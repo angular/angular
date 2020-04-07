@@ -117,11 +117,19 @@ export {
   ɵɵreference,
   ɵɵenableBindings,
   ɵɵdisableBindings,
-  ɵɵallocHostVars,
   ɵɵelementContainerStart,
   ɵɵelementContainerEnd,
   ɵɵelementContainer,
   ɵɵstyleMap,
+  ɵɵstyleMapInterpolate1,
+  ɵɵstyleMapInterpolate2,
+  ɵɵstyleMapInterpolate3,
+  ɵɵstyleMapInterpolate4,
+  ɵɵstyleMapInterpolate5,
+  ɵɵstyleMapInterpolate6,
+  ɵɵstyleMapInterpolate7,
+  ɵɵstyleMapInterpolate8,
+  ɵɵstyleMapInterpolateV,
   ɵɵstyleSanitizer,
   ɵɵclassMap,
   ɵɵclassMapInterpolate1,
@@ -144,7 +152,6 @@ export {
   ɵɵstylePropInterpolate8,
   ɵɵstylePropInterpolateV,
   ɵɵclassProp,
-  ɵɵelementHostAttrs,
 
   ɵɵselect,
   ɵɵadvance,
@@ -190,6 +197,9 @@ export {
 export {
   compilePipe as ɵcompilePipe,
 } from './render3/jit/pipe';
+export {
+  resetJitOptions as ɵresetJitOptions,
+} from './render3/jit/jit_options';
 
 export {
   NgModuleDef as ɵNgModuleDef,

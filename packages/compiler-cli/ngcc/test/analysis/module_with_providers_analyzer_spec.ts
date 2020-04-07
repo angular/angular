@@ -7,8 +7,8 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, absoluteFrom, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../../src/ngtsc/file_system';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer';
@@ -333,9 +333,8 @@ runInEachFileSystem(() => {
             'test-package', 'esm2015', false, getRootFiles(TEST_PROGRAM),
             getRootFiles(TEST_DTS_PROGRAM));
         program = bundle.src.program;
-        dtsProgram = bundle.dts !;
-        const host = new Esm2015ReflectionHost(
-            new MockLogger(), false, program.getTypeChecker(), dtsProgram);
+        dtsProgram = bundle.dts!;
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle.src, dtsProgram);
         referencesRegistry = new NgccReferencesRegistry(host);
 
         const processDts = true;
@@ -368,8 +367,8 @@ runInEachFileSystem(() => {
         const libraryModuleDeclaration = getDeclaration(
             program, absoluteFrom('/node_modules/some-library/index.d.ts'), 'LibraryModule',
             ts.isClassDeclaration);
-        expect(declarations.has(externalModuleDeclaration.name !)).toBe(true);
-        expect(declarations.has(libraryModuleDeclaration.name !)).toBe(false);
+        expect(declarations.has(externalModuleDeclaration.name!)).toBe(true);
+        expect(declarations.has(libraryModuleDeclaration.name!)).toBe(false);
       });
 
       it('should find declarations that have implicit return types', () => {
@@ -415,13 +414,12 @@ runInEachFileSystem(() => {
           analyses: ModuleWithProvidersAnalyses, fileName: AbsoluteFsPath) {
         const file = getSourceFileOrError(dtsProgram.program, fileName);
         const analysis = analyses.get(file);
-        return analysis ?
-            analysis.map(
-                info =>
-                    [info.declaration.name !.getText(),
-                     (info.ngModule.node as ts.ClassDeclaration).name !.getText(),
-                     info.ngModule.viaModule]) :
-            [];
+        return analysis ? analysis.map(
+                              info =>
+                                  [info.declaration.name!.getText(),
+                                   (info.ngModule.node as ts.ClassDeclaration).name!.getText(),
+                                   info.ngModule.viaModule]) :
+                          [];
       }
     });
   });
@@ -537,9 +535,8 @@ runInEachFileSystem(() => {
           'test-package', 'esm2015', false, getRootFiles(TEST_PROGRAM),
           getRootFiles(TEST_DTS_PROGRAM));
       const program = bundle.src.program;
-      const dtsProgram = bundle.dts !;
-      const host =
-          new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dtsProgram);
+      const dtsProgram = bundle.dts!;
+      const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle.src, dtsProgram);
       const referencesRegistry = new NgccReferencesRegistry(host);
 
       const processDts = true;
@@ -560,17 +557,16 @@ runInEachFileSystem(() => {
       const libraryModuleDeclaration = getDeclaration(
           program, absoluteFrom('/node_modules/some-library/index.d.ts'), 'LibraryModule',
           ts.isClassDeclaration);
-      expect(declarations.has(explicitInternalModuleDeclaration.name !)).toBe(true);
-      expect(declarations.has(externalModuleDeclaration.name !)).toBe(true);
-      expect(declarations.has(libraryModuleDeclaration.name !)).toBe(false);
+      expect(declarations.has(explicitInternalModuleDeclaration.name!)).toBe(true);
+      expect(declarations.has(externalModuleDeclaration.name!)).toBe(true);
+      expect(declarations.has(libraryModuleDeclaration.name!)).toBe(false);
     });
 
     it('should track references even when typings have already been processed', () => {
       const bundle =
           makeTestEntryPointBundle('test-package', 'esm2015', false, getRootFiles(TEST_PROGRAM));
       const program = bundle.src.program;
-      const host =
-          new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), null);
+      const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle.src, null);
       const referencesRegistry = new NgccReferencesRegistry(host);
 
       const processDts = false;  // Emulate the scenario where typings have already been processed
@@ -589,9 +585,9 @@ runInEachFileSystem(() => {
       const libraryModuleDeclaration = getDeclaration(
           program, absoluteFrom('/node_modules/some-library/index.d.ts'), 'LibraryModule',
           ts.isClassDeclaration);
-      expect(declarations.has(explicitInternalModuleDeclaration.name !)).toBe(true);
-      expect(declarations.has(externalModuleDeclaration.name !)).toBe(true);
-      expect(declarations.has(libraryModuleDeclaration.name !)).toBe(false);
+      expect(declarations.has(explicitInternalModuleDeclaration.name!)).toBe(true);
+      expect(declarations.has(externalModuleDeclaration.name!)).toBe(true);
+      expect(declarations.has(libraryModuleDeclaration.name!)).toBe(false);
     });
   });
 });

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineNgModule as defineNgModule, ɵɵtext as text} from '@angular/core';
+import {APP_INITIALIZER, ChangeDetectorRef, Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -245,6 +245,21 @@ describe('TestBed', () => {
     expect(hello.nativeElement).toHaveText('Hello World!');
   });
 
+  it('should run `APP_INITIALIZER` before accessing `LOCALE_ID` provider', () => {
+    let locale: string = '';
+    @NgModule({
+      providers: [
+        {provide: APP_INITIALIZER, useValue: () => locale = 'fr-FR', multi: true},
+        {provide: LOCALE_ID, useFactory: () => locale}
+      ]
+    })
+    class TestModule {
+    }
+
+    TestBed.configureTestingModule({imports: [TestModule]});
+    expect(TestBed.inject(LOCALE_ID)).toBe('fr-FR');
+  });
+
   it('allow to override a provider', () => {
     TestBed.overrideProvider(NAME, {useValue: 'injected World!'});
     const hello = TestBed.createComponent(HelloWorld);
@@ -345,13 +360,19 @@ describe('TestBed', () => {
   describe('multi providers', () => {
     const multiToken = new InjectionToken<string[]>('multiToken');
     const singleToken = new InjectionToken<string>('singleToken');
+    const multiTokenToOverrideAtModuleLevel =
+        new InjectionToken<string[]>('moduleLevelMultiOverride');
     @NgModule({providers: [{provide: multiToken, useValue: 'valueFromModule', multi: true}]})
     class MyModule {
     }
 
     @NgModule({
       providers: [
-        {provide: singleToken, useValue: 't1'},
+        {provide: singleToken, useValue: 't1'}, {
+          provide: multiTokenToOverrideAtModuleLevel,
+          useValue: 'multiTokenToOverrideAtModuleLevelOriginal',
+          multi: true
+        },
         {provide: multiToken, useValue: 'valueFromModule2', multi: true},
         {provide: multiToken, useValue: 'secondValueFromModule2', multi: true}
       ]
@@ -361,14 +382,23 @@ describe('TestBed', () => {
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [MyModule, MyModule2],
+        imports: [
+          MyModule, {
+            ngModule: MyModule2,
+            providers:
+                [{provide: multiTokenToOverrideAtModuleLevel, useValue: 'override', multi: true}]
+          }
+        ],
       });
     });
 
     it('is preserved when other provider is overridden', () => {
       TestBed.overrideProvider(singleToken, {useValue: ''});
-      const value = TestBed.inject(multiToken);
-      expect(value.length).toEqual(3);
+      expect(TestBed.inject(multiToken).length).toEqual(3);
+      expect(TestBed.inject(multiTokenToOverrideAtModuleLevel).length).toEqual(2);
+      expect(TestBed.inject(multiTokenToOverrideAtModuleLevel)).toEqual([
+        'multiTokenToOverrideAtModuleLevelOriginal', 'override'
+      ]);
     });
 
     it('overridden with an array', () => {
@@ -469,6 +499,26 @@ describe('TestBed', () => {
        const service = TestBed.inject(MyService);
        expect(service.get()).toEqual('override');
      });
+
+  it('should handle overrides for a provider that has `ChangeDetectorRef` as a dependency', () => {
+    // Note: we specifically check an @Injectable with `ChangeDetectorRef` here due to the fact that
+    // in Ivy there is a special instruction that injects `ChangeDetectorRef` token for Pipes
+    // (ɵɵinjectPipeChangeDetectorRef) and using that function for other types causes problems,
+    // for example when we try to override an @Injectable. The test below captures a use-case that
+    // triggers a problem in case incompatible function is used to inject `ChangeDetectorRef` as a
+    // dependency.
+    @Injectable({providedIn: 'root'})
+    class MyService {
+      token = 'original';
+      constructor(public cdr: ChangeDetectorRef) {}
+    }
+
+    TestBed.configureTestingModule({});
+    TestBed.overrideProvider(MyService, {useValue: {token: 'override'}});
+
+    const service = TestBed.inject(MyService);
+    expect(service.token).toBe('override');
+  });
 
   it('should allow overriding a provider defined via ModuleWithProviders (using TestBed.configureTestingModule)',
      () => {
@@ -874,15 +924,23 @@ describe('TestBed', () => {
               {set: {template: `<span someDirective>{{'hello' | somePipe}}</span>`}});
           TestBed.createComponent(SomeComponent);
 
-          const defBeforeReset = (SomeComponent as any).ɵcmp;
-          expect(defBeforeReset.pipeDefs().length).toEqual(1);
-          expect(defBeforeReset.directiveDefs().length).toEqual(2);  // directive + component
+          const cmpDefBeforeReset = (SomeComponent as any).ɵcmp;
+          expect(cmpDefBeforeReset.pipeDefs().length).toEqual(1);
+          expect(cmpDefBeforeReset.directiveDefs().length).toEqual(2);  // directive + component
+
+          const modDefBeforeReset = (SomeModule as any).ɵmod;
+          const transitiveScope = modDefBeforeReset.transitiveCompileScopes.compilation;
+          expect(transitiveScope.pipes.size).toEqual(1);
+          expect(transitiveScope.directives.size).toEqual(2);
 
           TestBed.resetTestingModule();
 
-          const defAfterReset = (SomeComponent as any).ɵcmp;
-          expect(defAfterReset.pipeDefs).toBe(null);
-          expect(defAfterReset.directiveDefs).toBe(null);
+          const cmpDefAfterReset = (SomeComponent as any).ɵcmp;
+          expect(cmpDefAfterReset.pipeDefs).toBe(null);
+          expect(cmpDefAfterReset.directiveDefs).toBe(null);
+
+          const modDefAfterReset = (SomeModule as any).ɵmod;
+          expect(modDefAfterReset.transitiveCompileScopes).toBe(null);
         });
 
         it('should cleanup ng defs for classes with no ng annotations (in case of inheritance)',
@@ -1001,5 +1059,45 @@ describe('TestBed', () => {
           // resolved
           expect(TestBed.inject(Service)).toBeDefined();
         });
+      });
+
+  onlyInIvy('uses Ivy-specific compiler output')
+      .it('should handle provider overrides when module imports are provided as a function', () => {
+        class InjectedString {
+          value?: string;
+        }
+
+        @Component({template: '{{injectedString.value}}'})
+        class AppComponent {
+          constructor(public injectedString: InjectedString) {}
+        }
+
+        @NgModule({})
+        class DependencyModule {
+        }
+
+        // We need to write the compiler output manually here,
+        // because it depends on code generated by ngcc.
+        class TestingModule {
+          static ɵmod = defineNgModule({type: TestingModule});
+          static ɵinj =
+              defineInjector({factory: () => new TestingModule(), imports: [DependencyModule]});
+        }
+        setNgModuleScope(TestingModule, {imports: () => [DependencyModule]});
+
+        TestBed
+            .configureTestingModule({
+              imports: [TestingModule],
+              declarations: [AppComponent],
+              providers: [{provide: InjectedString, useValue: {value: 'initial'}}],
+            })
+            .compileComponents();
+
+        TestBed.overrideProvider(InjectedString, {useValue: {value: 'changed'}})
+            .compileComponents();
+
+        const fixture = TestBed.createComponent(AppComponent);
+        fixture.detectChanges();
+        expect(fixture !.nativeElement.textContent).toContain('changed');
       });
 });

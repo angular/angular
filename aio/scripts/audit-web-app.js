@@ -27,14 +27,13 @@
  */
 
 // Imports
-const chromeLauncher = require('chrome-launcher');
 const lighthouse = require('lighthouse');
 const printer = require('lighthouse/lighthouse-cli/printer');
 const logger = require('lighthouse-logger');
+const puppeteer = require('puppeteer');
 
 // Constants
 const AUDIT_CATEGORIES = ['accessibility', 'best-practices', 'performance', 'pwa', 'seo'];
-const CHROME_LAUNCH_OPTS = {chromeFlags: ['--headless']};
 const LIGHTHOUSE_FLAGS = {logLevel: process.env.CI ? 'error' : 'info'};  // Be less verbose on CI.
 const SKIPPED_HTTPS_AUDITS = ['redirects-http', 'uses-http2'];
 const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer';
@@ -84,13 +83,13 @@ function formatScore(score) {
 }
 
 async function launchChromeAndRunLighthouse(url, flags, config) {
-  const chrome = await chromeLauncher.launch(CHROME_LAUNCH_OPTS);
-  flags.port = chrome.port;
+  const browser = await puppeteer.launch();
+  flags.port = (new URL(browser.wsEndpoint())).port;
 
   try {
     return await lighthouse(url, flags, config);
   } finally {
-    await chrome.kill();
+    await browser.close();
   }
 }
 

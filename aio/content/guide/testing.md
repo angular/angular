@@ -507,10 +507,11 @@ Consider this `LightswitchComponent` which toggles a light on and off
 You might decide only to test that the `clicked()` method
 toggles the light's _on/off_ state and sets the message appropriately.
 
-This component class has no dependencies.
-To test a service with no dependencies, you create it with `new`, poke at its API,
-and assert expectations on its public state.
-Do the same with the component class.
+This component class has no dependencies. To test these types of classes, follow the same steps as you would for a service that has no dependencies:
+
+1. Create a component using the new keyword.
+2. Poke at its API.
+3. Assert expectations on its public state.
 
 <code-example
   path="testing/src/app/demo/demo.spec.ts"
@@ -617,6 +618,16 @@ It also generates an initial test file for the component, `banner-external.compo
   path="testing/src/app/banner/banner-initial.component.spec.ts"
   region="v1"
   header="app/banner/banner-external.component.spec.ts (initial)"></code-example>
+
+<div class="alert is-helpful">
+
+Because `compileComponents` is asynchronous, it uses
+the [`async`](api/core/testing/async) utility
+function imported from `@angular/core/testing`.
+
+Please refer to the [async](#async) section for more details.
+
+</div>
 
 #### Reduce the setup
 
@@ -889,8 +900,7 @@ In production, change detection kicks in automatically
 when Angular creates a component or the user enters a keystroke or
 an asynchronous activity (e.g., AJAX) completes.
 
-The `TestBed.createComponent` does _not_ trigger change detection.
-a fact confirmed in the revised test:
+The `TestBed.createComponent` does _not_ trigger change detection; a fact confirmed in the revised test:
 
 <code-example
   path="testing/src/app/banner/banner.component.spec.ts" region="test-w-o-detect-changes"></code-example>
@@ -1041,8 +1051,7 @@ attempt to reach an authentication server.
 These behaviors can be hard to intercept.
 It is far easier and safer to create and register a test double in place of the real `UserService`.
 
-This particular test suite supplies a minimal mock of the `UserService` that satisfies the needs of the `WelcomeComponent`
-and its tests:
+This particular test suite supplies a minimal mock of the `UserService` that satisfies the needs of the `WelcomeComponent` and its tests:
 
 <code-example
   path="testing/src/app/welcome/welcome.component.spec.ts"
@@ -1093,18 +1102,6 @@ see the [_Override component providers_](#component-override) section that
 explains when and why you must get the service from the component's injector instead.
 
 </div>
-
-{@a service-from-injector}
-
-#### Always get the service from an injector
-
-Do _not_ reference the `userServiceStub` object
-that's provided to the testing module in the body of your test.
-**It does not work!**
-The `userService` instance injected into the component is a completely _different_ object,
-a clone of the provided `userServiceStub`.
-
-<code-example path="testing/src/app/welcome/welcome.component.spec.ts" region="stub-not-injected" header="app/welcome/welcome.component.spec.ts"></code-example>
 
 {@a welcome-spec-setup}
 
@@ -1233,7 +1230,7 @@ The following test confirms the expected behavior when the service returns an `E
 Note that the `it()` function receives an argument of the following form.
 
 ```javascript
-fakeAsync(() => { /* test body */ })`
+fakeAsync(() => { /* test body */ })
 ```
 
 The `fakeAsync()` function enables a linear coding style by running the test body in a special `fakeAsync test zone`.
@@ -1251,20 +1248,36 @@ XHR calls within a test are rare, but if you need to call XHR, see [`async()`](#
 
 #### The _tick()_ function
 
-You do have to call `tick()` to advance the (virtual) clock.
+You do have to call [tick()](api/core/testing/tick) to advance the (virtual) clock.
 
-Calling `tick()` simulates the passage of time until all pending asynchronous activities finish.
+Calling [tick()](api/core/testing/tick) simulates the passage of time until all pending asynchronous activities finish.
 In this case, it waits for the error handler's `setTimeout()`.
 
-The `tick()` function accepts milliseconds as a parameter (defaults to 0 if not provided). The parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback.
+The [tick()](api/core/testing/tick) function accepts milliseconds and tickOptions as parameters, the millisecond (defaults to 0 if not provided) parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback. The tickOptions is an optional parameter with a property called `processNewMacroTasksSynchronously` (defaults to true) represents whether to invoke new generated macro tasks when ticking.
 
 <code-example
   path="testing/src/app/demo/async-helper.spec.ts"
   region="fake-async-test-tick">
 </code-example>
 
-The `tick()` function is one of the Angular testing utilities that you import with `TestBed`.
+The [tick()](api/core/testing/tick) function is one of the Angular testing utilities that you import with `TestBed`.
 It's a companion to `fakeAsync()` and you can only call it within a `fakeAsync()` body.
+
+#### tickOptions
+
+<code-example
+  path="testing/src/app/demo/async-helper.spec.ts"
+  region="fake-async-test-tick-new-macro-task-sync">
+</code-example>
+
+In this example, we have a new macro task (nested setTimeout), by default, when we `tick`, the setTimeout `outside` and `nested` will both be triggered.
+
+<code-example
+  path="testing/src/app/demo/async-helper.spec.ts"
+  region="fake-async-test-tick-new-macro-task-async">
+</code-example>
+
+And in some case, we don't want to trigger the new macro task when ticking, we can use `tick(milliseconds, {processNewMacroTasksSynchronously: false})` to not invoke new maco task.
 
 #### Comparing dates inside fakeAsync()
 
@@ -1304,51 +1317,46 @@ You can also use RxJS scheduler in `fakeAsync()` just like using `setTimeout()` 
 
 #### Support more macroTasks
 
-By default `fakeAsync()` supports the following `macroTasks`.
+By default, `fakeAsync()` supports the following macro tasks.
 
-- setTimeout
-- setInterval
-- requestAnimationFrame
-- webkitRequestAnimationFrame
-- mozRequestAnimationFrame
+- `setTimeout`
+- `setInterval`
+- `requestAnimationFrame`
+- `webkitRequestAnimationFrame`
+- `mozRequestAnimationFrame`
 
-If you run other `macroTask` such as `HTMLCanvasElement.toBlob()`, `Unknown macroTask scheduled in fake async test` error will be thrown.
+If you run other macro tasks such as `HTMLCanvasElement.toBlob()`, an _"Unknown macroTask scheduled in fake async test"_ error will be thrown.
 
 <code-tabs>
   <code-pane
+    header="src/app/shared/canvas.component.spec.ts (failing)"
     path="testing/src/app/shared/canvas.component.spec.ts"
-    header="src/app/shared/canvas.component.spec.ts">
+    region="without-toBlob-macrotask">
   </code-pane>
   <code-pane
+    header="src/app/shared/canvas.component.ts"
     path="testing/src/app/shared/canvas.component.ts"
-    header="src/app/shared/canvas.component.ts">
+    region="main">
   </code-pane>
 </code-tabs>
 
-If you want to support such a case, you need to define the `macroTask` you want to support in `beforeEach()`.
+If you want to support such a case, you need to define the macro task you want to support in `beforeEach()`.
 For example:
 
-```javascript
-beforeEach(() => {
-  window['__zone_symbol__FakeAsyncTestMacroTask'] = [
-    {
-      source: 'HTMLCanvasElement.toBlob',
-      callbackArgs: [{ size: 200 }]
-    }
-  ];
-});
+<code-example
+  header="src/app/shared/canvas.component.spec.ts (excerpt)"
+  path="testing/src/app/shared/canvas.component.spec.ts"
+  region="enable-toBlob-macrotask">
+</code-example>
 
-it('toBlob should be able to run in fakeAsync', fakeAsync(() => {
-    const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
-    let blob = null;
-    canvas.toBlob(function(b) {
-      blob = b;
-    });
-    tick();
-    expect(blob.size).toBe(200);
-  })
-);
-```
+Note that in order to make the `<canvas>` element Zone.js-aware in your app, you need to import the `zone-patch-canvas` patch (either in `polyfills.ts` or in the specific file that uses `<canvas>`):
+
+<code-example
+  header="src/polyfills.ts or src/app/shared/canvas.component.ts"
+  path="testing/src/app/shared/canvas.component.ts"
+  region="import-canvas-patch">
+</code-example>
+
 
 #### Async observables
 
@@ -1412,7 +1420,7 @@ in the real world.
 Notice that the quote element displays the placeholder value (`'...'`) after `ngOnInit()`.
 The first quote hasn't arrived yet.
 
-To flush the first quote from the observable, you call `tick()`.
+To flush the first quote from the observable, you call [tick()](api/core/testing/tick).
 Then call `detectChanges()` to tell Angular to update the screen.
 
 Then you can assert that the quote element displays the expected text.
@@ -1458,7 +1466,7 @@ When using an `intervalTimer()` such as `setInterval()` in `async()`, remember t
 #### _whenStable_
 
 The test must wait for the `getQuote()` observable to emit the next quote.
-Instead of calling `tick()`, it calls `fixture.whenStable()`.
+Instead of calling [tick()](api/core/testing/tick), it calls `fixture.whenStable()`.
 
 The `fixture.whenStable()` returns a promise that resolves when the JavaScript engine's
 task queue becomes empty.
@@ -1567,7 +1575,7 @@ you tell the `TestScheduler` to _flush_ its queue of prepared tasks like this.
   path="testing/src/app/twain/twain.component.marbles.spec.ts"
   region="test-scheduler-flush"></code-example>
 
-This step serves a purpose analogous to `tick()` and `whenStable()` in the
+This step serves a purpose analogous to [tick()](api/core/testing/tick) and `whenStable()` in the
 earlier `fakeAsync()` and `async()` examples.
 The balance of the test is the same as those examples.
 
@@ -1579,7 +1587,7 @@ Here's the marble testing version of the `getQuote()` error test.
   path="testing/src/app/twain/twain.component.marbles.spec.ts"
   region="error-test"></code-example>
 
-It's still an async test, calling `fakeAsync()` and `tick()`, because the component itself
+It's still an async test, calling `fakeAsync()` and [tick()](api/core/testing/tick), because the component itself
 calls `setTimeout()` when processing errors.
 
 Look at the marble observable definition.
@@ -3139,7 +3147,7 @@ Here are the most important static methods, in order of likely utility.
 
     </td>
   </tr>
-</table
+</table>
 
 A few of the `TestBed` instance methods are not covered by static `TestBed` _class_ methods.
 These are rarely needed.
@@ -3572,13 +3580,13 @@ The Angular `By` class has three static methods for common predicates:
 
 <hr>
 
-{@a faq}
+{@a useful-tips}
 
-## Frequently Asked Questions
+## Useful tips
 
 {@a q-spec-file-location}
 
-#### Why put spec file next to the file it tests?
+#### Place your spec file next to the file it tests
 
 It's a good idea to put unit test spec files in the same folder
 as the application source code files that they test:
@@ -3589,11 +3597,9 @@ as the application source code files that they test:
 - When you move the source (inevitable), you remember to move the test.
 - When you rename the source file (inevitable), you remember to rename the test file.
 
-<hr>
-
 {@a q-specs-in-test-folder}
 
-#### When would I put specs in a test folder?
+#### Place your spec files in a test folder
 
 Application integration specs can test the interactions of multiple parts
 spread across folders and modules.
@@ -3605,15 +3611,17 @@ It's often better to create an appropriate folder for them in the `tests` direct
 Of course specs that test the test helpers belong in the `test` folder,
 next to their corresponding helper files.
 
-{@a q-e2e}
+{@a q-kiss}
 
-#### Why not rely on E2E tests of DOM integration?
+#### Keep it simple
 
-The component DOM tests described in this guide often require extensive setup and
-advanced techniques whereas the [unit tests](#component-class-testing)
-are comparatively simple.
+[Component class testing](#component-class-testing) should be kept very clean and simple.
+It should test only a single unit. On a first glance, you should be able to understand
+what the test is testing. If it's doing more, then it doesn't belong here.
 
-#### Why not defer DOM integration tests to end-to-end (E2E) testing?
+{@a q-end-to-end}
+
+#### Use E2E (end-to-end) to test more than a single unit
 
 E2E tests are great for high-level validation of the entire system.
 But they can't give you the comprehensive test coverage that you'd expect from unit tests.

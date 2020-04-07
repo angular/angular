@@ -8,6 +8,8 @@ ts_library(
     srcs = glob(
         ["**/*.ts"],
     ),
+    # Visible to //:saucelabs_unit_tests
+    visibility = ["//:__pkg__"],
     deps = [
         "//packages/animations",
         "//packages/animations/browser",
@@ -35,11 +37,10 @@ ts_library(
 
 jasmine_node_test(
     name = "acceptance",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     deps = [
         ":acceptance_lib",
         "//packages/zone.js/lib:zone_d_ts",
-        "//tools/testing:node",
         "@npm//base64-js",
         "@npm//source-map",
     ],

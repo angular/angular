@@ -13,10 +13,9 @@ ts_library(
 
 jasmine_node_test(
     name = "ml_parser",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     deps = [
         ":ml_parser_lib",
-        "//tools/testing:node",
     ],
 )
 

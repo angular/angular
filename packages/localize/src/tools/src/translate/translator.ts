@@ -19,6 +19,7 @@ import {OutputPathFn} from './output_path';
 export interface TranslationBundle {
   locale: string;
   translations: Record<ɵMessageId, ɵParsedTranslation>;
+  diagnostics?: Diagnostics;
 }
 
 /**

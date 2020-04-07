@@ -306,9 +306,6 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "enableSummariesForJit": is_legacy_ngc,
         "enableIvy": is_ivy_enabled(ctx),
         "fullTemplateTypeCheck": ctx.attr.type_check,
-        # TODO(alxhub/arick): template type-checking in g3 is currently disabled because of
-        # preexisting failures. Reenable once g3 is fixed: FW-1753
-        "ivyTemplateTypeCheck": _is_bazel(),
         # In Google3 we still want to use the symbol factory re-exports in order to
         # not break existing apps inside Google. Unlike Bazel, Google3 does not only
         # enforce strict dependencies of source files, but also for generated files
@@ -318,7 +315,12 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "createExternalSymbolFactoryReexports": (not _is_bazel()),
         # FIXME: wrong place to de-dupe
         "expectedOut": depset([o.path for o in expected_outs]).to_list(),
+        # We instruct the compiler to use the host for import generation in Blaze. By default,
+        # module names between source files of the same compilation unit are relative paths. This
+        # is not desired in google3 where the generated module names are used as qualified names
+        # for aliased exports. We disable relative paths and always use manifest paths in google3.
         "_useHostForImportGeneration": (not _is_bazel()),
+        "_useManifestPathsAsModuleName": (not _is_bazel()),
     }
 
     if _should_produce_flat_module_outs(ctx):
@@ -578,7 +580,6 @@ def ng_module_impl(ctx, ts_compile_actions):
     providers = ts_compile_actions(
         ctx,
         is_library = True,
-        deps = ctx.attr.deps,
         compile_action = _prodmode_compile_action,
         devmode_compile_action = _devmode_compile_action,
         tsc_wrapped_tsconfig = _ngc_tsconfig,

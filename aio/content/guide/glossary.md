@@ -202,13 +202,13 @@ See also [Schematics CLI](#schematics-cli).
 
 ## component
 
-A class with the `@Component()` [decorator](#decorator) that associates it with a companion [template](#template). Together, the component and template define a [view](#view).
+A class with the `@Component()` [decorator](#decorator) that associates it with a companion [template](#template). Together, the component class and template define a [view](#view).
 A component is a special type of [directive](#directive).
 The `@Component()` decorator extends the `@Directive()` decorator with template-oriented features.
 
 An Angular component class is responsible for exposing data and handling most of the view's display and user-interaction logic through [data binding](#data-binding).
 
-Read more about components, templates, and views in [Architecture Overview](guide/architecture).
+Read more about component classes, templates, and views in [Introduction to Angular concepts](guide/architecture).
 
 ## configuration
 
@@ -302,6 +302,14 @@ Learn more in [Dependency Injection in Angular](guide/dependency-injection).
 ## DI token
 
 A lookup token associated with a dependency [provider](#provider), for use with the [dependency injection](#di) system.
+
+{@a differential-loading}
+
+## differential loading
+
+A build technique that creates two bundles for an application. One smaller bundle is for modern browsers. A second, larger bundle allows the application to run correctly in older browsers (such as IE11) that do not support all modern browser APIs.
+
+For more information, see the [Deployment](guide/deployment#differential-loading) guide.
 
 
 {@a directive}
@@ -478,6 +486,15 @@ or displayed between element tags, as in this example.
 
 Read more about [interpolation](guide/template-syntax#interpolation) in [Template Syntax](guide/template-syntax).
 
+{@a ivy}
+
+## Ivy
+
+Ivy is the code name for Angular's [next-generation compilation and rendering pipeline](https://blog.angular.io/a-plan-for-version-8-0-and-ivy-b3318dfc19f7).
+With the version 9 release of Angular, the new compiler and runtime instructions are used by default instead of the older compiler and runtime, known as [View Engine](#ve).
+
+See [Angular Ivy](guide/ivy).
+
 
 {@a J}
 
@@ -571,6 +588,14 @@ Compare to [NgModule](#ngmodule).
 
 
 {@a N}
+
+{@a ngcc}
+
+## ngcc
+
+Angular compatibility compiler.
+If you build your app using [Ivy](#ivy), but it depends on libraries have not been compiled with Ivy, the CLI uses `ngcc` to automatically update the dependent libraries to use Ivy.
+
 
 {@a ngmodule}
 
@@ -853,13 +878,13 @@ You can also define a custom builder, and add a target to the project configurat
 
 ## template
 
-Code associated with a component that defines how to render the component's [view](#view).
+Code that defines how to render a component's [view](#view).
 
 A template combines straight HTML with Angular [data-binding](#data-binding) syntax, [directives](#directive),
 and [template expressions](#template-expression) (logical constructs).
-The Angular elements insert or calculate values that modify the HTML elements before the page is displayed.
+The Angular elements insert or calculate values that modify the HTML elements before the page is displayed. Learn more about Angular template language in the [Template Syntax](guide/template-syntax) guide.
 
-A template is associated with a [component](#component) class through the `@Component()` [decorator](#decorator). The HTML can be provided inline, as the value of the `template` property, or in a separate HTML file linked through the `templateUrl` property.
+A template is associated with a [component class](#component) through the `@Component()` [decorator](#decorator). The template code can be provided inline, as the value of the `template` property, or in a separate HTML file linked through the `templateUrl` property.
 
 Additional templates, represented by `TemplateRef` objects, can define alternative or *embedded* views, which can be referenced from multiple components.
 
@@ -938,18 +963,25 @@ To learn more, see [Angular Universal: server-side rendering](guide/universal).
 ## view
 
 The smallest grouping of display elements that can be created and destroyed together.
-Angular renders a view under the control of one or more [directives](#directive),
-especially [component](#component) directives and their companion [templates](#template).
+Angular renders a view under the control of one or more [directives](#directive).
 
-A view is specifically represented by a `ViewRef` instance associated with the component.
-A view that belongs to a component is called a *host view*.
-Views are typically collected into [view hierarchies](#view-tree).
+A [component](#component) class and its associated [template](#template) define a view.
+A view is specifically represented by a `ViewRef` instance associated with a component.
+A view that belongs immediately to a component is called a *host view*.
+Views are typically collected into [view hierarchies](#view-tree). 
 
 Properties of elements in a view can change dynamically, in response to user actions;
 the structure (number and order) of elements in a view can't.
 You can change the structure of elements by inserting, moving, or removing nested views within their view containers.
 
 View hierarchies can be loaded and unloaded dynamically as the user navigates through the application, typically under the control of a [router](#router).
+
+{@a ve}
+
+## View Engine
+
+The compilation and rendering pipeline used by Angular before version 9. Compare [Ivy](#ivy).
+
 
 {@a view-tree}
 

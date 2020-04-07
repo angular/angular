@@ -7,6 +7,7 @@
  */
 import {ɵMessageId, ɵParsedTranslation, ɵparseTranslation} from '@angular/localize';
 import {extname} from 'path';
+import {Diagnostics} from '../../../diagnostics';
 import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
 
 /**
@@ -32,6 +33,6 @@ export class SimpleJsonTranslationParser implements TranslationParser {
       const targetMessage = translations[messageId];
       parsedTranslations[messageId] = ɵparseTranslation(targetMessage);
     }
-    return {locale: parsedLocale, translations: parsedTranslations};
+    return {locale: parsedLocale, translations: parsedTranslations, diagnostics: new Diagnostics()};
   }
 }

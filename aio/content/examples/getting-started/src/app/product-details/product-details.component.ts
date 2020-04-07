@@ -39,8 +39,8 @@ export class ProductDetailsComponent implements OnInit {
 // #enddocregion props-methods, get-product
 // #docregion add-to-cart
   addToCart(product) {
-    window.alert('Your product has been added to the cart!');
     this.cartService.addToCart(product);
+    window.alert('Your product has been added to the cart!');
   }
 // #docregion props-methods, get-product, inject-cart-service
 }

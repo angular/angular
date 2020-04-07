@@ -346,11 +346,9 @@ class SomeComponent {
       it('should wait for APP_INITIALIZER to set providers for `LOCALE_ID`', async() => {
         let locale: string = '';
 
-        const promise = Promise.resolve().then(() => { locale = 'fr-FR'; });
-
         const testModule = createModule({
           providers: [
-            {provide: APP_INITIALIZER, useValue: () => promise, multi: true},
+            {provide: APP_INITIALIZER, useValue: () => locale = 'fr-FR', multi: true},
             {provide: LOCALE_ID, useFactory: () => locale}
           ]
         });

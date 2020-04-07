@@ -24,8 +24,6 @@ export {
   store,
   tick,
 
-  ɵɵallocHostVars,
-
   ɵɵattribute,
   ɵɵattributeInterpolate1,
   ɵɵattributeInterpolate2,
@@ -65,7 +63,6 @@ export {
   ɵɵelementContainerStart,
   ɵɵelementEnd,
 
-  ɵɵelementHostAttrs,
   ɵɵelementStart,
   ɵɵembeddedViewEnd,
 
@@ -103,6 +100,15 @@ export {
   ɵɵselect,
   ɵɵadvance,
   ɵɵstyleMap,
+  ɵɵstyleMapInterpolate1,
+  ɵɵstyleMapInterpolate2,
+  ɵɵstyleMapInterpolate3,
+  ɵɵstyleMapInterpolate4,
+  ɵɵstyleMapInterpolate5,
+  ɵɵstyleMapInterpolate6,
+  ɵɵstyleMapInterpolate7,
+  ɵɵstyleMapInterpolate8,
+  ɵɵstyleMapInterpolateV,
 
   ɵɵstyleProp,
   ɵɵstylePropInterpolate1,

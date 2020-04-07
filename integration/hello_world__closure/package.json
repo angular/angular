@@ -16,14 +16,21 @@
     "zone.js": "file:../../dist/zone.js-dist/zone.js"
   },
   "devDependencies": {
-    "@types/jasmine": "2.5.41",
+    "@types/jasmine": "file:../../node_modules/@types/jasmine",
+    "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
     "concurrently": "3.4.0",
     "lite-server": "2.2.2",
-    "protractor": "file:../../node_modules/protractor"
+    "protractor": "file:../../node_modules/protractor",
+    "puppeteer": "file:../../node_modules/puppeteer",
+    "tsickle": "file:../../node_modules/tsickle"
+  },
+  "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
+  "resolutions": {
+    "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
   },
   "scripts": {
-    "postinstall": "webdriver-manager update --gecko false --standalone false $CI_CHROMEDRIVER_VERSION_ARG",
     "closure": "java -jar node_modules/google-closure-compiler/compiler.jar --flagfile closure.conf",
+    "build": "cd .",
     "test": "ngc && yarn run closure && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",
     "serve": "lite-server -c e2e/browser.config.json",
     "preprotractor": "tsc -p e2e",

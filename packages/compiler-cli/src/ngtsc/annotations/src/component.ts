@@ -15,7 +15,7 @@ import {absoluteFrom, relative} from '../../file_system';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
-import {DirectiveMeta, MetadataReader, MetadataRegistry, extractDirectiveGuards} from '../../metadata';
+import {DirectiveMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, extractDirectiveGuards} from '../../metadata';
 import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
@@ -26,10 +26,11 @@ import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {SubsetOfKeys} from '../../util/src/typescript';
 
 import {ResourceLoader} from './api';
+import {getDirectiveDiagnostics, getProviderDiagnostics} from './diagnostics';
 import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
+import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, makeDuplicateDeclarationError, readBaseClass, resolveProvidersRequiringFactory, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -53,6 +54,18 @@ export interface ComponentAnalysisData {
   guards: ReturnType<typeof extractDirectiveGuards>;
   template: ParsedTemplateWithSource;
   metadataStmt: Statement|null;
+
+  /**
+   * Providers extracted from the `providers` field of the component annotation which will require
+   * an Angular factory definition at runtime.
+   */
+  providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
+
+  /**
+   * Providers extracted from the `viewProviders` field of the component annotation which will
+   * require an Angular factory definition at runtime.
+   */
+  viewProvidersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
 }
 
 export type ComponentResolutionData = Pick<R3ComponentMetadata, ComponentMetadataResolvedFields>;
@@ -66,12 +79,14 @@ export class ComponentDecoratorHandler implements
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private metaReader: MetadataReader,
       private scopeReader: ComponentScopeReader, private scopeRegistry: LocalModuleScopeRegistry,
-      private isCore: boolean, private resourceLoader: ResourceLoader, private rootDirs: string[],
-      private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean,
-      private enableI18nLegacyMessageIdFormat: boolean, private moduleResolver: ModuleResolver,
-      private cycleAnalyzer: CycleAnalyzer, private refEmitter: ReferenceEmitter,
-      private defaultImportRecorder: DefaultImportRecorder,
-      private depTracker: DependencyTracker|null, private annotateForClosureCompiler: boolean) {}
+      private isCore: boolean, private resourceLoader: ResourceLoader,
+      private rootDirs: ReadonlyArray<string>, private defaultPreserveWhitespaces: boolean,
+      private i18nUseExternalIds: boolean, private enableI18nLegacyMessageIdFormat: boolean,
+      private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
+      private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder,
+      private depTracker: DependencyTracker|null,
+      private injectableRegistry: InjectableClassRegistry,
+      private annotateForClosureCompiler: boolean) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
@@ -94,6 +109,7 @@ export class ComponentDecoratorHandler implements
     if (decorator !== undefined) {
       return {
         trigger: decorator.node,
+        decorator,
         metadata: decorator,
       };
     } else {
@@ -186,12 +202,27 @@ export class ComponentDecoratorHandler implements
       }
     }, undefined) !;
 
-    const viewProviders: Expression|null = component.has('viewProviders') ?
-        new WrappedNodeExpr(
-            this.annotateForClosureCompiler ?
-                wrapFunctionExpressionsInParens(component.get('viewProviders') !) :
-                component.get('viewProviders') !) :
-        null;
+
+    // Note that we could technically combine the `viewProvidersRequiringFactory` and
+    // `providersRequiringFactory` into a single set, but we keep the separate so that
+    // we can distinguish where an error is coming from when logging the diagnostics in `resolve`.
+    let viewProvidersRequiringFactory: Set<Reference<ClassDeclaration>>|null = null;
+    let providersRequiringFactory: Set<Reference<ClassDeclaration>>|null = null;
+    let wrappedViewProviders: Expression|null = null;
+
+    if (component.has('viewProviders')) {
+      const viewProviders = component.get('viewProviders') !;
+      viewProvidersRequiringFactory =
+          resolveProvidersRequiringFactory(viewProviders, this.reflector, this.evaluator);
+      wrappedViewProviders = new WrappedNodeExpr(
+          this.annotateForClosureCompiler ? wrapFunctionExpressionsInParens(viewProviders) :
+                                            viewProviders);
+    }
+
+    if (component.has('providers')) {
+      providersRequiringFactory = resolveProvidersRequiringFactory(
+          component.get('providers') !, this.reflector, this.evaluator);
+    }
 
     // Parse the template.
     // If a preanalyze phase was executed, the template may already exist in parsed form, so check
@@ -242,7 +273,7 @@ export class ComponentDecoratorHandler implements
         const resourceStr = this.resourceLoader.load(resourceUrl);
         styles.push(resourceStr);
         if (this.depTracker !== null) {
-          this.depTracker.addResourceDependency(node.getSourceFile(), resourceUrl);
+          this.depTracker.addResourceDependency(node.getSourceFile(), absoluteFrom(resourceUrl));
         }
       }
     }
@@ -282,6 +313,7 @@ export class ComponentDecoratorHandler implements
           ...metadata,
           template: {
             nodes: template.emitNodes,
+            ngContentSelectors: template.ngContentSelectors,
           },
           encapsulation,
           interpolation: template.interpolation,
@@ -290,7 +322,7 @@ export class ComponentDecoratorHandler implements
           // These will be replaced during the compilation step, after all `NgModule`s have been
           // analyzed and the full compilation scope for the component can be realized.
           animations,
-          viewProviders,
+          viewProviders: wrappedViewProviders,
           i18nUseExternalIds: this.i18nUseExternalIds, relativeContextFilePath,
         },
         guards: extractDirectiveGuards(node, this.reflector),
@@ -298,6 +330,8 @@ export class ComponentDecoratorHandler implements
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),
         template,
+        providersRequiringFactory,
+        viewProvidersRequiringFactory,
       },
     };
     if (changeDetection !== null) {
@@ -321,6 +355,8 @@ export class ComponentDecoratorHandler implements
       isComponent: true,
       baseClass: analysis.baseClass, ...analysis.guards,
     });
+
+    this.injectableRegistry.registerInjectable(node);
   }
 
   index(
@@ -328,6 +364,11 @@ export class ComponentDecoratorHandler implements
     const scope = this.scopeReader.getScopeForComponent(node);
     const selector = analysis.meta.selector;
     const matcher = new SelectorMatcher<DirectiveMeta>();
+    if (scope === 'error') {
+      // Don't bother indexing components which had erroneous scopes.
+      return null;
+    }
+
     if (scope !== null) {
       for (const directive of scope.compilation.directives) {
         if (directive.selector !== null) {
@@ -360,6 +401,11 @@ export class ComponentDecoratorHandler implements
     let schemas: SchemaMetadata[] = [];
 
     const scope = this.scopeReader.getScopeForComponent(node);
+    if (scope === 'error') {
+      // Don't type-check components that had errors in their scopes.
+      return;
+    }
+
     if (scope !== null) {
       for (const meta of scope.compilation.directives) {
         if (meta.selector !== null) {
@@ -397,7 +443,7 @@ export class ComponentDecoratorHandler implements
       wrapDirectivesAndPipesInClosure: false,
     };
 
-    if (scope !== null) {
+    if (scope !== null && scope !== 'error') {
       // Replace the empty components and directives from the analyze() step with a fully expanded
       // scope. This is possible now because during resolve() the whole compilation unit has been
       // fully analyzed.
@@ -487,6 +533,35 @@ export class ComponentDecoratorHandler implements
         this.scopeRegistry.setComponentAsRequiringRemoteScoping(node);
       }
     }
+
+    const diagnostics: ts.Diagnostic[] = [];
+
+    if (analysis.providersRequiringFactory !== null &&
+        analysis.meta.providers instanceof WrappedNodeExpr) {
+      const providerDiagnostics = getProviderDiagnostics(
+          analysis.providersRequiringFactory, analysis.meta.providers !.node,
+          this.injectableRegistry);
+      diagnostics.push(...providerDiagnostics);
+    }
+
+    if (analysis.viewProvidersRequiringFactory !== null &&
+        analysis.meta.viewProviders instanceof WrappedNodeExpr) {
+      const viewProviderDiagnostics = getProviderDiagnostics(
+          analysis.viewProvidersRequiringFactory, analysis.meta.viewProviders !.node,
+          this.injectableRegistry);
+      diagnostics.push(...viewProviderDiagnostics);
+    }
+
+    const directiveDiagnostics = getDirectiveDiagnostics(
+        node, this.metaReader, this.evaluator, this.reflector, this.scopeRegistry, 'Component');
+    if (directiveDiagnostics !== null) {
+      diagnostics.push(...directiveDiagnostics);
+    }
+
+    if (diagnostics.length > 0) {
+      return {diagnostics};
+    }
+
     return {data};
   }
 
@@ -601,7 +676,7 @@ export class ComponentDecoratorHandler implements
       resourceUrl: string): ParsedTemplateWithSource {
     const templateStr = this.resourceLoader.load(resourceUrl);
     if (this.depTracker !== null) {
-      this.depTracker.addResourceDependency(node.getSourceFile(), resourceUrl);
+      this.depTracker.addResourceDependency(node.getSourceFile(), absoluteFrom(resourceUrl));
     }
 
     const template = this._parseTemplate(
@@ -696,12 +771,13 @@ export class ComponentDecoratorHandler implements
       interpolation = InterpolationConfig.fromArray(value as[string, string]);
     }
 
-    const {errors, nodes: emitNodes, styleUrls, styles} = parseTemplate(templateStr, templateUrl, {
-      preserveWhitespaces,
-      interpolationConfig: interpolation,
-      range: templateRange, escapedString,
-      enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
-    });
+    const {errors, nodes: emitNodes, styleUrls, styles, ngContentSelectors} =
+        parseTemplate(templateStr, templateUrl, {
+          preserveWhitespaces,
+          interpolationConfig: interpolation,
+          range: templateRange, escapedString,
+          enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
+        });
 
     // Unfortunately, the primary parse of the template above may not contain accurate source map
     // information. If used directly, it would result in incorrect code locations in template
@@ -730,6 +806,7 @@ export class ComponentDecoratorHandler implements
       diagNodes,
       styleUrls,
       styles,
+      ngContentSelectors,
       errors,
       template: templateStr, templateUrl,
       isInline: component.has('template'),
@@ -848,6 +925,11 @@ export interface ParsedTemplate {
    * Any inline styles extracted from the metadata.
    */
   styles: string[];
+
+  /**
+   * Any ng-content selectors extracted from the template.
+   */
+  ngContentSelectors: string[];
 
   /**
    * Whether the template was inline.

@@ -9,6 +9,7 @@ import {ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../diagnostics';
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {NOOP_DEFAULT_IMPORT_RECORDER} from '../../imports';
+import {InjectableClassRegistry} from '../../metadata';
 import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {InjectableDecoratorHandler} from '../src/injectable';
@@ -67,9 +68,10 @@ function setupHandler(errorOnDuplicateProv: boolean) {
   ]);
   const checker = program.getTypeChecker();
   const reflectionHost = new TypeScriptReflectionHost(checker);
+  const injectableRegistry = new InjectableClassRegistry(reflectionHost);
   const handler = new InjectableDecoratorHandler(
       reflectionHost, NOOP_DEFAULT_IMPORT_RECORDER, /* isCore */ false,
-      /* strictCtorDeps */ false, errorOnDuplicateProv);
+      /* strictCtorDeps */ false, injectableRegistry, errorOnDuplicateProv);
   const TestClass = getDeclaration(program, ENTRY_FILE, 'TestClass', isNamedClassDeclaration);
   const ɵprov = reflectionHost.getMembersOfClass(TestClass).find(member => member.name === 'ɵprov');
   if (ɵprov === undefined) {

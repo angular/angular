@@ -172,10 +172,10 @@
 /docs/ts/latest/api/testing/fakeAsync-function.html	/api/core/testing/fakeAsync
 /docs/ts/latest/cookbook/ts-to-js.html	https://v2.angular.io/docs/ts/latest/cookbook/ts-to-js.html
 /getting-started	/start
-/getting-started/routing	/start/routing
-/getting-started/data	/start/data
-/getting-started/forms	/start/forms
-/getting-started/deployment	/start/deployment
+/getting-started/routing	/start/start-routing
+/getting-started/data	/start/start-data
+/getting-started/forms	/start/start-forms
+/getting-started/deployment	/start/start-deployment
 /guide/cli-quickstart	/start
 /guide/learning-angular	/start
 /guide/learning-angular.html	/start
@@ -187,5 +187,9 @@
 /guide/webpack	https://v5.angular.io/guide/webpack
 /news	https://blog.angular.io/
 /news.html	https://blog.angular.io/
+/start/data	/start/start-data
+/start/deployment	/start/start-deployment
+/start/forms	/start/start-forms
+/start/routing	/start/start-routing
 /testing	/guide/testing
 /testing/first-app-tests.html	/guide/testing

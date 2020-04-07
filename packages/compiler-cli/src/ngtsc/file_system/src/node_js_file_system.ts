@@ -7,6 +7,7 @@
  */
 /// <reference types="node" />
 import * as fs from 'fs';
+import * as fsExtra from 'fs-extra';
 import * as p from 'path';
 import {absoluteFrom, relativeFrom} from './helpers';
 import {AbsoluteFsPath, FileStats, FileSystem, PathSegment, PathString} from './types';
@@ -18,9 +19,10 @@ export class NodeJSFileSystem implements FileSystem {
   private _caseSensitive: boolean|undefined = undefined;
   exists(path: AbsoluteFsPath): boolean { return fs.existsSync(path); }
   readFile(path: AbsoluteFsPath): string { return fs.readFileSync(path, 'utf8'); }
-  writeFile(path: AbsoluteFsPath, data: string): void {
-    return fs.writeFileSync(path, data, 'utf8');
+  writeFile(path: AbsoluteFsPath, data: string, exclusive: boolean = false): void {
+    fs.writeFileSync(path, data, exclusive ? {flag: 'wx'} : undefined);
   }
+  removeFile(path: AbsoluteFsPath): void { fs.unlinkSync(path); }
   symlink(target: AbsoluteFsPath, path: AbsoluteFsPath): void { fs.symlinkSync(target, path); }
   readdir(path: AbsoluteFsPath): PathSegment[] { return fs.readdirSync(path) as PathSegment[]; }
   lstat(path: AbsoluteFsPath): FileStats { return fs.lstatSync(path); }
@@ -39,6 +41,7 @@ export class NodeJSFileSystem implements FileSystem {
       this.safeMkdir(parents.pop() !);
     }
   }
+  removeDeep(path: AbsoluteFsPath): void { fsExtra.removeSync(path); }
   isCaseSensitive(): boolean {
     if (this._caseSensitive === undefined) {
       this._caseSensitive = this.exists(togglePathCase(__filename));

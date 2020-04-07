@@ -19,11 +19,17 @@ export class TypeCheckProgramHost implements ts.CompilerHost {
    */
   private sfMap: Map<string, ts.SourceFile>;
 
+  readonly resolveModuleNames?: ts.CompilerHost['resolveModuleNames'];
+
   constructor(sfMap: Map<string, ts.SourceFile>, private delegate: ts.CompilerHost) {
     this.sfMap = sfMap;
 
     if (delegate.getDirectories !== undefined) {
       this.getDirectories = (path: string) => delegate.getDirectories !(path);
+    }
+
+    if (delegate.resolveModuleNames !== undefined) {
+      this.resolveModuleNames = delegate.resolveModuleNames;
     }
   }
 

@@ -31,7 +31,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @internal
    */
   // TODO(issue/24571): remove '!'.
-  _parent !: ControlContainer;
+  _parent!: ControlContainer;
 
   /**
    * @description
@@ -40,7 +40,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @internal
    */
   // TODO(issue/24571): remove '!'.
-  _validators !: any[];
+  _validators!: any[];
 
   /**
    * @description
@@ -49,7 +49,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @internal
    */
   // TODO(issue/24571): remove '!'.
-  _asyncValidators !: any[];
+  _asyncValidators!: any[];
 
   /**
    * @description
@@ -58,7 +58,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    */
   ngOnInit(): void {
     this._checkParentType();
-    this.formDirective !.addFormGroup(this);
+    this.formDirective!.addFormGroup(this);
   }
 
   /**
@@ -76,7 +76,9 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @description
    * The `FormGroup` bound to this directive.
    */
-  get control(): FormGroup { return this.formDirective !.getFormGroup(this); }
+  get control(): FormGroup {
+    return this.formDirective!.getFormGroup(this);
+  }
 
   /**
    * @description
@@ -90,13 +92,17 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @description
    * The top-level directive for this group if present, otherwise null.
    */
-  get formDirective(): Form|null { return this._parent ? this._parent.formDirective : null; }
+  get formDirective(): Form|null {
+    return this._parent ? this._parent.formDirective : null;
+  }
 
   /**
    * @description
    * The synchronous validators registered with this group.
    */
-  get validator(): ValidatorFn|null { return composeValidators(this._validators); }
+  get validator(): ValidatorFn|null {
+    return composeValidators(this._validators);
+  }
 
   /**
    * @description

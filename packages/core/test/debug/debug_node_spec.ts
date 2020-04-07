@@ -12,7 +12,7 @@ import {Component, DebugElement, DebugNode, Directive, ElementRef, EmbeddedViewR
 import {NgZone} from '@angular/core/src/zone';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {hasClass} from '@angular/platform-browser/testing/src/browser_util';
+import {createMouseEvent, hasClass} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
@@ -368,6 +368,22 @@ class TestCmptWithPropInterpolation {
           .toBeFalsy('Expected bound host CSS class "absent-class" to be absent');
     });
 
+    it('should list classes on SVG nodes', () => {
+      // Class bindings on SVG elements require a polyfill
+      // on IE which we don't include when running tests.
+      if (typeof SVGElement !== 'undefined' && !('classList' in SVGElement.prototype)) {
+        return;
+      }
+
+      TestBed.overrideTemplate(TestApp, `<svg [class.foo]="true" [class.bar]="true"></svg>`);
+      fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+      const classes = fixture.debugElement.children[0].classes;
+
+      expect(classes['foo']).toBe(true);
+      expect(classes['bar']).toBe(true);
+    });
+
     it('should list element styles', () => {
       fixture = TestBed.createComponent(TestApp);
       fixture.detectChanges();
@@ -577,38 +593,51 @@ class TestCmptWithPropInterpolation {
       expect(fixture.debugElement.query(By.css('.myclass'))).toBeTruthy();
     });
 
-    it('DebugElement.query should work with dynamically created descendant elements', () => {
-      @Directive({
-        selector: '[dir]',
-      })
-      class MyDir {
-        @Input('dir') dir: number|undefined;
+    describe('DebugElement.query with dynamically created descendant elements', () => {
+      let fixture: ComponentFixture<{}>;
+      beforeEach(() => {
 
-        constructor(renderer: Renderer2, element: ElementRef) {
-          const outerDiv = renderer.createElement('div');
-          const innerDiv = renderer.createElement('div');
-          const div = renderer.createElement('div');
+        @Directive({
+          selector: '[dir]',
+        })
+        class MyDir {
+          @Input('dir') dir: number|undefined;
 
-          div.classList.add('myclass');
+          constructor(renderer: Renderer2, element: ElementRef) {
+            const outerDiv = renderer.createElement('div');
+            const innerDiv = renderer.createElement('div');
+            innerDiv.classList.add('inner');
+            const div = renderer.createElement('div');
 
-          renderer.appendChild(innerDiv, div);
-          renderer.appendChild(outerDiv, innerDiv);
-          renderer.appendChild(element.nativeElement, outerDiv);
+            div.classList.add('myclass');
+
+            renderer.appendChild(innerDiv, div);
+            renderer.appendChild(outerDiv, innerDiv);
+            renderer.appendChild(element.nativeElement, outerDiv);
+          }
         }
-      }
 
-      @Component({
-        selector: 'app-test',
-        template: '<div dir></div>',
-      })
-      class MyComponent {
-      }
+        @Component({
+          selector: 'app-test',
+          template: '<div dir></div>',
+        })
+        class MyComponent {
+        }
 
-      TestBed.configureTestingModule({declarations: [MyComponent, MyDir]});
-      const fixture = TestBed.createComponent(MyComponent);
-      fixture.detectChanges();
+        TestBed.configureTestingModule({declarations: [MyComponent, MyDir]});
+        fixture = TestBed.createComponent(MyComponent);
+        fixture.detectChanges();
 
-      expect(fixture.debugElement.query(By.css('.myclass'))).toBeTruthy();
+      });
+
+      it('should find the dynamic elements from fixture root',
+         () => { expect(fixture.debugElement.query(By.css('.myclass'))).toBeTruthy(); });
+
+      it('can use a dynamic element as root for another query', () => {
+        const inner = fixture.debugElement.query(By.css('.inner'));
+        expect(inner).toBeTruthy();
+        expect(inner.query(By.css('.myclass'))).toBeTruthy();
+      });
     });
 
     describe('DebugElement.query doesn\'t fail on elements outside Angular context', () => {
@@ -617,7 +646,9 @@ class TestCmptWithPropInterpolation {
         constructor(private elementRef: ElementRef) {}
 
         ngAfterViewInit() {
-          this.elementRef.nativeElement.children[0].appendChild(document.createElement('p'));
+          const ul = document.createElement('ul');
+          ul.appendChild(document.createElement('li'));
+          this.elementRef.nativeElement.children[0].appendChild(ul);
         }
       }
 
@@ -664,6 +695,13 @@ class TestCmptWithPropInterpolation {
 
       it('when searching by injector',
          () => { expect(() => el.query(e => e.injector === null)).not.toThrow(); });
+
+      onlyInIvy('VE does not match elements created outside Angular context')
+          .it('when using the out-of-context element as the DebugElement query root', () => {
+            const debugElOutsideAngularContext = el.query(By.css('ul'));
+            expect(debugElOutsideAngularContext.queryAll(By.css('li')).length).toBe(1);
+            expect(debugElOutsideAngularContext.query(By.css('li'))).toBeDefined();
+          });
     });
 
     it('DebugElement.queryAll should pick up both elements inserted via the view and through Renderer2',
@@ -1214,5 +1252,24 @@ class TestCmptWithPropInterpolation {
                         .createComponent(Wrapper);
     expect(fixture.debugElement.query(e => e.name === 'myComponent')).toBeTruthy();
     expect(fixture.debugElement.query(e => e.name === 'div')).toBeTruthy();
+  });
+
+  it('does not call event listeners added outside angular context', () => {
+    let listenerCalled = false;
+    const eventToTrigger = createMouseEvent('mouseenter');
+    function listener() { listenerCalled = true; }
+    @Component({template: ''})
+    class MyComp {
+      constructor(private readonly zone: NgZone, private readonly element: ElementRef) {}
+      ngOnInit() {
+        this.zone.runOutsideAngular(
+            () => { this.element.nativeElement.addEventListener('mouseenter', listener); });
+      }
+    }
+    const fixture =
+        TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+    fixture.detectChanges();
+    fixture.debugElement.triggerEventHandler('mouseenter', eventToTrigger);
+    expect(listenerCalled).toBe(false);
   });
 }

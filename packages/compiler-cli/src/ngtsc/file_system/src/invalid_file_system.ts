@@ -18,7 +18,8 @@ import {AbsoluteFsPath, FileStats, FileSystem, PathSegment, PathString} from './
 export class InvalidFileSystem implements FileSystem {
   exists(path: AbsoluteFsPath): boolean { throw makeError(); }
   readFile(path: AbsoluteFsPath): string { throw makeError(); }
-  writeFile(path: AbsoluteFsPath, data: string): void { throw makeError(); }
+  writeFile(path: AbsoluteFsPath, data: string, exclusive?: boolean): void { throw makeError(); }
+  removeFile(path: AbsoluteFsPath): void { throw makeError(); }
   symlink(target: AbsoluteFsPath, path: AbsoluteFsPath): void { throw makeError(); }
   readdir(path: AbsoluteFsPath): PathSegment[] { throw makeError(); }
   lstat(path: AbsoluteFsPath): FileStats { throw makeError(); }
@@ -29,6 +30,7 @@ export class InvalidFileSystem implements FileSystem {
   copyFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void { throw makeError(); }
   moveFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void { throw makeError(); }
   ensureDir(path: AbsoluteFsPath): void { throw makeError(); }
+  removeDeep(path: AbsoluteFsPath): void { throw makeError(); }
   isCaseSensitive(): boolean { throw makeError(); }
   resolve(...paths: string[]): AbsoluteFsPath { throw makeError(); }
   dirname<T extends PathString>(file: T): T { throw makeError(); }

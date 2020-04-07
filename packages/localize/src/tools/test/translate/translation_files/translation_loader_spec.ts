@@ -58,8 +58,8 @@ describe('TranslationLoader', () => {
       const result =
           loader.loadBundles(['/src/locale/messages.en.xlf', '/src/locale/messages.fr.xlf'], []);
       expect(result).toEqual([
-        {locale: 'pl', translations},
-        {locale: 'pl', translations},
+        {locale: 'pl', translations, diagnostics: new Diagnostics()},
+        {locale: 'pl', translations, diagnostics: new Diagnostics()},
       ]);
     });
 
@@ -71,8 +71,8 @@ describe('TranslationLoader', () => {
       const result = loader.loadBundles(
           ['/src/locale/messages.en.xlf', '/src/locale/messages.fr.xlf'], ['en', 'fr']);
       expect(result).toEqual([
-        {locale: 'en', translations},
-        {locale: 'fr', translations},
+        {locale: 'en', translations, diagnostics: new Diagnostics()},
+        {locale: 'fr', translations, diagnostics: new Diagnostics()},
       ]);
     });
 
@@ -127,6 +127,6 @@ class MockTranslationParser implements TranslationParser {
 
   parse(filePath: string, fileContents: string) {
     this.log.push(`parse(${filePath}, ${fileContents})`);
-    return {locale: this._locale, translations: this._translations};
+    return {locale: this._locale, translations: this._translations, diagnostics: new Diagnostics()};
   }
 }

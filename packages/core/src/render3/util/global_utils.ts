@@ -7,7 +7,8 @@
  */
 import {assertDefined} from '../../util/assert';
 import {global} from '../../util/global';
-import {getComponent, getContext, getDebugNode, getDirectives, getHostElement, getInjector, getListeners, getRootComponents, getViewComponent, markDirty} from '../global_utils_api';
+import {applyChanges} from './change_detection_utils';
+import {getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './discovery_utils';
 
 
 
@@ -42,13 +43,12 @@ export function publishDefaultGlobalUtils() {
     publishGlobalUtil('getComponent', getComponent);
     publishGlobalUtil('getContext', getContext);
     publishGlobalUtil('getListeners', getListeners);
-    publishGlobalUtil('getViewComponent', getViewComponent);
+    publishGlobalUtil('getOwningComponent', getOwningComponent);
     publishGlobalUtil('getHostElement', getHostElement);
     publishGlobalUtil('getInjector', getInjector);
     publishGlobalUtil('getRootComponents', getRootComponents);
     publishGlobalUtil('getDirectives', getDirectives);
-    publishGlobalUtil('getDebugNode', getDebugNode);
-    publishGlobalUtil('markDirty', markDirty);
+    publishGlobalUtil('applyChanges', applyChanges);
   }
 }
 

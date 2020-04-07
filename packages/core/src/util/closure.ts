@@ -15,6 +15,6 @@
  * to something which is retained otherwise the call to `noSideEffects` will be removed by closure
  * compiler.
  */
-export function noSideEffects(fn: () => void): string {
-  return '' + {toString: fn};
+export function noSideEffects<T>(fn: () => T): T {
+  return {toString: fn}.toString() as unknown as T;
 }

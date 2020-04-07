@@ -1,4 +1,11 @@
 load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library")
+load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+
+circular_dependency_test(
+    name = "circular_deps_test",
+    entry_point = "angular/packages/elements/index.js",
+    deps = ["//packages/elements"],
+)
 
 ts_library(
     name = "test_lib",
@@ -23,6 +30,7 @@ filegroup(
     testonly = True,
     # do not sort
     srcs = [
+        "@npm//:node_modules/core-js/client/core.js",
         "@npm//:node_modules/@webcomponents/custom-elements/src/native-shim.js",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
         "//packages/zone.js/dist:zone.js",
@@ -35,7 +43,6 @@ karma_web_test_suite(
     bootstrap = [
         ":elements_test_bootstrap_scripts",
     ],
-    # do not sort
     deps = [
         ":test_lib",
     ],

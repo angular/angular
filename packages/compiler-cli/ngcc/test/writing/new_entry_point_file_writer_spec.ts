@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {FileSystem, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NgccConfiguration} from '../../src/packages/configuration';
-import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointInfo} from '../../src/packages/entry_point';
+import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT} from '../../src/packages/entry_point';
 import {EntryPointBundle, makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {FileWriter} from '../../src/writing/file_writer';
 import {NewEntryPointFileWriter} from '../../src/writing/new_entry_point_file_writer';
@@ -19,16 +19,18 @@ import {loadPackageJson} from '../packages/entry_point_spec';
 
 runInEachFileSystem(() => {
   describe('NewEntryPointFileWriter', () => {
-
     let _: typeof absoluteFrom;
     let fs: FileSystem;
     let fileWriter: FileWriter;
+    let logger: MockLogger;
     let entryPoint: EntryPoint;
     let esm5bundle: EntryPointBundle;
     let esm2015bundle: EntryPointBundle;
 
     beforeEach(() => {
       _ = absoluteFrom;
+      fs = getFileSystem();
+      logger = new MockLogger();
       loadTestFiles([
 
         {
@@ -100,11 +102,15 @@ runInEachFileSystem(() => {
 
     describe('writeBundle() [primary entry-point]', () => {
       beforeEach(() => {
-        fs = getFileSystem();
-        fileWriter = new NewEntryPointFileWriter(fs, new DirectPackageJsonUpdater(fs));
+        fileWriter = new NewEntryPointFileWriter(
+            fs, logger, /* errorOnFailedEntryPoint */ true, new DirectPackageJsonUpdater(fs));
         const config = new NgccConfiguration(fs, _('/'));
-        entryPoint = getEntryPointInfo(
-            fs, config, new MockLogger(), _('/node_modules/test'), _('/node_modules/test')) !;
+        const result = getEntryPointInfo(
+            fs, config, logger, _('/node_modules/test'), _('/node_modules/test'))!;
+        if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
+          return fail(`Expected an entry point but got ${result}`);
+        }
+        entryPoint = result;
         esm5bundle = makeTestBundle(fs, entryPoint, 'module', 'esm5');
         esm2015bundle = makeTestBundle(fs, entryPoint, 'es2015', 'esm2015');
       });
@@ -236,11 +242,15 @@ runInEachFileSystem(() => {
 
     describe('writeBundle() [secondary entry-point]', () => {
       beforeEach(() => {
-        fs = getFileSystem();
-        fileWriter = new NewEntryPointFileWriter(fs, new DirectPackageJsonUpdater(fs));
+        fileWriter = new NewEntryPointFileWriter(
+            fs, logger, /* errorOnFailedEntryPoint */ true, new DirectPackageJsonUpdater(fs));
         const config = new NgccConfiguration(fs, _('/'));
-        entryPoint = getEntryPointInfo(
-            fs, config, new MockLogger(), _('/node_modules/test'), _('/node_modules/test/a')) !;
+        const result = getEntryPointInfo(
+            fs, config, logger, _('/node_modules/test'), _('/node_modules/test/a'))!;
+        if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
+          return fail(`Expected an entry point but got ${result}`);
+        }
+        entryPoint = result;
         esm5bundle = makeTestBundle(fs, entryPoint, 'module', 'esm5');
         esm2015bundle = makeTestBundle(fs, entryPoint, 'es2015', 'esm2015');
       });
@@ -361,11 +371,15 @@ runInEachFileSystem(() => {
 
     describe('writeBundle() [entry-point (with files placed outside entry-point folder)]', () => {
       beforeEach(() => {
-        fs = getFileSystem();
-        fileWriter = new NewEntryPointFileWriter(fs, new DirectPackageJsonUpdater(fs));
+        fileWriter = new NewEntryPointFileWriter(
+            fs, logger, /* errorOnFailedEntryPoint */ true, new DirectPackageJsonUpdater(fs));
         const config = new NgccConfiguration(fs, _('/'));
-        entryPoint = getEntryPointInfo(
-            fs, config, new MockLogger(), _('/node_modules/test'), _('/node_modules/test/b')) !;
+        const result = getEntryPointInfo(
+            fs, config, new MockLogger(), _('/node_modules/test'), _('/node_modules/test/b'))!;
+        if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
+          return fail(`Expected an entry point but got ${result}`);
+        }
+        entryPoint = result;
         esm5bundle = makeTestBundle(fs, entryPoint, 'module', 'esm5');
         esm2015bundle = makeTestBundle(fs, entryPoint, 'es2015', 'esm2015');
       });
@@ -486,6 +500,6 @@ runInEachFileSystem(() => {
       fs: FileSystem, entryPoint: EntryPoint, formatProperty: EntryPointJsonProperty,
       format: EntryPointFormat): EntryPointBundle {
     return makeEntryPointBundle(
-        fs, entryPoint, entryPoint.packageJson[formatProperty] !, false, format, true);
+        fs, entryPoint, entryPoint.packageJson[formatProperty]!, false, format, true);
   }
 });

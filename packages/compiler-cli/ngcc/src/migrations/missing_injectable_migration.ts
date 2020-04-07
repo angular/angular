@@ -102,7 +102,7 @@ function migrateProviders(metadata: ResolvedValueMap, field: string, host: Migra
   if (!metadata.has(field)) {
     return;
   }
-  const providers = metadata.get(field) !;
+  const providers = metadata.get(field)!;
   if (!Array.isArray(providers)) {
     return;
   }
@@ -127,10 +127,10 @@ function migrateProvider(provider: ResolvedValue, host: MigrationHost): void {
       // as the provider itself configures 'deps'. Only if 'deps' is missing will this require a
       // factory to exist on SomeClass.
       if (!provider.has('deps')) {
-        migrateProviderClass(provider.get('useClass') !, host);
+        migrateProviderClass(provider.get('useClass')!, host);
       }
     } else {
-      migrateProviderClass(provider.get('provide') !, host);
+      migrateProviderClass(provider.get('provide')!, host);
     }
   } else if (Array.isArray(provider)) {
     for (const v of provider) {

@@ -10,6 +10,7 @@ const {I18N_FOLDER, I18N_DATA_FOLDER} = require('./cldr/extract');
 
 // clang-format entry points
 const srcsToFmt = [
+  'dev-infra/**/*.{js,ts}',
   'packages/**/*.{js,ts}',
   '!packages/zone.js',  // Ignore the `zone.js/` directory itself. (The contents are still matched.)
   `!${I18N_DATA_FOLDER}/**/*.{js,ts}`,
@@ -84,12 +85,40 @@ function gulpStatus() {
 }
 
 module.exports = {
-  // Check source code for formatting errors (clang-format)
+  // Check source code for formatting errors with clang-format
   enforce: (gulp) => () => {
     const format = require('gulp-clang-format');
     const clangFormat = require('clang-format');
     return gulp.src(srcsToFmt).pipe(
         format.checkFormat('file', clangFormat, {verbose: true, fail: true}));
+  },
+
+  // Check only the untracked source code files for formatting errors with .clang-format
+  'enforce-untracked': (gulp) => () => {
+    const format = require('gulp-clang-format');
+    const clangFormat = require('clang-format');
+    const gulpFilter = require('gulp-filter');
+
+    return gulpStatus()
+        .pipe(gulpFilter(srcsToFmt))
+        .pipe(format.checkFormat('file', clangFormat, {verbose: true, fail: true}));
+  },
+
+  // Check only the changed source code files diffed from the provided branch for formatting
+  // errors with clang-format
+  'enforce-diff': (gulp) => () => {
+    const format = require('gulp-clang-format');
+    const clangFormat = require('clang-format');
+    const gulpFilter = require('gulp-filter');
+    const minimist = require('minimist');
+    const gulpGit = require('gulp-git');
+
+    const args = minimist(process.argv.slice(2));
+    const branch = args.branch || 'master';
+
+    return gulpGit.diff(branch, {log: false})
+        .pipe(gulpFilter(srcsToFmt))
+        .pipe(format.checkFormat('file', clangFormat, {verbose: true, fail: true}));
   },
 
   // Format the source code with clang-format (see .clang-format)

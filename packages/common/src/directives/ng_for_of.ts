@@ -85,6 +85,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * more complex then a property access, for example when using the async pipe (`userStreams |
  * async`).
  * - `index: number`: The index of the current item in the iterable.
+ * - `count: number`: The length of the iterable.
  * - `first: boolean`: True when the item is the first item in the iterable.
  * - `last: boolean`: True when the item is the last item in the iterable.
  * - `even: boolean`: True when the item has an even index in the iterable.
@@ -155,7 +156,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
       if (<any>console && <any>console.warn) {
         console.warn(
             `trackBy must be a function, but received ${JSON.stringify(fn)}. ` +
-            `See https://angular.io/docs/ts/latest/api/common/index/NgFor-directive.html#!#change-propagation for more information.`);
+            `See https://angular.io/api/common/NgForOf#change-propagation for more information.`);
       }
     }
     this._trackByFn = fn;

@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, NgtscCompilerHost, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
 import {TestFile} from '../../../src/ngtsc/file_system/testing';
 import {BundleProgram, makeBundleProgram} from '../../src/packages/bundle_program';
 import {NgccEntryPointConfig} from '../../src/packages/configuration';
@@ -49,7 +49,12 @@ export function makeTestEntryPointBundle(
   return {
     entryPoint,
     format,
-    rootDirs: [absoluteFrom('/')], src, dts, isCore, isFlatCore, enableI18nLegacyMessageIdFormat
+    rootDirs: [absoluteFrom('/')],
+    src,
+    dts,
+    isCore,
+    isFlatCore,
+    enableI18nLegacyMessageIdFormat
   };
 }
 

@@ -11,7 +11,7 @@ import {AbsoluteFsPath, absoluteFrom, basename} from '../../file_system';
 import {ImportRewriter} from '../../imports';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
-import {ShimGenerator} from './host';
+import {ShimGenerator} from './api';
 import {generatedModuleName} from './util';
 
 const TS_DTS_SUFFIX = /(\.d)?\.ts$/;
@@ -22,9 +22,11 @@ const STRIP_NG_FACTORY = /(.*)NgFactory$/;
  * class of an input ts.SourceFile.
  */
 export class FactoryGenerator implements ShimGenerator {
-  private constructor(private map: Map<string, string>) {}
+  private constructor(private map: Map<AbsoluteFsPath, AbsoluteFsPath>) {}
 
-  get factoryFileMap(): Map<string, string> { return this.map; }
+  get factoryFileMap(): Map<AbsoluteFsPath, AbsoluteFsPath> { return this.map; }
+
+  get factoryFileNames(): AbsoluteFsPath[] { return Array.from(this.map.keys()); }
 
   recognize(fileName: AbsoluteFsPath): boolean { return this.map.has(fileName); }
 
@@ -54,21 +56,16 @@ export class FactoryGenerator implements ShimGenerator {
                             .map(decl => decl.name !.text);
 
 
+    let sourceText = '';
+
     // If there is a top-level comment in the original file, copy it over at the top of the
     // generated factory file. This is important for preserving any load-bearing jsdoc comments.
-    let comment: string = '';
-    if (original.statements.length > 0) {
-      const firstStatement = original.statements[0];
-      // Must pass SourceFile to getLeadingTriviaWidth() and getFullText(), otherwise it'll try to
-      // get SourceFile by recursively looking up the parent of the Node and fail,
-      // because parent is undefined.
-      const leadingTriviaWidth = firstStatement.getLeadingTriviaWidth(original);
-      if (leadingTriviaWidth > 0) {
-        comment = firstStatement.getFullText(original).substr(0, leadingTriviaWidth);
-      }
+    const leadingComment = getFileoverviewComment(original);
+    if (leadingComment !== null) {
+      // Leading comments must be separated from the rest of the contents by a blank line.
+      sourceText = leadingComment + '\n\n';
     }
 
-    let sourceText = comment;
     if (symbolNames.length > 0) {
       // For each symbol name, generate a constant export of the corresponding NgFactory.
       // This will encompass a lot of symbols which don't need factories, but that's okay
@@ -101,7 +98,7 @@ export class FactoryGenerator implements ShimGenerator {
   }
 
   static forRootFiles(files: ReadonlyArray<AbsoluteFsPath>): FactoryGenerator {
-    const map = new Map<AbsoluteFsPath, string>();
+    const map = new Map<AbsoluteFsPath, AbsoluteFsPath>();
     files.filter(sourceFile => isNonDeclarationTsPath(sourceFile))
         .forEach(
             sourceFile =>
@@ -245,4 +242,37 @@ function transformFactorySourceFile(
   }
 
   return file;
+}
+
+
+/**
+ * Parses and returns the comment text of a \@fileoverview comment in the given source file.
+ */
+function getFileoverviewComment(sourceFile: ts.SourceFile): string|null {
+  const text = sourceFile.getFullText();
+  const trivia = text.substring(0, sourceFile.getStart());
+
+  const leadingComments = ts.getLeadingCommentRanges(trivia, 0);
+  if (!leadingComments || leadingComments.length === 0) {
+    return null;
+  }
+
+  const comment = leadingComments[0];
+  if (comment.kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
+    return null;
+  }
+
+  // Only comments separated with a \n\n from the file contents are considered file-level comments
+  // in TypeScript.
+  if (text.substring(comment.end, comment.end + 2) !== '\n\n') {
+    return null;
+  }
+
+  const commentText = text.substring(comment.pos, comment.end);
+  // Closure Compiler ignores @suppress and similar if the comment contains @license.
+  if (commentText.indexOf('@license') !== -1) {
+    return null;
+  }
+
+  return commentText;
 }

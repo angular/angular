@@ -6,9 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ContentChildren, Directive, EventEmitter, HostBinding, Input, OnChanges, Output, QueryList, ViewChildren} from '@angular/core';
+import {state, style, trigger} from '@angular/animations';
+import {Component, ContentChildren, Directive, EventEmitter, HostBinding, HostListener, Input, OnChanges, Output, QueryList, ViewChildren} from '@angular/core';
+import {ivyEnabled} from '@angular/core/src/ivy_switch';
+import {getDirectiveDef} from '@angular/core/src/render3/definition';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {onlyInIvy} from '@angular/private/testing';
 
 describe('inheritance', () => {
@@ -41,6 +45,86 @@ describe('inheritance', () => {
           TestBed.createComponent(App);
         }).toThrowError('Directives cannot inherit Components');
       });
+
+  describe('multiple children', () => {
+    it('should ensure that multiple child classes don\'t cause multiple parent execution', () => {
+      // Assume this inheritance:
+      //         Base
+      //           |
+      //         Super
+      //        /     \
+      //     Sub1    Sub2
+      //
+      // In the above case:
+      //  1.  Sub1 as will walk the inheritance Sub1, Super, Base
+      //  2.  Sub2 as will walk the inheritance Sub2, Super, Base
+      //
+      // Notice that Super, Base will get walked twice. Because inheritance works by wrapping parent
+      // hostBindings function in a delegate which calls the hostBindings of the directive as well
+      // as super, we need to ensure that we don't double wrap the hostBindings function. Doing so
+      // would result in calling the hostBindings multiple times (unnecessarily). This would be
+      // especially an issue if we have a lot of sub-classes (as is common in component libraries)
+      const log: string[] = [];
+
+      @Directive({selector: '[superDir]'})
+      class BaseDirective {
+        @HostBinding('style.background-color')
+        get backgroundColor() {
+          log.push('Base.backgroundColor');
+          return 'white';
+        }
+      }
+
+      @Directive({selector: '[superDir]'})
+      class SuperDirective extends BaseDirective {
+        @HostBinding('style.color')
+        get color() {
+          log.push('Super.color');
+          return 'blue';
+        }
+      }
+
+      @Directive({selector: '[subDir1]'})
+      class Sub1Directive extends SuperDirective {
+        @HostBinding('style.height')
+        get height() {
+          log.push('Sub1.height');
+          return '200px';
+        }
+      }
+
+      @Directive({selector: '[subDir2]'})
+      class Sub2Directive extends SuperDirective {
+        @HostBinding('style.width')
+        get width() {
+          log.push('Sub2.width');
+          return '100px';
+        }
+      }
+
+      @Component({template: `<div subDir1 subDir2></div>`})
+      class App {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, Sub1Directive, Sub2Directive, SuperDirective],
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges(false);  // Don't check for no changes (so that assertion does not need
+                                     // to worry about it.)
+
+      expect(log).toEqual([
+        'Base.backgroundColor', 'Super.color', 'Sub1.height',  //
+        'Base.backgroundColor', 'Super.color', 'Sub2.width',   //
+      ]);
+      if (ivyEnabled) {
+        expect(getDirectiveDef(BaseDirective) !.hostVars).toEqual(2);
+        expect(getDirectiveDef(SuperDirective) !.hostVars).toEqual(4);
+        expect(getDirectiveDef(Sub1Directive) !.hostVars).toEqual(6);
+        expect(getDirectiveDef(Sub2Directive) !.hostVars).toEqual(6);
+      }
+    });
+  });
 
   describe('ngOnChanges', () => {
     it('should be inherited when super is a directive', () => {
@@ -4050,6 +4134,99 @@ describe('inheritance', () => {
       });
     });
 
+    describe('animations', () => {
+      onlyInIvy('View Engine does not inherit `host` metadata from superclass')
+          .it('should work with inherited host bindings and animations', () => {
+            @Component({
+              selector: 'super-comp',
+              template: '<div>super-comp</div>',
+              host: {
+                '[@animation]': 'colorExp',
+              },
+              animations: [
+                trigger('animation', [state('color', style({color: 'red'}))]),
+              ],
+            })
+            class SuperComponent {
+              colorExp = 'color';
+            }
+
+            @Component({
+              selector: 'my-comp',
+              template: `<div>my-comp</div>`,
+            })
+            class MyComponent extends SuperComponent {
+            }
+
+            @Component({
+              template: '<my-comp>app</my-comp>',
+            })
+            class App {
+            }
+
+            TestBed.configureTestingModule({
+              declarations: [App, MyComponent, SuperComponent],
+              imports: [NoopAnimationsModule],
+            });
+            const fixture = TestBed.createComponent(App);
+            fixture.detectChanges();
+            const queryResult = fixture.debugElement.query(By.css('my-comp'));
+
+            expect(queryResult.nativeElement.style.color).toBe('red');
+          });
+
+      onlyInIvy('View Engine does not inherit `host` metadata from superclass')
+          .it('should compose animations (from super class)', () => {
+            @Component({
+              selector: 'super-comp',
+              template: '...',
+              animations: [
+                trigger('animation1', [state('color', style({color: 'red'}))]),
+                trigger('animation2', [state('opacity', style({opacity: '0.5'}))]),
+              ],
+            })
+            class SuperComponent {
+            }
+
+            @Component({
+              selector: 'my-comp',
+              template: '<div>my-comp</div>',
+              host: {
+                '[@animation1]': 'colorExp',
+                '[@animation2]': 'opacityExp',
+                '[@animation3]': 'bgExp',
+              },
+              animations: [
+                trigger('animation1', [state('color', style({color: 'blue'}))]),
+                trigger('animation3', [state('bg', style({backgroundColor: 'green'}))]),
+              ],
+            })
+            class MyComponent extends SuperComponent {
+              colorExp = 'color';
+              opacityExp = 'opacity';
+              bgExp = 'bg';
+            }
+
+            @Component({
+              template: '<my-comp>app</my-comp>',
+            })
+            class App {
+            }
+
+            TestBed.configureTestingModule({
+              declarations: [App, MyComponent, SuperComponent],
+              imports: [NoopAnimationsModule],
+            });
+            const fixture = TestBed.createComponent(App);
+            fixture.detectChanges();
+            const queryResult = fixture.debugElement.query(By.css('my-comp'));
+
+            expect(queryResult.nativeElement.style.color).toBe('blue');
+            expect(queryResult.nativeElement.style.opacity).toBe('0.5');
+            expect(queryResult.nativeElement.style.backgroundColor).toBe('green');
+          });
+    });
+
     describe('host bindings (style related)', () => {
       // TODO: sub and super HostBinding same property but different bindings
       // TODO: sub and super HostBinding same binding on two different properties
@@ -4223,6 +4400,71 @@ describe('inheritance', () => {
       fixture.detectChanges();
 
       expect(foundQueryList !.length).toBe(5);
+    });
+
+    it('should inherit host listeners from base class once', () => {
+      const events: string[] = [];
+
+      @Component({
+        selector: 'app-base',
+        template: 'base',
+      })
+      class BaseComponent {
+        @HostListener('click')
+        clicked() { events.push('BaseComponent.clicked'); }
+      }
+
+      @Component({
+        selector: 'app-child',
+        template: 'child',
+      })
+      class ChildComponent extends BaseComponent {
+        // additional host listeners are defined here to have `hostBindings` function generated on
+        // component def, which would trigger `hostBindings` functions merge operation in
+        // InheritDefinitionFeature logic (merging Child and Base host binding functions)
+        @HostListener('focus')
+        focused() {}
+
+        clicked() { events.push('ChildComponent.clicked'); }
+      }
+
+      @Component({
+        selector: 'app-grand-child',
+        template: 'grand-child',
+      })
+      class GrandChildComponent extends ChildComponent {
+        // additional host listeners are defined here to have `hostBindings` function generated on
+        // component def, which would trigger `hostBindings` functions merge operation in
+        // InheritDefinitionFeature logic (merging GrandChild and Child host binding functions)
+        @HostListener('blur')
+        blurred() {}
+
+        clicked() { events.push('GrandChildComponent.clicked'); }
+      }
+
+      @Component({
+        selector: 'root-app',
+        template: `
+          <app-base></app-base>
+          <app-child></app-child>
+          <app-grand-child></app-grand-child>
+        `,
+      })
+      class RootApp {
+      }
+
+      const components = [BaseComponent, ChildComponent, GrandChildComponent];
+      TestBed.configureTestingModule({
+        declarations: [RootApp, ...components],
+      });
+      const fixture = TestBed.createComponent(RootApp);
+      fixture.detectChanges();
+
+      components.forEach(component => {
+        fixture.debugElement.query(By.directive(component)).nativeElement.click();
+      });
+      expect(events).toEqual(
+          ['BaseComponent.clicked', 'ChildComponent.clicked', 'GrandChildComponent.clicked']);
     });
 
     xdescribe(
@@ -4672,6 +4914,70 @@ describe('inheritance', () => {
       });
     });
 
+    describe('animations', () => {
+      onlyInIvy('View Engine does not inherit `host` metadata from superclass')
+          .it('should compose animations across multiple inheritance levels', () => {
+            @Component({
+              selector: 'super-comp',
+              template: '...',
+              host: {
+                '[@animation1]': 'colorExp',
+                '[@animation2]': 'opacityExp',
+              },
+              animations: [
+                trigger('animation1', [state('color', style({color: 'red'}))]),
+                trigger('animation2', [state('opacity', style({opacity: '0.5'}))]),
+              ],
+            })
+            class SuperComponent {
+              colorExp = 'color';
+              opacityExp = 'opacity';
+            }
+
+            @Component({
+              selector: 'intermediate-comp',
+              template: '...',
+            })
+            class IntermediateComponent extends SuperComponent {
+            }
+
+            @Component({
+              selector: 'my-comp',
+              template: '<div>my-comp</div>',
+              host: {
+                '[@animation1]': 'colorExp',
+                '[@animation3]': 'bgExp',
+              },
+              animations: [
+                trigger('animation1', [state('color', style({color: 'blue'}))]),
+                trigger('animation3', [state('bg', style({backgroundColor: 'green'}))]),
+              ],
+            })
+            class MyComponent extends IntermediateComponent {
+              colorExp = 'color';
+              opacityExp = 'opacity';
+              bgExp = 'bg';
+            }
+
+            @Component({
+              template: '<my-comp>app</my-comp>',
+            })
+            class App {
+            }
+
+            TestBed.configureTestingModule({
+              declarations: [App, MyComponent, IntermediateComponent, SuperComponent],
+              imports: [NoopAnimationsModule],
+            });
+            const fixture = TestBed.createComponent(App);
+            fixture.detectChanges();
+            const queryResult = fixture.debugElement.query(By.css('my-comp'));
+
+            expect(queryResult.nativeElement.style.color).toBe('blue');
+            expect(queryResult.nativeElement.style.opacity).toBe('0.5');
+            expect(queryResult.nativeElement.style.backgroundColor).toBe('green');
+          });
+    });
     describe('host bindings (style related)', () => {
       // TODO: sub and super HostBinding same property but different bindings
       // TODO: sub and super HostBinding same binding on two different properties

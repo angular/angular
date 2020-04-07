@@ -10,7 +10,7 @@
 import '@angular/localize/init';
 import {CommonModule, registerLocaleData} from '@angular/common';
 import localeRo from '@angular/common/locales/ro';
-import {Component, ContentChild, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, Pipe, PipeTransform, NO_ERRORS_SCHEMA} from '@angular/core';
+import {Component, ContentChild, ElementRef, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, Pipe, PipeTransform, NO_ERRORS_SCHEMA} from '@angular/core';
 import {setDelayProjection} from '@angular/core/src/render3/instructions/projection';
 import {TestBed} from '@angular/core/testing';
 import {loadTranslations, clearTranslations} from '@angular/localize';
@@ -299,19 +299,28 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       [computeMsgId(
           '{$START_TAG_NG_CONTAINER} One {$CLOSE_TAG_NG_CONTAINER}' +
           '{$START_TAG_DIV} Two {$CLOSE_TAG_DIV}' +
-          '{$START_TAG_SPAN} Three {$CLOSE_TAG_SPAN}')]:
+          '{$START_TAG_SPAN} Three {$CLOSE_TAG_SPAN}' +
+          '{$START_TAG_NG_TEMPLATE} Four {$CLOSE_TAG_NG_TEMPLATE}' +
+          '{$START_TAG_NG_CONTAINER_1}{$CLOSE_TAG_NG_CONTAINER}')]:
+
           '{$START_TAG_NG_CONTAINER} Une {$CLOSE_TAG_NG_CONTAINER}' +
           '{$START_TAG_DIV} Deux {$CLOSE_TAG_DIV}' +
-          '{$START_TAG_SPAN} Trois {$CLOSE_TAG_SPAN}'
+          '{$START_TAG_SPAN} Trois {$CLOSE_TAG_SPAN}' +
+          '{$START_TAG_NG_TEMPLATE} Quatre {$CLOSE_TAG_NG_TEMPLATE}' +
+          '{$START_TAG_NG_CONTAINER_1}{$CLOSE_TAG_NG_CONTAINER}'
+
     });
     const fixture = initWithTemplate(AppComp, `
       <div i18n>
         <ng-container #localRefA> One </ng-container>
         <div #localRefB> Two </div>
         <span #localRefC> Three </span>
+
+        <ng-template #localRefD> Four </ng-template>
+        <ng-container *ngTemplateOutlet="localRefD"></ng-container>
       </div>
     `);
-    expect(fixture.nativeElement.textContent).toBe(' Une  Deux  Trois ');
+    expect(fixture.nativeElement.textContent).toBe(' Une  Deux  Trois  Quatre ');
   });
 
   it('should handle local refs correctly in case an element is removed in translation', () => {
@@ -528,6 +537,36 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
       const element = fixture.nativeElement;
       expect(element).toHaveText('autre');
+    });
+
+    it('with no root node and text surrounding ICU', () => {
+      loadTranslations({
+        [computeMsgId('{VAR_SELECT, select, 10 {Ten} 20 {Twenty} other {Other}}')]:
+            '{VAR_SELECT, select, 10 {Dix} 20 {Vingt} other {Autre}}'
+      });
+      const fixture = initWithTemplate(AppComp, `
+        ICU start -->
+        {count, select, 10 {Ten} 20 {Twenty} other {Other}}
+        <-- ICU end
+      `);
+
+      const element = fixture.nativeElement;
+      expect(element.textContent).toContain('ICU start --> Autre <-- ICU end');
+    });
+
+    it('with no root node and text and DOM nodes surrounding ICU', () => {
+      loadTranslations({
+        [computeMsgId('{VAR_SELECT, select, 10 {Ten} 20 {Twenty} other {Other}}')]:
+            '{VAR_SELECT, select, 10 {Dix} 20 {Vingt} other {Autre}}'
+      });
+      const fixture = initWithTemplate(AppComp, `
+        <span>ICU start --> </span>
+        {count, select, 10 {Ten} 20 {Twenty} other {Other}}
+        <-- ICU end
+      `);
+
+      const element = fixture.nativeElement;
+      expect(element.textContent).toContain('ICU start --> Autre <-- ICU end');
     });
 
     it('with no i18n tag', () => {
@@ -1319,6 +1358,123 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       expect(element.title).toBe('Bonjour Angular');
     });
 
+    it('should process i18n attributes on explicit <ng-template> elements', () => {
+      const titleDirInstances: TitleDir[] = [];
+      loadTranslations({[computeMsgId('Hello')]: 'Bonjour'});
+
+      @Directive({
+        selector: '[title]',
+      })
+      class TitleDir {
+        @Input() title = '';
+        constructor() { titleDirInstances.push(this); }
+      }
+
+      @Component({
+        selector: 'comp',
+        template: '<ng-template i18n-title title="Hello"></ng-template>',
+      })
+      class Comp {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [Comp, TitleDir],
+      });
+
+      const fixture = TestBed.createComponent(Comp);
+      fixture.detectChanges();
+
+      // make sure we only match `TitleDir` once
+      expect(titleDirInstances.length).toBe(1);
+
+      expect(titleDirInstances[0].title).toBe('Bonjour');
+    });
+
+    it('should match directive only once in case i18n attrs are present on inline template', () => {
+      const titleDirInstances: TitleDir[] = [];
+      loadTranslations({[computeMsgId('Hello')]: 'Bonjour'});
+
+      @Directive({selector: '[title]'})
+      class TitleDir {
+        @Input() title: string = '';
+        constructor(public elRef: ElementRef) { titleDirInstances.push(this); }
+      }
+
+      @Component({
+        selector: 'my-cmp',
+        template: `
+          <button *ngIf="true" i18n-title title="Hello"></button>
+        `,
+      })
+      class Cmp {
+      }
+
+      TestBed.configureTestingModule({
+        imports: [CommonModule],
+        declarations: [Cmp, TitleDir],
+      });
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+
+      // make sure we only match `TitleDir` once and on the right element
+      expect(titleDirInstances.length).toBe(1);
+      expect(titleDirInstances[0].elRef.nativeElement instanceof HTMLButtonElement).toBeTruthy();
+
+      expect(titleDirInstances[0].title).toBe('Bonjour');
+    });
+
+    it('should allow directive inputs (as an interpolated prop) on <ng-template>', () => {
+      loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
+
+      let dirInstance: WithInput;
+      @Directive({selector: '[dir]'})
+      class WithInput {
+        constructor() { dirInstance = this; }
+        @Input() dir: string = '';
+      }
+
+      @Component({
+        selector: 'my-app',
+        template: '<ng-template i18n-dir dir="Hello {{ name }}"></ng-template>',
+      })
+      class TestComp {
+        name = 'Angular';
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComp, WithInput]});
+      const fixture = TestBed.createComponent(TestComp);
+      fixture.detectChanges();
+
+      expect(dirInstance !.dir).toBe('Bonjour Angular');
+    });
+
+    it('should allow directive inputs (as interpolated props)' +
+           'on <ng-template> with structural directives present',
+       () => {
+         loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
+
+         let dirInstance: WithInput;
+         @Directive({selector: '[dir]'})
+         class WithInput {
+           constructor() { dirInstance = this; }
+           @Input() dir: string = '';
+         }
+
+         @Component({
+           selector: 'my-app',
+           template: '<ng-template *ngIf="true" i18n-dir dir="Hello {{ name }}"></ng-template>',
+         })
+         class TestComp {
+           name = 'Angular';
+         }
+
+         TestBed.configureTestingModule({declarations: [TestComp, WithInput]});
+         const fixture = TestBed.createComponent(TestComp);
+         fixture.detectChanges();
+
+         expect(dirInstance !.dir).toBe('Bonjour Angular');
+       });
+
     it('should apply i18n attributes during second template pass', () => {
       loadTranslations({[computeMsgId('Set')]: 'Set'});
       @Directive({
@@ -2015,6 +2171,104 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
   });
 
+  describe('invalid translations handling', () => {
+    it('should throw in case invalid ICU is present in a template', () => {
+      // Error message is produced by Compiler.
+      expect(() => initWithTemplate(AppComp, '{count, select, 10 {ten} other {other}'))
+          .toThrowError(
+              /Invalid ICU message. Missing '}'. \("{count, select, 10 {ten} other {other}\[ERROR ->\]"\)/);
+    });
+
+    it('should throw in case invalid ICU is present in translation', () => {
+      loadTranslations({
+        [computeMsgId('{VAR_SELECT, select, 10 {ten} other {other}}')]:
+            // Missing "}" at the end of translation.
+            '{VAR_SELECT, select, 10 {dix} other {autre}'
+      });
+
+      // Error message is produced at runtime.
+      expect(() => initWithTemplate(AppComp, '{count, select, 10 {ten} other {other}}'))
+          .toThrowError(
+              /Unable to parse ICU expression in "{�0�, select, 10 {dix} other {autre}" message./);
+    });
+
+    it('should throw in case unescaped curly braces are present in a template', () => {
+      // Error message is produced by Compiler.
+      expect(() => initWithTemplate(AppComp, 'Text { count }'))
+          .toThrowError(
+              /Do you have an unescaped "{" in your template\? Use "{{ '{' }}"\) to escape it/);
+    });
+
+    it('should throw in case curly braces are added into translation', () => {
+      loadTranslations({
+        // Curly braces which were not present in a template were added into translation.
+        [computeMsgId('Text')]: 'Text { count }',
+      });
+      expect(() => initWithTemplate(AppComp, '<div i18n>Text</div>'))
+          .toThrowError(/Unable to parse ICU expression in "Text { count }" message./);
+    });
+  });
+
+  it('should handle extra HTML in translation as plain text', () => {
+    loadTranslations({
+      // Translation contains HTML tags that were not present in original message.
+      [computeMsgId('Text')]: 'Text <div *ngIf="true">Extra content</div>',
+    });
+    const fixture = initWithTemplate(AppComp, '<div i18n>Text</div>');
+
+    const element = fixture.nativeElement;
+    expect(element).toHaveText('Text <div *ngIf="true">Extra content</div>');
+  });
+
+  it('should reflect lifecycle hook changes in text interpolations in i18n block', () => {
+    @Directive({selector: 'input'})
+    class InputsDir {
+      constructor(private elementRef: ElementRef) {}
+      ngOnInit() { this.elementRef.nativeElement.value = 'value set in Directive.ngOnInit'; }
+    }
+
+    @Component({
+      template: `
+        <input #myinput>
+        <div i18n>{{myinput.value}}</div>
+      `
+    })
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [App, InputsDir]});
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('value set in Directive.ngOnInit');
+  });
+
+  it('should reflect lifecycle hook changes in text interpolations in i18n attributes', () => {
+    @Directive({selector: 'input'})
+    class InputsDir {
+      constructor(private elementRef: ElementRef) {}
+      ngOnInit() { this.elementRef.nativeElement.value = 'value set in Directive.ngOnInit'; }
+    }
+
+    @Component({
+      template: `
+        <input #myinput>
+        <div i18n-title title="{{myinput.value}}"></div>
+      `
+    })
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [App, InputsDir]});
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('div').title)
+        .toContain('value set in Directive.ngOnInit');
+  });
+
   it('should not alloc expando slots when there is no new variable to create', () => {
     loadTranslations({
       [computeMsgId('{$START_TAG_DIV} Some content {$CLOSE_TAG_DIV}')]:
@@ -2050,6 +2304,73 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     expect(fixture.nativeElement.innerHTML).toEqual(`<div dialog=""><!--bindings={
   "ng-reflect-ng-if": "false"
 }--></div><button title="Close dialog">Button label</button>`);
+  });
+
+  describe('ngTemplateOutlet', () => {
+    it('should work with i18n content that includes elements', () => {
+      loadTranslations({
+        [computeMsgId('{$START_TAG_SPAN}A{$CLOSE_TAG_SPAN} B ')]:
+            '{$START_TAG_SPAN}a{$CLOSE_TAG_SPAN} b',
+      });
+
+      const fixture = initWithTemplate(AppComp, `
+        <ng-container *ngTemplateOutlet="tmpl"></ng-container>
+        <ng-template #tmpl i18n>
+          <span>A</span> B
+        </ng-template>
+      `);
+      expect(fixture.nativeElement.textContent).toContain('a b');
+    });
+
+    it('should work with i18n content that includes other templates (*ngIf)', () => {
+      loadTranslations({
+        [computeMsgId('{$START_TAG_SPAN}A{$CLOSE_TAG_SPAN} B ')]:
+            '{$START_TAG_SPAN}a{$CLOSE_TAG_SPAN} b',
+      });
+
+      const fixture = initWithTemplate(AppComp, `
+        <ng-container *ngTemplateOutlet="tmpl"></ng-container>
+        <ng-template #tmpl i18n>
+          <span *ngIf="visible">A</span> B
+        </ng-template>
+      `);
+      expect(fixture.nativeElement.textContent).toContain('a b');
+    });
+
+    it('should work with i18n content that includes projection', () => {
+      loadTranslations({
+        [computeMsgId('{$START_TAG_NG_CONTENT}{$CLOSE_TAG_NG_CONTENT} B ')]:
+            '{$START_TAG_NG_CONTENT}{$CLOSE_TAG_NG_CONTENT} b',
+      });
+
+      @Component({
+        selector: 'projector',
+        template: `
+          <ng-container *ngTemplateOutlet="tmpl"></ng-container>
+          <ng-template #tmpl i18n>
+            <ng-content></ng-content> B
+          </ng-template>
+        `
+      })
+      class Projector {
+      }
+
+      @Component({
+        selector: 'app',
+        template: `
+          <projector>a</projector>
+        `
+      })
+      class AppComponent {
+      }
+
+      TestBed.configureTestingModule({declarations: [AppComponent, Projector]});
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('a b');
+    });
   });
 });
 

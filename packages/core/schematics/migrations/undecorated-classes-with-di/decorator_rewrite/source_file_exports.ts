@@ -39,7 +39,7 @@ export function getExportSymbolsOfFile(
       }
     } else if (ts.isExportDeclaration(node)) {
       const {moduleSpecifier, exportClause} = node;
-      if (!moduleSpecifier && exportClause) {
+      if (!moduleSpecifier && exportClause && ts.isNamedExports(exportClause)) {
         exportClause.elements.forEach(el => exports.push({
           exportName: el.name.text,
           identifier: el.propertyName ? el.propertyName : el.name

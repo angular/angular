@@ -1,6 +1,6 @@
 {@a top}
 
-# Set the Document Title
+# Set the document title
 
 Your app should be able to make the browser title bar say whatever you want it to say.
 This cookbook explains how to do it.

@@ -559,5 +559,65 @@ describe('components using pure function instructions internally', () => {
           .not.toBe(secondFixture.componentInstance.directive.value);
     });
 
+    it('should not confuse object literals and null inside of a literal', () => {
+      @Component({
+        template: `
+          <div [dir]="{foo: null}"></div>
+          <div [dir]="{foo: {}}"></div>
+        `
+      })
+      class App {
+        @ViewChildren(Dir) directives !: QueryList<Dir>;
+      }
+
+      TestBed.configureTestingModule({declarations: [Dir, App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const values = fixture.componentInstance.directives.map(directive => directive.value);
+
+      expect(values).toEqual([{foo: null}, {foo: {}}]);
+    });
+
+    it('should not confuse array literals and null inside of a literal', () => {
+      @Component({
+        template: `
+          <div [dir]="{foo: null}"></div>
+          <div [dir]="{foo: []}"></div>
+        `
+      })
+      class App {
+        @ViewChildren(Dir) directives !: QueryList<Dir>;
+      }
+
+      TestBed.configureTestingModule({declarations: [Dir, App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const values = fixture.componentInstance.directives.map(directive => directive.value);
+
+      expect(values).toEqual([{foo: null}, {foo: []}]);
+    });
+
+    it('should not confuse function calls and null inside of a literal', () => {
+      @Component({
+        template: `
+          <div [dir]="{foo: null}"></div>
+          <div [dir]="{foo: getFoo()}"></div>
+        `
+      })
+      class App {
+        @ViewChildren(Dir) directives !: QueryList<Dir>;
+        getFoo() { return 'foo!'; }
+      }
+
+      TestBed.configureTestingModule({declarations: [Dir, App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const values = fixture.componentInstance.directives.map(directive => directive.value);
+
+      expect(values).toEqual([{foo: null}, {foo: 'foo!'}]);
+    });
+
+
+
   });
 });

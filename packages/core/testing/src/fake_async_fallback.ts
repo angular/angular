@@ -118,8 +118,11 @@ function _getFakeAsyncZoneSpec(): any {
  *
  * @publicApi
  */
-export function tickFallback(millis: number = 0): void {
-  _getFakeAsyncZoneSpec().tick(millis);
+export function tickFallback(
+    millis: number = 0, tickOptions: {processNewMacroTasksSynchronously: boolean} = {
+      processNewMacroTasksSynchronously: true
+    }): void {
+  _getFakeAsyncZoneSpec().tick(millis, null, tickOptions);
 }
 
 /**

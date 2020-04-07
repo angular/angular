@@ -1,4 +1,4 @@
-# Setup for Upgrading from AngularJS
+# Setup for upgrading from AngularJS
 
 <!--
 Question: Can we remove this file and instead direct readers to https://github.com/angular/quickstart/blob/master/README.md

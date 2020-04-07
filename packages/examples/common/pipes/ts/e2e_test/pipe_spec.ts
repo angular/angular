@@ -77,7 +77,7 @@ describe('pipe', () => {
       expect(examples.get(0).getText()).toEqual('e (no formatting): 2.718');
       expect(examples.get(1).getText()).toEqual('e (3.1-5): 002.71828');
       expect(examples.get(2).getText()).toEqual('e (4.5-5): 0,002.71828');
-      expect(examples.get(3).getText()).toEqual('e (french): 0 002,71828');
+      expect(examples.get(3).getText()).toEqual('e (french): 0\u202f002,71828');
       expect(examples.get(4).getText()).toEqual('pi (no formatting): 3.14');
       expect(examples.get(5).getText()).toEqual('pi (3.1-5): 003.14');
       expect(examples.get(6).getText()).toEqual('pi (3.5-5): 003.14000');
@@ -92,7 +92,7 @@ describe('pipe', () => {
       const examples = element.all(by.css('percent-pipe p'));
       expect(examples.get(0).getText()).toEqual('A: 26%');
       expect(examples.get(1).getText()).toEqual('B: 0,134.950%');
-      expect(examples.get(2).getText()).toEqual('B: 0 134,950 %');
+      expect(examples.get(2).getText()).toEqual('B: 0\u202f134,950 %');
     });
   });
 
@@ -106,7 +106,7 @@ describe('pipe', () => {
       expect(examples.get(2).getText()).toEqual('A: CAD0.26');
       expect(examples.get(3).getText()).toEqual('B: CA$0,001.35');
       expect(examples.get(4).getText()).toEqual('B: $0,001.35');
-      expect(examples.get(5).getText()).toEqual('B: 0 001,35 CA$');
+      expect(examples.get(5).getText()).toEqual('B: 0\u202f001,35 $CA');
       expect(examples.get(6).getText()).toEqual('B: CLP1');
     });
   });

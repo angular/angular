@@ -88,10 +88,14 @@ export const Decorator = {
  * a namespaced property access (e.g. `core.Decorator`).
  */
 export type DecoratorIdentifier = ts.Identifier | NamespacedIdentifier;
-export type NamespacedIdentifier = ts.PropertyAccessExpression & {expression: ts.Identifier};
+export type NamespacedIdentifier = ts.PropertyAccessExpression & {
+  expression: ts.Identifier;
+  name: ts.Identifier
+};
 export function isDecoratorIdentifier(exp: ts.Expression): exp is DecoratorIdentifier {
   return ts.isIdentifier(exp) ||
-      ts.isPropertyAccessExpression(exp) && ts.isIdentifier(exp.expression);
+      ts.isPropertyAccessExpression(exp) && ts.isIdentifier(exp.expression) &&
+      ts.isIdentifier(exp.name);
 }
 
 /**
@@ -317,29 +321,34 @@ export interface FunctionDefinition {
   body: ts.Statement[]|null;
 
   /**
-   * The type of tslib helper function, if the function is determined to represent a tslib helper
-   * function. Otherwise, this will be null.
-   */
-  helper: TsHelperFn|null;
-
-  /**
    * Metadata regarding the function's parameters, including possible default value expressions.
    */
   parameters: Parameter[];
 }
 
 /**
- * Possible functions from TypeScript's helper library.
+ * Possible declarations of known values, such as built-in objects/functions or TypeScript helpers.
  */
-export enum TsHelperFn {
+export enum KnownDeclaration {
   /**
-   * Indicates the `__spread` function.
+   * Indicates the JavaScript global `Object` class.
    */
-  Spread,
+  JsGlobalObject,
+
   /**
-   * Indicates the `__spreadArrays` function.
+   * Indicates the `__assign` TypeScript helper function.
    */
-  SpreadArrays,
+  TsHelperAssign,
+
+  /**
+   * Indicates the `__spread` TypeScript helper function.
+   */
+  TsHelperSpread,
+
+  /**
+   * Indicates the `__spreadArrays` TypeScript helper function.
+   */
+  TsHelperSpreadArrays,
 }
 
 /**
@@ -395,6 +404,11 @@ export interface BaseDeclaration<T extends ts.Declaration = ts.Declaration> {
    * TypeScript reference to the declaration itself, if one exists.
    */
   node: T|null;
+
+  /**
+   * If set, describes the type of the known declaration this declaration resolves to.
+   */
+  known: KnownDeclaration|null;
 }
 
 /**

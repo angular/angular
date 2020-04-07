@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BoundTarget, ImplicitReceiver, ParseSourceSpan, PropertyWrite, RecursiveAstVisitor, TmplAstVariable} from '@angular/compiler';
+import {AST, BoundTarget, ImplicitReceiver, PropertyWrite, RecursiveAstVisitor, TmplAstVariable} from '@angular/compiler';
 
-import {toAbsoluteSpan} from './diagnostics';
+import {TemplateId} from './api';
 import {OutOfBandDiagnosticRecorder} from './oob';
 
 /**
@@ -16,8 +16,8 @@ import {OutOfBandDiagnosticRecorder} from './oob';
  */
 export class ExpressionSemanticVisitor extends RecursiveAstVisitor {
   constructor(
-      private templateId: string, private boundTarget: BoundTarget<any>,
-      private oob: OutOfBandDiagnosticRecorder, private sourceSpan: ParseSourceSpan) {
+      private templateId: TemplateId, private boundTarget: BoundTarget<any>,
+      private oob: OutOfBandDiagnosticRecorder) {
     super();
   }
 
@@ -31,14 +31,13 @@ export class ExpressionSemanticVisitor extends RecursiveAstVisitor {
     const target = this.boundTarget.getExpressionTarget(ast);
     if (target instanceof TmplAstVariable) {
       // Template variables are read-only.
-      const astSpan = toAbsoluteSpan(ast.span, this.sourceSpan);
-      this.oob.illegalAssignmentToTemplateVar(this.templateId, ast, astSpan, target);
+      this.oob.illegalAssignmentToTemplateVar(this.templateId, ast, target);
     }
   }
 
   static visit(
-      ast: AST, sourceSpan: ParseSourceSpan, id: string, boundTarget: BoundTarget<any>,
+      ast: AST, id: TemplateId, boundTarget: BoundTarget<any>,
       oob: OutOfBandDiagnosticRecorder): void {
-    ast.visit(new ExpressionSemanticVisitor(id, boundTarget, oob, sourceSpan));
+    ast.visit(new ExpressionSemanticVisitor(id, boundTarget, oob));
   }
 }

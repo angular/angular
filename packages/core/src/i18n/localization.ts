@@ -34,3 +34,9 @@ export function getPluralCase(value: any, locale: string): string {
  * The locale id that the application is using by default (for translations and ICU expressions).
  */
 export const DEFAULT_LOCALE_ID = 'en-US';
+
+/**
+ * USD currency code that the application uses by default for CurrencyPipe when no
+ * DEFAULT_CURRENCY_CODE is provided.
+ */
+export const USD_CURRENCY_CODE = 'USD';

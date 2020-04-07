@@ -7,9 +7,8 @@
  */
 import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {getLView, getSelectedIndex, nextBindingIndex} from '../state';
-
-import {elementAttributeInternal} from './shared';
+import {getLView, getSelectedIndex, getSelectedTNode, getTView, nextBindingIndex} from '../state';
+import {elementAttributeInternal, storePropertyBindingMetadata} from './shared';
 
 
 
@@ -30,8 +29,12 @@ export function ɵɵattribute(
     name: string, value: any, sanitizer?: SanitizerFn | null,
     namespace?: string): typeof ɵɵattribute {
   const lView = getLView();
-  if (bindingUpdated(lView, nextBindingIndex(), value)) {
-    elementAttributeInternal(getSelectedIndex(), name, value, lView, sanitizer, namespace);
+  const bindingIndex = nextBindingIndex();
+  if (bindingUpdated(lView, bindingIndex, value)) {
+    const tView = getTView();
+    const tNode = getSelectedTNode();
+    elementAttributeInternal(tNode, lView, name, value, sanitizer, namespace);
+    ngDevMode && storePropertyBindingMetadata(tView.data, tNode, 'attr.' + name, bindingIndex);
   }
   return ɵɵattribute;
 }

@@ -15,9 +15,9 @@ specification of this format at https://goo.gl/jB3GVv
 
 load("@build_bazel_rules_nodejs//:providers.bzl", "JSEcmaScriptModuleInfo", "JSNamedModuleInfo", "NpmPackageInfo", "node_modules_aspect")
 load(
-    "@build_bazel_rules_nodejs//internal/npm_package:npm_package.bzl",
-    "NPM_PACKAGE_ATTRS",
-    "NPM_PACKAGE_OUTPUTS",
+    "@build_bazel_rules_nodejs//internal/pkg_npm:pkg_npm.bzl",
+    "PKG_NPM_ATTRS",
+    "PKG_NPM_OUTPUTS",
     "create_package",
 )
 load("//packages/bazel/src:external.bzl", "FLAT_DTS_FILE_SUFFIX")
@@ -77,7 +77,7 @@ def _convert_dash_case_to_camel_case(s):
     parts = s.split("-")
 
     # First letter in the result is always unchanged
-    return s[0] + "".join([p.title() for p in parts])[1:]
+    return s[0] + "".join([p.capitalize() for p in parts])[1:]
 
 # Convert from a package name on npm to an identifier that's a legal global symbol
 #  @angular/core -> ng.core
@@ -623,7 +623,7 @@ def _ng_package_impl(ctx):
     package_dir = create_package(
         ctx,
         devfiles.to_list(),
-        [npm_package_directory] + ctx.files.packages,
+        [npm_package_directory] + ctx.files.nested_packages,
     )
     return [DefaultInfo(
         files = depset([package_dir]),
@@ -631,7 +631,7 @@ def _ng_package_impl(ctx):
 
 _NG_PACKAGE_DEPS_ASPECTS = [esm5_outputs_aspect, ng_package_module_mappings_aspect, node_modules_aspect]
 
-_NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **{
+_NG_PACKAGE_ATTRS = dict(PKG_NPM_ATTRS, **{
     "srcs": attr.label_list(
         doc = """JavaScript source files from the workspace.
         These can use ES2015 syntax and ES Modules (import/export)""",
@@ -640,7 +640,7 @@ _NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **{
     "entry_point": attr.label(
         doc = """The starting point of the application, passed as the `--input` flag to rollup.
 
-        If the entry JavaScript file belongs to the same package (as the BUILD file), 
+        If the entry JavaScript file belongs to the same package (as the BUILD file),
         you can simply reference it by its relative name to the package directory:
 
         ```
@@ -668,7 +668,7 @@ _NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **{
 
         The rule will use the corresponding `.js` output of the ts_library rule as the entry point.
 
-        If the entry point target is a rule, it should produce a single JavaScript entry file that will be passed to the nodejs_binary rule. 
+        If the entry point target is a rule, it should produce a single JavaScript entry file that will be passed to the nodejs_binary rule.
         For example:
 
         ```
@@ -807,12 +807,12 @@ def _ng_package_outputs(name, entry_point, entry_point_name):
         "umd": "%s.umd.js" % basename,
         "umd_min": "%s.umd.min.js" % basename,
     }
-    for key in NPM_PACKAGE_OUTPUTS:
-        # NPM_PACKAGE_OUTPUTS is a "normal" dict-valued outputs so it looks like
+    for key in PKG_NPM_OUTPUTS:
+        # PKG_NPM_OUTPUTS is a "normal" dict-valued outputs so it looks like
         #  "pack": "%{name}.pack",
         # But this is a function-valued outputs.
         # Bazel won't replace the %{name} token so we have to do it.
-        outputs[key] = NPM_PACKAGE_OUTPUTS[key].replace("%{name}", name)
+        outputs[key] = PKG_NPM_OUTPUTS[key].replace("%{name}", name)
     return outputs
 
 ng_package = rule(

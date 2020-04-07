@@ -8,10 +8,10 @@
 
 import {Injector, NgModuleRef, ViewEncapsulation} from '../../src/core';
 import {ComponentFactory} from '../../src/linker/component_factory';
-import {RendererFactory2} from '../../src/render/api';
+import {RendererFactory2, RendererType2} from '../../src/render/api';
 import {injectComponentFactoryResolver} from '../../src/render3/component_ref';
-import {ɵɵdefineComponent} from '../../src/render3/index';
-import {domRendererFactory3} from '../../src/render3/interfaces/renderer';
+import {AttributeMarker, ɵɵdefineComponent} from '../../src/render3/index';
+import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 
 describe('ComponentFactory', () => {
@@ -23,7 +23,7 @@ describe('ComponentFactory', () => {
         static ɵfac = () => new TestComponent();
         static ɵcmp = ɵɵdefineComponent({
           type: TestComponent,
-          selectors: [['test', 'foo'], ['bar']],
+          selectors: [['test', 'foo', ''], ['bar']],
           decls: 0,
           vars: 0,
           template: () => undefined,
@@ -32,7 +32,7 @@ describe('ComponentFactory', () => {
 
       const cf = cfr.resolveComponentFactory(TestComponent);
 
-      expect(cf.selector).toBe('test');
+      expect(cf.selector).toBe('test[foo],bar');
       expect(cf.componentType).toBe(TestComponent);
       expect(cf.ngContentSelectors).toEqual([]);
       expect(cf.inputs).toEqual([]);
@@ -45,7 +45,7 @@ describe('ComponentFactory', () => {
         static ɵcmp = ɵɵdefineComponent({
           type: TestComponent,
           encapsulation: ViewEncapsulation.None,
-          selectors: [['test', 'foo'], ['bar']],
+          selectors: [['test', 'foo', ''], ['bar']],
           decls: 0,
           vars: 0,
           template: () => undefined,
@@ -65,7 +65,7 @@ describe('ComponentFactory', () => {
 
       expect(cf.componentType).toBe(TestComponent);
       expect(cf.ngContentSelectors).toEqual(['*', 'a', 'b']);
-      expect(cf.selector).toBe('test');
+      expect(cf.selector).toBe('test[foo],bar');
 
       expect(cf.inputs).toEqual([
         {propName: 'in1', templateName: 'in1'},
@@ -97,6 +97,7 @@ describe('ComponentFactory', () => {
           decls: 0,
           vars: 0,
           template: () => undefined,
+          hostAttrs: [AttributeMarker.Classes, 'HOST_COMPONENT']
         });
       }
 
@@ -290,6 +291,25 @@ describe('ComponentFactory', () => {
 
            expect(mSanitizerFactorySpy).toHaveBeenCalled();
          });
+    });
+
+    it('should ensure that rendererFactory is called after initial styling is set', () => {
+      const myRendererFactory: RendererFactory3 = {
+        createRenderer: function(hostElement: RElement|null, rendererType: RendererType2|null):
+            Renderer3 {
+              if (hostElement) {
+                hostElement.classList.add('HOST_RENDERER');
+              }
+              return document;
+            }
+      };
+      const injector = Injector.create([
+        {provide: RendererFactory2, useValue: myRendererFactory},
+      ]);
+
+      const hostNode = document.createElement('div');
+      const componentRef = cf.create(injector, undefined, hostNode);
+      expect(hostNode.className).toEqual('HOST_COMPONENT HOST_RENDERER');
     });
   });
 });

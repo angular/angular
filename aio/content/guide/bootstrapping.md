@@ -1,4 +1,4 @@
-# Bootstrapping
+# Launching your app with a root module
 
 #### Prerequisites
 
@@ -7,12 +7,12 @@ A basic understanding of the following:
 
 <hr />
 
-An `NgModule` describes how the application parts fit together.
-Every application has at least one Angular module, the _root_ module
-that you bootstrap to launch the application.
-By convention, it is usually called `AppModule`.
+An NgModule describes how the application parts fit together.
+Every application has at least one Angular module, the _root_ module,
+which must be present for bootstrapping the application on launch.
+By convention and by default, this NgModule is named `AppModule`.
 
-If you use the [Angular CLI](cli) to generate an app, the default `AppModule` is as follows:
+When you use the [Angular CLI](cli) command `ng new` to generate an app, the default `AppModule` is as follows.
 
 ```typescript
 /* JavaScript imports */

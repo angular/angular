@@ -68,7 +68,8 @@ export function translate(
         return message.substitutions[placeholder];
       } else {
         throw new Error(
-            `No placeholder found with name ${placeholder} in message ${describeMessage(message)}.`);
+            `There is a placeholder name mismatch with the translation provided for the message ${describeMessage(message)}.\n` +
+            `The translation contains a placeholder with name ${placeholder}, which does not exist in the message.`);
       }
     })
   ];

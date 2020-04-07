@@ -11,12 +11,13 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder} from '../../imports';
+import {InjectableClassRegistry} from '../../metadata';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, unwrapConstructorDependencies, unwrapForwardRef, validateConstructorDependencies} from './util';
+import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, unwrapConstructorDependencies, unwrapForwardRef, validateConstructorDependencies, wrapTypeReference} from './util';
 
 export interface InjectableHandlerData {
   meta: R3InjectableMetadata;
@@ -33,6 +34,7 @@ export class InjectableDecoratorHandler implements
   constructor(
       private reflector: ReflectionHost, private defaultImportRecorder: DefaultImportRecorder,
       private isCore: boolean, private strictCtorDeps: boolean,
+      private injectableRegistry: InjectableClassRegistry,
       /**
        * What to do if the injectable already contains a ɵprov property.
        *
@@ -52,6 +54,7 @@ export class InjectableDecoratorHandler implements
     if (decorator !== undefined) {
       return {
         trigger: decorator.node,
+        decorator: decorator,
         metadata: decorator,
       };
     } else {
@@ -79,6 +82,8 @@ export class InjectableDecoratorHandler implements
       },
     };
   }
+
+  register(node: ClassDeclaration): void { this.injectableRegistry.registerInjectable(node); }
 
   compile(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>): CompileResult[] {
     const res = compileIvyInjectable(analysis.meta);
@@ -121,8 +126,7 @@ export class InjectableDecoratorHandler implements
 
 /**
  * Read metadata from the `@Injectable` decorator and produce the `IvyInjectableMetadata`, the
- * input
- * metadata needed to run `compileIvyInjectable`.
+ * input metadata needed to run `compileIvyInjectable`.
  *
  * A `null` return value indicates this is @Injectable has invalid data.
  */
@@ -130,7 +134,7 @@ function extractInjectableMetadata(
     clazz: ClassDeclaration, decorator: Decorator,
     reflector: ReflectionHost): R3InjectableMetadata {
   const name = clazz.name.text;
-  const type = new WrappedNodeExpr(clazz.name);
+  const type = wrapTypeReference(reflector, clazz);
   const internalType = new WrappedNodeExpr(reflector.getInternalNameOfClass(clazz));
   const typeArgumentCount = reflector.getGenericArityOfClass(clazz) || 0;
   if (decorator.args === null) {
@@ -152,7 +156,9 @@ function extractInjectableMetadata(
     // transport references from one location to another. This is the problem that lowering
     // used to solve - if this restriction proves too undesirable we can re-implement lowering.
     if (!ts.isObjectLiteralExpression(metaNode)) {
-      throw new Error(`In Ivy, decorator metadata must be inline.`);
+      throw new FatalDiagnosticError(
+          ErrorCode.DECORATOR_ARG_NOT_LITERAL, metaNode,
+          `@Injectable argument must be an object literal`);
     }
 
     // Resolve the fields of the literal into a map of field name to expression.
@@ -168,7 +174,7 @@ function extractInjectableMetadata(
       if (!ts.isArrayLiteralExpression(depsExpr)) {
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_NOT_LITERAL, depsExpr,
-            `In Ivy, deps metadata must be an inline array.`);
+            `@Injectable deps metadata must be an inline array`);
       }
       userDeps = depsExpr.elements.map(dep => getDep(dep, reflector));
     }
@@ -268,6 +274,7 @@ function extractInjectableCtorDeps(
 function getDep(dep: ts.Expression, reflector: ReflectionHost): R3DependencyMetadata {
   const meta: R3DependencyMetadata = {
     token: new WrappedNodeExpr(dep),
+    attribute: null,
     host: false,
     resolved: R3ResolvedDependencyType.Token,
     optional: false,

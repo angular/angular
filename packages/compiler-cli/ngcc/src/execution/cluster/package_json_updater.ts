@@ -12,7 +12,7 @@ import * as cluster from 'cluster';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {JsonObject} from '../../packages/entry_point';
-import {PackageJsonChange, PackageJsonUpdate, PackageJsonUpdater, applyChange} from '../../writing/package_json_updater';
+import {applyChange, PackageJsonChange, PackageJsonUpdate, PackageJsonUpdater} from '../../writing/package_json_updater';
 
 import {sendMessageToMaster} from './utils';
 
@@ -44,7 +44,8 @@ export class ClusterPackageJsonUpdater implements PackageJsonUpdater {
           throw new Error(`Missing property path for writing value to '${packageJsonPath}'.`);
         }
 
-        applyChange(preExistingParsedJson, propPath, value);
+        // No need to take property positioning into account for in-memory representations.
+        applyChange(preExistingParsedJson, propPath, value, 'unimportant');
       }
     }
 

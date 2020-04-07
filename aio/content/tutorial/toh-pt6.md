@@ -1,4 +1,4 @@
-# HTTP
+# Get data from a server
 
 In this tutorial, you'll add the following data persistence features with help from
 Angular's `HttpClient`.
@@ -140,7 +140,7 @@ This particular `HttpClient.get()` call returns an `Observable<Hero[]>`; that is
 ### `HttpClient.get()` returns response data
 
 `HttpClient.get()` returns the body of the response as an untyped JSON object by default.
-Applying the optional type specifier, `<Hero[]>` , gives you a typed result object.
+Applying the optional type specifier, `<Hero[]>` , adds TypeScript capabilities, which reduce errors during compile time.
 
 The server's data API determines the shape of the JSON data.
 The _Tour of Heroes_ data API returns the hero data as an array.

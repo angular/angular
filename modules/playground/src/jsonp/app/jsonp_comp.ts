@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {HttpClient} from '@angular/common/http';
 import {Component} from '@angular/core';
-import {Jsonp} from '@angular/http';
 
 @Component({
   selector: 'jsonp-app',
@@ -22,7 +22,7 @@ import {Jsonp} from '@angular/http';
 })
 export class JsonpCmp {
   people: Object;
-  constructor(jsonp: Jsonp) {
-    jsonp.get('./people.json?callback=JSONP_CALLBACK').subscribe(res => this.people = res.json());
+  constructor(http: HttpClient) {
+    http.jsonp<Object>('./people.json', 'callback').subscribe((res: Object) => this.people = res);
   }
 }

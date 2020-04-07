@@ -8,12 +8,12 @@
 
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {computeMsgId} from '@angular/compiler';
-import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, NO_ERRORS_SCHEMA, NgModule, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, Injector, NO_ERRORS_SCHEMA, NgModule, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵsetDocument} from '@angular/core';
 import {Input} from '@angular/core/src/metadata';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed, TestComponentRenderer} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
-import {By, DomSanitizer} from '@angular/platform-browser';
+import {By, DomSanitizer, ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
@@ -159,6 +159,189 @@ describe('ViewContainerRef', () => {
       fixture.componentInstance.createComponent();
       fixture.detectChanges();
       expect(fixture.debugElement.nativeElement.innerHTML).toContain('Hello');
+    });
+
+    describe('element namespaces', () => {
+      function runTestWithSelectors(svgSelector: string, mathMLSelector: string) {
+        it('should be set correctly for host elements of dynamically created components', () => {
+          @Component({
+            selector: svgSelector,
+            template: '<svg><g></g></svg>',
+          })
+          class SvgComp {
+          }
+
+          @Component({
+            selector: mathMLSelector,
+            template: '<math><matrix></matrix></math>',
+          })
+          class MathMLComp {
+          }
+
+          @NgModule({
+            entryComponents: [SvgComp, MathMLComp],
+            declarations: [SvgComp, MathMLComp],
+            // View Engine doesn't have MathML tags listed in `DomElementSchemaRegistry`, thus
+            // throwing "unknown element" error (':math:matrix' is not a known element). Ignore
+            // these errors by adding `NO_ERRORS_SCHEMA` to this NgModule.
+            schemas: [NO_ERRORS_SCHEMA],
+          })
+          class RootModule {
+          }
+
+          @Component({
+            template: `
+              <ng-container #svg></ng-container>
+              <ng-container #mathml></ng-container>
+            `
+          })
+          class TestComp {
+            @ViewChild('svg', {read: ViewContainerRef}) svgVCRef !: ViewContainerRef;
+            @ViewChild('mathml', {read: ViewContainerRef}) mathMLVCRef !: ViewContainerRef;
+
+            constructor(public cfr: ComponentFactoryResolver) {}
+
+            createDynamicComponents() {
+              const svgFactory = this.cfr.resolveComponentFactory(SvgComp);
+              this.svgVCRef.createComponent(svgFactory);
+
+              const mathMLFactory = this.cfr.resolveComponentFactory(MathMLComp);
+              this.mathMLVCRef.createComponent(mathMLFactory);
+            }
+          }
+
+          function _document(): any {
+            // Tell Ivy about the global document
+            ɵsetDocument(document);
+            return document;
+          }
+
+          TestBed.configureTestingModule({
+            declarations: [TestComp],
+            imports: [RootModule],
+            providers: [
+              {provide: DOCUMENT, useFactory: _document, deps: []},
+              // TODO(FW-811): switch back to default server renderer (i.e. remove the line below)
+              // once it starts to support Ivy namespace format (URIs) correctly. For now, use
+              // `DomRenderer` that supports Ivy namespace format.
+              {provide: RendererFactory2, useClass: DomRendererFactory2}
+            ],
+          });
+          const fixture = TestBed.createComponent(TestComp);
+          fixture.detectChanges();
+
+          fixture.componentInstance.createDynamicComponents();
+          fixture.detectChanges();
+
+          expect(fixture.nativeElement.querySelector('svg').namespaceURI)
+              .toEqual('http://www.w3.org/2000/svg');
+
+          // View Engine doesn't set MathML namespace, since it's not present in the list of
+          // known namespaces here:
+          // https://github.com/angular/angular/blob/master/packages/platform-browser/src/dom/dom_renderer.ts#L14
+          if (ivyEnabled) {
+            expect(fixture.nativeElement.querySelector('math').namespaceURI)
+                .toEqual('http://www.w3.org/1998/MathML/');
+          }
+        });
+      }
+
+      runTestWithSelectors('svg[some-attr]', 'math[some-attr]');
+
+      // Also test with selector that has element name in uppercase
+      runTestWithSelectors('SVG[some-attr]', 'MATH[some-attr]');
+    });
+
+    it('should apply attributes and classes to host element based on selector', () => {
+      @Component({
+        selector: '[attr-a=a].class-a:not(.class-b):not([attr-b=b]).class-c[attr-c]',
+        template: 'Hello'
+      })
+      class HelloComp {
+      }
+
+      @NgModule({entryComponents: [HelloComp], declarations: [HelloComp]})
+      class HelloCompModule {
+      }
+
+      @Component({
+        template: `
+          <div id="factory" attr-a="a-original" class="class-original"></div>
+          <div id="vcr">
+            <ng-container #container></ng-container>
+          </div>
+        `
+      })
+      class TestComp {
+        @ViewChild('container', {read: ViewContainerRef}) vcRef !: ViewContainerRef;
+
+        private helloCompFactory = this.cfr.resolveComponentFactory(HelloComp);
+
+        constructor(public cfr: ComponentFactoryResolver, public injector: Injector) {}
+
+        createComponentViaVCRef() {
+          this.vcRef.createComponent(this.helloCompFactory);  //
+        }
+
+        createComponentViaFactory() {
+          this.helloCompFactory.create(this.injector, undefined, '#factory');
+        }
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComp], imports: [HelloCompModule]});
+      const fixture = TestBed.createComponent(TestComp);
+      fixture.detectChanges();
+      fixture.componentInstance.createComponentViaVCRef();
+      fixture.componentInstance.createComponentViaFactory();
+      fixture.detectChanges();
+
+      // Verify host element for a component created via  `vcRef.createComponent` method
+      const vcrHostElement = fixture.nativeElement.querySelector('#vcr > div');
+
+      expect(vcrHostElement.classList.contains('class-a')).toBe(true);
+      // `class-b` should not be present, since it's wrapped in `:not()` selector
+      expect(vcrHostElement.classList.contains('class-b')).toBe(false);
+      expect(vcrHostElement.classList.contains('class-c')).toBe(true);
+
+      expect(vcrHostElement.getAttribute('attr-a')).toBe('a');
+      // `attr-b` should not be present, since it's wrapped in `:not()` selector
+      expect(vcrHostElement.getAttribute('attr-b')).toBe(null);
+      expect(vcrHostElement.getAttribute('attr-c')).toBe('');
+
+      // Verify host element for a component created using `factory.createComponent` method when
+      // also passing element selector as an argument
+      const factoryHostElement = fixture.nativeElement.querySelector('#factory');
+
+      if (ivyEnabled) {
+        // In Ivy, if selector is passed when component is created, matched host node (found using
+        // this selector) retains all attrs/classes and selector-based attrs/classes should *not* be
+        // added
+
+        //  Verify original attrs and classes are still present
+        expect(factoryHostElement.classList.contains('class-original')).toBe(true);
+        expect(factoryHostElement.getAttribute('attr-a')).toBe('a-original');
+
+        // Make sure selector-based attrs and classes were not added to the host element
+        expect(factoryHostElement.classList.contains('class-a')).toBe(false);
+        expect(factoryHostElement.getAttribute('attr-c')).toBe(null);
+
+      } else {
+        // In View Engine, selector-based attrs/classes are *always* added to the host element
+
+        expect(factoryHostElement.classList.contains('class-a')).toBe(true);
+        // `class-b` should not be present, since it's wrapped in `:not()` selector
+        expect(factoryHostElement.classList.contains('class-b')).toBe(false);
+        expect(factoryHostElement.classList.contains('class-c')).toBe(true);
+        // Make sure classes are overridden with ones used in component selector
+        expect(factoryHostElement.classList.contains('class-original')).toBe(false);
+
+        // Note: `attr-a` attr is also present on host element, but we update the value with the
+        // value from component selector (i.e. using `[attr-a=a]`)
+        expect(factoryHostElement.getAttribute('attr-a')).toBe('a');
+        // `attr-b` should not be present, since it's wrapped in `:not()` selector
+        expect(factoryHostElement.getAttribute('attr-b')).toBe(null);
+        expect(factoryHostElement.getAttribute('attr-c')).toBe('');
+      }
     });
   });
 

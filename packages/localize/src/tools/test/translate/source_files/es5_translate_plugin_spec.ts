@@ -103,6 +103,22 @@ describe('makeEs5Plugin', () => {
       expect(output.code).toEqual('"try" + (40 + 2) + "me";');
     });
 
+    it('should handle minified code', () => {
+      const diagnostics = new Diagnostics();
+      const input = `$localize(
+        cachedObj||
+        (
+          cookedParts=['try', 'me'],
+          rawParts=['try', 'me'],
+          Object.defineProperty?
+            Object.defineProperty(cookedParts,"raw",{value:rawParts}):
+            cookedParts.raw=rawParts,
+          cachedObj=cookedParts
+        ),40 + 2)`;
+      const output = transformSync(input, {plugins: [makeEs5TranslatePlugin(diagnostics, {})]}) !;
+      expect(output.code).toEqual('"try" + (40 + 2) + "me";');
+    });
+
     it('should handle lazy-load helper calls', () => {
       const diagnostics = new Diagnostics();
       const input = `
@@ -142,7 +158,7 @@ describe('makeEs5Plugin', () => {
            type: 'error',
            message: '/app/dist/test.js: `$localize` called without any arguments.\n' +
                '> 1 | $localize()\n' +
-               '    | ^',
+               '    | ^^^^^^^^^^^',
          });
        });
 
@@ -158,7 +174,7 @@ describe('makeEs5Plugin', () => {
            type: 'error',
            message: '/app/dist/test.js: Unexpected argument to `$localize` (expected an array).\n' +
                '> 1 | $localize(...x)\n' +
-               '    |           ^',
+               '    |           ^^^^',
          });
        });
 
@@ -175,7 +191,7 @@ describe('makeEs5Plugin', () => {
            message:
                '/app/dist/test.js: Unexpected messageParts for `$localize` (expected an array of strings).\n' +
                '> 1 | $localize(null, [])\n' +
-               '    |           ^',
+               '    |           ^^^^',
          });
        });
 
@@ -192,7 +208,7 @@ describe('makeEs5Plugin', () => {
            message:
                '/app/dist/test.js: Unexpected `raw` argument to the "makeTemplateObject()" function (expected an expression).\n' +
                '> 1 | $localize(__makeTemplateObject([], ...[]))\n' +
-               '    |                                    ^',
+               '    |                                    ^^^^^',
          });
        });
 
@@ -209,7 +225,7 @@ describe('makeEs5Plugin', () => {
            message:
                '/app/dist/test.js: Unexpected `cooked` argument to the "makeTemplateObject()" function (expected an expression).\n' +
                '> 1 | $localize(__makeTemplateObject(...[], []))\n' +
-               '    |                                ^',
+               '    |                                ^^^^^',
          });
        });
 
@@ -226,7 +242,7 @@ describe('makeEs5Plugin', () => {
            message:
                '/app/dist/test.js: Unexpected messageParts for `$localize` (expected an array of strings).\n' +
                '> 1 | $localize(__makeTemplateObject(["a", 12, "b"], ["a", "12", "b"]))\n' +
-               '    |                                ^',
+               '    |                                ^^^^^^^^^^^^^^',
          });
        });
 
@@ -243,7 +259,7 @@ describe('makeEs5Plugin', () => {
            message:
                '/app/dist/test.js: Unexpected messageParts for `$localize` (expected an array of strings).\n' +
                '> 1 | $localize(__makeTemplateObject(["a", "12", "b"], ["a", 12, "b"]))\n' +
-               '    |                                                  ^',
+               '    |                                                  ^^^^^^^^^^^^^^',
          });
        });
 
@@ -260,7 +276,7 @@ describe('makeEs5Plugin', () => {
            message:
                '/app/dist/test.js: Invalid substitutions for `$localize` (expected all substitution arguments to be expressions).\n' +
                '> 1 | $localize(__makeTemplateObject(["a", "b"], ["a", "b"]), ...[])\n' +
-               '    |                                                         ^',
+               '    |                                                         ^^^^^',
          });
        });
 

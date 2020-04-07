@@ -1,10 +1,10 @@
 /**
- * @license
- * Copyright Google Inc. All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
+* @license
+* Copyright Google Inc. All Rights Reserved.
+*
+* Use of this source code is governed by an MIT-style license that can be
+* found in the LICENSE file at https://angular.io/license
+*/
 import {ɵɵadvance} from '../../../../src/render3/instructions/advance';
 import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element';
 import {refreshView} from '../../../../src/render3/instructions/shared';
@@ -149,7 +149,7 @@ function dirThatSetsFooClassesHostBindings(rf: RenderFlags, ctx: any) {
 }
 
 const rootLView = setupRootViewWithEmbeddedViews(
-    testTemplate, 11, 10, 1000, null,
+    testTemplate, 11, 40, 1000, null,
     [
       ['dir-that-sets-width', '', 'dir-that-sets-foo-class', ''],
     ],
@@ -167,7 +167,7 @@ const refreshTime = duplicateMapBasedStyleAndClassBindingsBenchmark('refresh');
 // run change detection in the update mode
 console.profile('duplicate_map_based_style_and_class_bindings_refresh');
 while (refreshTime()) {
-  refreshView(rootLView, rootTView, null, null);
+  refreshView(rootTView, rootLView, null, null);
 }
 console.profileEnd();
 

@@ -7,8 +7,8 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, absoluteFrom} from '../../../src/ngtsc/file_system';
-import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {absoluteFrom, AbsoluteFsPath} from '../../../src/ngtsc/file_system';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {Reference} from '../../../src/ngtsc/imports';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadTestFiles} from '../../../test/helpers/src/mock_file_loading';
@@ -161,86 +161,26 @@ runInEachFileSystem(() => {
                identifier: 'PrivateComponent1',
                from: _('/node_modules/test-package/src/b.js'),
                dtsFrom: null,
-               alias: null
              },
              {
                identifier: 'InternalComponent1',
                from: _('/node_modules/test-package/src/c.js'),
                dtsFrom: _('/node_modules/test-package/typings/c.d.ts'),
-               alias: null
              },
            ]);
          });
-
-      it('should find all non-public declarations that were aliased', () => {
-        const _ = absoluteFrom;
-        const ALIASED_EXPORTS_PROGRAM = [
-          {
-            name: _('/node_modules/test-package/src/entry_point.js'),
-            isRoot: true,
-            contents: `
-          // This component is only exported as an alias.
-          export {ComponentOne as aliasedComponentOne} from './a';
-          // This component is exported both as itself and an alias.
-          export {ComponentTwo as aliasedComponentTwo, ComponentTwo} from './a';
-        `
-          },
-          {
-            name: _('/node_modules/test-package/src/a.js'),
-            isRoot: false,
-            contents: `
-        import {Component} from '@angular/core';
-        export class ComponentOne {}
-        ComponentOne.decorators = [
-          {type: Component, args: [{selectors: 'a', template: ''}]}
-        ];
-
-        export class ComponentTwo {}
-        Component.decorators = [
-          {type: Component, args: [{selectors: 'a', template: ''}]}
-        ];
-      `
-          }
-        ];
-        const ALIASED_EXPORTS_DTS_PROGRAM = [
-          {
-            name: _('/node_modules/test-package/typings/entry_point.d.ts'),
-            isRoot: true,
-            contents: `
-          export declare class aliasedComponentOne {}
-          export declare class ComponentTwo {}
-          export {ComponentTwo as aliasedComponentTwo}
-        `
-          },
-        ];
-        const {program, referencesRegistry, analyzer} =
-            setup(ALIASED_EXPORTS_PROGRAM, ALIASED_EXPORTS_DTS_PROGRAM);
-
-        addToReferencesRegistry(
-            program, referencesRegistry, _('/node_modules/test-package/src/a.js'), 'ComponentOne');
-        addToReferencesRegistry(
-            program, referencesRegistry, _('/node_modules/test-package/src/a.js'), 'ComponentTwo');
-
-        const analyses = analyzer.analyzeProgram(program);
-        expect(analyses).toEqual([{
-          identifier: 'ComponentOne',
-          from: _('/node_modules/test-package/src/a.js'),
-          dtsFrom: null,
-          alias: 'aliasedComponentOne',
-        }]);
-      });
     });
   });
 
   function setup(jsProgram: TestFile[], dtsProgram: TestFile[]) {
     loadTestFiles(jsProgram);
     loadTestFiles(dtsProgram);
-    const {src: {program}, dts} = makeTestEntryPointBundle(
+    const {src, dts} = makeTestEntryPointBundle(
         'test-package', 'esm2015', false, getRootFiles(jsProgram), getRootFiles(dtsProgram));
-    const host = new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker(), dts);
+    const host = new Esm2015ReflectionHost(new MockLogger(), false, src, dts);
     const referencesRegistry = new NgccReferencesRegistry(host);
     const analyzer = new PrivateDeclarationsAnalyzer(host, referencesRegistry);
-    return {program, referencesRegistry, analyzer};
+    return {program: src.program, referencesRegistry, analyzer};
   }
 
   /**
@@ -252,6 +192,6 @@ runInEachFileSystem(() => {
       program: ts.Program, registry: NgccReferencesRegistry, fileName: AbsoluteFsPath,
       componentName: string) {
     const declaration = getDeclaration(program, fileName, componentName, ts.isClassDeclaration);
-    registry.add(null !, new Reference(declaration));
+    registry.add(null!, new Reference(declaration));
   }
 });

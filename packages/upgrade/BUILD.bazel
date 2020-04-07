@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_api_guardian_test_npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -31,10 +31,20 @@ ng_package(
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
-    visibility = ["//visibility:private"],
+    visibility = ["//integration:__pkg__"],
     deps = [
         ":upgrade",
         "//packages/upgrade/static",
         "//packages/upgrade/static/testing",
     ],
+)
+
+ts_api_guardian_test_npm_package(
+    name = "upgrade_api",
+    actualDir = "angular/packages/upgrade/npm_package",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    goldenDir = "angular/goldens/public-api/upgrade",
 )

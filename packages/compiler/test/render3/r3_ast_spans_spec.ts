@@ -225,10 +225,28 @@ describe('R3 AST source spans', () => {
   // TODO(joost): improve spans of nodes extracted from macrosyntax
   describe('inline templates', () => {
     it('is correct for attribute and bound attributes', () => {
+      // Desugared form is
+      // <ng-template ngFor [ngForOf]="items" let-item>
+      //   <div></div>
+      // </ng-template>
+      expectFromHtml('<div *ngFor="let item of items"></div>').toEqual([
+        ['Template', '0:32', '0:32', '32:38'],
+        ['TextAttribute', '5:31', '<empty>'],
+        ['BoundAttribute', '5:31', '25:30'],  // *ngFor="let item of items" -> items
+        ['Variable', '13:22', '<empty>'],     // let item
+        ['Element', '0:38', '0:32', '32:38'],
+      ]);
+
+      // Note that this test exercises an *incorrect* usage of the ngFor
+      // directive. There is a missing 'let' in the beginning of the expression
+      // which causes the template to be desugared into
+      // <ng-template [ngFor]="item" [ngForOf]="items">
+      //   <div></div>
+      // </ng-template>
       expectFromHtml('<div *ngFor="item of items"></div>').toEqual([
         ['Template', '0:28', '0:28', '28:34'],
-        ['BoundAttribute', '5:27', '<empty>'],
-        ['BoundAttribute', '5:27', '<empty>'],
+        ['BoundAttribute', '5:27', '13:17'],  // ngFor="item of items" -> item
+        ['BoundAttribute', '5:27', '21:26'],  // ngFor="item of items" -> items
         ['Element', '0:34', '0:28', '28:34'],
       ]);
     });
@@ -237,7 +255,7 @@ describe('R3 AST source spans', () => {
       expectFromHtml('<div *ngIf="let a=b"></div>').toEqual([
         ['Template', '0:21', '0:21', '21:27'],
         ['TextAttribute', '5:20', '<empty>'],
-        ['Variable', '5:20', '<empty>'],
+        ['Variable', '12:19', '18:19'],  // let a=b -> b
         ['Element', '0:27', '0:21', '21:27'],
       ]);
     });
@@ -245,8 +263,8 @@ describe('R3 AST source spans', () => {
     it('is correct for variables via as ...', () => {
       expectFromHtml('<div *ngIf="expr as local"></div>').toEqual([
         ['Template', '0:27', '0:27', '27:33'],
-        ['BoundAttribute', '5:26', '<empty>'],
-        ['Variable', '5:26', '<empty>'],
+        ['BoundAttribute', '5:26', '12:16'],  // ngIf="expr as local" -> expr
+        ['Variable', '6:25', '6:10'],         // ngIf="expr as local -> ngIf
         ['Element', '0:33', '0:27', '27:33'],
       ]);
     });

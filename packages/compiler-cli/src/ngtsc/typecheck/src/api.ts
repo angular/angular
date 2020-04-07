@@ -25,6 +25,8 @@ export interface TypeCheckableDirectiveMeta extends DirectiveMeta {
   hasNgTemplateContextGuard: boolean;
 }
 
+export type TemplateId = string & {__brand: 'TemplateId'};
+
 /**
  * Metadata required in addition to a component class in order to generate a type check block (TCB)
  * for that component.
@@ -35,7 +37,7 @@ export interface TypeCheckBlockMetadata {
    *
    * This can be used to map errors back to the `ts.ClassDeclaration` for the component.
    */
-  id: string;
+  id: TemplateId;
 
   /**
    * Semantic information about the template of the component.
@@ -209,6 +211,24 @@ export interface TypeCheckingConfig {
    * This is currently an unsupported feature.
    */
   checkQueries: false;
+
+  /**
+   * Whether to use any generic types of the context component.
+   *
+   * If this is `true`, then if the context component has generic types, those will be mirrored in
+   * the template type-checking context. If `false`, any generic type parameters of the context
+   * component will be set to `any` during type-checking.
+   */
+  useContextGenericType: boolean;
+
+  /**
+   * Whether or not to infer types for object and array literals in the template.
+   *
+   * If this is `true`, then the type of an object or an array literal in the template will be the
+   * same type that TypeScript would infer if the literal appeared in code. If `false`, then such
+   * literals are cast to `any` when declared.
+   */
+  strictLiteralTypes: boolean;
 }
 
 

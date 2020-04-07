@@ -6,5 +6,6 @@
     "!**/app-ctor.component.ts",
     "!**/*.[1,2,3].*"
   ],
+  "file": "src/app/app.component.ts",
   "tags": ["Template"]
 }

@@ -5,12 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, PathSegment, join, relative, relativeFrom} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, join, PathSegment, relative, relativeFrom} from '../../../src/ngtsc/file_system';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {Logger} from '../logging/logger';
+import {hasBeenProcessed} from '../packages/build_marker';
 import {NgccConfiguration} from '../packages/configuration';
-import {EntryPoint, getEntryPointInfo} from '../packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty, getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT} from '../packages/entry_point';
 import {PathMappings} from '../utils';
+
 import {EntryPointFinder} from './interface';
 import {getBasePaths} from './utils';
 
@@ -24,7 +26,7 @@ import {getBasePaths} from './utils';
 export class TargetedEntryPointFinder implements EntryPointFinder {
   private unprocessedPaths: AbsoluteFsPath[] = [];
   private unsortedEntryPoints = new Map<AbsoluteFsPath, EntryPoint>();
-  private basePaths = getBasePaths(this.basePath, this.pathMappings);
+  private basePaths = getBasePaths(this.logger, this.basePath, this.pathMappings);
 
   constructor(
       private fs: FileSystem, private config: NgccConfiguration, private logger: Logger,
@@ -37,27 +39,66 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
       this.processNextPath();
     }
     const targetEntryPoint = this.unsortedEntryPoints.get(this.targetPath);
-    return this.resolver.sortEntryPointsByDependency(
+    const entryPoints = this.resolver.sortEntryPointsByDependency(
         Array.from(this.unsortedEntryPoints.values()), targetEntryPoint);
+
+    const invalidTarget =
+        entryPoints.invalidEntryPoints.find(i => i.entryPoint.path === this.targetPath);
+    if (invalidTarget !== undefined) {
+      throw new Error(
+          `The target entry-point "${invalidTarget.entryPoint.name}" has missing dependencies:\n` +
+          invalidTarget.missingDependencies.map(dep => ` - ${dep}\n`).join(''));
+    }
+    return entryPoints;
+  }
+
+  targetNeedsProcessingOrCleaning(
+      propertiesToConsider: EntryPointJsonProperty[], compileAllFormats: boolean): boolean {
+    const entryPoint = this.getEntryPoint(this.targetPath);
+    if (entryPoint === null || !entryPoint.compiledByAngular) {
+      return false;
+    }
+
+    for (const property of propertiesToConsider) {
+      if (entryPoint.packageJson[property]) {
+        // Here is a property that should be processed.
+        if (!hasBeenProcessed(entryPoint.packageJson, property)) {
+          return true;
+        }
+        if (!compileAllFormats) {
+          // This property has been processed, and we only need one.
+          return false;
+        }
+      }
+    }
+    // All `propertiesToConsider` that appear in this entry-point have been processed.
+    // In other words, there were no properties that need processing.
+    return false;
   }
 
   private processNextPath(): void {
-    const path = this.unprocessedPaths.shift() !;
+    const path = this.unprocessedPaths.shift()!;
     const entryPoint = this.getEntryPoint(path);
-    if (entryPoint !== null && entryPoint.compiledByAngular) {
-      this.unsortedEntryPoints.set(entryPoint.path, entryPoint);
-      const deps = this.resolver.getEntryPointDependencies(entryPoint);
-      deps.dependencies.forEach(dep => {
-        if (!this.unsortedEntryPoints.has(dep)) {
-          this.unprocessedPaths.push(dep);
-        }
-      });
+    if (entryPoint === null || !entryPoint.compiledByAngular) {
+      return;
     }
+    this.unsortedEntryPoints.set(entryPoint.path, entryPoint);
+    const deps = this.resolver.getEntryPointDependencies(entryPoint);
+    deps.dependencies.forEach(dep => {
+      if (!this.unsortedEntryPoints.has(dep)) {
+        this.unprocessedPaths.push(dep);
+      }
+    });
   }
 
   private getEntryPoint(entryPointPath: AbsoluteFsPath): EntryPoint|null {
     const packagePath = this.computePackagePath(entryPointPath);
-    return getEntryPointInfo(this.fs, this.config, this.logger, packagePath, entryPointPath);
+    const entryPoint =
+        getEntryPointInfo(this.fs, this.config, this.logger, packagePath, entryPointPath);
+    if (entryPoint === NO_ENTRY_POINT || entryPoint === INCOMPATIBLE_ENTRY_POINT) {
+      return null;
+    }
+    return entryPoint;
   }
 
   /**
@@ -76,17 +117,27 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
       if (entryPointPath.startsWith(basePath)) {
         let packagePath = basePath;
         const segments = this.splitPath(relative(basePath, entryPointPath));
-
-        // Start the search at the last nested `node_modules` folder if the relative
-        // `entryPointPath` contains one or more.
         let nodeModulesIndex = segments.lastIndexOf(relativeFrom('node_modules'));
+
+        // If there are no `node_modules` in the relative path between the `basePath` and the
+        // `entryPointPath` then just try the `basePath` as the `packagePath`.
+        // (This can be the case with path-mapped entry-points.)
+        if (nodeModulesIndex === -1) {
+          if (this.fs.exists(join(packagePath, 'package.json'))) {
+            return packagePath;
+          }
+        }
+
+        // Start the search at the deepest nested `node_modules` folder that is below the `basePath`
+        // but above the `entryPointPath`, if there are any.
         while (nodeModulesIndex >= 0) {
-          packagePath = join(packagePath, segments.shift() !);
+          packagePath = join(packagePath, segments.shift()!);
           nodeModulesIndex--;
         }
 
-        // Note that we skip the first `packagePath` and start looking from the first folder below
-        // it because that will be the `node_modules` folder.
+        // Note that we start at the folder below the current candidate `packagePath` because the
+        // initial candidate `packagePath` is either a `node_modules` folder or the `basePath` with
+        // no `package.json`.
         for (const segment of segments) {
           packagePath = join(packagePath, segment);
           if (this.fs.exists(join(packagePath, 'package.json'))) {
@@ -94,19 +145,41 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
           }
         }
 
-        // If we got here then we couldn't find a `packagePath` for the current `basePath` but since
-        // `basePath`s are guaranteed not to be a sub-directory each other then no other `basePath`
-        // will match either.
+        // If we got here then we couldn't find a `packagePath` for the current `basePath`.
+        // Since `basePath`s are guaranteed not to be a sub-directory of each other then no other
+        // `basePath` will match either.
         break;
       }
     }
-    // If we get here then none of the `basePaths` matched the `entryPointPath`, which
-    // is somewhat unexpected and means that this entry-point lives completely outside
-    // any of the `basePaths`.
-    // All we can do is assume that his entry-point is a primary entry-point to a package.
-    return entryPointPath;
-  }
 
+    // We couldn't find a `packagePath` using `basePaths` so try to find the nearest `node_modules`
+    // that contains the `entryPointPath`, if there is one, and use it as a `basePath`.
+    let packagePath = entryPointPath;
+    let scopedPackagePath = packagePath;
+    let containerPath = this.fs.dirname(packagePath);
+    while (!this.fs.isRoot(containerPath) && !containerPath.endsWith('node_modules')) {
+      scopedPackagePath = packagePath;
+      packagePath = containerPath;
+      containerPath = this.fs.dirname(containerPath);
+    }
+
+    if (this.fs.exists(join(packagePath, 'package.json'))) {
+      // The directory directly below `node_modules` is a package - use it
+      return packagePath;
+    } else if (
+        this.fs.basename(packagePath).startsWith('@') &&
+        this.fs.exists(join(scopedPackagePath, 'package.json'))) {
+      // The directory directly below the `node_modules` is a scope and the directory directly
+      // below that is a scoped package - use it
+      return scopedPackagePath;
+    } else {
+      // If we get here then none of the `basePaths` contained the `entryPointPath` and the
+      // `entryPointPath` contains no `node_modules` that contains a package or a scoped
+      // package. All we can do is assume that this entry-point is a primary entry-point to a
+      // package.
+      return entryPointPath;
+    }
+  }
 
   /**
    * Split the given `path` into path segments using an FS independent algorithm.

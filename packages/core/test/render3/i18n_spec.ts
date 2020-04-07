@@ -194,6 +194,7 @@ describe('Runtime i18n', () => {
       let nbConsts = 3;
       let index = 1;
       const firstTextNode = 3;
+      const rootTemplate = 2;
       let opCodes = getOpCodes(() => { ɵɵi18nStart(index, MSG_DIV); }, null, nbConsts, index);
 
       expect(opCodes).toEqual({
@@ -202,7 +203,7 @@ describe('Runtime i18n', () => {
           '',
           nbConsts,
           index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          2 << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
+          ~rootTemplate << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
           index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
           '!',
           nbConsts + 1,
@@ -234,7 +235,7 @@ describe('Runtime i18n', () => {
           'before',
           nbConsts,
           spanElement << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
-          bElementSubTemplate << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
+          ~bElementSubTemplate << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
           spanElement << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
           'after',
           nbConsts + 1,

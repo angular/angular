@@ -9,9 +9,13 @@
 import {Expression, ExternalExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {UnifiedModulesHost} from '../../core/api';
 import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration} from '../../reflection';
-import {FileToModuleHost, ReferenceEmitStrategy} from './emitter';
-import {ImportMode, Reference} from './references';
+
+import {ImportFlags, ReferenceEmitStrategy} from './emitter';
+import {Reference} from './references';
+
+
 
 // Escape anything that isn't alphanumeric, '/' or '_'.
 const CHARS_TO_ESCAPE = /[^a-zA-Z0-9/_]/g;
@@ -31,8 +35,8 @@ const CHARS_TO_ESCAPE = /[^a-zA-Z0-9/_]/g;
  *
  * 1) It can be used to create "alias" re-exports from different files, which can be used when the
  *    user hasn't exported the directive(s) from the ES module containing the NgModule. These re-
- *    exports can also be helpful when using a `FileToModuleHost`, which overrides the import logic
- *    described above.
+ *    exports can also be helpful when using a `UnifiedModulesHost`, which overrides the import
+ *    logic described above.
  *
  * 2) It can be used to get an alternative import expression for a directive or pipe, instead of
  *    the import that the normal logic would apply. The alias used depends on the provenance of the
@@ -83,16 +87,16 @@ export interface AliasingHost {
 
 /**
  * An `AliasingHost` which generates and consumes alias re-exports when module names for each file
- * are determined by a `FileToModuleHost`.
+ * are determined by a `UnifiedModulesHost`.
  *
- * When using a `FileToModuleHost`, aliasing prevents issues with transitive dependencies. See the
+ * When using a `UnifiedModulesHost`, aliasing prevents issues with transitive dependencies. See the
  * README.md for more details.
  */
-export class FileToModuleAliasingHost implements AliasingHost {
-  constructor(private fileToModuleHost: FileToModuleHost) {}
+export class UnifiedModulesAliasingHost implements AliasingHost {
+  constructor(private unifiedModulesHost: UnifiedModulesHost) {}
 
   /**
-   * With a `FileToModuleHost`, aliases are chosen automatically without the need to look through
+   * With a `UnifiedModulesHost`, aliases are chosen automatically without the need to look through
    * the exports present in a .d.ts file, so we can avoid cluttering the .d.ts files.
    */
   readonly aliasExportsInDts = false;
@@ -101,7 +105,8 @@ export class FileToModuleAliasingHost implements AliasingHost {
       ref: Reference<ClassDeclaration>, context: ts.SourceFile, ngModuleName: string,
       isReExport: boolean): string|null {
     if (!isReExport) {
-      // Aliasing is used with a FileToModuleHost to prevent transitive dependencies. Thus, aliases
+      // Aliasing is used with a UnifiedModulesHost to prevent transitive dependencies. Thus,
+      // aliases
       // only need to be created for directives/pipes which are not direct declarations of an
       // NgModule which exports them.
       return null;
@@ -120,7 +125,7 @@ export class FileToModuleAliasingHost implements AliasingHost {
       return null;
     }
     // viaModule is the module it'll actually be imported from.
-    const moduleName = this.fileToModuleHost.fileNameToModuleName(via.fileName, via.fileName);
+    const moduleName = this.unifiedModulesHost.fileNameToModuleName(via.fileName, via.fileName);
     return new ExternalExpr({moduleName, name: this.aliasName(decl, via)});
   }
 
@@ -130,8 +135,8 @@ export class FileToModuleAliasingHost implements AliasingHost {
    */
   private aliasName(decl: ClassDeclaration, context: ts.SourceFile): string {
     // The declared module is used to get the name of the alias.
-    const declModule =
-        this.fileToModuleHost.fileNameToModuleName(decl.getSourceFile().fileName, context.fileName);
+    const declModule = this.unifiedModulesHost.fileNameToModuleName(
+        decl.getSourceFile().fileName, context.fileName);
 
     const replaced = declModule.replace(CHARS_TO_ESCAPE, '_').replace(/\//g, '$');
     return 'ɵng$' + replaced + '$$' + decl.name.text;
@@ -206,7 +211,11 @@ export class PrivateExportAliasingHost implements AliasingHost {
  * directive or pipe, if it exists.
  */
 export class AliasStrategy implements ReferenceEmitStrategy {
-  emit(ref: Reference<ts.Node>, context: ts.SourceFile, importMode: ImportMode): Expression|null {
+  emit(ref: Reference<ts.Node>, context: ts.SourceFile, importMode: ImportFlags): Expression|null {
+    if (importMode & ImportFlags.NoAliasing) {
+      return null;
+    }
+
     return ref.alias;
   }
 }

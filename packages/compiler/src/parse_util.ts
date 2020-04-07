@@ -7,7 +7,6 @@
  */
 import * as chars from './chars';
 import {CompileIdentifierMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
-import {error} from './util';
 
 export class ParseLocation {
   constructor(
@@ -108,9 +107,6 @@ export class ParseSourceSpan {
     return this.start.file.content.substring(this.start.offset, this.end.offset);
   }
 }
-
-export const EMPTY_PARSE_LOCATION = new ParseLocation(new ParseSourceFile('', ''), 0, 0, 0);
-export const EMPTY_SOURCE_SPAN = new ParseSourceSpan(EMPTY_PARSE_LOCATION, EMPTY_PARSE_LOCATION);
 
 export enum ParseErrorLevel {
   WARNING,

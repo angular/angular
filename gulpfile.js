@@ -26,31 +26,31 @@ function loadTask(fileName, taskName) {
   return task(gulp);
 }
 
-// Check source code for formatting errors in all source files.
-gulp.task('format:enforce', loadTask('format', 'enforce'));
+//#######################################################
+// A format and enforce task for different sets of files.
+//#######################################################
 
-// Format all source files.
+// All source files.
 gulp.task('format:all', loadTask('format', 'format'));
+gulp.task('format:all:enforce', loadTask('format', 'enforce'));
 
-// Format only untracked source code files.
+// Untracked source code files.
 gulp.task('format:untracked', loadTask('format', 'format-untracked'));
+gulp.task('format:untracked:enforce', loadTask('format', 'enforce-untracked'));
 
-// Format only the changed, tracked source code files.
+// Changed, tracked source code files.
 gulp.task('format:diff', loadTask('format', 'format-diff'));
+gulp.task('format:diff:enforce', loadTask('format', 'enforce-diff'));
 
-// Format only changed lines based on the diff from the provided --branch
-// argument (or `master` by default).
+// Changed, both tracked and untracked, source code files.
 gulp.task('format:changed', ['format:untracked', 'format:diff']);
+gulp.task('format:changed:enforce', ['format:untracked:enforce', 'format:diff:enforce']);
 
 // Alias for `format:changed` that formerly formatted all files.
 gulp.task('format', ['format:changed']);
 
-gulp.task('lint', ['format:enforce', 'validate-commit-messages', 'tslint']);
-gulp.task('tslint', ['tools:build'], loadTask('lint'));
-gulp.task('validate-commit-messages', loadTask('validate-commit-message'));
+gulp.task('lint', ['format:changed:enforce']);
 gulp.task('source-map-test', loadTask('source-map-test'));
-gulp.task('tools:build', loadTask('tools-build'));
-gulp.task('check-cycle', loadTask('check-cycle'));
 gulp.task('changelog', loadTask('changelog'));
 gulp.task('changelog:zonejs', loadTask('changelog-zonejs'));
 gulp.task('check-env', () => {/* this is a noop because the env test ran already above */});

@@ -27,7 +27,7 @@ export class UmdDependencyHost extends DependencyHostBase {
    * @param alreadySeen A set that is used to track internal dependencies to prevent getting stuck
    * in a circular dependency loop.
    */
-  protected recursivelyFindDependencies(
+  protected recursivelyCollectDependencies(
       file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
       deepImports: Set<string>, alreadySeen: Set<AbsoluteFsPath>): void {
     const fromContents = this.fs.readFile(file);
@@ -58,7 +58,7 @@ export class UmdDependencyHost extends DependencyHostBase {
           const internalDependency = resolvedModule.modulePath;
           if (!alreadySeen.has(internalDependency)) {
             alreadySeen.add(internalDependency);
-            this.recursivelyFindDependencies(
+            this.recursivelyCollectDependencies(
                 internalDependency, dependencies, missing, deepImports, alreadySeen);
           }
         } else {
@@ -84,5 +84,7 @@ export class UmdDependencyHost extends DependencyHostBase {
    * @returns false if there are definitely no require calls
    * in this file, true otherwise.
    */
-  private hasRequireCalls(source: string): boolean { return /require\(['"]/.test(source); }
+  private hasRequireCalls(source: string): boolean {
+    return /require\(['"]/.test(source);
+  }
 }

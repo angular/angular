@@ -34,6 +34,7 @@ export const Inject = callableParamDecorator();
 export const Self = callableParamDecorator();
 export const SkipSelf = callableParamDecorator();
 export const Optional = callableParamDecorator();
+export const Host = callableParamDecorator();
 
 export const ContentChild = callablePropDecorator();
 export const ContentChildren = callablePropDecorator();
@@ -57,6 +58,10 @@ export class ɵNgModuleFactory<T> {
   constructor(public clazz: T) {}
 }
 
+export class InjectionToken<T> {
+  constructor(description: string) {}
+}
+
 export function forwardRef<T>(fn: () => T): T {
   return fn();
 }
@@ -64,7 +69,8 @@ export function forwardRef<T>(fn: () => T): T {
 export interface SimpleChanges { [propName: string]: any; }
 
 export type ɵɵNgModuleDefWithMeta<ModuleT, DeclarationsT, ImportsT, ExportsT> = any;
-export type ɵɵDirectiveDefWithMeta<DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT> = any;
+export type ɵɵDirectiveDefWithMeta<
+    DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT, NgContentSelectorsT> = any;
 export type ɵɵPipeDefWithMeta<PipeT, NameT> = any;
 
 export enum ViewEncapsulation {
@@ -89,3 +95,5 @@ export class EventEmitter<T> {
 export interface QueryList<T>/* implements Iterable<T> */ { [Symbol.iterator]: () => Iterator<T>; }
 
 export type NgIterable<T> = Array<T>| Iterable<T>;
+
+export class NgZone {}

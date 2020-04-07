@@ -1,7 +1,7 @@
 # Modules
 
-Starting from zone.js v0.8.9, you can choose which web API modules you want to patch as to reduce overhead introduced by the patching of these modules. For example, 
-the below samples show how to disable some modules. You just need to define a few global variables 
+Starting from zone.js v0.8.9, you can choose which web API modules you want to patch as to reduce overhead introduced by the patching of these modules. For example,
+the below samples show how to disable some modules. You just need to define a few global variables
 before loading zone.js.
 
 ```
@@ -18,7 +18,7 @@ before loading zone.js.
 
 Below is the full list of currently supported modules.
 
-- Common 
+- Common
 
 |Module Name|Behavior with zone.js patch|How to disable|
 |--|--|--|
@@ -43,6 +43,7 @@ Below is the full list of currently supported modules.
 |PromiseRejectionEvent|PromiseRejectEvent will fire when ZoneAwarePromise has unhandled error|__Zone_disable_PromiseRejectionEvent = true|
 |mediaQuery|mediaQuery addListener API will be patched as Zone aware EventTask. (By default, mediaQuery patch will not be loaded by zone.js) |__Zone_disable_mediaQuery = true|
 |notification|notification onProperties API will be patched as Zone aware EventTask. (By default, notification patch will not be loaded by zone.js) |__Zone_disable_notification = true|
+|MessagePort|MessagePort onProperties APIs will be patched as Zone aware EventTask. (By default, MessagePort patch will not be loaded by zone.js) |__Zone_disable_MessagePort = true|
 
 - NodeJS
 
@@ -54,6 +55,12 @@ Below is the full list of currently supported modules.
 |nextTick|NodeJS patch process.nextTick as microTask|__Zone_disable_nextTick = true|
 |handleUnhandledPromiseRejection|NodeJS handle unhandledPromiseRejection from ZoneAwarePromise|__Zone_disable_handleUnhandledPromiseRejection = true|
 |crypto|NodeJS patch crypto function as macroTask|__Zone_disable_crypto = true|
+
+- Test Framework
+|Module Name|Behavior with zone.js patch|How to disable|
+|--|--|--|
+|Jasmine|Jasmine APIs patch|__Zone_disable_jasmine = true|
+|Mocha|Mocha APIs patch|__Zone_disable_mocha = true|
 
 - on_property
 
@@ -80,7 +87,7 @@ you can do like this.
 
 By default, `zone.js/dist/zone-error` will not be loaded for performance concern.
 This package will provide following functionality.
-  
+
   1. Error inherit: handle `extend Error` issue.
      ```
        class MyError extends Error {}
@@ -104,7 +111,7 @@ This package will provide following functionality.
 
      with this patch, those zone frames will be removed,
      and the zone information `<angular>/<root>` will be added
-     
+
      ```
        at a.b.c (vendor.bundle.js: 12345 <angular>)
        at d.e.f (main.bundle.js: 23456 <root>)
@@ -114,8 +121,8 @@ This package will provide following functionality.
   The flag is `__Zone_Error_BlacklistedStackFrames_policy`. And the available options is:
 
     1. default: this is the default one, if you load `zone.js/dist/zone-error` without
-     setting the flag, `default` will be used, and `BlackListStackFrames` will be available 
-     when `new Error()`, you can get a `error.stack`  which is `zone stack free`. But this 
+     setting the flag, `default` will be used, and `BlackListStackFrames` will be available
+     when `new Error()`, you can get a `error.stack`  which is `zone stack free`. But this
      will slow down `new Error()` a little bit.
 
     2. disable: this will disable `BlackListZoneStackFrame` feature, and if you load
@@ -123,13 +130,13 @@ This package will provide following functionality.
       `Error inherit` issue.
 
     3. lazy: this is a feature to let you be able to get `BlackListZoneStackFrame` feature,
-     but not impact performance. But as a trade off, you can't get the `zone free stack 
+     but not impact performance. But as a trade off, you can't get the `zone free stack
      frames` by access `error.stack`. You can only get it by access `error.zoneAwareStack`.
-    
+
 
 - Angular(2+)
 
-Angular uses zone.js to manage async operations and decide when to perform change detection. Thus, in Angular, 
+Angular uses zone.js to manage async operations and decide when to perform change detection. Thus, in Angular,
 the following APIs should be patched, otherwise Angular may not work as expected.
 
 1. ZoneAwarePromise

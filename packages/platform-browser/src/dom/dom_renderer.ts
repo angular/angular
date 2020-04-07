@@ -50,10 +50,16 @@ export function flattenStyles(
 }
 
 function decoratePreventDefault(eventHandler: Function): Function {
+  // `DebugNode.triggerEventHandler` needs to know if the listener was created with
+  // decoratePreventDefault or is a listener added outside the Angular context so it can handle the
+  // two differently. In the first case, the special '__ngUnwrap__' token is passed to the unwrap
+  // the listener (see below).
   return (event: any) => {
-    // Ivy uses `Function` as a special token that allows us to unwrap the function
-    // so that it can be invoked programmatically by `DebugNode.triggerEventHandler`.
-    if (event === Function) {
+    // Ivy uses '__ngUnwrap__' as a special token that allows us to unwrap the function
+    // so that it can be invoked programmatically by `DebugNode.triggerEventHandler`. The debug_node
+    // can inspect the listener toString contents for the existence of this special token. Because
+    // the token is a string literal, it is ensured to not be modified by compiled code.
+    if (event === '__ngUnwrap__') {
       return eventHandler;
     }
 
@@ -168,7 +174,7 @@ class DefaultDomRenderer2 implements Renderer2 {
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     if (namespace) {
       name = namespace + ':' + name;
-      // TODO(benlesh): Ivy may cause issues here because it's passing around
+      // TODO(FW-811): Ivy may cause issues here because it's passing around
       // full URIs for namespaces, therefore this lookup will fail.
       const namespaceUri = NAMESPACE_URIS[namespace];
       if (namespaceUri) {
@@ -183,13 +189,13 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   removeAttribute(el: any, name: string, namespace?: string): void {
     if (namespace) {
-      // TODO(benlesh): Ivy may cause issues here because it's passing around
+      // TODO(FW-811): Ivy may cause issues here because it's passing around
       // full URIs for namespaces, therefore this lookup will fail.
       const namespaceUri = NAMESPACE_URIS[namespace];
       if (namespaceUri) {
         el.removeAttributeNS(namespaceUri, name);
       } else {
-        // TODO(benlesh): Since ivy is passing around full URIs for namespaces
+        // TODO(FW-811): Since ivy is passing around full URIs for namespaces
         // this could result in properties like `http://www.w3.org/2000/svg:cx="123"`,
         // which is wrong.
         el.removeAttribute(`${namespace}:${name}`);

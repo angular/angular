@@ -7,20 +7,21 @@
  */
 
 /// <reference types="node" />
-
 import * as os from 'os';
 
-import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem, join} from '../../../src/ngtsc/file_system';
-import {Folder, MockFileSystem, TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, join} from '../../../src/ngtsc/file_system';
+import {Folder, MockFileSystem, runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles, loadTestFiles} from '../../../test/helpers';
+import {getLockFilePath} from '../../src/locking/lock_file';
 import {mainNgcc} from '../../src/main';
-import {markAsProcessed} from '../../src/packages/build_marker';
+import {hasBeenProcessed, markAsProcessed} from '../../src/packages/build_marker';
 import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
+import {EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
 import {Transformer} from '../../src/packages/transformer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
 import {MockLogger} from '../helpers/mock_logger';
-import {compileIntoApf, compileIntoFlatEs5Package} from './util';
 
+import {compileIntoApf, compileIntoFlatEs5Package} from './util';
 
 const testFiles = loadStandardTestFiles({fakeCore: false, rxjs: true});
 
@@ -133,7 +134,7 @@ runInEachFileSystem(() => {
       mainNgcc({
         basePath: '/node_modules',
         targetEntryPointPath: 'test-package',
-        propertiesToConsider: ['main'],
+        propertiesToConsider: ['module'],
       });
 
       const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`)).replace(/\s+/g, ' ');
@@ -143,6 +144,84 @@ runInEachFileSystem(() => {
               '[{ type: Directive, args: [{ selector: \'[foo]\' }] }], ' +
               'function () { return []; }, ' +
               '{ bar: [{ type: Input }] }); })();');
+    });
+
+    ['esm5', 'esm2015'].forEach(target => {
+      it(`should be able to process spread operator inside objects for ${
+             target} format (imported helpers)`,
+         () => {
+           compileIntoApf(
+               'test-package', {
+                 '/index.ts': `
+                  import {Directive, Input, NgModule} from '@angular/core';
+
+                  const a = { '[class.a]': 'true' };
+                  const b = { '[class.b]': 'true' };
+
+                  @Directive({
+                    selector: '[foo]',
+                    host: {...a, ...b, '[class.c]': 'false'}
+                  })
+                  export class FooDirective {}
+
+                  @NgModule({
+                    declarations: [FooDirective],
+                  })
+                  export class FooModule {}
+                `,
+               },
+               {importHelpers: true, noEmitHelpers: true});
+
+           fs.writeFile(
+               _('/node_modules/tslib/index.d.ts'),
+               `export declare function __assign(...args: object[]): object;`);
+
+           mainNgcc({
+             basePath: '/node_modules',
+             targetEntryPointPath: 'test-package',
+             propertiesToConsider: [target],
+           });
+
+           const jsContents = fs.readFile(_(`/node_modules/test-package/${target}/src/index.js`))
+                                  .replace(/\s+/g, ' ');
+           expect(jsContents).toContain('ngcc0.ɵɵclassProp("a", true)("b", true)("c", false)');
+         });
+
+      it(`should be able to process emitted spread operator inside objects for ${
+             target} format (emitted helpers)`,
+         () => {
+           compileIntoApf(
+               'test-package', {
+                 '/index.ts': `
+                    import {Directive, Input, NgModule} from '@angular/core';
+
+                    const a = { '[class.a]': 'true' };
+                    const b = { '[class.b]': 'true' };
+
+                    @Directive({
+                      selector: '[foo]',
+                      host: {...a, ...b, '[class.c]': 'false'}
+                    })
+                    export class FooDirective {}
+
+                    @NgModule({
+                      declarations: [FooDirective],
+                    })
+                    export class FooModule {}
+                  `,
+               },
+               {importHelpers: false, noEmitHelpers: false});
+
+           mainNgcc({
+             basePath: '/node_modules',
+             targetEntryPointPath: 'test-package',
+             propertiesToConsider: [target],
+           });
+
+           const jsContents = fs.readFile(_(`/node_modules/test-package/${target}/src/index.js`))
+                                  .replace(/\s+/g, ' ');
+           expect(jsContents).toContain('ngcc0.ɵɵclassProp("a", true)("b", true)("c", false)');
+         });
     });
 
     it('should not add `const` in ES5 generated code', () => {
@@ -167,12 +246,75 @@ runInEachFileSystem(() => {
       mainNgcc({
         basePath: '/node_modules',
         targetEntryPointPath: 'test-package',
-        propertiesToConsider: ['main'],
+        propertiesToConsider: ['module'],
       });
 
       const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
       expect(jsContents).not.toMatch(/\bconst \w+\s*=/);
-      expect(jsContents).toMatch(/\bvar _c0 =/);
+    });
+
+    it('should be able to reflect into external libraries', () => {
+      compileIntoApf('lib', {
+        '/index.ts': `
+          export * from './constants';
+          export * from './module';
+        `,
+        '/constants.ts': `
+          export const selectorA = '[selector-a]';
+
+          export class Selectors {
+            static readonly B = '[selector-b]';
+          }
+        `,
+        '/module.ts': `
+          import {NgModule, ModuleWithProviders} from '@angular/core';
+
+          @NgModule()
+          export class MyOtherModule {}
+
+          export class MyModule {
+            static forRoot(): ModuleWithProviders<MyOtherModule> {
+              return {ngModule: MyOtherModule};
+            }
+          }
+        `
+      });
+
+      compileIntoFlatEs5Package('test-package', {
+        '/index.ts': `
+          import {Directive, Input, NgModule} from '@angular/core';
+          import * as lib from 'lib';
+
+          @Directive({
+            selector: lib.selectorA,
+          })
+          export class DirectiveA {
+          }
+
+          @Directive({
+            selector: lib.Selectors.B,
+          })
+          export class DirectiveB {
+          }
+
+          @NgModule({
+            imports: [lib.MyModule.forRoot()],
+            declarations: [DirectiveA, DirectiveB],
+          })
+          export class FooModule {}
+        `,
+      });
+
+      mainNgcc({
+        basePath: '/node_modules',
+        targetEntryPointPath: 'test-package',
+        propertiesToConsider: ['module'],
+      });
+
+      const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
+      expect(jsContents).toContain('"selector-a"');
+      expect(jsContents).toContain('"selector-b"');
+      expect(jsContents).toContain('imports: [ɵngcc1.MyOtherModule]');
     });
 
     it('should add ɵfac but not duplicate ɵprov properties on injectables', () => {
@@ -188,11 +330,11 @@ runInEachFileSystem(() => {
       });
 
       const before = fs.readFile(_(`/node_modules/test-package/index.js`));
-      const originalProp = /ɵprov[^;]+/.exec(before) ![0];
+      const originalProp = /ɵprov[^;]+/.exec(before)![0];
       mainNgcc({
         basePath: '/node_modules',
         targetEntryPointPath: 'test-package',
-        propertiesToConsider: ['main'],
+        propertiesToConsider: ['module'],
       });
       const after = fs.readFile(_(`/node_modules/test-package/index.js`));
 
@@ -224,7 +366,7 @@ runInEachFileSystem(() => {
       mainNgcc({
         basePath: '/node_modules',
         targetEntryPointPath: 'test-package',
-        propertiesToConsider: ['main'],
+        propertiesToConsider: ['module'],
       });
 
       const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
@@ -233,6 +375,48 @@ runInEachFileSystem(() => {
               `TestClass.ɵfac = function TestClass_Factory(t) { return new (t || TestClass)(); };\n` +
               `TestClass.ɵpipe = ɵngcc0.ɵɵdefinePipe({ name: "myTestPipe", type: TestClass, pure: true });\n` +
               `TestClass.ɵprov = ɵngcc0.ɵɵdefineInjectable({`);
+    });
+
+    it('should use the correct type name in typings files when an export has a different name in source files',
+       () => {
+         // We need to make sure that changes to the typings files use the correct name
+         // static ɵprov: ɵngcc0.ɵɵInjectableDef<ɵangular_packages_common_common_a>;
+         mainNgcc({
+           basePath: '/node_modules',
+           targetEntryPointPath: '@angular/common',
+           propertiesToConsider: ['esm2015']
+         });
+
+         // In `@angular/common` the `BrowserPlatformLocation` class gets exported as something like
+         // `ɵangular_packages_common_common_a`.
+         const jsContents = fs.readFile(_(`/node_modules/@angular/common/fesm2015/common.js`));
+         const exportedNameMatch =
+             jsContents.match(/export.* BrowserPlatformLocation as ([^ ,}]+)/);
+         if (exportedNameMatch === null) {
+           return fail(
+               'Expected `/node_modules/@angular/common/fesm2015/common.js` to export `BrowserPlatformLocation` via an alias');
+         }
+         const exportedName = exportedNameMatch[1];
+
+         // We need to make sure that the flat typings file exports this directly
+         const dtsContents = fs.readFile(_('/node_modules/@angular/common/common.d.ts'));
+         expect(dtsContents)
+             .toContain(`export declare class ${exportedName} extends PlatformLocation`);
+         // And that ngcc's modifications to that class use the correct (exported) name
+         expect(dtsContents).toContain(`static ɵfac: ɵngcc0.ɵɵFactoryDef<${exportedName}, never>`);
+       });
+
+    it('should include constructor metadata in factory definitions', () => {
+      mainNgcc({
+        basePath: '/node_modules',
+        targetEntryPointPath: '@angular/common',
+        propertiesToConsider: ['esm2015']
+      });
+
+      const dtsContents = fs.readFile(_('/node_modules/@angular/common/common.d.ts'));
+      expect(dtsContents)
+          .toContain(
+              `static ɵfac: ɵngcc0.ɵɵFactoryDef<NgPluralCase, [{ attribute: "ngPluralCase"; }, null, null, { host: true; }]>`);
     });
 
     it('should add generic type for ModuleWithProviders and generate exports for private modules',
@@ -305,7 +489,7 @@ runInEachFileSystem(() => {
       mainNgcc({
         basePath: '/node_modules',
         targetEntryPointPath: 'test-package',
-        propertiesToConsider: ['main'],
+        propertiesToConsider: ['module'],
       });
 
       const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
@@ -316,7 +500,7 @@ runInEachFileSystem(() => {
     });
 
     describe('in async mode', () => {
-      it('should run ngcc without errors for fesm2015', async() => {
+      it('should run ngcc without errors for fesm2015', async () => {
         const promise = mainNgcc({
           basePath: '/node_modules',
           propertiesToConsider: ['fesm2015'],
@@ -327,7 +511,7 @@ runInEachFileSystem(() => {
         await promise;
       });
 
-      it('should reject, if some of the entry-points are unprocessable', async() => {
+      it('should reject, if some of the entry-points are unprocessable', async () => {
         const createEntryPoint = (name: string, prop: EntryPointJsonProperty): TestFile[] => {
           return [
             {
@@ -361,7 +545,7 @@ runInEachFileSystem(() => {
                 `  - ${_('/dist/unprocessable-3')}`)));
       });
 
-      it('should reject, if an error happens during processing', async() => {
+      it('should reject, if an error happens during processing', async () => {
         spyOn(Transformer.prototype, 'transform').and.throwError('Test error.');
 
         const promise = mainNgcc({
@@ -408,22 +592,50 @@ runInEachFileSystem(() => {
         expect(loadPackage('@angular/common/testing').__processed_by_ivy_ngcc__).toBeUndefined();
       });
 
-      it('should mark a non-Angular package target as processed', () => {
+      it('should not mark a non-Angular package as processed if it is the target', () => {
         mainNgcc({basePath: '/node_modules', targetEntryPointPath: 'test-package'});
 
-        // `test-package` has no Angular but is marked as processed.
-        expect(loadPackage('test-package').__processed_by_ivy_ngcc__).toEqual({
+        // * `test-package` has no Angular and is not marked as processed.
+        expect(loadPackage('test-package').__processed_by_ivy_ngcc__).toBeUndefined();
+
+        // * `core` is a dependency of `test-package`, but it is also not processed, since
+        // `test-package` was not processed.
+        expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toBeUndefined();
+      });
+
+      it('should not mark a non-Angular package as processed if it is a dependency', () => {
+        // `test-package-user` is a valid Angular package that depends upon `test-package`.
+        loadTestFiles([
+          {
+            name: _('/node_modules/test-package-user/package.json'),
+            contents:
+                '{"name": "test-package-user", "es2015": "./index.js", "typings": "./index.d.ts"}'
+          },
+          {
+            name: _('/node_modules/test-package-user/index.js'),
+            contents: 'import * as x from \'test-package\';'
+          },
+          {
+            name: _('/node_modules/test-package-user/index.d.ts'),
+            contents: 'import * as x from \'test-package\';'
+          },
+          {name: _('/node_modules/test-package-user/index.metadata.json'), contents: 'DUMMY DATA'},
+        ]);
+
+        mainNgcc({basePath: '/node_modules', targetEntryPointPath: 'test-package-user'});
+
+        // * `test-package-user` is processed because it is compiled by Angular
+        expect(loadPackage('test-package-user').__processed_by_ivy_ngcc__).toEqual({
           es2015: '0.0.0-PLACEHOLDER',
-          esm2015: '0.0.0-PLACEHOLDER',
-          esm5: '0.0.0-PLACEHOLDER',
-          fesm2015: '0.0.0-PLACEHOLDER',
-          fesm5: '0.0.0-PLACEHOLDER',
-          main: '0.0.0-PLACEHOLDER',
-          module: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
         });
 
-        // * `core` is a dependency of `test-package`, but it is not processed, since test-package
-        // was not processed.
+        // * `test-package` is a dependency of `test-package-user` but has not been compiled by
+        // Angular, and so is not marked as processed
+        expect(loadPackage('test-package').__processed_by_ivy_ngcc__).toBeUndefined();
+
+        // * `core` is a dependency of `test-package`, but it is not processed, because
+        // `test-package` was not processed.
         expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toBeUndefined();
       });
 
@@ -443,7 +655,8 @@ runInEachFileSystem(() => {
           markPropertiesAsProcessed('@angular/common/http/testing', SUPPORTED_FORMAT_PROPERTIES);
           mainNgcc({
             basePath: '/node_modules',
-            targetEntryPointPath: '@angular/common/http/testing', logger,
+            targetEntryPointPath: '@angular/common/http/testing',
+            logger,
           });
           expect(logger.logs.debug).toContain([
             'The target entry-point has already been processed'
@@ -457,7 +670,8 @@ runInEachFileSystem(() => {
              mainNgcc({
                basePath: '/node_modules',
                targetEntryPointPath: '@angular/common/http/testing',
-               propertiesToConsider: ['fesm2015', 'esm5', 'esm2015'], logger,
+               propertiesToConsider: ['fesm2015', 'esm5', 'esm2015'],
+               logger,
              });
              expect(logger.logs.debug).not.toContain([
                'The target entry-point has already been processed'
@@ -474,7 +688,8 @@ runInEachFileSystem(() => {
                basePath: '/node_modules',
                targetEntryPointPath: '@angular/common/http/testing',
                propertiesToConsider: ['esm5', 'esm2015'],
-               compileAllFormats: false, logger,
+               compileAllFormats: false,
+               logger,
              });
 
              expect(logger.logs.debug).not.toContain([
@@ -491,7 +706,8 @@ runInEachFileSystem(() => {
                targetEntryPointPath: '@angular/common/http/testing',
                // Simulate a property that does not exist on the package.json and will be ignored.
                propertiesToConsider: ['missing', 'esm2015', 'esm5'],
-               compileAllFormats: false, logger,
+               compileAllFormats: false,
+               logger,
              });
 
              expect(logger.logs.debug).toContain([
@@ -509,7 +725,8 @@ runInEachFileSystem(() => {
              targetEntryPointPath: '@angular/common/http/testing',
              // Simulate a property that does not exist on the package.json and will be ignored.
              propertiesToConsider: ['missing', 'esm2015', 'esm5'],
-             compileAllFormats: false, logger,
+             compileAllFormats: false,
+             logger,
            });
 
            expect(logger.logs.debug).toContain([
@@ -517,7 +734,6 @@ runInEachFileSystem(() => {
            ]);
          });
     });
-
 
     function markPropertiesAsProcessed(packagePath: string, properties: EntryPointJsonProperty[]) {
       const basePath = _('/node_modules');
@@ -527,6 +743,49 @@ runInEachFileSystem(() => {
           pkgJsonUpdater, targetPackage, targetPackageJsonPath, ['typings', ...properties]);
     }
 
+    it('should clean up outdated artifacts', () => {
+      compileIntoFlatEs5Package('test-package', {
+        'index.ts': `
+        import {Directive} from '@angular/core';
+
+        @Directive({selector: '[foo]'})
+        export class FooDirective {
+        }
+      `,
+      });
+      mainNgcc({
+        basePath: '/node_modules',
+        propertiesToConsider: ['module'],
+        logger: new MockLogger(),
+      });
+
+      // Now hack the files to look like it was processed by an outdated version of ngcc
+      const packageJson = loadPackage('test-package', _('/node_modules'));
+      packageJson.__processed_by_ivy_ngcc__!.typings = '8.0.0';
+      packageJson.main_ivy_ngcc = '__ivy_ngcc__/main.js';
+      fs.writeFile(_('/node_modules/test-package/package.json'), JSON.stringify(packageJson));
+      fs.writeFile(_('/node_modules/test-package/x.js'), 'processed content');
+      fs.writeFile(_('/node_modules/test-package/x.js.__ivy_ngcc_bak'), 'original content');
+      fs.ensureDir(_('/node_modules/test-package/__ivy_ngcc__/foo'));
+
+      // Now run ngcc again to see that it cleans out the outdated artifacts
+      mainNgcc({
+        basePath: '/node_modules',
+        propertiesToConsider: ['module'],
+        logger: new MockLogger(),
+      });
+      const newPackageJson = loadPackage('test-package', _('/node_modules'));
+      expect(newPackageJson.__processed_by_ivy_ngcc__).toEqual({
+        module: '0.0.0-PLACEHOLDER',
+        typings: '0.0.0-PLACEHOLDER',
+      });
+      expect(newPackageJson.module_ivy_ngcc).toBeUndefined();
+      expect(fs.exists(_('/node_modules/test-package/x.js'))).toBe(true);
+      expect(fs.exists(_('/node_modules/test-package/x.js.__ivy_ngcc_bak'))).toBe(false);
+      expect(fs.readFile(_('/node_modules/test-package/x.js'))).toEqual('original content');
+      expect(fs.exists(_('/node_modules/test-package/__ivy_ngcc__'))).toBe(false);
+    });
+
 
     describe('with propertiesToConsider', () => {
       it('should complain if none of the properties in the `propertiesToConsider` list is supported',
@@ -534,7 +793,7 @@ runInEachFileSystem(() => {
            const propertiesToConsider = ['es1337', 'fesm42'];
            const errorMessage =
                'No supported format property to consider among [es1337, fesm42]. Supported ' +
-               'properties: fesm2015, fesm5, es2015, esm2015, esm5, main, module';
+               'properties: fesm2015, fesm5, es2015, esm2015, esm5, main, module, browser';
 
            expect(() => mainNgcc({basePath: '/node_modules', propertiesToConsider}))
                .toThrowError(errorMessage);
@@ -588,7 +847,8 @@ runInEachFileSystem(() => {
            // `fesm2015` and `es2015` map to the same file: `./fesm2015/common.js`
            mainNgcc({
              basePath: '/node_modules/@angular/common',
-             propertiesToConsider: ['fesm2015'], logger,
+             propertiesToConsider: ['fesm2015'],
+             logger,
            });
 
            expect(logs).not.toContain(['Skipping @angular/common : es2015 (already compiled).']);
@@ -601,7 +861,8 @@ runInEachFileSystem(() => {
            // Now, compiling `es2015` should be a no-op.
            mainNgcc({
              basePath: '/node_modules/@angular/common',
-             propertiesToConsider: ['es2015'], logger,
+             propertiesToConsider: ['es2015'],
+             logger,
            });
 
            expect(logs).toContain(['Skipping @angular/common : es2015 (already compiled).']);
@@ -732,48 +993,250 @@ runInEachFileSystem(() => {
         expect(pkg.fesm5_ivy_ngcc).toEqual('__ivy_ngcc__/fesm5/core.js');
         expect(pkg.module_ivy_ngcc).toEqual('__ivy_ngcc__/fesm5/core.js');
       });
+
+      it('should update `package.json` deterministically (regardless of entry-point processing order)',
+         () => {
+           // Ensure formats are not marked as processed in `package.json` at the beginning.
+           let pkg = loadPackage('@angular/core');
+           expectNotToHaveProp(pkg, 'esm5_ivy_ngcc');
+           expectNotToHaveProp(pkg, 'fesm2015_ivy_ngcc');
+           expectNotToHaveProp(pkg, 'fesm5_ivy_ngcc');
+           expectNotToHaveProp(pkg, '__processed_by_ivy_ngcc__');
+
+           // Process `fesm2015` and update `package.json`.
+           pkg = processFormatAndUpdatePackageJson('fesm2015');
+           expectNotToHaveProp(pkg, 'esm5_ivy_ngcc');
+           expectToHaveProp(pkg, 'fesm2015_ivy_ngcc');
+           expectNotToHaveProp(pkg, 'fesm5_ivy_ngcc');
+           expectToHaveProp(pkg.__processed_by_ivy_ngcc__!, 'fesm2015');
+
+           // Process `fesm5` and update `package.json`.
+           pkg = processFormatAndUpdatePackageJson('fesm5');
+           expectNotToHaveProp(pkg, 'esm5_ivy_ngcc');
+           expectToHaveProp(pkg, 'fesm2015_ivy_ngcc');
+           expectToHaveProp(pkg, 'fesm5_ivy_ngcc');
+           expectToHaveProp(pkg.__processed_by_ivy_ngcc__!, 'fesm5');
+
+           // Process `esm5` and update `package.json`.
+           pkg = processFormatAndUpdatePackageJson('esm5');
+           expectToHaveProp(pkg, 'esm5_ivy_ngcc');
+           expectToHaveProp(pkg, 'fesm2015_ivy_ngcc');
+           expectToHaveProp(pkg, 'fesm5_ivy_ngcc');
+           expectToHaveProp(pkg.__processed_by_ivy_ngcc__!, 'esm5');
+
+           // Ensure the properties are in deterministic order (regardless of processing order).
+           const pkgKeys = stringifyKeys(pkg);
+           expect(pkgKeys).toContain('|esm5_ivy_ngcc|esm5|');
+           expect(pkgKeys).toContain('|fesm2015_ivy_ngcc|fesm2015|');
+           expect(pkgKeys).toContain('|fesm5_ivy_ngcc|fesm5|');
+
+           // NOTE:
+           // Along with the first format that is processed, the typings are processed as well.
+           // Also, once a property has been processed, alias properties as also marked as
+           // processed. Aliases properties are properties that point to the same entry-point file.
+           // For example:
+           // - `fesm2015` <=> `es2015`
+           // - `fesm5` <=> `module`
+           expect(stringifyKeys(pkg.__processed_by_ivy_ngcc__!))
+               .toBe('|es2015|esm5|fesm2015|fesm5|module|typings|');
+
+           // Helpers
+           function expectNotToHaveProp(obj: object, prop: string) {
+             expect(obj.hasOwnProperty(prop))
+                 .toBe(
+                     false,
+                     `Expected object not to have property '${prop}': ${
+                         JSON.stringify(obj, null, 2)}`);
+           }
+
+           function expectToHaveProp(obj: object, prop: string) {
+             expect(obj.hasOwnProperty(prop))
+                 .toBe(
+                     true,
+                     `Expected object to have property '${prop}': ${JSON.stringify(obj, null, 2)}`);
+           }
+
+           function processFormatAndUpdatePackageJson(formatProp: string) {
+             mainNgcc({
+               basePath: '/node_modules/@angular/core',
+               createNewEntryPointFormats: true,
+               propertiesToConsider: [formatProp],
+             });
+             return loadPackage('@angular/core');
+           }
+
+           function stringifyKeys(obj: object) {
+             return `|${Object.keys(obj).join('|')}|`;
+           }
+         });
+    });
+
+    describe('with ignoreEntryPointManifest', () => {
+      it('should not read the entry-point manifest file', () => {
+        // Ensure there is a lock-file. Otherwise the manifest will not be written
+        fs.writeFile(_('/yarn.lock'), 'DUMMY YARN LOCK FILE');
+        // Populate the manifest file
+        mainNgcc(
+            {basePath: '/node_modules', propertiesToConsider: ['esm5'], logger: new MockLogger()});
+        // Check that common/testings ES5 was processed
+        let commonTesting =
+            JSON.parse(fs.readFile(_('/node_modules/@angular/common/testing/package.json')));
+        expect(hasBeenProcessed(commonTesting, 'esm5')).toBe(true);
+        expect(hasBeenProcessed(commonTesting, 'esm2015')).toBe(false);
+        // Modify the manifest to test that is has no effect
+        let manifest: EntryPointManifestFile =
+            JSON.parse(fs.readFile(_('/node_modules/__ngcc_entry_points__.json')));
+        manifest.entryPointPaths = manifest.entryPointPaths.filter(
+            paths => paths[1] !== _('/node_modules/@angular/common/testing'));
+        fs.writeFile(_('/node_modules/__ngcc_entry_points__.json'), JSON.stringify(manifest));
+        // Now run ngcc again ignoring this manifest but trying to process ES2015, which are not yet
+        // processed.
+        mainNgcc({
+          basePath: '/node_modules',
+          propertiesToConsider: ['esm2015'],
+          logger: new MockLogger(),
+          invalidateEntryPointManifest: true,
+        });
+        // Check that common/testing ES2015 is now processed, despite the manifest not listing it
+        commonTesting =
+            JSON.parse(fs.readFile(_('/node_modules/@angular/common/testing/package.json')));
+        expect(hasBeenProcessed(commonTesting, 'esm5')).toBe(true);
+        expect(hasBeenProcessed(commonTesting, 'esm2015')).toBe(true);
+        // Check that the newly computed manifest has written to disk, containing the path that we
+        // had removed earlier.
+        manifest = JSON.parse(fs.readFile(_('/node_modules/__ngcc_entry_points__.json')));
+        expect(manifest.entryPointPaths).toContain([
+          _('/node_modules/@angular/common'), _('/node_modules/@angular/common/testing')
+        ]);
+      });
     });
 
     describe('diagnostics', () => {
-      it('should fail with formatted diagnostics when an error diagnostic is produced', () => {
-        loadTestFiles([
-          {
-            name: _('/node_modules/fatal-error/package.json'),
-            contents: '{"name": "fatal-error", "es2015": "./index.js", "typings": "./index.d.ts"}',
-          },
-          {name: _('/node_modules/fatal-error/index.metadata.json'), contents: 'DUMMY DATA'},
-          {
-            name: _('/node_modules/fatal-error/index.js'),
-            contents: `
+      it('should fail with formatted diagnostics when an error diagnostic is produced, if targetEntryPointPath is provided',
+         () => {
+           loadTestFiles([
+             {
+               name: _('/node_modules/fatal-error/package.json'),
+               contents:
+                   '{"name": "fatal-error", "es2015": "./index.js", "typings": "./index.d.ts"}',
+             },
+             {name: _('/node_modules/fatal-error/index.metadata.json'), contents: 'DUMMY DATA'},
+             {
+               name: _('/node_modules/fatal-error/index.js'),
+               contents: `
               import {Component} from '@angular/core';
               export class FatalError {}
               FatalError.decorators = [
                 {type: Component, args: [{selector: 'fatal-error'}]}
               ];
             `,
-          },
-          {
-            name: _('/node_modules/fatal-error/index.d.ts'),
-            contents: `
+             },
+             {
+               name: _('/node_modules/fatal-error/index.d.ts'),
+               contents: `
               export declare class FatalError {}
             `,
-          },
-        ]);
+             },
+           ]);
 
-        try {
-          mainNgcc({
-            basePath: '/node_modules',
-            targetEntryPointPath: 'fatal-error',
-            propertiesToConsider: ['es2015']
-          });
-          fail('should have thrown');
-        } catch (e) {
-          expect(e.message).toContain(
-              'Failed to compile entry-point fatal-error due to compilation errors:');
-          expect(e.message).toContain('NG2001');
-          expect(e.message).toContain('component is missing a template');
-        }
-      });
+           try {
+             mainNgcc({
+               basePath: '/node_modules',
+               targetEntryPointPath: 'fatal-error',
+               propertiesToConsider: ['es2015']
+             });
+             fail('should have thrown');
+           } catch (e) {
+             expect(e.message).toContain(
+                 'Failed to compile entry-point fatal-error (es2015 as esm2015) due to compilation errors:');
+             expect(e.message).toContain('NG2001');
+             expect(e.message).toContain('component is missing a template');
+           }
+         });
+
+      it('should not fail but log an error with formatted diagnostics when an error diagnostic is produced, if targetEntryPoint is not provided and errorOnFailedEntryPoint is false',
+         () => {
+           loadTestFiles([
+             {
+               name: _('/node_modules/fatal-error/package.json'),
+               contents:
+                   '{"name": "fatal-error", "es2015": "./index.js", "typings": "./index.d.ts"}',
+             },
+             {name: _('/node_modules/fatal-error/index.metadata.json'), contents: 'DUMMY DATA'},
+             {
+               name: _('/node_modules/fatal-error/index.js'),
+               contents: `
+             import {Component} from '@angular/core';
+             export class FatalError {}
+             FatalError.decorators = [
+               {type: Component, args: [{selector: 'fatal-error'}]}
+             ];`,
+             },
+             {
+               name: _('/node_modules/fatal-error/index.d.ts'),
+               contents: `export declare class FatalError {}`,
+             },
+             {
+               name: _('/node_modules/dependent/package.json'),
+               contents: '{"name": "dependent", "es2015": "./index.js", "typings": "./index.d.ts"}',
+             },
+             {name: _('/node_modules/dependent/index.metadata.json'), contents: 'DUMMY DATA'},
+             {
+               name: _('/node_modules/dependent/index.js'),
+               contents: `
+             import {Component} from '@angular/core';
+             import {FatalError} from 'fatal-error';
+             export class Dependent {}
+             Dependent.decorators = [
+               {type: Component, args: [{selector: 'dependent', template: ''}]}
+             ];`,
+             },
+             {
+               name: _('/node_modules/dependent/index.d.ts'),
+               contents: `export declare class Dependent {}`,
+             },
+             {
+               name: _('/node_modules/independent/package.json'),
+               contents:
+                   '{"name": "independent", "es2015": "./index.js", "typings": "./index.d.ts"}',
+             },
+             {name: _('/node_modules/independent/index.metadata.json'), contents: 'DUMMY DATA'},
+             {
+               name: _('/node_modules/independent/index.js'),
+               contents: `
+             import {Component} from '@angular/core';
+             export class Independent {}
+             Independent.decorators = [
+               {type: Component, args: [{selector: 'independent', template: ''}]}
+             ];`,
+             },
+             {
+               name: _('/node_modules/independent/index.d.ts'),
+               contents: `export declare class Independent {}`,
+             },
+           ]);
+
+           const logger = new MockLogger();
+           mainNgcc({
+             basePath: '/node_modules',
+             propertiesToConsider: ['es2015'],
+             errorOnFailedEntryPoint: false,
+             logger,
+           });
+           expect(logger.logs.error.length).toEqual(1);
+           const message = logger.logs.error[0][0];
+           expect(message).toContain(
+               'Failed to compile entry-point fatal-error (es2015 as esm2015) due to compilation errors:');
+           expect(message).toContain('NG2001');
+           expect(message).toContain('component is missing a template');
+
+           expect(hasBeenProcessed(loadPackage('fatal-error', _('/node_modules')), 'es2015'))
+               .toBe(false);
+           expect(hasBeenProcessed(loadPackage('dependent', _('/node_modules')), 'es2015'))
+               .toBe(false);
+           expect(hasBeenProcessed(loadPackage('independent', _('/node_modules')), 'es2015'))
+               .toBe(true);
+         });
     });
 
     describe('logger', () => {
@@ -788,28 +1251,182 @@ runInEachFileSystem(() => {
         const logger = new MockLogger();
         mainNgcc({
           basePath: '/node_modules',
-          propertiesToConsider: ['esm2015'], logger,
+          propertiesToConsider: ['esm2015'],
+          logger,
         });
         expect(logger.logs.info).toContain(['Compiling @angular/common/http : esm2015 as esm2015']);
       });
     });
 
     describe('with pathMappings', () => {
-      it('should find and compile packages accessible via the pathMappings', () => {
-        mainNgcc({
-          basePath: '/node_modules',
-          propertiesToConsider: ['es2015'],
-          pathMappings: {paths: {'*': ['dist/*']}, baseUrl: '/'},
-        });
-        expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
+      it('should infer the @app pathMapping from a local tsconfig.json path', () => {
+        fs.writeFile(
+            _('/tsconfig.json'),
+            JSON.stringify({compilerOptions: {paths: {'@app/*': ['dist/*']}, baseUrl: './'}}));
+        const logger = new MockLogger();
+        mainNgcc({basePath: '/dist', propertiesToConsider: ['es2015'], logger});
+        expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
           es2015: '0.0.0-PLACEHOLDER',
-          fesm2015: '0.0.0-PLACEHOLDER',
           typings: '0.0.0-PLACEHOLDER',
+        });
+        expect(loadPackage('local-package-2', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+          es2015: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        // The local-package-3 and local-package-4 will not be processed because there is no path
+        // mappings for `@x` and plain local imports.
+        expect(loadPackage('local-package-3', _('/dist')).__processed_by_ivy_ngcc__)
+            .toBeUndefined();
+        expect(logger.logs.debug).toContain([
+          `Invalid entry-point ${_('/dist/local-package-3')}.`,
+          'It is missing required dependencies:\n - @x/local-package'
+        ]);
+        expect(loadPackage('local-package-4', _('/dist')).__processed_by_ivy_ngcc__)
+            .toBeUndefined();
+        expect(logger.logs.debug).toContain([
+          `Invalid entry-point ${_('/dist/local-package-4')}.`,
+          'It is missing required dependencies:\n - local-package'
+        ]);
+      });
+
+      it('should read the @x pathMapping from a specified tsconfig.json path', () => {
+        fs.writeFile(
+            _('/tsconfig.app.json'),
+            JSON.stringify({compilerOptions: {paths: {'@x/*': ['dist/*']}, baseUrl: './'}}));
+        const logger = new MockLogger();
+        mainNgcc({
+          basePath: '/dist',
+          propertiesToConsider: ['es2015'],
+          tsConfigPath: _('/tsconfig.app.json'),
+          logger
         });
         expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
           es2015: '0.0.0-PLACEHOLDER',
           typings: '0.0.0-PLACEHOLDER',
         });
+        expect(loadPackage('local-package-3', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+          es2015: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        // The local-package-2 and local-package-4 will not be processed because there is no path
+        // mappings for `@app` and plain local imports.
+        expect(loadPackage('local-package-2', _('/dist')).__processed_by_ivy_ngcc__)
+            .toBeUndefined();
+        expect(logger.logs.debug).toContain([
+          `Invalid entry-point ${_('/dist/local-package-2')}.`,
+          'It is missing required dependencies:\n - @app/local-package'
+        ]);
+        expect(loadPackage('local-package-4', _('/dist')).__processed_by_ivy_ngcc__)
+            .toBeUndefined();
+        expect(logger.logs.debug).toContain([
+          `Invalid entry-point ${_('/dist/local-package-4')}.`,
+          'It is missing required dependencies:\n - local-package'
+        ]);
+      });
+
+      it('should use the explicit `pathMappings`, ignoring the local tsconfig.json settings',
+         () => {
+           const logger = new MockLogger();
+           fs.writeFile(
+               _('/tsconfig.json'),
+               JSON.stringify({compilerOptions: {paths: {'@app/*': ['dist/*']}, baseUrl: './'}}));
+           mainNgcc({
+             basePath: '/node_modules',
+             propertiesToConsider: ['es2015'],
+             pathMappings: {paths: {'*': ['dist/*']}, baseUrl: '/'},
+             logger
+           });
+           expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
+             es2015: '0.0.0-PLACEHOLDER',
+             fesm2015: '0.0.0-PLACEHOLDER',
+             typings: '0.0.0-PLACEHOLDER',
+           });
+           expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+             es2015: '0.0.0-PLACEHOLDER',
+             typings: '0.0.0-PLACEHOLDER',
+           });
+           expect(loadPackage('local-package-4', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+             es2015: '0.0.0-PLACEHOLDER',
+             typings: '0.0.0-PLACEHOLDER',
+           });
+           // The local-package-2 and local-package-3 will not be processed because there is no path
+           // mappings for `@app` and `@x` local imports.
+           expect(loadPackage('local-package-2', _('/dist')).__processed_by_ivy_ngcc__)
+               .toBeUndefined();
+           expect(logger.logs.debug).toContain([
+             `Invalid entry-point ${_('/dist/local-package-2')}.`,
+             'It is missing required dependencies:\n - @app/local-package'
+           ]);
+           expect(loadPackage('local-package-3', _('/dist')).__processed_by_ivy_ngcc__)
+               .toBeUndefined();
+           expect(logger.logs.debug).toContain([
+             `Invalid entry-point ${_('/dist/local-package-3')}.`,
+             'It is missing required dependencies:\n - @x/local-package'
+           ]);
+         });
+
+      it('should not use pathMappings from a local tsconfig.json path if tsConfigPath is null',
+         () => {
+           const logger = new MockLogger();
+           fs.writeFile(
+               _('/tsconfig.json'),
+               JSON.stringify({compilerOptions: {paths: {'@app/*': ['dist/*']}, baseUrl: './'}}));
+           mainNgcc({
+             basePath: '/dist',
+             propertiesToConsider: ['es2015'],
+             tsConfigPath: null,
+             logger,
+           });
+           expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+             es2015: '0.0.0-PLACEHOLDER',
+             typings: '0.0.0-PLACEHOLDER',
+           });
+           // Since the tsconfig is not loaded, the `@app/local-package` import in `local-package-2`
+           // is not path-mapped correctly, and so it fails to be processed.
+           expect(loadPackage('local-package-2', _('/dist')).__processed_by_ivy_ngcc__)
+               .toBeUndefined();
+           expect(logger.logs.debug).toContain([
+             `Invalid entry-point ${_('/dist/local-package-2')}.`,
+             'It is missing required dependencies:\n - @app/local-package'
+           ]);
+         });
+    });
+
+    describe('whitespace preservation', () => {
+      it('should default not to preserve whitespace', () => {
+        mainNgcc({basePath: '/dist', propertiesToConsider: ['es2015']});
+        expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+          es2015: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        expect(fs.readFile(_('/dist/local-package/index.js')))
+            .toMatch(/ɵɵtext\(\d+, " Hello\\n"\);/);
+      });
+
+      it('should preserve whitespace if set in a loaded tsconfig.json', () => {
+        fs.writeFile(
+            _('/tsconfig.json'),
+            JSON.stringify({angularCompilerOptions: {preserveWhitespaces: true}}));
+        mainNgcc({basePath: '/dist', propertiesToConsider: ['es2015']});
+        expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+          es2015: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        expect(fs.readFile(_('/dist/local-package/index.js')))
+            .toMatch(/ɵɵtext\(\d+, "\\n  Hello\\n"\);/);
+      });
+
+      it('should not preserve whitespace if set to false in a loaded tsconfig.json', () => {
+        fs.writeFile(
+            _('/tsconfig.json'),
+            JSON.stringify({angularCompilerOptions: {preserveWhitespaces: false}}));
+        mainNgcc({basePath: '/dist', propertiesToConsider: ['es2015']});
+        expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+          es2015: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        expect(fs.readFile(_('/dist/local-package/index.js')))
+            .toMatch(/ɵɵtext\(\d+, " Hello\\n"\);/);
       });
     });
 
@@ -988,7 +1605,7 @@ runInEachFileSystem(() => {
            mainNgcc({
              basePath: '/node_modules',
              targetEntryPointPath: 'test-package',
-             propertiesToConsider: ['main'],
+             propertiesToConsider: ['module'],
            });
 
 
@@ -1029,7 +1646,7 @@ runInEachFileSystem(() => {
            mainNgcc({
              basePath: '/node_modules',
              targetEntryPointPath: 'test-package',
-             propertiesToConsider: ['main'],
+             propertiesToConsider: ['module'],
            });
 
 
@@ -1042,7 +1659,7 @@ runInEachFileSystem(() => {
            const dtsContents = fs.readFile(_(`/node_modules/test-package/index.d.ts`));
            expect(dtsContents)
                .toContain(
-                   'static ɵcmp: ɵngcc0.ɵɵComponentDefWithMeta<DerivedCmp, "[base]", never, {}, {}, never>;');
+                   'static ɵcmp: ɵngcc0.ɵɵComponentDefWithMeta<DerivedCmp, "[base]", never, {}, {}, never, never>;');
          });
 
       it('should generate directive definitions with CopyDefinitionFeature for undecorated child directives in a long inheritance chain',
@@ -1072,7 +1689,7 @@ runInEachFileSystem(() => {
            mainNgcc({
              basePath: '/node_modules',
              targetEntryPointPath: 'test-package',
-             propertiesToConsider: ['main'],
+             propertiesToConsider: ['module'],
            });
 
            const dtsContents = fs.readFile(_(`/node_modules/test-package/index.d.ts`));
@@ -1223,7 +1840,7 @@ runInEachFileSystem(() => {
         expect(jsContents).toContain('exports.ɵngExportɵFooModuleɵFoo = ɵngcc1.Foo;');
         expect(dtsContents)
             .toContain(`export {Foo as ɵngExportɵFooModuleɵFoo} from './directive';`);
-        expect(dtsContents.match(/ɵngExportɵFooModuleɵFoo/g) !.length).toBe(1);
+        expect(dtsContents.match(/ɵngExportɵFooModuleɵFoo/g)!.length).toBe(1);
         expect(dtsContents).not.toContain(`ɵngExportɵFooModuleɵLocalDir`);
       });
     });
@@ -1292,6 +1909,7 @@ runInEachFileSystem(() => {
     function initMockFileSystem(fs: FileSystem, testFiles: Folder) {
       if (fs instanceof MockFileSystem) {
         fs.init(testFiles);
+        fs.ensureDir(fs.dirname(getLockFilePath(fs)));
       }
 
       // a random test package that no metadata.json file so not compiled by Angular.
@@ -1312,7 +1930,7 @@ runInEachFileSystem(() => {
         },
       ]);
 
-      // An Angular package that has been built locally and stored in the `dist` directory.
+      // Angular packages that have been built locally and stored in the `dist` directory.
       loadTestFiles([
         {
           name: _('/dist/local-package/package.json'),
@@ -1322,11 +1940,59 @@ runInEachFileSystem(() => {
         {
           name: _('/dist/local-package/index.js'),
           contents:
-              `import {Component} from '@angular/core';\nexport class AppComponent {};\nAppComponent.decorators = [\n{ type: Component, args: [{selector: 'app', template: '<h2>Hello</h2>'}] }\n];`
+              `import {Component} from '@angular/core';\nexport class AppComponent {};\nAppComponent.decorators = [\n{ type: Component, args: [{selector: 'app', template: '<h2>\\n  Hello\\n</h2>'}] }\n];`
         },
         {
           name: _('/dist/local-package/index.d.ts'),
           contents: `export declare class AppComponent {};`
+        },
+        // local-package-2 depends upon local-package, via an `@app` aliased import.
+        {
+          name: _('/dist/local-package-2/package.json'),
+          contents: '{"name": "local-package-2", "es2015": "./index.js", "typings": "./index.d.ts"}'
+        },
+        {name: _('/dist/local-package-2/index.metadata.json'), contents: 'DUMMY DATA'},
+        {
+          name: _('/dist/local-package-2/index.js'),
+          contents:
+              `import {Component} from '@angular/core';\nexport {AppComponent} from '@app/local-package';`
+        },
+        {
+          name: _('/dist/local-package-2/index.d.ts'),
+          contents:
+              `import {Component} from '@angular/core';\nexport {AppComponent} from '@app/local-package';`
+        },
+        // local-package-3 depends upon local-package, via an `@x` aliased import.
+        {
+          name: _('/dist/local-package-3/package.json'),
+          contents: '{"name": "local-package-3", "es2015": "./index.js", "typings": "./index.d.ts"}'
+        },
+        {name: _('/dist/local-package-3/index.metadata.json'), contents: 'DUMMY DATA'},
+        {
+          name: _('/dist/local-package-3/index.js'),
+          contents:
+              `import {Component} from '@angular/core';\nexport {AppComponent} from '@x/local-package';`
+        },
+        {
+          name: _('/dist/local-package-3/index.d.ts'),
+          contents:
+              `import {Component} from '@angular/core';\nexport {AppComponent} from '@x/local-package';`
+        },
+        // local-package-4 depends upon local-package, via a plain import.
+        {
+          name: _('/dist/local-package-4/package.json'),
+          contents: '{"name": "local-package-", "es2015": "./index.js", "typings": "./index.d.ts"}'
+        },
+        {name: _('/dist/local-package-4/index.metadata.json'), contents: 'DUMMY DATA'},
+        {
+          name: _('/dist/local-package-4/index.js'),
+          contents:
+              `import {Component} from '@angular/core';\nexport {AppComponent} from 'local-package';`
+        },
+        {
+          name: _('/dist/local-package-4/index.d.ts'),
+          contents:
+              `import {Component} from '@angular/core';\nexport {AppComponent} from 'local-package';`
         },
       ]);
 

@@ -13,13 +13,20 @@
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {
+    "@angular/animations": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/common": "0.0.0-PLACEHOLDER",
     "tslib": "^1.10.0"
   },
+  "peerDependenciesMeta": {
+    "@angular/animations": {
+      "optional": true
+    }
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/angular/angular.git"
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/platform-browser"
   },
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"

@@ -39,7 +39,9 @@ abstract class BaseTemplate implements ng.TemplateSource {
   /**
    * Return the Angular StaticSymbol for the class that contains this template.
    */
-  get type() { return this.classSymbol; }
+  get type() {
+    return this.classSymbol;
+  }
 
   /**
    * Return a Map-like data structure that allows users to retrieve some or all
@@ -98,7 +100,9 @@ export class InlineTemplate extends BaseTemplate {
       throw new Error(`Inline template and component class should belong to the same source file`);
     }
     this.fileName = sourceFile.fileName;
-    this.source = templateNode.text;
+    // node.text returns the TS internal representation of the normalized text,
+    // and all CR characters are stripped. node.getText() returns the raw text.
+    this.source = templateNode.getText().slice(1, -1);  // strip leading and trailing quotes
     this.span = {
       // TS string literal includes surrounding quotes in the start/end offsets.
       start: templateNode.getStart() + 1,

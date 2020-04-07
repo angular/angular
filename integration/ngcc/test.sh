@@ -3,7 +3,7 @@
 # Do not immediately exit on error to allow the `assertSucceeded` function to handle the error.
 #
 # NOTE:
-# Each statement should be followed by an `assertSucceeded`/`assertFailed` or `exit 1` statement.
+# Each statement should be followed by an `assert*` or `exit 1` statement.
 set +e -x
 
 PATH=$PATH:$(npm bin)
@@ -22,9 +22,31 @@ function assertSucceeded {
   fi
 }
 
+function assertEquals {
+  local value1=$1;
+  local value2=$2;
+
+  if [[ "$value1" != "$value2" ]]; then
+    echo "FAIL: Expected '$value1' to equal '$value2'."
+    exit 1;
+  fi
+}
+
+function assertNotEquals {
+  local value1=$1;
+  local value2=$2;
+
+  if [[ "$value1" == "$value2" ]]; then
+    echo "FAIL: Expected '$value1' not to equal '$value2'."
+    exit 1;
+  fi
+}
 
 ngcc --help
 assertSucceeded "Expected 'ngcc --help' to succeed."
+
+ngcc --unknown-option 2>&1 | grep 'Unknown arguments: unknown-option, unknownOption'
+assertSucceeded "Expected ngcc to report bad option."
 
 # node --inspect-brk $(npm bin)/ngcc -f esm2015
 # Run ngcc and check it logged compilation output as expected
@@ -123,6 +145,57 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
   # (and ensure the @angular/cdk/a11y package is indeed using static properties)
   grep "FocusMonitor.decorators =" node_modules/@angular/cdk/bundles/cdk-a11y.umd.js.__ivy_ngcc_bak
   assertSucceeded "Expected '@angular/cdk/a11y' (umd) to actually have decorators via static properties."
+
+
+# Did it transform imports in UMD correctly?
+# (E.g. no trailing commas, so that it remains compatible with legacy browsers, such as IE11.)
+  grep "factory(exports, require('rxjs'), require('rxjs/operators'))" node_modules/@angular/core/bundles/core.umd.js
+  assertSucceeded "Expected 'ngcc' to not add trailing commas to CommonJS block in UMD."
+
+  grep "define('@angular/core', \['exports', 'rxjs', 'rxjs/operators'], factory)" node_modules/@angular/core/bundles/core.umd.js
+  assertSucceeded "Expected 'ngcc' to not add trailing commas to AMD block in UMD."
+
+  grep "factory((global.ng = global.ng || {}, global.ng.core = {}), global.rxjs, global.rxjs.operators)" node_modules/@angular/core/bundles/core.umd.js
+  assertSucceeded "Expected 'ngcc' to not add trailing commas to globals block in UMD."
+
+  grep "(this, (function (exports, rxjs, operators) {" node_modules/@angular/core/bundles/core.umd.js
+  assertSucceeded "Expected 'ngcc' to not add trailing commas to factory function parameters in UMD."
+
+
+# Can it correctly clean up and re-compile when dependencies are already compiled by a different version?
+  readonly actualNgccVersion=`node --print "require('@angular/compiler-cli/package.json').version"`
+  readonly mockNgccVersion="3.0.0"
+
+  # Mock the ngcc version marker on a package to make it appear as if it is compiled by a different ngcc version.
+  node mock-ngcc-version-marker @angular/material/button $mockNgccVersion
+  assertSucceeded "Expected to successfully mock the 'ngcc' version marker in '@angular/material/button'."
+  assertEquals $mockNgccVersion `node --print "require('@angular/material/button/package.json').__processed_by_ivy_ngcc__.main"`
+  assertEquals 1 `cat node_modules/@angular/material/button/button.d.ts | grep 'import \* as ɵngcc0' | wc -l`
+
+  # Re-compile packages (which requires cleaning up those compiled by a different ngcc version).
+  # (Use sync mode to ensure all tasks share the same `CachedFileSystem` instance.)
+  ngcc --no-async --properties main
+  assertSucceeded "Expected 'ngcc' to successfully re-compile the packages."
+
+  # Ensure previously compiled packages were correctly cleaned up (i.e. no multiple
+  # `import ... ɵngcc0` statements) and re-compiled by the current ngcc version.
+  assertEquals $actualNgccVersion `node --print "require('@angular/material/button/package.json').__processed_by_ivy_ngcc__.main"`
+  assertEquals 1 `cat node_modules/@angular/material/button/button.d.ts | grep 'import \* as ɵngcc0' | wc -l`
+
+
+# Can it compile `@angular/platform-server` in UMD + typings without errors?
+# (The CLI prefers the `main` property (which maps to UMD) over `module` when compiling `@angular/platform-server`.
+# See https://github.com/angular/angular-cli/blob/e36853338/packages/angular_devkit/build_angular/src/angular-cli-files/models/webpack-configs/server.ts#L34)
+  if [[ -z "$cache" ]]; then
+    cache=".yarn_local_cache"
+  fi
+  rm -rf node_modules/@angular/platform-server && \
+    yarn install --cache-folder $cache --check-files && \
+    test -d node_modules/@angular/platform-server
+  assertSucceeded "Expected to re-install '@angular/platform-server'."
+
+  ngcc --properties main --target @angular/platform-server
+  assertSucceeded "Expected 'ngcc' to successfully compile '@angular/platform-server' (main)."
 
 
 # Can it be safely run again (as a noop)?

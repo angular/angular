@@ -40,7 +40,7 @@ ts_library(
 
 jasmine_node_test(
     name = "extract_i18n",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     data = [
         "//packages/core:npm_package",
     ],
@@ -53,7 +53,6 @@ jasmine_node_test(
         ":extract_i18n_lib",
         "//packages/common:npm_package",
         "//packages/core",
-        "//tools/testing:node",
         "@npm//minimist",
     ],
 )
@@ -76,7 +75,7 @@ ts_library(
 jasmine_node_test(
     name = "ngc",
     timeout = "long",  # 900 seconds
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     data = [
         "//packages/common:npm_package",
         "//packages/core:npm_package",
@@ -91,7 +90,6 @@ jasmine_node_test(
     deps = [
         ":ngc_lib",
         "//packages/core",
-        "//tools/testing:node",
         "@npm//minimist",
         "@npm//rxjs",
         "@npm//tsickle",
@@ -116,14 +114,13 @@ ts_library(
 
 jasmine_node_test(
     name = "perform_watch",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     data = [
         "//packages/core:npm_package",
     ],
     deps = [
         ":perform_watch_lib",
         "//packages/core",
-        "//tools/testing:node",
     ],
 )
 
@@ -143,13 +140,12 @@ ts_library(
 
 jasmine_node_test(
     name = "perform_compile",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     data = [
         "//packages/core:npm_package",
     ],
     deps = [
         ":perform_compile_lib",
         "//packages/core",
-        "//tools/testing:node",
     ],
 )

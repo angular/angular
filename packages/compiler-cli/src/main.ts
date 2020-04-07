@@ -103,8 +103,9 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|un
       tsickle.TsickleHost, 'shouldSkipTsickleProcessing'|'pathToModuleName'|
       'shouldIgnoreWarningsForPath'|'fileNameToModuleId'|'googmodule'|'untyped'|
       'convertIndexImportShorthand'|'transformDecorators'|'transformTypesToClosure'> = {
-    shouldSkipTsickleProcessing: (fileName) =>
-                                     /\.d\.ts$/.test(fileName) || GENERATED_FILES.test(fileName),
+    shouldSkipTsickleProcessing: (fileName) => /\.d\.ts$/.test(fileName) ||
+        // View Engine's generated files were never intended to be processed with tsickle.
+        (!options.enableIvy && GENERATED_FILES.test(fileName)),
     pathToModuleName: (context, importPath) => '',
     shouldIgnoreWarningsForPath: (filePath) => false,
     fileNameToModuleId: (fileName) => fileName,

@@ -1,4 +1,4 @@
-# Deprecated APIs and Features
+# Deprecated APIs and features
 
 Angular strives to balance innovation and stability.
 Sometimes, APIs and features become obsolete and need to be removed or replaced so that Angular can stay current with new best practices, changing dependencies, or changes in the (web) platform itself.
@@ -36,12 +36,14 @@ v9 - v12
 | Area                          | API or Feature                                                                | May be removed in |
 | ----------------------------- | ---------------------------------------------------------------------------   | ----------------- |
 | `@angular/common`             | [`ReflectiveInjector`](#reflectiveinjector)                                   | <!--v8--> v10 |
+| `@angular/common`             | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | <!--v9--> v11 |
 | `@angular/core`               | [`CollectionChangeRecord`](#core)                                             | <!--v7--> v10 |
 | `@angular/core`               | [`DefaultIterableDiffer`](#core)                                              | <!--v7--> v10 |
 | `@angular/core`               | [`ReflectiveKey`](#core)                                                      | <!--v8--> v10 |
 | `@angular/core`               | [`RenderComponentType`](#core)                                                | <!--v7--> v10 |
 | `@angular/core`               | [`ViewEncapsulation.Native`](#core)                                           | <!--v6--> v10 |
 | `@angular/core`               | [`ModuleWithProviders` without a generic](#moduleWithProviders)               | <!--v9--> v10 |
+| `@angular/core`               | [Undecorated base classes that use Angular features](#undecorated-base-classes) | <!--v9--> v10 |
 | `@angular/forms`              | [`ngModel` with reactive forms](#ngmodel-reactive)                            | <!--v6--> v10 |
 | `@angular/router`             | [`preserveQueryParams`](#router)                                              | <!--v7--> v10 |
 | `@angular/upgrade`            | [`@angular/upgrade`](#upgrade)                                                | <!--v8--> v10 |
@@ -73,6 +75,14 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 
 </div>
 
+{@a common}
+### @angular/common
+
+| API                                                                                           | Replacement                                         | Deprecation announced | Notes |
+| --------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------- | ----- |
+| [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | `{provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}` | v9                    | From v11 the default code will be extracted from the locale data given by `LOCAL_ID`, rather than `USD`. |
+
+
 {@a core}
 ### @angular/core
 
@@ -87,6 +97,7 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | [`entryComponents`](api/core/NgModule#entryComponents) | none | v9 | See [`entryComponents`](#entryComponents) |
 | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS) | none | v9 | See [`ANALYZE_FOR_ENTRY_COMPONENTS`](#entryComponents) |
 | `ModuleWithProviders` without a generic |  `ModuleWithProviders` with a generic             | v9 | See [`ModuleWithProviders` section](#moduleWithProviders) |
+| Undecorated base classes that use Angular features | Base classes with `@Directive()` decorator that use Angular features | v9 | See [undecorated base classes section](#undecorated-base-classes) |
 
 
 
@@ -301,6 +312,62 @@ However, in practice, Angular simply ignores two-way bindings to template variab
 ```html
 <option *ngFor="let optionName of options" [value]="optionName"></option>
 ```
+
+{@a undecorated-base-classes}
+### Undecorated base classes using Angular features
+
+As of version 9, it's deprecated to have an undecorated base class that:
+
+- uses Angular features
+- is extended by a directive or component
+
+Angular lifecycle hooks or any of the following Angular field decorators are considered Angular features:
+
+- `@Input()`
+- `@Output()`
+- `@HostBinding()`
+- `@HostListener()`
+- `@ViewChild()` / `@ViewChildren()`
+- `@ContentChild()` / `@ContentChildren()`
+
+For example, the following case is deprecated because the base class uses `@Input()` and does not have a class-level decorator:
+
+```ts
+class Base {
+  @Input()
+  foo: string;
+}
+
+@Directive(...)
+class Dir extends Base {
+  ngOnChanges(): void {
+    // notified when bindings to [foo] are updated
+  }
+}
+```
+
+In a future version of Angular, this code will start to throw an error.
+To fix this example, add a selectorless `@Directive()` decorator to the base class:
+
+```ts
+@Directive()
+class Base {
+  @Input()
+  foo: string;
+}
+
+@Directive(...)
+class Dir extends Base {
+  ngOnChanges(): void {
+    // notified when bindings to [foo] are updated
+  }
+}
+```
+
+In version 9, the CLI has an automated migration that will update your code for you when `ng update` is run.
+See [the dedicated migration guide](guide/migration-undecorated-classes) for more information about the change and more examples.
+
+
 
 {@a binding-to-innertext}
 ### Binding to `innerText` in `platform-server`

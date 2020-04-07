@@ -76,7 +76,9 @@ export function getDeclaration<T extends ts.Declaration>(
             chosenDecl = decl;
           }
         });
-      } else if (ts.isClassDeclaration(node) || ts.isFunctionDeclaration(node)) {
+      } else if (
+          ts.isClassDeclaration(node) || ts.isFunctionDeclaration(node) ||
+          ts.isInterfaceDeclaration(node)) {
         if (node.name !== undefined && node.name.text === name) {
           chosenDecl = node;
         }

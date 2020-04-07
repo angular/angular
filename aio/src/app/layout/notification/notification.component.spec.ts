@@ -111,6 +111,22 @@ describe('NotificationComponent', () => {
     expect(getItemSpy).toHaveBeenCalledWith('aio-notification/survey-january-2018');
     expect(component.showNotification).toBe('hide');
   });
+
+  it('should not break when cookies are disabled in the browser', () => {
+    configTestingModule();
+
+    // Simulate `window.localStorage` being inaccessible, when cookies are disabled.
+    const mockWindow: MockWindow = TestBed.inject(WindowToken);
+    Object.defineProperty(mockWindow, 'localStorage', {
+      get() { throw new Error('The operation is insecure'); },
+    });
+
+    expect(() => createComponent()).not.toThrow();
+    expect(component.showNotification).toBe('show');
+
+    component.dismiss();
+    expect(component.showNotification).toBe('hide');
+  });
 });
 
 @Component({

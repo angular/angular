@@ -15,10 +15,11 @@ import {Sanitizer} from '../../sanitization/sanitizer';
 import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
 import {I18nUpdateOpCodes, TI18n} from './i18n';
-import {TAttributes, TConstants, TElementNode, TNode, TViewNode} from './node';
+import {TConstants, TElementNode, TNode, TViewNode} from './node';
 import {PlayerHandler} from './player';
 import {LQueries, TQueries} from './query';
 import {RElement, Renderer3, RendererFactory3} from './renderer';
+import {TStylingKey, TStylingRange} from './styling';
 
 
 
@@ -364,8 +365,10 @@ export const enum InitPhaseState {
 
 /** More flags associated with an LView (saved in LView[PREORDER_HOOK_FLAGS]) */
 export const enum PreOrderHookFlags {
-  /** The index of the next pre-order hook to be called in the hooks array, on the first 16
-     bits */
+  /**
+     The index of the next pre-order hook to be called in the hooks array, on the first 16
+     bits
+   */
   IndexOfTheNextPreOrderHookMaskMask = 0b01111111111111111,
 
   /**
@@ -470,7 +473,17 @@ export interface TView {
   /** Whether or not this template has been processed in creation mode. */
   firstCreatePass: boolean;
 
-  /** Whether or not the first update for this template has been processed. */
+  /**
+   *  Whether or not this template has been processed in update mode (e.g. change detected)
+   *
+   * `firstUpdatePass` is used by styling to set up `TData` to contain metadata about the styling
+   * instructions. (Mainly to build up a linked list of styling priority order.)
+   *
+   * Typically this function gets cleared after first execution. If exception is thrown then this
+   * flag can remain turned un until there is first successful (no exception) pass. This means that
+   * individual styling instructions keep track of if they have already been added to the linked
+   * list to prevent double adding.
+   */
   firstUpdatePass: boolean;
 
   /** Static data equivalent of LView.data[]. Contains TNodes, PipeDefInternal or TI18n. */
@@ -524,6 +537,8 @@ export interface TView {
    *
    * See VIEW_DATA.md for more information.
    */
+  // TODO(misko): `expandoInstructions` should be renamed to `hostBindingsInstructions` since they
+  // keep track of `hostBindings` which need to be executed.
   expandoInstructions: ExpandoInstructions|null;
 
   /**
@@ -604,7 +619,7 @@ export interface TView {
    * Even indices: Directive index
    * Odd indices: Hook function
    */
-  destroyHooks: HookData|null;
+  destroyHooks: DestroyHookData|null;
 
   /**
    * When a view is destroyed, listeners need to be released and outputs need to be
@@ -671,7 +686,11 @@ export interface TView {
   consts: TConstants|null;
 }
 
-export const enum RootContextFlags {Empty = 0b00, DetectChanges = 0b01, FlushPlayers = 0b10}
+export const enum RootContextFlags {
+  Empty = 0b00,
+  DetectChanges = 0b01,
+  FlushPlayers = 0b10
+}
 
 
 /**
@@ -709,6 +728,15 @@ export interface RootContext {
   flags: RootContextFlags;
 }
 
+/** Single hook callback function. */
+export type HookFn = () => void;
+
+/**
+ * Information necessary to call a hook. E.g. the callback that
+ * needs to invoked and the index at which to find its context.
+ */
+export type HookEntry = number|HookFn;
+
 /**
  * Array of hooks that should be executed for a view and their directive indices.
  *
@@ -721,7 +749,27 @@ export interface RootContext {
  * Special cases:
  *  - a negative directive index flags an init hook (ngOnInit, ngAfterContentInit, ngAfterViewInit)
  */
-export type HookData = (number | (() => void))[];
+export type HookData = HookEntry[];
+
+/**
+ * Array of destroy hooks that should be executed for a view and their directive indices.
+ *
+ * The array is set up as a series of number/function or number/(number|function)[]:
+ * - Even indices represent the context with which hooks should be called.
+ * - Odd indices are the hook functions themselves. If a value at an odd index is an array,
+ *   it represents the destroy hooks of a `multi` provider where:
+ *     - Even indices represent the index of the provider for which we've registered a destroy hook,
+ *       inside of the `multi` provider array.
+ *     - Odd indices are the destroy hook functions.
+ * For example:
+ * LView: `[0, 1, 2, AService, 4, [BService, CService, DService]]`
+ * destroyHooks: `[3, AService.ngOnDestroy, 5, [0, BService.ngOnDestroy, 2, DService.ngOnDestroy]]`
+ *
+ * In the example above `AService` is a type provider with an `ngOnDestroy`, whereas `BService`,
+ * `CService` and `DService` are part of a `multi` provider where only `BService` and `DService`
+ * have an `ngOnDestroy` hook.
+ */
+export type DestroyHookData = (HookEntry|HookData)[];
 
 /**
  * Static data that corresponds to the instance-specific data array on an LView.
@@ -751,8 +799,8 @@ export type HookData = (number | (() => void))[];
  * Injector bloom filters are also stored here.
  */
 export type TData =
-    (TNode | PipeDef<any>| DirectiveDef<any>| ComponentDef<any>| number | Type<any>|
-     InjectionToken<any>| TI18n | I18nUpdateOpCodes | null | string)[];
+    (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|number|TStylingRange|TStylingKey|
+     Type<any>|InjectionToken<any>|TI18n|I18nUpdateOpCodes|null|string)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

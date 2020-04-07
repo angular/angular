@@ -23,14 +23,14 @@ export class Deferred<T> {
    *
    * @param value The value to resolve the promise with.
    */
-  resolve !: (value: T) => void;
+  resolve!: (value: T) => void;
 
   /**
    * Rejects the associated promise with the specified reason.
    *
    * @param reason The rejection reason.
    */
-  reject !: (reason: any) => void;
+  reject!: (reason: any) => void;
 
   /** The `Promise` instance associated with this deferred. */
   promise = new Promise<T>((resolve, reject) => {

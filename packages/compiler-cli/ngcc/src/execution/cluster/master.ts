@@ -13,8 +13,9 @@ import * as cluster from 'cluster';
 import {resolve} from '../../../../src/ngtsc/file_system';
 import {Logger} from '../../logging/logger';
 import {PackageJsonUpdater} from '../../writing/package_json_updater';
-import {AnalyzeEntryPointsFn, Task, TaskQueue} from '../api';
-import {onTaskCompleted, stringifyTask} from '../utils';
+import {AnalyzeEntryPointsFn} from '../api';
+import {CreateTaskCompletedCallback, Task, TaskCompletedCallback, TaskQueue} from '../tasks/api';
+import {stringifyTask} from '../tasks/utils';
 
 import {MessageFromWorker, TaskCompletedMessage, UpdatePackageJsonMessage} from './api';
 import {Deferred, sendMessageToWorker} from './utils';
@@ -29,18 +30,25 @@ export class ClusterMaster {
   private processingStartTime: number = -1;
   private taskAssignments = new Map<number, Task|null>();
   private taskQueue: TaskQueue;
+  private onTaskCompleted: TaskCompletedCallback;
 
   constructor(
-      private workerCount: number, private logger: Logger,
-      private pkgJsonUpdater: PackageJsonUpdater, analyzeEntryPoints: AnalyzeEntryPointsFn) {
+      private maxWorkerCount: number, private logger: Logger,
+      private pkgJsonUpdater: PackageJsonUpdater, analyzeEntryPoints: AnalyzeEntryPointsFn,
+      createTaskCompletedCallback: CreateTaskCompletedCallback) {
     if (!cluster.isMaster) {
       throw new Error('Tried to instantiate `ClusterMaster` on a worker process.');
     }
 
     this.taskQueue = analyzeEntryPoints();
+    this.onTaskCompleted = createTaskCompletedCallback(this.taskQueue);
   }
 
   run(): Promise<void> {
+    if (this.taskQueue.allTasksCompleted) {
+      return Promise.resolve();
+    }
+
     // Set up listeners for worker events (emitted on `cluster`).
     cluster.on('online', this.wrapEventHandler(worker => this.onWorkerOnline(worker.id)));
 
@@ -51,10 +59,8 @@ export class ClusterMaster {
         'exit',
         this.wrapEventHandler((worker, code, signal) => this.onWorkerExit(worker, code, signal)));
 
-    // Start the workers.
-    for (let i = 0; i < this.workerCount; i++) {
-      cluster.fork();
-    }
+    // Since we have pending tasks at the very minimum we need a single worker.
+    cluster.fork();
 
     return this.finishedDeferred.promise.then(() => this.stopWorkers(), err => {
       this.stopWorkers();
@@ -68,7 +74,7 @@ export class ClusterMaster {
 
     // First, check whether all tasks have been completed.
     if (this.taskQueue.allTasksCompleted) {
-      const duration = Math.round((Date.now() - this.processingStartTime) / 1000);
+      const duration = Math.round((Date.now() - this.processingStartTime) / 100) / 10;
       this.logger.debug(`Processed tasks in ${duration}s.`);
 
       return this.finishedDeferred.resolve();
@@ -98,11 +104,16 @@ export class ClusterMaster {
       isWorkerAvailable = false;
     }
 
-    // If there are no available workers or no available tasks, log (for debugging purposes).
     if (!isWorkerAvailable) {
-      this.logger.debug(
-          `All ${this.taskAssignments.size} workers are currently busy and cannot take on more ` +
-          'work.');
+      const spawnedWorkerCount = Object.keys(cluster.workers).length;
+      if (spawnedWorkerCount < this.maxWorkerCount) {
+        this.logger.debug('Spawning another worker process as there is more work to be done.');
+        cluster.fork();
+      } else {
+        // If there are no available workers or no available tasks, log (for debugging purposes).
+        this.logger.debug(
+            `All ${spawnedWorkerCount} workers are currently busy and cannot take on more work.`);
+      }
     } else {
       const busyWorkers = Array.from(this.taskAssignments)
                               .filter(([_workerId, task]) => task !== null)
@@ -199,7 +210,7 @@ export class ClusterMaster {
           JSON.stringify(msg));
     }
 
-    onTaskCompleted(this.pkgJsonUpdater, task, msg.outcome);
+    this.onTaskCompleted(task, msg.outcome, msg.message);
 
     this.taskQueue.markTaskCompleted(task);
     this.taskAssignments.set(workerId, null);
@@ -251,7 +262,7 @@ export class ClusterMaster {
    */
   private wrapEventHandler<Args extends unknown[]>(fn: (...args: Args) => void|Promise<void>):
       (...args: Args) => Promise<void> {
-    return async(...args: Args) => {
+    return async (...args: Args) => {
       try {
         await fn(...args);
       } catch (err) {

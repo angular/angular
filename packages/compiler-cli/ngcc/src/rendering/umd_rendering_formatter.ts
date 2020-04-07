@@ -6,17 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {dirname, relative} from 'canonical-path';
-import * as ts from 'typescript';
 import MagicString from 'magic-string';
+import * as ts from 'typescript';
+
+import {Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {UmdReflectionHost} from '../host/umd_host';
+
 import {Esm5RenderingFormatter} from './esm5_rendering_formatter';
 import {stripExtension} from './utils';
-import {Reexport} from '../../../src/ngtsc/imports';
 
-type CommonJsConditional = ts.ConditionalExpression & {whenTrue: ts.CallExpression};
-type AmdConditional = ts.ConditionalExpression & {whenTrue: ts.CallExpression};
+type CommonJsConditional = ts.ConditionalExpression&{whenTrue: ts.CallExpression};
+type AmdConditional = ts.ConditionalExpression&{whenTrue: ts.CallExpression};
 
 /**
  * A RenderingFormatter that works with UMD files, instead of `import` and `export` statements
@@ -24,12 +26,35 @@ type AmdConditional = ts.ConditionalExpression & {whenTrue: ts.CallExpression};
  * wrapper function for AMD, CommonJS and global module formats.
  */
 export class UmdRenderingFormatter extends Esm5RenderingFormatter {
-  constructor(protected umdHost: UmdReflectionHost, isCore: boolean) { super(umdHost, isCore); }
+  constructor(protected umdHost: UmdReflectionHost, isCore: boolean) {
+    super(umdHost, isCore);
+  }
 
   /**
-   *  Add the imports to the UMD module IIFE.
+   * Add the imports to the UMD module IIFE.
+   *
+   * Note that imports at "prepended" to the start of the parameter list of the factory function,
+   * and so also to the arguments passed to it when it is called.
+   * This is because there are scenarios where the factory function does not accept as many
+   * parameters as are passed as argument in the call. For example:
+   *
+   * ```
+   * (function (global, factory) {
+   *     typeof exports === 'object' && typeof module !== 'undefined' ?
+   *         factory(exports,require('x'),require('z')) :
+   *     typeof define === 'function' && define.amd ?
+   *         define(['exports', 'x', 'z'], factory) :
+   *     (global = global || self, factory(global.myBundle = {}, global.x));
+   * }(this, (function (exports, x) { ... }
+   * ```
+   *
+   * (See that the `z` import is not being used by the factory function.)
    */
   addImports(output: MagicString, imports: Import[], file: ts.SourceFile): void {
+    if (imports.length === 0) {
+      return;
+    }
+
     // Assume there is only one UMD module in the file
     const umdModule = this.umdHost.getUmdModule(file);
     if (!umdModule) {
@@ -121,10 +146,13 @@ function renderCommonJsDependencies(
     return;
   }
   const factoryCall = conditional.whenTrue;
-  // Backup one char to account for the closing parenthesis on the call
-  const injectionPoint = factoryCall.getEnd() - 1;
+  const injectionPoint = factoryCall.arguments.length > 0 ?
+      // Add extra dependencies before the first argument
+      factoryCall.arguments[0].getFullStart() :
+      // Backup one char to account for the closing parenthesis on the call
+      factoryCall.getEnd() - 1;
   const importString = imports.map(i => `require('${i.specifier}')`).join(',');
-  output.appendLeft(injectionPoint, (factoryCall.arguments.length > 0 ? ',' : '') + importString);
+  output.appendLeft(injectionPoint, importString + (factoryCall.arguments.length > 0 ? ',' : ''));
 }
 
 /**
@@ -148,11 +176,14 @@ function renderAmdDependencies(
     const injectionPoint = amdDefineCall.arguments[factoryIndex].getFullStart();
     output.appendLeft(injectionPoint, `[${importString}],`);
   } else {
-    // Already an array, add imports to the end of the array.
-    // Backup one char to account for the closing square bracket on the array
-    const injectionPoint = dependencyArray.getEnd() - 1;
+    // Already an array
+    const injectionPoint = dependencyArray.elements.length > 0 ?
+        // Add imports before the first item.
+        dependencyArray.elements[0].getFullStart() :
+        // Backup one char to account for the closing square bracket on the array
+        dependencyArray.getEnd() - 1;
     output.appendLeft(
-        injectionPoint, (dependencyArray.elements.length > 0 ? ',' : '') + importString);
+        injectionPoint, importString + (dependencyArray.elements.length > 0 ? ',' : ''));
   }
 }
 
@@ -165,11 +196,14 @@ function renderGlobalDependencies(
   if (!globalFactoryCall) {
     return;
   }
-  // Backup one char to account for the closing parenthesis after the argument list of the call.
-  const injectionPoint = globalFactoryCall.getEnd() - 1;
+  const injectionPoint = globalFactoryCall.arguments.length > 0 ?
+      // Add extra dependencies before the first argument
+      globalFactoryCall.arguments[0].getFullStart() :
+      // Backup one char to account for the closing parenthesis on the call
+      globalFactoryCall.getEnd() - 1;
   const importString = imports.map(i => `global.${getGlobalIdentifier(i)}`).join(',');
   output.appendLeft(
-      injectionPoint, (globalFactoryCall.arguments.length > 0 ? ',' : '') + importString);
+      injectionPoint, importString + (globalFactoryCall.arguments.length > 0 ? ',' : ''));
 }
 
 /**
@@ -193,8 +227,8 @@ function renderFactoryParameters(
   const parameters = factoryFunction.parameters;
   const parameterString = imports.map(i => i.qualifier).join(',');
   if (parameters.length > 0) {
-    const injectionPoint = parameters[parameters.length - 1].getEnd();
-    output.appendLeft(injectionPoint, ',' + parameterString);
+    const injectionPoint = parameters[0].getFullStart();
+    output.appendLeft(injectionPoint, parameterString + ',');
   } else {
     // If there are no parameters then the factory function will look like:
     // function () { ... }

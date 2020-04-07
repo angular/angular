@@ -6,16 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../../interface/type';
+import {Type, Writable} from '../../interface/type';
 import {fillProperties} from '../../util/property';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {ComponentDef, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, HostBindingsFunction, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
+import {TAttributes} from '../interfaces/node';
 import {isComponentDef} from '../interfaces/type_checks';
+import {mergeHostAttrs} from '../util/attrs_utils';
 
 export function getSuperType(type: Type<any>): Type<any>&
     {ɵcmp?: ComponentDef<any>, ɵdir?: DirectiveDef<any>} {
   return Object.getPrototypeOf(type.prototype).constructor;
 }
+
+type WritableDef = Writable<DirectiveDef<any>|ComponentDef<any>>;
 
 /**
  * Merges the definition from a super class to a sub class.
@@ -25,6 +29,8 @@ export function getSuperType(type: Type<any>): Type<any>&
  */
 export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| ComponentDef<any>): void {
   let superType = getSuperType(definition.type);
+  let shouldInheritFields = true;
+  const inheritanceChain: WritableDef[] = [definition];
 
   while (superType) {
     let superDef: DirectiveDef<any>|ComponentDef<any>|undefined = undefined;
@@ -40,38 +46,50 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
     }
 
     if (superDef) {
-      // Some fields in the definition may be empty, if there were no values to put in them that
-      // would've justified object creation. Unwrap them if necessary.
-      const writeableDef = definition as any;
-      writeableDef.inputs = maybeUnwrapEmpty(definition.inputs);
-      writeableDef.declaredInputs = maybeUnwrapEmpty(definition.declaredInputs);
-      writeableDef.outputs = maybeUnwrapEmpty(definition.outputs);
+      if (shouldInheritFields) {
+        inheritanceChain.push(superDef);
+        // Some fields in the definition may be empty, if there were no values to put in them that
+        // would've justified object creation. Unwrap them if necessary.
+        const writeableDef = definition as WritableDef;
+        writeableDef.inputs = maybeUnwrapEmpty(definition.inputs);
+        writeableDef.declaredInputs = maybeUnwrapEmpty(definition.declaredInputs);
+        writeableDef.outputs = maybeUnwrapEmpty(definition.outputs);
 
-      // Merge hostBindings
-      const superHostBindings = superDef.hostBindings;
-      superHostBindings && inheritHostBindings(definition, superHostBindings);
+        // Merge hostBindings
+        const superHostBindings = superDef.hostBindings;
+        superHostBindings && inheritHostBindings(definition, superHostBindings);
 
-      // Merge queries
-      const superViewQuery = superDef.viewQuery;
-      const superContentQueries = superDef.contentQueries;
-      superViewQuery && inheritViewQuery(definition, superViewQuery);
-      superContentQueries && inheritContentQueries(definition, superContentQueries);
+        // Merge queries
+        const superViewQuery = superDef.viewQuery;
+        const superContentQueries = superDef.contentQueries;
+        superViewQuery && inheritViewQuery(definition, superViewQuery);
+        superContentQueries && inheritContentQueries(definition, superContentQueries);
 
-      // Merge inputs and outputs
-      fillProperties(definition.inputs, superDef.inputs);
-      fillProperties(definition.declaredInputs, superDef.declaredInputs);
-      fillProperties(definition.outputs, superDef.outputs);
+        // Merge inputs and outputs
+        fillProperties(definition.inputs, superDef.inputs);
+        fillProperties(definition.declaredInputs, superDef.declaredInputs);
+        fillProperties(definition.outputs, superDef.outputs);
 
-      // Inherit hooks
-      // Assume super class inheritance feature has already run.
-      definition.afterContentChecked =
-          definition.afterContentChecked || superDef.afterContentChecked;
-      definition.afterContentInit = definition.afterContentInit || superDef.afterContentInit;
-      definition.afterViewChecked = definition.afterViewChecked || superDef.afterViewChecked;
-      definition.afterViewInit = definition.afterViewInit || superDef.afterViewInit;
-      definition.doCheck = definition.doCheck || superDef.doCheck;
-      definition.onDestroy = definition.onDestroy || superDef.onDestroy;
-      definition.onInit = definition.onInit || superDef.onInit;
+        // Merge animations metadata.
+        // If `superDef` is a Component, the `data` field is present (defaults to an empty object).
+        if (isComponentDef(superDef) && superDef.data.animation) {
+          // If super def is a Component, the `definition` is also a Component, since Directives can
+          // not inherit Components (we throw an error above and cannot reach this code).
+          const defData = (definition as ComponentDef<any>).data;
+          defData.animation = (defData.animation || []).concat(superDef.data.animation);
+        }
+
+        // Inherit hooks
+        // Assume super class inheritance feature has already run.
+        writeableDef.afterContentChecked =
+            writeableDef.afterContentChecked || superDef.afterContentChecked;
+        writeableDef.afterContentInit = definition.afterContentInit || superDef.afterContentInit;
+        writeableDef.afterViewChecked = definition.afterViewChecked || superDef.afterViewChecked;
+        writeableDef.afterViewInit = definition.afterViewInit || superDef.afterViewInit;
+        writeableDef.doCheck = definition.doCheck || superDef.doCheck;
+        writeableDef.onDestroy = definition.onDestroy || superDef.onDestroy;
+        writeableDef.onInit = definition.onInit || superDef.onInit;
+      }
 
       // Run parent features
       const features = superDef.features;
@@ -81,11 +99,43 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| Comp
           if (feature && feature.ngInherit) {
             (feature as DirectiveDefFeature)(definition);
           }
+          // If `InheritDefinitionFeature` is a part of the current `superDef`, it means that this
+          // def already has all the necessary information inherited from its super class(es), so we
+          // can stop merging fields from super classes. However we need to iterate through the
+          // prototype chain to look for classes that might contain other "features" (like
+          // NgOnChanges), which we should invoke for the original `definition`. We set the
+          // `shouldInheritFields` flag to indicate that, essentially skipping fields inheritance
+          // logic and only invoking functions from the "features" list.
+          if (feature === ɵɵInheritDefinitionFeature) {
+            shouldInheritFields = false;
+          }
         }
       }
     }
 
     superType = Object.getPrototypeOf(superType);
+  }
+  mergeHostAttrsAcrossInheritance(inheritanceChain);
+}
+
+/**
+ * Merge the `hostAttrs` and `hostVars` from the inherited parent to the base class.
+ *
+ * @param inheritanceChain A list of `WritableDefs` starting at the top most type and listing
+ * sub-types in order. For each type take the `hostAttrs` and `hostVars` and merge it with the child
+ * type.
+ */
+function mergeHostAttrsAcrossInheritance(inheritanceChain: WritableDef[]) {
+  let hostVars: number = 0;
+  let hostAttrs: TAttributes|null = null;
+  // We process the inheritance order from the base to the leaves here.
+  for (let i = inheritanceChain.length - 1; i >= 0; i--) {
+    const def = inheritanceChain[i];
+    // For each `hostVars`, we need to add the superclass amount.
+    def.hostVars = (hostVars += def.hostVars);
+    // for each `hostAttrs` we need to merge it with superclass.
+    def.hostAttrs =
+        mergeHostAttrs(def.hostAttrs, hostAttrs = mergeHostAttrs(hostAttrs, def.hostAttrs));
   }
 }
 
@@ -101,10 +151,8 @@ function maybeUnwrapEmpty(value: any): any {
   }
 }
 
-function inheritViewQuery(
-    definition: DirectiveDef<any>| ComponentDef<any>, superViewQuery: ViewQueriesFunction<any>) {
+function inheritViewQuery(definition: WritableDef, superViewQuery: ViewQueriesFunction<any>) {
   const prevViewQuery = definition.viewQuery;
-
   if (prevViewQuery) {
     definition.viewQuery = (rf, ctx) => {
       superViewQuery(rf, ctx);
@@ -116,10 +164,8 @@ function inheritViewQuery(
 }
 
 function inheritContentQueries(
-    definition: DirectiveDef<any>| ComponentDef<any>,
-    superContentQueries: ContentQueriesFunction<any>) {
+    definition: WritableDef, superContentQueries: ContentQueriesFunction<any>) {
   const prevContentQueries = definition.contentQueries;
-
   if (prevContentQueries) {
     definition.contentQueries = (rf, ctx, directiveIndex) => {
       superContentQueries(rf, ctx, directiveIndex);
@@ -131,20 +177,14 @@ function inheritContentQueries(
 }
 
 function inheritHostBindings(
-    definition: DirectiveDef<any>| ComponentDef<any>,
-    superHostBindings: HostBindingsFunction<any>) {
+    definition: WritableDef, superHostBindings: HostBindingsFunction<any>) {
   const prevHostBindings = definition.hostBindings;
-  // If the subclass does not have a host bindings function, we set the subclass host binding
-  // function to be the superclass's (in this feature). We should check if they're the same here
-  // to ensure we don't inherit it twice.
-  if (superHostBindings !== prevHostBindings) {
-    if (prevHostBindings) {
-      definition.hostBindings = (rf: RenderFlags, ctx: any, elementIndex: number) => {
-        superHostBindings(rf, ctx, elementIndex);
-        prevHostBindings(rf, ctx, elementIndex);
-      };
-    } else {
-      definition.hostBindings = superHostBindings;
-    }
+  if (prevHostBindings) {
+    definition.hostBindings = (rf: RenderFlags, ctx: any) => {
+      superHostBindings(rf, ctx);
+      prevHostBindings(rf, ctx);
+    };
+  } else {
+    definition.hostBindings = superHostBindings;
   }
 }

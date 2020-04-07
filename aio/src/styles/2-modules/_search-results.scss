@@ -6,7 +6,8 @@ aio-search-results {
     flex-direction: row;
     justify-content: space-around;
     overflow: auto;
-    padding: 68px 32px 0;
+    padding: 0px 32px;
+    border-top: 68px solid transparent;
     width: auto;
     max-height: 95vh;
     position: fixed;
@@ -66,10 +67,15 @@ aio-search-results {
       }
     }
 
-    .not-found {
+    .no-results {
       color: $white;
       text-align: center;
       margin: 16px;
+    }
+
+    a {
+      color: $white;
+      font-weight: 500;
     }
 
     @media (max-width: 600px) {
@@ -100,8 +106,12 @@ aio-search-results {
         }
       }
 
-      .not-found {
+      .no-results {
         color: $darkgray;
+      }
+
+      a {
+        color: $blue;
       }
     }
   }

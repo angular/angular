@@ -5,12 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {SourceMapConverter, commentRegex, fromJSON, fromObject, fromSource, generateMapFileComment, mapFileCommentRegex, removeComments, removeMapFileComments} from 'convert-source-map';
+import {fromObject, generateMapFileComment, SourceMapConverter} from 'convert-source-map';
 import MagicString from 'magic-string';
-import {RawSourceMap, SourceMapConsumer, SourceMapGenerator} from 'source-map';
 import * as ts from 'typescript';
-import {resolve, FileSystem, absoluteFromSourceFile, dirname, basename, absoluteFrom} from '../../../src/ngtsc/file_system';
+
+import {absoluteFrom, absoluteFromSourceFile, basename, FileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
+import {RawSourceMap} from '../sourcemaps/raw_source_map';
+import {SourceFileLoader} from '../sourcemaps/source_file_loader';
+
 import {FileToWrite} from './utils';
 
 export interface SourceMapInfo {
@@ -20,116 +23,43 @@ export interface SourceMapInfo {
 }
 
 /**
- * Get the map from the source (note whether it is inline or external)
- */
-export function extractSourceMap(
-    fs: FileSystem, logger: Logger, file: ts.SourceFile): SourceMapInfo {
-  const inline = commentRegex.test(file.text);
-  const external = mapFileCommentRegex.exec(file.text);
-
-  if (inline) {
-    const inlineSourceMap = fromSource(file.text);
-    return {
-      source: removeComments(file.text).replace(/\n\n$/, '\n'),
-      map: inlineSourceMap,
-      isInline: true,
-    };
-  } else if (external) {
-    let externalSourceMap: SourceMapConverter|null = null;
-    try {
-      const fileName = external[1] || external[2];
-      const filePath = resolve(dirname(absoluteFromSourceFile(file)), fileName);
-      const mappingFile = fs.readFile(filePath);
-      externalSourceMap = fromJSON(mappingFile);
-    } catch (e) {
-      if (e.code === 'ENOENT') {
-        logger.warn(
-            `The external map file specified in the source code comment "${e.path}" was not found on the file system.`);
-        const mapPath = absoluteFrom(file.fileName + '.map');
-        if (basename(e.path) !== basename(mapPath) && fs.exists(mapPath) &&
-            fs.stat(mapPath).isFile()) {
-          logger.warn(
-              `Guessing the map file name from the source file name: "${basename(mapPath)}"`);
-          try {
-            externalSourceMap = fromObject(JSON.parse(fs.readFile(mapPath)));
-          } catch (e) {
-            logger.error(e);
-          }
-        }
-      }
-    }
-    return {
-      source: removeMapFileComments(file.text).replace(/\n\n$/, '\n'),
-      map: externalSourceMap,
-      isInline: false,
-    };
-  } else {
-    return {source: file.text, map: null, isInline: false};
-  }
-}
-
-/**
  * Merge the input and output source-maps, replacing the source-map comment in the output file
  * with an appropriate source-map comment pointing to the merged source-map.
  */
 export function renderSourceAndMap(
-    sourceFile: ts.SourceFile, input: SourceMapInfo, output: MagicString): FileToWrite[] {
-  const outputPath = absoluteFromSourceFile(sourceFile);
-  const outputMapPath = absoluteFrom(`${outputPath}.map`);
-  const relativeSourcePath = basename(outputPath);
-  const relativeMapPath = `${relativeSourcePath}.map`;
+    logger: Logger, fs: FileSystem, sourceFile: ts.SourceFile,
+    generatedMagicString: MagicString): FileToWrite[] {
+  const generatedPath = absoluteFromSourceFile(sourceFile);
+  const generatedMapPath = absoluteFrom(`${generatedPath}.map`);
+  const generatedContent = generatedMagicString.toString();
+  const generatedMap: RawSourceMap = generatedMagicString.generateMap(
+      {file: generatedPath, source: generatedPath, includeContent: true});
 
-  const outputMap = output.generateMap({
-    source: outputPath,
-    includeContent: true,
-    // hires: true // TODO: This results in accurate but huge sourcemaps. Instead we should fix
-    // the merge algorithm.
-  });
+  try {
+    const loader = new SourceFileLoader(fs, logger);
+    const generatedFile = loader.loadSourceFile(
+        generatedPath, generatedContent, {map: generatedMap, mapPath: generatedMapPath});
 
-  // we must set this after generation as magic string does "manipulation" on the path
-  outputMap.file = relativeSourcePath;
-
-  const mergedMap =
-      mergeSourceMaps(input.map && input.map.toObject(), JSON.parse(outputMap.toString()));
-
-  const result: FileToWrite[] = [];
-  if (input.isInline) {
-    result.push({path: outputPath, contents: `${output.toString()}\n${mergedMap.toComment()}`});
-  } else {
-    result.push({
-      path: outputPath,
-      contents: `${output.toString()}\n${generateMapFileComment(relativeMapPath)}`
-    });
-    result.push({path: outputMapPath, contents: mergedMap.toJSON()});
+    const rawMergedMap: RawSourceMap = generatedFile.renderFlattenedSourceMap();
+    const mergedMap = fromObject(rawMergedMap);
+    if (generatedFile.sources[0]?.inline) {
+      // The input source-map was inline so make the output one inline too.
+      return [
+        {path: generatedPath, contents: `${generatedFile.contents}\n${mergedMap.toComment()}`}
+      ];
+    } else {
+      const sourceMapComment = generateMapFileComment(`${basename(generatedPath)}.map`);
+      return [
+        {path: generatedPath, contents: `${generatedFile.contents}\n${sourceMapComment}`},
+        {path: generatedMapPath, contents: mergedMap.toJSON()}
+      ];
+    }
+  } catch (e) {
+    logger.error(`Error when flattening the source-map "${generatedMapPath}" for "${
+        generatedPath}": ${e.toString()}`);
+    return [
+      {path: generatedPath, contents: generatedContent},
+      {path: generatedMapPath, contents: fromObject(generatedMap).toJSON()},
+    ];
   }
-  return result;
-}
-
-
-/**
- * Merge the two specified source-maps into a single source-map that hides the intermediate
- * source-map.
- * E.g. Consider these mappings:
- *
- * ```
- * OLD_SRC -> OLD_MAP -> INTERMEDIATE_SRC -> NEW_MAP -> NEW_SRC
- * ```
- *
- * this will be replaced with:
- *
- * ```
- * OLD_SRC -> MERGED_MAP -> NEW_SRC
- * ```
- */
-export function mergeSourceMaps(
-    oldMap: RawSourceMap | null, newMap: RawSourceMap): SourceMapConverter {
-  if (!oldMap) {
-    return fromObject(newMap);
-  }
-  const oldMapConsumer = new SourceMapConsumer(oldMap);
-  const newMapConsumer = new SourceMapConsumer(newMap);
-  const mergedMapGenerator = SourceMapGenerator.fromSourceMap(newMapConsumer);
-  mergedMapGenerator.applySourceMap(oldMapConsumer);
-  const merged = fromJSON(mergedMapGenerator.toString());
-  return merged;
 }

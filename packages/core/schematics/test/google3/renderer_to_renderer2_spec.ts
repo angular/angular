@@ -43,8 +43,7 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
   function runTSLint(fix: boolean) {
     const program = Linter.createProgram(join(tmpDir, 'tsconfig.json'));
     const linter = new Linter({fix, rulesDirectory: [rulesDirectory]}, program);
-    const config = Configuration.parseConfigFile(
-        {rules: {'renderer-to-renderer2': true}, linterOptions: {typeCheck: true}});
+    const config = Configuration.parseConfigFile({rules: {'renderer-to-renderer2': true}});
 
     program.getRootFileNames().forEach(fileName => {
       linter.lint(fileName, program.getSourceFile(fileName) !.getFullText(), config);

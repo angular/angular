@@ -16,7 +16,7 @@ if (bazel_stamp_file) {
 
 const banner = `/**
 * @license Angular v${version}
-* (c) 2010-2019 Google LLC. https://angular.io/
+* (c) 2010-2020 Google LLC. https://angular.io/
 * License: MIT
 */`;
 
@@ -27,6 +27,23 @@ module.exports = {
     }),
     commonjs(),
   ],
-  external: ['electron'],
-  output: {globals: {electron: 'electron'}, banner},
+  external: id => {
+    if (/build-esm/.test(id)) {
+      return false;
+    }
+    return /rxjs/.test(id) || /electron/.test(id);
+  },
+  output: {
+    globals: {
+      electron: 'electron',
+      'rxjs/Observable': 'Rx',
+      'rxjs/Subscriber': 'Rx',
+      'rxjs/Subscription': 'Rx',
+      'rxjs/Scheduler': 'Rx.Scheduler',
+      'rxjs/scheduler/asap': 'Rx.Scheduler',
+      'rxjs/scheduler/async': 'Rx.Scheduler',
+      'rxjs/symbol/rxSubscriber': 'Rx.Symbol'
+    },
+    banner
+  },
 }

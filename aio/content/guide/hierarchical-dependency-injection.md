@@ -320,7 +320,7 @@ Use `@SkipSelf()` with `@Optional()` to prevent an error if the value is `null`.
 
 ``` ts
 class Person {
-  constructor(@Optional() @SkipSelf() parent: Person) {}
+  constructor(@Optional() @SkipSelf() parent?: Person) {}
 }
 ```
 
@@ -602,7 +602,7 @@ finds the `FlowerService` and never sees the 🌺 (red hibiscus).
 
 Use the `viewProviders` array as another way to provide services in the
 `@Component()` decorator. Using `viewProviders` makes services
-visibile in the `<#VIEW>`.
+visible in the `<#VIEW>`.
 
 <div class="is-helpful alert">
 

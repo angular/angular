@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AstPath, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, ParseSourceSpan, RecursiveTemplateAstVisitor, TemplateAst, TemplateAstPath, identifierName, templateVisitAll} from '@angular/compiler';
+import {AstPath, BoundEventAst, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, HtmlAstPath, identifierName, Identifiers, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, RecursiveVisitor, TemplateAst, TemplateAstPath, templateVisitAll, visitAll} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AstResult, SelectorInfo} from './common';
 import {DiagnosticTemplateInfo} from './expression_diagnostics';
-import {Span} from './types';
+import {Span, Symbol, SymbolQuery} from './types';
 
 export interface SpanHolder {
   sourceSpan: ParseSourceSpan;
@@ -25,8 +25,8 @@ export function isParseSourceSpan(value: any): value is ParseSourceSpan {
 
 export function spanOf(span: SpanHolder): Span;
 export function spanOf(span: ParseSourceSpan): Span;
-export function spanOf(span: SpanHolder | ParseSourceSpan | undefined): Span|undefined;
-export function spanOf(span?: SpanHolder | ParseSourceSpan): Span|undefined {
+export function spanOf(span: SpanHolder|ParseSourceSpan|undefined): Span|undefined;
+export function spanOf(span?: SpanHolder|ParseSourceSpan): Span|undefined {
   if (!span) return undefined;
   if (isParseSourceSpan(span)) {
     return {start: span.start.offset, end: span.end.offset};
@@ -36,7 +36,7 @@ export function spanOf(span?: SpanHolder | ParseSourceSpan): Span|undefined {
     } else if (span.children && span.children.length) {
       return {
         start: span.sourceSpan.start.offset,
-        end: spanOf(span.children[span.children.length - 1]) !.end
+        end: spanOf(span.children[span.children.length - 1])!.end
       };
     }
     return {start: span.sourceSpan.start.offset, end: span.sourceSpan.end.offset};
@@ -44,8 +44,9 @@ export function spanOf(span?: SpanHolder | ParseSourceSpan): Span|undefined {
 }
 
 export function inSpan(position: number, span?: Span, exclusive?: boolean): boolean {
-  return span != null && (exclusive ? position >= span.start && position < span.end :
-                                      position >= span.start && position <= span.end);
+  return span != null &&
+      (exclusive ? position >= span.start && position < span.end :
+                   position >= span.start && position <= span.end);
 }
 
 export function offsetSpan(span: Span, amount: number): Span {
@@ -56,12 +57,12 @@ export function isNarrower(spanA: Span, spanB: Span): boolean {
   return spanA.start >= spanB.start && spanA.end <= spanB.end;
 }
 
-export function hasTemplateReference(type: CompileTypeMetadata): boolean {
-  if (type.diDeps) {
-    for (let diDep of type.diDeps) {
-      if (diDep.token && diDep.token.identifier &&
-          identifierName(diDep.token !.identifier !) === 'TemplateRef')
-        return true;
+export function isStructuralDirective(type: CompileTypeMetadata): boolean {
+  for (const diDep of type.diDeps) {
+    const diDepName = identifierName(diDep.token?.identifier);
+    if (diDepName === Identifiers.TemplateRef.name ||
+        diDepName === Identifiers.ViewContainerRef.name) {
+      return true;
     }
   }
   return false;
@@ -71,7 +72,7 @@ export function getSelectors(info: AstResult): SelectorInfo {
   const map = new Map<CssSelector, CompileDirectiveSummary>();
   const results: CssSelector[] = [];
   for (const directive of info.directives) {
-    const selectors: CssSelector[] = CssSelector.parse(directive.selector !);
+    const selectors: CssSelector[] = CssSelector.parse(directive.selector!);
     for (const selector of selectors) {
       results.push(selector);
       map.set(selector, directive);
@@ -97,19 +98,19 @@ export function diagnosticInfoFromTemplateInfo(info: AstResult): DiagnosticTempl
     query: info.template.query,
     members: info.template.members,
     htmlAst: info.htmlAst,
-    templateAst: info.templateAst
+    templateAst: info.templateAst,
+    source: info.template.source,
   };
 }
 
-export function findTemplateAstAt(
-    ast: TemplateAst[], position: number, allowWidening: boolean = false): TemplateAstPath {
+export function findTemplateAstAt(ast: TemplateAst[], position: number): TemplateAstPath {
   const path: TemplateAst[] = [];
   const visitor = new class extends RecursiveTemplateAstVisitor {
-    visit(ast: TemplateAst, context: any): any {
+    visit(ast: TemplateAst): any {
       let span = spanOf(ast);
       if (inSpan(position, span)) {
         const len = path.length;
-        if (!len || allowWidening || isNarrower(span, spanOf(path[len - 1]))) {
+        if (!len || isNarrower(span, spanOf(path[len - 1]))) {
           path.push(ast);
         }
       } else {
@@ -141,7 +142,9 @@ export function findTemplateAstAt(
 
     visitDirective(ast: DirectiveAst, context: any): any {
       // Ignore the host properties of a directive
-      const result = this.visitChildren(context, visit => { visit(ast.inputs); });
+      const result = this.visitChildren(context, visit => {
+        visit(ast.inputs);
+      });
       // We never care about the diretive itself, just its inputs.
       if (path[path.length - 1] === ast) {
         path.pop();
@@ -167,8 +170,8 @@ export function findTightestNode(node: ts.Node, position: number): ts.Node|undef
 }
 
 interface DirectiveClassLike {
-  decoratorId: ts.Identifier;  // decorator identifier
-  classDecl: ts.ClassDeclaration;
+  decoratorId: ts.Identifier;  // decorator identifier, like @Component
+  classId: ts.Identifier;
 }
 
 /**
@@ -181,11 +184,11 @@ interface DirectiveClassLike {
  *
  * For example,
  *     v---------- `decoratorId`
- * @NgModule({
- *   declarations: [],
- * })
- * class AppModule {}
- *          ^----- `classDecl`
+ * @NgModule({           <
+ *   declarations: [],   < classDecl
+ * })                    <
+ * class AppModule {}    <
+ *          ^----- `classId`
  *
  * @param node Potential node that represents an Angular directive.
  */
@@ -203,7 +206,7 @@ export function getDirectiveClassLike(node: ts.Node): DirectiveClassLike|undefin
     if (ts.isObjectLiteralExpression(arg)) {
       return {
         decoratorId: expr.expression,
-        classDecl: node,
+        classId: node.name,
       };
     }
   }
@@ -225,4 +228,64 @@ export function findPropertyValueOfType<T extends ts.Node>(
     if (predicate(initializer)) return initializer;
   }
   return startNode.forEachChild(c => findPropertyValueOfType(c, propName, predicate));
+}
+
+/**
+ * Find the tightest node at the specified `position` from the AST `nodes`, and
+ * return the path to the node.
+ * @param nodes HTML AST nodes
+ * @param position
+ */
+export function getPathToNodeAtPosition(nodes: Node[], position: number): HtmlAstPath {
+  const path: Node[] = [];
+  const visitor = new class extends RecursiveVisitor {
+    visit(ast: Node) {
+      const span = spanOf(ast);
+      if (inSpan(position, span)) {
+        path.push(ast);
+      } else {
+        // Returning a truthy value here will skip all children and terminate
+        // the visit.
+        return true;
+      }
+    }
+  };
+  visitAll(visitor, nodes);
+  return new AstPath<Node>(path, position);
+}
+
+
+/**
+ * Inverts an object's key-value pairs.
+ */
+export function invertMap(obj: {[name: string]: string}): {[name: string]: string} {
+  const result: {[name: string]: string} = {};
+  for (const name of Object.keys(obj)) {
+    const v = obj[name];
+    result[v] = name;
+  }
+  return result;
+}
+
+
+/**
+ * Finds the directive member providing a template output binding, if one exists.
+ * @param info aggregate template AST information
+ * @param path narrowing
+ */
+export function findOutputBinding(
+    binding: BoundEventAst, path: TemplateAstPath, query: SymbolQuery): Symbol|undefined {
+  const element = path.first(ElementAst);
+  if (element) {
+    for (const directive of element.directives) {
+      const invertedOutputs = invertMap(directive.directive.outputs);
+      const fieldName = invertedOutputs[binding.name];
+      if (fieldName) {
+        const classSymbol = query.getTypeSymbol(directive.directive.type.reference);
+        if (classSymbol) {
+          return classSymbol.members().get(fieldName);
+        }
+      }
+    }
+  }
 }

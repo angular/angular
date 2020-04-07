@@ -1,3 +1,4 @@
+// tslint:disable:file-header
 /**
  * Copyright (c) 2016, Tiernan Cridland
  *

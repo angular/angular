@@ -38,8 +38,7 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
   function runTSLint(fix = true) {
     const program = Linter.createProgram(join(tmpDir, 'tsconfig.json'));
     const linter = new Linter({fix, rulesDirectory: [rulesDirectory]}, program);
-    const config = Configuration.parseConfigFile(
-        {rules: {'explicit-query-timing': true}, linterOptions: {typeCheck: true}});
+    const config = Configuration.parseConfigFile({rules: {'explicit-query-timing': true}});
 
     program.getRootFileNames().forEach(fileName => {
       linter.lint(fileName, program.getSourceFile(fileName) !.getFullText(), config);

@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, CompileDirectiveSummary, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, I18NHtmlParser, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, isFormattedError} from '@angular/compiler';
+import {analyzeNgModules, AotSummaryResolver, CompileDirectiveSummary, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompilerConfig, createOfflineCompileUrlResolver, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, I18NHtmlParser, isFormattedError, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, Parser, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser} from '@angular/compiler';
 import {SchemaMetadata, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {AstResult} from './common';
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
-import {ExternalTemplate, InlineTemplate, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './template';
+import {ExternalTemplate, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue, InlineTemplate} from './template';
 import {Declaration, DeclarationError, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
 import {findTightestNode, getDirectiveClassLike} from './utils';
 
@@ -35,14 +35,18 @@ export function createLanguageServiceFromTypescript(
  * syntactically incorrect templates.
  */
 export class DummyHtmlParser extends HtmlParser {
-  parse(): ParseTreeResult { return new ParseTreeResult([], []); }
+  parse(): ParseTreeResult {
+    return new ParseTreeResult([], []);
+  }
 }
 
 /**
  * Avoid loading resources in the language servcie by using a dummy loader.
  */
 export class DummyResourceLoader extends ResourceLoader {
-  get(url: string): Promise<string> { return Promise.resolve(''); }
+  get(url: string): Promise<string> {
+    return Promise.resolve('');
+  }
 }
 
 /**
@@ -74,10 +78,18 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       readonly tsLsHost: tss.LanguageServiceHost, private readonly tsLS: tss.LanguageService) {
     this.summaryResolver = new AotSummaryResolver(
         {
-          loadSummary(filePath: string) { return null; },
-          isSourceFile(sourceFilePath: string) { return true; },
-          toSummaryFileName(sourceFilePath: string) { return sourceFilePath; },
-          fromSummaryFileName(filePath: string): string{return filePath;},
+          loadSummary(filePath: string) {
+            return null;
+          },
+          isSourceFile(sourceFilePath: string) {
+            return true;
+          },
+          toSummaryFileName(sourceFilePath: string) {
+            return sourceFilePath;
+          },
+          fromSummaryFileName(filePath: string): string {
+            return filePath;
+          },
         },
         this.staticSymbolCache);
     this.reflectorHost = new ReflectorHost(() => this.program, tsLsHost);
@@ -148,13 +160,9 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
    * and templateReferences.
    * In addition to returning information about NgModules, this method plays the
    * same role as 'synchronizeHostData' in tsserver.
-   * @param ensureSynchronized whether or not the Language Service should make sure analyzedModules
-   *   are synced to the last update of the project. If false, returns the set of analyzedModules
-   *   that is already cached. This is useful if the project must not be reanalyzed, even if its
-   *   file watchers (which are disjoint from the TypeScriptServiceHost) detect an update.
    */
-  getAnalyzedModules(ensureSynchronized = true): NgAnalyzedModules {
-    if (!ensureSynchronized || this.upToDate()) {
+  getAnalyzedModules(): NgAnalyzedModules {
+    if (this.upToDate()) {
       return this.analyzedModules;
     }
 
@@ -163,7 +171,11 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     this.collectedErrors.clear();
     this.resolver.clearCache();
 
-    const analyzeHost = {isSourceFile(filePath: string) { return true; }};
+    const analyzeHost = {
+      isSourceFile(filePath: string) {
+        return true;
+      }
+    };
     const programFiles = this.program.getSourceFiles().map(sf => sf.fileName);
     this.analyzedModules =
         analyzeNgModules(programFiles, analyzeHost, this.staticSymbolResolver, this.resolver);
@@ -172,7 +184,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     const urlResolver = createOfflineCompileUrlResolver();
     for (const ngModule of this.analyzedModules.ngModules) {
       for (const directive of ngModule.declaredDirectives) {
-        const {metadata} = this.resolver.getNonNormalizedDirectiveMetadata(directive.reference) !;
+        const {metadata} = this.resolver.getNonNormalizedDirectiveMetadata(directive.reference)!;
         if (metadata.isComponent && metadata.template && metadata.template.templateUrl) {
           const templateName = urlResolver.resolve(
               this.reflector.componentModuleUrl(directive.reference),
@@ -288,9 +300,9 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     const visit = (child: tss.Node) => {
       const candidate = getDirectiveClassLike(child);
       if (candidate) {
-        const {decoratorId, classDecl} = candidate;
-        const declarationSpan = spanOf(decoratorId);
-        const className = classDecl.name !.text;
+        const {classId} = candidate;
+        const declarationSpan = spanOf(classId);
+        const className = classId.getText();
         const classSymbol = this.reflector.getStaticSymbol(sourceFile.fileName, className);
         // Ask the resolver to check if candidate is actually Angular directive
         if (!this.resolver.isDirective(classSymbol)) {
@@ -451,14 +463,6 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   /**
-   * Gets a StaticSymbol from a file and symbol name.
-   * @return Angular StaticSymbol matching the file and name, if any
-   */
-  getStaticSymbol(file: string, name: string): StaticSymbol|undefined {
-    return this.reflector.getStaticSymbol(file, name);
-  }
-
-  /**
    * Find the NgModule which the directive associated with the `classSymbol`
    * belongs to, then return its schema and transitive directives and pipes.
    * @param classSymbol Angular Symbol that defines a directive
@@ -501,14 +505,14 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (!data) {
       return;
     }
-    const htmlParser = new I18NHtmlParser(new HtmlParser());
+    const htmlParser = new HtmlParser();
     const expressionParser = new Parser(new Lexer());
     const parser = new TemplateParser(
         new CompilerConfig(), this.reflector, expressionParser, new DomElementSchemaRegistry(),
         htmlParser,
-        null !,  // console
-        []       // tranforms
-        );
+        null!,  // console
+        []      // tranforms
+    );
     const htmlResult = htmlParser.parse(template.source, fileName, {
       tokenizeExpansionForms: true,
       preserveLineEndings: true,  // do not convert CRLF to LF
@@ -521,8 +525,12 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     return {
       htmlAst: htmlResult.rootNodes,
       templateAst: parseResult.templateAst,
-      directive: data.metadata, directives, pipes,
-      parseErrors: parseResult.errors, expressionParser, template,
+      directive: data.metadata,
+      directives,
+      pipes,
+      parseErrors: parseResult.errors,
+      expressionParser,
+      template,
     };
   }
 
@@ -586,7 +594,7 @@ function spanOf(node: tss.Node): Span {
 function spanAt(sourceFile: tss.SourceFile, line: number, column: number): Span|undefined {
   if (line != null && column != null) {
     const position = tss.getPositionOfLineAndCharacter(sourceFile, line, column);
-    const findChild = function findChild(node: tss.Node): tss.Node | undefined {
+    const findChild = function findChild(node: tss.Node): tss.Node|undefined {
       if (node.kind > tss.SyntaxKind.LastToken && node.pos <= position && node.end > position) {
         const betterNode = tss.forEachChild(node, findChild);
         return betterNode || node;

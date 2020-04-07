@@ -10,10 +10,13 @@ import * as yargs from 'yargs';
 
 import {resolve, setFileSystem, CachedFileSystem, NodeJSFileSystem} from '../src/ngtsc/file_system';
 import {mainNgcc} from './src/main';
-import {ConsoleLogger, LogLevel} from './src/logging/console_logger';
+import {ConsoleLogger} from './src/logging/console_logger';
+import {LogLevel} from './src/logging/logger';
 
 // CLI entry point
 if (require.main === module) {
+  process.title = 'ngcc';
+
   const startTime = Date.now();
 
   const args = process.argv.slice(2);
@@ -38,7 +41,8 @@ if (require.main === module) {
           .option('t', {
             alias: 'target',
             describe:
-                'A relative path (from the `source` path) to a single entry-point to process (plus its dependencies).',
+                'A relative path (from the `source` path) to a single entry-point to process (plus its dependencies).\n' +
+                'If this property is provided then `error-on-failed-entry-point` is forced to true',
           })
           .option('first-only', {
             describe:
@@ -75,6 +79,29 @@ if (require.main === module) {
             describe: 'The lowest severity logging message that should be output.',
             choices: ['debug', 'info', 'warn', 'error'],
           })
+          .option('invalidate-entry-point-manifest', {
+            describe:
+                'If this is set then ngcc will not read an entry-point manifest file from disk.\n' +
+                'Instead it will walk the directory tree as normal looking for entry-points, and then write a new manifest file.',
+            type: 'boolean',
+            default: false,
+          })
+          .option('error-on-failed-entry-point', {
+            describe:
+                'Set this option in order to terminate immediately with an error code if an entry-point fails to be processed.\n' +
+                'If `-t`/`--target` is provided then this property is always true and cannot be changed. Otherwise the default is false.\n' +
+                'When set to false, ngcc will continue to process entry-points after a failure. In which case it will log an error and resume processing other entry-points.',
+            type: 'boolean',
+            default: false,
+          })
+          .option('tsconfig', {
+            describe:
+                'A path to a tsconfig.json file that will be used to configure the Angular compiler and module resolution used by ngcc.\n' +
+                'If not provided, ngcc will attempt to read a `tsconfig.json` file from the folder above that given by the `-s` option.\n' +
+                'Set to false (via `--no-tsconfig`) if you do not want ngcc to use any `tsconfig.json` file.',
+            type: 'string',
+          })
+          .strict()
           .help()
           .parse(args);
 
@@ -93,8 +120,14 @@ if (require.main === module) {
   const createNewEntryPointFormats = options['create-ivy-entry-points'];
   const logLevel = options['l'] as keyof typeof LogLevel | undefined;
   const enableI18nLegacyMessageIdFormat = options['legacy-message-ids'];
+  const invalidateEntryPointManifest = options['invalidate-entry-point-manifest'];
+  const errorOnFailedEntryPoint = options['error-on-failed-entry-point'];
+  // yargs is not so great at mixed string+boolean types, so we have to test tsconfig against a
+  // string "false" to capture the `tsconfig=false` option.
+  // And we have to convert the option to a string to handle `no-tsconfig`, which will be `false`.
+  const tsConfigPath = `${options['tsconfig']}` === 'false' ? null : options['tsconfig'];
 
-  (async() => {
+  (async () => {
     try {
       const logger = logLevel && new ConsoleLogger(LogLevel[logLevel]);
 
@@ -107,6 +140,9 @@ if (require.main === module) {
         logger,
         enableI18nLegacyMessageIdFormat,
         async: options['async'],
+        invalidateEntryPointManifest,
+        errorOnFailedEntryPoint,
+        tsConfigPath
       });
 
       if (logger) {

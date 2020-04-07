@@ -223,7 +223,6 @@ function _stripIndexHtml(url: string): string {
 /**
  * Tries to decode the URI component without throwing an exception.
  *
- * @private
  * @param str value potential URI component to check.
  * @returns the decoded URI if it can be decoded or else `undefined`.
  */

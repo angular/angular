@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, SkipSelf, forwardRef} from '@angular/core';
+import {Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, SkipSelf} from '@angular/core';
 
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
@@ -31,13 +31,13 @@ export const controlNameBinding: any = {
  * @description
  * Syncs a `FormControl` in an existing `FormGroup` to a form control
  * element by name.
- * 
+ *
  * @see [Reactive Forms Guide](guide/reactive-forms)
  * @see `FormControl`
  * @see `AbstractControl`
  *
  * @usageNotes
- * 
+ *
  * ### Register `FormControl` within a group
  *
  * The following example shows how to register multiple form controls within a form group
@@ -140,7 +140,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * Tracks the `FormControl` instance bound to the directive.
    */
   // TODO(issue/24571): remove '!'.
-  readonly control !: FormControl;
+  readonly control!: FormControl;
 
   /**
    * @description
@@ -152,14 +152,16 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * to indices when iterating over controls in a `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('formControlName') name !: string | number | null;
+  @Input('formControlName') name!: string|number|null;
 
   /**
    * @description
    * Triggers a warning that this input should not be used with reactive forms.
    */
   @Input('disabled')
-  set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
+  set isDisabled(isDisabled: boolean) {
+    ReactiveErrors.disabledAttrWarning();
+  }
 
   // TODO(kara): remove next 4 properties once deprecation period is over
 
@@ -244,21 +246,25 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * Each index is the string name of the control on that level.
    */
   get path(): string[] {
-    return controlPath(this.name == null ? this.name : this.name.toString(), this._parent !);
+    return controlPath(this.name == null ? this.name : this.name.toString(), this._parent!);
   }
 
   /**
    * @description
    * The top-level directive for this group if present, otherwise null.
    */
-  get formDirective(): any { return this._parent ? this._parent.formDirective : null; }
+  get formDirective(): any {
+    return this._parent ? this._parent.formDirective : null;
+  }
 
   /**
    * @description
    * Synchronous validator function composed of all the synchronous validators
    * registered with this directive.
    */
-  get validator(): ValidatorFn|null { return composeValidators(this._rawValidators); }
+  get validator(): ValidatorFn|null {
+    return composeValidators(this._rawValidators);
+  }
 
   /**
    * @description
@@ -266,7 +272,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * directive.
    */
   get asyncValidator(): AsyncValidatorFn {
-    return composeAsyncValidators(this._rawAsyncValidators) !;
+    return composeAsyncValidators(this._rawAsyncValidators)!;
   }
 
   private _checkParentType(): void {
@@ -282,9 +288,9 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   private _setUpControl() {
     this._checkParentType();
-    (this as{control: FormControl}).control = this.formDirective.addControl(this);
-    if (this.control.disabled && this.valueAccessor !.setDisabledState) {
-      this.valueAccessor !.setDisabledState !(true);
+    (this as {control: FormControl}).control = this.formDirective.addControl(this);
+    if (this.control.disabled && this.valueAccessor!.setDisabledState) {
+      this.valueAccessor!.setDisabledState!(true);
     }
     this._added = true;
   }

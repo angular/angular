@@ -351,6 +351,10 @@ export class TestBedRender3 implements TestBed {
     return fixture;
   }
 
+  /**
+   * @internal strip this from published d.ts files due to
+   * https://github.com/microsoft/TypeScript/issues/36216
+   */
   private get compiler(): R3TestBedCompiler {
     if (this._compiler === null) {
       throw new Error(`Need to call TestBed.initTestEnvironment() first`);
@@ -358,6 +362,10 @@ export class TestBedRender3 implements TestBed {
     return this._compiler;
   }
 
+  /**
+   * @internal strip this from published d.ts files due to
+   * https://github.com/microsoft/TypeScript/issues/36216
+   */
   private get testModuleRef(): NgModuleRef<any> {
     if (this._testModuleRef === null) {
       this._testModuleRef = this.compiler.finalize();

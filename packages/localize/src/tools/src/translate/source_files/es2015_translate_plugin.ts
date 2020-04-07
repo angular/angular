@@ -9,7 +9,7 @@ import {ɵParsedTranslation} from '@angular/localize';
 import {NodePath, PluginObj} from '@babel/core';
 import {TaggedTemplateExpression} from '@babel/types';
 import {Diagnostics} from '../../diagnostics';
-import {TranslatePluginOptions, buildLocalizeReplacement, isBabelParseError, isLocalize, translate, unwrapMessagePartsFromTemplateLiteral} from './source_file_utils';
+import {TranslatePluginOptions, buildCodeFrameError, buildLocalizeReplacement, isBabelParseError, isLocalize, translate, unwrapMessagePartsFromTemplateLiteral} from './source_file_utils';
 
 export function makeEs2015TranslatePlugin(
     diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation>,
@@ -32,7 +32,7 @@ export function makeEs2015TranslatePlugin(
             // If we get a BabelParseError here then something went wrong with Babel itself
             // since there must be something wrong with the structure of the AST generated
             // by Babel parsing a TaggedTemplateExpression.
-            throw path.hub.file.buildCodeFrameError(e.node, e.message);
+            throw buildCodeFrameError(path, e);
           }
         }
       }

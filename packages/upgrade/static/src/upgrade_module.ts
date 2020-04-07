@@ -24,10 +24,10 @@ import {NgAdapterInjector} from './util';
  * and has an instance method used to bootstrap the hybrid upgrade application.
  *
  * *Part of the [upgrade/static](api?query=upgrade/static)
- * library for hybrid upgrade apps that support AoT compilation*
+ * library for hybrid upgrade apps that support AOT compilation*
  *
  * The `upgrade/static` package contains helpers that allow AngularJS and Angular components
- * to be used together inside a hybrid upgrade application, which supports AoT compilation.
+ * to be used together inside a hybrid upgrade application, which supports AOT compilation.
  *
  * Specifically, the classes and functions in the `upgrade/static` module allow the following:
  *

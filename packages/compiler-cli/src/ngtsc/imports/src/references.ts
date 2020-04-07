@@ -11,11 +11,6 @@ import * as ts from 'typescript';
 
 import {identifierOfNode} from '../../util/src/typescript';
 
-export enum ImportMode {
-  UseExistingImport,
-  ForceNewImport,
-}
-
 export interface OwningModule {
   specifier: string;
   resolutionContext: string;
@@ -113,6 +108,49 @@ export class Reference<T extends ts.Node = ts.Node> {
    */
   getIdentityIn(context: ts.SourceFile): ts.Identifier|null {
     return this.identifiers.find(id => id.getSourceFile() === context) || null;
+  }
+
+  /**
+   * Get a `ts.Identifier` for this `Reference` that exists within the given expression.
+   *
+   * This is very useful for producing `ts.Diagnostic`s that reference `Reference`s that were
+   * extracted from some larger expression, as it can be used to pinpoint the `ts.Identifier` within
+   * the expression from which the `Reference` originated.
+   */
+  getIdentityInExpression(expr: ts.Expression): ts.Identifier|null {
+    const sf = expr.getSourceFile();
+    return this.identifiers.find(id => {
+      if (id.getSourceFile() !== sf) {
+        return false;
+      }
+
+      // This identifier is a match if its position lies within the given expression.
+      return id.pos >= expr.pos && id.end <= expr.end;
+    }) ||
+        null;
+  }
+
+  /**
+   * Given the 'container' expression from which this `Reference` was extracted, produce a
+   * `ts.Expression` to use in a diagnostic which best indicates the position within the container
+   * expression that generated the `Reference`.
+   *
+   * For example, given a `Reference` to the class 'Bar' and the containing expression:
+   * `[Foo, Bar, Baz]`, this function would attempt to return the `ts.Identifier` for `Bar` within
+   * the array. This could be used to produce a nice diagnostic context:
+   *
+   * ```text
+   * [Foo, Bar, Baz]
+   *       ~~~
+   * ```
+   *
+   * If no specific node can be found, then the `fallback` expression is used, which defaults to the
+   * entire containing expression.
+   */
+  getOriginForDiagnostics(container: ts.Expression, fallback: ts.Expression = container):
+      ts.Expression {
+    const id = this.getIdentityInExpression(container);
+    return id !== null ? id : fallback;
   }
 
   cloneWithAlias(alias: Expression): Reference<T> {

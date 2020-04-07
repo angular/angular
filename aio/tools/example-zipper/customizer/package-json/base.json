@@ -13,7 +13,6 @@
     "@angular/router",
     "@angular/upgrade",
     "angular-in-memory-web-api",
-    "core-js",
     "rxjs",
     "zone.js"
   ],

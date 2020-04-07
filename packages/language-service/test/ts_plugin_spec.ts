@@ -26,7 +26,7 @@ const mockProject = {
 describe('plugin', () => {
   const mockHost = new MockTypescriptHost(['/app/main.ts']);
   const tsLS = ts.createLanguageService(mockHost);
-  const program = tsLS.getProgram() !;
+  const program = tsLS.getProgram()!;
   const plugin = create({
     languageService: tsLS,
     languageServiceHost: mockHost,
@@ -35,7 +35,9 @@ describe('plugin', () => {
     config: {},
   });
 
-  beforeEach(() => { mockHost.reset(); });
+  beforeEach(() => {
+    mockHost.reset();
+  });
 
   it('should produce TypeScript diagnostics', () => {
     const fileName = '/foo.ts';
@@ -55,8 +57,8 @@ describe('plugin', () => {
     const compilerDiags = tsLS.getCompilerOptionsDiagnostics();
     expect(compilerDiags).toEqual([]);
     const sourceFiles = program.getSourceFiles().filter(f => !f.fileName.endsWith('.d.ts'));
-    // there are six .ts files in the test project
-    expect(sourceFiles.length).toBe(6);
+    // there are three .ts files in the test project
+    expect(sourceFiles.length).toBe(3);
     for (const {fileName} of sourceFiles) {
       const syntacticDiags = tsLS.getSyntacticDiagnostics(fileName);
       expect(syntacticDiags).toEqual([]);
@@ -117,7 +119,7 @@ describe('plugin', () => {
     const marker = mockHost.getLocationMarkerFor(MY_COMPONENT, 'tree');
     const completions = plugin.getCompletionsAtPosition(MY_COMPONENT, marker.start, undefined);
     expect(completions).toBeDefined();
-    expect(completions !.entries).toEqual([
+    expect(completions!.entries).toEqual([
       {
         name: 'children',
         kind: CompletionKind.PROPERTY as any,

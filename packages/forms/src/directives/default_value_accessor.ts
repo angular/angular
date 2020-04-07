@@ -7,7 +7,8 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {Directive, ElementRef, Inject, InjectionToken, Optional, Renderer2, forwardRef} from '@angular/core';
+import {Directive, ElementRef, forwardRef, Inject, InjectionToken, Optional, Renderer2} from '@angular/core';
+
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const DEFAULT_VALUE_ACCESSOR: any = {
@@ -112,7 +113,9 @@ export class DefaultValueAccessor implements ControlValueAccessor {
    *
    * @param fn The callback function
    */
-  registerOnChange(fn: (_: any) => void): void { this.onChange = fn; }
+  registerOnChange(fn: (_: any) => void): void {
+    this.onChange = fn;
+  }
 
   /**
    * @description
@@ -120,7 +123,9 @@ export class DefaultValueAccessor implements ControlValueAccessor {
    *
    * @param fn The callback function
    */
-  registerOnTouched(fn: () => void): void { this.onTouched = fn; }
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
 
   /**
    * Sets the "disabled" property on the input element.
@@ -139,7 +144,9 @@ export class DefaultValueAccessor implements ControlValueAccessor {
   }
 
   /** @internal */
-  _compositionStart(): void { this._composing = true; }
+  _compositionStart(): void {
+    this._composing = true;
+  }
 
   /** @internal */
   _compositionEnd(value: any): void {

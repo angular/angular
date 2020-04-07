@@ -33,6 +33,7 @@ ts_library(
         ],
         exclude = [
             "common/Error.spec.ts",
+            "common/promise-disable-wrap-uncaught-promise-rejection.spec.ts",
         ],
     ),
     deps = [
@@ -68,10 +69,42 @@ ts_library(
     testonly = True,
     srcs = glob(["node/*.ts"]) + [
         "node-env-setup.ts",
-        "node_entry_point.ts",
-        "node_entry_point_no_patch_clock.ts",
         "test-env-setup-jasmine-no-patch-clock.ts",
     ],
+    deps = [
+        ":common_spec_env",
+        ":common_spec_srcs",
+        ":common_spec_util",
+        "//packages/zone.js/lib",
+        "@npm//@types/shelljs",
+        "@npm//@types/systemjs",
+        "@npm//rxjs",
+        "@npm//shelljs",
+        "@npm//systemjs",
+    ],
+)
+
+ts_library(
+    name = "node_entry_point",
+    testonly = True,
+    srcs = ["node_entry_point.ts"],
+    deps = [
+        ":common_spec_env",
+        ":common_spec_srcs",
+        ":common_spec_util",
+        "//packages/zone.js/lib",
+        "@npm//@types/shelljs",
+        "@npm//@types/systemjs",
+        "@npm//rxjs",
+        "@npm//shelljs",
+        "@npm//systemjs",
+    ],
+)
+
+ts_library(
+    name = "node_entry_point_no_patch_clock",
+    testonly = True,
+    srcs = ["node_entry_point_no_patch_clock.ts"],
     deps = [
         ":common_spec_env",
         ":common_spec_srcs",
@@ -90,7 +123,6 @@ ts_library(
     testonly = True,
     srcs = [
         "extra/bluebird.spec.ts",
-        "node_bluebird_entry_point.ts",
     ],
     deps = [
         ":common_spec_env",
@@ -100,13 +132,33 @@ ts_library(
 )
 
 ts_library(
-    name = "error_spec",
+    name = "node_bluebird_entry_point",
     testonly = True,
-    srcs = [
-        "node_error_disable_policy_entry_point.ts",
-        "node_error_entry_point.ts",
-        "node_error_lazy_policy_entry_point.ts",
+    srcs = ["node_bluebird_entry_point.ts"],
+    deps = [
+        ":common_spec_env",
+        "//packages/zone.js/lib",
+        "@npm//bluebird",
     ],
+)
+
+ts_library(
+    name = "node_error_disable_policy_entry_point",
+    testonly = True,
+    srcs = ["node_error_disable_policy_entry_point.ts"],
+    deps = [
+        ":common_spec_env",
+        ":common_spec_util",
+        ":error_spec_srcs",
+        ":node_error_entry_point",
+        "//packages/zone.js/lib",
+    ],
+)
+
+ts_library(
+    name = "node_error_entry_point",
+    testonly = True,
+    srcs = ["node_error_entry_point.ts"],
     deps = [
         ":common_spec_env",
         ":common_spec_util",
@@ -115,11 +167,22 @@ ts_library(
     ],
 )
 
+ts_library(
+    name = "node_error_lazy_policy_entry_point",
+    testonly = True,
+    srcs = ["node_error_lazy_policy_entry_point.ts"],
+    deps = [
+        ":common_spec_env",
+        ":common_spec_util",
+        ":error_spec_srcs",
+        ":node_error_entry_point",
+        "//packages/zone.js/lib",
+    ],
+)
+
 jasmine_node_test(
     name = "test_node",
-    bootstrap = [
-        "angular/packages/zone.js/test/node_entry_point.js",
-    ],
+    bootstrap = [":node_entry_point_es5"],
     deps = [
         ":test_node_lib",
     ],
@@ -127,9 +190,7 @@ jasmine_node_test(
 
 jasmine_node_test(
     name = "test_node_no_jasmine_clock",
-    bootstrap = [
-        "angular/packages/zone.js/test/node_entry_point_no_patch_clock.js",
-    ],
+    bootstrap = [":node_entry_point_no_patch_clock_es5"],
     deps = [
         ":test_node_lib",
     ],
@@ -137,9 +198,7 @@ jasmine_node_test(
 
 jasmine_node_test(
     name = "test_node_bluebird",
-    bootstrap = [
-        "angular/packages/zone.js/test/node_bluebird_entry_point.js",
-    ],
+    bootstrap = [":node_bluebird_entry_point_es5"],
     deps = [
         ":bluebird_spec",
     ],
@@ -147,22 +206,12 @@ jasmine_node_test(
 
 jasmine_node_test(
     name = "test_node_error_disable_policy",
-    bootstrap = [
-        "angular/packages/zone.js/test/node_error_disable_policy_entry_point.js",
-    ],
-    deps = [
-        ":error_spec",
-    ],
+    bootstrap = [":node_error_disable_policy_entry_point_es5"],
 )
 
 jasmine_node_test(
     name = "test_node_error_lazy_policy",
-    bootstrap = [
-        "angular/packages/zone.js/test/node_error_lazy_policy_entry_point.js",
-    ],
-    deps = [
-        ":error_spec",
-    ],
+    bootstrap = [":node_error_lazy_policy_entry_point_es5"],
 )
 
 ts_library(
@@ -205,7 +254,10 @@ env_entry_point = ":browser-env-setup.ts"
 
 test_srcs = glob(
     ["browser/*.ts"],
-    exclude = ["browser/shadydom.spec.ts"],
+    exclude = [
+        "browser/shadydom.spec.ts",
+        "common/promise-disable-wrap-uncaught-promise-rejection.spec.ts",
+    ],
 ) + [
     "extra/cordova.spec.ts",
     "mocha-patch.spec.ts",
@@ -230,15 +282,15 @@ test_deps = [
 test_entry_point = ":browser_entry_point.ts"
 
 karma_tests = {
-    "browser_test": ["//packages/zone.js/dist:zone-testing-bundle-dist-dev-test"],
+    "browser_test": ["//packages/zone.js/dist:zone-testing-bundle.js"],
     "browser_green_test": [
-        "//packages/zone.js/dist:zone-evergreen-dist-dev-test",
-        "//packages/zone.js/dist:zone-testing-dist-dev-test",
+        "//packages/zone.js/dist:zone-evergreen.js",
+        "//packages/zone.js/dist:zone-testing.js",
     ],
     "browser_legacy_test": [
-        "//packages/zone.js/dist:zone-legacy-dist-dev-test",
-        "//packages/zone.js/dist:zone-evergreen-dist-dev-test",
-        "//packages/zone.js/dist:zone-testing-dist-dev-test",
+        "//packages/zone.js/dist:zone-legacy.js",
+        "//packages/zone.js/dist:zone-evergreen.js",
+        "//packages/zone.js/dist:zone-testing.js",
     ],
 }
 
@@ -257,8 +309,8 @@ karma_test(
 karma_test(
     name = "browser_shadydom",
     bootstraps = {"browser_shadydom": [
-        "//packages/zone.js/dist:zone-testing-bundle-dist-dev-test",
-        "//packages/zone.js/dist:webapis-shadydom-dist-dev-test",
+        "//packages/zone.js/dist:zone-testing-bundle.js",
+        "//packages/zone.js/dist:webapis-shadydom.js",
     ]},
     ci = False,
     env_deps = [
@@ -273,5 +325,26 @@ karma_test(
     test_srcs = [
         "browser/shadydom.spec.ts",
         "browser_shadydom_entry_point.ts",
+    ],
+)
+
+karma_test(
+    name = "browser_disable_wrap_uncaught_promise_rejection",
+    bootstraps = {"browser_disable_wrap_uncaught_promise_rejection": [
+        "//packages/zone.js/dist:zone-testing-bundle.js",
+    ]},
+    ci = False,
+    env_deps = [
+        "//packages/zone.js/lib",
+    ],
+    env_entry_point = ":browser_disable_wrap_uncaught_promise_rejection_setup.ts",
+    env_srcs = ["browser_disable_wrap_uncaught_promise_rejection_setup.ts"],
+    test_deps = [
+        "//packages/zone.js/lib",
+    ],
+    test_entry_point = ":browser_disable_wrap_uncaught_promise_rejection_entry_point.ts",
+    test_srcs = [
+        "common/promise-disable-wrap-uncaught-promise-rejection.spec.ts",
+        "browser_disable_wrap_uncaught_promise_rejection_entry_point.ts",
     ],
 )

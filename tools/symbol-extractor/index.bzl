@@ -24,7 +24,7 @@ def js_expected_symbol_test(name, src, golden, data = [], **kwargs):
         name = name,
         data = all_data,
         entry_point = entry_point,
-        templated_args = ["$(location %s)" % src, "$(location %s)" % golden],
+        templated_args = ["$(rootpath %s)" % src, "$(rootpath %s)" % golden],
         configuration_env_vars = ["angular_ivy_enabled"],
         **kwargs
     )
@@ -35,6 +35,6 @@ def js_expected_symbol_test(name, src, golden, data = [], **kwargs):
         data = all_data,
         entry_point = entry_point,
         configuration_env_vars = ["angular_ivy_enabled"],
-        templated_args = ["$(location %s)" % src, "$(location %s)" % golden, "--accept"],
+        templated_args = ["$(rootpath %s)" % src, "$(rootpath %s)" % golden, "--accept"],
         **kwargs
     )

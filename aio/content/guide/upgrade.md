@@ -539,12 +539,14 @@ of multiple words. In Angular, you would bind these attributes using camelCase:
 
 <code-example format="">
   [myHero]="hero"
+  (heroDeleted)="handleHeroDeleted($event)"
 </code-example>
 
 But when using them from AngularJS templates, you must use kebab-case:
 
 <code-example format="">
   [my-hero]="hero"
+  (hero-deleted)="handleHeroDeleted($event)"
 </code-example>
 
 </div>
@@ -932,7 +934,7 @@ The `useHash` property defaults to `false`, and the `hashPrefix` defaults to an 
 
 ```ts
 LocationUpgradeModule.config({
-  useHash: true
+  useHash: true,
   hashPrefix: '!'
 })
 ```
@@ -958,6 +960,12 @@ angular.module('myHybridApp', [...])
 
 Once you introduce the Angular Router, using the Angular Router triggers navigations through the unified location service, still providing a single source for navigating with AngularJS and Angular.
 
+<!--
+TODO:
+Correctly document how to use AOT with SystemJS-based `ngUpgrade` apps (or better yet update the
+`ngUpgrade` examples/guides to use `@angular/cli`).
+See https://github.com/angular/angular/issues/35989.
+
 ## Using Ahead-of-time compilation with hybrid apps
 
 You can take advantage of Ahead-of-time (AOT) compilation on hybrid apps just like on any other
@@ -977,6 +985,7 @@ bootstrap the hybrid app:
 </code-example>
 
 And that's all you need do to get the full benefit of AOT for Angular apps!
+-->
 
 ## PhoneCat Upgrade Tutorial
 
@@ -1162,11 +1171,19 @@ Begin by installing TypeScript to the project.
 </code-example>
 
 Install type definitions for the existing libraries that
-you're using but that don't come with prepackaged types: AngularJS and the
+you're using but that don't come with prepackaged types: AngularJS, AngularJS Material, and the
 Jasmine unit test framework.
 
+For the PhoneCat app, we can install the necessary type definitions by running the following command:
+
 <code-example format="">
-  npm install @types/jasmine @types/angular @types/angular-animate @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize --save-dev
+  npm install @types/jasmine @types/angular @types/angular-animate @types/angular-aria @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize --save-dev
+</code-example>
+
+If you are using AngularJS Material, you can install the type definitions via:
+
+<code-example format="">
+  npm install @types/angular-material --save-dev
 </code-example>
 
 You should also configure the TypeScript compiler with a `tsconfig.json` in the project directory
@@ -1354,7 +1371,7 @@ You also need to make a couple of adjustments
 to the `systemjs.config.js` file installed during [upgrade setup](guide/upgrade-setup).
 
 Point the browser to the project root when loading things through SystemJS,
-instead of using the  `<base>` URL.
+instead of using the `<base>` URL.
 
 Install the `upgrade` package via `npm install @angular/upgrade --save`
 and add a mapping for the `@angular/upgrade/static` package.

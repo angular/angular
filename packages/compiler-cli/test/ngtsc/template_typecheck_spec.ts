@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 
+import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {absoluteFrom as _, getFileSystem} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
@@ -70,7 +71,7 @@ export declare class NgIf<T = unknown> {
   ngIfThen: TemplateRef<NgIfContext<T>> | null;
   constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext<T>>);
   static ngTemplateGuard_ngIf: 'binding';
-  static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<T>;
+  static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<NonNullable<T>>;
   static ɵdir: i0.ɵɵDirectiveDefWithMeta<NgIf<any>, '[ngIf]', never, {'ngIf': 'ngIf'}, {}, never>;
 }
 
@@ -135,6 +136,8 @@ export declare class AnimationEvent {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
+      // The reported error code should be in the TS error space, not a -99 "NG" code.
+      expect(diags[0].code).toBeGreaterThan(0);
     });
 
     it('should support inputs and outputs with names that are not JavaScript identifiers', () => {
@@ -174,6 +177,33 @@ export declare class AnimationEvent {
           .toEqual(`Argument of type 'string' is not assignable to parameter of type 'number'.`);
     });
 
+    it('should support one input property mapping to multiple fields', () => {
+      env.write('test.ts', `
+        import {Component, Directive, Input, NgModule} from '@angular/core';
+
+        @Directive({
+          selector: '[dir]',
+        })
+        export class Dir {
+
+          @Input('propertyName') fieldA!: string;
+          @Input('propertyName') fieldB!: string;
+        }
+
+        @Component({
+          selector: 'test-cmp',
+          template: '<div dir propertyName="test"></div>',
+        })
+        export class Cmp {}
+
+        @NgModule({declarations: [Dir, Cmp]})
+        export class Module {}
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
     it('should check event bindings', () => {
       env.tsconfig({fullTemplateTypeCheck: true, strictOutputEventTypes: true});
       env.write('test.ts', `
@@ -211,6 +241,85 @@ export declare class AnimationEvent {
       expect(diags[2].messageText).toEqual(`Property 'focused' does not exist on type 'TestCmp'.`);
     });
 
+    // https://github.com/angular/angular/issues/35073
+    it('ngIf should narrow on output types', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {CommonModule} from '@angular/common';
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<div *ngIf="person" (click)="handleEvent(person.name)"></div>',
+        })
+        class TestCmp {
+          person?: { name: string; };
+          handleEvent(name: string) {}
+        }
+
+        @NgModule({
+          imports: [CommonModule],
+          declarations: [TestCmp],
+        })
+        class Module {}
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('ngIf should narrow on output types across multiple guards', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {CommonModule} from '@angular/common';
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<div *ngIf="person"><div *ngIf="person.name" (click)="handleEvent(person.name)"></div></div>',
+        })
+        class TestCmp {
+          person?: { name?: string; };
+          handleEvent(name: string) {}
+        }
+
+        @NgModule({
+          imports: [CommonModule],
+          declarations: [TestCmp],
+        })
+        class Module {}
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should support a directive being used in its own input expression', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {Component, Directive, NgModule, Input} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<target-cmp #ref [foo]="ref.bar"></target-cmp>',
+        })
+        export class TestCmp {}
+
+        @Component({template: '', selector: 'target-cmp'})
+        export class TargetCmp {
+          readonly bar = 'test';
+          @Input() foo: string;
+        }
+
+        @NgModule({
+          declarations: [TestCmp, TargetCmp],
+        })
+        export class Module {}
+      `);
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
     describe('strictInputTypes', () => {
       beforeEach(() => {
         env.write('test.ts', `
@@ -245,7 +354,7 @@ export declare class AnimationEvent {
       });
 
       it('should check expressions and their type when overall strictness is enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+        env.tsconfig({strictTemplates: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -303,7 +412,7 @@ export declare class AnimationEvent {
 
       it('should check expressions and their nullability when overall strictness is enabled',
          () => {
-           env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+           env.tsconfig({strictTemplates: true});
 
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(2);
@@ -366,10 +475,7 @@ export declare class AnimationEvent {
 
       it('should infer result type for safe navigation expressions when overall strictness is enabled',
          () => {
-           env.tsconfig({
-             fullTemplateTypeCheck: true,
-             strictTemplates: true,
-           });
+           env.tsconfig({strictTemplates: true});
 
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(2);
@@ -429,7 +535,7 @@ export declare class AnimationEvent {
       });
 
       it('should expressions and infer type of $event when overall strictness is enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+        env.tsconfig({strictTemplates: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -483,7 +589,7 @@ export declare class AnimationEvent {
 
       it('should check expressions and let $event be of type AnimationEvent when overall strictness is enabled',
          () => {
-           env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+           env.tsconfig({strictTemplates: true});
 
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(2);
@@ -532,7 +638,7 @@ export declare class AnimationEvent {
       });
 
       it('should infer the type of DOM references when overall strictness is enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+        env.tsconfig({strictTemplates: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -583,7 +689,7 @@ export declare class AnimationEvent {
       });
 
       it('should produce an error for text attributes when overall strictness is enabled', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+        env.tsconfig({strictTemplates: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -633,7 +739,7 @@ export declare class AnimationEvent {
 
       it('should check expressions and infer type of $event when overall strictness is enabled',
          () => {
-           env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+           env.tsconfig({strictTemplates: true});
 
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(2);
@@ -685,6 +791,54 @@ export declare class AnimationEvent {
     @Component({
       selector: 'test',
       template: '<div *ngIf="user !== null">{{user.name}}</div>',
+    })
+    class TestCmp {
+      user: {name: string}|null;
+    }
+
+    @NgModule({
+      declarations: [TestCmp],
+      imports: [CommonModule],
+    })
+    class Module {}
+    `);
+
+      env.driveMain();
+    });
+
+    it('should check usage of NgIf when using "let" to capture $implicit context variable', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+    import {CommonModule} from '@angular/common';
+    import {Component, NgModule} from '@angular/core';
+
+    @Component({
+      selector: 'test',
+      template: '<div *ngIf="user; let u">{{u.name}}</div>',
+    })
+    class TestCmp {
+      user: {name: string}|null;
+    }
+
+    @NgModule({
+      declarations: [TestCmp],
+      imports: [CommonModule],
+    })
+    class Module {}
+    `);
+
+      env.driveMain();
+    });
+
+    it('should check usage of NgIf when using "as" to capture `ngIf` context variable', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+    import {CommonModule} from '@angular/common';
+    import {Component, NgModule} from '@angular/core';
+
+    @Component({
+      selector: 'test',
+      template: '<div *ngIf="user as u">{{u.name}}</div>',
     })
     class TestCmp {
       user: {name: string}|null;
@@ -776,7 +930,7 @@ export declare class AnimationEvent {
     });
 
     it('should accept NgFor iteration over a QueryList', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+      env.tsconfig({strictTemplates: true});
       env.write('test.ts', `
         import {CommonModule} from '@angular/common';
         import {Component, NgModule, QueryList} from '@angular/core';
@@ -800,7 +954,7 @@ export declare class AnimationEvent {
     });
 
     it('should infer the context of NgFor', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+      env.tsconfig({strictTemplates: true});
       env.write('test.ts', `
         import {CommonModule} from '@angular/common';
         import {Component, NgModule} from '@angular/core';
@@ -825,7 +979,7 @@ export declare class AnimationEvent {
     });
 
     it('should infer the context of NgIf', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+      env.tsconfig({strictTemplates: true});
       env.write('test.ts', `
         import {CommonModule} from '@angular/common';
         import {Component, NgModule} from '@angular/core';
@@ -948,7 +1102,8 @@ export declare class AnimationEvent {
     });
 
     it('should constrain types using type parameter bounds', () => {
-      env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
+      env.tsconfig(
+          {fullTemplateTypeCheck: true, strictInputTypes: true, strictContextGenerics: true});
       env.write('test.ts', `
     import {CommonModule} from '@angular/common';
     import {Component, Input, NgModule} from '@angular/core';
@@ -1009,7 +1164,7 @@ export declare class AnimationEvent {
       });
 
       it('should be correctly inferred under strictTemplates', () => {
-        env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: true});
+        env.tsconfig({strictTemplates: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -1148,6 +1303,101 @@ export declare class AnimationEvent {
       expect(diags.length).toEqual(1);
       expect(getSourceCodeForDiagnostic(diags[0])).toEqual('y = !y');
     });
+
+    it('should detect a duplicate variable declaration', () => {
+      env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Component({
+          selector: 'test',
+          template: \`
+            <div *ngFor="let i of items; let i = index">
+              {{i}}
+            </div>
+          \`,
+        })
+        export class TestCmp {
+          items!: string[];
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+          imports: [CommonModule],
+        })
+        export class Module {}
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toEqual(1);
+      expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.DUPLICATE_VARIABLE_DECLARATION));
+      expect(getSourceCodeForDiagnostic(diags[0])).toContain('let i = index');
+    });
+
+    it('should still type-check when fileToModuleName aliasing is enabled, but alias exports are not in the .d.ts file',
+       () => {
+         // The template type-checking file imports directives/pipes in order to type-check their
+         // usage. When `UnifiedModulesHost` aliasing is enabled, these imports would ordinarily use
+         // aliased values. However, such aliases are not guaranteed to exist in the .d.ts files,
+         // and so feeding such imports back into TypeScript does not work.
+         //
+         // Instead, direct imports should be used within template type-checking code. This test
+         // verifies that template type-checking is able to cope with such a scenario where
+         // aliasing is enabled and alias re-exports don't exist in .d.ts files.
+         env.tsconfig({
+           // Setting this private flag turns on aliasing.
+           '_useHostForImportGeneration': true,
+           // Because the tsconfig is overridden, template type-checking needs to be turned back on
+           // explicitly as well.
+           'fullTemplateTypeCheck': true,
+         });
+
+         // 'alpha' declares the directive which will ultimately be imported.
+         env.write('alpha.d.ts', `
+          import {ɵɵDirectiveDefWithMeta, ɵɵNgModuleDefWithMeta} from '@angular/core';
+
+          export declare class ExternalDir {
+            input: string;
+            static ɵdir: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, { 'input': "input" }, never, never>;
+          }
+
+          export declare class AlphaModule {
+            static ɵmod: ɵɵNgModuleDefWithMeta<AlphaModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
+          }
+         `);
+
+         // 'beta' re-exports AlphaModule from alpha.
+         env.write('beta.d.ts', `
+          import {ɵɵNgModuleDefWithMeta} from '@angular/core';
+          import {AlphaModule} from './alpha';
+
+          export declare class BetaModule {
+            static ɵmod: ɵɵNgModuleDefWithMeta<BetaModule, never, never, [typeof AlphaModule]>;
+          }
+         `);
+
+         // The application imports BetaModule from beta, gaining visibility of ExternalDir from
+         // alpha.
+         env.write('test.ts', `
+          import {Component, NgModule} from '@angular/core';
+          import {BetaModule} from './beta';
+
+          @Component({
+            selector: 'cmp',
+            template: '<div test input="value"></div>',
+          })
+          export class Cmp {}
+
+          @NgModule({
+            declarations: [Cmp],
+            imports: [BetaModule],
+          })
+          export class Module {}
+         `);
+
+         const diags = env.driveDiagnostics();
+         expect(diags.length).toBe(0);
+       });
 
     describe('input coercion', () => {
       beforeEach(() => {
@@ -1551,6 +1801,41 @@ export declare class AnimationEvent {
               .toBe(`'./template.html'`);
         });
       });
+    });
+
+    describe('option compatibility verification', () => {
+      beforeEach(() => env.write('index.ts', `export const a = 1;`));
+
+      it('should error if "fullTemplateTypeCheck" is false when "strictTemplates" is true', () => {
+        env.tsconfig({fullTemplateTypeCheck: false, strictTemplates: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toContain(
+                'Angular compiler option "strictTemplates" is enabled, however "fullTemplateTypeCheck" is disabled.');
+      });
+      it('should not error if "fullTemplateTypeCheck" is false when "strictTemplates" is false',
+         () => {
+           env.tsconfig({fullTemplateTypeCheck: false, strictTemplates: false});
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
+      it('should not error if "fullTemplateTypeCheck" is not set when "strictTemplates" is true',
+         () => {
+           env.tsconfig({strictTemplates: true});
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
+      it('should not error if "fullTemplateTypeCheck" is true set when "strictTemplates" is true',
+         () => {
+           env.tsconfig({strictTemplates: true});
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
     });
   });
 });

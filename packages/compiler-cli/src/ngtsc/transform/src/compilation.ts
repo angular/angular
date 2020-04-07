@@ -6,22 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, Type} from '@angular/compiler';
+import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {ImportRewriter} from '../../imports';
 import {IncrementalBuild} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
-import {ModuleWithProvidersScanner} from '../../modulewithproviders';
 import {PerfRecorder} from '../../perf';
-import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration} from '../../reflection';
+import {ClassDeclaration, Decorator, ReflectionHost} from '../../reflection';
 import {TypeCheckContext} from '../../typecheck';
 import {getSourceFile, isExported} from '../../util/src/typescript';
 
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from './api';
+import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerFlags, HandlerPrecedence, ResolveResult} from './api';
 import {DtsTransformRegistry} from './declaration';
-import {Trait, TraitState} from './trait';
+import {PendingTrait, Trait, TraitState} from './trait';
 
 
 /**
@@ -80,7 +78,7 @@ export class TraitCompiler {
    * Maps source files to any class declaration(s) within them which have been discovered to contain
    * Ivy traits.
    */
-  private fileToClasses = new Map<ts.SourceFile, Set<ClassDeclaration>>();
+  protected fileToClasses = new Map<ts.SourceFile, Set<ClassDeclaration>>();
 
   private reexportMap = new Map<string, Map<string, [string, string]>>();
 
@@ -103,6 +101,11 @@ export class TraitCompiler {
   private analyze(sf: ts.SourceFile, preanalyze: false): void;
   private analyze(sf: ts.SourceFile, preanalyze: true): Promise<void>|undefined;
   private analyze(sf: ts.SourceFile, preanalyze: boolean): Promise<void>|undefined {
+    // We shouldn't analyze declaration files.
+    if (sf.isDeclarationFile) {
+      return undefined;
+    }
+
     // analyze() really wants to return `Promise<void>|void`, but TypeScript cannot narrow a return
     // type of 'void', so `undefined` is used instead.
     const promises: Promise<void>[] = [];
@@ -118,7 +121,7 @@ export class TraitCompiler {
     }
 
     const visit = (node: ts.Node): void => {
-      if (isNamedClassDeclaration(node)) {
+      if (this.reflector.isClass(node)) {
         this.analyzeClass(node, preanalyze ? promises : null);
       }
       ts.forEachChild(node, visit);
@@ -130,6 +133,14 @@ export class TraitCompiler {
       return Promise.all(promises).then(() => undefined as void);
     } else {
       return undefined;
+    }
+  }
+
+  recordFor(clazz: ClassDeclaration): ClassRecord|null {
+    if (this.classes.has(clazz)) {
+      return this.classes.get(clazz) !;
+    } else {
+      return null;
     }
   }
 
@@ -187,14 +198,21 @@ export class TraitCompiler {
     this.fileToClasses.get(sf) !.add(record.node);
   }
 
-  private scanClassForTraits(clazz: ClassDeclaration): ClassRecord|null {
+  private scanClassForTraits(clazz: ClassDeclaration):
+      PendingTrait<unknown, unknown, unknown>[]|null {
     if (!this.compileNonExportedClasses && !isExported(clazz)) {
       return null;
     }
 
     const decorators = this.reflector.getDecoratorsOfDeclaration(clazz);
 
-    let record: ClassRecord|null = null;
+    return this.detectTraits(clazz, decorators);
+  }
+
+  protected detectTraits(clazz: ClassDeclaration, decorators: Decorator[]|null):
+      PendingTrait<unknown, unknown, unknown>[]|null {
+    let record: ClassRecord|null = this.recordFor(clazz);
+    let foundTraits: PendingTrait<unknown, unknown, unknown>[] = [];
 
     for (const handler of this.handlers) {
       const result = handler.detect(clazz, decorators);
@@ -202,10 +220,11 @@ export class TraitCompiler {
         continue;
       }
 
-
       const isPrimaryHandler = handler.precedence === HandlerPrecedence.PRIMARY;
       const isWeakHandler = handler.precedence === HandlerPrecedence.WEAK;
       const trait = Trait.pending(handler, result);
+
+      foundTraits.push(trait);
 
       if (record === null) {
         // This is the first handler to match this class. This path is a fast path through which
@@ -257,8 +276,8 @@ export class TraitCompiler {
             length: clazz.getWidth(),
             messageText: 'Two incompatible decorators on class',
           }];
-          record.traits = [];
-          return record;
+          record.traits = foundTraits = [];
+          break;
         }
 
         // Otherwise, it's safe to accept the multiple decorators here. Update some of the metadata
@@ -268,23 +287,34 @@ export class TraitCompiler {
       }
     }
 
-    return record;
+    return foundTraits.length > 0 ? foundTraits : null;
   }
 
-  private analyzeClass(clazz: ClassDeclaration, preanalyzeQueue: Promise<void>[]|null): void {
-    const record = this.scanClassForTraits(clazz);
+  protected analyzeClass(clazz: ClassDeclaration, preanalyzeQueue: Promise<void>[]|null): void {
+    const traits = this.scanClassForTraits(clazz);
 
-    if (record === null) {
+    if (traits === null) {
       // There are no Ivy traits on the class, so it can safely be skipped.
       return;
     }
 
-    for (const trait of record.traits) {
+    for (const trait of traits) {
       const analyze = () => this.analyzeTrait(clazz, trait);
 
       let preanalysis: Promise<void>|null = null;
       if (preanalyzeQueue !== null && trait.handler.preanalyze !== undefined) {
-        preanalysis = trait.handler.preanalyze(clazz, trait.detected.metadata) || null;
+        // Attempt to run preanalysis. This could fail with a `FatalDiagnosticError`; catch it if it
+        // does.
+        try {
+          preanalysis = trait.handler.preanalyze(clazz, trait.detected.metadata) || null;
+        } catch (err) {
+          if (err instanceof FatalDiagnosticError) {
+            trait.toErrored([err.toDiagnostic()]);
+            return;
+          } else {
+            throw err;
+          }
+        }
       }
       if (preanalysis !== null) {
         preanalyzeQueue !.push(preanalysis.then(analyze));
@@ -294,7 +324,9 @@ export class TraitCompiler {
     }
   }
 
-  private analyzeTrait(clazz: ClassDeclaration, trait: Trait<unknown, unknown, unknown>): void {
+  protected analyzeTrait(
+      clazz: ClassDeclaration, trait: Trait<unknown, unknown, unknown>,
+      flags?: HandlerFlags): void {
     if (trait.state !== TraitState.PENDING) {
       throw new Error(
           `Attempt to analyze trait of ${clazz.name.text} in state ${TraitState[trait.state]} (expected DETECTED)`);
@@ -303,7 +335,7 @@ export class TraitCompiler {
     // Attempt analysis. This could fail with a `FatalDiagnosticError`; catch it if it does.
     let result: AnalysisOutput<unknown>;
     try {
-      result = trait.handler.analyze(clazz, trait.detected.metadata);
+      result = trait.handler.analyze(clazz, trait.detected.metadata, flags);
     } catch (err) {
       if (err instanceof FatalDiagnosticError) {
         trait = trait.toErrored([err.toDiagnostic()]);
@@ -363,7 +395,7 @@ export class TraitCompiler {
           }
         }
 
-        if (result.diagnostics !== undefined) {
+        if (result.diagnostics !== undefined && result.diagnostics.length > 0) {
           trait = trait.toErrored(result.diagnostics);
         } else {
           if (result.data !== undefined) {
@@ -420,7 +452,7 @@ export class TraitCompiler {
 
   compile(clazz: ts.Declaration, constantPool: ConstantPool): CompileResult[]|null {
     const original = ts.getOriginalNode(clazz) as typeof clazz;
-    if (!isNamedClassDeclaration(clazz) || !isNamedClassDeclaration(original) ||
+    if (!this.reflector.isClass(clazz) || !this.reflector.isClass(original) ||
         !this.classes.has(original)) {
       return null;
     }
@@ -460,7 +492,7 @@ export class TraitCompiler {
 
   decoratorsFor(node: ts.Declaration): ts.Decorator[] {
     const original = ts.getOriginalNode(node) as typeof node;
-    if (!isNamedClassDeclaration(original) || !this.classes.has(original)) {
+    if (!this.reflector.isClass(original) || !this.classes.has(original)) {
       return [];
     }
 

@@ -39,6 +39,7 @@ ES5_BUNDLES = {
     "zone-patch-rxjs": _DIR + "rxjs/rxjs",
     "webapis-shadydom": _DIR + "browser/shadydom",
     "zone-patch-socket-io": _DIR + "extra/socket-io",
+    "zone-patch-message-port": _DIR + "browser/message-port",
     "zone-patch-user-media": _DIR + "browser/webapis-user-media",
     "zone-testing": _DIR + "testing/zone-testing",
     "zone-testing-bundle": _DIR + "browser/rollup-legacy-test-main",

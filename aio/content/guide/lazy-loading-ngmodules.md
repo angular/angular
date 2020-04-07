@@ -1,4 +1,4 @@
-# Lazy Loading Feature Modules
+# Lazy-loading feature modules
 
 ## High level view
 
@@ -50,11 +50,10 @@ This creates a `customers` folder with the new lazy-loadable module `CustomersMo
 Because the new module is meant to be lazy-loaded, the command does NOT add a reference to the new feature module in the application's root module file, `app.module.ts`.
 Instead, it adds the declared route, `customers` to the `routes` array declared in the module provided as the `--module` option.
 
-<code-example language="typescript" header="src/app/app-routing.module.ts">
-const routes: Routes = [
-    { path: 'customers',
-      loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule) }
-    ];
+<code-example
+  header="src/app/app-routing.module.ts"
+  path="lazy-loading-ngmodules/src/app/app-routing.module.ts"
+  region="routes-customers">
 </code-example>
 
 Notice that the lazy-loading syntax uses `loadChildren` followed by a function that uses the browser's built-in `import('...')` syntax for dynamic imports.
@@ -71,13 +70,10 @@ ng generate module orders --route orders --module app.module
 This creates a new folder called `orders` containing the `OrdersModule` and `OrdersRoutingModule`, along with the new `OrdersComponent` source files.
 The `orders` route, specified with the `--route` option, is added to the `routes` array inside the `app-routing.module.ts` file, using the lazy-loading syntax.
 
-<code-example language="typescript" header="src/app/app-routing.module.ts">
-const routes: Routes = [
-    { path: 'customers',
-      loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule) },
-    { path: 'orders',
-      loadChildren: () => import('./orders/orders.module').then(m => m.OrdersModule) }
-    ];
+<code-example
+  header="src/app/app-routing.module.ts"
+  path="lazy-loading-ngmodules/src/app/app-routing.module.ts"
+  region="routes-customers-orders">
 </code-example>
 
 ## Set up the UI
@@ -128,7 +124,7 @@ The `customers.module.ts` file imports the `customers-routing.module.ts` and `cu
 
 The `app-routing.module.ts` then imports the feature module, `customers.module.ts` using JavaScript's dynamic import.
 
-The feature-specific route definition file—`customers-routing.module.ts`—imports its own feature component defined in the `customers.componen.ts` file, along with the other JavaScript import statements. It then maps the empty path to the `CustomersComponent`.
+The feature-specific route definition file `customers-routing.module.ts` imports its own feature component defined in the `customers.component.ts` file, along with the other JavaScript import statements. It then maps the empty path to the `CustomersComponent`.
 
 <code-example path="lazy-loading-ngmodules/src/app/customers/customers-routing.module.ts" id="customers-routing.module.ts" region="customers-routing-module" header="src/app/customers/customers-routing.module.ts"></code-example>
 

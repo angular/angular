@@ -12,11 +12,10 @@ filegroup(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
     deps = [
         "//packages/bazel/src/schematics/ng-add:test",
         "//packages/bazel/src/schematics/ng-new:test",
         "//packages/bazel/src/schematics/utility:test",
-        "//tools/testing:node",
     ],
 )

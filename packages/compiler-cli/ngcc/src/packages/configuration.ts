@@ -5,15 +5,23 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {createHash} from 'crypto';
 import {satisfies} from 'semver';
 import * as vm from 'vm';
-import {AbsoluteFsPath, FileSystem, dirname, join, resolve} from '../../../src/ngtsc/file_system';
+
+import {AbsoluteFsPath, dirname, FileSystem, join, resolve} from '../../../src/ngtsc/file_system';
+
 import {PackageJsonFormatPropertiesMap} from './entry_point';
 
 /**
  * The format of a project level configuration file.
  */
-export interface NgccProjectConfig<T = NgccPackageConfig> { packages: {[packagePath: string]: T}; }
+export interface NgccProjectConfig<T = NgccPackageConfig> {
+  /**
+   * The packages that are configured by this project config.
+   */
+  packages: {[packagePath: string]: T};
+}
 
 /**
  * The format of a package level configuration file.
@@ -27,6 +35,11 @@ export interface NgccPackageConfig {
    * will be absolute.
    */
   entryPoints: {[entryPointPath: string]: NgccEntryPointConfig;};
+  /**
+   * A collection of regexes that match deep imports to ignore, for this package, rather than
+   * displaying a warning.
+   */
+  ignorableDeepImportMatchers?: RegExp[];
 }
 
 /**
@@ -91,6 +104,19 @@ export const DEFAULT_NGCC_CONFIG: NgccProjectConfig = {
     //   },
     // },
 
+    // The package does not contain any `.metadata.json` files in the root directory but only inside
+    // `dist/`. Without this config, ngcc does not realize this is a ViewEngine-built Angular
+    // package that needs to be compiled to Ivy.
+    'angular2-highcharts': {
+      entryPoints: {
+        '.': {
+          override: {
+            main: './index.js',
+          },
+        },
+      },
+    },
+
     // The `dist/` directory has a duplicate `package.json` pointing to the same files, which (under
     // certain configurations) can causes ngcc to try to process the files twice and fail.
     // Ignore the `dist/` entry-point.
@@ -136,10 +162,12 @@ export class NgccConfiguration {
   private defaultConfig: NgccProjectConfig<VersionedPackageConfig[]>;
   private projectConfig: NgccProjectConfig<VersionedPackageConfig[]>;
   private cache = new Map<string, VersionedPackageConfig>();
+  readonly hash: string;
 
   constructor(private fs: FileSystem, baseDir: AbsoluteFsPath) {
     this.defaultConfig = this.processProjectConfig(baseDir, DEFAULT_NGCC_CONFIG);
     this.projectConfig = this.processProjectConfig(baseDir, this.loadProjectConfig(baseDir));
+    this.hash = this.computeHash();
   }
 
   /**
@@ -152,7 +180,7 @@ export class NgccConfiguration {
   getConfig(packagePath: AbsoluteFsPath, version: string|null): VersionedPackageConfig {
     const cacheKey = packagePath + (version !== null ? `@${version}` : '');
     if (this.cache.has(cacheKey)) {
-      return this.cache.get(cacheKey) !;
+      return this.cache.get(cacheKey)!;
     }
 
     const projectLevelConfig =
@@ -188,7 +216,8 @@ export class NgccConfiguration {
         const absPackagePath = resolve(baseDir, 'node_modules', packagePath);
         const entryPoints = this.processEntryPoints(absPackagePath, packageConfig);
         processedConfig.packages[absPackagePath] = processedConfig.packages[absPackagePath] || [];
-        processedConfig.packages[absPackagePath].push({versionRange, entryPoints});
+        processedConfig.packages[absPackagePath].push(
+            {...packageConfig, versionRange, entryPoints});
       }
     }
     return processedConfig;
@@ -212,9 +241,11 @@ export class NgccConfiguration {
     const configFilePath = join(packagePath, NGCC_CONFIG_FILENAME);
     if (this.fs.exists(configFilePath)) {
       try {
+        const packageConfig = this.evalSrcFile(configFilePath);
         return {
+          ...packageConfig,
           versionRange: version || '*',
-          entryPoints: this.processEntryPoints(packagePath, this.evalSrcFile(configFilePath)),
+          entryPoints: this.processEntryPoints(packagePath, packageConfig),
         };
       } catch (e) {
         throw new Error(`Invalid package configuration file at "${configFilePath}": ` + e.message);
@@ -229,7 +260,8 @@ export class NgccConfiguration {
     const theExports = {};
     const sandbox = {
       module: {exports: theExports},
-      exports: theExports, require,
+      exports: theExports,
+      require,
       __dirname: dirname(srcPath),
       __filename: srcPath
     };
@@ -259,11 +291,14 @@ export class NgccConfiguration {
         ] :
         [packagePathAndVersion, undefined];
   }
+
+  private computeHash(): string {
+    return createHash('md5').update(JSON.stringify(this.projectConfig)).digest('hex');
+  }
 }
 
-function findSatisfactoryVersion(
-    configs: VersionedPackageConfig[] | undefined, version: string | null): VersionedPackageConfig|
-    null {
+function findSatisfactoryVersion(configs: VersionedPackageConfig[]|undefined, version: string|null):
+    VersionedPackageConfig|null {
   if (configs === undefined) {
     return null;
   }
@@ -273,5 +308,7 @@ function findSatisfactoryVersion(
     // So just return the first config that matches the package name.
     return configs[0];
   }
-  return configs.find(config => satisfies(version, config.versionRange)) || null;
+  return configs.find(
+             config => satisfies(version, config.versionRange, {includePrerelease: true})) ||
+      null;
 }

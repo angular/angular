@@ -10,6 +10,7 @@ module.exports = (gulp) => () => {
   const conventionalChangelog = require('gulp-conventional-changelog');
   const ignoredScopes = [
     'aio',
+    'dev-infra',
     'docs-infra',
     'zone.js',
   ];

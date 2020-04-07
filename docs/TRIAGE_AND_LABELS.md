@@ -21,6 +21,7 @@ The components have a clear piece of source code associated with it within the `
   browser-platforms are very intertwined, we will be treating them as one
 * `comp: ivy` - a subset of core representing the new Ivy renderer.
 * `comp: ngcc` - a subset of ivy representing the [Angular Compatibility Compiler](../packages/compiler-cli/ngcc/README.md)
+* `comp: ve` - a subset of `core & compiler` representing changes specific to ViewEngine (legacy compiler/renderer).
 * `comp: docs-infra` - the angular.io application and docs-related tooling
 * `comp: elements`
 * `comp: forms`
@@ -41,6 +42,7 @@ They don't have a clear location in the source tree.
 We will treat them as a component even thought no specific source tree is associated with them.
 
 * `comp: build & ci` - build and CI infrastructure for the angular/angular repo
+* `comp: dev-infra` - angular's common internal developer infrastructure scripting and tooling
 * `comp: docs` - documentation, including API docs, guides, tutorial
 * `comp: packaging` - packaging format of @angular/* npm packages
 * `comp: performance`
@@ -171,9 +173,10 @@ If a PR is missing the `PR target: *` label, or if the label is set to "TBD" whe
 
 Before a PR can be merged it must be approved by the appropriate reviewer(s).
 
-To ensure that the right people review each change, we configured [GitHub CODEOWNERS](https://help.github.com/articles/about-codeowners/) (via `.github/CODEOWNERS`) and require that each PR has at least one approval from an appropriate code owner.
+To ensure that the right people review each change, we set review requests using [PullApprove](https://https://docs.pullapprove.com/) (via `.pullapprove`) and require that each PR has at least one approval from an appropriate code owner.
 
-If the PR author is a code owner themselves, the approval can come from _any_ repo collaborator (person with write access). GitHub CODEOWNERs does not support this scenario, so the `merge-assistance` label must be added, mentioning that the PR author is a code owner. In any case, the reviewer should actually look through the code and provide feedback if necessary.
+If the PR author is a code owner themselves, the approval can come from _any_ repo collaborator (person with write access).
+In any case, the reviewer should actually look through the code and provide feedback if necessary.
 
 Note that approved state does not mean a PR is ready to be merged.
 For example, a reviewer might approve the PR but request a minor tweak that doesn't need further review, e.g., a rebase or small uncontroversial change.

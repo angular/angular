@@ -52,7 +52,7 @@ A tool which "upgrades" `node_module` compiled with non-ivy `ngc` into ivy compl
 
 ## `@angular/core` changes
 
-The goal is for the `@Component` (and friends) to be the compiler of template. Since decorators are functions which execute during parsing of the `.js` file, the decorator can compile the template into Ivy. The AoT compiler's job is to remove the `@Component` and replace it with call to `ɵɵdefineComponent`.
+The goal is for the `@Component` (and friends) to be the compiler of template. Since decorators are functions which execute during parsing of the `.js` file, the decorator can compile the template into Ivy. The AOT compiler's job is to remove the `@Component` and replace it with call to `ɵɵdefineComponent`.
 
 - ✅ `@angular/compiler` can patch itself onto:
   - ✅ `@Injectable`

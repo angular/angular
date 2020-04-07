@@ -5,42 +5,66 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, basename, dirname, isRoot} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
+import {NGCC_PROPERTY_EXTENSION} from '../writing/new_entry_point_file_writer';
 import {PackageJsonUpdater} from '../writing/package_json_updater';
 import {EntryPointPackageJson, PackageJsonFormatProperties} from './entry_point';
 
 export const NGCC_VERSION = '0.0.0-PLACEHOLDER';
 
 /**
- * Check whether ngcc has already processed a given entry-point format.
+ * Returns true if there is a format in this entry-point that was compiled with an outdated version
+ * of ngcc.
  *
- * The entry-point is defined by the package.json contents provided.
- * The format is defined by the provided property name of the path to the bundle in the package.json
+ * @param packageJson The parsed contents of the package.json for the entry-point
+ */
+export function needsCleaning(packageJson: EntryPointPackageJson): boolean {
+  return Object.values(packageJson.__processed_by_ivy_ngcc__ || {})
+      .some(value => value !== NGCC_VERSION);
+}
+
+/**
+ * Clean any build marker artifacts from the given `packageJson` object.
+ * @param packageJson The parsed contents of the package.json to modify
+ * @returns true if the package was modified during cleaning
+ */
+export function cleanPackageJson(packageJson: EntryPointPackageJson): boolean {
+  if (packageJson.__processed_by_ivy_ngcc__ !== undefined) {
+    // Remove the actual marker
+    delete packageJson.__processed_by_ivy_ngcc__;
+    // Remove new format properties that have been added by ngcc
+    for (const prop of Object.keys(packageJson)) {
+      if (prop.endsWith(NGCC_PROPERTY_EXTENSION)) {
+        delete packageJson[prop];
+      }
+    }
+
+    // Also remove the prebulish script if we modified it
+    const scripts = packageJson.scripts;
+    if (scripts !== undefined && scripts.prepublishOnly) {
+      delete scripts.prepublishOnly;
+      if (scripts.prepublishOnly__ivy_ngcc_bak !== undefined) {
+        scripts.prepublishOnly = scripts.prepublishOnly__ivy_ngcc_bak;
+        delete scripts.prepublishOnly__ivy_ngcc_bak;
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Check whether ngcc has already processed a given entry-point format.
  *
  * @param packageJson The parsed contents of the package.json file for the entry-point.
  * @param format The entry-point format property in the package.json to check.
- * @returns true if the entry-point and format have already been processed with this ngcc version.
- * @throws Error if the `packageJson` property is not an object.
- * @throws Error if the entry-point has already been processed with a different ngcc version.
+ * @returns true if the `format` in the entry-point has already been processed by this ngcc version,
+ * false otherwise.
  */
 export function hasBeenProcessed(
-    packageJson: EntryPointPackageJson, format: PackageJsonFormatProperties,
-    entryPointPath: AbsoluteFsPath): boolean {
-  if (!packageJson.__processed_by_ivy_ngcc__) {
-    return false;
-  }
-  if (Object.keys(packageJson.__processed_by_ivy_ngcc__)
-          .some(property => packageJson.__processed_by_ivy_ngcc__ ![property] !== NGCC_VERSION)) {
-    let nodeModulesFolderPath = entryPointPath;
-    while (!isRoot(nodeModulesFolderPath) && basename(nodeModulesFolderPath) !== 'node_modules') {
-      nodeModulesFolderPath = dirname(nodeModulesFolderPath);
-    }
-    throw new Error(
-        `The ngcc compiler has changed since the last ngcc build.\n` +
-        `Please remove "${isRoot(nodeModulesFolderPath) ? entryPointPath : nodeModulesFolderPath}" and try again.`);
-  }
-
-  return packageJson.__processed_by_ivy_ngcc__[format] === NGCC_VERSION;
+    packageJson: EntryPointPackageJson, format: PackageJsonFormatProperties): boolean {
+  return packageJson.__processed_by_ivy_ngcc__ !== undefined &&
+      packageJson.__processed_by_ivy_ngcc__[format] === NGCC_VERSION;
 }
 
 /**
@@ -60,7 +84,7 @@ export function markAsProcessed(
 
   // Update the format properties to mark them as processed.
   for (const prop of formatProperties) {
-    update.addChange(['__processed_by_ivy_ngcc__', prop], NGCC_VERSION);
+    update.addChange(['__processed_by_ivy_ngcc__', prop], NGCC_VERSION, 'alphabetic');
   }
 
   // Update the `prepublishOnly` script (keeping a backup, if necessary) to prevent `ngcc`'d

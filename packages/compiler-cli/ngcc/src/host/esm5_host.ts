@@ -8,11 +8,12 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, Declaration, Decorator, FunctionDefinition, Parameter, TsHelperFn, isNamedVariableDeclaration, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
-import {getNameText, hasNameIdentifier, stripDollarSuffix} from '../utils';
+import {ClassDeclaration, ClassMember, ClassMemberKind, Declaration, Decorator, FunctionDefinition, isNamedVariableDeclaration, Parameter, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {getNameText, getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, hasNameIdentifier} from '../utils';
 
-import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignment, isAssignmentStatement} from './esm2015_host';
+import {Esm2015ReflectionHost, getPropertyValueFromSymbol, isAssignment, isAssignmentStatement, ParamInfo} from './esm2015_host';
 import {NgccClassSymbol} from './ngcc_host';
+
 
 /**
  * ESM5 packages contain ECMAScript IIFE functions that act like classes. For example:
@@ -40,8 +41,6 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param clazz a `ClassDeclaration` representing the class over which to reflect.
    */
   hasBaseClass(clazz: ClassDeclaration): boolean {
-    if (super.hasBaseClass(clazz)) return true;
-
     const classSymbol = this.getClassSymbol(clazz);
     if (classSymbol === undefined) {
       return false;
@@ -57,11 +56,6 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   }
 
   getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null {
-    const superBaseClassIdentifier = super.getBaseClassExpression(clazz);
-    if (superBaseClassIdentifier) {
-      return superBaseClassIdentifier;
-    }
-
     const classSymbol = this.getClassSymbol(clazz);
     if (classSymbol === undefined) {
       return null;
@@ -87,12 +81,13 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   getInternalNameOfClass(clazz: ClassDeclaration): ts.Identifier {
     const innerClass = this.getInnerFunctionDeclarationFromClassDeclaration(clazz);
     if (innerClass === undefined) {
-      throw new Error(
-          `getInternalNameOfClass() called on a non-ES5 class: expected ${clazz.name.text} to have an inner class declaration`);
+      throw new Error(`getInternalNameOfClass() called on a non-ES5 class: expected ${
+          clazz.name.text} to have an inner class declaration`);
     }
     if (innerClass.name === undefined) {
       throw new Error(
-          `getInternalNameOfClass() called on a class with an anonymous inner declaration: expected a name on:\n${innerClass.getText()}`);
+          `getInternalNameOfClass() called on a class with an anonymous inner declaration: expected a name on:\n${
+              innerClass.getText()}`);
     }
     return innerClass.name;
   }
@@ -104,19 +99,21 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   getEndOfClass(classSymbol: NgccClassSymbol): ts.Node {
     const iifeBody = getIifeBody(classSymbol.declaration.valueDeclaration);
     if (!iifeBody) {
-      throw new Error(
-          `Compiled class declaration is not inside an IIFE: ${classSymbol.name} in ${classSymbol.declaration.valueDeclaration.getSourceFile().fileName}`);
+      throw new Error(`Compiled class declaration is not inside an IIFE: ${classSymbol.name} in ${
+          classSymbol.declaration.valueDeclaration.getSourceFile().fileName}`);
     }
 
     const returnStatementIndex = iifeBody.statements.findIndex(ts.isReturnStatement);
     if (returnStatementIndex === -1) {
       throw new Error(
-          `Compiled class wrapper IIFE does not have a return statement: ${classSymbol.name} in ${classSymbol.declaration.valueDeclaration.getSourceFile().fileName}`);
+          `Compiled class wrapper IIFE does not have a return statement: ${classSymbol.name} in ${
+              classSymbol.declaration.valueDeclaration.getSourceFile().fileName}`);
     }
 
     // Return the statement before the IIFE return statement
     return iifeBody.statements[returnStatementIndex - 1];
   }
+
   /**
    * In ES5, the implementation of a class is a function expression that is hidden inside an IIFE,
    * whose value is assigned to a variable (which represents the class to the rest of the program).
@@ -195,7 +192,24 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
     const superDeclaration = super.getDeclarationOfIdentifier(id);
 
-    if (superDeclaration === null || superDeclaration.node === null) {
+    if (superDeclaration === null) {
+      const nonEmittedNorImportedTsHelperDeclaration = getTsHelperFnFromIdentifier(id);
+      if (nonEmittedNorImportedTsHelperDeclaration !== null) {
+        // No declaration could be found for this identifier and its name matches a known TS helper
+        // function. This can happen if a package is compiled with `noEmitHelpers: true` and
+        // `importHelpers: false` (the default). This is, for example, the case with
+        // `@nativescript/angular@9.0.0-next-2019-11-12-155500-01`.
+        return {
+          expression: id,
+          known: nonEmittedNorImportedTsHelperDeclaration,
+          node: null,
+          viaModule: null,
+        };
+      }
+    }
+
+    if (superDeclaration === null || superDeclaration.node === null ||
+        superDeclaration.known !== null) {
       return superDeclaration;
     }
 
@@ -205,7 +219,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
         super.getDeclarationOfIdentifier(outerClassNode.name) :
         superDeclaration;
 
-    if (!declaration || declaration.node === null) {
+    if (declaration === null || declaration.node === null || declaration.known !== null) {
       return declaration;
     }
 
@@ -244,23 +258,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    */
   getDefinitionOfFunction(node: ts.Node): FunctionDefinition|null {
     if (!ts.isFunctionDeclaration(node) && !ts.isMethodDeclaration(node) &&
-        !ts.isFunctionExpression(node) && !ts.isVariableDeclaration(node)) {
-      return null;
-    }
-
-    const tsHelperFn = getTsHelperFn(node);
-    if (tsHelperFn !== null) {
-      return {
-        node,
-        body: null,
-        helper: tsHelperFn,
-        parameters: [],
-      };
-    }
-
-    // If the node was not identified to be a TypeScript helper, a variable declaration at this
-    // point cannot be resolved as a function.
-    if (ts.isVariableDeclaration(node)) {
+        !ts.isFunctionExpression(node)) {
       return null;
     }
 
@@ -275,7 +273,27 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       return !lookingForParamInitializers;
     });
 
-    return {node, body: statements || null, helper: null, parameters};
+    return {node, body: statements || null, parameters};
+  }
+
+  /**
+   * Check whether a `Declaration` corresponds with a known declaration, such as a TypeScript helper
+   * function, and set its `known` property to the appropriate `KnownDeclaration`.
+   *
+   * @param decl The `Declaration` to check.
+   * @return The passed in `Declaration` (potentially enhanced with a `KnownDeclaration`).
+   */
+  detectKnownDeclaration(decl: null): null;
+  detectKnownDeclaration<T extends Declaration>(decl: T): T;
+  detectKnownDeclaration<T extends Declaration>(decl: T|null): T|null;
+  detectKnownDeclaration<T extends Declaration>(decl: T|null): T|null {
+    decl = super.detectKnownDeclaration(decl);
+
+    if (decl !== null && decl.known === null && decl.node !== null) {
+      decl.known = getTsHelperFnFromDeclaration(decl.node);
+    }
+
+    return decl;
   }
 
 
@@ -290,16 +308,14 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    *
    * Given the outer variable declaration, we want to get to the inner function declaration.
    *
-   * @param node a node that could be the variable expression outside an ES5 class IIFE.
+   * @param decl a declaration node that could be the variable expression outside an ES5 class IIFE.
    * @param checker the TS program TypeChecker
    * @returns the inner function declaration or `undefined` if it is not a "class".
    */
-  protected getInnerFunctionDeclarationFromClassDeclaration(node: ts.Node): ts.FunctionDeclaration
-      |undefined {
-    if (!ts.isVariableDeclaration(node)) return undefined;
-
+  protected getInnerFunctionDeclarationFromClassDeclaration(decl: ts.Declaration):
+      ts.FunctionDeclaration|undefined {
     // Extract the IIFE body (if any).
-    const iifeBody = getIifeBody(node);
+    const iifeBody = getIifeBody(decl);
     if (!iifeBody) return undefined;
 
     // Extract the function declaration from inside the IIFE.
@@ -376,9 +392,9 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     if (expression && ts.isArrayLiteralExpression(expression)) {
       const elements = expression.elements;
       return elements.map(reflectArrayElement).map(paramInfo => {
-        const typeExpression = paramInfo && paramInfo.has('type') ? paramInfo.get('type') ! : null;
+        const typeExpression = paramInfo && paramInfo.has('type') ? paramInfo.get('type')! : null;
         const decoratorInfo =
-            paramInfo && paramInfo.has('decorators') ? paramInfo.get('decorators') ! : null;
+            paramInfo && paramInfo.has('decorators') ? paramInfo.get('decorators')! : null;
         const decorators = decoratorInfo && this.reflectDecorators(decoratorInfo);
         return {typeExpression, decorators};
       });
@@ -606,7 +622,15 @@ export function getIifeBody(declaration: ts.Declaration): ts.Block|undefined {
     return undefined;
   }
 
-  const call = stripParentheses(declaration.initializer);
+  // Recognize a variable declaration of one of the forms:
+  // - `var MyClass = (function () { ... }());`
+  // - `var MyClass = MyClass_1 = (function () { ... }());`
+  let parenthesizedCall = declaration.initializer;
+  while (isAssignment(parenthesizedCall)) {
+    parenthesizedCall = parenthesizedCall.right;
+  }
+
+  const call = stripParentheses(parenthesizedCall);
   if (!ts.isCallExpression(call)) {
     return undefined;
   }
@@ -634,7 +658,7 @@ function getReturnIdentifier(body: ts.Block): ts.Identifier|undefined {
   return undefined;
 }
 
-function getReturnStatement(declaration: ts.Expression | undefined): ts.ReturnStatement|undefined {
+function getReturnStatement(declaration: ts.Expression|undefined): ts.ReturnStatement|undefined {
   return declaration && ts.isFunctionExpression(declaration) ?
       declaration.body.statements.find(ts.isReturnStatement) :
       undefined;
@@ -642,26 +666,6 @@ function getReturnStatement(declaration: ts.Expression | undefined): ts.ReturnSt
 
 function reflectArrayElement(element: ts.Expression) {
   return ts.isObjectLiteralExpression(element) ? reflectObjectLiteral(element) : null;
-}
-
-/**
- * Inspects a function declaration to determine if it corresponds with a TypeScript helper function,
- * returning its kind if so or null if the declaration does not seem to correspond with such a
- * helper.
- */
-function getTsHelperFn(node: ts.NamedDeclaration): TsHelperFn|null {
-  const name = node.name !== undefined && ts.isIdentifier(node.name) ?
-      stripDollarSuffix(node.name.text) :
-      null;
-
-  switch (name) {
-    case '__spread':
-      return TsHelperFn.Spread;
-    case '__spreadArrays':
-      return TsHelperFn.SpreadArrays;
-    default:
-      return null;
-  }
 }
 
 /**

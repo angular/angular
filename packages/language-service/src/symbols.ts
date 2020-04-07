@@ -7,6 +7,8 @@
  */
 
 import {StaticSymbol} from '@angular/compiler';
+import * as ts from 'typescript';
+
 
 /**
  * The range of a span of text in a source file.
@@ -38,7 +40,7 @@ export interface Location {
 /**
  * A defnition location(s).
  */
-export type Definition = Location[] | undefined;
+export type Definition = Location[]|undefined;
 
 /**
  * A symbol describing a language element that can be referenced by expressions
@@ -96,6 +98,11 @@ export interface Symbol {
   readonly nullable: boolean;
 
   /**
+   * Documentation comment on the Symbol, if any.
+   */
+  readonly documentation: ts.SymbolDisplayPart[];
+
+  /**
    * A table of the members of the symbol; that is, the members that can appear
    * after a `.` in an Angular expression.
    */
@@ -122,6 +129,11 @@ export interface Symbol {
    * If the symbol cannot be indexed, this method should return `undefined`.
    */
   indexed(argument: Symbol, key?: any): Symbol|undefined;
+
+  /**
+   * Returns the type arguments of a Symbol, if any.
+   */
+  typeArguments(): Symbol[]|undefined;
 }
 
 /**
@@ -223,8 +235,8 @@ export enum BuiltinType {
  *
  * @publicApi
  */
-export type DeclarationKind = 'attribute' | 'html attribute' | 'component' | 'element' | 'entity' |
-    'key' | 'method' | 'pipe' | 'property' | 'type' | 'reference' | 'variable';
+export type DeclarationKind = 'attribute'|'html attribute'|'component'|'element'|'entity'|'key'|
+    'method'|'pipe'|'property'|'type'|'reference'|'variable';
 
 /**
  * Describes a symbol to type binding used to build a symbol table.
@@ -275,7 +287,7 @@ export interface PipeInfo {
  *
  * @publicApi
  */
-export type Pipes = PipeInfo[] | undefined;
+export type Pipes = PipeInfo[]|undefined;
 
 /**
  * Describes the language context in which an Angular expression is evaluated.

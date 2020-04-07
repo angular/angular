@@ -8,17 +8,19 @@
 import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
-import {relative, dirname, AbsoluteFsPath, absoluteFromSourceFile} from '../../../src/ngtsc/file_system';
+
+import {absoluteFromSourceFile, AbsoluteFsPath, dirname, relative} from '../../../src/ngtsc/file_system';
 import {NOOP_DEFAULT_IMPORT_RECORDER, Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager, translateStatement} from '../../../src/ngtsc/translator';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
-import {CompiledClass} from '../analysis/types';
-import {NgccReflectionHost, POST_R3_MARKER, PRE_R3_MARKER, SwitchableVariableDeclaration} from '../host/ngcc_host';
 import {ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyzer';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
-import {RenderingFormatter, RedundantDecoratorMap} from './rendering_formatter';
-import {stripExtension} from './utils';
+import {CompiledClass} from '../analysis/types';
 import {isAssignment} from '../host/esm2015_host';
+import {NgccReflectionHost, POST_R3_MARKER, PRE_R3_MARKER, SwitchableVariableDeclaration} from '../host/ngcc_host';
+
+import {RedundantDecoratorMap, RenderingFormatter} from './rendering_formatter';
+import {stripExtension} from './utils';
 
 /**
  * A RenderingFormatter that works with ECMAScript Module import and export statements.
@@ -32,6 +34,10 @@ export class EsmRenderingFormatter implements RenderingFormatter {
    *  Add the imports at the top of the file, after any imports that are already there.
    */
   addImports(output: MagicString, imports: Import[], sf: ts.SourceFile): void {
+    if (imports.length === 0) {
+      return;
+    }
+
     const insertionPoint = this.findEndOfImports(sf);
     const renderedImports =
         imports.map(i => `import * as ${i.qualifier} from '${i.specifier}';\n`).join('');
@@ -55,9 +61,7 @@ export class EsmRenderingFormatter implements RenderingFormatter {
         exportFrom = entryPointBasePath !== basePath ? ` from '${relativePath}'` : '';
       }
 
-      // aliases should only be added in dts files as these are lost when rolling up dts file.
-      const exportStatement = e.alias && isDtsFile ? `${e.alias} as ${e.identifier}` : e.identifier;
-      const exportStr = `\nexport {${exportStatement}}${exportFrom};`;
+      const exportStr = `\nexport {${e.identifier}}${exportFrom};`;
       output.append(exportStr);
     });
   }
@@ -100,7 +104,8 @@ export class EsmRenderingFormatter implements RenderingFormatter {
     if (!classSymbol) {
       throw new Error(`Compiled class does not have a valid symbol: ${compiledClass.name}`);
     }
-    const insertionPoint = classSymbol.declaration.valueDeclaration.getEnd();
+    const declarationStatement = getDeclarationStatement(classSymbol.declaration.valueDeclaration);
+    const insertionPoint = declarationStatement.getEnd();
     output.appendLeft(insertionPoint, '\n' + definitions);
   }
 
@@ -223,7 +228,8 @@ export class EsmRenderingFormatter implements RenderingFormatter {
             info.declaration.getEnd();
         outputText.appendLeft(
             insertPoint,
-            `: ${generateImportString(importManager, '@angular/core', 'ModuleWithProviders')}<${ngModule}>`);
+            `: ${generateImportString(importManager, '@angular/core', 'ModuleWithProviders')}<${
+                ngModule}>`);
       }
     });
   }
@@ -271,7 +277,18 @@ export class EsmRenderingFormatter implements RenderingFormatter {
   }
 }
 
-function findStatement(node: ts.Node) {
+function getDeclarationStatement(node: ts.Node): ts.Statement {
+  let statement = node;
+  while (statement) {
+    if (ts.isVariableStatement(statement) || ts.isClassDeclaration(statement)) {
+      return statement;
+    }
+    statement = statement.parent;
+  }
+  throw new Error(`Class is not defined in a declaration statement: ${node.getText()}`);
+}
+
+function findStatement(node: ts.Node): ts.Statement|undefined {
   while (node) {
     if (ts.isExpressionStatement(node) || ts.isReturnStatement(node)) {
       return node;
@@ -282,7 +299,7 @@ function findStatement(node: ts.Node) {
 }
 
 function generateImportString(
-    importManager: ImportManager, importPath: string | null, importName: string) {
+    importManager: ImportManager, importPath: string|null, importName: string) {
   const importAs = importPath ? importManager.generateNamedImport(importPath, importName) : null;
   return importAs ? `${importAs.moduleImport}.${importAs.symbol}` : `${importName}`;
 }

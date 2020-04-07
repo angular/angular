@@ -12,6 +12,7 @@ import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
 import {R3DependencyMetadata} from '../r3_factory';
+import {R3Reference} from '../util';
 
 
 /**
@@ -26,7 +27,7 @@ export interface R3DirectiveMetadata {
   /**
    * An expression representing a reference to the directive itself.
    */
-  type: o.Expression;
+  type: R3Reference;
 
   /**
    * An expression representing a reference to the directive being compiled, intended for use within
@@ -128,6 +129,12 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
      * Parsed nodes of the template.
      */
     nodes: t.Node[];
+
+    /**
+     * Any ng-content selectors extracted from the template. Contains `null` when an ng-content
+     * element without selector is present.
+     */
+    ngContentSelectors: string[];
   };
 
   /**

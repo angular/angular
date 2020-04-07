@@ -23,7 +23,7 @@ try {
 const {set, cd, sed, echo, ls, rm} = require('shelljs');
 const {readFileSync} = require('fs');
 const path = require('path');
-const log = console.log;
+const log = console.info;
 
 // COMMENTED OUT BECAUSE WE CURRENTLY REQUIRE NO PATCHES
 // UNCOMMENT TO REENABLE PATCHING AND LOG OUTPUT

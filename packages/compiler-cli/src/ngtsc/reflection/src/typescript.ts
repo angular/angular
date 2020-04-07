@@ -35,8 +35,12 @@ export class TypeScriptReflectionHost implements ReflectionHost {
   getConstructorParameters(clazz: ClassDeclaration): CtorParameter[]|null {
     const tsClazz = castDeclarationToClassOrDie(clazz);
 
-    // First, find the constructor.
-    const ctor = tsClazz.members.find(ts.isConstructorDeclaration);
+    // First, find the constructor with a `body`. The constructors without a `body` are overloads
+    // whereas we want the implementation since it's the one that'll be executed and which can
+    // have decorators.
+    const ctor = tsClazz.members.find(
+        (member): member is ts.ConstructorDeclaration =>
+            ts.isConstructorDeclaration(member) && member.body !== undefined);
     if (ctor === undefined) {
       return null;
     }
@@ -94,7 +98,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
   getExportsOfModule(node: ts.Node): Map<string, Declaration>|null {
     // In TypeScript code, modules are only ts.SourceFiles. Throw if the node isn't a module.
     if (!ts.isSourceFile(node)) {
-      throw new Error(`getDeclarationsOfModule() called on non-SourceFile in TS code`);
+      throw new Error(`getExportsOfModule() called on non-SourceFile in TS code`);
     }
     const map = new Map<string, Declaration>();
 
@@ -160,7 +164,6 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return {
       node,
       body: node.body !== undefined ? Array.from(node.body.statements) : null,
-      helper: null,
       parameters: node.parameters.map(param => {
         const name = parameterName(param.name);
         const initializer = param.initializer || null;
@@ -262,16 +265,14 @@ export class TypeScriptReflectionHost implements ReflectionHost {
 
   /**
    * Resolve a `ts.Symbol` to its declaration, keeping track of the `viaModule` along the way.
-   *
-   * @internal
    */
-  private getDeclarationOfSymbol(symbol: ts.Symbol, originalId: ts.Identifier|null): Declaration
+  protected getDeclarationOfSymbol(symbol: ts.Symbol, originalId: ts.Identifier|null): Declaration
       |null {
     // If the symbol points to a ShorthandPropertyAssignment, resolve it.
     let valueDeclaration: ts.Declaration|undefined = undefined;
     if (symbol.valueDeclaration !== undefined) {
       valueDeclaration = symbol.valueDeclaration;
-    } else if (symbol.declarations.length > 0) {
+    } else if (symbol.declarations !== undefined && symbol.declarations.length > 0) {
       valueDeclaration = symbol.declarations[0];
     }
     if (valueDeclaration !== undefined && ts.isShorthandPropertyAssignment(valueDeclaration)) {
@@ -304,12 +305,12 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     if (symbol.valueDeclaration !== undefined) {
       return {
         node: symbol.valueDeclaration,
-        viaModule,
+        known: null, viaModule,
       };
     } else if (symbol.declarations !== undefined && symbol.declarations.length > 0) {
       return {
         node: symbol.declarations[0],
-        viaModule,
+        known: null, viaModule,
       };
     } else {
       return null;

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
+import {AbsoluteSourceSpan, ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
 
-import {TemplateSourceMapping} from './api';
-import {SourceLocation, TcbSourceResolver} from './diagnostics';
+import {TemplateId, TemplateSourceMapping} from './api';
+import {TemplateSourceResolver} from './diagnostics';
 import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mappings';
 
 /**
@@ -44,35 +44,35 @@ export class TemplateSource {
 /**
  * Assigns IDs to templates and keeps track of their origins.
  *
- * Implements `TcbSourceResolver` to resolve the source of a template based on these IDs.
+ * Implements `TemplateSourceResolver` to resolve the source of a template based on these IDs.
  */
-export class TcbSourceManager implements TcbSourceResolver {
-  private nextTcbId: number = 1;
+export class TemplateSourceManager implements TemplateSourceResolver {
+  private nextTemplateId: number = 1;
   /**
    * This map keeps track of all template sources that have been type-checked by the id that is
    * attached to a TCB's function declaration as leading trivia. This enables translation of
    * diagnostics produced for TCB code to their source location in the template.
    */
-  private templateSources = new Map<string, TemplateSource>();
+  private templateSources = new Map<TemplateId, TemplateSource>();
 
-  captureSource(mapping: TemplateSourceMapping, file: ParseSourceFile): string {
-    const id = `tcb${this.nextTcbId++}`;
+  captureSource(mapping: TemplateSourceMapping, file: ParseSourceFile): TemplateId {
+    const id = `tcb${this.nextTemplateId++}` as TemplateId;
     this.templateSources.set(id, new TemplateSource(mapping, file));
     return id;
   }
 
-  getSourceMapping(id: string): TemplateSourceMapping {
+  getSourceMapping(id: TemplateId): TemplateSourceMapping {
     if (!this.templateSources.has(id)) {
-      throw new Error(`Unexpected unknown TCB ID: ${id}`);
+      throw new Error(`Unexpected unknown template ID: ${id}`);
     }
     return this.templateSources.get(id) !.mapping;
   }
 
-  sourceLocationToSpan(location: SourceLocation): ParseSourceSpan|null {
-    if (!this.templateSources.has(location.id)) {
+  toParseSourceSpan(id: TemplateId, span: AbsoluteSourceSpan): ParseSourceSpan|null {
+    if (!this.templateSources.has(id)) {
       return null;
     }
-    const templateSource = this.templateSources.get(location.id) !;
-    return templateSource.toParseSourceSpan(location.start, location.end);
+    const templateSource = this.templateSources.get(id) !;
+    return templateSource.toParseSourceSpan(span.start, span.end);
   }
 }

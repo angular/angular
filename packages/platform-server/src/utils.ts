@@ -54,7 +54,8 @@ the server-rendered app can be properly bootstrapped into a client app.`);
               try {
                 const callbackResult = callback();
                 if (ɵisPromise(callbackResult)) {
-                  asyncPromises.push(callbackResult);
+                  // TODO: in TS3.7, callbackResult is void.
+                  asyncPromises.push(callbackResult as any);
                 }
 
               } catch (e) {

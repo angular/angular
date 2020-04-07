@@ -9,14 +9,12 @@
 import {AotCompilerOptions} from '../aot/compiler_options';
 import {StaticReflector} from '../aot/static_reflector';
 import {StaticSymbol} from '../aot/static_symbol';
-import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompilePipeSummary} from '../compile_metadata';
-import {BindingForm, BuiltinConverter, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
+import {CompileDirectiveMetadata, CompilePipeSummary} from '../compile_metadata';
+import {BindingForm, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
-import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
-import {convertValueToOutputAst} from '../output/value_util';
 import {ParseSourceSpan} from '../parse_util';
-import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAst, ProviderAstType, QueryMatch, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
+import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
 import {OutputContext} from '../util';
 
 
@@ -133,7 +131,11 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
           result.push({
             guard,
             useIf,
-            expression: {context: this.component, value: input.value} as Expression
+            expression: {
+              context: this.component,
+              value: input.value,
+              sourceSpan: input.sourceSpan,
+            },
           });
         }
       }

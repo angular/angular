@@ -1,4 +1,4 @@
-# Reactive Forms
+# Reactive forms
 
 *Reactive forms* provide a model-driven approach to handling form inputs whose values change over time. This guide shows you how to create and update a simple form control, progress to using multiple controls in a group, validate form values, and implement more advanced forms.
 

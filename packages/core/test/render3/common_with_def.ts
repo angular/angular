@@ -41,7 +41,7 @@ NgIf.ɵfac = () =>
 NgTemplateOutlet.ɵdir = ɵɵdefineDirective({
   type: NgTemplateOutletDef,
   selectors: [['', 'ngTemplateOutlet', '']],
-  features: [ɵɵNgOnChangesFeature()],
+  features: [ɵɵNgOnChangesFeature],
   inputs:
       {ngTemplateOutlet: 'ngTemplateOutlet', ngTemplateOutletContext: 'ngTemplateOutletContext'}
 });

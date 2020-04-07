@@ -1,12 +1,12 @@
-# The Ahead-of-Time (AOT) compiler
+# Ahead-of-time (AOT) compilation
 
 An Angular application consists mainly of components and their HTML templates. Because the components and templates provided by Angular cannot be understood by the browser directly, Angular applications require a compilation process before they can run in a browser.
 
-The Angular Ahead-of-Time (AOT) compiler converts your Angular HTML and TypeScript code into efficient JavaScript code during the build phase _before_ the browser downloads and runs that code. Compiling your application during the build process provides a faster rendering in the browser.
+The Angular [ahead-of-time (AOT) compiler](guide/glossary#aot) converts your Angular HTML and TypeScript code into efficient JavaScript code during the build phase _before_ the browser downloads and runs that code. Compiling your application during the build process provides a faster rendering in the browser.
 
 This guide explains how to specify metadata and apply available compiler options to compile your applications efficiently using the AOT compiler.
 
-<div class="alert is-helpful"
+<div class="alert is-helpful">
 
   <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">Watch compiler author Tobias Bosch explain the Angular compiler</a> at AngularConnect 2016.
 
@@ -570,7 +570,7 @@ In the template type-checking phase, the Angular template compiler uses the Type
 Enable this phase explicitly by adding the compiler option `"fullTemplateTypeCheck"` in the `"angularCompilerOptions"` of the project's `tsconfig.json`
 (see [Angular Compiler Options](guide/angular-compiler-options)).
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
 In [Angular Ivy](guide/ivy), the template type checker has been completely rewritten to be more capable as well as stricter, meaning it can catch a variety of new errors that the previous type checker would not detect.
 

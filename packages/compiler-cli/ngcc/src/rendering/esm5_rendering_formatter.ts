@@ -25,14 +25,14 @@ export class Esm5RenderingFormatter extends EsmRenderingFormatter {
   addDefinitions(output: MagicString, compiledClass: CompiledClass, definitions: string): void {
     const iifeBody = getIifeBody(compiledClass.declaration);
     if (!iifeBody) {
-      throw new Error(
-          `Compiled class declaration is not inside an IIFE: ${compiledClass.name} in ${compiledClass.declaration.getSourceFile().fileName}`);
+      throw new Error(`Compiled class declaration is not inside an IIFE: ${compiledClass.name} in ${
+          compiledClass.declaration.getSourceFile().fileName}`);
     }
 
     const returnStatement = iifeBody.statements.find(ts.isReturnStatement);
     if (!returnStatement) {
-      throw new Error(
-          `Compiled class wrapper IIFE does not have a return statement: ${compiledClass.name} in ${compiledClass.declaration.getSourceFile().fileName}`);
+      throw new Error(`Compiled class wrapper IIFE does not have a return statement: ${
+          compiledClass.name} in ${compiledClass.declaration.getSourceFile().fileName}`);
     }
 
     const insertionPoint = returnStatement.getFullStart();

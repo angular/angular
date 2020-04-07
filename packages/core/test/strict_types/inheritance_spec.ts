@@ -9,7 +9,7 @@
 import {ɵɵComponentDefWithMeta, ɵɵPipeDefWithMeta as PipeDefWithMeta} from '@angular/core';
 
 declare class SuperComponent {
-  static ɵcmp: ɵɵComponentDefWithMeta<SuperComponent, '[super]', never, {}, {}, never>;
+  static ɵcmp: ɵɵComponentDefWithMeta<SuperComponent, '[super]', never, {}, {}, never, never>;
 }
 
 declare class SubComponent extends SuperComponent {
@@ -18,7 +18,7 @@ declare class SubComponent extends SuperComponent {
   // would produce type errors when the "strictFunctionTypes" option is enabled.
   onlyInSubtype: string;
 
-  static ɵcmp: ɵɵComponentDefWithMeta<SubComponent, '[sub]', never, {}, {}, never>;
+  static ɵcmp: ɵɵComponentDefWithMeta<SubComponent, '[sub]', never, {}, {}, never, never>;
 }
 
 declare class SuperPipe { static ɵpipe: PipeDefWithMeta<SuperPipe, 'super'>; }

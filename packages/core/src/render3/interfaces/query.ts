@@ -7,7 +7,7 @@
  */
 
 import {Type} from '../../interface/type';
-import {QueryList} from '../../linker';
+import {QueryList} from '../../linker/query_list';
 
 import {TNode} from './node';
 import {TView} from './view';

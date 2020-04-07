@@ -684,7 +684,7 @@ export class Driver implements Debuggable, UpdateSource {
   /**
    * Retrieve a copy of the latest manifest from the server.
    * Return `null` if `ignoreOfflineError` is true (default: false) and the server or client are
-   * offline (detected as response status 504).
+   * offline (detected as response status 503 (service unavailable) or 504 (gateway timeout)).
    */
   private async fetchLatestManifest(ignoreOfflineError?: false): Promise<Manifest>;
   private async fetchLatestManifest(ignoreOfflineError: true): Promise<Manifest|null>;
@@ -695,7 +695,7 @@ export class Driver implements Debuggable, UpdateSource {
       if (res.status === 404) {
         await this.deleteAllCaches();
         await this.scope.registration.unregister();
-      } else if (res.status === 504 && ignoreOfflineError) {
+      } else if ((res.status === 503 || res.status === 504) && ignoreOfflineError) {
         return null;
       }
       throw new Error(`Manifest fetch failed! (status: ${res.status})`);

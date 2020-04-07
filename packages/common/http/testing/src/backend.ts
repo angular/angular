@@ -90,7 +90,19 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
           `Expected one matching request for criteria "${description}", found ${matches.length} requests.`);
     }
     if (matches.length === 0) {
-      throw new Error(`Expected one matching request for criteria "${description}", found none.`);
+      let message = `Expected one matching request for criteria "${description}", found none.`;
+      if (this.open.length > 0) {
+        // Show the methods and URLs of open requests in the error, for convenience.
+        const requests = this.open
+                             .map(testReq => {
+                               const url = testReq.request.urlWithParams;
+                               const method = testReq.request.method;
+                               return `${method} ${url}`;
+                             })
+                             .join(', ');
+        message += ` Requests received are: ${requests}.`;
+      }
+      throw new Error(message);
     }
     return matches[0];
   }

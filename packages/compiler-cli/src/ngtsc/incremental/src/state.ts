@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
 import {ClassRecord, TraitCompiler} from '../../transform';
 import {IncrementalBuild} from '../api';
 
@@ -52,7 +53,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
       state = {
         kind: BuildStateKind.Pending,
         pendingEmit: oldDriver.state.pendingEmit,
-        changedResourcePaths: new Set<string>(),
+        changedResourcePaths: new Set<AbsoluteFsPath>(),
         changedTsPaths: new Set<string>(),
         lastGood: oldDriver.state.lastGood,
       };
@@ -61,7 +62,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
     // Merge the freshly modified resource files with any prior ones.
     if (modifiedResourceFiles !== null) {
       for (const resFile of modifiedResourceFiles) {
-        state.changedResourcePaths.add(resFile);
+        state.changedResourcePaths.add(absoluteFrom(resFile));
       }
     }
 
@@ -127,6 +128,16 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
       for (const fileName of state.changedTsPaths) {
         logicalChanges.add(fileName);
       }
+
+      // Any logically changed files need to be re-emitted. Most of the time this would happen
+      // regardless because the new dependency graph would _also_ identify the file as stale.
+      // However there are edge cases such as removing a component from an NgModule without adding
+      // it to another one, where the previous graph identifies the file as logically changed, but
+      // the new graph (which does not have that edge) fails to identify that the file should be
+      // re-emitted.
+      for (const change of logicalChanges) {
+        state.pendingEmit.add(change);
+      }
     }
 
     // `state` now reflects the initial pending state of the current compilation.
@@ -143,7 +154,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
     const state: PendingBuildState = {
       kind: BuildStateKind.Pending,
       pendingEmit: new Set<string>(tsFiles.map(sf => sf.fileName)),
-      changedResourcePaths: new Set<string>(),
+      changedResourcePaths: new Set<AbsoluteFsPath>(),
       changedTsPaths: new Set<string>(),
       lastGood: null,
     };
@@ -277,7 +288,7 @@ interface PendingBuildState extends BaseBuildState {
   /**
    * Set of resource file paths which have changed since the last successfully analyzed build.
    */
-  changedResourcePaths: Set<string>;
+  changedResourcePaths: Set<AbsoluteFsPath>;
 }
 
 interface AnalyzedBuildState extends BaseBuildState {

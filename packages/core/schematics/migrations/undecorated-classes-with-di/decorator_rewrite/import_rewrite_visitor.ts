@@ -10,12 +10,13 @@ import {AotCompilerHost} from '@angular/compiler';
 import {dirname, resolve} from 'path';
 import * as ts from 'typescript';
 
+import {ImportManager} from '../../../utils/import_manager';
 import {Import, getImportOfIdentifier} from '../../../utils/typescript/imports';
 import {getValueSymbolOfDeclaration} from '../../../utils/typescript/symbol';
-import {ImportManager} from '../import_manager';
 
 import {getPosixPath} from './path_format';
 import {ResolvedExport, getExportSymbolsOfFile} from './source_file_exports';
+
 
 /**
  * Factory that creates a TypeScript transformer which ensures that

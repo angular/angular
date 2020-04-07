@@ -470,6 +470,64 @@ describe('di', () => {
         fixture.detectChanges();
         expect(divElement.id).toBe('bar');
       });
+
+      it('dynamic components should find dependencies when parent is projected', () => {
+        @Directive({selector: '[dirA]'})
+        class DirA {
+        }
+        @Directive({selector: '[dirB]'})
+        class DirB {
+        }
+        @Component({selector: 'child', template: ''})
+        class Child {
+          constructor(@Optional() readonly dirA: DirA, @Optional() readonly dirB: DirB) {}
+        }
+        @Component({
+          selector: 'projector',
+          template: '<ng-content></ng-content>',
+        })
+        class Projector {
+        }
+
+        @Component({
+          template: `
+          <projector>
+            <div dirA>
+              <ng-container #childOrigin></ng-container>
+              <ng-container #childOriginWithDirB dirB></ng-container>
+            </div>
+          </projector>`,
+          entryComponents: [Child]
+        })
+        class MyApp {
+          @ViewChild('childOrigin', {read: ViewContainerRef, static: true})
+          childOrigin !: ViewContainerRef;
+          @ViewChild('childOriginWithDirB', {read: ViewContainerRef, static: true})
+          childOriginWithDirB !: ViewContainerRef;
+          childFactory = this.resolver.resolveComponentFactory(Child);
+
+          constructor(readonly resolver: ComponentFactoryResolver, readonly injector: Injector) {}
+
+          addChild() { return this.childOrigin.createComponent(this.childFactory); }
+          addChildWithDirB() { return this.childOriginWithDirB.createComponent(this.childFactory); }
+        }
+
+        const fixture =
+            TestBed.configureTestingModule({declarations: [Child, DirA, DirB, Projector, MyApp]})
+                .createComponent(MyApp);
+        const child = fixture.componentInstance.addChild();
+        expect(child).toBeDefined();
+        expect(child.instance.dirA)
+            .not.toBeNull('dirA should be found. It is on the parent of the viewContainerRef.');
+        const child2 = fixture.componentInstance.addChildWithDirB();
+        expect(child2).toBeDefined();
+        expect(child2.instance.dirA)
+            .not.toBeNull('dirA should be found. It is on the parent of the viewContainerRef.');
+        expect(child2.instance.dirB)
+            .toBeNull(
+                'dirB appears on the ng-container and should not be found because the ' +
+                'viewContainerRef.createComponent node is inserted next to the container.');
+      });
     });
 
     it('should throw if directive is not found anywhere', () => {
@@ -982,6 +1040,136 @@ describe('di', () => {
             `This will become an error in v10. Please add @Injectable() to the "MyRootService" class.`);
       }
     });
+
+    it('should inject services in constructor with overloads', () => {
+      @Injectable({providedIn: 'root'})
+      class MyService {
+      }
+
+      @Injectable({providedIn: 'root'})
+      class MyOtherService {
+      }
+
+      @Component({template: ''})
+      class MyComp {
+        constructor(myService: MyService);
+        constructor(
+            public myService: MyService, @Optional() public myOtherService?: MyOtherService) {}
+      }
+      TestBed.configureTestingModule({declarations: [MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.myService instanceof MyService).toBe(true);
+      expect(fixture.componentInstance.myOtherService instanceof MyOtherService).toBe(true);
+    });
+
+  });
+
+  describe('service injection with useClass', () => {
+    @Injectable({providedIn: 'root'})
+    class BarServiceDep {
+      name = 'BarServiceDep';
+    }
+
+    @Injectable({providedIn: 'root'})
+    class BarService {
+      constructor(public dep: BarServiceDep) {}
+      getMessage() { return 'bar'; }
+    }
+
+    @Injectable({providedIn: 'root'})
+    class FooServiceDep {
+      name = 'FooServiceDep';
+    }
+
+    @Injectable({providedIn: 'root', useClass: BarService})
+    class FooService {
+      constructor(public dep: FooServiceDep) {}
+      getMessage() { return 'foo'; }
+    }
+
+    it('should use @Injectable useClass config when token is not provided', () => {
+      let provider: FooService|BarService;
+
+      @Component({template: ''})
+      class App {
+        constructor(service: FooService) { provider = service; }
+      }
+
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(provider !.getMessage()).toBe('bar');
+
+      // ViewEngine incorrectly uses the original class DI config, instead of the one from useClass.
+      if (ivyEnabled) {
+        expect(provider !.dep.name).toBe('BarServiceDep');
+      }
+    });
+
+    it('should use constructor config directly when token is explicitly provided via useClass',
+       () => {
+         let provider: FooService|BarService;
+
+         @Component({template: ''})
+         class App {
+           constructor(service: FooService) { provider = service; }
+         }
+
+         TestBed.configureTestingModule(
+             {declarations: [App], providers: [{provide: FooService, useClass: FooService}]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         expect(provider !.getMessage()).toBe('foo');
+       });
+
+
+    it('should inject correct provider when re-providing an injectable that has useClass', () => {
+      let directProvider: FooService|BarService;
+      let overriddenProvider: FooService|BarService;
+
+      @Component({template: ''})
+      class App {
+        constructor(@Inject('stringToken') overriddenService: FooService, service: FooService) {
+          overriddenProvider = overriddenService;
+          directProvider = service;
+        }
+      }
+
+      TestBed.configureTestingModule(
+          {declarations: [App], providers: [{provide: 'stringToken', useClass: FooService}]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(directProvider !.getMessage()).toBe('bar');
+      expect(overriddenProvider !.getMessage()).toBe('foo');
+
+      // ViewEngine incorrectly uses the original class DI config, instead of the one from useClass.
+      if (ivyEnabled) {
+        expect(directProvider !.dep.name).toBe('BarServiceDep');
+        expect(overriddenProvider !.dep.name).toBe('FooServiceDep');
+      }
+    });
+
+    it('should use constructor config directly when token is explicitly provided as a type provider',
+       () => {
+         let provider: FooService|BarService;
+
+         @Component({template: ''})
+         class App {
+           constructor(service: FooService) { provider = service; }
+         }
+
+         TestBed.configureTestingModule({declarations: [App], providers: [FooService]});
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         expect(provider !.getMessage()).toBe('foo');
+         expect(provider !.dep.name).toBe('FooServiceDep');
+       });
   });
 
   describe('inject', () => {
@@ -1900,5 +2088,37 @@ describe('di', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent.trim()).toBe('2 (transformed) items');
+  });
+
+  // TODO: https://angular-team.atlassian.net/browse/FW-1779
+  it('should prioritize useFactory over useExisting', () => {
+    abstract class Base {}
+    @Directive({selector: '[dirA]'})
+    class DirA implements Base {
+    }
+    @Directive({selector: '[dirB]'})
+    class DirB implements Base {
+    }
+
+    const PROVIDER = {provide: Base, useExisting: DirA, useFactory: () => new DirB()};
+
+    @Component({selector: 'child', template: '', providers: [PROVIDER]})
+    class Child {
+      constructor(readonly base: Base) {}
+    }
+
+    @Component({template: `<div dirA> <child></child> </div>`})
+    class App {
+      @ViewChild(DirA) dirA !: DirA;
+      @ViewChild(Child) child !: Child;
+    }
+
+    const fixture = TestBed.configureTestingModule({declarations: [DirA, DirB, App, Child]})
+                        .createComponent(App);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.dirA)
+        .not.toEqual(
+            fixture.componentInstance.child.base,
+            'should not get dirA from parent, but create new dirB from the useFactory provider');
   });
 });

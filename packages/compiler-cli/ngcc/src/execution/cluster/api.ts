@@ -9,7 +9,7 @@
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {JsonObject} from '../../packages/entry_point';
 import {PackageJsonChange} from '../../writing/package_json_updater';
-import {Task, TaskProcessingOutcome} from '../api';
+import {Task, TaskProcessingOutcome} from '../tasks/api';
 
 
 /** A message reporting that an unrecoverable error occurred. */
@@ -33,6 +33,7 @@ export interface ProcessTaskMessage extends JsonObject {
 export interface TaskCompletedMessage extends JsonObject {
   type: 'task-completed';
   outcome: TaskProcessingOutcome;
+  message: string|null;
 }
 
 /** A message requesting the update of a `package.json` file. */
@@ -43,7 +44,7 @@ export interface UpdatePackageJsonMessage extends JsonObject {
 }
 
 /** The type of messages sent from cluster workers to the cluster master. */
-export type MessageFromWorker = ErrorMessage | TaskCompletedMessage | UpdatePackageJsonMessage;
+export type MessageFromWorker = ErrorMessage|TaskCompletedMessage|UpdatePackageJsonMessage;
 
 /** The type of messages sent from the cluster master to cluster workers. */
 export type MessageToWorker = ProcessTaskMessage;

@@ -108,6 +108,9 @@
     "name": "createInjector"
   },
   {
+    "name": "createInjectorWithoutInjectorInstances"
+  },
+  {
     "name": "deepForEach"
   },
   {
@@ -187,6 +190,9 @@
   },
   {
     "name": "newArray"
+  },
+  {
+    "name": "noSideEffects"
   },
   {
     "name": "providerToFactory"

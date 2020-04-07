@@ -1,4 +1,4 @@
-# Schematics
+# Generating code using schematics
 
 A schematic is a template-based code generator that supports complex logic.
 It is a set of instructions for transforming a software project by generating or modifying code.

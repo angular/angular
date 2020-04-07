@@ -70,7 +70,8 @@ export type InterpolationFunction = (args: o.Expression[]) => o.Expression;
 export function convertActionBinding(
     localResolver: LocalResolver | null, implicitReceiver: o.Expression, action: cdAst.AST,
     bindingId: string, interpolationFunction?: InterpolationFunction,
-    baseSourceSpan?: ParseSourceSpan): ConvertActionBindingResult {
+    baseSourceSpan?: ParseSourceSpan,
+    implicitReceiverAccesses?: Set<string>): ConvertActionBindingResult {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver();
   }
@@ -98,7 +99,8 @@ export function convertActionBinding(
       action);
 
   const visitor = new _AstToIrVisitor(
-      localResolver, implicitReceiver, bindingId, interpolationFunction, baseSourceSpan);
+      localResolver, implicitReceiver, bindingId, interpolationFunction, baseSourceSpan,
+      implicitReceiverAccesses);
   const actionStmts: o.Statement[] = [];
   flattenStatements(actionWithoutBuiltins.visit(visitor, _Mode.Statement), actionStmts);
   prependTemporaryDecls(visitor.temporaryCount, bindingId, actionStmts);
@@ -313,7 +315,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   constructor(
       private _localResolver: LocalResolver, private _implicitReceiver: o.Expression,
       private bindingId: string, private interpolationFunction: InterpolationFunction|undefined,
-      private baseSourceSpan?: ParseSourceSpan) {}
+      private baseSourceSpan?: ParseSourceSpan, private implicitReceiverAccesses?: Set<string>) {}
 
   visitBinary(ast: cdAst.Binary, mode: _Mode): any {
     let op: o.BinaryOperator;
@@ -493,6 +495,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
           this.usesImplicitReceiver = prevUsesImplicitReceiver;
           result = varExpr.callFn(args);
         }
+        this.addImplicitReceiverAccess(ast.name);
       }
       if (result == null) {
         result = receiver.callMethod(ast.name, args, this.convertSourceSpan(ast.span));
@@ -525,6 +528,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
           // receiver has been replaced with a resolved local expression.
           this.usesImplicitReceiver = prevUsesImplicitReceiver;
         }
+        this.addImplicitReceiverAccess(ast.name);
       }
       if (result == null) {
         result = receiver.prop(ast.name);
@@ -549,6 +553,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
           // Restore the previous "usesImplicitReceiver" state since the implicit
           // receiver has been replaced with a resolved local expression.
           this.usesImplicitReceiver = prevUsesImplicitReceiver;
+          this.addImplicitReceiverAccess(ast.name);
         } else {
           // Otherwise it's an error.
           const receiver = ast.name;
@@ -778,6 +783,13 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       return new ParseSourceSpan(start, end);
     } else {
       return null;
+    }
+  }
+
+  /** Adds the name of an AST to the list of implicit receiver accesses. */
+  private addImplicitReceiverAccess(name: string) {
+    if (this.implicitReceiverAccesses) {
+      this.implicitReceiverAccesses.add(name);
     }
   }
 }

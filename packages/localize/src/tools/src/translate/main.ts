@@ -74,7 +74,7 @@ if (require.main === module) {
             choices: ['error', 'warning', 'ignore'],
             default: 'warning',
           })
-
+          .strict()
           .help()
           .parse(args);
 
@@ -142,7 +142,7 @@ export function translateFiles({sourceRootPath, sourceFilePaths, translationFile
       [
         new Xliff2TranslationParser(),
         new Xliff1TranslationParser(),
-        new XtbTranslationParser(diagnostics),
+        new XtbTranslationParser(),
         new SimpleJsonTranslationParser(),
       ],
       diagnostics);

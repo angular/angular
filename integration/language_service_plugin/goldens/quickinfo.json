@@ -15,7 +15,7 @@
       "line": 5,
       "offset": 30
     },
-    "displayString": "(property) AppComponent.name",
+    "displayString": "(property) AppComponent.name: string",
     "documentation": "",
     "tags": []
   }

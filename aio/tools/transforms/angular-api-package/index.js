@@ -97,7 +97,7 @@ module.exports =
             'common/testing/index.ts',
             'common/upgrade/index.ts',
             'core/index.ts',
-            'core/global.ts',
+            'core/global/index.ts',
             'core/testing/index.ts',
             'elements/index.ts',
             'forms/index.ts',

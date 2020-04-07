@@ -25,7 +25,7 @@ import {ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, VIEW_REFS} from '.
 import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
 import {isComponentHost, isLContainer, isLView, isRootView} from './interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, LView, LViewFlags, PARENT, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, LView, LViewFlags, PARENT, QUERIES, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode, removeView} from './node_manipulation';
 import {getParentInjectorTNode} from './node_util';
@@ -60,8 +60,7 @@ export function createElementRef(
     ElementRefToken: typeof ViewEngine_ElementRef, tNode: TNode,
     view: LView): ViewEngine_ElementRef {
   if (!R3ElementRef) {
-    // TODO: Fix class name, should be ElementRef, but there appears to be a rollup bug
-    R3ElementRef = class ElementRef_ extends ElementRefToken {};
+    R3ElementRef = class ElementRef extends ElementRefToken {};
   }
   return new R3ElementRef(getNativeByTNode(tNode, view) as RElement);
 }
@@ -96,8 +95,7 @@ export function createTemplateRef<T>(
     TemplateRefToken: typeof ViewEngine_TemplateRef, ElementRefToken: typeof ViewEngine_ElementRef,
     hostTNode: TNode, hostView: LView): ViewEngine_TemplateRef<T>|null {
   if (!R3TemplateRef) {
-    // TODO: Fix class name, should be TemplateRef, but there appears to be a rollup bug
-    R3TemplateRef = class TemplateRef_<T> extends TemplateRefToken<T> {
+    R3TemplateRef = class TemplateRef<T> extends TemplateRefToken<T> {
       constructor(
           private _declarationView: LView, private _declarationTContainer: TContainerNode,
           readonly elementRef: ViewEngine_ElementRef) {
@@ -106,23 +104,23 @@ export function createTemplateRef<T>(
 
       createEmbeddedView(context: T): viewEngine_EmbeddedViewRef<T> {
         const embeddedTView = this._declarationTContainer.tViews as TView;
-        const lView = createLView(
+        const embeddedLView = createLView(
             this._declarationView, embeddedTView, context, LViewFlags.CheckAlways, null,
             embeddedTView.node);
 
         const declarationLContainer = this._declarationView[this._declarationTContainer.index];
         ngDevMode && assertLContainer(declarationLContainer);
-        lView[DECLARATION_LCONTAINER] = declarationLContainer;
+        embeddedLView[DECLARATION_LCONTAINER] = declarationLContainer;
 
         const declarationViewLQueries = this._declarationView[QUERIES];
         if (declarationViewLQueries !== null) {
-          lView[QUERIES] = declarationViewLQueries.createEmbeddedView(embeddedTView);
+          embeddedLView[QUERIES] = declarationViewLQueries.createEmbeddedView(embeddedTView);
         }
 
-        renderView(lView, embeddedTView, context);
+        renderView(embeddedTView, embeddedLView, context);
 
-        const viewRef = new ViewRef<T>(lView);
-        viewRef._tViewNode = lView[T_HOST] as TViewNode;
+        const viewRef = new ViewRef<T>(embeddedLView);
+        viewRef._tViewNode = embeddedLView[T_HOST] as TViewNode;
         return viewRef;
       }
     };
@@ -173,8 +171,7 @@ export function createContainerRef(
     hostTNode: TElementNode|TContainerNode|TElementContainerNode,
     hostView: LView): ViewEngine_ViewContainerRef {
   if (!R3ViewContainerRef) {
-    // TODO: Fix class name, should be ViewContainerRef, but there appears to be a rollup bug
-    R3ViewContainerRef = class ViewContainerRef_ extends ViewContainerRefToken {
+    R3ViewContainerRef = class ViewContainerRef extends ViewContainerRefToken {
       constructor(
           private _lContainer: LContainer,
           private _hostTNode: TElementNode|TContainerNode|TElementContainerNode,
@@ -241,6 +238,7 @@ export function createContainerRef(
 
       insert(viewRef: viewEngine_ViewRef, index?: number): viewEngine_ViewRef {
         const lView = (viewRef as ViewRef<any>)._lView !;
+        const tView = lView[TVIEW];
 
         if (viewRef.destroyed) {
           throw new Error('Cannot insert a destroyed View in a ViewContainer!');
@@ -277,10 +275,10 @@ export function createContainerRef(
         }
 
         const adjustedIdx = this._adjustIndex(index);
-        insertView(lView, this._lContainer, adjustedIdx);
+        insertView(tView, lView, this._lContainer, adjustedIdx);
 
         const beforeNode = getBeforeNodeForView(adjustedIdx, this._lContainer);
-        addRemoveViewFromContainer(lView, true, beforeNode);
+        addRemoveViewFromContainer(tView, lView, true, beforeNode);
 
         (viewRef as ViewRef<any>).attachToViewContainerRef(this);
         addToArray(this._lContainer[VIEW_REFS] !, adjustedIdx, viewRef);
@@ -370,7 +368,7 @@ export function createContainerRef(
         nativeInsertBefore(
             renderer, parentOfHostNative !, commentNode, nativeNextSibling(renderer, hostNative));
       } else {
-        appendChild(commentNode, hostTNode, hostView);
+        appendChild(hostView[TVIEW], hostView, commentNode, hostTNode);
       }
     }
 

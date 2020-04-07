@@ -14,12 +14,12 @@ Add-Content $profile '$Env:path = "${Env:ProgramFiles}\nodejs\;C:\Users\circleci
 # Environment variables for Bazel
 Add-Content $profile '$Env:BAZEL_SH = "C:\tools\msys64\usr\bin\bash.exe"'
 
-# Get the bazel version devdep and store it in a global var for use in the circleci job.
-$bazelVersion = & ${Env:ProgramFiles}\nodejs\node.exe -e "console.log(require('./package.json').devDependencies['@bazel/bazel'])"
-# This is a tricky situation: we want $bazelVersion to be evaluated but not $Env:BAZEL_VERSION.
+# Get the bazelisk version devdep and store it in a global var for use in the circleci job.
+$bazeliskVersion = & ${Env:ProgramFiles}\nodejs\node.exe -e "console.log(require('./package.json').devDependencies['@bazel/bazelisk'])"
+# This is a tricky situation: we want $bazeliskVersion to be evaluated but not $Env:BAZELISK_VERSION.
 # Formatting works https://stackoverflow.com/questions/32127583/expand-variable-inside-single-quotes
-$bazelVersionGlobalVar = '$Env:BAZEL_VERSION = "{0}"' -f $bazelVersion
-Add-Content $profile $bazelVersionGlobalVar
+$bazeliskVersionGlobalVar = '$Env:BAZELISK_VERSION = "{0}"' -f $bazeliskVersion
+Add-Content $profile $bazeliskVersionGlobalVar
 
 # Remove the CircleCI checkout SSH override, because it breaks cloning repositories through Bazel.
 # See https://circleci.com/gh/angular/angular/401454 for an example.
@@ -27,8 +27,23 @@ Add-Content $profile $bazelVersionGlobalVar
 git config --global --unset url.ssh://git@github.com.insteadOf
 
 
+####################################################################################################
+# Decrypt GCP Credentials and store them as the Google default credentials.
+####################################################################################################
+mkdir ${env:APPDATA}\gcloud
+openssl aes-256-cbc -d -in .circleci\gcp_token -md md5 -out "$env:APPDATA\gcloud\application_default_credentials.json" -k "$env:CIRCLE_PROJECT_REPONAME"
+
+####################################################################################################
+# Set bazel configuration for CircleCI runs.
+####################################################################################################
+copy .circleci\bazel.windows.rc ${Env:USERPROFILE}\.bazelrc
+
+####################################################################################################
+# Install specific version of node.
+####################################################################################################
+choco install nodejs --version 12.14.1 --no-progress
+
 # These Bazel prereqs aren't needed because the CircleCI image already includes them.
-# choco install nodejs --version 10.16.0 --no-progress
 # choco install yarn --version 1.16.0 --no-progress
 # choco install vcredist2015 --version 14.0.24215.20170201
 

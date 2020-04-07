@@ -13,7 +13,6 @@ import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {addAllToArray} from '../util/array_utils';
 import {assertDataInRange, assertDefined, assertEqual} from '../util/assert';
-
 import {bindingUpdated} from './bindings';
 import {attachPatchData} from './context_discovery';
 import {setDelayProjection} from './instructions/all';
@@ -28,7 +27,7 @@ import {SanitizerFn} from './interfaces/sanitization';
 import {isLContainer} from './interfaces/type_checks';
 import {HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
 import {appendChild, applyProjection, createTextNode, nativeRemoveNode} from './node_manipulation';
-import {getBindingIndex, getIsParent, getLView, getPreviousOrParentTNode, nextBindingIndex, setIsNotParent, setPreviousOrParentTNode} from './state';
+import {getBindingIndex, getIsParent, getLView, getPreviousOrParentTNode, getTView, nextBindingIndex, setIsNotParent, setPreviousOrParentTNode} from './state';
 import {renderStringify} from './util/misc_utils';
 import {getNativeByIndex, getNativeByTNode, getTNode, load} from './util/view_utils';
 
@@ -360,14 +359,13 @@ const parentIndexStack: number[] = [];
  * @codeGenApi
  */
 export function ɵɵi18nStart(index: number, message: string, subTemplateIndex?: number): void {
-  const lView = getLView();
-  const tView = lView[TVIEW];
+  const tView = getTView();
   ngDevMode && assertDefined(tView, `tView should be defined`);
   i18nIndexStack[++i18nIndexStackPointer] = index;
   // We need to delay projections until `i18nEnd`
   setDelayProjection(true);
   if (tView.firstCreatePass && tView.data[index + HEADER_OFFSET] === null) {
-    i18nStartFirstPass(lView, tView, index, message, subTemplateIndex);
+    i18nStartFirstPass(getLView(), tView, index, message, subTemplateIndex);
   }
 }
 
@@ -392,11 +390,19 @@ function i18nStartFirstPass(
   parentIndexStack[parentIndexPointer] = parentIndex;
   const createOpCodes: I18nMutateOpCodes = [];
   // If the previous node wasn't the direct parent then we have a translation without top level
-  // element and we need to keep a reference of the previous element if there is one
+  // element and we need to keep a reference of the previous element if there is one. We should also
+  // keep track whether an element was a parent node or not, so that the logic that consumes
+  // the generated `I18nMutateOpCode`s can leverage this information to properly set TNode state
+  // (whether it's a parent or sibling).
   if (index > 0 && previousOrParentTNode !== parentTNode) {
+    let previousTNodeIndex = previousOrParentTNode.index - HEADER_OFFSET;
+    // If current TNode is a sibling node, encode it using a negative index. This information is
+    // required when the `Select` action is processed (see the `readCreateOpCodes` function).
+    if (!getIsParent()) {
+      previousTNodeIndex = ~previousTNodeIndex;
+    }
     // Create an OpCode to select the previous TNode
-    createOpCodes.push(
-        previousOrParentTNode.index << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select);
+    createOpCodes.push(previousTNodeIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select);
   }
   const updateOpCodes: I18nUpdateOpCodes = [];
   const icuExpressions: TIcu[] = [];
@@ -416,12 +422,16 @@ function i18nStartFirstPass(
         }
       } else {
         const phIndex = parseInt(value.substr(1), 10);
-        // The value represents a placeholder that we move to the designated index
+        const isElement = value.charAt(0) === TagType.ELEMENT;
+        // The value represents a placeholder that we move to the designated index.
+        // Note: positive indicies indicate that a TNode with a given index should also be marked as
+        // parent while executing `Select` instruction.
         createOpCodes.push(
-            phIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
+            (isElement ? phIndex : ~phIndex) << I18nMutateOpCode.SHIFT_REF |
+                I18nMutateOpCode.Select,
             parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
 
-        if (value.charAt(0) === TagType.ELEMENT) {
+        if (isElement) {
           parentIndexStack[++parentIndexPointer] = parentIndex = phIndex;
         }
       }
@@ -431,6 +441,15 @@ function i18nStartFirstPass(
       for (let j = 0; j < parts.length; j++) {
         if (j & 1) {
           // Odd indexes are ICU expressions
+          const icuExpression = parts[j] as IcuExpression;
+
+          // Verify that ICU expression has the right shape. Translations might contain invalid
+          // constructions (while original messages were correct), so ICU parsing at runtime may not
+          // succeed (thus `icuExpression` remains a string).
+          if (typeof icuExpression !== 'object') {
+            throw new Error(`Unable to parse ICU expression in "${templateTranslation}" message.`);
+          }
+
           // Create the comment node that will anchor the ICU expression
           const icuNodeIndex = startIndex + i18nVarsCount++;
           createOpCodes.push(
@@ -438,7 +457,6 @@ function i18nStartFirstPass(
               parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
 
           // Update codes for the ICU expression
-          const icuExpression = parts[j] as IcuExpression;
           const mask = getBindingMask(icuExpression);
           icuStart(icuExpressions, icuExpression, icuNodeIndex, icuNodeIndex);
           // Since this is recursive, the last TIcu that was pushed is the one we want
@@ -471,7 +489,7 @@ function i18nStartFirstPass(
   }
 
   if (i18nVarsCount > 0) {
-    allocExpando(lView, i18nVarsCount);
+    allocExpando(tView, lView, i18nVarsCount);
   }
 
   ngDevMode &&
@@ -490,7 +508,8 @@ function i18nStartFirstPass(
 }
 
 function appendI18nNode(
-    tNode: TNode, parentTNode: TNode, previousTNode: TNode | null, lView: LView): TNode {
+    tView: TView, tNode: TNode, parentTNode: TNode, previousTNode: TNode | null,
+    lView: LView): TNode {
   ngDevMode && ngDevMode.rendererMoveNode++;
   const nextNode = tNode.next;
   if (!previousTNode) {
@@ -523,16 +542,16 @@ function appendI18nNode(
 
   // If the placeholder to append is a projection, we need to move the projected nodes instead
   if (tNode.type === TNodeType.Projection) {
-    applyProjection(lView, tNode as TProjectionNode);
+    applyProjection(tView, lView, tNode as TProjectionNode);
     return tNode;
   }
 
-  appendChild(getNativeByTNode(tNode, lView), tNode, lView);
+  appendChild(tView, lView, getNativeByTNode(tNode, lView), tNode);
 
   const slotValue = lView[tNode.index];
   if (tNode.type !== TNodeType.Container && isLContainer(slotValue)) {
     // Nodes that inject ViewContainerRef also have a comment node that should be moved
-    appendChild(slotValue[NATIVE], tNode, lView);
+    appendChild(tView, lView, slotValue[NATIVE], tNode);
   }
   return tNode;
 }
@@ -657,9 +676,9 @@ export function ɵɵi18nPostprocess(
  */
 export function ɵɵi18nEnd(): void {
   const lView = getLView();
-  const tView = lView[TVIEW];
+  const tView = getTView();
   ngDevMode && assertDefined(tView, `tView should be defined`);
-  i18nEndFirstPass(lView, tView);
+  i18nEndFirstPass(tView, lView);
   // Stop delaying projections
   setDelayProjection(false);
 }
@@ -667,7 +686,7 @@ export function ɵɵi18nEnd(): void {
 /**
  * See `i18nEnd` above.
  */
-function i18nEndFirstPass(lView: LView, tView: TView) {
+function i18nEndFirstPass(tView: TView, lView: LView) {
   ngDevMode && assertEqual(
                    getBindingIndex(), tView.bindingStartIndex,
                    'i18nEnd should be called before any binding');
@@ -680,17 +699,18 @@ function i18nEndFirstPass(lView: LView, tView: TView) {
   const lastCreatedNode = getPreviousOrParentTNode();
 
   // Read the instructions to insert/move/remove DOM elements
-  const visitedNodes = readCreateOpCodes(rootIndex, tI18n.create, lView);
+  const visitedNodes = readCreateOpCodes(rootIndex, tI18n.create, tView, lView);
 
   // Remove deleted nodes
   let index = rootIndex + 1;
   while (index <= lastCreatedNode.index - HEADER_OFFSET) {
     if (visitedNodes.indexOf(index) === -1) {
-      removeNode(index, lView, /* markAsDetached */ true);
+      removeNode(tView, lView, index, /* markAsDetached */ true);
     }
     // Check if an element has any local refs and skip them
-    const tNode = getTNode(index, lView);
-    if (tNode && (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) &&
+    const tNode = getTNode(tView, index);
+    if (tNode && (tNode.type === TNodeType.Container || tNode.type === TNodeType.Element ||
+                  tNode.type === TNodeType.ElementContainer) &&
         tNode.localNames !== null) {
       // Divide by 2 to get the number of local refs,
       // since they are stored as an array that also includes directive indexes,
@@ -705,12 +725,12 @@ function i18nEndFirstPass(lView: LView, tView: TView) {
  * Creates and stores the dynamic TNode, and unhooks it from the tree for now.
  */
 function createDynamicNodeAtIndex(
-    lView: LView, index: number, type: TNodeType, native: RElement | RText | null,
+    tView: TView, lView: LView, index: number, type: TNodeType, native: RElement | RText | null,
     name: string | null): TElementNode|TIcuContainerNode {
   const previousOrParentTNode = getPreviousOrParentTNode();
   ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
   lView[index + HEADER_OFFSET] = native;
-  const tNode = getOrCreateTNode(lView[TVIEW], lView[T_HOST], index, type as any, name, null);
+  const tNode = getOrCreateTNode(tView, lView[T_HOST], index, type as any, name, null);
 
   // We are creating a dynamic node, the previous tNode might not be pointing at this node.
   // We will link ourselves into the tree later with `appendI18nNode`.
@@ -722,7 +742,7 @@ function createDynamicNodeAtIndex(
 }
 
 function readCreateOpCodes(
-    index: number, createOpCodes: I18nMutateOpCodes, lView: LView): number[] {
+    index: number, createOpCodes: I18nMutateOpCodes, tView: TView, lView: LView): number[] {
   const renderer = lView[RENDERER];
   let currentTNode: TNode|null = null;
   let previousTNode: TNode|null = null;
@@ -735,7 +755,7 @@ function readCreateOpCodes(
       ngDevMode && ngDevMode.rendererCreateTextNode++;
       previousTNode = currentTNode;
       currentTNode =
-          createDynamicNodeAtIndex(lView, textNodeIndex, TNodeType.Element, textRNode, null);
+          createDynamicNodeAtIndex(tView, lView, textNodeIndex, TNodeType.Element, textRNode, null);
       visitedNodes.push(textNodeIndex);
       setIsNotParent();
     } else if (typeof opCode == 'number') {
@@ -748,26 +768,30 @@ function readCreateOpCodes(
             // top-level node and we should use the host node instead
             destinationTNode = lView[T_HOST] !;
           } else {
-            destinationTNode = getTNode(destinationNodeIndex, lView);
+            destinationTNode = getTNode(tView, destinationNodeIndex);
           }
           ngDevMode &&
               assertDefined(
                   currentTNode !,
                   `You need to create or select a node before you can insert it into the DOM`);
-          previousTNode = appendI18nNode(currentTNode !, destinationTNode, previousTNode, lView);
+          previousTNode =
+              appendI18nNode(tView, currentTNode !, destinationTNode, previousTNode, lView);
           break;
         case I18nMutateOpCode.Select:
-          const nodeIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
+          // Negative indicies indicate that a given TNode is a sibling node, not a parent node
+          // (see `i18nStartFirstPass` for additional information).
+          const isParent = opCode >= 0;
+          const nodeIndex = (isParent ? opCode : ~opCode) >>> I18nMutateOpCode.SHIFT_REF;
           visitedNodes.push(nodeIndex);
           previousTNode = currentTNode;
-          currentTNode = getTNode(nodeIndex, lView);
+          currentTNode = getTNode(tView, nodeIndex);
           if (currentTNode) {
-            setPreviousOrParentTNode(currentTNode, currentTNode.type === TNodeType.Element);
+            setPreviousOrParentTNode(currentTNode, isParent);
           }
           break;
         case I18nMutateOpCode.ElementEnd:
           const elementIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
-          previousTNode = currentTNode = getTNode(elementIndex, lView);
+          previousTNode = currentTNode = getTNode(tView, elementIndex);
           setPreviousOrParentTNode(currentTNode, false);
           break;
         case I18nMutateOpCode.Attr:
@@ -776,7 +800,8 @@ function readCreateOpCodes(
           const attrValue = createOpCodes[++i] as string;
           // This code is used for ICU expressions only, since we don't support
           // directives/components in ICUs, we don't need to worry about inputs here
-          elementAttributeInternal(elementNodeIndex, attrName, attrValue, lView);
+          elementAttributeInternal(
+              getTNode(tView, elementNodeIndex), lView, attrName, attrValue, null, null);
           break;
         default:
           throw new Error(`Unable to determine the type of mutate operation for "${opCode}"`);
@@ -793,7 +818,7 @@ function readCreateOpCodes(
           ngDevMode && ngDevMode.rendererCreateComment++;
           previousTNode = currentTNode;
           currentTNode = createDynamicNodeAtIndex(
-              lView, commentNodeIndex, TNodeType.IcuContainer, commentRNode, null);
+              tView, lView, commentNodeIndex, TNodeType.IcuContainer, commentRNode, null);
           visitedNodes.push(commentNodeIndex);
           attachPatchData(commentRNode, lView);
           (currentTNode as TIcuContainerNode).activeCaseIndex = null;
@@ -810,7 +835,7 @@ function readCreateOpCodes(
           ngDevMode && ngDevMode.rendererCreateElement++;
           previousTNode = currentTNode;
           currentTNode = createDynamicNodeAtIndex(
-              lView, elementNodeIndex, TNodeType.Element, elementRNode, tagNameValue);
+              tView, lView, elementNodeIndex, TNodeType.Element, elementRNode, tagNameValue);
           visitedNodes.push(elementNodeIndex);
           break;
         default:
@@ -826,7 +851,7 @@ function readCreateOpCodes(
 
 function readUpdateOpCodes(
     updateOpCodes: I18nUpdateOpCodes, icus: TIcu[] | null, bindingsStartIndex: number,
-    changeMask: number, viewData: LView, bypassCheckBit = false) {
+    changeMask: number, tView: TView, lView: LView, bypassCheckBit = false) {
   let caseCreated = false;
   for (let i = 0; i < updateOpCodes.length; i++) {
     // bit code to check if we should apply the next update
@@ -843,7 +868,7 @@ function readUpdateOpCodes(
         } else if (typeof opCode == 'number') {
           if (opCode < 0) {
             // It's a binding index whose value is negative
-            value += renderStringify(viewData[bindingsStartIndex - opCode]);
+            value += renderStringify(lView[bindingsStartIndex - opCode]);
           } else {
             const nodeIndex = opCode >>> I18nUpdateOpCode.SHIFT_REF;
             let tIcuIndex: number;
@@ -853,15 +878,17 @@ function readUpdateOpCodes(
               case I18nUpdateOpCode.Attr:
                 const propName = updateOpCodes[++j] as string;
                 const sanitizeFn = updateOpCodes[++j] as SanitizerFn | null;
-                elementPropertyInternal(viewData, nodeIndex, propName, value, sanitizeFn);
+                elementPropertyInternal(
+                    tView, getTNode(tView, nodeIndex), lView, propName, value, lView[RENDERER],
+                    sanitizeFn, false);
                 break;
               case I18nUpdateOpCode.Text:
-                textBindingInternal(viewData, nodeIndex, value);
+                textBindingInternal(lView, nodeIndex, value);
                 break;
               case I18nUpdateOpCode.IcuSwitch:
                 tIcuIndex = updateOpCodes[++j] as number;
                 tIcu = icus ![tIcuIndex];
-                icuTNode = getTNode(nodeIndex, viewData) as TIcuContainerNode;
+                icuTNode = getTNode(tView, nodeIndex) as TIcuContainerNode;
                 // If there is an active case, delete the old nodes
                 if (icuTNode.activeCaseIndex !== null) {
                   const removeCodes = tIcu.remove[icuTNode.activeCaseIndex];
@@ -873,13 +900,13 @@ function readUpdateOpCodes(
                         // Remove DOM element, but do *not* mark TNode as detached, since we are
                         // just switching ICU cases (while keeping the same TNode), so a DOM element
                         // representing a new ICU case will be re-created.
-                        removeNode(nodeIndex, viewData, /* markAsDetached */ false);
+                        removeNode(tView, lView, nodeIndex, /* markAsDetached */ false);
                         break;
                       case I18nMutateOpCode.RemoveNestedIcu:
                         const nestedIcuNodeIndex =
                             removeCodes[k + 1] as number >>> I18nMutateOpCode.SHIFT_REF;
                         const nestedIcuTNode =
-                            getTNode(nestedIcuNodeIndex, viewData) as TIcuContainerNode;
+                            getTNode(tView, nestedIcuNodeIndex) as TIcuContainerNode;
                         const activeIndex = nestedIcuTNode.activeCaseIndex;
                         if (activeIndex !== null) {
                           const nestedIcuTIndex = removeOpCode >>> I18nMutateOpCode.SHIFT_REF;
@@ -896,18 +923,18 @@ function readUpdateOpCodes(
                 icuTNode.activeCaseIndex = caseIndex !== -1 ? caseIndex : null;
                 if (caseIndex > -1) {
                   // Add the nodes for the new case
-                  readCreateOpCodes(-1, tIcu.create[caseIndex], viewData);
+                  readCreateOpCodes(-1, tIcu.create[caseIndex], tView, lView);
                   caseCreated = true;
                 }
                 break;
               case I18nUpdateOpCode.IcuUpdate:
                 tIcuIndex = updateOpCodes[++j] as number;
                 tIcu = icus ![tIcuIndex];
-                icuTNode = getTNode(nodeIndex, viewData) as TIcuContainerNode;
+                icuTNode = getTNode(tView, nodeIndex) as TIcuContainerNode;
                 if (icuTNode.activeCaseIndex !== null) {
                   readUpdateOpCodes(
                       tIcu.update[icuTNode.activeCaseIndex], icus, bindingsStartIndex, changeMask,
-                      viewData, caseCreated);
+                      tView, lView, caseCreated);
                 }
                 break;
             }
@@ -919,18 +946,18 @@ function readUpdateOpCodes(
   }
 }
 
-function removeNode(index: number, viewData: LView, markAsDetached: boolean) {
-  const removedPhTNode = getTNode(index, viewData);
-  const removedPhRNode = getNativeByIndex(index, viewData);
+function removeNode(tView: TView, lView: LView, index: number, markAsDetached: boolean) {
+  const removedPhTNode = getTNode(tView, index);
+  const removedPhRNode = getNativeByIndex(index, lView);
   if (removedPhRNode) {
-    nativeRemoveNode(viewData[RENDERER], removedPhRNode);
+    nativeRemoveNode(lView[RENDERER], removedPhRNode);
   }
 
-  const slotValue = load(viewData, index) as RElement | RComment | LContainer;
+  const slotValue = load(lView, index) as RElement | RComment | LContainer;
   if (isLContainer(slotValue)) {
     const lContainer = slotValue as LContainer;
     if (removedPhTNode.type !== TNodeType.Container) {
-      nativeRemoveNode(viewData[RENDERER], lContainer[NATIVE]);
+      nativeRemoveNode(lView[RENDERER], lContainer[NATIVE]);
     }
   }
 
@@ -982,7 +1009,7 @@ export function ɵɵi18n(index: number, message: string, subTemplateIndex?: numb
  */
 export function ɵɵi18nAttributes(index: number, values: string[]): void {
   const lView = getLView();
-  const tView = lView[TVIEW];
+  const tView = getTView();
   ngDevMode && assertDefined(tView, `tView should be defined`);
   i18nAttributesFirstPass(lView, tView, index, values);
 }
@@ -1014,16 +1041,16 @@ function i18nAttributesFirstPass(lView: LView, tView: TView, index: number, valu
                 generateBindingUpdateOpCodes(value, previousElementIndex, attrName), updateOpCodes);
           }
         } else {
-          const tNode = getTNode(previousElementIndex, lView);
+          const tNode = getTNode(tView, previousElementIndex);
           // Set attributes for Elements only, for other types (like ElementContainer),
           // only set inputs below
           if (tNode.type === TNodeType.Element) {
-            elementAttributeInternal(previousElementIndex, attrName, value, lView);
+            elementAttributeInternal(tNode, lView, attrName, value, null, null);
           }
           // Check if that attribute is a directive input
           const dataValue = tNode.inputs !== null && tNode.inputs[attrName];
           if (dataValue) {
-            setInputsForProperty(lView, dataValue, attrName, value);
+            setInputsForProperty(tView, lView, dataValue, attrName, value);
             if (ngDevMode) {
               const element = getNativeByIndex(previousElementIndex, lView) as RElement | RComment;
               setNgReflectProperties(lView, element, tNode.type, dataValue, value);
@@ -1071,8 +1098,7 @@ export function ɵɵi18nExp<T>(value: T): typeof ɵɵi18nExp {
  */
 export function ɵɵi18nApply(index: number) {
   if (shiftsCounter) {
-    const lView = getLView();
-    const tView = lView[TVIEW];
+    const tView = getTView();
     ngDevMode && assertDefined(tView, `tView should be defined`);
     const tI18n = tView.data[index + HEADER_OFFSET];
     let updateOpCodes: I18nUpdateOpCodes;
@@ -1084,7 +1110,8 @@ export function ɵɵi18nApply(index: number) {
       icus = (tI18n as TI18n).icus;
     }
     const bindingsStartIndex = getBindingIndex() - shiftsCounter - 1;
-    readUpdateOpCodes(updateOpCodes, icus, bindingsStartIndex, changeMask, lView);
+    const lView = getLView();
+    readUpdateOpCodes(updateOpCodes, icus, bindingsStartIndex, changeMask, tView, lView);
 
     // Reset changeMask & maskBit to default for the next update cycle
     changeMask = 0b0;

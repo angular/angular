@@ -15,6 +15,7 @@ interface PageInfo {
   type: string;
   titleWords: string;
   keyWords: string;
+  topics: string;
 }
 
 addEventListener('message', handleMessage);
@@ -27,6 +28,7 @@ function createIndex(loadIndexFn: IndexLoader): lunr.Index {
   queryLexer.termSeparator = lunr.tokenizer.separator = /\s+/;
   return lunr(/** @this */function() {
     this.ref('path');
+    this.field('topics', { boost: 15 });
     this.field('titleWords', { boost: 10 });
     this.field('headingWords', { boost: 5 });
     this.field('members', { boost: 4 });

@@ -257,13 +257,15 @@ export class R3TestBedCompiler {
     const parentInjector = this.platform.injector;
     this.testModuleRef = new NgModuleRef(this.testModuleType, parentInjector);
 
-    // Set the locale ID, it can be overridden for the tests
-    const localeId = this.testModuleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
-    setLocaleId(localeId);
-
     // ApplicationInitStatus.runInitializers() is marked @internal to core.
     // Cast it to any before accessing it.
     (this.testModuleRef.injector.get(ApplicationInitStatus) as any).runInitializers();
+
+    // Set locale ID after running app initializers, since locale information might be updated while
+    // running initializers. This is also consistent with the execution order while bootstrapping an
+    // app (see `packages/core/src/application_ref.ts` file).
+    const localeId = this.testModuleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
+    setLocaleId(localeId);
 
     return this.testModuleRef;
   }
@@ -355,8 +357,11 @@ export class R3TestBedCompiler {
             // are present, always re-calculate transitive scopes to have the most up-to-date
             // information available. The `moduleToScope` map avoids repeated re-calculation of
             // scopes for the same module.
-            const forceRecalc = !isTestingModule && this.hasModuleOverrides;
-            moduleToScope.set(moduleType, transitiveScopesFor(realType, forceRecalc));
+            if (!isTestingModule && this.hasModuleOverrides) {
+              this.storeFieldOfDefOnType(moduleType as any, NG_MOD_DEF, 'transitiveCompileScopes');
+              (moduleType as any)[NG_MOD_DEF].transitiveCompileScopes = null;
+            }
+            moduleToScope.set(moduleType, transitiveScopesFor(realType));
           }
           return moduleToScope.get(moduleType) !;
         };
@@ -394,15 +399,8 @@ export class R3TestBedCompiler {
 
     const injectorDef: any = (moduleType as any)[NG_INJ_DEF];
     if (this.providerOverridesByToken.size > 0) {
-      // Extract the list of providers from ModuleWithProviders, so we can define the final list of
-      // providers that might have overrides.
-      // Note: second `flatten` operation is needed to convert an array of providers
-      // (e.g. `[[], []]`) into one flat list, also eliminating empty arrays.
-      const providersFromModules = flatten(flatten(
-          injectorDef.imports, (imported: NgModuleType<any>| ModuleWithProviders<any>) =>
-                                   isModuleWithProviders(imported) ? imported.providers : []));
       const providers = [
-        ...providersFromModules, ...injectorDef.providers,
+        ...injectorDef.providers,
         ...(this.providerOverridesByModule.get(moduleType as InjectorType<any>) || [])
       ];
       if (this.hasProviderOverrides(providers)) {
@@ -413,8 +411,9 @@ export class R3TestBedCompiler {
       }
 
       // Apply provider overrides to imported modules recursively
-      const moduleDef: any = (moduleType as any)[NG_MOD_DEF];
-      for (const importedModule of moduleDef.imports) {
+      const moduleDef = (moduleType as any)[NG_MOD_DEF];
+      const imports = maybeUnwrapFn(moduleDef.imports);
+      for (const importedModule of imports) {
         this.applyProviderOverridesToModule(importedModule);
       }
       // Also override the providers on any ModuleWithProviders imports since those don't appear in

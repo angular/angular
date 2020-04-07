@@ -7,10 +7,9 @@
  */
 import {assertDataInRange, assertEqual} from '../../util/assert';
 import {TElementNode, TNodeType} from '../interfaces/node';
-import {HEADER_OFFSET, RENDERER, TVIEW, T_HOST} from '../interfaces/view';
+import {HEADER_OFFSET, RENDERER, T_HOST} from '../interfaces/view';
 import {appendChild, createTextNode} from '../node_manipulation';
-import {getBindingIndex, getLView, setPreviousOrParentTNode} from '../state';
-
+import {getBindingIndex, getLView, getTView, setPreviousOrParentTNode} from '../state';
 import {getOrCreateTNode} from './shared';
 
 
@@ -25,7 +24,7 @@ import {getOrCreateTNode} from './shared';
  */
 export function ɵɵtext(index: number, value: string = ''): void {
   const lView = getLView();
-  const tView = lView[TVIEW];
+  const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
 
   ngDevMode && assertEqual(
@@ -38,7 +37,7 @@ export function ɵɵtext(index: number, value: string = ''): void {
       tView.data[adjustedIndex] as TElementNode;
 
   const textNative = lView[adjustedIndex] = createTextNode(value, lView[RENDERER]);
-  appendChild(textNative, tNode, lView);
+  appendChild(tView, lView, textNative, tNode);
 
   // Text nodes are self closing.
   setPreviousOrParentTNode(tNode, false);

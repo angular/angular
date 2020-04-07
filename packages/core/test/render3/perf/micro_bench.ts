@@ -65,7 +65,7 @@ export function createBenchmark(benchmarkName: string): Benchmark {
           if (!runAgain) {
             // tslint:disable-next-line:no-console
             console.log(
-                `  ${formatTime(iterationTime_ms)} (count: ${profile.sampleCount}, iterations: ${profile.iterationCount})`);
+                `  ${formatTime(profile.bestTime)} (count: ${profile.sampleCount}, iterations: ${profile.iterationCount})`);
           }
         }
         iterationCounter = profile.iterationCount;
@@ -91,7 +91,7 @@ export function createBenchmark(benchmarkName: string): Benchmark {
       return (previous.bestTime < current.bestTime) ? previous : current;
     });
     const unitOffset = findUnit(fastest.bestTime);
-    (fn || console.log)(`\nBenchmark: ${benchmarkName}\n${profiles.map((profile: Profile) => {
+    (fn || console.info)(`\nBenchmark: ${benchmarkName}\n${profiles.map((profile: Profile) => {
       const time = formatTime(profile.bestTime, unitOffset);
       const percent = formatPercent(1 - profile.bestTime / fastest.bestTime);
       return ` ${profile.profileName}: ${time}(${percent}) `;

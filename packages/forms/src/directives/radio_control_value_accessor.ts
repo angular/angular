@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer2, forwardRef} from '@angular/core';
+import {Directive, ElementRef, forwardRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer2} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
@@ -93,17 +93,16 @@ export class RadioControlRegistry {
   host: {'(change)': 'onChange()', '(blur)': 'onTouched()'},
   providers: [RADIO_VALUE_ACCESSOR]
 })
-export class RadioControlValueAccessor implements ControlValueAccessor,
-    OnDestroy, OnInit {
+export class RadioControlValueAccessor implements ControlValueAccessor, OnDestroy, OnInit {
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _state !: boolean;
+  _state!: boolean;
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _control !: NgControl;
+  _control!: NgControl;
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _fn !: Function;
+  _fn!: Function;
 
   /**
    * @description
@@ -122,7 +121,7 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
    * Tracks the name of the radio input element.
    */
   // TODO(issue/24571): remove '!'.
-  @Input() name !: string;
+  @Input() name!: string;
 
   /**
    * @description
@@ -130,7 +129,7 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
    * to a key in the parent `FormGroup` or `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
-  @Input() formControlName !: string;
+  @Input() formControlName!: string;
 
   /**
    * @description
@@ -156,7 +155,9 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
    * @description
    * Lifecycle method called before the directive's instance is destroyed. For internal use only.
    */
-  ngOnDestroy(): void { this._registry.remove(this); }
+  ngOnDestroy(): void {
+    this._registry.remove(this);
+  }
 
   /**
    * @description
@@ -188,7 +189,9 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
    *
    * @param value
    */
-  fireUncheck(value: any): void { this.writeValue(value); }
+  fireUncheck(value: any): void {
+    this.writeValue(value);
+  }
 
   /**
    * @description
@@ -196,7 +199,9 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
    *
    * @param fn The callback function
    */
-  registerOnTouched(fn: () => {}): void { this.onTouched = fn; }
+  registerOnTouched(fn: () => {}): void {
+    this.onTouched = fn;
+  }
 
   /**
    * Sets the "disabled" property on the input element.

@@ -20,9 +20,11 @@ const CATCH_STACK_NAME = 'stack';
 const _VALID_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;
 
 export class TypeScriptNodeEmitter {
+  constructor(private annotateForClosureCompiler: boolean) {}
+
   updateSourceFile(sourceFile: ts.SourceFile, stmts: Statement[], preamble?: string):
       [ts.SourceFile, Map<ts.Node, Node>] {
-    const converter = new NodeEmitterVisitor();
+    const converter = new NodeEmitterVisitor(this.annotateForClosureCompiler);
     // [].concat flattens the result so that each `visit...` method can also return an array of
     // stmts.
     const statements: any[] = [].concat(
@@ -63,8 +65,8 @@ export class TypeScriptNodeEmitter {
  */
 export function updateSourceFile(
     sourceFile: ts.SourceFile, module: PartialModule,
-    context: ts.TransformationContext): [ts.SourceFile, Map<ts.Node, Node>] {
-  const converter = new NodeEmitterVisitor();
+    annotateForClosureCompiler: boolean): [ts.SourceFile, Map<ts.Node, Node>] {
+  const converter = new NodeEmitterVisitor(annotateForClosureCompiler);
   converter.loadExportedVariableIdentifiers(sourceFile);
 
   const prefixStatements = module.statements.filter(statement => !(statement instanceof ClassStmt));
@@ -191,6 +193,8 @@ export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
   private _reexports = new Map<string, {name: string, as: string}[]>();
   private _templateSources = new Map<ParseSourceFile, ts.SourceMapSource>();
   private _exportedVariableIdentifiers = new Map<string, ts.Identifier>();
+
+  constructor(private annotateForClosureCompiler: boolean) {}
 
   /**
    * Process the source file and collect exported identifiers that refer to variables.
@@ -367,14 +371,27 @@ export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
 
   visitDeclareClassStmt(stmt: ClassStmt) {
     const modifiers = this.getModifiers(stmt);
-    const fields = stmt.fields.map(
-        field => ts.createProperty(
-            /* decorators */ undefined, /* modifiers */ translateModifiers(field.modifiers),
-            field.name,
-            /* questionToken */ undefined,
-            /* type */ undefined,
-            field.initializer == null ? ts.createNull() :
-                                        field.initializer.visitExpression(this, null)));
+    const fields = stmt.fields.map(field => {
+      const property = ts.createProperty(
+          /* decorators */ undefined, /* modifiers */ translateModifiers(field.modifiers),
+          field.name,
+          /* questionToken */ undefined,
+          /* type */ undefined,
+          field.initializer == null ? ts.createNull() :
+                                      field.initializer.visitExpression(this, null));
+
+      if (this.annotateForClosureCompiler) {
+        // Closure compiler transforms the form `Service.ɵprov = X` into `Service$ɵprov = X`. To
+        // prevent this transformation, such assignments need to be annotated with @nocollapse.
+        // Note that tsickle is typically responsible for adding such annotations, however it
+        // doesn't yet handle synthetic fields added during other transformations.
+        ts.addSyntheticLeadingComment(
+            property, ts.SyntaxKind.MultiLineCommentTrivia, '* @nocollapse ',
+            /* hasTrailingNewLine */ false);
+      }
+
+      return property;
+    });
     const getters = stmt.getters.map(
         getter => ts.createGetAccessor(
             /* decorators */ undefined, /* modifiers */ undefined, getter.name, /* parameters */[],

@@ -8,11 +8,11 @@
 
 import {CompileDirectiveSummary, CompilePipeSummary} from '../compile_metadata';
 import {SecurityContext} from '../core';
-import {ASTWithSource, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
+import {ASTWithSource, AbsoluteSourceSpan, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding, VariableBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {mergeNsAndName} from '../ml_parser/tags';
-import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
+import {ParseError, ParseErrorLevel, ParseLocation, ParseSourceSpan} from '../parse_util';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector} from '../selector';
 import {splitAtColon, splitAtPeriod} from '../util';
@@ -21,7 +21,7 @@ const PROPERTY_PARTS_SEPARATOR = '.';
 const ATTRIBUTE_PREFIX = 'attr';
 const CLASS_PREFIX = 'class';
 const STYLE_PREFIX = 'style';
-
+const TEMPLATE_ATTR_PREFIX = '*';
 const ANIMATE_PROP_PREFIX = 'animate-';
 
 /**
@@ -113,42 +113,74 @@ export class BindingParser {
     }
   }
 
-  // Parse an inline template binding. ie `<tag *tplKey="<tplValue>">`
+  /**
+   * Parses the bindings in a microsyntax expression, and converts them to
+   * `ParsedProperty` or `ParsedVariable`.
+   *
+   * @param tplKey template binding name
+   * @param tplValue template binding value
+   * @param sourceSpan span of template binding relative to entire the template
+   * @param absoluteValueOffset start of the tplValue relative to the entire template
+   * @param targetMatchableAttrs potential attributes to match in the template
+   * @param targetProps target property bindings in the template
+   * @param targetVars target variables in the template
+   */
   parseInlineTemplateBinding(
-      tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan, absoluteOffset: number,
+      tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan, absoluteValueOffset: number,
       targetMatchableAttrs: string[][], targetProps: ParsedProperty[],
       targetVars: ParsedVariable[]) {
-    const bindings = this._parseTemplateBindings(tplKey, tplValue, sourceSpan, absoluteOffset);
+    const absoluteKeyOffset = sourceSpan.start.offset + TEMPLATE_ATTR_PREFIX.length;
+    const bindings = this._parseTemplateBindings(
+        tplKey, tplValue, sourceSpan, absoluteKeyOffset, absoluteValueOffset);
 
-    for (let i = 0; i < bindings.length; i++) {
-      const binding = bindings[i];
-      if (binding.keyIsVar) {
-        targetVars.push(new ParsedVariable(binding.key, binding.name, sourceSpan));
-      } else if (binding.expression) {
+    for (const binding of bindings) {
+      // sourceSpan is for the entire HTML attribute. bindingSpan is for a particular
+      // binding within the microsyntax expression so it's more narrow than sourceSpan.
+      const bindingSpan = moveParseSourceSpan(sourceSpan, binding.sourceSpan);
+      const key = binding.key.source;
+      const keySpan = moveParseSourceSpan(sourceSpan, binding.key.span);
+      if (binding instanceof VariableBinding) {
+        const value = binding.value ? binding.value.source : '$implicit';
+        const valueSpan =
+            binding.value ? moveParseSourceSpan(sourceSpan, binding.value.span) : undefined;
+        targetVars.push(new ParsedVariable(key, value, bindingSpan, keySpan, valueSpan));
+      } else if (binding.value) {
+        const valueSpan = moveParseSourceSpan(sourceSpan, binding.value.ast.sourceSpan);
         this._parsePropertyAst(
-            binding.key, binding.expression, sourceSpan, undefined, targetMatchableAttrs,
-            targetProps);
+            key, binding.value, sourceSpan, valueSpan, targetMatchableAttrs, targetProps);
       } else {
-        targetMatchableAttrs.push([binding.key, '']);
+        targetMatchableAttrs.push([key, '']);
         this.parseLiteralAttr(
-            binding.key, null, sourceSpan, absoluteOffset, undefined, targetMatchableAttrs,
+            key, null, sourceSpan, absoluteValueOffset, undefined, targetMatchableAttrs,
             targetProps);
       }
     }
   }
 
+  /**
+   * Parses the bindings in a microsyntax expression, e.g.
+   * ```
+   *    <tag *tplKey="let value1 = prop; let value2 = localVar">
+   * ```
+   *
+   * @param tplKey template binding name
+   * @param tplValue template binding value
+   * @param sourceSpan span of template binding relative to entire the template
+   * @param absoluteKeyOffset start of the `tplKey`
+   * @param absoluteValueOffset start of the `tplValue`
+   */
   private _parseTemplateBindings(
-      tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan,
-      absoluteOffset: number): TemplateBinding[] {
+      tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan, absoluteKeyOffset: number,
+      absoluteValueOffset: number): TemplateBinding[] {
     const sourceInfo = sourceSpan.start.toString();
 
     try {
-      const bindingsResult =
-          this._exprParser.parseTemplateBindings(tplKey, tplValue, sourceInfo, absoluteOffset);
+      const bindingsResult = this._exprParser.parseTemplateBindings(
+          tplKey, tplValue, sourceInfo, absoluteKeyOffset, absoluteValueOffset);
       this._reportExpressionParserErrors(bindingsResult.errors, sourceSpan);
       bindingsResult.templateBindings.forEach((binding) => {
-        if (binding.expression) {
-          this._checkPipes(binding.expression, sourceSpan);
+        if (binding.value instanceof ASTWithSource) {
+          this._checkPipes(binding.value, sourceSpan);
         }
       });
       bindingsResult.warnings.forEach(
@@ -185,6 +217,10 @@ export class BindingParser {
       name: string, expression: string, isHost: boolean, sourceSpan: ParseSourceSpan,
       absoluteOffset: number, valueSpan: ParseSourceSpan|undefined,
       targetMatchableAttrs: string[][], targetProps: ParsedProperty[]) {
+    if (name.length === 0) {
+      this._reportError(`Property name is missing in binding`, sourceSpan);
+    }
+
     let isAnimationProp = false;
     if (name.startsWith(ANIMATE_PROP_PREFIX)) {
       isAnimationProp = true;
@@ -230,6 +266,10 @@ export class BindingParser {
       name: string, expression: string|null, sourceSpan: ParseSourceSpan, absoluteOffset: number,
       valueSpan: ParseSourceSpan|undefined, targetMatchableAttrs: string[][],
       targetProps: ParsedProperty[]) {
+    if (name.length === 0) {
+      this._reportError('Animation trigger is missing', sourceSpan);
+    }
+
     // This will occur when a @trigger is not paired with an expression.
     // For animations it is valid to not have an expression since */void
     // states will be applied by angular when the element is attached/detached
@@ -325,6 +365,10 @@ export class BindingParser {
   parseEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetEvents: ParsedEvent[]) {
+    if (name.length === 0) {
+      this._reportError(`Event name is missing in binding`, sourceSpan);
+    }
+
     if (isAnimationLabel(name)) {
       name = name.substr(1);
       this._parseAnimationEvent(name, expression, sourceSpan, handlerSpan, targetEvents);
@@ -479,4 +523,19 @@ export function calcPossibleSecurityContexts(
         elementName => registry.securityContext(elementName, propName, isAttribute)));
   });
   return ctxs.length === 0 ? [SecurityContext.NONE] : Array.from(new Set(ctxs)).sort();
+}
+
+/**
+ * Compute a new ParseSourceSpan based off an original `sourceSpan` by using
+ * absolute offsets from the specified `absoluteSpan`.
+ *
+ * @param sourceSpan original source span
+ * @param absoluteSpan absolute source span to move to
+ */
+function moveParseSourceSpan(
+    sourceSpan: ParseSourceSpan, absoluteSpan: AbsoluteSourceSpan): ParseSourceSpan {
+  // The difference of two absolute offsets provide the relative offset
+  const startDiff = absoluteSpan.start - sourceSpan.start.offset;
+  const endDiff = absoluteSpan.end - sourceSpan.end.offset;
+  return new ParseSourceSpan(sourceSpan.start.moveBy(startDiff), sourceSpan.end.moveBy(endDiff));
 }

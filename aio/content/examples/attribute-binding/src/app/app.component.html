@@ -27,39 +27,41 @@
 
 <hr />
 
-<h2>Class binding</h2>
+<h2>Styling precedence</h2>
 
-<!-- #docregion is-special -->
-<h3>toggle the "special" class on/off with a property:</h3>
-<div [class.special]="isSpecial">The class binding is special.</div>
+<!-- #docregion basic-specificity -->
+<h3>Basic specificity</h3>
 
-<h3>binding to class.special overrides the class attribute:</h3>
-<div class="special" [class.special]="!isSpecial">This one is not so special.</div>
+<!-- The `class.special` binding will override any value for the `special` class in `classExpr`.  -->
+<div [class.special]="isSpecial" [class]="classExpr">Some text.</div>
 
-<h3>Using the bind- syntax:</h3>
-<div bind-class.special="isSpecial">This class binding is special too.</div>
-<!-- #enddocregion is-special -->
+<!-- The `style.color` binding will override any value for the `color` property in `styleExpr`.  -->
+<div [style.color]="color" [style]="styleExpr">Some text.</div>
+<!-- #enddocregion basic-specificity -->
 
-<!-- #docregion add-class -->
-<h3>Add a class:</h3>
-<div class="item clearance special" [class.item-clearance]="itemClearance">Add another class</div>
-<!-- #enddocregion add-class -->
+<!-- #docregion source-specificity -->
+<h3>Source specificity</h3>
 
-<!-- #docregion class-override -->
-<h3>Overwrite all existing classes with a new class:</h3>
-<div class="item clearance special" [attr.class]="resetClasses">Reset all classes at once</div>
-<!-- #enddocregion class-override -->
+<!-- The `class.special` template binding will override any host binding to the `special` class set by `dirWithClassBinding` or `comp-with-host-binding`.-->
+<comp-with-host-binding [class.special]="isSpecial" dirWithClassBinding>Some text.</comp-with-host-binding>
 
-<hr />
+<!-- The `style.color` template binding will override any host binding to the `color` property set by `dirWithStyleBinding` or `comp-with-host-binding`. -->
+<comp-with-host-binding [style.color]="color" dirWithStyleBinding>Some text.</comp-with-host-binding>
+<!-- #enddocregion source-specificity -->
 
-<h2>Style binding</h2>
+<!-- #docregion dynamic-priority -->
+<h3>Dynamic vs static</h3>
 
-<!-- #docregion style-binding-->
-<button [style.color]="isSpecial ? 'red': 'green'">Red</button>
-<button [style.background-color]="canSave ? 'cyan': 'grey'" >Save</button>
-<!-- #enddocregion style-binding -->
+<!-- If `classExpr` has a value for the `special` class, this value will override the `class="special"` below -->
+<div class="special" [class]="classExpr">Some text.</div>
 
-<!-- #docregion style-binding-condition-->
-<button [style.font-size.em]="isSpecial ? 3 : 1" >Big</button>
-<button [style.font-size.%]="!isSpecial ? 150 : 50" >Small</button>
-<!-- #enddocregion style-binding-condition-->
+<!-- If `styleExpr` has a value for the `color` property, this value will override the `style="color: blue"` below -->
+<div style="color: blue" [style]="styleExpr">Some text.</div>
+
+<!-- #enddocregion dynamic-priority -->
+
+<!-- #docregion style-delegation -->
+<comp-with-host-binding dirWithHostBinding></comp-with-host-binding>
+<!-- #enddocregion style-delegation -->
+
+

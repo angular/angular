@@ -1,0 +1,44 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
+load("@npm_bazel_typescript//:index.bzl", "ts_library")
+
+ts_library(
+    name = "cli",
+    srcs = [
+        "cli.ts",
+    ],
+    module_name = "@angular/dev-infra-private",
+    deps = [
+        "//dev-infra/commit-message",
+        "//dev-infra/pullapprove",
+        "//dev-infra/ts-circular-dependencies",
+        "//dev-infra/utils:config",
+        "@npm//@types/node",
+        "@npm//@types/yargs",
+        "@npm//yargs",
+    ],
+)
+
+genrule(
+    name = "package-json",
+    srcs = [
+        "tmpl-package.json",
+        "//:package.json",
+    ],
+    outs = ["package.json"],
+    cmd = """
+        $(execpath //tools:inline-package-json-deps) $(execpath tmpl-package.json) \
+            $(execpath //:package.json) $@
+    """,
+    tools = ["//tools:inline-package-json-deps"],
+)
+
+pkg_npm(
+    name = "npm_package",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":cli",
+        ":package-json",
+        "//dev-infra/commit-message",
+        "//dev-infra/ts-circular-dependencies",
+    ],
+)

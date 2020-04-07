@@ -11,7 +11,6 @@
     "ngc": "ngc -p tsconfig.json",
     "rollup": "rollup -f iife -c rollup.config.js -o dist/bundle.es2015.js",
     "rollup:lazy": "rollup -f cjs -c rollup.lazy.config.js -o dist/lazy.bundle.es2015.js",
-    "postinstall": "webdriver-manager update --gecko false --standalone false $CI_CHROMEDRIVER_VERSION_ARG",
     "preprotractor": "tsc -p e2e",
     "protractor": "protractor e2e/protractor.config.js",
     "serve": "lite-server -c e2e/browser.config.json",
@@ -25,6 +24,7 @@
     "concurrently": "3.4.0",
     "lite-server": "2.2.2",
     "protractor": "file:../../node_modules/protractor",
+    "puppeteer": "file:../../node_modules/puppeteer",
     "rollup": "file:../../node_modules/rollup",
     "rollup-plugin-commonjs": "file:../../node_modules/rollup-plugin-commonjs",
     "rollup-plugin-node-resolve": "file:../../node_modules/rollup-plugin-node-resolve",
@@ -42,5 +42,9 @@
     "rxjs": "file:../../node_modules/rxjs",
     "systemjs": "file:../../node_modules/systemjs",
     "zone.js": "file:../../dist/zone.js-dist/zone.js"
+  },
+  "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
+  "resolutions": {
+    "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
   }
 }

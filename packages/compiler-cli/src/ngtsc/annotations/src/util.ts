@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, ExternalExpr, LiteralExpr, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {DefaultImportRecorder, ImportMode, Reference, ReferenceEmitter} from '../../imports';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics';
+import {DefaultImportRecorder, ImportFlags, Reference, ReferenceEmitter} from '../../imports';
 import {ForeignFunctionResolver, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, CtorParameter, Decorator, Import, ReflectionHost, TypeValueReference, isNamedClassDeclaration} from '../../reflection';
+import {DeclarationData} from '../../scope';
 
 export enum ConstructorDepErrorKind {
   NO_SUITABLE_TOKEN,
@@ -47,6 +48,7 @@ export function getConstructorDependencies(
   }
   ctorParams.forEach((param, idx) => {
     let token = valueReferenceToExpression(param.typeValueReference, defaultImportRecorder);
+    let attribute: Expression|null = null;
     let optional = false, self = false, skipSelf = false, host = false;
     let resolved = R3ResolvedDependencyType.Token;
 
@@ -73,7 +75,13 @@ export function getConstructorDependencies(
               ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(dec),
               `Unexpected number of arguments to @Attribute().`);
         }
-        token = new WrappedNodeExpr(dec.args[0]);
+        const attributeName = dec.args[0];
+        token = new WrappedNodeExpr(attributeName);
+        if (ts.isStringLiteralLike(attributeName)) {
+          attribute = new LiteralExpr(attributeName.text);
+        } else {
+          attribute = new WrappedNodeExpr(ts.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword));
+        }
         resolved = R3ResolvedDependencyType.Attribute;
       } else {
         throw new FatalDiagnosticError(
@@ -92,7 +100,7 @@ export function getConstructorDependencies(
         kind: ConstructorDepErrorKind.NO_SUITABLE_TOKEN, param,
       });
     } else {
-      deps.push({token, optional, self, skipSelf, host, resolved});
+      deps.push({token, attribute, optional, self, skipSelf, host, resolved});
     }
   });
   if (errors.length === 0) {
@@ -188,8 +196,9 @@ export function validateConstructorDependencies(
 export function toR3Reference(
     valueRef: Reference, typeRef: Reference, valueContext: ts.SourceFile,
     typeContext: ts.SourceFile, refEmitter: ReferenceEmitter): R3Reference {
-  const value = refEmitter.emit(valueRef, valueContext, ImportMode.UseExistingImport);
-  const type = refEmitter.emit(typeRef, typeContext, ImportMode.ForceNewImport);
+  const value = refEmitter.emit(valueRef, valueContext);
+  const type = refEmitter.emit(
+      typeRef, typeContext, ImportFlags.ForceNewImport | ImportFlags.AllowTypeImports);
   if (value === null || type === null) {
     throw new Error(`Could not refer to ${ts.SyntaxKind[valueRef.node.kind]}`);
   }
@@ -367,7 +376,8 @@ const parensWrapperTransformerFactory: ts.TransformerFactory<ts.Expression> =
 /**
  * Wraps all functions in a given expression in parentheses. This is needed to avoid problems
  * where Tsickle annotations added between analyse and transform phases in Angular may trigger
- * automatic semicolon insertion, e.g. if a function is the expression in a `return` statement. More
+ * automatic semicolon insertion, e.g. if a function is the expression in a `return` statement.
+ * More
  * info can be found in Tsickle source code here:
  * https://github.com/angular/tsickle/blob/d7974262571c8a17d684e5ba07680e1b1993afdd/src/jsdoc_transformer.ts#L1021
  *
@@ -375,4 +385,107 @@ const parensWrapperTransformerFactory: ts.TransformerFactory<ts.Expression> =
  */
 export function wrapFunctionExpressionsInParens(expression: ts.Expression): ts.Expression {
   return ts.transform(expression, [parensWrapperTransformerFactory]).transformed[0];
+}
+
+/**
+ * Create a `ts.Diagnostic` which indicates the given class is part of the declarations of two or
+ * more NgModules.
+ *
+ * The resulting `ts.Diagnostic` will have a context entry for each NgModule showing the point where
+ * the directive/pipe exists in its `declarations` (if possible).
+ */
+export function makeDuplicateDeclarationError(
+    node: ClassDeclaration, data: DeclarationData[], kind: string): ts.Diagnostic {
+  const context: {node: ts.Node; messageText: string;}[] = [];
+  for (const decl of data) {
+    if (decl.rawDeclarations === null) {
+      continue;
+    }
+    // Try to find the reference to the declaration within the declarations array, to hang the
+    // error there. If it can't be found, fall back on using the NgModule's name.
+    const contextNode = decl.ref.getOriginForDiagnostics(decl.rawDeclarations, decl.ngModule.name);
+    context.push({
+      node: contextNode,
+      messageText:
+          `'${node.name.text}' is listed in the declarations of the NgModule '${decl.ngModule.name.text}'.`,
+    });
+  }
+
+  // Finally, produce the diagnostic.
+  return makeDiagnostic(
+      ErrorCode.NGMODULE_DECLARATION_NOT_UNIQUE, node.name,
+      `The ${kind} '${node.name.text}' is declared by more than one NgModule.`, context);
+}
+
+/**
+ * Resolves the given `rawProviders` into `ClassDeclarations` and returns
+ * a set containing those that are known to require a factory definition.
+ * @param rawProviders Expression that declared the providers array in the source.
+ */
+export function resolveProvidersRequiringFactory(
+    rawProviders: ts.Expression, reflector: ReflectionHost,
+    evaluator: PartialEvaluator): Set<Reference<ClassDeclaration>> {
+  const providers = new Set<Reference<ClassDeclaration>>();
+  const resolvedProviders = evaluator.evaluate(rawProviders);
+
+  if (!Array.isArray(resolvedProviders)) {
+    return providers;
+  }
+
+  resolvedProviders.forEach(function processProviders(provider) {
+    let tokenClass: Reference|null = null;
+
+    if (Array.isArray(provider)) {
+      // If we ran into an array, recurse into it until we've resolve all the classes.
+      provider.forEach(processProviders);
+    } else if (provider instanceof Reference) {
+      tokenClass = provider;
+    } else if (provider instanceof Map && provider.has('useClass') && !provider.has('deps')) {
+      const useExisting = provider.get('useClass') !;
+      if (useExisting instanceof Reference) {
+        tokenClass = useExisting;
+      }
+    }
+
+    if (tokenClass !== null && reflector.isClass(tokenClass.node)) {
+      const constructorParameters = reflector.getConstructorParameters(tokenClass.node);
+
+      // Note that we only want to capture providers with a non-trivial constructor,
+      // because they're the ones that might be using DI and need to be decorated.
+      if (constructorParameters !== null && constructorParameters.length > 0) {
+        providers.add(tokenClass as Reference<ClassDeclaration>);
+      }
+    }
+  });
+
+  return providers;
+}
+
+/**
+ * Create an R3Reference for a class.
+ *
+ * The `value` is the exported declaration of the class from its source file.
+ * The `type` is an expression that would be used by ngcc in the typings (.d.ts) files.
+ */
+export function wrapTypeReference(reflector: ReflectionHost, clazz: ClassDeclaration): R3Reference {
+  const dtsClass = reflector.getDtsDeclaration(clazz);
+  const value = new WrappedNodeExpr(clazz.name);
+  const type = dtsClass !== null && isNamedClassDeclaration(dtsClass) ?
+      new WrappedNodeExpr(dtsClass.name) :
+      value;
+  return {value, type};
+}
+
+/** Creates a ParseSourceSpan for a TypeScript node. */
+export function createSourceSpan(node: ts.Node): ParseSourceSpan {
+  const sf = node.getSourceFile();
+  const [startOffset, endOffset] = [node.getStart(), node.getEnd()];
+  const {line: startLine, character: startCol} = sf.getLineAndCharacterOfPosition(startOffset);
+  const {line: endLine, character: endCol} = sf.getLineAndCharacterOfPosition(endOffset);
+  const parseSf = new ParseSourceFile(sf.getFullText(), sf.fileName);
+
+  // +1 because values are zero-indexed.
+  return new ParseSourceSpan(
+      new ParseLocation(parseSf, startOffset, startLine + 1, startCol + 1),
+      new ParseLocation(parseSf, endOffset, endLine + 1, endCol + 1));
 }

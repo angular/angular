@@ -15,7 +15,6 @@ import * as ts from 'typescript';
 const TS_EXT = /(^.|(?!\.d)..)\.ts$/;
 
 describe('StaticSymbolResolver', () => {
-  const noContext = new StaticSymbol('', '', []);
   let host: StaticSymbolResolverHost;
   let symbolResolver: StaticSymbolResolver;
   let symbolCache: StaticSymbolCache;
@@ -103,6 +102,19 @@ describe('StaticSymbolResolver', () => {
         .toBe(symbolResolver.getStaticSymbol('/tmp/src/export.ts', 'exportedObj', ['someMember']));
   });
 
+  it('should not explore re-exports of the same module', () => {
+    init({
+      '/tmp/src/test.ts': `
+        export * from './test';
+
+        export const testValue = 10;
+      `,
+    });
+
+    const symbols = symbolResolver.getSymbolsOf('/tmp/src/test.ts');
+    expect(symbols).toEqual([symbolResolver.getStaticSymbol('/tmp/src/test.ts', 'testValue')]);
+  });
+
   it('should use summaries in resolveSymbol and prefer them over regular metadata', () => {
     const symbolA = symbolCache.get('/test.ts', 'a');
     const symbolB = symbolCache.get('/test.ts', 'b');
@@ -140,7 +152,6 @@ describe('StaticSymbolResolver', () => {
 
   it('should read the exported symbols of a file from the summary and ignore exports in the source',
      () => {
-       const someSymbol = symbolCache.get('/test.ts', 'a');
        init(
            {'/test.ts': 'export var b = 2'},
            [{symbol: symbolCache.get('/test.ts', 'a'), metadata: 1}]);

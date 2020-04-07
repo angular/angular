@@ -22,18 +22,23 @@
     "zone.js": "file:../../dist/zone.js-dist/zone.js"
   },
   "devDependencies": {
-    "@types/jasmine": "2.5.41",
+    "@types/jasmine": "file:../../node_modules/@types/jasmine",
+    "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
     "@types/node": "file:../../node_modules/@types/node",
     "babel-core": "6.26.3",
     "babel-loader": "6.4.1",
     "babel-preset-es2015": "6.24.1",
     "concurrently": "3.1.0",
     "protractor": "file:../../node_modules/protractor",
+    "puppeteer": "file:../../node_modules/puppeteer",
     "raw-loader": "0.5.1",
     "webpack": "2.7.0"
   },
+  "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
+  "resolutions": {
+    "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
+  },
   "scripts": {
-    "postinstall": "webdriver-manager update --gecko false --standalone false $CI_CHROMEDRIVER_VERSION_ARG",
     "build": "./build.sh",
     "test": "npm run build && concurrently \"npm run serve\" \"npm run protractor\" --kill-others --success first",
     "serve": "node built/server-bundle.js",

@@ -84,7 +84,7 @@ console.profile('element property update');
 let i = 0;
 while (updateTime()) {
   ctx.value = `value${i++}`;
-  refreshView(rootLView, rootTView, null, ctx);
+  refreshView(rootTView, rootLView, null, ctx);
 }
 console.profileEnd();
 

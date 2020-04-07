@@ -12,7 +12,6 @@ import {Provider} from '../di/interface/provider';
 import {convertInjectableProviderToFactory} from '../di/util';
 import {Type} from '../interface/type';
 import {SchemaMetadata} from '../metadata/schema';
-import {NgModuleType} from '../render3';
 import {compileNgModule as render3CompileNgModule} from '../render3/jit/module';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
 

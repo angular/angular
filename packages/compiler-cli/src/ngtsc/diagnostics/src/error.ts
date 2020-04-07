@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ErrorCode} from './code';
+import {ErrorCode} from './error_code';
 
 export class FatalDiagnosticError {
   constructor(readonly code: ErrorCode, readonly node: ts.Node, readonly message: string) {}

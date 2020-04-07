@@ -15,7 +15,7 @@ export class UserService {
   private _userName = 'Sherlock Holmes';
 
   // #docregion ctor
-  constructor(@Optional() config: UserServiceConfig) {
+  constructor(@Optional() config?: UserServiceConfig) {
     if (config) { this._userName = config.userName; }
   }
   // #enddocregion ctor

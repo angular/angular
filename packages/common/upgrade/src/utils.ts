@@ -31,7 +31,7 @@ export function isAnchor(el: (Node & ParentNode) | Element | null): el is HTMLAn
   return (<HTMLAnchorElement>el).href !== undefined;
 }
 
-export function isPromise(obj: any): obj is Promise<any> {
+export function isPromise<T = any>(obj: any): obj is Promise<T> {
   // allow any Promise/A+ compliant thenable.
   // It's up to the caller to ensure that obj.then conforms to the spec
   return !!obj && typeof obj.then === 'function';

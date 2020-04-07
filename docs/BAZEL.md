@@ -13,7 +13,7 @@ In order to ensure that everyone builds Angular in a _consistent_ way, Bazel
 will be installed through NPM and therefore it's not necessary to install Bazel
 manually.
 
-The binaries for Bazel will be provided by the [`@bazel/bazel`](https://github.com/bazelbuild/rules_nodejs/tree/master/packages)
+The binaries for Bazel will be provided by the [`@bazel/bazelisk`](https://github.com/bazelbuild/bazelisk)
 NPM package and its platform-specific dependencies.
 
 You can access Bazel with the `yarn bazel` command

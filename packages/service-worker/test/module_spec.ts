@@ -141,13 +141,13 @@ describe('ServiceWorkerModule', () => {
               ],
             });
 
-            // Dummy `get()` call to initialize the test "app".
+            // Dummy `inject()` call to initialize the test "app".
             TestBed.inject(ApplicationRef);
 
             return isStableSub;
           };
 
-      it('defaults to registering the SW when the app stabilizes', fakeAsync(() => {
+      it('defaults to registering the SW when the app stabilizes (under 30s)', fakeAsync(() => {
            const isStableSub = configTestBedWithMockedStability();
 
            isStableSub.next(false);
@@ -156,19 +156,100 @@ describe('ServiceWorkerModule', () => {
            tick();
            expect(swRegisterSpy).not.toHaveBeenCalled();
 
+           tick(20000);
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
            isStableSub.next(true);
 
            tick();
            expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
          }));
 
-      it('registers the SW when the app stabilizes with `registerWhenStable`', fakeAsync(() => {
+      it('defaults to registering the SW after 30s if the app does not stabilize sooner',
+         fakeAsync(() => {
+           const isStableSub = configTestBedWithMockedStability();
+
+           tick(29999);
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           tick(1);
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
+      it('registers the SW when the app stabilizes with `registerWhenStable:<timeout>`',
+         fakeAsync(() => {
+           const isStableSub = configTestBedWithMockedStability('registerWhenStable:1000');
+
+           isStableSub.next(false);
+           isStableSub.next(false);
+
+           tick();
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           tick(500);
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           isStableSub.next(true);
+
+           tick();
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
+      it('registers the SW after `timeout` if the app does not stabilize with `registerWhenStable:<timeout>`',
+         fakeAsync(() => {
+           configTestBedWithMockedStability('registerWhenStable:1000');
+
+           tick(999);
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           tick(1);
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
+      it('registers the SW asap (asynchronously) before the app stabilizes with `registerWhenStable:0`',
+         fakeAsync(() => {
+           const isStableSub = configTestBedWithMockedStability('registerWhenStable:0');
+
+           // Create a microtask.
+           Promise.resolve();
+
+           flushMicrotasks();
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           tick(0);
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
+      it('registers the SW only when the app stabilizes with `registerWhenStable:`',
+         fakeAsync(() => {
+           const isStableSub = configTestBedWithMockedStability('registerWhenStable:');
+
+           isStableSub.next(false);
+           isStableSub.next(false);
+
+           tick();
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           tick(60000);
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           isStableSub.next(true);
+
+           tick();
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
+      it('registers the SW only when the app stabilizes with `registerWhenStable`',
+         fakeAsync(() => {
            const isStableSub = configTestBedWithMockedStability('registerWhenStable');
 
            isStableSub.next(false);
            isStableSub.next(false);
 
            tick();
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           tick(60000);
            expect(swRegisterSpy).not.toHaveBeenCalled();
 
            isStableSub.next(true);

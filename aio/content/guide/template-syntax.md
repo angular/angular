@@ -1,4 +1,4 @@
-# Template Syntax
+# Template syntax
 
 <style>
   h4 {font-size: 17px !important; text-transform: none !important;}
@@ -237,16 +237,15 @@ You're free to change anything, anywhere, during this turn of the event loop.
 
 Like template expressions, template *statements* use a language that looks like JavaScript.
 The template statement parser differs from the template expression parser and
-specifically supports both basic assignment (`=`) and chaining expressions
-(with <code>;</code> or <code>,</code>).
+specifically supports both basic assignment (`=`) and chaining expressions with <code>;</code>.
 
-However, certain JavaScript syntax is not allowed:
+However, certain JavaScript and template expression syntax is not allowed:
 
 * <code>new</code>
 * increment and decrement operators, `++` and `--`
 * operator assignment, such as `+=` and `-=`
-* the bitwise operators `|` and `&`
-* the [template expression operators](guide/template-syntax#expression-operators)
+* the bitwise operators, such as `|` and `&`
+* the [pipe operator](guide/template-syntax#pipe)
 
 ### Statement context
 
@@ -731,13 +730,13 @@ As you can see here, the `parentItem` in `AppComponent` is a string, which the `
 The previous simple example showed passing in a string. To pass in an object,
 the syntax and thinking are the same.
 
-In this scenario, `ListItemComponent` is nested within `AppComponent` and the `item` property expects an object.
+In this scenario, `ItemListComponent` is nested within `AppComponent` and the `items` property expects an array of objects.
 
 <code-example path="property-binding/src/app/app.component.html" region="pass-object" header="src/app/app.component.html"></code-example>
 
-The `item` property is declared in the `ListItemComponent` with a type of `Item` and decorated with `@Input()`:
+The `items` property is declared in the `ItemListComponent` with a type of `Item` and decorated with `@Input()`:
 
-<code-example path="property-binding/src/app/list-item/list-item.component.ts" region="item-input" header="src/app/list-item.component.ts"></code-example>
+<code-example path="property-binding/src/app/item-list/item-list.component.ts" region="item-input" header="src/app/item-list.component.ts"></code-example>
 
 In this sample app, an `Item` is an object that has two properties; an `id` and a `name`.
 
@@ -748,11 +747,11 @@ specify a different item in `app.component.ts` so that the new item will render:
 
 <code-example path="property-binding/src/app/app.component.ts" region="pass-object" header="src/app.component.ts"></code-example>
 
-You just have to make sure, in this case, that you're supplying an object because that's the type of `item` and is what the nested component, `ListItemComponent`, expects.
+You just have to make sure, in this case, that you're supplying an array of objects because that's the type of `Item` and is what the nested component, `ItemListComponent`, expects.
 
 In this example, `AppComponent` specifies a different `item` object
-(`currentItem`) and passes it to the nested `ListItemComponent`. `ListItemComponent` was able to use `currentItem` because it matches what an `Item` object is according to `item.ts`. The `item.ts` file is where
-`ListItemComponent` gets its definition of an `item`.
+(`currentItems`) and passes it to the nested `ItemListComponent`. `ItemListComponent` was able to use `currentItems` because it matches what an `Item` object is according to `item.ts`. The `item.ts` file is where
+`ItemListComponent` gets its definition of an `item`.
 
 ### Remember the brackets
 
@@ -781,7 +780,7 @@ not a template expression. Angular sets it and forgets about it.
 
 <code-example path="property-binding/src/app/app.component.html" region="string-init" header="src/app/app.component.html"></code-example>
 
-The `[item]` binding, on the other hand, remains a live binding to the component's `currentItem` property.
+The `[item]` binding, on the other hand, remains a live binding to the component's `currentItems` property.
 
 ### Property binding vs. interpolation
 
@@ -892,58 +891,97 @@ Instead, you'd use property binding and write it like this:
 
 ### Class binding
 
-Add and remove CSS class names from an element's `class` attribute with
-a **class binding**.
-
-Here's how to set the attribute without binding in plain HTML:
+Here's how to set the `class` attribute without a binding in plain HTML:
 
 ```html
 <!-- standard class attribute setting -->
-<div class="item clearance special">Item clearance special</div>
+<div class="foo bar">Some text</div>
 ```
 
-Class binding syntax resembles property binding, but instead of an element property between brackets, start with the prefix `class`,
-optionally followed by a dot (`.`) and the name of a CSS class: `[class.class-name]`.
+You can also add and remove CSS class names from an element's `class` attribute with a **class binding**.
 
-You can replace that with a binding to a string of the desired class names; this is an all-or-nothing, replacement binding.
+To create a single class binding, start with the prefix `class` followed by a dot (`.`) and the name of the CSS class (for example, `[class.foo]="hasFoo"`). 
+Angular adds the class when the bound expression is truthy, and it removes the class when the expression is falsy (with the exception of `undefined`, see [styling delegation](#styling-delegation)).
+
+To create a binding to multiple classes, use a generic `[class]` binding without the dot (for example, `[class]="classExpr"`).
+The expression can be a space-delimited string of class names, or you can format it as an object with class names as the keys and truthy/falsy expressions as the values. 
+With object format, Angular will add a class only if its associated value is truthy. 
+
+It's important to note that with any object-like expression (`object`, `Array`, `Map`, `Set`, etc), the identity of the object must change for the class list to be updated.
+Updating the property without changing object identity will have no effect.
+
+If there are multiple bindings to the same class name, conflicts are resolved using [styling precedence](#styling-precedence).
+
+<style>
+  td, th {vertical-align: top}
+</style>
+
+<table width="100%">
+  <col width="15%">
+  </col>
+  <col width="20%">
+  </col>
+  <col width="35%">
+  </col>
+  <col width="30%">
+  </col>
+  <tr>
+    <th>
+      Binding Type
+    </th>
+    <th>
+      Syntax
+    </th>
+    <th>
+      Input Type
+    </th>
+    <th>
+      Example Input Values
+    </th>
+  </tr>
+  <tr>
+    <td>Single class binding</td>
+    <td><code>[class.foo]="hasFoo"</code></td>
+    <td><code>boolean | undefined | null</code></td>
+    <td><code>true</code>, <code>false</code></td>
+  </tr>
+  <tr>
+    <td rowspan=3>Multi-class binding</td>
+    <td rowspan=3><code>[class]="classExpr"</code></td>
+    <td><code>string</code></td>
+    <td><code>"my-class-1 my-class-2 my-class-3"</code></td>
+  </tr>
+  <tr>
+    <td><code>{[key: string]: boolean | undefined | null}</code></td>
+    <td><code>{foo: true, bar: false}</code></td>
+  </tr>
+  <tr>
+    <td><code>Array</code><<code>string</code>></td>
+    <td><code>['foo', 'bar']</code></td>
+  </tr>
+</table>
 
 
- <code-example path="attribute-binding/src/app/app.component.html" region="class-override" header="src/app/app.component.html"></code-example>
-
-You can also add a class to an element without overwriting the classes already on the element:
-
- <code-example path="attribute-binding/src/app/app.component.html" region="add-class" header="src/app/app.component.html"></code-example>
-
-Finally, you can bind to a specific class name.
-Angular adds the class when the template expression evaluates to truthy.
-It removes the class when the expression is falsy.
-
-<code-example path="attribute-binding/src/app/app.component.html" region="is-special" header="src/app/app.component.html"></code-example>
-
-While this technique is suitable for toggling a single class name,
-consider the [`NgClass`](guide/template-syntax#ngClass) directive when
-managing multiple class names at the same time.
+The [NgClass](#ngclass) directive can be used as an alternative to direct `[class]` bindings. 
+However, using the above class binding syntax without `NgClass` is preferred because due to improvements in class binding in Angular, `NgClass` no longer provides significant value, and might eventually be removed in the future.
 
 
 <hr/>
 
 ### Style binding
 
-You can set inline styles with a **style binding**.
+Here's how to set the `style` attribute without a binding in plain HTML:
 
-Style binding syntax resembles property binding.
-Instead of an element property between brackets, start with the prefix `style`,
-followed by a dot (`.`) and the name of a CSS style property: `[style.style-property]`.
+```html
+<!-- standard style attribute setting -->
+<div style="color: blue">Some text</div>
+```
 
-<code-example path="attribute-binding/src/app/app.component.html" region="style-binding" header="src/app/app.component.html"></code-example>
+You can also set styles dynamically with a **style binding**.
 
-Some style binding styles have a unit extension.
-The following example conditionally sets the font size in  “em” and “%” units.
-
-<code-example path="attribute-binding/src/app/app.component.html" region="style-binding-condition" header="src/app/app.component.html"></code-example>
-
-This technique is suitable for setting a single style, but consider
-the [`NgStyle`](guide/template-syntax#ngStyle) directive when setting several inline styles at the same time.
+To create a single style binding, start with the prefix `style` followed by a dot (`.`) and the name of the CSS style property (for example, `[style.width]="width"`). 
+The property will be set to the value of the bound expression, which is normally a string.
+Optionally, you can add a unit extension like `em` or `%`, which requires a number type.
 
 <div class="alert is-helpful">
 
@@ -953,7 +991,139 @@ Note that a _style property_ name can be written in either
 
 </div>
 
+If there are multiple styles you'd like to toggle, you can bind to the `[style]` property directly without the dot (for example, `[style]="styleExpr"`).
+The expression attached to the `[style]` binding is most often a string list of styles like `"width: 100px; height: 100px;"`. 
+
+You can also format the expression as an object with style names as the keys and style values as the values, like `{width: '100px', height: '100px'}`. 
+It's important to note that with any object-like expression (`object`, `Array`, `Map`, `Set`, etc), the identity of the object must change for the class list to be updated.
+Updating the property without changing object identity will have no effect.
+
+If there are multiple bindings to the same style property, conflicts are resolved using [styling precedence rules](#styling-precedence).
+
+<style>
+  td, th {vertical-align: top}
+</style>
+
+<table width="100%">
+  <col width="15%">
+  </col>
+  <col width="20%">
+  </col>
+  <col width="35%">
+  </col>
+  <col width="30%">
+  </col>
+  <tr>
+    <th>
+      Binding Type
+    </th>
+    <th>
+      Syntax
+    </th>
+    <th>
+      Input Type
+    </th>
+    <th>
+      Example Input Values
+    </th>
+  </tr>
+  <tr>
+    <td>Single style binding</td>
+    <td><code>[style.width]="width"</code></td>
+    <td><code>string | undefined | null</code></td>
+    <td><code>"100px"</code></td>
+  </tr>
+  <tr>
+  <tr>
+    <td>Single style binding with units</td>
+    <td><code>[style.width.px]="width"</code></td>
+    <td><code>number | undefined | null</code></td>
+    <td><code>100</code></td>
+  </tr>
+    <tr>
+    <td rowspan=3>Multi-style binding</td>
+    <td rowspan=3><code>[style]="styleExpr"</code></td>
+    <td><code>string</code></td>
+    <td><code>"width: 100px; height: 100px"</code></td>
+  </tr>
+  <tr>
+    <td><code>{[key: string]: string | undefined | null}</code></td>
+    <td><code>{width: '100px', height: '100px'}</code></td>
+  </tr>
+  <tr>
+    <td><code>Array</code><<code>string</code>></td>
+    <td><code>['width', '100px']</code></td>
+  </tr>
+</table>
+
+The [NgStyle](#ngstyle) directive can be used as an alternative to direct `[style]` bindings. 
+However, using the above style binding syntax without `NgStyle` is preferred because due to improvements in style binding in Angular, `NgStyle` no longer provides significant value, and might eventually be removed in the future.
+
+
 <hr/>
+
+{@a styling-precedence}
+### Styling Precedence
+
+A single HTML element can have its CSS class list and style values bound to multiple sources (for example, host bindings from multiple directives).
+
+When there are multiple bindings to the same class name or style property, Angular uses a set of precedence rules to resolve conflicts and determine which classes or styles are ultimately applied to the element.
+
+<div class="alert is-helpful">
+<h4>Styling precedence (highest to lowest)</h4>
+
+1. Template bindings
+    1. Property binding (for example, `<div [class.foo]="hasFoo">` or `<div [style.color]="color">`)
+    1. Map binding (for example, `<div [class]="classExpr">` or `<div [style]="styleExpr">`)
+    1. Static value (for example, `<div class="foo">` or `<div style="color: blue">`) 
+1. Directive host bindings
+    1. Property binding (for example, `host: {'[class.foo]': 'hasFoo'}` or `host: {'[style.color]': 'color'}`)
+    1. Map binding (for example, `host: {'[class]': 'classExpr'}` or `host: {'[style]': 'styleExpr'}`)
+    1. Static value (for example, `host: {'class': 'foo'}` or `host: {'style': 'color: blue'}`)    
+1. Component host bindings
+    1. Property binding (for example, `host: {'[class.foo]': 'hasFoo'}` or `host: {'[style.color]': 'color'}`)
+    1. Map binding (for example, `host: {'[class]': 'classExpr'}` or `host: {'[style]': 'styleExpr'}`)
+    1. Static value (for example, `host: {'class': 'foo'}` or `host: {'style': 'color: blue'}`)    
+
+</div>
+
+The more specific a class or style binding is, the higher its precedence.
+
+A binding to a specific class (for example, `[class.foo]`) will take precedence over a generic `[class]` binding, and a binding to a specific style (for example, `[style.bar]`) will take precedence over a generic `[style]` binding.
+
+<code-example path="attribute-binding/src/app/app.component.html" region="basic-specificity" header="src/app/app.component.html"></code-example>
+
+Specificity rules also apply when it comes to bindings that originate from different sources. 
+It's possible for an element to have bindings in the template where it's declared, from host bindings on matched directives, and from host bindings on matched components.
+
+Template bindings are the most specific because they apply to the element directly and exclusively, so they have the highest precedence.
+
+Directive host bindings are considered less specific because directives can be used in multiple locations, so they have a lower precedence than template bindings.
+
+Directives often augment component behavior, so host bindings from components have the lowest precedence. 
+
+<code-example path="attribute-binding/src/app/app.component.html" region="source-specificity" header="src/app/app.component.html"></code-example>
+
+In addition, bindings take precedence over static attributes. 
+
+In the following case, `class` and `[class]` have similar specificity, but the `[class]` binding will take precedence because it is dynamic.
+
+<code-example path="attribute-binding/src/app/app.component.html" region="dynamic-priority" header="src/app/app.component.html"></code-example>
+
+{@a styling-delegation}
+### Delegating to styles with lower precedence
+
+It is possible for higher precedence styles to "delegate" to lower precedence styles using `undefined` values.
+Whereas setting a style property to `null` ensures the style is removed, setting it to `undefined` will cause Angular to fall back to the next-highest precedence binding to that style.
+
+For example, consider the following template: 
+
+<code-example path="attribute-binding/src/app/app.component.html" region="style-delegation" header="src/app/app.component.html"></code-example>
+
+Imagine that the `dirWithHostBinding` directive and the `comp-with-host-binding` component both have a `[style.width]` host binding.
+In that case, if `dirWithHostBinding` sets its binding to `undefined`, the `width` property will fall back to the value of the `comp-with-host-binding` host binding.
+However, if `dirWithHostBinding` sets its binding to `null`, the `width` property will be removed entirely.
+
 
 {@a event-binding}
 
@@ -1429,6 +1599,14 @@ The text assigned to `*ngFor` is the instruction that guides the repeater proces
 The following example shows `NgFor` applied to a simple `<div>`. (Don't forget the asterisk (`*`) in front of `ngFor`.)
 
 <code-example path="built-in-directives/src/app/app.component.html" region="NgFor-1" header="src/app/app.component.html"></code-example>
+
+<div class="alert is-helpful">
+
+Don't forget the asterisk (`*`) in front of `ngFor`. For more information
+on the asterisk, see the [asterisk (*) prefix](guide/structural-directives#the-asterisk--prefix) section of
+[Structural Directives](guide/structural-directives).
+
+</div>
 
 You can also apply an `NgFor` to a component element, as in the following example.
 
@@ -2086,22 +2264,20 @@ It works perfectly with long property paths such as `a?.b?.c?.d`.
 
 ### The non-null assertion operator ( `!` )
 
-As of Typescript 2.0, you can enforce [strict null checking](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html "Strict null checking in TypeScript") with the `--strictNullChecks` flag. TypeScript then ensures that no variable is unintentionally null or undefined.
+As of Typescript 2.0, you can enforce [strict null checking](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html "Strict null checking in TypeScript") with the `--strictNullChecks` flag. TypeScript then ensures that no variable is unintentionally `null` or `undefined`.
 
 In this mode, typed variables disallow `null` and `undefined` by default. The type checker throws an error if you leave a variable unassigned or try to assign `null` or `undefined` to a variable whose type disallows `null` and `undefined`.
 
-The type checker also throws an error if it can't determine whether a variable will be `null` or undefined at runtime. You tell the type checker not to throw an error by applying the postfix
+The type checker also throws an error if it can't determine whether a variable will be `null` or `undefined` at runtime. You tell the type checker not to throw an error by applying the postfix
 [non-null assertion operator, !](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator "Non-null assertion operator").
 
 The Angular non-null assertion operator, `!`, serves the same purpose in
-an Angular template. For example, after you use [*ngIf](guide/template-syntax#ngIf)
-to check that `item` is defined, you can assert that
-`item` properties are also defined.
+an Angular template. For example, you can assert that `item` properties are also defined.
 
 <code-example path="template-expression-operators/src/app/app.component.html" region="non-null" header="src/app/app.component.html"></code-example>
 
 When the Angular compiler turns your template into TypeScript code,
-it prevents TypeScript from reporting that `item` might be `null` or `undefined`.
+it prevents TypeScript from reporting that `item.color` might be `null` or `undefined`.
 
 Unlike the [_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?)"),
 the non-null assertion operator does not guard against `null` or `undefined`.

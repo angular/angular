@@ -97,8 +97,8 @@ module.exports = (gulp, done) => {
 
   console.log(`All i18n cldr files have been generated, formatting files..."`);
   shelljs.exec(
-    `yarn clang-format -i ${I18N_DATA_FOLDER}/**/*.ts ${I18N_DATA_FOLDER}/*.ts ${I18N_FOLDER}/currencies.ts ${I18N_CORE_FOLDER}/locale_en.ts ${I18N_GLOBAL_FOLDER}/*.js`,
-    {silent: true});
+      `yarn clang-format -i ${I18N_DATA_FOLDER}/**/*.ts ${I18N_DATA_FOLDER}/*.ts ${I18N_FOLDER}/currencies.ts ${I18N_CORE_FOLDER}/locale_en.ts ${I18N_GLOBAL_FOLDER}/*.js`,
+      {silent: true});
   done();
 };
 
@@ -149,16 +149,19 @@ function generateGlobalLocale(locale, localeData, baseCurrencies) {
  * Collect up the basic locale data [ localeId, dateTime, number, currency, pluralCase ].
  */
 function generateBasicLocaleString(locale, localeData, baseCurrencies) {
-  let data =
-      stringify(
-          [
-            locale, ...getDateTimeTranslations(localeData), ...getDateTimeSettings(localeData),
-            ...getNumberSettings(localeData), ...getCurrencySettings(locale, localeData),
-            generateLocaleCurrencies(localeData, baseCurrencies), getDirectionality(localeData),
-          ],
-          true)
-          // We remove "undefined" added by spreading arrays when there is no value
-          .replace(/undefined/g, 'u');
+  let data = stringify(
+                 [
+                   locale,
+                   ...getDateTimeTranslations(localeData),
+                   ...getDateTimeSettings(localeData),
+                   ...getNumberSettings(localeData),
+                   ...getCurrencySettings(locale, localeData),
+                   generateLocaleCurrencies(localeData, baseCurrencies),
+                   getDirectionality(localeData),
+                 ],
+                 true)
+                 // We remove "undefined" added by spreading arrays when there is no value
+                 .replace(/undefined/g, 'u');
 
   // adding plural function after, because we don't want it as a string
   data = data.replace(/\]$/, ', plural]');
@@ -495,8 +498,8 @@ function getNumberSettings(localeData) {
 }
 
 /**
- * Returns the currency symbol and name for a locale
- * @returns [ symbol, name ]
+ * Returns the currency code, symbol and name for a locale
+ * @returns [ code, symbol, name ]
  */
 function getCurrencySettings(locale, localeData) {
   const currencyInfo = localeData.main(`numbers/currencies`);
@@ -523,11 +526,13 @@ function getCurrencySettings(locale, localeData) {
     }
   }
 
-  let currencySettings = [undefined, undefined];
+  let currencySettings = [undefined, undefined, undefined];
 
   if (currentCurrency) {
-    currencySettings =
-        [currencyInfo[currentCurrency].symbol, currencyInfo[currentCurrency].displayName];
+    currencySettings = [
+      currentCurrency, currencyInfo[currentCurrency].symbol,
+      currencyInfo[currentCurrency].displayName
+    ];
   }
 
   return currencySettings;

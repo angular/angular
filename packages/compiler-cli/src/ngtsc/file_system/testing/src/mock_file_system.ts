@@ -34,14 +34,32 @@ export abstract class MockFileSystem implements FileSystem {
     }
   }
 
-  writeFile(path: AbsoluteFsPath, data: string): void {
+  writeFile(path: AbsoluteFsPath, data: string, exclusive: boolean = false): void {
     const [folderPath, basename] = this.splitIntoFolderAndFile(path);
     const {entity} = this.findFromPath(folderPath);
     if (entity === null || !isFolder(entity)) {
       throw new MockFileSystemError(
           'ENOENT', path, `Unable to write file "${path}". The containing folder does not exist.`);
     }
+    if (exclusive && entity[basename] !== undefined) {
+      throw new MockFileSystemError(
+          'EEXIST', path, `Unable to exclusively write file "${path}". The file already exists.`);
+    }
     entity[basename] = data;
+  }
+
+  removeFile(path: AbsoluteFsPath): void {
+    const [folderPath, basename] = this.splitIntoFolderAndFile(path);
+    const {entity} = this.findFromPath(folderPath);
+    if (entity === null || !isFolder(entity)) {
+      throw new MockFileSystemError(
+          'ENOENT', path, `Unable to remove file "${path}". The containing folder does not exist.`);
+    }
+    if (isFolder(entity[basename])) {
+      throw new MockFileSystemError(
+          'EISDIR', path, `Unable to remove file "${path}". The path to remove is a folder.`);
+    }
+    delete entity[basename];
   }
 
   symlink(target: AbsoluteFsPath, path: AbsoluteFsPath): void {
@@ -111,6 +129,17 @@ export abstract class MockFileSystem implements FileSystem {
       }
       current = current[segment] as Folder;
     }
+  }
+
+  removeDeep(path: AbsoluteFsPath): void {
+    const [folderPath, basename] = this.splitIntoFolderAndFile(path);
+    const {entity} = this.findFromPath(folderPath);
+    if (entity === null || !isFolder(entity)) {
+      throw new MockFileSystemError(
+          'ENOENT', path,
+          `Unable to remove folder "${path}". The containing folder does not exist.`);
+    }
+    delete entity[basename];
   }
 
   isRoot(path: AbsoluteFsPath): boolean { return this.dirname(path) === path; }

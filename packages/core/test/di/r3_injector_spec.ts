@@ -267,6 +267,30 @@ describe('InjectorDef-based createInjector()', () => {
     injector = createInjector(Module);
   });
 
+  it('initializes imported modules before the module being declared', () => {
+    const moduleRegistrations: string[] = [];
+
+    class ChildModule {
+      static ɵinj = ɵɵdefineInjector({
+        factory: () => new ChildModule(),
+        imports: undefined,
+        providers: [],
+      });
+      constructor() { moduleRegistrations.push('ChildModule'); }
+    }
+
+    class RootModule {
+      static ɵinj = ɵɵdefineInjector({
+        factory: () => new RootModule(),
+        imports: [ChildModule],
+        providers: [],
+      });
+      constructor() { moduleRegistrations.push('RootModule'); }
+    }
+    createInjector(RootModule);
+    expect(moduleRegistrations).toEqual(['ChildModule', 'RootModule']);
+  });
+
   it('injects a simple class', () => {
     const instance = injector.get(Service);
     expect(instance instanceof Service).toBeTruthy();

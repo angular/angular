@@ -15,7 +15,7 @@ import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy,
 import {ClassDeclaration, TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
-import {TemplateSourceMapping, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../src/api';
+import {TemplateId, TemplateSourceMapping, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../src/api';
 import {TypeCheckContext} from '../src/context';
 import {DomSchemaChecker} from '../src/dom';
 import {Environment} from '../src/environment';
@@ -92,6 +92,8 @@ export function angularCoreDts(): TestFile {
     export declare class EventEmitter<T> {
       subscribe(generatorOrNext?: any, error?: any, complete?: any): unknown;
     }
+    
+    export declare type NgIterable<T> = Array<T> | Iterable<T>;
   `
   };
 }
@@ -161,6 +163,8 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   checkTypeOfNonDomReferences: true,
   checkTypeOfPipes: true,
   strictSafeNavigationTypes: true,
+  useContextGenericType: true,
+  strictLiteralTypes: true,
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
@@ -197,7 +201,8 @@ export function tcb(
   const binder = new R3TargetBinder(matcher);
   const boundTarget = binder.bind({template: nodes});
 
-  const meta: TypeCheckBlockMetadata = {boundTarget, pipes, id: 'tcb', schemas: []};
+  const id = 'tcb' as TemplateId;
+  const meta: TypeCheckBlockMetadata = {id, boundTarget, pipes, schemas: []};
 
   config = config || {
     applyTemplateContextGuards: true,
@@ -214,6 +219,8 @@ export function tcb(
     checkTypeOfPipes: true,
     checkTemplateBodies: true,
     strictSafeNavigationTypes: true,
+    useContextGenericType: true,
+    strictLiteralTypes: true,
   };
   options = options || {
     emitSpans: false,
@@ -257,7 +264,8 @@ export function typecheck(
         program, checker, moduleResolver, new TypeScriptReflectionHost(checker)),
     new LogicalProjectStrategy(reflectionHost, logicalFs),
   ]);
-  const ctx = new TypeCheckContext({...ALL_ENABLED_CONFIG, ...config}, emitter, typeCheckFilePath);
+  const ctx = new TypeCheckContext(
+      {...ALL_ENABLED_CONFIG, ...config}, emitter, reflectionHost, typeCheckFilePath);
 
   const templateUrl = 'synthetic.html';
   const templateFile = new ParseSourceFile(template, templateUrl);
@@ -392,4 +400,5 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   missingReferenceTarget(): void {}
   missingPipe(): void {}
   illegalAssignmentToTemplateVar(): void {}
+  duplicateTemplateVar(): void {}
 }
