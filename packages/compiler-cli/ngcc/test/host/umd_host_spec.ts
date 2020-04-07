@@ -2101,6 +2101,84 @@ runInEachFileSystem(() => {
         testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread, 'tslib');
         testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays, 'tslib');
       });
+
+      it('should recognize undeclared, unimported TypeScript helpers (by name)', () => {
+        const file: TestFile = {
+          name: _('/test.js'),
+          contents: `
+            (function (global, factory) {
+              typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+              typeof define === 'function' && define.amd ? define('test', ['exports'], factory) :
+              (factory(global.test));
+            }(this, (function (exports) { 'use strict';
+              var a = __assign({foo: 'bar'}, {baz: 'qux'});
+              var b = __spread(['foo', 'bar'], ['baz', 'qux']);
+              var c = __spreadArrays(['foo', 'bar'], ['baz', 'qux']);
+            })));
+          `,
+        };
+        loadTestFiles([file]);
+        const bundle = makeTestBundleProgram(file.name);
+        const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
+        const {factoryFn} = parseStatementForUmdModule(
+            getSourceFileOrError(bundle.program, file.name).statements[0])!;
+
+        const testForHelper = (varName: string, helperName: string, knownAs: KnownDeclaration) => {
+          const node = getVariableDeclaration(factoryFn, varName);
+          const helperIdentifier = getIdentifierFromCallExpression(node);
+          const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
+
+          expect(helperDeclaration).toEqual({
+            known: knownAs,
+            expression: helperIdentifier,
+            node: null,
+            viaModule: null,
+          });
+        };
+
+        testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign);
+        testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread);
+        testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays);
+      });
+
+      it('should recognize suffixed, undeclared, unimported TypeScript helpers (by name)', () => {
+        const file: TestFile = {
+          name: _('/test.js'),
+          contents: `
+            (function (global, factory) {
+              typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+              typeof define === 'function' && define.amd ? define('test', ['exports'], factory) :
+              (factory(global.test));
+            }(this, (function (exports) { 'use strict';
+              var a = __assign$1({foo: 'bar'}, {baz: 'qux'});
+              var b = __spread$2(['foo', 'bar'], ['baz', 'qux']);
+              var c = __spreadArrays$3(['foo', 'bar'], ['baz', 'qux']);
+            })));
+          `,
+        };
+        loadTestFiles([file]);
+        const bundle = makeTestBundleProgram(file.name);
+        const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
+        const {factoryFn} = parseStatementForUmdModule(
+            getSourceFileOrError(bundle.program, file.name).statements[0])!;
+
+        const testForHelper = (varName: string, helperName: string, knownAs: KnownDeclaration) => {
+          const node = getVariableDeclaration(factoryFn, varName);
+          const helperIdentifier = getIdentifierFromCallExpression(node);
+          const helperDeclaration = host.getDeclarationOfIdentifier(helperIdentifier);
+
+          expect(helperDeclaration).toEqual({
+            known: knownAs,
+            expression: helperIdentifier,
+            node: null,
+            viaModule: null,
+          });
+        };
+
+        testForHelper('a', '__assign$1', KnownDeclaration.TsHelperAssign);
+        testForHelper('b', '__spread$2', KnownDeclaration.TsHelperSpread);
+        testForHelper('c', '__spreadArrays$3', KnownDeclaration.TsHelperSpreadArrays);
+      });
     });
 
     describe('getExportsOfModule()', () => {
