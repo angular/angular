@@ -8,19 +8,19 @@
 
 interface FnWithArg<T> {
   (...args: any[]): T;
-  new (...args: any[]): T;
+  new(...args: any[]): T;
 }
 
 function callableClassDecorator(): FnWithArg<(clazz: any) => any> {
-  return null !;
+  return null!;
 }
 
 function callableParamDecorator(): FnWithArg<(a: any, b: any, c: any) => void> {
-  return null !;
+  return null!;
 }
 
 function callablePropDecorator(): FnWithArg<(a: any, b: any) => any> {
-  return null !;
+  return null!;
 }
 
 export const Component = callableClassDecorator();
@@ -66,7 +66,9 @@ export function forwardRef<T>(fn: () => T): T {
   return fn();
 }
 
-export interface SimpleChanges { [propName: string]: any; }
+export interface SimpleChanges {
+  [propName: string]: any;
+}
 
 export type ɵɵNgModuleDefWithMeta<ModuleT, DeclarationsT, ImportsT, ExportsT> = any;
 export type ɵɵDirectiveDefWithMeta<
@@ -89,11 +91,15 @@ export const CUSTOM_ELEMENTS_SCHEMA: any = false;
 export const NO_ERRORS_SCHEMA: any = false;
 
 export class EventEmitter<T> {
-  subscribe(generatorOrNext?: any, error?: any, complete?: any): unknown { return null; }
+  subscribe(generatorOrNext?: any, error?: any, complete?: any): unknown {
+    return null;
+  }
 }
 
-export interface QueryList<T>/* implements Iterable<T> */ { [Symbol.iterator]: () => Iterator<T>; }
+export interface QueryList<T>/* implements Iterable<T> */ {
+  [Symbol.iterator]: () => Iterator<T>;
+}
 
-export type NgIterable<T> = Array<T>| Iterable<T>;
+export type NgIterable<T> = Array<T>|Iterable<T>;
 
 export class NgZone {}

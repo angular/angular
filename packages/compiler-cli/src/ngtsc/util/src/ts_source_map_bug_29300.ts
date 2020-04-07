@@ -29,16 +29,38 @@ export function tsSourceMapBug29300Fixed() {
     const sourceFile =
         ts.createSourceFile('test.ts', 'a;', ts.ScriptTarget.ES2015, true, ts.ScriptKind.TS);
     const host = {
-      getSourceFile(): ts.SourceFile | undefined{return sourceFile;},
-      fileExists(): boolean{return true;},
-      readFile(): string | undefined{return '';},
-      writeFile(fileName: string, data: string) { writtenFiles[fileName] = data; },
-      getDefaultLibFileName(): string{return '';},
-      getCurrentDirectory(): string{return '';},
-      getDirectories(): string[]{return [];},
-      getCanonicalFileName(): string{return '';},
-      useCaseSensitiveFileNames(): boolean{return true;},
-      getNewLine(): string{return '\n';},
+      getSourceFile(): ts.SourceFile |
+          undefined {
+            return sourceFile;
+          },
+      fileExists(): boolean {
+        return true;
+      },
+      readFile(): string |
+          undefined {
+            return '';
+          },
+      writeFile(fileName: string, data: string) {
+        writtenFiles[fileName] = data;
+      },
+      getDefaultLibFileName(): string {
+        return '';
+      },
+      getCurrentDirectory(): string {
+        return '';
+      },
+      getDirectories(): string[] {
+        return [];
+      },
+      getCanonicalFileName(): string {
+        return '';
+      },
+      useCaseSensitiveFileNames(): boolean {
+        return true;
+      },
+      getNewLine(): string {
+        return '\n';
+      },
     };
 
     const transform = (context: ts.TransformationContext) => {

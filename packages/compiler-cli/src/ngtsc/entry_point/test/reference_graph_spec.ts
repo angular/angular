@@ -12,8 +12,9 @@ import {ReferenceGraph} from '../src/reference_graph';
 describe('entry_point reference graph', () => {
   let graph: ReferenceGraph<string>;
 
-  const refs =
-      (target: string) => { return Array.from(graph.transitiveReferencesOf(target)).sort(); };
+  const refs = (target: string) => {
+    return Array.from(graph.transitiveReferencesOf(target)).sort();
+  };
 
   beforeEach(() => {
     graph = new ReferenceGraph();
@@ -45,6 +46,7 @@ describe('entry_point reference graph', () => {
     expect(graph.pathFrom('beta', 'alpha')).toEqual(['beta', 'delta', 'alpha']);
   });
 
-  it('should not report a path that doesn\'t exist',
-     () => { expect(graph.pathFrom('gamma', 'beta')).toBeNull(); });
+  it('should not report a path that doesn\'t exist', () => {
+    expect(graph.pathFrom('gamma', 'beta')).toBeNull();
+  });
 });

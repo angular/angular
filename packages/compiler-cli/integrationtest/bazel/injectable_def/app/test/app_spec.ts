@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, INJECTOR, Injectable, NgModule} from '@angular/core';
+import {Component, Injectable, INJECTOR, NgModule} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {renderModuleFactory} from '@angular/platform-server';
 import {BasicAppModuleNgFactory} from 'app_built/src/basic.ngfactory';
@@ -104,7 +104,6 @@ describe('ngInjectableDef Bazel Integration', () => {
   });
 
   it('allows provider override in JIT for module-scoped @Injectables', () => {
-
     @NgModule()
     class Module {
     }
@@ -172,7 +171,9 @@ describe('ngInjectableDef Bazel Integration', () => {
 
        // ChildServices exteds ParentService but does not have @Injectable
        class ChildService extends ParentService {
-         constructor(value: string) { super(value); }
+         constructor(value: string) {
+           super(value);
+         }
          static ngInjectableDef = {
            providedIn: 'root',
            factory: () => new ChildService('child'),

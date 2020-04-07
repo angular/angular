@@ -85,5 +85,4 @@ describe('compiler compliance: listen()', () => {
     expectEmit(result.source, componentDef, 'Incorrect component definition');
     expectEmit(result.source, directiveDef, 'Incorrect directive definition');
   });
-
 });

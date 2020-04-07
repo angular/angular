@@ -12,7 +12,7 @@ import {ModuleResolver} from '../../imports';
 import {PartialEvaluator} from '../../partial_evaluator';
 
 import {scanForCandidateTransitiveModules, scanForRouteEntryPoints} from './lazy';
-import {RouterEntryPointManager, entryPointKeyFor} from './route';
+import {entryPointKeyFor, RouterEntryPointManager} from './route';
 
 export interface NgModuleRawRouteData {
   sourceFile: ts.SourceFile;
@@ -42,10 +42,13 @@ export class NgModuleRouteAnalyzer {
     if (this.modules.has(key)) {
       throw new Error(`Double route analyzing for '${key}'.`);
     }
-    this.modules.set(
-        key, {
-                 sourceFile, moduleName, imports, exports, providers,
-             });
+    this.modules.set(key, {
+      sourceFile,
+      moduleName,
+      imports,
+      exports,
+      providers,
+    });
   }
 
   listLazyRoutes(entryModuleKey?: string|undefined): LazyRoute[] {
@@ -63,7 +66,7 @@ export class NgModuleRouteAnalyzer {
     const scanRecursively = entryModuleKey !== undefined;
 
     while (pendingModuleKeys.length > 0) {
-      const key = pendingModuleKeys.pop() !;
+      const key = pendingModuleKeys.pop()!;
 
       if (scannedModuleKeys.has(key)) {
         continue;
@@ -71,7 +74,7 @@ export class NgModuleRouteAnalyzer {
         scannedModuleKeys.add(key);
       }
 
-      const data = this.modules.get(key) !;
+      const data = this.modules.get(key)!;
       const entryPoints = scanForRouteEntryPoints(
           data.sourceFile, data.moduleName, data, this.entryPointManager, this.evaluator);
 

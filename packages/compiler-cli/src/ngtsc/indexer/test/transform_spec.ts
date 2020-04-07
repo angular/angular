@@ -68,7 +68,7 @@ runInEachFileSystem(() => {
 
       const info = analysis.get(decl);
       expect(info).toBeDefined();
-      expect(info !.template.file)
+      expect(info!.template.file)
           .toEqual(new ParseSourceFile('class C {}', util.getTestFilePath()));
     });
 
@@ -83,7 +83,7 @@ runInEachFileSystem(() => {
 
       const info = analysis.get(decl);
       expect(info).toBeDefined();
-      expect(info !.template.file)
+      expect(info!.template.file)
           .toEqual(new ParseSourceFile('<div>{{foo}}</div>', util.getTestFilePath()));
     });
 
@@ -110,11 +110,11 @@ runInEachFileSystem(() => {
 
       const infoA = analysis.get(declA);
       expect(infoA).toBeDefined();
-      expect(infoA !.template.usedComponents).toEqual(new Set([declB]));
+      expect(infoA!.template.usedComponents).toEqual(new Set([declB]));
 
       const infoB = analysis.get(declB);
       expect(infoB).toBeDefined();
-      expect(infoB !.template.usedComponents).toEqual(new Set([declA]));
+      expect(infoB!.template.usedComponents).toEqual(new Set([declA]));
     });
   });
 });

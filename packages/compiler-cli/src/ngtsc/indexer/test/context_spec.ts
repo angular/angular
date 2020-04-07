@@ -19,7 +19,8 @@ runInEachFileSystem(() => {
 
       context.addComponent({
         declaration,
-        selector: 'c-selector', boundTemplate,
+        selector: 'c-selector',
+        boundTemplate,
         templateMeta: {
           isInline: false,
           file: new ParseSourceFile('<div></div>', util.getTestFilePath()),
@@ -29,7 +30,8 @@ runInEachFileSystem(() => {
       expect(context.components).toEqual(new Set([
         {
           declaration,
-          selector: 'c-selector', boundTemplate,
+          selector: 'c-selector',
+          boundTemplate,
           templateMeta: {
             isInline: false,
             file: new ParseSourceFile('<div></div>', util.getTestFilePath()),

@@ -17,7 +17,9 @@ export class MockFileSystemWindows extends MockFileSystem {
     return this.normalize(resolved as AbsoluteFsPath);
   }
 
-  dirname<T extends string>(path: T): T { return this.normalize(p.win32.dirname(path) as T); }
+  dirname<T extends string>(path: T): T {
+    return this.normalize(p.win32.dirname(path) as T);
+  }
 
   join<T extends string>(basePath: T, ...paths: string[]): T {
     return this.normalize(p.win32.join(basePath, ...paths)) as T;
@@ -31,9 +33,13 @@ export class MockFileSystemWindows extends MockFileSystem {
     return p.win32.basename(filePath, extension) as PathSegment;
   }
 
-  isRooted(path: string): boolean { return /^([A-Z]:)?([\\\/]|$)/i.test(path); }
+  isRooted(path: string): boolean {
+    return /^([A-Z]:)?([\\\/]|$)/i.test(path);
+  }
 
-  protected splitPath<T extends PathString>(path: T): string[] { return path.split(/[\\\/]/); }
+  protected splitPath<T extends PathString>(path: T): string[] {
+    return path.split(/[\\\/]/);
+  }
 
   normalize<T extends PathString>(path: T): T {
     return path.replace(/^[\/\\]/i, 'C:/').replace(/\\/g, '/') as T;

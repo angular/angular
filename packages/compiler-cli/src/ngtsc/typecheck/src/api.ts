@@ -25,7 +25,7 @@ export interface TypeCheckableDirectiveMeta extends DirectiveMeta {
   hasNgTemplateContextGuard: boolean;
 }
 
-export type TemplateId = string & {__brand: 'TemplateId'};
+export type TemplateId = string&{__brand: 'TemplateId'};
 
 /**
  * Metadata required in addition to a component class in order to generate a type check block (TCB)
@@ -233,7 +233,7 @@ export interface TypeCheckingConfig {
 
 
 export type TemplateSourceMapping =
-    DirectTemplateSourceMapping | IndirectTemplateSourceMapping | ExternalTemplateSourceMapping;
+    DirectTemplateSourceMapping|IndirectTemplateSourceMapping|ExternalTemplateSourceMapping;
 
 /**
  * A mapping to an inline template in a TS file.

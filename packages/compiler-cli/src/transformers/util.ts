@@ -16,7 +16,11 @@ export const GENERATED_FILES = /(.*?)\.(ngfactory|shim\.ngstyle|ngstyle|ngsummar
 export const DTS = /\.d\.ts$/;
 export const TS = /^(?!.*\.d\.ts$).*\.ts$/;
 
-export const enum StructureIsReused {Not = 0, SafeModules = 1, Completely = 2}
+export const enum StructureIsReused {
+  Not = 0,
+  SafeModules = 1,
+  Completely = 2
+}
 
 // Note: This is an internal property in TypeScript. Use it only for assertions and tests.
 export function tsStructureIsReused(program: ts.Program): StructureIsReused {
@@ -36,7 +40,8 @@ export function createMessageDiagnostic(messageText: string): ts.Diagnostic&Diag
     file: undefined,
     start: undefined,
     length: undefined,
-    category: ts.DiagnosticCategory.Message, messageText,
+    category: ts.DiagnosticCategory.Message,
+    messageText,
     code: DEFAULT_ERROR_CODE,
     source: SOURCE,
   };
@@ -76,7 +81,7 @@ export function ngToTsDiagnostic(ng: Diagnostic): ts.Diagnostic {
     // Note: We can't use a real ts.SourceFile,
     // but we can at least mirror the properties `fileName` and `text`, which
     // are mostly used for error reporting.
-    file = { fileName: ng.span.start.file.url, text: ng.span.start.file.content } as ts.SourceFile;
+    file = {fileName: ng.span.start.file.url, text: ng.span.start.file.content} as ts.SourceFile;
     start = ng.span.start.offset;
     length = ng.span.end.offset - start;
   }
@@ -84,6 +89,8 @@ export function ngToTsDiagnostic(ng: Diagnostic): ts.Diagnostic {
     file,
     messageText: ng.messageText,
     category: ng.category,
-    code: ng.code, start, length,
+    code: ng.code,
+    start,
+    length,
   };
 }

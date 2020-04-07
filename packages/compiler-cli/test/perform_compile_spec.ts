@@ -10,7 +10,7 @@ import * as path from 'path';
 
 import {readConfiguration} from '../src/perform_compile';
 
-import {TestSupport, setup} from './test_support';
+import {setup, TestSupport} from './test_support';
 
 describe('perform_compile', () => {
   let support: TestSupport;

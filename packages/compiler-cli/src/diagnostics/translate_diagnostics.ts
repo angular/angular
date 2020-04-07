@@ -35,7 +35,8 @@ export function translateDiagnostics(
         const fileName = span.start.file.url;
         ng.push({
           messageText: diagnosticMessageToString(diagnostic.messageText),
-          category: diagnostic.category, span,
+          category: diagnostic.category,
+          span,
           source: SOURCE,
           code: DEFAULT_ERROR_CODE
         });
@@ -53,6 +54,6 @@ function sourceSpanOf(host: TypeCheckHost, source: ts.SourceFile, start: number)
   return host.parseSourceSpanOf(source.fileName, line, character);
 }
 
-function diagnosticMessageToString(message: ts.DiagnosticMessageChain | string): string {
+function diagnosticMessageToString(message: ts.DiagnosticMessageChain|string): string {
   return ts.flattenDiagnosticMessageText(message, '\n');
 }

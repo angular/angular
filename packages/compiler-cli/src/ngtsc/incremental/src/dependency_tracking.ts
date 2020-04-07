@@ -23,11 +23,13 @@ import {DependencyTracker} from '../api';
  * 2. One of its dependencies has physically changed.
  * 3. One of its resource dependencies has physically changed.
  */
-export class FileDependencyGraph<T extends{fileName: string} = ts.SourceFile> implements
+export class FileDependencyGraph<T extends {fileName: string} = ts.SourceFile> implements
     DependencyTracker<T> {
   private nodes = new Map<T, FileNode>();
 
-  addDependency(from: T, on: T): void { this.nodeFor(from).dependsOn.add(on.fileName); }
+  addDependency(from: T, on: T): void {
+    this.nodeFor(from).dependsOn.add(on.fileName);
+  }
 
   addResourceDependency(from: T, resource: AbsoluteFsPath): void {
     this.nodeFor(from).usesResources.add(resource);
@@ -103,7 +105,7 @@ export class FileDependencyGraph<T extends{fileName: string} = ts.SourceFile> im
         usesResources: new Set<AbsoluteFsPath>(),
       });
     }
-    return this.nodes.get(sf) !;
+    return this.nodes.get(sf)!;
   }
 }
 
@@ -111,7 +113,7 @@ export class FileDependencyGraph<T extends{fileName: string} = ts.SourceFile> im
  * Determine whether `sf` has logically changed, given its dependencies and the set of physically
  * changed files and resources.
  */
-function isLogicallyChanged<T extends{fileName: string}>(
+function isLogicallyChanged<T extends {fileName: string}>(
     sf: T, node: FileNode, changedTsPaths: ReadonlySet<string>, deletedTsPaths: ReadonlySet<string>,
     changedResources: ReadonlySet<AbsoluteFsPath>): boolean {
   // A file is logically changed if it has physically changed itself (including being deleted).

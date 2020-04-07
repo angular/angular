@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration} from '../../reflection';
+import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
 
 import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from './api';
 import {extractDirectiveGuards, extractReferencesFromType, readStringArrayType, readStringMapType, readStringType} from './util';

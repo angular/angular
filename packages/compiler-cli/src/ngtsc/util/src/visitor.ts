@@ -68,7 +68,9 @@ export abstract class Visitor {
   /**
    * Visit types of nodes which don't have their own explicit visitor.
    */
-  visitOtherNode<T extends ts.Node>(node: T): T { return node; }
+  visitOtherNode<T extends ts.Node>(node: T): T {
+    return node;
+  }
 
   /**
    * @internal
@@ -81,8 +83,9 @@ export abstract class Visitor {
     node = ts.visitEachChild(node, child => this._visit(child, context), context) as T;
 
     if (ts.isClassDeclaration(node)) {
-      visitedNode = this._visitListEntryNode(
-          node, (node: ts.ClassDeclaration) => this.visitClassDeclaration(node)) as typeof node;
+      visitedNode =
+          this._visitListEntryNode(
+              node, (node: ts.ClassDeclaration) => this.visitClassDeclaration(node)) as typeof node;
     } else {
       visitedNode = this.visitOtherNode(node);
     }
@@ -111,12 +114,12 @@ export abstract class Visitor {
     const newStatements: ts.Statement[] = [];
     clone.statements.forEach(stmt => {
       if (this._before.has(stmt)) {
-        newStatements.push(...(this._before.get(stmt) !as ts.Statement[]));
+        newStatements.push(...(this._before.get(stmt)! as ts.Statement[]));
         this._before.delete(stmt);
       }
       newStatements.push(stmt);
       if (this._after.has(stmt)) {
-        newStatements.push(...(this._after.get(stmt) !as ts.Statement[]));
+        newStatements.push(...(this._after.get(stmt)! as ts.Statement[]));
         this._after.delete(stmt);
       }
     });
@@ -126,6 +129,6 @@ export abstract class Visitor {
 }
 
 function hasStatements(node: ts.Node): node is ts.Node&{statements: ts.NodeArray<ts.Statement>} {
-  const block = node as{statements?: any};
+  const block = node as {statements?: any};
   return block.statements !== undefined && Array.isArray(block.statements);
 }

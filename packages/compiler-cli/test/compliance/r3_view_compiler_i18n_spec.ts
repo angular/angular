@@ -58,7 +58,9 @@ const verifyTranslationIds =
       });
       const regexp = /const\s*MSG_EXTERNAL_(.+?)\s*=\s*goog\.getMsg/g;
       const ids = extract(output, regexp, v => v[1]);
-      ids.forEach(id => { generatedIds.add(id.split('$$')[0]); });
+      ids.forEach(id => {
+        generatedIds.add(id.split('$$')[0]);
+      });
       const delta = diff(extractedIds, generatedIds);
       if (delta.size) {
         // check if we have ids in exception list
@@ -179,7 +181,6 @@ const verify = (input: string, output: string, extra: any = {}): void => {
 };
 
 describe('i18n support in the template compiler', () => {
-
   describe('element attributes', () => {
     it('should add the meaning and description as JsDoc comments and metadata blocks', () => {
       const input = `
@@ -193,7 +194,7 @@ describe('i18n support in the template compiler', () => {
         <div i18n="Some text \\' [BACKUP_MESSAGE_ID: xxx]">Content H</div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             /**
@@ -269,8 +270,8 @@ describe('i18n support in the template compiler', () => {
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             /**
              * @desc [BACKUP_$` +
-          String.raw `{MESSAGE}_ID:idH]` +
-          '`' + String.raw `desc
+          String.raw`{MESSAGE}_ID:idH]` +
+          '`' + String.raw`desc
              */
             const $MSG_EXTERNAL_idG$$APP_SPEC_TS_24$ = goog.getMsg("Title G");
             $I18N_23$ = $MSG_EXTERNAL_idG$$APP_SPEC_TS_24$;
@@ -338,7 +339,7 @@ describe('i18n support in the template compiler', () => {
 
       // TODO (FW-1942): update the code to avoid adding `title` attribute in plain form
       // into the `consts` array on Component def.
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_6616505470450179563$$APP_SPEC_TS_1$ = goog.getMsg("Hello");
@@ -368,7 +369,7 @@ describe('i18n support in the template compiler', () => {
 
          // TODO (FW-1942): update the code to avoid adding `title` attribute in plain form
          // into the `consts` array on Component def.
-         const output = String.raw `
+         const output = String.raw`
             var $I18N_0$;
             if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
                 const $MSG_EXTERNAL_6616505470450179563$$APP_SPEC_TS_1$ = goog.getMsg("Hello");
@@ -409,7 +410,7 @@ describe('i18n support in the template compiler', () => {
            <ng-template i18n-title title="Hello {{ name }}"></ng-template>
          `;
 
-         const output = String.raw `
+         const output = String.raw`
            var $I18N_0$;
            if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
              const $MSG_EXTERNAL_3771704108176831903$$APP_SPEC_TS_1$ = goog.getMsg("Hello {$interpolation}", {
@@ -419,7 +420,7 @@ describe('i18n support in the template compiler', () => {
            }
            else {
              $I18N_0$ = $localize \`Hello $` +
-             String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+             String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
            }
            const $_c2$ = ["title", $I18N_0$];
            …
@@ -444,7 +445,7 @@ describe('i18n support in the template compiler', () => {
             <ng-template *ngIf="true" i18n-title title="Hello {{ name }}"></ng-template>
           `;
 
-         const output = String.raw `
+         const output = String.raw`
             var $I18N_0$;
             if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
               const $MSG_EXTERNAL_3771704108176831903$$APP_SPEC_TS__1$ = goog.getMsg("Hello {$interpolation}", {
@@ -454,7 +455,7 @@ describe('i18n support in the template compiler', () => {
             }
             else {
               $I18N_0$ = $localize \`Hello $` +
-             String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+             String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
             }
             const $_c2$ = ["title", $I18N_0$];
             …
@@ -531,7 +532,7 @@ describe('i18n support in the template compiler', () => {
         <div id="static" i18n-title="m|d" title="introduction"></div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           /**
@@ -572,7 +573,7 @@ describe('i18n support in the template compiler', () => {
         ></div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           const $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$ = goog.getMsg("static text");
@@ -594,7 +595,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_2$ = $localize \`:m|d:intro $` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         var $I18N_3$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
@@ -609,7 +610,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_3$ = $localize \`:m1|d1:$` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c1$ = [
           "aria-roledescription", $I18N_1$,
@@ -629,9 +630,9 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_6$ = $localize \`:m2|d2:$` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: and $` +
-          String.raw `{"\uFFFD1\uFFFD"}:INTERPOLATION_1: and again $` +
-          String.raw `{"\uFFFD2\uFFFD"}:INTERPOLATION_2:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION: and $` +
+          String.raw`{"\uFFFD1\uFFFD"}:INTERPOLATION_1: and again $` +
+          String.raw`{"\uFFFD2\uFFFD"}:INTERPOLATION_2:\`;
         }
         var $I18N_7$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
@@ -642,7 +643,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_7$ = $localize \`$` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c3$ = [
           "title", $I18N_6$,
@@ -651,7 +652,10 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 5,
         vars: 8,
-        consts: [["id", "dynamic-1", ${AttributeMarker.I18n}, "aria-roledescription", "title", "aria-label"], ["id", "dynamic-2", ${AttributeMarker.I18n}, "title", "aria-roledescription"]],
+        consts: [["id", "dynamic-1", ${
+              AttributeMarker
+                  .I18n}, "aria-roledescription", "title", "aria-label"], ["id", "dynamic-2", ${
+              AttributeMarker.I18n}, "title", "aria-roledescription"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
@@ -680,7 +684,7 @@ describe('i18n support in the template compiler', () => {
         <div i18n-title="m|d" title="intro {% valueA | uppercase %}"></div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             /**
@@ -694,7 +698,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_1$ = $localize \`:m|d:intro $` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c3$ = ["title", $I18N_1$];
         …
@@ -722,7 +726,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             /**
@@ -736,7 +740,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_1$ = $localize \`:m|d:different scope $` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c2$ = ["title", $I18N_1$];
         function MyComponent_div_0_Template(rf, ctx) {
@@ -758,7 +762,8 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 1,
         vars: 1,
-        consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.I18n}, "title"]],
+        consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${
+              AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", 0);
@@ -777,7 +782,7 @@ describe('i18n support in the template compiler', () => {
         <div i18n-title title="{{valueA.getRawValue()?.getTitle()}} title"></div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_3462388422673575127$$APP_SPEC_TS_2$ = goog.getMsg("{$interpolation} title", {
@@ -787,7 +792,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_1$ = $localize \`$` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: title\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION: title\`;
         }
         const $_c3$ = ["title", $I18N_1$];
         …
@@ -825,7 +830,7 @@ describe('i18n support in the template compiler', () => {
         ></div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$ = goog.getMsg("static text");
@@ -847,7 +852,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_2$ = $localize \`:m|d:intro $` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         var $I18N_3$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
@@ -862,7 +867,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_3$ = $localize \`:m1|d1:$` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c1$ = [
           "aria-roledescription", $I18N_1$,
@@ -882,9 +887,9 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_6$ = $localize \`:m2|d2:$` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: and $` +
-          String.raw `{"\uFFFD1\uFFFD"}:INTERPOLATION_1: and again $` +
-          String.raw `{"\uFFFD2\uFFFD"}:INTERPOLATION_2:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION: and $` +
+          String.raw`{"\uFFFD1\uFFFD"}:INTERPOLATION_1: and again $` +
+          String.raw`{"\uFFFD2\uFFFD"}:INTERPOLATION_2:\`;
         }
         var $I18N_7$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
@@ -895,7 +900,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_7$ = $localize \`$` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c3$ = [
           "title", $I18N_6$,
@@ -938,7 +943,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_2$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             /**
@@ -952,7 +957,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_2$ = $localize \`:m|d:different scope $` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c4$ = ["title", $I18N_2$];
         function MyComponent_div_0_Template(rf, ctx) {
@@ -974,7 +979,8 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 1,
         vars: 1,
-        consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.I18n}, "title"]],
+        consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${
+              AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", 0);
@@ -993,7 +999,7 @@ describe('i18n support in the template compiler', () => {
         <div i18n i18n-title="m|d" title="Element title">Some content</div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             /**
@@ -1036,7 +1042,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_ID_WITH_INVALID_CHARS$$APP_SPEC_TS_1$ = goog.getMsg("Element title");
@@ -1075,7 +1081,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelement(0, "div");
@@ -1097,7 +1103,7 @@ describe('i18n support in the template compiler', () => {
         <div i18n>Some <!-- comments --> text</div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
       var $I18N_0$;
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           const $MSG_APP_SPEC_TS_1$ = goog.getMsg("Some  text");
@@ -1115,11 +1121,11 @@ describe('i18n support in the template compiler', () => {
         <div i18n>Some text 'with single quotes', "with double quotes", \`with backticks\` and without quotes.</div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_4924931801512133405$$APP_SPEC_TS_0$ = goog.getMsg("Some text 'with single quotes', \"with double quotes\", ` +
-          '`with backticks`' + String.raw ` and without quotes.");
+          '`with backticks`' + String.raw` and without quotes.");
             $I18N_0$ = $MSG_EXTERNAL_4924931801512133405$$APP_SPEC_TS_0$;
         }
         else {
@@ -1132,16 +1138,16 @@ describe('i18n support in the template compiler', () => {
 
     it('should handle interpolations wrapped in backticks', () => {
       const input = '<div i18n>`{{ count }}`</div>';
-      const output = String.raw `
+      const output = String.raw`
       var $I18N_0$;
       if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           const $MSG_APP_SPEC_TS_1$ = goog.getMsg("` +
-          '`{$interpolation}`' + String.raw `", { "interpolation": "\uFFFD0\uFFFD" });
+          '`{$interpolation}`' + String.raw`", { "interpolation": "\uFFFD0\uFFFD" });
           $I18N_0$ = $MSG_APP_SPEC_TS_1$;
       }
       else {
           $I18N_0$ = $localize \`\\\`$` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\\\`\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\\\`\`;
       }`;
       verify(input, output);
     });
@@ -1155,7 +1161,7 @@ describe('i18n support in the template compiler', () => {
         <div i18n>My i18n block #3</div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$ = goog.getMsg("My i18n block #1");
@@ -1213,7 +1219,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_7597881511811528589$$APP_SPEC_TS_0$ = goog.getMsg(" Named interpolation: {$phA} Named interpolation with spaces: {$phB} ", {
@@ -1224,8 +1230,8 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` Named interpolation: $` +
-          String.raw `{"\uFFFD0\uFFFD"}:PH_A: Named interpolation with spaces: $` +
-          String.raw `{"\uFFFD1\uFFFD"}:PH_B: \`;
+          String.raw`{"\uFFFD0\uFFFD"}:PH_A: Named interpolation with spaces: $` +
+          String.raw`{"\uFFFD1\uFFFD"}:PH_B: \`;
         }
         …
         decls: 2,
@@ -1252,7 +1258,7 @@ describe('i18n support in the template compiler', () => {
         <div i18n>{% valueA %}</div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_6749967533321674787$$APP_SPEC_TS_0$ = goog.getMsg("{$interpolation}", {
@@ -1262,7 +1268,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \`$` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         …
         template: function MyComponent_Template(rf, ctx) {
@@ -1290,7 +1296,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_APP_SPEC_TS_1$$APP_SPEC_TS_1$ = goog.getMsg(" {$interpolation} {$interpolation_1} {$interpolation_2} ", {
@@ -1302,9 +1308,9 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` $` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: $` +
-          String.raw `{"\uFFFD1\uFFFD"}:INTERPOLATION_1: $` +
-          String.raw `{"\uFFFD2\uFFFD"}:INTERPOLATION_2: \`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION: $` +
+          String.raw`{"\uFFFD1\uFFFD"}:INTERPOLATION_1: $` +
+          String.raw`{"\uFFFD2\uFFFD"}:INTERPOLATION_2: \`;
         }
         …
         template: function MyComponent_Template(rf, ctx) {
@@ -1333,7 +1339,7 @@ describe('i18n support in the template compiler', () => {
         <div i18n>My i18n block #{{ three + four + five }}</div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_572579892698764378$$APP_SPEC_TS_0$ = goog.getMsg("My i18n block #{$interpolation}", {
@@ -1343,7 +1349,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \`My i18n block #$` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
@@ -1354,7 +1360,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_1$ = $localize \`My i18n block #$` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         var $I18N_2$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
@@ -1365,7 +1371,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_2$ = $localize \`My i18n block #$` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         …
         decls: 7,
@@ -1418,7 +1424,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_7905233330103651696$$APP_SPEC_TS_0$ = goog.getMsg(" My i18n block #{$interpolation} {$startTagSpan}Plain text in nested element{$closeTagSpan}", {
@@ -1430,9 +1436,9 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` My i18n block #$` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: $` +
-          String.raw `{"\uFFFD#2\uFFFD"}:START_TAG_SPAN:Plain text in nested element$` +
-          String.raw `{"\uFFFD/#2\uFFFD"}:CLOSE_TAG_SPAN:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION: $` +
+          String.raw`{"\uFFFD#2\uFFFD"}:START_TAG_SPAN:Plain text in nested element$` +
+          String.raw`{"\uFFFD/#2\uFFFD"}:CLOSE_TAG_SPAN:\`;
         }
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
@@ -1448,14 +1454,14 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_1$ = $localize \` My i18n block #$` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: $` +
-          String.raw `{"[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]"}:START_TAG_DIV:$` +
-          String.raw `{"[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]"}:START_TAG_DIV:$` + String.raw
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION: $` +
+          String.raw`{"[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]"}:START_TAG_DIV:$` +
+          String.raw`{"[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]"}:START_TAG_DIV:$` + String.raw
       `{"\uFFFD#8\uFFFD"}:START_TAG_SPAN: More bindings in more nested element: $` +
-          String.raw `{"\uFFFD1\uFFFD"}:INTERPOLATION_1: $` +
-          String.raw `{"\uFFFD/#8\uFFFD"}:CLOSE_TAG_SPAN:$` +
-          String.raw `{"[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]"}:CLOSE_TAG_DIV:$` +
-          String.raw `{"[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]"}:CLOSE_TAG_DIV:\`;
+          String.raw`{"\uFFFD1\uFFFD"}:INTERPOLATION_1: $` +
+          String.raw`{"\uFFFD/#8\uFFFD"}:CLOSE_TAG_SPAN:$` +
+          String.raw`{"[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]"}:CLOSE_TAG_DIV:$` +
+          String.raw`{"[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]"}:CLOSE_TAG_DIV:\`;
         }
         $I18N_1$ = $r3$.ɵɵi18nPostprocess($I18N_1$);
         …
@@ -1509,7 +1515,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_2$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_4782264005467235841$$APP_SPEC_TS_3$ = goog.getMsg("Span title {$interpolation} and {$interpolation_1}", {
@@ -1520,8 +1526,8 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_2$ = $localize \`Span title $` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: and $` +
-          String.raw `{"\uFFFD1\uFFFD"}:INTERPOLATION_1:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION: and $` +
+          String.raw`{"\uFFFD1\uFFFD"}:INTERPOLATION_1:\`;
         }
         const $_c4$ = ["title", $I18N_2$];
         var $I18N_0$;
@@ -1535,9 +1541,9 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` My i18n block #1 with value: $` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: $` + String.raw
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION: $` + String.raw
       `{"\uFFFD#2\uFFFD"}:START_TAG_SPAN: Plain text in nested element (block #1) $` +
-          String.raw `{"\uFFFD/#2\uFFFD"}:CLOSE_TAG_SPAN:\`;
+          String.raw`{"\uFFFD/#2\uFFFD"}:CLOSE_TAG_SPAN:\`;
         }
         var $I18N_7$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
@@ -1548,7 +1554,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_7$ = $localize \`Span title $` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c9$ = ["title", $I18N_7$];
         var $I18N_6$;
@@ -1562,9 +1568,9 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_6$ = $localize \` My i18n block #2 with value $` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: $` + String.raw
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION: $` + String.raw
       `{"\uFFFD#7\uFFFD"}:START_TAG_SPAN: Plain text in nested element (block #2) $` +
-          String.raw `{"\uFFFD/#7\uFFFD"}:CLOSE_TAG_SPAN:\`;
+          String.raw`{"\uFFFD/#7\uFFFD"}:CLOSE_TAG_SPAN:\`;
         }
         …
         decls: 9,
@@ -1623,7 +1629,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_7679414751795588050$$APP_SPEC_TS__1$ = goog.getMsg(" Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$closeTagDiv}", {
@@ -1636,10 +1642,10 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_1$ = $localize \` Some other content $` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION: $` +
-          String.raw `{"\uFFFD#3\uFFFD"}:START_TAG_DIV: More nested levels with bindings $` +
-          String.raw `{"\uFFFD1\uFFFD"}:INTERPOLATION_1: $` +
-          String.raw `{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_DIV:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION: $` +
+          String.raw`{"\uFFFD#3\uFFFD"}:START_TAG_DIV: More nested levels with bindings $` +
+          String.raw`{"\uFFFD1\uFFFD"}:INTERPOLATION_1: $` +
+          String.raw`{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_DIV:\`;
         }
         …
         function MyComponent_div_2_Template(rf, ctx) {
@@ -1688,7 +1694,7 @@ describe('i18n support in the template compiler', () => {
         <img src="logo.png" i18n *ngIf="visible" i18n-title title="App logo #{{ id }}" />
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         function MyComponent_img_1_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelement(0, "img", 0);
@@ -1703,7 +1709,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_2$ = $localize \`App logo #$` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         const $_c4$ = ["title", $I18N_2$];
         function MyComponent_img_2_Template(rf, ctx) {
@@ -1721,7 +1727,11 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 3,
         vars: 2,
-        consts: [["src", "logo.png"], ["src", "logo.png", ${AttributeMarker.Template}, "ngIf"], ["src", "logo.png", ${AttributeMarker.Bindings}, "title", ${AttributeMarker.Template}, "ngIf"], ["src", "logo.png", ${AttributeMarker.I18n}, "title"]],
+        consts: [["src", "logo.png"], ["src", "logo.png", ${
+              AttributeMarker.Template}, "ngIf"], ["src", "logo.png", ${
+              AttributeMarker.Bindings}, "title", ${
+              AttributeMarker.Template}, "ngIf"], ["src", "logo.png", ${
+              AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelement(0, "img", 0);
@@ -1765,7 +1775,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         function MyComponent_div_2_div_4_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵi18nStart(0, $I18N_0$, 2);
@@ -1821,13 +1831,13 @@ describe('i18n support in the template compiler', () => {
             $I18N_0$ = $localize \` Some content $` +
           String.raw
       `{"\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_DIV_2: Some other content $` +
-          String.raw `{"\uFFFD0:1\uFFFD"}:INTERPOLATION: $` + String.raw
+          String.raw`{"\uFFFD0:1\uFFFD"}:INTERPOLATION: $` + String.raw
       `{"[\uFFFD#2:1\uFFFD|\uFFFD#2:2\uFFFD|\uFFFD#2:3\uFFFD]"}:START_TAG_DIV: More nested levels with bindings $` +
-          String.raw `{"\uFFFD1:1\uFFFD"}:INTERPOLATION_1: $` + String.raw
+          String.raw`{"\uFFFD1:1\uFFFD"}:INTERPOLATION_1: $` + String.raw
       `{"\uFFFD*4:2\uFFFD\uFFFD#1:2\uFFFD"}:START_TAG_DIV_1: Content inside sub-template $` +
-          String.raw `{"\uFFFD0:2\uFFFD"}:INTERPOLATION_2: $` + String.raw
+          String.raw`{"\uFFFD0:2\uFFFD"}:INTERPOLATION_2: $` + String.raw
       `{"[\uFFFD#2:1\uFFFD|\uFFFD#2:2\uFFFD|\uFFFD#2:3\uFFFD]"}:START_TAG_DIV: Bottom level element $` +
-          String.raw `{"\uFFFD1:2\uFFFD"}:INTERPOLATION_3: $` + String.raw
+          String.raw`{"\uFFFD1:2\uFFFD"}:INTERPOLATION_3: $` + String.raw
       `{"[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]"}:CLOSE_TAG_DIV:$` +
           String.raw
       `{"[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]"}:CLOSE_TAG_DIV:$` +
@@ -1837,9 +1847,9 @@ describe('i18n support in the template compiler', () => {
       `{"[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]"}:CLOSE_TAG_DIV:$` +
           String.raw
       `{"\uFFFD*3:3\uFFFD\uFFFD#1:3\uFFFD"}:START_TAG_DIV_3: Some other content $` +
-          String.raw `{"\uFFFD0:3\uFFFD"}:INTERPOLATION_4: $` + String.raw
+          String.raw`{"\uFFFD0:3\uFFFD"}:INTERPOLATION_4: $` + String.raw
       `{"[\uFFFD#2:1\uFFFD|\uFFFD#2:2\uFFFD|\uFFFD#2:3\uFFFD]"}:START_TAG_DIV: More nested levels with bindings $` +
-          String.raw `{"\uFFFD1:3\uFFFD"}:INTERPOLATION_5: $` + String.raw
+          String.raw`{"\uFFFD1:3\uFFFD"}:INTERPOLATION_5: $` + String.raw
       `{"[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]"}:CLOSE_TAG_DIV:$` +
           String.raw
       `{"[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]"}:CLOSE_TAG_DIV:\`;
@@ -1891,7 +1901,7 @@ describe('i18n support in the template compiler', () => {
         <div i18n *ngIf="visible">Some other content <span>{{ valueA }}</span></div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_119975189388320493$$APP_SPEC_TS__1$ = goog.getMsg("Some other content {$startTagSpan}{$interpolation}{$closeTagSpan}", {
@@ -1903,9 +1913,9 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_1$ = $localize \`Some other content $` +
-          String.raw `{"\uFFFD#2\uFFFD"}:START_TAG_SPAN:$` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:$` +
-          String.raw `{"\uFFFD/#2\uFFFD"}:CLOSE_TAG_SPAN:\`;
+          String.raw`{"\uFFFD#2\uFFFD"}:START_TAG_SPAN:$` +
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:$` +
+          String.raw`{"\uFFFD/#2\uFFFD"}:CLOSE_TAG_SPAN:\`;
         }
         …
         function MyComponent_div_0_Template(rf, ctx) {
@@ -1945,7 +1955,7 @@ describe('i18n support in the template compiler', () => {
         <div i18n (click)="onClick()">Hello</div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_APP_SPEC_TS_2$ = goog.getMsg("Hello");
@@ -1976,7 +1986,7 @@ describe('i18n support in the template compiler', () => {
         <div i18n>My i18n block #1</div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$ = goog.getMsg("My i18n block #1");
@@ -2003,7 +2013,7 @@ describe('i18n support in the template compiler', () => {
         <div i18n>{age, select, 10 {ten} 20 {twenty} other {other}}</div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
@@ -2041,7 +2051,7 @@ describe('i18n support in the template compiler', () => {
         <ng-container i18n>My i18n block #2</ng-container>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_0$ = goog.getMsg("My i18n block #2");
@@ -2083,7 +2093,7 @@ describe('i18n support in the template compiler', () => {
         <span i18n style="padding: 10px;">Text #2</span>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_5295701706185791735$$APP_SPEC_TS_1$ = goog.getMsg("Text #1");
@@ -2103,7 +2113,8 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 4,
         vars: 0,
-        consts: [[${AttributeMarker.Classes}, "myClass"], [${AttributeMarker.Styles}, "padding", "10px"]],
+        consts: [[${AttributeMarker.Classes}, "myClass"], [${
+          AttributeMarker.Styles}, "padding", "10px"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "span", 0);
@@ -2126,7 +2137,7 @@ describe('i18n support in the template compiler', () => {
         <ng-container i18n>Some content: {{ valueA | uppercase }}</ng-container>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           const $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS_0$ = goog.getMsg("Some content: {$interpolation}", {
@@ -2136,7 +2147,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_0$ = $localize \`Some content: $` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         …
         decls: 3,
@@ -2164,7 +2175,7 @@ describe('i18n support in the template compiler', () => {
         <ng-template i18n>Some content: {{ valueA | uppercase }}</ng-template>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS__0$ = goog.getMsg("Some content: {$interpolation}", {
@@ -2174,7 +2185,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \`Some content: $` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION:\`;
         }
         function MyComponent_ng_template_0_Template(rf, ctx) {
           if (rf & 1) {
@@ -2208,7 +2219,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           const $MSG_EXTERNAL_702706566400598764$$APP_SPEC_TS_0$ = goog.getMsg("{$startTagNgTemplate}Template content: {$interpolation}{$closeTagNgTemplate}{$startTagNgContainer}Container content: {$interpolation_1}{$closeTagNgContainer}", {
@@ -2223,12 +2234,12 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_0$ = $localize \`$` +
-          String.raw `{"\uFFFD*2:1\uFFFD"}:START_TAG_NG_TEMPLATE:Template content: $` +
-          String.raw `{"\uFFFD0:1\uFFFD"}:INTERPOLATION:$` +
-          String.raw `{"\uFFFD/*2:1\uFFFD"}:CLOSE_TAG_NG_TEMPLATE:$` +
-          String.raw `{"\uFFFD#3\uFFFD"}:START_TAG_NG_CONTAINER:Container content: $` +
-          String.raw `{"\uFFFD0\uFFFD"}:INTERPOLATION_1:$` +
-          String.raw `{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_NG_CONTAINER:\`;
+          String.raw`{"\uFFFD*2:1\uFFFD"}:START_TAG_NG_TEMPLATE:Template content: $` +
+          String.raw`{"\uFFFD0:1\uFFFD"}:INTERPOLATION:$` +
+          String.raw`{"\uFFFD/*2:1\uFFFD"}:CLOSE_TAG_NG_TEMPLATE:$` +
+          String.raw`{"\uFFFD#3\uFFFD"}:START_TAG_NG_CONTAINER:Container content: $` +
+          String.raw`{"\uFFFD0\uFFFD"}:INTERPOLATION_1:$` +
+          String.raw`{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_NG_CONTAINER:\`;
         }
         function MyComponent_ng_template_2_Template(rf, ctx) {
           if (rf & 1) {
@@ -2272,7 +2283,7 @@ describe('i18n support in the template compiler', () => {
         <ng-container>{age, select, 10 {ten} 20 {twenty} other {other}}</ng-container>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
@@ -2341,7 +2352,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         function MyComponent_ng_template_2_ng_template_2_ng_template_1_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵi18n(0, $I18N_0$, 3);
@@ -2380,11 +2391,11 @@ describe('i18n support in the template compiler', () => {
             $I18N_0$ = $localize \`$` +
           String.raw
       `{"[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]"}:START_TAG_NG_TEMPLATE: Template A: $` +
-          String.raw `{"\uFFFD0:1\uFFFD"}:INTERPOLATION: $` + String.raw
+          String.raw`{"\uFFFD0:1\uFFFD"}:INTERPOLATION: $` + String.raw
       `{"[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]"}:START_TAG_NG_TEMPLATE: Template B: $` +
-          String.raw `{"\uFFFD0:2\uFFFD"}:INTERPOLATION_1: $` + String.raw
+          String.raw`{"\uFFFD0:2\uFFFD"}:INTERPOLATION_1: $` + String.raw
       `{"[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]"}:START_TAG_NG_TEMPLATE: Template C: $` +
-          String.raw `{"\uFFFD0:3\uFFFD"}:INTERPOLATION_2: $` + String.raw
+          String.raw`{"\uFFFD0:3\uFFFD"}:INTERPOLATION_2: $` + String.raw
       `{"[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]"}:CLOSE_TAG_NG_TEMPLATE:$` +
           String.raw
       `{"[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]"}:CLOSE_TAG_NG_TEMPLATE:$` +
@@ -2429,7 +2440,7 @@ describe('i18n support in the template compiler', () => {
         <ng-template i18n>{age, select, 10 {ten} 20 {twenty} other {other}}</ng-template>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
@@ -2493,7 +2504,7 @@ describe('i18n support in the template compiler', () => {
         </ng-template>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_4891196282781544695$$APP_SPEC_TS_0$ = goog.getMsg("{$tagImg} is my logo #1 ", {
@@ -2503,7 +2514,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \`$` +
-          String.raw `{"\uFFFD#2\uFFFD\uFFFD/#2\uFFFD"}:TAG_IMG: is my logo #1 \`;
+          String.raw`{"\uFFFD#2\uFFFD\uFFFD/#2\uFFFD"}:TAG_IMG: is my logo #1 \`;
         }
         var $I18N_2$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
@@ -2514,7 +2525,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_2$ = $localize \`$` +
-          String.raw `{"\uFFFD#1\uFFFD\uFFFD/#1\uFFFD"}:TAG_IMG: is my logo #2 \`;
+          String.raw`{"\uFFFD#1\uFFFD\uFFFD/#1\uFFFD"}:TAG_IMG: is my logo #2 \`;
         }
         function MyComponent_ng_template_3_Template(rf, ctx) {
           if (rf & 1) {
@@ -2550,7 +2561,7 @@ describe('i18n support in the template compiler', () => {
         </ng-template>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_8537814667662432133$$APP_SPEC_TS__0$ = goog.getMsg(" Root content {$startTagNgContainer} Nested content {$closeTagNgContainer}", {
@@ -2563,7 +2574,7 @@ describe('i18n support in the template compiler', () => {
             $I18N_0$ = $localize \` Root content $` +
           String.raw
       `{"\uFFFD*1:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_NG_CONTAINER: Nested content $` +
-          String.raw `{"\uFFFD/#1:1\uFFFD\uFFFD/*1:1\uFFFD"}:CLOSE_TAG_NG_CONTAINER:\`;
+          String.raw`{"\uFFFD/#1:1\uFFFD\uFFFD/*1:1\uFFFD"}:CLOSE_TAG_NG_CONTAINER:\`;
         }
         …
       `;
@@ -2580,7 +2591,7 @@ describe('i18n support in the template compiler', () => {
       // TODO(FW-635): currently we generate unique consts for each i18n block even though it
       // might contain the same content. This should be optimized by translation statements caching,
       // that can be implemented in the future within FW-635.
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_6563391987554512024$$APP_SPEC_TS_0$ = goog.getMsg("Test");
@@ -2610,7 +2621,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
           const $MSG_APP_SPEC_TS_1$ = goog.getMsg(" Hello {$startTagNgContainer}there{$closeTagNgContainer}", { "startTagNgContainer": "\uFFFD#2\uFFFD", "closeTagNgContainer": "\uFFFD/#2\uFFFD" });
@@ -2618,8 +2629,8 @@ describe('i18n support in the template compiler', () => {
         }
         else {
           $I18N_0$ = $localize \` Hello $` +
-          String.raw `{"\uFFFD#2\uFFFD"}:START_TAG_NG_CONTAINER:there$` +
-          String.raw `{"\uFFFD/#2\uFFFD"}:CLOSE_TAG_NG_CONTAINER:\`;
+          String.raw`{"\uFFFD#2\uFFFD"}:START_TAG_NG_CONTAINER:there$` +
+          String.raw`{"\uFFFD/#2\uFFFD"}:CLOSE_TAG_NG_CONTAINER:\`;
         }
         …
         decls: 3,
@@ -2646,7 +2657,7 @@ describe('i18n support in the template compiler', () => {
           </div>
         `;
 
-         const output = String.raw `
+         const output = String.raw`
           var $I18N_0$;
           if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_APP_SPEC_TS_1$ = goog.getMsg(" Hello {$startTagNgContainer}there {$startTagStrong}!{$closeTagStrong}{$closeTagNgContainer}", { "startTagNgContainer": "\uFFFD#2\uFFFD", "startTagStrong": "\uFFFD#3\uFFFD", "closeTagStrong": "\uFFFD/#3\uFFFD", "closeTagNgContainer": "\uFFFD/#2\uFFFD" });
@@ -2654,10 +2665,10 @@ describe('i18n support in the template compiler', () => {
           }
           else {
             $I18N_0$ = $localize \` Hello $` +
-             String.raw `{"\uFFFD#2\uFFFD"}:START_TAG_NG_CONTAINER:there $` +
-             String.raw `{"\uFFFD#3\uFFFD"}:START_TAG_STRONG:!$` +
-             String.raw `{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_STRONG:$` +
-             String.raw `{"\uFFFD/#2\uFFFD"}:CLOSE_TAG_NG_CONTAINER:\`;
+             String.raw`{"\uFFFD#2\uFFFD"}:START_TAG_NG_CONTAINER:there $` +
+             String.raw`{"\uFFFD#3\uFFFD"}:START_TAG_STRONG:!$` +
+             String.raw`{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_STRONG:$` +
+             String.raw`{"\uFFFD/#2\uFFFD"}:CLOSE_TAG_NG_CONTAINER:\`;
           }
           …
           decls: 4,
@@ -2686,7 +2697,7 @@ describe('i18n support in the template compiler', () => {
         <ng-container *ngIf="someFlag" i18n>Content B</ng-container>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_3308216566145348998$$APP_SPEC_TS___2$ = goog.getMsg("Content A");
@@ -2747,7 +2758,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$ = goog.getMsg("\n          Some text\n          {$startTagSpan}Text inside span{$closeTagSpan}\n        ", {
@@ -2760,8 +2771,8 @@ describe('i18n support in the template compiler', () => {
             $I18N_0$ = $localize \`
           Some text
           $` +
-          String.raw `{"\uFFFD#3\uFFFD"}:START_TAG_SPAN:Text inside span$` +
-          String.raw `{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_SPAN:
+          String.raw`{"\uFFFD#3\uFFFD"}:START_TAG_SPAN:Text inside span$` +
+          String.raw`{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_SPAN:
         \`;
         }
         …
@@ -2788,7 +2799,7 @@ describe('i18n support in the template compiler', () => {
         <div i18n>{gender, select, male {male} female {female} other {other}}</div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
@@ -2825,7 +2836,7 @@ describe('i18n support in the template compiler', () => {
         <div i18n>{gender, select, single {'single quotes'} double {"double quotes"} other {other}}</div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, single {'single quotes'} double {\"double quotes\"} other {other}}");
@@ -2847,7 +2858,7 @@ describe('i18n support in the template compiler', () => {
         {age, select, 10 {ten} 20 {twenty} other {other}}
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
@@ -2887,7 +2898,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
@@ -2955,7 +2966,9 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 4,
         vars: 3,
-        consts: [["title", "icu only", ${AttributeMarker.Template}, "ngIf"], ["title", "icu and text", ${AttributeMarker.Template}, "ngIf"], ["title", "icu only"], ["title", "icu and text"]],
+        consts: [["title", "icu only", ${
+          AttributeMarker.Template}, "ngIf"], ["title", "icu and text", ${
+          AttributeMarker.Template}, "ngIf"], ["title", "icu only"], ["title", "icu and text"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -2984,7 +2997,7 @@ describe('i18n support in the template compiler', () => {
         <div i18n>{age, select, 10 {ten} 20 {twenty} other {{% other %}}}</div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_2949673783721159566$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {{INTERPOLATION}}}");
@@ -3024,7 +3037,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male - {START_BOLD_TEXT}male{CLOSE_BOLD_TEXT}} female {female {START_BOLD_TEXT}female{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}{START_ITALIC_TEXT}other{CLOSE_ITALIC_TEXT}{CLOSE_TAG_DIV}}}");
@@ -3057,13 +3070,13 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` $` +
-          String.raw `{$I18N_1$}:ICU: $` +
-          String.raw `{"\uFFFD#2\uFFFD"}:START_BOLD_TEXT:Other content$` +
-          String.raw `{"\uFFFD/#2\uFFFD"}:CLOSE_BOLD_TEXT:$` +
-          String.raw `{"\uFFFD#3\uFFFD"}:START_TAG_DIV:$` +
-          String.raw `{"\uFFFD#4\uFFFD"}:START_ITALIC_TEXT:Another content$` +
-          String.raw `{"\uFFFD/#4\uFFFD"}:CLOSE_ITALIC_TEXT:$` +
-          String.raw `{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_DIV:\`;
+          String.raw`{$I18N_1$}:ICU: $` +
+          String.raw`{"\uFFFD#2\uFFFD"}:START_BOLD_TEXT:Other content$` +
+          String.raw`{"\uFFFD/#2\uFFFD"}:CLOSE_BOLD_TEXT:$` +
+          String.raw`{"\uFFFD#3\uFFFD"}:START_TAG_DIV:$` +
+          String.raw`{"\uFFFD#4\uFFFD"}:START_ITALIC_TEXT:Another content$` +
+          String.raw`{"\uFFFD/#4\uFFFD"}:CLOSE_ITALIC_TEXT:$` +
+          String.raw`{"\uFFFD/#3\uFFFD"}:CLOSE_TAG_DIV:\`;
         }
         …
         decls: 5,
@@ -3096,7 +3109,7 @@ describe('i18n support in the template compiler', () => {
         <div i18n>{gender, select, male {male of age: {{ ageA + ageB + ageC }}} female {female} other {other}}</div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male of age: {INTERPOLATION}} female {female} other {other}}");
@@ -3137,7 +3150,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
@@ -3170,7 +3183,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` $` +
-          String.raw `{$I18N_1$}:ICU: $` + String.raw `{$I18N_2$}:ICU_1: \`;
+          String.raw`{$I18N_1$}:ICU: $` + String.raw`{$I18N_2$}:ICU_1: \`;
         }
         …
         decls: 2,
@@ -3205,7 +3218,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
@@ -3251,12 +3264,12 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` $` +
-          String.raw `{"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU: $` +
-          String.raw `{"\uFFFD#2\uFFFD"}:START_TAG_DIV: $` +
-          String.raw `{"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU: $` + String.raw
+          String.raw`{"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU: $` +
+          String.raw`{"\uFFFD#2\uFFFD"}:START_TAG_DIV: $` +
+          String.raw`{"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU: $` + String.raw
       `{"[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]"}:CLOSE_TAG_DIV:$` +
-          String.raw `{"\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_DIV_1: $` +
-          String.raw `{"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU: $` + String.raw
+          String.raw`{"\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_DIV_1: $` +
+          String.raw`{"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU: $` + String.raw
       `{"[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]"}:CLOSE_TAG_DIV:\`;
         }
         $I18N_0$ = $r3$.ɵɵi18nPostprocess($I18N_0$, {
@@ -3314,7 +3327,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT_1, select, male {male of age: {VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}} female {female} other {other}}");
@@ -3334,7 +3347,7 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` $` +
-          String.raw `{$I18N_1$}:ICU: \`;
+          String.raw`{$I18N_1$}:ICU: \`;
         }        …
         decls: 2,
         vars: 2,
@@ -3370,7 +3383,7 @@ describe('i18n support in the template compiler', () => {
         }</div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_6870293071705078389$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_PLURAL, plural, =0 {zero} =2 {{INTERPOLATION} {VAR_SELECT, select, cat {cats} dog {dogs} other {animals}} !} other {other - {INTERPOLATION}}}");
@@ -3414,7 +3427,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
@@ -3449,10 +3462,10 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` $` +
-          String.raw `{$I18N_1$}:ICU: $` +
-          String.raw `{"\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_SPAN: $` +
-          String.raw `{$I18N_3$}:ICU_1: $` +
-          String.raw `{"\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD"}:CLOSE_TAG_SPAN:\`;
+          String.raw`{$I18N_1$}:ICU: $` +
+          String.raw`{"\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_SPAN: $` +
+          String.raw`{$I18N_3$}:ICU_1: $` +
+          String.raw`{"\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD"}:CLOSE_TAG_SPAN:\`;
         }
         function MyComponent_span_2_Template(rf, ctx) {
           if (rf & 1) {
@@ -3501,7 +3514,7 @@ describe('i18n support in the template compiler', () => {
         </div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_1$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male {INTERPOLATION}} female {female {INTERPOLATION_1}} other {other}}");
@@ -3539,10 +3552,10 @@ describe('i18n support in the template compiler', () => {
         }
         else {
             $I18N_0$ = $localize \` $` +
-          String.raw `{I18N_1}:ICU: $` +
-          String.raw `{"\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_SPAN: $` +
-          String.raw `{I18N_3}:ICU_1: $` +
-          String.raw `{"\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD"}:CLOSE_TAG_SPAN:\`;
+          String.raw`{I18N_1}:ICU: $` +
+          String.raw`{"\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_SPAN: $` +
+          String.raw`{I18N_3}:ICU_1: $` +
+          String.raw`{"\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD"}:CLOSE_TAG_SPAN:\`;
         }
         function MyComponent_span_2_Template(rf, ctx) {
           if (rf & 1) {
@@ -3592,7 +3605,7 @@ describe('i18n support in the template compiler', () => {
         }</div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             const $MSG_EXTERNAL_6318060397235942326$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male {PH_A}} female {female {PH_B}} other {other {PH_WITH_SPACES}}}");
@@ -3632,7 +3645,7 @@ describe('i18n support in the template compiler', () => {
         <div i18n="meaningA|descA@@idA">{count, select, 1 {one} other {more than one}}</div>
       `;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
             /**
@@ -3656,7 +3669,7 @@ describe('i18n support in the template compiler', () => {
     it('should add legacy message ids if `enableI18nLegacyMessageIdFormat` is true', () => {
       const input = `<div i18n>Some Message</div>`;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) { … }
         else {
@@ -3671,7 +3684,7 @@ describe('i18n support in the template compiler', () => {
     it('should add legacy message ids if `enableI18nLegacyMessageIdFormat` is undefined', () => {
       const input = `<div i18n>Some Message</div>`;
 
-      const output = String.raw `
+      const output = String.raw`
         var $I18N_0$;
         if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) { … }
         else {

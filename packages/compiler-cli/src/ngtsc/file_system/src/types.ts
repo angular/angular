@@ -12,7 +12,7 @@
  * A `string` is not assignable to a `BrandedPath`, but a `BrandedPath` is assignable to a `string`.
  * Two `BrandedPath`s with different brands are not mutually assignable.
  */
-export type BrandedPath<B extends string> = string & {
+export type BrandedPath<B extends string> = string&{
   _brand: B;
 };
 
@@ -63,7 +63,7 @@ export interface FileSystem {
   normalize<T extends PathString>(path: T): T;
 }
 
-export type PathString = string | AbsoluteFsPath | PathSegment;
+export type PathString = string|AbsoluteFsPath|PathSegment;
 
 /**
  * Information about an object in the FileSystem.

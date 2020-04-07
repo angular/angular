@@ -12,7 +12,7 @@ import {Reference} from '../../imports';
 import {ForeignFunctionResolver, PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 
 import {NgModuleRawRouteData} from './analyzer';
-import {RouterEntryPoint, RouterEntryPointManager, entryPointKeyFor} from './route';
+import {entryPointKeyFor, RouterEntryPoint, RouterEntryPointManager} from './route';
 
 const ROUTES_MARKER = '__ngRoutesMarker__';
 
@@ -23,7 +23,7 @@ export interface LazyRouteEntry {
 }
 
 export function scanForCandidateTransitiveModules(
-    expr: ts.Expression | null, evaluator: PartialEvaluator): string[] {
+    expr: ts.Expression|null, evaluator: PartialEvaluator): string[] {
   if (expr === null) {
     return [];
   }
@@ -38,7 +38,7 @@ export function scanForCandidateTransitiveModules(
       }
     } else if (entry instanceof Map) {
       if (entry.has('ngModule')) {
-        recursivelyAddModules(entry.get('ngModule') !);
+        recursivelyAddModules(entry.get('ngModule')!);
       }
     } else if ((entry instanceof Reference) && hasIdentifier(entry.node)) {
       const filePath = entry.node.getSourceFile().fileName;
@@ -70,7 +70,9 @@ export function scanForRouteEntryPoints(
     const resolvedTo = entryPointManager.resolveLoadChildrenIdentifier(loadChildren, ngModule);
     if (resolvedTo !== null) {
       routes.push({
-          loadChildren, from, resolvedTo,
+        loadChildren,
+        from,
+        resolvedTo,
       });
     }
   }
@@ -159,29 +161,27 @@ function scanForLazyRoutes(routes: ResolvedValue[]): string[] {
 const routerModuleFFR: ForeignFunctionResolver =
     function routerModuleFFR(
         ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-        args: ReadonlyArray<ts.Expression>): ts.Expression |
-    null {
-      if (!isMethodNodeReference(ref) || !ts.isClassDeclaration(ref.node.parent)) {
-        return null;
-      } else if (
-          ref.bestGuessOwningModule === null ||
-          ref.bestGuessOwningModule.specifier !== '@angular/router') {
-        return null;
-      } else if (
-          ref.node.parent.name === undefined || ref.node.parent.name.text !== 'RouterModule') {
-        return null;
-      } else if (
-          !ts.isIdentifier(ref.node.name) ||
-          (ref.node.name.text !== 'forRoot' && ref.node.name.text !== 'forChild')) {
-        return null;
-      }
+        args: ReadonlyArray<ts.Expression>): ts.Expression|null {
+  if (!isMethodNodeReference(ref) || !ts.isClassDeclaration(ref.node.parent)) {
+    return null;
+  } else if (
+      ref.bestGuessOwningModule === null ||
+      ref.bestGuessOwningModule.specifier !== '@angular/router') {
+    return null;
+  } else if (ref.node.parent.name === undefined || ref.node.parent.name.text !== 'RouterModule') {
+    return null;
+  } else if (
+      !ts.isIdentifier(ref.node.name) ||
+      (ref.node.name.text !== 'forRoot' && ref.node.name.text !== 'forChild')) {
+    return null;
+  }
 
-      const routes = args[0];
-      return ts.createObjectLiteral([
-        ts.createPropertyAssignment(ROUTES_MARKER, ts.createTrue()),
-        ts.createPropertyAssignment('routes', routes),
-      ]);
-    };
+  const routes = args[0];
+  return ts.createObjectLiteral([
+    ts.createPropertyAssignment(ROUTES_MARKER, ts.createTrue()),
+    ts.createPropertyAssignment('routes', routes),
+  ]);
+};
 
 function hasIdentifier(node: ts.Node): node is ts.Node&{name: ts.Identifier} {
   const node_ = node as ts.NamedDeclaration;

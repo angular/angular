@@ -8,16 +8,16 @@
 import * as ts from 'typescript';
 
 import {absoluteFrom} from '../../file_system';
-import {TestFile, runInEachFileSystem} from '../../file_system/testing';
-import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
+import {runInEachFileSystem, TestFile} from '../../file_system/testing';
+import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {TypeParameterEmitter} from '../src/type_parameter_emitter';
+
 import {angularCoreDts} from './test_utils';
 
 
 runInEachFileSystem(() => {
   describe('type parameter emitter', () => {
-
     function createEmitter(source: string, additionalFiles: TestFile[] = []) {
       const files: TestFile[] = [
         angularCoreDts(), {name: absoluteFrom('/main.ts'), contents: source}, ...additionalFiles
@@ -34,7 +34,7 @@ runInEachFileSystem(() => {
 
     function emit(emitter: TypeParameterEmitter) {
       const emitted = emitter.emit(ref => {
-        const typeName = ts.createQualifiedName(ts.createIdentifier('test'), ref.debugName !);
+        const typeName = ts.createQualifiedName(ts.createIdentifier('test'), ref.debugName!);
         return ts.createTypeReferenceNode(typeName, /* typeArguments */ undefined);
       });
 
@@ -209,6 +209,5 @@ runInEachFileSystem(() => {
       expect(emitter.canEmit()).toBe(true);
       expect(emit(emitter)).toEqual('<T extends test.MyType>');
     });
-
   });
 });

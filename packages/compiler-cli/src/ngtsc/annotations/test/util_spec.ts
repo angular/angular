@@ -13,8 +13,9 @@ import {unwrapExpression} from '../src/util';
 describe('ngtsc annotation utilities', () => {
   describe('unwrapExpression', () => {
     const obj = ts.createObjectLiteral();
-    it('should pass through an ObjectLiteralExpression',
-       () => { expect(unwrapExpression(obj)).toBe(obj); });
+    it('should pass through an ObjectLiteralExpression', () => {
+      expect(unwrapExpression(obj)).toBe(obj);
+    });
 
     it('should unwrap an ObjectLiteralExpression in parentheses', () => {
       const wrapped = ts.createParen(obj);

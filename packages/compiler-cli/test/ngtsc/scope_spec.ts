@@ -20,7 +20,7 @@ const testFiles = loadStandardTestFiles();
 
 runInEachFileSystem(() => {
   describe('ngtsc module scopes', () => {
-    let env !: NgtscTestEnvironment;
+    let env!: NgtscTestEnvironment;
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
@@ -92,11 +92,11 @@ runInEachFileSystem(() => {
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
           const node = findContainingClass(diagnosticToNode(diags[0], ts.isIdentifier));
-          expect(node.name !.text).toEqual('TestDir');
+          expect(node.name!.text).toEqual('TestDir');
 
-          const relatedNodes = new Set(diags[0].relatedInformation !.map(
+          const relatedNodes = new Set(diags[0].relatedInformation!.map(
               related =>
-                  findContainingClass(diagnosticToNode(related, ts.isIdentifier)).name !.text));
+                  findContainingClass(diagnosticToNode(related, ts.isIdentifier)).name!.text));
           expect(relatedNodes).toContain('ModuleA');
           expect(relatedNodes).toContain('ModuleB');
           expect(relatedNodes.size).toBe(2);
@@ -141,11 +141,11 @@ runInEachFileSystem(() => {
              const diags = env.driveDiagnostics();
              expect(diags.length).toBe(1);
              const node = findContainingClass(diagnosticToNode(diags[0], ts.isIdentifier));
-             expect(node.name !.text).toEqual('TestDir');
+             expect(node.name!.text).toEqual('TestDir');
 
-             const relatedNodes = new Set(diags[0].relatedInformation !.map(
+             const relatedNodes = new Set(diags[0].relatedInformation!.map(
                  related =>
-                     findContainingClass(diagnosticToNode(related, ts.isIdentifier)).name !.text));
+                     findContainingClass(diagnosticToNode(related, ts.isIdentifier)).name!.text));
              expect(relatedNodes).toContain('ModuleA');
              expect(relatedNodes).toContain('ModuleB');
              expect(relatedNodes.size).toBe(2);
@@ -386,13 +386,13 @@ runInEachFileSystem(() => {
   });
 
   function diagnosticToNode<T extends ts.Node>(
-      diagnostic: ts.Diagnostic | Diagnostic | ts.DiagnosticRelatedInformation,
+      diagnostic: ts.Diagnostic|Diagnostic|ts.DiagnosticRelatedInformation,
       guard: (node: ts.Node) => node is T): T {
     const diag = diagnostic as ts.Diagnostic | ts.DiagnosticRelatedInformation;
     if (diag.file === undefined) {
       throw new Error(`Expected ts.Diagnostic to have a file source`);
     }
-    const node = getTokenAtPosition(diag.file, diag.start !);
+    const node = getTokenAtPosition(diag.file, diag.start!);
     expect(guard(node)).toBe(true);
     return node as T;
   }

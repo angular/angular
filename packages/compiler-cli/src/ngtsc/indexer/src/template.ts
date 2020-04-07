@@ -18,9 +18,9 @@ interface HTMLNode extends TmplAstNode {
   name?: string;
 }
 
-type ExpressionIdentifier = PropertyIdentifier | MethodIdentifier;
-type TmplTarget = TmplAstReference | TmplAstVariable;
-type TargetIdentifier = ReferenceIdentifier | VariableIdentifier;
+type ExpressionIdentifier = PropertyIdentifier|MethodIdentifier;
+type TmplTarget = TmplAstReference|TmplAstVariable;
+type TargetIdentifier = ReferenceIdentifier|VariableIdentifier;
 type TargetIdentifierMap = Map<TmplTarget, TargetIdentifier>;
 
 /**
@@ -62,7 +62,9 @@ class ExpressionVisitor extends RecursiveAstVisitor {
     return visitor.identifiers;
   }
 
-  visit(ast: AST) { ast.visit(this); }
+  visit(ast: AST) {
+    ast.visit(this);
+  }
 
   visitMethodCall(ast: MethodCall, context: {}) {
     this.visitIdentifier(ast, IdentifierKind.Method);
@@ -144,16 +146,22 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
    *
    * @param boundTemplate bound template target
    */
-  constructor(private boundTemplate: BoundTarget<ComponentMeta>) { super(); }
+  constructor(private boundTemplate: BoundTarget<ComponentMeta>) {
+    super();
+  }
 
   /**
    * Visits a node in the template.
    *
    * @param node node to visit
    */
-  visit(node: HTMLNode) { node.visit(this); }
+  visit(node: HTMLNode) {
+    node.visit(this);
+  }
 
-  visitAll(nodes: TmplAstNode[]) { nodes.forEach(node => this.visit(node)); }
+  visitAll(nodes: TmplAstNode[]) {
+    nodes.forEach(node => this.visit(node));
+  }
 
   /**
    * Add an identifier for an HTML element and visit its children recursively.
@@ -204,8 +212,12 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
         this.targetToIdentifier.bind(this));
     identifiers.forEach(id => this.identifiers.add(id));
   }
-  visitBoundEvent(attribute: TmplAstBoundEvent) { this.visitExpression(attribute.handler); }
-  visitBoundText(text: TmplAstBoundText) { this.visitExpression(text.value); }
+  visitBoundEvent(attribute: TmplAstBoundEvent) {
+    this.visitExpression(attribute.handler);
+  }
+  visitBoundText(text: TmplAstBoundText) {
+    this.visitExpression(text.value);
+  }
   visitReference(reference: TmplAstReference) {
     const referenceIdentifer = this.targetToIdentifier(reference);
 
@@ -222,7 +234,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       |TemplateNodeIdentifier {
     // If this node has already been seen, return the cached result.
     if (this.elementAndTemplateIdentifierCache.has(node)) {
-      return this.elementAndTemplateIdentifierCache.get(node) !;
+      return this.elementAndTemplateIdentifierCache.get(node)!;
     }
 
     let name: string;
@@ -254,7 +266,8 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
 
     const identifier = {
       name,
-      span: absoluteSpan, kind,
+      span: absoluteSpan,
+      kind,
       attributes: new Set(attributes),
       usedDirectives: new Set(usedDirectives.map(dir => {
         return {
@@ -274,7 +287,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
   private targetToIdentifier(node: TmplAstReference|TmplAstVariable): TargetIdentifier {
     // If this node has already been seen, return the cached result.
     if (this.targetIdentifierCache.has(node)) {
-      return this.targetIdentifierCache.get(node) !;
+      return this.targetIdentifierCache.get(node)!;
     }
 
     const {name, sourceSpan} = node;
@@ -304,7 +317,8 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       identifier = {
         name,
         span,
-        kind: IdentifierKind.Reference, target,
+        kind: IdentifierKind.Reference,
+        target,
       };
     } else {
       identifier = {

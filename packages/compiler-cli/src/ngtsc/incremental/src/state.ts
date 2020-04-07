@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
+import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
 import {ClassRecord, TraitCompiler} from '../../transform';
 import {IncrementalBuild} from '../api';
 
@@ -194,9 +194,13 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
     };
   }
 
-  recordSuccessfulEmit(sf: ts.SourceFile): void { this.state.pendingEmit.delete(sf.fileName); }
+  recordSuccessfulEmit(sf: ts.SourceFile): void {
+    this.state.pendingEmit.delete(sf.fileName);
+  }
 
-  safeToSkipEmit(sf: ts.SourceFile): boolean { return !this.state.pendingEmit.has(sf.fileName); }
+  safeToSkipEmit(sf: ts.SourceFile): boolean {
+    return !this.state.pendingEmit.has(sf.fileName);
+  }
 
   priorWorkFor(sf: ts.SourceFile): ClassRecord[]|null {
     if (this.state.lastGood === null || this.logicalChanges === null) {
@@ -212,7 +216,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
   }
 }
 
-type BuildState = PendingBuildState | AnalyzedBuildState;
+type BuildState = PendingBuildState|AnalyzedBuildState;
 
 enum BuildStateKind {
   Pending,

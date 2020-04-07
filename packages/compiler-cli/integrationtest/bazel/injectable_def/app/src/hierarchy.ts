@@ -29,7 +29,9 @@ export class AppComponent {
 export class ChildComponent {
   found: boolean;
 
-  constructor(@Optional() @Self() service: Service|null) { this.found = !!service; }
+  constructor(@Optional() @Self() service: Service|null) {
+    this.found = !!service;
+  }
 }
 
 @NgModule({

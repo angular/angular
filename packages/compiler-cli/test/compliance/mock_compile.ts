@@ -7,8 +7,9 @@
  */
 import {AotCompilerOptions} from '@angular/compiler';
 import {escapeRegExp} from '@angular/compiler/src/util';
-import {MockCompilerHost, MockData, MockDirectory, arrayToMockDir, toMockFileArray} from '@angular/compiler/test/aot/test_util';
+import {arrayToMockDir, MockCompilerHost, MockData, MockDirectory, toMockFileArray} from '@angular/compiler/test/aot/test_util';
 import * as ts from 'typescript';
+
 import {NodeJSFileSystem, setFileSystem} from '../../src/ngtsc/file_system';
 import {NgtscProgram} from '../../src/ngtsc/program';
 
@@ -22,10 +23,11 @@ const NUMBER = /\d+/;
 
 const ELLIPSIS = '…';
 const TOKEN = new RegExp(
-    `\\s*((${IDENTIFIER.source})|(${BACKTICK_STRING.source})|(${OPERATOR.source})|(${STRING.source})|${NUMBER.source}|${ELLIPSIS})\\s*`,
+    `\\s*((${IDENTIFIER.source})|(${BACKTICK_STRING.source})|(${OPERATOR.source})|(${
+        STRING.source})|${NUMBER.source}|${ELLIPSIS})\\s*`,
     'y');
 
-type Piece = string | RegExp;
+type Piece = string|RegExp;
 
 const SKIP = /(?:.|\n|\r)*/;
 
@@ -116,15 +118,16 @@ export function expectEmit(
         const context = fullContext.length > contextLength ?
             `...${fullContext.substr(-contextLength)}` :
             fullContext;
-        fail(
-            `${description}: Failed to find "${expectedPiece}" after "${context}" in:\n'${source.substr(0,last)}[<---HERE expected "${expectedPiece}"]${source.substr(last)}'`);
+        fail(`${description}: Failed to find "${expectedPiece}" after "${context}" in:\n'${
+            source.substr(0, last)}[<---HERE expected "${expectedPiece}"]${source.substr(last)}'`);
         return;
       } else {
         last = (m.index || 0) + m[0].length;
       }
     }
     fail(
-        `Test helper failure: Expected expression failed but the reporting logic could not find where it failed in: ${source}`);
+        `Test helper failure: Expected expression failed but the reporting logic could not find where it failed in: ${
+            source}`);
   } else {
     if (assertIdentifiers) {
       // It might be possible to add the constraints in the original regexp (see `buildMatcher`)
@@ -141,8 +144,8 @@ export function expectEmit(
           const name = matches[groups.get(id) as number];
           const regexp = assertIdentifiers[id];
           if (!regexp.test(name)) {
-            throw Error(
-                `${description}: The matching identifier "${id}" is "${name}" which doesn't match ${regexp}`);
+            throw Error(`${description}: The matching identifier "${id}" is "${
+                name}" which doesn't match ${regexp}`);
           }
         }
       }
@@ -160,7 +163,7 @@ const MATCHING_IDENT = /^\$.*\$$/;
  * - the `regexp` to be used to match the generated code,
  * - the `groups` which maps `$...$` identifier to their position in the regexp matches.
  */
-function buildMatcher(pieces: (string | RegExp)[]): {regexp: RegExp, groups: Map<string, number>} {
+function buildMatcher(pieces: (string|RegExp)[]): {regexp: RegExp, groups: Map<string, number>} {
   const results: string[] = [];
   let first = true;
   let group = 0;
@@ -196,7 +199,9 @@ function buildMatcher(pieces: (string | RegExp)[]): {regexp: RegExp, groups: Map
 
 export function compile(
     data: MockDirectory, angularFiles: MockData, options: AotCompilerOptions = {},
-    errorCollector: (error: any, fileName?: string) => void = error => { throw error;}): {
+    errorCollector: (error: any, fileName?: string) => void = error => {
+      throw error;
+    }): {
   source: string,
 } {
   setFileSystem(new NodeJSFileSystem());
@@ -211,7 +216,8 @@ export function compile(
         target: ts.ScriptTarget.ES2015,
         module: ts.ModuleKind.ES2015,
         moduleResolution: ts.ModuleResolutionKind.NodeJs,
-        enableI18nLegacyMessageIdFormat: false, ...options,
+        enableI18nLegacyMessageIdFormat: false,
+        ...options,
       },
       mockCompilerHost);
   program.emit();

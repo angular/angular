@@ -17,7 +17,9 @@ export class MockFileSystemPosix extends MockFileSystem {
     return this.normalize(resolved) as AbsoluteFsPath;
   }
 
-  dirname<T extends string>(file: T): T { return this.normalize(p.posix.dirname(file)) as T; }
+  dirname<T extends string>(file: T): T {
+    return this.normalize(p.posix.dirname(file)) as T;
+  }
 
   join<T extends string>(basePath: T, ...paths: string[]): T {
     return this.normalize(p.posix.join(basePath, ...paths)) as T;
@@ -31,9 +33,13 @@ export class MockFileSystemPosix extends MockFileSystem {
     return p.posix.basename(filePath, extension) as PathSegment;
   }
 
-  isRooted(path: string): boolean { return path.startsWith('/'); }
+  isRooted(path: string): boolean {
+    return path.startsWith('/');
+  }
 
-  protected splitPath<T extends PathString>(path: T): string[] { return path.split('/'); }
+  protected splitPath<T extends PathString>(path: T): string[] {
+    return path.split('/');
+  }
 
   normalize<T extends PathString>(path: T): T {
     return path.replace(/^[a-z]:\//i, '/').replace(/\\/g, '/') as T;

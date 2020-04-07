@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {CollectorOptions} from './collector';
-import {ClassMetadata, FunctionMetadata, InterfaceMetadata, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataSourceLocationInfo, MetadataSymbolicCallExpression, MetadataValue, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportDefaultReference, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
+import {ClassMetadata, FunctionMetadata, InterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportDefaultReference, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataSourceLocationInfo, MetadataSymbolicCallExpression, MetadataValue} from './schema';
 import {Symbols} from './symbols';
 
 
@@ -46,8 +46,9 @@ export function recordMapEntry<T extends MetadataEntry>(
     sourceFile?: ts.SourceFile) {
   if (!nodeMap.has(entry)) {
     nodeMap.set(entry, node);
-    if (node && (isMetadataImportedSymbolReferenceExpression(entry) ||
-                 isMetadataImportDefaultReference(entry)) &&
+    if (node &&
+        (isMetadataImportedSymbolReferenceExpression(entry) ||
+         isMetadataImportDefaultReference(entry)) &&
         entry.line == null) {
       const info = sourceInfo(node, sourceFile);
       if (info.line != null) entry.line = info.line;
@@ -88,7 +89,7 @@ export interface ImportMetadata {
 }
 
 
-function getSourceFileOfNode(node: ts.Node | undefined): ts.SourceFile {
+function getSourceFileOfNode(node: ts.Node|undefined): ts.SourceFile {
   while (node && node.kind != ts.SyntaxKind.SourceFile) {
     node = node.parent;
   }
@@ -97,7 +98,7 @@ function getSourceFileOfNode(node: ts.Node | undefined): ts.SourceFile {
 
 /* @internal */
 export function sourceInfo(
-    node: ts.Node | undefined, sourceFile: ts.SourceFile | undefined): MetadataSourceLocationInfo {
+    node: ts.Node|undefined, sourceFile: ts.SourceFile|undefined): MetadataSourceLocationInfo {
   if (node) {
     sourceFile = sourceFile || getSourceFileOfNode(node);
     if (sourceFile) {
@@ -435,7 +436,7 @@ export class Evaluator {
       case ts.SyntaxKind.TypeReference:
         const typeReferenceNode = <ts.TypeReferenceNode>node;
         const typeNameNode = typeReferenceNode.typeName;
-        const getReference: (typeNameNode: ts.Identifier | ts.QualifiedName) => MetadataValue =
+        const getReference: (typeNameNode: ts.Identifier|ts.QualifiedName) => MetadataValue =
             node => {
               if (typeNameNode.kind === ts.SyntaxKind.QualifiedName) {
                 const qualifiedName = <ts.QualifiedName>node;
@@ -691,6 +692,6 @@ function isPropertyAssignment(node: ts.Node): node is ts.PropertyAssignment {
 
 const empty = ts.createNodeArray<any>();
 
-function arrayOrEmpty<T extends ts.Node>(v: ts.NodeArray<T>| undefined): ts.NodeArray<T> {
+function arrayOrEmpty<T extends ts.Node>(v: ts.NodeArray<T>|undefined): ts.NodeArray<T> {
   return v || empty;
 }

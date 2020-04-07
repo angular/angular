@@ -405,7 +405,6 @@ describe('compiler compliance: bindings', () => {
 
       expectEmit(result.source, template, 'Incorrect template');
     });
-
   });
 
   describe('attribute bindings', () => {
@@ -640,13 +639,13 @@ describe('compiler compliance: bindings', () => {
       };
 
       const template = `
-        consts: [["target", "_blank", "aria-label", "link", ${AttributeMarker.Bindings}, "title", "id", "customEvent"]],
+        consts: [["target", "_blank", "aria-label", "link", ${
+          AttributeMarker.Bindings}, "title", "id", "customEvent"]],
         …
       `;
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect attribute array');
     });
-
   });
 
   describe('host bindings', () => {
@@ -850,12 +849,15 @@ describe('compiler compliance: bindings', () => {
         HostAttributeComp.ɵcmp = $r3$.ɵɵdefineComponent({
           type: HostAttributeComp,
           selectors: [["my-host-attribute-component"]],
-          hostAttrs: ["title", "hello there from component", ${AttributeMarker.Styles}, "opacity", "1"],
+          hostAttrs: ["title", "hello there from component", ${
+          AttributeMarker.Styles}, "opacity", "1"],
         …
         HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
-          hostAttrs: ["title", "hello there from directive", ${AttributeMarker.Classes}, "one", "two", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"],
+          hostAttrs: ["title", "hello there from directive", ${
+          AttributeMarker.Classes}, "one", "two", ${
+          AttributeMarker.Styles}, "width", "200px", "height", "500px"],
           hostVars: 4,
           hostBindings: function HostAttributeDir_HostBindings(rf, ctx) {
             …
@@ -1216,7 +1218,6 @@ describe('compiler compliance: bindings', () => {
       `;
       expectEmit(result.source, template, 'Incorrect template');
     });
-
   });
 
   describe('non bindable behavior', () => {
@@ -1420,7 +1421,5 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect handling of elements with no children');
     });
-
   });
-
 });

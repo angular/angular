@@ -24,11 +24,15 @@ runInEachFileSystem(() => {
         name = 'FakeDecoratorHandler';
         precedence = HandlerPrecedence.PRIMARY;
 
-        detect(): undefined { throw new Error('detect should not have been called'); }
+        detect(): undefined {
+          throw new Error('detect should not have been called');
+        }
         analyze(): AnalysisOutput<unknown> {
           throw new Error('analyze should not have been called');
         }
-        compile(): CompileResult { throw new Error('compile should not have been called'); }
+        compile(): CompileResult {
+          throw new Error('compile should not have been called');
+        }
       }
 
       const {program} = makeProgram([{
@@ -40,7 +44,7 @@ runInEachFileSystem(() => {
       const compiler = new TraitCompiler(
           [new FakeDecoratorHandler()], reflectionHost, NOOP_PERF_RECORDER, NOOP_INCREMENTAL_BUILD,
           true, new DtsTransformRegistry());
-      const sourceFile = program.getSourceFile('lib.d.ts') !;
+      const sourceFile = program.getSourceFile('lib.d.ts')!;
       const analysis = compiler.analyzeSync(sourceFile);
 
       expect(sourceFile.isDeclarationFile).toBe(true);

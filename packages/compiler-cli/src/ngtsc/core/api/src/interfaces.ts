@@ -56,7 +56,7 @@ export interface ResourceHost {
  * core interface.
  */
 export interface ExtendedTsCompilerHost extends ts.CompilerHost, Partial<ResourceHost>,
-    Partial<UnifiedModulesHost> {}
+                                                Partial<UnifiedModulesHost> {}
 
 export interface LazyRoute {
   route: string;

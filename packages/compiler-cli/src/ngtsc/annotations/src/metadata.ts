@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, FunctionExpr, Identifiers, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NONE_TYPE, ReturnStatement, Statement, WrappedNodeExpr, literalMap} from '@angular/compiler';
+import {Expression, ExternalExpr, FunctionExpr, Identifiers, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, literalMap, NONE_TYPE, ReturnStatement, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {DefaultImportRecorder} from '../../imports';
@@ -71,7 +71,7 @@ export function generateSetClassMetadataCall(
         duplicateDecoratedMemberNames.join(', '));
   }
   const decoratedMembers =
-      classMembers.map(member => classMemberToMetadata(member.name, member.decorators !, isCore));
+      classMembers.map(member => classMemberToMetadata(member.name, member.decorators!, isCore));
   if (decoratedMembers.length > 0) {
     metaPropDecorators = ts.createObjectLiteral(decoratedMembers);
   }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, Identifiers, LiteralExpr, R3DependencyMetadata, R3FactoryTarget, R3InjectableMetadata, R3ResolvedDependencyType, Statement, WrappedNodeExpr, compileInjectable as compileIvyInjectable} from '@angular/compiler';
+import {compileInjectable as compileIvyInjectable, Expression, Identifiers, LiteralExpr, R3DependencyMetadata, R3FactoryTarget, R3InjectableMetadata, R3ResolvedDependencyType, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -83,7 +83,9 @@ export class InjectableDecoratorHandler implements
     };
   }
 
-  register(node: ClassDeclaration): void { this.injectableRegistry.registerInjectable(node); }
+  register(node: ClassDeclaration): void {
+    this.injectableRegistry.registerInjectable(node);
+  }
 
   compile(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>): CompileResult[] {
     const res = compileIvyInjectable(analysis.meta);
@@ -165,12 +167,12 @@ function extractInjectableMetadata(
     const meta = reflectObjectLiteral(metaNode);
     let providedIn: Expression = new LiteralExpr(null);
     if (meta.has('providedIn')) {
-      providedIn = new WrappedNodeExpr(meta.get('providedIn') !);
+      providedIn = new WrappedNodeExpr(meta.get('providedIn')!);
     }
 
     let userDeps: R3DependencyMetadata[]|undefined = undefined;
     if ((meta.has('useClass') || meta.has('useFactory')) && meta.has('deps')) {
-      const depsExpr = meta.get('deps') !;
+      const depsExpr = meta.get('deps')!;
       if (!ts.isArrayLiteralExpression(depsExpr)) {
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_NOT_LITERAL, depsExpr,
@@ -186,7 +188,7 @@ function extractInjectableMetadata(
         typeArgumentCount,
         internalType,
         providedIn,
-        useValue: new WrappedNodeExpr(unwrapForwardRef(meta.get('useValue') !, reflector)),
+        useValue: new WrappedNodeExpr(unwrapForwardRef(meta.get('useValue')!, reflector)),
       };
     } else if (meta.has('useExisting')) {
       return {
@@ -195,7 +197,7 @@ function extractInjectableMetadata(
         typeArgumentCount,
         internalType,
         providedIn,
-        useExisting: new WrappedNodeExpr(unwrapForwardRef(meta.get('useExisting') !, reflector)),
+        useExisting: new WrappedNodeExpr(unwrapForwardRef(meta.get('useExisting')!, reflector)),
       };
     } else if (meta.has('useClass')) {
       return {
@@ -204,19 +206,20 @@ function extractInjectableMetadata(
         typeArgumentCount,
         internalType,
         providedIn,
-        useClass: new WrappedNodeExpr(unwrapForwardRef(meta.get('useClass') !, reflector)),
+        useClass: new WrappedNodeExpr(unwrapForwardRef(meta.get('useClass')!, reflector)),
         userDeps,
       };
     } else if (meta.has('useFactory')) {
       // useFactory is special - the 'deps' property must be analyzed.
-      const factory = new WrappedNodeExpr(meta.get('useFactory') !);
+      const factory = new WrappedNodeExpr(meta.get('useFactory')!);
       return {
         name,
         type,
         typeArgumentCount,
         internalType,
         providedIn,
-        useFactory: factory, userDeps,
+        useFactory: factory,
+        userDeps,
       };
     } else {
       return {name, type, typeArgumentCount, internalType, providedIn};

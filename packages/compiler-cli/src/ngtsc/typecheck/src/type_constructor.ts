@@ -15,8 +15,7 @@ import {TypeParameterEmitter} from './type_parameter_emitter';
 
 export function generateTypeCtorDeclarationFn(
     node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata, nodeTypeRef: ts.EntityName,
-    typeParams: ts.TypeParameterDeclaration[] | undefined,
-    reflector: ReflectionHost): ts.Statement {
+    typeParams: ts.TypeParameterDeclaration[]|undefined, reflector: ReflectionHost): ts.Statement {
   if (requiresInlineTypeCtor(node, reflector)) {
     throw new Error(`${node.name.text} requires an inline type constructor`);
   }
@@ -32,7 +31,8 @@ export function generateTypeCtorDeclarationFn(
     const fnType = ts.createFunctionTypeNode(
         /* typeParameters */ typeParameters,
         /* parameters */[initParam],
-        /* type */ rawType, );
+        /* type */ rawType,
+    );
 
     const decl = ts.createVariableDeclaration(
         /* name */ meta.fnName,
@@ -121,7 +121,8 @@ export function generateInlineTypeCtor(
       /* typeParameters */ typeParametersWithDefaultTypes(node.typeParameters),
       /* parameters */[initParam],
       /* type */ rawType,
-      /* body */ body, );
+      /* body */ body,
+  );
 }
 
 function constructTypeCtorParameter(
@@ -149,7 +150,8 @@ function constructTypeCtorParameter(
           /* modifiers */ undefined,
           /* name */ key,
           /* questionToken */ undefined,
-          /* type */ ts.createTypeQueryNode(
+          /* type */
+          ts.createTypeQueryNode(
               ts.createQualifiedName(rawType.typeName, `ngAcceptInputType_${key}`)),
           /* initializer */ undefined));
     }
@@ -243,9 +245,8 @@ function checkIfGenericTypeBoundsAreContextFree(
  *
  * This correctly infers `T` as `any`, and therefore `_t3` as `NgFor<any>`.
  */
-function typeParametersWithDefaultTypes(
-    params: ReadonlyArray<ts.TypeParameterDeclaration>| undefined): ts.TypeParameterDeclaration[]|
-    undefined {
+function typeParametersWithDefaultTypes(params: ReadonlyArray<ts.TypeParameterDeclaration>|
+                                        undefined): ts.TypeParameterDeclaration[]|undefined {
   if (params === undefined) {
     return undefined;
   }

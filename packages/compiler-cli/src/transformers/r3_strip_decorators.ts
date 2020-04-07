@@ -9,7 +9,7 @@
 import {StaticReflector, StaticSymbol} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {MetadataValue, isClassMetadata, isMetadataImportedSymbolReferenceExpression, isMetadataSymbolicCallExpression} from '../metadata';
+import {isClassMetadata, isMetadataImportedSymbolReferenceExpression, isMetadataSymbolicCallExpression, MetadataValue} from '../metadata';
 
 import {MetadataTransformer, ValueTransform} from './metadata_cache';
 
@@ -39,8 +39,14 @@ export function getDecoratorStripTransformerFactory(
             });
             if (decorators.length !== node.decorators.length) {
               return ts.updateClassDeclaration(
-                  node, decorators, node.modifiers, node.name, node.typeParameters,
-                  node.heritageClauses || [], node.members, );
+                  node,
+                  decorators,
+                  node.modifiers,
+                  node.name,
+                  node.typeParameters,
+                  node.heritageClauses || [],
+                  node.members,
+              );
             }
             return node;
           };
@@ -130,7 +136,7 @@ function resolveToStaticSymbol(
   if (!ts.isImportSpecifier(decl)) {
     return null;
   }
-  const moduleSpecifier = decl.parent !.parent !.parent !.moduleSpecifier;
+  const moduleSpecifier = decl.parent!.parent!.parent!.moduleSpecifier;
   if (!ts.isStringLiteral(moduleSpecifier)) {
     return null;
   }
