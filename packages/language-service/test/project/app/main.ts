@@ -10,16 +10,12 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {AppComponent} from './app.component';
-import * as NgForCases from './ng-for-cases';
 import * as ParsingCases from './parsing-cases';
 
 @NgModule({
   imports: [CommonModule, FormsModule],
   declarations: [
     AppComponent,
-    NgForCases.UnknownEven,
-    NgForCases.UnknownPeople,
-    NgForCases.UnknownTrackBy,
     ParsingCases.AsyncForUsingComponent,
     ParsingCases.CaseIncompleteOpen,
     ParsingCases.CaseMissingClosing,
