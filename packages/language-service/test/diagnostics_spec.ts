@@ -342,7 +342,7 @@ describe('diagnostics', () => {
       expect(category).toBe(ts.DiagnosticCategory.Error);
       expect(messageText)
           .toBe(
-              `Identifier 'missingField' is not defined. '{ implicitPerson: Person; }' does not contain such a member`,
+              `Identifier 'missingField' is not defined. '{ implicitPerson: Hero; }' does not contain such a member`,
           );
       const span = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'emb');
       expect(start).toBe(span.start);
@@ -361,7 +361,7 @@ describe('diagnostics', () => {
       expect(category).toBe(ts.DiagnosticCategory.Error);
       expect(messageText)
           .toBe(
-              `Identifier 'missingField' is not defined. 'Person' does not contain such a member`,
+              `Identifier 'missingField' is not defined. 'Hero' does not contain such a member`,
           );
       const span = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'emb');
       expect(start).toBe(span.start);
