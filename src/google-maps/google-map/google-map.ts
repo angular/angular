@@ -45,8 +45,7 @@ export interface UpdatedGoogleMap extends google.maps.Map {
 /** default options set to the Googleplex */
 export const DEFAULT_OPTIONS: google.maps.MapOptions = {
   center: {lat: 37.421995, lng: -122.084092},
-  zoom: 17,
-  mapTypeId: undefined
+  zoom: 17
 };
 
 /** Arbitrary default height for the map element */
