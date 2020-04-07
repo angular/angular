@@ -168,9 +168,10 @@ describe('completions', () => {
   });
 
   it('should be able to get completions in an empty interpolation', () => {
-    const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'empty-interpolation');
-    const completions = ngLS.getCompletionsAtPosition(PARSING_CASES, marker.start);
-    expectContain(completions, CompletionKind.PROPERTY, ['title', 'subTitle']);
+    mockHost.override(TEST_TEMPLATE, `{{ ~{cursor} }}`);
+    const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+    const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+    expectContain(completions, CompletionKind.PROPERTY, ['title', 'hero']);
   });
 
   it('should suggest $any() type cast function in an interpolation', () => {
@@ -282,9 +283,14 @@ describe('completions', () => {
 
   describe('with a *ngIf', () => {
     it('should be able to get completions for exported *ngIf variable', () => {
-      const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'promised-person-name');
-      const completions = ngLS.getCompletionsAtPosition(PARSING_CASES, marker.start);
-      expectContain(completions, CompletionKind.PROPERTY, ['name', 'age', 'street']);
+      mockHost.override(TEST_TEMPLATE, `
+        <div *ngIf="heroP | async as h">
+          {{ h.~{cursor} }}
+        </div>
+      `);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
     });
   });
 
@@ -368,9 +374,14 @@ describe('completions', () => {
     });
 
     it('should be able to infer the type of a ngForOf with an async pipe', () => {
-      const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'async-person-name');
-      const completions = ngLS.getCompletionsAtPosition(PARSING_CASES, marker.start);
-      expectContain(completions, CompletionKind.PROPERTY, ['name', 'age', 'street']);
+      mockHost.override(TEST_TEMPLATE, `
+        <div *ngFor="let h of heroesP | async">
+          {{ h.~{cursor} }}
+        </div>
+      `);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.PROPERTY, ['id', 'name']);
     });
 
     it('should be able to resolve variable in nested loop', () => {
@@ -498,14 +509,27 @@ describe('completions', () => {
 
   describe('with references', () => {
     it('should list references', () => {
-      const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'test-comp-content');
-      const completions = ngLS.getCompletionsAtPosition(PARSING_CASES, marker.start);
-      expectContain(completions, CompletionKind.REFERENCE, ['div', 'test1', 'test2']);
+      mockHost.override(TEST_TEMPLATE, `
+        <div #myDiv>
+          <test-comp #test1>
+            {{ ~{cursor} }}
+          </test-comp>
+        </div>
+        <test-comp #test2></test-comp>
+      `);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
+      expectContain(completions, CompletionKind.REFERENCE, ['myDiv', 'test1', 'test2']);
     });
 
     it('should reference the component', () => {
-      const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'test-comp-after-test');
-      const completions = ngLS.getCompletionsAtPosition(PARSING_CASES, marker.start);
+      mockHost.override(TEST_TEMPLATE, `
+        <test-comp #test1>
+          {{ test1.~{cursor} }}
+        </test-comp>
+      `);
+      const marker = mockHost.getLocationMarkerFor(TEST_TEMPLATE, 'cursor');
+      const completions = ngLS.getCompletionsAtPosition(TEST_TEMPLATE, marker.start);
       expectContain(completions, CompletionKind.PROPERTY, ['name', 'testEvent']);
     });
 
