@@ -16,6 +16,9 @@
     // were disabled via the `NoopAnimationsModule`, the element won't have a transition and
     // `transitionend` won't fire. We work around the issue by assigning a very short transition.
     transition-duration: 1ms;
+
+    // Disables the chip enter animation.
+    animation: none;
   }
 
   @include cdk-high-contrast(active, off) {
