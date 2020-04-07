@@ -137,10 +137,16 @@ export function valueReferenceToExpression(
     }
     return new WrappedNodeExpr(valueRef.expression);
   } else {
+    // TODO(alxhub): this cast is necessary because the g3 typescript version doesn't narrow here.
+    const ref = valueRef as {
+      moduleName: string;
+      importedName: string;
+      nestedPath: string[]|null;
+    };
     let importExpr: Expression =
-        new ExternalExpr({moduleName: valueRef.moduleName, name: valueRef.importedName});
-    if (valueRef.nestedPath !== null) {
-      for (const property of valueRef.nestedPath) {
+        new ExternalExpr({moduleName: ref.moduleName, name: ref.importedName});
+    if (ref.nestedPath !== null) {
+      for (const property of ref.nestedPath) {
         importExpr = new ReadPropExpr(importExpr, property);
       }
     }
