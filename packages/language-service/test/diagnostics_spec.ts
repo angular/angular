@@ -274,22 +274,22 @@ describe('diagnostics', () => {
     expect(diags).toContain('Expected a number type');
   });
 
-  describe('in ng-for-cases.ts', () => {
-    it('should report an unknown field', () => {
-      const diags = ngLS.getSemanticDiagnostics(NG_FOR_CASES).map(d => d.messageText);
-      expect(diags).toContain(
-          `Identifier 'people_1' is not defined. ` +
-          `The component declaration, template variable declarations, ` +
-          `and element references do not contain such a member`);
-    });
+  it('should report an unknown field', () => {
+    mockHost.override(TEST_TEMPLATE, `<div *ngFor="let person of people"></div>`);
+    const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE).map(d => d.messageText);
+    expect(diags).toContain(
+        `Identifier 'people' is not defined. ` +
+        `The component declaration, template variable declarations, ` +
+        `and element references do not contain such a member`);
+  });
 
-    it('should report an unknown value in a key expression', () => {
-      const diags = ngLS.getSemanticDiagnostics(NG_FOR_CASES).map(d => d.messageText);
-      expect(diags).toContain(
-          `Identifier 'trackBy_1' is not defined. ` +
-          `The component declaration, template variable declarations, ` +
-          `and element references do not contain such a member`);
-    });
+  it('should report an unknown value in a key expression', () => {
+    mockHost.override(TEST_TEMPLATE, `<div *ngFor="let hero of heroes; trackBy: trackByFn"></div>`);
+    const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE).map(d => d.messageText);
+    expect(diags).toContain(
+        `Identifier 'trackByFn' is not defined. ` +
+        `The component declaration, template variable declarations, ` +
+        `and element references do not contain such a member`);
   });
 
   describe('embedded templates', () => {
