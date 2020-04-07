@@ -327,7 +327,7 @@ export declare class MatRipple implements OnInit, OnDestroy, RippleTarget {
     get trigger(): HTMLElement;
     set trigger(trigger: HTMLElement);
     unbounded: boolean;
-    constructor(_elementRef: ElementRef<HTMLElement>, ngZone: NgZone, platform: Platform, globalOptions?: RippleGlobalOptions, animationMode?: string);
+    constructor(_elementRef: ElementRef<HTMLElement>, ngZone: NgZone, platform: Platform, globalOptions?: RippleGlobalOptions, _animationMode?: string | undefined);
     fadeOutAll(): void;
     launch(config: RippleConfig): RippleRef;
     launch(x: number, y: number, config?: RippleConfig): RippleRef;

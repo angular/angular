@@ -121,14 +121,10 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
               ngZone: NgZone,
               platform: Platform,
               @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalOptions?: RippleGlobalOptions,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) private _animationMode?: string) {
 
     this._globalOptions = globalOptions || {};
     this._rippleRenderer = new RippleRenderer(this, ngZone, _elementRef, platform);
-
-    if (animationMode === 'NoopAnimations') {
-      this._globalOptions.animation = {enterDuration: 0, exitDuration: 0};
-    }
   }
 
   ngOnInit() {
@@ -154,7 +150,11 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
       centered: this.centered,
       radius: this.radius,
       color: this.color,
-      animation: {...this._globalOptions.animation, ...this.animation},
+      animation: {
+        ...this._globalOptions.animation,
+        ...(this._animationMode === 'NoopAnimations' ? {enterDuration: 0, exitDuration: 0} : {}),
+        ...this.animation
+      },
       terminateOnPointerUp: this._globalOptions.terminateOnPointerUp,
     };
   }

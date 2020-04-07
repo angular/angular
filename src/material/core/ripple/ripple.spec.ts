@@ -479,14 +479,15 @@ describe('MatRipple', () => {
     let rippleDirective: MatRipple;
 
     function createTestComponent(rippleConfig: RippleGlobalOptions,
-                                 testComponent: any = BasicRippleContainer) {
+                                 testComponent: any = BasicRippleContainer,
+                                 extraImports: any[] = []) {
       // Reset the previously configured testing module to be able set new providers.
       // The testing module has been initialized in the root describe group for the ripples.
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        imports: [MatRippleModule],
+        imports: [MatRippleModule, ...extraImports],
         declarations: [testComponent],
-        providers: [{ provide: MAT_RIPPLE_GLOBAL_OPTIONS, useValue: rippleConfig }]
+        providers: [{provide: MAT_RIPPLE_GLOBAL_OPTIONS, useValue: rippleConfig}]
       });
 
       fixture = TestBed.createComponent(testComponent);
@@ -569,6 +570,14 @@ describe('MatRipple', () => {
       // will still exist. To properly finish all timers, we just wait the remaining time.
       tick(enterDuration - exitDuration);
     }));
+
+    it('should not mutate the global options when NoopAnimationsModule is present', () => {
+      const options: RippleGlobalOptions = {};
+
+      createTestComponent(options, RippleContainerWithoutBindings, [NoopAnimationsModule]);
+
+      expect(options.animation).toBeFalsy();
+    });
   });
 
   describe('with disabled animations', () => {
