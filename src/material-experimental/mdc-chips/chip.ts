@@ -173,13 +173,14 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   }
   protected _disabled: boolean = false;
 
+  private _textElement!: HTMLElement;
 
-  /** The value of the chip. Defaults to the content inside `<mat-chip>` tags. */
+  /** The value of the chip. Defaults to the content inside the mdc-chip__text element. */
   @Input()
   get value(): any {
     return this._value !== undefined
       ? this._value
-      : this._elementRef.nativeElement.textContent;
+      : this._textElement.textContent!.trim();
   }
   set value(value: any) { this._value = value; }
   protected _value: any;
@@ -321,7 +322,6 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
     this._animationsDisabled = animationMode === 'NoopAnimations';
     this._isBasicChip = _elementRef.nativeElement.hasAttribute(this.basicChipAttrName) ||
                         _elementRef.nativeElement.tagName.toLowerCase() === this.basicChipAttrName;
-
   }
 
   ngAfterContentInit() {
@@ -330,6 +330,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
 
   ngAfterViewInit() {
     this._chipFoundation.init();
+    this._textElement = this._elementRef.nativeElement.querySelector('.mdc-chip__text');
   }
 
   ngOnDestroy() {

@@ -204,7 +204,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
   set value(value: any) {
     this._value = value;
   }
-  protected _value: any;
+  protected _value: Array<any> = [];
 
   /** Combined stream of all of the child chips' blur events. */
   get chipBlurChanges(): Observable<MatChipEvent> {
@@ -478,9 +478,9 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
   }
 
  /** Emits change event to set the model value. */
-  private _propagateChanges(fallbackValue?: any): void {
+  private _propagateChanges(): void {
     const valueToEmit = this._chips.length ? this._chips.toArray().map(
-      chip => chip.value) : fallbackValue;
+      chip => chip.value) : [];
     this._value = valueToEmit;
     this.change.emit(new MatChipGridChange(this, valueToEmit));
     this.valueChange.emit(valueToEmit);
