@@ -14,9 +14,16 @@ export function buildCommitMessageParser(localYargs: yargs.Argv) {
   return localYargs.help()
       .strict()
       .command(
-          'pre-commit-validate', 'Validate the most recent commit message', {},
-          () => {
-            validateFile('.git/COMMIT_EDITMSG');
+          'pre-commit-validate', 'Validate the most recent commit message', {
+            'file': {
+              type: 'string',
+              normalize: true,
+              default: '.git/COMMIT_EDITMSG',
+              description: 'The file path for the file containing the commit message.'
+            }
+          },
+          argv => {
+            validateFile(argv['file']);
           })
       .command(
           'validate-range', 'Validate a range of commit messages', {
