@@ -12,7 +12,9 @@ import {PlaceholderRegistry} from '../../../src/i18n/serializers/placeholder';
   describe('PlaceholderRegistry', () => {
     let reg: PlaceholderRegistry;
 
-    beforeEach(() => { reg = new PlaceholderRegistry(); });
+    beforeEach(() => {
+      reg = new PlaceholderRegistry();
+    });
 
     describe('tag placeholder', () => {
       it('should generate names for well known tags', () => {
@@ -84,7 +86,6 @@ import {PlaceholderRegistry} from '../../../src/i18n/serializers/placeholder';
         expect(reg.getPlaceholderName('name1', 'content')).toEqual('NAME1');
         expect(reg.getPlaceholderName('name2', 'content')).toEqual('NAME2');
       });
-
     });
   });
 }

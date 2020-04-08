@@ -52,8 +52,8 @@ export function isDefined(val: any): boolean {
   return val !== null && val !== undefined;
 }
 
-export function noUndefined<T>(val: T | undefined): T {
-  return val === undefined ? null ! : val;
+export function noUndefined<T>(val: T|undefined): T {
+  return val === undefined ? null! : val;
 }
 
 export interface ValueVisitor {
@@ -69,14 +69,20 @@ export class ValueTransformer implements ValueVisitor {
   }
   visitStringMap(map: {[key: string]: any}, context: any): any {
     const result: {[key: string]: any} = {};
-    Object.keys(map).forEach(key => { result[key] = visitValue(map[key], this, context); });
+    Object.keys(map).forEach(key => {
+      result[key] = visitValue(map[key], this, context);
+    });
     return result;
   }
-  visitPrimitive(value: any, context: any): any { return value; }
-  visitOther(value: any, context: any): any { return value; }
+  visitPrimitive(value: any, context: any): any {
+    return value;
+  }
+  visitOther(value: any, context: any): any {
+    return value;
+  }
 }
 
-export type SyncAsync<T> = T | Promise<T>;
+export type SyncAsync<T> = T|Promise<T>;
 
 export const SyncAsync = {
   assertSync: <T>(value: SyncAsync<T>): T => {
@@ -86,7 +92,9 @@ export const SyncAsync = {
     return value;
   },
   then: <T, R>(value: SyncAsync<T>, cb: (value: T) => R | Promise<R>| SyncAsync<R>):
-            SyncAsync<R> => { return isPromise(value) ? value.then(cb) : cb(value);},
+      SyncAsync<R> => {
+        return isPromise(value) ? value.then(cb) : cb(value);
+      },
   all: <T>(syncAsyncValues: SyncAsync<T>[]): SyncAsync<T[]> => {
     return syncAsyncValues.some(isPromise) ? Promise.all(syncAsyncValues) : syncAsyncValues as T[];
   }
@@ -259,7 +267,7 @@ export function newArray<T>(size: number, value: T): T[];
 export function newArray<T>(size: number, value?: T): T[] {
   const list: T[] = [];
   for (let i = 0; i < size; i++) {
-    list.push(value !);
+    list.push(value!);
   }
   return list;
 }

@@ -17,8 +17,7 @@ export interface SourceLocation {
 }
 
 export function originalPositionFor(
-    sourceMap: SourceMap,
-    genPosition: {line: number | null, column: number | null}): SourceLocation {
+    sourceMap: SourceMap, genPosition: {line: number|null, column: number|null}): SourceLocation {
   const smc = new SourceMapConsumer(sourceMap);
   // Note: We don't return the original object as it also contains a `name` property
   // which is always null and we don't want to include that in our assertions...

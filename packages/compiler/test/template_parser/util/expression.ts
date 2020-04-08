@@ -15,12 +15,16 @@ type HumanizedExpressionSource = [string, AbsoluteSourceSpan];
 class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.TemplateAstVisitor {
   result: HumanizedExpressionSource[] = [];
 
-  private recordAst(ast: e.AST) { this.result.push([unparse(ast), ast.sourceSpan]); }
+  private recordAst(ast: e.AST) {
+    this.result.push([unparse(ast), ast.sourceSpan]);
+  }
 
   // This method is defined to reconcile the type of ExpressionSourceHumanizer
   // since both RecursiveAstVisitor and TemplateAstVisitor define the visit()
   // method in their interfaces.
-  visit(node: e.AST|t.TemplateAst, context?: any) { node.visit(this, context); }
+  visit(node: e.AST|t.TemplateAst, context?: any) {
+    node.visit(this, context);
+  }
 
   visitASTWithSource(ast: e.ASTWithSource) {
     this.recordAst(ast);
@@ -128,17 +132,25 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Templ
   }
   visitReference(ast: t.ReferenceAst) {}
   visitVariable(ast: t.VariableAst) {}
-  visitEvent(ast: t.BoundEventAst) { ast.handler.visit(this); }
-  visitElementProperty(ast: t.BoundElementPropertyAst) { ast.value.visit(this); }
+  visitEvent(ast: t.BoundEventAst) {
+    ast.handler.visit(this);
+  }
+  visitElementProperty(ast: t.BoundElementPropertyAst) {
+    ast.value.visit(this);
+  }
   visitAttr(ast: t.AttrAst) {}
-  visitBoundText(ast: t.BoundTextAst) { ast.value.visit(this); }
+  visitBoundText(ast: t.BoundTextAst) {
+    ast.value.visit(this);
+  }
   visitText(ast: t.TextAst) {}
   visitDirective(ast: t.DirectiveAst) {
     t.templateVisitAll(this, ast.hostEvents);
     t.templateVisitAll(this, ast.hostProperties);
     t.templateVisitAll(this, ast.inputs);
   }
-  visitDirectiveProperty(ast: t.BoundDirectivePropertyAst) { ast.value.visit(this); }
+  visitDirectiveProperty(ast: t.BoundDirectivePropertyAst) {
+    ast.value.visit(this);
+  }
 }
 
 /**

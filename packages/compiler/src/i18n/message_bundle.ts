@@ -47,7 +47,9 @@ export class MessageBundle {
 
   // Return the message in the internal format
   // The public (serialized) format might be different, see the `write` method.
-  getMessages(): i18n.Message[] { return this._messages; }
+  getMessages(): i18n.Message[] {
+    return this._messages;
+  }
 
   write(serializer: Serializer, filterSources?: (path: string) => string): string {
     const messages: {[id: string]: i18n.Message} = {};
@@ -88,18 +90,18 @@ class MapPlaceholderNames extends i18n.CloneVisitor {
   }
 
   visitTagPlaceholder(ph: i18n.TagPlaceholder, mapper: PlaceholderMapper): i18n.TagPlaceholder {
-    const startName = mapper.toPublicName(ph.startName) !;
-    const closeName = ph.closeName ? mapper.toPublicName(ph.closeName) ! : ph.closeName;
+    const startName = mapper.toPublicName(ph.startName)!;
+    const closeName = ph.closeName ? mapper.toPublicName(ph.closeName)! : ph.closeName;
     const children = ph.children.map(n => n.visit(this, mapper));
     return new i18n.TagPlaceholder(
         ph.tag, ph.attrs, startName, closeName, children, ph.isVoid, ph.sourceSpan);
   }
 
   visitPlaceholder(ph: i18n.Placeholder, mapper: PlaceholderMapper): i18n.Placeholder {
-    return new i18n.Placeholder(ph.value, mapper.toPublicName(ph.name) !, ph.sourceSpan);
+    return new i18n.Placeholder(ph.value, mapper.toPublicName(ph.name)!, ph.sourceSpan);
   }
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, mapper: PlaceholderMapper): i18n.IcuPlaceholder {
-    return new i18n.IcuPlaceholder(ph.value, mapper.toPublicName(ph.name) !, ph.sourceSpan);
+    return new i18n.IcuPlaceholder(ph.value, mapper.toPublicName(ph.name)!, ph.sourceSpan);
   }
 }

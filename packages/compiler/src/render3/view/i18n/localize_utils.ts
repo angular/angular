@@ -28,7 +28,9 @@ class MessagePiece {
 }
 class LiteralPiece extends MessagePiece {}
 class PlaceholderPiece extends MessagePiece {
-  constructor(name: string) { super(formatI18nPlaceholderName(name, /* useCamelCase */ false)); }
+  constructor(name: string) {
+    super(formatI18nPlaceholderName(name, /* useCamelCase */ false));
+  }
 }
 
 /**

@@ -15,7 +15,6 @@ import {humanizeDom} from './ast_spec_utils';
 
 {
   describe('removeWhitespaces', () => {
-
     function parseAndRemoveWS(template: string, options?: TokenizeOptions): any[] {
       return humanizeDom(removeWhitespaces(new HtmlParser().parse(template, 'TestComp', options)));
     }

@@ -18,16 +18,21 @@ export class HtmlTagDefinition implements TagDefinition {
   ignoreFirstLf: boolean;
   canSelfClose: boolean = false;
 
-  constructor(
-      {closedByChildren, implicitNamespacePrefix, contentType = TagContentType.PARSABLE_DATA,
-       closedByParent = false, isVoid = false, ignoreFirstLf = false}: {
-        closedByChildren?: string[],
-        closedByParent?: boolean,
-        implicitNamespacePrefix?: string,
-        contentType?: TagContentType,
-        isVoid?: boolean,
-        ignoreFirstLf?: boolean
-      } = {}) {
+  constructor({
+    closedByChildren,
+    implicitNamespacePrefix,
+    contentType = TagContentType.PARSABLE_DATA,
+    closedByParent = false,
+    isVoid = false,
+    ignoreFirstLf = false
+  }: {
+    closedByChildren?: string[],
+    closedByParent?: boolean,
+    implicitNamespacePrefix?: string,
+    contentType?: TagContentType,
+    isVoid?: boolean,
+    ignoreFirstLf?: boolean
+  } = {}) {
     if (closedByChildren && closedByChildren.length > 0) {
       closedByChildren.forEach(tagName => this.closedByChildren[tagName] = true);
     }
@@ -43,11 +48,11 @@ export class HtmlTagDefinition implements TagDefinition {
   }
 }
 
-let _DEFAULT_TAG_DEFINITION !: HtmlTagDefinition;
+let _DEFAULT_TAG_DEFINITION!: HtmlTagDefinition;
 
 // see http://www.w3.org/TR/html51/syntax.html#optional-tags
 // This implementation does not fully conform to the HTML5 spec.
-let TAG_DEFINITIONS !: {[key: string]: HtmlTagDefinition};
+let TAG_DEFINITIONS!: {[key: string]: HtmlTagDefinition};
 
 export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
   if (!TAG_DEFINITIONS) {

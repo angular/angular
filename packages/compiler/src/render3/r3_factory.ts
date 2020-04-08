@@ -89,8 +89,8 @@ export interface R3ExpressionFactoryMetadata extends R3ConstructorFactoryMetadat
   expression: o.Expression;
 }
 
-export type R3FactoryMetadata = R3ConstructorFactoryMetadata | R3DelegatedFactoryMetadata |
-    R3DelegatedFnOrClassMetadata | R3ExpressionFactoryMetadata;
+export type R3FactoryMetadata = R3ConstructorFactoryMetadata|R3DelegatedFactoryMetadata|
+    R3DelegatedFnOrClassMetadata|R3ExpressionFactoryMetadata;
 
 export enum R3FactoryTarget {
   Directive = 0,
@@ -280,8 +280,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3FactoryFn {
         `${meta.name}_Factory`),
     statements,
     type: o.expressionType(o.importExpr(
-        R3.FactoryDef,
-        [typeWithParameters(meta.type.type, meta.typeArgumentCount), ctorDepsType]))
+        R3.FactoryDef, [typeWithParameters(meta.type.type, meta.typeArgumentCount), ctorDepsType]))
   };
 }
 
@@ -402,7 +401,8 @@ export function dependenciesFromGlobalMetadata(
       // Construct the dependency.
       deps.push({
         token,
-        attribute: null, resolved,
+        attribute: null,
+        resolved,
         host: !!dependency.isHost,
         optional: !!dependency.isOptional,
         self: !!dependency.isSelf,

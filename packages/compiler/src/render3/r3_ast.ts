@@ -18,19 +18,25 @@ export interface Node {
 
 export class Text implements Node {
   constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitText(this); }
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitText(this);
+  }
 }
 
 export class BoundText implements Node {
   constructor(public value: AST, public sourceSpan: ParseSourceSpan, public i18n?: I18nMeta) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitBoundText(this); }
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitBoundText(this);
+  }
 }
 
 export class TextAttribute implements Node {
   constructor(
       public name: string, public value: string, public sourceSpan: ParseSourceSpan,
       public valueSpan?: ParseSourceSpan, public i18n?: I18nMeta) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitTextAttribute(this); }
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitTextAttribute(this);
+  }
 }
 
 export class BoundAttribute implements Node {
@@ -45,7 +51,9 @@ export class BoundAttribute implements Node {
         prop.valueSpan, i18n);
   }
 
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitBoundAttribute(this); }
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitBoundAttribute(this);
+  }
 }
 
 export class BoundEvent implements Node {
@@ -62,7 +70,9 @@ export class BoundEvent implements Node {
         event.name, event.type, event.handler, target, phase, event.sourceSpan, event.handlerSpan);
   }
 
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitBoundEvent(this); }
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitBoundEvent(this);
+  }
 }
 
 export class Element implements Node {
@@ -76,7 +86,9 @@ export class Element implements Node {
       this.sourceSpan = new ParseSourceSpan(sourceSpan.start, endSourceSpan.end);
     }
   }
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitElement(this); }
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitElement(this);
+  }
 }
 
 export class Template implements Node {
@@ -86,36 +98,46 @@ export class Template implements Node {
       public children: Node[], public references: Reference[], public variables: Variable[],
       public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
       public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nMeta) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitTemplate(this); }
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitTemplate(this);
+  }
 }
 
 export class Content implements Node {
   constructor(
       public selector: string, public attributes: TextAttribute[],
       public sourceSpan: ParseSourceSpan, public i18n?: I18nMeta) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitContent(this); }
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitContent(this);
+  }
 }
 
 export class Variable implements Node {
   constructor(
       public name: string, public value: string, public sourceSpan: ParseSourceSpan,
       public valueSpan?: ParseSourceSpan) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitVariable(this); }
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitVariable(this);
+  }
 }
 
 export class Reference implements Node {
   constructor(
       public name: string, public value: string, public sourceSpan: ParseSourceSpan,
       public valueSpan?: ParseSourceSpan) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitReference(this); }
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitReference(this);
+  }
 }
 
 export class Icu implements Node {
   constructor(
       public vars: {[name: string]: BoundText},
-      public placeholders: {[name: string]: Text | BoundText}, public sourceSpan: ParseSourceSpan,
+      public placeholders: {[name: string]: Text|BoundText}, public sourceSpan: ParseSourceSpan,
       public i18n?: I18nMeta) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitIcu(this); }
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitIcu(this);
+  }
 }
 
 export interface Visitor<Result = any> {
@@ -210,16 +232,34 @@ export class TransformVisitor implements Visitor<Node> {
     return template;
   }
 
-  visitContent(content: Content): Node { return content; }
+  visitContent(content: Content): Node {
+    return content;
+  }
 
-  visitVariable(variable: Variable): Node { return variable; }
-  visitReference(reference: Reference): Node { return reference; }
-  visitTextAttribute(attribute: TextAttribute): Node { return attribute; }
-  visitBoundAttribute(attribute: BoundAttribute): Node { return attribute; }
-  visitBoundEvent(attribute: BoundEvent): Node { return attribute; }
-  visitText(text: Text): Node { return text; }
-  visitBoundText(text: BoundText): Node { return text; }
-  visitIcu(icu: Icu): Node { return icu; }
+  visitVariable(variable: Variable): Node {
+    return variable;
+  }
+  visitReference(reference: Reference): Node {
+    return reference;
+  }
+  visitTextAttribute(attribute: TextAttribute): Node {
+    return attribute;
+  }
+  visitBoundAttribute(attribute: BoundAttribute): Node {
+    return attribute;
+  }
+  visitBoundEvent(attribute: BoundEvent): Node {
+    return attribute;
+  }
+  visitText(text: Text): Node {
+    return text;
+  }
+  visitBoundText(text: BoundText): Node {
+    return text;
+  }
+  visitIcu(icu: Icu): Node {
+    return icu;
+  }
 }
 
 export function visitAll<Result>(visitor: Visitor<Result>, nodes: Node[]): Result[] {

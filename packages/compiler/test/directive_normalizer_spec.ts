@@ -10,7 +10,7 @@ import {CompilerConfig, preserveWhitespacesDefault} from '@angular/compiler/src/
 import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
 import {ResourceLoader} from '@angular/compiler/src/resource_loader';
 import {ViewEncapsulation} from '@angular/core/src/metadata/view';
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 
 import {noUndefined} from '../src/util';
 
@@ -20,7 +20,10 @@ const SOME_MODULE_URL = 'package:some/module/a.js';
 const SOME_HTTP_MODULE_URL = 'http://some/module/a.js';
 
 function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
-  moduleUrl?: string; template?: string | null; templateUrl?: string | null; styles?: string[];
+  moduleUrl?: string;
+  template?: string | null;
+  templateUrl?: string | null;
+  styles?: string[];
   styleUrls?: string[];
   interpolation?: [string, string] | null;
   encapsulation?: ViewEncapsulation | null;
@@ -51,8 +54,7 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
           jasmine.createSpy('get').and.callFake((url: string) => `resource(${url})`);
       const resourceLoader = {get: resourceLoaderSpy};
       TestBed.configureCompiler({
-        providers:
-            [...TEST_COMPILER_PROVIDERS, {provide: ResourceLoader, useValue: resourceLoader}]
+        providers: [...TEST_COMPILER_PROVIDERS, {provide: ResourceLoader, useValue: resourceLoader}]
       });
     });
 
@@ -64,12 +66,12 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
          }));
       it('should throw if template is not a string',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           expect(() => normalizeTemplate(normalizer, {template: <any>{}}))
+           expect(() => normalizeTemplate(normalizer, {template: <any> {}}))
                .toThrowError('The template specified for component SomeComp is not a string');
          }));
       it('should throw if templateUrl is not a string',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
-           expect(() => normalizeTemplate(normalizer, {templateUrl: <any>{}}))
+           expect(() => normalizeTemplate(normalizer, {templateUrl: <any> {}}))
                .toThrowError('The templateUrl specified for component SomeComp is not a string');
          }));
       it('should throw if both template and templateUrl are defined',
@@ -89,11 +91,9 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
                .toThrowError(
                    'The preserveWhitespaces option for component SomeComp must be a boolean');
          }));
-
     });
 
     describe('inline template', () => {
-
       it('should store the template',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
            const template = <CompileTemplateMetadata>normalizeTemplate(normalizer, {
@@ -174,7 +174,6 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
        }));
 
     describe('externalStylesheets', () => {
-
       it('should load an external stylesheet',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
            const template = <CompileTemplateMetadata>normalizeTemplate(
@@ -222,7 +221,6 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
 
            expect(resourceLoaderSpy).toHaveBeenCalledTimes(1);
          }));
-
     });
 
     describe('normalizeLoadedTemplate', () => {

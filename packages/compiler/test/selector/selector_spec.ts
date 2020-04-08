@@ -17,13 +17,16 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
     let s1: any[], s2: any[], s3: any[], s4: any[];
     let matched: any[];
 
-    function reset() { matched = []; }
+    function reset() {
+      matched = [];
+    }
 
     beforeEach(() => {
       reset();
-      s1 = s2 = s3 = s4 = null !;
-      selectableCollector =
-          (selector: CssSelector, context: any) => { matched.push(selector, context); };
+      s1 = s2 = s3 = s4 = null!;
+      selectableCollector = (selector: CssSelector, context: any) => {
+        matched.push(selector, context);
+      };
       matcher = new SelectorMatcher();
     });
 
@@ -128,7 +131,7 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
 
       const elementSelector = new CssSelector();
       const element = el('<div attr></div>');
-      const empty = element.getAttribute('attr') !;
+      const empty = element.getAttribute('attr')!;
       elementSelector.addAttribute('some-decor', empty);
       matcher.match(elementSelector, selectableCollector);
       expect(matched).toEqual([s1[0], 1]);
@@ -458,9 +461,13 @@ function getSelectorFor(
   const selector = new CssSelector();
   selector.setElement(tag);
 
-  attrs.forEach(nameValue => { selector.addAttribute(nameValue[0], nameValue[1]); });
+  attrs.forEach(nameValue => {
+    selector.addAttribute(nameValue[0], nameValue[1]);
+  });
 
-  classes.trim().split(/\s+/g).forEach(cName => { selector.addClassName(cName); });
+  classes.trim().split(/\s+/g).forEach(cName => {
+    selector.addClassName(cName);
+  });
 
   return selector;
 }

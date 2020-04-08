@@ -241,63 +241,67 @@ lignes</target>
 `;
 
 (function() {
-  const serializer = new Xliff();
+const serializer = new Xliff();
 
-  function toXliff(html: string, locale: string | null = null): string {
-    const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
-    catalog.updateFromTemplate(html, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
-    return catalog.write(serializer);
-  }
+function toXliff(html: string, locale: string|null = null): string {
+  const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
+  catalog.updateFromTemplate(html, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
+  return catalog.write(serializer);
+}
 
-  function loadAsMap(xliff: string): {[id: string]: string} {
-    const {i18nNodesByMsgId} = serializer.load(xliff, 'url');
+function loadAsMap(xliff: string): {[id: string]: string} {
+  const {i18nNodesByMsgId} = serializer.load(xliff, 'url');
 
-    const msgMap: {[id: string]: string} = {};
-    Object.keys(i18nNodesByMsgId)
-        .forEach(id => msgMap[id] = serializeNodes(i18nNodesByMsgId[id]).join(''));
+  const msgMap: {[id: string]: string} = {};
+  Object.keys(i18nNodesByMsgId)
+      .forEach(id => msgMap[id] = serializeNodes(i18nNodesByMsgId[id]).join(''));
 
-    return msgMap;
-  }
+  return msgMap;
+}
 
-  describe('XLIFF serializer', () => {
-    describe('write', () => {
-      it('should write a valid xliff file', () => { expect(toXliff(HTML)).toEqual(WRITE_XLIFF); });
-      it('should write a valid xliff file with a source language',
-         () => { expect(toXliff(HTML, 'fr')).toContain('file source-language="fr"'); });
+describe('XLIFF serializer', () => {
+  describe('write', () => {
+    it('should write a valid xliff file', () => {
+      expect(toXliff(HTML)).toEqual(WRITE_XLIFF);
+    });
+    it('should write a valid xliff file with a source language', () => {
+      expect(toXliff(HTML, 'fr')).toContain('file source-language="fr"');
+    });
+  });
+
+  describe('load', () => {
+    it('should load XLIFF files', () => {
+      expect(loadAsMap(LOAD_XLIFF)).toEqual({
+        '983775b9a51ce14b036be72d4cfd65d68d64e231': 'etubirtta elbatalsnart',
+        'ec1d033f2436133c14ab038286c4f5df4697484a':
+            '<ph name="INTERPOLATION"/> footnemele elbatalsnart <ph name="START_BOLD_TEXT"/>sredlohecalp htiw<ph name="CLOSE_BOLD_TEXT"/>',
+        'e2ccf3d131b15f54aa1fcf1314b1ca77c14bfcc2':
+            '{VAR_PLURAL, plural, =0 {[<ph name="START_PARAGRAPH"/>, TEST, <ph name="CLOSE_PARAGRAPH"/>]}}',
+        'db3e0a6a5a96481f60aec61d98c3eecddef5ac23': 'oof',
+        'i': 'toto',
+        'bar': 'tata',
+        'd7fa2d59aaedcaa5309f13028c59af8c85b8c49d':
+            '<ph name="START_TAG_DIV"/><ph name="CLOSE_TAG_DIV"/><ph name="TAG_IMG"/><ph name="LINE_BREAK"/>',
+        'empty target': '',
+        'baz':
+            '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}}',
+        '52ffa620dcd76247a56d5331f34e73f340a43cdb': 'Test: <ph name="ICU"/>',
+        '1503afd0ccc20ff01d5e2266a9157b7b342ba494':
+            '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph' +
+            ' name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}, =other {[beaucoup]}}',
+        'fcfa109b0e152d4c217dbc02530be0bcb8123ad1': `multi
+lignes`,
+        'mrk-test': 'Translated first sentence.',
+        'mrk-test2': 'Translated first sentence.'
+      });
     });
 
-    describe('load', () => {
-      it('should load XLIFF files', () => {
-        expect(loadAsMap(LOAD_XLIFF)).toEqual({
-          '983775b9a51ce14b036be72d4cfd65d68d64e231': 'etubirtta elbatalsnart',
-          'ec1d033f2436133c14ab038286c4f5df4697484a':
-              '<ph name="INTERPOLATION"/> footnemele elbatalsnart <ph name="START_BOLD_TEXT"/>sredlohecalp htiw<ph name="CLOSE_BOLD_TEXT"/>',
-          'e2ccf3d131b15f54aa1fcf1314b1ca77c14bfcc2':
-              '{VAR_PLURAL, plural, =0 {[<ph name="START_PARAGRAPH"/>, TEST, <ph name="CLOSE_PARAGRAPH"/>]}}',
-          'db3e0a6a5a96481f60aec61d98c3eecddef5ac23': 'oof',
-          'i': 'toto',
-          'bar': 'tata',
-          'd7fa2d59aaedcaa5309f13028c59af8c85b8c49d':
-              '<ph name="START_TAG_DIV"/><ph name="CLOSE_TAG_DIV"/><ph name="TAG_IMG"/><ph name="LINE_BREAK"/>',
-          'empty target': '',
-          'baz':
-              '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}}',
-          '52ffa620dcd76247a56d5331f34e73f340a43cdb': 'Test: <ph name="ICU"/>',
-          '1503afd0ccc20ff01d5e2266a9157b7b342ba494':
-              '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph' +
-              ' name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}, =other {[beaucoup]}}',
-          'fcfa109b0e152d4c217dbc02530be0bcb8123ad1': `multi
-lignes`,
-          'mrk-test': 'Translated first sentence.',
-          'mrk-test2': 'Translated first sentence.'
-        });
-      });
+    it('should return the target locale', () => {
+      expect(serializer.load(LOAD_XLIFF, 'url').locale).toEqual('fr');
+    });
 
-      it('should return the target locale',
-         () => { expect(serializer.load(LOAD_XLIFF, 'url').locale).toEqual('fr'); });
-
-      it('should ignore alt-trans targets', () => {
-        const XLIFF = `
+    it('should ignore alt-trans targets', () => {
+      const XLIFF = `
           <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
             <file source-language="en" target-language="fr" datatype="plaintext" original="ng2.template">
               <body>
@@ -318,12 +322,12 @@ lignes`,
             </file>
           </xliff>`;
 
-        expect(loadAsMap(XLIFF)).toEqual({'registration.submit': 'Weiter'});
-      });
+      expect(loadAsMap(XLIFF)).toEqual({'registration.submit': 'Weiter'});
+    });
 
-      describe('structure errors', () => {
-        it('should throw when a trans-unit has no translation', () => {
-          const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
+    describe('structure errors', () => {
+      it('should throw when a trans-unit has no translation', () => {
+        const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
@@ -334,14 +338,14 @@ lignes`,
   </file>
 </xliff>`;
 
-          expect(() => {
-            loadAsMap(XLIFF);
-          }).toThrowError(/Message missingtarget misses a translation/);
-        });
+        expect(() => {
+          loadAsMap(XLIFF);
+        }).toThrowError(/Message missingtarget misses a translation/);
+      });
 
 
-        it('should throw when a trans-unit has no id attribute', () => {
-          const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
+      it('should throw when a trans-unit has no id attribute', () => {
+        const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
@@ -353,13 +357,13 @@ lignes`,
   </file>
 </xliff>`;
 
-          expect(() => {
-            loadAsMap(XLIFF);
-          }).toThrowError(/<trans-unit> misses the "id" attribute/);
-        });
+        expect(() => {
+          loadAsMap(XLIFF);
+        }).toThrowError(/<trans-unit> misses the "id" attribute/);
+      });
 
-        it('should throw on duplicate trans-unit id', () => {
-          const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
+      it('should throw on duplicate trans-unit id', () => {
+        const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
@@ -375,15 +379,15 @@ lignes`,
   </file>
 </xliff>`;
 
-          expect(() => {
-            loadAsMap(XLIFF);
-          }).toThrowError(/Duplicated translations for msg deadbeef/);
-        });
+        expect(() => {
+          loadAsMap(XLIFF);
+        }).toThrowError(/Duplicated translations for msg deadbeef/);
       });
+    });
 
-      describe('message errors', () => {
-        it('should throw on unknown message tags', () => {
-          const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
+    describe('message errors', () => {
+      it('should throw on unknown message tags', () => {
+        const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
@@ -395,13 +399,15 @@ lignes`,
   </file>
 </xliff>`;
 
-          expect(() => { loadAsMap(XLIFF); })
-              .toThrowError(
-                  new RegExp(escapeRegExp(`[ERROR ->]<b>msg should contain only ph tags</b>`)));
-        });
+        expect(() => {
+          loadAsMap(XLIFF);
+        })
+            .toThrowError(
+                new RegExp(escapeRegExp(`[ERROR ->]<b>msg should contain only ph tags</b>`)));
+      });
 
-        it('should throw when a placeholder misses an id attribute', () => {
-          const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
+      it('should throw when a placeholder misses an id attribute', () => {
+        const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
@@ -413,12 +419,11 @@ lignes`,
   </file>
 </xliff>`;
 
-          expect(() => {
-            loadAsMap(XLIFF);
-          }).toThrowError(new RegExp(escapeRegExp(`<x> misses the "id" attribute`)));
-        });
-
+        expect(() => {
+          loadAsMap(XLIFF);
+        }).toThrowError(new RegExp(escapeRegExp(`<x> misses the "id" attribute`)));
       });
     });
   });
+});
 })();

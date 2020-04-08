@@ -8,12 +8,12 @@
 
 import {CompileSummaryKind} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
-import {MetadataFactory, createAttribute, createComponent, createContentChild, createContentChildren, createDirective, createHost, createHostBinding, createHostListener, createInject, createInjectable, createInput, createNgModule, createOptional, createOutput, createPipe, createSelf, createSkipSelf, createViewChild, createViewChildren} from '../core';
+import {createAttribute, createComponent, createContentChild, createContentChildren, createDirective, createHost, createHostBinding, createHostListener, createInject, createInjectable, createInput, createNgModule, createOptional, createOutput, createPipe, createSelf, createSkipSelf, createViewChild, createViewChildren, MetadataFactory} from '../core';
 import * as o from '../output/output_ast';
 import {SummaryResolver} from '../summary_resolver';
 import {syntaxError} from '../util';
 
-import {FormattedMessageChain, formattedError} from './formatted_error';
+import {formattedError, FormattedMessageChain} from './formatted_error';
 import {StaticSymbol} from './static_symbol';
 import {StaticSymbolResolver} from './static_symbol_resolver';
 
@@ -50,13 +50,13 @@ export class StaticReflector implements CompileReflector {
   private conversionMap = new Map<StaticSymbol, (context: StaticSymbol, args: any[]) => any>();
   private resolvedExternalReferences = new Map<string, StaticSymbol>();
   // TODO(issue/24571): remove '!'.
-  private injectionToken !: StaticSymbol;
+  private injectionToken!: StaticSymbol;
   // TODO(issue/24571): remove '!'.
-  private opaqueToken !: StaticSymbol;
+  private opaqueToken!: StaticSymbol;
   // TODO(issue/24571): remove '!'.
-  ROUTES !: StaticSymbol;
+  ROUTES!: StaticSymbol;
   // TODO(issue/24571): remove '!'.
-  private ANALYZE_FOR_ENTRY_COMPONENTS !: StaticSymbol;
+  private ANALYZE_FOR_ENTRY_COMPONENTS!: StaticSymbol;
   private annotationForParentClassWithSummaryKind =
       new Map<CompileSummaryKind, MetadataFactory<any>[]>();
 
@@ -110,10 +110,10 @@ export class StaticReflector implements CompileReflector {
       if (declarationSymbol) return declarationSymbol;
     }
     const refSymbol =
-        this.symbolResolver.getSymbolByModule(ref.moduleName !, ref.name !, containingFile);
+        this.symbolResolver.getSymbolByModule(ref.moduleName!, ref.name!, containingFile);
     const declarationSymbol = this.findSymbolDeclaration(refSymbol);
     if (!containingFile) {
-      this.symbolResolver.recordModuleNameForFileName(refSymbol.filePath, ref.moduleName !);
+      this.symbolResolver.recordModuleNameForFileName(refSymbol.filePath, ref.moduleName!);
       this.symbolResolver.recordImportAs(declarationSymbol, refSymbol);
     }
     if (key) {
@@ -192,16 +192,20 @@ export class StaticReflector implements CompileReflector {
         const summary = this.summaryResolver.resolveSummary(parentType);
         if (summary && summary.type) {
           const requiredAnnotationTypes =
-              this.annotationForParentClassWithSummaryKind.get(summary.type.summaryKind !) !;
+              this.annotationForParentClassWithSummaryKind.get(summary.type.summaryKind!)!;
           const typeHasRequiredAnnotation = requiredAnnotationTypes.some(
               (requiredType) => ownAnnotations.some(ann => requiredType.isTypeOf(ann)));
           if (!typeHasRequiredAnnotation) {
             this.reportError(
                 formatMetadataError(
                     metadataError(
-                        `Class ${type.name} in ${type.filePath} extends from a ${CompileSummaryKind[summary.type.summaryKind!]} in another compilation unit without duplicating the decorator`,
+                        `Class ${type.name} in ${type.filePath} extends from a ${
+                            CompileSummaryKind[summary.type.summaryKind!
+            ]} in another compilation unit without duplicating the decorator`,
                         /* summary */ undefined,
-                        `Please add a ${requiredAnnotationTypes.map((type) => type.ngMetadataName).join(' or ')} decorator to the class`),
+                        `Please add a ${
+                            requiredAnnotationTypes.map((type) => type.ngMetadataName)
+                                .join(' or ')} decorator to the class`),
                     type),
                 type);
           }
@@ -221,7 +225,7 @@ export class StaticReflector implements CompileReflector {
       if (parentType) {
         const parentPropMetadata = this.propMetadata(parentType);
         Object.keys(parentPropMetadata).forEach((parentProp) => {
-          propMetadata ![parentProp] = parentPropMetadata[parentProp];
+          propMetadata![parentProp] = parentPropMetadata[parentProp];
         });
       }
 
@@ -231,10 +235,10 @@ export class StaticReflector implements CompileReflector {
         const prop = (<any[]>propData)
                          .find(a => a['__symbolic'] == 'property' || a['__symbolic'] == 'method');
         const decorators: any[] = [];
-        if (propMetadata ![propName]) {
-          decorators.push(...propMetadata ![propName]);
+        if (propMetadata![propName]) {
+          decorators.push(...propMetadata![propName]);
         }
-        propMetadata ![propName] = decorators;
+        propMetadata![propName] = decorators;
         if (prop && prop['decorators']) {
           decorators.push(...this.simplify(type, prop['decorators']));
         }
@@ -271,7 +275,7 @@ export class StaticReflector implements CompileReflector {
             if (decorators) {
               nestedResult.push(...decorators);
             }
-            parameters !.push(nestedResult);
+            parameters!.push(nestedResult);
           });
         } else if (parentType) {
           parameters = this.parameters(parentType);
@@ -297,7 +301,7 @@ export class StaticReflector implements CompileReflector {
       if (parentType) {
         const parentMethodNames = this._methodNames(parentType);
         Object.keys(parentMethodNames).forEach((parentProp) => {
-          methodNames ![parentProp] = parentMethodNames[parentProp];
+          methodNames![parentProp] = parentMethodNames[parentProp];
         });
       }
 
@@ -305,7 +309,7 @@ export class StaticReflector implements CompileReflector {
       Object.keys(members).forEach((propName) => {
         const propData = members[propName];
         const isMethod = (<any[]>propData).some(a => a['__symbolic'] == 'method');
-        methodNames ![propName] = methodNames ![propName] || isMethod;
+        methodNames![propName] = methodNames![propName] || isMethod;
       });
       this.methodCache.set(type, methodNames);
     }
@@ -485,7 +489,7 @@ export class StaticReflector implements CompileReflector {
             // Propagate the message text up but add a message to the chain that explains how we got
             // here.
             // e.chain implies e.symbol
-            const summaryMsg = e.chain ? 'references \'' + e.symbol !.name + '\'' : errorSummary(e);
+            const summaryMsg = e.chain ? 'references \'' + e.symbol!.name + '\'' : errorSummary(e);
             const summary = `'${nestedContext.name}' ${summaryMsg}`;
             const chain = {message: summary, position: e.position, next: e.chain};
             // TODO(chuckj): retrieve the position information indirectly from the collectors node
@@ -494,7 +498,8 @@ export class StaticReflector implements CompileReflector {
                 {
                   message: e.message,
                   advise: e.advise,
-                  context: e.context, chain,
+                  context: e.context,
+                  chain,
                   symbol: nestedContext
                 },
                 context);
@@ -566,7 +571,8 @@ export class StaticReflector implements CompileReflector {
             {
               message: FUNCTION_CALL_NOT_SUPPORTED,
               context: functionSymbol,
-              value: targetFunction, position
+              value: targetFunction,
+              position
             },
             context);
       }
@@ -875,7 +881,7 @@ interface MetadataMessageChain {
   next?: MetadataMessageChain;
 }
 
-type MetadataError = Error & {
+type MetadataError = Error&{
   position?: Position;
   advise?: string;
   summary?: string;
@@ -916,7 +922,8 @@ function expandedMessage(message: string, context: any): string {
   switch (message) {
     case REFERENCE_TO_NONEXPORTED_CLASS:
       if (context && context.className) {
-        return `References to a non-exported class are not supported in decorators but ${context.className} was referenced.`;
+        return `References to a non-exported class are not supported in decorators but ${
+            context.className} was referenced.`;
       }
       break;
     case VARIABLE_NOT_INITIALIZED:
@@ -935,7 +942,8 @@ function expandedMessage(message: string, context: any): string {
       return 'Function calls are not supported in decorators';
     case REFERENCE_TO_LOCAL_SYMBOL:
       if (context && context.name) {
-        return `Reference to a local (non-exported) symbols are not supported in decorators but '${context.name}' was referenced`;
+        return `Reference to a local (non-exported) symbols are not supported in decorators but '${
+            context.name}' was referenced`;
       }
       break;
     case LAMBDA_NOT_SUPPORTED:
@@ -1040,7 +1048,9 @@ abstract class BindingScope {
 }
 
 class PopulatedScope extends BindingScope {
-  constructor(private bindings: Map<string, any>) { super(); }
+  constructor(private bindings: Map<string, any>) {
+    super();
+  }
 
   resolve(name: string): any {
     return this.bindings.has(name) ? this.bindings.get(name) : BindingScope.missing;
@@ -1048,7 +1058,7 @@ class PopulatedScope extends BindingScope {
 }
 
 function formatMetadataMessageChain(
-    chain: MetadataMessageChain, advise: string | undefined): FormattedMessageChain {
+    chain: MetadataMessageChain, advise: string|undefined): FormattedMessageChain {
   const expanded = expandedMessage(chain.message, chain.context);
   const nesting = chain.symbol ? ` in '${chain.symbol.name}'` : '';
   const message = `${expanded}${nesting}`;

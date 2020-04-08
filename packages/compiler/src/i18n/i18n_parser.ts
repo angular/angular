@@ -83,7 +83,7 @@ class _I18nVisitor implements html.Visitor {
     const isVoid: boolean = getHtmlTagDefinition(el.name).isVoid;
     const startPhName =
         context.placeholderRegistry.getStartTagPlaceholderName(el.name, attrs, isVoid);
-    context.placeholderToContent[startPhName] = el.sourceSpan !.toString();
+    context.placeholderToContent[startPhName] = el.sourceSpan!.toString();
 
     let closePhName = '';
 
@@ -93,7 +93,7 @@ class _I18nVisitor implements html.Visitor {
     }
 
     const node = new i18n.TagPlaceholder(
-        el.name, attrs, startPhName, closePhName, children, isVoid, el.sourceSpan !);
+        el.name, attrs, startPhName, closePhName, children, isVoid, el.sourceSpan!);
     return context.visitNodeFn(el, node);
   }
 
@@ -103,7 +103,7 @@ class _I18nVisitor implements html.Visitor {
   }
 
   visitText(text: html.Text, context: I18nMessageVisitorContext): i18n.Node {
-    const node = this._visitTextWithInterpolation(text.value, text.sourceSpan !, context);
+    const node = this._visitTextWithInterpolation(text.value, text.sourceSpan!, context);
     return context.visitNodeFn(text, node);
   }
 

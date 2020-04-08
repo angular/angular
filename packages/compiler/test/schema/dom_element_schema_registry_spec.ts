@@ -19,7 +19,9 @@ import {extractSchema} from './schema_extractor';
 {
   describe('DOMElementSchema', () => {
     let registry: DomElementSchemaRegistry;
-    beforeEach(() => { registry = new DomElementSchemaRegistry(); });
+    beforeEach(() => {
+      registry = new DomElementSchemaRegistry();
+    });
 
     it('should detect elements', () => {
       expect(registry.hasElement('div', [])).toBeTruthy();
@@ -97,8 +99,9 @@ import {extractSchema} from './schema_extractor';
       expect(registry.hasElement('unknown', [NO_ERRORS_SCHEMA])).toBeTruthy();
     });
 
-    it('should re-map property names that are specified in DOM facade',
-       () => { expect(registry.getMappedPropName('readonly')).toEqual('readOnly'); });
+    it('should re-map property names that are specified in DOM facade', () => {
+      expect(registry.getMappedPropName('readonly')).toEqual('readOnly');
+    });
 
     it('should not re-map property names that are not specified in DOM facade', () => {
       expect(registry.getMappedPropName('title')).toEqual('title');
@@ -173,8 +176,9 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     });
 
     describe('Angular custom elements', () => {
-      it('should support <ng-container>',
-         () => { expect(registry.hasProperty('ng-container', 'id', [])).toBeFalsy(); });
+      it('should support <ng-container>', () => {
+        expect(registry.hasProperty('ng-container', 'id', [])).toBeFalsy();
+      });
 
       it('should support <ng-content>', () => {
         expect(registry.hasProperty('ng-content', 'id', [])).toBeFalsy();
@@ -185,8 +189,9 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     if (browserDetection.isChromeDesktop) {
       it('generate a new schema', () => {
         let schema = '\n';
-        extractSchema() !.forEach(
-            (props, name) => { schema += `'${name}|${props.join(',')}',\n`; });
+        extractSchema()!.forEach((props, name) => {
+          schema += `'${name}|${props.join(',')}',\n`;
+        });
         // Uncomment this line to see:
         // the generated schema which can then be pasted to the DomElementSchemaRegistry
         // console.log(schema);

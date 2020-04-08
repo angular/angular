@@ -8,8 +8,8 @@
 
 import {Identifiers} from './identifiers';
 import * as o from './output/output_ast';
-import {R3DependencyMetadata, R3FactoryDelegateType, R3FactoryMetadata, R3FactoryTarget, compileFactoryFunction} from './render3/r3_factory';
-import {R3Reference, mapToMapExpression, typeWithParameters} from './render3/util';
+import {compileFactoryFunction, R3DependencyMetadata, R3FactoryDelegateType, R3FactoryMetadata, R3FactoryTarget} from './render3/r3_factory';
+import {mapToMapExpression, R3Reference, typeWithParameters} from './render3/util';
 
 export interface InjectableDef {
   expression: o.Expression;

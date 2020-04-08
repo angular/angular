@@ -9,7 +9,7 @@
 import * as chars from '../chars';
 import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../parse_util';
 
-import {BlockType, CssAst, CssAtRulePredicateAst, CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssPseudoSelectorAst, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssSimpleSelectorAst, CssStyleSheetAst, CssStyleValueAst, CssStylesBlockAst, CssUnknownRuleAst, CssUnknownTokenListAst, mergeTokens} from './css_ast';
+import {BlockType, CssAst, CssAtRulePredicateAst, CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssPseudoSelectorAst, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssSimpleSelectorAst, CssStylesBlockAst, CssStyleSheetAst, CssStyleValueAst, CssUnknownRuleAst, CssUnknownTokenListAst, mergeTokens} from './css_ast';
 import {CssLexer, CssLexerMode, CssScanner, CssToken, CssTokenType, generateErrorMessage, getRawMessage, isNewline} from './css_lexer';
 
 const SPACE_OPERATOR = ' ';
@@ -84,11 +84,11 @@ export class ParsedCssResult {
 export class CssParser {
   private _errors: CssParseError[] = [];
   // TODO(issue/24571): remove '!'.
-  private _file !: ParseSourceFile;
+  private _file!: ParseSourceFile;
   // TODO(issue/24571): remove '!'.
-  private _scanner !: CssScanner;
+  private _scanner!: CssScanner;
   // TODO(issue/24571): remove '!'.
-  private _lastToken !: CssToken;
+  private _lastToken!: CssToken;
 
   /**
    * @param css the CSS code that will be parsed
@@ -125,11 +125,13 @@ export class CssParser {
       // EOF token that was emitted sometime during the lexing
       span = this._generateSourceSpan(firstRule, this._lastToken);
     }
-    return new CssStyleSheetAst(span !, results);
+    return new CssStyleSheetAst(span!, results);
   }
 
   /** @internal */
-  _getSourceContent(): string { return this._scanner != null ? this._scanner.input : ''; }
+  _getSourceContent(): string {
+    return this._scanner != null ? this._scanner.input : '';
+  }
 
   /** @internal */
   _extractSourceContent(start: number, end: number): string {
@@ -159,9 +161,9 @@ export class CssParser {
     let endColumn: number = -1;
     let endIndex: number = -1;
     if (end instanceof CssAst) {
-      endLine = end.location.end.line !;
-      endColumn = end.location.end.col !;
-      endIndex = end.location.end.offset !;
+      endLine = end.location.end.line!;
+      endColumn = end.location.end.col!;
+      endIndex = end.location.end.offset!;
     } else if (end instanceof CssToken) {
       endLine = end.line;
       endColumn = end.column;
@@ -253,7 +255,7 @@ export class CssParser {
 
       case BlockType.Viewport:
       case BlockType.FontFace:
-        block = this._parseStyleBlock(delimiters) !;
+        block = this._parseStyleBlock(delimiters)!;
         span = this._generateSourceSpan(startToken, block);
         return new CssBlockRuleAst(span, type, block);
 
@@ -293,7 +295,7 @@ export class CssParser {
         span = this._generateSourceSpan(startToken, tokens[tokens.length - 1]);
         query = new CssAtRulePredicateAst(span, strValue, tokens);
         block = this._parseBlock(delimiters);
-        strValue = this._extractSourceContent(start, block.end.offset !);
+        strValue = this._extractSourceContent(start, block.end.offset!);
         span = this._generateSourceSpan(startToken, block);
         return new CssBlockDefinitionRuleAst(span, strValue, type, query, block);
 
@@ -310,11 +312,15 @@ export class CssParser {
             token);
 
         this._collectUntilDelim(delimiters | LBRACE_DELIM_FLAG | SEMICOLON_DELIM_FLAG)
-            .forEach((token) => { listOfTokens.push(token); });
+            .forEach((token) => {
+              listOfTokens.push(token);
+            });
         if (this._scanner.peek == chars.$LBRACE) {
           listOfTokens.push(this._consume(CssTokenType.Character, '{'));
           this._collectUntilDelim(delimiters | RBRACE_DELIM_FLAG | LBRACE_DELIM_FLAG)
-              .forEach((token) => { listOfTokens.push(token); });
+              .forEach((token) => {
+                listOfTokens.push(token);
+              });
           listOfTokens.push(this._consume(CssTokenType.Character, '}'));
         }
         endToken = listOfTokens[listOfTokens.length - 1];
@@ -339,7 +345,9 @@ export class CssParser {
       const innerTokens: CssToken[] = [];
       selectors.forEach((selector: CssSelectorAst) => {
         selector.selectorParts.forEach((part: CssSimpleSelectorAst) => {
-          part.tokens.forEach((token: CssToken) => { innerTokens.push(token); });
+          part.tokens.forEach((token: CssToken) => {
+            innerTokens.push(token);
+          });
         });
       });
       const endToken = innerTokens[innerTokens.length - 1];
@@ -376,7 +384,7 @@ export class CssParser {
 
   /** @internal */
   _scan(): CssToken {
-    const output = this._scanner.scan() !;
+    const output = this._scanner.scan()!;
     const token = output.token;
     const error = output.error;
     if (error != null) {
@@ -387,7 +395,9 @@ export class CssParser {
   }
 
   /** @internal */
-  _getScannerIndex(): number { return this._scanner.index; }
+  _getScannerIndex(): number {
+    return this._scanner.index;
+  }
 
   /** @internal */
   _consume(type: CssTokenType, value: string|null = null): CssToken {
@@ -432,7 +442,7 @@ export class CssParser {
     }
     const stylesBlock = this._parseStyleBlock(delimiters | RBRACE_DELIM_FLAG);
     const span = this._generateSourceSpan(stepTokens[0], stylesBlock);
-    const ast = new CssKeyframeDefinitionAst(span, stepTokens, stylesBlock !);
+    const ast = new CssKeyframeDefinitionAst(span, stepTokens, stylesBlock!);
 
     this._scanner.setMode(CssLexerMode.BLOCK);
     return ast;
@@ -523,7 +533,7 @@ export class CssParser {
     const selectorCssTokens: CssToken[] = [];
     const pseudoSelectors: CssPseudoSelectorAst[] = [];
 
-    let previousToken: CssToken = undefined !;
+    let previousToken: CssToken = undefined!;
 
     const selectorPartDelimiters = delimiters | SPACE_DELIM_FLAG;
     let loopOverSelector = !characterContainsDelimiter(this._scanner.peek, selectorPartDelimiters);
@@ -576,7 +586,8 @@ export class CssParser {
         hasAttributeError || this._scanner.getMode() == CssLexerMode.ATTRIBUTE_SELECTOR;
     if (hasAttributeError) {
       this._error(
-          `Unbalanced CSS attribute selector at column ${previousToken.line}:${previousToken.column}`,
+          `Unbalanced CSS attribute selector at column ${previousToken.line}:${
+              previousToken.column}`,
           previousToken);
     }
 
@@ -671,8 +682,8 @@ export class CssParser {
       endTokenOrAst = operator;
     }
 
-    const span = this._generateSourceSpan(startTokenOrAst !, endTokenOrAst);
-    return new CssSimpleSelectorAst(span, selectorCssTokens, strValue, pseudoSelectors, operator !);
+    const span = this._generateSourceSpan(startTokenOrAst!, endTokenOrAst);
+    return new CssSimpleSelectorAst(span, selectorCssTokens, strValue, pseudoSelectors, operator!);
   }
 
   /** @internal */
@@ -701,7 +712,7 @@ export class CssParser {
 
     const tokens: CssToken[] = [];
     let wsStr = '';
-    let previous: CssToken = undefined !;
+    let previous: CssToken = undefined!;
     while (!characterContainsDelimiter(this._scanner.peek, delimiters)) {
       let token: CssToken;
       if (previous != null && previous.type == CssTokenType.Identifier &&
@@ -841,7 +852,9 @@ export class CssParser {
           const remainingTokens = this._collectUntilDelim(
               delimiters | COLON_DELIM_FLAG | SEMICOLON_DELIM_FLAG, CssTokenType.Identifier);
           if (remainingTokens.length > 0) {
-            remainingTokens.forEach((token) => { propStr.push(token.strValue); });
+            remainingTokens.forEach((token) => {
+              propStr.push(token.strValue);
+            });
           }
 
           endToken = prop =
@@ -868,7 +881,7 @@ export class CssParser {
     }
 
     const span = this._generateSourceSpan(prop, endToken);
-    return new CssDefinitionAst(span, prop, value !);
+    return new CssDefinitionAst(span, prop, value!);
   }
 
   /** @internal */
@@ -899,5 +912,7 @@ export class CssParseError extends ParseError {
     return new CssParseError(span, 'CSS Parse Error: ' + errMsg);
   }
 
-  constructor(span: ParseSourceSpan, message: string) { super(span, message); }
+  constructor(span: ParseSourceSpan, message: string) {
+    super(span, message);
+  }
 }

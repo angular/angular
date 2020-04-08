@@ -36,7 +36,7 @@ describe('expression AST absolute source spans', () => {
   beforeEach(inject([TemplateParser], (parser: TemplateParser) => {
     parse =
         (template: string, directives: CompileDirectiveSummary[] = [],
-         pipes: CompilePipeSummary[] | null = null, schemas: SchemaMetadata[] = [],
+         pipes: CompilePipeSummary[]|null = null, schemas: SchemaMetadata[] = [],
          preserveWhitespaces = true): TemplateAst[] => {
           if (pipes === null) {
             pipes = [];

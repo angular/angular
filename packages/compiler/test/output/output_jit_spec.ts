@@ -57,7 +57,7 @@ const anotherModuleUrl = 'somePackage/someOtherPath';
             o.literal('use strict').toStmt(),
           ],
           ctx);
-      const matches = ctx.toSource().match(/'use strict';/g) !;
+      const matches = ctx.toSource().match(/'use strict';/g)!;
       expect(matches.length).toBe(1);
     });
   });

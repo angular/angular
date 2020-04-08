@@ -13,7 +13,7 @@ import {Xmb} from '@angular/compiler/src/i18n/serializers/xmb';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
 import {DebugElement, TRANSLATIONS, TRANSLATIONS_FORMAT} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {SpyResourceLoader} from '../spies';
@@ -22,7 +22,6 @@ import {FrLocalization, HTML, I18nComponent, validateHtml} from './integration_c
 
 {
   describe('i18n XMB/XTB integration spec', () => {
-
     beforeEach(async(() => {
       TestBed.configureCompiler({
         providers: [

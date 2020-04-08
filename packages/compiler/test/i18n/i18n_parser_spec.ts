@@ -14,7 +14,6 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
 
 {
   describe('I18nParser', () => {
-
     describe('elements', () => {
       it('should extract from elements', () => {
         expect(_humanizeMessages('<div i18n="m|d">text</div>')).toEqual([
@@ -34,11 +33,13 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
         ]);
       });
 
-      it('should not create a message for empty elements',
-         () => { expect(_humanizeMessages('<div i18n="m|d"></div>')).toEqual([]); });
+      it('should not create a message for empty elements', () => {
+        expect(_humanizeMessages('<div i18n="m|d"></div>')).toEqual([]);
+      });
 
-      it('should not create a message for plain elements',
-         () => { expect(_humanizeMessages('<div></div>')).toEqual([]); });
+      it('should not create a message for plain elements', () => {
+        expect(_humanizeMessages('<div></div>')).toEqual([]);
+      });
 
       it('should support void elements', () => {
         expect(_humanizeMessages('<div i18n="m|d"><p><br></p></div>')).toEqual([
@@ -115,8 +116,9 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
             ]);
       });
 
-      it('should not create a message for empty attributes',
-         () => { expect(_humanizeMessages('<div i18n-title="m|d" title></div>')).toEqual([]); });
+      it('should not create a message for empty attributes', () => {
+        expect(_humanizeMessages('<div i18n-title="m|d" title></div>')).toEqual([]);
+      });
     });
 
     describe('interpolation', () => {
@@ -252,7 +254,6 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
         expect(_humanizePlaceholders(html)).toEqual([
           'START_PARAGRAPH=<p>, CLOSE_PARAGRAPH=</p>, START_PARAGRAPH_1=<p other>',
         ]);
-
       });
 
       it('should reuse the same placeholder name for interpolations', () => {
@@ -302,7 +303,6 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
           '',
           '',
         ]);
-
       });
     });
   });

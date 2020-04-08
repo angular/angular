@@ -74,18 +74,24 @@ class R3AstSourceSpans implements t.Visitor<void> {
         ['BoundEvent', humanizeSpan(event.sourceSpan), humanizeSpan(event.handlerSpan)]);
   }
 
-  visitText(text: t.Text) { this.result.push(['Text', humanizeSpan(text.sourceSpan)]); }
+  visitText(text: t.Text) {
+    this.result.push(['Text', humanizeSpan(text.sourceSpan)]);
+  }
 
   visitBoundText(text: t.BoundText) {
     this.result.push(['BoundText', humanizeSpan(text.sourceSpan)]);
   }
 
-  visitIcu(icu: t.Icu) { return null; }
+  visitIcu(icu: t.Icu) {
+    return null;
+  }
 
-  private visitAll(nodes: t.Node[][]) { nodes.forEach(node => t.visitAll(this, node)); }
+  private visitAll(nodes: t.Node[][]) {
+    nodes.forEach(node => t.visitAll(this, node));
+  }
 }
 
-function humanizeSpan(span: ParseSourceSpan | null | undefined): string {
+function humanizeSpan(span: ParseSourceSpan|null|undefined): string {
   if (span === null || span === undefined) {
     return `<empty>`;
   }

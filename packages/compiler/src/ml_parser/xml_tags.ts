@@ -11,19 +11,23 @@ import {TagContentType, TagDefinition} from './tags';
 export class XmlTagDefinition implements TagDefinition {
   closedByParent: boolean = false;
   // TODO(issue/24571): remove '!'.
-  requiredParents !: {[key: string]: boolean};
+  requiredParents!: {[key: string]: boolean};
   // TODO(issue/24571): remove '!'.
-  parentToAdd !: string;
+  parentToAdd!: string;
   // TODO(issue/24571): remove '!'.
-  implicitNamespacePrefix !: string;
+  implicitNamespacePrefix!: string;
   contentType: TagContentType = TagContentType.PARSABLE_DATA;
   isVoid: boolean = false;
   ignoreFirstLf: boolean = false;
   canSelfClose: boolean = true;
 
-  requireExtraParent(currentParent: string): boolean { return false; }
+  requireExtraParent(currentParent: string): boolean {
+    return false;
+  }
 
-  isClosedByChild(name: string): boolean { return false; }
+  isClosedByChild(name: string): boolean {
+    return false;
+  }
 }
 
 const _TAG_DEFINITION = new XmlTagDefinition();

@@ -11,7 +11,9 @@ import * as i18n from '../../../i18n/i18n_ast';
 import {formatI18nPlaceholderName} from './util';
 
 class IcuSerializerVisitor implements i18n.Visitor {
-  visitText(text: i18n.Text): any { return text.value; }
+  visitText(text: i18n.Text): any {
+    return text.value;
+  }
 
   visitContainer(container: i18n.Container): any {
     return container.children.map(child => child.visit(this)).join('');
@@ -27,10 +29,13 @@ class IcuSerializerVisitor implements i18n.Visitor {
   visitTagPlaceholder(ph: i18n.TagPlaceholder): any {
     return ph.isVoid ?
         this.formatPh(ph.startName) :
-        `${this.formatPh(ph.startName)}${ph.children.map(child => child.visit(this)).join('')}${this.formatPh(ph.closeName)}`;
+        `${this.formatPh(ph.startName)}${ph.children.map(child => child.visit(this)).join('')}${
+            this.formatPh(ph.closeName)}`;
   }
 
-  visitPlaceholder(ph: i18n.Placeholder): any { return this.formatPh(ph.name); }
+  visitPlaceholder(ph: i18n.Placeholder): any {
+    return this.formatPh(ph.name);
+  }
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
     return this.formatPh(ph.name);
