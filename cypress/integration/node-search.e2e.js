@@ -1,8 +1,5 @@
 function checkSearchedNodesLength(type, length) {
-  cy.get('mat-tree')
-    .find(type)
-    .its('length')
-    .should('eq', length);
+  cy.get('.tree-wrapper').find(type).its('length').should('eq', length);
 }
 
 function inputSearchText(text) {
@@ -14,18 +11,16 @@ function checkComponentName(name) {
 }
 
 function checkEmptyNodes() {
-  cy.get('mat-tree')
-    .find('.matched')
-    .should('not.exist');
+  cy.get('.tree-wrapper').find('.matched').should('not.exist');
 }
 
 function clickSearchArrows(upwards) {
   const buttons = cy.get('.up-down-buttons').find('button');
 
   if (upwards) {
-    buttons.first().then(btn => btn[0].click());
+    buttons.first().then((btn) => btn[0].click());
   } else {
-    buttons.last().then(btn => btn[0].click());
+    buttons.last().then((btn) => btn[0].click());
   }
 }
 
@@ -77,10 +72,7 @@ describe('Search items in component tree', () => {
     checkSearchedNodesLength('.selected', 1);
 
     // should show correct buttons in breadcrumbs
-    cy.get('.parent-nodes')
-      .find('button')
-      .its('length')
-      .should('eq', 7);
+    cy.get('.parent-nodes').find('button').its('length').should('eq', 7);
 
     // should display correct text in explorer panel
     checkComponentName('app-todos');
