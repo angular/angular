@@ -40,32 +40,25 @@
 const util = require('util');
 const child_process = require('child_process');
 const exec = util.promisify(child_process.exec);
-const getRefsAndShasForTarget = require('./utils/get-refs-and-shas-for-target');
+const getRefs = require('./utils/get-refs');
 
-// CLI validation
-if (process.argv.length != 4) {
-  console.error(`This script requires the GitHub repository and PR number as arguments.`);
-  console.error(`Example: node tools/rebase-pr.js angular/angular 123`);
-  process.exitCode = 1;
-  return;
-}
 
 // Run
-_main(...process.argv.slice(2)).catch(err => {
+_main().catch(err => {
   console.log('Failed to rebase on top of target branch.\n');
   console.error(err);
   process.exitCode = 1;
 });
 
 // Helpers
-async function _main(repository, prNumber) {
-  const target = await getRefsAndShasForTarget(prNumber);
+async function _main() {
+  const target = await getRefs();
 
   // Log known refs and shas
   console.log(`--------------------------------`);
   console.log(`    Target Branch:                   ${target.base.ref}`);
-  console.log(`    Latest Commit for Target Branch: ${target.latestShaOfTargetBranch}`);
-  console.log(`    Latest Commit for PR:            ${target.latestShaOfPrBranch}`);
+  console.log(`    Latest Commit for Target Branch: ${target.target.latestSha}`);
+  console.log(`    Latest Commit for PR:            ${target.base.latestSha}`);
   console.log(`    First Common Ancestor SHA:       ${target.commonAncestorSha}`);
   console.log(`--------------------------------`);
   console.log();

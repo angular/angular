@@ -22,6 +22,7 @@ else
   ####################################################################################################
   # See https://circleci.com/docs/2.0/env-vars/#built-in-environment-variables for more info.
   ####################################################################################################
+  setPublicVar CI "$CI"
   setPublicVar PROJECT_ROOT "$projectDir";
   setPublicVar CI_AIO_MIN_PWA_SCORE "95";
   # This is the branch being built; e.g. `pull/12345` for PR builds.
@@ -36,9 +37,8 @@ else
   setPublicVar CI_PULL_REQUEST "${CIRCLE_PR_NUMBER:-false}";
   setPublicVar CI_REPO_NAME "$CIRCLE_PROJECT_REPONAME";
   setPublicVar CI_REPO_OWNER "$CIRCLE_PROJECT_USERNAME";
-
-  # Store a PR's refs and shas so they don't need to be requested multiple times.
-  setPublicVar GITHUB_REFS_AND_SHAS $(node tools/utils/get-refs-and-shas-for-target.js ${CIRCLE_PR_NUMBER:-false} | awk '{ gsub(/"/,"\\\"") } 1');
+  setPublicVar CI_PR_REPONAME "$CIRCLE_PR_REPONAME";
+  setPublicVar CI_PR_USERNAME "$CIRCLE_PR_USERNAME";
 
 
   ####################################################################################################
@@ -82,7 +82,7 @@ else
   setPublicVar COMPONENTS_REPO_BRANCH "master"
   # **NOTE**: When updating the commit SHA, also update the cache key in the CircleCI `config.yml`.
   setPublicVar COMPONENTS_REPO_COMMIT "598db096e668aa7e9debd56eedfd127b7a55e371"
-  
+
   # Save the created BASH_ENV into the bash env cache file.
   cat "$BASH_ENV" >> $bashEnvCachePath;
 fi
