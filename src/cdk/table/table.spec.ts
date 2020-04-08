@@ -316,6 +316,22 @@ describe('CdkTable', () => {
     expect(tableElement.firstElementChild).toBe(caption);
   }));
 
+  it('should be able to project colgroup and col', fakeAsync(() => {
+    setupTableTestApp(NativeHtmlTableWithColgroupAndCol);
+    fixture.detectChanges();
+
+    const colgroupsAndCols = Array.from(tableElement.querySelectorAll('colgroup, col'));
+
+    expect(colgroupsAndCols.length).toBe(3);
+    expect(colgroupsAndCols[0].childNodes[0]).toBe(colgroupsAndCols[1]);
+    expect(colgroupsAndCols[2].parentNode!.nodeName.toLowerCase()).toBe('table');
+    expect(colgroupsAndCols.map(e => e.nodeName.toLowerCase())).toEqual([
+      'colgroup',
+      'col',
+      'col',
+    ]);
+  }));
+
   describe('with different data inputs other than data source', () => {
     let baseData: TestData[] = [
       {a: 'a_1', b: 'b_1', c: 'c_1'},
@@ -2386,6 +2402,34 @@ class NativeTableWithNoHeaderOrFooterRows {
 class NativeHtmlTableWithCaptionApp {
   dataSource: FakeDataSource | undefined = new FakeDataSource();
   columnsToRender = ['column_a'];
+
+  @ViewChild(CdkTable) table: CdkTable<TestData>;
+}
+
+@Component({
+  template: `
+    <table cdk-table [dataSource]="dataSource">
+      <colgroup>
+        <col>
+      </colgroup>
+      <col>
+      <ng-container cdkColumnDef="column_a">
+        <th cdk-header-cell *cdkHeaderCellDef> Column A</th>
+        <td cdk-cell *cdkCellDef="let row"> {{row.a}}</td>
+      </ng-container>
+      <ng-container cdkColumnDef="column_b">
+        <th cdk-header-cell *cdkHeaderCellDef> Column B</th>
+        <td cdk-cell *cdkCellDef="let row"> {{row.b}}</td>
+      </ng-container>
+
+      <tr cdk-header-row *cdkHeaderRowDef="columnsToRender"></tr>
+      <tr cdk-row *cdkRowDef="let row; columns: columnsToRender" class="customRowClass"></tr>
+    </table>
+  `
+})
+class NativeHtmlTableWithColgroupAndCol {
+  dataSource: FakeDataSource | undefined = new FakeDataSource();
+  columnsToRender = ['column_a', 'column_b'];
 
   @ViewChild(CdkTable) table: CdkTable<TestData>;
 }

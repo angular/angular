@@ -27,7 +27,7 @@ export declare const CDK_ROW_TEMPLATE = "<ng-container cdkCellOutlet></ng-contai
 
 export declare const CDK_TABLE: InjectionToken<any>;
 
-export declare const CDK_TABLE_TEMPLATE = "\n  <ng-content select=\"caption\"></ng-content>\n  <ng-container headerRowOutlet></ng-container>\n  <ng-container rowOutlet></ng-container>\n  <ng-container footerRowOutlet></ng-container>\n";
+export declare const CDK_TABLE_TEMPLATE = "\n  <ng-content select=\"caption\"></ng-content>\n  <ng-content select=\"colgroup, col\"></ng-content>\n  <ng-container headerRowOutlet></ng-container>\n  <ng-container rowOutlet></ng-container>\n  <ng-container footerRowOutlet></ng-container>\n";
 
 export declare class CdkCell extends BaseCdkCell {
     constructor(columnDef: CdkColumnDef, elementRef: ElementRef);
@@ -206,7 +206,7 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
     updateStickyFooterRowStyles(): void;
     updateStickyHeaderRowStyles(): void;
     static ngAcceptInputType_multiTemplateDataRows: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkTable<any>, "cdk-table, table[cdk-table]", ["cdkTable"], { "trackBy": "trackBy"; "dataSource": "dataSource"; "multiTemplateDataRows": "multiTemplateDataRows"; }, {}, ["_contentColumnDefs", "_contentRowDefs", "_contentHeaderRowDefs", "_contentFooterRowDefs"], ["caption"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkTable<any>, "cdk-table, table[cdk-table]", ["cdkTable"], { "trackBy": "trackBy"; "dataSource": "dataSource"; "multiTemplateDataRows": "multiTemplateDataRows"; }, {}, ["_contentColumnDefs", "_contentRowDefs", "_contentHeaderRowDefs", "_contentFooterRowDefs"], ["caption", "colgroup, col"]>;
     static ɵfac: i0.ɵɵFactoryDef<CdkTable<any>, [null, null, null, { attribute: "role"; }, { optional: true; }, null, null]>;
 }
 

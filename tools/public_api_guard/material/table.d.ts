@@ -72,7 +72,7 @@ export declare class MatRowDef<T> extends CdkRowDef<T> {
 
 export declare class MatTable<T> extends CdkTable<T> {
     protected stickyCssClass: string;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTable<any>, "mat-table, table[mat-table]", ["matTable"], {}, {}, never, ["caption"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTable<any>, "mat-table, table[mat-table]", ["matTable"], {}, {}, never, ["caption", "colgroup, col"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatTable<any>, never>;
 }
 
