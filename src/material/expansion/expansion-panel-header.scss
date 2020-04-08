@@ -4,6 +4,7 @@
   align-items: center;
   padding: 0 24px;
   border-radius: inherit;
+  position: relative; // Necessary for the strong focus indication.
 
   &:focus,
   &:hover {

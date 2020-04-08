@@ -13,6 +13,9 @@
   transition: margin 225ms $mat-fast-out-slow-in-timing-function,
       mat-elevation-transition-property-value();
 
+  // Required so that the `box-shadow` works after we add `position: relative` to the header.
+  position: relative;
+
   .mat-accordion & {
     &:not(.mat-expanded), &:not(.mat-expansion-panel-spacing) {
       border-radius: 0;
