@@ -692,16 +692,16 @@ jobs:
       # Restore the cache before cloning the repository because the clone script re-uses
       # the restored repository if present. This reduces the amount of times the components
       # repository needs to be cloned (this is slow and increases based on commits in the repo).
-      - restore_cache:
-          keys:
-            - *components_repo_unit_tests_cache_key
-            # Whenever the `angular/components` SHA is updated, the cache key will no longer
-            # match. The fallback cache will still match, and CircleCI will restore the most
-            # recently cached repository folder. Without the fallback cache, we'd need to download
-            # the repository from scratch and it would slow down the job. This is because we can't
-            # clone the repository with reduced `--depth`, but rather need to clone the whole
-            # repository to be able to support arbitrary SHAs.
-            - *components_repo_unit_tests_cache_key_fallback
+      # - restore_cache:
+      #     keys:
+      #       - *components_repo_unit_tests_cache_key
+      #       # Whenever the `angular/components` SHA is updated, the cache key will no longer
+      #       # match. The fallback cache will still match, and CircleCI will restore the most
+      #       # recently cached repository folder. Without the fallback cache, we'd need to download
+      #       # the repository from scratch and it would slow down the job. This is because we can't
+      #       # clone the repository with reduced `--depth`, but rather need to clone the whole
+      #       # repository to be able to support arbitrary SHAs.
+      #       - *components_repo_unit_tests_cache_key_fallback
       - run:
           name: "Fetching angular/components repository"
           command: ./scripts/ci/clone_angular_components_repo.sh
