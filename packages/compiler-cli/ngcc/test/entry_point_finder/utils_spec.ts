@@ -115,7 +115,7 @@ runInEachFileSystem(() => {
       ]);
     });
 
-    it('should discard basePaths that do not exists and log a warning', () => {
+    it('should discard basePaths that do not exists and log a debug message', () => {
       const projectDirectory = _('/path/to/project');
       const fs = getFileSystem();
       fs.ensureDir(fs.resolve(projectDirectory, 'dist-1'));
@@ -131,7 +131,7 @@ runInEachFileSystem(() => {
         sourceDirectory,
         fs.resolve(projectDirectory, 'dist-1'),
       ]);
-      expect(logger.logs.warn).toEqual([
+      expect(logger.logs.debug).toEqual([
         [`The basePath "${
              fs.resolve(projectDirectory, 'sub-folder/dist-2')}" computed from baseUrl "${
              projectDirectory}" and path mapping "sub-folder/dist-2" does not exist in the file-system.\n` +

@@ -50,7 +50,7 @@ export function getBasePaths(
       if (fs.exists(basePath)) {
         basePaths.push(basePath);
       } else {
-        logger.warn(
+        logger.debug(
             `The basePath "${basePath}" computed from baseUrl "${baseUrl}" and path mapping "${
                 path}" does not exist in the file-system.\n` +
             `It will not be scanned for entry-points.`);
