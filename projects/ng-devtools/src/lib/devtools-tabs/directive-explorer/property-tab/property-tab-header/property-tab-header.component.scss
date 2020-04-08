@@ -1,8 +1,15 @@
 .element-header {
   display: flex;
   justify-content: space-between;
+  width: 100%;
   align-items: center;
   font-size: 12px;
+
+  .mat-icon-button {
+    height: 25px;
+    width: 25px;
+    line-height: 25px;
+  }
 
   .component-name {
     margin-left: 10px;
@@ -18,17 +25,31 @@
 }
 
 ::ng-deep {
-  .mat-button {
-    height: 25px;
-    width: 25px;
-    line-height: 25px;
-    margin-right: 5px;
-  }
-}
+  .property-tab-header {
+    &.mat-accordion {
+      .mat-expansion-panel {
+        &:not(.mat-expanded) {
+          .mat-expansion-panel-header {
+            &:hover:not([aria-disabled='true']) {
+              background: #fff;
+            }
+          }
+        }
 
-.mat-icon-button {
-  height: 25px;
-  width: 25px;
-  line-height: 25px;
-  margin-right: 5px;
+        .mat-expansion-panel-header {
+          padding: 0;
+
+          .mat-expansion-panel-header-title {
+            margin-right: 0;
+          }
+        }
+
+        .mat-expansion-panel-content {
+          .mat-expansion-panel-body {
+            padding: 0;
+          }
+        }
+      }
+    }
+  }
 }

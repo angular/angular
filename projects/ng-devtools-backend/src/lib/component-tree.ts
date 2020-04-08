@@ -3,6 +3,7 @@ import { deeplySerializeSelectedProperties, serializeDirectiveState } from './st
 import {
   ComponentExplorerViewQuery,
   DevToolsNode,
+  DirectiveMetadata,
   DirectivesProperties,
   ElementPosition,
   PropertyQueryTypes,
@@ -10,6 +11,7 @@ import {
 } from 'protocol';
 import { IndexedNode } from './observer/identity-tracker';
 import { buildDirectiveTree, getLViewFromDirectiveOrElementInstance } from './lview-transform';
+import { ViewEncapsulation } from '@angular/core';
 
 const ngDebug = () => (window as any).ng;
 
@@ -40,15 +42,13 @@ export const getLatestComponentState = (query: ComponentExplorerViewQuery): Dire
     if (query.propertyQuery.type === PropertyQueryTypes.All) {
       result[dir.name] = {
         props: serializeDirectiveState(dir.instance),
-        inputs: getDirectiveMetaData(dir.instance).inputs(),
-        outputs: getDirectiveMetaData(dir.instance).outputs(),
+        metadata: getDirectiveMetadata(dir.instance),
       };
     }
     if (query.propertyQuery.type === PropertyQueryTypes.Specified) {
       result[dir.name] = {
         props: deeplySerializeSelectedProperties(dir.instance, query.propertyQuery.properties[dir.name] || []),
-        inputs: getDirectiveMetaData(dir.instance).inputs(),
-        outputs: getDirectiveMetaData(dir.instance).outputs(),
+        metadata: getDirectiveMetadata(dir.instance),
       };
     }
   };
@@ -61,19 +61,28 @@ export const getLatestComponentState = (query: ComponentExplorerViewQuery): Dire
   return result;
 };
 
-export const getDirectiveMetaData = (dir: any) => {
-  const getDirInputOrOutput = (inputOrOutputKey: 'inputs' | 'outputs') => {
+const enum DirectiveMetadataKey {
+  INPUTS = 'inputs',
+  OUTPUTS = 'outputs',
+  ENCAPSULATION = 'encapsulation',
+  ON_PUSH = 'onPush',
+}
+
+export const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
+  const safelyGrabMetadata = (key: DirectiveMetadataKey) => {
     try {
-      return dir.constructor.ɵcmp ? dir.constructor.ɵcmp[inputOrOutputKey] : dir.constructor.ɵdir[inputOrOutputKey];
+      return dir.constructor.ɵcmp ? dir.constructor.ɵcmp[key] : dir.constructor.ɵdir[key];
     } catch {
-      console.warn('Could not find metadata for: ', dir);
-      return {};
+      console.warn(`Could not find metadata for key: ${key} in directive:`, dir);
+      return undefined;
     }
   };
 
   return {
-    inputs: () => getDirInputOrOutput('inputs'),
-    outputs: () => getDirInputOrOutput('outputs'),
+    inputs: safelyGrabMetadata(DirectiveMetadataKey.INPUTS),
+    outputs: safelyGrabMetadata(DirectiveMetadataKey.OUTPUTS),
+    encapsulation: safelyGrabMetadata(DirectiveMetadataKey.ENCAPSULATION),
+    onPush: safelyGrabMetadata(DirectiveMetadataKey.ON_PUSH),
   };
 };
 

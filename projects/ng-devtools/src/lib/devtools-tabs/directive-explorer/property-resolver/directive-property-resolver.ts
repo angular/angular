@@ -5,6 +5,7 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import { getExpandedDirectiveProperties } from './property-expanded-directive-properties';
 import { Observable } from 'rxjs';
 import { Property, FlatNode } from './element-property-resolver';
+import { ViewEncapsulation } from '@angular/core';
 
 export interface DirectiveTreeData {
   dataSource: PropertyDataSource;
@@ -91,6 +92,14 @@ export class DirectivePropertyResolver {
     return this._directivePosition;
   }
 
+  get directiveViewEncapsulation(): ViewEncapsulation | undefined {
+    return this._props.metadata?.encapsulation;
+  }
+
+  get directiveHasOnPushStrategy(): boolean | undefined {
+    return this._props.metadata?.onPush;
+  }
+
   getExpandedProperties(): NestedProp[] {
     return [
       ...getExpandedDirectiveProperties(this._inputsDataSource.data),
@@ -156,8 +165,8 @@ export class DirectivePropertyResolver {
     outputProps: { [name: string]: Descriptor };
     stateProps: { [name: string]: Descriptor };
   } {
-    const inputLabels: Set<string> = new Set(Object.keys(this._props.inputs || {}));
-    const outputLabels: Set<string> = new Set(Object.keys(this._props.outputs || {}));
+    const inputLabels: Set<string> = new Set(Object.keys(this._props.metadata?.inputs || {}));
+    const outputLabels: Set<string> = new Set(Object.keys(this._props.metadata?.outputs || {}));
 
     const inputProps = {};
     const outputProps = {};

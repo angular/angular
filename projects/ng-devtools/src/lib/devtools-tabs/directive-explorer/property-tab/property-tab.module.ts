@@ -5,10 +5,17 @@ import { PropertyTabHeaderComponent } from './property-tab-header/property-tab-h
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { PropertyTabBodyComponent } from './property-tab-body/property-tab-body.component';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { ComponentMetadataComponent } from './property-tab-header/component-metadata/component-metadata.component';
 
 @NgModule({
-  declarations: [PropertyTabComponent, PropertyTabHeaderComponent, PropertyTabBodyComponent],
-  imports: [PropertyViewModule, CommonModule, MatButtonModule],
+  declarations: [
+    PropertyTabComponent,
+    PropertyTabHeaderComponent,
+    PropertyTabBodyComponent,
+    ComponentMetadataComponent,
+  ],
+  imports: [PropertyViewModule, CommonModule, MatButtonModule, MatExpansionModule],
   exports: [PropertyTabComponent],
 })
 export class PropertyTabModule {}

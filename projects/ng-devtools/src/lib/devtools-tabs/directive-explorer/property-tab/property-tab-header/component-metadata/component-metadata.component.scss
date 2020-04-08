@@ -1,0 +1,24 @@
+.view-link {
+  display: block;
+  font-size: 11px;
+  padding: 2px;
+  color: unset;
+  text-decoration: unset;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:hover {
+    background-color: #eee;
+    cursor: pointer;
+  }
+
+  &:active {
+    background-color: #bcbcbc;
+  }
+}
+
+.meta-data {
+  font-weight: 400;
+}

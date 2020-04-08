@@ -1,19 +1,35 @@
 <ng-container *ngIf="currentSelectedElement; else emptyState">
-  <div class="element-header">
-    <ng-container *ngIf="currentSelectedElement.component; else currentElementIsDOMElement">
-      <div class="component-name">{{ currentSelectedElement.component.name }}</div>
-      <button mat-icon-button (click)="viewSource.emit()">
-        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
-          <path d="M0 0h24v24H0V0z" fill="none" />
-          <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
-        </svg>
-      </button>
-    </ng-container>
-    <ng-template #currentElementIsDOMElement>
+  <ng-container *ngIf="currentSelectedElement.component; else currentElementIsDOMElement">
+    <mat-accordion class="property-tab-header">
+      <div>
+        <mat-expansion-panel [hideToggle]="true">
+          <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">
+            <mat-panel-title>
+              <div class="element-header">
+                <div class="component-name">{{ currentSelectedElement.component.name }}</div>
+                <button mat-icon-button (click)="handleViewSource($event)">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+                    <path d="M0 0h24v24H0V0z" fill="none" />
+                    <path
+                      d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-component-metadata [currentSelectedComponent]="currentSelectedElement.component"></ng-component-metadata>
+        </mat-expansion-panel>
+      </div>
+    </mat-accordion>
+  </ng-container>
+  <ng-template #currentElementIsDOMElement>
+    <div class="element-header">
       <div class="element-name">{{ currentSelectedElement.element }}</div>
-    </ng-template>
-  </div>
+    </div>
+  </ng-template>
 </ng-container>
+
 <ng-template #emptyState>
   <div class="element-header">
     <div class="element-name">No selected Element</div>
