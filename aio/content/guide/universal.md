@@ -267,7 +267,7 @@ file isn't found.
 
 <code-example path="universal/server.ts" header="server.ts (static files)" region="static"></code-example>
 
-### Using absolute URLs for server requests
+### Using absolute URLs for HTTP (data) requests on the server
 
 The tutorial's `HeroService` and `HeroSearchService` delegate to the Angular `HttpClient` module to fetch application data.
 These services send requests to _relative_ URLs such as `api/heroes`.
