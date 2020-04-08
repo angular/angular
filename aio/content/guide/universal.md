@@ -23,24 +23,28 @@ The CLI schematic `@nguniversal/express-engine` performs the required steps, as 
 하지만 이와 다르게 Angular Universal은 _서버_ 에 미리 _정적_ 으로 생성해둔 애플리케이션을 클라이언트가 실행하고, 그 이후에 클라이언트에서 앱을 다시 부트스트랩하는 테크닉입니다.
 이 방식을 사용하면 애플리케이션을 좀 더 빠르게 실행할 수 있기 때문에 사용자가 보는 애플리케이션 화면도 빠르게 띄울 수 있습니다.
 
-For a more detailed look at different techniques and concepts surrounding SSR, please check out this 
-[article](https://developers.google.com/web/updates/2019/02/rendering-on-the-web).
+이와 비슷한 방식이나 SSR 컨셉에 대해서 더 알아보려면 [이 문서](https://developers.google.com/web/updates/2019/02/rendering-on-the-web)를 참고하세요.
 
-You can easily prepare an app for server-side rendering using the [Angular CLI](guide/glossary#cli). 
-The CLI schematic `@nguniversal/express-engine` performs the required steps, as described below.
+서버 사이드 렌더링은 [Angular CLI](guide/glossary#cli)를 활용해도 간단하게 적용할 수 있습니다.
+Angular CLI 스키매틱 중 `@nguniversal/express-engine`를 활용하는 방법인데, 아래에서 자세하게 설명합니다.
+
 <div class="alert is-helpful">
 
   <!--
   **Note:** [Download the finished sample code](generated/zips/universal/universal.zip),
   which runs in a [Node.js® Express](https://expressjs.com/) server.
   -->
-  **참고:** [완성된 샘플 코드를 다운받아서](generated/zips/universal/universal.zip) [Node.js® Express](https://expressjs.com/) 서버에 직접 실행해볼 수 있습니다.
+  **참고:** [완성된 샘플 코드를 다운](generated/zips/universal/universal.zip)받고 [Node.js® Express](https://expressjs.com/) 서버에서 직접 실행해볼 수 있습니다.
 
 </div>
 
 {@a the-example}
+<!--
 ## Universal tutorial
+-->
+## Universal 튜토리얼
 
+<!--
 The [Tour of Heroes tutorial](tutorial) is the foundation for this walkthrough.
 
 In this example, the Angular CLI compiles and bundles the Universal version of the app with the
@@ -74,9 +78,47 @@ package.json                 <i>npm configuration</i>
 </code-example>
 
 The files marked with `*` are new and not in the original tutorial sample.
+-->
+이 문서에서는 [히어로들의 여행](tutorial) 앱에 Universal을 적용해 봅시다.
 
+이 앱은 Angular CLI로 컴파일 할 때 [AOT 컴파일러](guide/aot-compiler)를 사용합니다.
+그리고 이렇게 빌드한 결과물은 Node Express 서버로 서비스해 봅시다.
+
+서버 사이드 앱 모듈을 생성하려면 다음 명령을 실행해서 `app.server.module.ts`를 생성합니다.
+
+<code-example language="bash">
+
+ng add @nguniversal/express-engine
+
+</code-example>
+
+그러면 다음과 같은 폴더 구조가 생성됩니다.
+
+<code-example language="none">
+src/
+  index.html                 <i>애플리케이션 웹 페이지</i>
+  main.ts                    <i>클라이언트 앱을 부트스트랩하는 파일</i>
+  main.server.ts             <i>* 서버 앱을 부트스트랩하는 파일</i>
+  style.css                  <i>앱 전역 스타일 파일</i>
+  app/ ...                   <i>애플리케이션 코드</i>
+    app.server.module.ts     <i>* 서버 사이드 애플리케이션 모듈</i>
+server.ts                    <i>* Express 웹 서버</i>
+tsconfig.json                <i>TypeScript 클라이언트 설정 파일</i>
+tsconfig.app.json            <i>TypeScript 클라이언트 설정 파일</i>
+tsconfig.server.json         <i>* TypeScript 서버 설정 파일</i>
+tsconfig.spec.json           <i>TypeScript 스펙 설정 파일</i>
+package.json                 <i>npm 설정 파일</i>
+</code-example>
+
+이 중 `*` 표시가 된 파일이 새로 추가된 파일입니다.
+
+
+<!--
 ### Universal in action
+-->
+### Universal 앱 실행하기
 
+<!--
 To start rendering your app with Universal on your local system, use the following command.
 
 <code-example language="bash">
@@ -112,6 +154,39 @@ dropdown on the far right of the menu bar.
 1. Try one of the "3G" speeds.
 
 The server-rendered app still launches quickly but the full client app may take seconds to load.
+-->
+로컬 개발 환경에서 Angular 앱을 Universal로 렌더링하려면 다음 명령을 실행하면 됩니다.
+
+<code-example language="bash">
+npm run build:ssr && npm run serve:ssr
+</code-example>
+
+명령을 실행하고 나면 브라우저를 열어서 http://localhost:4000/에 접속해 보세요.
+이전에 봤던 히어로들의 여행 대시보드 화면이 표시될 것입니다.
+
+이 앱은 네이티브 앵커 태그(`<a>`)를 사용하기 때문에 `routerLinks`도 이전과 마찬가지로 동작합니다.
+그래서 대시보드 화면에서 히어로 목록 화면으로 이동할 수 있고 이전 화면으로 돌아갈 수도 있습니다.
+그리고 대시보드 화면에서 히어로를 클릭하면 히어로 상세정보 화면으로 이동할 수 있습니다.
+
+이 상태에서 네트워크 속도를 제한하면 애플리케이션 코드를 다운로드하는 속도가 느려지기 때문에 다음과 같은 현상이 발생합니다:
+* 히어로 목록 화면에서 히어로를 클릭하면 아무일도 일어나지 않습니다.
+* 히어로를 추가하거나 삭제할 수 없습니다.
+* 대시보드 화면에 있는 검색창이 동작하지 않습니다.
+* 히어로 상세정보 화면에 있는 *Back*, *Save* 버튼이 동작하지 않습니다.
+
+네트워크 속도를 제한하면 `routerLink`를 클릭하는 것 이외의 기능이 동작하지 않습니다.
+이 때는 클라이언트 앱이 모두 부트스트랩되어 실행될 때까지 기다리거나 [preboot](https://github.com/angular/preboot)와 같은 라이브러리를 활용해서 이벤트를 캐싱해놨다가 클라이언트 스크립트가 로드된 후에 다시 한 번 처리해야 합니다.
+
+서버에서 렌더링된 앱을 클라이언트용으로 전환하는 것은 간단하지만 실제로 운영되고 있는 앱이라면 이 앱을 확실하게 테스트해야 합니다.
+
+네트워크 속도를 제한하는 기능은 다음과 같이 적용합니다:
+
+1. Chrome 개발자 도구를 열어서 Network 탭으로 이동합니다.
+1. 메뉴바 오른쪽에 있는 [Network Throttling](https://developers.google.com/web/tools/chrome-devtools/network-performance/reference#throttling) 드롭다운을 클릭합니다.
+1. "3G" 속도를 선택합니다.
+
+이렇게 적용하면 서버 사이드용으로 렌더링된 앱의 초기 실행은 빠를 수 있지만 클라이언트 앱이 전부 로딩되려면 몇 초 기다려야 합니다.
+
 
 {@a why-do-it}
 <!--
@@ -310,9 +385,14 @@ Angular는 이런 객체를 참조해야 하는 상황을 대비해서 [`Localti
 
 결국 서버에서 렌더링된 페이지에서는 사용자가 링크를 클릭한다는 방식을 활용할 수 없기 때문에, 이와 유사한 UX를 제공할 수 있도록 구현방식을 수정해야 할 수도 있습니다.
 
-{@a http-urls}
-### Using absolute URLs for server requests
 
+{@a http-urls}
+<!--
+### Using absolute URLs for server requests
+-->
+### 서버로 요청 보낼 때 절대 URL 사용하기
+
+<!--
 The tutorial's `HeroService` and `HeroSearchService` delegate to the Angular `HttpClient` module to fetch application data.
 These services send requests to _relative_ URLs such as `api/heroes`.
 In a Universal app, HTTP URLs must be _absolute_ (for example, `https://my-server.com/api/heroes`).
@@ -324,6 +404,15 @@ value and prepend it to the request URL. If you're using the `ngExpressEngine`, 
 the work is already done. We'll assume this is the case, but it's trivial to provide the same functionality.
 
 Start by creating an [HttpInterceptor](api/common/http/HttpInterceptor).
+-->
+튜토리얼 앱에서 `HeroService`와 `HeroSearchService`는 모두 Angular `HttpClient` 모듈을 사용해서 애플리케이션 데이터를 가져옵니다.
+그리고 이 서비스들이 보내는 요청은 `api/heroes`와 같은 _상대(relative)_ URL로 작성되었습니다.
+하지만 Universal 앱에서는 HTTP URL이 반드시 `https://my-server.com/api/heroes`와 같이 _절대(absolute)_ 주소가 되어야 합니다.
+Universal 앱은 브라우저에서 실행되는 것이 아니라 서버에서 실행되기 때문에 리모트 서버로 요청을 보낼 때 절대 URL을 사용해야 하며 서비스에서 관련된 부분도 수정되어야 합니다.
+
+이 작업을 간단하게 처리하려면 서비스가 요청을 보낼 때 인터셉터로 이 요청을 받아서 URL을 수정한 후에 다시 요청을 보내면 됩니다.
+그리고 이 문서에서 다룬 것처럼 `ngExpressEngine`을 사용하고 있다면 이 작업은 이미 반정도 완료되었다고 보면 됩니다.
+인터셉터는 다음과 같이 구현합니다.
 
 <code-example language="typescript" header="universal-interceptor.ts">
 
@@ -353,7 +442,10 @@ export class UniversalInterceptor implements HttpInterceptor {
 
 </code-example>
 
+<!--
 Next, provide the interceptor in the providers for the server `AppModule`.
+-->
+그리고 이 인터셉터를 서버용 `AppModule`에 등록합니다.
 
 <code-example language="typescript" header="app.server.module.ts">
 
@@ -372,8 +464,12 @@ export class AppServerModule {}
 
 </code-example>
 
+<!--
 Now, on every HTTP request made on the server, this interceptor will fire and replace the request URL with the absolute
 URL provided in the Express `Request` object.
+-->
+이제 서버에서 발생하는 모든 HTTP 요청은 이 인터셉터를 거치기 때문에 모든 요청이 Express `Request` 객체가 제공하는 절대 URL로 변경됩니다.
+
 
 {@a universal-engine}
 <!--
@@ -460,8 +556,7 @@ Because we use routing, we can easily recognize the three types of requests and 
 A Node Express server is a pipeline of middleware that filters and processes requests one after the other.
 You configure the Node Express server pipeline with calls to `app.get()` like this one for data requests.
 -->
-NOTE: the basic behavior described below is handled automatically when using the NgUniversal Express schematic, this
-is helpful when trying to understand the underlying behavior or replicate it without using the schematic.
+참고: NgUniversal Express 스키매틱을 사용하면 아래에서 설명하는 내용은 자동으로 처리됩니다. 스키매틱을 사용하는 방법에 대해 익숙하지 않더라도 내용을 이해하는 데에는 어려움이 없을 것입니다.
 
 웹 서버는 _앱 페이지를 요청하는 것_ 과 데이터를 요청하는 것을 구별할 수 있어야 합니다.
 
