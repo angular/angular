@@ -15,7 +15,7 @@ The CLI schematic `@nguniversal/express-engine` performs the required steps, as 
 
 <div class="alert is-helpful">
 
-  **Note:** [Download the finished sample code](generated/zips/universal/universal.zip),
+  **Note:** <live-example downloadOnly>Download the finished sample code</live-example>,
   which runs in a [Node.js® Express](https://expressjs.com/) server.
 
 </div>
@@ -27,7 +27,7 @@ The [Tour of Heroes tutorial](tutorial) is the foundation for this walkthrough.
 
 In this example, the Angular CLI compiles and bundles the Universal version of the app with the
 [Ahead-of-Time (AOT) compiler](guide/aot-compiler).
-A Node Express web server compiles HTML pages with Universal based on client requests.
+A Node.js Express web server compiles HTML pages with Universal based on client requests.
 
 To create the server-side app module, `app.server.module.ts`, run the following CLI command.
 
@@ -158,13 +158,12 @@ The sample web server for this guide is based on the popular [Express](https://e
 Universal applications use the Angular `platform-server` package (as opposed to `platform-browser`), which provides
 server implementations of the DOM, `XMLHttpRequest`, and other low-level features that don't rely on a browser.
 
-The server ([Node Express](https://expressjs.com/) in this guide's example)
+The server ([Node.js Express](https://expressjs.com/) in this guide's example)
 passes client requests for application pages to the NgUniversal `ngExpressEngine`. Under the hood, this
 calls Universal's `renderModule()` function, while providing caching and other helpful utilities.
 
 The `renderModule()` function takes as inputs a *template* HTML page (usually `index.html`),
-an Angular *module* containing components,
-and a *route* that determines which components to display.
+an Angular *module* containing components, and a *route* that determines which components to display.
 The route comes from the client's request to the server.
 
 Each request results in the appropriate view for the requested route.
@@ -203,7 +202,7 @@ the work is already done. We'll assume this is the case, but it's trivial to pro
 
 Start by creating an [HttpInterceptor](api/common/http/HttpInterceptor).
 
-<code-example language="typescript" header="universal-interceptor.ts">
+<code-example language="typescript" header="src/app/universal-interceptor.ts">
 
 import {Injectable, Inject, Optional} from '@angular/core';
 import {HttpInterceptor, HttpHandler, HttpRequest, HttpHeaders} from '@angular/common/http';
@@ -233,8 +232,9 @@ export class UniversalInterceptor implements HttpInterceptor {
 
 Next, provide the interceptor in the providers for the server `AppModule`.
 
-<code-example language="typescript" header="app.server.module.ts">
+<code-example language="typescript" header="src/app/app.server.module.ts">
 
+...
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
 import {UniversalInterceptor} from './universal-interceptor';
 
@@ -262,17 +262,13 @@ The important bit in the `server.ts` file is the `ngExpressEngine()` function.
 </code-example>
 
 The `ngExpressEngine()` function is a wrapper around Universal's `renderModule()` function which turns a client's
-requests into server-rendered HTML pages.
+requests into server-rendered HTML pages. It accepts an object with the following properties:
 
-* The first parameter is `AppServerModule`.
-It's the bridge between the Universal server-side renderer and the Angular application.
+* `bootstrap`: The root `NgModule` or `NgModule` factory to use for bootstraping the app when rendering on the server. For the example app, it is `AppServerModule`. It's the bridge between the Universal server-side renderer and the Angular application.
+* `extraProviders`: This is optional and lets you specify dependency providers that apply only when rendering the app on the server. You can do this when your app needs information that can only be determined by the currently running server instance.
 
-* The second parameter, `extraProviders`, is optional. It lets you specify dependency providers that apply only when
-running on this server.
-You can do this when your app needs information that can only be determined by the currently running server instance.
 One example could be the running server's *origin*, which could be used to [calculate absolute HTTP URLs](#http-urls) if
 not using the `Request` token as shown above.
-
 The `ngExpressEngine()` function returns a `Promise` callback that resolves to the rendered page.
 It's up to the engine to decide what to do with that page.
 This engine's `Promise` callback returns the rendered page to the web server,
@@ -287,7 +283,7 @@ which then forwards it to the client in the HTTP response.
 
 ### Filtering request URLs
 
-NOTE: the basic behavior described below is handled automatically when using the NgUniversal Express schematic, this
+NOTE: The basic behavior described below is handled automatically when using the NgUniversal Express schematic. This
 is helpful when trying to understand the underlying behavior or replicate it without using the schematic.
 
 The web server must distinguish _app page requests_ from other kinds of requests.
@@ -307,8 +303,8 @@ Because we use routing, we can easily recognize the three types of requests and 
 1. **App navigation**: request URL with no file extension.
 1. **Static asset**: all other requests.
 
-A Node Express server is a pipeline of middleware that filters and processes requests one after the other.
-You configure the Node Express server pipeline with calls to `app.get()` like this one for data requests.
+A Node.js Express server is a pipeline of middleware that filters and processes requests one after the other.
+You configure the Node.js Express server pipeline with calls to `server.get()` like this one for data requests.
 
 <code-example path="universal/server.ts" header="server.ts (data URL)" region="data-request"></code-example>
 
@@ -334,7 +330,7 @@ such as JavaScript, image, and style files.
 To ensure that clients can only download the files that they are permitted to see, put all client-facing asset files in
 the `/dist` folder and only honor requests for files from the `/dist` folder.
 
-The following Node Express code routes all remaining requests to `/dist`, and returns a `404 - NOT FOUND` error if the
+The following Node.js Express code routes all remaining requests to `/dist`, and returns a `404 - NOT FOUND` error if the
 file isn't found.
 
 <code-example path="universal/server.ts" header="server.ts (static files)" region="static"></code-example>
