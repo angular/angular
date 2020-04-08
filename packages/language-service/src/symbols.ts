@@ -192,42 +192,42 @@ export enum BuiltinType {
   /**
    * The type is a type that can hold any other type.
    */
-  Any,
+  Any = -1,
 
   /**
    * The type of a string literal.
    */
-  String,
+  String = 1 << 0,
 
   /**
    * The type of a numeric literal.
    */
-  Number,
+  Number = 1 << 1,
 
   /**
    * The type of the `true` and `false` literals.
    */
-  Boolean,
+  Boolean = 1 << 2,
 
   /**
    * The type of the `undefined` literal.
    */
-  Undefined,
+  Undefined = 1 << 3,
 
   /**
    * the type of the `null` literal.
    */
-  Null,
+  Null = 1 << 4,
 
   /**
    * the type is an unbound type parameter.
    */
-  Unbound,
+  Unbound = 1 << 5,
 
   /**
    * Not a built-in type.
    */
-  Other
+  Other = 1 << 6,
 }
 
 /**

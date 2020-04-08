@@ -902,20 +902,13 @@ function typeKindOf(type: ts.Type|undefined): BuiltinType {
     } else if (type.flags & (ts.TypeFlags.Null)) {
       return BuiltinType.Null;
     } else if (type.flags & ts.TypeFlags.Union) {
-      // If all the constituent types of a union are the same kind, it is also that kind.
-      let candidate: BuiltinType|null = null;
       const unionType = type as ts.UnionType;
-      if (unionType.types.length > 0) {
-        candidate = typeKindOf(unionType.types[0]);
-        for (const subType of unionType.types) {
-          if (candidate != typeKindOf(subType)) {
-            return BuiltinType.Other;
-          }
-        }
+      if (unionType.types.length === 0) return BuiltinType.Other;
+      let ty: BuiltinType = 0;
+      for (const subType of unionType.types) {
+        ty |= typeKindOf(subType);
       }
-      if (candidate != null) {
-        return candidate;
-      }
+      return ty;
     } else if (type.flags & ts.TypeFlags.TypeParameter) {
       return BuiltinType.Unbound;
     }
