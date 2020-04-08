@@ -1,6 +1,10 @@
 import {inject, async, fakeAsync, tick, TestBed} from '@angular/core/testing';
 import {SafeResourceUrl, DomSanitizer, SafeHtml} from '@angular/platform-browser';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+  TestRequest,
+} from '@angular/common/http/testing';
 import {Component, ErrorHandler} from '@angular/core';
 import {MatIconModule, MAT_ICON_LOCATION} from './index';
 import {MatIconRegistry, getMatIconNoHttpProviderError} from './icon-registry';
@@ -189,9 +193,11 @@ describe('MatIcon', () => {
     it('should register icon URLs by name', fakeAsync(() => {
       iconRegistry.addSvgIcon('fluffy', trustUrl('cat.svg'));
       iconRegistry.addSvgIcon('fido', trustUrl('dog.svg'));
+      iconRegistry.addSvgIcon('felix', trustUrl('auth-cat.svg'), {withCredentials: true});
 
       const fixture = TestBed.createComponent(IconFromSvgName);
       let svgElement: SVGElement;
+      let testRequest: TestRequest;
       const testComponent = fixture.componentInstance;
       const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
 
@@ -214,6 +220,15 @@ describe('MatIcon', () => {
       http.expectNone('dog.svg');
       svgElement = verifyAndGetSingleSvgChild(iconElement);
       verifyPathChildElement(svgElement, 'woof');
+
+      // Change icon to one that needs credentials during fetch.
+      testComponent.iconName = 'felix';
+      fixture.detectChanges();
+      testRequest = http.expectOne('auth-cat.svg');
+      expect(testRequest.request.withCredentials).toBeTrue();
+      testRequest.flush(FAKE_SVGS.cat);
+      svgElement = verifyAndGetSingleSvgChild(iconElement);
+      verifyPathChildElement(svgElement, 'meow');
 
       // Assert that a registered icon can be looked-up by url.
       iconRegistry.getSvgIconFromUrl(trustUrl('cat.svg')).subscribe(element => {

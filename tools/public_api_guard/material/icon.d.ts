@@ -16,6 +16,7 @@ export declare function ICON_REGISTRY_PROVIDER_FACTORY(parentRegistry: MatIconRe
 
 export interface IconOptions {
     viewBox?: string;
+    withCredentials?: boolean;
 }
 
 export declare const MAT_ICON_LOCATION: InjectionToken<MatIconLocation>;
