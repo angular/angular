@@ -10,7 +10,7 @@
 const shell = require('shelljs');
 const karmaBin = require.resolve('karma/bin/karma');
 const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER']);
-const sauceService = runfiles.resolve(process.argv[2]);
+const sauceService = runfiles.resolveWorkspaceRelative(process.argv[2]);
 process.argv = [
   process.argv[0],
   karmaBin,
@@ -61,7 +61,7 @@ try {
   }
 
   console.error(`Launching karma ${karmaBin}...`);
-  module.constructor._load(karmaBin, this, /*isMain=*/true);
+  module.constructor._load(karmaBin, this, /*isMain=*/ true);
 } catch (e) {
   console.error(e.stack || e);
   process.exit(1);
