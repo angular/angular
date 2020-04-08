@@ -62,10 +62,10 @@ The files marked with `*` are new and not in the original tutorial sample.
 To start rendering your app with Universal on your local system, use the following command.
 
 <code-example language="bash">
-npm run build:ssr && npm run serve:ssr
+npm run dev:ssr
 </code-example>
 
-Open a browser and navigate to http://localhost:4000/.
+Open a browser and navigate to http://localhost:4200/.
 You should see the familiar Tour of Heroes dashboard page.
 
 Navigation via `routerLinks` works correctly because they use the native anchor (`<a>`) tags.
@@ -328,7 +328,7 @@ The following code filters for request URLs with no extensions and treats them a
 
 ### Serving static files safely
 
-A single `app.use()` treats all other URLs as requests for static assets
+A single `server.use()` treats all other URLs as requests for static assets
 such as JavaScript, image, and style files.
 
 To ensure that clients can only download the files that they are permitted to see, put all client-facing asset files in
