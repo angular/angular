@@ -243,7 +243,7 @@ function removeInnerTemplateTranslation(message: string): string {
  * external template and removes all sub-templates.
  */
 export function getTranslationForTemplate(message: string, subTemplateIndex?: number) {
-  if (typeof subTemplateIndex !== 'number') {
+  if (isRootTemplateMessage(subTemplateIndex)) {
     // We want the root template message, ignore all sub-templates
     return removeInnerTemplateTranslation(message);
   } else {
@@ -376,6 +376,10 @@ export function ɵɵi18nStart(index: number, message: string, subTemplateIndex?:
 // This is reset to 0 when `i18nStartFirstPass` is called.
 let i18nVarsCount: number;
 
+function allocNodeIndex(startIndex: number): number {
+  return startIndex + i18nVarsCount++;
+}
+
 /**
  * See `i18nStart` above.
  */
@@ -409,81 +413,90 @@ function i18nStartFirstPass(
   const updateOpCodes: I18nUpdateOpCodes = [];
   const icuExpressions: TIcu[] = [];
 
-  const templateTranslation = getTranslationForTemplate(message, subTemplateIndex);
-  const msgParts = replaceNgsp(templateTranslation).split(PH_REGEXP);
-  for (let i = 0; i < msgParts.length; i++) {
-    let value = msgParts[i];
-    if (i & 1) {
-      // Odd indexes are placeholders (elements and sub-templates)
-      if (value.charAt(0) === '/') {
-        // It is a closing tag
-        if (value.charAt(1) === TagType.ELEMENT) {
-          const phIndex = parseInt(value.substr(2), 10);
-          parentIndex = parentIndexStack[--parentIndexPointer];
-          createOpCodes.push(phIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.ElementEnd);
+  if (message === '' && isRootTemplateMessage(subTemplateIndex)) {
+    // If top level translation is an empty string, do not invoke additional processing
+    // and just create op codes for empty text node instead.
+    createOpCodes.push(
+        message, allocNodeIndex(startIndex),
+        parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
+  } else {
+    const templateTranslation = getTranslationForTemplate(message, subTemplateIndex);
+    const msgParts = replaceNgsp(templateTranslation).split(PH_REGEXP);
+    for (let i = 0; i < msgParts.length; i++) {
+      let value = msgParts[i];
+      if (i & 1) {
+        // Odd indexes are placeholders (elements and sub-templates)
+        if (value.charAt(0) === '/') {
+          // It is a closing tag
+          if (value.charAt(1) === TagType.ELEMENT) {
+            const phIndex = parseInt(value.substr(2), 10);
+            parentIndex = parentIndexStack[--parentIndexPointer];
+            createOpCodes.push(phIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.ElementEnd);
+          }
+        } else {
+          const phIndex = parseInt(value.substr(1), 10);
+          const isElement = value.charAt(0) === TagType.ELEMENT;
+          // The value represents a placeholder that we move to the designated index.
+          // Note: positive indicies indicate that a TNode with a given index should also be marked
+          // as parent while executing `Select` instruction.
+          createOpCodes.push(
+              (isElement ? phIndex : ~phIndex) << I18nMutateOpCode.SHIFT_REF |
+                  I18nMutateOpCode.Select,
+              parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
+
+          if (isElement) {
+            parentIndexStack[++parentIndexPointer] = parentIndex = phIndex;
+          }
         }
       } else {
-        const phIndex = parseInt(value.substr(1), 10);
-        const isElement = value.charAt(0) === TagType.ELEMENT;
-        // The value represents a placeholder that we move to the designated index.
-        // Note: positive indicies indicate that a TNode with a given index should also be marked as
-        // parent while executing `Select` instruction.
-        createOpCodes.push(
-            (isElement ? phIndex : ~phIndex) << I18nMutateOpCode.SHIFT_REF |
-                I18nMutateOpCode.Select,
-            parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
+        // Even indexes are text (including bindings & ICU expressions)
+        const parts = extractParts(value);
+        for (let j = 0; j < parts.length; j++) {
+          if (j & 1) {
+            // Odd indexes are ICU expressions
+            const icuExpression = parts[j] as IcuExpression;
 
-        if (isElement) {
-          parentIndexStack[++parentIndexPointer] = parentIndex = phIndex;
-        }
-      }
-    } else {
-      // Even indexes are text (including bindings & ICU expressions)
-      const parts = extractParts(value);
-      for (let j = 0; j < parts.length; j++) {
-        if (j & 1) {
-          // Odd indexes are ICU expressions
-          const icuExpression = parts[j] as IcuExpression;
+            // Verify that ICU expression has the right shape. Translations might contain invalid
+            // constructions (while original messages were correct), so ICU parsing at runtime may
+            // not succeed (thus `icuExpression` remains a string).
+            if (typeof icuExpression !== 'object') {
+              throw new Error(
+                  `Unable to parse ICU expression in "${templateTranslation}" message.`);
+            }
 
-          // Verify that ICU expression has the right shape. Translations might contain invalid
-          // constructions (while original messages were correct), so ICU parsing at runtime may not
-          // succeed (thus `icuExpression` remains a string).
-          if (typeof icuExpression !== 'object') {
-            throw new Error(`Unable to parse ICU expression in "${templateTranslation}" message.`);
-          }
+            // Create the comment node that will anchor the ICU expression
+            const icuNodeIndex = allocNodeIndex(startIndex);
+            createOpCodes.push(
+                COMMENT_MARKER, ngDevMode ? `ICU ${icuNodeIndex}` : '', icuNodeIndex,
+                parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
 
-          // Create the comment node that will anchor the ICU expression
-          const icuNodeIndex = startIndex + i18nVarsCount++;
-          createOpCodes.push(
-              COMMENT_MARKER, ngDevMode ? `ICU ${icuNodeIndex}` : '', icuNodeIndex,
-              parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
+            // Update codes for the ICU expression
+            const mask = getBindingMask(icuExpression);
+            icuStart(icuExpressions, icuExpression, icuNodeIndex, icuNodeIndex);
+            // Since this is recursive, the last TIcu that was pushed is the one we want
+            const tIcuIndex = icuExpressions.length - 1;
+            updateOpCodes.push(
+                toMaskBit(icuExpression.mainBinding),  // mask of the main binding
+                3,                                     // skip 3 opCodes if not changed
+                -1 - icuExpression.mainBinding,
+                icuNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuSwitch, tIcuIndex,
+                mask,  // mask of all the bindings of this ICU expression
+                2,     // skip 2 opCodes if not changed
+                icuNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuUpdate, tIcuIndex);
+          } else if (parts[j] !== '') {
+            const text = parts[j] as string;
+            // Even indexes are text (including bindings)
+            const hasBinding = text.match(BINDING_REGEXP);
+            // Create text nodes
+            const textNodeIndex = allocNodeIndex(startIndex);
+            createOpCodes.push(
+                // If there is a binding, the value will be set during update
+                hasBinding ? '' : text, textNodeIndex,
+                parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
 
-          // Update codes for the ICU expression
-          const mask = getBindingMask(icuExpression);
-          icuStart(icuExpressions, icuExpression, icuNodeIndex, icuNodeIndex);
-          // Since this is recursive, the last TIcu that was pushed is the one we want
-          const tIcuIndex = icuExpressions.length - 1;
-          updateOpCodes.push(
-              toMaskBit(icuExpression.mainBinding),  // mask of the main binding
-              3,                                     // skip 3 opCodes if not changed
-              -1 - icuExpression.mainBinding,
-              icuNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuSwitch, tIcuIndex,
-              mask,  // mask of all the bindings of this ICU expression
-              2,     // skip 2 opCodes if not changed
-              icuNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuUpdate, tIcuIndex);
-        } else if (parts[j] !== '') {
-          const text = parts[j] as string;
-          // Even indexes are text (including bindings)
-          const hasBinding = text.match(BINDING_REGEXP);
-          // Create text nodes
-          const textNodeIndex = startIndex + i18nVarsCount++;
-          createOpCodes.push(
-              // If there is a binding, the value will be set during update
-              hasBinding ? '' : text, textNodeIndex,
-              parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
-
-          if (hasBinding) {
-            addAllToArray(generateBindingUpdateOpCodes(text, textNodeIndex), updateOpCodes);
+            if (hasBinding) {
+              addAllToArray(generateBindingUpdateOpCodes(text, textNodeIndex), updateOpCodes);
+            }
           }
         }
       }
@@ -556,6 +569,10 @@ function appendI18nNode(
     appendChild(tView, lView, slotValue[NATIVE], tNode);
   }
   return tNode;
+}
+
+function isRootTemplateMessage(subTemplateIndex: number|undefined): subTemplateIndex is undefined {
+  return subTemplateIndex === undefined;
 }
 
 /**
