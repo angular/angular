@@ -43,7 +43,7 @@ console.log(`BUILD_SCM_LOCAL_CHANGES ${LOCAL_CHANGES}`);
 // This will ignore non-version tags which would break unit tests expecting a valid version
 // number in the package headers
 const BUILD_SCM_VERSION_RAW =
-    _exec(`git describe --match [0-9].[0-9].[0-9]* --abbrev=7 --tags HEAD`);
+    _exec(`git describe --match [0-9]*.[0-9]*.[0-9]* --abbrev=7 --tags HEAD`);
 
 // Reformat `git describe` version string into a more semver-ish string
 //   From:   5.2.0-rc.0-57-g757f886
