@@ -815,5 +815,13 @@
     "website": "https://wellwind.idv.tw/blog/",
     "bio": "Mike is a full-stack developer, consultant, blogger, instructor, and conference speaker. He has over 10 years of web development experience and passion to share his knowledge.",
     "groups": ["GDE"]
+  },
+  "ahasall": {
+    "name": "Amadou Sall",
+    "picture": "ahasall.jpg",
+    "groups": ["GDE"],
+    "twitter": "ahasall",
+    "website": "https://www.amadousall.com",
+    "bio": "Amadou is a Frontend Software Engineer from Senegal based in France. He currently works at Air France where he helps developers build better Angular applications. Passionate about web technologies, Amadou is an international speaker, a technical writer, and a Google Developer Expert in Angular."
   }
 }
