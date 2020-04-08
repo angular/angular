@@ -4,7 +4,7 @@ describe('Testing the Todo app Demo', () => {
   });
 
   it('should contain the todos application', () => {
-    cy.enter('#sample-app').then(getBody => {
+    cy.enter('#sample-app').then((getBody) => {
       getBody().contains('Todos');
       getBody().contains('About');
       getBody().contains('Clear completed');
@@ -21,7 +21,7 @@ describe('Testing the Todo app Demo', () => {
   });
 
   it('should contain "app-root" and "app-todo-demo" in the component tree', () => {
-    cy.get('mat-tree-node').contains('app-root');
-    cy.get('mat-tree-node').contains('app-todo-demo');
+    cy.get('.tree-node').contains('app-root');
+    cy.get('.tree-node').contains('app-todo-demo');
   });
 });

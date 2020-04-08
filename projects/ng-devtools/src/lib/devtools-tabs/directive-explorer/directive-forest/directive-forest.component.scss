@@ -3,66 +3,68 @@
   height: 100%;
   overflow: auto;
 
-  ::ng-deep {
-    .mat-tree-node {
-      min-height: 20px !important;
-      cursor: default;
-      font-family: Menlo, monospace;
-      margin: 2px;
+  .tree-node {
+    color: #111;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    position: relative;
 
-      .mat-icon {
-        font-size: 12px;
-        width: 16px;
-        height: 16px;
-      }
+    cursor: default;
+    font-family: Menlo, monospace;
+    font-size: 11px;
+
+    border-radius: 8px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    .mat-icon {
+      font-size: 12px;
+      width: 16px;
+      height: 16px;
+      display: inline-block;
     }
 
-    mat-tree-node {
-      border-radius: 8px;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+    & > button {
+      outline: none;
+      border: 0;
+      padding: 0;
+      position: relative;
+      background-color: transparent;
+      top: 3px;
+    }
 
-      & > button {
-        outline: none;
-        border: 0;
-        background: transparent;
-        padding: 0;
-        margin-top: 3px;
-      }
+    &:hover {
+      background-color: #d4e7ff;
+      cursor: pointer;
+    }
+
+    &.matched {
+      background-color: #b298e4;
+      color: #fff;
 
       &:hover {
-        background-color: #d4e7ff;
-        cursor: pointer;
+        background-color: #8463be;
       }
 
-      &.matched {
-        background-color: #b298e4;
-        color: #fff;
+      &.selected {
+        background-color: #6f56bb;
+        color: #fcd736;
+      }
 
-        &:hover {
-          background-color: #8463be;
-        }
+      .dir-names {
+        opacity: 0.8;
+      }
 
-        &.selected {
-          background-color: #6f56bb;
-          color: #fcd736;
-        }
-
-        .dir-names {
-          opacity: 0.8;
-        }
-
-        .console-reference {
-          opacity: 0.8;
-        }
+      .console-reference {
+        opacity: 0.8;
       }
     }
-  }
-}
 
-:host ::ng-deep .mat-tree-node,
-.mat-nested-tree-node {
-  font-size: 11px;
+    &.selected,
+    &.highlighted {
+      background-color: #92bdff;
+    }
+  }
 }
 
 @keyframes appear {
@@ -79,11 +81,6 @@
 
 .new-node {
   animation: appear 0.5s;
-}
-
-:host ::ng-deep mat-tree-node.selected,
-:host ::ng-deep mat-tree-node.highlighted {
-  background-color: #92bdff;
 }
 
 .dir-names {
@@ -121,6 +118,7 @@
 
 .tree-wrapper {
   overflow-y: auto;
+  height: calc(100% - 24px);
 }
 
 .angular-element {

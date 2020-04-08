@@ -56,11 +56,11 @@ export class TodosComponent implements OnInit, OnDestroy {
   }
 
   get itemsLeft(): number {
-    return (this.todos || []).filter(t => !t.completed).length;
+    return (this.todos || []).filter((t) => !t.completed).length;
   }
 
   clearCompleted(): void {
-    (this.todos || []).filter(t => t.completed).forEach(t => this.delete.emit(t));
+    (this.todos || []).filter((t) => t.completed).forEach((t) => this.delete.emit(t));
   }
 
   addTodo(input: HTMLInputElement): void {
@@ -83,7 +83,7 @@ export class TodosComponent implements OnInit, OnDestroy {
     if (!todo.id) {
       return;
     }
-    const idx = this.todos.findIndex(t => t.id === todo.id);
+    const idx = this.todos.findIndex((t) => t.id === todo.id);
     if (idx < 0) {
       return;
     }

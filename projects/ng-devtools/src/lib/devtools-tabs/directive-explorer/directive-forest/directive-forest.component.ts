@@ -9,10 +9,11 @@ import {
   ViewChild,
 } from '@angular/core';
 import { DevToolsNode, ElementPosition } from 'protocol';
-import { CdkTree, FlatTreeControl } from '@angular/cdk/tree';
+import { FlatTreeControl } from '@angular/cdk/tree';
 import { ComponentDataSource, FlatNode } from './component-data-source';
 import { isChildOf, parentCollapsed } from './directive-forest-utils';
 import { IndexedNode } from './index-forest';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 @Component({
   selector: 'ng-directive-forest',
@@ -37,7 +38,7 @@ export class DirectiveForestComponent {
   @Output() highlightFromComponent = new EventEmitter<ElementPosition>();
   @Output() unhighlightFromComponent = new EventEmitter<null>();
 
-  @ViewChild(CdkTree) tree: CdkTree<any>;
+  @ViewChild(CdkVirtualScrollViewport) scrollParentElement: CdkVirtualScrollViewport;
 
   filterRegex = new RegExp('.^');
   currentlyMatchedIndex = -1;
@@ -45,42 +46,47 @@ export class DirectiveForestComponent {
   selectedNode: FlatNode | null = null;
   parents: FlatNode[];
 
-  treeControl = new FlatTreeControl<FlatNode>(
+  readonly treeControl = new FlatTreeControl<FlatNode>(
     (node) => node.level,
     (node) => node.expandable
   );
-  dataSource = new ComponentDataSource(this.treeControl);
+  readonly dataSource = new ComponentDataSource(this.treeControl);
+  readonly itemHeight = 21;
 
   private _initialized = false;
 
   hasChild = (_: number, node: FlatNode) => node.expandable;
 
-  constructor(private _host: ElementRef) {}
-
   handleSelect(node: FlatNode): void {
-    const matchedTree: FlatNode[] = this._findMatchedNodes();
-    this.currentlyMatchedIndex = matchedTree.findIndex((matchedNode) => matchedNode.id === node.id);
-    this.select(node);
+    this.currentlyMatchedIndex = this.dataSource.data.findIndex((matchedNode) => matchedNode.id === node.id);
+    this.selectAndEnsureVisible(this.currentlyMatchedIndex);
   }
 
   handleSelectDomElement(node: FlatNode): void {
     this.selectDomElement.emit(node.original);
   }
 
-  select(node: FlatNode): void {
+  selectAndEnsureVisible(idx: number): void {
+    this.select(idx);
+
+    const scrollParent = this.scrollParentElement.elementRef.nativeElement;
+    // The top most point we see an element
+    const top = scrollParent.scrollTop;
+    // That's the bottom most point we currently see an element.
+    const bottom = top + scrollParent.offsetHeight;
+    const itemTop = idx * this.itemHeight;
+    if (itemTop < top) {
+      scrollParent.scrollTo({ top: itemTop });
+    } else if (bottom < itemTop + this.itemHeight) {
+      scrollParent.scrollTo({ top: itemTop - scrollParent.offsetHeight + this.itemHeight });
+    }
+  }
+
+  select(idx: number): void {
+    const node = this.dataSource.data[idx];
     this.populateParents(node.position);
     this.selectNode.emit(node.original);
     this.selectedNode = node;
-
-    // We wait for the CD to run.
-    setTimeout(() => {
-      const element = this._host.nativeElement.querySelector('.selected');
-      if (!element) {
-        return;
-      }
-
-      element.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'nearest' });
-    }, 0);
   }
 
   clearSelectedNode(): void {
@@ -93,7 +99,7 @@ export class DirectiveForestComponent {
   private _reselectNodeOnUpdate(): void {
     const nodeThatStillExists = this.dataSource.getFlatNodeFromIndexedNode(this.currentSelectedElement);
     if (nodeThatStillExists) {
-      this.select(nodeThatStillExists);
+      this.select(this.dataSource.data.indexOf(nodeThatStillExists));
     } else {
       this.clearSelectedNode();
     }
@@ -149,13 +155,13 @@ export class DirectiveForestComponent {
     let prevNode = data[prevIdx];
     const currentNode = data[prevIdx + 1];
     if (prevNode.position.length <= currentNode.position.length) {
-      return this.select(data[prevIdx]);
+      return this.selectAndEnsureVisible(prevIdx);
     }
     while (prevIdx >= 0 && parentCollapsed(prevIdx, data, this.treeControl)) {
       prevIdx--;
       prevNode = data[prevIdx];
     }
-    this.select(data[prevIdx]);
+    this.selectAndEnsureVisible(prevIdx);
   }
 
   @HostListener('document:keydown.ArrowDown', ['$event'])
@@ -182,7 +188,7 @@ export class DirectiveForestComponent {
     if (idx >= data.length) {
       return;
     }
-    this.select(data[idx]);
+    this.selectAndEnsureVisible(idx);
   }
 
   @HostListener('document:keydown.ArrowLeft', ['$event'])
@@ -238,8 +244,14 @@ export class DirectiveForestComponent {
     }
   }
 
-  _findMatchedNodes(): FlatNode[] {
-    return this.dataSource.data.filter((node) => this.isMatched(node));
+  _findMatchedNodes(): number[] {
+    const result: number[] = [];
+    for (let i = 0; i < this.dataSource.data.length; i++) {
+      if (this.isMatched(this.dataSource.data[i])) {
+        result.push(i);
+      }
+    }
+    return result;
   }
 
   hasMatched(): boolean {
@@ -247,12 +259,13 @@ export class DirectiveForestComponent {
   }
 
   nextMatched(): void {
-    const matchedTree: FlatNode[] = this._findMatchedNodes();
+    const matchedTree = this._findMatchedNodes();
     this.currentlyMatchedIndex = (this.currentlyMatchedIndex + 1) % matchedTree.length;
-    const nodeToSelect = matchedTree[this.currentlyMatchedIndex];
-    if (nodeToSelect) {
-      this.select(nodeToSelect);
+    const indexToSelect = matchedTree[this.currentlyMatchedIndex];
+    if (indexToSelect !== undefined) {
+      this.selectAndEnsureVisible(indexToSelect);
     }
+    const nodeToSelect = this.dataSource.data[indexToSelect];
     const nodeIsVisible = this.dataSource.expandedDataValues.find((node) => node === nodeToSelect);
     if (!nodeIsVisible) {
       this.parents.forEach((parent) => this.treeControl.expand(parent));
@@ -260,12 +273,13 @@ export class DirectiveForestComponent {
   }
 
   prevMatched(): void {
-    const matchedTree: FlatNode[] = this._findMatchedNodes();
+    const matchedTree = this._findMatchedNodes();
     this.currentlyMatchedIndex = (this.currentlyMatchedIndex - 1 + matchedTree.length) % matchedTree.length;
-    const nodeToSelect = matchedTree[this.currentlyMatchedIndex];
-    if (nodeToSelect) {
-      this.select(nodeToSelect);
+    const indexToSelect = matchedTree[this.currentlyMatchedIndex];
+    if (indexToSelect !== undefined) {
+      this.selectAndEnsureVisible(indexToSelect);
     }
+    const nodeToSelect = this.dataSource.data[indexToSelect];
     const nodeIsVisible = this.dataSource.expandedDataValues.find((node) => node === nodeToSelect);
     if (!nodeIsVisible) {
       this.parents.forEach((parent) => this.treeControl.expand(parent));

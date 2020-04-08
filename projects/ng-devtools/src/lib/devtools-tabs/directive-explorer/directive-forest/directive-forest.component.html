@@ -5,44 +5,23 @@
   (prevMatched)="prevMatched()"
 >
 </ng-filter>
-<div class="tree-wrapper">
-  <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
-    <mat-tree-node
+<cdk-virtual-scroll-viewport class="tree-wrapper" [itemSize]="itemHeight">
+  <ng-container *cdkVirtualFor="let node of dataSource; let idx = index">
+    <div
       [ngClass]="{
         matched: isMatched(node),
         selected: isSelected(node),
         highlighted: isHighlighted(node),
         'new-node': node.newItem
       }"
-      (click)="handleSelect(node)"
+      class="tree-node"
+      (click)="selectAndEnsureVisible(idx)"
       (dblclick)="handleSelectDomElement(node)"
       (mouseenter)="highlightNode(node.position)"
       (mouseleave)="removeHighlight()"
-      *matTreeNodeDef="let node"
-      matTreeNodePaddingIndent="20"
-      matTreeNodePadding
+      [style.padding-left]="15 * node.level + 'px'"
     >
-      <button disabled></button>
-      <span class="element-name" [class.angular-element]="isElement(node)">{{ node.name }}</span>
-      <span *ngIf="node.directives" class="dir-names">[{{ node.directives }}]</span>
-      <span class="console-reference" *ngIf="isSelected(node)"> - $ng0 </span>
-    </mat-tree-node>
-    <mat-tree-node
-      [ngClass]="{
-        matched: isMatched(node),
-        selected: isSelected(node),
-        highlighted: isHighlighted(node),
-        'new-node': node.newItem
-      }"
-      (click)="handleSelect(node)"
-      (dblclick)="handleSelectDomElement(node)"
-      (mouseenter)="highlightNode(node.position)"
-      (mouseleave)="removeHighlight()"
-      *matTreeNodeDef="let node; when: hasChild"
-      matTreeNodePaddingIndent="20"
-      matTreeNodePadding
-    >
-      <button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
+      <button *ngIf="node.expandable" (click)="treeControl.toggle(node)" [attr.aria-label]="'toggle ' + node.name">
         <mat-icon class="mat-icon-rtl-mirror">
           {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
         </mat-icon>
@@ -50,6 +29,6 @@
       <span class="element-name" [class.angular-element]="isElement(node)">{{ node.name }}</span>
       <span *ngIf="node.directives" class="dir-names">[{{ node.directives }}]</span>
       <span class="console-reference" *ngIf="isSelected(node)"> - $ng0 </span>
-    </mat-tree-node>
-  </mat-tree>
-</div>
+    </div>
+  </ng-container>
+</cdk-virtual-scroll-viewport>

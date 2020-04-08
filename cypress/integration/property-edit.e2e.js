@@ -6,17 +6,12 @@ describe('edit properties of directive in the property view tab', () => {
   describe('edit app-todo component', () => {
     beforeEach(() => {
       // select todo node in component tree
-      cy.get('mat-tree')
-        .find('mat-tree-node:contains("app-todo[TooltipDirective]")')
-        .first()
-        .click();
+      cy.get('.tree-wrapper').find('.tree-node:contains("app-todo[TooltipDirective]")').first().click({ force: true });
     });
 
     it('should be able to enable editMode', () => {
-      cy.enter('#sample-app').then(getBody => {
-        getBody()
-          .find('app-todo input.edit')
-          .should('not.be.visible');
+      cy.enter('#sample-app').then((getBody) => {
+        getBody().find('app-todo input.edit').should('not.be.visible');
       });
 
       cy.get('.explorer-panel:contains("Properties of app-todo")')
@@ -28,10 +23,8 @@ describe('edit properties of directive in the property view tab', () => {
         .type('true')
         .type('{enter}');
 
-      cy.enter('#sample-app').then(getBody => {
-        getBody()
-          .find('app-todo input.edit')
-          .should('be.visible');
+      cy.enter('#sample-app').then((getBody) => {
+        getBody().find('app-todo input.edit').should('be.visible');
       });
     });
 
@@ -45,12 +38,8 @@ describe('edit properties of directive in the property view tab', () => {
 
       it('should change todo label in app when edited', () => {
         // check initial todo label
-        cy.enter('#sample-app').then(getBody => {
-          getBody()
-            .find('app-todo')
-            .contains('Buy milk')
-            .its('length')
-            .should('eq', 1);
+        cy.enter('#sample-app').then((getBody) => {
+          getBody().find('app-todo').contains('Buy milk').its('length').should('eq', 1);
         });
 
         // find label variable and run through edit logic
@@ -64,23 +53,15 @@ describe('edit properties of directive in the property view tab', () => {
           .type('{enter}');
 
         // assert that the page has been updated
-        cy.enter('#sample-app').then(getBody => {
-          getBody()
-            .find('app-todo')
-            .contains('Buy cookies')
-            .its('length')
-            .should('eq', 1);
+        cy.enter('#sample-app').then((getBody) => {
+          getBody().find('app-todo').contains('Buy cookies').its('length').should('eq', 1);
         });
       });
 
       it('should change todo completed in app when edited', () => {
         // check initial todo completed status
-        cy.enter('#sample-app').then(getBody => {
-          getBody()
-            .find('app-todo li')
-            .not('.completed')
-            .its('length')
-            .should('eq', 2);
+        cy.enter('#sample-app').then((getBody) => {
+          getBody().find('app-todo li').not('.completed').its('length').should('eq', 2);
         });
 
         // find completed variable and run through edit logic
@@ -94,11 +75,8 @@ describe('edit properties of directive in the property view tab', () => {
           .type('{enter}');
 
         // assert that the page has been updated
-        cy.enter('#sample-app').then(getBody => {
-          getBody()
-            .find('app-todo li.completed')
-            .its('length')
-            .should('eq', 1);
+        cy.enter('#sample-app').then((getBody) => {
+          getBody().find('app-todo li.completed').its('length').should('eq', 1);
         });
       });
     });
