@@ -52,7 +52,7 @@ import {SourceMapGenerator, toBase64String} from '@angular/compiler/src/output/s
                         .addMapping(3, 'a.js', 5, 2);
 
         // Generated with https://sokra.github.io/source-map-visualization using a TS source map
-        expect(map.toJSON() !.mappings)
+        expect(map.toJSON()!.mappings)
             .toEqual(
                 'AAAA,IAAM,CAAC,GAAe,CAAC,CAAC;AACxB,IAAM,CAAC,GAAG,CAAC,CAAC;AAEZ,EAAE,CAAC,OAAO,CAAC,UAAA,CAAC;IACR,OAAO,CAAC,GAAG,CAAC,KAAK,CAAC,CAAC;AACvB,CAAC,CAAC,CAAA');
       });
@@ -64,7 +64,7 @@ import {SourceMapGenerator, toBase64String} from '@angular/compiler/src/output/s
                         .addSource('url.ts', null)
                         .addLine()
                         .addMapping(0, 'inline.ts', 0, 0)
-                        .toJSON() !;
+                        .toJSON()!;
 
         expect(map.file).toEqual('out.js');
         expect(map.sources).toEqual(['inline.ts', 'url.ts']);
@@ -81,7 +81,11 @@ import {SourceMapGenerator, toBase64String} from '@angular/compiler/src/output/s
 
     describe('encodeB64String', () => {
       it('should return the b64 encoded value', () => {
-        [['', ''], ['a', 'YQ=='], ['Foo', 'Rm9v'], ['Foo1', 'Rm9vMQ=='], ['Foo12', 'Rm9vMTI='],
+        [['', ''],
+         ['a', 'YQ=='],
+         ['Foo', 'Rm9v'],
+         ['Foo1', 'Rm9vMQ=='],
+         ['Foo12', 'Rm9vMTI='],
          ['Foo123', 'Rm9vMTIz'],
         ].forEach(([src, b64]) => expect(toBase64String(src)).toEqual(b64));
       });
@@ -113,7 +117,7 @@ import {SourceMapGenerator, toBase64String} from '@angular/compiler/src/output/s
 
       it('should throw when adding segments without column', () => {
         expect(() => {
-          new SourceMapGenerator('out.js').addSource('in.js').addLine().addMapping(null !);
+          new SourceMapGenerator('out.js').addSource('in.js').addLine().addMapping(null!);
         }).toThrowError('The column in the generated code must be provided');
       });
 

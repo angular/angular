@@ -226,7 +226,10 @@ export class StylingBuilder {
     const entry: BoundStylingEntry = {
       name: property,
       sanitize: property ? isStyleSanitizable(property) : true,
-      unit: unit || bindingUnit, value, sourceSpan, hasOverrideFlag
+      unit: unit || bindingUnit,
+      value,
+      sourceSpan,
+      hasOverrideFlag
     };
     if (isMapBased) {
       this._styleMapInput = entry;
@@ -385,7 +388,7 @@ export class StylingBuilder {
         supportsInterpolation: true,
         sourceSpan: stylingInput.sourceSpan,
         allocateBindingSlots: totalBindingSlotsRequired,
-        params: (convertFn: (value: any) => o.Expression | o.Expression[]) => {
+        params: (convertFn: (value: any) => o.Expression|o.Expression[]) => {
           const convertResult = convertFn(mapValue);
           const params = Array.isArray(convertResult) ? convertResult : [convertResult];
           return params;

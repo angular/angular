@@ -48,7 +48,9 @@ export function computeDecimalDigest(message: i18n.Message): string {
  * @internal
  */
 class _SerializerVisitor implements i18n.Visitor {
-  visitText(text: i18n.Text, context: any): any { return text.value; }
+  visitText(text: i18n.Text, context: any): any {
+    return text.value;
+  }
 
   visitContainer(container: i18n.Container, context: any): any {
     return `[${container.children.map(child => child.visit(this)).join(', ')}]`;
@@ -63,7 +65,8 @@ class _SerializerVisitor implements i18n.Visitor {
   visitTagPlaceholder(ph: i18n.TagPlaceholder, context: any): any {
     return ph.isVoid ?
         `<ph tag name="${ph.startName}"/>` :
-        `<ph tag name="${ph.startName}">${ph.children.map(child => child.visit(this)).join(', ')}</ph name="${ph.closeName}">`;
+        `<ph tag name="${ph.startName}">${
+            ph.children.map(child => child.visit(this)).join(', ')}</ph name="${ph.closeName}">`;
   }
 
   visitPlaceholder(ph: i18n.Placeholder, context: any): any {

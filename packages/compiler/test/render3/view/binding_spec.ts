@@ -54,8 +54,9 @@ describe('t2 binding', () => {
     const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta>());
     const res = binder.bind({template: template.nodes});
 
-    const itemBinding = (findExpression(template.nodes, '{{item.name}}') !as e.Interpolation)
-                            .expressions[0] as e.PropertyRead;
+    const itemBinding =
+        (findExpression(template.nodes, '{{item.name}}')! as e.Interpolation).expressions[0] as
+        e.PropertyRead;
     const item = itemBinding.receiver;
     const itemTarget = res.getExpressionTarget(item);
     if (!(itemTarget instanceof a.Variable)) {
@@ -64,7 +65,7 @@ describe('t2 binding', () => {
     expect(itemTarget.value).toBe('$implicit');
     const itemTemplate = res.getTemplateOfSymbol(itemTarget);
     expect(itemTemplate).not.toBeNull();
-    expect(res.getNestingLevel(itemTemplate !)).toBe(1);
+    expect(res.getNestingLevel(itemTemplate!)).toBe(1);
   });
 
   it('should match directives when binding a simple template', () => {
@@ -72,7 +73,7 @@ describe('t2 binding', () => {
     const binder = new R3TargetBinder(makeSelectorMatcher());
     const res = binder.bind({template: template.nodes});
     const tmpl = template.nodes[0] as a.Template;
-    const directives = res.getDirectivesOfNode(tmpl) !;
+    const directives = res.getDirectivesOfNode(tmpl)!;
     expect(directives).not.toBeNull();
     expect(directives.length).toBe(1);
     expect(directives[0].name).toBe('NgFor');
@@ -92,7 +93,7 @@ describe('t2 binding', () => {
     const res = binder.bind({template: template.nodes});
     const svgNode = template.nodes[0] as a.Element;
     const textNode = svgNode.children[0] as a.Element;
-    const directives = res.getDirectivesOfNode(textNode) !;
+    const directives = res.getDirectivesOfNode(textNode)!;
     expect(directives).not.toBeNull();
     expect(directives.length).toBe(1);
     expect(directives[0].name).toBe('Dir');
@@ -103,11 +104,11 @@ describe('t2 binding', () => {
     const binder = new R3TargetBinder(makeSelectorMatcher());
     const res = binder.bind({template: template.nodes});
     const tmpl = template.nodes[0] as a.Template;
-    const tmplDirectives = res.getDirectivesOfNode(tmpl) !;
+    const tmplDirectives = res.getDirectivesOfNode(tmpl)!;
     expect(tmplDirectives).not.toBeNull();
     expect(tmplDirectives.length).toBe(1);
     expect(tmplDirectives[0].name).toBe('NgFor');
-    const elDirectives = res.getDirectivesOfNode(tmpl.children[0] as a.Element) !;
+    const elDirectives = res.getDirectivesOfNode(tmpl.children[0] as a.Element)!;
     expect(elDirectives).not.toBeNull();
     expect(elDirectives.length).toBe(1);
     expect(elDirectives[0].name).toBe('Dir');

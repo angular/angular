@@ -46,8 +46,12 @@ export interface CssAstVisitor {
 
 export abstract class CssAst {
   constructor(public location: ParseSourceSpan) {}
-  get start(): ParseLocation { return this.location.start; }
-  get end(): ParseLocation { return this.location.end; }
+  get start(): ParseLocation {
+    return this.location.start;
+  }
+  get end(): ParseLocation {
+    return this.location.end;
+  }
   abstract visit(visitor: CssAstVisitor, context?: any): any;
 }
 
@@ -55,11 +59,15 @@ export class CssStyleValueAst extends CssAst {
   constructor(location: ParseSourceSpan, public tokens: CssToken[], public strValue: string) {
     super(location);
   }
-  visit(visitor: CssAstVisitor, context?: any): any { return visitor.visitCssValue(this); }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssValue(this);
+  }
 }
 
 export abstract class CssRuleAst extends CssAst {
-  constructor(location: ParseSourceSpan) { super(location); }
+  constructor(location: ParseSourceSpan) {
+    super(location);
+  }
 }
 
 export class CssBlockRuleAst extends CssRuleAst {
@@ -158,7 +166,9 @@ export class CssDefinitionAst extends CssAst {
 }
 
 export abstract class CssSelectorPartAst extends CssAst {
-  constructor(location: ParseSourceSpan) { super(location); }
+  constructor(location: ParseSourceSpan) {
+    super(location);
+  }
 }
 
 export class CssSelectorAst extends CssSelectorPartAst {
@@ -195,8 +205,12 @@ export class CssPseudoSelectorAst extends CssSelectorPartAst {
 }
 
 export class CssBlockAst extends CssAst {
-  constructor(location: ParseSourceSpan, public entries: CssAst[]) { super(location); }
-  visit(visitor: CssAstVisitor, context?: any): any { return visitor.visitCssBlock(this, context); }
+  constructor(location: ParseSourceSpan, public entries: CssAst[]) {
+    super(location);
+  }
+  visit(visitor: CssAstVisitor, context?: any): any {
+    return visitor.visitCssBlock(this, context);
+  }
 }
 
 /*
@@ -213,7 +227,9 @@ export class CssStylesBlockAst extends CssBlockAst {
 }
 
 export class CssStyleSheetAst extends CssAst {
-  constructor(location: ParseSourceSpan, public rules: CssAst[]) { super(location); }
+  constructor(location: ParseSourceSpan, public rules: CssAst[]) {
+    super(location);
+  }
   visit(visitor: CssAstVisitor, context?: any): any {
     return visitor.visitCssStyleSheet(this, context);
   }

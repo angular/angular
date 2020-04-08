@@ -215,7 +215,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       // Moreover, if the node is an element, then we need to hoist its attributes to the template
       // node for matching against content projection selectors.
       const attrs = this.extractAttributes('ng-template', templateParsedProperties, i18nAttrsMeta);
-      const templateAttrs: (t.TextAttribute | t.BoundAttribute)[] = [];
+      const templateAttrs: (t.TextAttribute|t.BoundAttribute)[] = [];
       attrs.literal.forEach(attr => templateAttrs.push(attr));
       attrs.bound.forEach(attr => templateAttrs.push(attr));
       const hoistedAttrs = parsedElement instanceof t.Element ?
@@ -260,12 +260,12 @@ class HtmlAstToIvyAst implements html.Visitor {
       return null;
     }
     if (!isI18nRootNode(expansion.i18n)) {
-      throw new Error(
-          `Invalid type "${expansion.i18n.constructor}" for "i18n" property of ${expansion.sourceSpan.toString()}. Expected a "Message"`);
+      throw new Error(`Invalid type "${expansion.i18n.constructor}" for "i18n" property of ${
+          expansion.sourceSpan.toString()}. Expected a "Message"`);
     }
     const message = expansion.i18n;
     const vars: {[name: string]: t.BoundText} = {};
-    const placeholders: {[name: string]: t.Text | t.BoundText} = {};
+    const placeholders: {[name: string]: t.Text|t.BoundText} = {};
     // extract VARs from ICUs - we process them separately while
     // assembling resulting message via goog.getMsg function, since
     // we need to pass them to top-level goog.getMsg call
@@ -284,9 +284,13 @@ class HtmlAstToIvyAst implements html.Visitor {
     return new t.Icu(vars, placeholders, expansion.sourceSpan, message);
   }
 
-  visitExpansionCase(expansionCase: html.ExpansionCase): null { return null; }
+  visitExpansionCase(expansionCase: html.ExpansionCase): null {
+    return null;
+  }
 
-  visitComment(comment: html.Comment): null { return null; }
+  visitComment(comment: html.Comment): null {
+    return null;
+  }
 
   // convert view engine `ParsedProperty` to a format suitable for IVY
   private extractAttributes(
@@ -460,18 +464,26 @@ class NonBindableVisitor implements html.Visitor {
         ast.startSourceSpan, ast.endSourceSpan);
   }
 
-  visitComment(comment: html.Comment): any { return null; }
+  visitComment(comment: html.Comment): any {
+    return null;
+  }
 
   visitAttribute(attribute: html.Attribute): t.TextAttribute {
     return new t.TextAttribute(
         attribute.name, attribute.value, attribute.sourceSpan, undefined, attribute.i18n);
   }
 
-  visitText(text: html.Text): t.Text { return new t.Text(text.value, text.sourceSpan); }
+  visitText(text: html.Text): t.Text {
+    return new t.Text(text.value, text.sourceSpan);
+  }
 
-  visitExpansion(expansion: html.Expansion): any { return null; }
+  visitExpansion(expansion: html.Expansion): any {
+    return null;
+  }
 
-  visitExpansionCase(expansionCase: html.ExpansionCase): any { return null; }
+  visitExpansionCase(expansionCase: html.ExpansionCase): any {
+    return null;
+  }
 }
 
 const NON_BINDABLE_VISITOR = new NonBindableVisitor();

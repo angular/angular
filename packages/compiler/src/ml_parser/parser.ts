@@ -10,7 +10,7 @@ import {ParseError, ParseSourceSpan} from '../parse_util';
 
 import * as html from './ast';
 import * as lex from './lexer';
-import {TagDefinition, getNsPrefix, isNgContainer, mergeNsAndName} from './tags';
+import {getNsPrefix, isNgContainer, mergeNsAndName, TagDefinition} from './tags';
 
 export class TreeError extends ParseError {
   static create(elementName: string|null, span: ParseSourceSpan, msg: string): TreeError {
@@ -43,7 +43,7 @@ export class Parser {
 class _TreeBuilder {
   private _index: number = -1;
   // TODO(issue/24571): remove '!'.
-  private _peek !: lex.Token;
+  private _peek!: lex.Token;
 
   private _rootNodes: html.Node[] = [];
   private _errors: TreeError[] = [];
@@ -283,7 +283,7 @@ class _TreeBuilder {
         endTagToken.parts[0], endTagToken.parts[1], this._getParentElement());
 
     if (this._getParentElement()) {
-      this._getParentElement() !.endSourceSpan = endTagToken.sourceSpan;
+      this._getParentElement()!.endSourceSpan = endTagToken.sourceSpan;
     }
 
     if (this.getTagDefinition(fullName).isVoid) {
@@ -291,8 +291,8 @@ class _TreeBuilder {
           fullName, endTagToken.sourceSpan,
           `Void elements do not have end tags "${endTagToken.parts[1]}"`));
     } else if (!this._popElement(fullName)) {
-      const errMsg =
-          `Unexpected closing tag "${fullName}". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags`;
+      const errMsg = `Unexpected closing tag "${
+          fullName}". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags`;
       this._errors.push(TreeError.create(fullName, endTagToken.sourceSpan, errMsg));
     }
   }
@@ -316,7 +316,7 @@ class _TreeBuilder {
     const fullName = mergeNsAndName(attrName.parts[0], attrName.parts[1]);
     let end = attrName.sourceSpan.end;
     let value = '';
-    let valueSpan: ParseSourceSpan = undefined !;
+    let valueSpan: ParseSourceSpan = undefined!;
     if (this._peek.type === lex.TokenType.ATTR_QUOTE) {
       this._advance();
     }
@@ -344,7 +344,7 @@ class _TreeBuilder {
    * `<ng-container>` elements are skipped as they are not rendered as DOM element.
    */
   private _getParentElementSkippingContainers():
-      {parent: html.Element | null, container: html.Element|null} {
+      {parent: html.Element|null, container: html.Element|null} {
     let container: html.Element|null = null;
 
     for (let i = this._elementStack.length - 1; i >= 0; i--) {

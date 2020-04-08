@@ -31,7 +31,7 @@ export class StaticSymbolCache {
 
   get(declarationFile: string, name: string, members?: string[]): StaticSymbol {
     members = members || [];
-    const memberSuffix = members.length ? `.${ members.join('.')}` : '';
+    const memberSuffix = members.length ? `.${members.join('.')}` : '';
     const key = `"${declarationFile}".${name}${memberSuffix}`;
     let result = this.cache.get(key);
     if (!result) {

@@ -90,7 +90,8 @@ describe('style parsing', () => {
       expect(hyphenate('-fooBar-man')).toEqual('-foo-bar-man');
     });
 
-    it('should make everything lowercase',
-       () => { expect(hyphenate('-WebkitAnimation')).toEqual('-webkit-animation'); });
+    it('should make everything lowercase', () => {
+      expect(hyphenate('-WebkitAnimation')).toEqual('-webkit-animation');
+    });
   });
 });

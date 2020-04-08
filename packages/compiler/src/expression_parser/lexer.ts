@@ -42,37 +42,61 @@ export class Token {
     return this.type == TokenType.Character && this.numValue == code;
   }
 
-  isNumber(): boolean { return this.type == TokenType.Number; }
+  isNumber(): boolean {
+    return this.type == TokenType.Number;
+  }
 
-  isString(): boolean { return this.type == TokenType.String; }
+  isString(): boolean {
+    return this.type == TokenType.String;
+  }
 
   isOperator(operator: string): boolean {
     return this.type == TokenType.Operator && this.strValue == operator;
   }
 
-  isIdentifier(): boolean { return this.type == TokenType.Identifier; }
+  isIdentifier(): boolean {
+    return this.type == TokenType.Identifier;
+  }
 
-  isKeyword(): boolean { return this.type == TokenType.Keyword; }
+  isKeyword(): boolean {
+    return this.type == TokenType.Keyword;
+  }
 
-  isKeywordLet(): boolean { return this.type == TokenType.Keyword && this.strValue == 'let'; }
+  isKeywordLet(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'let';
+  }
 
-  isKeywordAs(): boolean { return this.type == TokenType.Keyword && this.strValue == 'as'; }
+  isKeywordAs(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'as';
+  }
 
-  isKeywordNull(): boolean { return this.type == TokenType.Keyword && this.strValue == 'null'; }
+  isKeywordNull(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'null';
+  }
 
   isKeywordUndefined(): boolean {
     return this.type == TokenType.Keyword && this.strValue == 'undefined';
   }
 
-  isKeywordTrue(): boolean { return this.type == TokenType.Keyword && this.strValue == 'true'; }
+  isKeywordTrue(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'true';
+  }
 
-  isKeywordFalse(): boolean { return this.type == TokenType.Keyword && this.strValue == 'false'; }
+  isKeywordFalse(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'false';
+  }
 
-  isKeywordThis(): boolean { return this.type == TokenType.Keyword && this.strValue == 'this'; }
+  isKeywordThis(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'this';
+  }
 
-  isError(): boolean { return this.type == TokenType.Error; }
+  isError(): boolean {
+    return this.type == TokenType.Error;
+  }
 
-  toNumber(): number { return this.type == TokenType.Number ? this.numValue : -1; }
+  toNumber(): number {
+    return this.type == TokenType.Number ? this.numValue : -1;
+  }
 
   toString(): string|null {
     switch (this.type) {

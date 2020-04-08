@@ -97,7 +97,9 @@ export function extractSchema(): Map<string, string[]>|null {
 
   types.sort();
 
-  types.forEach(type => { extractRecursiveProperties(visited, descMap, (window as any)[type]); });
+  types.forEach(type => {
+    extractRecursiveProperties(visited, descMap, (window as any)[type]);
+  });
 
   // Add elements missed by Chrome auto-detection
   Object.keys(MISSING_FROM_CHROME).forEach(elHierarchy => {
@@ -125,7 +127,7 @@ function assertNoMissingTags(descMap: Map<string, string[]>): void {
 
 function extractRecursiveProperties(
     visited: {[name: string]: boolean}, descMap: Map<string, string[]>, type: Function): string {
-  const name = extractName(type) !;
+  const name = extractName(type)!;
 
   if (visited[name]) {
     return name;
@@ -181,7 +183,7 @@ function extractProperties(
 
   const fullName = name + (superName ? '^' + superName : '');
 
-  const props: string[] = descMap.has(fullName) ? descMap.get(fullName) ! : [];
+  const props: string[] = descMap.has(fullName) ? descMap.get(fullName)! : [];
 
   const prototype = type.prototype;
   const keys = Object.getOwnPropertyNames(prototype);

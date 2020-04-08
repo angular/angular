@@ -75,13 +75,21 @@ class R3AstHumanizer implements t.Visitor<void> {
     ]);
   }
 
-  visitText(text: t.Text) { this.result.push(['Text', text.value]); }
+  visitText(text: t.Text) {
+    this.result.push(['Text', text.value]);
+  }
 
-  visitBoundText(text: t.BoundText) { this.result.push(['BoundText', unparse(text.value)]); }
+  visitBoundText(text: t.BoundText) {
+    this.result.push(['BoundText', unparse(text.value)]);
+  }
 
-  visitIcu(icu: t.Icu) { return null; }
+  visitIcu(icu: t.Icu) {
+    return null;
+  }
 
-  private visitAll(nodes: t.Node[][]) { nodes.forEach(node => t.visitAll(this, node)); }
+  private visitAll(nodes: t.Node[][]) {
+    nodes.forEach(node => t.visitAll(this, node));
+  }
 }
 
 function expectFromHtml(html: string) {
@@ -97,13 +105,14 @@ function expectFromR3Nodes(nodes: t.Node[]) {
 
 function expectSpanFromHtml(html: string) {
   const {nodes} = parse(html);
-  return expect(nodes[0] !.sourceSpan.toString());
+  return expect(nodes[0]!.sourceSpan.toString());
 }
 
 describe('R3 template transform', () => {
   describe('ParseSpan on nodes toString', () => {
-    it('should create valid text span on Element with adjacent start and end tags',
-       () => { expectSpanFromHtml('<div></div>').toBe('<div></div>'); });
+    it('should create valid text span on Element with adjacent start and end tags', () => {
+      expectSpanFromHtml('<div></div>').toBe('<div></div>');
+    });
   });
 
   describe('Nodes without binding', () => {

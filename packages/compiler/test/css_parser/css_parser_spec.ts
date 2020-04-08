@@ -111,26 +111,26 @@ export function assertTokens(tokens: CssToken[], valuesArr: string[]) {
       expect(ast.rules.length).toEqual(1);
 
       const rule = <CssKeyframeRuleAst>ast.rules[0];
-      expect(rule.name !.strValue).toEqual('rotateMe');
+      expect(rule.name!.strValue).toEqual('rotateMe');
 
       const block = <CssBlockAst>rule.block;
       const fromRule = <CssKeyframeDefinitionAst>block.entries[0];
 
-      expect(fromRule.name !.strValue).toEqual('from');
+      expect(fromRule.name!.strValue).toEqual('from');
       const fromStyle = <CssDefinitionAst>(<CssBlockAst>fromRule.block).entries[0];
       expect(fromStyle.property.strValue).toEqual('transform');
       assertTokens(fromStyle.value.tokens, ['rotate', '(', '-360', 'deg', ')']);
 
       const midRule = <CssKeyframeDefinitionAst>block.entries[1];
 
-      expect(midRule.name !.strValue).toEqual('50%');
+      expect(midRule.name!.strValue).toEqual('50%');
       const midStyle = <CssDefinitionAst>(<CssBlockAst>midRule.block).entries[0];
       expect(midStyle.property.strValue).toEqual('transform');
       assertTokens(midStyle.value.tokens, ['rotate', '(', '0', 'deg', ')']);
 
       const toRule = <CssKeyframeDefinitionAst>block.entries[2];
 
-      expect(toRule.name !.strValue).toEqual('to');
+      expect(toRule.name!.strValue).toEqual('to');
       const toStyle = <CssDefinitionAst>(<CssBlockAst>toRule.block).entries[0];
       expect(toStyle.property.strValue).toEqual('transform');
       assertTokens(toStyle.value.tokens, ['rotate', '(', '360', 'deg', ')']);
@@ -695,7 +695,7 @@ export function assertTokens(tokens: CssToken[], valuesArr: string[]) {
         const ast = output.ast;
 
         assertMatchesOffsetAndChar(ast.location.start, 0, '#');
-        assertMatchesOffsetAndChar(ast.location.end, 22, undefined !);
+        assertMatchesOffsetAndChar(ast.location.end, 22, undefined!);
       });
     });
 

@@ -51,7 +51,7 @@ class JsEmitterVisitor extends AbstractJsEmitterVisitor {
       }
       ctx.print(ast, `${prefix}.`);
     }
-    ctx.print(ast, name !);
+    ctx.print(ast, name!);
     return null;
   }
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {

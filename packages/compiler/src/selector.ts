@@ -118,9 +118,13 @@ export class CssSelector {
         this.notSelectors.length === 0;
   }
 
-  hasElementSelector(): boolean { return !!this.element; }
+  hasElementSelector(): boolean {
+    return !!this.element;
+  }
 
-  setElement(element: string|null = null) { this.element = element; }
+  setElement(element: string|null = null) {
+    this.element = element;
+  }
 
   /** Gets a template string for an element that matches the selector. */
   getMatchingElementTemplate(): string {
@@ -150,7 +154,9 @@ export class CssSelector {
     this.attrs.push(name, value && value.toLowerCase() || '');
   }
 
-  addClassName(name: string) { this.classNames.push(name.toLowerCase()); }
+  addClassName(name: string) {
+    this.classNames.push(name.toLowerCase());
+  }
 
   toString(): string {
     let res: string = this.element || '';
@@ -189,7 +195,7 @@ export class SelectorMatcher<T = any> {
   private _listContexts: SelectorListContext[] = [];
 
   addSelectables(cssSelectors: CssSelector[], callbackCtxt?: T) {
-    let listContext: SelectorListContext = null !;
+    let listContext: SelectorListContext = null!;
     if (cssSelectors.length > 1) {
       listContext = new SelectorListContext(cssSelectors);
       this._listContexts.push(listContext);
@@ -284,10 +290,10 @@ export class SelectorMatcher<T = any> {
    * @param cssSelector A css selector
    * @param matchedCallback This callback will be called with the object handed into `addSelectable`
    * @return boolean true if a match was found
-  */
+   */
   match(cssSelector: CssSelector, matchedCallback: ((c: CssSelector, a: T) => void)|null): boolean {
     let result = false;
-    const element = cssSelector.element !;
+    const element = cssSelector.element!;
     const classNames = cssSelector.classNames;
     const attrs = cssSelector.attrs;
 
@@ -315,7 +321,7 @@ export class SelectorMatcher<T = any> {
         const name = attrs[i];
         const value = attrs[i + 1];
 
-        const terminalValuesMap = this._attrValueMap.get(name) !;
+        const terminalValuesMap = this._attrValueMap.get(name)!;
         if (value) {
           result =
               this._matchTerminal(terminalValuesMap, '', cssSelector, matchedCallback) || result;
@@ -323,7 +329,7 @@ export class SelectorMatcher<T = any> {
         result =
             this._matchTerminal(terminalValuesMap, value, cssSelector, matchedCallback) || result;
 
-        const partialValuesMap = this._attrValuePartialMap.get(name) !;
+        const partialValuesMap = this._attrValuePartialMap.get(name)!;
         if (value) {
           result = this._matchPartial(partialValuesMap, '', cssSelector, matchedCallback) || result;
         }
@@ -343,7 +349,7 @@ export class SelectorMatcher<T = any> {
     }
 
     let selectables: SelectorContext<T>[] = map.get(name) || [];
-    const starSelectables: SelectorContext<T>[] = map.get('*') !;
+    const starSelectables: SelectorContext<T>[] = map.get('*')!;
     if (starSelectables) {
       selectables = selectables.concat(starSelectables);
     }

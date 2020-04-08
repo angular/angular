@@ -16,13 +16,13 @@ import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/int
 import {DeclareVarStmt, Expression, LiteralExpr, Statement, StmtModifier, WrappedNodeExpr} from './output/output_ast';
 import {JitEvaluator} from './output/output_jit';
 import {ParseError, ParseSourceSpan, r3JitTypeSourceSpan} from './parse_util';
-import {R3DependencyMetadata, R3FactoryTarget, R3ResolvedDependencyType, compileFactoryFunction} from './render3/r3_factory';
+import {compileFactoryFunction, R3DependencyMetadata, R3FactoryTarget, R3ResolvedDependencyType} from './render3/r3_factory';
 import {R3JitReflector} from './render3/r3_jit';
-import {R3InjectorMetadata, R3NgModuleMetadata, compileInjector, compileNgModule} from './render3/r3_module_compiler';
-import {R3PipeMetadata, compilePipeFromMetadata} from './render3/r3_pipe_compiler';
+import {compileInjector, compileNgModule, R3InjectorMetadata, R3NgModuleMetadata} from './render3/r3_module_compiler';
+import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 import {R3Reference} from './render3/util';
 import {R3DirectiveMetadata, R3QueryMetadata} from './render3/view/api';
-import {ParsedHostBindings, compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
+import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
@@ -277,7 +277,7 @@ function wrapExpression(obj: any, property: string): WrappedNodeExpr<any>|undefi
   }
 }
 
-function computeProvidedIn(providedIn: Type | string | null | undefined): Expression {
+function computeProvidedIn(providedIn: Type|string|null|undefined): Expression {
   if (providedIn == null || typeof providedIn === 'string') {
     return new LiteralExpr(providedIn);
   } else {
@@ -305,8 +305,8 @@ function convertR3DependencyMetadata(facade: R3DependencyMetadataFacade): R3Depe
   };
 }
 
-function convertR3DependencyMetadataArray(facades: R3DependencyMetadataFacade[] | null | undefined):
-    R3DependencyMetadata[]|null {
+function convertR3DependencyMetadataArray(facades: R3DependencyMetadataFacade[]|null|
+                                          undefined): R3DependencyMetadata[]|null {
   return facades == null ? null : facades.map(convertR3DependencyMetadata);
 }
 
@@ -356,13 +356,11 @@ function isOutput(value: any): value is Output {
 }
 
 function parseInputOutputs(values: string[]): StringMap {
-  return values.reduce(
-      (map, value) => {
-        const [field, property] = value.split(',').map(piece => piece.trim());
-        map[field] = property || field;
-        return map;
-      },
-      {} as StringMap);
+  return values.reduce((map, value) => {
+    const [field, property] = value.split(',').map(piece => piece.trim());
+    map[field] = property || field;
+    return map;
+  }, {} as StringMap);
 }
 
 export function publishFacade(global: any) {

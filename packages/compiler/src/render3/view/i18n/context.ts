@@ -46,7 +46,7 @@ export class I18nContext {
   public placeholders = new Map<string, any[]>();
   public isEmitted: boolean = false;
 
-  private _registry !: any;
+  private _registry!: any;
   private _unresolvedCtxCount: number = 0;
 
   constructor(
@@ -66,9 +66,15 @@ export class I18nContext {
     updatePlaceholderMap(this.placeholders, ph, content);
   }
 
-  get icus() { return this._registry.icus; }
-  get isRoot() { return this.level === 0; }
-  get isResolved() { return this._unresolvedCtxCount === 0; }
+  get icus() {
+    return this._registry.icus;
+  }
+  get isRoot() {
+    return this.level === 0;
+  }
+  get isResolved() {
+    return this._unresolvedCtxCount === 0;
+  }
 
   getSerializedPlaceholders() {
     const result = new Map<string, any[]>();
@@ -78,7 +84,9 @@ export class I18nContext {
   }
 
   // public API to accumulate i18n-related content
-  appendBinding(binding: AST) { this.bindings.add(binding); }
+  appendBinding(binding: AST) {
+    this.bindings.add(binding);
+  }
   appendIcu(name: string, ref: o.Expression) {
     updatePlaceholderMap(this._registry.icus, name, ref);
   }
@@ -181,7 +189,7 @@ function wrapTag(symbol: string, {index, ctx, isVoid}: any, closed?: boolean): s
                   wrap(symbol, index, ctx, closed);
 }
 
-function findTemplateFn(ctx: number, templateIndex: number | null) {
+function findTemplateFn(ctx: number, templateIndex: number|null) {
   return (token: any) => typeof token === 'object' && token.type === TagType.TEMPLATE &&
       token.index === templateIndex && token.ctx === ctx;
 }

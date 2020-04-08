@@ -34,7 +34,7 @@ export function listLazyRoutes(
   return allLazyRoutes;
 }
 
-function _collectLoadChildren(routes: string | Route | Route[], target: string[] = []): string[] {
+function _collectLoadChildren(routes: string|Route|Route[], target: string[] = []): string[] {
   if (typeof routes === 'string') {
     target.push(routes);
   } else if (Array.isArray(routes)) {

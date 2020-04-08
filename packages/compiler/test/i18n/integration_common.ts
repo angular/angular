@@ -20,11 +20,11 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 })
 export class I18nComponent {
   // TODO(issue/24571): remove '!'.
-  count !: number;
+  count!: number;
   // TODO(issue/24571): remove '!'.
-  sex !: string;
+  sex!: string;
   // TODO(issue/24571): remove '!'.
-  sexB !: string;
+  sexB!: string;
   response: any = {getItemsList: (): any[] => []};
 }
 

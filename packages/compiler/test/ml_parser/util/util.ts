@@ -15,16 +15,21 @@ class _SerializerVisitor implements html.Visitor {
       return `<${element.name}${this._visitAll(element.attrs, ' ')}/>`;
     }
 
-    return `<${element.name}${this._visitAll(element.attrs, ' ')}>${this._visitAll(element.children)}</${element.name}>`;
+    return `<${element.name}${this._visitAll(element.attrs, ' ')}>${
+        this._visitAll(element.children)}</${element.name}>`;
   }
 
   visitAttribute(attribute: html.Attribute, context: any): any {
     return `${attribute.name}="${attribute.value}"`;
   }
 
-  visitText(text: html.Text, context: any): any { return text.value; }
+  visitText(text: html.Text, context: any): any {
+    return text.value;
+  }
 
-  visitComment(comment: html.Comment, context: any): any { return `<!--${comment.value}-->`; }
+  visitComment(comment: html.Comment, context: any): any {
+    return `<!--${comment.value}-->`;
+  }
 
   visitExpansion(expansion: html.Expansion, context: any): any {
     return `{${expansion.switchValue}, ${expansion.type},${this._visitAll(expansion.cases)}}`;

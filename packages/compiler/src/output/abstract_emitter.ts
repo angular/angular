@@ -28,31 +28,39 @@ class _EmittedLine {
 }
 
 export class EmitterVisitorContext {
-  static createRoot(): EmitterVisitorContext { return new EmitterVisitorContext(0); }
+  static createRoot(): EmitterVisitorContext {
+    return new EmitterVisitorContext(0);
+  }
 
   private _lines: _EmittedLine[];
   private _classes: o.ClassStmt[] = [];
   private _preambleLineCount = 0;
 
-  constructor(private _indent: number) { this._lines = [new _EmittedLine(_indent)]; }
+  constructor(private _indent: number) {
+    this._lines = [new _EmittedLine(_indent)];
+  }
 
   /**
    * @internal strip this from published d.ts files due to
    * https://github.com/microsoft/TypeScript/issues/36216
    */
-  private get _currentLine(): _EmittedLine { return this._lines[this._lines.length - 1]; }
+  private get _currentLine(): _EmittedLine {
+    return this._lines[this._lines.length - 1];
+  }
 
-  println(from?: {sourceSpan: ParseSourceSpan | null}|null, lastPart: string = ''): void {
+  println(from?: {sourceSpan: ParseSourceSpan|null}|null, lastPart: string = ''): void {
     this.print(from || null, lastPart, true);
   }
 
-  lineIsEmpty(): boolean { return this._currentLine.parts.length === 0; }
+  lineIsEmpty(): boolean {
+    return this._currentLine.parts.length === 0;
+  }
 
   lineLength(): number {
     return this._currentLine.indent * _INDENT_WITH.length + this._currentLine.partsLength;
   }
 
-  print(from: {sourceSpan: ParseSourceSpan | null}|null, part: string, newLine: boolean = false) {
+  print(from: {sourceSpan: ParseSourceSpan|null}|null, part: string, newLine: boolean = false) {
     if (part.length > 0) {
       this._currentLine.parts.push(part);
       this._currentLine.partsLength += part.length;
@@ -83,9 +91,13 @@ export class EmitterVisitorContext {
     }
   }
 
-  pushClass(clazz: o.ClassStmt) { this._classes.push(clazz); }
+  pushClass(clazz: o.ClassStmt) {
+    this._classes.push(clazz);
+  }
 
-  popClass(): o.ClassStmt { return this._classes.pop() !; }
+  popClass(): o.ClassStmt {
+    return this._classes.pop()!;
+  }
 
   get currentClass(): o.ClassStmt|null {
     return this._classes.length > 0 ? this._classes[this._classes.length - 1] : null;
@@ -135,7 +147,7 @@ export class EmitterVisitorContext {
       }
 
       while (spanIdx < spans.length) {
-        const span = spans[spanIdx] !;
+        const span = spans[spanIdx]!;
         const source = span.start.file;
         const sourceLine = span.start.line;
         const sourceCol = span.start.col;
@@ -156,7 +168,9 @@ export class EmitterVisitorContext {
     return map;
   }
 
-  setPreambleLineCount(count: number) { return this._preambleLineCount = count; }
+  setPreambleLineCount(count: number) {
+    return this._preambleLineCount = count;
+  }
 
   spanOf(line: number, column: number): ParseSourceSpan|null {
     const emittedLine = this._lines[line - this._preambleLineCount];
@@ -243,7 +257,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     if (stmt.multiline) {
       ctx.println(stmt, `/* ${stmt.comment} */`);
     } else {
-      stmt.comment.split('\n').forEach((line) => { ctx.println(stmt, `// ${line}`); });
+      stmt.comment.split('\n').forEach((line) => {
+        ctx.println(stmt, `// ${line}`);
+      });
     }
     return null;
   }
@@ -327,7 +343,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     expr.expr.visitExpression(this, ctx);
   }
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): any {
-    let varName = ast.name !;
+    let varName = ast.name!;
     if (ast.builtin != null) {
       switch (ast.builtin) {
         case o.BuiltinVar.Super:
@@ -337,10 +353,10 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
           varName = 'this';
           break;
         case o.BuiltinVar.CatchError:
-          varName = CATCH_ERROR_VAR.name !;
+          varName = CATCH_ERROR_VAR.name!;
           break;
         case o.BuiltinVar.CatchStack:
-          varName = CATCH_STACK_VAR.name !;
+          varName = CATCH_STACK_VAR.name!;
           break;
         default:
           throw new Error(`Unknown builtin variable ${ast.builtin}`);
@@ -388,7 +404,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(ast, '? ');
     ast.trueCase.visitExpression(this, ctx);
     ctx.print(ast, ': ');
-    ast.falseCase !.visitExpression(this, ctx);
+    ast.falseCase!.visitExpression(this, ctx);
     ctx.print(ast, `)`);
     return null;
   }

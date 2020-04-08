@@ -232,7 +232,6 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.EOF, ''],
         ]);
       });
-
     });
 
     describe('attributes', () => {
@@ -400,7 +399,6 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.ATTR_VALUE, 'Unexpected character "EOF"', '0:8'],
         ]);
       });
-
     });
 
     describe('closing tags', () => {
@@ -729,7 +727,6 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.EOF, ''],
         ]);
       });
-
     });
 
     describe('expansion forms', () => {
@@ -898,7 +895,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         const file = new ParseSourceFile(src, 'file://');
         const location = new ParseLocation(file, 12, 123, 456);
         const span = new ParseSourceSpan(location, location);
-        const error = new lex.TokenError('**ERROR**', null !, span);
+        const error = new lex.TokenError('**ERROR**', null!, span);
         expect(error.toString())
             .toEqual(`**ERROR** ("\n222\n333\n[ERROR ->]E\n444\n555\n"): file://@123:456`);
       });

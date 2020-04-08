@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssRule, ShadowCss, processRules} from '@angular/compiler/src/shadow_css';
+import {CssRule, processRules, ShadowCss} from '@angular/compiler/src/shadow_css';
 import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
 
 {
   describe('ShadowCss', function() {
-
     function s(css: string, contentAttr: string, hostAttr: string = '') {
       const shadowCss = new ShadowCss();
       const shim = shadowCss.shimCssText(css, contentAttr, hostAttr);
@@ -19,7 +18,9 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       return normalizeCSS(shim.replace(nlRegexp, ''));
     }
 
-    it('should handle empty string', () => { expect(s('', 'contenta')).toEqual(''); });
+    it('should handle empty string', () => {
+      expect(s('', 'contenta')).toEqual('');
+    });
 
     it('should add an attribute to every rule', () => {
       const css = 'one {color: red;}two {color: red;}';
@@ -112,14 +113,17 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
     });
 
     describe((':host'), () => {
-      it('should handle no context',
-         () => { expect(s(':host {}', 'contenta', 'a-host')).toEqual('[a-host] {}'); });
+      it('should handle no context', () => {
+        expect(s(':host {}', 'contenta', 'a-host')).toEqual('[a-host] {}');
+      });
 
-      it('should handle tag selector',
-         () => { expect(s(':host(ul) {}', 'contenta', 'a-host')).toEqual('ul[a-host] {}'); });
+      it('should handle tag selector', () => {
+        expect(s(':host(ul) {}', 'contenta', 'a-host')).toEqual('ul[a-host] {}');
+      });
 
-      it('should handle class selector',
-         () => { expect(s(':host(.x) {}', 'contenta', 'a-host')).toEqual('.x[a-host] {}'); });
+      it('should handle class selector', () => {
+        expect(s(':host(.x) {}', 'contenta', 'a-host')).toEqual('.x[a-host] {}');
+      });
 
       it('should handle attribute selector', () => {
         expect(s(':host([a="b"]) {}', 'contenta', 'a-host')).toEqual('[a="b"][a-host] {}');
@@ -285,14 +289,17 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       expect(css).toEqual('div[contenta] {height:calc(100% - 55px);}');
     });
 
-    it('should strip comments',
-       () => { expect(s('/* x */b {c}', 'contenta')).toEqual('b[contenta] {c}'); });
+    it('should strip comments', () => {
+      expect(s('/* x */b {c}', 'contenta')).toEqual('b[contenta] {c}');
+    });
 
-    it('should ignore special characters in comments',
-       () => { expect(s('/* {;, */b {c}', 'contenta')).toEqual('b[contenta] {c}'); });
+    it('should ignore special characters in comments', () => {
+      expect(s('/* {;, */b {c}', 'contenta')).toEqual('b[contenta] {c}');
+    });
 
-    it('should support multiline comments',
-       () => { expect(s('/* \n */b {c}', 'contenta')).toEqual('b[contenta] {c}'); });
+    it('should support multiline comments', () => {
+      expect(s('/* \n */b {c}', 'contenta')).toEqual('b[contenta] {c}');
+    });
 
     it('should keep sourceMappingURL comments', () => {
       expect(s('b {c}/*# sourceMappingURL=data:x */', 'contenta'))
@@ -318,13 +325,17 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
         return result;
       }
 
-      it('should work with empty css', () => { expect(captureRules('')).toEqual([]); });
+      it('should work with empty css', () => {
+        expect(captureRules('')).toEqual([]);
+      });
 
-      it('should capture a rule without body',
-         () => { expect(captureRules('a;')).toEqual([new CssRule('a', '')]); });
+      it('should capture a rule without body', () => {
+        expect(captureRules('a;')).toEqual([new CssRule('a', '')]);
+      });
 
-      it('should capture css rules with body',
-         () => { expect(captureRules('a {b}')).toEqual([new CssRule('a', 'b')]); });
+      it('should capture css rules with body', () => {
+        expect(captureRules('a {b}')).toEqual([new CssRule('a', 'b')]);
+      });
 
       it('should capture css rules with nested rules', () => {
         expect(captureRules('a {b {c}} d {e}')).toEqual([

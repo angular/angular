@@ -21,7 +21,7 @@ import {formatI18nPlaceholderName} from '../../../src/render3/view/i18n/util';
 import {parseR3 as parse} from './util';
 
 const expressionParser = new Parser(new Lexer());
-const i18nOf = (element: t.Node & {i18n?: i18n.I18nMeta}) => element.i18n !;
+const i18nOf = (element: t.Node&{i18n?: i18n.I18nMeta}) => element.i18n!;
 
 describe('I18nContext', () => {
   it('should support i18n content collection', () => {
@@ -74,7 +74,7 @@ describe('I18nContext', () => {
     const [boundTextB, elementC, boundTextC] = (elementB as t.Element).children;
 
     // simulate I18nContext for a given template
-    const ctx = new I18nContext(1, o.variable('ctx'), 0, null, root.i18n !);
+    const ctx = new I18nContext(1, o.variable('ctx'), 0, null, root.i18n!);
 
     // set data for root ctx
     ctx.appendBoundText(i18nOf(boundTextA));
@@ -87,7 +87,7 @@ describe('I18nContext', () => {
     expect(ctx.isResolved).toBe(false);
 
     // create child context
-    const childCtx = ctx.forkChildContext(2, 1, (templateA as t.Template).i18n !);
+    const childCtx = ctx.forkChildContext(2, 1, (templateA as t.Template).i18n!);
     expect(childCtx.bindings.size).toBe(0);
     expect(childCtx.isRoot).toBe(false);
 
@@ -116,11 +116,12 @@ describe('I18nContext', () => {
     const expected = new Map([
       ['INTERPOLATION', '�0�'], ['START_TAG_DIV', '�#0�|�#1:1�'],
       ['START_BOLD_TEXT', '�*1:1��#0:1�'], ['CLOSE_BOLD_TEXT', '�/#0:1��/*1:1�'],
-      ['CLOSE_TAG_DIV', '�/#0�|�/#1:1�'], ['INTERPOLATION_1', '�0:1�'],
-      ['INTERPOLATION_2', '�1:1�']
+      ['CLOSE_TAG_DIV', '�/#0�|�/#1:1�'], ['INTERPOLATION_1', '�0:1�'], ['INTERPOLATION_2', '�1:1�']
     ]);
     const phs = ctx.getSerializedPlaceholders();
-    expected.forEach((value, key) => { expect(phs.get(key) !.join('|')).toEqual(value); });
+    expected.forEach((value, key) => {
+      expect(phs.get(key)!.join('|')).toEqual(value);
+    });
 
     // placeholders are added into the root ctx
     expect(phs.size).toBe(expected.size);
@@ -152,7 +153,7 @@ describe('I18nContext', () => {
     const [textC] = (templateB as t.Template).children;
 
     // simulate I18nContext for a given template
-    const ctxLevelA = new I18nContext(0, o.variable('ctx'), 0, null, root.i18n !);
+    const ctxLevelA = new I18nContext(0, o.variable('ctx'), 0, null, root.i18n!);
 
     // create Level A context
     ctxLevelA.appendTemplate(i18nOf(templateA), 1);
@@ -160,12 +161,12 @@ describe('I18nContext', () => {
     expect(ctxLevelA.isResolved).toBe(false);
 
     // create Level B context
-    const ctxLevelB = ctxLevelA.forkChildContext(0, 1, (templateA as t.Template).i18n !);
+    const ctxLevelB = ctxLevelA.forkChildContext(0, 1, (templateA as t.Template).i18n!);
     ctxLevelB.appendTemplate(i18nOf(templateB), 1);
     expect(ctxLevelB.isRoot).toBe(false);
 
     // create Level 2 context
-    const ctxLevelC = ctxLevelB.forkChildContext(0, 1, (templateB as t.Template).i18n !);
+    const ctxLevelC = ctxLevelB.forkChildContext(0, 1, (templateB as t.Template).i18n!);
     expect(ctxLevelC.isRoot).toBe(false);
 
     // reconcile
@@ -176,7 +177,9 @@ describe('I18nContext', () => {
     const expected = new Map(
         [['START_TAG_NG-TEMPLATE', '�*1:1�|�*1:2�'], ['CLOSE_TAG_NG-TEMPLATE', '�/*1:2�|�/*1:1�']]);
     const phs = ctxLevelA.getSerializedPlaceholders();
-    expected.forEach((value, key) => { expect(phs.get(key) !.join('|')).toEqual(value); });
+    expected.forEach((value, key) => {
+      expect(phs.get(key)!.join('|')).toEqual(value);
+    });
 
     // placeholders are added into the root ctx
     expect(phs.size).toBe(expected.size);
@@ -195,8 +198,9 @@ describe('Utils', () => {
       ['START_TAG_NG-CONTAINER_1', 'startTagNgContainer_1'], ['CLOSE_TAG_ITALIC', 'closeTagItalic'],
       ['CLOSE_TAG_BOLD_1', 'closeTagBold_1']
     ];
-    cases.forEach(
-        ([input, output]) => { expect(formatI18nPlaceholderName(input)).toEqual(output); });
+    cases.forEach(([input, output]) => {
+      expect(formatI18nPlaceholderName(input)).toEqual(output);
+    });
   });
 
   describe('metadata serialization', () => {
@@ -292,8 +296,9 @@ describe('serializeI18nMessageForGetMsg', () => {
     return serializeI18nMessageForGetMsg(root.i18n as i18n.Message);
   };
 
-  it('should serialize plain text for `GetMsg()`',
-     () => { expect(serialize('Some text')).toEqual('Some text'); });
+  it('should serialize plain text for `GetMsg()`', () => {
+    expect(serialize('Some text')).toEqual('Some text');
+  });
 
   it('should serialize text with interpolation for `GetMsg()`', () => {
     expect(serialize('Some text {{ valueA }} and {{ valueB + valueC }}'))

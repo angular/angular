@@ -121,7 +121,7 @@ export class InjectableCompiler {
 
   compile(injectable: CompileInjectableMetadata, ctx: OutputContext): void {
     if (this.alwaysGenerateDef || injectable.providedIn !== undefined) {
-      const className = identifierName(injectable.type) !;
+      const className = identifierName(injectable.type)!;
       const clazz = new o.ClassStmt(
           className, null,
           [

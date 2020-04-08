@@ -12,7 +12,7 @@ import {CompilerConfig} from '../config';
 import {SchemaMetadata} from '../core';
 import {AST, ASTWithSource, EmptyExpr, ParsedEvent, ParsedProperty, ParsedVariable} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
-import {Identifiers, createTokenForExternalReference, createTokenForReference} from '../identifiers';
+import {createTokenForExternalReference, createTokenForReference, Identifiers} from '../identifiers';
 import * as html from '../ml_parser/ast';
 import {HtmlParser, ParseTreeResult} from '../ml_parser/html_parser';
 import {removeWhitespaces, replaceNgsp} from '../ml_parser/html_whitespaces';
@@ -57,7 +57,7 @@ const IDENT_EVENT_IDX = 10;
 const TEMPLATE_ATTR_PREFIX = '*';
 const CLASS_ATTR = 'class';
 
-let _TEXT_CSS_SELECTOR !: CssSelector;
+let _TEXT_CSS_SELECTOR!: CssSelector;
 function TEXT_CSS_SELECTOR(): CssSelector {
   if (!_TEXT_CSS_SELECTOR) {
     _TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
@@ -84,7 +84,9 @@ export class TemplateParser {
       private _htmlParser: HtmlParser, private _console: Console,
       public transforms: t.TemplateAstVisitor[]) {}
 
-  public get expressionParser() { return this._exprParser; }
+  public get expressionParser() {
+    return this._exprParser;
+  }
 
   parse(
       component: CompileDirectiveMetadata, template: string|ParseTreeResult,
@@ -93,9 +95,9 @@ export class TemplateParser {
       preserveWhitespaces: boolean): {template: t.TemplateAst[], pipes: CompilePipeSummary[]} {
     const result = this.tryParse(
         component, template, directives, pipes, schemas, templateUrl, preserveWhitespaces);
-    const warnings = result.errors !.filter(error => error.level === ParseErrorLevel.WARNING);
+    const warnings = result.errors!.filter(error => error.level === ParseErrorLevel.WARNING);
 
-    const errors = result.errors !.filter(error => error.level === ParseErrorLevel.ERROR);
+    const errors = result.errors!.filter(error => error.level === ParseErrorLevel.ERROR);
 
     if (warnings.length > 0) {
       this._console.warn(`Template parse warnings:\n${warnings.join('\n')}`);
@@ -106,7 +108,7 @@ export class TemplateParser {
       throw syntaxError(`Template parse errors:\n${errorString}`, errors);
     }
 
-    return {template: result.templateAst !, pipes: result.usedPipes !};
+    return {template: result.templateAst!, pipes: result.usedPipes!};
   }
 
   tryParse(
@@ -114,7 +116,7 @@ export class TemplateParser {
       directives: CompileDirectiveSummary[], pipes: CompilePipeSummary[], schemas: SchemaMetadata[],
       templateUrl: string, preserveWhitespaces: boolean): TemplateParseResult {
     let htmlParseResult = typeof template === 'string' ?
-        this._htmlParser !.parse(template, templateUrl, {
+        this._htmlParser!.parse(template, templateUrl, {
           tokenizeExpansionForms: true,
           interpolationConfig: this.getInterpolationConfig(component)
         }) :
@@ -139,7 +141,7 @@ export class TemplateParser {
       const uniqDirectives = removeSummaryDuplicates(directives);
       const uniqPipes = removeSummaryDuplicates(pipes);
       const providerViewContext = new ProviderViewContext(this._reflector, component);
-      let interpolationConfig: InterpolationConfig = undefined !;
+      let interpolationConfig: InterpolationConfig = undefined!;
       if (component.template && component.template.interpolation) {
         interpolationConfig = {
           start: component.template.interpolation[0],
@@ -147,7 +149,7 @@ export class TemplateParser {
         };
       }
       const bindingParser = new BindingParser(
-          this._exprParser, interpolationConfig !, this._schemaRegistry, uniqPipes, errors);
+          this._exprParser, interpolationConfig!, this._schemaRegistry, uniqPipes, errors);
       const parseVisitor = new TemplateParseVisitor(
           this._reflector, this._config, providerViewContext, uniqDirectives, bindingParser,
           this._schemaRegistry, schemas, errors);
@@ -164,8 +166,9 @@ export class TemplateParser {
     }
 
     if (this.transforms) {
-      this.transforms.forEach(
-          (transform: t.TemplateAstVisitor) => { result = t.templateVisitAll(transform, result); });
+      this.transforms.forEach((transform: t.TemplateAstVisitor) => {
+        result = t.templateVisitAll(transform, result);
+      });
     }
 
     return new TemplateParseResult(result, usedPipes, errors);
@@ -224,29 +227,35 @@ class TemplateParseVisitor implements html.Visitor {
     // Note: queries start with id 1 so we can use the number in a Bloom filter!
     this.contentQueryStartId = providerViewContext.component.viewQueries.length + 1;
     directives.forEach((directive, index) => {
-      const selector = CssSelector.parse(directive.selector !);
+      const selector = CssSelector.parse(directive.selector!);
       this.selectorMatcher.addSelectables(selector, directive);
       this.directivesIndex.set(directive, index);
     });
   }
 
-  visitExpansion(expansion: html.Expansion, context: any): any { return null; }
+  visitExpansion(expansion: html.Expansion, context: any): any {
+    return null;
+  }
 
-  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any { return null; }
+  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
+    return null;
+  }
 
   visitText(text: html.Text, parent: ElementContext): any {
-    const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR()) !;
+    const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR())!;
     const valueNoNgsp = replaceNgsp(text.value);
-    const expr = this._bindingParser.parseInterpolation(valueNoNgsp, text.sourceSpan !);
-    return expr ? new t.BoundTextAst(expr, ngContentIndex, text.sourceSpan !) :
-                  new t.TextAst(valueNoNgsp, ngContentIndex, text.sourceSpan !);
+    const expr = this._bindingParser.parseInterpolation(valueNoNgsp, text.sourceSpan!);
+    return expr ? new t.BoundTextAst(expr, ngContentIndex, text.sourceSpan!) :
+                  new t.TextAst(valueNoNgsp, ngContentIndex, text.sourceSpan!);
   }
 
   visitAttribute(attribute: html.Attribute, context: any): any {
     return new t.AttrAst(attribute.name, attribute.value, attribute.sourceSpan);
   }
 
-  visitComment(comment: html.Comment, context: any): any { return null; }
+  visitComment(comment: html.Comment, context: any): any {
+    return null;
+  }
 
   visitElement(element: html.Element, parent: ElementContext): any {
     const queryStartIndex = this.contentQueryStartId;
@@ -307,7 +316,7 @@ class TemplateParseVisitor implements html.Visitor {
         const parsedVariables: ParsedVariable[] = [];
         const absoluteOffset = (attr.valueSpan || attr.sourceSpan).start.offset;
         this._bindingParser.parseInlineTemplateBinding(
-            templateKey !, templateValue !, attr.sourceSpan, absoluteOffset, templateMatchableAttrs,
+            templateKey!, templateValue!, attr.sourceSpan, absoluteOffset, templateMatchableAttrs,
             templateElementOrDirectiveProps, parsedVariables);
         templateElementVars.push(...parsedVariables.map(v => t.VariableAst.fromParsedVariable(v)));
       }
@@ -326,52 +335,51 @@ class TemplateParseVisitor implements html.Visitor {
     const boundDirectivePropNames = new Set<string>();
     const directiveAsts = this._createDirectiveAsts(
         isTemplateElement, element.name, directiveMetas, elementOrDirectiveProps,
-        elementOrDirectiveRefs, element.sourceSpan !, references, boundDirectivePropNames);
+        elementOrDirectiveRefs, element.sourceSpan!, references, boundDirectivePropNames);
     const elementProps: t.BoundElementPropertyAst[] = this._createElementPropertyAsts(
         element.name, elementOrDirectiveProps, boundDirectivePropNames);
     const isViewRoot = parent.isTemplateElement || hasInlineTemplates;
 
     const providerContext = new ProviderElementContext(
-        this.providerViewContext, parent.providerContext !, isViewRoot, directiveAsts, attrs,
-        references, isTemplateElement, queryStartIndex, element.sourceSpan !);
+        this.providerViewContext, parent.providerContext!, isViewRoot, directiveAsts, attrs,
+        references, isTemplateElement, queryStartIndex, element.sourceSpan!);
 
     const children: t.TemplateAst[] = html.visitAll(
         preparsedElement.nonBindable ? NON_BINDABLE_VISITOR : this, element.children,
         ElementContext.create(
             isTemplateElement, directiveAsts,
-            isTemplateElement ? parent.providerContext ! : providerContext));
+            isTemplateElement ? parent.providerContext! : providerContext));
     providerContext.afterElement();
     // Override the actual selector when the `ngProjectAs` attribute is provided
     const projectionSelector = preparsedElement.projectAs != '' ?
         CssSelector.parse(preparsedElement.projectAs)[0] :
         elementCssSelector;
-    const ngContentIndex = parent.findNgContentIndex(projectionSelector) !;
+    const ngContentIndex = parent.findNgContentIndex(projectionSelector)!;
     let parsedElement: t.TemplateAst;
 
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
       // `<ng-content>` element
       if (element.children && !element.children.every(_isEmptyTextNode)) {
-        this._reportError(`<ng-content> element cannot have content.`, element.sourceSpan !);
+        this._reportError(`<ng-content> element cannot have content.`, element.sourceSpan!);
       }
 
       parsedElement = new t.NgContentAst(
-          this.ngContentCount++, hasInlineTemplates ? null ! : ngContentIndex,
-          element.sourceSpan !);
+          this.ngContentCount++, hasInlineTemplates ? null! : ngContentIndex, element.sourceSpan!);
     } else if (isTemplateElement) {
       // `<ng-template>` element
       this._assertAllEventsPublishedByDirectives(directiveAsts, events);
       this._assertNoComponentsNorElementBindingsOnTemplate(
-          directiveAsts, elementProps, element.sourceSpan !);
+          directiveAsts, elementProps, element.sourceSpan!);
 
       parsedElement = new t.EmbeddedTemplateAst(
           attrs, events, references, elementVars, providerContext.transformedDirectiveAsts,
           providerContext.transformProviders, providerContext.transformedHasViewContainer,
-          providerContext.queryMatches, children, hasInlineTemplates ? null ! : ngContentIndex,
-          element.sourceSpan !);
+          providerContext.queryMatches, children, hasInlineTemplates ? null! : ngContentIndex,
+          element.sourceSpan!);
     } else {
       // element other than `<ng-content>` and `<ng-template>`
       this._assertElementExists(matchElement, element);
-      this._assertOnlyOneComponent(directiveAsts, element.sourceSpan !);
+      this._assertOnlyOneComponent(directiveAsts, element.sourceSpan!);
 
       const ngContentIndex =
           hasInlineTemplates ? null : parent.findNgContentIndex(projectionSelector);
@@ -389,22 +397,22 @@ class TemplateParseVisitor implements html.Visitor {
       const {directives} = this._parseDirectives(this.selectorMatcher, templateSelector);
       const templateBoundDirectivePropNames = new Set<string>();
       const templateDirectiveAsts = this._createDirectiveAsts(
-          true, elName, directives, templateElementOrDirectiveProps, [], element.sourceSpan !, [],
+          true, elName, directives, templateElementOrDirectiveProps, [], element.sourceSpan!, [],
           templateBoundDirectivePropNames);
       const templateElementProps: t.BoundElementPropertyAst[] = this._createElementPropertyAsts(
           elName, templateElementOrDirectiveProps, templateBoundDirectivePropNames);
       this._assertNoComponentsNorElementBindingsOnTemplate(
-          templateDirectiveAsts, templateElementProps, element.sourceSpan !);
+          templateDirectiveAsts, templateElementProps, element.sourceSpan!);
       const templateProviderContext = new ProviderElementContext(
-          this.providerViewContext, parent.providerContext !, parent.isTemplateElement,
-          templateDirectiveAsts, [], [], true, templateQueryStartIndex, element.sourceSpan !);
+          this.providerViewContext, parent.providerContext!, parent.isTemplateElement,
+          templateDirectiveAsts, [], [], true, templateQueryStartIndex, element.sourceSpan!);
       templateProviderContext.afterElement();
 
       parsedElement = new t.EmbeddedTemplateAst(
           [], [], [], templateElementVars, templateProviderContext.transformedDirectiveAsts,
           templateProviderContext.transformProviders,
           templateProviderContext.transformedHasViewContainer, templateProviderContext.queryMatches,
-          [parsedElement], ngContentIndex, element.sourceSpan !);
+          [parsedElement], ngContentIndex, element.sourceSpan!);
     }
 
     return parsedElement;
@@ -538,7 +546,7 @@ class TemplateParseVisitor implements html.Visitor {
     let matchElement = false;
 
     selectorMatcher.match(elementCssSelector, (selector, directive) => {
-      directives[this.directivesIndex.get(directive) !] = directive;
+      directives[this.directivesIndex.get(directive)!] = directive;
       matchElement = matchElement || selector.hasElementSelector();
     });
 
@@ -554,7 +562,7 @@ class TemplateParseVisitor implements html.Visitor {
       elementSourceSpan: ParseSourceSpan, targetReferences: t.ReferenceAst[],
       targetBoundDirectivePropNames: Set<string>): t.DirectiveAst[] {
     const matchedReferences = new Set<string>();
-    let component: CompileDirectiveSummary = null !;
+    let component: CompileDirectiveSummary = null!;
 
     const directiveAsts = directives.map((directive) => {
       const sourceSpan = new ParseSourceSpan(
@@ -566,15 +574,14 @@ class TemplateParseVisitor implements html.Visitor {
       }
       const directiveProperties: t.BoundDirectivePropertyAst[] = [];
       const boundProperties =
-          this._bindingParser.createDirectiveHostPropertyAsts(directive, elementName, sourceSpan) !;
+          this._bindingParser.createDirectiveHostPropertyAsts(directive, elementName, sourceSpan)!;
 
       let hostProperties =
           boundProperties.map(prop => t.BoundElementPropertyAst.fromBoundProperty(prop));
       // Note: We need to check the host properties here as well,
       // as we don't know the element name in the DirectiveWrapperCompiler yet.
       hostProperties = this._checkPropertiesInSchema(elementName, hostProperties);
-      const parsedEvents =
-          this._bindingParser.createDirectiveHostEventAsts(directive, sourceSpan) !;
+      const parsedEvents = this._bindingParser.createDirectiveHostEventAsts(directive, sourceSpan)!;
       this._createDirectivePropertyAsts(
           directive.inputs, props, directiveProperties, targetBoundDirectivePropNames);
       elementOrDirectiveRefs.forEach((elOrDirRef) => {
@@ -602,7 +609,7 @@ class TemplateParseVisitor implements html.Visitor {
               elOrDirRef.sourceSpan);
         }
       } else if (!component) {
-        let refToken: CompileTokenMetadata = null !;
+        let refToken: CompileTokenMetadata = null!;
         if (isTemplateElement) {
           refToken = createTokenForExternalReference(this.reflector, Identifiers.TemplateRef);
         }
@@ -663,7 +670,7 @@ class TemplateParseVisitor implements html.Visitor {
 
   private _findComponentDirectiveNames(directives: t.DirectiveAst[]): string[] {
     return this._findComponentDirectives(directives)
-        .map(directive => identifierName(directive.directive.type) !);
+        .map(directive => identifierName(directive.directive.type)!);
   }
 
   private _assertOnlyOneComponent(directives: t.DirectiveAst[], sourceSpan: ParseSourceSpan) {
@@ -691,16 +698,16 @@ class TemplateParseVisitor implements html.Visitor {
 
     if (!matchElement && !this._schemaRegistry.hasElement(elName, this._schemas)) {
       let errorMsg = `'${elName}' is not a known element:\n`;
-      errorMsg +=
-          `1. If '${elName}' is an Angular component, then verify that it is part of this module.\n`;
+      errorMsg += `1. If '${
+          elName}' is an Angular component, then verify that it is part of this module.\n`;
       if (elName.indexOf('-') > -1) {
-        errorMsg +=
-            `2. If '${elName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
+        errorMsg += `2. If '${
+            elName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
       } else {
         errorMsg +=
             `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
       }
-      this._reportError(errorMsg, element.sourceSpan !);
+      this._reportError(errorMsg, element.sourceSpan!);
     }
   }
 
@@ -714,7 +721,8 @@ class TemplateParseVisitor implements html.Visitor {
     }
     elementProps.forEach(prop => {
       this._reportError(
-          `Property binding ${prop.name} not used by any directive on an embedded template. Make sure that the property name is spelled correctly and all directives are listed in the "@NgModule.declarations".`,
+          `Property binding ${
+              prop.name} not used by any directive on an embedded template. Make sure that the property name is spelled correctly and all directives are listed in the "@NgModule.declarations".`,
           sourceSpan);
     });
   }
@@ -733,7 +741,9 @@ class TemplateParseVisitor implements html.Visitor {
     events.forEach(event => {
       if (event.target != null || !allDirectiveEvents.has(event.name)) {
         this._reportError(
-            `Event binding ${event.fullName} not emitted by any directive on an embedded template. Make sure that the event name is spelled correctly and all directives are listed in the "@NgModule.declarations".`,
+            `Event binding ${
+                event
+                    .fullName} not emitted by any directive on an embedded template. Make sure that the event name is spelled correctly and all directives are listed in the "@NgModule.declarations".`,
             event.sourceSpan);
       }
     });
@@ -746,16 +756,20 @@ class TemplateParseVisitor implements html.Visitor {
     return boundProps.filter((boundProp) => {
       if (boundProp.type === t.PropertyBindingType.Property &&
           !this._schemaRegistry.hasProperty(elementName, boundProp.name, this._schemas)) {
-        let errorMsg =
-            `Can't bind to '${boundProp.name}' since it isn't a known property of '${elementName}'.`;
+        let errorMsg = `Can't bind to '${boundProp.name}' since it isn't a known property of '${
+            elementName}'.`;
         if (elementName.startsWith('ng-')) {
           errorMsg +=
-              `\n1. If '${boundProp.name}' is an Angular directive, then add 'CommonModule' to the '@NgModule.imports' of this component.` +
+              `\n1. If '${
+                  boundProp
+                      .name}' is an Angular directive, then add 'CommonModule' to the '@NgModule.imports' of this component.` +
               `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
         } else if (elementName.indexOf('-') > -1) {
           errorMsg +=
-              `\n1. If '${elementName}' is an Angular component and it has '${boundProp.name}' input, then verify that it is part of this module.` +
-              `\n2. If '${elementName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.` +
+              `\n1. If '${elementName}' is an Angular component and it has '${
+                  boundProp.name}' input, then verify that it is part of this module.` +
+              `\n2. If '${
+                  elementName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.` +
               `\n3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
         }
         this._reportError(errorMsg, boundProp.sourceSpan);
@@ -791,20 +805,26 @@ class NonBindableVisitor implements html.Visitor {
         ast.name, html.visitAll(this, ast.attrs), [], [], [], [], [], false, [], children,
         ngContentIndex, ast.sourceSpan, ast.endSourceSpan);
   }
-  visitComment(comment: html.Comment, context: any): any { return null; }
+  visitComment(comment: html.Comment, context: any): any {
+    return null;
+  }
 
   visitAttribute(attribute: html.Attribute, context: any): t.AttrAst {
     return new t.AttrAst(attribute.name, attribute.value, attribute.sourceSpan);
   }
 
   visitText(text: html.Text, parent: ElementContext): t.TextAst {
-    const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR()) !;
-    return new t.TextAst(text.value, ngContentIndex, text.sourceSpan !);
+    const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR())!;
+    return new t.TextAst(text.value, ngContentIndex, text.sourceSpan!);
   }
 
-  visitExpansion(expansion: html.Expansion, context: any): any { return expansion; }
+  visitExpansion(expansion: html.Expansion, context: any): any {
+    return expansion;
+  }
 
-  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any { return expansionCase; }
+  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
+    return expansionCase;
+  }
 }
 
 /**
@@ -824,7 +844,7 @@ class ElementOrDirectiveRef {
 }
 
 /** Splits a raw, potentially comma-delimited `exportAs` value into an array of names. */
-function splitExportAs(exportAs: string | null): string[] {
+function splitExportAs(exportAs: string|null): string[] {
   return exportAs ? exportAs.split(',').map(e => e.trim()) : [];
 }
 
@@ -837,7 +857,7 @@ class ElementContext {
       isTemplateElement: boolean, directives: t.DirectiveAst[],
       providerContext: ProviderElementContext): ElementContext {
     const matcher = new SelectorMatcher();
-    let wildcardNgContentIndex: number = null !;
+    let wildcardNgContentIndex: number = null!;
     const component = directives.find(directive => directive.directive.isComponent);
     if (component) {
       const ngContentSelectors = component.directive.template !.ngContentSelectors;
@@ -859,8 +879,9 @@ class ElementContext {
 
   findNgContentIndex(selector: CssSelector): number|null {
     const ngContentIndices: number[] = [];
-    this._ngContentIndexMatcher.match(
-        selector, (selector, ngContentIndex) => { ngContentIndices.push(ngContentIndex); });
+    this._ngContentIndexMatcher.match(selector, (selector, ngContentIndex) => {
+      ngContentIndices.push(ngContentIndex);
+    });
     ngContentIndices.sort();
     if (this._wildcardNgContentIndex != null) {
       ngContentIndices.push(this._wildcardNgContentIndex);
@@ -897,7 +918,7 @@ function _isEmptyTextNode(node: html.Node): boolean {
   return node instanceof html.Text && node.value.trim().length == 0;
 }
 
-export function removeSummaryDuplicates<T extends{type: CompileTypeMetadata}>(items: T[]): T[] {
+export function removeSummaryDuplicates<T extends {type: CompileTypeMetadata}>(items: T[]): T[] {
   const map = new Map<any, T>();
 
   items.forEach((item) => {

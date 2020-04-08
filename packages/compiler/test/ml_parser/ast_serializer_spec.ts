@@ -13,7 +13,9 @@ import {serializeNodes} from './util/util';
   describe('Node serializer', () => {
     let parser: HtmlParser;
 
-    beforeEach(() => { parser = new HtmlParser(); });
+    beforeEach(() => {
+      parser = new HtmlParser();
+    });
 
     it('should support element', () => {
       const html = '<p></p>';

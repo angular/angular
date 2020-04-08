@@ -106,7 +106,9 @@ export class PlaceholderRegistry {
     return start + strAttrs + end;
   }
 
-  private _hashClosingTag(tag: string): string { return this._hashTag(`/${tag}`, {}, false); }
+  private _hashClosingTag(tag: string): string {
+    return this._hashTag(`/${tag}`, {}, false);
+  }
 
   private _generateUniqueName(base: string): string {
     const seen = this._placeHolderNameCounts.hasOwnProperty(base);

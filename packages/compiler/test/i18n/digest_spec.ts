@@ -27,14 +27,17 @@ import {computeMsgId, digest, sha1} from '../../src/i18n/digest';
     });
 
     describe('sha1', () => {
-      it('should work on empty strings',
-         () => { expect(sha1('')).toEqual('da39a3ee5e6b4b0d3255bfef95601890afd80709'); });
+      it('should work on empty strings', () => {
+        expect(sha1('')).toEqual('da39a3ee5e6b4b0d3255bfef95601890afd80709');
+      });
 
-      it('should returns the sha1 of "hello world"',
-         () => { expect(sha1('abc')).toEqual('a9993e364706816aba3e25717850c26c9cd0d89d'); });
+      it('should returns the sha1 of "hello world"', () => {
+        expect(sha1('abc')).toEqual('a9993e364706816aba3e25717850c26c9cd0d89d');
+      });
 
-      it('should returns the sha1 of unicode strings',
-         () => { expect(sha1('你好，世界')).toEqual('3becb03b015ed48050611c8d7afe4b88f70d5a20'); });
+      it('should returns the sha1 of unicode strings', () => {
+        expect(sha1('你好，世界')).toEqual('3becb03b015ed48050611c8d7afe4b88f70d5a20');
+      });
 
       it('should support arbitrary string size', () => {
         // node.js reference code:
@@ -89,8 +92,9 @@ import {computeMsgId, digest, sha1} from '../../src/i18n/digest';
           '': '4416290763660062288',
         };
 
-        Object.keys(fixtures).forEach(
-            msg => { expect(computeMsgId(msg, '')).toEqual(fixtures[msg]); });
+        Object.keys(fixtures).forEach(msg => {
+          expect(computeMsgId(msg, '')).toEqual(fixtures[msg]);
+        });
       });
 
       it('should work on well known inputs with meaning', () => {
@@ -100,8 +104,9 @@ import {computeMsgId, digest, sha1} from '../../src/i18n/digest';
           '3993998469942805487': ['View', 'Gmail UI'],
         };
 
-        Object.keys(fixtures).forEach(
-            id => { expect(computeMsgId(fixtures[id][0], fixtures[id][1])).toEqual(id); });
+        Object.keys(fixtures).forEach(id => {
+          expect(computeMsgId(fixtures[id][0], fixtures[id][1])).toEqual(id);
+        });
       });
 
       it('should support arbitrary string size', () => {
@@ -116,7 +121,6 @@ import {computeMsgId, digest, sha1} from '../../src/i18n/digest';
         }
         expect(computeMsgId(result, '')).toEqual('2122606631351252558');
       });
-
     });
   });
 }

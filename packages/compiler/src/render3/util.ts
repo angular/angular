@@ -13,14 +13,13 @@ import {OutputContext} from '../util';
 /**
  * Convert an object map with `Expression` values into a `LiteralMapExpr`.
  */
-export function mapToMapExpression(map: {[key: string]: o.Expression | undefined}):
-    o.LiteralMapExpr {
+export function mapToMapExpression(map: {[key: string]: o.Expression|undefined}): o.LiteralMapExpr {
   const result = Object.keys(map).map(
       key => ({
         key,
         // The assertion here is because really TypeScript doesn't allow us to express that if the
         // key is present, it will have a value, but this is true in reality.
-        value: map[key] !,
+        value: map[key]!,
         quoted: false,
       }));
   return o.literalMap(result);
