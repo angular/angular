@@ -14,7 +14,7 @@ describe('convertValueToOutputAst', () => {
     const ctx = null;
     const value = new Array(3).concat('foo');
     const expr = convertValueToOutputAst(ctx!, value) as o.LiteralArrayExpr;
-    expect(expr instanceof o.LiteralArrayExpr).toBe(true);
+    expect(expr instanceof o.LiteralArrayExpr).toBeTrue();
     expect(expr.entries.length).toBe(4);
     for (let i = 0; i < 4; ++i) {
       expect(expr.entries[i] instanceof o.Expression).toBe(true);
