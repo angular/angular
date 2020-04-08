@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {readFileSync} from 'fs';
-import {join} from 'path';
+import {resolve} from 'path';
 
 import {getRepoBaseDir} from '../utils/config';
 
@@ -14,7 +14,7 @@ import {validateCommitMessage} from './validate';
 
 /** Validate commit message at the provided file path. */
 export function validateFile(filePath: string) {
-  const commitMessage = readFileSync(join(getRepoBaseDir(), filePath), 'utf8');
+  const commitMessage = readFileSync(resolve(getRepoBaseDir(), filePath), 'utf8');
   if (validateCommitMessage(commitMessage)) {
     console.info('√  Valid commit message');
     return;
