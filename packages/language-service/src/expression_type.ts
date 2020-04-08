@@ -38,16 +38,6 @@ export class AstType implements AstVisitor {
   }
 
   visitBinary(ast: Binary): Symbol {
-    // Treat undefined and null as other.
-    function normalize(kind: BuiltinType, other: BuiltinType): BuiltinType {
-      switch (kind) {
-        case BuiltinType.Undefined:
-        case BuiltinType.Null:
-          return normalize(other, BuiltinType.Other);
-      }
-      return kind;
-    }
-
     const getType = (ast: AST, operation: string): Symbol => {
       const type = this.getType(ast);
       if (type.nullable) {
@@ -64,17 +54,14 @@ export class AstType implements AstVisitor {
             this.diagnostics.push(createDiagnostic(ast.span, Diagnostic.expression_might_be_null));
             break;
         }
-        return this.query.getNonNullableType(type);
       }
       return type;
     };
 
     const leftType = getType(ast.left, ast.operation);
     const rightType = getType(ast.right, ast.operation);
-    const leftRawKind = this.query.getTypeKind(leftType);
-    const rightRawKind = this.query.getTypeKind(rightType);
-    const leftKind = normalize(leftRawKind, rightRawKind);
-    const rightKind = normalize(rightRawKind, leftRawKind);
+    const leftKind = this.query.getTypeKind(leftType);
+    const rightKind = this.query.getTypeKind(rightType);
 
     // The following swtich implements operator typing similar to the
     // type production tables in the TypeScript specification.
@@ -154,26 +141,15 @@ export class AstType implements AstVisitor {
       case '!=':
       case '===':
       case '!==':
-        switch (operKind) {
-          case BuiltinType.Any << 8 | BuiltinType.Any:
-          case BuiltinType.Any << 8 | BuiltinType.Boolean:
-          case BuiltinType.Any << 8 | BuiltinType.Number:
-          case BuiltinType.Any << 8 | BuiltinType.String:
-          case BuiltinType.Any << 8 | BuiltinType.Other:
-          case BuiltinType.Boolean << 8 | BuiltinType.Any:
-          case BuiltinType.Boolean << 8 | BuiltinType.Boolean:
-          case BuiltinType.Number << 8 | BuiltinType.Any:
-          case BuiltinType.Number << 8 | BuiltinType.Number:
-          case BuiltinType.String << 8 | BuiltinType.Any:
-          case BuiltinType.String << 8 | BuiltinType.String:
-          case BuiltinType.Other << 8 | BuiltinType.Any:
-          case BuiltinType.Other << 8 | BuiltinType.Other:
-            return this.query.getBuiltinType(BuiltinType.Boolean);
-          default:
-            this.diagnostics.push(
-                createDiagnostic(ast.span, Diagnostic.expected_operands_of_similar_type_or_any));
-            return this.anyType;
+        if (!(leftKind & rightKind) &&
+            !((leftKind | rightKind) & (BuiltinType.Null | BuiltinType.Undefined))) {
+          // Two values are comparable only if
+          //   - they have some type overlap, or
+          //   - at least one is not defined
+          this.diagnostics.push(
+              createDiagnostic(ast.span, Diagnostic.expected_operands_of_comparable_types_or_any));
         }
+        return this.query.getBuiltinType(BuiltinType.Boolean);
       case '&&':
         return rightType;
       case '||':

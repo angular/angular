@@ -23,8 +23,6 @@ import {MockTypescriptHost} from './test_utils';
  * as well.
  */
 
-const EXPRESSION_CASES = '/app/expression-cases.ts';
-const NG_FOR_CASES = '/app/ng-for-cases.ts';
 const TEST_TEMPLATE = '/app/test.ng';
 const APP_COMPONENT = '/app/app.component.ts';
 
@@ -121,8 +119,41 @@ describe('diagnostics', () => {
     expect(diagnostics).toEqual([]);
   });
 
+  describe('diagnostics for expression comparisons', () => {
+    for (let [left, right, leftTy, rightTy] of [
+             ['\'abc\'', 1, 'string', 'number'],
+             ['hero', 2, 'object', 'number'],
+             ['strOrNumber', 'hero', 'string|number', 'object'],
+    ]) {
+      it(`it should report errors for mismtched types in a comparison: ${leftTy} and ${rightTy}`,
+         () => {
+           mockHost.override(TEST_TEMPLATE, `{{ ${left} != ${right} }}`);
+           const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText).toBe(`Expected operands to be of comparable types or any`);
+         });
+    }
+
+    for (let [left, right, leftTy, rightTy] of [
+             ['\'abc\'', 'anyValue', 'string', 'any'],
+             ['\'abc\'', null, 'string', 'null'],
+             ['\'abc\'', undefined, 'string', 'undefined'],
+             [null, null, 'null', 'null'],
+             ['{a: 1}', '{b: 2}', 'object', 'object'],
+             ['strOrNumber', '1', 'string|number', 'number'],
+    ]) {
+      it(`it should not report errors for compatible types in a comparison: ${leftTy} and ${
+             rightTy}`,
+         () => {
+           mockHost.override(TEST_TEMPLATE, `{{ ${left} != ${right} }}`);
+           const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+           expect(diags.length).toBe(0);
+         });
+    }
+  });
+
   describe('diagnostics for ngFor exported values', () => {
-    it('should report errors for mistmatched exported types', () => {
+    it('should report errors for mismatched exported types', () => {
       mockHost.override(TEST_TEMPLATE, `
         <div *ngFor="let hero of heroes; let i = index; let isFirst = first">
             'i' is a number; 'isFirst' is a boolean
@@ -131,7 +162,7 @@ describe('diagnostics', () => {
       `);
       const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Expected operands to be of similar type or any`);
+      expect(diags[0].messageText).toBe(`Expected operands to be of comparable types or any`);
     });
 
     it('should not report errors for matching exported type', () => {
@@ -581,26 +612,6 @@ describe('diagnostics', () => {
     const keyword = `"onClick"`;
     expect(start).toBe(content.lastIndexOf(keyword) + 1);  // exclude leading quote
     expect(length).toBe(keyword.length - 2);               // exclude leading and trailing quotes
-  });
-
-  // #13412
-  it('should not report an error for using undefined under non-strict mode', () => {
-    mockHost.override(APP_COMPONENT, `
-      import { Component } from '@angular/core';
-
-      @Component({
-        template: '<div *ngIf="something === undefined"></div>'
-      })
-      export class AppComponent {
-        something = 'foo';
-      }`);
-    mockHost.overrideOptions({
-      strict: false,  // TODO: This test fails in strict mode
-    });
-    const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
-    expect(tsDiags).toEqual([]);
-    const ngDiags = ngLS.getSemanticDiagnostics(APP_COMPONENT);
-    expect(ngDiags).toEqual([]);
   });
 
   // Issue #13326
