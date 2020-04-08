@@ -362,15 +362,12 @@ state of the previous instance.
 
 * `SAFE_MODE`: 서비스 워커가 캐싱된 데이터의 안전성을 보장할 수 없는 상태를 의미합니다. 다르게 표현하면, 캐싱된 앱을 실행하다가 에러가 발생했거나 캐싱된 앱 버전 자체가 유효하지 않은 상태를 의미합니다. 앱에서 주고받는 모든 트래픽은 캐싱된 앱이 아니라 네트워크를 통해 전송되며, 서비스 워커의 실행은 최소화됩니다.
 
-In both cases, the parenthetical annotation provides the
-error that caused the service worker to enter the degraded state.
+두 경우 모두 괄호 안에 표시되는 에러 내용을 확인하면 서비스 워커가 제대로 동작하지 않는 원인을 확인할 수 있습니다.
 
-Both states are temporary; they are saved only for the lifetime of the [ServiceWorker
-instance](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope).
-The browser sometimes terminates an idle service worker to conserve memory and
-processor power, and creates a new service worker instance in response to
-network events. The new instance starts in the `NORMAL` mode, regardless of the
-state of the previous instance.
+그리고 두 상태는 모두 일시적입니다. 이 상태는 [서비스 워커의 인스턴스](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope)가 유지될 때까지만 유효합니다.
+브라우저는 메모리를 확보하고 연산 성능을 최대화하기 위해서 동작하지 않는 서비스 워커를 종료시키고 새로운 서비스 워커의 인스턴스를 생성하기도 합니다.
+이 때 새로 생성되는 서비스 워커의 상태는 이전 상태와 관계 없이 `NORMAL` 모드입니다. 
+
 
 <!--
 #### Latest manifest hash
@@ -555,8 +552,13 @@ the past on your site.
 
 이 스크립트를 사용하면 `@angular/service-worker`가 등록한 서비스 워커와 다른 방식으로 사이트에 등록된 서비스 워커도 모두 비활성화할 수 있습니다.
 
-### Changing your app's location
 
+<!--
+### Changing your app's location
+-->
+### 앱 위치 변경하기
+
+<!--
 It is important to note that service workers don't work behind redirect. You 
 may have already encountered the error `The script resource is behind a redirect, which is disallowed`.
 
@@ -571,6 +573,16 @@ entirely from Service Worker. The old worker (registered at `example.com`)
 
 To remedy this, you may need to kill the old worker using one of the above
 techniques ([Fail-safe](#fail-safe) or [Safety Worker](#safety-worker)).
+-->
+서비스 워커는 리다이렉트와는 궁합이 맞지 않습니다.
+`The script resource is behind a redirect, which is disallowed` 에러가 발생한다면 보통 리다이렉트와 함께 사용했기 때문입니다.
+
+하지만 애플리케이션이 실행되는 주소를 변경해야 하는 경우에는 문제가 될 수 있습니다.
+이전에 `example.com`이었던 접속 주소를 `www.example.com`으로 옮기기 위해 리다이렉트한다면 이 경우에는 서비스 워커가 동작하지 않습니다.
+그리고 리다이렉트를 사용하면 누가 서비스 워커를 실행했는지에 대한 이벤트도 발생시키지 않습니다.
+이전에 `example.com`에서 사용했던 서비스 워커는 계속 예전 주소로 업데이트를 시도하지만 찾을 수 없을 것이고, `www.example.com`에 있는 서비스 워커는 `The script resource is behind a redirect, which is disallowed` 에러를 마주하게 될 것입니다.
+
+이런 상황을 방지하려면 위에서 살펴본 [실행에 실패했을 때](#fail-safe)나 [Safety Worker](#safety-worker)와 같은 테크닉으로 이전에 있던 워커를 완전히 종료하는 것이 좋습니다.
 
 
 <!--

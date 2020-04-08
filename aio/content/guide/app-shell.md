@@ -35,7 +35,7 @@ ng new my-app --routing
 <!--
 For an existing application, you have to manually add the `RouterModule` and defining a `<router-outlet>` within your application.
 -->
-이미 애플리케이션이 있다면, 애플리케이션에 `RouterModule`을 추가하고 템플릿에 `<router-outlet>`을 추가하면 됩니다.
+이미 생성된 애플리케이션이라면 `RouterModule`을 추가하고 템플릿에 `<router-outlet>`을 추가하면 됩니다.
 
 <!--
 ## Step 2: Create the app shell
@@ -45,15 +45,20 @@ For an existing application, you have to manually add the `RouterModule` and def
 <!--
 Use the CLI to automatically create the app shell.
 -->
-다음 명령을 실행하면 애플리케이션의 기본 틀이 생성합니다.
+다음 명령을 실행하면 애플리케이션의 기본 틀이 생성됩니다.
 
 <code-example language="bash">
 ng generate app-shell
 </code-example>
 
+<!--
 * `client-project` takes the name of your client application.
 
 After running this command you will notice that the `angular.json` configuration file has been updated to add two new targets, with a few other changes.
+-->
+* `client-project`에는 클라이언트 애플리케이션의 이름이 들어갑니다.
+
+이 명령을 실행하고 나면 `angular.json` 설정 파일에 다음 두 빌드 대상이 추가됩니다.
 
 <code-example language="json">
 "server": {

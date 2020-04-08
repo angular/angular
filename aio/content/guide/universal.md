@@ -1,7 +1,6 @@
 <!--
 # Server-side rendering (SSR) with Angular Universal
 -->
--->
 # 서버 사이드 렌더링 (Server-side Rendering, SSR): Angular Universal
 
 <!--
