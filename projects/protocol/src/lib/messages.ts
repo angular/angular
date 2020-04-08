@@ -1,3 +1,5 @@
+import { ViewEncapsulation } from '@angular/core';
+
 export interface DirectiveType {
   name: string;
   id: number;
@@ -45,10 +47,16 @@ export interface DirectivesProperties {
   [name: string]: Properties;
 }
 
+export interface DirectiveMetadata {
+  inputs: { [name: string]: string };
+  outputs: { [name: string]: string };
+  encapsulation: ViewEncapsulation;
+  onPush: boolean;
+}
+
 export interface Properties {
   props: { [name: string]: Descriptor };
-  inputs?: { [name: string]: string };
-  outputs?: { [name: string]: string };
+  metadata?: DirectiveMetadata;
 }
 
 export type ElementPosition = number[];

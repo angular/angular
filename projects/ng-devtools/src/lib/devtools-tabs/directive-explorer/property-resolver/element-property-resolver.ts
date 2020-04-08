@@ -33,14 +33,7 @@ export class ElementPropertyResolver {
   }
 
   setProperties(indexedNode: IndexedNode, data: DirectivesProperties): void {
-    // To prevent memory leaks when a directive no longer exists on an element
-    const currentProps = [...this._directivePropertiesController.keys()];
-    const incomingProps = new Set(Object.keys(data));
-    for (const prop of currentProps) {
-      if (!incomingProps.has(prop)) {
-        this._directivePropertiesController.delete(prop);
-      }
-    }
+    this._flushDeletedProperties(data);
 
     Object.keys(data).forEach((key) => {
       const controller = this._directivePropertiesController.get(key);
@@ -60,6 +53,16 @@ export class ElementPropertyResolver {
         new DirectivePropertyResolver(this._messageBus, data[key], position)
       );
     });
+  }
+
+  private _flushDeletedProperties(data: DirectivesProperties): void {
+    const currentProps = [...this._directivePropertiesController.keys()];
+    const incomingProps = new Set(Object.keys(data));
+    for (const prop of currentProps) {
+      if (!incomingProps.has(prop)) {
+        this._directivePropertiesController.delete(prop);
+      }
+    }
   }
 
   getExpandedProperties(): ComponentExplorerViewProperties {
