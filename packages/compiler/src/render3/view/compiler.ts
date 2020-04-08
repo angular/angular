@@ -20,17 +20,17 @@ import {CssSelector, SelectorMatcher} from '../../selector';
 import {ShadowCss} from '../../shadow_css';
 import {CONTENT_ATTR, HOST_ATTR} from '../../style_compiler';
 import {BindingParser} from '../../template_parser/binding_parser';
-import {OutputContext, error} from '../../util';
+import {error, OutputContext} from '../../util';
 import {BoundEvent} from '../r3_ast';
-import {R3DependencyMetadata, R3FactoryTarget, R3ResolvedDependencyType, compileFactoryFunction} from '../r3_factory';
+import {compileFactoryFunction, R3DependencyMetadata, R3FactoryTarget, R3ResolvedDependencyType} from '../r3_factory';
 import {Identifiers as R3} from '../r3_identifiers';
 import {Render3ParseResult} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
 
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
 import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
-import {BindingScope, TemplateDefinitionBuilder, ValueConverter, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn} from './template';
-import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, chainedInstruction, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
+import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
+import {asLiteral, chainedInstruction, conditionallyCreateMapObjectLiteral, CONTEXT_NAME, DefinitionMap, getQueryPredicate, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -65,9 +65,10 @@ function baseDirectiveFields(
 
   // e.g. `hostBindings: (rf, ctx) => { ... }
   definitionMap.set(
-      'hostBindings', createHostBindingsFunction(
-                          meta.host, meta.typeSourceSpan, bindingParser, constantPool,
-                          meta.selector || '', meta.name, definitionMap));
+      'hostBindings',
+      createHostBindingsFunction(
+          meta.host, meta.typeSourceSpan, bindingParser, constantPool, meta.selector || '',
+          meta.name, definitionMap));
 
   // e.g 'inputs: {a: 'a'}`
   definitionMap.set('inputs', conditionallyCreateMapObjectLiteral(meta.inputs, true));
@@ -85,8 +86,7 @@ function baseDirectiveFields(
 /**
  * Add features to the definition map.
  */
-function addFeatures(
-    definitionMap: DefinitionMap, meta: R3DirectiveMetadata | R3ComponentMetadata) {
+function addFeatures(definitionMap: DefinitionMap, meta: R3DirectiveMetadata|R3ComponentMetadata) {
   // e.g. `features: [NgOnChangesFeature]`
   const features: o.Expression[] = [];
 
@@ -148,10 +148,11 @@ export function compileComponentFromMetadata(
     const selectorAttributes = firstSelector.getAttrs();
     if (selectorAttributes.length) {
       definitionMap.set(
-          'attrs', constantPool.getConstLiteral(
-                       o.literalArr(selectorAttributes.map(
-                           value => value != null ? o.literal(value) : o.literal(undefined))),
-                       /* forceShared */ true));
+          'attrs',
+          constantPool.getConstLiteral(
+              o.literalArr(selectorAttributes.map(
+                  value => value != null ? o.literal(value) : o.literal(undefined))),
+              /* forceShared */ true));
     }
   }
 
@@ -273,7 +274,7 @@ export function compileComponentFromMetadata(
 export function compileDirectiveFromRender2(
     outputCtx: OutputContext, directive: CompileDirectiveMetadata, reflector: CompileReflector,
     bindingParser: BindingParser) {
-  const name = identifierName(directive.type) !;
+  const name = identifierName(directive.type)!;
   name || error(`Cannot resolver the name of ${directive.type}`);
 
   const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Directive);
@@ -306,7 +307,7 @@ export function compileComponentFromRender2(
     outputCtx: OutputContext, component: CompileDirectiveMetadata, render3Ast: Render3ParseResult,
     reflector: CompileReflector, bindingParser: BindingParser, directiveTypeBySel: Map<string, any>,
     pipeTypeByName: Map<string, any>) {
-  const name = identifierName(component.type) !;
+  const name = identifierName(component.type)!;
   name || error(`Cannot resolver the name of ${component.type}`);
 
   const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Component);
@@ -372,7 +373,8 @@ function queriesFromGlobalMetadata(
       propertyName: query.propertyName,
       first: query.first,
       predicate: selectorsFromGlobalMetadata(query.selectors, outputCtx),
-      descendants: query.descendants, read,
+      descendants: query.descendants,
+      read,
       static: !!query.static
     };
   });
@@ -464,7 +466,7 @@ function stringAsType(str: string): o.Type {
   return o.expressionType(o.literal(str));
 }
 
-function stringMapAsType(map: {[key: string]: string | string[]}): o.Type {
+function stringMapAsType(map: {[key: string]: string|string[]}): o.Type {
   const mapValues = Object.keys(map).map(key => {
     const value = Array.isArray(map[key]) ? map[key][0] : map[key];
     return {
@@ -723,7 +725,7 @@ function convertStylingCall(
 function getBindingNameAndInstruction(binding: ParsedProperty):
     {bindingName: string, instruction: o.ExternalReference, isAttribute: boolean} {
   let bindingName = binding.name;
-  let instruction !: o.ExternalReference;
+  let instruction!: o.ExternalReference;
 
   // Check to see if this is an attr binding or a property binding
   const attrMatches = bindingName.match(ATTR_REGEX);
@@ -817,8 +819,7 @@ export interface ParsedHostBindings {
   specialAttributes: {styleAttr?: string; classAttr?: string;};
 }
 
-export function parseHostBindings(host: {[key: string]: string | o.Expression}):
-    ParsedHostBindings {
+export function parseHostBindings(host: {[key: string]: string|o.Expression}): ParsedHostBindings {
   const attributes: {[key: string]: o.Expression} = {};
   const listeners: {[key: string]: string} = {};
   const properties: {[key: string]: string} = {};
@@ -893,5 +894,7 @@ export function verifyHostBindings(
 
 function compileStyles(styles: string[], selector: string, hostSelector: string): string[] {
   const shadowCss = new ShadowCss();
-  return styles.map(style => { return shadowCss !.shimCssText(style, selector, hostSelector); });
+  return styles.map(style => {
+    return shadowCss!.shimCssText(style, selector, hostSelector);
+  });
 }

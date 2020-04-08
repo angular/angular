@@ -10,11 +10,11 @@ import {AotCompilerOptions} from '../aot/compiler_options';
 import {StaticReflector} from '../aot/static_reflector';
 import {StaticSymbol} from '../aot/static_symbol';
 import {CompileDirectiveMetadata, CompilePipeSummary} from '../compile_metadata';
-import {BindingForm, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
+import {BindingForm, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins, EventHandlerVars, LocalResolver} from '../compiler_util/expression_converter';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
 import * as o from '../output/output_ast';
 import {ParseSourceSpan} from '../parse_util';
-import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
+import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, ReferenceAst, TemplateAst, TemplateAstVisitor, templateVisitAll, TextAst, VariableAst} from '../template_parser/template_ast';
 import {OutputContext} from '../util';
 
 
@@ -40,7 +40,7 @@ export class TypeCheckCompiler {
     usedPipes.forEach(p => pipes.set(p.name, p.type.reference));
     let embeddedViewCount = 0;
     const viewBuilderFactory =
-        (parent: ViewBuilder | null, guards: GuardExpression[]): ViewBuilder => {
+        (parent: ViewBuilder|null, guards: GuardExpression[]): ViewBuilder => {
           const embeddedViewIndex = embeddedViewCount++;
           return new ViewBuilder(
               this.options, this.reflector, externalReferenceVars, parent, component.type.reference,
@@ -66,7 +66,7 @@ interface ViewBuilderFactory {
 
 // Note: This is used as key in Map and should therefore be
 // unique per value.
-type OutputVarType = o.BuiltinTypeName | StaticSymbol;
+type OutputVarType = o.BuiltinTypeName|StaticSymbol;
 
 interface Expression {
   context: OutputVarType;
@@ -247,10 +247,12 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     directives: DirectiveAst[],
     references: ReferenceAst[],
   }) {
-    ast.directives.forEach((dirAst) => { this.visitDirective(dirAst); });
+    ast.directives.forEach((dirAst) => {
+      this.visitDirective(dirAst);
+    });
 
     ast.references.forEach((ref) => {
-      let outputVarType: OutputVarType = null !;
+      let outputVarType: OutputVarType = null!;
       // Note: The old view compiler used to use an `any` type
       // for directives exposed via `exportAs`.
       // We keep this behaivor behind a flag for now.
@@ -331,8 +333,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
               // for arrays.
               return this.options.fullTemplateTypeCheck ? arr : arr.cast(o.DYNAMIC_TYPE);
             },
-            createLiteralMapConverter:
-                (keys: {key: string, quoted: boolean}[]) => (values: o.Expression[]) => {
+            createLiteralMapConverter: (keys: {key: string, quoted: boolean}[]) =>
+                (values: o.Expression[]) => {
                   const entries = keys.map((k, i) => ({
                                              key: k.key,
                                              value: values[i],

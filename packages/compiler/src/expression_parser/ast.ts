@@ -31,8 +31,12 @@ export class AST {
        * Absolute location of the expression AST in a source code file.
        */
       public sourceSpan: AbsoluteSourceSpan) {}
-  visit(visitor: AstVisitor, context: any = null): any { return null; }
-  toString(): string { return 'AST'; }
+  visit(visitor: AstVisitor, context: any = null): any {
+    return null;
+  }
+  toString(): string {
+    return 'AST';
+  }
 }
 
 /**
@@ -54,8 +58,12 @@ export class Quote extends AST {
       public uninterpretedExpression: string, public location: any) {
     super(span, sourceSpan);
   }
-  visit(visitor: AstVisitor, context: any = null): any { return visitor.visitQuote(this, context); }
-  toString(): string { return 'Quote'; }
+  visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitQuote(this, context);
+  }
+  toString(): string {
+    return 'Quote';
+  }
 }
 
 export class EmptyExpr extends AST {
@@ -77,7 +85,9 @@ export class Chain extends AST {
   constructor(span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public expressions: any[]) {
     super(span, sourceSpan);
   }
-  visit(visitor: AstVisitor, context: any = null): any { return visitor.visitChain(this, context); }
+  visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitChain(this, context);
+  }
 }
 
 export class Conditional extends AST {
@@ -148,7 +158,9 @@ export class BindingPipe extends AST {
       public args: any[], public nameSpan: AbsoluteSourceSpan) {
     super(span, sourceSpan);
   }
-  visit(visitor: AstVisitor, context: any = null): any { return visitor.visitPipe(this, context); }
+  visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitPipe(this, context);
+  }
 }
 
 export class LiteralPrimitive extends AST {
@@ -280,7 +292,9 @@ export class ASTWithSource extends AST {
     }
     return this.ast.visit(visitor, context);
   }
-  toString(): string { return `${this.source} in ${this.location}`; }
+  toString(): string {
+    return `${this.source} in ${this.location}`;
+  }
 }
 
 /**
@@ -302,7 +316,7 @@ export class ASTWithSource extends AST {
  * the LHS of a HTML attribute to the expression in the RHS. All other bindings
  * in the example above are derived solely from the RHS.
  */
-export type TemplateBinding = VariableBinding | ExpressionBinding;
+export type TemplateBinding = VariableBinding|ExpressionBinding;
 
 export class VariableBinding {
   /**
@@ -379,7 +393,9 @@ export class RecursiveAstVisitor implements AstVisitor {
     this.visit(ast.left, context);
     this.visit(ast.right, context);
   }
-  visitChain(ast: Chain, context: any): any { this.visitAll(ast.expressions, context); }
+  visitChain(ast: Chain, context: any): any {
+    this.visitAll(ast.expressions, context);
+  }
   visitConditional(ast: Conditional, context: any): any {
     this.visit(ast.condition, context);
     this.visit(ast.trueExp, context);
@@ -411,15 +427,23 @@ export class RecursiveAstVisitor implements AstVisitor {
   visitLiteralArray(ast: LiteralArray, context: any): any {
     this.visitAll(ast.expressions, context);
   }
-  visitLiteralMap(ast: LiteralMap, context: any): any { this.visitAll(ast.values, context); }
+  visitLiteralMap(ast: LiteralMap, context: any): any {
+    this.visitAll(ast.values, context);
+  }
   visitLiteralPrimitive(ast: LiteralPrimitive, context: any): any {}
   visitMethodCall(ast: MethodCall, context: any): any {
     this.visit(ast.receiver, context);
     this.visitAll(ast.args, context);
   }
-  visitPrefixNot(ast: PrefixNot, context: any): any { this.visit(ast.expression, context); }
-  visitNonNullAssert(ast: NonNullAssert, context: any): any { this.visit(ast.expression, context); }
-  visitPropertyRead(ast: PropertyRead, context: any): any { this.visit(ast.receiver, context); }
+  visitPrefixNot(ast: PrefixNot, context: any): any {
+    this.visit(ast.expression, context);
+  }
+  visitNonNullAssert(ast: NonNullAssert, context: any): any {
+    this.visit(ast.expression, context);
+  }
+  visitPropertyRead(ast: PropertyRead, context: any): any {
+    this.visit(ast.receiver, context);
+  }
   visitPropertyWrite(ast: PropertyWrite, context: any): any {
     this.visit(ast.receiver, context);
     this.visit(ast.value, context);
@@ -441,7 +465,9 @@ export class RecursiveAstVisitor implements AstVisitor {
 }
 
 export class AstTransformer implements AstVisitor {
-  visitImplicitReceiver(ast: ImplicitReceiver, context: any): AST { return ast; }
+  visitImplicitReceiver(ast: ImplicitReceiver, context: any): AST {
+    return ast;
+  }
 
   visitInterpolation(ast: Interpolation, context: any): AST {
     return new Interpolation(ast.span, ast.sourceSpan, ast.strings, this.visitAll(ast.expressions));
@@ -476,7 +502,7 @@ export class AstTransformer implements AstVisitor {
 
   visitFunctionCall(ast: FunctionCall, context: any): AST {
     return new FunctionCall(
-        ast.span, ast.sourceSpan, ast.target !.visit(this), this.visitAll(ast.args));
+        ast.span, ast.sourceSpan, ast.target!.visit(this), this.visitAll(ast.args));
   }
 
   visitLiteralArray(ast: LiteralArray, context: any): AST {
@@ -542,7 +568,9 @@ export class AstTransformer implements AstVisitor {
 // A transformer that only creates new nodes if the transformer makes a change or
 // a change is made a child node.
 export class AstMemoryEfficientTransformer implements AstVisitor {
-  visitImplicitReceiver(ast: ImplicitReceiver, context: any): AST { return ast; }
+  visitImplicitReceiver(ast: ImplicitReceiver, context: any): AST {
+    return ast;
+  }
 
   visitInterpolation(ast: Interpolation, context: any): Interpolation {
     const expressions = this.visitAll(ast.expressions);
@@ -551,7 +579,9 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     return ast;
   }
 
-  visitLiteralPrimitive(ast: LiteralPrimitive, context: any): AST { return ast; }
+  visitLiteralPrimitive(ast: LiteralPrimitive, context: any): AST {
+    return ast;
+  }
 
   visitPropertyRead(ast: PropertyRead, context: any): AST {
     const receiver = ast.receiver.visit(this);
@@ -704,7 +734,9 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     return ast;
   }
 
-  visitQuote(ast: Quote, context: any): AST { return ast; }
+  visitQuote(ast: Quote, context: any): AST {
+    return ast;
+  }
 }
 
 // Bindings

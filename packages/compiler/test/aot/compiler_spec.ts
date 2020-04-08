@@ -13,7 +13,7 @@ import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/s
 import {NodeFlags} from '@angular/core/src/view/index';
 import * as ts from 'typescript';
 
-import {EmittingCompilerHost, MockAotCompilerHost, MockCompilerHost, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, compile, expectNoDiagnostics, isInBazel, settings, setup, toMockFileArray} from './test_util';
+import {arrayToMockDir, compile, EmittingCompilerHost, expectNoDiagnostics, isInBazel, MockAotCompilerHost, MockCompilerHost, MockDirectory, MockMetadataBundlerHost, settings, setup, toMockFileArray} from './test_util';
 
 describe('compiler (unbundled Angular)', () => {
   let angularFiles = setup();
@@ -53,11 +53,11 @@ describe('compiler (unbundled Angular)', () => {
     function compileApp(): GeneratedFile {
       const {genFiles} = compile([rootDir, angularFiles]);
       return genFiles.find(
-          genFile => genFile.srcFileUrl === componentPath && genFile.genFileUrl.endsWith('.ts')) !;
+          genFile => genFile.srcFileUrl === componentPath && genFile.genFileUrl.endsWith('.ts'))!;
     }
 
     function findLineAndColumn(
-        file: string, token: string): {line: number | null, column: number | null} {
+        file: string, token: string): {line: number|null, column: number|null} {
       const index = file.indexOf(token);
       if (index === -1) {
         return {line: null, column: null};
@@ -84,7 +84,9 @@ describe('compiler (unbundled Angular)', () => {
     describe('inline templates', () => {
       const ngUrl = `${componentPath}.AppComponent.html`;
 
-      function templateDecorator(template: string) { return `template: \`${template}\`,`; }
+      function templateDecorator(template: string) {
+        return `template: \`${template}\`,`;
+      }
 
       declareTests({ngUrl, templateDecorator});
     });
@@ -125,7 +127,7 @@ describe('compiler (unbundled Angular)', () => {
 
         const genFile = compileApp();
         const genSource = toTypeScript(genFile);
-        const sourceMap = extractSourceMap(genSource) !;
+        const sourceMap = extractSourceMap(genSource)!;
         expect(sourceMap.file).toEqual(genFile.genFileUrl);
 
         // Note: the generated file also contains code that is not mapped to
@@ -146,7 +148,7 @@ describe('compiler (unbundled Angular)', () => {
 
         const genFile = compileApp();
         const genSource = toTypeScript(genFile);
-        const sourceMap = extractSourceMap(genSource) !;
+        const sourceMap = extractSourceMap(genSource)!;
         expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `'span'`)))
             .toEqual({line: 2, column: 3, source: ngUrl});
       });
@@ -158,7 +160,7 @@ describe('compiler (unbundled Angular)', () => {
 
         const genFile = compileApp();
         const genSource = toTypeScript(genFile);
-        const sourceMap = extractSourceMap(genSource) !;
+        const sourceMap = extractSourceMap(genSource)!;
         expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `someMethod()`)))
             .toEqual({line: 2, column: 9, source: ngUrl});
       });
@@ -170,7 +172,7 @@ describe('compiler (unbundled Angular)', () => {
 
         const genFile = compileApp();
         const genSource = toTypeScript(genFile);
-        const sourceMap = extractSourceMap(genSource) !;
+        const sourceMap = extractSourceMap(genSource)!;
         expect(originalPositionFor(sourceMap, findLineAndColumn(genSource, `someMethod()`)))
             .toEqual({line: 2, column: 9, source: ngUrl});
       });
@@ -180,7 +182,7 @@ describe('compiler (unbundled Angular)', () => {
 
         const genFile = compileApp();
         const genSource = toTypeScript(genFile);
-        const sourceMap = extractSourceMap(genSource) !;
+        const sourceMap = extractSourceMap(genSource)!;
         expect(originalPositionFor(sourceMap, {line: 1, column: 0}))
             .toEqual({line: 1, column: 0, source: ngFactoryPath});
       });
@@ -205,7 +207,6 @@ describe('compiler (unbundled Angular)', () => {
       compile([FILES, angularFiles]);
       expect(warnSpy).toHaveBeenCalledWith(
           `Warning: Can't resolve all parameters for MyService in /app/app.ts: (?). This will become an error in Angular v6.x`);
-
     });
 
     it('should error if not all arguments of an @Injectable class can be resolved if strictInjectionParameters is true',
@@ -279,7 +280,7 @@ describe('compiler (unbundled Angular)', () => {
       };
       compile([FILES, angularFiles], {
         postCompile: program => {
-          const factorySource = program.getSourceFile('/app/app.ngfactory.ts') !;
+          const factorySource = program.getSourceFile('/app/app.ngfactory.ts')!;
           expect(factorySource.text).not.toContain('\'/app/app.ngfactory\'');
         }
       });
@@ -321,7 +322,7 @@ describe('compiler (unbundled Angular)', () => {
     const genFilePreamble = '/* Hello world! */';
     const {genFiles} = compile([FILES, angularFiles]);
     const genFile =
-        genFiles.find(gf => gf.srcFileUrl === '/app/app.ts' && gf.genFileUrl.endsWith('.ts')) !;
+        genFiles.find(gf => gf.srcFileUrl === '/app/app.ts' && gf.genFileUrl.endsWith('.ts'))!;
     const genSource = toTypeScript(genFile, genFilePreamble);
     expect(genSource.startsWith(genFilePreamble)).toBe(true);
   });
@@ -445,9 +446,9 @@ describe('compiler (unbundled Angular)', () => {
         }
       };
       const {genFiles} = compile([FILES, angularFiles]);
-      const genFile = genFiles.find(genFile => genFile.srcFileUrl === '/app/app.ts') !;
+      const genFile = genFiles.find(genFile => genFile.srcFileUrl === '/app/app.ts')!;
       const genSource = toTypeScript(genFile);
-      const createComponentFactoryCall = /ɵccf\([^)]*\)/m.exec(genSource) ![0].replace(/\s*/g, '');
+      const createComponentFactoryCall = /ɵccf\([^)]*\)/m.exec(genSource)![0].replace(/\s*/g, '');
       // selector
       expect(createComponentFactoryCall).toContain('my-comp');
       // inputs
@@ -476,10 +477,9 @@ describe('compiler (unbundled Angular)', () => {
       };
       const {genFiles} = compile([FILES, angularFiles]);
       const genFile =
-          genFiles.find(gf => gf.srcFileUrl === '/app/app.ts' && gf.genFileUrl.endsWith('.ts')) !;
+          genFiles.find(gf => gf.srcFileUrl === '/app/app.ts' && gf.genFileUrl.endsWith('.ts'))!;
       const genSource = toTypeScript(genFile);
       expect(genSource).not.toContain('check(');
-
     });
   });
 
@@ -492,7 +492,6 @@ describe('compiler (unbundled Angular)', () => {
     inheritanceWithSummariesSpecs(() => angularSummaryFiles);
 
     describe('external symbol re-exports enabled', () => {
-
       it('should not reexport type symbols mentioned in constructors', () => {
         const libInput: MockDirectory = {
           'lib': {
@@ -520,7 +519,7 @@ describe('compiler (unbundled Angular)', () => {
         const {genFiles: appGenFiles} = compile(
             [appInput, libOutDir, angularSummaryFiles],
             {useSummaries: true, createExternalSymbolFactoryReexports: true});
-        const appNgFactory = appGenFiles.find((f) => f.genFileUrl === '/app/main.ngfactory.ts') !;
+        const appNgFactory = appGenFiles.find((f) => f.genFileUrl === '/app/main.ngfactory.ts')!;
         const appNgFactoryTs = toTypeScript(appNgFactory);
         expect(appNgFactoryTs).not.toContain('AType');
         expect(appNgFactoryTs).toContain('AValue');
@@ -570,7 +569,7 @@ describe('compiler (unbundled Angular)', () => {
         const {genFiles: appGenFiles} = compile(
             [appInput, libOutDir, angularSummaryFiles],
             {useSummaries: true, createExternalSymbolFactoryReexports: true});
-        const appNgFactory = appGenFiles.find((f) => f.genFileUrl === '/app/main.ngfactory.ts') !;
+        const appNgFactory = appGenFiles.find((f) => f.genFileUrl === '/app/main.ngfactory.ts')!;
         const appNgFactoryTs = toTypeScript(appNgFactory);
 
         // metadata of ctor calls is preserved, so we reexport the argument
@@ -614,7 +613,7 @@ describe('compiler (unbundled Angular)', () => {
         const {genFiles: appGenFiles} = compile(
             [appInput, libOutDir, angularSummaryFiles],
             {useSummaries: true, createExternalSymbolFactoryReexports: true});
-        const appNgFactory = appGenFiles.find((f) => f.genFileUrl === '/app/main.ngfactory.ts') !;
+        const appNgFactory = appGenFiles.find((f) => f.genFileUrl === '/app/main.ngfactory.ts')!;
         const appNgFactoryTs = toTypeScript(appNgFactory);
 
         // we don't need to reexport exported symbols via the .ngfactory
@@ -707,7 +706,7 @@ describe('compiler (unbundled Angular)', () => {
           compile([libInput, getAngularSummaryFiles()], {useSummaries: true});
       const {genFiles} =
           compile([libOutDir, appInput, getAngularSummaryFiles()], {useSummaries: true});
-      const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts') !;
+      const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts')!;
       const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
       expect(toTypeScript(mainNgFactory))
           .toContain(`${flags},(null as any),0,i1.Extends,[i2.AParam]`);
@@ -761,7 +760,7 @@ describe('compiler (unbundled Angular)', () => {
          const {genFiles} = compile(
              [lib1OutDir, lib2OutDir, appInput, getAngularSummaryFiles()], {useSummaries: true});
 
-         const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts') !;
+         const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts')!;
          const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
          const mainNgFactorySource = toTypeScript(mainNgFactory);
          expect(mainNgFactorySource).toContain(`import * as i2 from '/lib1/base';`);

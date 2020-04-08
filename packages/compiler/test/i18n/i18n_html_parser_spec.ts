@@ -26,6 +26,5 @@ import {ParseTreeResult} from '@angular/compiler/src/ml_parser/parser';
       i18nHtmlParser.parse('source', 'url');
       expect(TranslationBundle.load).toHaveBeenCalledTimes(1);
     });
-
   });
 }

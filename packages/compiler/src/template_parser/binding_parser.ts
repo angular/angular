@@ -8,7 +8,7 @@
 
 import {CompileDirectiveSummary, CompilePipeSummary} from '../compile_metadata';
 import {SecurityContext} from '../core';
-import {ASTWithSource, AbsoluteSourceSpan, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding, VariableBinding} from '../expression_parser/ast';
+import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding, VariableBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {mergeNsAndName} from '../ml_parser/tags';
@@ -45,9 +45,13 @@ export class BindingParser {
     }
   }
 
-  get interpolationConfig(): InterpolationConfig { return this._interpolationConfig; }
+  get interpolationConfig(): InterpolationConfig {
+    return this._interpolationConfig;
+  }
 
-  getUsedPipes(): CompilePipeSummary[] { return Array.from(this._usedPipes.values()); }
+  getUsedPipes(): CompilePipeSummary[] {
+    return Array.from(this._usedPipes.values());
+  }
 
   createBoundHostProperties(dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan):
       ParsedProperty[]|null {
@@ -61,7 +65,9 @@ export class BindingParser {
               boundProps);
         } else {
           this._reportError(
-              `Value of the host property binding "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
+              `Value of the host property binding "${
+                  propName}" needs to be a string representing an expression but got "${
+                  expression}" (${typeof expression})`,
               sourceSpan);
         }
       });
@@ -89,7 +95,9 @@ export class BindingParser {
           this.parseEvent(propName, expression, sourceSpan, sourceSpan, [], targetEvents);
         } else {
           this._reportError(
-              `Value of the host listener "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
+              `Value of the host listener "${
+                  propName}" needs to be a string representing an expression but got "${
+                  expression}" (${typeof expression})`,
               sourceSpan);
         }
       });
@@ -103,7 +111,7 @@ export class BindingParser {
 
     try {
       const ast = this._exprParser.parseInterpolation(
-          value, sourceInfo, sourceSpan.start.offset, this._interpolationConfig) !;
+          value, sourceInfo, sourceSpan.start.offset, this._interpolationConfig)!;
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       return ast;
@@ -183,8 +191,9 @@ export class BindingParser {
           this._checkPipes(binding.value, sourceSpan);
         }
       });
-      bindingsResult.warnings.forEach(
-          (warning) => { this._reportError(warning, sourceSpan, ParseErrorLevel.WARNING); });
+      bindingsResult.warnings.forEach((warning) => {
+        this._reportError(warning, sourceSpan, ParseErrorLevel.WARNING);
+      });
       return bindingsResult.templateBindings;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
@@ -257,7 +266,7 @@ export class BindingParser {
       name: string, ast: ASTWithSource, sourceSpan: ParseSourceSpan,
       valueSpan: ParseSourceSpan|undefined, targetMatchableAttrs: string[][],
       targetProps: ParsedProperty[]) {
-    targetMatchableAttrs.push([name, ast.source !]);
+    targetMatchableAttrs.push([name, ast.source!]);
     targetProps.push(
         new ParsedProperty(name, ast, ParsedPropertyType.DEFAULT, sourceSpan, valueSpan));
   }
@@ -275,7 +284,7 @@ export class BindingParser {
     // states will be applied by angular when the element is attached/detached
     const ast = this._parseBinding(
         expression || 'undefined', false, valueSpan || sourceSpan, absoluteOffset);
-    targetMatchableAttrs.push([name, ast.source !]);
+    targetMatchableAttrs.push([name, ast.source!]);
     targetProps.push(
         new ParsedProperty(name, ast, ParsedPropertyType.ANIMATION, sourceSpan, valueSpan));
   }
@@ -310,10 +319,10 @@ export class BindingParser {
     }
 
     let unit: string|null = null;
-    let bindingType: BindingType = undefined !;
+    let bindingType: BindingType = undefined!;
     let boundPropertyName: string|null = null;
     const parts = boundProp.name.split(PROPERTY_PARTS_SEPARATOR);
-    let securityContexts: SecurityContext[] = undefined !;
+    let securityContexts: SecurityContext[] = undefined!;
 
     // Check for special cases (prefix style, attr, class)
     if (parts.length > 1) {
@@ -401,13 +410,15 @@ export class BindingParser {
 
         default:
           this._reportError(
-              `The provided animation output phase value "${phase}" for "@${eventName}" is not supported (use start or done)`,
+              `The provided animation output phase value "${phase}" for "@${
+                  eventName}" is not supported (use start or done)`,
               sourceSpan);
           break;
       }
     } else {
       this._reportError(
-          `The animation trigger output event (@${eventName}) is missing its phase value name (start or done are currently supported)`,
+          `The animation trigger output event (@${
+              eventName}) is missing its phase value name (start or done are currently supported)`,
           sourceSpan);
     }
   }
@@ -416,9 +427,9 @@ export class BindingParser {
       name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetEvents: ParsedEvent[]) {
     // long format: 'target: eventName'
-    const [target, eventName] = splitAtColon(name, [null !, name]);
+    const [target, eventName] = splitAtColon(name, [null!, name]);
     const ast = this._parseAction(expression, handlerSpan);
-    targetMatchableAttrs.push([name !, ast.source !]);
+    targetMatchableAttrs.push([name!, ast.source!]);
     targetEvents.push(
         new ParsedEvent(eventName, target, ParsedEventType.Regular, ast, sourceSpan, handlerSpan));
     // Don't detect directives for event names for now,
@@ -465,7 +476,7 @@ export class BindingParser {
       const collector = new PipeCollector();
       ast.visit(collector);
       collector.pipes.forEach((ast, pipeName) => {
-        const pipeMeta = this.pipesByName !.get(pipeName);
+        const pipeMeta = this.pipesByName!.get(pipeName);
         if (!pipeMeta) {
           this._reportError(
               `The pipe '${pipeName}' could not be found`,
@@ -488,7 +499,7 @@ export class BindingParser {
     const report = isAttr ? this._schemaRegistry.validateAttribute(propName) :
                             this._schemaRegistry.validateProperty(propName);
     if (report.error) {
-      this._reportError(report.msg !, sourceSpan, ParseErrorLevel.ERROR);
+      this._reportError(report.msg!, sourceSpan, ParseErrorLevel.ERROR);
     }
   }
 }

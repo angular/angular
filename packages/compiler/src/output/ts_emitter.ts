@@ -15,8 +15,7 @@ import * as o from './output_ast';
 
 const _debugFilePath = '/debug/lib';
 
-export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.Type | any[]):
-    string {
+export function debugOutputAstAsTypeScript(ast: o.Statement|o.Expression|o.Type|any[]): string {
   const converter = new _TsEmitterVisitor();
   const ctx = EmitterVisitorContext.createRoot();
   const asts: any[] = Array.isArray(ast) ? ast : [ast];
@@ -147,7 +146,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
           reexports = [];
           this.reexports.set(moduleName, reexports);
         }
-        reexports.push({name: name !, as: stmt.name});
+        reexports.push({name: name!, as: stmt.name});
         return null;
       }
     }
@@ -175,7 +174,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
 
   visitCastExpr(ast: o.CastExpr, ctx: EmitterVisitorContext): any {
     ctx.print(ast, `(<`);
-    ast.type !.visitType(this, ctx);
+    ast.type!.visitType(this, ctx);
     ctx.print(ast, `>`);
     ast.value.visitExpression(this, ctx);
     ctx.print(ast, `)`);
@@ -422,7 +421,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       }
       ctx.print(null, `${prefix}.`);
     }
-    ctx.print(null, name !);
+    ctx.print(null, name!);
 
     if (this.typeExpression > 0) {
       // If we are in a type expression that refers to a generic type then supply
@@ -433,7 +432,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       const suppliedParameters = typeParams || [];
       if (suppliedParameters.length > 0) {
         ctx.print(null, `<`);
-        this.visitAllObjects(type => type.visitType(this, ctx), typeParams !, ctx, ',');
+        this.visitAllObjects(type => type.visitType(this, ctx), typeParams!, ctx, ',');
         ctx.print(null, `>`);
       }
     }

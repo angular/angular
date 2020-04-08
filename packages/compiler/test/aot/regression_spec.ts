@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MockDirectory, compile, expectNoDiagnostics, setup} from './test_util';
+import {compile, expectNoDiagnostics, MockDirectory, setup} from './test_util';
 
 describe('regressions', () => {
   let angularFiles = setup();

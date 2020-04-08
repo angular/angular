@@ -7,7 +7,7 @@
  */
 
 import {Component, Directive, Input} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -21,7 +21,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
            @Directive({selector: '[dot.name]'})
            class MyDir {
              // TODO(issue/24571): remove '!'.
-             @Input('dot.name') value !: string;
+             @Input('dot.name') value!: string;
            }
 
            TestBed.configureTestingModule({

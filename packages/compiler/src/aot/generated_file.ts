@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Statement, areAllEquivalent} from '../output/output_ast';
+import {areAllEquivalent, Statement} from '../output/output_ast';
 import {TypeScriptEmitter} from '../output/ts_emitter';
 
 export class GeneratedFile {
@@ -36,7 +36,7 @@ export class GeneratedFile {
     }
     // Note: the constructor guarantees that if this.source is not filled,
     // then this.stmts is.
-    return areAllEquivalent(this.stmts !, other.stmts !);
+    return areAllEquivalent(this.stmts!, other.stmts!);
   }
 }
 

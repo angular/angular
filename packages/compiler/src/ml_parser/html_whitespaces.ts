@@ -81,11 +81,17 @@ export class WhitespaceVisitor implements html.Visitor {
     return null;
   }
 
-  visitComment(comment: html.Comment, context: any): any { return comment; }
+  visitComment(comment: html.Comment, context: any): any {
+    return comment;
+  }
 
-  visitExpansion(expansion: html.Expansion, context: any): any { return expansion; }
+  visitExpansion(expansion: html.Expansion, context: any): any {
+    return expansion;
+  }
 
-  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any { return expansionCase; }
+  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
+    return expansionCase;
+  }
 }
 
 export function removeWhitespaces(htmlAstWithErrors: ParseTreeResult): ParseTreeResult {

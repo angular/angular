@@ -764,7 +764,7 @@ function mergeTextTokens(srcTokens: Token[]): Token[] {
   for (let i = 0; i < srcTokens.length; i++) {
     const token = srcTokens[i];
     if (lastDstToken && lastDstToken.type == TokenType.TEXT && token.type == TokenType.TEXT) {
-      lastDstToken.parts[0] ! += token.parts[0];
+      lastDstToken.parts[0]! += token.parts[0];
       lastDstToken.sourceSpan.end = token.sourceSpan.end;
     } else {
       lastDstToken = token;
@@ -849,15 +849,27 @@ class PlainCharacterCursor implements CharacterCursor {
     }
   }
 
-  clone(): PlainCharacterCursor { return new PlainCharacterCursor(this); }
+  clone(): PlainCharacterCursor {
+    return new PlainCharacterCursor(this);
+  }
 
-  peek() { return this.state.peek; }
-  charsLeft() { return this.end - this.state.offset; }
-  diff(other: this) { return this.state.offset - other.state.offset; }
+  peek() {
+    return this.state.peek;
+  }
+  charsLeft() {
+    return this.end - this.state.offset;
+  }
+  diff(other: this) {
+    return this.state.offset - other.state.offset;
+  }
 
-  advance(): void { this.advanceState(this.state); }
+  advance(): void {
+    this.advanceState(this.state);
+  }
 
-  init(): void { this.updatePeek(this.state); }
+  init(): void {
+    this.updatePeek(this.state);
+  }
 
   getSpan(start?: this, leadingTriviaCodePoints?: number[]): ParseSourceSpan {
     start = start || this;
@@ -880,7 +892,9 @@ class PlainCharacterCursor implements CharacterCursor {
     return this.input.substring(start.state.offset, this.state.offset);
   }
 
-  charAt(pos: number): number { return this.input.charCodeAt(pos); }
+  charAt(pos: number): number {
+    return this.input.charCodeAt(pos);
+  }
 
   protected advanceState(state: CursorState) {
     if (state.offset >= this.end) {
@@ -913,7 +927,7 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
       super(fileOrCursor);
       this.internalState = {...fileOrCursor.internalState};
     } else {
-      super(fileOrCursor, range !);
+      super(fileOrCursor, range!);
       this.internalState = this.state;
     }
   }
@@ -929,7 +943,9 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
     this.processEscapeSequence();
   }
 
-  clone(): EscapedCharacterCursor { return new EscapedCharacterCursor(this); }
+  clone(): EscapedCharacterCursor {
+    return new EscapedCharacterCursor(this);
+  }
 
   getChars(start: this): string {
     const cursor = start.clone();

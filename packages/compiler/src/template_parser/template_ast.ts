@@ -36,7 +36,9 @@ export interface TemplateAst {
 export class TextAst implements TemplateAst {
   constructor(
       public value: string, public ngContentIndex: number, public sourceSpan: ParseSourceSpan) {}
-  visit(visitor: TemplateAstVisitor, context: any): any { return visitor.visitText(this, context); }
+  visit(visitor: TemplateAstVisitor, context: any): any {
+    return visitor.visitText(this, context);
+  }
 }
 
 /**
@@ -56,7 +58,9 @@ export class BoundTextAst implements TemplateAst {
  */
 export class AttrAst implements TemplateAst {
   constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
-  visit(visitor: TemplateAstVisitor, context: any): any { return visitor.visitAttr(this, context); }
+  visit(visitor: TemplateAstVisitor, context: any): any {
+    return visitor.visitAttr(this, context);
+  }
 }
 
 export const enum PropertyBindingType {
@@ -319,7 +323,9 @@ export class NullTemplateVisitor implements TemplateAstVisitor {
  * in an template ast recursively.
  */
 export class RecursiveTemplateAstVisitor extends NullTemplateVisitor implements TemplateAstVisitor {
-  constructor() { super(); }
+  constructor() {
+    super();
+  }
 
   // Nodes with children
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
@@ -358,7 +364,7 @@ export class RecursiveTemplateAstVisitor extends NullTemplateVisitor implements 
       cb: (visit: (<V extends TemplateAst>(children: V[]|undefined) => void)) => void) {
     let results: any[][] = [];
     let t = this;
-    function visit<T extends TemplateAst>(children: T[] | undefined) {
+    function visit<T extends TemplateAst>(children: T[]|undefined) {
       if (children && children.length) results.push(templateVisitAll(t, children, context));
     }
     cb(visit);
@@ -373,7 +379,7 @@ export function templateVisitAll(
     visitor: TemplateAstVisitor, asts: TemplateAst[], context: any = null): any[] {
   const result: any[] = [];
   const visit = visitor.visit ?
-      (ast: TemplateAst) => visitor.visit !(ast, context) || ast.visit(visitor, context) :
+      (ast: TemplateAst) => visitor.visit!(ast, context) || ast.visit(visitor, context) :
       (ast: TemplateAst) => ast.visit(visitor, context);
   asts.forEach(ast => {
     const astResult = visit(ast);

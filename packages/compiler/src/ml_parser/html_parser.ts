@@ -8,12 +8,14 @@
 
 import {getHtmlTagDefinition} from './html_tags';
 import {TokenizeOptions} from './lexer';
-import {ParseTreeResult, Parser} from './parser';
+import {Parser, ParseTreeResult} from './parser';
 
 export {ParseTreeResult, TreeError} from './parser';
 
 export class HtmlParser extends Parser {
-  constructor() { super(getHtmlTagDefinition); }
+  constructor() {
+    super(getHtmlTagDefinition);
+  }
 
   parse(source: string, url: string, options?: TokenizeOptions): ParseTreeResult {
     return super.parse(source, url, options);

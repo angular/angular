@@ -16,16 +16,18 @@ import {calcPossibleSecurityContexts} from '../../src/template_parser/binding_pa
   describe('BindingParser', () => {
     let registry: ElementSchemaRegistry;
 
-    beforeEach(inject(
-        [ElementSchemaRegistry], (_registry: ElementSchemaRegistry) => { registry = _registry; }));
+    beforeEach(inject([ElementSchemaRegistry], (_registry: ElementSchemaRegistry) => {
+      registry = _registry;
+    }));
 
     describe('possibleSecurityContexts', () => {
       function hrefSecurityContexts(selector: string) {
         return calcPossibleSecurityContexts(registry, selector, 'href', false);
       }
 
-      it('should return a single security context if the selector as an element name',
-         () => { expect(hrefSecurityContexts('a')).toEqual([SecurityContext.URL]); });
+      it('should return a single security context if the selector as an element name', () => {
+        expect(hrefSecurityContexts('a')).toEqual([SecurityContext.URL]);
+      });
 
       it('should return the possible security contexts if the selector has no element name', () => {
         expect(hrefSecurityContexts('[myDir]')).toEqual([
@@ -45,8 +47,9 @@ import {calcPossibleSecurityContexts} from '../../src/template_parser/binding_pa
         ]);
       });
 
-      it('should return SecurityContext.NONE if there are no possible elements',
-         () => { expect(hrefSecurityContexts('img:not(img)')).toEqual([SecurityContext.NONE]); });
+      it('should return SecurityContext.NONE if there are no possible elements', () => {
+        expect(hrefSecurityContexts('img:not(img)')).toEqual([SecurityContext.NONE]);
+      });
 
       it('should return the union of the possible security contexts if multiple selectors are specified',
          () => {

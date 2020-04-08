@@ -76,12 +76,12 @@ export class StaticSymbolResolver {
 
   resolveSymbol(staticSymbol: StaticSymbol): ResolvedStaticSymbol {
     if (staticSymbol.members.length > 0) {
-      return this._resolveSymbolMembers(staticSymbol) !;
+      return this._resolveSymbolMembers(staticSymbol)!;
     }
     // Note: always ask for a summary first,
     // as we might have read shallow metadata via a .d.ts file
     // for the symbol.
-    const resultFromSummary = this._resolveSymbolFromSummary(staticSymbol) !;
+    const resultFromSummary = this._resolveSymbolFromSummary(staticSymbol)!;
     if (resultFromSummary) {
       return resultFromSummary;
     }
@@ -93,7 +93,7 @@ export class StaticSymbolResolver {
     // have summaries, only .d.ts files. So we always need to check both, the summary
     // and metadata.
     this._createSymbolsOf(staticSymbol.filePath);
-    return this.resolvedSymbols.get(staticSymbol) !;
+    return this.resolvedSymbols.get(staticSymbol)!;
   }
 
   /**
@@ -119,15 +119,14 @@ export class StaticSymbolResolver {
       const baseSymbol =
           this.getStaticSymbol(summarizedFileName, summarizedName, staticSymbol.members);
       const baseImportAs = this.getImportAs(baseSymbol, useSummaries);
-      return baseImportAs ?
-          this.getStaticSymbol(
-              summaryForJitFileName(baseImportAs.filePath), summaryForJitName(baseImportAs.name),
-              baseSymbol.members) :
-          null;
+      return baseImportAs ? this.getStaticSymbol(
+                                summaryForJitFileName(baseImportAs.filePath),
+                                summaryForJitName(baseImportAs.name), baseSymbol.members) :
+                            null;
     }
     let result = (useSummaries && this.summaryResolver.getImportAs(staticSymbol)) || null;
     if (!result) {
-      result = this.importAs.get(staticSymbol) !;
+      result = this.importAs.get(staticSymbol)!;
     }
     return result;
   }
@@ -347,8 +346,8 @@ export class StaticSymbolResolver {
           // correctly.
           const originFilePath = this.resolveModule(origin, filePath);
           if (!originFilePath) {
-            this.reportError(new Error(
-                `Couldn't resolve original symbol for ${origin} from ${this.host.getOutputName(filePath)}`));
+            this.reportError(new Error(`Couldn't resolve original symbol for ${origin} from ${
+                this.host.getOutputName(filePath)}`));
           } else {
             this.symbolResourcePaths.set(symbol, originFilePath);
           }
@@ -413,7 +412,7 @@ export class StaticSymbolResolver {
           }
           let filePath: string;
           if (module) {
-            filePath = self.resolveModule(module, sourceSymbol.filePath) !;
+            filePath = self.resolveModule(module, sourceSymbol.filePath)!;
             if (!filePath) {
               return {
                 __symbolic: 'error',
@@ -501,8 +500,11 @@ export class StaticSymbolResolver {
       }
       if (moduleMetadata['version'] != SUPPORTED_SCHEMA_VERSION) {
         const errorMessage = moduleMetadata['version'] == 2 ?
-            `Unsupported metadata version ${moduleMetadata['version']} for module ${module}. This module should be compiled with a newer version of ngc` :
-            `Metadata version mismatch for module ${this.host.getOutputName(module)}, found version ${moduleMetadata['version']}, expected ${SUPPORTED_SCHEMA_VERSION}`;
+            `Unsupported metadata version ${moduleMetadata['version']} for module ${
+                module}. This module should be compiled with a newer version of ngc` :
+            `Metadata version mismatch for module ${
+                this.host.getOutputName(module)}, found version ${
+                moduleMetadata['version']}, expected ${SUPPORTED_SCHEMA_VERSION}`;
         this.reportError(new Error(errorMessage));
       }
       this.metadataCache.set(module, moduleMetadata);
@@ -514,9 +516,8 @@ export class StaticSymbolResolver {
   getSymbolByModule(module: string, symbolName: string, containingFile?: string): StaticSymbol {
     const filePath = this.resolveModule(module, containingFile);
     if (!filePath) {
-      this.reportError(
-          new Error(`Could not resolve module ${module}${containingFile ? ' relative to ' +
-            this.host.getOutputName(containingFile) : ''}`));
+      this.reportError(new Error(`Could not resolve module ${module}${
+          containingFile ? ' relative to ' + this.host.getOutputName(containingFile) : ''}`));
       return this.getStaticSymbol(`ERROR:${module}`, symbolName);
     }
     return this.getStaticSymbol(filePath, symbolName);

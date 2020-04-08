@@ -46,9 +46,9 @@ export class Xliff extends Serializer {
             new xml.CR(10),
             new xml.Tag(
                 _CONTEXT_TAG, {'context-type': 'sourcefile'}, [new xml.Text(source.filePath)]),
-            new xml.CR(10), new xml.Tag(
-                                _CONTEXT_TAG, {'context-type': 'linenumber'},
-                                [new xml.Text(`${source.startLine}`)]),
+            new xml.CR(10),
+            new xml.Tag(_CONTEXT_TAG, {'context-type': 'linenumber'}, [new xml.Text(
+                                                                          `${source.startLine}`)]),
             new xml.CR(8));
         contextTags.push(new xml.CR(8), contextGroupTag);
       });
@@ -112,14 +112,18 @@ export class Xliff extends Serializer {
       throw new Error(`xliff parse errors:\n${errors.join('\n')}`);
     }
 
-    return {locale: locale !, i18nNodesByMsgId};
+    return {locale: locale!, i18nNodesByMsgId};
   }
 
-  digest(message: i18n.Message): string { return digest(message); }
+  digest(message: i18n.Message): string {
+    return digest(message);
+  }
 }
 
 class _WriteVisitor implements i18n.Visitor {
-  visitText(text: i18n.Text, context?: any): xml.Node[] { return [new xml.Text(text.value)]; }
+  visitText(text: i18n.Text, context?: any): xml.Node[] {
+    return [new xml.Text(text.value)];
+  }
 
   visitContainer(container: i18n.Container, context?: any): xml.Node[] {
     const nodes: xml.Node[] = [];
@@ -161,8 +165,8 @@ class _WriteVisitor implements i18n.Visitor {
   }
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): xml.Node[] {
-    const equivText =
-        `{${ph.value.expression}, ${ph.value.type}, ${Object.keys(ph.value.cases).map((value: string) => value + ' {...}').join(' ')}}`;
+    const equivText = `{${ph.value.expression}, ${ph.value.type}, ${
+        Object.keys(ph.value.cases).map((value: string) => value + ' {...}').join(' ')}}`;
     return [new xml.Tag(_PLACEHOLDER_TAG, {id: ph.name, 'equiv-text': equivText})];
   }
 
@@ -175,11 +179,11 @@ class _WriteVisitor implements i18n.Visitor {
 // Extract messages as xml nodes from the xliff file
 class XliffParser implements ml.Visitor {
   // TODO(issue/24571): remove '!'.
-  private _unitMlString !: string | null;
+  private _unitMlString!: string|null;
   // TODO(issue/24571): remove '!'.
-  private _errors !: I18nError[];
+  private _errors!: I18nError[];
   // TODO(issue/24571): remove '!'.
-  private _msgIdToHtml !: {[msgId: string]: string};
+  private _msgIdToHtml!: {[msgId: string]: string};
   private _locale: string|null = null;
 
   parse(xliff: string, url: string) {
@@ -201,7 +205,7 @@ class XliffParser implements ml.Visitor {
   visitElement(element: ml.Element, context: any): any {
     switch (element.name) {
       case _UNIT_TAG:
-        this._unitMlString = null !;
+        this._unitMlString = null!;
         const idAttr = element.attrs.find((attr) => attr.name === 'id');
         if (!idAttr) {
           this._addError(element, `<${_UNIT_TAG}> misses the "id" attribute`);
@@ -227,9 +231,9 @@ class XliffParser implements ml.Visitor {
         break;
 
       case _TARGET_TAG:
-        const innerTextStart = element.startSourceSpan !.end.offset;
-        const innerTextEnd = element.endSourceSpan !.start.offset;
-        const content = element.startSourceSpan !.start.file.content;
+        const innerTextStart = element.startSourceSpan!.end.offset;
+        const innerTextEnd = element.endSourceSpan!.start.offset;
+        const content = element.startSourceSpan!.start.file.content;
         const innerText = content.slice(innerTextStart, innerTextEnd);
         this._unitMlString = innerText;
         break;
@@ -260,14 +264,14 @@ class XliffParser implements ml.Visitor {
   visitExpansionCase(expansionCase: ml.ExpansionCase, context: any): any {}
 
   private _addError(node: ml.Node, message: string): void {
-    this._errors.push(new I18nError(node.sourceSpan !, message));
+    this._errors.push(new I18nError(node.sourceSpan!, message));
   }
 }
 
 // Convert ml nodes (xliff syntax) to i18n nodes
 class XmlToI18n implements ml.Visitor {
   // TODO(issue/24571): remove '!'.
-  private _errors !: I18nError[];
+  private _errors!: I18nError[];
 
   convert(message: string, url: string) {
     const xmlIcu = new XmlParser().parse(message, url, {tokenizeExpansionForms: true});
@@ -283,13 +287,15 @@ class XmlToI18n implements ml.Visitor {
     };
   }
 
-  visitText(text: ml.Text, context: any) { return new i18n.Text(text.value, text.sourceSpan !); }
+  visitText(text: ml.Text, context: any) {
+    return new i18n.Text(text.value, text.sourceSpan!);
+  }
 
   visitElement(el: ml.Element, context: any): i18n.Placeholder|ml.Node[]|null {
     if (el.name === _PLACEHOLDER_TAG) {
       const nameAttr = el.attrs.find((attr) => attr.name === 'id');
       if (nameAttr) {
-        return new i18n.Placeholder('', nameAttr.value, el.sourceSpan !);
+        return new i18n.Placeholder('', nameAttr.value, el.sourceSpan!);
       }
 
       this._addError(el, `<${_PLACEHOLDER_TAG}> misses the "id" attribute`);
@@ -326,7 +332,7 @@ class XmlToI18n implements ml.Visitor {
   visitAttribute(attribute: ml.Attribute, context: any) {}
 
   private _addError(node: ml.Node, message: string): void {
-    this._errors.push(new I18nError(node.sourceSpan !, message));
+    this._errors.push(new I18nError(node.sourceSpan!, message));
   }
 }
 

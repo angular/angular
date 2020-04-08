@@ -14,7 +14,7 @@ import * as o from './output_ast';
 export const QUOTED_KEYS = '$quoted$';
 
 export function convertValueToOutputAst(
-    ctx: OutputContext, value: any, type: o.Type | null = null): o.Expression {
+    ctx: OutputContext, value: any, type: o.Type|null = null): o.Expression {
   return visitValue(value, new _ValueOutputAstTransformer(ctx), type);
 }
 
@@ -43,7 +43,9 @@ class _ValueOutputAstTransformer implements ValueTransformer {
     return new o.LiteralMapExpr(entries, type);
   }
 
-  visitPrimitive(value: any, type: o.Type): o.Expression { return o.literal(value, type); }
+  visitPrimitive(value: any, type: o.Type): o.Expression {
+    return o.literal(value, type);
+  }
 
   visitOther(value: any, type: o.Type): o.Expression {
     if (value instanceof o.Expression) {

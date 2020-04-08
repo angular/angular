@@ -33,7 +33,9 @@ class SimpleClass {}
   describe('NgModuleResolver', () => {
     let resolver: NgModuleResolver;
 
-    beforeEach(() => { resolver = new NgModuleResolver(new JitReflector()); });
+    beforeEach(() => {
+      resolver = new NgModuleResolver(new JitReflector());
+    });
 
     it('should read out the metadata from the class', () => {
       const moduleMetadata = resolver.resolve(SomeModule);
@@ -66,6 +68,5 @@ class SimpleClass {}
 
       expect(resolver.resolve(ChildWithDecorator)).toEqual(new NgModule({id: 'c'}));
     });
-
   });
 }

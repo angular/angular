@@ -49,7 +49,7 @@ export function icuFromI18nMessage(message: i18n.Message) {
   return message.nodes[0] as i18n.IcuPlaceholder;
 }
 
-export function wrapI18nPlaceholder(content: string | number, contextId: number = 0): string {
+export function wrapI18nPlaceholder(content: string|number, contextId: number = 0): string {
   const blockId = contextId > 0 ? `:${contextId}` : '';
   return `${I18N_PLACEHOLDER_SYMBOL}${content}${blockId}${I18N_PLACEHOLDER_SYMBOL}`;
 }
@@ -147,7 +147,7 @@ export function formatI18nPlaceholderName(name: string, useCamelCase: boolean = 
   if (/^\d+$/.test(chunks[chunks.length - 1])) {
     postfix = chunks.pop();
   }
-  let raw = chunks.shift() !.toLowerCase();
+  let raw = chunks.shift()!.toLowerCase();
   if (chunks.length) {
     raw += chunks.map(c => c.charAt(0).toUpperCase() + c.slice(1).toLowerCase()).join('');
   }
@@ -170,5 +170,5 @@ export function getTranslationConstPrefix(extra: string): string {
  */
 export function declareI18nVariable(variable: o.ReadVarExpr): o.Statement {
   return new o.DeclareVarStmt(
-      variable.name !, undefined, o.INFERRED_TYPE, null, variable.sourceSpan);
+      variable.name!, undefined, o.INFERRED_TYPE, null, variable.sourceSpan);
 }

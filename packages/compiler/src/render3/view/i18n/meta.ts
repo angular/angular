@@ -8,12 +8,12 @@
 
 import {computeDecimalDigest, computeDigest, decimalDigest} from '../../../i18n/digest';
 import * as i18n from '../../../i18n/i18n_ast';
-import {VisitNodeFn, createI18nMessageFactory} from '../../../i18n/i18n_parser';
+import {createI18nMessageFactory, VisitNodeFn} from '../../../i18n/i18n_parser';
 import * as html from '../../../ml_parser/ast';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../ml_parser/interpolation_config';
 import * as o from '../../../output/output_ast';
 
-import {I18N_ATTR, I18N_ATTR_PREFIX, hasI18nAttrs, icuFromI18nMessage} from './util';
+import {hasI18nAttrs, I18N_ATTR, I18N_ATTR_PREFIX, icuFromI18nMessage} from './util';
 
 export type I18nMeta = {
   id?: string,
@@ -134,10 +134,18 @@ export class I18nMetaVisitor implements html.Visitor {
     return expansion;
   }
 
-  visitText(text: html.Text): any { return text; }
-  visitAttribute(attribute: html.Attribute): any { return attribute; }
-  visitComment(comment: html.Comment): any { return comment; }
-  visitExpansionCase(expansionCase: html.ExpansionCase): any { return expansionCase; }
+  visitText(text: html.Text): any {
+    return text;
+  }
+  visitAttribute(attribute: html.Attribute): any {
+    return attribute;
+  }
+  visitComment(comment: html.Comment): any {
+    return comment;
+  }
+  visitExpansionCase(expansionCase: html.ExpansionCase): any {
+    return expansionCase;
+  }
 
   /**
    * Parse the general form `meta` passed into extract the explicit metadata needed to create a

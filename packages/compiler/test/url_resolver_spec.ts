@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {UrlResolver, createOfflineCompileUrlResolver} from '@angular/compiler/src/url_resolver';
+import {createOfflineCompileUrlResolver, UrlResolver} from '@angular/compiler/src/url_resolver';
 import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
 {
@@ -65,7 +65,6 @@ import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/sr
         expect(resolver.resolve('foo/', './bar')).toEqual('foo/bar');
         expect(resolver.resolve('foo/baz', './bar')).toEqual('foo/bar');
         expect(resolver.resolve('foo/baz', 'bar')).toEqual('foo/bar');
-
       });
 
       it('should support ".." in the path', () => {
@@ -89,14 +88,14 @@ import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/sr
     describe('packages', () => {
       it('should resolve a url based on the application package', () => {
         resolver = new UrlResolver('my_packages_dir');
-        expect(resolver.resolve(null !, 'package:some/dir/file.txt'))
+        expect(resolver.resolve(null!, 'package:some/dir/file.txt'))
             .toEqual('my_packages_dir/some/dir/file.txt');
-        expect(resolver.resolve(null !, 'some/dir/file.txt')).toEqual('some/dir/file.txt');
+        expect(resolver.resolve(null!, 'some/dir/file.txt')).toEqual('some/dir/file.txt');
       });
 
       it('should contain a default value of "/" when nothing is provided',
          inject([UrlResolver], (resolver: UrlResolver) => {
-           expect(resolver.resolve(null !, 'package:file')).toEqual('/file');
+           expect(resolver.resolve(null!, 'package:file')).toEqual('/file');
          }));
 
       it('should resolve a package value when present within the baseurl', () => {

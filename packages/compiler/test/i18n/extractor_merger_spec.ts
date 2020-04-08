@@ -94,8 +94,9 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
             ]);
       });
 
-      it('should not create a message for empty elements',
-         () => { expect(extract('<div i18n="m|d"></div>')).toEqual([]); });
+      it('should not create a message for empty elements', () => {
+        expect(extract('<div i18n="m|d"></div>')).toEqual([]);
+      });
 
       it('should ignore implicit elements in translatable elements', () => {
         expect(extract('<div i18n="m|d"><p></p></div>', ['p'])).toEqual([
@@ -138,7 +139,8 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
               ],
               [
                 [
-                  'text', '<ph tag name="START_PARAGRAPH">html, <ph tag' +
+                  'text',
+                  '<ph tag name="START_PARAGRAPH">html, <ph tag' +
                       ' name="START_BOLD_TEXT">nested</ph name="CLOSE_BOLD_TEXT"></ph name="CLOSE_PARAGRAPH">',
                   '<ph icu name="ICU">{count, plural, =0 {[<ph tag' +
                       ' name="START_TAG_SPAN">html</ph name="CLOSE_TAG_SPAN">]}}</ph>',
@@ -156,8 +158,9 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
             ]);
       });
 
-      it('should not create a message for empty blocks',
-         () => { expect(extract(`<!-- i18n: meaning1|desc1 --><!-- /i18n -->`)).toEqual([]); });
+      it('should not create a message for empty blocks', () => {
+        expect(extract(`<!-- i18n: meaning1|desc1 --><!-- /i18n -->`)).toEqual([]);
+      });
     });
 
     describe('ICU messages', () => {
@@ -199,8 +202,9 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
             ]);
       });
 
-      it('should not extract ICU messages outside of i18n sections',
-         () => { expect(extract('{count, plural, =0 {text}}')).toEqual([]); });
+      it('should not extract ICU messages outside of i18n sections', () => {
+        expect(extract('{count, plural, =0 {text}}')).toEqual([]);
+      });
 
       it('should ignore nested ICU messages', () => {
         expect(extract('<div i18n="m|d">{count, plural, =0 { {sex, select, male {m}} }}</div>'))
@@ -280,8 +284,9 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
             ]);
       });
 
-      it('should not create a message for empty attributes',
-         () => { expect(extract('<div i18n-title="m|d" title></div>')).toEqual([]); });
+      it('should not create a message for empty attributes', () => {
+        expect(extract('<div i18n-title="m|d" title></div>')).toEqual([]);
+      });
     });
 
     describe('implicit elements', () => {
@@ -292,7 +297,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
       });
 
       it('should allow nested implicit elements', () => {
-        let result: any[] = undefined !;
+        let result: any[] = undefined!;
 
         expect(() => {
           result = extract('<div>outer<div>inner</div></div>', ['div']);
@@ -302,7 +307,6 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
           [['outer', '<ph tag name="START_TAG_DIV">inner</ph name="CLOSE_TAG_DIV">'], '', '', ''],
         ]);
       });
-
     });
 
     describe('implicit attributes', () => {
@@ -341,7 +345,6 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
             ['Could not start a block inside a translatable section', '<!--'],
             ['Trying to close an unopened block', '<!--'],
           ]);
-
         });
 
         it('should report unclosed blocks', () => {
@@ -527,7 +530,7 @@ function fakeTranslate(
   messages.forEach(message => {
     const id = digest(message);
     const text = serializeI18nNodes(message.nodes).join('').replace(/</g, '[');
-    i18nMsgMap[id] = [new i18n.Text(`**${text}**`, null !)];
+    i18nMsgMap[id] = [new i18n.Text(`**${text}**`, null!)];
   });
 
   const translationBundle = new TranslationBundle(i18nMsgMap, null, digest);

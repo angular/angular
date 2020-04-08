@@ -78,11 +78,11 @@ export class Extractor {
               // Template URL points to either an HTML or TS file depending on
               // whether the file is used with `templateUrl:` or `template:`,
               // respectively.
-              const templateUrl = compMeta.template !.templateUrl !;
+              const templateUrl = compMeta.template !.templateUrl!;
               const interpolationConfig =
                   InterpolationConfig.fromArray(compMeta.template !.interpolation);
               errors.push(...this.messageBundle.updateFromTemplate(
-                  html, templateUrl, interpolationConfig) !);
+                  html, templateUrl, interpolationConfig)!);
             });
           });
 
