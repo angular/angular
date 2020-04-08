@@ -187,72 +187,6 @@ Similarly, without mouse or keyboard events, a server-side app can't rely on a u
 The app must determine what to render based solely on the incoming client request.
 This is a good argument for making the app [routable](guide/router).
 
-{@a http-urls}
-### Using absolute URLs for server requests
-
-The tutorial's `HeroService` and `HeroSearchService` delegate to the Angular `HttpClient` module to fetch application data.
-These services send requests to _relative_ URLs such as `api/heroes`.
-In a Universal app, HTTP URLs must be _absolute_ (for example, `https://my-server.com/api/heroes`).
-This means you need to change your services to make requests with absolute URLs when running on the server and with relative
-URLs when running in the browser.
-
-One solution is to provide the full URL to your application on the server, and write an interceptor that can retrieve this
-value and prepend it to the request URL. If you're using the `ngExpressEngine`, as shown in the example in this guide, half
-the work is already done. We'll assume this is the case, but it's trivial to provide the same functionality.
-
-Start by creating an [HttpInterceptor](api/common/http/HttpInterceptor).
-
-<code-example language="typescript" header="src/app/universal-interceptor.ts">
-
-import {Injectable, Inject, Optional} from '@angular/core';
-import {HttpInterceptor, HttpHandler, HttpRequest, HttpHeaders} from '@angular/common/http';
-import {Request} from 'express';
-import {REQUEST} from '@nguniversal/express-engine/tokens';
-
-@Injectable()
-export class UniversalInterceptor implements HttpInterceptor {
-
-  constructor(@Optional() @Inject(REQUEST) protected request?: Request) {}
-
-  intercept(req: HttpRequest<any>, next: HttpHandler) {
-    let serverReq: HttpRequest<any> = req;
-    if (this.request) {
-      let newUrl = `${this.request.protocol}://${this.request.get('host')}`;
-      if (!req.url.startsWith('/')) {
-        newUrl += '/';
-      }
-      newUrl += req.url;
-      serverReq = req.clone({url: newUrl});
-    }
-    return next.handle(serverReq);
-  }
-}
-
-</code-example>
-
-Next, provide the interceptor in the providers for the server `AppModule`.
-
-<code-example language="typescript" header="src/app/app.server.module.ts">
-
-...
-import {HTTP_INTERCEPTORS} from '@angular/common/http';
-import {UniversalInterceptor} from './universal-interceptor';
-
-@NgModule({
-  ...
-  providers: [{
-    provide: HTTP_INTERCEPTORS,
-    useClass: UniversalInterceptor,
-    multi: true
-  }],
-})
-export class AppServerModule {}
-
-</code-example>
-
-Now, on every HTTP request made on the server, this interceptor will fire and replace the request URL with the absolute
-URL provided in the Express `Request` object.
-
 {@a universal-engine}
 ### Universal template engine
 
@@ -267,8 +201,6 @@ requests into server-rendered HTML pages. It accepts an object with the followin
 * `bootstrap`: The root `NgModule` or `NgModule` factory to use for bootstraping the app when rendering on the server. For the example app, it is `AppServerModule`. It's the bridge between the Universal server-side renderer and the Angular application.
 * `extraProviders`: This is optional and lets you specify dependency providers that apply only when rendering the app on the server. You can do this when your app needs information that can only be determined by the currently running server instance.
 
-One example could be the running server's *origin*, which could be used to [calculate absolute HTTP URLs](#http-urls) if
-not using the `Request` token as shown above.
 The `ngExpressEngine()` function returns a `Promise` callback that resolves to the rendered page.
 It's up to the engine to decide what to do with that page.
 This engine's `Promise` callback returns the rendered page to the web server,
@@ -334,3 +266,22 @@ The following Node.js Express code routes all remaining requests to `/dist`, and
 file isn't found.
 
 <code-example path="universal/server.ts" header="server.ts (static files)" region="static"></code-example>
+
+### Using absolute URLs for HTTP (data) requests on the server
+
+The tutorial's `HeroService` and `HeroSearchService` delegate to the Angular `HttpClient` module to fetch application data.
+These services send requests to _relative_ URLs such as `api/heroes`.
+In a server-side rendered app, HTTP URLs must be _absolute_ (for example, `https://my-server.com/api/heroes`).
+This means that the URLs must be somehow converted to absolute when running on the server and be left relative when running in the browser.
+
+If you are using one of the `@nguniversal/*-engine` packages (such as `@nguniversal/express-engine`), this is taken care for you automatically.
+You don't need to do anything to make relative URLs work on the server.
+
+If, for some reason, you are not using an `@nguniversal/*-engine` package, you may need to handle it yourself.
+
+The recommended solution is to pass the full request URL to the `options` argument of [renderModule()](api/platform-server/renderModule) or [renderModuleFactory()](api/platform-server/renderModuleFactory) (depending on what you use to render `AppServerModule` on the server).
+This option is the least intrusive as it does not require any changes to the app.
+Here, "request URL" refers to the URL of the request as a response to which the app is being rendered on the server.
+For example, if the client requested `https://my-server.com/dashboard` and you are rendering the app on the server to respond to that request, `options.url` should be set to `https://my-server.com/dashboard`.
+
+Now, on every HTTP request made as part of rendering the app on the server, Angular can correctly resolve the request URL to an absolute URL, using the provided `options.url`.
