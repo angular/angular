@@ -279,11 +279,12 @@ Here are the steps performed in the model to view test.
 
 To learn more about reactive forms, see the following guides:
 
-* [Reactive forms](guide/reactive-forms) guide
-* [Form validation](guide/form-validation#reactive-form-validation) guide
-* [Building dynamic forms](guide/dynamic-form) tutorial
+* [Reactive forms](guide/reactive-forms)
+* [Form validation](guide/form-validation#reactive-form-validation)
+* [Dynamic forms](guide/dynamic-form)
 
 To learn more about template-driven forms, see the following guides:
 
-* [Building a template-driven form](guide/forms#template-driven-forms) tutorial
-* [Form validation](guide/form-validation#template-driven-validation) guide
+* [Building a template-driven form](guide/forms) tutorial
+* [Form validation](guide/form-validation#template-driven-validation)
+* `NgForm` directive API reference
