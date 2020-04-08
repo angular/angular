@@ -1611,6 +1611,41 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
   });
 
+  describe('empty translations', () => {
+    it('should replace existing text content with empty translation', () => {
+      loadTranslations({[computeMsgId('Some Text')]: ''});
+      const fixture = initWithTemplate(AppComp, '<div i18n>Some Text</div>');
+      expect(fixture.nativeElement.textContent).toBe('');
+    });
+
+    it('should replace existing DOM elements with empty translation', () => {
+      loadTranslations({
+        [computeMsgId(
+            ' Start {$START_TAG_DIV}DIV{$CLOSE_TAG_DIV}' +
+            '{$START_TAG_SPAN}SPAN{$CLOSE_TAG_SPAN} End ')]: '',
+      });
+      const fixture = initWithTemplate(AppComp, `
+        <div i18n>
+          Start
+          <div>DIV</div>
+          <span>SPAN</span>
+          End
+        </div>
+      `);
+      expect(fixture.nativeElement.textContent).toBe('');
+    });
+
+    it('should replace existing ICU content with empty translation', () => {
+      loadTranslations({
+        [computeMsgId('{VAR_PLURAL, plural, =0 {zero} other {more than zero}}')]: '',
+      });
+      const fixture = initWithTemplate(AppComp, `
+        <div i18n>{count, plural, =0 {zero} other {more than zero}}</div>
+      `);
+      expect(fixture.nativeElement.textContent).toBe('');
+    });
+  });
+
   it('should work with directives and host bindings', () => {
     let directiveInstances: ClsDir[] = [];
 
