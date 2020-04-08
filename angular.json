@@ -22,6 +22,7 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
+            "vendorChunk": false,
             "aot": true,
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
@@ -45,7 +46,6 @@
               "extractCss": true,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
               "buildOptimizer": true,
               "budgets": [
                 {
@@ -133,6 +133,7 @@
             "main": "projects/shell-chrome/src/main.ts",
             "polyfills": "projects/shell-chrome/src/polyfills.ts",
             "tsConfig": "projects/shell-chrome/tsconfig.app.json",
+            "vendorChunk": false,
             "aot": true,
             "assets": [
               "projects/shell-chrome/src/favicon.ico",
@@ -158,7 +159,6 @@
               "extractCss": true,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
               "buildOptimizer": true,
               "budgets": [
                 {

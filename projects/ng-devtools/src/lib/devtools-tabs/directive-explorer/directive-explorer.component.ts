@@ -55,6 +55,8 @@ export class DirectiveExplorerComponent implements OnInit {
 
   private _changeSize = new Subject<Event>();
   private _clickedElement: IndexedNode | null = null;
+  private _refreshRetryTimeout: any = null;
+
   parents: FlatNode[] | null = null;
 
   @ViewChild(DirectiveForestComponent) directiveForest: DirectiveForestComponent;
@@ -114,8 +116,15 @@ export class DirectiveExplorerComponent implements OnInit {
 
   refresh(): void {
     const success = this._messageBus.emit('getLatestComponentExplorerView', [this._constructViewQuery()]);
-    if (!success) {
-      setTimeout(() => this.refresh(), 500);
+    // If the event was not throttled, we no longer need to retry.
+    if (success) {
+      clearTimeout(this._refreshRetryTimeout);
+      this._refreshRetryTimeout = null;
+      return;
+    }
+    // If the event was throttled and we haven't scheduled a retry yet.
+    if (!this._refreshRetryTimeout) {
+      this._refreshRetryTimeout = setTimeout(() => this.refresh(), 500);
     }
   }
 
