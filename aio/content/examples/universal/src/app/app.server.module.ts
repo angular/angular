@@ -10,7 +10,7 @@ import { AppComponent } from './app.component';
     ServerModule,
   ],
   providers: [
-    // Add universal-only providers here
+    // Add server-only providers here.
   ],
   bootstrap: [AppComponent],
 })

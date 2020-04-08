@@ -1,5 +1,4 @@
-import { Injectable, Inject, Optional } from '@angular/core';
-import { APP_BASE_HREF } from '@angular/common';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Observable, of } from 'rxjs';
@@ -18,14 +17,9 @@ export class HeroService {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   };
 
-  // #docregion ctor
   constructor(
     private http: HttpClient,
-    private messageService: MessageService,
-    @Optional() @Inject(APP_BASE_HREF) origin?: string) {
-      this.heroesUrl = `${origin || ''}${this.heroesUrl}`;
-    }
-  // #enddocregion ctor
+    private messageService: MessageService) { }
 
   /** GET heroes from the server */
   getHeroes(): Observable<Hero[]> {
