@@ -2027,6 +2027,39 @@ describe('CdkDrag', () => {
       expect(Math.floor(previewRect.right)).toBe(Math.floor(listRect.right));
     }));
 
+    it('should update the boundary if the page is scrolled while dragging', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.componentInstance.boundarySelector = '.cdk-drop-list';
+      fixture.detectChanges();
+
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+      const list = fixture.componentInstance.dropInstance.element.nativeElement;
+      const cleanup = makePageScrollable();
+      scrollTo(0, 10);
+      let listRect = list.getBoundingClientRect(); // Note that we need to measure after scrolling.
+
+      startDraggingViaMouse(fixture, item);
+      startDraggingViaMouse(fixture, item, listRect.right, listRect.bottom);
+      flush();
+      dispatchMouseEvent(document, 'mousemove', listRect.right, listRect.bottom);
+      fixture.detectChanges();
+
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+      let previewRect = preview.getBoundingClientRect();
+      expect(Math.floor(previewRect.bottom)).toBe(Math.floor(listRect.bottom));
+
+      scrollTo(0, 0);
+      dispatchFakeEvent(document, 'scroll');
+      fixture.detectChanges();
+      listRect = list.getBoundingClientRect(); // We need to update these since we've scrolled.
+      dispatchMouseEvent(document, 'mousemove', listRect.right, listRect.bottom);
+      fixture.detectChanges();
+      previewRect = preview.getBoundingClientRect();
+
+      expect(Math.floor(previewRect.bottom)).toBe(Math.floor(listRect.bottom));
+      cleanup();
+    }));
+
     it('should clear the id from the preview', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();

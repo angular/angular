@@ -16,6 +16,12 @@ import {takeUntil} from 'rxjs/operators';
 import {moveItemInArray} from './drag-utils';
 import {DragDropRegistry} from './drag-drop-registry';
 import {DragRefInternal as DragRef, Point} from './drag-ref';
+import {
+  isPointerNearClientRect,
+  adjustClientRect,
+  getMutableClientRect,
+  isInsideClientRect,
+} from './client-rect';
 
 /**
  * Proximity, as a ratio to width/height, at which a
@@ -446,7 +452,8 @@ export class DropListRef<T = any> {
   _sortItem(item: DragRef, pointerX: number, pointerY: number,
             pointerDelta: {x: number, y: number}): void {
     // Don't sort the item if sorting is disabled or it's out of range.
-    if (this.sortingDisabled || !isPointerNearClientRect(this._clientRect, pointerX, pointerY)) {
+    if (this.sortingDisabled ||
+        !isPointerNearClientRect(this._clientRect, DROP_PROXIMITY_THRESHOLD, pointerX, pointerY)) {
       return;
     }
 
@@ -540,7 +547,8 @@ export class DropListRef<T = any> {
         return;
       }
 
-      if (isPointerNearClientRect(position.clientRect, pointerX, pointerY)) {
+      if (isPointerNearClientRect(position.clientRect, DROP_PROXIMITY_THRESHOLD,
+          pointerX, pointerY)) {
         [verticalScrollDirection, horizontalScrollDirection] = getElementScrollDirections(
             element as HTMLElement, position.clientRect, pointerX, pointerY);
 
@@ -922,35 +930,6 @@ export class DropListRef<T = any> {
 
 
 /**
- * Updates the top/left positions of a `ClientRect`, as well as their bottom/right counterparts.
- * @param clientRect `ClientRect` that should be updated.
- * @param top Amount to add to the `top` position.
- * @param left Amount to add to the `left` position.
- */
-function adjustClientRect(clientRect: ClientRect, top: number, left: number) {
-  clientRect.top += top;
-  clientRect.bottom = clientRect.top + clientRect.height;
-
-  clientRect.left += left;
-  clientRect.right = clientRect.left + clientRect.width;
-}
-
-/**
- * Checks whether the pointer coordinates are close to a ClientRect.
- * @param rect ClientRect to check against.
- * @param pointerX Coordinates along the X axis.
- * @param pointerY Coordinates along the Y axis.
- */
-function isPointerNearClientRect(rect: ClientRect, pointerX: number, pointerY: number): boolean {
-  const {top, right, bottom, left, width, height} = rect;
-  const xThreshold = width * DROP_PROXIMITY_THRESHOLD;
-  const yThreshold = height * DROP_PROXIMITY_THRESHOLD;
-
-  return pointerY > top - yThreshold && pointerY < bottom + yThreshold &&
-         pointerX > left - xThreshold && pointerX < right + xThreshold;
-}
-
-/**
  * Finds the index of an item that matches a predicate function. Used as an equivalent
  * of `Array.prototype.findIndex` which isn't part of the standard Google typings.
  * @param array Array in which to look for matches.
@@ -966,37 +945,6 @@ function findIndex<T>(array: T[],
   }
 
   return -1;
-}
-
-
-/**
- * Checks whether some coordinates are within a `ClientRect`.
- * @param clientRect ClientRect that is being checked.
- * @param x Coordinates along the X axis.
- * @param y Coordinates along the Y axis.
- */
-function isInsideClientRect(clientRect: ClientRect, x: number, y: number) {
-  const {top, bottom, left, right} = clientRect;
-  return y >= top && y <= bottom && x >= left && x <= right;
-}
-
-
-/** Gets a mutable version of an element's bounding `ClientRect`. */
-function getMutableClientRect(element: Element): ClientRect {
-  const clientRect = element.getBoundingClientRect();
-
-  // We need to clone the `clientRect` here, because all the values on it are readonly
-  // and we need to be able to update them. Also we can't use a spread here, because
-  // the values on a `ClientRect` aren't own properties. See:
-  // https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect#Notes
-  return {
-    top: clientRect.top,
-    right: clientRect.right,
-    bottom: clientRect.bottom,
-    left: clientRect.left,
-    width: clientRect.width,
-    height: clientRect.height
-  };
 }
 
 /**

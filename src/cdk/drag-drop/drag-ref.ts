@@ -17,6 +17,7 @@ import {DropListRefInternal as DropListRef} from './drop-list-ref';
 import {DragDropRegistry} from './drag-drop-registry';
 import {extendStyles, toggleNativeDragInteractions} from './drag-styling';
 import {getTransformTransitionDurationInMs} from './transition-duration';
+import {getMutableClientRect, adjustClientRect} from './client-rect';
 
 /** Object that can be used to configure the behavior of DragRef. */
 export interface DragRefConfig {
@@ -495,7 +496,7 @@ export class DragRef<T = any> {
     const position = this._pointerPositionAtLastDirectionChange;
 
     if (position && this._dropContainer) {
-      this._updateActiveDropContainer(position);
+      this._updateActiveDropContainer(this._getConstrainedPointerPosition(position));
     }
   }
 
@@ -556,9 +557,9 @@ export class DragRef<T = any> {
     // Prevent the default action as early as possible in order to block
     // native actions like dragging the selected text or images with the mouse.
     event.preventDefault();
+    const pointerPosition = this._getPointerPositionOnPage(event);
 
     if (!this._hasStartedDragging) {
-      const pointerPosition = this._getPointerPositionOnPage(event);
       const distanceX = Math.abs(pointerPosition.x - this._pickupPositionOnPage.x);
       const distanceY = Math.abs(pointerPosition.y - this._pickupPositionOnPage.y);
       const isOverThreshold = distanceX + distanceY >= this._config.dragStartThreshold;
@@ -595,7 +596,7 @@ export class DragRef<T = any> {
       }
     }
 
-    const constrainedPointerPosition = this._getConstrainedPointerPosition(event);
+    const constrainedPointerPosition = this._getConstrainedPointerPosition(pointerPosition);
     this._hasMoved = true;
     this._updatePointerDirectionDelta(constrainedPointerPosition);
 
@@ -775,11 +776,11 @@ export class DragRef<T = any> {
     this._pointerMoveSubscription = this._dragDropRegistry.pointerMove.subscribe(this._pointerMove);
     this._pointerUpSubscription = this._dragDropRegistry.pointerUp.subscribe(this._pointerUp);
     this._scrollSubscription = this._dragDropRegistry.scroll.pipe(startWith(null)).subscribe(() => {
-      this._scrollPosition = this._viewportRuler.getViewportScrollPosition();
+      this._updateOnScroll();
     });
 
     if (this._boundaryElement) {
-      this._boundaryRect = this._boundaryElement.getBoundingClientRect();
+      this._boundaryRect = getMutableClientRect(this._boundaryElement);
     }
 
     // If we have a custom preview we can't know ahead of time how large it'll be so we position
@@ -1033,8 +1034,7 @@ export class DragRef<T = any> {
 
 
   /** Gets the pointer position on the page, accounting for any position constraints. */
-  private _getConstrainedPointerPosition(event: MouseEvent | TouchEvent): Point {
-    const point = this._getPointerPositionOnPage(event);
+  private _getConstrainedPointerPosition(point: Point): Point {
     const constrainedPoint = this.constrainPosition ? this.constrainPosition(point, this) : point;
     const dropContainerLock = this._dropContainer ? this._dropContainer.lockAxis : null;
 
@@ -1218,6 +1218,22 @@ export class DragRef<T = any> {
     }
 
     return value ? value.mouse : 0;
+  }
+
+  /** Updates the internal state of the draggable element when scrolling has occurred. */
+  private _updateOnScroll() {
+    const oldScrollPosition = this._scrollPosition;
+    const currentScrollPosition = this._viewportRuler.getViewportScrollPosition();
+
+    // ClientRect dimensions are based on the page's scroll position so
+    // we have to update the cached boundary ClientRect if the user has scrolled.
+    if (oldScrollPosition && this._boundaryRect) {
+      const topDifference = oldScrollPosition.top - currentScrollPosition.top;
+      const leftDifference = oldScrollPosition.left - currentScrollPosition.left;
+      adjustClientRect(this._boundaryRect, topDifference, leftDifference);
+    }
+
+    this._scrollPosition = currentScrollPosition;
   }
 }
 
