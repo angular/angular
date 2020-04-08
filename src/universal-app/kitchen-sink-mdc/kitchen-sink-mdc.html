@@ -14,8 +14,25 @@
 
 <h2>MDC card</h2>
 
-<!-- TODO: Copy kitchen sink examples for mat-card here -->
-Not yet implemented.
+<mat-card>
+  Simple card
+</mat-card>
+
+<mat-card>
+  <mat-card-title>Complicated card</mat-card-title>
+  <mat-card-subtitle>Subtitle</mat-card-subtitle>
+  <mat-card-content>
+    <p>This is some stuff</p>
+    <p>And more stuff</p>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-button>LIKE</button>
+    <button mat-button>SHARE</button>
+  </mat-card-actions>
+  <mat-card-footer>
+    Hurray
+  </mat-card-footer>
+</mat-card>
 
 <h2>MDC checkbox</h2>
 
@@ -48,10 +65,20 @@ Not yet implemented.
   <button mat-menu-item disabled>Sombra</button>
 </mat-menu>
 
-<h2>MDC radio</h2>
+<h2>MDC Radio buttons</h2>
 
-<!-- TODO: Copy kitchen sink examples for mat-radio here -->
-Not yet implemented.
+<h3>MDC Radio group</h3>
+<mat-radio-group>
+  <mat-radio-button>Charmander</mat-radio-button>
+  <mat-radio-button>Squirtle</mat-radio-button>
+  <mat-radio-button>Bulbasaur</mat-radio-button>
+</mat-radio-group>
+
+<h3>MDC Standalone radios</h3>
+<mat-radio-button name="onions">White</mat-radio-button>
+<mat-radio-button name="onions">Yellow</mat-radio-button>
+<mat-radio-button name="onions">Green</mat-radio-button>
+<mat-radio-button name="onions" disabled>Red</mat-radio-button>
 
 <h2>MDC slide-toggle</h2>
 
