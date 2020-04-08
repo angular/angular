@@ -2,6 +2,10 @@
 
 set -u -e -o pipefail
 
+# Runs the pre-check before performing the publish to ensure
+# the version is valid for release.
+exec "$(dirname "$0")/pre-check";
+
 # Use for production releases
 # Query Bazel for npm_package and ng_package rules with tags=["release-with-framework"]
 # Publish them to npm (tagged next)
@@ -22,4 +26,3 @@ for packageLabel in $NPM_PACKAGE_LABELS; do
   echo "publishing $packageLabel"
   $BAZEL run --config=release -- ${packageLabel}.publish --access public --tag latest
 done
-
