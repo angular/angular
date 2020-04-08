@@ -1,3 +1,8 @@
+<a name="10.0.0-next.1"></a>
+# [10.0.0-next.1](https://github.com/angular/angular/compare/10.0.0-next.0...10.0.0-next.1) (2020-04-08)
+
+This release contains various API docs improvements.
+
 <a name="10.0.0-next.0"></a>
 # [10.0.0-next.0](https://github.com/angular/angular/compare/9.1.0-rc.0...10.0.0-next.0) (2020-04-08)
 
