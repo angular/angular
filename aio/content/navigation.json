@@ -255,11 +255,6 @@
               "tooltip": "Create a reactive form using FormBuilder, groups, and arrays."
             },
             {
-              "url": "guide/forms",
-              "title": "Template-driven Forms",
-              "tooltip": "Create a template-driven form using directives and Angular template syntax."
-            },
-            {
               "url": "guide/form-validation",
               "title": "Validate form input",
               "tooltip": "Validate user's form entries."
@@ -749,6 +744,11 @@
           "url": "guide/router-tutorial",
           "title": "Using Angular Routes in a Single-page Application",
           "tooltip": "A tutorial that covers many patterns associated with Angular routing."
+        },
+        {
+          "url": "guide/forms",
+          "title": "Building a Template-driven Form",
+          "tooltip": "Create a template-driven form using directives and Angular template syntax."
         }
       ]
     },
