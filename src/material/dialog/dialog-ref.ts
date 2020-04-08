@@ -94,6 +94,14 @@ export class MatDialogRef<T, R = any> {
         event.preventDefault();
         this.close();
       });
+
+    _overlayRef.backdropClick().subscribe(() => {
+      if (this.disableClose) {
+        this._containerInstance._recaptureFocus();
+      } else {
+        this.close();
+      }
+    });
   }
 
   /**

@@ -99,6 +99,7 @@ export declare class MatDialogContainer extends BasePortalOutlet {
     _config: MatDialogConfig);
     _onAnimationDone(event: AnimationEvent): void;
     _onAnimationStart(event: AnimationEvent): void;
+    _recaptureFocus(): void;
     _startExitAnimation(): void;
     attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T>;
     attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C>;

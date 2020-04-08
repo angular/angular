@@ -973,6 +973,29 @@ describe('MatDialog', () => {
 
       expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeFalsy();
     }));
+
+    it('should recapture focus when clicking on the backdrop', fakeAsync(() => {
+      dialog.open(PizzaMsg, {
+        disableClose: true,
+        viewContainerRef: testViewContainerRef
+      });
+
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+      let input = overlayContainerElement.querySelector('input') as HTMLInputElement;
+
+      expect(document.activeElement).toBe(input, 'Expected input to be focused on open');
+
+      input.blur(); // Programmatic clicks might not move focus so we simulate it.
+      backdrop.click();
+      viewContainerFixture.detectChanges();
+      flush();
+
+      expect(document.activeElement).toBe(input, 'Expected input to stay focused after click');
+    }));
+
   });
 
   describe('hasBackdrop option', () => {
