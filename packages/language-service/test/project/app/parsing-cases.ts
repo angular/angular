@@ -133,4 +133,5 @@ export class TemplateReference {
   readonlyHeroes: ReadonlyArray<Readonly<Hero>> = this.heroes;
   constNames = [{name: 'name'}] as const;
   private myField = 'My Field';
+  strOrNumber: string|number = '';
 }
