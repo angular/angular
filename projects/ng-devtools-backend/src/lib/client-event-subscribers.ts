@@ -9,7 +9,7 @@ import {
   ProfilerFrame,
   ComponentExplorerViewQuery,
 } from 'protocol';
-import { onChangeDetection } from './change-detection-tracker';
+import { onChangeDetection$ } from './change-detection-tracker';
 import { ComponentTreeNode, getLatestComponentState, queryDirectiveForest, updateState } from './component-tree';
 import { start as startProfiling, stop as stopProfiling } from './observer';
 import { serializeDirectiveState } from './state-serializer/state-serializer';
@@ -18,6 +18,7 @@ import { setConsoleReference } from './selected-component';
 import { unHighlight } from './highlighter';
 import { getAngularVersion, appIsAngularInDevMode, appIsSupportedAngularVersion } from './angular-check';
 import { observeDOM, getDirectiveId, getDirectiveForest, indexDirectiveForest } from './component-tree-identifiers';
+import { debounceTime } from 'rxjs/operators';
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
   messageBus.on('shutdown', shutdownCallback(messageBus));
@@ -37,7 +38,11 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
 
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion()) {
     setupInspector(messageBus);
-    onChangeDetection(() => messageBus.emit('componentTreeDirty'));
+    // Often websites have `scroll` event listener which triggers
+    // Angular's change detection. We don't want to constantly send
+    // update requests, instead we want to request an update at most
+    // every 50ms
+    onChangeDetection$.pipe(debounceTime(50)).subscribe(() => messageBus.emit('componentTreeDirty'));
   }
 };
 
