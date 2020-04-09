@@ -284,18 +284,16 @@ runInEachFileSystem(() => {
             JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json')));
         expect(file.entryPointPaths).toEqual([
           [
-            _Abs('/project/node_modules/package-1/'),
-            _Abs('/project/node_modules/package-1/'),
+            'package-1',
+            'package-1',
             [
               _Abs('/project/node_modules/other_package_1'),
               _Abs('/project/node_modules/other_package_2'),
             ],
-            [],
-            [],
           ],
           [
-            _Abs('/project/node_modules/package-2/'),
-            _Abs('/project/node_modules/package-2/entry-point'),
+            'package-2',
+            'package-2/entry-point',
             [],
             [
               _Abs('/project/node_modules/missing_1'),
