@@ -2511,7 +2511,7 @@ For example: `path: 'crisis-center' `
 
 
 
-**Why?** Use of the routing module helps increase readability and stabilization of your code. The order in which you define your paths affect how the application runs. When you add many complex paths in one location you may run into bugs.
+**Why?** Use of the routing module helps increase readability and modularization of your code.
 
 
 </div>
