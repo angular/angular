@@ -1,5 +1,6 @@
-::ng-deep {
-  body {
-    max-width: 500px !important;
-  }
+@import 'todomvc-common/base.css';
+@import 'todomvc-app-css/index.css';
+
+body {
+  max-width: 500px !important;
 }

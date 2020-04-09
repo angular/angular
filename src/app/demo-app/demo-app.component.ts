@@ -1,9 +1,10 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ZippyComponent } from './zippy/zippy.component';
 
 @Component({
   templateUrl: './demo-app.component.html',
   styleUrls: ['./demo-app.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class DemoAppComponent {
   @ViewChild(ZippyComponent) zippy: ZippyComponent;

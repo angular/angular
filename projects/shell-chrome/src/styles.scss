@@ -4,8 +4,13 @@ html {
   background-color: white;
 }
 
-body, html {
+body,
+html {
   padding: 0;
   margin: 0;
   height: 100%;
+  color: #111111;
+  line-height: 1.4em;
+  font-weight: 300;
+  font: 14px 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
