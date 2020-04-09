@@ -1079,7 +1079,7 @@ runInEachFileSystem(() => {
         // Populate the manifest file
         mainNgcc(
             {basePath: '/node_modules', propertiesToConsider: ['esm5'], logger: new MockLogger()});
-        // Check that common/testings ES5 was processed
+        // Check that common/testing ES5 was processed
         let commonTesting =
             JSON.parse(fs.readFile(_('/node_modules/@angular/common/testing/package.json')));
         expect(hasBeenProcessed(commonTesting, 'esm5')).toBe(true);
@@ -1087,8 +1087,8 @@ runInEachFileSystem(() => {
         // Modify the manifest to test that is has no effect
         let manifest: EntryPointManifestFile =
             JSON.parse(fs.readFile(_('/node_modules/__ngcc_entry_points__.json')));
-        manifest.entryPointPaths = manifest.entryPointPaths.filter(
-            paths => paths[1] !== _('/node_modules/@angular/common/testing'));
+        manifest.entryPointPaths =
+            manifest.entryPointPaths.filter(paths => paths[1] !== '@angular/common/testing');
         fs.writeFile(_('/node_modules/__ngcc_entry_points__.json'), JSON.stringify(manifest));
         // Now run ngcc again ignoring this manifest but trying to process ES2015, which are not yet
         // processed.
@@ -1107,12 +1107,12 @@ runInEachFileSystem(() => {
         // had removed earlier.
         manifest = JSON.parse(fs.readFile(_('/node_modules/__ngcc_entry_points__.json')));
         expect(manifest.entryPointPaths).toContain([
-          _('/node_modules/@angular/common'), _('/node_modules/@angular/common/testing'),
+          '@angular/common',
+          '@angular/common/testing',
           [
             _('/node_modules/@angular/core'), _('/node_modules/@angular/common'),
             _('/node_modules/rxjs')
           ],
-          [], []
         ]);
       });
     });
