@@ -9,17 +9,10 @@
 import {AST, Attribute, BoundDirectivePropertyAst, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, RecursiveTemplateAstVisitor, SelectorMatcher, StaticSymbol, TemplateAst, TemplateAstPath, templateVisitAll, tokenReference, VariableBinding} from '@angular/compiler';
 import * as tss from 'typescript/lib/tsserverlibrary';
 
-import {AstResult} from './common';
-import {diagnosticInfoFromTemplateInfo, getExpressionScope} from './expression_diagnostics';
+import {getExpressionScope} from './expression_diagnostics';
 import {getExpressionSymbol} from './expressions';
-import {Definition, DirectiveKind, Span, Symbol} from './types';
-import {findOutputBinding, findTemplateAstAt, getPathToNodeAtPosition, inSpan, invertMap, isNarrower, offsetSpan, spanOf} from './utils';
-
-export interface SymbolInfo {
-  symbol: Symbol;
-  span: tss.TextSpan;
-  staticSymbol?: StaticSymbol;
-}
+import {AstResult, Definition, DirectiveKind, Span, Symbol, SymbolInfo} from './types';
+import {diagnosticInfoFromTemplateInfo, findOutputBinding, findTemplateAstAt, getPathToNodeAtPosition, inSpan, invertMap, isNarrower, offsetSpan, spanOf} from './utils';
 
 /**
  * Traverses a template AST and locates symbol(s) at a specified position.
@@ -86,8 +79,8 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
   };
   ast.visit(
       {
-        visitNgContent(ast) {},
-        visitEmbeddedTemplate(ast) {},
+        visitNgContent(_ast) {},
+        visitEmbeddedTemplate(_ast) {},
         visitElement(ast) {
           const component = ast.directives.find(d => d.directive.isComponent);
           if (component) {
@@ -113,7 +106,7 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
           symbol = ast.value && info.template.query.getTypeSymbol(tokenReference(ast.value));
           span = spanOf(ast);
         },
-        visitVariable(ast) {},
+        visitVariable(_ast) {},
         visitEvent(ast) {
           if (!attributeValueSymbol(ast.handler)) {
             symbol = findOutputBinding(ast, path, info.template.query);
@@ -158,7 +151,7 @@ function locateSymbol(ast: TemplateAst, path: TemplateAstPath, info: AstResult):
             }
           }
         },
-        visitText(ast) {},
+        visitText(_ast) {},
         visitDirective(ast) {
           // Need to cast because 'reference' is typed as any
           staticSymbol = ast.directive.type.reference as StaticSymbol;

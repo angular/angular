@@ -11,7 +11,7 @@ import {ReflectorHost} from '@angular/language-service/src/reflector_host';
 import * as ts from 'typescript';
 
 import {BuiltinType, Symbol, SymbolQuery, SymbolTable} from '../src/symbols';
-import {getSymbolQuery, toSymbolTableFactory} from '../src/typescript_symbols';
+import {getSymbolQuery} from '../src/typescript_symbols';
 
 import {DiagnosticContext, MockLanguageServiceHost} from './mocks';
 
@@ -76,14 +76,6 @@ describe('symbol query', () => {
         expect(got).toBe(want!);
       }
     }
-  });
-});
-
-describe('toSymbolTableFactory(tsVersion)', () => {
-  it('should return a Map for versions of TypeScript >= 2.2', () => {
-    const a = {name: 'a'} as ts.Symbol;
-    const b = {name: 'b'} as ts.Symbol;
-    expect(toSymbolTableFactory([a, b]) instanceof Map).toEqual(true);
   });
 });
 

@@ -6,16 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {analyzeNgModules, AotSummaryResolver, CompileDirectiveSummary, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompilerConfig, createOfflineCompileUrlResolver, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, I18NHtmlParser, isFormattedError, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, Parser, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser} from '@angular/compiler';
+import {analyzeNgModules, AotSummaryResolver, CompileDirectiveSummary, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompilerConfig, createOfflineCompileUrlResolver, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, isFormattedError, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, Parser, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser} from '@angular/compiler';
 import {SchemaMetadata, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as tss from 'typescript/lib/tsserverlibrary';
 
-import {AstResult} from './common';
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
-import {ExternalTemplate, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue, InlineTemplate} from './template';
-import {Declaration, DeclarationError, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
-import {findTightestNode, getDirectiveClassLike} from './utils';
+import {ExternalTemplate, InlineTemplate} from './template';
+import {AstResult, Declaration, DeclarationError, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
+import {findTightestNode, getClassDeclFromDecoratorProp, getDirectiveClassLike, getPropertyAssignmentFromValue} from './utils';
 
 
 /**
@@ -44,7 +43,7 @@ export class DummyHtmlParser extends HtmlParser {
  * Avoid loading resources in the language servcie by using a dummy loader.
  */
 export class DummyResourceLoader extends ResourceLoader {
-  get(url: string): Promise<string> {
+  get(_url: string): Promise<string> {
     return Promise.resolve('');
   }
 }
@@ -78,10 +77,10 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       readonly tsLsHost: tss.LanguageServiceHost, private readonly tsLS: tss.LanguageService) {
     this.summaryResolver = new AotSummaryResolver(
         {
-          loadSummary(filePath: string) {
+          loadSummary(_filePath: string) {
             return null;
           },
-          isSourceFile(sourceFilePath: string) {
+          isSourceFile(_sourceFilePath: string) {
             return true;
           },
           toSummaryFileName(sourceFilePath: string) {
@@ -172,7 +171,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     this.resolver.clearCache();
 
     const analyzeHost = {
-      isSourceFile(filePath: string) {
+      isSourceFile(_filePath: string) {
         return true;
       }
     };

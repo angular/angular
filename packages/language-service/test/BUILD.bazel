@@ -47,7 +47,6 @@ ts_library(
         "html_info_spec.ts",
         "language_service_spec.ts",
         "reflector_host_spec.ts",
-        "template_spec.ts",
         "ts_plugin_spec.ts",
         "typescript_host_spec.ts",
         "utils_spec.ts",

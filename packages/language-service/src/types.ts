@@ -6,26 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, NgAnalyzedModules, StaticSymbol} from '@angular/compiler';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CssSelector, NgAnalyzedModules, Node as HtmlAst, ParseError, Parser, StaticSymbol, TemplateAst} from '@angular/compiler';
 import * as ts from 'typescript';
-import {AstResult} from './common';
-import {BuiltinType, DeclarationKind, Definition, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
 
-export {
-  BuiltinType,
-  DeclarationKind,
-  Definition,
-  PipeInfo,
-  Pipes,
-  Signature,
-  Span,
-  StaticSymbol,
-  Symbol,
-  SymbolDeclaration,
-  SymbolQuery,
-  SymbolTable
-};
+import {Span, Symbol, SymbolQuery, SymbolTable} from './symbols';
 
+export {StaticSymbol} from '@angular/compiler';
+export {BuiltinType, Definition, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
 
 /**
  * The information `LanguageService` needs from the `LanguageServiceHost` to describe the content of
@@ -66,15 +53,6 @@ export interface TemplateSource {
    */
   readonly fileName: string;
 }
-
-/**
- * A sequence of template sources.
- *
- * A host type; see `LanguageServiceHost`.
- *
- * @publicApi
- */
-export type TemplateSources = TemplateSource[]|undefined;
 
 /**
  * Error information found getting declaration information
@@ -133,15 +111,6 @@ export interface Declaration {
 }
 
 /**
- * A sequence of declarations.
- *
- * A host type; see `LanguageServiceHost`.
- *
- * @publicApi
- */
-export type Declarations = Declaration[];
-
-/**
  * The host for a `LanguageService`. This provides all the `LanguageService` requires to respond
  * to the `LanguageService` requests.
  *
@@ -178,7 +147,7 @@ export interface LanguageServiceHost {
   /**
    * Returns the Angular declarations in the given file.
    */
-  getDeclarations(fileName: string): Declarations;
+  getDeclarations(fileName: string): Declaration[];
 
   /**
    * Return a summary of all Angular modules in the project.
@@ -194,45 +163,6 @@ export interface LanguageServiceHost {
    * Return the template AST for the node that corresponds to the position.
    */
   getTemplateAstAtPosition(fileName: string, position: number): AstResult|undefined;
-}
-
-/**
- * An item of the completion result to be displayed by an editor.
- *
- * A `LanguageService` interface.
- *
- * @publicApi
- */
-export interface Completion {
-  /**
-   * The kind of completion.
-   */
-  kind: DeclarationKind;
-
-  /**
-   * The name of the completion to be displayed
-   */
-  name: string;
-
-  /**
-   * The key to use to sort the completions for display.
-   */
-  sort: string;
-}
-
-/**
- * A sequence of completions.
- *
- * @deprecated
- */
-export type Completions = Completion[];
-
-/**
- * A file and span.
- */
-export interface Location {
-  fileName: string;
-  span: Span;
 }
 
 /**
@@ -313,45 +243,6 @@ export interface Diagnostic {
 }
 
 /**
- * A sequence of diagnostic message.
- *
- * @deprecated
- */
-export type Diagnostics = Diagnostic[];
-
-/**
- * A section of hover text. If the text is code then language should be provided.
- * Otherwise the text is assumed to be Markdown text that will be sanitized.
- */
-export interface HoverTextSection {
-  /**
-   * Source code or markdown text describing the symbol a the hover location.
-   */
-  readonly text: string;
-
-  /**
-   * The language of the source if `text` is a source code fragment.
-   */
-  readonly language?: string;
-}
-
-/**
- * Hover information for a symbol at the hover location.
- */
-export interface Hover {
-  /**
-   * The hover text to display for the symbol at the hover location. If the text includes
-   * source code, the section will specify which language it should be interpreted as.
-   */
-  readonly text: HoverTextSection[];
-
-  /**
-   * The span of source the hover covers.
-   */
-  readonly span: Span;
-}
-
-/**
  * An instance of an Angular language service created by `createLanguageService()`.
  *
  * The Angular language service implements a subset of methods defined in
@@ -364,3 +255,38 @@ export type LanguageService = Pick<
     ts.LanguageService,
     'getCompletionsAtPosition'|'getDefinitionAndBoundSpan'|'getQuickInfoAtPosition'|
     'getSemanticDiagnostics'>;
+
+/** Information about an Angular template AST. */
+export interface AstResult {
+  htmlAst: HtmlAst[];
+  templateAst: TemplateAst[];
+  directive: CompileDirectiveMetadata;
+  directives: CompileDirectiveSummary[];
+  pipes: CompilePipeSummary[];
+  parseErrors?: ParseError[];
+  expressionParser: Parser;
+  template: TemplateSource;
+}
+
+/** Information about a directive's selectors. */
+export type SelectorInfo = {
+  selectors: CssSelector[],
+  map: Map<CssSelector, CompileDirectiveSummary>
+};
+
+export interface SymbolInfo {
+  symbol: Symbol;
+  span: ts.TextSpan;
+  staticSymbol?: StaticSymbol;
+}
+
+/** TODO: this should probably be merged with AstResult */
+export interface DiagnosticTemplateInfo {
+  fileName?: string;
+  offset: number;
+  query: SymbolQuery;
+  members: SymbolTable;
+  htmlAst: HtmlAst[];
+  templateAst: TemplateAst[];
+  source: string;
+}

@@ -53,20 +53,20 @@ export function getExpressionCompletions(
   // (that is the scope of the implicit receiver) is the right scope as the user is typing the
   // beginning of an expression.
   tail.visit({
-    visitBinary(ast) {},
-    visitChain(ast) {},
-    visitConditional(ast) {},
-    visitFunctionCall(ast) {},
-    visitImplicitReceiver(ast) {},
-    visitInterpolation(ast) {
+    visitBinary(_ast) {},
+    visitChain(_ast) {},
+    visitConditional(_ast) {},
+    visitFunctionCall(_ast) {},
+    visitImplicitReceiver(_ast) {},
+    visitInterpolation(_ast) {
       result = undefined;
     },
-    visitKeyedRead(ast) {},
-    visitKeyedWrite(ast) {},
-    visitLiteralArray(ast) {},
-    visitLiteralMap(ast) {},
-    visitLiteralPrimitive(ast) {},
-    visitMethodCall(ast) {},
+    visitKeyedRead(_ast) {},
+    visitKeyedWrite(_ast) {},
+    visitLiteralArray(_ast) {},
+    visitLiteralMap(_ast) {},
+    visitLiteralPrimitive(_ast) {},
+    visitMethodCall(_ast) {},
     visitPipe(ast) {
       if (position >= ast.exp.span.end &&
           (!ast.args || !ast.args.length || position < (<AST>ast.args[0]).span.start)) {
@@ -74,8 +74,8 @@ export function getExpressionCompletions(
         result = templateInfo.query.getPipes();
       }
     },
-    visitPrefixNot(ast) {},
-    visitNonNullAssert(ast) {},
+    visitPrefixNot(_ast) {},
+    visitNonNullAssert(_ast) {},
     visitPropertyRead(ast) {
       const receiverType = getType(ast.receiver);
       result = receiverType ? receiverType.members() : scope;
@@ -84,7 +84,7 @@ export function getExpressionCompletions(
       const receiverType = getType(ast.receiver);
       result = receiverType ? receiverType.members() : scope;
     },
-    visitQuote(ast) {
+    visitQuote(_ast) {
       // For a quote, return the members of any (if there are any).
       result = templateInfo.query.getBuiltinType(BuiltinType.Any).members();
     },
@@ -127,17 +127,17 @@ export function getExpressionSymbol(
   // (that is the scope of the implicit receiver) is the right scope as the user is typing the
   // beginning of an expression.
   tail.visit({
-    visitBinary(ast) {},
-    visitChain(ast) {},
-    visitConditional(ast) {},
-    visitFunctionCall(ast) {},
-    visitImplicitReceiver(ast) {},
-    visitInterpolation(ast) {},
-    visitKeyedRead(ast) {},
-    visitKeyedWrite(ast) {},
-    visitLiteralArray(ast) {},
-    visitLiteralMap(ast) {},
-    visitLiteralPrimitive(ast) {},
+    visitBinary(_ast) {},
+    visitChain(_ast) {},
+    visitConditional(_ast) {},
+    visitFunctionCall(_ast) {},
+    visitImplicitReceiver(_ast) {},
+    visitInterpolation(_ast) {},
+    visitKeyedRead(_ast) {},
+    visitKeyedWrite(_ast) {},
+    visitLiteralArray(_ast) {},
+    visitLiteralMap(_ast) {},
+    visitLiteralPrimitive(_ast) {},
     visitMethodCall(ast) {
       const receiverType = getType(ast.receiver);
       symbol = receiverType && receiverType.members().get(ast.name);
@@ -159,8 +159,8 @@ export function getExpressionSymbol(
         };
       }
     },
-    visitPrefixNot(ast) {},
-    visitNonNullAssert(ast) {},
+    visitPrefixNot(_ast) {},
+    visitNonNullAssert(_ast) {},
     visitPropertyRead(ast) {
       const receiverType = getType(ast.receiver);
       symbol = receiverType && receiverType.members().get(ast.name);
@@ -177,7 +177,7 @@ export function getExpressionSymbol(
       //        ^^^^^^ value; visited separately as a nested AST
       span = {start, end: start + ast.name.length};
     },
-    visitQuote(ast) {},
+    visitQuote(_ast) {},
     visitSafeMethodCall(ast) {
       const receiverType = getType(ast.receiver);
       symbol = receiverType && receiverType.members().get(ast.name);
