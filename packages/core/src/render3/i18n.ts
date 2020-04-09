@@ -376,6 +376,10 @@ export function ɵɵi18nStart(index: number, message: string, subTemplateIndex?:
 // This is reset to 0 when `i18nStartFirstPass` is called.
 let i18nVarsCount: number;
 
+function allocNodeIndex(startIndex: number): number {
+  return startIndex + i18nVarsCount++;
+}
+
 /**
  * See `i18nStart` above.
  */
@@ -412,9 +416,8 @@ function i18nStartFirstPass(
   if (message === '' && isRootTemplateMessage(subTemplateIndex)) {
     // If top level translation is an empty string, do not invoke additional processing
     // and just create op codes for empty text node instead.
-    const textNodeIndex = startIndex + i18nVarsCount++;
     createOpCodes.push(
-        message, textNodeIndex,
+        message, allocNodeIndex(startIndex),
         parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
   } else {
     const templateTranslation = getTranslationForTemplate(message, subTemplateIndex);
@@ -462,7 +465,7 @@ function i18nStartFirstPass(
             }
 
             // Create the comment node that will anchor the ICU expression
-            const icuNodeIndex = startIndex + i18nVarsCount++;
+            const icuNodeIndex = allocNodeIndex(startIndex);
             createOpCodes.push(
                 COMMENT_MARKER, ngDevMode ? `ICU ${icuNodeIndex}` : '', icuNodeIndex,
                 parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
@@ -485,7 +488,7 @@ function i18nStartFirstPass(
             // Even indexes are text (including bindings)
             const hasBinding = text.match(BINDING_REGEXP);
             // Create text nodes
-            const textNodeIndex = startIndex + i18nVarsCount++;
+            const textNodeIndex = allocNodeIndex(startIndex);
             createOpCodes.push(
                 // If there is a binding, the value will be set during update
                 hasBinding ? '' : text, textNodeIndex,
