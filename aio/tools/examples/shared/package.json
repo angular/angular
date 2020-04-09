@@ -34,6 +34,7 @@
     "@nguniversal/common": "~9.0.1",
     "@nguniversal/express-engine": "~9.0.1",
     "@nguniversal/module-map-ngfactory-loader": "~9.0.0-next.9",
+    "@webcomponents/custom-elements": "^1.4.1",
     "angular": "1.7.9",
     "angular-in-memory-web-api": "~0.9.0",
     "angular-route": "1.7.9",

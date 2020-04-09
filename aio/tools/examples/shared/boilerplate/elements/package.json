@@ -21,6 +21,7 @@
     "@angular/platform-browser": "~9.0.6",
     "@angular/platform-browser-dynamic": "~9.0.6",
     "@angular/router": "~9.0.6",
+    "@webcomponents/custom-elements": "^1.4.1",
     "angular-in-memory-web-api": "~0.9.0",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
