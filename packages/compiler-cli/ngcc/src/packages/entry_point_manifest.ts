@@ -69,10 +69,12 @@ export class EntryPointManifest {
       const startTime = Date.now();
 
       const entryPoints: EntryPointWithDependencies[] = [];
-      for (const [packagePath, entryPointPath, dependencyPaths, missingPaths, deepImportPaths] of
-               entryPointPaths) {
-        const result =
-            getEntryPointInfo(this.fs, this.config, this.logger, packagePath, entryPointPath);
+      for (const
+               [packagePath, entryPointPath, dependencyPaths = [], missingPaths = [],
+                                             deepImportPaths = []] of entryPointPaths) {
+        const result = getEntryPointInfo(
+            this.fs, this.config, this.logger, this.fs.resolve(basePath, packagePath),
+            this.fs.resolve(basePath, entryPointPath));
         if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
           throw new Error(`The entry-point manifest at ${
               manifestPath} contained an invalid pair of package paths: [${packagePath}, ${
@@ -122,14 +124,27 @@ export class EntryPointManifest {
       ngccVersion: NGCC_VERSION,
       configFileHash: this.config.hash,
       lockFileHash: lockFileHash,
-      entryPointPaths: entryPoints.map(
-          e =>
-              [e.entryPoint.package,
-               e.entryPoint.path,
-               Array.from(e.depInfo.dependencies),
-               Array.from(e.depInfo.missing),
-               Array.from(e.depInfo.deepImports),
-    ]),
+      entryPointPaths: entryPoints.map(e => {
+        const entryPointPaths: EntryPointPaths = [
+          this.fs.relative(basePath, e.entryPoint.package),
+          this.fs.relative(basePath, e.entryPoint.path),
+        ];
+        // Only add depInfo arrays if needed.
+        if (e.depInfo.dependencies.size > 0) {
+          entryPointPaths[2] = Array.from(e.depInfo.dependencies);
+        } else if (e.depInfo.missing.size > 0 || e.depInfo.deepImports.size > 0) {
+          entryPointPaths[2] = [];
+        }
+        if (e.depInfo.missing.size > 0) {
+          entryPointPaths[3] = Array.from(e.depInfo.missing);
+        } else if (e.depInfo.deepImports.size > 0) {
+          entryPointPaths[3] = [];
+        }
+        if (e.depInfo.deepImports.size > 0) {
+          entryPointPaths[4] = Array.from(e.depInfo.deepImports);
+        }
+        return entryPointPaths;
+      }),
     };
     this.fs.writeFile(this.getEntryPointManifestPath(basePath), JSON.stringify(manifest));
   }
@@ -156,14 +171,22 @@ export class EntryPointManifest {
  * current manifest file.
  *
  * It always returns `null` from the `readEntryPointsUsingManifest()` method, which forces a new
- * manifest to be created, which will overwrite the current file when `writeEntryPointManifest()` is
- * called.
+ * manifest to be created, which will overwrite the current file when `writeEntryPointManifest()`
+ * is called.
  */
 export class InvalidatingEntryPointManifest extends EntryPointManifest {
   readEntryPointsUsingManifest(_basePath: AbsoluteFsPath): EntryPointWithDependencies[]|null {
     return null;
   }
 }
+
+export type EntryPointPaths = [
+  string,
+  string,
+  Array<AbsoluteFsPath>?,
+  Array<AbsoluteFsPath|PathSegment>?,
+  Array<AbsoluteFsPath>?,
+];
 
 /**
  * The JSON format of the manifest file that is written to disk.
@@ -172,8 +195,5 @@ export interface EntryPointManifestFile {
   ngccVersion: string;
   configFileHash: string;
   lockFileHash: string;
-  entryPointPaths: Array<[
-    AbsoluteFsPath, AbsoluteFsPath, AbsoluteFsPath[], (AbsoluteFsPath | PathSegment)[],
-    AbsoluteFsPath[]
-  ]>;
+  entryPointPaths: EntryPointPaths[];
 }
