@@ -268,10 +268,10 @@ export class Validators {
    * Validator that requires the length of the control's value to be greater than or equal
    * to the provided minimum length. This validator is also provided by default if you use the
    * the HTML5 `minlength` attribute. Note that the `minLength` validator is intended to be used
-   * only for types that have a numeric `length` property, such as strings or arrays. The `minLength`
-   * validator logic is also not invoked for values when their `length` property is 0 (for example in
-   * case of an empty string or an empty array), to support optional controls. You can use
-   * the standard `required` validator if empty values should not be considered valid.
+   * only for types that have a numeric `length` property, such as strings or arrays. The
+   * `minLength` validator logic is also not invoked for values when their `length` property is 0
+   * (for example in case of an empty string or an empty array), to support optional controls. You
+   * can use the standard `required` validator if empty values should not be considered valid.
    *
    * @usageNotes
    *
