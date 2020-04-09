@@ -57,8 +57,14 @@ export function getClassMembersFromDeclaration(
   return new TypeWrapper(type, {node: source, program, checker}).members();
 }
 
-export function getClassFromStaticSymbol(
-    program: ts.Program, type: StaticSymbol): ts.ClassDeclaration|undefined {
+export function getPipesTable(
+    source: ts.SourceFile, program: ts.Program, checker: ts.TypeChecker,
+    pipes: CompilePipeSummary[]): SymbolTable {
+  return new PipesTable(pipes, {program, checker, node: source});
+}
+
+function getClassFromStaticSymbol(program: ts.Program, type: StaticSymbol): ts.ClassDeclaration|
+    undefined {
   const source = program.getSourceFile(type.filePath);
   if (source) {
     return ts.forEachChild(source, child => {
@@ -72,12 +78,6 @@ export function getClassFromStaticSymbol(
   }
 
   return undefined;
-}
-
-export function getPipesTable(
-    source: ts.SourceFile, program: ts.Program, checker: ts.TypeChecker,
-    pipes: CompilePipeSummary[]): SymbolTable {
-  return new PipesTable(pipes, {program, checker, node: source});
 }
 
 class TypeScriptSymbolQuery implements SymbolQuery {
@@ -123,7 +123,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
     return result || this.getBuiltinType(BuiltinType.Any);
   }
 
-  getArrayType(type: Symbol): Symbol {
+  getArrayType(_type: Symbol): Symbol {
     return this.getBuiltinType(BuiltinType.Any);
   }
 
@@ -222,7 +222,7 @@ function signaturesOf(type: ts.Type, context: TypeContext): Signature[] {
   return type.getCallSignatures().map(s => new SignatureWrapper(s, context));
 }
 
-function selectSignature(type: ts.Type, context: TypeContext, types: Symbol[]): Signature|
+function selectSignature(type: ts.Type, context: TypeContext, _types: Symbol[]): Signature|
     undefined {
   // TODO: Do a better job of selecting the right signature. TypeScript does not currently support a
   // Type Relationship API (see https://github.com/angular/vscode-ng-language-service/issues/143).
@@ -404,7 +404,7 @@ class SymbolWrapper implements Symbol {
     return selectSignature(this.tsType, this.context, types);
   }
 
-  indexed(argument: Symbol): Symbol|undefined {
+  indexed(_argument: Symbol): Symbol|undefined {
     return undefined;
   }
 
@@ -475,7 +475,7 @@ class DeclaredSymbol implements Symbol {
     return this.type.typeArguments();
   }
 
-  indexed(argument: Symbol): Symbol|undefined {
+  indexed(_argument: Symbol): Symbol|undefined {
     return undefined;
   }
 }
@@ -504,7 +504,7 @@ class SignatureResultOverride implements Signature {
   }
 }
 
-export function toSymbolTableFactory(symbols: ts.Symbol[]): ts.SymbolTable {
+function toSymbolTableFactory(symbols: ts.Symbol[]): ts.SymbolTable {
   // ∀ Typescript version >= 2.2, `SymbolTable` is implemented as an ES6 `Map`
   const result = new Map<string, ts.Symbol>();
   for (const symbol of symbols) {
@@ -548,8 +548,7 @@ class SymbolTableWrapper implements SymbolTable {
    * @param context program context
    * @param type original TypeScript type of entity owning the symbols, if known
    */
-  constructor(
-      symbols: ts.SymbolTable|ts.Symbol[], private context: TypeContext, private type?: ts.Type) {
+  constructor(symbols: ts.SymbolTable|ts.Symbol[], private context: TypeContext, type?: ts.Type) {
     symbols = symbols || [];
 
     if (Array.isArray(symbols)) {
@@ -727,7 +726,7 @@ class PipeSymbol implements Symbol {
     return signature;
   }
 
-  indexed(argument: Symbol): Symbol|undefined {
+  indexed(_argument: Symbol): Symbol|undefined {
     return undefined;
   }
 
@@ -786,10 +785,10 @@ function findClassSymbolInContext(type: StaticSymbol, context: TypeContext): ts.
 
 class EmptyTable implements SymbolTable {
   public readonly size: number = 0;
-  get(key: string): Symbol|undefined {
+  get(_key: string): Symbol|undefined {
     return undefined;
   }
-  has(key: string): boolean {
+  has(_key: string): boolean {
     return false;
   }
   values(): Symbol[] {

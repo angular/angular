@@ -8,7 +8,6 @@
 
 import {NgAnalyzedModules} from '@angular/compiler';
 import * as ts from 'typescript';
-import {AstResult} from './common';
 import {locateSymbols} from './locate_symbol';
 import * as ng from './types';
 import {inSpan} from './utils';
@@ -27,7 +26,8 @@ const SYMBOL_INTERFACE = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.inter
  * @param analyzedModules all NgModules in the program.
  */
 export function getTemplateHover(
-    info: AstResult, position: number, analyzedModules: NgAnalyzedModules): ts.QuickInfo|undefined {
+    info: ng.AstResult, position: number, analyzedModules: NgAnalyzedModules): ts.QuickInfo|
+    undefined {
   const symbolInfo = locateSymbols(info, position)[0];
   if (!symbolInfo) {
     return;

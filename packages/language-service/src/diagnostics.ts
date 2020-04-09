@@ -10,20 +10,17 @@ import {NgAnalyzedModules} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {AstResult} from './common';
 import {createDiagnostic, Diagnostic} from './diagnostic_messages';
 import {getTemplateExpressionDiagnostics} from './expression_diagnostics';
 import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 import {findPropertyValueOfType, findTightestNode, offsetSpan, spanOf} from './utils';
 
-
-
 /**
  * Return diagnostic information for the parsed AST of the template.
  * @param ast contains HTML and template AST
  */
-export function getTemplateDiagnostics(ast: AstResult): ng.Diagnostic[] {
+export function getTemplateDiagnostics(ast: ng.AstResult): ng.Diagnostic[] {
   const {parseErrors, templateAst, htmlAst, template} = ast;
   if (parseErrors && parseErrors.length) {
     return parseErrors.map(e => {

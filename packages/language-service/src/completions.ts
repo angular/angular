@@ -10,13 +10,12 @@ import {AbsoluteSourceSpan, AST, AstPath, AttrAst, Attribute, BoundDirectiveProp
 import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
 import {ATTR, getBindingDescriptor} from './binding_utils';
-import {AstResult} from './common';
-import {diagnosticInfoFromTemplateInfo, getExpressionScope} from './expression_diagnostics';
+import {getExpressionScope} from './expression_diagnostics';
 import {getExpressionCompletions} from './expressions';
 import {attributeNames, elementNames, eventNames, propertyNames} from './html_info';
 import {InlineTemplate} from './template';
 import * as ng from './types';
-import {findTemplateAstAt, getPathToNodeAtPosition, getSelectors, inSpan, isStructuralDirective, spanOf} from './utils';
+import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, getPathToNodeAtPosition, getSelectors, inSpan, isStructuralDirective, spanOf} from './utils';
 
 const HIDDEN_HTML_ELEMENTS: ReadonlySet<string> =
     new Set(['html', 'script', 'noscript', 'base', 'body', 'title', 'head', 'link']);
@@ -56,7 +55,7 @@ function isIdentifierPart(code: number) {
  * `position`, nothing is returned.
  */
 function getBoundedWordSpan(
-    templateInfo: AstResult, position: number, ast: HtmlAst|undefined): ts.TextSpan|undefined {
+    templateInfo: ng.AstResult, position: number, ast: HtmlAst|undefined): ts.TextSpan|undefined {
   const {template} = templateInfo;
   const templateSrc = template.source;
 
@@ -127,7 +126,7 @@ function getBoundedWordSpan(
 }
 
 export function getTemplateCompletions(
-    templateInfo: AstResult, position: number): ng.CompletionEntry[] {
+    templateInfo: ng.AstResult, position: number): ng.CompletionEntry[] {
   let result: ng.CompletionEntry[] = [];
   const {htmlAst, template} = templateInfo;
   // The templateNode starts at the delimiter character so we add 1 to skip it.
@@ -204,7 +203,7 @@ export function getTemplateCompletions(
   });
 }
 
-function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ng.CompletionEntry[] {
+function attributeCompletions(info: ng.AstResult, path: AstPath<HtmlAst>): ng.CompletionEntry[] {
   const attr = path.tail;
   const elem = path.parentOf(attr);
   if (!(attr instanceof Attribute) || !(elem instanceof Element)) {
@@ -258,7 +257,7 @@ function attributeCompletions(info: AstResult, path: AstPath<HtmlAst>): ng.Compl
 }
 
 function attributeCompletionsForElement(
-    info: AstResult, elementName: string): ng.CompletionEntry[] {
+    info: ng.AstResult, elementName: string): ng.CompletionEntry[] {
   const results: ng.CompletionEntry[] = [];
 
   if (info.template instanceof InlineTemplate) {
@@ -292,7 +291,8 @@ function attributeCompletionsForElement(
  * @param info Object that contains the template AST
  * @param htmlPath Path to the HTML node
  */
-function attributeValueCompletions(info: AstResult, htmlPath: HtmlAstPath): ng.CompletionEntry[] {
+function attributeValueCompletions(
+    info: ng.AstResult, htmlPath: HtmlAstPath): ng.CompletionEntry[] {
   // Find the corresponding Template AST path.
   const templatePath = findTemplateAstAt(info.templateAst, htmlPath.position);
   const visitor = new ExpressionVisitor(info, htmlPath.position, () => {
@@ -334,7 +334,7 @@ function attributeValueCompletions(info: AstResult, htmlPath: HtmlAstPath): ng.C
   return visitor.results;
 }
 
-function elementCompletions(info: AstResult): ng.CompletionEntry[] {
+function elementCompletions(info: ng.AstResult): ng.CompletionEntry[] {
   const results: ng.CompletionEntry[] = [...ANGULAR_ELEMENTS];
 
   if (info.template instanceof InlineTemplate) {
@@ -380,7 +380,7 @@ function entityCompletions(value: string, position: number): ng.CompletionEntry[
   return result;
 }
 
-function interpolationCompletions(info: AstResult, position: number): ng.CompletionEntry[] {
+function interpolationCompletions(info: ng.AstResult, position: number): ng.CompletionEntry[] {
   // Look for an interpolation in at the position.
   const templatePath = findTemplateAstAt(info.templateAst, position);
   if (!templatePath.tail) {
@@ -399,7 +399,7 @@ function interpolationCompletions(info: AstResult, position: number): ng.Complet
 // code checks for this case and returns element completions if it is detected or undefined
 // if it is not.
 function voidElementAttributeCompletions(
-    info: AstResult, path: AstPath<HtmlAst>): ng.CompletionEntry[] {
+    info: ng.AstResult, path: AstPath<HtmlAst>): ng.CompletionEntry[] {
   const tail = path.tail;
   if (tail instanceof Text) {
     const match = tail.value.match(/<(\w(\w|\d|-)*:)?(\w(\w|\d|-)*)\s/);
@@ -417,7 +417,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
   private readonly completions = new Map<string, ng.CompletionEntry>();
 
   constructor(
-      private readonly info: AstResult, private readonly position: number,
+      private readonly info: ng.AstResult, private readonly position: number,
       private readonly getExpressionScope: () => ng.SymbolTable) {
     super();
   }
@@ -619,7 +619,7 @@ interface AngularAttributes {
  * @param info
  * @param elementName
  */
-function angularAttributes(info: AstResult, elementName: string): AngularAttributes {
+function angularAttributes(info: ng.AstResult, elementName: string): AngularAttributes {
   const {selectors, map: selectorMap} = getSelectors(info);
   const templateRefs = new Set<string>();
   const inputs = new Set<string>();

@@ -8,11 +8,10 @@
 
 import * as path from 'path';
 import * as ts from 'typescript';  // used as value and is provided at runtime
-import {AstResult} from './common';
+
 import {locateSymbols} from './locate_symbol';
-import {getPropertyAssignmentFromValue, isClassDecoratorProperty} from './template';
-import {Span} from './types';
-import {findTightestNode} from './utils';
+import {AstResult, Span} from './types';
+import {findTightestNode, getPropertyAssignmentFromValue, isClassDecoratorProperty} from './utils';
 
 /**
  * Convert Angular Span to TypeScript TextSpan. Angular Span has 'start' and
