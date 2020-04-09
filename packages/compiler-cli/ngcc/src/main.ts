@@ -44,7 +44,6 @@ import {NgccConfiguration} from './packages/configuration';
 import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, getEntryPointFormat, SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {EntryPointManifest, InvalidatingEntryPointManifest} from './packages/entry_point_manifest';
-import {Transformer} from './packages/transformer';
 import {PathMappings} from './utils';
 import {cleanOutdatedPackages} from './writing/cleaning/package_cleaner';
 import {FileWriter} from './writing/file_writer';
@@ -315,6 +314,7 @@ export function mainNgcc({
   const createCompileFn: CreateCompileFn = onTaskCompleted => {
     const fileWriter = getFileWriter(
         fileSystem, logger, pkgJsonUpdater, createNewEntryPointFormats, errorOnFailedEntryPoint);
+    const {Transformer} = require('./packages/transformer');
     const transformer = new Transformer(fileSystem, logger, tsConfig);
 
     return (task: Task) => {
