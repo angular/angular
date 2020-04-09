@@ -30,7 +30,7 @@ const BOILERPLATE_PATHS = {
 // This maps the CLI files that exists in a parent folder
 const cliRelativePath = BOILERPLATE_PATHS.cli.map(file => `../cli/${file}`);
 
-BOILERPLATE_PATHS.elements = [...cliRelativePath, 'package.json'];
+BOILERPLATE_PATHS.elements = [...cliRelativePath, 'package.json', 'src/polyfills.ts'];
 
 BOILERPLATE_PATHS.i18n = [...cliRelativePath, 'angular.json', 'package.json'];
 
@@ -79,7 +79,7 @@ class ExampleBoilerPlate {
     if (!fs.existsSync(SHARED_NODE_MODULES_PATH)) {
       throw new Error(
           `The shared node_modules folder for the examples (${SHARED_NODE_MODULES_PATH}) is missing.\n` +
-          `Perhaps you need to run "yarn example-use-npm" or "yarn example-use-local" to install the dependencies?`);
+          'Perhaps you need to run "yarn example-use-npm" or "yarn example-use-local" to install the dependencies?');
     }
 
     if (!viewengine) {
