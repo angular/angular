@@ -25,11 +25,7 @@
             "vendorChunk": false,
             "aot": true,
             "assets": ["src/favicon.ico", "src/assets"],
-            "styles": [
-              "src/styles.scss",
-              "node_modules/todomvc-common/base.css",
-              "node_modules/todomvc-app-css/index.css"
-            ],
+            "styles": ["src/styles.scss"],
             "scripts": []
           },
           "configurations": {

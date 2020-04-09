@@ -19,9 +19,14 @@
       (dblclick)="handleSelectDomElement(node)"
       (mouseenter)="highlightNode(node.position)"
       (mouseleave)="removeHighlight()"
-      [style.padding-left]="15 * node.level + 'px'"
+      [style.padding-left]="15 + 15 * node.level + 'px'"
     >
-      <button *ngIf="node.expandable" (click)="treeControl.toggle(node)" [attr.aria-label]="'toggle ' + node.name">
+      <button
+        [style.left]="15 * node.level + 'px'"
+        *ngIf="node.expandable"
+        (click)="treeControl.toggle(node)"
+        [attr.aria-label]="'toggle ' + node.name"
+      >
         <mat-icon class="mat-icon-rtl-mirror">
           {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
         </mat-icon>

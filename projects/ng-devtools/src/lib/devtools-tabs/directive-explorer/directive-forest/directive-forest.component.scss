@@ -17,20 +17,20 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 
-    .mat-icon {
-      font-size: 12px;
-      width: 16px;
-      height: 16px;
-      display: inline-block;
-    }
-
     & > button {
       outline: none;
       border: 0;
       padding: 0;
-      position: relative;
+      position: absolute;
       background-color: transparent;
-      top: 3px;
+      top: 5px;
+    }
+
+    .mat-icon {
+      font-size: 11px;
+      width: 16px;
+      height: 13px;
+      display: inline-block;
     }
 
     &:hover {
