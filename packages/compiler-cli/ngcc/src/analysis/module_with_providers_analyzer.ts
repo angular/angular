@@ -115,7 +115,7 @@ export class ModuleWithProvidersAnalyzer {
           dtsNgModule.getText()}`);
     }
 
-    return {node: dtsNgModule, known: null, viaModule: null};
+    return {node: dtsNgModule, known: null, viaModule: null, identity: null};
   }
 }
 

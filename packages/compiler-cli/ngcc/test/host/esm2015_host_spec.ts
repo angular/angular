@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {ClassMemberKind, CtorParameter, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
+import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DownleveledEnum, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {DelegatingReflectionHost} from '../../src/host/delegating_host';
@@ -1558,6 +1558,7 @@ runInEachFileSystem(() => {
         expect(actualDeclaration).not.toBe(null);
         expect(actualDeclaration!.node).toBe(classNode);
         expect(actualDeclaration!.viaModule).toBe(null);
+        expect((actualDeclaration as ConcreteDeclaration).identity).toBe(null);
       });
 
       it('should return the declaration of an externally defined identifier', () => {
@@ -1617,6 +1618,119 @@ runInEachFileSystem(() => {
         expect(aliasedClassIdentifier.text).toBe('AliasedClass_1');
         expect(host.getDeclarationOfIdentifier(aliasedClassIdentifier)!.node)
             .toBe(classDeclaration);
+      });
+
+      it('should recognize enum declarations with string values', () => {
+        const testFile: TestFile = {
+          name: _('/node_modules/test-package/some/file.js'),
+          contents: `
+          export var Enum;
+          (function (Enum) {
+              Enum["ValueA"] = "1";
+              Enum["ValueB"] = "2";
+          })(Enum || (Enum = {}));
+
+          var value = Enum;`
+        };
+        loadTestFiles([testFile]);
+        const bundle = makeTestBundleProgram(testFile.name);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+        const valueDecl = getDeclaration(
+            bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
+            ts.isVariableDeclaration);
+        const declaration = host.getDeclarationOfIdentifier(
+                                valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
+
+        expect(declaration.node.parent.parent.getText()).toBe('export var Enum;');
+
+        const enumMembers = (declaration.identity as DownleveledEnum).enumMembers;
+        expect(enumMembers!.length).toBe(2);
+        expect(enumMembers![0].name.getText()).toBe('"ValueA"');
+        expect(enumMembers![0].initializer!.getText()).toBe('"1"');
+        expect(enumMembers![1].name.getText()).toBe('"ValueB"');
+        expect(enumMembers![1].initializer!.getText()).toBe('"2"');
+      });
+
+      it('should recognize enum declarations with numeric values', () => {
+        const testFile: TestFile = {
+          name: _('/node_modules/test-package/some/file.js'),
+          contents: `
+          export var Enum;
+          (function (Enum) {
+              Enum[Enum["ValueA"] = "1"] = "ValueA";
+              Enum[Enum["ValueB"] = "2"] = "ValueB";
+          })(Enum || (Enum = {}));
+
+          var value = Enum;`
+        };
+        loadTestFiles([testFile]);
+        const bundle = makeTestBundleProgram(testFile.name);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+        const valueDecl = getDeclaration(
+            bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
+            ts.isVariableDeclaration);
+        const declaration = host.getDeclarationOfIdentifier(
+                                valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
+
+        const enumMembers = (declaration.identity as DownleveledEnum).enumMembers;
+        expect(declaration.node.parent.parent.getText()).toBe('export var Enum;');
+        expect(enumMembers!.length).toBe(2);
+        expect(enumMembers![0].name.getText()).toBe('"ValueA"');
+        expect(enumMembers![0].initializer!.getText()).toBe('"1"');
+        expect(enumMembers![1].name.getText()).toBe('"ValueB"');
+        expect(enumMembers![1].initializer!.getText()).toBe('"2"');
+      });
+
+      it('should not consider IIFEs that do no assign members to the parameter as an enum declaration',
+         () => {
+           const testFile: TestFile = {
+             name: _('/node_modules/test-package/some/file.js'),
+             contents: `
+          export var Enum;
+          (function (E) {
+              Enum["ValueA"] = "1";
+              Enum["ValueB"] = "2";
+          })(Enum || (Enum = {}));
+
+          var value = Enum;`
+           };
+           loadTestFiles([testFile]);
+           const bundle = makeTestBundleProgram(testFile.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+           const valueDecl = getDeclaration(
+               bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
+               ts.isVariableDeclaration);
+           const declaration = host.getDeclarationOfIdentifier(
+                                   valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
+
+           expect(declaration.node.parent.parent.getText()).toBe('export var Enum;');
+           expect(declaration.identity).toBe(null);
+         });
+
+      it('should not consider IIFEs without call argument as an enum declaration', () => {
+        const testFile: TestFile = {
+          name: _('/node_modules/test-package/some/file.js'),
+          contents: `
+          export var Enum;
+          (function (Enum) {
+              Enum["ValueA"] = "1";
+              Enum["ValueB"] = "2";
+          })();
+
+          var value = Enum;`
+        };
+        loadTestFiles([testFile]);
+        const bundle = makeTestBundleProgram(testFile.name);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+        const valueDecl = getDeclaration(
+            bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
+            ts.isVariableDeclaration);
+        const declaration = host.getDeclarationOfIdentifier(
+                                valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
+
+        expect(declaration.node.parent.parent.getText()).toBe('export var Enum;');
+        expect(declaration.identity).toBe(null);
       });
     });
 

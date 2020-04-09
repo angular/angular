@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {Reference} from '../../imports';
 import {OwningModule} from '../../imports/src/references';
 import {DependencyTracker} from '../../incremental/api';
-import {Declaration, InlineDeclaration, ReflectionHost} from '../../reflection';
+import {ConcreteDeclaration, Declaration, EnumMember, InlineDeclaration, ReflectionHost, SpecialDeclarationKind} from '../../reflection';
 import {isDeclaration} from '../../util/src/typescript';
 
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn} from './builtin';
@@ -225,6 +225,10 @@ export class StaticInterpreter {
     }
     if (decl.known !== null) {
       return resolveKnownDeclaration(decl.known);
+    } else if (
+        isConcreteDeclaration(decl) && decl.identity !== null &&
+        decl.identity.kind === SpecialDeclarationKind.DownleveledEnum) {
+      return this.getResolvedEnum(decl.node, decl.identity.enumMembers, context);
     }
     const declContext = {...context, ...joinModuleContext(context, node, decl)};
     // The identifier's declaration is either concrete (a ts.Declaration exists for it) or inline
@@ -279,7 +283,7 @@ export class StaticInterpreter {
   }
 
   private visitEnumDeclaration(node: ts.EnumDeclaration, context: Context): ResolvedValue {
-    const enumRef = this.getReference(node, context) as Reference<ts.EnumDeclaration>;
+    const enumRef = this.getReference(node, context);
     const map = new Map<string, EnumValue>();
     node.members.forEach(member => {
       const name = this.stringNameFromPropertyName(member.name, context);
@@ -572,7 +576,21 @@ export class StaticInterpreter {
     }
   }
 
-  private getReference(node: ts.Declaration, context: Context): Reference {
+  private getResolvedEnum(node: ts.Declaration, enumMembers: EnumMember[], context: Context):
+      ResolvedValue {
+    const enumRef = this.getReference(node, context);
+    const map = new Map<string, EnumValue>();
+    enumMembers.forEach(member => {
+      const name = this.stringNameFromPropertyName(member.name, context);
+      if (name !== undefined) {
+        const resolved = this.visit(member.initializer, context);
+        map.set(name, new EnumValue(enumRef, name, resolved));
+      }
+    });
+    return map;
+  }
+
+  private getReference<T extends ts.Declaration>(node: T, context: Context): Reference<T> {
     return new Reference(node, owningModule(context));
   }
 }
@@ -637,4 +655,12 @@ function owningModule(context: Context, override: OwningModule|null = null): Own
   } else {
     return null;
   }
+}
+
+/**
+ * Helper type guard to workaround a narrowing limitation in g3, where testing for
+ * `decl.node !== null` would not narrow `decl` to be of type `ConcreteDeclaration`.
+ */
+function isConcreteDeclaration(decl: Declaration): decl is ConcreteDeclaration {
+  return decl.node !== null;
 }

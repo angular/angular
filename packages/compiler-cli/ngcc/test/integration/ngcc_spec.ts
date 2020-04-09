@@ -317,6 +317,46 @@ runInEachFileSystem(() => {
       expect(jsContents).toContain('imports: [ɵngcc1.MyOtherModule]');
     });
 
+    it('should be able to resolve enum values', () => {
+      compileIntoApf('test-package', {
+        '/index.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          export enum StringEnum {
+            ValueA = "a",
+            ValueB = "b",
+          }
+
+          export enum NumericEnum {
+            Value3 = 3,
+            Value4,
+          }
+
+          @Component({
+            template: \`\${StringEnum.ValueA} - \${StringEnum.ValueB} - \${NumericEnum.Value3} - \${NumericEnum.Value4}\`,
+          })
+          export class FooCmp {}
+
+          @NgModule({
+            declarations: [FooCmp],
+          })
+          export class FooModule {}
+        `,
+      });
+
+      mainNgcc({
+        basePath: '/node_modules',
+        targetEntryPointPath: 'test-package',
+        propertiesToConsider: ['esm2015', 'esm5'],
+      });
+
+      const es2015Contents = fs.readFile(_(`/node_modules/test-package/esm2015/src/index.js`));
+      expect(es2015Contents).toContain('ɵngcc0.ɵɵtext(0, "a - b - 3 - 4")');
+
+      const es5Contents = fs.readFile(_(`/node_modules/test-package/esm5/src/index.js`));
+      expect(es5Contents).toContain('ɵngcc0.ɵɵtext(0, "a - b - 3 - 4")');
+    });
+
     it('should add ɵfac but not duplicate ɵprov properties on injectables', () => {
       compileIntoFlatEs5Package('test-package', {
         '/index.ts': `
