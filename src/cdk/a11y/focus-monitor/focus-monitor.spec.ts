@@ -4,6 +4,8 @@ import {
   dispatchKeyboardEvent,
   dispatchMouseEvent,
   patchElementFocus,
+  createMouseEvent,
+  dispatchEvent,
 } from '@angular/cdk/testing/private';
 import {Component, NgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
@@ -116,6 +118,26 @@ describe('FocusMonitor', () => {
     expect(buttonElement.classList.contains('cdk-program-focused'))
         .toBe(true, 'button should have cdk-program-focused class');
     expect(changeHandler).toHaveBeenCalledWith('program');
+  }));
+
+  it('should detect fake mousedown from a screen reader', fakeAsync(() => {
+    // Simulate focus via a fake mousedown from a screen reader.
+    dispatchMouseEvent(buttonElement, 'mousedown');
+    const event = createMouseEvent('mousedown');
+    Object.defineProperty(event, 'buttons', {get: () => 0});
+    dispatchEvent(buttonElement, event);
+
+    buttonElement.focus();
+    fixture.detectChanges();
+    flush();
+
+    expect(buttonElement.classList.length)
+        .toBe(2, 'button should have exactly 2 focus classes');
+    expect(buttonElement.classList.contains('cdk-focused'))
+        .toBe(true, 'button should have cdk-focused class');
+    expect(buttonElement.classList.contains('cdk-keyboard-focused'))
+        .toBe(true, 'button should have cdk-keyboard-focused class');
+    expect(changeHandler).toHaveBeenCalledWith('keyboard');
   }));
 
   it('focusVia keyboard should simulate keyboard focus', fakeAsync(() => {

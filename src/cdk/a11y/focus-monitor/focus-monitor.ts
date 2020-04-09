@@ -22,6 +22,7 @@ import {
 import {Observable, of as observableOf, Subject, Subscription} from 'rxjs';
 import {coerceElement} from '@angular/cdk/coercion';
 import {DOCUMENT} from '@angular/common';
+import {isFakeMousedownFromScreenReader} from '../fake-mousedown';
 
 
 // This is the value used by AngularJS Material. Through trial and error (on iPhone 6S) they found
@@ -129,11 +130,14 @@ export class FocusMonitor implements OnDestroy {
    * Event listener for `mousedown` events on the document.
    * Needs to be an arrow function in order to preserve the context when it gets bound.
    */
-  private _documentMousedownListener = () => {
+  private _documentMousedownListener = (event: MouseEvent) => {
     // On mousedown record the origin only if there is not touch
     // target, since a mousedown can happen as a result of a touch event.
     if (!this._lastTouchTarget) {
-      this._setOriginForCurrentEventQueue('mouse');
+      // In some cases screen readers fire fake `mousedown` events instead of `keydown`.
+      // Resolve the focus source to `keyboard` if we detect one of them.
+      const source = isFakeMousedownFromScreenReader(event) ? 'keyboard' : 'mouse';
+      this._setOriginForCurrentEventQueue(source);
     }
   }
 
