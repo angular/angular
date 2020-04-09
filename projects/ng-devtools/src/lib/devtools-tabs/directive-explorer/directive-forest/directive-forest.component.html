@@ -33,7 +33,7 @@
       </button>
       <span class="element-name" [class.angular-element]="isElement(node)">{{ node.name }}</span>
       <span *ngIf="node.directives" class="dir-names">[{{ node.directives }}]</span>
-      <span class="console-reference" *ngIf="isSelected(node)"> - $ng0 </span>
+      <span class="console-reference" *ngIf="isSelected(node)"> == $ng0 </span>
     </div>
   </ng-container>
 </cdk-virtual-scroll-viewport>
