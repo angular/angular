@@ -13,7 +13,7 @@ import {convertInjectableProviderToFactory} from '../di/util';
 import {Type} from '../interface/type';
 import {SchemaMetadata} from '../metadata/schema';
 import {compileNgModule as render3CompileNgModule} from '../render3/jit/module';
-import {TypeDecorator, makeDecorator} from '../util/decorators';
+import {makeDecorator, TypeDecorator} from '../util/decorators';
 
 
 /**
@@ -107,7 +107,7 @@ export interface NgModuleDecorator {
    * Decorator that marks a class as an NgModule and supplies configuration metadata.
    */
   (obj?: NgModule): TypeDecorator;
-  new (obj?: NgModule): NgModule;
+  new(obj?: NgModule): NgModule;
 }
 
 /**
@@ -345,7 +345,9 @@ export const NgModule: NgModuleDecorator = makeDecorator(
  *
  * @publicApi
  */
-export interface DoBootstrap { ngDoBootstrap(appRef: ApplicationRef): void; }
+export interface DoBootstrap {
+  ngDoBootstrap(appRef: ApplicationRef): void;
+}
 
 function preR3NgModuleCompile(moduleType: Type<any>, metadata?: NgModule): void {
   let imports = (metadata && metadata.imports) || [];

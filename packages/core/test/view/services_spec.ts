@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DebugContext, NodeFlags, QueryValueType, Services, asElementData, asTextData, directiveDef, elementDef, textDef} from '@angular/core/src/view/index';
+import {asElementData, asTextData, DebugContext, directiveDef, elementDef, NodeFlags, QueryValueType, Services, textDef} from '@angular/core/src/view/index';
 
 import {compViewDef, createAndGetRootNodes} from './helper';
 
 {
   describe('View Services', () => {
-
     describe('DebugContext', () => {
       class AComp {}
 

@@ -10,9 +10,12 @@ import {TestBed} from '@angular/core/testing/src/test_bed';
 import {AsyncTestCompleter, ddescribe, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 
 describe('TestBed with async processing', () => {
-
-  beforeEach(() => { TestBed.resetTestingModule(); });
+  beforeEach(() => {
+    TestBed.resetTestingModule();
+  });
 
   it('should allow injecting AsyncTestCompleter',
-     inject([AsyncTestCompleter], (async: AsyncTestCompleter) => { async.done(); }));
+     inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+       async.done();
+     }));
 });

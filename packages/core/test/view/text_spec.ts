@@ -8,13 +8,12 @@
 
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {getDebugNode} from '@angular/core';
-import {NodeFlags, Services, asTextData, elementDef, textDef} from '@angular/core/src/view/index';
+import {asTextData, elementDef, NodeFlags, Services, textDef} from '@angular/core/src/view/index';
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, compViewDef, createAndGetRootNodes} from './helper';
 
 {
   describe(`View Text`, () => {
-
     describe('create', () => {
       it('should create text nodes without parents', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([textDef(0, null, ['a'])])).rootNodes;
@@ -44,7 +43,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, compViewDef, createAndGetRoot
         const someContext = {};
         const {view, rootNodes} =
             createAndGetRootNodes(compViewDef([textDef(0, null, ['a'])]), someContext);
-        expect(getDebugNode(rootNodes[0]) !.nativeNode).toBe(asTextData(view, 0).renderText);
+        expect(getDebugNode(rootNodes[0])!.nativeNode).toBe(asTextData(view, 0).renderText);
       });
     });
 
@@ -55,7 +54,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, compViewDef, createAndGetRoot
               [
                 textDef(0, null, ['0', '1', '2']),
               ],
-              null !, (check, view) => {
+              null!, (check, view) => {
                 checkNodeInlineOrDynamic(check, view, 0, inlineDynamic, ['a', 'b']);
               }));
 
@@ -63,9 +62,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, compViewDef, createAndGetRoot
 
           expect(rootNodes[0].textContent).toBe('0a1b2');
         });
-
       });
     });
-
   });
 }

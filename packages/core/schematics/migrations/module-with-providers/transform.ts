@@ -35,7 +35,7 @@ export class ModuleWithProvidersTransform {
   /** Migrates a given NgModule by walking through the referenced providers and static methods. */
   migrateModule(module: ResolvedNgModule): AnalysisFailure[] {
     return module.staticMethodsWithoutType.map(this._migrateStaticNgModuleMethod.bind(this))
-        .filter(v => v) as AnalysisFailure[];
+               .filter(v => v) as AnalysisFailure[];
   }
 
   /** Migrates a ModuleWithProviders type definition that has no explicit generic type */
@@ -98,8 +98,10 @@ export class ModuleWithProvidersTransform {
     return ngModule && (value.size === 1 || (providers && value.size === 2));
   }
 
-  /** Determine the generic type of a suspected ModuleWithProviders return type and add it
-   * explicitly */
+  /**
+   * Determine the generic type of a suspected ModuleWithProviders return type and add it
+   * explicitly
+   */
   private _migrateStaticNgModuleMethod(node: ts.MethodDeclaration): AnalysisFailure|null {
     const returnStatement = node.body &&
         node.body.statements.find(n => ts.isReturnStatement(n)) as ts.ReturnStatement | undefined;
@@ -131,7 +133,7 @@ export class ModuleWithProvidersTransform {
    */
   private _getTypeOfResolvedValue(value: ResolvedValue): string|undefined {
     if (value instanceof Map && this.isModuleWithProvidersType(value)) {
-      const mapValue = value.get('ngModule') !;
+      const mapValue = value.get('ngModule')!;
       if (mapValue instanceof Reference && ts.isClassDeclaration(mapValue.node) &&
           mapValue.node.name) {
         return mapValue.node.name.text;

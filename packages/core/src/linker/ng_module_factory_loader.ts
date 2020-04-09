@@ -43,6 +43,8 @@ export function getModuleFactory__POST_R3__(id: string): NgModuleFactory<any> {
  */
 export const getModuleFactory: (id: string) => NgModuleFactory<any> = getModuleFactory__PRE_R3__;
 
-function noModuleError(id: string, ): Error {
+function noModuleError(
+    id: string,
+    ): Error {
   return new Error(`No module with ID ${id} loaded`);
 }

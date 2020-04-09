@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 import {getCallDecoratorImport} from './typescript/decorators';
 
-export type CallExpressionDecorator = ts.Decorator & {
+export type CallExpressionDecorator = ts.Decorator&{
   expression: ts.CallExpression;
 };
 
@@ -30,8 +30,8 @@ export function getAngularDecorators(
       .filter(({importData}) => importData && importData.importModule.startsWith('@angular/'))
       .map(({node, importData}) => ({
              node: node as CallExpressionDecorator,
-             name: importData !.name,
-             moduleName: importData !.importModule,
-             importNode: importData !.node
+             name: importData!.name,
+             moduleName: importData!.importModule,
+             importNode: importData!.node
            }));
 }

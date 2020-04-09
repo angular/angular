@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import {getPropertyNameText} from '../../utils/typescript/property_name';
 import {NgQueryDefinition, QueryTiming} from './angular/query-definition';
 
-export type TransformedQueryResult = null | {
+export type TransformedQueryResult = null|{
   /** Transformed call expression. */
   node: ts.CallExpression;
   /** Failure message which is set when the query could not be transformed successfully. */
@@ -25,7 +25,7 @@ const TODO_CHECK_COMMENT = 'TODO: check static flag';
  * determined timing. The updated decorator call expression node will be returned.
  */
 export function getTransformedQueryCallExpr(
-    query: NgQueryDefinition, timing: QueryTiming | null,
+    query: NgQueryDefinition, timing: QueryTiming|null,
     createTodo: boolean): TransformedQueryResult {
   const queryExpr = query.decorator.node.expression;
   const queryArguments = queryExpr.arguments;
@@ -81,7 +81,7 @@ export function getTransformedQueryCallExpr(
       failureMessage,
       node: ts.updateCall(
           queryExpr, queryExpr.expression, queryExpr.typeArguments,
-          [queryArguments[0], newOptionsNode !])
+          [queryArguments[0], newOptionsNode!])
     };
   }
 
@@ -94,8 +94,7 @@ export function getTransformedQueryCallExpr(
   return {
     failureMessage: null,
     node: ts.updateCall(
-        queryExpr, queryExpr.expression, queryExpr.typeArguments,
-        [queryArguments[0], optionsNode])
+        queryExpr, queryExpr.expression, queryExpr.typeArguments, [queryArguments[0], optionsNode])
   };
 }
 

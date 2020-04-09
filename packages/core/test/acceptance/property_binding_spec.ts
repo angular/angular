@@ -91,7 +91,6 @@ describe('property bindings', () => {
   it('should not map properties whose names do not correspond to their attribute names, ' +
          'if they correspond to inputs',
      () => {
-
        @Component({template: '', selector: 'my-comp'})
        class MyComp {
           @Input() for !:string;
@@ -393,7 +392,6 @@ describe('property bindings', () => {
   });
 
   describe('attributes and input properties', () => {
-
     @Directive({selector: '[myDir]', exportAs: 'myDir'})
     class MyDir {
       @Input() role: string|undefined;
@@ -596,7 +594,6 @@ describe('property bindings', () => {
       expect(comp2.children[0].getAttribute('role')).toBe('button');
       expect(comp2.textContent).toBe('role: button');
     });
-
   });
 
   it('should not throw on synthetic property bindings when a directive on the same element injects ViewContainerRef',
@@ -626,5 +623,4 @@ describe('property bindings', () => {
          fixture.detectChanges();
        }).not.toThrow();
      });
-
 });

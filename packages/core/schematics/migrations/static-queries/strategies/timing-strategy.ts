@@ -16,5 +16,6 @@ export interface TimingStrategy {
 }
 
 export type TimingResult = {
-  timing: QueryTiming | null; message?: string;
+  timing: QueryTiming|null;
+  message?: string;
 };

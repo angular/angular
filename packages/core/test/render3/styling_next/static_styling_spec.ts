@@ -14,10 +14,10 @@ import {computeStaticStyling} from '@angular/core/src/render3/styling/static_sty
 
 describe('static styling', () => {
   const mockFirstCreatePassLView: LView = [null, {firstCreatePass: true}] as any;
-  let tNode !: TNode;
+  let tNode!: TNode;
   beforeEach(() => {
     enterView(mockFirstCreatePassLView, null);
-    tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
+    tNode = createTNode(null!, null!, TNodeType.Element, 0, '', null);
   });
   it('should initialize when no attrs', () => {
     computeStaticStyling(tNode, []);

@@ -1,16 +1,16 @@
 /**
-* @license
-* Copyright Google Inc. All Rights Reserved.
-*
-* Use of this source code is governed by an MIT-style license that can be
-* found in the LICENSE file at https://angular.io/license
-*/
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 import {KeyValueArray, keyValueArrayIndexOf} from '../../util/array_utils';
 import {assertDataInRange, assertEqual, assertNotEqual} from '../../util/assert';
 import {assertFirstUpdatePass} from '../assert';
 import {TNode} from '../interfaces/node';
-import {TStylingKey, TStylingKeyPrimitive, TStylingRange, getTStylingRangeNext, getTStylingRangePrev, setTStylingRangeNext, setTStylingRangeNextDuplicate, setTStylingRangePrev, setTStylingRangePrevDuplicate, toTStylingRange} from '../interfaces/styling';
+import {getTStylingRangeNext, getTStylingRangePrev, setTStylingRangeNext, setTStylingRangeNextDuplicate, setTStylingRangePrev, setTStylingRangePrevDuplicate, toTStylingRange, TStylingKey, TStylingKeyPrimitive, TStylingRange} from '../interfaces/styling';
 import {TData} from '../interfaces/view';
 import {getTView} from '../state';
 
@@ -249,9 +249,10 @@ export function insertTStylingBinding(
     // We are inserting in template section.
     // We need to set this binding's "previous" to the current template tail
     tData[index + 1] = toTStylingRange(tmplTail, 0);
-    ngDevMode && assertEqual(
-                     tmplHead !== 0 && tmplTail === 0, false,
-                     'Adding template bindings after hostBindings is not allowed.');
+    ngDevMode &&
+        assertEqual(
+            tmplHead !== 0 && tmplTail === 0, false,
+            'Adding template bindings after hostBindings is not allowed.');
     if (tmplHead === 0) {
       tmplHead = index;
     } else {
@@ -409,13 +410,14 @@ function isStylingMatch(tStylingKeyCursor: TStylingKey, tStylingKey: TStylingKey
   ngDevMode &&
       assertNotEqual(
           Array.isArray(tStylingKey), true, 'Expected that \'tStylingKey\' has been unwrapped');
-  if (tStylingKeyCursor === null ||  // If the cursor is `null` it means that we have map at that
+  if (
+      tStylingKeyCursor === null ||  // If the cursor is `null` it means that we have map at that
                                      // location so we must assume that we have a match.
       tStylingKey == null ||  // If `tStylingKey` is `null` then it is a map therefor assume that it
                               // contains a match.
       (Array.isArray(tStylingKeyCursor) ? tStylingKeyCursor[1] : tStylingKeyCursor) ===
           tStylingKey  // If the keys match explicitly than we are a match.
-      ) {
+  ) {
     return true;
   } else if (Array.isArray(tStylingKeyCursor) && typeof tStylingKey === 'string') {
     // if we did not find a match, but `tStylingKeyCursor` is `KeyValueArray` that means cursor has

@@ -57,8 +57,7 @@ export class InjectionToken<T> {
   readonly ɵprov: never|undefined;
 
   constructor(protected _desc: string, options?: {
-    providedIn?: Type<any>| 'root' | 'platform' | 'any' | null,
-    factory: () => T
+    providedIn?: Type<any>|'root'|'platform'|'any'|null, factory: () => T
   }) {
     this.ɵprov = undefined;
     if (typeof options == 'number') {
@@ -75,7 +74,11 @@ export class InjectionToken<T> {
     }
   }
 
-  toString(): string { return `InjectionToken ${this._desc}`; }
+  toString(): string {
+    return `InjectionToken ${this._desc}`;
+  }
 }
 
-export interface InjectableDefToken<T> extends InjectionToken<T> { ɵprov: never; }
+export interface InjectableDefToken<T> extends InjectionToken<T> {
+  ɵprov: never;
+}

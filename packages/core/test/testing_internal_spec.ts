@@ -10,23 +10,34 @@ import {SpyObject} from '@angular/core/testing/src/testing_internal';
 
 class TestObj {
   prop: any;
-  constructor(prop: any) { this.prop = prop; }
-  someFunc(): number { return -1; }
-  someComplexFunc(a: any) { return a; }
+  constructor(prop: any) {
+    this.prop = prop;
+  }
+  someFunc(): number {
+    return -1;
+  }
+  someComplexFunc(a: any) {
+    return a;
+  }
 }
 
 {
   describe('testing', () => {
     describe('should respect custom equality tester', () => {
       beforeEach(() => {
-        const equalIfMarried =
-            (first: any, second: any) => { return first === 'kevin' && second === 'patricia'; };
+        const equalIfMarried = (first: any, second: any) => {
+          return first === 'kevin' && second === 'patricia';
+        };
         jasmine.addCustomEqualityTester(equalIfMarried);
       });
 
-      it('for positive test', () => { expect('kevin').toEqual('patricia'); });
+      it('for positive test', () => {
+        expect('kevin').toEqual('patricia');
+      });
 
-      it('for negative test', () => { expect('kevin').not.toEqual('kevin'); });
+      it('for negative test', () => {
+        expect('kevin').not.toEqual('kevin');
+      });
     });
 
     describe('equality', () => {
@@ -83,10 +94,13 @@ class TestObj {
     describe('spy objects', () => {
       let spyObj: any;
 
-      beforeEach(() => { spyObj = new SpyObject(TestObj); });
+      beforeEach(() => {
+        spyObj = new SpyObject(TestObj);
+      });
 
-      it('should return a new spy func with no calls',
-         () => { expect(spyObj.spy('someFunc')).not.toHaveBeenCalled(); });
+      it('should return a new spy func with no calls', () => {
+        expect(spyObj.spy('someFunc')).not.toHaveBeenCalled();
+      });
 
       it('should record function calls', () => {
         spyObj.spy('someFunc').and.callFake((a: any, b: any) => a + b);

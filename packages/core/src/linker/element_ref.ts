@@ -48,7 +48,9 @@ export class ElementRef<T extends any = any> {
    */
   public nativeElement: T;
 
-  constructor(nativeElement: T) { this.nativeElement = nativeElement; }
+  constructor(nativeElement: T) {
+    this.nativeElement = nativeElement;
+  }
 
   /**
    * @internal

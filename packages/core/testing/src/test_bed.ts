@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbstractType, ApplicationInitStatus, CompilerOptions, Component, Directive, InjectFlags, InjectionToken, Injector, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, StaticProvider, Type, ɵDepFlags as DepFlags, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵNodeFlags as NodeFlags, ɵclearOverrides as clearOverrides, ɵgetInjectableDef as getInjectableDef, ɵivyEnabled as ivyEnabled, ɵoverrideComponentView as overrideComponentView, ɵoverrideProvider as overrideProvider, ɵstringify as stringify, ɵɵInjectableDef} from '@angular/core';
+import {AbstractType, ApplicationInitStatus, CompilerOptions, Component, Directive, InjectFlags, InjectionToken, Injector, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, StaticProvider, Type, ɵclearOverrides as clearOverrides, ɵDepFlags as DepFlags, ɵgetInjectableDef as getInjectableDef, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵivyEnabled as ivyEnabled, ɵNodeFlags as NodeFlags, ɵoverrideComponentView as overrideComponentView, ɵoverrideProvider as overrideProvider, ɵstringify as stringify, ɵɵInjectableDef} from '@angular/core';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
-import {TestBedRender3, _getTestBedRender3} from './r3_test_bed';
+import {_getTestBedRender3, TestBedRender3} from './r3_test_bed';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBedStatic, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
 import {TestingCompiler, TestingCompilerFactory} from './test_compiler';
 
@@ -123,7 +123,9 @@ export class TestBedViewEngine implements TestBed {
   /**
    * Reset the providers for the test injector.
    */
-  static resetTestEnvironment(): void { _getTestBedViewEngine().resetTestEnvironment(); }
+  static resetTestEnvironment(): void {
+    _getTestBedViewEngine().resetTestEnvironment();
+  }
 
   static resetTestingModule(): TestBedStatic {
     _getTestBedViewEngine().resetTestingModule();
@@ -153,7 +155,9 @@ export class TestBedViewEngine implements TestBed {
    * It is necessary to call this function
    * as fetching urls is asynchronous.
    */
-  static compileComponents(): Promise<any> { return getTestBed().compileComponents(); }
+  static compileComponents(): Promise<any> {
+    return getTestBed().compileComponents();
+  }
 
   static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): TestBedStatic {
     _getTestBedViewEngine().overrideModule(ngModule, override);
@@ -178,7 +182,7 @@ export class TestBedViewEngine implements TestBed {
   }
 
   static overrideTemplate(component: Type<any>, template: string): TestBedStatic {
-    _getTestBedViewEngine().overrideComponent(component, {set: {template, templateUrl: null !}});
+    _getTestBedViewEngine().overrideComponent(component, {set: {template, templateUrl: null!}});
     return TestBedViewEngine as any as TestBedStatic;
   }
 
@@ -243,9 +247,9 @@ export class TestBedViewEngine implements TestBed {
 
   private _instantiated: boolean = false;
 
-  private _compiler: TestingCompiler = null !;
-  private _moduleRef: NgModuleRef<any> = null !;
-  private _moduleFactory: NgModuleFactory<any> = null !;
+  private _compiler: TestingCompiler = null!;
+  private _moduleRef: NgModuleRef<any> = null!;
+  private _moduleFactory: NgModuleFactory<any> = null!;
 
   private _compilerOptions: CompilerOptions[] = [];
 
@@ -267,9 +271,9 @@ export class TestBedViewEngine implements TestBed {
   private _isRoot: boolean = true;
   private _rootProviderOverrides: Provider[] = [];
 
-  platform: PlatformRef = null !;
+  platform: PlatformRef = null!;
 
-  ngModule: Type<any>|Type<any>[] = null !;
+  ngModule: Type<any>|Type<any>[] = null!;
 
   /**
    * Initialize the environment for testing with a compiler factory, a PlatformRef, and an
@@ -299,8 +303,8 @@ export class TestBedViewEngine implements TestBed {
    */
   resetTestEnvironment(): void {
     this.resetTestingModule();
-    this.platform = null !;
-    this.ngModule = null !;
+    this.platform = null!;
+    this.ngModule = null!;
     this._testEnvAotSummaries = () => [];
   }
 
@@ -308,7 +312,7 @@ export class TestBedViewEngine implements TestBed {
     clearOverrides();
     this._aotSummaries = [];
     this._templateOverrides = [];
-    this._compiler = null !;
+    this._compiler = null!;
     this._moduleOverrides = [];
     this._componentOverrides = [];
     this._directiveOverrides = [];
@@ -317,8 +321,8 @@ export class TestBedViewEngine implements TestBed {
     this._isRoot = true;
     this._rootProviderOverrides = [];
 
-    this._moduleRef = null !;
-    this._moduleFactory = null !;
+    this._moduleRef = null!;
+    this._moduleFactory = null!;
     this._compilerOptions = [];
     this._providers = [];
     this._declarations = [];
@@ -387,7 +391,9 @@ export class TestBedViewEngine implements TestBed {
         const errorCompType = this._compiler.getComponentFromError(e);
         if (errorCompType) {
           throw new Error(
-              `This test module uses the component ${stringify(errorCompType)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
+              `This test module uses the component ${
+                  stringify(
+                      errorCompType)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
               `Please call "TestBed.compileComponents" before your test.`);
         } else {
           throw e;
@@ -593,8 +599,8 @@ export class TestBedViewEngine implements TestBed {
     const componentFactory = this._compiler.getComponentFactory(component);
 
     if (!componentFactory) {
-      throw new Error(
-          `Cannot create the component ${stringify(component)} as it was not imported into the testing module!`);
+      throw new Error(`Cannot create the component ${
+          stringify(component)} as it was not imported into the testing module!`);
     }
 
     // TODO: Don't cast as `InjectionToken<boolean>`, declared type is boolean[]
@@ -688,7 +694,9 @@ export function inject(tokens: any[], fn: Function): () => any {
     };
   } else {
     // Not using an arrow function to preserve context passed from call site
-    return function(this: unknown) { return testBed.execute(tokens, fn, this); };
+    return function(this: unknown) {
+      return testBed.execute(tokens, fn, this);
+    };
   }
 }
 
@@ -720,7 +728,7 @@ export class InjectSetupWrapper {
  */
 export function withModule(moduleDef: TestModuleMetadata): InjectSetupWrapper;
 export function withModule(moduleDef: TestModuleMetadata, fn: Function): () => any;
-export function withModule(moduleDef: TestModuleMetadata, fn?: Function | null): (() => any)|
+export function withModule(moduleDef: TestModuleMetadata, fn?: Function|null): (() => any)|
     InjectSetupWrapper {
   if (fn) {
     // Not using an arrow function to preserve context passed from call site

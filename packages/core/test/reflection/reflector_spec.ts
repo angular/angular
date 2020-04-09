@@ -7,13 +7,13 @@
  */
 
 import {Reflector} from '@angular/core/src/reflection/reflection';
-import {ReflectionCapabilities, isDelegateCtor} from '@angular/core/src/reflection/reflection_capabilities';
+import {isDelegateCtor, ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
 import {makeDecorator, makeParamDecorator, makePropDecorator} from '@angular/core/src/util/decorators';
 import {global} from '@angular/core/src/util/global';
 
 interface ClassDecoratorFactory {
   (data: ClassDecorator): any;
-  new (data: ClassDecorator): ClassDecorator;
+  new(data: ClassDecorator): ClassDecorator;
 }
 
 interface ClassDecorator {
@@ -46,10 +46,12 @@ class ClassWithDecorators {
   b: AType;
 
   @PropDecorator('p3')
-  set c(value: any) {}
+  set c(value: any) {
+  }
 
   @PropDecorator('p4')
-  someMethod() {}
+  someMethod() {
+  }
 
   constructor(@ParamDecorator('a') a: AType, @ParamDecorator('b') b: AType) {
     this.a = a;
@@ -64,14 +66,18 @@ class ClassWithoutDecorators {
 class TestObj {
   constructor(public a: any, public b: any) {}
 
-  identity(arg: any) { return arg; }
+  identity(arg: any) {
+    return arg;
+  }
 }
 
 {
   describe('Reflector', () => {
     let reflector: Reflector;
 
-    beforeEach(() => { reflector = new Reflector(new ReflectionCapabilities()); });
+    beforeEach(() => {
+      reflector = new Reflector(new ReflectionCapabilities());
+    });
 
     describe('factory', () => {
       it('should create a factory for the given type', () => {
@@ -131,8 +137,7 @@ class TestObj {
 
       it('should also return metadata if the class has no decorator', () => {
         class Test {
-          @PropDecorator('test')
-          prop: any;
+          @PropDecorator('test') prop: any;
         }
 
         expect(reflector.propMetadata(Test)).toEqual({'prop': [new PropDecorator('test')]});
@@ -183,7 +188,9 @@ class TestObj {
 
         class ChildNoCtor extends Parent {}
         class ChildWithCtor extends Parent {
-          constructor() { super(); }
+          constructor() {
+            super();
+          }
         }
         class ChildNoCtorPrivateProps extends Parent {
           private x = 10;
@@ -242,12 +249,10 @@ class TestObj {
         noCtor(`class $Bar1_ extends $Fo0_ {}`);
         noCtor(`class Bar extends Foo { other(){} }`);
       });
-
     });
 
     describe('inheritance with decorators', () => {
       it('should inherit annotations', () => {
-
         @ClassDecorator({value: 'parent'})
         class Parent {
         }
@@ -273,7 +278,7 @@ class TestObj {
         expect(reflector.annotations(NoDecorators)).toEqual([]);
         expect(reflector.annotations(<any>{})).toEqual([]);
         expect(reflector.annotations(<any>1)).toEqual([]);
-        expect(reflector.annotations(null !)).toEqual([]);
+        expect(reflector.annotations(null!)).toEqual([]);
       });
 
       it('should inherit parameters', () => {
@@ -303,11 +308,15 @@ class TestObj {
         // as otherwise TS won't capture the ctor arguments!
         @ClassDecorator({value: 'child'})
         class ChildWithCtor extends Parent {
-          constructor(@ParamDecorator('c') c: C) { super(null !, null !); }
+          constructor(@ParamDecorator('c') c: C) {
+            super(null!, null!);
+          }
         }
 
         class ChildWithCtorNoDecorator extends Parent {
-          constructor(a: any, b: any, c: any) { super(null !, null !); }
+          constructor(a: any, b: any, c: any) {
+            super(null!, null!);
+          }
         }
 
         class NoDecorators {}
@@ -340,7 +349,7 @@ class TestObj {
         expect(reflector.parameters(NoDecorators)).toEqual([]);
         expect(reflector.parameters(<any>{})).toEqual([]);
         expect(reflector.parameters(<any>1)).toEqual([]);
-        expect(reflector.parameters(null !)).toEqual([]);
+        expect(reflector.parameters(null!)).toEqual([]);
       });
 
       it('should inherit property metadata', () => {
@@ -350,20 +359,16 @@ class TestObj {
 
         class Parent {
           // TODO(issue/24571): remove '!'.
-          @PropDecorator('a')
-          a !: A;
+          @PropDecorator('a') a!: A;
           // TODO(issue/24571): remove '!'.
-          @PropDecorator('b1')
-          b !: B;
+          @PropDecorator('b1') b!: B;
         }
 
         class Child extends Parent {
           // TODO(issue/24571): remove '!'.
-          @PropDecorator('b2')
-          b !: B;
+          @PropDecorator('b2') b!: B;
           // TODO(issue/24571): remove '!'.
-          @PropDecorator('c')
-          c !: C;
+          @PropDecorator('c') c!: C;
         }
 
         class NoDecorators {}
@@ -383,7 +388,7 @@ class TestObj {
         expect(reflector.propMetadata(NoDecorators)).toEqual({});
         expect(reflector.propMetadata(<any>{})).toEqual({});
         expect(reflector.propMetadata(<any>1)).toEqual({});
-        expect(reflector.propMetadata(null !)).toEqual({});
+        expect(reflector.propMetadata(null!)).toEqual({});
       });
 
       it('should inherit lifecycle hooks', () => {
@@ -406,12 +411,10 @@ class TestObj {
 
         expect(hooks(Child, ['hook1', 'hook2', 'hook3'])).toEqual([true, true, true]);
       });
-
     });
 
     describe('inheritance with tsickle', () => {
       it('should inherit annotations', () => {
-
         class Parent {
           static decorators = [{type: ClassDecorator, args: [{value: 'parent'}]}];
         }
@@ -448,9 +451,12 @@ class TestObj {
         class Child extends Parent {}
 
         class ChildWithCtor extends Parent {
-          static ctorParameters =
-              () => [{type: C, decorators: [{type: ParamDecorator, args: ['c']}]}, ]
-          constructor() { super(); }
+          static ctorParameters = () =>
+              [{type: C, decorators: [{type: ParamDecorator, args: ['c']}]},
+          ]
+          constructor() {
+            super();
+          }
         }
 
         // Check that metadata for Parent was not changed!
@@ -496,12 +502,10 @@ class TestObj {
           'c': [new PropDecorator('c')]
         });
       });
-
     });
 
     describe('inheritance with es5 API', () => {
       it('should inherit annotations', () => {
-
         class Parent {
           static annotations = [new ClassDecorator({value: 'parent'})];
         }
@@ -541,7 +545,9 @@ class TestObj {
           static parameters = [
             [C, new ParamDecorator('c')],
           ];
-          constructor() { super(); }
+          constructor() {
+            super();
+          }
         }
 
         // Check that metadata for Parent was not changed!

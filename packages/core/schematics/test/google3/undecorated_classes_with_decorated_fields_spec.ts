@@ -18,7 +18,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = join(process.env['TEST_TMPDIR'] !, 'google3-test');
+    tmpDir = join(process.env['TEST_TMPDIR']!, 'google3-test');
     shx.mkdir('-p', tmpDir);
     writeFile('tsconfig.json', JSON.stringify({compilerOptions: {module: 'es2015'}}));
   });
@@ -33,7 +33,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     });
 
     program.getRootFileNames().forEach(fileName => {
-      linter.lint(fileName, program.getSourceFile(fileName) !.getFullText(), config);
+      linter.lint(fileName, program.getSourceFile(fileName)!.getFullText(), config);
     });
 
     return linter;
@@ -43,7 +43,9 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     writeFileSync(join(tmpDir, fileName), content);
   }
 
-  function getFile(fileName: string) { return readFileSync(join(tmpDir, fileName), 'utf8'); }
+  function getFile(fileName: string) {
+    return readFileSync(join(tmpDir, fileName), 'utf8');
+  }
 
   it('should flag undecorated classes with decorated fields', () => {
     writeFile('/index.ts', `
@@ -97,8 +99,9 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     expect(getFile('/index.ts')).toContain(`import { Directive, Input } from '@angular/core';`);
   });
 
-  it('should not generate conflicting imports there is a different `Directive` symbol', async() => {
-    writeFile('/index.ts', `
+  it('should not generate conflicting imports there is a different `Directive` symbol',
+     async () => {
+       writeFile('/index.ts', `
       import { HostBinding } from '@angular/core';
       
       export class Directive {
@@ -111,12 +114,12 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
       }
     `);
 
-    runTSLint(true);
-    const fileContent = getFile('/index.ts');
-    expect(fileContent)
-        .toContain(`import { HostBinding, Directive as Directive_1 } from '@angular/core';`);
-    expect(fileContent).toMatch(/@Directive_1\(\)\s+export class MyLibrarySharedBaseClass/);
-  });
+       runTSLint(true);
+       const fileContent = getFile('/index.ts');
+       expect(fileContent)
+           .toContain(`import { HostBinding, Directive as Directive_1 } from '@angular/core';`);
+       expect(fileContent).toMatch(/@Directive_1\(\)\s+export class MyLibrarySharedBaseClass/);
+     });
 
   it('should add @Directive to undecorated classes that have @Input', () => {
     writeFile('/index.ts', `
@@ -250,7 +253,7 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
-  it('should add @Directive to undecorated derived classes of a migrated class', async() => {
+  it('should add @Directive to undecorated derived classes of a migrated class', async () => {
     writeFile('/index.ts', `
       import { Input, Directive, NgModule } from '@angular/core';
 

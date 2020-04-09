@@ -24,9 +24,9 @@ export enum RendererStyleFlags3 {
   DashCase = 1 << 1
 }
 
-export type Renderer3 = ObjectOrientedRenderer3 | ProceduralRenderer3;
+export type Renderer3 = ObjectOrientedRenderer3|ProceduralRenderer3;
 
-export type GlobalTargetName = 'document' | 'window' | 'body';
+export type GlobalTargetName = 'document'|'window'|'body';
 
 export type GlobalTargetResolver = (element: any) => {
   name: GlobalTargetName, target: EventTarget
@@ -49,8 +49,8 @@ export interface ObjectOrientedRenderer3 {
 }
 
 /** Returns whether the `renderer` is a `ProceduralRenderer3` */
-export function isProceduralRenderer(renderer: ProceduralRenderer3 | ObjectOrientedRenderer3):
-    renderer is ProceduralRenderer3 {
+export function isProceduralRenderer(renderer: ProceduralRenderer3|
+                                     ObjectOrientedRenderer3): renderer is ProceduralRenderer3 {
   return !!((renderer as any).listen);
 }
 
@@ -104,8 +104,9 @@ export interface RendererFactory3 {
 }
 
 export const domRendererFactory3: RendererFactory3 = {
-  createRenderer: (hostElement: RElement | null, rendererType: RendererType2 | null):
-                      Renderer3 => { return getDocument();}
+  createRenderer: (hostElement: RElement|null, rendererType: RendererType2|null): Renderer3 => {
+    return getDocument();
+  }
 };
 
 /** Subset of API needed for appending elements and text nodes. */
@@ -175,9 +176,13 @@ export interface RDomTokenList {
   remove(token: string): void;
 }
 
-export interface RText extends RNode { textContent: string|null; }
+export interface RText extends RNode {
+  textContent: string|null;
+}
 
-export interface RComment extends RNode { textContent: string|null; }
+export interface RComment extends RNode {
+  textContent: string|null;
+}
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

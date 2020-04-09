@@ -16,7 +16,9 @@
  *
  * @publicApi
  */
-export interface SchemaMetadata { name: string; }
+export interface SchemaMetadata {
+  name: string;
+}
 
 /**
  * Defines a schema that allows an NgModule to contain the following:

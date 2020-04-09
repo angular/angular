@@ -27,9 +27,10 @@ export function ɵɵtext(index: number, value: string = ''): void {
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
 
-  ngDevMode && assertEqual(
-                   getBindingIndex(), tView.bindingStartIndex,
-                   'text nodes should be created before any bindings');
+  ngDevMode &&
+      assertEqual(
+          getBindingIndex(), tView.bindingStartIndex,
+          'text nodes should be created before any bindings');
   ngDevMode && assertDataInRange(lView, adjustedIndex);
 
   const tNode = tView.firstCreatePass ?

@@ -78,7 +78,7 @@ const rootLView = createLView(
     null, createTView(TViewType.Root, -1, null, 0, 0, null, null, null, null, null), {},
     LViewFlags.IsRoot, null, null);
 
-const viewTNode = createTNode(null !, null, TNodeType.View, -1, null, null) as TViewNode;
+const viewTNode = createTNode(null!, null, TNodeType.View, -1, null, null) as TViewNode;
 const embeddedTView = createTView(
     TViewType.Embedded, -1, testTemplate, 21, 10, [Tooltip.ɵdir], null, null, null,
     [['position', 'top', 3, 'tooltip']]);

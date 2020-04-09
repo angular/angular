@@ -11,7 +11,7 @@ import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
-import {INJECTOR, NG_TEMP_TOKEN_PATH, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE, catchInjectorError, formatError, setCurrentInjector, ɵɵinject} from './injector_compatibility';
+import {catchInjectorError, formatError, INJECTOR, NG_TEMP_TOKEN_PATH, NullInjector, setCurrentInjector, THROW_IF_NOT_FOUND, USE_VALUE, ɵɵinject} from './injector_compatibility';
 import {getInjectableDef, ɵɵdefineInjectable} from './interface/defs';
 import {InjectFlags} from './interface/injector';
 import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './interface/provider';
@@ -20,12 +20,12 @@ import {createInjector} from './r3_injector';
 import {INJECTOR_SCOPE} from './scope';
 
 export function INJECTOR_IMPL__PRE_R3__(
-    providers: StaticProvider[], parent: Injector | undefined, name: string) {
+    providers: StaticProvider[], parent: Injector|undefined, name: string) {
   return new StaticInjector(providers, parent, name);
 }
 
 export function INJECTOR_IMPL__POST_R3__(
-    providers: StaticProvider[], parent: Injector | undefined, name: string) {
+    providers: StaticProvider[], parent: Injector|undefined, name: string) {
   return createInjector({name: name}, parent, providers, name);
 }
 
@@ -166,8 +166,9 @@ export class StaticInjector implements Injector {
         const providedIn = injectableDef && injectableDef.providedIn;
         if (providedIn === 'any' || providedIn != null && providedIn === this.scope) {
           records.set(
-              token, record = resolveProvider(
-                         {provide: token, useFactory: injectableDef.factory, deps: EMPTY}));
+              token,
+              record = resolveProvider(
+                  {provide: token, useFactory: injectableDef.factory, deps: EMPTY}));
         }
       }
       if (record === undefined) {
@@ -193,7 +194,7 @@ export class StaticInjector implements Injector {
 }
 
 type SupportedProvider =
-    ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider;
+    ValueProvider|ExistingProvider|StaticClassProvider|ConstructorProvider|FactoryProvider;
 
 interface Record {
   fn: Function;
@@ -293,7 +294,7 @@ function recursivelyProcessProviders(records: Map<any, Record>, provider: Static
 }
 
 function tryResolveToken(
-    token: any, record: Record | undefined | null, records: Map<any, Record|null>, parent: Injector,
+    token: any, record: Record|undefined|null, records: Map<any, Record|null>, parent: Injector,
     notFoundValue: any, flags: InjectFlags): any {
   try {
     return resolveToken(token, record, records, parent, notFoundValue, flags);
@@ -313,7 +314,7 @@ function tryResolveToken(
 }
 
 function resolveToken(
-    token: any, record: Record | undefined | null, records: Map<any, Record|null>, parent: Injector,
+    token: any, record: Record|undefined|null, records: Map<any, Record|null>, parent: Injector,
     notFoundValue: any, flags: InjectFlags): any {
   let value;
   if (record && !(flags & InjectFlags.SkipSelf)) {

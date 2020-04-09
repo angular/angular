@@ -20,9 +20,10 @@ import {LView, TVIEW, TView} from './interfaces/view';
 
 
 export function assertTNodeForLView(tNode: TNode, lView: LView) {
-  tNode.hasOwnProperty('tView_') && assertEqual(
-                                        (tNode as any as{tView_: TView}).tView_, lView[TVIEW],
-                                        'This TNode does not belong to this LView.');
+  tNode.hasOwnProperty('tView_') &&
+      assertEqual(
+          (tNode as any as {tView_: TView}).tView_, lView[TVIEW],
+          'This TNode does not belong to this LView.');
 }
 
 export function assertComponentType(
@@ -45,9 +46,9 @@ export function assertPreviousIsParent(isParent: boolean) {
   assertEqual(isParent, true, 'previousOrParentTNode should be a parent');
 }
 
-export function assertHasParent(tNode: TNode | null) {
+export function assertHasParent(tNode: TNode|null) {
   assertDefined(tNode, 'previousOrParentTNode should exist!');
-  assertDefined(tNode !.parent, 'previousOrParentTNode should have a parent');
+  assertDefined(tNode!.parent, 'previousOrParentTNode should have a parent');
 }
 
 export function assertDataNext(lView: LView, index: number, arr?: any[]) {

@@ -9,7 +9,6 @@
 import {computeLineStartsMap, getLineAndCharacterFromPosition} from '../utils/line_mappings';
 
 describe('line mappings', () => {
-
   it('should properly compute line starts',
      () => {
        expect(computeLineStartsMap(`

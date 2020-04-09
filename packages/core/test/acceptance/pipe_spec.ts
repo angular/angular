@@ -14,7 +14,9 @@ describe('pipe', () => {
   @Pipe({name: 'countingPipe'})
   class CountingPipe implements PipeTransform {
     state: number = 0;
-    transform(value: any) { return `${value} state:${this.state++}`; }
+    transform(value: any) {
+      return `${value} state:${this.state++}`;
+    }
   }
 
   @Pipe({name: 'multiArgPipe'})
@@ -57,20 +59,21 @@ describe('pipe', () => {
   it('should support bindings', () => {
     @Directive({selector: '[my-dir]'})
     class Dir {
-      @Input()
-      dirProp: string = '';
+      @Input() dirProp: string = '';
     }
 
     @Pipe({name: 'double'})
     class DoublePipe implements PipeTransform {
-      transform(value: any) { return `${value}${value}`; }
+      transform(value: any) {
+        return `${value}${value}`;
+      }
     }
 
     @Component({
       template: `<div my-dir [dirProp]="'a'|double"></div>`,
     })
     class App {
-      @ViewChild(Dir) directive !: Dir;
+      @ViewChild(Dir) directive!: Dir;
     }
 
     TestBed.configureTestingModule({declarations: [App, DoublePipe, Dir]});
@@ -113,7 +116,9 @@ describe('pipe', () => {
   it('should pick a Pipe defined in `declarations` over imported Pipes', () => {
     @Pipe({name: 'number'})
     class PipeA implements PipeTransform {
-      transform(value: any) { return `PipeA: ${value}`; }
+      transform(value: any) {
+        return `PipeA: ${value}`;
+      }
     }
 
     @NgModule({
@@ -125,7 +130,9 @@ describe('pipe', () => {
 
     @Pipe({name: 'number'})
     class PipeB implements PipeTransform {
-      transform(value: any) { return `PipeB: ${value}`; }
+      transform(value: any) {
+        return `PipeB: ${value}`;
+      }
     }
 
     @Component({
@@ -150,7 +157,9 @@ describe('pipe', () => {
      () => {
        @Pipe({name: 'number'})
        class PipeA implements PipeTransform {
-         transform(value: any) { return `PipeA: ${value}`; }
+         transform(value: any) {
+           return `PipeA: ${value}`;
+         }
        }
 
        @NgModule({
@@ -162,7 +171,9 @@ describe('pipe', () => {
 
        @Pipe({name: 'number'})
        class PipeB implements PipeTransform {
-         transform(value: any) { return `PipeB: ${value}`; }
+         transform(value: any) {
+           return `PipeB: ${value}`;
+         }
        }
 
        @NgModule({
@@ -222,12 +233,16 @@ describe('pipe', () => {
   it('should support duplicates by using the later entry', () => {
     @Pipe({name: 'duplicatePipe'})
     class DuplicatePipe1 implements PipeTransform {
-      transform(value: any) { return `${value} from duplicate 1`; }
+      transform(value: any) {
+        return `${value} from duplicate 1`;
+      }
     }
 
     @Pipe({name: 'duplicatePipe'})
     class DuplicatePipe2 implements PipeTransform {
-      transform(value: any) { return `${value} from duplicate 2`; }
+      transform(value: any) {
+        return `${value} from duplicate 2`;
+      }
     }
 
     @Component({
@@ -247,7 +262,9 @@ describe('pipe', () => {
   it('should support pipe in context of ternary operator', () => {
     @Pipe({name: 'pipe'})
     class MyPipe implements PipeTransform {
-      transform(value: any): any { return value; }
+      transform(value: any): any {
+        return value;
+      }
     }
 
     @Component({
@@ -313,8 +330,12 @@ describe('pipe', () => {
     @Pipe({name: 'countingImpurePipe', pure: false})
     class CountingImpurePipe implements PipeTransform {
       state: number = 0;
-      transform(value: any) { return `${value} state:${this.state++}`; }
-      constructor() { impurePipeInstances.push(this); }
+      transform(value: any) {
+        return `${value} state:${this.state++}`;
+      }
+      constructor() {
+        impurePipeInstances.push(this);
+      }
     }
 
     beforeEach(() => impurePipeInstances = []);
@@ -372,8 +393,12 @@ describe('pipe', () => {
 
       @Pipe({name: 'pipeWithOnDestroy'})
       class PipeWithOnDestroy implements PipeTransform, OnDestroy {
-        ngOnDestroy() { destroyCalls++; }
-        transform(value: any): any { return null; }
+        ngOnDestroy() {
+          destroyCalls++;
+        }
+        transform(value: any): any {
+          return null;
+        }
       }
 
       @Component({
@@ -401,7 +426,9 @@ describe('pipe', () => {
       @Pipe({name: 'myConcatPipe'})
       class ConcatPipe implements PipeTransform {
         constructor(public service: Service) {}
-        transform(value: string): string { return `${value} - ${this.service.title}`; }
+        transform(value: string): string {
+          return `${value} - ${this.service.title}`;
+        }
       }
 
       @Component({
@@ -428,7 +455,9 @@ describe('pipe', () => {
       @Pipe({name: 'myConcatPipe'})
       class ConcatPipe implements PipeTransform {
         constructor(@Inject(token) public service: Service) {}
-        transform(value: string): string { return `${value} - ${this.service.title}`; }
+        transform(value: string): string {
+          return `${value} - ${this.service.title}`;
+        }
       }
 
       @Component({
@@ -461,7 +490,9 @@ describe('pipe', () => {
       @Pipe({name: 'myConcatPipe'})
       class ConcatPipe implements PipeTransform {
         constructor(public service: Service) {}
-        transform(value: string): string { return `${value} - ${this.service.title}`; }
+        transform(value: string): string {
+          return `${value} - ${this.service.title}`;
+        }
       }
 
       @Component({
@@ -501,7 +532,7 @@ describe('pipe', () => {
          })
          class App {
            @Input() something: any;
-           @ViewChild(SomeComp) comp !: SomeComp;
+           @ViewChild(SomeComp) comp!: SomeComp;
            pipeValue = 10;
            displayValue = 0;
          }
@@ -512,7 +543,9 @@ describe('pipe', () => {
              pipeChangeDetectorRef = changeDetectorRef;
            }
 
-           transform() { return ''; }
+           transform() {
+             return '';
+           }
          }
 
          TestBed.configureTestingModule({declarations: [App, SomeComp, TestPipe]});
@@ -521,7 +554,7 @@ describe('pipe', () => {
 
          fixture.componentInstance.displayValue = 1;
          fixture.componentInstance.comp.displayValue = 1;
-         pipeChangeDetectorRef !.markForCheck();
+         pipeChangeDetectorRef!.markForCheck();
          fixture.detectChanges();
 
          expect(fixture.nativeElement.textContent).toContain('Outer value: "1"');
@@ -553,7 +586,7 @@ describe('pipe', () => {
          })
          class App {
            @Input() something: any;
-           @ViewChild(SomeComp) comp !: SomeComp;
+           @ViewChild(SomeComp) comp!: SomeComp;
            pipeValue = 10;
            displayValue = 0;
          }
@@ -564,7 +597,9 @@ describe('pipe', () => {
              pipeChangeDetectorRef = changeDetectorRef;
            }
 
-           transform() { return ''; }
+           transform() {
+             return '';
+           }
          }
 
          TestBed.configureTestingModule({declarations: [App, SomeComp, TestPipe]});
@@ -573,22 +608,21 @@ describe('pipe', () => {
 
          fixture.componentInstance.displayValue = 1;
          fixture.componentInstance.comp.displayValue = 1;
-         pipeChangeDetectorRef !.markForCheck();
+         pipeChangeDetectorRef!.markForCheck();
          fixture.detectChanges();
 
          expect(fixture.nativeElement.textContent).toContain('Outer value: "1"');
          expect(fixture.nativeElement.textContent).toContain('Inner value: "0"');
        });
-
   });
 
   describe('pure pipe error handling', () => {
-
     it('should not re-invoke pure pipes if it fails initially', () => {
-
       @Pipe({name: 'throwPipe', pure: true})
       class ThrowPipe implements PipeTransform {
-        transform(): never { throw new Error('ThrowPipeError'); }
+        transform(): never {
+          throw new Error('ThrowPipeError');
+        }
       }
       @Component({template: `{{val | throwPipe}}`})
       class App {
@@ -607,7 +641,6 @@ describe('pipe', () => {
 
 
     it('should display the last known result from a pure pipe when it throws', () => {
-
       @Pipe({name: 'throwPipe', pure: true})
       class ThrowPipe implements PipeTransform {
         transform(value: string): string {
@@ -647,7 +680,8 @@ describe('pipe', () => {
     describe('pure pipe error handling with multiple arguments', () => {
       const args: string[] = new Array(10).fill(':0');
       for (let numberOfPipeArgs = 0; numberOfPipeArgs < args.length; numberOfPipeArgs++) {
-        it(`should not invoke ${numberOfPipeArgs} argument pure pipe second time if it throws unless input changes`,
+        it(`should not invoke ${
+               numberOfPipeArgs} argument pure pipe second time if it throws unless input changes`,
            () => {
              // https://stackblitz.com/edit/angular-mbx2pg
              const log: string[] = [];
@@ -685,8 +719,5 @@ describe('pipe', () => {
            });
       }
     });
-
   });
-
-
 });

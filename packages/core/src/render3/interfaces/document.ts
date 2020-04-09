@@ -31,7 +31,7 @@ let DOCUMENT: Document|undefined = undefined;
  *
  * @param document The object representing the global `document` in this environment.
  */
-export function setDocument(document: Document | undefined): void {
+export function setDocument(document: Document|undefined): void {
   DOCUMENT = document;
 }
 
@@ -52,5 +52,5 @@ export function getDocument(): Document {
   // this should not happen in Angular apps.
   // Once we support running ivy outside of Angular we will need to publish `setDocument()` as a
   // public API. Meanwhile we just return `undefined` and let the application fail.
-  return undefined !;
+  return undefined!;
 }

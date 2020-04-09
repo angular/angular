@@ -14,7 +14,6 @@ import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('projection', () => {
-
   function getElementHtml(element: HTMLElement) {
     return element.innerHTML.replace(/<!--(\W|\w)*?-->/g, '')
         .replace(/\sng-reflect-\S*="[^"]*"/g, '');
@@ -328,11 +327,13 @@ describe('projection', () => {
 
        @Directive({selector: '[trigger]'})
        class Trigger {
-         @Input() trigger !: Comp;
+         @Input() trigger!: Comp;
 
          constructor(public vcr: ViewContainerRef) {}
 
-         open() { this.vcr.createEmbeddedView(this.trigger.template); }
+         open() {
+           this.vcr.createEmbeddedView(this.trigger.template);
+         }
        }
 
        @Component({
@@ -861,7 +862,6 @@ describe('projection', () => {
 
       expect(getElementHtml(fixture.nativeElement))
           .toEqual('<child><span title="Some title">Has title</span></child>');
-
     });
 
     it('should match selectors against projected containers', () => {
@@ -934,7 +934,9 @@ describe('projection', () => {
   it('should project content if the change detector has been detached', () => {
     @Component({selector: 'my-comp', template: '<ng-content></ng-content>'})
     class MyComp {
-      constructor(changeDetectorRef: ChangeDetectorRef) { changeDetectorRef.detach(); }
+      constructor(changeDetectorRef: ChangeDetectorRef) {
+        changeDetectorRef.detach();
+      }
     }
 
     @Component({
@@ -1108,7 +1110,9 @@ describe('projection', () => {
 
       @Directive({selector: 'div'})
       class DivDirective {
-        constructor() { divDirectives++; }
+        constructor() {
+          divDirectives++;
+        }
       }
 
       @Component({
@@ -1135,7 +1139,9 @@ describe('projection', () => {
 
       @Directive({selector: '[x]'})
       class XDirective {
-        constructor() { xDirectives++; }
+        constructor() {
+          xDirectives++;
+        }
       }
 
       @Component({
@@ -1162,7 +1168,9 @@ describe('projection', () => {
 
       @Directive({selector: '.x'})
       class XDirective {
-        constructor() { xDirectives++; }
+        constructor() {
+          xDirectives++;
+        }
       }
 
       @Component({
@@ -1199,7 +1207,9 @@ describe('projection', () => {
           {id: 2, name: 'two'},
           {id: 3, name: 'three'},
         ];
-        getItemId(item: {id: number}) { return item.id; }
+        getItemId(item: {id: number}) {
+          return item.id;
+        }
       }
 
       TestBed.configureTestingModule({declarations: [SelectedNgContentComp, SelectorMainComp]});
@@ -1265,7 +1275,9 @@ describe('projection', () => {
 
         @Directive({selector: '[x]'})
         class XDirective {
-          constructor() { xDirectives++; }
+          constructor() {
+            xDirectives++;
+          }
         }
 
         @Component({
@@ -1293,7 +1305,9 @@ describe('projection', () => {
 
         @Directive({selector: '.x'})
         class XDirective {
-          constructor() { xDirectives++; }
+          constructor() {
+            xDirectives++;
+          }
         }
 
         @Component({

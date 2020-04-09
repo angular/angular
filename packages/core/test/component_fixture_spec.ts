@@ -7,7 +7,7 @@
  */
 
 import {Component, Injectable, Input} from '@angular/core';
-import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, async, withModule} from '@angular/core/testing';
+import {async, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, withModule} from '@angular/core/testing';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -15,7 +15,9 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 @Injectable()
 class SimpleComp {
   simpleBinding: string;
-  constructor() { this.simpleBinding = 'Simple'; }
+  constructor() {
+    this.simpleBinding = 'Simple';
+  }
 }
 
 @Component({
@@ -31,7 +33,9 @@ class MyIfComp {
 class AutoDetectComp {
   text: string = '1';
 
-  click() { this.text += '1'; }
+  click() {
+    this.text += '1';
+  }
 }
 
 @Component({selector: 'async-comp', template: `<span (click)='click()'>{{text}}</span>`})
@@ -39,7 +43,9 @@ class AsyncComp {
   text: string = '1';
 
   click() {
-    Promise.resolve(null).then((_) => { this.text += '1'; });
+    Promise.resolve(null).then((_) => {
+      this.text += '1';
+    });
   }
 }
 
@@ -49,7 +55,9 @@ class AsyncChildComp {
 
   @Input()
   set text(value: string) {
-    Promise.resolve(null).then((_) => { this.localText = value; });
+    Promise.resolve(null).then((_) => {
+      this.localText = value;
+    });
   }
 }
 
@@ -60,7 +68,9 @@ class AsyncChildComp {
 class AsyncChangeComp {
   text: string = '1';
 
-  click() { this.text += '1'; }
+  click() {
+    this.text += '1';
+  }
 }
 
 @Component({selector: 'async-timeout-comp', template: `<span (click)='click()'>{{text}}</span>`})
@@ -68,7 +78,9 @@ class AsyncTimeoutComp {
   text: string = '1';
 
   click() {
-    setTimeout(() => { this.text += '1'; }, 10);
+    setTimeout(() => {
+      this.text += '1';
+    }, 10);
   }
 }
 
@@ -78,7 +90,11 @@ class NestedAsyncTimeoutComp {
   text: string = '1';
 
   click() {
-    setTimeout(() => { setTimeout(() => { this.text += '1'; }, 10); }, 10);
+    setTimeout(() => {
+      setTimeout(() => {
+        this.text += '1';
+      }, 10);
+    }, 10);
   }
 }
 
@@ -94,7 +110,6 @@ class NestedAsyncTimeoutComp {
     }));
 
     it('should auto detect changes if autoDetectChanges is called', () => {
-
       const componentFixture = TestBed.createComponent(AutoDetectComp);
       expect(componentFixture.ngZone).not.toBeNull();
       componentFixture.autoDetectChanges();
@@ -109,7 +124,6 @@ class NestedAsyncTimeoutComp {
 
     it('should auto detect changes if ComponentFixtureAutoDetect is provided as true',
        withModule({providers: [{provide: ComponentFixtureAutoDetect, useValue: true}]}, () => {
-
          const componentFixture = TestBed.createComponent(AutoDetectComp);
          expect(componentFixture.nativeElement).toHaveText('1');
 
@@ -181,7 +195,6 @@ class NestedAsyncTimeoutComp {
     it('should wait for macroTask(setTimeout) while checking for whenStable ' +
            '(no autoDetectChanges)',
        async(() => {
-
          const componentFixture = TestBed.createComponent(AsyncTimeoutComp);
          componentFixture.detectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
@@ -203,7 +216,6 @@ class NestedAsyncTimeoutComp {
     it('should wait for nested macroTasks(setTimeout) while checking for whenStable ' +
            '(autoDetectChanges)',
        async(() => {
-
          const componentFixture = TestBed.createComponent(NestedAsyncTimeoutComp);
 
          componentFixture.autoDetectChanges();
@@ -225,7 +237,6 @@ class NestedAsyncTimeoutComp {
     it('should wait for nested macroTasks(setTimeout) while checking for whenStable ' +
            '(no autoDetectChanges)',
        async(() => {
-
          const componentFixture = TestBed.createComponent(NestedAsyncTimeoutComp);
          componentFixture.detectChanges();
          expect(componentFixture.nativeElement).toHaveText('1');
@@ -245,7 +256,6 @@ class NestedAsyncTimeoutComp {
        }));
 
     it('should stabilize after async task in change detection (autoDetectChanges)', async(() => {
-
          const componentFixture = TestBed.createComponent(AsyncChangeComp);
 
          componentFixture.autoDetectChanges();
@@ -255,13 +265,13 @@ class NestedAsyncTimeoutComp {
            const element = componentFixture.debugElement.children[0];
            dispatchEvent(element.nativeElement, 'click');
 
-           componentFixture.whenStable().then(
-               (_) => { expect(componentFixture.nativeElement).toHaveText('11'); });
+           componentFixture.whenStable().then((_) => {
+             expect(componentFixture.nativeElement).toHaveText('11');
+           });
          });
        }));
 
     it('should stabilize after async task in change detection(no autoDetectChanges)', async(() => {
-
          const componentFixture = TestBed.createComponent(AsyncChangeComp);
          componentFixture.detectChanges();
          componentFixture.whenStable().then((_) => {
@@ -290,7 +300,6 @@ class NestedAsyncTimeoutComp {
       });
 
       it('calling autoDetectChanges raises an error', () => {
-
         const componentFixture = TestBed.createComponent(SimpleComp);
         expect(() => {
           componentFixture.autoDetectChanges();
@@ -298,7 +307,6 @@ class NestedAsyncTimeoutComp {
       });
 
       it('should instantiate a component with valid DOM', async(() => {
-
            const componentFixture = TestBed.createComponent(SimpleComp);
 
            expect(componentFixture.ngZone).toBeNull();
@@ -307,7 +315,6 @@ class NestedAsyncTimeoutComp {
          }));
 
       it('should allow changing members of the component', async(() => {
-
            const componentFixture = TestBed.createComponent(MyIfComp);
 
            componentFixture.detectChanges();
@@ -316,9 +323,7 @@ class NestedAsyncTimeoutComp {
            componentFixture.componentInstance.showMore = true;
            componentFixture.detectChanges();
            expect(componentFixture.nativeElement).toHaveText('MyIf(More)');
-
          }));
     });
-
   });
 }

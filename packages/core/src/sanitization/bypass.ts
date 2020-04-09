@@ -70,24 +70,34 @@ abstract class SafeValueImpl implements SafeValue {
 }
 
 class SafeHtmlImpl extends SafeValueImpl implements SafeHtml {
-  getTypeName() { return BypassType.Html; }
+  getTypeName() {
+    return BypassType.Html;
+  }
 }
 class SafeStyleImpl extends SafeValueImpl implements SafeStyle {
-  getTypeName() { return BypassType.Style; }
+  getTypeName() {
+    return BypassType.Style;
+  }
 }
 class SafeScriptImpl extends SafeValueImpl implements SafeScript {
-  getTypeName() { return BypassType.Script; }
+  getTypeName() {
+    return BypassType.Script;
+  }
 }
 class SafeUrlImpl extends SafeValueImpl implements SafeUrl {
-  getTypeName() { return BypassType.Url; }
+  getTypeName() {
+    return BypassType.Url;
+  }
 }
 class SafeResourceUrlImpl extends SafeValueImpl implements SafeResourceUrl {
-  getTypeName() { return BypassType.ResourceUrl; }
+  getTypeName() {
+    return BypassType.ResourceUrl;
+  }
 }
 
 export function unwrapSafeValue(value: SafeValue): string;
 export function unwrapSafeValue<T>(value: T): T;
-export function unwrapSafeValue<T>(value: T | SafeValue): T {
+export function unwrapSafeValue<T>(value: T|SafeValue): T {
   return value instanceof SafeValueImpl ? value.changingThisBreaksApplicationSecurity as any as T :
                                           value as any as T;
 }

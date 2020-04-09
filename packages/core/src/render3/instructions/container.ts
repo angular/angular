@@ -13,11 +13,12 @@ import {ACTIVE_INDEX, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/c
 import {ComponentTemplate} from '../interfaces/definition';
 import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType, TViewNode} from '../interfaces/node';
 import {isDirectiveHost} from '../interfaces/type_checks';
-import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, TView, TViewType, T_HOST} from '../interfaces/view';
+import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, RENDERER, T_HOST, TView, TViewType} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild, removeView} from '../node_manipulation';
 import {getBindingIndex, getCheckNoChangesMode, getIsParent, getLView, getPreviousOrParentTNode, getTView, setIsNotParent, setPreviousOrParentTNode} from '../state';
 import {getConstant, getLContainerActiveIndex, load} from '../util/view_utils';
+
 import {addToViewTree, createDirectivesInstances, createLContainer, createTNode, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
 
@@ -45,9 +46,9 @@ export function ɵɵcontainer(index: number): void {
 }
 
 function templateFirstCreatePass(
-    index: number, tView: TView, lView: LView, templateFn: ComponentTemplate<any>| null,
-    decls: number, vars: number, tagName?: string | null, attrsIndex?: number | null,
-    localRefsIndex?: number | null): TContainerNode {
+    index: number, tView: TView, lView: LView, templateFn: ComponentTemplate<any>|null,
+    decls: number, vars: number, tagName?: string|null, attrsIndex?: number|null,
+    localRefsIndex?: number|null): TContainerNode {
   ngDevMode && assertFirstCreatePass(tView);
   ngDevMode && ngDevMode.firstCreatePass++;
   const tViewConsts = tView.consts;
@@ -94,8 +95,8 @@ function templateFirstCreatePass(
  * @codeGenApi
  */
 export function ɵɵtemplate(
-    index: number, templateFn: ComponentTemplate<any>| null, decls: number, vars: number,
-    tagName?: string | null, attrsIndex?: number | null, localRefsIndex?: number | null,
+    index: number, templateFn: ComponentTemplate<any>|null, decls: number, vars: number,
+    tagName?: string|null, attrsIndex?: number|null, localRefsIndex?: number|null,
     localRefExtractor?: LocalRefExtractor) {
   const lView = getLView();
   const tView = getTView();
@@ -172,7 +173,7 @@ export function ɵɵcontainerRefreshEnd(): void {
   } else {
     ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.View);
     ngDevMode && assertHasParent(previousOrParentTNode);
-    previousOrParentTNode = previousOrParentTNode.parent !;
+    previousOrParentTNode = previousOrParentTNode.parent!;
     setPreviousOrParentTNode(previousOrParentTNode, false);
   }
 
@@ -188,11 +189,12 @@ export function ɵɵcontainerRefreshEnd(): void {
 }
 
 function containerInternal(
-    tView: TView, lView: LView, nodeIndex: number, tagName: string | null,
-    attrs: TAttributes | null): TContainerNode {
-  ngDevMode && assertEqual(
-                   getBindingIndex(), tView.bindingStartIndex,
-                   'container nodes should be created before any bindings');
+    tView: TView, lView: LView, nodeIndex: number, tagName: string|null,
+    attrs: TAttributes|null): TContainerNode {
+  ngDevMode &&
+      assertEqual(
+          getBindingIndex(), tView.bindingStartIndex,
+          'container nodes should be created before any bindings');
 
   const adjustedIndex = nodeIndex + HEADER_OFFSET;
   ngDevMode && assertDataInRange(lView, nodeIndex + HEADER_OFFSET);

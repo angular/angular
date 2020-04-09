@@ -17,8 +17,7 @@ class DirectiveA {
 
 @Directive({selector: '[directiveB]'})
 class DirectiveB {
-  @HostBinding('title')
-  title = 'DirectiveB Title';
+  @HostBinding('title') title = 'DirectiveB Title';
 }
 
 @Component({selector: 'component-a', template: 'ComponentA Template'})
@@ -34,8 +33,7 @@ class ComponentWithNoAnnotation extends ComponentA {}
 
 @Directive({selector: '[directiveExtendsComponent]'})
 class DirectiveExtendsComponent extends ComponentA {
-  @HostBinding('title')
-  title = 'DirectiveExtendsComponent Title';
+  @HostBinding('title') title = 'DirectiveExtendsComponent Title';
 }
 
 class DirectiveWithNoAnnotation extends DirectiveB {}

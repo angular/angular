@@ -21,7 +21,9 @@ import {_sanitizeUrl, sanitizeSrcset} from '../../src/sanitization/url_sanitizer
       console.warn = (msg: any) => logMsgs.push(msg);
     });
 
-    afterEach(() => { console.warn = originalLog; });
+    afterEach(() => {
+      console.warn = originalLog;
+    });
 
     t.it('reports unsafe URLs', () => {
       t.expect(_sanitizeUrl('javascript:evil()')).toBe('unsafe:javascript:evil()');
@@ -113,6 +115,5 @@ import {_sanitizeUrl, sanitizeSrcset} from '../../src/sanitization/url_sanitizer
         t.it(`valid ${srcset}`, () => t.expect(sanitizeSrcset(srcset)).toMatch(/unsafe:/));
       }
     });
-
   });
 }

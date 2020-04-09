@@ -11,11 +11,11 @@ import {dirname, resolve} from 'path';
 import * as ts from 'typescript';
 
 import {ImportManager} from '../../../utils/import_manager';
-import {Import, getImportOfIdentifier} from '../../../utils/typescript/imports';
+import {getImportOfIdentifier, Import} from '../../../utils/typescript/imports';
 import {getValueSymbolOfDeclaration} from '../../../utils/typescript/symbol';
 
 import {getPosixPath} from './path_format';
-import {ResolvedExport, getExportSymbolsOfFile} from './source_file_exports';
+import {getExportSymbolsOfFile, ResolvedExport} from './source_file_exports';
 
 
 /**
@@ -116,7 +116,7 @@ export class ImportRewriteTransformerFactory {
    */
   private _getSourceFileExports(sourceFile: ts.SourceFile): ResolvedExport[] {
     if (this.sourceFileExports.has(sourceFile)) {
-      return this.sourceFileExports.get(sourceFile) !;
+      return this.sourceFileExports.get(sourceFile)!;
     }
 
     const sourceFileExports = getExportSymbolsOfFile(sourceFile, this.typeChecker);

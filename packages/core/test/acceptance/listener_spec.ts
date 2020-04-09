@@ -16,36 +16,40 @@ function getNoOfNativeListeners(): number {
 }
 
 describe('event listeners', () => {
-
   describe('coalescing', () => {
-
     @Component({
       selector: 'with-clicks-cmpt',
       template: `<button likes-clicks (click)="count()" md-button>Click me!</button>`
     })
     class WithClicksCmpt {
       counter = 0;
-      count() { this.counter++; }
+      count() {
+        this.counter++;
+      }
     }
 
     @Directive({selector: '[md-button]'})
     class MdButton {
       counter = 0;
       @HostListener('click')
-      count() { this.counter++; }
+      count() {
+        this.counter++;
+      }
     }
 
     @Directive({selector: '[likes-clicks]'})
     class LikesClicks {
       counter = 0;
       @HostListener('click')
-      count() { this.counter++; }
+      count() {
+        this.counter++;
+      }
     }
 
     @Directive({selector: '[returns-false]'})
     class ReturnsFalse {
       counter = 0;
-      event !: Event;
+      event!: Event;
       handlerShouldReturn: boolean|undefined = undefined;
 
       @HostListener('click', ['$event'])
@@ -65,7 +69,6 @@ describe('event listeners', () => {
     onlyInIvy('ngDevMode.rendererAddEventListener counters are only available in ivy')
         .it('should coalesce multiple event listeners for the same event on the same element',
             () => {
-
               @Component({
                 selector: 'test-cmpt',
                 template:
@@ -107,7 +110,6 @@ describe('event listeners', () => {
 
     onlyInIvy('ngDevMode.rendererAddEventListener counters are only available in ivy')
         .it('should coalesce multiple event listeners in presence of queries', () => {
-
           @Component({
             selector: 'test-cmpt',
             template: `<button likes-clicks (click)="counter = counter+1">Click me!</button>`
@@ -115,7 +117,7 @@ describe('event listeners', () => {
           class TestCmpt {
             counter = 0;
 
-            @ViewChildren('nothing') nothing !: QueryList<any>;
+            @ViewChildren('nothing') nothing!: QueryList<any>;
           }
 
           TestBed.configureTestingModule({declarations: [TestCmpt, LikesClicks]});
@@ -136,11 +138,12 @@ describe('event listeners', () => {
 
 
     it('should try to execute remaining coalesced listeners if one of the listeners throws', () => {
-
       @Directive({selector: '[throws-on-clicks]'})
       class ThrowsOnClicks {
         @HostListener('click')
-        dontCount() { throw new Error('I was clicked and I don\'t like it!'); }
+        dontCount() {
+          throw new Error('I was clicked and I don\'t like it!');
+        }
       }
 
       @Component(
@@ -151,7 +154,9 @@ describe('event listeners', () => {
       let noOfErrors = 0;
 
       class CountingErrorHandler extends ErrorHandler {
-        handleError(error: any): void { noOfErrors++; }
+        handleError(error: any): void {
+          noOfErrors++;
+        }
       }
 
       TestBed.configureTestingModule({
@@ -209,7 +214,9 @@ describe('event listeners', () => {
         @Input('foo') model: any;
         @Output('fooChange') update = new EventEmitter();
 
-        updateValue(value: any) { this.update.emit(value); }
+        updateValue(value: any) {
+          this.update.emit(value);
+        }
       }
 
       @Component({
@@ -222,9 +229,13 @@ describe('event listeners', () => {
 
         @ViewChild(FooDirective) fooDirective: FooDirective|null = null;
 
-        fooChange() { this.count++; }
+        fooChange() {
+          this.count++;
+        }
 
-        triggerUpdate(value: any) { this.fooDirective !.updateValue(value); }
+        triggerUpdate(value: any) {
+          this.fooDirective!.updateValue(value);
+        }
       }
 
       TestBed.configureTestingModule({declarations: [TestComponent, FooDirective]});
@@ -247,19 +258,25 @@ describe('event listeners', () => {
       })
       class MyComp {
         counter = 0;
-        count() { log.push('component.click'); }
+        count() {
+          log.push('component.click');
+        }
       }
 
       @Directive({selector: '[dirA]'})
       class DirA {
         @HostListener('click')
-        count() { log.push('dirA.click'); }
+        count() {
+          log.push('dirA.click');
+        }
       }
 
       @Directive({selector: '[dirB]'})
       class DirB {
         @HostListener('click')
-        count() { log.push('dirB.click'); }
+        count() {
+          log.push('dirB.click');
+        }
       }
 
       TestBed.configureTestingModule({declarations: [MyComp, DirA, DirB]});

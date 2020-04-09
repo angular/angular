@@ -31,9 +31,9 @@ function getFactoryOf<T>(type: Type<any>): ((type?: Type<T>) => T)|null {
 
   if (isForwardRef(type)) {
     return (() => {
-      const factory = getFactoryOf<T>(resolveForwardRef(typeAny));
-      return factory ? factory() : null;
-    }) as any;
+             const factory = getFactoryOf<T>(resolveForwardRef(typeAny));
+             return factory ? factory() : null;
+           }) as any;
   }
 
   const def = getInjectableDef<T>(typeAny) || getInjectorDef<T>(typeAny);

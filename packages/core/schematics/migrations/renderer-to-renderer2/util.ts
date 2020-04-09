@@ -88,8 +88,7 @@ export function findImportSpecifier(
 
 /** Checks whether a node is referring to an import spcifier. */
 function isReferenceToImport(
-    typeChecker: ts.TypeChecker, node: ts.Node,
-    importSpecifier: ts.ImportSpecifier | null): boolean {
+    typeChecker: ts.TypeChecker, node: ts.Node, importSpecifier: ts.ImportSpecifier|null): boolean {
   if (importSpecifier) {
     const nodeSymbol = typeChecker.getTypeAtLocation(node).getSymbol();
     const importSymbol = typeChecker.getTypeAtLocation(importSpecifier).getSymbol();
@@ -102,7 +101,7 @@ function isReferenceToImport(
 /** Finds the identifier referring to the `Renderer` inside a `forwardRef` call expression. */
 function findRendererIdentifierInForwardRef(
     typeChecker: ts.TypeChecker, node: ts.CallExpression,
-    rendererImport: ts.ImportSpecifier | null): ts.Identifier|null {
+    rendererImport: ts.ImportSpecifier|null): ts.Identifier|null {
   const firstArg = node.arguments[0];
 
   if (ts.isArrowFunction(firstArg)) {

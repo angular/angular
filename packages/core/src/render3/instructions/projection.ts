@@ -79,9 +79,9 @@ export function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void {
     // If no explicit projection slots are defined, fall back to a single
     // projection slot with the wildcard selector.
     const numProjectionSlots = projectionSlots ? projectionSlots.length : 1;
-    const projectionHeads: (TNode | null)[] = componentNode.projection =
-        newArray(numProjectionSlots, null !as TNode);
-    const tails: (TNode | null)[] = projectionHeads.slice();
+    const projectionHeads: (TNode|null)[] = componentNode.projection =
+        newArray(numProjectionSlots, null! as TNode);
+    const tails: (TNode|null)[] = projectionHeads.slice();
 
     let componentChild: TNode|null = componentNode.child;
 
@@ -91,7 +91,7 @@ export function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void {
 
       if (slotIndex !== null) {
         if (tails[slotIndex]) {
-          tails[slotIndex] !.projectionNext = componentChild;
+          tails[slotIndex]!.projectionNext = componentChild;
         } else {
           projectionHeads[slotIndex] = componentChild;
         }
@@ -119,7 +119,7 @@ export function setDelayProjection(value: boolean) {
  *        - 1 based index of the selector from the {@link projectionDef}
  *
  * @codeGenApi
-*/
+ */
 export function ɵɵprojection(
     nodeIndex: number, selectorIndex: number = 0, attrs?: TAttributes): void {
   const lView = getLView();

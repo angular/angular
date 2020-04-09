@@ -8,7 +8,7 @@
 
 import {newArray} from '../util/array_utils';
 
-import {BindingDef, BindingFlags, NodeDef, NodeFlags, PureExpressionData, ViewData, asPureExpressionData} from './types';
+import {asPureExpressionData, BindingDef, BindingFlags, NodeDef, NodeFlags, PureExpressionData, ViewData} from './types';
 import {calcBindingFlags, checkAndUpdateBinding} from './util';
 
 export function purePipeDef(checkIndex: number, argCount: number): NodeDef {
@@ -64,7 +64,8 @@ function _pureExpressionDef(
     matchedQueryIds: 0,
     references: {},
     ngContentIndex: -1,
-    childCount: 0, bindings,
+    childCount: 0,
+    bindings,
     bindingFlags: calcBindingFlags(bindings),
     outputs: [],
     element: null,
@@ -115,16 +116,16 @@ export function checkAndUpdatePureExpressionInline(
         break;
       case NodeFlags.TypePureObject:
         value = {};
-        if (bindLen > 0) value[bindings[0].name !] = v0;
-        if (bindLen > 1) value[bindings[1].name !] = v1;
-        if (bindLen > 2) value[bindings[2].name !] = v2;
-        if (bindLen > 3) value[bindings[3].name !] = v3;
-        if (bindLen > 4) value[bindings[4].name !] = v4;
-        if (bindLen > 5) value[bindings[5].name !] = v5;
-        if (bindLen > 6) value[bindings[6].name !] = v6;
-        if (bindLen > 7) value[bindings[7].name !] = v7;
-        if (bindLen > 8) value[bindings[8].name !] = v8;
-        if (bindLen > 9) value[bindings[9].name !] = v9;
+        if (bindLen > 0) value[bindings[0].name!] = v0;
+        if (bindLen > 1) value[bindings[1].name!] = v1;
+        if (bindLen > 2) value[bindings[2].name!] = v2;
+        if (bindLen > 3) value[bindings[3].name!] = v3;
+        if (bindLen > 4) value[bindings[4].name!] = v4;
+        if (bindLen > 5) value[bindings[5].name!] = v5;
+        if (bindLen > 6) value[bindings[6].name!] = v6;
+        if (bindLen > 7) value[bindings[7].name!] = v7;
+        if (bindLen > 8) value[bindings[8].name!] = v8;
+        if (bindLen > 9) value[bindings[9].name!] = v9;
         break;
       case NodeFlags.TypePurePipe:
         const pipe = v0;
@@ -188,7 +189,7 @@ export function checkAndUpdatePureExpressionDynamic(
       case NodeFlags.TypePureObject:
         value = {};
         for (let i = 0; i < values.length; i++) {
-          value[bindings[i].name !] = values[i];
+          value[bindings[i].name!] = values[i];
         }
         break;
       case NodeFlags.TypePurePipe:

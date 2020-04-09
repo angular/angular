@@ -13,7 +13,7 @@ import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition';
 
 const PRIVATE_PREFIX = '__ngOnChanges_';
 
-type OnChangesExpando = OnChanges & {
+type OnChangesExpando = OnChanges&{
   __ngOnChanges_: SimpleChanges|null|undefined;
   // tslint:disable-next-line:no-any Can hold any value
   [key: string]: any;
@@ -45,7 +45,7 @@ type OnChangesExpando = OnChanges & {
 export function ɵɵNgOnChangesFeature<T>(definition: DirectiveDef<T>): void {
   if (definition.type.prototype.ngOnChanges) {
     definition.setInput = ngOnChangesSetInput;
-    (definition as{onChanges: Function}).onChanges = wrapOnChanges();
+    (definition as {onChanges: Function}).onChanges = wrapOnChanges();
   }
 }
 
@@ -61,9 +61,9 @@ function wrapOnChanges() {
     const current = simpleChangesStore && simpleChangesStore.current;
 
     if (current) {
-      const previous = simpleChangesStore !.previous;
+      const previous = simpleChangesStore!.previous;
       if (previous === EMPTY_OBJ) {
-        simpleChangesStore !.previous = current;
+        simpleChangesStore!.previous = current;
       } else {
         // New changes are copied to the previous store, so that we don't lose history for inputs
         // which were not changed this time
@@ -71,7 +71,7 @@ function wrapOnChanges() {
           previous[key] = current[key];
         }
       }
-      simpleChangesStore !.current = null;
+      simpleChangesStore!.current = null;
       this.ngOnChanges(current);
     }
   };
@@ -84,7 +84,7 @@ function ngOnChangesSetInput<T>(
   const current = simpleChangesStore.current || (simpleChangesStore.current = {});
   const previous = simpleChangesStore.previous;
 
-  const declaredName = (this.declaredInputs as{[key: string]: string})[publicName];
+  const declaredName = (this.declaredInputs as {[key: string]: string})[publicName];
   const previousChange = previous[declaredName];
   current[declaredName] = new SimpleChange(
       previousChange && previousChange.currentValue, value, previous === EMPTY_OBJ);

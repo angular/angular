@@ -30,5 +30,5 @@ export function supportsPrompt(): boolean {
  * create prompts.
  */
 export function getInquirer(): Inquirer {
-  return resolvedInquirerModule !;
+  return resolvedInquirerModule!;
 }
