@@ -11,7 +11,7 @@ import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {Reference} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
-import {Declaration, KnownDeclaration, TypeScriptReflectionHost} from '../../reflection';
+import {Declaration, KnownDeclaration, SpecialDeclarationKind, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {DynamicValue} from '../src/dynamic';
 import {PartialEvaluator} from '../src/interface';
@@ -488,8 +488,21 @@ runInEachFileSystem(() => {
       if (!(result instanceof EnumValue)) {
         return fail(`result is not an EnumValue`);
       }
-      expect(result.enumRef.node.name.text).toBe('Foo');
+      expect((result.enumRef.node as ts.EnumDeclaration).name.text).toBe('Foo');
       expect(result.name).toBe('B');
+    });
+
+    it('enum resolution works when recognized in reflection host', () => {
+      const {checker, expression} = makeExpression('var Foo;', 'Foo.ValueB');
+      const reflectionHost = new DownleveledEnumReflectionHost(checker);
+      const evaluator = new PartialEvaluator(reflectionHost, checker, null);
+      const result = evaluator.evaluate(expression);
+      if (!(result instanceof EnumValue)) {
+        return fail(`result is not an EnumValue`);
+      }
+      expect(result.enumRef.node.parent.parent.getText()).toBe('var Foo;');
+      expect(result.name).toBe('ValueB');
+      expect(result.resolved).toBe('b');
     });
 
     it('variable declaration resolution works', () => {
@@ -843,6 +856,20 @@ runInEachFileSystem(() => {
     });
   });
 
+  class DownleveledEnumReflectionHost extends TypeScriptReflectionHost {
+    getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
+      const declaration = super.getDeclarationOfIdentifier(id);
+      if (declaration !== null && declaration.node !== null) {
+        const enumMembers = [
+          {name: ts.createStringLiteral('ValueA'), initializer: ts.createStringLiteral('a')},
+          {name: ts.createStringLiteral('ValueB'), initializer: ts.createStringLiteral('b')},
+        ];
+        declaration.identity = {kind: SpecialDeclarationKind.DownleveledEnum, enumMembers};
+      }
+      return declaration;
+    }
+  }
+
   /**
    * Customizes the resolution of module exports and identifier declarations to recognize known
    * helper functions from `tslib`. Such functions are not handled specially in the default
@@ -872,6 +899,7 @@ runInEachFileSystem(() => {
           known: tsHelperFn,
           node: id,
           viaModule: null,
+          identity: null,
         };
       }
 

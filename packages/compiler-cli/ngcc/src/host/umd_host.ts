@@ -15,7 +15,8 @@ import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, getTsHelperFnFromIdentifier, stripExtension} from '../utils';
 
 import {ExportDeclaration, ExportStatement, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isReexportStatement, isRequireCall, ReexportStatement} from './commonjs_umd_utils';
-import {Esm5ReflectionHost, stripParentheses} from './esm5_host';
+import {Esm5ReflectionHost} from './esm5_host';
+import {stripParentheses} from './utils';
 
 export class UmdReflectionHost extends Esm5ReflectionHost {
   protected umdModules =
@@ -179,7 +180,10 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     const reexports: ExportDeclaration[] = [];
     importedExports.forEach((decl, name) => {
       if (decl.node !== null) {
-        reexports.push({name, declaration: {node: decl.node, known: null, viaModule}});
+        reexports.push({
+          name,
+          declaration: {node: decl.node, known: null, viaModule, identity: decl.identity}
+        });
       } else {
         reexports.push(
             {name, declaration: {node: null, known: null, expression: decl.expression, viaModule}});
@@ -211,7 +215,12 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
 
     // We need to add the `viaModule` because  the `getExportsOfModule()` call
     // did not know that we were importing the declaration.
-    return {node: importedFile, known: getTsHelperFnFromIdentifier(id), viaModule: importInfo.from};
+    return {
+      node: importedFile,
+      known: getTsHelperFnFromIdentifier(id),
+      viaModule: importInfo.from,
+      identity: null
+    };
   }
 
   private resolveModuleName(moduleName: string, containingFile: ts.SourceFile): ts.SourceFile
