@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 
 /**
- * @title Drag&Drop custom placeholer
+ * @title Drag&Drop custom placeholder
  */
 @Component({
   selector: 'cdk-drag-drop-custom-placeholder-example',
