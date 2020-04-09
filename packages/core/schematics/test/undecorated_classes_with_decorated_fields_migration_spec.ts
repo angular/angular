@@ -292,6 +292,27 @@ describe('Undecorated classes with decorated fields migration', () => {
     expect(fileContent).toMatch(/}\s+export class MyCompWrapped/);
   });
 
+  it('should not throw if undecorated class extends from unresolved declaration', async() => {
+    writeFile('/lib.d.ts', `
+      // Fakes the ES5 error default lib types. Since we are in a virtual tree,
+      // the default lib types from TypeScript are not available.
+      interface ErrorConstructor {}
+      declare var Error: ErrorConstructor;
+    `);
+    writeFile('/index.ts', `
+      export class MyCustomErrorClass extends Error {}
+    `);
+
+    let error: any = null;
+    try {
+      await runMigration();
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error).toBe(null);
+  });
+
   function writeFile(filePath: string, contents: string) {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }
