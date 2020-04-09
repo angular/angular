@@ -19,6 +19,20 @@ import {SerializationOptions, generateGoldenFile, verifyAgainstGoldenFile, disco
 /** Name of the CLI */
 const CMD = 'ts-api-guardian';
 
+/** Name of the Bazel workspace that runs the CLI. */
+const bazelWorkspaceName = process.env.BAZEL_WORKSPACE;
+/**
+ * Path to the Bazel workspace directory. Only set if the CLI is run with `bazel run`.
+ * https://docs.bazel.build/versions/master/user-manual.html#run.
+ */
+const bazelWorkspaceDirectory = process.env.BUILD_WORKSPACE_DIRECTORY;
+/**
+ * Regular expression that matches Bazel manifest paths that start with the
+ * current Bazel workspace, followed by a path delimiter.
+ */
+const bazelWorkspaceManifestPathRegex =
+    bazelWorkspaceName ? new RegExp(`^${bazelWorkspaceName}[/\\\\]`) : null;
+
 export function startCli() {
   const {argv, mode, errors} = parseArguments(process.argv.slice(2));
 
@@ -81,8 +95,8 @@ export function startCli() {
             lines.pop();  // Remove trailing newline
           }
           for (const line of lines) {
-            const chalkMap:
-                {[key: string]: any} = {'-': chalk.red, '+': chalk.green, '@': chalk.cyan};
+            const chalkMap: {[key: string]:
+                                 any} = {'-': chalk.red, '+': chalk.green, '@': chalk.cyan};
             const chalkFunc = chalkMap[line[0]] || chalk.reset;
             console.log(chalkFunc(line));
           }
@@ -95,7 +109,7 @@ export function startCli() {
         if (bazelTarget) {
           console.error('\n\nIf you modify a public API, you must accept the new golden file.');
           console.error('\n\nTo do so, execute the following Bazel target:');
-          console.error(`  yarn bazel run ${bazelTarget.replace(/_bin$/, '')}.accept`);
+          console.error(`  yarn bazel run ${bazelTarget.replace(/_bin$/, "")}.accept`);
           if (process.env['TEST_WORKSPACE'] === 'angular') {
             console.error('\n\nFor more information, see');
             console.error(
@@ -221,29 +235,20 @@ function resolveFilePath(fileName: string): string {
   if (path.isAbsolute(fileName)) {
     return fileName;
   }
-  const runfilesHelperPath = process.env['BAZEL_NODE_RUNFILES_HELPER'];
   // Outside of Bazel, file paths are resolved based on the current working directory.
-  if (!runfilesHelperPath) {
+  if (!bazelWorkspaceName) {
     return path.resolve(fileName);
   }
   // In Bazel, we first try to resolve the file through the runfiles. We do this by calling
-  // the `runfiles.resolve` function that is supplied by the Bazel NodeJS rules. Note that we
-  // need to catch errors because it could happen that manifest paths which aren't part of the
+  // the `require.resolve` function that is patched by the Bazel NodeJS rules. Note that we
+  // need to catch errors because files inside tree artifacts cannot be resolved through
+  // runfile manifests. Hence, we need to have alternative resolution logic when resolving
+  // file paths. Additionally, it could happen that manifest paths which aren't part of the
   // runfiles are specified (i.e. golden is approved but does not exist in the workspace yet).
-  const runfiles = require(runfilesHelperPath);
   try {
-    return runfiles.resolve(fileName);
+    return require.resolve(fileName);
   } catch {
   }
-  // Path to the Bazel workspace directory. Only set if the CLI is run with `bazel run`.
-  // https://docs.bazel.build/versions/master/user-manual.html#run.
-  const bazelWorkspaceDirectory = process.env.BUILD_WORKSPACE_DIRECTORY;
-  // Name of the Bazel workspace that runs the CLI.
-  const bazelWorkspaceName = runfiles.workspace;
-  // Regular expression that matches Bazel manifest paths that start with the
-  // current Bazel workspace, followed by a path delimiter.
-  const bazelWorkspaceManifestPathRegex =
-      bazelWorkspaceName ? new RegExp(`^${bazelWorkspaceName}[/\\\\]`) : null;
   // This handles cases where file paths cannot be resolved through runfiles. This happens
   // commonly when goldens are approved while the golden does not exist in the workspace yet.
   // In those cases, we want to build up a relative path based on the manifest path, and join
