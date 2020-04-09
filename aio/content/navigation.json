@@ -747,6 +747,17 @@
       ]
     },
     {
+      "title": "Tutorials",
+      "tooltop": "End-to-end tutorials for learning Angular concepts and patterns.",
+      "children": [
+        {
+          "url": "guide/router-tutorial",
+          "title": "Using Angular Routes in a Single-page Application",
+          "tooltip": "A tutorial that covers many patterns associated with Angular routing."
+        }
+      ]
+    },
+    {
       "title": "Release Information",
       "tooltip": "Angular release practices, updating, and upgrading.",
       "children": [
