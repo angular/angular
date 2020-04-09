@@ -363,6 +363,7 @@ runInEachFileSystem(() => {
           node: targetDecl,
           known: null,
           viaModule: 'absolute',
+          identity: null,
         });
       });
 
@@ -393,6 +394,7 @@ runInEachFileSystem(() => {
           node: targetDecl,
           known: null,
           viaModule: 'absolute',
+          identity: null,
         });
       });
     });

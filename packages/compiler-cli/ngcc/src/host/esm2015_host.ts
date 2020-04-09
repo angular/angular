@@ -8,13 +8,14 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, ConcreteDeclaration, CtorParameter, Declaration, Decorator, isDecoratorIdentifier, KnownDeclaration, reflectObjectLiteral, TypeScriptReflectionHost, TypeValueReference,} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, ConcreteDeclaration, CtorParameter, Declaration, Decorator, EnumMember, isDecoratorIdentifier, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
 
 import {ClassSymbol, isSwitchableVariableDeclaration, ModuleWithProvidersFunction, NgccClassSymbol, NgccReflectionHost, PRE_R3_MARKER, SwitchableVariableDeclaration} from './ngcc_host';
+import {stripParentheses} from './utils';
 
 export const DECORATORS = 'decorators' as ts.__String;
 export const PROP_DECORATORS = 'propDecorators' as ts.__String;
@@ -344,13 +345,28 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
     const superDeclaration = super.getDeclarationOfIdentifier(id);
 
+    // If no declaration was found or it's an inline declaration, return as is.
+    if (superDeclaration === null || superDeclaration.node === null) {
+      return superDeclaration;
+    }
+
+    // If the declaration already has traits assigned to it, return as is.
+    if (superDeclaration.known !== null || superDeclaration.identity !== null) {
+      return superDeclaration;
+    }
+
     // The identifier may have been of an additional class assignment such as `MyClass_1` that was
     // present as alias for `MyClass`. If so, resolve such aliases to their original declaration.
-    if (superDeclaration !== null && superDeclaration.node !== null &&
-        superDeclaration.known === null) {
-      const aliasedIdentifier = this.resolveAliasedClassIdentifier(superDeclaration.node);
-      if (aliasedIdentifier !== null) {
-        return this.getDeclarationOfIdentifier(aliasedIdentifier);
+    const aliasedIdentifier = this.resolveAliasedClassIdentifier(superDeclaration.node);
+    if (aliasedIdentifier !== null) {
+      return this.getDeclarationOfIdentifier(aliasedIdentifier);
+    }
+
+    // Variable declarations may represent an enum declaration, so attempt to resolve its members.
+    if (ts.isVariableDeclaration(superDeclaration.node)) {
+      const enumMembers = this.resolveEnumMembers(superDeclaration.node);
+      if (enumMembers !== null) {
+        superDeclaration.identity = {kind: SpecialDeclarationKind.DownleveledEnum, enumMembers};
       }
     }
 
@@ -1763,9 +1779,188 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     // definition file. This requires default types to be enabled for the host program.
     return this.src.program.isSourceFileDefaultLibrary(node.getSourceFile());
   }
+
+  /**
+   * In JavaScript, enum declarations are emitted as a regular variable declaration followed by an
+   * IIFE in which the enum members are assigned.
+   *
+   *   export var Enum;
+   *   (function (Enum) {
+   *     Enum["a"] = "A";
+   *     Enum["b"] = "B";
+   *   })(Enum || (Enum = {}));
+   *
+   * @param declaration A variable declaration that may represent an enum
+   * @returns An array of enum members if the variable declaration is followed by an IIFE that
+   * declares the enum members, or null otherwise.
+   */
+  protected resolveEnumMembers(declaration: ts.VariableDeclaration): EnumMember[]|null {
+    // Initialized variables don't represent enum declarations.
+    if (declaration.initializer !== undefined) return null;
+
+    const variableStmt = declaration.parent.parent;
+    if (!ts.isVariableStatement(variableStmt)) return null;
+
+    const block = variableStmt.parent;
+    if (!ts.isBlock(block) && !ts.isSourceFile(block)) return null;
+
+    const declarationIndex = block.statements.findIndex(statement => statement === variableStmt);
+    if (declarationIndex === -1 || declarationIndex === block.statements.length - 1) return null;
+
+    const subsequentStmt = block.statements[declarationIndex + 1];
+    if (!ts.isExpressionStatement(subsequentStmt)) return null;
+
+    const iife = stripParentheses(subsequentStmt.expression);
+    if (!ts.isCallExpression(iife) || !isEnumDeclarationIife(iife)) return null;
+
+    const fn = stripParentheses(iife.expression);
+    if (!ts.isFunctionExpression(fn)) return null;
+
+    return this.reflectEnumMembers(fn);
+  }
+
+  /**
+   * Attempts to extract all `EnumMember`s from a function that is according to the JavaScript emit
+   * format for enums:
+   *
+   *   function (Enum) {
+   *     Enum["MemberA"] = "a";
+   *     Enum["MemberB"] = "b";
+   *   }
+   *
+   * @param fn The function expression that is assumed to contain enum members.
+   * @returns All enum members if the function is according to the correct syntax, null otherwise.
+   */
+  private reflectEnumMembers(fn: ts.FunctionExpression): EnumMember[]|null {
+    if (fn.parameters.length !== 1) return null;
+
+    const enumName = fn.parameters[0].name;
+    if (!ts.isIdentifier(enumName)) return null;
+
+    const enumMembers: EnumMember[] = [];
+    for (const statement of fn.body.statements) {
+      const enumMember = this.reflectEnumMember(enumName, statement);
+      if (enumMember === null) {
+        return null;
+      }
+      enumMembers.push(enumMember);
+    }
+    return enumMembers;
+  }
+
+  /**
+   * Attempts to extract a single `EnumMember` from a statement in the following syntax:
+   *
+   *   Enum["MemberA"] = "a";
+   *
+   * or, for enum member with numeric values:
+   *
+   *   Enum[Enum["MemberA"] = 0] = "MemberA";
+   *
+   * @param enumName The identifier of the enum that the members should be set on.
+   * @param statement The statement to inspect.
+   * @returns An `EnumMember` if the statement is according to the expected syntax, null otherwise.
+   */
+  protected reflectEnumMember(enumName: ts.Identifier, statement: ts.Statement): EnumMember|null {
+    if (!ts.isExpressionStatement(statement)) return null;
+
+    const expression = statement.expression;
+
+    // Check for the `Enum[X] = Y;` case.
+    if (!isEnumAssignment(enumName, expression)) {
+      return null;
+    }
+    const assignment = reflectEnumAssignment(expression);
+    if (assignment != null) {
+      return assignment;
+    }
+
+    // Check for the `Enum[Enum[X] = Y] = ...;` case.
+    const innerExpression = expression.left.argumentExpression;
+    if (!isEnumAssignment(enumName, innerExpression)) {
+      return null;
+    }
+    return reflectEnumAssignment(innerExpression);
+  }
 }
 
 ///////////// Exported Helpers /////////////
+
+/**
+ * Checks whether the iife has the following call signature:
+ *
+ *   (Enum || (Enum = {})
+ *
+ * Note that the `Enum` identifier is not checked, as it could also be something
+ * like `exports.Enum`. Instead, only the structure of binary operators is checked.
+ *
+ * @param iife The call expression to check.
+ * @returns true if the iife has a call signature that corresponds with a potential
+ * enum declaration.
+ */
+function isEnumDeclarationIife(iife: ts.CallExpression): boolean {
+  if (iife.arguments.length !== 1) return false;
+
+  const arg = iife.arguments[0];
+  if (!ts.isBinaryExpression(arg) || arg.operatorToken.kind !== ts.SyntaxKind.BarBarToken ||
+      !ts.isParenthesizedExpression(arg.right)) {
+    return false;
+  }
+
+  const right = arg.right.expression;
+  if (!ts.isBinaryExpression(right) || right.operatorToken.kind !== ts.SyntaxKind.EqualsToken) {
+    return false;
+  }
+
+  if (!ts.isObjectLiteralExpression(right.right) || right.right.properties.length !== 0) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * An enum member assignment that looks like `Enum[X] = Y;`.
+ */
+export type EnumMemberAssignment = ts.BinaryExpression&{left: ts.ElementAccessExpression};
+
+/**
+ * Checks whether the expression looks like an enum member assignment targeting `Enum`:
+ *
+ *   Enum[X] = Y;
+ *
+ * Here, X and Y can be any expression.
+ *
+ * @param enumName The identifier of the enum that the members should be set on.
+ * @param expression The expression that should be checked to conform to the above form.
+ * @returns true if the expression is of the correct form, false otherwise.
+ */
+function isEnumAssignment(
+    enumName: ts.Identifier, expression: ts.Expression): expression is EnumMemberAssignment {
+  if (!ts.isBinaryExpression(expression) ||
+      expression.operatorToken.kind !== ts.SyntaxKind.EqualsToken ||
+      !ts.isElementAccessExpression(expression.left)) {
+    return false;
+  }
+
+  // Verify that the outer assignment corresponds with the enum declaration.
+  const enumIdentifier = expression.left.expression;
+  return ts.isIdentifier(enumIdentifier) && enumIdentifier.text === enumName.text;
+}
+
+/**
+ * Attempts to create an `EnumMember` from an expression that is believed to represent an enum
+ * assignment.
+ *
+ * @param expression The expression that is believed to be an enum assignment.
+ * @returns An `EnumMember` or null if the expression did not represent an enum member after all.
+ */
+function reflectEnumAssignment(expression: EnumMemberAssignment): EnumMember|null {
+  const memberName = expression.left.argumentExpression;
+  if (!ts.isPropertyName(memberName)) return null;
+
+  return {name: memberName, initializer: expression.right};
+}
 
 export type ParamInfo = {
   decorators: Decorator[]|null,

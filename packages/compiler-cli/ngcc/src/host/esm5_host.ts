@@ -13,6 +13,7 @@ import {getNameText, getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, 
 
 import {Esm2015ReflectionHost, getPropertyValueFromSymbol, isAssignment, isAssignmentStatement, ParamInfo} from './esm2015_host';
 import {NgccClassSymbol} from './ngcc_host';
+import {stripParentheses} from './utils';
 
 
 /**
@@ -848,8 +849,4 @@ function isUndefinedComparison(expression: ts.Expression): expression is ts.Expr
   return ts.isBinaryExpression(expression) &&
       expression.operatorToken.kind === ts.SyntaxKind.EqualsEqualsEqualsToken &&
       ts.isVoidExpression(expression.right) && ts.isIdentifier(expression.left);
-}
-
-export function stripParentheses(node: ts.Node): ts.Node {
-  return ts.isParenthesizedExpression(node) ? node.expression : node;
 }

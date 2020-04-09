@@ -73,7 +73,7 @@ export class ResolvedModule {
  */
 export class EnumValue {
   constructor(
-      readonly enumRef: Reference<ts.EnumDeclaration>, readonly name: string,
+      readonly enumRef: Reference<ts.Declaration>, readonly name: string,
       readonly resolved: ResolvedValue) {}
 }
 
