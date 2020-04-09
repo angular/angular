@@ -134,7 +134,7 @@ export class DependencyResolver {
       host.collectDependencies(formatInfo.path, dependencies);
       this.typingsHost.collectDependencies(entryPoint.typings, dependencies);
     }
-    return {entryPoint, dependencies};
+    return {entryPoint, depInfo: dependencies};
   }
 
   /**
@@ -154,10 +154,7 @@ export class DependencyResolver {
     angularEntryPoints.forEach(e => graph.addNode(e.entryPoint.path, e.entryPoint));
 
     // Now add the dependencies between them
-    angularEntryPoints.forEach(({
-                                 entryPoint,
-                                 dependencies: {dependencies, missing, deepImports}
-                               }) => {
+    angularEntryPoints.forEach(({entryPoint, depInfo: {dependencies, missing, deepImports}}) => {
       const missingDependencies = Array.from(missing).filter(dep => !builtinNodeJsModules.has(dep));
 
       if (missingDependencies.length > 0 && !entryPoint.ignoreMissingDependencies) {

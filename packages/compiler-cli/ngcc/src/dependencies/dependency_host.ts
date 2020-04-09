@@ -24,7 +24,7 @@ export interface DependencyInfo {
 
 export interface EntryPointWithDependencies {
   entryPoint: EntryPoint;
-  dependencies: DependencyInfo;
+  depInfo: DependencyInfo;
 }
 
 export function createDependencyInfo(): DependencyInfo {

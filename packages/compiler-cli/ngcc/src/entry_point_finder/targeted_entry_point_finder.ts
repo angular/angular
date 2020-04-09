@@ -85,7 +85,7 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
     }
     const entryPointWithDeps = this.resolver.getEntryPointWithDependencies(entryPoint);
     this.unsortedEntryPoints.set(entryPoint.path, entryPointWithDeps);
-    entryPointWithDeps.dependencies.dependencies.forEach(dep => {
+    entryPointWithDeps.depInfo.dependencies.forEach(dep => {
       if (!this.unsortedEntryPoints.has(dep)) {
         this.unprocessedPaths.push(dep);
       }

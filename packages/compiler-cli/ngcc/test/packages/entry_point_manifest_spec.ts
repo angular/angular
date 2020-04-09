@@ -157,7 +157,7 @@ runInEachFileSystem(() => {
             ignoreMissingDependencies: false,
             generateDeepReexports: false,
           } as any,
-          dependencies: {
+          depInfo: {
             dependencies: new Set([
               _Abs('/project/node_modules/other_package_1'),
               _Abs('/project/node_modules/other_package_2'),
@@ -254,7 +254,7 @@ runInEachFileSystem(() => {
             package: _Abs('/project/node_modules/package-1/'),
             path: _Abs('/project/node_modules/package-1/'),
           } as any,
-          dependencies: {
+          depInfo: {
             dependencies: new Set([
               _Abs('/project/node_modules/other_package_1'),
               _Abs('/project/node_modules/other_package_2'),
@@ -268,7 +268,7 @@ runInEachFileSystem(() => {
             package: _Abs('/project/node_modules/package-2/'),
             path: _Abs('/project/node_modules/package-2/entry-point'),
           } as any,
-          dependencies: {
+          depInfo: {
             dependencies: new Set(),
             missing: new Set([
               _Abs('/project/node_modules/missing_1'),

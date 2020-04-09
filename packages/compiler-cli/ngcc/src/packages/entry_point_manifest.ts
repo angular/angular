@@ -80,7 +80,7 @@ export class EntryPointManifest {
         } else {
           entryPoints.push({
             entryPoint: result,
-            dependencies: {
+            depInfo: {
               dependencies: new Set(dependencyPaths),
               missing: new Set(missingPaths),
               deepImports: new Set(deepImportPaths),
@@ -126,9 +126,9 @@ export class EntryPointManifest {
           e =>
               [e.entryPoint.package,
                e.entryPoint.path,
-               Array.from(e.dependencies.dependencies),
-               Array.from(e.dependencies.missing),
-               Array.from(e.dependencies.deepImports),
+               Array.from(e.depInfo.dependencies),
+               Array.from(e.depInfo.missing),
+               Array.from(e.depInfo.deepImports),
     ]),
     };
     this.fs.writeFile(this.getEntryPointManifestPath(basePath), JSON.stringify(manifest));
