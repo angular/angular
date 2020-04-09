@@ -49,7 +49,7 @@ class LanguageServiceImpl implements ng.LanguageService {
 
   getCompletionsAtPosition(
       fileName: string, position: number,
-      options?: tss.GetCompletionsAtPositionOptions): tss.CompletionInfo|undefined {
+      _options?: tss.GetCompletionsAtPositionOptions): tss.CompletionInfo|undefined {
     this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
     const ast = this.host.getTemplateAstAtPosition(fileName, position);
     if (!ast) {

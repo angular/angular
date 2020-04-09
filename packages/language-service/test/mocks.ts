@@ -14,7 +14,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {DiagnosticTemplateInfo} from '../src/expression_diagnostics';
+import {DiagnosticTemplateInfo} from '../src/types';
 import {getClassMembers, getPipesTable, getSymbolQuery} from '../src/typescript_symbols';
 
 const realFiles = new Map<string, string>();

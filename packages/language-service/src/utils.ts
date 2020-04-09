@@ -9,16 +9,15 @@
 import {AstPath, BoundEventAst, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, HtmlAstPath, identifierName, Identifiers, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, RecursiveVisitor, TemplateAst, TemplateAstPath, templateVisitAll, visitAll} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {AstResult, SelectorInfo} from './common';
-import {Span, Symbol, SymbolQuery} from './types';
+import {AstResult, DiagnosticTemplateInfo, SelectorInfo, Span, Symbol, SymbolQuery} from './types';
 
-export interface SpanHolder {
+interface SpanHolder {
   sourceSpan: ParseSourceSpan;
   endSourceSpan?: ParseSourceSpan|null;
   children?: SpanHolder[];
 }
 
-export function isParseSourceSpan(value: any): value is ParseSourceSpan {
+function isParseSourceSpan(value: any): value is ParseSourceSpan {
   return value && !!value.start;
 }
 
@@ -80,14 +79,16 @@ export function getSelectors(info: AstResult): SelectorInfo {
   return {selectors: results, map};
 }
 
-export function isTypescriptVersion(low: string, high?: string) {
-  const version = ts.version;
-
-  if (version.substring(0, low.length) < low) return false;
-
-  if (high && (version.substring(0, high.length) > high)) return false;
-
-  return true;
+export function diagnosticInfoFromTemplateInfo(info: AstResult): DiagnosticTemplateInfo {
+  return {
+    fileName: info.template.fileName,
+    offset: info.template.span.start,
+    query: info.template.query,
+    members: info.template.members,
+    htmlAst: info.htmlAst,
+    templateAst: info.templateAst,
+    source: info.template.source,
+  };
 }
 
 export function findTemplateAstAt(ast: TemplateAst[], position: number): TemplateAstPath {
@@ -275,4 +276,63 @@ export function findOutputBinding(
       }
     }
   }
+}
+
+/**
+ * Returns a property assignment from the assignment value, or `undefined` if there is no
+ * assignment.
+ */
+export function getPropertyAssignmentFromValue(value: ts.Node): ts.PropertyAssignment|undefined {
+  if (!value.parent || !ts.isPropertyAssignment(value.parent)) {
+    return;
+  }
+  return value.parent;
+}
+
+/**
+ * Given a decorator property assignment, return the ClassDeclaration node that corresponds to the
+ * directive class the property applies to.
+ * If the property assignment is not on a class decorator, no declaration is returned.
+ *
+ * For example,
+ *
+ * @Component({
+ *   template: '<div></div>'
+ *   ^^^^^^^^^^^^^^^^^^^^^^^---- property assignment
+ * })
+ * class AppComponent {}
+ *           ^---- class declaration node
+ *
+ * @param propAsgn property assignment
+ */
+export function getClassDeclFromDecoratorProp(propAsgnNode: ts.PropertyAssignment):
+    ts.ClassDeclaration|undefined {
+  if (!propAsgnNode.parent || !ts.isObjectLiteralExpression(propAsgnNode.parent)) {
+    return;
+  }
+  const objLitExprNode = propAsgnNode.parent;
+  if (!objLitExprNode.parent || !ts.isCallExpression(objLitExprNode.parent)) {
+    return;
+  }
+  const callExprNode = objLitExprNode.parent;
+  if (!callExprNode.parent || !ts.isDecorator(callExprNode.parent)) {
+    return;
+  }
+  const decorator = callExprNode.parent;
+  if (!decorator.parent || !ts.isClassDeclaration(decorator.parent)) {
+    return;
+  }
+  const classDeclNode = decorator.parent;
+  return classDeclNode;
+}
+
+/**
+ * Determines if a property assignment is on a class decorator.
+ * See `getClassDeclFromDecoratorProperty`, which gets the class the decorator is applied to, for
+ * more details.
+ *
+ * @param prop property assignment
+ */
+export function isClassDecoratorProperty(propAsgn: ts.PropertyAssignment): boolean {
+  return !!getClassDeclFromDecoratorProp(propAsgn);
 }

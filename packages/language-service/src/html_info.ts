@@ -453,7 +453,3 @@ export function eventNames(elementName: string): string[] {
 export function propertyNames(elementName: string): string[] {
   return SchemaInformation.instance.propertiesOf(elementName);
 }
-
-export function propertyType(elementName: string, propertyName: string): string {
-  return SchemaInformation.instance.typeOf(elementName, propertyName);
-}

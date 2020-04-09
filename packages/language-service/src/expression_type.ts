@@ -12,7 +12,7 @@ import {createDiagnostic, Diagnostic} from './diagnostic_messages';
 import {BuiltinType, Signature, Symbol, SymbolQuery, SymbolTable} from './symbols';
 import * as ng from './types';
 
-export interface ExpressionDiagnosticsContext {
+interface ExpressionDiagnosticsContext {
   inEvent?: boolean;
 }
 
@@ -225,7 +225,7 @@ export class AstType implements AstVisitor {
     return this.anyType;
   }
 
-  visitImplicitReceiver(ast: ImplicitReceiver): Symbol {
+  visitImplicitReceiver(_ast: ImplicitReceiver): Symbol {
     const _this = this;
     // Return a pseudo-symbol for the implicit receiver.
     // The members of the implicit receiver are what is defined by the
@@ -247,11 +247,11 @@ export class AstType implements AstVisitor {
       signatures(): Signature[] {
         return [];
       },
-      selectSignature(types): Signature |
+      selectSignature(_types): Signature |
           undefined {
             return undefined;
           },
-      indexed(argument): Symbol |
+      indexed(_argument): Symbol |
           undefined {
             return undefined;
           },
@@ -366,7 +366,7 @@ export class AstType implements AstVisitor {
     return this.getType(ast.value);
   }
 
-  visitQuote(ast: Quote) {
+  visitQuote(_ast: Quote) {
     // The type of a quoted expression is any.
     return this.query.getBuiltinType(BuiltinType.Any);
   }
