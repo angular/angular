@@ -1,6 +1,6 @@
 @import '../../material/core/theming/theming';
 @import '../../material/core/style/layout-common';
-@import '../../material/core/focus-indicator/focus-indicator';
+@import '../../material/core/focus-indicators/focus-indicators';
 
 
 /// Mixin that turns on strong focus indicators.
@@ -106,8 +106,10 @@
   @if type-of($theme-or-color) != 'map' {
     @include _mat-mdc-strong-focus-indicators-border-color($theme-or-color);
   }
-  $color: mat-get-color-config($theme-or-color);
-  @if $color != null {
-    @include mat-mdc-strong-focus-indicators-color($color);
+  @else {
+    $color: mat-get-color-config($theme-or-color);
+    @if $color != null {
+      @include mat-mdc-strong-focus-indicators-color($color);
+    }
   }
 }

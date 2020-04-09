@@ -23,7 +23,7 @@
 // Include base styles for strong focus indicators.
 .demo-strong-focus {
   @include mat-strong-focus-indicators();
-  @include mat-strong-focus-indicators-mdc();
+  @include mat-mdc-strong-focus-indicators();
 }
 
 // Define the default theme (same as the example above).
@@ -57,7 +57,7 @@ $dark-theme: mat-dark-theme((
 // Include the default theme for focus indicators.
 .demo-strong-focus {
   @include mat-strong-focus-indicators-theme($candy-app-theme);
-  @include mat-strong-focus-indicators-theme-mdc($candy-app-theme);
+  @include mat-mdc-strong-focus-indicators-theme($candy-app-theme);
 }
 
 // Include the alternative theme styles inside of a block with a CSS class. You can make this
@@ -74,7 +74,7 @@ $dark-theme: mat-dark-theme((
 // Include the dark theme for focus indicators.
 .demo-unicorn-dark-theme.demo-strong-focus {
   @include mat-strong-focus-indicators-theme($dark-theme);
-  @include mat-strong-focus-indicators-theme-mdc($dark-theme);
+  @include mat-mdc-strong-focus-indicators-theme($dark-theme);
 }
 
 // Create classes for all density scales which are supported by all MDC-based components.
