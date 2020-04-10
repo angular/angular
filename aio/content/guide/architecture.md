@@ -19,7 +19,7 @@ Both components and services are simply classes, with *decorators* that mark the
 
 An app's components typically define many views, arranged hierarchically. Angular provides the `Router` service to help you define navigation paths among views. The router provides sophisticated in-browser navigational capabilities.
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
   See the [Angular Glossary](guide/glossary) for basic definitions of important Angular terms and usage.
 
