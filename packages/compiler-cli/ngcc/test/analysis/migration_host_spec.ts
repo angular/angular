@@ -92,8 +92,6 @@ runInEachFileSystem(() => {
       });
     });
 
-
-
     describe('getAllDecorators', () => {
       it('should include injected decorators', () => {
         const directiveHandler = new DetectDecoratorHandler('Directive', HandlerPrecedence.WEAK);
@@ -143,7 +141,7 @@ runInEachFileSystem(() => {
         expect(host.isInScope(internalClass)).toBe(true);
       });
 
-      it('should be false for nodes outside the entry-point', () => {
+      it('should be false for nodes outside the entry-point (in sibling package)', () => {
         loadTestFiles([
           {name: _('/node_modules/external/index.js'), contents: `export class ExternalClass {}`},
           {
@@ -162,6 +160,30 @@ runInEachFileSystem(() => {
             isNamedClassDeclaration);
 
         expect(host.isInScope(externalClass)).toBe(false);
+      });
+
+      it('should be false for nodes outside the entry-point (in nested `node_modules/`)', () => {
+        loadTestFiles([
+          {
+            name: _('/node_modules/test/index.js'),
+            contents: `
+              export {NestedDependencyClass} from 'nested';
+              export class InternalClass {}
+            `,
+          },
+          {
+            name: _('/node_modules/test/node_modules/nested/index.js'),
+            contents: `export class NestedDependencyClass {}`,
+          },
+        ]);
+        const entryPoint =
+            makeTestEntryPointBundle('test', 'esm2015', false, [_('/node_modules/test/index.js')]);
+        const {host} = createMigrationHost({entryPoint, handlers: []});
+        const nestedDepClass = getDeclaration(
+            entryPoint.src.program, _('/node_modules/test/node_modules/nested/index.js'),
+            'NestedDependencyClass', isNamedClassDeclaration);
+
+        expect(host.isInScope(nestedDepClass)).toBe(false);
       });
     });
   });

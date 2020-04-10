@@ -11,7 +11,8 @@ import {absoluteFromSourceFile, AbsoluteFsPath, relative} from '../../../src/ngt
 import {DependencyTracker} from '../../../src/ngtsc/incremental/api';
 
 export function isWithinPackage(packagePath: AbsoluteFsPath, sourceFile: ts.SourceFile): boolean {
-  return !relative(packagePath, absoluteFromSourceFile(sourceFile)).startsWith('..');
+  const relativePath = relative(packagePath, absoluteFromSourceFile(sourceFile));
+  return !relativePath.startsWith('..') && !relativePath.startsWith('node_modules/');
 }
 
 class NoopDependencyTracker implements DependencyTracker {

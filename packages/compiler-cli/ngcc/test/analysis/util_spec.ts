@@ -12,20 +12,36 @@ import {isWithinPackage} from '../../src/analysis/util';
 
 runInEachFileSystem(() => {
   describe('isWithinPackage', () => {
+    let _: typeof absoluteFrom;
+
+    beforeEach(() => _ = absoluteFrom);
+
     it('should return true if the source-file is contained in the package', () => {
-      const _ = absoluteFrom;
+      const packagePath = _('/node_modules/test');
       const file =
           ts.createSourceFile(_('/node_modules/test/src/index.js'), '', ts.ScriptTarget.ES2015);
-      const packagePath = _('/node_modules/test');
       expect(isWithinPackage(packagePath, file)).toBe(true);
     });
 
     it('should return false if the source-file is not contained in the package', () => {
-      const _ = absoluteFrom;
+      const packagePath = _('/node_modules/test');
       const file =
           ts.createSourceFile(_('/node_modules/other/src/index.js'), '', ts.ScriptTarget.ES2015);
-      const packagePath = _('/node_modules/test');
       expect(isWithinPackage(packagePath, file)).toBe(false);
+    });
+
+    it('should return false if the source-file is inside the package\'s `node_modules/`', () => {
+      const packagePath = _('/node_modules/test');
+
+      // An external file inside the package's `node_modules/`.
+      const file1 = ts.createSourceFile(
+          _('/node_modules/test/node_modules/other/src/index.js'), '', ts.ScriptTarget.ES2015);
+      expect(isWithinPackage(packagePath, file1)).toBe(false);
+
+      // An internal file starting with `node_modules`.
+      const file2 = ts.createSourceFile(
+          _('/node_modules/test/node_modules_optimizer.js'), '', ts.ScriptTarget.ES2015);
+      expect(isWithinPackage(packagePath, file2)).toBe(true);
     });
   });
 });
