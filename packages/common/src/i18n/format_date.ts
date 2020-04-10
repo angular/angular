@@ -6,20 +6,35 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FormStyle, FormatWidth, NumberSymbol, Time, TranslationWidth, getLocaleDateFormat, getLocaleDateTimeFormat, getLocaleDayNames, getLocaleDayPeriods, getLocaleEraNames, getLocaleExtraDayPeriodRules, getLocaleExtraDayPeriods, getLocaleId, getLocaleMonthNames, getLocaleNumberSymbol, getLocaleTimeFormat} from './locale_data_api';
+import {
+  FormStyle,
+  FormatWidth,
+  NumberSymbol,
+  Time,
+  TranslationWidth,
+  getLocaleDateFormat,
+  getLocaleDateTimeFormat,
+  getLocaleDayNames,
+  getLocaleDayPeriods,
+  getLocaleEraNames,
+  getLocaleExtraDayPeriodRules,
+  getLocaleExtraDayPeriods,
+  getLocaleId,
+  getLocaleMonthNames,
+  getLocaleNumberSymbol,
+  getLocaleTimeFormat,
+} from './locale_data_api';
 
-export const ISO8601_DATE_REGEX =
-    /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$/;
+export const ISO8601_DATE_REGEX = /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$/;
 //    1        2       3         4          5          6          7          8  9     10      11
 const NAMED_FORMATS: {[localeId: string]: {[format: string]: string}} = {};
-const DATE_FORMATS_SPLIT =
-    /((?:[^GyMLwWdEabBhHmsSzZO']+)|(?:'(?:[^']|'')*')|(?:G{1,5}|y{1,4}|M{1,5}|L{1,5}|w{1,2}|W{1}|d{1,2}|E{1,6}|a{1,5}|b{1,5}|B{1,5}|h{1,2}|H{1,2}|m{1,2}|s{1,2}|S{1,3}|z{1,4}|Z{1,5}|O{1,4}))([\s\S]*)/;
+const DATE_FORMATS_SPLIT = /((?:[^GyMLwWdEabBhHmsSzZO']+)|(?:'(?:[^']|'')*')|(?:G{1,5}|y{1,4}|M{1,5}|L{1,5}|w{1,2}|W{1}|d{1,2}|E{1,6}|a{1,5}|b{1,5}|B{1,5}|h{1,2}|H{1,2}|m{1,2}|s{1,2}|S{1,3}|z{1,4}|Z{1,5}|O{1,4}))([\s\S]*)/;
 
 enum ZoneWidth {
   Short,
   ShortGMT,
   Long,
-  Extended
+  Extended,
 }
 
 enum DateType {
@@ -30,14 +45,14 @@ enum DateType {
   Minutes,
   Seconds,
   FractionalSeconds,
-  Day
+  Day,
 }
 
 enum TranslationType {
   DayPeriods,
   Days,
   Months,
-  Eras
+  Eras,
 }
 
 /**
@@ -62,7 +77,11 @@ enum TranslationType {
  * @publicApi
  */
 export function formatDate(
-    value: string | number | Date, format: string, locale: string, timezone?: string): string {
+  value: string | number | Date,
+  format: string,
+  locale: string,
+  timezone?: string
+): string {
   let date = toDate(value);
   const namedFormat = getNamedFormat(locale, format);
   format = namedFormat || format;
@@ -91,11 +110,13 @@ export function formatDate(
   }
 
   let text = '';
-  parts.forEach(value => {
+  parts.forEach((value) => {
     const dateFormatter = getDateFormatter(value);
-    text += dateFormatter ?
-        dateFormatter(date, locale, dateTimezoneOffset) :
-        value === '\'\'' ? '\'' : value.replace(/(^'|'$)/g, '').replace(/''/g, '\'');
+    text += dateFormatter
+      ? dateFormatter(date, locale, dateTimezoneOffset)
+      : value === "''"
+      ? "'"
+      : value.replace(/(^'|'$)/g, '').replace(/''/g, "'");
   });
 
   return text;
@@ -138,26 +159,34 @@ function getNamedFormat(locale: string, format: string): string {
     case 'short':
       const shortTime = getNamedFormat(locale, 'shortTime');
       const shortDate = getNamedFormat(locale, 'shortDate');
-      formatValue = formatDateTime(
-          getLocaleDateTimeFormat(locale, FormatWidth.Short), [shortTime, shortDate]);
+      formatValue = formatDateTime(getLocaleDateTimeFormat(locale, FormatWidth.Short), [
+        shortTime,
+        shortDate,
+      ]);
       break;
     case 'medium':
       const mediumTime = getNamedFormat(locale, 'mediumTime');
       const mediumDate = getNamedFormat(locale, 'mediumDate');
-      formatValue = formatDateTime(
-          getLocaleDateTimeFormat(locale, FormatWidth.Medium), [mediumTime, mediumDate]);
+      formatValue = formatDateTime(getLocaleDateTimeFormat(locale, FormatWidth.Medium), [
+        mediumTime,
+        mediumDate,
+      ]);
       break;
     case 'long':
       const longTime = getNamedFormat(locale, 'longTime');
       const longDate = getNamedFormat(locale, 'longDate');
-      formatValue =
-          formatDateTime(getLocaleDateTimeFormat(locale, FormatWidth.Long), [longTime, longDate]);
+      formatValue = formatDateTime(getLocaleDateTimeFormat(locale, FormatWidth.Long), [
+        longTime,
+        longDate,
+      ]);
       break;
     case 'full':
       const fullTime = getNamedFormat(locale, 'fullTime');
       const fullDate = getNamedFormat(locale, 'fullDate');
-      formatValue =
-          formatDateTime(getLocaleDateTimeFormat(locale, FormatWidth.Full), [fullTime, fullDate]);
+      formatValue = formatDateTime(getLocaleDateTimeFormat(locale, FormatWidth.Full), [
+        fullTime,
+        fullDate,
+      ]);
       break;
   }
   if (formatValue) {
@@ -168,15 +197,20 @@ function getNamedFormat(locale: string, format: string): string {
 
 function formatDateTime(str: string, opt_values: string[]) {
   if (opt_values) {
-    str = str.replace(/\{([^}]+)}/g, function(match, key) {
-      return (opt_values != null && key in opt_values) ? opt_values[key] : match;
+    str = str.replace(/\{([^}]+)}/g, function (match, key) {
+      return opt_values != null && key in opt_values ? opt_values[key] : match;
     });
   }
   return str;
 }
 
 function padNumber(
-    num: number, digits: number, minusSign = '-', trim?: boolean, negWrap?: boolean): string {
+  num: number,
+  digits: number,
+  minusSign = '-',
+  trim?: boolean,
+  negWrap?: boolean
+): string {
   let neg = '';
   if (num < 0 || (negWrap && num <= 0)) {
     if (negWrap) {
@@ -205,9 +239,13 @@ function formatFractionalSeconds(milliseconds: number, digits: number): string {
  * Returns a date formatter that transforms a date into its locale digit representation
  */
 function dateGetter(
-    name: DateType, size: number, offset: number = 0, trim = false,
-    negWrap = false): DateFormatter {
-  return function(date: Date, locale: string): string {
+  name: DateType,
+  size: number,
+  offset: number = 0,
+  trim = false,
+  negWrap = false
+): DateFormatter {
+  return function (date: Date, locale: string): string {
     let part = getDatePart(name, date);
     if (offset > 0 || part > -offset) {
       part += offset;
@@ -253,9 +291,12 @@ function getDatePart(part: DateType, date: Date): number {
  * Returns a date formatter that transforms a date into its locale string representation
  */
 function dateStrGetter(
-    name: TranslationType, width: TranslationWidth, form: FormStyle = FormStyle.Format,
-    extended = false): DateFormatter {
-  return function(date: Date, locale: string): string {
+  name: TranslationType,
+  width: TranslationWidth,
+  form: FormStyle = FormStyle.Format,
+  extended = false
+): DateFormatter {
+  return function (date: Date, locale: string): string {
     return getDateTranslation(date, locale, name, width, form, extended);
   };
 }
@@ -264,8 +305,13 @@ function dateStrGetter(
  * Returns the locale translation of a date for a given form, type and width
  */
 function getDateTranslation(
-    date: Date, locale: string, name: TranslationType, width: TranslationWidth, form: FormStyle,
-    extended: boolean) {
+  date: Date,
+  locale: string,
+  name: TranslationType,
+  width: TranslationWidth,
+  form: FormStyle,
+  extended: boolean
+) {
   switch (name) {
     case TranslationType.Months:
       return getLocaleMonthNames(locale, form, width)[date.getMonth()];
@@ -283,12 +329,15 @@ function getDateTranslation(
             // morning, afternoon, evening, night
             const {hours: hoursFrom, minutes: minutesFrom} = rule[0];
             const {hours: hoursTo, minutes: minutesTo} = rule[1];
-            if (currentHours >= hoursFrom && currentMinutes >= minutesFrom &&
-                (currentHours < hoursTo ||
-                 (currentHours === hoursTo && currentMinutes < minutesTo))) {
+            if (
+              currentHours >= hoursFrom &&
+              currentMinutes >= minutesFrom &&
+              (currentHours < hoursTo || (currentHours === hoursTo && currentMinutes < minutesTo))
+            ) {
               result = dayPeriods[index];
             }
-          } else {  // noon or midnight
+          } else {
+            // noon or midnight
             const {hours, minutes} = rule;
             if (hours === currentHours && minutes === currentMinutes) {
               result = dayPeriods[index];
@@ -319,25 +368,37 @@ function getDateTranslation(
  * extended = +04:30)
  */
 function timeZoneGetter(width: ZoneWidth): DateFormatter {
-  return function(date: Date, locale: string, offset: number) {
+  return function (date: Date, locale: string, offset: number) {
     const zone = -1 * offset;
     const minusSign = getLocaleNumberSymbol(locale, NumberSymbol.MinusSign);
     const hours = zone > 0 ? Math.floor(zone / 60) : Math.ceil(zone / 60);
     switch (width) {
       case ZoneWidth.Short:
-        return ((zone >= 0) ? '+' : '') + padNumber(hours, 2, minusSign) +
-            padNumber(Math.abs(zone % 60), 2, minusSign);
+        return (
+          (zone >= 0 ? '+' : '') +
+          padNumber(hours, 2, minusSign) +
+          padNumber(Math.abs(zone % 60), 2, minusSign)
+        );
       case ZoneWidth.ShortGMT:
-        return 'GMT' + ((zone >= 0) ? '+' : '') + padNumber(hours, 1, minusSign);
+        return 'GMT' + (zone >= 0 ? '+' : '') + padNumber(hours, 1, minusSign);
       case ZoneWidth.Long:
-        return 'GMT' + ((zone >= 0) ? '+' : '') + padNumber(hours, 2, minusSign) + ':' +
-            padNumber(Math.abs(zone % 60), 2, minusSign);
+        return (
+          'GMT' +
+          (zone >= 0 ? '+' : '') +
+          padNumber(hours, 2, minusSign) +
+          ':' +
+          padNumber(Math.abs(zone % 60), 2, minusSign)
+        );
       case ZoneWidth.Extended:
         if (offset === 0) {
           return 'Z';
         } else {
-          return ((zone >= 0) ? '+' : '') + padNumber(hours, 2, minusSign) + ':' +
-              padNumber(Math.abs(zone % 60), 2, minusSign);
+          return (
+            (zone >= 0 ? '+' : '') +
+            padNumber(hours, 2, minusSign) +
+            ':' +
+            padNumber(Math.abs(zone % 60), 2, minusSign)
+          );
         }
       default:
         throw new Error(`Unknown zone width "${width}"`);
@@ -348,30 +409,35 @@ function timeZoneGetter(width: ZoneWidth): DateFormatter {
 const JANUARY = 0;
 const THURSDAY = 4;
 function getFirstThursdayOfYear(year: number) {
-  const firstDayOfYear = (new Date(year, JANUARY, 1)).getDay();
+  const firstDayOfYear = new Date(year, JANUARY, 1).getDay();
   return new Date(
-      year, 0, 1 + ((firstDayOfYear <= THURSDAY) ? THURSDAY : THURSDAY + 7) - firstDayOfYear);
+    year,
+    0,
+    1 + (firstDayOfYear <= THURSDAY ? THURSDAY : THURSDAY + 7) - firstDayOfYear
+  );
 }
 
 function getThursdayThisWeek(datetime: Date) {
   return new Date(
-      datetime.getFullYear(), datetime.getMonth(),
-      datetime.getDate() + (THURSDAY - datetime.getDay()));
+    datetime.getFullYear(),
+    datetime.getMonth(),
+    datetime.getDate() + (THURSDAY - datetime.getDay())
+  );
 }
 
 function weekGetter(size: number, monthBased = false): DateFormatter {
-  return function(date: Date, locale: string) {
+  return function (date: Date, locale: string) {
     let result;
     if (monthBased) {
       const nbDaysBefore1stDayOfMonth =
-          new Date(date.getFullYear(), date.getMonth(), 1).getDay() - 1;
+        new Date(date.getFullYear(), date.getMonth(), 1).getDay() - 1;
       const today = date.getDate();
       result = 1 + Math.floor((today + nbDaysBefore1stDayOfMonth) / 7);
     } else {
       const firstThurs = getFirstThursdayOfYear(date.getFullYear());
       const thisThurs = getThursdayThisWeek(date);
       const diff = thisThurs.getTime() - firstThurs.getTime();
-      result = 1 + Math.round(diff / 6.048e8);  // 6.048e8 ms per week
+      result = 1 + Math.round(diff / 6.048e8); // 6.048e8 ms per week
     }
 
     return padNumber(result, size, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
@@ -386,7 +452,7 @@ const DATE_FORMATS: {[format: string]: DateFormatter} = {};
 // See complete list: http://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
 // See also explanations: http://cldr.unicode.org/translation/date-time
 // TODO(ocombe): support all missing cldr formats: Y, U, Q, D, F, e, c, j, J, C, A, v, V, X, x
-function getDateFormatter(format: string): DateFormatter|null {
+function getDateFormatter(format: string): DateFormatter | null {
   if (DATE_FORMATS[format]) {
     return DATE_FORMATS[format];
   }
@@ -445,16 +511,25 @@ function getDateFormatter(format: string): DateFormatter|null {
 
     // Month of the year (January, ...), string, standalone
     case 'LLL':
-      formatter =
-          dateStrGetter(TranslationType.Months, TranslationWidth.Abbreviated, FormStyle.Standalone);
+      formatter = dateStrGetter(
+        TranslationType.Months,
+        TranslationWidth.Abbreviated,
+        FormStyle.Standalone
+      );
       break;
     case 'LLLL':
-      formatter =
-          dateStrGetter(TranslationType.Months, TranslationWidth.Wide, FormStyle.Standalone);
+      formatter = dateStrGetter(
+        TranslationType.Months,
+        TranslationWidth.Wide,
+        FormStyle.Standalone
+      );
       break;
     case 'LLLLL':
-      formatter =
-          dateStrGetter(TranslationType.Months, TranslationWidth.Narrow, FormStyle.Standalone);
+      formatter = dateStrGetter(
+        TranslationType.Months,
+        TranslationWidth.Narrow,
+        FormStyle.Standalone
+      );
       break;
 
     // Week of the year (1, ... 52)
@@ -512,15 +587,27 @@ function getDateFormatter(format: string): DateFormatter|null {
     case 'bb':
     case 'bbb':
       formatter = dateStrGetter(
-          TranslationType.DayPeriods, TranslationWidth.Abbreviated, FormStyle.Standalone, true);
+        TranslationType.DayPeriods,
+        TranslationWidth.Abbreviated,
+        FormStyle.Standalone,
+        true
+      );
       break;
     case 'bbbb':
       formatter = dateStrGetter(
-          TranslationType.DayPeriods, TranslationWidth.Wide, FormStyle.Standalone, true);
+        TranslationType.DayPeriods,
+        TranslationWidth.Wide,
+        FormStyle.Standalone,
+        true
+      );
       break;
     case 'bbbbb':
       formatter = dateStrGetter(
-          TranslationType.DayPeriods, TranslationWidth.Narrow, FormStyle.Standalone, true);
+        TranslationType.DayPeriods,
+        TranslationWidth.Narrow,
+        FormStyle.Standalone,
+        true
+      );
       break;
 
     // Extended period of the day (midnight, night, ...), standalone
@@ -528,15 +615,27 @@ function getDateFormatter(format: string): DateFormatter|null {
     case 'BB':
     case 'BBB':
       formatter = dateStrGetter(
-          TranslationType.DayPeriods, TranslationWidth.Abbreviated, FormStyle.Format, true);
+        TranslationType.DayPeriods,
+        TranslationWidth.Abbreviated,
+        FormStyle.Format,
+        true
+      );
       break;
     case 'BBBB':
-      formatter =
-          dateStrGetter(TranslationType.DayPeriods, TranslationWidth.Wide, FormStyle.Format, true);
+      formatter = dateStrGetter(
+        TranslationType.DayPeriods,
+        TranslationWidth.Wide,
+        FormStyle.Format,
+        true
+      );
       break;
     case 'BBBBB':
       formatter = dateStrGetter(
-          TranslationType.DayPeriods, TranslationWidth.Narrow, FormStyle.Format, true);
+        TranslationType.DayPeriods,
+        TranslationWidth.Narrow,
+        FormStyle.Format,
+        true
+      );
       break;
 
     // Hour in AM/PM, (1-12)
@@ -582,7 +681,6 @@ function getDateFormatter(format: string): DateFormatter|null {
     case 'SSS':
       formatter = dateGetter(DateType.FractionalSeconds, 3);
       break;
-
 
     // Timezone ISO8601 short format (-0430)
     case 'Z':
@@ -667,7 +765,7 @@ export function toDate(value: string | number | Date): Date {
     const parsedNb = parseFloat(value);
 
     // any string that only contains numbers, like "1234" but not like "1234hello"
-    if (!isNaN(value as any - parsedNb)) {
+    if (!isNaN((value as any) - parsedNb)) {
       return new Date(parsedNb);
     }
 
@@ -683,8 +781,8 @@ export function toDate(value: string | number | Date): Date {
       return new Date(y, m - 1, d);
     }
 
-    let match: RegExpMatchArray|null;
-    if (match = value.match(ISO8601_DATE_REGEX)) {
+    let match: RegExpMatchArray | null;
+    if ((match = value.match(ISO8601_DATE_REGEX))) {
       return isoStringToDate(match);
     }
   }

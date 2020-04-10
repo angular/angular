@@ -8,7 +8,6 @@
 
 import {EventEmitter, Injectable, NgZone} from '@angular/core';
 
-
 /**
  * A mock implementation of {@link NgZone}.
  */
@@ -16,11 +15,19 @@ import {EventEmitter, Injectable, NgZone} from '@angular/core';
 export class MockNgZone extends NgZone {
   onStable: EventEmitter<any> = new EventEmitter(false);
 
-  constructor() { super({enableLongStackTrace: false, shouldCoalesceEventChangeDetection: false}); }
+  constructor() {
+    super({enableLongStackTrace: false, shouldCoalesceEventChangeDetection: false});
+  }
 
-  run(fn: Function): any { return fn(); }
+  run(fn: Function): any {
+    return fn();
+  }
 
-  runOutsideAngular(fn: Function): any { return fn(); }
+  runOutsideAngular(fn: Function): any {
+    return fn();
+  }
 
-  simulateZoneExit(): void { this.onStable.emit(null); }
+  simulateZoneExit(): void {
+    this.onStable.emit(null);
+  }
 }

@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as i18n from '../../../i18n/i18n_ast';
 import {mapLiteral} from '../../../output/map_util';
 import * as o from '../../../output/output_ast';
@@ -17,8 +18,11 @@ import {formatI18nPlaceholderName} from './util';
 const GOOG_GET_MSG = 'goog.getMsg';
 
 export function createGoogleGetMsgStatements(
-    variable: o.ReadVarExpr, message: i18n.Message, closureVar: o.ReadVarExpr,
-    params: {[name: string]: o.Expression}): o.Statement[] {
+  variable: o.ReadVarExpr,
+  message: i18n.Message,
+  closureVar: o.ReadVarExpr,
+  params: {[name: string]: o.Expression}
+): o.Statement[] {
   const messageString = serializeI18nMessageForGetMsg(message);
   const args = [o.literal(messageString) as o.Expression];
   if (Object.keys(params).length) {
@@ -56,7 +60,7 @@ class GetMsgSerializerVisitor implements i18n.Visitor {
   }
 
   visitContainer(container: i18n.Container): any {
-    return container.children.map(child => child.visit(this)).join('');
+    return container.children.map((child) => child.visit(this)).join('');
   }
 
   visitIcu(icu: i18n.Icu): any {
@@ -64,10 +68,11 @@ class GetMsgSerializerVisitor implements i18n.Visitor {
   }
 
   visitTagPlaceholder(ph: i18n.TagPlaceholder): any {
-    return ph.isVoid ?
-        this.formatPh(ph.startName) :
-        `${this.formatPh(ph.startName)}${ph.children.map(child => child.visit(this)).join('')}${
-            this.formatPh(ph.closeName)}`;
+    return ph.isVoid
+      ? this.formatPh(ph.startName)
+      : `${this.formatPh(ph.startName)}${ph.children
+          .map((child) => child.visit(this))
+          .join('')}${this.formatPh(ph.closeName)}`;
   }
 
   visitPlaceholder(ph: i18n.Placeholder): any {
@@ -82,5 +87,5 @@ class GetMsgSerializerVisitor implements i18n.Visitor {
 const serializerVisitor = new GetMsgSerializerVisitor();
 
 export function serializeI18nMessageForGetMsg(message: i18n.Message): string {
-  return message.nodes.map(node => node.visit(serializerVisitor, null)).join('');
+  return message.nodes.map((node) => node.visit(serializerVisitor, null)).join('');
 }

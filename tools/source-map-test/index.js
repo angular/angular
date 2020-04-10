@@ -28,12 +28,13 @@ const SYNTHETIC_REGEX = /ɵ[0-9]/;
 
 // tslint:disable:no-console
 module.exports = function sourceMapTest(package) {
-  const mappings =
-      getMappings(getBundlePath(package)).filter(mapping => shouldCheckMapping(mapping.sourceText));
+  const mappings = getMappings(getBundlePath(package)).filter((mapping) =>
+    shouldCheckMapping(mapping.sourceText)
+  );
 
   console.log(`Analyzing ${mappings.length} mappings for ${package}...`);
 
-  const failures = mappings.filter(mapping => {
+  const failures = mappings.filter((mapping) => {
     if (SYNTHETIC_REGEX.test(mapping.sourceText)) return false;
     if (cleanSource(mapping.sourceText) !== cleanGen(mapping.genText)) {
       console.log('source:', cleanSource(mapping.sourceText), 'gen:', cleanGen(mapping.genText));
@@ -48,30 +49,38 @@ module.exports = function sourceMapTest(package) {
 function shouldCheckMapping(text) {
   // tsickle closure declaration does not exist in final bundle, so can't be checked
   if (CLOSURE_REGEX.test(text)) return false;
-  return VAR_REGEX.test(text) || FUNCTION_REGEX.test(text) || CLASS_REGEX.test(text) ||
-      PROPERTY_REGEX.test(text) || METHOD_REGEX.test(text) || GETTER_REGEX.test(text);
+  return (
+    VAR_REGEX.test(text) ||
+    FUNCTION_REGEX.test(text) ||
+    CLASS_REGEX.test(text) ||
+    PROPERTY_REGEX.test(text) ||
+    METHOD_REGEX.test(text) ||
+    GETTER_REGEX.test(text)
+  );
 }
 
 function cleanSource(source) {
-  return source.replace(TYPE_COMMENT_REGEX, '')
-      .replace(EXPORT_REGEX, '')
-      .replace(STRIP_PREFIX_REGEX, '')
-      .replace(TSLIB_REGEX, '__')
-      .replace(AFTER_EQUALS_REGEX, '$1=');
+  return source
+    .replace(TYPE_COMMENT_REGEX, '')
+    .replace(EXPORT_REGEX, '')
+    .replace(STRIP_PREFIX_REGEX, '')
+    .replace(TSLIB_REGEX, '__')
+    .replace(AFTER_EQUALS_REGEX, '$1=');
 }
 
 function cleanGen(gen) {
-  return gen.replace(TYPE_COMMENT_REGEX, '')
-      .replace(STRIP_PREFIX_REGEX, '')
-      .replace(STRIP_SUFFIX_REGEX, '$1')
-      .replace(AFTER_EQUALS_REGEX, '$1=');
+  return gen
+    .replace(TYPE_COMMENT_REGEX, '')
+    .replace(STRIP_PREFIX_REGEX, '')
+    .replace(STRIP_SUFFIX_REGEX, '$1')
+    .replace(AFTER_EQUALS_REGEX, '$1=');
 }
 
 // tslint:disable:no-console
 function logResults(failures) {
   if (failures.length) {
     console.error(`... and source maps appear to be broken: ${failures.length} failures.`);
-    failures.forEach(failure => console.error(failure));
+    failures.forEach((failure) => console.error(failure));
   } else {
     console.log('... and source maps look good! 100% match');
   }

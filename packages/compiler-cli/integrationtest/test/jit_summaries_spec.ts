@@ -10,7 +10,15 @@ import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {platformServerTesting, ServerTestingModule} from '@angular/platform-server/testing';
 
-import {expectInstanceCreated, SomeDep, SomeDirective, SomeModule, SomePipe, SomePrivateComponent, SomeService} from '../src/jit_summaries';
+import {
+  expectInstanceCreated,
+  SomeDep,
+  SomeDirective,
+  SomeModule,
+  SomePipe,
+  SomePrivateComponent,
+  SomeService,
+} from '../src/jit_summaries';
 import {SomeModuleNgSummary} from '../src/jit_summaries.ngsummary';
 
 describe('Jit Summaries', () => {
@@ -24,21 +32,23 @@ describe('Jit Summaries', () => {
 
   it('should use directive metadata from summaries', () => {
     @Component({template: '<div someDir></div>'})
-    class TestComp {
-    }
+    class TestComp {}
 
-    TestBed.configureTestingModule({providers: [SomeDep], declarations: [TestComp, SomeDirective]})
-        .createComponent(TestComp);
+    TestBed.configureTestingModule({
+      providers: [SomeDep],
+      declarations: [TestComp, SomeDirective],
+    }).createComponent(TestComp);
     expectInstanceCreated(SomeDirective);
   });
 
   it('should use pipe metadata from summaries', () => {
     @Component({template: '{{1 | somePipe}}'})
-    class TestComp {
-    }
+    class TestComp {}
 
-    TestBed.configureTestingModule({providers: [SomeDep], declarations: [TestComp, SomePipe]})
-        .createComponent(TestComp);
+    TestBed.configureTestingModule({
+      providers: [SomeDep],
+      declarations: [TestComp, SomePipe],
+    }).createComponent(TestComp);
     expectInstanceCreated(SomePipe);
   });
 
@@ -56,10 +66,11 @@ describe('Jit Summaries', () => {
       constructor(service: SomeService) {}
     }
 
-    TestBed
-        .configureTestingModule(
-            {providers: [SomeDep], declarations: [TestComp], imports: [SomeModule]})
-        .createComponent(TestComp);
+    TestBed.configureTestingModule({
+      providers: [SomeDep],
+      declarations: [TestComp],
+      imports: [SomeModule],
+    }).createComponent(TestComp);
 
     expectInstanceCreated(SomeModule);
     expectInstanceCreated(SomeDirective);
@@ -68,8 +79,9 @@ describe('Jit Summaries', () => {
   });
 
   it('should allow to create private components from imported NgModule summaries', () => {
-    TestBed.configureTestingModule({providers: [SomeDep], imports: [SomeModule]})
-        .createComponent(SomePrivateComponent);
+    TestBed.configureTestingModule({providers: [SomeDep], imports: [SomeModule]}).createComponent(
+      SomePrivateComponent
+    );
     expectInstanceCreated(SomePrivateComponent);
   });
 });

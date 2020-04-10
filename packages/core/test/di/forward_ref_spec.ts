@@ -11,7 +11,7 @@ import {forwardRef, resolveForwardRef} from '@angular/core/src/di';
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 {
-  describe('forwardRef', function() {
+  describe('forwardRef', function () {
     it('should wrap and unwrap the reference', () => {
       const ref = forwardRef(() => String);
       expect(ref instanceof Type).toBe(true);

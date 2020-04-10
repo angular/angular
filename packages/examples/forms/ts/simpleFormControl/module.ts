@@ -14,9 +14,8 @@ import {SimpleFormControl} from './simple_form_control_example';
 @NgModule({
   imports: [BrowserModule, ReactiveFormsModule],
   declarations: [SimpleFormControl],
-  bootstrap: [SimpleFormControl]
+  bootstrap: [SimpleFormControl],
 })
-export class AppModule {
-}
+export class AppModule {}
 
 export {SimpleFormControl as AppComponent};

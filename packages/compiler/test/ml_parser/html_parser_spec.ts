@@ -29,19 +29,21 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
 
         it('should parse text nodes inside regular elements', () => {
           expect(humanizeDom(parser.parse('<div>a</div>', 'TestComp'))).toEqual([
-            [html.Element, 'div', 0], [html.Text, 'a', 1]
+            [html.Element, 'div', 0],
+            [html.Text, 'a', 1],
           ]);
         });
 
         it('should parse text nodes inside <ng-template> elements', () => {
           expect(humanizeDom(parser.parse('<ng-template>a</ng-template>', 'TestComp'))).toEqual([
-            [html.Element, 'ng-template', 0], [html.Text, 'a', 1]
+            [html.Element, 'ng-template', 0],
+            [html.Text, 'a', 1],
           ]);
         });
 
         it('should parse CDATA', () => {
           expect(humanizeDom(parser.parse('<![CDATA[text]]>', 'TestComp'))).toEqual([
-            [html.Text, 'text', 0]
+            [html.Text, 'text', 0],
           ]);
         });
       });
@@ -49,51 +51,58 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
       describe('elements', () => {
         it('should parse root level elements', () => {
           expect(humanizeDom(parser.parse('<div></div>', 'TestComp'))).toEqual([
-            [html.Element, 'div', 0]
+            [html.Element, 'div', 0],
           ]);
         });
 
         it('should parse elements inside of regular elements', () => {
           expect(humanizeDom(parser.parse('<div><span></span></div>', 'TestComp'))).toEqual([
-            [html.Element, 'div', 0], [html.Element, 'span', 1]
+            [html.Element, 'div', 0],
+            [html.Element, 'span', 1],
           ]);
         });
 
         it('should parse elements inside  <ng-template> elements', () => {
-          expect(humanizeDom(parser.parse('<ng-template><span></span></ng-template>', 'TestComp')))
-              .toEqual([[html.Element, 'ng-template', 0], [html.Element, 'span', 1]]);
+          expect(
+            humanizeDom(parser.parse('<ng-template><span></span></ng-template>', 'TestComp'))
+          ).toEqual([
+            [html.Element, 'ng-template', 0],
+            [html.Element, 'span', 1],
+          ]);
         });
 
         it('should support void elements', () => {
-          expect(humanizeDom(parser.parse('<link rel="author license" href="/about">', 'TestComp')))
-              .toEqual([
-                [html.Element, 'link', 0],
-                [html.Attribute, 'rel', 'author license'],
-                [html.Attribute, 'href', '/about'],
-              ]);
+          expect(
+            humanizeDom(parser.parse('<link rel="author license" href="/about">', 'TestComp'))
+          ).toEqual([
+            [html.Element, 'link', 0],
+            [html.Attribute, 'rel', 'author license'],
+            [html.Attribute, 'href', '/about'],
+          ]);
         });
 
-        it('should not error on void elements from HTML5 spec',
-           () => {  // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements without:
-             // <base> - it can be present in head only
-             // <meta> - it can be present in head only
-             // <command> - obsolete
-             // <keygen> - obsolete
-             ['<map><area></map>',
-              '<div><br></div>',
-              '<colgroup><col></colgroup>',
-              '<div><embed></div>',
-              '<div><hr></div>',
-              '<div><img></div>',
-              '<div><input></div>',
-              '<object><param>/<object>',
-              '<audio><source></audio>',
-              '<audio><track></audio>',
-              '<p><wbr></p>',
-             ].forEach((html) => {
-               expect(parser.parse(html, 'TestComp').errors).toEqual([]);
-             });
-           });
+        it('should not error on void elements from HTML5 spec', () => {
+          // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements without:
+          // <base> - it can be present in head only
+          // <meta> - it can be present in head only
+          // <command> - obsolete
+          // <keygen> - obsolete
+          [
+            '<map><area></map>',
+            '<div><br></div>',
+            '<colgroup><col></colgroup>',
+            '<div><embed></div>',
+            '<div><hr></div>',
+            '<div><img></div>',
+            '<div><input></div>',
+            '<object><param>/<object>',
+            '<audio><source></audio>',
+            '<audio><track></audio>',
+            '<p><wbr></p>',
+          ].forEach((html) => {
+            expect(parser.parse(html, 'TestComp').errors).toEqual([]);
+          });
+        });
 
         it('should close void elements on text nodes', () => {
           expect(humanizeDom(parser.parse('<p>before<br>after</p>', 'TestComp'))).toEqual([
@@ -115,13 +124,14 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
         });
 
         it('should support nested elements', () => {
-          expect(humanizeDom(parser.parse('<ul><li><ul><li></li></ul></li></ul>', 'TestComp')))
-              .toEqual([
-                [html.Element, 'ul', 0],
-                [html.Element, 'li', 1],
-                [html.Element, 'ul', 2],
-                [html.Element, 'li', 3],
-              ]);
+          expect(
+            humanizeDom(parser.parse('<ul><li><ul><li></li></ul></li></ul>', 'TestComp'))
+          ).toEqual([
+            [html.Element, 'ul', 0],
+            [html.Element, 'li', 1],
+            [html.Element, 'ul', 2],
+            [html.Element, 'li', 3],
+          ]);
         });
 
         /**
@@ -140,13 +150,13 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
 
         it('should support explicit namespace', () => {
           expect(humanizeDom(parser.parse('<myns:div></myns:div>', 'TestComp'))).toEqual([
-            [html.Element, ':myns:div', 0]
+            [html.Element, ':myns:div', 0],
           ]);
         });
 
         it('should support implicit namespace', () => {
           expect(humanizeDom(parser.parse('<svg></svg>', 'TestComp'))).toEqual([
-            [html.Element, ':svg:svg', 0]
+            [html.Element, ':svg:svg', 0],
           ]);
         });
 
@@ -164,41 +174,45 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
             [
               'p',
               'Unexpected closing tag "p". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
-              '0:8'
+              '0:8',
             ],
             [
               'dIv',
               'Unexpected closing tag "dIv". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
-              '0:12'
+              '0:12',
             ],
           ]);
         });
 
         it('should support self closing void elements', () => {
           expect(humanizeDom(parser.parse('<input />', 'TestComp'))).toEqual([
-            [html.Element, 'input', 0]
+            [html.Element, 'input', 0],
           ]);
         });
 
         it('should support self closing foreign elements', () => {
           expect(humanizeDom(parser.parse('<math />', 'TestComp'))).toEqual([
-            [html.Element, ':math:math', 0]
+            [html.Element, ':math:math', 0],
           ]);
         });
 
         it('should ignore LF immediately after textarea, pre and listing', () => {
-          expect(humanizeDom(parser.parse(
-                     '<p>\n</p><textarea>\n</textarea><pre>\n\n</pre><listing>\n\n</listing>',
-                     'TestComp')))
-              .toEqual([
-                [html.Element, 'p', 0],
-                [html.Text, '\n', 1],
-                [html.Element, 'textarea', 0],
-                [html.Element, 'pre', 0],
-                [html.Text, '\n', 1],
-                [html.Element, 'listing', 0],
-                [html.Text, '\n', 1],
-              ]);
+          expect(
+            humanizeDom(
+              parser.parse(
+                '<p>\n</p><textarea>\n</textarea><pre>\n\n</pre><listing>\n\n</listing>',
+                'TestComp'
+              )
+            )
+          ).toEqual([
+            [html.Element, 'p', 0],
+            [html.Text, '\n', 1],
+            [html.Element, 'textarea', 0],
+            [html.Element, 'pre', 0],
+            [html.Text, '\n', 1],
+            [html.Element, 'listing', 0],
+            [html.Text, '\n', 1],
+          ]);
         });
       });
 
@@ -226,11 +240,12 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
         });
 
         it('should parse attributes on <ng-template> elements', () => {
-          expect(humanizeDom(parser.parse('<ng-template k="v"></ng-template>', 'TestComp')))
-              .toEqual([
-                [html.Element, 'ng-template', 0],
-                [html.Attribute, 'k', 'v'],
-              ]);
+          expect(
+            humanizeDom(parser.parse('<ng-template k="v"></ng-template>', 'TestComp'))
+          ).toEqual([
+            [html.Element, 'ng-template', 0],
+            [html.Attribute, 'k', 'v'],
+          ]);
         });
 
         it('should support namespace', () => {
@@ -253,8 +268,10 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
       describe('expansion forms', () => {
         it('should parse out expansion forms', () => {
           const parsed = parser.parse(
-              `<div>before{messages.length, plural, =0 {You have <b>no</b> messages} =1 {One {{message}}}}after</div>`,
-              'TestComp', {tokenizeExpansionForms: true});
+            `<div>before{messages.length, plural, =0 {You have <b>no</b> messages} =1 {One {{message}}}}after</div>`,
+            'TestComp',
+            {tokenizeExpansionForms: true}
+          );
 
           expect(humanizeDom(parsed)).toEqual([
             [html.Element, 'div', 0],
@@ -274,14 +291,14 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
           ]);
 
           expect(humanizeDom(new ParseTreeResult(cases[1].expression, []))).toEqual([
-            [html.Text, 'One {{message}}', 0]
+            [html.Text, 'One {{message}}', 0],
           ]);
         });
 
         it('should parse out expansion forms', () => {
-          const parsed = parser.parse(
-              `<div><span>{a, plural, =0 {b}}</span></div>`, 'TestComp',
-              {tokenizeExpansionForms: true});
+          const parsed = parser.parse(`<div><span>{a, plural, =0 {b}}</span></div>`, 'TestComp', {
+            tokenizeExpansionForms: true,
+          });
 
           expect(humanizeDom(parsed)).toEqual([
             [html.Element, 'div', 0],
@@ -293,8 +310,10 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
 
         it('should parse out nested expansion forms', () => {
           const parsed = parser.parse(
-              `{messages.length, plural, =0 { {p.gender, select, male {m}} }}`, 'TestComp',
-              {tokenizeExpansionForms: true});
+            `{messages.length, plural, =0 { {p.gender, select, male {m}} }}`,
+            'TestComp',
+            {tokenizeExpansionForms: true}
+          );
           expect(humanizeDom(parsed)).toEqual([
             [html.Expansion, 'messages.length', 'plural', 0],
             [html.ExpansionCase, '=0', 1],
@@ -310,69 +329,75 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
         });
 
         it('should error when expansion form is not closed', () => {
-          const p = parser.parse(
-              `{messages.length, plural, =0 {one}`, 'TestComp', {tokenizeExpansionForms: true});
+          const p = parser.parse(`{messages.length, plural, =0 {one}`, 'TestComp', {
+            tokenizeExpansionForms: true,
+          });
           expect(humanizeErrors(p.errors)).toEqual([
-            [null, 'Invalid ICU message. Missing \'}\'.', '0:34']
+            [null, "Invalid ICU message. Missing '}'.", '0:34'],
           ]);
         });
 
         it('should support ICU expressions with cases that contain numbers', () => {
-          const p = parser.parse(
-              `{sex, select, male {m} female {f} 0 {other}}`, 'TestComp',
-              {tokenizeExpansionForms: true});
+          const p = parser.parse(`{sex, select, male {m} female {f} 0 {other}}`, 'TestComp', {
+            tokenizeExpansionForms: true,
+          });
           expect(p.errors.length).toEqual(0);
         });
 
-        it(`should support ICU expressions with cases that contain any character except '}'`,
-           () => {
-             const p = parser.parse(
-                 `{a, select, b {foo} % bar {% bar}}`, 'TestComp', {tokenizeExpansionForms: true});
-             expect(p.errors.length).toEqual(0);
-           });
+        it(`should support ICU expressions with cases that contain any character except '}'`, () => {
+          const p = parser.parse(`{a, select, b {foo} % bar {% bar}}`, 'TestComp', {
+            tokenizeExpansionForms: true,
+          });
+          expect(p.errors.length).toEqual(0);
+        });
 
         it('should error when expansion case is not properly closed', () => {
-          const p = parser.parse(
-              `{a, select, b {foo} % { bar {% bar}}`, 'TestComp', {tokenizeExpansionForms: true});
+          const p = parser.parse(`{a, select, b {foo} % { bar {% bar}}`, 'TestComp', {
+            tokenizeExpansionForms: true,
+          });
           expect(humanizeErrors(p.errors)).toEqual([
             [
               6,
               'Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ \'{\' }}") to escape it.)',
-              '0:36'
+              '0:36',
             ],
-            [null, 'Invalid ICU message. Missing \'}\'.', '0:22']
+            [null, "Invalid ICU message. Missing '}'.", '0:22'],
           ]);
         });
 
         it('should error when expansion case is not closed', () => {
-          const p = parser.parse(
-              `{messages.length, plural, =0 {one`, 'TestComp', {tokenizeExpansionForms: true});
+          const p = parser.parse(`{messages.length, plural, =0 {one`, 'TestComp', {
+            tokenizeExpansionForms: true,
+          });
           expect(humanizeErrors(p.errors)).toEqual([
-            [null, 'Invalid ICU message. Missing \'}\'.', '0:29']
+            [null, "Invalid ICU message. Missing '}'.", '0:29'],
           ]);
         });
 
         it('should error when invalid html in the case', () => {
-          const p = parser.parse(
-              `{messages.length, plural, =0 {<b/>}`, 'TestComp', {tokenizeExpansionForms: true});
+          const p = parser.parse(`{messages.length, plural, =0 {<b/>}`, 'TestComp', {
+            tokenizeExpansionForms: true,
+          });
           expect(humanizeErrors(p.errors)).toEqual([
-            ['b', 'Only void and foreign elements can be self closed "b"', '0:30']
+            ['b', 'Only void and foreign elements can be self closed "b"', '0:30'],
           ]);
         });
       });
 
       describe('source spans', () => {
         it('should store the location', () => {
-          expect(humanizeDomSourceSpans(parser.parse(
-                     '<div [prop]="v1" (e)="do()" attr="v2" noValue>\na\n</div>', 'TestComp')))
-              .toEqual([
-                [html.Element, 'div', 0, '<div [prop]="v1" (e)="do()" attr="v2" noValue>'],
-                [html.Attribute, '[prop]', 'v1', '[prop]="v1"'],
-                [html.Attribute, '(e)', 'do()', '(e)="do()"'],
-                [html.Attribute, 'attr', 'v2', 'attr="v2"'],
-                [html.Attribute, 'noValue', '', 'noValue'],
-                [html.Text, '\na\n', 1, '\na\n'],
-              ]);
+          expect(
+            humanizeDomSourceSpans(
+              parser.parse('<div [prop]="v1" (e)="do()" attr="v2" noValue>\na\n</div>', 'TestComp')
+            )
+          ).toEqual([
+            [html.Element, 'div', 0, '<div [prop]="v1" (e)="do()" attr="v2" noValue>'],
+            [html.Attribute, '[prop]', 'v1', '[prop]="v1"'],
+            [html.Attribute, '(e)', 'do()', '(e)="do()"'],
+            [html.Attribute, 'attr', 'v2', 'attr="v2"'],
+            [html.Attribute, 'noValue', '', 'noValue'],
+            [html.Text, '\na\n', 1, '\na\n'],
+          ]);
         });
 
         it('should set the start and end source spans', () => {
@@ -386,14 +411,17 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
         });
 
         it('should support expansion form', () => {
-          expect(humanizeDomSourceSpans(parser.parse(
-                     '<div>{count, plural, =0 {msg}}</div>', 'TestComp',
-                     {tokenizeExpansionForms: true})))
-              .toEqual([
-                [html.Element, 'div', 0, '<div>'],
-                [html.Expansion, 'count', 'plural', 1, '{count, plural, =0 {msg}}'],
-                [html.ExpansionCase, '=0', 2, '=0 {msg}'],
-              ]);
+          expect(
+            humanizeDomSourceSpans(
+              parser.parse('<div>{count, plural, =0 {msg}}</div>', 'TestComp', {
+                tokenizeExpansionForms: true,
+              })
+            )
+          ).toEqual([
+            [html.Element, 'div', 0, '<div>'],
+            [html.Expansion, 'count', 'plural', 1, '{count, plural, =0 {msg}}'],
+            [html.ExpansionCase, '=0', 2, '=0 {msg}'],
+          ]);
         });
 
         it('should not report a value span for an attribute without a value', () => {
@@ -433,10 +461,12 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
         });
 
         it('should visit all nodes', () => {
-          const result =
-              parser.parse('<div id="foo"><span id="bar">a</span><span>b</span></div>', 'TestComp');
+          const result = parser.parse(
+            '<div id="foo"><span id="bar">a</span><span>b</span></div>',
+            'TestComp'
+          );
           const accumulator: html.Node[] = [];
-          const visitor = new class {
+          const visitor = new (class {
             visit(node: html.Node, context: any) {
               accumulator.push(node);
             }
@@ -451,17 +481,22 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
               html.visitAll(this, expansion.cases);
             }
             visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {}
-          };
+          })();
 
           html.visitAll(visitor, result.rootNodes);
-          expect(accumulator.map(n => n.constructor)).toEqual([
-            html.Element, html.Attribute, html.Element, html.Attribute, html.Text, html.Element,
-            html.Text
+          expect(accumulator.map((n) => n.constructor)).toEqual([
+            html.Element,
+            html.Attribute,
+            html.Element,
+            html.Attribute,
+            html.Text,
+            html.Element,
+            html.Text,
           ]);
         });
 
         it('should skip typed visit if visit() returns a truthy value', () => {
-          const visitor = new class {
+          const visitor = new (class {
             visit(node: html.Node, context: any) {
               return true;
             }
@@ -483,7 +518,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
             visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
               throw Error('Unexpected');
             }
-          };
+          })();
           const result = parser.parse('<div id="foo"></div><div id="bar"></div>', 'TestComp');
           const traversal = html.visitAll(visitor, result.rootNodes);
           expect(traversal).toEqual([true, true]);
@@ -494,28 +529,32 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
         it('should report unexpected closing tags', () => {
           const errors = parser.parse('<div></p></div>', 'TestComp').errors;
           expect(errors.length).toEqual(1);
-          expect(humanizeErrors(errors)).toEqual([[
-            'p',
-            'Unexpected closing tag "p". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
-            '0:5'
-          ]]);
+          expect(humanizeErrors(errors)).toEqual([
+            [
+              'p',
+              'Unexpected closing tag "p". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
+              '0:5',
+            ],
+          ]);
         });
 
         it('should report subsequent open tags without proper close tag', () => {
           const errors = parser.parse('<div</div>', 'TestComp').errors;
           expect(errors.length).toEqual(1);
-          expect(humanizeErrors(errors)).toEqual([[
-            'div',
-            'Unexpected closing tag "div". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
-            '0:4'
-          ]]);
+          expect(humanizeErrors(errors)).toEqual([
+            [
+              'div',
+              'Unexpected closing tag "div". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
+              '0:4',
+            ],
+          ]);
         });
 
         it('should report closing tag for void elements', () => {
           const errors = parser.parse('<input></input>', 'TestComp').errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([
-            ['input', 'Void elements do not have end tags "input"', '0:7']
+            ['input', 'Void elements do not have end tags "input"', '0:7'],
           ]);
         });
 
@@ -523,7 +562,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
           const errors = parser.parse('<p />', 'TestComp').errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([
-            ['p', 'Only void and foreign elements can be self closed "p"', '0:0']
+            ['p', 'Only void and foreign elements can be self closed "p"', '0:0'],
           ]);
         });
 
@@ -531,7 +570,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
           const errors = parser.parse('<my-cmp />', 'TestComp').errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([
-            ['my-cmp', 'Only void and foreign elements can be self closed "my-cmp"', '0:0']
+            ['my-cmp', 'Only void and foreign elements can be self closed "my-cmp"', '0:0'],
           ]);
         });
 
@@ -543,8 +582,8 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
             [
               'p',
               'Unexpected closing tag "p". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
-              '0:14'
-            ]
+              '0:14',
+            ],
           ]);
         });
       });
@@ -553,7 +592,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
 }
 
 export function humanizeErrors(errors: ParseError[]): any[] {
-  return errors.map(e => {
+  return errors.map((e) => {
     if (e instanceof TreeError) {
       // Parser errors
       return [<any>e.elementName, e.msg, humanizeLineColumn(e.span.start)];

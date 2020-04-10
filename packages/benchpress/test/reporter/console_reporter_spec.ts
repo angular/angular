@@ -16,13 +16,17 @@ import {ConsoleReporter, Injector, MeasureValues, SampleDescription} from '../..
     let reporter: ConsoleReporter;
     let log: string[];
 
-    function createReporter(
-        {columnWidth = null, sampleId = null, descriptions = null, metrics = null}: {
-          columnWidth?: number | null,
-          sampleId?: string | null,
-          descriptions?: {[key: string]: any}[] | null,
-          metrics?: {[key: string]: any} | null
-        }) {
+    function createReporter({
+      columnWidth = null,
+      sampleId = null,
+      descriptions = null,
+      metrics = null,
+    }: {
+      columnWidth?: number | null;
+      sampleId?: string | null;
+      descriptions?: {[key: string]: any}[] | null;
+      metrics?: {[key: string]: any} | null;
+    }) {
       log = [];
       if (!descriptions) {
         descriptions = [];
@@ -31,11 +35,12 @@ import {ConsoleReporter, Injector, MeasureValues, SampleDescription} from '../..
         sampleId = 'null';
       }
       const providers: StaticProvider[] = [
-        ConsoleReporter.PROVIDERS, {
+        ConsoleReporter.PROVIDERS,
+        {
           provide: SampleDescription,
-          useValue: new SampleDescription(sampleId, descriptions, metrics !)
+          useValue: new SampleDescription(sampleId, descriptions, metrics!),
         },
-        {provide: ConsoleReporter.PRINT, useValue: (line: string) => log.push(line)}
+        {provide: ConsoleReporter.PRINT, useValue: (line: string) => log.push(line)},
       ];
       if (columnWidth != null) {
         providers.push({provide: ConsoleReporter.COLUMN_WIDTH, useValue: columnWidth});
@@ -48,7 +53,7 @@ import {ConsoleReporter, Injector, MeasureValues, SampleDescription} from '../..
         columnWidth: 8,
         sampleId: 'someSample',
         descriptions: [{'a': 1, 'b': 2}],
-        metrics: {'m1': 'some desc', 'm2': 'some other desc'}
+        metrics: {'m1': 'some desc', 'm2': 'some other desc'},
       });
       expect(log).toEqual([
         'BENCHMARK someSample',
@@ -84,7 +89,6 @@ import {ConsoleReporter, Injector, MeasureValues, SampleDescription} from '../..
       reporter.reportSample([], [mv(0, 0, {'a': 3, 'b': 0}), mv(1, 1, {'a': 5, 'b': 0})]);
       expect(log).toEqual(['======== | ========', '4.00+-25% |     0.00']);
     });
-
   });
 }
 

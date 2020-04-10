@@ -50,16 +50,22 @@ export enum TraitState {
  * This not only simplifies the implementation, but ensures traits are monomorphic objects as
  * they're all just "views" in the type system of the same object (which never changes shape).
  */
-export type Trait<D, A, R> = PendingTrait<D, A, R>|SkippedTrait<D, A, R>|AnalyzedTrait<D, A, R>|
-    ResolvedTrait<D, A, R>|ErroredTrait<D, A, R>;
+export type Trait<D, A, R> =
+  | PendingTrait<D, A, R>
+  | SkippedTrait<D, A, R>
+  | AnalyzedTrait<D, A, R>
+  | ResolvedTrait<D, A, R>
+  | ErroredTrait<D, A, R>;
 
 /**
  * The value side of `Trait` exposes a helper to create a `Trait` in a pending state (by delegating
  * to `TraitImpl`).
  */
 export const Trait = {
-  pending: <D, A, R>(handler: DecoratorHandler<D, A, R>, detected: DetectResult<D>):
-      PendingTrait<D, A, R> => TraitImpl.pending(handler, detected),
+  pending: <D, A, R>(
+    handler: DecoratorHandler<D, A, R>,
+    detected: DetectResult<D>
+  ): PendingTrait<D, A, R> => TraitImpl.pending(handler, detected),
 };
 
 /**
@@ -201,9 +207,9 @@ class TraitImpl<D, A, R> {
   state: TraitState = TraitState.PENDING;
   handler: DecoratorHandler<D, A, R>;
   detected: DetectResult<D>;
-  analysis: Readonly<A>|null = null;
-  resolution: Readonly<R>|null = null;
-  diagnostics: ts.Diagnostic[]|null = null;
+  analysis: Readonly<A> | null = null;
+  resolution: Readonly<R> | null = null;
+  diagnostics: ts.Diagnostic[] | null = null;
 
   constructor(handler: DecoratorHandler<D, A, R>, detected: DetectResult<D>) {
     this.handler = handler;
@@ -253,16 +259,21 @@ class TraitImpl<D, A, R> {
    */
   private assertTransitionLegal(allowedState: TraitState, transitionTo: TraitState): void {
     if (!(this.state & allowedState)) {
-      throw new Error(`Assertion failure: cannot transition from ${TraitState[this.state]} to ${
-          TraitState[transitionTo]}.`);
+      throw new Error(
+        `Assertion failure: cannot transition from ${TraitState[this.state]} to ${
+          TraitState[transitionTo]
+        }.`
+      );
     }
   }
 
   /**
    * Construct a new `TraitImpl` in the pending state.
    */
-  static pending<D, A, R>(handler: DecoratorHandler<D, A, R>, detected: DetectResult<D>):
-      PendingTrait<D, A, R> {
+  static pending<D, A, R>(
+    handler: DecoratorHandler<D, A, R>,
+    detected: DetectResult<D>
+  ): PendingTrait<D, A, R> {
     return new TraitImpl(handler, detected) as PendingTrait<D, A, R>;
   }
 }

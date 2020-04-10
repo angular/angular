@@ -33,17 +33,19 @@ import {URLSearchParams} from '@angular/http/src/url_search_params';
       expect(new URLSearchParams().toString()).toBe('');
     });
 
-
     it('should optionally accept a custom parser', () => {
       const fooEveryThingParser = {
-        encodeKey() { return 'I AM KEY'; },
-        encodeValue() { return 'I AM VALUE'; }
+        encodeKey() {
+          return 'I AM KEY';
+        },
+        encodeValue() {
+          return 'I AM VALUE';
+        },
       };
       const params = new URLSearchParams('', fooEveryThingParser);
       params.set('myKey', 'myValue');
       expect(params.toString()).toBe('I AM KEY=I AM VALUE');
     });
-
 
     it('should encode special characters in params', () => {
       const searchParams = new URLSearchParams();
@@ -52,7 +54,6 @@ import {URLSearchParams} from '@angular/http/src/url_search_params';
       searchParams.append('d%', '3$');
       expect(searchParams.toString()).toEqual('a=1+1&b%20c=2&d%25=3$');
     });
-
 
     it('should not encode allowed characters', () => {
       /*
@@ -68,13 +69,15 @@ import {URLSearchParams} from '@angular/http/src/url_search_params';
        **/
 
       let params = new URLSearchParams();
-      '! $ \' ( ) * + , ; A 9 - . _ ~ ? / ='.split(' ').forEach(
-          (char, idx) => { params.set(`a${idx}`, char); });
-      expect(params.toString())
-          .toBe(
-              `a0=!&a1=$&a2=\'&a3=(&a4=)&a5=*&a6=+&a7=,&a8=;&a9=A&a10=9&a11=-&a12=.&a13=_&a14=~&a15=?&a16=/&a17==`
-                  .replace(/\s/g, ''));
-
+      "! $ ' ( ) * + , ; A 9 - . _ ~ ? / =".split(' ').forEach((char, idx) => {
+        params.set(`a${idx}`, char);
+      });
+      expect(params.toString()).toBe(
+        `a0=!&a1=$&a2=\'&a3=(&a4=)&a5=*&a6=+&a7=,&a8=;&a9=A&a10=9&a11=-&a12=.&a13=_&a14=~&a15=?&a16=/&a17==`.replace(
+          /\s/g,
+          ''
+        )
+      );
 
       // Original example from https://github.com/angular/angular/issues/9348 for posterity
       params = new URLSearchParams();
@@ -82,10 +85,10 @@ import {URLSearchParams} from '@angular/http/src/url_search_params';
       params.set('sort', 'created');
       params.set('order', 'desc');
       params.set('page', '1');
-      expect(params.toString())
-          .toBe('q=repo:janbaer/howcani+type:issue&sort=created&order=desc&page=1');
+      expect(params.toString()).toBe(
+        'q=repo:janbaer/howcani+type:issue&sort=created&order=desc&page=1'
+      );
     });
-
 
     it('should support map-like merging operation via setAll()', () => {
       const mapA = new URLSearchParams('a=1&a=2&a=3&c=8');
@@ -100,7 +103,6 @@ import {URLSearchParams} from '@angular/http/src/url_search_params';
       expect(mapA.toString()).toEqual('a=4&c=8&b=7');
     });
 
-
     it('should support multimap-like merging operation via appendAll()', () => {
       const mapA = new URLSearchParams('a=1&a=2&a=3&c=8');
       const mapB = new URLSearchParams('a=4&a=5&a=6&b=7');
@@ -113,7 +115,6 @@ import {URLSearchParams} from '@angular/http/src/url_search_params';
       expect(mapA.getAll('c')).toEqual(['8']);
       expect(mapA.toString()).toEqual('a=1&a=2&a=3&a=4&a=5&a=6&c=8&b=7');
     });
-
 
     it('should support multimap-like merging operation via replaceAll()', () => {
       const mapA = new URLSearchParams('a=1&a=2&a=3&c=8');
@@ -130,8 +131,12 @@ import {URLSearchParams} from '@angular/http/src/url_search_params';
 
     it('should support a clone operation via clone()', () => {
       const fooQueryEncoder = {
-        encodeKey(k: string) { return encodeURIComponent(k); },
-        encodeValue(v: string) { return encodeURIComponent(v); }
+        encodeKey(k: string) {
+          return encodeURIComponent(k);
+        },
+        encodeValue(v: string) {
+          return encodeURIComponent(v);
+        },
       };
       const paramsA = new URLSearchParams('', fooQueryEncoder);
       paramsA.set('a', '2');
@@ -151,21 +156,20 @@ import {URLSearchParams} from '@angular/http/src/url_search_params';
 
     it('should remove the parameter when set to undefined or null', () => {
       const params = new URLSearchParams('q=Q');
-      params.set('q', undefined !);
+      params.set('q', undefined!);
       expect(params.has('q')).toBe(false);
       expect(params.toString()).toEqual('');
-      params.set('q', null !);
+      params.set('q', null!);
       expect(params.has('q')).toBe(false);
       expect(params.toString()).toEqual('');
     });
 
     it('should ignore the value when append undefined or null', () => {
       const params = new URLSearchParams('q=Q');
-      params.append('q', undefined !);
+      params.append('q', undefined!);
       expect(params.toString()).toEqual('q=Q');
-      params.append('q', null !);
+      params.append('q', null!);
       expect(params.toString()).toEqual('q=Q');
     });
-
   });
 }

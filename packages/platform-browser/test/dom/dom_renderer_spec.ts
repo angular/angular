@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {Component, Renderer2, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -20,9 +21,13 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     beforeEach(() => {
       TestBed.configureTestingModule({
         declarations: [
-          TestCmp, SomeApp, CmpEncapsulationEmulated, CmpEncapsulationNative, CmpEncapsulationNone,
-          CmpEncapsulationNative
-        ]
+          TestCmp,
+          SomeApp,
+          CmpEncapsulationEmulated,
+          CmpEncapsulationNative,
+          CmpEncapsulationNone,
+          CmpEncapsulationNative,
+        ],
       });
       renderer = TestBed.createComponent(TestCmp).componentInstance.renderer;
     });
@@ -99,22 +104,20 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     });
 
     if (browserDetection.supportsDeprecatedShadowDomV0) {
-      it('should allow to style components with emulated encapsulation and no encapsulation inside of components with shadow DOM',
-         () => {
-           const fixture = TestBed.createComponent(SomeApp);
+      it('should allow to style components with emulated encapsulation and no encapsulation inside of components with shadow DOM', () => {
+        const fixture = TestBed.createComponent(SomeApp);
 
-           const cmp = fixture.debugElement.query(By.css('cmp-native')).nativeElement;
+        const cmp = fixture.debugElement.query(By.css('cmp-native')).nativeElement;
 
+        const native = cmp.shadowRoot.querySelector('.native');
+        expect(window.getComputedStyle(native).color).toEqual('rgb(255, 0, 0)');
 
-           const native = cmp.shadowRoot.querySelector('.native');
-           expect(window.getComputedStyle(native).color).toEqual('rgb(255, 0, 0)');
+        const emulated = cmp.shadowRoot.querySelector('.emulated');
+        expect(window.getComputedStyle(emulated).color).toEqual('rgb(0, 0, 255)');
 
-           const emulated = cmp.shadowRoot.querySelector('.emulated');
-           expect(window.getComputedStyle(emulated).color).toEqual('rgb(0, 0, 255)');
-
-           const none = cmp.shadowRoot.querySelector('.none');
-           expect(window.getComputedStyle(none).color).toEqual('rgb(0, 255, 0)');
-         });
+        const none = cmp.shadowRoot.querySelector('.none');
+        expect(window.getComputedStyle(none).color).toEqual('rgb(0, 255, 0)');
+      });
     }
   });
 }
@@ -122,49 +125,68 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 @Component({
   selector: 'cmp-native',
   template: `<div class="native"></div><cmp-emulated></cmp-emulated><cmp-none></cmp-none>`,
-  styles: [`.native { color: red; }`],
-  encapsulation: ViewEncapsulation.Native
+  styles: [
+    `
+      .native {
+        color: red;
+      }
+    `,
+  ],
+  encapsulation: ViewEncapsulation.Native,
 })
-class CmpEncapsulationNative {
-}
+class CmpEncapsulationNative {}
 
 @Component({
   selector: 'cmp-emulated',
   template: `<div class="emulated"></div>`,
-  styles: [`.emulated { color: blue; }`],
-  encapsulation: ViewEncapsulation.Emulated
+  styles: [
+    `
+      .emulated {
+        color: blue;
+      }
+    `,
+  ],
+  encapsulation: ViewEncapsulation.Emulated,
 })
-class CmpEncapsulationEmulated {
-}
+class CmpEncapsulationEmulated {}
 
 @Component({
   selector: 'cmp-none',
   template: `<div class="none"></div>`,
-  styles: [`.none { color: lime; }`],
-  encapsulation: ViewEncapsulation.None
+  styles: [
+    `
+      .none {
+        color: lime;
+      }
+    `,
+  ],
+  encapsulation: ViewEncapsulation.None,
 })
-class CmpEncapsulationNone {
-}
+class CmpEncapsulationNone {}
 
 @Component({
   selector: 'cmp-shadow',
   template: `<div class="shadow"></div><cmp-emulated></cmp-emulated><cmp-none></cmp-none>`,
-  styles: [`.native { color: red; }`],
-  encapsulation: ViewEncapsulation.ShadowDom
+  styles: [
+    `
+      .native {
+        color: red;
+      }
+    `,
+  ],
+  encapsulation: ViewEncapsulation.ShadowDom,
 })
-class CmpEncapsulationShadow {
-}
+class CmpEncapsulationShadow {}
 
 @Component({
   selector: 'some-app',
   template: `
-	  <cmp-native></cmp-native>
-	  <cmp-emulated></cmp-emulated>
-	  <cmp-none></cmp-none>
+    <cmp-native></cmp-native>
+    <cmp-emulated></cmp-emulated>
+    <cmp-none></cmp-none>
   `,
 })
-export class SomeApp {
-}
+export class SomeApp {}
 
 @Component({selector: 'test-cmp', template: ''})
 class TestCmp {

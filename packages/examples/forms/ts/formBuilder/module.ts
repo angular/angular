@@ -14,9 +14,8 @@ import {DisabledFormControlComponent, FormBuilderComp} from './form_builder_exam
 @NgModule({
   imports: [BrowserModule, ReactiveFormsModule],
   declarations: [FormBuilderComp, DisabledFormControlComponent],
-  bootstrap: [FormBuilderComp]
+  bootstrap: [FormBuilderComp],
 })
-export class AppModule {
-}
+export class AppModule {}
 
 export {FormBuilderComp as AppComponent};

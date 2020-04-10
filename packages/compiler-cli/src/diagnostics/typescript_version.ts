@@ -26,7 +26,7 @@ export function toNumbers(value: string): number[] {
  * @returns {-1|0|1} The comparison result: 1 if a is greater, -1 if b is greater, 0 is the two
  * arrays are equals
  */
-export function compareNumbers(a: number[], b: number[]): -1|0|1 {
+export function compareNumbers(a: number[], b: number[]): -1 | 0 | 1 {
   const max = Math.max(a.length, b.length);
   const min = Math.min(a.length, b.length);
 
@@ -66,8 +66,10 @@ export function compareNumbers(a: number[], b: number[]): -1|0|1 {
 export function isVersionBetween(version: string, low: string, high?: string): boolean {
   const tsNumbers = toNumbers(version);
   if (high !== undefined) {
-    return compareNumbers(toNumbers(low), tsNumbers) <= 0 &&
-        compareNumbers(toNumbers(high), tsNumbers) >= 0;
+    return (
+      compareNumbers(toNumbers(low), tsNumbers) <= 0 &&
+      compareNumbers(toNumbers(high), tsNumbers) >= 0
+    );
   }
   return compareNumbers(toNumbers(low), tsNumbers) <= 0;
 }
@@ -80,6 +82,6 @@ export function isVersionBetween(version: string, low: string, high?: string): b
  * @returns {-1|0|1} The comparison result: 1 if v1 is greater, -1 if v2 is greater, 0 is the two
  * versions are equals
  */
-export function compareVersions(v1: string, v2: string): -1|0|1 {
+export function compareVersions(v1: string, v2: string): -1 | 0 | 1 {
   return compareNumbers(toNumbers(v1), toNumbers(v2));
 }

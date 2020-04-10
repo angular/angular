@@ -22,7 +22,7 @@
  * Angular does this for us in each of the standard platforms (`Browser`, `Server`, and `WebWorker`)
  * by calling `setDocument()` when providing the `DOCUMENT` token.
  */
-let DOCUMENT: Document|undefined = undefined;
+let DOCUMENT: Document | undefined = undefined;
 
 /**
  * Tell ivy what the `document` is for this platform.
@@ -52,5 +52,5 @@ export function getDocument(): Document {
   // this should not happen in Angular apps.
   // Once we support running ivy outside of Angular we will need to publish `setDocument()` as a
   // public API. Meanwhile we just return `undefined` and let the application fail.
-  return undefined !;
+  return undefined!;
 }

@@ -15,7 +15,6 @@ import {SchemaMetadata} from '../metadata/schema';
 import {compileNgModule as render3CompileNgModule} from '../render3/jit/module';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
 
-
 /**
  * Represents the expansion of an `NgModule` into its scopes.
  *
@@ -26,9 +25,9 @@ import {TypeDecorator, makeDecorator} from '../util/decorators';
  * to module A's compilation scope when module A imports B).
  */
 export interface NgModuleTransitiveScopes {
-  compilation: {directives: Set<any>; pipes: Set<any>;};
-  exported: {directives: Set<any>; pipes: Set<any>;};
-  schemas: SchemaMetadata[]|null;
+  compilation: {directives: Set<any>; pipes: Set<any>};
+  exported: {directives: Set<any>; pipes: Set<any>};
+  schemas: SchemaMetadata[] | null;
 }
 
 /**
@@ -51,32 +50,32 @@ export interface NgModuleDef<T> {
   type: T;
 
   /** List of components to bootstrap. */
-  bootstrap: Type<any>[]|(() => Type<any>[]);
+  bootstrap: Type<any>[] | (() => Type<any>[]);
 
   /** List of components, directives, and pipes declared by this module. */
-  declarations: Type<any>[]|(() => Type<any>[]);
+  declarations: Type<any>[] | (() => Type<any>[]);
 
   /** List of modules or `ModuleWithProviders` imported by this module. */
-  imports: Type<any>[]|(() => Type<any>[]);
+  imports: Type<any>[] | (() => Type<any>[]);
 
   /**
    * List of modules, `ModuleWithProviders`, components, directives, or pipes exported by this
    * module.
    */
-  exports: Type<any>[]|(() => Type<any>[]);
+  exports: Type<any>[] | (() => Type<any>[]);
 
   /**
    * Cached value of computed `transitiveCompileScopes` for this module.
    *
    * This should never be read directly, but accessed via `transitiveScopesFor`.
    */
-  transitiveCompileScopes: NgModuleTransitiveScopes|null;
+  transitiveCompileScopes: NgModuleTransitiveScopes | null;
 
   /** The set of schemas that declare elements to be allowed in the NgModule. */
-  schemas: SchemaMetadata[]|null;
+  schemas: SchemaMetadata[] | null;
 
   /** Unique ID for the module with which it should be registered.  */
-  id: string|null;
+  id: string | null;
 }
 
 /**
@@ -91,11 +90,11 @@ export interface NgModuleDef<T> {
  * @publicApi
  */
 export interface ModuleWithProviders<
-    T = any /** TODO(alxhub): remove default when callers pass explicit type param */> {
+  T = any /** TODO(alxhub): remove default when callers pass explicit type param */
+> {
   ngModule: Type<T>;
   providers?: Provider[];
 }
-
 
 /**
  * Type of the NgModule decorator / constructor function.
@@ -191,7 +190,7 @@ export interface NgModule {
    * }
    * ```
    */
-  declarations?: Array<Type<any>|any[]>;
+  declarations?: Array<Type<any> | any[]>;
 
   /**
    * The set of NgModules whose exported [declarables](guide/glossary#declarable)
@@ -220,7 +219,7 @@ export interface NgModule {
    * ```
    *
    */
-  imports?: Array<Type<any>|ModuleWithProviders<{}>|any[]>;
+  imports?: Array<Type<any> | ModuleWithProviders<{}> | any[]>;
 
   /**
    * The set of components, directives, and pipes declared in this
@@ -252,7 +251,7 @@ export interface NgModule {
    * }
    * ```
    */
-  exports?: Array<Type<any>|any[]>;
+  exports?: Array<Type<any> | any[]>;
 
   /**
    * The set of components to compile when this NgModule is defined,
@@ -269,14 +268,14 @@ export interface NgModule {
    * @see [Entry Components](guide/entry-components)
    * @deprecated Since 9.0.0. With Ivy, this property is no longer necessary.
    */
-  entryComponents?: Array<Type<any>|any[]>;
+  entryComponents?: Array<Type<any> | any[]>;
 
   /**
    * The set of components that are bootstrapped when
    * this module is bootstrapped. The components listed here
    * are automatically added to `entryComponents`.
    */
-  bootstrap?: Array<Type<any>|any[]>;
+  bootstrap?: Array<Type<any> | any[]>;
 
   /**
    * The set of schemas that declare elements to be allowed in the NgModule.
@@ -288,7 +287,7 @@ export interface NgModule {
    * @security When using one of `NO_ERRORS_SCHEMA` or `CUSTOM_ELEMENTS_SCHEMA`
    * you must ensure that allowed elements and properties securely escape inputs.
    */
-  schemas?: Array<SchemaMetadata|any[]>;
+  schemas?: Array<SchemaMetadata | any[]>;
 
   /**
    * A name or path that uniquely identifies this NgModule in `getModuleFactory`.
@@ -311,19 +310,23 @@ export interface NgModule {
  * @publicApi
  */
 export const NgModule: NgModuleDecorator = makeDecorator(
-    'NgModule', (ngModule: NgModule) => ngModule, undefined, undefined,
-    /**
-     * Decorator that marks the following class as an NgModule, and supplies
-     * configuration metadata for it.
-     *
-     * * The `declarations` and `entryComponents` options configure the compiler
-     * with information about what belongs to the NgModule.
-     * * The `providers` options configures the NgModule's injector to provide
-     * dependencies the NgModule members.
-     * * The `imports` and `exports` options bring in members from other modules, and make
-     * this module's members available to others.
-     */
-    (type: Type<any>, meta: NgModule) => SWITCH_COMPILE_NGMODULE(type, meta));
+  'NgModule',
+  (ngModule: NgModule) => ngModule,
+  undefined,
+  undefined,
+  /**
+   * Decorator that marks the following class as an NgModule, and supplies
+   * configuration metadata for it.
+   *
+   * * The `declarations` and `entryComponents` options configure the compiler
+   * with information about what belongs to the NgModule.
+   * * The `providers` options configures the NgModule's injector to provide
+   * dependencies the NgModule members.
+   * * The `imports` and `exports` options bring in members from other modules, and make
+   * this module's members available to others.
+   */
+  (type: Type<any>, meta: NgModule) => SWITCH_COMPILE_NGMODULE(type, meta)
+);
 
 /**
  * @description
@@ -345,7 +348,9 @@ export const NgModule: NgModuleDecorator = makeDecorator(
  *
  * @publicApi
  */
-export interface DoBootstrap { ngDoBootstrap(appRef: ApplicationRef): void; }
+export interface DoBootstrap {
+  ngDoBootstrap(appRef: ApplicationRef): void;
+}
 
 function preR3NgModuleCompile(moduleType: Type<any>, metadata?: NgModule): void {
   let imports = (metadata && metadata.imports) || [];
@@ -359,7 +364,6 @@ function preR3NgModuleCompile(moduleType: Type<any>, metadata?: NgModule): void 
     imports: imports,
   });
 }
-
 
 export const SWITCH_COMPILE_NGMODULE__POST_R3__ = render3CompileNgModule;
 const SWITCH_COMPILE_NGMODULE__PRE_R3__ = preR3NgModuleCompile;

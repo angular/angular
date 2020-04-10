@@ -7,10 +7,18 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {GetTestability, Testability, TestabilityRegistry, setTestabilityGetter, ɵglobal as global} from '@angular/core';
+import {
+  GetTestability,
+  Testability,
+  TestabilityRegistry,
+  setTestabilityGetter,
+  ɵglobal as global,
+} from '@angular/core';
 
 export class BrowserGetTestability implements GetTestability {
-  static init() { setTestabilityGetter(new BrowserGetTestability()); }
+  static init() {
+    setTestabilityGetter(new BrowserGetTestability());
+  }
 
   addToWindow(registry: TestabilityRegistry): void {
     global['getAngularTestability'] = (elem: any, findInAncestors: boolean = true) => {
@@ -29,14 +37,14 @@ export class BrowserGetTestability implements GetTestability {
       const testabilities = global['getAllAngularTestabilities']();
       let count = testabilities.length;
       let didWork = false;
-      const decrement = function(didWork_: any /** TODO #9100 */) {
+      const decrement = function (didWork_: any /** TODO #9100 */) {
         didWork = didWork || didWork_;
         count--;
         if (count == 0) {
           callback(didWork);
         }
       };
-      testabilities.forEach(function(testability: any /** TODO #9100 */) {
+      testabilities.forEach(function (testability: any /** TODO #9100 */) {
         testability.whenStable(decrement);
       });
     };
@@ -47,8 +55,11 @@ export class BrowserGetTestability implements GetTestability {
     global['frameworkStabilizers'].push(whenAllStable);
   }
 
-  findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
-      Testability|null {
+  findTestabilityInTree(
+    registry: TestabilityRegistry,
+    elem: any,
+    findInAncestors: boolean
+  ): Testability | null {
     if (elem == null) {
       return null;
     }

@@ -14,20 +14,33 @@ export interface DiagnosticMessage {
   kind: keyof typeof ts.DiagnosticCategory;
 }
 
-type DiagnosticName = 'directive_not_in_module'|'missing_template_and_templateurl'|
-    'both_template_and_templateurl'|'invalid_templateurl'|'template_context_missing_member'|
-    'callable_expression_expected_method_call'|'call_target_not_callable'|
-    'expression_might_be_null'|'expected_a_number_type'|'expected_a_string_or_number_type'|
-    'expected_operands_of_similar_type_or_any'|'unrecognized_operator'|'unrecognized_primitive'|
-    'no_pipe_found'|'unable_to_resolve_compatible_call_signature'|'unable_to_resolve_signature'|
-    'could_not_resolve_type'|'identifier_not_callable'|'identifier_possibly_undefined'|
-    'identifier_not_defined_in_app_context'|'identifier_not_defined_on_receiver'|
-    'identifier_is_private';
+type DiagnosticName =
+  | 'directive_not_in_module'
+  | 'missing_template_and_templateurl'
+  | 'both_template_and_templateurl'
+  | 'invalid_templateurl'
+  | 'template_context_missing_member'
+  | 'callable_expression_expected_method_call'
+  | 'call_target_not_callable'
+  | 'expression_might_be_null'
+  | 'expected_a_number_type'
+  | 'expected_a_string_or_number_type'
+  | 'expected_operands_of_similar_type_or_any'
+  | 'unrecognized_operator'
+  | 'unrecognized_primitive'
+  | 'no_pipe_found'
+  | 'unable_to_resolve_compatible_call_signature'
+  | 'unable_to_resolve_signature'
+  | 'could_not_resolve_type'
+  | 'identifier_not_callable'
+  | 'identifier_possibly_undefined'
+  | 'identifier_not_defined_in_app_context'
+  | 'identifier_not_defined_on_receiver'
+  | 'identifier_is_private';
 
 export const Diagnostic: Record<DiagnosticName, DiagnosticMessage> = {
   directive_not_in_module: {
-    message:
-        `%1 '%2' is not included in a module and will not be available inside a template. Consider adding it to a NgModule declaration.`,
+    message: `%1 '%2' is not included in a module and will not be available inside a template. Consider adding it to a NgModule declaration.`,
     kind: 'Suggestion',
   },
 
@@ -47,8 +60,9 @@ export const Diagnostic: Record<DiagnosticName, DiagnosticMessage> = {
   },
 
   template_context_missing_member: {
-    message: `The template context of '%1' does not define %2.\n` +
-        `If the context type is a base type or 'any', consider refining it to a more specific type.`,
+    message:
+      `The template context of '%1' does not define %2.\n` +
+      `If the context type is a base type or 'any', consider refining it to a more specific type.`,
     kind: 'Suggestion',
   },
 
@@ -119,14 +133,12 @@ export const Diagnostic: Record<DiagnosticName, DiagnosticMessage> = {
   },
 
   identifier_possibly_undefined: {
-    message:
-        `'%1' is possibly undefined. Consider using the safe navigation operator (%2) or non-null assertion operator (%3).`,
+    message: `'%1' is possibly undefined. Consider using the safe navigation operator (%2) or non-null assertion operator (%3).`,
     kind: 'Suggestion',
   },
 
   identifier_not_defined_in_app_context: {
-    message:
-        `Identifier '%1' is not defined. The component declaration, template variable declarations, and element references do not contain such a member`,
+    message: `Identifier '%1' is not defined. The component declaration, template variable declarations, and element references do not contain such a member`,
     kind: 'Error',
   },
 
@@ -150,10 +162,15 @@ export const Diagnostic: Record<DiagnosticName, DiagnosticMessage> = {
  * @returns a created diagnostic
  */
 export function createDiagnostic(
-    span: ng.Span, dm: DiagnosticMessage, ...formatArgs: string[]): ng.Diagnostic {
+  span: ng.Span,
+  dm: DiagnosticMessage,
+  ...formatArgs: string[]
+): ng.Diagnostic {
   // Formats "%1 %2" with formatArgs ['a', 'b'] as "a b"
-  const formattedMessage =
-      dm.message.replace(/%(\d+)/g, (_, index: string) => formatArgs[+index - 1]);
+  const formattedMessage = dm.message.replace(
+    /%(\d+)/g,
+    (_, index: string) => formatArgs[+index - 1]
+  );
   return {
     kind: ts.DiagnosticCategory[dm.kind],
     message: formattedMessage,

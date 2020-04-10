@@ -12,14 +12,16 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'lowerupper-pipe',
   template: `<div>
-    <label>Name: </label><input #name (keyup)="change(name.value)" type="text">
-    <p>In lowercase: <pre>'{{value | lowercase}}'</pre>
-    <p>In uppercase: <pre>'{{value | uppercase}}'</pre>
-  </div>`
+    <label>Name: </label><input #name (keyup)="change(name.value)" type="text" />
+    <p>In lowercase: </p><pre>'{{ value | lowercase }}'</pre> <p>In uppercase: </p
+    ><pre>'{{ value | uppercase }}'</pre>
+  </div>`,
 })
 export class LowerUpperPipeComponent {
   // TODO(issue/24571): remove '!'.
-  value !: string;
-  change(value: string) { this.value = value; }
+  value!: string;
+  change(value: string) {
+    this.value = value;
+  }
 }
 // #enddocregion

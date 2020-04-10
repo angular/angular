@@ -10,7 +10,7 @@ import {Injectable} from '@angular/core';
 
 let _nextRequestId = 0;
 export const JSONP_HOME = '__ng_jsonp__';
-let _jsonpConnections: {[key: string]: any}|null = null;
+let _jsonpConnections: {[key: string]: any} | null = null;
 
 function _getJsonpConnections(): {[key: string]: any} {
   const w: {[key: string]: any} = typeof window == 'object' ? window : {};
@@ -30,9 +30,13 @@ export class BrowserJsonp {
     return node;
   }
 
-  nextRequestID(): string { return `__req${_nextRequestId++}`; }
+  nextRequestID(): string {
+    return `__req${_nextRequestId++}`;
+  }
 
-  requestCallback(id: string): string { return `${JSONP_HOME}.${id}.finished`; }
+  requestCallback(id: string): string {
+    return `${JSONP_HOME}.${id}.finished`;
+  }
 
   exposeConnection(id: string, connection: any) {
     const connections = _getJsonpConnections();
@@ -45,12 +49,14 @@ export class BrowserJsonp {
   }
 
   // Attach the <script> element to the DOM
-  send(node: any) { document.body.appendChild(<Node>(node)); }
+  send(node: any) {
+    document.body.appendChild(<Node>node);
+  }
 
   // Remove <script> element from the DOM
   cleanup(node: any) {
     if (node.parentNode) {
-      node.parentNode.removeChild(<Node>(node));
+      node.parentNode.removeChild(<Node>node);
     }
   }
 }

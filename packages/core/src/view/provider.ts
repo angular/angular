@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, SimpleChange, SimpleChanges, WrappedValue} from '../change_detection/change_detection';
+import {
+  ChangeDetectorRef,
+  SimpleChange,
+  SimpleChanges,
+  WrappedValue,
+} from '../change_detection/change_detection';
 import {INJECTOR, Injector, resolveForwardRef} from '../di';
 import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
@@ -16,8 +21,35 @@ import {isObservable} from '../util/lang';
 import {stringify} from '../util/stringify';
 
 import {createChangeDetectorRef, createInjector} from './refs';
-import {BindingDef, BindingFlags, DepDef, DepFlags, NodeDef, NodeFlags, OutputDef, OutputType, ProviderData, QueryValueType, Services, ViewData, ViewFlags, ViewState, asElementData, asProviderData, shouldCallLifecycleInitHook} from './types';
-import {calcBindingFlags, checkBinding, dispatchEvent, isComponentView, splitDepsDsl, splitMatchedQueriesDsl, tokenKey, viewParentEl} from './util';
+import {
+  BindingDef,
+  BindingFlags,
+  DepDef,
+  DepFlags,
+  NodeDef,
+  NodeFlags,
+  OutputDef,
+  OutputType,
+  ProviderData,
+  QueryValueType,
+  Services,
+  ViewData,
+  ViewFlags,
+  ViewState,
+  asElementData,
+  asProviderData,
+  shouldCallLifecycleInitHook,
+} from './types';
+import {
+  calcBindingFlags,
+  checkBinding,
+  dispatchEvent,
+  isComponentView,
+  splitDepsDsl,
+  splitMatchedQueriesDsl,
+  tokenKey,
+  viewParentEl,
+} from './util';
 
 const Renderer2TokenKey = tokenKey(Renderer2);
 const ElementRefTokenKey = tokenKey(ElementRef);
@@ -28,33 +60,52 @@ const InjectorRefTokenKey = tokenKey(Injector);
 const INJECTORRefTokenKey = tokenKey(INJECTOR);
 
 export function directiveDef(
-    checkIndex: number, flags: NodeFlags,
-    matchedQueries: null | [string | number, QueryValueType][], childCount: number, ctor: any,
-    deps: ([DepFlags, any] | any)[], props?: null | {[name: string]: [number, string]},
-    outputs?: null | {[name: string]: string}): NodeDef {
+  checkIndex: number,
+  flags: NodeFlags,
+  matchedQueries: null | [string | number, QueryValueType][],
+  childCount: number,
+  ctor: any,
+  deps: ([DepFlags, any] | any)[],
+  props?: null | {[name: string]: [number, string]},
+  outputs?: null | {[name: string]: string}
+): NodeDef {
   const bindings: BindingDef[] = [];
   if (props) {
     for (let prop in props) {
       const [bindingIndex, nonMinifiedName] = props[prop];
       bindings[bindingIndex] = {
         flags: BindingFlags.TypeProperty,
-        name: prop, nonMinifiedName,
+        name: prop,
+        nonMinifiedName,
         ns: null,
         securityContext: null,
-        suffix: null
+        suffix: null,
       };
     }
   }
   const outputDefs: OutputDef[] = [];
   if (outputs) {
     for (let propName in outputs) {
-      outputDefs.push(
-          {type: OutputType.DirectiveOutput, propName, target: null, eventName: outputs[propName]});
+      outputDefs.push({
+        type: OutputType.DirectiveOutput,
+        propName,
+        target: null,
+        eventName: outputs[propName],
+      });
     }
   }
   flags |= NodeFlags.TypeDirective;
   return _def(
-      checkIndex, flags, matchedQueries, childCount, ctor, ctor, deps, bindings, outputDefs);
+    checkIndex,
+    flags,
+    matchedQueries,
+    childCount,
+    ctor,
+    ctor,
+    deps,
+    bindings,
+    outputDefs
+  );
 }
 
 export function pipeDef(flags: NodeFlags, ctor: any, deps: ([DepFlags, any] | any)[]): NodeDef {
@@ -63,16 +114,26 @@ export function pipeDef(flags: NodeFlags, ctor: any, deps: ([DepFlags, any] | an
 }
 
 export function providerDef(
-    flags: NodeFlags, matchedQueries: null | [string | number, QueryValueType][], token: any,
-    value: any, deps: ([DepFlags, any] | any)[]): NodeDef {
+  flags: NodeFlags,
+  matchedQueries: null | [string | number, QueryValueType][],
+  token: any,
+  value: any,
+  deps: ([DepFlags, any] | any)[]
+): NodeDef {
   return _def(-1, flags, matchedQueries, 0, token, value, deps);
 }
 
 export function _def(
-    checkIndex: number, flags: NodeFlags,
-    matchedQueriesDsl: [string | number, QueryValueType][] | null, childCount: number, token: any,
-    value: any, deps: ([DepFlags, any] | any)[], bindings?: BindingDef[],
-    outputs?: OutputDef[]): NodeDef {
+  checkIndex: number,
+  flags: NodeFlags,
+  matchedQueriesDsl: [string | number, QueryValueType][] | null,
+  childCount: number,
+  token: any,
+  value: any,
+  deps: ([DepFlags, any] | any)[],
+  bindings?: BindingDef[],
+  outputs?: OutputDef[]
+): NodeDef {
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
   if (!outputs) {
     outputs = [];
@@ -99,14 +160,20 @@ export function _def(
     flags,
     childFlags: 0,
     directChildFlags: 0,
-    childMatchedQueries: 0, matchedQueries, matchedQueryIds, references,
-    ngContentIndex: -1, childCount, bindings,
-    bindingFlags: calcBindingFlags(bindings), outputs,
+    childMatchedQueries: 0,
+    matchedQueries,
+    matchedQueryIds,
+    references,
+    ngContentIndex: -1,
+    childCount,
+    bindings,
+    bindingFlags: calcBindingFlags(bindings),
+    outputs,
     element: null,
     provider: {token, value, deps: depDefs},
     text: null,
     query: null,
-    ngContent: null
+    ngContent: null,
   };
 }
 
@@ -124,8 +191,12 @@ export function createPipeInstance(view: ViewData, def: NodeDef): any {
   const allowPrivateServices = true;
   // pipes are always eager and classes!
   return createClass(
-      compView.parent !, viewParentEl(compView) !, allowPrivateServices, def.provider !.value,
-      def.provider !.deps);
+    compView.parent!,
+    viewParentEl(compView)!,
+    allowPrivateServices,
+    def.provider!.value,
+    def.provider!.deps
+  );
 }
 
 export function createDirectiveInstance(view: ViewData, def: NodeDef): any {
@@ -133,18 +204,25 @@ export function createDirectiveInstance(view: ViewData, def: NodeDef): any {
   const allowPrivateServices = (def.flags & NodeFlags.Component) > 0;
   // directives are always eager and classes!
   const instance = createClass(
-      view, def.parent !, allowPrivateServices, def.provider !.value, def.provider !.deps);
+    view,
+    def.parent!,
+    allowPrivateServices,
+    def.provider!.value,
+    def.provider!.deps
+  );
   if (def.outputs.length) {
     for (let i = 0; i < def.outputs.length; i++) {
       const output = def.outputs[i];
-      const outputObservable = instance[output.propName !];
+      const outputObservable = instance[output.propName!];
       if (isObservable(outputObservable)) {
         const subscription = outputObservable.subscribe(
-            eventHandlerClosure(view, def.parent !.nodeIndex, output.eventName));
-        view.disposables ![def.outputIndex + i] = subscription.unsubscribe.bind(subscription);
+          eventHandlerClosure(view, def.parent!.nodeIndex, output.eventName)
+        );
+        view.disposables![def.outputIndex + i] = subscription.unsubscribe.bind(subscription);
       } else {
         throw new Error(
-            `@Output ${output.propName} not initialized in '${instance.constructor.name}'.`);
+          `@Output ${output.propName} not initialized in '${instance.constructor.name}'.`
+        );
       }
     }
   }
@@ -156,12 +234,23 @@ function eventHandlerClosure(view: ViewData, index: number, eventName: string) {
 }
 
 export function checkAndUpdateDirectiveInline(
-    view: ViewData, def: NodeDef, v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any,
-    v7: any, v8: any, v9: any): boolean {
+  view: ViewData,
+  def: NodeDef,
+  v0: any,
+  v1: any,
+  v2: any,
+  v3: any,
+  v4: any,
+  v5: any,
+  v6: any,
+  v7: any,
+  v8: any,
+  v9: any
+): boolean {
   const providerData = asProviderData(view, def.nodeIndex);
   const directive = providerData.instance;
   let changed = false;
-  let changes: SimpleChanges = undefined !;
+  let changes: SimpleChanges = undefined!;
   const bindLen = def.bindings.length;
   if (bindLen > 0 && checkBinding(view, def, 0, v0)) {
     changed = true;
@@ -206,8 +295,10 @@ export function checkAndUpdateDirectiveInline(
   if (changes) {
     directive.ngOnChanges(changes);
   }
-  if ((def.flags & NodeFlags.OnInit) &&
-      shouldCallLifecycleInitHook(view, ViewState.InitState_CallingOnInit, def.nodeIndex)) {
+  if (
+    def.flags & NodeFlags.OnInit &&
+    shouldCallLifecycleInitHook(view, ViewState.InitState_CallingOnInit, def.nodeIndex)
+  ) {
     directive.ngOnInit();
   }
   if (def.flags & NodeFlags.DoCheck) {
@@ -217,11 +308,14 @@ export function checkAndUpdateDirectiveInline(
 }
 
 export function checkAndUpdateDirectiveDynamic(
-    view: ViewData, def: NodeDef, values: any[]): boolean {
+  view: ViewData,
+  def: NodeDef,
+  values: any[]
+): boolean {
   const providerData = asProviderData(view, def.nodeIndex);
   const directive = providerData.instance;
   let changed = false;
-  let changes: SimpleChanges = undefined !;
+  let changes: SimpleChanges = undefined!;
   for (let i = 0; i < values.length; i++) {
     if (checkBinding(view, def, i, values[i])) {
       changed = true;
@@ -231,8 +325,10 @@ export function checkAndUpdateDirectiveDynamic(
   if (changes) {
     directive.ngOnChanges(changes);
   }
-  if ((def.flags & NodeFlags.OnInit) &&
-      shouldCallLifecycleInitHook(view, ViewState.InitState_CallingOnInit, def.nodeIndex)) {
+  if (
+    def.flags & NodeFlags.OnInit &&
+    shouldCallLifecycleInitHook(view, ViewState.InitState_CallingOnInit, def.nodeIndex)
+  ) {
     directive.ngOnInit();
   }
   if (def.flags & NodeFlags.DoCheck) {
@@ -248,19 +344,34 @@ function _createProviderInstance(view: ViewData, def: NodeDef): any {
   switch (def.flags & NodeFlags.Types) {
     case NodeFlags.TypeClassProvider:
       return createClass(
-          view, def.parent !, allowPrivateServices, providerDef !.value, providerDef !.deps);
+        view,
+        def.parent!,
+        allowPrivateServices,
+        providerDef!.value,
+        providerDef!.deps
+      );
     case NodeFlags.TypeFactoryProvider:
       return callFactory(
-          view, def.parent !, allowPrivateServices, providerDef !.value, providerDef !.deps);
+        view,
+        def.parent!,
+        allowPrivateServices,
+        providerDef!.value,
+        providerDef!.deps
+      );
     case NodeFlags.TypeUseExistingProvider:
-      return resolveDep(view, def.parent !, allowPrivateServices, providerDef !.deps[0]);
+      return resolveDep(view, def.parent!, allowPrivateServices, providerDef!.deps[0]);
     case NodeFlags.TypeValueProvider:
-      return providerDef !.value;
+      return providerDef!.value;
   }
 }
 
 function createClass(
-    view: ViewData, elDef: NodeDef, allowPrivateServices: boolean, ctor: any, deps: DepDef[]): any {
+  view: ViewData,
+  elDef: NodeDef,
+  allowPrivateServices: boolean,
+  ctor: any,
+  deps: DepDef[]
+): any {
   const len = deps.length;
   switch (len) {
     case 0:
@@ -269,13 +380,15 @@ function createClass(
       return new ctor(resolveDep(view, elDef, allowPrivateServices, deps[0]));
     case 2:
       return new ctor(
-          resolveDep(view, elDef, allowPrivateServices, deps[0]),
-          resolveDep(view, elDef, allowPrivateServices, deps[1]));
+        resolveDep(view, elDef, allowPrivateServices, deps[0]),
+        resolveDep(view, elDef, allowPrivateServices, deps[1])
+      );
     case 3:
       return new ctor(
-          resolveDep(view, elDef, allowPrivateServices, deps[0]),
-          resolveDep(view, elDef, allowPrivateServices, deps[1]),
-          resolveDep(view, elDef, allowPrivateServices, deps[2]));
+        resolveDep(view, elDef, allowPrivateServices, deps[0]),
+        resolveDep(view, elDef, allowPrivateServices, deps[1]),
+        resolveDep(view, elDef, allowPrivateServices, deps[2])
+      );
     default:
       const depValues = [];
       for (let i = 0; i < len; i++) {
@@ -286,8 +399,12 @@ function createClass(
 }
 
 function callFactory(
-    view: ViewData, elDef: NodeDef, allowPrivateServices: boolean, factory: any,
-    deps: DepDef[]): any {
+  view: ViewData,
+  elDef: NodeDef,
+  allowPrivateServices: boolean,
+  factory: any,
+  deps: DepDef[]
+): any {
   const len = deps.length;
   switch (len) {
     case 0:
@@ -296,13 +413,15 @@ function callFactory(
       return factory(resolveDep(view, elDef, allowPrivateServices, deps[0]));
     case 2:
       return factory(
-          resolveDep(view, elDef, allowPrivateServices, deps[0]),
-          resolveDep(view, elDef, allowPrivateServices, deps[1]));
+        resolveDep(view, elDef, allowPrivateServices, deps[0]),
+        resolveDep(view, elDef, allowPrivateServices, deps[1])
+      );
     case 3:
       return factory(
-          resolveDep(view, elDef, allowPrivateServices, deps[0]),
-          resolveDep(view, elDef, allowPrivateServices, deps[1]),
-          resolveDep(view, elDef, allowPrivateServices, deps[2]));
+        resolveDep(view, elDef, allowPrivateServices, deps[0]),
+        resolveDep(view, elDef, allowPrivateServices, deps[1]),
+        resolveDep(view, elDef, allowPrivateServices, deps[2])
+      );
     default:
       const depValues = [];
       for (let i = 0; i < len; i++) {
@@ -332,8 +451,12 @@ function callFactory(
 export const NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR = {};
 
 export function resolveDep(
-    view: ViewData, elDef: NodeDef, allowPrivateServices: boolean, depDef: DepDef,
-    notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
+  view: ViewData,
+  elDef: NodeDef,
+  allowPrivateServices: boolean,
+  depDef: DepDef,
+  notFoundValue: any = Injector.THROW_IF_NOT_FOUND
+): any {
   if (depDef.flags & DepFlags.Value) {
     return depDef.token;
   }
@@ -346,15 +469,15 @@ export function resolveDep(
   if (tokenKey === ChangeDetectorRefTokenKey) {
     // directives on the same element as a component should be able to control the change detector
     // of that component as well.
-    allowPrivateServices = !!(elDef && elDef.element !.componentView);
+    allowPrivateServices = !!(elDef && elDef.element!.componentView);
   }
 
-  if (elDef && (depDef.flags & DepFlags.SkipSelf)) {
+  if (elDef && depDef.flags & DepFlags.SkipSelf) {
     allowPrivateServices = false;
-    elDef = elDef.parent !;
+    elDef = elDef.parent!;
   }
 
-  let searchView: ViewData|null = view;
+  let searchView: ViewData | null = view;
   while (searchView) {
     if (elDef) {
       switch (tokenKey) {
@@ -367,7 +490,7 @@ export function resolveDep(
         case ViewContainerRefTokenKey:
           return asElementData(searchView, elDef.nodeIndex).viewContainer;
         case TemplateRefTokenKey: {
-          if (elDef.element !.template) {
+          if (elDef.element!.template) {
             return asElementData(searchView, elDef.nodeIndex).template;
           }
           break;
@@ -380,9 +503,9 @@ export function resolveDep(
         case INJECTORRefTokenKey:
           return createInjector(searchView, elDef);
         default:
-          const providerDef =
-              (allowPrivateServices ? elDef.element !.allProviders :
-                                      elDef.element !.publicProviders) ![tokenKey];
+          const providerDef = (allowPrivateServices
+            ? elDef.element!.allProviders
+            : elDef.element!.publicProviders)![tokenKey];
           if (providerDef) {
             let providerData = asProviderData(searchView, providerDef.nodeIndex);
             if (!providerData) {
@@ -395,8 +518,8 @@ export function resolveDep(
     }
 
     allowPrivateServices = isComponentView(searchView);
-    elDef = viewParentEl(searchView) !;
-    searchView = searchView.parent !;
+    elDef = viewParentEl(searchView)!;
+    searchView = searchView.parent!;
 
     if (depDef.flags & DepFlags.Self) {
       searchView = null;
@@ -405,8 +528,10 @@ export function resolveDep(
 
   const value = startView.root.injector.get(depDef.token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR);
 
-  if (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR ||
-      notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) {
+  if (
+    value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR ||
+    notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR
+  ) {
     // Return the value from the root element injector when
     // - it provides it
     //   (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)
@@ -432,16 +557,21 @@ function findCompView(view: ViewData, elDef: NodeDef, allowPrivateServices: bool
 }
 
 function updateProp(
-    view: ViewData, providerData: ProviderData, def: NodeDef, bindingIdx: number, value: any,
-    changes: SimpleChanges): SimpleChanges {
+  view: ViewData,
+  providerData: ProviderData,
+  def: NodeDef,
+  bindingIdx: number,
+  value: any,
+  changes: SimpleChanges
+): SimpleChanges {
   if (def.flags & NodeFlags.Component) {
-    const compView = asElementData(view, def.parent !.nodeIndex).componentView;
+    const compView = asElementData(view, def.parent!.nodeIndex).componentView;
     if (compView.def.flags & ViewFlags.OnPush) {
       compView.state |= ViewState.ChecksEnabled;
     }
   }
   const binding = def.bindings[bindingIdx];
-  const propName = binding.name !;
+  const propName = binding.name!;
   // Note: This is still safe with Closure Compiler as
   // the user passed in the property name as an object has to `providerDef`,
   // so Closure Compiler will have renamed the property correctly already.
@@ -450,8 +580,11 @@ function updateProp(
     changes = changes || {};
     const oldValue = WrappedValue.unwrap(view.oldValues[def.bindingIndex + bindingIdx]);
     const binding = def.bindings[bindingIdx];
-    changes[binding.nonMinifiedName !] =
-        new SimpleChange(oldValue, value, (view.state & ViewState.FirstCheck) !== 0);
+    changes[binding.nonMinifiedName!] = new SimpleChange(
+      oldValue,
+      value,
+      (view.state & ViewState.FirstCheck) !== 0
+    );
   }
   view.oldValues[def.bindingIndex + bindingIdx] = value;
   return changes;
@@ -517,8 +650,11 @@ export function callLifecycleHooksChildrenFirst(view: ViewData, lifecycles: Node
       // no child matches one of the lifecycles
       i += nodeDef.childCount;
     }
-    while (parent && (parent.flags & NodeFlags.TypeElement) &&
-           i === parent.nodeIndex + parent.childCount) {
+    while (
+      parent &&
+      parent.flags & NodeFlags.TypeElement &&
+      i === parent.nodeIndex + parent.childCount
+    ) {
       // last child of an element
       if (parent.directChildFlags & lifecycles) {
         initIndex = callElementProvidersLifecycles(view, parent, lifecycles, initIndex);
@@ -529,7 +665,11 @@ export function callLifecycleHooksChildrenFirst(view: ViewData, lifecycles: Node
 }
 
 function callElementProvidersLifecycles(
-    view: ViewData, elDef: NodeDef, lifecycles: NodeFlags, initIndex: number): number {
+  view: ViewData,
+  elDef: NodeDef,
+  lifecycles: NodeFlags,
+  initIndex: number
+): number {
   for (let i = elDef.nodeIndex + 1; i <= elDef.nodeIndex + elDef.childCount; i++) {
     const nodeDef = view.def.nodes[i];
     if (nodeDef.flags & lifecycles) {
@@ -542,7 +682,11 @@ function callElementProvidersLifecycles(
 }
 
 function callProviderLifecycles(
-    view: ViewData, index: number, lifecycles: NodeFlags, initIndex: number) {
+  view: ViewData,
+  index: number,
+  lifecycles: NodeFlags,
+  initIndex: number
+) {
   const providerData = asProviderData(view, index);
   if (!providerData) {
     return;
@@ -552,15 +696,19 @@ function callProviderLifecycles(
     return;
   }
   Services.setCurrentNode(view, index);
-  if (lifecycles & NodeFlags.AfterContentInit &&
-      shouldCallLifecycleInitHook(view, ViewState.InitState_CallingAfterContentInit, initIndex)) {
+  if (
+    lifecycles & NodeFlags.AfterContentInit &&
+    shouldCallLifecycleInitHook(view, ViewState.InitState_CallingAfterContentInit, initIndex)
+  ) {
     provider.ngAfterContentInit();
   }
   if (lifecycles & NodeFlags.AfterContentChecked) {
     provider.ngAfterContentChecked();
   }
-  if (lifecycles & NodeFlags.AfterViewInit &&
-      shouldCallLifecycleInitHook(view, ViewState.InitState_CallingAfterViewInit, initIndex)) {
+  if (
+    lifecycles & NodeFlags.AfterViewInit &&
+    shouldCallLifecycleInitHook(view, ViewState.InitState_CallingAfterViewInit, initIndex)
+  ) {
     provider.ngAfterViewInit();
   }
   if (lifecycles & NodeFlags.AfterViewChecked) {

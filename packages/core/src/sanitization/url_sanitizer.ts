@@ -40,8 +40,7 @@ const SAFE_URL_PATTERN = /^(?:(?:https?|mailto|ftp|tel|file):|[^&:/?#]*(?:[/?#]|
 const SAFE_SRCSET_PATTERN = /^(?:(?:https?|file):|[^&:/?#]*(?:[/?#]|$))/gi;
 
 /** A pattern that matches safe data URLs. Only matches image, video and audio types. */
-const DATA_URL_PATTERN =
-    /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm)|audio\/(?:mp3|oga|ogg|opus));base64,[a-z0-9+\/]+=*$/i;
+const DATA_URL_PATTERN = /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm)|audio\/(?:mp3|oga|ogg|opus));base64,[a-z0-9+\/]+=*$/i;
 
 export function _sanitizeUrl(url: string): string {
   url = String(url);
@@ -56,5 +55,8 @@ export function _sanitizeUrl(url: string): string {
 
 export function sanitizeSrcset(srcset: string): string {
   srcset = String(srcset);
-  return srcset.split(',').map((srcset) => _sanitizeUrl(srcset.trim())).join(', ');
+  return srcset
+    .split(',')
+    .map((srcset) => _sanitizeUrl(srcset.trim()))
+    .join(', ');
 }

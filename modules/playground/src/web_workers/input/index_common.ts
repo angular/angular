@@ -13,20 +13,23 @@ import {Component} from '@angular/core';
   template: `
     <h2>Input App</h2>
     <div id="input-container">
-      <input type="text" (input)="inputChanged($event)">
+      <input type="text" (input)="inputChanged($event)" />
       <textarea (input)="textAreaChanged($event)"></textarea>
-      <div class="input-val">Input val is {{inputVal}}.</div>
-      <div class="textarea-val">Textarea val is {{textareaVal}}.</div>
+      <div class="input-val">Input val is {{ inputVal }}.</div>
+      <div class="textarea-val">Textarea val is {{ textareaVal }}.</div>
     </div>
-    <div id="ng-model-container">
-    </div>
-  `
+    <div id="ng-model-container"> </div>
+  `,
 })
 export class InputCmp {
   inputVal = '';
   textareaVal = '';
 
-  inputChanged(e: Event) { this.inputVal = (e.target as HTMLInputElement).value; }
+  inputChanged(e: Event) {
+    this.inputVal = (e.target as HTMLInputElement).value;
+  }
 
-  textAreaChanged(e: Event) { this.textareaVal = (e.target as HTMLTextAreaElement).value; }
+  textAreaChanged(e: Event) {
+    this.textareaVal = (e.target as HTMLTextAreaElement).value;
+  }
 }

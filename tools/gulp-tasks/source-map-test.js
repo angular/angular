@@ -14,10 +14,11 @@ const excludedPackages = ['bazel', 'benchpress', 'compiler-cli', 'language-servi
 
 module.exports = (gulp) => () => {
   const packageDir = path.resolve(process.cwd(), 'dist/packages-dist/');
-  const packages =
-      fs.readdirSync(packageDir).filter(package => excludedPackages.indexOf(package) === -1);
+  const packages = fs
+    .readdirSync(packageDir)
+    .filter((package) => excludedPackages.indexOf(package) === -1);
 
-  packages.forEach(package => {
+  packages.forEach((package) => {
     if (sourceMapTest(package).length) {
       process.exit(1);
     }

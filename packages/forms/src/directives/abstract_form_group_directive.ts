@@ -15,8 +15,6 @@ import {Form} from './form_interface';
 import {composeAsyncValidators, composeValidators, controlPath} from './shared';
 import {AsyncValidatorFn, ValidatorFn} from './validators';
 
-
-
 /**
  * @description
  * A base class for code shared between the `NgModelGroup` and `FormGroupName` directives.
@@ -92,7 +90,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @description
    * The top-level directive for this group if present, otherwise null.
    */
-  get formDirective(): Form|null {
+  get formDirective(): Form | null {
     return this._parent ? this._parent.formDirective : null;
   }
 
@@ -100,7 +98,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @description
    * The synchronous validators registered with this group.
    */
-  get validator(): ValidatorFn|null {
+  get validator(): ValidatorFn | null {
     return composeValidators(this._validators);
   }
 
@@ -108,7 +106,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @description
    * The async validators registered with this group.
    */
-  get asyncValidator(): AsyncValidatorFn|null {
+  get asyncValidator(): AsyncValidatorFn | null {
     return composeAsyncValidators(this._asyncValidators);
   }
 

@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {hasLifecycleHook as hasLifecycleHookImpl, LifecycleHooks as Hooks} from '@angular/compiler/src/lifecycle_reflector';
+import {
+  hasLifecycleHook as hasLifecycleHookImpl,
+  LifecycleHooks as Hooks,
+} from '@angular/compiler/src/lifecycle_reflector';
 import {SimpleChanges} from '@angular/core';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
@@ -59,8 +62,9 @@ function hasLifecycleHook(hook: Hooks, directive: any): boolean {
 
       describe('ngAfterContentInit', () => {
         it('should be true when the directive has the ngAfterContentInit method', () => {
-          expect(hasLifecycleHook(Hooks.AfterContentInit, DirectiveWithAfterContentInitMethod))
-              .toBe(true);
+          expect(
+            hasLifecycleHook(Hooks.AfterContentInit, DirectiveWithAfterContentInitMethod)
+          ).toBe(true);
         });
 
         it('should be false otherwise', () => {
@@ -71,8 +75,8 @@ function hasLifecycleHook(hook: Hooks, directive: any): boolean {
       describe('ngAfterContentChecked', () => {
         it('should be true when the directive has the ngAfterContentChecked method', () => {
           expect(
-              hasLifecycleHook(Hooks.AfterContentChecked, DirectiveWithAfterContentCheckedMethod))
-              .toBe(true);
+            hasLifecycleHook(Hooks.AfterContentChecked, DirectiveWithAfterContentCheckedMethod)
+          ).toBe(true);
         });
 
         it('should be false otherwise', () => {
@@ -80,11 +84,11 @@ function hasLifecycleHook(hook: Hooks, directive: any): boolean {
         });
       });
 
-
       describe('ngAfterViewInit', () => {
         it('should be true when the directive has the ngAfterViewInit method', () => {
-          expect(hasLifecycleHook(Hooks.AfterViewInit, DirectiveWithAfterViewInitMethod))
-              .toBe(true);
+          expect(hasLifecycleHook(Hooks.AfterViewInit, DirectiveWithAfterViewInitMethod)).toBe(
+            true
+          );
         });
 
         it('should be false otherwise', () => {
@@ -94,8 +98,9 @@ function hasLifecycleHook(hook: Hooks, directive: any): boolean {
 
       describe('ngAfterViewChecked', () => {
         it('should be true when the directive has the ngAfterViewChecked method', () => {
-          expect(hasLifecycleHook(Hooks.AfterViewChecked, DirectiveWithAfterViewCheckedMethod))
-              .toBe(true);
+          expect(
+            hasLifecycleHook(Hooks.AfterViewChecked, DirectiveWithAfterViewCheckedMethod)
+          ).toBe(true);
         });
 
         it('should be false otherwise', () => {

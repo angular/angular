@@ -6,11 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentInit, AfterViewInit, ChangeDetectionStrategy, Component, ContentChildren, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output, QueryList, ViewChild, forwardRef} from '@angular/core';
+import {
+  AfterContentInit,
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ContentChildren,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnDestroy,
+  Output,
+  QueryList,
+  ViewChild,
+  forwardRef,
+} from '@angular/core';
 import {Subscription} from 'rxjs';
 
-import {EXPANDING_ROW_HOST_INJECTION_TOKEN, ExpandingRow, ExpandingRowHostBase} from './expanding_row';
-
+import {
+  EXPANDING_ROW_HOST_INJECTION_TOKEN,
+  ExpandingRow,
+  ExpandingRowHostBase,
+} from './expanding_row';
 
 /**
  * We use this class in <cfc-expanding-row/> template to identify the row.
@@ -35,21 +53,13 @@ type UpOrDown = 'up' | 'down';
  */
 @Component({
   selector: 'cfc-expanding-row-host',
-  template: `
-    <div #firstFocusable
-      (focus)="focusOnLastFocusedRow()"
-      tabindex="0">
-    </div>
+  template: ` <div #firstFocusable (focus)="focusOnLastFocusedRow()" tabindex="0"> </div>
     <ng-content></ng-content>
-    <div #lastFocusable
-      (focus)="focusOnLastFocusedRow()"
-      tabindex="0">
-    </div>`,
+    <div #lastFocusable (focus)="focusOnLastFocusedRow()" tabindex="0"> </div>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{provide: EXPANDING_ROW_HOST_INJECTION_TOKEN, useExisting: ExpandingRowHost}],
 })
-export class ExpandingRowHost implements AfterViewInit,
-    OnDestroy, ExpandingRowHostBase {
+export class ExpandingRowHost implements AfterViewInit, OnDestroy, ExpandingRowHostBase {
   /**
    * An HTML selector (e.g. "body") for the scroll element. We need this to
    * make some scroll adjustments.
@@ -71,11 +81,11 @@ export class ExpandingRowHost implements AfterViewInit,
   @Output() onPrepend = new EventEmitter<void>();
 
   /** A reference to the last focusable element in list of expanding rows. */
-  @ViewChild('lastFocusable', {static: true}) lastFocusableElement !: ElementRef;
+  @ViewChild('lastFocusable', {static: true}) lastFocusableElement!: ElementRef;
 
   /** A reference to the first focusable element in list of expanding rows. */
   @ViewChild('firstFocusable', {static: true})
-  firstFocusableElement !: ElementRef;
+  firstFocusableElement!: ElementRef;
 
   /**
    * A reference to all child cfc-expanding-row elements. We will need for
@@ -83,7 +93,7 @@ export class ExpandingRowHost implements AfterViewInit,
    * which row is previous row when user presses "left arrow" on a focused row.
    */
   @ContentChildren(forwardRef(() => ExpandingRow), {descendants: true})
-  contentRows !: QueryList<ExpandingRow>;
+  contentRows!: QueryList<ExpandingRow>;
 
   /**
    * Keeps track of the last row that had focus before focus left the list
@@ -122,7 +132,7 @@ export class ExpandingRowHost implements AfterViewInit,
 
   /** Subscription to changes in the expanding rows. */
   // TODO(b/109816955): remove '!', see go/strict-prop-init-fix.
-  private rowChangeSubscription !: Subscription;
+  private rowChangeSubscription!: Subscription;
 
   /**
    * When component initializes we need to attach click listener to the root
@@ -138,8 +148,9 @@ export class ExpandingRowHost implements AfterViewInit,
 
     clickRootElement.addEventListener('mouseup', this.handleRootMouseUpBound);
 
-    this.rowChangeSubscription =
-        this.contentRows.changes.subscribe(() => { this.recalcRowIndexes(); });
+    this.rowChangeSubscription = this.contentRows.changes.subscribe(() => {
+      this.recalcRowIndexes();
+    });
     this.recalcRowIndexes();
   }
 
@@ -256,13 +267,17 @@ export class ExpandingRowHost implements AfterViewInit,
    * Function that is called by expanding row summary to focus on the last
    * focusable element before the list of expanding rows.
    */
-  focusOnPreviousFocusableElement(): void { this.lastFocusedRow = this.focusedRow; }
+  focusOnPreviousFocusableElement(): void {
+    this.lastFocusedRow = this.focusedRow;
+  }
 
   /**
    * Function that is called by expanding row summary to focus on the next
    * focusable element after the list of expanding rows.
    */
-  focusOnNextFocusableElement(): void { this.lastFocusedRow = this.focusedRow; }
+  focusOnNextFocusableElement(): void {
+    this.lastFocusedRow = this.focusedRow;
+  }
 
   /**
    * Handles keydown event on the host. We are just concerned with up,
@@ -305,7 +320,7 @@ export class ExpandingRowHost implements AfterViewInit,
       return;
     }
 
-    if (!this.isTargetInRow(event.target as {} as HTMLElement)) {
+    if (!this.isTargetInRow((event.target as {}) as HTMLElement)) {
       this.expandedRow.handleCaptionClick(event);
     }
   }
@@ -314,7 +329,7 @@ export class ExpandingRowHost implements AfterViewInit,
    * Check if element is blacklisted.  Blacklisted elements will not collapse an
    * open row when clicked.
    */
-  isBlacklisted(element: HTMLElement|null): boolean {
+  isBlacklisted(element: HTMLElement | null): boolean {
     const clickRoot = this.getClickRootElement();
     while (element && element !== clickRoot) {
       if (element.hasAttribute('cfcexpandingrowblacklist')) {
@@ -379,7 +394,7 @@ export class ExpandingRowHost implements AfterViewInit,
    * Gets the HTML element described by scrollElementSelector @Input value.
    * We need this value for scroll adjustments.
    */
-  private getScrollElement(): HTMLElement|undefined {
+  private getScrollElement(): HTMLElement | undefined {
     if (!this.scrollElementSelector) {
       return undefined;
     }
@@ -417,9 +432,10 @@ export class ExpandingRowHost implements AfterViewInit,
   }
 
   /** Returns the HTMLElement that is the currently focused row summary. */
-  private focusedRowSummary(): HTMLElement|undefined {
-    return this.focusedRow ? this.focusedRow.summaryViewChild.mainElementRef.nativeElement :
-                             undefined;
+  private focusedRowSummary(): HTMLElement | undefined {
+    return this.focusedRow
+      ? this.focusedRow.summaryViewChild.mainElementRef.nativeElement
+      : undefined;
   }
 
   /**
@@ -442,8 +458,10 @@ export class ExpandingRowHost implements AfterViewInit,
 
     // If row is expanded but focus is inside the expanded element, arrow
     // key presses should not do anything.
-    if (this.expandedRow &&
-        document.activeElement !== this.expandedRow.expandingRowMainElement.nativeElement) {
+    if (
+      this.expandedRow &&
+      document.activeElement !== this.expandedRow.expandingRowMainElement.nativeElement
+    ) {
       return;
     }
 
@@ -456,12 +474,12 @@ export class ExpandingRowHost implements AfterViewInit,
     // the list of expanding rows, so we must reset the variable here
     this.lastFocusedRow = undefined;
 
-    const rowToLookFor: ExpandingRow|undefined = this.expandedRow || this.focusedRow;
+    const rowToLookFor: ExpandingRow | undefined = this.expandedRow || this.focusedRow;
     if (!rowToLookFor) {
       return;
     }
 
-    const isFocus: boolean = (rowToLookFor === this.focusedRow);
+    const isFocus: boolean = rowToLookFor === this.focusedRow;
 
     const rowIndex: number = this.getRowIndex(rowToLookFor);
     const contentRowsArray: ExpandingRow[] = this.contentRows.toArray();
@@ -491,7 +509,10 @@ export class ExpandingRowHost implements AfterViewInit,
   // Updates all of the rows with their new index.
   private recalcRowIndexes() {
     let index = 0;
-    setTimeout(
-        () => { this.contentRows.forEach((row: ExpandingRow) => { row.index = index++; }); });
+    setTimeout(() => {
+      this.contentRows.forEach((row: ExpandingRow) => {
+        row.index = index++;
+      });
+    });
   }
 }

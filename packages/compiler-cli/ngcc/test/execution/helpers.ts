@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {DepGraph} from 'dependency-graph';
 import {PartiallyOrderedTasks, Task} from '../../src/execution/tasks/api';
 import {EntryPoint} from '../../src/packages/entry_point';
@@ -34,9 +35,10 @@ import {EntryPoint} from '../../src/packages/entry_point';
  *         - `graph`: The dependency graph for the generated mock entry-point.
  */
 export function createTasksAndGraph(
-    entryPointCount: number, tasksPerEntryPointCount = 1,
-    entryPointDeps: {[entryPointIndex: string]: number[]} = {}):
-    {tasks: PartiallyOrderedTasks, graph: DepGraph<EntryPoint>} {
+  entryPointCount: number,
+  tasksPerEntryPointCount = 1,
+  entryPointDeps: {[entryPointIndex: string]: number[]} = {}
+): {tasks: PartiallyOrderedTasks; graph: DepGraph<EntryPoint>} {
   const entryPoints: EntryPoint[] = [];
   const tasks: PartiallyOrderedTasks = [] as any;
   const graph = new DepGraph<EntryPoint>();
@@ -57,15 +59,16 @@ export function createTasksAndGraph(
   }
 
   // Define entry-point interdependencies.
-  for (const epIdx of Object.keys(entryPointDeps).map(strIdx => +strIdx)) {
+  for (const epIdx of Object.keys(entryPointDeps).map((strIdx) => +strIdx)) {
     const fromPath = entryPoints[epIdx].path;
     for (const depIdx of entryPointDeps[epIdx]) {
       // Ensure that each entry-point only depends on entry-points at a lower index.
       if (depIdx >= epIdx) {
         throw Error(
-            'Invalid `entryPointDeps`: Entry-points can only depend on entry-points at a lower ' +
+          'Invalid `entryPointDeps`: Entry-points can only depend on entry-points at a lower ' +
             `index, but entry-point #${epIdx} depends on #${depIdx} in: ` +
-            JSON.stringify(entryPointDeps, null, 2));
+            JSON.stringify(entryPointDeps, null, 2)
+        );
       }
 
       const toPath = entryPoints[depIdx].path;

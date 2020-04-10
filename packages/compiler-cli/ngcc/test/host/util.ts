@@ -1,4 +1,3 @@
-
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -6,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 import {CtorParameter} from '../../../src/ngtsc/reflection';
 
@@ -14,7 +14,10 @@ import {CtorParameter} from '../../../src/ngtsc/reflection';
  * names.
  */
 export function expectTypeValueReferencesForParameters(
-    parameters: CtorParameter[], expectedParams: (string|null)[], fromModule: string|null = null) {
+  parameters: CtorParameter[],
+  expectedParams: (string | null)[],
+  fromModule: string | null = null
+) {
   parameters!.forEach((param, idx) => {
     const expected = expectedParams[idx];
     if (expected !== null) {

@@ -7,7 +7,13 @@
  */
 
 import {PlatformRef} from '@angular/core';
-import {ClientMessageBrokerFactory, FnArg, SerializerTypes, UiArguments, bootstrapWorkerUi} from '@angular/platform-webworker';
+import {
+  ClientMessageBrokerFactory,
+  FnArg,
+  SerializerTypes,
+  UiArguments,
+  bootstrapWorkerUi,
+} from '@angular/platform-webworker';
 
 const ECHO_CHANNEL = 'ECHO';
 
@@ -23,8 +29,9 @@ function afterBootstrap(ref: PlatformRef) {
     const args = new UiArguments('echo', [fnArg]);
 
     broker.runOnService(args, SerializerTypes.PRIMITIVE).then((echo_result: string) => {
-      document.getElementById('echo_result').innerHTML =
-          `<span class='response'>${echo_result}</span>`;
+      document.getElementById(
+        'echo_result'
+      ).innerHTML = `<span class='response'>${echo_result}</span>`;
     });
   });
 }

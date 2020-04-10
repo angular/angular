@@ -7,7 +7,14 @@
  */
 
 import {MockResourceLoader} from '@angular/compiler/testing/src/resource_loader_mock';
-import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  describe,
+  expect,
+  inject,
+  it,
+} from '@angular/core/testing/src/testing_internal';
 
 {
   describe('MockResourceLoader', () => {
@@ -18,7 +25,11 @@ import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@ang
     });
 
     function expectResponse(
-        request: Promise<string>, url: string, response: string, done: () => void = null!) {
+      request: Promise<string>,
+      url: string,
+      response: string,
+      done: () => void = null!
+    ) {
       function onResponse(text: string): string {
         if (response === null) {
           throw `Unexpected response ${url} -> ${text}`;
@@ -42,41 +53,49 @@ import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@ang
       request.then(onResponse, onError);
     }
 
-    it('should return a response from the definitions',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const url = '/foo';
-         const response = 'bar';
-         resourceLoader.when(url, response);
-         expectResponse(resourceLoader.get(url), url, response, () => async.done());
-         resourceLoader.flush();
-       }));
+    it('should return a response from the definitions', inject(
+      [AsyncTestCompleter],
+      (async: AsyncTestCompleter) => {
+        const url = '/foo';
+        const response = 'bar';
+        resourceLoader.when(url, response);
+        expectResponse(resourceLoader.get(url), url, response, () => async.done());
+        resourceLoader.flush();
+      }
+    ));
 
-    it('should return an error from the definitions',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const url = '/foo';
-         const response: string = null!;
-         resourceLoader.when(url, response);
-         expectResponse(resourceLoader.get(url), url, response, () => async.done());
-         resourceLoader.flush();
-       }));
+    it('should return an error from the definitions', inject(
+      [AsyncTestCompleter],
+      (async: AsyncTestCompleter) => {
+        const url = '/foo';
+        const response: string = null!;
+        resourceLoader.when(url, response);
+        expectResponse(resourceLoader.get(url), url, response, () => async.done());
+        resourceLoader.flush();
+      }
+    ));
 
-    it('should return a response from the expectations',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const url = '/foo';
-         const response = 'bar';
-         resourceLoader.expect(url, response);
-         expectResponse(resourceLoader.get(url), url, response, () => async.done());
-         resourceLoader.flush();
-       }));
+    it('should return a response from the expectations', inject(
+      [AsyncTestCompleter],
+      (async: AsyncTestCompleter) => {
+        const url = '/foo';
+        const response = 'bar';
+        resourceLoader.expect(url, response);
+        expectResponse(resourceLoader.get(url), url, response, () => async.done());
+        resourceLoader.flush();
+      }
+    ));
 
-    it('should return an error from the expectations',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const url = '/foo';
-         const response: string = null!;
-         resourceLoader.expect(url, response);
-         expectResponse(resourceLoader.get(url), url, response, () => async.done());
-         resourceLoader.flush();
-       }));
+    it('should return an error from the expectations', inject(
+      [AsyncTestCompleter],
+      (async: AsyncTestCompleter) => {
+        const url = '/foo';
+        const response: string = null!;
+        resourceLoader.expect(url, response);
+        expectResponse(resourceLoader.get(url), url, response, () => async.done());
+        resourceLoader.flush();
+      }
+    ));
 
     it('should not reuse expectations', () => {
       const url = '/foo';
@@ -89,15 +108,17 @@ import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@ang
       }).toThrowError('Unexpected request /foo');
     });
 
-    it('should return expectations before definitions',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const url = '/foo';
-         resourceLoader.when(url, 'when');
-         resourceLoader.expect(url, 'expect');
-         expectResponse(resourceLoader.get(url), url, 'expect');
-         expectResponse(resourceLoader.get(url), url, 'when', () => async.done());
-         resourceLoader.flush();
-       }));
+    it('should return expectations before definitions', inject(
+      [AsyncTestCompleter],
+      (async: AsyncTestCompleter) => {
+        const url = '/foo';
+        resourceLoader.when(url, 'when');
+        resourceLoader.expect(url, 'expect');
+        expectResponse(resourceLoader.get(url), url, 'expect');
+        expectResponse(resourceLoader.get(url), url, 'when', () => async.done());
+        resourceLoader.flush();
+      }
+    ));
 
     it('should throw when there is no definitions or expectations', () => {
       resourceLoader.get('/foo');

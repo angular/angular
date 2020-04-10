@@ -8,27 +8,63 @@
 
 import {ViewEncapsulation, ɵɵdefineInjectable, ɵɵdefineInjector} from '../../src/core';
 import {createInjector} from '../../src/di/r3_injector';
-import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, getRenderedText, markDirty, ɵɵadvance, ɵɵdefineComponent, ɵɵdirectiveInject, ɵɵproperty, ɵɵselect, ɵɵtemplate} from '../../src/render3/index';
-import {tick, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵnextContext, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
+import {
+  AttributeMarker,
+  ComponentFactory,
+  LifecycleHooksFeature,
+  getRenderedText,
+  markDirty,
+  ɵɵadvance,
+  ɵɵdefineComponent,
+  ɵɵdirectiveInject,
+  ɵɵproperty,
+  ɵɵselect,
+  ɵɵtemplate,
+} from '../../src/render3/index';
+import {
+  tick,
+  ɵɵcontainer,
+  ɵɵcontainerRefreshEnd,
+  ɵɵcontainerRefreshStart,
+  ɵɵelement,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+  ɵɵembeddedViewEnd,
+  ɵɵembeddedViewStart,
+  ɵɵnextContext,
+  ɵɵtext,
+  ɵɵtextInterpolate,
+} from '../../src/render3/instructions/all';
 import {ComponentDef, RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
-import {ComponentFixture, MockRendererFactory, containerEl, createComponent, renderComponent, renderToHtml, requestAnimationFrame, toHtml} from './render_util';
+import {
+  ComponentFixture,
+  MockRendererFactory,
+  containerEl,
+  createComponent,
+  renderComponent,
+  renderToHtml,
+  requestAnimationFrame,
+  toHtml,
+} from './render_util';
 
 describe('component', () => {
   class CounterComponent {
     count = 0;
 
-    increment() { this.count++; }
+    increment() {
+      this.count++;
+    }
 
-    static ɵfac = () => new CounterComponent;
+    static ɵfac = () => new CounterComponent();
     static ɵcmp = ɵɵdefineComponent({
       type: CounterComponent,
       encapsulation: ViewEncapsulation.None,
       selectors: [['counter']],
       decls: 1,
       vars: 1,
-      template: function(rf: RenderFlags, ctx: CounterComponent) {
+      template: function (rf: RenderFlags, ctx: CounterComponent) {
         if (rf & RenderFlags.Create) {
           ɵɵtext(0);
         }
@@ -78,21 +114,21 @@ describe('component', () => {
         selectors: [['my-component']],
         decls: 1,
         vars: 1,
-        template: function(fs: RenderFlags, ctx: MyComponent) {
+        template: function (fs: RenderFlags, ctx: MyComponent) {
           if (fs & RenderFlags.Create) {
             ɵɵtext(0);
           }
           if (fs & RenderFlags.Update) {
             ɵɵtextInterpolate(ctx.myService.value);
           }
-        }
+        },
       });
     }
 
     class MyModule {
       static ɵinj = ɵɵdefineInjector({
         factory: () => new MyModule(),
-        providers: [{provide: MyService, useValue: new MyService('injector')}]
+        providers: [{provide: MyService, useValue: new MyService('injector')}],
       });
     }
 
@@ -105,11 +141,9 @@ describe('component', () => {
       const fixture = new ComponentFixture(MyComponent, {injector: createInjector(MyModule)});
       expect(fixture.html).toEqual('injector');
     });
-
   });
 
   it('should instantiate components at high indices', () => {
-
     // {{ name }}
     class Comp {
       // @Input
@@ -129,21 +163,27 @@ describe('component', () => {
             ɵɵtextInterpolate(ctx.name);
           }
         },
-        inputs: {name: 'name'}
+        inputs: {name: 'name'},
       });
     }
 
     // Artificially inflating the slot IDs of this app component to mimic an app
     // with a very large view
-    const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
-      if (rf & RenderFlags.Create) {
-        ɵɵelement(4097, 'comp');
-      }
-      if (rf & RenderFlags.Update) {
-        ɵɵadvance(4097);
-        ɵɵproperty('name', ctx.name);
-      }
-    }, 4098, 1, [Comp]);
+    const App = createComponent(
+      'app',
+      (rf: RenderFlags, ctx: any) => {
+        if (rf & RenderFlags.Create) {
+          ɵɵelement(4097, 'comp');
+        }
+        if (rf & RenderFlags.Update) {
+          ɵɵadvance(4097);
+          ɵɵproperty('name', ctx.name);
+        }
+      },
+      4098,
+      1,
+      [Comp]
+    );
 
     const fixture = new ComponentFixture(App);
     expect(fixture.html).toEqual('<comp></comp>');
@@ -152,7 +192,6 @@ describe('component', () => {
     fixture.update();
     expect(fixture.html).toEqual('<comp>some name</comp>');
   });
-
 });
 
 it('should not invoke renderer destroy method for embedded views', () => {
@@ -169,11 +208,10 @@ it('should not invoke renderer destroy method for embedded views', () => {
   class Comp {
     visible = true;
 
-    static ɵfac =
-        () => {
-          comp = new Comp();
-          return comp;
-        }
+    static ɵfac = () => {
+      comp = new Comp();
+      return comp;
+    };
 
     static ɵcmp = ɵɵdefineComponent({
       type: Comp,
@@ -186,7 +224,7 @@ it('should not invoke renderer destroy method for embedded views', () => {
        *  <div>Root view</div>
        *  <div *ngIf="visible">Child view</div>
        */
-      template: function(rf: RenderFlags, ctx: Comp) {
+      template: function (rf: RenderFlags, ctx: Comp) {
         if (rf & RenderFlags.Create) {
           ɵɵelementStart(0, 'div');
           ɵɵtext(1, 'Root view');
@@ -197,20 +235,20 @@ it('should not invoke renderer destroy method for embedded views', () => {
           ɵɵadvance(2);
           ɵɵproperty('ngIf', ctx.visible);
         }
-      }
+      },
     });
   }
 
   const rendererFactory = new MockRendererFactory(['destroy']);
   const fixture = new ComponentFixture(Comp, {rendererFactory});
 
-  comp !.visible = false;
+  comp!.visible = false;
   fixture.update();
 
-  comp !.visible = true;
+  comp!.visible = true;
   fixture.update();
 
-  const renderer = rendererFactory.lastRenderer !;
+  const renderer = rendererFactory.lastRenderer!;
   const destroySpy = renderer.spies['destroy'];
 
   // we should never see `destroy` method being called
@@ -246,8 +284,8 @@ describe('component with a container', () => {
 
   class WrapperComponent {
     // TODO(issue/24571): remove '!'.
-    items !: string[];
-    static ɵfac = () => new WrapperComponent;
+    items!: string[];
+    static ɵfac = () => new WrapperComponent();
     static ɵcmp = ɵɵdefineComponent({
       type: WrapperComponent,
       encapsulation: ViewEncapsulation.None,
@@ -262,13 +300,15 @@ describe('component with a container', () => {
           ɵɵcontainerRefreshStart(0);
           {
             const rf0 = ɵɵembeddedViewStart(0, 1, 0);
-            { showItems(rf0, {items: ctx.items}); }
+            {
+              showItems(rf0, {items: ctx.items});
+            }
             ɵɵembeddedViewEnd();
           }
           ɵɵcontainerRefreshEnd();
         }
       },
-      inputs: {items: 'items'}
+      inputs: {items: 'items'},
     });
   }
 
@@ -303,8 +343,11 @@ describe('recursive components', () => {
 
   class TreeNode {
     constructor(
-        public value: number, public depth: number, public left: TreeNode|null,
-        public right: TreeNode|null) {}
+      public value: number,
+      public depth: number,
+      public left: TreeNode | null,
+      public right: TreeNode | null
+    ) {}
   }
 
   /**
@@ -320,9 +363,13 @@ describe('recursive components', () => {
   class TreeComponent {
     data: TreeNode = _buildTree(0);
 
-    ngDoCheck() { events.push('check' + this.data.value); }
+    ngDoCheck() {
+      events.push('check' + this.data.value);
+    }
 
-    ngOnDestroy() { events.push('destroy' + this.data.value); }
+    ngOnDestroy() {
+      events.push('destroy' + this.data.value);
+    }
 
     static ɵfac = () => new TreeComponent();
     static ɵcmp = ɵɵdefineComponent({
@@ -371,7 +418,7 @@ describe('recursive components', () => {
           ɵɵcontainerRefreshEnd();
         }
       },
-      inputs: {data: 'data'}
+      inputs: {data: 'data'},
     });
   }
 
@@ -385,9 +432,13 @@ describe('recursive components', () => {
   class NgIfTree {
     data: TreeNode = _buildTree(0);
 
-    ngDoCheck() { events.push('check' + this.data.value); }
+    ngDoCheck() {
+      events.push('check' + this.data.value);
+    }
 
-    ngOnDestroy() { events.push('destroy' + this.data.value); }
+    ngOnDestroy() {
+      events.push('destroy' + this.data.value);
+    }
 
     static ɵfac = () => new NgIfTree();
     static ɵcmp = ɵɵdefineComponent({
@@ -457,29 +508,34 @@ describe('recursive components', () => {
 
   // This tests that the view tree is set up properly for recursive components
   it('should call onDestroys properly', () => {
-
     /**
      * % if (!skipContent) {
      *   <tree-comp></tree-comp>
      * % }
      */
-    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
-      if (rf & RenderFlags.Create) {
-        ɵɵcontainer(0);
-      }
-      if (rf & RenderFlags.Update) {
-        ɵɵcontainerRefreshStart(0);
-        if (!ctx.skipContent) {
-          const rf0 = ɵɵembeddedViewStart(0, 1, 0);
-          if (rf0 & RenderFlags.Create) {
-            ɵɵelementStart(0, 'tree-comp');
-            ɵɵelementEnd();
-          }
-          ɵɵembeddedViewEnd();
+    const App = createComponent(
+      'app',
+      function (rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          ɵɵcontainer(0);
         }
-        ɵɵcontainerRefreshEnd();
-      }
-    }, 1, 0, [TreeComponent]);
+        if (rf & RenderFlags.Update) {
+          ɵɵcontainerRefreshStart(0);
+          if (!ctx.skipContent) {
+            const rf0 = ɵɵembeddedViewStart(0, 1, 0);
+            if (rf0 & RenderFlags.Create) {
+              ɵɵelementStart(0, 'tree-comp');
+              ɵɵelementEnd();
+            }
+            ɵɵembeddedViewEnd();
+          }
+          ɵɵcontainerRefreshEnd();
+        }
+      },
+      1,
+      0,
+      [TreeComponent]
+    );
 
     const fixture = new ComponentFixture(App);
     expect(getRenderedText(fixture.component)).toEqual('6201534');
@@ -487,8 +543,15 @@ describe('recursive components', () => {
     events = [];
     fixture.component.skipContent = true;
     fixture.update();
-    expect(events).toEqual(
-        ['destroy0', 'destroy1', 'destroy2', 'destroy3', 'destroy4', 'destroy5', 'destroy6']);
+    expect(events).toEqual([
+      'destroy0',
+      'destroy1',
+      'destroy2',
+      'destroy3',
+      'destroy4',
+      'destroy5',
+      'destroy6',
+    ]);
   });
 
   it('should call onDestroys properly with ngIf', () => {
@@ -497,23 +560,29 @@ describe('recursive components', () => {
      *   <ng-if-tree></ng-if-tree>
      * % }
      */
-    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
-      if (rf & RenderFlags.Create) {
-        ɵɵcontainer(0);
-      }
-      if (rf & RenderFlags.Update) {
-        ɵɵcontainerRefreshStart(0);
-        if (!ctx.skipContent) {
-          const rf0 = ɵɵembeddedViewStart(0, 1, 0);
-          if (rf0 & RenderFlags.Create) {
-            ɵɵelementStart(0, 'ng-if-tree');
-            ɵɵelementEnd();
-          }
-          ɵɵembeddedViewEnd();
+    const App = createComponent(
+      'app',
+      function (rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          ɵɵcontainer(0);
         }
-        ɵɵcontainerRefreshEnd();
-      }
-    }, 1, 0, [NgIfTree]);
+        if (rf & RenderFlags.Update) {
+          ɵɵcontainerRefreshStart(0);
+          if (!ctx.skipContent) {
+            const rf0 = ɵɵembeddedViewStart(0, 1, 0);
+            if (rf0 & RenderFlags.Create) {
+              ɵɵelementStart(0, 'ng-if-tree');
+              ɵɵelementEnd();
+            }
+            ɵɵembeddedViewEnd();
+          }
+          ɵɵcontainerRefreshEnd();
+        }
+      },
+      1,
+      0,
+      [NgIfTree]
+    );
 
     const fixture = new ComponentFixture(App);
     expect(getRenderedText(fixture.component)).toEqual('6201534');
@@ -522,14 +591,21 @@ describe('recursive components', () => {
     events = [];
     fixture.component.skipContent = true;
     fixture.update();
-    expect(events).toEqual(
-        ['destroy0', 'destroy1', 'destroy2', 'destroy3', 'destroy4', 'destroy5', 'destroy6']);
+    expect(events).toEqual([
+      'destroy0',
+      'destroy1',
+      'destroy2',
+      'destroy3',
+      'destroy4',
+      'destroy5',
+      'destroy6',
+    ]);
   });
 
-  it('should map inputs minified & unminified names', async() => {
+  it('should map inputs minified & unminified names', async () => {
     class TestInputsComponent {
       // TODO(issue/24571): remove '!'.
-      minifiedName !: string;
+      minifiedName!: string;
       static ɵfac = () => new TestInputsComponent();
       static ɵcmp = ɵɵdefineComponent({
         type: TestInputsComponent,
@@ -538,18 +614,16 @@ describe('recursive components', () => {
         inputs: {minifiedName: 'unminifiedName'},
         decls: 0,
         vars: 0,
-        template: function(rf: RenderFlags, ctx: TestInputsComponent): void {
+        template: function (rf: RenderFlags, ctx: TestInputsComponent): void {
           // Template not needed for this test
-        }
+        },
       });
     }
 
     const testInputsComponentFactory = new ComponentFactory(TestInputsComponent.ɵcmp);
 
-    expect([
-      {propName: 'minifiedName', templateName: 'unminifiedName'}
-    ]).toEqual(testInputsComponentFactory.inputs);
-
+    expect([{propName: 'minifiedName', templateName: 'unminifiedName'}]).toEqual(
+      testInputsComponentFactory.inputs
+    );
   });
-
 });

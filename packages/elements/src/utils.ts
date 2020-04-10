@@ -5,12 +5,19 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ComponentFactoryResolver, Injector, Type} from '@angular/core';
 
 const matches = (() => {
   const elProto = Element.prototype as any;
-  return elProto.matches || elProto.matchesSelector || elProto.mozMatchesSelector ||
-      elProto.msMatchesSelector || elProto.oMatchesSelector || elProto.webkitMatchesSelector;
+  return (
+    elProto.matches ||
+    elProto.matchesSelector ||
+    elProto.mozMatchesSelector ||
+    elProto.msMatchesSelector ||
+    elProto.oMatchesSelector ||
+    elProto.webkitMatchesSelector
+  );
 })();
 
 /**
@@ -22,8 +29,10 @@ export const scheduler = {
    *
    * Returns a function that when executed will cancel the scheduled function.
    */
-  schedule(taskFn: () => void, delay: number): () =>
-      void{const id = setTimeout(taskFn, delay); return () => clearTimeout(id);},
+  schedule(taskFn: () => void, delay: number): () => void {
+    const id = setTimeout(taskFn, delay);
+    return () => clearTimeout(id);
+  },
 
   /**
    * Schedule a callback to be called before the next render.
@@ -31,7 +40,7 @@ export const scheduler = {
    *
    * Returns a function that when executed will cancel the scheduled function.
    */
-  scheduleBeforeRender(taskFn: () => void): () => void{
+  scheduleBeforeRender(taskFn: () => void): () => void {
     // TODO(gkalpak): Implement a better way of accessing `requestAnimationFrame()`
     //                (e.g. accounting for vendor prefix, SSR-compatibility, etc).
     if (typeof window === 'undefined') {
@@ -53,7 +62,7 @@ export const scheduler = {
  * Convert a camelCased string to kebab-cased.
  */
 export function camelToDashCase(input: string): string {
-  return input.replace(/[A-Z]/g, char => `-${char.toLowerCase()}`);
+  return input.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`);
 }
 
 /**
@@ -110,7 +119,8 @@ export function strictEquals(value1: any, value2: any): boolean {
 
 /** Gets a map of default set of attributes to observe and the properties they affect. */
 export function getDefaultAttributeToPropertyInputs(
-    inputs: {propName: string, templateName: string}[]) {
+  inputs: {propName: string; templateName: string}[]
+) {
   const attributeToPropertyInputs: {[key: string]: string} = {};
   inputs.forEach(({propName, templateName}) => {
     attributeToPropertyInputs[camelToDashCase(templateName)] = propName;
@@ -124,7 +134,9 @@ export function getDefaultAttributeToPropertyInputs(
  * are defined.
  */
 export function getComponentInputs(
-    component: Type<any>, injector: Injector): {propName: string, templateName: string}[] {
+  component: Type<any>,
+  injector: Injector
+): {propName: string; templateName: string}[] {
   const componentFactoryResolver: ComponentFactoryResolver = injector.get(ComponentFactoryResolver);
   const componentFactory = componentFactoryResolver.resolveComponentFactory(component);
   return componentFactory.inputs;

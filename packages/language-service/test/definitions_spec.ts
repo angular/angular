@@ -70,8 +70,9 @@ describe('definitions', () => {
     expect(def.kind).toBe('property');
 
     const fileContent = mockHost.readFile(def.fileName);
-    expect(fileContent!.substring(def.textSpan.start, def.textSpan.start + def.textSpan.length))
-        .toEqual(`title = 'Some title';`);
+    expect(
+      fileContent!.substring(def.textSpan.start, def.textSpan.start + def.textSpan.length)
+    ).toEqual(`title = 'Some title';`);
   });
 
   it('should be able to find a method from a call', () => {
@@ -287,7 +288,9 @@ describe('definitions', () => {
   describe('in structural directive', () => {
     it('should be able to find the directive', () => {
       mockHost.override(
-          TEST_TEMPLATE, `<div ~{start-my}*«ngFor»="let item of heroes;"~{end-my}></div>`);
+        TEST_TEMPLATE,
+        `<div ~{start-my}*«ngFor»="let item of heroes;"~{end-my}></div>`
+      );
 
       // Get the marker for ngFor in the code added above.
       const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'ngFor');
@@ -329,7 +332,7 @@ describe('definitions', () => {
       expect(definitions!.length).toBe(2);
 
       const refFileName = '/node_modules/@angular/common/common.d.ts';
-      definitions!.forEach(def => {
+      definitions!.forEach((def) => {
         expect(def.fileName).toBe(refFileName);
         expect(def.name).toBe('ngForTrackBy');
         expect(def.kind).toBe('method');
@@ -358,15 +361,17 @@ describe('definitions', () => {
       expect(def.name).toBe('heroes');
       expect(def.kind).toBe('property');
       const content = mockHost.readFile(refFileName)!;
-      expect(content.substring(def.textSpan.start, def.textSpan.start + def.textSpan.length))
-          .toEqual(`heroes: Hero[] = [this.hero];`);
+      expect(
+        content.substring(def.textSpan.start, def.textSpan.start + def.textSpan.length)
+      ).toEqual(`heroes: Hero[] = [this.hero];`);
     });
   });
 
   it('should be able to find a two-way binding', () => {
     mockHost.override(
-        TEST_TEMPLATE,
-        `<test-comp string-model ~{start-my}[(«model»)]="title"~{end-my}></test-comp>`);
+      TEST_TEMPLATE,
+      `<test-comp string-model ~{start-my}[(«model»)]="title"~{end-my}></test-comp>`
+    );
     // Get the marker for «model» in the code added above.
     const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'model');
 
@@ -387,15 +392,17 @@ describe('definitions', () => {
     expect(def1.name).toBe('model');
     expect(def1.kind).toBe('property');
     let content = mockHost.readFile(refFileName)!;
-    expect(content.substring(def1.textSpan.start, def1.textSpan.start + def1.textSpan.length))
-        .toEqual(`@Input() model: string = 'model';`);
+    expect(
+      content.substring(def1.textSpan.start, def1.textSpan.start + def1.textSpan.length)
+    ).toEqual(`@Input() model: string = 'model';`);
 
     expect(def2.fileName).toBe(refFileName);
     expect(def2.name).toBe('modelChange');
     expect(def2.kind).toBe('event');
     content = mockHost.readFile(refFileName)!;
-    expect(content.substring(def2.textSpan.start, def2.textSpan.start + def2.textSpan.length))
-        .toEqual(`@Output() modelChange: EventEmitter<string> = new EventEmitter();`);
+    expect(
+      content.substring(def2.textSpan.start, def2.textSpan.start + def2.textSpan.length)
+    ).toEqual(`@Output() modelChange: EventEmitter<string> = new EventEmitter();`);
   });
 
   it('should be able to find a template from a url', () => {

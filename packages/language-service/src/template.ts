@@ -13,7 +13,6 @@ import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 import {getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from './typescript_symbols';
 
-
 /**
  * A base class to represent a template and which component class it is
  * associated with. A template source could answer basic questions about
@@ -22,13 +21,14 @@ import {getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from './t
  */
 abstract class BaseTemplate implements ng.TemplateSource {
   private readonly program: ts.Program;
-  private membersTable: ng.SymbolTable|undefined;
-  private queryCache: ng.SymbolQuery|undefined;
+  private membersTable: ng.SymbolTable | undefined;
+  private queryCache: ng.SymbolQuery | undefined;
 
   constructor(
-      private readonly host: TypeScriptServiceHost,
-      private readonly classDeclNode: ts.ClassDeclaration,
-      private readonly classSymbol: ng.StaticSymbol) {
+    private readonly host: TypeScriptServiceHost,
+    private readonly classDeclNode: ts.ClassDeclaration,
+    private readonly classSymbol: ng.StaticSymbol
+  ) {
     this.program = host.program;
   }
 
@@ -92,8 +92,11 @@ export class InlineTemplate extends BaseTemplate {
   public readonly span: ng.Span;
 
   constructor(
-      templateNode: ts.StringLiteralLike, classDeclNode: ts.ClassDeclaration,
-      classSymbol: ng.StaticSymbol, host: TypeScriptServiceHost) {
+    templateNode: ts.StringLiteralLike,
+    classDeclNode: ts.ClassDeclaration,
+    classSymbol: ng.StaticSymbol,
+    host: TypeScriptServiceHost
+  ) {
     super(host, classDeclNode, classSymbol);
     const sourceFile = templateNode.getSourceFile();
     if (sourceFile !== classDeclNode.getSourceFile()) {
@@ -102,7 +105,7 @@ export class InlineTemplate extends BaseTemplate {
     this.fileName = sourceFile.fileName;
     // node.text returns the TS internal representation of the normalized text,
     // and all CR characters are stripped. node.getText() returns the raw text.
-    this.source = templateNode.getText().slice(1, -1);  // strip leading and trailing quotes
+    this.source = templateNode.getText().slice(1, -1); // strip leading and trailing quotes
     this.span = {
       // TS string literal includes surrounding quotes in the start/end offsets.
       start: templateNode.getStart() + 1,
@@ -122,9 +125,12 @@ export class ExternalTemplate extends BaseTemplate {
   public readonly span: ng.Span;
 
   constructor(
-      public readonly source: string, public readonly fileName: string,
-      classDeclNode: ts.ClassDeclaration, classSymbol: ng.StaticSymbol,
-      host: TypeScriptServiceHost) {
+    public readonly source: string,
+    public readonly fileName: string,
+    classDeclNode: ts.ClassDeclaration,
+    classSymbol: ng.StaticSymbol,
+    host: TypeScriptServiceHost
+  ) {
     super(host, classDeclNode, classSymbol);
     this.span = {
       start: 0,
@@ -137,7 +143,7 @@ export class ExternalTemplate extends BaseTemplate {
  * Returns a property assignment from the assignment value, or `undefined` if there is no
  * assignment.
  */
-export function getPropertyAssignmentFromValue(value: ts.Node): ts.PropertyAssignment|undefined {
+export function getPropertyAssignmentFromValue(value: ts.Node): ts.PropertyAssignment | undefined {
   if (!value.parent || !ts.isPropertyAssignment(value.parent)) {
     return;
   }
@@ -160,8 +166,9 @@ export function getPropertyAssignmentFromValue(value: ts.Node): ts.PropertyAssig
  *
  * @param propAsgn property assignment
  */
-export function getClassDeclFromDecoratorProp(propAsgnNode: ts.PropertyAssignment):
-    ts.ClassDeclaration|undefined {
+export function getClassDeclFromDecoratorProp(
+  propAsgnNode: ts.PropertyAssignment
+): ts.ClassDeclaration | undefined {
   if (!propAsgnNode.parent || !ts.isObjectLiteralExpression(propAsgnNode.parent)) {
     return;
   }

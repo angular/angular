@@ -10,12 +10,21 @@ import * as ts from 'typescript';
 import {absoluteFrom as _abs} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {KnownDeclaration} from '../../src/ngtsc/reflection';
-import {FactoryMap, getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, isRelativePath, stripExtension} from '../src/utils';
+import {
+  FactoryMap,
+  getTsHelperFnFromDeclaration,
+  getTsHelperFnFromIdentifier,
+  isRelativePath,
+  stripExtension,
+} from '../src/utils';
 
 describe('FactoryMap', () => {
   it('should return an existing value', () => {
     const factoryFnSpy = jasmine.createSpy('factory');
-    const factoryMap = new FactoryMap<string, string>(factoryFnSpy, [['k1', 'v1'], ['k2', 'v2']]);
+    const factoryMap = new FactoryMap<string, string>(factoryFnSpy, [
+      ['k1', 'v1'],
+      ['k2', 'v2'],
+    ]);
 
     expect(factoryMap.get('k1')).toBe('v1');
     expect(factoryMap.get('k2')).toBe('v2');
@@ -42,7 +51,10 @@ describe('FactoryMap', () => {
 
   it('should create, store and return the value if it does not exist', () => {
     const factoryFnSpy = jasmine.createSpy('factory').and.returnValues('v3', 'never gonna happen');
-    const factoryMap = new FactoryMap(factoryFnSpy, [['k1', 'v1'], ['k2', 'v2']]);
+    const factoryMap = new FactoryMap(factoryFnSpy, [
+      ['k1', 'v1'],
+      ['k2', 'v2'],
+    ]);
 
     expect(factoryMap.get('k3')).toBe('v3');
     expect(factoryFnSpy).toHaveBeenCalledTimes(1);
@@ -55,10 +67,19 @@ describe('FactoryMap', () => {
 });
 
 describe('getTsHelperFnFromDeclaration()', () => {
-  const createFunctionDeclaration = (fnName?: string) => ts.createFunctionDeclaration(
-      undefined, undefined, undefined, fnName, undefined, [], undefined, undefined);
+  const createFunctionDeclaration = (fnName?: string) =>
+    ts.createFunctionDeclaration(
+      undefined,
+      undefined,
+      undefined,
+      fnName,
+      undefined,
+      [],
+      undefined,
+      undefined
+    );
   const createVariableDeclaration = (varName: string) =>
-      ts.createVariableDeclaration(varName, undefined, undefined);
+    ts.createVariableDeclaration(varName, undefined, undefined);
 
   it('should recognize the `__assign` helper as function declaration', () => {
     const decl1 = createFunctionDeclaration('__assign');
@@ -125,8 +146,14 @@ describe('getTsHelperFnFromDeclaration()', () => {
   });
 
   it('should return null for non-function/variable declarations', () => {
-    const classDecl =
-        ts.createClassDeclaration(undefined, undefined, '__assign', undefined, undefined, []);
+    const classDecl = ts.createClassDeclaration(
+      undefined,
+      undefined,
+      '__assign',
+      undefined,
+      undefined,
+      []
+    );
 
     expect(classDecl.name!.text).toBe('__assign');
     expect(getTsHelperFnFromDeclaration(classDecl)).toBe(null);

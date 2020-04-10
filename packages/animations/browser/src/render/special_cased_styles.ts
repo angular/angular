@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {eraseStyles, setStyles} from '../util';
 
 /**
@@ -19,9 +20,11 @@ import {eraseStyles, setStyles} from '../util';
  * @returns an instance of `SpecialCasedStyles` if any special styles are detected otherwise `null`
  */
 export function packageNonAnimatableStyles(
-    element: any, styles: {[key: string]: any} | {[key: string]: any}[]): SpecialCasedStyles|null {
-  let startStyles: {[key: string]: any}|null = null;
-  let endStyles: {[key: string]: any}|null = null;
+  element: any,
+  styles: {[key: string]: any} | {[key: string]: any}[]
+): SpecialCasedStyles | null {
+  let startStyles: {[key: string]: any} | null = null;
+  let endStyles: {[key: string]: any} | null = null;
   if (Array.isArray(styles) && styles.length) {
     startStyles = filterNonAnimatableStyles(styles[0]);
     if (styles.length > 1) {
@@ -31,8 +34,7 @@ export function packageNonAnimatableStyles(
     startStyles = filterNonAnimatableStyles(styles);
   }
 
-  return (startStyles || endStyles) ? new SpecialCasedStyles(element, startStyles, endStyles) :
-                                      null;
+  return startStyles || endStyles ? new SpecialCasedStyles(element, startStyles, endStyles) : null;
 }
 
 /**
@@ -47,14 +49,16 @@ export class SpecialCasedStyles {
   static initialStylesByElement = new WeakMap<any, {[key: string]: any}>();
 
   private _state = SpecialCasedStylesState.Pending;
-  private _initialStyles !: {[key: string]: any};
+  private _initialStyles!: {[key: string]: any};
 
   constructor(
-      private _element: any, private _startStyles: {[key: string]: any}|null,
-      private _endStyles: {[key: string]: any}|null) {
+    private _element: any,
+    private _startStyles: {[key: string]: any} | null,
+    private _endStyles: {[key: string]: any} | null
+  ) {
     let initialStyles = SpecialCasedStyles.initialStylesByElement.get(_element);
     if (!initialStyles) {
-      SpecialCasedStyles.initialStylesByElement.set(_element, initialStyles = {});
+      SpecialCasedStyles.initialStylesByElement.set(_element, (initialStyles = {}));
     }
     this._initialStyles = initialStyles;
   }
@@ -116,7 +120,7 @@ const enum SpecialCasedStylesState {
 }
 
 function filterNonAnimatableStyles(styles: {[key: string]: any}) {
-  let result: {[key: string]: any}|null = null;
+  let result: {[key: string]: any} | null = null;
   const props = Object.keys(styles);
   for (let i = 0; i < props.length; i++) {
     const prop = props[i];

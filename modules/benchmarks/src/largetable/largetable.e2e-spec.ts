@@ -13,11 +13,14 @@ import {openBrowser, verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 describe('largetable benchmark', () => {
   afterEach(verifyNoBrowserErrors);
 
-  it(`should render the table`, async() => {
+  it(`should render the table`, async () => {
     openBrowser({
       url: '',
       ignoreBrowserSynchronization: true,
-      params: [{name: 'cols', value: 5}, {name: 'rows', value: 5}],
+      params: [
+        {name: 'cols', value: 5},
+        {name: 'rows', value: 5},
+      ],
     });
     await $('#createDom').click();
     expect($('#root').getText()).toContain('0/0');

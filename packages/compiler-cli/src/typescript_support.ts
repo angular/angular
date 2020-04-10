@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 import {compareVersions} from './diagnostics/typescript_version';
 
@@ -48,9 +49,10 @@ export function restoreTypeScriptVersionForTesting(): void {
  * @throws Will throw an error if the given version ∉ [minVersion, maxVersion[
  */
 export function checkVersion(version: string, minVersion: string, maxVersion: string) {
-  if ((compareVersions(version, minVersion) < 0 || compareVersions(version, maxVersion) >= 0)) {
-    throw new Error(`The Angular Compiler requires TypeScript >=${minVersion} and <${
-        maxVersion} but ${version} was found instead.`);
+  if (compareVersions(version, minVersion) < 0 || compareVersions(version, maxVersion) >= 0) {
+    throw new Error(
+      `The Angular Compiler requires TypeScript >=${minVersion} and <${maxVersion} but ${version} was found instead.`
+    );
   }
 }
 

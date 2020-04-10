@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
     basePath: '',
     client: {errorpolicy: config.errorpolicy},
     files: [
-      'node_modules/systemjs/dist/system-polyfills.js', 'node_modules/systemjs/dist/system.src.js',
+      'node_modules/systemjs/dist/system-polyfills.js',
+      'node_modules/systemjs/dist/system.src.js',
       'node_modules/whatwg-fetch/fetch.js',
       {pattern: 'node_modules/rxjs/**/**/*.js', included: false, watched: false},
       {pattern: 'node_modules/rxjs/**/**/*.js.map', included: false, watched: false},
@@ -21,12 +22,13 @@ module.exports = function(config) {
       {pattern: 'node_modules/rxjs/**/*.js.map', included: false, watched: false},
       {pattern: 'test/assets/**/*.*', watched: true, served: true, included: false},
       {pattern: 'build/**/*.js.map', watched: true, served: true, included: false},
-      {pattern: 'build/**/*.js', watched: true, served: true, included: false}
+      {pattern: 'build/**/*.js', watched: true, served: true, included: false},
     ],
 
     plugins: [
-      require('karma-chrome-launcher'), require('karma-firefox-launcher'),
-      require('karma-sourcemap-loader')
+      require('karma-chrome-launcher'),
+      require('karma-firefox-launcher'),
+      require('karma-sourcemap-loader'),
     ],
 
     preprocessors: {'**/*.js': ['sourcemap']},
@@ -46,6 +48,6 @@ module.exports = function(config) {
     retryLimit: 4,
 
     autoWatch: true,
-    singleRun: false
+    singleRun: false,
   });
 };

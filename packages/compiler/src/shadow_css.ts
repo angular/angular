@@ -175,7 +175,7 @@ export class ShadowCss {
    **/
   private _insertPolyfillDirectivesInCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
-    return cssText.replace(_cssContentNextSelectorRe, function(...m: string[]) {
+    return cssText.replace(_cssContentNextSelectorRe, function (...m: string[]) {
       return m[2] + '{';
     });
   }
@@ -243,7 +243,7 @@ export class ShadowCss {
   private _extractUnscopedRulesFromCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
     let r = '';
-    let m: RegExpExecArray|null;
+    let m: RegExpExecArray | null;
     _cssContentUnscopedRuleRe.lastIndex = 0;
     while ((m = _cssContentUnscopedRuleRe.exec(cssText)) !== null) {
       const rule = m[0].replace(m[2], '').replace(m[1], m[4]);
@@ -280,12 +280,15 @@ export class ShadowCss {
    */
   private _convertColonHostContext(cssText: string): string {
     return this._convertColonRule(
-        cssText, _cssColonHostContextRe, this._colonHostContextPartReplacer);
+      cssText,
+      _cssColonHostContextRe,
+      this._colonHostContextPartReplacer
+    );
   }
 
   private _convertColonRule(cssText: string, regExp: RegExp, partReplacer: Function): string {
     // m[1] = :host(-context), m[2] = contents of (), m[3] rest of rule
-    return cssText.replace(regExp, function(...m: string[]) {
+    return cssText.replace(regExp, function (...m: string[]) {
       if (m[2]) {
         const parts = m[2].split(',');
         const r: string[] = [];
@@ -327,11 +330,18 @@ export class ShadowCss {
       let selector = rule.selector;
       let content = rule.content;
       if (rule.selector[0] != '@') {
-        selector =
-            this._scopeSelector(rule.selector, scopeSelector, hostSelector, this.strictStyling);
+        selector = this._scopeSelector(
+          rule.selector,
+          scopeSelector,
+          hostSelector,
+          this.strictStyling
+        );
       } else if (
-          rule.selector.startsWith('@media') || rule.selector.startsWith('@supports') ||
-          rule.selector.startsWith('@page') || rule.selector.startsWith('@document')) {
+        rule.selector.startsWith('@media') ||
+        rule.selector.startsWith('@supports') ||
+        rule.selector.startsWith('@page') ||
+        rule.selector.startsWith('@document')
+      ) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       }
       return new CssRule(selector, content);
@@ -339,23 +349,28 @@ export class ShadowCss {
   }
 
   private _scopeSelector(
-      selector: string, scopeSelector: string, hostSelector: string, strict: boolean): string {
-    return selector.split(',')
-        .map(part => part.trim().split(_shadowDeepSelectors))
-        .map((deepParts) => {
-          const [shallowPart, ...otherParts] = deepParts;
-          const applyScope = (shallowPart: string) => {
-            if (this._selectorNeedsScoping(shallowPart, scopeSelector)) {
-              return strict ?
-                  this._applyStrictSelectorScope(shallowPart, scopeSelector, hostSelector) :
-                  this._applySelectorScope(shallowPart, scopeSelector, hostSelector);
-            } else {
-              return shallowPart;
-            }
-          };
-          return [applyScope(shallowPart), ...otherParts].join(' ');
-        })
-        .join(', ');
+    selector: string,
+    scopeSelector: string,
+    hostSelector: string,
+    strict: boolean
+  ): string {
+    return selector
+      .split(',')
+      .map((part) => part.trim().split(_shadowDeepSelectors))
+      .map((deepParts) => {
+        const [shallowPart, ...otherParts] = deepParts;
+        const applyScope = (shallowPart: string) => {
+          if (this._selectorNeedsScoping(shallowPart, scopeSelector)) {
+            return strict
+              ? this._applyStrictSelectorScope(shallowPart, scopeSelector, hostSelector)
+              : this._applySelectorScope(shallowPart, scopeSelector, hostSelector);
+          } else {
+            return shallowPart;
+          }
+        };
+        return [applyScope(shallowPart), ...otherParts].join(' ');
+      })
+      .join(', ');
   }
 
   private _selectorNeedsScoping(selector: string, scopeSelector: string): boolean {
@@ -370,30 +385,35 @@ export class ShadowCss {
     return new RegExp('^(' + scopeSelector + ')' + _selectorReSuffix, 'm');
   }
 
-  private _applySelectorScope(selector: string, scopeSelector: string, hostSelector: string):
-      string {
+  private _applySelectorScope(
+    selector: string,
+    scopeSelector: string,
+    hostSelector: string
+  ): string {
     // Difference from webcomponents.js: scopeSelector could not be an array
     return this._applySimpleSelectorScope(selector, scopeSelector, hostSelector);
   }
 
   // scope via name and [is=name]
-  private _applySimpleSelectorScope(selector: string, scopeSelector: string, hostSelector: string):
-      string {
+  private _applySimpleSelectorScope(
+    selector: string,
+    scopeSelector: string,
+    hostSelector: string
+  ): string {
     // In Android browser, the lastIndex is not reset when the regex is used in String.replace()
     _polyfillHostRe.lastIndex = 0;
     if (_polyfillHostRe.test(selector)) {
       const replaceBy = this.strictStyling ? `[${hostSelector}]` : scopeSelector;
       return selector
-          .replace(
-              _polyfillHostNoCombinatorRe,
-              (hnc, selector) => {
-                return selector.replace(
-                    /([^:]*)(:*)(.*)/,
-                    (_: string, before: string, colon: string, after: string) => {
-                      return before + replaceBy + colon + after;
-                    });
-              })
-          .replace(_polyfillHostRe, replaceBy + ' ');
+        .replace(_polyfillHostNoCombinatorRe, (hnc, selector) => {
+          return selector.replace(
+            /([^:]*)(:*)(.*)/,
+            (_: string, before: string, colon: string, after: string) => {
+              return before + replaceBy + colon + after;
+            }
+          );
+        })
+        .replace(_polyfillHostRe, replaceBy + ' ');
     }
 
     return scopeSelector + ' ' + selector;
@@ -401,8 +421,11 @@ export class ShadowCss {
 
   // return a selector with [name] suffix on each simple selector
   // e.g. .foo.bar > .zot becomes .foo[name].bar[name] > .zot[name]  /** @internal */
-  private _applyStrictSelectorScope(selector: string, scopeSelector: string, hostSelector: string):
-      string {
+  private _applyStrictSelectorScope(
+    selector: string,
+    scopeSelector: string,
+    hostSelector: string
+  ): string {
     const isRe = /\[is=([^\]]*)\]/g;
     scopeSelector = scopeSelector.replace(isRe, (_: string, ...parts: string[]) => parts[0]);
 
@@ -436,7 +459,7 @@ export class ShadowCss {
 
     let scopedSelector = '';
     let startIndex = 0;
-    let res: RegExpExecArray|null;
+    let res: RegExpExecArray | null;
     const sep = /( |>|\+|~(?!=))\s*/g;
 
     // If a selector appears before :host it should not be shimmed as it
@@ -472,8 +495,9 @@ export class ShadowCss {
   }
 
   private _insertPolyfillHostInCssText(selector: string): string {
-    return selector.replace(_colonHostContextRe, _polyfillHostContext)
-        .replace(_colonHostRe, _polyfillHost);
+    return selector
+      .replace(_colonHostContextRe, _polyfillHostContext)
+      .replace(_colonHostRe, _polyfillHost);
   }
 }
 
@@ -511,17 +535,13 @@ class SafeSelector {
   }
 }
 
-const _cssContentNextSelectorRe =
-    /polyfill-next-selector[^}]*content:[\s]*?(['"])(.*?)\1[;\s]*}([^{]*?){/gim;
+const _cssContentNextSelectorRe = /polyfill-next-selector[^}]*content:[\s]*?(['"])(.*?)\1[;\s]*}([^{]*?){/gim;
 const _cssContentRuleRe = /(polyfill-rule)[^}]*(content:[\s]*(['"])(.*?)\3)[;\s]*[^}]*}/gim;
-const _cssContentUnscopedRuleRe =
-    /(polyfill-unscoped-rule)[^}]*(content:[\s]*(['"])(.*?)\3)[;\s]*[^}]*}/gim;
+const _cssContentUnscopedRuleRe = /(polyfill-unscoped-rule)[^}]*(content:[\s]*(['"])(.*?)\3)[;\s]*[^}]*}/gim;
 const _polyfillHost = '-shadowcsshost';
 // note: :host-context pre-processed to -shadowcsshostcontext.
 const _polyfillHostContext = '-shadowcsscontext';
-const _parenSuffix = ')(?:\\((' +
-    '(?:\\([^)(]*\\)|[^)(]*)+?' +
-    ')\\))?([^,{]*)';
+const _parenSuffix = ')(?:\\((' + '(?:\\([^)(]*\\)|[^)(]*)+?' + ')\\))?([^,{]*)';
 const _cssColonHostRe = new RegExp('(' + _polyfillHost + _parenSuffix, 'gim');
 const _cssColonHostContextRe = new RegExp('(' + _polyfillHostContext + _parenSuffix, 'gim');
 const _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
@@ -538,7 +558,7 @@ const _shadowDOMSelectorsRe = [
 // Support for `>>>`, `deep`, `::ng-deep` is then also deprecated and will be removed in the future.
 // see https://github.com/angular/angular/pull/17677
 const _shadowDeepSelectors = /(?:>>>)|(?:\/deep\/)|(?:::ng-deep)/g;
-const _selectorReSuffix = '([>\\s~+\[.,{:][\\s\\S]*)?$';
+const _selectorReSuffix = '([>\\s~+[.,{:][\\s\\S]*)?$';
 const _polyfillHostRe = /-shadowcsshost/gim;
 const _colonHostRe = /:host/gim;
 const _colonHostContextRe = /:host-context/gim;
@@ -568,7 +588,7 @@ export class CssRule {
 export function processRules(input: string, ruleCallback: (rule: CssRule) => CssRule): string {
   const inputWithEscapedBlocks = escapeBlocks(input);
   let nextBlockIndex = 0;
-  return inputWithEscapedBlocks.escapedString.replace(_ruleRe, function(...m: string[]) {
+  return inputWithEscapedBlocks.escapedString.replace(_ruleRe, function (...m: string[]) {
     const selector = m[2];
     let content = '';
     let suffix = m[4];

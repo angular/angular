@@ -7,14 +7,28 @@
  */
 
 import {applyChanges} from '../../src/render3/util/change_detection_utils';
-import {getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from '../../src/render3/util/discovery_utils';
-import {GLOBAL_PUBLISH_EXPANDO_KEY, GlobalDevModeContainer, publishDefaultGlobalUtils, publishGlobalUtil} from '../../src/render3/util/global_utils';
+import {
+  getComponent,
+  getContext,
+  getDirectives,
+  getHostElement,
+  getInjector,
+  getListeners,
+  getOwningComponent,
+  getRootComponents,
+} from '../../src/render3/util/discovery_utils';
+import {
+  GLOBAL_PUBLISH_EXPANDO_KEY,
+  GlobalDevModeContainer,
+  publishDefaultGlobalUtils,
+  publishGlobalUtil,
+} from '../../src/render3/util/global_utils';
 import {global} from '../../src/util/global';
 
 describe('global utils', () => {
   describe('publishGlobalUtil', () => {
     it('should publish a function to the window', () => {
-      const w = global as any as GlobalDevModeContainer;
+      const w = (global as any) as GlobalDevModeContainer;
       expect(w[GLOBAL_PUBLISH_EXPANDO_KEY]['foo']).toBeFalsy();
       const fooFn = () => {};
       publishGlobalUtil('foo', fooFn);
@@ -64,6 +78,6 @@ describe('global utils', () => {
 });
 
 function assertPublished(name: string, value: Function) {
-  const w = global as any as GlobalDevModeContainer;
+  const w = (global as any) as GlobalDevModeContainer;
   expect(w[GLOBAL_PUBLISH_EXPANDO_KEY][name]).toBe(value);
 }

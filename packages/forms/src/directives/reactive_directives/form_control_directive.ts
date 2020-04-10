@@ -6,26 +6,45 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Inject, InjectionToken, Input, OnChanges, Optional, Output, Self, SimpleChanges} from '@angular/core';
+import {
+  Directive,
+  EventEmitter,
+  forwardRef,
+  Inject,
+  InjectionToken,
+  Input,
+  OnChanges,
+  Optional,
+  Output,
+  Self,
+  SimpleChanges,
+} from '@angular/core';
 
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
 import {NgControl} from '../ng_control';
 import {ReactiveErrors} from '../reactive_errors';
-import {_ngModelWarning, composeAsyncValidators, composeValidators, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
+import {
+  _ngModelWarning,
+  composeAsyncValidators,
+  composeValidators,
+  isPropertyUpdated,
+  selectValueAccessor,
+  setUpControl,
+} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
-
 
 /**
  * Token to provide to turn off the ngModel warning on formControl and formControlName.
  */
-export const NG_MODEL_WITH_FORM_CONTROL_WARNING =
-    new InjectionToken('NgModelWithFormControlWarning');
+export const NG_MODEL_WITH_FORM_CONTROL_WARNING = new InjectionToken(
+  'NgModelWithFormControlWarning'
+);
 
 export const formControlBinding: any = {
   provide: NgControl,
-  useExisting: forwardRef(() => FormControlDirective)
+  useExisting: forwardRef(() => FormControlDirective),
 };
 
 /**
@@ -51,7 +70,6 @@ export const formControlBinding: any = {
  * @publicApi
  */
 @Directive({selector: '[formControl]', providers: [formControlBinding], exportAs: 'ngForm'})
-
 export class FormControlDirective extends NgControl implements OnChanges {
   /**
    * @description
@@ -102,12 +120,16 @@ export class FormControlDirective extends NgControl implements OnChanges {
   _ngModelWarningSent = false;
 
   constructor(
-      @Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator|ValidatorFn>,
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
-          Array<AsyncValidator|AsyncValidatorFn>,
-      @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[],
-      @Optional() @Inject(NG_MODEL_WITH_FORM_CONTROL_WARNING) private _ngModelWarningConfig: string|
-      null) {
+    @Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator | ValidatorFn>,
+    @Optional()
+    @Self()
+    @Inject(NG_ASYNC_VALIDATORS)
+    asyncValidators: Array<AsyncValidator | AsyncValidatorFn>,
+    @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[],
+    @Optional()
+    @Inject(NG_MODEL_WITH_FORM_CONTROL_WARNING)
+    private _ngModelWarningConfig: string | null
+  ) {
     super();
     this._rawValidators = validators || [];
     this._rawAsyncValidators = asyncValidators || [];
@@ -150,7 +172,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
    * Synchronous validator function composed of all the synchronous validators
    * registered with this directive.
    */
-  get validator(): ValidatorFn|null {
+  get validator(): ValidatorFn | null {
     return composeValidators(this._rawValidators);
   }
 
@@ -159,7 +181,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
    * Async validator function composed of all the async validators registered with this
    * directive.
    */
-  get asyncValidator(): AsyncValidatorFn|null {
+  get asyncValidator(): AsyncValidatorFn | null {
     return composeAsyncValidators(this._rawAsyncValidators);
   }
 

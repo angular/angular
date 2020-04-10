@@ -10,9 +10,8 @@ const browserProvidersConf = require('../../browser-providers.conf');
 const {generateSeed} = require('../../tools/jasmine-seed-generator');
 
 // Karma configuration
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
-
     basePath: '../../',
 
     frameworks: ['jasmine'],
@@ -61,19 +60,19 @@ module.exports = function(config) {
       {
         pattern: 'dist/all/@angular/platform-browser/testing/**/*.js',
         included: false,
-        watched: false
+        watched: false,
       },
 
       {pattern: 'dist/all/@angular/platform-browser-dynamic/*.js', included: false, watched: false},
       {
         pattern: 'dist/all/@angular/platform-browser-dynamic/src/**/*.js',
         included: false,
-        watched: false
+        watched: false,
       },
       {
         pattern: 'dist/all/@angular/platform-browser-dynamic/testing/**/*.js',
         included: false,
-        watched: false
+        watched: false,
       },
 
       {pattern: 'dist/all/@angular/private/testing/**/*.js', included: false, watched: false},
@@ -82,7 +81,7 @@ module.exports = function(config) {
       {pattern: 'dist/all/@angular/upgrade/static/src/**/*.js', included: false, watched: false},
 
       // Router
-      {pattern: 'dist/all/@angular/router/**/*.js', included: false, watched: true}
+      {pattern: 'dist/all/@angular/router/**/*.js', included: false, watched: true},
     ],
 
     customLaunchers: browserProvidersConf.customLaunchers,

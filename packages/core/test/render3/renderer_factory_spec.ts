@@ -8,7 +8,17 @@
 
 import {RendererType2, ViewEncapsulation} from '../../src/core';
 import {ɵɵdefineComponent} from '../../src/render3/index';
-import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵtext} from '../../src/render3/instructions/all';
+import {
+  ɵɵcontainer,
+  ɵɵcontainerRefreshEnd,
+  ɵɵcontainerRefreshStart,
+  ɵɵelement,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+  ɵɵembeddedViewEnd,
+  ɵɵembeddedViewStart,
+  ɵɵtext,
+} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {getRendererFactory2} from './imported_renderer2';
@@ -26,14 +36,14 @@ describe('renderer factory lifecycle', () => {
   rendererFactory.end = () => logs.push('end');
 
   class SomeComponent {
-    static ɵfac = () => new SomeComponent;
+    static ɵfac = () => new SomeComponent();
     static ɵcmp = ɵɵdefineComponent({
       type: SomeComponent,
       encapsulation: ViewEncapsulation.None,
       selectors: [['some-component']],
       decls: 1,
       vars: 0,
-      template: function(rf: RenderFlags, ctx: SomeComponent) {
+      template: function (rf: RenderFlags, ctx: SomeComponent) {
         if (rf & RenderFlags.Create) {
           logs.push('component create');
           ɵɵtext(0, 'foo');
@@ -41,21 +51,21 @@ describe('renderer factory lifecycle', () => {
         if (rf & RenderFlags.Update) {
           logs.push('component update');
         }
-      }
+      },
     });
   }
 
   class SomeComponentWhichThrows {
-    static ɵfac = () => new SomeComponentWhichThrows;
+    static ɵfac = () => new SomeComponentWhichThrows();
     static ɵcmp = ɵɵdefineComponent({
       type: SomeComponentWhichThrows,
       encapsulation: ViewEncapsulation.None,
       selectors: [['some-component-with-Error']],
       decls: 0,
       vars: 0,
-      template: function(rf: RenderFlags, ctx: SomeComponentWhichThrows) {
-        throw(new Error('SomeComponentWhichThrows threw'));
-      }
+      template: function (rf: RenderFlags, ctx: SomeComponentWhichThrows) {
+        throw new Error('SomeComponentWhichThrows threw');
+      },
     });
   }
 
@@ -82,7 +92,9 @@ describe('renderer factory lifecycle', () => {
     }
   }
 
-  beforeEach(() => { logs = []; });
+  beforeEach(() => {
+    logs = [];
+  });
 
   it('should work with a template', () => {
     renderToHtml(Template, {}, 1, 0, null, null, rendererFactory);
@@ -96,15 +108,18 @@ describe('renderer factory lifecycle', () => {
   it('should work with a template which contains a component', () => {
     renderToHtml(TemplateWithComponent, {}, 2, 0, directives, null, rendererFactory);
     expect(logs).toEqual([
-      'create', 'function_with_component create', 'create', 'component create',
-      'function_with_component update', 'component update'
+      'create',
+      'function_with_component create',
+      'create',
+      'component create',
+      'function_with_component update',
+      'component update',
     ]);
 
     logs = [];
     renderToHtml(TemplateWithComponent, {}, 2, 0, directives);
     expect(logs).toEqual(['begin', 'function_with_component update', 'component update', 'end']);
   });
-
 });
 
 describe('Renderer2 destruction hooks', () => {
@@ -115,7 +130,9 @@ describe('Renderer2 destruction hooks', () => {
 
     function createTemplate() {
       ɵɵelementStart(0, 'div');
-      { ɵɵcontainer(1); }
+      {
+        ɵɵcontainer(1);
+      }
       ɵɵelementEnd();
     }
 
@@ -138,7 +155,15 @@ describe('Renderer2 destruction hooks', () => {
     }
 
     const t = new TemplateFixture(
-        createTemplate, updateTemplate, 2, 0, null, null, null, rendererFactory);
+      createTemplate,
+      updateTemplate,
+      2,
+      0,
+      null,
+      null,
+      null,
+      rendererFactory
+    );
 
     expect(t.html).toEqual('<div><span></span><span></span><span></span></div>');
 
@@ -150,14 +175,14 @@ describe('Renderer2 destruction hooks', () => {
 
   it('should call renderer.destroy for each component destroyed', () => {
     class SimpleComponent {
-      static ɵfac = () => new SimpleComponent;
+      static ɵfac = () => new SimpleComponent();
       static ɵcmp = ɵɵdefineComponent({
         type: SimpleComponent,
         encapsulation: ViewEncapsulation.None,
         selectors: [['simple']],
         decls: 1,
         vars: 0,
-        template: function(rf: RenderFlags, ctx: SimpleComponent) {
+        template: function (rf: RenderFlags, ctx: SimpleComponent) {
           if (rf & RenderFlags.Create) {
             ɵɵelement(0, 'span');
           }
@@ -169,7 +194,9 @@ describe('Renderer2 destruction hooks', () => {
 
     function createTemplate() {
       ɵɵelementStart(0, 'div');
-      { ɵɵcontainer(1); }
+      {
+        ɵɵcontainer(1);
+      }
       ɵɵelementEnd();
     }
 
@@ -192,10 +219,19 @@ describe('Renderer2 destruction hooks', () => {
     }
 
     const t = new TemplateFixture(
-        createTemplate, updateTemplate, 2, 0, [SimpleComponent], null, null, rendererFactory);
+      createTemplate,
+      updateTemplate,
+      2,
+      0,
+      [SimpleComponent],
+      null,
+      null,
+      rendererFactory
+    );
 
     expect(t.html).toEqual(
-        '<div><simple><span></span></simple><span></span><simple><span></span></simple></div>');
+      '<div><simple><span></span></simple><span></span><simple><span></span></simple></div>'
+    );
 
     condition = false;
     t.update();

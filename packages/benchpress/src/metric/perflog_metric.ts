@@ -12,7 +12,6 @@ import {Options} from '../common_options';
 import {Metric} from '../metric';
 import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
 
-
 /**
  * A metric that reads out the performance log
  */
@@ -24,16 +23,21 @@ export class PerflogMetric extends Metric {
     {
       provide: PerflogMetric,
       deps: [
-        WebDriverExtension, PerflogMetric.SET_TIMEOUT, Options.MICRO_METRICS, Options.FORCE_GC,
-        Options.CAPTURE_FRAMES, Options.RECEIVED_DATA, Options.REQUEST_COUNT,
-        PerflogMetric.IGNORE_NAVIGATION
-      ]
+        WebDriverExtension,
+        PerflogMetric.SET_TIMEOUT,
+        Options.MICRO_METRICS,
+        Options.FORCE_GC,
+        Options.CAPTURE_FRAMES,
+        Options.RECEIVED_DATA,
+        Options.REQUEST_COUNT,
+        PerflogMetric.IGNORE_NAVIGATION,
+      ],
     },
     {
       provide: PerflogMetric.SET_TIMEOUT,
-      useValue: (fn: Function, millis: number) => <any>setTimeout(fn, millis)
+      useValue: (fn: Function, millis: number) => <any>setTimeout(fn, millis),
     },
-    {provide: PerflogMetric.IGNORE_NAVIGATION, useValue: false}
+    {provide: PerflogMetric.IGNORE_NAVIGATION, useValue: false},
   ];
 
   private _remainingEvents: PerfLogEvent[];
@@ -48,14 +52,15 @@ export class PerflogMetric extends Metric {
    *   usually triggered by a page load, but can also be triggered when adding iframes to the DOM.
    **/
   constructor(
-      private _driverExtension: WebDriverExtension,
-      @Inject(PerflogMetric.SET_TIMEOUT) private _setTimeout: Function,
-      @Inject(Options.MICRO_METRICS) private _microMetrics: {[key: string]: string},
-      @Inject(Options.FORCE_GC) private _forceGc: boolean,
-      @Inject(Options.CAPTURE_FRAMES) private _captureFrames: boolean,
-      @Inject(Options.RECEIVED_DATA) private _receivedData: boolean,
-      @Inject(Options.REQUEST_COUNT) private _requestCount: boolean,
-      @Inject(PerflogMetric.IGNORE_NAVIGATION) private _ignoreNavigation: boolean) {
+    private _driverExtension: WebDriverExtension,
+    @Inject(PerflogMetric.SET_TIMEOUT) private _setTimeout: Function,
+    @Inject(Options.MICRO_METRICS) private _microMetrics: {[key: string]: string},
+    @Inject(Options.FORCE_GC) private _forceGc: boolean,
+    @Inject(Options.CAPTURE_FRAMES) private _captureFrames: boolean,
+    @Inject(Options.RECEIVED_DATA) private _receivedData: boolean,
+    @Inject(Options.REQUEST_COUNT) private _requestCount: boolean,
+    @Inject(PerflogMetric.IGNORE_NAVIGATION) private _ignoreNavigation: boolean
+  ) {
     super();
 
     this._remainingEvents = [];
@@ -71,7 +76,7 @@ export class PerflogMetric extends Metric {
   describe(): {[key: string]: string} {
     const res: {[key: string]: any} = {
       'scriptTime': 'script execution time in ms, including gc and render',
-      'pureScriptTime': 'script execution time in ms, without gc nor render'
+      'pureScriptTime': 'script execution time in ms, without gc nor render',
     };
     if (this._perfLogFeatures.render) {
       res['renderTime'] = 'render time in ms';
@@ -134,14 +139,15 @@ export class PerflogMetric extends Metric {
       // disable frame capture for measurements during forced gc
       const originalFrameCaptureValue = this._captureFrames;
       this._captureFrames = false;
-      return this._driverExtension.gc()
-          .then((_) => this._endMeasure(restartMeasure))
-          .then((forceGcMeasureValues) => {
-            this._captureFrames = originalFrameCaptureValue;
-            measureValues['forcedGcTime'] = forceGcMeasureValues['gcTime'];
-            measureValues['forcedGcAmount'] = forceGcMeasureValues['gcAmount'];
-            return measureValues;
-          });
+      return this._driverExtension
+        .gc()
+        .then((_) => this._endMeasure(restartMeasure))
+        .then((forceGcMeasureValues) => {
+          this._captureFrames = originalFrameCaptureValue;
+          measureValues['forcedGcTime'] = forceGcMeasureValues['gcTime'];
+          measureValues['forcedGcAmount'] = forceGcMeasureValues['gcAmount'];
+          return measureValues;
+        });
     });
   }
 
@@ -152,12 +158,16 @@ export class PerflogMetric extends Metric {
   private _endMeasure(restart: boolean): Promise<{[key: string]: number}> {
     const markName = this._markName(this._measureCount - 1);
     const nextMarkName = restart ? this._markName(this._measureCount++) : null;
-    return this._driverExtension.timeEnd(markName, nextMarkName)
-        .then((_: any) => this._readUntilEndMark(markName));
+    return this._driverExtension
+      .timeEnd(markName, nextMarkName)
+      .then((_: any) => this._readUntilEndMark(markName));
   }
 
   private _readUntilEndMark(
-      markName: string, loopCount: number = 0, startEvent: PerfLogEvent|null = null) {
+    markName: string,
+    loopCount: number = 0,
+    startEvent: PerfLogEvent | null = null
+  ) {
     if (loopCount > _MAX_RETRY_COUNT) {
       throw new Error(`Tried too often to get the ending mark: ${loopCount}`);
     }
@@ -169,7 +179,9 @@ export class PerflogMetric extends Metric {
         return result;
       }
       let resolve: (result: any) => void;
-      const promise = new Promise<{[key: string]: number}>(res => { resolve = res; });
+      const promise = new Promise<{[key: string]: number}>((res) => {
+        resolve = res;
+      });
       this._setTimeout(() => resolve(this._readUntilEndMark(markName, loopCount + 1)), 100);
       return promise;
     });
@@ -177,7 +189,7 @@ export class PerflogMetric extends Metric {
 
   private _addEvents(events: PerfLogEvent[]) {
     let needSort = false;
-    events.forEach(event => {
+    events.forEach((event) => {
       if (event['ph'] === 'X') {
         needSort = true;
         const startEvent: PerfLogEvent = {};
@@ -188,7 +200,7 @@ export class PerflogMetric extends Metric {
         }
         startEvent['ph'] = 'B';
         endEvent['ph'] = 'E';
-        endEvent['ts'] = startEvent['ts'] ! + startEvent['dur'] !;
+        endEvent['ts'] = startEvent['ts']! + startEvent['dur']!;
         this._remainingEvents.push(startEvent);
         this._remainingEvents.push(endEvent);
       } else {
@@ -198,13 +210,16 @@ export class PerflogMetric extends Metric {
     if (needSort) {
       // Need to sort because of the ph==='X' events
       this._remainingEvents.sort((a, b) => {
-        const diff = a['ts'] ! - b['ts'] !;
+        const diff = a['ts']! - b['ts']!;
         return diff > 0 ? 1 : diff < 0 ? -1 : 0;
       });
     }
   }
 
-  private _aggregateEvents(events: PerfLogEvent[], markName: string): {[key: string]: number}|null {
+  private _aggregateEvents(
+    events: PerfLogEvent[],
+    markName: string
+  ): {[key: string]: number} | null {
     const result: {[key: string]: number} = {'scriptTime': 0, 'pureScriptTime': 0};
     if (this._perfLogFeatures.gc) {
       result['gcTime'] = 0;
@@ -230,8 +245,8 @@ export class PerflogMetric extends Metric {
       result['requestCount'] = 0;
     }
 
-    let markStartEvent: PerfLogEvent = null !;
-    let markEndEvent: PerfLogEvent = null !;
+    let markStartEvent: PerfLogEvent = null!;
+    let markEndEvent: PerfLogEvent = null!;
     events.forEach((event) => {
       const ph = event['ph'];
       const name = event['name'];
@@ -258,8 +273,8 @@ export class PerflogMetric extends Metric {
 
     const frameTimestamps: number[] = [];
     const frameTimes: number[] = [];
-    let frameCaptureStartEvent: PerfLogEvent|null = null;
-    let frameCaptureEndEvent: PerfLogEvent|null = null;
+    let frameCaptureStartEvent: PerfLogEvent | null = null;
+    let frameCaptureEndEvent: PerfLogEvent | null = null;
 
     const intervalStarts: {[key: string]: PerfLogEvent} = {};
     const intervalStartCount: {[key: string]: number} = {};
@@ -267,7 +282,7 @@ export class PerflogMetric extends Metric {
     let inMeasureRange = false;
     events.forEach((event) => {
       const ph = event['ph'];
-      let name = event['name'] !;
+      let name = event['name']!;
       let microIterations = 1;
       const microIterationsMatch = name.match(_MICRO_ITERATIONS_REGEX);
       if (microIterationsMatch) {
@@ -286,7 +301,7 @@ export class PerflogMetric extends Metric {
       if (this._requestCount && name === 'sendRequest') {
         result['requestCount'] += 1;
       } else if (this._receivedData && name === 'receivedData' && ph === 'I') {
-        result['receivedData'] += event['args'] !['encodedDataLength'] !;
+        result['receivedData'] += event['args']!['encodedDataLength']!;
       }
       if (ph === 'B' && name === _MARK_NAME_FRAME_CAPTURE) {
         if (frameCaptureStartEvent) {
@@ -294,7 +309,8 @@ export class PerflogMetric extends Metric {
         }
         if (!this._captureFrames) {
           throw new Error(
-              'found start event for frame capture, but frame capture was not requested in benchpress');
+            'found start event for frame capture, but frame capture was not requested in benchpress'
+          );
         }
         frameCaptureStartEvent = event;
       } else if (ph === 'E' && name === _MARK_NAME_FRAME_CAPTURE) {
@@ -305,11 +321,12 @@ export class PerflogMetric extends Metric {
       }
 
       if (ph === 'I' && frameCaptureStartEvent && !frameCaptureEndEvent && name === 'frame') {
-        frameTimestamps.push(event['ts'] !);
+        frameTimestamps.push(event['ts']!);
         if (frameTimestamps.length >= 2) {
           frameTimes.push(
-              frameTimestamps[frameTimestamps.length - 1] -
-              frameTimestamps[frameTimestamps.length - 2]);
+            frameTimestamps[frameTimestamps.length - 1] -
+              frameTimestamps[frameTimestamps.length - 2]
+          );
         }
       }
 
@@ -320,18 +337,18 @@ export class PerflogMetric extends Metric {
         } else {
           intervalStartCount[name]++;
         }
-      } else if ((ph === 'E') && intervalStarts[name]) {
+      } else if (ph === 'E' && intervalStarts[name]) {
         intervalStartCount[name]--;
         if (intervalStartCount[name] === 0) {
           const startEvent = intervalStarts[name];
-          const duration = (event['ts'] ! - startEvent['ts'] !);
-          intervalStarts[name] = null !;
+          const duration = event['ts']! - startEvent['ts']!;
+          intervalStarts[name] = null!;
           if (name === 'gc') {
             result['gcTime'] += duration;
             const amount =
-                (startEvent['args'] !['usedHeapSize'] ! - event['args'] !['usedHeapSize'] !) / 1000;
+              (startEvent['args']!['usedHeapSize']! - event['args']!['usedHeapSize']!) / 1000;
             result['gcAmount'] += amount;
-            const majorGc = event['args'] !['majorGc'];
+            const majorGc = event['args']!['majorGc'];
             if (majorGc && majorGc) {
               result['majorGcTime'] += duration;
             }
@@ -368,13 +385,15 @@ export class PerflogMetric extends Metric {
   private _addFrameMetrics(result: {[key: string]: number}, frameTimes: any[]) {
     result['frameTime.mean'] = frameTimes.reduce((a, b) => a + b, 0) / frameTimes.length;
     const firstFrame = frameTimes[0];
-    result['frameTime.worst'] = frameTimes.reduce((a, b) => a > b ? a : b, firstFrame);
-    result['frameTime.best'] = frameTimes.reduce((a, b) => a < b ? a : b, firstFrame);
+    result['frameTime.worst'] = frameTimes.reduce((a, b) => (a > b ? a : b), firstFrame);
+    result['frameTime.best'] = frameTimes.reduce((a, b) => (a < b ? a : b), firstFrame);
     result['frameTime.smooth'] =
-        frameTimes.filter(t => t < _FRAME_TIME_SMOOTH_THRESHOLD).length / frameTimes.length;
+      frameTimes.filter((t) => t < _FRAME_TIME_SMOOTH_THRESHOLD).length / frameTimes.length;
   }
 
-  private _markName(index: number) { return `${_MARK_NAME_PREFIX}${index}`; }
+  private _markName(index: number) {
+    return `${_MARK_NAME_PREFIX}${index}`;
+  }
 }
 
 const _MICRO_ITERATIONS_REGEX = /(.+)\*(\d+)$/;

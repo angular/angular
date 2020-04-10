@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {computeMsgId} from '@angular/compiler';
 
 import {BLOCK_MARKER, ID_SEPARATOR, LEGACY_ID_INDICATOR, MEANING_SEPARATOR} from './constants';
@@ -106,15 +107,19 @@ export interface ParsedMessage {
  * See `ParsedMessage` for an example.
  */
 export function parseMessage(
-    messageParts: TemplateStringsArray, expressions?: readonly any[]): ParsedMessage {
+  messageParts: TemplateStringsArray,
+  expressions?: readonly any[]
+): ParsedMessage {
   const substitutions: {[placeholderName: string]: any} = {};
   const metadata = parseMetadata(messageParts[0], messageParts.raw[0]);
   const cleanedMessageParts: string[] = [metadata.text];
   const placeholderNames: string[] = [];
   let messageString = metadata.text;
   for (let i = 1; i < messageParts.length; i++) {
-    const {text: messagePart, block: placeholderName = computePlaceholderName(i)} =
-        splitBlock(messageParts[i], messageParts.raw[i]);
+    const {text: messagePart, block: placeholderName = computePlaceholderName(i)} = splitBlock(
+      messageParts[i],
+      messageParts.raw[i]
+    );
     messageString += `{$${placeholderName}}${messagePart}`;
     if (expressions !== undefined) {
       substitutions[placeholderName] = expressions[i - 1];
@@ -123,7 +128,7 @@ export function parseMessage(
     cleanedMessageParts.push(messagePart);
   }
   const messageId = metadata.id || computeMsgId(messageString, metadata.meaning || '');
-  const legacyIds = metadata.legacyIds.filter(id => id !== messageId);
+  const legacyIds = metadata.legacyIds.filter((id) => id !== messageId);
   return {
     messageId,
     legacyIds,
@@ -131,15 +136,16 @@ export function parseMessage(
     messageString,
     meaning: metadata.meaning || '',
     description: metadata.description || '',
-    messageParts: cleanedMessageParts, placeholderNames,
+    messageParts: cleanedMessageParts,
+    placeholderNames,
   };
 }
 
 export interface MessageMetadata {
   text: string;
-  meaning: string|undefined;
-  description: string|undefined;
-  id: string|undefined;
+  meaning: string | undefined;
+  description: string | undefined;
+  id: string | undefined;
   legacyIds: string[];
 }
 
@@ -208,7 +214,7 @@ export function parseMetadata(cooked: string, raw: string): MessageMetadata {
  * exists.
  * @throws an error if the `block` is unterminated
  */
-export function splitBlock(cooked: string, raw: string): {text: string, block?: string} {
+export function splitBlock(cooked: string, raw: string): {text: string; block?: string} {
   if (raw.charAt(0) !== BLOCK_MARKER) {
     return {text: cooked};
   } else {
@@ -219,7 +225,6 @@ export function splitBlock(cooked: string, raw: string): {text: string, block?: 
     };
   }
 }
-
 
 function computePlaceholderName(index: number) {
   return index === 1 ? 'PH' : `PH_${index - 1}`;
@@ -236,9 +241,9 @@ function computePlaceholderName(index: number) {
  */
 export function findEndOfBlock(cooked: string, raw: string): number {
   /************************************************************************************************
-  * This function is repeated in `src/localize/src/localize.ts` and the two should be kept in sync.
-  * (See that file for more explanation of why.)
-  ************************************************************************************************/
+   * This function is repeated in `src/localize/src/localize.ts` and the two should be kept in sync.
+   * (See that file for more explanation of why.)
+   ************************************************************************************************/
   for (let cookedIndex = 1, rawIndex = 1; cookedIndex < cooked.length; cookedIndex++, rawIndex++) {
     if (raw[rawIndex] === '\\') {
       rawIndex++;

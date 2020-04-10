@@ -12,8 +12,7 @@ import {verifyNoBrowserErrors} from '../../../../e2e_util/e2e_util';
 
 const URL = '/';
 
-describe('MessageBroker', function() {
-
+describe('MessageBroker', function () {
   afterEach(() => {
     verifyNoBrowserErrors();
     browser.ignoreSynchronization = false;

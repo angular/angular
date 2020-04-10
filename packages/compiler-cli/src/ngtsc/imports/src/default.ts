@@ -44,8 +44,8 @@ export interface DefaultImportRecorder {
  * or for ngcc.
  */
 export const NOOP_DEFAULT_IMPORT_RECORDER: DefaultImportRecorder = {
-  recordImportedIdentifier: (id: ts.Identifier) => void{},
-  recordUsedIdentifier: (id: ts.Identifier) => void{},
+  recordImportedIdentifier: (id: ts.Identifier) => void {},
+  recordUsedIdentifier: (id: ts.Identifier) => void {},
 };
 
 /**
@@ -83,8 +83,10 @@ export class DefaultImportTracker implements DefaultImportRecorder {
    * A `Map` which tracks the `Map` of default import `ts.Identifier`s to their
    * `ts.ImportDeclaration`s. These declarations are not guaranteed to be used.
    */
-  private sourceFileToImportMap =
-      new Map<ts.SourceFile, Map<ts.Identifier, ts.ImportDeclaration>>();
+  private sourceFileToImportMap = new Map<
+    ts.SourceFile,
+    Map<ts.Identifier, ts.ImportDeclaration>
+  >();
 
   /**
    * A `Map` which tracks the `Set` of `ts.ImportDeclaration`s for default imports that were used in
@@ -147,7 +149,7 @@ export class DefaultImportTracker implements DefaultImportRecorder {
     const importsToPreserve = this.sourceFileToUsedImports.get(originalSf)!;
 
     // Generate a new statement list which preserves any imports present in `importsToPreserve`.
-    const statements = sf.statements.map(stmt => {
+    const statements = sf.statements.map((stmt) => {
       if (ts.isImportDeclaration(stmt) && importsToPreserve.has(stmt)) {
         // Preserving an import that's marked as unreferenced (type-only) is tricky in TypeScript.
         //

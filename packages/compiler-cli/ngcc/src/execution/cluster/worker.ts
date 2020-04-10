@@ -17,7 +17,6 @@ import {stringifyTask} from '../tasks/utils';
 import {MessageToWorker} from './api';
 import {sendMessageToMaster} from './utils';
 
-
 /**
  * A cluster worker is responsible for processing one task (i.e. one format property for a specific
  * entry-point) at a time and reporting results back to the cluster master.
@@ -30,9 +29,9 @@ export class ClusterWorker {
       throw new Error('Tried to instantiate `ClusterWorker` on the master process.');
     }
 
-    this.compile = createCompileFn(
-        (_task, outcome, message) =>
-            sendMessageToMaster({type: 'task-completed', outcome, message}));
+    this.compile = createCompileFn((_task, outcome, message) =>
+      sendMessageToMaster({type: 'task-completed', outcome, message})
+    );
   }
 
   run(): Promise<void> {
@@ -42,16 +41,18 @@ export class ClusterWorker {
         switch (msg.type) {
           case 'process-task':
             this.logger.debug(
-                `[Worker #${cluster.worker.id}] Processing task: ${stringifyTask(msg.task)}`);
+              `[Worker #${cluster.worker.id}] Processing task: ${stringifyTask(msg.task)}`
+            );
             return this.compile(msg.task);
           default:
             throw new Error(
-                `[Worker #${cluster.worker.id}] Invalid message received: ${JSON.stringify(msg)}`);
+              `[Worker #${cluster.worker.id}] Invalid message received: ${JSON.stringify(msg)}`
+            );
         }
       } catch (err) {
         sendMessageToMaster({
           type: 'error',
-          error: (err instanceof Error) ? (err.stack || err.message) : err,
+          error: err instanceof Error ? err.stack || err.message : err,
         });
       }
     });

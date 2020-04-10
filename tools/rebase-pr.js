@@ -51,7 +51,7 @@ if (process.argv.length != 4) {
 }
 
 // Run
-_main(...process.argv.slice(2)).catch(err => {
+_main(...process.argv.slice(2)).catch((err) => {
   console.log('Failed to rebase on top of target branch.\n');
   console.error(err);
   process.exitCode = 1;
@@ -59,7 +59,6 @@ _main(...process.argv.slice(2)).catch(err => {
 
 // Helpers
 async function _main(repository, prNumber) {
-
   const target = await getRefsAndShasForTarget(prNumber);
 
   // Log known refs and shas
@@ -71,21 +70,23 @@ async function _main(repository, prNumber) {
   console.log(`--------------------------------`);
   console.log();
 
-
-
   // Get the count of commits between the latest commit from origin and the common ancestor SHA.
-  const {stdout: commitCount} =
-      await exec(`git rev-list --count origin/${target.base.ref}...${target.commonAncestorSha}`);
+  const {stdout: commitCount} = await exec(
+    `git rev-list --count origin/${target.base.ref}...${target.commonAncestorSha}`
+  );
   console.log(`Checking ${commitCount.trim()} commits for changes in the CircleCI config file.`);
 
   // Check if the files changed between the latest commit from origin and the common ancestor SHA
   // includes the CircleCI config.
   const {stdout: circleCIConfigChanged} = await exec(
-      `git diff --name-only origin/${target.base.ref} ${target.commonAncestorSha} -- .circleci/config.yml`);
+    `git diff --name-only origin/${target.base.ref} ${target.commonAncestorSha} -- .circleci/config.yml`
+  );
 
   if (!!circleCIConfigChanged) {
     throw Error(`
-        CircleCI config on ${target.base.ref} has been modified since commit ${target.commonAncestorSha.slice(0, 7)},
+        CircleCI config on ${
+          target.base.ref
+        } has been modified since commit ${target.commonAncestorSha.slice(0, 7)},
         which this PR is based on.
 
         Please rebase the PR on ${target.base.ref} after fetching from upstream.

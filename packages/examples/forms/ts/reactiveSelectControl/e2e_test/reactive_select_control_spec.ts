@@ -33,5 +33,4 @@ describe('reactiveSelectControl example', () => {
 
     expect(p.getText()).toEqual('Form value: { "state": { "name": "Arizona", "abbrev": "AZ" } }');
   });
-
 });

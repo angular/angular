@@ -14,9 +14,8 @@ import {SimpleFormGroup} from './simple_form_group_example';
 @NgModule({
   imports: [BrowserModule, ReactiveFormsModule],
   declarations: [SimpleFormGroup],
-  bootstrap: [SimpleFormGroup]
+  bootstrap: [SimpleFormGroup],
 })
-export class AppModule {
-}
+export class AppModule {}
 
 export {SimpleFormGroup as AppComponent};

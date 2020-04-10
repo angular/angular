@@ -114,8 +114,9 @@ describe('unit test', () => {
       export { A as Apple } from './classes_and_interfaces';
     `;
     checkThrows(
-        {'classes_and_interfaces.d.ts': classesAndInterfaces, 'file.d.ts': input},
-        'Symbol "A" was aliased as "Apple". Aliases are not supported.');
+      {'classes_and_interfaces.d.ts': classesAndInterfaces, 'file.d.ts': input},
+      'Symbol "A" was aliased as "Apple". Aliases are not supported.'
+    );
   });
 
   it('should remove reexported external symbols', () => {
@@ -125,8 +126,9 @@ describe('unit test', () => {
     const expected = `
     `;
     check({'classes_and_interfaces.d.ts': classesAndInterfaces, 'file.d.ts': input}, expected);
-    chai.assert.deepEqual(
-        warnings, ['file.d.ts(1,1): error: No export declaration found for symbol "Foo"']);
+    chai.assert.deepEqual(warnings, [
+      'file.d.ts(1,1): error: No export declaration found for symbol "Foo"',
+    ]);
   });
 
   it('should sort exports', () => {
@@ -357,30 +359,30 @@ describe('unit test', () => {
     check({'file.d.ts': input}, expected, {stripExportPattern: /^__.*/});
   });
 
-  it('should throw on using module imports in expression position that were not explicitly allowed',
-     () => {
-       const input = `
+  it('should throw on using module imports in expression position that were not explicitly allowed', () => {
+    const input = `
       import * as foo from './foo';
       export declare class A extends foo.A {
       }
     `;
-       checkThrows(
-           {'file.d.ts': input},
-           'file.d.ts(2,32): error: Module identifier "foo" is not allowed. ' +
-               'Remove it from source or allow it via --allowModuleIdentifiers.');
-     });
+    checkThrows(
+      {'file.d.ts': input},
+      'file.d.ts(2,32): error: Module identifier "foo" is not allowed. ' +
+        'Remove it from source or allow it via --allowModuleIdentifiers.'
+    );
+  });
 
-  it('should throw on using module imports in type position that were not explicitly allowed',
-     () => {
-       const input = `
+  it('should throw on using module imports in type position that were not explicitly allowed', () => {
+    const input = `
       import * as foo from './foo';
       export type A = foo.A;
     `;
-       checkThrows(
-           {'file.d.ts': input},
-           'file.d.ts(2,17): error: Module identifier "foo" is not allowed. ' +
-               'Remove it from source or allow it via --allowModuleIdentifiers.');
-     });
+    checkThrows(
+      {'file.d.ts': input},
+      'file.d.ts(2,17): error: Module identifier "foo" is not allowed. ' +
+        'Remove it from source or allow it via --allowModuleIdentifiers.'
+    );
+  });
 
   it('should not throw on using explicitly allowed module imports', () => {
     const input = `
@@ -490,9 +492,10 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-        {'file.d.ts': input},
-        'file.d.ts(4,1): error: Banned jsdoc tags - "@stable" - were found on `A`.',
-        {exportTags: {banned: ['stable']}});
+      {'file.d.ts': input},
+      'file.d.ts(4,1): error: Banned jsdoc tags - "@stable" - were found on `A`.',
+      {exportTags: {banned: ['stable']}}
+    );
   });
 
   it('should throw on using banned jsdoc tags on fields', () => {
@@ -505,9 +508,10 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-        {'file.d.ts': input},
-        'file.d.ts(5,3): error: Banned jsdoc tags - "@stable" - were found on `value`.',
-        {memberTags: {banned: ['stable']}});
+      {'file.d.ts': input},
+      'file.d.ts(5,3): error: Banned jsdoc tags - "@stable" - were found on `value`.',
+      {memberTags: {banned: ['stable']}}
+    );
   });
 
   it('should throw on using banned jsdoc tags on parameters', () => {
@@ -517,9 +521,10 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-        {'file.d.ts': input},
-        'file.d.ts(2,22): error: Banned jsdoc tags - "@stable" - were found on `param`.',
-        {paramTags: {banned: ['stable']}});
+      {'file.d.ts': input},
+      'file.d.ts(2,22): error: Banned jsdoc tags - "@stable" - were found on `param`.',
+      {paramTags: {banned: ['stable']}}
+    );
   });
 
   it('should throw on missing required jsdoc tags on exports', () => {
@@ -530,9 +535,10 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-        {'file.d.ts': input},
-        'file.d.ts(2,1): error: Required jsdoc tags - One of the tags: "@stable" - must exist on `A`.',
-        {exportTags: {requireAtLeastOne: ['stable']}});
+      {'file.d.ts': input},
+      'file.d.ts(2,1): error: Required jsdoc tags - One of the tags: "@stable" - must exist on `A`.',
+      {exportTags: {requireAtLeastOne: ['stable']}}
+    );
   });
 
   it('should throw on missing required jsdoc tags on fields', () => {
@@ -543,9 +549,10 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-        {'file.d.ts': input},
-        'file.d.ts(3,3): error: Required jsdoc tags - One of the tags: "@stable" - must exist on `value`.',
-        {memberTags: {requireAtLeastOne: ['stable']}});
+      {'file.d.ts': input},
+      'file.d.ts(3,3): error: Required jsdoc tags - One of the tags: "@stable" - must exist on `value`.',
+      {memberTags: {requireAtLeastOne: ['stable']}}
+    );
   });
 
   it('should throw on missing required jsdoc tags on parameters', () => {
@@ -556,9 +563,10 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-        {'file.d.ts': input},
-        'file.d.ts(3,7): error: Required jsdoc tags - One of the tags: "@stable" - must exist on `param`.',
-        {paramTags: {requireAtLeastOne: ['stable']}});
+      {'file.d.ts': input},
+      'file.d.ts(3,7): error: Required jsdoc tags - One of the tags: "@stable" - must exist on `param`.',
+      {paramTags: {requireAtLeastOne: ['stable']}}
+    );
   });
 
   it('should require at least one of the requireAtLeastOne tags', () => {
@@ -569,9 +577,10 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-        {'file.d.ts': input},
-        'file.d.ts(3,7): error: Required jsdoc tags - One of the tags: "@stable", "@foo", "@bar" - must exist on `param`.',
-        {paramTags: {requireAtLeastOne: ['stable', 'foo', 'bar']}});
+      {'file.d.ts': input},
+      'file.d.ts(3,7): error: Required jsdoc tags - One of the tags: "@stable", "@foo", "@bar" - must exist on `param`.',
+      {paramTags: {requireAtLeastOne: ['stable', 'foo', 'bar']}}
+    );
   });
 
   it('should allow with one of the requireAtLeastOne tags found', () => {
@@ -606,9 +615,9 @@ describe('unit test', () => {
 
     export declare function d(): void;
     `;
-    check(
-        {'file.d.ts': input}, expected,
-        {exportTags: {requireAtLeastOne: ['stable', 'foo', 'bar']}});
+    check({'file.d.ts': input}, expected, {
+      exportTags: {requireAtLeastOne: ['stable', 'foo', 'bar']},
+    });
   });
 });
 
@@ -617,7 +626,11 @@ function getMockHost(files: {[name: string]: string}): ts.CompilerHost {
     getSourceFile: (sourceName, languageVersion) => {
       if (!files[sourceName]) return undefined;
       return ts.createSourceFile(
-          sourceName, stripExtraIndentation(files[sourceName]), languageVersion, true);
+        sourceName,
+        stripExtraIndentation(files[sourceName]),
+        languageVersion,
+        true
+      );
     },
     writeFile: (name, text, writeByteOrderMark) => {},
     fileExists: (filename) => !!files[filename],
@@ -627,20 +640,27 @@ function getMockHost(files: {[name: string]: string}): ts.CompilerHost {
     getCanonicalFileName: (filename) => filename,
     getCurrentDirectory: () => './',
     getNewLine: () => '\n',
-    getDirectories: () => []
+    getDirectories: () => [],
   };
 }
 
 function check(
-    files: {[name: string]: string}, expected: string, options: SerializationOptions = {}) {
+  files: {[name: string]: string},
+  expected: string,
+  options: SerializationOptions = {}
+) {
   const actual = publicApiInternal(getMockHost(files), 'file.d.ts', {}, options);
   chai.assert.equal(actual.trim(), stripExtraIndentation(expected).trim());
 }
 
 function checkThrows(
-    files: {[name: string]: string}, error: string, options: SerializationOptions = {}) {
-  chai.assert.throws(
-      () => { publicApiInternal(getMockHost(files), 'file.d.ts', {}, options); }, error);
+  files: {[name: string]: string},
+  error: string,
+  options: SerializationOptions = {}
+) {
+  chai.assert.throws(() => {
+    publicApiInternal(getMockHost(files), 'file.d.ts', {}, options);
+  }, error);
 }
 
 function stripExtraIndentation(text: string) {
@@ -648,10 +668,10 @@ function stripExtraIndentation(text: string) {
   // Ignore first and last new line
   lines = lines.slice(1, lines.length - 1);
   const commonIndent = lines.reduce((min, line) => {
-    const indent = /^( *)/.exec(line) ![1].length;
+    const indent = /^( *)/.exec(line)![1].length;
     // Ignore empty line
     return line.length ? Math.min(min, indent) : min;
   }, text.length);
 
-  return lines.map(line => line.substr(commonIndent)).join('\n') + '\n';
+  return lines.map((line) => line.substr(commonIndent)).join('\n') + '\n';
 }

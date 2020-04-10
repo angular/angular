@@ -17,11 +17,13 @@ import {_sanitizeUrl, sanitizeSrcset} from '../../src/sanitization/url_sanitizer
 
     t.beforeEach(() => {
       logMsgs = [];
-      originalLog = console.warn;  // Monkey patch DOM.log.
+      originalLog = console.warn; // Monkey patch DOM.log.
       console.warn = (msg: any) => logMsgs.push(msg);
     });
 
-    afterEach(() => { console.warn = originalLog; });
+    afterEach(() => {
+      console.warn = originalLog;
+    });
 
     t.it('reports unsafe URLs', () => {
       t.expect(_sanitizeUrl('javascript:evil()')).toBe('unsafe:javascript:evil()');
@@ -44,7 +46,7 @@ import {_sanitizeUrl, sanitizeSrcset} from '../../src/sanitization/url_sanitizer
         '#anchor',
         '/page1.md',
         'http://JavaScript/my.js',
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',  // Truncated.
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/', // Truncated.
         'data:video/webm;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
         'data:audio/opus;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
       ];
@@ -113,6 +115,5 @@ import {_sanitizeUrl, sanitizeSrcset} from '../../src/sanitization/url_sanitizer
         t.it(`valid ${srcset}`, () => t.expect(sanitizeSrcset(srcset)).toMatch(/unsafe:/));
       }
     });
-
   });
 }

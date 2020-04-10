@@ -17,8 +17,11 @@ declare var globalThis: any /** TODO #9100 */;
 
 const __globalThis = typeof globalThis !== 'undefined' && globalThis;
 const __window = typeof window !== 'undefined' && window;
-const __self = typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'undefined' &&
-    self instanceof WorkerGlobalScope && self;
+const __self =
+  typeof self !== 'undefined' &&
+  typeof WorkerGlobalScope !== 'undefined' &&
+  self instanceof WorkerGlobalScope &&
+  self;
 const __global = typeof global !== 'undefined' && global;
 
 // Always use __globalThis if available, which is the spec-defined global variable across all

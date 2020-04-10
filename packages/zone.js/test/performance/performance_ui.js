@@ -5,14 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-(function(_global) {
+(function (_global) {
   var options;
 
   function setAttributes(elem, attrs) {
     if (!attrs) {
       return;
     }
-    Object.keys(attrs).forEach(function(key) { elem.setAttribute(key, attrs[key]); });
+    Object.keys(attrs).forEach(function (key) {
+      elem.setAttribute(key, attrs[key]);
+    });
   }
 
   function createLi(attrs) {
@@ -34,7 +36,9 @@
     return button;
   }
 
-  function createTextNode(text) { return document.createTextNode(text); }
+  function createTextNode(text) {
+    return document.createTextNode(text);
+  }
 
   function createCheckbox(attrs, checked) {
     var checkbox = document.createElement('input');
@@ -52,18 +56,20 @@
 
   var serailPromise = _global['__zone_symbol__serialPromise'];
 
-  _global['__zone_symbol__testTargetsUIBuild'] = function(_options) {
+  _global['__zone_symbol__testTargetsUIBuild'] = function (_options) {
     options = _options;
     var allButton = createButton({}, 'test selected');
-    allButton.addEventListener('click', function() {
+    allButton.addEventListener('click', function () {
       var promiseFactories = [];
       for (var i = 0; i < options.tests.length; i++) {
         var checkbox = document.getElementById('testcheck' + i);
         if (checkbox.checked) {
           var test = options.tests[i];
           promiseFactories.push({
-            factory: function(context) { return doTest(context.test, context.idx); },
-            context: {test: test, idx: i}
+            factory: function (context) {
+              return doTest(context.test, context.idx);
+            },
+            context: {test: test, idx: i},
           });
         }
       }
@@ -101,7 +107,7 @@
     var split = result.displayText.split('\n');
     options.jsonResult[test.title] = result.rawData;
     options.jsonContainer.innerHTML =
-        '<div style="display:none">' + JSON.stringify(options.jsonResult) + '</div>';
+      '<div style="display:none">' + JSON.stringify(options.jsonResult) + '</div>';
 
     var summary = result.summary;
     var row = options.resultsContainer.insertRow();
@@ -109,7 +115,7 @@
     cell.innerHTML = test.title;
     cell.rowSpan = Object.keys(summary).length;
     var idx = 0;
-    Object.keys(summary).forEach(function(key) {
+    Object.keys(summary).forEach(function (key) {
       var tableRow = row;
       if (idx !== 0) {
         tableRow = options.resultsContainer.insertRow();
@@ -137,7 +143,7 @@
     button.setAttribute('enabled', 'false');
     var label = document.getElementById('label' + id);
     label.innerHTML = 'Testing';
-    return test.testFn().then(function(result) {
+    return test.testFn().then(function (result) {
       processTestResult(test, result, id);
       test.after();
       label.innerHTML = 'Finished';
@@ -146,11 +152,11 @@
   }
 
   function buildButtonClickHandler(button) {
-    button.onclick = function(event) {
+    button.onclick = function (event) {
       var target = event.target;
       var id = target.getAttribute('id').substring(10);
       var test = options.tests[id];
       doTest(test, id);
     };
   }
-}(typeof window === 'undefined' ? global : window));
+})(typeof window === 'undefined' ? global : window);

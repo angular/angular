@@ -11,21 +11,44 @@ import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
-import {INJECTOR, NG_TEMP_TOKEN_PATH, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE, catchInjectorError, formatError, setCurrentInjector, ɵɵinject} from './injector_compatibility';
+import {
+  INJECTOR,
+  NG_TEMP_TOKEN_PATH,
+  NullInjector,
+  THROW_IF_NOT_FOUND,
+  USE_VALUE,
+  catchInjectorError,
+  formatError,
+  setCurrentInjector,
+  ɵɵinject,
+} from './injector_compatibility';
 import {getInjectableDef, ɵɵdefineInjectable} from './interface/defs';
 import {InjectFlags} from './interface/injector';
-import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './interface/provider';
+import {
+  ConstructorProvider,
+  ExistingProvider,
+  FactoryProvider,
+  StaticClassProvider,
+  StaticProvider,
+  ValueProvider,
+} from './interface/provider';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
 import {createInjector} from './r3_injector';
 import {INJECTOR_SCOPE} from './scope';
 
 export function INJECTOR_IMPL__PRE_R3__(
-    providers: StaticProvider[], parent: Injector | undefined, name: string) {
+  providers: StaticProvider[],
+  parent: Injector | undefined,
+  name: string
+) {
   return new StaticInjector(providers, parent, name);
 }
 
 export function INJECTOR_IMPL__POST_R3__(
-    providers: StaticProvider[], parent: Injector | undefined, name: string) {
+  providers: StaticProvider[],
+  parent: Injector | undefined,
+  name: string
+) {
   return createInjector({name: name}, parent, providers, name);
 }
 
@@ -65,7 +88,10 @@ export abstract class Injector {
    * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
    */
   abstract get<T>(
-      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
+    token: Type<T> | InjectionToken<T> | AbstractType<T>,
+    notFoundValue?: T,
+    flags?: InjectFlags
+  ): T;
   /**
    * @deprecated from v4.0.0 use Type<T> or InjectionToken<T>
    * @suppress {duplicate}
@@ -89,12 +115,12 @@ export abstract class Injector {
    * @returns The new injector instance.
    *
    */
-  static create(options: {providers: StaticProvider[], parent?: Injector, name?: string}): Injector;
-
+  static create(options: {providers: StaticProvider[]; parent?: Injector; name?: string}): Injector;
 
   static create(
-      options: StaticProvider[]|{providers: StaticProvider[], parent?: Injector, name?: string},
-      parent?: Injector): Injector {
+    options: StaticProvider[] | {providers: StaticProvider[]; parent?: Injector; name?: string},
+    parent?: Injector
+  ): Injector {
     if (Array.isArray(options)) {
       return INJECTOR_IMPL(options, parent, '');
     } else {
@@ -116,14 +142,12 @@ export abstract class Injector {
   static __NG_ELEMENT_ID__ = -1;
 }
 
-
-
-const IDENT = function<T>(value: T): T {
+const IDENT = function <T>(value: T): T {
   return value;
 };
 const EMPTY = <any[]>[];
 const CIRCULAR = IDENT;
-const MULTI_PROVIDER_FN = function(): any[] {
+const MULTI_PROVIDER_FN = function (): any[] {
   return Array.prototype.slice.call(arguments);
 };
 
@@ -131,30 +155,43 @@ const enum OptionFlags {
   Optional = 1 << 0,
   CheckSelf = 1 << 1,
   CheckParent = 1 << 2,
-  Default = CheckSelf | CheckParent
+  Default = CheckSelf | CheckParent,
 }
 const NO_NEW_LINE = 'ɵ';
 
 export class StaticInjector implements Injector {
   readonly parent: Injector;
-  readonly source: string|null;
-  readonly scope: string|null;
+  readonly source: string | null;
+  readonly scope: string | null;
 
-  private _records: Map<any, Record|null>;
+  private _records: Map<any, Record | null>;
 
   constructor(
-      providers: StaticProvider[], parent: Injector = Injector.NULL, source: string|null = null) {
+    providers: StaticProvider[],
+    parent: Injector = Injector.NULL,
+    source: string | null = null
+  ) {
     this.parent = parent;
     this.source = source;
-    const records = this._records = new Map<any, Record>();
-    records.set(
-        Injector, <Record>{token: Injector, fn: IDENT, deps: EMPTY, value: this, useNew: false});
-    records.set(
-        INJECTOR, <Record>{token: INJECTOR, fn: IDENT, deps: EMPTY, value: this, useNew: false});
+    const records = (this._records = new Map<any, Record>());
+    records.set(Injector, <Record>{
+      token: Injector,
+      fn: IDENT,
+      deps: EMPTY,
+      value: this,
+      useNew: false,
+    });
+    records.set(INJECTOR, <Record>{
+      token: INJECTOR,
+      fn: IDENT,
+      deps: EMPTY,
+      value: this,
+      useNew: false,
+    });
     this.scope = recursivelyProcessProviders(records, providers);
   }
 
-  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+  get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
   get(token: any, notFoundValue?: any): any;
   get(token: any, notFoundValue?: any, flags: InjectFlags = InjectFlags.Default): any {
     const records = this._records;
@@ -164,10 +201,15 @@ export class StaticInjector implements Injector {
       const injectableDef = getInjectableDef(token);
       if (injectableDef) {
         const providedIn = injectableDef && injectableDef.providedIn;
-        if (providedIn === 'any' || providedIn != null && providedIn === this.scope) {
+        if (providedIn === 'any' || (providedIn != null && providedIn === this.scope)) {
           records.set(
-              token, record = resolveProvider(
-                         {provide: token, useFactory: injectableDef.factory, deps: EMPTY}));
+            token,
+            (record = resolveProvider({
+              provide: token,
+              useFactory: injectableDef.factory,
+              deps: EMPTY,
+            }))
+          );
         }
       }
       if (record === undefined) {
@@ -186,14 +228,19 @@ export class StaticInjector implements Injector {
   }
 
   toString() {
-    const tokens = <string[]>[], records = this._records;
+    const tokens = <string[]>[],
+      records = this._records;
     records.forEach((v, token) => tokens.push(stringify(token)));
     return `StaticInjector[${tokens.join(', ')}]`;
   }
 }
 
 type SupportedProvider =
-    ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider;
+  | ValueProvider
+  | ExistingProvider
+  | StaticClassProvider
+  | ConstructorProvider
+  | FactoryProvider;
 
 interface Record {
   fn: Function;
@@ -228,8 +275,9 @@ function resolveProvider(provider: SupportedProvider): Record {
     fn = provide;
   } else {
     throw staticError(
-        'StaticProvider does not have [useValue|useFactory|useExisting|useClass] or [provide] is not newable',
-        provider);
+      'StaticProvider does not have [useValue|useFactory|useExisting|useClass] or [provide] is not newable',
+      provider
+    );
   }
   return {deps, fn, useNew, value};
 }
@@ -238,9 +286,11 @@ function multiProviderMixError(token: any) {
   return staticError('Cannot mix multi providers and regular providers', token);
 }
 
-function recursivelyProcessProviders(records: Map<any, Record>, provider: StaticProvider): string|
-    null {
-  let scope: string|null = null;
+function recursivelyProcessProviders(
+  records: Map<any, Record>,
+  provider: StaticProvider
+): string | null {
+  let scope: string | null = null;
   if (provider) {
     provider = resolveForwardRef(provider);
     if (Array.isArray(provider)) {
@@ -258,20 +308,23 @@ function recursivelyProcessProviders(records: Map<any, Record>, provider: Static
       const resolvedProvider = resolveProvider(provider);
       if (provider.multi === true) {
         // This is a multi provider.
-        let multiProvider: Record|undefined = records.get(token);
+        let multiProvider: Record | undefined = records.get(token);
         if (multiProvider) {
           if (multiProvider.fn !== MULTI_PROVIDER_FN) {
             throw multiProviderMixError(token);
           }
         } else {
           // Create a placeholder factory which will look up the constituents of the multi provider.
-          records.set(token, multiProvider = <Record>{
-            token: provider.provide,
-            deps: [],
-            useNew: false,
-            fn: MULTI_PROVIDER_FN,
-            value: EMPTY
-          });
+          records.set(
+            token,
+            (multiProvider = <Record>{
+              token: provider.provide,
+              deps: [],
+              useNew: false,
+              fn: MULTI_PROVIDER_FN,
+              value: EMPTY,
+            })
+          );
         }
         // Treat the provider as the token.
         token = provider;
@@ -293,8 +346,13 @@ function recursivelyProcessProviders(records: Map<any, Record>, provider: Static
 }
 
 function tryResolveToken(
-    token: any, record: Record | undefined | null, records: Map<any, Record|null>, parent: Injector,
-    notFoundValue: any, flags: InjectFlags): any {
+  token: any,
+  record: Record | undefined | null,
+  records: Map<any, Record | null>,
+  parent: Injector,
+  notFoundValue: any,
+  flags: InjectFlags
+): any {
   try {
     return resolveToken(token, record, records, parent, notFoundValue, flags);
   } catch (e) {
@@ -302,7 +360,7 @@ function tryResolveToken(
     if (!(e instanceof Error)) {
       e = new Error(e);
     }
-    const path: any[] = e[NG_TEMP_TOKEN_PATH] = e[NG_TEMP_TOKEN_PATH] || [];
+    const path: any[] = (e[NG_TEMP_TOKEN_PATH] = e[NG_TEMP_TOKEN_PATH] || []);
     path.unshift(token);
     if (record && record.value == CIRCULAR) {
       // Reset the Circular flag.
@@ -313,8 +371,13 @@ function tryResolveToken(
 }
 
 function resolveToken(
-    token: any, record: Record | undefined | null, records: Map<any, Record|null>, parent: Injector,
-    notFoundValue: any, flags: InjectFlags): any {
+  token: any,
+  record: Record | undefined | null,
+  records: Map<any, Record | null>,
+  parent: Injector,
+  notFoundValue: any,
+  flags: InjectFlags
+): any {
   let value;
   if (record && !(flags & InjectFlags.SkipSelf)) {
     // If we don't have a record, this implies that we don't own the provider hence don't know how
@@ -335,8 +398,9 @@ function resolveToken(
           const depRecord: DependencyRecord = depRecords[i];
           const options = depRecord.options;
           const childRecord =
-              options & OptionFlags.CheckSelf ? records.get(depRecord.token) : undefined;
-          deps.push(tryResolveToken(
+            options & OptionFlags.CheckSelf ? records.get(depRecord.token) : undefined;
+          deps.push(
+            tryResolveToken(
               // Current Token to resolve
               depRecord.token,
               // A record which describes how to resolve the token.
@@ -348,7 +412,9 @@ function resolveToken(
               // than pass in Null injector.
               !childRecord && !(options & OptionFlags.CheckParent) ? Injector.NULL : parent,
               options & OptionFlags.Optional ? null : Injector.THROW_IF_NOT_FOUND,
-              InjectFlags.Default));
+              InjectFlags.Default
+            )
+          );
         }
       }
       record.value = value = useNew ? new (fn as any)(...deps) : fn.apply(obj, deps);
@@ -365,8 +431,9 @@ function resolveToken(
 
 function computeDeps(provider: StaticProvider): DependencyRecord[] {
   let deps: DependencyRecord[] = EMPTY;
-  const providerDeps: any[] =
-      (provider as ExistingProvider & StaticClassProvider & ConstructorProvider).deps;
+  const providerDeps: any[] = (provider as ExistingProvider &
+    StaticClassProvider &
+    ConstructorProvider).deps;
   if (providerDeps && providerDeps.length) {
     deps = [];
     for (let i = 0; i < providerDeps.length; i++) {
@@ -395,7 +462,7 @@ function computeDeps(provider: StaticProvider): DependencyRecord[] {
     deps = [{token, options: OptionFlags.Default}];
   } else if (!providerDeps && !(USE_VALUE in provider)) {
     // useValue & useExisting are the only ones which are exempt from deps all others need it.
-    throw staticError('\'deps\' required', provider);
+    throw staticError("'deps' required", provider);
   }
   return deps;
 }

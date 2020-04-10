@@ -18,7 +18,9 @@ import {main, readCommandLineAndConfiguration} from './main';
 import {setFileSystem, NodeJSFileSystem} from './ngtsc/file_system';
 
 export function mainXi18n(
-    args: string[], consoleError: (msg: string) => void = console.error): number {
+  args: string[],
+  consoleError: (msg: string) => void = console.error
+): number {
   const config = readXi18nCommandLineAndConfiguration(args);
   return main(args, consoleError, config, undefined, undefined, undefined);
 }

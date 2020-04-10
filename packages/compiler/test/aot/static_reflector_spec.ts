@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {core as compilerCore, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost} from '@angular/compiler';
+import {
+  core as compilerCore,
+  StaticReflector,
+  StaticSymbol,
+  StaticSymbolCache,
+  StaticSymbolResolver,
+  StaticSymbolResolverHost,
+} from '@angular/compiler';
 import {CollectorOptions, METADATA_VERSION} from '@angular/compiler-cli';
 
 import {MockStaticSymbolResolverHost, MockSummaryResolver} from './static_symbol_resolver_spec';
@@ -18,10 +25,11 @@ describe('StaticReflector', () => {
   let reflector: StaticReflector;
 
   function init(
-      testData: {[key: string]: any} = DEFAULT_TEST_DATA,
-      decorators: {name: string, filePath: string, ctor: any}[] = [],
-      errorRecorder?: (error: any, fileName?: string) => void,
-      collectorOptions?: CollectorOptions) {
+    testData: {[key: string]: any} = DEFAULT_TEST_DATA,
+    decorators: {name: string; filePath: string; ctor: any}[] = [],
+    errorRecorder?: (error: any, fileName?: string) => void,
+    collectorOptions?: CollectorOptions
+  ) {
     const symbolCache = new StaticSymbolCache();
     host = new MockStaticSymbolResolverHost(testData, collectorOptions);
     const summaryResolver = new MockSummaryResolver([]);
@@ -55,13 +63,18 @@ describe('StaticReflector', () => {
 
     const parameters = reflector.parameters(NgFor);
     expect(parameters).toEqual([
-      [ViewContainerRef], [TemplateRef], [IterableDiffers], [ChangeDetectorRef]
+      [ViewContainerRef],
+      [TemplateRef],
+      [IterableDiffers],
+      [ChangeDetectorRef],
     ]);
   });
 
   it('should get annotations for HeroDetailComponent', () => {
-    const HeroDetailComponent =
-        reflector.findDeclaration('src/app/hero-detail.component', 'HeroDetailComponent');
+    const HeroDetailComponent = reflector.findDeclaration(
+      'src/app/hero-detail.component',
+      'HeroDetailComponent'
+    );
     const annotations = reflector.annotations(HeroDetailComponent);
     expect(annotations.length).toEqual(1);
     const annotation = annotations[0];
@@ -78,19 +91,22 @@ describe('StaticReflector', () => {
     init({
       '/tmp/test.ts': `
         export var x = null;
-      `
+      `,
     });
     const annotations = reflector.annotations(reflector.getStaticSymbol('/tmp/test.ts', 'x'));
     expect(annotations).toEqual([]);
   });
 
   it('should get propMetadata for HeroDetailComponent', () => {
-    const HeroDetailComponent =
-        reflector.findDeclaration('src/app/hero-detail.component', 'HeroDetailComponent');
+    const HeroDetailComponent = reflector.findDeclaration(
+      'src/app/hero-detail.component',
+      'HeroDetailComponent'
+    );
     const props = reflector.propMetadata(HeroDetailComponent);
     expect(props['hero']).toBeTruthy();
-    expect(props['onMouseOver']).toEqual([compilerCore.createHostListener(
-        'mouseover', ['$event'])]);
+    expect(props['onMouseOver']).toEqual([
+      compilerCore.createHostListener('mouseover', ['$event']),
+    ]);
   });
 
   it('should get an empty object from propMetadata for an unknown class', () => {
@@ -107,12 +123,13 @@ describe('StaticReflector', () => {
 
   it('should provide context for errors reported by the collector', () => {
     const SomeClass = reflector.findDeclaration('src/error-reporting', 'SomeClass');
-    expect(() => reflector.annotations(SomeClass))
-        .toThrow(new Error(`Error during template compile of 'SomeClass'
+    expect(() => reflector.annotations(SomeClass)).toThrow(
+      new Error(`Error during template compile of 'SomeClass'
   A reasonable error message in 'Link1'
     'Link1' references 'Link2'
       'Link2' references 'ErrorSym'
-        'ErrorSym' contains the error at /tmp/src/error-references.ts(13,34).`));
+        'ErrorSym' contains the error at /tmp/src/error-references.ts(13,34).`)
+    );
   });
 
   it('should simplify primitive into itself', () => {
@@ -136,162 +153,203 @@ describe('StaticReflector', () => {
   });
 
   it('should simplify &&', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '&&', left: true, right: true})))
-        .toBe(true);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '&&', left: true, right: false})))
-        .toBe(false);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '&&', left: false, right: true})))
-        .toBe(false);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '&&', left: false, right: false})))
-        .toBe(false);
+    expect(
+      simplify(noContext, {__symbolic: 'binop', operator: '&&', left: true, right: true})
+    ).toBe(true);
+    expect(
+      simplify(noContext, {__symbolic: 'binop', operator: '&&', left: true, right: false})
+    ).toBe(false);
+    expect(
+      simplify(noContext, {__symbolic: 'binop', operator: '&&', left: false, right: true})
+    ).toBe(false);
+    expect(
+      simplify(noContext, {__symbolic: 'binop', operator: '&&', left: false, right: false})
+    ).toBe(false);
   });
 
   it('should simplify ||', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '||', left: true, right: true})))
-        .toBe(true);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '||', left: true, right: false})))
-        .toBe(true);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '||', left: false, right: true})))
-        .toBe(true);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '||', left: false, right: false})))
-        .toBe(false);
+    expect(
+      simplify(noContext, {__symbolic: 'binop', operator: '||', left: true, right: true})
+    ).toBe(true);
+    expect(
+      simplify(noContext, {__symbolic: 'binop', operator: '||', left: true, right: false})
+    ).toBe(true);
+    expect(
+      simplify(noContext, {__symbolic: 'binop', operator: '||', left: false, right: true})
+    ).toBe(true);
+    expect(
+      simplify(noContext, {__symbolic: 'binop', operator: '||', left: false, right: false})
+    ).toBe(false);
   });
 
   it('should simplify &', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '&', left: 0x22, right: 0x0F})))
-        .toBe(0x22 & 0x0F);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '&', left: 0x22, right: 0xF0})))
-        .toBe(0x22 & 0xF0);
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '&', left: 0x22, right: 0x0f})).toBe(
+      0x22 & 0x0f
+    );
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '&', left: 0x22, right: 0xf0})).toBe(
+      0x22 & 0xf0
+    );
   });
 
   it('should simplify |', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '|', left: 0x22, right: 0x0F})))
-        .toBe(0x22 | 0x0F);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '|', left: 0x22, right: 0xF0})))
-        .toBe(0x22 | 0xF0);
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '|', left: 0x22, right: 0x0f})).toBe(
+      0x22 | 0x0f
+    );
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '|', left: 0x22, right: 0xf0})).toBe(
+      0x22 | 0xf0
+    );
   });
 
   it('should simplify ^', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '|', left: 0x22, right: 0x0F})))
-        .toBe(0x22 | 0x0F);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '|', left: 0x22, right: 0xF0})))
-        .toBe(0x22 | 0xF0);
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '|', left: 0x22, right: 0x0f})).toBe(
+      0x22 | 0x0f
+    );
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '|', left: 0x22, right: 0xf0})).toBe(
+      0x22 | 0xf0
+    );
   });
 
   it('should simplify ==', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '==', left: 0x22, right: 0x22})))
-        .toBe(0x22 == 0x22);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '==', left: 0x22, right: 0xF0})))
-        .toBe(0x22 as any == 0xF0);
+    expect(
+      simplify(noContext, {__symbolic: 'binop', operator: '==', left: 0x22, right: 0x22})
+    ).toBe(0x22 == 0x22);
+    expect(
+      simplify(noContext, {__symbolic: 'binop', operator: '==', left: 0x22, right: 0xf0})
+    ).toBe((0x22 as any) == 0xf0);
   });
 
   it('should simplify !=', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '!=', left: 0x22, right: 0x22})))
-        .toBe(0x22 != 0x22);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '!=', left: 0x22, right: 0xF0})))
-        .toBe(0x22 as any != 0xF0);
+    expect(
+      simplify(noContext, {__symbolic: 'binop', operator: '!=', left: 0x22, right: 0x22})
+    ).toBe(0x22 != 0x22);
+    expect(
+      simplify(noContext, {__symbolic: 'binop', operator: '!=', left: 0x22, right: 0xf0})
+    ).toBe((0x22 as any) != 0xf0);
   });
 
   it('should simplify ===', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '===', left: 0x22, right: 0x22})))
-        .toBe(0x22 === 0x22);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '===', left: 0x22, right: 0xF0})))
-        .toBe(0x22 as any === 0xF0);
+    expect(
+      simplify(noContext, {__symbolic: 'binop', operator: '===', left: 0x22, right: 0x22})
+    ).toBe(0x22 === 0x22);
+    expect(
+      simplify(noContext, {__symbolic: 'binop', operator: '===', left: 0x22, right: 0xf0})
+    ).toBe((0x22 as any) === 0xf0);
   });
 
   it('should simplify !==', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '!==', left: 0x22, right: 0x22})))
-        .toBe(0x22 !== 0x22);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '!==', left: 0x22, right: 0xF0})))
-        .toBe(0x22 as any !== 0xF0);
+    expect(
+      simplify(noContext, {__symbolic: 'binop', operator: '!==', left: 0x22, right: 0x22})
+    ).toBe(0x22 !== 0x22);
+    expect(
+      simplify(noContext, {__symbolic: 'binop', operator: '!==', left: 0x22, right: 0xf0})
+    ).toBe((0x22 as any) !== 0xf0);
   });
 
   it('should simplify >', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '>', left: 1, right: 1})))
-        .toBe(1 > 1);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '>', left: 1, right: 0})))
-        .toBe(1 > 0);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '>', left: 0, right: 1})))
-        .toBe(0 > 1);
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '>', left: 1, right: 1})).toBe(
+      1 > 1
+    );
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '>', left: 1, right: 0})).toBe(
+      1 > 0
+    );
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '>', left: 0, right: 1})).toBe(
+      0 > 1
+    );
   });
 
   it('should simplify >=', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '>=', left: 1, right: 1})))
-        .toBe(1 >= 1);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '>=', left: 1, right: 0})))
-        .toBe(1 >= 0);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '>=', left: 0, right: 1})))
-        .toBe(0 >= 1);
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '>=', left: 1, right: 1})).toBe(
+      1 >= 1
+    );
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '>=', left: 1, right: 0})).toBe(
+      1 >= 0
+    );
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '>=', left: 0, right: 1})).toBe(
+      0 >= 1
+    );
   });
 
   it('should simplify <=', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '<=', left: 1, right: 1})))
-        .toBe(1 <= 1);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '<=', left: 1, right: 0})))
-        .toBe(1 <= 0);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '<=', left: 0, right: 1})))
-        .toBe(0 <= 1);
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '<=', left: 1, right: 1})).toBe(
+      1 <= 1
+    );
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '<=', left: 1, right: 0})).toBe(
+      1 <= 0
+    );
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '<=', left: 0, right: 1})).toBe(
+      0 <= 1
+    );
   });
 
   it('should simplify <', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '<', left: 1, right: 1})))
-        .toBe(1 < 1);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '<', left: 1, right: 0})))
-        .toBe(1 < 0);
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '<', left: 0, right: 1})))
-        .toBe(0 < 1);
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '<', left: 1, right: 1})).toBe(
+      1 < 1
+    );
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '<', left: 1, right: 0})).toBe(
+      1 < 0
+    );
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '<', left: 0, right: 1})).toBe(
+      0 < 1
+    );
   });
 
   it('should simplify <<', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '<<', left: 0x55, right: 2})))
-        .toBe(0x55 << 2);
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '<<', left: 0x55, right: 2})).toBe(
+      0x55 << 2
+    );
   });
 
   it('should simplify >>', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '>>', left: 0x55, right: 2})))
-        .toBe(0x55 >> 2);
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '>>', left: 0x55, right: 2})).toBe(
+      0x55 >> 2
+    );
   });
 
   it('should simplify +', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '+', left: 0x55, right: 2})))
-        .toBe(0x55 + 2);
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '+', left: 0x55, right: 2})).toBe(
+      0x55 + 2
+    );
   });
 
   it('should simplify -', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '-', left: 0x55, right: 2})))
-        .toBe(0x55 - 2);
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '-', left: 0x55, right: 2})).toBe(
+      0x55 - 2
+    );
   });
 
   it('should simplify *', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '*', left: 0x55, right: 2})))
-        .toBe(0x55 * 2);
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '*', left: 0x55, right: 2})).toBe(
+      0x55 * 2
+    );
   });
 
   it('should simplify /', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '/', left: 0x55, right: 2})))
-        .toBe(0x55 / 2);
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '/', left: 0x55, right: 2})).toBe(
+      0x55 / 2
+    );
   });
 
   it('should simplify %', () => {
-    expect(simplify(noContext, ({__symbolic: 'binop', operator: '%', left: 0x55, right: 2})))
-        .toBe(0x55 % 2);
+    expect(simplify(noContext, {__symbolic: 'binop', operator: '%', left: 0x55, right: 2})).toBe(
+      0x55 % 2
+    );
   });
 
   it('should simplify prefix -', () => {
-    expect(simplify(noContext, ({__symbolic: 'pre', operator: '-', operand: 2}))).toBe(-2);
+    expect(simplify(noContext, {__symbolic: 'pre', operator: '-', operand: 2})).toBe(-2);
   });
 
   it('should simplify prefix ~', () => {
-    expect(simplify(noContext, ({__symbolic: 'pre', operator: '~', operand: 2}))).toBe(~2);
+    expect(simplify(noContext, {__symbolic: 'pre', operator: '~', operand: 2})).toBe(~2);
   });
 
   it('should simplify prefix !', () => {
-    expect(simplify(noContext, ({__symbolic: 'pre', operator: '!', operand: true}))).toBe(!true);
-    expect(simplify(noContext, ({__symbolic: 'pre', operator: '!', operand: false}))).toBe(!false);
+    expect(simplify(noContext, {__symbolic: 'pre', operator: '!', operand: true})).toBe(!true);
+    expect(simplify(noContext, {__symbolic: 'pre', operator: '!', operand: false})).toBe(!false);
   });
 
   it('should simplify an array index', () => {
-    expect(simplify(noContext, ({__symbolic: 'index', expression: [1, 2, 3], index: 2}))).toBe(3);
+    expect(simplify(noContext, {__symbolic: 'index', expression: [1, 2, 3], index: 2})).toBe(3);
   });
 
   it('should simplify an object index', () => {
@@ -300,60 +358,72 @@ describe('StaticReflector', () => {
   });
 
   it('should simplify a file reference', () => {
-    expect(simplify(
-               reflector.getStaticSymbol('/src/cases', ''),
-               reflector.getStaticSymbol('/src/extern.d.ts', 's')))
-        .toEqual('s');
+    expect(
+      simplify(
+        reflector.getStaticSymbol('/src/cases', ''),
+        reflector.getStaticSymbol('/src/extern.d.ts', 's')
+      )
+    ).toEqual('s');
   });
 
   it('should simplify a non existing reference as a static symbol', () => {
-    expect(simplify(
-               reflector.getStaticSymbol('/src/cases', ''),
-               reflector.getStaticSymbol('/src/extern.d.ts', 'nonExisting')))
-        .toEqual(reflector.getStaticSymbol('/src/extern.d.ts', 'nonExisting'));
+    expect(
+      simplify(
+        reflector.getStaticSymbol('/src/cases', ''),
+        reflector.getStaticSymbol('/src/extern.d.ts', 'nonExisting')
+      )
+    ).toEqual(reflector.getStaticSymbol('/src/extern.d.ts', 'nonExisting'));
   });
 
   it('should simplify a function reference as a static symbol', () => {
-    expect(simplify(
-               reflector.getStaticSymbol('/src/cases', 'myFunction'),
-               ({__symbolic: 'function', parameters: ['a'], value: []})))
-        .toEqual(reflector.getStaticSymbol('/src/cases', 'myFunction'));
+    expect(
+      simplify(reflector.getStaticSymbol('/src/cases', 'myFunction'), {
+        __symbolic: 'function',
+        parameters: ['a'],
+        value: [],
+      })
+    ).toEqual(reflector.getStaticSymbol('/src/cases', 'myFunction'));
   });
 
   it('should simplify values initialized with a function call', () => {
-    expect(simplify(
-               reflector.getStaticSymbol('/tmp/src/function-reference.ts', ''),
-               reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'one')))
-        .toEqual(['some-value']);
-    expect(simplify(
-               reflector.getStaticSymbol('/tmp/src/function-reference.ts', ''),
-               reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'three')))
-        .toEqual(3);
+    expect(
+      simplify(
+        reflector.getStaticSymbol('/tmp/src/function-reference.ts', ''),
+        reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'one')
+      )
+    ).toEqual(['some-value']);
+    expect(
+      simplify(
+        reflector.getStaticSymbol('/tmp/src/function-reference.ts', ''),
+        reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'three')
+      )
+    ).toEqual(3);
   });
 
   it('should error on direct recursive calls', () => {
-    expect(
-        () => simplify(
-            reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'MyComp'),
-            reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'recursion')))
-        .toThrow(new Error(`Error during template compile of 'MyComp'
+    expect(() =>
+      simplify(
+        reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'MyComp'),
+        reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'recursion')
+      )
+    ).toThrow(
+      new Error(`Error during template compile of 'MyComp'
   Recursion is not supported in 'recursion'
     'recursion' references 'recursive'
-      'recursive' called 'recursive' recursively.`));
+      'recursive' called 'recursive' recursively.`)
+    );
   });
 
-  it('should throw a SyntaxError without stack trace when the required resource cannot be resolved',
-     () => {
-       expect(
-           () => simplify(
-               reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'AppModule'), ({
-                 __symbolic: 'error',
-                 message:
-                     'Could not resolve ./does-not-exist.component relative to /tmp/src/function-reference.ts'
-               })))
-           .toThrowError(`Error during template compile of 'AppModule'
+  it('should throw a SyntaxError without stack trace when the required resource cannot be resolved', () => {
+    expect(() =>
+      simplify(reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'AppModule'), {
+        __symbolic: 'error',
+        message:
+          'Could not resolve ./does-not-exist.component relative to /tmp/src/function-reference.ts',
+      })
+    ).toThrowError(`Error during template compile of 'AppModule'
   Could not resolve ./does-not-exist.component relative to /tmp/src/function-reference.ts.`);
-     });
+  });
 
   it('should record data about the error in the exception', () => {
     let threw = false;
@@ -365,8 +435,9 @@ describe('StaticReflector', () => {
       const classData: any = moduleMetadata['InvalidMetadata'];
       expect(classData).toBeDefined();
       simplify(
-          reflector.getStaticSymbol('/tmp/src/invalid-metadata.ts', ''),
-          classData.decorators[0].arguments);
+        reflector.getStaticSymbol('/tmp/src/invalid-metadata.ts', ''),
+        classData.decorators[0].arguments
+      );
     } catch (e) {
       expect(e.position).toBeDefined();
       threw = true;
@@ -375,27 +446,33 @@ describe('StaticReflector', () => {
   });
 
   it('should error on indirect recursive calls', () => {
-    expect(
-        () => simplify(
-            reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'MyComp'),
-            reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'indirectRecursion')))
-        .toThrow(new Error(`Error during template compile of 'MyComp'
+    expect(() =>
+      simplify(
+        reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'MyComp'),
+        reflector.getStaticSymbol('/tmp/src/function-reference.ts', 'indirectRecursion')
+      )
+    ).toThrow(
+      new Error(`Error during template compile of 'MyComp'
   Recursion is not supported in 'indirectRecursion'
     'indirectRecursion' references 'indirectRecursion1'
       'indirectRecursion1' references 'indirectRecursion2'
-        'indirectRecursion2' called 'indirectRecursion1' recursively.`));
+        'indirectRecursion2' called 'indirectRecursion1' recursively.`)
+    );
   });
 
   it('should simplify a spread expression', () => {
-    expect(simplify(
-               reflector.getStaticSymbol('/tmp/src/spread.ts', ''),
-               reflector.getStaticSymbol('/tmp/src/spread.ts', 'spread')))
-        .toEqual([0, 1, 2, 3, 4, 5]);
+    expect(
+      simplify(
+        reflector.getStaticSymbol('/tmp/src/spread.ts', ''),
+        reflector.getStaticSymbol('/tmp/src/spread.ts', 'spread')
+      )
+    ).toEqual([0, 1, 2, 3, 4, 5]);
   });
 
   it('should be able to get metadata for a class containing a custom decorator', () => {
     const props = reflector.propMetadata(
-        reflector.getStaticSymbol('/tmp/src/custom-decorator-reference.ts', 'Foo'));
+      reflector.getStaticSymbol('/tmp/src/custom-decorator-reference.ts', 'Foo')
+    );
     expect(props).toEqual({foo: []});
   });
 
@@ -407,74 +484,84 @@ describe('StaticReflector', () => {
   });
 
   it('should report an error for invalid function calls', () => {
-    expect(
-        () => reflector.annotations(
-            reflector.getStaticSymbol('/tmp/src/invalid-calls.ts', 'MyComponent')))
-        .toThrow(new Error(
-            `/tmp/src/invalid-calls.ts(8,29): Error during template compile of 'MyComponent'
-  Function calls are not supported in decorators but 'someFunction' was called.`));
+    expect(() =>
+      reflector.annotations(reflector.getStaticSymbol('/tmp/src/invalid-calls.ts', 'MyComponent'))
+    ).toThrow(
+      new Error(
+        `/tmp/src/invalid-calls.ts(8,29): Error during template compile of 'MyComponent'
+  Function calls are not supported in decorators but 'someFunction' was called.`
+      )
+    );
   });
 
   it('should be able to get metadata for a class containing a static method call', () => {
     const annotations = reflector.annotations(
-        reflector.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyComponent'));
+      reflector.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyComponent')
+    );
     expect(annotations.length).toBe(1);
     expect(annotations[0].providers).toEqual({provider: 'a', useValue: 100});
   });
 
   it('should be able to get metadata for a class containing a static field reference', () => {
     const annotations = reflector.annotations(
-        reflector.getStaticSymbol('/tmp/src/static-field-reference.ts', 'Foo'));
+      reflector.getStaticSymbol('/tmp/src/static-field-reference.ts', 'Foo')
+    );
     expect(annotations.length).toBe(1);
     expect(annotations[0].providers).toEqual([{provider: 'a', useValue: 'Some string'}]);
   });
 
-  it('should be able to get the metadata for a class calling a method with a conditional expression',
-     () => {
-       const annotations = reflector.annotations(
-           reflector.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyCondComponent'));
-       expect(annotations.length).toBe(1);
-       expect(annotations[0].providers).toEqual([
-         [{provider: 'a', useValue: '1'}], [{provider: 'a', useValue: '2'}]
-       ]);
-     });
+  it('should be able to get the metadata for a class calling a method with a conditional expression', () => {
+    const annotations = reflector.annotations(
+      reflector.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyCondComponent')
+    );
+    expect(annotations.length).toBe(1);
+    expect(annotations[0].providers).toEqual([
+      [{provider: 'a', useValue: '1'}],
+      [{provider: 'a', useValue: '2'}],
+    ]);
+  });
 
   it('should be able to get metadata for a class with nested method calls', () => {
     const annotations = reflector.annotations(
-        reflector.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyFactoryComponent'));
+      reflector.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyFactoryComponent')
+    );
     expect(annotations.length).toBe(1);
     expect(annotations[0].providers).toEqual({
       provide: 'c',
-      useFactory:
-          reflector.getStaticSymbol('/tmp/src/static-method.ts', 'AnotherModule', ['someFactory'])
+      useFactory: reflector.getStaticSymbol('/tmp/src/static-method.ts', 'AnotherModule', [
+        'someFactory',
+      ]),
     });
   });
 
-  it('should be able to get the metadata for a class calling a method with default parameters',
-     () => {
-       const annotations = reflector.annotations(
-           reflector.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyDefaultsComponent'));
-       expect(annotations.length).toBe(1);
-       expect(annotations[0].providers).toEqual([['a', true, false]]);
-     });
+  it('should be able to get the metadata for a class calling a method with default parameters', () => {
+    const annotations = reflector.annotations(
+      reflector.getStaticSymbol('/tmp/src/static-method-call.ts', 'MyDefaultsComponent')
+    );
+    expect(annotations.length).toBe(1);
+    expect(annotations[0].providers).toEqual([['a', true, false]]);
+  });
 
   it('should be able to get metadata with a reference to a static method', () => {
     const annotations = reflector.annotations(
-        reflector.getStaticSymbol('/tmp/src/static-method-ref.ts', 'MethodReference'));
+      reflector.getStaticSymbol('/tmp/src/static-method-ref.ts', 'MethodReference')
+    );
     expect(annotations.length).toBe(1);
     expect(annotations[0].providers[0].useValue.members[0]).toEqual('staticMethod');
   });
 
   it('should be able to get metadata for a class calling a macro function', () => {
     const annotations = reflector.annotations(
-        reflector.getStaticSymbol('/tmp/src/call-macro-function.ts', 'MyComponent'));
+      reflector.getStaticSymbol('/tmp/src/call-macro-function.ts', 'MyComponent')
+    );
     expect(annotations.length).toBe(1);
     expect(annotations[0].providers.useValue).toBe(100);
   });
 
   it('should be able to get metadata for a class calling a nested macro function', () => {
     const annotations = reflector.annotations(
-        reflector.getStaticSymbol('/tmp/src/call-macro-function.ts', 'MyComponentNested'));
+      reflector.getStaticSymbol('/tmp/src/call-macro-function.ts', 'MyComponentNested')
+    );
     expect(annotations.length).toBe(1);
     expect(annotations[0].providers.useValue.useValue).toBe(100);
   });
@@ -651,7 +738,7 @@ describe('StaticReflector', () => {
       init(testData, [
         {filePath: '/tmp/src/decorator.ts', name: 'ClassDecorator', ctor: ClassDecorator},
         {filePath: '/tmp/src/decorator.ts', name: 'ParamDecorator', ctor: ParamDecorator},
-        {filePath: '/tmp/src/decorator.ts', name: 'PropDecorator', ctor: PropDecorator}
+        {filePath: '/tmp/src/decorator.ts', name: 'PropDecorator', ctor: PropDecorator},
       ]);
     }
 
@@ -669,23 +756,25 @@ describe('StaticReflector', () => {
             export class ChildNoDecorators extends Parent {}
 
             export class ChildInvalidParent extends a.InvalidParent {}
-          `
+          `,
       });
 
       // Check that metadata for Parent was not changed!
-      expect(reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'Parent')))
-          .toEqual([new ClassDecorator('parent')]);
-
-      expect(reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child')))
-          .toEqual([new ClassDecorator('parent'), new ClassDecorator('child')]);
+      expect(
+        reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'Parent'))
+      ).toEqual([new ClassDecorator('parent')]);
 
       expect(
-          reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildNoDecorators')))
-          .toEqual([new ClassDecorator('parent')]);
+        reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child'))
+      ).toEqual([new ClassDecorator('parent'), new ClassDecorator('child')]);
 
-      expect(reflector.annotations(
-                 reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent')))
-          .toEqual([]);
+      expect(
+        reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildNoDecorators'))
+      ).toEqual([new ClassDecorator('parent')]);
+
+      expect(
+        reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent'))
+      ).toEqual([]);
     });
 
     it('should inherit parameters', () => {
@@ -708,27 +797,29 @@ describe('StaticReflector', () => {
             }
 
             export class ChildInvalidParent extends a.InvalidParent {}
-          `
+          `,
       });
 
       // Check that metadata for Parent was not changed!
-      expect(reflector.parameters(reflector.getStaticSymbol('/tmp/src/main.ts', 'Parent')))
-          .toEqual([
-            [reflector.getStaticSymbol('/tmp/src/main.ts', 'A'), new ParamDecorator('a')],
-            [reflector.getStaticSymbol('/tmp/src/main.ts', 'B'), new ParamDecorator('b')]
-          ]);
+      expect(reflector.parameters(reflector.getStaticSymbol('/tmp/src/main.ts', 'Parent'))).toEqual(
+        [
+          [reflector.getStaticSymbol('/tmp/src/main.ts', 'A'), new ParamDecorator('a')],
+          [reflector.getStaticSymbol('/tmp/src/main.ts', 'B'), new ParamDecorator('b')],
+        ]
+      );
 
       expect(reflector.parameters(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child'))).toEqual([
         [reflector.getStaticSymbol('/tmp/src/main.ts', 'A'), new ParamDecorator('a')],
-        [reflector.getStaticSymbol('/tmp/src/main.ts', 'B'), new ParamDecorator('b')]
+        [reflector.getStaticSymbol('/tmp/src/main.ts', 'B'), new ParamDecorator('b')],
       ]);
 
-      expect(reflector.parameters(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildWithCtor')))
-          .toEqual([[reflector.getStaticSymbol('/tmp/src/main.ts', 'C'), new ParamDecorator('c')]]);
+      expect(
+        reflector.parameters(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildWithCtor'))
+      ).toEqual([[reflector.getStaticSymbol('/tmp/src/main.ts', 'C'), new ParamDecorator('c')]]);
 
       expect(
-          reflector.parameters(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent')))
-          .toEqual([]);
+        reflector.parameters(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent'))
+      ).toEqual([]);
     });
 
     it('should inherit property metadata', () => {
@@ -755,26 +846,28 @@ describe('StaticReflector', () => {
             }
 
             export class ChildInvalidParent extends a.InvalidParent {}
-          `
+          `,
       });
 
       // Check that metadata for Parent was not changed!
-      expect(reflector.propMetadata(reflector.getStaticSymbol('/tmp/src/main.ts', 'Parent')))
-          .toEqual({
-            'a': [new PropDecorator('a')],
-            'b': [new PropDecorator('b1')],
-          });
+      expect(
+        reflector.propMetadata(reflector.getStaticSymbol('/tmp/src/main.ts', 'Parent'))
+      ).toEqual({
+        'a': [new PropDecorator('a')],
+        'b': [new PropDecorator('b1')],
+      });
 
-      expect(reflector.propMetadata(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child')))
-          .toEqual({
-            'a': [new PropDecorator('a')],
-            'b': [new PropDecorator('b1'), new PropDecorator('b2')],
-            'c': [new PropDecorator('c')]
-          });
+      expect(
+        reflector.propMetadata(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child'))
+      ).toEqual({
+        'a': [new PropDecorator('a')],
+        'b': [new PropDecorator('b1'), new PropDecorator('b2')],
+        'c': [new PropDecorator('c')],
+      });
 
-      expect(reflector.propMetadata(
-                 reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent')))
-          .toEqual({});
+      expect(
+        reflector.propMetadata(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent'))
+      ).toEqual({});
     });
 
     it('should inherit lifecycle hooks', () => {
@@ -791,25 +884,29 @@ describe('StaticReflector', () => {
             }
 
             export class ChildInvalidParent extends a.InvalidParent {}
-          `
+          `,
       });
 
       function hooks(symbol: StaticSymbol, names: string[]): boolean[] {
-        return names.map(name => reflector.hasLifecycleHook(symbol, name));
+        return names.map((name) => reflector.hasLifecycleHook(symbol, name));
       }
 
       // Check that metadata for Parent was not changed!
-      expect(hooks(reflector.getStaticSymbol('/tmp/src/main.ts', 'Parent'), [
-        'hook1', 'hook2', 'hook3'
-      ])).toEqual([true, true, false]);
+      expect(
+        hooks(reflector.getStaticSymbol('/tmp/src/main.ts', 'Parent'), ['hook1', 'hook2', 'hook3'])
+      ).toEqual([true, true, false]);
 
-      expect(hooks(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child'), [
-        'hook1', 'hook2', 'hook3'
-      ])).toEqual([true, true, true]);
+      expect(
+        hooks(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child'), ['hook1', 'hook2', 'hook3'])
+      ).toEqual([true, true, true]);
 
-      expect(hooks(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent'), [
-        'hook1', 'hook2', 'hook3'
-      ])).toEqual([false, false, false]);
+      expect(
+        hooks(reflector.getStaticSymbol('/tmp/src/main.ts', 'ChildInvalidParent'), [
+          'hook1',
+          'hook2',
+          'hook3',
+        ])
+      ).toEqual([false, false, false]);
     });
 
     it('should allow inheritance from expressions', () => {
@@ -817,11 +914,12 @@ describe('StaticReflector', () => {
         '/tmp/src/main.ts': `
             export function metaClass() { return null; };
             export class Child extends metaClass() {}
-          `
+          `,
       });
 
-      expect(reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child')))
-          .toEqual([]);
+      expect(reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child'))).toEqual(
+        []
+      );
     });
 
     it('should allow inheritance from functions', () => {
@@ -829,11 +927,12 @@ describe('StaticReflector', () => {
         '/tmp/src/main.ts': `
             export let ctor: {new(): T} = function() { return null; }
             export class Child extends ctor {}
-          `
+          `,
       });
 
-      expect(reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child')))
-          .toEqual([]);
+      expect(reflector.annotations(reflector.getStaticSymbol('/tmp/src/main.ts', 'Child'))).toEqual(
+        []
+      );
     });
 
     it('should support constructor parameters with @Inject and an interface type', () => {
@@ -857,8 +956,9 @@ describe('StaticReflector', () => {
 
       init(data);
 
-      expect(reflector.parameters(reflector.getStaticSymbol(file, 'SomeClass'))[0].length)
-          .toEqual(1);
+      expect(reflector.parameters(reflector.getStaticSymbol(file, 'SomeClass'))[0].length).toEqual(
+        1
+      );
     });
   });
 
@@ -882,10 +982,10 @@ describe('StaticReflector', () => {
       `;
       init(data);
 
-      expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
-                 .providers[0]
-                 .useFactory)
-          .toBe(reflector.getStaticSymbol(file, 'myLambda'));
+      expect(
+        reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0].providers[0]
+          .useFactory
+      ).toBe(reflector.getStaticSymbol(file, 'myLambda'));
     });
   });
 
@@ -919,10 +1019,9 @@ describe('StaticReflector', () => {
     `;
     init(data);
 
-    expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
-               .providers[0]
-               .useValue)
-        .toEqual([{data: {c: [3]}}]);
+    expect(
+      reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0].providers[0].useValue
+    ).toEqual([{data: {c: [3]}}]);
   });
 
   // Regression #18170
@@ -966,10 +1065,10 @@ describe('StaticReflector', () => {
       }
     `;
     init(data);
-    expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
-               .providers[0][0]
-               .useValue)
-        .toEqual({path: 'foo', data: {e: 0}});
+    expect(
+      reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0].providers[0][0]
+        .useValue
+    ).toEqual({path: 'foo', data: {e: 0}});
   });
 
   // Regression #18170
@@ -1007,21 +1106,21 @@ describe('StaticReflector', () => {
         ];
       }
     `;
-    data['/tmp/src/indirect.ts'] = `
+    (data['/tmp/src/indirect.ts'] = `
       import {MyEnum} from './consts';
 
       export const E = MyEnum;
-    `,
-    data['/tmp/src/consts.ts'] = `
+    `),
+      (data['/tmp/src/consts.ts'] = `
       export enum MyEnum {
         Value = 1,
       }
-    `;
+    `);
     init(data);
-    expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
-               .providers[0][0]
-               .useValue)
-        .toEqual({path: 'foo', data: {e: 1}});
+    expect(
+      reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0].providers[0][0]
+        .useValue
+    ).toEqual({path: 'foo', data: {e: 1}});
   });
 
   // Regression #18170
@@ -1059,35 +1158,36 @@ describe('StaticReflector', () => {
         ];
       }
     `;
-    data['/tmp/src/indirect.ts'] = `
+    (data['/tmp/src/indirect.ts'] = `
       import {A} from './consts';
 
       export const E = A;
-    `,
-    data['/tmp/src/consts.ts'] = `
+    `),
+      (data['/tmp/src/consts.ts'] = `
       export const A = [0, 1];
-    `;
+    `);
     init(data);
-    expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
-               .providers[0][0]
-               .useValue)
-        .toEqual({path: 'foo', data: {e: 1}});
+    expect(
+      reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0].providers[0][0]
+        .useValue
+    ).toEqual({path: 'foo', data: {e: 1}});
   });
 
   describe('resolveExternalReference', () => {
-    it('should register modules names in the StaticSymbolResolver if no containingFile is given',
-       () => {
-         init({
-           '/tmp/root.ts': ``,
-           '/tmp/a.ts': `export const x = 1;`,
-         });
-         let symbol = reflector.resolveExternalReference(
-             {moduleName: './a', name: 'x', runtime: null}, '/tmp/root.ts');
-         expect(symbolResolver.getKnownModuleName(symbol.filePath)).toBeFalsy();
+    it('should register modules names in the StaticSymbolResolver if no containingFile is given', () => {
+      init({
+        '/tmp/root.ts': ``,
+        '/tmp/a.ts': `export const x = 1;`,
+      });
+      let symbol = reflector.resolveExternalReference(
+        {moduleName: './a', name: 'x', runtime: null},
+        '/tmp/root.ts'
+      );
+      expect(symbolResolver.getKnownModuleName(symbol.filePath)).toBeFalsy();
 
-         symbol = reflector.resolveExternalReference({moduleName: 'a', name: 'x', runtime: null});
-         expect(symbolResolver.getKnownModuleName(symbol.filePath)).toBe('a');
-       });
+      symbol = reflector.resolveExternalReference({moduleName: 'a', name: 'x', runtime: null});
+      expect(symbolResolver.getKnownModuleName(symbol.filePath)).toBe('a');
+    });
   });
 
   describe('formatted error reporting', () => {
@@ -1135,7 +1235,7 @@ describe('StaticReflector', () => {
           value: TWO_LEVELS_INDIRECT_CALL_FUNCTION
         })
         export class TwoLevelsIndirectReferenceCalledFunction {}
-    `
+    `,
         };
         init({...DEFAULT_TEST_DATA, ...localData});
       });
@@ -1143,46 +1243,49 @@ describe('StaticReflector', () => {
       it('should report a formatted error for a direct function call', () => {
         expect(() => {
           return reflector.annotations(reflector.getStaticSymbol(fileName, 'CallImportedFunction'));
-        })
-            .toThrowError(
-                `/tmp/src/invalid/components.ts(9,18): Error during template compile of 'CallImportedFunction'
-  Function calls are not supported in decorators but 'functionToCall' was called.`);
+        }).toThrowError(
+          `/tmp/src/invalid/components.ts(9,18): Error during template compile of 'CallImportedFunction'
+  Function calls are not supported in decorators but 'functionToCall' was called.`
+        );
       });
 
       it('should report a formatted error for a reference to a function call', () => {
         expect(() => {
           return reflector.annotations(
-              reflector.getStaticSymbol(fileName, 'ReferenceCalledFunction'));
-        })
-            .toThrowError(
-                `/tmp/src/invalid/components.ts(14,18): Error during template compile of 'ReferenceCalledFunction'
+            reflector.getStaticSymbol(fileName, 'ReferenceCalledFunction')
+          );
+        }).toThrowError(
+          `/tmp/src/invalid/components.ts(14,18): Error during template compile of 'ReferenceCalledFunction'
   Function calls are not supported in decorators but 'functionToCall' was called in 'CALL_FUNCTION'
-    'CALL_FUNCTION' calls 'functionToCall' at /tmp/src/invalid/function-call.ts(3,38).`);
+    'CALL_FUNCTION' calls 'functionToCall' at /tmp/src/invalid/function-call.ts(3,38).`
+        );
       });
 
       it('should report a formatted error for an indirect reference to a function call', () => {
         expect(() => {
           return reflector.annotations(
-              reflector.getStaticSymbol(fileName, 'IndirectReferenceCalledFunction'));
-        })
-            .toThrowError(
-                `/tmp/src/invalid/components.ts(19,18): Error during template compile of 'IndirectReferenceCalledFunction'
+            reflector.getStaticSymbol(fileName, 'IndirectReferenceCalledFunction')
+          );
+        }).toThrowError(
+          `/tmp/src/invalid/components.ts(19,18): Error during template compile of 'IndirectReferenceCalledFunction'
   Function calls are not supported in decorators but 'functionToCall' was called in 'INDIRECT_CALL_FUNCTION'
     'INDIRECT_CALL_FUNCTION' references 'CALL_FUNCTION' at /tmp/src/invalid/indirect.ts(4,47)
-      'CALL_FUNCTION' calls 'functionToCall' at /tmp/src/invalid/function-call.ts(3,38).`);
+      'CALL_FUNCTION' calls 'functionToCall' at /tmp/src/invalid/function-call.ts(3,38).`
+        );
       });
 
       it('should report a formatted error for a double-indirect reference to a function call', () => {
         expect(() => {
           return reflector.annotations(
-              reflector.getStaticSymbol(fileName, 'TwoLevelsIndirectReferenceCalledFunction'));
-        })
-            .toThrowError(
-                `/tmp/src/invalid/components.ts(24,18): Error during template compile of 'TwoLevelsIndirectReferenceCalledFunction'
+            reflector.getStaticSymbol(fileName, 'TwoLevelsIndirectReferenceCalledFunction')
+          );
+        }).toThrowError(
+          `/tmp/src/invalid/components.ts(24,18): Error during template compile of 'TwoLevelsIndirectReferenceCalledFunction'
   Function calls are not supported in decorators but 'functionToCall' was called in 'TWO_LEVELS_INDIRECT_CALL_FUNCTION'
     'TWO_LEVELS_INDIRECT_CALL_FUNCTION' references 'INDIRECT_CALL_FUNCTION' at /tmp/src/invalid/two-levels-indirect.ts(4,58)
       'INDIRECT_CALL_FUNCTION' references 'CALL_FUNCTION' at /tmp/src/invalid/indirect.ts(4,47)
-        'CALL_FUNCTION' calls 'functionToCall' at /tmp/src/invalid/function-call.ts(3,38).`);
+        'CALL_FUNCTION' calls 'functionToCall' at /tmp/src/invalid/function-call.ts(3,38).`
+        );
       });
     });
 
@@ -1225,7 +1328,7 @@ describe('StaticReflector', () => {
           template: someMacro(INDIRECT_CALL_FUNCTION)
         })
         export class DoubleIndirectCall {}
-    `
+    `,
         };
         init({...DEFAULT_TEST_DATA, ...localData});
       });
@@ -1233,31 +1336,31 @@ describe('StaticReflector', () => {
       it('should report a formatted error for a direct function call', () => {
         expect(() => {
           return reflector.annotations(reflector.getStaticSymbol(fileName, 'DirectCall'));
-        })
-            .toThrowError(
-                `/tmp/src/invalid/components.ts(9,31): Error during template compile of 'DirectCall'
-  Function calls are not supported in decorators but 'functionToCall' was called.`);
+        }).toThrowError(
+          `/tmp/src/invalid/components.ts(9,31): Error during template compile of 'DirectCall'
+  Function calls are not supported in decorators but 'functionToCall' was called.`
+        );
       });
 
       it('should report a formatted error for a reference to a function call', () => {
         expect(() => {
           return reflector.annotations(reflector.getStaticSymbol(fileName, 'IndirectCall'));
-        })
-            .toThrowError(
-                `/tmp/src/invalid/components.ts(14,31): Error during template compile of 'IndirectCall'
+        }).toThrowError(
+          `/tmp/src/invalid/components.ts(14,31): Error during template compile of 'IndirectCall'
   Function calls are not supported in decorators but 'functionToCall' was called in 'CALL_FUNCTION'
-    'CALL_FUNCTION' calls 'functionToCall' at /tmp/src/invalid/function-call.ts(3,38).`);
+    'CALL_FUNCTION' calls 'functionToCall' at /tmp/src/invalid/function-call.ts(3,38).`
+        );
       });
 
       it('should report a formatted error for an indirect refernece to a function call', () => {
         expect(() => {
           return reflector.annotations(reflector.getStaticSymbol(fileName, 'DoubleIndirectCall'));
-        })
-            .toThrowError(
-                `/tmp/src/invalid/components.ts(19,31): Error during template compile of 'DoubleIndirectCall'
+        }).toThrowError(
+          `/tmp/src/invalid/components.ts(19,31): Error during template compile of 'DoubleIndirectCall'
   Function calls are not supported in decorators but 'functionToCall' was called in 'INDIRECT_CALL_FUNCTION'
     'INDIRECT_CALL_FUNCTION' references 'CALL_FUNCTION' at /tmp/src/invalid/indirect.ts(4,47)
-      'CALL_FUNCTION' calls 'functionToCall' at /tmp/src/invalid/function-call.ts(3,38).`);
+      'CALL_FUNCTION' calls 'functionToCall' at /tmp/src/invalid/function-call.ts(3,38).`
+        );
       });
     });
 
@@ -1278,7 +1381,7 @@ describe('StaticReflector', () => {
       function initWith(content: string) {
         init({
           ...DEFAULT_TEST_DATA,
-          [fileName]: `import {Component} from '@angular/core';\n${content}`
+          [fileName]: `import {Component} from '@angular/core';\n${content}`,
         });
       }
 
@@ -1294,110 +1397,157 @@ describe('StaticReflector', () => {
 
       it('should advise avoiding destructuring', () => {
         initWith(
-            'export const {foo, bar} = {foo: 1, bar: 2}; @Component({value: foo}) export class MyComp {}');
+          'export const {foo, bar} = {foo: 1, bar: 2}; @Component({value: foo}) export class MyComp {}'
+        );
         expect(collectError('MyComp')).toContain(`Consider simplifying to avoid destructuring`);
       });
 
       it('should advise converting an arrow function into an exported function', () => {
         initWith('@Component({value: () => true}) export class MyComp {}');
-        expect(collectError('MyComp'))
-            .toContain(`Consider changing the function expression into an exported function`);
+        expect(collectError('MyComp')).toContain(
+          `Consider changing the function expression into an exported function`
+        );
       });
 
       it('should advise converting a function expression into an exported function', () => {
         initWith('@Component({value: function () { return true; }}) export class MyComp {}');
-        expect(collectError('MyComp'))
-            .toContain(`Consider changing the function expression into an exported function`);
+        expect(collectError('MyComp')).toContain(
+          `Consider changing the function expression into an exported function`
+        );
       });
     });
   });
 });
 
 const DEFAULT_TEST_DATA: {[key: string]: any} = {
-  '/tmp/@angular/common/src/forms-deprecated/directives.d.ts': [{
-    '__symbolic': 'module',
-    'version': METADATA_VERSION,
-    'metadata': {
-      'FORM_DIRECTIVES': [{
-        '__symbolic': 'reference',
-        'name': 'NgFor',
-        'module': '@angular/common/src/directives/ng_for'
-      }]
-    }
-  }],
+  '/tmp/@angular/common/src/forms-deprecated/directives.d.ts': [
+    {
+      '__symbolic': 'module',
+      'version': METADATA_VERSION,
+      'metadata': {
+        'FORM_DIRECTIVES': [
+          {
+            '__symbolic': 'reference',
+            'name': 'NgFor',
+            'module': '@angular/common/src/directives/ng_for',
+          },
+        ],
+      },
+    },
+  ],
   '/tmp/@angular/common/src/directives/ng_for.d.ts': {
     '__symbolic': 'module',
     'version': METADATA_VERSION,
     'metadata': {
       'NgFor': {
         '__symbolic': 'class',
-        'decorators': [{
-          '__symbolic': 'call',
-          'expression': {'__symbolic': 'reference', 'name': 'Directive', 'module': '@angular/core'},
-          'arguments': [
-            {'selector': '[ngFor][ngForOf]', 'inputs': ['ngForTrackBy', 'ngForOf', 'ngForTemplate']}
-          ]
-        }],
+        'decorators': [
+          {
+            '__symbolic': 'call',
+            'expression': {
+              '__symbolic': 'reference',
+              'name': 'Directive',
+              'module': '@angular/core',
+            },
+            'arguments': [
+              {
+                'selector': '[ngFor][ngForOf]',
+                'inputs': ['ngForTrackBy', 'ngForOf', 'ngForTemplate'],
+              },
+            ],
+          },
+        ],
         'members': {
-          '__ctor__': [{
-            '__symbolic': 'constructor',
-            'parameters': [
-              {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'ViewContainerRef'},
-              {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'TemplateRef'},
-              {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'IterableDiffers'},
-              {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'ChangeDetectorRef'}
-            ]
-          }]
-        }
-      }
-    }
+          '__ctor__': [
+            {
+              '__symbolic': 'constructor',
+              'parameters': [
+                {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'ViewContainerRef'},
+                {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'TemplateRef'},
+                {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'IterableDiffers'},
+                {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'ChangeDetectorRef'},
+              ],
+            },
+          ],
+        },
+      },
+    },
   },
-  '/tmp/@angular/core/src/linker/view_container_ref.d.ts':
-      {version: METADATA_VERSION, 'metadata': {'ViewContainerRef': {'__symbolic': 'class'}}},
+  '/tmp/@angular/core/src/linker/view_container_ref.d.ts': {
+    version: METADATA_VERSION,
+    'metadata': {'ViewContainerRef': {'__symbolic': 'class'}},
+  },
   '/tmp/@angular/core/src/linker/template_ref.d.ts': {
     version: METADATA_VERSION,
     'module': './template_ref',
-    'metadata': {'TemplateRef': {'__symbolic': 'class'}}
+    'metadata': {'TemplateRef': {'__symbolic': 'class'}},
   },
-  '/tmp/@angular/core/src/change_detection/differs/iterable_differs.d.ts':
-      {version: METADATA_VERSION, 'metadata': {'IterableDiffers': {'__symbolic': 'class'}}},
-  '/tmp/@angular/core/src/change_detection/change_detector_ref.d.ts':
-      {version: METADATA_VERSION, 'metadata': {'ChangeDetectorRef': {'__symbolic': 'class'}}},
+  '/tmp/@angular/core/src/change_detection/differs/iterable_differs.d.ts': {
+    version: METADATA_VERSION,
+    'metadata': {'IterableDiffers': {'__symbolic': 'class'}},
+  },
+  '/tmp/@angular/core/src/change_detection/change_detector_ref.d.ts': {
+    version: METADATA_VERSION,
+    'metadata': {'ChangeDetectorRef': {'__symbolic': 'class'}},
+  },
   '/tmp/src/app/hero-detail.component.d.ts': {
     '__symbolic': 'module',
     'version': METADATA_VERSION,
     'metadata': {
       'HeroDetailComponent': {
         '__symbolic': 'class',
-        'decorators': [{
-          '__symbolic': 'call',
-          'expression': {'__symbolic': 'reference', 'name': 'Component', 'module': '@angular/core'},
-          'arguments': [{
-            'selector': 'my-hero-detail',
-            'template':
-                '\n  <div *ngIf="hero">\n    <h2>{{hero.name}} details!</h2>\n    <div><label>id: </label>{{hero.id}}</div>\n    <div>\n      <label>name: </label>\n      <input [(ngModel)]="hero.name" placeholder="name"/>\n    </div>\n  </div>\n',
-          }]
-        }],
+        'decorators': [
+          {
+            '__symbolic': 'call',
+            'expression': {
+              '__symbolic': 'reference',
+              'name': 'Component',
+              'module': '@angular/core',
+            },
+            'arguments': [
+              {
+                'selector': 'my-hero-detail',
+                'template':
+                  '\n  <div *ngIf="hero">\n    <h2>{{hero.name}} details!</h2>\n    <div><label>id: </label>{{hero.id}}</div>\n    <div>\n      <label>name: </label>\n      <input [(ngModel)]="hero.name" placeholder="name"/>\n    </div>\n  </div>\n',
+              },
+            ],
+          },
+        ],
         'members': {
-          'hero': [{
-            '__symbolic': 'property',
-            'decorators': [{
-              '__symbolic': 'call',
-              'expression': {'__symbolic': 'reference', 'name': 'Input', 'module': '@angular/core'}
-            }]
-          }],
-          'onMouseOver': [{
-            '__symbolic': 'method',
-            'decorators': [{
-              '__symbolic': 'call',
-              'expression':
-                  {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'HostListener'},
-              'arguments': ['mouseover', ['$event']]
-            }]
-          }]
-        }
-      }
-    }
+          'hero': [
+            {
+              '__symbolic': 'property',
+              'decorators': [
+                {
+                  '__symbolic': 'call',
+                  'expression': {
+                    '__symbolic': 'reference',
+                    'name': 'Input',
+                    'module': '@angular/core',
+                  },
+                },
+              ],
+            },
+          ],
+          'onMouseOver': [
+            {
+              '__symbolic': 'method',
+              'decorators': [
+                {
+                  '__symbolic': 'call',
+                  'expression': {
+                    '__symbolic': 'reference',
+                    'module': '@angular/core',
+                    'name': 'HostListener',
+                  },
+                  'arguments': ['mouseover', ['$event']],
+                },
+              ],
+            },
+          ],
+        },
+      },
+    },
   },
   '/src/extern.d.ts': {'__symbolic': 'module', 'version': METADATA_VERSION, metadata: {s: 's'}},
   '/tmp/src/error-reporting.d.ts': {
@@ -1406,19 +1556,25 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
     metadata: {
       SomeClass: {
         __symbolic: 'class',
-        decorators: [{
-          __symbolic: 'call',
-          expression: {__symbolic: 'reference', name: 'Component', module: '@angular/core'},
-          arguments: [{
-            entryComponents: [{
-              __symbolic: 'reference',
-              module: 'src/error-references',
-              name: 'Link1',
-            }]
-          }]
-        }],
-      }
-    }
+        decorators: [
+          {
+            __symbolic: 'call',
+            expression: {__symbolic: 'reference', name: 'Component', module: '@angular/core'},
+            arguments: [
+              {
+                entryComponents: [
+                  {
+                    __symbolic: 'reference',
+                    module: 'src/error-references',
+                    name: 'Link1',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    },
   },
   '/tmp/src/error-references.d.ts': {
     __symbolic: 'module',
@@ -1426,9 +1582,13 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
     metadata: {
       Link1: {__symbolic: 'reference', module: 'src/error-references', name: 'Link2'},
       Link2: {__symbolic: 'reference', module: 'src/error-references', name: 'ErrorSym'},
-      ErrorSym:
-          {__symbolic: 'error', message: 'A reasonable error message', line: 12, character: 33}
-    }
+      ErrorSym: {
+        __symbolic: 'error',
+        message: 'A reasonable error message',
+        line: 12,
+        character: 33,
+      },
+    },
   },
   '/tmp/src/function-declaration.d.ts': {
     __symbolic: 'module',
@@ -1437,7 +1597,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
       one: {
         __symbolic: 'function',
         parameters: ['a'],
-        value: [{__symbolic: 'reference', name: 'a'}]
+        value: [{__symbolic: 'reference', name: 'a'}],
       },
       add: {
         __symbolic: 'function',
@@ -1450,12 +1610,12 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
             __symbolic: 'binop',
             operator: '+',
             left: {__symbolic: 'reference', name: 'b'},
-            right: {__symbolic: 'reference', name: 'oneLiteral'}
-          }
-        }
+            right: {__symbolic: 'reference', name: 'oneLiteral'},
+          },
+        },
       },
-      oneLiteral: 1
-    }
+      oneLiteral: 1,
+    },
   },
   '/tmp/src/function-reference.ts': {
     __symbolic: 'module',
@@ -1464,25 +1624,28 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
       one: {
         __symbolic: 'call',
         expression: {__symbolic: 'reference', module: './function-declaration', name: 'one'},
-        arguments: ['some-value']
+        arguments: ['some-value'],
       },
       three: {
         __symbolic: 'call',
         expression: {__symbolic: 'reference', module: './function-declaration', name: 'add'},
-        arguments: [1, 1]
+        arguments: [1, 1],
       },
       recursion: {
         __symbolic: 'call',
         expression: {__symbolic: 'reference', module: './function-recursive', name: 'recursive'},
-        arguments: [1]
+        arguments: [1],
       },
       indirectRecursion: {
         __symbolic: 'call',
-        expression:
-            {__symbolic: 'reference', module: './function-recursive', name: 'indirectRecursion1'},
-        arguments: [1]
-      }
-    }
+        expression: {
+          __symbolic: 'reference',
+          module: './function-recursive',
+          name: 'indirectRecursion1',
+        },
+        arguments: [1],
+      },
+    },
   },
   '/tmp/src/function-recursive.d.ts': {
     __symbolic: 'modules',
@@ -1498,8 +1661,8 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
             module: './function-recursive',
             name: 'recursive',
           },
-          arguments: [{__symbolic: 'reference', name: 'a'}]
-        }
+          arguments: [{__symbolic: 'reference', name: 'a'}],
+        },
       },
       indirectRecursion1: {
         __symbolic: 'function',
@@ -1511,8 +1674,8 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
             module: './function-recursive',
             name: 'indirectRecursion2',
           },
-          arguments: [{__symbolic: 'reference', name: 'a'}]
-        }
+          arguments: [{__symbolic: 'reference', name: 'a'}],
+        },
       },
       indirectRecursion2: {
         __symbolic: 'function',
@@ -1524,15 +1687,15 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
             module: './function-recursive',
             name: 'indirectRecursion1',
           },
-          arguments: [{__symbolic: 'reference', name: 'a'}]
-        }
-      }
+          arguments: [{__symbolic: 'reference', name: 'a'}],
+        },
+      },
     },
   },
   '/tmp/src/spread.ts': {
     __symbolic: 'module',
     version: METADATA_VERSION,
-    metadata: {spread: [0, {__symbolic: 'spread', expression: [1, 2, 3, 4]}, 5]}
+    metadata: {spread: [0, {__symbolic: 'spread', expression: [1, 2, 3, 4]}, 5]},
   },
   '/tmp/src/custom-decorator.ts': `
         export function CustomDecorator(): any {

@@ -54,9 +54,8 @@ describe('t2 binding', () => {
     const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta>());
     const res = binder.bind({template: template.nodes});
 
-    const itemBinding =
-        (findExpression(template.nodes, '{{item.name}}')! as e.Interpolation).expressions[0] as
-        e.PropertyRead;
+    const itemBinding = (findExpression(template.nodes, '{{item.name}}')! as e.Interpolation)
+      .expressions[0] as e.PropertyRead;
     const item = itemBinding.receiver;
     const itemTarget = res.getExpressionTarget(item);
     if (!(itemTarget instanceof a.Variable)) {
@@ -136,8 +135,11 @@ describe('t2 binding', () => {
     });
 
     it('should work for text attributes on templates', () => {
-      const template =
-          parseTemplate('<ng-template hasInput inputBinding="text"></ng-template>', '', {});
+      const template = parseTemplate(
+        '<ng-template hasInput inputBinding="text"></ng-template>',
+        '',
+        {}
+      );
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const res = binder.bind({template: template.nodes});
       const el = template.nodes[0] as a.Element;
@@ -159,8 +161,11 @@ describe('t2 binding', () => {
 
   describe('matching outputs to consuming directives', () => {
     it('should work for bound events', () => {
-      const template =
-          parseTemplate('<div hasOutput (outputBinding)="myHandler($event)"></div>', '', {});
+      const template = parseTemplate(
+        '<div hasOutput (outputBinding)="myHandler($event)"></div>',
+        '',
+        {}
+      );
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const res = binder.bind({template: template.nodes});
       const el = template.nodes[0] as a.Element;

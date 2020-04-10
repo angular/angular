@@ -12,7 +12,14 @@ import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleFactory, NgModuleRef} from '../linker/ng_module_factory';
 
 import {initServicesIfNeeded} from './services';
-import {NgModuleDefinition, NgModuleDefinitionFactory, NgModuleProviderDef, ProviderOverride, Services, ViewDefinition} from './types';
+import {
+  NgModuleDefinition,
+  NgModuleDefinitionFactory,
+  NgModuleProviderDef,
+  ProviderOverride,
+  Services,
+  ViewDefinition,
+} from './types';
 import {resolveDefinition} from './util';
 
 export function overrideProvider(override: ProviderOverride) {
@@ -33,8 +40,10 @@ export function clearOverrides() {
 // Attention: this function is called as top level function.
 // Putting any logic in here will destroy closure tree shaking!
 export function createNgModuleFactory(
-    ngModuleType: Type<any>, bootstrapComponents: Type<any>[],
-    defFactory: NgModuleDefinitionFactory): NgModuleFactory<any> {
+  ngModuleType: Type<any>,
+  bootstrapComponents: Type<any>[],
+  defFactory: NgModuleDefinitionFactory
+): NgModuleFactory<any> {
   return new NgModuleFactory_(ngModuleType, bootstrapComponents, defFactory);
 }
 
@@ -48,26 +57,35 @@ function cloneNgModuleDefinition(def: NgModuleDefinition): NgModuleDefinition {
 
   return {
     factory: def.factory,
-    scope: def.scope, providers, modules, providersByKey,
+    scope: def.scope,
+    providers,
+    modules,
+    providersByKey,
   };
 }
 
 class NgModuleFactory_ extends NgModuleFactory<any> {
   constructor(
-      public readonly moduleType: Type<any>, private _bootstrapComponents: Type<any>[],
-      private _ngModuleDefFactory: NgModuleDefinitionFactory) {
+    public readonly moduleType: Type<any>,
+    private _bootstrapComponents: Type<any>[],
+    private _ngModuleDefFactory: NgModuleDefinitionFactory
+  ) {
     // Attention: this ctor is called as top level function.
     // Putting any logic in here will destroy closure tree shaking!
     super();
   }
 
-  create(parentInjector: Injector|null): NgModuleRef<any> {
+  create(parentInjector: Injector | null): NgModuleRef<any> {
     initServicesIfNeeded();
     // Clone the NgModuleDefinition so that any tree shakeable provider definition
     // added to this instance of the NgModuleRef doesn't affect the cached copy.
     // See https://github.com/angular/angular/issues/25018.
     const def = cloneNgModuleDefinition(resolveDefinition(this._ngModuleDefFactory));
     return Services.createNgModuleRef(
-        this.moduleType, parentInjector || Injector.NULL, this._bootstrapComponents, def);
+      this.moduleType,
+      parentInjector || Injector.NULL,
+      this._bootstrapComponents,
+      def
+    );
   }
 }

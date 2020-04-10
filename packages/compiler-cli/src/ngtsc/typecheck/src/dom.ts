@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DomElementSchemaRegistry, ParseSourceSpan, SchemaMetadata, TmplAstElement} from '@angular/compiler';
+import {
+  DomElementSchemaRegistry,
+  ParseSourceSpan,
+  SchemaMetadata,
+  TmplAstElement,
+} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
@@ -55,8 +60,12 @@ export interface DomSchemaChecker {
    * property.
    */
   checkProperty(
-      id: string, element: TmplAstElement, name: string, span: ParseSourceSpan,
-      schemas: SchemaMetadata[]): void;
+    id: string,
+    element: TmplAstElement,
+    name: string,
+    span: ParseSourceSpan,
+    schemas: SchemaMetadata[]
+  ): void;
 }
 
 /**
@@ -82,49 +91,53 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
       const mapping = this.resolver.getSourceMapping(id);
 
       let errorMsg = `'${name}' is not a known element:\n`;
-      errorMsg +=
-          `1. If '${name}' is an Angular component, then verify that it is part of this module.\n`;
+      errorMsg += `1. If '${name}' is an Angular component, then verify that it is part of this module.\n`;
       if (name.indexOf('-') > -1) {
-        errorMsg += `2. If '${
-            name}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
+        errorMsg += `2. If '${name}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
       } else {
-        errorMsg +=
-            `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+        errorMsg += `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
       }
 
       const diag = makeTemplateDiagnostic(
-          mapping, element.sourceSpan, ts.DiagnosticCategory.Error,
-          ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT), errorMsg);
+        mapping,
+        element.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT),
+        errorMsg
+      );
       this._diagnostics.push(diag);
     }
   }
 
   checkProperty(
-      id: TemplateId, element: TmplAstElement, name: string, span: ParseSourceSpan,
-      schemas: SchemaMetadata[]): void {
+    id: TemplateId,
+    element: TmplAstElement,
+    name: string,
+    span: ParseSourceSpan,
+    schemas: SchemaMetadata[]
+  ): void {
     if (!REGISTRY.hasProperty(element.name, name, schemas)) {
       const mapping = this.resolver.getSourceMapping(id);
 
-      let errorMsg =
-          `Can't bind to '${name}' since it isn't a known property of '${element.name}'.`;
+      let errorMsg = `Can't bind to '${name}' since it isn't a known property of '${element.name}'.`;
       if (element.name.startsWith('ng-')) {
         errorMsg +=
-            `\n1. If '${
-                name}' is an Angular directive, then add 'CommonModule' to the '@NgModule.imports' of this component.` +
-            `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+          `\n1. If '${name}' is an Angular directive, then add 'CommonModule' to the '@NgModule.imports' of this component.` +
+          `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
       } else if (element.name.indexOf('-') > -1) {
         errorMsg +=
-            `\n1. If '${element.name}' is an Angular component and it has '${
-                name}' input, then verify that it is part of this module.` +
-            `\n2. If '${
-                element
-                    .name}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.` +
-            `\n3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+          `\n1. If '${element.name}' is an Angular component and it has '${name}' input, then verify that it is part of this module.` +
+          `\n2. If '${element.name}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.` +
+          `\n3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
       }
 
       const diag = makeTemplateDiagnostic(
-          mapping, span, ts.DiagnosticCategory.Error,
-          ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE), errorMsg);
+        mapping,
+        span,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE),
+        errorMsg
+      );
       this._diagnostics.push(diag);
     }
   }

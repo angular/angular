@@ -38,11 +38,11 @@ export interface UrlResolver {
 }
 
 export interface UrlResolverCtor {
-  new(packagePrefix?: string|null): UrlResolver;
+  new (packagePrefix?: string | null): UrlResolver;
 }
 
 export const UrlResolver: UrlResolverCtor = class UrlResolverImpl {
-  constructor(private _packagePrefix: string|null = null) {}
+  constructor(private _packagePrefix: string | null = null) {}
 
   /**
    * Resolves the `url` given the `baseUrl`:
@@ -59,8 +59,11 @@ export const UrlResolver: UrlResolverCtor = class UrlResolverImpl {
     }
     const resolvedParts = _split(resolvedUrl);
     let prefix = this._packagePrefix;
-    if (prefix != null && resolvedParts != null &&
-        resolvedParts[_ComponentIndex.Scheme] == 'package') {
+    if (
+      prefix != null &&
+      resolvedParts != null &&
+      resolvedParts[_ComponentIndex.Scheme] == 'package'
+    ) {
       let path = resolvedParts[_ComponentIndex.Path];
       prefix = prefix.replace(/\/+$/, '');
       path = path.replace(/^\/+/, '');
@@ -99,8 +102,14 @@ export function getUrlScheme(url: string): string {
  * @return The fully combined URI.
  */
 function _buildFromEncodedParts(
-    opt_scheme?: string, opt_userInfo?: string, opt_domain?: string, opt_port?: string,
-    opt_path?: string, opt_queryData?: string, opt_fragment?: string): string {
+  opt_scheme?: string,
+  opt_userInfo?: string,
+  opt_domain?: string,
+  opt_port?: string,
+  opt_path?: string,
+  opt_queryData?: string,
+  opt_fragment?: string
+): string {
   const out: string[] = [];
 
   if (opt_scheme != null) {
@@ -198,23 +207,24 @@ function _buildFromEncodedParts(
  * @internal
  */
 const _splitRe = new RegExp(
-    '^' +
-    '(?:' +
-    '([^:/?#.]+)' +  // scheme - ignore special characters
-                     // used by other URL parts such as :,
-                     // ?, /, #, and .
-    ':)?' +
-    '(?://' +
-    '(?:([^/?#]*)@)?' +                  // userInfo
-    '([\\w\\d\\-\\u0100-\\uffff.%]*)' +  // domain - restrict to letters,
-                                         // digits, dashes, dots, percent
-                                         // escapes, and unicode characters.
-    '(?::([0-9]+))?' +                   // port
-    ')?' +
-    '([^?#]+)?' +        // path
-    '(?:\\?([^#]*))?' +  // query
-    '(?:#(.*))?' +       // fragment
-    '$');
+  '^' +
+  '(?:' +
+  '([^:/?#.]+)' + // scheme - ignore special characters
+  // used by other URL parts such as :,
+  // ?, /, #, and .
+  ':)?' +
+  '(?://' +
+  '(?:([^/?#]*)@)?' + // userInfo
+  '([\\w\\d\\-\\u0100-\\uffff.%]*)' + // domain - restrict to letters,
+  // digits, dashes, dots, percent
+  // escapes, and unicode characters.
+  '(?::([0-9]+))?' + // port
+  ')?' +
+  '([^?#]+)?' + // path
+  '(?:\\?([^#]*))?' + // query
+  '(?:#(.*))?' + // fragment
+    '$'
+);
 
 /**
  * The index of each URI component in the return value of goog.uri.utils.split.
@@ -227,7 +237,7 @@ enum _ComponentIndex {
   Port,
   Path,
   QueryData,
-  Fragment
+  Fragment,
 }
 
 /**
@@ -245,7 +255,7 @@ enum _ComponentIndex {
  *     on the browser's regular expression implementation.  Never null, since
  *     arbitrary strings may still look like path names.
  */
-function _split(uri: string): Array<string|any> {
+function _split(uri: string): Array<string | any> {
   return uri.match(_splitRe)!;
 }
 
@@ -304,9 +314,14 @@ function _joinAndCanonicalizePath(parts: any[]): string {
   parts[_ComponentIndex.Path] = path;
 
   return _buildFromEncodedParts(
-      parts[_ComponentIndex.Scheme], parts[_ComponentIndex.UserInfo], parts[_ComponentIndex.Domain],
-      parts[_ComponentIndex.Port], path, parts[_ComponentIndex.QueryData],
-      parts[_ComponentIndex.Fragment]);
+    parts[_ComponentIndex.Scheme],
+    parts[_ComponentIndex.UserInfo],
+    parts[_ComponentIndex.Domain],
+    parts[_ComponentIndex.Port],
+    path,
+    parts[_ComponentIndex.QueryData],
+    parts[_ComponentIndex.Fragment]
+  );
 }
 
 /**

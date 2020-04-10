@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {PullApproveGroupResult} from './group';
 
 /** Create logs for each pullapprove group result. */
@@ -14,14 +15,16 @@ export function logGroup(group: PullApproveGroupResult, matched = true) {
   console.groupCollapsed(`[${group.groupName}]`);
   if (includeConditions.length) {
     console.group('includes');
-    includeConditions.forEach(
-        matcher => console.info(`${matcher.glob} - ${matcher.matchedFiles.size}`));
+    includeConditions.forEach((matcher) =>
+      console.info(`${matcher.glob} - ${matcher.matchedFiles.size}`)
+    );
     console.groupEnd();
   }
   if (excludeConditions.length) {
     console.group('excludes');
-    excludeConditions.forEach(
-        matcher => console.info(`${matcher.glob} - ${matcher.matchedFiles.size}`));
+    excludeConditions.forEach((matcher) =>
+      console.info(`${matcher.glob} - ${matcher.matchedFiles.size}`)
+    );
     console.groupEnd();
   }
   console.groupEnd();

@@ -27,7 +27,10 @@ const SYMBOL_INTERFACE = ts.SymbolDisplayPartKind[ts.SymbolDisplayPartKind.inter
  * @param analyzedModules all NgModules in the program.
  */
 export function getTemplateHover(
-    info: AstResult, position: number, analyzedModules: NgAnalyzedModules): ts.QuickInfo|undefined {
+  info: AstResult,
+  position: number,
+  analyzedModules: NgAnalyzedModules
+): ts.QuickInfo | undefined {
   const symbolInfo = locateSymbols(info, position)[0];
   if (!symbolInfo) {
     return;
@@ -37,7 +40,7 @@ export function getTemplateHover(
   // The container is either the symbol's container (for example, 'AppComponent'
   // is the container of the symbol 'title' in its template) or the NgModule
   // that the directive belongs to (the container of AppComponent is AppModule).
-  let containerName: string|undefined = symbol.container?.name;
+  let containerName: string | undefined = symbol.container?.name;
   if (!containerName && staticSymbol) {
     // If there is a static symbol then the target is a directive.
     const ngModule = analyzedModules.ngModuleByPipeOrDirective.get(staticSymbol);
@@ -45,7 +48,13 @@ export function getTemplateHover(
   }
 
   return createQuickInfo(
-      symbol.name, symbol.kind, span, containerName, symbol.type?.name, symbol.documentation);
+    symbol.name,
+    symbol.kind,
+    span,
+    containerName,
+    symbol.type?.name,
+    symbol.documentation
+  );
 }
 
 /**
@@ -55,8 +64,10 @@ export function getTemplateHover(
  * @param analyzedModules all NgModules in the program.
  */
 export function getTsHover(
-    position: number, declarations: ng.Declaration[],
-    analyzedModules: NgAnalyzedModules): ts.QuickInfo|undefined {
+  position: number,
+  declarations: ng.Declaration[],
+  analyzedModules: NgAnalyzedModules
+): ts.QuickInfo | undefined {
   for (const {declarationSpan, metadata} of declarations) {
     if (inSpan(position, declarationSpan)) {
       const staticSymbol: ng.StaticSymbol = metadata.type.reference;
@@ -66,7 +77,12 @@ export function getTsHover(
       const ngModule = analyzedModules.ngModuleByPipeOrDirective.get(staticSymbol);
       const moduleName = ngModule?.type.reference.name;
       return createQuickInfo(
-          directiveName, kind, textSpan, moduleName, ts.ScriptElementKind.classElement);
+        directiveName,
+        kind,
+        textSpan,
+        moduleName,
+        ts.ScriptElementKind.classElement
+      );
     }
   }
 }
@@ -81,22 +97,27 @@ export function getTsHover(
  * @param documentation docstring or comment
  */
 function createQuickInfo(
-    name: string, kind: string, textSpan: ts.TextSpan, containerName?: string, type?: string,
-    documentation?: ts.SymbolDisplayPart[]): ts.QuickInfo {
-  const containerDisplayParts = containerName ?
-      [
+  name: string,
+  kind: string,
+  textSpan: ts.TextSpan,
+  containerName?: string,
+  type?: string,
+  documentation?: ts.SymbolDisplayPart[]
+): ts.QuickInfo {
+  const containerDisplayParts = containerName
+    ? [
         {text: containerName, kind: SYMBOL_INTERFACE},
         {text: '.', kind: SYMBOL_PUNC},
-      ] :
-      [];
+      ]
+    : [];
 
-  const typeDisplayParts = type ?
-      [
+  const typeDisplayParts = type
+    ? [
         {text: ':', kind: SYMBOL_PUNC},
         {text: ' ', kind: SYMBOL_SPACE},
         {text: type, kind: SYMBOL_INTERFACE},
-      ] :
-      [];
+      ]
+    : [];
 
   return {
     kind: kind as ts.ScriptElementKind,

@@ -6,7 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, forwardRef, Host, Inject, Input, OnDestroy, OnInit, Optional, Self, SkipSelf} from '@angular/core';
+import {
+  Directive,
+  forwardRef,
+  Host,
+  Inject,
+  Input,
+  OnDestroy,
+  OnInit,
+  Optional,
+  Self,
+  SkipSelf,
+} from '@angular/core';
 
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
@@ -17,7 +28,7 @@ import {TemplateDrivenErrors} from './template_driven_errors';
 
 export const modelGroupProvider: any = {
   provide: ControlContainer,
-  useExisting: forwardRef(() => NgModelGroup)
+  useExisting: forwardRef(() => NgModelGroup),
 };
 
 /**
@@ -57,9 +68,10 @@ export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, 
   @Input('ngModelGroup') name!: string;
 
   constructor(
-      @Host() @SkipSelf() parent: ControlContainer,
-      @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
+    @Host() @SkipSelf() parent: ControlContainer,
+    @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
+    @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]
+  ) {
     super();
     this._parent = parent;
     this._validators = validators;

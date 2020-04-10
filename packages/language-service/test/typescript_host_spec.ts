@@ -12,7 +12,6 @@ import {TypeScriptServiceHost} from '../src/typescript_host';
 
 import {findDirectiveMetadataByName, MockTypescriptHost} from './test_utils';
 
-
 describe('TypeScriptServiceHost', () => {
   it('should be able to create a typescript host and analyze modules', () => {
     const tsLSHost = new MockTypescriptHost(['/app/main.ts']);
@@ -120,23 +119,28 @@ describe('TypeScriptServiceHost', () => {
     // First, make sure there is no missing modules
     expect(oldModules.symbolsMissingModule).toEqual([]);
     // Expect to find AppComponent in the old modules
-    const oldFile = oldModules.files.find(f => f.fileName === fileName);
+    const oldFile = oldModules.files.find((f) => f.fileName === fileName);
     expect(oldFile!.directives.length).toBe(1);
     const appComp = oldFile!.directives[0];
     expect(appComp.name).toBe('AppComponent');
     expect(oldModules.ngModuleByPipeOrDirective.has(appComp)).toBe(true);
 
     // Now, override app.component.ts with a different component
-    tsLSHost.override(fileName, `
+    tsLSHost.override(
+      fileName,
+      `
       import {Component} from '@angular/core';
 
       @Component({
         template: '<div>Hello</div>',
       })
       export class HelloComponent {}
-    `);
+    `
+    );
     // And override the containing NgModule to import the new component
-    tsLSHost.override('/app/main.ts', `
+    tsLSHost.override(
+      '/app/main.ts',
+      `
       import {NgModule} from '@angular/core';
       import {HelloComponent} from './app.component';
 
@@ -146,14 +150,15 @@ describe('TypeScriptServiceHost', () => {
         ]
       })
       export class AppModule {}
-    `);
+    `
+    );
     // Get the new state
     const newModules = ngLSHost.getAnalyzedModules();
     // Make sure there's no missing modules. If caches are not cleared properly,
     // it will be a non-empty array
     expect(newModules.symbolsMissingModule).toEqual([]);
     // Expect to find HelloComponent in the new modules
-    const newFile = newModules.files.find(f => f.fileName === fileName);
+    const newFile = newModules.files.find((f) => f.fileName === fileName);
     expect(newFile!.directives.length).toBe(1);
     const helloComp = newFile!.directives[0];
     expect(helloComp.name).toBe('HelloComponent');

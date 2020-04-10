@@ -12,7 +12,13 @@ import {NgswCommChannel} from '@angular/service-worker/src/low_level';
 import {ngswCommChannelFactory, SwRegistrationOptions} from '@angular/service-worker/src/module';
 import {SwPush} from '@angular/service-worker/src/push';
 import {SwUpdate} from '@angular/service-worker/src/update';
-import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockServiceWorkerRegistration, patchDecodeBase64} from '@angular/service-worker/testing/mock';
+import {
+  MockPushManager,
+  MockPushSubscription,
+  MockServiceWorkerContainer,
+  MockServiceWorkerRegistration,
+  patchDecodeBase64,
+} from '@angular/service-worker/testing/mock';
 
 {
   describe('ServiceWorker library', () => {
@@ -25,10 +31,10 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
     });
 
     describe('NgswCommsChannel', () => {
-      it('can access the registration when it comes before subscription', done => {
+      it('can access the registration when it comes before subscription', (done) => {
         const mock = new MockServiceWorkerContainer();
         const comm = new NgswCommChannel(mock as any);
-        const regPromise = mock.getRegistration() as any as MockServiceWorkerRegistration;
+        const regPromise = (mock.getRegistration() as any) as MockServiceWorkerRegistration;
 
         mock.setupSw();
 
@@ -36,10 +42,10 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           done();
         });
       });
-      it('can access the registration when it comes after subscription', done => {
+      it('can access the registration when it comes after subscription', (done) => {
         const mock = new MockServiceWorkerContainer();
         const comm = new NgswCommChannel(mock as any);
-        const regPromise = mock.getRegistration() as any as MockServiceWorkerRegistration;
+        const regPromise = (mock.getRegistration() as any) as MockServiceWorkerRegistration;
 
         (comm as any).registration.subscribe((reg: any) => {
           done();
@@ -54,26 +60,28 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
         TestBed.configureTestingModule({
           providers: [
             {provide: PLATFORM_ID, useValue: 'server'},
-            {provide: SwRegistrationOptions, useValue: {enabled: true}}, {
+            {provide: SwRegistrationOptions, useValue: {enabled: true}},
+            {
               provide: NgswCommChannel,
               useFactory: ngswCommChannelFactory,
-              deps: [SwRegistrationOptions, PLATFORM_ID]
-            }
-          ]
+              deps: [SwRegistrationOptions, PLATFORM_ID],
+            },
+          ],
         });
 
         expect(TestBed.inject(NgswCommChannel).isEnabled).toEqual(false);
       });
-      it('gives disabled NgswCommChannel when \'enabled\' option is false', () => {
+      it("gives disabled NgswCommChannel when 'enabled' option is false", () => {
         TestBed.configureTestingModule({
           providers: [
             {provide: PLATFORM_ID, useValue: 'browser'},
-            {provide: SwRegistrationOptions, useValue: {enabled: false}}, {
+            {provide: SwRegistrationOptions, useValue: {enabled: false}},
+            {
               provide: NgswCommChannel,
               useFactory: ngswCommChannelFactory,
-              deps: [SwRegistrationOptions, PLATFORM_ID]
-            }
-          ]
+              deps: [SwRegistrationOptions, PLATFORM_ID],
+            },
+          ],
         });
 
         expect(TestBed.inject(NgswCommChannel).isEnabled).toEqual(false);
@@ -107,35 +115,35 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           }
         }
       });
-      it('gives enabled NgswCommChannel when browser supports SW and enabled option is true',
-         () => {
-           TestBed.configureTestingModule({
-             providers: [
-               {provide: PLATFORM_ID, useValue: 'browser'},
-               {provide: SwRegistrationOptions, useValue: {enabled: true}}, {
-                 provide: NgswCommChannel,
-                 useFactory: ngswCommChannelFactory,
-                 deps: [SwRegistrationOptions, PLATFORM_ID]
-               }
-             ]
-           });
+      it('gives enabled NgswCommChannel when browser supports SW and enabled option is true', () => {
+        TestBed.configureTestingModule({
+          providers: [
+            {provide: PLATFORM_ID, useValue: 'browser'},
+            {provide: SwRegistrationOptions, useValue: {enabled: true}},
+            {
+              provide: NgswCommChannel,
+              useFactory: ngswCommChannelFactory,
+              deps: [SwRegistrationOptions, PLATFORM_ID],
+            },
+          ],
+        });
 
-           const context: any = global || window;
-           const originalDescriptor = Object.getOwnPropertyDescriptor(context, 'navigator');
-           const patchedDescriptor = {value: {serviceWorker: mock}, configurable: true};
+        const context: any = global || window;
+        const originalDescriptor = Object.getOwnPropertyDescriptor(context, 'navigator');
+        const patchedDescriptor = {value: {serviceWorker: mock}, configurable: true};
 
-           try {
-             // Set `navigator` to `{serviceWorker: mock}`.
-             Object.defineProperty(context, 'navigator', patchedDescriptor);
-             expect(TestBed.inject(NgswCommChannel).isEnabled).toBe(true);
-           } finally {
-             if (originalDescriptor) {
-               Object.defineProperty(context, 'navigator', originalDescriptor);
-             } else {
-               delete context.navigator;
-             }
-           }
-         });
+        try {
+          // Set `navigator` to `{serviceWorker: mock}`.
+          Object.defineProperty(context, 'navigator', patchedDescriptor);
+          expect(TestBed.inject(NgswCommChannel).isEnabled).toBe(true);
+        } finally {
+          if (originalDescriptor) {
+            Object.defineProperty(context, 'navigator', originalDescriptor);
+          } else {
+            delete context.navigator;
+          }
+        }
+      });
     });
 
     describe('SwPush', () => {
@@ -143,7 +151,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
       let push: SwPush;
 
       // Patch `SwPush.decodeBase64()` in Node.js (where `atob` is not available).
-      beforeAll(() => unpatchDecodeBase64 = patchDecodeBase64(SwPush.prototype as any));
+      beforeAll(() => (unpatchDecodeBase64 = patchDecodeBase64(SwPush.prototype as any)));
       afterAll(() => unpatchDecodeBase64());
 
       beforeEach(() => {
@@ -153,10 +161,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
 
       it('is injectable', () => {
         TestBed.configureTestingModule({
-          providers: [
-            SwPush,
-            {provide: NgswCommChannel, useValue: comm},
-          ]
+          providers: [SwPush, {provide: NgswCommChannel, useValue: comm}],
         });
         expect(() => TestBed.inject(SwPush)).not.toThrow();
       });
@@ -172,7 +177,9 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
 
         it('calls `PushManager.subscribe()` (with appropriate options)', async () => {
           const decode = (charCodeArr: Uint8Array) =>
-              Array.from(charCodeArr).map(c => String.fromCharCode(c)).join('');
+            Array.from(charCodeArr)
+              .map((c) => String.fromCharCode(c))
+              .join('');
 
           // atob('c3ViamVjdHM/') === 'subjects?'
           const serverPublicKey = 'c3ViamVjdHM_';
@@ -262,7 +269,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
 
         it('does not emit on `SwPush.subscription` on failure', async () => {
           const subscriptionSpy = jasmine.createSpy('subscriptionSpy');
-          const initialSubEmit = new Promise(resolve => subscriptionSpy.and.callFake(resolve));
+          const initialSubEmit = new Promise((resolve) => subscriptionSpy.and.callFake(resolve));
 
           push.subscription.subscribe(subscriptionSpy);
           await initialSubEmit;
@@ -293,7 +300,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
       describe('messages', () => {
         it('receives push messages', () => {
           const sendMessage = (type: string, message: string) =>
-              mock.sendMessage({type, data: {message}});
+            mock.sendMessage({type, data: {message}});
 
           const receivedMessages: string[] = [];
           push.messages.subscribe((msg: any) => receivedMessages.push(msg.message));
@@ -313,21 +320,19 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
       describe('notificationClicks', () => {
         it('receives notification clicked messages', () => {
           const sendMessage = (type: string, action: string) =>
-              mock.sendMessage({type, data: {action}});
+            mock.sendMessage({type, data: {action}});
 
           const receivedMessages: string[] = [];
-          push.notificationClicks.subscribe(
-              (msg: {action: string}) => receivedMessages.push(msg.action));
+          push.notificationClicks.subscribe((msg: {action: string}) =>
+            receivedMessages.push(msg.action)
+          );
 
           sendMessage('NOTIFICATION_CLICK', 'this was a click');
           sendMessage('NOT_IFICATION_CLICK', 'this was not a click');
           sendMessage('NOTIFICATION_CLICK', 'this was a click too');
           sendMessage('KCILC_NOITACIFITON', 'this was a KCILC_NOITACIFITON message');
 
-          expect(receivedMessages).toEqual([
-            'this was a click',
-            'this was a click too',
-          ]);
+          expect(receivedMessages).toEqual(['this was a click', 'this was a click too']);
         });
       });
 
@@ -337,10 +342,10 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
         let subscriptionSpy: jasmine.Spy;
 
         beforeEach(() => {
-          nextSubEmitPromise = new Promise(resolve => nextSubEmitResolve = resolve);
+          nextSubEmitPromise = new Promise((resolve) => (nextSubEmitResolve = resolve));
           subscriptionSpy = jasmine.createSpy('subscriptionSpy').and.callFake(() => {
             nextSubEmitResolve();
-            nextSubEmitPromise = new Promise(resolve => nextSubEmitResolve = resolve);
+            nextSubEmitPromise = new Promise((resolve) => (nextSubEmitResolve = resolve));
           });
 
           push.subscription.subscribe(subscriptionSpy);
@@ -393,19 +398,19 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
         });
 
         it('does not crash on subscription to observables', () => {
-          push.messages.toPromise().catch(err => fail(err));
-          push.notificationClicks.toPromise().catch(err => fail(err));
-          push.subscription.toPromise().catch(err => fail(err));
+          push.messages.toPromise().catch((err) => fail(err));
+          push.notificationClicks.toPromise().catch((err) => fail(err));
+          push.subscription.toPromise().catch((err) => fail(err));
         });
 
-        it('gives an error when registering', done => {
-          push.requestSubscription({serverPublicKey: 'test'}).catch(err => {
+        it('gives an error when registering', (done) => {
+          push.requestSubscription({serverPublicKey: 'test'}).catch((err) => {
             done();
           });
         });
 
-        it('gives an error when unsubscribing', done => {
-          push.unsubscribe().catch(err => {
+        it('gives an error when unsubscribing', (done) => {
+          push.unsubscribe().catch((err) => {
             done();
           });
         });
@@ -418,8 +423,8 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
         update = new SwUpdate(comm);
         mock.setupSw();
       });
-      it('processes update availability notifications when sent', done => {
-        update.available.subscribe(event => {
+      it('processes update availability notifications when sent', (done) => {
+        update.available.subscribe((event) => {
           expect(event.current).toEqual({hash: 'A'});
           expect(event.available).toEqual({hash: 'B'});
           expect(event.type).toEqual('UPDATE_AVAILABLE');
@@ -435,8 +440,8 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           },
         });
       });
-      it('processes update activation notifications when sent', done => {
-        update.activated.subscribe(event => {
+      it('processes update activation notifications when sent', (done) => {
+        update.activated.subscribe((event) => {
           expect(event.previous).toEqual({hash: 'A'});
           expect(event.current).toEqual({hash: 'B'});
           expect(event.type).toEqual('UPDATE_ACTIVATED');
@@ -452,8 +457,8 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           },
         });
       });
-      it('activates updates when requested', done => {
-        mock.messages.subscribe((msg: {action: string, statusNonce: number}) => {
+      it('activates updates when requested', (done) => {
+        mock.messages.subscribe((msg: {action: string; statusNonce: number}) => {
           expect(msg.action).toEqual('ACTIVATE_UPDATE');
           mock.sendMessage({
             type: 'STATUS',
@@ -461,10 +466,13 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
             status: true,
           });
         });
-        return update.activateUpdate().then(() => done()).catch(err => done.fail(err));
+        return update
+          .activateUpdate()
+          .then(() => done())
+          .catch((err) => done.fail(err));
       });
-      it('reports activation failure when requested', done => {
-        mock.messages.subscribe((msg: {action: string, statusNonce: number}) => {
+      it('reports activation failure when requested', (done) => {
+        mock.messages.subscribe((msg: {action: string; statusNonce: number}) => {
           expect(msg.action).toEqual('ACTIVATE_UPDATE');
           mock.sendMessage({
             type: 'STATUS',
@@ -473,19 +481,17 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
             error: 'Failed to activate',
           });
         });
-        return update.activateUpdate()
-            .catch(err => {
-              expect(err.message).toEqual('Failed to activate');
-            })
-            .then(() => done())
-            .catch(err => done.fail(err));
+        return update
+          .activateUpdate()
+          .catch((err) => {
+            expect(err.message).toEqual('Failed to activate');
+          })
+          .then(() => done())
+          .catch((err) => done.fail(err));
       });
       it('is injectable', () => {
         TestBed.configureTestingModule({
-          providers: [
-            SwUpdate,
-            {provide: NgswCommChannel, useValue: comm},
-          ]
+          providers: [SwUpdate, {provide: NgswCommChannel, useValue: comm}],
         });
         expect(() => TestBed.inject(SwUpdate)).not.toThrow();
       });
@@ -498,18 +504,18 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
         });
         it('does not crash on subscription to observables', () => {
           update = new SwUpdate(comm);
-          update.available.toPromise().catch(err => fail(err));
-          update.activated.toPromise().catch(err => fail(err));
+          update.available.toPromise().catch((err) => fail(err));
+          update.activated.toPromise().catch((err) => fail(err));
         });
-        it('gives an error when checking for updates', done => {
+        it('gives an error when checking for updates', (done) => {
           update = new SwUpdate(comm);
-          update.checkForUpdate().catch(err => {
+          update.checkForUpdate().catch((err) => {
             done();
           });
         });
-        it('gives an error when activating updates', done => {
+        it('gives an error when activating updates', (done) => {
           update = new SwUpdate(comm);
-          update.activateUpdate().catch(err => {
+          update.activateUpdate().catch((err) => {
             done();
           });
         });

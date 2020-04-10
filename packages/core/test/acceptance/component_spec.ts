@@ -7,14 +7,30 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Component, ComponentFactoryResolver, ComponentRef, ElementRef, InjectionToken, Injector, Input, NgModule, OnDestroy, Renderer2, RendererFactory2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
+import {
+  Component,
+  ComponentFactoryResolver,
+  ComponentRef,
+  ElementRef,
+  InjectionToken,
+  Injector,
+  Input,
+  NgModule,
+  OnDestroy,
+  Renderer2,
+  RendererFactory2,
+  Type,
+  ViewChild,
+  ViewContainerRef,
+  ViewEncapsulation,
+  ɵsetDocument,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
 
 import {domRendererFactory3} from '../../src/render3/interfaces/renderer';
-
 
 describe('component', () => {
   describe('view destruction', () => {
@@ -25,10 +41,12 @@ describe('component', () => {
       @Component({
         selector: 'comp-with-on-destroy',
         template: '',
-        providers: [{provide: testToken, useExisting: ParentWithOnDestroy}]
+        providers: [{provide: testToken, useExisting: ParentWithOnDestroy}],
       })
       class ParentWithOnDestroy {
-        ngOnDestroy() { destroyCalls++; }
+        ngOnDestroy() {
+          destroyCalls++;
+        }
       }
 
       @Component({selector: 'child', template: ''})
@@ -42,10 +60,9 @@ describe('component', () => {
           <comp-with-on-destroy>
             <child></child>
           </comp-with-on-destroy>
-        `
+        `,
       })
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App, ParentWithOnDestroy, ChildComponent]});
       const fixture = TestBed.createComponent(App);
@@ -58,24 +75,22 @@ describe('component', () => {
 
   it('should support entry components from another module', () => {
     @Component({selector: 'other-component', template: `bar`})
-    class OtherComponent {
-    }
+    class OtherComponent {}
 
     @NgModule({
       declarations: [OtherComponent],
       exports: [OtherComponent],
-      entryComponents: [OtherComponent]
+      entryComponents: [OtherComponent],
     })
-    class OtherModule {
-    }
+    class OtherModule {}
 
     @Component({
       selector: 'test_component',
       template: `foo|<ng-template #vc></ng-template>`,
-      entryComponents: [OtherComponent]
+      entryComponents: [OtherComponent],
     })
     class TestComponent {
-      @ViewChild('vc', {read: ViewContainerRef, static: true}) vcref !: ViewContainerRef;
+      @ViewChild('vc', {read: ViewContainerRef, static: true}) vcref!: ViewContainerRef;
 
       constructor(private _cfr: ComponentFactoryResolver) {}
 
@@ -99,37 +114,38 @@ describe('component', () => {
     @Component({
       selector: 'wrapper',
       encapsulation: ViewEncapsulation.None,
-      template: `<encapsulated></encapsulated>`
+      template: `<encapsulated></encapsulated>`,
     })
-    class WrapperComponent {
-    }
+    class WrapperComponent {}
 
     @Component({
       selector: 'encapsulated',
       encapsulation: ViewEncapsulation.Emulated,
       // styles array must contain a value (even empty) to trigger `ViewEncapsulation.Emulated`
       styles: [``],
-      template: `foo<leaf></leaf>`
+      template: `foo<leaf></leaf>`,
     })
-    class EncapsulatedComponent {
-    }
+    class EncapsulatedComponent {}
 
-    @Component(
-        {selector: 'leaf', encapsulation: ViewEncapsulation.None, template: `<span>bar</span>`})
-    class LeafComponent {
-    }
+    @Component({
+      selector: 'leaf',
+      encapsulation: ViewEncapsulation.None,
+      template: `<span>bar</span>`,
+    })
+    class LeafComponent {}
 
     beforeEach(() => {
-      TestBed.configureTestingModule(
-          {declarations: [WrapperComponent, EncapsulatedComponent, LeafComponent]});
+      TestBed.configureTestingModule({
+        declarations: [WrapperComponent, EncapsulatedComponent, LeafComponent],
+      });
     });
 
     it('should encapsulate children, but not host nor grand children', () => {
       const fixture = TestBed.createComponent(WrapperComponent);
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML)
-          .toMatch(
-              /<encapsulated _nghost-[a-z\-]+(\d+)="">foo<leaf _ngcontent-[a-z\-]+\1=""><span>bar<\/span><\/leaf><\/encapsulated>/);
+      expect(fixture.nativeElement.innerHTML).toMatch(
+        /<encapsulated _nghost-[a-z\-]+(\d+)="">foo<leaf _ngcontent-[a-z\-]+\1=""><span>bar<\/span><\/leaf><\/encapsulated>/
+      );
     });
 
     it('should encapsulate host', () => {
@@ -143,8 +159,9 @@ describe('component', () => {
 
     it('should encapsulate host and children with different attributes', () => {
       // styles array must contain a value (even empty) to trigger `ViewEncapsulation.Emulated`
-      TestBed.overrideComponent(
-          LeafComponent, {set: {encapsulation: ViewEncapsulation.Emulated, styles: [``]}});
+      TestBed.overrideComponent(LeafComponent, {
+        set: {encapsulation: ViewEncapsulation.Emulated, styles: [``]},
+      });
       const fixture = TestBed.createComponent(EncapsulatedComponent);
       fixture.detectChanges();
       const html = fixture.nativeElement.outerHTML;
@@ -152,7 +169,10 @@ describe('component', () => {
       expect(match).toBeDefined();
       expect(match.length).toEqual(2);
       expect(html).toMatch(
-          `<leaf ${match[0].replace('_nghost', '_ngcontent')}="" ${match[1]}=""><span ${match[1].replace('_nghost', '_ngcontent')}="">bar</span></leaf></div>`);
+        `<leaf ${match[0].replace('_nghost', '_ngcontent')}="" ${
+          match[1]
+        }=""><span ${match[1].replace('_nghost', '_ngcontent')}="">bar</span></leaf></div>`
+      );
     });
   });
 
@@ -162,7 +182,9 @@ describe('component', () => {
 
       @Component({selector: 'comp-with-destroy', template: ``})
       class ComponentWithOnDestroy implements OnDestroy {
-        ngOnDestroy() { wasOnDestroyCalled = true; }
+        ngOnDestroy() {
+          wasOnDestroyCalled = true;
+        }
       }
 
       // This test asserts that the view tree is set up correctly based on the knowledge that this
@@ -170,17 +192,16 @@ describe('component', () => {
       // child of the root view, then the onDestroy hook on the child view will never be called
       // when the view tree is torn down following the destruction of that root view.
       @Component({selector: `test-app`, template: `<comp-with-destroy></comp-with-destroy>`})
-      class TestApp {
-      }
+      class TestApp {}
 
       TestBed.configureTestingModule({declarations: [ComponentWithOnDestroy, TestApp]});
       const fixture = TestBed.createComponent(TestApp);
       fixture.detectChanges();
       fixture.destroy();
-      expect(wasOnDestroyCalled)
-          .toBe(
-              true,
-              'Expected component onDestroy method to be called when its parent view is destroyed');
+      expect(wasOnDestroyCalled).toBe(
+        true,
+        'Expected component onDestroy method to be called when its parent view is destroyed'
+      );
     });
   });
 
@@ -188,16 +209,15 @@ describe('component', () => {
     @Component({
       selector: 'app-root',
       template: '<parent-comp></parent-comp>',
-      styles: [':host { color: red; }'],  // `styles` must exist for encapsulation to apply.
+      styles: [':host { color: red; }'], // `styles` must exist for encapsulation to apply.
       encapsulation: ViewEncapsulation.Emulated,
     })
-    class AppRoot {
-    }
+    class AppRoot {}
 
     @Component({
       selector: 'parent-comp',
       template: '',
-      styles: [':host { color: orange; }'],  // `styles` must exist for encapsulation to apply.
+      styles: [':host { color: orange; }'], // `styles` must exist for encapsulation to apply.
       encapsulation: ViewEncapsulation.Emulated,
     })
     class ParentComponent {
@@ -214,17 +234,19 @@ describe('component', () => {
     const secondParentEl: HTMLElement = fixture.nativeElement.querySelector('parent-comp');
     const elementFromRenderer: HTMLElement = fixture.nativeElement.querySelector('p');
     const getNgContentAttr = (element: HTMLElement) => {
-      return Array.from(element.attributes).map(a => a.name).find(a => /ngcontent/.test(a));
+      return Array.from(element.attributes)
+        .map((a) => a.name)
+        .find((a) => /ngcontent/.test(a));
     };
 
     const hostNgContentAttr = getNgContentAttr(secondParentEl);
     const viewNgContentAttr = getNgContentAttr(elementFromRenderer);
 
-    expect(hostNgContentAttr)
-        .not.toBe(
-            viewNgContentAttr,
-            'Expected child manually created via Renderer2 to have a different view encapsulation' +
-                'attribute than its host element');
+    expect(hostNgContentAttr).not.toBe(
+      viewNgContentAttr,
+      'Expected child manually created via Renderer2 to have a different view encapsulation' +
+        'attribute than its host element'
+    );
   });
 
   it('should create a new Renderer2 for each component', () => {
@@ -244,7 +266,7 @@ describe('component', () => {
       encapsulation: ViewEncapsulation.Emulated,
     })
     class Parent {
-      @ViewChild(Child) childInstance !: Child;
+      @ViewChild(Child) childInstance!: Child;
       constructor(public renderer: Renderer2) {}
     }
 
@@ -254,8 +276,10 @@ describe('component', () => {
     fixture.detectChanges();
 
     // Assert like this, rather than `.not.toBe` so we get a better failure message.
-    expect(componentInstance.renderer !== componentInstance.childInstance.renderer)
-        .toBe(true, 'Expected renderers to be different.');
+    expect(componentInstance.renderer !== componentInstance.childInstance.renderer).toBe(
+      true,
+      'Expected renderers to be different.'
+    );
   });
 
   it('components should not share the same context when creating with a root element', () => {
@@ -266,7 +290,9 @@ describe('component', () => {
     })
     class CompA {
       @Input() a: string = '';
-      ngDoCheck() { log.push('CompA:ngDoCheck'); }
+      ngDoCheck() {
+        log.push('CompA:ngDoCheck');
+      }
     }
 
     @Component({
@@ -275,19 +301,25 @@ describe('component', () => {
     })
     class CompB {
       @Input() b: string = '';
-      ngDoCheck() { log.push('CompB:ngDoCheck'); }
+      ngDoCheck() {
+        log.push('CompB:ngDoCheck');
+      }
     }
 
     @Component({template: `<span></span>`})
     class MyCompA {
       constructor(
-          private _componentFactoryResolver: ComponentFactoryResolver,
-          private _injector: Injector) {}
+        private _componentFactoryResolver: ComponentFactoryResolver,
+        private _injector: Injector
+      ) {}
 
       createComponent() {
         const componentFactoryA = this._componentFactoryResolver.resolveComponentFactory(CompA);
-        const compRefA =
-            componentFactoryA.create(this._injector, [], document.createElement('div'));
+        const compRefA = componentFactoryA.create(
+          this._injector,
+          [],
+          document.createElement('div')
+        );
         return compRefA;
       }
     }
@@ -307,15 +339,13 @@ describe('component', () => {
       declarations: [CompA],
       entryComponents: [CompA],
     })
-    class MyModuleA {
-    }
+    class MyModuleA {}
 
     @NgModule({
       declarations: [CompB],
       entryComponents: [CompB],
     })
-    class MyModuleB {
-    }
+    class MyModuleB {}
 
     TestBed.configureTestingModule({
       declarations: [MyCompA, MyCompB],
@@ -329,7 +359,7 @@ describe('component', () => {
 
     expect(log).toEqual(['CompA:ngDoCheck']);
 
-    log.length = 0;  // reset the log
+    log.length = 0; // reset the log
 
     const fixtureB = TestBed.createComponent(MyCompB);
     fixtureB.detectChanges();
@@ -342,15 +372,13 @@ describe('component', () => {
 
   it('should preserve simple component selector in a component factory', () => {
     @Component({selector: '[foo]', template: ''})
-    class AttSelectorCmp {
-    }
+    class AttSelectorCmp {}
 
     @NgModule({
       declarations: [AttSelectorCmp],
       entryComponents: [AttSelectorCmp],
     })
-    class AppModule {
-    }
+    class AppModule {}
 
     TestBed.configureTestingModule({imports: [AppModule]});
     const cmpFactoryResolver = TestBed.inject(ComponentFactoryResolver);
@@ -361,15 +389,13 @@ describe('component', () => {
 
   it('should preserve complex component selector in a component factory', () => {
     @Component({selector: '[foo],div:not(.bar)', template: ''})
-    class ComplexSelectorCmp {
-    }
+    class ComplexSelectorCmp {}
 
     @NgModule({
       declarations: [ComplexSelectorCmp],
       entryComponents: [ComplexSelectorCmp],
     })
-    class AppModule {
-    }
+    class AppModule {}
 
     TestBed.configureTestingModule({imports: [AppModule]});
     const cmpFactoryResolver = TestBed.inject(ComponentFactoryResolver);
@@ -384,8 +410,7 @@ describe('component', () => {
         selector: 'dynamic-comp',
         template: 'DynamicComponent Content',
       })
-      class DynamicComponent {
-      }
+      class DynamicComponent {}
 
       @Component({
         selector: 'app',
@@ -414,8 +439,7 @@ describe('component', () => {
         declarations: [App, DynamicComponent],
         entryComponents: [App, DynamicComponent],
       })
-      class AppModule {
-      }
+      class AppModule {}
 
       function _document(): any {
         // Tell Ivy about the global document
@@ -425,35 +449,32 @@ describe('component', () => {
 
       TestBed.configureTestingModule({
         imports: [AppModule],
-        providers: [
-          {provide: DOCUMENT, useFactory: _document, deps: []},
-          rendererProviders,
-        ],
+        providers: [{provide: DOCUMENT, useFactory: _document, deps: []}, rendererProviders],
       });
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
       // Create an instance of DynamicComponent and provide host element *reference*
-      let targetEl = document.getElementById('dynamic-comp-root-a') !;
+      let targetEl = document.getElementById('dynamic-comp-root-a')!;
       fixture.componentInstance.createDynamicComponent(targetEl);
       fixture.detectChanges();
       expect(targetEl.innerHTML).not.toContain('Existing content in slot A');
       expect(targetEl.innerHTML).toContain('DynamicComponent Content');
 
       // Create an instance of DynamicComponent and provide host element *selector*
-      targetEl = document.getElementById('dynamic-comp-root-b') !;
+      targetEl = document.getElementById('dynamic-comp-root-b')!;
       fixture.componentInstance.createDynamicComponent('#dynamic-comp-root-b');
       fixture.detectChanges();
       expect(targetEl.innerHTML).not.toContain('Existing content in slot B');
       expect(targetEl.innerHTML).toContain('DynamicComponent Content');
     }
 
-    it('with Renderer2',
-       () => runTestWithRenderer([{provide: RendererFactory2, useClass: DomRendererFactory2}]));
+    it('with Renderer2', () =>
+      runTestWithRenderer([{provide: RendererFactory2, useClass: DomRendererFactory2}]));
 
-    onlyInIvy('Renderer3 is supported only in Ivy')
-        .it('with Renderer3', () => runTestWithRenderer(
-                                  [{provide: RendererFactory2, useValue: domRendererFactory3}]));
+    onlyInIvy('Renderer3 is supported only in Ivy').it('with Renderer3', () =>
+      runTestWithRenderer([{provide: RendererFactory2, useValue: domRendererFactory3}])
+    );
   });
 });

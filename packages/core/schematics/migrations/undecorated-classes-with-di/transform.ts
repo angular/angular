@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerHost, CompileMetadataResolver, StaticSymbol, StaticSymbolResolver, SummaryResolver} from '@angular/compiler';
+import {
+  AotCompiler,
+  AotCompilerHost,
+  CompileMetadataResolver,
+  StaticSymbol,
+  StaticSymbolResolver,
+  SummaryResolver,
+} from '@angular/compiler';
 import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/core';
 import * as ts from 'typescript';
@@ -17,17 +24,18 @@ import {hasExplicitConstructor} from '../../utils/typescript/class_declaration';
 import {findBaseClassDeclarations} from '../../utils/typescript/find_base_classes';
 import {getImportOfIdentifier} from '../../utils/typescript/imports';
 
-import {UnexpectedMetadataValueError, convertDirectiveMetadataToExpression} from './decorator_rewrite/convert_directive_metadata';
+import {
+  UnexpectedMetadataValueError,
+  convertDirectiveMetadataToExpression,
+} from './decorator_rewrite/convert_directive_metadata';
 import {DecoratorRewriter} from './decorator_rewrite/decorator_rewriter';
 import {hasDirectiveDecorator, hasInjectableDecorator} from './ng_declaration_collector';
 import {UpdateRecorder} from './update_recorder';
 
-
-
 /** Resolved metadata of a declaration. */
 interface DeclarationMetadata {
   metadata: any;
-  type: 'Component'|'Directive'|'Pipe';
+  type: 'Component' | 'Directive' | 'Pipe';
 }
 
 export interface TransformFailure {
@@ -38,8 +46,12 @@ export interface TransformFailure {
 export class UndecoratedClassesTransform {
   private printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
   private importManager = new ImportManager(this.getUpdateRecorder, this.printer);
-  private decoratorRewriter =
-      new DecoratorRewriter(this.importManager, this.typeChecker, this.evaluator, this.compiler);
+  private decoratorRewriter = new DecoratorRewriter(
+    this.importManager,
+    this.typeChecker,
+    this.evaluator,
+    this.compiler
+  );
 
   private compilerHost: AotCompilerHost;
   private symbolResolver: StaticSymbolResolver;
@@ -56,9 +68,11 @@ export class UndecoratedClassesTransform {
   private missingExplicitConstructorClasses = new Set<ts.ClassDeclaration>();
 
   constructor(
-      private typeChecker: ts.TypeChecker, private compiler: AotCompiler,
-      private evaluator: PartialEvaluator,
-      private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder) {
+    private typeChecker: ts.TypeChecker,
+    private compiler: AotCompiler,
+    private evaluator: PartialEvaluator,
+    private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder
+  ) {
     this.symbolResolver = compiler['_symbolResolver'];
     this.compilerHost = compiler['_host'];
     this.metadataResolver = compiler['_metadataResolver'];
@@ -81,8 +95,9 @@ export class UndecoratedClassesTransform {
    */
   migrateDecoratedDirectives(directives: ts.ClassDeclaration[]): TransformFailure[] {
     return directives.reduce(
-        (failures, node) => failures.concat(this._migrateDirectiveBaseClass(node)),
-        [] as TransformFailure[]);
+      (failures, node) => failures.concat(this._migrateDirectiveBaseClass(node)),
+      [] as TransformFailure[]
+    );
   }
 
   /**
@@ -92,26 +107,32 @@ export class UndecoratedClassesTransform {
    */
   migrateDecoratedProviders(providers: ts.ClassDeclaration[]): TransformFailure[] {
     return providers.reduce(
-        (failures, node) => failures.concat(this._migrateProviderBaseClass(node)),
-        [] as TransformFailure[]);
+      (failures, node) => failures.concat(this._migrateProviderBaseClass(node)),
+      [] as TransformFailure[]
+    );
   }
 
   private _migrateProviderBaseClass(node: ts.ClassDeclaration): TransformFailure[] {
     return this._migrateDecoratedClassWithInheritedCtor(
-        node, symbol => this.metadataResolver.isInjectable(symbol),
-        node => this._addInjectableDecorator(node));
+      node,
+      (symbol) => this.metadataResolver.isInjectable(symbol),
+      (node) => this._addInjectableDecorator(node)
+    );
   }
 
   private _migrateDirectiveBaseClass(node: ts.ClassDeclaration): TransformFailure[] {
     return this._migrateDecoratedClassWithInheritedCtor(
-        node, symbol => this.metadataResolver.isDirective(symbol),
-        node => this._addAbstractDirectiveDecorator(node));
+      node,
+      (symbol) => this.metadataResolver.isDirective(symbol),
+      (node) => this._addAbstractDirectiveDecorator(node)
+    );
   }
 
-
   private _migrateDecoratedClassWithInheritedCtor(
-      node: ts.ClassDeclaration, isClassDecorated: (symbol: StaticSymbol) => boolean,
-      addClassDecorator: (node: ts.ClassDeclaration) => void): TransformFailure[] {
+    node: ts.ClassDeclaration,
+    isClassDecorated: (symbol: StaticSymbol) => boolean,
+    addClassDecorator: (node: ts.ClassDeclaration) => void
+  ): TransformFailure[] {
     // In case the provider has an explicit constructor, we don't need to do anything
     // because the class is already decorated and does not inherit a constructor.
     if (hasExplicitConstructor(node)) {
@@ -127,7 +148,7 @@ export class UndecoratedClassesTransform {
       if (hasExplicitConstructor(baseClass)) {
         // All classes in between the decorated class and the undecorated class
         // that defines the constructor need to be decorated as well.
-        undecoratedBaseClasses.forEach(b => addClassDecorator(b));
+        undecoratedBaseClasses.forEach((b) => addClassDecorator(b));
 
         if (baseClassFile.isDeclarationFile) {
           const staticSymbol = this._getStaticSymbolOfIdentifier(identifier);
@@ -142,7 +163,7 @@ export class UndecoratedClassesTransform {
           // used as anchor for a comment explaining that the class that defines the
           // constructor cannot be decorated automatically.
           const lastDecoratedClass =
-              undecoratedBaseClasses[undecoratedBaseClasses.length - 1] || node;
+            undecoratedBaseClasses[undecoratedBaseClasses.length - 1] || node;
           return this._addMissingExplicitConstructorTodo(lastDecoratedClass);
         }
 
@@ -166,19 +187,27 @@ export class UndecoratedClassesTransform {
    * is no existing directive decorator.
    */
   private _addAbstractDirectiveDecorator(baseClass: ts.ClassDeclaration) {
-    if (hasDirectiveDecorator(baseClass, this.typeChecker) ||
-        this.decoratedDirectives.has(baseClass)) {
+    if (
+      hasDirectiveDecorator(baseClass, this.typeChecker) ||
+      this.decoratedDirectives.has(baseClass)
+    ) {
       return;
     }
 
     const baseClassFile = baseClass.getSourceFile();
     const recorder = this.getUpdateRecorder(baseClassFile);
-    const directiveExpr =
-        this.importManager.addImportToSourceFile(baseClassFile, 'Directive', '@angular/core');
+    const directiveExpr = this.importManager.addImportToSourceFile(
+      baseClassFile,
+      'Directive',
+      '@angular/core'
+    );
 
     const newDecorator = ts.createDecorator(ts.createCall(directiveExpr, undefined, []));
-    const newDecoratorText =
-        this.printer.printNode(ts.EmitHint.Unspecified, newDecorator, baseClassFile);
+    const newDecoratorText = this.printer.printNode(
+      ts.EmitHint.Unspecified,
+      newDecorator,
+      baseClassFile
+    );
 
     recorder.addClassDecorator(baseClass, newDecoratorText);
     this.decoratedDirectives.add(baseClass);
@@ -189,19 +218,27 @@ export class UndecoratedClassesTransform {
    * is no existing directive decorator.
    */
   private _addInjectableDecorator(baseClass: ts.ClassDeclaration) {
-    if (hasInjectableDecorator(baseClass, this.typeChecker) ||
-        this.decoratedProviders.has(baseClass)) {
+    if (
+      hasInjectableDecorator(baseClass, this.typeChecker) ||
+      this.decoratedProviders.has(baseClass)
+    ) {
       return;
     }
 
     const baseClassFile = baseClass.getSourceFile();
     const recorder = this.getUpdateRecorder(baseClassFile);
-    const injectableExpr =
-        this.importManager.addImportToSourceFile(baseClassFile, 'Injectable', '@angular/core');
+    const injectableExpr = this.importManager.addImportToSourceFile(
+      baseClassFile,
+      'Injectable',
+      '@angular/core'
+    );
 
     const newDecorator = ts.createDecorator(ts.createCall(injectableExpr, undefined, []));
-    const newDecoratorText =
-        this.printer.printNode(ts.EmitHint.Unspecified, newDecorator, baseClassFile);
+    const newDecoratorText = this.printer.printNode(
+      ts.EmitHint.Unspecified,
+      newDecorator,
+      baseClassFile
+    );
 
     recorder.addClassDecorator(baseClass, newDecoratorText);
     this.decoratedProviders.add(baseClass);
@@ -233,27 +270,31 @@ export class UndecoratedClassesTransform {
    */
   migrateUndecoratedDeclarations(directives: ts.ClassDeclaration[]): TransformFailure[] {
     return directives.reduce(
-        (failures, node) => failures.concat(this._migrateDerivedDeclaration(node)),
-        [] as TransformFailure[]);
+      (failures, node) => failures.concat(this._migrateDerivedDeclaration(node)),
+      [] as TransformFailure[]
+    );
   }
 
   private _migrateDerivedDeclaration(node: ts.ClassDeclaration): TransformFailure[] {
     const targetSourceFile = node.getSourceFile();
     const orderedBaseClasses = findBaseClassDeclarations(node, this.typeChecker);
-    let newDecoratorText: string|null = null;
+    let newDecoratorText: string | null = null;
 
     for (let {node: baseClass, identifier} of orderedBaseClasses) {
       // Before looking for decorators within the metadata or summary files, we
       // try to determine the directive decorator through the source file AST.
       if (baseClass.decorators) {
-        const ngDecorator =
-            getAngularDecorators(this.typeChecker, baseClass.decorators)
-                .find(({name}) => name === 'Component' || name === 'Directive' || name === 'Pipe');
+        const ngDecorator = getAngularDecorators(this.typeChecker, baseClass.decorators).find(
+          ({name}) => name === 'Component' || name === 'Directive' || name === 'Pipe'
+        );
 
         if (ngDecorator) {
           const newDecorator = this.decoratorRewriter.rewrite(ngDecorator, node.getSourceFile());
           newDecoratorText = this.printer.printNode(
-              ts.EmitHint.Unspecified, newDecorator, ngDecorator.node.getSourceFile());
+            ts.EmitHint.Unspecified,
+            newDecorator,
+            ngDecorator.node.getSourceFile()
+          );
           break;
         }
       }
@@ -264,9 +305,13 @@ export class UndecoratedClassesTransform {
 
       // Check if the static symbol resolves to a class declaration with
       // pipe or directive metadata.
-      if (!staticSymbol ||
-          !(this.metadataResolver.isPipe(staticSymbol) ||
-            this.metadataResolver.isDirective(staticSymbol))) {
+      if (
+        !staticSymbol ||
+        !(
+          this.metadataResolver.isPipe(staticSymbol) ||
+          this.metadataResolver.isDirective(staticSymbol)
+        )
+      ) {
         continue;
       }
 
@@ -277,38 +322,49 @@ export class UndecoratedClassesTransform {
       // usually decorator metadata is always present but just can't be read if a program
       // only has access to summaries (this is a special case in google3).
       if (!metadata) {
-        return [{
-          node,
-          message: `Class cannot be migrated as the inherited metadata from ` +
+        return [
+          {
+            node,
+            message:
+              `Class cannot be migrated as the inherited metadata from ` +
               `${identifier.getText()} cannot be converted into a decorator. Please manually
             decorate the class.`,
-        }];
+          },
+        ];
       }
 
       const newDecorator = this._constructDecoratorFromMetadata(metadata, targetSourceFile);
       if (!newDecorator) {
         const annotationType = metadata.type;
-        return [{
-          node,
-          message: `Class cannot be migrated as the inherited @${annotationType} decorator ` +
+        return [
+          {
+            node,
+            message:
+              `Class cannot be migrated as the inherited @${annotationType} decorator ` +
               `cannot be copied. Please manually add a @${annotationType} decorator.`,
-        }];
+          },
+        ];
       }
 
       // In case the decorator could be constructed from the resolved metadata, use
       // that decorator for the derived undecorated classes.
-      newDecoratorText =
-          this.printer.printNode(ts.EmitHint.Unspecified, newDecorator, targetSourceFile);
+      newDecoratorText = this.printer.printNode(
+        ts.EmitHint.Unspecified,
+        newDecorator,
+        targetSourceFile
+      );
       break;
     }
 
     if (!newDecoratorText) {
-      return [{
-        node,
-        message:
+      return [
+        {
+          node,
+          message:
             'Class cannot be migrated as no directive/component/pipe metadata could be found. ' +
-            'Please manually add a @Directive, @Component or @Pipe decorator.'
-      }];
+            'Please manually add a @Directive, @Component or @Pipe decorator.',
+        },
+      ];
     }
 
     this.getUpdateRecorder(targetSourceFile).addClassDecorator(node, newDecoratorText);
@@ -316,50 +372,70 @@ export class UndecoratedClassesTransform {
   }
 
   /** Records all changes that were made in the import manager. */
-  recordChanges() { this.importManager.recordChanges(); }
+  recordChanges() {
+    this.importManager.recordChanges();
+  }
 
   /**
    * Constructs a TypeScript decorator node from the specified declaration metadata. Returns
    * null if the metadata could not be simplified/resolved.
    */
   private _constructDecoratorFromMetadata(
-      directiveMetadata: DeclarationMetadata, targetSourceFile: ts.SourceFile): ts.Decorator|null {
+    directiveMetadata: DeclarationMetadata,
+    targetSourceFile: ts.SourceFile
+  ): ts.Decorator | null {
     try {
       const decoratorExpr = convertDirectiveMetadataToExpression(
-          directiveMetadata.metadata,
-          staticSymbol =>
-              this.compilerHost
-                  .fileNameToModuleName(staticSymbol.filePath, targetSourceFile.fileName)
-                  .replace(/\/index$/, ''),
-          (moduleName: string, name: string) =>
-              this.importManager.addImportToSourceFile(targetSourceFile, name, moduleName),
-          (propertyName, value) => {
-            // Only normalize properties called "changeDetection" and "encapsulation"
-            // for "@Directive" and "@Component" annotations.
-            if (directiveMetadata.type === 'Pipe') {
-              return null;
-            }
-
-            // Instead of using the number as value for the "changeDetection" and
-            // "encapsulation" properties, we want to use the actual enum symbols.
-            if (propertyName === 'changeDetection' && typeof value === 'number') {
-              return ts.createPropertyAccess(
-                  this.importManager.addImportToSourceFile(
-                      targetSourceFile, 'ChangeDetectionStrategy', '@angular/core'),
-                  ChangeDetectionStrategy[value]);
-            } else if (propertyName === 'encapsulation' && typeof value === 'number') {
-              return ts.createPropertyAccess(
-                  this.importManager.addImportToSourceFile(
-                      targetSourceFile, 'ViewEncapsulation', '@angular/core'),
-                  ViewEncapsulation[value]);
-            }
+        directiveMetadata.metadata,
+        (staticSymbol) =>
+          this.compilerHost
+            .fileNameToModuleName(staticSymbol.filePath, targetSourceFile.fileName)
+            .replace(/\/index$/, ''),
+        (moduleName: string, name: string) =>
+          this.importManager.addImportToSourceFile(targetSourceFile, name, moduleName),
+        (propertyName, value) => {
+          // Only normalize properties called "changeDetection" and "encapsulation"
+          // for "@Directive" and "@Component" annotations.
+          if (directiveMetadata.type === 'Pipe') {
             return null;
-          });
+          }
 
-      return ts.createDecorator(ts.createCall(
+          // Instead of using the number as value for the "changeDetection" and
+          // "encapsulation" properties, we want to use the actual enum symbols.
+          if (propertyName === 'changeDetection' && typeof value === 'number') {
+            return ts.createPropertyAccess(
+              this.importManager.addImportToSourceFile(
+                targetSourceFile,
+                'ChangeDetectionStrategy',
+                '@angular/core'
+              ),
+              ChangeDetectionStrategy[value]
+            );
+          } else if (propertyName === 'encapsulation' && typeof value === 'number') {
+            return ts.createPropertyAccess(
+              this.importManager.addImportToSourceFile(
+                targetSourceFile,
+                'ViewEncapsulation',
+                '@angular/core'
+              ),
+              ViewEncapsulation[value]
+            );
+          }
+          return null;
+        }
+      );
+
+      return ts.createDecorator(
+        ts.createCall(
           this.importManager.addImportToSourceFile(
-              targetSourceFile, directiveMetadata.type, '@angular/core'),
-          undefined, [decoratorExpr]));
+            targetSourceFile,
+            directiveMetadata.type,
+            '@angular/core'
+          ),
+          undefined,
+          [decoratorExpr]
+        )
+      );
     } catch (e) {
       if (e instanceof UnexpectedMetadataValueError) {
         return null;
@@ -372,14 +448,19 @@ export class UndecoratedClassesTransform {
    * Resolves the declaration metadata of a given static symbol. The metadata
    * is determined by resolving metadata for the static symbol.
    */
-  private _resolveDeclarationMetadata(symbol: StaticSymbol): null|DeclarationMetadata {
+  private _resolveDeclarationMetadata(symbol: StaticSymbol): null | DeclarationMetadata {
     try {
       // Note that this call can throw if the metadata is not computable. In that
       // case we are not able to serialize the metadata into a decorator and we return
       // null.
-      const annotations = this.compiler.reflector.annotations(symbol).find(
-          s => s.ngMetadataName === 'Component' || s.ngMetadataName === 'Directive' ||
-              s.ngMetadataName === 'Pipe');
+      const annotations = this.compiler.reflector
+        .annotations(symbol)
+        .find(
+          (s) =>
+            s.ngMetadataName === 'Component' ||
+            s.ngMetadataName === 'Directive' ||
+            s.ngMetadataName === 'Pipe'
+        );
 
       if (!annotations) {
         return null;
@@ -397,7 +478,7 @@ export class UndecoratedClassesTransform {
     }
   }
 
-  private _getStaticSymbolOfIdentifier(node: ts.Identifier): StaticSymbol|null {
+  private _getStaticSymbolOfIdentifier(node: ts.Identifier): StaticSymbol | null {
     const sourceFile = node.getSourceFile();
     const resolvedImport = getImportOfIdentifier(this.typeChecker, node);
 
@@ -405,8 +486,10 @@ export class UndecoratedClassesTransform {
       return null;
     }
 
-    const moduleName =
-        this.compilerHost.moduleNameToFileName(resolvedImport.importModule, sourceFile.fileName);
+    const moduleName = this.compilerHost.moduleNameToFileName(
+      resolvedImport.importModule,
+      sourceFile.fileName
+    );
 
     if (!moduleName) {
       return null;
@@ -415,7 +498,8 @@ export class UndecoratedClassesTransform {
     // Find the declaration symbol as symbols could be aliased due to
     // metadata re-exports.
     return this.compiler.reflector.findSymbolDeclaration(
-        this.symbolResolver.getStaticSymbol(moduleName, resolvedImport.name));
+      this.symbolResolver.getStaticSymbol(moduleName, resolvedImport.name)
+    );
   }
 
   /**

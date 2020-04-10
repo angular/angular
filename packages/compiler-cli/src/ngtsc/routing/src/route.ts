@@ -37,8 +37,10 @@ export class RouterEntryPointManager {
 
   constructor(private moduleResolver: ModuleResolver) {}
 
-  resolveLoadChildrenIdentifier(loadChildrenIdentifier: string, context: ts.SourceFile):
-      RouterEntryPoint|null {
+  resolveLoadChildrenIdentifier(
+    loadChildrenIdentifier: string,
+    context: ts.SourceFile
+  ): RouterEntryPoint | null {
     const [relativeFile, moduleName] = loadChildrenIdentifier.split('#');
     if (moduleName === undefined) {
       return null;

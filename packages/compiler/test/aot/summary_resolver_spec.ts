@@ -6,8 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, AotSummaryResolverHost, CompileSummaryKind, CompileTypeSummary, ResolvedStaticSymbol, StaticSymbol, StaticSymbolCache, StaticSymbolResolver} from '@angular/compiler';
-import {deserializeSummaries, serializeSummaries} from '@angular/compiler/src/aot/summary_serializer';
+import {
+  AotSummaryResolver,
+  AotSummaryResolverHost,
+  CompileSummaryKind,
+  CompileTypeSummary,
+  ResolvedStaticSymbol,
+  StaticSymbol,
+  StaticSymbolCache,
+  StaticSymbolResolver,
+} from '@angular/compiler';
+import {
+  deserializeSummaries,
+  serializeSummaries,
+} from '@angular/compiler/src/aot/summary_serializer';
 import {ConstantPool} from '@angular/compiler/src/constant_pool';
 import * as o from '@angular/compiler/src/output/output_ast';
 import {OutputContext} from '@angular/compiler/src/util';
@@ -33,15 +45,25 @@ const EXT = /(\.d)?\.ts$/;
     }
 
     function serialize(
-        symbols: ResolvedStaticSymbol[], enableExternalSymbolReexports = false): string {
+      symbols: ResolvedStaticSymbol[],
+      enableExternalSymbolReexports = false
+    ): string {
       // Note: Don't use the top level host / summaryResolver as they might not be created yet
       const mockSummaryResolver = new MockSummaryResolver([]);
       const symbolResolver = new StaticSymbolResolver(
-          new MockStaticSymbolResolverHost({}), symbolCache, mockSummaryResolver);
+        new MockStaticSymbolResolverHost({}),
+        symbolCache,
+        mockSummaryResolver
+      );
       return serializeSummaries(
-                 'someFile.ts', createMockOutputContext(), mockSummaryResolver, symbolResolver,
-                 symbols, [], enableExternalSymbolReexports)
-          .json;
+        'someFile.ts',
+        createMockOutputContext(),
+        mockSummaryResolver,
+        symbolResolver,
+        symbols,
+        [],
+        enableExternalSymbolReexports
+      ).json;
     }
 
     it('should load serialized summary files', () => {
@@ -74,14 +96,20 @@ const EXT = /(\.d)?\.ts$/;
       const libSymbol = symbolCache.get('/lib.d.ts', 'Lib');
       const srcSymbol = symbolCache.get('/src.ts', 'Src');
       init({
-        '/src.ngsummary.json':
-            serialize([{symbol: srcSymbol, metadata: 1}, {symbol: libSymbol, metadata: 2}], true)
+        '/src.ngsummary.json': serialize(
+          [
+            {symbol: srcSymbol, metadata: 1},
+            {symbol: libSymbol, metadata: 2},
+          ],
+          true
+        ),
       });
       summaryResolver.getSymbolsOf('/src.d.ts');
 
       expect(summaryResolver.getImportAs(symbolCache.get('/src.d.ts', 'Src'))).toBeFalsy();
-      expect(summaryResolver.getImportAs(libSymbol))
-          .toBe(symbolCache.get('/src.ngfactory.d.ts', 'Lib_1'));
+      expect(summaryResolver.getImportAs(libSymbol)).toBe(
+        symbolCache.get('/src.ngfactory.d.ts', 'Lib_1')
+      );
     });
 
     describe('isLibraryFile', () => {
@@ -91,26 +119,25 @@ const EXT = /(\.d)?\.ts$/;
         expect(summaryResolver.isLibraryFile('someFile.d.ts')).toBe(true);
       });
 
-      it('should calculate the result for generated files based on the result for non generated files',
-         () => {
-           init();
-           spyOn(host, 'isSourceFile').and.callThrough();
-           expect(summaryResolver.isLibraryFile('someFile.ngfactory.ts')).toBe(false);
-           expect(host.isSourceFile).toHaveBeenCalledWith('someFile.ts');
-         });
+      it('should calculate the result for generated files based on the result for non generated files', () => {
+        init();
+        spyOn(host, 'isSourceFile').and.callThrough();
+        expect(summaryResolver.isLibraryFile('someFile.ngfactory.ts')).toBe(false);
+        expect(host.isSourceFile).toHaveBeenCalledWith('someFile.ts');
+      });
     });
 
     describe('regression', () => {
       // #18170
       it('should support resolving symbol with members ', () => {
         init();
-        expect(summaryResolver.resolveSummary(symbolCache.get('/src.d.ts', 'Src', ['One', 'Two'])))
-            .toBeNull();
+        expect(
+          summaryResolver.resolveSummary(symbolCache.get('/src.d.ts', 'Src', ['One', 'Two']))
+        ).toBeNull();
       });
     });
   });
 }
-
 
 export class MockAotSummaryResolverHost implements AotSummaryResolverHost {
   constructor(private summaries: {[fileName: string]: string}) {}
@@ -141,6 +168,6 @@ export function createMockOutputContext(): OutputContext {
     statements: [],
     genFilePath: 'someGenFilePath',
     importExpr: () => o.NULL_EXPR,
-    constantPool: new ConstantPool()
+    constantPool: new ConstantPool(),
   };
 }

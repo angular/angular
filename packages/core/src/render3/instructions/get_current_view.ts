@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {OpaqueViewState} from '../interfaces/view';
 import {getLView} from '../state';
 
@@ -18,5 +19,5 @@ import {getLView} from '../state';
  * @codeGenApi
  */
 export function ɵɵgetCurrentView(): OpaqueViewState {
-  return getLView() as any as OpaqueViewState;
+  return (getLView() as any) as OpaqueViewState;
 }

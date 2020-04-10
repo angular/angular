@@ -9,20 +9,22 @@
 import {Directive, HostListener, Input} from '@angular/core';
 import {setClassMetadata} from '@angular/core/src/render3/metadata';
 
-import {convertToR3QueryMetadata, directiveMetadata, extendsDirectlyFromObject} from '../../../src/render3/jit/directive';
+import {
+  convertToR3QueryMetadata,
+  directiveMetadata,
+  extendsDirectlyFromObject,
+} from '../../../src/render3/jit/directive';
 
 describe('jit directive helper functions', () => {
-
   describe('extendsDirectlyFromObject', () => {
-
     // Inheritance Example using Classes
     class Parent {}
     class Child extends Parent {}
 
     // Inheritance Example using Function
-    const Parent5 = function Parent5() {} as any as{new (): {}};
-    const Child5 = function Child5() {} as any as{new (): {}};
-    Child5.prototype = new Parent5;
+    const Parent5 = (function Parent5() {} as any) as {new (): {}};
+    const Child5 = (function Child5() {} as any) as {new (): {}};
+    Child5.prototype = new Parent5();
     Child5.prototype.constructor = Child5;
 
     it('should correctly behave with instanceof', () => {
@@ -45,45 +47,47 @@ describe('jit directive helper functions', () => {
   });
 
   describe('convertToR3QueryMetadata', () => {
-
     it('should convert decorator with a single string selector', () => {
-      expect(convertToR3QueryMetadata('propName', {
-        selector: 'localRef',
-        descendants: false,
-        first: false,
-        isViewQuery: false,
-        read: undefined,
-        static: false,
-      })).toEqual({
+      expect(
+        convertToR3QueryMetadata('propName', {
+          selector: 'localRef',
+          descendants: false,
+          first: false,
+          isViewQuery: false,
+          read: undefined,
+          static: false,
+        })
+      ).toEqual({
         propertyName: 'propName',
         predicate: ['localRef'],
         descendants: false,
         first: false,
         read: null,
-        static: false
+        static: false,
       });
     });
 
     it('should convert decorator with multiple string selectors', () => {
-      expect(convertToR3QueryMetadata('propName', {
-        selector: 'foo, bar,baz',
-        descendants: true,
-        first: true,
-        isViewQuery: true,
-        read: undefined,
-        static: false,
-      })).toEqual({
+      expect(
+        convertToR3QueryMetadata('propName', {
+          selector: 'foo, bar,baz',
+          descendants: true,
+          first: true,
+          isViewQuery: true,
+          read: undefined,
+          static: false,
+        })
+      ).toEqual({
         propertyName: 'propName',
         predicate: ['foo', 'bar', 'baz'],
         descendants: true,
         first: true,
         read: null,
-        static: false
+        static: false,
       });
     });
 
     it('should convert decorator with type selector and read option', () => {
-
       class Directive {}
 
       const converted = convertToR3QueryMetadata('propName', {
@@ -92,21 +96,20 @@ describe('jit directive helper functions', () => {
         first: true,
         isViewQuery: true,
         read: Directive,
-        static: false
+        static: false,
       });
 
       expect(converted.predicate).toEqual(Directive);
       expect(converted.read).toEqual(Directive);
     });
-
   });
 
   describe('directiveMetadata', () => {
     it('should not inherit propMetadata from super class', () => {
       class SuperDirective {}
-      setClassMetadata(
-          SuperDirective, [{type: Directive, args: []}], null,
-          {handleClick: [{type: HostListener, args: ['click']}]});
+      setClassMetadata(SuperDirective, [{type: Directive, args: []}], null, {
+        handleClick: [{type: HostListener, args: ['click']}],
+      });
 
       class SubDirective extends SuperDirective {}
       setClassMetadata(SubDirective, [{type: Directive, args: []}], null, null);
@@ -117,9 +120,9 @@ describe('jit directive helper functions', () => {
 
     it('should not inherit propMetadata from grand super class', () => {
       class SuperSuperDirective {}
-      setClassMetadata(
-          SuperSuperDirective, [{type: Directive, args: []}], null,
-          {handleClick: [{type: HostListener, args: ['click']}]});
+      setClassMetadata(SuperSuperDirective, [{type: Directive, args: []}], null, {
+        handleClick: [{type: HostListener, args: ['click']}],
+      });
 
       class SuperDirective {}
       setClassMetadata(SuperDirective, [{type: Directive, args: []}], null, null);
@@ -133,28 +136,25 @@ describe('jit directive helper functions', () => {
       expect(directiveMetadata(SubDirective, {}).propMetadata.handleClick).toBeFalsy();
     });
 
-    it('should not inherit propMetadata from super class when sub class has its own propMetadata',
-       () => {
-         class SuperDirective {}
-         setClassMetadata(SuperDirective, [{type: Directive}], null, {
-           someInput: [{type: Input}],
-           handleClick: [{type: HostListener, args: ['click', ['$event']]}]
-         });
+    it('should not inherit propMetadata from super class when sub class has its own propMetadata', () => {
+      class SuperDirective {}
+      setClassMetadata(SuperDirective, [{type: Directive}], null, {
+        someInput: [{type: Input}],
+        handleClick: [{type: HostListener, args: ['click', ['$event']]}],
+      });
 
-         class SubDirective extends SuperDirective {}
-         setClassMetadata(
-             SubDirective, [{type: Directive}], null, {someOtherInput: [{type: Input}]});
+      class SubDirective extends SuperDirective {}
+      setClassMetadata(SubDirective, [{type: Directive}], null, {someOtherInput: [{type: Input}]});
 
-         const superPropMetadata = directiveMetadata(SuperDirective, {}).propMetadata;
-         const subPropMetadata = directiveMetadata(SubDirective, {}).propMetadata;
+      const superPropMetadata = directiveMetadata(SuperDirective, {}).propMetadata;
+      const subPropMetadata = directiveMetadata(SubDirective, {}).propMetadata;
 
-         expect(superPropMetadata.handleClick).toBeTruthy();
-         expect(superPropMetadata.someInput).toBeTruthy();
+      expect(superPropMetadata.handleClick).toBeTruthy();
+      expect(superPropMetadata.someInput).toBeTruthy();
 
-         expect(subPropMetadata.handleClick).toBeFalsy();
-         expect(subPropMetadata.someInput).toBeFalsy();
-         expect(subPropMetadata.someOtherInput).toBeTruthy();
-       });
-
+      expect(subPropMetadata.handleClick).toBeFalsy();
+      expect(subPropMetadata.someInput).toBeFalsy();
+      expect(subPropMetadata.someOtherInput).toBeTruthy();
+    });
   });
 });

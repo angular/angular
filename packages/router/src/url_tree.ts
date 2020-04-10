@@ -15,12 +15,16 @@ export function createEmptyUrlTree() {
 
 export function containsTree(container: UrlTree, containee: UrlTree, exact: boolean): boolean {
   if (exact) {
-    return equalQueryParams(container.queryParams, containee.queryParams) &&
-        equalSegmentGroups(container.root, containee.root);
+    return (
+      equalQueryParams(container.queryParams, containee.queryParams) &&
+      equalSegmentGroups(container.root, containee.root)
+    );
   }
 
-  return containsQueryParams(container.queryParams, containee.queryParams) &&
-      containsSegmentGroup(container.root, containee.root);
+  return (
+    containsQueryParams(container.queryParams, containee.queryParams) &&
+    containsSegmentGroup(container.root, containee.root)
+  );
 }
 
 function equalQueryParams(container: Params, containee: Params): boolean {
@@ -40,8 +44,10 @@ function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGro
 
 function containsQueryParams(container: Params, containee: Params): boolean {
   // TODO: This does not handle array params correctly.
-  return Object.keys(containee).length <= Object.keys(container).length &&
-      Object.keys(containee).every(key => equalArraysOrString(container[key], containee[key]));
+  return (
+    Object.keys(containee).length <= Object.keys(container).length &&
+    Object.keys(containee).every((key) => equalArraysOrString(container[key], containee[key]))
+  );
 }
 
 function containsSegmentGroup(container: UrlSegmentGroup, containee: UrlSegmentGroup): boolean {
@@ -49,13 +55,15 @@ function containsSegmentGroup(container: UrlSegmentGroup, containee: UrlSegmentG
 }
 
 function containsSegmentGroupHelper(
-    container: UrlSegmentGroup, containee: UrlSegmentGroup, containeePaths: UrlSegment[]): boolean {
+  container: UrlSegmentGroup,
+  containee: UrlSegmentGroup,
+  containeePaths: UrlSegment[]
+): boolean {
   if (container.segments.length > containeePaths.length) {
     const current = container.segments.slice(0, containeePaths.length);
     if (!equalPath(current, containeePaths)) return false;
     if (containee.hasChildren()) return false;
     return true;
-
   } else if (container.segments.length === containeePaths.length) {
     if (!equalPath(container.segments, containeePaths)) return false;
     for (const c in containee.children) {
@@ -63,7 +71,6 @@ function containsSegmentGroupHelper(
       if (!containsSegmentGroup(container.children[c], containee.children[c])) return false;
     }
     return true;
-
   } else {
     const current = containeePaths.slice(0, container.segments.length);
     const next = containeePaths.slice(container.segments.length);
@@ -106,16 +113,17 @@ function containsSegmentGroupHelper(
 export class UrlTree {
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _queryParamMap !: ParamMap;
+  _queryParamMap!: ParamMap;
 
   /** @internal */
   constructor(
-      /** The root segment group of the URL tree */
-      public root: UrlSegmentGroup,
-      /** The query params of the URL */
-      public queryParams: Params,
-      /** The fragment of the URL */
-      public fragment: string|null) {}
+    /** The root segment group of the URL tree */
+    public root: UrlSegmentGroup,
+    /** The query params of the URL */
+    public queryParams: Params,
+    /** The fragment of the URL */
+    public fragment: string | null
+  ) {}
 
   get queryParamMap(): ParamMap {
     if (!this._queryParamMap) {
@@ -125,7 +133,9 @@ export class UrlTree {
   }
 
   /** @docsNotRequired */
-  toString(): string { return DEFAULT_SERIALIZER.serialize(this); }
+  toString(): string {
+    return DEFAULT_SERIALIZER.serialize(this);
+  }
 }
 
 /**
@@ -140,31 +150,37 @@ export class UrlTree {
 export class UrlSegmentGroup {
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _sourceSegment !: UrlSegmentGroup;
+  _sourceSegment!: UrlSegmentGroup;
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _segmentIndexShift !: number;
+  _segmentIndexShift!: number;
   /** The parent node in the url tree */
-  parent: UrlSegmentGroup|null = null;
+  parent: UrlSegmentGroup | null = null;
 
   constructor(
-      /** The URL segments of this group. See `UrlSegment` for more information */
-      public segments: UrlSegment[],
-      /** The list of children of this group */
-      public children: {[key: string]: UrlSegmentGroup}) {
-    forEach(children, (v: any, k: any) => v.parent = this);
+    /** The URL segments of this group. See `UrlSegment` for more information */
+    public segments: UrlSegment[],
+    /** The list of children of this group */
+    public children: {[key: string]: UrlSegmentGroup}
+  ) {
+    forEach(children, (v: any, k: any) => (v.parent = this));
   }
 
   /** Whether the segment has child segments */
-  hasChildren(): boolean { return this.numberOfChildren > 0; }
+  hasChildren(): boolean {
+    return this.numberOfChildren > 0;
+  }
 
   /** Number of child segments */
-  get numberOfChildren(): number { return Object.keys(this.children).length; }
+  get numberOfChildren(): number {
+    return Object.keys(this.children).length;
+  }
 
   /** @docsNotRequired */
-  toString(): string { return serializePaths(this); }
+  toString(): string {
+    return serializePaths(this);
+  }
 }
-
 
 /**
  * @description
@@ -195,14 +211,15 @@ export class UrlSegmentGroup {
 export class UrlSegment {
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _parameterMap !: ParamMap;
+  _parameterMap!: ParamMap;
 
   constructor(
-      /** The path part of a URL segment */
-      public path: string,
+    /** The path part of a URL segment */
+    public path: string,
 
-      /** The matrix parameters associated with a segment */
-      public parameters: {[name: string]: string}) {}
+    /** The matrix parameters associated with a segment */
+    public parameters: {[name: string]: string}
+  ) {}
 
   get parameterMap() {
     if (!this._parameterMap) {
@@ -212,7 +229,9 @@ export class UrlSegment {
   }
 
   /** @docsNotRequired */
-  toString(): string { return serializePath(this); }
+  toString(): string {
+    return serializePath(this);
+  }
 }
 
 export function equalSegments(as: UrlSegment[], bs: UrlSegment[]): boolean {
@@ -225,7 +244,9 @@ export function equalPath(as: UrlSegment[], bs: UrlSegment[]): boolean {
 }
 
 export function mapChildrenIntoArray<T>(
-    segment: UrlSegmentGroup, fn: (v: UrlSegmentGroup, k: string) => T[]): T[] {
+  segment: UrlSegmentGroup,
+  fn: (v: UrlSegmentGroup, k: string) => T[]
+): T[] {
   let res: T[] = [];
   forEach(segment.children, (child: UrlSegmentGroup, childOutlet: string) => {
     if (childOutlet === PRIMARY_OUTLET) {
@@ -239,7 +260,6 @@ export function mapChildrenIntoArray<T>(
   });
   return res;
 }
-
 
 /**
  * @description
@@ -291,7 +311,7 @@ export class DefaultUrlSerializer implements UrlSerializer {
     const segment = `/${serializeSegment(tree.root, true)}`;
     const query = serializeQueryParams(tree.queryParams);
     const fragment =
-        typeof tree.fragment === `string` ? `#${encodeUriFragment(tree.fragment !)}` : '';
+      typeof tree.fragment === `string` ? `#${encodeUriFragment(tree.fragment!)}` : '';
 
     return `${segment}${query}${fragment}`;
   }
@@ -300,7 +320,7 @@ export class DefaultUrlSerializer implements UrlSerializer {
 const DEFAULT_SERIALIZER = new DefaultUrlSerializer();
 
 export function serializePaths(segment: UrlSegmentGroup): string {
-  return segment.segments.map(p => serializePath(p)).join('/');
+  return segment.segments.map((p) => serializePath(p)).join('/');
 }
 
 function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
@@ -309,9 +329,9 @@ function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
   }
 
   if (root) {
-    const primary = segment.children[PRIMARY_OUTLET] ?
-        serializeSegment(segment.children[PRIMARY_OUTLET], false) :
-        '';
+    const primary = segment.children[PRIMARY_OUTLET]
+      ? serializeSegment(segment.children[PRIMARY_OUTLET], false)
+      : '';
     const children: string[] = [];
 
     forEach(segment.children, (v: UrlSegmentGroup, k: string) => {
@@ -321,7 +341,6 @@ function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
     });
 
     return children.length > 0 ? `${primary}(${children.join('//')})` : primary;
-
   } else {
     const children = mapChildrenIntoArray(segment, (v: UrlSegmentGroup, k: string) => {
       if (k === PRIMARY_OUTLET) {
@@ -329,7 +348,6 @@ function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
       }
 
       return [`${k}:${serializeSegment(v, false)}`];
-
     });
 
     return `${serializePaths(segment)}/(${children.join('//')})`;
@@ -344,10 +362,10 @@ function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
  */
 function encodeUriString(s: string): string {
   return encodeURIComponent(s)
-      .replace(/%40/g, '@')
-      .replace(/%3A/gi, ':')
-      .replace(/%24/g, '$')
-      .replace(/%2C/gi, ',');
+    .replace(/%40/g, '@')
+    .replace(/%3A/gi, ':')
+    .replace(/%24/g, '$')
+    .replace(/%2C/gi, ',');
 }
 
 /**
@@ -397,19 +415,19 @@ export function serializePath(path: UrlSegment): string {
 
 function serializeMatrixParams(params: {[key: string]: string}): string {
   return Object.keys(params)
-      .map(key => `;${encodeUriSegment(key)}=${encodeUriSegment(params[key])}`)
-      .join('');
+    .map((key) => `;${encodeUriSegment(key)}=${encodeUriSegment(params[key])}`)
+    .join('');
 }
 
 function serializeQueryParams(params: {[key: string]: any}): string {
   const strParams: string[] = Object.keys(params).map((name) => {
     const value = params[name];
-    return Array.isArray(value) ?
-        value.map(v => `${encodeUriQuery(name)}=${encodeUriQuery(v)}`).join('&') :
-        `${encodeUriQuery(name)}=${encodeUriQuery(value)}`;
+    return Array.isArray(value)
+      ? value.map((v) => `${encodeUriQuery(name)}=${encodeUriQuery(v)}`).join('&')
+      : `${encodeUriQuery(name)}=${encodeUriQuery(value)}`;
   });
 
-  return strParams.length ? `?${strParams.join("&")}` : '';
+  return strParams.length ? `?${strParams.join('&')}` : '';
 }
 
 const SEGMENT_RE = /^[^\/()?;=#]+/;
@@ -435,7 +453,9 @@ function matchUrlQueryParamValue(str: string): string {
 class UrlParser {
   private remaining: string;
 
-  constructor(private url: string) { this.remaining = url; }
+  constructor(private url: string) {
+    this.remaining = url;
+  }
 
   parseRootSegment(): UrlSegmentGroup {
     this.consumeOptional('/');
@@ -458,7 +478,7 @@ class UrlParser {
     return params;
   }
 
-  parseFragment(): string|null {
+  parseFragment(): string | null {
     return this.consumeOptional('#') ? decodeURIComponent(this.remaining) : null;
   }
 
@@ -584,7 +604,7 @@ class UrlParser {
         throw new Error(`Cannot parse url '${this.url}'`);
       }
 
-      let outletName: string = undefined !;
+      let outletName: string = undefined!;
       if (path.indexOf(':') > -1) {
         outletName = path.substr(0, path.indexOf(':'));
         this.capture(outletName);
@@ -594,15 +614,19 @@ class UrlParser {
       }
 
       const children = this.parseChildren();
-      segments[outletName] = Object.keys(children).length === 1 ? children[PRIMARY_OUTLET] :
-                                                                  new UrlSegmentGroup([], children);
+      segments[outletName] =
+        Object.keys(children).length === 1
+          ? children[PRIMARY_OUTLET]
+          : new UrlSegmentGroup([], children);
       this.consumeOptional('//');
     }
 
     return segments;
   }
 
-  private peekStartsWith(str: string): boolean { return this.remaining.startsWith(str); }
+  private peekStartsWith(str: string): boolean {
+    return this.remaining.startsWith(str);
+  }
 
   // Consumes the prefix when it is present and returns whether it has been consumed
   private consumeOptional(str: string): boolean {

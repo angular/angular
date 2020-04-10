@@ -14,10 +14,15 @@ import {ClassDeclaration} from '../../../src/ngtsc/reflection';
 import {HandlerFlags} from '../../../src/ngtsc/transform';
 
 import {Migration, MigrationHost} from './migration';
-import {createComponentDecorator, createDirectiveDecorator, hasDirectiveDecorator, hasPipeDecorator} from './utils';
+import {
+  createComponentDecorator,
+  createDirectiveDecorator,
+  hasDirectiveDecorator,
+  hasPipeDecorator,
+} from './utils';
 
 export class UndecoratedChildMigration implements Migration {
-  apply(clazz: ClassDeclaration, host: MigrationHost): ts.Diagnostic|null {
+  apply(clazz: ClassDeclaration, host: MigrationHost): ts.Diagnostic | null {
     // This migration looks at NgModules and considers the directives (and pipes) it declares.
     // It verifies that these classes have decorators.
     const moduleMeta = host.metadata.getNgModuleMetadata(new Reference(clazz));
@@ -64,10 +69,16 @@ export class UndecoratedChildMigration implements Migration {
     // Otherwise, decorate the class with @Component() or @Directive(), as appropriate.
     if (baseMeta.isComponent) {
       host.injectSyntheticDecorator(
-          ref.node, createComponentDecorator(ref.node, baseMeta), HandlerFlags.FULL_INHERITANCE);
+        ref.node,
+        createComponentDecorator(ref.node, baseMeta),
+        HandlerFlags.FULL_INHERITANCE
+      );
     } else {
       host.injectSyntheticDecorator(
-          ref.node, createDirectiveDecorator(ref.node, baseMeta), HandlerFlags.FULL_INHERITANCE);
+        ref.node,
+        createDirectiveDecorator(ref.node, baseMeta),
+        HandlerFlags.FULL_INHERITANCE
+      );
     }
 
     // Success!

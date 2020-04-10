@@ -13,16 +13,8 @@ import {ThirdPartyDirective} from './directive';
 import {AnotherThirdPartyModule} from './other_module';
 
 @NgModule({
-  declarations: [
-    ThirdPartyComponent,
-    ThirdPartyDirective,
-  ],
-  exports: [
-    AnotherThirdPartyModule,
-    ThirdPartyComponent,
-    ThirdPartyDirective,
-  ],
-  imports: [AnotherThirdPartyModule]
+  declarations: [ThirdPartyComponent, ThirdPartyDirective],
+  exports: [AnotherThirdPartyModule, ThirdPartyComponent, ThirdPartyDirective],
+  imports: [AnotherThirdPartyModule],
 })
-export class ThirdpartyModule {
-}
+export class ThirdpartyModule {}

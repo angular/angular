@@ -13,7 +13,11 @@ import {KeyValueDifferFactory, KeyValueDiffers} from './differs/keyvalue_differs
 
 export {WrappedValue, devModeEqual} from './change_detection_util';
 export {ChangeDetectorRef} from './change_detector_ref';
-export {ChangeDetectionStrategy, ChangeDetectorStatus, isDefaultChangeDetectionStrategy} from './constants';
+export {
+  ChangeDetectionStrategy,
+  ChangeDetectorStatus,
+  isDefaultChangeDetectionStrategy,
+} from './constants';
 export {DefaultIterableDifferFactory} from './differs/default_iterable_differ';
 export {DefaultIterableDiffer} from './differs/default_iterable_differ';
 export {DefaultKeyValueDifferFactory} from './differs/default_keyvalue_differ';
@@ -25,14 +29,17 @@ export {
   IterableDifferFactory,
   IterableDiffers,
   NgIterable,
-  TrackByFunction
-} from
-'./differs/iterable_differs';
-export {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFactory, KeyValueDiffers} from './differs/keyvalue_differs';
+  TrackByFunction,
+} from './differs/iterable_differs';
+export {
+  KeyValueChangeRecord,
+  KeyValueChanges,
+  KeyValueDiffer,
+  KeyValueDifferFactory,
+  KeyValueDiffers,
+} from './differs/keyvalue_differs';
 export {PipeTransform} from './pipe_transform';
 export {SimpleChange, SimpleChanges} from '../interface/simple_change';
-
-
 
 /**
  * Structural diffing for `Object`s and `Map`s.

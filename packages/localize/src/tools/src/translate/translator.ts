@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ɵMessageId, ɵParsedTranslation} from '@angular/localize';
 import {relative} from 'path';
 
@@ -54,8 +55,14 @@ export interface TranslationHandler {
    * stripped out.
    */
   translate(
-      diagnostics: Diagnostics, sourceRoot: string, relativeFilePath: string, contents: Buffer,
-      outputPathFn: OutputPathFn, translations: TranslationBundle[], sourceLocale?: string): void;
+    diagnostics: Diagnostics,
+    sourceRoot: string,
+    relativeFilePath: string,
+    contents: Buffer,
+    outputPathFn: OutputPathFn,
+    translations: TranslationBundle[],
+    sourceLocale?: string
+  ): void;
 }
 
 /**
@@ -66,16 +73,26 @@ export class Translator {
   constructor(private resourceHandlers: TranslationHandler[], private diagnostics: Diagnostics) {}
 
   translateFiles(
-      inputPaths: string[], rootPath: string, outputPathFn: OutputPathFn,
-      translations: TranslationBundle[], sourceLocale?: string): void {
-    inputPaths.forEach(inputPath => {
+    inputPaths: string[],
+    rootPath: string,
+    outputPathFn: OutputPathFn,
+    translations: TranslationBundle[],
+    sourceLocale?: string
+  ): void {
+    inputPaths.forEach((inputPath) => {
       const contents = FileUtils.readFileBuffer(inputPath);
       const relativePath = relative(rootPath, inputPath);
       for (const resourceHandler of this.resourceHandlers) {
         if (resourceHandler.canTranslate(relativePath, contents)) {
           return resourceHandler.translate(
-              this.diagnostics, rootPath, relativePath, contents, outputPathFn, translations,
-              sourceLocale);
+            this.diagnostics,
+            rootPath,
+            relativePath,
+            contents,
+            outputPathFn,
+            translations,
+            sourceLocale
+          );
         }
       }
       this.diagnostics.error(`Unable to handle resource file: ${inputPath}`);

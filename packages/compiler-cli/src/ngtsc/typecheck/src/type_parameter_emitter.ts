@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 
 import {OwningModule, Reference} from '../../imports';
@@ -12,14 +13,14 @@ import {ReflectionHost} from '../../reflection';
 
 import {canEmitType, ResolvedTypeReference, TypeEmitter} from './type_emitter';
 
-
 /**
  * See `TypeEmitter` for more information on the emitting process.
  */
 export class TypeParameterEmitter {
   constructor(
-      private typeParameters: ts.NodeArray<ts.TypeParameterDeclaration>|undefined,
-      private reflector: ReflectionHost) {}
+    private typeParameters: ts.NodeArray<ts.TypeParameterDeclaration> | undefined,
+    private reflector: ReflectionHost
+  ) {}
 
   /**
    * Determines whether the type parameters can be emitted. If this returns true, then a call to
@@ -31,34 +32,35 @@ export class TypeParameterEmitter {
       return true;
     }
 
-    return this.typeParameters.every(typeParam => {
+    return this.typeParameters.every((typeParam) => {
       if (typeParam.constraint === undefined) {
         return true;
       }
 
-      return canEmitType(typeParam.constraint, type => this.resolveTypeReference(type));
+      return canEmitType(typeParam.constraint, (type) => this.resolveTypeReference(type));
     });
   }
 
   /**
    * Emits the type parameters using the provided emitter function for `Reference`s.
    */
-  emit(emitReference: (ref: Reference) => ts.TypeNode): ts.TypeParameterDeclaration[]|undefined {
+  emit(emitReference: (ref: Reference) => ts.TypeNode): ts.TypeParameterDeclaration[] | undefined {
     if (this.typeParameters === undefined) {
       return undefined;
     }
 
-    const emitter = new TypeEmitter(type => this.resolveTypeReference(type), emitReference);
+    const emitter = new TypeEmitter((type) => this.resolveTypeReference(type), emitReference);
 
-    return this.typeParameters.map(typeParam => {
+    return this.typeParameters.map((typeParam) => {
       const constraint =
-          typeParam.constraint !== undefined ? emitter.emitType(typeParam.constraint) : undefined;
+        typeParam.constraint !== undefined ? emitter.emitType(typeParam.constraint) : undefined;
 
       return ts.updateTypeParameterDeclaration(
-          /* node */ typeParam,
-          /* name */ typeParam.name,
-          /* constraint */ constraint,
-          /* defaultType */ typeParam.default);
+        /* node */ typeParam,
+        /* name */ typeParam.name,
+        /* constraint */ constraint,
+        /* defaultType */ typeParam.default
+      );
     });
   }
 
@@ -78,7 +80,7 @@ export class TypeParameterEmitter {
       return type;
     }
 
-    let owningModule: OwningModule|null = null;
+    let owningModule: OwningModule | null = null;
     if (declaration.viaModule !== null) {
       owningModule = {
         specifier: declaration.viaModule,
@@ -92,6 +94,6 @@ export class TypeParameterEmitter {
   private isLocalTypeParameter(decl: ts.Declaration): boolean {
     // Checking for local type parameters only occurs during resolution of type parameters, so it is
     // guaranteed that type parameters are present.
-    return this.typeParameters!.some(param => param === decl);
+    return this.typeParameters!.some((param) => param === decl);
   }
 }

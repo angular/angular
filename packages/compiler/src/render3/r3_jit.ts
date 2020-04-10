@@ -21,8 +21,9 @@ export class R3JitReflector implements CompileReflector {
   resolveExternalReference(ref: o.ExternalReference): any {
     // This reflector only handles @angular/core imports.
     if (ref.moduleName !== '@angular/core') {
-      throw new Error(`Cannot resolve external reference to ${
-          ref.moduleName}, only references to @angular/core are supported.`);
+      throw new Error(
+        `Cannot resolve external reference to ${ref.moduleName}, only references to @angular/core are supported.`
+      );
     }
     if (!this.context.hasOwnProperty(ref.name!)) {
       throw new Error(`No value provided for @angular/core symbol '${ref.name!}'.`);
@@ -46,7 +47,7 @@ export class R3JitReflector implements CompileReflector {
     throw new Error('Not implemented.');
   }
 
-  propMetadata(typeOrFunc: any): {[key: string]: any[];} {
+  propMetadata(typeOrFunc: any): {[key: string]: any[]} {
     throw new Error('Not implemented.');
   }
 
@@ -54,7 +55,7 @@ export class R3JitReflector implements CompileReflector {
     throw new Error('Not implemented.');
   }
 
-  guards(typeOrFunc: any): {[key: string]: any;} {
+  guards(typeOrFunc: any): {[key: string]: any} {
     throw new Error('Not implemented.');
   }
 

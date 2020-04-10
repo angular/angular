@@ -9,7 +9,6 @@
 import {Route, UrlMatchResult} from './config';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
-
 /**
  * The primary routing outlet.
  *
@@ -52,7 +51,7 @@ export interface ParamMap {
    * or the first value if the parameter has multiple values,
    * or `null` when there is no such parameter.
    */
-  get(name: string): string|null;
+  get(name: string): string | null;
   /**
    * Retrieves multiple values for a parameter.
    * @param name The parameter name.
@@ -69,11 +68,15 @@ export interface ParamMap {
 class ParamsAsMap implements ParamMap {
   private params: Params;
 
-  constructor(params: Params) { this.params = params || {}; }
+  constructor(params: Params) {
+    this.params = params || {};
+  }
 
-  has(name: string): boolean { return this.params.hasOwnProperty(name); }
+  has(name: string): boolean {
+    return this.params.hasOwnProperty(name);
+  }
 
-  get(name: string): string|null {
+  get(name: string): string | null {
     if (this.has(name)) {
       const v = this.params[name];
       return Array.isArray(v) ? v[0] : v;
@@ -91,7 +94,9 @@ class ParamsAsMap implements ParamMap {
     return [];
   }
 
-  get keys(): string[] { return Object.keys(this.params); }
+  get keys(): string[] {
+    return Object.keys(this.params);
+  }
 }
 
 /**
@@ -119,16 +124,21 @@ export function isNavigationCancelingError(error: Error) {
 
 // Matches the route configuration (`route`) against the actual URL (`segments`).
 export function defaultUrlMatcher(
-    segments: UrlSegment[], segmentGroup: UrlSegmentGroup, route: Route): UrlMatchResult|null {
-  const parts = route.path !.split('/');
+  segments: UrlSegment[],
+  segmentGroup: UrlSegmentGroup,
+  route: Route
+): UrlMatchResult | null {
+  const parts = route.path!.split('/');
 
   if (parts.length > segments.length) {
     // The actual URL is shorter than the config, no match
     return null;
   }
 
-  if (route.pathMatch === 'full' &&
-      (segmentGroup.hasChildren() || parts.length < segments.length)) {
+  if (
+    route.pathMatch === 'full' &&
+    (segmentGroup.hasChildren() || parts.length < segments.length)
+  ) {
     // The config is longer than the actual URL but we are looking for a full match, return null
     return null;
   }

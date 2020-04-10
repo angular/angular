@@ -13,12 +13,13 @@ import {Configuration, Linter} from 'tslint';
 
 describe('Google3 undecorated classes with decorated fields TSLint rule', () => {
   const rulesDirectory = dirname(
-      require.resolve('../../migrations/google3/undecoratedClassesWithDecoratedFieldsRule'));
+    require.resolve('../../migrations/google3/undecoratedClassesWithDecoratedFieldsRule')
+  );
 
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = join(process.env['TEST_TMPDIR'] !, 'google3-test');
+    tmpDir = join(process.env['TEST_TMPDIR']!, 'google3-test');
     shx.mkdir('-p', tmpDir);
     writeFile('tsconfig.json', JSON.stringify({compilerOptions: {module: 'es2015'}}));
   });
@@ -32,8 +33,8 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
       rules: {'undecorated-classes-with-decorated-fields': true},
     });
 
-    program.getRootFileNames().forEach(fileName => {
-      linter.lint(fileName, program.getSourceFile(fileName) !.getFullText(), config);
+    program.getRootFileNames().forEach((fileName) => {
+      linter.lint(fileName, program.getSourceFile(fileName)!.getFullText(), config);
     });
 
     return linter;
@@ -43,10 +44,14 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
     writeFileSync(join(tmpDir, fileName), content);
   }
 
-  function getFile(fileName: string) { return readFileSync(join(tmpDir, fileName), 'utf8'); }
+  function getFile(fileName: string) {
+    return readFileSync(join(tmpDir, fileName), 'utf8');
+  }
 
   it('should flag undecorated classes with decorated fields', () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { Input, Directive } from '@angular/core';
 
       @Directive()
@@ -57,31 +62,38 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
       export class InvalidClass {
         @Input() isActive: boolean;
       }
-    `);
+    `
+    );
 
     const linter = runTSLint(false);
-    const failures = linter.getResult().failures.map(failure => failure.getFailure());
+    const failures = linter.getResult().failures.map((failure) => failure.getFailure());
 
     expect(failures.length).toBe(1);
-    expect(failures[0])
-        .toBe('Class needs to be decorated with "@Directive()" because it uses Angular features.');
+    expect(failures[0]).toBe(
+      'Class needs to be decorated with "@Directive()" because it uses Angular features.'
+    );
   });
 
   it(`should add an import for Directive if there isn't one already`, () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { Input } from '@angular/core';
 
       export class Base {
         @Input() isActive: boolean;
       }
-    `);
+    `
+    );
 
     runTSLint(true);
     expect(getFile('/index.ts')).toContain(`import { Input, Directive } from '@angular/core';`);
   });
 
   it('should not change the imports if there is an import for Directive already', () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { Directive, Input } from '@angular/core';
 
       export class Base {
@@ -91,14 +103,17 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
       @Directive()
       export class Child extends Base {
       }
-    `);
+    `
+    );
 
     runTSLint(true);
     expect(getFile('/index.ts')).toContain(`import { Directive, Input } from '@angular/core';`);
   });
 
-  it('should not generate conflicting imports there is a different `Directive` symbol', async() => {
-    writeFile('/index.ts', `
+  it('should not generate conflicting imports there is a different `Directive` symbol', async () => {
+    writeFile(
+      '/index.ts',
+      `
       import { HostBinding } from '@angular/core';
       
       export class Directive {
@@ -109,30 +124,37 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
       export class MyLibrarySharedBaseClass {
         @HostBinding('class.active') isActive: boolean;
       }
-    `);
+    `
+    );
 
     runTSLint(true);
     const fileContent = getFile('/index.ts');
-    expect(fileContent)
-        .toContain(`import { HostBinding, Directive as Directive_1 } from '@angular/core';`);
+    expect(fileContent).toContain(
+      `import { HostBinding, Directive as Directive_1 } from '@angular/core';`
+    );
     expect(fileContent).toMatch(/@Directive_1\(\)\s+export class MyLibrarySharedBaseClass/);
   });
 
   it('should add @Directive to undecorated classes that have @Input', () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { Input } from '@angular/core';
 
       export class Base {
         @Input() isActive: boolean;
       }
-    `);
+    `
+    );
 
     runTSLint(true);
     expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should not change decorated classes', () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { Input, Component, Output, EventEmitter } from '@angular/core';
 
       @Component({})
@@ -143,31 +165,38 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
       export class Child extends Base {
         @Output() clicked = new EventEmitter<void>();
       }
-    `);
+    `
+    );
 
     runTSLint(true);
     const content = getFile('/index.ts');
     expect(content).toContain(
-        `import { Input, Component, Output, EventEmitter, Directive } from '@angular/core';`);
+      `import { Input, Component, Output, EventEmitter, Directive } from '@angular/core';`
+    );
     expect(content).toContain(`@Component({})\n      export class Base {`);
     expect(content).toContain(`@Directive()\nexport class Child extends Base {`);
   });
 
   it('should add @Directive to undecorated classes that have @Output', () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { Output, EventEmitter } from '@angular/core';
 
       export class Base {
         @Output() clicked = new EventEmitter<void>();
       }
-    `);
+    `
+    );
 
     runTSLint(true);
     expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a host binding', () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { HostBinding } from '@angular/core';
 
       export class Base {
@@ -176,14 +205,17 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
           return 'id-' + Date.now();
         }
       }
-    `);
+    `
+    );
 
     runTSLint(true);
     expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a host listener', () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { HostListener } from '@angular/core';
 
       export class Base {
@@ -192,66 +224,81 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
           console.log('Key has been pressed');
         }
       }
-    `);
+    `
+    );
 
     runTSLint(true);
     expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a ViewChild query', () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { ViewChild, ElementRef } from '@angular/core';
 
       export class Base {
         @ViewChild('button') button: ElementRef<HTMLElement>;
       }
-    `);
+    `
+    );
 
     runTSLint(true);
     expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a ViewChildren query', () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { ViewChildren, ElementRef } from '@angular/core';
 
       export class Base {
         @ViewChildren('button') button: ElementRef<HTMLElement>;
       }
-    `);
+    `
+    );
 
     runTSLint(true);
     expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a ContentChild query', () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { ContentChild, ElementRef } from '@angular/core';
 
       export class Base {
         @ContentChild('button') button: ElementRef<HTMLElement>;
       }
-    `);
+    `
+    );
 
     runTSLint(true);
     expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a ContentChildren query', () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { ContentChildren, ElementRef } from '@angular/core';
 
       export class Base {
         @ContentChildren('button') button: ElementRef<HTMLElement>;
       }
-    `);
+    `
+    );
 
     runTSLint(true);
     expect(getFile('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
-  it('should add @Directive to undecorated derived classes of a migrated class', async() => {
-    writeFile('/index.ts', `
+  it('should add @Directive to undecorated derived classes of a migrated class', async () => {
+    writeFile(
+      '/index.ts',
+      `
       import { Input, Directive, NgModule } from '@angular/core';
 
       export class Base {
@@ -269,7 +316,8 @@ describe('Google3 undecorated classes with decorated fields TSLint rule', () => 
       
       @NgModule({declarations: [MyComp, MyCompWrapped]})
       export class AppModule {} 
-    `);
+    `
+    );
 
     runTSLint(true);
     const fileContent = getFile('/index.ts');

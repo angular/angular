@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-(function(global: any) {
-
+(function (global: any) {
   writeScriptTag('/all/benchmarks/vendor/core.js');
   writeScriptTag('/all/benchmarks/vendor/zone.js');
   writeScriptTag('/all/benchmarks/vendor/long-stack-trace-zone.js');
@@ -26,14 +25,14 @@
           '@angular/core': '/packages-dist/core/bundles/core.umd.js',
           '@angular/animations': '/packages-dist/common/bundles/animations.umd.js',
           '@angular/platform-browser/animations':
-              '/packages-dist/platform-browser/bundles/platform-browser-animations.umd.js',
+            '/packages-dist/platform-browser/bundles/platform-browser-animations.umd.js',
           '@angular/common': '/packages-dist/common/bundles/common.umd.js',
           '@angular/forms': '/packages-dist/forms/bundles/forms.umd.js',
           '@angular/compiler': '/packages-dist/compiler/bundles/compiler.umd.js',
           '@angular/platform-browser':
-              '/packages-dist/platform-browser/bundles/platform-browser.umd.js',
+            '/packages-dist/platform-browser/bundles/platform-browser.umd.js',
           '@angular/platform-browser-dynamic':
-              '/packages-dist/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
+            '/packages-dist/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
           '@angular/http': '/packages-dist/http/bundles/http.umd.js',
           '@angular/upgrade': '/packages-dist/upgrade/bundles/upgrade.umd.js',
           '@angular/router': '/packages-dist/router/bundles/router.umd.js',
@@ -45,11 +44,12 @@
           'rxjs/testing': {main: 'index.js', defaultExtension: 'js'},
           'rxjs/websocket': {main: 'index.js', defaultExtension: 'js'},
           'rxjs': {main: 'index.js', defaultExtension: 'js'},
-        }
+        },
       });
     } else {
       console.warn(
-          'Not using the Angular bundles. Don\'t use this configuration for e2e/performance tests!');
+        "Not using the Angular bundles. Don't use this configuration for e2e/performance tests!"
+      );
 
       System.config({
         defaultJSExtensions: true,
@@ -70,15 +70,17 @@
           'rxjs/testing': {main: 'index.js', defaultExtension: 'js'},
           'rxjs/websocket': {main: 'index.js', defaultExtension: 'js'},
           'rxjs': {main: 'index.js', defaultExtension: 'js'},
-        }
+        },
       });
     }
 
     // BOOTSTRAP the app!
-    System.import('index').then(function(m: any) { m.main(); }, console.error.bind(console));
+    System.import('index').then(function (m: any) {
+      m.main();
+    }, console.error.bind(console));
   }
 
   function writeScriptTag(scriptUrl: string, onload?: string) {
     document.write(`<script src="${scriptUrl}" onload="${onload}"></script>`);
   }
-}(window));
+})(window);

@@ -13,15 +13,16 @@ import {OutputContext} from '../util';
 /**
  * Convert an object map with `Expression` values into a `LiteralMapExpr`.
  */
-export function mapToMapExpression(map: {[key: string]: o.Expression|undefined}): o.LiteralMapExpr {
-  const result = Object.keys(map).map(
-      key => ({
-        key,
-        // The assertion here is because really TypeScript doesn't allow us to express that if the
-        // key is present, it will have a value, but this is true in reality.
-        value: map[key]!,
-        quoted: false,
-      }));
+export function mapToMapExpression(map: {
+  [key: string]: o.Expression | undefined;
+}): o.LiteralMapExpr {
+  const result = Object.keys(map).map((key) => ({
+    key,
+    // The assertion here is because really TypeScript doesn't allow us to express that if the
+    // key is present, it will have a value, but this is true in reality.
+    value: map[key]!,
+    quoted: false,
+  }));
   return o.literalMap(result);
 }
 
@@ -32,7 +33,7 @@ export function mapToMapExpression(map: {[key: string]: o.Expression|undefined})
  */
 export function convertMetaToOutput(meta: any, ctx: OutputContext): o.Expression {
   if (Array.isArray(meta)) {
-    return o.literalArr(meta.map(entry => convertMetaToOutput(entry, ctx)));
+    return o.literalArr(meta.map((entry) => convertMetaToOutput(entry, ctx)));
   }
   if (meta instanceof StaticSymbol) {
     return ctx.importExpr(meta);
@@ -45,7 +46,7 @@ export function convertMetaToOutput(meta: any, ctx: OutputContext): o.Expression
 }
 
 export function typeWithParameters(type: o.Expression, numParams: number): o.ExpressionType {
-  let params: o.Type[]|null = null;
+  let params: o.Type[] | null = null;
   if (numParams > 0) {
     params = [];
     for (let i = 0; i < numParams; i++) {
@@ -91,10 +92,18 @@ export function prepareSyntheticListenerFunctionName(name: string, phase: string
 export function jitOnlyGuardedExpression(expr: o.Expression): o.Expression {
   const ngJitMode = new o.ExternalExpr({name: 'ngJitMode', moduleName: null});
   const jitFlagNotDefined = new o.BinaryOperatorExpr(
-      o.BinaryOperator.Identical, new o.TypeofExpr(ngJitMode), o.literal('undefined'));
+    o.BinaryOperator.Identical,
+    new o.TypeofExpr(ngJitMode),
+    o.literal('undefined')
+  );
   const jitFlagUndefinedOrTrue = new o.BinaryOperatorExpr(
-      o.BinaryOperator.Or, jitFlagNotDefined, ngJitMode, /* type */ undefined,
-      /* sourceSpan */ undefined, true);
+    o.BinaryOperator.Or,
+    jitFlagNotDefined,
+    ngJitMode,
+    /* type */ undefined,
+    /* sourceSpan */ undefined,
+    true
+  );
   return new o.BinaryOperatorExpr(o.BinaryOperator.And, jitFlagUndefinedOrTrue, expr);
 }
 

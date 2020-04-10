@@ -80,7 +80,11 @@ runInEachFileSystem(() => {
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
         const host = new UmdReflectionHost(new MockLogger(), false, bundle);
         const classNode = getDeclaration(
-            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+          bundle.program,
+          SOME_DIRECTIVE_FILE.name,
+          'SomeDirective',
+          isNamedVariableDeclaration
+        );
         const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
         expect(decorators).toBeDefined();
@@ -90,8 +94,8 @@ runInEachFileSystem(() => {
         expect(decorator.name).toEqual('Directive');
         expect(decorator.identifier!.getText()).toEqual('core.Directive');
         expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
-        expect(decorator.args!.map(arg => arg.getText())).toEqual([
-          '{ selector: \'[someDirective]\' }',
+        expect(decorator.args!.map((arg) => arg.getText())).toEqual([
+          "{ selector: '[someDirective]' }",
         ]);
       });
 
@@ -100,8 +104,11 @@ runInEachFileSystem(() => {
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
         const host = new UmdReflectionHost(new MockLogger(), false, bundle);
         const classNode = getDeclaration(
-            bundle.program, SOME_DIRECTIVE_FILE.name, 'AliasedDirective$1',
-            isNamedVariableDeclaration);
+          bundle.program,
+          SOME_DIRECTIVE_FILE.name,
+          'AliasedDirective$1',
+          isNamedVariableDeclaration
+        );
         const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
         expect(decorators).toBeDefined();
@@ -111,8 +118,8 @@ runInEachFileSystem(() => {
         expect(decorator.name).toEqual('Directive');
         expect(decorator.identifier!.getText()).toEqual('core.Directive');
         expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
-        expect(decorator.args!.map(arg => arg.getText())).toEqual([
-          '{ selector: \'[someDirective]\' }',
+        expect(decorator.args!.map((arg) => arg.getText())).toEqual([
+          "{ selector: '[someDirective]' }",
         ]);
       });
     });
@@ -123,18 +130,22 @@ runInEachFileSystem(() => {
         const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
         const host = new UmdReflectionHost(new MockLogger(), false, bundle);
         const classNode = getDeclaration(
-            bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedVariableDeclaration);
+          bundle.program,
+          SOME_DIRECTIVE_FILE.name,
+          'SomeDirective',
+          isNamedVariableDeclaration
+        );
         const members = host.getMembersOfClass(classNode);
 
-        const input1 = members.find(member => member.name === 'input1')!;
+        const input1 = members.find((member) => member.name === 'input1')!;
         expect(input1.kind).toEqual(ClassMemberKind.Property);
         expect(input1.isStatic).toEqual(false);
-        expect(input1.decorators!.map(d => d.name)).toEqual(['Input']);
+        expect(input1.decorators!.map((d) => d.name)).toEqual(['Input']);
 
-        const input2 = members.find(member => member.name === 'input2')!;
+        const input2 = members.find((member) => member.name === 'input2')!;
         expect(input2.kind).toEqual(ClassMemberKind.Property);
         expect(input2.isStatic).toEqual(false);
-        expect(input1.decorators!.map(d => d.name)).toEqual(['Input']);
+        expect(input1.decorators!.map((d) => d.name)).toEqual(['Input']);
       });
 
       describe('getConstructorParameters', () => {
@@ -143,13 +154,18 @@ runInEachFileSystem(() => {
           const bundle = makeTestBundleProgram(SOME_DIRECTIVE_FILE.name);
           const host = new UmdReflectionHost(new MockLogger(), false, bundle);
           const classNode = getDeclaration(
-              bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
-              isNamedVariableDeclaration);
+            bundle.program,
+            SOME_DIRECTIVE_FILE.name,
+            'SomeDirective',
+            isNamedVariableDeclaration
+          );
           const parameters = host.getConstructorParameters(classNode);
 
           expect(parameters).toBeDefined();
-          expect(parameters!.map(parameter => parameter.name)).toEqual([
-            '_viewContainer', '_template', 'injected'
+          expect(parameters!.map((parameter) => parameter.name)).toEqual([
+            '_viewContainer',
+            '_template',
+            'injected',
           ]);
           expectTypeValueReferencesForParameters(parameters!, [
             'ViewContainerRef',

@@ -6,14 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, ApplicationRef, DebugNode, NgProbeToken, NgZone, Optional, Provider, ɵgetDebugNodeR2} from '@angular/core';
+import {
+  APP_INITIALIZER,
+  ApplicationRef,
+  DebugNode,
+  NgProbeToken,
+  NgZone,
+  Optional,
+  Provider,
+  ɵgetDebugNodeR2,
+} from '@angular/core';
 
 import {exportNgVar} from '../util';
 
 const CORE_TOKENS = (() => ({
-                       'ApplicationRef': ApplicationRef,
-                       'NgZone': NgZone,
-                     }))();
+  'ApplicationRef': ApplicationRef,
+  'NgZone': NgZone,
+}))();
 
 const INSPECT_GLOBAL_NAME = 'probe';
 const CORE_TOKENS_GLOBAL_NAME = 'coreTokens';
@@ -23,7 +32,7 @@ const CORE_TOKENS_GLOBAL_NAME = 'coreTokens';
  * null if the given native element does not have an Angular view associated
  * with it.
  */
-export function inspectNativeElementR2(element: any): DebugNode|null {
+export function inspectNativeElementR2(element: any): DebugNode | null {
   return ɵgetDebugNodeR2(element);
 }
 
@@ -34,7 +43,7 @@ export function _createNgProbeR2(coreTokens: NgProbeToken[]): any {
 }
 
 function _ngProbeTokensToMap(tokens: NgProbeToken[]): {[name: string]: any} {
-  return tokens.reduce((prev: any, t: any) => (prev[t.name] = t.token, prev), {});
+  return tokens.reduce((prev: any, t: any) => ((prev[t.name] = t.token), prev), {});
 }
 
 /**
@@ -53,9 +62,7 @@ export const ELEMENT_PROBE_PROVIDERS__PRE_R3__: Provider[] = [
   {
     provide: APP_INITIALIZER,
     useFactory: _createNgProbeR2,
-    deps: [
-      [NgProbeToken, new Optional()],
-    ],
+    deps: [[NgProbeToken, new Optional()]],
     multi: true,
   },
 ];

@@ -43,10 +43,11 @@ export type NavigationTrigger = 'imperative' | 'popstate' | 'hashchange';
  */
 export class RouterEvent {
   constructor(
-      /** A unique ID that the router assigns to every router navigation. */
-      public id: number,
-      /** The URL that is the destination for this navigation. */
-      public url: string) {}
+    /** A unique ID that the router assigns to every router navigation. */
+    public id: number,
+    /** The URL that is the destination for this navigation. */
+    public url: string
+  ) {}
 }
 
 /**
@@ -60,7 +61,7 @@ export class NavigationStart extends RouterEvent {
    * An `imperative` trigger is a call to `router.navigateByUrl()` or `router.navigate()`.
    *
    */
-  navigationTrigger?: 'imperative'|'popstate'|'hashchange';
+  navigationTrigger?: 'imperative' | 'popstate' | 'hashchange';
 
   /**
    * The navigation state that was previously supplied to the `pushState` call,
@@ -79,24 +80,27 @@ export class NavigationStart extends RouterEvent {
    * remembered state, such as scroll position.
    *
    */
-  restoredState?: {[k: string]: any, navigationId: number}|null;
+  restoredState?: {[k: string]: any; navigationId: number} | null;
 
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
-      /** @docsNotRequired */
-      navigationTrigger: 'imperative'|'popstate'|'hashchange' = 'imperative',
-      /** @docsNotRequired */
-      restoredState: {[k: string]: any, navigationId: number}|null = null) {
+    /** @docsNotRequired */
+    id: number,
+    /** @docsNotRequired */
+    url: string,
+    /** @docsNotRequired */
+    navigationTrigger: 'imperative' | 'popstate' | 'hashchange' = 'imperative',
+    /** @docsNotRequired */
+    restoredState: {[k: string]: any; navigationId: number} | null = null
+  ) {
     super(id, url);
     this.navigationTrigger = navigationTrigger;
     this.restoredState = restoredState;
   }
 
   /** @docsNotRequired */
-  toString(): string { return `NavigationStart(id: ${this.id}, url: '${this.url}')`; }
+  toString(): string {
+    return `NavigationStart(id: ${this.id}, url: '${this.url}')`;
+  }
 }
 
 /**
@@ -106,12 +110,13 @@ export class NavigationStart extends RouterEvent {
  */
 export class NavigationEnd extends RouterEvent {
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
-      /** @docsNotRequired */
-      public urlAfterRedirects: string) {
+    /** @docsNotRequired */
+    id: number,
+    /** @docsNotRequired */
+    url: string,
+    /** @docsNotRequired */
+    public urlAfterRedirects: string
+  ) {
     super(id, url);
   }
 
@@ -131,17 +136,20 @@ export class NavigationEnd extends RouterEvent {
  */
 export class NavigationCancel extends RouterEvent {
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
-      /** @docsNotRequired */
-      public reason: string) {
+    /** @docsNotRequired */
+    id: number,
+    /** @docsNotRequired */
+    url: string,
+    /** @docsNotRequired */
+    public reason: string
+  ) {
     super(id, url);
   }
 
   /** @docsNotRequired */
-  toString(): string { return `NavigationCancel(id: ${this.id}, url: '${this.url}')`; }
+  toString(): string {
+    return `NavigationCancel(id: ${this.id}, url: '${this.url}')`;
+  }
 }
 
 /**
@@ -151,12 +159,13 @@ export class NavigationCancel extends RouterEvent {
  */
 export class NavigationError extends RouterEvent {
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
-      /** @docsNotRequired */
-      public error: any) {
+    /** @docsNotRequired */
+    id: number,
+    /** @docsNotRequired */
+    url: string,
+    /** @docsNotRequired */
+    public error: any
+  ) {
     super(id, url);
   }
 
@@ -173,14 +182,15 @@ export class NavigationError extends RouterEvent {
  */
 export class RoutesRecognized extends RouterEvent {
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
-      /** @docsNotRequired */
-      public urlAfterRedirects: string,
-      /** @docsNotRequired */
-      public state: RouterStateSnapshot) {
+    /** @docsNotRequired */
+    id: number,
+    /** @docsNotRequired */
+    url: string,
+    /** @docsNotRequired */
+    public urlAfterRedirects: string,
+    /** @docsNotRequired */
+    public state: RouterStateSnapshot
+  ) {
     super(id, url);
   }
 
@@ -197,14 +207,15 @@ export class RoutesRecognized extends RouterEvent {
  */
 export class GuardsCheckStart extends RouterEvent {
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
-      /** @docsNotRequired */
-      public urlAfterRedirects: string,
-      /** @docsNotRequired */
-      public state: RouterStateSnapshot) {
+    /** @docsNotRequired */
+    id: number,
+    /** @docsNotRequired */
+    url: string,
+    /** @docsNotRequired */
+    public urlAfterRedirects: string,
+    /** @docsNotRequired */
+    public state: RouterStateSnapshot
+  ) {
     super(id, url);
   }
 
@@ -220,16 +231,17 @@ export class GuardsCheckStart extends RouterEvent {
  */
 export class GuardsCheckEnd extends RouterEvent {
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
-      /** @docsNotRequired */
-      public urlAfterRedirects: string,
-      /** @docsNotRequired */
-      public state: RouterStateSnapshot,
-      /** @docsNotRequired */
-      public shouldActivate: boolean) {
+    /** @docsNotRequired */
+    id: number,
+    /** @docsNotRequired */
+    url: string,
+    /** @docsNotRequired */
+    public urlAfterRedirects: string,
+    /** @docsNotRequired */
+    public state: RouterStateSnapshot,
+    /** @docsNotRequired */
+    public shouldActivate: boolean
+  ) {
     super(id, url);
   }
 
@@ -248,14 +260,15 @@ export class GuardsCheckEnd extends RouterEvent {
  */
 export class ResolveStart extends RouterEvent {
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
-      /** @docsNotRequired */
-      public urlAfterRedirects: string,
-      /** @docsNotRequired */
-      public state: RouterStateSnapshot) {
+    /** @docsNotRequired */
+    id: number,
+    /** @docsNotRequired */
+    url: string,
+    /** @docsNotRequired */
+    public urlAfterRedirects: string,
+    /** @docsNotRequired */
+    public state: RouterStateSnapshot
+  ) {
     super(id, url);
   }
 
@@ -272,14 +285,15 @@ export class ResolveStart extends RouterEvent {
  */
 export class ResolveEnd extends RouterEvent {
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
-      /** @docsNotRequired */
-      public urlAfterRedirects: string,
-      /** @docsNotRequired */
-      public state: RouterStateSnapshot) {
+    /** @docsNotRequired */
+    id: number,
+    /** @docsNotRequired */
+    url: string,
+    /** @docsNotRequired */
+    public urlAfterRedirects: string,
+    /** @docsNotRequired */
+    public state: RouterStateSnapshot
+  ) {
     super(id, url);
   }
 
@@ -295,9 +309,12 @@ export class ResolveEnd extends RouterEvent {
  */
 export class RouteConfigLoadStart {
   constructor(
-      /** @docsNotRequired */
-      public route: Route) {}
-  toString(): string { return `RouteConfigLoadStart(path: ${this.route.path})`; }
+    /** @docsNotRequired */
+    public route: Route
+  ) {}
+  toString(): string {
+    return `RouteConfigLoadStart(path: ${this.route.path})`;
+  }
 }
 
 /**
@@ -307,9 +324,12 @@ export class RouteConfigLoadStart {
  */
 export class RouteConfigLoadEnd {
   constructor(
-      /** @docsNotRequired */
-      public route: Route) {}
-  toString(): string { return `RouteConfigLoadEnd(path: ${this.route.path})`; }
+    /** @docsNotRequired */
+    public route: Route
+  ) {}
+  toString(): string {
+    return `RouteConfigLoadEnd(path: ${this.route.path})`;
+  }
 }
 
 /**
@@ -322,10 +342,11 @@ export class RouteConfigLoadEnd {
  */
 export class ChildActivationStart {
   constructor(
-      /** @docsNotRequired */
-      public snapshot: ActivatedRouteSnapshot) {}
+    /** @docsNotRequired */
+    public snapshot: ActivatedRouteSnapshot
+  ) {}
   toString(): string {
-    const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
+    const path = (this.snapshot.routeConfig && this.snapshot.routeConfig.path) || '';
     return `ChildActivationStart(path: '${path}')`;
   }
 }
@@ -339,10 +360,11 @@ export class ChildActivationStart {
  */
 export class ChildActivationEnd {
   constructor(
-      /** @docsNotRequired */
-      public snapshot: ActivatedRouteSnapshot) {}
+    /** @docsNotRequired */
+    public snapshot: ActivatedRouteSnapshot
+  ) {}
   toString(): string {
-    const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
+    const path = (this.snapshot.routeConfig && this.snapshot.routeConfig.path) || '';
     return `ChildActivationEnd(path: '${path}')`;
   }
 }
@@ -357,10 +379,11 @@ export class ChildActivationEnd {
  */
 export class ActivationStart {
   constructor(
-      /** @docsNotRequired */
-      public snapshot: ActivatedRouteSnapshot) {}
+    /** @docsNotRequired */
+    public snapshot: ActivatedRouteSnapshot
+  ) {}
   toString(): string {
-    const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
+    const path = (this.snapshot.routeConfig && this.snapshot.routeConfig.path) || '';
     return `ActivationStart(path: '${path}')`;
   }
 }
@@ -375,10 +398,11 @@ export class ActivationStart {
  */
 export class ActivationEnd {
   constructor(
-      /** @docsNotRequired */
-      public snapshot: ActivatedRouteSnapshot) {}
+    /** @docsNotRequired */
+    public snapshot: ActivatedRouteSnapshot
+  ) {}
   toString(): string {
-    const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
+    const path = (this.snapshot.routeConfig && this.snapshot.routeConfig.path) || '';
     return `ActivationEnd(path: '${path}')`;
   }
 }
@@ -390,14 +414,15 @@ export class ActivationEnd {
  */
 export class Scroll {
   constructor(
-      /** @docsNotRequired */
-      readonly routerEvent: NavigationEnd,
+    /** @docsNotRequired */
+    readonly routerEvent: NavigationEnd,
 
-      /** @docsNotRequired */
-      readonly position: [number, number]|null,
+    /** @docsNotRequired */
+    readonly position: [number, number] | null,
 
-      /** @docsNotRequired */
-      readonly anchor: string|null) {}
+    /** @docsNotRequired */
+    readonly anchor: string | null
+  ) {}
 
   toString(): string {
     const pos = this.position ? `${this.position[0]}, ${this.position[1]}` : null;
@@ -429,5 +454,12 @@ export class Scroll {
  *
  * @publicApi
  */
-export type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart |
-    ChildActivationEnd | ActivationStart | ActivationEnd | Scroll;
+export type Event =
+  | RouterEvent
+  | RouteConfigLoadStart
+  | RouteConfigLoadEnd
+  | ChildActivationStart
+  | ChildActivationEnd
+  | ActivationStart
+  | ActivationEnd
+  | Scroll;

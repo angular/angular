@@ -15,7 +15,6 @@ Zone.__load_patch('jest', (context: any, Zone: ZoneType) => {
 
   jest['__zone_patch__'] = true;
 
-
   if (typeof Zone === 'undefined') {
     throw new Error('Missing Zone.js');
   }
@@ -32,9 +31,9 @@ Zone.__load_patch('jest', (context: any, Zone: ZoneType) => {
   const proxyZone = rootZone.fork(new ProxyZoneSpec());
 
   function wrapDescribeFactoryInZone(originalJestFn: Function) {
-    return function(this: unknown, ...tableArgs: any[]) {
+    return function (this: unknown, ...tableArgs: any[]) {
       const originalDescribeFn = originalJestFn.apply(this, tableArgs);
-      return function(this: unknown, ...args: any[]) {
+      return function (this: unknown, ...args: any[]) {
         args[1] = wrapDescribeInZone(args[1]);
         return originalDescribeFn.apply(this, args);
       };
@@ -42,8 +41,8 @@ Zone.__load_patch('jest', (context: any, Zone: ZoneType) => {
   }
 
   function wrapTestFactoryInZone(originalJestFn: Function) {
-    return function(this: unknown, ...tableArgs: any[]) {
-      return function(this: unknown, ...args: any[]) {
+    return function (this: unknown, ...tableArgs: any[]) {
+      return function (this: unknown, ...args: any[]) {
         args[1] = wrapTestInZone(args[1]);
         return originalJestFn.apply(this, tableArgs).apply(this, args);
       };
@@ -55,7 +54,7 @@ Zone.__load_patch('jest', (context: any, Zone: ZoneType) => {
    * synchronous-only zone.
    */
   function wrapDescribeInZone(describeBody: Function): Function {
-    return function(this: unknown, ...args: any[]) {
+    return function (this: unknown, ...args: any[]) {
       return syncZone.run(describeBody, this, args);
     };
   }
@@ -69,24 +68,27 @@ Zone.__load_patch('jest', (context: any, Zone: ZoneType) => {
     if (typeof testBody !== 'function') {
       return testBody;
     }
-    const wrappedFunc = function() {
+    const wrappedFunc = function () {
       return proxyZone.run(testBody, null, arguments as any);
     };
     // Update the length of wrappedFunc to be the same as the length of the testBody
     // So jest core can handle whether the test function has `done()` or not correctly
-    Object.defineProperty(
-        wrappedFunc, 'length', {configurable: true, writable: true, enumerable: false});
+    Object.defineProperty(wrappedFunc, 'length', {
+      configurable: true,
+      writable: true,
+      enumerable: false,
+    });
     wrappedFunc.length = testBody.length;
     return wrappedFunc;
   }
 
-  ['describe', 'xdescribe', 'fdescribe'].forEach(methodName => {
+  ['describe', 'xdescribe', 'fdescribe'].forEach((methodName) => {
     let originalJestFn: Function = context[methodName];
     if (context[Zone.__symbol__(methodName)]) {
       return;
     }
     context[Zone.__symbol__(methodName)] = originalJestFn;
-    context[methodName] = function(this: unknown, ...args: any[]) {
+    context[methodName] = function (this: unknown, ...args: any[]) {
       args[1] = wrapDescribeInZone(args[1]);
       return originalJestFn.apply(this, args);
     };
@@ -95,13 +97,13 @@ Zone.__load_patch('jest', (context: any, Zone: ZoneType) => {
   context.describe.only = context.fdescribe;
   context.describe.skip = context.xdescribe;
 
-  ['it', 'xit', 'fit', 'test', 'xtest'].forEach(methodName => {
+  ['it', 'xit', 'fit', 'test', 'xtest'].forEach((methodName) => {
     let originalJestFn: Function = context[methodName];
     if (context[Zone.__symbol__(methodName)]) {
       return;
     }
     context[Zone.__symbol__(methodName)] = originalJestFn;
-    context[methodName] = function(this: unknown, ...args: any[]) {
+    context[methodName] = function (this: unknown, ...args: any[]) {
       args[1] = wrapTestInZone(args[1]);
       return originalJestFn.apply(this, args);
     };
@@ -114,13 +116,13 @@ Zone.__load_patch('jest', (context: any, Zone: ZoneType) => {
   context.test.only = context.fit;
   context.test.skip = context.xit;
 
-  ['beforeEach', 'afterEach', 'beforeAll', 'afterAll'].forEach(methodName => {
+  ['beforeEach', 'afterEach', 'beforeAll', 'afterAll'].forEach((methodName) => {
     let originalJestFn: Function = context[methodName];
     if (context[Zone.__symbol__(methodName)]) {
       return;
     }
     context[Zone.__symbol__(methodName)] = originalJestFn;
-    context[methodName] = function(this: unknown, ...args: any[]) {
+    context[methodName] = function (this: unknown, ...args: any[]) {
       args[0] = wrapTestInZone(args[0]);
       return originalJestFn.apply(this, args);
     };

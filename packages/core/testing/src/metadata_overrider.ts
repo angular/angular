@@ -10,7 +10,7 @@ import {ɵstringify as stringify} from '@angular/core';
 import {MetadataOverride} from './metadata_override';
 
 type StringMap = {
-  [key: string]: any
+  [key: string]: any;
 };
 
 let _nextReferenceId = 0;
@@ -22,10 +22,13 @@ export class MetadataOverrider {
    * based on an old instance and overrides.
    */
   overrideMetadata<C extends T, T>(
-      metadataClass: {new (options: T): C;}, oldMetadata: C, override: MetadataOverride<T>): C {
+    metadataClass: {new (options: T): C},
+    oldMetadata: C,
+    override: MetadataOverride<T>
+  ): C {
     const props: StringMap = {};
     if (oldMetadata) {
-      _valueProps(oldMetadata).forEach((prop) => props[prop] = (<any>oldMetadata)[prop]);
+      _valueProps(oldMetadata).forEach((prop) => (props[prop] = (<any>oldMetadata)[prop]));
     }
 
     if (override.set) {
@@ -49,8 +52,9 @@ function removeMetadata(metadata: StringMap, remove: any, references: Map<any, s
   for (const prop in remove) {
     const removeValue = remove[prop];
     if (Array.isArray(removeValue)) {
-      removeValue.forEach(
-          (value: any) => { removeObjects.add(_propHashKey(prop, value, references)); });
+      removeValue.forEach((value: any) => {
+        removeObjects.add(_propHashKey(prop, value, references));
+      });
     } else {
       removeObjects.add(_propHashKey(prop, removeValue, references));
     }
@@ -60,7 +64,8 @@ function removeMetadata(metadata: StringMap, remove: any, references: Map<any, s
     const propValue = metadata[prop];
     if (Array.isArray(propValue)) {
       metadata[prop] = propValue.filter(
-          (value: any) => !removeObjects.has(_propHashKey(prop, value, references)));
+        (value: any) => !removeObjects.has(_propHashKey(prop, value, references))
+      );
     } else {
       if (removeObjects.has(_propHashKey(prop, propValue, references))) {
         metadata[prop] = undefined;
@@ -107,7 +112,6 @@ function _serializeReference(ref: any, references: Map<any, string>): string {
   return id;
 }
 
-
 function _valueProps(obj: any): string[] {
   const props: string[] = [];
   // regular public props
@@ -119,7 +123,7 @@ function _valueProps(obj: any): string[] {
 
   // getters
   let proto = obj;
-  while (proto = Object.getPrototypeOf(proto)) {
+  while ((proto = Object.getPrototypeOf(proto))) {
     Object.keys(proto).forEach((protoProp) => {
       const desc = Object.getOwnPropertyDescriptor(proto, protoProp);
       if (!protoProp.startsWith('_') && desc && 'get' in desc) {

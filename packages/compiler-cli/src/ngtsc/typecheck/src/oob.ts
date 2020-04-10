@@ -14,8 +14,6 @@ import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {TemplateId} from './api';
 import {makeTemplateDiagnostic, TemplateSourceResolver} from './diagnostics';
 
-
-
 /**
  * Collects `ts.Diagnostic`s on problems which occur in the template which aren't directly sourced
  * from Type Check Blocks.
@@ -49,7 +47,10 @@ export interface OutOfBandDiagnosticRecorder {
   missingPipe(templateId: TemplateId, ast: BindingPipe): void;
 
   illegalAssignmentToTemplateVar(
-      templateId: TemplateId, assignment: PropertyWrite, target: TmplAstVariable): void;
+    templateId: TemplateId,
+    assignment: PropertyWrite,
+    target: TmplAstVariable
+  ): void;
 
   /**
    * Reports a duplicate declaration of a template variable.
@@ -60,7 +61,10 @@ export interface OutOfBandDiagnosticRecorder {
    * @param firstDecl the first variable declaration which uses the same name as `variable`.
    */
   duplicateTemplateVar(
-      templateId: TemplateId, variable: TmplAstVariable, firstDecl: TmplAstVariable): void;
+    templateId: TemplateId,
+    variable: TmplAstVariable,
+    firstDecl: TmplAstVariable
+  ): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -77,9 +81,15 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     const value = ref.value.trim();
 
     const errorMsg = `No directive found with exportAs '${value}'.`;
-    this._diagnostics.push(makeTemplateDiagnostic(
-        mapping, ref.valueSpan || ref.sourceSpan, ts.DiagnosticCategory.Error,
-        ngErrorCode(ErrorCode.MISSING_REFERENCE_TARGET), errorMsg));
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        mapping,
+        ref.valueSpan || ref.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.MISSING_REFERENCE_TARGET),
+        errorMsg
+      )
+    );
   }
 
   missingPipe(templateId: TemplateId, ast: BindingPipe): void {
@@ -89,48 +99,72 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     const sourceSpan = this.resolver.toParseSourceSpan(templateId, ast.nameSpan);
     if (sourceSpan === null) {
       throw new Error(
-          `Assertion failure: no SourceLocation found for usage of pipe '${ast.name}'.`);
+        `Assertion failure: no SourceLocation found for usage of pipe '${ast.name}'.`
+      );
     }
-    this._diagnostics.push(makeTemplateDiagnostic(
-        mapping, sourceSpan, ts.DiagnosticCategory.Error, ngErrorCode(ErrorCode.MISSING_PIPE),
-        errorMsg));
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        mapping,
+        sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.MISSING_PIPE),
+        errorMsg
+      )
+    );
   }
 
   illegalAssignmentToTemplateVar(
-      templateId: TemplateId, assignment: PropertyWrite, target: TmplAstVariable): void {
+    templateId: TemplateId,
+    assignment: PropertyWrite,
+    target: TmplAstVariable
+  ): void {
     const mapping = this.resolver.getSourceMapping(templateId);
-    const errorMsg = `Cannot use variable '${
-        assignment
-            .name}' as the left-hand side of an assignment expression. Template variables are read-only.`;
+    const errorMsg = `Cannot use variable '${assignment.name}' as the left-hand side of an assignment expression. Template variables are read-only.`;
 
     const sourceSpan = this.resolver.toParseSourceSpan(templateId, assignment.sourceSpan);
     if (sourceSpan === null) {
       throw new Error(`Assertion failure: no SourceLocation found for property binding.`);
     }
-    this._diagnostics.push(makeTemplateDiagnostic(
-        mapping, sourceSpan, ts.DiagnosticCategory.Error,
-        ngErrorCode(ErrorCode.WRITE_TO_READ_ONLY_VARIABLE), errorMsg, {
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        mapping,
+        sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.WRITE_TO_READ_ONLY_VARIABLE),
+        errorMsg,
+        {
           text: `The variable ${assignment.name} is declared here.`,
           span: target.valueSpan || target.sourceSpan,
-        }));
+        }
+      )
+    );
   }
 
   duplicateTemplateVar(
-      templateId: TemplateId, variable: TmplAstVariable, firstDecl: TmplAstVariable): void {
+    templateId: TemplateId,
+    variable: TmplAstVariable,
+    firstDecl: TmplAstVariable
+  ): void {
     const mapping = this.resolver.getSourceMapping(templateId);
-    const errorMsg = `Cannot redeclare variable '${
-        variable.name}' as it was previously declared elsewhere for the same template.`;
+    const errorMsg = `Cannot redeclare variable '${variable.name}' as it was previously declared elsewhere for the same template.`;
 
     // The allocation of the error here is pretty useless for variables declared in microsyntax,
     // since the sourceSpan refers to the entire microsyntax property, not a span for the specific
     // variable in question.
     //
     // TODO(alxhub): allocate to a tighter span once one is available.
-    this._diagnostics.push(makeTemplateDiagnostic(
-        mapping, variable.sourceSpan, ts.DiagnosticCategory.Error,
-        ngErrorCode(ErrorCode.DUPLICATE_VARIABLE_DECLARATION), errorMsg, {
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        mapping,
+        variable.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.DUPLICATE_VARIABLE_DECLARATION),
+        errorMsg,
+        {
           text: `The variable '${firstDecl.name}' was first declared here.`,
           span: firstDecl.sourceSpan,
-        }));
+        }
+      )
+    );
   }
 }

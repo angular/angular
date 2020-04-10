@@ -5,14 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ɵMessageId, ɵParsedTranslation} from '@angular/localize/private';
 import {Diagnostics} from '../../../diagnostics';
 
 /**
-* An object that holds translations that have been parsed from a translation file.
-*/
+ * An object that holds translations that have been parsed from a translation file.
+ */
 export interface ParsedTranslationBundle {
-  locale: string|undefined;
+  locale: string | undefined;
   translations: Record<ɵMessageId, ɵParsedTranslation>;
   diagnostics: Diagnostics;
 }
@@ -43,7 +44,7 @@ export interface TranslationParser<Hint = true> {
    * @returns A hint, which can be used in doing the actual parsing, if the file can be parsed by
    * this parser; false otherwise.
    */
-  canParse(filePath: string, contents: string): Hint|false;
+  canParse(filePath: string, contents: string): Hint | false;
 
   /**
    * Parses the given file, extracting the target locale and translations.

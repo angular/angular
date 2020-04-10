@@ -14,7 +14,7 @@ export type TransformedQueryResult = null | {
   /** Transformed call expression. */
   node: ts.CallExpression;
   /** Failure message which is set when the query could not be transformed successfully. */
-  failureMessage: string|null;
+  failureMessage: string | null;
 };
 
 const TODO_SPECIFY_COMMENT = 'TODO: add static flag';
@@ -25,35 +25,46 @@ const TODO_CHECK_COMMENT = 'TODO: check static flag';
  * determined timing. The updated decorator call expression node will be returned.
  */
 export function getTransformedQueryCallExpr(
-    query: NgQueryDefinition, timing: QueryTiming | null,
-    createTodo: boolean): TransformedQueryResult {
+  query: NgQueryDefinition,
+  timing: QueryTiming | null,
+  createTodo: boolean
+): TransformedQueryResult {
   const queryExpr = query.decorator.node.expression;
   const queryArguments = queryExpr.arguments;
-  const queryPropertyAssignments = timing === null ?
-      [] :
-      [ts.createPropertyAssignment(
-          'static', timing === QueryTiming.STATIC ? ts.createTrue() : ts.createFalse())];
+  const queryPropertyAssignments =
+    timing === null
+      ? []
+      : [
+          ts.createPropertyAssignment(
+            'static',
+            timing === QueryTiming.STATIC ? ts.createTrue() : ts.createFalse()
+          ),
+        ];
 
   // If the query decorator is already called with two arguments, we need to
   // keep the existing options untouched and just add the new property if possible.
   if (queryArguments.length === 2) {
     const existingOptions = queryArguments[1];
     const existingOptionsText = existingOptions.getFullText();
-    const hasTodoComment = existingOptionsText.includes(TODO_SPECIFY_COMMENT) ||
-        existingOptionsText.includes(TODO_CHECK_COMMENT);
+    const hasTodoComment =
+      existingOptionsText.includes(TODO_SPECIFY_COMMENT) ||
+      existingOptionsText.includes(TODO_CHECK_COMMENT);
     let newOptionsNode: ts.Expression;
-    let failureMessage: string|null = null;
+    let failureMessage: string | null = null;
 
     if (ts.isObjectLiteralExpression(existingOptions)) {
       // In case the options already contains a property for the "static" flag,
       // we just skip this query and leave it untouched.
-      if (existingOptions.properties.some(
-              p => !!p.name && getPropertyNameText(p.name) === 'static')) {
+      if (
+        existingOptions.properties.some((p) => !!p.name && getPropertyNameText(p.name) === 'static')
+      ) {
         return null;
       }
 
       newOptionsNode = ts.updateObjectLiteral(
-          existingOptions, existingOptions.properties.concat(queryPropertyAssignments));
+        existingOptions,
+        existingOptions.properties.concat(queryPropertyAssignments)
+      );
 
       // In case we want to add a todo and the options do not have the todo
       // yet, we add the query timing todo as synthetic multi-line comment.
@@ -72,16 +83,18 @@ export function getTransformedQueryCallExpr(
       // we create a transformation failure message that shows developers that they need
       // to set the query timing manually to the determined query timing.
       if (timing !== null) {
-        failureMessage = 'Cannot update query to set explicit timing. Please manually ' +
-            `set the query timing to: "{static: ${(timing === QueryTiming.STATIC).toString()}}"`;
+        failureMessage =
+          'Cannot update query to set explicit timing. Please manually ' +
+          `set the query timing to: "{static: ${(timing === QueryTiming.STATIC).toString()}}"`;
       }
     }
 
     return {
       failureMessage,
-      node: ts.updateCall(
-          queryExpr, queryExpr.expression, queryExpr.typeArguments,
-          [queryArguments[0], newOptionsNode !])
+      node: ts.updateCall(queryExpr, queryExpr.expression, queryExpr.typeArguments, [
+        queryArguments[0],
+        newOptionsNode!,
+      ]),
     };
   }
 
@@ -93,9 +106,10 @@ export function getTransformedQueryCallExpr(
 
   return {
     failureMessage: null,
-    node: ts.updateCall(
-        queryExpr, queryExpr.expression, queryExpr.typeArguments,
-        [queryArguments[0], optionsNode])
+    node: ts.updateCall(queryExpr, queryExpr.expression, queryExpr.typeArguments, [
+      queryArguments[0],
+      optionsNode,
+    ]),
   };
 }
 
@@ -104,12 +118,13 @@ export function getTransformedQueryCallExpr(
  * an explicit query timing or to double-check the updated timing.
  */
 function addQueryTimingTodoToNode(node: ts.Node, addSpecifyTimingTodo: boolean) {
-  ts.setSyntheticLeadingComments(
-      node, [{
-        pos: -1,
-        end: -1,
-        hasTrailingNewLine: false,
-        kind: ts.SyntaxKind.MultiLineCommentTrivia,
-        text: ` ${addSpecifyTimingTodo ? TODO_SPECIFY_COMMENT : TODO_CHECK_COMMENT} `
-      }]);
+  ts.setSyntheticLeadingComments(node, [
+    {
+      pos: -1,
+      end: -1,
+      hasTrailingNewLine: false,
+      kind: ts.SyntaxKind.MultiLineCommentTrivia,
+      text: ` ${addSpecifyTimingTodo ? TODO_SPECIFY_COMMENT : TODO_CHECK_COMMENT} `,
+    },
+  ]);
 }

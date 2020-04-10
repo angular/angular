@@ -5,9 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 
-let _tsSourceMapBug29300Fixed: boolean|undefined;
+let _tsSourceMapBug29300Fixed: boolean | undefined;
 
 /**
  * Test the current version of TypeScript to see if it has fixed the external SourceMap
@@ -26,20 +27,23 @@ let _tsSourceMapBug29300Fixed: boolean|undefined;
 export function tsSourceMapBug29300Fixed() {
   if (_tsSourceMapBug29300Fixed === undefined) {
     let writtenFiles: {[filename: string]: string} = {};
-    const sourceFile =
-        ts.createSourceFile('test.ts', 'a;', ts.ScriptTarget.ES2015, true, ts.ScriptKind.TS);
+    const sourceFile = ts.createSourceFile(
+      'test.ts',
+      'a;',
+      ts.ScriptTarget.ES2015,
+      true,
+      ts.ScriptKind.TS
+    );
     const host = {
-      getSourceFile(): ts.SourceFile |
-          undefined {
-            return sourceFile;
-          },
+      getSourceFile(): ts.SourceFile | undefined {
+        return sourceFile;
+      },
       fileExists(): boolean {
         return true;
       },
-      readFile(): string |
-          undefined {
-            return '';
-          },
+      readFile(): string | undefined {
+        return '';
+      },
       writeFile(fileName: string, data: string) {
         writtenFiles[fileName] = data;
       },
@@ -71,7 +75,7 @@ export function tsSourceMapBug29300Fixed() {
           ts.setSourceMapRange(newNode, {
             pos: 16,
             end: 16,
-            source: ts.createSourceMapSource('test.html', 'abc\ndef\nghi\njkl\nmno\npqr')
+            source: ts.createSourceMapSource('test.html', 'abc\ndef\nghi\njkl\nmno\npqr'),
           });
           return newNode;
         }

@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {dirname, relative} from 'canonical-path';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
@@ -17,8 +18,8 @@ import {UmdReflectionHost} from '../host/umd_host';
 import {Esm5RenderingFormatter} from './esm5_rendering_formatter';
 import {stripExtension} from './utils';
 
-type CommonJsConditional = ts.ConditionalExpression&{whenTrue: ts.CallExpression};
-type AmdConditional = ts.ConditionalExpression&{whenTrue: ts.CallExpression};
+type CommonJsConditional = ts.ConditionalExpression & {whenTrue: ts.CallExpression};
+type AmdConditional = ts.ConditionalExpression & {whenTrue: ts.CallExpression};
 
 /**
  * A RenderingFormatter that works with UMD files, instead of `import` and `export` statements
@@ -74,23 +75,29 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
    * Add the exports to the bottom of the UMD module factory function.
    */
   addExports(
-      output: MagicString, entryPointBasePath: string, exports: ExportInfo[],
-      importManager: ImportManager, file: ts.SourceFile): void {
+    output: MagicString,
+    entryPointBasePath: string,
+    exports: ExportInfo[],
+    importManager: ImportManager,
+    file: ts.SourceFile
+  ): void {
     const umdModule = this.umdHost.getUmdModule(file);
     if (!umdModule) {
       return;
     }
     const factoryFunction = umdModule.factoryFn;
     const lastStatement =
-        factoryFunction.body.statements[factoryFunction.body.statements.length - 1];
-    const insertionPoint =
-        lastStatement ? lastStatement.getEnd() : factoryFunction.body.getEnd() - 1;
-    exports.forEach(e => {
+      factoryFunction.body.statements[factoryFunction.body.statements.length - 1];
+    const insertionPoint = lastStatement
+      ? lastStatement.getEnd()
+      : factoryFunction.body.getEnd() - 1;
+    exports.forEach((e) => {
       const basePath = stripExtension(e.from);
       const relativePath = './' + relative(dirname(entryPointBasePath), basePath);
-      const namedImport = entryPointBasePath !== basePath ?
-          importManager.generateNamedImport(relativePath, e.identifier) :
-          {symbol: e.identifier, moduleImport: null};
+      const namedImport =
+        entryPointBasePath !== basePath
+          ? importManager.generateNamedImport(relativePath, e.identifier)
+          : {symbol: e.identifier, moduleImport: null};
       const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport}.` : '';
       const exportStr = `\nexports.${e.identifier} = ${importNamespace}${namedImport.symbol};`;
       output.appendRight(insertionPoint, exportStr);
@@ -98,17 +105,21 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
   }
 
   addDirectExports(
-      output: MagicString, exports: Reexport[], importManager: ImportManager,
-      file: ts.SourceFile): void {
+    output: MagicString,
+    exports: Reexport[],
+    importManager: ImportManager,
+    file: ts.SourceFile
+  ): void {
     const umdModule = this.umdHost.getUmdModule(file);
     if (!umdModule) {
       return;
     }
     const factoryFunction = umdModule.factoryFn;
     const lastStatement =
-        factoryFunction.body.statements[factoryFunction.body.statements.length - 1];
-    const insertionPoint =
-        lastStatement ? lastStatement.getEnd() : factoryFunction.body.getEnd() - 1;
+      factoryFunction.body.statements[factoryFunction.body.statements.length - 1];
+    const insertionPoint = lastStatement
+      ? lastStatement.getEnd()
+      : factoryFunction.body.getEnd() - 1;
     for (const e of exports) {
       const namedImport = importManager.generateNamedImport(e.fromModule, e.symbolName);
       const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport}.` : '';
@@ -130,8 +141,9 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
     }
     const factoryFunction = umdModule.factoryFn;
     const firstStatement = factoryFunction.body.statements[0];
-    const insertionPoint =
-        firstStatement ? firstStatement.getStart() : factoryFunction.body.getStart() + 1;
+    const insertionPoint = firstStatement
+      ? firstStatement.getStart()
+      : factoryFunction.body.getStart() + 1;
     output.appendLeft(insertionPoint, '\n' + constants + '\n');
   }
 }
@@ -140,18 +152,22 @@ export class UmdRenderingFormatter extends Esm5RenderingFormatter {
  * Add dependencies to the CommonJS part of the UMD wrapper function.
  */
 function renderCommonJsDependencies(
-    output: MagicString, wrapperFunction: ts.FunctionExpression, imports: Import[]) {
+  output: MagicString,
+  wrapperFunction: ts.FunctionExpression,
+  imports: Import[]
+) {
   const conditional = find(wrapperFunction.body.statements[0], isCommonJSConditional);
   if (!conditional) {
     return;
   }
   const factoryCall = conditional.whenTrue;
-  const injectionPoint = factoryCall.arguments.length > 0 ?
-      // Add extra dependencies before the first argument
-      factoryCall.arguments[0].getFullStart() :
-      // Backup one char to account for the closing parenthesis on the call
-      factoryCall.getEnd() - 1;
-  const importString = imports.map(i => `require('${i.specifier}')`).join(',');
+  const injectionPoint =
+    factoryCall.arguments.length > 0
+      ? // Add extra dependencies before the first argument
+        factoryCall.arguments[0].getFullStart()
+      : // Backup one char to account for the closing parenthesis on the call
+        factoryCall.getEnd() - 1;
+  const importString = imports.map((i) => `require('${i.specifier}')`).join(',');
   output.appendLeft(injectionPoint, importString + (factoryCall.arguments.length > 0 ? ',' : ''));
 }
 
@@ -159,13 +175,16 @@ function renderCommonJsDependencies(
  * Add dependencies to the AMD part of the UMD wrapper function.
  */
 function renderAmdDependencies(
-    output: MagicString, wrapperFunction: ts.FunctionExpression, imports: Import[]) {
+  output: MagicString,
+  wrapperFunction: ts.FunctionExpression,
+  imports: Import[]
+) {
   const conditional = find(wrapperFunction.body.statements[0], isAmdConditional);
   if (!conditional) {
     return;
   }
   const amdDefineCall = conditional.whenTrue;
-  const importString = imports.map(i => `'${i.specifier}'`).join(',');
+  const importString = imports.map((i) => `'${i.specifier}'`).join(',');
   // The dependency array (if it exists) is the second to last argument
   // `define(id?, dependencies?, factory);`
   const factoryIndex = amdDefineCall.arguments.length - 1;
@@ -177,13 +196,16 @@ function renderAmdDependencies(
     output.appendLeft(injectionPoint, `[${importString}],`);
   } else {
     // Already an array
-    const injectionPoint = dependencyArray.elements.length > 0 ?
-        // Add imports before the first item.
-        dependencyArray.elements[0].getFullStart() :
-        // Backup one char to account for the closing square bracket on the array
-        dependencyArray.getEnd() - 1;
+    const injectionPoint =
+      dependencyArray.elements.length > 0
+        ? // Add imports before the first item.
+          dependencyArray.elements[0].getFullStart()
+        : // Backup one char to account for the closing square bracket on the array
+          dependencyArray.getEnd() - 1;
     output.appendLeft(
-        injectionPoint, importString + (dependencyArray.elements.length > 0 ? ',' : ''));
+      injectionPoint,
+      importString + (dependencyArray.elements.length > 0 ? ',' : '')
+    );
   }
 }
 
@@ -191,26 +213,35 @@ function renderAmdDependencies(
  * Add dependencies to the global part of the UMD wrapper function.
  */
 function renderGlobalDependencies(
-    output: MagicString, wrapperFunction: ts.FunctionExpression, imports: Import[]) {
+  output: MagicString,
+  wrapperFunction: ts.FunctionExpression,
+  imports: Import[]
+) {
   const globalFactoryCall = find(wrapperFunction.body.statements[0], isGlobalFactoryCall);
   if (!globalFactoryCall) {
     return;
   }
-  const injectionPoint = globalFactoryCall.arguments.length > 0 ?
-      // Add extra dependencies before the first argument
-      globalFactoryCall.arguments[0].getFullStart() :
-      // Backup one char to account for the closing parenthesis on the call
-      globalFactoryCall.getEnd() - 1;
-  const importString = imports.map(i => `global.${getGlobalIdentifier(i)}`).join(',');
+  const injectionPoint =
+    globalFactoryCall.arguments.length > 0
+      ? // Add extra dependencies before the first argument
+        globalFactoryCall.arguments[0].getFullStart()
+      : // Backup one char to account for the closing parenthesis on the call
+        globalFactoryCall.getEnd() - 1;
+  const importString = imports.map((i) => `global.${getGlobalIdentifier(i)}`).join(',');
   output.appendLeft(
-      injectionPoint, importString + (globalFactoryCall.arguments.length > 0 ? ',' : ''));
+    injectionPoint,
+    importString + (globalFactoryCall.arguments.length > 0 ? ',' : '')
+  );
 }
 
 /**
  * Add dependency parameters to the UMD factory function.
  */
 function renderFactoryParameters(
-    output: MagicString, wrapperFunction: ts.FunctionExpression, imports: Import[]) {
+  output: MagicString,
+  wrapperFunction: ts.FunctionExpression,
+  imports: Import[]
+) {
   const wrapperCall = wrapperFunction.parent as ts.CallExpression;
   const secondArgument = wrapperCall.arguments[1];
   if (!secondArgument) {
@@ -218,14 +249,15 @@ function renderFactoryParameters(
   }
 
   // Be resilient to the factory being inside parentheses
-  const factoryFunction =
-      ts.isParenthesizedExpression(secondArgument) ? secondArgument.expression : secondArgument;
+  const factoryFunction = ts.isParenthesizedExpression(secondArgument)
+    ? secondArgument.expression
+    : secondArgument;
   if (!ts.isFunctionExpression(factoryFunction)) {
     return;
   }
 
   const parameters = factoryFunction.parameters;
-  const parameterString = imports.map(i => i.qualifier).join(',');
+  const parameterString = imports.map((i) => i.qualifier).join(',');
   if (parameters.length > 0) {
     const injectionPoint = parameters[0].getFullStart();
     output.appendLeft(injectionPoint, parameterString + ',');
@@ -246,8 +278,10 @@ function isCommonJSConditional(value: ts.Node): value is CommonJsConditional {
   if (!ts.isConditionalExpression(value)) {
     return false;
   }
-  if (!ts.isBinaryExpression(value.condition) ||
-      value.condition.operatorToken.kind !== ts.SyntaxKind.AmpersandAmpersandToken) {
+  if (
+    !ts.isBinaryExpression(value.condition) ||
+    value.condition.operatorToken.kind !== ts.SyntaxKind.AmpersandAmpersandToken
+  ) {
     return false;
   }
   if (!oneOfBinaryConditions(value.condition, (exp) => isTypeOf(exp, 'exports', 'module'))) {
@@ -266,8 +300,10 @@ function isAmdConditional(value: ts.Node): value is AmdConditional {
   if (!ts.isConditionalExpression(value)) {
     return false;
   }
-  if (!ts.isBinaryExpression(value.condition) ||
-      value.condition.operatorToken.kind !== ts.SyntaxKind.AmpersandAmpersandToken) {
+  if (
+    !ts.isBinaryExpression(value.condition) ||
+    value.condition.operatorToken.kind !== ts.SyntaxKind.AmpersandAmpersandToken
+  ) {
     return false;
   }
   if (!oneOfBinaryConditions(value.condition, (exp) => isTypeOf(exp, 'define'))) {
@@ -288,8 +324,9 @@ function isGlobalFactoryCall(value: ts.Node): value is ts.CallExpression {
     value = isCommaExpression(value.parent) ? value.parent : value;
     // Be resilient to the value being inside parentheses
     value = ts.isParenthesizedExpression(value.parent) ? value.parent : value;
-    return !!value.parent && ts.isConditionalExpression(value.parent) &&
-        value.parent.whenFalse === value;
+    return (
+      !!value.parent && ts.isConditionalExpression(value.parent) && value.parent.whenFalse === value
+    );
   } else {
     return false;
   }
@@ -322,23 +359,30 @@ function isCommaExpression(value: ts.Node): value is ts.BinaryExpression {
  * in a rollup configuration for mapping import paths to global indentifiers.
  */
 function getGlobalIdentifier(i: Import): string {
-  return i.specifier.replace(/^@angular\//, 'ng.')
-      .replace(/^@/, '')
-      .replace(/\//g, '.')
-      .replace(/[-_]+(.?)/g, (_, c) => c.toUpperCase())
-      .replace(/^./, c => c.toLowerCase());
+  return i.specifier
+    .replace(/^@angular\//, 'ng.')
+    .replace(/^@/, '')
+    .replace(/\//g, '.')
+    .replace(/[-_]+(.?)/g, (_, c) => c.toUpperCase())
+    .replace(/^./, (c) => c.toLowerCase());
 }
 
-function find<T>(node: ts.Node, test: (node: ts.Node) => node is ts.Node & T): T|undefined {
-  return test(node) ? node : node.forEachChild(child => find<T>(child, test));
+function find<T>(node: ts.Node, test: (node: ts.Node) => node is ts.Node & T): T | undefined {
+  return test(node) ? node : node.forEachChild((child) => find<T>(child, test));
 }
 
 function oneOfBinaryConditions(
-    node: ts.BinaryExpression, test: (expression: ts.Expression) => boolean) {
+  node: ts.BinaryExpression,
+  test: (expression: ts.Expression) => boolean
+) {
   return test(node.left) || test(node.right);
 }
 
 function isTypeOf(node: ts.Expression, ...types: string[]): boolean {
-  return ts.isBinaryExpression(node) && ts.isTypeOfExpression(node.left) &&
-      ts.isIdentifier(node.left.expression) && types.indexOf(node.left.expression.text) !== -1;
+  return (
+    ts.isBinaryExpression(node) &&
+    ts.isTypeOfExpression(node.left) &&
+    ts.isIdentifier(node.left.expression) &&
+    types.indexOf(node.left.expression.text) !== -1
+  );
 }

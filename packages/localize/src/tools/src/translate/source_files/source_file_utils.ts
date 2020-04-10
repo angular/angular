@@ -5,7 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵParsedTranslation, ɵisMissingTranslationError, ɵmakeTemplateObject, ɵtranslate} from '@angular/localize';
+
+import {
+  ɵParsedTranslation,
+  ɵisMissingTranslationError,
+  ɵmakeTemplateObject,
+  ɵtranslate,
+} from '@angular/localize';
 import {NodePath} from '@babel/traverse';
 import * as t from '@babel/types';
 import {Diagnostics} from '../../diagnostics';
@@ -17,7 +23,9 @@ import {Diagnostics} from '../../diagnostics';
  * @param localizeName The configured name of `$localize`.
  */
 export function isLocalize(
-    expression: NodePath, localizeName: string): expression is NodePath<t.Identifier> {
+  expression: NodePath,
+  localizeName: string
+): expression is NodePath<t.Identifier> {
   return isNamedIdentifier(expression, localizeName) && isGlobalIdentifier(expression);
 }
 
@@ -28,44 +36,52 @@ export function isLocalize(
  * @param name The name of the identifier we are looking for.
  */
 export function isNamedIdentifier(
-    expression: NodePath, name: string): expression is NodePath<t.Identifier> {
+  expression: NodePath,
+  name: string
+): expression is NodePath<t.Identifier> {
   return expression.isIdentifier() && expression.node.name === name;
 }
 
 /**
-* Is the given `identifier` declared globally.
-* @param identifier The identifier to check.
-*/
+ * Is the given `identifier` declared globally.
+ * @param identifier The identifier to check.
+ */
 export function isGlobalIdentifier(identifier: NodePath<t.Identifier>) {
   return !identifier.scope || !identifier.scope.hasBinding(identifier.node.name);
 }
 
 /**
-* Build a translated expression to replace the call to `$localize`.
-* @param messageParts The static parts of the message.
-* @param substitutions The expressions to substitute into the message.
-*/
+ * Build a translated expression to replace the call to `$localize`.
+ * @param messageParts The static parts of the message.
+ * @param substitutions The expressions to substitute into the message.
+ */
 export function buildLocalizeReplacement(
-    messageParts: TemplateStringsArray, substitutions: readonly t.Expression[]): t.Expression {
+  messageParts: TemplateStringsArray,
+  substitutions: readonly t.Expression[]
+): t.Expression {
   let mappedString: t.Expression = t.stringLiteral(messageParts[0]);
   for (let i = 1; i < messageParts.length; i++) {
-    mappedString =
-        t.binaryExpression('+', mappedString, wrapInParensIfNecessary(substitutions[i - 1]));
+    mappedString = t.binaryExpression(
+      '+',
+      mappedString,
+      wrapInParensIfNecessary(substitutions[i - 1])
+    );
     mappedString = t.binaryExpression('+', mappedString, t.stringLiteral(messageParts[i]));
   }
   return mappedString;
 }
 
 /**
-* Extract the message parts from the given `call` (to `$localize`).
-*
-* The message parts will either by the first argument to the `call` or it will be wrapped in call
-* to a helper function like `__makeTemplateObject`.
-*
-* @param call The AST node of the call to process.
-*/
-export function unwrapMessagePartsFromLocalizeCall(call: NodePath<t.CallExpression>):
-    TemplateStringsArray {
+ * Extract the message parts from the given `call` (to `$localize`).
+ *
+ * The message parts will either by the first argument to the `call` or it will be wrapped in call
+ * to a helper function like `__makeTemplateObject`.
+ *
+ * @param call The AST node of the call to process.
+ */
+export function unwrapMessagePartsFromLocalizeCall(
+  call: NodePath<t.CallExpression>
+): TemplateStringsArray {
   let cooked = call.get('arguments')[0];
 
   if (cooked === undefined) {
@@ -73,21 +89,28 @@ export function unwrapMessagePartsFromLocalizeCall(call: NodePath<t.CallExpressi
   }
   if (!cooked.isExpression()) {
     throw new BabelParseError(
-        cooked.node, 'Unexpected argument to `$localize` (expected an array).');
+      cooked.node,
+      'Unexpected argument to `$localize` (expected an array).'
+    );
   }
 
   // If there is no call to `__makeTemplateObject(...)`, then `raw` must be the same as `cooked`.
   let raw = cooked;
 
   // Check for cached call of the form `x || x = __makeTemplateObject(...)`
-  if (cooked.isLogicalExpression() && cooked.node.operator === '||' &&
-      cooked.get('left').isIdentifier()) {
+  if (
+    cooked.isLogicalExpression() &&
+    cooked.node.operator === '||' &&
+    cooked.get('left').isIdentifier()
+  ) {
     const right = cooked.get('right');
     if (right.isAssignmentExpression()) {
       cooked = right.get('right');
       if (!cooked.isExpression()) {
         throw new BabelParseError(
-            cooked.node, 'Unexpected "makeTemplateObject()" function (expected an expression).');
+          cooked.node,
+          'Unexpected "makeTemplateObject()" function (expected an expression).'
+        );
       }
     } else if (right.isSequenceExpression()) {
       const expressions = right.get('expressions');
@@ -99,7 +122,9 @@ export function unwrapMessagePartsFromLocalizeCall(call: NodePath<t.CallExpressi
           cooked = first.get('right');
           if (!cooked.isExpression()) {
             throw new BabelParseError(
-                first.node, 'Unexpected cooked value, expected an expression.');
+              first.node,
+              'Unexpected cooked value, expected an expression.'
+            );
           }
           raw = second.get('right');
           if (!raw.isExpression()) {
@@ -122,14 +147,16 @@ export function unwrapMessagePartsFromLocalizeCall(call: NodePath<t.CallExpressi
     cooked = call.get('arguments')[0];
     if (!cooked.isExpression()) {
       throw new BabelParseError(
-          cooked.node,
-          'Unexpected `cooked` argument to the "makeTemplateObject()" function (expected an expression).');
+        cooked.node,
+        'Unexpected `cooked` argument to the "makeTemplateObject()" function (expected an expression).'
+      );
     }
     const arg2 = call.get('arguments')[1];
     if (arg2 && !arg2.isExpression()) {
       throw new BabelParseError(
-          arg2.node,
-          'Unexpected `raw` argument to the "makeTemplateObject()" function (expected an expression).');
+        arg2.node,
+        'Unexpected `raw` argument to the "makeTemplateObject()" function (expected an expression).'
+      );
     }
     // If there is no second argument then assume that raw and cooked are the same
     raw = arg2 !== undefined ? arg2 : cooked;
@@ -140,38 +167,41 @@ export function unwrapMessagePartsFromLocalizeCall(call: NodePath<t.CallExpressi
   return ɵmakeTemplateObject(cookedStrings, rawStrings);
 }
 
-
 export function unwrapSubstitutionsFromLocalizeCall(call: t.CallExpression): t.Expression[] {
   const expressions = call.arguments.splice(1);
   if (!isArrayOfExpressions(expressions)) {
-    const badExpression = expressions.find(expression => !t.isExpression(expression)) !;
+    const badExpression = expressions.find((expression) => !t.isExpression(expression))!;
     throw new BabelParseError(
-        badExpression,
-        'Invalid substitutions for `$localize` (expected all substitution arguments to be expressions).');
+      badExpression,
+      'Invalid substitutions for `$localize` (expected all substitution arguments to be expressions).'
+    );
   }
   return expressions;
 }
 
-export function unwrapMessagePartsFromTemplateLiteral(elements: t.TemplateElement[]):
-    TemplateStringsArray {
-  const cooked = elements.map(q => {
+export function unwrapMessagePartsFromTemplateLiteral(
+  elements: t.TemplateElement[]
+): TemplateStringsArray {
+  const cooked = elements.map((q) => {
     if (q.value.cooked === undefined) {
       throw new BabelParseError(
-          q, `Unexpected undefined message part in "${elements.map(q => q.value.cooked)}"`);
+        q,
+        `Unexpected undefined message part in "${elements.map((q) => q.value.cooked)}"`
+      );
     }
     return q.value.cooked;
   });
-  const raw = elements.map(q => q.value.raw);
+  const raw = elements.map((q) => q.value.raw);
   return ɵmakeTemplateObject(cooked, raw);
 }
 
 /**
-* Wrap the given `expression` in parentheses if it is a binary expression.
-*
-* This ensures that this expression is evaluated correctly if it is embedded in another expression.
-*
-* @param expression The expression to potentially wrap.
-*/
+ * Wrap the given `expression` in parentheses if it is a binary expression.
+ *
+ * This ensures that this expression is evaluated correctly if it is embedded in another expression.
+ *
+ * @param expression The expression to potentially wrap.
+ */
 export function wrapInParensIfNecessary(expression: t.Expression): t.Expression {
   if (t.isBinaryExpression(expression)) {
     return t.parenthesizedExpression(expression);
@@ -181,13 +211,15 @@ export function wrapInParensIfNecessary(expression: t.Expression): t.Expression 
 }
 
 /**
-* Extract the string values from an `array` of string literals.
-* @param array The array to unwrap.
-*/
+ * Extract the string values from an `array` of string literals.
+ * @param array The array to unwrap.
+ */
 export function unwrapStringLiteralArray(array: t.Expression): string[] {
   if (!isStringLiteralArray(array)) {
     throw new BabelParseError(
-        array, 'Unexpected messageParts for `$localize` (expected an array of strings).');
+      array,
+      'Unexpected messageParts for `$localize` (expected an array of strings).'
+    );
   }
   return array.elements.map((str: t.StringLiteral) => str.value);
 }
@@ -208,13 +240,15 @@ export function unwrapStringLiteralArray(array: t.Expression): string[] {
  * @param call the call expression to unwrap
  * @returns the  call expression
  */
-export function unwrapLazyLoadHelperCall(call: NodePath<t.CallExpression>):
-    NodePath<t.CallExpression> {
+export function unwrapLazyLoadHelperCall(
+  call: NodePath<t.CallExpression>
+): NodePath<t.CallExpression> {
   const callee = call.get('callee');
   if (!callee.isIdentifier()) {
     throw new BabelParseError(
-        callee.node,
-        'Unexpected lazy-load helper call (expected a call of the form `_templateObject()`).');
+      callee.node,
+      'Unexpected lazy-load helper call (expected a call of the form `_templateObject()`).'
+    );
   }
   const lazyLoadBinding = call.scope.getBinding(callee.node.name);
   if (!lazyLoadBinding) {
@@ -223,7 +257,9 @@ export function unwrapLazyLoadHelperCall(call: NodePath<t.CallExpression>):
   const lazyLoadFn = lazyLoadBinding.path;
   if (!lazyLoadFn.isFunctionDeclaration()) {
     throw new BabelParseError(
-        lazyLoadFn.node, 'Unexpected expression (expected a function declaration');
+      lazyLoadFn.node,
+      'Unexpected expression (expected a function declaration'
+    );
   }
   const returnedNode = getReturnedExpression(lazyLoadFn);
 
@@ -236,18 +272,22 @@ export function unwrapLazyLoadHelperCall(call: NodePath<t.CallExpression>):
     const declaration = returnedNode.scope.getBinding(identifierName);
     if (declaration === undefined) {
       throw new BabelParseError(
-          returnedNode.node, 'Missing declaration for return value from helper.');
+        returnedNode.node,
+        'Missing declaration for return value from helper.'
+      );
     }
     if (!declaration.path.isVariableDeclarator()) {
       throw new BabelParseError(
-          declaration.path.node,
-          'Unexpected helper return value declaration (expected a variable declaration).');
+        declaration.path.node,
+        'Unexpected helper return value declaration (expected a variable declaration).'
+      );
     }
     const initializer = declaration.path.get('init');
     if (!initializer.isCallExpression()) {
       throw new BabelParseError(
-          declaration.path.node,
-          'Unexpected return value from helper (expected a call expression).');
+        declaration.path.node,
+        'Unexpected return value from helper (expected a call expression).'
+      );
     }
 
     // Remove the lazy load helper if this is the only reference to it.
@@ -272,7 +312,9 @@ function getReturnedExpression(fn: NodePath<t.FunctionDeclaration>): NodePath<t.
         return argument;
       } else {
         throw new BabelParseError(
-            statement.node, 'Invalid return argument in helper function (expected an expression).');
+          statement.node,
+          'Invalid return argument in helper function (expected an expression).'
+        );
       }
     }
   }
@@ -280,21 +322,22 @@ function getReturnedExpression(fn: NodePath<t.FunctionDeclaration>): NodePath<t.
 }
 
 /**
-* Is the given `node` an array of literal strings?
-*
-* @param node The node to test.
-*/
-export function isStringLiteralArray(node: t.Node): node is t.Expression&
-    {elements: t.StringLiteral[]} {
-  return t.isArrayExpression(node) && node.elements.every(element => t.isStringLiteral(element));
+ * Is the given `node` an array of literal strings?
+ *
+ * @param node The node to test.
+ */
+export function isStringLiteralArray(
+  node: t.Node
+): node is t.Expression & {elements: t.StringLiteral[]} {
+  return t.isArrayExpression(node) && node.elements.every((element) => t.isStringLiteral(element));
 }
 
 /**
-* Are all the given `nodes` expressions?
-* @param nodes The nodes to test.
-*/
+ * Are all the given `nodes` expressions?
+ * @param nodes The nodes to test.
+ */
 export function isArrayOfExpressions(nodes: t.Node[]): nodes is t.Expression[] {
-  return nodes.every(element => t.isExpression(element));
+  return nodes.every((element) => t.isExpression(element));
 }
 
 /** Options that affect how the `makeEsXXXTranslatePlugin()` functions work. */
@@ -314,9 +357,12 @@ export type MissingTranslationStrategy = 'error' | 'warning' | 'ignore';
  * Logs as warning if the translation is not available
  */
 export function translate(
-    diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation>,
-    messageParts: TemplateStringsArray, substitutions: readonly any[],
-    missingTranslation: MissingTranslationStrategy): [TemplateStringsArray, readonly any[]] {
+  diagnostics: Diagnostics,
+  translations: Record<string, ɵParsedTranslation>,
+  messageParts: TemplateStringsArray,
+  substitutions: readonly any[],
+  missingTranslation: MissingTranslationStrategy
+): [TemplateStringsArray, readonly any[]] {
   try {
     return ɵtranslate(translations, messageParts, substitutions);
   } catch (e) {
@@ -329,7 +375,7 @@ export function translate(
       // Return the parsed message because this will have the meta blocks stripped
       return [
         ɵmakeTemplateObject(e.parsedMessage.messageParts, e.parsedMessage.messageParts),
-        substitutions
+        substitutions,
       ];
     } else {
       diagnostics.error(e.message);
@@ -340,7 +386,9 @@ export function translate(
 
 export class BabelParseError extends Error {
   private readonly type = 'BabelParseError';
-  constructor(public node: t.Node, message: string) { super(message); }
+  constructor(public node: t.Node, message: string) {
+    super(message);
+  }
 }
 
 export function isBabelParseError(e: any): e is BabelParseError {

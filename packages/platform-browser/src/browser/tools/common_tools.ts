@@ -21,7 +21,9 @@ export class ChangeDetectionPerfRecord {
 export class AngularProfiler {
   appRef: ApplicationRef;
 
-  constructor(ref: ComponentRef<any>) { this.appRef = ref.injector.get(ApplicationRef); }
+  constructor(ref: ComponentRef<any>) {
+    this.appRef = ref.injector.get(ApplicationRef);
+  }
 
   // tslint:disable:no-console
   /**
@@ -50,7 +52,7 @@ export class AngularProfiler {
     }
     const start = getDOM().performanceNow();
     let numTicks = 0;
-    while (numTicks < 5 || (getDOM().performanceNow() - start) < 500) {
+    while (numTicks < 5 || getDOM().performanceNow() - start < 500) {
       this.appRef.tick();
       numTicks++;
     }

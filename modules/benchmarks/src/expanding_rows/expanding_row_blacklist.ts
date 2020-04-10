@@ -8,7 +8,6 @@
 
 import {Directive} from '@angular/core';
 
-
 /**
  * This directive is used to flag an element to NOT trigger collapsing an
  * expanded row
@@ -16,5 +15,4 @@ import {Directive} from '@angular/core';
 @Directive({
   selector: '[cfcExpandingRowBlacklist]',
 })
-export class ExpandingRowBlacklist {
-}
+export class ExpandingRowBlacklist {}

@@ -9,27 +9,29 @@
 // Extra Mocha-specific typings to make sure typescript compiler is happy
 // Didn't want to add @types/mocha because of duplication in typings-file with @types/jasmine
 declare function suite(description: string, suiteFn: () => void): void;
-    declare function test(description: string, testFn: () => void): void;
-    declare function specify(description: string, testFn: () => void): void;
-    declare function setup(fn: () => void): void; declare function teardown(fn: () => void): void;
-    declare function suiteSetup(fn: () => void): void;
-    declare function suiteTeardown(fn: () => void): void;
-    declare function before(fn: () => void): void; declare function after(fn: () => void): void;
-    //
+declare function test(description: string, testFn: () => void): void;
+declare function specify(description: string, testFn: () => void): void;
+declare function setup(fn: () => void): void;
+declare function teardown(fn: () => void): void;
+declare function suiteSetup(fn: () => void): void;
+declare function suiteTeardown(fn: () => void): void;
+declare function before(fn: () => void): void;
+declare function after(fn: () => void): void;
+//
 
-    import {
-      ifEnvSupports
-    } from './test-util';
+import {ifEnvSupports} from './test-util';
 
-ifEnvSupports('Mocha', function() {
+ifEnvSupports('Mocha', function () {
   describe('Mocha BDD-style', () => {
     let throwOnAsync = false;
-    let beforeEachZone: Zone|null = null;
-    let itZone: Zone|null = null;
+    let beforeEachZone: Zone | null = null;
+    let itZone: Zone | null = null;
     const syncZone = Zone.current;
-    let beforeZone: Zone|null = null;
+    let beforeZone: Zone | null = null;
 
-    before(() => { beforeZone = Zone.current; });
+    before(() => {
+      beforeZone = Zone.current;
+    });
 
     try {
       Zone.current.scheduleMicroTask('dontallow', (): any => null);
@@ -37,7 +39,7 @@ ifEnvSupports('Mocha', function() {
       throwOnAsync = true;
     }
 
-    beforeEach(() => beforeEachZone = Zone.current);
+    beforeEach(() => (beforeEachZone = Zone.current));
 
     it('should throw on async in describe', () => {
       expect(Zone.currentTask).toBeTruthy();
@@ -53,17 +55,23 @@ ifEnvSupports('Mocha', function() {
       expect(itZone).toBe(zone);
     });
 
-    after(() => { expect(beforeZone).toBe(Zone.current); });
+    after(() => {
+      expect(beforeZone).toBe(Zone.current);
+    });
   });
 
   suite('Mocha TDD-style', () => {
-    let testZone: Zone|null = null;
-    let beforeEachZone: Zone|null = null;
-    let suiteSetupZone: Zone|null = null;
+    let testZone: Zone | null = null;
+    let beforeEachZone: Zone | null = null;
+    let suiteSetupZone: Zone | null = null;
 
-    suiteSetup(() => { suiteSetupZone = Zone.current; });
+    suiteSetup(() => {
+      suiteSetupZone = Zone.current;
+    });
 
-    setup(() => { beforeEachZone = Zone.current; });
+    setup(() => {
+      beforeEachZone = Zone.current;
+    });
 
     test('should run in Zone with "test"-syntax in TDD-mode', () => {
       testZone = Zone.current;
@@ -83,12 +91,16 @@ ifEnvSupports('Mocha', function() {
       expect(testZone).toBe(Zone.current);
     });
 
-    suiteTeardown(() => { expect(suiteSetupZone).toBe(Zone.current); });
+    suiteTeardown(() => {
+      expect(suiteSetupZone).toBe(Zone.current);
+    });
   });
 
   describe('return promise', () => {
     let log: string[];
-    beforeEach(() => { log = []; });
+    beforeEach(() => {
+      log = [];
+    });
 
     it('should wait for promise to resolve', () => {
       return new Promise((res, _) => {
@@ -99,6 +111,8 @@ ifEnvSupports('Mocha', function() {
       });
     });
 
-    afterEach(() => { expect(log).toEqual(['resolved']); });
+    afterEach(() => {
+      expect(log).toEqual(['resolved']);
+    });
   });
 })();

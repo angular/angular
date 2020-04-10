@@ -16,12 +16,10 @@ import {bindAction, getIntParameter} from '@angular/testing/src/benchmark_util';
 
 import {ScrollAreaComponent} from './scroll_area';
 
-
 @Component({
   selector: 'scroll-app',
   directives: [ScrollAreaComponent, NgIf, NgFor],
-  template: `
-  <div>
+  template: ` <div>
     <div style="display: flex">
       <scroll-area id="testArea"></scroll-area>
     </div>
@@ -29,7 +27,7 @@ import {ScrollAreaComponent} from './scroll_area';
       <p>Following tables are only here to add weight to the UI:</p>
       <scroll-area *ngFor="let scrollArea of scrollAreas"></scroll-area>
     </div>
-  </div>`
+  </div>`,
 })
 export class App {
   scrollAreas: number[];
@@ -40,12 +38,14 @@ export class App {
     let appSize = getIntParameter('appSize');
     this.iterationCount = getIntParameter('iterationCount');
     this.scrollIncrement = getIntParameter('scrollIncrement');
-    appSize = appSize > 1 ? appSize - 1 : 0;  // draw at least one table
+    appSize = appSize > 1 ? appSize - 1 : 0; // draw at least one table
     this.scrollAreas = [];
     for (let i = 0; i < appSize; i++) {
       this.scrollAreas.push(i);
     }
-    bindAction('#run-btn', () => { this.runBenchmark(); });
+    bindAction('#run-btn', () => {
+      this.runBenchmark();
+    });
     bindAction('#reset-btn', () => {
       this._getScrollDiv().scrollTop = 0;
       const existingMarker = this._locateFinishedMarker();
@@ -88,7 +88,11 @@ export class App {
     }, 0);
   }
 
-  private _locateFinishedMarker() { return DOM.querySelector(document.body, '#done'); }
+  private _locateFinishedMarker() {
+    return DOM.querySelector(document.body, '#done');
+  }
 
-  private _getScrollDiv() { return DOM.query('body /deep/ #scrollDiv'); }
+  private _getScrollDiv() {
+    return DOM.query('body /deep/ #scrollDiv');
+  }
 }

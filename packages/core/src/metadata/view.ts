@@ -49,5 +49,5 @@ export enum ViewEncapsulation {
    * DOM](https://w3c.github.io/webcomponents/spec/shadow/) and
    * creating a ShadowRoot for Component's Host Element.
    */
-  ShadowDom = 3
+  ShadowDom = 3,
 }

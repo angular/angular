@@ -16,5 +16,5 @@
  * compiler.
  */
 export function noSideEffects<T>(fn: () => T): T {
-  return {toString: fn}.toString() as unknown as T;
+  return ({toString: fn}.toString() as unknown) as T;
 }

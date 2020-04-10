@@ -5,8 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ɵɵadvance} from '../../../../src/render3/instructions/advance';
-import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element';
+import {
+  ɵɵelement,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+} from '../../../../src/render3/instructions/element';
 import {ɵɵproperty} from '../../../../src/render3/instructions/property';
 import {refreshView} from '../../../../src/render3/instructions/shared';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
@@ -66,9 +71,12 @@ function TestInterpolationComponent_ng_template_0_Template(rf: RenderFlags, ctx:
   }
 }
 
-
-const rootLView =
-    setupRootViewWithEmbeddedViews(TestInterpolationComponent_ng_template_0_Template, 11, 10, 1000);
+const rootLView = setupRootViewWithEmbeddedViews(
+  TestInterpolationComponent_ng_template_0_Template,
+  11,
+  10,
+  1000
+);
 const rootTView = rootLView[TVIEW];
 
 // scenario to benchmark

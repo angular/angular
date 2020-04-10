@@ -7,7 +7,21 @@
  */
 
 import {CompileReflector} from './compile_reflector';
-import {Component, createComponent, createContentChild, createContentChildren, createDirective, createHostBinding, createHostListener, createInput, createOutput, createViewChild, createViewChildren, Directive, Type} from './core';
+import {
+  Component,
+  createComponent,
+  createContentChild,
+  createContentChildren,
+  createDirective,
+  createHostBinding,
+  createHostListener,
+  createInput,
+  createOutput,
+  createViewChild,
+  createViewChildren,
+  Directive,
+  Type,
+} from './core';
 import {resolveForwardRef, splitAtColon, stringify} from './util';
 
 const QUERY_METADATA_IDENTIFIERS = [
@@ -37,8 +51,8 @@ export class DirectiveResolver {
    */
   resolve(type: Type): Directive;
   resolve(type: Type, throwIfNotFound: true): Directive;
-  resolve(type: Type, throwIfNotFound: boolean): Directive|null;
-  resolve(type: Type, throwIfNotFound = true): Directive|null {
+  resolve(type: Type, throwIfNotFound: boolean): Directive | null;
+  resolve(type: Type, throwIfNotFound = true): Directive | null {
     const typeMetadata = this._reflector.annotations(resolveForwardRef(type));
     if (typeMetadata) {
       const metadata = findLast(typeMetadata, isDirectiveMetadata);
@@ -57,8 +71,11 @@ export class DirectiveResolver {
   }
 
   private _mergeWithPropertyMetadata(
-      dm: Directive, propertyMetadata: {[key: string]: any[]}, guards: {[key: string]: any},
-      directiveType: Type): Directive {
+    dm: Directive,
+    propertyMetadata: {[key: string]: any[]},
+    guards: {[key: string]: any},
+    directiveType: Type
+  ): Directive {
     const inputs: string[] = [];
     const outputs: string[] = [];
     const host: {[key: string]: string} = {};
@@ -80,28 +97,32 @@ export class DirectiveResolver {
           outputs.push(propName);
         }
       }
-      const hostBindings = propertyMetadata[propName].filter(a => createHostBinding.isTypeOf(a));
-      hostBindings.forEach(hostBinding => {
+      const hostBindings = propertyMetadata[propName].filter((a) => createHostBinding.isTypeOf(a));
+      hostBindings.forEach((hostBinding) => {
         if (hostBinding.hostPropertyName) {
           const startWith = hostBinding.hostPropertyName[0];
           if (startWith === '(') {
             throw new Error(`@HostBinding can not bind to events. Use @HostListener instead.`);
           } else if (startWith === '[') {
             throw new Error(
-                `@HostBinding parameter should be a property name, 'class.<name>', or 'attr.<name>'.`);
+              `@HostBinding parameter should be a property name, 'class.<name>', or 'attr.<name>'.`
+            );
           }
           host[`[${hostBinding.hostPropertyName}]`] = propName;
         } else {
           host[`[${propName}]`] = propName;
         }
       });
-      const hostListeners = propertyMetadata[propName].filter(a => createHostListener.isTypeOf(a));
-      hostListeners.forEach(hostListener => {
+      const hostListeners = propertyMetadata[propName].filter((a) =>
+        createHostListener.isTypeOf(a)
+      );
+      hostListeners.forEach((hostListener) => {
         const args = hostListener.args || [];
         host[`(${hostListener.eventName})`] = `${propName}(${args.join(',')})`;
       });
-      const query = findLast(
-          propertyMetadata[propName], (a) => QUERY_METADATA_IDENTIFIERS.some(i => i.isTypeOf(a)));
+      const query = findLast(propertyMetadata[propName], (a) =>
+        QUERY_METADATA_IDENTIFIERS.some((i) => i.isTypeOf(a))
+      );
       if (query) {
         queries[propName] = query;
       }
@@ -131,12 +152,20 @@ export class DirectiveResolver {
   }
 
   private _merge(
-      directive: Directive, inputs: string[], outputs: string[], host: {[key: string]: string},
-      queries: {[key: string]: any}, guards: {[key: string]: any}, directiveType: Type): Directive {
-    const mergedInputs =
-        this._dedupeBindings(directive.inputs ? directive.inputs.concat(inputs) : inputs);
-    const mergedOutputs =
-        this._dedupeBindings(directive.outputs ? directive.outputs.concat(outputs) : outputs);
+    directive: Directive,
+    inputs: string[],
+    outputs: string[],
+    host: {[key: string]: string},
+    queries: {[key: string]: any},
+    guards: {[key: string]: any},
+    directiveType: Type
+  ): Directive {
+    const mergedInputs = this._dedupeBindings(
+      directive.inputs ? directive.inputs.concat(inputs) : inputs
+    );
+    const mergedOutputs = this._dedupeBindings(
+      directive.outputs ? directive.outputs.concat(outputs) : outputs
+    );
     const mergedHost = directive.host ? {...directive.host, ...host} : host;
     const mergedQueries = directive.queries ? {...directive.queries, ...queries} : queries;
     if (createComponent.isTypeOf(directive)) {
@@ -171,7 +200,7 @@ export class DirectiveResolver {
         exportAs: directive.exportAs,
         queries: mergedQueries,
         providers: directive.providers,
-        guards
+        guards,
       });
     }
   }
@@ -181,7 +210,7 @@ function isDirectiveMetadata(type: any): type is Directive {
   return createDirective.isTypeOf(type) || createComponent.isTypeOf(type);
 }
 
-export function findLast<T>(arr: T[], condition: (value: T) => boolean): T|null {
+export function findLast<T>(arr: T[], condition: (value: T) => boolean): T | null {
   for (let i = arr.length - 1; i >= 0; i--) {
     if (condition(arr[i])) {
       return arr[i];

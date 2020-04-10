@@ -41,9 +41,9 @@ export const CHECKBOX_VALUE_ACCESSOR: any = {
  */
 @Directive({
   selector:
-      'input[type=checkbox][formControlName],input[type=checkbox][formControl],input[type=checkbox][ngModel]',
+    'input[type=checkbox][formControlName],input[type=checkbox][formControl],input[type=checkbox][ngModel]',
   host: {'(change)': 'onChange($event.target.checked)', '(blur)': 'onTouched()'},
-  providers: [CHECKBOX_VALUE_ACCESSOR]
+  providers: [CHECKBOX_VALUE_ACCESSOR],
 })
 export class CheckboxControlValueAccessor implements ControlValueAccessor {
   /**

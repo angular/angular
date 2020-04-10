@@ -6,15 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NodeFlags, QueryValueType, ViewDefinition, ViewFlags, anchorDef, directiveDef, elementDef, textDef, viewDef} from '@angular/core/src/view/index';
+import {
+  NodeFlags,
+  QueryValueType,
+  ViewDefinition,
+  ViewFlags,
+  anchorDef,
+  directiveDef,
+  elementDef,
+  textDef,
+  viewDef,
+} from '@angular/core/src/view/index';
 import {filterQueryId} from '@angular/core/src/view/util';
 
 {
   describe('viewDef', () => {
-
     describe('parent', () => {
       function parents(viewDef: ViewDefinition): (number | null)[] {
-        return viewDef.nodes.map(node => node.parent ? node.parent.nodeIndex : null);
+        return viewDef.nodes.map((node) => (node.parent ? node.parent.nodeIndex : null));
       }
 
       it('should calculate parents for one level', () => {
@@ -54,27 +63,28 @@ import {filterQueryId} from '@angular/core/src/view/util';
     });
 
     describe('childFlags', () => {
-
       function childFlags(viewDef: ViewDefinition): number[] {
-        return viewDef.nodes.map(node => node.childFlags);
+        return viewDef.nodes.map((node) => node.childFlags);
       }
 
       function directChildFlags(viewDef: ViewDefinition): number[] {
-        return viewDef.nodes.map(node => node.directChildFlags);
+        return viewDef.nodes.map((node) => node.directChildFlags);
       }
 
       it('should calculate childFlags for one level', () => {
         const vd = viewDef(ViewFlags.None, [
           elementDef(0, NodeFlags.None, null, null, 1, 'span'),
-          directiveDef(1, NodeFlags.AfterContentChecked, null, 0, AService, [])
+          directiveDef(1, NodeFlags.AfterContentChecked, null, 0, AService, []),
         ]);
 
         expect(childFlags(vd)).toEqual([
-          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked, NodeFlags.None
+          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked,
+          NodeFlags.None,
         ]);
 
         expect(directChildFlags(vd)).toEqual([
-          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked, NodeFlags.None
+          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked,
+          NodeFlags.None,
         ]);
       });
 
@@ -82,17 +92,19 @@ import {filterQueryId} from '@angular/core/src/view/util';
         const vd = viewDef(ViewFlags.None, [
           elementDef(0, NodeFlags.None, null, null, 2, 'span'),
           elementDef(1, NodeFlags.None, null, null, 1, 'span'),
-          directiveDef(2, NodeFlags.AfterContentChecked, null, 0, AService, [])
+          directiveDef(2, NodeFlags.AfterContentChecked, null, 0, AService, []),
         ]);
 
         expect(childFlags(vd)).toEqual([
           NodeFlags.TypeElement | NodeFlags.TypeDirective | NodeFlags.AfterContentChecked,
-          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked, NodeFlags.None
+          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked,
+          NodeFlags.None,
         ]);
 
         expect(directChildFlags(vd)).toEqual([
-          NodeFlags.TypeElement, NodeFlags.TypeDirective | NodeFlags.AfterContentChecked,
-          NodeFlags.None
+          NodeFlags.TypeElement,
+          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked,
+          NodeFlags.None,
         ]);
       });
 
@@ -106,15 +118,19 @@ import {filterQueryId} from '@angular/core/src/view/util';
         ]);
 
         expect(childFlags(vd)).toEqual([
-          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked, NodeFlags.None,
+          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked,
+          NodeFlags.None,
           NodeFlags.TypeDirective | NodeFlags.AfterContentInit | NodeFlags.AfterViewChecked,
-          NodeFlags.None, NodeFlags.None
+          NodeFlags.None,
+          NodeFlags.None,
         ]);
 
         expect(directChildFlags(vd)).toEqual([
-          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked, NodeFlags.None,
+          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked,
+          NodeFlags.None,
           NodeFlags.TypeDirective | NodeFlags.AfterContentInit | NodeFlags.AfterViewChecked,
-          NodeFlags.None, NodeFlags.None
+          NodeFlags.None,
+          NodeFlags.None,
         ]);
       });
 
@@ -122,7 +138,7 @@ import {filterQueryId} from '@angular/core/src/view/util';
         const vd = viewDef(ViewFlags.None, [
           elementDef(0, NodeFlags.None, null, null, 2, 'span'),
           elementDef(1, NodeFlags.None, null, null, 1, 'span'),
-          directiveDef(2, NodeFlags.AfterContentChecked, null !, 0, AService, []),
+          directiveDef(2, NodeFlags.AfterContentChecked, null!, 0, AService, []),
           elementDef(3, NodeFlags.None, null, null, 2, 'span'),
           directiveDef(4, NodeFlags.AfterContentInit, null, 0, AService, []),
           directiveDef(5, NodeFlags.AfterViewInit, null, 0, AService, []),
@@ -130,29 +146,33 @@ import {filterQueryId} from '@angular/core/src/view/util';
 
         expect(childFlags(vd)).toEqual([
           NodeFlags.TypeElement | NodeFlags.TypeDirective | NodeFlags.AfterContentChecked,
-          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked, NodeFlags.None,
+          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked,
+          NodeFlags.None,
           NodeFlags.TypeDirective | NodeFlags.AfterContentInit | NodeFlags.AfterViewInit,
-          NodeFlags.None, NodeFlags.None
+          NodeFlags.None,
+          NodeFlags.None,
         ]);
 
         expect(directChildFlags(vd)).toEqual([
-          NodeFlags.TypeElement, NodeFlags.TypeDirective | NodeFlags.AfterContentChecked,
+          NodeFlags.TypeElement,
+          NodeFlags.TypeDirective | NodeFlags.AfterContentChecked,
           NodeFlags.None,
           NodeFlags.TypeDirective | NodeFlags.AfterContentInit | NodeFlags.AfterViewInit,
-          NodeFlags.None, NodeFlags.None
+          NodeFlags.None,
+          NodeFlags.None,
         ]);
       });
     });
 
     describe('childMatchedQueries', () => {
       function childMatchedQueries(viewDef: ViewDefinition): number[] {
-        return viewDef.nodes.map(node => node.childMatchedQueries);
+        return viewDef.nodes.map((node) => node.childMatchedQueries);
       }
 
       it('should calculate childMatchedQueries for one level', () => {
         const vd = viewDef(ViewFlags.None, [
           elementDef(0, NodeFlags.None, null, null, 1, 'span'),
-          directiveDef(1, NodeFlags.None, [[1, QueryValueType.Provider]], 0, AService, [])
+          directiveDef(1, NodeFlags.None, [[1, QueryValueType.Provider]], 0, AService, []),
         ]);
 
         expect(childMatchedQueries(vd)).toEqual([filterQueryId(1), 0]);
@@ -162,7 +182,7 @@ import {filterQueryId} from '@angular/core/src/view/util';
         const vd = viewDef(ViewFlags.None, [
           elementDef(0, NodeFlags.None, null, null, 2, 'span'),
           elementDef(1, NodeFlags.None, null, null, 1, 'span'),
-          directiveDef(2, NodeFlags.None, [[1, QueryValueType.Provider]], 0, AService, [])
+          directiveDef(2, NodeFlags.None, [[1, QueryValueType.Provider]], 0, AService, []),
         ]);
 
         expect(childMatchedQueries(vd)).toEqual([filterQueryId(1), filterQueryId(1), 0]);
@@ -178,7 +198,11 @@ import {filterQueryId} from '@angular/core/src/view/util';
         ]);
 
         expect(childMatchedQueries(vd)).toEqual([
-          filterQueryId(1), 0, filterQueryId(2) | filterQueryId(3), 0, 0
+          filterQueryId(1),
+          0,
+          filterQueryId(2) | filterQueryId(3),
+          0,
+          0,
         ]);
       });
 
@@ -193,20 +217,23 @@ import {filterQueryId} from '@angular/core/src/view/util';
         ]);
 
         expect(childMatchedQueries(vd)).toEqual([
-          filterQueryId(1), filterQueryId(1), 0, filterQueryId(2) | filterQueryId(3), 0, 0
+          filterQueryId(1),
+          filterQueryId(1),
+          0,
+          filterQueryId(2) | filterQueryId(3),
+          0,
+          0,
         ]);
       });
 
       it('should included embedded views into childMatchedQueries', () => {
         const vd = viewDef(ViewFlags.None, [
           elementDef(0, NodeFlags.None, null, null, 1, 'span'),
-          anchorDef(
-              NodeFlags.None, null, null, 0, null,
-              () => viewDef(
-                  ViewFlags.None,
-                  [
-                    elementDef(0, NodeFlags.None, [[1, QueryValueType.Provider]], null, 0, 'span'),
-                  ]))
+          anchorDef(NodeFlags.None, null, null, 0, null, () =>
+            viewDef(ViewFlags.None, [
+              elementDef(0, NodeFlags.None, [[1, QueryValueType.Provider]], null, 0, 'span'),
+            ])
+          ),
         ]);
 
         // Note: the template will become a sibling to the anchor once stamped out,

@@ -5,15 +5,20 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as fs from 'fs';
 import * as path from 'path';
 
 export class FileUtils {
-  static readFile(absolutePath: string): string { return fs.readFileSync(absolutePath, 'utf8'); }
+  static readFile(absolutePath: string): string {
+    return fs.readFileSync(absolutePath, 'utf8');
+  }
 
-  static readFileBuffer(absolutePath: string): Buffer { return fs.readFileSync(absolutePath); }
+  static readFileBuffer(absolutePath: string): Buffer {
+    return fs.readFileSync(absolutePath);
+  }
 
-  static writeFile(absolutePath: string, contents: string|Buffer) {
+  static writeFile(absolutePath: string, contents: string | Buffer) {
     FileUtils.ensureDir(path.dirname(absolutePath));
     fs.writeFileSync(absolutePath, contents);
   }
@@ -25,7 +30,7 @@ export class FileUtils {
       absolutePath = path.dirname(absolutePath);
     }
     while (parents.length) {
-      fs.mkdirSync(parents.pop() !);
+      fs.mkdirSync(parents.pop()!);
     }
   }
 
@@ -34,7 +39,7 @@ export class FileUtils {
     if (stat.isFile()) {
       fs.unlinkSync(p);
     } else if (stat.isDirectory()) {
-      fs.readdirSync(p).forEach(child => {
+      fs.readdirSync(p).forEach((child) => {
         const absChild = path.resolve(p, child);
         FileUtils.remove(absChild);
       });

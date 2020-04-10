@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-let _DOM: DomAdapter = null !;
+let _DOM: DomAdapter = null!;
 
 export function getDOM(): DomAdapter {
   return _DOM;
@@ -60,9 +60,8 @@ export abstract class DomAdapter {
 
   // Used by PlatformLocation
   abstract getHistory(): History;
-  abstract getLocation():
-      any; /** This is the ambient Location definition, NOT Location from @angular/common.  */
-  abstract getBaseHref(doc: Document): string|null;
+  abstract getLocation(): any; /** This is the ambient Location definition, NOT Location from @angular/common.  */
+  abstract getBaseHref(doc: Document): string | null;
   abstract resetBaseElement(): void;
 
   // TODO: remove dependency in DefaultValueAccessor
@@ -73,5 +72,5 @@ export abstract class DomAdapter {
 
   // Used by CookieXSRFStrategy
   abstract supportsCookies(): boolean;
-  abstract getCookie(name: string): string|null;
+  abstract getCookie(name: string): string | null;
 }

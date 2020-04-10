@@ -66,7 +66,7 @@ runInEachFileSystem((os) => {
         export class Service {
           constructor(dep: Dep) {}
         }
-    `,
+    `
       );
       env.driveMain();
 
@@ -89,7 +89,7 @@ runInEachFileSystem((os) => {
 
         @Injectable()
         export class Store<T> {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -114,7 +114,7 @@ runInEachFileSystem((os) => {
         export class Service {
           constructor(dep: Dep) {}
         }
-    `,
+    `
       );
 
       env.driveMain();
@@ -123,7 +123,7 @@ runInEachFileSystem((os) => {
       expect(jsContents).toContain('Dep.ɵprov =');
       expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents).toContain(
-        'Service.ɵfac = function Service_Factory(t) { return new (t || Service)(i0.ɵɵinject(Dep)); };',
+        'Service.ɵfac = function Service_Factory(t) { return new (t || Service)(i0.ɵɵinject(Dep)); };'
       );
       expect(jsContents).toContain("providedIn: 'root' })");
       expect(jsContents).not.toContain('__decorate');
@@ -144,7 +144,7 @@ runInEachFileSystem((os) => {
         export class Service {
           constructor() {}
         }
-    `,
+    `
       );
 
       env.driveMain();
@@ -152,7 +152,7 @@ runInEachFileSystem((os) => {
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents).toContain(
-        'factory: function () { return (function () { return new Service(); })(); }',
+        'factory: function () { return (function () { return new Service(); })(); }'
       );
       expect(jsContents).toContain('Service_Factory(t) { return new (t || Service)(); }');
       expect(jsContents).toContain(", providedIn: 'root' });");
@@ -175,7 +175,7 @@ runInEachFileSystem((os) => {
         export class Service {
           constructor(dep: Dep) {}
         }
-    `,
+    `
       );
 
       env.driveMain();
@@ -185,7 +185,7 @@ runInEachFileSystem((os) => {
       expect(jsContents).toContain('factory: function Service_Factory(t) { var r = null; if (t) {');
       expect(jsContents).toContain('return new (t || Service)(i0.ɵɵinject(Dep));');
       expect(jsContents).toContain(
-        'r = (function (dep) { return new Service(dep); })(i0.ɵɵinject(Dep));',
+        'r = (function (dep) { return new Service(dep); })(i0.ɵɵinject(Dep));'
       );
       expect(jsContents).toContain("return r; }, providedIn: 'root' });");
       expect(jsContents).not.toContain('__decorate');
@@ -207,7 +207,7 @@ runInEachFileSystem((os) => {
       class Service {
         constructor(@Opt() dep: Dep) {}
       }
-    `,
+    `
       );
       env.driveMain();
       const jsContents = env.getContents('test.js');
@@ -232,14 +232,14 @@ runInEachFileSystem((os) => {
 
         constructor(dep: Dep, @Optional() optionalDep?: OptionalDep) {}
       }
-    `,
+    `
       );
       env.driveMain();
       const jsContents = env.getContents('test.js');
 
       expect(jsContents).toContain(
         `Service.ɵfac = function Service_Factory(t) { ` +
-          `return new (t || Service)(i0.ɵɵinject(Dep), i0.ɵɵinject(OptionalDep, 8)); };`,
+          `return new (t || Service)(i0.ɵɵinject(Dep), i0.ɵɵinject(OptionalDep, 8)); };`
       );
     });
 
@@ -251,7 +251,7 @@ runInEachFileSystem((os) => {
 
         @Directive({selector: '[dir]'})
         export class TestDir {}
-      `,
+      `
       );
 
       env.driveMain();
@@ -263,7 +263,7 @@ runInEachFileSystem((os) => {
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(
-        'static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestDir, "[dir]", never, {}, {}, never>',
+        'static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestDir, "[dir]", never, {}, {}, never>'
       );
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestDir, never>');
     });
@@ -276,7 +276,7 @@ runInEachFileSystem((os) => {
 
         @Directive()
         export class TestDir {}
-      `,
+      `
       );
 
       env.driveMain();
@@ -288,7 +288,7 @@ runInEachFileSystem((os) => {
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(
-        'static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestDir, never, never, {}, {}, never>',
+        'static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestDir, never, never, {}, {}, never>'
       );
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestDir, never>');
     });
@@ -304,7 +304,7 @@ runInEachFileSystem((os) => {
           template: 'this is a test',
         })
         export class TestCmp {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -316,7 +316,7 @@ runInEachFileSystem((os) => {
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(
-        'static ɵcmp: i0.ɵɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never, never>',
+        'static ɵcmp: i0.ɵɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never, never>'
       );
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestCmp, never>');
     });
@@ -332,7 +332,7 @@ runInEachFileSystem((os) => {
           template: 'this is ' + 'a test',
         })
         export class TestCmp {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -346,7 +346,7 @@ runInEachFileSystem((os) => {
 
       expect(dtsContents).toContain(
         'static ɵcmp: i0.ɵɵComponentDefWithMeta' +
-          '<TestCmp, "test-cmp", never, {}, {}, never, never>',
+          '<TestCmp, "test-cmp", never, {}, {}, never, never>'
       );
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestCmp, never>');
     });
@@ -365,7 +365,7 @@ runInEachFileSystem((os) => {
           template: getTemplate(),
         })
         export class TestCmp {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -377,7 +377,7 @@ runInEachFileSystem((os) => {
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(
-        'static ɵcmp: i0.ɵɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never, never>',
+        'static ɵcmp: i0.ɵɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never, never>'
       );
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestCmp, never>');
     });
@@ -393,7 +393,7 @@ runInEachFileSystem((os) => {
           templateUrl: './dir/test.html',
         })
         export class TestCmp {}
-    `,
+    `
       );
       env.write('dir/test.html', '<p>Hello World</p>');
 
@@ -422,7 +422,7 @@ runInEachFileSystem((os) => {
               templateUrl: './dir/test.html',
             })
             export class TestCmp {}
-          `,
+          `
           );
           env.write('dir/test.html', '<p>Hello World</p>');
 
@@ -471,7 +471,7 @@ runInEachFileSystem((os) => {
               return /**
               * @return {?}
               */
-            `),
+            `)
             );
             expect(trim(jsContents)).toContain(
               trim(`
@@ -494,7 +494,7 @@ runInEachFileSystem((os) => {
                       });
                   })
               }]
-            `),
+            `)
             );
           };
 
@@ -513,7 +513,7 @@ runInEachFileSystem((os) => {
                 providers: ${providers}
               })
               export class SomeModule {}
-            `,
+            `
             );
 
             env.driveMain();
@@ -536,7 +536,7 @@ runInEachFileSystem((os) => {
                 providers: ${providers}
               })
               export class SomeComponent {}
-            `,
+            `
             );
 
             env.driveMain();
@@ -559,7 +559,7 @@ runInEachFileSystem((os) => {
                 viewProviders: ${providers}
               })
               export class SomeComponent {}
-            `,
+            `
             );
 
             env.driveMain();
@@ -581,7 +581,7 @@ runInEachFileSystem((os) => {
                 providers: ${providers}
               })
               export class SomeDirective {}
-            `,
+            `
             );
 
             env.driveMain();
@@ -645,7 +645,7 @@ runInEachFileSystem((os) => {
         ]
       })
       class MyModule {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -696,7 +696,7 @@ runInEachFileSystem((os) => {
           declarations: [PipeB, App],
         })
         class ModuleB {}
-      `,
+      `
       );
 
       env.driveMain();
@@ -747,7 +747,7 @@ runInEachFileSystem((os) => {
               declarations: [App],
             })
             class ModuleC {}
-          `,
+          `
       );
 
       env.driveMain();
@@ -805,7 +805,7 @@ runInEachFileSystem((os) => {
           declarations: [DirectiveB, ComponentB, App],
         })
         class ModuleB {}
-      `,
+      `
       );
 
       env.driveMain();
@@ -871,7 +871,7 @@ runInEachFileSystem((os) => {
           declarations: [App],
         })
         class ModuleC {}
-      `,
+      `
       );
 
       env.driveMain();
@@ -893,7 +893,7 @@ runInEachFileSystem((os) => {
           templateUrl: 'test.html',
         })
         export class TestCmp {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -915,7 +915,7 @@ runInEachFileSystem((os) => {
           templateUrl: '/test.html',
         })
         export class TestCmp {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -936,7 +936,7 @@ runInEachFileSystem((os) => {
           template: '',
         })
         export class TestCmp {}
-    `,
+    `
       );
       env.write('dir/style.css', ':host { background-color: blue; }');
 
@@ -958,7 +958,7 @@ runInEachFileSystem((os) => {
           template: '',
         })
         export class TestCmp {}
-    `,
+    `
       );
       env.write('dir/style.css', ':host { background-color: blue; }');
 
@@ -977,19 +977,19 @@ runInEachFileSystem((os) => {
         export class TestBase {
           @Input() input: any;
         }
-    `,
+    `
       );
 
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        'i0.ɵɵdefineDirective({ type: TestBase, inputs: { input: "input" } });',
+        'i0.ɵɵdefineDirective({ type: TestBase, inputs: { input: "input" } });'
       );
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(
-        `static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestBase, never, never, { "input": "input"; }, {}, never>;`,
+        `static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestBase, never, never, { "input": "input"; }, {}, never>;`
       );
     });
 
@@ -1010,29 +1010,29 @@ runInEachFileSystem((os) => {
           bootstrap: [TestCmp],
         })
         export class TestModule {}
-    `,
+    `
       );
 
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        'i0.ɵɵdefineNgModule({ type: TestModule, bootstrap: [TestCmp] });',
+        'i0.ɵɵdefineNgModule({ type: TestModule, bootstrap: [TestCmp] });'
       );
       expect(jsContents).toContain(
-        'function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(TestModule, { declarations: [TestCmp] }); })();',
+        'function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(TestModule, { declarations: [TestCmp] }); })();'
       );
       expect(jsContents).toContain(
         'i0.ɵɵdefineInjector({ factory: ' +
-          'function TestModule_Factory(t) { return new (t || TestModule)(); } });',
+          'function TestModule_Factory(t) { return new (t || TestModule)(); } });'
       );
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(
-        'static ɵcmp: i0.ɵɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never, never>',
+        'static ɵcmp: i0.ɵɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never, never>'
       );
       expect(dtsContents).toContain(
-        'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], never, never>',
+        'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], never, never>'
       );
       expect(dtsContents).not.toContain('__decorate');
     });
@@ -1045,7 +1045,7 @@ runInEachFileSystem((os) => {
 
         @NgModule({})
         export class TestModule {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -1063,7 +1063,7 @@ runInEachFileSystem((os) => {
 
         @NgModule({id: 'test'})
         export class TestModule {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -1077,7 +1077,7 @@ runInEachFileSystem((os) => {
         'index.d.ts',
         `
          declare const module = {id: string};
-       `,
+       `
       );
       env.write(
         'test.ts',
@@ -1086,7 +1086,7 @@ runInEachFileSystem((os) => {
 
          @NgModule({id: module.id})
          export class TestModule {}
-       `,
+       `
       );
 
       env.driveMain();
@@ -1117,7 +1117,7 @@ runInEachFileSystem((os) => {
         exports: [EXPORTS],
       })
       export class TestModule {}
-    `,
+    `
       );
       env.write(
         `decls.ts`,
@@ -1135,7 +1135,7 @@ runInEachFileSystem((os) => {
 
       @Component({selector: 'test', template: ''})
       export class Comp {}
-    `,
+    `
       );
       env.write(
         'node_modules/@angular/router/index.d.ts',
@@ -1150,7 +1150,7 @@ runInEachFileSystem((os) => {
         static forRoot(): ModuleWithProviders<RouterModule>;
         static ɵmod: ɵɵNgModuleDefWithMeta<RouterModule, [typeof RouterComp], never, [typeof RouterComp]>;
       }
-    `,
+    `
       );
 
       env.driveMain();
@@ -1159,7 +1159,7 @@ runInEachFileSystem((os) => {
       expect(jsContents).toContain(
         'i0.ɵɵdefineInjector({ factory: function TestModule_Factory(t) ' +
           '{ return new (t || TestModule)(); }, imports: [[OtherModule, RouterModule.forRoot()],' +
-          '\n            OtherModule,\n            RouterModule] });',
+          '\n            OtherModule,\n            RouterModule] });'
       );
     });
 
@@ -1186,7 +1186,7 @@ runInEachFileSystem((os) => {
           imports: [OtherModule],
         })
         export class TestModule {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -1196,12 +1196,12 @@ runInEachFileSystem((os) => {
       expect(jsContents).toContain(
         `TestModule.ɵinj = i0.ɵɵdefineInjector({ factory: ` +
           `function TestModule_Factory(t) { return new (t || TestModule)(); }, providers: [{ provide: ` +
-          `Token, useValue: 'test' }], imports: [[OtherModule]] });`,
+          `Token, useValue: 'test' }], imports: [[OtherModule]] });`
       );
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(
-        'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>',
+        'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>'
       );
       expect(dtsContents).toContain('static ɵinj: i0.ɵɵInjectorDef');
     });
@@ -1229,7 +1229,7 @@ runInEachFileSystem((os) => {
           imports: [OtherModule],
         })
         export class TestModule {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -1239,12 +1239,12 @@ runInEachFileSystem((os) => {
       expect(jsContents).toContain(
         `TestModule.ɵinj = i0.ɵɵdefineInjector({ factory: ` +
           `function TestModule_Factory(t) { return new (t || TestModule)(); }, providers: [{ provide: ` +
-          `Token, useFactory: function () { return new Token(); } }], imports: [[OtherModule]] });`,
+          `Token, useFactory: function () { return new Token(); } }], imports: [[OtherModule]] });`
       );
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(
-        'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>',
+        'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>'
       );
       expect(dtsContents).toContain('static ɵinj: i0.ɵɵInjectorDef');
     });
@@ -1276,7 +1276,7 @@ runInEachFileSystem((os) => {
           imports: [OtherModule],
         })
         export class TestModule {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -1286,12 +1286,12 @@ runInEachFileSystem((os) => {
       expect(jsContents).toContain(
         `TestModule.ɵinj = i0.ɵɵdefineInjector({ factory: ` +
           `function TestModule_Factory(t) { return new (t || TestModule)(); }, providers: [{ provide: ` +
-          `Token, useFactory: function (dep) { return new Token(dep); }, deps: [Dep] }], imports: [[OtherModule]] });`,
+          `Token, useFactory: function (dep) { return new Token(dep); }, deps: [Dep] }], imports: [[OtherModule]] });`
       );
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(
-        'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>',
+        'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>'
       );
       expect(dtsContents).toContain('static ɵinj: i0.ɵɵInjectorDef');
     });
@@ -1307,7 +1307,7 @@ runInEachFileSystem((os) => {
         declarations: [Foo],
       })
       export class FooModule {}
-    `,
+    `
       );
       env.write(
         'foo.ts',
@@ -1315,7 +1315,7 @@ runInEachFileSystem((os) => {
       import {Component} from '@angular/core';
       @Component({selector: 'foo', template: ''})
       export class Foo {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -1339,7 +1339,7 @@ runInEachFileSystem((os) => {
         declarations: [Foo],
       })
       export class FooModule {}
-    `,
+    `
       );
       env.write(
         'node_modules/foo/index.ts',
@@ -1352,7 +1352,7 @@ runInEachFileSystem((os) => {
       })
       export class Foo {
       }
-    `,
+    `
       );
 
       env.driveMain();
@@ -1378,7 +1378,7 @@ runInEachFileSystem((os) => {
 
       @Component({selector: 'foo', template: 'foo'})
       export class Foo {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -1400,7 +1400,7 @@ runInEachFileSystem((os) => {
 
       @Directive({selector: 'foo'})
       export class Foo {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -1422,7 +1422,7 @@ runInEachFileSystem((os) => {
 
       @NgModule({})
       export class BarModule {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -1444,7 +1444,7 @@ runInEachFileSystem((os) => {
 
       @NgModule({})
       export class BarModule {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -1464,7 +1464,7 @@ runInEachFileSystem((os) => {
           pure: false,
         })
         export class TestPipe {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -1473,10 +1473,10 @@ runInEachFileSystem((os) => {
       const dtsContents = env.getContents('test.d.ts');
 
       expect(jsContents).toContain(
-        'TestPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: false })',
+        'TestPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: false })'
       );
       expect(jsContents).toContain(
-        'TestPipe.ɵfac = function TestPipe_Factory(t) { return new (t || TestPipe)(); }',
+        'TestPipe.ɵfac = function TestPipe_Factory(t) { return new (t || TestPipe)(); }'
       );
       expect(dtsContents).toContain('static ɵpipe: i0.ɵɵPipeDefWithMeta<TestPipe, "test-pipe">;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestPipe, never>;');
@@ -1492,7 +1492,7 @@ runInEachFileSystem((os) => {
           name: 'test-pipe',
         })
         export class TestPipe {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -1501,10 +1501,10 @@ runInEachFileSystem((os) => {
       const dtsContents = env.getContents('test.d.ts');
 
       expect(jsContents).toContain(
-        'TestPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: true })',
+        'TestPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: true })'
       );
       expect(jsContents).toContain(
-        'TestPipe.ɵfac = function TestPipe_Factory(t) { return new (t || TestPipe)(); }',
+        'TestPipe.ɵfac = function TestPipe_Factory(t) { return new (t || TestPipe)(); }'
       );
       expect(dtsContents).toContain('static ɵpipe: i0.ɵɵPipeDefWithMeta<TestPipe, "test-pipe">;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestPipe, never>;');
@@ -1525,7 +1525,7 @@ runInEachFileSystem((os) => {
         export class TestPipe {
           constructor(dep: Dep) {}
         }
-    `,
+    `
       );
 
       env.driveMain();
@@ -1544,7 +1544,7 @@ runInEachFileSystem((os) => {
           name: 'test-pipe',
         })
         export class TestPipe<T> {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -1553,7 +1553,7 @@ runInEachFileSystem((os) => {
       expect(jsContents).toContain('TestPipe.ɵpipe =');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(
-        'static ɵpipe: i0.ɵɵPipeDefWithMeta<TestPipe<any>, "test-pipe">;',
+        'static ɵpipe: i0.ɵɵPipeDefWithMeta<TestPipe<any>, "test-pipe">;'
       );
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDef<TestPipe<any>, never>;');
     });
@@ -1572,7 +1572,7 @@ runInEachFileSystem((os) => {
 
         @NgModule({declarations: [TestPipe, TestCmp]})
         export class TestModule {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -1582,7 +1582,7 @@ runInEachFileSystem((os) => {
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(
-        'i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestPipe, typeof TestCmp], never, never>',
+        'i0.ɵɵNgModuleDefWithMeta<TestModule, [typeof TestPipe, typeof TestCmp], never, never>'
       );
     });
 
@@ -1597,7 +1597,7 @@ runInEachFileSystem((os) => {
           template: '...',
         })
         export class TestCmp {}
-      `,
+      `
         );
 
         env.driveMain();
@@ -1617,7 +1617,7 @@ runInEachFileSystem((os) => {
           template: '...',
         })
         export class TestCmp {}
-      `,
+      `
         );
 
         env.driveMain();
@@ -1645,7 +1645,7 @@ runInEachFileSystem((os) => {
             inputs: ['a', 'b']
           })
           export class TestDirWithInputs {}
-        `,
+        `
         );
         const errors = env.driveDiagnostics();
         expect(errors.length).toBe(0);
@@ -1658,7 +1658,7 @@ runInEachFileSystem((os) => {
             extends: './tsconfig-base.json',
             angularCompilerOptions: {enableIvy: true},
             compilerOptions: {rootDir: '.', outDir: '../node_modules/lib1_built'},
-          }),
+          })
         );
         env.write(
           'index.ts',
@@ -1667,7 +1667,7 @@ runInEachFileSystem((os) => {
 
           @Directive()
           export class BaseClass {}
-        `,
+        `
         );
 
         expect(env.driveDiagnostics().length).toBe(0);
@@ -1684,7 +1684,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({declarations: [MyDirective]})
           export class AppModule {}
-        `,
+        `
         );
 
         expect(env.driveDiagnostics().length).toBe(0);
@@ -1703,11 +1703,11 @@ runInEachFileSystem((os) => {
             declarations: [BaseDir],
           })
           export class MyModule {}
-        `,
+        `
         );
         const errors = env.driveDiagnostics();
         expect(trim(errors[0].messageText as string)).toContain(
-          'Directive BaseDir has no selector, please add it!',
+          'Directive BaseDir has no selector, please add it!'
         );
       });
 
@@ -1721,12 +1721,12 @@ runInEachFileSystem((os) => {
           selector: ''
         })
         export class TestDir {}
-      `,
+      `
         );
 
         const errors = env.driveDiagnostics();
         expect(trim(errors[0].messageText as string)).toContain(
-          'Directive TestDir has no selector, please add it!',
+          'Directive TestDir has no selector, please add it!'
         );
       });
     });
@@ -1749,11 +1749,11 @@ runInEachFileSystem((os) => {
 
           @NgModule('invalidNgModuleArgumentType')
           export class MyModule {}
-        `,
+        `
         );
         verifyThrownError(
           ErrorCode.DECORATOR_ARG_NOT_LITERAL,
-          '@NgModule argument must be an object literal',
+          '@NgModule argument must be an object literal'
         );
       });
 
@@ -1773,11 +1773,11 @@ runInEachFileSystem((os) => {
             @ContentChild('foo')
             foo: any;
           }
-        `,
+        `
         );
         verifyThrownError(
           ErrorCode.DECORATOR_COLLISION,
-          'Cannot have multiple query decorators on the same class member',
+          'Cannot have multiple query decorators on the same class member'
         );
       });
 
@@ -1796,11 +1796,11 @@ runInEachFileSystem((os) => {
               export class TestCmp {
                 @Input() @${decorator}('foo') foo: any;
               }
-            `,
+            `
           );
           verifyThrownError(
             ErrorCode.DECORATOR_COLLISION,
-            'Cannot combine @Input decorators with query decorators',
+            'Cannot combine @Input decorators with query decorators'
           );
         });
 
@@ -1818,11 +1818,11 @@ runInEachFileSystem((os) => {
             export class TestCmp {
               @${decorator}('foo', 'invalidOptionsArgumentType') foo: any;
             }
-          `,
+          `
           );
           verifyThrownError(
             ErrorCode.DECORATOR_ARG_NOT_LITERAL,
-            `@${decorator} options must be an object literal`,
+            `@${decorator} options must be an object literal`
           );
         });
 
@@ -1841,11 +1841,11 @@ runInEachFileSystem((os) => {
               @${decorator}('foo')
               private someFn() {}
             }
-          `,
+          `
           );
           verifyThrownError(
             ErrorCode.DECORATOR_UNEXPECTED,
-            'Query decorator must go on a property-type member',
+            'Query decorator must go on a property-type member'
           );
         });
 
@@ -1863,11 +1863,11 @@ runInEachFileSystem((os) => {
             export class TestCmp {
               @${decorator}('foo', {}, 'invalid-extra-arg') foo: any;
             }
-          `,
+          `
           );
           verifyThrownError(
             ErrorCode.DECORATOR_ARITY_WRONG,
-            `@${decorator} has too many arguments`,
+            `@${decorator} has too many arguments`
           );
         });
 
@@ -1885,11 +1885,11 @@ runInEachFileSystem((os) => {
             export class TestCmp {
               @${decorator}({'invalid-predicate-type': true}) foo: any;
             }
-          `,
+          `
           );
           verifyThrownError(
             ErrorCode.VALUE_HAS_WRONG_TYPE,
-            `@${decorator} predicate cannot be interpreted`,
+            `@${decorator} predicate cannot be interpreted`
           );
         });
 
@@ -1907,11 +1907,11 @@ runInEachFileSystem((os) => {
             export class TestCmp {
               @${decorator}(['predicate-a', {'invalid-predicate-type': true}]) foo: any;
             }
-          `,
+          `
           );
           verifyThrownError(
             ErrorCode.VALUE_HAS_WRONG_TYPE,
-            `Failed to resolve @${decorator} predicate at position 1 to a string`,
+            `Failed to resolve @${decorator} predicate at position 1 to a string`
           );
         });
       });
@@ -1929,11 +1929,11 @@ runInEachFileSystem((os) => {
               ${field}: 'invalid-field-type',
             })
             export class TestDir {}
-          `,
+          `
           );
           verifyThrownError(
             ErrorCode.VALUE_HAS_WRONG_TYPE,
-            `Failed to resolve @Directive.${field} to a string array`,
+            `Failed to resolve @Directive.${field} to a string array`
           );
         });
       });
@@ -1953,11 +1953,11 @@ runInEachFileSystem((os) => {
               export class TestCmp {
                 @ContentChild('foo', {descendants: 'invalid'}) foo: any;
               }
-            `,
+            `
           );
           verifyThrownError(
             ErrorCode.VALUE_HAS_WRONG_TYPE,
-            '@ContentChild options.descendants must be a boolean',
+            '@ContentChild options.descendants must be a boolean'
           );
         });
       });
@@ -1977,11 +1977,11 @@ runInEachFileSystem((os) => {
             export class TestCmp {
               @${decorator}(['invalid-arg-type']) foo: any;
             }
-          `,
+          `
           );
           verifyThrownError(
             ErrorCode.VALUE_HAS_WRONG_TYPE,
-            `@${decorator} decorator argument must resolve to a string`,
+            `@${decorator} decorator argument must resolve to a string`
           );
         });
 
@@ -1999,11 +1999,11 @@ runInEachFileSystem((os) => {
             export class TestCmp {
               @${decorator}('name', 'invalid-extra-arg') foo: any;
             }
-          `,
+          `
           );
           verifyThrownError(
             ErrorCode.DECORATOR_ARITY_WRONG,
-            `@${decorator} can have at most one argument, got 2 argument(s)`,
+            `@${decorator} can have at most one argument, got 2 argument(s)`
           );
         });
       });
@@ -2022,11 +2022,11 @@ runInEachFileSystem((os) => {
           export class TestCmp {
             @HostBinding(['invalid-arg-type']) foo: any;
           }
-        `,
+        `
         );
         verifyThrownError(
           ErrorCode.VALUE_HAS_WRONG_TYPE,
-          `@HostBinding's argument must be a string`,
+          `@HostBinding's argument must be a string`
         );
       });
 
@@ -2044,11 +2044,11 @@ runInEachFileSystem((os) => {
           export class TestCmp {
             @HostBinding('name', 'invalid-extra-arg') foo: any;
           }
-        `,
+        `
         );
         verifyThrownError(
           ErrorCode.DECORATOR_ARITY_WRONG,
-          '@HostBinding can have at most one argument',
+          '@HostBinding can have at most one argument'
         );
       });
 
@@ -2064,11 +2064,11 @@ runInEachFileSystem((os) => {
             host: 'invalid-host-type'
           })
           export class TestDir {}
-        `,
+        `
         );
         verifyThrownError(
           ErrorCode.VALUE_HAS_WRONG_TYPE,
-          'Decorator host metadata must be an object',
+          'Decorator host metadata must be an object'
         );
       });
 
@@ -2084,11 +2084,11 @@ runInEachFileSystem((os) => {
                 host: {'key': ['invalid-host-value']}
               })
               export class TestDir {}
-            `,
+            `
         );
         verifyThrownError(
           ErrorCode.VALUE_HAS_WRONG_TYPE,
-          'Decorator host metadata must be a string -> string object, but found unparseable value',
+          'Decorator host metadata must be a string -> string object, but found unparseable value'
         );
       });
 
@@ -2104,11 +2104,11 @@ runInEachFileSystem((os) => {
             queries: 'invalid-queries-type'
           })
           export class TestDir {}
-        `,
+        `
         );
         verifyThrownError(
           ErrorCode.VALUE_HAS_WRONG_TYPE,
-          'Decorator queries metadata must be an object',
+          'Decorator queries metadata must be an object'
         );
       });
 
@@ -2126,11 +2126,11 @@ runInEachFileSystem((os) => {
             }
           })
           export class TestDir {}
-        `,
+        `
         );
         verifyThrownError(
           ErrorCode.VALUE_HAS_WRONG_TYPE,
-          'Decorator query metadata must be an instance of a query type',
+          'Decorator query metadata must be an instance of a query type'
         );
       });
 
@@ -2148,11 +2148,11 @@ runInEachFileSystem((os) => {
                 }
               })
               export class TestDir {}
-            `,
+            `
         );
         verifyThrownError(
           ErrorCode.VALUE_HAS_WRONG_TYPE,
-          'Decorator query metadata must be an instance of a query type',
+          'Decorator query metadata must be an instance of a query type'
         );
       });
 
@@ -2165,11 +2165,11 @@ runInEachFileSystem((os) => {
 
           @Injectable('invalid')
           export class TestProvider {}
-        `,
+        `
         );
         verifyThrownError(
           ErrorCode.DECORATOR_ARG_NOT_LITERAL,
-          '@Injectable argument must be an object literal',
+          '@Injectable argument must be an object literal'
         );
       });
     });
@@ -2196,7 +2196,7 @@ runInEachFileSystem((os) => {
         @NgModule({declarations: [TestCmp, TestDir, TestPipe]})
         @Injectable()
         export class TestNgModule {}
-      `,
+      `
         );
 
         env.driveMain();
@@ -2237,7 +2237,7 @@ runInEachFileSystem((os) => {
         @Component({selector: 'test', template: 'test'})
         @Directive({selector: 'test'})
         class ShouldNotCompile {}
-      `,
+      `
         );
 
         const errors = env.driveDiagnostics();
@@ -2258,7 +2258,7 @@ runInEachFileSystem((os) => {
         export class Test {
           constructor(@Inject('foo') foo: string) {}
         }
-      `,
+      `
         );
         env.driveMain();
         const jsContents = env.getContents('test.js');
@@ -2280,7 +2280,7 @@ runInEachFileSystem((os) => {
             export class Test {
               constructor(private notInjectable: string) {}
             }
-          `,
+          `
           );
 
           const errors = env.driveDiagnostics();
@@ -2299,7 +2299,7 @@ runInEachFileSystem((os) => {
             export class Test {
               constructor(private notInjectable: string) {}
             }
-          `,
+          `
           );
 
           const errors = env.driveDiagnostics();
@@ -2321,7 +2321,7 @@ runInEachFileSystem((os) => {
                export class Test {
                  constructor(private notInjectable: string) {}
                }
-             `,
+             `
           );
 
           env.driveMain();
@@ -2343,7 +2343,7 @@ runInEachFileSystem((os) => {
                export class Test {
                  constructor(private notInjectable: string) {}
                }
-             `,
+             `
           );
 
           env.driveMain();
@@ -2367,7 +2367,7 @@ runInEachFileSystem((os) => {
                export class Test {
                  constructor(private notInjectable: string) {}
                }
-             `,
+             `
           );
 
           env.driveMain();
@@ -2391,7 +2391,7 @@ runInEachFileSystem((os) => {
                export class Test {
                  constructor(private notInjectable: string) {}
                }
-             `,
+             `
           );
 
           env.driveMain();
@@ -2412,13 +2412,13 @@ runInEachFileSystem((os) => {
             export class Test {
               constructor(private notInjectable: string) {}
             }
-          `,
+          `
           );
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            'Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()',
+            'Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()'
           );
         });
 
@@ -2432,13 +2432,13 @@ runInEachFileSystem((os) => {
               export class Test {
                 constructor(private notInjectable: string) {}
               }
-            `,
+            `
           );
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            'Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()',
+            'Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()'
           );
         });
       });
@@ -2457,7 +2457,7 @@ runInEachFileSystem((os) => {
             export class Test {
               constructor(private notInjectable: string) {}
             }
-          `,
+          `
           );
 
           const errors = env.driveDiagnostics();
@@ -2478,13 +2478,13 @@ runInEachFileSystem((os) => {
           export class Test {
             constructor(private notInjectable: string) {}
           }
-        `,
+        `
           );
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            'Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()',
+            'Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()'
           );
         });
       });
@@ -2500,13 +2500,13 @@ runInEachFileSystem((os) => {
         export class Test {
           constructor(private notInjectable: string) {}
         }
-      `,
+      `
         );
 
         env.driveMain();
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          'Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()',
+          'Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()'
         );
       });
     });
@@ -2549,7 +2549,7 @@ runInEachFileSystem((os) => {
             template: '...',
           })
           export class TestCmp {}
-        `,
+        `
           );
 
           env.driveMain();
@@ -2573,7 +2573,7 @@ runInEachFileSystem((os) => {
             templateUrl: '${templateRef}'
           })
           export class TestCmp {}
-        `,
+        `
           );
 
           env.driveMain();
@@ -2599,7 +2599,7 @@ runInEachFileSystem((os) => {
           value = true;
           no = 'no';
         }
-      `,
+      `
         );
 
         env.driveMain();
@@ -2623,7 +2623,7 @@ runInEachFileSystem((os) => {
 
           test = 'test';
         }
-      `,
+      `
         );
 
         env.driveMain();
@@ -2641,7 +2641,7 @@ runInEachFileSystem((os) => {
 
         @NgModule({imports: [RouterModule.forRoot()]})
         export class TestModule {}
-    `,
+    `
         );
 
         env.write(
@@ -2653,7 +2653,7 @@ runInEachFileSystem((os) => {
           static forRoot(): ModuleWithProviders<RouterModule>;
           static ɵmod: ɵɵNgModuleDefWithMeta<RouterModule, never, never, never>;
         }
-    `,
+    `
         );
 
         env.driveMain();
@@ -2664,7 +2664,7 @@ runInEachFileSystem((os) => {
         const dtsContents = env.getContents('test.d.ts');
         expect(dtsContents).toContain(`import * as i1 from "router";`);
         expect(dtsContents).toContain(
-          'i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.RouterModule], never>',
+          'i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.RouterModule], never>'
         );
       });
 
@@ -2677,7 +2677,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({imports: [RouterModule.forRoot()]})
           export class TestModule {}
-        `,
+        `
         );
 
         env.write(
@@ -2689,13 +2689,13 @@ runInEachFileSystem((os) => {
             static forRoot(): ModuleWithProviders;
             static ɵmod: ɵɵNgModuleDefWithMeta<RouterModule, never, never, never>;
           }
-        `,
+        `
         );
         const errors = env.driveDiagnostics();
         expect(trim(errors[0].messageText as string)).toContain(
           `RouterModule.forRoot returns a ModuleWithProviders type without a generic type argument. ` +
             `Please add a generic type argument to the ModuleWithProviders type. If this ` +
-            `occurrence is in library code you don't control, please contact the library authors.`,
+            `occurrence is in library code you don't control, please contact the library authors.`
         );
       });
 
@@ -2708,7 +2708,7 @@ runInEachFileSystem((os) => {
 
         @NgModule({imports: [RouterModule.forRoot()]})
         export class TestModule {}
-    `,
+    `
         );
 
         env.write(
@@ -2722,7 +2722,7 @@ runInEachFileSystem((os) => {
           static forRoot(): ModuleWithProviders<internal.InternalRouterModule>;
         }
 
-    `,
+    `
         );
 
         env.write(
@@ -2732,7 +2732,7 @@ runInEachFileSystem((os) => {
         export declare class InternalRouterModule {
           static ɵmod: ɵɵNgModuleDefWithMeta<InternalRouterModule, never, never, never>;
         }
-    `,
+    `
         );
 
         env.driveMain();
@@ -2743,7 +2743,7 @@ runInEachFileSystem((os) => {
         const dtsContents = env.getContents('test.d.ts');
         expect(dtsContents).toContain(`import * as i1 from "router";`);
         expect(dtsContents).toContain(
-          'i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.InternalRouterModule], never>',
+          'i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.InternalRouterModule], never>'
         );
       });
 
@@ -2755,7 +2755,7 @@ runInEachFileSystem((os) => {
             import {RouterModule} from 'router';
 
             @NgModule({imports: [RouterModule.forRoot()]})
-            export class TestModule {}`,
+            export class TestModule {}`
         );
 
         env.write(
@@ -2766,7 +2766,7 @@ runInEachFileSystem((os) => {
 
             declare export class RouterModule {
               static forRoot(): ModuleWithProviders<router2.Router2Module>;
-            }`,
+            }`
         );
 
         env.write(
@@ -2775,7 +2775,7 @@ runInEachFileSystem((os) => {
             import {ɵɵNgModuleDefWithMeta} from '@angular/core';
             export declare class Router2Module {
               static ɵmod: ɵɵNgModuleDefWithMeta<Router2Module, never, never, never>;
-            }`,
+            }`
         );
 
         env.driveMain();
@@ -2786,7 +2786,7 @@ runInEachFileSystem((os) => {
         const dtsContents = env.getContents('test.d.ts');
         expect(dtsContents).toContain(`import * as i1 from "router2";`);
         expect(dtsContents).toContain(
-          'i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.Router2Module], never>',
+          'i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.Router2Module], never>'
         );
       });
 
@@ -2800,7 +2800,7 @@ runInEachFileSystem((os) => {
             static forRoot(arg1: any, arg2: any): ModuleWithProviders<DepModule>;
             static ɵmod: ɵɵNgModuleDefWithMeta<DepModule, never, never, never>;
           }
-        `,
+        `
         );
         env.write(
           'test.ts',
@@ -2817,7 +2817,7 @@ runInEachFileSystem((os) => {
             imports: [mwp],
           })
           export class Module {}
-        `,
+        `
         );
         env.driveMain();
         const jsContents = env.getContents('test.js');
@@ -2834,7 +2834,7 @@ runInEachFileSystem((os) => {
 
       @NgModule({imports: [RouterModule.forRoot()]})
       export class TestModule {}
-  `,
+  `
       );
 
       env.write(
@@ -2848,7 +2848,7 @@ runInEachFileSystem((os) => {
         static forRoot(): (MyType)&{ngModule:RouterModule};
         static ɵmod: ɵɵNgModuleDefWithMeta<RouterModule, never, never, never>;
       }
-  `,
+  `
       );
 
       env.driveMain();
@@ -2859,7 +2859,7 @@ runInEachFileSystem((os) => {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(`import * as i1 from "router";`);
       expect(dtsContents).toContain(
-        'i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.RouterModule], never>',
+        'i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.RouterModule], never>'
       );
     });
 
@@ -2872,7 +2872,7 @@ runInEachFileSystem((os) => {
 
         @NgModule({imports: [RouterModule.forRoot()]})
         export class TestModule {}
-    `,
+    `
       );
 
       env.write(
@@ -2885,7 +2885,7 @@ runInEachFileSystem((os) => {
           static forRoot(): core.ModuleWithProviders<RouterModule>;
           static ɵmod: ɵɵNgModuleDefWithMeta<RouterModule, never, never, never>;
         }
-    `,
+    `
       );
 
       env.driveMain();
@@ -2896,7 +2896,7 @@ runInEachFileSystem((os) => {
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(`import * as i1 from "router";`);
       expect(dtsContents).toContain(
-        'i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.RouterModule], never>',
+        'i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof i1.RouterModule], never>'
       );
     });
 
@@ -2930,13 +2930,13 @@ runInEachFileSystem((os) => {
             vcr: ViewContainerRef,
           ) {}
         }
-    `,
+    `
       );
 
       env.driveMain();
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        `FooCmp.ɵfac = function FooCmp_Factory(t) { return new (t || FooCmp)(i0.ɵɵinjectAttribute("test"), i0.ɵɵdirectiveInject(i0.ChangeDetectorRef), i0.ɵɵdirectiveInject(i0.ElementRef), i0.ɵɵdirectiveInject(i0.Injector), i0.ɵɵdirectiveInject(i0.Renderer2), i0.ɵɵdirectiveInject(i0.TemplateRef), i0.ɵɵdirectiveInject(i0.ViewContainerRef)); }`,
+        `FooCmp.ɵfac = function FooCmp_Factory(t) { return new (t || FooCmp)(i0.ɵɵinjectAttribute("test"), i0.ɵɵdirectiveInject(i0.ChangeDetectorRef), i0.ɵɵdirectiveInject(i0.ElementRef), i0.ɵɵdirectiveInject(i0.Injector), i0.ɵɵdirectiveInject(i0.Renderer2), i0.ɵɵdirectiveInject(i0.TemplateRef), i0.ɵɵdirectiveInject(i0.ViewContainerRef)); }`
       );
     });
 
@@ -2984,7 +2984,7 @@ runInEachFileSystem((os) => {
         export class MyPipe {
           constructor(@Host() withHost: MyService) {}
         }
-    `,
+    `
       );
 
       env.driveMain();
@@ -2993,7 +2993,7 @@ runInEachFileSystem((os) => {
         'static ɵfac: i0.ɵɵFactoryDef<WithDecorators, [' +
           '{ self: true; }, { skipSelf: true; }, { host: true; }, ' +
           '{ optional: true; }, { attribute: "attr"; }, { attribute: unknown; }, ' +
-          '{ optional: true; host: true; skipSelf: true; }, null]>',
+          '{ optional: true; host: true; skipSelf: true; }, null]>'
       );
       expect(dtsContents).toContain(`static ɵfac: i0.ɵɵFactoryDef<NoCtor, never>`);
       expect(dtsContents).toContain(`static ɵfac: i0.ɵɵFactoryDef<EmptyCtor, never>`);
@@ -3044,24 +3044,24 @@ runInEachFileSystem((os) => {
         export class InjUseValue {
           constructor(@Self() service: MyService) {}
         }
-    `,
+    `
       );
 
       env.driveMain();
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(`static ɵfac: i0.ɵɵFactoryDef<Inj, [{ self: true; }]>`);
       expect(dtsContents).toContain(
-        `static ɵfac: i0.ɵɵFactoryDef<InjUseExisting, [{ self: true; }]>`,
+        `static ɵfac: i0.ɵɵFactoryDef<InjUseExisting, [{ self: true; }]>`
       );
       expect(dtsContents).toContain(`static ɵfac: i0.ɵɵFactoryDef<InjUseClass, [{ self: true; }]>`);
       expect(dtsContents).toContain(
-        `static ɵfac: i0.ɵɵFactoryDef<InjUseClassWithDeps, [{ self: true; }]>`,
+        `static ɵfac: i0.ɵɵFactoryDef<InjUseClassWithDeps, [{ self: true; }]>`
       );
       expect(dtsContents).toContain(
-        `static ɵfac: i0.ɵɵFactoryDef<InjUseFactory, [{ self: true; }]>`,
+        `static ɵfac: i0.ɵɵFactoryDef<InjUseFactory, [{ self: true; }]>`
       );
       expect(dtsContents).toContain(
-        `static ɵfac: i0.ɵɵFactoryDef<InjUseFactoryWithDeps, [{ self: true; }]>`,
+        `static ɵfac: i0.ɵɵFactoryDef<InjUseFactoryWithDeps, [{ self: true; }]>`
       );
       expect(dtsContents).toContain(`static ɵfac: i0.ɵɵFactoryDef<InjUseValue, [{ self: true; }]>`);
     });
@@ -3078,13 +3078,13 @@ runInEachFileSystem((os) => {
         })
         export class TestCmp {
         }
-    `,
+    `
       );
 
       env.driveMain();
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(
-        'static ɵcmp: i0.ɵɵComponentDefWithMeta<TestCmp, "test", never, {}, {}, never, ["*", ".foo"]>',
+        'static ɵcmp: i0.ɵɵComponentDefWithMeta<TestCmp, "test", never, {}, {}, never, ["*", ".foo"]>'
       );
     });
 
@@ -3108,7 +3108,7 @@ runInEachFileSystem((os) => {
           get aview(): any { return null; }
           @ViewChild('accessor') set aview(value: any) {}
         }
-    `,
+    `
       );
 
       env.driveMain();
@@ -3142,7 +3142,7 @@ runInEachFileSystem((os) => {
           get aview(): any { return null; }
           @ViewChild('accessor') set aview(value: any) {}
         }
-    `,
+    `
       );
 
       env.driveMain();
@@ -3177,7 +3177,7 @@ runInEachFileSystem((os) => {
 
           @ContentChild((forwardRef((function() { return 'parens'; }) as any))) childInParens: any;
         }
-    `,
+    `
       );
 
       env.driveMain();
@@ -3207,7 +3207,7 @@ runInEachFileSystem((os) => {
           @ViewChild(TOKEN as any) viewChild: any;
           @ContentChild(TOKEN as any) contentChild: any;
         }
-      `,
+      `
       );
 
       env.driveMain();
@@ -3232,7 +3232,7 @@ runInEachFileSystem((os) => {
           test: any;
           key: string;
         }
-    `,
+    `
       );
 
       env.driveMain();
@@ -3259,7 +3259,7 @@ runInEachFileSystem((os) => {
           @HostListener('window:scroll')
           onWindowScroll(event: any): void {}
         }
-    `,
+    `
       );
 
       env.driveMain();
@@ -3288,11 +3288,11 @@ runInEachFileSystem((os) => {
           @HostListener('UnknownTarget:click')
           onClick(event: any): void {}
         }
-    `,
+    `
       );
       const errors = env.driveDiagnostics();
       expect(trim(errors[0].messageText as string)).toContain(
-        `Unexpected global target 'UnknownTarget' defined for 'click' event. Supported list of global targets: window,document,body.`,
+        `Unexpected global target 'UnknownTarget' defined for 'click' event. Supported list of global targets: window,document,body.`
       );
     });
 
@@ -3310,7 +3310,7 @@ runInEachFileSystem((os) => {
           }
         })
         class FooCmp {}
-      `,
+      `
       );
 
       const errors = env.driveDiagnostics();
@@ -3334,11 +3334,11 @@ runInEachFileSystem((os) => {
           }
         })
         class FooCmp {}
-      `,
+      `
       );
       const errors = env.driveDiagnostics();
       expect(trim(errors[0].messageText as string)).toContain(
-        'Cannot have a pipe in an action expression',
+        'Cannot have a pipe in an action expression'
       );
     });
 
@@ -3356,11 +3356,11 @@ runInEachFileSystem((os) => {
               }
             })
             class FooCmp {}
-         `,
+         `
       );
       const errors = env.driveDiagnostics();
       expect(trim(errors[0].messageText as string)).toContain(
-        'Host binding expression cannot contain pipes',
+        'Host binding expression cannot contain pipes'
       );
     });
 
@@ -3378,11 +3378,11 @@ runInEachFileSystem((os) => {
               }
             })
             class FooCmp {}
-         `,
+         `
       );
       const errors = env.driveDiagnostics();
       expect(trim(errors[0].messageText as string)).toContain(
-        'Host binding expression cannot contain pipes',
+        'Host binding expression cannot contain pipes'
       );
     });
 
@@ -3400,11 +3400,11 @@ runInEachFileSystem((os) => {
               }
             })
             class FooCmp {}
-         `,
+         `
       );
       const errors = env.driveDiagnostics();
       expect(trim(errors[0].messageText as string)).toContain(
-        'Host binding expression cannot contain pipes',
+        'Host binding expression cannot contain pipes'
       );
     });
 
@@ -3433,7 +3433,7 @@ runInEachFileSystem((os) => {
           @HostListener('change', ['arg1', 'arg2', 'arg3'])
           onChange(event: any, arg: any): void {}
         }
-    `,
+    `
       );
 
       env.driveMain();
@@ -3459,7 +3459,7 @@ runInEachFileSystem((os) => {
         'other.d.ts',
         `
       export declare const foo: any;
-    `,
+    `
       );
       env.write(
         'test.ts',
@@ -3477,7 +3477,7 @@ runInEachFileSystem((os) => {
         },
       })
       export class TestCmp {}
-    `,
+    `
       );
       env.driveMain();
       const jsContents = env.getContents('test.js');
@@ -3504,7 +3504,7 @@ runInEachFileSystem((os) => {
         class FooCmp {
           foo = 'test';
         }
-    `,
+    `
       );
 
       env.driveMain();
@@ -3524,7 +3524,7 @@ runInEachFileSystem((os) => {
           @HostListener('change', ['$event', 'arg'])
           onChange(event: any, arg: any): void {}
         }
-    `,
+    `
       );
 
       env.driveMain();
@@ -3555,7 +3555,7 @@ runInEachFileSystem((os) => {
         \`
       })
       class FooCmp {}
-    `,
+    `
       );
       env.driveMain();
       const jsContents = env.getContents('test.js');
@@ -3577,12 +3577,12 @@ runInEachFileSystem((os) => {
         \`
       })
       class FooCmp {}
-    `,
+    `
       );
       env.driveMain();
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        'text(2, "\\n            Template with whitespaces\\n          ");',
+        'text(2, "\\n            Template with whitespaces\\n          ");'
       );
     });
 
@@ -3602,7 +3602,7 @@ runInEachFileSystem((os) => {
         \`
       })
       class FooCmp {}
-    `,
+    `
       );
       env.driveMain();
       const jsContents = env.getContents('test.js');
@@ -3620,7 +3620,7 @@ runInEachFileSystem((os) => {
         template: '<div i18n>Some text</div>'
       })
       class FooCmp {}
-    `,
+    `
       );
       env.driveMain();
       const jsContents = env.getContents('test.js');
@@ -3638,7 +3638,7 @@ runInEachFileSystem((os) => {
         template: '<div i18n>Some text</div>'
       })
       class FooCmp {}
-    `,
+    `
       );
       env.driveMain();
       const jsContents = env.getContents('test.js');
@@ -3655,12 +3655,12 @@ runInEachFileSystem((os) => {
           selector: 'test',
           template: '<div i18n>Some text</div>'
         })
-        class FooCmp {}`,
+        class FooCmp {}`
       );
       env.driveMain();
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        '":\\u241F5dbba0a3da8dff890e20cf76eb075d58900fbcd3\\u241F8321000940098097247:Some text"',
+        '":\\u241F5dbba0a3da8dff890e20cf76eb075d58900fbcd3\\u241F8321000940098097247:Some text"'
       );
     });
 
@@ -3674,12 +3674,12 @@ runInEachFileSystem((os) => {
           selector: 'test',
           template: '<div i18n="@@custom">Some text</div>'
         })
-        class FooCmp {}`,
+        class FooCmp {}`
       );
       env.driveMain();
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        ':@@custom\\u241F5dbba0a3da8dff890e20cf76eb075d58900fbcd3\\u241F8321000940098097247:Some text',
+        ':@@custom\\u241F5dbba0a3da8dff890e20cf76eb075d58900fbcd3\\u241F8321000940098097247:Some text'
       );
     });
 
@@ -3693,7 +3693,7 @@ runInEachFileSystem((os) => {
        selector: 'test',
        template: '<div i18n>Some text</div>'
      })
-     class FooCmp {}`,
+     class FooCmp {}`
       );
       env.driveMain();
       const jsContents = env.getContents('test.js');
@@ -3711,15 +3711,15 @@ runInEachFileSystem((os) => {
        selector: 'test',
        template: '<div i18n="@@custom">Some text {age, plural, 10 {ten} other {other}}</div>'
      })
-     class FooCmp {}`,
+     class FooCmp {}`
       );
       env.driveMain();
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        ':\\u241F720ba589d043a0497ac721ff972f41db0c919efb\\u241F3221232817843005870:{VAR_PLURAL, plural, 10 {ten} other {other}}',
+        ':\\u241F720ba589d043a0497ac721ff972f41db0c919efb\\u241F3221232817843005870:{VAR_PLURAL, plural, 10 {ten} other {other}}'
       );
       expect(jsContents).toContain(
-        ':@@custom\\u241Fdcb6170595f5d548a3d00937e87d11858f51ad04\\u241F7419139165339437596:Some text',
+        ':@@custom\\u241Fdcb6170595f5d548a3d00937e87d11858f51ad04\\u241F7419139165339437596:Some text'
       );
     });
 
@@ -3736,7 +3736,7 @@ runInEachFileSystem((os) => {
       class ComponentWithCustomInterpolationA {
         text = 'Custom Interpolation A';
       }
-    `,
+    `
       );
 
       env.driveMain();
@@ -3755,7 +3755,7 @@ runInEachFileSystem((os) => {
         encapsulation: ViewEncapsulation.None
       })
       class CompA {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -3774,11 +3774,11 @@ runInEachFileSystem((os) => {
         encapsulation: 'invalid-value'
       })
       class CompA {}
-    `,
+    `
       );
       const errors = env.driveDiagnostics();
       expect(errors[0].messageText).toContain(
-        'encapsulation must be a member of ViewEncapsulation enum from @angular/core',
+        'encapsulation must be a member of ViewEncapsulation enum from @angular/core'
       );
     });
 
@@ -3793,7 +3793,7 @@ runInEachFileSystem((os) => {
         changeDetection: ChangeDetectionStrategy.OnPush
       })
       class CompA {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -3812,11 +3812,11 @@ runInEachFileSystem((os) => {
         changeDetection: 'invalid-value'
       })
       class CompA {}
-    `,
+    `
       );
       const errors = env.driveDiagnostics();
       expect(errors[0].messageText).toContain(
-        'changeDetection must be a member of ChangeDetectionStrategy enum from @angular/core',
+        'changeDetection must be a member of ChangeDetectionStrategy enum from @angular/core'
       );
     });
 
@@ -3830,7 +3830,7 @@ runInEachFileSystem((os) => {
         template: '<div [someProp]></div>'
       })
       class FooCmp {}
-    `,
+    `
       );
       env.driveMain();
       const jsContents = env.getContents('test.js');
@@ -3849,7 +3849,7 @@ runInEachFileSystem((os) => {
           exports: [Dir, Comp],
         })
         class Module {}
-    `,
+    `
       );
       env.write(
         `test.ts`,
@@ -3866,7 +3866,7 @@ runInEachFileSystem((os) => {
           template: '<div dir>Test</div>',
         })
         export class Comp {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -3885,7 +3885,7 @@ runInEachFileSystem((os) => {
           exportAs: 'foo',
         })
         class Dir {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -3905,7 +3905,7 @@ runInEachFileSystem((os) => {
           exportAs: 'foo, bar',
         })
         class Dir {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -3927,7 +3927,7 @@ runInEachFileSystem((os) => {
 
         @NgModule({})
         export class TestModule {}
-    `,
+    `
       );
 
       env.write(
@@ -3937,7 +3937,7 @@ runInEachFileSystem((os) => {
 
         @Injectable()
         export class NotAModule {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -3946,7 +3946,7 @@ runInEachFileSystem((os) => {
       expect(factoryContents).toContain(`import * as i0 from '@angular/core';`);
       expect(factoryContents).toContain(`import { NotAModule, TestModule } from './test';`);
       expect(factoryContents).toContain(
-        `export var TestModuleNgFactory = new i0.\u0275NgModuleFactory(TestModule);`,
+        `export var TestModuleNgFactory = new i0.\u0275NgModuleFactory(TestModule);`
       );
       expect(factoryContents).not.toContain(`NotAModuleNgFactory`);
       expect(factoryContents).not.toContain('\u0275NonEmptyModule');
@@ -3971,7 +3971,7 @@ runInEachFileSystem((os) => {
           template: '...',
         })
         export class TestCmp {}
-      `,
+      `
         );
         env.driveMain();
 
@@ -3986,7 +3986,7 @@ runInEachFileSystem((os) => {
           'test.ts',
           `
           export {MyModuleNgFactory} from './my-module.ngfactory';
-      `,
+      `
         );
 
         env.write(
@@ -3996,7 +3996,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class MyModule {}
-      `,
+      `
         );
 
         env.driveMain();
@@ -4012,7 +4012,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class TestModule {}
-      `,
+      `
         );
 
         // Trick the compiler into thinking it's compiling @angular/core.
@@ -4026,7 +4026,7 @@ runInEachFileSystem((os) => {
         import * as i0 from "./r3_symbols";
         import { TestModule } from './test';
         export var TestModuleNgFactory = new i0.NgModuleFactory(TestModule);
-      `),
+      `)
         );
       });
 
@@ -4042,7 +4042,7 @@ runInEachFileSystem((os) => {
 
             @NgModule({})
             export class TestModule {}
-          `,
+          `
           );
           env.driveMain();
 
@@ -4057,7 +4057,7 @@ runInEachFileSystem((os) => {
             'test.ts',
             `/** I am a top-level comment, but not for the file. */
             export const TEST = true;
-          `,
+          `
           );
           env.driveMain();
 
@@ -4072,7 +4072,7 @@ runInEachFileSystem((os) => {
             'test.ts',
             `/** @license I am a top-level comment, but have a license. */
             export const TEST = true;
-          `,
+          `
           );
           env.driveMain();
 
@@ -4097,7 +4097,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class TestModule {}
-      `,
+      `
         );
 
         env.driveMain();
@@ -4116,7 +4116,7 @@ runInEachFileSystem((os) => {
           class NotDirectlyExported {}
 
           export {NotDirectlyExported};
-      `,
+      `
         );
 
         env.driveMain();
@@ -4130,7 +4130,7 @@ runInEachFileSystem((os) => {
           'empty.ts',
           `
           export class NotAModule {}
-      `,
+      `
         );
 
         env.driveMain();
@@ -4152,7 +4152,7 @@ runInEachFileSystem((os) => {
           selector: 'test'
         })
         class TestCmp {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -4180,21 +4180,21 @@ runInEachFileSystem((os) => {
             super(null!);
           }
         }
-    `,
+    `
       );
 
       env.driveMain();
       const jsContents = env.getContents('test.js');
 
       expect(jsContents).toContain(
-        'function Base_Factory(t) { return new (t || Base)(i0.ɵɵinject(Dep)); }',
+        'function Base_Factory(t) { return new (t || Base)(i0.ɵɵinject(Dep)); }'
       );
       expect(jsContents).toContain('var \u0275Child_BaseFactory = i0.ɵɵgetInheritedFactory(Child)');
       expect(jsContents).toContain(
-        'function Child_Factory(t) { return \u0275Child_BaseFactory(t || Child); }',
+        'function Child_Factory(t) { return \u0275Child_BaseFactory(t || Child); }'
       );
       expect(jsContents).toContain(
-        'function GrandChild_Factory(t) { return new (t || GrandChild)(); }',
+        'function GrandChild_Factory(t) { return new (t || GrandChild)(); }'
       );
     });
 
@@ -4214,7 +4214,7 @@ runInEachFileSystem((os) => {
         })
         class Dir extends Base {
         }
-    `,
+    `
       );
 
       env.driveMain();
@@ -4245,7 +4245,7 @@ runInEachFileSystem((os) => {
           declarations: [CmpA, CmpB],
         })
         class Module {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -4262,13 +4262,13 @@ runInEachFileSystem((os) => {
 
         @Injectable({providedIn: 'root'})
         export class Service {}
-      `,
+      `
       );
 
       env.driveMain();
       const jsContents = env.getContents('test.js').replace(/\s+/g, ' ');
       expect(jsContents).toContain(
-        `/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Service, [{ type: Injectable, args: [{ providedIn: 'root' }] }], null, null); })();`,
+        `/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Service, [{ type: Injectable, args: [{ providedIn: 'root' }] }], null, null); })();`
       );
     });
 
@@ -4290,7 +4290,7 @@ runInEachFileSystem((os) => {
           schemas: [NO_ERRORS_SCHEMA],
         })
         class MyModule {}
-      `,
+      `
       );
 
       env.driveMain();
@@ -4309,10 +4309,10 @@ runInEachFileSystem((os) => {
           },
           encapsulation: 2
         });
-      `),
+      `)
       );
       expect(jsContents).toContain(
-        trim('MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });'),
+        trim('MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });')
       );
     });
 
@@ -4327,7 +4327,7 @@ runInEachFileSystem((os) => {
       @Injectable() class TestInjectable {}
       @NgModule({declarations: [TestComponent, TestDirective]}) class TestNgModule {}
       @Pipe({name: 'pipe'}) class TestPipe {}
-    `,
+    `
       );
 
       env.driveMain();
@@ -4345,7 +4345,7 @@ runInEachFileSystem((os) => {
         `
       export class MyTypeA {}
       export class MyTypeB {}
-    `,
+    `
       );
       env.write(
         `test.ts`,
@@ -4365,7 +4365,7 @@ runInEachFileSystem((os) => {
       export class SomeComp {
         constructor(@Inject('arg-token') arg: MyTypeB) {}
       }
-    `,
+    `
       );
 
       env.driveMain();
@@ -4381,7 +4381,7 @@ runInEachFileSystem((os) => {
         `
          export class MyTypeA {}
          export class MyTypeB {}
-       `,
+       `
       );
       env.write(
         `test.ts`,
@@ -4401,7 +4401,7 @@ runInEachFileSystem((os) => {
          export class SomeComp {
            constructor(@Inject('arg-token') arg: types.MyTypeB) {}
          }
-      `,
+      `
       );
 
       env.driveMain();
@@ -4417,7 +4417,7 @@ runInEachFileSystem((os) => {
         `
             export default class Default {}
             export class Other {}
-          `,
+          `
       );
       env.write(
         `test.ts`,
@@ -4430,7 +4430,7 @@ runInEachFileSystem((os) => {
             export class SomeCmp {
               constructor(arg: Default, other: Other) {}
             }
-         `,
+         `
       );
 
       env.driveMain();
@@ -4455,7 +4455,7 @@ runInEachFileSystem((os) => {
               export declare namespace one.two {
                 export declare class Two {}
               }
-           `,
+           `
         );
         env.write(
           `test.ts`,
@@ -4471,7 +4471,7 @@ runInEachFileSystem((os) => {
                   two: ns.one.two.Two,
                 ) {}
               }
-           `,
+           `
         );
 
         env.driveMain();
@@ -4498,7 +4498,7 @@ runInEachFileSystem((os) => {
                   export declare class Two {}
                 }
               }
-           `,
+           `
         );
         env.write(
           `test.ts`,
@@ -4518,7 +4518,7 @@ runInEachFileSystem((os) => {
                   aliasedTwo: alias.one.two.Two,
                 ) {}
               }
-           `,
+           `
         );
 
         env.driveMain();
@@ -4530,7 +4530,7 @@ runInEachFileSystem((os) => {
             'i0.ɵɵinject(i1.ns.one.two.Two), ' +
             'i0.ɵɵinject(i1.ns.Zero), ' +
             'i0.ɵɵinject(i1.ns.one.One), ' +
-            'i0.ɵɵinject(i1.ns.one.two.Two)',
+            'i0.ɵɵinject(i1.ns.one.two.Two)'
         );
         expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.ns.Zero'));
         expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.ns.one.One'));
@@ -4545,7 +4545,7 @@ runInEachFileSystem((os) => {
           export = Foo;
           declare class Foo {}
           declare namespace Foo {}
-        `,
+        `
         );
         env.write(
           `test.ts`,
@@ -4559,7 +4559,7 @@ runInEachFileSystem((os) => {
           export class MyService {
             constructor(@Inject(TOKEN) foo: Foo) {}
           }
-       `,
+       `
         );
 
         env.driveMain();
@@ -4576,7 +4576,7 @@ runInEachFileSystem((os) => {
           export = Foo;
           declare class Foo {}
           declare namespace Foo {}
-        `,
+        `
         );
         env.write(
           `test.ts`,
@@ -4588,13 +4588,13 @@ runInEachFileSystem((os) => {
           export class MyService {
             constructor(foo: Foo) {}
           }
-       `,
+       `
         );
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(
-          `No suitable injection token for parameter 'foo' of class 'MyService'.\nFound Foo`,
+          `No suitable injection token for parameter 'foo' of class 'MyService'.\nFound Foo`
         );
       });
     });
@@ -4604,7 +4604,7 @@ runInEachFileSystem((os) => {
         `types.ts`,
         `
       export type MyType = Map<any, any>;
-    `,
+    `
       );
       env.write(
         `test.ts`,
@@ -4619,7 +4619,7 @@ runInEachFileSystem((os) => {
       export class SomeComp {
         constructor(@Inject('arg-token') arg: MyType) {}
       }
-    `,
+    `
       );
 
       env.driveMain();
@@ -4644,7 +4644,7 @@ runInEachFileSystem((os) => {
             \`,
           })
           class CmpA {}
-       `,
+       `
       );
       const errors = env.driveDiagnostics();
       expect(errors.length).toBe(0);
@@ -4671,7 +4671,7 @@ runInEachFileSystem((os) => {
         declarations: [Cmp, DirA, DirB],
       })
       class Module {}
-  `,
+  `
       );
 
       env.driveMain();
@@ -4697,7 +4697,7 @@ runInEachFileSystem((os) => {
           declarations: [NormalComponent, CyclicComponent],
         })
         export class Module {}
-      `,
+      `
         );
 
         env.write(
@@ -4710,13 +4710,13 @@ runInEachFileSystem((os) => {
           template: '<cyclic-component></cyclic-component>',
         })
         export class NormalComponent {}
-      `,
+      `
         );
 
         env.driveMain();
         const jsContents = env.getContents('test.js');
         expect(jsContents).toMatch(
-          /i\d\.ɵɵsetComponentScope\(NormalComponent,\s+\[NormalComponent,\s+CyclicComponent\],\s+\[\]\)/,
+          /i\d\.ɵɵsetComponentScope\(NormalComponent,\s+\[NormalComponent,\s+CyclicComponent\],\s+\[\]\)/
         );
         expect(jsContents).not.toContain('/*__PURE__*/ i0.ɵɵsetComponentScope');
       });
@@ -4731,7 +4731,7 @@ runInEachFileSystem((os) => {
 
         @NgModule({declarations: [ACmp, BCmp]})
         export class Module {}
-      `,
+      `
         );
         env.write(
           'a.ts',
@@ -4743,7 +4743,7 @@ runInEachFileSystem((os) => {
           template: '<b-cmp></b-cmp>',
         })
         export class ACmp {}
-      `,
+      `
         );
         env.write(
           'b.ts',
@@ -4755,7 +4755,7 @@ runInEachFileSystem((os) => {
           template: '<a-cmp></a-cmp>',
         })
         export class BCmp {}
-      `,
+      `
         );
         env.driveMain();
         const aJsContents = env.getContents('a.js');
@@ -4774,7 +4774,7 @@ runInEachFileSystem((os) => {
 
         @NgModule({declarations: [ACmp, BCmp]})
         export class Module {}
-      `,
+      `
         );
         env.write(
           'a.ts',
@@ -4786,7 +4786,7 @@ runInEachFileSystem((os) => {
           template: '<b-cmp></b-cmp>',
         })
         export class ACmp {}
-      `,
+      `
         );
         env.write(
           'b.ts',
@@ -4798,7 +4798,7 @@ runInEachFileSystem((os) => {
           template: 'does not use a-cmp',
         })
         export class BCmp {}
-      `,
+      `
         );
         env.driveMain();
         const jsContents = env.getContents('test.js');
@@ -4820,11 +4820,11 @@ runInEachFileSystem((os) => {
             template: '<div #ref="unknownTarget"></div>',
           })
           export class TestCmp {}
-        `,
+        `
           );
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(0);
-        },
+        }
       );
     });
 
@@ -4890,7 +4890,7 @@ runInEachFileSystem((os) => {
         @Input('track-type') trackType: string;
         @Input('track-name') trackName: string;
       }
-    `,
+    `
       );
 
       env.driveMain();
@@ -4931,14 +4931,14 @@ runInEachFileSystem((os) => {
         "typeRoots": ["./testTypeRoot"],
       },
       "files": ["./test.ts"]
-    }`,
+    }`
       );
       env.write(
         'test.ts',
         `
       import {Test} from 'ambient';
       console.log(Test);
-    `,
+    `
       );
       env.write('testTypeRoot/.exists', '');
       env.write(
@@ -4947,7 +4947,7 @@ runInEachFileSystem((os) => {
       declare module 'ambient' {
         export const Test = 'This is a test';
       }
-    `,
+    `
       );
 
       env.driveMain();
@@ -4969,7 +4969,7 @@ runInEachFileSystem((os) => {
           'node_modules/external/index.d.ts',
           `
           export declare class NotAModule {}
-        `,
+        `
         );
         env.write(
           'test.ts',
@@ -4981,13 +4981,13 @@ runInEachFileSystem((os) => {
             imports: [NotAModule],
           })
           export class Module {}
-        `,
+        `
         );
 
         verifyThrownError(
           ErrorCode.NGMODULE_INVALID_IMPORT,
           'This likely means that the library (external) which declares NotAModule has not ' +
-            'been processed correctly by ngcc, or is not compatible with Angular Ivy.',
+            'been processed correctly by ngcc, or is not compatible with Angular Ivy.'
         );
       });
 
@@ -4996,7 +4996,7 @@ runInEachFileSystem((os) => {
           'libs/external/index.d.ts',
           `
           export declare class NotAModule {}
-        `,
+        `
         );
 
         env.write(
@@ -5009,13 +5009,13 @@ runInEachFileSystem((os) => {
             imports: [NotAModule],
           })
           export class Module {}
-        `,
+        `
         );
 
         verifyThrownError(
           ErrorCode.NGMODULE_INVALID_IMPORT,
           'This likely means that the dependency which declares NotAModule has not ' +
-            'been processed correctly by ngcc.',
+            'been processed correctly by ngcc.'
         );
       });
 
@@ -5024,7 +5024,7 @@ runInEachFileSystem((os) => {
           'invalid.ts',
           `
           export class NotAModule {}
-        `,
+        `
         );
 
         env.write(
@@ -5037,12 +5037,12 @@ runInEachFileSystem((os) => {
             imports: [NotAModule],
           })
           export class Module {}
-        `,
+        `
         );
 
         verifyThrownError(
           ErrorCode.NGMODULE_INVALID_IMPORT,
-          'Is it missing an @NgModule annotation?',
+          'Is it missing an @NgModule annotation?'
         );
       });
     });
@@ -5061,7 +5061,7 @@ runInEachFileSystem((os) => {
         export declare class ExternalModule {
           static ɵmod: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
         }
-      `,
+      `
         );
         env.write(
           'test.ts',
@@ -5081,7 +5081,7 @@ runInEachFileSystem((os) => {
           imports: [ExternalModule, ExternalModule],
         })
         class Module {}
-      `,
+      `
         );
 
         env.driveMain();
@@ -5101,7 +5101,7 @@ runInEachFileSystem((os) => {
         export declare class ExternalModule {
           static ɵmod: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof InternalDir], never, [typeof InternalDir]>;
         }
-      `,
+      `
         );
         env.write(
           'node_modules/external/internal.d.ts',
@@ -5110,7 +5110,7 @@ runInEachFileSystem((os) => {
         export declare class InternalDir {
           static ɵdir: ɵɵDirectiveDefWithMeta<InternalDir, '[test]', never, never, never, never>;
         }
-      `,
+      `
         );
         env.write(
           'test.ts',
@@ -5128,7 +5128,7 @@ runInEachFileSystem((os) => {
           imports: [ExternalModule],
         })
         class Module {}
-      `,
+      `
         );
 
         env.driveMain();
@@ -5161,7 +5161,7 @@ runInEachFileSystem((os) => {
               selector: 'test',
             })
             export class TestCmp {}
-          `,
+          `
           );
 
           const diags = await driveDiagnostics();
@@ -5181,7 +5181,7 @@ runInEachFileSystem((os) => {
               styleUrls: '...'
             })
             export class TestCmp {}
-          `,
+          `
           );
 
           const diags = await driveDiagnostics();
@@ -5214,7 +5214,7 @@ runInEachFileSystem((os) => {
         const jsContents = env.getContents('flat.js');
         expect(jsContents).toContain(
           "export * from './index';",
-          'Should detect the "index.ts" file as flat module entry-point.',
+          'Should detect the "index.ts" file as flat module entry-point.'
         );
       });
 
@@ -5269,7 +5269,7 @@ runInEachFileSystem((os) => {
           // just wrote the bundle file with an empty filename (just extension).
           env.assertDoesNotExist('.js');
           env.assertDoesNotExist('.d.ts');
-        },
+        }
       );
 
       it('should report an error when a flat module index is requested but no entrypoint can be determined', () => {
@@ -5280,7 +5280,7 @@ runInEachFileSystem((os) => {
         const errors = env.driveDiagnostics();
         expect(errors.length).toBe(1);
         expect(errors[0].messageText).toBe(
-          'Angular compiler option "flatModuleOutFile" requires one and only one .ts file in the "files" field.',
+          'Angular compiler option "flatModuleOutFile" requires one and only one .ts file in the "files" field.'
         );
       });
 
@@ -5298,7 +5298,7 @@ runInEachFileSystem((os) => {
         // The module is, which makes the directive visible.
         @NgModule({declarations: [Dir], exports: [Dir]})
         export class Module {}
-      `,
+      `
         );
 
         const errors = env.driveDiagnostics();
@@ -5306,7 +5306,7 @@ runInEachFileSystem((os) => {
         expect(errors[0].messageText).toBe(
           'Unsupported private class Dir. This class is visible ' +
             'to consumers via Module -> Dir, but is not exported from the top-level library ' +
-            'entrypoint.',
+            'entrypoint.'
         );
 
         // Verify that the error is for the correct class.
@@ -5334,7 +5334,7 @@ runInEachFileSystem((os) => {
         // The module is, which makes the directive visible.
         @NgModule({exports: [DirModule]})
         export class Module {}
-      `,
+      `
         );
 
         const errors = env.driveDiagnostics();
@@ -5342,12 +5342,12 @@ runInEachFileSystem((os) => {
         expect(errors[0].messageText).toBe(
           'Unsupported private class DirModule. This class is ' +
             'visible to consumers via Module -> DirModule, but is not exported from the top-level ' +
-            'library entrypoint.',
+            'library entrypoint.'
         );
         expect(errors[1].messageText).toBe(
           'Unsupported private class Dir. This class is visible ' +
             'to consumers via Module -> DirModule -> Dir, but is not exported from the top-level ' +
-            'library entrypoint.',
+            'library entrypoint.'
         );
       });
 
@@ -5369,7 +5369,7 @@ runInEachFileSystem((os) => {
         // The module is, which makes the module and directive visible.
         @NgModule({exports: [DirModule]})
         export class Module {}
-      `,
+      `
         );
 
         const errors = env.driveDiagnostics();
@@ -5377,7 +5377,7 @@ runInEachFileSystem((os) => {
         expect(errors[0].messageText).toBe(
           'Unsupported private class DirModule. This class is ' +
             'visible to consumers via Module -> DirModule, but is not exported from the top-level ' +
-            'library entrypoint.',
+            'library entrypoint.'
         );
       });
 
@@ -5400,7 +5400,7 @@ runInEachFileSystem((os) => {
         // directive visible.
         @NgModule({imports: [DirModule]})
         export class Module {}
-      `,
+      `
         );
 
         const errors = env.driveDiagnostics();
@@ -5418,7 +5418,7 @@ runInEachFileSystem((os) => {
         // This module makes ExternalModule and ExternalDir visible.
         @NgModule({exports: [ExternalModule]})
         export class Module {}
-      `,
+      `
         );
         env.write(
           'node_modules/external/index.d.ts',
@@ -5432,7 +5432,7 @@ runInEachFileSystem((os) => {
         export declare class ExternalModule {
           static ɵmod: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
         }
-      `,
+      `
         );
 
         const errors = env.driveDiagnostics();
@@ -5457,7 +5457,7 @@ runInEachFileSystem((os) => {
             selector: 'dir',
           })
           export class Dir {}
-        `,
+        `
         );
         env.write(
           'module.ts',
@@ -5473,7 +5473,7 @@ runInEachFileSystem((os) => {
             exports: [Dir, InlineDir],
           })
           export class Module {}
-        `,
+        `
         );
 
         env.driveMain();
@@ -5502,7 +5502,7 @@ runInEachFileSystem((os) => {
             exports: [Dir],
           })
           export class DirModule {}
-        `,
+        `
         );
         env.write(
           'module.ts',
@@ -5514,7 +5514,7 @@ runInEachFileSystem((os) => {
             exports: [DirModule],
           })
           export class Module {}
-        `,
+        `
         );
 
         env.driveMain();
@@ -5535,7 +5535,7 @@ runInEachFileSystem((os) => {
                selector: 'dir',
              })
              export class Dir {}
-           `,
+           `
         );
         env.write(
           'module.ts',
@@ -5548,7 +5548,7 @@ runInEachFileSystem((os) => {
                exports: [],
              })
              export class Module {}
-           `,
+           `
         );
 
         env.driveMain();
@@ -5569,7 +5569,7 @@ runInEachFileSystem((os) => {
             selector: 'dir',
           })
           export class Dir {}
-        `,
+        `
         );
         env.write(
           'module.ts',
@@ -5584,7 +5584,7 @@ runInEachFileSystem((os) => {
           export class Module {}
 
           export {Dir};
-        `,
+        `
         );
 
         env.driveMain();
@@ -5608,7 +5608,7 @@ runInEachFileSystem((os) => {
           export declare class ExternalModule {
             static ɵmod: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
           }
-          `,
+          `
         );
         env.write(
           'module.ts',
@@ -5620,7 +5620,7 @@ runInEachFileSystem((os) => {
             exports: [ExternalModule],
           })
           export class Module {}
-        `,
+        `
         );
 
         env.driveMain();
@@ -5639,7 +5639,7 @@ runInEachFileSystem((os) => {
             selector: 'dir',
           })
           export class Dir {}
-        `,
+        `
         );
         env.write(
           'dir2.ts',
@@ -5650,7 +5650,7 @@ runInEachFileSystem((os) => {
             selector: 'dir',
           })
           export class Dir {}
-        `,
+        `
         );
         env.write(
           'module.ts',
@@ -5664,7 +5664,7 @@ runInEachFileSystem((os) => {
             exports: [Dir, Dir2],
           })
           export class Module {}
-        `,
+        `
         );
 
         const diag = env.driveDiagnostics();
@@ -5682,7 +5682,7 @@ runInEachFileSystem((os) => {
                selector: 'dir',
              })
              export class Dir {}
-           `,
+           `
         );
         env.write(
           'dir2.ts',
@@ -5693,7 +5693,7 @@ runInEachFileSystem((os) => {
                selector: 'dir',
              })
              export class Dir {}
-           `,
+           `
         );
         env.write(
           'module.ts',
@@ -5709,7 +5709,7 @@ runInEachFileSystem((os) => {
              export class Module {}
 
              export {Dir} from './dir2';
-           `,
+           `
         );
 
         env.driveMain();
@@ -5726,7 +5726,7 @@ runInEachFileSystem((os) => {
           export declare class ExternalDir {
             static ɵdir: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
           }
-          `,
+          `
         );
         env.write(
           'node_modules/external/module.d.ts',
@@ -5739,7 +5739,7 @@ runInEachFileSystem((os) => {
           }
 
           export {ExternalDir as ɵngExportɵExternalModuleɵExternalDir};
-        `,
+        `
         );
         env.write(
           'test.ts',
@@ -5758,7 +5758,7 @@ runInEachFileSystem((os) => {
             imports: [ExternalModule],
           })
           class Module {}
-        `,
+        `
         );
 
         env.driveMain();
@@ -5780,7 +5780,7 @@ runInEachFileSystem((os) => {
             selector: 'dir',
           })
           export class Dir {}
-        `,
+        `
         );
         env.write(
           'module.ts',
@@ -5793,7 +5793,7 @@ runInEachFileSystem((os) => {
             exports: [Dir],
           })
           export class Module {}
-        `,
+        `
         );
 
         env.driveMain();
@@ -5816,7 +5816,7 @@ runInEachFileSystem((os) => {
 
       @NgModule({})
       class Module {}
-    `,
+    `
       );
 
       env.driveMain({
@@ -5856,7 +5856,7 @@ runInEachFileSystem((os) => {
           template: '<div class="test"></div>',
         })
         export class SomeComp {}
-      `,
+      `
           );
 
           env.driveMain();
@@ -5901,7 +5901,7 @@ runInEachFileSystem((os) => {
               template: '<div class="test"></div>',
             })
             export class SomeComp {}
-          `,
+          `
           );
 
           env.driveMain();
@@ -5933,7 +5933,7 @@ runInEachFileSystem((os) => {
           template: '<div class="test"></div>',
         })
         export class SomeComp {}
-      `,
+      `
           );
 
           env.driveMain();
@@ -5964,7 +5964,7 @@ runInEachFileSystem((os) => {
 
         const testConst = 'testConstValue';
         const testFn = function() { return true; }
-      `,
+      `
           );
 
           env.driveMain();
@@ -6018,7 +6018,7 @@ runInEachFileSystem((os) => {
           template: '<a [unsafeAttrs]="ctxProp">Link Title</a>'
         })
         class FooCmp {}
-      `,
+      `
         );
 
         env.driveMain();
@@ -6068,7 +6068,7 @@ runInEachFileSystem((os) => {
           template: '<a [unsafeProps]="ctxProp">Link Title</a>'
         })
         class FooCmp {}
-      `,
+      `
         );
 
         env.driveMain();
@@ -6103,7 +6103,7 @@ runInEachFileSystem((os) => {
           }
         })
         class FooCmp {}
-      `,
+      `
         );
 
         env.driveMain();
@@ -6127,7 +6127,7 @@ runInEachFileSystem((os) => {
         fromModulePath: RegExp,
         fromModuleName: string,
         toModulePath: RegExp,
-        toModuleName: string,
+        toModuleName: string
       ) => {
         return ({
           route,
@@ -6154,7 +6154,7 @@ runInEachFileSystem((os) => {
           static forChild(arg1: any): ModuleWithProviders<RouterModule>;
           static ɵmod: ɵɵNgModuleDefWithMeta<RouterModule, never, never, never>;
         }
-      `,
+      `
         );
       });
 
@@ -6175,7 +6175,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class TestModule {}
-        `,
+        `
           );
           env.write(
             'lazy/lazy-1.ts',
@@ -6184,7 +6184,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class Lazy1Module {}
-        `,
+        `
           );
           env.write(
             'lazy/lazy-2.ts',
@@ -6200,7 +6200,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class Lazy2Module {}
-        `,
+        `
           );
           env.write(
             'lazy/lazy-3.ts',
@@ -6209,7 +6209,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class Lazy3Module {}
-        `,
+        `
           );
 
           const routes = env.driveRoutes();
@@ -6219,21 +6219,21 @@ runInEachFileSystem((os) => {
               /\/lazy\/lazy-2\.ts$/,
               'Lazy2Module',
               /\/lazy\/lazy-3\.ts$/,
-              'Lazy3Module',
+              'Lazy3Module'
             ),
             lazyRouteMatching(
               './lazy/lazy-1#Lazy1Module',
               /\/test\.ts$/,
               'TestModule',
               /\/lazy\/lazy-1\.ts$/,
-              'Lazy1Module',
+              'Lazy1Module'
             ),
             lazyRouteMatching(
               './lazy/lazy-2#Lazy2Module',
               /\/test\.ts$/,
               'TestModule',
               /\/lazy\/lazy-2\.ts$/,
-              'Lazy2Module',
+              'Lazy2Module'
             ),
           ]);
         });
@@ -6262,7 +6262,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class TestModule {}
-        `,
+        `
           );
           env.write(
             'lazy.ts',
@@ -6272,7 +6272,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class LazyModule {}
-        `,
+        `
           );
 
           const routes = env.driveRoutes();
@@ -6282,7 +6282,7 @@ runInEachFileSystem((os) => {
               /\/test\.ts$/,
               'TestModule',
               /\/lazy\.ts$/,
-              'LazyModule',
+              'LazyModule'
             ),
           ]);
         });
@@ -6303,7 +6303,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class TestModule {}
-        `,
+        `
           );
           env.write(
             'foo/other-root-dir/src/lazy-foo.ts',
@@ -6319,7 +6319,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class LazyFooModule {}
-        `,
+        `
           );
           env.write(
             'bar/other-root-dir/src/lazy-bar.ts',
@@ -6335,7 +6335,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class LazyBarModule {}
-        `,
+        `
           );
           env.write(
             'bar/other-root-dir/src/lazier-bar.ts',
@@ -6344,7 +6344,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class LazierBarModule {}
-        `,
+        `
           );
 
           const routes = env.driveRoutes();
@@ -6355,21 +6355,21 @@ runInEachFileSystem((os) => {
               /\/test\.ts$/,
               'TestModule',
               /\/foo\/other-root-dir\/src\/lazy-foo\.ts$/,
-              'LazyFooModule',
+              'LazyFooModule'
             ),
             lazyRouteMatching(
               './lazy-bar#LazyBarModule',
               /\/foo\/other-root-dir\/src\/lazy-foo\.ts$/,
               'LazyFooModule',
               /\/bar\/other-root-dir\/src\/lazy-bar\.ts$/,
-              'LazyBarModule',
+              'LazyBarModule'
             ),
             lazyRouteMatching(
               './lazier-bar#LazierBarModule',
               /\/bar\/other-root-dir\/src\/lazy-bar\.ts$/,
               'LazyBarModule',
               /\/bar\/other-root-dir\/src\/lazier-bar\.ts$/,
-              'LazierBarModule',
+              'LazierBarModule'
             ),
           ]);
         });
@@ -6391,7 +6391,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class TestModule {}
-        `,
+        `
           );
 
           const entryModule1 = absoluteFrom('/test#TestModule');
@@ -6400,10 +6400,10 @@ runInEachFileSystem((os) => {
 
           expect(() => env.driveRoutes(entryModule1)).not.toThrow();
           expect(() => env.driveRoutes(entryModule2)).toThrowError(
-            `Failed to list lazy routes: Unknown module '${entryModule2}'.`,
+            `Failed to list lazy routes: Unknown module '${entryModule2}'.`
           );
           expect(() => env.driveRoutes(entryModule3)).toThrowError(
-            `Failed to list lazy routes: Unknown module '${entryModule3}'.`,
+            `Failed to list lazy routes: Unknown module '${entryModule3}'.`
           );
         });
 
@@ -6428,7 +6428,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class TestModule {}
-        `,
+        `
           );
           env.write(
             'test-1.ts',
@@ -6444,7 +6444,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class Test1Module {}
-        `,
+        `
           );
           env.write(
             'test-2.ts',
@@ -6460,7 +6460,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class Test2Module {}
-        `,
+        `
           );
           env.write(
             'lazy/lazy.ts',
@@ -6469,7 +6469,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class LazyModule {}
-        `,
+        `
           );
           env.write(
             'lazy-1/lazy-1.ts',
@@ -6478,7 +6478,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class Lazy1Module {}
-        `,
+        `
           );
           env.write(
             'lazy-2/lazy-2.ts',
@@ -6487,7 +6487,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class Lazy2Module {}
-        `,
+        `
           );
 
           const routes = env.driveRoutes(absoluteFrom('/test#TestModule'));
@@ -6498,21 +6498,21 @@ runInEachFileSystem((os) => {
               /\/test\.ts$/,
               'TestModule',
               /\/lazy\/lazy\.ts$/,
-              'LazyModule',
+              'LazyModule'
             ),
             lazyRouteMatching(
               './lazy-1/lazy-1#Lazy1Module',
               /\/test-1\.ts$/,
               'Test1Module',
               /\/lazy-1\/lazy-1\.ts$/,
-              'Lazy1Module',
+              'Lazy1Module'
             ),
             lazyRouteMatching(
               './lazy-2/lazy-2#Lazy2Module',
               /\/test-2\.ts$/,
               'Test2Module',
               /\/lazy-2\/lazy-2\.ts$/,
-              'Lazy2Module',
+              'Lazy2Module'
             ),
           ]);
         });
@@ -6538,7 +6538,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class Test1Module {}
-        `,
+        `
           );
           env.write(
             'test-2.ts',
@@ -6564,7 +6564,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class Test2Module {}
-        `,
+        `
           );
           env.write(
             'lazy-1/lazy-1.ts',
@@ -6573,7 +6573,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class Lazy1Module {}
-        `,
+        `
           );
           env.write(
             'lazy-2/lazy-2.ts',
@@ -6582,7 +6582,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class Lazy2Module {}
-        `,
+        `
           );
 
           const routes = env.driveRoutes(absoluteFrom('/test-1#Test1Module'));
@@ -6593,14 +6593,14 @@ runInEachFileSystem((os) => {
               /\/test-1\.ts$/,
               'Test1Module',
               /\/lazy-1\/lazy-1\.ts$/,
-              'Lazy1Module',
+              'Lazy1Module'
             ),
             lazyRouteMatching(
               './lazy-2/lazy-2#Lazy2Module',
               /\/test-2\.ts$/,
               'Test2Module',
               /\/lazy-2\/lazy-2\.ts$/,
-              'Lazy2Module',
+              'Lazy2Module'
             ),
           ]);
         });
@@ -6637,7 +6637,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class TestModule {}
-        `,
+        `
           );
           env.write(
             'lazy-1/lazy-1.ts',
@@ -6646,7 +6646,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class Lazy1Module {}
-        `,
+        `
           );
           env.write(
             'lazy-2/lazy-2.ts',
@@ -6655,7 +6655,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class Lazy2Module {}
-        `,
+        `
           );
 
           const routes = env.driveRoutes(absoluteFrom('/test#TestModule'));
@@ -6666,14 +6666,14 @@ runInEachFileSystem((os) => {
               /\/test\.ts$/,
               'TestModule',
               /\/lazy-1\/lazy-1\.ts$/,
-              'Lazy1Module',
+              'Lazy1Module'
             ),
             lazyRouteMatching(
               './lazy-2/lazy-2#Lazy2Module',
               /\/test\.ts$/,
               'TestRoutingModule',
               /\/lazy-2\/lazy-2\.ts$/,
-              'Lazy2Module',
+              'Lazy2Module'
             ),
           ]);
         });
@@ -6703,7 +6703,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class TestModule {}
-        `,
+        `
           );
           env.write(
             'lazy/lazy.ts',
@@ -6719,7 +6719,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class LazyModule {}
-        `,
+        `
           );
           env.write(
             'lazier/lazier.ts',
@@ -6728,7 +6728,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class LazierModule {}
-        `,
+        `
           );
 
           const routes = env.driveRoutes(absoluteFrom('/test#TestModule'));
@@ -6741,21 +6741,21 @@ runInEachFileSystem((os) => {
               /\/test\.ts$/,
               'TestModule',
               /\/lazy\/lazy\.ts$/,
-              'LazyModule',
+              'LazyModule'
             ),
             lazyRouteMatching(
               './lazy/lazy#LazyModule',
               /\/test\.ts$/,
               'SharedModule',
               /\/lazy\/lazy\.ts$/,
-              'LazyModule',
+              'LazyModule'
             ),
             lazyRouteMatching(
               '../lazier/lazier#LazierModule',
               /\/lazy\/lazy\.ts$/,
               'LazyModule',
               /\/lazier\/lazier\.ts$/,
-              'LazierModule',
+              'LazierModule'
             ),
           ]);
         });
@@ -6776,7 +6776,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class TestModule {}
-        `,
+        `
           );
           env.write(
             'foo/other-root-dir/src/lazy-foo.ts',
@@ -6792,7 +6792,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class LazyFooModule {}
-        `,
+        `
           );
           env.write(
             'bar/other-root-dir/src/lazy-bar.ts',
@@ -6808,7 +6808,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class LazyBarModule {}
-        `,
+        `
           );
           env.write(
             'bar/other-root-dir/src/lazier-bar.ts',
@@ -6817,7 +6817,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class LazierBarModule {}
-        `,
+        `
           );
 
           const routes = env.driveRoutes(absoluteFrom('/src/test#TestModule'));
@@ -6828,21 +6828,21 @@ runInEachFileSystem((os) => {
               /\/test\.ts$/,
               'TestModule',
               /\/foo\/other-root-dir\/src\/lazy-foo\.ts$/,
-              'LazyFooModule',
+              'LazyFooModule'
             ),
             lazyRouteMatching(
               './lazy-bar#LazyBarModule',
               /\/foo\/other-root-dir\/src\/lazy-foo\.ts$/,
               'LazyFooModule',
               /\/bar\/other-root-dir\/src\/lazy-bar\.ts$/,
-              'LazyBarModule',
+              'LazyBarModule'
             ),
             lazyRouteMatching(
               './lazier-bar#LazierBarModule',
               /\/bar\/other-root-dir\/src\/lazy-bar\.ts$/,
               'LazyBarModule',
               /\/bar\/other-root-dir\/src\/lazier-bar\.ts$/,
-              'LazierBarModule',
+              'LazierBarModule'
             ),
           ]);
         });
@@ -6871,7 +6871,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class Test2Module {}
-        `,
+        `
           );
           env.write(
             'lazy/lazy.ts',
@@ -6883,7 +6883,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class Lazy2Module {}
-        `,
+        `
           );
 
           const routes = env.driveRoutes(absoluteFrom('/test#Test1Module'));
@@ -6894,7 +6894,7 @@ runInEachFileSystem((os) => {
               /\/test\.ts$/,
               'Test1Module',
               /\/lazy\/lazy\.ts$/,
-              'Lazy1Module',
+              'Lazy1Module'
             ),
           ]);
         });
@@ -6915,7 +6915,7 @@ runInEachFileSystem((os) => {
             ],
           })
           export class TestModule {}
-        `,
+        `
           );
           env.write(
             'lazy/lazy.ts',
@@ -6924,7 +6924,7 @@ runInEachFileSystem((os) => {
 
           @NgModule({})
           export class LazyModule {}
-        `,
+        `
           );
 
           const routes = env.driveRoutes(absoluteFrom('/test#TestModule'));
@@ -6935,7 +6935,7 @@ runInEachFileSystem((os) => {
               /\/test\.ts$/,
               'TestModule',
               /\/lazy\/lazy\.ts$/,
-              'LazyModule',
+              'LazyModule'
             ),
           ]);
         });
@@ -6949,7 +6949,7 @@ runInEachFileSystem((os) => {
           `
 export const FooCmp__POST_R3__ = 1;
 export const FooCmp__PRE_R3__ = 2;
-export const FooCmp = FooCmp__PRE_R3__;`,
+export const FooCmp = FooCmp__PRE_R3__;`
         );
         env.driveMain();
 
@@ -6967,7 +6967,7 @@ export const Foo = Foo__PRE_R3__;
         env.write('test_outside_angular_core.ts', content);
         env.write(
           'test_inside_angular_core.ts',
-          content + '\nexport const ITS_JUST_ANGULAR = true;',
+          content + '\nexport const ITS_JUST_ANGULAR = true;'
         );
         env.driveMain();
 
@@ -6994,7 +6994,7 @@ export const Foo = Foo__PRE_R3__;
         export declare class AlphaModule {
           static ɵmod: ɵɵNgModuleDefWithMeta<AlphaModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
         }
-      `,
+      `
         );
 
         // 'beta' re-exports AlphaModule from alpha.
@@ -7007,7 +7007,7 @@ export const Foo = Foo__PRE_R3__;
         export declare class BetaModule {
           static ɵmod: ɵɵNgModuleDefWithMeta<AlphaModule, never, never, [typeof AlphaModule]>;
         }
-      `,
+      `
         );
 
         // The application imports BetaModule from beta, gaining visibility of ExternalDir from
@@ -7029,7 +7029,7 @@ export const Foo = Foo__PRE_R3__;
           imports: [BetaModule],
         })
         export class Module {}
-      `,
+      `
         );
         env.driveMain();
         const jsContents = env.getContents('test.js');
@@ -7054,7 +7054,7 @@ export const Foo = Foo__PRE_R3__;
         export declare class ExternalModule {
           static ɵmod: ɵɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir, typeof LibModule]>;
         }
-      `,
+      `
         );
         env.write(
           'lib.d.ts',
@@ -7068,7 +7068,7 @@ export const Foo = Foo__PRE_R3__;
         export declare class LibModule {
           static ɵmod: ɵɵNgModuleDefWithMeta<LibModule, [typeof LibDir], never, [typeof LibDir]>;
         }
-      `,
+      `
         );
         env.write(
           'foo.ts',
@@ -7084,7 +7084,7 @@ export const Foo = Foo__PRE_R3__;
           exports: [FooDir, ExternalModule]
         })
         export class FooModule {}
-      `,
+      `
         );
         env.write(
           'index.ts',
@@ -7103,12 +7103,12 @@ export const Foo = Foo__PRE_R3__;
           exports: [FooModule],
         })
         export class IndexModule {}
-      `,
+      `
         );
         env.driveMain();
         const jsContents = env.getContents('index.js');
         expect(jsContents).toContain(
-          'export { FooDir as \u0275ng$root$foo$$FooDir } from "root/foo";',
+          'export { FooDir as \u0275ng$root$foo$$FooDir } from "root/foo";'
         );
       });
 
@@ -7127,7 +7127,7 @@ export const Foo = Foo__PRE_R3__;
           exports: [TestDir],
         })
         export class OtherModule {}
-      `,
+      `
         );
         env.write(
           'index.ts',
@@ -7139,12 +7139,12 @@ export const Foo = Foo__PRE_R3__;
           exports: [OtherModule],
         })
         export class IndexModule {}
-      `,
+      `
         );
         env.driveMain();
         const jsContents = env.getContents('index.js');
         expect(jsContents).toContain(
-          'export { TestDir as \u0275ng$root$other___test$$TestDir } from "root/other._$test";',
+          'export { TestDir as \u0275ng$root$other___test$$TestDir } from "root/other._$test";'
         );
       });
     });
@@ -7218,7 +7218,7 @@ export const Foo = Foo__PRE_R3__;
             selector: '[base]',
           })
           export class BaseDir {}
-        `,
+        `
         );
 
         env.write(
@@ -7243,7 +7243,7 @@ export const Foo = Foo__PRE_R3__;
           export declare class BaseDir {
             static ɵdir: ɵɵDirectiveDefWithMeta<BaseDir, '[base]', never, never, never, never>;
           }
-        `,
+        `
         );
       });
 
@@ -7265,7 +7265,7 @@ export const Foo = Foo__PRE_R3__;
             template: 'TestCmp',
           })
           export class Cmp extends BaseCmp {}
-        `,
+        `
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
@@ -7289,7 +7289,7 @@ export const Foo = Foo__PRE_R3__;
             template: 'TestCmp',
           })
           export class Cmp extends BasePlainWithBlankConstructor {}
-        `,
+        `
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
@@ -7313,7 +7313,7 @@ export const Foo = Foo__PRE_R3__;
             template: 'TestCmp',
           })
           export class Cmp extends BasePlain {}
-        `,
+        `
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
@@ -7337,7 +7337,7 @@ export const Foo = Foo__PRE_R3__;
             template: 'TestCmp',
           })
           export class Cmp extends BasePlainWithConstructorParameters {}
-        `,
+        `
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -7367,7 +7367,7 @@ export const Foo = Foo__PRE_R3__;
             template: 'TestCmp',
           })
           export class Cmp extends Parent {}
-        `,
+        `
         );
 
         const diags = env.driveDiagnostics();
@@ -7400,7 +7400,7 @@ export const Foo = Foo__PRE_R3__;
                 template: 'TestCmp',
               })
               export class Cmp extends Parent {}
-            `,
+            `
         );
 
         const diags = env.driveDiagnostics();
@@ -7429,7 +7429,7 @@ export const Foo = Foo__PRE_R3__;
                 template: 'TestCmp',
               })
               export class Cmp extends BaseCmp {}
-           `,
+           `
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
@@ -7448,7 +7448,7 @@ export const Foo = Foo__PRE_R3__;
                 selector: '[dir]',
               })
               export class Dir extends BasePlainWithConstructorParameters {}
-            `,
+            `
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
@@ -7470,13 +7470,13 @@ export const Foo = Foo__PRE_R3__;
           styles: ['h2 {width: 10px}']
         })
         export class TestCmp {}
-      `,
+      `
         );
 
         env.driveMain();
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          'styles: ["h2[_ngcontent-%COMP%] {width: 10px}", "h1[_ngcontent-%COMP%] {font-size: larger}"]',
+          'styles: ["h2[_ngcontent-%COMP%] {width: 10px}", "h1[_ngcontent-%COMP%] {font-size: larger}"]'
         );
       });
 
@@ -7492,7 +7492,7 @@ export const Foo = Foo__PRE_R3__;
           template: '<link rel="stylesheet" href="./style.css">',
         })
         export class TestCmp {}
-      `,
+      `
         );
 
         env.driveMain();
@@ -7514,7 +7514,7 @@ export const Foo = Foo__PRE_R3__;
             selector: '[test]'
           })
           class TestDirective {}
-        `,
+        `
         );
         env.driveMain();
         const jsContents = env.getContents('test.js');
@@ -7534,7 +7534,7 @@ export const Foo = Foo__PRE_R3__;
             template: 'hello'
           })
           class TestComponent {}
-        `,
+        `
         );
         env.driveMain();
         const jsContents = env.getContents('test.js');
@@ -7553,7 +7553,7 @@ export const Foo = Foo__PRE_R3__;
             declarations: []
           })
           class TestModule {}
-        `,
+        `
         );
         env.driveMain();
         const jsContents = env.getContents('test.js');
@@ -7578,7 +7578,7 @@ export const Foo = Foo__PRE_R3__;
               providers: [NotAService]
             })
             export class SomeModule {}
-          `,
+          `
         );
 
         const diags = env.driveDiagnostics();
@@ -7603,7 +7603,7 @@ export const Foo = Foo__PRE_R3__;
             providers: [{provide: Service, useClass: NotAService}]
           })
           export class SomeModule {}
-        `,
+        `
         );
 
         const diags = env.driveDiagnostics();
@@ -7628,7 +7628,7 @@ export const Foo = Foo__PRE_R3__;
             providers: [{provide: Service, useClass: NotAService, deps: [NgZone]}]
           })
           export class SomeModule {}
-        `,
+        `
         );
 
         const diags = env.driveDiagnostics();
@@ -7652,7 +7652,7 @@ export const Foo = Foo__PRE_R3__;
             providers: [Service, [NotAService]]
           })
           export class SomeModule {}
-        `,
+        `
         );
 
         const diags = env.driveDiagnostics();
@@ -7680,7 +7680,7 @@ export const Foo = Foo__PRE_R3__;
             declarations: [SomeDirective]
           })
           export class SomeModule {}
-        `,
+        `
         );
 
         const diags = env.driveDiagnostics();
@@ -7709,7 +7709,7 @@ export const Foo = Foo__PRE_R3__;
             declarations: [SomeComponent]
           })
           export class SomeModule {}
-        `,
+        `
         );
 
         const diags = env.driveDiagnostics();
@@ -7738,7 +7738,7 @@ export const Foo = Foo__PRE_R3__;
             declarations: [SomeComponent]
           })
           export class SomeModule {}
-        `,
+        `
         );
 
         const diags = env.driveDiagnostics();
@@ -7762,7 +7762,7 @@ export const Foo = Foo__PRE_R3__;
             providers: [SomePipe]
           })
           export class SomeModule {}
-        `,
+        `
         );
 
         const diags = env.driveDiagnostics();
@@ -7788,7 +7788,7 @@ export const Foo = Foo__PRE_R3__;
             providers: [SomeModule],
           })
           export class Module {}
-        `,
+        `
         );
 
         const diags = env.driveDiagnostics();
@@ -7801,7 +7801,7 @@ export const Foo = Foo__PRE_R3__;
           `
           export declare class Testability {
           }
-        `,
+        `
         );
         env.write(
           'test.ts',
@@ -7813,7 +7813,7 @@ export const Foo = Foo__PRE_R3__;
             providers: [Testability]
           })
           export class SomeModule {}
-        `,
+        `
         );
 
         const diags = env.driveDiagnostics();
@@ -7826,7 +7826,7 @@ export const Foo = Foo__PRE_R3__;
           `
             export declare class Testability {
             }
-          `,
+          `
         );
         env.write(
           'test.ts',
@@ -7841,7 +7841,7 @@ export const Foo = Foo__PRE_R3__;
               providers: [{provide: TestingService, useClass: Testability}]
             })
             export class SomeModule {}
-          `,
+          `
         );
 
         const diags = env.driveDiagnostics();
@@ -7864,7 +7864,7 @@ export const Foo = Foo__PRE_R3__;
             providers: [NoConstructorService, BlankConstructorService]
           })
           export class SomeModule {}
-        `,
+        `
         );
 
         const diags = env.driveDiagnostics();
@@ -7880,7 +7880,7 @@ export const Foo = Foo__PRE_R3__;
             export declare class Testability {
               constructor(ngZone: NgZone) {}
             }
-          `,
+          `
         );
         env.write(
           'test.ts',
@@ -7895,7 +7895,7 @@ export const Foo = Foo__PRE_R3__;
               providers: [{provide: TestingService, useClass: Testability}]
             })
             export class SomeModule {}
-          `,
+          `
         );
 
         const diags = env.driveDiagnostics();
@@ -7915,7 +7915,7 @@ export const Foo = Foo__PRE_R3__;
               static ɵfac: i0.ɵɵFactoryDef<Testability, never>;
               constructor(ngZone: NgZone) {}
             }
-          `,
+          `
         );
         env.write(
           'test.ts',
@@ -7930,7 +7930,7 @@ export const Foo = Foo__PRE_R3__;
               providers: [{provide: TestingService, useClass: Testability}]
             })
             export class SomeModule {}
-          `,
+          `
         );
 
         const diags = env.driveDiagnostics();
@@ -7942,7 +7942,7 @@ export const Foo = Foo__PRE_R3__;
   function expectTokenAtPosition<T extends ts.Node>(
     sf: ts.SourceFile,
     pos: number,
-    guard: (node: ts.Node) => node is T,
+    guard: (node: ts.Node) => node is T
   ): T {
     // getTokenAtPosition is part of TypeScript's private API.
     const node = (ts as any).getTokenAtPosition(sf, pos) as ts.Node;

@@ -10,13 +10,41 @@ import {ViewEncapsulation} from '../metadata/view';
 import {RendererType2} from '../render/api';
 import {SecurityContext} from '../sanitization/security';
 
-import {BindingDef, BindingFlags, ElementData, ElementHandleEventFn, NodeDef, NodeFlags, OutputDef, OutputType, QueryValueType, ViewData, ViewDefinitionFactory, asElementData} from './types';
-import {NOOP, calcBindingFlags, checkAndUpdateBinding, dispatchEvent, elementEventFullName, getParentRenderElement, resolveDefinition, resolveRendererType2, splitMatchedQueriesDsl, splitNamespace} from './util';
+import {
+  BindingDef,
+  BindingFlags,
+  ElementData,
+  ElementHandleEventFn,
+  NodeDef,
+  NodeFlags,
+  OutputDef,
+  OutputType,
+  QueryValueType,
+  ViewData,
+  ViewDefinitionFactory,
+  asElementData,
+} from './types';
+import {
+  NOOP,
+  calcBindingFlags,
+  checkAndUpdateBinding,
+  dispatchEvent,
+  elementEventFullName,
+  getParentRenderElement,
+  resolveDefinition,
+  resolveRendererType2,
+  splitMatchedQueriesDsl,
+  splitNamespace,
+} from './util';
 
 export function anchorDef(
-    flags: NodeFlags, matchedQueriesDsl: null | [string | number, QueryValueType][],
-    ngContentIndex: null | number, childCount: number, handleEvent?: null | ElementHandleEventFn,
-    templateFactory?: ViewDefinitionFactory): NodeDef {
+  flags: NodeFlags,
+  matchedQueriesDsl: null | [string | number, QueryValueType][],
+  ngContentIndex: null | number,
+  childCount: number,
+  handleEvent?: null | ElementHandleEventFn,
+  templateFactory?: ViewDefinitionFactory
+): NodeDef {
   flags |= NodeFlags.TypeElement;
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
   const template = templateFactory ? resolveDefinition(templateFactory) : null;
@@ -33,42 +61,54 @@ export function anchorDef(
     checkIndex: -1,
     childFlags: 0,
     directChildFlags: 0,
-    childMatchedQueries: 0, matchedQueries, matchedQueryIds, references, ngContentIndex, childCount,
+    childMatchedQueries: 0,
+    matchedQueries,
+    matchedQueryIds,
+    references,
+    ngContentIndex,
+    childCount,
     bindings: [],
     bindingFlags: 0,
     outputs: [],
     element: {
       ns: null,
       name: null,
-      attrs: null, template,
+      attrs: null,
+      template,
       componentProvider: null,
       componentView: null,
       componentRendererType: null,
       publicProviders: null,
       allProviders: null,
-      handleEvent: handleEvent || NOOP
+      handleEvent: handleEvent || NOOP,
     },
     provider: null,
     text: null,
     query: null,
-    ngContent: null
+    ngContent: null,
   };
 }
 
 export function elementDef(
-    checkIndex: number, flags: NodeFlags,
-    matchedQueriesDsl: null | [string | number, QueryValueType][], ngContentIndex: null | number,
-    childCount: number, namespaceAndName: string | null, fixedAttrs: null | [string, string][] = [],
-    bindings?: null | [BindingFlags, string, string | SecurityContext | null][],
-    outputs?: null | ([string, string])[], handleEvent?: null | ElementHandleEventFn,
-    componentView?: null | ViewDefinitionFactory,
-    componentRendererType?: RendererType2 | null): NodeDef {
+  checkIndex: number,
+  flags: NodeFlags,
+  matchedQueriesDsl: null | [string | number, QueryValueType][],
+  ngContentIndex: null | number,
+  childCount: number,
+  namespaceAndName: string | null,
+  fixedAttrs: null | [string, string][] = [],
+  bindings?: null | [BindingFlags, string, string | SecurityContext | null][],
+  outputs?: null | [string, string][],
+  handleEvent?: null | ElementHandleEventFn,
+  componentView?: null | ViewDefinitionFactory,
+  componentRendererType?: RendererType2 | null
+): NodeDef {
   if (!handleEvent) {
     handleEvent = NOOP;
   }
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
-  let ns: string = null !;
-  let name: string = null !;
+  let ns: string = null!;
+  let name: string = null!;
   if (namespaceAndName) {
     [ns, name] = splitNamespace(namespaceAndName);
   }
@@ -78,8 +118,8 @@ export function elementDef(
     const [bindingFlags, namespaceAndName, suffixOrSecurityContext] = bindings[i];
 
     const [ns, name] = splitNamespace(namespaceAndName);
-    let securityContext: SecurityContext = undefined !;
-    let suffix: string = undefined !;
+    let securityContext: SecurityContext = undefined!;
+    let suffix: string = undefined!;
     switch (bindingFlags & BindingFlags.Types) {
       case BindingFlags.TypeElementStyle:
         suffix = <string>suffixOrSecurityContext;
@@ -89,8 +129,14 @@ export function elementDef(
         securityContext = <SecurityContext>suffixOrSecurityContext;
         break;
     }
-    bindingDefs[i] =
-        {flags: bindingFlags, ns, name, nonMinifiedName: name, securityContext, suffix};
+    bindingDefs[i] = {
+      flags: bindingFlags,
+      ns,
+      name,
+      nonMinifiedName: name,
+      securityContext,
+      suffix,
+    };
   }
   outputs = outputs || [];
   const outputDefs: OutputDef[] = [];
@@ -98,8 +144,9 @@ export function elementDef(
     const [target, eventName] = outputs[i];
     outputDefs[i] = {
       type: OutputType.ElementOutput,
-      target: <any>target, eventName,
-      propName: null
+      target: <any>target,
+      eventName,
+      propName: null,
     };
   }
   fixedAttrs = fixedAttrs || [];
@@ -124,7 +171,12 @@ export function elementDef(
     flags,
     childFlags: 0,
     directChildFlags: 0,
-    childMatchedQueries: 0, matchedQueries, matchedQueryIds, references, ngContentIndex, childCount,
+    childMatchedQueries: 0,
+    matchedQueries,
+    matchedQueryIds,
+    references,
+    ngContentIndex,
+    childCount,
     bindings: bindingDefs,
     bindingFlags: calcBindingFlags(bindingDefs),
     outputs: outputDefs,
@@ -144,12 +196,12 @@ export function elementDef(
     provider: null,
     text: null,
     query: null,
-    ngContent: null
+    ngContent: null,
   };
 }
 
 export function createElement(view: ViewData, renderHost: any, def: NodeDef): ElementData {
-  const elDef = def.element !;
+  const elDef = def.element!;
   const rootSelectorOrNode = view.root.selectorOrNode;
   const renderer = view.renderer;
   let el: any;
@@ -166,8 +218,8 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): El
   } else {
     // when using native Shadow DOM, do not clear the root element contents to allow slot projection
     const preserveContent =
-        (!!elDef.componentRendererType &&
-         elDef.componentRendererType.encapsulation === ViewEncapsulation.ShadowDom);
+      !!elDef.componentRendererType &&
+      elDef.componentRendererType.encapsulation === ViewEncapsulation.ShadowDom;
     el = renderer.selectRootElement(rootSelectorOrNode, preserveContent);
   }
   if (elDef.attrs) {
@@ -183,16 +235,20 @@ export function listenToElementOutputs(view: ViewData, compView: ViewData, def: 
   for (let i = 0; i < def.outputs.length; i++) {
     const output = def.outputs[i];
     const handleEventClosure = renderEventHandlerClosure(
-        view, def.nodeIndex, elementEventFullName(output.target, output.eventName));
-    let listenTarget: 'window'|'document'|'body'|'component'|null = output.target;
+      view,
+      def.nodeIndex,
+      elementEventFullName(output.target, output.eventName)
+    );
+    let listenTarget: 'window' | 'document' | 'body' | 'component' | null = output.target;
     let listenerView = view;
     if (output.target === 'component') {
       listenTarget = null;
       listenerView = compView;
     }
-    const disposable =
-        <any>listenerView.renderer.listen(listenTarget || el, output.eventName, handleEventClosure);
-    view.disposables ![def.outputIndex + i] = disposable;
+    const disposable = <any>(
+      listenerView.renderer.listen(listenTarget || el, output.eventName, handleEventClosure)
+    );
+    view.disposables![def.outputIndex + i] = disposable;
   }
 }
 
@@ -200,10 +256,20 @@ function renderEventHandlerClosure(view: ViewData, index: number, eventName: str
   return (event: any) => dispatchEvent(view, index, eventName, event);
 }
 
-
 export function checkAndUpdateElementInline(
-    view: ViewData, def: NodeDef, v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any,
-    v7: any, v8: any, v9: any): boolean {
+  view: ViewData,
+  def: NodeDef,
+  v0: any,
+  v1: any,
+  v2: any,
+  v3: any,
+  v4: any,
+  v5: any,
+  v6: any,
+  v7: any,
+  v8: any,
+  v9: any
+): boolean {
   const bindLen = def.bindings.length;
   let changed = false;
   if (bindLen > 0 && checkAndUpdateElementValue(view, def, 0, v0)) changed = true;
@@ -234,7 +300,7 @@ function checkAndUpdateElementValue(view: ViewData, def: NodeDef, bindingIdx: nu
   const binding = def.bindings[bindingIdx];
   const elData = asElementData(view, def.nodeIndex);
   const renderNode = elData.renderElement;
-  const name = binding.name !;
+  const name = binding.name!;
   switch (binding.flags & BindingFlags.Types) {
     case BindingFlags.TypeElementAttribute:
       setElementAttribute(view, binding, renderNode, binding.ns, name, value);
@@ -246,10 +312,10 @@ function checkAndUpdateElementValue(view: ViewData, def: NodeDef, bindingIdx: nu
       setElementStyle(view, binding, renderNode, name, value);
       break;
     case BindingFlags.TypeProperty:
-      const bindView = (def.flags & NodeFlags.ComponentView &&
-                        binding.flags & BindingFlags.SyntheticHostProperty) ?
-          elData.componentView :
-          view;
+      const bindView =
+        def.flags & NodeFlags.ComponentView && binding.flags & BindingFlags.SyntheticHostProperty
+          ? elData.componentView
+          : view;
       setElementProperty(bindView, binding, renderNode, name, value);
       break;
   }
@@ -257,8 +323,13 @@ function checkAndUpdateElementValue(view: ViewData, def: NodeDef, bindingIdx: nu
 }
 
 function setElementAttribute(
-    view: ViewData, binding: BindingDef, renderNode: any, ns: string | null, name: string,
-    value: any) {
+  view: ViewData,
+  binding: BindingDef,
+  renderNode: any,
+  ns: string | null,
+  name: string,
+  value: any
+) {
   const securityContext = binding.securityContext;
   let renderValue = securityContext ? view.root.sanitizer.sanitize(securityContext, value) : value;
   renderValue = renderValue != null ? renderValue.toString() : null;
@@ -280,9 +351,16 @@ function setElementClass(view: ViewData, renderNode: any, name: string, value: b
 }
 
 function setElementStyle(
-    view: ViewData, binding: BindingDef, renderNode: any, name: string, value: any) {
-  let renderValue: string|null =
-      view.root.sanitizer.sanitize(SecurityContext.STYLE, value as{} | string);
+  view: ViewData,
+  binding: BindingDef,
+  renderNode: any,
+  name: string,
+  value: any
+) {
+  let renderValue: string | null = view.root.sanitizer.sanitize(
+    SecurityContext.STYLE,
+    value as {} | string
+  );
   if (renderValue != null) {
     renderValue = renderValue.toString();
     const unit = binding.suffix;
@@ -301,7 +379,12 @@ function setElementStyle(
 }
 
 function setElementProperty(
-    view: ViewData, binding: BindingDef, renderNode: any, name: string, value: any) {
+  view: ViewData,
+  binding: BindingDef,
+  renderNode: any,
+  name: string,
+  value: any
+) {
   const securityContext = binding.securityContext;
   let renderValue = securityContext ? view.root.sanitizer.sanitize(securityContext, value) : value;
   view.renderer.setProperty(renderNode, name, renderValue);

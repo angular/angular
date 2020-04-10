@@ -8,7 +8,6 @@
 
 import {DirectiveMeta, PipeMeta} from '../../metadata';
 
-
 /**
  * Data for one of a given NgModule's scopes (either compilation scope or export scopes).
  */

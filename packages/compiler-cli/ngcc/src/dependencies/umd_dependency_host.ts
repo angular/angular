@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {getImportsOfUmdModule, parseStatementForUmdModule} from '../host/umd_host';
@@ -28,8 +29,12 @@ export class UmdDependencyHost extends DependencyHostBase {
    * in a circular dependency loop.
    */
   protected recursivelyCollectDependencies(
-      file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
-      deepImports: Set<string>, alreadySeen: Set<AbsoluteFsPath>): void {
+    file: AbsoluteFsPath,
+    dependencies: Set<AbsoluteFsPath>,
+    missing: Set<string>,
+    deepImports: Set<string>,
+    alreadySeen: Set<AbsoluteFsPath>
+  ): void {
     const fromContents = this.fs.readFile(file);
 
     if (!this.hasRequireCalls(fromContents)) {
@@ -38,8 +43,13 @@ export class UmdDependencyHost extends DependencyHostBase {
     }
 
     // Parse the source into a TypeScript AST and then walk it looking for imports and re-exports.
-    const sf =
-        ts.createSourceFile(file, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
+    const sf = ts.createSourceFile(
+      file,
+      fromContents,
+      ts.ScriptTarget.ES2015,
+      false,
+      ts.ScriptKind.JS
+    );
 
     if (sf.statements.length !== 1) {
       return;
@@ -51,7 +61,7 @@ export class UmdDependencyHost extends DependencyHostBase {
       return;
     }
 
-    umdImports.forEach(umdImport => {
+    umdImports.forEach((umdImport) => {
       const resolvedModule = this.moduleResolver.resolveModuleImport(umdImport.path, file);
       if (resolvedModule) {
         if (resolvedModule instanceof ResolvedRelativeModule) {
@@ -59,7 +69,12 @@ export class UmdDependencyHost extends DependencyHostBase {
           if (!alreadySeen.has(internalDependency)) {
             alreadySeen.add(internalDependency);
             this.recursivelyCollectDependencies(
-                internalDependency, dependencies, missing, deepImports, alreadySeen);
+              internalDependency,
+              dependencies,
+              missing,
+              deepImports,
+              alreadySeen
+            );
           }
         } else {
           if (resolvedModule instanceof ResolvedDeepImport) {

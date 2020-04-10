@@ -40,7 +40,7 @@ interface AnalyzedProject {
 }
 
 /** Entry point for the V8 static-query migration. */
-export default function(): Rule {
+export default function (): Rule {
   return (tree: Tree, context: SchematicContext) => {
     // We need to cast the returned "Observable" to "any" as there is a
     // RxJS version mismatch that breaks the TS compilation.
@@ -56,16 +56,17 @@ async function runMigration(tree: Tree, context: SchematicContext) {
 
   if (!buildPaths.length && !testPaths.length) {
     throw new SchematicsException(
-        'Could not find any tsconfig file. Cannot migrate queries ' +
-        'to add static flag.');
+      'Could not find any tsconfig file. Cannot migrate queries ' + 'to add static flag.'
+    );
   }
 
   const analyzedFiles = new Set<string>();
   const buildProjects = new Set<AnalyzedProject>();
   const failures = [];
-  const strategy = process.env['NG_STATIC_QUERY_USAGE_STRATEGY'] === 'true' ?
-      SELECTED_STRATEGY.USAGE :
-      SELECTED_STRATEGY.TEMPLATE;
+  const strategy =
+    process.env['NG_STATIC_QUERY_USAGE_STRATEGY'] === 'true'
+      ? SELECTED_STRATEGY.USAGE
+      : SELECTED_STRATEGY.TEMPLATE;
 
   for (const tsconfigPath of buildPaths) {
     const project = analyzeProject(tree, tsconfigPath, basePath, analyzedFiles, logger);
@@ -76,7 +77,7 @@ async function runMigration(tree: Tree, context: SchematicContext) {
 
   if (buildProjects.size) {
     for (let project of Array.from(buildProjects.values())) {
-      failures.push(...await runStaticQueryMigration(tree, project, strategy, logger));
+      failures.push(...(await runStaticQueryMigration(tree, project, strategy, logger)));
     }
   }
 
@@ -86,7 +87,8 @@ async function runMigration(tree: Tree, context: SchematicContext) {
     const project = await analyzeProject(tree, tsconfigPath, basePath, analyzedFiles, logger);
     if (project) {
       failures.push(
-          ...await runStaticQueryMigration(tree, project, SELECTED_STRATEGY.TESTS, logger));
+        ...(await runStaticQueryMigration(tree, project, SELECTED_STRATEGY.TESTS, logger))
+      );
     }
   }
 
@@ -96,7 +98,7 @@ async function runMigration(tree: Tree, context: SchematicContext) {
     logger.info('through these manually and apply the appropriate timing.');
     logger.info('For more info on how to choose a flag, please see: ');
     logger.info('https://v8.angular.io/guide/static-query-migration');
-    failures.forEach(failure => logger.warn(`⮑   ${failure}`));
+    failures.forEach((failure) => logger.warn(`⮑   ${failure}`));
   }
 }
 
@@ -105,8 +107,12 @@ async function runMigration(tree: Tree, context: SchematicContext) {
  * migrated. In case there are no queries that can be migrated, null is returned.
  */
 function analyzeProject(
-    tree: Tree, tsconfigPath: string, basePath: string, analyzedFiles: Set<string>,
-    logger: logging.LoggerApi): AnalyzedProject|null {
+  tree: Tree,
+  tsconfigPath: string,
+  basePath: string,
+  analyzedFiles: Set<string>,
+  logger: logging.LoggerApi
+): AnalyzedProject | null {
   const {program, host} = createMigrationProgram(tree, tsconfigPath, basePath);
   const syntacticDiagnostics = program.getSyntacticDiagnostics();
 
@@ -115,21 +121,24 @@ function analyzeProject(
   // can just re-run the migration after fixing these failures.
   if (syntacticDiagnostics.length) {
     logger.warn(
-        `\nTypeScript project "${tsconfigPath}" has syntactical errors which could cause ` +
-        `an incomplete migration. Please fix the following failures and rerun the migration:`);
+      `\nTypeScript project "${tsconfigPath}" has syntactical errors which could cause ` +
+        `an incomplete migration. Please fix the following failures and rerun the migration:`
+    );
     logger.error(ts.formatDiagnostics(syntacticDiagnostics, host));
     logger.info(
-        'Migration can be rerun with: "ng update @angular/core --from 7 --to 8 --migrate-only"\n');
+      'Migration can be rerun with: "ng update @angular/core --from 7 --to 8 --migrate-only"\n'
+    );
   }
 
   const typeChecker = program.getTypeChecker();
-  const sourceFiles = program.getSourceFiles().filter(
-      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
+  const sourceFiles = program
+    .getSourceFiles()
+    .filter((f) => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
   const queryVisitor = new NgQueryResolveVisitor(typeChecker);
 
   // Analyze all project source-files and collect all queries that
   // need to be migrated.
-  sourceFiles.forEach(sourceFile => {
+  sourceFiles.forEach((sourceFile) => {
     const relativePath = relative(basePath, sourceFile.fileName);
 
     // Only look for queries within the current source files if the
@@ -154,8 +163,11 @@ function analyzeProject(
  * not need to be static and can be set up with "static: false".
  */
 async function runStaticQueryMigration(
-    tree: Tree, project: AnalyzedProject, selectedStrategy: SELECTED_STRATEGY,
-    logger: logging.LoggerApi): Promise<string[]> {
+  tree: Tree,
+  project: AnalyzedProject,
+  selectedStrategy: SELECTED_STRATEGY,
+  logger: logging.LoggerApi
+): Promise<string[]> {
   const {sourceFiles, typeChecker, host, queryVisitor, tsconfigPath, basePath} = project;
   const printer = ts.createPrinter();
   const failureMessages: string[] = [];
@@ -164,7 +176,7 @@ async function runStaticQueryMigration(
   // If the "usage" strategy is selected, we also need to add the query visitor
   // to the analysis visitors so that query usage in templates can be also checked.
   if (selectedStrategy === SELECTED_STRATEGY.USAGE) {
-    sourceFiles.forEach(s => templateVisitor.visitNode(s));
+    sourceFiles.forEach((s) => templateVisitor.visitNode(s));
   }
 
   const {resolvedQueries, classMetadata} = queryVisitor;
@@ -173,7 +185,7 @@ async function runStaticQueryMigration(
   if (selectedStrategy === SELECTED_STRATEGY.USAGE) {
     // Add all resolved templates to the class metadata if the usage strategy is used. This
     // is necessary in order to be able to check component templates for static query usage.
-    resolvedTemplates.forEach(template => {
+    resolvedTemplates.forEach((template) => {
       if (classMetadata.has(template.container)) {
         classMetadata.get(template.container)!.template = template;
       }
@@ -194,20 +206,23 @@ async function runStaticQueryMigration(
   } catch (e) {
     if (selectedStrategy === SELECTED_STRATEGY.TEMPLATE) {
       logger.warn(
-          `\nThe template migration strategy uses the Angular compiler ` +
+        `\nThe template migration strategy uses the Angular compiler ` +
           `internally and therefore projects that no longer build successfully after ` +
           `the update cannot use the template migration strategy. Please ensure ` +
-          `there are no AOT compilation errors.\n`);
+          `there are no AOT compilation errors.\n`
+      );
     }
     // In case the strategy could not be set up properly, we just exit the
     // migration. We don't want to throw an exception as this could mean
     // that other migrations are interrupted.
     logger.warn(
-        `Could not setup migration strategy for "${project.tsconfigPath}". The ` +
-        `following error has been reported:\n`);
+      `Could not setup migration strategy for "${project.tsconfigPath}". The ` +
+        `following error has been reported:\n`
+    );
     logger.error(`${e.toString()}\n`);
     logger.info(
-        'Migration can be rerun with: "ng update @angular/core --from 7 --to 8 --migrate-only"\n');
+      'Migration can be rerun with: "ng update @angular/core --from 7 --to 8 --migrate-only"\n'
+    );
     return [];
   }
 
@@ -221,7 +236,7 @@ async function runStaticQueryMigration(
 
     // Compute the query timing for all resolved queries and update the
     // query definitions to explicitly set the determined query timing.
-    queries.forEach(q => {
+    queries.forEach((q) => {
       const queryExpr = q.decorator.node.expression;
       const {timing, message} = strategy.detectTiming(q);
       const result = getTransformedQueryCallExpr(q, timing, !!message);
@@ -238,10 +253,13 @@ async function runStaticQueryMigration(
       update.insertRight(queryExpr.getStart(), newText);
 
       if (result.failureMessage || message) {
-        const {line, character} =
-            ts.getLineAndCharacterOfPosition(sourceFile, q.decorator.node.getStart());
+        const {line, character} = ts.getLineAndCharacterOfPosition(
+          sourceFile,
+          q.decorator.node.getStart()
+        );
         failureMessages.push(
-            `${relativePath}@${line + 1}:${character + 1}: ${result.failureMessage || message}`);
+          `${relativePath}@${line + 1}:${character + 1}: ${result.failureMessage || message}`
+        );
       }
     });
 

@@ -13,15 +13,22 @@ import {SchemaMetadata} from '../../metadata';
 import {Sanitizer} from '../../sanitization/sanitizer';
 
 import {LContainer} from './container';
-import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
+import {
+  ComponentDef,
+  ComponentTemplate,
+  DirectiveDef,
+  DirectiveDefList,
+  HostBindingsFunction,
+  PipeDef,
+  PipeDefList,
+  ViewQueriesFunction,
+} from './definition';
 import {I18nUpdateOpCodes, TI18n} from './i18n';
 import {TConstants, TElementNode, TNode, TViewNode} from './node';
 import {PlayerHandler} from './player';
 import {LQueries, TQueries} from './query';
 import {RElement, Renderer3, RendererFactory3} from './renderer';
 import {TStylingKey, TStylingRange} from './styling';
-
-
 
 // Below are constants for LView indices to help us look up LView members
 // without having to remember the specific indices.
@@ -48,14 +55,12 @@ export const PREORDER_HOOK_FLAGS = 18;
 /** Size of LView's header. Necessary to adjust for it when setting slots.  */
 export const HEADER_OFFSET = 19;
 
-
 // This interface replaces the real LView interface if it is an arg or a
 // return value of a public instruction. This ensures we don't need to expose
 // the actual interface, which should be kept private.
 export interface OpaqueViewState {
   '__brand__': 'Brand for OpaqueViewState that nothing will match';
 }
-
 
 /**
  * `LView` stores all of the information needed to process the instructions as
@@ -72,14 +77,14 @@ export interface LView extends Array<any> {
    * The host node for this LView instance, if this is a component view.
    * If this is an embedded view, HOST will be null.
    */
-  [HOST]: RElement|null;
+  [HOST]: RElement | null;
 
   /**
    * The static data for this view. We need a reference to this so we can easily walk up the
    * node tree in DI and get the TView.data array associated with a node (where the
    * directive defs are stored).
    */
-  readonly[TVIEW]: TView;
+  readonly [TVIEW]: TView;
 
   /** Flags for this view. See LViewFlags for more info. */
   [FLAGS]: LViewFlags;
@@ -93,7 +98,7 @@ export interface LView extends Array<any> {
    *
    * `LContainer` - The current view is part of a container, and is an embedded view.
    */
-  [PARENT]: LView|LContainer|null;
+  [PARENT]: LView | LContainer | null;
 
   /**
    *
@@ -104,10 +109,10 @@ export interface LView extends Array<any> {
    * views in the same container. We need a way to link component views and views
    * across containers as well.
    */
-  [NEXT]: LView|LContainer|null;
+  [NEXT]: LView | LContainer | null;
 
   /** Queries active for this view - nodes from a view are reported to those queries. */
-  [QUERIES]: LQueries|null;
+  [QUERIES]: LQueries | null;
 
   /**
    * Pointer to the `TViewNode` or `TElementNode` which represents the root of the view.
@@ -119,7 +124,7 @@ export interface LView extends Array<any> {
    *
    * If null, this is the root view of an application (root component is in this view).
    */
-  [T_HOST]: TViewNode|TElementNode|null;
+  [T_HOST]: TViewNode | TElementNode | null;
 
   /**
    * When a view is destroyed, listeners need to be released and outputs need to be
@@ -130,7 +135,7 @@ export interface LView extends Array<any> {
    * TView.cleanup saves an index to the necessary context in this array.
    */
   // TODO: flatten into LView[]
-  [CLEANUP]: any[]|null;
+  [CLEANUP]: any[] | null;
 
   /**
    * - For dynamic views, this is the context with which to render the template (e.g.
@@ -139,10 +144,10 @@ export interface LView extends Array<any> {
    * - For non-root components, the context is the component instance,
    * - For inline views, the context is null.
    */
-  [CONTEXT]: {}|RootContext|null;
+  [CONTEXT]: {} | RootContext | null;
 
   /** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
-  readonly[INJECTOR]: Injector|null;
+  readonly [INJECTOR]: Injector | null;
 
   /** Factory to be used for creating Renderer. */
   [RENDERER_FACTORY]: RendererFactory3;
@@ -151,7 +156,7 @@ export interface LView extends Array<any> {
   [RENDERER]: Renderer3;
 
   /** An optional custom sanitizer. */
-  [SANITIZER]: Sanitizer|null;
+  [SANITIZER]: Sanitizer | null;
 
   /**
    * Reference to the first LView or LContainer beneath this LView in
@@ -160,7 +165,7 @@ export interface LView extends Array<any> {
    * Necessary to store this so views can traverse through their nested views
    * to remove listeners and call onDestroy callbacks.
    */
-  [CHILD_HEAD]: LView|LContainer|null;
+  [CHILD_HEAD]: LView | LContainer | null;
 
   /**
    * The last LView or LContainer beneath this LView in the hierarchy.
@@ -168,7 +173,7 @@ export interface LView extends Array<any> {
    * The tail allows us to quickly add a new state to the end of the view list
    * without having to propagate starting from the first child.
    */
-  [CHILD_TAIL]: LView|LContainer|null;
+  [CHILD_TAIL]: LView | LContainer | null;
 
   /**
    * View where this view's template was declared.
@@ -194,8 +199,7 @@ export interface LView extends Array<any> {
    * template function during change detection, we need the declaration view to get inherited
    * context.
    */
-  [DECLARATION_VIEW]: LView|null;
-
+  [DECLARATION_VIEW]: LView | null;
 
   /**
    * Points to the declaration component view, used to track transplanted `LView`s.
@@ -276,7 +280,7 @@ export interface LView extends Array<any> {
    * query matches in a proper order (query matches are ordered based on their declaration point and
    * _not_ the insertion point).
    */
-  [DECLARATION_LCONTAINER]: LContainer|null;
+  [DECLARATION_LCONTAINER]: LContainer | null;
 
   /**
    * More flags for this view. See PreOrderHookFlags for more info.
@@ -384,7 +388,7 @@ export const enum PreOrderHookFlags {
  *
  * See VIEW_DATA.md for more information.
  */
-export interface ExpandoInstructions extends Array<number|HostBindingsFunction<any>|null> {}
+export interface ExpandoInstructions extends Array<number | HostBindingsFunction<any> | null> {}
 
 /**
  * Explicitly marks `TView` as a specific type in `ngDevMode`
@@ -446,12 +450,12 @@ export interface TView {
    * The template function used to refresh the view of dynamically created views
    * and components. Will be null for inline views.
    */
-  template: ComponentTemplate<{}>|null;
+  template: ComponentTemplate<{}> | null;
 
   /**
    * A function containing query-related instructions.
    */
-  viewQuery: ViewQueriesFunction<{}>|null;
+  viewQuery: ViewQueriesFunction<{}> | null;
 
   /**
    * Pointer to the host `TNode` (not part of this TView).
@@ -468,7 +472,7 @@ export interface TView {
    * different host TNodes, depending on where the component is being used. These host
    * TNodes cannot be shared (due to different indices, etc).
    */
-  node: TViewNode|TElementNode|null;
+  node: TViewNode | TElementNode | null;
 
   /** Whether or not this template has been processed in creation mode. */
   firstCreatePass: boolean;
@@ -530,7 +534,7 @@ export interface TView {
   /**
    * A reference to the first child node located in the view.
    */
-  firstChild: TNode|null;
+  firstChild: TNode | null;
 
   /**
    * Set of instructions used to process host bindings efficiently.
@@ -539,7 +543,7 @@ export interface TView {
    */
   // TODO(misko): `expandoInstructions` should be renamed to `hostBindingsInstructions` since they
   // keep track of `hostBindings` which need to be executed.
-  expandoInstructions: ExpandoInstructions|null;
+  expandoInstructions: ExpandoInstructions | null;
 
   /**
    * Full registry of directives and components that may be found in this view.
@@ -547,7 +551,7 @@ export interface TView {
    * It's necessary to keep a copy of the full def list on the TView so it's possible
    * to render template functions without a host component.
    */
-  directiveRegistry: DirectiveDefList|null;
+  directiveRegistry: DirectiveDefList | null;
 
   /**
    * Full registry of pipes that may be found in this view.
@@ -558,7 +562,7 @@ export interface TView {
    * It's necessary to keep a copy of the full def list on the TView so it's possible
    * to render template functions without a host component.
    */
-  pipeRegistry: PipeDefList|null;
+  pipeRegistry: PipeDefList | null;
 
   /**
    * Array of ngOnInit, ngOnChanges and ngDoCheck hooks that should be executed for this view in
@@ -567,7 +571,7 @@ export interface TView {
    * Even indices: Directive index
    * Odd indices: Hook function
    */
-  preOrderHooks: HookData|null;
+  preOrderHooks: HookData | null;
 
   /**
    * Array of ngOnChanges and ngDoCheck hooks that should be executed for this view in update mode.
@@ -575,7 +579,7 @@ export interface TView {
    * Even indices: Directive index
    * Odd indices: Hook function
    */
-  preOrderCheckHooks: HookData|null;
+  preOrderCheckHooks: HookData | null;
 
   /**
    * Array of ngAfterContentInit and ngAfterContentChecked hooks that should be executed
@@ -584,7 +588,7 @@ export interface TView {
    * Even indices: Directive index
    * Odd indices: Hook function
    */
-  contentHooks: HookData|null;
+  contentHooks: HookData | null;
 
   /**
    * Array of ngAfterContentChecked hooks that should be executed for this view in update
@@ -593,7 +597,7 @@ export interface TView {
    * Even indices: Directive index
    * Odd indices: Hook function
    */
-  contentCheckHooks: HookData|null;
+  contentCheckHooks: HookData | null;
 
   /**
    * Array of ngAfterViewInit and ngAfterViewChecked hooks that should be executed for
@@ -602,7 +606,7 @@ export interface TView {
    * Even indices: Directive index
    * Odd indices: Hook function
    */
-  viewHooks: HookData|null;
+  viewHooks: HookData | null;
 
   /**
    * Array of ngAfterViewChecked hooks that should be executed for this view in
@@ -611,7 +615,7 @@ export interface TView {
    * Even indices: Directive index
    * Odd indices: Hook function
    */
-  viewCheckHooks: HookData|null;
+  viewCheckHooks: HookData | null;
 
   /**
    * Array of ngOnDestroy hooks that should be executed when this view is destroyed.
@@ -619,7 +623,7 @@ export interface TView {
    * Even indices: Directive index
    * Odd indices: Hook function
    */
-  destroyHooks: DestroyHookData|null;
+  destroyHooks: DestroyHookData | null;
 
   /**
    * When a view is destroyed, listeners need to be released and outputs need to be
@@ -647,7 +651,7 @@ export interface TView {
    * 2nd index is: index of function context in LView.cleanupInstances[]
    *               `tView.cleanup[i+0].call(lView[CLEANUP][tView.cleanup[i+1]])`
    */
-  cleanup: any[]|null;
+  cleanup: any[] | null;
 
   /**
    * A list of element indices for child components that will need to be
@@ -655,12 +659,12 @@ export interface TView {
    * already been adjusted for the HEADER_OFFSET.
    *
    */
-  components: number[]|null;
+  components: number[] | null;
 
   /**
    * A collection of queries tracked in a given view.
    */
-  queries: TQueries|null;
+  queries: TQueries | null;
 
   /**
    * An array of indices pointing to directives with content queries alongside with the
@@ -672,26 +676,25 @@ export interface TView {
    * We are storing those indexes so we can refresh content queries as part of a view refresh
    * process.
    */
-  contentQueries: number[]|null;
+  contentQueries: number[] | null;
 
   /**
    * Set of schemas that declare elements to be allowed inside the view.
    */
-  schemas: SchemaMetadata[]|null;
+  schemas: SchemaMetadata[] | null;
 
   /**
    * Array of constants for the view. Includes attribute arrays, local definition arrays etc.
    * Used for directive matching, attribute bindings, local definitions and more.
    */
-  consts: TConstants|null;
+  consts: TConstants | null;
 }
 
 export const enum RootContextFlags {
   Empty = 0b00,
   DetectChanges = 0b01,
-  FlushPlayers = 0b10
+  FlushPlayers = 0b10,
 }
-
 
 /**
  * RootContext contains information which is shared for all components which
@@ -720,7 +723,7 @@ export interface RootContext {
   /**
    * The player flushing handler to kick off all animations
    */
-  playerHandler: PlayerHandler|null;
+  playerHandler: PlayerHandler | null;
 
   /**
    * What render-related operations to run once a scheduler has been set
@@ -735,7 +738,7 @@ export type HookFn = () => void;
  * Information necessary to call a hook. E.g. the callback that
  * needs to invoked and the index at which to find its context.
  */
-export type HookEntry = number|HookFn;
+export type HookEntry = number | HookFn;
 
 /**
  * Array of hooks that should be executed for a view and their directive indices.
@@ -769,7 +772,7 @@ export type HookData = HookEntry[];
  * `CService` and `DService` are part of a `multi` provider where only `BService` and `DService`
  * have an `ngOnDestroy` hook.
  */
-export type DestroyHookData = (HookEntry|HookData)[];
+export type DestroyHookData = (HookEntry | HookData)[];
 
 /**
  * Static data that corresponds to the instance-specific data array on an LView.
@@ -798,9 +801,21 @@ export type DestroyHookData = (HookEntry|HookData)[];
  *
  * Injector bloom filters are also stored here.
  */
-export type TData =
-    (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|number|TStylingRange|TStylingKey|
-     Type<any>|InjectionToken<any>|TI18n|I18nUpdateOpCodes|null|string)[];
+export type TData = (
+  | TNode
+  | PipeDef<any>
+  | DirectiveDef<any>
+  | ComponentDef<any>
+  | number
+  | TStylingRange
+  | TStylingKey
+  | Type<any>
+  | InjectionToken<any>
+  | TI18n
+  | I18nUpdateOpCodes
+  | null
+  | string
+)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

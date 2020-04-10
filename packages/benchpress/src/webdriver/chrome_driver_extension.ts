@@ -22,18 +22,22 @@ import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_e
  */
 @Injectable()
 export class ChromeDriverExtension extends WebDriverExtension {
-  static PROVIDERS = <StaticProvider>[{
-    provide: ChromeDriverExtension,
-    deps: [WebDriverAdapter, Options.USER_AGENT, Options.RAW_PERFLOG_PATH]
-  }];
+  static PROVIDERS = <StaticProvider>[
+    {
+      provide: ChromeDriverExtension,
+      deps: [WebDriverAdapter, Options.USER_AGENT, Options.RAW_PERFLOG_PATH],
+    },
+  ];
 
   private _majorChromeVersion: number;
   private _firstRun = true;
-  private _rawPerflogPath: string|null;
+  private _rawPerflogPath: string | null;
 
   constructor(
-      private driver: WebDriverAdapter, @Inject(Options.USER_AGENT) userAgent: string,
-      @Inject(Options.RAW_PERFLOG_PATH) rawPerflogPath: string|null) {
+    private driver: WebDriverAdapter,
+    @Inject(Options.USER_AGENT) userAgent: string,
+    @Inject(Options.RAW_PERFLOG_PATH) rawPerflogPath: string | null
+  ) {
     super();
     this._majorChromeVersion = this._parseChromeVersion(userAgent);
     this._rawPerflogPath = rawPerflogPath;
@@ -54,7 +58,9 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return parseInt(v, 10);
   }
 
-  gc() { return this.driver.executeScript('window.gc()'); }
+  gc() {
+    return this.driver.executeScript('window.gc()');
+  }
 
   async timeBegin(name: string): Promise<any> {
     if (this._firstRun) {
@@ -66,7 +72,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return this.driver.executeScript(`performance.mark('${name}-bpstart');`);
   }
 
-  timeEnd(name: string, restartName: string|null = null): Promise<any> {
+  timeEnd(name: string, restartName: string | null = null): Promise<any> {
     let script = `performance.mark('${name}-bpend');`;
     if (restartName) {
       script += `performance.mark('${restartName}-bpstart');`;
@@ -79,36 +85,39 @@ export class ChromeDriverExtension extends WebDriverExtension {
   readPerfLog(): Promise<PerfLogEvent[]> {
     // TODO(tbosch): Chromedriver bug https://code.google.com/p/chromedriver/issues/detail?id=1098
     // Need to execute at least one command so that the browser logs can be read out!
-    return this.driver.executeScript('1+1')
-        .then((_) => this.driver.logs('performance'))
-        .then((entries) => {
-          const events: PerfLogEvent[] = [];
-          entries.forEach((entry: any) => {
-            const message = JSON.parse(entry['message'])['message'];
-            if (message['method'] === 'Tracing.dataCollected') {
-              events.push(message['params']);
-            }
-            if (message['method'] === 'Tracing.bufferUsage') {
-              throw new Error('The DevTools trace buffer filled during the test!');
-            }
-          });
-
-          if (this._rawPerflogPath && events.length) {
-            fs.appendFileSync(this._rawPerflogPath, JSON.stringify(events));
+    return this.driver
+      .executeScript('1+1')
+      .then((_) => this.driver.logs('performance'))
+      .then((entries) => {
+        const events: PerfLogEvent[] = [];
+        entries.forEach((entry: any) => {
+          const message = JSON.parse(entry['message'])['message'];
+          if (message['method'] === 'Tracing.dataCollected') {
+            events.push(message['params']);
           }
-          return this._convertPerfRecordsToEvents(events);
+          if (message['method'] === 'Tracing.bufferUsage') {
+            throw new Error('The DevTools trace buffer filled during the test!');
+          }
         });
+
+        if (this._rawPerflogPath && events.length) {
+          fs.appendFileSync(this._rawPerflogPath, JSON.stringify(events));
+        }
+        return this._convertPerfRecordsToEvents(events);
+      });
   }
 
   private _convertPerfRecordsToEvents(
-      chromeEvents: Array<{[key: string]: any}>, normalizedEvents: PerfLogEvent[]|null = null) {
+    chromeEvents: Array<{[key: string]: any}>,
+    normalizedEvents: PerfLogEvent[] | null = null
+  ) {
     if (!normalizedEvents) {
       normalizedEvents = [];
     }
     chromeEvents.forEach((event) => {
       const categories = this._parseCategories(event['cat']);
       const normalizedEvent = this._convertEvent(event, categories);
-      if (normalizedEvent != null) normalizedEvents !.push(normalizedEvent);
+      if (normalizedEvent != null) normalizedEvents!.push(normalizedEvent);
     });
     return normalizedEvents;
   }
@@ -120,9 +129,14 @@ export class ChromeDriverExtension extends WebDriverExtension {
       return normalizeEvent(event, {'name': name});
     } else if (this._isEvent(categories, name, ['blink.user_timing'])) {
       return normalizeEvent(event, {'name': name});
-    } else if (this._isEvent(
-                   categories, name, ['benchmark'],
-                   'BenchmarkInstrumentation::ImplThreadRenderingStats')) {
+    } else if (
+      this._isEvent(
+        categories,
+        name,
+        ['benchmark'],
+        'BenchmarkInstrumentation::ImplThreadRenderingStats'
+      )
+    ) {
       // TODO(goderbauer): Instead of BenchmarkInstrumentation::ImplThreadRenderingStats the
       // following events should be used (if available) for more accurate measurements:
       //   1st choice: vsync_before - ground truth on Android
@@ -138,38 +152,46 @@ export class ChromeDriverExtension extends WebDriverExtension {
         return normalizeEvent(event, {'name': 'frame'});
       }
     } else if (
-        this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'], 'Rasterize') ||
-        this._isEvent(
-            categories, name, ['disabled-by-default-devtools.timeline'], 'CompositeLayers')) {
+      this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'], 'Rasterize') ||
+      this._isEvent(categories, name, ['disabled-by-default-devtools.timeline'], 'CompositeLayers')
+    ) {
       return normalizeEvent(event, {'name': 'render'});
     } else if (this._isEvent(categories, name, ['devtools.timeline', 'v8'], 'MajorGC')) {
       const normArgs = {
         'majorGc': true,
-        'usedHeapSize': args['usedHeapSizeAfter'] !== undefined ? args['usedHeapSizeAfter'] :
-                                                                  args['usedHeapSizeBefore']
+        'usedHeapSize':
+          args['usedHeapSizeAfter'] !== undefined
+            ? args['usedHeapSizeAfter']
+            : args['usedHeapSizeBefore'],
       };
       return normalizeEvent(event, {'name': 'gc', 'args': normArgs});
     } else if (this._isEvent(categories, name, ['devtools.timeline', 'v8'], 'MinorGC')) {
       const normArgs = {
         'majorGc': false,
-        'usedHeapSize': args['usedHeapSizeAfter'] !== undefined ? args['usedHeapSizeAfter'] :
-                                                                  args['usedHeapSizeBefore']
+        'usedHeapSize':
+          args['usedHeapSizeAfter'] !== undefined
+            ? args['usedHeapSizeAfter']
+            : args['usedHeapSizeBefore'],
       };
       return normalizeEvent(event, {'name': 'gc', 'args': normArgs});
     } else if (
-        this._isEvent(categories, name, ['devtools.timeline'], 'FunctionCall') &&
-        (!args || !args['data'] ||
-         (args['data']['scriptName'] !== 'InjectedScript' && args['data']['scriptName'] !== ''))) {
+      this._isEvent(categories, name, ['devtools.timeline'], 'FunctionCall') &&
+      (!args ||
+        !args['data'] ||
+        (args['data']['scriptName'] !== 'InjectedScript' && args['data']['scriptName'] !== ''))
+    ) {
       return normalizeEvent(event, {'name': 'script'});
     } else if (this._isEvent(categories, name, ['devtools.timeline'], 'EvaluateScript')) {
       return normalizeEvent(event, {'name': 'script'});
-    } else if (this._isEvent(
-                   categories, name, ['devtools.timeline', 'blink'], 'UpdateLayoutTree')) {
+    } else if (
+      this._isEvent(categories, name, ['devtools.timeline', 'blink'], 'UpdateLayoutTree')
+    ) {
       return normalizeEvent(event, {'name': 'render'});
     } else if (
-        this._isEvent(categories, name, ['devtools.timeline'], 'UpdateLayerTree') ||
-        this._isEvent(categories, name, ['devtools.timeline'], 'Layout') ||
-        this._isEvent(categories, name, ['devtools.timeline'], 'Paint')) {
+      this._isEvent(categories, name, ['devtools.timeline'], 'UpdateLayerTree') ||
+      this._isEvent(categories, name, ['devtools.timeline'], 'Layout') ||
+      this._isEvent(categories, name, ['devtools.timeline'], 'Paint')
+    ) {
       return normalizeEvent(event, {'name': 'render'});
     } else if (this._isEvent(categories, name, ['devtools.timeline'], 'ResourceReceivedData')) {
       const normArgs = {'encodedDataLength': args['data']['encodedDataLength']};
@@ -181,16 +203,23 @@ export class ChromeDriverExtension extends WebDriverExtension {
     } else if (this._isEvent(categories, name, ['blink.user_timing'], 'navigationStart')) {
       return normalizeEvent(event, {'name': 'navigationStart'});
     }
-    return null;  // nothing useful in this event
+    return null; // nothing useful in this event
   }
 
-  private _parseCategories(categories: string): string[] { return categories.split(','); }
+  private _parseCategories(categories: string): string[] {
+    return categories.split(',');
+  }
 
   private _isEvent(
-      eventCategories: string[], eventName: string, expectedCategories: string[],
-      expectedName: string|null = null): boolean {
+    eventCategories: string[],
+    eventName: string,
+    expectedCategories: string[],
+    expectedName: string | null = null
+  ): boolean {
     const hasCategories = expectedCategories.reduce(
-        (value, cat) => value && eventCategories.indexOf(cat) !== -1, true);
+      (value, cat) => value && eventCategories.indexOf(cat) !== -1,
+      true
+    );
     return !expectedName ? hasCategories : hasCategories && eventName === expectedName;
   }
 
@@ -222,8 +251,12 @@ function normalizeEvent(chromeEvent: {[key: string]: any}, data: PerfLogEvent): 
       ph = 'E';
     }
   }
-  const result: {[key: string]: any} =
-      {'pid': chromeEvent['pid'], 'ph': ph, 'cat': 'timeline', 'ts': chromeEvent['ts'] / 1000};
+  const result: {[key: string]: any} = {
+    'pid': chromeEvent['pid'],
+    'ph': ph,
+    'cat': 'timeline',
+    'ts': chromeEvent['ts'] / 1000,
+  };
   if (ph === 'X') {
     let dur = chromeEvent['dur'];
     if (dur === undefined) {

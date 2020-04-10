@@ -5,7 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {discardPeriodicTasksFallback, fakeAsyncFallback, flushFallback, flushMicrotasksFallback, resetFakeAsyncZoneFallback, tickFallback} from './fake_async_fallback';
+
+import {
+  discardPeriodicTasksFallback,
+  fakeAsyncFallback,
+  flushFallback,
+  flushMicrotasksFallback,
+  resetFakeAsyncZoneFallback,
+  tickFallback,
+} from './fake_async_fallback';
 
 const _Zone: any = typeof Zone !== 'undefined' ? Zone : null;
 const fakeAsyncTestModule = _Zone && _Zone[_Zone.__symbol__('fakeAsyncTest')];
@@ -103,9 +111,11 @@ export function fakeAsync(fn: Function): (...args: any[]) => any {
  * @publicApi
  */
 export function tick(
-    millis: number = 0, tickOptions: {processNewMacroTasksSynchronously: boolean} = {
-      processNewMacroTasksSynchronously: true
-    }): void {
+  millis: number = 0,
+  tickOptions: {processNewMacroTasksSynchronously: boolean} = {
+    processNewMacroTasksSynchronously: true,
+  }
+): void {
   if (fakeAsyncTestModule) {
     return fakeAsyncTestModule.tick(millis, tickOptions);
   } else {

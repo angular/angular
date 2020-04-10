@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 const ELAPSED_TIME_MAX_DECIMAL_PLACES = 3;
 const ANIMATION_PROP = 'animation';
 const ANIMATIONEND_EVENT = 'animationend';
@@ -18,24 +19,33 @@ export class ElementAnimationStyleHandler {
   private _position = 0;
 
   constructor(
-      private readonly _element: any, private readonly _name: string,
-      private readonly _duration: number, private readonly _delay: number,
-      private readonly _easing: string, private readonly _fillMode: ''|'both'|'forwards',
-      private readonly _onDoneFn: () => any) {
+    private readonly _element: any,
+    private readonly _name: string,
+    private readonly _duration: number,
+    private readonly _delay: number,
+    private readonly _easing: string,
+    private readonly _fillMode: '' | 'both' | 'forwards',
+    private readonly _onDoneFn: () => any
+  ) {
     this._eventFn = (e) => this._handleCallback(e);
   }
 
   apply() {
     applyKeyframeAnimation(
-        this._element,
-        `${this._duration}ms ${this._easing} ${this._delay}ms 1 normal ${this._fillMode} ${this._name}`);
+      this._element,
+      `${this._duration}ms ${this._easing} ${this._delay}ms 1 normal ${this._fillMode} ${this._name}`
+    );
     addRemoveAnimationEvent(this._element, this._eventFn, false);
     this._startTime = Date.now();
   }
 
-  pause() { playPauseAnimation(this._element, this._name, 'paused'); }
+  pause() {
+    playPauseAnimation(this._element, this._name, 'paused');
+  }
 
-  resume() { playPauseAnimation(this._element, this._name, 'running'); }
+  resume() {
+    playPauseAnimation(this._element, this._name, 'running');
+  }
 
   setPosition(position: number) {
     const index = findIndexForAnimation(this._element, this._name);
@@ -43,14 +53,19 @@ export class ElementAnimationStyleHandler {
     setAnimationStyle(this._element, 'Delay', `-${this._position}ms`, index);
   }
 
-  getPosition() { return this._position; }
+  getPosition() {
+    return this._position;
+  }
 
   private _handleCallback(event: any) {
     const timestamp = event._ngTestManualTimestamp || Date.now();
     const elapsedTime =
-        parseFloat(event.elapsedTime.toFixed(ELAPSED_TIME_MAX_DECIMAL_PLACES)) * ONE_SECOND;
-    if (event.animationName == this._name &&
-        Math.max(timestamp - this._startTime, 0) >= this._delay && elapsedTime >= this._duration) {
+      parseFloat(event.elapsedTime.toFixed(ELAPSED_TIME_MAX_DECIMAL_PLACES)) * ONE_SECOND;
+    if (
+      event.animationName == this._name &&
+      Math.max(timestamp - this._startTime, 0) >= this._delay &&
+      elapsedTime >= this._duration
+    ) {
       this.finish();
     }
   }
@@ -116,8 +131,9 @@ function findMatchingTokenIndex(tokens: string[], searchToken: string): number {
 }
 
 function addRemoveAnimationEvent(element: any, fn: (e: any) => any, doRemove: boolean) {
-  doRemove ? element.removeEventListener(ANIMATIONEND_EVENT, fn) :
-             element.addEventListener(ANIMATIONEND_EVENT, fn);
+  doRemove
+    ? element.removeEventListener(ANIMATIONEND_EVENT, fn)
+    : element.addEventListener(ANIMATIONEND_EVENT, fn);
 }
 
 function setAnimationStyle(element: any, name: string, value: string, index?: number) {

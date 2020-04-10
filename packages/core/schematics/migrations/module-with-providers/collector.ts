@@ -40,7 +40,7 @@ export class Collector {
       this.resolvedNonGenerics.push(node);
     }
 
-    ts.forEachChild(node, n => this.visitNode(n));
+    ts.forEachChild(node, (n) => this.visitNode(n));
   }
 
   private visitClassDeclaration(node: ts.ClassDeclaration) {
@@ -74,6 +74,10 @@ export class Collector {
 }
 
 function isStaticMethodNoType(node: ts.ClassElement): node is ts.MethodDeclaration {
-  return ts.isMethodDeclaration(node) && !!node.modifiers &&
-      node.modifiers.findIndex(m => m.kind === ts.SyntaxKind.StaticKeyword) > -1 && !node.type;
+  return (
+    ts.isMethodDeclaration(node) &&
+    !!node.modifiers &&
+    node.modifiers.findIndex((m) => m.kind === ts.SyntaxKind.StaticKeyword) > -1 &&
+    !node.type
+  );
 }

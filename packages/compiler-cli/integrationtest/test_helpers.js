@@ -29,12 +29,15 @@ const requiredNodeModules = {
   '@angular/core': resolveNpmTreeArtifact('angular/packages/core/npm_package'),
   '@angular/forms': resolveNpmTreeArtifact('angular/packages/forms/npm_package'),
   '@angular/http': resolveNpmTreeArtifact('angular/packages/http/npm_package'),
-  '@angular/platform-browser':
-      resolveNpmTreeArtifact('angular/packages/platform-browser/npm_package'),
-  '@angular/platform-browser-dynamic':
-      resolveNpmTreeArtifact('angular/packages/platform-browser-dynamic/npm_package'),
-  '@angular/platform-server':
-      resolveNpmTreeArtifact('angular/packages/platform-server/npm_package'),
+  '@angular/platform-browser': resolveNpmTreeArtifact(
+    'angular/packages/platform-browser/npm_package'
+  ),
+  '@angular/platform-browser-dynamic': resolveNpmTreeArtifact(
+    'angular/packages/platform-browser-dynamic/npm_package'
+  ),
+  '@angular/platform-server': resolveNpmTreeArtifact(
+    'angular/packages/platform-server/npm_package'
+  ),
   '@angular/router': resolveNpmTreeArtifact('angular/packages/router/npm_package'),
   // Note, @bazel/typescript does not appear here because it's not listed as a dependency of
   // @angular/compiler-cli
@@ -61,7 +64,7 @@ const requiredNodeModules = {
 };
 
 /** Sets up the temporary test directory and returns the path to the directory. */
-exports.setupTestDirectory = function() {
+exports.setupTestDirectory = function () {
   copySourceFilesToTempDir();
   symlinkNodeModules();
   return tmpDir;
@@ -82,8 +85,8 @@ exports.runCommand = function runCommand(binary, args = []) {
       // location does not have the required dependencies of these NPM packages installed. This
       // could be fixed by setting the NodeJS "--preserve-symlinks" option, but this would mean
       // that transitive dependencies of fine-grained dependencies cannot be resolved either.
-      NODE_PATH: path.join(tmpDir, 'node_modules/')
-    }
+      NODE_PATH: path.join(tmpDir, 'node_modules/'),
+    },
   });
 
   if (ngcProcess.status !== 0) {
@@ -98,7 +101,7 @@ exports.runCommand = function runCommand(binary, args = []) {
  * Additionally, NGC expects types and imported packages to be within the project's root dir.
  */
 function symlinkNodeModules() {
-  Object.keys(requiredNodeModules).forEach(importName => {
+  Object.keys(requiredNodeModules).forEach((importName) => {
     const outputPath = path.join(tmpDir, 'node_modules', importName);
     const moduleDir = requiredNodeModules[importName];
     shx.mkdir('-p', path.dirname(outputPath));
@@ -133,20 +136,21 @@ function getSourceFilesFromRunfiles() {
 
   if (!runfilesManifestPath) {
     const packageRunfilesDir = path.join(process.env.RUNFILES, baseManifestPath);
-    return findFilesWithinDirectory(packageRunfilesDir).map(filePath => ({
-                                                              realPath: filePath,
-                                                              relativeFilePath: path.relative(
-                                                                  packageRunfilesDir, filePath)
-                                                            }));
+    return findFilesWithinDirectory(packageRunfilesDir).map((filePath) => ({
+      realPath: filePath,
+      relativeFilePath: path.relative(packageRunfilesDir, filePath),
+    }));
   }
 
-  return fs.readFileSync(runfilesManifestPath, 'utf8')
-      .split('\n')
-      .map(mapping => mapping.split(' '))
-      .filter(([runfilePath]) => runfilePath.startsWith(baseManifestPath))
-      .map(
-          ([runfilePath, realPath]) =>
-              ({realPath, relativeFilePath: path.relative(baseManifestPath, runfilePath)}));
+  return fs
+    .readFileSync(runfilesManifestPath, 'utf8')
+    .split('\n')
+    .map((mapping) => mapping.split(' '))
+    .filter(([runfilePath]) => runfilePath.startsWith(baseManifestPath))
+    .map(([runfilePath, realPath]) => ({
+      realPath,
+      relativeFilePath: path.relative(baseManifestPath, runfilePath),
+    }));
 }
 
 /**
@@ -160,5 +164,5 @@ function resolveNpmTreeArtifact(manifestPath, resolveFile = 'package.json') {
 
 /** Finds all files within a specified directory. */
 function findFilesWithinDirectory(directoryPath) {
-  return shx.find(directoryPath).filter(filePath => !fs.lstatSync(filePath).isDirectory());
+  return shx.find(directoryPath).filter((filePath) => !fs.lstatSync(filePath).isDirectory());
 }

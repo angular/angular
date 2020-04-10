@@ -6,10 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {describe, expect, it} from '../../../core/testing/src/testing_internal';
-import {CssBlockAst, CssBlockDefinitionRuleAst, CssBlockRuleAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssSelectorRuleAst, CssStyleSheetAst, CssStyleValueAst} from '../../src/css_parser/css_ast';
-import {BlockType, CssParseError, CssParser, CssToken, ParsedCssResult} from '../../src/css_parser/css_parser';
+import {
+  CssBlockAst,
+  CssBlockDefinitionRuleAst,
+  CssBlockRuleAst,
+  CssDefinitionAst,
+  CssInlineRuleAst,
+  CssKeyframeDefinitionAst,
+  CssKeyframeRuleAst,
+  CssMediaQueryRuleAst,
+  CssSelectorRuleAst,
+  CssStyleSheetAst,
+  CssStyleValueAst,
+} from '../../src/css_parser/css_ast';
+import {
+  BlockType,
+  CssParseError,
+  CssParser,
+  CssToken,
+  ParsedCssResult,
+} from '../../src/css_parser/css_parser';
 import {ParseLocation} from '../../src/parse_util';
 
 export function assertTokens(tokens: CssToken[], valuesArr: string[]) {
@@ -180,13 +197,17 @@ export function assertTokens(tokens: CssToken[], valuesArr: string[]) {
 
       const namespaceRule = <CssInlineRuleAst>ast.rules[2];
       expect(namespaceRule.type).toEqual(BlockType.Namespace);
-      assertTokens(
-          namespaceRule.value.tokens, ['ng', 'url', '(', 'http://angular.io/namespace/ng', ')']);
+      assertTokens(namespaceRule.value.tokens, [
+        'ng',
+        'url',
+        '(',
+        'http://angular.io/namespace/ng',
+        ')',
+      ]);
     });
 
-    it('should parse CSS values that contain functions and leave the inner function data untokenized',
-       () => {
-         const styles = `
+    it('should parse CSS values that contain functions and leave the inner function data untokenized', () => {
+      const styles = `
         .class {
           background: url(matias.css);
           animation-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
@@ -195,21 +216,27 @@ export function assertTokens(tokens: CssToken[], valuesArr: string[]) {
         }
       `;
 
-         const ast = makeAst(styles);
-         expect(ast.rules.length).toEqual(1);
+      const ast = makeAst(styles);
+      expect(ast.rules.length).toEqual(1);
 
-         const defs = (<CssSelectorRuleAst>ast.rules[0]).block.entries;
-         expect(defs.length).toEqual(4);
+      const defs = (<CssSelectorRuleAst>ast.rules[0]).block.entries;
+      expect(defs.length).toEqual(4);
 
-         assertTokens((<CssDefinitionAst>defs[0]).value.tokens, ['url', '(', 'matias.css', ')']);
-         assertTokens(
-             (<CssDefinitionAst>defs[1]).value.tokens,
-             ['cubic-bezier', '(', '0.755, 0.050, 0.855, 0.060', ')']);
-         assertTokens((<CssDefinitionAst>defs[2]).value.tokens, ['calc', '(', '100% - 50px', ')']);
-         assertTokens(
-             (<CssDefinitionAst>defs[3]).value.tokens,
-             ['linear-gradient', '(', '45deg, rgba(100, 0, 0, 0.5), black', ')']);
-       });
+      assertTokens((<CssDefinitionAst>defs[0]).value.tokens, ['url', '(', 'matias.css', ')']);
+      assertTokens((<CssDefinitionAst>defs[1]).value.tokens, [
+        'cubic-bezier',
+        '(',
+        '0.755, 0.050, 0.855, 0.060',
+        ')',
+      ]);
+      assertTokens((<CssDefinitionAst>defs[2]).value.tokens, ['calc', '(', '100% - 50px', ')']);
+      assertTokens((<CssDefinitionAst>defs[3]).value.tokens, [
+        'linear-gradient',
+        '(',
+        '45deg, rgba(100, 0, 0, 0.5), black',
+        ')',
+      ]);
+    });
 
     it('should parse un-named block-level CSS values', () => {
       const styles = `
@@ -262,8 +289,16 @@ export function assertTokens(tokens: CssToken[], valuesArr: string[]) {
       expect(fontFaceRule.block.entries.length).toEqual(2);
 
       const mediaQueryRule = <CssMediaQueryRuleAst>ast.rules[2];
-      assertTokens(
-          mediaQueryRule.query.tokens, ['all', 'and', '(', 'max-width', ':', '100', 'px', ')']);
+      assertTokens(mediaQueryRule.query.tokens, [
+        'all',
+        'and',
+        '(',
+        'max-width',
+        ':',
+        '100',
+        'px',
+        ')',
+      ]);
       expect(mediaQueryRule.block.entries.length).toEqual(2);
     });
 
@@ -440,25 +475,26 @@ export function assertTokens(tokens: CssToken[], valuesArr: string[]) {
       const output = parse(styles);
       const errors = output.errors;
 
-      expect(errors[0].msg)
-          .toMatch(/Character does not match expected Character value \("{" should match "\)"\)/);
+      expect(errors[0].msg).toMatch(
+        /Character does not match expected Character value \("{" should match "\)"\)/
+      );
     });
 
-    it('should raise an error when a semi colon is missing from a CSS style/pair that isn\'t the last entry',
-       () => {
-         const styles = `.class {
+    it("should raise an error when a semi colon is missing from a CSS style/pair that isn't the last entry", () => {
+      const styles = `.class {
         color: red
         background: blue
       }`;
 
-         const output = parse(styles);
-         const errors = output.errors;
+      const output = parse(styles);
+      const errors = output.errors;
 
-         expect(errors.length).toEqual(1);
+      expect(errors.length).toEqual(1);
 
-         expect(errors[0].msg)
-             .toMatch(/The CSS key\/value definition did not end with a semicolon at column 1:15/g);
-       });
+      expect(errors[0].msg).toMatch(
+        /The CSS key\/value definition did not end with a semicolon at column 1:15/g
+      );
+    });
 
     it('should parse the inner value of a :not() pseudo-selector as a CSS selector', () => {
       const styles = `div:not(.ignore-this-div) {
@@ -520,18 +556,21 @@ export function assertTokens(tokens: CssToken[], valuesArr: string[]) {
 
       expect(errors.length).toEqual(4);
 
-      expect(errors[0].msg)
-          .toMatch(
-              /Identifier does not match expected Character value \("color" should match ":"\) at column 1:19/g);
+      expect(errors[0].msg).toMatch(
+        /Identifier does not match expected Character value \("color" should match ":"\) at column 1:19/g
+      );
 
-      expect(errors[1].msg)
-          .toMatch(/The CSS key\/value definition did not end with a semicolon at column 2:15/g);
+      expect(errors[1].msg).toMatch(
+        /The CSS key\/value definition did not end with a semicolon at column 2:15/g
+      );
 
-      expect(errors[2].msg)
-          .toMatch(/The CSS property was not paired with a style value at column 3:8/g);
+      expect(errors[2].msg).toMatch(
+        /The CSS property was not paired with a style value at column 3:8/g
+      );
 
-      expect(errors[3].msg)
-          .toMatch(/The CSS property was not paired with a style value at column 4:8/g);
+      expect(errors[3].msg).toMatch(
+        /The CSS property was not paired with a style value at column 4:8/g
+      );
     });
 
     it('should recover from CSS key/value parse errors', () => {
@@ -561,7 +600,10 @@ export function assertTokens(tokens: CssToken[], valuesArr: string[]) {
       let styles: string;
 
       function assertMatchesOffsetAndChar(
-          location: ParseLocation, expectedOffset: number, expectedChar: string): void {
+        location: ParseLocation,
+        expectedOffset: number,
+        expectedChar: string
+      ): void {
         expect(location.offset).toEqual(expectedOffset);
         expect(styles[expectedOffset]).toEqual(expectedChar);
       }
@@ -585,11 +627,11 @@ export function assertTokens(tokens: CssToken[], valuesArr: string[]) {
 
         const selector1 = rule1.selectors[0];
         assertMatchesOffsetAndChar(selector1.location.start, 0, '.');
-        assertMatchesOffsetAndChar(selector1.location.end, 1, 'p');  // problem-class
+        assertMatchesOffsetAndChar(selector1.location.end, 1, 'p'); // problem-class
 
         const selector2 = rule2.selectors[0];
         assertMatchesOffsetAndChar(selector2.location.start, 56, '#');
-        assertMatchesOffsetAndChar(selector2.location.end, 57, 'g');  // good-boy-rule_
+        assertMatchesOffsetAndChar(selector2.location.end, 57, 'g'); // good-boy-rule_
 
         const block1 = rule1.block;
         assertMatchesOffsetAndChar(block1.location.start, 15, '{');
@@ -600,20 +642,20 @@ export function assertTokens(tokens: CssToken[], valuesArr: string[]) {
         assertMatchesOffsetAndChar(block2.location.end, 111, '}');
 
         const block1def1 = <CssDefinitionAst>block1.entries[0];
-        assertMatchesOffsetAndChar(block1def1.location.start, 17, 'b');  // border-top-right
-        assertMatchesOffsetAndChar(block1def1.location.end, 36, 'p');    // px
+        assertMatchesOffsetAndChar(block1def1.location.start, 17, 'b'); // border-top-right
+        assertMatchesOffsetAndChar(block1def1.location.end, 36, 'p'); // px
 
         const block1def2 = <CssDefinitionAst>block1.entries[1];
-        assertMatchesOffsetAndChar(block1def2.location.start, 40, 'c');  // color
-        assertMatchesOffsetAndChar(block1def2.location.end, 47, 'w');    // white
+        assertMatchesOffsetAndChar(block1def2.location.start, 40, 'c'); // color
+        assertMatchesOffsetAndChar(block1def2.location.end, 47, 'w'); // white
 
         const block2def1 = <CssDefinitionAst>block2.entries[0];
-        assertMatchesOffsetAndChar(block2def1.location.start, 74, 'b');  // background-color
-        assertMatchesOffsetAndChar(block2def1.location.end, 93, 'f');    // fe4
+        assertMatchesOffsetAndChar(block2def1.location.start, 74, 'b'); // background-color
+        assertMatchesOffsetAndChar(block2def1.location.end, 93, 'f'); // fe4
 
         const block2def2 = <CssDefinitionAst>block2.entries[1];
-        assertMatchesOffsetAndChar(block2def2.location.start, 98, 'c');  // color
-        assertMatchesOffsetAndChar(block2def2.location.end, 105, 't');   // teal
+        assertMatchesOffsetAndChar(block2def2.location.start, 98, 'c'); // color
+        assertMatchesOffsetAndChar(block2def2.location.end, 105, 't'); // teal
 
         const block1value1 = block1def1.value;
         assertMatchesOffsetAndChar(block1value1.location.start, 35, '1');

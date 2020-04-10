@@ -15,7 +15,10 @@ import {NgModuleRef} from './ng_module_factory';
 
 export function noComponentFactoryError(component: Function) {
   const error = Error(
-      `No component factory found for ${stringify(component)}. Did you add it to @NgModule.entryComponents?`);
+    `No component factory found for ${stringify(
+      component
+    )}. Did you add it to @NgModule.entryComponents?`
+  );
   (error as any)[ERROR_COMPONENT] = component;
   return error;
 }
@@ -25,7 +28,6 @@ const ERROR_COMPONENT = 'ngComponent';
 export function getComponent(error: Error): Type<any> {
   return (error as any)[ERROR_COMPONENT];
 }
-
 
 class _NullComponentFactoryResolver implements ComponentFactoryResolver {
   resolveComponentFactory<T>(component: {new (...args: any[]): T}): ComponentFactory<T> {
@@ -55,8 +57,10 @@ export class CodegenComponentFactoryResolver implements ComponentFactoryResolver
   private _factories = new Map<any, ComponentFactory<any>>();
 
   constructor(
-      factories: ComponentFactory<any>[], private _parent: ComponentFactoryResolver,
-      private _ngModule: NgModuleRef<any>) {
+    factories: ComponentFactory<any>[],
+    private _parent: ComponentFactoryResolver,
+    private _ngModule: NgModuleRef<any>
+  ) {
     for (let i = 0; i < factories.length; i++) {
       const factory = factories[i];
       this._factories.set(factory.componentType, factory);
@@ -79,8 +83,8 @@ export class ComponentFactoryBoundToModule<C> extends ComponentFactory<C> {
   readonly selector: string;
   readonly componentType: Type<any>;
   readonly ngContentSelectors: string[];
-  readonly inputs: {propName: string, templateName: string}[];
-  readonly outputs: {propName: string, templateName: string}[];
+  readonly inputs: {propName: string; templateName: string}[];
+  readonly outputs: {propName: string; templateName: string}[];
 
   constructor(private factory: ComponentFactory<C>, private ngModule: NgModuleRef<any>) {
     super();
@@ -92,9 +96,16 @@ export class ComponentFactoryBoundToModule<C> extends ComponentFactory<C> {
   }
 
   create(
-      injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any,
-      ngModule?: NgModuleRef<any>): ComponentRef<C> {
+    injector: Injector,
+    projectableNodes?: any[][],
+    rootSelectorOrNode?: string | any,
+    ngModule?: NgModuleRef<any>
+  ): ComponentRef<C> {
     return this.factory.create(
-        injector, projectableNodes, rootSelectorOrNode, ngModule || this.ngModule);
+      injector,
+      projectableNodes,
+      rootSelectorOrNode,
+      ngModule || this.ngModule
+    );
   }
 }

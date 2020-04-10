@@ -44,9 +44,10 @@ export function provideLocationStrategy(platformLocation: PlatformLocation) {
   // See #23917
   const location = ɵɵinject(DOCUMENT).location;
   return new PathLocationStrategy(
-      ɵɵinject(PlatformLocation as any), location && location.origin || '');
+    ɵɵinject(PlatformLocation as any),
+    (location && location.origin) || ''
+  );
 }
-
 
 /**
  * A predefined [DI token](guide/glossary#di-token) for the base href
@@ -105,8 +106,9 @@ export class PathLocationStrategy extends LocationStrategy {
   private _baseHref: string;
 
   constructor(
-      private _platformLocation: PlatformLocation,
-      @Optional() @Inject(APP_BASE_HREF) href?: string) {
+    private _platformLocation: PlatformLocation,
+    @Optional() @Inject(APP_BASE_HREF) href?: string
+  ) {
     super();
 
     if (href == null) {
@@ -115,7 +117,8 @@ export class PathLocationStrategy extends LocationStrategy {
 
     if (href == null) {
       throw new Error(
-          `No base href set. Please provide a value for the APP_BASE_HREF token or add a base element to the document.`);
+        `No base href set. Please provide a value for the APP_BASE_HREF token or add a base element to the document.`
+      );
     }
 
     this._baseHref = href;
@@ -126,13 +129,17 @@ export class PathLocationStrategy extends LocationStrategy {
     this._platformLocation.onHashChange(fn);
   }
 
-  getBaseHref(): string { return this._baseHref; }
+  getBaseHref(): string {
+    return this._baseHref;
+  }
 
-  prepareExternalUrl(internal: string): string { return joinWithSlash(this._baseHref, internal); }
+  prepareExternalUrl(internal: string): string {
+    return joinWithSlash(this._baseHref, internal);
+  }
 
   path(includeHash: boolean = false): string {
     const pathname =
-        this._platformLocation.pathname + normalizeQueryParams(this._platformLocation.search);
+      this._platformLocation.pathname + normalizeQueryParams(this._platformLocation.search);
     const hash = this._platformLocation.hash;
     return hash && includeHash ? `${pathname}${hash}` : pathname;
   }
@@ -147,7 +154,11 @@ export class PathLocationStrategy extends LocationStrategy {
     this._platformLocation.replaceState(state, title, externalUrl);
   }
 
-  forward(): void { this._platformLocation.forward(); }
+  forward(): void {
+    this._platformLocation.forward();
+  }
 
-  back(): void { this._platformLocation.back(); }
+  back(): void {
+    this._platformLocation.back();
+  }
 }

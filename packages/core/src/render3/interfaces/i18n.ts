@@ -64,9 +64,11 @@ export const enum I18nMutateOpCode {
  * See `I18nMutateOpCodes` documentation.
  */
 export const ELEMENT_MARKER: ELEMENT_MARKER = {
-  marker: 'element'
+  marker: 'element',
 };
-export interface ELEMENT_MARKER { marker: 'element'; }
+export interface ELEMENT_MARKER {
+  marker: 'element';
+}
 
 /**
  * Marks that the next string is for comment.
@@ -74,10 +76,12 @@ export interface ELEMENT_MARKER { marker: 'element'; }
  * See `I18nMutateOpCodes` documentation.
  */
 export const COMMENT_MARKER: COMMENT_MARKER = {
-  marker: 'comment'
+  marker: 'comment',
 };
 
-export interface COMMENT_MARKER { marker: 'comment'; }
+export interface COMMENT_MARKER {
+  marker: 'comment';
+}
 
 /**
  * Array storing OpCode for dynamically creating `i18n` blocks.
@@ -153,8 +157,8 @@ export interface COMMENT_MARKER { marker: 'comment'; }
  *
  * See: `applyI18nCreateOpCodes`;
  */
-export interface I18nMutateOpCodes extends Array<number|string|ELEMENT_MARKER|COMMENT_MARKER|null> {
-}
+export interface I18nMutateOpCodes
+  extends Array<number | string | ELEMENT_MARKER | COMMENT_MARKER | null> {}
 
 export const enum I18nUpdateOpCode {
   /**
@@ -252,7 +256,7 @@ export const enum I18nUpdateOpCode {
  * ```
  *
  */
-export interface I18nUpdateOpCodes extends Array<string|number|SanitizerFn|null> {}
+export interface I18nUpdateOpCodes extends Array<string | number | SanitizerFn | null> {}
 
 /**
  * Store information for the i18n translation block.
@@ -289,7 +293,7 @@ export interface TI18n {
    *   1. `{count, plural, ...}`
    *   2. `{state, switch, ...}`
    */
-  icus: TIcu[]|null;
+  icus: TIcu[] | null;
 }
 
 /**

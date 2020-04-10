@@ -23,7 +23,9 @@ export interface LazyRouteEntry {
 }
 
 export function scanForCandidateTransitiveModules(
-    expr: ts.Expression|null, evaluator: PartialEvaluator): string[] {
+  expr: ts.Expression | null,
+  evaluator: PartialEvaluator
+): string[] {
   if (expr === null) {
     return [];
   }
@@ -40,7 +42,7 @@ export function scanForCandidateTransitiveModules(
       if (entry.has('ngModule')) {
         recursivelyAddModules(entry.get('ngModule')!);
       }
-    } else if ((entry instanceof Reference) && hasIdentifier(entry.node)) {
+    } else if (entry instanceof Reference && hasIdentifier(entry.node)) {
       const filePath = entry.node.getSourceFile().fileName;
       const moduleName = entry.node.name.text;
       candidateModuleKeys.push(entryPointKeyFor(filePath, moduleName));
@@ -52,8 +54,12 @@ export function scanForCandidateTransitiveModules(
 }
 
 export function scanForRouteEntryPoints(
-    ngModule: ts.SourceFile, moduleName: string, data: NgModuleRawRouteData,
-    entryPointManager: RouterEntryPointManager, evaluator: PartialEvaluator): LazyRouteEntry[] {
+  ngModule: ts.SourceFile,
+  moduleName: string,
+  data: NgModuleRawRouteData,
+  entryPointManager: RouterEntryPointManager,
+  evaluator: PartialEvaluator
+): LazyRouteEntry[] {
   const loadChildrenIdentifiers: string[] = [];
   const from = entryPointManager.fromNgModule(ngModule, moduleName);
   if (data.providers !== null) {
@@ -158,21 +164,23 @@ function scanForLazyRoutes(routes: ResolvedValue[]): string[] {
  *
  * These objects are then recognizable inside the larger set of imports/exports.
  */
-const routerModuleFFR: ForeignFunctionResolver =
-    function routerModuleFFR(
-        ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-        args: ReadonlyArray<ts.Expression>): ts.Expression|null {
+const routerModuleFFR: ForeignFunctionResolver = function routerModuleFFR(
+  ref: Reference<ts.FunctionDeclaration | ts.MethodDeclaration | ts.FunctionExpression>,
+  args: ReadonlyArray<ts.Expression>
+): ts.Expression | null {
   if (!isMethodNodeReference(ref) || !ts.isClassDeclaration(ref.node.parent)) {
     return null;
   } else if (
-      ref.bestGuessOwningModule === null ||
-      ref.bestGuessOwningModule.specifier !== '@angular/router') {
+    ref.bestGuessOwningModule === null ||
+    ref.bestGuessOwningModule.specifier !== '@angular/router'
+  ) {
     return null;
   } else if (ref.node.parent.name === undefined || ref.node.parent.name.text !== 'RouterModule') {
     return null;
   } else if (
-      !ts.isIdentifier(ref.node.name) ||
-      (ref.node.name.text !== 'forRoot' && ref.node.name.text !== 'forChild')) {
+    !ts.isIdentifier(ref.node.name) ||
+    (ref.node.name.text !== 'forRoot' && ref.node.name.text !== 'forChild')
+  ) {
     return null;
   }
 
@@ -183,18 +191,22 @@ const routerModuleFFR: ForeignFunctionResolver =
   ]);
 };
 
-function hasIdentifier(node: ts.Node): node is ts.Node&{name: ts.Identifier} {
+function hasIdentifier(node: ts.Node): node is ts.Node & {name: ts.Identifier} {
   const node_ = node as ts.NamedDeclaration;
-  return (node_.name !== undefined) && ts.isIdentifier(node_.name);
+  return node_.name !== undefined && ts.isIdentifier(node_.name);
 }
 
 function isMethodNodeReference(
-    ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>):
-    ref is Reference<ts.MethodDeclaration> {
+  ref: Reference<ts.FunctionDeclaration | ts.MethodDeclaration | ts.FunctionExpression>
+): ref is Reference<ts.MethodDeclaration> {
   return ts.isMethodDeclaration(ref.node);
 }
 
 function isRouteToken(ref: ResolvedValue): boolean {
-  return ref instanceof Reference && ref.bestGuessOwningModule !== null &&
-      ref.bestGuessOwningModule.specifier === '@angular/router' && ref.debugName === 'ROUTES';
+  return (
+    ref instanceof Reference &&
+    ref.bestGuessOwningModule !== null &&
+    ref.bestGuessOwningModule.specifier === '@angular/router' &&
+    ref.debugName === 'ROUTES'
+  );
 }

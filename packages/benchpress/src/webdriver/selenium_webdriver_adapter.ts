@@ -10,22 +10,29 @@ import {StaticProvider} from '@angular/core';
 
 import {WebDriverAdapter} from '../web_driver_adapter';
 
-
 /**
  * Adapter for the selenium-webdriver.
  */
 export class SeleniumWebDriverAdapter extends WebDriverAdapter {
-  static PROTRACTOR_PROVIDERS = <StaticProvider[]>[{
-    provide: WebDriverAdapter,
-    useFactory: () => new SeleniumWebDriverAdapter((<any>global).browser),
-    deps: []
-  }];
+  static PROTRACTOR_PROVIDERS = <StaticProvider[]>[
+    {
+      provide: WebDriverAdapter,
+      useFactory: () => new SeleniumWebDriverAdapter((<any>global).browser),
+      deps: [],
+    },
+  ];
 
-  constructor(private _driver: any) { super(); }
+  constructor(private _driver: any) {
+    super();
+  }
 
-  waitFor(callback: () => any): Promise<any> { return this._driver.call(callback); }
+  waitFor(callback: () => any): Promise<any> {
+    return this._driver.call(callback);
+  }
 
-  executeScript(script: string): Promise<any> { return this._driver.executeScript(script); }
+  executeScript(script: string): Promise<any> {
+    return this._driver.executeScript(script);
+  }
 
   executeAsyncScript(script: string): Promise<any> {
     return this._driver.executeAsyncScript(script);
@@ -45,8 +52,9 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
     // Needed as selenium-webdriver does not forward
     // performance logs in the correct way via manage().logs
     return this._driver.schedule(
-        new Command('getLog').setParameter('type', type),
-        'WebDriver.manage().logs().get(' + type + ')');
+      new Command('getLog').setParameter('type', type),
+      'WebDriver.manage().logs().get(' + type + ')'
+    );
   }
 }
 
@@ -58,7 +66,9 @@ class Command {
   private parameters_: {[key: string]: any} = {};
   constructor(private name_: string) {}
 
-  getName() { return this.name_; }
+  getName() {
+    return this.name_;
+  }
 
   setParameter(name: string, value: any) {
     this.parameters_[name] = value;
@@ -70,7 +80,11 @@ class Command {
     return this;
   }
 
-  getParameter(key: string) { return this.parameters_[key]; }
+  getParameter(key: string) {
+    return this.parameters_[key];
+  }
 
-  getParameters() { return this.parameters_; }
+  getParameters() {
+    return this.parameters_;
+  }
 }

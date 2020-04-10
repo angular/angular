@@ -17,12 +17,12 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div *ngIf="first.invalid"> Name is too short. </div>
 
-      <input formControlName="first" placeholder="First name">
-      <input formControlName="last" placeholder="Last name">
+      <input formControlName="first" placeholder="First name" />
+      <input formControlName="last" placeholder="Last name" />
 
       <button type="submit">Submit</button>
-   </form>
-   <button (click)="setValue()">Set preset value</button>
+    </form>
+    <button (click)="setValue()">Set preset value</button>
   `,
 })
 export class SimpleFormGroup {
@@ -31,14 +31,17 @@ export class SimpleFormGroup {
     last: new FormControl('Drew'),
   });
 
-  get first(): any { return this.form.get('first'); }
-
-  onSubmit(): void {
-    console.log(this.form.value);  // {first: 'Nancy', last: 'Drew'}
+  get first(): any {
+    return this.form.get('first');
   }
 
-  setValue() { this.form.setValue({first: 'Carson', last: 'Drew'}); }
-}
+  onSubmit(): void {
+    console.log(this.form.value); // {first: 'Nancy', last: 'Drew'}
+  }
 
+  setValue() {
+    this.form.setValue({first: 'Carson', last: 'Drew'});
+  }
+}
 
 // #enddocregion

@@ -18,25 +18,28 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     let inceptionObjString: string;
     let pipe: JsonPipe;
 
-    function normalize(obj: string): string { return obj.replace(regNewLine, ''); }
+    function normalize(obj: string): string {
+      return obj.replace(regNewLine, '');
+    }
 
     beforeEach(() => {
       inceptionObj = {dream: {dream: {dream: 'Limbo'}}};
-      inceptionObjString = '{\n' +
-          '  "dream": {\n' +
-          '    "dream": {\n' +
-          '      "dream": "Limbo"\n' +
-          '    }\n' +
-          '  }\n' +
-          '}';
-
+      inceptionObjString =
+        '{\n' +
+        '  "dream": {\n' +
+        '    "dream": {\n' +
+        '      "dream": "Limbo"\n' +
+        '    }\n' +
+        '  }\n' +
+        '}';
 
       pipe = new JsonPipe();
     });
 
     describe('transform', () => {
-      it('should return JSON-formatted string',
-         () => { expect(pipe.transform(inceptionObj)).toEqual(inceptionObjString); });
+      it('should return JSON-formatted string', () => {
+        expect(pipe.transform(inceptionObj)).toEqual(inceptionObjString);
+      });
 
       it('should return JSON-formatted string even when normalized', () => {
         const dream1 = normalize(pipe.transform(inceptionObj));
@@ -52,7 +55,6 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     });
 
     describe('integration', () => {
-
       @Component({selector: 'test-comp', template: '{{data | json}}'})
       class TestComp {
         data: any;
@@ -63,16 +65,16 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       });
 
       it('should work with mutable objects', async(() => {
-           const fixture = TestBed.createComponent(TestComp);
-           const mutable: number[] = [1];
-           fixture.componentInstance.data = mutable;
-           fixture.detectChanges();
-           expect(fixture.nativeElement).toHaveText('[\n  1\n]');
+        const fixture = TestBed.createComponent(TestComp);
+        const mutable: number[] = [1];
+        fixture.componentInstance.data = mutable;
+        fixture.detectChanges();
+        expect(fixture.nativeElement).toHaveText('[\n  1\n]');
 
-           mutable.push(2);
-           fixture.detectChanges();
-           expect(fixture.nativeElement).toHaveText('[\n  1,\n  2\n]');
-         }));
+        mutable.push(2);
+        fixture.detectChanges();
+        expect(fixture.nativeElement).toHaveText('[\n  1,\n  2\n]');
+      }));
     });
   });
 }

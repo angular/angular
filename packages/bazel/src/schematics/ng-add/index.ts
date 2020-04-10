@@ -9,19 +9,35 @@
  */
 
 import {JsonAstObject, parseJsonAst} from '@angular-devkit/core';
-import {Rule, SchematicContext, SchematicsException, Tree, apply, applyTemplates, chain, mergeWith, url} from '@angular-devkit/schematics';
+import {
+  Rule,
+  SchematicContext,
+  SchematicsException,
+  Tree,
+  apply,
+  applyTemplates,
+  chain,
+  mergeWith,
+  url,
+} from '@angular-devkit/schematics';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 import {getWorkspace, getWorkspacePath} from '@schematics/angular/utility/config';
-import {NodeDependencyType, addPackageJsonDependency, getPackageJsonDependency, removePackageJsonDependency} from '@schematics/angular/utility/dependencies';
-import {findPropertyInAstObject, insertPropertyInAstObjectInOrder} from '@schematics/angular/utility/json-utils';
+import {
+  NodeDependencyType,
+  addPackageJsonDependency,
+  getPackageJsonDependency,
+  removePackageJsonDependency,
+} from '@schematics/angular/utility/dependencies';
+import {
+  findPropertyInAstObject,
+  insertPropertyInAstObjectInOrder,
+} from '@schematics/angular/utility/json-utils';
 import {validateProjectName} from '@schematics/angular/utility/validation';
 
 import {isJsonAstObject, replacePropertyInAstObject} from '../utility/json-utils';
 import {findE2eArchitect} from '../utility/workspace-utils';
 
 import {Schema} from './schema';
-
-
 
 /**
  * Packages that build under Bazel require additional dev dependencies. This
@@ -83,9 +99,7 @@ function addDevDependenciesToPackageJson(options: Schema) {
  */
 function removeObsoleteDependenciesFromPackageJson(options: Schema) {
   return (host: Tree) => {
-    const depsToRemove = [
-      '@angular-devkit/build-angular',
-    ];
+    const depsToRemove = ['@angular-devkit/build-angular'];
 
     for (const packageName of depsToRemove) {
       removePackageJsonDependency(host, packageName);
@@ -99,9 +113,7 @@ function removeObsoleteDependenciesFromPackageJson(options: Schema) {
  */
 function addFilesRequiredByBazel(options: Schema) {
   return (host: Tree) => {
-    return mergeWith(apply(url('./files'), [
-      applyTemplates({}),
-    ]));
+    return mergeWith(apply(url('./files'), [applyTemplates({})]));
   };
 }
 
@@ -137,7 +149,7 @@ function updateGitignore() {
  */
 function updateAngularJsonToUseBazelBuilder(options: Schema): Rule {
   return (host: Tree) => {
-    const name = options.name !;
+    const name = options.name!;
     const workspacePath = getWorkspacePath(host);
     if (!workspacePath) {
       throw new Error('Could not find angular.json');
@@ -157,66 +169,84 @@ function updateAngularJsonToUseBazelBuilder(options: Schema): Rule {
     }
     const recorder = host.beginUpdate(workspacePath);
     const indent = 8;
-    const architect =
-        findPropertyInAstObject(project as JsonAstObject, 'architect') as JsonAstObject;
+    const architect = findPropertyInAstObject(
+      project as JsonAstObject,
+      'architect'
+    ) as JsonAstObject;
     replacePropertyInAstObject(
-        recorder, architect, 'build', {
-          builder: '@angular/bazel:build',
-          options: {
+      recorder,
+      architect,
+      'build',
+      {
+        builder: '@angular/bazel:build',
+        options: {
+          targetLabel: '//src:prodapp',
+          bazelCommand: 'build',
+        },
+        configurations: {
+          production: {
             targetLabel: '//src:prodapp',
-            bazelCommand: 'build',
-          },
-          configurations: {
-            production: {
-              targetLabel: '//src:prodapp',
-            },
           },
         },
-        indent);
+      },
+      indent
+    );
     replacePropertyInAstObject(
-        recorder, architect, 'serve', {
-          builder: '@angular/bazel:build',
-          options: {
-            targetLabel: '//src:devserver',
-            bazelCommand: 'run',
-            watch: true,
-          },
-          configurations: {
-            production: {
-              targetLabel: '//src:prodserver',
-            },
+      recorder,
+      architect,
+      'serve',
+      {
+        builder: '@angular/bazel:build',
+        options: {
+          targetLabel: '//src:devserver',
+          bazelCommand: 'run',
+          watch: true,
+        },
+        configurations: {
+          production: {
+            targetLabel: '//src:prodserver',
           },
         },
-        indent);
+      },
+      indent
+    );
 
     if (findPropertyInAstObject(architect, 'test')) {
       replacePropertyInAstObject(
-          recorder, architect, 'test', {
-            builder: '@angular/bazel:build',
-            options: {
-              bazelCommand: 'test',
-              targetLabel: '//src:test',
-            },
+        recorder,
+        architect,
+        'test',
+        {
+          builder: '@angular/bazel:build',
+          options: {
+            bazelCommand: 'test',
+            targetLabel: '//src:test',
           },
-          indent);
+        },
+        indent
+      );
     }
 
     const e2eArchitect = findE2eArchitect(workspaceJsonAst, name);
     if (e2eArchitect && findPropertyInAstObject(e2eArchitect, 'e2e')) {
       replacePropertyInAstObject(
-          recorder, e2eArchitect, 'e2e', {
-            builder: '@angular/bazel:build',
-            options: {
-              bazelCommand: 'test',
-              targetLabel: '//e2e:devserver_test',
-            },
-            configurations: {
-              production: {
-                targetLabel: '//e2e:prodserver_test',
-              },
-            }
+        recorder,
+        e2eArchitect,
+        'e2e',
+        {
+          builder: '@angular/bazel:build',
+          options: {
+            bazelCommand: 'test',
+            targetLabel: '//e2e:devserver_test',
           },
-          indent);
+          configurations: {
+            production: {
+              targetLabel: '//e2e:prodserver_test',
+            },
+          },
+        },
+        indent
+      );
     }
 
     host.commitUpdate(recorder);
@@ -235,9 +265,11 @@ function backupAngularJson(): Rule {
       return;
     }
     host.create(
-        `${workspacePath}.bak`, '// This is a backup file of the original angular.json. ' +
-            'This file is needed in case you want to revert to the workflow without Bazel.\n\n' +
-            host.read(workspacePath));
+      `${workspacePath}.bak`,
+      '// This is a backup file of the original angular.json. ' +
+        'This file is needed in case you want to revert to the workflow without Bazel.\n\n' +
+        host.read(workspacePath)
+    );
   };
 }
 
@@ -264,8 +296,9 @@ function upgradeRxjs() {
       }
     } else {
       context.logger.info(
-          'Could not determine version of rxjs. \n' +
-          'Please make sure that version is at least 6.5.3.');
+        'Could not determine version of rxjs. \n' +
+          'Please make sure that version is at least 6.5.3.'
+      );
     }
     return host;
   };
@@ -300,8 +333,9 @@ function addPostinstallToRunNgcc() {
         let value = postInstall.value as string;
         if (/\bngcc\b/.test(value)) {
           // `ngcc` is already in the postinstall script
-          value =
-              value.replace(/\s*--first-only\b/, '').replace(/\s*--create-ivy-entry-points\b/, '');
+          value = value
+            .replace(/\s*--first-only\b/, '')
+            .replace(/\s*--create-ivy-entry-points\b/, '');
           replacePropertyInAstObject(recorder, scripts, 'postinstall', value);
         } else {
           const command = `${postInstall.value}; ${ngccCommand}`;
@@ -312,10 +346,14 @@ function addPostinstallToRunNgcc() {
       }
     } else {
       insertPropertyInAstObjectInOrder(
-          recorder, jsonAst, 'scripts', {
-            postinstall: ngccCommand,
-          },
-          2);
+        recorder,
+        jsonAst,
+        'scripts',
+        {
+          postinstall: ngccCommand,
+        },
+        2
+      );
     }
     host.commitUpdate(recorder);
     return host;
@@ -333,7 +371,7 @@ function installNodeModules(options: Schema): Rule {
   };
 }
 
-export default function(options: Schema): Rule {
+export default function (options: Schema): Rule {
   return (host: Tree) => {
     options.name = options.name || getWorkspace(host).defaultProject;
     if (!options.name) {

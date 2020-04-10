@@ -82,7 +82,7 @@ export interface CompilerOptions extends NgCompilerOptions, ts.CompilerOptions {
   // static fields: Replace decorators with a static field in the class.
   //                Allows advanced tree-shakers like Closure Compiler to remove
   //                unused classes.
-  annotationsAs?: 'decorators'|'static fields';
+  annotationsAs?: 'decorators' | 'static fields';
 
   // Print extra information while running the compiler
   trace?: boolean;
@@ -103,7 +103,7 @@ export interface CompilerOptions extends NgCompilerOptions, ts.CompilerOptions {
   // Path to the translation file
   i18nInFile?: string;
   // How to handle missing messages
-  i18nInMissingTranslations?: 'error'|'warning'|'ignore';
+  i18nInMissingTranslations?: 'error' | 'warning' | 'ignore';
 
   /**
    * Whether to generate .ngsummary.ts files that allow to use AOTed artifacts
@@ -139,7 +139,7 @@ export interface CompilerHost extends ts.CompilerHost, ExtendedTsCompilerHost {
    * Converts a module name that is used in an `import` to a file path.
    * I.e. `path/to/containingFile.ts` containing `import {...} from 'module-name'`.
    */
-  moduleNameToFileName?(moduleName: string, containingFile: string): string|null;
+  moduleNameToFileName?(moduleName: string, containingFile: string): string | null;
   /**
    * Converts a file name into a representation that should be stored in a summary file.
    * This has to include changing the suffix as well.
@@ -160,7 +160,7 @@ export interface CompilerHost extends ts.CompilerHost, ExtendedTsCompilerHost {
    * An AMD module can have an arbitrary name, so that it is require'd by name
    * rather than by path. See http://requirejs.org/docs/whyamd.html#namedmodules
    */
-  amdModuleName?(sf: ts.SourceFile): string|undefined;
+  amdModuleName?(sf: ts.SourceFile): string | undefined;
 }
 
 export enum EmitFlags {
@@ -205,8 +205,8 @@ export interface LibrarySummary {
 
 export interface LazyRoute {
   route: string;
-  module: {name: string, filePath: string};
-  referencedModule: {name: string, filePath: string};
+  module: {name: string; filePath: string};
+  referencedModule: {name: string; filePath: string};
 }
 
 export interface Program {
@@ -227,16 +227,19 @@ export interface Program {
   /**
    * Retrieve options diagnostics for the Angular options used to create the program.
    */
-  getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken):
-      ReadonlyArray<ts.Diagnostic|Diagnostic>;
+  getNgOptionDiagnostics(
+    cancellationToken?: ts.CancellationToken
+  ): ReadonlyArray<ts.Diagnostic | Diagnostic>;
 
   /**
    * Retrieve the syntax diagnostics from TypeScript. This is faster than calling
    * `getTsProgram().getSyntacticDiagnostics()` since it does not need to collect Angular structural
    * information to produce the errors.
    */
-  getTsSyntacticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
-      ReadonlyArray<ts.Diagnostic>;
+  getTsSyntacticDiagnostics(
+    sourceFile?: ts.SourceFile,
+    cancellationToken?: ts.CancellationToken
+  ): ReadonlyArray<ts.Diagnostic>;
 
   /**
    * Retrieve the diagnostics for the structure of an Angular application is correctly formed.
@@ -255,16 +258,20 @@ export interface Program {
    * Retrieve the semantic diagnostics from TypeScript. This is equivalent to calling
    * `getTsProgram().getSemanticDiagnostics()` directly and is included for completeness.
    */
-  getTsSemanticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
-      ReadonlyArray<ts.Diagnostic>;
+  getTsSemanticDiagnostics(
+    sourceFile?: ts.SourceFile,
+    cancellationToken?: ts.CancellationToken
+  ): ReadonlyArray<ts.Diagnostic>;
 
   /**
    * Retrieve the Angular semantic diagnostics.
    *
    * Angular structural information is required to produce these diagnostics.
    */
-  getNgSemanticDiagnostics(fileName?: string, cancellationToken?: ts.CancellationToken):
-      ReadonlyArray<ts.Diagnostic|Diagnostic>;
+  getNgSemanticDiagnostics(
+    fileName?: string,
+    cancellationToken?: ts.CancellationToken
+  ): ReadonlyArray<ts.Diagnostic | Diagnostic>;
 
   /**
    * Load Angular structural information asynchronously. If this method is not called then the
@@ -287,14 +294,19 @@ export interface Program {
    *
    * Angular structural information is required to emit files.
    */
-  emit({emitFlags, cancellationToken, customTransformers, emitCallback, mergeEmitResultsCallback}?:
-           {
-             emitFlags?: EmitFlags,
-             cancellationToken?: ts.CancellationToken,
-             customTransformers?: CustomTransformers,
-             emitCallback?: TsEmitCallback,
-             mergeEmitResultsCallback?: TsMergeEmitResultsCallback
-           }): ts.EmitResult;
+  emit({
+    emitFlags,
+    cancellationToken,
+    customTransformers,
+    emitCallback,
+    mergeEmitResultsCallback,
+  }?: {
+    emitFlags?: EmitFlags;
+    cancellationToken?: ts.CancellationToken;
+    customTransformers?: CustomTransformers;
+    emitCallback?: TsEmitCallback;
+    mergeEmitResultsCallback?: TsMergeEmitResultsCallback;
+  }): ts.EmitResult;
 
   /**
    * Returns the .d.ts / .ngsummary.json / .ngfactory.d.ts files of libraries that have been emitted

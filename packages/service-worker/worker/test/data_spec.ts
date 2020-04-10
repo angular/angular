@@ -13,33 +13,32 @@ import {MockRequest} from '../testing/fetch';
 import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
-(function() {
+(function () {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
     return;
   }
 
   const dist = new MockFileSystemBuilder()
-                   .addFile('/foo.txt', 'this is foo')
-                   .addFile('/bar.txt', 'this is bar')
-                   .addFile('/api/test', 'version 1')
-                   .addFile('/api/a', 'version A')
-                   .addFile('/api/b', 'version B')
-                   .addFile('/api/c', 'version C')
-                   .addFile('/api/d', 'version D')
-                   .addFile('/api/e', 'version E')
-                   .addFile('/fresh/data', 'this is fresh data')
-                   .addFile('/refresh/data', 'this is some data')
-                   .build();
-
+    .addFile('/foo.txt', 'this is foo')
+    .addFile('/bar.txt', 'this is bar')
+    .addFile('/api/test', 'version 1')
+    .addFile('/api/a', 'version A')
+    .addFile('/api/b', 'version B')
+    .addFile('/api/c', 'version C')
+    .addFile('/api/d', 'version D')
+    .addFile('/api/e', 'version E')
+    .addFile('/fresh/data', 'this is fresh data')
+    .addFile('/refresh/data', 'this is some data')
+    .build();
 
   const distUpdate = new MockFileSystemBuilder()
-                         .addFile('/foo.txt', 'this is foo v2')
-                         .addFile('/bar.txt', 'this is bar')
-                         .addFile('/api/test', 'version 2')
-                         .addFile('/fresh/data', 'this is fresher data')
-                         .addFile('/refresh/data', 'this is refreshed data')
-                         .build();
+    .addFile('/foo.txt', 'this is foo v2')
+    .addFile('/bar.txt', 'this is bar')
+    .addFile('/api/test', 'version 2')
+    .addFile('/fresh/data', 'this is fresher data')
+    .addFile('/refresh/data', 'this is refreshed data')
+    .build();
 
   const manifest: Manifest = {
     configVersion: 1,
@@ -50,10 +49,7 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         name: 'assets',
         installMode: 'prefetch',
         updateMode: 'prefetch',
-        urls: [
-          '/foo.txt',
-          '/bar.txt',
-        ],
+        urls: ['/foo.txt', '/bar.txt'],
         patterns: [],
       },
     ],
@@ -95,30 +91,30 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
     ...manifest,
     dataGroups: [
       {
-        ...manifest.dataGroups ![0],
+        ...manifest.dataGroups![0],
         version: 2,
       },
-      manifest.dataGroups ![1],
-      manifest.dataGroups ![2],
+      manifest.dataGroups![1],
+      manifest.dataGroups![2],
     ],
   };
 
-
   const server = new MockServerStateBuilder().withStaticFiles(dist).withManifest(manifest).build();
 
-  const serverUpdate =
-      new MockServerStateBuilder().withStaticFiles(distUpdate).withManifest(manifest).build();
+  const serverUpdate = new MockServerStateBuilder()
+    .withStaticFiles(distUpdate)
+    .withManifest(manifest)
+    .build();
 
   const serverSeqUpdate = new MockServerStateBuilder()
-                              .withStaticFiles(distUpdate)
-                              .withManifest(seqIncreasedManifest)
-                              .build();
-
+    .withStaticFiles(distUpdate)
+    .withManifest(seqIncreasedManifest)
+    .build();
 
   describe('data cache', () => {
     let scope: SwTestHarness;
     let driver: Driver;
-    beforeEach(async() => {
+    beforeEach(async () => {
       scope = new SwTestHarnessBuilder().withServerState(server).build();
       driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
 
@@ -136,13 +132,13 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
     });
 
     describe('in performance mode', () => {
-      it('names the caches correctly', async() => {
+      it('names the caches correctly', async () => {
         expect(await makeRequest(scope, '/api/test')).toEqual('version 1');
         const keys = await scope.caches.keys();
-        expect(keys.every(key => key.startsWith('ngsw:/:'))).toEqual(true);
+        expect(keys.every((key) => key.startsWith('ngsw:/:'))).toEqual(true);
       });
 
-      it('caches a basic request', async() => {
+      it('caches a basic request', async () => {
         expect(await makeRequest(scope, '/api/test')).toEqual('version 1');
         server.assertSawRequestFor('/api/test');
         scope.advance(1000);
@@ -150,7 +146,7 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         server.assertNoOtherRequests();
       });
 
-      it('does not cache opaque responses', async() => {
+      it('does not cache opaque responses', async () => {
         expect(await makeNoCorsRequest(scope, '/api/test')).toBe('');
         server.assertSawRequestFor('/api/test');
 
@@ -158,7 +154,7 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         server.assertSawRequestFor('/api/test');
       });
 
-      it('refreshes after awhile', async() => {
+      it('refreshes after awhile', async () => {
         expect(await makeRequest(scope, '/api/test')).toEqual('version 1');
         server.clearRequests();
         scope.advance(10000);
@@ -166,7 +162,7 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         expect(await makeRequest(scope, '/api/test')).toEqual('version 2');
       });
 
-      it('expires the least recently used entry', async() => {
+      it('expires the least recently used entry', async () => {
         expect(await makeRequest(scope, '/api/a')).toEqual('version A');
         expect(await makeRequest(scope, '/api/b')).toEqual('version B');
         expect(await makeRequest(scope, '/api/c')).toEqual('version C');
@@ -184,7 +180,7 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         server.assertNoOtherRequests();
       });
 
-      it('does not carry over cache with new version', async() => {
+      it('does not carry over cache with new version', async () => {
         expect(await makeRequest(scope, '/api/test')).toEqual('version 1');
         scope.updateServerState(serverSeqUpdate);
         expect(await driver.checkForUpdate()).toEqual(true);
@@ -194,7 +190,7 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
     });
 
     describe('in freshness mode', () => {
-      it('goes to the server first', async() => {
+      it('goes to the server first', async () => {
         expect(await makeRequest(scope, '/fresh/data')).toEqual('this is fresh data');
         server.assertSawRequestFor('/fresh/data');
         server.clearRequests();
@@ -207,7 +203,7 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         serverUpdate.assertNoOtherRequests();
       });
 
-      it('caches opaque responses', async() => {
+      it('caches opaque responses', async () => {
         expect(await makeNoCorsRequest(scope, '/fresh/data')).toBe('');
         server.assertSawRequestFor('/fresh/data');
 
@@ -217,7 +213,7 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         server.assertNoOtherRequests();
       });
 
-      it('falls back on the cache when server times out', async() => {
+      it('falls back on the cache when server times out', async () => {
         expect(await makeRequest(scope, '/fresh/data')).toEqual('this is fresh data');
         server.assertSawRequestFor('/fresh/data');
         server.clearRequests();
@@ -244,7 +240,7 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         expect(await res2).toEqual('this is fresher data');
       });
 
-      it('refreshes ahead', async() => {
+      it('refreshes ahead', async () => {
         server.assertNoOtherRequests();
         serverUpdate.assertNoOtherRequests();
         expect(await makeRequest(scope, '/refresh/data')).toEqual('this is some data');
@@ -260,7 +256,7 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         serverUpdate.assertNoOtherRequests();
       });
 
-      it('caches opaque responses on refresh', async() => {
+      it('caches opaque responses on refresh', async () => {
         // Make the initial request and populate the cache.
         expect(await makeRequest(scope, '/fresh/data')).toBe('this is fresh data');
         server.assertSawRequestFor('/fresh/data');
@@ -269,8 +265,10 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
         // Update the server state and pause the server, so the next request times out.
         scope.updateServerState(serverUpdate);
         serverUpdate.pause();
-        const [res, done] =
-            makePendingRequest(scope, new MockRequest('/fresh/data', {mode: 'no-cors'}));
+        const [res, done] = makePendingRequest(
+          scope,
+          new MockRequest('/fresh/data', {mode: 'no-cors'})
+        );
 
         // The network request times out after 1,000ms and the cached response is returned.
         await serverUpdate.nextRequest;
@@ -293,25 +291,27 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
   });
 })();
 
-function makeRequest(scope: SwTestHarness, url: string, clientId?: string): Promise<string|null> {
+function makeRequest(scope: SwTestHarness, url: string, clientId?: string): Promise<string | null> {
   const [resTextPromise, done] = makePendingRequest(scope, url, clientId);
   return done.then(() => resTextPromise);
 }
 
 function makeNoCorsRequest(
-    scope: SwTestHarness, url: string, clientId?: string): Promise<string|null> {
+  scope: SwTestHarness,
+  url: string,
+  clientId?: string
+): Promise<string | null> {
   const req = new MockRequest(url, {mode: 'no-cors'});
   const [resTextPromise, done] = makePendingRequest(scope, req, clientId);
   return done.then(() => resTextPromise);
 }
 
 function makePendingRequest(
-    scope: SwTestHarness, urlOrReq: string | MockRequest,
-    clientId?: string): [Promise<string|null>, Promise<void>] {
-  const req = (typeof urlOrReq === 'string') ? new MockRequest(urlOrReq) : urlOrReq;
+  scope: SwTestHarness,
+  urlOrReq: string | MockRequest,
+  clientId?: string
+): [Promise<string | null>, Promise<void>] {
+  const req = typeof urlOrReq === 'string' ? new MockRequest(urlOrReq) : urlOrReq;
   const [resPromise, done] = scope.handleFetch(req, clientId || 'default');
-  return [
-    resPromise.then<string|null>(res => res ? res.text() : null),
-    done,
-  ];
+  return [resPromise.then<string | null>((res) => (res ? res.text() : null)), done];
 }

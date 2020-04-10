@@ -67,13 +67,13 @@ export class Testability implements PublicTestability {
   private _didWork: boolean = false;
   private _callbacks: WaitCallback[] = [];
 
-  private taskTrackingZone: {macroTasks: Task[]}|null = null;
+  private taskTrackingZone: {macroTasks: Task[]} | null = null;
 
   constructor(private _ngZone: NgZone) {
     this._watchAngularEvents();
     _ngZone.run(() => {
       this.taskTrackingZone =
-          typeof Zone == 'undefined' ? null : Zone.current.get('TaskTrackingZone');
+        typeof Zone == 'undefined' ? null : Zone.current.get('TaskTrackingZone');
     });
   }
 
@@ -82,7 +82,7 @@ export class Testability implements PublicTestability {
       next: () => {
         this._didWork = true;
         this._isZoneStable = false;
-      }
+      },
     });
 
     this._ngZone.runOutsideAngular(() => {
@@ -93,7 +93,7 @@ export class Testability implements PublicTestability {
             this._isZoneStable = true;
             this._runCallbacksIfReady();
           });
-        }
+        },
       });
     });
   }
@@ -133,7 +133,7 @@ export class Testability implements PublicTestability {
       // Schedules the call backs in a new frame so that it is always async.
       scheduleMicroTask(() => {
         while (this._callbacks.length !== 0) {
-          let cb = this._callbacks.pop() !;
+          let cb = this._callbacks.pop()!;
           clearTimeout(cb.timeoutId);
           cb.doneCb(this._didWork);
         }
@@ -167,7 +167,7 @@ export class Testability implements PublicTestability {
         // From TaskTrackingZone:
         // https://github.com/angular/zone.js/blob/master/lib/zone-spec/task-tracking.ts#L40
         creationLocation: (t as any).creationLocation as Error,
-        data: t.data
+        data: t.data,
       };
     });
   }
@@ -198,8 +198,9 @@ export class Testability implements PublicTestability {
   whenStable(doneCb: Function, timeout?: number, updateCb?: Function): void {
     if (updateCb && !this.taskTrackingZone) {
       throw new Error(
-          'Task tracking zone is required when passing an update callback to ' +
-          'whenStable(). Is "zone.js/dist/task-tracking.js" loaded?');
+        'Task tracking zone is required when passing an update callback to ' +
+          'whenStable(). Is "zone.js/dist/task-tracking.js" loaded?'
+      );
     }
     // These arguments are 'Function' above to keep the public API simple.
     this.addCallback(doneCb as DoneCallback, timeout, updateCb as UpdateCallback);
@@ -210,7 +211,9 @@ export class Testability implements PublicTestability {
    * Get the number of pending requests
    * @deprecated pending requests are now tracked with zones
    */
-  getPendingRequestCount(): number { return this._pendingCount; }
+  getPendingRequestCount(): number {
+    return this._pendingCount;
+  }
 
   /**
    * Find providers by name
@@ -233,7 +236,9 @@ export class TestabilityRegistry {
   /** @internal */
   _applications = new Map<any, Testability>();
 
-  constructor() { _testabilityGetter.addToWindow(this); }
+  constructor() {
+    _testabilityGetter.addToWindow(this);
+  }
 
   /**
    * Registers an application with a testability hook so that it can be tracked
@@ -248,28 +253,38 @@ export class TestabilityRegistry {
    * Unregisters an application.
    * @param token token of application, root element
    */
-  unregisterApplication(token: any) { this._applications.delete(token); }
+  unregisterApplication(token: any) {
+    this._applications.delete(token);
+  }
 
   /**
    * Unregisters all applications
    */
-  unregisterAllApplications() { this._applications.clear(); }
+  unregisterAllApplications() {
+    this._applications.clear();
+  }
 
   /**
    * Get a testability hook associated with the application
    * @param elem root element
    */
-  getTestability(elem: any): Testability|null { return this._applications.get(elem) || null; }
+  getTestability(elem: any): Testability | null {
+    return this._applications.get(elem) || null;
+  }
 
   /**
    * Get all registered testabilities
    */
-  getAllTestabilities(): Testability[] { return Array.from(this._applications.values()); }
+  getAllTestabilities(): Testability[] {
+    return Array.from(this._applications.values());
+  }
 
   /**
    * Get all registered applications(root elements)
    */
-  getAllRootElements(): any[] { return Array.from(this._applications.keys()); }
+  getAllRootElements(): any[] {
+    return Array.from(this._applications.keys());
+  }
 
   /**
    * Find testability of a node in the Tree
@@ -277,7 +292,7 @@ export class TestabilityRegistry {
    * @param findInAncestors whether finding testability in ancestors if testability was not found in
    * current node
    */
-  findTestabilityInTree(elem: Node, findInAncestors: boolean = true): Testability|null {
+  findTestabilityInTree(elem: Node, findInAncestors: boolean = true): Testability | null {
     return _testabilityGetter.findTestabilityInTree(this, elem, findInAncestors);
   }
 }
@@ -290,14 +305,20 @@ export class TestabilityRegistry {
  */
 export interface GetTestability {
   addToWindow(registry: TestabilityRegistry): void;
-  findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
-      Testability|null;
+  findTestabilityInTree(
+    registry: TestabilityRegistry,
+    elem: any,
+    findInAncestors: boolean
+  ): Testability | null;
 }
 
 class _NoopGetTestability implements GetTestability {
   addToWindow(registry: TestabilityRegistry): void {}
-  findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
-      Testability|null {
+  findTestabilityInTree(
+    registry: TestabilityRegistry,
+    elem: any,
+    findInAncestors: boolean
+  ): Testability | null {
     return null;
   }
 }

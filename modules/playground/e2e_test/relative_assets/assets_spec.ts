@@ -16,7 +16,6 @@ function waitForElement(selector: string) {
 }
 
 describe('relative assets relative-app', () => {
-
   afterEach(verifyNoBrowserErrors);
 
   const URL = '/';
@@ -34,7 +33,9 @@ describe('relative assets relative-app', () => {
     waitForElement('my-cmp .inner-container');
     const elem = element(by.css('my-cmp .inner-container'));
     const width = browser.executeScript(
-        (e: Element) => parseInt(window.getComputedStyle(e).width), elem.getWebElement());
+      (e: Element) => parseInt(window.getComputedStyle(e).width),
+      elem.getWebElement()
+    );
 
     expect(width).toBe(432);
   });

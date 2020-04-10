@@ -9,18 +9,16 @@
 import * as ts from 'typescript';
 import {Declaration} from '../../../src/ngtsc/reflection';
 
-
 export interface ExportDeclaration {
   name: string;
   declaration: Declaration;
 }
 
 export interface ExportStatement extends ts.ExpressionStatement {
-  expression: ts.BinaryExpression&{
-    left: ts.PropertyAccessExpression &
-        {
-          expression: ts.Identifier
-        }
+  expression: ts.BinaryExpression & {
+    left: ts.PropertyAccessExpression & {
+      expression: ts.Identifier;
+    };
   };
 }
 
@@ -44,20 +42,20 @@ export interface ReexportStatement extends ts.ExpressionStatement {
 }
 
 export interface RequireCall extends ts.CallExpression {
-  arguments: ts.CallExpression['arguments']&[ts.StringLiteral];
+  arguments: ts.CallExpression['arguments'] & [ts.StringLiteral];
 }
-
 
 /**
  * Return the "namespace" of the specified `ts.Identifier` if the identifier is the RHS of a
  * property access expression, i.e. an expression of the form `<namespace>.<id>` (in which case a
  * `ts.Identifier` corresponding to `<namespace>` will be returned). Otherwise return `null`.
  */
-export function findNamespaceOfIdentifier(id: ts.Identifier): ts.Identifier|null {
-  return id.parent && ts.isPropertyAccessExpression(id.parent) &&
-          ts.isIdentifier(id.parent.expression) ?
-      id.parent.expression :
-      null;
+export function findNamespaceOfIdentifier(id: ts.Identifier): ts.Identifier | null {
+  return id.parent &&
+    ts.isPropertyAccessExpression(id.parent) &&
+    ts.isIdentifier(id.parent.expression)
+    ? id.parent.expression
+    : null;
 }
 
 /**
@@ -65,12 +63,14 @@ export function findNamespaceOfIdentifier(id: ts.Identifier): ts.Identifier|null
  * specified indentifier was indeed initialized with a require call in a declaration of the form:
  * `var <id> = require('...')`
  */
-export function findRequireCallReference(id: ts.Identifier, checker: ts.TypeChecker): RequireCall|
-    null {
+export function findRequireCallReference(
+  id: ts.Identifier,
+  checker: ts.TypeChecker
+): RequireCall | null {
   const symbol = checker.getSymbolAtLocation(id) || null;
   const declaration = symbol && symbol.valueDeclaration;
   const initializer =
-      declaration && ts.isVariableDeclaration(declaration) && declaration.initializer || null;
+    (declaration && ts.isVariableDeclaration(declaration) && declaration.initializer) || null;
   return initializer && isRequireCall(initializer) ? initializer : null;
 }
 
@@ -79,11 +79,14 @@ export function findRequireCallReference(id: ts.Identifier, checker: ts.TypeChec
  * of the form: `export.<foo> = <bar>`
  */
 export function isExportStatement(stmt: ts.Statement): stmt is ExportStatement {
-  return ts.isExpressionStatement(stmt) && ts.isBinaryExpression(stmt.expression) &&
-      (stmt.expression.operatorToken.kind === ts.SyntaxKind.EqualsToken) &&
-      ts.isPropertyAccessExpression(stmt.expression.left) &&
-      ts.isIdentifier(stmt.expression.left.expression) &&
-      stmt.expression.left.expression.text === 'exports';
+  return (
+    ts.isExpressionStatement(stmt) &&
+    ts.isBinaryExpression(stmt.expression) &&
+    stmt.expression.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
+    ts.isPropertyAccessExpression(stmt.expression.left) &&
+    ts.isIdentifier(stmt.expression.left.expression) &&
+    stmt.expression.left.expression.text === 'exports'
+  );
 }
 
 /**
@@ -109,19 +112,20 @@ export function isReexportStatement(stmt: ts.Statement): stmt is ReexportStateme
   //       The current implementation accepts the other two formats (`__exportStar(...)` and
   //       `tslib.__export(...)`) as well to be more future-proof (given that it is unlikely that
   //       they will introduce false positives).
-  let fnName: string|null = null;
+  let fnName: string | null = null;
   if (ts.isIdentifier(stmt.expression.expression)) {
     // Statement of the form `someFn(...)`.
     fnName = stmt.expression.expression.text;
   } else if (
-      ts.isPropertyAccessExpression(stmt.expression.expression) &&
-      ts.isIdentifier(stmt.expression.expression.name)) {
+    ts.isPropertyAccessExpression(stmt.expression.expression) &&
+    ts.isIdentifier(stmt.expression.expression.name)
+  ) {
     // Statement of the form `tslib.someFn(...)`.
     fnName = stmt.expression.expression.name.text;
   }
 
   // Ensure the called function is either `__export()` or `__exportStar()`.
-  if ((fnName !== '__export') && (fnName !== '__exportStar')) {
+  if (fnName !== '__export' && fnName !== '__exportStar') {
     return false;
   }
 
@@ -136,7 +140,11 @@ export function isReexportStatement(stmt: ts.Statement): stmt is ReexportStateme
  * the form: `require('<foo>')`
  */
 export function isRequireCall(node: ts.Node): node is RequireCall {
-  return ts.isCallExpression(node) && ts.isIdentifier(node.expression) &&
-      node.expression.text === 'require' && node.arguments.length === 1 &&
-      ts.isStringLiteral(node.arguments[0]);
+  return (
+    ts.isCallExpression(node) &&
+    ts.isIdentifier(node.expression) &&
+    node.expression.text === 'require' &&
+    node.arguments.length === 1 &&
+    ts.isStringLiteral(node.arguments[0])
+  );
 }

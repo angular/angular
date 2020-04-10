@@ -10,7 +10,6 @@ import {dirname, isAbsolute, resolve} from 'path';
 
 import {ModuleResolver} from './analyzer';
 
-
 /** Configuration for a circular dependencies test. */
 export interface CircularDependenciesTestConfig {
   /** Base directory used for shortening paths in the golden file. */
@@ -18,7 +17,7 @@ export interface CircularDependenciesTestConfig {
   /** Path to the golden file that is used for checking and approving. */
   goldenFile: string;
   /** Glob that resolves source files which should be checked. */
-  glob: string
+  glob: string;
   /**
    * Optional module resolver function that can be used to resolve modules
    * to absolute file paths.

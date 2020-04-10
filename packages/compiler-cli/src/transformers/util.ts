@@ -19,7 +19,7 @@ export const TS = /^(?!.*\.d\.ts$).*\.ts$/;
 export const enum StructureIsReused {
   Not = 0,
   SafeModules = 1,
-  Completely = 2
+  Completely = 2,
 }
 
 // Note: This is an internal property in TypeScript. Use it only for assertions and tests.
@@ -35,7 +35,7 @@ export function userError(msg: string): never {
   throw syntaxError(msg);
 }
 
-export function createMessageDiagnostic(messageText: string): ts.Diagnostic&Diagnostic {
+export function createMessageDiagnostic(messageText: string): ts.Diagnostic & Diagnostic {
   return {
     file: undefined,
     start: undefined,
@@ -62,7 +62,7 @@ export function relativeToRootDirs(filePath: string, rootDirs: string[]): string
   return filePath;
 }
 
-function pathStartsWithPrefix(prefix: string, fullPath: string): string|null {
+function pathStartsWithPrefix(prefix: string, fullPath: string): string | null {
   const rel = path.relative(prefix, fullPath);
   return rel.startsWith('..') ? null : rel;
 }
@@ -74,9 +74,9 @@ function pathStartsWithPrefix(prefix: string, fullPath: string): string|null {
  * I.e. only use this where the API allows only a ts.Diagnostic.
  */
 export function ngToTsDiagnostic(ng: Diagnostic): ts.Diagnostic {
-  let file: ts.SourceFile|undefined;
-  let start: number|undefined;
-  let length: number|undefined;
+  let file: ts.SourceFile | undefined;
+  let start: number | undefined;
+  let length: number | undefined;
   if (ng.span) {
     // Note: We can't use a real ts.SourceFile,
     // but we can at least mirror the properties `fileName` and `text`, which

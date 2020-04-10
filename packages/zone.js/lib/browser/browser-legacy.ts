@@ -15,10 +15,12 @@ import {eventTargetLegacyPatch} from './event-target-legacy';
 import {propertyDescriptorLegacyPatch} from './property-descriptor-legacy';
 import {registerElementPatch} from './register-element';
 
-(function(_global: any) {
+(function (_global: any) {
   const symbolPrefix = _global['__Zone_symbol_prefix'] || '__zone_symbol__';
-  function __symbol__(name: string) { return symbolPrefix + name; }
-  _global[__symbol__('legacyPatch')] = function() {
+  function __symbol__(name: string) {
+    return symbolPrefix + name;
+  }
+  _global[__symbol__('legacyPatch')] = function () {
     const Zone = _global['Zone'];
     Zone.__load_patch('defineProperty', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
       api._redefineProperty = _redefineProperty;
@@ -33,6 +35,12 @@ import {registerElementPatch} from './register-element';
       propertyDescriptorLegacyPatch(api, global);
     });
   };
-})(typeof window !== 'undefined' ?
-       window :
-       typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {});
+})(
+  typeof window !== 'undefined'
+    ? window
+    : typeof global !== 'undefined'
+    ? global
+    : typeof self !== 'undefined'
+    ? self
+    : {}
+);

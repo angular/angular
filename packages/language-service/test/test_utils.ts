@@ -56,8 +56,14 @@ function isFile(path: string) {
  */
 function loadTourOfHeroes(): ReadonlyMap<string, string> {
   const {TEST_SRCDIR} = process.env;
-  const root =
-      path.join(TEST_SRCDIR!, 'angular', 'packages', 'language-service', 'test', 'project');
+  const root = path.join(
+    TEST_SRCDIR!,
+    'angular',
+    'packages',
+    'language-service',
+    'test',
+    'project'
+  );
   const dirs = [root];
   const files = new Map<string, string>();
   while (dirs.length) {
@@ -100,12 +106,13 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
   private options: ts.CompilerOptions;
   private readonly overrideDirectory = new Set<string>();
   private readonly existsCache = new Map<string, boolean>();
-  private readonly fileCache = new Map<string, string|undefined>();
+  private readonly fileCache = new Map<string, string | undefined>();
 
   constructor(
-      private readonly scriptNames: string[],
-      private readonly node_modules: string = 'node_modules',
-      private readonly myPath: typeof path = path) {
+    private readonly scriptNames: string[],
+    private readonly node_modules: string = 'node_modules',
+    private readonly myPath: typeof path = path
+  ) {
     const support = setup();
     this.nodeModulesPath = path.posix.join(support.basePath, 'node_modules');
     this.angularPath = path.posix.join(this.nodeModulesPath, '@angular');
@@ -156,7 +163,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     return (this.scriptVersion.get(fileName) || 0).toString();
   }
 
-  getScriptSnapshot(fileName: string): ts.IScriptSnapshot|undefined {
+  getScriptSnapshot(fileName: string): ts.IScriptSnapshot | undefined {
     const content = this.readFile(fileName);
     if (content) return ts.ScriptSnapshot.fromString(content);
     return undefined;
@@ -186,7 +193,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     return this.getRawFileContent(fileName) != null;
   }
 
-  readFile(fileName: string): string|undefined {
+  readFile(fileName: string): string | undefined {
     const content = this.getRawFileContent(fileName);
     if (content) {
       return removeReferenceMarkers(removeLocationMarkers(content));
@@ -221,7 +228,7 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     this.options = COMPILER_OPTIONS;
   }
 
-  private getRawFileContent(fileName: string): string|undefined {
+  private getRawFileContent(fileName: string): string | undefined {
     if (this.overrides.has(fileName)) {
       return this.overrides.get(fileName);
     }
@@ -238,8 +245,12 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     if (effectiveName === fileName) {
       return TOH.get(fileName);
     }
-    if (!fileName.match(angularts) && !fileName.match(rxjsts) && !fileName.match(rxjsmetadata) &&
-        !fileName.match(tsxfile)) {
+    if (
+      !fileName.match(angularts) &&
+      !fileName.match(rxjsts) &&
+      !fileName.match(rxjsmetadata) &&
+      !fileName.match(tsxfile)
+    ) {
       if (this.fileCache.has(effectiveName)) {
         return this.fileCache.get(effectiveName);
       } else if (this.pathExists(effectiveName)) {
@@ -267,20 +278,23 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     const at_angular = '/@angular';
     if (name.startsWith('/' + node_modules)) {
       if (this.nodeModulesPath && !name.startsWith('/' + node_modules + at_angular)) {
-        const result =
-            this.myPath.posix.join(this.nodeModulesPath, name.substr(node_modules.length + 1));
+        const result = this.myPath.posix.join(
+          this.nodeModulesPath,
+          name.substr(node_modules.length + 1)
+        );
         if (!name.match(rxjsts) && this.pathExists(result)) {
           return result;
         }
       }
       if (name.startsWith('/' + node_modules + at_angular)) {
         return this.myPath.posix.join(
-            this.angularPath, name.substr(node_modules.length + at_angular.length + 1));
+          this.angularPath,
+          name.substr(node_modules.length + at_angular.length + 1)
+        );
       }
     }
     return name;
   }
-
 
   /**
    * Append a snippet of code to `app.component.ts` and return the file name.
@@ -408,7 +422,7 @@ function getLocationMarkers(value: string): {[name: string]: number} {
 const referenceMarker = /«(((\w|\-)+)|([^ᐱ]*ᐱ(\w+)ᐱ.[^»]*))»/g;
 
 export type ReferenceMarkers = {
-  [name: string]: Span[]
+  [name: string]: Span[];
 };
 export interface ReferenceResult {
   text: string;
@@ -423,17 +437,25 @@ function getReferenceMarkers(value: string): ReferenceResult {
 
   let adjustment = 0;
   const text = value.replace(
-      referenceMarker,
-      (match: string, text: string, reference: string, _: string, definition: string,
-       definitionName: string, index: number): string => {
-        const result = reference ? text : text.replace(/ᐱ/g, '');
-        const span: Span = {start: index - adjustment, end: index - adjustment + result.length};
-        const markers = reference ? references : definitions;
-        const name = reference || definitionName;
-        (markers[name] = (markers[name] || [])).push(span);
-        adjustment += match.length - result.length;
-        return result;
-      });
+    referenceMarker,
+    (
+      match: string,
+      text: string,
+      reference: string,
+      _: string,
+      definition: string,
+      definitionName: string,
+      index: number
+    ): string => {
+      const result = reference ? text : text.replace(/ᐱ/g, '');
+      const span: Span = {start: index - adjustment, end: index - adjustment + result.length};
+      const markers = reference ? references : definitions;
+      const name = reference || definitionName;
+      (markers[name] = markers[name] || []).push(span);
+      adjustment += match.length - result.length;
+      return result;
+    }
+  );
 
   return {text, definitions, references};
 }
@@ -449,7 +471,9 @@ function removeReferenceMarkers(value: string): string {
  * @param directiveName
  */
 export function findDirectiveMetadataByName(
-    ngModules: NgAnalyzedModules, directiveName: string): CompileNgModuleMetadata|undefined {
+  ngModules: NgAnalyzedModules,
+  directiveName: string
+): CompileNgModuleMetadata | undefined {
   for (const [key, value] of ngModules.ngModuleByPipeOrDirective) {
     if (key.name === directiveName) {
       return value;

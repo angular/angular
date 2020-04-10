@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {Logger} from '../../../logging/logger';
 import {PartiallyOrderedTasks, Task, TaskDependencies} from '../api';
 import {getBlockedTasks, sortTasksByPriority, stringifyTask} from '../utils';
@@ -27,10 +28,10 @@ export class ParallelTaskQueue extends BaseTaskQueue {
     this.blockedTasks = getBlockedTasks(dependencies);
   }
 
-  computeNextTask(): Task|null {
+  computeNextTask(): Task | null {
     // Look for the first available (i.e. not blocked) task.
     // (NOTE: Since tasks are sorted by priority, the first available one is the best choice.)
-    const nextTaskIdx = this.tasks.findIndex(task => !this.blockedTasks.has(task));
+    const nextTaskIdx = this.tasks.findIndex((task) => !this.blockedTasks.has(task));
     if (nextTaskIdx === -1) return null;
 
     // Remove the task from the list of available tasks and add it to the list of in-progress tasks.
@@ -63,16 +64,19 @@ export class ParallelTaskQueue extends BaseTaskQueue {
   }
 
   toString(): string {
-    return `${super.toString()}\n` +
-        `  Blocked tasks (${this.blockedTasks.size}): ${this.stringifyBlockedTasks('    ')}`;
+    return (
+      `${super.toString()}\n` +
+      `  Blocked tasks (${this.blockedTasks.size}): ${this.stringifyBlockedTasks('    ')}`
+    );
   }
 
   private stringifyBlockedTasks(indentation: string): string {
     return Array.from(this.blockedTasks)
-        .map(
-            ([task, blockingTasks]) =>
-                `\n${indentation}- ${stringifyTask(task)} (${blockingTasks.size}): ` +
-                this.stringifyTasks(Array.from(blockingTasks), `${indentation}    `))
-        .join('');
+      .map(
+        ([task, blockingTasks]) =>
+          `\n${indentation}- ${stringifyTask(task)} (${blockingTasks.size}): ` +
+          this.stringifyTasks(Array.from(blockingTasks), `${indentation}    `)
+      )
+      .join('');
   }
 }

@@ -12,8 +12,12 @@ import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {forEach, last, shallowEqual} from './utils/collection';
 
 export function createUrlTree(
-    route: ActivatedRoute, urlTree: UrlTree, commands: any[], queryParams: Params,
-    fragment: string): UrlTree {
+  route: ActivatedRoute,
+  urlTree: UrlTree,
+  commands: any[],
+  queryParams: Params,
+  fragment: string
+): UrlTree {
   if (commands.length === 0) {
     return tree(urlTree.root, urlTree.root, urlTree, queryParams, fragment);
   }
@@ -26,10 +30,13 @@ export function createUrlTree(
 
   const startingPosition = findStartingPosition(nav, urlTree, route);
 
-  const segmentGroup = startingPosition.processChildren ?
-      updateSegmentGroupChildren(
-          startingPosition.segmentGroup, startingPosition.index, nav.commands) :
-      updateSegmentGroup(startingPosition.segmentGroup, startingPosition.index, nav.commands);
+  const segmentGroup = startingPosition.processChildren
+    ? updateSegmentGroupChildren(
+        startingPosition.segmentGroup,
+        startingPosition.index,
+        nav.commands
+      )
+    : updateSegmentGroup(startingPosition.segmentGroup, startingPosition.index, nav.commands);
   return tree(startingPosition.segmentGroup, segmentGroup, urlTree, queryParams, fragment);
 }
 
@@ -38,8 +45,12 @@ function isMatrixParams(command: any): boolean {
 }
 
 function tree(
-    oldSegmentGroup: UrlSegmentGroup, newSegmentGroup: UrlSegmentGroup, urlTree: UrlTree,
-    queryParams: Params, fragment: string): UrlTree {
+  oldSegmentGroup: UrlSegmentGroup,
+  newSegmentGroup: UrlSegmentGroup,
+  urlTree: UrlTree,
+  queryParams: Params,
+  fragment: string
+): UrlTree {
   let qp: any = {};
   if (queryParams) {
     forEach(queryParams, (value: any, name: any) => {
@@ -55,8 +66,10 @@ function tree(
 }
 
 function replaceSegment(
-    current: UrlSegmentGroup, oldSegment: UrlSegmentGroup,
-    newSegment: UrlSegmentGroup): UrlSegmentGroup {
+  current: UrlSegmentGroup,
+  oldSegment: UrlSegmentGroup,
+  newSegment: UrlSegmentGroup
+): UrlSegmentGroup {
   const children: {[key: string]: UrlSegmentGroup} = {};
   forEach(current.children, (c: UrlSegmentGroup, outletName: string) => {
     if (c === oldSegment) {
@@ -70,12 +83,15 @@ function replaceSegment(
 
 class Navigation {
   constructor(
-      public isAbsolute: boolean, public numberOfDoubleDots: number, public commands: any[]) {
+    public isAbsolute: boolean,
+    public numberOfDoubleDots: number,
+    public commands: any[]
+  ) {
     if (isAbsolute && commands.length > 0 && isMatrixParams(commands[0])) {
       throw new Error('Root segment cannot have matrix parameters');
     }
 
-    const cmdWithOutlet = commands.find(c => typeof c === 'object' && c != null && c.outlets);
+    const cmdWithOutlet = commands.find((c) => typeof c === 'object' && c != null && c.outlets);
     if (cmdWithOutlet && cmdWithOutlet !== last(commands)) {
       throw new Error('{outlets:{}} has to be the last command');
     }
@@ -88,7 +104,7 @@ class Navigation {
 
 /** Transforms commands to a normalized `Navigation` */
 function computeNavigation(commands: any[]): Navigation {
-  if ((typeof commands[0] === 'string') && commands.length === 1 && commands[0] === '/') {
+  if (typeof commands[0] === 'string' && commands.length === 1 && commands[0] === '/') {
     return new Navigation(true, 0, commands);
   }
 
@@ -118,9 +134,11 @@ function computeNavigation(commands: any[]): Navigation {
       cmd.split('/').forEach((urlPart, partIndex) => {
         if (partIndex == 0 && urlPart === '.') {
           // skip './a'
-        } else if (partIndex == 0 && urlPart === '') {  //  '/a'
+        } else if (partIndex == 0 && urlPart === '') {
+          //  '/a'
           isAbsolute = true;
-        } else if (urlPart === '..') {  //  '../a'
+        } else if (urlPart === '..') {
+          //  '../a'
           numberOfDoubleDots++;
         } else if (urlPart != '') {
           res.push(urlPart);
@@ -138,8 +156,10 @@ function computeNavigation(commands: any[]): Navigation {
 
 class Position {
   constructor(
-      public segmentGroup: UrlSegmentGroup, public processChildren: boolean, public index: number) {
-  }
+    public segmentGroup: UrlSegmentGroup,
+    public processChildren: boolean,
+    public index: number
+  ) {}
 }
 
 function findStartingPosition(nav: Navigation, tree: UrlTree, route: ActivatedRoute): Position {
@@ -154,19 +174,25 @@ function findStartingPosition(nav: Navigation, tree: UrlTree, route: ActivatedRo
   const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
   const index = route.snapshot._lastPathIndex + modifier;
   return createPositionApplyingDoubleDots(
-      route.snapshot._urlSegment, index, nav.numberOfDoubleDots);
+    route.snapshot._urlSegment,
+    index,
+    nav.numberOfDoubleDots
+  );
 }
 
 function createPositionApplyingDoubleDots(
-    group: UrlSegmentGroup, index: number, numberOfDoubleDots: number): Position {
+  group: UrlSegmentGroup,
+  index: number,
+  numberOfDoubleDots: number
+): Position {
   let g = group;
   let ci = index;
   let dd = numberOfDoubleDots;
   while (dd > ci) {
     dd -= ci;
-    g = g.parent !;
+    g = g.parent!;
     if (!g) {
-      throw new Error('Invalid number of \'../\'');
+      throw new Error("Invalid number of '../'");
     }
     ci = g.segments.length;
   }
@@ -187,7 +213,10 @@ function getOutlets(commands: any[]): {[k: string]: any[]} {
 }
 
 function updateSegmentGroup(
-    segmentGroup: UrlSegmentGroup, startIndex: number, commands: any[]): UrlSegmentGroup {
+  segmentGroup: UrlSegmentGroup,
+  startIndex: number,
+  commands: any[]
+): UrlSegmentGroup {
   if (!segmentGroup) {
     segmentGroup = new UrlSegmentGroup([], {});
   }
@@ -199,8 +228,10 @@ function updateSegmentGroup(
   const slicedCommands = commands.slice(m.commandIndex);
   if (m.match && m.pathIndex < segmentGroup.segments.length) {
     const g = new UrlSegmentGroup(segmentGroup.segments.slice(0, m.pathIndex), {});
-    g.children[PRIMARY_OUTLET] =
-        new UrlSegmentGroup(segmentGroup.segments.slice(m.pathIndex), segmentGroup.children);
+    g.children[PRIMARY_OUTLET] = new UrlSegmentGroup(
+      segmentGroup.segments.slice(m.pathIndex),
+      segmentGroup.children
+    );
     return updateSegmentGroupChildren(g, 0, slicedCommands);
   } else if (m.match && slicedCommands.length === 0) {
     return new UrlSegmentGroup(segmentGroup.segments, {});
@@ -214,7 +245,10 @@ function updateSegmentGroup(
 }
 
 function updateSegmentGroupChildren(
-    segmentGroup: UrlSegmentGroup, startIndex: number, commands: any[]): UrlSegmentGroup {
+  segmentGroup: UrlSegmentGroup,
+  startIndex: number,
+  commands: any[]
+): UrlSegmentGroup {
   if (commands.length === 0) {
     return new UrlSegmentGroup(segmentGroup.segments, {});
   } else {
@@ -246,11 +280,11 @@ function prefixedWith(segmentGroup: UrlSegmentGroup, startIndex: number, command
     const path = segmentGroup.segments[currentPathIndex];
     const curr = getPath(commands[currentCommandIndex]);
     const next =
-        currentCommandIndex < commands.length - 1 ? commands[currentCommandIndex + 1] : null;
+      currentCommandIndex < commands.length - 1 ? commands[currentCommandIndex + 1] : null;
 
     if (currentPathIndex > 0 && curr === undefined) break;
 
-    if (curr && next && (typeof next === 'object') && next.outlets === undefined) {
+    if (curr && next && typeof next === 'object' && next.outlets === undefined) {
       if (!compare(curr, next, path)) return noMatch;
       currentCommandIndex += 2;
     } else {
@@ -264,7 +298,10 @@ function prefixedWith(segmentGroup: UrlSegmentGroup, startIndex: number, command
 }
 
 function createNewSegmentGroup(
-    segmentGroup: UrlSegmentGroup, startIndex: number, commands: any[]): UrlSegmentGroup {
+  segmentGroup: UrlSegmentGroup,
+  startIndex: number,
+  commands: any[]
+): UrlSegmentGroup {
   const paths = segmentGroup.segments.slice(0, startIndex);
 
   let i = 0;
@@ -283,7 +320,7 @@ function createNewSegmentGroup(
     }
 
     const curr = getPath(commands[i]);
-    const next = (i < commands.length - 1) ? commands[i + 1] : null;
+    const next = i < commands.length - 1 ? commands[i + 1] : null;
     if (curr && next && isMatrixParams(next)) {
       paths.push(new UrlSegment(curr, stringify(next)));
       i += 2;
@@ -307,7 +344,7 @@ function createNewSegmentChildren(outlets: {[name: string]: any}): any {
 
 function stringify(params: {[key: string]: any}): {[key: string]: string} {
   const res: {[key: string]: string} = {};
-  forEach(params, (v: any, k: string) => res[k] = `${v}`);
+  forEach(params, (v: any, k: string) => (res[k] = `${v}`));
   return res;
 }
 

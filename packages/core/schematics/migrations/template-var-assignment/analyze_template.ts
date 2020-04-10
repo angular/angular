@@ -22,8 +22,9 @@ export interface TemplateVariableAssignment {
  * Analyzes a given resolved template by looking for property assignments to local
  * template variables within bound events.
  */
-export function analyzeResolvedTemplate(template: ResolvedTemplate): TemplateVariableAssignment[]|
-    null {
+export function analyzeResolvedTemplate(
+  template: ResolvedTemplate
+): TemplateVariableAssignment[] | null {
   const templateNodes = parseHtmlGracefully(template.content, template.filePath);
 
   if (!templateNodes) {
@@ -35,6 +36,9 @@ export function analyzeResolvedTemplate(template: ResolvedTemplate): TemplateVar
   // Analyze the Angular Render3 HTML AST and collect all template variable assignments.
   visitAll(visitor, templateNodes);
 
-  return visitor.variableAssignments.map(
-      ({node, start, end}) => ({node, start: start + node.span.start, end}));
+  return visitor.variableAssignments.map(({node, start, end}) => ({
+    node,
+    start: start + node.span.start,
+    end,
+  }));
 }

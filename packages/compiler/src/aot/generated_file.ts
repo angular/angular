@@ -10,11 +10,14 @@ import {areAllEquivalent, Statement} from '../output/output_ast';
 import {TypeScriptEmitter} from '../output/ts_emitter';
 
 export class GeneratedFile {
-  public source: string|null;
-  public stmts: Statement[]|null;
+  public source: string | null;
+  public stmts: Statement[] | null;
 
   constructor(
-      public srcFileUrl: string, public genFileUrl: string, sourceOrStmts: string|Statement[]) {
+    public srcFileUrl: string,
+    public genFileUrl: string,
+    sourceOrStmts: string | Statement[]
+  ) {
     if (typeof sourceOrStmts === 'string') {
       this.source = sourceOrStmts;
       this.stmts = null;

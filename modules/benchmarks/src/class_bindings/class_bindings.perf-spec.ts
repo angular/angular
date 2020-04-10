@@ -10,8 +10,7 @@ import {$, browser} from 'protractor';
 import {runBenchmark} from '../../../e2e_util/perf_util';
 
 describe('class bindings perf', () => {
-
-  it('should work for update', async() => {
+  it('should work for update', async () => {
     browser.rootEl = '#root';
     await runBenchmark({
       id: 'create',
@@ -19,11 +18,11 @@ describe('class bindings perf', () => {
       ignoreBrowserSynchronization: true,
       params: [],
       prepare: () => $('#destroy').click(),
-      work: () => $('#create').click()
+      work: () => $('#create').click(),
     });
   });
 
-  it('should work for update', async() => {
+  it('should work for update', async () => {
     browser.rootEl = '#root';
     await runBenchmark({
       id: 'update',
@@ -31,8 +30,7 @@ describe('class bindings perf', () => {
       ignoreBrowserSynchronization: true,
       params: [],
       prepare: () => $('#create').click(),
-      work: () => $('#update').click()
+      work: () => $('#update').click(),
     });
   });
-
 });

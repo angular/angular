@@ -8,7 +8,7 @@
 
 interface FnWithArg<T> {
   (...args: any[]): T;
-  new(...args: any[]): T;
+  new (...args: any[]): T;
 }
 
 function callableClassDecorator(): FnWithArg<(clazz: any) => any> {
@@ -72,19 +72,26 @@ export interface SimpleChanges {
 
 export type ɵɵNgModuleDefWithMeta<ModuleT, DeclarationsT, ImportsT, ExportsT> = any;
 export type ɵɵDirectiveDefWithMeta<
-    DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT, NgContentSelectorsT> = any;
+  DirT,
+  SelectorT,
+  ExportAsT,
+  InputsT,
+  OutputsT,
+  QueriesT,
+  NgContentSelectorsT
+> = any;
 export type ɵɵPipeDefWithMeta<PipeT, NameT> = any;
 
 export enum ViewEncapsulation {
   Emulated = 0,
   Native = 1,
   None = 2,
-  ShadowDom = 3
+  ShadowDom = 3,
 }
 
 export enum ChangeDetectionStrategy {
   OnPush = 0,
-  Default = 1
+  Default = 1,
 }
 
 export const CUSTOM_ELEMENTS_SCHEMA: any = false;
@@ -96,10 +103,10 @@ export class EventEmitter<T> {
   }
 }
 
-export interface QueryList<T>/* implements Iterable<T> */ {
+export interface QueryList<T> /* implements Iterable<T> */ {
   [Symbol.iterator]: () => Iterator<T>;
 }
 
-export type NgIterable<T> = Array<T>|Iterable<T>;
+export type NgIterable<T> = Array<T> | Iterable<T>;
 
 export class NgZone {}

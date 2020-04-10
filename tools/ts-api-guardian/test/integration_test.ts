@@ -26,14 +26,17 @@ describe('integration test: public api', () => {
     _warn = null;
   });
 
-  it('should handle empty files',
-     () => { check('test/fixtures/empty.d.ts', 'test/fixtures/empty_expected.d.ts'); });
+  it('should handle empty files', () => {
+    check('test/fixtures/empty.d.ts', 'test/fixtures/empty_expected.d.ts');
+  });
 
-  it('should include symbols',
-     () => { check('test/fixtures/simple.d.ts', 'test/fixtures/simple_expected.d.ts'); });
+  it('should include symbols', () => {
+    check('test/fixtures/simple.d.ts', 'test/fixtures/simple_expected.d.ts');
+  });
 
-  it('should include symbols reexported explicitly',
-     () => { check('test/fixtures/reexported.d.ts', 'test/fixtures/reexported_expected.d.ts'); });
+  it('should include symbols reexported explicitly', () => {
+    check('test/fixtures/reexported.d.ts', 'test/fixtures/reexported_expected.d.ts');
+  });
 
   it('should include symbols reexported with *', () => {
     check('test/fixtures/reexported_star.d.ts', 'test/fixtures/reexported_star_expected.d.ts');
@@ -41,25 +44,29 @@ describe('integration test: public api', () => {
 
   it('should include members of classes and interfaces', () => {
     check(
-        'test/fixtures/classes_and_interfaces.d.ts',
-        'test/fixtures/classes_and_interfaces_expected.d.ts');
+      'test/fixtures/classes_and_interfaces.d.ts',
+      'test/fixtures/classes_and_interfaces_expected.d.ts'
+    );
   });
 
   it('should include value and type', () => {
     check(
-        'test/fixtures/exports_type_and_value.d.ts',
-        'test/fixtures/exports_type_and_value_expected.d.ts');
+      'test/fixtures/exports_type_and_value.d.ts',
+      'test/fixtures/exports_type_and_value_expected.d.ts'
+    );
   });
 
   it('should include members reexported classes', () => {
     check(
-        'test/fixtures/reexported_classes.d.ts', 'test/fixtures/reexported_classes_expected.d.ts');
+      'test/fixtures/reexported_classes.d.ts',
+      'test/fixtures/reexported_classes_expected.d.ts'
+    );
   });
 
   it('should remove reexported external symbols', () => {
     check('test/fixtures/reexported_extern.d.ts', 'test/fixtures/reexported_extern_expected.d.ts');
     chai.assert.deepEqual(warnings, [
-      'test/fixtures/reexported_extern.d.ts(5,1): error: No export declaration found for symbol "CompilerHost"'
+      'test/fixtures/reexported_extern.d.ts(5,1): error: No export declaration found for symbol "CompilerHost"',
     ]);
   });
 
@@ -78,9 +85,9 @@ describe('integration test: public api', () => {
   });
 
   it('should respect serialization options', () => {
-    check(
-        'test/fixtures/underscored.d.ts', 'test/fixtures/underscored_expected.d.ts',
-        {stripExportPattern: /^__.*/});
+    check('test/fixtures/underscored.d.ts', 'test/fixtures/underscored_expected.d.ts', {
+      stripExportPattern: /^__.*/,
+    });
   });
 });
 
@@ -95,8 +102,9 @@ describe('integration test: generateGoldenFile', () => {
     }
   });
 
-  afterEach(() => { unlinkRecursively(outDir); });
-
+  afterEach(() => {
+    unlinkRecursively(outDir);
+  });
 
   it('should generate a golden file', () => {
     main.generateGoldenFile('test/fixtures/reexported_classes.d.ts', outFile);
@@ -109,8 +117,9 @@ describe('integration test: generateGoldenFile', () => {
   });
 
   it('should respect serialization options', () => {
-    main.generateGoldenFile(
-        'test/fixtures/underscored.d.ts', outFile, {stripExportPattern: /^__.*/});
+    main.generateGoldenFile('test/fixtures/underscored.d.ts', outFile, {
+      stripExportPattern: /^__.*/,
+    });
     assertFileEqual(outFile, 'test/fixtures/underscored_expected.d.ts');
   });
 
@@ -123,20 +132,26 @@ describe('integration test: generateGoldenFile', () => {
 describe('integration test: verifyAgainstGoldenFile', () => {
   it('should check an entrypoint against a golden file on equal', () => {
     const diff = main.verifyAgainstGoldenFile(
-        'test/fixtures/reexported_classes.d.ts', 'test/fixtures/reexported_classes_expected.d.ts');
+      'test/fixtures/reexported_classes.d.ts',
+      'test/fixtures/reexported_classes_expected.d.ts'
+    );
     chai.assert.equal(diff, '');
   });
 
   it('should check an entrypoint against a golden file with proper diff message', () => {
     const diff = main.verifyAgainstGoldenFile(
-        'test/fixtures/verify_entrypoint.d.ts', 'test/fixtures/verify_expected.d.ts');
+      'test/fixtures/verify_entrypoint.d.ts',
+      'test/fixtures/verify_expected.d.ts'
+    );
     chai.assert.equal(diff, fs.readFileSync('test/fixtures/verify.patch').toString());
   });
 
   it('should respect serialization options', () => {
     const diff = main.verifyAgainstGoldenFile(
-        'test/fixtures/underscored.d.ts', 'test/fixtures/underscored_expected.d.ts',
-        {stripExportPattern: /^__.*/});
+      'test/fixtures/underscored.d.ts',
+      'test/fixtures/underscored_expected.d.ts',
+      {stripExportPattern: /^__.*/}
+    );
     chai.assert.equal(diff, '');
   });
 });

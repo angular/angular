@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ChildProcess, fork} from 'child_process';
 
 import {AbsoluteFsPath, CachedFileSystem, FileSystem} from '../../../../src/ngtsc/file_system';
@@ -34,13 +35,12 @@ import {removeLockFile} from './util';
  */
 export class LockFileWithChildProcess implements LockFile {
   path: AbsoluteFsPath;
-  private unlocker: ChildProcess|null;
+  private unlocker: ChildProcess | null;
 
   constructor(protected fs: FileSystem, protected logger: Logger) {
     this.path = getLockFilePath(fs);
     this.unlocker = this.createUnlocker(this.path);
   }
-
 
   write(): void {
     if (this.unlocker === null) {
@@ -80,7 +80,7 @@ export class LockFileWithChildProcess implements LockFile {
   protected createUnlocker(path: AbsoluteFsPath): ChildProcess {
     this.logger.debug('Forking unlocker child-process');
     const logLevel =
-        this.logger.level !== undefined ? this.logger.level.toString() : LogLevel.info.toString();
+      this.logger.level !== undefined ? this.logger.level.toString() : LogLevel.info.toString();
     return fork(this.fs.resolve(__dirname, './unlocker.js'), [path, logLevel], {detached: true});
   }
 }

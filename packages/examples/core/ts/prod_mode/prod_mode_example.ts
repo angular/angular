@@ -15,8 +15,7 @@ import {MyComponent} from './my_component';
 enableProdMode();
 
 @NgModule({imports: [BrowserModule], declarations: [MyComponent], bootstrap: [MyComponent]})
-export class AppModule {
-}
+export class AppModule {}
 
 platformBrowserDynamic().bootstrapModule(AppModule);
 // #enddocregion

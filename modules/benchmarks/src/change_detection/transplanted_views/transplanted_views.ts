@@ -14,8 +14,8 @@ import {newArray} from '../util';
 @Component({
   selector: 'declaration-component',
   template: `
-  <ng-template #template>{{trackTemplateRefresh()}}</ng-template>
-  <insertion-component [template]="template" [viewCount]="viewCount"></insertion-component>
+    <ng-template #template>{{ trackTemplateRefresh() }}</ng-template>
+    <insertion-component [template]="template" [viewCount]="viewCount"></insertion-component>
   `,
 })
 export class DeclarationComponent {
@@ -34,22 +34,25 @@ export class DeclarationComponent {
   template: `
     <ng-container *ngFor="let n of views; template: template; trackBy: trackByIndex"></ng-container>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InsertionComponent {
-  @Input() template !: TemplateRef<{}>;
+  @Input() template!: TemplateRef<{}>;
   views: any[] = [];
   @Input()
-  set viewCount(n: number) { this.views = n > 0 ? newArray<any>(n) : []; }
+  set viewCount(n: number) {
+    this.views = n > 0 ? newArray<any>(n) : [];
+  }
 
   // use trackBy to ensure profile isn't affected by the cost to refresh ngFor.
-  trackByIndex(index: number, item: any) { return index; }
+  trackByIndex(index: number, item: any) {
+    return index;
+  }
 }
 
 @NgModule({
   declarations: [DeclarationComponent, InsertionComponent],
   bootstrap: [DeclarationComponent],
-  imports: [BrowserModule]
+  imports: [BrowserModule],
 })
-export class TransplantedViewsModule {
-}
+export class TransplantedViewsModule {}

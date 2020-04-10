@@ -22,15 +22,16 @@ const README_URL = 'https://v8.angular.io/guide/deprecations#cannot-assign-to-te
 const FAILURE_MESSAGE = `Found assignment to template variable.`;
 
 /** Entry point for the V8 template variable assignment schematic. */
-export default function(): Rule {
+export default function (): Rule {
   return (tree: Tree, context: SchematicContext) => {
     const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
 
     if (!buildPaths.length && !testPaths.length) {
       throw new SchematicsException(
-          'Could not find any tsconfig file. Cannot check templates for template variable ' +
-          'assignments.');
+        'Could not find any tsconfig file. Cannot check templates for template variable ' +
+          'assignments.'
+      );
     }
 
     for (const tsconfigPath of [...buildPaths, ...testPaths]) {
@@ -44,22 +45,27 @@ export default function(): Rule {
  * if values are assigned to template variables within output bindings.
  */
 function runTemplateVariableAssignmentCheck(
-    tree: Tree, tsconfigPath: string, basePath: string, logger: Logger) {
+  tree: Tree,
+  tsconfigPath: string,
+  basePath: string,
+  logger: Logger
+) {
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();
   const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
-  const sourceFiles = program.getSourceFiles().filter(
-      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
+  const sourceFiles = program
+    .getSourceFiles()
+    .filter((f) => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
 
   // Analyze source files by detecting HTML templates.
-  sourceFiles.forEach(sourceFile => templateVisitor.visitNode(sourceFile));
+  sourceFiles.forEach((sourceFile) => templateVisitor.visitNode(sourceFile));
 
   const {resolvedTemplates} = templateVisitor;
   const collectedFailures: string[] = [];
 
   // Analyze each resolved template and print a warning for property writes to
   // template variables.
-  resolvedTemplates.forEach(template => {
+  resolvedTemplates.forEach((template) => {
     const filePath = template.filePath;
     const nodes = analyzeResolvedTemplate(template);
 
@@ -69,7 +75,7 @@ function runTemplateVariableAssignmentCheck(
 
     const displayFilePath = normalize(relative(basePath, filePath));
 
-    nodes.forEach(n => {
+    nodes.forEach((n) => {
       const {line, character} = template.getCharacterAndLineOfPosition(n.start);
       collectedFailures.push(`${displayFilePath}@${line + 1}:${character + 1}: ${FAILURE_MESSAGE}`);
     });
@@ -82,6 +88,6 @@ function runTemplateVariableAssignmentCheck(
     logger.info(`this change here: ${README_URL}`);
     logger.info('');
     logger.info('The following template assignments were found:');
-    collectedFailures.forEach(failure => logger.warn(`⮑   ${failure}`));
+    collectedFailures.forEach((failure) => logger.warn(`⮑   ${failure}`));
   }
 }

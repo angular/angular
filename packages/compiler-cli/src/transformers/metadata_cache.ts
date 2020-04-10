@@ -17,18 +17,20 @@ export type ValueTransform = (value: MetadataValue, node: ts.Node) => MetadataVa
 
 export interface MetadataTransformer {
   connect?(cache: MetadataCache): void;
-  start(sourceFile: ts.SourceFile): ValueTransform|undefined;
+  start(sourceFile: ts.SourceFile): ValueTransform | undefined;
 }
 
 /**
  * Cache, and potentially transform, metadata as it is being collected.
  */
 export class MetadataCache implements MetadataProvider {
-  private metadataCache = new Map<string, ModuleMetadata|undefined>();
+  private metadataCache = new Map<string, ModuleMetadata | undefined>();
 
   constructor(
-      private collector: MetadataCollector, private readonly strict: boolean,
-      private transformers: MetadataTransformer[]) {
+    private collector: MetadataCollector,
+    private readonly strict: boolean,
+    private transformers: MetadataTransformer[]
+  ) {
     for (let transformer of transformers) {
       if (transformer.connect) {
         transformer.connect(this);
@@ -36,11 +38,11 @@ export class MetadataCache implements MetadataProvider {
     }
   }
 
-  getMetadata(sourceFile: ts.SourceFile): ModuleMetadata|undefined {
+  getMetadata(sourceFile: ts.SourceFile): ModuleMetadata | undefined {
     if (this.metadataCache.has(sourceFile.fileName)) {
       return this.metadataCache.get(sourceFile.fileName);
     }
-    let substitute: ValueTransform|undefined = undefined;
+    let substitute: ValueTransform | undefined = undefined;
 
     // Only process transformers on modules that are not declaration files.
     const declarationFile = sourceFile.isDeclarationFile;
@@ -52,7 +54,7 @@ export class MetadataCache implements MetadataProvider {
           if (substitute) {
             const previous: ValueTransform = substitute;
             substitute = (value: MetadataValue, node: ts.Node) =>
-                transformSubstitute(previous(value, node), node);
+              transformSubstitute(previous(value, node), node);
           } else {
             substitute = transformSubstitute;
           }

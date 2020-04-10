@@ -10,7 +10,7 @@ import {browser, by, element, protractor} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../../e2e_util/e2e_util';
 
-describe('WebWorkers Todo', function() {
+describe('WebWorkers Todo', function () {
   afterEach(() => {
     verifyNoBrowserErrors();
     browser.ignoreSynchronization = false;
@@ -26,7 +26,6 @@ describe('WebWorkers Todo', function() {
     waitForBootstrap();
     expect(element(by.css('#todoapp header')).getText()).toEqual('todos');
   });
-
 });
 
 function waitForBootstrap(): void {

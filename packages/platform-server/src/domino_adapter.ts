@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 const domino = require('domino');
 
 import {ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
@@ -52,11 +53,15 @@ export class DominoAdapter extends BrowserDomAdapter {
     console.log(error);
   }
 
-  logGroup(error: string) { console.error(error); }
+  logGroup(error: string) {
+    console.error(error);
+  }
 
   logGroupEnd() {}
 
-  supportsDOMEvents(): boolean { return false; }
+  supportsDOMEvents(): boolean {
+    return false;
+  }
 
   createHtmlDocument(): HTMLDocument {
     return parseDocument('<html><head><title>fakeTitle</title></head><body></body></html>');
@@ -72,7 +77,9 @@ export class DominoAdapter extends BrowserDomAdapter {
   isElementNode(node: any): boolean {
     return node ? node.nodeType === DominoAdapter.defaultDoc.ELEMENT_NODE : false;
   }
-  isShadowRoot(node: any): boolean { return node.shadowRoot == node; }
+  isShadowRoot(node: any): boolean {
+    return node.shadowRoot == node;
+  }
 
   getProperty(el: Element, name: string): any {
     if (name === 'href') {
@@ -86,7 +93,7 @@ export class DominoAdapter extends BrowserDomAdapter {
     return (<any>el)[name];
   }
 
-  getGlobalEventTarget(doc: Document, target: string): EventTarget|null {
+  getGlobalEventTarget(doc: Document, target: string): EventTarget | null {
     if (target === 'window') {
       return doc.defaultView;
     }
@@ -100,10 +107,10 @@ export class DominoAdapter extends BrowserDomAdapter {
   }
 
   getBaseHref(doc: Document): string {
-    const base = doc.documentElement !.querySelector('base');
+    const base = doc.documentElement!.querySelector('base');
     let href = '';
     if (base) {
-      href = base.getAttribute('href') !;
+      href = base.getAttribute('href')!;
     }
     // TODO(alxhub): Need relative path logic from BrowserDomAdapter here?
     return href;
@@ -120,12 +127,24 @@ export class DominoAdapter extends BrowserDomAdapter {
     }
   }
 
-  getHistory(): History { throw _notImplemented('getHistory'); }
-  getLocation(): Location { throw _notImplemented('getLocation'); }
-  getUserAgent(): string { return 'Fake user agent'; }
+  getHistory(): History {
+    throw _notImplemented('getHistory');
+  }
+  getLocation(): Location {
+    throw _notImplemented('getLocation');
+  }
+  getUserAgent(): string {
+    return 'Fake user agent';
+  }
 
-  performanceNow(): number { return Date.now(); }
+  performanceNow(): number {
+    return Date.now();
+  }
 
-  supportsCookies(): boolean { return false; }
-  getCookie(name: string): string { throw _notImplemented('getCookie'); }
+  supportsCookies(): boolean {
+    return false;
+  }
+  getCookie(name: string): string {
+    throw _notImplemented('getCookie');
+  }
 }

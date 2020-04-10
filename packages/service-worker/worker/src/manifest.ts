@@ -17,14 +17,14 @@ export interface Manifest {
   index: string;
   assetGroups?: AssetGroupConfig[];
   dataGroups?: DataGroupConfig[];
-  navigationUrls: {positive: boolean, regex: string}[];
+  navigationUrls: {positive: boolean; regex: string}[];
   hashTable: {[url: string]: string};
 }
 
 export interface AssetGroupConfig {
   name: string;
-  installMode: 'prefetch'|'lazy';
-  updateMode: 'prefetch'|'lazy';
+  installMode: 'prefetch' | 'lazy';
+  updateMode: 'prefetch' | 'lazy';
   urls: string[];
   patterns: string[];
 }
@@ -32,7 +32,7 @@ export interface AssetGroupConfig {
 export interface DataGroupConfig {
   name: string;
   version: number;
-  strategy: 'freshness'|'performance';
+  strategy: 'freshness' | 'performance';
   patterns: string[];
   maxSize: number;
   timeoutMs?: number;

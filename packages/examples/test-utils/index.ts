@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 /* tslint:disable:no-console  */
 import {WebDriver, logging} from 'selenium-webdriver';
 
@@ -16,7 +17,7 @@ export async function verifyNoBrowserErrors() {
   const browserLog = await browser.manage().logs().get('browser');
   const collectedErrors: any[] = [];
 
-  browserLog.forEach(logEntry => {
+  browserLog.forEach((logEntry) => {
     const msg = logEntry.message;
 
     // Since we currently use the `ts_devserver` from the Bazel TypeScript rules, which does
@@ -27,8 +28,9 @@ export async function verifyNoBrowserErrors() {
     // we manually filter this error before ensuring there are no console errors.
     // TODO: This is a current limitation of using the "ts_devserver" with Angular routing.
     // Tracked with: TOOL-629
-    if (msg.includes(
-            `Failed to load resource: the server responded with a status of 404 (Not Found)`)) {
+    if (
+      msg.includes(`Failed to load resource: the server responded with a status of 404 (Not Found)`)
+    ) {
       return;
     }
 

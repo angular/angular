@@ -18,8 +18,6 @@ import {ResolvedDirective, ResolvedNgModule} from './definition_collector';
 import {ProviderLiteral, ProvidersEvaluator} from './providers_evaluator';
 import {UpdateRecorder} from './update_recorder';
 
-
-
 /** Name of decorators which imply that a given class does not need to be migrated. */
 const NO_MIGRATE_DECORATORS = ['Injectable', 'Directive', 'Component', 'Pipe'];
 
@@ -40,13 +38,19 @@ export class MissingInjectableTransform {
   private visitedProviderLiterals = new Set<ts.ObjectLiteralExpression>();
 
   constructor(
-      private typeChecker: ts.TypeChecker,
-      private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder) {
+    private typeChecker: ts.TypeChecker,
+    private getUpdateRecorder: (sf: ts.SourceFile) => UpdateRecorder
+  ) {
     this.providersEvaluator = new ProvidersEvaluator(
-        new TypeScriptReflectionHost(typeChecker), typeChecker, /* dependencyTracker */ null);
+      new TypeScriptReflectionHost(typeChecker),
+      typeChecker,
+      /* dependencyTracker */ null
+    );
   }
 
-  recordChanges() { this.importManager.recordChanges(); }
+  recordChanges() {
+    this.importManager.recordChanges();
+  }
 
   /**
    * Migrates all specified NgModule's by walking through referenced providers
@@ -54,7 +58,9 @@ export class MissingInjectableTransform {
    */
   migrateModules(modules: ResolvedNgModule[]): AnalysisFailure[] {
     return modules.reduce(
-        (failures, node) => failures.concat(this.migrateModule(node)), [] as AnalysisFailure[]);
+      (failures, node) => failures.concat(this.migrateModule(node)),
+      [] as AnalysisFailure[]
+    );
   }
 
   /**
@@ -63,7 +69,9 @@ export class MissingInjectableTransform {
    */
   migrateDirectives(directives: ResolvedDirective[]): AnalysisFailure[] {
     return directives.reduce(
-        (failures, node) => failures.concat(this.migrateDirective(node)), [] as AnalysisFailure[]);
+      (failures, node) => failures.concat(this.migrateDirective(node)),
+      [] as AnalysisFailure[]
+    );
   }
 
   /** Migrates a given NgModule by walking through the referenced providers. */
@@ -76,15 +84,16 @@ export class MissingInjectableTransform {
     this._migrateLiteralProviders(literals);
 
     if (!Array.isArray(resolvedValue)) {
-      return [{
-        node: module.providersExpr,
-        message: 'Providers of module are not statically analyzable.'
-      }];
+      return [
+        {
+          node: module.providersExpr,
+          message: 'Providers of module are not statically analyzable.',
+        },
+      ];
     }
 
     return this._visitProviderResolvedValue(resolvedValue, module);
   }
-
 
   /**
    * Migrates a given directive by walking through defined providers. This method
@@ -99,7 +108,7 @@ export class MissingInjectableTransform {
       this._migrateLiteralProviders(literals);
       if (!Array.isArray(resolvedValue)) {
         return [
-          {node: directive.providersExpr, message: `Providers are not statically analyzable.`}
+          {node: directive.providersExpr, message: `Providers are not statically analyzable.`},
         ];
       }
       failures.push(...this._visitProviderResolvedValue(resolvedValue, directive));
@@ -107,12 +116,13 @@ export class MissingInjectableTransform {
 
     // Migrate "viewProviders" on components if defined.
     if (directive.viewProvidersExpr) {
-      const {resolvedValue, literals} =
-          this.providersEvaluator.evaluate(directive.viewProvidersExpr);
+      const {resolvedValue, literals} = this.providersEvaluator.evaluate(
+        directive.viewProvidersExpr
+      );
       this._migrateLiteralProviders(literals);
       if (!Array.isArray(resolvedValue)) {
         return [
-          {node: directive.viewProvidersExpr, message: `Providers are not statically analyzable.`}
+          {node: directive.viewProvidersExpr, message: `Providers are not statically analyzable.`},
         ];
       }
       failures.push(...this._visitProviderResolvedValue(resolvedValue, directive));
@@ -124,7 +134,7 @@ export class MissingInjectableTransform {
    * Migrates a given provider class if it is not decorated with
    * any Angular decorator.
    */
-  migrateProviderClass(node: ts.ClassDeclaration, context: ResolvedNgModule|ResolvedDirective) {
+  migrateProviderClass(node: ts.ClassDeclaration, context: ResolvedNgModule | ResolvedDirective) {
     if (this.visitedProviderClasses.has(node)) {
       return;
     }
@@ -139,27 +149,35 @@ export class MissingInjectableTransform {
       return;
     }
 
-    const ngDecorators =
-        node.decorators ? getAngularDecorators(this.typeChecker, node.decorators) : null;
+    const ngDecorators = node.decorators
+      ? getAngularDecorators(this.typeChecker, node.decorators)
+      : null;
 
-    if (ngDecorators !== null &&
-        ngDecorators.some(d => NO_MIGRATE_DECORATORS.indexOf(d.name) !== -1)) {
+    if (
+      ngDecorators !== null &&
+      ngDecorators.some((d) => NO_MIGRATE_DECORATORS.indexOf(d.name) !== -1)
+    ) {
       return;
     }
 
     const updateRecorder = this.getUpdateRecorder(sourceFile);
-    const importExpr =
-        this.importManager.addImportToSourceFile(sourceFile, 'Injectable', '@angular/core');
+    const importExpr = this.importManager.addImportToSourceFile(
+      sourceFile,
+      'Injectable',
+      '@angular/core'
+    );
     const newDecoratorExpr = ts.createDecorator(ts.createCall(importExpr, undefined, undefined));
-    const newDecoratorText =
-        this.printer.printNode(ts.EmitHint.Unspecified, newDecoratorExpr, sourceFile);
-
+    const newDecoratorText = this.printer.printNode(
+      ts.EmitHint.Unspecified,
+      newDecoratorExpr,
+      sourceFile
+    );
 
     // In case the class is already decorated with "@Inject(..)", we replace the "@Inject"
     // decorator with "@Injectable()" since using "@Inject(..)" on a class is a noop and
     // most likely was meant to be "@Injectable()".
     const existingInjectDecorator =
-        ngDecorators !== null ? ngDecorators.find(d => d.name === 'Inject') : null;
+      ngDecorators !== null ? ngDecorators.find((d) => d.name === 'Inject') : null;
     if (existingInjectDecorator) {
       updateRecorder.replaceDecorator(existingInjectDecorator.node, newDecoratorText, context.name);
     } else {
@@ -186,20 +204,30 @@ export class MissingInjectableTransform {
       }
       this.visitedProviderLiterals.add(node);
 
-      if (!resolvedValue || !(resolvedValue instanceof Map) || !resolvedValue.has('provide') ||
-          resolvedValue.has('useClass') || resolvedValue.has('useValue') ||
-          resolvedValue.has('useExisting') || resolvedValue.has('useFactory')) {
+      if (
+        !resolvedValue ||
+        !(resolvedValue instanceof Map) ||
+        !resolvedValue.has('provide') ||
+        resolvedValue.has('useClass') ||
+        resolvedValue.has('useValue') ||
+        resolvedValue.has('useExisting') ||
+        resolvedValue.has('useFactory')
+      ) {
         continue;
       }
 
       const sourceFile = node.getSourceFile();
       const newObjectLiteral = ts.updateObjectLiteral(
-          node, node.properties.concat(
-                    ts.createPropertyAssignment('useValue', ts.createIdentifier('undefined'))));
+        node,
+        node.properties.concat(
+          ts.createPropertyAssignment('useValue', ts.createIdentifier('undefined'))
+        )
+      );
 
-      this.getUpdateRecorder(sourceFile)
-          .updateObjectLiteral(
-              node, this.printer.printNode(ts.EmitHint.Unspecified, newObjectLiteral, sourceFile));
+      this.getUpdateRecorder(sourceFile).updateObjectLiteral(
+        node,
+        this.printer.printNode(ts.EmitHint.Unspecified, newObjectLiteral, sourceFile)
+      );
     }
   }
 
@@ -208,8 +236,10 @@ export class MissingInjectableTransform {
    * arrays and we need to recursively walk through the providers to be able to
    * migrate all referenced provider classes. e.g. "providers: [[A, [B]]]".
    */
-  private _visitProviderResolvedValue(value: ResolvedValue, module: ResolvedNgModule):
-      AnalysisFailure[] {
+  private _visitProviderResolvedValue(
+    value: ResolvedValue,
+    module: ResolvedNgModule
+  ): AnalysisFailure[] {
     if (value instanceof Reference && ts.isClassDeclaration(value.node)) {
       this.migrateProviderClass(value.node, module);
     } else if (value instanceof Map) {
@@ -217,11 +247,13 @@ export class MissingInjectableTransform {
       // decorate the class. This is because the class is instantiated through the
       // specified "deps" and the class does not need a factory definition.
       if (value.has('provide') && value.has('useClass') && value.get('deps') == null) {
-        return this._visitProviderResolvedValue(value.get('useClass') !, module);
+        return this._visitProviderResolvedValue(value.get('useClass')!, module);
       }
     } else if (Array.isArray(value)) {
-      return value.reduce((res, v) => res.concat(this._visitProviderResolvedValue(v, module)), [
-      ] as AnalysisFailure[]);
+      return value.reduce(
+        (res, v) => res.concat(this._visitProviderResolvedValue(v, module)),
+        [] as AnalysisFailure[]
+      );
     } else if (value instanceof DynamicValue) {
       return [{node: value.node, message: `Provider is not statically analyzable.`}];
     }

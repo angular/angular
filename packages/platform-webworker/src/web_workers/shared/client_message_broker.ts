@@ -68,10 +68,13 @@ export class ClientMessageBroker {
     return id;
   }
 
-  runOnService(args: UiArguments, returnType: Type<any>|SerializerTypes|null): Promise<any>|null {
+  runOnService(
+    args: UiArguments,
+    returnType: Type<any> | SerializerTypes | null
+  ): Promise<any> | null {
     const fnArgs: any[] = [];
     if (args.args) {
-      args.args.forEach(argument => {
+      args.args.forEach((argument) => {
         if (argument.type != null) {
           fnArgs.push(this._serializer.serialize(argument.value, argument.type));
         } else {
@@ -80,11 +83,13 @@ export class ClientMessageBroker {
       });
     }
 
-    let promise: Promise<any>|null;
-    let id: string|null = null;
+    let promise: Promise<any> | null;
+    let id: string | null = null;
     if (returnType != null) {
-      let completer: PromiseCompleter = undefined !;
-      promise = new Promise((resolve, reject) => { completer = {resolve, reject}; });
+      let completer: PromiseCompleter = undefined!;
+      promise = new Promise((resolve, reject) => {
+        completer = {resolve, reject};
+      });
       id = this._generateMessageId(args.method);
       this._pending.set(id, completer);
 
@@ -97,8 +102,9 @@ export class ClientMessageBroker {
         completer.reject(err);
       });
 
-      promise = promise.then(
-          (v: any) => this._serializer ? this._serializer.deserialize(v, returnType) : v);
+      promise = promise.then((v: any) =>
+        this._serializer ? this._serializer.deserialize(v, returnType) : v
+      );
     } else {
       promise = null;
     }
@@ -117,12 +123,12 @@ export class ClientMessageBroker {
 
   private _handleMessage(message: ResponseMessageData): void {
     if (message.type === 'result' || message.type === 'error') {
-      const id = message.id !;
+      const id = message.id!;
       if (this._pending.has(id)) {
         if (message.type === 'result') {
-          this._pending.get(id) !.resolve(message.value);
+          this._pending.get(id)!.resolve(message.value);
         } else {
-          this._pending.get(id) !.reject(message.value);
+          this._pending.get(id)!.reject(message.value);
         }
         this._pending.delete(id);
       }
@@ -137,7 +143,7 @@ interface RequestMessageData {
 }
 
 interface ResponseMessageData {
-  type: 'result'|'error';
+  type: 'result' | 'error';
   value?: any;
   id?: string;
 }
@@ -148,7 +154,9 @@ interface ResponseMessageData {
  */
 export class FnArg {
   constructor(
-      public value: any, public type: Type<any>|SerializerTypes = SerializerTypes.PRIMITIVE) {}
+    public value: any,
+    public type: Type<any> | SerializerTypes = SerializerTypes.PRIMITIVE
+  ) {}
 }
 
 /**

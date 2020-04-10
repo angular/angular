@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ClassField, ClassMethod, ClassStmt, PartialModule, Statement, StmtModifier} from '@angular/compiler';
+import {
+  ClassField,
+  ClassMethod,
+  ClassStmt,
+  PartialModule,
+  Statement,
+  StmtModifier,
+} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {isClassMetadata, MetadataCollector} from '../../src/metadata/index';
@@ -24,27 +31,42 @@ describe('r3_transform_spec', () => {
       }
     `;
 
-    const sourceFile =
-        ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, /* setParentNodes */ true);
+    const sourceFile = ts.createSourceFile(
+      fileName,
+      source,
+      ts.ScriptTarget.Latest,
+      /* setParentNodes */ true
+    );
     const partialModule: PartialModule = {
       fileName,
-      statements: [new ClassStmt(
-          className, /* parent */ null, /* fields */[new ClassField(
-              /* name */ newFieldName, /* type */ null, /* modifiers */[StmtModifier.Static])],
-          /* getters */[],
-          /* constructorMethod */ new ClassMethod(/* name */ null, /* params */[], /* body */[]),
-          /* methods */[])]
+      statements: [
+        new ClassStmt(
+          className,
+          /* parent */ null,
+          /* fields */ [
+            new ClassField(
+              /* name */ newFieldName,
+              /* type */ null,
+              /* modifiers */ [StmtModifier.Static]
+            ),
+          ],
+          /* getters */ [],
+          /* constructorMethod */ new ClassMethod(/* name */ null, /* params */ [], /* body */ []),
+          /* methods */ []
+        ),
+      ],
     };
 
-    const cache = new MetadataCache(
-        new MetadataCollector(), /* strict */ true,
-        [new PartialModuleMetadataTransformer([partialModule])]);
+    const cache = new MetadataCache(new MetadataCollector(), /* strict */ true, [
+      new PartialModuleMetadataTransformer([partialModule]),
+    ]);
     const metadata = cache.getMetadata(sourceFile);
     expect(metadata).toBeDefined('Expected metadata from test source file');
     if (metadata) {
       const classData = metadata.metadata[className];
-      expect(classData && isClassMetadata(classData))
-          .toBeDefined(`Expected metadata to contain data for "${className}"`);
+      expect(classData && isClassMetadata(classData)).toBeDefined(
+        `Expected metadata to contain data for "${className}"`
+      );
       if (classData && isClassMetadata(classData)) {
         const statics = classData.statics;
         expect(statics).toBeDefined(`Expected "${className}" metadata to contain statics`);

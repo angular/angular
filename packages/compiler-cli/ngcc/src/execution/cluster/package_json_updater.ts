@@ -12,10 +12,14 @@ import * as cluster from 'cluster';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {JsonObject} from '../../packages/entry_point';
-import {applyChange, PackageJsonChange, PackageJsonUpdate, PackageJsonUpdater} from '../../writing/package_json_updater';
+import {
+  applyChange,
+  PackageJsonChange,
+  PackageJsonUpdate,
+  PackageJsonUpdater,
+} from '../../writing/package_json_updater';
 
 import {sendMessageToMaster} from './utils';
-
 
 /**
  * A `PackageJsonUpdater` that can safely handle update operations on multiple processes.
@@ -28,8 +32,10 @@ export class ClusterPackageJsonUpdater implements PackageJsonUpdater {
   }
 
   writeChanges(
-      changes: PackageJsonChange[], packageJsonPath: AbsoluteFsPath,
-      preExistingParsedJson?: JsonObject): void {
+    changes: PackageJsonChange[],
+    packageJsonPath: AbsoluteFsPath,
+    preExistingParsedJson?: JsonObject
+  ): void {
     if (cluster.isMaster) {
       // This is the master process:
       // Actually apply the changes to the file on disk.

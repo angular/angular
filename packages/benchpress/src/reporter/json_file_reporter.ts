@@ -15,7 +15,6 @@ import {SampleDescription} from '../sample_description';
 
 import {formatStats, sortedProps} from './util';
 
-
 /**
  * A reporter that writes results into a json file.
  */
@@ -25,19 +24,23 @@ export class JsonFileReporter extends Reporter {
   static PROVIDERS = [
     {
       provide: JsonFileReporter,
-      deps: [SampleDescription, JsonFileReporter.PATH, Options.WRITE_FILE, Options.NOW]
+      deps: [SampleDescription, JsonFileReporter.PATH, Options.WRITE_FILE, Options.NOW],
     },
-    {provide: JsonFileReporter.PATH, useValue: '.'}
+    {provide: JsonFileReporter.PATH, useValue: '.'},
   ];
 
   constructor(
-      private _description: SampleDescription, @Inject(JsonFileReporter.PATH) private _path: string,
-      @Inject(Options.WRITE_FILE) private _writeFile: Function,
-      @Inject(Options.NOW) private _now: Function) {
+    private _description: SampleDescription,
+    @Inject(JsonFileReporter.PATH) private _path: string,
+    @Inject(Options.WRITE_FILE) private _writeFile: Function,
+    @Inject(Options.NOW) private _now: Function
+  ) {
     super();
   }
 
-  reportMeasureValues(measureValues: MeasureValues): Promise<any> { return Promise.resolve(null); }
+  reportMeasureValues(measureValues: MeasureValues): Promise<any> {
+    return Promise.resolve(null);
+  }
 
   reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]): Promise<any> {
     const stats: {[key: string]: string} = {};
@@ -45,13 +48,15 @@ export class JsonFileReporter extends Reporter {
       stats[metricName] = formatStats(validSample, metricName);
     });
     const content = JSON.stringify(
-        {
-          'description': this._description,
-          'stats': stats,
-          'completeSample': completeSample,
-          'validSample': validSample,
-        },
-        null, 2);
+      {
+        'description': this._description,
+        'stats': stats,
+        'completeSample': completeSample,
+        'validSample': validSample,
+      },
+      null,
+      2
+    );
     const filePath = `${this._path}/${this._description.id}_${this._now().getTime()}.json`;
     return this._writeFile(filePath, content);
   }

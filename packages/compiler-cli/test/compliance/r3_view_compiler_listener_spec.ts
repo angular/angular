@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AttributeMarker} from '@angular/compiler/src/core';
 import {setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
@@ -35,8 +36,8 @@ describe('compiler compliance: listen()', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     // The template should look like this (where IDENT is a wild card for an identifier):
@@ -82,8 +83,8 @@ describe('compiler compliance: listen()', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const template = `
@@ -128,8 +129,8 @@ describe('compiler compliance: listen()', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const template = `
@@ -188,8 +189,8 @@ describe('compiler compliance: listen()', () => {
 
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const MyComponentDefinition = `
@@ -244,8 +245,8 @@ describe('compiler compliance: listen()', () => {
 
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const template = `
@@ -286,14 +287,13 @@ describe('compiler compliance: listen()', () => {
 
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const template = `
         …
-        consts: [[${AttributeMarker.Bindings}, "click", "change"], [${
-        AttributeMarker.Bindings}, "update", "delete"]],
+        consts: [[${AttributeMarker.Bindings}, "click", "change"], [${AttributeMarker.Bindings}, "update", "delete"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
@@ -325,8 +325,8 @@ describe('compiler compliance: listen()', () => {
 
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const template = `
@@ -356,8 +356,8 @@ describe('compiler compliance: listen()', () => {
           export class MyComponent {
             onClick() {}
           }
-        `
-      }
+        `,
+      },
     };
 
     const template = `
@@ -397,8 +397,8 @@ describe('compiler compliance: listen()', () => {
             @HostListener('click')
             click() {}
           }
-        `
-      }
+        `,
+      },
     };
 
     const template = `
@@ -429,8 +429,8 @@ describe('compiler compliance: listen()', () => {
             @HostListener('click', ['$event.target'])
             click(t: EventTarget) {}
           }
-        `
-      }
+        `,
+      },
     };
 
     const template = `

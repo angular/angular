@@ -5,16 +5,40 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {LifecycleHooksFeature, renderComponent, whenRendered} from './component';
-import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefineNgModule, ɵɵdefinePipe, ɵɵsetComponentScope, ɵɵsetNgModuleScope} from './definition';
+import {
+  ɵɵdefineComponent,
+  ɵɵdefineDirective,
+  ɵɵdefineNgModule,
+  ɵɵdefinePipe,
+  ɵɵsetComponentScope,
+  ɵɵsetNgModuleScope,
+} from './definition';
 import {ɵɵCopyDefinitionFeature} from './features/copy_definition_feature';
 import {ɵɵInheritDefinitionFeature} from './features/inherit_definition_feature';
 import {ɵɵNgOnChangesFeature} from './features/ng_onchanges_feature';
 import {ɵɵProvidersFeature} from './features/providers_feature';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PipeDef, ɵɵComponentDefWithMeta, ɵɵDirectiveDefWithMeta, ɵɵFactoryDef, ɵɵPipeDefWithMeta} from './interfaces/definition';
+import {
+  ComponentDef,
+  ComponentTemplate,
+  ComponentType,
+  DirectiveDef,
+  DirectiveType,
+  PipeDef,
+  ɵɵComponentDefWithMeta,
+  ɵɵDirectiveDefWithMeta,
+  ɵɵFactoryDef,
+  ɵɵPipeDefWithMeta,
+} from './interfaces/definition';
 import {getComponent, getDirectives, getHostElement, getRenderedText} from './util/discovery_utils';
 
-export {ComponentFactory, ComponentFactoryResolver, ComponentRef, injectComponentFactoryResolver} from './component_ref';
+export {
+  ComponentFactory,
+  ComponentFactoryResolver,
+  ComponentRef,
+  injectComponentFactoryResolver,
+} from './component_ref';
 export {ɵɵgetFactoryOf, ɵɵgetInheritedFactory} from './di';
 
 // prettier-ignore
@@ -163,22 +187,11 @@ export {
 
 export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
 
-export {
-  AttributeMarker
-} from './interfaces/node';
+export {AttributeMarker} from './interfaces/node';
 
-export {
-  setClassMetadata,
-} from './metadata';
+export {setClassMetadata} from './metadata';
 
-export {
-  ɵɵpipe,
-  ɵɵpipeBind1,
-  ɵɵpipeBind2,
-  ɵɵpipeBind3,
-  ɵɵpipeBind4,
-  ɵɵpipeBindV,
-} from './pipe';
+export {ɵɵpipe, ɵɵpipeBind1, ɵɵpipeBind2, ɵɵpipeBind3, ɵɵpipeBind4, ɵɵpipeBindV} from './pipe';
 
 export {
   ɵɵqueryRefresh,
@@ -186,7 +199,7 @@ export {
   ɵɵstaticViewQuery,
   ɵɵloadQuery,
   ɵɵcontentQuery,
-  ɵɵstaticContentQuery
+  ɵɵstaticContentQuery,
 } from './query';
 
 export {
@@ -202,7 +215,10 @@ export {
   ɵɵpureFunctionV,
 } from './pure_function';
 
-export {ɵɵtemplateRefExtractor, ɵɵinjectPipeChangeDetectorRef} from './view_engine_compatibility_prebound';
+export {
+  ɵɵtemplateRefExtractor,
+  ɵɵinjectPipeChangeDetectorRef,
+} from './view_engine_compatibility_prebound';
 
 export {ɵɵresolveWindow, ɵɵresolveDocument, ɵɵresolveBody} from './util/misc_utils';
 

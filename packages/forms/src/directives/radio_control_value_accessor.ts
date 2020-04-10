@@ -6,7 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, forwardRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer2} from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  forwardRef,
+  Injectable,
+  Injector,
+  Input,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
@@ -14,7 +24,7 @@ import {NgControl} from './ng_control';
 export const RADIO_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => RadioControlValueAccessor),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -59,11 +69,13 @@ export class RadioControlRegistry {
   }
 
   private _isSameGroup(
-      controlPair: [NgControl, RadioControlValueAccessor],
-      accessor: RadioControlValueAccessor): boolean {
+    controlPair: [NgControl, RadioControlValueAccessor],
+    accessor: RadioControlValueAccessor
+  ): boolean {
     if (!controlPair[0].control) return false;
-    return controlPair[0]._parent === accessor._control._parent &&
-        controlPair[1].name === accessor.name;
+    return (
+      controlPair[0]._parent === accessor._control._parent && controlPair[1].name === accessor.name
+    );
   }
 }
 
@@ -89,9 +101,9 @@ export class RadioControlRegistry {
  */
 @Directive({
   selector:
-      'input[type=radio][formControlName],input[type=radio][formControl],input[type=radio][ngModel]',
+    'input[type=radio][formControlName],input[type=radio][formControl],input[type=radio][ngModel]',
   host: {'(change)': 'onChange()', '(blur)': 'onTouched()'},
-  providers: [RADIO_VALUE_ACCESSOR]
+  providers: [RADIO_VALUE_ACCESSOR],
 })
 export class RadioControlValueAccessor implements ControlValueAccessor, OnDestroy, OnInit {
   /** @internal */
@@ -138,8 +150,11 @@ export class RadioControlValueAccessor implements ControlValueAccessor, OnDestro
   @Input() value: any;
 
   constructor(
-      private _renderer: Renderer2, private _elementRef: ElementRef,
-      private _registry: RadioControlRegistry, private _injector: Injector) {}
+    private _renderer: Renderer2,
+    private _elementRef: ElementRef,
+    private _registry: RadioControlRegistry,
+    private _injector: Injector
+  ) {}
 
   /**
    * @description

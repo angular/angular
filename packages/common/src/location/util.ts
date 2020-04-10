@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 /**
  * Joins two parts of a URL with a slash if needed.
  *
@@ -50,7 +49,7 @@ export function joinWithSlash(start: string, end: string): string {
  */
 export function stripTrailingSlash(url: string): string {
   const match = url.match(/#|\?|$/);
-  const pathEndIdx = match && match.index || url.length;
+  const pathEndIdx = (match && match.index) || url.length;
   const droppedSlashIdx = pathEndIdx - (url[pathEndIdx - 1] === '/' ? 1 : 0);
   return url.slice(0, droppedSlashIdx) + url.slice(pathEndIdx);
 }

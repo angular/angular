@@ -10,9 +10,9 @@
 
 // This section defines the HTML elements and attribute surface of HTML 4
 // which is derived from https://www.w3.org/TR/html4/strict.dtd
-type attrType = string|string[];
+type attrType = string | string[];
 type hash<T> = {
-  [name: string]: T
+  [name: string]: T;
 };
 
 const values: attrType[] = [
@@ -41,7 +41,7 @@ const values: attrType[] = [
   ['top', 'middle', 'bottom', 'baseline'],
   'IDREFS',
   ['row', 'col', 'rowgroup', 'colgroup'],
-  ['defer']
+  ['defer'],
 ];
 
 const groups: hash<number>[] = [
@@ -56,7 +56,7 @@ const groups: hash<number>[] = [
     onmouseout: 1,
     onkeypress: 1,
     onkeydown: 1,
-    onkeyup: 1
+    onkeyup: 1,
   },
   {lang: 2, dir: 3},
   {onload: 1, onunload: 1},
@@ -78,8 +78,7 @@ const groups: hash<number>[] = [
   {datetime: 1},
   {accept: 1},
   {shape: 4, coords: 1},
-  { for: 11
-  },
+  {for: 11},
   {action: 1, method: 10, enctype: 1, onsubmit: 1, onreset: 1, 'accept-charset': 1},
   {valuetype: 9},
   {longdesc: 1},
@@ -105,8 +104,10 @@ const groups: hash<number>[] = [
   {hreflang: 2, rel: 1, rev: 1},
   {ismap: 7},
   {
-    defer: 25, event: 1, for: 1
-  }
+    defer: 25,
+    event: 1,
+    for: 1,
+  },
 ];
 
 const elements: {[name: string]: number[]} = {
@@ -186,22 +187,23 @@ const elements: {[name: string]: number[]} = {
   STYLE: [2, 6, 9, 16],
   SCRIPT: [6, 12, 14, 47],
   NOSCRIPT: [0, 1, 2, 16, 44],
-  HTML: [2]
+  HTML: [2],
 };
 
 const defaultAttributes = [0, 1, 2, 4];
 
 export function elementNames(): string[] {
-  return Object.keys(elements).sort().map(v => v.toLowerCase());
+  return Object.keys(elements)
+    .sort()
+    .map((v) => v.toLowerCase());
 }
 
-function compose(indexes: number[]|undefined): hash<attrType> {
+function compose(indexes: number[] | undefined): hash<attrType> {
   const result: hash<attrType> = {};
   if (indexes) {
     for (let index of indexes) {
       const group = groups[index];
-      for (let name in group)
-        if (group.hasOwnProperty(name)) result[name] = values[group[name]];
+      for (let name in group) if (group.hasOwnProperty(name)) result[name] = values[group[name]];
     }
   }
   return result;
@@ -211,7 +213,7 @@ export function attributeNames(element: string): string[] {
   return Object.keys(compose(elements[element.toUpperCase()] || defaultAttributes)).sort();
 }
 
-export function attributeType(element: string, attribute: string): string|string[]|undefined {
+export function attributeType(element: string, attribute: string): string | string[] | undefined {
   return compose(elements[element.toUpperCase()] || defaultAttributes)[attribute.toLowerCase()];
 }
 
@@ -222,8 +224,8 @@ export function attributeType(element: string, attribute: string): string|string
 // schema registry.
 const SCHEMA: string[] = [
   '[Element]|textContent,%classList,className,id,innerHTML,*beforecopy,*beforecut,*beforepaste,*copy,*cut,*paste,*search,*selectstart,*webkitfullscreenchange,*webkitfullscreenerror,*wheel,outerHTML,#scrollLeft,#scrollTop,slot' +
-      /* added manually to avoid breaking changes */
-      ',*message,*mozfullscreenchange,*mozfullscreenerror,*mozpointerlockchange,*mozpointerlockerror,*webglcontextcreationerror,*webglcontextlost,*webglcontextrestored',
+    /* added manually to avoid breaking changes */
+    ',*message,*mozfullscreenchange,*mozfullscreenerror,*mozpointerlockchange,*mozpointerlockerror,*webglcontextcreationerror,*webglcontextlost,*webglcontextrestored',
   '[HTMLElement]^[Element]|accessKey,contentEditable,dir,!draggable,!hidden,innerText,lang,*abort,*auxclick,*blur,*cancel,*canplay,*canplaythrough,*change,*click,*close,*contextmenu,*cuechange,*dblclick,*drag,*dragend,*dragenter,*dragleave,*dragover,*dragstart,*drop,*durationchange,*emptied,*ended,*error,*focus,*gotpointercapture,*input,*invalid,*keydown,*keypress,*keyup,*load,*loadeddata,*loadedmetadata,*loadstart,*lostpointercapture,*mousedown,*mouseenter,*mouseleave,*mousemove,*mouseout,*mouseover,*mouseup,*mousewheel,*pause,*play,*playing,*pointercancel,*pointerdown,*pointerenter,*pointerleave,*pointermove,*pointerout,*pointerover,*pointerup,*progress,*ratechange,*reset,*resize,*scroll,*seeked,*seeking,*select,*show,*stalled,*submit,*suspend,*timeupdate,*toggle,*volumechange,*waiting,outerText,!spellcheck,%style,#tabIndex,title,!translate',
   'abbr,address,article,aside,b,bdi,bdo,cite,code,dd,dfn,dt,em,figcaption,figure,footer,header,i,kbd,main,mark,nav,noscript,rb,rp,rt,rtc,ruby,s,samp,section,small,strong,sub,sup,u,var,wbr^[HTMLElement]|accessKey,contentEditable,dir,!draggable,!hidden,innerText,lang,*abort,*auxclick,*blur,*cancel,*canplay,*canplaythrough,*change,*click,*close,*contextmenu,*cuechange,*dblclick,*drag,*dragend,*dragenter,*dragleave,*dragover,*dragstart,*drop,*durationchange,*emptied,*ended,*error,*focus,*gotpointercapture,*input,*invalid,*keydown,*keypress,*keyup,*load,*loadeddata,*loadedmetadata,*loadstart,*lostpointercapture,*mousedown,*mouseenter,*mouseleave,*mousemove,*mouseout,*mouseover,*mouseup,*mousewheel,*pause,*play,*playing,*pointercancel,*pointerdown,*pointerenter,*pointerleave,*pointermove,*pointerout,*pointerover,*pointerup,*progress,*ratechange,*reset,*resize,*scroll,*seeked,*seeking,*select,*show,*stalled,*submit,*suspend,*timeupdate,*toggle,*volumechange,*waiting,outerText,!spellcheck,%style,#tabIndex,title,!translate',
   'media^[HTMLElement]|!autoplay,!controls,%controlsList,%crossOrigin,#currentTime,!defaultMuted,#defaultPlaybackRate,!disableRemotePlayback,!loop,!muted,*encrypted,*waitingforkey,#playbackRate,preload,src,%srcObject,#volume',
@@ -386,13 +388,13 @@ export class SchemaInformation {
   schema = <{[element: string]: {[property: string]: string}}>{};
 
   constructor() {
-    SCHEMA.forEach(encodedType => {
+    SCHEMA.forEach((encodedType) => {
       const parts = encodedType.split('|');
       const properties = parts[1].split(',');
       const typeParts = (parts[0] + '^').split('^');
       const typeName = typeParts[0];
       const type = <{[property: string]: string}>{};
-      typeName.split(',').forEach(tag => this.schema[tag.toLowerCase()] = type);
+      typeName.split(',').forEach((tag) => (this.schema[tag.toLowerCase()] = type));
       const superName = typeParts[1];
       const superType = superName && this.schema[superName.toLowerCase()];
       if (superType) {
@@ -423,12 +425,12 @@ export class SchemaInformation {
 
   eventsOf(elementName: string): string[] {
     const elementType = this.schema[elementName.toLowerCase()] || {};
-    return Object.keys(elementType).filter(property => elementType[property] === EVENT);
+    return Object.keys(elementType).filter((property) => elementType[property] === EVENT);
   }
 
   propertiesOf(elementName: string): string[] {
     const elementType = this.schema[elementName.toLowerCase()] || {};
-    return Object.keys(elementType).filter(property => elementType[property] !== EVENT);
+    return Object.keys(elementType).filter((property) => elementType[property] !== EVENT);
   }
 
   typeOf(elementName: string, property: string): string {

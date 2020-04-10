@@ -27,10 +27,9 @@ import * as ParsingCases from './parsing-cases';
     ParsingCases.TemplateReference,
     ParsingCases.TestComponent,
     ParsingCases.WithContextDirective,
-  ]
+  ],
 })
-export class AppModule {
-}
+export class AppModule {}
 
 declare function bootstrap(v: any): void;
 

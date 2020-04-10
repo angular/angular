@@ -10,10 +10,9 @@ import {browser, by, element, protractor} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../../e2e_util/e2e_util';
 
-
 // Disabled because with ViewEngine animations within webworkers is not supported.
 // See: https://github.com/angular/angular/issues/18610
-xdescribe('WebWorkers Animations', function() {
+xdescribe('WebWorkers Animations', function () {
   afterEach(() => {
     verifyNoBrowserErrors();
     browser.ignoreSynchronization = false;
@@ -41,7 +40,7 @@ xdescribe('WebWorkers Animations', function() {
     element(by.css(selector + ' button')).click();
 
     const boxElm = element(by.css(selector + ' .box'));
-    browser.wait(() => boxElm.getSize().then(sizes => sizes['width'] > 750), 1000);
+    browser.wait(() => boxElm.getSize().then((sizes) => sizes['width'] > 750), 1000);
   });
 
   it('should cancel the animation midway and continue from where it left off', () => {
@@ -68,12 +67,14 @@ xdescribe('WebWorkers Animations', function() {
   });
 
   function waitForBootstrap() {
-    browser.wait(protractor.until.elementLocated(by.css(selector + ' .box')), 5000)
-        .then(() => {}, () => {
-          // jasmine will timeout if this gets called too many times
-          console.error('>> unexpected timeout -> browser.refresh()');
-          browser.refresh();
-          waitForBootstrap();
-        });
+    browser.wait(protractor.until.elementLocated(by.css(selector + ' .box')), 5000).then(
+      () => {},
+      () => {
+        // jasmine will timeout if this gets called too many times
+        console.error('>> unexpected timeout -> browser.refresh()');
+        browser.refresh();
+        waitForBootstrap();
+      }
+    );
   }
 });

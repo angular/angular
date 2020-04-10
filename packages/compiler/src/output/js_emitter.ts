@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {StaticSymbol} from '../aot/static_symbol';
 import {CompileIdentifierMetadata} from '../compile_metadata';
 
@@ -23,9 +22,7 @@ export class JavaScriptEmitter implements OutputEmitter {
     const preambleLines = preamble ? preamble.split('\n') : [];
     converter.importsWithPrefixes.forEach((prefix, importedModuleName) => {
       // Note: can't write the real word for import as it screws up system.js auto detection...
-      preambleLines.push(
-          `var ${prefix} = req` +
-          `uire('${importedModuleName}');`);
+      preambleLines.push(`var ${prefix} = req` + `uire('${importedModuleName}');`);
     });
 
     const sm = ctx.toSourceMapGenerator(genFilePath, preambleLines.length).toJsComment();

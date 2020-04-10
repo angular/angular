@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Self} from '@angular/core';
+import {
+  AfterViewInit,
+  Directive,
+  EventEmitter,
+  forwardRef,
+  Inject,
+  Input,
+  Optional,
+  Self,
+} from '@angular/core';
 
 import {AbstractControl, FormControl, FormGroup, FormHooks} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
@@ -16,11 +25,18 @@ import {Form} from './form_interface';
 import {NgControl} from './ng_control';
 import {NgModel} from './ng_model';
 import {NgModelGroup} from './ng_model_group';
-import {composeAsyncValidators, composeValidators, removeDir, setUpControl, setUpFormContainer, syncPendingControls} from './shared';
+import {
+  composeAsyncValidators,
+  composeValidators,
+  removeDir,
+  setUpControl,
+  setUpFormContainer,
+  syncPendingControls,
+} from './shared';
 
 export const formDirectiveProvider: any = {
   provide: ControlContainer,
-  useExisting: forwardRef(() => NgForm)
+  useExisting: forwardRef(() => NgForm),
 };
 
 const resolvedPromise = (() => Promise.resolve(null))();
@@ -94,7 +110,7 @@ const resolvedPromise = (() => Promise.resolve(null))();
   providers: [formDirectiveProvider],
   host: {'(submit)': 'onSubmit($event)', '(reset)': 'onReset()'},
   outputs: ['ngSubmit'],
-  exportAs: 'ngForm'
+  exportAs: 'ngForm',
 })
 export class NgForm extends ControlContainer implements Form, AfterViewInit {
   /**
@@ -130,11 +146,15 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   @Input('ngFormOptions') options!: {updateOn?: FormHooks};
 
   constructor(
-      @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
+    @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
+    @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]
+  ) {
     super();
-    this.form =
-        new FormGroup({}, composeValidators(validators), composeAsyncValidators(asyncValidators));
+    this.form = new FormGroup(
+      {},
+      composeValidators(validators),
+      composeAsyncValidators(asyncValidators)
+    );
   }
 
   /**
@@ -188,8 +208,9 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   addControl(dir: NgModel): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
-      (dir as {control: FormControl}).control =
-          <FormControl>container.registerControl(dir.name, dir.control);
+      (dir as {control: FormControl}).control = <FormControl>(
+        container.registerControl(dir.name, dir.control)
+      );
       setUpControl(dir.control, dir);
       dir.control.updateValueAndValidity({emitEvent: false});
       this._directives.push(dir);

@@ -40,6 +40,5 @@ describe('formControlName example', () => {
       expect(firstInput.getAttribute('value')).toEqual('Carson');
       expect(lastInput.getAttribute('value')).toEqual('Drew');
     });
-
   });
 });

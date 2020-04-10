@@ -9,16 +9,25 @@
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, ElementRef, HostBinding, HostListener, NgModule, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
+import {
+  Component,
+  Directive,
+  ElementRef,
+  HostBinding,
+  HostListener,
+  NgModule,
+  ɵmarkDirty as markDirty,
+  ɵrenderComponent as renderComponent,
+} from '@angular/core';
 
 @Directive({
   selector: '[make-color-grey]',
   exportAs: 'makeColorGrey',
-  host: {'style': 'font-family: Times New Roman;'}
+  host: {'style': 'font-family: Times New Roman;'},
 })
 class MakeColorGreyDirective {
-  @HostBinding('style.background-color') private _backgroundColor: string|null = null;
-  @HostBinding('style.color') private _textColor: string|null = null;
+  @HostBinding('style.background-color') private _backgroundColor: string | null = null;
+  @HostBinding('style.color') private _textColor: string | null = null;
 
   on() {
     this._backgroundColor = 'grey';
@@ -30,7 +39,9 @@ class MakeColorGreyDirective {
     this._textColor = null;
   }
 
-  toggle() { this._backgroundColor ? this.off() : this.on(); }
+  toggle() {
+    this._backgroundColor ? this.off() : this.on();
+  }
 }
 
 @Component({selector: 'box-with-overridden-styles', template: '...'})
@@ -40,7 +51,9 @@ class BoxWithOverriddenStylesComponent {
   @HostBinding('style')
   styles = {};
 
-  constructor() { this.onInActive(); }
+  constructor() {
+    this.onInActive();
+  }
 
   @HostListener('click', ['$event'])
   toggle() {
@@ -78,16 +91,19 @@ class BoxWithOverriddenStylesComponent {
         [style]="styles"
         [style.color]="item.value == 4 ? 'red' : null"
         [style.background-color]="item.value == 4 ? 'white' : null"
-        (click)="toggleActive(item, makeColorGrey)">
+        (click)="toggleActive(item, makeColorGrey)"
+      >
         {{ item.value }}
       </div>
     </div>
 
-    <hr>
+    <hr />
 
     <box-with-overridden-styles
       style="display:block"
-      [style]="{'border-radius':'50px', 'border': '50px solid teal'}" [ngStyle]="{transform:'rotate(50deg)'}">
+      [style]="{'border-radius': '50px', 'border': '50px solid teal'}"
+      [ngStyle]="{transform: 'rotate(50deg)'}"
+    >
     </box-with-overridden-styles>
   `,
 })
@@ -95,16 +111,26 @@ class AnimationWorldComponent {
   @HostBinding('class') classVal = 'border';
 
   items: any[] = [
-    {value: 1, active: false}, {value: 2, active: false}, {value: 3, active: false},
-    {value: 4, active: false}, {value: 5, active: false}, {value: 6, active: false},
-    {value: 7, active: false}, {value: 8, active: false}, {value: 9, active: false}
+    {value: 1, active: false},
+    {value: 2, active: false},
+    {value: 3, active: false},
+    {value: 4, active: false},
+    {value: 5, active: false},
+    {value: 6, active: false},
+    {value: 7, active: false},
+    {value: 8, active: false},
+    {value: 9, active: false},
   ];
   private _hostElement: HTMLElement;
-  public styles: {[key: string]: any}|null = null;
+  public styles: {[key: string]: any} | null = null;
 
-  constructor(element: ElementRef) { this._hostElement = element.nativeElement; }
+  constructor(element: ElementRef) {
+    this._hostElement = element.nativeElement;
+  }
 
-  makeClass(item: any) { return `record-${item.value}`; }
+  makeClass(item: any) {
+    return `record-${item.value}`;
+  }
 
   toggleActive(item: any, makeColorGrey: MakeColorGreyDirective) {
     item.active = !item.active;
@@ -115,9 +141,8 @@ class AnimationWorldComponent {
 
 @NgModule({
   declarations: [AnimationWorldComponent, MakeColorGreyDirective, BoxWithOverriddenStylesComponent],
-  imports: [CommonModule]
+  imports: [CommonModule],
 })
-class AnimationWorldModule {
-}
+class AnimationWorldModule {}
 
 renderComponent(AnimationWorldComponent);

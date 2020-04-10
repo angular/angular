@@ -28,5 +28,4 @@ export class Lib2Cmp {
   exports: [Lib2Cmp],
   imports: [Lib1Module],
 })
-export class Lib2Module {
-}
+export class Lib2Module {}

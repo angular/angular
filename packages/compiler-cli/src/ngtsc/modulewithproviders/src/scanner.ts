@@ -19,8 +19,10 @@ export interface DtsHandler {
 
 export class ModuleWithProvidersScanner {
   constructor(
-      private host: ReflectionHost, private evaluator: PartialEvaluator,
-      private emitter: ReferenceEmitter) {}
+    private host: ReflectionHost,
+    private evaluator: PartialEvaluator,
+    private emitter: ReferenceEmitter
+  ) {}
 
   scan(sf: ts.SourceFile, dts: DtsHandler): void {
     for (const stmt of sf.statements) {
@@ -38,8 +40,9 @@ export class ModuleWithProvidersScanner {
     //
     // This is intentional, because the alternative is slow and this will catch 99% of the cases we
     // need to handle.
-    const isExported = stmt.modifiers !== undefined &&
-        stmt.modifiers.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword);
+    const isExported =
+      stmt.modifiers !== undefined &&
+      stmt.modifiers.some((mod) => mod.kind === ts.SyntaxKind.ExportKeyword);
 
     if (!isExported) {
       return;
@@ -59,7 +62,9 @@ export class ModuleWithProvidersScanner {
   }
 
   private visitFunctionOrMethodDeclaration(
-      dts: DtsHandler, decl: ts.MethodDeclaration|ts.FunctionDeclaration): void {
+    dts: DtsHandler,
+    decl: ts.MethodDeclaration | ts.FunctionDeclaration
+  ): void {
     // First, some sanity. This should have a method body with a single return statement.
     if (decl.body === undefined || decl.body.statements.length !== 1) {
       return;
@@ -99,17 +104,24 @@ export class ModuleWithProvidersScanner {
       return;
     }
 
-    const ngModuleExpr =
-        this.emitter.emit(ngModule, decl.getSourceFile(), ImportFlags.ForceNewImport);
+    const ngModuleExpr = this.emitter.emit(
+      ngModule,
+      decl.getSourceFile(),
+      ImportFlags.ForceNewImport
+    );
     const ngModuleType = new ExpressionType(ngModuleExpr);
     const mwpNgType = new ExpressionType(
-        new ExternalExpr(Identifiers.ModuleWithProviders), /* modifiers */ null, [ngModuleType]);
+      new ExternalExpr(Identifiers.ModuleWithProviders),
+      /* modifiers */ null,
+      [ngModuleType]
+    );
 
     dts.addTypeReplacement(decl, mwpNgType);
   }
 
-  private returnTypeOf(decl: ts.FunctionDeclaration|ts.MethodDeclaration|
-                       ts.VariableDeclaration): ReturnType {
+  private returnTypeOf(
+    decl: ts.FunctionDeclaration | ts.MethodDeclaration | ts.VariableDeclaration
+  ): ReturnType {
     if (decl.type === undefined) {
       return ReturnType.INFERRED;
     } else if (!ts.isTypeReferenceNode(decl.type)) {
@@ -130,8 +142,11 @@ export class ModuleWithProvidersScanner {
     }
 
     const importDecl = this.host.getImportOfIdentifier(typeId);
-    if (importDecl === null || importDecl.from !== '@angular/core' ||
-        importDecl.name !== 'ModuleWithProviders') {
+    if (
+      importDecl === null ||
+      importDecl.from !== '@angular/core' ||
+      importDecl.name !== 'ModuleWithProviders'
+    ) {
       return ReturnType.OTHER;
     }
 
@@ -161,6 +176,8 @@ function isModuleWithProvidersType(value: ResolvedValueMap): boolean {
 }
 
 function isStatic(node: ts.Node): boolean {
-  return node.modifiers !== undefined &&
-      node.modifiers.some(mod => mod.kind === ts.SyntaxKind.StaticKeyword);
+  return (
+    node.modifiers !== undefined &&
+    node.modifiers.some((mod) => mod.kind === ts.SyntaxKind.StaticKeyword)
+  );
 }

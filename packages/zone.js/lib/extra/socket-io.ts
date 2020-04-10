@@ -12,11 +12,13 @@ Zone.__load_patch('socketio', (global: any, Zone: ZoneType, api: _ZonePrivate) =
       useG: false,
       chkDup: false,
       rt: true,
-      diff: (task: any, delegate: any) => { return task.callback === delegate; }
+      diff: (task: any, delegate: any) => {
+        return task.callback === delegate;
+      },
     });
     // also patch io.Socket.prototype.on/off/removeListener/removeAllListeners
     io.Socket.prototype.on = io.Socket.prototype.addEventListener;
-    io.Socket.prototype.off = io.Socket.prototype.removeListener =
-        io.Socket.prototype.removeAllListeners = io.Socket.prototype.removeEventListener;
+    io.Socket.prototype.off = io.Socket.prototype.removeListener = io.Socket.prototype.removeAllListeners =
+      io.Socket.prototype.removeEventListener;
   };
 });

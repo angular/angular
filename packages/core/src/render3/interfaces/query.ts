@@ -16,7 +16,7 @@ import {TView} from './view';
  * An object representing query metadata extracted from query annotations.
  */
 export interface TQueryMetadata {
-  predicate: Type<any>|string[];
+  predicate: Type<any> | string[];
   descendants: boolean;
   read: any;
   isStatic: boolean;
@@ -57,7 +57,7 @@ export interface TQuery {
    * ng-template and ElementRef for other elements);
    * - a positive number - index of an injectable to be read from the element injector.
    */
-  matches: number[]|null;
+  matches: number[] | null;
 
   /**
    * A flag indicating if a given query crosses an <ng-template> element. This flag exists for
@@ -96,7 +96,7 @@ export interface TQuery {
    * @param tNode
    * @param childQueryIndex
    */
-  embeddedTView(tNode: TNode, childQueryIndex: number): TQuery|null;
+  embeddedTView(tNode: TNode, childQueryIndex: number): TQuery | null;
 }
 
 /**
@@ -145,11 +145,11 @@ export interface TQueries {
   template(tView: TView, tNode: TNode): void;
 
   /**
-  * A proxy method that iterates over all the TQueries in a given TView and calls the corresponding
+   * A proxy method that iterates over all the TQueries in a given TView and calls the corresponding
    * `embeddedTView` on each and every TQuery.
    * @param tNode
    */
-  embeddedTView(tNode: TNode): TQueries|null;
+  embeddedTView(tNode: TNode): TQueries | null;
 }
 
 /**
@@ -163,7 +163,7 @@ export interface LQuery<T> {
    * Materialized query matches for a given view only (!). Results are initialized lazily so the
    * array of matches is set to `null` initially.
    */
-  matches: (T|null)[]|null;
+  matches: (T | null)[] | null;
 
   /**
    * A QueryList where materialized query results should be reported.
@@ -196,7 +196,7 @@ export interface LQueries {
    * for a new embedded view is instantiated (cloned) from the declaration view.
    * @param tView
    */
-  createEmbeddedView(tView: TView): LQueries|null;
+  createEmbeddedView(tView: TView): LQueries | null;
 
   /**
    * A method called when an embedded view is inserted into a container. As a result all impacted
@@ -212,7 +212,6 @@ export interface LQueries {
    */
   detachView(tView: TView): void;
 }
-
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

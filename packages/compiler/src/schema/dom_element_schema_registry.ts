@@ -77,8 +77,8 @@ const OBJECT = 'object';
 
 const SCHEMA: string[] = [
   '[Element]|textContent,%classList,className,id,innerHTML,*beforecopy,*beforecut,*beforepaste,*copy,*cut,*paste,*search,*selectstart,*webkitfullscreenchange,*webkitfullscreenerror,*wheel,outerHTML,#scrollLeft,#scrollTop,slot' +
-      /* added manually to avoid breaking changes */
-      ',*message,*mozfullscreenchange,*mozfullscreenerror,*mozpointerlockchange,*mozpointerlockerror,*webglcontextcreationerror,*webglcontextlost,*webglcontextrestored',
+    /* added manually to avoid breaking changes */
+    ',*message,*mozfullscreenchange,*mozfullscreenerror,*mozpointerlockchange,*mozpointerlockerror,*webglcontextcreationerror,*webglcontextlost,*webglcontextrestored',
   '[HTMLElement]^[Element]|accessKey,contentEditable,dir,!draggable,!hidden,innerText,lang,*abort,*auxclick,*blur,*cancel,*canplay,*canplaythrough,*change,*click,*close,*contextmenu,*cuechange,*dblclick,*drag,*dragend,*dragenter,*dragleave,*dragover,*dragstart,*drop,*durationchange,*emptied,*ended,*error,*focus,*gotpointercapture,*input,*invalid,*keydown,*keypress,*keyup,*load,*loadeddata,*loadedmetadata,*loadstart,*lostpointercapture,*mousedown,*mouseenter,*mouseleave,*mousemove,*mouseout,*mouseover,*mouseup,*mousewheel,*pause,*play,*playing,*pointercancel,*pointerdown,*pointerenter,*pointerleave,*pointermove,*pointerout,*pointerover,*pointerup,*progress,*ratechange,*reset,*resize,*scroll,*seeked,*seeking,*select,*show,*stalled,*submit,*suspend,*timeupdate,*toggle,*volumechange,*waiting,outerText,!spellcheck,%style,#tabIndex,title,!translate',
   'abbr,address,article,aside,b,bdi,bdo,cite,code,dd,dfn,dt,em,figcaption,figure,footer,header,i,kbd,main,mark,nav,noscript,rb,rp,rt,rtc,ruby,s,samp,section,small,strong,sub,sup,u,var,wbr^[HTMLElement]|accessKey,contentEditable,dir,!draggable,!hidden,innerText,lang,*abort,*auxclick,*blur,*cancel,*canplay,*canplaythrough,*change,*click,*close,*contextmenu,*cuechange,*dblclick,*drag,*dragend,*dragenter,*dragleave,*dragover,*dragstart,*drop,*durationchange,*emptied,*ended,*error,*focus,*gotpointercapture,*input,*invalid,*keydown,*keypress,*keyup,*load,*loadeddata,*loadedmetadata,*loadstart,*lostpointercapture,*mousedown,*mouseenter,*mouseleave,*mousemove,*mouseout,*mouseover,*mouseup,*mousewheel,*pause,*play,*playing,*pointercancel,*pointerdown,*pointerenter,*pointerleave,*pointermove,*pointerout,*pointerover,*pointerup,*progress,*ratechange,*reset,*resize,*scroll,*seeked,*seeking,*select,*show,*stalled,*submit,*suspend,*timeupdate,*toggle,*volumechange,*waiting,outerText,!spellcheck,%style,#tabIndex,title,!translate',
   'media^[HTMLElement]|!autoplay,!controls,%controlsList,%crossOrigin,#currentTime,!defaultMuted,#defaultPlaybackRate,!disableRemotePlayback,!loop,!muted,*encrypted,*waitingforkey,#playbackRate,preload,src,%srcObject,#volume',
@@ -245,12 +245,12 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
 
   constructor() {
     super();
-    SCHEMA.forEach(encodedType => {
+    SCHEMA.forEach((encodedType) => {
       const type: {[property: string]: string} = {};
       const [strType, strProperties] = encodedType.split('|');
       const properties = strProperties.split(',');
       const [typeNames, superName] = strType.split('^');
-      typeNames.split(',').forEach(tag => this._schema[tag.toLowerCase()] = type);
+      typeNames.split(',').forEach((tag) => (this._schema[tag.toLowerCase()] = type));
       const superType = superName && this._schema[superName.toLowerCase()];
       if (superType) {
         Object.keys(superType).forEach((prop: string) => {
@@ -360,22 +360,24 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     return 'ng-component';
   }
 
-  validateProperty(name: string): {error: boolean, msg?: string} {
+  validateProperty(name: string): {error: boolean; msg?: string} {
     if (name.toLowerCase().startsWith('on')) {
-      const msg = `Binding to event property '${name}' is disallowed for security reasons, ` +
-          `please use (${name.slice(2)})=...` +
-          `\nIf '${name}' is a directive input, make sure the directive is imported by the` +
-          ` current module.`;
+      const msg =
+        `Binding to event property '${name}' is disallowed for security reasons, ` +
+        `please use (${name.slice(2)})=...` +
+        `\nIf '${name}' is a directive input, make sure the directive is imported by the` +
+        ` current module.`;
       return {error: true, msg: msg};
     } else {
       return {error: false};
     }
   }
 
-  validateAttribute(name: string): {error: boolean, msg?: string} {
+  validateAttribute(name: string): {error: boolean; msg?: string} {
     if (name.toLowerCase().startsWith('on')) {
-      const msg = `Binding to event attribute '${name}' is disallowed for security reasons, ` +
-          `please use (${name.slice(2)})=...`;
+      const msg =
+        `Binding to event attribute '${name}' is disallowed for security reasons, ` +
+        `please use (${name.slice(2)})=...`;
       return {error: true, msg: msg};
     } else {
       return {error: false};
@@ -390,8 +392,11 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     return dashCaseToCamelCase(propName);
   }
 
-  normalizeAnimationStyleValue(camelCaseProp: string, userProvidedProp: string, val: string|number):
-      {error: string, value: string} {
+  normalizeAnimationStyleValue(
+    camelCaseProp: string,
+    userProvidedProp: string,
+    val: string | number
+  ): {error: string; value: string} {
     let unit: string = '';
     const strVal = val.toString().trim();
     let errorMsg: string = null!;

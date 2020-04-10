@@ -17,8 +17,11 @@ import {TableCell, buildTable, emptyTable} from '../util';
     <table>
       <tbody>
         <tr *ngFor="let row of data; trackBy: trackByIndex">
-          <td *ngFor="let cell of row; trackBy: trackByIndex" [style.background-color]="getColor(cell.row)">
-            {{cell.value}}
+          <td
+            *ngFor="let cell of row; trackBy: trackByIndex"
+            [style.background-color]="getColor(cell.row)"
+          >
+            {{ cell.value }}
           </td>
         </tr>
       </tbody>
@@ -29,15 +32,17 @@ export class LargeTableComponent {
   @Input()
   data: TableCell[][] = emptyTable;
 
-  trackByIndex(index: number, item: any) { return index; }
+  trackByIndex(index: number, item: any) {
+    return index;
+  }
 
-  getColor(row: number) { return row % 2 ? '' : 'grey'; }
+  getColor(row: number) {
+    return row % 2 ? '' : 'grey';
+  }
 }
 
 @NgModule({declarations: [LargeTableComponent], imports: [CommonModule]})
-export class TableModule {
-}
-
+export class TableModule {}
 
 export function destroyDom(component: LargeTableComponent) {
   component.data = emptyTable;

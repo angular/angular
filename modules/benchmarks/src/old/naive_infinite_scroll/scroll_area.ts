@@ -9,28 +9,34 @@
 import {NgFor} from '@angular/common';
 import {Component, Directive} from '@angular/core';
 
-import {HEIGHT, ITEMS, ITEM_HEIGHT, Offering, ROW_WIDTH, VIEW_PORT_HEIGHT, VISIBLE_ITEMS} from './common';
+import {
+  HEIGHT,
+  ITEMS,
+  ITEM_HEIGHT,
+  Offering,
+  ROW_WIDTH,
+  VIEW_PORT_HEIGHT,
+  VISIBLE_ITEMS,
+} from './common';
 import {generateOfferings} from './random_data';
 import {ScrollItemComponent} from './scroll_item';
 
 @Component({
   selector: 'scroll-area',
   directives: [ScrollItemComponent, NgFor],
-  template: `
-    <div>
-        <div id="scrollDiv"
-             [style.height.px]="viewPortHeight"
-             style="width: 1000px; border: 1px solid #000; overflow: scroll"
-             on-scroll="onScroll($event)">
-            <div id="padding"></div>
-            <div id="inner">
-                <scroll-item
-                    *ngFor="let item of visibleItems"
-                    [offering]="item">
-                </scroll-item>
-            </div>
-        </div>
-    </div>`
+  template: ` <div>
+    <div
+      id="scrollDiv"
+      [style.height.px]="viewPortHeight"
+      style="width: 1000px; border: 1px solid #000; overflow: scroll"
+      on-scroll="onScroll($event)"
+    >
+      <div id="padding"></div>
+      <div id="inner">
+        <scroll-item *ngFor="let item of visibleItems" [offering]="item"> </scroll-item>
+      </div>
+    </div>
+  </div>`,
 })
 export class ScrollAreaComponent {
   private _fullList: Offering[];

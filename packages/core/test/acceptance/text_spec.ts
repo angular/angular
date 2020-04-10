@@ -5,25 +5,34 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {of } from 'rxjs';
+import {of} from 'rxjs';
 
 describe('text instructions', () => {
   it('should handle all flavors of interpolated text', () => {
     @Component({
       template: `
-        <div>a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i{{nine}}j</div>
-        <div>a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i</div>
-        <div>a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h</div>
-        <div>a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g</div>
-        <div>a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f</div>
-        <div>a{{one}}b{{two}}c{{three}}d{{four}}e</div>
-        <div>a{{one}}b{{two}}c{{three}}d</div>
-        <div>a{{one}}b{{two}}c</div>
-        <div>a{{one}}b</div>
-        <div>{{one}}</div>
-      `
+        <div
+          >a{{ one }}b{{ two }}c{{ three }}d{{ four }}e{{ five }}f{{ six }}g{{ seven }}h{{
+            eight
+          }}i{{ nine }}j</div
+        >
+        <div
+          >a{{ one }}b{{ two }}c{{ three }}d{{ four }}e{{ five }}f{{ six }}g{{ seven }}h{{
+            eight
+          }}i</div
+        >
+        <div>a{{ one }}b{{ two }}c{{ three }}d{{ four }}e{{ five }}f{{ six }}g{{ seven }}h</div>
+        <div>a{{ one }}b{{ two }}c{{ three }}d{{ four }}e{{ five }}f{{ six }}g</div>
+        <div>a{{ one }}b{{ two }}c{{ three }}d{{ four }}e{{ five }}f</div>
+        <div>a{{ one }}b{{ two }}c{{ three }}d{{ four }}e</div>
+        <div>a{{ one }}b{{ two }}c{{ three }}d</div>
+        <div>a{{ one }}b{{ two }}c</div>
+        <div>a{{ one }}b</div>
+        <div>{{ one }}</div>
+      `,
     })
     class App {
       one = 1;
@@ -41,9 +50,9 @@ describe('text instructions', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    const allTextContent =
-        Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('div'))
-            .map((div: HTMLDivElement) => div.textContent);
+    const allTextContent = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll('div')
+    ).map((div: HTMLDivElement) => div.textContent);
 
     expect(allTextContent).toEqual([
       'a1b2c3d4e5f6g7h8i9j',
@@ -62,12 +71,15 @@ describe('text instructions', () => {
   it('should handle piped values in interpolated text', () => {
     @Component({
       template: `
-        <p>{{who | async}} sells {{(item | async)?.what}} down by the {{(item | async)?.where}}.</p>
-      `
+        <p
+          >{{ who | async }} sells {{ (item | async)?.what }} down by the
+          {{ (item | async)?.where }}.</p
+        >
+      `,
     })
     class App {
-      who = of ('Sally');
-      item = of ({
+      who = of('Sally');
+      item = of({
         what: 'seashells',
         where: 'seashore',
       });
@@ -94,8 +106,9 @@ describe('text instructions', () => {
     fixture.detectChanges();
     const p = fixture.nativeElement.querySelector('p');
 
-    expect(p.textContent)
-        .toBe('javascript:alert("image_of_dog_with_coffee_in_burning_building.gif")');
+    expect(p.textContent).toBe(
+      'javascript:alert("image_of_dog_with_coffee_in_burning_building.gif")'
+    );
   });
 
   it('should not allow writing HTML in interpolated text', () => {

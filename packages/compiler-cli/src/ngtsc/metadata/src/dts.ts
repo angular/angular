@@ -12,7 +12,13 @@ import {Reference} from '../../imports';
 import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
 
 import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from './api';
-import {extractDirectiveGuards, extractReferencesFromType, readStringArrayType, readStringMapType, readStringType} from './util';
+import {
+  extractDirectiveGuards,
+  extractReferencesFromType,
+  readStringArrayType,
+  readStringMapType,
+  readStringType,
+} from './util';
 
 /**
  * A `MetadataReader` that can read metadata from `.d.ts` files, which have static Ivy properties
@@ -27,20 +33,23 @@ export class DtsMetadataReader implements MetadataReader {
    *
    * @param ref `Reference` to the class of interest, with the context of how it was obtained.
    */
-  getNgModuleMetadata(ref: Reference<ClassDeclaration>): NgModuleMeta|null {
+  getNgModuleMetadata(ref: Reference<ClassDeclaration>): NgModuleMeta | null {
     const clazz = ref.node;
     const resolutionContext = clazz.getSourceFile().fileName;
     // This operation is explicitly not memoized, as it depends on `ref.ownedByModuleGuess`.
     // TODO(alxhub): investigate caching of .d.ts module metadata.
-    const ngModuleDef = this.reflector.getMembersOfClass(clazz).find(
-        member => member.name === 'ɵmod' && member.isStatic);
+    const ngModuleDef = this.reflector
+      .getMembersOfClass(clazz)
+      .find((member) => member.name === 'ɵmod' && member.isStatic);
     if (ngModuleDef === undefined) {
       return null;
     } else if (
-        // Validate that the shape of the ngModuleDef type is correct.
-        ngModuleDef.type === null || !ts.isTypeReferenceNode(ngModuleDef.type) ||
-        ngModuleDef.type.typeArguments === undefined ||
-        ngModuleDef.type.typeArguments.length !== 4) {
+      // Validate that the shape of the ngModuleDef type is correct.
+      ngModuleDef.type === null ||
+      !ts.isTypeReferenceNode(ngModuleDef.type) ||
+      ngModuleDef.type.typeArguments === undefined ||
+      ngModuleDef.type.typeArguments.length !== 4
+    ) {
       return null;
     }
 
@@ -49,11 +58,23 @@ export class DtsMetadataReader implements MetadataReader {
     return {
       ref,
       declarations: extractReferencesFromType(
-          this.checker, declarationMetadata, ref.ownedByModuleGuess, resolutionContext),
+        this.checker,
+        declarationMetadata,
+        ref.ownedByModuleGuess,
+        resolutionContext
+      ),
       exports: extractReferencesFromType(
-          this.checker, exportMetadata, ref.ownedByModuleGuess, resolutionContext),
+        this.checker,
+        exportMetadata,
+        ref.ownedByModuleGuess,
+        resolutionContext
+      ),
       imports: extractReferencesFromType(
-          this.checker, importMetadata, ref.ownedByModuleGuess, resolutionContext),
+        this.checker,
+        importMetadata,
+        ref.ownedByModuleGuess,
+        resolutionContext
+      ),
       schemas: [],
       rawDeclarations: null,
     };
@@ -62,16 +83,20 @@ export class DtsMetadataReader implements MetadataReader {
   /**
    * Read directive (or component) metadata from a referenced class in a .d.ts file.
    */
-  getDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta|null {
+  getDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta | null {
     const clazz = ref.node;
-    const def = this.reflector.getMembersOfClass(clazz).find(
-        field => field.isStatic && (field.name === 'ɵcmp' || field.name === 'ɵdir'));
+    const def = this.reflector
+      .getMembersOfClass(clazz)
+      .find((field) => field.isStatic && (field.name === 'ɵcmp' || field.name === 'ɵdir'));
     if (def === undefined) {
       // No definition could be found.
       return null;
     } else if (
-        def.type === null || !ts.isTypeReferenceNode(def.type) ||
-        def.type.typeArguments === undefined || def.type.typeArguments.length < 2) {
+      def.type === null ||
+      !ts.isTypeReferenceNode(def.type) ||
+      def.type.typeArguments === undefined ||
+      def.type.typeArguments.length < 2
+    ) {
       // The type metadata was the wrong shape.
       return null;
     }
@@ -93,15 +118,19 @@ export class DtsMetadataReader implements MetadataReader {
   /**
    * Read pipe metadata from a referenced class in a .d.ts file.
    */
-  getPipeMetadata(ref: Reference<ClassDeclaration>): PipeMeta|null {
-    const def = this.reflector.getMembersOfClass(ref.node).find(
-        field => field.isStatic && field.name === 'ɵpipe');
+  getPipeMetadata(ref: Reference<ClassDeclaration>): PipeMeta | null {
+    const def = this.reflector
+      .getMembersOfClass(ref.node)
+      .find((field) => field.isStatic && field.name === 'ɵpipe');
     if (def === undefined) {
       // No definition could be found.
       return null;
     } else if (
-        def.type === null || !ts.isTypeReferenceNode(def.type) ||
-        def.type.typeArguments === undefined || def.type.typeArguments.length < 2) {
+      def.type === null ||
+      !ts.isTypeReferenceNode(def.type) ||
+      def.type.typeArguments === undefined ||
+      def.type.typeArguments.length < 2
+    ) {
       // The type metadata was the wrong shape.
       return null;
     }
@@ -115,8 +144,11 @@ export class DtsMetadataReader implements MetadataReader {
   }
 }
 
-function readBaseClass(clazz: ClassDeclaration, checker: ts.TypeChecker, reflector: ReflectionHost):
-    Reference<ClassDeclaration>|'dynamic'|null {
+function readBaseClass(
+  clazz: ClassDeclaration,
+  checker: ts.TypeChecker,
+  reflector: ReflectionHost
+): Reference<ClassDeclaration> | 'dynamic' | null {
   if (!isNamedClassDeclaration(clazz)) {
     // Technically this is an error in a .d.ts file, but for the purposes of finding the base class
     // it's ignored.
@@ -133,8 +165,10 @@ function readBaseClass(clazz: ClassDeclaration, checker: ts.TypeChecker, reflect
         } else if (symbol.flags & ts.SymbolFlags.Alias) {
           symbol = checker.getAliasedSymbol(symbol);
         }
-        if (symbol.valueDeclaration !== undefined &&
-            isNamedClassDeclaration(symbol.valueDeclaration)) {
+        if (
+          symbol.valueDeclaration !== undefined &&
+          isNamedClassDeclaration(symbol.valueDeclaration)
+        ) {
           return new Reference(symbol.valueDeclaration);
         } else {
           return 'dynamic';

@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 import {absoluteFrom} from '../../file_system';
 import {getSourceFileOrNull, resolveModuleName} from '../../util/src/typescript';
@@ -17,13 +18,20 @@ import {getSourceFileOrNull, resolveModuleName} from '../../util/src/typescript'
  */
 export class ModuleResolver {
   constructor(
-      private program: ts.Program, private compilerOptions: ts.CompilerOptions,
-      private host: ts.CompilerHost, private moduleResolutionCache: ts.ModuleResolutionCache|null) {
-  }
+    private program: ts.Program,
+    private compilerOptions: ts.CompilerOptions,
+    private host: ts.CompilerHost,
+    private moduleResolutionCache: ts.ModuleResolutionCache | null
+  ) {}
 
-  resolveModule(moduleName: string, containingFile: string): ts.SourceFile|null {
+  resolveModule(moduleName: string, containingFile: string): ts.SourceFile | null {
     const resolved = resolveModuleName(
-        moduleName, containingFile, this.compilerOptions, this.host, this.moduleResolutionCache);
+      moduleName,
+      containingFile,
+      this.compilerOptions,
+      this.host,
+      this.moduleResolutionCache
+    );
     if (resolved === undefined) {
       return null;
     }

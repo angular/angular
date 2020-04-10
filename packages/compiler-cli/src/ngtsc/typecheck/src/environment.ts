@@ -9,7 +9,12 @@
 import {ExpressionType, ExternalExpr, Type, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ImportFlags, NOOP_DEFAULT_IMPORT_RECORDER, Reference, ReferenceEmitter} from '../../imports';
+import {
+  ImportFlags,
+  NOOP_DEFAULT_IMPORT_RECORDER,
+  Reference,
+  ReferenceEmitter,
+} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateType} from '../../translator';
 
@@ -41,13 +46,16 @@ export class Environment {
   private pipeInsts = new Map<ClassDeclaration, ts.Expression>();
   protected pipeInstStatements: ts.Statement[] = [];
 
-  private outputHelperIdent: ts.Identifier|null = null;
+  private outputHelperIdent: ts.Identifier | null = null;
   protected helperStatements: ts.Statement[] = [];
 
   constructor(
-      readonly config: TypeCheckingConfig, protected importManager: ImportManager,
-      private refEmitter: ReferenceEmitter, private reflector: ReflectionHost,
-      protected contextFile: ts.SourceFile) {}
+    readonly config: TypeCheckingConfig,
+    protected importManager: ImportManager,
+    private refEmitter: ReferenceEmitter,
+    private reflector: ReflectionHost,
+    protected contextFile: ts.SourceFile
+  ) {}
 
   /**
    * Get an expression referring to a type constructor for the given directive.
@@ -88,7 +96,12 @@ export class Environment {
       };
       const typeParams = this.emitTypeParameters(node);
       const typeCtor = generateTypeCtorDeclarationFn(
-          node, meta, nodeTypeRef.typeName, typeParams, this.reflector);
+        node,
+        meta,
+        nodeTypeRef.typeName,
+        typeParams,
+        this.reflector
+      );
       this.typeCtorStatements.push(typeCtor);
       const fnId = ts.createIdentifier(fnName);
       this.typeCtors.set(node, fnId);
@@ -128,15 +141,18 @@ export class Environment {
     const genericTypeDecl = ts.createTypeParameterDeclaration('T');
     const genericTypeRef = ts.createTypeReferenceNode('T', /* typeParameters */ undefined);
 
-    const eventEmitter = this.referenceExternalType(
-        '@angular/core', 'EventEmitter', [new ExpressionType(new WrappedNodeExpr(genericTypeRef))]);
+    const eventEmitter = this.referenceExternalType('@angular/core', 'EventEmitter', [
+      new ExpressionType(new WrappedNodeExpr(genericTypeRef)),
+    ]);
 
     // Declare a type that has a `subscribe` method that carries over type `T` as parameter
     // into the callback. The below code generates the following type literal:
     // `{subscribe(cb: (event: T) => any): void;}`
-    const observableLike = ts.createTypeLiteralNode([ts.createMethodSignature(
+    const observableLike = ts.createTypeLiteralNode([
+      ts.createMethodSignature(
         /* typeParameters */ undefined,
-        /* parameters */[ts.createParameter(
+        /* parameters */ [
+          ts.createParameter(
             /* decorators */ undefined,
             /* modifiers */ undefined,
             /* dotDotDotToken */ undefined,
@@ -144,60 +160,80 @@ export class Environment {
             /* questionToken */ undefined,
             /* type */
             ts.createFunctionTypeNode(
-                /* typeParameters */ undefined,
-                /* parameters */[ts.createParameter(
-                    /* decorators */ undefined,
-                    /* modifiers */ undefined,
-                    /* dotDotDotToken */ undefined,
-                    /* name */ 'event',
-                    /* questionToken */ undefined,
-                    /* type */ genericTypeRef)],
-                /* type */ ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)))],
+              /* typeParameters */ undefined,
+              /* parameters */ [
+                ts.createParameter(
+                  /* decorators */ undefined,
+                  /* modifiers */ undefined,
+                  /* dotDotDotToken */ undefined,
+                  /* name */ 'event',
+                  /* questionToken */ undefined,
+                  /* type */ genericTypeRef
+                ),
+              ],
+              /* type */ ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)
+            )
+          ),
+        ],
         /* type */ ts.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword),
         /* name */ 'subscribe',
-        /* questionToken */ undefined)]);
+        /* questionToken */ undefined
+      ),
+    ]);
 
     // Declares the first signature of `_outputHelper` that matches arguments of type
     // `EventEmitter`, to convert them into `observableLike` defined above. The following
     // statement is generated:
     // `declare function _outputHelper<T>(output: EventEmitter<T>): observableLike;`
-    this.helperStatements.push(ts.createFunctionDeclaration(
+    this.helperStatements.push(
+      ts.createFunctionDeclaration(
         /* decorators */ undefined,
-        /* modifiers */[ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
+        /* modifiers */ [ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
         /* asteriskToken */ undefined,
         /* name */ outputHelperIdent,
-        /* typeParameters */[genericTypeDecl],
-        /* parameters */[ts.createParameter(
+        /* typeParameters */ [genericTypeDecl],
+        /* parameters */ [
+          ts.createParameter(
             /* decorators */ undefined,
             /* modifiers */ undefined,
             /* dotDotDotToken */ undefined,
             /* name */ 'output',
             /* questionToken */ undefined,
-            /* type */ eventEmitter)],
+            /* type */ eventEmitter
+          ),
+        ],
         /* type */ observableLike,
-        /* body */ undefined));
+        /* body */ undefined
+      )
+    );
 
     // Declares the second signature of `_outputHelper` that matches all other argument types,
     // i.e. ensures type identity for output types other than `EventEmitter`. This corresponds
     // with the following statement:
     // `declare function _outputHelper<T>(output: T): T;`
-    this.helperStatements.push(ts.createFunctionDeclaration(
+    this.helperStatements.push(
+      ts.createFunctionDeclaration(
         /* decorators */ undefined,
-        /* modifiers */[ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
+        /* modifiers */ [ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
         /* asteriskToken */ undefined,
         /* name */ outputHelperIdent,
-        /* typeParameters */[genericTypeDecl],
-        /* parameters */[ts.createParameter(
+        /* typeParameters */ [genericTypeDecl],
+        /* parameters */ [
+          ts.createParameter(
             /* decorators */ undefined,
             /* modifiers */ undefined,
             /* dotDotDotToken */ undefined,
             /* name */ 'output',
             /* questionToken */ undefined,
-            /* type */ genericTypeRef)],
+            /* type */ genericTypeRef
+          ),
+        ],
         /* type */ genericTypeRef,
-        /* body */ undefined));
+        /* body */ undefined
+      )
+    );
 
-    return this.outputHelperIdent = outputHelperIdent;
+    return (this.outputHelperIdent = outputHelperIdent);
   }
 
   /**
@@ -214,7 +250,11 @@ export class Environment {
 
     // Use `translateExpression` to convert the `Expression` into a `ts.Expression`.
     return translateExpression(
-        ngExpr, this.importManager, NOOP_DEFAULT_IMPORT_RECORDER, ts.ScriptTarget.ES2015);
+      ngExpr,
+      this.importManager,
+      NOOP_DEFAULT_IMPORT_RECORDER,
+      ts.ScriptTarget.ES2015
+    );
   }
 
   /**
@@ -224,17 +264,21 @@ export class Environment {
    */
   referenceType(ref: Reference): ts.TypeNode {
     const ngExpr = this.refEmitter.emit(
-        ref, this.contextFile, ImportFlags.NoAliasing | ImportFlags.AllowTypeImports);
+      ref,
+      this.contextFile,
+      ImportFlags.NoAliasing | ImportFlags.AllowTypeImports
+    );
 
     // Create an `ExpressionType` from the `Expression` and translate it via `translateType`.
     // TODO(alxhub): support references to types with generic arguments in a clean way.
     return translateType(new ExpressionType(ngExpr), this.importManager);
   }
 
-  private emitTypeParameters(declaration: ClassDeclaration<ts.ClassDeclaration>):
-      ts.TypeParameterDeclaration[]|undefined {
+  private emitTypeParameters(
+    declaration: ClassDeclaration<ts.ClassDeclaration>
+  ): ts.TypeParameterDeclaration[] | undefined {
     const emitter = new TypeParameterEmitter(declaration.typeParameters, this.reflector);
-    return emitter.emit(ref => this.referenceType(ref));
+    return emitter.emit((ref) => this.referenceType(ref));
   }
 
   /**
@@ -249,10 +293,6 @@ export class Environment {
   }
 
   getPreludeStatements(): ts.Statement[] {
-    return [
-      ...this.helperStatements,
-      ...this.pipeInstStatements,
-      ...this.typeCtorStatements,
-    ];
+    return [...this.helperStatements, ...this.pipeInstStatements, ...this.typeCtorStatements];
   }
 }

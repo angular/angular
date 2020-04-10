@@ -10,10 +10,12 @@ import {core, ElementSchemaRegistry} from '@angular/compiler';
 
 export class MockSchemaRegistry implements ElementSchemaRegistry {
   constructor(
-      public existingProperties: {[key: string]: boolean},
-      public attrPropMapping: {[key: string]: string},
-      public existingElements: {[key: string]: boolean}, public invalidProperties: Array<string>,
-      public invalidAttributes: Array<string>) {}
+    public existingProperties: {[key: string]: boolean},
+    public attrPropMapping: {[key: string]: string},
+    public existingElements: {[key: string]: boolean},
+    public invalidProperties: Array<string>,
+    public invalidAttributes: Array<string>
+  ) {}
 
   hasProperty(tagName: string, property: string, schemas: core.SchemaMetadata[]): boolean {
     const value = this.existingProperties[property];
@@ -41,7 +43,7 @@ export class MockSchemaRegistry implements ElementSchemaRegistry {
     return 'ng-component';
   }
 
-  validateProperty(name: string): {error: boolean, msg?: string} {
+  validateProperty(name: string): {error: boolean; msg?: string} {
     if (this.invalidProperties.indexOf(name) > -1) {
       return {error: true, msg: `Binding to property '${name}' is disallowed for security reasons`};
     } else {
@@ -49,11 +51,11 @@ export class MockSchemaRegistry implements ElementSchemaRegistry {
     }
   }
 
-  validateAttribute(name: string): {error: boolean, msg?: string} {
+  validateAttribute(name: string): {error: boolean; msg?: string} {
     if (this.invalidAttributes.indexOf(name) > -1) {
       return {
         error: true,
-        msg: `Binding to attribute '${name}' is disallowed for security reasons`
+        msg: `Binding to attribute '${name}' is disallowed for security reasons`,
       };
     } else {
       return {error: false};
@@ -63,8 +65,11 @@ export class MockSchemaRegistry implements ElementSchemaRegistry {
   normalizeAnimationStyleProperty(propName: string): string {
     return propName;
   }
-  normalizeAnimationStyleValue(camelCaseProp: string, userProvidedProp: string, val: string|number):
-      {error: string, value: string} {
+  normalizeAnimationStyleValue(
+    camelCaseProp: string,
+    userProvidedProp: string,
+    val: string | number
+  ): {error: string; value: string} {
     return {error: null!, value: val.toString()};
   }
 }

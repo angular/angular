@@ -21,11 +21,11 @@ export function assertArrayOfStrings(identifier: string, value: any) {
 }
 
 const UNUSABLE_INTERPOLATION_REGEXPS = [
-  /^\s*$/,        // empty
-  /[<>]/,         // html tag
-  /^[{}]$/,       // i18n expansion
-  /&(#|[a-z])/i,  // character reference,
-  /^\/\//,        // comment
+  /^\s*$/, // empty
+  /[<>]/, // html tag
+  /^[{}]$/, // i18n expansion
+  /&(#|[a-z])/i, // character reference,
+  /^\/\//, // comment
 ];
 
 export function assertInterpolationSymbols(identifier: string, value: any): void {
@@ -35,7 +35,7 @@ export function assertInterpolationSymbols(identifier: string, value: any): void
     const start = value[0] as string;
     const end = value[1] as string;
     // Check for unusable interpolation symbols
-    UNUSABLE_INTERPOLATION_REGEXPS.forEach(regexp => {
+    UNUSABLE_INTERPOLATION_REGEXPS.forEach((regexp) => {
       if (regexp.test(start) || regexp.test(end)) {
         throw new Error(`['${start}', '${end}'] contains unusable interpolation symbol.`);
       }

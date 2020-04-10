@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {Logger} from '../logging/logger';
 import {LockFile} from './lock_file';
 
@@ -21,8 +22,11 @@ import {LockFile} from './lock_file';
  */
 export class AsyncLocker {
   constructor(
-      private lockFile: LockFile, protected logger: Logger, private retryDelay: number,
-      private retryAttempts: number) {}
+    private lockFile: LockFile,
+    protected logger: Logger,
+    private retryDelay: number,
+    private retryAttempts: number
+  ) {}
 
   /**
    * Run a function guarded by the lock file.
@@ -51,19 +55,20 @@ export class AsyncLocker {
         }
         if (attempts === 0) {
           this.logger.info(
-              `Another process, with id ${pid}, is currently running ngcc.\n` +
-              `Waiting up to ${this.retryDelay * this.retryAttempts / 1000}s for it to finish.`);
+            `Another process, with id ${pid}, is currently running ngcc.\n` +
+              `Waiting up to ${(this.retryDelay * this.retryAttempts) / 1000}s for it to finish.`
+          );
         }
         // The file is still locked by another process so wait for a bit and retry
-        await new Promise(resolve => setTimeout(resolve, this.retryDelay));
+        await new Promise((resolve) => setTimeout(resolve, this.retryDelay));
       }
     }
     // If we fall out of the loop then we ran out of rety attempts
     throw new Error(
-        `Timed out waiting ${
-            this.retryAttempts * this.retryDelay /
-            1000}s for another ngcc process, with id ${pid}, to complete.\n` +
-        `(If you are sure no ngcc process is running then you should delete the lock-file at ${
-            this.lockFile.path}.)`);
+      `Timed out waiting ${
+        (this.retryAttempts * this.retryDelay) / 1000
+      }s for another ngcc process, with id ${pid}, to complete.\n` +
+        `(If you are sure no ngcc process is running then you should delete the lock-file at ${this.lockFile.path}.)`
+    );
   }
 }

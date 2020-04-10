@@ -15,15 +15,15 @@ export interface ResolvedNgModule {
   name: string;
   node: ts.ClassDeclaration;
   decorator: NgDecorator;
-  providersExpr: ts.Expression|null;
+  providersExpr: ts.Expression | null;
 }
 
 export interface ResolvedDirective {
   name: string;
   node: ts.ClassDeclaration;
   decorator: NgDecorator;
-  providersExpr: ts.Expression|null;
-  viewProvidersExpr: ts.Expression|null;
+  providersExpr: ts.Expression | null;
+  viewProvidersExpr: ts.Expression | null;
 }
 
 /**
@@ -41,7 +41,7 @@ export class NgDefinitionCollector {
       this.visitClassDeclaration(node);
     }
 
-    ts.forEachChild(node, n => this.visitNode(n));
+    ts.forEachChild(node, (n) => this.visitNode(n));
   }
 
   private visitClassDeclaration(node: ts.ClassDeclaration) {
@@ -50,8 +50,9 @@ export class NgDefinitionCollector {
     }
 
     const ngDecorators = getAngularDecorators(this.typeChecker, node.decorators);
-    const directiveDecorator =
-        ngDecorators.find(({name}) => name === 'Component' || name == 'Directive');
+    const directiveDecorator = ngDecorators.find(
+      ({name}) => name === 'Component' || name == 'Directive'
+    );
     const ngModuleDecorator = ngDecorators.find(({name}) => name === 'NgModule');
 
     if (ngModuleDecorator) {
@@ -69,11 +70,13 @@ export class NgDefinitionCollector {
       return;
     }
 
-    const providersNode = metadata.properties.filter(ts.isPropertyAssignment)
-                              .find(p => getPropertyNameText(p.name) === 'providers');
+    const providersNode = metadata.properties
+      .filter(ts.isPropertyAssignment)
+      .find((p) => getPropertyNameText(p.name) === 'providers');
 
-    const viewProvidersNode = metadata.properties.filter(ts.isPropertyAssignment)
-                                  .find(p => getPropertyNameText(p.name) === 'viewProviders');
+    const viewProvidersNode = metadata.properties
+      .filter(ts.isPropertyAssignment)
+      .find((p) => getPropertyNameText(p.name) === 'viewProviders');
 
     this.resolvedDirectives.push({
       name: node.name ? node.name.text : 'default',
@@ -92,8 +95,9 @@ export class NgDefinitionCollector {
       return;
     }
 
-    const providersNode = metadata.properties.filter(ts.isPropertyAssignment)
-                              .find(p => getPropertyNameText(p.name) === 'providers');
+    const providersNode = metadata.properties
+      .filter(ts.isPropertyAssignment)
+      .find((p) => getPropertyNameText(p.name) === 'providers');
     this.resolvedModules.push({
       name: node.name ? node.name.text : 'default',
       node,

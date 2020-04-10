@@ -8,13 +8,34 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, ConcreteDeclaration, CtorParameter, Declaration, Decorator, isDecoratorIdentifier, KnownDeclaration, reflectObjectLiteral, TypeScriptReflectionHost, TypeValueReference,} from '../../../src/ngtsc/reflection';
+import {
+  ClassDeclaration,
+  ClassMember,
+  ClassMemberKind,
+  ConcreteDeclaration,
+  CtorParameter,
+  Declaration,
+  Decorator,
+  isDecoratorIdentifier,
+  KnownDeclaration,
+  reflectObjectLiteral,
+  TypeScriptReflectionHost,
+  TypeValueReference,
+} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
 
-import {ClassSymbol, isSwitchableVariableDeclaration, ModuleWithProvidersFunction, NgccClassSymbol, NgccReflectionHost, PRE_R3_MARKER, SwitchableVariableDeclaration} from './ngcc_host';
+import {
+  ClassSymbol,
+  isSwitchableVariableDeclaration,
+  ModuleWithProvidersFunction,
+  NgccClassSymbol,
+  NgccReflectionHost,
+  PRE_R3_MARKER,
+  SwitchableVariableDeclaration,
+} from './ngcc_host';
 
 export const DECORATORS = 'decorators' as ts.__String;
 export const PROP_DECORATORS = 'propDecorators' as ts.__String;
@@ -56,7 +77,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * tree. Note that by definition the key and value declarations will not be in the same TS
    * program.
    */
-  protected publicDtsDeclarationMap: Map<ts.Declaration, ts.Declaration>|null = null;
+  protected publicDtsDeclarationMap: Map<ts.Declaration, ts.Declaration> | null = null;
   /**
    * A mapping from source declarations to typings declarations, which are not publicly exported.
    *
@@ -64,7 +85,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * the same name in both the source and the dts file. Note that by definition the key and value
    * declarations will not be in the same TS program.
    */
-  protected privateDtsDeclarationMap: Map<ts.Declaration, ts.Declaration>|null = null;
+  protected privateDtsDeclarationMap: Map<ts.Declaration, ts.Declaration> | null = null;
 
   /**
    * The set of source files that have already been preprocessed.
@@ -97,8 +118,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   protected decoratorCache = new Map<ClassDeclaration, DecoratorInfo>();
 
   constructor(
-      protected logger: Logger, protected isCore: boolean, protected src: BundleProgram,
-      protected dts: BundleProgram|null = null) {
+    protected logger: Logger,
+    protected isCore: boolean,
+    protected src: BundleProgram,
+    protected dts: BundleProgram | null = null
+  ) {
     super(src.program.getTypeChecker());
   }
 
@@ -119,7 +143,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param declaration the declaration node whose symbol we are finding.
    * @returns the symbol for the node or `undefined` if it is not a "class" or has no symbol.
    */
-  getClassSymbol(declaration: ts.Node): NgccClassSymbol|undefined {
+  getClassSymbol(declaration: ts.Node): NgccClassSymbol | undefined {
     const symbol = this.getClassSymbolFromOuterDeclaration(declaration);
     if (symbol !== undefined) {
       return symbol;
@@ -143,7 +167,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns the symbol for the node or `undefined` if it does not represent an outer declaration
    * of a class.
    */
-  protected getClassSymbolFromOuterDeclaration(declaration: ts.Node): NgccClassSymbol|undefined {
+  protected getClassSymbolFromOuterDeclaration(declaration: ts.Node): NgccClassSymbol | undefined {
     // Create a symbol without inner declaration if the declaration is a regular class declaration.
     if (ts.isClassDeclaration(declaration) && hasNameIdentifier(declaration)) {
       return this.createClassSymbol(declaration, null);
@@ -176,7 +200,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns the symbol for the node or `undefined` if it does not represent an inner declaration
    * of a class.
    */
-  protected getClassSymbolFromInnerDeclaration(declaration: ts.Node): NgccClassSymbol|undefined {
+  protected getClassSymbolFromInnerDeclaration(declaration: ts.Node): NgccClassSymbol | undefined {
     if (!ts.isClassExpression(declaration) || !hasNameIdentifier(declaration)) {
       return undefined;
     }
@@ -201,17 +225,20 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * the declarations could not be resolved.
    */
   protected createClassSymbol(
-      outerDeclaration: ClassDeclaration, innerDeclaration: ClassDeclaration|null): NgccClassSymbol
-      |undefined {
-    const declarationSymbol =
-        this.checker.getSymbolAtLocation(outerDeclaration.name) as ClassSymbol | undefined;
+    outerDeclaration: ClassDeclaration,
+    innerDeclaration: ClassDeclaration | null
+  ): NgccClassSymbol | undefined {
+    const declarationSymbol = this.checker.getSymbolAtLocation(outerDeclaration.name) as
+      | ClassSymbol
+      | undefined;
     if (declarationSymbol === undefined) {
       return undefined;
     }
 
-    const implementationSymbol = innerDeclaration !== null ?
-        this.checker.getSymbolAtLocation(innerDeclaration.name) :
-        declarationSymbol;
+    const implementationSymbol =
+      innerDeclaration !== null
+        ? this.checker.getSymbolAtLocation(innerDeclaration.name)
+        : declarationSymbol;
     if (implementationSymbol === undefined) {
       return undefined;
     }
@@ -236,7 +263,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns an array of `Decorator` metadata if decorators are present on the declaration, or
    * `null` if either no decorators were present or if the declaration is not of a decoratable type.
    */
-  getDecoratorsOfDeclaration(declaration: ts.Declaration): Decorator[]|null {
+  getDecoratorsOfDeclaration(declaration: ts.Declaration): Decorator[] | null {
     const symbol = this.getClassSymbol(declaration);
     if (!symbol) {
       return null;
@@ -277,11 +304,12 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    *
    * @throws if `declaration` does not resolve to a class declaration.
    */
-  getConstructorParameters(clazz: ClassDeclaration): CtorParameter[]|null {
+  getConstructorParameters(clazz: ClassDeclaration): CtorParameter[] | null {
     const classSymbol = this.getClassSymbol(clazz);
     if (!classSymbol) {
       throw new Error(
-          `Attempted to get constructor parameters of a non-class: "${clazz.getText()}"`);
+        `Attempted to get constructor parameters of a non-class: "${clazz.getText()}"`
+      );
     }
     const parameterNodes = this.getConstructorParameterDeclarations(classSymbol);
     if (parameterNodes) {
@@ -304,7 +332,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     return super.hasBaseClass(innerClassDeclaration);
   }
 
-  getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null {
+  getBaseClassExpression(clazz: ClassDeclaration): ts.Expression | null {
     // First try getting the base class from the "outer" declaration
     const superBaseClassIdentifier = super.getBaseClassExpression(clazz);
     if (superBaseClassIdentifier) {
@@ -341,13 +369,16 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns metadata about the `Declaration` if the original declaration is found, or `null`
    * otherwise.
    */
-  getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
+  getDeclarationOfIdentifier(id: ts.Identifier): Declaration | null {
     const superDeclaration = super.getDeclarationOfIdentifier(id);
 
     // The identifier may have been of an additional class assignment such as `MyClass_1` that was
     // present as alias for `MyClass`. If so, resolve such aliases to their original declaration.
-    if (superDeclaration !== null && superDeclaration.node !== null &&
-        superDeclaration.known === null) {
+    if (
+      superDeclaration !== null &&
+      superDeclaration.node !== null &&
+      superDeclaration.known === null
+    ) {
       const aliasedIdentifier = this.resolveAliasedClassIdentifier(superDeclaration.node);
       if (aliasedIdentifier !== null) {
         return this.getDeclarationOfIdentifier(aliasedIdentifier);
@@ -361,7 +392,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * Gets all decorators of the given class symbol. Any decorator that have been synthetically
    * injected by a migration will not be present in the returned collection.
    */
-  getDecoratorsOfSymbol(symbol: NgccClassSymbol): Decorator[]|null {
+  getDecoratorsOfSymbol(symbol: NgccClassSymbol): Decorator[] | null {
     const {classDecorators} = this.acquireDecoratorInfo(symbol);
     if (classDecorators === null) {
       return null;
@@ -379,12 +410,12 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   getSwitchableDeclarations(module: ts.Node): SwitchableVariableDeclaration[] {
     // Don't bother to walk the AST if the marker is not found in the text
-    return module.getText().indexOf(PRE_R3_MARKER) >= 0 ?
-        findAll(module, isSwitchableVariableDeclaration) :
-        [];
+    return module.getText().indexOf(PRE_R3_MARKER) >= 0
+      ? findAll(module, isSwitchableVariableDeclaration)
+      : [];
   }
 
-  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|null {
+  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression | null {
     const value = super.getVariableValue(declaration);
     if (value) {
       return value;
@@ -421,8 +452,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
         const targetSymbol = this.checker.getSymbolAtLocation(target);
         const targetDeclaration = targetSymbol && targetSymbol.valueDeclaration;
         if (targetDeclaration) {
-          if (ts.isClassDeclaration(targetDeclaration) ||
-              ts.isFunctionDeclaration(targetDeclaration)) {
+          if (
+            ts.isClassDeclaration(targetDeclaration) ||
+            ts.isFunctionDeclaration(targetDeclaration)
+          ) {
             // The target is just a function or class declaration
             // so return its identifier as the variable value.
             return targetDeclaration.name || null;
@@ -450,9 +483,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   findClassSymbols(sourceFile: ts.SourceFile): NgccClassSymbol[] {
     const classes: NgccClassSymbol[] = [];
-    this.getModuleStatements(sourceFile).forEach(statement => {
+    this.getModuleStatements(sourceFile).forEach((statement) => {
       if (ts.isVariableStatement(statement)) {
-        statement.declarationList.declarations.forEach(declaration => {
+        statement.declarationList.declarations.forEach((declaration) => {
           const classSymbol = this.getClassSymbol(declaration);
           if (classSymbol) {
             classes.push(classSymbol);
@@ -476,7 +509,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns the number of type parameters of the class, if known, or `null` if the declaration
    * is not a class or has an unknown number of type parameters.
    */
-  getGenericArityOfClass(clazz: ClassDeclaration): number|null {
+  getGenericArityOfClass(clazz: ClassDeclaration): number | null {
     const dtsDeclaration = this.getDtsDeclaration(clazz);
     if (dtsDeclaration && ts.isClassDeclaration(dtsDeclaration)) {
       return dtsDeclaration.typeParameters ? dtsDeclaration.typeParameters.length : 0;
@@ -496,13 +529,16 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * Note that the `ts.ClassDeclaration` returned from this function may not be from the same
    * `ts.Program` as the input declaration.
    */
-  getDtsDeclaration(declaration: ts.Declaration): ts.Declaration|null {
+  getDtsDeclaration(declaration: ts.Declaration): ts.Declaration | null {
     if (this.dts === null) {
       return null;
     }
     if (!isNamedDeclaration(declaration)) {
-      throw new Error(`Cannot get the dts file for a declaration that has no name: ${
-          declaration.getText()} in ${declaration.getSourceFile().fileName}`);
+      throw new Error(
+        `Cannot get the dts file for a declaration that has no name: ${declaration.getText()} in ${
+          declaration.getSourceFile().fileName
+        }`
+      );
     }
 
     // Try to retrieve the dts declaration from the public map
@@ -541,10 +577,14 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
         return;
       }
       if (this.isClass(declaration.node)) {
-        this.getMembersOfClass(declaration.node).forEach(member => {
+        this.getMembersOfClass(declaration.node).forEach((member) => {
           if (member.isStatic) {
             const info = this.parseForModuleWithProviders(
-                member.name, member.node, member.implementation, declaration.node);
+              member.name,
+              member.node,
+              member.implementation,
+              declaration.node
+            );
             if (info) {
               infos.push(info);
             }
@@ -552,8 +592,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
         });
       } else {
         if (isNamedDeclaration(declaration.node)) {
-          const info =
-              this.parseForModuleWithProviders(declaration.node.name.text, declaration.node);
+          const info = this.parseForModuleWithProviders(
+            declaration.node.name.text,
+            declaration.node
+          );
           if (info) {
             infos.push(info);
           }
@@ -568,7 +610,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
     // If there are static members on this class then find the last one
     if (classSymbol.declaration.exports !== undefined) {
-      classSymbol.declaration.exports.forEach(exportSymbol => {
+      classSymbol.declaration.exports.forEach((exportSymbol) => {
         if (exportSymbol.valueDeclaration === undefined) {
           return;
         }
@@ -580,9 +622,13 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
 
     // If there are helper calls for this class then find the last one
-    const helpers = this.getHelperCallsForClass(
-        classSymbol, ['__decorate', '__extends', '__param', '__metadata']);
-    helpers.forEach(helper => {
+    const helpers = this.getHelperCallsForClass(classSymbol, [
+      '__decorate',
+      '__extends',
+      '__param',
+      '__metadata',
+    ]);
+    helpers.forEach((helper) => {
       const helperStatement = getContainingStatement(helper);
       if (helperStatement !== null && last.getEnd() < helperStatement.getEnd()) {
         last = helperStatement;
@@ -601,8 +647,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   detectKnownDeclaration(decl: null): null;
   detectKnownDeclaration<T extends Declaration>(decl: T): T;
-  detectKnownDeclaration<T extends Declaration>(decl: T|null): T|null;
-  detectKnownDeclaration<T extends Declaration>(decl: T|null): T|null {
+  detectKnownDeclaration<T extends Declaration>(decl: T | null): T | null;
+  detectKnownDeclaration<T extends Declaration>(decl: T | null): T | null {
     if (decl !== null && decl.known === null && this.isJavaScriptObjectDeclaration(decl)) {
       // If the identifier resolves to the global JavaScript `Object`, update the declaration to
       // denote it as the known `JsGlobalObject` declaration.
@@ -612,15 +658,16 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     return decl;
   }
 
-
   ///////////// Protected Helpers /////////////
 
   /**
    * Resolve a `ts.Symbol` to its declaration and detect whether it corresponds with a known
    * declaration.
    */
-  protected getDeclarationOfSymbol(symbol: ts.Symbol, originalId: ts.Identifier|null): Declaration
-      |null {
+  protected getDeclarationOfSymbol(
+    symbol: ts.Symbol,
+    originalId: ts.Identifier | null
+  ): Declaration | null {
     return this.detectKnownDeclaration(super.getDeclarationOfSymbol(symbol, originalId));
   }
 
@@ -635,11 +682,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns The original identifier that the given class declaration resolves to, or `undefined`
    * if the declaration does not represent an aliased class.
    */
-  protected resolveAliasedClassIdentifier(declaration: ts.Declaration): ts.Identifier|null {
+  protected resolveAliasedClassIdentifier(declaration: ts.Declaration): ts.Identifier | null {
     this.ensurePreprocessed(declaration.getSourceFile());
-    return this.aliasedClassDeclarations.has(declaration) ?
-        this.aliasedClassDeclarations.get(declaration)! :
-        null;
+    return this.aliasedClassDeclarations.has(declaration)
+      ? this.aliasedClassDeclarations.get(declaration)!
+      : null;
   }
 
   /**
@@ -679,8 +726,13 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
     const declaration = declarations[0];
     const initializer = declaration.initializer;
-    if (!ts.isIdentifier(declaration.name) || !initializer || !isAssignment(initializer) ||
-        !ts.isIdentifier(initializer.left) || !this.isClass(declaration)) {
+    if (
+      !ts.isIdentifier(declaration.name) ||
+      !initializer ||
+      !isAssignment(initializer) ||
+      !ts.isIdentifier(initializer.left) ||
+      !this.isClass(declaration)
+    ) {
       return;
     }
 
@@ -689,7 +741,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     const aliasedDeclaration = this.getDeclarationOfIdentifier(aliasedIdentifier);
     if (aliasedDeclaration === null || aliasedDeclaration.node === null) {
       throw new Error(
-          `Unable to locate declaration of ${aliasedIdentifier.text} in "${statement.getText()}"`);
+        `Unable to locate declaration of ${aliasedIdentifier.text} in "${statement.getText()}"`
+      );
     }
     this.aliasedClassDeclarations.set(aliasedDeclaration.node, declaration.name);
   }
@@ -711,8 +764,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns an expression that represents the value of the variable, or undefined if none can be
    * found.
    */
-  protected findDecoratedVariableValue(node: ts.Node|undefined, symbol: ts.Symbol):
-      ts.CallExpression|null {
+  protected findDecoratedVariableValue(
+    node: ts.Node | undefined,
+    symbol: ts.Symbol
+  ): ts.CallExpression | null {
     if (!node) {
       return null;
     }
@@ -720,11 +775,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       const left = node.left;
       const right = node.right;
       if (ts.isIdentifier(left) && this.checker.getSymbolAtLocation(left) === symbol) {
-        return (ts.isCallExpression(right) && getCalleeName(right) === '__decorate') ? right : null;
+        return ts.isCallExpression(right) && getCalleeName(right) === '__decorate' ? right : null;
       }
       return this.findDecoratedVariableValue(right, symbol);
     }
-    return node.forEachChild(node => this.findDecoratedVariableValue(node, symbol)) || null;
+    return node.forEachChild((node) => this.findDecoratedVariableValue(node, symbol)) || null;
   }
 
   /**
@@ -733,8 +788,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param propertyName the name of static property.
    * @returns the symbol if it is found or `undefined` if not.
    */
-  protected getStaticProperty(symbol: NgccClassSymbol, propertyName: ts.__String): ts.Symbol
-      |undefined {
+  protected getStaticProperty(
+    symbol: NgccClassSymbol,
+    propertyName: ts.__String
+  ): ts.Symbol | undefined {
     return symbol.declaration.exports && symbol.declaration.exports.get(propertyName);
   }
 
@@ -777,13 +834,16 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns All information on the decorators as extracted from static properties, or `null` if
    * none of the static properties exist.
    */
-  protected computeDecoratorInfoFromStaticProperties(classSymbol: NgccClassSymbol): {
-    classDecorators: Decorator[]|null; memberDecorators: Map<string, Decorator[]>| null;
+  protected computeDecoratorInfoFromStaticProperties(
+    classSymbol: NgccClassSymbol
+  ): {
+    classDecorators: Decorator[] | null;
+    memberDecorators: Map<string, Decorator[]> | null;
     constructorParamInfo: ParamInfo[] | null;
   } {
-    let classDecorators: Decorator[]|null = null;
-    let memberDecorators: Map<string, Decorator[]>|null = null;
-    let constructorParamInfo: ParamInfo[]|null = null;
+    let classDecorators: Decorator[] | null = null;
+    let memberDecorators: Map<string, Decorator[]> | null = null;
+    let constructorParamInfo: ParamInfo[] | null = null;
 
     const decoratorsProperty = this.getStaticProperty(classSymbol, DECORATORS);
     if (decoratorsProperty !== undefined) {
@@ -817,15 +877,18 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param decoratorsSymbol the property containing the decorators we want to get.
    * @returns an array of decorators or null if none where found.
    */
-  protected getClassDecoratorsFromStaticProperty(decoratorsSymbol: ts.Symbol): Decorator[]|null {
+  protected getClassDecoratorsFromStaticProperty(decoratorsSymbol: ts.Symbol): Decorator[] | null {
     const decoratorsIdentifier = decoratorsSymbol.valueDeclaration;
     if (decoratorsIdentifier && decoratorsIdentifier.parent) {
-      if (ts.isBinaryExpression(decoratorsIdentifier.parent) &&
-          decoratorsIdentifier.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken) {
+      if (
+        ts.isBinaryExpression(decoratorsIdentifier.parent) &&
+        decoratorsIdentifier.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken
+      ) {
         // AST of the array of decorator values
         const decoratorsArray = decoratorsIdentifier.parent.right;
-        return this.reflectDecorators(decoratorsArray)
-            .filter(decorator => this.isFromCore(decorator));
+        return this.reflectDecorators(decoratorsArray).filter((decorator) =>
+          this.isFromCore(decorator)
+        );
       }
     }
     return null;
@@ -905,7 +968,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
         nameNode: null,
         node: null,
         type: null,
-        value: null
+        value: null,
       });
     });
 
@@ -927,16 +990,18 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns a map whose keys are the name of the members and whose values are collections of
    * decorators for the given member.
    */
-  protected getMemberDecoratorsFromStaticProperty(decoratorsProperty: ts.Symbol):
-      Map<string, Decorator[]> {
+  protected getMemberDecoratorsFromStaticProperty(
+    decoratorsProperty: ts.Symbol
+  ): Map<string, Decorator[]> {
     const memberDecorators = new Map<string, Decorator[]>();
     // Symbol of the identifier for `SomeDirective.propDecorators`.
     const propDecoratorsMap = getPropertyValueFromSymbol(decoratorsProperty);
     if (propDecoratorsMap && ts.isObjectLiteralExpression(propDecoratorsMap)) {
       const propertiesMap = reflectObjectLiteral(propDecoratorsMap);
       propertiesMap.forEach((value, name) => {
-        const decorators =
-            this.reflectDecorators(value).filter(decorator => this.isFromCore(decorator));
+        const decorators = this.reflectDecorators(value).filter((decorator) =>
+          this.isFromCore(decorator)
+        );
         if (decorators.length) {
           memberDecorators.set(name, decorators);
         }
@@ -973,7 +1038,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns All information on the decorators of the class.
    */
   protected computeDecoratorInfoFromHelperCalls(classSymbol: NgccClassSymbol): DecoratorInfo {
-    let classDecorators: Decorator[]|null = null;
+    let classDecorators: Decorator[] | null = null;
     const memberDecorators = new Map<string, Decorator[]>();
     const constructorParamInfo: ParamInfo[] = [];
 
@@ -1029,7 +1094,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
             // The helper arg represents the types of the parameters. Since it's applied to the
             // class, it corresponds with the constructor parameters of the class.
             entry.types.forEach(
-                (type, index) => getConstructorParamInfo(index).typeExpression = type);
+              (type, index) => (getConstructorParamInfo(index).typeExpression = type)
+            );
           }
         }
       } else if (isMemberDecorateCall(helperCall, matchesClass)) {
@@ -1046,8 +1112,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           if (entry.type === 'decorator') {
             // The helper arg was reflected to represent an actual decorator.
             if (this.isFromCore(entry.decorator)) {
-              const decorators =
-                  memberDecorators.has(memberName) ? memberDecorators.get(memberName)! : [];
+              const decorators = memberDecorators.has(memberName)
+                ? memberDecorators.get(memberName)!
+                : [];
               decorators.push(entry.decorator);
               memberDecorators.set(memberName, decorators);
             }
@@ -1084,7 +1151,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns an object that indicates which of the three categories the call represents, together
    * with the reflected information of the call, or null if the call is not a valid decorate call.
    */
-  protected reflectDecorateHelperEntry(expression: ts.Expression): DecorateHelperEntry|null {
+  protected reflectDecorateHelperEntry(expression: ts.Expression): DecorateHelperEntry | null {
     // We only care about those elements that are actual calls
     if (!ts.isCallExpression(expression)) {
       return null;
@@ -1147,15 +1214,16 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     };
   }
 
-  protected reflectDecoratorCall(call: ts.CallExpression): Decorator|null {
+  protected reflectDecoratorCall(call: ts.CallExpression): Decorator | null {
     const decoratorExpression = call.expression;
     if (!isDecoratorIdentifier(decoratorExpression)) {
       return null;
     }
 
     // We found a decorator!
-    const decoratorIdentifier =
-        ts.isIdentifier(decoratorExpression) ? decoratorExpression : decoratorExpression.name;
+    const decoratorIdentifier = ts.isIdentifier(decoratorExpression)
+      ? decoratorExpression
+      : decoratorExpression.name;
 
     return {
       name: decoratorIdentifier.text,
@@ -1176,9 +1244,14 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns the node that corresponds to the `__decorate(...)` call or null if the statement
    * does not match.
    */
-  protected getHelperCall(statement: ts.Statement, helperNames: string[]): ts.CallExpression|null {
-    if ((ts.isExpressionStatement(statement) || ts.isReturnStatement(statement)) &&
-        statement.expression) {
+  protected getHelperCall(
+    statement: ts.Statement,
+    helperNames: string[]
+  ): ts.CallExpression | null {
+    if (
+      (ts.isExpressionStatement(statement) || ts.isReturnStatement(statement)) &&
+      statement.expression
+    ) {
       let expression = statement.expression;
       while (isAssignment(expression)) {
         expression = expression.right;
@@ -1192,7 +1265,6 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
     return null;
   }
-
 
   /**
    * Reflect over the given array node and extract decorator information from each element.
@@ -1213,7 +1285,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
     if (ts.isArrayLiteralExpression(decoratorsArray)) {
       // Add each decorator that is imported from `@angular/core` into the `decorators` array
-      decoratorsArray.elements.forEach(node => {
+      decoratorsArray.elements.forEach((node) => {
         // If the decorator is not an object literal expression then we are not interested
         if (ts.isObjectLiteralExpression(node)) {
           // We are only interested in objects of the form: `{ type: DecoratorType, args: [...] }`
@@ -1223,8 +1295,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           if (decorator.has('type')) {
             let decoratorType = decorator.get('type')!;
             if (isDecoratorIdentifier(decoratorType)) {
-              const decoratorIdentifier =
-                  ts.isIdentifier(decoratorType) ? decoratorType : decoratorType.name;
+              const decoratorIdentifier = ts.isIdentifier(decoratorType)
+                ? decoratorType
+                : decoratorType.name;
               decorators.push({
                 name: decoratorIdentifier.text,
                 identifier: decoratorType,
@@ -1260,15 +1333,18 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param isStatic true if this member is static, false if it is an instance property.
    * @returns the reflected member information, or null if the symbol is not a member.
    */
-  protected reflectMembers(symbol: ts.Symbol, decorators?: Decorator[], isStatic?: boolean):
-      ClassMember[]|null {
+  protected reflectMembers(
+    symbol: ts.Symbol,
+    decorators?: Decorator[],
+    isStatic?: boolean
+  ): ClassMember[] | null {
     if (symbol.flags & ts.SymbolFlags.Accessor) {
       const members: ClassMember[] = [];
       const setter = symbol.declarations && symbol.declarations.find(ts.isSetAccessor);
       const getter = symbol.declarations && symbol.declarations.find(ts.isGetAccessor);
 
       const setterMember =
-          setter && this.reflectMember(setter, ClassMemberKind.Setter, decorators, isStatic);
+        setter && this.reflectMember(setter, ClassMemberKind.Setter, decorators, isStatic);
       if (setterMember) {
         members.push(setterMember);
 
@@ -1279,7 +1355,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       }
 
       const getterMember =
-          getter && this.reflectMember(getter, ClassMemberKind.Getter, decorators, isStatic);
+        getter && this.reflectMember(getter, ClassMemberKind.Getter, decorators, isStatic);
       if (getterMember) {
         members.push(getterMember);
       }
@@ -1287,14 +1363,14 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       return members;
     }
 
-    let kind: ClassMemberKind|null = null;
+    let kind: ClassMemberKind | null = null;
     if (symbol.flags & ts.SymbolFlags.Method) {
       kind = ClassMemberKind.Method;
     } else if (symbol.flags & ts.SymbolFlags.Property) {
       kind = ClassMemberKind.Property;
     }
 
-    const node = symbol.valueDeclaration || symbol.declarations && symbol.declarations[0];
+    const node = symbol.valueDeclaration || (symbol.declarations && symbol.declarations[0]);
     if (!node) {
       // If the symbol has been imported from a TypeScript typings file then the compiler
       // may pass the `prototype` symbol as an export of the class.
@@ -1320,11 +1396,14 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns the reflected member information, or null if the symbol is not a member.
    */
   protected reflectMember(
-      node: ts.Declaration, kind: ClassMemberKind|null, decorators?: Decorator[],
-      isStatic?: boolean): ClassMember|null {
-    let value: ts.Expression|null = null;
-    let name: string|null = null;
-    let nameNode: ts.Identifier|null = null;
+    node: ts.Declaration,
+    kind: ClassMemberKind | null,
+    decorators?: Decorator[],
+    isStatic?: boolean
+  ): ClassMember | null {
+    let value: ts.Expression | null = null;
+    let name: string | null = null;
+    let nameNode: ts.Identifier | null = null;
 
     if (!isClassMemberType(node)) {
       return null;
@@ -1361,8 +1440,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     // If we have still not determined if this is a static or instance member then
     // look for the `static` keyword on the declaration
     if (isStatic === undefined) {
-      isStatic = node.modifiers !== undefined &&
-          node.modifiers.some(mod => mod.kind === ts.SyntaxKind.StaticKeyword);
+      isStatic =
+        node.modifiers !== undefined &&
+        node.modifiers.some((mod) => mod.kind === ts.SyntaxKind.StaticKeyword);
     }
 
     const type: ts.TypeNode = (node as any).type || null;
@@ -1375,7 +1455,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       nameNode,
       value,
       isStatic,
-      decorators: decorators || []
+      decorators: decorators || [],
     };
   }
 
@@ -1385,14 +1465,16 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns an array of `ts.ParameterDeclaration` objects representing each of the parameters in
    * the class's constructor or null if there is no constructor.
    */
-  protected getConstructorParameterDeclarations(classSymbol: NgccClassSymbol):
-      ts.ParameterDeclaration[]|null {
+  protected getConstructorParameterDeclarations(
+    classSymbol: NgccClassSymbol
+  ): ts.ParameterDeclaration[] | null {
     const members = classSymbol.implementation.members;
     if (members && members.has(CONSTRUCTOR)) {
       const constructorSymbol = members.get(CONSTRUCTOR)!;
       // For some reason the constructor does not have a `valueDeclaration` ?!?
-      const constructor = constructorSymbol.declarations &&
-          constructorSymbol.declarations[0] as ts.ConstructorDeclaration | undefined;
+      const constructor =
+        constructorSymbol.declarations &&
+        (constructorSymbol.declarations[0] as ts.ConstructorDeclaration | undefined);
       if (!constructor) {
         return [];
       }
@@ -1415,23 +1497,29 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns an array of constructor parameter info objects.
    */
   protected getConstructorParamInfo(
-      classSymbol: NgccClassSymbol, parameterNodes: ts.ParameterDeclaration[]): CtorParameter[] {
+    classSymbol: NgccClassSymbol,
+    parameterNodes: ts.ParameterDeclaration[]
+  ): CtorParameter[] {
     const {constructorParamInfo} = this.acquireDecoratorInfo(classSymbol);
 
     return parameterNodes.map((node, index) => {
-      const {decorators, typeExpression} = constructorParamInfo[index] ?
-          constructorParamInfo[index] :
-          {decorators: null, typeExpression: null};
+      const {decorators, typeExpression} = constructorParamInfo[index]
+        ? constructorParamInfo[index]
+        : {decorators: null, typeExpression: null};
       const nameNode = node.name;
 
-      let typeValueReference: TypeValueReference|null = null;
+      let typeValueReference: TypeValueReference | null = null;
       if (typeExpression !== null) {
         // `typeExpression` is an expression in a "type" context. Resolve it to a declared value.
         // Either it's a reference to an imported type, or a type declared locally. Distinguish the
         // two cases with `getDeclarationOfExpression`.
         const decl = this.getDeclarationOfExpression(typeExpression);
-        if (decl !== null && decl.node !== null && decl.viaModule !== null &&
-            isNamedDeclaration(decl.node)) {
+        if (
+          decl !== null &&
+          decl.node !== null &&
+          decl.viaModule !== null &&
+          isNamedDeclaration(decl.node)
+        ) {
           typeValueReference = {
             local: false,
             valueDeclaration: decl.node,
@@ -1453,7 +1541,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
         nameNode,
         typeValueReference,
         typeNode: null,
-        decorators
+        decorators,
       };
     });
   }
@@ -1488,33 +1576,38 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param paramDecoratorsProperty the property that holds the parameter info we want to get.
    * @returns an array of objects containing the type and decorators for each parameter.
    */
-  protected getParamInfoFromStaticProperty(paramDecoratorsProperty: ts.Symbol): ParamInfo[]|null {
+  protected getParamInfoFromStaticProperty(paramDecoratorsProperty: ts.Symbol): ParamInfo[] | null {
     const paramDecorators = getPropertyValueFromSymbol(paramDecoratorsProperty);
     if (paramDecorators) {
       // The decorators array may be wrapped in an arrow function. If so unwrap it.
-      const container =
-          ts.isArrowFunction(paramDecorators) ? paramDecorators.body : paramDecorators;
+      const container = ts.isArrowFunction(paramDecorators)
+        ? paramDecorators.body
+        : paramDecorators;
       if (ts.isArrayLiteralExpression(container)) {
         const elements = container.elements;
         return elements
-            .map(
-                element =>
-                    ts.isObjectLiteralExpression(element) ? reflectObjectLiteral(element) : null)
-            .map(paramInfo => {
-              const typeExpression =
-                  paramInfo && paramInfo.has('type') ? paramInfo.get('type')! : null;
-              const decoratorInfo =
-                  paramInfo && paramInfo.has('decorators') ? paramInfo.get('decorators')! : null;
-              const decorators = decoratorInfo &&
-                  this.reflectDecorators(decoratorInfo)
-                      .filter(decorator => this.isFromCore(decorator));
-              return {typeExpression, decorators};
-            });
+          .map((element) =>
+            ts.isObjectLiteralExpression(element) ? reflectObjectLiteral(element) : null
+          )
+          .map((paramInfo) => {
+            const typeExpression =
+              paramInfo && paramInfo.has('type') ? paramInfo.get('type')! : null;
+            const decoratorInfo =
+              paramInfo && paramInfo.has('decorators') ? paramInfo.get('decorators')! : null;
+            const decorators =
+              decoratorInfo &&
+              this.reflectDecorators(decoratorInfo).filter((decorator) =>
+                this.isFromCore(decorator)
+              );
+            return {typeExpression, decorators};
+          });
       } else if (paramDecorators !== undefined) {
         this.logger.warn(
-            'Invalid constructor parameter decorator in ' +
-                paramDecorators.getSourceFile().fileName + ':\n',
-            paramDecorators.getText());
+          'Invalid constructor parameter decorator in ' +
+            paramDecorators.getSourceFile().fileName +
+            ':\n',
+          paramDecorators.getText()
+        );
       }
     }
     return null;
@@ -1527,11 +1620,13 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * in.
    * @returns an array of CallExpression nodes for each matching helper call.
    */
-  protected getHelperCallsForClass(classSymbol: NgccClassSymbol, helperNames: string[]):
-      ts.CallExpression[] {
+  protected getHelperCallsForClass(
+    classSymbol: NgccClassSymbol,
+    helperNames: string[]
+  ): ts.CallExpression[] {
     return this.getStatementsForClass(classSymbol)
-        .map(statement => this.getHelperCall(statement, helperNames))
-        .filter(isDefined);
+      .map((statement) => this.getHelperCall(statement, helperNames))
+      .filter(isDefined);
   }
 
   /**
@@ -1574,8 +1669,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param dts the program bundle containing the typings files.
    * @returns a map of source declarations to typings declarations.
    */
-  protected computePublicDtsDeclarationMap(src: BundleProgram, dts: BundleProgram):
-      Map<ts.Declaration, ts.Declaration> {
+  protected computePublicDtsDeclarationMap(
+    src: BundleProgram,
+    dts: BundleProgram
+  ): Map<ts.Declaration, ts.Declaration> {
     const declarationMap = new Map<ts.Declaration, ts.Declaration>();
     const dtsDeclarationMap = new Map<string, ts.Declaration>();
     const rootDts = getRootFileOrFail(dts);
@@ -1598,8 +1695,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param dts the program bundle containing the typings files.
    * @returns a map of source declarations to typings declarations.
    */
-  protected computePrivateDtsDeclarationMap(src: BundleProgram, dts: BundleProgram):
-      Map<ts.Declaration, ts.Declaration> {
+  protected computePrivateDtsDeclarationMap(
+    src: BundleProgram,
+    dts: BundleProgram
+  ): Map<ts.Declaration, ts.Declaration> {
     const declarationMap = new Map<ts.Declaration, ts.Declaration>();
     const dtsDeclarationMap = new Map<string, ts.Declaration>();
     const typeChecker = dts.program.getTypeChecker();
@@ -1622,12 +1721,14 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * Any new mappings are added to the `dtsDeclarationMap`.
    */
   protected collectDtsExportedDeclarations(
-      dtsDeclarationMap: Map<string, ts.Declaration>, srcFile: ts.SourceFile,
-      checker: ts.TypeChecker): void {
+    dtsDeclarationMap: Map<string, ts.Declaration>,
+    srcFile: ts.SourceFile,
+    checker: ts.TypeChecker
+  ): void {
     const srcModule = srcFile && checker.getSymbolAtLocation(srcFile);
     const moduleExports = srcModule && checker.getExportsOfModule(srcModule);
     if (moduleExports) {
-      moduleExports.forEach(exportedSymbol => {
+      moduleExports.forEach((exportedSymbol) => {
         const name = exportedSymbol.name;
         if (exportedSymbol.flags & ts.SymbolFlags.Alias) {
           exportedSymbol = checker.getAliasedSymbol(exportedSymbol);
@@ -1640,10 +1741,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
   }
 
-
   protected collectSrcExportedDeclarations(
-      declarationMap: Map<ts.Declaration, ts.Declaration>,
-      dtsDeclarationMap: Map<string, ts.Declaration>, srcFile: ts.SourceFile): void {
+    declarationMap: Map<ts.Declaration, ts.Declaration>,
+    dtsDeclarationMap: Map<string, ts.Declaration>,
+    srcFile: ts.SourceFile
+  ): void {
     const fileExports = this.getExportsOfModule(srcFile);
     if (fileExports !== null) {
       for (const [exportName, {node: declaration}] of fileExports) {
@@ -1665,11 +1767,17 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * otherwise.
    */
   protected parseForModuleWithProviders(
-      name: string, node: ts.Node|null, implementation: ts.Node|null = node,
-      container: ts.Declaration|null = null): ModuleWithProvidersFunction|null {
-    if (implementation === null ||
-        (!ts.isFunctionDeclaration(implementation) && !ts.isMethodDeclaration(implementation) &&
-         !ts.isFunctionExpression(implementation))) {
+    name: string,
+    node: ts.Node | null,
+    implementation: ts.Node | null = node,
+    container: ts.Declaration | null = null
+  ): ModuleWithProvidersFunction | null {
+    if (
+      implementation === null ||
+      (!ts.isFunctionDeclaration(implementation) &&
+        !ts.isMethodDeclaration(implementation) &&
+        !ts.isFunctionExpression(implementation))
+    ) {
       return null;
     }
     const declaration = implementation;
@@ -1680,12 +1788,14 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     const body = definition.body;
     const lastStatement = body && body[body.length - 1];
     const returnExpression =
-        lastStatement && ts.isReturnStatement(lastStatement) && lastStatement.expression || null;
-    const ngModuleProperty = returnExpression && ts.isObjectLiteralExpression(returnExpression) &&
-            returnExpression.properties.find(
-                prop =>
-                    !!prop.name && ts.isIdentifier(prop.name) && prop.name.text === 'ngModule') ||
-        null;
+      (lastStatement && ts.isReturnStatement(lastStatement) && lastStatement.expression) || null;
+    const ngModuleProperty =
+      (returnExpression &&
+        ts.isObjectLiteralExpression(returnExpression) &&
+        returnExpression.properties.find(
+          (prop) => !!prop.name && ts.isIdentifier(prop.name) && prop.name.text === 'ngModule'
+        )) ||
+      null;
 
     if (!ngModuleProperty || !ts.isPropertyAssignment(ngModuleProperty)) {
       return null;
@@ -1699,8 +1809,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
     const ngModuleDeclaration = this.getDeclarationOfExpression(ngModuleValue);
     if (!ngModuleDeclaration || ngModuleDeclaration.node === null) {
-      throw new Error(`Cannot find a declaration for NgModule ${
-          ngModuleValue.getText()} referenced in "${declaration!.getText()}"`);
+      throw new Error(
+        `Cannot find a declaration for NgModule ${ngModuleValue.getText()} referenced in "${declaration!.getText()}"`
+      );
     }
     if (!hasNameIdentifier(ngModuleDeclaration.node)) {
       return null;
@@ -1709,11 +1820,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       name,
       ngModule: ngModuleDeclaration as ConcreteDeclaration<ClassDeclaration>,
       declaration,
-      container
+      container,
     };
   }
 
-  protected getDeclarationOfExpression(expression: ts.Expression): Declaration|null {
+  protected getDeclarationOfExpression(expression: ts.Expression): Declaration | null {
     if (ts.isIdentifier(expression)) {
       return this.getDeclarationOfIdentifier(expression);
     }
@@ -1748,15 +1859,22 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     const node = decl.node;
     // The default TypeScript library types the global `Object` variable through
     // a variable declaration with a type reference resolving to `ObjectConstructor`.
-    if (!ts.isVariableDeclaration(node) || !ts.isIdentifier(node.name) ||
-        node.name.text !== 'Object' || node.type === undefined) {
+    if (
+      !ts.isVariableDeclaration(node) ||
+      !ts.isIdentifier(node.name) ||
+      node.name.text !== 'Object' ||
+      node.type === undefined
+    ) {
       return false;
     }
     const typeNode = node.type;
     // If the variable declaration does not have a type resolving to `ObjectConstructor`,
     // we cannot guarantee that the declaration resolves to the global `Object` variable.
-    if (!ts.isTypeReferenceNode(typeNode) || !ts.isIdentifier(typeNode.typeName) ||
-        typeNode.typeName.text !== 'ObjectConstructor') {
+    if (
+      !ts.isTypeReferenceNode(typeNode) ||
+      !ts.isIdentifier(typeNode.typeName) ||
+      typeNode.typeName.text !== 'ObjectConstructor'
+    ) {
       return false;
     }
     // Finally, check if the type definition for `Object` originates from a default library
@@ -1768,8 +1886,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 ///////////// Exported Helpers /////////////
 
 export type ParamInfo = {
-  decorators: Decorator[]|null,
-  typeExpression: ts.Expression|null
+  decorators: Decorator[] | null;
+  typeExpression: ts.Expression | null;
 };
 
 /**
@@ -1813,7 +1931,7 @@ export interface DecoratorCall {
  * ], SomeDirective);
  * ```
  */
-export type DecorateHelperEntry = ParameterTypes|ParameterDecorators|DecoratorCall;
+export type DecorateHelperEntry = ParameterTypes | ParameterDecorators | DecoratorCall;
 
 /**
  * The recorded decorator information of a single class. This information is cached in the host.
@@ -1822,7 +1940,7 @@ interface DecoratorInfo {
   /**
    * All decorators that were present on the class. If no decorators were present, this is `null`
    */
-  classDecorators: Decorator[]|null;
+  classDecorators: Decorator[] | null;
 
   /**
    * All decorators per member of the class they were present on.
@@ -1841,16 +1959,20 @@ interface DecoratorInfo {
 /**
  * A statement node that represents an assignment.
  */
-export type AssignmentStatement =
-    ts.ExpressionStatement&{expression: {left: ts.Identifier, right: ts.Expression}};
+export type AssignmentStatement = ts.ExpressionStatement & {
+  expression: {left: ts.Identifier; right: ts.Expression};
+};
 
 /**
  * Test whether a statement node is an assignment statement.
  * @param statement the statement to test.
  */
 export function isAssignmentStatement(statement: ts.Statement): statement is AssignmentStatement {
-  return ts.isExpressionStatement(statement) && isAssignment(statement.expression) &&
-      ts.isIdentifier(statement.expression.left);
+  return (
+    ts.isExpressionStatement(statement) &&
+    isAssignment(statement.expression) &&
+    ts.isIdentifier(statement.expression.left)
+  );
 }
 
 export function isAssignment(node: ts.Node): node is ts.AssignmentExpression<ts.EqualsToken> {
@@ -1869,8 +1991,9 @@ export function isAssignment(node: ts.Node): node is ts.AssignmentExpression<ts.
  * @param matches predicate function to test whether the call is associated with the desired class.
  */
 export function isClassDecorateCall(
-    call: ts.CallExpression, matches: (identifier: ts.Identifier) => boolean):
-    call is ts.CallExpression&{arguments: [ts.ArrayLiteralExpression, ts.Expression]} {
+  call: ts.CallExpression,
+  matches: (identifier: ts.Identifier) => boolean
+): call is ts.CallExpression & {arguments: [ts.ArrayLiteralExpression, ts.Expression]} {
   const helperArgs = call.arguments[0];
   if (helperArgs === undefined || !ts.isArrayLiteralExpression(helperArgs)) {
     return false;
@@ -1892,18 +2015,24 @@ export function isClassDecorateCall(
  * @param matches predicate function to test whether the call is associated with the desired class.
  */
 export function isMemberDecorateCall(
-    call: ts.CallExpression, matches: (identifier: ts.Identifier) => boolean):
-    call is ts.CallExpression&
-    {arguments: [ts.ArrayLiteralExpression, ts.StringLiteral, ts.StringLiteral]} {
+  call: ts.CallExpression,
+  matches: (identifier: ts.Identifier) => boolean
+): call is ts.CallExpression & {
+  arguments: [ts.ArrayLiteralExpression, ts.StringLiteral, ts.StringLiteral];
+} {
   const helperArgs = call.arguments[0];
   if (helperArgs === undefined || !ts.isArrayLiteralExpression(helperArgs)) {
     return false;
   }
 
   const target = call.arguments[1];
-  if (target === undefined || !ts.isPropertyAccessExpression(target) ||
-      !ts.isIdentifier(target.expression) || !matches(target.expression) ||
-      target.name.text !== 'prototype') {
+  if (
+    target === undefined ||
+    !ts.isPropertyAccessExpression(target) ||
+    !ts.isIdentifier(target.expression) ||
+    !matches(target.expression) ||
+    target.name.text !== 'prototype'
+  ) {
     return false;
   }
 
@@ -1915,7 +2044,7 @@ export function isMemberDecorateCall(
  * Helper method to extract the value of a property given the property's "symbol",
  * which is actually the symbol of the identifier of the property.
  */
-export function getPropertyValueFromSymbol(propSymbol: ts.Symbol): ts.Expression|undefined {
+export function getPropertyValueFromSymbol(propSymbol: ts.Symbol): ts.Expression | undefined {
   const propIdentifier = propSymbol.valueDeclaration;
   const parent = propIdentifier && propIdentifier.parent;
   return parent && ts.isBinaryExpression(parent) ? parent.right : undefined;
@@ -1924,7 +2053,7 @@ export function getPropertyValueFromSymbol(propSymbol: ts.Symbol): ts.Expression
 /**
  * A callee could be one of: `__decorate(...)` or `tslib_1.__decorate`.
  */
-function getCalleeName(call: ts.CallExpression): string|null {
+function getCalleeName(call: ts.CallExpression): string | null {
   if (ts.isIdentifier(call.expression)) {
     return stripDollarSuffix(call.expression.text);
   }
@@ -1950,7 +2079,7 @@ function getCalleeName(call: ts.CallExpression): string|null {
  * @param node the node that represents the class whose declaration we are finding.
  * @returns the declaration of the class or `null` if it is not a "class".
  */
-function getInnerClassDeclaration(node: ts.Node): ClassDeclaration<ts.ClassExpression>|null {
+function getInnerClassDeclaration(node: ts.Node): ClassDeclaration<ts.ClassExpression> | null {
   if (!ts.isVariableDeclaration(node) || node.initializer === undefined) {
     return null;
   }
@@ -1971,38 +2100,47 @@ function getInnerClassDeclaration(node: ts.Node): ClassDeclaration<ts.ClassExpre
 
 function getDecoratorArgs(node: ts.ObjectLiteralExpression): ts.Expression[] {
   // The arguments of a decorator are held in the `args` property of its declaration object.
-  const argsProperty = node.properties.filter(ts.isPropertyAssignment)
-                           .find(property => getNameText(property.name) === 'args');
+  const argsProperty = node.properties
+    .filter(ts.isPropertyAssignment)
+    .find((property) => getNameText(property.name) === 'args');
   const argsExpression = argsProperty && argsProperty.initializer;
-  return argsExpression && ts.isArrayLiteralExpression(argsExpression) ?
-      Array.from(argsExpression.elements) :
-      [];
+  return argsExpression && ts.isArrayLiteralExpression(argsExpression)
+    ? Array.from(argsExpression.elements)
+    : [];
 }
 
-function isPropertyAccess(node: ts.Node): node is ts.PropertyAccessExpression&
-    {parent: ts.BinaryExpression} {
+function isPropertyAccess(
+  node: ts.Node
+): node is ts.PropertyAccessExpression & {parent: ts.BinaryExpression} {
   return !!node.parent && ts.isBinaryExpression(node.parent) && ts.isPropertyAccessExpression(node);
 }
 
-function isThisAssignment(node: ts.Declaration): node is ts.BinaryExpression&
-    {left: ts.PropertyAccessExpression} {
-  return ts.isBinaryExpression(node) && ts.isPropertyAccessExpression(node.left) &&
-      node.left.expression.kind === ts.SyntaxKind.ThisKeyword;
+function isThisAssignment(
+  node: ts.Declaration
+): node is ts.BinaryExpression & {left: ts.PropertyAccessExpression} {
+  return (
+    ts.isBinaryExpression(node) &&
+    ts.isPropertyAccessExpression(node.left) &&
+    node.left.expression.kind === ts.SyntaxKind.ThisKeyword
+  );
 }
 
-function isNamedDeclaration(node: ts.Declaration): node is ts.NamedDeclaration&
-    {name: ts.Identifier} {
+function isNamedDeclaration(
+  node: ts.Declaration
+): node is ts.NamedDeclaration & {name: ts.Identifier} {
   const anyNode: any = node;
   return !!anyNode.name && ts.isIdentifier(anyNode.name);
 }
 
-
-function isClassMemberType(node: ts.Declaration): node is ts.ClassElement|
-    ts.PropertyAccessExpression|ts.BinaryExpression {
-  return (ts.isClassElement(node) || isPropertyAccess(node) || ts.isBinaryExpression(node)) &&
-      // Additionally, ensure `node` is not an index signature, for example on an abstract class:
-      // `abstract class Foo { [key: string]: any; }`
-      !ts.isIndexSignatureDeclaration(node);
+function isClassMemberType(
+  node: ts.Declaration
+): node is ts.ClassElement | ts.PropertyAccessExpression | ts.BinaryExpression {
+  return (
+    (ts.isClassElement(node) || isPropertyAccess(node) || ts.isBinaryExpression(node)) &&
+    // Additionally, ensure `node` is not an index signature, for example on an abstract class:
+    // `abstract class Foo { [key: string]: any; }`
+    !ts.isIndexSignatureDeclaration(node)
+  );
 }
 
 /**
@@ -2019,8 +2157,9 @@ function isClassMemberType(node: ts.Declaration): node is ts.ClassElement|
  * @param declaration The declaration for which any variable declaration should be obtained.
  * @returns the outer variable declaration if found, undefined otherwise.
  */
-function getVariableDeclarationOfDeclaration(declaration: ts.Declaration): ts.VariableDeclaration|
-    undefined {
+function getVariableDeclarationOfDeclaration(
+  declaration: ts.Declaration
+): ts.VariableDeclaration | undefined {
   let node = declaration.parent;
 
   // Detect an intermediary variable assignment and skip over it.
@@ -2075,15 +2214,18 @@ function isSynthesizedSuperCall(expression: ts.Expression): boolean {
   if (expression.arguments.length !== 1) return false;
 
   const argument = expression.arguments[0];
-  return ts.isSpreadElement(argument) && ts.isIdentifier(argument.expression) &&
-      argument.expression.text === 'arguments';
+  return (
+    ts.isSpreadElement(argument) &&
+    ts.isIdentifier(argument.expression) &&
+    argument.expression.text === 'arguments'
+  );
 }
 
 /**
  * Find the statement that contains the given node
  * @param node a node whose containing statement we wish to find
  */
-function getContainingStatement(node: ts.Node): ts.ExpressionStatement|null {
+function getContainingStatement(node: ts.Node): ts.ExpressionStatement | null {
   while (node) {
     if (ts.isExpressionStatement(node)) {
       break;
@@ -2103,6 +2245,7 @@ function getRootFileOrFail(bundle: BundleProgram): ts.SourceFile {
 
 function getNonRootPackageFiles(bundle: BundleProgram): ts.SourceFile[] {
   const rootFile = bundle.program.getSourceFile(bundle.path);
-  return bundle.program.getSourceFiles().filter(
-      f => (f !== rootFile) && isWithinPackage(bundle.package, f));
+  return bundle.program
+    .getSourceFiles()
+    .filter((f) => f !== rootFile && isWithinPackage(bundle.package, f));
 }

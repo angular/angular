@@ -6,4 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {TestingCompiler as ɵTestingCompiler, TestingCompilerFactory as ɵTestingCompilerFactory} from './test_compiler';
+export {
+  TestingCompiler as ɵTestingCompiler,
+  TestingCompilerFactory as ɵTestingCompilerFactory,
+} from './test_compiler';

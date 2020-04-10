@@ -16,7 +16,7 @@ import {MissingInjectableTransform} from './transform';
 import {UpdateRecorder} from './update_recorder';
 
 /** Entry point for the V9 "missing @Injectable" schematic. */
-export default function(): Rule {
+export default function (): Rule {
   return (tree: Tree, ctx: SchematicContext) => {
     const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
@@ -24,8 +24,9 @@ export default function(): Rule {
 
     if (!buildPaths.length && !testPaths.length) {
       throw new SchematicsException(
-          'Could not find any tsconfig file. Cannot add the "@Injectable" decorator to providers ' +
-          'which don\'t have that decorator set.');
+        'Could not find any tsconfig file. Cannot add the "@Injectable" decorator to providers ' +
+          "which don't have that decorator set."
+      );
     }
 
     for (const tsconfigPath of [...buildPaths, ...testPaths]) {
@@ -35,34 +36,41 @@ export default function(): Rule {
     if (failures.length) {
       ctx.logger.info('Could not migrate all providers automatically. Please');
       ctx.logger.info('manually migrate the following instances:');
-      failures.forEach(message => ctx.logger.warn(`⮑   ${message}`));
+      failures.forEach((message) => ctx.logger.warn(`⮑   ${message}`));
     }
   };
 }
 
 function runMissingInjectableMigration(
-    tree: Tree, tsconfigPath: string, basePath: string): string[] {
+  tree: Tree,
+  tsconfigPath: string,
+  basePath: string
+): string[] {
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const failures: string[] = [];
   const typeChecker = program.getTypeChecker();
   const definitionCollector = new NgDefinitionCollector(typeChecker);
-  const sourceFiles = program.getSourceFiles().filter(
-      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
+  const sourceFiles = program
+    .getSourceFiles()
+    .filter((f) => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
 
   // Analyze source files by detecting all modules, directives and components.
-  sourceFiles.forEach(sourceFile => definitionCollector.visitNode(sourceFile));
+  sourceFiles.forEach((sourceFile) => definitionCollector.visitNode(sourceFile));
 
   const {resolvedModules, resolvedDirectives} = definitionCollector;
   const transformer = new MissingInjectableTransform(typeChecker, getUpdateRecorder);
   const updateRecorders = new Map<ts.SourceFile, UpdateRecorder>();
 
-  [...transformer.migrateModules(resolvedModules),
-   ...transformer.migrateDirectives(resolvedDirectives),
+  [
+    ...transformer.migrateModules(resolvedModules),
+    ...transformer.migrateDirectives(resolvedDirectives),
   ].forEach(({message, node}) => {
     const nodeSourceFile = node.getSourceFile();
     const relativeFilePath = relative(basePath, nodeSourceFile.fileName);
-    const {line, character} =
-        ts.getLineAndCharacterOfPosition(node.getSourceFile(), node.getStart());
+    const {line, character} = ts.getLineAndCharacterOfPosition(
+      node.getSourceFile(),
+      node.getStart()
+    );
     failures.push(`${relativeFilePath}@${line + 1}:${character + 1}: ${message}`);
   });
 
@@ -72,7 +80,7 @@ function runMissingInjectableMigration(
   // Walk through each update recorder and commit the update. We need to commit the
   // updates in batches per source file as there can be only one recorder per source
   // file in order to avoid shift character offsets.
-  updateRecorders.forEach(recorder => recorder.commitUpdate());
+  updateRecorders.forEach((recorder) => recorder.commitUpdate());
 
   return failures;
 
@@ -109,7 +117,7 @@ function runMissingInjectableMigration(
       },
       commitUpdate() {
         tree.commitUpdate(treeRecorder);
-      }
+      },
     };
     updateRecorders.set(sourceFile, recorder);
     return recorder;

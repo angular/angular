@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as i18n from '../../../i18n/i18n_ast';
 import * as o from '../../../output/output_ast';
 
@@ -12,13 +13,25 @@ import {serializeIcuNode} from './icu_serializer';
 import {formatI18nPlaceholderName} from './util';
 
 export function createLocalizeStatements(
-    variable: o.ReadVarExpr, message: i18n.Message,
-    params: {[name: string]: o.Expression}): o.Statement[] {
+  variable: o.ReadVarExpr,
+  message: i18n.Message,
+  params: {[name: string]: o.Expression}
+): o.Statement[] {
   const statements = [];
 
   const {messageParts, placeHolders} = serializeI18nMessageForLocalize(message);
-  statements.push(new o.ExpressionStatement(variable.set(
-      o.localizedString(message, messageParts, placeHolders, placeHolders.map(ph => params[ph])))));
+  statements.push(
+    new o.ExpressionStatement(
+      variable.set(
+        o.localizedString(
+          message,
+          messageParts,
+          placeHolders,
+          placeHolders.map((ph) => params[ph])
+        )
+      )
+    )
+  );
 
   return statements;
 }
@@ -49,7 +62,7 @@ class LocalizeSerializerVisitor implements i18n.Visitor {
   }
 
   visitContainer(container: i18n.Container, context: MessagePiece[]): any {
-    container.children.forEach(child => child.visit(this, context));
+    container.children.forEach((child) => child.visit(this, context));
   }
 
   visitIcu(icu: i18n.Icu, context: MessagePiece[]): any {
@@ -59,7 +72,7 @@ class LocalizeSerializerVisitor implements i18n.Visitor {
   visitTagPlaceholder(ph: i18n.TagPlaceholder, context: MessagePiece[]): any {
     context.push(new PlaceholderPiece(ph.startName));
     if (!ph.isVoid) {
-      ph.children.forEach(child => child.visit(this, context));
+      ph.children.forEach((child) => child.visit(this, context));
       context.push(new PlaceholderPiece(ph.closeName));
     }
   }
@@ -83,10 +96,11 @@ const serializerVisitor = new LocalizeSerializerVisitor();
  * @param message The message to be serialized.
  * @returns an object containing the messageParts and placeholders.
  */
-export function serializeI18nMessageForLocalize(message: i18n.Message):
-    {messageParts: string[], placeHolders: string[]} {
+export function serializeI18nMessageForLocalize(
+  message: i18n.Message
+): {messageParts: string[]; placeHolders: string[]} {
   const pieces: MessagePiece[] = [];
-  message.nodes.forEach(node => node.visit(serializerVisitor, pieces));
+  message.nodes.forEach((node) => node.visit(serializerVisitor, pieces));
   return processMessagePieces(pieces);
 }
 
@@ -99,8 +113,9 @@ export function serializeI18nMessageForLocalize(message: i18n.Message):
  * @param pieces The pieces to process.
  * @returns an object containing the messageParts and placeholders.
  */
-function processMessagePieces(pieces: MessagePiece[]):
-    {messageParts: string[], placeHolders: string[]} {
+function processMessagePieces(
+  pieces: MessagePiece[]
+): {messageParts: string[]; placeHolders: string[]} {
   const messageParts: string[] = [];
   const placeHolders: string[] = [];
 

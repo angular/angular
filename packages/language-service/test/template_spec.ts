@@ -13,13 +13,16 @@ import {MockTypescriptHost} from './test_utils';
 describe('getClassDeclFromTemplateNode', () => {
   it('should find class declaration in syntax-only mode', () => {
     const sourceFile = ts.createSourceFile(
-        'foo.ts', `
+      'foo.ts',
+      `
         @Component({
           template: '<div></div>'
         })
         class MyComponent {}`,
-        ts.ScriptTarget.ES2015, true /* setParentNodes */);
-    function visit(node: ts.Node): ts.ClassDeclaration|undefined {
+      ts.ScriptTarget.ES2015,
+      true /* setParentNodes */
+    );
+    function visit(node: ts.Node): ts.ClassDeclaration | undefined {
       if (ts.isPropertyAssignment(node)) {
         return getClassDeclFromDecoratorProp(node);
       }
@@ -31,13 +34,12 @@ describe('getClassDeclFromTemplateNode', () => {
     expect((classDecl as ts.ClassDeclaration).name!.text).toBe('MyComponent');
   });
 
-
   it('should return class declaration for AppComponent', () => {
     const host = new MockTypescriptHost(['/app/app.component.ts']);
     const tsLS = ts.createLanguageService(host);
     const sourceFile = tsLS.getProgram()!.getSourceFile('/app/app.component.ts');
     expect(sourceFile).toBeTruthy();
-    const classDecl = sourceFile!.forEachChild(function visit(node): ts.Node|undefined {
+    const classDecl = sourceFile!.forEachChild(function visit(node): ts.Node | undefined {
       if (ts.isPropertyAssignment(node)) {
         return getClassDeclFromDecoratorProp(node);
       }

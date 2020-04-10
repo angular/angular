@@ -14,18 +14,28 @@ describe('Observable.never', () => {
   const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
   let observable1: Observable<any>;
 
-  beforeEach(() => { log = []; });
+  beforeEach(() => {
+    log = [];
+  });
 
   it('never func callback should run in the correct zone', () => {
-    observable1 = constructorZone1.run(() => { return NEVER.pipe(startWith(7)); });
+    observable1 = constructorZone1.run(() => {
+      return NEVER.pipe(startWith(7));
+    });
 
     subscriptionZone.run(() => {
       observable1.subscribe(
-          (result: any) => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            log.push(result);
-          },
-          () => { fail('should not call error'); }, () => { fail('should not call complete'); });
+        (result: any) => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          log.push(result);
+        },
+        () => {
+          fail('should not call error');
+        },
+        () => {
+          fail('should not call complete');
+        }
+      );
     });
 
     expect(log).toEqual([7]);

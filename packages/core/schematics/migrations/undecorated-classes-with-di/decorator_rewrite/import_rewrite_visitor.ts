@@ -17,7 +17,6 @@ import {getValueSymbolOfDeclaration} from '../../../utils/typescript/symbol';
 import {getPosixPath} from './path_format';
 import {ResolvedExport, getExportSymbolsOfFile} from './source_file_exports';
 
-
 /**
  * Factory that creates a TypeScript transformer which ensures that
  * referenced identifiers are available at the target file location.
@@ -29,11 +28,15 @@ export class ImportRewriteTransformerFactory {
   private sourceFileExports = new Map<ts.SourceFile, ResolvedExport[]>();
 
   constructor(
-      private importManager: ImportManager, private typeChecker: ts.TypeChecker,
-      private compilerHost: AotCompilerHost) {}
+    private importManager: ImportManager,
+    private typeChecker: ts.TypeChecker,
+    private compilerHost: AotCompilerHost
+  ) {}
 
-  create<T extends ts.Node>(ctx: ts.TransformationContext, newSourceFile: ts.SourceFile):
-      ts.Transformer<T> {
+  create<T extends ts.Node>(
+    ctx: ts.TransformationContext,
+    newSourceFile: ts.SourceFile
+  ): ts.Transformer<T> {
     const visitNode: ts.Visitor = (node: ts.Node) => {
       if (ts.isIdentifier(node)) {
         // Record the identifier reference and return the new identifier. The identifier
@@ -48,14 +51,19 @@ export class ImportRewriteTransformerFactory {
     return (node: T) => ts.visitNode(node, visitNode);
   }
 
-  private _recordIdentifierReference(node: ts.Identifier, targetSourceFile: ts.SourceFile):
-      ts.Node {
+  private _recordIdentifierReference(
+    node: ts.Identifier,
+    targetSourceFile: ts.SourceFile
+  ): ts.Node {
     // For object literal elements we don't want to check identifiers that describe the
     // property name. These identifiers do not refer to a value but rather to a property
     // name and therefore don't need to be imported. The exception is that for shorthand
     // property assignments the "name" identifier is both used as value and property name.
-    if (ts.isObjectLiteralElementLike(node.parent) &&
-        !ts.isShorthandPropertyAssignment(node.parent) && node.parent.name === node) {
+    if (
+      ts.isObjectLiteralElementLike(node.parent) &&
+      !ts.isShorthandPropertyAssignment(node.parent) &&
+      node.parent.name === node
+    ) {
       return node;
     }
 
@@ -64,23 +72,28 @@ export class ImportRewriteTransformerFactory {
 
     if (resolvedImport) {
       const symbolName = resolvedImport.name;
-      const moduleFileName =
-          this.compilerHost.moduleNameToFileName(resolvedImport.importModule, sourceFile.fileName);
+      const moduleFileName = this.compilerHost.moduleNameToFileName(
+        resolvedImport.importModule,
+        sourceFile.fileName
+      );
 
       // In case the identifier refers to an export in the target source file, we need to use
       // the local identifier in the scope of the target source file. This is necessary because
       // the export could be aliased and the alias is not available to the target source file.
       if (moduleFileName && resolve(moduleFileName) === resolve(targetSourceFile.fileName)) {
-        const resolvedExport =
-            this._getSourceFileExports(targetSourceFile).find(e => e.exportName === symbolName);
+        const resolvedExport = this._getSourceFileExports(targetSourceFile).find(
+          (e) => e.exportName === symbolName
+        );
         if (resolvedExport) {
           return resolvedExport.identifier;
         }
       }
 
       return this.importManager.addImportToSourceFile(
-          targetSourceFile, symbolName,
-          this._rewriteModuleImport(resolvedImport, targetSourceFile));
+        targetSourceFile,
+        symbolName,
+        this._rewriteModuleImport(resolvedImport, targetSourceFile)
+      );
     } else {
       let symbol = getValueSymbolOfDeclaration(node, this.typeChecker);
 
@@ -93,14 +106,18 @@ export class ImportRewriteTransformerFactory {
           symbol = this.typeChecker.getShorthandAssignmentValueSymbol(symbol.valueDeclaration);
         }
 
-        const resolvedExport =
-            this._getSourceFileExports(sourceFile).find(e => e.symbol === symbol);
+        const resolvedExport = this._getSourceFileExports(sourceFile).find(
+          (e) => e.symbol === symbol
+        );
 
         if (resolvedExport) {
           return this.importManager.addImportToSourceFile(
-              targetSourceFile, resolvedExport.exportName,
-              getPosixPath(this.compilerHost.fileNameToModuleName(
-                  sourceFile.fileName, targetSourceFile.fileName)));
+            targetSourceFile,
+            resolvedExport.exportName,
+            getPosixPath(
+              this.compilerHost.fileNameToModuleName(sourceFile.fileName, targetSourceFile.fileName)
+            )
+          );
         }
       }
 
@@ -116,7 +133,7 @@ export class ImportRewriteTransformerFactory {
    */
   private _getSourceFileExports(sourceFile: ts.SourceFile): ResolvedExport[] {
     if (this.sourceFileExports.has(sourceFile)) {
-      return this.sourceFileExports.get(sourceFile) !;
+      return this.sourceFileExports.get(sourceFile)!;
     }
 
     const sourceFileExports = getExportSymbolsOfFile(sourceFile, this.typeChecker);
@@ -132,8 +149,10 @@ export class ImportRewriteTransformerFactory {
 
     const importFilePath = resolvedImport.node.getSourceFile().fileName;
     const resolvedModulePath = resolve(dirname(importFilePath), resolvedImport.importModule);
-    const relativeModuleName =
-        this.compilerHost.fileNameToModuleName(resolvedModulePath, newSourceFile.fileName);
+    const relativeModuleName = this.compilerHost.fileNameToModuleName(
+      resolvedModulePath,
+      newSourceFile.fileName
+    );
 
     return getPosixPath(relativeModuleName);
   }

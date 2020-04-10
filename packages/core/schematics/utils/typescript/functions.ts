@@ -10,9 +10,14 @@ import * as ts from 'typescript';
 
 /** Checks whether a given node is a function like declaration. */
 export function isFunctionLikeDeclaration(node: ts.Node): node is ts.FunctionLikeDeclaration {
-  return ts.isFunctionDeclaration(node) || ts.isMethodDeclaration(node) ||
-      ts.isArrowFunction(node) || ts.isFunctionExpression(node) ||
-      ts.isGetAccessorDeclaration(node) || ts.isSetAccessorDeclaration(node);
+  return (
+    ts.isFunctionDeclaration(node) ||
+    ts.isMethodDeclaration(node) ||
+    ts.isArrowFunction(node) ||
+    ts.isFunctionExpression(node) ||
+    ts.isGetAccessorDeclaration(node) ||
+    ts.isSetAccessorDeclaration(node)
+  );
 }
 
 /**

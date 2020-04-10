@@ -21,8 +21,9 @@ describe('ProxySpec', () => {
   });
 
   describe('properties', () => {
-    it('should expose ProxyZone in the properties',
-       () => { expect(proxyZone.get('ProxyZoneSpec')).toBe(proxyZoneSpec); });
+    it('should expose ProxyZone in the properties', () => {
+      expect(proxyZone.get('ProxyZoneSpec')).toBe(proxyZoneSpec);
+    });
 
     it('should assert that it is in or out of ProxyZone', () => {
       let rootZone = Zone.current;
@@ -79,12 +80,16 @@ describe('ProxySpec', () => {
       let called = false;
       proxyZoneSpec.setDelegate({
         name: '.',
-        onFork: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                 zoneSpec: ZoneSpec) => {
+        onFork: (
+          parentZoneDelegate: ZoneDelegate,
+          currentZone: Zone,
+          targetZone: Zone,
+          zoneSpec: ZoneSpec
+        ) => {
           expect(currentZone).toBe(proxyZone);
           expect(targetZone).toBe(proxyZone), expect(zoneSpec.name).toBe('fork2');
           called = true;
-        }
+        },
       });
       proxyZone.fork({name: 'fork2'});
       expect(called).toBe(true);
@@ -95,8 +100,15 @@ describe('ProxySpec', () => {
       expect(proxyZone.wrap(fn, 'test')('works')).toEqual('works');
       proxyZoneSpec.setDelegate({
         name: '.',
-        onIntercept: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                      delegate: Function, source: string): Function => { return () => '(works)'; }
+        onIntercept: (
+          parentZoneDelegate: ZoneDelegate,
+          currentZone: Zone,
+          targetZone: Zone,
+          delegate: Function,
+          source: string
+        ): Function => {
+          return () => '(works)';
+        },
       });
       expect(proxyZone.wrap(fn, 'test')('works')).toEqual('(works)');
     });
@@ -106,33 +118,57 @@ describe('ProxySpec', () => {
       expect(proxyZone.run(fn)).toEqual('works');
       proxyZoneSpec.setDelegate({
         name: '.',
-        onInvoke: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                   delegate: Function, applyThis: any, applyArgs: any[], source: string) => {
-          return `(${
-                  parentZoneDelegate.invoke(targetZone, delegate, applyThis, applyArgs, source)})`;
-        }
+        onInvoke: (
+          parentZoneDelegate: ZoneDelegate,
+          currentZone: Zone,
+          targetZone: Zone,
+          delegate: Function,
+          applyThis: any,
+          applyArgs: any[],
+          source: string
+        ) => {
+          return `(${parentZoneDelegate.invoke(
+            targetZone,
+            delegate,
+            applyThis,
+            applyArgs,
+            source
+          )})`;
+        },
       });
       expect(proxyZone.run(fn)).toEqual('(works)');
     });
 
     it('should handleError', () => {
       const error = new Error('TestError');
-      const fn = () => { throw error; };
+      const fn = () => {
+        throw error;
+      };
       expect(() => proxyZone.run(fn)).toThrow(error);
       proxyZoneSpec.setDelegate({
         name: '.',
-        onHandleError: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                        error: any): boolean => {
+        onHandleError: (
+          parentZoneDelegate: ZoneDelegate,
+          currentZone: Zone,
+          targetZone: Zone,
+          error: any
+        ): boolean => {
           expect(error).toEqual(error);
           return false;
-        }
+        },
       });
       expect(() => proxyZone.runGuarded(fn)).not.toThrow();
     });
 
     it('should Task', () => {
       const fn = (): any => null;
-      const task = proxyZone.scheduleMacroTask('test', fn, {}, () => null, () => null);
+      const task = proxyZone.scheduleMacroTask(
+        'test',
+        fn,
+        {},
+        () => null,
+        () => null
+      );
       expect(task.source).toEqual('test');
       proxyZone.cancelTask(task);
     });
@@ -140,37 +176,61 @@ describe('ProxySpec', () => {
 
   describe('delegateSpec change', () => {
     let log: string[] = [];
-    beforeEach(() => { log = []; });
+    beforeEach(() => {
+      log = [];
+    });
     it('should trigger hasTask when invoke', (done: Function) => {
       const zoneSpec1 = {
         name: 'zone1',
         onHasTask: (delegate: ZoneDelegate, curr: Zone, target: Zone, hasTask: HasTaskState) => {
           log.push(`zoneSpec1 hasTask: ${hasTask.microTask},${hasTask.macroTask}`);
           return delegate.hasTask(target, hasTask);
-        }
+        },
       };
       const zoneSpec2 = {
         name: 'zone2',
         onHasTask: (delegate: ZoneDelegate, curr: Zone, target: Zone, hasTask: HasTaskState) => {
           log.push(`zoneSpec2 hasTask: ${hasTask.microTask},${hasTask.macroTask}`);
           return delegate.hasTask(target, hasTask);
-        }
+        },
       };
       proxyZoneSpec.setDelegate(zoneSpec1);
-      proxyZone.run(() => { setTimeout(() => { log.push('timeout in zoneSpec1'); }, 50); });
+      proxyZone.run(() => {
+        setTimeout(() => {
+          log.push('timeout in zoneSpec1');
+        }, 50);
+      });
       proxyZoneSpec.setDelegate(zoneSpec2);
-      proxyZone.run(() => { Promise.resolve(1).then(() => { log.push('then in zoneSpec2'); }); });
+      proxyZone.run(() => {
+        Promise.resolve(1).then(() => {
+          log.push('then in zoneSpec2');
+        });
+      });
       proxyZoneSpec.setDelegate(null);
-      proxyZone.run(() => { setTimeout(() => { log.push('timeout in null spec'); }, 50); });
+      proxyZone.run(() => {
+        setTimeout(() => {
+          log.push('timeout in null spec');
+        }, 50);
+      });
       proxyZoneSpec.setDelegate(zoneSpec2);
-      proxyZone.run(() => { Promise.resolve(1).then(() => { log.push('then in zoneSpec2'); }); });
+      proxyZone.run(() => {
+        Promise.resolve(1).then(() => {
+          log.push('then in zoneSpec2');
+        });
+      });
 
       setTimeout(() => {
         expect(log).toEqual([
-          'zoneSpec1 hasTask: false,true', 'zoneSpec2 hasTask: false,true',
-          'zoneSpec2 hasTask: true,true', 'zoneSpec2 hasTask: true,true', 'then in zoneSpec2',
-          'then in zoneSpec2', 'zoneSpec2 hasTask: false,true', 'timeout in zoneSpec1',
-          'timeout in null spec', 'zoneSpec2 hasTask: false,false'
+          'zoneSpec1 hasTask: false,true',
+          'zoneSpec2 hasTask: false,true',
+          'zoneSpec2 hasTask: true,true',
+          'zoneSpec2 hasTask: true,true',
+          'then in zoneSpec2',
+          'then in zoneSpec2',
+          'zoneSpec2 hasTask: false,true',
+          'timeout in zoneSpec1',
+          'timeout in null spec',
+          'zoneSpec2 hasTask: false,false',
         ]);
         done();
       }, 300);

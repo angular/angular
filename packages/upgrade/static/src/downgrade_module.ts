@@ -9,13 +9,29 @@
 import {Injector, NgModuleFactory, NgModuleRef, StaticProvider} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
-import {IInjectorService, IProvideService, module_ as angularModule} from '../../src/common/src/angular1';
-import {$INJECTOR, $PROVIDE, DOWNGRADED_MODULE_COUNT_KEY, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../../src/common/src/constants';
-import {LazyModuleRef, UpgradeAppType, getDowngradedModuleCount, isFunction} from '../../src/common/src/util';
+import {
+  IInjectorService,
+  IProvideService,
+  module_ as angularModule,
+} from '../../src/common/src/angular1';
+import {
+  $INJECTOR,
+  $PROVIDE,
+  DOWNGRADED_MODULE_COUNT_KEY,
+  INJECTOR_KEY,
+  LAZY_MODULE_REF,
+  UPGRADE_APP_TYPE_KEY,
+  UPGRADE_MODULE_NAME,
+} from '../../src/common/src/constants';
+import {
+  LazyModuleRef,
+  UpgradeAppType,
+  getDowngradedModuleCount,
+  isFunction,
+} from '../../src/common/src/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 import {NgAdapterInjector} from './util';
-
 
 let moduleUid = 0;
 
@@ -129,57 +145,57 @@ let moduleUid = 0;
  * @publicApi
  */
 export function downgradeModule<T>(
-    moduleFactoryOrBootstrapFn: NgModuleFactory<T>|
-    ((extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string {
+  moduleFactoryOrBootstrapFn:
+    | NgModuleFactory<T>
+    | ((extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)
+): string {
   const lazyModuleName = `${UPGRADE_MODULE_NAME}.lazy${++moduleUid}`;
   const lazyModuleRefKey = `${LAZY_MODULE_REF}${lazyModuleName}`;
   const lazyInjectorKey = `${INJECTOR_KEY}${lazyModuleName}`;
 
-  const bootstrapFn = isFunction(moduleFactoryOrBootstrapFn) ?
-      moduleFactoryOrBootstrapFn :
-      (extraProviders: StaticProvider[]) =>
-          platformBrowser(extraProviders).bootstrapModuleFactory(moduleFactoryOrBootstrapFn);
+  const bootstrapFn = isFunction(moduleFactoryOrBootstrapFn)
+    ? moduleFactoryOrBootstrapFn
+    : (extraProviders: StaticProvider[]) =>
+        platformBrowser(extraProviders).bootstrapModuleFactory(moduleFactoryOrBootstrapFn);
 
   let injector: Injector;
 
   // Create an ng1 module to bootstrap.
   angularModule(lazyModuleName, [])
-      .constant(UPGRADE_APP_TYPE_KEY, UpgradeAppType.Lite)
-      .factory(INJECTOR_KEY, [lazyInjectorKey, identity])
-      .factory(
-          lazyInjectorKey,
-          () => {
-            if (!injector) {
-              throw new Error(
-                  'Trying to get the Angular injector before bootstrapping the corresponding ' +
-                  'Angular module.');
-            }
-            return injector;
-          })
-      .factory(LAZY_MODULE_REF, [lazyModuleRefKey, identity])
-      .factory(
-          lazyModuleRefKey,
-          [
-            $INJECTOR,
-            ($injector: IInjectorService) => {
-              setTempInjectorRef($injector);
-              const result: LazyModuleRef = {
-                promise: bootstrapFn(angular1Providers).then(ref => {
-                  injector = result.injector = new NgAdapterInjector(ref.injector);
-                  injector.get($INJECTOR);
+    .constant(UPGRADE_APP_TYPE_KEY, UpgradeAppType.Lite)
+    .factory(INJECTOR_KEY, [lazyInjectorKey, identity])
+    .factory(lazyInjectorKey, () => {
+      if (!injector) {
+        throw new Error(
+          'Trying to get the Angular injector before bootstrapping the corresponding ' +
+            'Angular module.'
+        );
+      }
+      return injector;
+    })
+    .factory(LAZY_MODULE_REF, [lazyModuleRefKey, identity])
+    .factory(lazyModuleRefKey, [
+      $INJECTOR,
+      ($injector: IInjectorService) => {
+        setTempInjectorRef($injector);
+        const result: LazyModuleRef = {
+          promise: bootstrapFn(angular1Providers).then((ref) => {
+            injector = result.injector = new NgAdapterInjector(ref.injector);
+            injector.get($INJECTOR);
 
-                  return injector;
-                })
-              };
-              return result;
-            }
-          ])
-      .config([
-        $INJECTOR, $PROVIDE,
-        ($injector: IInjectorService, $provide: IProvideService) => {
-          $provide.constant(DOWNGRADED_MODULE_COUNT_KEY, getDowngradedModuleCount($injector) + 1);
-        }
-      ]);
+            return injector;
+          }),
+        };
+        return result;
+      },
+    ])
+    .config([
+      $INJECTOR,
+      $PROVIDE,
+      ($injector: IInjectorService, $provide: IProvideService) => {
+        $provide.constant(DOWNGRADED_MODULE_COUNT_KEY, getDowngradedModuleCount($injector) + 1);
+      },
+    ]);
 
   return lazyModuleName;
 }

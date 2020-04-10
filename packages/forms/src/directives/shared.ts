@@ -27,8 +27,7 @@ import {SelectControlValueAccessor} from './select_control_value_accessor';
 import {SelectMultipleControlValueAccessor} from './select_multiple_control_value_accessor';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
-
-export function controlPath(name: string|null, parent: ControlContainer): string[] {
+export function controlPath(name: string | null, parent: ControlContainer): string[] {
   return [...parent.path!, name!];
 }
 
@@ -52,12 +51,12 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
   }
 
   // re-run validation when validator binding changes, e.g. minlength=3 -> minlength=4
-  dir._rawValidators.forEach((validator: Validator|ValidatorFn) => {
+  dir._rawValidators.forEach((validator: Validator | ValidatorFn) => {
     if ((<Validator>validator).registerOnValidatorChange)
       (<Validator>validator).registerOnValidatorChange!(() => control.updateValueAndValidity());
   });
 
-  dir._rawAsyncValidators.forEach((validator: AsyncValidator|AsyncValidatorFn) => {
+  dir._rawAsyncValidators.forEach((validator: AsyncValidator | AsyncValidatorFn) => {
     if ((<Validator>validator).registerOnValidatorChange)
       (<Validator>validator).registerOnValidatorChange!(() => control.updateValueAndValidity());
   });
@@ -119,7 +118,9 @@ function setUpModelChangePipeline(control: FormControl, dir: NgControl): void {
 }
 
 export function setUpFormContainer(
-    control: FormGroup|FormArray, dir: AbstractFormGroupDirective|FormArrayName) {
+  control: FormGroup | FormArray,
+  dir: AbstractFormGroupDirective | FormArrayName
+) {
   if (control == null) _throwError(dir, 'Cannot find control with');
   control.validator = Validators.compose([control.validator, dir.validator]);
   control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);
@@ -141,14 +142,16 @@ function _throwError(dir: AbstractControlDirective, message: string): void {
   throw new Error(`${message} ${messageEnd}`);
 }
 
-export function composeValidators(validators: Array<Validator|ValidatorFn>): ValidatorFn|null {
+export function composeValidators(validators: Array<Validator | ValidatorFn>): ValidatorFn | null {
   return validators != null ? Validators.compose(validators.map(normalizeValidator)) : null;
 }
 
-export function composeAsyncValidators(validators: Array<AsyncValidator|AsyncValidatorFn>):
-    AsyncValidatorFn|null {
-  return validators != null ? Validators.composeAsync(validators.map(normalizeAsyncValidator)) :
-                              null;
+export function composeAsyncValidators(
+  validators: Array<AsyncValidator | AsyncValidatorFn>
+): AsyncValidatorFn | null {
+  return validators != null
+    ? Validators.composeAsync(validators.map(normalizeAsyncValidator))
+    : null;
 }
 
 export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any): boolean {
@@ -169,12 +172,12 @@ const BUILTIN_ACCESSORS = [
 ];
 
 export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean {
-  return BUILTIN_ACCESSORS.some(a => valueAccessor.constructor === a);
+  return BUILTIN_ACCESSORS.some((a) => valueAccessor.constructor === a);
 }
 
 export function syncPendingControls(form: FormGroup, directives: NgControl[]): void {
   form._syncPendingControls();
-  directives.forEach(dir => {
+  directives.forEach((dir) => {
     const control = dir.control as FormControl;
     if (control.updateOn === 'submit' && control._pendingChange) {
       dir.viewToModelUpdate(control._pendingValue);
@@ -185,25 +188,25 @@ export function syncPendingControls(form: FormGroup, directives: NgControl[]): v
 
 // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
 export function selectValueAccessor(
-    dir: NgControl, valueAccessors: ControlValueAccessor[]): ControlValueAccessor|null {
+  dir: NgControl,
+  valueAccessors: ControlValueAccessor[]
+): ControlValueAccessor | null {
   if (!valueAccessors) return null;
 
   if (!Array.isArray(valueAccessors))
     _throwError(dir, 'Value accessor was not provided as an array for form control with');
 
-  let defaultAccessor: ControlValueAccessor|undefined = undefined;
-  let builtinAccessor: ControlValueAccessor|undefined = undefined;
-  let customAccessor: ControlValueAccessor|undefined = undefined;
+  let defaultAccessor: ControlValueAccessor | undefined = undefined;
+  let builtinAccessor: ControlValueAccessor | undefined = undefined;
+  let customAccessor: ControlValueAccessor | undefined = undefined;
 
   valueAccessors.forEach((v: ControlValueAccessor) => {
     if (v.constructor === DefaultValueAccessor) {
       defaultAccessor = v;
-
     } else if (isBuiltInAccessor(v)) {
       if (builtinAccessor)
         _throwError(dir, 'More than one built-in value accessor matches form control with');
       builtinAccessor = v;
-
     } else {
       if (customAccessor)
         _throwError(dir, 'More than one custom value accessor matches form control with');
@@ -226,12 +229,17 @@ export function removeDir<T>(list: T[], el: T): void {
 
 // TODO(kara): remove after deprecation period
 export function _ngModelWarning(
-    name: string, type: {_ngModelWarningSentOnce: boolean},
-    instance: {_ngModelWarningSent: boolean}, warningConfig: string|null) {
+  name: string,
+  type: {_ngModelWarningSentOnce: boolean},
+  instance: {_ngModelWarningSent: boolean},
+  warningConfig: string | null
+) {
   if (!isDevMode() || warningConfig === 'never') return;
 
-  if (((warningConfig === null || warningConfig === 'once') && !type._ngModelWarningSentOnce) ||
-      (warningConfig === 'always' && !instance._ngModelWarningSent)) {
+  if (
+    ((warningConfig === null || warningConfig === 'once') && !type._ngModelWarningSentOnce) ||
+    (warningConfig === 'always' && !instance._ngModelWarningSent)
+  ) {
     ReactiveErrors.ngModelWarning(name);
     type._ngModelWarningSentOnce = true;
     instance._ngModelWarningSent = true;

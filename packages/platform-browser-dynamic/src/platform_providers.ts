@@ -22,7 +22,7 @@ export const INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS: StaticProvider[] = [
   {
     provide: COMPILER_OPTIONS,
     useValue: {providers: [{provide: ResourceLoader, useClass: ResourceLoaderImpl, deps: []}]},
-    multi: true
+    multi: true,
   },
   {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
 ];

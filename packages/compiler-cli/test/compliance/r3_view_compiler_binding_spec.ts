@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AttributeMarker} from '@angular/compiler/src/core';
 import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
@@ -32,8 +33,8 @@ describe('compiler compliance: bindings', () => {
           }
           @NgModule({declarations: [MyComponent]})
           export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const template = `
@@ -69,8 +70,8 @@ describe('compiler compliance: bindings', () => {
           }
 
           @NgModule({declarations: [MyComponent]})
-          export class MyModule {}`
-        }
+          export class MyModule {}`,
+        },
       };
 
       const template = `
@@ -103,8 +104,8 @@ describe('compiler compliance: bindings', () => {
           }
           @NgModule({declarations: [MyComponent]})
           export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const template = `
@@ -132,18 +133,17 @@ describe('compiler compliance: bindings', () => {
               template: '<div [someProp]></div>'
             })
             class FooCmp {}
-          `
-        }
+          `,
+        },
       };
       const result = compile(files, angularFiles);
       expect(result.source).not.toContain('i0.ɵɵproperty');
     });
 
-    it('should not remap property names whose names do not correspond to their attribute names',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should not remap property names whose names do not correspond to their attribute names', () => {
+      const files = {
+        app: {
+          'spec.ts': `
               import {Component, NgModule} from '@angular/core';
 
               @Component({
@@ -157,11 +157,11 @@ describe('compiler compliance: bindings', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-           }
-         };
+          `,
+        },
+      };
 
-         const template = `
+      const template = `
       consts: [[${AttributeMarker.Bindings}, "for"]]
 
       // ...
@@ -175,10 +175,10 @@ describe('compiler compliance: bindings', () => {
         }
       }`;
 
-         const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
     it('should chain multiple property bindings into a single instruction', () => {
       const files = {
@@ -192,8 +192,8 @@ describe('compiler compliance: bindings', () => {
             export class MyComponent {
               myTitle = 'hello';
               buttonId = 'special-button';
-            }`
-        }
+            }`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -219,8 +219,8 @@ describe('compiler compliance: bindings', () => {
             @Component({
               template: '<button [title]="1" [attr.id]="2" [tabindex]="3" aria-label="{{1 + 3}}"></button>'
             })
-            export class MyComponent {}`
-        }
+            export class MyComponent {}`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -248,8 +248,8 @@ describe('compiler compliance: bindings', () => {
             @Component({
               template: '<button [title]="1" [id]="2" tabindex="{{0 + 3}}" aria-label="hello-{{1 + 3}}-{{2 + 3}}"></button>'
             })
-            export class MyComponent {}`
-        }
+            export class MyComponent {}`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -285,8 +285,8 @@ describe('compiler compliance: bindings', () => {
             })
             export class MyComponent {
               expansionState = 'expanded';
-            }`
-        }
+            }`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -315,8 +315,8 @@ describe('compiler compliance: bindings', () => {
             export class MyComponent {
               myTitle = 'hello';
               buttonId = 'custom-id';
-            }`
-        }
+            }`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -349,8 +349,8 @@ describe('compiler compliance: bindings', () => {
             export class MyComponent {
               myTitle = 'hello';
               buttonId = 'special-button';
-            }`
-        }
+            }`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -386,8 +386,8 @@ describe('compiler compliance: bindings', () => {
             export class MyComponent {
               myTitle = 'hello';
               buttonId = 'special-button';
-            }`
-        }
+            }`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -422,8 +422,8 @@ describe('compiler compliance: bindings', () => {
             export class MyComponent {
               myTitle = 'hello';
               buttonId = 'special-button';
-            }`
-        }
+            }`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -454,8 +454,8 @@ describe('compiler compliance: bindings', () => {
             export class MyComponent {
               myTitle = 'hello';
               buttonId = 'special-button';
-            }`
-        }
+            }`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -484,8 +484,8 @@ describe('compiler compliance: bindings', () => {
                 </button>
               \`
             })
-            export class MyComponent {}`
-        }
+            export class MyComponent {}`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -518,8 +518,8 @@ describe('compiler compliance: bindings', () => {
                   attr.tabindex="prefix-{{0 + 3}}"
                   attr.aria-label="hello-{{1 + 3}}-{{2 + 3}}"></button>\`
             })
-            export class MyComponent {}`
-        }
+            export class MyComponent {}`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -554,8 +554,8 @@ describe('compiler compliance: bindings', () => {
             export class MyComponent {
               myTitle = 'hello';
               buttonId = 'special-button';
-            }`
-        }
+            }`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -591,8 +591,8 @@ describe('compiler compliance: bindings', () => {
             export class MyComponent {
               myTitle = 'hello';
               buttonId = 'special-button';
-            }`
-        }
+            }`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -634,13 +634,12 @@ describe('compiler compliance: bindings', () => {
           }
 
           @NgModule({declarations: [MyComponent]})
-          export class MyModule {}`
-        }
+          export class MyModule {}`,
+        },
       };
 
       const template = `
-        consts: [["target", "_blank", "aria-label", "link", ${
-          AttributeMarker.Bindings}, "title", "id", "customEvent"]],
+        consts: [["target", "_blank", "aria-label", "link", ${AttributeMarker.Bindings}, "title", "id", "customEvent"]],
         …
       `;
       const result = compile(files, angularFiles);
@@ -662,8 +661,8 @@ describe('compiler compliance: bindings', () => {
 
             @NgModule({declarations: [HostBindingDir]})
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const HostBindingDirDeclaration = `
@@ -704,8 +703,8 @@ describe('compiler compliance: bindings', () => {
 
             @NgModule({declarations: [HostBindingComp]})
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const HostBindingCompDeclaration = `
@@ -751,8 +750,8 @@ describe('compiler compliance: bindings', () => {
 
             @NgModule({declarations: [HostAttributeDir]})
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const HostAttributeDirDeclaration = `
@@ -791,8 +790,8 @@ describe('compiler compliance: bindings', () => {
 
             @NgModule({declarations: [HostAttributeDir]})
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const HostAttributeDirDeclaration = `
@@ -841,23 +840,20 @@ describe('compiler compliance: bindings', () => {
 
             @NgModule({declarations: [HostAttributeComp, HostAttributeDir]})
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const CompAndDirDeclaration = `
         HostAttributeComp.ɵcmp = $r3$.ɵɵdefineComponent({
           type: HostAttributeComp,
           selectors: [["my-host-attribute-component"]],
-          hostAttrs: ["title", "hello there from component", ${
-          AttributeMarker.Styles}, "opacity", "1"],
+          hostAttrs: ["title", "hello there from component", ${AttributeMarker.Styles}, "opacity", "1"],
         …
         HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
-          hostAttrs: ["title", "hello there from directive", ${
-          AttributeMarker.Classes}, "one", "two", ${
-          AttributeMarker.Styles}, "width", "200px", "height", "500px"],
+          hostAttrs: ["title", "hello there from directive", ${AttributeMarker.Classes}, "one", "two", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"],
           hostVars: 4,
           hostBindings: function HostAttributeDir_HostBindings(rf, ctx) {
             …
@@ -886,8 +882,8 @@ describe('compiler compliance: bindings', () => {
             export class MyDirective {
               myTitle = 'hello';
               myId = 'special-directive';
-            }`
-        }
+            }`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -922,8 +918,8 @@ describe('compiler compliance: bindings', () => {
 
               @HostBinding('id')
               myId = 'special-directive';
-            }`
-        }
+            }`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -954,8 +950,8 @@ describe('compiler compliance: bindings', () => {
                 '[id]': '"my-id"'
               }
             })
-            export class MyDirective {}`
-        }
+            export class MyDirective {}`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -990,8 +986,8 @@ describe('compiler compliance: bindings', () => {
             export class MyDirective {
               expandedState = 'collapsed';
               isSmall = true;
-            }`
-        }
+            }`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -1025,8 +1021,8 @@ describe('compiler compliance: bindings', () => {
             export class MyDirective {
               myTitle = 'hello';
               myId = 'special-directive';
-            }`
-        }
+            }`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -1061,8 +1057,8 @@ describe('compiler compliance: bindings', () => {
 
               @HostBinding('attr.id')
               myId = 'special-directive';
-            }`
-        }
+            }`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -1093,8 +1089,8 @@ describe('compiler compliance: bindings', () => {
                 '[attr.id]': '"my-id"'
               }
             })
-            export class MyDirective {}`
-        }
+            export class MyDirective {}`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -1131,8 +1127,8 @@ describe('compiler compliance: bindings', () => {
 
               @HostListener('click')
               click() {}
-            }`
-        }
+            }`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -1164,8 +1160,8 @@ describe('compiler compliance: bindings', () => {
             export class MyComponent {
               @HostListener('@animation.start')
               start() {}
-            }`
-        }
+            }`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -1202,8 +1198,8 @@ describe('compiler compliance: bindings', () => {
 
               @HostListener('click')
               click() {}
-            }`
-        }
+            }`,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -1235,8 +1231,8 @@ describe('compiler compliance: bindings', () => {
           }
 
           @NgModule({declarations: [MyComponent]})
-          export class MyModule {}`
-      }
+          export class MyModule {}`,
+      },
     });
 
     it('should generate the proper update instructions for interpolated properties', () => {
@@ -1281,7 +1277,6 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect handling of interpolated properties');
     });
-
 
     it('should generate the proper update instructions for interpolated attributes', () => {
       const files: MockDirectory = getAppFiles(`

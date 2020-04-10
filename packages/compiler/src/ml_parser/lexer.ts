@@ -33,16 +33,19 @@ export enum TokenType {
   EXPANSION_CASE_EXP_START,
   EXPANSION_CASE_EXP_END,
   EXPANSION_FORM_END,
-  EOF
+  EOF,
 }
 
 export class Token {
   constructor(
-      public type: TokenType|null, public parts: string[], public sourceSpan: ParseSourceSpan) {}
+    public type: TokenType | null,
+    public parts: string[],
+    public sourceSpan: ParseSourceSpan
+  ) {}
 }
 
 export class TokenError extends ParseError {
-  constructor(errorMsg: string, public tokenType: TokenType|null, span: ParseSourceSpan) {
+  constructor(errorMsg: string, public tokenType: TokenType | null, span: ParseSourceSpan) {
     super(span, errorMsg);
   }
 }
@@ -108,8 +111,11 @@ export interface TokenizeOptions {
 }
 
 export function tokenize(
-    source: string, url: string, getTagDefinition: (tagName: string) => TagDefinition,
-    options: TokenizeOptions = {}): TokenizeResult {
+  source: string,
+  url: string,
+  getTagDefinition: (tagName: string) => TagDefinition,
+  options: TokenizeOptions = {}
+): TokenizeResult {
   return new _Tokenizer(new ParseSourceFile(source, url), getTagDefinition, options).tokenize();
 }
 
@@ -133,9 +139,9 @@ class _Tokenizer {
   private _cursor: CharacterCursor;
   private _tokenizeIcu: boolean;
   private _interpolationConfig: InterpolationConfig;
-  private _leadingTriviaCodePoints: number[]|undefined;
-  private _currentTokenStart: CharacterCursor|null = null;
-  private _currentTokenType: TokenType|null = null;
+  private _leadingTriviaCodePoints: number[] | undefined;
+  private _currentTokenStart: CharacterCursor | null = null;
+  private _currentTokenType: TokenType | null = null;
   private _expansionCaseStack: TokenType[] = [];
   private _inInterpolation: boolean = false;
   private readonly _preserveLineEndings: boolean;
@@ -148,16 +154,23 @@ class _Tokenizer {
    * @param options Configuration of the tokenization.
    */
   constructor(
-      _file: ParseSourceFile, private _getTagDefinition: (tagName: string) => TagDefinition,
-      options: TokenizeOptions) {
+    _file: ParseSourceFile,
+    private _getTagDefinition: (tagName: string) => TagDefinition,
+    options: TokenizeOptions
+  ) {
     this._tokenizeIcu = options.tokenizeExpansionForms || false;
     this._interpolationConfig = options.interpolationConfig || DEFAULT_INTERPOLATION_CONFIG;
     this._leadingTriviaCodePoints =
-        options.leadingTriviaChars && options.leadingTriviaChars.map(c => c.codePointAt(0) || 0);
-    const range =
-        options.range || {endPos: _file.content.length, startPos: 0, startLine: 0, startCol: 0};
-    this._cursor = options.escapedString ? new EscapedCharacterCursor(_file, range) :
-                                           new PlainCharacterCursor(_file, range);
+      options.leadingTriviaChars && options.leadingTriviaChars.map((c) => c.codePointAt(0) || 0);
+    const range = options.range || {
+      endPos: _file.content.length,
+      startPos: 0,
+      startLine: 0,
+      startCol: 0,
+    };
+    this._cursor = options.escapedString
+      ? new EscapedCharacterCursor(_file, range)
+      : new PlainCharacterCursor(_file, range);
     this._preserveLineEndings = options.preserveLineEndings || false;
     try {
       this._cursor.init();
@@ -245,17 +258,23 @@ class _Tokenizer {
   private _endToken(parts: string[], end?: CharacterCursor): Token {
     if (this._currentTokenStart === null) {
       throw new TokenError(
-          'Programming error - attempted to end a token when there was no start to the token',
-          this._currentTokenType, this._cursor.getSpan(end));
+        'Programming error - attempted to end a token when there was no start to the token',
+        this._currentTokenType,
+        this._cursor.getSpan(end)
+      );
     }
     if (this._currentTokenType === null) {
       throw new TokenError(
-          'Programming error - attempted to end a token which has no token type', null,
-          this._cursor.getSpan(this._currentTokenStart));
+        'Programming error - attempted to end a token which has no token type',
+        null,
+        this._cursor.getSpan(this._currentTokenStart)
+      );
     }
     const token = new Token(
-        this._currentTokenType, parts,
-        this._cursor.getSpan(this._currentTokenStart, this._leadingTriviaCodePoints));
+      this._currentTokenType,
+      parts,
+      this._cursor.getSpan(this._currentTokenStart, this._leadingTriviaCodePoints)
+    );
     this.tokens.push(token);
     this._currentTokenStart = null;
     this._currentTokenType = null;
@@ -303,7 +322,9 @@ class _Tokenizer {
     const location = this._cursor.clone();
     if (!this._attemptCharCode(charCode)) {
       throw this._createError(
-          _unexpectedCharacterErrorMsg(this._cursor.peek()), this._cursor.getSpan(location));
+        _unexpectedCharacterErrorMsg(this._cursor.peek()),
+        this._cursor.getSpan(location)
+      );
     }
   }
 
@@ -337,7 +358,9 @@ class _Tokenizer {
     const location = this._cursor.clone();
     if (!this._attemptStr(chars)) {
       throw this._createError(
-          _unexpectedCharacterErrorMsg(this._cursor.peek()), this._cursor.getSpan(location));
+        _unexpectedCharacterErrorMsg(this._cursor.peek()),
+        this._cursor.getSpan(location)
+      );
     }
   }
 
@@ -352,7 +375,9 @@ class _Tokenizer {
     this._attemptCharCodeUntilFn(predicate);
     if (this._cursor.diff(start) < len) {
       throw this._createError(
-          _unexpectedCharacterErrorMsg(this._cursor.peek()), this._cursor.getSpan(start));
+        _unexpectedCharacterErrorMsg(this._cursor.peek()),
+        this._cursor.getSpan(start)
+      );
     }
   }
 
@@ -383,7 +408,9 @@ class _Tokenizer {
       this._attemptCharCodeUntilFn(isDigitEntityEnd);
       if (this._cursor.peek() != chars.$SEMICOLON) {
         throw this._createError(
-            _unexpectedCharacterErrorMsg(this._cursor.peek()), this._cursor.getSpan());
+          _unexpectedCharacterErrorMsg(this._cursor.peek()),
+          this._cursor.getSpan()
+        );
       }
       const strNum = this._cursor.getChars(codeStart);
       this._cursor.advance();
@@ -392,7 +419,9 @@ class _Tokenizer {
         return String.fromCharCode(charCode);
       } catch {
         throw this._createError(
-            _unknownEntityErrorMsg(this._cursor.getChars(start)), this._cursor.getSpan());
+          _unknownEntityErrorMsg(this._cursor.getChars(start)),
+          this._cursor.getSpan()
+        );
       }
     } else {
       const nameStart = this._cursor.clone();
@@ -477,13 +506,15 @@ class _Tokenizer {
   private _consumeTagOpen(start: CharacterCursor) {
     let tagName: string;
     let prefix: string;
-    let openTagToken: Token|undefined;
+    let openTagToken: Token | undefined;
     let tokensBeforeTagOpen = this.tokens.length;
     const innerStart = this._cursor.clone();
     try {
       if (!chars.isAsciiLetter(this._cursor.peek())) {
         throw this._createError(
-            _unexpectedCharacterErrorMsg(this._cursor.peek()), this._cursor.getSpan(start));
+          _unexpectedCharacterErrorMsg(this._cursor.peek()),
+          this._cursor.getSpan(start)
+        );
       }
 
       openTagToken = this._consumeTagOpenStart(start);
@@ -535,8 +566,8 @@ class _Tokenizer {
       return this._attemptCharCode(chars.$GT);
     });
     this._beginToken(TokenType.TAG_CLOSE);
-    this._requireCharCodeUntilFn(code => code === chars.$GT, 3);
-    this._cursor.advance();  // Consume the `>`
+    this._requireCharCodeUntilFn((code) => code === chars.$GT, 3);
+    this._cursor.advance(); // Consume the `>`
     this._endToken([prefix, tagName]);
   }
 
@@ -583,8 +614,9 @@ class _Tokenizer {
   }
 
   private _consumeTagOpenEnd() {
-    const tokenType =
-        this._attemptCharCode(chars.$SLASH) ? TokenType.TAG_OPEN_END_VOID : TokenType.TAG_OPEN_END;
+    const tokenType = this._attemptCharCode(chars.$SLASH)
+      ? TokenType.TAG_OPEN_END_VOID
+      : TokenType.TAG_OPEN_END;
     this._beginToken(tokenType);
     this._requireCharCode(chars.$GT);
     this._endToken([]);
@@ -660,8 +692,10 @@ class _Tokenizer {
         parts.push(this._interpolationConfig.start);
         this._inInterpolation = true;
       } else if (
-          this._interpolationConfig && this._inInterpolation &&
-          this._attemptStr(this._interpolationConfig.end)) {
+        this._interpolationConfig &&
+        this._inInterpolation &&
+        this._attemptStr(this._interpolationConfig.end)
+      ) {
         parts.push(this._interpolationConfig.end);
         this._inInterpolation = false;
       } else {
@@ -699,15 +733,19 @@ class _Tokenizer {
   }
 
   private _isInExpansionCase(): boolean {
-    return this._expansionCaseStack.length > 0 &&
-        this._expansionCaseStack[this._expansionCaseStack.length - 1] ===
-        TokenType.EXPANSION_CASE_EXP_START;
+    return (
+      this._expansionCaseStack.length > 0 &&
+      this._expansionCaseStack[this._expansionCaseStack.length - 1] ===
+        TokenType.EXPANSION_CASE_EXP_START
+    );
   }
 
   private _isInExpansionForm(): boolean {
-    return this._expansionCaseStack.length > 0 &&
-        this._expansionCaseStack[this._expansionCaseStack.length - 1] ===
-        TokenType.EXPANSION_FORM_START;
+    return (
+      this._expansionCaseStack.length > 0 &&
+      this._expansionCaseStack[this._expansionCaseStack.length - 1] ===
+        TokenType.EXPANSION_FORM_START
+    );
   }
 
   private isExpansionFormStart(): boolean {
@@ -729,13 +767,22 @@ function isNotWhitespace(code: number): boolean {
 }
 
 function isNameEnd(code: number): boolean {
-  return chars.isWhitespace(code) || code === chars.$GT || code === chars.$SLASH ||
-      code === chars.$SQ || code === chars.$DQ || code === chars.$EQ;
+  return (
+    chars.isWhitespace(code) ||
+    code === chars.$GT ||
+    code === chars.$SLASH ||
+    code === chars.$SQ ||
+    code === chars.$DQ ||
+    code === chars.$EQ
+  );
 }
 
 function isPrefixEnd(code: number): boolean {
-  return (code < chars.$a || chars.$z < code) && (code < chars.$A || chars.$Z < code) &&
-      (code < chars.$0 || code > chars.$9);
+  return (
+    (code < chars.$a || chars.$z < code) &&
+    (code < chars.$A || chars.$Z < code) &&
+    (code < chars.$0 || code > chars.$9)
+  );
 }
 
 function isDigitEntityEnd(code: number): boolean {
@@ -760,7 +807,7 @@ function toUpperCaseCharCode(code: number): number {
 
 function mergeTextTokens(srcTokens: Token[]): Token[] {
   const dstTokens: Token[] = [];
-  let lastDstToken: Token|undefined = undefined;
+  let lastDstToken: Token | undefined = undefined;
   for (let i = 0; i < srcTokens.length; i++) {
     const token = srcTokens[i];
     if (lastDstToken && lastDstToken.type == TokenType.TEXT && token.type == TokenType.TEXT) {
@@ -774,7 +821,6 @@ function mergeTextTokens(srcTokens: Token[]): Token[] {
 
   return dstTokens;
 }
-
 
 /**
  * The _Tokenizer uses objects of this type to move through the input text,
@@ -815,7 +861,7 @@ class PlainCharacterCursor implements CharacterCursor {
 
   constructor(fileOrCursor: PlainCharacterCursor);
   constructor(fileOrCursor: ParseSourceFile, range: LexerRange);
-  constructor(fileOrCursor: ParseSourceFile|PlainCharacterCursor, range?: LexerRange) {
+  constructor(fileOrCursor: ParseSourceFile | PlainCharacterCursor, range?: LexerRange) {
     if (fileOrCursor instanceof PlainCharacterCursor) {
       this.file = fileOrCursor.file;
       this.input = fileOrCursor.input;
@@ -835,7 +881,8 @@ class PlainCharacterCursor implements CharacterCursor {
     } else {
       if (!range) {
         throw new Error(
-            'Programming error: the range argument must be provided with a file argument.');
+          'Programming error: the range argument must be provided with a file argument.'
+        );
       }
       this.file = fileOrCursor;
       this.input = fileOrCursor.content;
@@ -884,8 +931,9 @@ class PlainCharacterCursor implements CharacterCursor {
       }
     }
     return new ParseSourceSpan(
-        new ParseLocation(start.file, start.state.offset, start.state.line, start.state.column),
-        new ParseLocation(this.file, this.state.offset, this.state.line, this.state.column));
+      new ParseLocation(start.file, start.state.offset, start.state.line, start.state.column),
+      new ParseLocation(this.file, this.state.offset, this.state.line, this.state.column)
+    );
   }
 
   getChars(start: this): string {
@@ -922,7 +970,7 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
 
   constructor(fileOrCursor: EscapedCharacterCursor);
   constructor(fileOrCursor: ParseSourceFile, range: LexerRange);
-  constructor(fileOrCursor: ParseSourceFile|EscapedCharacterCursor, range?: LexerRange) {
+  constructor(fileOrCursor: ParseSourceFile | EscapedCharacterCursor, range?: LexerRange) {
     if (fileOrCursor instanceof EscapedCharacterCursor) {
       super(fileOrCursor);
       this.internalState = {...fileOrCursor.internalState};
@@ -991,10 +1039,10 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
       // Now consider more complex sequences
       else if (peek() === chars.$u) {
         // Unicode code-point sequence
-        this.advanceState(this.internalState);  // advance past the `u` char
+        this.advanceState(this.internalState); // advance past the `u` char
         if (peek() === chars.$LBRACE) {
           // Variable length Unicode, e.g. `\x{123}`
-          this.advanceState(this.internalState);  // advance past the `{` char
+          this.advanceState(this.internalState); // advance past the `{` char
           // Advance past the variable number of hex digits until we hit a `}` char
           const digitStart = this.clone();
           let length = 0;
@@ -1011,17 +1059,13 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
           this.advanceState(this.internalState);
           this.state.peek = this.decodeHexDigits(digitStart, 4);
         }
-      }
-
-      else if (peek() === chars.$x) {
+      } else if (peek() === chars.$x) {
         // Hex char code, e.g. `\x2F`
-        this.advanceState(this.internalState);  // advance past the `x` char
+        this.advanceState(this.internalState); // advance past the `x` char
         const digitStart = this.clone();
         this.advanceState(this.internalState);
         this.state.peek = this.decodeHexDigits(digitStart, 2);
-      }
-
-      else if (chars.isOctalDigit(peek())) {
+      } else if (chars.isOctalDigit(peek())) {
         // Octal char code, e.g. `\012`,
         let octal = '';
         let length = 0;
@@ -1035,15 +1079,11 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
         this.state.peek = parseInt(octal, 8);
         // Backup one char
         this.internalState = previous.internalState;
-      }
-
-      else if (chars.isNewLine(this.internalState.peek)) {
+      } else if (chars.isNewLine(this.internalState.peek)) {
         // Line continuation `\` followed by a new line
-        this.advanceState(this.internalState);  // advance over the newline
+        this.advanceState(this.internalState); // advance over the newline
         this.state = this.internalState;
-      }
-
-      else {
+      } else {
         // If none of the `if` blocks were executed then we just have an escaped normal character.
         // In that case we just, effectively, skip the backslash from the character.
         this.state.peek = this.internalState.peek;

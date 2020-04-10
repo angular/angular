@@ -6,7 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, SkipSelf} from '@angular/core';
+import {
+  Directive,
+  EventEmitter,
+  forwardRef,
+  Host,
+  Inject,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Optional,
+  Output,
+  Self,
+  SimpleChanges,
+  SkipSelf,
+} from '@angular/core';
 
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
@@ -15,7 +29,14 @@ import {ControlContainer} from '../control_container';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
 import {NgControl} from '../ng_control';
 import {ReactiveErrors} from '../reactive_errors';
-import {_ngModelWarning, composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor} from '../shared';
+import {
+  _ngModelWarning,
+  composeAsyncValidators,
+  composeValidators,
+  controlPath,
+  isPropertyUpdated,
+  selectValueAccessor,
+} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 import {NG_MODEL_WITH_FORM_CONTROL_WARNING} from './form_control_directive';
@@ -24,7 +45,7 @@ import {FormArrayName, FormGroupName} from './form_group_name';
 
 export const controlNameBinding: any = {
   provide: NgControl,
-  useExisting: forwardRef(() => FormControlName)
+  useExisting: forwardRef(() => FormControlName),
 };
 
 /**
@@ -88,7 +109,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * to indices when iterating over controls in a `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('formControlName') name!: string|number|null;
+  @Input('formControlName') name!: string | number | null;
 
   /**
    * @description
@@ -126,13 +147,17 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   _ngModelWarningSent = false;
 
   constructor(
-      @Optional() @Host() @SkipSelf() parent: ControlContainer,
-      @Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator|ValidatorFn>,
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
-          Array<AsyncValidator|AsyncValidatorFn>,
-      @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[],
-      @Optional() @Inject(NG_MODEL_WITH_FORM_CONTROL_WARNING) private _ngModelWarningConfig: string|
-      null) {
+    @Optional() @Host() @SkipSelf() parent: ControlContainer,
+    @Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator | ValidatorFn>,
+    @Optional()
+    @Self()
+    @Inject(NG_ASYNC_VALIDATORS)
+    asyncValidators: Array<AsyncValidator | AsyncValidatorFn>,
+    @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[],
+    @Optional()
+    @Inject(NG_MODEL_WITH_FORM_CONTROL_WARNING)
+    private _ngModelWarningConfig: string | null
+  ) {
     super();
     this._parent = parent;
     this._rawValidators = validators || [];
@@ -198,7 +223,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * Synchronous validator function composed of all the synchronous validators
    * registered with this directive.
    */
-  get validator(): ValidatorFn|null {
+  get validator(): ValidatorFn | null {
     return composeValidators(this._rawValidators);
   }
 
@@ -212,12 +237,16 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   }
 
   private _checkParentType(): void {
-    if (!(this._parent instanceof FormGroupName) &&
-        this._parent instanceof AbstractFormGroupDirective) {
+    if (
+      !(this._parent instanceof FormGroupName) &&
+      this._parent instanceof AbstractFormGroupDirective
+    ) {
       ReactiveErrors.ngModelGroupException();
     } else if (
-        !(this._parent instanceof FormGroupName) && !(this._parent instanceof FormGroupDirective) &&
-        !(this._parent instanceof FormArrayName)) {
+      !(this._parent instanceof FormGroupName) &&
+      !(this._parent instanceof FormGroupDirective) &&
+      !(this._parent instanceof FormArrayName)
+    ) {
       ReactiveErrors.controlParentException();
     }
   }

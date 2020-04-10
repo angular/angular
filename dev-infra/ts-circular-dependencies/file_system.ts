@@ -9,7 +9,7 @@
 import {Stats, statSync} from 'fs';
 
 /** Gets the status of the specified file. Returns null if the file does not exist. */
-export function getFileStatus(filePath: string): Stats|null {
+export function getFileStatus(filePath: string): Stats | null {
   try {
     return statSync(filePath);
   } catch {

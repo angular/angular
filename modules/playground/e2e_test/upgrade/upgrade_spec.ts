@@ -10,20 +10,20 @@ import {browser, by, element} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
-describe('ngUpgrade', function() {
+describe('ngUpgrade', function () {
   const URL = '/';
 
-  beforeEach(function() {
+  beforeEach(function () {
     browser.rootEl = 'body';
     browser.get(URL);
   });
 
-  afterEach(function() {
+  afterEach(function () {
     browser.useAllAngular2AppRoots();
     verifyNoBrowserErrors();
   });
 
-  it('should bootstrap AngularJS and Angular apps together', function() {
+  it('should bootstrap AngularJS and Angular apps together', function () {
     const ng1NameInput = element(by.css('input[ng-model="name"]'));
     expect(ng1NameInput.getAttribute('value')).toEqual('World');
 

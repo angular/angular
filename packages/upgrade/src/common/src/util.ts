@@ -30,8 +30,9 @@ export function controllerKey(name: string): string {
 }
 
 export function directiveNormalize(name: string): string {
-  return name.replace(DIRECTIVE_PREFIX_REGEXP, '')
-      .replace(DIRECTIVE_SPECIAL_CHARS_REGEXP, (_, letter) => letter.toUpperCase());
+  return name
+    .replace(DIRECTIVE_PREFIX_REGEXP, '')
+    .replace(DIRECTIVE_SPECIAL_CHARS_REGEXP, (_, letter) => letter.toUpperCase());
 }
 
 export function getTypeName(type: Type<any>): string {
@@ -40,13 +41,15 @@ export function getTypeName(type: Type<any>): string {
 }
 
 export function getDowngradedModuleCount($injector: IInjectorService): number {
-  return $injector.has(DOWNGRADED_MODULE_COUNT_KEY) ? $injector.get(DOWNGRADED_MODULE_COUNT_KEY) :
-                                                      0;
+  return $injector.has(DOWNGRADED_MODULE_COUNT_KEY)
+    ? $injector.get(DOWNGRADED_MODULE_COUNT_KEY)
+    : 0;
 }
 
 export function getUpgradeAppType($injector: IInjectorService): UpgradeAppType {
-  return $injector.has(UPGRADE_APP_TYPE_KEY) ? $injector.get(UPGRADE_APP_TYPE_KEY) :
-                                               UpgradeAppType.None;
+  return $injector.has(UPGRADE_APP_TYPE_KEY)
+    ? $injector.get(UPGRADE_APP_TYPE_KEY)
+    : UpgradeAppType.None;
 }
 
 export function isFunction(value: any): value is Function {
@@ -54,8 +57,11 @@ export function isFunction(value: any): value is Function {
 }
 
 export function validateInjectionKey(
-    $injector: IInjectorService, downgradedModule: string, injectionKey: string,
-    attemptedAction: string): void {
+  $injector: IInjectorService,
+  downgradedModule: string,
+  injectionKey: string,
+  attemptedAction: string
+): void {
   const upgradeAppType = getUpgradeAppType($injector);
   const downgradedModuleCount = getDowngradedModuleCount($injector);
 
@@ -65,41 +71,45 @@ export function validateInjectionKey(
     case UpgradeAppType.Static:
       if (downgradedModule) {
         throw new Error(
-            `Error while ${attemptedAction}: 'downgradedModule' unexpectedly specified.\n` +
-            'You should not specify a value for \'downgradedModule\', unless you are downgrading ' +
-            'more than one Angular module (via \'downgradeModule()\').');
+          `Error while ${attemptedAction}: 'downgradedModule' unexpectedly specified.\n` +
+            "You should not specify a value for 'downgradedModule', unless you are downgrading " +
+            "more than one Angular module (via 'downgradeModule()')."
+        );
       }
       break;
     case UpgradeAppType.Lite:
-      if (!downgradedModule && (downgradedModuleCount >= 2)) {
+      if (!downgradedModule && downgradedModuleCount >= 2) {
         throw new Error(
-            `Error while ${attemptedAction}: 'downgradedModule' not specified.\n` +
+          `Error while ${attemptedAction}: 'downgradedModule' not specified.\n` +
             'This application contains more than one downgraded Angular module, thus you need to ' +
-            'always specify \'downgradedModule\' when downgrading components and injectables.');
+            "always specify 'downgradedModule' when downgrading components and injectables."
+        );
       }
 
       if (!$injector.has(injectionKey)) {
         throw new Error(
-            `Error while ${attemptedAction}: Unable to find the specified downgraded module.\n` +
+          `Error while ${attemptedAction}: Unable to find the specified downgraded module.\n` +
             'Did you forget to downgrade an Angular module or include it in the AngularJS ' +
-            'application?');
+            'application?'
+        );
       }
 
       break;
     default:
       throw new Error(
-          `Error while ${attemptedAction}: Not a valid '@angular/upgrade' application.\n` +
+        `Error while ${attemptedAction}: Not a valid '@angular/upgrade' application.\n` +
           'Did you forget to downgrade an Angular module or include it in the AngularJS ' +
-          'application?');
+          'application?'
+      );
   }
 }
 
 export class Deferred<R> {
   promise: Promise<R>;
   // TODO(issue/24571): remove '!'.
-  resolve !: (value?: R | PromiseLike<R>) => void;
+  resolve!: (value?: R | PromiseLike<R>) => void;
   // TODO(issue/24571): remove '!'.
-  reject !: (error?: any) => void;
+  reject!: (error?: any) => void;
 
   constructor() {
     this.promise = new Promise((res, rej) => {
@@ -134,8 +144,9 @@ export const enum UpgradeAppType {
  *     compatibility.
  */
 function supportsNgModel(component: any) {
-  return typeof component.writeValue === 'function' &&
-      typeof component.registerOnChange === 'function';
+  return (
+    typeof component.writeValue === 'function' && typeof component.registerOnChange === 'function'
+  );
 }
 
 /**
@@ -144,7 +155,9 @@ function supportsNgModel(component: any) {
  */
 export function hookupNgModel(ngModel: INgModelController, component: any) {
   if (ngModel && supportsNgModel(component)) {
-    ngModel.$render = () => { component.writeValue(ngModel.$viewValue); };
+    ngModel.$render = () => {
+      component.writeValue(ngModel.$viewValue);
+    };
     component.registerOnChange(ngModel.$setViewValue.bind(ngModel));
     if (typeof component.registerOnTouched === 'function') {
       component.registerOnTouched(ngModel.$setTouched.bind(ngModel));

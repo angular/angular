@@ -5,10 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {EventEmitter} from '@angular/core';
 import {Serializer, SerializerTypes} from '../shared/serializer';
 
-import {serializeEventWithTarget, serializeGenericEvent, serializeKeyboardEvent, serializeMouseEvent, serializeTransitionEvent} from './event_serializer';
+import {
+  serializeEventWithTarget,
+  serializeGenericEvent,
+  serializeKeyboardEvent,
+  serializeMouseEvent,
+  serializeTransitionEvent,
+} from './event_serializer';
 
 export class EventDispatcher {
   constructor(private _sink: EventEmitter<any>, private _serializer: Serializer) {}

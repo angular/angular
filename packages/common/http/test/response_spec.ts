@@ -56,9 +56,12 @@ import {ddescribe, describe, it} from '@angular/core/testing/src/testing_interna
     });
     describe('.clone()', () => {
       it('copies the original when given no arguments', () => {
-        const clone =
-            new HttpResponse({body: 'test', status: 201, statusText: 'created', url: '/test'})
-                .clone();
+        const clone = new HttpResponse({
+          body: 'test',
+          status: 201,
+          statusText: 'created',
+          url: '/test',
+        }).clone();
         expect(clone.body).toBe('test');
         expect(clone.status).toBe(201);
         expect(clone.statusText).toBe('created');
@@ -66,10 +69,18 @@ import {ddescribe, describe, it} from '@angular/core/testing/src/testing_interna
         expect(clone.headers).not.toBeNull();
       });
       it('overrides the original', () => {
-        const orig =
-            new HttpResponse({body: 'test', status: 201, statusText: 'created', url: '/test'});
-        const clone =
-            orig.clone({body: {data: 'test'}, status: 200, statusText: 'Okay', url: '/bar'});
+        const orig = new HttpResponse({
+          body: 'test',
+          status: 201,
+          statusText: 'created',
+          url: '/test',
+        });
+        const clone = orig.clone({
+          body: {data: 'test'},
+          status: 200,
+          statusText: 'Okay',
+          url: '/bar',
+        });
         expect(clone.body).toEqual({data: 'test'});
         expect(clone.status).toBe(200);
         expect(clone.statusText).toBe('Okay');

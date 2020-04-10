@@ -37,15 +37,17 @@ import {UpgradeModule} from '@angular/upgrade/static';
 export const RouterUpgradeInitializer = {
   provide: APP_BOOTSTRAP_LISTENER,
   multi: true,
-  useFactory: locationSyncBootstrapListener as(ngUpgrade: UpgradeModule) => () => void,
-  deps: [UpgradeModule]
+  useFactory: locationSyncBootstrapListener as (ngUpgrade: UpgradeModule) => () => void,
+  deps: [UpgradeModule],
 };
 
 /**
  * @internal
  */
 export function locationSyncBootstrapListener(ngUpgrade: UpgradeModule) {
-  return () => { setUpLocationSync(ngUpgrade); };
+  return () => {
+    setUpLocationSync(ngUpgrade);
+  };
 }
 
 /**
@@ -71,21 +73,22 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path' | 'h
   const router: Router = ngUpgrade.injector.get(Router);
   const location: Location = ngUpgrade.injector.get(Location);
 
-  ngUpgrade.$injector.get('$rootScope')
-      .$on('$locationChangeStart', (_: any, next: string, __: string) => {
-        let url;
-        if (urlType === 'path') {
-          url = resolveUrl(next);
-        } else if (urlType === 'hash') {
-          // Remove the first hash from the URL
-          const hashIdx = next.indexOf('#');
-          url = resolveUrl(next.substring(0, hashIdx) + next.substring(hashIdx + 1));
-        } else {
-          throw 'Invalid URLType passed to setUpLocationSync: ' + urlType;
-        }
-        const path = location.normalize(url.pathname);
-        router.navigateByUrl(path + url.search + url.hash);
-      });
+  ngUpgrade.$injector
+    .get('$rootScope')
+    .$on('$locationChangeStart', (_: any, next: string, __: string) => {
+      let url;
+      if (urlType === 'path') {
+        url = resolveUrl(next);
+      } else if (urlType === 'hash') {
+        // Remove the first hash from the URL
+        const hashIdx = next.indexOf('#');
+        url = resolveUrl(next.substring(0, hashIdx) + next.substring(hashIdx + 1));
+      } else {
+        throw 'Invalid URLType passed to setUpLocationSync: ' + urlType;
+      }
+      const path = location.normalize(url.pathname);
+      router.navigateByUrl(path + url.search + url.hash);
+    });
 }
 
 /**
@@ -106,8 +109,8 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path' | 'h
  * https://github.com/angular/angular.js/blob/2c7400e7d07b0f6cec1817dab40b9250ce8ebce6/src/ng/urlUtils.js#L26-L33
  * for more info.
  */
-let anchor: HTMLAnchorElement|undefined;
-function resolveUrl(url: string): {pathname: string, search: string, hash: string} {
+let anchor: HTMLAnchorElement | undefined;
+function resolveUrl(url: string): {pathname: string; search: string; hash: string} {
   if (!anchor) {
     anchor = document.createElement('a');
   }
@@ -119,6 +122,6 @@ function resolveUrl(url: string): {pathname: string, search: string, hash: strin
     // IE does not start `pathname` with `/` like other browsers.
     pathname: `/${anchor.pathname.replace(/^\//, '')}`,
     search: anchor.search,
-    hash: anchor.hash
+    hash: anchor.hash,
   };
 }

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-(function(_global) {
+(function (_global) {
   var mark = _global['__zone_symbol__mark'];
   var measure = _global['__zone_symbol__measure'];
   var testRunner = _global['__zone_symbol__testRunner'];
@@ -17,7 +17,7 @@
   var testTarget = {
     title: 'timer',
     times: 10,
-    before: function() {
+    before: function () {
       _global['__zone_symbol__callbackContext'].measureName = 'setTimeout_callback';
       _global['__zone_symbol__callbackContext'].type = 'macroTask';
       _global['__zone_symbol__callbackContext'].source = 'setTimeout';
@@ -29,27 +29,39 @@
         nativeMethod: '__zone_symbol__setTimeout',
         clearMethod: 'clearTimeout',
         nativeClearMethod: '__zone_symbol__clearTimeout',
-        run: function() { return setTimeout(function() {}); },
-        runClear: function(timerId) { return clearTimeout(timerId); },
-        nativeRun: function() { return nativeSetTimeout(function() {}); },
-        nativeRunClear: function(timerId) { return nativeClearTimeout(timerId); }
+        run: function () {
+          return setTimeout(function () {});
+        },
+        runClear: function (timerId) {
+          return clearTimeout(timerId);
+        },
+        nativeRun: function () {
+          return nativeSetTimeout(function () {});
+        },
+        nativeRunClear: function (timerId) {
+          return nativeClearTimeout(timerId);
+        },
       },
       {
         isCallback: true,
         supportClear: false,
         method: 'setTimeout_callback',
         nativeMethod: 'native_setTimeout_callback',
-        run: function() { zone.run(function() { setTimeout(function() {}); }); },
-        nativeRun: function() {
-          var func = function() {};
-          nativeSetTimeout(function() {
+        run: function () {
+          zone.run(function () {
+            setTimeout(function () {});
+          });
+        },
+        nativeRun: function () {
+          var func = function () {};
+          nativeSetTimeout(function () {
             mark('native_setTimeout_callback');
             func.apply(this, arguments);
             measure('native_setTimeout_callback', 'native_setTimeout_callback');
           });
-        }
-      }
+        },
+      },
     ],
   };
   return testRunner(testTarget);
-}(typeof window === 'undefined' ? global : window));
+})(typeof window === 'undefined' ? global : window);

@@ -10,10 +10,10 @@ import {browser} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
-describe('Order Management CRUD', function() {
+describe('Order Management CRUD', function () {
   const URL = '/';
 
-  it('should work', function() {
+  it('should work', function () {
     browser.get(URL);
     verifyNoBrowserErrors();
   });

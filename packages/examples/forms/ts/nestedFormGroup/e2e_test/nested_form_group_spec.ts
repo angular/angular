@@ -40,5 +40,4 @@ describe('nestedFormGroup example', () => {
     expect(firstInput.getAttribute('value')).toEqual('Bess');
     expect(lastInput.getAttribute('value')).toEqual('Marvin');
   });
-
 });

@@ -10,5 +10,6 @@ importScripts('angular/modules/playground/src/web_workers/worker-configure.js');
 
 System.config({packages: {'angular/modules/playground/src/web_workers': {defaultExtension: 'js'}}});
 
-System.import('./background_index.js')
-    .catch(error => console.error('error loading background', error));
+System.import('./background_index.js').catch((error) =>
+  console.error('error loading background', error)
+);

@@ -33,8 +33,8 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
       it('should extract from attributes', () => {
         expect(
           extract(
-            '<div i18n="m1|d1"><span i18n-title="m2|d2" title="single child">nested</span></div>',
-          ),
+            '<div i18n="m1|d1"><span i18n-title="m2|d2" title="single child">nested</span></div>'
+          )
         ).toEqual([
           [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm1', 'd1', ''],
           [['single child'], 'm2', 'd2', ''],
@@ -44,8 +44,8 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
       it('should extract from attributes with id', () => {
         expect(
           extract(
-            '<div i18n="m1|d1@@i1"><span i18n-title="m2|d2@@i2" title="single child">nested</span></div>',
-          ),
+            '<div i18n="m1|d1@@i1"><span i18n-title="m2|d2@@i2" title="single child">nested</span></div>'
+          )
         ).toEqual([
           [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm1', 'd1', 'i1'],
           [['single child'], 'm2', 'd2', 'i2'],
@@ -61,8 +61,8 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
       it('should extract from attributes without meaning and with id', () => {
         expect(
           extract(
-            '<div i18n="d1@@i1"><span i18n-title="d2@@i2" title="single child">nested</span></div>',
-          ),
+            '<div i18n="d1@@i1"><span i18n-title="d2@@i2" title="single child">nested</span></div>'
+          )
         ).toEqual([
           [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], '', 'd1', 'i1'],
           [['single child'], '', 'd2', 'i2'],
@@ -72,8 +72,8 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
       it('should extract from attributes with id only', () => {
         expect(
           extract(
-            '<div i18n="@@i1"><span i18n-title="@@i2" title="single child">nested</span></div>',
-          ),
+            '<div i18n="@@i1"><span i18n-title="@@i2" title="single child">nested</span></div>'
+          )
         ).toEqual([
           [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], '', '', 'i1'],
           [['single child'], '', '', 'i2'],
@@ -83,8 +83,8 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
       it('should extract from ICU messages', () => {
         expect(
           extract(
-            '<div i18n="m|d">{count, plural, =0 { <p i18n-title i18n-desc title="title" desc="desc"></p>}}</div>',
-          ),
+            '<div i18n="m|d">{count, plural, =0 { <p i18n-title i18n-desc title="title" desc="desc"></p>}}</div>'
+          )
         ).toEqual([
           [
             ['{count, plural, =0 {[<ph tag name="START_PARAGRAPH"></ph name="CLOSE_PARAGRAPH">]}}'],
@@ -115,7 +115,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
          <!-- i18n: desc2 -->message2<!-- /i18n -->
          <!-- i18n -->message3<!-- /i18n -->
          <!-- i18n: meaning4|desc4@@id4 -->message4<!-- /i18n -->
-         <!-- i18n: @@id5 -->message5<!-- /i18n -->`),
+         <!-- i18n: @@id5 -->message5<!-- /i18n -->`)
         ).toEqual([
           [['message1'], 'meaning1', 'desc1', ''],
           [['message2'], '', 'desc2', ''],
@@ -134,8 +134,8 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
       it('should extract siblings', () => {
         expect(
           extract(
-            `<!-- i18n -->text<p>html<b>nested</b></p>{count, plural, =0 {<span>html</span>}}{{interp}}<!-- /i18n -->`,
-          ),
+            `<!-- i18n -->text<p>html<b>nested</b></p>{count, plural, =0 {<span>html</span>}}{{interp}}<!-- /i18n -->`
+          )
         ).toEqual([
           [
             [
@@ -163,7 +163,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
 
       it('should ignore other comments', () => {
         expect(
-          extract(`<!-- i18n: meaning1|desc1@@id1 --><!-- other -->message1<!-- /i18n -->`),
+          extract(`<!-- i18n: meaning1|desc1@@id1 --><!-- other -->message1<!-- /i18n -->`)
         ).toEqual([[['message1'], 'meaning1', 'desc1', 'id1']]);
       });
 
@@ -204,7 +204,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
 
         // one message for the block content and one message for the ICU
         expect(
-          extract('<!-- i18n:m|d -->before{count, plural, =0 {text}}after<!-- /i18n -->'),
+          extract('<!-- i18n:m|d -->before{count, plural, =0 {text}}after<!-- /i18n -->')
         ).toEqual([
           [['{count, plural, =0 {[text]}}'], '', '', ''],
           [
@@ -222,7 +222,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
 
       it('should ignore nested ICU messages', () => {
         expect(
-          extract('<div i18n="m|d">{count, plural, =0 { {sex, select, male {m}} }}</div>'),
+          extract('<div i18n="m|d">{count, plural, =0 { {sex, select, male {m}} }}</div>')
         ).toEqual([[['{count, plural, =0 {[{sex, select, male {[m]}},  ]}}'], 'm', 'd', '']]);
       });
 
@@ -231,8 +231,8 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
           extract(
             '<div i18n="m|d@@i">{count, plural, =0 { {sex, select, male {<p>ignore</p>}}' +
               ' }}</div>',
-            ['p'],
-          ),
+            ['p']
+          )
         ).toEqual([
           [
             [
@@ -247,7 +247,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
 
       it('should ignore implicit elements in non translatable ICU messages', () => {
         expect(
-          extract('{count, plural, =0 { {sex, select, male {<p>ignore</p>}} }}', ['p']),
+          extract('{count, plural, =0 { {sex, select, male {<p>ignore</p>}} }}', ['p'])
         ).toEqual([]);
       });
     });
@@ -276,7 +276,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
 
       it('should extract from attributes in translatable blocks', () => {
         expect(
-          extract('<!-- i18n --><p><b i18n-title="m|d" title="msg"></b></p><!-- /i18n -->'),
+          extract('<!-- i18n --><p><b i18n-title="m|d" title="msg"></b></p><!-- /i18n -->')
         ).toEqual([
           [['msg'], 'm', 'd', ''],
           [
@@ -294,7 +294,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
       it('should extract from attributes in translatable ICUs', () => {
         expect(
           extract(`<!-- i18n -->{count, plural, =0 {<p><b i18n-title="m|d@@i"
-                 title="msg"></b></p>}}<!-- /i18n -->`),
+                 title="msg"></b></p>}}<!-- /i18n -->`)
         ).toEqual([
           [['msg'], 'm', 'd', 'i'],
           [
@@ -311,7 +311,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
 
       it('should extract from attributes in non translatable ICUs', () => {
         expect(
-          extract('{count, plural, =0 {<p><b i18n-title="m|d" title="msg"></b></p>}}'),
+          extract('{count, plural, =0 {<p><b i18n-title="m|d" title="msg"></b></p>}}')
         ).toEqual([[['msg'], 'm', 'd', '']]);
       });
 
@@ -341,7 +341,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
     describe('implicit attributes', () => {
       it('should extract implicit attributes', () => {
         expect(
-          extract('<b title="bb">bold</b><i title="ii">italic</i>', [], {'b': ['title']}),
+          extract('<b title="bb">bold</b><i title="ii">italic</i>', [], {'b': ['title']})
         ).toEqual([[['bb'], '', '', '']]);
       });
     });
@@ -427,7 +427,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
           htmlNodes,
           DEFAULT_INTERPOLATION_CONFIG,
           [],
-          {},
+          {}
         ).messages;
 
         expect(messages.length).toEqual(1);
@@ -440,7 +440,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
           translations,
           DEFAULT_INTERPOLATION_CONFIG,
           [],
-          {},
+          {}
         );
         expect(output.errors).toEqual([]);
 
@@ -459,7 +459,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
         expect(fakeTranslate(HTML)).toEqual(
           'before**[ph tag name="START_PARAGRAPH">foo[/ph name="CLOSE_PARAGRAPH">[ph tag' +
             ' name="START_TAG_SPAN">[ph tag name="START_ITALIC_TEXT">bar[/ph' +
-            ' name="CLOSE_ITALIC_TEXT">[/ph name="CLOSE_TAG_SPAN">**after',
+            ' name="CLOSE_ITALIC_TEXT">[/ph name="CLOSE_TAG_SPAN">**after'
         );
       });
 
@@ -468,7 +468,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
         expect(fakeTranslate(HTML)).toEqual(
           '<div>before**[ph tag name="START_PARAGRAPH">foo[/ph name="CLOSE_PARAGRAPH">[ph' +
             ' tag name="START_TAG_SPAN">[ph tag name="START_ITALIC_TEXT">bar[/ph' +
-            ' name="CLOSE_ITALIC_TEXT">[/ph name="CLOSE_TAG_SPAN">**after</div>',
+            ' name="CLOSE_ITALIC_TEXT">[/ph name="CLOSE_TAG_SPAN">**after</div>'
         );
       });
     });
@@ -487,7 +487,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
       it('should merge nested attributes', () => {
         const HTML = `<div>{count, plural, =0 {<p i18n-title title="foo"></p>}}</div>`;
         expect(fakeTranslate(HTML)).toEqual(
-          '<div>{count, plural, =0 {<p title="**foo**"></p>}}</div>',
+          '<div>{count, plural, =0 {<p title="**foo**"></p>}}</div>'
         );
       });
 
@@ -503,7 +503,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
           htmlNodes,
           DEFAULT_INTERPOLATION_CONFIG,
           [],
-          {},
+          {}
         ).messages;
 
         expect(messages.length).toEqual(1);
@@ -516,12 +516,12 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
           translations,
           DEFAULT_INTERPOLATION_CONFIG,
           [],
-          {},
+          {}
         );
         expect(output.errors).toEqual([]);
 
         expect(serializeHtmlNodes(output.rootNodes).join('')).toEqual(
-          `<div title="">some element</div>`,
+          `<div title="">some element</div>`
         );
       });
     });
@@ -545,7 +545,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
       it('should remove nested i18n markup', () => {
         const HTML = `<!-- i18n --><span someAttr="ok">foo</span><div>{count, plural, =0 {<p i18n-title title="foo"></p>}}</div><!-- /i18n -->`;
         expect(fakeNoTranslate(HTML)).toEqual(
-          '<span someAttr="ok">foo</span><div>{count, plural, =0 {<p title="foo"></p>}}</div>',
+          '<span someAttr="ok">foo</span><div>{count, plural, =0 {<p title="foo"></p>}}</div>'
         );
       });
     });
@@ -564,14 +564,14 @@ function parseHtml(html: string): html.Node[] {
 function fakeTranslate(
   content: string,
   implicitTags: string[] = [],
-  implicitAttrs: {[k: string]: string[]} = {},
+  implicitAttrs: {[k: string]: string[]} = {}
 ): string {
   const htmlNodes: html.Node[] = parseHtml(content);
   const messages: i18n.Message[] = extractMessages(
     htmlNodes,
     DEFAULT_INTERPOLATION_CONFIG,
     implicitTags,
-    implicitAttrs,
+    implicitAttrs
   ).messages;
 
   const i18nMsgMap: {[id: string]: i18n.Node[]} = {};
@@ -588,7 +588,7 @@ function fakeTranslate(
     translationBundle,
     DEFAULT_INTERPOLATION_CONFIG,
     implicitTags,
-    implicitAttrs,
+    implicitAttrs
   );
   expect(output.errors).toEqual([]);
 
@@ -598,7 +598,7 @@ function fakeTranslate(
 function fakeNoTranslate(
   content: string,
   implicitTags: string[] = [],
-  implicitAttrs: {[k: string]: string[]} = {},
+  implicitAttrs: {[k: string]: string[]} = {}
 ): string {
   const htmlNodes: html.Node[] = parseHtml(content);
   const translationBundle = new TranslationBundle(
@@ -607,14 +607,14 @@ function fakeNoTranslate(
     digest,
     undefined,
     MissingTranslationStrategy.Ignore,
-    console,
+    console
   );
   const output = mergeTranslations(
     htmlNodes,
     translationBundle,
     DEFAULT_INTERPOLATION_CONFIG,
     implicitTags,
-    implicitAttrs,
+    implicitAttrs
   );
   expect(output.errors).toEqual([]);
 
@@ -624,13 +624,13 @@ function fakeNoTranslate(
 function extract(
   html: string,
   implicitTags: string[] = [],
-  implicitAttrs: {[k: string]: string[]} = {},
+  implicitAttrs: {[k: string]: string[]} = {}
 ): [string[], string, string, string][] {
   const result = extractMessages(
     parseHtml(html),
     DEFAULT_INTERPOLATION_CONFIG,
     implicitTags,
-    implicitAttrs,
+    implicitAttrs
   );
 
   if (result.errors.length > 0) {
@@ -649,13 +649,13 @@ function extract(
 function extractErrors(
   html: string,
   implicitTags: string[] = [],
-  implicitAttrs: {[k: string]: string[]} = {},
+  implicitAttrs: {[k: string]: string[]} = {}
 ): any[] {
   const errors = extractMessages(
     parseHtml(html),
     DEFAULT_INTERPOLATION_CONFIG,
     implicitTags,
-    implicitAttrs,
+    implicitAttrs
   ).errors;
 
   return errors.map((e): [string, string] => [e.msg, e.span.toString()]);

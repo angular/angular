@@ -11,7 +11,6 @@ import {serializeNodes} from '../../../src/i18n/digest';
 import * as i18n from '../../../src/i18n/i18n_ast';
 import {Xtb} from '../../../src/i18n/serializers/xtb';
 
-
 {
   describe('XTB serializer', () => {
     const serializer = new Xtb();
@@ -19,7 +18,7 @@ import {Xtb} from '../../../src/i18n/serializers/xtb';
     function loadAsMap(xtb: string): {[id: string]: string} {
       const {i18nNodesByMsgId} = serializer.load(xtb, 'url');
       const msgMap: {[id: string]: string} = {};
-      Object.keys(i18nNodesByMsgId).forEach(id => {
+      Object.keys(i18nNodesByMsgId).forEach((id) => {
         msgMap[id] = serializeNodes(i18nNodesByMsgId[id]).join('');
       });
       return msgMap;
@@ -69,7 +68,7 @@ import {Xtb} from '../../../src/i18n/serializers/xtb';
 </translationbundle>`;
 
         expect(loadAsMap(XTB)).toEqual({
-          '8877975308926375834': '<ph name="START_PARAGRAPH"/>rab<ph name="CLOSE_PARAGRAPH"/>'
+          '8877975308926375834': '<ph name="START_PARAGRAPH"/>rab<ph name="CLOSE_PARAGRAPH"/>',
         });
       });
 
@@ -82,8 +81,7 @@ import {Xtb} from '../../../src/i18n/serializers/xtb';
 
         expect(loadAsMap(XTB)).toEqual({
           '7717087045075616176': `*<ph name="ICU"/>*`,
-          '5115002811911870583':
-              `{VAR_PLURAL, plural, =1 {[<ph name="START_PARAGRAPH"/>, rab, <ph name="CLOSE_PARAGRAPH"/>]}}`,
+          '5115002811911870583': `{VAR_PLURAL, plural, =1 {[<ph name="START_PARAGRAPH"/>, rab, <ph name="CLOSE_PARAGRAPH"/>]}}`,
         });
       });
 
@@ -97,13 +95,10 @@ import {Xtb} from '../../../src/i18n/serializers/xtb';
 </translationbundle>`;
 
         expect(loadAsMap(XTB)).toEqual({
-          '8281795707202401639':
-              `<ph name="INTERPOLATION"/><ph name="START_BOLD_TEXT"/>rab<ph name="CLOSE_BOLD_TEXT"/> oof`,
-          '5115002811911870583':
-              `{VAR_PLURAL, plural, =1 {[<ph name="START_PARAGRAPH"/>, rab, <ph name="CLOSE_PARAGRAPH"/>]}}`,
+          '8281795707202401639': `<ph name="INTERPOLATION"/><ph name="START_BOLD_TEXT"/>rab<ph name="CLOSE_BOLD_TEXT"/> oof`,
+          '5115002811911870583': `{VAR_PLURAL, plural, =1 {[<ph name="START_PARAGRAPH"/>, rab, <ph name="CLOSE_PARAGRAPH"/>]}}`,
           '130772889486467622': `oof`,
-          '4739316421648347533':
-              `{VAR_PLURAL, plural, =1 {[{VAR_GENDER, gender, male {[<ph name="START_PARAGRAPH"/>, rab, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}}`,
+          '4739316421648347533': `{VAR_PLURAL, plural, =1 {[{VAR_GENDER, gender, male {[<ph name="START_PARAGRAPH"/>, rab, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}}`,
         });
       });
     });
@@ -132,7 +127,7 @@ import {Xtb} from '../../../src/i18n/serializers/xtb';
 
       it('should throw on nested <translationbundle>', () => {
         const XTB =
-            '<translationbundle><translationbundle></translationbundle></translationbundle>';
+          '<translationbundle><translationbundle></translationbundle></translationbundle>';
 
         expect(() => {
           loadAsMap(XTB);
@@ -174,9 +169,9 @@ import {Xtb} from '../../../src/i18n/serializers/xtb';
 
         expect(() => {
           loadAsMap(XTB);
-        })
-            .toThrowError(
-                new RegExp(escapeRegExp(`[ERROR ->]<b>msg should contain only ph tags</b>`)));
+        }).toThrowError(
+          new RegExp(escapeRegExp(`[ERROR ->]<b>msg should contain only ph tags</b>`))
+        );
       });
 
       it('should throw on duplicate message id', () => {

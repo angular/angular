@@ -14,9 +14,8 @@ import {ReactiveSelectComp} from './reactive_select_control_example';
 @NgModule({
   imports: [BrowserModule, ReactiveFormsModule],
   declarations: [ReactiveSelectComp],
-  bootstrap: [ReactiveSelectComp]
+  bootstrap: [ReactiveSelectComp],
 })
-export class AppModule {
-}
+export class AppModule {}
 
 export {ReactiveSelectComp as AppComponent};

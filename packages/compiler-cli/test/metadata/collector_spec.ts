@@ -9,7 +9,17 @@
 import * as ts from 'typescript';
 
 import {MetadataCollector} from '../../src/metadata/collector';
-import {ClassMetadata, ConstructorMetadata, isClassMetadata, isMetadataGlobalReferenceExpression, METADATA_VERSION, MetadataEntry, MetadataMap, MetadataSymbolicExpression, ModuleMetadata} from '../../src/metadata/schema';
+import {
+  ClassMetadata,
+  ConstructorMetadata,
+  isClassMetadata,
+  isMetadataGlobalReferenceExpression,
+  METADATA_VERSION,
+  MetadataEntry,
+  MetadataMap,
+  MetadataSymbolicExpression,
+  ModuleMetadata,
+} from '../../src/metadata/schema';
 
 import {Directory, expectValidSources, Host} from './typescript.mocks';
 
@@ -22,22 +32,38 @@ describe('Collector', () => {
 
   beforeEach(() => {
     host = new Host(FILES, [
-      '/app/app.component.ts',    '/app/cases-data.ts',
-      '/app/error-cases.ts',      '/promise.ts',
-      '/unsupported-1.ts',        '/unsupported-2.ts',
-      '/unsupported-3.ts',        'class-arity.ts',
-      'declarations.d.ts',        'import-star.ts',
-      'exported-classes.ts',      'exported-functions.ts',
-      'exported-enum.ts',         'exported-type.ts',
-      'exported-consts.ts',       'local-symbol-ref.ts',
-      'local-function-ref.ts',    'local-symbol-ref-func.ts',
-      'private-enum.ts',          're-exports.ts',
-      're-exports-2.ts',          'export-as.d.ts',
-      'named-module.d.ts',        'static-field-reference.ts',
-      'static-method.ts',         'static-method-call.ts',
-      'static-method-with-if.ts', 'static-method-with-default.ts',
-      'class-inheritance.ts',     'class-inheritance-parent.ts',
-      'interface-reference.ts',   'static-type-check-members.ts',
+      '/app/app.component.ts',
+      '/app/cases-data.ts',
+      '/app/error-cases.ts',
+      '/promise.ts',
+      '/unsupported-1.ts',
+      '/unsupported-2.ts',
+      '/unsupported-3.ts',
+      'class-arity.ts',
+      'declarations.d.ts',
+      'import-star.ts',
+      'exported-classes.ts',
+      'exported-functions.ts',
+      'exported-enum.ts',
+      'exported-type.ts',
+      'exported-consts.ts',
+      'local-symbol-ref.ts',
+      'local-function-ref.ts',
+      'local-symbol-ref-func.ts',
+      'private-enum.ts',
+      're-exports.ts',
+      're-exports-2.ts',
+      'export-as.d.ts',
+      'named-module.d.ts',
+      'static-field-reference.ts',
+      'static-method.ts',
+      'static-method-call.ts',
+      'static-method-with-if.ts',
+      'static-method-with-default.ts',
+      'class-inheritance.ts',
+      'class-inheritance-parent.ts',
+      'interface-reference.ts',
+      'static-type-check-members.ts',
     ]);
     service = ts.createLanguageService(host, documentRegistry);
     program = service.getProgram()!;
@@ -63,7 +89,7 @@ describe('Collector', () => {
       metadata: {
         DeclaredClass: {__symbolic: 'class'},
         declaredFn: {__symbolic: 'function'} as any,
-      }
+      },
     });
   });
 
@@ -73,7 +99,7 @@ describe('Collector', () => {
     expect(metadata).toEqual({
       __symbolic: 'module',
       version: METADATA_VERSION,
-      metadata: {SomeType: {__symbolic: 'interface'}}
+      metadata: {SomeType: {__symbolic: 'interface'}},
     });
   });
 
@@ -83,7 +109,7 @@ describe('Collector', () => {
     expect(metadata).toEqual({
       __symbolic: 'module',
       version: METADATA_VERSION,
-      metadata: {Hero: {__symbolic: 'interface'}}
+      metadata: {Hero: {__symbolic: 'interface'}},
     });
   });
 
@@ -93,7 +119,7 @@ describe('Collector', () => {
     expect(metadata!['importAs']).toEqual('some-named-module');
   });
 
-  it('should be able to collect a simple component\'s metadata', () => {
+  it("should be able to collect a simple component's metadata", () => {
     const sourceFile = program.getSourceFile('app/hero-detail.component.ts')!;
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
@@ -102,18 +128,20 @@ describe('Collector', () => {
       metadata: {
         HeroDetailComponent: {
           __symbolic: 'class',
-          decorators: [{
-            __symbolic: 'call',
-            expression: {
-              __symbolic: 'reference',
-              module: 'angular2/core',
-              name: 'Component',
-              line: 4,
-              character: 7
-            },
-            arguments: [{
-              selector: 'my-hero-detail',
-              template: `
+          decorators: [
+            {
+              __symbolic: 'call',
+              expression: {
+                __symbolic: 'reference',
+                module: 'angular2/core',
+                name: 'Component',
+                line: 4,
+                character: 7,
+              },
+              arguments: [
+                {
+                  selector: 'my-hero-detail',
+                  template: `
         <div *ngIf="hero">
           <h2>{{hero.name}} details!</h2>
           <div><label>id: </label>{{hero.id}}</div>
@@ -122,30 +150,36 @@ describe('Collector', () => {
             <input [(ngModel)]="hero.name" placeholder="name"/>
           </div>
         </div>
-      `
-            }]
-          }],
+      `,
+                },
+              ],
+            },
+          ],
           members: {
-            hero: [{
-              __symbolic: 'property',
-              decorators: [{
-                __symbolic: 'call',
-                expression: {
-                  __symbolic: 'reference',
-                  module: 'angular2/core',
-                  name: 'Input',
-                  line: 18,
-                  character: 9
-                }
-              }]
-            }]
-          }
-        }
-      }
+            hero: [
+              {
+                __symbolic: 'property',
+                decorators: [
+                  {
+                    __symbolic: 'call',
+                    expression: {
+                      __symbolic: 'reference',
+                      module: 'angular2/core',
+                      name: 'Input',
+                      line: 18,
+                      character: 9,
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
     });
   });
 
-  it('should be able to get a more complicated component\'s metadata', () => {
+  it("should be able to get a more complicated component's metadata", () => {
     const sourceFile = program.getSourceFile('/app/app.component.ts')!;
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual({
@@ -154,18 +188,20 @@ describe('Collector', () => {
       metadata: {
         AppComponent: {
           __symbolic: 'class',
-          decorators: [{
-            __symbolic: 'call',
-            expression: {
-              __symbolic: 'reference',
-              module: 'angular2/core',
-              name: 'Component',
-              line: 9,
-              character: 7
-            },
-            arguments: [{
-              selector: 'my-app',
-              template: `
+          decorators: [
+            {
+              __symbolic: 'call',
+              expression: {
+                __symbolic: 'reference',
+                module: 'angular2/core',
+                name: 'Component',
+                line: 9,
+                character: 7,
+              },
+              arguments: [
+                {
+                  selector: 'my-app',
+                  template: `
         <h2>My Heroes</h2>
         <ul class="heroes">
           <li *ngFor="#hero of heroes"
@@ -176,64 +212,72 @@ describe('Collector', () => {
         </ul>
         <my-hero-detail [hero]="selectedHero"></my-hero-detail>
         `,
-              directives: [
-                {
-                  __symbolic: 'reference',
-                  module: './hero-detail.component',
-                  name: 'HeroDetailComponent',
-                  line: 22,
-                  character: 21
+                  directives: [
+                    {
+                      __symbolic: 'reference',
+                      module: './hero-detail.component',
+                      name: 'HeroDetailComponent',
+                      line: 22,
+                      character: 21,
+                    },
+                    {
+                      __symbolic: 'reference',
+                      module: 'angular2/common',
+                      name: 'NgFor',
+                      line: 22,
+                      character: 42,
+                    },
+                  ],
+                  providers: [
+                    {
+                      __symbolic: 'reference',
+                      module: './hero.service',
+                      default: true,
+                      line: 23,
+                      character: 20,
+                    },
+                  ],
+                  pipes: [
+                    {
+                      __symbolic: 'reference',
+                      module: 'angular2/common',
+                      name: 'LowerCasePipe',
+                      line: 24,
+                      character: 16,
+                    },
+                    {
+                      __symbolic: 'reference',
+                      module: 'angular2/common',
+                      name: 'UpperCasePipe',
+                      line: 24,
+                      character: 38,
+                    },
+                  ],
                 },
-                {
-                  __symbolic: 'reference',
-                  module: 'angular2/common',
-                  name: 'NgFor',
-                  line: 22,
-                  character: 42
-                }
               ],
-              providers: [{
-                __symbolic: 'reference',
-                module: './hero.service',
-                default: true,
-                line: 23,
-                character: 20
-              }],
-              pipes: [
-                {
-                  __symbolic: 'reference',
-                  module: 'angular2/common',
-                  name: 'LowerCasePipe',
-                  line: 24,
-                  character: 16
-                },
-                {
-                  __symbolic: 'reference',
-                  module: 'angular2/common',
-                  name: 'UpperCasePipe',
-                  line: 24,
-                  character: 38
-                }
-              ]
-            }]
-          }],
+            },
+          ],
           members: {
-            __ctor__: [{
-              __symbolic: 'constructor',
-              parameters: [{
-                __symbolic: 'reference',
-                module: './hero.service',
-                default: true,
-                line: 31,
-                character: 42
-              }]
-            }],
+            __ctor__: [
+              {
+                __symbolic: 'constructor',
+                parameters: [
+                  {
+                    __symbolic: 'reference',
+                    module: './hero.service',
+                    default: true,
+                    line: 31,
+                    character: 42,
+                  },
+                ],
+              },
+            ],
             onSelect: [{__symbolic: 'method'}],
             ngOnInit: [{__symbolic: 'method'}],
-            getHeroes: [{__symbolic: 'method'}]
-          }
-        }
-      }
+            getHeroes: [{__symbolic: 'method'}],
+          },
+        },
+      },
     });
   });
 
@@ -254,9 +298,9 @@ describe('Collector', () => {
           {'id': 17, 'name': 'Dynama', '$quoted$': ['id', 'name']},
           {'id': 18, 'name': 'Dr IQ', '$quoted$': ['id', 'name']},
           {'id': 19, 'name': 'Magma', '$quoted$': ['id', 'name']},
-          {'id': 20, 'name': 'Tornado', '$quoted$': ['id', 'name']}
-        ]
-      }
+          {'id': 20, 'name': 'Tornado', '$quoted$': ['id', 'name']},
+        ],
+      },
     });
   });
 
@@ -272,24 +316,36 @@ describe('Collector', () => {
     const casesAny = <ClassMetadata>casesMetadata.metadata['CaseAny'];
     expect(casesAny).toBeTruthy();
     const ctorData = casesAny.members!['__ctor__'] as ConstructorMetadata[];
-    expect(ctorData).toEqual([{
-      __symbolic: 'constructor',
-      parameters: [{__symbolic: 'reference', name: 'any'} as MetadataSymbolicExpression]
-    }]);
+    expect(ctorData).toEqual([
+      {
+        __symbolic: 'constructor',
+        parameters: [{__symbolic: 'reference', name: 'any'} as MetadataSymbolicExpression],
+      },
+    ]);
   });
 
   it('should record annotations on set and get declarations', () => {
-    const propertyData = (line: number) => ({
-      name: [{
-        __symbolic: 'property',
-        decorators: [{
-          __symbolic: 'call',
-          expression:
-              {__symbolic: 'reference', module: 'angular2/core', name: 'Input', line, character: 9},
-          arguments: ['firstName']
-        }]
-      }]
-    } as any as MetadataMap);  // TODO: Review use of `any` here (#19904)
+    const propertyData = (line: number) =>
+      (({
+        name: [
+          {
+            __symbolic: 'property',
+            decorators: [
+              {
+                __symbolic: 'call',
+                expression: {
+                  __symbolic: 'reference',
+                  module: 'angular2/core',
+                  name: 'Input',
+                  line,
+                  character: 9,
+                },
+                arguments: ['firstName'],
+              },
+            ],
+          },
+        ],
+      } as any) as MetadataMap); // TODO: Review use of `any` here (#19904)
 
     const caseGetProp = <ClassMetadata>casesMetadata.metadata['GetProp'];
     expect(caseGetProp.members).toEqual(propertyData(11));
@@ -301,29 +357,35 @@ describe('Collector', () => {
 
   it('should record references to parameterized types', () => {
     const casesForIn = <ClassMetadata>casesMetadata.metadata['NgFor'];
-    expect(casesForIn).toEqual({
+    expect(casesForIn).toEqual(({
       __symbolic: 'class',
-      decorators: [{
-        __symbolic: 'call',
-        expression: {
-          __symbolic: 'reference',
-          module: 'angular2/core',
-          name: 'Injectable',
-          line: 40,
-          character: 7
-        }
-      }],
-      members: {
-        __ctor__: [{
-          __symbolic: 'constructor',
-          parameters: [{
+      decorators: [
+        {
+          __symbolic: 'call',
+          expression: {
             __symbolic: 'reference',
-            name: 'ClassReference',
-            arguments: [{__symbolic: 'reference', name: 'NgForRow'}]
-          }]
-        }]
-      }
-    } as any as ClassMetadata);  // TODO: Review use of `any` here (#19904)
+            module: 'angular2/core',
+            name: 'Injectable',
+            line: 40,
+            character: 7,
+          },
+        },
+      ],
+      members: {
+        __ctor__: [
+          {
+            __symbolic: 'constructor',
+            parameters: [
+              {
+                __symbolic: 'reference',
+                name: 'ClassReference',
+                arguments: [{__symbolic: 'reference', name: 'NgForRow'}],
+              },
+            ],
+          },
+        ],
+      },
+    } as any) as ClassMetadata); // TODO: Review use of `any` here (#19904)
   });
 
   it('should report errors for destructured imports', () => {
@@ -337,8 +399,8 @@ describe('Collector', () => {
         b: {__symbolic: 'error', message: 'Destructuring not supported', line: 1, character: 19},
         c: {__symbolic: 'error', message: 'Destructuring not supported', line: 2, character: 16},
         d: {__symbolic: 'error', message: 'Destructuring not supported', line: 2, character: 19},
-        e: {__symbolic: 'error', message: 'Variable not initialized', line: 3, character: 15}
-      }
+        e: {__symbolic: 'error', message: 'Variable not initialized', line: 3, character: 15},
+      },
     });
   });
 
@@ -353,7 +415,7 @@ describe('Collector', () => {
       message: 'Reference to non-exported class',
       line: 3,
       character: 4,
-      context: {className: 'Foo'}
+      context: {className: 'Foo'},
     });
   });
 
@@ -364,8 +426,13 @@ describe('Collector', () => {
     const ctor = <ConstructorMetadata>someClass.members!['__ctor__'][0];
     const parameters = ctor.parameters;
     expect(parameters).toEqual([
-      {__symbolic: 'reference', module: 'angular2/common', name: 'NgFor', line: 6, character: 29} as
-      MetadataSymbolicExpression
+      {
+        __symbolic: 'reference',
+        module: 'angular2/common',
+        name: 'NgFor',
+        line: 6,
+        character: 29,
+      } as MetadataSymbolicExpression,
     ]);
   });
 
@@ -378,8 +445,8 @@ describe('Collector', () => {
       metadata: {
         SimpleClass: {__symbolic: 'class'},
         AbstractClass: {__symbolic: 'class'},
-        DeclaredClass: {__symbolic: 'class'}
-      }
+        DeclaredClass: {__symbolic: 'class'},
+      },
     });
   });
 
@@ -396,8 +463,8 @@ describe('Collector', () => {
           value: {
             a: {__symbolic: 'reference', name: 'a'},
             b: {__symbolic: 'reference', name: 'b'},
-            c: {__symbolic: 'reference', name: 'c'}
-          }
+            c: {__symbolic: 'reference', name: 'c'},
+          },
         },
         two: {
           __symbolic: 'function',
@@ -405,16 +472,17 @@ describe('Collector', () => {
           value: {
             a: {__symbolic: 'reference', name: 'a'},
             b: {__symbolic: 'reference', name: 'b'},
-            c: {__symbolic: 'reference', name: 'c'}
-          }
+            c: {__symbolic: 'reference', name: 'c'},
+          },
         },
         three: {
           __symbolic: 'function',
           parameters: ['a', 'b', 'c'],
           value: [
-            {__symbolic: 'reference', name: 'a'}, {__symbolic: 'reference', name: 'b'},
-            {__symbolic: 'reference', name: 'c'}
-          ]
+            {__symbolic: 'reference', name: 'a'},
+            {__symbolic: 'reference', name: 'b'},
+            {__symbolic: 'reference', name: 'c'},
+          ],
         },
         supportsState: {
           __symbolic: 'function',
@@ -430,16 +498,16 @@ describe('Collector', () => {
                 expression: {
                   __symbolic: 'select',
                   expression: {__symbolic: 'reference', name: 'window'},
-                  member: 'history'
+                  member: 'history',
                 },
-                member: 'pushState'
-              }
-            }
-          }
+                member: 'pushState',
+              },
+            },
+          },
         },
         complexFn: {__symbolic: 'function'} as any,
         declaredFn: {__symbolic: 'function'} as any,
-      }
+      },
     });
   });
 
@@ -450,8 +518,13 @@ describe('Collector', () => {
     const ctor = <ConstructorMetadata>someClass.members!['__ctor__'][0];
     const parameters = ctor.parameters;
     expect(parameters).toEqual([
-      {__symbolic: 'reference', module: 'angular2/common', name: 'NgFor', line: 6, character: 29} as
-      MetadataSymbolicExpression
+      {
+        __symbolic: 'reference',
+        module: 'angular2/common',
+        name: 'NgFor',
+        line: 6,
+        character: 29,
+      } as MetadataSymbolicExpression,
     ]);
   });
 
@@ -485,8 +558,8 @@ describe('Collector', () => {
         module: './exported-consts',
         name: 'constValue',
         line: 5,
-        character: 75
-      }
+        character: 75,
+      },
     });
   });
 
@@ -502,9 +575,9 @@ describe('Collector', () => {
         parameters: ['comp'],
         value: [
           {__symbolic: 'reference', name: 'MyModule'},
-          {provider: 'a', useValue: {__symbolic: 'reference', name: 'comp'}}
-        ]
-      }
+          {provider: 'a', useValue: {__symbolic: 'reference', name: 'comp'}},
+        ],
+      },
     });
   });
 
@@ -514,7 +587,7 @@ describe('Collector', () => {
     expect(metadata).toBeDefined();
     const classData = <ClassMetadata>metadata.metadata['Foo'];
     expect(classData).toBeDefined();
-    expect(classData.decorators).toEqual([
+    expect(classData.decorators).toEqual(([
       {
         __symbolic: 'call',
         expression: {
@@ -522,27 +595,29 @@ describe('Collector', () => {
           module: 'angular2/core',
           name: 'Component',
           line: 4,
-          character: 5
+          character: 5,
         },
-        arguments: [{
-          providers: {
-            __symbolic: 'call',
-            expression: {
-              __symbolic: 'select',
+        arguments: [
+          {
+            providers: {
+              __symbolic: 'call',
               expression: {
-                __symbolic: 'reference',
-                module: './static-method',
-                name: 'MyModule',
-                line: 5,
-                character: 17
+                __symbolic: 'select',
+                expression: {
+                  __symbolic: 'reference',
+                  module: './static-method',
+                  name: 'MyModule',
+                  line: 5,
+                  character: 17,
+                },
+                member: 'with',
               },
-              member: 'with'
+              arguments: ['a'],
             },
-            arguments: ['a']
-          }
-        }]
-      }
-    ] as any as MetadataSymbolicExpression[]);  // TODO: Review use of `any` here (#19904)
+          },
+        ],
+      },
+    ] as any) as MetadataSymbolicExpression[]); // TODO: Review use of `any` here (#19904)
   });
 
   it('should be able to collect a static field', () => {
@@ -572,7 +647,7 @@ describe('Collector', () => {
     expect(metadata).toBeDefined();
     const classData = <ClassMetadata>metadata.metadata['Foo'];
     expect(classData).toBeDefined();
-    expect(classData.decorators).toEqual([
+    expect(classData.decorators).toEqual(([
       {
         __symbolic: 'call',
         expression: {
@@ -580,26 +655,30 @@ describe('Collector', () => {
           module: 'angular2/core',
           name: 'Component',
           line: 4,
-          character: 5
+          character: 5,
         },
-        arguments: [{
-          providers: [{
-            provide: 'a',
-            useValue: {
-              __symbolic: 'select',
-              expression: {
-                __symbolic: 'reference',
-                module: './static-field',
-                name: 'MyModule',
-                line: 5,
-                character: 45
+        arguments: [
+          {
+            providers: [
+              {
+                provide: 'a',
+                useValue: {
+                  __symbolic: 'select',
+                  expression: {
+                    __symbolic: 'reference',
+                    module: './static-field',
+                    name: 'MyModule',
+                    line: 5,
+                    character: 45,
+                  },
+                  member: 'VALUE',
+                },
               },
-              member: 'VALUE'
-            }
-          }]
-        }]
-      }
-    ] as any as MetadataSymbolicExpression[]);  // TODO: Review use of `any` here (#19904)
+            ],
+          },
+        ],
+      },
+    ] as any) as MetadataSymbolicExpression[]); // TODO: Review use of `any` here (#19904)
   });
 
   it('should be able to collect a method with a conditional expression', () => {
@@ -613,17 +692,18 @@ describe('Collector', () => {
         __symbolic: 'function',
         parameters: ['cond'],
         value: [
-          {__symbolic: 'reference', name: 'MyModule'}, {
+          {__symbolic: 'reference', name: 'MyModule'},
+          {
             provider: 'a',
             useValue: {
               __symbolic: 'if',
               condition: {__symbolic: 'reference', name: 'cond'},
               thenExpression: '1',
-              elseExpression: '2'
-            }
-          }
-        ]
-      }
+              elseExpression: '2',
+            },
+          },
+        ],
+      },
     });
   });
 
@@ -639,20 +719,21 @@ describe('Collector', () => {
         parameters: ['comp', 'foo', 'bar'],
         defaults: [undefined, true, false],
         value: [
-          {__symbolic: 'reference', name: 'MyModule'}, {
+          {__symbolic: 'reference', name: 'MyModule'},
+          {
             __symbolic: 'if',
             condition: {__symbolic: 'reference', name: 'foo'},
             thenExpression: {provider: 'a', useValue: {__symbolic: 'reference', name: 'comp'}},
-            elseExpression: {provider: 'b', useValue: {__symbolic: 'reference', name: 'comp'}}
+            elseExpression: {provider: 'b', useValue: {__symbolic: 'reference', name: 'comp'}},
           },
           {
             __symbolic: 'if',
             condition: {__symbolic: 'reference', name: 'bar'},
             thenExpression: {provider: 'c', useValue: {__symbolic: 'reference', name: 'comp'}},
-            elseExpression: {provider: 'd', useValue: {__symbolic: 'reference', name: 'comp'}}
-          }
-        ]
-      }
+            elseExpression: {provider: 'd', useValue: {__symbolic: 'reference', name: 'comp'}},
+          },
+        ],
+      },
     });
   });
 
@@ -662,7 +743,7 @@ describe('Collector', () => {
     expect(metadata.exports).toEqual([
       {from: './static-field', export: ['MyModule']},
       {from: './static-field-reference', export: [{name: 'Foo', as: 'OtherModule'}]},
-      {from: 'angular2/core'}
+      {from: 'angular2/core'},
     ]);
   });
 
@@ -682,15 +763,15 @@ describe('Collector', () => {
         module: './static-field-reference',
         name: 'Foo',
         line: 4,
-        character: 12
+        character: 12,
       },
       MyOtherModule: {
         __symbolic: 'reference',
         module: './static-field',
         name: 'MyModule',
         line: 4,
-        character: 25
-      }
+        character: 25,
+      },
     });
   });
 
@@ -703,22 +784,24 @@ describe('Collector', () => {
         message: 'Reference to a local symbol',
         line: 3,
         character: 8,
-        context: {name: 'REQUIRED'}
+        context: {name: 'REQUIRED'},
       },
       SomeComponent: {
         __symbolic: 'class',
-        decorators: [{
-          __symbolic: 'call',
-          expression: {
-            __symbolic: 'reference',
-            module: 'angular2/core',
-            name: 'Component',
-            line: 11,
-            character: 5
+        decorators: [
+          {
+            __symbolic: 'call',
+            expression: {
+              __symbolic: 'reference',
+              module: 'angular2/core',
+              name: 'Component',
+              line: 11,
+              character: 5,
+            },
+            arguments: [{providers: [{__symbolic: 'reference', name: 'REQUIRED_VALIDATOR'}]}],
           },
-          arguments: [{providers: [{__symbolic: 'reference', name: 'REQUIRED_VALIDATOR'}]}]
-        }]
-      }
+        ],
+      },
     });
   });
 
@@ -731,22 +814,24 @@ describe('Collector', () => {
         message: 'Reference to a non-exported function',
         line: 3,
         character: 13,
-        context: {name: 'required'}
+        context: {name: 'required'},
       },
       SomeComponent: {
         __symbolic: 'class',
-        decorators: [{
-          __symbolic: 'call',
-          expression: {
-            __symbolic: 'reference',
-            module: 'angular2/core',
-            name: 'Component',
-            line: 11,
-            character: 5
+        decorators: [
+          {
+            __symbolic: 'call',
+            expression: {
+              __symbolic: 'reference',
+              module: 'angular2/core',
+              name: 'Component',
+              line: 11,
+              character: 5,
+            },
+            arguments: [{providers: [{__symbolic: 'reference', name: 'REQUIRED_VALIDATOR'}]}],
           },
-          arguments: [{providers: [{__symbolic: 'reference', name: 'REQUIRED_VALIDATOR'}]}]
-        }]
-      }
+        ],
+      },
     });
   });
 
@@ -762,32 +847,38 @@ describe('Collector', () => {
           message: 'Reference to a local symbol',
           line: 1,
           character: 8,
-          context: {name: 'localSymbol'}
-        }
-      }
+          context: {name: 'localSymbol'},
+        },
+      },
     });
   });
 
   it('should collect any for interface parameter reference', () => {
     const source = program.getSourceFile('/interface-reference.ts')!;
     const metadata = collector.getMetadata(source)!;
-    expect((metadata.metadata['SomeClass'] as ClassMetadata).members).toEqual({
-      __ctor__: [{
-        __symbolic: 'constructor',
-        parameterDecorators: [[{
-          __symbolic: 'call',
-          expression: {
-            __symbolic: 'reference',
-            module: 'angular2/core',
-            name: 'Inject',
-            line: 6,
-            character: 19
-          },
-          arguments: ['a']
-        }]],
-        parameters: [{__symbolic: 'reference', name: 'any'}]
-      }]
-    } as any as MetadataMap);  // TODO: Review use of `any` here (#19904)
+    expect((metadata.metadata['SomeClass'] as ClassMetadata).members).toEqual(({
+      __ctor__: [
+        {
+          __symbolic: 'constructor',
+          parameterDecorators: [
+            [
+              {
+                __symbolic: 'call',
+                expression: {
+                  __symbolic: 'reference',
+                  module: 'angular2/core',
+                  name: 'Inject',
+                  line: 6,
+                  character: 19,
+                },
+                arguments: ['a'],
+              },
+            ],
+          ],
+          parameters: [{__symbolic: 'reference', name: 'any'}],
+        },
+      ],
+    } as any) as MetadataMap); // TODO: Review use of `any` here (#19904)
   });
 
   describe('with interpolations', () => {
@@ -805,8 +896,9 @@ describe('Collector', () => {
     });
 
     it('should be able to interpolate multiple values', () => {
-      e('`foo:${foo}, bar:${bar}, end`', 'const foo = "foo"; const bar = "bar";')
-          .toBe('foo:foo, bar:bar, end');
+      e('`foo:${foo}, bar:${bar}, end`', 'const foo = "foo"; const bar = "bar";').toBe(
+        'foo:foo, bar:bar, end'
+      );
     });
 
     it('should be able to interpolate with an imported reference', () => {
@@ -820,7 +912,7 @@ describe('Collector', () => {
           name: 'external',
           line: 0,
           character: 68,
-        }
+        },
       });
     });
 
@@ -830,7 +922,7 @@ describe('Collector', () => {
         module: './external',
         name: 'external',
         line: 0,
-        character: 59
+        character: 59,
       });
     });
 
@@ -853,15 +945,20 @@ describe('Collector', () => {
                 module: './external',
                 name: 'foo',
                 line: 0,
-                character: 63
-              }
+                character: 63,
+              },
             },
-            right: ', bar:'
+            right: ', bar:',
           },
-          right:
-              {__symbolic: 'reference', module: './external', name: 'bar', line: 0, character: 75}
+          right: {
+            __symbolic: 'reference',
+            module: './external',
+            name: 'bar',
+            line: 0,
+            character: 75,
+          },
         },
-        right: ', end'
+        right: ', end',
       });
     });
 
@@ -870,7 +967,7 @@ describe('Collector', () => {
         __symbolic: 'error',
         message: 'Tagged template expressions are not supported in metadata',
         line: 0,
-        character: 20
+        character: 20,
       });
     });
   });
@@ -882,29 +979,34 @@ describe('Collector', () => {
         constructor (a: Foo, b: Foo | null, c: Foo | undefined, d: Foo | undefined | null, e: Foo | undefined | null | Foo) {}
       }
     `);
-    expect((metadata.metadata['SomeClass'] as ClassMetadata).members).toEqual({
-      __ctor__: [{
-        __symbolic: 'constructor',
-        parameters: [
-          {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24},
-          {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24},
-          {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24},
-          {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24},
-          {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24}
-        ]
-      }]
-    } as any as MetadataMap);  // TODO: Review use of `any` here (#19904)
+    expect((metadata.metadata['SomeClass'] as ClassMetadata).members).toEqual(({
+      __ctor__: [
+        {
+          __symbolic: 'constructor',
+          parameters: [
+            {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24},
+            {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24},
+            {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24},
+            {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24},
+            {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24},
+          ],
+        },
+      ],
+    } as any) as MetadataMap); // TODO: Review use of `any` here (#19904)
   });
 
   it('should treat exported class expressions as a class', () => {
     const source = ts.createSourceFile(
-        '', `
+      '',
+      `
     export const InjectionToken: {new<T>(desc: string): InjectionToken<T>;} = class {
       constructor(protected _desc: string) {}
 
       toString(): string { return \`InjectionToken \${this._desc}\`; }
     } as any;`,
-        ts.ScriptTarget.Latest, true);
+      ts.ScriptTarget.Latest,
+      true
+    );
     const metadata = collector.getMetadata(source)!;
     expect(metadata.metadata).toEqual({InjectionToken: {__symbolic: 'class'}});
   });
@@ -917,20 +1019,23 @@ describe('Collector', () => {
 
     it('should throw if an error if collecting a reference to a non-exported function', () => {
       const source = program.getSourceFile('/local-function-ref.ts')!;
-      expect(() => collector.getMetadata(source, true))
-          .toThrowError(/Reference to a non-exported function/);
+      expect(() => collector.getMetadata(source, true)).toThrowError(
+        /Reference to a non-exported function/
+      );
     });
 
     it('should throw for references to unexpected types', () => {
       const unsupported2 = program.getSourceFile('/unsupported-2.ts')!;
-      expect(() => collector.getMetadata(unsupported2, true))
-          .toThrowError(/Reference to non-exported class/);
+      expect(() => collector.getMetadata(unsupported2, true)).toThrowError(
+        /Reference to non-exported class/
+      );
     });
 
     it('should throw for errors in a static method', () => {
       const unsupported3 = program.getSourceFile('/unsupported-3.ts')!;
-      expect(() => collector.getMetadata(unsupported3, true))
-          .toThrowError(/Reference to a non-exported class/);
+      expect(() => collector.getMetadata(unsupported3, true)).toThrowError(
+        /Reference to a non-exported class/
+      );
     });
   });
 
@@ -950,27 +1055,26 @@ describe('Collector', () => {
     });
   });
 
-  describe(
-      'inheritance', () => {
-        it('should record `extends` clauses for declared classes',
-           () => {
-             const metadata =
-                 collector.getMetadata(program.getSourceFile('/class-inheritance.ts')!)!;
-             expect(metadata.metadata['DeclaredChildClass'])
-          .toEqual({__symbolic: 'class', extends: {__symbolic: 'reference', name: 'ParentClass'}});
-           });
+  describe('inheritance', () => {
+    it('should record `extends` clauses for declared classes', () => {
+      const metadata = collector.getMetadata(program.getSourceFile('/class-inheritance.ts')!)!;
+      expect(metadata.metadata['DeclaredChildClass']).toEqual({
+        __symbolic: 'class',
+        extends: {__symbolic: 'reference', name: 'ParentClass'},
+      });
+    });
 
-        it('should record `extends` clauses for classes in the same file',
-           () => {
-             const metadata =
-                 collector.getMetadata(program.getSourceFile('/class-inheritance.ts')!)!;
-             expect(metadata.metadata['ChildClassSameFile'])
-          .toEqual({__symbolic: 'class', extends: {__symbolic: 'reference', name: 'ParentClass'}});
-           });
+    it('should record `extends` clauses for classes in the same file', () => {
+      const metadata = collector.getMetadata(program.getSourceFile('/class-inheritance.ts')!)!;
+      expect(metadata.metadata['ChildClassSameFile']).toEqual({
+        __symbolic: 'class',
+        extends: {__symbolic: 'reference', name: 'ParentClass'},
+      });
+    });
 
-        it('should record `extends` clauses for classes in a different file', () => {
-          const metadata = collector.getMetadata(program.getSourceFile('/class-inheritance.ts')!)!;
-          expect(metadata.metadata['ChildClassOtherFile']).toEqual({
+    it('should record `extends` clauses for classes in a different file', () => {
+      const metadata = collector.getMetadata(program.getSourceFile('/class-inheritance.ts')!)!;
+      expect(metadata.metadata['ChildClassOtherFile']).toEqual({
         __symbolic: 'class',
         extends: {
           __symbolic: 'reference',
@@ -978,31 +1082,31 @@ describe('Collector', () => {
           name: 'ParentClassFromOtherFile',
           line: 9,
           character: 45,
-        }
+        },
       });
-        });
+    });
 
-        function expectClass(entry: MetadataEntry): entry is ClassMetadata {
-          const result = isClassMetadata(entry);
-          expect(result).toBeTruthy();
-          return result;
-        }
+    function expectClass(entry: MetadataEntry): entry is ClassMetadata {
+      const result = isClassMetadata(entry);
+      expect(result).toBeTruthy();
+      return result;
+    }
 
-        it('should collect the correct arity for a class', () => {
-          const metadata = collector.getMetadata(program.getSourceFile('/class-arity.ts')!)!;
+    it('should collect the correct arity for a class', () => {
+      const metadata = collector.getMetadata(program.getSourceFile('/class-arity.ts')!)!;
 
-          const zero = metadata.metadata['Zero'];
-          if (expectClass(zero)) expect(zero.arity).toBeUndefined();
-          const one = metadata.metadata['One'];
-          if (expectClass(one)) expect(one.arity).toBe(1);
-          const two = metadata.metadata['Two'];
-          if (expectClass(two)) expect(two.arity).toBe(2);
-          const three = metadata.metadata['Three'];
-          if (expectClass(three)) expect(three.arity).toBe(3);
-          const nine = metadata.metadata['Nine'];
-          if (expectClass(nine)) expect(nine.arity).toBe(9);
-        });
-      });
+      const zero = metadata.metadata['Zero'];
+      if (expectClass(zero)) expect(zero.arity).toBeUndefined();
+      const one = metadata.metadata['One'];
+      if (expectClass(one)) expect(one.arity).toBe(1);
+      const two = metadata.metadata['Two'];
+      if (expectClass(two)) expect(two.arity).toBe(2);
+      const three = metadata.metadata['Three'];
+      if (expectClass(three)) expect(three.arity).toBe(3);
+      const nine = metadata.metadata['Nine'];
+      if (expectClass(nine)) expect(nine.arity).toBe(9);
+    });
+  });
 
   describe('regression', () => {
     it('should be able to collect a short-hand property value', () => {
@@ -1066,8 +1170,9 @@ describe('Collector', () => {
         }
       `);
 
-      expect((metadata.metadata.MyIf as any).statics.typeGuard)
-          .not.toBeUndefined('typeGuard was not collected');
+      expect((metadata.metadata.MyIf as any).statics.typeGuard).not.toBeUndefined(
+        'typeGuard was not collected'
+      );
     });
   });
 
@@ -1085,7 +1190,7 @@ describe('Collector', () => {
       `);
       expect(metadata.metadata['someValue']).toEqual(1);
       expect(metadata.metadata['v']).toEqual({
-        useValue: {__symbolic: 'reference', name: 'someValue'}
+        useValue: {__symbolic: 'reference', name: 'someValue'},
       });
     });
 
@@ -1098,7 +1203,7 @@ describe('Collector', () => {
         }
       `);
       expect(metadata.metadata['v']).toEqual({
-        v: {i: [{a: 1, b: 3, c: {__symbolic: 'reference', name: 'myLambda'}}]}
+        v: {i: [{a: 1, b: 3, c: {__symbolic: 'reference', name: 'myLambda'}}]},
       });
     });
 
@@ -1111,7 +1216,7 @@ describe('Collector', () => {
         }
       `);
       expect(metadata.metadata['v']).toEqual({
-        v: {i: [1, 3, {__symbolic: 'reference', name: 'myLambda'}]}
+        v: {i: [1, 3, {__symbolic: 'reference', name: 'myLambda'}]},
       });
     });
   });
@@ -1136,9 +1241,9 @@ describe('Collector', () => {
     it('should compose substitution functions', () => {
       const collector = new MetadataCollector({
         substituteExpression: (value, node) =>
-            isMetadataGlobalReferenceExpression(value) && value.name == lambdaTemp ?
-            {__symbolic: 'reference', name: value.name + '2'} :
-            value
+          isMetadataGlobalReferenceExpression(value) && value.name == lambdaTemp
+            ? {__symbolic: 'reference', name: value.name + '2'}
+            : value,
       });
       const source = createSource(`
         const b = 1;
@@ -1169,7 +1274,8 @@ describe('Collector', () => {
 // TODO: Do not use \` in a template literal as it confuses clang-format
 const FILES: Directory = {
   'app': {
-    'app.component.ts': `
+    'app.component.ts':
+      `
       import {Component as MyComponent, OnInit} from 'angular2/core';
       import * as common from 'angular2/common';
       import {Hero} from './hero';
@@ -1181,8 +1287,8 @@ const FILES: Directory = {
       @MyComponent({
         selector: 'my-app',
         template:` +
-        '`' +
-        `
+      '`' +
+      `
         <h2>My Heroes</h2>
         <ul class="heroes">
           <li *ngFor="#hero of heroes"
@@ -1193,8 +1299,8 @@ const FILES: Directory = {
         </ul>
         <my-hero-detail [hero]="selectedHero"></my-hero-detail>
         ` +
-        '`' +
-        `,
+      '`' +
+      `,
         directives: [HeroDetailComponent, common.NgFor],
         providers: [HeroService],
         pipes: [common.LowerCasePipe, common.UpperCasePipe]
@@ -1222,15 +1328,16 @@ const FILES: Directory = {
         name: string;
       }`,
     'empty.ts': ``,
-    'hero-detail.component.ts': `
+    'hero-detail.component.ts':
+      `
       import {Component, Input} from 'angular2/core';
       import {Hero} from './hero';
 
       @Component({
         selector: 'my-hero-detail',
         template: ` +
-        '`' +
-        `
+      '`' +
+      `
         <div *ngIf="hero">
           <h2>{{hero.name}} details!</h2>
           <div><label>id: </label>{{hero.id}}</div>
@@ -1240,8 +1347,8 @@ const FILES: Directory = {
           </div>
         </div>
       ` +
-        '`' +
-        `,
+      '`' +
+      `,
       })
       export class HeroDetailComponent {
         @Input() public hero: Hero;
@@ -1333,7 +1440,7 @@ const FILES: Directory = {
       export class CaseCtor {
         constructor(private _heroService: HeroService) { }
       }
-    `
+    `,
   },
   'promise.ts': `
     interface PromiseLike<T> {
@@ -1664,9 +1771,9 @@ const FILES: Directory = {
         export declare class UpperCasePipe {
             transform(value: string, args?: any[]): string;
         }
-      `
-    }
-  }
+      `,
+    },
+  },
 };
 
 function createSource(text: string): ts.SourceFile {

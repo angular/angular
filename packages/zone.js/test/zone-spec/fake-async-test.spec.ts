@@ -22,8 +22,10 @@ function supportNode() {
 
 function supportClock() {
   const _global: any = typeof window === 'undefined' ? global : window;
-  return typeof jasmine.clock === 'function' &&
-      _global[zoneSymbol('fakeAsyncAutoFakeAsyncWhenClockPatched')];
+  return (
+    typeof jasmine.clock === 'function' &&
+    _global[zoneSymbol('fakeAsyncAutoFakeAsyncWhenClockPatched')]
+  );
 }
 
 (supportClock as any).message = 'support patch clock';
@@ -39,21 +41,26 @@ describe('FakeAsyncTestZoneSpec', () => {
   });
 
   it('sets the FakeAsyncTestZoneSpec property', () => {
-    fakeAsyncTestZone.run(
-        () => { expect(Zone.current.get('FakeAsyncTestZoneSpec')).toEqual(testZoneSpec); });
+    fakeAsyncTestZone.run(() => {
+      expect(Zone.current.get('FakeAsyncTestZoneSpec')).toEqual(testZoneSpec);
+    });
   });
 
   describe('synchronous code', () => {
     it('should run', () => {
       let ran = false;
-      fakeAsyncTestZone.run(() => { ran = true; });
+      fakeAsyncTestZone.run(() => {
+        ran = true;
+      });
 
       expect(ran).toEqual(true);
     });
 
     it('should throw the error in the code', () => {
       expect(() => {
-        fakeAsyncTestZone.run(() => { throw new Error('sync'); });
+        fakeAsyncTestZone.run(() => {
+          throw new Error('sync');
+        });
       }).toThrowError('sync');
     });
 
@@ -71,7 +78,9 @@ describe('FakeAsyncTestZoneSpec', () => {
     it('should run', () => {
       fakeAsyncTestZone.run(() => {
         let thenRan = false;
-        Promise.resolve(null).then((_) => { thenRan = true; });
+        Promise.resolve(null).then((_) => {
+          thenRan = true;
+        });
 
         expect(thenRan).toEqual(false);
 
@@ -80,21 +89,24 @@ describe('FakeAsyncTestZoneSpec', () => {
       });
     });
 
-    it('should rethrow the exception on flushMicroTasks for error thrown in Promise callback',
-       () => {
-         fakeAsyncTestZone.run(() => {
-           Promise.resolve(null).then((_) => { throw new Error('async'); });
-           expect(() => {
-             testZoneSpec.flushMicrotasks();
-           }).toThrowError(/Uncaught \(in promise\): Error: async/);
-         });
-       });
+    it('should rethrow the exception on flushMicroTasks for error thrown in Promise callback', () => {
+      fakeAsyncTestZone.run(() => {
+        Promise.resolve(null).then((_) => {
+          throw new Error('async');
+        });
+        expect(() => {
+          testZoneSpec.flushMicrotasks();
+        }).toThrowError(/Uncaught \(in promise\): Error: async/);
+      });
+    });
 
     it('should run chained thens', () => {
       fakeAsyncTestZone.run(() => {
         let log: number[] = [];
 
-        Promise.resolve(null).then((_) => log.push(1)).then((_) => log.push(2));
+        Promise.resolve(null)
+          .then((_) => log.push(1))
+          .then((_) => log.push(2));
 
         expect(log).toEqual([]);
 
@@ -124,7 +136,9 @@ describe('FakeAsyncTestZoneSpec', () => {
     it('should run queued zero duration timer on zero tick', () => {
       fakeAsyncTestZone.run(() => {
         let ran = false;
-        setTimeout(() => { ran = true; }, 0);
+        setTimeout(() => {
+          ran = true;
+        }, 0);
 
         expect(ran).toEqual(false);
 
@@ -133,17 +147,22 @@ describe('FakeAsyncTestZoneSpec', () => {
       });
     });
 
-    it('should run queued immediate timer on zero tick', ifEnvSupports('setImmediate', () => {
-         fakeAsyncTestZone.run(() => {
-           let ran = false;
-           setImmediate(() => { ran = true; });
+    it(
+      'should run queued immediate timer on zero tick',
+      ifEnvSupports('setImmediate', () => {
+        fakeAsyncTestZone.run(() => {
+          let ran = false;
+          setImmediate(() => {
+            ran = true;
+          });
 
-           expect(ran).toEqual(false);
+          expect(ran).toEqual(false);
 
-           testZoneSpec.tick();
-           expect(ran).toEqual(true);
-         });
-       }));
+          testZoneSpec.tick();
+          expect(ran).toEqual(true);
+        });
+      })
+    );
 
     it('should default to processNewMacroTasksSynchronously if providing other flags', () => {
       function nestedTimer(callback: () => any): void {
@@ -158,27 +177,27 @@ describe('FakeAsyncTestZoneSpec', () => {
       });
     });
 
-
-    it('should not queue new macro task on tick with processNewMacroTasksSynchronously=false',
-       () => {
-         function nestedTimer(callback: () => any): void {
-           setTimeout(() => setTimeout(() => callback()));
-         }
-         fakeAsyncTestZone.run(() => {
-           const callback = jasmine.createSpy('callback');
-           nestedTimer(callback);
-           expect(callback).not.toHaveBeenCalled();
-           testZoneSpec.tick(0, null, {processNewMacroTasksSynchronously: false});
-           expect(callback).not.toHaveBeenCalled();
-           testZoneSpec.flush();
-           expect(callback).toHaveBeenCalled();
-         });
-       });
+    it('should not queue new macro task on tick with processNewMacroTasksSynchronously=false', () => {
+      function nestedTimer(callback: () => any): void {
+        setTimeout(() => setTimeout(() => callback()));
+      }
+      fakeAsyncTestZone.run(() => {
+        const callback = jasmine.createSpy('callback');
+        nestedTimer(callback);
+        expect(callback).not.toHaveBeenCalled();
+        testZoneSpec.tick(0, null, {processNewMacroTasksSynchronously: false});
+        expect(callback).not.toHaveBeenCalled();
+        testZoneSpec.flush();
+        expect(callback).toHaveBeenCalled();
+      });
+    });
 
     it('should run queued timer after sufficient clock ticks', () => {
       fakeAsyncTestZone.run(() => {
         let ran = false;
-        setTimeout(() => { ran = true; }, 10);
+        setTimeout(() => {
+          ran = true;
+        }, 10);
 
         testZoneSpec.tick(6);
         expect(ran).toEqual(false);
@@ -191,7 +210,9 @@ describe('FakeAsyncTestZoneSpec', () => {
     it('should run doTick callback even if no work ran', () => {
       fakeAsyncTestZone.run(() => {
         let totalElapsed = 0;
-        function doTick(elapsed: number) { totalElapsed += elapsed; }
+        function doTick(elapsed: number) {
+          totalElapsed += elapsed;
+        }
         setTimeout(() => {}, 10);
 
         testZoneSpec.tick(6, doTick);
@@ -231,7 +252,9 @@ describe('FakeAsyncTestZoneSpec', () => {
     it('should run queued timer only once', () => {
       fakeAsyncTestZone.run(() => {
         let cycles = 0;
-        setTimeout(() => { cycles++; }, 10);
+        setTimeout(() => {
+          cycles++;
+        }, 10);
 
         testZoneSpec.tick(10);
         expect(cycles).toEqual(1);
@@ -248,7 +271,9 @@ describe('FakeAsyncTestZoneSpec', () => {
     it('should not run cancelled timer', () => {
       fakeAsyncTestZone.run(() => {
         let ran = false;
-        let id: any = setTimeout(() => { ran = true; }, 10);
+        let id: any = setTimeout(() => {
+          ran = true;
+        }, 10);
         clearTimeout(id);
 
         testZoneSpec.tick(10);
@@ -259,27 +284,45 @@ describe('FakeAsyncTestZoneSpec', () => {
     it('should pass arguments to times', () => {
       fakeAsyncTestZone.run(() => {
         let value = 'genuine value';
-        let id = setTimeout((arg1, arg2) => { value = arg1 + arg2; }, 0, 'expected', ' value');
+        let id = setTimeout(
+          (arg1, arg2) => {
+            value = arg1 + arg2;
+          },
+          0,
+          'expected',
+          ' value'
+        );
 
         testZoneSpec.tick();
         expect(value).toEqual('expected value');
       });
     });
 
-    it('should pass arguments to setImmediate', ifEnvSupports('setImmediate', () => {
-         fakeAsyncTestZone.run(() => {
-           let value = 'genuine value';
-           let id = setImmediate((arg1, arg2) => { value = arg1 + arg2; }, 'expected', ' value');
+    it(
+      'should pass arguments to setImmediate',
+      ifEnvSupports('setImmediate', () => {
+        fakeAsyncTestZone.run(() => {
+          let value = 'genuine value';
+          let id = setImmediate(
+            (arg1, arg2) => {
+              value = arg1 + arg2;
+            },
+            'expected',
+            ' value'
+          );
 
-           testZoneSpec.tick();
-           expect(value).toEqual('expected value');
-         });
-       }));
+          testZoneSpec.tick();
+          expect(value).toEqual('expected value');
+        });
+      })
+    );
 
     it('should run periodic timers', () => {
       fakeAsyncTestZone.run(() => {
         let cycles = 0;
-        let id = setInterval(() => { cycles++; }, 10);
+        let id = setInterval(() => {
+          cycles++;
+        }, 10);
 
         expect(id).toBeGreaterThan(0);
 
@@ -300,7 +343,14 @@ describe('FakeAsyncTestZoneSpec', () => {
     it('should pass arguments to periodic timers', () => {
       fakeAsyncTestZone.run(() => {
         let value = 'genuine value';
-        let id = setInterval((arg1, arg2) => { value = arg1 + arg2; }, 10, 'expected', ' value');
+        let id = setInterval(
+          (arg1, arg2) => {
+            value = arg1 + arg2;
+          },
+          10,
+          'expected',
+          ' value'
+        );
 
         testZoneSpec.tick(10);
         expect(value).toEqual('expected value');
@@ -310,7 +360,9 @@ describe('FakeAsyncTestZoneSpec', () => {
     it('should not run cancelled periodic timer', () => {
       fakeAsyncTestZone.run(() => {
         let ran = false;
-        let id = setInterval(() => { ran = true; }, 10);
+        let id = setInterval(() => {
+          ran = true;
+        }, 10);
 
         testZoneSpec.tick(10);
         expect(ran).toEqual(true);
@@ -327,10 +379,10 @@ describe('FakeAsyncTestZoneSpec', () => {
         let cycles = 0;
         let id: number;
 
-        id = setInterval(() => {
+        id = (setInterval(() => {
           cycles++;
           clearInterval(id);
-        }, 10) as any as number;
+        }, 10) as any) as number;
 
         testZoneSpec.tick(10);
         expect(cycles).toEqual(1);
@@ -374,21 +426,35 @@ describe('FakeAsyncTestZoneSpec', () => {
         }, 10);
 
         testZoneSpec.tick(10);
-        expect(log).toEqual(
-            ['microtask', 'timer', 't microtask', 'periodic timer', 'pt microtask']);
+        expect(log).toEqual([
+          'microtask',
+          'timer',
+          't microtask',
+          'periodic timer',
+          'pt microtask',
+        ]);
 
         testZoneSpec.tick(10);
         expect(log).toEqual([
-          'microtask', 'timer', 't microtask', 'periodic timer', 'pt microtask', 'periodic timer',
-          'pt microtask'
+          'microtask',
+          'timer',
+          't microtask',
+          'periodic timer',
+          'pt microtask',
+          'periodic timer',
+          'pt microtask',
         ]);
       });
     });
 
     it('should throw the exception from tick for error thrown in timer callback', () => {
       fakeAsyncTestZone.run(() => {
-        setTimeout(() => { throw new Error('timer'); }, 10);
-        expect(() => { testZoneSpec.tick(10); }).toThrowError('timer');
+        setTimeout(() => {
+          throw new Error('timer');
+        }, 10);
+        expect(() => {
+          testZoneSpec.tick(10);
+        }).toThrowError('timer');
       });
       // There should be no pending timers after the error in timer callback.
       expect(testZoneSpec.pendingTimers.length).toBe(0);
@@ -402,7 +468,9 @@ describe('FakeAsyncTestZoneSpec', () => {
           throw new Error(count.toString());
         }, 10);
 
-        expect(() => { testZoneSpec.tick(10); }).toThrowError('1');
+        expect(() => {
+          testZoneSpec.tick(10);
+        }).toThrowError('1');
 
         // Periodic timer is cancelled on first error.
         expect(count).toBe(1);
@@ -417,9 +485,15 @@ describe('FakeAsyncTestZoneSpec', () => {
   it('should be able to resume processing timer callbacks after handling an error', () => {
     fakeAsyncTestZone.run(() => {
       let ran = false;
-      setTimeout(() => { throw new Error('timer'); }, 10);
-      setTimeout(() => { ran = true; }, 10);
-      expect(() => { testZoneSpec.tick(10); }).toThrowError('timer');
+      setTimeout(() => {
+        throw new Error('timer');
+      }, 10);
+      setTimeout(() => {
+        ran = true;
+      }, 10);
+      expect(() => {
+        testZoneSpec.tick(10);
+      }).toThrowError('timer');
       expect(ran).toBe(false);
 
       // Restart timer queue processing.
@@ -437,9 +511,15 @@ describe('FakeAsyncTestZoneSpec', () => {
         let y = false;
         let z = false;
 
-        setTimeout(() => { x = true; }, 10);
-        setTimeout(() => { y = true; }, 100);
-        setTimeout(() => { z = true; }, 70);
+        setTimeout(() => {
+          x = true;
+        }, 10);
+        setTimeout(() => {
+          y = true;
+        }, 100);
+        setTimeout(() => {
+          z = true;
+        }, 70);
 
         let elapsed = testZoneSpec.flush();
 
@@ -456,7 +536,9 @@ describe('FakeAsyncTestZoneSpec', () => {
         let y = true;
         setTimeout(() => {
           x = true;
-          setTimeout(() => { y = true; }, 100);
+          setTimeout(() => {
+            y = true;
+          }, 100);
         }, 200);
 
         let elapsed = testZoneSpec.flush();
@@ -473,9 +555,15 @@ describe('FakeAsyncTestZoneSpec', () => {
         let y = false;
         let z = 0;
 
-        setTimeout(() => { x = true; }, 50);
-        setTimeout(() => { y = true; }, 141);
-        setInterval(() => { z++; }, 10);
+        setTimeout(() => {
+          x = true;
+        }, 50);
+        setTimeout(() => {
+          y = true;
+        }, 141);
+        setInterval(() => {
+          z++;
+        }, 10);
 
         let elapsed = testZoneSpec.flush();
 
@@ -490,7 +578,9 @@ describe('FakeAsyncTestZoneSpec', () => {
       fakeAsyncTestZone.run(() => {
         let z = 0;
 
-        setInterval(() => { z++; }, 10);
+        setInterval(() => {
+          z++;
+        }, 10);
 
         let elapsed = testZoneSpec.flush();
 
@@ -498,7 +588,6 @@ describe('FakeAsyncTestZoneSpec', () => {
         expect(z).toEqual(0);
       });
     });
-
 
     it('should process micro-tasks created in timers before next timers', () => {
       fakeAsyncTestZone.run(() => {
@@ -517,15 +606,24 @@ describe('FakeAsyncTestZoneSpec', () => {
         }, 10);
 
         testZoneSpec.flush();
-        expect(log).toEqual(
-            ['microtask', 'periodic timer', 'pt microtask', 'timer', 't microtask']);
+        expect(log).toEqual([
+          'microtask',
+          'periodic timer',
+          'pt microtask',
+          'timer',
+          't microtask',
+        ]);
       });
     });
 
     it('should throw the exception from tick for error thrown in timer callback', () => {
       fakeAsyncTestZone.run(() => {
-        setTimeout(() => { throw new Error('timer'); }, 10);
-        expect(() => { testZoneSpec.flush(); }).toThrowError('timer');
+        setTimeout(() => {
+          throw new Error('timer');
+        }, 10);
+        expect(() => {
+          testZoneSpec.flush();
+        }).toThrowError('timer');
       });
       // There should be no pending timers after the error in timer callback.
       expect(testZoneSpec.pendingTimers.length).toBe(0);
@@ -546,9 +644,9 @@ describe('FakeAsyncTestZoneSpec', () => {
           poll();
           testZoneSpec.flush();
         });
-      })
-          .toThrowError(
-              'flush failed after reaching the limit of 20 tasks. Does your code use a polling timeout?');
+      }).toThrowError(
+        'flush failed after reaching the limit of 20 tasks. Does your code use a polling timeout?'
+      );
     });
 
     it('accepts a custom limit', () => {
@@ -566,16 +664,18 @@ describe('FakeAsyncTestZoneSpec', () => {
           poll();
           testZoneSpec.flush(10);
         });
-      })
-          .toThrowError(
-              'flush failed after reaching the limit of 10 tasks. Does your code use a polling timeout?');
+      }).toThrowError(
+        'flush failed after reaching the limit of 10 tasks. Does your code use a polling timeout?'
+      );
     });
 
     it('can flush periodic timers if flushPeriodic is true', () => {
       fakeAsyncTestZone.run(() => {
         let x = 0;
 
-        setInterval(() => { x++; }, 10);
+        setInterval(() => {
+          x++;
+        }, 10);
 
         let elapsed = testZoneSpec.flush(20, true);
 
@@ -589,9 +689,13 @@ describe('FakeAsyncTestZoneSpec', () => {
         let x = 0;
         let y = 0;
 
-        setInterval(() => { x++; }, 10);
+        setInterval(() => {
+          x++;
+        }, 10);
 
-        setInterval(() => { y++; }, 100);
+        setInterval(() => {
+          y++;
+        }, 100);
 
         let elapsed = testZoneSpec.flush(20, true);
 
@@ -606,11 +710,15 @@ describe('FakeAsyncTestZoneSpec', () => {
         let x = 0;
         let y = 0;
 
-        setInterval(() => { x++; }, 10);
+        setInterval(() => {
+          x++;
+        }, 10);
 
         // This shouldn't cause the flush to throw an exception even though
         // it would require 100 iterations of the shorter timer.
-        setInterval(() => { y++; }, 1000);
+        setInterval(() => {
+          y++;
+        }, 1000);
 
         let elapsed = testZoneSpec.flush(20, true);
 
@@ -637,146 +745,176 @@ describe('FakeAsyncTestZoneSpec', () => {
   });
 
   describe('requestAnimationFrame', () => {
-    const functions =
-        ['requestAnimationFrame', 'webkitRequestAnimationFrame', 'mozRequestAnimationFrame'];
+    const functions = [
+      'requestAnimationFrame',
+      'webkitRequestAnimationFrame',
+      'mozRequestAnimationFrame',
+    ];
     functions.forEach((fnName) => {
-      describe(fnName, ifEnvSupports(fnName, () => {
-                 it('should schedule a requestAnimationFrame with timeout of 16ms', () => {
-                   fakeAsyncTestZone.run(() => {
-                     let ran = false;
-                     requestAnimationFrame(() => { ran = true; });
+      describe(
+        fnName,
+        ifEnvSupports(fnName, () => {
+          it('should schedule a requestAnimationFrame with timeout of 16ms', () => {
+            fakeAsyncTestZone.run(() => {
+              let ran = false;
+              requestAnimationFrame(() => {
+                ran = true;
+              });
 
-                     testZoneSpec.tick(6);
-                     expect(ran).toEqual(false);
+              testZoneSpec.tick(6);
+              expect(ran).toEqual(false);
 
-                     testZoneSpec.tick(10);
-                     expect(ran).toEqual(true);
-                   });
-                 });
-                 it('does not count as a pending timer', () => {
-                   fakeAsyncTestZone.run(() => { requestAnimationFrame(() => {}); });
-                   expect(testZoneSpec.pendingTimers.length).toBe(0);
-                   expect(testZoneSpec.pendingPeriodicTimers.length).toBe(0);
-                 });
-                 it('should cancel a scheduled requestAnimatiomFrame', () => {
-                   fakeAsyncTestZone.run(() => {
-                     let ran = false;
-                     const id = requestAnimationFrame(() => { ran = true; });
+              testZoneSpec.tick(10);
+              expect(ran).toEqual(true);
+            });
+          });
+          it('does not count as a pending timer', () => {
+            fakeAsyncTestZone.run(() => {
+              requestAnimationFrame(() => {});
+            });
+            expect(testZoneSpec.pendingTimers.length).toBe(0);
+            expect(testZoneSpec.pendingPeriodicTimers.length).toBe(0);
+          });
+          it('should cancel a scheduled requestAnimatiomFrame', () => {
+            fakeAsyncTestZone.run(() => {
+              let ran = false;
+              const id = requestAnimationFrame(() => {
+                ran = true;
+              });
 
-                     testZoneSpec.tick(6);
-                     expect(ran).toEqual(false);
+              testZoneSpec.tick(6);
+              expect(ran).toEqual(false);
 
-                     cancelAnimationFrame(id);
+              cancelAnimationFrame(id);
 
-                     testZoneSpec.tick(10);
-                     expect(ran).toEqual(false);
-                   });
-                 });
-                 it('is not flushed when flushPeriodic is false', () => {
-                   let ran = false;
-                   fakeAsyncTestZone.run(() => {
-                     requestAnimationFrame(() => { ran = true; });
-                     testZoneSpec.flush(20);
-                     expect(ran).toEqual(false);
-                   });
-                 });
-                 it('is flushed when flushPeriodic is true', () => {
-                   let ran = false;
-                   fakeAsyncTestZone.run(() => {
-                     requestAnimationFrame(() => { ran = true; });
-                     const elapsed = testZoneSpec.flush(20, true);
-                     expect(elapsed).toEqual(16);
-                     expect(ran).toEqual(true);
-                   });
-                 });
-                 it('should pass timestamp as parameter', () => {
-                   let timestamp = 0;
-                   let timestamp1 = 0;
-                   fakeAsyncTestZone.run(() => {
-                     requestAnimationFrame((ts) => {
-                       timestamp = ts;
-                       requestAnimationFrame(ts1 => { timestamp1 = ts1; });
-                     });
-                     const elapsed = testZoneSpec.flush(20, true);
-                     const elapsed1 = testZoneSpec.flush(20, true);
-                     expect(elapsed).toEqual(16);
-                     expect(elapsed1).toEqual(16);
-                     expect(timestamp).toEqual(16);
-                     expect(timestamp1).toEqual(32);
-                   });
-                 });
-               }));
+              testZoneSpec.tick(10);
+              expect(ran).toEqual(false);
+            });
+          });
+          it('is not flushed when flushPeriodic is false', () => {
+            let ran = false;
+            fakeAsyncTestZone.run(() => {
+              requestAnimationFrame(() => {
+                ran = true;
+              });
+              testZoneSpec.flush(20);
+              expect(ran).toEqual(false);
+            });
+          });
+          it('is flushed when flushPeriodic is true', () => {
+            let ran = false;
+            fakeAsyncTestZone.run(() => {
+              requestAnimationFrame(() => {
+                ran = true;
+              });
+              const elapsed = testZoneSpec.flush(20, true);
+              expect(elapsed).toEqual(16);
+              expect(ran).toEqual(true);
+            });
+          });
+          it('should pass timestamp as parameter', () => {
+            let timestamp = 0;
+            let timestamp1 = 0;
+            fakeAsyncTestZone.run(() => {
+              requestAnimationFrame((ts) => {
+                timestamp = ts;
+                requestAnimationFrame((ts1) => {
+                  timestamp1 = ts1;
+                });
+              });
+              const elapsed = testZoneSpec.flush(20, true);
+              const elapsed1 = testZoneSpec.flush(20, true);
+              expect(elapsed).toEqual(16);
+              expect(elapsed1).toEqual(16);
+              expect(timestamp).toEqual(16);
+              expect(timestamp1).toEqual(32);
+            });
+          });
+        })
+      );
     });
   });
 
   describe(
-      'XHRs', ifEnvSupports('XMLHttpRequest', () => {
-        it('should throw an exception if an XHR is initiated in the zone', () => {
-          expect(() => {
-            fakeAsyncTestZone.run(() => {
-              let finished = false;
-              let req = new XMLHttpRequest();
+    'XHRs',
+    ifEnvSupports('XMLHttpRequest', () => {
+      it('should throw an exception if an XHR is initiated in the zone', () => {
+        expect(() => {
+          fakeAsyncTestZone.run(() => {
+            let finished = false;
+            let req = new XMLHttpRequest();
 
-              req.onreadystatechange = () => {
-                if (req.readyState === XMLHttpRequest.DONE) {
-                  finished = true;
-                }
-              };
+            req.onreadystatechange = () => {
+              if (req.readyState === XMLHttpRequest.DONE) {
+                finished = true;
+              }
+            };
 
-              req.open('GET', '/test', true);
-              req.send();
-            });
-          }).toThrowError('Cannot make XHRs from within a fake async test. Request URL: /test');
+            req.open('GET', '/test', true);
+            req.send();
+          });
+        }).toThrowError('Cannot make XHRs from within a fake async test. Request URL: /test');
+      });
+    })
+  );
+
+  describe(
+    'node process',
+    ifEnvSupports(supportNode, () => {
+      it('should be able to schedule microTask with additional arguments', () => {
+        const process = global['process'];
+        const nextTick = process && process['nextTick'];
+        if (!nextTick) {
+          return;
+        }
+        fakeAsyncTestZone.run(() => {
+          let tickRun = false;
+          let cbArgRun = false;
+          nextTick(
+            (strArg: string, cbArg: Function) => {
+              tickRun = true;
+              expect(strArg).toEqual('stringArg');
+              cbArg();
+            },
+            'stringArg',
+            () => {
+              cbArgRun = true;
+            }
+          );
+
+          expect(tickRun).toEqual(false);
+
+          testZoneSpec.flushMicrotasks();
+          expect(tickRun).toEqual(true);
+          expect(cbArgRun).toEqual(true);
         });
-      }));
-
-  describe('node process', ifEnvSupports(supportNode, () => {
-             it('should be able to schedule microTask with additional arguments', () => {
-               const process = global['process'];
-               const nextTick = process && process['nextTick'];
-               if (!nextTick) {
-                 return;
-               }
-               fakeAsyncTestZone.run(() => {
-                 let tickRun = false;
-                 let cbArgRun = false;
-                 nextTick(
-                     (strArg: string, cbArg: Function) => {
-                       tickRun = true;
-                       expect(strArg).toEqual('stringArg');
-                       cbArg();
-                     },
-                     'stringArg', () => { cbArgRun = true; });
-
-                 expect(tickRun).toEqual(false);
-
-                 testZoneSpec.flushMicrotasks();
-                 expect(tickRun).toEqual(true);
-                 expect(cbArgRun).toEqual(true);
-               });
-             });
-           }));
+      });
+    })
+  );
 
   describe('should allow user define which macroTask fakeAsyncTest', () => {
     let FakeAsyncTestZoneSpec = (Zone as any)['FakeAsyncTestZoneSpec'];
     let testZoneSpec: any;
     let fakeAsyncTestZone: Zone;
     it('should support custom non perodic macroTask', () => {
-      testZoneSpec = new FakeAsyncTestZoneSpec(
-          'name', false, [{source: 'TestClass.myTimeout', callbackArgs: ['test']}]);
+      testZoneSpec = new FakeAsyncTestZoneSpec('name', false, [
+        {source: 'TestClass.myTimeout', callbackArgs: ['test']},
+      ]);
       class TestClass {
         myTimeout(callback: Function) {}
       }
       fakeAsyncTestZone = Zone.current.fork(testZoneSpec);
       fakeAsyncTestZone.run(() => {
         let ran = false;
-        patchMacroTask(
-            TestClass.prototype, 'myTimeout',
-            (self: any, args: any[]) =>
-                ({name: 'TestClass.myTimeout', target: self, cbIdx: 0, args: args}));
+        patchMacroTask(TestClass.prototype, 'myTimeout', (self: any, args: any[]) => ({
+          name: 'TestClass.myTimeout',
+          target: self,
+          cbIdx: 0,
+          args: args,
+        }));
 
         const testClass = new TestClass();
-        testClass.myTimeout(function(callbackArgs: any) {
+        testClass.myTimeout(function (callbackArgs: any) {
           ran = true;
           expect(callbackArgs).toEqual('test');
         });
@@ -796,13 +934,17 @@ describe('FakeAsyncTestZoneSpec', () => {
       fakeAsyncTestZone = Zone.current.fork(testZoneSpec);
       fakeAsyncTestZone.run(() => {
         let ran = false;
-        patchMacroTask(
-            TestClass.prototype, 'myTimeout',
-            (self: any, args: any[]) =>
-                ({name: 'TestClass.myTimeout', target: self, cbIdx: 0, args: args}));
+        patchMacroTask(TestClass.prototype, 'myTimeout', (self: any, args: any[]) => ({
+          name: 'TestClass.myTimeout',
+          target: self,
+          cbIdx: 0,
+          args: args,
+        }));
 
         const testClass = new TestClass();
-        testClass.myTimeout(() => { ran = true; });
+        testClass.myTimeout(() => {
+          ran = true;
+        });
 
         expect(ran).toEqual(false);
 
@@ -811,23 +953,29 @@ describe('FakeAsyncTestZoneSpec', () => {
       });
     });
 
-
     it('should support custom perodic macroTask', () => {
-      testZoneSpec = new FakeAsyncTestZoneSpec(
-          'name', false, [{source: 'TestClass.myInterval', isPeriodic: true}]);
+      testZoneSpec = new FakeAsyncTestZoneSpec('name', false, [
+        {source: 'TestClass.myInterval', isPeriodic: true},
+      ]);
       fakeAsyncTestZone = Zone.current.fork(testZoneSpec);
       fakeAsyncTestZone.run(() => {
         let cycle = 0;
         class TestClass {
-          myInterval(callback: Function, interval: number): any { return null; }
+          myInterval(callback: Function, interval: number): any {
+            return null;
+          }
         }
-        patchMacroTask(
-            TestClass.prototype, 'myInterval',
-            (self: any, args: any[]) =>
-                ({name: 'TestClass.myInterval', target: self, cbIdx: 0, args: args}));
+        patchMacroTask(TestClass.prototype, 'myInterval', (self: any, args: any[]) => ({
+          name: 'TestClass.myInterval',
+          target: self,
+          cbIdx: 0,
+          args: args,
+        }));
 
         const testClass = new TestClass();
-        const id = testClass.myInterval(() => { cycle++; }, 10);
+        const id = testClass.myInterval(() => {
+          cycle++;
+        }, 10);
 
         expect(cycle).toEqual(0);
 
@@ -843,7 +991,9 @@ describe('FakeAsyncTestZoneSpec', () => {
 
   describe('return promise', () => {
     let log: string[];
-    beforeEach(() => { log = []; });
+    beforeEach(() => {
+      log = [];
+    });
 
     it('should wait for promise to resolve', () => {
       return new Promise((res, _) => {
@@ -854,7 +1004,9 @@ describe('FakeAsyncTestZoneSpec', () => {
       });
     });
 
-    afterEach(() => { expect(log).toEqual(['resolved']); });
+    afterEach(() => {
+      expect(log).toEqual(['resolved']);
+    });
   });
 
   describe('fakeAsyncTest should patch Date', () => {
@@ -916,197 +1068,217 @@ describe('FakeAsyncTestZoneSpec', () => {
   });
 
   describe(
-      'fakeAsyncTest should work without patch jasmine.clock',
-      ifEnvSupports(
-          () => { return !supportClock() && supportNode(); },
-          () => {
-            const fakeAsync = (Zone as any)[Zone.__symbol__('fakeAsyncTest')].fakeAsync;
-            let spy: any;
-            beforeEach(() => {
-              spy = jasmine.createSpy('timer');
-              jasmine.clock().install();
-            });
+    'fakeAsyncTest should work without patch jasmine.clock',
+    ifEnvSupports(
+      () => {
+        return !supportClock() && supportNode();
+      },
+      () => {
+        const fakeAsync = (Zone as any)[Zone.__symbol__('fakeAsyncTest')].fakeAsync;
+        let spy: any;
+        beforeEach(() => {
+          spy = jasmine.createSpy('timer');
+          jasmine.clock().install();
+        });
 
-            afterEach(() => { jasmine.clock().uninstall(); });
+        afterEach(() => {
+          jasmine.clock().uninstall();
+        });
 
-            it('should check date type correctly', fakeAsync(() => {
-                 const d: any = new Date();
-                 expect(d instanceof Date).toBe(true);
-               }));
+        it('should check date type correctly', fakeAsync(() => {
+          const d: any = new Date();
+          expect(d instanceof Date).toBe(true);
+        }));
 
-            it('should check date type correctly without fakeAsync', () => {
-              const d: any = new Date();
-              expect(d instanceof Date).toBe(true);
-            });
+        it('should check date type correctly without fakeAsync', () => {
+          const d: any = new Date();
+          expect(d instanceof Date).toBe(true);
+        });
 
-            it('should tick correctly', fakeAsync(() => {
-                 jasmine.clock().mockDate();
-                 const start = Date.now();
-                 jasmine.clock().tick(100);
-                 const end = Date.now();
-                 expect(end - start).toBe(100);
-               }));
+        it('should tick correctly', fakeAsync(() => {
+          jasmine.clock().mockDate();
+          const start = Date.now();
+          jasmine.clock().tick(100);
+          const end = Date.now();
+          expect(end - start).toBe(100);
+        }));
 
-            it('should tick correctly without fakeAsync', () => {
-              jasmine.clock().mockDate();
-              const start = Date.now();
-              jasmine.clock().tick(100);
-              const end = Date.now();
-              expect(end - start).toBe(100);
-            });
+        it('should tick correctly without fakeAsync', () => {
+          jasmine.clock().mockDate();
+          const start = Date.now();
+          jasmine.clock().tick(100);
+          const end = Date.now();
+          expect(end - start).toBe(100);
+        });
 
-            it('should mock date correctly', fakeAsync(() => {
-                 const baseTime = new Date(2013, 9, 23);
-                 jasmine.clock().mockDate(baseTime);
-                 const start = Date.now();
-                 expect(start).toBe(baseTime.getTime());
-                 jasmine.clock().tick(100);
-                 const end = Date.now();
-                 expect(end - start).toBe(100);
-                 expect(end).toBe(baseTime.getTime() + 100);
-                 expect(new Date().getFullYear()).toEqual(2013);
-               }));
+        it('should mock date correctly', fakeAsync(() => {
+          const baseTime = new Date(2013, 9, 23);
+          jasmine.clock().mockDate(baseTime);
+          const start = Date.now();
+          expect(start).toBe(baseTime.getTime());
+          jasmine.clock().tick(100);
+          const end = Date.now();
+          expect(end - start).toBe(100);
+          expect(end).toBe(baseTime.getTime() + 100);
+          expect(new Date().getFullYear()).toEqual(2013);
+        }));
 
-            it('should mock date correctly without fakeAsync', () => {
-              const baseTime = new Date(2013, 9, 23);
-              jasmine.clock().mockDate(baseTime);
-              const start = Date.now();
-              expect(start).toBe(baseTime.getTime());
-              jasmine.clock().tick(100);
-              const end = Date.now();
-              expect(end - start).toBe(100);
-              expect(end).toBe(baseTime.getTime() + 100);
-              expect(new Date().getFullYear()).toEqual(2013);
-            });
+        it('should mock date correctly without fakeAsync', () => {
+          const baseTime = new Date(2013, 9, 23);
+          jasmine.clock().mockDate(baseTime);
+          const start = Date.now();
+          expect(start).toBe(baseTime.getTime());
+          jasmine.clock().tick(100);
+          const end = Date.now();
+          expect(end - start).toBe(100);
+          expect(end).toBe(baseTime.getTime() + 100);
+          expect(new Date().getFullYear()).toEqual(2013);
+        });
 
-            it('should handle new Date correctly', fakeAsync(() => {
-                 const baseTime = new Date(2013, 9, 23);
-                 jasmine.clock().mockDate(baseTime);
-                 const start = new Date();
-                 expect(start.getTime()).toBe(baseTime.getTime());
-                 jasmine.clock().tick(100);
-                 const end = new Date();
-                 expect(end.getTime() - start.getTime()).toBe(100);
-                 expect(end.getTime()).toBe(baseTime.getTime() + 100);
-               }));
+        it('should handle new Date correctly', fakeAsync(() => {
+          const baseTime = new Date(2013, 9, 23);
+          jasmine.clock().mockDate(baseTime);
+          const start = new Date();
+          expect(start.getTime()).toBe(baseTime.getTime());
+          jasmine.clock().tick(100);
+          const end = new Date();
+          expect(end.getTime() - start.getTime()).toBe(100);
+          expect(end.getTime()).toBe(baseTime.getTime() + 100);
+        }));
 
-            it('should handle new Date correctly without fakeAsync', () => {
-              const baseTime = new Date(2013, 9, 23);
-              jasmine.clock().mockDate(baseTime);
-              const start = new Date();
-              expect(start.getTime()).toBe(baseTime.getTime());
-              jasmine.clock().tick(100);
-              const end = new Date();
-              expect(end.getTime() - start.getTime()).toBe(100);
-              expect(end.getTime()).toBe(baseTime.getTime() + 100);
-            });
+        it('should handle new Date correctly without fakeAsync', () => {
+          const baseTime = new Date(2013, 9, 23);
+          jasmine.clock().mockDate(baseTime);
+          const start = new Date();
+          expect(start.getTime()).toBe(baseTime.getTime());
+          jasmine.clock().tick(100);
+          const end = new Date();
+          expect(end.getTime() - start.getTime()).toBe(100);
+          expect(end.getTime()).toBe(baseTime.getTime() + 100);
+        });
 
-            it('should handle setTimeout correctly', fakeAsync(() => {
-                 setTimeout(spy, 100);
-                 expect(spy).not.toHaveBeenCalled();
-                 jasmine.clock().tick(100);
-                 expect(spy).toHaveBeenCalled();
-               }));
+        it('should handle setTimeout correctly', fakeAsync(() => {
+          setTimeout(spy, 100);
+          expect(spy).not.toHaveBeenCalled();
+          jasmine.clock().tick(100);
+          expect(spy).toHaveBeenCalled();
+        }));
 
-            it('should handle setTimeout correctly without fakeAsync', () => {
-              setTimeout(spy, 100);
-              expect(spy).not.toHaveBeenCalled();
-              jasmine.clock().tick(100);
-              expect(spy).toHaveBeenCalled();
-            });
-          }));
+        it('should handle setTimeout correctly without fakeAsync', () => {
+          setTimeout(spy, 100);
+          expect(spy).not.toHaveBeenCalled();
+          jasmine.clock().tick(100);
+          expect(spy).toHaveBeenCalled();
+        });
+      }
+    )
+  );
 
-  describe('fakeAsyncTest should patch jasmine.clock', ifEnvSupports(supportClock, () => {
-             let spy: any;
-             beforeEach(() => {
-               spy = jasmine.createSpy('timer');
-               jasmine.clock().install();
-             });
+  describe(
+    'fakeAsyncTest should patch jasmine.clock',
+    ifEnvSupports(supportClock, () => {
+      let spy: any;
+      beforeEach(() => {
+        spy = jasmine.createSpy('timer');
+        jasmine.clock().install();
+      });
 
-             afterEach(() => { jasmine.clock().uninstall(); });
+      afterEach(() => {
+        jasmine.clock().uninstall();
+      });
 
-             it('should check date type correctly', () => {
-               const d: any = new Date();
-               expect(d instanceof Date).toBe(true);
-             });
+      it('should check date type correctly', () => {
+        const d: any = new Date();
+        expect(d instanceof Date).toBe(true);
+      });
 
-             it('should get date diff correctly', () => {
-               const start = Date.now();
-               jasmine.clock().tick(100);
-               const end = Date.now();
-               expect(end - start).toBe(100);
-             });
+      it('should get date diff correctly', () => {
+        const start = Date.now();
+        jasmine.clock().tick(100);
+        const end = Date.now();
+        expect(end - start).toBe(100);
+      });
 
-             it('should tick correctly', () => {
-               const start = Date.now();
-               jasmine.clock().tick(100);
-               const end = Date.now();
-               expect(end - start).toBe(100);
-             });
+      it('should tick correctly', () => {
+        const start = Date.now();
+        jasmine.clock().tick(100);
+        const end = Date.now();
+        expect(end - start).toBe(100);
+      });
 
-             it('should mock date correctly', () => {
-               const baseTime = new Date(2013, 9, 23);
-               jasmine.clock().mockDate(baseTime);
-               const start = Date.now();
-               expect(start).toBe(baseTime.getTime());
-               jasmine.clock().tick(100);
-               const end = Date.now();
-               expect(end - start).toBe(100);
-               expect(end).toBe(baseTime.getTime() + 100);
-             });
+      it('should mock date correctly', () => {
+        const baseTime = new Date(2013, 9, 23);
+        jasmine.clock().mockDate(baseTime);
+        const start = Date.now();
+        expect(start).toBe(baseTime.getTime());
+        jasmine.clock().tick(100);
+        const end = Date.now();
+        expect(end - start).toBe(100);
+        expect(end).toBe(baseTime.getTime() + 100);
+      });
 
-             it('should handle new Date correctly', () => {
-               const baseTime = new Date(2013, 9, 23);
-               jasmine.clock().mockDate(baseTime);
-               const start = new Date();
-               expect(start.getTime()).toBe(baseTime.getTime());
-               jasmine.clock().tick(100);
-               const end = new Date();
-               expect(end.getTime() - start.getTime()).toBe(100);
-               expect(end.getTime()).toBe(baseTime.getTime() + 100);
-             });
+      it('should handle new Date correctly', () => {
+        const baseTime = new Date(2013, 9, 23);
+        jasmine.clock().mockDate(baseTime);
+        const start = new Date();
+        expect(start.getTime()).toBe(baseTime.getTime());
+        jasmine.clock().tick(100);
+        const end = new Date();
+        expect(end.getTime() - start.getTime()).toBe(100);
+        expect(end.getTime()).toBe(baseTime.getTime() + 100);
+      });
 
-             it('should handle setTimeout correctly', () => {
-               setTimeout(spy, 100);
-               expect(spy).not.toHaveBeenCalled();
-               jasmine.clock().tick(100);
-               expect(spy).toHaveBeenCalled();
-             });
-           }));
+      it('should handle setTimeout correctly', () => {
+        setTimeout(spy, 100);
+        expect(spy).not.toHaveBeenCalled();
+        jasmine.clock().tick(100);
+        expect(spy).toHaveBeenCalled();
+      });
+    })
+  );
 
-  describe('fakeAsyncTest should patch rxjs scheduler', ifEnvSupports(supportClock, () => {
-             let FakeAsyncTestZoneSpec = (Zone as any)['FakeAsyncTestZoneSpec'];
-             let testZoneSpec: any;
-             let fakeAsyncTestZone: Zone;
+  describe(
+    'fakeAsyncTest should patch rxjs scheduler',
+    ifEnvSupports(supportClock, () => {
+      let FakeAsyncTestZoneSpec = (Zone as any)['FakeAsyncTestZoneSpec'];
+      let testZoneSpec: any;
+      let fakeAsyncTestZone: Zone;
 
-             beforeEach(() => {
-               testZoneSpec = new FakeAsyncTestZoneSpec('name', false);
-               fakeAsyncTestZone = Zone.current.fork(testZoneSpec);
-             });
+      beforeEach(() => {
+        testZoneSpec = new FakeAsyncTestZoneSpec('name', false);
+        fakeAsyncTestZone = Zone.current.fork(testZoneSpec);
+      });
 
-             it('should get date diff correctly', (done) => {
-               fakeAsyncTestZone.run(() => {
-                 let result: any = null;
-                 const observable = new Observable((subscribe: any) => {
-                   subscribe.next('hello');
-                   subscribe.complete();
-                 });
-                 observable.pipe(delay(1000)).subscribe((v: any) => { result = v; });
-                 expect(result).toBe(null);
-                 testZoneSpec.tick(1000);
-                 expect(result).toBe('hello');
-                 done();
-               });
-             });
-           }));
+      it('should get date diff correctly', (done) => {
+        fakeAsyncTestZone.run(() => {
+          let result: any = null;
+          const observable = new Observable((subscribe: any) => {
+            subscribe.next('hello');
+            subscribe.complete();
+          });
+          observable.pipe(delay(1000)).subscribe((v: any) => {
+            result = v;
+          });
+          expect(result).toBe(null);
+          testZoneSpec.tick(1000);
+          expect(result).toBe('hello');
+          done();
+        });
+      });
+    })
+  );
 });
 
 class Log {
   logItems: any[];
 
-  constructor() { this.logItems = []; }
+  constructor() {
+    this.logItems = [];
+  }
 
-  add(value: any /** TODO #9100 */): void { this.logItems.push(value); }
+  add(value: any /** TODO #9100 */): void {
+    this.logItems.push(value);
+  }
 
   fn(value: any /** TODO #9100 */) {
     return (a1: any = null, a2: any = null, a3: any = null, a4: any = null, a5: any = null) => {
@@ -1114,9 +1286,13 @@ class Log {
     };
   }
 
-  clear(): void { this.logItems = []; }
+  clear(): void {
+    this.logItems = [];
+  }
 
-  result(): string { return this.logItems.join('; '); }
+  result(): string {
+    return this.logItems.join('; ');
+  }
 }
 
 const resolvedPromise = Promise.resolve(null);
@@ -1128,7 +1304,9 @@ const {fakeAsync, tick, discardPeriodicTasks, flush, flushMicrotasks} = fakeAsyn
   describe('fake async', () => {
     it('should run synchronous code', () => {
       let ran = false;
-      fakeAsync(() => { ran = true; })();
+      fakeAsync(() => {
+        ran = true;
+      })();
 
       expect(ran).toEqual(true);
     });
@@ -1140,268 +1318,307 @@ const {fakeAsync, tick, discardPeriodicTasks, flush, flushMicrotasks} = fakeAsyn
       })('foo', 'bar');
     });
 
-
     it('should throw on nested calls', () => {
       expect(() => {
-        fakeAsync(() => { fakeAsync((): any /** TODO #9100 */ => null)(); })();
+        fakeAsync(() => {
+          fakeAsync((): any /** TODO #9100 */ => null)();
+        })();
       }).toThrowError('fakeAsync() calls can not be nested');
     });
 
     it('should flush microtasks before returning', () => {
       let thenRan = false;
 
-      fakeAsync(() => { resolvedPromise.then(_ => { thenRan = true; }); })();
+      fakeAsync(() => {
+        resolvedPromise.then((_) => {
+          thenRan = true;
+        });
+      })();
 
       expect(thenRan).toEqual(true);
     });
 
-
-    it('should propagate the return value',
-       () => { expect(fakeAsync(() => 'foo')()).toEqual('foo'); });
+    it('should propagate the return value', () => {
+      expect(fakeAsync(() => 'foo')()).toEqual('foo');
+    });
 
     describe('Promise', () => {
       it('should run asynchronous code', fakeAsync(() => {
-           let thenRan = false;
-           resolvedPromise.then((_) => { thenRan = true; });
+        let thenRan = false;
+        resolvedPromise.then((_) => {
+          thenRan = true;
+        });
 
-           expect(thenRan).toEqual(false);
+        expect(thenRan).toEqual(false);
 
-           flushMicrotasks();
-           expect(thenRan).toEqual(true);
-         }));
+        flushMicrotasks();
+        expect(thenRan).toEqual(true);
+      }));
 
       it('should run chained thens', fakeAsync(() => {
-           const log = new Log();
+        const log = new Log();
 
-           resolvedPromise.then((_) => log.add(1)).then((_) => log.add(2));
+        resolvedPromise.then((_) => log.add(1)).then((_) => log.add(2));
 
-           expect(log.result()).toEqual('');
+        expect(log.result()).toEqual('');
 
-           flushMicrotasks();
-           expect(log.result()).toEqual('1; 2');
-         }));
+        flushMicrotasks();
+        expect(log.result()).toEqual('1; 2');
+      }));
 
       it('should run Promise created in Promise', fakeAsync(() => {
-           const log = new Log();
+        const log = new Log();
 
-           resolvedPromise.then((_) => {
-             log.add(1);
-             resolvedPromise.then((_) => log.add(2));
-           });
+        resolvedPromise.then((_) => {
+          log.add(1);
+          resolvedPromise.then((_) => log.add(2));
+        });
 
-           expect(log.result()).toEqual('');
+        expect(log.result()).toEqual('');
 
-           flushMicrotasks();
-           expect(log.result()).toEqual('1; 2');
-         }));
+        flushMicrotasks();
+        expect(log.result()).toEqual('1; 2');
+      }));
 
       it('should complain if the test throws an exception during async calls', () => {
         expect(() => {
           fakeAsync(() => {
-            resolvedPromise.then((_) => { throw new Error('async'); });
+            resolvedPromise.then((_) => {
+              throw new Error('async');
+            });
             flushMicrotasks();
           })();
         }).toThrowError(/Uncaught \(in promise\): Error: async/);
       });
 
       it('should complain if a test throws an exception', () => {
-        expect(() => { fakeAsync(() => { throw new Error('sync'); })(); }).toThrowError('sync');
+        expect(() => {
+          fakeAsync(() => {
+            throw new Error('sync');
+          })();
+        }).toThrowError('sync');
       });
     });
 
     describe('timers', () => {
       it('should run queued zero duration timer on zero tick', fakeAsync(() => {
-           let ran = false;
-           setTimeout(() => { ran = true; }, 0);
+        let ran = false;
+        setTimeout(() => {
+          ran = true;
+        }, 0);
 
-           expect(ran).toEqual(false);
+        expect(ran).toEqual(false);
 
-           tick();
-           expect(ran).toEqual(true);
-         }));
-
+        tick();
+        expect(ran).toEqual(true);
+      }));
 
       it('should run queued timer after sufficient clock ticks', fakeAsync(() => {
-           let ran = false;
-           setTimeout(() => { ran = true; }, 10);
+        let ran = false;
+        setTimeout(() => {
+          ran = true;
+        }, 10);
 
-           tick(6);
-           expect(ran).toEqual(false);
+        tick(6);
+        expect(ran).toEqual(false);
 
-           tick(6);
-           expect(ran).toEqual(true);
-         }));
+        tick(6);
+        expect(ran).toEqual(true);
+      }));
 
       it('should run queued timer only once', fakeAsync(() => {
-           let cycles = 0;
-           setTimeout(() => { cycles++; }, 10);
+        let cycles = 0;
+        setTimeout(() => {
+          cycles++;
+        }, 10);
 
-           tick(10);
-           expect(cycles).toEqual(1);
+        tick(10);
+        expect(cycles).toEqual(1);
 
-           tick(10);
-           expect(cycles).toEqual(1);
+        tick(10);
+        expect(cycles).toEqual(1);
 
-           tick(10);
-           expect(cycles).toEqual(1);
-         }));
+        tick(10);
+        expect(cycles).toEqual(1);
+      }));
 
       it('should not run cancelled timer', fakeAsync(() => {
-           let ran = false;
-           const id = setTimeout(() => { ran = true; }, 10);
-           clearTimeout(id);
+        let ran = false;
+        const id = setTimeout(() => {
+          ran = true;
+        }, 10);
+        clearTimeout(id);
 
-           tick(10);
-           expect(ran).toEqual(false);
-         }));
+        tick(10);
+        expect(ran).toEqual(false);
+      }));
 
       it('should throw an error on dangling timers', () => {
         expect(() => {
-          fakeAsync(() => { setTimeout(() => {}, 10); })();
+          fakeAsync(() => {
+            setTimeout(() => {}, 10);
+          })();
         }).toThrowError('1 timer(s) still in the queue.');
       });
 
       it('should throw an error on dangling periodic timers', () => {
         expect(() => {
-          fakeAsync(() => { setInterval(() => {}, 10); })();
+          fakeAsync(() => {
+            setInterval(() => {}, 10);
+          })();
         }).toThrowError('1 periodic timer(s) still in the queue.');
       });
 
       it('should run periodic timers', fakeAsync(() => {
-           let cycles = 0;
-           const id = setInterval(() => { cycles++; }, 10);
+        let cycles = 0;
+        const id = setInterval(() => {
+          cycles++;
+        }, 10);
 
-           tick(10);
-           expect(cycles).toEqual(1);
+        tick(10);
+        expect(cycles).toEqual(1);
 
-           tick(10);
-           expect(cycles).toEqual(2);
+        tick(10);
+        expect(cycles).toEqual(2);
 
-           tick(10);
-           expect(cycles).toEqual(3);
-           clearInterval(id);
-         }));
+        tick(10);
+        expect(cycles).toEqual(3);
+        clearInterval(id);
+      }));
 
       it('should not run cancelled periodic timer', fakeAsync(() => {
-           let ran = false;
-           const id = setInterval(() => { ran = true; }, 10);
-           clearInterval(id);
+        let ran = false;
+        const id = setInterval(() => {
+          ran = true;
+        }, 10);
+        clearInterval(id);
 
-           tick(10);
-           expect(ran).toEqual(false);
-         }));
+        tick(10);
+        expect(ran).toEqual(false);
+      }));
 
       it('should be able to cancel periodic timers from a callback', fakeAsync(() => {
-           let cycles = 0;
-           let id: any /** TODO #9100 */;
+        let cycles = 0;
+        let id: any /** TODO #9100 */;
 
-           id = setInterval(() => {
-             cycles++;
-             clearInterval(id);
-           }, 10);
+        id = setInterval(() => {
+          cycles++;
+          clearInterval(id);
+        }, 10);
 
-           tick(10);
-           expect(cycles).toEqual(1);
+        tick(10);
+        expect(cycles).toEqual(1);
 
-           tick(10);
-           expect(cycles).toEqual(1);
-         }));
+        tick(10);
+        expect(cycles).toEqual(1);
+      }));
 
       it('should clear periodic timers', fakeAsync(() => {
-           let cycles = 0;
-           const id = setInterval(() => { cycles++; }, 10);
+        let cycles = 0;
+        const id = setInterval(() => {
+          cycles++;
+        }, 10);
 
-           tick(10);
-           expect(cycles).toEqual(1);
+        tick(10);
+        expect(cycles).toEqual(1);
 
-           discardPeriodicTasks();
+        discardPeriodicTasks();
 
-           // Tick once to clear out the timer which already started.
-           tick(10);
-           expect(cycles).toEqual(2);
+        // Tick once to clear out the timer which already started.
+        tick(10);
+        expect(cycles).toEqual(2);
 
-           tick(10);
-           // Nothing should change
-           expect(cycles).toEqual(2);
-         }));
+        tick(10);
+        // Nothing should change
+        expect(cycles).toEqual(2);
+      }));
 
       it('should process microtasks before timers', fakeAsync(() => {
-           const log = new Log();
+        const log = new Log();
 
-           resolvedPromise.then((_) => log.add('microtask'));
+        resolvedPromise.then((_) => log.add('microtask'));
 
-           setTimeout(() => log.add('timer'), 9);
+        setTimeout(() => log.add('timer'), 9);
 
-           const id = setInterval(() => log.add('periodic timer'), 10);
+        const id = setInterval(() => log.add('periodic timer'), 10);
 
-           expect(log.result()).toEqual('');
+        expect(log.result()).toEqual('');
 
-           tick(10);
-           expect(log.result()).toEqual('microtask; timer; periodic timer');
-           clearInterval(id);
-         }));
+        tick(10);
+        expect(log.result()).toEqual('microtask; timer; periodic timer');
+        clearInterval(id);
+      }));
 
       it('should process micro-tasks created in timers before next timers', fakeAsync(() => {
-           const log = new Log();
+        const log = new Log();
 
-           resolvedPromise.then((_) => log.add('microtask'));
+        resolvedPromise.then((_) => log.add('microtask'));
 
-           setTimeout(() => {
-             log.add('timer');
-             resolvedPromise.then((_) => log.add('t microtask'));
-           }, 9);
+        setTimeout(() => {
+          log.add('timer');
+          resolvedPromise.then((_) => log.add('t microtask'));
+        }, 9);
 
-           const id = setInterval(() => {
-             log.add('periodic timer');
-             resolvedPromise.then((_) => log.add('pt microtask'));
-           }, 10);
+        const id = setInterval(() => {
+          log.add('periodic timer');
+          resolvedPromise.then((_) => log.add('pt microtask'));
+        }, 10);
 
-           tick(10);
-           expect(log.result())
-               .toEqual('microtask; timer; t microtask; periodic timer; pt microtask');
+        tick(10);
+        expect(log.result()).toEqual('microtask; timer; t microtask; periodic timer; pt microtask');
 
-           tick(10);
-           expect(log.result())
-               .toEqual(
-                   'microtask; timer; t microtask; periodic timer; pt microtask; periodic timer; pt microtask');
-           clearInterval(id);
-         }));
+        tick(10);
+        expect(log.result()).toEqual(
+          'microtask; timer; t microtask; periodic timer; pt microtask; periodic timer; pt microtask'
+        );
+        clearInterval(id);
+      }));
 
       it('should flush tasks', fakeAsync(() => {
-           let ran = false;
-           setTimeout(() => { ran = true; }, 10);
+        let ran = false;
+        setTimeout(() => {
+          ran = true;
+        }, 10);
 
-           flush();
-           expect(ran).toEqual(true);
-         }));
+        flush();
+        expect(ran).toEqual(true);
+      }));
 
       it('should flush multiple tasks', fakeAsync(() => {
-           let ran = false;
-           let ran2 = false;
-           setTimeout(() => { ran = true; }, 10);
-           setTimeout(() => { ran2 = true; }, 30);
+        let ran = false;
+        let ran2 = false;
+        setTimeout(() => {
+          ran = true;
+        }, 10);
+        setTimeout(() => {
+          ran2 = true;
+        }, 30);
 
-           let elapsed = flush();
+        let elapsed = flush();
 
-           expect(ran).toEqual(true);
-           expect(ran2).toEqual(true);
-           expect(elapsed).toEqual(30);
-         }));
+        expect(ran).toEqual(true);
+        expect(ran2).toEqual(true);
+        expect(elapsed).toEqual(30);
+      }));
 
       it('should move periodic tasks', fakeAsync(() => {
-           let ran = false;
-           let count = 0;
-           setInterval(() => { count++; }, 10);
-           setTimeout(() => { ran = true; }, 35);
+        let ran = false;
+        let count = 0;
+        setInterval(() => {
+          count++;
+        }, 10);
+        setTimeout(() => {
+          ran = true;
+        }, 35);
 
-           let elapsed = flush();
+        let elapsed = flush();
 
-           expect(count).toEqual(3);
-           expect(ran).toEqual(true);
-           expect(elapsed).toEqual(35);
+        expect(count).toEqual(3);
+        expect(ran).toEqual(true);
+        expect(elapsed).toEqual(35);
 
-           discardPeriodicTasks();
-         }));
+        discardPeriodicTasks();
+      }));
     });
 
     describe('outside of the fakeAsync zone', () => {
@@ -1433,70 +1650,76 @@ const {fakeAsync, tick, discardPeriodicTasks, flush, flushMicrotasks} = fakeAsyn
     describe('only one `fakeAsync` zone per test', () => {
       let zoneInBeforeEach: Zone;
       let zoneInTest1: Zone;
-      beforeEach(fakeAsync(() => { zoneInBeforeEach = Zone.current; }));
+      beforeEach(fakeAsync(() => {
+        zoneInBeforeEach = Zone.current;
+      }));
 
       it('should use the same zone as in beforeEach', fakeAsync(() => {
-           zoneInTest1 = Zone.current;
-           expect(zoneInTest1).toBe(zoneInBeforeEach);
-         }));
+        zoneInTest1 = Zone.current;
+        expect(zoneInTest1).toBe(zoneInBeforeEach);
+      }));
     });
 
     describe('fakeAsync should work with Date', () => {
       it('should get date diff correctly', fakeAsync(() => {
-           const start = Date.now();
-           tick(100);
-           const end = Date.now();
-           expect(end - start).toBe(100);
-         }));
+        const start = Date.now();
+        tick(100);
+        const end = Date.now();
+        expect(end - start).toBe(100);
+      }));
 
       it('should check date type correctly', fakeAsync(() => {
-           const d: any = new Date();
-           expect(d instanceof Date).toBe(true);
-         }));
+        const d: any = new Date();
+        expect(d instanceof Date).toBe(true);
+      }));
 
       it('should new Date with parameter correctly', fakeAsync(() => {
-           const d: Date = new Date(0);
-           expect(d.getFullYear()).toBeLessThan(1971);
-           const d1: Date = new Date('December 17, 1995 03:24:00');
-           expect(d1.getFullYear()).toEqual(1995);
-           const d2: Date = new Date(1995, 11, 17, 3, 24, 0);
-           expect(isNaN(d2.getTime())).toBeFalsy();
-           expect(d2.getFullYear()).toEqual(1995);
-           d2.setFullYear(1985);
-           expect(d2.getFullYear()).toBe(1985);
-           expect(d2.getMonth()).toBe(11);
-           expect(d2.getDate()).toBe(17);
-         }));
+        const d: Date = new Date(0);
+        expect(d.getFullYear()).toBeLessThan(1971);
+        const d1: Date = new Date('December 17, 1995 03:24:00');
+        expect(d1.getFullYear()).toEqual(1995);
+        const d2: Date = new Date(1995, 11, 17, 3, 24, 0);
+        expect(isNaN(d2.getTime())).toBeFalsy();
+        expect(d2.getFullYear()).toEqual(1995);
+        d2.setFullYear(1985);
+        expect(d2.getFullYear()).toBe(1985);
+        expect(d2.getMonth()).toBe(11);
+        expect(d2.getDate()).toBe(17);
+      }));
 
       it('should get Date.UTC() correctly', fakeAsync(() => {
-           const utcDate = new Date(Date.UTC(96, 11, 1, 0, 0, 0));
-           expect(utcDate.getFullYear()).toBe(1996);
-         }));
+        const utcDate = new Date(Date.UTC(96, 11, 1, 0, 0, 0));
+        expect(utcDate.getFullYear()).toBe(1996);
+      }));
 
       it('should call Date.parse() correctly', fakeAsync(() => {
-           const unixTimeZero = Date.parse('01 Jan 1970 00:00:00 GMT');
-           expect(unixTimeZero).toBe(0);
-         }));
+        const unixTimeZero = Date.parse('01 Jan 1970 00:00:00 GMT');
+        expect(unixTimeZero).toBe(0);
+      }));
     });
   });
 
   describe('ProxyZone', () => {
-    beforeEach(() => { ProxyZoneSpec.assertPresent(); });
+    beforeEach(() => {
+      ProxyZoneSpec.assertPresent();
+    });
 
-    afterEach(() => { ProxyZoneSpec.assertPresent(); });
+    afterEach(() => {
+      ProxyZoneSpec.assertPresent();
+    });
 
     it('should allow fakeAsync zone to retroactively set a zoneSpec outside of fakeAsync', () => {
       ProxyZoneSpec.assertPresent();
       let state: string = 'not run';
       const testZone = Zone.current.fork({name: 'test-zone'});
-      (fakeAsync(() => {
+      fakeAsync(() => {
         testZone.run(() => {
-          Promise.resolve('works').then((v) => state = v);
+          Promise.resolve('works').then((v) => (state = v));
           expect(state).toEqual('not run');
           flushMicrotasks();
           expect(state).toEqual('works');
         });
-      }))();
+      })();
       expect(state).toEqual('works');
     });
   });

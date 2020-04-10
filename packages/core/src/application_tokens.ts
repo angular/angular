@@ -9,7 +9,6 @@
 import {InjectionToken} from './di';
 import {ComponentRef} from './linker/component_factory';
 
-
 /**
  * A DI Token representing a unique string id assigned to the application by Angular and used
  * primarily for prefixing application attributes and CSS styles when
@@ -60,8 +59,9 @@ export const PLATFORM_ID = new InjectionToken<Object>('Platform ID');
  *
  * @publicApi
  */
-export const APP_BOOTSTRAP_LISTENER =
-    new InjectionToken<Array<(compRef: ComponentRef<any>) => void>>('appBootstrapListener');
+export const APP_BOOTSTRAP_LISTENER = new InjectionToken<
+  Array<(compRef: ComponentRef<any>) => void>
+>('appBootstrapListener');
 
 /**
  * A token which indicates the root directory of the application

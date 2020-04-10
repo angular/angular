@@ -32,8 +32,6 @@ export {
   NgTemplateOutlet,
 };
 
-
-
 /**
  * A collection of Angular directives that are likely to be used in each and every Angular
  * application.

@@ -6,9 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '@angular/core';
+import {
+  Injectable,
+  Renderer2,
+  RendererFactory2,
+  RendererStyleFlags2,
+  RendererType2,
+} from '@angular/core';
 
-import {ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments} from '../shared/client_message_broker';
+import {
+  ClientMessageBroker,
+  ClientMessageBrokerFactory,
+  FnArg,
+  UiArguments,
+} from '../shared/client_message_broker';
 import {MessageBus} from '../shared/message_bus';
 import {EVENT_2_CHANNEL, RENDERER_2_CHANNEL} from '../shared/messaging_api';
 import {RenderStore} from '../shared/render_store';
@@ -16,9 +27,11 @@ import {Serializer, SerializerTypes} from '../shared/serializer';
 
 export class NamedEventEmitter {
   // TODO(issue/24571): remove '!'.
-  private _listeners !: Map<string, Function[]>;
+  private _listeners!: Map<string, Function[]>;
 
-  listen(eventName: string, callback: Function) { this._getListeners(eventName).push(callback); }
+  listen(eventName: string, callback: Function) {
+    this._getListeners(eventName).push(callback);
+  }
 
   unlisten(eventName: string, listener: Function) {
     const listeners = this._getListeners(eventName);
@@ -48,7 +61,6 @@ export class NamedEventEmitter {
   }
 }
 
-
 function eventNameWithTarget(target: string, eventName: string): string {
   return `${target}:${eventName}`;
 }
@@ -60,15 +72,18 @@ export class WebWorkerRendererFactory2 implements RendererFactory2 {
   private _messageBroker: ClientMessageBroker;
 
   constructor(
-      messageBrokerFactory: ClientMessageBrokerFactory, bus: MessageBus,
-      private _serializer: Serializer, public renderStore: RenderStore) {
+    messageBrokerFactory: ClientMessageBrokerFactory,
+    bus: MessageBus,
+    private _serializer: Serializer,
+    public renderStore: RenderStore
+  ) {
     this._messageBroker = messageBrokerFactory.createMessageBroker(RENDERER_2_CHANNEL);
     bus.initChannel(EVENT_2_CHANNEL);
     const source = bus.from(EVENT_2_CHANNEL);
     source.subscribe({next: (message: any) => this._dispatchEvent(message)});
   }
 
-  createRenderer(element: any, type: RendererType2|null): Renderer2 {
+  createRenderer(element: any, type: RendererType2 | null): Renderer2 {
     const renderer = new WebWorkerRenderer2(this);
 
     const id = this.renderStore.allocateId();
@@ -97,13 +112,19 @@ export class WebWorkerRendererFactory2 implements RendererFactory2 {
     return result;
   }
 
-  freeNode(node: any) { this.renderStore.remove(node); }
+  freeNode(node: any) {
+    this.renderStore.remove(node);
+  }
 
-  allocateId(): number { return this.renderStore.allocateId(); }
+  allocateId(): number {
+    return this.renderStore.allocateId();
+  }
 
   private _dispatchEvent(message: {[key: string]: any}): void {
-    const element: WebWorkerRenderNode =
-        this._serializer.deserialize(message['element'], SerializerTypes.RENDER_STORE_OBJECT);
+    const element: WebWorkerRenderNode = this._serializer.deserialize(
+      message['element'],
+      SerializerTypes.RENDER_STORE_OBJECT
+    );
 
     const eventName = message['eventName'];
     const target = message['eventTarget'];
@@ -117,7 +138,6 @@ export class WebWorkerRendererFactory2 implements RendererFactory2 {
   }
 }
 
-
 export class WebWorkerRenderer2 implements Renderer2 {
   data: {[key: string]: any} = Object.create(null);
 
@@ -125,7 +145,9 @@ export class WebWorkerRenderer2 implements Renderer2 {
 
   private asFnArg = new FnArg(this, SerializerTypes.RENDER_STORE_OBJECT);
 
-  destroy(): void { this.callUIWithRenderer('destroy'); }
+  destroy(): void {
+    this.callUIWithRenderer('destroy');
+  }
 
   destroyNode(node: any) {
     this.callUIWithRenderer('destroyNode', [new FnArg(node, SerializerTypes.RENDER_STORE_OBJECT)]);
@@ -186,7 +208,7 @@ export class WebWorkerRenderer2 implements Renderer2 {
     ]);
   }
 
-  selectRootElement(selectorOrNode: string|any): any {
+  selectRootElement(selectorOrNode: string | any): any {
     const node = this._rendererFactory.allocateNode();
     this.callUIWithRenderer('selectRootElement', [
       new FnArg(selectorOrNode),
@@ -277,13 +299,14 @@ export class WebWorkerRenderer2 implements Renderer2 {
   }
 
   listen(
-      target: 'window'|'document'|'body'|any, eventName: string,
-      listener: (event: any) => boolean): () => void {
+    target: 'window' | 'document' | 'body' | any,
+    eventName: string,
+    listener: (event: any) => boolean
+  ): () => void {
     const unlistenId = this._rendererFactory.allocateId();
 
     const [targetEl, targetName, fullName]: [any, string | null, string | null] =
-        typeof target === 'string' ? [null, target, `${target}:${eventName}`] :
-                                     [target, null, null];
+      typeof target === 'string' ? [null, target, `${target}:${eventName}`] : [target, null, null];
 
     if (fullName) {
       this._rendererFactory.globalEvents.listen(fullName, listener);
@@ -314,4 +337,6 @@ export class WebWorkerRenderer2 implements Renderer2 {
   }
 }
 
-export class WebWorkerRenderNode { events = new NamedEventEmitter(); }
+export class WebWorkerRenderNode {
+  events = new NamedEventEmitter();
+}

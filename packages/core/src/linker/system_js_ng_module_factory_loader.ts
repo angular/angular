@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {Injectable, Optional} from '../di';
 import {ivyEnabled} from '../ivy_switch';
 
@@ -32,13 +31,13 @@ export abstract class SystemJsNgModuleLoaderConfig {
    * Prefix to add when computing the name of the factory module for a given module name.
    */
   // TODO(issue/24571): remove '!'.
-  factoryPathPrefix !: string;
+  factoryPathPrefix!: string;
 
   /**
    * Suffix to add when computing the name of the factory module for a given module name.
    */
   // TODO(issue/24571): remove '!'.
-  factoryPathSuffix !: string;
+  factoryPathSuffix!: string;
 }
 
 const DEFAULT_CONFIG: SystemJsNgModuleLoaderConfig = {
@@ -72,9 +71,9 @@ export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
     }
 
     return System.import(module)
-        .then((module: any) => module[exportName])
-        .then((type: any) => checkNotEmpty(type, module, exportName))
-        .then((type: any) => this._compiler.compileModuleAsync(type));
+      .then((module: any) => module[exportName])
+      .then((type: any) => checkNotEmpty(type, module, exportName))
+      .then((type: any) => this._compiler.compileModuleAsync(type));
   }
 
   private loadFactory(path: string): Promise<NgModuleFactory<any>> {
@@ -86,8 +85,8 @@ export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
     }
 
     return System.import(this._config.factoryPathPrefix + module + this._config.factoryPathSuffix)
-        .then((module: any) => module[exportName + factoryClassSuffix])
-        .then((factory: any) => checkNotEmpty(factory, module, exportName));
+      .then((module: any) => module[exportName + factoryClassSuffix])
+      .then((factory: any) => checkNotEmpty(factory, module, exportName));
   }
 }
 

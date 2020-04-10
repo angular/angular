@@ -9,9 +9,12 @@
 import {Injectable} from '@angular/core';
 import {NEVER, Observable} from 'rxjs';
 
-import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UpdateActivatedEvent, UpdateAvailableEvent} from './low_level';
-
-
+import {
+  ERR_SW_NOT_SUPPORTED,
+  NgswCommChannel,
+  UpdateActivatedEvent,
+  UpdateAvailableEvent,
+} from './low_level';
 
 /**
  * Subscribe to update notifications from the Service Worker, trigger update
@@ -35,7 +38,9 @@ export class SwUpdate {
    * True if the Service Worker is enabled (supported by the browser and enabled via
    * `ServiceWorkerModule`).
    */
-  get isEnabled(): boolean { return this.sw.isEnabled; }
+  get isEnabled(): boolean {
+    return this.sw.isEnabled;
+  }
 
   constructor(private sw: NgswCommChannel) {
     if (!sw.isEnabled) {

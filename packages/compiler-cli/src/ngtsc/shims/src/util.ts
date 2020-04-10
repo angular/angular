@@ -7,7 +7,10 @@
  */
 
 export function generatedModuleName(
-    originalModuleName: string, originalFileName: string, genSuffix: string): string {
+  originalModuleName: string,
+  originalFileName: string,
+  genSuffix: string
+): string {
   let moduleName: string;
   if (originalFileName.endsWith('/index.ts')) {
     moduleName = originalModuleName + '/index' + genSuffix;

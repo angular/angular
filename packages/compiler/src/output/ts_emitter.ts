@@ -6,16 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {StaticSymbol} from '../aot/static_symbol';
 import {CompileIdentifierMetadata} from '../compile_metadata';
 
-import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
+import {
+  AbstractEmitterVisitor,
+  CATCH_ERROR_VAR,
+  CATCH_STACK_VAR,
+  EmitterVisitorContext,
+  OutputEmitter,
+} from './abstract_emitter';
 import * as o from './output_ast';
 
 const _debugFilePath = '/debug/lib';
 
-export function debugOutputAstAsTypeScript(ast: o.Statement|o.Expression|o.Type|any[]): string {
+export function debugOutputAstAsTypeScript(
+  ast: o.Statement | o.Expression | o.Type | any[]
+): string {
   const converter = new _TsEmitterVisitor();
   const ctx = EmitterVisitorContext.createRoot();
   const asts: any[] = Array.isArray(ast) ? ast : [ast];
@@ -38,9 +45,13 @@ export type ReferenceFilter = (reference: o.ExternalReference) => boolean;
 
 export class TypeScriptEmitter implements OutputEmitter {
   emitStatementsAndContext(
-      genFilePath: string, stmts: o.Statement[], preamble: string = '',
-      emitSourceMaps: boolean = true, referenceFilter?: ReferenceFilter,
-      importFilter?: ReferenceFilter): {sourceText: string, context: EmitterVisitorContext} {
+    genFilePath: string,
+    stmts: o.Statement[],
+    preamble: string = '',
+    emitSourceMaps: boolean = true,
+    referenceFilter?: ReferenceFilter,
+    importFilter?: ReferenceFilter
+  ): {sourceText: string; context: EmitterVisitorContext} {
     const converter = new _TsEmitterVisitor(referenceFilter, importFilter);
 
     const ctx = EmitterVisitorContext.createRoot();
@@ -49,21 +60,20 @@ export class TypeScriptEmitter implements OutputEmitter {
 
     const preambleLines = preamble ? preamble.split('\n') : [];
     converter.reexports.forEach((reexports, exportedModuleName) => {
-      const reexportsCode =
-          reexports.map(reexport => `${reexport.name} as ${reexport.as}`).join(',');
+      const reexportsCode = reexports
+        .map((reexport) => `${reexport.name} as ${reexport.as}`)
+        .join(',');
       preambleLines.push(`export {${reexportsCode}} from '${exportedModuleName}';`);
     });
 
     converter.importsWithPrefixes.forEach((prefix, importedModuleName) => {
       // Note: can't write the real word for import as it screws up system.js auto detection...
-      preambleLines.push(
-          `imp` +
-          `ort * as ${prefix} from '${importedModuleName}';`);
+      preambleLines.push(`imp` + `ort * as ${prefix} from '${importedModuleName}';`);
     });
 
-    const sm = emitSourceMaps ?
-        ctx.toSourceMapGenerator(genFilePath, preambleLines.length).toJsComment() :
-        '';
+    const sm = emitSourceMaps
+      ? ctx.toSourceMapGenerator(genFilePath, preambleLines.length).toJsComment()
+      : '';
     const lines = [...preambleLines, ctx.toSource(), sm];
     if (sm) {
       // always add a newline at the end, as some tools have bugs without it.
@@ -78,7 +88,6 @@ export class TypeScriptEmitter implements OutputEmitter {
   }
 }
 
-
 class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor {
   private typeExpression = 0;
 
@@ -87,9 +96,9 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   }
 
   importsWithPrefixes = new Map<string, string>();
-  reexports = new Map<string, {name: string, as: string}[]>();
+  reexports = new Map<string, {name: string; as: string}[]>();
 
-  visitType(t: o.Type|null, ctx: EmitterVisitorContext, defaultType: string = 'any') {
+  visitType(t: o.Type | null, ctx: EmitterVisitorContext, defaultType: string = 'any') {
     if (t) {
       this.typeExpression++;
       t.visitType(this, ctx);
@@ -107,7 +116,6 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     }
     return super.visitLiteralExpr(ast, ctx);
   }
-
 
   // Temporary workaround to support strictNullCheck enabled consumers of ngc emit.
   // In SNC mode, [] have the type never[], so we cast here to any[].
@@ -136,8 +144,11 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   }
 
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
-    if (stmt.hasModifier(o.StmtModifier.Exported) && stmt.value instanceof o.ExternalExpr &&
-        !stmt.type) {
+    if (
+      stmt.hasModifier(o.StmtModifier.Exported) &&
+      stmt.value instanceof o.ExternalExpr &&
+      !stmt.type
+    ) {
       // check for a reexport
       const {name, moduleName} = stmt.value.value;
       if (moduleName) {
@@ -317,10 +328,13 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ctx.decIndent();
     ctx.println(stmt, `} catch (${CATCH_ERROR_VAR.name}) {`);
     ctx.incIndent();
-    const catchStmts =
-        [<o.Statement>CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack', null)).toDeclStmt(null, [
-          o.StmtModifier.Final
-        ])].concat(stmt.catchStmts);
+    const catchStmts = [
+      <o.Statement>(
+        CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack', null)).toDeclStmt(null, [
+          o.StmtModifier.Final,
+        ])
+      ),
+    ].concat(stmt.catchStmts);
     this.visitAllStatements(catchStmts, ctx);
     ctx.decIndent();
     ctx.println(stmt, `}`);
@@ -362,7 +376,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     ast.value.visitExpression(this, ctx);
     if (ast.typeParams !== null) {
       ctx.print(null, '<');
-      this.visitAllObjects(type => this.visitType(type, ctx), ast.typeParams, ctx, ',');
+      this.visitAllObjects((type) => this.visitType(type, ctx), ast.typeParams, ctx, ',');
       ctx.print(null, '>');
     }
     return null;
@@ -400,14 +414,22 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   }
 
   private _visitParams(params: o.FnParam[], ctx: EmitterVisitorContext): void {
-    this.visitAllObjects(param => {
-      ctx.print(null, param.name);
-      this._printColonType(param.type, ctx);
-    }, params, ctx, ',');
+    this.visitAllObjects(
+      (param) => {
+        ctx.print(null, param.name);
+        this._printColonType(param.type, ctx);
+      },
+      params,
+      ctx,
+      ','
+    );
   }
 
   private _visitIdentifier(
-      value: o.ExternalReference, typeParams: o.Type[]|null, ctx: EmitterVisitorContext): void {
+    value: o.ExternalReference,
+    typeParams: o.Type[] | null,
+    ctx: EmitterVisitorContext
+  ): void {
     const {name, moduleName} = value;
     if (this.referenceFilter && this.referenceFilter(value)) {
       ctx.print(null, '(null as any)');
@@ -432,13 +454,13 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       const suppliedParameters = typeParams || [];
       if (suppliedParameters.length > 0) {
         ctx.print(null, `<`);
-        this.visitAllObjects(type => type.visitType(this, ctx), typeParams!, ctx, ',');
+        this.visitAllObjects((type) => type.visitType(this, ctx), typeParams!, ctx, ',');
         ctx.print(null, `>`);
       }
     }
   }
 
-  private _printColonType(type: o.Type|null, ctx: EmitterVisitorContext, defaultType?: string) {
+  private _printColonType(type: o.Type | null, ctx: EmitterVisitorContext, defaultType?: string) {
     if (type !== o.INFERRED_TYPE) {
       ctx.print(null, ':');
       this.visitType(type, ctx, defaultType);

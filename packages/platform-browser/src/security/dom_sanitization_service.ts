@@ -7,11 +7,28 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, Injector, Sanitizer, SecurityContext, forwardRef, ɵBypassType as BypassType, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵgetSanitizationBypassType as getSanitizationBypassType, ɵunwrapSafeValue as unwrapSafeValue} from '@angular/core';
+import {
+  Inject,
+  Injectable,
+  Injector,
+  Sanitizer,
+  SecurityContext,
+  forwardRef,
+  ɵBypassType as BypassType,
+  ɵ_sanitizeHtml as _sanitizeHtml,
+  ɵ_sanitizeStyle as _sanitizeStyle,
+  ɵ_sanitizeUrl as _sanitizeUrl,
+  ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow,
+  ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml,
+  ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl,
+  ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript,
+  ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle,
+  ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl,
+  ɵgetSanitizationBypassType as getSanitizationBypassType,
+  ɵunwrapSafeValue as unwrapSafeValue,
+} from '@angular/core';
 
 export {SecurityContext};
-
-
 
 /**
  * Marker interface for a value that's safe to use in a particular context.
@@ -96,7 +113,7 @@ export abstract class DomSanitizer implements Sanitizer {
    * by replacing URLs that have an unsafe protocol part (such as `javascript:`). The implementation
    * is responsible to make sure that the value can definitely be safely used in the given context.
    */
-  abstract sanitize(context: SecurityContext, value: SafeValue|string|null): string|null;
+  abstract sanitize(context: SecurityContext, value: SafeValue | string | null): string | null;
 
   /**
    * Bypass security and trust the given value to be safe HTML. Only use this when the bound HTML
@@ -149,9 +166,11 @@ export function domSanitizerImplFactory(injector: Injector) {
 
 @Injectable({providedIn: 'root', useFactory: domSanitizerImplFactory, deps: [Injector]})
 export class DomSanitizerImpl extends DomSanitizer {
-  constructor(@Inject(DOCUMENT) private _doc: any) { super(); }
+  constructor(@Inject(DOCUMENT) private _doc: any) {
+    super();
+  }
 
-  sanitize(ctx: SecurityContext, value: SafeValue|string|null): string|null {
+  sanitize(ctx: SecurityContext, value: SafeValue | string | null): string | null {
     if (value == null) return null;
     switch (ctx) {
       case SecurityContext.NONE:
@@ -182,18 +201,25 @@ export class DomSanitizerImpl extends DomSanitizer {
           return unwrapSafeValue(value);
         }
         throw new Error(
-            'unsafe value used in a resource URL context (see http://g.co/ng/security#xss)');
+          'unsafe value used in a resource URL context (see http://g.co/ng/security#xss)'
+        );
       default:
         throw new Error(`Unexpected SecurityContext ${ctx} (see http://g.co/ng/security#xss)`);
     }
   }
 
-  bypassSecurityTrustHtml(value: string): SafeHtml { return bypassSanitizationTrustHtml(value); }
-  bypassSecurityTrustStyle(value: string): SafeStyle { return bypassSanitizationTrustStyle(value); }
+  bypassSecurityTrustHtml(value: string): SafeHtml {
+    return bypassSanitizationTrustHtml(value);
+  }
+  bypassSecurityTrustStyle(value: string): SafeStyle {
+    return bypassSanitizationTrustStyle(value);
+  }
   bypassSecurityTrustScript(value: string): SafeScript {
     return bypassSanitizationTrustScript(value);
   }
-  bypassSecurityTrustUrl(value: string): SafeUrl { return bypassSanitizationTrustUrl(value); }
+  bypassSecurityTrustUrl(value: string): SafeUrl {
+    return bypassSanitizationTrustUrl(value);
+  }
   bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl {
     return bypassSanitizationTrustResourceUrl(value);
   }

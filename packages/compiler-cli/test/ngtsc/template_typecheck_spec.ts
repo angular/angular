@@ -24,7 +24,9 @@ runInEachFileSystem(() => {
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
       env.tsconfig({fullTemplateTypeCheck: true});
-      env.write('node_modules/@angular/common/index.d.ts', `
+      env.write(
+        'node_modules/@angular/common/index.d.ts',
+        `
 import * as i0 from '@angular/core';
 
 export declare class NgForOfContext<T, U extends i0.NgIterable<T> = i0.NgIterable<T>> {
@@ -83,16 +85,22 @@ export declare class NgIfContext<T = unknown> {
 export declare class CommonModule {
   static ɵmod: i0.ɵɵNgModuleDefWithMeta<CommonModule, [typeof NgIf, typeof NgForOf, typeof IndexPipe, typeof SlicePipe], never, [typeof NgIf, typeof NgForOf, typeof IndexPipe, typeof SlicePipe]>;
 }
-`);
-      env.write('node_modules/@angular/animations/index.d.ts', `
+`
+      );
+      env.write(
+        'node_modules/@angular/animations/index.d.ts',
+        `
 export declare class AnimationEvent {
   element: any;
 }
-`);
+`
+      );
     });
 
     it('should check a simple component', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
     import {Component, NgModule} from '@angular/core';
 
     @Component({
@@ -105,15 +113,21 @@ export declare class AnimationEvent {
       declarations: [TestCmp],
     })
     class Module {}
-    `);
+    `
+      );
 
       env.driveMain();
     });
 
     it('should check regular attributes that are directive inputs', () => {
-      env.tsconfig(
-          {fullTemplateTypeCheck: true, strictInputTypes: true, strictAttributeTypes: true});
-      env.write('test.ts', `
+      env.tsconfig({
+        fullTemplateTypeCheck: true,
+        strictInputTypes: true,
+        strictAttributeTypes: true,
+      });
+      env.write(
+        'test.ts',
+        `
         import {Component, Directive, NgModule, Input} from '@angular/core';
 
         @Component({
@@ -131,7 +145,8 @@ export declare class AnimationEvent {
           declarations: [TestCmp, TestDir],
         })
         class Module {}
-      `);
+      `
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
@@ -141,9 +156,14 @@ export declare class AnimationEvent {
     });
 
     it('should support inputs and outputs with names that are not JavaScript identifiers', () => {
-      env.tsconfig(
-          {fullTemplateTypeCheck: true, strictInputTypes: true, strictOutputEventTypes: true});
-      env.write('test.ts', `
+      env.tsconfig({
+        fullTemplateTypeCheck: true,
+        strictInputTypes: true,
+        strictOutputEventTypes: true,
+      });
+      env.write(
+        'test.ts',
+        `
         import {Component, Directive, NgModule, EventEmitter} from '@angular/core';
 
         @Component({
@@ -168,17 +188,21 @@ export declare class AnimationEvent {
           declarations: [TestCmp, TestDir],
         })
         class Module {}
-      `);
+      `
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(2);
       expect(diags[0].messageText).toEqual(`Type 'number' is not assignable to type 'string'.`);
-      expect(diags[1].messageText)
-          .toEqual(`Argument of type 'string' is not assignable to parameter of type 'number'.`);
+      expect(diags[1].messageText).toEqual(
+        `Argument of type 'string' is not assignable to parameter of type 'number'.`
+      );
     });
 
     it('should support one input property mapping to multiple fields', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, Directive, Input, NgModule} from '@angular/core';
 
         @Directive({
@@ -198,7 +222,8 @@ export declare class AnimationEvent {
 
         @NgModule({declarations: [Dir, Cmp]})
         export class Module {}
-      `);
+      `
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(0);
@@ -206,7 +231,9 @@ export declare class AnimationEvent {
 
     it('should check event bindings', () => {
       env.tsconfig({fullTemplateTypeCheck: true, strictOutputEventTypes: true});
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, Directive, EventEmitter, NgModule, Output} from '@angular/core';
 
         @Component({
@@ -226,14 +253,17 @@ export declare class AnimationEvent {
           declarations: [TestCmp, TestDir],
         })
         class Module {}
-      `);
+      `
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(3);
-      expect(diags[0].messageText)
-          .toEqual(`Argument of type 'number' is not assignable to parameter of type 'string'.`);
-      expect(diags[1].messageText)
-          .toEqual(`Property 'updated' does not exist on type 'TestCmp'. Did you mean 'update'?`);
+      expect(diags[0].messageText).toEqual(
+        `Argument of type 'number' is not assignable to parameter of type 'string'.`
+      );
+      expect(diags[1].messageText).toEqual(
+        `Property 'updated' does not exist on type 'TestCmp'. Did you mean 'update'?`
+      );
       // Disabled because `checkTypeOfDomEvents` is disabled by default
       // expect(diags[2].messageText)
       //     .toEqual(
@@ -244,7 +274,9 @@ export declare class AnimationEvent {
     // https://github.com/angular/angular/issues/35073
     it('ngIf should narrow on output types', () => {
       env.tsconfig({strictTemplates: true});
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {CommonModule} from '@angular/common';
         import {Component, NgModule} from '@angular/core';
 
@@ -262,7 +294,8 @@ export declare class AnimationEvent {
           declarations: [TestCmp],
         })
         class Module {}
-      `);
+      `
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(0);
@@ -270,7 +303,9 @@ export declare class AnimationEvent {
 
     it('ngIf should narrow on output types across multiple guards', () => {
       env.tsconfig({strictTemplates: true});
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {CommonModule} from '@angular/common';
         import {Component, NgModule} from '@angular/core';
 
@@ -288,7 +323,8 @@ export declare class AnimationEvent {
           declarations: [TestCmp],
         })
         class Module {}
-      `);
+      `
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(0);
@@ -296,7 +332,9 @@ export declare class AnimationEvent {
 
     it('should support a directive being used in its own input expression', () => {
       env.tsconfig({strictTemplates: true});
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, Directive, NgModule, Input} from '@angular/core';
 
         @Component({
@@ -315,14 +353,17 @@ export declare class AnimationEvent {
           declarations: [TestCmp, TargetCmp],
         })
         export class Module {}
-      `);
+      `
+      );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(0);
     });
 
     describe('strictInputTypes', () => {
       beforeEach(() => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, Directive, NgModule, Input} from '@angular/core';
 
           @Component({
@@ -340,7 +381,8 @@ export declare class AnimationEvent {
             declarations: [TestCmp, TestDir],
           })
           class Module {}
-        `);
+        `
+        );
       });
 
       it('should check expressions and their type when enabled', () => {
@@ -349,8 +391,9 @@ export declare class AnimationEvent {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
         expect(diags[0].messageText).toEqual(`Type 'number' is not assignable to type 'string'.`);
-        expect(diags[1].messageText)
-            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect(diags[1].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
       });
 
       it('should check expressions and their type when overall strictness is enabled', () => {
@@ -359,8 +402,9 @@ export declare class AnimationEvent {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
         expect(diags[0].messageText).toEqual(`Type 'number' is not assignable to type 'string'.`);
-        expect(diags[1].messageText)
-            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect(diags[1].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
       });
 
       it('should check expressions but not their type when not enabled', () => {
@@ -368,14 +412,17 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText)
-            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect(diags[0].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
       });
     });
 
     describe('strictNullInputTypes', () => {
       beforeEach(() => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, Directive, NgModule, Input} from '@angular/core';
 
           @Component({
@@ -395,46 +442,56 @@ export declare class AnimationEvent {
             declarations: [TestCmp, TestDir],
           })
           class Module {}
-        `);
+        `
+        );
       });
 
       it('should check expressions and their nullability when enabled', () => {
-        env.tsconfig(
-            {fullTemplateTypeCheck: true, strictInputTypes: true, strictNullInputTypes: true});
+        env.tsconfig({
+          fullTemplateTypeCheck: true,
+          strictInputTypes: true,
+          strictNullInputTypes: true,
+        });
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText)
-            .toEqual(`Type 'string | null | undefined' is not assignable to type 'string'.`);
-        expect(diags[1].messageText)
-            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toEqual(
+          `Type 'string | null | undefined' is not assignable to type 'string'.`
+        );
+        expect(diags[1].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
       });
 
-      it('should check expressions and their nullability when overall strictness is enabled',
-         () => {
-           env.tsconfig({strictTemplates: true});
+      it('should check expressions and their nullability when overall strictness is enabled', () => {
+        env.tsconfig({strictTemplates: true});
 
-           const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(2);
-           expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText)
-               .toEqual(`Type 'string | null | undefined' is not assignable to type 'string'.`);
-           expect(diags[1].messageText)
-               .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
-         });
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toEqual(
+          `Type 'string | null | undefined' is not assignable to type 'string'.`
+        );
+        expect(diags[1].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
+      });
 
       it('should check expressions but not their nullability when not enabled', () => {
         env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText)
-            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect(diags[0].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
       });
     });
 
     describe('strictSafeNavigationTypes', () => {
       beforeEach(() => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, Directive, NgModule, Input} from '@angular/core';
 
           @Component({
@@ -454,7 +511,8 @@ export declare class AnimationEvent {
             declarations: [TestCmp, TestDir],
           })
           class Module {}
-        `);
+        `
+        );
       });
 
       it('should infer result type for safe navigation expressions when enabled', () => {
@@ -462,28 +520,31 @@ export declare class AnimationEvent {
           fullTemplateTypeCheck: true,
           strictInputTypes: true,
           strictNullInputTypes: true,
-          strictSafeNavigationTypes: true
+          strictSafeNavigationTypes: true,
         });
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText)
-            .toEqual(`Type 'string | undefined' is not assignable to type 'string'.`);
-        expect(diags[1].messageText)
-            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toEqual(
+          `Type 'string | undefined' is not assignable to type 'string'.`
+        );
+        expect(diags[1].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
       });
 
-      it('should infer result type for safe navigation expressions when overall strictness is enabled',
-         () => {
-           env.tsconfig({strictTemplates: true});
+      it('should infer result type for safe navigation expressions when overall strictness is enabled', () => {
+        env.tsconfig({strictTemplates: true});
 
-           const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(2);
-           expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText)
-               .toEqual(`Type 'string | undefined' is not assignable to type 'string'.`);
-           expect(diags[1].messageText)
-               .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
-         });
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toEqual(
+          `Type 'string | undefined' is not assignable to type 'string'.`
+        );
+        expect(diags[1].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
+      });
 
       it('should not infer result type for safe navigation expressions when not enabled', () => {
         env.tsconfig({
@@ -493,14 +554,17 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText)
-            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect(diags[0].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
       });
     });
 
     describe('strictOutputEventTypes', () => {
       beforeEach(() => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, Directive, EventEmitter, NgModule, Output} from '@angular/core';
 
           @Component({
@@ -520,7 +584,8 @@ export declare class AnimationEvent {
             declarations: [TestCmp, TestDir],
           })
           class Module {}
-        `);
+        `
+        );
       });
 
       it('should expressions and infer type of $event when enabled', () => {
@@ -528,10 +593,12 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText)
-            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
-        expect(diags[1].messageText)
-            .toEqual(`Argument of type 'number' is not assignable to parameter of type 'string'.`);
+        expect(diags[0].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
+        expect(diags[1].messageText).toEqual(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`
+        );
       });
 
       it('should expressions and infer type of $event when overall strictness is enabled', () => {
@@ -539,10 +606,12 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText)
-            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
-        expect(diags[1].messageText)
-            .toEqual(`Argument of type 'number' is not assignable to parameter of type 'string'.`);
+        expect(diags[0].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
+        expect(diags[1].messageText).toEqual(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`
+        );
       });
 
       it('should check expressions but not infer type of $event when not enabled', () => {
@@ -550,14 +619,17 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText)
-            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect(diags[0].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
       });
     });
 
     describe('strictOutputEventTypes and animation event bindings', () => {
       beforeEach(() => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -572,7 +644,8 @@ export declare class AnimationEvent {
             declarations: [TestCmp],
           })
           class Module {}
-        `);
+        `
+        );
       });
 
       it('should check expressions and let $event be of type AnimationEvent when enabled', () => {
@@ -580,39 +653,43 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText)
-            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
-        expect(diags[1].messageText)
-            .toEqual(
-                `Argument of type 'AnimationEvent' is not assignable to parameter of type 'string'.`);
+        expect(diags[0].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
+        expect(diags[1].messageText).toEqual(
+          `Argument of type 'AnimationEvent' is not assignable to parameter of type 'string'.`
+        );
       });
 
-      it('should check expressions and let $event be of type AnimationEvent when overall strictness is enabled',
-         () => {
-           env.tsconfig({strictTemplates: true});
+      it('should check expressions and let $event be of type AnimationEvent when overall strictness is enabled', () => {
+        env.tsconfig({strictTemplates: true});
 
-           const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(2);
-           expect(diags[0].messageText)
-               .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
-           expect(diags[1].messageText)
-               .toEqual(
-                   `Argument of type 'AnimationEvent' is not assignable to parameter of type 'string'.`);
-         });
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
+        expect(diags[1].messageText).toEqual(
+          `Argument of type 'AnimationEvent' is not assignable to parameter of type 'string'.`
+        );
+      });
 
       it('should check expressions and let $event be of type any when not enabled', () => {
         env.tsconfig({fullTemplateTypeCheck: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText)
-            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect(diags[0].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
       });
     });
 
     describe('strictDomLocalRefTypes', () => {
       beforeEach(() => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -625,7 +702,8 @@ export declare class AnimationEvent {
             declarations: [TestCmp],
           })
           class Module {}
-        `);
+        `
+        );
       });
 
       it('should infer the type of DOM references when enabled', () => {
@@ -633,8 +711,9 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText)
-            .toEqual(`Property 'does_not_exist' does not exist on type 'HTMLInputElement'.`);
+        expect(diags[0].messageText).toEqual(
+          `Property 'does_not_exist' does not exist on type 'HTMLInputElement'.`
+        );
       });
 
       it('should infer the type of DOM references when overall strictness is enabled', () => {
@@ -642,8 +721,9 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText)
-            .toEqual(`Property 'does_not_exist' does not exist on type 'HTMLInputElement'.`);
+        expect(diags[0].messageText).toEqual(
+          `Property 'does_not_exist' does not exist on type 'HTMLInputElement'.`
+        );
       });
 
       it('should let the type of DOM references be any when not enabled', () => {
@@ -656,7 +736,9 @@ export declare class AnimationEvent {
 
     describe('strictAttributeTypes', () => {
       beforeEach(() => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, Directive, NgModule, Input} from '@angular/core';
 
           @Component({
@@ -675,12 +757,16 @@ export declare class AnimationEvent {
             declarations: [TestCmp, TestDir],
           })
           class Module {}
-        `);
+        `
+        );
       });
 
       it('should produce an error for text attributes when enabled', () => {
-        env.tsconfig(
-            {fullTemplateTypeCheck: true, strictInputTypes: true, strictAttributeTypes: true});
+        env.tsconfig({
+          fullTemplateTypeCheck: true,
+          strictInputTypes: true,
+          strictAttributeTypes: true,
+        });
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
@@ -707,7 +793,9 @@ export declare class AnimationEvent {
 
     describe('strictDomEventTypes', () => {
       beforeEach(() => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -722,7 +810,8 @@ export declare class AnimationEvent {
             declarations: [TestCmp],
           })
           class Module {}
-        `);
+        `
+        );
       });
 
       it('should check expressions and infer type of $event when enabled', () => {
@@ -730,38 +819,42 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText)
-            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
-        expect(diags[1].messageText)
-            .toEqual(
-                `Argument of type 'FocusEvent' is not assignable to parameter of type 'string'.`);
+        expect(diags[0].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
+        expect(diags[1].messageText).toEqual(
+          `Argument of type 'FocusEvent' is not assignable to parameter of type 'string'.`
+        );
       });
 
-      it('should check expressions and infer type of $event when overall strictness is enabled',
-         () => {
-           env.tsconfig({strictTemplates: true});
+      it('should check expressions and infer type of $event when overall strictness is enabled', () => {
+        env.tsconfig({strictTemplates: true});
 
-           const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(2);
-           expect(diags[0].messageText)
-               .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
-           expect(diags[1].messageText)
-               .toEqual(
-                   `Argument of type 'FocusEvent' is not assignable to parameter of type 'string'.`);
-         });
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
+        expect(diags[1].messageText).toEqual(
+          `Argument of type 'FocusEvent' is not assignable to parameter of type 'string'.`
+        );
+      });
 
       it('should check expressions but not infer type of $event when not enabled', () => {
         env.tsconfig({fullTemplateTypeCheck: true});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText)
-            .toEqual(`Property 'invalid' does not exist on type 'TestCmp'.`);
+        expect(diags[0].messageText).toEqual(
+          `Property 'invalid' does not exist on type 'TestCmp'.`
+        );
       });
     });
 
     it('should check basic usage of NgIf', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
     import {CommonModule} from '@angular/common';
     import {Component, NgModule} from '@angular/core';
 
@@ -778,13 +871,16 @@ export declare class AnimationEvent {
       imports: [CommonModule],
     })
     class Module {}
-    `);
+    `
+      );
 
       env.driveMain();
     });
 
     it('should check usage of NgIf with explicit non-null guard', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
     import {CommonModule} from '@angular/common';
     import {Component, NgModule} from '@angular/core';
 
@@ -801,14 +897,17 @@ export declare class AnimationEvent {
       imports: [CommonModule],
     })
     class Module {}
-    `);
+    `
+      );
 
       env.driveMain();
     });
 
     it('should check usage of NgIf when using "let" to capture $implicit context variable', () => {
       env.tsconfig({strictTemplates: true});
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
     import {CommonModule} from '@angular/common';
     import {Component, NgModule} from '@angular/core';
 
@@ -825,14 +924,17 @@ export declare class AnimationEvent {
       imports: [CommonModule],
     })
     class Module {}
-    `);
+    `
+      );
 
       env.driveMain();
     });
 
     it('should check usage of NgIf when using "as" to capture `ngIf` context variable', () => {
       env.tsconfig({strictTemplates: true});
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
     import {CommonModule} from '@angular/common';
     import {Component, NgModule} from '@angular/core';
 
@@ -849,13 +951,16 @@ export declare class AnimationEvent {
       imports: [CommonModule],
     })
     class Module {}
-    `);
+    `
+      );
 
       env.driveMain();
     });
 
     it('should check basic usage of NgFor', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
     import {CommonModule} from '@angular/common';
     import {Component, NgModule} from '@angular/core';
 
@@ -872,14 +977,17 @@ export declare class AnimationEvent {
       imports: [CommonModule],
     })
     class Module {}
-    `);
+    `
+      );
 
       env.driveMain();
     });
 
     it('should report an error inside the NgFor template', () => {
       env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
     import {CommonModule} from '@angular/common';
     import {Component, NgModule} from '@angular/core';
 
@@ -896,18 +1004,22 @@ export declare class AnimationEvent {
       imports: [CommonModule],
     })
     export class Module {}
-    `);
+    `
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText)
-          .toEqual(`Property 'does_not_exist' does not exist on type '{ name: string; }'.`);
+      expect(diags[0].messageText).toEqual(
+        `Property 'does_not_exist' does not exist on type '{ name: string; }'.`
+      );
       expect(diags[0].start).toBe(199);
       expect(diags[0].length).toBe(19);
     });
 
     it('should accept an NgFor iteration over an any-typed value', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
     import {CommonModule} from '@angular/common';
     import {Component, NgModule} from '@angular/core';
 
@@ -924,14 +1036,17 @@ export declare class AnimationEvent {
       imports: [CommonModule],
     })
     export class Module {}
-    `);
+    `
+      );
 
       env.driveMain();
     });
 
     it('should accept NgFor iteration over a QueryList', () => {
       env.tsconfig({strictTemplates: true});
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {CommonModule} from '@angular/common';
         import {Component, NgModule, QueryList} from '@angular/core';
 
@@ -948,14 +1063,17 @@ export declare class AnimationEvent {
           imports: [CommonModule],
         })
         class Module {}
-    `);
+    `
+      );
 
       env.driveMain();
     });
 
     it('should infer the context of NgFor', () => {
       env.tsconfig({strictTemplates: true});
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {CommonModule} from '@angular/common';
         import {Component, NgModule} from '@angular/core';
 
@@ -972,7 +1090,8 @@ export declare class AnimationEvent {
           imports: [CommonModule],
         })
         class Module {}
-      `);
+      `
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(0);
@@ -980,7 +1099,9 @@ export declare class AnimationEvent {
 
     it('should infer the context of NgIf', () => {
       env.tsconfig({strictTemplates: true});
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {CommonModule} from '@angular/common';
         import {Component, NgModule} from '@angular/core';
         @Component({
@@ -997,16 +1118,20 @@ export declare class AnimationEvent {
           imports: [CommonModule],
         })
         class Module {}
-      `);
+      `
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText)
-          .toBe(`Property 'nonExistingProp' does not exist on type '{ name: string; }'.`);
+      expect(diags[0].messageText).toBe(
+        `Property 'nonExistingProp' does not exist on type '{ name: string; }'.`
+      );
     });
 
     it('should report an error with an unknown local ref target', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, NgModule} from '@angular/core';
 
         @Component({
@@ -1019,7 +1144,8 @@ export declare class AnimationEvent {
           declarations: [TestCmp],
         })
         class Module {}
-      `);
+      `
+      );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toBe(`No directive found with exportAs 'unknownTarget'.`);
@@ -1027,7 +1153,9 @@ export declare class AnimationEvent {
     });
 
     it('should report an error with an unknown pipe', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, NgModule} from '@angular/core';
 
         @Component({
@@ -1042,7 +1170,8 @@ export declare class AnimationEvent {
           declarations: [TestCmp],
         })
         class Module {}
-      `);
+      `
+      );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toBe(`No pipe found with name 'unknown'.`);
@@ -1050,7 +1179,9 @@ export declare class AnimationEvent {
     });
 
     it('should report an error with pipe bindings', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
     import {CommonModule} from '@angular/common';
     import {Component, NgModule} from '@angular/core';
 
@@ -1080,7 +1211,8 @@ export declare class AnimationEvent {
       imports: [CommonModule],
     })
     class Module {}
-    `);
+    `
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(4);
@@ -1093,18 +1225,25 @@ export declare class AnimationEvent {
       ];
 
       for (const error of allErrors) {
-        if (!diags.some(
-                diag =>
-                    ts.flattenDiagnosticMessageText(diag.messageText, '').indexOf(error) > -1)) {
+        if (
+          !diags.some(
+            (diag) => ts.flattenDiagnosticMessageText(diag.messageText, '').indexOf(error) > -1
+          )
+        ) {
           fail(`Expected a diagnostic message with text: ${error}`);
         }
       }
     });
 
     it('should constrain types using type parameter bounds', () => {
-      env.tsconfig(
-          {fullTemplateTypeCheck: true, strictInputTypes: true, strictContextGenerics: true});
-      env.write('test.ts', `
+      env.tsconfig({
+        fullTemplateTypeCheck: true,
+        strictInputTypes: true,
+        strictContextGenerics: true,
+      });
+      env.write(
+        'test.ts',
+        `
     import {CommonModule} from '@angular/common';
     import {Component, Input, NgModule} from '@angular/core';
 
@@ -1121,7 +1260,8 @@ export declare class AnimationEvent {
       imports: [CommonModule],
     })
     class Module {}
-    `);
+    `
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
@@ -1133,7 +1273,9 @@ export declare class AnimationEvent {
     describe('microsyntax variables', () => {
       beforeEach(() => {
         // Use the same template for both tests
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {CommonModule} from '@angular/common';
           import {Component, NgModule} from '@angular/core';
 
@@ -1153,10 +1295,11 @@ export declare class AnimationEvent {
             imports: [CommonModule],
           })
           export class Module {}
-        `);
+        `
+        );
       });
 
-      it('should be treated as \'any\' without strictTemplates', () => {
+      it("should be treated as 'any' without strictTemplates", () => {
         env.tsconfig({fullTemplateTypeCheck: true, strictTemplates: false});
 
         const diags = env.driveDiagnostics();
@@ -1168,14 +1311,17 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText)
-            .toBe(`Property 'nonExistingProp' does not exist on type '{ name: string; }[]'.`);
+        expect(diags[0].messageText).toBe(
+          `Property 'nonExistingProp' does not exist on type '{ name: string; }[]'.`
+        );
       });
     });
 
     it('should properly type-check inherited directives', () => {
       env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
     import {Component, Directive, Input, NgModule} from '@angular/core';
 
     @Directive()
@@ -1207,7 +1353,8 @@ export declare class AnimationEvent {
       declarations: [TestCmp, ChildDir],
     })
     class Module {}
-    `);
+    `
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(3);
@@ -1222,7 +1369,9 @@ export declare class AnimationEvent {
     it('should properly type-check inherited directives from external libraries', () => {
       env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
 
-      env.write('node_modules/external/index.d.ts', `
+      env.write(
+        'node_modules/external/index.d.ts',
+        `
         import * as i0 from '@angular/core';
 
         export declare class AbstractDir {
@@ -1240,9 +1389,12 @@ export declare class AnimationEvent {
         export declare class ExternalModule {
           static ɵmod: i0.ɵɵNgModuleDefWithMeta<ExternalModule, [typeof BaseDir], never, [typeof BaseDir]>;
         }
-      `);
+      `
+      );
 
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, Directive, Input, NgModule} from '@angular/core';
         import {BaseDir, ExternalModule} from 'external';
 
@@ -1264,7 +1416,8 @@ export declare class AnimationEvent {
           imports: [ExternalModule],
         })
         class Module {}
-      `);
+      `
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(3);
@@ -1277,7 +1430,9 @@ export declare class AnimationEvent {
     });
 
     it('should detect an illegal write to a template variable', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, NgModule} from '@angular/core';
         import {CommonModule} from '@angular/common';
 
@@ -1298,14 +1453,17 @@ export declare class AnimationEvent {
           imports: [CommonModule],
         })
         export class Module {}
-      `);
+      `
+      );
       const diags = env.driveDiagnostics();
       expect(diags.length).toEqual(1);
       expect(getSourceCodeForDiagnostic(diags[0])).toEqual('y = !y');
     });
 
     it('should detect a duplicate variable declaration', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, NgModule} from '@angular/core';
         import {CommonModule} from '@angular/common';
 
@@ -1326,7 +1484,8 @@ export declare class AnimationEvent {
           imports: [CommonModule],
         })
         export class Module {}
-      `);
+      `
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toEqual(1);
@@ -1334,26 +1493,27 @@ export declare class AnimationEvent {
       expect(getSourceCodeForDiagnostic(diags[0])).toContain('let i = index');
     });
 
-    it('should still type-check when fileToModuleName aliasing is enabled, but alias exports are not in the .d.ts file',
-       () => {
-         // The template type-checking file imports directives/pipes in order to type-check their
-         // usage. When `UnifiedModulesHost` aliasing is enabled, these imports would ordinarily use
-         // aliased values. However, such aliases are not guaranteed to exist in the .d.ts files,
-         // and so feeding such imports back into TypeScript does not work.
-         //
-         // Instead, direct imports should be used within template type-checking code. This test
-         // verifies that template type-checking is able to cope with such a scenario where
-         // aliasing is enabled and alias re-exports don't exist in .d.ts files.
-         env.tsconfig({
-           // Setting this private flag turns on aliasing.
-           '_useHostForImportGeneration': true,
-           // Because the tsconfig is overridden, template type-checking needs to be turned back on
-           // explicitly as well.
-           'fullTemplateTypeCheck': true,
-         });
+    it('should still type-check when fileToModuleName aliasing is enabled, but alias exports are not in the .d.ts file', () => {
+      // The template type-checking file imports directives/pipes in order to type-check their
+      // usage. When `UnifiedModulesHost` aliasing is enabled, these imports would ordinarily use
+      // aliased values. However, such aliases are not guaranteed to exist in the .d.ts files,
+      // and so feeding such imports back into TypeScript does not work.
+      //
+      // Instead, direct imports should be used within template type-checking code. This test
+      // verifies that template type-checking is able to cope with such a scenario where
+      // aliasing is enabled and alias re-exports don't exist in .d.ts files.
+      env.tsconfig({
+        // Setting this private flag turns on aliasing.
+        '_useHostForImportGeneration': true,
+        // Because the tsconfig is overridden, template type-checking needs to be turned back on
+        // explicitly as well.
+        'fullTemplateTypeCheck': true,
+      });
 
-         // 'alpha' declares the directive which will ultimately be imported.
-         env.write('alpha.d.ts', `
+      // 'alpha' declares the directive which will ultimately be imported.
+      env.write(
+        'alpha.d.ts',
+        `
           import {ɵɵDirectiveDefWithMeta, ɵɵNgModuleDefWithMeta} from '@angular/core';
 
           export declare class ExternalDir {
@@ -1364,21 +1524,27 @@ export declare class AnimationEvent {
           export declare class AlphaModule {
             static ɵmod: ɵɵNgModuleDefWithMeta<AlphaModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
           }
-         `);
+         `
+      );
 
-         // 'beta' re-exports AlphaModule from alpha.
-         env.write('beta.d.ts', `
+      // 'beta' re-exports AlphaModule from alpha.
+      env.write(
+        'beta.d.ts',
+        `
           import {ɵɵNgModuleDefWithMeta} from '@angular/core';
           import {AlphaModule} from './alpha';
 
           export declare class BetaModule {
             static ɵmod: ɵɵNgModuleDefWithMeta<BetaModule, never, never, [typeof AlphaModule]>;
           }
-         `);
+         `
+      );
 
-         // The application imports BetaModule from beta, gaining visibility of ExternalDir from
-         // alpha.
-         env.write('test.ts', `
+      // The application imports BetaModule from beta, gaining visibility of ExternalDir from
+      // alpha.
+      env.write(
+        'test.ts',
+        `
           import {Component, NgModule} from '@angular/core';
           import {BetaModule} from './beta';
 
@@ -1393,16 +1559,19 @@ export declare class AnimationEvent {
             imports: [BetaModule],
           })
           export class Module {}
-         `);
+         `
+      );
 
-         const diags = env.driveDiagnostics();
-         expect(diags.length).toBe(0);
-       });
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
 
     describe('input coercion', () => {
       beforeEach(() => {
         env.tsconfig({fullTemplateTypeCheck: true, strictInputTypes: true});
-        env.write('node_modules/@angular/material/index.d.ts', `
+        env.write(
+          'node_modules/@angular/material/index.d.ts',
+          `
         import * as i0 from '@angular/core';
 
         export declare class MatInput {
@@ -1414,11 +1583,14 @@ export declare class AnimationEvent {
         export declare class MatInputModule {
           static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatInputModule, [typeof MatInput], never, [typeof MatInput]>;
         }
-        `);
+        `
+        );
       });
 
       it('should coerce an input using a coercion function if provided', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, NgModule} from '@angular/core';
           import {MatInputModule} from '@angular/material';
 
@@ -1435,13 +1607,16 @@ export declare class AnimationEvent {
             imports: [MatInputModule],
           })
           export class FooModule {}
-        `);
+        `
+        );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
       });
 
       it('should apply coercion members of base classes', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, Directive, Input, NgModule} from '@angular/core';
 
           @Directive()
@@ -1469,14 +1644,16 @@ export declare class AnimationEvent {
             declarations: [MyDir, FooCmp],
           })
           export class FooModule {}
-        `);
+        `
+        );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
       });
 
-      it('should give an error if the binding expression type is not accepted by the coercion function',
-         () => {
-           env.write('test.ts', `
+      it('should give an error if the binding expression type is not accepted by the coercion function', () => {
+        env.write(
+          'test.ts',
+          `
             import {Component, NgModule} from '@angular/core';
             import {MatInputModule} from '@angular/material';
 
@@ -1493,12 +1670,14 @@ export declare class AnimationEvent {
               imports: [MatInputModule],
             })
             export class FooModule {}
-        `);
-           const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(1);
-           expect(diags[0].messageText)
-               .toBe(`Type 'boolean' is not assignable to type 'string | number'.`);
-         });
+        `
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Type 'boolean' is not assignable to type 'string | number'.`
+        );
+      });
     });
 
     describe('legacy schema checking with the DOM schema', () => {
@@ -1507,7 +1686,9 @@ export declare class AnimationEvent {
       });
 
       it('should check for unknown elements', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
         import {Component, NgModule} from '@angular/core';
         @Component({
           selector: 'blah',
@@ -1518,7 +1699,8 @@ export declare class AnimationEvent {
           declarations: [FooCmp],
         })
         export class FooModule {}
-      `);
+      `
+        );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(`'foo' is not a known element:
@@ -1527,7 +1709,9 @@ export declare class AnimationEvent {
       });
 
       it('should have a descriptive error for unknown elements that contain a dash', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
         import {Component, NgModule} from '@angular/core';
         @Component({
           selector: 'blah',
@@ -1538,7 +1722,8 @@ export declare class AnimationEvent {
           declarations: [FooCmp],
         })
         export class FooModule {}
-      `);
+      `
+        );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(`'my-foo' is not a known element:
@@ -1547,7 +1732,9 @@ export declare class AnimationEvent {
       });
 
       it('should check for unknown properties', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
         import {Component, NgModule} from '@angular/core';
         @Component({
           selector: 'blah',
@@ -1558,15 +1745,19 @@ export declare class AnimationEvent {
           declarations: [FooCmp],
         })
         export class FooModule {}
-      `);
+      `
+        );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText)
-            .toBe(`Can't bind to 'foo' since it isn't a known property of 'div'.`);
+        expect(diags[0].messageText).toBe(
+          `Can't bind to 'foo' since it isn't a known property of 'div'.`
+        );
       });
 
       it('should have a descriptive error for unknown properties with an "ng-" prefix', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
         import {Component, NgModule} from '@angular/core';
         @Component({
           selector: 'blah',
@@ -1577,15 +1768,19 @@ export declare class AnimationEvent {
           declarations: [FooCmp],
         })
         export class FooModule {}
-      `);
+      `
+        );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText)
-            .toBe(`Can't bind to 'foo' since it isn't a known property of 'div'.`);
+        expect(diags[0].messageText).toBe(
+          `Can't bind to 'foo' since it isn't a known property of 'div'.`
+        );
       });
 
       it('should convert property names when binding special properties', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
         import {Component, NgModule} from '@angular/core';
         @Component({
           selector: 'blah',
@@ -1598,16 +1793,18 @@ export declare class AnimationEvent {
           declarations: [FooCmp],
         })
         export class FooModule {}
-      `);
+      `
+        );
         const diags = env.driveDiagnostics();
         // Should not be an error to bind [for] of <label>, even though the actual property in the
         // DOM schema.
         expect(diags.length).toBe(0);
       });
 
-      it('should produce diagnostics for custom-elements-style elements when not using the CUSTOM_ELEMENTS_SCHEMA',
-         () => {
-           env.write('test.ts', `
+      it('should produce diagnostics for custom-elements-style elements when not using the CUSTOM_ELEMENTS_SCHEMA', () => {
+        env.write(
+          'test.ts',
+          `
           import {Component, NgModule} from '@angular/core';
           @Component({
             selector: 'blah',
@@ -1618,22 +1815,24 @@ export declare class AnimationEvent {
             declarations: [FooCmp],
           })
           export class FooModule {}
-      `);
-           const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(2);
-           expect(diags[0].messageText).toBe(`'custom-element' is not a known element:
+      `
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toBe(`'custom-element' is not a known element:
 1. If 'custom-element' is an Angular component, then verify that it is part of this module.
 2. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`);
-           expect(diags[1].messageText)
-               .toBe(`Can't bind to 'foo' since it isn't a known property of 'custom-element'.
+        expect(diags[1].messageText)
+          .toBe(`Can't bind to 'foo' since it isn't a known property of 'custom-element'.
 1. If 'custom-element' is an Angular component and it has 'foo' input, then verify that it is part of this module.
 2. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
 3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
-         });
+      });
 
-      it('should not produce diagnostics for custom-elements-style elements when using the CUSTOM_ELEMENTS_SCHEMA',
-         () => {
-           env.write('test.ts', `
+      it('should not produce diagnostics for custom-elements-style elements when using the CUSTOM_ELEMENTS_SCHEMA', () => {
+        env.write(
+          'test.ts',
+          `
             import {Component, NgModule, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 
             @Component({
@@ -1647,13 +1846,16 @@ export declare class AnimationEvent {
               schemas: [CUSTOM_ELEMENTS_SCHEMA],
             })
             export class FooModule {}
-          `);
-           const diags = env.driveDiagnostics();
-           expect(diags).toEqual([]);
-         });
+          `
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags).toEqual([]);
+      });
 
       it('should not produce diagnostics when using the NO_ERRORS_SCHEMA', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
         import {Component, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
 
         @Component({
@@ -1667,13 +1869,16 @@ export declare class AnimationEvent {
           schemas: [NO_ERRORS_SCHEMA],
         })
         export class FooModule {}
-      `);
+      `
+        );
         const diags = env.driveDiagnostics();
         expect(diags).toEqual([]);
       });
 
       it('should allow HTML elements inside SVG foreignObject', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
         import {Component, NgModule} from '@angular/core';
         @Component({
           selector: 'blah',
@@ -1690,13 +1895,16 @@ export declare class AnimationEvent {
           declarations: [FooCmp],
         })
         export class FooModule {}
-      `);
+      `
+        );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
       });
 
       it('should check for unknown elements inside an SVG foreignObject', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
         import {Component, NgModule} from '@angular/core';
         @Component({
           selector: 'blah',
@@ -1713,7 +1921,8 @@ export declare class AnimationEvent {
           declarations: [FooCmp],
         })
         export class FooModule {}
-      `);
+      `
+        );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(`'foo' is not a known element:
@@ -1723,7 +1932,7 @@ export declare class AnimationEvent {
     });
 
     // Test both sync and async compilations, see https://github.com/angular/angular/issues/32538
-    ['sync', 'async'].forEach(mode => {
+    ['sync', 'async'].forEach((mode) => {
       describe(`error locations [${mode}]`, () => {
         let driveDiagnostics: () => Promise<ReadonlyArray<ts.Diagnostic>>;
         beforeEach(() => {
@@ -1736,7 +1945,9 @@ export declare class AnimationEvent {
         });
 
         it('should be correct for direct templates', async () => {
-          env.write('test.ts', `
+          env.write(
+            'test.ts',
+            `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -1747,7 +1958,8 @@ export declare class AnimationEvent {
           })
           export class TestCmp {
             user: {name: string}[];
-          }`);
+          }`
+          );
 
           const diags = await driveDiagnostics();
           expect(diags.length).toBe(1);
@@ -1756,7 +1968,9 @@ export declare class AnimationEvent {
         });
 
         it('should be correct for indirect templates', async () => {
-          env.write('test.ts', `
+          env.write(
+            'test.ts',
+            `
           import {Component, NgModule} from '@angular/core';
 
           const TEMPLATE = \`<p>
@@ -1769,7 +1983,8 @@ export declare class AnimationEvent {
           })
           export class TestCmp {
             user: {name: string}[];
-          }`);
+          }`
+          );
 
           const diags = await driveDiagnostics();
           expect(diags.length).toBe(1);
@@ -1779,10 +1994,15 @@ export declare class AnimationEvent {
         });
 
         it('should be correct for external templates', async () => {
-          env.write('template.html', `<p>
+          env.write(
+            'template.html',
+            `<p>
           {{user.does_not_exist}}
-        </p>`);
-          env.write('test.ts', `
+        </p>`
+          );
+          env.write(
+            'test.ts',
+            `
           import {Component, NgModule} from '@angular/core';
 
 
@@ -1792,14 +2012,16 @@ export declare class AnimationEvent {
           })
           export class TestCmp {
             user: {name: string}[];
-          }`);
+          }`
+          );
 
           const diags = await driveDiagnostics();
           expect(diags.length).toBe(1);
           expect(diags[0].file!.fileName).toBe(_('/template.html'));
           expect(getSourceCodeForDiagnostic(diags[0])).toBe('user.does_not_exist');
-          expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0]))
-              .toBe(`'./template.html'`);
+          expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe(
+            `'./template.html'`
+          );
         });
       });
     });
@@ -1812,31 +2034,28 @@ export declare class AnimationEvent {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText)
-            .toContain(
-                'Angular compiler option "strictTemplates" is enabled, however "fullTemplateTypeCheck" is disabled.');
+        expect(diags[0].messageText).toContain(
+          'Angular compiler option "strictTemplates" is enabled, however "fullTemplateTypeCheck" is disabled.'
+        );
       });
-      it('should not error if "fullTemplateTypeCheck" is false when "strictTemplates" is false',
-         () => {
-           env.tsconfig({fullTemplateTypeCheck: false, strictTemplates: false});
+      it('should not error if "fullTemplateTypeCheck" is false when "strictTemplates" is false', () => {
+        env.tsconfig({fullTemplateTypeCheck: false, strictTemplates: false});
 
-           const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(0);
-         });
-      it('should not error if "fullTemplateTypeCheck" is not set when "strictTemplates" is true',
-         () => {
-           env.tsconfig({strictTemplates: true});
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+      it('should not error if "fullTemplateTypeCheck" is not set when "strictTemplates" is true', () => {
+        env.tsconfig({strictTemplates: true});
 
-           const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(0);
-         });
-      it('should not error if "fullTemplateTypeCheck" is true set when "strictTemplates" is true',
-         () => {
-           env.tsconfig({strictTemplates: true});
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+      it('should not error if "fullTemplateTypeCheck" is true set when "strictTemplates" is true', () => {
+        env.tsconfig({strictTemplates: true});
 
-           const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(0);
-         });
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
     });
   });
 });

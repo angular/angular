@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 import {AbsoluteFsPath, FileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
 import {PathMappings} from '../utils';
@@ -23,7 +24,7 @@ export interface EntryPointBundle {
   isFlatCore: boolean;
   rootDirs: AbsoluteFsPath[];
   src: BundleProgram;
-  dts: BundleProgram|null;
+  dts: BundleProgram | null;
   enableI18nLegacyMessageIdFormat: boolean;
 }
 
@@ -42,14 +43,24 @@ export interface EntryPointBundle {
  * component templates.
  */
 export function makeEntryPointBundle(
-    fs: FileSystem, entryPoint: EntryPoint, formatPath: string, isCore: boolean,
-    format: EntryPointFormat, transformDts: boolean, pathMappings?: PathMappings,
-    mirrorDtsFromSrc: boolean = false,
-    enableI18nLegacyMessageIdFormat: boolean = true): EntryPointBundle {
+  fs: FileSystem,
+  entryPoint: EntryPoint,
+  formatPath: string,
+  isCore: boolean,
+  format: EntryPointFormat,
+  transformDts: boolean,
+  pathMappings?: PathMappings,
+  mirrorDtsFromSrc: boolean = false,
+  enableI18nLegacyMessageIdFormat: boolean = true
+): EntryPointBundle {
   // Create the TS program and necessary helpers.
   const rootDir = entryPoint.package;
-  const options: ts
-      .CompilerOptions = {allowJs: true, maxNodeModuleJsDepth: Infinity, rootDir, ...pathMappings};
+  const options: ts.CompilerOptions = {
+    allowJs: true,
+    maxNodeModuleJsDepth: Infinity,
+    rootDir,
+    ...pathMappings,
+  };
   const srcHost = new NgccSourcesCompilerHost(fs, options, entryPoint.path);
   const dtsHost = new NgtscCompilerHost(fs, options);
 
@@ -57,14 +68,30 @@ export function makeEntryPointBundle(
   const absFormatPath = fs.resolve(entryPoint.path, formatPath);
   const typingsPath = fs.resolve(entryPoint.path, entryPoint.typings);
   const src = makeBundleProgram(
-      fs, isCore, entryPoint.package, absFormatPath, 'r3_symbols.js', options, srcHost);
-  const additionalDtsFiles = transformDts && mirrorDtsFromSrc ?
-      computePotentialDtsFilesFromJsFiles(fs, src.program, absFormatPath, typingsPath) :
-      [];
-  const dts = transformDts ? makeBundleProgram(
-                                 fs, isCore, entryPoint.package, typingsPath, 'r3_symbols.d.ts',
-                                 options, dtsHost, additionalDtsFiles) :
-                             null;
+    fs,
+    isCore,
+    entryPoint.package,
+    absFormatPath,
+    'r3_symbols.js',
+    options,
+    srcHost
+  );
+  const additionalDtsFiles =
+    transformDts && mirrorDtsFromSrc
+      ? computePotentialDtsFilesFromJsFiles(fs, src.program, absFormatPath, typingsPath)
+      : [];
+  const dts = transformDts
+    ? makeBundleProgram(
+        fs,
+        isCore,
+        entryPoint.package,
+        typingsPath,
+        'r3_symbols.d.ts',
+        options,
+        dtsHost,
+        additionalDtsFiles
+      )
+    : null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
 
   return {
@@ -75,13 +102,16 @@ export function makeEntryPointBundle(
     isFlatCore,
     src,
     dts,
-    enableI18nLegacyMessageIdFormat
+    enableI18nLegacyMessageIdFormat,
   };
 }
 
 function computePotentialDtsFilesFromJsFiles(
-    fs: FileSystem, srcProgram: ts.Program, formatPath: AbsoluteFsPath,
-    typingsPath: AbsoluteFsPath) {
+  fs: FileSystem,
+  srcProgram: ts.Program,
+  formatPath: AbsoluteFsPath,
+  typingsPath: AbsoluteFsPath
+) {
   const formatRoot = fs.dirname(formatPath);
   const typingsRoot = fs.dirname(typingsPath);
   const additionalFiles: AbsoluteFsPath[] = [];
@@ -92,8 +122,10 @@ function computePotentialDtsFilesFromJsFiles(
 
     // Given a source file at e.g. `esm2015/src/some/nested/index.js`, try to resolve the
     // declaration file under the typings root in `src/some/nested/index.d.ts`.
-    const mirroredDtsPath =
-        fs.resolve(typingsRoot, fs.relative(formatRoot, sf.fileName.replace(/\.js$/, '.d.ts')));
+    const mirroredDtsPath = fs.resolve(
+      typingsRoot,
+      fs.relative(formatRoot, sf.fileName.replace(/\.js$/, '.d.ts'))
+    );
     if (fs.exists(mirroredDtsPath)) {
       additionalFiles.push(mirroredDtsPath);
     }

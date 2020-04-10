@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDiDependencyMetadata, CompileEntryComponentMetadata, CompileProviderMetadata, CompileTokenMetadata} from '../compile_metadata';
+import {
+  CompileDiDependencyMetadata,
+  CompileEntryComponentMetadata,
+  CompileProviderMetadata,
+  CompileTokenMetadata,
+} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {DepFlags, NodeFlags} from '../core';
 import {createTokenForExternalReference, Identifiers} from '../identifiers';
@@ -16,11 +21,14 @@ import {convertValueToOutputAst} from '../output/value_util';
 import {ProviderAst, ProviderAstType} from '../template_parser/template_ast';
 import {OutputContext} from '../util';
 
-export function providerDef(ctx: OutputContext, providerAst: ProviderAst): {
-  providerExpr: o.Expression,
-  flags: NodeFlags,
-  depsExpr: o.Expression,
-  tokenExpr: o.Expression
+export function providerDef(
+  ctx: OutputContext,
+  providerAst: ProviderAst
+): {
+  providerExpr: o.Expression;
+  flags: NodeFlags;
+  depsExpr: o.Expression;
+  tokenExpr: o.Expression;
 } {
   let flags = NodeFlags.None;
   if (!providerAst.eager) {
@@ -34,15 +42,17 @@ export function providerDef(ctx: OutputContext, providerAst: ProviderAst): {
   }
   providerAst.lifecycleHooks.forEach((lifecycleHook) => {
     // for regular providers, we only support ngOnDestroy
-    if (lifecycleHook === LifecycleHooks.OnDestroy ||
-        providerAst.providerType === ProviderAstType.Directive ||
-        providerAst.providerType === ProviderAstType.Component) {
+    if (
+      lifecycleHook === LifecycleHooks.OnDestroy ||
+      providerAst.providerType === ProviderAstType.Directive ||
+      providerAst.providerType === ProviderAstType.Component
+    ) {
       flags |= lifecycleHookToNodeFlag(lifecycleHook);
     }
   });
-  const {providerExpr, flags: providerFlags, depsExpr} = providerAst.multiProvider ?
-      multiProviderDef(ctx, flags, providerAst.providers) :
-      singleProviderDef(ctx, flags, providerAst.providerType, providerAst.providers[0]);
+  const {providerExpr, flags: providerFlags, depsExpr} = providerAst.multiProvider
+    ? multiProviderDef(ctx, flags, providerAst.providers)
+    : singleProviderDef(ctx, flags, providerAst.providerType, providerAst.providers[0]);
   return {
     providerExpr,
     flags: providerFlags,
@@ -52,8 +62,10 @@ export function providerDef(ctx: OutputContext, providerAst: ProviderAst): {
 }
 
 function multiProviderDef(
-    ctx: OutputContext, flags: NodeFlags, providers: CompileProviderMetadata[]):
-    {providerExpr: o.Expression, flags: NodeFlags, depsExpr: o.Expression} {
+  ctx: OutputContext,
+  flags: NodeFlags,
+  providers: CompileProviderMetadata[]
+): {providerExpr: o.Expression; flags: NodeFlags; depsExpr: o.Expression} {
   const allDepDefs: o.Expression[] = [];
   const allParams: o.FnParam[] = [];
   const exprs = providers.map((provider, providerIndex) => {
@@ -72,12 +84,15 @@ function multiProviderDef(
     }
     return expr;
   });
-  const providerExpr =
-      o.fn(allParams, [new o.ReturnStatement(o.literalArr(exprs))], o.INFERRED_TYPE);
+  const providerExpr = o.fn(
+    allParams,
+    [new o.ReturnStatement(o.literalArr(exprs))],
+    o.INFERRED_TYPE
+  );
   return {
     providerExpr,
     flags: flags | NodeFlags.TypeFactoryProvider,
-    depsExpr: o.literalArr(allDepDefs)
+    depsExpr: o.literalArr(allDepDefs),
   };
 
   function convertDeps(providerIndex: number, deps: CompileDiDependencyMetadata[]) {
@@ -91,9 +106,11 @@ function multiProviderDef(
 }
 
 function singleProviderDef(
-    ctx: OutputContext, flags: NodeFlags, providerType: ProviderAstType,
-    providerMeta: CompileProviderMetadata):
-    {providerExpr: o.Expression, flags: NodeFlags, depsExpr: o.Expression} {
+  ctx: OutputContext,
+  flags: NodeFlags,
+  providerType: ProviderAstType,
+  providerMeta: CompileProviderMetadata
+): {providerExpr: o.Expression; flags: NodeFlags; depsExpr: o.Expression} {
   let providerExpr: o.Expression;
   let deps: CompileDiDependencyMetadata[];
   if (providerType === ProviderAstType.Directive || providerType === ProviderAstType.Component) {
@@ -119,13 +136,14 @@ function singleProviderDef(
       deps = [];
     }
   }
-  const depsExpr = o.literalArr(deps.map(dep => depDef(ctx, dep)));
+  const depsExpr = o.literalArr(deps.map((dep) => depDef(ctx, dep)));
   return {providerExpr, flags, depsExpr};
 }
 
 function tokenExpr(ctx: OutputContext, tokenMeta: CompileTokenMetadata): o.Expression {
-  return tokenMeta.identifier ? ctx.importExpr(tokenMeta.identifier.reference) :
-                                o.literal(tokenMeta.value);
+  return tokenMeta.identifier
+    ? ctx.importExpr(tokenMeta.identifier.reference)
+    : o.literal(tokenMeta.value);
 }
 
 export function depDef(ctx: OutputContext, dep: CompileDiDependencyMetadata): o.Expression {
@@ -180,15 +198,19 @@ export function lifecycleHookToNodeFlag(lifecycleHook: LifecycleHooks): NodeFlag
 }
 
 export function componentFactoryResolverProviderDef(
-    reflector: CompileReflector, ctx: OutputContext, flags: NodeFlags,
-    entryComponents: CompileEntryComponentMetadata[]): {
-  providerExpr: o.Expression,
+  reflector: CompileReflector,
+  ctx: OutputContext,
   flags: NodeFlags,
-  depsExpr: o.Expression,
-  tokenExpr: o.Expression
+  entryComponents: CompileEntryComponentMetadata[]
+): {
+  providerExpr: o.Expression;
+  flags: NodeFlags;
+  depsExpr: o.Expression;
+  tokenExpr: o.Expression;
 } {
-  const entryComponentFactories =
-      entryComponents.map((entryComponent) => ctx.importExpr(entryComponent.componentFactory));
+  const entryComponentFactories = entryComponents.map((entryComponent) =>
+    ctx.importExpr(entryComponent.componentFactory)
+  );
   const token = createTokenForExternalReference(reflector, Identifiers.ComponentFactoryResolver);
   const classMeta = {
     diDeps: [
@@ -197,13 +219,17 @@ export function componentFactoryResolverProviderDef(
       {token: createTokenForExternalReference(reflector, Identifiers.NgModuleRef)},
     ],
     lifecycleHooks: [],
-    reference: reflector.resolveExternalReference(Identifiers.CodegenComponentFactoryResolver)
+    reference: reflector.resolveExternalReference(Identifiers.CodegenComponentFactoryResolver),
   };
-  const {providerExpr, flags: providerFlags, depsExpr} =
-      singleProviderDef(ctx, flags, ProviderAstType.PrivateService, {
-        token,
-        multi: false,
-        useClass: classMeta,
-      });
+  const {providerExpr, flags: providerFlags, depsExpr} = singleProviderDef(
+    ctx,
+    flags,
+    ProviderAstType.PrivateService,
+    {
+      token,
+      multi: false,
+      useClass: classMeta,
+    }
+  );
   return {providerExpr, flags: providerFlags, depsExpr, tokenExpr: tokenExpr(ctx, token)};
 }

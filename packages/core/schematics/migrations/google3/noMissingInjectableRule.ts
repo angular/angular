@@ -13,8 +13,6 @@ import {NgDefinitionCollector} from '../missing-injectable/definition_collector'
 import {TslintUpdateRecorder} from '../missing-injectable/google3/tslint_update_recorder';
 import {MissingInjectableTransform} from '../missing-injectable/transform';
 
-
-
 /**
  * TSLint rule that flags classes which are declared as providers in "NgModule",
  * "Directive" or "Component" definitions while not being decorated with any
@@ -24,21 +22,23 @@ export class Rule extends Rules.TypedRule {
   applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
     const ruleName = this.ruleName;
     const typeChecker = program.getTypeChecker();
-    const sourceFiles = program.getSourceFiles().filter(
-        s => !s.isDeclarationFile && !program.isSourceFileFromExternalLibrary(s));
+    const sourceFiles = program
+      .getSourceFiles()
+      .filter((s) => !s.isDeclarationFile && !program.isSourceFileFromExternalLibrary(s));
     const definitionCollector = new NgDefinitionCollector(typeChecker);
     const failures: RuleFailure[] = [];
 
     // Analyze source files by detecting all "NgModule", "Directive" or
     // "Component" definitions.
-    sourceFiles.forEach(sourceFile => definitionCollector.visitNode(sourceFile));
+    sourceFiles.forEach((sourceFile) => definitionCollector.visitNode(sourceFile));
 
     const {resolvedModules, resolvedDirectives} = definitionCollector;
     const transformer = new MissingInjectableTransform(typeChecker, getUpdateRecorder);
     const updateRecorders = new Map<ts.SourceFile, TslintUpdateRecorder>();
 
-    [...transformer.migrateModules(resolvedModules),
-     ...transformer.migrateDirectives(resolvedDirectives),
+    [
+      ...transformer.migrateModules(resolvedModules),
+      ...transformer.migrateDirectives(resolvedDirectives),
     ].forEach(({message, node}) => {
       // Only report failures for the current source file that is visited.
       if (node.getSourceFile() === sourceFile) {
@@ -50,7 +50,7 @@ export class Rule extends Rules.TypedRule {
     transformer.recordChanges();
 
     if (updateRecorders.has(sourceFile)) {
-      failures.push(...updateRecorders.get(sourceFile) !.failures);
+      failures.push(...updateRecorders.get(sourceFile)!.failures);
     }
 
     return failures;
@@ -58,7 +58,7 @@ export class Rule extends Rules.TypedRule {
     /** Gets the update recorder for the specified source file. */
     function getUpdateRecorder(sourceFile: ts.SourceFile): TslintUpdateRecorder {
       if (updateRecorders.has(sourceFile)) {
-        return updateRecorders.get(sourceFile) !;
+        return updateRecorders.get(sourceFile)!;
       }
       const recorder = new TslintUpdateRecorder(ruleName, sourceFile);
       updateRecorders.set(sourceFile, recorder);

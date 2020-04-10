@@ -14,9 +14,8 @@ import {SelectControlComp} from './select_control_example';
 @NgModule({
   imports: [BrowserModule, FormsModule],
   declarations: [SelectControlComp],
-  bootstrap: [SelectControlComp]
+  bootstrap: [SelectControlComp],
 })
-export class AppModule {
-}
+export class AppModule {}
 
 export {SelectControlComp as AppComponent};

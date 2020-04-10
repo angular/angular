@@ -8,10 +8,20 @@
 
 import {EventEmitter} from '@angular/core';
 import {Injectable} from '@angular/core/src/di';
-import {PendingMacrotask, Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
+import {
+  PendingMacrotask,
+  Testability,
+  TestabilityRegistry,
+} from '@angular/core/src/testability/testability';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {async, fakeAsync, flush, tick} from '@angular/core/testing';
-import {SpyObject, beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
+import {
+  SpyObject,
+  beforeEach,
+  describe,
+  expect,
+  it,
+} from '@angular/core/testing/src/testing_internal';
 
 import {scheduleMicroTask} from '../../src/util/microtask';
 
@@ -38,9 +48,13 @@ class MockNgZone extends NgZone {
     this.onStable = new EventEmitter(false);
   }
 
-  unstable(): void { this.onUnstable.emit(null); }
+  unstable(): void {
+    this.onUnstable.emit(null);
+  }
 
-  stable(): void { this.onStable.emit(null); }
+  stable(): void {
+    this.onStable.emit(null);
+  }
 }
 
 {
@@ -60,14 +74,17 @@ class MockNgZone extends NgZone {
     }));
 
     describe('Pending count logic', () => {
-      it('should start with a pending count of 0',
-         () => { expect(testability.getPendingRequestCount()).toEqual(0); });
+      it('should start with a pending count of 0', () => {
+        expect(testability.getPendingRequestCount()).toEqual(0);
+      });
 
       it('should fire whenstable callbacks if pending count is 0', async(() => {
-           testability.whenStable(execute);
+        testability.whenStable(execute);
 
-           microTask(() => { expect(execute).toHaveBeenCalled(); });
-         }));
+        microTask(() => {
+          expect(execute).toHaveBeenCalled();
+        });
+      }));
 
       it('should not fire whenstable callbacks synchronously if pending count is 0', () => {
         testability.whenStable(execute);
@@ -75,173 +92,181 @@ class MockNgZone extends NgZone {
       });
 
       it('should not call whenstable callbacks when there are pending counts', async(() => {
-           testability.increasePendingRequestCount();
-           testability.increasePendingRequestCount();
-           testability.whenStable(execute);
+        testability.increasePendingRequestCount();
+        testability.increasePendingRequestCount();
+        testability.whenStable(execute);
 
-           microTask(() => {
-             expect(execute).not.toHaveBeenCalled();
-             testability.decreasePendingRequestCount();
+        microTask(() => {
+          expect(execute).not.toHaveBeenCalled();
+          testability.decreasePendingRequestCount();
 
-             microTask(() => { expect(execute).not.toHaveBeenCalled(); });
-           });
-         }));
+          microTask(() => {
+            expect(execute).not.toHaveBeenCalled();
+          });
+        });
+      }));
 
       it('should fire whenstable callbacks when pending drops to 0', async(() => {
-           testability.increasePendingRequestCount();
-           testability.whenStable(execute);
+        testability.increasePendingRequestCount();
+        testability.whenStable(execute);
 
-           microTask(() => {
-             expect(execute).not.toHaveBeenCalled();
-             testability.decreasePendingRequestCount();
+        microTask(() => {
+          expect(execute).not.toHaveBeenCalled();
+          testability.decreasePendingRequestCount();
 
-             microTask(() => { expect(execute).toHaveBeenCalled(); });
-           });
-         }));
+          microTask(() => {
+            expect(execute).toHaveBeenCalled();
+          });
+        });
+      }));
 
       it('should not fire whenstable callbacks synchronously when pending drops to 0', async(() => {
-           testability.increasePendingRequestCount();
-           testability.whenStable(execute);
-           testability.decreasePendingRequestCount();
+        testability.increasePendingRequestCount();
+        testability.whenStable(execute);
+        testability.decreasePendingRequestCount();
 
-           expect(execute).not.toHaveBeenCalled();
-         }));
+        expect(execute).not.toHaveBeenCalled();
+      }));
 
       it('should fire whenstable callbacks with didWork if pending count is 0', async(() => {
-           microTask(() => {
-             testability.whenStable(execute);
+        microTask(() => {
+          testability.whenStable(execute);
 
-             microTask(() => { expect(execute).toHaveBeenCalledWith(false); });
-           });
-         }));
+          microTask(() => {
+            expect(execute).toHaveBeenCalledWith(false);
+          });
+        });
+      }));
 
       it('should fire whenstable callbacks with didWork when pending drops to 0', async(() => {
-           testability.increasePendingRequestCount();
-           testability.whenStable(execute);
+        testability.increasePendingRequestCount();
+        testability.whenStable(execute);
 
-           testability.decreasePendingRequestCount();
+        testability.decreasePendingRequestCount();
 
-           microTask(() => {
-             expect(execute).toHaveBeenCalledWith(true);
-             testability.whenStable(execute2);
+        microTask(() => {
+          expect(execute).toHaveBeenCalledWith(true);
+          testability.whenStable(execute2);
 
-             microTask(() => { expect(execute2).toHaveBeenCalledWith(false); });
-           });
-         }));
-
+          microTask(() => {
+            expect(execute2).toHaveBeenCalledWith(false);
+          });
+        });
+      }));
     });
 
     describe('NgZone callback logic', () => {
       describe('whenStable with timeout', () => {
         it('should list pending tasks when the timeout is hit', fakeAsync(() => {
-             const id = ngZone.run(() => setTimeout(() => {}, 1000));
-             testability.whenStable(execute, 200);
+          const id = ngZone.run(() => setTimeout(() => {}, 1000));
+          testability.whenStable(execute, 200);
 
-             expect(execute).not.toHaveBeenCalled();
-             tick(200);
-             expect(execute).toHaveBeenCalled();
-             const tasks = execute.calls.mostRecent().args[1] as PendingMacrotask[];
+          expect(execute).not.toHaveBeenCalled();
+          tick(200);
+          expect(execute).toHaveBeenCalled();
+          const tasks = execute.calls.mostRecent().args[1] as PendingMacrotask[];
 
-             expect(tasks.length).toEqual(1);
-             expect(tasks[0].data).toBeTruthy();
-             expect(tasks[0].data !.delay).toEqual(1000);
-             expect(tasks[0].source).toEqual('setTimeout');
-             expect(tasks[0].data !.isPeriodic).toEqual(false);
+          expect(tasks.length).toEqual(1);
+          expect(tasks[0].data).toBeTruthy();
+          expect(tasks[0].data!.delay).toEqual(1000);
+          expect(tasks[0].source).toEqual('setTimeout');
+          expect(tasks[0].data!.isPeriodic).toEqual(false);
 
-             clearTimeout(id);
-           }));
+          clearTimeout(id);
+        }));
 
         it('should fire if Angular is already stable', async(() => {
-             testability.whenStable(execute, 200);
+          testability.whenStable(execute, 200);
 
-             microTask(() => { expect(execute).toHaveBeenCalled(); });
-           }));
+          microTask(() => {
+            expect(execute).toHaveBeenCalled();
+          });
+        }));
 
         it('should fire when macroTasks are cancelled', fakeAsync(() => {
-             const id = ngZone.run(() => setTimeout(() => {}, 1000));
-             testability.whenStable(execute, 500);
+          const id = ngZone.run(() => setTimeout(() => {}, 1000));
+          testability.whenStable(execute, 500);
 
-             tick(200);
-             ngZone.run(() => clearTimeout(id));
-             // fakeAsync doesn't trigger NgZones whenStable
-             ngZone.stable();
+          tick(200);
+          ngZone.run(() => clearTimeout(id));
+          // fakeAsync doesn't trigger NgZones whenStable
+          ngZone.stable();
 
-             tick(1);
-             expect(execute).toHaveBeenCalled();
-           }));
+          tick(1);
+          expect(execute).toHaveBeenCalled();
+        }));
 
         it('calls the done callback when angular is stable', fakeAsync(() => {
-             let timeout1Done = false;
-             ngZone.run(() => setTimeout(() => timeout1Done = true, 500));
-             testability.whenStable(execute, 1000);
+          let timeout1Done = false;
+          ngZone.run(() => setTimeout(() => (timeout1Done = true), 500));
+          testability.whenStable(execute, 1000);
 
-             tick(600);
-             ngZone.stable();
-             tick();
+          tick(600);
+          ngZone.stable();
+          tick();
 
-             expect(timeout1Done).toEqual(true);
-             expect(execute).toHaveBeenCalled();
+          expect(timeout1Done).toEqual(true);
+          expect(execute).toHaveBeenCalled();
 
-             // Should cancel the done timeout.
-             tick(500);
-             ngZone.stable();
-             tick();
-             expect(execute.calls.count()).toEqual(1);
-           }));
-
+          // Should cancel the done timeout.
+          tick(500);
+          ngZone.stable();
+          tick();
+          expect(execute.calls.count()).toEqual(1);
+        }));
 
         it('calls update when macro tasks change', fakeAsync(() => {
-             let timeout1Done = false;
-             let timeout2Done = false;
-             ngZone.run(() => setTimeout(() => timeout1Done = true, 500));
-             tick();
-             testability.whenStable(execute, 1000, updateCallback);
+          let timeout1Done = false;
+          let timeout2Done = false;
+          ngZone.run(() => setTimeout(() => (timeout1Done = true), 500));
+          tick();
+          testability.whenStable(execute, 1000, updateCallback);
 
-             tick(100);
-             ngZone.run(() => setTimeout(() => timeout2Done = true, 300));
-             expect(updateCallback.calls.count()).toEqual(1);
-             tick(600);
+          tick(100);
+          ngZone.run(() => setTimeout(() => (timeout2Done = true), 300));
+          expect(updateCallback.calls.count()).toEqual(1);
+          tick(600);
 
-             expect(timeout1Done).toEqual(true);
-             expect(timeout2Done).toEqual(true);
-             expect(updateCallback.calls.count()).toEqual(3);
-             expect(execute).toHaveBeenCalled();
+          expect(timeout1Done).toEqual(true);
+          expect(timeout2Done).toEqual(true);
+          expect(updateCallback.calls.count()).toEqual(3);
+          expect(execute).toHaveBeenCalled();
 
-             const update1 = updateCallback.calls.all()[0].args[0] as PendingMacrotask[];
-             expect(update1[0].data !.delay).toEqual(500);
+          const update1 = updateCallback.calls.all()[0].args[0] as PendingMacrotask[];
+          expect(update1[0].data!.delay).toEqual(500);
 
-             const update2 = updateCallback.calls.all()[1].args[0] as PendingMacrotask[];
-             expect(update2[0].data !.delay).toEqual(500);
-             expect(update2[1].data !.delay).toEqual(300);
-           }));
+          const update2 = updateCallback.calls.all()[1].args[0] as PendingMacrotask[];
+          expect(update2[0].data!.delay).toEqual(500);
+          expect(update2[1].data!.delay).toEqual(300);
+        }));
 
         it('cancels the done callback if the update callback returns true', fakeAsync(() => {
-             let timeoutDone = false;
-             ngZone.unstable();
-             execute2.and.returnValue(true);
-             testability.whenStable(execute, 1000, execute2);
+          let timeoutDone = false;
+          ngZone.unstable();
+          execute2.and.returnValue(true);
+          testability.whenStable(execute, 1000, execute2);
 
-             tick(100);
-             ngZone.run(() => setTimeout(() => timeoutDone = true, 500));
-             ngZone.stable();
-             expect(execute2).toHaveBeenCalled();
+          tick(100);
+          ngZone.run(() => setTimeout(() => (timeoutDone = true), 500));
+          ngZone.stable();
+          expect(execute2).toHaveBeenCalled();
 
-             tick(500);
-             ngZone.stable();
-             tick();
+          tick(500);
+          ngZone.stable();
+          tick();
 
-             expect(execute).not.toHaveBeenCalled();
-           }));
+          expect(execute).not.toHaveBeenCalled();
+        }));
       });
 
       it('should fire whenstable callback if event is already finished', fakeAsync(() => {
-           ngZone.unstable();
-           ngZone.stable();
-           testability.whenStable(execute);
+        ngZone.unstable();
+        ngZone.stable();
+        testability.whenStable(execute);
 
-           tick();
-           expect(execute).toHaveBeenCalled();
-         }));
+        tick();
+        expect(execute).toHaveBeenCalled();
+      }));
 
       it('should not fire whenstable callbacks synchronously if event is already finished', () => {
         ngZone.unstable();
@@ -252,16 +277,16 @@ class MockNgZone extends NgZone {
       });
 
       it('should fire whenstable callback when event finishes', fakeAsync(() => {
-           ngZone.unstable();
-           testability.whenStable(execute);
+        ngZone.unstable();
+        testability.whenStable(execute);
 
-           tick();
-           expect(execute).not.toHaveBeenCalled();
-           ngZone.stable();
+        tick();
+        expect(execute).not.toHaveBeenCalled();
+        ngZone.stable();
 
-           tick();
-           expect(execute).toHaveBeenCalled();
-         }));
+        tick();
+        expect(execute).toHaveBeenCalled();
+      }));
 
       it('should not fire whenstable callbacks synchronously when event finishes', () => {
         ngZone.unstable();
@@ -272,72 +297,71 @@ class MockNgZone extends NgZone {
       });
 
       it('should not fire whenstable callback when event did not finish', fakeAsync(() => {
-           ngZone.unstable();
-           testability.increasePendingRequestCount();
-           testability.whenStable(execute);
+        ngZone.unstable();
+        testability.increasePendingRequestCount();
+        testability.whenStable(execute);
 
-           tick();
-           expect(execute).not.toHaveBeenCalled();
-           testability.decreasePendingRequestCount();
+        tick();
+        expect(execute).not.toHaveBeenCalled();
+        testability.decreasePendingRequestCount();
 
-           tick();
-           expect(execute).not.toHaveBeenCalled();
-           ngZone.stable();
+        tick();
+        expect(execute).not.toHaveBeenCalled();
+        ngZone.stable();
 
-           tick();
-           expect(execute).toHaveBeenCalled();
-         }));
+        tick();
+        expect(execute).toHaveBeenCalled();
+      }));
 
       it('should not fire whenstable callback when there are pending counts', fakeAsync(() => {
-           ngZone.unstable();
-           testability.increasePendingRequestCount();
-           testability.increasePendingRequestCount();
-           testability.whenStable(execute);
+        ngZone.unstable();
+        testability.increasePendingRequestCount();
+        testability.increasePendingRequestCount();
+        testability.whenStable(execute);
 
-           tick();
-           expect(execute).not.toHaveBeenCalled();
-           ngZone.stable();
+        tick();
+        expect(execute).not.toHaveBeenCalled();
+        ngZone.stable();
 
-           tick();
-           expect(execute).not.toHaveBeenCalled();
-           testability.decreasePendingRequestCount();
+        tick();
+        expect(execute).not.toHaveBeenCalled();
+        testability.decreasePendingRequestCount();
 
-           tick();
-           expect(execute).not.toHaveBeenCalled();
-           testability.decreasePendingRequestCount();
+        tick();
+        expect(execute).not.toHaveBeenCalled();
+        testability.decreasePendingRequestCount();
 
-           tick();
-           expect(execute).toHaveBeenCalled();
-         }));
+        tick();
+        expect(execute).toHaveBeenCalled();
+      }));
 
-      it('should fire whenstable callback with didWork if event is already finished',
-         fakeAsync(() => {
-           ngZone.unstable();
-           ngZone.stable();
-           testability.whenStable(execute);
+      it('should fire whenstable callback with didWork if event is already finished', fakeAsync(() => {
+        ngZone.unstable();
+        ngZone.stable();
+        testability.whenStable(execute);
 
-           tick();
-           expect(execute).toHaveBeenCalledWith(true);
-           testability.whenStable(execute2);
+        tick();
+        expect(execute).toHaveBeenCalledWith(true);
+        testability.whenStable(execute2);
 
-           tick();
-           expect(execute2).toHaveBeenCalledWith(false);
-         }));
+        tick();
+        expect(execute2).toHaveBeenCalledWith(false);
+      }));
 
       it('should fire whenstable callback with didwork when event finishes', fakeAsync(() => {
-           ngZone.unstable();
-           testability.whenStable(execute);
+        ngZone.unstable();
+        testability.whenStable(execute);
 
-           tick();
-           ngZone.stable();
+        tick();
+        ngZone.stable();
 
-           tick();
-           expect(execute).toHaveBeenCalledWith(true);
-           testability.whenStable(execute2);
+        tick();
+        expect(execute).toHaveBeenCalledWith(true);
+        testability.whenStable(execute2);
 
-           tick();
-           expect(execute2).toHaveBeenCalledWith(false);
-         }));
+        tick();
+        expect(execute2).toHaveBeenCalledWith(false);
+      }));
     });
   });
 

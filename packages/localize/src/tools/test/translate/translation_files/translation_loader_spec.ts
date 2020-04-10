@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ɵParsedTranslation} from '@angular/localize';
 
 import {Diagnostics} from '../../../src/diagnostics';
@@ -55,8 +56,10 @@ describe('TranslationLoader', () => {
       const diagnostics = new Diagnostics();
       const parser = new MockTranslationParser(true, 'pl', translations);
       const loader = new TranslationLoader([parser], diagnostics);
-      const result =
-          loader.loadBundles(['/src/locale/messages.en.xlf', '/src/locale/messages.fr.xlf'], []);
+      const result = loader.loadBundles(
+        ['/src/locale/messages.en.xlf', '/src/locale/messages.fr.xlf'],
+        []
+      );
       expect(result).toEqual([
         {locale: 'pl', translations, diagnostics: new Diagnostics()},
         {locale: 'pl', translations, diagnostics: new Diagnostics()},
@@ -69,7 +72,9 @@ describe('TranslationLoader', () => {
       const parser = new MockTranslationParser(true, undefined, translations);
       const loader = new TranslationLoader([parser], diagnostics);
       const result = loader.loadBundles(
-          ['/src/locale/messages.en.xlf', '/src/locale/messages.fr.xlf'], ['en', 'fr']);
+        ['/src/locale/messages.en.xlf', '/src/locale/messages.fr.xlf'],
+        ['en', 'fr']
+      );
       expect(result).toEqual([
         {locale: 'en', translations, diagnostics: new Diagnostics()},
         {locale: 'fr', translations, diagnostics: new Diagnostics()},
@@ -82,13 +87,14 @@ describe('TranslationLoader', () => {
       const parser = new MockTranslationParser(true, 'pl', translations);
       const loader = new TranslationLoader([parser], diagnostics);
       loader.loadBundles(
-          ['/src/locale/messages.en.xlf', '/src/locale/messages.fr.xlf'], [undefined, 'FR']);
+        ['/src/locale/messages.en.xlf', '/src/locale/messages.fr.xlf'],
+        [undefined, 'FR']
+      );
       expect(diagnostics.messages.length).toEqual(1);
       expect(diagnostics.messages).toContain({
         type: 'warning',
-        message:
-            `The provided locale "FR" does not match the target locale "pl" found in the translation file "/src/locale/messages.fr.xlf".`,
-      }, );
+        message: `The provided locale "FR" does not match the target locale "pl" found in the translation file "/src/locale/messages.fr.xlf".`,
+      });
     });
 
     it('should throw an error if there is no provided nor parsed target locale', () => {
@@ -96,20 +102,20 @@ describe('TranslationLoader', () => {
       const diagnostics = new Diagnostics();
       const parser = new MockTranslationParser(true, undefined, translations);
       const loader = new TranslationLoader([parser], diagnostics);
-      expect(() => loader.loadBundles(['/src/locale/messages.en.xlf'], []))
-          .toThrowError(
-              'The translation file "/src/locale/messages.en.xlf" does not contain a target locale and no explicit locale was provided for this file.');
+      expect(() => loader.loadBundles(['/src/locale/messages.en.xlf'], [])).toThrowError(
+        'The translation file "/src/locale/messages.en.xlf" does not contain a target locale and no explicit locale was provided for this file.'
+      );
     });
 
     it('should error if none of the parsers can parse the file', () => {
       const diagnostics = new Diagnostics();
       const parser = new MockTranslationParser(false);
       const loader = new TranslationLoader([parser], diagnostics);
-      expect(
-          () => loader.loadBundles(
-              ['/src/locale/messages.en.xlf', '/src/locale/messages.fr.xlf'], []))
-          .toThrowError(
-              'There is no "TranslationParser" that can parse this translation file: /src/locale/messages.en.xlf.');
+      expect(() =>
+        loader.loadBundles(['/src/locale/messages.en.xlf', '/src/locale/messages.fr.xlf'], [])
+      ).toThrowError(
+        'There is no "TranslationParser" that can parse this translation file: /src/locale/messages.en.xlf.'
+      );
     });
   });
 });
@@ -117,8 +123,10 @@ describe('TranslationLoader', () => {
 class MockTranslationParser implements TranslationParser {
   log: string[] = [];
   constructor(
-      private _canParse: boolean = true, private _locale?: string,
-      private _translations: Record<string, ɵParsedTranslation> = {}) {}
+    private _canParse: boolean = true,
+    private _locale?: string,
+    private _translations: Record<string, ɵParsedTranslation> = {}
+  ) {}
 
   canParse(filePath: string, fileContents: string) {
     this.log.push(`canParse(${filePath}, ${fileContents})`);

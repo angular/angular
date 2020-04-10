@@ -12,7 +12,6 @@ import {ResponseType} from './enums';
 import {Headers} from './headers';
 import {ResponseOptionsArgs} from './interfaces';
 
-
 /**
  * Creates a response options object to be optionally provided when instantiating a
  * {@link Response}.
@@ -48,25 +47,25 @@ export class ResponseOptions {
   /**
    * String, Object, ArrayBuffer or Blob representing the body of the {@link Response}.
    */
-  body: string|Object|ArrayBuffer|Blob|null;
+  body: string | Object | ArrayBuffer | Blob | null;
   /**
    * Http {@link http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html status code}
    * associated with the response.
    */
-  status: number|null;
+  status: number | null;
   /**
    * Response {@link Headers headers}
    */
-  headers: Headers|null;
+  headers: Headers | null;
   /**
    * @internal
    */
-  statusText: string|null;
+  statusText: string | null;
   /**
    * @internal
    */
-  type: ResponseType|null;
-  url: string|null;
+  type: ResponseType | null;
+  url: string | null;
   constructor(opts: ResponseOptionsArgs = {}) {
     const {body, status, headers, statusText, type, url} = opts;
     this.body = body != null ? body : null;

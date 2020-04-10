@@ -15,7 +15,13 @@ export {ReadyState, RequestMethod, ResponseContentType, ResponseType} from './en
 export {Headers} from './headers';
 export {Http, Jsonp} from './http';
 export {HttpModule, JsonpModule} from './http_module';
-export {Connection, ConnectionBackend, RequestOptionsArgs, ResponseOptionsArgs, XSRFStrategy} from './interfaces';
+export {
+  Connection,
+  ConnectionBackend,
+  RequestOptionsArgs,
+  ResponseOptionsArgs,
+  XSRFStrategy,
+} from './interfaces';
 export {Request} from './static_request';
 export {Response} from './static_response';
 export {QueryEncoder, URLSearchParams} from './url_search_params';

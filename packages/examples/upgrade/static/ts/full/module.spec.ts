@@ -8,7 +8,10 @@
 
 // #docregion angular-setup
 import {TestBed} from '@angular/core/testing';
-import {createAngularJSTestingModule, createAngularTestingModule} from '@angular/upgrade/static/testing';
+import {
+  createAngularJSTestingModule,
+  createAngularTestingModule,
+} from '@angular/upgrade/static/testing';
 
 import {HeroesService, Ng2AppModule, ng1AppModule} from './module';
 
@@ -16,11 +19,11 @@ const {module, inject} = (window as any).angular.mock;
 
 // #enddocregion angular-setup
 describe('HeroesService (from Angular)', () => {
-
   // #docregion angular-setup
   beforeEach(() => {
-    TestBed.configureTestingModule(
-        {imports: [createAngularTestingModule([ng1AppModule.name]), Ng2AppModule]});
+    TestBed.configureTestingModule({
+      imports: [createAngularTestingModule([ng1AppModule.name]), Ng2AppModule],
+    });
   });
   // #enddocregion angular-setup
 
@@ -32,7 +35,6 @@ describe('HeroesService (from Angular)', () => {
   // #enddocregion angular-spec
 });
 
-
 describe('HeroesService (from AngularJS)', () => {
   // #docregion angularjs-setup
   beforeEach(module(createAngularJSTestingModule([Ng2AppModule])));
@@ -40,7 +42,8 @@ describe('HeroesService (from AngularJS)', () => {
   // #enddocregion angularjs-setup
 
   // #docregion angularjs-spec
-  it('should have access to the HeroesService',
-     inject((heroesService: HeroesService) => { expect(heroesService).toBeDefined(); }));
+  it('should have access to the HeroesService', inject((heroesService: HeroesService) => {
+    expect(heroesService).toBeDefined();
+  }));
   // #enddocregion angularjs-spec
 });

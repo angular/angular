@@ -9,7 +9,19 @@
 import {CompileDirectiveMetadata, NgAnalyzedModules, StaticSymbol} from '@angular/compiler';
 import * as ts from 'typescript';
 import {AstResult} from './common';
-import {BuiltinType, DeclarationKind, Definition, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
+import {
+  BuiltinType,
+  DeclarationKind,
+  Definition,
+  PipeInfo,
+  Pipes,
+  Signature,
+  Span,
+  Symbol,
+  SymbolDeclaration,
+  SymbolQuery,
+  SymbolTable,
+} from './symbols';
 
 export {
   BuiltinType,
@@ -23,9 +35,8 @@ export {
   Symbol,
   SymbolDeclaration,
   SymbolQuery,
-  SymbolTable
+  SymbolTable,
 };
-
 
 /**
  * The information `LanguageService` needs from the `LanguageServiceHost` to describe the content of
@@ -74,7 +85,7 @@ export interface TemplateSource {
  *
  * @publicApi
  */
-export type TemplateSources = TemplateSource[]|undefined;
+export type TemplateSources = TemplateSource[] | undefined;
 
 /**
  * Error information found getting declaration information
@@ -93,7 +104,7 @@ export interface DeclarationError {
    * The message to display describing the error or a chain
    * of messages.
    */
-  readonly message: string|DiagnosticMessageChain;
+  readonly message: string | DiagnosticMessageChain;
 }
 
 /**
@@ -188,12 +199,12 @@ export interface LanguageServiceHost {
   /**
    * Return the AST for both HTML and template for the contextFile.
    */
-  getTemplateAst(template: TemplateSource): AstResult|undefined;
+  getTemplateAst(template: TemplateSource): AstResult | undefined;
 
   /**
    * Return the template AST for the node that corresponds to the position.
    */
-  getTemplateAstAtPosition(fileName: string, position: number): AstResult|undefined;
+  getTemplateAstAtPosition(fileName: string, position: number): AstResult | undefined;
 }
 
 /**
@@ -264,8 +275,8 @@ export enum CompletionKind {
   VARIABLE = 'variable',
 }
 
-export type CompletionEntry = Omit<ts.CompletionEntry, 'kind'>&{
-  kind: CompletionKind,
+export type CompletionEntry = Omit<ts.CompletionEntry, 'kind'> & {
+  kind: CompletionKind;
 };
 
 /**
@@ -309,7 +320,7 @@ export interface Diagnostic {
   /**
    * The text of the diagnostic message to display or a chain of messages.
    */
-  message: string|DiagnosticMessageChain;
+  message: string | DiagnosticMessageChain;
 }
 
 /**
@@ -361,6 +372,9 @@ export interface Hover {
  * @publicApi
  */
 export type LanguageService = Pick<
-    ts.LanguageService,
-    'getCompletionsAtPosition'|'getDefinitionAndBoundSpan'|'getQuickInfoAtPosition'|
-    'getSemanticDiagnostics'>;
+  ts.LanguageService,
+  | 'getCompletionsAtPosition'
+  | 'getDefinitionAndBoundSpan'
+  | 'getQuickInfoAtPosition'
+  | 'getSemanticDiagnostics'
+>;

@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {AbstractControlDirective} from './abstract_control_directive';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor} from './control_value_accessor';
@@ -30,19 +29,19 @@ export abstract class NgControl extends AbstractControlDirective {
    *
    * @internal
    */
-  _parent: ControlContainer|null = null;
+  _parent: ControlContainer | null = null;
 
   /**
    * @description
    * The name for the control
    */
-  name: string|number|null = null;
+  name: string | number | null = null;
 
   /**
    * @description
    * The value accessor for the control
    */
-  valueAccessor: ControlValueAccessor|null = null;
+  valueAccessor: ControlValueAccessor | null = null;
 
   /**
    * @description
@@ -50,7 +49,7 @@ export abstract class NgControl extends AbstractControlDirective {
    *
    * @internal
    */
-  _rawValidators: Array<Validator|ValidatorFn> = [];
+  _rawValidators: Array<Validator | ValidatorFn> = [];
 
   /**
    * @description
@@ -58,7 +57,7 @@ export abstract class NgControl extends AbstractControlDirective {
    *
    * @internal
    */
-  _rawAsyncValidators: Array<AsyncValidator|AsyncValidatorFn> = [];
+  _rawAsyncValidators: Array<AsyncValidator | AsyncValidatorFn> = [];
 
   /**
    * @description
@@ -66,7 +65,7 @@ export abstract class NgControl extends AbstractControlDirective {
    *
    * @throws An exception that this method is not implemented
    */
-  get validator(): ValidatorFn|null {
+  get validator(): ValidatorFn | null {
     return <ValidatorFn>unimplemented();
   }
 
@@ -76,7 +75,7 @@ export abstract class NgControl extends AbstractControlDirective {
    *
    * @throws An exception that this method is not implemented
    */
-  get asyncValidator(): AsyncValidatorFn|null {
+  get asyncValidator(): AsyncValidatorFn | null {
     return <AsyncValidatorFn>unimplemented();
   }
 

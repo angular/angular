@@ -6,8 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentFactoryResolver, ComponentRef, Directive, Injector, Input, NgModuleFactory, NgModuleRef, OnChanges, OnDestroy, SimpleChanges, StaticProvider, Type, ViewContainerRef} from '@angular/core';
-
+import {
+  ComponentFactoryResolver,
+  ComponentRef,
+  Directive,
+  Injector,
+  Input,
+  NgModuleFactory,
+  NgModuleRef,
+  OnChanges,
+  OnDestroy,
+  SimpleChanges,
+  StaticProvider,
+  Type,
+  ViewContainerRef,
+} from '@angular/core';
 
 /**
  * Instantiates a single {@link Component} type and inserts its Host View into current View.
@@ -67,16 +80,16 @@ import {ComponentFactoryResolver, ComponentRef, Directive, Injector, Input, NgMo
 @Directive({selector: '[ngComponentOutlet]'})
 export class NgComponentOutlet implements OnChanges, OnDestroy {
   // TODO(issue/24571): remove '!'.
-  @Input() ngComponentOutlet !: Type<any>;
+  @Input() ngComponentOutlet!: Type<any>;
   // TODO(issue/24571): remove '!'.
-  @Input() ngComponentOutletInjector !: Injector;
+  @Input() ngComponentOutletInjector!: Injector;
   // TODO(issue/24571): remove '!'.
-  @Input() ngComponentOutletContent !: any[][];
+  @Input() ngComponentOutletContent!: any[][];
   // TODO(issue/24571): remove '!'.
-  @Input() ngComponentOutletNgModuleFactory !: NgModuleFactory<any>;
+  @Input() ngComponentOutletNgModuleFactory!: NgModuleFactory<any>;
 
-  private _componentRef: ComponentRef<any>|null = null;
-  private _moduleRef: NgModuleRef<any>|null = null;
+  private _componentRef: ComponentRef<any> | null = null;
+  private _moduleRef: NgModuleRef<any> | null = null;
 
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
@@ -98,15 +111,20 @@ export class NgComponentOutlet implements OnChanges, OnDestroy {
         }
       }
 
-      const componentFactoryResolver = this._moduleRef ? this._moduleRef.componentFactoryResolver :
-                                                         elInjector.get(ComponentFactoryResolver);
+      const componentFactoryResolver = this._moduleRef
+        ? this._moduleRef.componentFactoryResolver
+        : elInjector.get(ComponentFactoryResolver);
 
-      const componentFactory =
-          componentFactoryResolver.resolveComponentFactory(this.ngComponentOutlet);
+      const componentFactory = componentFactoryResolver.resolveComponentFactory(
+        this.ngComponentOutlet
+      );
 
       this._componentRef = this._viewContainerRef.createComponent(
-          componentFactory, this._viewContainerRef.length, elInjector,
-          this.ngComponentOutletContent);
+        componentFactory,
+        this._viewContainerRef.length,
+        elInjector,
+        this.ngComponentOutletContent
+      );
     }
   }
 

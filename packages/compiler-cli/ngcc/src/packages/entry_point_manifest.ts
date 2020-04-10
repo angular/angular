@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {createHash} from 'crypto';
 
 import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_system';
@@ -41,7 +42,7 @@ export class EntryPointManifest {
    * @returns an array of entry-point information for all entry-points found below the given
    * `basePath` or `null` if the manifest was out of date.
    */
-  readEntryPointsUsingManifest(basePath: AbsoluteFsPath): EntryPointWithDependencies[]|null {
+  readEntryPointsUsingManifest(basePath: AbsoluteFsPath): EntryPointWithDependencies[] | null {
     try {
       if (this.fs.basename(basePath) !== 'node_modules') {
         return null;
@@ -57,28 +58,41 @@ export class EntryPointManifest {
         return null;
       }
 
-      const {ngccVersion, configFileHash, lockFileHash, entryPointPaths} =
-          JSON.parse(this.fs.readFile(manifestPath)) as EntryPointManifestFile;
-      if (ngccVersion !== NGCC_VERSION || configFileHash !== this.config.hash ||
-          lockFileHash !== computedLockFileHash) {
+      const {ngccVersion, configFileHash, lockFileHash, entryPointPaths} = JSON.parse(
+        this.fs.readFile(manifestPath)
+      ) as EntryPointManifestFile;
+      if (
+        ngccVersion !== NGCC_VERSION ||
+        configFileHash !== this.config.hash ||
+        lockFileHash !== computedLockFileHash
+      ) {
         return null;
       }
 
-      this.logger.debug(`Entry-point manifest found for ${
-          basePath} so loading entry-point information directly.`);
+      this.logger.debug(
+        `Entry-point manifest found for ${basePath} so loading entry-point information directly.`
+      );
       const startTime = Date.now();
 
       const entryPoints: EntryPointWithDependencies[] = [];
-      for (const
-               [packagePath, entryPointPath, dependencyPaths = [], missingPaths = [],
-                                             deepImportPaths = []] of entryPointPaths) {
+      for (const [
+        packagePath,
+        entryPointPath,
+        dependencyPaths = [],
+        missingPaths = [],
+        deepImportPaths = [],
+      ] of entryPointPaths) {
         const result = getEntryPointInfo(
-            this.fs, this.config, this.logger, this.fs.resolve(basePath, packagePath),
-            this.fs.resolve(basePath, entryPointPath));
+          this.fs,
+          this.config,
+          this.logger,
+          this.fs.resolve(basePath, packagePath),
+          this.fs.resolve(basePath, entryPointPath)
+        );
         if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
-          throw new Error(`The entry-point manifest at ${
-              manifestPath} contained an invalid pair of package paths: [${packagePath}, ${
-              entryPointPath}]`);
+          throw new Error(
+            `The entry-point manifest at ${manifestPath} contained an invalid pair of package paths: [${packagePath}, ${entryPointPath}]`
+          );
         } else {
           entryPoints.push({
             entryPoint: result,
@@ -86,7 +100,7 @@ export class EntryPointManifest {
               dependencies: new Set(dependencyPaths),
               missing: new Set(missingPaths),
               deepImports: new Set(deepImportPaths),
-            }
+            },
           });
         }
       }
@@ -95,7 +109,9 @@ export class EntryPointManifest {
       return entryPoints;
     } catch (e) {
       this.logger.warn(
-          `Unable to read the entry-point manifest for ${basePath}:\n`, e.stack || e.toString());
+        `Unable to read the entry-point manifest for ${basePath}:\n`,
+        e.stack || e.toString()
+      );
       return null;
     }
   }
@@ -110,8 +126,10 @@ export class EntryPointManifest {
    * @param basePath The path where the manifest file is to be written.
    * @param entryPoints A collection of entry-points to record in the manifest.
    */
-  writeEntryPointManifest(basePath: AbsoluteFsPath, entryPoints: EntryPointWithDependencies[]):
-      void {
+  writeEntryPointManifest(
+    basePath: AbsoluteFsPath,
+    entryPoints: EntryPointWithDependencies[]
+  ): void {
     if (this.fs.basename(basePath) !== 'node_modules') {
       return;
     }
@@ -124,7 +142,7 @@ export class EntryPointManifest {
       ngccVersion: NGCC_VERSION,
       configFileHash: this.config.hash,
       lockFileHash: lockFileHash,
-      entryPointPaths: entryPoints.map(e => {
+      entryPointPaths: entryPoints.map((e) => {
         const entryPointPaths: EntryPointPaths = [
           this.fs.relative(basePath, e.entryPoint.package),
           this.fs.relative(basePath, e.entryPoint.path),
@@ -153,7 +171,7 @@ export class EntryPointManifest {
     return this.fs.resolve(basePath, '__ngcc_entry_points__.json');
   }
 
-  private computeLockFileHash(basePath: AbsoluteFsPath): string|null {
+  private computeLockFileHash(basePath: AbsoluteFsPath): string | null {
     const directory = this.fs.dirname(basePath);
     for (const lockFileName of ['yarn.lock', 'package-lock.json']) {
       const lockFilePath = this.fs.resolve(directory, lockFileName);
@@ -175,7 +193,7 @@ export class EntryPointManifest {
  * is called.
  */
 export class InvalidatingEntryPointManifest extends EntryPointManifest {
-  readEntryPointsUsingManifest(_basePath: AbsoluteFsPath): EntryPointWithDependencies[]|null {
+  readEntryPointsUsingManifest(_basePath: AbsoluteFsPath): EntryPointWithDependencies[] | null {
     return null;
   }
 }
@@ -184,8 +202,8 @@ export type EntryPointPaths = [
   string,
   string,
   Array<AbsoluteFsPath>?,
-  Array<AbsoluteFsPath|PathSegment>?,
-  Array<AbsoluteFsPath>?,
+  Array<AbsoluteFsPath | PathSegment>?,
+  Array<AbsoluteFsPath>?
 ];
 
 /**

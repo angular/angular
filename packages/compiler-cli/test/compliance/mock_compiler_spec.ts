@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
@@ -39,8 +38,8 @@ describe('mock_compiler', () => {
 
             @NgModule({declarations: [HelloComponent]})
             export class HelloModule {}
-          `
-        }
+          `,
+        },
       };
       const result = compile(files, angularFiles);
 
@@ -68,8 +67,8 @@ describe('mock_compiler', () => {
 
             @NgModule({declarations: [HelloComponent]})
             export class HelloModule {}
-          `
-        }
+          `,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -79,15 +78,17 @@ describe('mock_compiler', () => {
 
       // Whitespace is not significant
       expectEmit(
-          result.source, 'name   \n\n   .  \n    length',
-          'name length expression not found (whitespace)');
+        result.source,
+        'name   \n\n   .  \n    length',
+        'name length expression not found (whitespace)'
+      );
     });
 
     it('should throw if the expected output contains unknown characters', () => {
       const files = {
         app: {
           'test.ts': `ɵsayHello();`,
-        }
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -101,7 +102,7 @@ describe('mock_compiler', () => {
       const files = {
         app: {
           'test.ts': String.raw`const identifier = "\"quoted\"";`,
-        }
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -129,8 +130,8 @@ describe('mock_compiler', () => {
 
           @NgModule({declarations: [HelloComponent]})
           export class HelloModule {}
-        `
-      }
+        `,
+      },
     };
 
     const result = compile(files, angularFiles);
@@ -141,7 +142,10 @@ describe('mock_compiler', () => {
     // need to be tested. `// ...` could also be used in place of `…`.
     expectEmit(result.source, 'ctx.name … ctx.name.length', 'could not find correct length access');
     expectEmit(
-        result.source, 'ctx.name // ... ctx.name.length', 'could not find correct length access');
+      result.source,
+      'ctx.name // ... ctx.name.length',
+      'could not find correct length access'
+    );
   });
 
   it('should be able to skip TODO comments (// TODO)', () => {
@@ -159,21 +163,22 @@ describe('mock_compiler', () => {
 
           @NgModule({declarations: [HelloComponent]})
           export class HelloModule {}
-        `
-      }
+        `,
+      },
     };
 
     const result = compile(files, angularFiles);
 
     expectEmit(
-        result.source, `
+      result.source,
+      `
     // TODO: this comment should not be taken into account
     $r3$.ɵɵtext(0, "Hello!");
     // TODO: this comment should not be taken into account
     `,
-        'todo comments should be ignored');
+      'todo comments should be ignored'
+    );
   });
-
 
   it('should be able to enforce consistent identifiers', () => {
     const files = {
@@ -192,8 +197,8 @@ describe('mock_compiler', () => {
 
           @NgModule({declarations: [HelloComponent]})
           export class HelloModule {}
-        `
-      }
+        `,
+      },
     };
 
     const result = compile(files, angularFiles);
@@ -206,8 +211,10 @@ describe('mock_compiler', () => {
     // This is useful if the code generator is free to invent a name but should use the name
     // consistently.
     expectEmit(
-        result.source, '$ctx$.$name$ … $ctx$.$name$.length',
-        'could not find correct length access');
+      result.source,
+      '$ctx$.$name$ … $ctx$.$name$.length',
+      'could not find correct length access'
+    );
   });
 
   it('should be able to enforce that identifiers match a regexp', () => {
@@ -227,8 +234,8 @@ describe('mock_compiler', () => {
 
           @NgModule({declarations: [HelloComponent]})
           export class HelloModule {}
-        `
-      }
+        `,
+      },
     };
 
     const result = compile(files, angularFiles);
@@ -238,8 +245,9 @@ describe('mock_compiler', () => {
 
     // Fail: `$n$` does not match `/(not)_(\1)/` in the generated code
     expect(() => {
-      expectEmit(
-          result.source, '$ctx$.$n$ … $ctx$.$n$.length', 'Match names', {'$n$': /(not)_(\1)/});
+      expectEmit(result.source, '$ctx$.$n$ … $ctx$.$n$.length', 'Match names', {
+        '$n$': /(not)_(\1)/,
+      });
     }).toThrowError(/"\$n\$" is "name" which doesn't match \/\(not\)_\(\\1\)\//);
   });
 });

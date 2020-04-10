@@ -43,9 +43,7 @@ import {humanizeDom} from './ast_spec_utils';
     });
 
     it('should remove whitespaces from the beginning and end of a template', () => {
-      expect(parseAndRemoveWS(` <br>\t`)).toEqual([
-        [html.Element, 'br', 0],
-      ]);
+      expect(parseAndRemoveWS(` <br>\t`)).toEqual([[html.Element, 'br', 0]]);
     });
 
     it('should convert &ngsp; to a space and preserve it', () => {
@@ -70,7 +68,7 @@ import {humanizeDom} from './ast_spec_utils';
 
     it('should not replace sequences of &nbsp;', () => {
       expect(parseAndRemoveWS('&nbsp;&nbsp;foo&nbsp;&nbsp;')).toEqual([
-        [html.Text, '\u00a0\u00a0foo\u00a0\u00a0', 0]
+        [html.Text, '\u00a0\u00a0foo\u00a0\u00a0', 0],
       ]);
     });
 
@@ -92,20 +90,19 @@ import {humanizeDom} from './ast_spec_utils';
     });
 
     it('should preserve whitespaces around interpolations', () => {
-      expect(parseAndRemoveWS(` {{exp}} `)).toEqual([
-        [html.Text, ' {{exp}} ', 0],
-      ]);
+      expect(parseAndRemoveWS(` {{exp}} `)).toEqual([[html.Text, ' {{exp}} ', 0]]);
     });
 
     it('should preserve whitespaces around ICU expansions', () => {
-      expect(parseAndRemoveWS(`<span> {a, b, =4 {c}} </span>`, {tokenizeExpansionForms: true}))
-          .toEqual([
-            [html.Element, 'span', 0],
-            [html.Text, ' ', 1],
-            [html.Expansion, 'a', 'b', 1],
-            [html.ExpansionCase, '=4', 2],
-            [html.Text, ' ', 1],
-          ]);
+      expect(
+        parseAndRemoveWS(`<span> {a, b, =4 {c}} </span>`, {tokenizeExpansionForms: true})
+      ).toEqual([
+        [html.Element, 'span', 0],
+        [html.Text, ' ', 1],
+        [html.Expansion, 'a', 'b', 1],
+        [html.ExpansionCase, '=4', 2],
+        [html.Text, ' ', 1],
+      ]);
     });
 
     it('should preserve whitespaces inside <pre> elements', () => {
@@ -126,14 +123,13 @@ import {humanizeDom} from './ast_spec_utils';
       ]);
     });
 
-    it(`should preserve whitespaces inside elements annotated with ${PRESERVE_WS_ATTR_NAME}`,
-       () => {
-         expect(parseAndRemoveWS(`<div ${PRESERVE_WS_ATTR_NAME}><img> <img></div>`)).toEqual([
-           [html.Element, 'div', 0],
-           [html.Element, 'img', 1],
-           [html.Text, ' ', 1],
-           [html.Element, 'img', 1],
-         ]);
-       });
+    it(`should preserve whitespaces inside elements annotated with ${PRESERVE_WS_ATTR_NAME}`, () => {
+      expect(parseAndRemoveWS(`<div ${PRESERVE_WS_ATTR_NAME}><img> <img></div>`)).toEqual([
+        [html.Element, 'div', 0],
+        [html.Element, 'img', 1],
+        [html.Text, ' ', 1],
+        [html.Element, 'img', 1],
+      ]);
+    });
   });
 }

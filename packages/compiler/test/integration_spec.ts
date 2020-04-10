@@ -18,54 +18,49 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
     describe('directives', () => {
       it('should support dotted selectors', async(() => {
-           @Directive({selector: '[dot.name]'})
-           class MyDir {
-             // TODO(issue/24571): remove '!'.
-             @Input('dot.name') value!: string;
-           }
+        @Directive({selector: '[dot.name]'})
+        class MyDir {
+          // TODO(issue/24571): remove '!'.
+          @Input('dot.name') value!: string;
+        }
 
-           TestBed.configureTestingModule({
-             declarations: [
-               MyDir,
-               TestComponent,
-             ],
-           });
+        TestBed.configureTestingModule({
+          declarations: [MyDir, TestComponent],
+        });
 
-           const template = `<div [dot.name]="'foo'"></div>`;
-           fixture = createTestComponent(template);
-           fixture.detectChanges();
-           const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
-           expect(myDir.value).toEqual('foo');
-         }));
+        const template = `<div [dot.name]="'foo'"></div>`;
+        fixture = createTestComponent(template);
+        fixture.detectChanges();
+        const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
+        expect(myDir.value).toEqual('foo');
+      }));
     });
 
     describe('ng-container', () => {
       if (browserDetection.isChromeDesktop) {
         it('should work regardless the namespace', async(() => {
-             @Component({
-               selector: 'comp',
-               template:
-                   '<svg><ng-container *ngIf="1"><rect x="10" y="10" width="30" height="30"></rect></ng-container></svg>',
-             })
-             class MyCmp {
-             }
+          @Component({
+            selector: 'comp',
+            template:
+              '<svg><ng-container *ngIf="1"><rect x="10" y="10" width="30" height="30"></rect></ng-container></svg>',
+          })
+          class MyCmp {}
 
-             const f =
-                 TestBed.configureTestingModule({declarations: [MyCmp]}).createComponent(MyCmp);
-             f.detectChanges();
+          const f = TestBed.configureTestingModule({declarations: [MyCmp]}).createComponent(MyCmp);
+          f.detectChanges();
 
-             expect(f.nativeElement.children[0].children[0].tagName).toEqual('rect');
-           }));
+          expect(f.nativeElement.children[0].children[0].tagName).toEqual('rect');
+        }));
       }
     });
   });
 }
 
 @Component({selector: 'test-cmp', template: ''})
-class TestComponent {
-}
+class TestComponent {}
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {
-  return TestBed.overrideComponent(TestComponent, {set: {template: template}})
-      .createComponent(TestComponent);
+  return TestBed.overrideComponent(TestComponent, {set: {template: template}}).createComponent(
+    TestComponent
+  );
 }

@@ -55,27 +55,42 @@ export class WhitespaceVisitor implements html.Visitor {
       // don't descent into elements where we need to preserve whitespaces
       // but still visit all attributes to eliminate one used as a market to preserve WS
       return new html.Element(
-          element.name, html.visitAll(this, element.attrs), element.children, element.sourceSpan,
-          element.startSourceSpan, element.endSourceSpan, element.i18n);
+        element.name,
+        html.visitAll(this, element.attrs),
+        element.children,
+        element.sourceSpan,
+        element.startSourceSpan,
+        element.endSourceSpan,
+        element.i18n
+      );
     }
 
     return new html.Element(
-        element.name, element.attrs, visitAllWithSiblings(this, element.children),
-        element.sourceSpan, element.startSourceSpan, element.endSourceSpan, element.i18n);
+      element.name,
+      element.attrs,
+      visitAllWithSiblings(this, element.children),
+      element.sourceSpan,
+      element.startSourceSpan,
+      element.endSourceSpan,
+      element.i18n
+    );
   }
 
   visitAttribute(attribute: html.Attribute, context: any): any {
     return attribute.name !== PRESERVE_WS_ATTR_NAME ? attribute : null;
   }
 
-  visitText(text: html.Text, context: SiblingVisitorContext|null): any {
+  visitText(text: html.Text, context: SiblingVisitorContext | null): any {
     const isNotBlank = text.value.match(NO_WS_REGEXP);
-    const hasExpansionSibling = context &&
-        (context.prev instanceof html.Expansion || context.next instanceof html.Expansion);
+    const hasExpansionSibling =
+      context && (context.prev instanceof html.Expansion || context.next instanceof html.Expansion);
 
     if (isNotBlank || hasExpansionSibling) {
       return new html.Text(
-          replaceNgsp(text.value).replace(WS_REPLACE_REGEXP, ' '), text.sourceSpan, text.i18n);
+        replaceNgsp(text.value).replace(WS_REPLACE_REGEXP, ' '),
+        text.sourceSpan,
+        text.i18n
+      );
     }
 
     return null;
@@ -96,13 +111,14 @@ export class WhitespaceVisitor implements html.Visitor {
 
 export function removeWhitespaces(htmlAstWithErrors: ParseTreeResult): ParseTreeResult {
   return new ParseTreeResult(
-      html.visitAll(new WhitespaceVisitor(), htmlAstWithErrors.rootNodes),
-      htmlAstWithErrors.errors);
+    html.visitAll(new WhitespaceVisitor(), htmlAstWithErrors.rootNodes),
+    htmlAstWithErrors.errors
+  );
 }
 
 interface SiblingVisitorContext {
-  prev: html.Node|undefined;
-  next: html.Node|undefined;
+  prev: html.Node | undefined;
+  next: html.Node | undefined;
 }
 
 function visitAllWithSiblings(visitor: WhitespaceVisitor, nodes: html.Node[]): any[] {

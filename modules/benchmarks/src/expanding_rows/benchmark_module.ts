@@ -11,22 +11,26 @@ import {Component, ErrorHandler, Injectable, NgModule} from '@angular/core';
 @Component({
   selector: 'benchmark-area',
   template: '<ng-content></ng-content>',
-  styles: [`
-    :host {
-      padding: 1;
-      margin: 1;
-      background-color: white;
-      width: 1000px;
-      display: block;
-    }`],
+  styles: [
+    `
+      :host {
+        padding: 1;
+        margin: 1;
+        background-color: white;
+        width: 1000px;
+        display: block;
+      }
+    `,
+  ],
   host: {
     'class': 'cfc-ng2-region',
-  }
+  },
 })
-export class BenchmarkArea {
-}
+export class BenchmarkArea {}
 
-declare interface ExtendedWindow extends Window { benchmarkErrors?: string[]; }
+declare interface ExtendedWindow extends Window {
+  benchmarkErrors?: string[];
+}
 const extendedWindow = window as ExtendedWindow;
 
 @Injectable({providedIn: 'root'})
@@ -43,9 +47,6 @@ export class BenchmarkErrorHandler implements ErrorHandler {
 @NgModule({
   declarations: [BenchmarkArea],
   exports: [BenchmarkArea],
-  providers: [
-    {provide: ErrorHandler, useClass: BenchmarkErrorHandler},
-  ]
+  providers: [{provide: ErrorHandler, useClass: BenchmarkErrorHandler}],
 })
-export class BenchmarkModule {
-}
+export class BenchmarkModule {}

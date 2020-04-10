@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {Diagnostics} from '../../../src/diagnostics';
 import {FileUtils} from '../../../src/file_utils';
 import {AssetTranslationHandler} from '../../../src/translate/asset_files/asset_translation_handler';
@@ -33,7 +34,13 @@ describe('AssetTranslationHandler', () => {
       ];
       const contents = Buffer.from('contents');
       handler.translate(
-          diagnostics, '/root/path', 'relative/path', contents, mockOutputPathFn, translations);
+        diagnostics,
+        '/root/path',
+        'relative/path',
+        contents,
+        mockOutputPathFn,
+        translations
+      );
 
       expect(FileUtils.writeFile).toHaveBeenCalledWith('/translations/en/relative/path', contents);
       expect(FileUtils.writeFile).toHaveBeenCalledWith('/translations/fr/relative/path', contents);
@@ -46,11 +53,19 @@ describe('AssetTranslationHandler', () => {
       const contents = Buffer.from('contents');
       const sourceLocale = 'en-US';
       handler.translate(
-          diagnostics, '/root/path', 'relative/path', contents, mockOutputPathFn, translations,
-          sourceLocale);
+        diagnostics,
+        '/root/path',
+        'relative/path',
+        contents,
+        mockOutputPathFn,
+        translations,
+        sourceLocale
+      );
 
-      expect(FileUtils.writeFile)
-          .toHaveBeenCalledWith('/translations/en-US/relative/path', contents);
+      expect(FileUtils.writeFile).toHaveBeenCalledWith(
+        '/translations/en-US/relative/path',
+        contents
+      );
     });
   });
 });

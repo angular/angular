@@ -9,12 +9,12 @@
 export enum TagContentType {
   RAW_TEXT,
   ESCAPABLE_RAW_TEXT,
-  PARSABLE_DATA
+  PARSABLE_DATA,
 }
 
 export interface TagDefinition {
   closedByParent: boolean;
-  implicitNamespacePrefix: string|null;
+  implicitNamespacePrefix: string | null;
   contentType: TagContentType;
   isVoid: boolean;
   ignoreFirstLf: boolean;
@@ -23,7 +23,7 @@ export interface TagDefinition {
   isClosedByChild(name: string): boolean;
 }
 
-export function splitNsName(elementName: string): [string|null, string] {
+export function splitNsName(elementName: string): [string | null, string] {
   if (elementName[0] != ':') {
     return [null, elementName];
   }
@@ -54,7 +54,7 @@ export function isNgTemplate(tagName: string): boolean {
 
 export function getNsPrefix(fullName: string): string;
 export function getNsPrefix(fullName: null): null;
-export function getNsPrefix(fullName: string|null): string|null {
+export function getNsPrefix(fullName: string | null): string | null {
   return fullName === null ? null : splitNsName(fullName)[0];
 }
 

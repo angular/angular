@@ -16,15 +16,17 @@ type AstPath = AstPathBase<AST>;
 
 function findAstAt(ast: AST, position: number, excludeEmpty: boolean = false): AstPath {
   const path: AST[] = [];
-  const visitor = new class extends RecursiveAstVisitor {
+  const visitor = new (class extends RecursiveAstVisitor {
     visit(ast: AST) {
-      if ((!excludeEmpty || ast.sourceSpan.start < ast.sourceSpan.end) &&
-          inSpan(position, ast.sourceSpan)) {
+      if (
+        (!excludeEmpty || ast.sourceSpan.start < ast.sourceSpan.end) &&
+        inSpan(position, ast.sourceSpan)
+      ) {
         path.push(ast);
         ast.visit(this);
       }
     }
-  };
+  })();
 
   // We never care about the ASTWithSource node and its visit() method calls its ast's visit so
   // the visit() method above would never see it.
@@ -38,12 +40,15 @@ function findAstAt(ast: AST, position: number, excludeEmpty: boolean = false): A
 }
 
 export function getExpressionCompletions(
-    scope: SymbolTable, ast: AST, position: number, templateInfo: TemplateSource): Symbol[]|
-    undefined {
+  scope: SymbolTable,
+  ast: AST,
+  position: number,
+  templateInfo: TemplateSource
+): Symbol[] | undefined {
   const path = findAstAt(ast, position);
   if (path.empty) return undefined;
   const tail = path.tail!;
-  let result: SymbolTable|undefined = scope;
+  let result: SymbolTable | undefined = scope;
 
   function getType(ast: AST): Symbol {
     return new AstType(scope, templateInfo.query, {}, templateInfo.source).getType(ast);
@@ -68,8 +73,10 @@ export function getExpressionCompletions(
     visitLiteralPrimitive(ast) {},
     visitMethodCall(ast) {},
     visitPipe(ast) {
-      if (position >= ast.exp.span.end &&
-          (!ast.args || !ast.args.length || position < (<AST>ast.args[0]).span.start)) {
+      if (
+        position >= ast.exp.span.end &&
+        (!ast.args || !ast.args.length || position < (<AST>ast.args[0]).span.start)
+      ) {
         // We are in a position a pipe name is expected.
         result = templateInfo.query.getPipes();
       }
@@ -110,8 +117,11 @@ export function getExpressionCompletions(
  * @param query type symbol query for the template scope
  */
 export function getExpressionSymbol(
-    scope: SymbolTable, ast: AST, position: number,
-    templateInfo: TemplateSource): {symbol: Symbol, span: Span}|undefined {
+  scope: SymbolTable,
+  ast: AST,
+  position: number,
+  templateInfo: TemplateSource
+): {symbol: Symbol; span: Span} | undefined {
   const path = findAstAt(ast, position, /* excludeEmpty */ true);
   if (path.empty) return undefined;
   const tail = path.tail!;
@@ -120,8 +130,8 @@ export function getExpressionSymbol(
     return new AstType(scope, templateInfo.query, {}, templateInfo.source).getType(ast);
   }
 
-  let symbol: Symbol|undefined = undefined;
-  let span: Span|undefined = undefined;
+  let symbol: Symbol | undefined = undefined;
+  let span: Span | undefined = undefined;
 
   // If the completion request is in a not in a pipe or property access then the global scope
   // (that is the scope of the implicit receiver) is the right scope as the user is typing the

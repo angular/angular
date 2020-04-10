@@ -12,13 +12,14 @@ import * as shx from 'shelljs';
 import {Configuration, Linter} from 'tslint';
 
 describe('Google3 noTemplateVariableAssignment TSLint rule', () => {
-  const rulesDirectory =
-      dirname(require.resolve('../../migrations/google3/noTemplateVariableAssignmentRule'));
+  const rulesDirectory = dirname(
+    require.resolve('../../migrations/google3/noTemplateVariableAssignmentRule')
+  );
 
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = join(process.env['TEST_TMPDIR'] !, 'google3-test');
+    tmpDir = join(process.env['TEST_TMPDIR']!, 'google3-test');
     shx.mkdir('-p', tmpDir);
 
     writeFile('tsconfig.json', JSON.stringify({compilerOptions: {module: 'es2015'}}));
@@ -30,11 +31,12 @@ describe('Google3 noTemplateVariableAssignment TSLint rule', () => {
   function runTSLint() {
     const program = Linter.createProgram(join(tmpDir, 'tsconfig.json'));
     const linter = new Linter({fix: false, rulesDirectory: [rulesDirectory]}, program);
-    const config =
-        Configuration.parseConfigFile({rules: {'no-template-variable-assignment': true}});
+    const config = Configuration.parseConfigFile({
+      rules: {'no-template-variable-assignment': true},
+    });
 
-    program.getRootFileNames().forEach(fileName => {
-      linter.lint(fileName, program.getSourceFile(fileName) !.getFullText(), config);
+    program.getRootFileNames().forEach((fileName) => {
+      linter.lint(fileName, program.getSourceFile(fileName)!.getFullText(), config);
     });
 
     return linter;
@@ -46,12 +48,15 @@ describe('Google3 noTemplateVariableAssignment TSLint rule', () => {
   }
 
   it('should create failure for detected two-way data binding assignment', () => {
-    writeFile('index.ts', `
+    writeFile(
+      'index.ts',
+      `
       import {Component} from '@angular/core';
       
       @Component({template: '<span *ngFor="let i of options" [(a)]="i"></span>'})
       export class MyComp {}
-    `);
+    `
+    );
 
     const linter = runTSLint();
     const failures = linter.getResult().failures;
@@ -64,16 +69,22 @@ describe('Google3 noTemplateVariableAssignment TSLint rule', () => {
   });
 
   it('should create failure with correct offsets for external templates', () => {
-    writeFile('index.ts', `
+    writeFile(
+      'index.ts',
+      `
       import {Component} from '@angular/core';
       
       @Component({templateUrl: './my-tmpl.html'})
       export class MyComp {}
-    `);
+    `
+    );
 
-    writeFile(`my-tmpl.html`, `
+    writeFile(
+      `my-tmpl.html`,
+      `
       <span *ngFor="let option of options" [(a)]="option"></span>
-    `);
+    `
+    );
 
     const linter = runTSLint();
     const failures = linter.getResult().failures;
@@ -86,17 +97,23 @@ describe('Google3 noTemplateVariableAssignment TSLint rule', () => {
   });
 
   it('should create failure for template variable assignment within output', () => {
-    writeFile('index.ts', `
+    writeFile(
+      'index.ts',
+      `
       import {Component} from '@angular/core';
       
       @Component({templateUrl: './my-tmpl.html'})
       export class MyComp {}
-    `);
+    `
+    );
 
-    writeFile(`my-tmpl.html`, `
+    writeFile(
+      `my-tmpl.html`,
+      `
       <!-- Comment -->
       <span *ngFor="let option of options" (click)="option = true"></span>
-    `);
+    `
+    );
 
     const linter = runTSLint();
     const failures = linter.getResult().failures;

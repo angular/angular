@@ -5,14 +5,24 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 import {Reference} from '../../../src/ngtsc/imports';
-import {ClassDeclaration, Decorator, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+import {
+  ClassDeclaration,
+  Decorator,
+  isNamedClassDeclaration,
+  isNamedFunctionDeclaration,
+  isNamedVariableDeclaration,
+} from '../../../src/ngtsc/reflection';
 import {MigrationHost} from './migration';
 
 export function isClassDeclaration(clazz: ts.Declaration): clazz is ClassDeclaration {
-  return isNamedClassDeclaration(clazz) || isNamedFunctionDeclaration(clazz) ||
-      isNamedVariableDeclaration(clazz);
+  return (
+    isNamedClassDeclaration(clazz) ||
+    isNamedFunctionDeclaration(clazz) ||
+    isNamedVariableDeclaration(clazz)
+  );
 }
 
 /**
@@ -42,8 +52,9 @@ export function hasConstructor(host: MigrationHost, clazz: ClassDeclaration): bo
  * Create an empty `Directive` decorator that will be associated with the `clazz`.
  */
 export function createDirectiveDecorator(
-    clazz: ClassDeclaration,
-    metadata?: {selector: string|null, exportAs: string[]|null}): Decorator {
+  clazz: ClassDeclaration,
+  metadata?: {selector: string | null; exportAs: string[] | null}
+): Decorator {
   const args: ts.Expression[] = [];
   if (metadata !== undefined) {
     const metaArgs: ts.PropertyAssignment[] = [];
@@ -69,11 +80,10 @@ export function createDirectiveDecorator(
  * Create an empty `Component` decorator that will be associated with the `clazz`.
  */
 export function createComponentDecorator(
-    clazz: ClassDeclaration,
-    metadata: {selector: string|null, exportAs: string[]|null}): Decorator {
-  const metaArgs: ts.PropertyAssignment[] = [
-    property('template', ''),
-  ];
+  clazz: ClassDeclaration,
+  metadata: {selector: string | null; exportAs: string[] | null}
+): Decorator {
+  const metaArgs: ts.PropertyAssignment[] = [property('template', '')];
   if (metadata.selector !== null) {
     metaArgs.push(property('selector', metadata.selector));
   }
@@ -86,9 +96,7 @@ export function createComponentDecorator(
     import: {name: 'Component', from: '@angular/core'},
     node: null,
     synthesizedFor: clazz.name,
-    args: [
-      reifySourceFile(ts.createObjectLiteral(metaArgs)),
-    ],
+    args: [reifySourceFile(ts.createObjectLiteral(metaArgs))],
   };
 }
 
@@ -123,7 +131,12 @@ function reifySourceFile(expr: ts.Expression): ts.Expression {
   const printer = ts.createPrinter();
   const exprText = printer.printNode(ts.EmitHint.Unspecified, expr, EMPTY_SF);
   const sf = ts.createSourceFile(
-      '(synthetic)', `const expr = ${exprText};`, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+    '(synthetic)',
+    `const expr = ${exprText};`,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.JS
+  );
   const stmt = sf.statements[0];
   if (!ts.isVariableStatement(stmt)) {
     throw new Error(`Expected VariableStatement, got ${ts.SyntaxKind[stmt.kind]}`);

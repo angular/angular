@@ -12,5 +12,4 @@ import {Component} from '@angular/core';
   selector: 'third-party-comp',
   template: '<div>3rdP-component</div>',
 })
-export class ThirdPartyComponent {
-}
+export class ThirdPartyComponent {}

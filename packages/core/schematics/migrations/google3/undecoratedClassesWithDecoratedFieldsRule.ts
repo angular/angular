@@ -19,11 +19,14 @@ export class Rule extends Rules.TypedRule {
   applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
     const typeChecker = program.getTypeChecker();
     const ruleName = this.ruleName;
-    const sourceFiles = program.getSourceFiles().filter(
-        s => !s.isDeclarationFile && !program.isSourceFileFromExternalLibrary(s));
+    const sourceFiles = program
+      .getSourceFiles()
+      .filter((s) => !s.isDeclarationFile && !program.isSourceFileFromExternalLibrary(s));
     const updateRecorders = new Map<ts.SourceFile, TslintUpdateRecorder>();
-    const transform =
-        new UndecoratedClassesWithDecoratedFieldsTransform(typeChecker, getUpdateRecorder);
+    const transform = new UndecoratedClassesWithDecoratedFieldsTransform(
+      typeChecker,
+      getUpdateRecorder
+    );
 
     // Migrate all source files in the project.
     transform.migrate(sourceFiles);
@@ -32,14 +35,14 @@ export class Rule extends Rules.TypedRule {
     transform.recordChanges();
 
     if (updateRecorders.has(sourceFile)) {
-      return updateRecorders.get(sourceFile) !.failures;
+      return updateRecorders.get(sourceFile)!.failures;
     }
     return [];
 
     /** Gets the update recorder for the specified source file. */
     function getUpdateRecorder(sourceFile: ts.SourceFile): TslintUpdateRecorder {
       if (updateRecorders.has(sourceFile)) {
-        return updateRecorders.get(sourceFile) !;
+        return updateRecorders.get(sourceFile)!;
       }
       const recorder = new TslintUpdateRecorder(ruleName, sourceFile);
       updateRecorders.set(sourceFile, recorder);

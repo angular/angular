@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
@@ -21,29 +22,43 @@ runInEachFileSystem(() => {
   describe('NgccReferencesRegistry', () => {
     it('should return a mapping from resolved reference identifiers to their declarations', () => {
       const _ = absoluteFrom;
-      const TEST_FILES: TestFile[] = [{
-        name: _('/index.ts'),
-        contents: `
+      const TEST_FILES: TestFile[] = [
+        {
+          name: _('/index.ts'),
+          contents: `
         export class SomeClass {}
         export function someFunction() {}
         export const someVariable = 42;
 
         export const testArray = [SomeClass, someFunction, someVariable];
-        `
-      }];
+        `,
+        },
+      ];
       loadTestFiles(TEST_FILES);
       const {program} = makeTestBundleProgram(TEST_FILES[0].name);
 
       const checker = program.getTypeChecker();
 
       const indexPath = _('/index.ts');
-      const testArrayDeclaration =
-          getDeclaration(program, indexPath, 'testArray', ts.isVariableDeclaration);
+      const testArrayDeclaration = getDeclaration(
+        program,
+        indexPath,
+        'testArray',
+        ts.isVariableDeclaration
+      );
       const someClassDecl = getDeclaration(program, indexPath, 'SomeClass', ts.isClassDeclaration);
-      const someFunctionDecl =
-          getDeclaration(program, indexPath, 'someFunction', ts.isFunctionDeclaration);
-      const someVariableDecl =
-          getDeclaration(program, indexPath, 'someVariable', ts.isVariableDeclaration);
+      const someFunctionDecl = getDeclaration(
+        program,
+        indexPath,
+        'someFunction',
+        ts.isFunctionDeclaration
+      );
+      const someVariableDecl = getDeclaration(
+        program,
+        indexPath,
+        'someVariable',
+        ts.isVariableDeclaration
+      );
       const testArrayExpression = testArrayDeclaration.initializer!;
 
       const reflectionHost = new TypeScriptReflectionHost(checker);

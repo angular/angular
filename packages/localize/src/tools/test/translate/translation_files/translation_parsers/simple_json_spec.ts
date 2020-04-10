@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ɵmakeTemplateObject} from '@angular/localize';
 import {SimpleJsonTranslationParser} from '../../../../src/translate/translation_files/translation_parsers/simple_json_translation_parser';
 
@@ -26,16 +27,19 @@ describe('SimpleJsonTranslationParser', () => {
 
     it('should extract and process the translations from the JSON contents', () => {
       const parser = new SimpleJsonTranslationParser();
-      const result = parser.parse('/some/file.json', `{
+      const result = parser.parse(
+        '/some/file.json',
+        `{
         "locale": "fr",
         "translations": {
           "Hello, {$ph_1}!": "Bonjour, {$ph_1}!"
         }
-      }`);
+      }`
+      );
       expect(result.translations).toEqual({
         'Hello, {$ph_1}!': {
           messageParts: ɵmakeTemplateObject(['Bonjour, ', '!'], ['Bonjour, ', '!']),
-          placeholderNames: ['ph_1']
+          placeholderNames: ['ph_1'],
         },
       });
     });

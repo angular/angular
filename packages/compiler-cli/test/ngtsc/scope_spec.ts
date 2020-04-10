@@ -30,7 +30,9 @@ runInEachFileSystem(() => {
     describe('diagnostics', () => {
       describe('declarations', () => {
         it('should detect when a random class is declared', () => {
-          env.write('test.ts', `
+          env.write(
+            'test.ts',
+            `
             import {NgModule} from '@angular/core';
 
             export class RandomClass {}
@@ -39,7 +41,8 @@ runInEachFileSystem(() => {
               declarations: [RandomClass],
             })
             export class Module {}
-          `);
+          `
+          );
 
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
@@ -49,14 +52,19 @@ runInEachFileSystem(() => {
         });
 
         it('should detect when a declaration lives outside the current compilation', () => {
-          env.write('dir.d.ts', `
+          env.write(
+            'dir.d.ts',
+            `
             import {ɵɵDirectiveDefWithMeta} from '@angular/core';
 
             export declare class ExternalDir {
               static ɵdir: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
             }
-          `);
-          env.write('test.ts', `
+          `
+          );
+          env.write(
+            'test.ts',
+            `
             import {NgModule} from '@angular/core';
             import {ExternalDir} from './dir';
 
@@ -64,7 +72,8 @@ runInEachFileSystem(() => {
               declarations: [ExternalDir],
             })
             export class Module {}
-          `);
+          `
+          );
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
           const node = diagnosticToNode(diags[0], ts.isIdentifier);
@@ -73,7 +82,9 @@ runInEachFileSystem(() => {
         });
 
         it('should detect when a declaration is shared between two modules', () => {
-          env.write('test.ts', `
+          env.write(
+            'test.ts',
+            `
             import {Directive, NgModule} from '@angular/core';
 
             @Directive({selector: '[test]'})
@@ -88,22 +99,28 @@ runInEachFileSystem(() => {
               declarations: [TestDir],
             })
             export class ModuleB {}
-          `);
+          `
+          );
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
           const node = findContainingClass(diagnosticToNode(diags[0], ts.isIdentifier));
           expect(node.name!.text).toEqual('TestDir');
 
-          const relatedNodes = new Set(diags[0].relatedInformation!.map(
-              related =>
-                  findContainingClass(diagnosticToNode(related, ts.isIdentifier)).name!.text));
+          const relatedNodes = new Set(
+            diags[0].relatedInformation!.map(
+              (related) =>
+                findContainingClass(diagnosticToNode(related, ts.isIdentifier)).name!.text
+            )
+          );
           expect(relatedNodes).toContain('ModuleA');
           expect(relatedNodes).toContain('ModuleB');
           expect(relatedNodes.size).toBe(2);
         });
 
         it('should detect when a declaration is repeated within the same module', () => {
-          env.write('test.ts', `
+          env.write(
+            'test.ts',
+            `
             import {Directive, NgModule} from '@angular/core';
 
             @Directive({selector: '[test]'})
@@ -114,15 +131,17 @@ runInEachFileSystem(() => {
               declarations: [TestDir, TestDir],
             })
             export class Module {}
-          `);
+          `
+          );
 
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(0);
         });
 
-        it('should detect when a declaration is shared between two modules, and is repeated within them',
-           () => {
-             env.write('test.ts', `
+        it('should detect when a declaration is shared between two modules, and is repeated within them', () => {
+          env.write(
+            'test.ts',
+            `
               import {Directive, NgModule} from '@angular/core';
 
               @Directive({selector: '[test]'})
@@ -137,23 +156,29 @@ runInEachFileSystem(() => {
                 declarations: [TestDir, TestDir],
               })
               export class ModuleB {}
-            `);
-             const diags = env.driveDiagnostics();
-             expect(diags.length).toBe(1);
-             const node = findContainingClass(diagnosticToNode(diags[0], ts.isIdentifier));
-             expect(node.name!.text).toEqual('TestDir');
+            `
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          const node = findContainingClass(diagnosticToNode(diags[0], ts.isIdentifier));
+          expect(node.name!.text).toEqual('TestDir');
 
-             const relatedNodes = new Set(diags[0].relatedInformation!.map(
-                 related =>
-                     findContainingClass(diagnosticToNode(related, ts.isIdentifier)).name!.text));
-             expect(relatedNodes).toContain('ModuleA');
-             expect(relatedNodes).toContain('ModuleB');
-             expect(relatedNodes.size).toBe(2);
-           });
+          const relatedNodes = new Set(
+            diags[0].relatedInformation!.map(
+              (related) =>
+                findContainingClass(diagnosticToNode(related, ts.isIdentifier)).name!.text
+            )
+          );
+          expect(relatedNodes).toContain('ModuleA');
+          expect(relatedNodes).toContain('ModuleB');
+          expect(relatedNodes.size).toBe(2);
+        });
       });
       describe('imports', () => {
         it('should emit imports in a pure function call', () => {
-          env.write('test.ts', `
+          env.write(
+            'test.ts',
+            `
           import {NgModule} from '@angular/core';
 
           @NgModule({})
@@ -161,31 +186,35 @@ runInEachFileSystem(() => {
 
           @NgModule({imports: [OtherModule]})
           export class TestModule {}
-        `);
+        `
+          );
 
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
-          expect(jsContents)
-              .toContain(
-                  'function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(TestModule, { imports: [OtherModule] }); })();');
+          expect(jsContents).toContain(
+            'function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(TestModule, { imports: [OtherModule] }); })();'
+          );
 
           const dtsContents = env.getContents('test.d.ts');
-          expect(dtsContents)
-              .toContain(
-                  'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof OtherModule], never>');
+          expect(dtsContents).toContain(
+            'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, never, [typeof OtherModule], never>'
+          );
         });
 
         it('should produce an error when an invalid class is imported', () => {
-          env.write('test.ts', `
+          env.write(
+            'test.ts',
+            `
           import {NgModule} from '@angular/core';
 
           class NotAModule {}
 
           @NgModule({imports: [NotAModule]})
           class IsAModule {}
-        `);
+        `
+          );
           const [error] = env.driveDiagnostics();
           expect(error).not.toBeUndefined();
           expect(error.messageText).toContain('IsAModule');
@@ -196,13 +225,16 @@ runInEachFileSystem(() => {
 
         it('should produce an error when a non-class is imported from a .d.ts dependency', () => {
           env.write('dep.d.ts', `export declare let NotAClass: Function;`);
-          env.write('test.ts', `
+          env.write(
+            'test.ts',
+            `
           import {NgModule} from '@angular/core';
           import {NotAClass} from './dep';
 
           @NgModule({imports: [NotAClass]})
           class IsAModule {}
-        `);
+        `
+          );
           const [error] = env.driveDiagnostics();
           expect(error).not.toBeUndefined();
           expect(error.messageText).toContain('IsAModule');
@@ -214,7 +246,9 @@ runInEachFileSystem(() => {
 
       describe('exports', () => {
         it('should emit exports in a pure function call', () => {
-          env.write('test.ts', `
+          env.write(
+            'test.ts',
+            `
           import {NgModule} from '@angular/core';
 
           @NgModule({})
@@ -222,31 +256,35 @@ runInEachFileSystem(() => {
 
           @NgModule({exports: [OtherModule]})
           export class TestModule {}
-        `);
+        `
+          );
 
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
-          expect(jsContents)
-              .toContain(
-                  '(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(TestModule, { exports: [OtherModule] }); })();');
+          expect(jsContents).toContain(
+            '(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(TestModule, { exports: [OtherModule] }); })();'
+          );
 
           const dtsContents = env.getContents('test.d.ts');
-          expect(dtsContents)
-              .toContain(
-                  'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, never, never, [typeof OtherModule]>');
+          expect(dtsContents).toContain(
+            'static ɵmod: i0.ɵɵNgModuleDefWithMeta<TestModule, never, never, [typeof OtherModule]>'
+          );
         });
 
         it('should produce an error when a non-NgModule class is exported', () => {
-          env.write('test.ts', `
+          env.write(
+            'test.ts',
+            `
           import {NgModule} from '@angular/core';
 
           class NotAModule {}
 
           @NgModule({exports: [NotAModule]})
           class IsAModule {}
-        `);
+        `
+          );
           const [error] = env.driveDiagnostics();
           expect(error).not.toBeUndefined();
           expect(error.messageText).toContain('IsAModule');
@@ -256,7 +294,9 @@ runInEachFileSystem(() => {
         });
 
         it('should produce a transitive error when an invalid NgModule is exported', () => {
-          env.write('test.ts', `
+          env.write(
+            'test.ts',
+            `
           import {NgModule} from '@angular/core';
 
           export class NotAModule {}
@@ -268,11 +308,13 @@ runInEachFileSystem(() => {
 
           @NgModule({exports: [InvalidModule]})
           class IsAModule {}
-        `);
+        `
+          );
 
           // Find the diagnostic referencing InvalidModule, which should have come from IsAModule.
-          const error = env.driveDiagnostics().find(
-              error => diagnosticToNode(error, ts.isIdentifier).text === 'InvalidModule');
+          const error = env
+            .driveDiagnostics()
+            .find((error) => diagnosticToNode(error, ts.isIdentifier).text === 'InvalidModule');
           if (error === undefined) {
             return fail('Expected to find a diagnostic referencing InvalidModule');
           }
@@ -284,7 +326,9 @@ runInEachFileSystem(() => {
 
       describe('re-exports', () => {
         it('should produce an error when a non-declared/imported class is re-exported', () => {
-          env.write('test.ts', `
+          env.write(
+            'test.ts',
+            `
           import {Directive, NgModule} from '@angular/core';
 
           @Directive({selector: 'test'})
@@ -292,7 +336,8 @@ runInEachFileSystem(() => {
 
           @NgModule({exports: [Dir]})
           class IsAModule {}
-        `);
+        `
+          );
           const [error] = env.driveDiagnostics();
           expect(error).not.toBeUndefined();
           expect(error.messageText).toContain('IsAModule');
@@ -313,7 +358,9 @@ runInEachFileSystem(() => {
         // NgModule.
 
         // This NgModule declares something which isn't a directive/pipe.
-        env.write('invalid-declaration.ts', `
+        env.write(
+          'invalid-declaration.ts',
+          `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -326,10 +373,13 @@ runInEachFileSystem(() => {
 
           @NgModule({declarations: [TestCmp, NotACmp]})
           export class Module {}
-        `);
+        `
+        );
 
         // This NgModule imports something which isn't an NgModule.
-        env.write('invalid-import.ts', `
+        env.write(
+          'invalid-import.ts',
+          `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -345,11 +395,14 @@ runInEachFileSystem(() => {
             imports: [NotAModule],
           })
           export class Module {}
-        `);
+        `
+        );
 
         // This NgModule imports a DepModule which itself is invalid (it declares something which
         // isn't a directive/pipe).
-        env.write('transitive-error-in-import.ts', `
+        env.write(
+          'transitive-error-in-import.ts',
+          `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -371,23 +424,25 @@ runInEachFileSystem(() => {
             imports: [DepModule],
           })
           export class Module {}
-        `);
+        `
+        );
 
         for (const diag of env.driveDiagnostics()) {
           // None of the diagnostics should be related to the fact that the component uses an
           // unknown element, because in all cases the component's scope was invalid.
-          expect(diag.messageText)
-              .not.toContain(
-                  'doesnt-exist',
-                  'Template type-checking ran for a component, when it shouldn\'t have.');
+          expect(diag.messageText).not.toContain(
+            'doesnt-exist',
+            "Template type-checking ran for a component, when it shouldn't have."
+          );
         }
       });
     });
   });
 
   function diagnosticToNode<T extends ts.Node>(
-      diagnostic: ts.Diagnostic|Diagnostic|ts.DiagnosticRelatedInformation,
-      guard: (node: ts.Node) => node is T): T {
+    diagnostic: ts.Diagnostic | Diagnostic | ts.DiagnosticRelatedInformation,
+    guard: (node: ts.Node) => node is T
+  ): T {
     const diag = diagnostic as ts.Diagnostic | ts.DiagnosticRelatedInformation;
     if (diag.file === undefined) {
       throw new Error(`Expected ts.Diagnostic to have a file source`);

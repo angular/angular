@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {NGCC_PROPERTY_EXTENSION} from '../writing/new_entry_point_file_writer';
 import {PackageJsonUpdater} from '../writing/package_json_updater';
@@ -19,8 +20,9 @@ export const NGCC_VERSION = '0.0.0-PLACEHOLDER';
  * @param packageJson The parsed contents of the package.json for the entry-point
  */
 export function needsCleaning(packageJson: EntryPointPackageJson): boolean {
-  return Object.values(packageJson.__processed_by_ivy_ngcc__ || {})
-      .some(value => value !== NGCC_VERSION);
+  return Object.values(packageJson.__processed_by_ivy_ngcc__ || {}).some(
+    (value) => value !== NGCC_VERSION
+  );
 }
 
 /**
@@ -62,9 +64,13 @@ export function cleanPackageJson(packageJson: EntryPointPackageJson): boolean {
  * false otherwise.
  */
 export function hasBeenProcessed(
-    packageJson: EntryPointPackageJson, format: PackageJsonFormatProperties): boolean {
-  return packageJson.__processed_by_ivy_ngcc__ !== undefined &&
-      packageJson.__processed_by_ivy_ngcc__[format] === NGCC_VERSION;
+  packageJson: EntryPointPackageJson,
+  format: PackageJsonFormatProperties
+): boolean {
+  return (
+    packageJson.__processed_by_ivy_ngcc__ !== undefined &&
+    packageJson.__processed_by_ivy_ngcc__[format] === NGCC_VERSION
+  );
 }
 
 /**
@@ -78,8 +84,11 @@ export function hasBeenProcessed(
  *                   the marker.
  */
 export function markAsProcessed(
-    pkgJsonUpdater: PackageJsonUpdater, packageJson: EntryPointPackageJson,
-    packageJsonPath: AbsoluteFsPath, formatProperties: PackageJsonFormatProperties[]): void {
+  pkgJsonUpdater: PackageJsonUpdater,
+  packageJson: EntryPointPackageJson,
+  packageJsonPath: AbsoluteFsPath,
+  formatProperties: PackageJsonFormatProperties[]
+): void {
   const update = pkgJsonUpdater.createUpdate();
 
   // Update the format properties to mark them as processed.
@@ -90,14 +99,15 @@ export function markAsProcessed(
   // Update the `prepublishOnly` script (keeping a backup, if necessary) to prevent `ngcc`'d
   // packages from getting accidentally published.
   const oldPrepublishOnly = packageJson.scripts && packageJson.scripts.prepublishOnly;
-  const newPrepublishOnly = 'node --eval \"console.error(\'' +
-      'ERROR: Trying to publish a package that has been compiled by NGCC. This is not allowed.\\n' +
-      'Please delete and rebuild the package, without compiling with NGCC, before attempting to publish.\\n' +
-      'Note that NGCC may have been run by importing this package into another project that is being built with Ivy enabled.\\n' +
-      '\')\" ' +
-      '&& exit 1';
+  const newPrepublishOnly =
+    'node --eval "console.error(\'' +
+    'ERROR: Trying to publish a package that has been compiled by NGCC. This is not allowed.\\n' +
+    'Please delete and rebuild the package, without compiling with NGCC, before attempting to publish.\\n' +
+    'Note that NGCC may have been run by importing this package into another project that is being built with Ivy enabled.\\n' +
+    '\')" ' +
+    '&& exit 1';
 
-  if (oldPrepublishOnly && (oldPrepublishOnly !== newPrepublishOnly)) {
+  if (oldPrepublishOnly && oldPrepublishOnly !== newPrepublishOnly) {
     update.addChange(['scripts', 'prepublishOnly__ivy_ngcc_bak'], oldPrepublishOnly);
   }
 

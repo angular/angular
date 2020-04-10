@@ -16,8 +16,10 @@ var PROJECT_ROOT = path.join(__dirname, '../../');
 
 // tslint:disable:no-console
 function checkNodeModules(logOutput, purgeIfStale) {
-  var yarnCheck = childProcess.spawnSync(
-      'yarn check --integrity', {shell: true, cwd: path.resolve(__dirname, '../..')});
+  var yarnCheck = childProcess.spawnSync('yarn check --integrity', {
+    shell: true,
+    cwd: path.resolve(__dirname, '../..'),
+  });
 
   var nodeModulesOK = yarnCheck.status === 0;
   if (nodeModulesOK) {
@@ -33,7 +35,6 @@ function checkNodeModules(logOutput, purgeIfStale) {
   return nodeModulesOK;
 }
 
-
 /**
  * Custom implementation of recursive `rm` because we can't rely on the state of node_modules to
  * pull in existing module.
@@ -41,7 +42,7 @@ function checkNodeModules(logOutput, purgeIfStale) {
 function _deleteDir(path) {
   if (fs.existsSync(path)) {
     var subpaths = fs.readdirSync(path);
-    subpaths.forEach(function(subpath) {
+    subpaths.forEach(function (subpath) {
       var curPath = path + '/' + subpath;
       if (fs.lstatSync(curPath).isDirectory()) {
         _deleteDir(curPath);
@@ -52,6 +53,5 @@ function _deleteDir(path) {
     fs.rmdirSync(path);
   }
 }
-
 
 module.exports = checkNodeModules;

@@ -12,5 +12,4 @@ import {Component} from '@angular/core';
   selector: 'trigger',
   template: '<dep></dep>',
 })
-export class TriggerComponent {
-}
+export class TriggerComponent {}

@@ -8,9 +8,14 @@
 
 import {Type} from '../../interface/type';
 import {getClosureSafeProperty} from '../../util/property';
-import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, ValueProvider} from './provider';
-
-
+import {
+  ClassProvider,
+  ConstructorProvider,
+  ExistingProvider,
+  FactoryProvider,
+  StaticClassProvider,
+  ValueProvider,
+} from './provider';
 
 /**
  * Information about how a type or `InjectionToken` interfaces with the DI system.
@@ -35,7 +40,7 @@ export interface ɵɵInjectableDef<T> {
    * - `null`, does not belong to any injector. Must be explicitly listed in the injector
    *   `providers`.
    */
-  providedIn: InjectorType<any>|'root'|'platform'|'any'|null;
+  providedIn: InjectorType<any> | 'root' | 'platform' | 'any' | null;
 
   /**
    * The token to which this definition belongs.
@@ -52,7 +57,7 @@ export interface ɵɵInjectableDef<T> {
   /**
    * In a case of no explicit injector, a location where the instance of the injectable is stored.
    */
-  value: T|undefined;
+  value: T | undefined;
 }
 
 /**
@@ -72,10 +77,18 @@ export interface ɵɵInjectorDef<T> {
 
   // TODO(alxhub): Narrow down the type here once decorators properly change the return type of the
   // class they are decorating (to add the ɵprov property for example).
-  providers: (Type<any>|ValueProvider|ExistingProvider|FactoryProvider|ConstructorProvider|
-              StaticClassProvider|ClassProvider|any[])[];
+  providers: (
+    | Type<any>
+    | ValueProvider
+    | ExistingProvider
+    | FactoryProvider
+    | ConstructorProvider
+    | StaticClassProvider
+    | ClassProvider
+    | any[]
+  )[];
 
-  imports: (InjectorType<any>|InjectorTypeWithProviders<any>)[];
+  imports: (InjectorType<any> | InjectorTypeWithProviders<any>)[];
 }
 
 /**
@@ -117,10 +130,17 @@ export interface InjectorType<T> extends Type<T> {
  */
 export interface InjectorTypeWithProviders<T> {
   ngModule: InjectorType<T>;
-  providers?: (Type<any>|ValueProvider|ExistingProvider|FactoryProvider|ConstructorProvider|
-               StaticClassProvider|ClassProvider|any[])[];
+  providers?: (
+    | Type<any>
+    | ValueProvider
+    | ExistingProvider
+    | FactoryProvider
+    | ConstructorProvider
+    | StaticClassProvider
+    | ClassProvider
+    | any[]
+  )[];
 }
-
 
 /**
  * Construct an `InjectableDef` which defines how a token will be constructed by the DI system, and
@@ -139,13 +159,15 @@ export interface InjectorTypeWithProviders<T> {
  * @codeGenApi
  */
 export function ɵɵdefineInjectable<T>(opts: {
-  token: unknown,
-  providedIn?: Type<any>| 'root' | 'platform' | 'any' | null,
-  factory: () => T,
+  token: unknown;
+  providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
+  factory: () => T;
 }): never {
   return ({
-    token: opts.token, providedIn: opts.providedIn as any || null, factory: opts.factory,
-        value: undefined,
+    token: opts.token,
+    providedIn: (opts.providedIn as any) || null,
+    factory: opts.factory,
+    value: undefined,
   } as ɵɵInjectableDef<T>) as never;
 }
 
@@ -176,10 +198,15 @@ export const defineInjectable = ɵɵdefineInjectable;
  *
  * @publicApi
  */
-export function ɵɵdefineInjector(options: {factory: () => any, providers?: any[], imports?: any[]}):
-    never {
+export function ɵɵdefineInjector(options: {
+  factory: () => any;
+  providers?: any[];
+  imports?: any[];
+}): never {
   return ({
-    factory: options.factory, providers: options.providers || [], imports: options.imports || [],
+    factory: options.factory,
+    providers: options.providers || [],
+    imports: options.imports || [],
   } as ɵɵInjectorDef<any>) as never;
 }
 
@@ -189,9 +216,10 @@ export function ɵɵdefineInjector(options: {factory: () => any, providers?: any
  *
  * @param type A type which may have its own (non-inherited) `ɵprov`.
  */
-export function getInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
-  return getOwnDefinition(type, type[NG_PROV_DEF]) ||
-      getOwnDefinition(type, type[NG_INJECTABLE_DEF]);
+export function getInjectableDef<T>(type: any): ɵɵInjectableDef<T> | null {
+  return (
+    getOwnDefinition(type, type[NG_PROV_DEF]) || getOwnDefinition(type, type[NG_INJECTABLE_DEF])
+  );
 }
 
 /**
@@ -205,7 +233,7 @@ export function getInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
  * property was not defined directly on the type itself, and was likely inherited. The definition
  * is only returned if the `type` matches the `def.token`.
  */
-function getOwnDefinition<T>(type: any, def: ɵɵInjectableDef<T>): ɵɵInjectableDef<T>|null {
+function getOwnDefinition<T>(type: any, def: ɵɵInjectableDef<T>): ɵɵInjectableDef<T> | null {
   return def && def.token === type ? def : null;
 }
 
@@ -217,18 +245,22 @@ function getOwnDefinition<T>(type: any, def: ɵɵInjectableDef<T>): ɵɵInjectab
  * @deprecated Will be removed in v10, where an error will occur in the scenario if we find the
  * `ɵprov` on an ancestor only.
  */
-export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
+export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDef<T> | null {
   // See `jit/injectable.ts#compileInjectable` for context on NG_PROV_DEF_FALLBACK.
-  const def = type && (type[NG_PROV_DEF] || type[NG_INJECTABLE_DEF] ||
-                       (type[NG_PROV_DEF_FALLBACK] && type[NG_PROV_DEF_FALLBACK]()));
+  const def =
+    type &&
+    (type[NG_PROV_DEF] ||
+      type[NG_INJECTABLE_DEF] ||
+      (type[NG_PROV_DEF_FALLBACK] && type[NG_PROV_DEF_FALLBACK]()));
 
   if (def) {
     const typeName = getTypeName(type);
     // TODO(FW-1307): Re-add ngDevMode when closure can handle it
     // ngDevMode &&
     console.warn(
-        `DEPRECATED: DI is instantiating a token "${typeName}" that inherits its @Injectable decorator but does not provide one itself.\n` +
-        `This will become an error in v10. Please add @Injectable() to the "${typeName}" class.`);
+      `DEPRECATED: DI is instantiating a token "${typeName}" that inherits its @Injectable decorator but does not provide one itself.\n` +
+        `This will become an error in v10. Please add @Injectable() to the "${typeName}" class.`
+    );
     return def;
   } else {
     return null;
@@ -256,10 +288,10 @@ function getTypeName(type: any): string {
  *
  * @param type type which may have an injector def (`ɵinj`)
  */
-export function getInjectorDef<T>(type: any): ɵɵInjectorDef<T>|null {
-  return type && (type.hasOwnProperty(NG_INJ_DEF) || type.hasOwnProperty(NG_INJECTOR_DEF)) ?
-      (type as any)[NG_INJ_DEF] :
-      null;
+export function getInjectorDef<T>(type: any): ɵɵInjectorDef<T> | null {
+  return type && (type.hasOwnProperty(NG_INJ_DEF) || type.hasOwnProperty(NG_INJECTOR_DEF))
+    ? (type as any)[NG_INJ_DEF]
+    : null;
 }
 
 export const NG_PROV_DEF = getClosureSafeProperty({ɵprov: getClosureSafeProperty});

@@ -5,23 +5,29 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Diagnostics as Diagnostics} from '../../src/diagnostics';
+
+import {Diagnostics} from '../../src/diagnostics';
 import {FileUtils} from '../../src/file_utils';
 import {OutputPathFn} from '../../src/translate/output_path';
 import {TranslationBundle, TranslationHandler, Translator} from '../../src/translate/translator';
 
 describe('Translator', () => {
   describe('translateFiles()', () => {
-
     beforeEach(() => {
-      spyOn(FileUtils, 'readFileBuffer')
-          .and.returnValues(Buffer.from('resource file 1'), Buffer.from('resource file 2'));
+      spyOn(FileUtils, 'readFileBuffer').and.returnValues(
+        Buffer.from('resource file 1'),
+        Buffer.from('resource file 2')
+      );
     });
 
     it('should call FileUtils.readFileBuffer to load the resource file contents', () => {
       const translator = new Translator([new MockTranslationHandler()], new Diagnostics());
       translator.translateFiles(
-          ['/dist/file1.js', '/dist/images/img.gif'], '/dist', mockOutputPathFn, []);
+        ['/dist/file1.js', '/dist/images/img.gif'],
+        '/dist',
+        mockOutputPathFn,
+        []
+      );
       expect(FileUtils.readFileBuffer).toHaveBeenCalledWith('/dist/file1.js');
       expect(FileUtils.readFileBuffer).toHaveBeenCalledWith('/dist/images/img.gif');
     });
@@ -31,7 +37,11 @@ describe('Translator', () => {
       const handler = new MockTranslationHandler(true);
       const translator = new Translator([handler], diagnostics);
       translator.translateFiles(
-          ['/dist/file1.js', '/dist/images/img.gif'], '/dist', mockOutputPathFn, []);
+        ['/dist/file1.js', '/dist/images/img.gif'],
+        '/dist',
+        mockOutputPathFn,
+        []
+      );
 
       expect(handler.log).toEqual([
         'canTranslate(file1.js, resource file 1)',
@@ -46,7 +56,12 @@ describe('Translator', () => {
       const handler = new MockTranslationHandler(true);
       const translator = new Translator([handler], diagnostics);
       translator.translateFiles(
-          ['/dist/file1.js', '/dist/images/img.gif'], '/dist', mockOutputPathFn, [], 'en-US');
+        ['/dist/file1.js', '/dist/images/img.gif'],
+        '/dist',
+        mockOutputPathFn,
+        [],
+        'en-US'
+      );
 
       expect(handler.log).toEqual([
         'canTranslate(file1.js, resource file 1)',
@@ -63,7 +78,11 @@ describe('Translator', () => {
       const handler3 = new MockTranslationHandler(true);
       const translator = new Translator([handler1, handler2, handler3], diagnostics);
       translator.translateFiles(
-          ['/dist/file1.js', '/dist/images/img.gif'], '/dist', mockOutputPathFn, []);
+        ['/dist/file1.js', '/dist/images/img.gif'],
+        '/dist',
+        mockOutputPathFn,
+        []
+      );
 
       expect(handler1.log).toEqual([
         'canTranslate(file1.js, resource file 1)',
@@ -83,7 +102,11 @@ describe('Translator', () => {
       const translator = new Translator([handler], diagnostics);
 
       translator.translateFiles(
-          ['/dist/file1.js', '/dist/images/img.gif'], '/dist', mockOutputPathFn, []);
+        ['/dist/file1.js', '/dist/images/img.gif'],
+        '/dist',
+        mockOutputPathFn,
+        []
+      );
 
       expect(diagnostics.messages).toEqual([
         {type: 'error', message: 'Unable to handle resource file: /dist/file1.js'},
@@ -103,11 +126,18 @@ class MockTranslationHandler implements TranslationHandler {
   }
 
   translate(
-      _diagnostics: Diagnostics, rootPath: string, relativePath: string, contents: Buffer,
-      _outputPathFn: OutputPathFn, _translations: TranslationBundle[], sourceLocale?: string) {
+    _diagnostics: Diagnostics,
+    rootPath: string,
+    relativePath: string,
+    contents: Buffer,
+    _outputPathFn: OutputPathFn,
+    _translations: TranslationBundle[],
+    sourceLocale?: string
+  ) {
     this.log.push(
-        `translate(${rootPath}, ${relativePath}, ${contents}, ...` +
-        (sourceLocale !== undefined ? `, ${sourceLocale})` : ')'));
+      `translate(${rootPath}, ${relativePath}, ${contents}, ...` +
+        (sourceLocale !== undefined ? `, ${sourceLocale})` : ')')
+    );
   }
 }
 

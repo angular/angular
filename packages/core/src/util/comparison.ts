@@ -8,10 +8,9 @@
 
 import {areIterablesEqual, isListLikeIterable} from './iterable';
 
-
 // JS has NaN !== NaN
 export function looseIdentical(a: any, b: any): boolean {
-  return a === b || typeof a === 'number' && typeof b === 'number' && isNaN(a) && isNaN(b);
+  return a === b || (typeof a === 'number' && typeof b === 'number' && isNaN(a) && isNaN(b));
 }
 
 export function devModeEqual(a: any, b: any): boolean {

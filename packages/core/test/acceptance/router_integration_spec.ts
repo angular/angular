@@ -23,8 +23,7 @@ describe('router integration acceptance', () => {
         ]),
       ],
     })
-    class Level1AModule {
-    }
+    class Level1AModule {}
 
     @NgModule({
       imports: [
@@ -34,8 +33,7 @@ describe('router integration acceptance', () => {
         ]),
       ],
     })
-    class Level1BModule {
-    }
+    class Level1BModule {}
 
     @NgModule({
       imports: [
@@ -43,17 +41,14 @@ describe('router integration acceptance', () => {
         Level1AModule,
         Level1BModule,
       ],
-      providers: [
-        {provide: APP_BASE_HREF, useValue: '/'},
-      ]
+      providers: [{provide: APP_BASE_HREF, useValue: '/'}],
     })
-    class RootModule {
-    }
+    class RootModule {}
 
     TestBed.configureTestingModule({
       imports: [RootModule],
     });
-    expect((TestBed.inject(Router)).config.map(r => r.path)).toEqual([
+    expect(TestBed.inject(Router).config.map((r) => r.path)).toEqual([
       '1a:1',
       '1a:2',
       '1b:1',

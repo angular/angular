@@ -5,8 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {LocalizeFn} from './localize';
-import {MessageId, ParsedTranslation, TargetMessage, parseTranslation, translate as _translate} from './utils';
+import {
+  MessageId,
+  ParsedTranslation,
+  TargetMessage,
+  parseTranslation,
+  translate as _translate,
+} from './utils';
 
 /**
  * We augment the `$localize` object to also store the translations.
@@ -14,7 +21,7 @@ import {MessageId, ParsedTranslation, TargetMessage, parseTranslation, translate
  * Note that because the TRANSLATIONS are attached to a global object, they will be shared between
  * all applications that are running in a single page of the browser.
  */
-declare const $localize: LocalizeFn&{TRANSLATIONS: Record<MessageId, ParsedTranslation>};
+declare const $localize: LocalizeFn & {TRANSLATIONS: Record<MessageId, ParsedTranslation>};
 
 /**
  * Load translations for `$localize`.
@@ -41,7 +48,7 @@ export function loadTranslations(translations: Record<MessageId, TargetMessage>)
   if (!$localize.TRANSLATIONS) {
     $localize.TRANSLATIONS = {};
   }
-  Object.keys(translations).forEach(key => {
+  Object.keys(translations).forEach((key) => {
     $localize.TRANSLATIONS[key] = parseTranslation(translations[key]);
   });
 }
@@ -61,8 +68,10 @@ export function clearTranslations() {
  *
  * This function may reorder (or remove) substitutions as indicated in the matching translation.
  */
-export function translate(messageParts: TemplateStringsArray, substitutions: readonly any[]):
-    [TemplateStringsArray, readonly any[]] {
+export function translate(
+  messageParts: TemplateStringsArray,
+  substitutions: readonly any[]
+): [TemplateStringsArray, readonly any[]] {
   try {
     return _translate($localize.TRANSLATIONS, messageParts, substitutions);
   } catch (e) {

@@ -11,8 +11,16 @@ import {browser} from 'protractor';
 import {openBrowser} from '../../../e2e_util/e2e_util';
 import {runBenchmark} from '../../../e2e_util/perf_util';
 
-export function runTreeBenchmark({id, prepare, setup, work}: {
-  id: string; prepare ? () : void; setup ? () : void; work(): void;
+export function runTreeBenchmark({
+  id,
+  prepare,
+  setup,
+  work,
+}: {
+  id: string;
+  prepare?(): void;
+  setup?(): void;
+  work(): void;
 }) {
   browser.rootEl = '#root';
   return runBenchmark({
@@ -22,7 +30,7 @@ export function runTreeBenchmark({id, prepare, setup, work}: {
     params: [],
     work: work,
     prepare: prepare,
-    setup: setup
+    setup: setup,
   });
 }
 

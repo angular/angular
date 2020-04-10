@@ -23,5 +23,7 @@ export function unlinkRecursively(file: string) {
 
 export function assertFileEqual(actualFile: string, expectedFile: string) {
   chai.assert.equal(
-      fs.readFileSync(actualFile).toString(), fs.readFileSync(expectedFile).toString());
+    fs.readFileSync(actualFile).toString(),
+    fs.readFileSync(expectedFile).toString()
+  );
 }

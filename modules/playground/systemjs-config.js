@@ -35,7 +35,7 @@ const mapConfig = {
   'rxjs/operators': 'angular/modules/playground/systemjs-rxjs-operators.js',
 };
 
-angularPackages.forEach(pkgName => {
+angularPackages.forEach((pkgName) => {
   mapConfig[`@angular/${pkgName}`] = `angular/packages/${pkgName}`;
   packagesConfig[`@angular/${pkgName}`] = {
     main: 'index.js',

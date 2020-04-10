@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 /// <reference types="node" />
 import * as fs from 'fs';
 import * as fsExtra from 'fs-extra';
@@ -16,7 +17,7 @@ import {AbsoluteFsPath, FileStats, FileSystem, PathSegment, PathString} from './
  * A wrapper around the Node.js file-system (i.e the `fs` package).
  */
 export class NodeJSFileSystem implements FileSystem {
-  private _caseSensitive: boolean|undefined = undefined;
+  private _caseSensitive: boolean | undefined = undefined;
   exists(path: AbsoluteFsPath): boolean {
     return fs.existsSync(path);
   }
@@ -94,7 +95,7 @@ export class NodeJSFileSystem implements FileSystem {
   basename(filePath: string, extension?: string): PathSegment {
     return p.basename(filePath, extension) as PathSegment;
   }
-  extname(path: AbsoluteFsPath|PathSegment): string {
+  extname(path: AbsoluteFsPath | PathSegment): string {
     return p.extname(path);
   }
   realpath(path: AbsoluteFsPath): AbsoluteFsPath {
@@ -126,5 +127,6 @@ export class NodeJSFileSystem implements FileSystem {
  */
 function togglePathCase(str: string): AbsoluteFsPath {
   return absoluteFrom(
-      str.replace(/\w/g, ch => ch.toUpperCase() === ch ? ch.toLowerCase() : ch.toUpperCase()));
+    str.replace(/\w/g, (ch) => (ch.toUpperCase() === ch ? ch.toLowerCase() : ch.toUpperCase()))
+  );
 }

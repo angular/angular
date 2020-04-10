@@ -5,7 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimateTimings, AnimationMetadata, AnimationMetadataType, AnimationOptions, sequence, ɵStyleData} from '@angular/animations';
+
+import {
+  AnimateTimings,
+  AnimationMetadata,
+  AnimationMetadataType,
+  AnimationOptions,
+  sequence,
+  ɵStyleData,
+} from '@angular/animations';
 import {Ast as AnimationAst, AstVisitor as AnimationAstVisitor} from './dsl/animation_ast';
 import {AnimationDslVisitor} from './dsl/animation_dsl_visitor';
 import {isNode} from './render/shared';
@@ -36,20 +44,27 @@ function _convertTimeValueToMS(value: number, unit: string): number {
   switch (unit) {
     case 's':
       return value * ONE_SECOND;
-    default:  // ms or something else
+    default:
+      // ms or something else
       return value;
   }
 }
 
 export function resolveTiming(
-    timings: string | number | AnimateTimings, errors: any[], allowNegativeValues?: boolean) {
-  return timings.hasOwnProperty('duration') ?
-      <AnimateTimings>timings :
-      parseTimeExpression(<string|number>timings, errors, allowNegativeValues);
+  timings: string | number | AnimateTimings,
+  errors: any[],
+  allowNegativeValues?: boolean
+) {
+  return timings.hasOwnProperty('duration')
+    ? <AnimateTimings>timings
+    : parseTimeExpression(<string | number>timings, errors, allowNegativeValues);
 }
 
 function parseTimeExpression(
-    exp: string | number, errors: string[], allowNegativeValues?: boolean): AnimateTimings {
+  exp: string | number,
+  errors: string[],
+  allowNegativeValues?: boolean
+): AnimateTimings {
   const regex = /^(-?[\.\d]+)(m?s)(?:\s+(-?[\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?$/i;
   let duration: number;
   let delay: number = 0;
@@ -96,15 +111,19 @@ function parseTimeExpression(
 }
 
 export function copyObj(
-    obj: {[key: string]: any}, destination: {[key: string]: any} = {}): {[key: string]: any} {
-  Object.keys(obj).forEach(prop => { destination[prop] = obj[prop]; });
+  obj: {[key: string]: any},
+  destination: {[key: string]: any} = {}
+): {[key: string]: any} {
+  Object.keys(obj).forEach((prop) => {
+    destination[prop] = obj[prop];
+  });
   return destination;
 }
 
 export function normalizeStyles(styles: ɵStyleData | ɵStyleData[]): ɵStyleData {
   const normalizedStyles: ɵStyleData = {};
   if (Array.isArray(styles)) {
-    styles.forEach(data => copyStyles(data, false, normalizedStyles));
+    styles.forEach((data) => copyStyles(data, false, normalizedStyles));
   } else {
     copyStyles(styles, false, normalizedStyles);
   }
@@ -112,7 +131,10 @@ export function normalizeStyles(styles: ɵStyleData | ɵStyleData[]): ɵStyleDat
 }
 
 export function copyStyles(
-    styles: ɵStyleData, readPrototype: boolean, destination: ɵStyleData = {}): ɵStyleData {
+  styles: ɵStyleData,
+  readPrototype: boolean,
+  destination: ɵStyleData = {}
+): ɵStyleData {
   if (readPrototype) {
     // we make use of a for-in loop so that the
     // prototypically inherited properties are
@@ -159,7 +181,7 @@ function writeStyleAttribute(element: any) {
 
 export function setStyles(element: any, styles: ɵStyleData, formerStyles?: {[key: string]: any}) {
   if (element['style']) {
-    Object.keys(styles).forEach(prop => {
+    Object.keys(styles).forEach((prop) => {
       const camelProp = dashCaseToCamelCase(prop);
       if (formerStyles && !formerStyles.hasOwnProperty(prop)) {
         formerStyles[prop] = element.style[camelProp];
@@ -175,7 +197,7 @@ export function setStyles(element: any, styles: ɵStyleData, formerStyles?: {[ke
 
 export function eraseStyles(element: any, styles: ɵStyleData) {
   if (element['style']) {
-    Object.keys(styles).forEach(prop => {
+    Object.keys(styles).forEach((prop) => {
       const camelProp = dashCaseToCamelCase(prop);
       element.style[camelProp] = '';
     });
@@ -186,8 +208,9 @@ export function eraseStyles(element: any, styles: ɵStyleData) {
   }
 }
 
-export function normalizeAnimationEntry(steps: AnimationMetadata | AnimationMetadata[]):
-    AnimationMetadata {
+export function normalizeAnimationEntry(
+  steps: AnimationMetadata | AnimationMetadata[]
+): AnimationMetadata {
   if (Array.isArray(steps)) {
     if (steps.length == 1) return steps[0];
     return sequence(steps);
@@ -196,26 +219,32 @@ export function normalizeAnimationEntry(steps: AnimationMetadata | AnimationMeta
 }
 
 export function validateStyleParams(
-    value: string | number, options: AnimationOptions, errors: any[]) {
+  value: string | number,
+  options: AnimationOptions,
+  errors: any[]
+) {
   const params = options.params || {};
   const matches = extractStyleParams(value);
   if (matches.length) {
-    matches.forEach(varName => {
+    matches.forEach((varName) => {
       if (!params.hasOwnProperty(varName)) {
         errors.push(
-            `Unable to resolve the local animation param ${varName} in the given list of values`);
+          `Unable to resolve the local animation param ${varName} in the given list of values`
+        );
       }
     });
   }
 }
 
-const PARAM_REGEX =
-    new RegExp(`${SUBSTITUTION_EXPR_START}\\s*(.+?)\\s*${SUBSTITUTION_EXPR_END}`, 'g');
+const PARAM_REGEX = new RegExp(
+  `${SUBSTITUTION_EXPR_START}\\s*(.+?)\\s*${SUBSTITUTION_EXPR_END}`,
+  'g'
+);
 export function extractStyleParams(value: string | number): string[] {
   let params: string[] = [];
   if (typeof value === 'string') {
     let match: any;
-    while (match = PARAM_REGEX.exec(value)) {
+    while ((match = PARAM_REGEX.exec(value))) {
       params.push(match[1] as string);
     }
     PARAM_REGEX.lastIndex = 0;
@@ -224,7 +253,10 @@ export function extractStyleParams(value: string | number): string[] {
 }
 
 export function interpolateParams(
-    value: string | number, params: {[name: string]: any}, errors: any[]): string|number {
+  value: string | number,
+  params: {[name: string]: any},
+  errors: any[]
+): string | number {
   const original = value.toString();
   const str = original.replace(PARAM_REGEX, (_, varName) => {
     let localVal = params[varName];
@@ -251,14 +283,16 @@ export function iteratorToArray(iterator: any): any[] {
 }
 
 export function mergeAnimationOptions(
-    source: AnimationOptions, destination: AnimationOptions): AnimationOptions {
+  source: AnimationOptions,
+  destination: AnimationOptions
+): AnimationOptions {
   if (source.params) {
     const p0 = source.params;
     if (!destination.params) {
       destination.params = {};
     }
     const p1 = destination.params;
-    Object.keys(p0).forEach(param => {
+    Object.keys(p0).forEach((param) => {
       if (!p1.hasOwnProperty(param)) {
         p1[param] = p0[param];
       }
@@ -281,12 +315,15 @@ export function allowPreviousPlayerStylesMerge(duration: number, delay: number) 
 }
 
 export function balancePreviousStylesIntoKeyframes(
-    element: any, keyframes: {[key: string]: any}[], previousStyles: {[key: string]: any}) {
+  element: any,
+  keyframes: {[key: string]: any}[],
+  previousStyles: {[key: string]: any}
+) {
   const previousStyleProps = Object.keys(previousStyles);
   if (previousStyleProps.length && keyframes.length) {
     let startingKeyframe = keyframes[0];
     let missingStyleProps: string[] = [];
-    previousStyleProps.forEach(prop => {
+    previousStyleProps.forEach((prop) => {
       if (!startingKeyframe.hasOwnProperty(prop)) {
         missingStyleProps.push(prop);
       }
@@ -297,7 +334,9 @@ export function balancePreviousStylesIntoKeyframes(
       // tslint:disable-next-line
       for (var i = 1; i < keyframes.length; i++) {
         let kf = keyframes[i];
-        missingStyleProps.forEach(function(prop) { kf[prop] = computeStyle(element, prop); });
+        missingStyleProps.forEach(function (prop) {
+          kf[prop] = computeStyle(element, prop);
+        });
       }
     }
   }
@@ -305,9 +344,15 @@ export function balancePreviousStylesIntoKeyframes(
 }
 
 export function visitDslNode(
-    visitor: AnimationDslVisitor, node: AnimationMetadata, context: any): any;
+  visitor: AnimationDslVisitor,
+  node: AnimationMetadata,
+  context: any
+): any;
 export function visitDslNode(
-    visitor: AnimationAstVisitor, node: AnimationAst<AnimationMetadataType>, context: any): any;
+  visitor: AnimationAstVisitor,
+  node: AnimationAst<AnimationMetadataType>,
+  context: any
+): any;
 export function visitDslNode(visitor: any, node: any, context: any): any {
   switch (node.type) {
     case AnimationMetadataType.Trigger:

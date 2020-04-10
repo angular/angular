@@ -32,8 +32,10 @@ function main(args) {
   compilerOptions['outDir'] = path.posix.join(compilerOptions['outDir'], newRoot);
 
   bazelOptions['es5Mode'] = true;
-  bazelOptions['tsickleExternsPath'] =
-      bazelOptions['tsickleExternsPath'].replace(binDir, newOutputBase);
+  bazelOptions['tsickleExternsPath'] = bazelOptions['tsickleExternsPath'].replace(
+    binDir,
+    newOutputBase
+  );
 
   if (data['angularCompilerOptions']) {
     const {angularCompilerOptions} = data;
@@ -43,8 +45,9 @@ function main(args) {
     // keeps posix normalized paths. Otherwise this could cause unexpected behavior because
     // ngc-wrapped is expecting POSIX paths and the TypeScript Bazel rules by default only pass
     // POSIX paths as well.
-    angularCompilerOptions['expectedOut'] = angularCompilerOptions['expectedOut'].map(
-        f => f.replace(/\.mjs$/, '.js').replace(binDir, newOutputBase));
+    angularCompilerOptions['expectedOut'] = angularCompilerOptions['expectedOut'].map((f) =>
+      f.replace(/\.mjs$/, '.js').replace(binDir, newOutputBase)
+    );
   }
   fs.writeFileSync(output, JSON.stringify(data));
 }

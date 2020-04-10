@@ -11,7 +11,6 @@ import {ViewEncapsulation} from '../metadata/view';
 import {injectRenderer2 as render3InjectRenderer2} from '../render3/view_engine_compatibility';
 import {noop} from '../util/noop';
 
-
 export const Renderer2Interceptor = new InjectionToken<Renderer2[]>('Renderer2Interceptor');
 
 /**
@@ -39,7 +38,7 @@ export interface RendererType2 {
   /**
    * Defines CSS styles to be stored on a renderer instance.
    */
-  styles: (string|any[])[];
+  styles: (string | any[])[];
   /**
    * Defines arbitrary developer-defined data to be stored on a renderer instance.
    * This is useful for renderers that delegate to other renderers.
@@ -59,7 +58,7 @@ export abstract class RendererFactory2 {
    * @param type The base class to implement.
    * @returns The new custom renderer instance.
    */
-  abstract createRenderer(hostElement: any, type: RendererType2|null): Renderer2;
+  abstract createRenderer(hostElement: any, type: RendererType2 | null): Renderer2;
   /**
    * A callback invoked when rendering has begun.
    */
@@ -90,7 +89,7 @@ export enum RendererStyleFlags2 {
   /**
    * Marks a style as using dash case naming (this-is-dash-case).
    */
-  DashCase = 1 << 1
+  DashCase = 1 << 1,
 }
 
 /**
@@ -126,7 +125,7 @@ export abstract class Renderer2 {
    * @param namespace The namespace for the new element.
    * @returns The new element.
    */
-  abstract createElement(name: string, namespace?: string|null): any;
+  abstract createElement(name: string, namespace?: string | null): any;
   /**
    * Implement this callback to add a comment to the DOM of the host element.
    * @param value The comment text.
@@ -145,7 +144,7 @@ export abstract class Renderer2 {
    * This is used as a performance optimization for production mode.
    */
   // TODO(issue/24571): remove '!'.
-  destroyNode !: ((node: any) => void) | null;
+  destroyNode!: ((node: any) => void) | null;
   /**
    * Appends a child to a given parent node in the host element DOM.
    * @param parent The parent node.
@@ -178,7 +177,7 @@ export abstract class Renderer2 {
    * content projection via `<slot>` elements.
    * @returns The root element.
    */
-  abstract selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any;
+  abstract selectRootElement(selectorOrNode: string | any, preserveContent?: boolean): any;
   /**
    * Implement this callback to get the parent of a given node
    * in the host element's DOM.
@@ -205,7 +204,7 @@ export abstract class Renderer2 {
    * @param value The new value.
    * @param namespace The namespace.
    */
-  abstract setAttribute(el: any, name: string, value: string, namespace?: string|null): void;
+  abstract setAttribute(el: any, name: string, value: string, namespace?: string | null): void;
 
   /**
    * Implement this callback to remove an attribute from an element in the DOM.
@@ -213,7 +212,7 @@ export abstract class Renderer2 {
    * @param name The attribute name.
    * @param namespace The namespace.
    */
-  abstract removeAttribute(el: any, name: string, namespace?: string|null): void;
+  abstract removeAttribute(el: any, name: string, namespace?: string | null): void;
   /**
    * Implement this callback to add a class to an element in the DOM.
    * @param el The element.
@@ -270,8 +269,10 @@ export abstract class Renderer2 {
    * @returns An "unlisten" function for disposing of this handler.
    */
   abstract listen(
-      target: 'window'|'document'|'body'|any, eventName: string,
-      callback: (event: any) => boolean | void): () => void;
+    target: 'window' | 'document' | 'body' | any,
+    eventName: string,
+    callback: (event: any) => boolean | void
+  ): () => void;
 
   /**
    * @internal
@@ -279,7 +280,6 @@ export abstract class Renderer2 {
    */
   static __NG_ELEMENT_ID__: () => Renderer2 = () => SWITCH_RENDERER2_FACTORY();
 }
-
 
 export const SWITCH_RENDERER2_FACTORY__POST_R3__ = render3InjectRenderer2;
 const SWITCH_RENDERER2_FACTORY__PRE_R3__ = noop;

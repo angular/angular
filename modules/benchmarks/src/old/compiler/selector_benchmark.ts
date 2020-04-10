@@ -47,7 +47,9 @@ export function main() {
   function match() {
     let matchCount = 0;
     for (let i = 0; i < count; i++) {
-      fixedMatcher.match(fixedSelectors[i][0], (selector, selected) => { matchCount += selected; });
+      fixedMatcher.match(fixedSelectors[i][0], (selector, selected) => {
+        matchCount += selected;
+      });
     }
     return matchCount;
   }
@@ -78,9 +80,9 @@ function randomStr(len) {
 
 function randomChar() {
   const n = randomNum(62);
-  if (n < 10) return n.toString();                        // 1-10
-  if (n < 36) return StringWrapper.fromCharCode(n + 55);  // A-Z
-  return StringWrapper.fromCharCode(n + 61);              // a-z
+  if (n < 10) return n.toString(); // 1-10
+  if (n < 36) return StringWrapper.fromCharCode(n + 55); // A-Z
+  return StringWrapper.fromCharCode(n + 61); // a-z
 }
 
 function randomNum(max) {

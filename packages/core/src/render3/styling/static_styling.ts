@@ -1,10 +1,10 @@
 /**
-* @license
-* Copyright Google Inc. All Rights Reserved.
-*
-* Use of this source code is governed by an MIT-style license that can be
-* found in the LICENSE file at https://angular.io/license
-*/
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 import {concatStringsWithSpace} from '../../util/stringify';
 import {assertFirstCreatePass} from '../assert';
@@ -21,10 +21,10 @@ import {getTView} from '../state';
  */
 export function computeStaticStyling(tNode: TNode, attrs: TAttributes): void {
   ngDevMode &&
-      assertFirstCreatePass(getTView(), 'Expecting to be called in first template pass only');
-  let styles: string|null = tNode.styles;
-  let classes: string|null = tNode.classes;
-  let mode: AttributeMarker|0 = 0;
+    assertFirstCreatePass(getTView(), 'Expecting to be called in first template pass only');
+  let styles: string | null = tNode.styles;
+  let classes: string | null = tNode.classes;
+  let mode: AttributeMarker | 0 = 0;
   for (let i = 0; i < attrs.length; i++) {
     const value = attrs[i];
     if (typeof value === 'number') {

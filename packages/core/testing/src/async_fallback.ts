@@ -36,12 +36,14 @@ export function asyncFallback(fn: Function): (done: any) => any {
   // function when asynchronous activity is finished.
   if (_global.jasmine) {
     // Not using an arrow function to preserve context passed from call site
-    return function(this: unknown, done: any) {
+    return function (this: unknown, done: any) {
       if (!done) {
         // if we run beforeEach in @angular/core/testing/testing_internal then we get no done
         // fake it here and assume sync.
-        done = function() {};
-        done.fail = function(e: any) { throw e; };
+        done = function () {};
+        done.fail = function (e: any) {
+          throw e;
+        };
       }
       runInTestZone(fn, this, done, (err: any) => {
         if (typeof err === 'string') {
@@ -56,7 +58,7 @@ export function asyncFallback(fn: Function): (done: any) => any {
   // is finished. This will be correctly consumed by the Mocha framework with
   // it('...', async(myFn)); or can be used in a custom framework.
   // Not using an arrow function to preserve context passed from call site
-  return function(this: unknown) {
+  return function (this: unknown) {
     return new Promise<void>((finishCallback, failCallback) => {
       runInTestZone(fn, this, finishCallback, failCallback);
     });
@@ -64,22 +66,28 @@ export function asyncFallback(fn: Function): (done: any) => any {
 }
 
 function runInTestZone(
-    fn: Function, context: any, finishCallback: Function, failCallback: Function) {
+  fn: Function,
+  context: any,
+  finishCallback: Function,
+  failCallback: Function
+) {
   const currentZone = Zone.current;
   const AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
   if (AsyncTestZoneSpec === undefined) {
     throw new Error(
-        'AsyncTestZoneSpec is needed for the async() test helper but could not be found. ' +
-        'Please make sure that your environment includes zone.js/dist/async-test.js');
+      'AsyncTestZoneSpec is needed for the async() test helper but could not be found. ' +
+        'Please make sure that your environment includes zone.js/dist/async-test.js'
+    );
   }
   const ProxyZoneSpec = (Zone as any)['ProxyZoneSpec'] as {
-    get(): {setDelegate(spec: ZoneSpec): void; getDelegate(): ZoneSpec;};
+    get(): {setDelegate(spec: ZoneSpec): void; getDelegate(): ZoneSpec};
     assertPresent: () => void;
   };
   if (ProxyZoneSpec === undefined) {
     throw new Error(
-        'ProxyZoneSpec is needed for the async() test helper but could not be found. ' +
-        'Please make sure that your environment includes zone.js/dist/proxy.js');
+      'ProxyZoneSpec is needed for the async() test helper but could not be found. ' +
+        'Please make sure that your environment includes zone.js/dist/proxy.js'
+    );
   }
   const proxyZoneSpec = ProxyZoneSpec.get();
   ProxyZoneSpec.assertPresent();
@@ -87,29 +95,30 @@ function runInTestZone(
   // If we do it in ProxyZone then we will get to infinite recursion.
   const proxyZone = Zone.current.getZoneWith('ProxyZoneSpec');
   const previousDelegate = proxyZoneSpec.getDelegate();
-  proxyZone !.parent !.run(() => {
+  proxyZone!.parent!.run(() => {
     const testZoneSpec: ZoneSpec = new AsyncTestZoneSpec(
-        () => {
-          // Need to restore the original zone.
-          currentZone.run(() => {
-            if (proxyZoneSpec.getDelegate() == testZoneSpec) {
-              // Only reset the zone spec if it's sill this one. Otherwise, assume it's OK.
-              proxyZoneSpec.setDelegate(previousDelegate);
-            }
-            finishCallback();
-          });
-        },
-        (error: any) => {
-          // Need to restore the original zone.
-          currentZone.run(() => {
-            if (proxyZoneSpec.getDelegate() == testZoneSpec) {
-              // Only reset the zone spec if it's sill this one. Otherwise, assume it's OK.
-              proxyZoneSpec.setDelegate(previousDelegate);
-            }
-            failCallback(error);
-          });
-        },
-        'test');
+      () => {
+        // Need to restore the original zone.
+        currentZone.run(() => {
+          if (proxyZoneSpec.getDelegate() == testZoneSpec) {
+            // Only reset the zone spec if it's sill this one. Otherwise, assume it's OK.
+            proxyZoneSpec.setDelegate(previousDelegate);
+          }
+          finishCallback();
+        });
+      },
+      (error: any) => {
+        // Need to restore the original zone.
+        currentZone.run(() => {
+          if (proxyZoneSpec.getDelegate() == testZoneSpec) {
+            // Only reset the zone spec if it's sill this one. Otherwise, assume it's OK.
+            proxyZoneSpec.setDelegate(previousDelegate);
+          }
+          failCallback(error);
+        });
+      },
+      'test'
+    );
     proxyZoneSpec.setDelegate(testZoneSpec);
   });
   return Zone.current.runGuarded(fn, context);

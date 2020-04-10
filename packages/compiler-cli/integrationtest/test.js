@@ -35,7 +35,10 @@ const nodejsBinaryExt = os.platform() === 'win32' ? '.bat' : '.sh';
 const ngcBin = require.resolve(`./ngc_bin${nodejsBinaryExt}`);
 const xi18nBin = require.resolve(`./ng_xi18n${nodejsBinaryExt}`);
 const nodeBin = require.resolve(
-    `${nodejs_repository()}/${(os.platform() === 'win32' ? 'bin/nodejs/node.exe' : 'bin/nodejs/bin/node')}`);
+  `${nodejs_repository()}/${
+    os.platform() === 'win32' ? 'bin/nodejs/node.exe' : 'bin/nodejs/bin/node'
+  }`
+);
 const jasmineBin = require.resolve('npm/node_modules/jasmine/bin/jasmine.js');
 
 // Prepare the test directory before building the integration test output. This ensures that
@@ -49,7 +52,9 @@ runCommand(ngcBin, ['-p', 'flat_module/tsconfig-build.json']);
 // has template code generation disabled and therefore needs to have the asset files included
 // next to the JavaScript output.
 shx.cp(
-    path.join(tmpDir, 'flat_module/src/*.html'), path.join(tmpDir, 'node_modules/flat_module/src'));
+  path.join(tmpDir, 'flat_module/src/*.html'),
+  path.join(tmpDir, 'node_modules/flat_module/src')
+);
 
 // Compile the "third_party" Angular project using NGC.
 runCommand(ngcBin, ['-p', 'third_party_src/tsconfig-build.json']);
@@ -57,16 +62,28 @@ runCommand(ngcBin, ['-p', 'third_party_src/tsconfig-build.json']);
 // Compile the main integration-test Angular project using NGC. Also uses a translated
 // i18n file which will be used to verify the translated templates of components.
 runCommand(ngcBin, [
-  '-p', 'tsconfig-build.json', '--i18nFile=src/messages.fi.xlf', '--locale=fi', '--i18nFormat=xlf'
+  '-p',
+  'tsconfig-build.json',
+  '--i18nFile=src/messages.fi.xlf',
+  '--locale=fi',
+  '--i18nFormat=xlf',
 ]);
 
 // Extract the i18n messages into various formats that will be verified
 // later on by the "i18n_spec" within "test/".
 runCommand(xi18nBin, ['-p', 'tsconfig-xi18n.json', '--i18nFormat=xlf', '--locale=fr']);
-runCommand(
-    xi18nBin, ['-p', 'tsconfig-xi18n.json', '--i18nFormat=xlf2', '--outFile=messages.xliff2.xlf']);
-runCommand(
-    xi18nBin, ['-p', 'tsconfig-xi18n.json', '--i18nFormat=xmb', '--outFile=custom_file.xmb']);
+runCommand(xi18nBin, [
+  '-p',
+  'tsconfig-xi18n.json',
+  '--i18nFormat=xlf2',
+  '--outFile=messages.xliff2.xlf',
+]);
+runCommand(xi18nBin, [
+  '-p',
+  'tsconfig-xi18n.json',
+  '--i18nFormat=xmb',
+  '--outFile=custom_file.xmb',
+]);
 
 // Run the ngtools tests that verify that the public API provided by the "compiler-cli"
 // is working as expected in real projects.

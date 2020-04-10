@@ -1,12 +1,17 @@
 /**
-* @license
-* Copyright Google Inc. All Rights Reserved.
-*
-* Use of this source code is governed by an MIT-style license that can be
-* found in the LICENSE file at https://angular.io/license
-*/
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {ɵɵadvance} from '../../../../src/render3/instructions/advance';
-import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element';
+import {
+  ɵɵelement,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+} from '../../../../src/render3/instructions/element';
 import {refreshView} from '../../../../src/render3/instructions/shared';
 import {ɵɵclassMap, ɵɵstyleMap} from '../../../../src/render3/instructions/styling';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
@@ -149,19 +154,23 @@ function dirThatSetsFooClassesHostBindings(rf: RenderFlags, ctx: any) {
 }
 
 const rootLView = setupRootViewWithEmbeddedViews(
-    testTemplate, 11, 40, 1000, null,
-    [
-      ['dir-that-sets-width', '', 'dir-that-sets-foo-class', ''],
-    ],
-    [
-      defineBenchmarkTestDirective('dir-that-sets-styles', dirThatSetsStylesHostBindings),
-      defineBenchmarkTestDirective('dir-that-sets-classes', dirThatSetsFooClassesHostBindings),
-    ]);
+  testTemplate,
+  11,
+  40,
+  1000,
+  null,
+  [['dir-that-sets-width', '', 'dir-that-sets-foo-class', '']],
+  [
+    defineBenchmarkTestDirective('dir-that-sets-styles', dirThatSetsStylesHostBindings),
+    defineBenchmarkTestDirective('dir-that-sets-classes', dirThatSetsFooClassesHostBindings),
+  ]
+);
 const rootTView = rootLView[TVIEW];
 
 // scenario to benchmark
-const duplicateMapBasedStyleAndClassBindingsBenchmark =
-    createBenchmark('duplicate map-based style and class bindings');
+const duplicateMapBasedStyleAndClassBindingsBenchmark = createBenchmark(
+  'duplicate map-based style and class bindings'
+);
 const refreshTime = duplicateMapBasedStyleAndClassBindingsBenchmark('refresh');
 
 // run change detection in the update mode

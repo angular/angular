@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CssSelector, Node as HtmlAst, ParseError, Parser, TemplateAst} from '@angular/compiler';
+import {
+  CompileDirectiveMetadata,
+  CompileDirectiveSummary,
+  CompilePipeSummary,
+  CssSelector,
+  Node as HtmlAst,
+  ParseError,
+  Parser,
+  TemplateAst,
+} from '@angular/compiler';
 
 import {TemplateSource} from './types';
 
@@ -22,6 +31,6 @@ export interface AstResult {
 }
 
 export type SelectorInfo = {
-  selectors: CssSelector[],
-  map: Map<CssSelector, CompileDirectiveSummary>
+  selectors: CssSelector[];
+  map: Map<CssSelector, CompileDirectiveSummary>;
 };

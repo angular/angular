@@ -6,12 +6,43 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CompileDirectiveSummary, CompileTypeMetadata, DirectiveAst, ElementAst, EmbeddedTemplateAst, identifierName, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, ReferenceAst, TemplateAst, TemplateAstPath, templateVisitAll, tokenReference, VariableAst} from '@angular/compiler';
+import {
+  AST,
+  AstPath,
+  Attribute,
+  BoundDirectivePropertyAst,
+  BoundElementPropertyAst,
+  BoundEventAst,
+  BoundTextAst,
+  CompileDirectiveSummary,
+  CompileTypeMetadata,
+  DirectiveAst,
+  ElementAst,
+  EmbeddedTemplateAst,
+  identifierName,
+  Node,
+  ParseSourceSpan,
+  RecursiveTemplateAstVisitor,
+  ReferenceAst,
+  TemplateAst,
+  TemplateAstPath,
+  templateVisitAll,
+  tokenReference,
+  VariableAst,
+} from '@angular/compiler';
 
 import {AstResult} from './common';
 import {createDiagnostic, Diagnostic} from './diagnostic_messages';
 import {AstType} from './expression_type';
-import {BuiltinType, Definition, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
+import {
+  BuiltinType,
+  Definition,
+  Span,
+  Symbol,
+  SymbolDeclaration,
+  SymbolQuery,
+  SymbolTable,
+} from './symbols';
 import * as ng from './types';
 import {findOutputBinding, getPathToNodeAtPosition} from './utils';
 
@@ -26,8 +57,9 @@ export interface DiagnosticTemplateInfo {
 }
 
 export function getTemplateExpressionDiagnostics(info: DiagnosticTemplateInfo): ng.Diagnostic[] {
-  const visitor = new ExpressionDiagnosticsVisitor(
-      info, (path: TemplateAstPath) => getExpressionScope(info, path));
+  const visitor = new ExpressionDiagnosticsVisitor(info, (path: TemplateAstPath) =>
+    getExpressionScope(info, path)
+  );
   templateVisitAll(visitor, info.templateAst);
   return visitor.diagnostics;
 }
@@ -37,7 +69,7 @@ function getReferences(info: DiagnosticTemplateInfo): SymbolDeclaration[] {
 
   function processReferences(references: ReferenceAst[]) {
     for (const reference of references) {
-      let type: Symbol|undefined = undefined;
+      let type: Symbol | undefined = undefined;
       if (reference.value) {
         type = info.query.getTypeSymbol(tokenReference(reference.value));
       }
@@ -47,12 +79,12 @@ function getReferences(info: DiagnosticTemplateInfo): SymbolDeclaration[] {
         type: type || info.query.getBuiltinType(BuiltinType.Any),
         get definition() {
           return getDefinitionOf(info, reference);
-        }
+        },
       });
     }
   }
 
-  const visitor = new class extends RecursiveTemplateAstVisitor {
+  const visitor = new (class extends RecursiveTemplateAstVisitor {
     visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
       super.visitEmbeddedTemplate(ast, context);
       processReferences(ast.references);
@@ -61,23 +93,25 @@ function getReferences(info: DiagnosticTemplateInfo): SymbolDeclaration[] {
       super.visitElement(ast, context);
       processReferences(ast.references);
     }
-  };
+  })();
 
   templateVisitAll(visitor, info.templateAst);
 
   return result;
 }
 
-function getDefinitionOf(info: DiagnosticTemplateInfo, ast: TemplateAst): Definition|undefined {
+function getDefinitionOf(info: DiagnosticTemplateInfo, ast: TemplateAst): Definition | undefined {
   if (info.fileName) {
     const templateOffset = info.offset;
-    return [{
-      fileName: info.fileName,
-      span: {
-        start: ast.sourceSpan.start.offset + templateOffset,
-        end: ast.sourceSpan.end.offset + templateOffset
-      }
-    }];
+    return [
+      {
+        fileName: info.fileName,
+        span: {
+          start: ast.sourceSpan.start.offset + templateOffset,
+          end: ast.sourceSpan.end.offset + templateOffset,
+        },
+      },
+    ];
   }
 }
 
@@ -88,7 +122,9 @@ function getDefinitionOf(info: DiagnosticTemplateInfo, ast: TemplateAst): Defini
  * @param path template AST path
  */
 function getVarDeclarations(
-    info: DiagnosticTemplateInfo, path: TemplateAstPath): SymbolDeclaration[] {
+  info: DiagnosticTemplateInfo,
+  path: TemplateAstPath
+): SymbolDeclaration[] {
   const results: SymbolDeclaration[] = [];
   for (let current = path.head; current; current = path.childOf(current)) {
     if (!(current instanceof EmbeddedTemplateAst)) {
@@ -130,7 +166,10 @@ function getVarDeclarations(
  * @param templateElement
  */
 function getVariableTypeFromDirectiveContext(
-    value: string, query: SymbolQuery, templateElement: EmbeddedTemplateAst): Symbol {
+  value: string,
+  query: SymbolQuery,
+  templateElement: EmbeddedTemplateAst
+): Symbol {
   for (const {directive} of templateElement.directives) {
     const context = query.getTemplateContext(directive.type.reference);
     if (context) {
@@ -154,20 +193,24 @@ function getVariableTypeFromDirectiveContext(
  * @param templateElement
  */
 function refinedVariableType(
-    value: string, mergedTable: SymbolTable, info: DiagnosticTemplateInfo,
-    templateElement: EmbeddedTemplateAst): Symbol {
+  value: string,
+  mergedTable: SymbolTable,
+  info: DiagnosticTemplateInfo,
+  templateElement: EmbeddedTemplateAst
+): Symbol {
   if (value === '$implicit') {
     // Special case: ngFor directive
-    const ngForDirective = templateElement.directives.find(d => {
+    const ngForDirective = templateElement.directives.find((d) => {
       const name = identifierName(d.directive.type);
       return name == 'NgFor' || name == 'NgForOf';
     });
     if (ngForDirective) {
-      const ngForOfBinding = ngForDirective.inputs.find(i => i.directiveName == 'ngForOf');
+      const ngForOfBinding = ngForDirective.inputs.find((i) => i.directiveName == 'ngForOf');
       if (ngForOfBinding) {
         // Check if there is a known type for the ngFor binding.
-        const bindingType =
-            new AstType(mergedTable, info.query, {}, info.source).getType(ngForOfBinding.value);
+        const bindingType = new AstType(mergedTable, info.query, {}, info.source).getType(
+          ngForOfBinding.value
+        );
         if (bindingType) {
           const result = info.query.getElementType(bindingType);
           if (result) {
@@ -179,8 +222,9 @@ function refinedVariableType(
   }
 
   if (value === 'ngIf' || value === '$implicit') {
-    const ngIfDirective =
-        templateElement.directives.find(d => identifierName(d.directive.type) === 'NgIf');
+    const ngIfDirective = templateElement.directives.find(
+      (d) => identifierName(d.directive.type) === 'NgIf'
+    );
     if (ngIfDirective) {
       // Special case: ngIf directive. The NgIf structural directive owns a template context with
       // "$implicit" and "ngIf" members. These properties are typed as generics. Until the language
@@ -189,11 +233,12 @@ function refinedVariableType(
       // import on the NgIf directive bound to the template.
       //
       // See @angular/common/ng_if.ts for more information.
-      const ngIfBinding = ngIfDirective.inputs.find(i => i.directiveName === 'ngIf');
+      const ngIfBinding = ngIfDirective.inputs.find((i) => i.directiveName === 'ngIf');
       if (ngIfBinding) {
         // Check if there is a known type bound to the ngIf input.
-        const bindingType =
-            new AstType(mergedTable, info.query, {}, info.source).getType(ngIfBinding.value);
+        const bindingType = new AstType(mergedTable, info.query, {}, info.source).getType(
+          ngIfBinding.value
+        );
         if (bindingType) {
           return bindingType;
         }
@@ -206,7 +251,9 @@ function refinedVariableType(
 }
 
 function getEventDeclaration(
-    info: DiagnosticTemplateInfo, path: TemplateAstPath): SymbolDeclaration|undefined {
+  info: DiagnosticTemplateInfo,
+  path: TemplateAstPath
+): SymbolDeclaration | undefined {
   const event = path.tail;
   if (!(event instanceof BoundEventAst)) {
     // No event available in this context.
@@ -241,7 +288,9 @@ function getEventDeclaration(
  * derived for.
  */
 export function getExpressionScope(
-    info: DiagnosticTemplateInfo, path: TemplateAstPath): SymbolTable {
+  info: DiagnosticTemplateInfo,
+  path: TemplateAstPath
+): SymbolTable {
   let result = info.members;
   const references = getReferences(info);
   const variables = getVarDeclarations(info, path);
@@ -257,13 +306,14 @@ export function getExpressionScope(
 
 class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
   private path: TemplateAstPath;
-  private directiveSummary: CompileDirectiveSummary|undefined;
+  private directiveSummary: CompileDirectiveSummary | undefined;
 
   diagnostics: ng.Diagnostic[] = [];
 
   constructor(
-      private info: DiagnosticTemplateInfo,
-      private getExpressionScope: (path: TemplateAstPath, includeEvent: boolean) => SymbolTable) {
+    private info: DiagnosticTemplateInfo,
+    private getExpressionScope: (path: TemplateAstPath, includeEvent: boolean) => SymbolTable
+  ) {
     super();
     this.path = new AstPath<TemplateAst>([]);
   }
@@ -305,12 +355,17 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
       const context = this.info.query.getTemplateContext(directive.type.reference)!;
       if (context && !context.has(ast.value)) {
         const missingMember =
-            ast.value === '$implicit' ? 'an implicit value' : `a member called '${ast.value}'`;
+          ast.value === '$implicit' ? 'an implicit value' : `a member called '${ast.value}'`;
 
         const span = this.absSpan(spanOf(ast.sourceSpan));
-        this.diagnostics.push(createDiagnostic(
-            span, Diagnostic.template_context_missing_member, directive.type.reference.name,
-            missingMember));
+        this.diagnostics.push(
+          createDiagnostic(
+            span,
+            Diagnostic.template_context_missing_member,
+            directive.type.reference.name,
+            missingMember
+          )
+        );
       }
     }
   }
@@ -327,8 +382,9 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
     this.push(ast);
 
     // Find directive that references this template
-    this.directiveSummary =
-        ast.directives.map(d => d.directive).find(d => hasTemplateReference(d.type))!;
+    this.directiveSummary = ast.directives
+      .map((d) => d.directive)
+      .find((d) => hasTemplateReference(d.type))!;
 
     // Process children
     super.visitEmbeddedTemplate(ast, context);
@@ -375,8 +431,11 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
 function hasTemplateReference(type: CompileTypeMetadata): boolean {
   if (type.diDeps) {
     for (let diDep of type.diDeps) {
-      if (diDep.token && diDep.token.identifier &&
-          identifierName(diDep.token!.identifier!) == 'TemplateRef')
+      if (
+        diDep.token &&
+        diDep.token.identifier &&
+        identifierName(diDep.token!.identifier!) == 'TemplateRef'
+      )
         return true;
     }
   }
@@ -386,7 +445,6 @@ function hasTemplateReference(type: CompileTypeMetadata): boolean {
 function spanOf(sourceSpan: ParseSourceSpan): Span {
   return {start: sourceSpan.start.offset, end: sourceSpan.end.offset};
 }
-
 
 export function diagnosticInfoFromTemplateInfo(info: AstResult): DiagnosticTemplateInfo {
   return {

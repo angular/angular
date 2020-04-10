@@ -10,8 +10,7 @@ import {$, browser} from 'protractor';
 import {runBenchmark} from '../../../e2e_util/perf_util';
 
 describe('benchmarks', () => {
-
-  it('should work for create', async() => {
+  it('should work for create', async () => {
     browser.rootEl = '#root';
     await runBenchmark({
       id: 'create',
@@ -19,8 +18,7 @@ describe('benchmarks', () => {
       ignoreBrowserSynchronization: true,
       params: [],
       prepare: () => $('#reset').click(),
-      work: () => $('#init').click()
+      work: () => $('#init').click(),
     });
   });
-
 });

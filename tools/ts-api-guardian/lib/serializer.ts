@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 const baseTsOptions: ts.CompilerOptions = {
   // We don't want symbols from external modules to be resolved, so we use the
   // classic algorithm.
-  moduleResolution: ts.ModuleResolutionKind.Classic
+  moduleResolution: ts.ModuleResolutionKind.Classic,
 };
 
 export interface JsDocTagOptions {
@@ -37,7 +37,7 @@ export interface SerializationOptions {
   /**
    * Removes all exports matching the regular expression.
    */
-  stripExportPattern?: RegExp|RegExp[];
+  stripExportPattern?: RegExp | RegExp[];
   /**
    * Allows these identifiers as modules in the output. For example,
    * ```
@@ -67,8 +67,11 @@ export function publicApi(fileName: string, options: SerializationOptions = {}):
 }
 
 export function publicApiInternal(
-    host: ts.CompilerHost, fileName: string, tsOptions: ts.CompilerOptions,
-    options: SerializationOptions = {}): string {
+  host: ts.CompilerHost,
+  fileName: string,
+  tsOptions: ts.CompilerOptions,
+  options: SerializationOptions = {}
+): string {
   // Since the entry point will be compared with the source files from the TypeScript program,
   // the path needs to be normalized with forward slashes in order to work within Windows.
   const entrypoint = path.normalize(fileName).replace(/\\/g, '/');
@@ -78,7 +81,7 @@ export function publicApiInternal(
     ...options,
     exportTags: applyDefaultTagOptions(options.exportTags),
     memberTags: applyDefaultTagOptions(options.memberTags),
-    paramTags: applyDefaultTagOptions(options.paramTags)
+    paramTags: applyDefaultTagOptions(options.paramTags),
   };
 
   if (!entrypoint.match(/\.d\.ts$/)) {
@@ -111,7 +114,7 @@ class ResolvedDeclarationEmitter {
   }
 
   emit(): string {
-    const sourceFile = this.program.getSourceFiles().find(sf => sf.fileName === this.fileName);
+    const sourceFile = this.program.getSourceFiles().find((sf) => sf.fileName === this.fileName);
     if (!sourceFile) {
       throw new Error(`Source file "${this.fileName}" not found`);
     }
@@ -132,7 +135,7 @@ class ResolvedDeclarationEmitter {
       if (!typeDecl && !valDecl) {
         this.diagnostics.push({
           type: 'warn',
-          message: `${sourceFile.fileName}: error: No declaration found for symbol "${symbol.name}"`
+          message: `${sourceFile.fileName}: error: No declaration found for symbol "${symbol.name}"`,
         });
         continue;
       }
@@ -144,9 +147,9 @@ class ResolvedDeclarationEmitter {
     }
 
     if (this.diagnostics.length) {
-      const message = this.diagnostics.map(d => d.message).join('\n');
+      const message = this.diagnostics.map((d) => d.message).join('\n');
       console.warn(message);
-      if (this.diagnostics.some(d => d.type === 'error')) {
+      if (this.diagnostics.some((d) => d.type === 'error')) {
         throw new Error(message);
       }
     }
@@ -178,19 +181,22 @@ class ResolvedDeclarationEmitter {
       // This may happen for symbols re-exported from external modules.
       this.diagnostics.push({
         type: 'warn',
-        message: createErrorMessage(decl, `No export declaration found for symbol "${symbol.name}"`)
+        message: createErrorMessage(
+          decl,
+          `No export declaration found for symbol "${symbol.name}"`
+        ),
       });
     }
   }
 
   private isExportPatternStripped(symbolName: string): boolean {
-    return [].concat(this.options.stripExportPattern).some(p => !!(p && symbolName.match(p)));
+    return [].concat(this.options.stripExportPattern).some((p) => !!(p && symbolName.match(p)));
   }
 
   private getResolvedSymbols(sourceFile: ts.SourceFile): ts.Symbol[] {
     const ms = (<any>sourceFile).symbol;
-    const rawSymbols = ms ? (this.typeChecker.getExportsOfModule(ms) || []) : [];
-    return rawSymbols.map(s => {
+    const rawSymbols = ms ? this.typeChecker.getExportsOfModule(ms) || [] : [];
+    return rawSymbols.map((s) => {
       if (s.flags & ts.SymbolFlags.Alias) {
         const resolvedSymbol = this.typeChecker.getAliasedSymbol(s);
 
@@ -203,8 +209,9 @@ class ResolvedDeclarationEmitter {
             return s;
           }
           throw new Error(
-              `Symbol "${resolvedSymbol.name}" was aliased as "${s.name}". ` +
-              `Aliases are not supported."`);
+            `Symbol "${resolvedSymbol.name}" was aliased as "${s.name}". ` +
+              `Aliases are not supported."`
+          );
         }
 
         return resolvedSymbol;
@@ -219,7 +226,7 @@ class ResolvedDeclarationEmitter {
       return '';
     }
 
-    const firstQualifier: ts.Identifier|null = getFirstQualifier(node);
+    const firstQualifier: ts.Identifier | null = getFirstQualifier(node);
 
     if (firstQualifier) {
       let isAllowed = false;
@@ -229,21 +236,26 @@ class ResolvedDeclarationEmitter {
       if (resolvedSymbol && resolvedSymbol.declarations && resolvedSymbol.declarations.length > 0) {
         // If the qualifier can be resolved, and it's not a namespaced import, then it should be
         // allowed.
-        isAllowed =
-            resolvedSymbol.declarations.every(decl => decl.kind !== ts.SyntaxKind.NamespaceImport);
+        isAllowed = resolvedSymbol.declarations.every(
+          (decl) => decl.kind !== ts.SyntaxKind.NamespaceImport
+        );
       }
 
       // If it is not allowed otherwise, it's allowed if it's on the list of allowed identifiers.
-      isAllowed = isAllowed ||
-          !(!this.options.allowModuleIdentifiers ||
-            this.options.allowModuleIdentifiers.indexOf(firstQualifier.text) < 0);
+      isAllowed =
+        isAllowed ||
+        !(
+          !this.options.allowModuleIdentifiers ||
+          this.options.allowModuleIdentifiers.indexOf(firstQualifier.text) < 0
+        );
       if (!isAllowed) {
         this.diagnostics.push({
           type: 'error',
           message: createErrorMessage(
-              firstQualifier,
-              `Module identifier "${firstQualifier.text}" is not allowed. Remove it ` +
-                  `from source or allow it via --allowModuleIdentifiers.`)
+            firstQualifier,
+            `Module identifier "${firstQualifier.text}" is not allowed. Remove it ` +
+              `from source or allow it via --allowModuleIdentifiers.`
+          ),
         });
       }
     }
@@ -252,7 +264,7 @@ class ResolvedDeclarationEmitter {
     if (ts.isFunctionDeclaration(node)) {
       // Used ts.isFunctionDeclaration instead of node.kind because this is a type guard
       const symbol = this.typeChecker.getSymbolAtLocation(node.name);
-      symbol.declarations.forEach(x => children = children.concat(x.getChildren()));
+      symbol.declarations.forEach((x) => (children = children.concat(x.getChildren())));
     } else {
       children = node.getChildren();
     }
@@ -268,19 +280,21 @@ class ResolvedDeclarationEmitter {
             // since SyntaxList is just an arbitrary data structure generated
             // by Node#getChildren(). We need to check that we are sorting the
             // right list.
-            if (children.every(node => node.kind in memberDeclarationOrder)) {
+            if (children.every((node) => node.kind in memberDeclarationOrder)) {
               children = children.slice();
               children.sort((a: ts.NamedDeclaration, b: ts.NamedDeclaration) => {
                 // Static after normal
-                return compareFunction(
-                           hasModifier(a, ts.SyntaxKind.StaticKeyword),
-                           hasModifier(b, ts.SyntaxKind.StaticKeyword)) ||
-                    // Our predefined order
-                    compareFunction(
-                           memberDeclarationOrder[a.kind], memberDeclarationOrder[b.kind]) ||
-                    // Alphebetical order
-                    // We need safe dereferencing due to edge cases, e.g. having two call signatures
-                    compareFunction((a.name || a).getText(), (b.name || b).getText());
+                return (
+                  compareFunction(
+                    hasModifier(a, ts.SyntaxKind.StaticKeyword),
+                    hasModifier(b, ts.SyntaxKind.StaticKeyword)
+                  ) ||
+                  // Our predefined order
+                  compareFunction(memberDeclarationOrder[a.kind], memberDeclarationOrder[b.kind]) ||
+                  // Alphebetical order
+                  // We need safe dereferencing due to edge cases, e.g. having two call signatures
+                  compareFunction((a.name || a).getText(), (b.name || b).getText())
+                );
               });
             }
             break;
@@ -288,9 +302,10 @@ class ResolvedDeclarationEmitter {
         }
       }
 
-      let output: string = children.filter(x => x.kind !== ts.SyntaxKind.JSDocComment)
-                               .map(n => this.emitNode(n))
-                               .join('');
+      let output: string = children
+        .filter((x) => x.kind !== ts.SyntaxKind.JSDocComment)
+        .map((n) => this.emitNode(n))
+        .join('');
 
       // Print stability annotation for fields and parmeters
       if (ts.isParameter(node) || node.kind in memberDeclarationOrder) {
@@ -318,34 +333,43 @@ class ResolvedDeclarationEmitter {
   private processJsDocTags(node: ts.Node, tagOptions: JsDocTagOptions) {
     const jsDocTags = getJsDocTags(node);
     const requireAtLeastOne = tagOptions.requireAtLeastOne;
-    const isMissingAnyRequiredTag = requireAtLeastOne != null && requireAtLeastOne.length > 0 &&
-        jsDocTags.every(tag => requireAtLeastOne.indexOf(tag) === -1);
+    const isMissingAnyRequiredTag =
+      requireAtLeastOne != null &&
+      requireAtLeastOne.length > 0 &&
+      jsDocTags.every((tag) => requireAtLeastOne.indexOf(tag) === -1);
     if (isMissingAnyRequiredTag) {
       this.diagnostics.push({
         type: 'error',
         message: createErrorMessage(
-            node, 'Required jsdoc tags - One of the tags: ' +
-                requireAtLeastOne.map(tag => `"@${tag}"`).join(', ') +
-                ` - must exist on ${getName(node)}.`)
+          node,
+          'Required jsdoc tags - One of the tags: ' +
+            requireAtLeastOne.map((tag) => `"@${tag}"`).join(', ') +
+            ` - must exist on ${getName(node)}.`
+        ),
       });
     }
-    const bannedTagsFound =
-        tagOptions.banned.filter(bannedTag => jsDocTags.some(tag => tag === bannedTag));
+    const bannedTagsFound = tagOptions.banned.filter((bannedTag) =>
+      jsDocTags.some((tag) => tag === bannedTag)
+    );
     if (bannedTagsFound.length) {
       this.diagnostics.push({
         type: 'error',
         message: createErrorMessage(
-            node, 'Banned jsdoc tags - ' + bannedTagsFound.map(tag => `"@${tag}"`).join(', ') +
-                ` - were found on ${getName(node)}.`)
+          node,
+          'Banned jsdoc tags - ' +
+            bannedTagsFound.map((tag) => `"@${tag}"`).join(', ') +
+            ` - were found on ${getName(node)}.`
+        ),
       });
     }
-    const tagsToCopy =
-        jsDocTags.filter(tag => tagOptions.toCopy.some(tagToCopy => tag === tagToCopy));
+    const tagsToCopy = jsDocTags.filter((tag) =>
+      tagOptions.toCopy.some((tagToCopy) => tag === tagToCopy)
+    );
 
     if (tagsToCopy.length === 1) {
       return `/** @${tagsToCopy[0]} */`;
     } else if (tagsToCopy.length > 1) {
-      return '/**\n' + tagsToCopy.map(tag => ` * @${tag}`).join('\n') + ' */\n';
+      return '/**\n' + tagsToCopy.map((tag) => ` * @${tag}`).join('\n') + ' */\n';
     } else {
       return '';
     }
@@ -361,7 +385,7 @@ function getJsDocTags(node: ts.Node): string[] {
   // (e.g. if a property has a getter and setter with the same tag).
   const jsdocTags: {[key: string]: boolean} = {};
   let match: RegExpExecArray;
-  while (match = tagRegex.exec(trivia)) {
+  while ((match = tagRegex.exec(trivia))) {
     jsdocTags[match[1]] = true;
   }
   return Object.keys(jsdocTags);
@@ -385,17 +409,20 @@ const memberDeclarationOrder: {[key: number]: number} = {
   [ts.SyntaxKind.ConstructSignature]: 2,
   [ts.SyntaxKind.IndexSignature]: 3,
   [ts.SyntaxKind.MethodSignature]: 4,
-  [ts.SyntaxKind.MethodDeclaration]: 4
+  [ts.SyntaxKind.MethodDeclaration]: 4,
 };
 
 function stripEmptyLines(text: string): string {
-  return text.split(/\r?\n/).filter(x => !!x.length).join('\n');
+  return text
+    .split(/\r?\n/)
+    .filter((x) => !!x.length)
+    .join('\n');
 }
 
 /**
  * Returns the first qualifier if the input node is a dotted expression.
  */
-function getFirstQualifier(node: ts.Node): ts.Identifier|null {
+function getFirstQualifier(node: ts.Node): ts.Identifier | null {
   switch (node.kind) {
     case ts.SyntaxKind.PropertyAccessExpression: {
       // For expression position
@@ -434,7 +461,7 @@ function createErrorMessage(node: ts.Node, message: string): string {
 }
 
 function hasModifier(node: ts.Node, modifierKind: ts.SyntaxKind): boolean {
-  return !!node.modifiers && node.modifiers.some(x => x.kind === modifierKind);
+  return !!node.modifiers && node.modifiers.some((x) => x.kind === modifierKind);
 }
 
 function applyDefaultTagOptions(tagOptions: JsDocTagOptions | undefined): JsDocTagOptions {

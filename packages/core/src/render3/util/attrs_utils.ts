@@ -5,12 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {CharCode} from '../../util/char_code';
 import {AttributeMarker, TAttributes} from '../interfaces/node';
 import {CssSelector} from '../interfaces/projection';
-import {ProceduralRenderer3, RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
-
-
+import {
+  ProceduralRenderer3,
+  RElement,
+  Renderer3,
+  isProceduralRenderer,
+} from '../interfaces/renderer';
 
 /**
  * Assigns all attribute values to the provided element via the inferred renderer.
@@ -60,9 +64,9 @@ export function setUpAttributes(renderer: Renderer3, native: RElement, attrs: TA
       const attrName = attrs[i++] as string;
       const attrVal = attrs[i++] as string;
       ngDevMode && ngDevMode.rendererSetAttribute++;
-      isProc ?
-          (renderer as ProceduralRenderer3).setAttribute(native, attrName, attrVal, namespaceURI) :
-          native.setAttributeNS(namespaceURI, attrName, attrVal);
+      isProc
+        ? (renderer as ProceduralRenderer3).setAttribute(native, attrName, attrVal, namespaceURI)
+        : native.setAttributeNS(namespaceURI, attrName, attrVal);
     } else {
       // attrName is string;
       const attrName = value as string;
@@ -74,9 +78,9 @@ export function setUpAttributes(renderer: Renderer3, native: RElement, attrs: TA
           (renderer as ProceduralRenderer3).setProperty(native, attrName, attrVal);
         }
       } else {
-        isProc ?
-            (renderer as ProceduralRenderer3).setAttribute(native, attrName, attrVal as string) :
-            native.setAttribute(attrName, attrVal as string);
+        isProc
+          ? (renderer as ProceduralRenderer3).setAttribute(native, attrName, attrVal as string)
+          : native.setAttribute(attrName, attrVal as string);
       }
       i++;
     }
@@ -97,8 +101,11 @@ export function setUpAttributes(renderer: Renderer3, native: RElement, attrs: TA
  * @returns true if the marker is a "name-only" marker (e.g. `Bindings`, `Template` or `I18n`).
  */
 export function isNameOnlyAttributeMarker(marker: string | AttributeMarker | CssSelector) {
-  return marker === AttributeMarker.Bindings || marker === AttributeMarker.Template ||
-      marker === AttributeMarker.I18n;
+  return (
+    marker === AttributeMarker.Bindings ||
+    marker === AttributeMarker.Template ||
+    marker === AttributeMarker.I18n
+  );
 }
 
 export function isAnimationProp(name: string): boolean {
@@ -116,7 +123,10 @@ export function isAnimationProp(name: string): boolean {
  * @param dst Location of where the merged `TAttributes` should end up.
  * @param src `TAttributes` which should be appended to `dst`
  */
-export function mergeHostAttrs(dst: TAttributes | null, src: TAttributes | null): TAttributes|null {
+export function mergeHostAttrs(
+  dst: TAttributes | null,
+  src: TAttributes | null
+): TAttributes | null {
   if (src === null || src.length === 0) {
     // do nothing
   } else if (dst === null || dst.length === 0) {
@@ -132,8 +142,9 @@ export function mergeHostAttrs(dst: TAttributes | null, src: TAttributes | null)
         if (srcMarker === AttributeMarker.NamespaceURI) {
           // Case where we need to consume `key1`, `key2`, `value` items.
         } else if (
-            srcMarker === AttributeMarker.ImplicitAttributes ||
-            srcMarker === AttributeMarker.Styles) {
+          srcMarker === AttributeMarker.ImplicitAttributes ||
+          srcMarker === AttributeMarker.Styles
+        ) {
           // Case where we have to consume `key1` and `value` only.
           mergeHostAttribute(dst, srcMarker, item as string, null, src[++i] as string);
         } else {
@@ -156,8 +167,12 @@ export function mergeHostAttrs(dst: TAttributes | null, src: TAttributes | null)
  * @param value Value to add or to overwrite to `TAttributes` Only used if `marker` is not Class.
  */
 export function mergeHostAttribute(
-    dst: TAttributes, marker: AttributeMarker, key1: string, key2: string | null,
-    value: string | null): void {
+  dst: TAttributes,
+  marker: AttributeMarker,
+  key1: string,
+  key2: string | null,
+  value: string | null
+): void {
   let i = 0;
   // Assume that new markers will be inserted at the end.
   let markerInsertPosition = dst.length;
@@ -195,7 +210,7 @@ export function mergeHostAttribute(
         }
         return;
       } else if (key2 === dst[i + 1]) {
-        dst[i + 2] = value !;
+        dst[i + 2] = value!;
         return;
       }
     }

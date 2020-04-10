@@ -15,24 +15,26 @@ export class MultiMetric extends Metric {
     return [
       {
         provide: _CHILDREN,
-        useFactory: (injector: Injector) => childTokens.map(token => injector.get(token)),
-        deps: [Injector]
+        useFactory: (injector: Injector) => childTokens.map((token) => injector.get(token)),
+        deps: [Injector],
       },
       {
         provide: MultiMetric,
         useFactory: (children: Metric[]) => new MultiMetric(children),
-        deps: [_CHILDREN]
-      }
+        deps: [_CHILDREN],
+      },
     ];
   }
 
-  constructor(private _metrics: Metric[]) { super(); }
+  constructor(private _metrics: Metric[]) {
+    super();
+  }
 
   /**
    * Starts measuring
    */
   beginMeasure(): Promise<any> {
-    return Promise.all(this._metrics.map(metric => metric.beginMeasure()));
+    return Promise.all(this._metrics.map((metric) => metric.beginMeasure()));
   }
 
   /**
@@ -41,8 +43,9 @@ export class MultiMetric extends Metric {
    * @param restart: Whether to restart right after this.
    */
   endMeasure(restart: boolean): Promise<{[key: string]: any}> {
-    return Promise.all(this._metrics.map(metric => metric.endMeasure(restart)))
-        .then(values => mergeStringMaps(<any>values));
+    return Promise.all(this._metrics.map((metric) => metric.endMeasure(restart))).then((values) =>
+      mergeStringMaps(<any>values)
+    );
   }
 
   /**
@@ -56,7 +59,11 @@ export class MultiMetric extends Metric {
 
 function mergeStringMaps(maps: {[key: string]: string}[]): {[key: string]: string} {
   const result: {[key: string]: string} = {};
-  maps.forEach(map => { Object.keys(map).forEach(prop => { result[prop] = map[prop]; }); });
+  maps.forEach((map) => {
+    Object.keys(map).forEach((prop) => {
+      result[prop] = map[prop];
+    });
+  });
   return result;
 }
 

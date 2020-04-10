@@ -9,7 +9,10 @@
 import * as ts from 'typescript';
 
 import {isClassMetadata, MetadataCollector} from '../../src/metadata/index';
-import {getInlineResourcesTransformFactory, InlineResourcesMetadataTransformer} from '../../src/transformers/inline_resources';
+import {
+  getInlineResourcesTransformFactory,
+  InlineResourcesMetadataTransformer,
+} from '../../src/transformers/inline_resources';
 import {MetadataCache} from '../../src/transformers/metadata_cache';
 import {MockAotContext, MockCompilerHost} from '../mocks';
 
@@ -17,24 +20,28 @@ describe('inline resources transformer', () => {
   describe('decorator input', () => {
     describe('should not touch unrecognized decorators', () => {
       it('Not from @angular/core', () => {
-        expect(convert(`declare const Component: Function;
-          @Component({templateUrl: './thing.html'}) class Foo {}`))
-            .toContain('templateUrl');
+        expect(
+          convert(`declare const Component: Function;
+          @Component({templateUrl: './thing.html'}) class Foo {}`)
+        ).toContain('templateUrl');
       });
       it('missing @ sign', () => {
-        expect(convert(`import {Component} from '@angular/core';
-          Component({templateUrl: './thing.html'}) class Foo {}`))
-            .toContain('templateUrl');
+        expect(
+          convert(`import {Component} from '@angular/core';
+          Component({templateUrl: './thing.html'}) class Foo {}`)
+        ).toContain('templateUrl');
       });
       it('too many arguments to @Component', () => {
-        expect(convert(`import {Component} from '@angular/core';
-          @Component(1, {templateUrl: './thing.html'}) class Foo {}`))
-            .toContain('templateUrl');
+        expect(
+          convert(`import {Component} from '@angular/core';
+          @Component(1, {templateUrl: './thing.html'}) class Foo {}`)
+        ).toContain('templateUrl');
       });
       it('wrong argument type to @Component', () => {
-        expect(convert(`import {Component} from '@angular/core';
-          @Component([{templateUrl: './thing.html'}]) class Foo {}`))
-            .toContain('templateUrl');
+        expect(
+          convert(`import {Component} from '@angular/core';
+          @Component([{templateUrl: './thing.html'}]) class Foo {}`)
+        ).toContain('templateUrl');
       });
     });
 
@@ -45,9 +52,9 @@ describe('inline resources transformer', () => {
 	        otherProp: 3,
 	      }) export class Foo {}`);
       expect(actual).not.toContain('templateUrl:');
-      expect(actual.replace(/\s+/g, ' '))
-          .toContain(
-              'Foo = __decorate([ core_1.Component({ template: "Some template", otherProp: 3 }) ], Foo)');
+      expect(actual.replace(/\s+/g, ' ')).toContain(
+        'Foo = __decorate([ core_1.Component({ template: "Some template", otherProp: 3 }) ], Foo)'
+      );
     });
     it('should allow different quotes', () => {
       const actual = convert(`import {Component} from '@angular/core';
@@ -100,9 +107,9 @@ describe('inline resources transformer', () => {
       }
     `);
       expect(actual).not.toContain('templateUrl:');
-      expect(actual.replace(/\s+/g, ' '))
-          .toMatch(
-              /Foo\.decorators = [{ .*type: core_1\.Component, args: [{ template: "Some template" }]/);
+      expect(actual.replace(/\s+/g, ' ')).toMatch(
+        /Foo\.decorators = [{ .*type: core_1\.Component, args: [{ template: "Some template" }]/
+      );
     });
     it('should replace styleUrls', () => {
       const actual = convert(`import {Component} from '@angular/core';
@@ -118,9 +125,9 @@ describe('inline resources transformer', () => {
       }
     `);
       expect(actual).not.toContain('styleUrls:');
-      expect(actual.replace(/\s+/g, ' '))
-          .toMatch(
-              /Foo\.decorators = [{ .*type: core_1\.Component, args: [{ style: "Some template" }]/);
+      expect(actual.replace(/\s+/g, ' ')).toMatch(
+        /Foo\.decorators = [{ .*type: core_1\.Component, args: [{ style: "Some template" }]/
+      );
     });
   });
 });
@@ -136,29 +143,37 @@ describe('metadata transformer', () => {
       export class Foo {}
     `;
     const sourceFile = ts.createSourceFile(
-        'someFile.ts', source, ts.ScriptTarget.Latest, /* setParentNodes */ true);
-    const cache = new MetadataCache(
-        new MetadataCollector(), /* strict */ true,
-        [new InlineResourcesMetadataTransformer(
-            {loadResource, resourceNameToFileName: (u: string) => u})]);
+      'someFile.ts',
+      source,
+      ts.ScriptTarget.Latest,
+      /* setParentNodes */ true
+    );
+    const cache = new MetadataCache(new MetadataCollector(), /* strict */ true, [
+      new InlineResourcesMetadataTransformer({
+        loadResource,
+        resourceNameToFileName: (u: string) => u,
+      }),
+    ]);
     const metadata = cache.getMetadata(sourceFile);
     expect(metadata).toBeDefined('Expected metadata from test source file');
     if (metadata) {
       const classData = metadata.metadata['Foo'];
-      expect(classData && isClassMetadata(classData))
-          .toBeDefined(`Expected metadata to contain data for Foo`);
+      expect(classData && isClassMetadata(classData)).toBeDefined(
+        `Expected metadata to contain data for Foo`
+      );
       if (classData && isClassMetadata(classData)) {
         expect(JSON.stringify(classData)).not.toContain('templateUrl');
         expect(JSON.stringify(classData)).toContain('"template":"Some template"');
         expect(JSON.stringify(classData)).not.toContain('styleUrls');
-        expect(JSON.stringify(classData))
-            .toContain('"styles":["h1 { color: red }",".some_style {}",".some_other_style {}"]');
+        expect(JSON.stringify(classData)).toContain(
+          '"styles":["h1 { color: red }",".some_style {}",".some_other_style {}"]'
+        );
       }
     }
   });
 });
 
-function loadResource(path: string): Promise<string>|string {
+function loadResource(path: string): Promise<string> | string {
   if (path === './thing.html') return 'Some template';
   if (path === './thing1.css') return '.some_style {}';
   if (path === './thing2.css') return '.some_other_style {}';
@@ -172,25 +187,40 @@ function convert(source: string) {
   const context = new MockAotContext('/', {[baseFileName + '.ts']: source});
   const host = new MockCompilerHost(context);
 
-  const sourceFile =
-      ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, /* setParentNodes */ true);
+  const sourceFile = ts.createSourceFile(
+    fileName,
+    source,
+    ts.ScriptTarget.Latest,
+    /* setParentNodes */ true
+  );
   const program = ts.createProgram(
-      [fileName], {
-        module: ts.ModuleKind.CommonJS,
-        target: ts.ScriptTarget.ES2017,
-      },
-      host);
+    [fileName],
+    {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2017,
+    },
+    host
+  );
   const moduleSourceFile = program.getSourceFile(fileName);
   const transformers: ts.CustomTransformers = {
-    before: [getInlineResourcesTransformFactory(
-        program, {loadResource, resourceNameToFileName: (u: string) => u})]
+    before: [
+      getInlineResourcesTransformFactory(program, {
+        loadResource,
+        resourceNameToFileName: (u: string) => u,
+      }),
+    ],
   };
   let result = '';
   const emitResult = program.emit(
-      moduleSourceFile, (emittedFileName, data, writeByteOrderMark, onError, sourceFiles) => {
-        if (fileName.startsWith(moduleName)) {
-          result = data;
-        }
-      }, undefined, undefined, transformers);
+    moduleSourceFile,
+    (emittedFileName, data, writeByteOrderMark, onError, sourceFiles) => {
+      if (fileName.startsWith(moduleName)) {
+        result = data;
+      }
+    },
+    undefined,
+    undefined,
+    transformers
+  );
   return result;
 }

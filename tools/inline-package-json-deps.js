@@ -47,7 +47,7 @@ fs.writeFileSync(outputPath, JSON.stringify(result, null, 2));
  * to match the version from the base `package.json` file.
  */
 function inlineDependenciesFromBase(deps) {
-  Object.keys(deps).forEach(name => {
+  Object.keys(deps).forEach((name) => {
     const value = deps[name];
     if (value !== BASE_DEPENDENCY_MARKER) {
       return;
@@ -56,8 +56,9 @@ function inlineDependenciesFromBase(deps) {
     if (linkedVersion === null) {
       console.error(`Could not find base version for: ${name}`);
       console.error(
-          `Either set a version for ${name} in "${basePackageJsonPath}", or use ` +
-          `an explicit version in "${inputPackageJson}"`);
+        `Either set a version for ${name} in "${basePackageJsonPath}", or use ` +
+          `an explicit version in "${inputPackageJson}"`
+      );
       process.exit(1);
     }
     deps[name] = linkedVersion;

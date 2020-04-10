@@ -47,7 +47,7 @@ export class ImportGraph {
       return;
     }
     results.add(sf);
-    this.importsOf(sf).forEach(imported => {
+    this.importsOf(sf).forEach((imported) => {
       this.transitiveImportsOfHelper(imported, results);
     });
   }
@@ -65,9 +65,12 @@ export class ImportGraph {
   private scanImports(sf: ts.SourceFile): Set<ts.SourceFile> {
     const imports = new Set<ts.SourceFile>();
     // Look through the source file for import statements.
-    sf.statements.forEach(stmt => {
-      if ((ts.isImportDeclaration(stmt) || ts.isExportDeclaration(stmt)) &&
-          stmt.moduleSpecifier !== undefined && ts.isStringLiteral(stmt.moduleSpecifier)) {
+    sf.statements.forEach((stmt) => {
+      if (
+        (ts.isImportDeclaration(stmt) || ts.isExportDeclaration(stmt)) &&
+        stmt.moduleSpecifier !== undefined &&
+        ts.isStringLiteral(stmt.moduleSpecifier)
+      ) {
         // Resolve the module to a file, and check whether that file is in the ts.Program.
         const moduleName = stmt.moduleSpecifier.text;
         const moduleFile = this.resolver.resolveModule(moduleName, sf.fileName);

@@ -14,7 +14,7 @@ const engines = require('./package.json').engines;
 require('./tools/check-environment')({
   requiredNodeVersion: engines.node,
   requiredNpmVersion: engines.npm,
-  requiredYarnVersion: engines.yarn
+  requiredYarnVersion: engines.yarn,
 });
 
 const gulp = require('gulp');
@@ -53,6 +53,8 @@ gulp.task('lint', ['format:changed:enforce']);
 gulp.task('source-map-test', loadTask('source-map-test'));
 gulp.task('changelog', loadTask('changelog'));
 gulp.task('changelog:zonejs', loadTask('changelog-zonejs'));
-gulp.task('check-env', () => {/* this is a noop because the env test ran already above */});
+gulp.task('check-env', () => {
+  /* this is a noop because the env test ran already above */
+});
 gulp.task('cldr:extract', loadTask('cldr', 'extract'));
 gulp.task('cldr:gen-closure-locale', loadTask('cldr', 'closure'));

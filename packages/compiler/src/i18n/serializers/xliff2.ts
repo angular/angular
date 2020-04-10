@@ -30,33 +30,41 @@ const _UNIT_TAG = 'unit';
 
 // http://docs.oasis-open.org/xliff/xliff-core/v2.0/os/xliff-core-v2.0-os.html
 export class Xliff2 extends Serializer {
-  write(messages: i18n.Message[], locale: string|null): string {
+  write(messages: i18n.Message[], locale: string | null): string {
     const visitor = new _WriteVisitor();
     const units: xml.Node[] = [];
 
-    messages.forEach(message => {
+    messages.forEach((message) => {
       const unit = new xml.Tag(_UNIT_TAG, {id: message.id});
       const notes = new xml.Tag('notes');
 
       if (message.description || message.meaning) {
         if (message.description) {
           notes.children.push(
-              new xml.CR(8),
-              new xml.Tag('note', {category: 'description'}, [new xml.Text(message.description)]));
+            new xml.CR(8),
+            new xml.Tag('note', {category: 'description'}, [new xml.Text(message.description)])
+          );
         }
 
         if (message.meaning) {
           notes.children.push(
-              new xml.CR(8),
-              new xml.Tag('note', {category: 'meaning'}, [new xml.Text(message.meaning)]));
+            new xml.CR(8),
+            new xml.Tag('note', {category: 'meaning'}, [new xml.Text(message.meaning)])
+          );
         }
       }
 
       message.sources.forEach((source: i18n.MessageSpan) => {
-        notes.children.push(new xml.CR(8), new xml.Tag('note', {category: 'location'}, [
-          new xml.Text(`${source.filePath}:${source.startLine}${
-              source.endLine !== source.startLine ? ',' + source.endLine : ''}`)
-        ]));
+        notes.children.push(
+          new xml.CR(8),
+          new xml.Tag('note', {category: 'location'}, [
+            new xml.Text(
+              `${source.filePath}:${source.startLine}${
+                source.endLine !== source.startLine ? ',' + source.endLine : ''
+              }`
+            ),
+          ])
+        );
       });
 
       notes.children.push(new xml.CR(6));
@@ -65,28 +73,39 @@ export class Xliff2 extends Serializer {
       const segment = new xml.Tag('segment');
 
       segment.children.push(
-          new xml.CR(8), new xml.Tag(_SOURCE_TAG, {}, visitor.serialize(message.nodes)),
-          new xml.CR(6));
+        new xml.CR(8),
+        new xml.Tag(_SOURCE_TAG, {}, visitor.serialize(message.nodes)),
+        new xml.CR(6)
+      );
 
       unit.children.push(new xml.CR(6), segment, new xml.CR(4));
 
       units.push(new xml.CR(4), unit);
     });
 
-    const file =
-        new xml.Tag('file', {'original': 'ng.template', id: 'ngi18n'}, [...units, new xml.CR(2)]);
+    const file = new xml.Tag('file', {'original': 'ng.template', id: 'ngi18n'}, [
+      ...units,
+      new xml.CR(2),
+    ]);
 
     const xliff = new xml.Tag(
-        _XLIFF_TAG, {version: _VERSION, xmlns: _XMLNS, srcLang: locale || _DEFAULT_SOURCE_LANG},
-        [new xml.CR(2), file, new xml.CR()]);
+      _XLIFF_TAG,
+      {version: _VERSION, xmlns: _XMLNS, srcLang: locale || _DEFAULT_SOURCE_LANG},
+      [new xml.CR(2), file, new xml.CR()]
+    );
 
     return xml.serialize([
-      new xml.Declaration({version: '1.0', encoding: 'UTF-8'}), new xml.CR(), xliff, new xml.CR()
+      new xml.Declaration({version: '1.0', encoding: 'UTF-8'}),
+      new xml.CR(),
+      xliff,
+      new xml.CR(),
     ]);
   }
 
-  load(content: string, url: string):
-      {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
+  load(
+    content: string,
+    url: string
+  ): {locale: string; i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
     // xliff to xml nodes
     const xliff2Parser = new Xliff2Parser();
     const {locale, msgIdToHtml, errors} = xliff2Parser.parse(content, url);
@@ -95,7 +114,7 @@ export class Xliff2 extends Serializer {
     const i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {};
     const converter = new XmlToI18n();
 
-    Object.keys(msgIdToHtml).forEach(msgId => {
+    Object.keys(msgIdToHtml).forEach((msgId) => {
       const {i18nNodes, errors: e} = converter.convert(msgIdToHtml[msgId], url);
       errors.push(...e);
       i18nNodesByMsgId[msgId] = i18nNodes;
@@ -160,7 +179,7 @@ class _WriteVisitor implements i18n.Visitor {
       dispStart: `<${ph.tag}>`,
       dispEnd: `</${ph.tag}>`,
     });
-    const nodes: xml.Node[] = [].concat(...ph.children.map(node => node.visit(this)));
+    const nodes: xml.Node[] = [].concat(...ph.children.map((node) => node.visit(this)));
     if (nodes.length) {
       nodes.forEach((node: xml.Node) => tagPc.children.push(node));
     } else {
@@ -172,36 +191,44 @@ class _WriteVisitor implements i18n.Visitor {
 
   visitPlaceholder(ph: i18n.Placeholder, context?: any): xml.Node[] {
     const idStr = (this._nextPlaceholderId++).toString();
-    return [new xml.Tag(_PLACEHOLDER_TAG, {
-      id: idStr,
-      equiv: ph.name,
-      disp: `{{${ph.value}}}`,
-    })];
+    return [
+      new xml.Tag(_PLACEHOLDER_TAG, {
+        id: idStr,
+        equiv: ph.name,
+        disp: `{{${ph.value}}}`,
+      }),
+    ];
   }
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): xml.Node[] {
-    const cases = Object.keys(ph.value.cases).map((value: string) => value + ' {...}').join(' ');
+    const cases = Object.keys(ph.value.cases)
+      .map((value: string) => value + ' {...}')
+      .join(' ');
     const idStr = (this._nextPlaceholderId++).toString();
-    return [new xml.Tag(
-        _PLACEHOLDER_TAG,
-        {id: idStr, equiv: ph.name, disp: `{${ph.value.expression}, ${ph.value.type}, ${cases}}`})];
+    return [
+      new xml.Tag(_PLACEHOLDER_TAG, {
+        id: idStr,
+        equiv: ph.name,
+        disp: `{${ph.value.expression}, ${ph.value.type}, ${cases}}`,
+      }),
+    ];
   }
 
   serialize(nodes: i18n.Node[]): xml.Node[] {
     this._nextPlaceholderId = 0;
-    return [].concat(...nodes.map(node => node.visit(this)));
+    return [].concat(...nodes.map((node) => node.visit(this)));
   }
 }
 
 // Extract messages as xml nodes from the xliff file
 class Xliff2Parser implements ml.Visitor {
   // TODO(issue/24571): remove '!'.
-  private _unitMlString!: string|null;
+  private _unitMlString!: string | null;
   // TODO(issue/24571): remove '!'.
   private _errors!: I18nError[];
   // TODO(issue/24571): remove '!'.
   private _msgIdToHtml!: {[msgId: string]: string};
-  private _locale: string|null = null;
+  private _locale: string | null = null;
 
   parse(xliff: string, url: string) {
     this._unitMlString = null;
@@ -264,8 +291,9 @@ class Xliff2Parser implements ml.Visitor {
           const version = versionAttr.value;
           if (version !== '2.0') {
             this._addError(
-                element,
-                `The XLIFF file version ${version} is not compatible with XLIFF 2.0 serializer`);
+              element,
+              `The XLIFF file version ${version} is not compatible with XLIFF 2.0 serializer`
+            );
           } else {
             ml.visitAll(this, element.children, null);
           }
@@ -300,9 +328,10 @@ class XmlToI18n implements ml.Visitor {
     const xmlIcu = new XmlParser().parse(message, url, {tokenizeExpansionForms: true});
     this._errors = xmlIcu.errors;
 
-    const i18nNodes = this._errors.length > 0 || xmlIcu.rootNodes.length == 0 ?
-        [] :
-        [].concat(...ml.visitAll(this, xmlIcu.rootNodes));
+    const i18nNodes =
+      this._errors.length > 0 || xmlIcu.rootNodes.length == 0
+        ? []
+        : [].concat(...ml.visitAll(this, xmlIcu.rootNodes));
 
     return {
       i18nNodes,
@@ -314,7 +343,7 @@ class XmlToI18n implements ml.Visitor {
     return new i18n.Text(text.value, text.sourceSpan);
   }
 
-  visitElement(el: ml.Element, context: any): i18n.Node[]|null {
+  visitElement(el: ml.Element, context: any): i18n.Node[] | null {
     switch (el.name) {
       case _PLACEHOLDER_TAG:
         const nameAttr = el.attrs.find((attr) => attr.name === 'equiv');
@@ -339,9 +368,10 @@ class XmlToI18n implements ml.Visitor {
           const nodes: i18n.Node[] = [];
 
           return nodes.concat(
-              new i18n.Placeholder('', startId, el.sourceSpan),
-              ...el.children.map(node => node.visit(this, null)),
-              new i18n.Placeholder('', endId, el.sourceSpan));
+            new i18n.Placeholder('', startId, el.sourceSpan),
+            ...el.children.map((node) => node.visit(this, null)),
+            new i18n.Placeholder('', endId, el.sourceSpan)
+          );
         }
         break;
       case _MARKER_TAG:

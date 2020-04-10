@@ -15,7 +15,7 @@ declare var angular: any;
 
 function init() {
   let detectChangesRuns = 0;
-  const numberOfChecksEl = document.getElementById('numberOfChecks') !;
+  const numberOfChecksEl = document.getElementById('numberOfChecks')!;
 
   addTreeToModule(angular.module('app', [])).run([
     '$rootScope',
@@ -31,11 +31,15 @@ function init() {
       function noop() {}
 
       function destroyDom() {
-        $rootScope.$apply(() => { $rootScope.initData = emptyTree; });
+        $rootScope.$apply(() => {
+          $rootScope.initData = emptyTree;
+        });
       }
 
       function createDom() {
-        $rootScope.$apply(() => { $rootScope.initData = buildTree(); });
+        $rootScope.$apply(() => {
+          $rootScope.initData = buildTree();
+        });
       }
 
       bindAction('#destroyDom', destroyDom);
@@ -44,7 +48,7 @@ function init() {
       bindAction('#detectChangesProfile', profile(detectChanges, noop, 'detectChanges'));
       bindAction('#updateDomProfile', profile(createDom, noop, 'update'));
       bindAction('#createDomProfile', profile(createDom, destroyDom, 'create'));
-    }
+    },
   ]);
 
   angular.bootstrap(document.querySelector('tree'), ['app']);

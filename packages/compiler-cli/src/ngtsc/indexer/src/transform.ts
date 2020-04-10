@@ -26,7 +26,7 @@ export function generateAnalysis(context: IndexingContext): Map<ts.Declaration, 
 
     const usedComponents = new Set<ts.Declaration>();
     const usedDirs = boundTemplate.getUsedDirectives();
-    usedDirs.forEach(dir => {
+    usedDirs.forEach((dir) => {
       if (dir.isComponent) {
         usedComponents.add(dir.ref.node);
       }
@@ -35,7 +35,9 @@ export function generateAnalysis(context: IndexingContext): Map<ts.Declaration, 
     // Get source files for the component and the template. If the template is inline, its source
     // file is the component's.
     const componentFile = new ParseSourceFile(
-        declaration.getSourceFile().getFullText(), declaration.getSourceFile().fileName);
+      declaration.getSourceFile().getFullText(),
+      declaration.getSourceFile().fileName
+    );
     let templateFile: ParseSourceFile;
     if (templateMeta.isInline) {
       templateFile = componentFile;

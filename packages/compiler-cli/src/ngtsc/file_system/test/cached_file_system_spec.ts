@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {CachedFileSystem} from '../src/cached_file_system';
 import {absoluteFrom, join, setFileSystem} from '../src/helpers';
 import {NodeJSFileSystem} from '../src/node_js_file_system';
@@ -35,7 +36,7 @@ describe('CachedFileSystem', () => {
 
     it('should take from the cache if available', () => {
       const spy = spyOn(delegate, 'exists').and.returnValue(true);
-      fs.exists(abcPath);  // Call once to fill the cache
+      fs.exists(abcPath); // Call once to fill the cache
       spy.calls.reset();
 
       expect(fs.exists(abcPath)).toBe(true);
@@ -58,7 +59,7 @@ describe('CachedFileSystem', () => {
 
     it('should take from the cache if available', () => {
       const spy = spyOn(delegate, 'readFile').and.returnValue('Some contents');
-      fs.readFile(abcPath);  // Call once to fill the cache
+      fs.readFile(abcPath); // Call once to fill the cache
       spy.calls.reset();
 
       expect(fs.readFile(abcPath)).toBe('Some contents');
@@ -91,36 +92,34 @@ describe('CachedFileSystem', () => {
   });
 
   describe('invalidateCaches()', () => {
-    it('should call the delegate `readFile()` if the path for the cached file has been invalidated',
-       () => {
-         spyOn(delegate, 'lstat').and.returnValue({isSymbolicLink: () => false} as any);
-         const spy = spyOn(delegate, 'readFile').and.returnValue('Some contents');
-         fs.readFile(abcPath);  // Call once to fill the cache
-         spy.calls.reset();
+    it('should call the delegate `readFile()` if the path for the cached file has been invalidated', () => {
+      spyOn(delegate, 'lstat').and.returnValue({isSymbolicLink: () => false} as any);
+      const spy = spyOn(delegate, 'readFile').and.returnValue('Some contents');
+      fs.readFile(abcPath); // Call once to fill the cache
+      spy.calls.reset();
 
-         expect(fs.readFile(abcPath)).toBe('Some contents');
-         expect(spy).not.toHaveBeenCalled();
+      expect(fs.readFile(abcPath)).toBe('Some contents');
+      expect(spy).not.toHaveBeenCalled();
 
-         fs.invalidateCaches(abcPath);
+      fs.invalidateCaches(abcPath);
 
-         expect(fs.readFile(abcPath)).toBe('Some contents');
-         expect(spy).toHaveBeenCalledWith(abcPath);
-       });
+      expect(fs.readFile(abcPath)).toBe('Some contents');
+      expect(spy).toHaveBeenCalledWith(abcPath);
+    });
 
-    it('should call the delegate `exists()` if the path for the cached file has been invalidated',
-       () => {
-         const spy = spyOn(delegate, 'exists').and.returnValue(true);
-         fs.exists(abcPath);  // Call once to fill the cache
-         spy.calls.reset();
+    it('should call the delegate `exists()` if the path for the cached file has been invalidated', () => {
+      const spy = spyOn(delegate, 'exists').and.returnValue(true);
+      fs.exists(abcPath); // Call once to fill the cache
+      spy.calls.reset();
 
-         expect(fs.exists(abcPath)).toBe(true);
-         expect(spy).not.toHaveBeenCalled();
+      expect(fs.exists(abcPath)).toBe(true);
+      expect(spy).not.toHaveBeenCalled();
 
-         fs.invalidateCaches(abcPath);
+      fs.invalidateCaches(abcPath);
 
-         expect(fs.exists(abcPath)).toBe(true);
-         expect(spy).toHaveBeenCalledWith(abcPath);
-       });
+      expect(fs.exists(abcPath)).toBe(true);
+      expect(spy).toHaveBeenCalledWith(abcPath);
+    });
   });
 
   describe('writeFile()', () => {

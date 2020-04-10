@@ -75,8 +75,10 @@ export class DeclarationUsageVisitor {
   private context: FunctionContext = new Map();
 
   constructor(
-      private declaration: ts.Node, private typeChecker: ts.TypeChecker,
-      private baseContext: FunctionContext = new Map()) {}
+    private declaration: ts.Node,
+    private typeChecker: ts.TypeChecker,
+    private baseContext: FunctionContext = new Map()
+  ) {}
 
   private isReferringToSymbol(node: ts.Node): boolean {
     const symbol = this.typeChecker.getSymbolAtLocation(node);
@@ -105,8 +107,11 @@ export class DeclarationUsageVisitor {
 
     // Note that we should not add previously visited symbols to the queue as
     // this could cause cycles.
-    if (!isFunctionLikeDeclaration(expressionDecl) ||
-        this.visitedJumpExprNodes.has(expressionDecl) || !expressionDecl.body) {
+    if (
+      !isFunctionLikeDeclaration(expressionDecl) ||
+      this.visitedJumpExprNodes.has(expressionDecl) ||
+      !expressionDecl.body
+    ) {
       this.peekIntoJumpExpression(callExpression);
       return;
     }
@@ -124,17 +129,24 @@ export class DeclarationUsageVisitor {
     // Only handle new expressions which resolve to classes. Technically "new" could
     // also call void functions or objects with a constructor signature. Also note that
     // we should not visit already visited symbols as this could cause cycles.
-    if (!newExprSymbol || !newExprSymbol.valueDeclaration ||
-        !ts.isClassDeclaration(newExprSymbol.valueDeclaration)) {
+    if (
+      !newExprSymbol ||
+      !newExprSymbol.valueDeclaration ||
+      !ts.isClassDeclaration(newExprSymbol.valueDeclaration)
+    ) {
       this.peekIntoJumpExpression(node);
       return;
     }
 
-    const targetConstructor =
-        newExprSymbol.valueDeclaration.members.find(ts.isConstructorDeclaration);
+    const targetConstructor = newExprSymbol.valueDeclaration.members.find(
+      ts.isConstructorDeclaration
+    );
 
-    if (targetConstructor && targetConstructor.body &&
-        !this.visitedJumpExprNodes.has(targetConstructor)) {
+    if (
+      targetConstructor &&
+      targetConstructor.body &&
+      !this.visitedJumpExprNodes.has(targetConstructor)
+    ) {
       // Update the context for the new expression and its specified constructor
       // parameters if arguments are passed to the class constructor.
       if (node.arguments) {
@@ -149,11 +161,17 @@ export class DeclarationUsageVisitor {
   }
 
   private visitPropertyAccessors(
-      node: ts.PropertyAccessExpression, checkSetter: boolean, checkGetter: boolean) {
+    node: ts.PropertyAccessExpression,
+    checkSetter: boolean,
+    checkGetter: boolean
+  ) {
     const propertySymbol = this._getPropertyAccessSymbol(node);
 
-    if (!propertySymbol || !propertySymbol.declarations.length ||
-        (propertySymbol.getFlags() & ts.SymbolFlags.Accessor) === 0) {
+    if (
+      !propertySymbol ||
+      !propertySymbol.declarations.length ||
+      (propertySymbol.getFlags() & ts.SymbolFlags.Accessor) === 0
+    ) {
       return;
     }
 
@@ -162,13 +180,16 @@ export class DeclarationUsageVisitor {
     const accessors = propertySymbol.declarations as ts.AccessorDeclaration[];
 
     accessors
-        .filter(
-            d => (checkSetter && ts.isSetAccessor(d) || checkGetter && ts.isGetAccessor(d)) &&
-                d.body && !this.visitedJumpExprNodes.has(d))
-        .forEach(d => {
-          this.visitedJumpExprNodes.add(d);
-          this.nodeQueue.push(d.body !);
-        });
+      .filter(
+        (d) =>
+          ((checkSetter && ts.isSetAccessor(d)) || (checkGetter && ts.isGetAccessor(d))) &&
+          d.body &&
+          !this.visitedJumpExprNodes.has(d)
+      )
+      .forEach((d) => {
+        this.visitedJumpExprNodes.add(d);
+        this.nodeQueue.push(d.body!);
+      });
   }
 
   private visitBinaryExpression(node: ts.BinaryExpression): boolean {
@@ -212,7 +233,7 @@ export class DeclarationUsageVisitor {
     this.ambiguousNodeQueue = [];
 
     while (this.nodeQueue.length) {
-      const node = this.nodeQueue.shift() !;
+      const node = this.nodeQueue.shift()!;
 
       if (ts.isIdentifier(node) && this.isReferringToSymbol(node)) {
         return ResolvedUsage.SYNCHRONOUS;
@@ -277,7 +298,7 @@ export class DeclarationUsageVisitor {
    * not guaranteed that the jump expression is executed. In that case the resolved
    * usage is ambiguous.
    */
-  private peekIntoJumpExpression(jumpExp: ts.CallExpression|ts.NewExpression) {
+  private peekIntoJumpExpression(jumpExp: ts.CallExpression | ts.NewExpression) {
     if (!jumpExp.arguments) {
       return;
     }
@@ -290,23 +311,29 @@ export class DeclarationUsageVisitor {
       const symbol = this._getDeclarationSymbolOfNode(jumpExp.expression);
       if (symbol && symbol.valueDeclaration) {
         const parentNode = symbol.valueDeclaration.parent;
-        if (parentNode && (ts.isInterfaceDeclaration(parentNode) || ts.isSourceFile(parentNode)) &&
-            (ts.isMethodSignature(symbol.valueDeclaration) ||
-             ts.isFunctionDeclaration(symbol.valueDeclaration)) &&
-            symbol.valueDeclaration.name) {
+        if (
+          parentNode &&
+          (ts.isInterfaceDeclaration(parentNode) || ts.isSourceFile(parentNode)) &&
+          (ts.isMethodSignature(symbol.valueDeclaration) ||
+            ts.isFunctionDeclaration(symbol.valueDeclaration)) &&
+          symbol.valueDeclaration.name
+        ) {
           const parentName = ts.isInterfaceDeclaration(parentNode) ? parentNode.name.text : null;
           const callName = getPropertyNameText(symbol.valueDeclaration.name);
-          if (ASYNC_EXTERNAL_CALLS.some(
-                  c =>
-                      (c.name === callName &&
-                       (c.parent.indexOf(parentName) !== -1 || c.parent.indexOf('*') !== -1)))) {
+          if (
+            ASYNC_EXTERNAL_CALLS.some(
+              (c) =>
+                c.name === callName &&
+                (c.parent.indexOf(parentName) !== -1 || c.parent.indexOf('*') !== -1)
+            )
+          ) {
             return;
           }
         }
       }
     }
 
-    jumpExp.arguments !.forEach((node: ts.Node) => {
+    jumpExp.arguments!.forEach((node: ts.Node) => {
       node = this._resolveDeclarationOfNode(node);
 
       if (ts.isVariableDeclaration(node) && node.initializer) {
@@ -325,7 +352,7 @@ export class DeclarationUsageVisitor {
    */
   private _resolveNodeFromContext(node: ts.Node): ts.Node {
     if (this.context.has(node)) {
-      return this.context.get(node) !;
+      return this.context.get(node)!;
     }
     return node;
   }
@@ -335,7 +362,9 @@ export class DeclarationUsageVisitor {
    * references to function parameters to be resolved to the actual node through the context.
    */
   private _updateContext(
-      callArgs: ts.NodeArray<ts.Expression>, parameters: ts.NodeArray<ts.ParameterDeclaration>) {
+    callArgs: ts.NodeArray<ts.Expression>,
+    parameters: ts.NodeArray<ts.ParameterDeclaration>
+  ) {
     parameters.forEach((parameter, index) => {
       let argumentNode: ts.Node = callArgs[index];
 
@@ -376,7 +405,7 @@ export class DeclarationUsageVisitor {
    * Gets the declaration symbol of a given TypeScript node. Resolves aliased
    * symbols to the symbol containing the value declaration.
    */
-  private _getDeclarationSymbolOfNode(node: ts.Node): ts.Symbol|null {
+  private _getDeclarationSymbolOfNode(node: ts.Node): ts.Symbol | null {
     let symbol = this.typeChecker.getSymbolAtLocation(node);
 
     if (!symbol) {
@@ -392,7 +421,7 @@ export class DeclarationUsageVisitor {
   }
 
   /** Gets the symbol of the given property access expression. */
-  private _getPropertyAccessSymbol(node: ts.PropertyAccessExpression): ts.Symbol|null {
+  private _getPropertyAccessSymbol(node: ts.PropertyAccessExpression): ts.Symbol | null {
     let propertySymbol = this._getDeclarationSymbolOfNode(node.name);
 
     if (!propertySymbol || !propertySymbol.valueDeclaration) {

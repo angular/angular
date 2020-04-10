@@ -18,8 +18,6 @@ import {Renderer2, RendererFactory2, RendererType2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {SecurityContext} from '../sanitization/security';
 
-
-
 // -------------------------------------
 // Defs
 // -------------------------------------
@@ -30,22 +28,28 @@ import {SecurityContext} from '../sanitization/security';
  * function to log the error from the definition of the node, which is shown in all browser
  * logs.
  */
-export interface DefinitionFactory<D extends Definition<any>> { (logger: NodeLogger): D; }
+export interface DefinitionFactory<D extends Definition<any>> {
+  (logger: NodeLogger): D;
+}
 
 /**
  * Function to call console.error at the right source location. This is an indirection
  * via another function as browser will log the location that actually called
  * `console.error`.
  */
-export interface NodeLogger { (): () => void; }
+export interface NodeLogger {
+  (): () => void;
+}
 
-export interface Definition<DF extends DefinitionFactory<any>> { factory: DF|null; }
+export interface Definition<DF extends DefinitionFactory<any>> {
+  factory: DF | null;
+}
 
 export interface NgModuleDefinition extends Definition<NgModuleDefinitionFactory> {
   providers: NgModuleProviderDef[];
   providersByKey: {[tokenKey: string]: NgModuleProviderDef};
   modules: any[];
-  scope: 'root'|'platform'|null;
+  scope: 'root' | 'platform' | null;
 }
 
 export interface NgModuleDefinitionFactory extends DefinitionFactory<NgModuleDefinition> {}
@@ -63,7 +67,7 @@ export interface ViewDefinition extends Definition<ViewDefinitionFactory> {
   /** aggregated NodeFlags for all nodes **/
   nodeFlags: NodeFlags;
   rootNodeFlags: NodeFlags;
-  lastRenderRootNode: NodeDef|null;
+  lastRenderRootNode: NodeDef | null;
   bindingCount: number;
   outputCount: number;
   /**
@@ -76,18 +80,35 @@ export interface ViewDefinition extends Definition<ViewDefinitionFactory> {
 
 export interface ViewDefinitionFactory extends DefinitionFactory<ViewDefinition> {}
 
-
-export interface ViewUpdateFn { (check: NodeCheckFn, view: ViewData): void; }
+export interface ViewUpdateFn {
+  (check: NodeCheckFn, view: ViewData): void;
+}
 
 // helper functions to create an overloaded function type.
 export interface NodeCheckFn {
   (view: ViewData, nodeIndex: number, argStyle: ArgumentType.Dynamic, values: any[]): any;
 
-  (view: ViewData, nodeIndex: number, argStyle: ArgumentType.Inline, v0?: any, v1?: any, v2?: any,
-   v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any): any;
+  (
+    view: ViewData,
+    nodeIndex: number,
+    argStyle: ArgumentType.Inline,
+    v0?: any,
+    v1?: any,
+    v2?: any,
+    v3?: any,
+    v4?: any,
+    v5?: any,
+    v6?: any,
+    v7?: any,
+    v8?: any,
+    v9?: any
+  ): any;
 }
 
-export const enum ArgumentType {Inline = 0, Dynamic = 1}
+export const enum ArgumentType {
+  Inline = 0,
+  Dynamic = 1,
+}
 
 export interface ViewHandleEventFn {
   (view: ViewData, nodeIndex: number, eventName: string, event: any): boolean;
@@ -114,10 +135,10 @@ export interface NodeDef {
   // Index of the node in the check functions
   // Differ from nodeIndex when nodes are added or removed at runtime (ie after compilation)
   checkIndex: number;
-  parent: NodeDef|null;
-  renderParent: NodeDef|null;
+  parent: NodeDef | null;
+  renderParent: NodeDef | null;
   /** this is checked against NgContentDef.index to find matched nodes */
-  ngContentIndex: number|null;
+  ngContentIndex: number | null;
   /** number of transitive children */
   childCount: number;
   /** aggregated NodeFlags for all transitive children (does not include self) **/
@@ -146,11 +167,11 @@ export interface NodeDef {
    * Used as a bloom filter.
    */
   childMatchedQueries: number;
-  element: ElementDef|null;
-  provider: ProviderDef|null;
-  text: TextDef|null;
-  query: QueryDef|null;
-  ngContent: NgContentDef|null;
+  element: ElementDef | null;
+  provider: ProviderDef | null;
+  text: TextDef | null;
+  query: QueryDef | null;
+  ngContent: NgContentDef | null;
 }
 
 /**
@@ -179,8 +200,10 @@ export const enum NodeFlags {
   PrivateProvider = 1 << 13,
   TypeDirective = 1 << 14,
   Component = 1 << 15,
-  CatProviderNoDirective =
-      TypeValueProvider | TypeClassProvider | TypeFactoryProvider | TypeUseExistingProvider,
+  CatProviderNoDirective = TypeValueProvider |
+    TypeClassProvider |
+    TypeFactoryProvider |
+    TypeUseExistingProvider,
   CatProvider = CatProviderNoDirective | TypeDirective,
   OnInit = 1 << 16,
   OnDestroy = 1 << 17,
@@ -200,16 +223,16 @@ export const enum NodeFlags {
   CatQuery = TypeContentQuery | TypeViewQuery,
 
   // mutually exclusive values...
-  Types = CatRenderNode | TypeNgContent | TypePipe | CatPureExpression | CatProvider | CatQuery
+  Types = CatRenderNode | TypeNgContent | TypePipe | CatPureExpression | CatProvider | CatQuery,
 }
 
 export interface BindingDef {
   flags: BindingFlags;
-  ns: string|null;
-  name: string|null;
-  nonMinifiedName: string|null;
-  securityContext: SecurityContext|null;
-  suffix: string|null;
+  ns: string | null;
+  name: string | null;
+  nonMinifiedName: string | null;
+  securityContext: SecurityContext | null;
+  suffix: string | null;
 }
 
 export const enum BindingFlags {
@@ -222,51 +245,56 @@ export const enum BindingFlags {
   CatSyntheticProperty = SyntheticProperty | SyntheticHostProperty,
 
   // mutually exclusive values...
-  Types = TypeElementAttribute | TypeElementClass | TypeElementStyle | TypeProperty
+  Types = TypeElementAttribute | TypeElementClass | TypeElementStyle | TypeProperty,
 }
 
 export interface OutputDef {
   type: OutputType;
-  target: 'window'|'document'|'body'|'component'|null;
+  target: 'window' | 'document' | 'body' | 'component' | null;
   eventName: string;
-  propName: string|null;
+  propName: string | null;
 }
 
-export const enum OutputType {ElementOutput, DirectiveOutput}
+export const enum OutputType {
+  ElementOutput,
+  DirectiveOutput,
+}
 
 export const enum QueryValueType {
   ElementRef = 0,
   RenderElement = 1,
   TemplateRef = 2,
   ViewContainerRef = 3,
-  Provider = 4
+  Provider = 4,
 }
 
 export interface ElementDef {
   // set to null for `<ng-container>`
-  name: string|null;
-  ns: string|null;
+  name: string | null;
+  ns: string | null;
   /** ns, name, value */
-  attrs: [string, string, string][]|null;
-  template: ViewDefinition|null;
-  componentProvider: NodeDef|null;
-  componentRendererType: RendererType2|null;
+  attrs: [string, string, string][] | null;
+  template: ViewDefinition | null;
+  componentProvider: NodeDef | null;
+  componentRendererType: RendererType2 | null;
   // closure to allow recursive components
-  componentView: ViewDefinitionFactory|null;
+  componentView: ViewDefinitionFactory | null;
   /**
    * visible public providers for DI in the view,
    * as see from this element. This does not include private providers.
    */
-  publicProviders: {[tokenKey: string]: NodeDef}|null;
+  publicProviders: {[tokenKey: string]: NodeDef} | null;
   /**
    * same as visiblePublicProviders, but also includes private providers
    * that are located on this element.
    */
-  allProviders: {[tokenKey: string]: NodeDef}|null;
-  handleEvent: ElementHandleEventFn|null;
+  allProviders: {[tokenKey: string]: NodeDef} | null;
+  handleEvent: ElementHandleEventFn | null;
 }
 
-export interface ElementHandleEventFn { (view: ViewData, eventName: string, event: any): boolean; }
+export interface ElementHandleEventFn {
+  (view: ViewData, eventName: string, event: any): boolean;
+}
 
 export interface ProviderDef {
   token: any;
@@ -299,7 +327,9 @@ export const enum DepFlags {
   Value = 1 << 3,
 }
 
-export interface TextDef { prefix: string; }
+export interface TextDef {
+  prefix: string;
+}
 
 export interface QueryDef {
   id: number;
@@ -313,7 +343,10 @@ export interface QueryBindingDef {
   bindingType: QueryBindingType;
 }
 
-export const enum QueryBindingType {First = 0, All = 1}
+export const enum QueryBindingType {
+  First = 0,
+  All = 1,
+}
 
 export interface NgContentDef {
   /**
@@ -346,9 +379,9 @@ export interface ViewData {
   root: RootData;
   renderer: Renderer2;
   // index of component provider / anchor.
-  parentNodeDef: NodeDef|null;
-  parent: ViewData|null;
-  viewContainerParent: ViewData|null;
+  parentNodeDef: NodeDef | null;
+  parent: ViewData | null;
+  viewContainerParent: ViewData | null;
   component: any;
   context: any;
   // Attention: Never loop over this, as this will
@@ -359,7 +392,7 @@ export interface ViewData {
   nodes: {[key: number]: NodeData};
   state: ViewState;
   oldValues: any[];
-  disposables: DisposableFn[]|null;
+  disposables: DisposableFn[] | null;
   initIndex: number;
 }
 
@@ -385,7 +418,7 @@ export const enum ViewState {
   InitState_AfterInit = 4 << 8,
 
   CatDetectChanges = Attached | ChecksEnabled,
-  CatInit = BeforeFirstCheck | CatDetectChanges | InitState_BeforeInit
+  CatInit = BeforeFirstCheck | CatDetectChanges | InitState_BeforeInit,
 }
 
 // Called before each cycle of a view's check to detect whether this is in the
@@ -393,7 +426,10 @@ export const enum ViewState {
 // lifecycle methods. Returns true if this check cycle should call lifecycle
 // methods.
 export function shiftInitState(
-    view: ViewData, priorInitState: ViewState, newInitState: ViewState): boolean {
+  view: ViewData,
+  priorInitState: ViewState,
+  newInitState: ViewState
+): boolean {
   // Only update the InitState if we are currently in the prior state.
   // For example, only move into CallingInit if we are in BeforeInit. Only
   // move into CallingContentInit if we are in CallingInit. Normally this will
@@ -416,7 +452,10 @@ export function shiftInitState(
 // Returns true if the lifecycle init method should be called for the node with
 // the given init index.
 export function shouldCallLifecycleInitHook(
-    view: ViewData, initState: ViewState, index: number): boolean {
+  view: ViewData,
+  initState: ViewState,
+  index: number
+): boolean {
   if ((view.state & ViewState.InitState_Mask) === initState && view.initIndex <= index) {
     view.initIndex = index + 1;
     return true;
@@ -424,7 +463,9 @@ export function shouldCallLifecycleInitHook(
   return false;
 }
 
-export interface DisposableFn { (): void; }
+export interface DisposableFn {
+  (): void;
+}
 
 /**
  * Node instance data.
@@ -437,14 +478,18 @@ export interface DisposableFn { (): void; }
  * This way, no usage site can get a `NodeData` from view.nodes and then use it for different
  * purposes.
  */
-export class NodeData { private __brand: any; }
+export class NodeData {
+  private __brand: any;
+}
 
 /**
  * Data for an instantiated NodeType.Text.
  *
  * Attention: Adding fields to this is performance sensitive!
  */
-export interface TextData { renderText: any; }
+export interface TextData {
+  renderText: any;
+}
 
 /**
  * Accessor for view.nodes, enforcing that every usage site stays monomorphic.
@@ -461,7 +506,7 @@ export function asTextData(view: ViewData, index: number): TextData {
 export interface ElementData {
   renderElement: any;
   componentView: ViewData;
-  viewContainer: ViewContainerData|null;
+  viewContainer: ViewContainerData | null;
   template: TemplateData;
 }
 
@@ -494,7 +539,9 @@ export function asElementData(view: ViewData, index: number): ElementData {
  *
  * Attention: Adding fields to this is performance sensitive!
  */
-export interface ProviderData { instance: any; }
+export interface ProviderData {
+  instance: any;
+}
 
 /**
  * Accessor for view.nodes, enforcing that every usage site stays monomorphic.
@@ -508,7 +555,9 @@ export function asProviderData(view: ViewData, index: number): ProviderData {
  *
  * Attention: Adding fields to this is performance sensitive!
  */
-export interface PureExpressionData { value: any; }
+export interface PureExpressionData {
+  value: any;
+}
 
 /**
  * Accessor for view.nodes, enforcing that every usage site stays monomorphic.
@@ -537,7 +586,7 @@ export interface RootData {
 
 export abstract class DebugContext {
   abstract get view(): ViewData;
-  abstract get nodeIndex(): number|null;
+  abstract get nodeIndex(): number | null;
   abstract get injector(): Injector;
   abstract get component(): any;
   abstract get providerTokens(): any[];
@@ -552,28 +601,47 @@ export abstract class DebugContext {
 // Other
 // -------------------------------------
 
-export const enum CheckType {CheckAndUpdate, CheckNoChanges}
+export const enum CheckType {
+  CheckAndUpdate,
+  CheckNoChanges,
+}
 
 export interface ProviderOverride {
   token: any;
   flags: NodeFlags;
   value: any;
-  deps: ([DepFlags, any]|any)[];
+  deps: ([DepFlags, any] | any)[];
   deprecatedBehavior: boolean;
 }
 
 export interface Services {
   setCurrentNode(view: ViewData, nodeIndex: number): void;
   createRootView(
-      injector: Injector, projectableNodes: any[][], rootSelectorOrNode: string|any,
-      def: ViewDefinition, ngModule: NgModuleRef<any>, context?: any): ViewData;
-  createEmbeddedView(parent: ViewData, anchorDef: NodeDef, viewDef: ViewDefinition, context?: any):
-      ViewData;
+    injector: Injector,
+    projectableNodes: any[][],
+    rootSelectorOrNode: string | any,
+    def: ViewDefinition,
+    ngModule: NgModuleRef<any>,
+    context?: any
+  ): ViewData;
+  createEmbeddedView(
+    parent: ViewData,
+    anchorDef: NodeDef,
+    viewDef: ViewDefinition,
+    context?: any
+  ): ViewData;
   createComponentView(
-      parentView: ViewData, nodeDef: NodeDef, viewDef: ViewDefinition, hostElement: any): ViewData;
+    parentView: ViewData,
+    nodeDef: NodeDef,
+    viewDef: ViewDefinition,
+    hostElement: any
+  ): ViewData;
   createNgModuleRef(
-      moduleType: Type<any>, parent: Injector, bootstrapComponents: Type<any>[],
-      def: NgModuleDefinition): NgModuleRef<any>;
+    moduleType: Type<any>,
+    parent: Injector,
+    bootstrapComponents: Type<any>[],
+    def: NgModuleDefinition
+  ): NgModuleRef<any>;
   overrideProvider(override: ProviderOverride): void;
   overrideComponentView(compType: Type<any>, compFactory: ComponentFactory<any>): void;
   clearOverrides(): void;
@@ -581,8 +649,12 @@ export interface Services {
   checkNoChangesView(view: ViewData): void;
   destroyView(view: ViewData): void;
   resolveDep(
-      view: ViewData, elDef: NodeDef|null, allowPrivateServices: boolean, depDef: DepDef,
-      notFoundValue?: any): any;
+    view: ViewData,
+    elDef: NodeDef | null,
+    allowPrivateServices: boolean,
+    depDef: DepDef,
+    notFoundValue?: any
+  ): any;
   createDebugContext(view: ViewData, nodeIndex: number): DebugContext;
   handleEvent: ViewHandleEventFn;
   updateDirectives: (view: ViewData, checkType: CheckType) => void;
@@ -595,21 +667,21 @@ export interface Services {
  * debug mode can hook it. It is lazily filled when `isDevMode` is known.
  */
 export const Services: Services = {
-  setCurrentNode: undefined !,
-  createRootView: undefined !,
-  createEmbeddedView: undefined !,
-  createComponentView: undefined !,
-  createNgModuleRef: undefined !,
-  overrideProvider: undefined !,
-  overrideComponentView: undefined !,
-  clearOverrides: undefined !,
-  checkAndUpdateView: undefined !,
-  checkNoChangesView: undefined !,
-  destroyView: undefined !,
-  resolveDep: undefined !,
-  createDebugContext: undefined !,
-  handleEvent: undefined !,
-  updateDirectives: undefined !,
-  updateRenderer: undefined !,
-  dirtyParentQueries: undefined !,
+  setCurrentNode: undefined!,
+  createRootView: undefined!,
+  createEmbeddedView: undefined!,
+  createComponentView: undefined!,
+  createNgModuleRef: undefined!,
+  overrideProvider: undefined!,
+  overrideComponentView: undefined!,
+  clearOverrides: undefined!,
+  checkAndUpdateView: undefined!,
+  checkNoChangesView: undefined!,
+  destroyView: undefined!,
+  resolveDep: undefined!,
+  createDebugContext: undefined!,
+  handleEvent: undefined!,
+  updateDirectives: undefined!,
+  updateRenderer: undefined!,
+  dirtyParentQueries: undefined!,
 };

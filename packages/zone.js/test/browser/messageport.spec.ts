@@ -33,9 +33,9 @@ describe('MessagePort onproperties', () => {
   it('onmessge should in the zone', (done) => {
     const channel = new MessageChannel();
     const zone = Zone.current.fork({name: 'zone'});
-    iframe.onload = function() {
+    iframe.onload = function () {
       zone.run(() => {
-        channel.port1.onmessage = function() {
+        channel.port1.onmessage = function () {
           expect(Zone.current.name).toBe(zone.name);
           done();
         };

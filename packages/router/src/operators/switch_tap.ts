@@ -15,15 +15,18 @@ import {map, switchMap} from 'rxjs/operators';
  * the `tap` operator, but if the side effectful `next` function returns an ObservableInput,
  * it will wait before continuing with the original value.
  */
-export function switchTap<T>(next: (x: T) => void|ObservableInput<any>):
-    MonoTypeOperatorFunction<T> {
-  return function(source) {
-    return source.pipe(switchMap(v => {
-      const nextResult = next(v);
-      if (nextResult) {
-        return from(nextResult).pipe(map(() => v));
-      }
-      return from([v]);
-    }));
+export function switchTap<T>(
+  next: (x: T) => void | ObservableInput<any>
+): MonoTypeOperatorFunction<T> {
+  return function (source) {
+    return source.pipe(
+      switchMap((v) => {
+        const nextResult = next(v);
+        if (nextResult) {
+          return from(nextResult).pipe(map(() => v));
+        }
+        return from([v]);
+      })
+    );
   };
 }

@@ -16,14 +16,16 @@ export class HasStyle {
 
   constructor() {}
 
-  set width(w: number) { this.cellWidth = w; }
+  set width(w: number) {
+    this.cellWidth = w;
+  }
 }
 
 @Component({
   selector: 'company-name',
   inputs: ['width: cell-width', 'company'],
   directives: [],
-  template: `<div [style.width.px]="cellWidth">{{company.name}}</div>`
+  template: `<div [style.width.px]="cellWidth">{{ company.name }}</div>`,
 })
 export class CompanyNameComponent extends HasStyle {
   company: Company;
@@ -33,7 +35,7 @@ export class CompanyNameComponent extends HasStyle {
   selector: 'opportunity-name',
   inputs: ['width: cell-width', 'opportunity'],
   directives: [],
-  template: `<div [style.width.px]="cellWidth">{{opportunity.name}}</div>`
+  template: `<div [style.width.px]="cellWidth">{{ opportunity.name }}</div>`,
 })
 export class OpportunityNameComponent extends HasStyle {
   opportunity: Opportunity;
@@ -43,7 +45,7 @@ export class OpportunityNameComponent extends HasStyle {
   selector: 'offering-name',
   inputs: ['width: cell-width', 'offering'],
   directives: [],
-  template: `<div [style.width.px]="cellWidth">{{offering.name}}</div>`
+  template: `<div [style.width.px]="cellWidth">{{ offering.name }}</div>`,
 })
 export class OfferingNameComponent extends HasStyle {
   offering: Offering;
@@ -60,21 +62,24 @@ export class Stage {
   selector: 'stage-buttons',
   inputs: ['width: cell-width', 'offering'],
   directives: [NgFor],
-  template: `
-      <div [style.width.px]="cellWidth">
-          <button *ngFor="let stage of stages"
-                  [disabled]="stage.isDisabled"
-                  [style.background-color]="stage.backgroundColor"
-                  on-click="setStage(stage)">
-            {{stage.name}}
-          </button>
-      </div>`
+  template: ` <div [style.width.px]="cellWidth">
+    <button
+      *ngFor="let stage of stages"
+      [disabled]="stage.isDisabled"
+      [style.background-color]="stage.backgroundColor"
+      on-click="setStage(stage)"
+    >
+      {{ stage.name }}
+    </button>
+  </div>`,
 })
 export class StageButtonsComponent extends HasStyle {
   private _offering: Offering;
   stages: Stage[];
 
-  get offering(): Offering { return this._offering; }
+  get offering(): Offering {
+    return this._offering;
+  }
 
   set offering(offering: Offering) {
     this._offering = offering;
@@ -88,19 +93,17 @@ export class StageButtonsComponent extends HasStyle {
 
   private _computeStageButtons() {
     let disabled = true;
-    this.stages = STATUS_LIST
-                      .map((status) => {
-                        const isCurrent = this._offering.status == status;
-                        const stage = new Stage();
-                        stage.name = status;
-                        stage.isDisabled = disabled;
-                        stage.backgroundColor = disabled ? '#DDD' : isCurrent ? '#DDF' : '#FDD';
-                        if (isCurrent) {
-                          disabled = false;
-                        }
-                        return stage;
-                      })
-                      .slice();
+    this.stages = STATUS_LIST.map((status) => {
+      const isCurrent = this._offering.status == status;
+      const stage = new Stage();
+      stage.name = status;
+      stage.isDisabled = disabled;
+      stage.backgroundColor = disabled ? '#DDD' : isCurrent ? '#DDF' : '#FDD';
+      if (isCurrent) {
+        disabled = false;
+      }
+      return stage;
+    }).slice();
   }
 }
 
@@ -108,12 +111,11 @@ export class StageButtonsComponent extends HasStyle {
   selector: 'account-cell',
   inputs: ['width: cell-width', 'account'],
   directives: [],
-  template: `
-      <div [style.width.px]="cellWidth">
-        <a href="/account/{{account.accountId}}">
-          {{account.accountId}}
-        </a>
-      </div>`
+  template: ` <div [style.width.px]="cellWidth">
+    <a href="/account/{{ account.accountId }}">
+      {{ account.accountId }}
+    </a>
+  </div>`,
 })
 export class AccountCellComponent extends HasStyle {
   account: Account;
@@ -123,7 +125,7 @@ export class AccountCellComponent extends HasStyle {
   selector: 'formatted-cell',
   inputs: ['width: cell-width', 'value'],
   directives: [],
-  template: `<div [style.width.px]="cellWidth">{{formattedValue}}</div>`
+  template: `<div [style.width.px]="cellWidth">{{ formattedValue }}</div>`,
 })
 export class FormattedCellComponent extends HasStyle {
   formattedValue: string;

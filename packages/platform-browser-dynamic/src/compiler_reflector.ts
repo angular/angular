@@ -6,8 +6,61 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileReflector, ExternalReference, Identifiers, getUrlScheme, syntaxError} from '@angular/compiler';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, NgModuleRef, QueryList, Renderer2, SecurityContext, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation, ɵCodegenComponentFactoryResolver, ɵEMPTY_ARRAY, ɵEMPTY_MAP, ɵReflectionCapabilities as ReflectionCapabilities, ɵand, ɵccf, ɵcmf, ɵcrt, ɵdid, ɵeld, ɵinlineInterpolate, ɵinterpolate, ɵmod, ɵmpd, ɵncd, ɵnov, ɵpad, ɵpid, ɵpod, ɵppd, ɵprd, ɵqud, ɵregisterModuleFactory, ɵstringify as stringify, ɵted, ɵunv, ɵvid} from '@angular/core';
+import {
+  CompileReflector,
+  ExternalReference,
+  Identifiers,
+  getUrlScheme,
+  syntaxError,
+} from '@angular/compiler';
+import {
+  ANALYZE_FOR_ENTRY_COMPONENTS,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ComponentFactory,
+  ComponentFactoryResolver,
+  ComponentRef,
+  ElementRef,
+  Injector,
+  LOCALE_ID,
+  NgModuleFactory,
+  NgModuleRef,
+  QueryList,
+  Renderer2,
+  SecurityContext,
+  TRANSLATIONS_FORMAT,
+  TemplateRef,
+  ViewContainerRef,
+  ViewEncapsulation,
+  ɵCodegenComponentFactoryResolver,
+  ɵEMPTY_ARRAY,
+  ɵEMPTY_MAP,
+  ɵReflectionCapabilities as ReflectionCapabilities,
+  ɵand,
+  ɵccf,
+  ɵcmf,
+  ɵcrt,
+  ɵdid,
+  ɵeld,
+  ɵinlineInterpolate,
+  ɵinterpolate,
+  ɵmod,
+  ɵmpd,
+  ɵncd,
+  ɵnov,
+  ɵpad,
+  ɵpid,
+  ɵpod,
+  ɵppd,
+  ɵprd,
+  ɵqud,
+  ɵregisterModuleFactory,
+  ɵstringify as stringify,
+  ɵted,
+  ɵunv,
+  ɵvid,
+} from '@angular/core';
 
 export const MODULE_SUFFIX = '';
 const builtinExternalReferences = createBuiltinExternalReferencesMap();
@@ -23,8 +76,11 @@ export class JitReflector implements CompileReflector {
       return scheme ? moduleId : `package:${moduleId}${MODULE_SUFFIX}`;
     } else if (moduleId !== null && moduleId !== void 0) {
       throw syntaxError(
-          `moduleId should be a string in "${stringify(type)}". See https://goo.gl/wIDDiL for more information.\n` +
-          `If you're using Webpack you should inline the template and the styles, see https://goo.gl/X2J8zc.`);
+        `moduleId should be a string in "${stringify(
+          type
+        )}". See https://goo.gl/wIDDiL for more information.\n` +
+          `If you're using Webpack you should inline the template and the styles, see https://goo.gl/X2J8zc.`
+      );
     }
 
     return `./${stringify(type)}`;
@@ -32,7 +88,9 @@ export class JitReflector implements CompileReflector {
   parameters(typeOrFunc: /*Type*/ any): any[][] {
     return this.reflectionCapabilities.parameters(typeOrFunc);
   }
-  tryAnnotations(typeOrFunc: /*Type*/ any): any[] { return this.annotations(typeOrFunc); }
+  tryAnnotations(typeOrFunc: /*Type*/ any): any[] {
+    return this.annotations(typeOrFunc);
+  }
   annotations(typeOrFunc: /*Type*/ any): any[] {
     return this.reflectionCapabilities.annotations(typeOrFunc);
   }
@@ -45,12 +103,13 @@ export class JitReflector implements CompileReflector {
   hasLifecycleHook(type: any, lcProperty: string): boolean {
     return this.reflectionCapabilities.hasLifecycleHook(type, lcProperty);
   }
-  guards(type: any): {[key: string]: any} { return this.reflectionCapabilities.guards(type); }
+  guards(type: any): {[key: string]: any} {
+    return this.reflectionCapabilities.guards(type);
+  }
   resolveExternalReference(ref: ExternalReference): any {
     return builtinExternalReferences.get(ref) || ref.runtime;
   }
 }
-
 
 function createBuiltinExternalReferencesMap() {
   const map = new Map<ExternalReference, any>();

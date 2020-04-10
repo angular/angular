@@ -8,5 +8,9 @@
 
 export * from './src/api';
 export {DtsMetadataReader} from './src/dts';
-export {CompoundMetadataRegistry, LocalMetadataRegistry, InjectableClassRegistry} from './src/registry';
+export {
+  CompoundMetadataRegistry,
+  LocalMetadataRegistry,
+  InjectableClassRegistry,
+} from './src/registry';
 export {extractDirectiveGuards, CompoundMetadataReader} from './src/util';

@@ -8,8 +8,24 @@
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {DomElementSchemaRegistry} from '@angular/compiler';
-import {Inject, Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
-import {EventManager, ɵNAMESPACE_URIS as NAMESPACE_URIS, ɵSharedStylesHost as SharedStylesHost, ɵflattenStyles as flattenStyles, ɵshimContentAttribute as shimContentAttribute, ɵshimHostAttribute as shimHostAttribute} from '@angular/platform-browser';
+import {
+  Inject,
+  Injectable,
+  NgZone,
+  Renderer2,
+  RendererFactory2,
+  RendererStyleFlags2,
+  RendererType2,
+  ViewEncapsulation,
+} from '@angular/core';
+import {
+  EventManager,
+  ɵNAMESPACE_URIS as NAMESPACE_URIS,
+  ɵSharedStylesHost as SharedStylesHost,
+  ɵflattenStyles as flattenStyles,
+  ɵshimContentAttribute as shimContentAttribute,
+  ɵshimHostAttribute as shimHostAttribute,
+} from '@angular/platform-browser';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -22,12 +38,15 @@ export class ServerRendererFactory2 implements RendererFactory2 {
   private schema = DEFAULT_SCHEMA;
 
   constructor(
-      private eventManager: EventManager, private ngZone: NgZone,
-      @Inject(DOCUMENT) private document: any, private sharedStylesHost: SharedStylesHost) {
+    private eventManager: EventManager,
+    private ngZone: NgZone,
+    @Inject(DOCUMENT) private document: any,
+    private sharedStylesHost: SharedStylesHost
+  ) {
     this.defaultRenderer = new DefaultServerRenderer2(eventManager, document, ngZone, this.schema);
   }
 
-  createRenderer(element: any, type: RendererType2|null): Renderer2 {
+  createRenderer(element: any, type: RendererType2 | null): Renderer2 {
     if (!element || !type) {
       return this.defaultRenderer;
     }
@@ -37,8 +56,13 @@ export class ServerRendererFactory2 implements RendererFactory2 {
         let renderer = this.rendererByCompId.get(type.id);
         if (!renderer) {
           renderer = new EmulatedEncapsulationServerRenderer2(
-              this.eventManager, this.document, this.ngZone, this.sharedStylesHost, this.schema,
-              type);
+            this.eventManager,
+            this.document,
+            this.ngZone,
+            this.sharedStylesHost,
+            this.schema,
+            type
+          );
           this.rendererByCompId.set(type.id, renderer);
         }
         (<EmulatedEncapsulationServerRenderer2>renderer).applyToHost(element);
@@ -63,8 +87,11 @@ class DefaultServerRenderer2 implements Renderer2 {
   data: {[key: string]: any} = Object.create(null);
 
   constructor(
-      private eventManager: EventManager, protected document: any, private ngZone: NgZone,
-      private schema: DomElementSchemaRegistry) {}
+    private eventManager: EventManager,
+    protected document: any,
+    private ngZone: NgZone,
+    private schema: DomElementSchemaRegistry
+  ) {}
 
   destroy(): void {}
 
@@ -90,7 +117,9 @@ class DefaultServerRenderer2 implements Renderer2 {
     return doc.createTextNode(value);
   }
 
-  appendChild(parent: any, newChild: any): void { parent.appendChild(newChild); }
+  appendChild(parent: any, newChild: any): void {
+    parent.appendChild(newChild);
+  }
 
   insertBefore(parent: any, newChild: any, refChild: any): void {
     if (parent) {
@@ -104,7 +133,7 @@ class DefaultServerRenderer2 implements Renderer2 {
     }
   }
 
-  selectRootElement(selectorOrNode: string|any, debugInfo?: any): any {
+  selectRootElement(selectorOrNode: string | any, debugInfo?: any): any {
     let el: any;
     if (typeof selectorOrNode === 'string') {
       el = this.document.querySelector(selectorOrNode);
@@ -120,9 +149,13 @@ class DefaultServerRenderer2 implements Renderer2 {
     return el;
   }
 
-  parentNode(node: any): any { return node.parentNode; }
+  parentNode(node: any): any {
+    return node.parentNode;
+  }
 
-  nextSibling(node: any): any { return node.nextSibling; }
+  nextSibling(node: any): any {
+    return node.nextSibling;
+  }
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     if (namespace) {
@@ -144,9 +177,13 @@ class DefaultServerRenderer2 implements Renderer2 {
     }
   }
 
-  addClass(el: any, name: string): void { el.classList.add(name); }
+  addClass(el: any, name: string): void {
+    el.classList.add(name);
+  }
 
-  removeClass(el: any, name: string): void { el.classList.remove(name); }
+  removeClass(el: any, name: string): void {
+    el.classList.remove(name);
+  }
 
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
     style = style.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
@@ -166,8 +203,10 @@ class DefaultServerRenderer2 implements Renderer2 {
   // attribute with the given name is checked against that security context of the
   // property.
   private _isSafeToReflectProperty(tagName: string, propertyName: string): boolean {
-    return this.schema.securityContext(tagName, propertyName, true) ===
-        this.schema.securityContext(tagName, propertyName, false);
+    return (
+      this.schema.securityContext(tagName, propertyName, true) ===
+      this.schema.securityContext(tagName, propertyName, false)
+    );
   }
 
   setProperty(el: any, name: string, value: any): void {
@@ -181,26 +220,40 @@ class DefaultServerRenderer2 implements Renderer2 {
     // Skip `innerhtml` which is conservatively marked as an attribute for security
     // purposes but is not actually an attribute.
     const tagName = (el.tagName as string).toLowerCase();
-    if (value != null && (typeof value === 'number' || typeof value == 'string') &&
-        name.toLowerCase() !== 'innerhtml' && this.schema.hasElement(tagName, EMPTY_ARRAY) &&
-        this.schema.hasProperty(tagName, name, EMPTY_ARRAY) &&
-        this._isSafeToReflectProperty(tagName, name)) {
+    if (
+      value != null &&
+      (typeof value === 'number' || typeof value == 'string') &&
+      name.toLowerCase() !== 'innerhtml' &&
+      this.schema.hasElement(tagName, EMPTY_ARRAY) &&
+      this.schema.hasProperty(tagName, name, EMPTY_ARRAY) &&
+      this._isSafeToReflectProperty(tagName, name)
+    ) {
       this.setAttribute(el, name, value.toString());
     }
   }
 
-  setValue(node: any, value: string): void { node.textContent = value; }
+  setValue(node: any, value: string): void {
+    node.textContent = value;
+  }
 
   listen(
-      target: 'document'|'window'|'body'|any, eventName: string,
-      callback: (event: any) => boolean): () => void {
+    target: 'document' | 'window' | 'body' | any,
+    eventName: string,
+    callback: (event: any) => boolean
+  ): () => void {
     checkNoSyntheticProp(eventName, 'listener');
     if (typeof target === 'string') {
-      return <() => void>this.eventManager.addGlobalEventListener(
-          target, eventName, this.decoratePreventDefault(callback));
+      return <() => void>(
+        this.eventManager.addGlobalEventListener(
+          target,
+          eventName,
+          this.decoratePreventDefault(callback)
+        )
+      );
     }
-    return <() => void>this.eventManager.addEventListener(
-               target, eventName, this.decoratePreventDefault(callback)) as() => void;
+    return (<() => void>(
+      this.eventManager.addEventListener(target, eventName, this.decoratePreventDefault(callback))
+    )) as () => void;
   }
 
   private decoratePreventDefault(eventHandler: Function): Function {
@@ -228,7 +281,8 @@ const AT_CHARCODE = '@'.charCodeAt(0);
 function checkNoSyntheticProp(name: string, nameKind: string) {
   if (name.charCodeAt(0) === AT_CHARCODE) {
     throw new Error(
-        `Found the synthetic ${nameKind} ${name}. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.`);
+      `Found the synthetic ${nameKind} ${name}. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.`
+    );
   }
 }
 
@@ -237,8 +291,13 @@ class EmulatedEncapsulationServerRenderer2 extends DefaultServerRenderer2 {
   private hostAttr: string;
 
   constructor(
-      eventManager: EventManager, document: any, ngZone: NgZone, sharedStylesHost: SharedStylesHost,
-      schema: DomElementSchemaRegistry, private component: RendererType2) {
+    eventManager: EventManager,
+    document: any,
+    ngZone: NgZone,
+    sharedStylesHost: SharedStylesHost,
+    schema: DomElementSchemaRegistry,
+    private component: RendererType2
+  ) {
     super(eventManager, document, ngZone, schema);
     // Add a 's' prefix to style attributes to indicate server.
     const componentId = 's' + component.id;
@@ -249,7 +308,9 @@ class EmulatedEncapsulationServerRenderer2 extends DefaultServerRenderer2 {
     this.hostAttr = shimHostAttribute(componentId);
   }
 
-  applyToHost(element: any) { super.setAttribute(element, this.hostAttr, ''); }
+  applyToHost(element: any) {
+    super.setAttribute(element, this.hostAttr, '');
+  }
 
   createElement(parent: any, name: string): Element {
     const el = super.createElement(parent, name, this.document);

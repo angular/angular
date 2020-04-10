@@ -54,12 +54,15 @@ export class InjectionToken<T> {
   /** @internal */
   readonly ngMetadataName = 'InjectionToken';
 
-  readonly ɵprov: never|undefined;
+  readonly ɵprov: never | undefined;
 
-  constructor(protected _desc: string, options?: {
-    providedIn?: Type<any>| 'root' | 'platform' | 'any' | null,
-    factory: () => T
-  }) {
+  constructor(
+    protected _desc: string,
+    options?: {
+      providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
+      factory: () => T;
+    }
+  ) {
     this.ɵprov = undefined;
     if (typeof options == 'number') {
       // This is a special hack to assign __NG_ELEMENT_ID__ to this instance.
@@ -75,7 +78,11 @@ export class InjectionToken<T> {
     }
   }
 
-  toString(): string { return `InjectionToken ${this._desc}`; }
+  toString(): string {
+    return `InjectionToken ${this._desc}`;
+  }
 }
 
-export interface InjectableDefToken<T> extends InjectionToken<T> { ɵprov: never; }
+export interface InjectableDefToken<T> extends InjectionToken<T> {
+  ɵprov: never;
+}

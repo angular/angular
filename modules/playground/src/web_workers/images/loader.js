@@ -12,8 +12,9 @@ System.config({
   map: {
     'base64-js': 'npm/node_modules/base64-js/base64js.min.js',
   },
-  packages: {'angular/modules/playground/src/web_workers': {defaultExtension: 'js'}}
+  packages: {'angular/modules/playground/src/web_workers': {defaultExtension: 'js'}},
 });
 
-System.import('./background_index.js')
-    .catch(error => console.error('error loading background', error));
+System.import('./background_index.js').catch((error) =>
+  console.error('error loading background', error)
+);

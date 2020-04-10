@@ -5,9 +5,24 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Directive, DoCheck, ElementRef, Input, IterableChanges, IterableDiffer, IterableDiffers, KeyValueChanges, KeyValueDiffer, KeyValueDiffers, Renderer2, ɵisListLikeIterable as isListLikeIterable, ɵstringify as stringify} from '@angular/core';
 
-type NgClassSupportedTypes = string[] | Set<string>| {[klass: string]: any} | null | undefined;
+import {
+  Directive,
+  DoCheck,
+  ElementRef,
+  Input,
+  IterableChanges,
+  IterableDiffer,
+  IterableDiffers,
+  KeyValueChanges,
+  KeyValueDiffer,
+  KeyValueDiffers,
+  Renderer2,
+  ɵisListLikeIterable as isListLikeIterable,
+  ɵstringify as stringify,
+} from '@angular/core';
+
+type NgClassSupportedTypes = string[] | Set<string> | {[klass: string]: any} | null | undefined;
 
 /**
  * @ngModule CommonModule
@@ -39,15 +54,17 @@ type NgClassSupportedTypes = string[] | Set<string>| {[klass: string]: any} | nu
  */
 @Directive({selector: '[ngClass]'})
 export class NgClass implements DoCheck {
-  private _iterableDiffer: IterableDiffer<string>|null = null;
-  private _keyValueDiffer: KeyValueDiffer<string, any>|null = null;
+  private _iterableDiffer: IterableDiffer<string> | null = null;
+  private _keyValueDiffer: KeyValueDiffer<string, any> | null = null;
   private _initialClasses: string[] = [];
   private _rawClass: NgClassSupportedTypes = null;
 
   constructor(
-      private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
-      private _ngEl: ElementRef, private _renderer: Renderer2) {}
-
+    private _iterableDiffers: IterableDiffers,
+    private _keyValueDiffers: KeyValueDiffers,
+    private _ngEl: ElementRef,
+    private _renderer: Renderer2
+  ) {}
 
   @Input('class')
   set klass(value: string) {
@@ -58,7 +75,7 @@ export class NgClass implements DoCheck {
   }
 
   @Input('ngClass')
-  set ngClass(value: string|string[]|Set<string>|{[klass: string]: any}) {
+  set ngClass(value: string | string[] | Set<string> | {[klass: string]: any}) {
     this._removeClasses(this._rawClass);
     this._applyClasses(this._initialClasses);
 
@@ -83,7 +100,7 @@ export class NgClass implements DoCheck {
         this._applyIterableChanges(iterableChanges);
       }
     } else if (this._keyValueDiffer) {
-      const keyValueChanges = this._keyValueDiffer.diff(this._rawClass as{[k: string]: any});
+      const keyValueChanges = this._keyValueDiffer.diff(this._rawClass as {[k: string]: any});
       if (keyValueChanges) {
         this._applyKeyValueChanges(keyValueChanges);
       }
@@ -106,7 +123,8 @@ export class NgClass implements DoCheck {
         this._toggleClass(record.item, true);
       } else {
         throw new Error(
-            `NgClass can only toggle CSS classes expressed as strings, got ${stringify(record.item)}`);
+          `NgClass can only toggle CSS classes expressed as strings, got ${stringify(record.item)}`
+        );
       }
     });
 
@@ -126,7 +144,7 @@ export class NgClass implements DoCheck {
       if (Array.isArray(rawClassVal) || rawClassVal instanceof Set) {
         (<any>rawClassVal).forEach((klass: string) => this._toggleClass(klass, true));
       } else {
-        Object.keys(rawClassVal).forEach(klass => this._toggleClass(klass, !!rawClassVal[klass]));
+        Object.keys(rawClassVal).forEach((klass) => this._toggleClass(klass, !!rawClassVal[klass]));
       }
     }
   }
@@ -140,7 +158,7 @@ export class NgClass implements DoCheck {
       if (Array.isArray(rawClassVal) || rawClassVal instanceof Set) {
         (<any>rawClassVal).forEach((klass: string) => this._toggleClass(klass, false));
       } else {
-        Object.keys(rawClassVal).forEach(klass => this._toggleClass(klass, false));
+        Object.keys(rawClassVal).forEach((klass) => this._toggleClass(klass, false));
       }
     }
   }
@@ -148,7 +166,7 @@ export class NgClass implements DoCheck {
   private _toggleClass(klass: string, enabled: boolean): void {
     klass = klass.trim();
     if (klass) {
-      klass.split(/\s+/g).forEach(klass => {
+      klass.split(/\s+/g).forEach((klass) => {
         if (enabled) {
           this._renderer.addClass(this._ngEl.nativeElement, klass);
         } else {

@@ -36,7 +36,9 @@ export const JSONP_ERR_WRONG_RESPONSE_TYPE = 'JSONP requests must use Json respo
  *
  *
  */
-export abstract class JsonpCallbackContext { [key: string]: (data: any) => void; }
+export abstract class JsonpCallbackContext {
+  [key: string]: (data: any) => void;
+}
 
 /**
  * Processes an `HttpRequest` with the JSONP method,
@@ -53,7 +55,9 @@ export class JsonpClientBackend implements HttpBackend {
   /**
    * Get the name of the next callback method, by incrementing the global `nextRequestId`.
    */
-  private nextCallback(): string { return `ng_jsonp_callback_${nextRequestId++}`; }
+  private nextCallback(): string {
+    return `ng_jsonp_callback_${nextRequestId++}`;
+  }
 
   /**
    * Processes a JSONP request and returns an event stream of the results.
@@ -86,7 +90,7 @@ export class JsonpClientBackend implements HttpBackend {
       // are closed over and track state across those callbacks.
 
       // The response object, if one has been received, or null otherwise.
-      let body: any|null = null;
+      let body: any | null = null;
 
       // Whether the response callback has been called.
       let finished: boolean = false;
@@ -143,22 +147,27 @@ export class JsonpClientBackend implements HttpBackend {
         if (!finished) {
           // It hasn't, something went wrong with the request. Return an error via
           // the Observable error path. All JSONP errors have status 0.
-          observer.error(new HttpErrorResponse({
-            url,
-            status: 0,
-            statusText: 'JSONP Error',
-            error: new Error(JSONP_ERR_NO_CALLBACK),
-          }));
+          observer.error(
+            new HttpErrorResponse({
+              url,
+              status: 0,
+              statusText: 'JSONP Error',
+              error: new Error(JSONP_ERR_NO_CALLBACK),
+            })
+          );
           return;
         }
 
         // Success. body either contains the response body or null if none was
         // returned.
-        observer.next(new HttpResponse({
-          body,
-          status: 200,
-          statusText: 'OK', url,
-        }));
+        observer.next(
+          new HttpResponse({
+            body,
+            status: 200,
+            statusText: 'OK',
+            url,
+          })
+        );
 
         // Complete the stream, the response is over.
         observer.complete();
@@ -175,11 +184,14 @@ export class JsonpClientBackend implements HttpBackend {
         cleanup();
 
         // Wrap the error in a HttpErrorResponse.
-        observer.error(new HttpErrorResponse({
-          error,
-          status: 0,
-          statusText: 'JSONP Error', url,
-        }));
+        observer.error(
+          new HttpErrorResponse({
+            error,
+            status: 0,
+            statusText: 'JSONP Error',
+            url,
+          })
+        );
       };
 
       // Subscribe to both the success (load) and error events on the <script> tag,

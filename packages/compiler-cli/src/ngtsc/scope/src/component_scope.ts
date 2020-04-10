@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ClassDeclaration} from '../../reflection';
 import {LocalModuleScope} from './local';
 
@@ -12,8 +13,8 @@ import {LocalModuleScope} from './local';
  * Read information about the compilation scope of components.
  */
 export interface ComponentScopeReader {
-  getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null|'error';
-  getRequiresRemoteScope(clazz: ClassDeclaration): boolean|null;
+  getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope | null | 'error';
+  getRequiresRemoteScope(clazz: ClassDeclaration): boolean | null;
 }
 
 /**
@@ -26,7 +27,7 @@ export interface ComponentScopeReader {
 export class CompoundComponentScopeReader implements ComponentScopeReader {
   constructor(private readers: ComponentScopeReader[]) {}
 
-  getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope|null|'error' {
+  getScopeForComponent(clazz: ClassDeclaration): LocalModuleScope | null | 'error' {
     for (const reader of this.readers) {
       const meta = reader.getScopeForComponent(clazz);
       if (meta !== null) {
@@ -36,7 +37,7 @@ export class CompoundComponentScopeReader implements ComponentScopeReader {
     return null;
   }
 
-  getRequiresRemoteScope(clazz: ClassDeclaration): boolean|null {
+  getRequiresRemoteScope(clazz: ClassDeclaration): boolean | null {
     for (const reader of this.readers) {
       const requiredScoping = reader.getRequiresRemoteScope(clazz);
       if (requiredScoping !== null) {

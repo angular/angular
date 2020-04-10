@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  describe,
+  expect,
+  inject,
+  it,
+} from '@angular/core/testing/src/testing_internal';
 import {ResourceLoaderImpl} from '@angular/platform-browser-dynamic/src/resource_loader/resource_loader_impl';
 
 if (isBrowser) {
@@ -22,23 +29,29 @@ if (isBrowser) {
     const url200 = '/base/angular/packages/platform-browser/test/browser/static_assets/200.html';
     const url404 = '/bad/path/404.html';
 
-    beforeEach(() => { resourceLoader = new ResourceLoaderImpl(); });
+    beforeEach(() => {
+      resourceLoader = new ResourceLoaderImpl();
+    });
 
-    it('should resolve the Promise with the file content on success',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         resourceLoader.get(url200).then((text) => {
-           expect(text.trim()).toEqual('<p>hey</p>');
-           async.done();
-         });
-       }), 10000);
+    it('should resolve the Promise with the file content on success', inject(
+      [AsyncTestCompleter],
+      (async: AsyncTestCompleter) => {
+        resourceLoader.get(url200).then((text) => {
+          expect(text.trim()).toEqual('<p>hey</p>');
+          async.done();
+        });
+      }
+    ), 10000);
 
-    it('should reject the Promise on failure',
-       inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         resourceLoader.get(url404).catch((e) => {
-           expect(e).toEqual(`Failed to load ${url404}`);
-           async.done();
-           return null;
-         });
-       }), 10000);
+    it('should reject the Promise on failure', inject(
+      [AsyncTestCompleter],
+      (async: AsyncTestCompleter) => {
+        resourceLoader.get(url404).catch((e) => {
+          expect(e).toEqual(`Failed to load ${url404}`);
+          async.done();
+          return null;
+        });
+      }
+    ), 10000);
   });
 }

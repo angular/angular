@@ -12,15 +12,32 @@ import {getClosureSafeProperty} from '../util/property';
 
 import {resolveForwardRef} from './forward_ref';
 import {injectArgs, ɵɵinject} from './injector_compatibility';
-import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './interface/provider';
+import {
+  ClassSansProvider,
+  ConstructorSansProvider,
+  ExistingSansProvider,
+  FactorySansProvider,
+  StaticClassSansProvider,
+  ValueProvider,
+  ValueSansProvider,
+} from './interface/provider';
 
-const USE_VALUE =
-    getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
+const USE_VALUE = getClosureSafeProperty<ValueProvider>({
+  provide: String,
+  useValue: getClosureSafeProperty,
+});
 const EMPTY_ARRAY: any[] = [];
 
 export function convertInjectableProviderToFactory(
-    type: Type<any>, provider?: ValueSansProvider | ExistingSansProvider | StaticClassSansProvider |
-        ConstructorSansProvider | FactorySansProvider | ClassSansProvider): () => any {
+  type: Type<any>,
+  provider?:
+    | ValueSansProvider
+    | ExistingSansProvider
+    | StaticClassSansProvider
+    | ConstructorSansProvider
+    | FactorySansProvider
+    | ClassSansProvider
+): () => any {
   if (!provider) {
     const reflectionCapabilities = new ReflectionCapabilities();
     const deps = reflectionCapabilities.parameters(type);
@@ -29,16 +46,16 @@ export function convertInjectableProviderToFactory(
   }
 
   if (USE_VALUE in provider) {
-    const valueProvider = (provider as ValueSansProvider);
+    const valueProvider = provider as ValueSansProvider;
     return () => valueProvider.useValue;
   } else if ((provider as ExistingSansProvider).useExisting) {
-    const existingProvider = (provider as ExistingSansProvider);
+    const existingProvider = provider as ExistingSansProvider;
     return () => ɵɵinject(resolveForwardRef(existingProvider.useExisting));
   } else if ((provider as FactorySansProvider).useFactory) {
-    const factoryProvider = (provider as FactorySansProvider);
+    const factoryProvider = provider as FactorySansProvider;
     return () => factoryProvider.useFactory(...injectArgs(factoryProvider.deps || EMPTY_ARRAY));
   } else if ((provider as StaticClassSansProvider | ClassSansProvider).useClass) {
-    const classProvider = (provider as StaticClassSansProvider | ClassSansProvider);
+    const classProvider = provider as StaticClassSansProvider | ClassSansProvider;
     let deps = (provider as StaticClassSansProvider).deps;
     if (!deps) {
       const reflectionCapabilities = new ReflectionCapabilities();
@@ -51,6 +68,6 @@ export function convertInjectableProviderToFactory(
       const reflectionCapabilities = new ReflectionCapabilities();
       deps = reflectionCapabilities.parameters(type);
     }
-    return () => new type(...injectArgs(deps !));
+    return () => new type(...injectArgs(deps!));
   }
 }

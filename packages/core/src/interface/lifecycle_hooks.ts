@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {SimpleChanges} from './simple_change';
 
+import {SimpleChanges} from './simple_change';
 
 /**
  * @description
@@ -90,12 +90,12 @@ export interface OnInit {
  */
 export interface DoCheck {
   /**
-     * A callback method that performs change-detection, invoked
-     * after the default change-detector runs.
-     * See `KeyValueDiffers` and `IterableDiffers` for implementing
-     * custom change checking for collections.
-     *
-     */
+   * A callback method that performs change-detection, invoked
+   * after the default change-detector runs.
+   * See `KeyValueDiffers` and `IterableDiffers` for implementing
+   * custom change checking for collections.
+   *
+   */
   ngDoCheck(): void;
 }
 

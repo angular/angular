@@ -13,12 +13,16 @@ import {getClosureSafeProperty} from '../../util/property';
 import {resolveForwardRef} from '../forward_ref';
 import {Injectable} from '../injectable';
 import {NG_PROV_DEF, NG_PROV_DEF_FALLBACK} from '../interface/defs';
-import {ClassSansProvider, ExistingSansProvider, FactorySansProvider, ValueProvider, ValueSansProvider} from '../interface/provider';
+import {
+  ClassSansProvider,
+  ExistingSansProvider,
+  FactorySansProvider,
+  ValueProvider,
+  ValueSansProvider,
+} from '../interface/provider';
 
 import {angularCoreDiEnv} from './environment';
 import {convertDependencies, reflectDependencies} from './util';
-
-
 
 /**
  * Compile an Angular injectable according to its `Injectable` metadata, and patch the resulting
@@ -34,8 +38,10 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
       get: () => {
         if (ngInjectableDef === null) {
           ngInjectableDef = getCompilerFacade().compileInjectable(
-              angularCoreDiEnv, `ng:///${type.name}/ɵprov.js`,
-              getInjectableMetadata(type, srcMeta));
+            angularCoreDiEnv,
+            `ng:///${type.name}/ɵprov.js`,
+            getInjectableMetadata(type, srcMeta)
+          );
         }
         return ngInjectableDef;
       },
@@ -65,35 +71,37 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
             typeArgumentCount: metadata.typeArgumentCount,
             deps: reflectDependencies(type),
             injectFn: 'inject',
-            target: compiler.R3FactoryTarget.Injectable
+            target: compiler.R3FactoryTarget.Injectable,
           });
         }
         return ngFactoryDef;
       },
       // Leave this configurable so that the factories from directives or pipes can take precedence.
-      configurable: true
+      configurable: true,
     });
   }
 }
 
 type UseClassProvider = Injectable & ClassSansProvider & {deps?: any[]};
 
-const USE_VALUE =
-    getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
+const USE_VALUE = getClosureSafeProperty<ValueProvider>({
+  provide: String,
+  useValue: getClosureSafeProperty,
+});
 
 function isUseClassProvider(meta: Injectable): meta is UseClassProvider {
   return (meta as UseClassProvider).useClass !== undefined;
 }
 
-function isUseValueProvider(meta: Injectable): meta is Injectable&ValueSansProvider {
+function isUseValueProvider(meta: Injectable): meta is Injectable & ValueSansProvider {
   return USE_VALUE in meta;
 }
 
-function isUseFactoryProvider(meta: Injectable): meta is Injectable&FactorySansProvider {
+function isUseFactoryProvider(meta: Injectable): meta is Injectable & FactorySansProvider {
   return (meta as FactorySansProvider).useFactory !== undefined;
 }
 
-function isUseExistingProvider(meta: Injectable): meta is Injectable&ExistingSansProvider {
+function isUseExistingProvider(meta: Injectable): meta is Injectable & ExistingSansProvider {
   return (meta as ExistingSansProvider).useExisting !== undefined;
 }
 

@@ -16,7 +16,6 @@
 let _devMode: boolean = true;
 let _runModeLocked: boolean = false;
 
-
 /**
  * Returns whether Angular is in development mode. After called once,
  * the value is locked and won't change any more.

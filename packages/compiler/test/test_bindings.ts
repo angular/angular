@@ -21,5 +21,5 @@ export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
 export const TEST_COMPILER_PROVIDERS: Provider[] = [
   {provide: ElementSchemaRegistry, useValue: new MockSchemaRegistry({}, {}, {}, [], [])},
   {provide: ResourceLoader, useClass: MockResourceLoader, deps: []},
-  {provide: UrlResolver, useFactory: createUrlResolverWithoutPackagePrefix, deps: []}
+  {provide: UrlResolver, useFactory: createUrlResolverWithoutPackagePrefix, deps: []},
 ];

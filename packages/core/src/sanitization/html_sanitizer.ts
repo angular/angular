@@ -38,27 +38,37 @@ const VOID_ELEMENTS = tagSet('area,br,col,hr,img,wbr');
 // http://dev.w3.org/html5/spec/Overview.html#optional-tags
 const OPTIONAL_END_TAG_BLOCK_ELEMENTS = tagSet('colgroup,dd,dt,li,p,tbody,td,tfoot,th,thead,tr');
 const OPTIONAL_END_TAG_INLINE_ELEMENTS = tagSet('rp,rt');
-const OPTIONAL_END_TAG_ELEMENTS =
-    merge(OPTIONAL_END_TAG_INLINE_ELEMENTS, OPTIONAL_END_TAG_BLOCK_ELEMENTS);
+const OPTIONAL_END_TAG_ELEMENTS = merge(
+  OPTIONAL_END_TAG_INLINE_ELEMENTS,
+  OPTIONAL_END_TAG_BLOCK_ELEMENTS
+);
 
 // Safe Block Elements - HTML5
 const BLOCK_ELEMENTS = merge(
-    OPTIONAL_END_TAG_BLOCK_ELEMENTS,
-    tagSet(
-        'address,article,' +
-        'aside,blockquote,caption,center,del,details,dialog,dir,div,dl,figure,figcaption,footer,h1,h2,h3,h4,h5,' +
-        'h6,header,hgroup,hr,ins,main,map,menu,nav,ol,pre,section,summary,table,ul'));
+  OPTIONAL_END_TAG_BLOCK_ELEMENTS,
+  tagSet(
+    'address,article,' +
+      'aside,blockquote,caption,center,del,details,dialog,dir,div,dl,figure,figcaption,footer,h1,h2,h3,h4,h5,' +
+      'h6,header,hgroup,hr,ins,main,map,menu,nav,ol,pre,section,summary,table,ul'
+  )
+);
 
 // Inline Elements - HTML5
 const INLINE_ELEMENTS = merge(
-    OPTIONAL_END_TAG_INLINE_ELEMENTS,
-    tagSet(
-        'a,abbr,acronym,audio,b,' +
-        'bdi,bdo,big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,picture,q,ruby,rp,rt,s,' +
-        'samp,small,source,span,strike,strong,sub,sup,time,track,tt,u,var,video'));
+  OPTIONAL_END_TAG_INLINE_ELEMENTS,
+  tagSet(
+    'a,abbr,acronym,audio,b,' +
+      'bdi,bdo,big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,picture,q,ruby,rp,rt,s,' +
+      'samp,small,source,span,strike,strong,sub,sup,time,track,tt,u,var,video'
+  )
+);
 
-export const VALID_ELEMENTS =
-    merge(VOID_ELEMENTS, BLOCK_ELEMENTS, INLINE_ELEMENTS, OPTIONAL_END_TAG_ELEMENTS);
+export const VALID_ELEMENTS = merge(
+  VOID_ELEMENTS,
+  BLOCK_ELEMENTS,
+  INLINE_ELEMENTS,
+  OPTIONAL_END_TAG_ELEMENTS
+);
 
 // Attributes that have href and hence need to be sanitized
 export const URI_ATTRS = tagSet('background,cite,href,itemtype,longdesc,poster,src,xlink:href');
@@ -67,21 +77,23 @@ export const URI_ATTRS = tagSet('background,cite,href,itemtype,longdesc,poster,s
 export const SRCSET_ATTRS = tagSet('srcset');
 
 const HTML_ATTRS = tagSet(
-    'abbr,accesskey,align,alt,autoplay,axis,bgcolor,border,cellpadding,cellspacing,class,clear,color,cols,colspan,' +
+  'abbr,accesskey,align,alt,autoplay,axis,bgcolor,border,cellpadding,cellspacing,class,clear,color,cols,colspan,' +
     'compact,controls,coords,datetime,default,dir,download,face,headers,height,hidden,hreflang,hspace,' +
     'ismap,itemscope,itemprop,kind,label,lang,language,loop,media,muted,nohref,nowrap,open,preload,rel,rev,role,rows,rowspan,rules,' +
     'scope,scrolling,shape,size,sizes,span,srclang,start,summary,tabindex,target,title,translate,type,usemap,' +
-    'valign,value,vspace,width');
+    'valign,value,vspace,width'
+);
 
 // Accessibility attributes as per WAI-ARIA 1.1 (W3C Working Draft 14 December 2018)
 const ARIA_ATTRS = tagSet(
-    'aria-activedescendant,aria-atomic,aria-autocomplete,aria-busy,aria-checked,aria-colcount,aria-colindex,' +
+  'aria-activedescendant,aria-atomic,aria-autocomplete,aria-busy,aria-checked,aria-colcount,aria-colindex,' +
     'aria-colspan,aria-controls,aria-current,aria-describedby,aria-details,aria-disabled,aria-dropeffect,' +
     'aria-errormessage,aria-expanded,aria-flowto,aria-grabbed,aria-haspopup,aria-hidden,aria-invalid,' +
     'aria-keyshortcuts,aria-label,aria-labelledby,aria-level,aria-live,aria-modal,aria-multiline,' +
     'aria-multiselectable,aria-orientation,aria-owns,aria-placeholder,aria-posinset,aria-pressed,aria-readonly,' +
     'aria-relevant,aria-required,aria-roledescription,aria-rowcount,aria-rowindex,aria-rowspan,aria-selected,' +
-    'aria-setsize,aria-sort,aria-valuemax,aria-valuemin,aria-valuenow,aria-valuetext');
+    'aria-setsize,aria-sort,aria-valuemax,aria-valuemin,aria-valuenow,aria-valuetext'
+);
 
 // NB: This currently consciously doesn't support SVG. SVG sanitization has had several security
 // issues in the past, so it seems safer to leave it out if possible. If support for binding SVG via
@@ -114,19 +126,19 @@ class SanitizingHtmlSerializer {
     // This cannot use a TreeWalker, as it has to run on Angular's various DOM adapters.
     // However this code never accesses properties off of `document` before deleting its contents
     // again, so it shouldn't be vulnerable to DOM clobbering.
-    let current: Node = el.firstChild !;
+    let current: Node = el.firstChild!;
     let traverseContent = true;
     while (current) {
       if (current.nodeType === Node.ELEMENT_NODE) {
         traverseContent = this.startElement(current as Element);
       } else if (current.nodeType === Node.TEXT_NODE) {
-        this.chars(current.nodeValue !);
+        this.chars(current.nodeValue!);
       } else {
         // Strip non-element, non-text nodes.
         this.sanitizedSomething = true;
       }
       if (traverseContent && current.firstChild) {
-        current = current.firstChild !;
+        current = current.firstChild!;
         continue;
       }
       while (current) {
@@ -135,14 +147,14 @@ class SanitizingHtmlSerializer {
           this.endElement(current as Element);
         }
 
-        let next = this.checkClobberedElement(current, current.nextSibling !);
+        let next = this.checkClobberedElement(current, current.nextSibling!);
 
         if (next) {
           current = next;
           break;
         }
 
-        current = this.checkClobberedElement(current, current.parentNode !);
+        current = this.checkClobberedElement(current, current.parentNode!);
       }
     }
     return this.buf.join('');
@@ -167,13 +179,13 @@ class SanitizingHtmlSerializer {
     const elAttrs = element.attributes;
     for (let i = 0; i < elAttrs.length; i++) {
       const elAttr = elAttrs.item(i);
-      const attrName = elAttr !.name;
+      const attrName = elAttr!.name;
       const lower = attrName.toLowerCase();
       if (!VALID_ATTRS.hasOwnProperty(lower)) {
         this.sanitizedSomething = true;
         continue;
       }
-      let value = elAttr !.value;
+      let value = elAttr!.value;
       // TODO(martinprobst): Special case image URIs for data:image/...
       if (URI_ATTRS[lower]) value = _sanitizeUrl(value);
       if (SRCSET_ATTRS[lower]) value = sanitizeSrcset(value);
@@ -192,14 +204,19 @@ class SanitizingHtmlSerializer {
     }
   }
 
-  private chars(chars: string) { this.buf.push(encodeEntities(chars)); }
+  private chars(chars: string) {
+    this.buf.push(encodeEntities(chars));
+  }
 
   checkClobberedElement(node: Node, nextNode: Node): Node {
-    if (nextNode &&
-        (node.compareDocumentPosition(nextNode) &
-         Node.DOCUMENT_POSITION_CONTAINED_BY) === Node.DOCUMENT_POSITION_CONTAINED_BY) {
+    if (
+      nextNode &&
+      (node.compareDocumentPosition(nextNode) & Node.DOCUMENT_POSITION_CONTAINED_BY) ===
+        Node.DOCUMENT_POSITION_CONTAINED_BY
+    ) {
       throw new Error(
-          `Failed to sanitize html because the element is clobbered: ${(node as Element).outerHTML}`);
+        `Failed to sanitize html because the element is clobbered: ${(node as Element).outerHTML}`
+      );
     }
     return nextNode;
   }
@@ -217,19 +234,18 @@ const NON_ALPHANUMERIC_REGEXP = /([^\#-~ |!])/g;
  * @param value
  */
 function encodeEntities(value: string) {
-  return value.replace(/&/g, '&amp;')
-      .replace(
-          SURROGATE_PAIR_REGEXP,
-          function(match: string) {
-            const hi = match.charCodeAt(0);
-            const low = match.charCodeAt(1);
-            return '&#' + (((hi - 0xD800) * 0x400) + (low - 0xDC00) + 0x10000) + ';';
-          })
-      .replace(
-          NON_ALPHANUMERIC_REGEXP,
-          function(match: string) { return '&#' + match.charCodeAt(0) + ';'; })
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(SURROGATE_PAIR_REGEXP, function (match: string) {
+      const hi = match.charCodeAt(0);
+      const low = match.charCodeAt(1);
+      return '&#' + ((hi - 0xd800) * 0x400 + (low - 0xdc00) + 0x10000) + ';';
+    })
+    .replace(NON_ALPHANUMERIC_REGEXP, function (match: string) {
+      return '&#' + match.charCodeAt(0) + ';';
+    })
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 let inertBodyHelper: InertBodyHelper;
@@ -239,7 +255,7 @@ let inertBodyHelper: InertBodyHelper;
  * the DOM in a browser environment.
  */
 export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
-  let inertBodyElement: HTMLElement|null = null;
+  let inertBodyElement: HTMLElement | null = null;
   try {
     inertBodyHelper = inertBodyHelper || new InertBodyHelper(defaultDoc);
     // Make sure unsafeHtml is actually a string (TypeScript types are not enforced at runtime).
@@ -258,16 +274,18 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string 
       mXSSAttempts--;
 
       unsafeHtml = parsedHtml;
-      parsedHtml = inertBodyElement !.innerHTML;
+      parsedHtml = inertBodyElement!.innerHTML;
       inertBodyElement = inertBodyHelper.getInertBodyElement(unsafeHtml);
     } while (unsafeHtml !== parsedHtml);
 
     const sanitizer = new SanitizingHtmlSerializer();
     const safeHtml = sanitizer.sanitizeChildren(
-        getTemplateContent(inertBodyElement !) as Element || inertBodyElement);
+      (getTemplateContent(inertBodyElement!) as Element) || inertBodyElement
+    );
     if (isDevMode() && sanitizer.sanitizedSomething) {
       console.warn(
-          'WARNING: sanitizing HTML stripped some content, see http://g.co/ng/security#xss');
+        'WARNING: sanitizing HTML stripped some content, see http://g.co/ng/security#xss'
+      );
     }
 
     return safeHtml;
@@ -282,10 +300,10 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string 
   }
 }
 
-export function getTemplateContent(el: Node): Node|null {
-  return 'content' in (el as any /** Microsoft/TypeScript#21517 */) && isTemplateElement(el) ?
-      el.content :
-      null;
+export function getTemplateContent(el: Node): Node | null {
+  return 'content' in (el as any) /** Microsoft/TypeScript#21517 */ && isTemplateElement(el)
+    ? el.content
+    : null;
 }
 function isTemplateElement(el: Node): el is HTMLTemplateElement {
   return el.nodeType === Node.ELEMENT_NODE && el.nodeName === 'TEMPLATE';

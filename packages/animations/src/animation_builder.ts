@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AnimationMetadata, AnimationOptions} from './animation_metadata';
 import {AnimationPlayer} from './players/animation_player';
 
@@ -61,7 +62,7 @@ export abstract class AnimationBuilder {
    * @returns A factory object that can create a player for the defined animation.
    * @see `animate()`
    */
-  abstract build(animation: AnimationMetadata|AnimationMetadata[]): AnimationFactory;
+  abstract build(animation: AnimationMetadata | AnimationMetadata[]): AnimationFactory;
 }
 
 /**

@@ -9,5 +9,5 @@
 import {IncrementalBuild} from '../api';
 
 export const NOOP_INCREMENTAL_BUILD: IncrementalBuild<any> = {
-  priorWorkFor: () => null
+  priorWorkFor: () => null,
 };

@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
@@ -77,7 +78,7 @@ AliasedDirective$1 = __decorate([
   core.Directive({ selector: '[someDirective]' }),
 ], AliasedDirective$1);
 exports.AliasedDirective$1 = AliasedDirective$1;
-`
+`,
       };
     });
 
@@ -88,8 +89,11 @@ exports.AliasedDirective$1 = AliasedDirective$1;
         const bundle = makeTestBundleProgram(TOPLEVEL_DECORATORS_FILE.name);
         const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
         const classNode = getDeclaration(
-            bundle.program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective',
-            isNamedVariableDeclaration);
+          bundle.program,
+          TOPLEVEL_DECORATORS_FILE.name,
+          'SomeDirective',
+          isNamedVariableDeclaration
+        );
         const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
         expect(decorators.length).toEqual(1);
@@ -98,8 +102,8 @@ exports.AliasedDirective$1 = AliasedDirective$1;
         expect(decorator.name).toEqual('Directive');
         expect(decorator.identifier!.getText()).toEqual('core.Directive');
         expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
-        expect(decorator.args!.map(arg => arg.getText())).toEqual([
-          '{ selector: \'[someDirective]\' }',
+        expect(decorator.args!.map((arg) => arg.getText())).toEqual([
+          "{ selector: '[someDirective]' }",
         ]);
       });
 
@@ -109,8 +113,11 @@ exports.AliasedDirective$1 = AliasedDirective$1;
         const bundle = makeTestBundleProgram(TOPLEVEL_DECORATORS_FILE.name);
         const host = new CommonJsReflectionHost(new MockLogger(), false, bundle);
         const classNode = getDeclaration(
-            bundle.program, TOPLEVEL_DECORATORS_FILE.name, 'AliasedDirective$1',
-            isNamedVariableDeclaration);
+          bundle.program,
+          TOPLEVEL_DECORATORS_FILE.name,
+          'AliasedDirective$1',
+          isNamedVariableDeclaration
+        );
         const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
         expect(decorators.length).toEqual(1);
@@ -119,8 +126,8 @@ exports.AliasedDirective$1 = AliasedDirective$1;
         expect(decorator.name).toEqual('Directive');
         expect(decorator.identifier!.getText()).toEqual('core.Directive');
         expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
-        expect(decorator.args!.map(arg => arg.getText())).toEqual([
-          '{ selector: \'[someDirective]\' }',
+        expect(decorator.args!.map((arg) => arg.getText())).toEqual([
+          "{ selector: '[someDirective]' }",
         ]);
       });
     });

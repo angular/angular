@@ -5,17 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 'use strict';
 
 const shell = require('shelljs');
 const karmaBin = require.resolve('karma/bin/karma');
 const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER']);
 const sauceService = runfiles.resolveWorkspaceRelative(process.argv[2]);
-process.argv = [
-  process.argv[0],
-  karmaBin,
-  ...process.argv.splice(3),
-];
+process.argv = [process.argv[0], karmaBin, ...process.argv.splice(3)];
 try {
   console.error(`Setting up environment for SauceLabs karma tests...`);
   // KARMA_WEB_TEST_MODE is set which informs /karma-js.conf.js that it should
@@ -25,8 +22,11 @@ try {
   // will be `null` if the test runs locally without the `sauce-service` being started.
   const saucelabsParams = readLocalSauceConnectParams();
   // Setup required SAUCE_* env if they are not already set
-  if (!process.env['SAUCE_USERNAME'] || !process.env['SAUCE_ACCESS_KEY'] ||
-      !process.env['SAUCE_TUNNEL_IDENTIFIER']) {
+  if (
+    !process.env['SAUCE_USERNAME'] ||
+    !process.env['SAUCE_ACCESS_KEY'] ||
+    !process.env['SAUCE_TUNNEL_IDENTIFIER']
+  ) {
     // We print a helpful error message below if the required Saucelabs parameters have not
     // been specified in test environment, and the `sauce-service` params file has not been
     // created either.

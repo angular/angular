@@ -27,7 +27,7 @@ export interface UpdateSource {
    * If an old version of the resource doesn't exist, or exists but does
    * not match the hash given, this returns null.
    */
-  lookupResourceWithHash(url: string, hash: string): Promise<Response|null>;
+  lookupResourceWithHash(url: string, hash: string): Promise<Response | null>;
 
   /**
    * Lookup an older version of a resource for which the hash is not known.
@@ -37,7 +37,7 @@ export interface UpdateSource {
    * `Response`, but the cache metadata needed to re-cache the resource in
    * a newer `AppVersion`.
    */
-  lookupResourceWithoutHash(url: string): Promise<CacheState|null>;
+  lookupResourceWithoutHash(url: string): Promise<CacheState | null>;
 
   /**
    * List the URLs of all of the resources which were previously cached.
@@ -82,13 +82,15 @@ export interface CacheState {
   metadata?: UrlMetadata;
 }
 
-export interface DebugLogger { log(value: string|Error, context?: string): void; }
+export interface DebugLogger {
+  log(value: string | Error, context?: string): void;
+}
 
 export interface DebugState {
   state: string;
   why: string;
-  latestHash: string|null;
-  lastUpdateCheck: number|null;
+  latestHash: string | null;
+  lastUpdateCheck: number | null;
 }
 
 export interface DebugVersion {
@@ -100,8 +102,8 @@ export interface DebugVersion {
 
 export interface DebugIdleState {
   queue: string[];
-  lastTrigger: number|null;
-  lastRun: number|null;
+  lastTrigger: number | null;
+  lastRun: number | null;
 }
 
 export interface Debuggable {

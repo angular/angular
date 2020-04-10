@@ -12,7 +12,7 @@ import {SymbolExtractor} from './symbol_extractor';
 const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER'] as string);
 
 if (require.main === module) {
-  const args = process.argv.slice(2) as[string, string];
+  const args = process.argv.slice(2) as [string, string];
   process.exitCode = main(args) ? 0 : 1;
 }
 
@@ -45,7 +45,10 @@ function main(argv: [string, string, string] | [string, string]): boolean {
       console.error(`TEST FAILED!`);
       console.error(`  To update the golden file run: `);
       console.error(
-          `    yarn bazel run --config=${ivyEnabled ? 'ivy' : 'view-engine'} ${process.env['TEST_TARGET']}.accept`);
+        `    yarn bazel run --config=${ivyEnabled ? 'ivy' : 'view-engine'} ${
+          process.env['TEST_TARGET']
+        }.accept`
+      );
     }
   }
   return passed;

@@ -21,15 +21,17 @@ describe('testability example', () => {
   describe('using task tracking', () => {
     const URL = '/testability/whenStable/';
 
-    it('times out with a list of tasks', done => {
+    it('times out with a list of tasks', (done) => {
       browser.get(URL);
       browser.ignoreSynchronization = true;
 
       // Script that runs in the browser and calls whenStable with a timeout.
-      let waitWithResultScript = function(done: any) {
+      let waitWithResultScript = function (done: any) {
         let rootEl = document.querySelector('example-app');
         let testability = window.getAngularTestability(rootEl);
-        testability.whenStable((didWork: boolean, tasks: any) => { done(tasks); }, 1000);
+        testability.whenStable((didWork: boolean, tasks: any) => {
+          done(tasks);
+        }, 1000);
       };
 
       element(by.css('.start-button')).click();
@@ -43,6 +45,8 @@ describe('testability example', () => {
       });
     });
 
-    afterAll(() => { browser.ignoreSynchronization = false; });
+    afterAll(() => {
+      browser.ignoreSynchronization = false;
+    });
   });
 });

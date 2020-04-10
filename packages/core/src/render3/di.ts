@@ -21,17 +21,45 @@ import {getFactoryDef} from './definition';
 import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
 import {registerPreOrderHooks} from './hooks';
 import {DirectiveDef, FactoryFn} from './interfaces/definition';
-import {NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags, TNODE, isFactory} from './interfaces/injector';
-import {AttributeMarker, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeProviderIndexes, TNodeType} from './interfaces/node';
+import {
+  NO_PARENT_INJECTOR,
+  NodeInjectorFactory,
+  PARENT_INJECTOR,
+  RelativeInjectorLocation,
+  RelativeInjectorLocationFlags,
+  TNODE,
+  isFactory,
+} from './interfaces/injector';
+import {
+  AttributeMarker,
+  TContainerNode,
+  TDirectiveHostNode,
+  TElementContainerNode,
+  TElementNode,
+  TNode,
+  TNodeProviderIndexes,
+  TNodeType,
+} from './interfaces/node';
 import {isComponentDef, isComponentHost} from './interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, INJECTOR, LView, TData, TVIEW, TView, T_HOST} from './interfaces/view';
+import {
+  DECLARATION_COMPONENT_VIEW,
+  DECLARATION_VIEW,
+  INJECTOR,
+  LView,
+  TData,
+  TVIEW,
+  TView,
+  T_HOST,
+} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {enterDI, leaveDI} from './state';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
-import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './util/injector_utils';
+import {
+  getParentInjectorIndex,
+  getParentInjectorView,
+  hasParentInjector,
+} from './util/injector_utils';
 import {stringifyForError} from './util/misc_utils';
-
-
 
 /**
  * Defines if the call to `inject` should include `viewProviders` in its resolution.
@@ -97,10 +125,13 @@ let nextNgElementId = 0;
  * @param type The directive token to register
  */
 export function bloomAdd(
-    injectorIndex: number, tView: TView, type: Type<any>| InjectionToken<any>| string): void {
+  injectorIndex: number,
+  tView: TView,
+  type: Type<any> | InjectionToken<any> | string
+): void {
   ngDevMode && assertEqual(tView.firstCreatePass, true, 'expected firstCreatePass to be true');
-  let id: number|undefined =
-      typeof type !== 'string' ? (type as any)[NG_ELEMENT_ID] : type.charCodeAt(0) || 0;
+  let id: number | undefined =
+    typeof type !== 'string' ? (type as any)[NG_ELEMENT_ID] : type.charCodeAt(0) || 0;
 
   // Set a unique ID on the directive type, so if something tries to inject the directive,
   // we can easily retrieve the ID and hash it into the bloom bit that should be checked.
@@ -125,11 +156,21 @@ export function bloomAdd(
   const tData = tView.data as number[];
 
   if (b7) {
-    b6 ? (b5 ? (tData[injectorIndex + 7] |= mask) : (tData[injectorIndex + 6] |= mask)) :
-         (b5 ? (tData[injectorIndex + 5] |= mask) : (tData[injectorIndex + 4] |= mask));
+    b6
+      ? b5
+        ? (tData[injectorIndex + 7] |= mask)
+        : (tData[injectorIndex + 6] |= mask)
+      : b5
+      ? (tData[injectorIndex + 5] |= mask)
+      : (tData[injectorIndex + 4] |= mask);
   } else {
-    b6 ? (b5 ? (tData[injectorIndex + 3] |= mask) : (tData[injectorIndex + 2] |= mask)) :
-         (b5 ? (tData[injectorIndex + 1] |= mask) : (tData[injectorIndex] |= mask));
+    b6
+      ? b5
+        ? (tData[injectorIndex + 3] |= mask)
+        : (tData[injectorIndex + 2] |= mask)
+      : b5
+      ? (tData[injectorIndex + 1] |= mask)
+      : (tData[injectorIndex] |= mask);
   }
 }
 
@@ -141,7 +182,9 @@ export function bloomAdd(
  * @returns Node injector
  */
 export function getOrCreateNodeInjectorForNode(
-    tNode: TElementNode | TContainerNode | TElementContainerNode, hostView: LView): number {
+  tNode: TElementNode | TContainerNode | TElementContainerNode,
+  hostView: LView
+): number {
   const existingInjectorIndex = getInjectorIndex(tNode, hostView);
   if (existingInjectorIndex !== -1) {
     return existingInjectorIndex;
@@ -150,8 +193,8 @@ export function getOrCreateNodeInjectorForNode(
   const tView = hostView[TVIEW];
   if (tView.firstCreatePass) {
     tNode.injectorIndex = hostView.length;
-    insertBloom(tView.data, tNode);  // foundation for node bloom
-    insertBloom(hostView, null);     // foundation for cumulative bloom
+    insertBloom(tView.data, tNode); // foundation for node bloom
+    insertBloom(hostView, null); // foundation for cumulative bloom
     insertBloom(tView.blueprint, null);
   }
 
@@ -179,15 +222,16 @@ function insertBloom(arr: any[], footer: TNode | null): void {
   arr.push(0, 0, 0, 0, 0, 0, 0, 0, footer);
 }
 
-
 export function getInjectorIndex(tNode: TNode, hostView: LView): number {
-  if (tNode.injectorIndex === -1 ||
-      // If the injector index is the same as its parent's injector index, then the index has been
-      // copied down from the parent node. No injector has been created yet on this node.
-      (tNode.parent && tNode.parent.injectorIndex === tNode.injectorIndex) ||
-      // After the first template pass, the injector index might exist but the parent values
-      // might not have been calculated yet for this instance
-      hostView[tNode.injectorIndex + PARENT_INJECTOR] == null) {
+  if (
+    tNode.injectorIndex === -1 ||
+    // If the injector index is the same as its parent's injector index, then the index has been
+    // copied down from the parent node. No injector has been created yet on this node.
+    (tNode.parent && tNode.parent.injectorIndex === tNode.injectorIndex) ||
+    // After the first template pass, the injector index might exist but the parent values
+    // might not have been calculated yet for this instance
+    hostView[tNode.injectorIndex + PARENT_INJECTOR] == null
+  ) {
     return -1;
   } else {
     return tNode.injectorIndex;
@@ -202,7 +246,7 @@ export function getInjectorIndex(tNode: TNode, hostView: LView): number {
  */
 export function getParentInjectorLocation(tNode: TNode, view: LView): RelativeInjectorLocation {
   if (tNode.parent && tNode.parent.injectorIndex !== -1) {
-    return tNode.parent.injectorIndex as any;  // ViewOffset is 0
+    return tNode.parent.injectorIndex as any; // ViewOffset is 0
   }
 
   // For most cases, the parent injector index can be found on the host node (e.g. for component
@@ -211,14 +255,14 @@ export function getParentInjectorLocation(tNode: TNode, view: LView): RelativeIn
   let hostTNode = view[T_HOST];
   let viewOffset = 1;
   while (hostTNode && hostTNode.injectorIndex === -1) {
-    view = view[DECLARATION_VIEW] !;
+    view = view[DECLARATION_VIEW]!;
     hostTNode = view ? view[T_HOST] : null;
     viewOffset++;
   }
 
-  return hostTNode ?
-      hostTNode.injectorIndex | (viewOffset << RelativeInjectorLocationFlags.ViewOffsetShift) :
-      -1 as any;
+  return hostTNode
+    ? hostTNode.injectorIndex | (viewOffset << RelativeInjectorLocationFlags.ViewOffsetShift)
+    : (-1 as any);
 }
 
 /**
@@ -229,7 +273,10 @@ export function getParentInjectorLocation(tNode: TNode, view: LView): RelativeIn
  * @param token The type or the injection token to be made public
  */
 export function diPublicInInjector(
-    injectorIndex: number, tView: TView, token: InjectionToken<any>| Type<any>): void {
+  injectorIndex: number,
+  tView: TView,
+  token: InjectionToken<any> | Type<any>
+): void {
   bloomAdd(injectorIndex, tView, token);
 }
 
@@ -264,9 +311,14 @@ export function diPublicInInjector(
  *
  * @publicApi
  */
-export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): string|null {
-  ngDevMode && assertNodeOfPossibleTypes(
-                   tNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
+export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): string | null {
+  ngDevMode &&
+    assertNodeOfPossibleTypes(
+      tNode,
+      TNodeType.Container,
+      TNodeType.Element,
+      TNodeType.ElementContainer
+    );
   ngDevMode && assertDefined(tNode, 'expecting tNode');
   if (attrNameToInject === 'class') {
     return tNode.classes;
@@ -308,7 +360,6 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
   return null;
 }
 
-
 /**
  * Returns the value associated to the given token from the NodeInjectors => ModuleInjector.
  *
@@ -327,8 +378,12 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
  * @returns the value from the injector, `null` when not found, or `notFoundValue` if provided
  */
 export function getOrCreateInjectable<T>(
-    tNode: TDirectiveHostNode | null, lView: LView, token: Type<T>| InjectionToken<T>,
-    flags: InjectFlags = InjectFlags.Default, notFoundValue?: any): T|null {
+  tNode: TDirectiveHostNode | null,
+  lView: LView,
+  token: Type<T> | InjectionToken<T>,
+  flags: InjectFlags = InjectFlags.Default,
+  notFoundValue?: any
+): T | null {
   if (tNode !== null) {
     const bloomHash = bloomHashBitOrFactory(token);
     // If the ID stored here is a function, this is a special object like ElementRef or TemplateRef
@@ -355,18 +410,20 @@ export function getOrCreateInjectable<T>(
       // A reference to the previous injector TView that was found while climbing the element
       // injector tree. This is used to know if viewProviders can be accessed on the current
       // injector.
-      let previousTView: TView|null = null;
+      let previousTView: TView | null = null;
       let injectorIndex = getInjectorIndex(tNode, lView);
       let parentLocation: RelativeInjectorLocation = NO_PARENT_INJECTOR;
-      let hostTElementNode: TNode|null =
-          flags & InjectFlags.Host ? lView[DECLARATION_COMPONENT_VIEW][T_HOST] : null;
+      let hostTElementNode: TNode | null =
+        flags & InjectFlags.Host ? lView[DECLARATION_COMPONENT_VIEW][T_HOST] : null;
 
       // If we should skip this injector, or if there is no injector on this node, start by
       // searching
       // the parent injector.
       if (injectorIndex === -1 || flags & InjectFlags.SkipSelf) {
-        parentLocation = injectorIndex === -1 ? getParentInjectorLocation(tNode, lView) :
-                                                lView[injectorIndex + PARENT_INJECTOR];
+        parentLocation =
+          injectorIndex === -1
+            ? getParentInjectorLocation(tNode, lView)
+            : lView[injectorIndex + PARENT_INJECTOR];
 
         if (!shouldSearchParent(flags, false)) {
           injectorIndex = -1;
@@ -388,15 +445,25 @@ export function getOrCreateInjectable<T>(
           // At this point, we have an injector which *may* contain the token, so we step through
           // the providers and directives associated with the injector's corresponding node to get
           // the instance.
-          const instance: T|null = searchTokensOnInjector<T>(
-              injectorIndex, lView, token, previousTView, flags, hostTElementNode);
+          const instance: T | null = searchTokensOnInjector<T>(
+            injectorIndex,
+            lView,
+            token,
+            previousTView,
+            flags,
+            hostTElementNode
+          );
           if (instance !== NOT_FOUND) {
             return instance;
           }
         }
-        if (shouldSearchParent(
-                flags, lView[TVIEW].data[injectorIndex + TNODE] === hostTElementNode) &&
-            bloomHasToken(bloomHash, injectorIndex, lView)) {
+        if (
+          shouldSearchParent(
+            flags,
+            lView[TVIEW].data[injectorIndex + TNODE] === hostTElementNode
+          ) &&
+          bloomHasToken(bloomHash, injectorIndex, lView)
+        ) {
           // The def wasn't found anywhere on this node, so it was a false positive.
           // Traverse up the tree and continue searching.
           previousTView = tView;
@@ -443,35 +510,46 @@ export function getOrCreateInjectable<T>(
 const NOT_FOUND = {};
 
 function searchTokensOnInjector<T>(
-    injectorIndex: number, lView: LView, token: Type<T>| InjectionToken<T>,
-    previousTView: TView | null, flags: InjectFlags, hostTElementNode: TNode | null) {
+  injectorIndex: number,
+  lView: LView,
+  token: Type<T> | InjectionToken<T>,
+  previousTView: TView | null,
+  flags: InjectFlags,
+  hostTElementNode: TNode | null
+) {
   const currentTView = lView[TVIEW];
   const tNode = currentTView.data[injectorIndex + TNODE] as TNode;
   // First, we need to determine if view providers can be accessed by the starting element.
   // There are two possibities
-  const canAccessViewProviders = previousTView == null ?
-      // 1) This is the first invocation `previousTView == null` which means that we are at the
-      // `TNode` of where injector is starting to look. In such a case the only time we are allowed
-      // to look into the ViewProviders is if:
-      // - we are on a component
-      // - AND the injector set `includeViewProviders` to true (implying that the token can see
-      // ViewProviders because it is the Component or a Service which itself was declared in
-      // ViewProviders)
-      (isComponentHost(tNode) && includeViewProviders) :
-      // 2) `previousTView != null` which means that we are now walking across the parent nodes.
-      // In such a case we are only allowed to look into the ViewProviders if:
-      // - We just crossed from child View to Parent View `previousTView != currentTView`
-      // - AND the parent TNode is an Element.
-      // This means that we just came from the Component's View and therefore are allowed to see
-      // into the ViewProviders.
-      (previousTView != currentTView && (tNode.type === TNodeType.Element));
+  const canAccessViewProviders =
+    previousTView == null
+      ? // 1) This is the first invocation `previousTView == null` which means that we are at the
+        // `TNode` of where injector is starting to look. In such a case the only time we are allowed
+        // to look into the ViewProviders is if:
+        // - we are on a component
+        // - AND the injector set `includeViewProviders` to true (implying that the token can see
+        // ViewProviders because it is the Component or a Service which itself was declared in
+        // ViewProviders)
+        isComponentHost(tNode) && includeViewProviders
+      : // 2) `previousTView != null` which means that we are now walking across the parent nodes.
+        // In such a case we are only allowed to look into the ViewProviders if:
+        // - We just crossed from child View to Parent View `previousTView != currentTView`
+        // - AND the parent TNode is an Element.
+        // This means that we just came from the Component's View and therefore are allowed to see
+        // into the ViewProviders.
+        previousTView != currentTView && tNode.type === TNodeType.Element;
 
   // This special case happens when there is a @host on the inject and when we are searching
   // on the host element node.
-  const isHostSpecialCase = (flags & InjectFlags.Host) && hostTElementNode === tNode;
+  const isHostSpecialCase = flags & InjectFlags.Host && hostTElementNode === tNode;
 
   const injectableIdx = locateDirectiveOrProvider(
-      tNode, currentTView, token, canAccessViewProviders, isHostSpecialCase);
+    tNode,
+    currentTView,
+    token,
+    canAccessViewProviders,
+    isHostSpecialCase
+  );
   if (injectableIdx !== null) {
     return getNodeInjectable(lView, currentTView, injectableIdx, tNode as TElementNode);
   } else {
@@ -490,8 +568,12 @@ function searchTokensOnInjector<T>(
  * @returns Index of a found directive or provider, or null when none found.
  */
 export function locateDirectiveOrProvider<T>(
-    tNode: TNode, tView: TView, token: Type<T>| InjectionToken<T>, canAccessViewProviders: boolean,
-    isHostSpecialCase: boolean | number): number|null {
+  tNode: TNode,
+  tView: TView,
+  token: Type<T> | InjectionToken<T>,
+  canAccessViewProviders: boolean,
+  isHostSpecialCase: boolean | number
+): number | null {
   const nodeProviderIndexes = tNode.providerIndexes;
   const tInjectables = tView.data;
 
@@ -499,15 +581,21 @@ export function locateDirectiveOrProvider<T>(
   const directivesStart = tNode.directiveStart;
   const directiveEnd = tNode.directiveEnd;
   const cptViewProvidersCount =
-      nodeProviderIndexes >> TNodeProviderIndexes.CptViewProvidersCountShift;
-  const startingIndex =
-      canAccessViewProviders ? injectablesStart : injectablesStart + cptViewProvidersCount;
+    nodeProviderIndexes >> TNodeProviderIndexes.CptViewProvidersCountShift;
+  const startingIndex = canAccessViewProviders
+    ? injectablesStart
+    : injectablesStart + cptViewProvidersCount;
   // When the host special case applies, only the viewProviders and the component are visible
   const endIndex = isHostSpecialCase ? injectablesStart + cptViewProvidersCount : directiveEnd;
   for (let i = startingIndex; i < endIndex; i++) {
-    const providerTokenOrDef = tInjectables[i] as InjectionToken<any>| Type<any>| DirectiveDef<any>;
-    if (i < directivesStart && token === providerTokenOrDef ||
-        i >= directivesStart && (providerTokenOrDef as DirectiveDef<any>).type === token) {
+    const providerTokenOrDef = tInjectables[i] as
+      | InjectionToken<any>
+      | Type<any>
+      | DirectiveDef<any>;
+    if (
+      (i < directivesStart && token === providerTokenOrDef) ||
+      (i >= directivesStart && (providerTokenOrDef as DirectiveDef<any>).type === token)
+    ) {
       return i;
     }
   }
@@ -521,14 +609,18 @@ export function locateDirectiveOrProvider<T>(
 }
 
 /**
-* Retrieve or instantiate the injectable from the `LView` at particular `index`.
-*
-* This function checks to see if the value has already been instantiated and if so returns the
-* cached `injectable`. Otherwise if it detects that the value is still a factory it
-* instantiates the `injectable` and caches the value.
-*/
+ * Retrieve or instantiate the injectable from the `LView` at particular `index`.
+ *
+ * This function checks to see if the value has already been instantiated and if so returns the
+ * cached `injectable`. Otherwise if it detects that the value is still a factory it
+ * instantiates the `injectable` and caches the value.
+ */
 export function getNodeInjectable(
-    lView: LView, tView: TView, index: number, tNode: TDirectiveHostNode): any {
+  lView: LView,
+  tView: TView,
+  index: number,
+  tNode: TDirectiveHostNode
+): any {
   let value = lView[index];
   const tData = tView.data;
   if (isFactory(value)) {
@@ -577,19 +669,23 @@ export function getNodeInjectable(
  * @returns the matching bit to check in the bloom filter or `null` if the token is not known.
  *   When the returned value is negative then it represents special values such as `Injector`.
  */
-export function bloomHashBitOrFactory(token: Type<any>| InjectionToken<any>| string): number|
-    Function|undefined {
+export function bloomHashBitOrFactory(
+  token: Type<any> | InjectionToken<any> | string
+): number | Function | undefined {
   ngDevMode && assertDefined(token, 'token must be defined');
   if (typeof token === 'string') {
     return token.charCodeAt(0) || 0;
   }
-  const tokenId: number|undefined = (token as any)[NG_ELEMENT_ID];
+  const tokenId: number | undefined = (token as any)[NG_ELEMENT_ID];
   // Negative token IDs are used for special objects such as `Injector`
-  return (typeof tokenId === 'number' && tokenId > 0) ? tokenId & BLOOM_MASK : tokenId;
+  return typeof tokenId === 'number' && tokenId > 0 ? tokenId & BLOOM_MASK : tokenId;
 }
 
 export function bloomHasToken(
-    bloomHash: number, injectorIndex: number, injectorView: LView | TData) {
+  bloomHash: number,
+  injectorIndex: number,
+  injectorView: LView | TData
+) {
   // Create a mask that targets the specific bit associated with the directive we're looking for.
   // JS bit operations are 32 bits, so this will be a number between 2^0 and 2^31, corresponding
   // to bit positions 0 - 31 in a 32 bit integer.
@@ -604,11 +700,21 @@ export function bloomHasToken(
   let value: number;
 
   if (b7) {
-    value = b6 ? (b5 ? injectorView[injectorIndex + 7] : injectorView[injectorIndex + 6]) :
-                 (b5 ? injectorView[injectorIndex + 5] : injectorView[injectorIndex + 4]);
+    value = b6
+      ? b5
+        ? injectorView[injectorIndex + 7]
+        : injectorView[injectorIndex + 6]
+      : b5
+      ? injectorView[injectorIndex + 5]
+      : injectorView[injectorIndex + 4];
   } else {
-    value = b6 ? (b5 ? injectorView[injectorIndex + 3] : injectorView[injectorIndex + 2]) :
-                 (b5 ? injectorView[injectorIndex + 1] : injectorView[injectorIndex]);
+    value = b6
+      ? b5
+        ? injectorView[injectorIndex + 3]
+        : injectorView[injectorIndex + 2]
+      : b5
+      ? injectorView[injectorIndex + 1]
+      : injectorView[injectorIndex];
   }
 
   // If the bloom filter value has the bit corresponding to the directive's bloomBit flipped on,
@@ -617,14 +723,15 @@ export function bloomHasToken(
 }
 
 /** Returns true if flags prevent parent injector from being searched for tokens */
-function shouldSearchParent(flags: InjectFlags, isFirstHostTNode: boolean): boolean|number {
+function shouldSearchParent(flags: InjectFlags, isFirstHostTNode: boolean): boolean | number {
   return !(flags & InjectFlags.Self) && !(flags & InjectFlags.Host && isFirstHostTNode);
 }
 
 export class NodeInjector implements Injector {
   constructor(
-      private _tNode: TElementNode|TContainerNode|TElementContainerNode|null,
-      private _lView: LView) {}
+    private _tNode: TElementNode | TContainerNode | TElementContainerNode | null,
+    private _lView: LView
+  ) {}
 
   get(token: any, notFoundValue?: any): any {
     return getOrCreateInjectable(this._tNode, this._lView, token, undefined, notFoundValue);
@@ -634,7 +741,7 @@ export class NodeInjector implements Injector {
 /**
  * @codeGenApi
  */
-export function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T>|null {
+export function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T> | null {
   const typeAny = type as any;
 
   if (isForwardRef(type)) {

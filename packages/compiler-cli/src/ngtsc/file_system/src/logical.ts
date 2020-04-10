@@ -5,13 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 
 import {absoluteFrom, dirname, relative, resolve} from './helpers';
 import {AbsoluteFsPath, BrandedPath, PathSegment} from './types';
 import {stripExtension} from './util';
-
-
 
 /**
  * A path that's relative to the logical root of a TypeScript project (one of the project's
@@ -28,7 +27,7 @@ export const LogicalProjectPath = {
    * This will return a `PathSegment` which would be a valid module specifier to use in `from` when
    * importing from `to`.
    */
-  relativePathBetween: function(from: LogicalProjectPath, to: LogicalProjectPath): PathSegment {
+  relativePathBetween: function (from: LogicalProjectPath, to: LogicalProjectPath): PathSegment {
     let relativePath = relative(dirname(resolve(from)), resolve(to));
     if (!relativePath.startsWith('../')) {
       relativePath = ('./' + relativePath) as PathSegment;
@@ -51,7 +50,7 @@ export class LogicalFileSystem {
    * A cache of file paths to project paths, because computation of these paths is slightly
    * expensive.
    */
-  private cache: Map<AbsoluteFsPath, LogicalProjectPath|null> = new Map();
+  private cache: Map<AbsoluteFsPath, LogicalProjectPath | null> = new Map();
 
   constructor(rootDirs: AbsoluteFsPath[]) {
     // Make a copy and sort it by length in reverse order (longest first). This speeds up lookups,
@@ -65,7 +64,7 @@ export class LogicalFileSystem {
    * This method is provided as a convenient alternative to calling
    * `logicalPathOfFile(absoluteFromSourceFile(sf))`.
    */
-  logicalPathOfSf(sf: ts.SourceFile): LogicalProjectPath|null {
+  logicalPathOfSf(sf: ts.SourceFile): LogicalProjectPath | null {
     return this.logicalPathOfFile(absoluteFrom(sf.fileName));
   }
 
@@ -75,9 +74,9 @@ export class LogicalFileSystem {
    * @returns A `LogicalProjectPath` to the source file, or `null` if the source file is not in any
    * of the TS project's root directories.
    */
-  logicalPathOfFile(physicalFile: AbsoluteFsPath): LogicalProjectPath|null {
+  logicalPathOfFile(physicalFile: AbsoluteFsPath): LogicalProjectPath | null {
     if (!this.cache.has(physicalFile)) {
-      let logicalFile: LogicalProjectPath|null = null;
+      let logicalFile: LogicalProjectPath | null = null;
       for (const rootDir of this.rootDirs) {
         if (physicalFile.startsWith(rootDir)) {
           logicalFile = this.createLogicalProjectPath(physicalFile, rootDir);
@@ -94,8 +93,10 @@ export class LogicalFileSystem {
     return this.cache.get(physicalFile)!;
   }
 
-  private createLogicalProjectPath(file: AbsoluteFsPath, rootDir: AbsoluteFsPath):
-      LogicalProjectPath {
+  private createLogicalProjectPath(
+    file: AbsoluteFsPath,
+    rootDir: AbsoluteFsPath
+  ): LogicalProjectPath {
     const logicalPath = stripExtension(file.substr(rootDir.length));
     return (logicalPath.startsWith('/') ? logicalPath : '/' + logicalPath) as LogicalProjectPath;
   }

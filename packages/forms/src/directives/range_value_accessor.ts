@@ -13,7 +13,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor'
 export const RANGE_VALUE_ACCESSOR: StaticProvider = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => RangeValueAccessor),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -42,13 +42,13 @@ export const RANGE_VALUE_ACCESSOR: StaticProvider = {
  */
 @Directive({
   selector:
-      'input[type=range][formControlName],input[type=range][formControl],input[type=range][ngModel]',
+    'input[type=range][formControlName],input[type=range][formControl],input[type=range][ngModel]',
   host: {
     '(change)': 'onChange($event.target.value)',
     '(input)': 'onChange($event.target.value)',
-    '(blur)': 'onTouched()'
+    '(blur)': 'onTouched()',
   },
-  providers: [RANGE_VALUE_ACCESSOR]
+  providers: [RANGE_VALUE_ACCESSOR],
 })
 export class RangeValueAccessor implements ControlValueAccessor {
   /**
@@ -81,7 +81,7 @@ export class RangeValueAccessor implements ControlValueAccessor {
    *
    * @param fn The callback function
    */
-  registerOnChange(fn: (_: number|null) => void): void {
+  registerOnChange(fn: (_: number | null) => void): void {
     this.onChange = (value) => {
       fn(value == '' ? null : parseFloat(value));
     };

@@ -13,7 +13,6 @@ import {platformWorkerAppDynamic} from '@angular/platform-webworker-dynamic';
 import {AnimationCmp} from './index_common';
 
 @NgModule({imports: [WorkerAppModule], bootstrap: [AnimationCmp], declarations: [AnimationCmp]})
-export class ExampleModule {
-}
+export class ExampleModule {}
 
 platformWorkerAppDynamic().bootstrapModule(ExampleModule);

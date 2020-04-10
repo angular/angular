@@ -11,18 +11,17 @@ import {ComponentFactoryResolver, ComponentRef} from '@angular/core';
 import {RouterOutlet} from './directives/router_outlet';
 import {ActivatedRoute} from './router_state';
 
-
 /**
  * Store contextual information about a `RouterOutlet`
  *
  * @publicApi
  */
 export class OutletContext {
-  outlet: RouterOutlet|null = null;
-  route: ActivatedRoute|null = null;
-  resolver: ComponentFactoryResolver|null = null;
+  outlet: RouterOutlet | null = null;
+  route: ActivatedRoute | null = null;
+  resolver: ComponentFactoryResolver | null = null;
   children = new ChildrenOutletContexts();
-  attachRef: ComponentRef<any>|null = null;
+  attachRef: ComponentRef<any> | null = null;
 }
 
 /**
@@ -63,7 +62,9 @@ export class ChildrenOutletContexts {
     return contexts;
   }
 
-  onOutletReAttached(contexts: Map<string, OutletContext>) { this.contexts = contexts; }
+  onOutletReAttached(contexts: Map<string, OutletContext>) {
+    this.contexts = contexts;
+  }
 
   getOrCreateContext(childName: string): OutletContext {
     let context = this.getContext(childName);
@@ -76,5 +77,7 @@ export class ChildrenOutletContexts {
     return context;
   }
 
-  getContext(childName: string): OutletContext|null { return this.contexts.get(childName) || null; }
+  getContext(childName: string): OutletContext | null {
+    return this.contexts.get(childName) || null;
+  }
 }

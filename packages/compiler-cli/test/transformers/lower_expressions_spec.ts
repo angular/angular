@@ -9,7 +9,12 @@
 import * as ts from 'typescript';
 
 import {MetadataCollector, ModuleMetadata} from '../../src/metadata/index';
-import {getExpressionLoweringTransformFactory, LoweringRequest, LowerMetadataTransform, RequestLocationMap} from '../../src/transformers/lower_expressions';
+import {
+  getExpressionLoweringTransformFactory,
+  LoweringRequest,
+  LowerMetadataTransform,
+  RequestLocationMap,
+} from '../../src/transformers/lower_expressions';
 import {MetadataCache} from '../../src/transformers/metadata_cache';
 import {Directory, MockAotContext, MockCompilerHost} from '../mocks';
 
@@ -22,19 +27,22 @@ describe('Expression lowering', () => {
     });
 
     it('should be able to lower an expression in a decorator', () => {
-      expect(convert(`
+      expect(
+        convert(`
           import {Component} from '@angular/core';
 
           @Component({
             provider: [{provide: 'someToken', useFactory:◊l: () => null◊}]
           })
           class MyClass {}
-      `)).toContain('const l = () => null; exports.l = l;');
+      `)
+      ).toContain('const l = () => null; exports.l = l;');
     });
 
     it('should be able to export a variable if the whole value is lowered', () => {
-      expect(convert('/*a*/ const a =◊b: () => null◊;'))
-          .toBe('/*a*/ const a = () => null; const b = a; export { b };');
+      expect(convert('/*a*/ const a =◊b: () => null◊;')).toBe(
+        '/*a*/ const a = () => null; const b = a; export { b };'
+      );
     });
   });
 
@@ -53,8 +61,9 @@ describe('Expression lowering', () => {
         })
         export class MyClass {}
       `);
-      expect(collected.requests.has(collected.annotations[0].start))
-          .toBeTruthy('did not find the useValue');
+      expect(collected.requests.has(collected.annotations[0].start)).toBeTruthy(
+        'did not find the useValue'
+      );
     });
 
     it('should not request a lowering for useValue with a reference to a static property', () => {
@@ -80,8 +89,9 @@ describe('Expression lowering', () => {
         })
         export class MyClass {}
       `);
-      expect(collected.requests.has(collected.annotations[0].start))
-          .toBeTruthy('did not find the useFactory');
+      expect(collected.requests.has(collected.annotations[0].start)).toBeTruthy(
+        'did not find the useFactory'
+      );
     });
 
     it('should request a lowering for data', () => {
@@ -98,8 +108,9 @@ describe('Expression lowering', () => {
         })
         export class MyClass {}
       `);
-      expect(collected.requests.has(collected.annotations[0].start))
-          .toBeTruthy('did not find the data field');
+      expect(collected.requests.has(collected.annotations[0].start)).toBeTruthy(
+        'did not find the data field'
+      );
     });
 
     it('should not lower a non-module', () => {
@@ -113,11 +124,12 @@ describe('Expression lowering', () => {
     });
 
     it('should throw a validation exception for invalid files', () => {
-      const cache = new MetadataCache(
-          new MetadataCollector({}), /* strict */ true,
-          [new LowerMetadataTransform(DEFAULT_FIELDS_TO_LOWER)]);
+      const cache = new MetadataCache(new MetadataCollector({}), /* strict */ true, [
+        new LowerMetadataTransform(DEFAULT_FIELDS_TO_LOWER),
+      ]);
       const sourceFile = ts.createSourceFile(
-          'foo.ts', `
+        'foo.ts',
+        `
         import {Injectable} from '@angular/core';
 
         class SomeLocalClass {}
@@ -126,16 +138,19 @@ describe('Expression lowering', () => {
           constructor(a: SomeLocalClass) {}
         }
       `,
-          ts.ScriptTarget.Latest, true);
+        ts.ScriptTarget.Latest,
+        true
+      );
       expect(() => cache.getMetadata(sourceFile)).toThrow();
     });
 
     it('should not report validation errors on a .d.ts file', () => {
-      const cache = new MetadataCache(
-          new MetadataCollector({}), /* strict */ true,
-          [new LowerMetadataTransform(DEFAULT_FIELDS_TO_LOWER)]);
+      const cache = new MetadataCache(new MetadataCollector({}), /* strict */ true, [
+        new LowerMetadataTransform(DEFAULT_FIELDS_TO_LOWER),
+      ]);
       const dtsFile = ts.createSourceFile(
-          'foo.d.ts', `
+        'foo.d.ts',
+        `
         import {Injectable} from '@angular/core';
 
         class SomeLocalClass {}
@@ -144,7 +159,9 @@ describe('Expression lowering', () => {
           constructor(a: SomeLocalClass) {}
         }
       `,
-          ts.ScriptTarget.Latest, true);
+        ts.ScriptTarget.Latest,
+        true
+      );
       expect(() => cache.getMetadata(dtsFile)).not.toThrow();
     });
   });
@@ -158,17 +175,19 @@ interface Annotation {
   name: string;
 }
 
-function getAnnotations(annotatedSource: string):
-    {unannotatedSource: string, annotations: Annotation[]} {
-  const annotations: {start: number, length: number, name: string}[] = [];
+function getAnnotations(
+  annotatedSource: string
+): {unannotatedSource: string; annotations: Annotation[]} {
+  const annotations: {start: number; length: number; name: string}[] = [];
   let adjustment = 0;
   const unannotatedSource = annotatedSource.replace(
-      /◊([a-zA-Z]+):(.*)◊/g,
-      (text: string, name: string, source: string, index: number): string => {
-        annotations.push({start: index + adjustment, length: source.length, name});
-        adjustment -= text.length - source.length;
-        return source;
-      });
+    /◊([a-zA-Z]+):(.*)◊/g,
+    (text: string, name: string, source: string, index: number): string => {
+      annotations.push({start: index + adjustment, length: source.length, name});
+      adjustment -= text.length - source.length;
+      return source;
+    }
+  );
   return {unannotatedSource, annotations};
 }
 
@@ -184,7 +203,11 @@ function convert(annotatedSource: string) {
   const host = new MockCompilerHost(context);
 
   const sourceFile = ts.createSourceFile(
-      fileName, unannotatedSource, ts.ScriptTarget.Latest, /* setParentNodes */ true);
+    fileName,
+    unannotatedSource,
+    ts.ScriptTarget.Latest,
+    /* setParentNodes */ true
+  );
   const requests = new Map<number, LoweringRequest>();
 
   for (const annotation of annotations) {
@@ -195,10 +218,14 @@ function convert(annotatedSource: string) {
   }
 
   const program = ts.createProgram(
-      [fileName], {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2017}, host);
+    [fileName],
+    {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2017},
+    host
+  );
   const moduleSourceFile = program.getSourceFile(fileName)!;
   const transformers: ts.CustomTransformers = {
-    before: [getExpressionLoweringTransformFactory(
+    before: [
+      getExpressionLoweringTransformFactory(
         {
           getRequests(sourceFile: ts.SourceFile): RequestLocationMap {
             if (sourceFile.fileName == moduleSourceFile.fileName) {
@@ -206,22 +233,29 @@ function convert(annotatedSource: string) {
             } else {
               return new Map();
             }
-          }
+          },
         },
-        program)]
+        program
+      ),
+    ],
   };
   let result: string = '';
   const emitResult = program.emit(
-      moduleSourceFile, (emittedFileName, data, writeByteOrderMark, onError, sourceFiles) => {
-        if (fileName.startsWith(moduleName)) {
-          result = data;
-        }
-      }, undefined, undefined, transformers);
+    moduleSourceFile,
+    (emittedFileName, data, writeByteOrderMark, onError, sourceFiles) => {
+      if (fileName.startsWith(moduleName)) {
+        result = data;
+      }
+    },
+    undefined,
+    undefined,
+    transformers
+  );
   return normalizeResult(result);
 }
 
-function findNode(node: ts.Node, start: number, length: number): ts.Node|undefined {
-  function find(node: ts.Node): ts.Node|undefined {
+function findNode(node: ts.Node, start: number, length: number): ts.Node | undefined {
+  function find(node: ts.Node): ts.Node | undefined {
     if (node.getFullStart() == start && node.getEnd() == start + length) {
       return node;
     }
@@ -237,13 +271,14 @@ function normalizeResult(result: string): string {
   // Remove new lines
   // Squish adjacent spaces
   // Remove prefix and postfix spaces
-  return result.replace('"use strict";', ' ')
-      .replace('exports.__esModule = true;', ' ')
-      .replace('Object.defineProperty(exports, "__esModule", { value: true });', ' ')
-      .replace(/\n/g, ' ')
-      .replace(/ +/g, ' ')
-      .replace(/^ /g, '')
-      .replace(/ $/g, '');
+  return result
+    .replace('"use strict";', ' ')
+    .replace('exports.__esModule = true;', ' ')
+    .replace('Object.defineProperty(exports, "__esModule", { value: true });', ' ')
+    .replace(/\n/g, ' ')
+    .replace(/ +/g, ' ')
+    .replace(/^ /g, '')
+    .replace(/ $/g, '');
 }
 
 // Collector helpers
@@ -253,10 +288,14 @@ function collect(annotatedSource: string) {
   const transformer = new LowerMetadataTransform(DEFAULT_FIELDS_TO_LOWER);
   const cache = new MetadataCache(new MetadataCollector({}), false, [transformer]);
   const sourceFile = ts.createSourceFile(
-      'someName.ts', unannotatedSource, ts.ScriptTarget.Latest, /* setParentNodes */ true);
+    'someName.ts',
+    unannotatedSource,
+    ts.ScriptTarget.Latest,
+    /* setParentNodes */ true
+  );
   return {
     metadata: cache.getMetadata(sourceFile),
     requests: transformer.getRequests(sourceFile),
-    annotations
+    annotations,
   };
 }

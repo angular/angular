@@ -114,9 +114,6 @@ export abstract class ChangeDetectorRef {
   static __NG_ELEMENT_ID__: () => ChangeDetectorRef = () => SWITCH_CHANGE_DETECTOR_REF_FACTORY();
 }
 
-
-
 export const SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ = render3InjectChangeDetectorRef;
 const SWITCH_CHANGE_DETECTOR_REF_FACTORY__PRE_R3__ = (...args: any[]): any => {};
-const SWITCH_CHANGE_DETECTOR_REF_FACTORY: typeof render3InjectChangeDetectorRef =
-    SWITCH_CHANGE_DETECTOR_REF_FACTORY__PRE_R3__;
+const SWITCH_CHANGE_DETECTOR_REF_FACTORY: typeof render3InjectChangeDetectorRef = SWITCH_CHANGE_DETECTOR_REF_FACTORY__PRE_R3__;

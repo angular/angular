@@ -12,7 +12,6 @@ import * as ts from 'typescript';
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
-
 /**
  * Metadata collected for an `NgModule`.
  */
@@ -29,7 +28,7 @@ export interface NgModuleMeta {
    * If this is `null`, then either no declarations exist, or no expression was available (likely
    * because the module came from a .d.ts file).
    */
-  rawDeclarations: ts.Expression|null;
+  rawDeclarations: ts.Expression | null;
 }
 
 /**
@@ -40,7 +39,7 @@ export interface DirectiveMeta extends T2DirectiveMeta {
   /**
    * Unparsed selector of the directive, or null if the directive does not have a selector.
    */
-  selector: string|null;
+  selector: string | null;
   queries: string[];
   ngTemplateGuards: TemplateGuardMeta[];
   hasNgTemplateContextGuard: boolean;
@@ -52,7 +51,7 @@ export interface DirectiveMeta extends T2DirectiveMeta {
    * A value of `'dynamic'` indicates that while the analyzer detected that this directive extends
    * another type, it could not statically determine the base class.
    */
-  baseClass: Reference<ClassDeclaration>|'dynamic'|null;
+  baseClass: Reference<ClassDeclaration> | 'dynamic' | null;
 }
 
 /**
@@ -71,7 +70,7 @@ export interface TemplateGuardMeta {
    *   type can result in narrowing of the input type.
    * - 'binding' means that the input binding expression itself is used as template guard.
    */
-  type: 'invocation'|'binding';
+  type: 'invocation' | 'binding';
 }
 
 /**
@@ -87,9 +86,9 @@ export interface PipeMeta {
  * or a registry.
  */
 export interface MetadataReader {
-  getDirectiveMetadata(node: Reference<ClassDeclaration>): DirectiveMeta|null;
-  getNgModuleMetadata(node: Reference<ClassDeclaration>): NgModuleMeta|null;
-  getPipeMetadata(node: Reference<ClassDeclaration>): PipeMeta|null;
+  getDirectiveMetadata(node: Reference<ClassDeclaration>): DirectiveMeta | null;
+  getNgModuleMetadata(node: Reference<ClassDeclaration>): NgModuleMeta | null;
+  getPipeMetadata(node: Reference<ClassDeclaration>): PipeMeta | null;
 }
 
 /**

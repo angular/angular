@@ -6,15 +6,42 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
+import {
+  AST,
+  AstVisitor,
+  ASTWithSource,
+  Binary,
+  BindingPipe,
+  Chain,
+  Conditional,
+  EmptyExpr,
+  FunctionCall,
+  ImplicitReceiver,
+  Interpolation,
+  KeyedRead,
+  KeyedWrite,
+  LiteralArray,
+  LiteralMap,
+  LiteralPrimitive,
+  MethodCall,
+  NonNullAssert,
+  PrefixNot,
+  PropertyRead,
+  PropertyWrite,
+  Quote,
+  SafeMethodCall,
+  SafePropertyRead,
+} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {TypeCheckingConfig} from './api';
 import {addParseSpanInfo, ignoreDiagnostics, wrapForDiagnostics} from './diagnostics';
 import {tsCastToAny} from './ts_util';
 
-export const NULL_AS_ANY =
-    ts.createAsExpression(ts.createNull(), ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+export const NULL_AS_ANY = ts.createAsExpression(
+  ts.createNull(),
+  ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)
+);
 const UNDEFINED = ts.createIdentifier('undefined');
 
 const BINARY_OPS = new Map<string, ts.SyntaxKind>([
@@ -42,16 +69,19 @@ const BINARY_OPS = new Map<string, ts.SyntaxKind>([
  * AST.
  */
 export function astToTypescript(
-    ast: AST, maybeResolve: (ast: AST) => (ts.Expression | null),
-    config: TypeCheckingConfig): ts.Expression {
+  ast: AST,
+  maybeResolve: (ast: AST) => ts.Expression | null,
+  config: TypeCheckingConfig
+): ts.Expression {
   const translator = new AstTranslator(maybeResolve, config);
   return translator.translate(ast);
 }
 
 class AstTranslator implements AstVisitor {
   constructor(
-      private maybeResolve: (ast: AST) => (ts.Expression | null),
-      private config: TypeCheckingConfig) {}
+    private maybeResolve: (ast: AST) => ts.Expression | null,
+    private config: TypeCheckingConfig
+  ) {}
 
   translate(ast: AST): ts.Expression {
     // Skip over an `ASTWithSource` as its `visit` method calls directly into its ast's `visit`,
@@ -87,7 +117,7 @@ class AstTranslator implements AstVisitor {
   }
 
   visitChain(ast: Chain): ts.Expression {
-    const elements = ast.expressions.map(expr => this.translate(expr));
+    const elements = ast.expressions.map((expr) => this.translate(expr));
     const node = wrapForDiagnostics(ts.createCommaList(elements));
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
@@ -104,7 +134,7 @@ class AstTranslator implements AstVisitor {
 
   visitFunctionCall(ast: FunctionCall): ts.Expression {
     const receiver = wrapForDiagnostics(this.translate(ast.target!));
-    const args = ast.args.map(expr => this.translate(expr));
+    const args = ast.args.map((expr) => this.translate(expr));
     const node = ts.createCall(receiver, undefined, args);
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
@@ -119,8 +149,9 @@ class AstTranslator implements AstVisitor {
     // interpolation's expressions. The chain is started using an actual string literal to ensure
     // the type is inferred as 'string'.
     return ast.expressions.reduce(
-        (lhs, ast) => ts.createBinary(lhs, ts.SyntaxKind.PlusToken, this.translate(ast)),
-        ts.createLiteral(''));
+      (lhs, ast) => ts.createBinary(lhs, ts.SyntaxKind.PlusToken, this.translate(ast)),
+      ts.createLiteral('')
+    );
   }
 
   visitKeyedRead(ast: KeyedRead): ts.Expression {
@@ -143,7 +174,7 @@ class AstTranslator implements AstVisitor {
   }
 
   visitLiteralArray(ast: LiteralArray): ts.Expression {
-    const elements = ast.expressions.map(expr => this.translate(expr));
+    const elements = ast.expressions.map((expr) => this.translate(expr));
     const literal = ts.createArrayLiteral(elements);
     // If strictLiteralTypes is disabled, array literals are cast to `any`.
     const node = this.config.strictLiteralTypes ? literal : tsCastToAny(literal);
@@ -179,7 +210,7 @@ class AstTranslator implements AstVisitor {
   visitMethodCall(ast: MethodCall): ts.Expression {
     const receiver = wrapForDiagnostics(this.translate(ast.receiver));
     const method = ts.createPropertyAccess(receiver, ast.name);
-    const args = ast.args.map(expr => this.translate(expr));
+    const args = ast.args.map((expr) => this.translate(expr));
     const node = ts.createCall(method, undefined, args);
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
@@ -231,7 +262,7 @@ class AstTranslator implements AstVisitor {
     // See the comments in SafePropertyRead above for an explanation of the cases here.
     let node: ts.Expression;
     const receiver = wrapForDiagnostics(this.translate(ast.receiver));
-    const args = ast.args.map(expr => this.translate(expr));
+    const args = ast.args.map((expr) => this.translate(expr));
     if (this.config.strictSafeNavigationTypes) {
       // "a?.method(...)" becomes (null as any ? a!.method(...) : undefined)
       const method = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
@@ -296,7 +327,7 @@ class AstTranslator implements AstVisitor {
 class VeSafeLhsInferenceBugDetector implements AstVisitor {
   private static SINGLETON = new VeSafeLhsInferenceBugDetector();
 
-  static veWillInferAnyFor(ast: SafeMethodCall|SafePropertyRead) {
+  static veWillInferAnyFor(ast: SafeMethodCall | SafePropertyRead) {
     return ast.receiver.visit(VeSafeLhsInferenceBugDetector.SINGLETON);
   }
 
@@ -316,7 +347,7 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
     return false;
   }
   visitInterpolation(ast: Interpolation): boolean {
-    return ast.expressions.some(exp => exp.visit(this));
+    return ast.expressions.some((exp) => exp.visit(this));
   }
   visitKeyedRead(ast: KeyedRead): boolean {
     return false;

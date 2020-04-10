@@ -8,12 +8,32 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, Declaration, Decorator, FunctionDefinition, isNamedVariableDeclaration, Parameter, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
-import {getNameText, getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, hasNameIdentifier} from '../utils';
+import {
+  ClassDeclaration,
+  ClassMember,
+  ClassMemberKind,
+  Declaration,
+  Decorator,
+  FunctionDefinition,
+  isNamedVariableDeclaration,
+  Parameter,
+  reflectObjectLiteral,
+} from '../../../src/ngtsc/reflection';
+import {
+  getNameText,
+  getTsHelperFnFromDeclaration,
+  getTsHelperFnFromIdentifier,
+  hasNameIdentifier,
+} from '../utils';
 
-import {Esm2015ReflectionHost, getPropertyValueFromSymbol, isAssignment, isAssignmentStatement, ParamInfo} from './esm2015_host';
+import {
+  Esm2015ReflectionHost,
+  getPropertyValueFromSymbol,
+  isAssignment,
+  isAssignmentStatement,
+  ParamInfo,
+} from './esm2015_host';
 import {NgccClassSymbol} from './ngcc_host';
-
 
 /**
  * ESM5 packages contain ECMAScript IIFE functions that act like classes. For example:
@@ -55,7 +75,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     return iife.parameters.length === 1 && isSuperIdentifier(iife.parameters[0].name);
   }
 
-  getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null {
+  getBaseClassExpression(clazz: ClassDeclaration): ts.Expression | null {
     const classSymbol = this.getClassSymbol(clazz);
     if (classSymbol === undefined) {
       return null;
@@ -81,13 +101,14 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   getInternalNameOfClass(clazz: ClassDeclaration): ts.Identifier {
     const innerClass = this.getInnerFunctionDeclarationFromClassDeclaration(clazz);
     if (innerClass === undefined) {
-      throw new Error(`getInternalNameOfClass() called on a non-ES5 class: expected ${
-          clazz.name.text} to have an inner class declaration`);
+      throw new Error(
+        `getInternalNameOfClass() called on a non-ES5 class: expected ${clazz.name.text} to have an inner class declaration`
+      );
     }
     if (innerClass.name === undefined) {
       throw new Error(
-          `getInternalNameOfClass() called on a class with an anonymous inner declaration: expected a name on:\n${
-              innerClass.getText()}`);
+        `getInternalNameOfClass() called on a class with an anonymous inner declaration: expected a name on:\n${innerClass.getText()}`
+      );
     }
     return innerClass.name;
   }
@@ -99,15 +120,20 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   getEndOfClass(classSymbol: NgccClassSymbol): ts.Node {
     const iifeBody = getIifeBody(classSymbol.declaration.valueDeclaration);
     if (!iifeBody) {
-      throw new Error(`Compiled class declaration is not inside an IIFE: ${classSymbol.name} in ${
-          classSymbol.declaration.valueDeclaration.getSourceFile().fileName}`);
+      throw new Error(
+        `Compiled class declaration is not inside an IIFE: ${classSymbol.name} in ${
+          classSymbol.declaration.valueDeclaration.getSourceFile().fileName
+        }`
+      );
     }
 
     const returnStatementIndex = iifeBody.statements.findIndex(ts.isReturnStatement);
     if (returnStatementIndex === -1) {
       throw new Error(
-          `Compiled class wrapper IIFE does not have a return statement: ${classSymbol.name} in ${
-              classSymbol.declaration.valueDeclaration.getSourceFile().fileName}`);
+        `Compiled class wrapper IIFE does not have a return statement: ${classSymbol.name} in ${
+          classSymbol.declaration.valueDeclaration.getSourceFile().fileName
+        }`
+      );
     }
 
     // Return the statement before the IIFE return statement
@@ -125,7 +151,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param declaration the declaration whose symbol we are finding.
    * @returns the symbol for the node or `undefined` if it is not a "class" or has no symbol.
    */
-  protected getClassSymbolFromOuterDeclaration(declaration: ts.Node): NgccClassSymbol|undefined {
+  protected getClassSymbolFromOuterDeclaration(declaration: ts.Node): NgccClassSymbol | undefined {
     const classSymbol = super.getClassSymbolFromOuterDeclaration(declaration);
     if (classSymbol !== undefined) {
       return classSymbol;
@@ -154,7 +180,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param declaration the declaration whose symbol we are finding.
    * @returns the symbol for the node or `undefined` if it is not a "class" or has no symbol.
    */
-  protected getClassSymbolFromInnerDeclaration(declaration: ts.Node): NgccClassSymbol|undefined {
+  protected getClassSymbolFromInnerDeclaration(declaration: ts.Node): NgccClassSymbol | undefined {
     const classSymbol = super.getClassSymbolFromInnerDeclaration(declaration);
     if (classSymbol !== undefined) {
       return classSymbol;
@@ -189,7 +215,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @returns metadata about the `Declaration` if the original declaration is found, or `null`
    * otherwise.
    */
-  getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
+  getDeclarationOfIdentifier(id: ts.Identifier): Declaration | null {
     const superDeclaration = super.getDeclarationOfIdentifier(id);
 
     if (superDeclaration === null) {
@@ -208,24 +234,31 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       }
     }
 
-    if (superDeclaration === null || superDeclaration.node === null ||
-        superDeclaration.known !== null) {
+    if (
+      superDeclaration === null ||
+      superDeclaration.node === null ||
+      superDeclaration.known !== null
+    ) {
       return superDeclaration;
     }
 
     // Get the identifier for the outer class node (if any).
     const outerClassNode = getClassDeclarationFromInnerFunctionDeclaration(superDeclaration.node);
-    const declaration = outerClassNode !== null ?
-        super.getDeclarationOfIdentifier(outerClassNode.name) :
-        superDeclaration;
+    const declaration =
+      outerClassNode !== null
+        ? super.getDeclarationOfIdentifier(outerClassNode.name)
+        : superDeclaration;
 
     if (declaration === null || declaration.node === null || declaration.known !== null) {
       return declaration;
     }
 
-    if (!ts.isVariableDeclaration(declaration.node) || declaration.node.initializer !== undefined ||
-        // VariableDeclaration => VariableDeclarationList => VariableStatement => IIFE Block
-        !ts.isBlock(declaration.node.parent.parent.parent)) {
+    if (
+      !ts.isVariableDeclaration(declaration.node) ||
+      declaration.node.initializer !== undefined ||
+      // VariableDeclaration => VariableDeclarationList => VariableStatement => IIFE Block
+      !ts.isBlock(declaration.node.parent.parent.parent)
+    ) {
       return declaration;
     }
 
@@ -236,9 +269,12 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     for (let i = 0; i < block.statements.length; i++) {
       const statement = block.statements[i];
       // Looking for statement that looks like: `AliasedVariable = OriginalVariable;`
-      if (isAssignmentStatement(statement) && ts.isIdentifier(statement.expression.left) &&
-          ts.isIdentifier(statement.expression.right) &&
-          this.checker.getSymbolAtLocation(statement.expression.left) === aliasSymbol) {
+      if (
+        isAssignmentStatement(statement) &&
+        ts.isIdentifier(statement.expression.left) &&
+        ts.isIdentifier(statement.expression.right) &&
+        this.checker.getSymbolAtLocation(statement.expression.left) === aliasSymbol
+      ) {
         return this.getDeclarationOfIdentifier(statement.expression.right);
       }
     }
@@ -256,22 +292,30 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param node the function declaration to parse.
    * @returns an object containing the node, statements and parameters of the function.
    */
-  getDefinitionOfFunction(node: ts.Node): FunctionDefinition|null {
-    if (!ts.isFunctionDeclaration(node) && !ts.isMethodDeclaration(node) &&
-        !ts.isFunctionExpression(node)) {
+  getDefinitionOfFunction(node: ts.Node): FunctionDefinition | null {
+    if (
+      !ts.isFunctionDeclaration(node) &&
+      !ts.isMethodDeclaration(node) &&
+      !ts.isFunctionExpression(node)
+    ) {
       return null;
     }
 
-    const parameters =
-        node.parameters.map(p => ({name: getNameText(p.name), node: p, initializer: null}));
+    const parameters = node.parameters.map((p) => ({
+      name: getNameText(p.name),
+      node: p,
+      initializer: null,
+    }));
     let lookingForParamInitializers = true;
 
-    const statements = node.body && node.body.statements.filter(s => {
-      lookingForParamInitializers =
+    const statements =
+      node.body &&
+      node.body.statements.filter((s) => {
+        lookingForParamInitializers =
           lookingForParamInitializers && reflectParamInitializer(s, parameters);
-      // If we are no longer looking for parameter initializers then we include this statement
-      return !lookingForParamInitializers;
-    });
+        // If we are no longer looking for parameter initializers then we include this statement
+        return !lookingForParamInitializers;
+      });
 
     return {node, body: statements || null, parameters};
   }
@@ -285,8 +329,8 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    */
   detectKnownDeclaration(decl: null): null;
   detectKnownDeclaration<T extends Declaration>(decl: T): T;
-  detectKnownDeclaration<T extends Declaration>(decl: T|null): T|null;
-  detectKnownDeclaration<T extends Declaration>(decl: T|null): T|null {
+  detectKnownDeclaration<T extends Declaration>(decl: T | null): T | null;
+  detectKnownDeclaration<T extends Declaration>(decl: T | null): T | null {
     decl = super.detectKnownDeclaration(decl);
 
     if (decl !== null && decl.known === null && decl.node !== null) {
@@ -295,7 +339,6 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
 
     return decl;
   }
-
 
   ///////////// Protected Helpers /////////////
 
@@ -312,8 +355,9 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param checker the TS program TypeChecker
    * @returns the inner function declaration or `undefined` if it is not a "class".
    */
-  protected getInnerFunctionDeclarationFromClassDeclaration(decl: ts.Declaration):
-      ts.FunctionDeclaration|undefined {
+  protected getInnerFunctionDeclarationFromClassDeclaration(
+    decl: ts.Declaration
+  ): ts.FunctionDeclaration | undefined {
     // Extract the IIFE body (if any).
     const iifeBody = getIifeBody(decl);
     if (!iifeBody) return undefined;
@@ -325,7 +369,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     // Extract the return identifier of the IIFE.
     const returnIdentifier = getReturnIdentifier(iifeBody);
     const returnIdentifierSymbol =
-        returnIdentifier && this.checker.getSymbolAtLocation(returnIdentifier);
+      returnIdentifier && this.checker.getSymbolAtLocation(returnIdentifier);
     if (!returnIdentifierSymbol) return undefined;
 
     // Verify that the inner function is returned.
@@ -346,8 +390,9 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @returns an array of `ts.ParameterDeclaration` objects representing each of the parameters in
    * the class's constructor or `null` if there is no constructor.
    */
-  protected getConstructorParameterDeclarations(classSymbol: NgccClassSymbol):
-      ts.ParameterDeclaration[]|null {
+  protected getConstructorParameterDeclarations(
+    classSymbol: NgccClassSymbol
+  ): ts.ParameterDeclaration[] | null {
     const constructor = classSymbol.implementation.valueDeclaration;
     if (!ts.isFunctionDeclaration(constructor)) return null;
 
@@ -384,25 +429,27 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param paramDecoratorsProperty the property that holds the parameter info we want to get.
    * @returns an array of objects containing the type and decorators for each parameter.
    */
-  protected getParamInfoFromStaticProperty(paramDecoratorsProperty: ts.Symbol): ParamInfo[]|null {
+  protected getParamInfoFromStaticProperty(paramDecoratorsProperty: ts.Symbol): ParamInfo[] | null {
     const paramDecorators = getPropertyValueFromSymbol(paramDecoratorsProperty);
     // The decorators array may be wrapped in a function. If so unwrap it.
     const returnStatement = getReturnStatement(paramDecorators);
     const expression = returnStatement ? returnStatement.expression : paramDecorators;
     if (expression && ts.isArrayLiteralExpression(expression)) {
       const elements = expression.elements;
-      return elements.map(reflectArrayElement).map(paramInfo => {
+      return elements.map(reflectArrayElement).map((paramInfo) => {
         const typeExpression = paramInfo && paramInfo.has('type') ? paramInfo.get('type')! : null;
         const decoratorInfo =
-            paramInfo && paramInfo.has('decorators') ? paramInfo.get('decorators')! : null;
+          paramInfo && paramInfo.has('decorators') ? paramInfo.get('decorators')! : null;
         const decorators = decoratorInfo && this.reflectDecorators(decoratorInfo);
         return {typeExpression, decorators};
       });
     } else if (paramDecorators !== undefined) {
       this.logger.warn(
-          'Invalid constructor parameter decorator in ' + paramDecorators.getSourceFile().fileName +
-              ':\n',
-          paramDecorators.getText());
+        'Invalid constructor parameter decorator in ' +
+          paramDecorators.getSourceFile().fileName +
+          ':\n',
+        paramDecorators.getText()
+      );
     }
     return null;
   }
@@ -420,9 +467,12 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param isStatic true if this member is static, false if it is an instance property.
    * @returns the reflected member information, or null if the symbol is not a member.
    */
-  protected reflectMembers(symbol: ts.Symbol, decorators?: Decorator[], isStatic?: boolean):
-      ClassMember[]|null {
-    const node = symbol.valueDeclaration || symbol.declarations && symbol.declarations[0];
+  protected reflectMembers(
+    symbol: ts.Symbol,
+    decorators?: Decorator[],
+    isStatic?: boolean
+  ): ClassMember[] | null {
+    const node = symbol.valueDeclaration || (symbol.declarations && symbol.declarations[0]);
     const propertyDefinition = node && getPropertyDefinition(node);
     if (propertyDefinition) {
       const members: ClassMember[] = [];
@@ -461,17 +511,24 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     }
 
     const members = super.reflectMembers(symbol, decorators, isStatic);
-    members && members.forEach(member => {
-      if (member && member.kind === ClassMemberKind.Method && member.isStatic && member.node &&
-          ts.isPropertyAccessExpression(member.node) && member.node.parent &&
+    members &&
+      members.forEach((member) => {
+        if (
+          member &&
+          member.kind === ClassMemberKind.Method &&
+          member.isStatic &&
+          member.node &&
+          ts.isPropertyAccessExpression(member.node) &&
+          member.node.parent &&
           ts.isBinaryExpression(member.node.parent) &&
-          ts.isFunctionExpression(member.node.parent.right)) {
-        // Recompute the implementation for this member:
-        // ES5 static methods are variable declarations so the declaration is actually the
-        // initializer of the variable assignment
-        member.implementation = member.node.parent.right;
-      }
-    });
+          ts.isFunctionExpression(member.node.parent.right)
+        ) {
+          // Recompute the implementation for this member:
+          // ES5 static methods are variable declarations so the declaration is actually the
+          // initializer of the variable assignment
+          member.implementation = member.node.parent.right;
+        }
+      });
     return members;
   }
 
@@ -501,8 +558,10 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param propertyName the name of static property.
    * @returns the symbol if it is found or `undefined` if not.
    */
-  protected getStaticProperty(symbol: NgccClassSymbol, propertyName: ts.__String): ts.Symbol
-      |undefined {
+  protected getStaticProperty(
+    symbol: NgccClassSymbol,
+    propertyName: ts.__String
+  ): ts.Symbol | undefined {
     // First lets see if the static property can be resolved from the inner class symbol.
     const prop = symbol.implementation.exports && symbol.implementation.exports.get(propertyName);
     if (prop !== undefined) {
@@ -520,8 +579,8 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
  * Represents the details about property definitions that were set using `Object.defineProperty`.
  */
 interface PropertyDefinition {
-  setter: ts.FunctionExpression|null;
-  getter: ts.FunctionExpression|null;
+  setter: ts.FunctionExpression | null;
+  getter: ts.FunctionExpression | null;
 }
 
 /**
@@ -547,12 +606,16 @@ interface PropertyDefinition {
  * @param node The node to obtain the property definition from.
  * @returns The property definition if the node corresponds with accessor, null otherwise.
  */
-function getPropertyDefinition(node: ts.Node): PropertyDefinition|null {
+function getPropertyDefinition(node: ts.Node): PropertyDefinition | null {
   if (!ts.isCallExpression(node)) return null;
 
   const fn = node.expression;
-  if (!ts.isPropertyAccessExpression(fn) || !ts.isIdentifier(fn.expression) ||
-      fn.expression.text !== 'Object' || fn.name.text !== 'defineProperty')
+  if (
+    !ts.isPropertyAccessExpression(fn) ||
+    !ts.isIdentifier(fn.expression) ||
+    fn.expression.text !== 'Object' ||
+    fn.name.text !== 'defineProperty'
+  )
     return null;
 
   const descriptor = node.arguments[2];
@@ -566,10 +629,13 @@ function getPropertyDefinition(node: ts.Node): PropertyDefinition|null {
 
 function readPropertyFunctionExpression(object: ts.ObjectLiteralExpression, name: string) {
   const property = object.properties.find(
-      (p): p is ts.PropertyAssignment =>
-          ts.isPropertyAssignment(p) && ts.isIdentifier(p.name) && p.name.text === name);
+    (p): p is ts.PropertyAssignment =>
+      ts.isPropertyAssignment(p) && ts.isIdentifier(p.name) && p.name.text === name
+  );
 
-  return property && ts.isFunctionExpression(property.initializer) && property.initializer || null;
+  return (
+    (property && ts.isFunctionExpression(property.initializer) && property.initializer) || null
+  );
 }
 
 /**
@@ -585,8 +651,9 @@ function readPropertyFunctionExpression(object: ts.ObjectLiteralExpression, name
  * @param node a node that could be the function expression inside an ES5 class IIFE.
  * @returns the outer variable declaration or `undefined` if it is not a "class".
  */
-function getClassDeclarationFromInnerFunctionDeclaration(node: ts.Node):
-    ClassDeclaration<ts.VariableDeclaration>|null {
+function getClassDeclarationFromInnerFunctionDeclaration(
+  node: ts.Node
+): ClassDeclaration<ts.VariableDeclaration> | null {
   if (ts.isFunctionDeclaration(node)) {
     // It might be the function expression inside the IIFE. We need to go 5 levels up...
 
@@ -617,7 +684,7 @@ function getClassDeclarationFromInnerFunctionDeclaration(node: ts.Node):
   return null;
 }
 
-export function getIifeBody(declaration: ts.Declaration): ts.Block|undefined {
+export function getIifeBody(declaration: ts.Declaration): ts.Block | undefined {
   if (!ts.isVariableDeclaration(declaration) || !declaration.initializer) {
     return undefined;
   }
@@ -643,7 +710,7 @@ export function getIifeBody(declaration: ts.Declaration): ts.Block|undefined {
   return fn.body;
 }
 
-function getReturnIdentifier(body: ts.Block): ts.Identifier|undefined {
+function getReturnIdentifier(body: ts.Block): ts.Identifier | undefined {
   const returnStatement = body.statements.find(ts.isReturnStatement);
   if (!returnStatement || !returnStatement.expression) {
     return undefined;
@@ -651,17 +718,21 @@ function getReturnIdentifier(body: ts.Block): ts.Identifier|undefined {
   if (ts.isIdentifier(returnStatement.expression)) {
     return returnStatement.expression;
   }
-  if (isAssignment(returnStatement.expression) &&
-      ts.isIdentifier(returnStatement.expression.left)) {
+  if (
+    isAssignment(returnStatement.expression) &&
+    ts.isIdentifier(returnStatement.expression.left)
+  ) {
     return returnStatement.expression.left;
   }
   return undefined;
 }
 
-function getReturnStatement(declaration: ts.Expression|undefined): ts.ReturnStatement|undefined {
-  return declaration && ts.isFunctionExpression(declaration) ?
-      declaration.body.statements.find(ts.isReturnStatement) :
-      undefined;
+function getReturnStatement(
+  declaration: ts.Expression | undefined
+): ts.ReturnStatement | undefined {
+  return declaration && ts.isFunctionExpression(declaration)
+    ? declaration.body.statements.find(ts.isReturnStatement)
+    : undefined;
 }
 
 function reflectArrayElement(element: ts.Expression) {
@@ -695,8 +766,10 @@ function isSynthesizedConstructor(constructor: ts.FunctionDeclaration): boolean 
   const firstStatement = constructor.body.statements[0];
   if (!firstStatement) return false;
 
-  return isSynthesizedSuperThisAssignment(firstStatement) ||
-      isSynthesizedSuperReturnStatement(firstStatement);
+  return (
+    isSynthesizedSuperThisAssignment(firstStatement) ||
+    isSynthesizedSuperReturnStatement(firstStatement)
+  );
 }
 
 /**
@@ -716,8 +789,10 @@ function isSynthesizedSuperThisAssignment(statement: ts.Statement): boolean {
   if (variableDeclarations.length !== 1) return false;
 
   const variableDeclaration = variableDeclarations[0];
-  if (!ts.isIdentifier(variableDeclaration.name) ||
-      !variableDeclaration.name.text.startsWith('_this'))
+  if (
+    !ts.isIdentifier(variableDeclaration.name) ||
+    !variableDeclaration.name.text.startsWith('_this')
+  )
     return false;
 
   const initializer = variableDeclaration.initializer;
@@ -768,8 +843,10 @@ function isSynthesizedDefaultSuperCall(expression: ts.Expression): boolean {
 }
 
 function isSuperNotNull(expression: ts.Expression): boolean {
-  return isBinaryExpr(expression, ts.SyntaxKind.ExclamationEqualsEqualsToken) &&
-      isSuperIdentifier(expression.left);
+  return (
+    isBinaryExpr(expression, ts.SyntaxKind.ExclamationEqualsEqualsToken) &&
+    isSuperIdentifier(expression.left)
+  );
 }
 
 /**
@@ -798,7 +875,9 @@ function isSuperApplyCall(expression: ts.Expression): boolean {
 }
 
 function isBinaryExpr(
-    expression: ts.Expression, operator: ts.BinaryOperator): expression is ts.BinaryExpression {
+  expression: ts.Expression,
+  operator: ts.BinaryOperator
+): expression is ts.BinaryExpression {
   return ts.isBinaryExpression(expression) && expression.operatorToken.kind === operator;
 }
 
@@ -824,15 +903,19 @@ function isSuperIdentifier(node: ts.Node): boolean {
  * @returns true if the statement was a parameter initializer
  */
 function reflectParamInitializer(statement: ts.Statement, parameters: Parameter[]) {
-  if (ts.isIfStatement(statement) && isUndefinedComparison(statement.expression) &&
-      ts.isBlock(statement.thenStatement) && statement.thenStatement.statements.length === 1) {
-    const ifStatementComparison = statement.expression;           // (arg === void 0)
-    const thenStatement = statement.thenStatement.statements[0];  // arg = initializer;
+  if (
+    ts.isIfStatement(statement) &&
+    isUndefinedComparison(statement.expression) &&
+    ts.isBlock(statement.thenStatement) &&
+    statement.thenStatement.statements.length === 1
+  ) {
+    const ifStatementComparison = statement.expression; // (arg === void 0)
+    const thenStatement = statement.thenStatement.statements[0]; // arg = initializer;
     if (isAssignmentStatement(thenStatement)) {
       const comparisonName = ifStatementComparison.left.text;
       const assignmentName = thenStatement.expression.left.text;
       if (comparisonName === assignmentName) {
-        const parameter = parameters.find(p => p.name === comparisonName);
+        const parameter = parameters.find((p) => p.name === comparisonName);
         if (parameter) {
           parameter.initializer = thenStatement.expression.right;
           return true;
@@ -843,11 +926,15 @@ function reflectParamInitializer(statement: ts.Statement, parameters: Parameter[
   return false;
 }
 
-function isUndefinedComparison(expression: ts.Expression): expression is ts.Expression&
-    {left: ts.Identifier, right: ts.Expression} {
-  return ts.isBinaryExpression(expression) &&
-      expression.operatorToken.kind === ts.SyntaxKind.EqualsEqualsEqualsToken &&
-      ts.isVoidExpression(expression.right) && ts.isIdentifier(expression.left);
+function isUndefinedComparison(
+  expression: ts.Expression
+): expression is ts.Expression & {left: ts.Identifier; right: ts.Expression} {
+  return (
+    ts.isBinaryExpression(expression) &&
+    expression.operatorToken.kind === ts.SyntaxKind.EqualsEqualsEqualsToken &&
+    ts.isVoidExpression(expression.right) &&
+    ts.isIdentifier(expression.left)
+  );
 }
 
 export function stripParentheses(node: ts.Node): ts.Node {

@@ -9,13 +9,13 @@
 import {computeLineStartsMap, getLineAndCharacterFromPosition} from '../utils/line_mappings';
 
 describe('line mappings', () => {
-
-  it('should properly compute line starts',
-     () => {
-       expect(computeLineStartsMap(`
+  it('should properly compute line starts', () => {
+    expect(
+      computeLineStartsMap(`
       1
-      2`)).toEqual([0, 1, 9, 16]);
-     });
+      2`)
+    ).toEqual([0, 1, 9, 16]);
+  });
 
   it('should properly get line and character from line starts', () => {
     const lineStarts = computeLineStartsMap(`

@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {createHash} from 'crypto';
 import {satisfies} from 'semver';
 import * as vm from 'vm';
@@ -34,7 +35,7 @@ export interface NgccPackageConfig {
    * but when being read back from the `NgccConfiguration` service, these paths
    * will be absolute.
    */
-  entryPoints: {[entryPointPath: string]: NgccEntryPointConfig;};
+  entryPoints: {[entryPointPath: string]: NgccEntryPointConfig};
   /**
    * A collection of regexes that match deep imports to ignore, for this package, rather than
    * displaying a warning.
@@ -177,14 +178,16 @@ export class NgccConfiguration {
    * @param version The version of the package whose config we want, or `null` if the package's
    * package.json did not exist or was invalid.
    */
-  getConfig(packagePath: AbsoluteFsPath, version: string|null): VersionedPackageConfig {
+  getConfig(packagePath: AbsoluteFsPath, version: string | null): VersionedPackageConfig {
     const cacheKey = packagePath + (version !== null ? `@${version}` : '');
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey)!;
     }
 
-    const projectLevelConfig =
-        findSatisfactoryVersion(this.projectConfig.packages[packagePath], version);
+    const projectLevelConfig = findSatisfactoryVersion(
+      this.projectConfig.packages[packagePath],
+      version
+    );
     if (projectLevelConfig !== null) {
       this.cache.set(cacheKey, projectLevelConfig);
       return projectLevelConfig;
@@ -196,8 +199,10 @@ export class NgccConfiguration {
       return packageLevelConfig;
     }
 
-    const defaultLevelConfig =
-        findSatisfactoryVersion(this.defaultConfig.packages[packagePath], version);
+    const defaultLevelConfig = findSatisfactoryVersion(
+      this.defaultConfig.packages[packagePath],
+      version
+    );
     if (defaultLevelConfig !== null) {
       this.cache.set(cacheKey, defaultLevelConfig);
       return defaultLevelConfig;
@@ -206,8 +211,10 @@ export class NgccConfiguration {
     return {versionRange: '*', entryPoints: {}};
   }
 
-  private processProjectConfig(baseDir: AbsoluteFsPath, projectConfig: NgccProjectConfig):
-      NgccProjectConfig<VersionedPackageConfig[]> {
+  private processProjectConfig(
+    baseDir: AbsoluteFsPath,
+    projectConfig: NgccProjectConfig
+  ): NgccProjectConfig<VersionedPackageConfig[]> {
     const processedConfig: NgccProjectConfig<VersionedPackageConfig[]> = {packages: {}};
     for (const packagePathAndVersion in projectConfig.packages) {
       const packageConfig = projectConfig.packages[packagePathAndVersion];
@@ -216,8 +223,11 @@ export class NgccConfiguration {
         const absPackagePath = resolve(baseDir, 'node_modules', packagePath);
         const entryPoints = this.processEntryPoints(absPackagePath, packageConfig);
         processedConfig.packages[absPackagePath] = processedConfig.packages[absPackagePath] || [];
-        processedConfig.packages[absPackagePath].push(
-            {...packageConfig, versionRange, entryPoints});
+        processedConfig.packages[absPackagePath].push({
+          ...packageConfig,
+          versionRange,
+          entryPoints,
+        });
       }
     }
     return processedConfig;
@@ -236,8 +246,10 @@ export class NgccConfiguration {
     }
   }
 
-  private loadPackageConfig(packagePath: AbsoluteFsPath, version: string|null):
-      VersionedPackageConfig|null {
+  private loadPackageConfig(
+    packagePath: AbsoluteFsPath,
+    version: string | null
+  ): VersionedPackageConfig | null {
     const configFilePath = join(packagePath, NGCC_CONFIG_FILENAME);
     if (this.fs.exists(configFilePath)) {
       try {
@@ -263,33 +275,35 @@ export class NgccConfiguration {
       exports: theExports,
       require,
       __dirname: dirname(srcPath),
-      __filename: srcPath
+      __filename: srcPath,
     };
     vm.runInNewContext(src, sandbox, {filename: srcPath});
     return sandbox.module.exports;
   }
 
-  private processEntryPoints(packagePath: AbsoluteFsPath, packageConfig: NgccPackageConfig):
-      {[entryPointPath: string]: NgccEntryPointConfig;} {
-    const processedEntryPoints: {[entryPointPath: string]: NgccEntryPointConfig;} = {};
+  private processEntryPoints(
+    packagePath: AbsoluteFsPath,
+    packageConfig: NgccPackageConfig
+  ): {[entryPointPath: string]: NgccEntryPointConfig} {
+    const processedEntryPoints: {[entryPointPath: string]: NgccEntryPointConfig} = {};
     for (const entryPointPath in packageConfig.entryPoints) {
       // Change the keys to be absolute paths
       processedEntryPoints[resolve(packagePath, entryPointPath)] =
-          packageConfig.entryPoints[entryPointPath];
+        packageConfig.entryPoints[entryPointPath];
     }
     return processedEntryPoints;
   }
 
-  private splitPathAndVersion(packagePathAndVersion: string): [string, string|undefined] {
+  private splitPathAndVersion(packagePathAndVersion: string): [string, string | undefined] {
     const versionIndex = packagePathAndVersion.lastIndexOf('@');
     // Note that > 0 is because we don't want to match @ at the start of the line
     // which is what you would have with a namespaced package, e.g. `@angular/common`.
-    return versionIndex > 0 ?
-        [
+    return versionIndex > 0
+      ? [
           packagePathAndVersion.substring(0, versionIndex),
-          packagePathAndVersion.substring(versionIndex + 1)
-        ] :
-        [packagePathAndVersion, undefined];
+          packagePathAndVersion.substring(versionIndex + 1),
+        ]
+      : [packagePathAndVersion, undefined];
   }
 
   private computeHash(): string {
@@ -297,8 +311,10 @@ export class NgccConfiguration {
   }
 }
 
-function findSatisfactoryVersion(configs: VersionedPackageConfig[]|undefined, version: string|null):
-    VersionedPackageConfig|null {
+function findSatisfactoryVersion(
+  configs: VersionedPackageConfig[] | undefined,
+  version: string | null
+): VersionedPackageConfig | null {
   if (configs === undefined) {
     return null;
   }
@@ -308,7 +324,8 @@ function findSatisfactoryVersion(configs: VersionedPackageConfig[]|undefined, ve
     // So just return the first config that matches the package name.
     return configs[0];
   }
-  return configs.find(
-             config => satisfies(version, config.versionRange, {includePrerelease: true})) ||
-      null;
+  return (
+    configs.find((config) => satisfies(version, config.versionRange, {includePrerelease: true})) ||
+    null
+  );
 }

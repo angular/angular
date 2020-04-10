@@ -5,20 +5,27 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AnimationMetadata, animate, style} from '@angular/animations';
 
-import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
+import {
+  AnimationStyleNormalizer,
+  NoopAnimationStyleNormalizer,
+} from '../../src/dsl/style_normalization/animation_style_normalizer';
 import {AnimationDriver} from '../../src/render/animation_driver';
 import {getBodyNode} from '../../src/render/shared';
 import {TimelineAnimationEngine} from '../../src/render/timeline_animation_engine';
 import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_animation_driver';
 
-(function() {
+(function () {
   const defaultDriver = new MockAnimationDriver();
 
   function makeEngine(body: any, driver?: AnimationDriver, normalizer?: AnimationStyleNormalizer) {
     return new TimelineAnimationEngine(
-        body, driver || defaultDriver, normalizer || new NoopAnimationStyleNormalizer());
+      body,
+      driver || defaultDriver,
+      normalizer || new NoopAnimationStyleNormalizer()
+    );
   }
 
   // these tests are only mean't to be run within the DOM
@@ -48,7 +55,9 @@ import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_a
 
       const log: string[] = [];
       function capture(value: string) {
-        return () => { log.push(value); };
+        return () => {
+          log.push(value);
+        };
       }
 
       const steps = [style({height: 0}), animate(1000, style({height: 500}))];
@@ -65,59 +74,64 @@ import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_a
       expect(log).toEqual(['done', 'destroy']);
     });
 
-    it('should normalize the style values that are animateTransitioned within an a timeline animation',
-       () => {
-         const engine =
-             makeEngine(getBodyNode(), defaultDriver, new SuffixNormalizer('-normalized'));
+    it('should normalize the style values that are animateTransitioned within an a timeline animation', () => {
+      const engine = makeEngine(getBodyNode(), defaultDriver, new SuffixNormalizer('-normalized'));
 
-         const steps = [
-           style({width: '333px'}),
-           animate(1000, style({width: '999px'})),
-         ];
+      const steps = [style({width: '333px'}), animate(1000, style({width: '999px'}))];
 
-         const player = invokeAnimation(engine, element, steps) as MockAnimationPlayer;
-         expect(player.keyframes).toEqual([
-           {'width-normalized': '333px-normalized', offset: 0},
-           {'width-normalized': '999px-normalized', offset: 1}
-         ]);
-       });
+      const player = invokeAnimation(engine, element, steps) as MockAnimationPlayer;
+      expect(player.keyframes).toEqual([
+        {'width-normalized': '333px-normalized', offset: 0},
+        {'width-normalized': '999px-normalized', offset: 1},
+      ]);
+    });
 
     it('should normalize `*` values', () => {
       const driver = new SuperMockDriver();
       const engine = makeEngine(getBodyNode(), driver);
 
-      const steps = [
-        style({width: '*'}),
-        animate(1000, style({width: '999px'})),
-      ];
+      const steps = [style({width: '*'}), animate(1000, style({width: '999px'}))];
 
       const player = invokeAnimation(engine, element, steps) as MockAnimationPlayer;
-      expect(player.keyframes).toEqual([{width: '*star*', offset: 0}, {width: '999px', offset: 1}]);
+      expect(player.keyframes).toEqual([
+        {width: '*star*', offset: 0},
+        {width: '999px', offset: 1},
+      ]);
     });
   });
 })();
 
 function invokeAnimation(
-    engine: TimelineAnimationEngine, element: any, steps: AnimationMetadata | AnimationMetadata[],
-    id: string = 'id') {
+  engine: TimelineAnimationEngine,
+  element: any,
+  steps: AnimationMetadata | AnimationMetadata[],
+  id: string = 'id'
+) {
   engine.register(id, steps);
   return engine.create(id, element);
 }
 
 class SuffixNormalizer extends AnimationStyleNormalizer {
-  constructor(private _suffix: string) { super(); }
+  constructor(private _suffix: string) {
+    super();
+  }
 
   normalizePropertyName(propertyName: string, errors: string[]): string {
     return propertyName + this._suffix;
   }
 
   normalizeStyleValue(
-      userProvidedProperty: string, normalizedProperty: string, value: string|number,
-      errors: string[]): string {
+    userProvidedProperty: string,
+    normalizedProperty: string,
+    value: string | number,
+    errors: string[]
+  ): string {
     return value + this._suffix;
   }
 }
 
 class SuperMockDriver extends MockAnimationDriver {
-  computeStyle(element: any, prop: string, defaultValue?: string): string { return '*star*'; }
+  computeStyle(element: any, prop: string, defaultValue?: string): string {
+    return '*star*';
+  }
 }

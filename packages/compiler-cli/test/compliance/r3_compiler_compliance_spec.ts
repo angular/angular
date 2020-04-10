@@ -10,7 +10,6 @@ import {AttributeMarker} from '@angular/compiler/src/core';
 import {setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
-
 /**
  * These tests are codified version of the tests in compiler_canonical_spec.ts. Every
  * test in compiler_canonical_spec.ts should have a corresponding test here.
@@ -37,19 +36,18 @@ describe('compiler compliance', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       // The factory should look like this:
       const factory =
-          'MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
+        'MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
         …
-        consts: [["title", "Hello", ${
-          AttributeMarker.Classes}, "my-app"], ["cx", "20", "cy", "30", "r", "50"]],
+        consts: [["title", "Hello", ${AttributeMarker.Classes}, "my-app"], ["cx", "20", "cy", "30", "r", "50"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div", 0);
@@ -65,7 +63,6 @@ describe('compiler compliance', () => {
           }
         }
       `;
-
 
       const result = compile(files, angularFiles);
 
@@ -87,13 +84,13 @@ describe('compiler compliance', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       // The factory should look like this:
       const factory =
-          'MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
+        'MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
@@ -115,7 +112,6 @@ describe('compiler compliance', () => {
         }
       `;
 
-
       const result = compile(files, angularFiles);
       expectEmit(result.source, factory, 'Incorrect factory');
       expectEmit(result.source, template, 'Incorrect template');
@@ -135,13 +131,13 @@ describe('compiler compliance', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       // The factory should look like this:
       const factory =
-          'MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
+        'MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
@@ -159,7 +155,6 @@ describe('compiler compliance', () => {
           }
         }
       `;
-
 
       const result = compile(files, angularFiles);
 
@@ -183,13 +178,13 @@ describe('compiler compliance', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-        }
+            `,
+        },
       };
 
       // The factory should look like this:
       const factory =
-          'MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
+        'MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
@@ -207,7 +202,6 @@ describe('compiler compliance', () => {
             }
           }
         `;
-
 
       const result = compile(files, angularFiles);
 
@@ -229,8 +223,8 @@ describe('compiler compliance', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       // The template should look like this (where IDENT is a wild card for an identifier):
@@ -266,8 +260,8 @@ describe('compiler compliance', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       // The template should look like this (where IDENT is a wild card for an identifier):
@@ -300,12 +294,12 @@ describe('compiler compliance', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const factory =
-          'MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
+        'MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
       const template = `
         …
         consts: [[${AttributeMarker.Bindings}, "id"]],
@@ -318,7 +312,6 @@ describe('compiler compliance', () => {
           }
         }
       `;
-
 
       const result = compile(files, angularFiles);
 
@@ -347,8 +340,8 @@ describe('compiler compliance', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       ///////////////
@@ -360,7 +353,7 @@ describe('compiler compliance', () => {
       ///////////////
 
       const factory =
-          'MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
+        'MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
       const template = `
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -372,7 +365,6 @@ describe('compiler compliance', () => {
           }
         }
       `;
-
 
       const result = compile(files, angularFiles);
 
@@ -422,8 +414,8 @@ describe('compiler compliance', () => {
               declarations: [MyComponent]
             })
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const hostBindingsDef = `
@@ -468,12 +460,12 @@ describe('compiler compliance', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const factory =
-          'MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
+        'MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
       const template = `
         MyComponent.ɵcmp = i0.ɵɵdefineComponent({type:MyComponent,selectors:[["my-component"]],
             decls: 1,
@@ -490,7 +482,6 @@ describe('compiler compliance', () => {
             encapsulation: 2
         });
       `;
-
 
       const result = compile(files, angularFiles);
 
@@ -516,8 +507,8 @@ describe('compiler compliance', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const template = `
@@ -531,7 +522,6 @@ describe('compiler compliance', () => {
           …
         }
       `;
-
 
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect template');
@@ -556,8 +546,8 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [ChildComponent, SomeDirective, MyComponent]})
             export class MyModule{}
-          `
-        }
+          `,
+        },
       };
 
       // ChildComponent definition should be:
@@ -575,8 +565,7 @@ describe('compiler compliance', () => {
           encapsulation: 2
         });`;
 
-      const ChildComponentFactory =
-          `ChildComponent.ɵfac = function ChildComponent_Factory(t) { return new (t || ChildComponent)(); };`;
+      const ChildComponentFactory = `ChildComponent.ɵfac = function ChildComponent_Factory(t) { return new (t || ChildComponent)(); };`;
 
       // SomeDirective definition should be:
       const SomeDirectiveDefinition = `
@@ -586,8 +575,7 @@ describe('compiler compliance', () => {
         });
       `;
 
-      const SomeDirectiveFactory =
-          `SomeDirective.ɵfac = function SomeDirective_Factory(t) {return new (t || SomeDirective)(); };`;
+      const SomeDirectiveFactory = `SomeDirective.ɵfac = function SomeDirective_Factory(t) {return new (t || SomeDirective)(); };`;
 
       // MyComponent definition should be:
       const MyComponentDefinition = `
@@ -609,8 +597,7 @@ describe('compiler compliance', () => {
         });
       `;
 
-      const MyComponentFactory =
-          `MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };`;
+      const MyComponentFactory = `MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };`;
 
       const result = compile(files, angularFiles);
       const source = result.source;
@@ -637,8 +624,8 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [SomeDirective, OtherDirective]})
             export class MyModule{}
-          `
-        }
+          `,
+        },
       };
 
       // SomeDirective definition should be:
@@ -649,8 +636,7 @@ describe('compiler compliance', () => {
         });
       `;
 
-      const SomeDirectiveFactory =
-          `SomeDirective.ɵfac = function SomeDirective_Factory(t) {return new (t || SomeDirective)(); };`;
+      const SomeDirectiveFactory = `SomeDirective.ɵfac = function SomeDirective_Factory(t) {return new (t || SomeDirective)(); };`;
 
       // OtherDirective definition should be:
       const OtherDirectiveDefinition = `
@@ -660,8 +646,7 @@ describe('compiler compliance', () => {
         });
       `;
 
-      const OtherDirectiveFactory =
-          `OtherDirective.ɵfac = function OtherDirective_Factory(t) {return new (t || OtherDirective)(); };`;
+      const OtherDirectiveFactory = `OtherDirective.ɵfac = function OtherDirective_Factory(t) {return new (t || OtherDirective)(); };`;
 
       const result = compile(files, angularFiles);
       const source = result.source;
@@ -683,8 +668,8 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [SomeComponent]})
             export class MyModule{}
-          `
-        }
+          `,
+        },
       };
 
       // SomeDirective definition should be:
@@ -712,8 +697,8 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [EmptyOutletComponent]})
             export class MyModule{}
-          `
-        }
+          `,
+        },
       };
 
       // EmptyOutletComponent definition should be:
@@ -733,8 +718,7 @@ describe('compiler compliance', () => {
         });
       `;
 
-      const EmptyOutletComponentFactory =
-          `EmptyOutletComponent.ɵfac = function EmptyOutletComponent_Factory(t) { return new (t || EmptyOutletComponent)(); };`;
+      const EmptyOutletComponentFactory = `EmptyOutletComponent.ɵfac = function EmptyOutletComponent_Factory(t) { return new (t || EmptyOutletComponent)(); };`;
 
       const result = compile(files, angularFiles);
       const source = result.source;
@@ -743,11 +727,10 @@ describe('compiler compliance', () => {
       expectEmit(source, EmptyOutletComponentFactory, 'Incorrect EmptyOutletComponent.ɵfac');
     });
 
-    it('should not treat ElementRef, ViewContainerRef, or ChangeDetectorRef specially when injecting',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should not treat ElementRef, ViewContainerRef, or ChangeDetectorRef specially when injecting', () => {
+      const files = {
+        app: {
+          'spec.ts': `
             import {Component, NgModule, ElementRef, ChangeDetectorRef, ViewContainerRef} from '@angular/core';
 
             @Component({
@@ -760,11 +743,11 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
-            `
-           }
-         };
+            `,
+        },
+      };
 
-         const MyComponentDefinition = `
+      const MyComponentDefinition = `
         …
         MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
           type: MyComponent,
@@ -775,18 +758,18 @@ describe('compiler compliance', () => {
           encapsulation: 2
         });`;
 
-         const MyComponentFactory = `MyComponent.ɵfac = function MyComponent_Factory(t) {
+      const MyComponentFactory = `MyComponent.ɵfac = function MyComponent_Factory(t) {
             return new (t || MyComponent)(
               $r3$.ɵɵdirectiveInject($i$.ElementRef), $r3$.ɵɵdirectiveInject($i$.ViewContainerRef),
               $r3$.ɵɵdirectiveInject($i$.ChangeDetectorRef));
           };`;
 
-         const result = compile(files, angularFiles);
-         const source = result.source;
+      const result = compile(files, angularFiles);
+      const source = result.source;
 
-         expectEmit(source, MyComponentDefinition, 'Incorrect MyComponent.ɵcmp');
-         expectEmit(source, MyComponentFactory, 'Incorrect MyComponent.ɵfac');
-       });
+      expectEmit(source, MyComponentDefinition, 'Incorrect MyComponent.ɵcmp');
+      expectEmit(source, MyComponentFactory, 'Incorrect MyComponent.ɵfac');
+    });
 
     it('should support structural directives', () => {
       const files = {
@@ -809,8 +792,8 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [IfDirective, MyComponent]})
             export class MyModule {}
-            `
-        }
+            `,
+        },
       };
 
       const IfDirectiveDefinition = `
@@ -818,8 +801,7 @@ describe('compiler compliance', () => {
           type: IfDirective,
           selectors: [["", "if", ""]]
         });`;
-      const IfDirectiveFactory =
-          `IfDirective.ɵfac = function IfDirective_Factory(t) { return new (t || IfDirective)($r3$.ɵɵdirectiveInject($i$.TemplateRef)); };`;
+      const IfDirectiveFactory = `IfDirective.ɵfac = function IfDirective_Factory(t) { return new (t || IfDirective)($r3$.ɵɵdirectiveInject($i$.TemplateRef)); };`;
 
       const MyComponentDefinition = `
         function MyComponent_li_2_Template(rf, ctx) {
@@ -853,8 +835,7 @@ describe('compiler compliance', () => {
           encapsulation: 2
         });`;
 
-      const MyComponentFactory =
-          `MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };`;
+      const MyComponentFactory = `MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };`;
 
       const result = compile(files, angularFiles);
       const source = result.source;
@@ -895,8 +876,8 @@ describe('compiler compliance', () => {
 
               @NgModule({declarations: [MyComp, MyApp]})
               export class MyModule { }
-            `
-          }
+            `,
+          },
         };
 
         const MyAppDeclaration = `
@@ -974,8 +955,8 @@ describe('compiler compliance', () => {
 
               @NgModule({declarations: [MyComp, MyApp]})
               export class MyModule {}
-              `
-          }
+              `,
+          },
         };
 
         const MyAppDefinition = `
@@ -1038,8 +1019,8 @@ describe('compiler compliance', () => {
 
                 @NgModule({declarations: [ObjectComp, MyApp]})
                 export class MyModule {}
-              `
-          }
+              `,
+          },
         };
 
         const MyAppDefinition = `
@@ -1102,8 +1083,8 @@ describe('compiler compliance', () => {
 
               @NgModule({declarations: [NestedComp, MyApp]})
               export class MyModule {}
-              `
-          }
+              `,
+          },
         };
 
         const MyAppDefinition = `
@@ -1131,7 +1112,6 @@ describe('compiler compliance', () => {
             encapsulation: 2
           });
         `;
-
 
         const result = compile(files, angularFiles);
         const source = result.source;
@@ -1166,8 +1146,8 @@ describe('compiler compliance', () => {
                 template: '<simple>content</simple> <complex></complex>'
               })
               export class MyApp {}
-            `
-          }
+            `,
+          },
         };
 
         const SimpleComponentDefinition = `
@@ -1217,9 +1197,15 @@ describe('compiler compliance', () => {
         const source = result.source;
 
         expectEmit(
-            result.source, SimpleComponentDefinition, 'Incorrect SimpleComponent definition');
+          result.source,
+          SimpleComponentDefinition,
+          'Incorrect SimpleComponent definition'
+        );
         expectEmit(
-            result.source, ComplexComponentDefinition, 'Incorrect ComplexComponent definition');
+          result.source,
+          ComplexComponentDefinition,
+          'Incorrect ComplexComponent definition'
+        );
       });
 
       it('should support multi-slot content projection with multiple wildcard slots', () => {
@@ -1240,7 +1226,7 @@ describe('compiler compliance', () => {
               @NgModule({ declarations: [Cmp] })
               class Module {}
             `,
-          }
+          },
         };
 
         const output = `
@@ -1292,8 +1278,8 @@ describe('compiler compliance', () => {
 
               @NgModule({ declarations: [Cmp] })
               class Module {}
-            `
-          }
+            `,
+          },
         };
         const output = `
           function Cmp_div_0_Template(rf, ctx) { if (rf & 1) {
@@ -1316,8 +1302,7 @@ describe('compiler compliance', () => {
           }
           const $_c4$ = [[["span", "title", "tofirst"]], "*"];
           …
-          consts: [["id", "second", ${AttributeMarker.Template}, "ngIf"], ["id", "third", ${
-            AttributeMarker.Template}, "ngIf"], ["id", "second"], ["id", "third"]],
+          consts: [["id", "second", ${AttributeMarker.Template}, "ngIf"], ["id", "third", ${AttributeMarker.Template}, "ngIf"], ["id", "second"], ["id", "third"]],
           template: function Cmp_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵɵprojectionDef($_c4$);
@@ -1362,8 +1347,8 @@ describe('compiler compliance', () => {
 
               @NgModule({ declarations: [Cmp] })
               class Module {}
-            `
-          }
+            `,
+          },
         };
 
         const output = `
@@ -1422,8 +1407,8 @@ describe('compiler compliance', () => {
                 template: '<simple><h1 ngProjectAs="[title]"></h1></simple>'
               })
               export class MyApp {}
-            `
-          }
+            `,
+          },
         };
 
         // Note that the c0 and c1 constants aren't being used in this particular test,
@@ -1451,7 +1436,10 @@ describe('compiler compliance', () => {
         const result = compile(files, angularFiles);
 
         expectEmit(
-            result.source, SimpleComponentDefinition, 'Incorrect SimpleComponent definition');
+          result.source,
+          SimpleComponentDefinition,
+          'Incorrect SimpleComponent definition'
+        );
       });
 
       it('should take the first selector if multiple values are passed into ngProjectAs', () => {
@@ -1474,8 +1462,8 @@ describe('compiler compliance', () => {
                 template: '<simple><h1 ngProjectAs="[title],[header]"></h1></simple>'
               })
               export class MyApp {}
-            `
-          }
+            `,
+          },
         };
 
         // Note that the c0 and c1 constants aren't being used in this particular test,
@@ -1503,7 +1491,10 @@ describe('compiler compliance', () => {
         const result = compile(files, angularFiles);
 
         expectEmit(
-            result.source, SimpleComponentDefinition, 'Incorrect SimpleComponent definition');
+          result.source,
+          SimpleComponentDefinition,
+          'Incorrect SimpleComponent definition'
+        );
       });
 
       it('should include parsed ngProjectAs selectors into template attrs', () => {
@@ -1519,8 +1510,8 @@ describe('compiler compliance', () => {
               export class MyApp {
                 show = true;
               }
-            `
-          }
+            `,
+          },
         };
 
         const SimpleComponentDefinition = `
@@ -1532,8 +1523,7 @@ describe('compiler compliance', () => {
             decls: 1,
             vars: 1,
             consts: [
-                ["ngProjectAs", ".someclass", ${AttributeMarker.ProjectAs}, ["", 8, "someclass"], ${
-            AttributeMarker.Template}, "ngIf"],
+                ["ngProjectAs", ".someclass", ${AttributeMarker.ProjectAs}, ["", 8, "someclass"], ${AttributeMarker.Template}, "ngIf"],
                 ["ngProjectAs", ".someclass", ${AttributeMarker.ProjectAs}, ["", 8, "someclass"]]
             ],
             template: function MyApp_Template(rf, ctx) {
@@ -1562,7 +1552,7 @@ describe('compiler compliance', () => {
             selector: '[someDir]',
           })
           export class SomeDirective { }
-        `
+        `,
       };
 
       it('should support view queries with directives', () => {
@@ -1586,8 +1576,8 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [SomeDirective, ViewQueryComponent]})
             export class MyModule {}
-            `
-          }
+            `,
+          },
         };
 
         const ViewQueryComponentDefinition = `
@@ -1644,8 +1634,8 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [ViewQueryComponent]})
             export class MyModule {}
-            `
-          }
+            `,
+          },
         };
 
         const ViewQueryComponentDefinition = `
@@ -1695,8 +1685,8 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [SomeDirective, ViewQueryComponent]})
             export class MyModule {}
-            `
-          }
+            `,
+          },
         };
 
         const ViewQueryComponentDefinition = `
@@ -1759,8 +1749,8 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [ViewQueryComponent]})
             export class MyModule {}
-            `
-          }
+            `,
+          },
         };
 
         const ViewQueryComponentDefinition = `
@@ -1824,8 +1814,8 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [SomeDirective, ContentQueryComponent, MyApp]})
             export class MyModule { }
-            `
-          }
+            `,
+          },
         };
 
         const ContentQueryComponentDefinition = `
@@ -1882,8 +1872,8 @@ describe('compiler compliance', () => {
             }
             @NgModule({declarations: [ContentQueryComponent]})
             export class MyModule {}
-          `
-          }
+          `,
+          },
         };
 
         const ContentQueryComponentDefinition = `
@@ -1943,8 +1933,8 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [SomeDirective, ContentQueryComponent, MyApp]})
             export class MyModule { }
-            `
-          }
+            `,
+          },
         };
 
         const ContentQueryComponentDefinition = `
@@ -2006,8 +1996,8 @@ describe('compiler compliance', () => {
             }
             @NgModule({declarations: [ContentQueryComponent]})
             export class MyModule {}
-          `
-          }
+          `,
+          },
         };
 
         const ContentQueryComponentDefinition = `
@@ -2077,8 +2067,8 @@ describe('compiler compliance', () => {
 
                 @NgModule({declarations:[MyPipe, MyPurePipe, MyApp]})
                 export class MyModule {}
-            `
-          }
+            `,
+          },
         };
 
         const MyPipeDefinition = `
@@ -2170,8 +2160,8 @@ describe('compiler compliance', () => {
 
                 @NgModule({declarations:[MyPipe, MyApp]})
                 export class MyModule {}
-            `
-          }
+            `,
+          },
         };
 
         const MyAppDefinition = `
@@ -2211,11 +2201,10 @@ describe('compiler compliance', () => {
         expectEmit(source, MyAppDefinition, 'Invalid MyApp definition');
       });
 
-      it('should generate the proper instruction when injecting ChangeDetectorRef into a pipe',
-         () => {
-           const files = {
-             app: {
-               'spec.ts': `
+      it('should generate the proper instruction when injecting ChangeDetectorRef into a pipe', () => {
+        const files = {
+          app: {
+            'spec.ts': `
                   import {Component, NgModule, Pipe, PipeTransform, ChangeDetectorRef, Optional} from '@angular/core';
 
                   @Pipe({name: 'myPipe'})
@@ -2242,11 +2231,11 @@ describe('compiler compliance', () => {
 
                   @NgModule({declarations:[MyPipe, MyOtherPipe, MyApp]})
                   export class MyModule {}
-                `
-             }
-           };
+                `,
+          },
+        };
 
-           const MyPipeDefinition = `
+        const MyPipeDefinition = `
               MyPipe.ɵpipe = $r3$.ɵɵdefinePipe({
                 name: "myPipe",
                 type: MyPipe,
@@ -2254,29 +2243,29 @@ describe('compiler compliance', () => {
               });
             `;
 
-           const MyPipeFactory = `
+        const MyPipeFactory = `
               MyPipe.ɵfac = function MyPipe_Factory(t) { return new (t || MyPipe)($r3$.ɵɵinjectPipeChangeDetectorRef()); };
             `;
 
-           const MyOtherPipeDefinition = `
+        const MyOtherPipeDefinition = `
               MyOtherPipe.ɵpipe = $r3$.ɵɵdefinePipe({
                 name: "myOtherPipe",
                 type: MyOtherPipe,
                 pure: true
               });`;
 
-           const MyOtherPipeFactory = `
+        const MyOtherPipeFactory = `
               MyOtherPipe.ɵfac = function MyOtherPipe_Factory(t) { return new (t || MyOtherPipe)($r3$.ɵɵinjectPipeChangeDetectorRef(8)); };
             `;
 
-           const result = compile(files, angularFiles);
-           const source = result.source;
+        const result = compile(files, angularFiles);
+        const source = result.source;
 
-           expectEmit(source, MyPipeDefinition, 'Invalid pipe definition');
-           expectEmit(source, MyPipeFactory, 'Invalid pipe factory function');
-           expectEmit(source, MyOtherPipeDefinition, 'Invalid alternate pipe definition');
-           expectEmit(source, MyOtherPipeFactory, 'Invalid alternate pipe factory function');
-         });
+        expectEmit(source, MyPipeDefinition, 'Invalid pipe definition');
+        expectEmit(source, MyPipeFactory, 'Invalid pipe factory function');
+        expectEmit(source, MyOtherPipeDefinition, 'Invalid alternate pipe definition');
+        expectEmit(source, MyOtherPipeFactory, 'Invalid alternate pipe factory function');
+      });
     });
 
     it('local reference', () => {
@@ -2290,8 +2279,8 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const MyComponentDefinition = `
@@ -2351,8 +2340,8 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [IfDirective, MyComponent]})
             export class MyModule {}
-            `
-        }
+            `,
+        },
       };
 
       const MyComponentDefinition = `
@@ -2437,8 +2426,8 @@ describe('compiler compliance', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const template = `
@@ -2471,8 +2460,7 @@ describe('compiler compliance', () => {
       }
 
       // ...
-      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], ["foo", ""], [${
-          AttributeMarker.Template}, "ngIf"]],
+      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], ["foo", ""], [${AttributeMarker.Template}, "ngIf"]],
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
           $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 1, "div", 0);
@@ -2527,8 +2515,8 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [LifecycleComp, SimpleLayout]})
             export class LifecycleModule {}
-          `
-        }
+          `,
+        },
       };
 
       it('should gen hooks with a few simple components', () => {
@@ -2624,8 +2612,8 @@ describe('compiler compliance', () => {
                 }
               }
             }
-          `
-        }
+          `,
+        },
       };
 
       it('should support embedded views in the SVG namespace', () => {
@@ -2648,8 +2636,8 @@ describe('compiler compliance', () => {
                     declarations: [MyComponent, ForOfDirective]
                   })
                   export class MyModule {}
-                `
-          }
+                `,
+          },
         };
 
         // TODO(benlesh): Enforce this when the directives are specified
@@ -2728,8 +2716,8 @@ describe('compiler compliance', () => {
                 declarations: [MyComponent, ForOfDirective]
               })
               export class MyModule {}
-            `
-          }
+            `,
+          },
         };
 
         // TODO(chuckj): Enforce this when the directives are specified
@@ -2826,8 +2814,8 @@ describe('compiler compliance', () => {
                 declarations: [MyComponent, ForOfDirective]
               })
               export class MyModule {}
-            `
-          }
+            `,
+          },
         };
 
         const MyComponentDefinition = `
@@ -2915,8 +2903,8 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [HostBindingComp, MyForwardDirective]})
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const MyAppDefinition = `
@@ -2952,8 +2940,8 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [HostBindingComp, MyForwardPipe]})
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const MyAppDefinition = `
@@ -2978,8 +2966,8 @@ describe('compiler compliance', () => {
 
             @NgModule({declarations: [SomeDirective]})
             export class MyModule{}
-          `
-        }
+          `,
+        },
       };
 
       // SomeDirective definition should be:
@@ -3011,8 +2999,8 @@ describe('compiler compliance', () => {
           }
 
           @NgModule({declarations: [MyComponent]})
-          export class MyModule {}`
-        }
+          export class MyModule {}`,
+        },
       };
 
       expect(() => compile(files, angularFiles)).not.toThrow();
@@ -3027,8 +3015,8 @@ describe('compiler compliance', () => {
             @Directive()
             export class AbstractDirective {
             }
-          `
-        }
+          `,
+        },
       };
       const expectedOutput = `
       // ...
@@ -3052,8 +3040,8 @@ describe('compiler compliance', () => {
             })
             export class MyApp {
             }
-          `
-        }
+          `,
+        },
       };
 
       const MyAppDeclaration = `
@@ -3093,8 +3081,8 @@ describe('compiler compliance', () => {
             })
             export class MyApp {
             }
-          `
-        }
+          `,
+        },
       };
 
       const MyAppDeclaration = `
@@ -3139,8 +3127,8 @@ describe('compiler compliance', () => {
 
               @NgModule({declarations: [MyApp]})
               export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const MyAppDeclaration = `
@@ -3189,8 +3177,8 @@ describe('compiler compliance', () => {
 
               @NgModule({declarations: [MyApp]})
               export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const MyAppDeclaration = `
@@ -3243,8 +3231,8 @@ describe('compiler compliance', () => {
 
               @NgModule({declarations: [MyApp]})
               export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const MyAppDeclaration = `
@@ -3286,7 +3274,7 @@ describe('compiler compliance', () => {
           selector: '[someDir]',
         })
         export class SomeDirective { }
-      `
+      `,
     };
 
     it('should add an abstract directive if one or more @Input is present', () => {
@@ -3313,8 +3301,8 @@ describe('compiler compliance', () => {
               declarations: [MyComponent]
             })
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
       const expectedOutput = `
       // ...
@@ -3360,8 +3348,8 @@ describe('compiler compliance', () => {
               declarations: [MyComponent]
             })
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
       const expectedOutput = `
       // ...
@@ -3378,11 +3366,10 @@ describe('compiler compliance', () => {
       expectEmit(result.source, expectedOutput, 'Invalid directive definition');
     });
 
-    it('should add an abstract directive if a mixture of @Input and @Output props are present',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should add an abstract directive if a mixture of @Input and @Output props are present', () => {
+      const files = {
+        app: {
+          'spec.ts': `
             import {Component, NgModule, Input, Output, EventEmitter} from '@angular/core';
             export class BaseClass {
               @Output()
@@ -3414,10 +3401,10 @@ describe('compiler compliance', () => {
               declarations: [MyComponent]
             })
             export class MyModule {}
-          `
-           }
-         };
-         const expectedOutput = `
+          `,
+        },
+      };
+      const expectedOutput = `
       // ...
       BaseClass.ɵdir = $r3$.ɵɵdefineDirective({
         type: BaseClass,
@@ -3432,9 +3419,9 @@ describe('compiler compliance', () => {
       });
       // ...
       `;
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, expectedOutput, 'Invalid directive definition');
-       });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, expectedOutput, 'Invalid directive definition');
+    });
 
     it('should add an abstract directive if a ViewChild query is present', () => {
       const files = {
@@ -3456,8 +3443,8 @@ describe('compiler compliance', () => {
               declarations: [MyComponent]
             })
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
       const expectedOutput = `
       const $e0_attrs$ = ["something"];
@@ -3503,8 +3490,8 @@ describe('compiler compliance', () => {
               declarations: [MyComponent, SomeDirective]
             })
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
       const expectedOutput = `
       // ...
@@ -3546,8 +3533,8 @@ describe('compiler compliance', () => {
               declarations: [MyComponent]
             })
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
       const expectedOutput = `
       const $e0_attrs$ = ["something"];
@@ -3593,8 +3580,8 @@ describe('compiler compliance', () => {
               declarations: [MyComponent, SomeDirective]
             })
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
       const expectedOutput = `
       // ...
@@ -3637,8 +3624,8 @@ describe('compiler compliance', () => {
               declarations: [MyComponent]
             })
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
       const expectedOutput = `
       // ...
@@ -3678,8 +3665,8 @@ describe('compiler compliance', () => {
               declarations: [MyComponent]
             })
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
       const expectedOutput = `
       // ...
@@ -3719,8 +3706,8 @@ describe('compiler compliance', () => {
               declarations: [MyComponent]
             })
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
       const expectedOutput = `
       // ...
@@ -3732,7 +3719,6 @@ describe('compiler compliance', () => {
       const result = compile(files, angularFiles);
       expectEmit(result.source, expectedOutput, 'Invalid directive definition');
     });
-
 
     it('should add an abstract directive when using ngOnChanges', () => {
       const files = {
@@ -3754,8 +3740,8 @@ describe('compiler compliance', () => {
               declarations: [MyComponent]
             })
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
       const expectedOutput = `
       // ...
@@ -3801,8 +3787,8 @@ describe('compiler compliance', () => {
               declarations: [MyComponent]
             })
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
       const result = compile(files, angularFiles);
       expect(result.source).not.toContain('ɵdir');
@@ -3839,8 +3825,8 @@ describe('compiler compliance', () => {
               declarations: [MyComponent]
             })
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
       const result = compile(files, angularFiles);
       expect(result.source.match(/ɵdir/g)!.length).toBe(1);

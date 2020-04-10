@@ -5,8 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ɵɵadvance} from '../../../../src/render3/instructions/advance';
-import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element';
+import {
+  ɵɵelement,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+} from '../../../../src/render3/instructions/element';
 import {refreshView} from '../../../../src/render3/instructions/shared';
 import {ɵɵclassProp, ɵɵstyleProp} from '../../../../src/render3/instructions/styling';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
@@ -78,10 +83,9 @@ function testTemplate(rf: RenderFlags, ctx: any) {
   }
 }
 
-
 const rootLView = setupRootViewWithEmbeddedViews(testTemplate, 11, 10, 1000, undefined, [
   [AttributeMarker.Classes, 'list'],
-  [AttributeMarker.Classes, 'item', AttributeMarker.Styles, 'width', '50px']
+  [AttributeMarker.Classes, 'item', AttributeMarker.Styles, 'width', '50px'],
 ]);
 const rootTView = rootLView[TVIEW];
 

@@ -11,7 +11,7 @@ import {global as _global} from './global';
 // When Symbol.iterator doesn't exist, retrieves the key used in es6-shim
 declare const Symbol: any;
 let _symbolIterator: any = null;
-export function getSymbolIterator(): string|symbol {
+export function getSymbolIterator(): string | symbol {
   if (!_symbolIterator) {
     const Symbol = _global['Symbol'];
     if (Symbol && Symbol.iterator) {
@@ -21,8 +21,11 @@ export function getSymbolIterator(): string|symbol {
       const keys = Object.getOwnPropertyNames(Map.prototype);
       for (let i = 0; i < keys.length; ++i) {
         const key = keys[i];
-        if (key !== 'entries' && key !== 'size' &&
-            (Map as any).prototype[key] === Map.prototype['entries']) {
+        if (
+          key !== 'entries' &&
+          key !== 'size' &&
+          (Map as any).prototype[key] === Map.prototype['entries']
+        ) {
           _symbolIterator = key;
         }
       }

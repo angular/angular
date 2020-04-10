@@ -49,30 +49,43 @@ export class WrappedValue {
   /** @deprecated from 5.3, use `unwrap()` instead - will switch to protected */
   wrapped: any;
 
-  constructor(value: any) { this.wrapped = value; }
+  constructor(value: any) {
+    this.wrapped = value;
+  }
 
   /** Creates a wrapped value. */
-  static wrap(value: any): WrappedValue { return new WrappedValue(value); }
+  static wrap(value: any): WrappedValue {
+    return new WrappedValue(value);
+  }
 
   /**
    * Returns the underlying value of a wrapped value.
    * Returns the given `value` when it is not wrapped.
    **/
-  static unwrap(value: any): any { return WrappedValue.isWrapped(value) ? value.wrapped : value; }
+  static unwrap(value: any): any {
+    return WrappedValue.isWrapped(value) ? value.wrapped : value;
+  }
 
   /** Returns true if `value` is a wrapped value. */
-  static isWrapped(value: any): value is WrappedValue { return value instanceof WrappedValue; }
+  static isWrapped(value: any): value is WrappedValue {
+    return value instanceof WrappedValue;
+  }
 }
 
 export function isListLikeIterable(obj: any): boolean {
   if (!isJsObject(obj)) return false;
-  return Array.isArray(obj) ||
-      (!(obj instanceof Map) &&      // JS Map are iterables but return entries as [k, v]
-       getSymbolIterator() in obj);  // JS Iterable have a Symbol.iterator prop
+  return (
+    Array.isArray(obj) ||
+    (!(obj instanceof Map) && // JS Map are iterables but return entries as [k, v]
+      getSymbolIterator() in obj)
+  ); // JS Iterable have a Symbol.iterator prop
 }
 
 export function areIterablesEqual(
-    a: any, b: any, comparator: (a: any, b: any) => boolean): boolean {
+  a: any,
+  b: any,
+  comparator: (a: any, b: any) => boolean
+): boolean {
   const iterator1 = a[getSymbolIterator()]();
   const iterator2 = b[getSymbolIterator()]();
 
@@ -93,7 +106,7 @@ export function iterateListLike(obj: any, fn: (p: any) => any) {
   } else {
     const iterator = obj[getSymbolIterator()]();
     let item: any;
-    while (!((item = iterator.next()).done)) {
+    while (!(item = iterator.next()).done) {
       fn(item.value);
     }
   }

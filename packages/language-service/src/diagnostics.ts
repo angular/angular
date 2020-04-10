@@ -17,8 +17,6 @@ import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 import {findPropertyValueOfType, findTightestNode, offsetSpan, spanOf} from './utils';
 
-
-
 /**
  * Return diagnostic information for the parsed AST of the template.
  * @param ast contains HTML and template AST
@@ -26,7 +24,7 @@ import {findPropertyValueOfType, findTightestNode, offsetSpan, spanOf} from './u
 export function getTemplateDiagnostics(ast: AstResult): ng.Diagnostic[] {
   const {parseErrors, templateAst, htmlAst, template} = ast;
   if (parseErrors && parseErrors.length) {
-    return parseErrors.map(e => {
+    return parseErrors.map((e) => {
       return {
         kind: ts.DiagnosticCategory.Error,
         span: offsetSpan(spanOf(e.span), template.span.start),
@@ -53,8 +51,10 @@ export function getTemplateDiagnostics(ast: AstResult): ng.Diagnostic[] {
  * @return diagnosed errors, if any
  */
 export function getDeclarationDiagnostics(
-    declarations: ng.Declaration[], modules: NgAnalyzedModules,
-    host: Readonly<TypeScriptServiceHost>): ng.Diagnostic[] {
+  declarations: ng.Declaration[],
+  modules: NgAnalyzedModules,
+  host: Readonly<TypeScriptServiceHost>
+): ng.Diagnostic[] {
   const directives = new Set<ng.StaticSymbol>();
   for (const ngModule of modules.ngModules) {
     for (const directive of ngModule.declaredDirectives) {
@@ -89,20 +89,27 @@ export function getDeclarationDiagnostics(
     }
 
     if (!modules.ngModuleByPipeOrDirective.has(declaration.type)) {
-      results.push(createDiagnostic(
-          declarationSpan, Diagnostic.directive_not_in_module,
-          metadata.isComponent ? 'Component' : 'Directive', type.name));
+      results.push(
+        createDiagnostic(
+          declarationSpan,
+          Diagnostic.directive_not_in_module,
+          metadata.isComponent ? 'Component' : 'Directive',
+          type.name
+        )
+      );
     }
 
     if (metadata.isComponent) {
-      const {template, templateUrl, styleUrls} = metadata.template !;
+      const {template, templateUrl, styleUrls} = metadata.template!;
       if (template === null && !templateUrl) {
-        results.push(createDiagnostic(
-            declarationSpan, Diagnostic.missing_template_and_templateurl, type.name));
+        results.push(
+          createDiagnostic(declarationSpan, Diagnostic.missing_template_and_templateurl, type.name)
+        );
       } else if (templateUrl) {
         if (template) {
-          results.push(createDiagnostic(
-              declarationSpan, Diagnostic.both_template_and_templateurl, type.name));
+          results.push(
+            createDiagnostic(declarationSpan, Diagnostic.both_template_and_templateurl, type.name)
+          );
         }
 
         // Find templateUrl value from the directive call expression, which is the parent of the
@@ -111,7 +118,10 @@ export function getDeclarationDiagnostics(
         // TODO: We should create an enum of the various properties a directive can have to use
         // instead of string literals. We can then perform a mass migration of all literal usages.
         const templateUrlNode = findPropertyValueOfType(
-            directiveIdentifier.parent, 'templateUrl', ts.isLiteralExpression);
+          directiveIdentifier.parent,
+          'templateUrl',
+          ts.isLiteralExpression
+        );
         if (!templateUrlNode) {
           host.error(`templateUrl ${templateUrl} exists but its TypeScript node doesn't`);
           return [];
@@ -124,7 +134,10 @@ export function getDeclarationDiagnostics(
         // Find styleUrls value from the directive call expression, which is the parent of the
         // directive identifier.
         const styleUrlsNode = findPropertyValueOfType(
-            directiveIdentifier.parent, 'styleUrls', ts.isArrayLiteralExpression);
+          directiveIdentifier.parent,
+          'styleUrls',
+          ts.isArrayLiteralExpression
+        );
         if (!styleUrlsNode) {
           host.error(`styleUrls property exists but its TypeScript node doesn't'`);
           return [];
@@ -148,7 +161,9 @@ export function getDeclarationDiagnostics(
  * @return diagnosed url errors, if any
  */
 function validateUrls(
-    urls: ArrayLike<ts.Expression>, tsLsHost: Readonly<ts.LanguageServiceHost>): ng.Diagnostic[] {
+  urls: ArrayLike<ts.Expression>,
+  tsLsHost: Readonly<ts.LanguageServiceHost>
+): ng.Diagnostic[] {
   if (!tsLsHost.fileExists) {
     return [];
   }
@@ -183,7 +198,7 @@ function chainDiagnostics(chain: ng.DiagnosticMessageChain): ts.DiagnosticMessag
     messageText: chain.message,
     category: ts.DiagnosticCategory.Error,
     code: 0,
-    next: chain.next ? chain.next.map(chainDiagnostics) : undefined
+    next: chain.next ? chain.next.map(chainDiagnostics) : undefined,
   };
 }
 
@@ -193,7 +208,9 @@ function chainDiagnostics(chain: ng.DiagnosticMessageChain): ts.DiagnosticMessag
  * @param file
  */
 export function ngDiagnosticToTsDiagnostic(
-    d: ng.Diagnostic, file: ts.SourceFile|undefined): ts.Diagnostic {
+  d: ng.Diagnostic,
+  file: ts.SourceFile | undefined
+): ts.Diagnostic {
   return {
     file,
     start: d.span.start,

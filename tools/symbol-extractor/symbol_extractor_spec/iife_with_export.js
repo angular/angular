@@ -10,17 +10,19 @@
  * Rollup exports symbols in this particular way. This test demonstrates that we can correctly read
  * symbols.
  */
-var bundle = function(exports) {
+var bundle = (function (exports) {
   'use strict';
   // tslint:disable-next-line:no-console
   console.log('Hello, Alice in Wonderland');
-  var A = function() {
+  var A = (function () {
     function A() {}
-    A.prototype.a = function() { return document.a; };
+    A.prototype.a = function () {
+      return document.a;
+    };
     return A;
-  }();
+  })();
   // tslint:disable-next-line:no-console
   console.error(new A().a());
   exports.A = A;
   return exports;
-}({});
+})({});

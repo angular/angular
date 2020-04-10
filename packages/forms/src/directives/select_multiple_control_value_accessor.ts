@@ -6,14 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, forwardRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider, ɵlooseIdentical as looseIdentical} from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  forwardRef,
+  Host,
+  Input,
+  OnDestroy,
+  Optional,
+  Renderer2,
+  StaticProvider,
+  ɵlooseIdentical as looseIdentical,
+} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const SELECT_MULTIPLE_VALUE_ACCESSOR: StaticProvider = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => SelectMultipleControlValueAccessor),
-  multi: true
+  multi: true,
 };
 
 function _buildValueString(id: string, value: any): string {
@@ -77,9 +88,9 @@ abstract class HTMLCollection {
  */
 @Directive({
   selector:
-      'select[multiple][formControlName],select[multiple][formControl],select[multiple][ngModel]',
+    'select[multiple][formControlName],select[multiple][formControl],select[multiple][ngModel]',
   host: {'(change)': 'onChange($event.target)', '(blur)': 'onTouched()'},
-  providers: [SELECT_MULTIPLE_VALUE_ACCESSOR]
+  providers: [SELECT_MULTIPLE_VALUE_ACCESSOR],
 })
 export class SelectMultipleControlValueAccessor implements ControlValueAccessor {
   /**
@@ -207,7 +218,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   }
 
   /** @internal */
-  _getOptionId(value: any): string|null {
+  _getOptionId(value: any): string | null {
     for (const id of Array.from(this._optionMap.keys())) {
       if (this._compareWith(this._optionMap.get(id)!._value, value)) return id;
     }
@@ -239,8 +250,10 @@ export class ɵNgSelectMultipleOption implements OnDestroy {
   _value: any;
 
   constructor(
-      private _element: ElementRef, private _renderer: Renderer2,
-      @Optional() @Host() private _select: SelectMultipleControlValueAccessor) {
+    private _element: ElementRef,
+    private _renderer: Renderer2,
+    @Optional() @Host() private _select: SelectMultipleControlValueAccessor
+  ) {
     if (this._select) {
       this.id = this._select._registerOption(this);
     }

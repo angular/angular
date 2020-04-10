@@ -8,8 +8,6 @@
 
 import {getDebugContext, getErrorLogger, getOriginalError} from './errors';
 
-
-
 /**
  * Provides a hook for centralized exception handling.
  *
@@ -60,8 +58,9 @@ export class ErrorHandler {
   /** @internal */
   _findContext(error: any): any {
     if (error) {
-      return getDebugContext(error) ? getDebugContext(error) :
-                                      this._findContext(getOriginalError(error));
+      return getDebugContext(error)
+        ? getDebugContext(error)
+        : this._findContext(getOriginalError(error));
     }
 
     return null;

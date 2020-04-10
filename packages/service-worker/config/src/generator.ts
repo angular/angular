@@ -12,10 +12,10 @@ import {globToRegex} from './glob';
 import {Config} from './in';
 
 const DEFAULT_NAVIGATION_URLS = [
-  '/**',           // Include all URLs.
-  '!/**/*.*',      // Exclude URLs to files (containing a file extension in the last segment).
-  '!/**/*__*',     // Exclude URLs containing `__` in the last segment.
-  '!/**/*__*/**',  // Exclude URLs containing `__` in any other segment.
+  '/**', // Include all URLs.
+  '!/**/*.*', // Exclude URLs to files (containing a file extension in the last segment).
+  '!/**/*__*', // Exclude URLs containing `__` in the last segment.
+  '!/**/*__*/**', // Exclude URLs containing `__` in any other segment.
 ];
 
 /**
@@ -34,51 +34,60 @@ export class Generator {
       configVersion: 1,
       timestamp: Date.now(),
       appData: config.appData,
-      index: joinUrls(this.baseHref, config.index), assetGroups,
+      index: joinUrls(this.baseHref, config.index),
+      assetGroups,
       dataGroups: this.processDataGroups(config),
       hashTable: withOrderedKeys(unorderedHashTable),
       navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
     };
   }
 
-  private async processAssetGroups(config: Config, hashTable: {[file: string]: string | undefined}):
-      Promise<Object[]> {
+  private async processAssetGroups(
+    config: Config,
+    hashTable: {[file: string]: string | undefined}
+  ): Promise<Object[]> {
     const seenMap = new Set<string>();
-    return Promise.all((config.assetGroups || []).map(async(group) => {
-      if ((group.resources as any).versionedFiles) {
-        throw new Error(
+    return Promise.all(
+      (config.assetGroups || []).map(async (group) => {
+        if ((group.resources as any).versionedFiles) {
+          throw new Error(
             `Asset-group '${group.name}' in 'ngsw-config.json' uses the 'versionedFiles' option, ` +
-            'which is no longer supported. Use \'files\' instead.');
-      }
+              "which is no longer supported. Use 'files' instead."
+          );
+        }
 
-      const fileMatcher = globListToMatcher(group.resources.files || []);
-      const allFiles = await this.fs.list('/');
+        const fileMatcher = globListToMatcher(group.resources.files || []);
+        const allFiles = await this.fs.list('/');
 
-      const matchedFiles = allFiles.filter(fileMatcher).filter(file => !seenMap.has(file)).sort();
-      matchedFiles.forEach(file => seenMap.add(file));
+        const matchedFiles = allFiles
+          .filter(fileMatcher)
+          .filter((file) => !seenMap.has(file))
+          .sort();
+        matchedFiles.forEach((file) => seenMap.add(file));
 
-      // Add the hashes.
-      await matchedFiles.reduce(async(previous, file) => {
-        await previous;
-        const hash = await this.fs.hash(file);
-        hashTable[joinUrls(this.baseHref, file)] = hash;
-      }, Promise.resolve());
+        // Add the hashes.
+        await matchedFiles.reduce(async (previous, file) => {
+          await previous;
+          const hash = await this.fs.hash(file);
+          hashTable[joinUrls(this.baseHref, file)] = hash;
+        }, Promise.resolve());
 
-      return {
-        name: group.name,
-        installMode: group.installMode || 'prefetch',
-        updateMode: group.updateMode || group.installMode || 'prefetch',
-        urls: matchedFiles.map(url => joinUrls(this.baseHref, url)),
-        patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref, true)),
-      };
-    }));
+        return {
+          name: group.name,
+          installMode: group.installMode || 'prefetch',
+          updateMode: group.updateMode || group.installMode || 'prefetch',
+          urls: matchedFiles.map((url) => joinUrls(this.baseHref, url)),
+          patterns: (group.resources.urls || []).map((url) => urlToRegex(url, this.baseHref, true)),
+        };
+      })
+    );
   }
 
   private processDataGroups(config: Config): Object[] {
-    return (config.dataGroups || []).map(group => {
+    return (config.dataGroups || []).map((group) => {
       return {
         name: group.name,
-        patterns: group.urls.map(url => urlToRegex(url, this.baseHref, true)),
+        patterns: group.urls.map((url) => urlToRegex(url, this.baseHref, true)),
         strategy: group.cacheConfig.strategy || 'performance',
         maxSize: group.cacheConfig.maxSize,
         maxAge: parseDurationToMs(group.cacheConfig.maxAge),
@@ -90,8 +99,10 @@ export class Generator {
 }
 
 export function processNavigationUrls(
-    baseHref: string, urls = DEFAULT_NAVIGATION_URLS): {positive: boolean, regex: string}[] {
-  return urls.map(url => {
+  baseHref: string,
+  urls = DEFAULT_NAVIGATION_URLS
+): {positive: boolean; regex: string}[] {
+  return urls.map((url) => {
     const positive = !url.startsWith('!');
     url = positive ? url : url.substr(1);
     return {positive, regex: `^${urlToRegex(url, baseHref)}$`};
@@ -99,7 +110,7 @@ export function processNavigationUrls(
 }
 
 function globListToMatcher(globs: string[]): (file: string) => boolean {
-  const patterns = globs.map(pattern => {
+  const patterns = globs.map((pattern) => {
     if (pattern.startsWith('!')) {
       return {
         positive: false,
@@ -115,7 +126,7 @@ function globListToMatcher(globs: string[]): (file: string) => boolean {
   return (file: string) => matches(file, patterns);
 }
 
-function matches(file: string, patterns: {positive: boolean, regex: RegExp}[]): boolean {
+function matches(file: string, patterns: {positive: boolean; regex: RegExp}[]): boolean {
   const res = patterns.reduce((isMatch, pattern) => {
     if (pattern.positive) {
       return isMatch || pattern.regex.test(file);
@@ -143,8 +154,10 @@ function joinUrls(a: string, b: string): string {
   return a + b;
 }
 
-function withOrderedKeys<T extends{[key: string]: any}>(unorderedObj: T): T {
-  const orderedObj = {} as{[key: string]: any};
-  Object.keys(unorderedObj).sort().forEach(key => orderedObj[key] = unorderedObj[key]);
+function withOrderedKeys<T extends {[key: string]: any}>(unorderedObj: T): T {
+  const orderedObj = {} as {[key: string]: any};
+  Object.keys(unorderedObj)
+    .sort()
+    .forEach((key) => (orderedObj[key] = unorderedObj[key]));
   return orderedObj as T;
 }

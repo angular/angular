@@ -5,10 +5,21 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, PathSegment} from '../../../../src/ngtsc/file_system';
+
+import {
+  absoluteFrom,
+  AbsoluteFsPath,
+  FileSystem,
+  getFileSystem,
+  PathSegment,
+} from '../../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';
 import {EntryPointPackageJson} from '../../../src/packages/entry_point';
-import {BackupFileCleaner, NgccDirectoryCleaner, PackageJsonCleaner} from '../../../src/writing/cleaning/cleaning_strategies';
+import {
+  BackupFileCleaner,
+  NgccDirectoryCleaner,
+  PackageJsonCleaner,
+} from '../../../src/writing/cleaning/cleaning_strategies';
 
 runInEachFileSystem(() => {
   describe('cleaning strategies', () => {
@@ -55,7 +66,7 @@ runInEachFileSystem(() => {
           const strategy = new PackageJsonCleaner(fs);
           const packageJson: EntryPointPackageJson = {
             name: 'test-package',
-            __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'}
+            __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'},
           };
           fs.ensureDir(fs.dirname(packageJsonPath));
           fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
@@ -68,7 +79,7 @@ runInEachFileSystem(() => {
           const strategy = new PackageJsonCleaner(fs);
           const packageJson: EntryPointPackageJson = {
             name: 'test-package',
-            __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'}
+            __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'},
           };
           fs.ensureDir(fs.dirname(packageJsonPath));
           fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
@@ -94,27 +105,26 @@ runInEachFileSystem(() => {
           });
         });
 
-        it('should revert and remove the backup for the prepublish script if there was a processed marker',
-           () => {
-             const strategy = new PackageJsonCleaner(fs);
-             const packageJson: EntryPointPackageJson = {
-               name: 'test-package',
-               __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'},
-               scripts: {
-                 prepublishOnly: 'added by ngcc',
-                 prepublishOnly__ivy_ngcc_bak: 'original',
-                 test: 'do testing'
-               },
-             };
-             fs.ensureDir(fs.dirname(packageJsonPath));
-             fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
-             strategy.clean(packageJsonPath, fs.basename(packageJsonPath));
-             const newPackageJson: EntryPointPackageJson = JSON.parse(fs.readFile(packageJsonPath));
-             expect(newPackageJson).toEqual({
-               name: 'test-package',
-               scripts: {prepublishOnly: 'original', test: 'do testing'},
-             });
-           });
+        it('should revert and remove the backup for the prepublish script if there was a processed marker', () => {
+          const strategy = new PackageJsonCleaner(fs);
+          const packageJson: EntryPointPackageJson = {
+            name: 'test-package',
+            __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'},
+            scripts: {
+              prepublishOnly: 'added by ngcc',
+              prepublishOnly__ivy_ngcc_bak: 'original',
+              test: 'do testing',
+            },
+          };
+          fs.ensureDir(fs.dirname(packageJsonPath));
+          fs.writeFile(packageJsonPath, JSON.stringify(packageJson));
+          strategy.clean(packageJsonPath, fs.basename(packageJsonPath));
+          const newPackageJson: EntryPointPackageJson = JSON.parse(fs.readFile(packageJsonPath));
+          expect(newPackageJson).toEqual({
+            name: 'test-package',
+            scripts: {prepublishOnly: 'original', test: 'do testing'},
+          });
+        });
 
         it('should not touch the scripts if there was not processed marker', () => {
           const strategy = new PackageJsonCleaner(fs);
@@ -123,7 +133,7 @@ runInEachFileSystem(() => {
             scripts: {
               prepublishOnly: 'added by ngcc',
               prepublishOnly__ivy_ngcc_bak: 'original',
-              test: 'do testing'
+              test: 'do testing',
             },
           };
           fs.ensureDir(fs.dirname(packageJsonPath));
@@ -135,8 +145,8 @@ runInEachFileSystem(() => {
             scripts: {
               prepublishOnly: 'added by ngcc',
               prepublishOnly__ivy_ngcc_bak: 'original',
-              test: 'do testing'
-            }
+              test: 'do testing',
+            },
           });
         });
       });
@@ -151,14 +161,13 @@ runInEachFileSystem(() => {
       });
 
       describe('canClean()', () => {
-        it('should return true if the file name ends in .__ivy_ngcc_bak and the processed file exists',
-           () => {
-             const strategy = new BackupFileCleaner(fs);
-             fs.ensureDir(fs.dirname(filePath));
-             fs.writeFile(filePath, 'processed file');
-             fs.writeFile(backupFilePath, 'original file');
-             expect(strategy.canClean(backupFilePath, fs.basename(backupFilePath))).toBe(true);
-           });
+        it('should return true if the file name ends in .__ivy_ngcc_bak and the processed file exists', () => {
+          const strategy = new BackupFileCleaner(fs);
+          fs.ensureDir(fs.dirname(filePath));
+          fs.writeFile(filePath, 'processed file');
+          fs.writeFile(backupFilePath, 'original file');
+          expect(strategy.canClean(backupFilePath, fs.basename(backupFilePath))).toBe(true);
+        });
 
         it('should return false if the file does not end in .__ivy_ngcc_bak', () => {
           const strategy = new BackupFileCleaner(fs);
@@ -168,13 +177,12 @@ runInEachFileSystem(() => {
           expect(strategy.canClean(filePath, fs.basename(filePath))).toBe(false);
         });
 
-        it('should return false if the file ends in .__ivy_ngcc_bak but the processed file does not exist',
-           () => {
-             const strategy = new BackupFileCleaner(fs);
-             fs.ensureDir(fs.dirname(filePath));
-             fs.writeFile(backupFilePath, 'original file');
-             expect(strategy.canClean(backupFilePath, fs.basename(backupFilePath))).toBe(false);
-           });
+        it('should return false if the file ends in .__ivy_ngcc_bak but the processed file does not exist', () => {
+          const strategy = new BackupFileCleaner(fs);
+          fs.ensureDir(fs.dirname(filePath));
+          fs.writeFile(backupFilePath, 'original file');
+          expect(strategy.canClean(backupFilePath, fs.basename(backupFilePath))).toBe(false);
+        });
       });
 
       describe('clean()', () => {

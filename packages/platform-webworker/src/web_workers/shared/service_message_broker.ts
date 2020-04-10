@@ -10,7 +10,6 @@ import {EventEmitter, Injectable, Type} from '@angular/core';
 import {MessageBus} from '../shared/message_bus';
 import {Serializer, SerializerTypes} from '../shared/serializer';
 
-
 /**
  * @publicApi
  * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
@@ -55,15 +54,18 @@ export class ServiceMessageBroker {
   }
 
   registerMethod(
-      methodName: string, signature: Array<Type<any>|SerializerTypes>|null,
-      method: (..._: any[]) => Promise<any>| void, returnType?: Type<any>|SerializerTypes): void {
+    methodName: string,
+    signature: Array<Type<any> | SerializerTypes> | null,
+    method: (..._: any[]) => Promise<any> | void,
+    returnType?: Type<any> | SerializerTypes
+  ): void {
     this._methods.set(methodName, (message: ReceivedMessage) => {
       const serializedArgs = message.args;
       const numArgs = signature ? signature.length : 0;
       const deserializedArgs = [];
       for (let i = 0; i < numArgs; i++) {
         const serializedArg = serializedArgs[i];
-        deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature ![i]);
+        deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature![i]);
       }
 
       const promise = method(...deserializedArgs);
@@ -75,12 +77,15 @@ export class ServiceMessageBroker {
 
   private _handleMessage(message: ReceivedMessage): void {
     if (this._methods.has(message.method)) {
-      this._methods.get(message.method) !(message);
+      this._methods.get(message.method)!(message);
     }
   }
 
-  private _wrapWebWorkerPromise(id: string, promise: Promise<any>, type: Type<any>|SerializerTypes):
-      void {
+  private _wrapWebWorkerPromise(
+    id: string,
+    promise: Promise<any>,
+    type: Type<any> | SerializerTypes
+  ): void {
     promise.then((result: any) => {
       this._sink.emit({
         'type': 'result',

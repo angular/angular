@@ -22,30 +22,33 @@ const CreateAndDestroyWorker = {
   work: () => {
     $('#createDom').click();
     $('#destroyDom').click();
-  }
+  },
 };
 
 describe('largeform benchmark spec', () => {
-
   afterEach(verifyNoBrowserErrors);
 
   [CreateAndDestroyWorker].forEach((worker) => {
     describe(worker.id, () => {
-      it('should run for ng2', async() => {
+      it('should run for ng2', async () => {
         await runLargeFormBenchmark({url: '/', id: `largeform.ng2.${worker.id}`, worker: worker});
       });
     });
   });
 
-  function runLargeFormBenchmark(
-      config: {id: string, url: string, ignoreBrowserSynchronization?: boolean, worker: Worker}) {
+  function runLargeFormBenchmark(config: {
+    id: string;
+    url: string;
+    ignoreBrowserSynchronization?: boolean;
+    worker: Worker;
+  }) {
     return runBenchmark({
       id: config.id,
       url: config.url,
       params: [{name: 'copies', value: 8}],
       ignoreBrowserSynchronization: config.ignoreBrowserSynchronization,
       prepare: config.worker.prepare,
-      work: config.worker.work
+      work: config.worker.work,
     });
   }
 });

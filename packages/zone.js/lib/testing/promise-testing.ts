@@ -43,7 +43,7 @@ Zone.__load_patch('promisefortest', (global: any, Zone: ZoneType, api: _ZonePriv
       return;
     }
     oriThen = (Promise as any)[Zone.__symbol__('ZonePromiseThen')] = Promise.prototype.then;
-    Promise.prototype.then = function() {
+    Promise.prototype.then = function () {
       const chained = oriThen.apply(this, arguments);
       if ((this as any)[symbolState] === UNRESOLVED) {
         // parent promise is unresolved.

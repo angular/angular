@@ -14,7 +14,7 @@ import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition';
 const PRIVATE_PREFIX = '__ngOnChanges_';
 
 type OnChangesExpando = OnChanges & {
-  __ngOnChanges_: SimpleChanges|null|undefined;
+  __ngOnChanges_: SimpleChanges | null | undefined;
   // tslint:disable-next-line:no-any Can hold any value
   [key: string]: any;
 };
@@ -45,7 +45,7 @@ type OnChangesExpando = OnChanges & {
 export function ɵɵNgOnChangesFeature<T>(definition: DirectiveDef<T>): void {
   if (definition.type.prototype.ngOnChanges) {
     definition.setInput = ngOnChangesSetInput;
-    (definition as{onChanges: Function}).onChanges = wrapOnChanges();
+    (definition as {onChanges: Function}).onChanges = wrapOnChanges();
   }
 }
 
@@ -61,9 +61,9 @@ function wrapOnChanges() {
     const current = simpleChangesStore && simpleChangesStore.current;
 
     if (current) {
-      const previous = simpleChangesStore !.previous;
+      const previous = simpleChangesStore!.previous;
       if (previous === EMPTY_OBJ) {
-        simpleChangesStore !.previous = current;
+        simpleChangesStore!.previous = current;
       } else {
         // New changes are copied to the previous store, so that we don't lose history for inputs
         // which were not changed this time
@@ -71,38 +71,47 @@ function wrapOnChanges() {
           previous[key] = current[key];
         }
       }
-      simpleChangesStore !.current = null;
+      simpleChangesStore!.current = null;
       this.ngOnChanges(current);
     }
   };
 }
 
 function ngOnChangesSetInput<T>(
-    this: DirectiveDef<T>, instance: T, value: any, publicName: string, privateName: string): void {
-  const simpleChangesStore = getSimpleChangesStore(instance) ||
-      setSimpleChangesStore(instance, {previous: EMPTY_OBJ, current: null});
+  this: DirectiveDef<T>,
+  instance: T,
+  value: any,
+  publicName: string,
+  privateName: string
+): void {
+  const simpleChangesStore =
+    getSimpleChangesStore(instance) ||
+    setSimpleChangesStore(instance, {previous: EMPTY_OBJ, current: null});
   const current = simpleChangesStore.current || (simpleChangesStore.current = {});
   const previous = simpleChangesStore.previous;
 
-  const declaredName = (this.declaredInputs as{[key: string]: string})[publicName];
+  const declaredName = (this.declaredInputs as {[key: string]: string})[publicName];
   const previousChange = previous[declaredName];
   current[declaredName] = new SimpleChange(
-      previousChange && previousChange.currentValue, value, previous === EMPTY_OBJ);
+    previousChange && previousChange.currentValue,
+    value,
+    previous === EMPTY_OBJ
+  );
 
   (instance as any)[privateName] = value;
 }
 
 const SIMPLE_CHANGES_STORE = '__ngSimpleChanges__';
 
-function getSimpleChangesStore(instance: any): null|NgSimpleChangesStore {
+function getSimpleChangesStore(instance: any): null | NgSimpleChangesStore {
   return instance[SIMPLE_CHANGES_STORE] || null;
 }
 
 function setSimpleChangesStore(instance: any, store: NgSimpleChangesStore): NgSimpleChangesStore {
-  return instance[SIMPLE_CHANGES_STORE] = store;
+  return (instance[SIMPLE_CHANGES_STORE] = store);
 }
 
 interface NgSimpleChangesStore {
   previous: SimpleChanges;
-  current: SimpleChanges|null;
+  current: SimpleChanges | null;
 }

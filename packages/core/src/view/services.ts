@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DebugElement__PRE_R3__, DebugEventListener, DebugNode__PRE_R3__, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
+import {
+  DebugElement__PRE_R3__,
+  DebugEventListener,
+  DebugNode__PRE_R3__,
+  getDebugNode,
+  indexDebugNode,
+  removeDebugNodeFromIndex,
+} from '../debug/debug_node';
 import {Injector} from '../di';
 import {InjectableType, getInjectableDef, ɵɵInjectableDef} from '../di/interface/defs';
 import {ErrorHandler} from '../error_handler';
@@ -22,10 +29,44 @@ import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './err
 import {resolveDep} from './provider';
 import {dirtyParentQueries, getQueryValue} from './query';
 import {createInjector, createNgModuleRef, getComponentViewDefinitionFactory} from './refs';
-import {ArgumentType, BindingFlags, CheckType, DebugContext, ElementData, NgModuleDefinition, NodeDef, NodeFlags, NodeLogger, ProviderOverride, RootData, Services, ViewData, ViewDefinition, ViewState, asElementData, asPureExpressionData} from './types';
-import {NOOP, isComponentView, renderNode, resolveDefinition, splitDepsDsl, tokenKey, viewParentEl} from './util';
-import {checkAndUpdateNode, checkAndUpdateView, checkNoChangesNode, checkNoChangesView, createComponentView, createEmbeddedView, createRootView, destroyView} from './view';
-
+import {
+  ArgumentType,
+  BindingFlags,
+  CheckType,
+  DebugContext,
+  ElementData,
+  NgModuleDefinition,
+  NodeDef,
+  NodeFlags,
+  NodeLogger,
+  ProviderOverride,
+  RootData,
+  Services,
+  ViewData,
+  ViewDefinition,
+  ViewState,
+  asElementData,
+  asPureExpressionData,
+} from './types';
+import {
+  NOOP,
+  isComponentView,
+  renderNode,
+  resolveDefinition,
+  splitDepsDsl,
+  tokenKey,
+  viewParentEl,
+} from './util';
+import {
+  checkAndUpdateNode,
+  checkAndUpdateView,
+  checkNoChangesNode,
+  checkNoChangesView,
+  createComponentView,
+  createEmbeddedView,
+  createRootView,
+  destroyView,
+} from './view';
 
 let initialized = false;
 
@@ -69,15 +110,17 @@ function createProdServices() {
     destroyView: destroyView,
     createDebugContext: (view: ViewData, nodeIndex: number) => new DebugContext_(view, nodeIndex),
     handleEvent: (view: ViewData, nodeIndex: number, eventName: string, event: any) =>
-                     view.def.handleEvent(view, nodeIndex, eventName, event),
-    updateDirectives: (view: ViewData, checkType: CheckType) => view.def.updateDirectives(
-                          checkType === CheckType.CheckAndUpdate ? prodCheckAndUpdateNode :
-                                                                   prodCheckNoChangesNode,
-                          view),
-    updateRenderer: (view: ViewData, checkType: CheckType) => view.def.updateRenderer(
-                        checkType === CheckType.CheckAndUpdate ? prodCheckAndUpdateNode :
-                                                                 prodCheckNoChangesNode,
-                        view),
+      view.def.handleEvent(view, nodeIndex, eventName, event),
+    updateDirectives: (view: ViewData, checkType: CheckType) =>
+      view.def.updateDirectives(
+        checkType === CheckType.CheckAndUpdate ? prodCheckAndUpdateNode : prodCheckNoChangesNode,
+        view
+      ),
+    updateRenderer: (view: ViewData, checkType: CheckType) =>
+      view.def.updateRenderer(
+        checkType === CheckType.CheckAndUpdate ? prodCheckAndUpdateNode : prodCheckNoChangesNode,
+        view
+      ),
   };
 }
 
@@ -102,63 +145,110 @@ function createDebugServices() {
 }
 
 function createProdRootView(
-    elInjector: Injector, projectableNodes: any[][], rootSelectorOrNode: string | any,
-    def: ViewDefinition, ngModule: NgModuleRef<any>, context?: any): ViewData {
+  elInjector: Injector,
+  projectableNodes: any[][],
+  rootSelectorOrNode: string | any,
+  def: ViewDefinition,
+  ngModule: NgModuleRef<any>,
+  context?: any
+): ViewData {
   const rendererFactory: RendererFactory2 = ngModule.injector.get(RendererFactory2);
   return createRootView(
-      createRootData(elInjector, ngModule, rendererFactory, projectableNodes, rootSelectorOrNode),
-      def, context);
+    createRootData(elInjector, ngModule, rendererFactory, projectableNodes, rootSelectorOrNode),
+    def,
+    context
+  );
 }
 
 function debugCreateRootView(
-    elInjector: Injector, projectableNodes: any[][], rootSelectorOrNode: string | any,
-    def: ViewDefinition, ngModule: NgModuleRef<any>, context?: any): ViewData {
+  elInjector: Injector,
+  projectableNodes: any[][],
+  rootSelectorOrNode: string | any,
+  def: ViewDefinition,
+  ngModule: NgModuleRef<any>,
+  context?: any
+): ViewData {
   const rendererFactory: RendererFactory2 = ngModule.injector.get(RendererFactory2);
   const root = createRootData(
-      elInjector, ngModule, new DebugRendererFactory2(rendererFactory), projectableNodes,
-      rootSelectorOrNode);
+    elInjector,
+    ngModule,
+    new DebugRendererFactory2(rendererFactory),
+    projectableNodes,
+    rootSelectorOrNode
+  );
   const defWithOverride = applyProviderOverridesToView(def);
-  return callWithDebugContext(
-      DebugAction.create, createRootView, null, [root, defWithOverride, context]);
+  return callWithDebugContext(DebugAction.create, createRootView, null, [
+    root,
+    defWithOverride,
+    context,
+  ]);
 }
 
 function createRootData(
-    elInjector: Injector, ngModule: NgModuleRef<any>, rendererFactory: RendererFactory2,
-    projectableNodes: any[][], rootSelectorOrNode: any): RootData {
+  elInjector: Injector,
+  ngModule: NgModuleRef<any>,
+  rendererFactory: RendererFactory2,
+  projectableNodes: any[][],
+  rootSelectorOrNode: any
+): RootData {
   const sanitizer = ngModule.injector.get(Sanitizer);
   const errorHandler = ngModule.injector.get(ErrorHandler);
   const renderer = rendererFactory.createRenderer(null, null);
   return {
     ngModule,
-    injector: elInjector, projectableNodes,
-    selectorOrNode: rootSelectorOrNode, sanitizer, rendererFactory, renderer, errorHandler
+    injector: elInjector,
+    projectableNodes,
+    selectorOrNode: rootSelectorOrNode,
+    sanitizer,
+    rendererFactory,
+    renderer,
+    errorHandler,
   };
 }
 
 function debugCreateEmbeddedView(
-    parentView: ViewData, anchorDef: NodeDef, viewDef: ViewDefinition, context?: any): ViewData {
+  parentView: ViewData,
+  anchorDef: NodeDef,
+  viewDef: ViewDefinition,
+  context?: any
+): ViewData {
   const defWithOverride = applyProviderOverridesToView(viewDef);
-  return callWithDebugContext(
-      DebugAction.create, createEmbeddedView, null,
-      [parentView, anchorDef, defWithOverride, context]);
+  return callWithDebugContext(DebugAction.create, createEmbeddedView, null, [
+    parentView,
+    anchorDef,
+    defWithOverride,
+    context,
+  ]);
 }
 
 function debugCreateComponentView(
-    parentView: ViewData, nodeDef: NodeDef, viewDef: ViewDefinition, hostElement: any): ViewData {
-  const overrideComponentView =
-      viewDefOverrides.get(nodeDef.element !.componentProvider !.provider !.token);
+  parentView: ViewData,
+  nodeDef: NodeDef,
+  viewDef: ViewDefinition,
+  hostElement: any
+): ViewData {
+  const overrideComponentView = viewDefOverrides.get(
+    nodeDef.element!.componentProvider!.provider!.token
+  );
   if (overrideComponentView) {
     viewDef = overrideComponentView;
   } else {
     viewDef = applyProviderOverridesToView(viewDef);
   }
-  return callWithDebugContext(
-      DebugAction.create, createComponentView, null, [parentView, nodeDef, viewDef, hostElement]);
+  return callWithDebugContext(DebugAction.create, createComponentView, null, [
+    parentView,
+    nodeDef,
+    viewDef,
+    hostElement,
+  ]);
 }
 
 function debugCreateNgModuleRef(
-    moduleType: Type<any>, parentInjector: Injector, bootstrapComponents: Type<any>[],
-    def: NgModuleDefinition): NgModuleRef<any> {
+  moduleType: Type<any>,
+  parentInjector: Injector,
+  bootstrapComponents: Type<any>[],
+  def: NgModuleDefinition
+): NgModuleRef<any> {
   const defWithOverride = applyProviderOverridesToNgModule(def);
   return createNgModuleRef(moduleType, parentInjector, bootstrapComponents, defWithOverride);
 }
@@ -169,16 +259,19 @@ const viewDefOverrides = new Map<any, ViewDefinition>();
 
 function debugOverrideProvider(override: ProviderOverride) {
   providerOverrides.set(override.token, override);
-  let injectableDef: ɵɵInjectableDef<any>|null;
-  if (typeof override.token === 'function' && (injectableDef = getInjectableDef(override.token)) &&
-      typeof injectableDef.providedIn === 'function') {
+  let injectableDef: ɵɵInjectableDef<any> | null;
+  if (
+    typeof override.token === 'function' &&
+    (injectableDef = getInjectableDef(override.token)) &&
+    typeof injectableDef.providedIn === 'function'
+  ) {
     providerOverridesWithScope.set(override.token as InjectableType<any>, override);
   }
 }
 
 function debugOverrideComponentView(comp: any, compFactory: ComponentFactory<any>) {
   const hostViewDef = resolveDefinition(getComponentViewDefinitionFactory(compFactory));
-  const compViewDef = resolveDefinition(hostViewDef.nodes[0].element !.componentView !);
+  const compViewDef = resolveDefinition(hostViewDef.nodes[0].element!.componentView!);
   viewDefOverrides.set(comp, compViewDef);
 }
 
@@ -204,7 +297,7 @@ function applyProviderOverridesToView(def: ViewDefinition): ViewDefinition {
   }
   // clone the whole view definition,
   // as it maintains references between the nodes that are hard to update.
-  def = def.factory !(() => NOOP);
+  def = def.factory!(() => NOOP);
   for (let i = 0; i < elementIndicesWithOverwrittenProviders.length; i++) {
     applyProviderOverridesToElement(def, elementIndicesWithOverwrittenProviders[i]);
   }
@@ -212,15 +305,18 @@ function applyProviderOverridesToView(def: ViewDefinition): ViewDefinition {
 
   function findElementIndicesWithOverwrittenProviders(def: ViewDefinition): number[] {
     const elIndicesWithOverwrittenProviders: number[] = [];
-    let lastElementDef: NodeDef|null = null;
+    let lastElementDef: NodeDef | null = null;
     for (let i = 0; i < def.nodes.length; i++) {
       const nodeDef = def.nodes[i];
       if (nodeDef.flags & NodeFlags.TypeElement) {
         lastElementDef = nodeDef;
       }
-      if (lastElementDef && nodeDef.flags & NodeFlags.CatProviderNoDirective &&
-          providerOverrides.has(nodeDef.provider !.token)) {
-        elIndicesWithOverwrittenProviders.push(lastElementDef !.nodeIndex);
+      if (
+        lastElementDef &&
+        nodeDef.flags & NodeFlags.CatProviderNoDirective &&
+        providerOverrides.has(nodeDef.provider!.token)
+      ) {
+        elIndicesWithOverwrittenProviders.push(lastElementDef!.nodeIndex);
         lastElementDef = null;
       }
     }
@@ -235,7 +331,7 @@ function applyProviderOverridesToView(def: ViewDefinition): ViewDefinition {
         return;
       }
       if (nodeDef.flags & NodeFlags.CatProviderNoDirective) {
-        const provider = nodeDef.provider !;
+        const provider = nodeDef.provider!;
         const override = providerOverrides.get(provider.token);
         if (override) {
           nodeDef.flags = (nodeDef.flags & ~NodeFlags.CatProviderNoDirective) | override.flags;
@@ -257,27 +353,28 @@ function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefi
   }
   // clone the whole view definition,
   // as it maintains references between the nodes that are hard to update.
-  def = def.factory !(() => NOOP);
+  def = def.factory!(() => NOOP);
   applyProviderOverrides(def);
   return def;
 
-  function calcHasOverrides(def: NgModuleDefinition):
-      {hasOverrides: boolean, hasDeprecatedOverrides: boolean} {
+  function calcHasOverrides(
+    def: NgModuleDefinition
+  ): {hasOverrides: boolean; hasDeprecatedOverrides: boolean} {
     let hasOverrides = false;
     let hasDeprecatedOverrides = false;
     if (providerOverrides.size === 0) {
       return {hasOverrides, hasDeprecatedOverrides};
     }
-    def.providers.forEach(node => {
+    def.providers.forEach((node) => {
       const override = providerOverrides.get(node.token);
-      if ((node.flags & NodeFlags.CatProviderNoDirective) && override) {
+      if (node.flags & NodeFlags.CatProviderNoDirective && override) {
         hasOverrides = true;
         hasDeprecatedOverrides = hasDeprecatedOverrides || override.deprecatedBehavior;
       }
     });
-    def.modules.forEach(module => {
+    def.modules.forEach((module) => {
       providerOverridesWithScope.forEach((override, token) => {
-        if (getInjectableDef(token) !.providedIn === module) {
+        if (getInjectableDef(token)!.providedIn === module) {
           hasOverrides = true;
           hasDeprecatedOverrides = hasDeprecatedOverrides || override.deprecatedBehavior;
         }
@@ -305,11 +402,11 @@ function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefi
     if (providerOverridesWithScope.size > 0) {
       let moduleSet = new Set<any>(def.modules);
       providerOverridesWithScope.forEach((override, token) => {
-        if (moduleSet.has(getInjectableDef(token) !.providedIn)) {
+        if (moduleSet.has(getInjectableDef(token)!.providedIn)) {
           let provider = {
             token: token,
             flags:
-                override.flags | (hasDeprecatedOverrides ? NodeFlags.LazyProvider : NodeFlags.None),
+              override.flags | (hasDeprecatedOverrides ? NodeFlags.LazyProvider : NodeFlags.None),
             deps: splitDepsDsl(override.deps),
             value: override.value,
             index: def.providers.length,
@@ -323,23 +420,47 @@ function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefi
 }
 
 function prodCheckAndUpdateNode(
-    view: ViewData, checkIndex: number, argStyle: ArgumentType, v0?: any, v1?: any, v2?: any,
-    v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any): any {
+  view: ViewData,
+  checkIndex: number,
+  argStyle: ArgumentType,
+  v0?: any,
+  v1?: any,
+  v2?: any,
+  v3?: any,
+  v4?: any,
+  v5?: any,
+  v6?: any,
+  v7?: any,
+  v8?: any,
+  v9?: any
+): any {
   const nodeDef = view.def.nodes[checkIndex];
   checkAndUpdateNode(view, nodeDef, argStyle, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
-  return (nodeDef.flags & NodeFlags.CatPureExpression) ?
-      asPureExpressionData(view, checkIndex).value :
-      undefined;
+  return nodeDef.flags & NodeFlags.CatPureExpression
+    ? asPureExpressionData(view, checkIndex).value
+    : undefined;
 }
 
 function prodCheckNoChangesNode(
-    view: ViewData, checkIndex: number, argStyle: ArgumentType, v0?: any, v1?: any, v2?: any,
-    v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any): any {
+  view: ViewData,
+  checkIndex: number,
+  argStyle: ArgumentType,
+  v0?: any,
+  v1?: any,
+  v2?: any,
+  v3?: any,
+  v4?: any,
+  v5?: any,
+  v6?: any,
+  v7?: any,
+  v8?: any,
+  v9?: any
+): any {
   const nodeDef = view.def.nodes[checkIndex];
   checkNoChangesNode(view, nodeDef, argStyle, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
-  return (nodeDef.flags & NodeFlags.CatPureExpression) ?
-      asPureExpressionData(view, checkIndex).value :
-      undefined;
+  return nodeDef.flags & NodeFlags.CatPureExpression
+    ? asPureExpressionData(view, checkIndex).value
+    : undefined;
 }
 
 function debugCheckAndUpdateView(view: ViewData) {
@@ -359,12 +480,12 @@ enum DebugAction {
   detectChanges,
   checkNoChanges,
   destroy,
-  handleEvent
+  handleEvent,
 }
 
 let _currentAction: DebugAction;
 let _currentView: ViewData;
-let _currentNodeIndex: number|null;
+let _currentNodeIndex: number | null;
 
 function debugSetCurrentNode(view: ViewData, nodeIndex: number | null) {
   _currentView = view;
@@ -373,8 +494,12 @@ function debugSetCurrentNode(view: ViewData, nodeIndex: number | null) {
 
 function debugHandleEvent(view: ViewData, nodeIndex: number, eventName: string, event: any) {
   debugSetCurrentNode(view, nodeIndex);
-  return callWithDebugContext(
-      DebugAction.handleEvent, view.def.handleEvent, null, [view, nodeIndex, eventName, event]);
+  return callWithDebugContext(DebugAction.handleEvent, view.def.handleEvent, null, [
+    view,
+    nodeIndex,
+    eventName,
+    event,
+  ]);
 }
 
 function debugUpdateDirectives(view: ViewData, checkType: CheckType) {
@@ -385,7 +510,11 @@ function debugUpdateDirectives(view: ViewData, checkType: CheckType) {
   return view.def.updateDirectives(debugCheckDirectivesFn, view);
 
   function debugCheckDirectivesFn(
-      view: ViewData, nodeIndex: number, argStyle: ArgumentType, ...values: any[]) {
+    view: ViewData,
+    nodeIndex: number,
+    argStyle: ArgumentType,
+    ...values: any[]
+  ) {
     const nodeDef = view.def.nodes[nodeIndex];
     if (checkType === CheckType.CheckAndUpdate) {
       debugCheckAndUpdateNode(view, nodeDef, argStyle, values);
@@ -395,9 +524,9 @@ function debugUpdateDirectives(view: ViewData, checkType: CheckType) {
     if (nodeDef.flags & NodeFlags.TypeDirective) {
       debugSetCurrentNode(view, nextDirectiveWithBinding(view, nodeIndex));
     }
-    return (nodeDef.flags & NodeFlags.CatPureExpression) ?
-        asPureExpressionData(view, nodeDef.nodeIndex).value :
-        undefined;
+    return nodeDef.flags & NodeFlags.CatPureExpression
+      ? asPureExpressionData(view, nodeDef.nodeIndex).value
+      : undefined;
   }
 }
 
@@ -409,7 +538,11 @@ function debugUpdateRenderer(view: ViewData, checkType: CheckType) {
   return view.def.updateRenderer(debugCheckRenderNodeFn, view);
 
   function debugCheckRenderNodeFn(
-      view: ViewData, nodeIndex: number, argStyle: ArgumentType, ...values: any[]) {
+    view: ViewData,
+    nodeIndex: number,
+    argStyle: ArgumentType,
+    ...values: any[]
+  ) {
     const nodeDef = view.def.nodes[nodeIndex];
     if (checkType === CheckType.CheckAndUpdate) {
       debugCheckAndUpdateNode(view, nodeDef, argStyle, values);
@@ -419,14 +552,18 @@ function debugUpdateRenderer(view: ViewData, checkType: CheckType) {
     if (nodeDef.flags & NodeFlags.CatRenderNode) {
       debugSetCurrentNode(view, nextRenderNodeWithBinding(view, nodeIndex));
     }
-    return (nodeDef.flags & NodeFlags.CatPureExpression) ?
-        asPureExpressionData(view, nodeDef.nodeIndex).value :
-        undefined;
+    return nodeDef.flags & NodeFlags.CatPureExpression
+      ? asPureExpressionData(view, nodeDef.nodeIndex).value
+      : undefined;
   }
 }
 
 function debugCheckAndUpdateNode(
-    view: ViewData, nodeDef: NodeDef, argStyle: ArgumentType, givenValues: any[]): void {
+  view: ViewData,
+  nodeDef: NodeDef,
+  argStyle: ArgumentType,
+  givenValues: any[]
+): void {
   const changed = (<any>checkAndUpdateNode)(view, nodeDef, argStyle, ...givenValues);
   if (changed) {
     const values = argStyle === ArgumentType.Dynamic ? givenValues[0] : givenValues;
@@ -436,13 +573,14 @@ function debugCheckAndUpdateNode(
         const binding = nodeDef.bindings[i];
         const value = values[i];
         if (binding.flags & BindingFlags.TypeProperty) {
-          bindingValues[normalizeDebugBindingName(binding.nonMinifiedName !)] =
-              normalizeDebugBindingValue(value);
+          bindingValues[
+            normalizeDebugBindingName(binding.nonMinifiedName!)
+          ] = normalizeDebugBindingValue(value);
         }
       }
-      const elDef = nodeDef.parent !;
+      const elDef = nodeDef.parent!;
       const el = asElementData(view, elDef.nodeIndex).renderElement;
-      if (!elDef.element !.name) {
+      if (!elDef.element!.name) {
         // a comment.
         view.renderer.setValue(el, `bindings=${JSON.stringify(bindingValues, null, 2)}`);
       } else {
@@ -461,11 +599,15 @@ function debugCheckAndUpdateNode(
 }
 
 function debugCheckNoChangesNode(
-    view: ViewData, nodeDef: NodeDef, argStyle: ArgumentType, values: any[]): void {
+  view: ViewData,
+  nodeDef: NodeDef,
+  argStyle: ArgumentType,
+  values: any[]
+): void {
   (<any>checkNoChangesNode)(view, nodeDef, argStyle, ...values);
 }
 
-function nextDirectiveWithBinding(view: ViewData, nodeIndex: number): number|null {
+function nextDirectiveWithBinding(view: ViewData, nodeIndex: number): number | null {
   for (let i = nodeIndex; i < view.def.nodes.length; i++) {
     const nodeDef = view.def.nodes[i];
     if (nodeDef.flags & NodeFlags.TypeDirective && nodeDef.bindings && nodeDef.bindings.length) {
@@ -475,10 +617,10 @@ function nextDirectiveWithBinding(view: ViewData, nodeIndex: number): number|nul
   return null;
 }
 
-function nextRenderNodeWithBinding(view: ViewData, nodeIndex: number): number|null {
+function nextRenderNodeWithBinding(view: ViewData, nodeIndex: number): number | null {
   for (let i = nodeIndex; i < view.def.nodes.length; i++) {
     const nodeDef = view.def.nodes[i];
-    if ((nodeDef.flags & NodeFlags.CatRenderNode) && nodeDef.bindings && nodeDef.bindings.length) {
+    if (nodeDef.flags & NodeFlags.CatRenderNode && nodeDef.bindings && nodeDef.bindings.length) {
       return i;
     }
   }
@@ -490,7 +632,7 @@ class DebugContext_ implements DebugContext {
   private elView: ViewData;
   private elDef: NodeDef;
 
-  constructor(public view: ViewData, public nodeIndex: number|null) {
+  constructor(public view: ViewData, public nodeIndex: number | null) {
     if (nodeIndex == null) {
       this.nodeIndex = nodeIndex = 0;
     }
@@ -498,12 +640,12 @@ class DebugContext_ implements DebugContext {
     let elDef = this.nodeDef;
     let elView = view;
     while (elDef && (elDef.flags & NodeFlags.TypeElement) === 0) {
-      elDef = elDef.parent !;
+      elDef = elDef.parent!;
     }
     if (!elDef) {
       while (!elDef && elView) {
-        elDef = viewParentEl(elView) !;
-        elView = elView.parent !;
+        elDef = viewParentEl(elView)!;
+        elView = elView.parent!;
       }
     }
     this.elDef = elDef;
@@ -515,20 +657,29 @@ class DebugContext_ implements DebugContext {
     return asElementData(this.elView, this.elDef.nodeIndex).componentView || this.view;
   }
 
-  get injector(): Injector { return createInjector(this.elView, this.elDef); }
+  get injector(): Injector {
+    return createInjector(this.elView, this.elDef);
+  }
 
-  get component(): any { return this.elOrCompView.component; }
+  get component(): any {
+    return this.elOrCompView.component;
+  }
 
-  get context(): any { return this.elOrCompView.context; }
+  get context(): any {
+    return this.elOrCompView.context;
+  }
 
   get providerTokens(): any[] {
     const tokens: any[] = [];
     if (this.elDef) {
-      for (let i = this.elDef.nodeIndex + 1; i <= this.elDef.nodeIndex + this.elDef.childCount;
-           i++) {
+      for (
+        let i = this.elDef.nodeIndex + 1;
+        i <= this.elDef.nodeIndex + this.elDef.childCount;
+        i++
+      ) {
         const childDef = this.elView.def.nodes[i];
         if (childDef.flags & NodeFlags.CatProvider) {
-          tokens.push(childDef.provider !.token);
+          tokens.push(childDef.provider!.token);
         }
         i += childDef.childCount;
       }
@@ -541,8 +692,11 @@ class DebugContext_ implements DebugContext {
     if (this.elDef) {
       collectReferences(this.elView, this.elDef, references);
 
-      for (let i = this.elDef.nodeIndex + 1; i <= this.elDef.nodeIndex + this.elDef.childCount;
-           i++) {
+      for (
+        let i = this.elDef.nodeIndex + 1;
+        i <= this.elDef.nodeIndex + this.elDef.childCount;
+        i++
+      ) {
         const childDef = this.elView.def.nodes[i];
         if (childDef.flags & NodeFlags.CatProvider) {
           collectReferences(this.elView, childDef, references);
@@ -559,8 +713,9 @@ class DebugContext_ implements DebugContext {
   }
 
   get renderNode(): any {
-    return this.nodeDef.flags & NodeFlags.TypeText ? renderNode(this.view, this.nodeDef) :
-                                                     renderNode(this.elView, this.elDef);
+    return this.nodeDef.flags & NodeFlags.TypeText
+      ? renderNode(this.view, this.nodeDef)
+      : renderNode(this.elView, this.elDef);
   }
 
   logError(console: Console, ...values: any[]) {
@@ -585,7 +740,7 @@ class DebugContext_ implements DebugContext {
         return NOOP;
       }
     };
-    logViewDef.factory !(nodeLogger);
+    logViewDef.factory!(nodeLogger);
     if (currRenderNodeIndex < renderNodeIndex) {
       console.error('Illegal state: the ViewDefinitionFactory did not call the logger!');
       (<any>console.error)(...values);
@@ -604,12 +759,12 @@ function getRenderNodeIndex(viewDef: ViewDefinition, nodeIndex: number): number 
   return renderNodeIndex;
 }
 
-function findHostElement(view: ViewData): ElementData|null {
+function findHostElement(view: ViewData): ElementData | null {
   while (view && !isComponentView(view)) {
-    view = view.parent !;
+    view = view.parent!;
   }
   if (view.parent) {
-    return asElementData(view.parent, viewParentEl(view) !.nodeIndex);
+    return asElementData(view.parent, viewParentEl(view)!.nodeIndex);
   }
   return null;
 }
@@ -635,18 +790,18 @@ function callWithDebugContext(action: DebugAction, fn: any, self: any, args: any
     if (isViewDebugError(e) || !_currentView) {
       throw e;
     }
-    throw viewWrappedDebugError(e, getCurrentDebugContext() !);
+    throw viewWrappedDebugError(e, getCurrentDebugContext()!);
   }
 }
 
-export function getCurrentDebugContext(): DebugContext|null {
+export function getCurrentDebugContext(): DebugContext | null {
   return _currentView ? new DebugContext_(_currentView, _currentNodeIndex) : null;
 }
 
 export class DebugRendererFactory2 implements RendererFactory2 {
   constructor(private delegate: RendererFactory2) {}
 
-  createRenderer(element: any, renderData: RendererType2|null): Renderer2 {
+  createRenderer(element: any, renderData: RendererType2 | null): Renderer2 {
     return new DebugRenderer2(this.delegate.createRenderer(element, renderData));
   }
 
@@ -672,7 +827,9 @@ export class DebugRendererFactory2 implements RendererFactory2 {
 export class DebugRenderer2 implements Renderer2 {
   readonly data: {[key: string]: any};
 
-  private createDebugContext(nativeElement: any) { return this.debugContextFactory(nativeElement); }
+  private createDebugContext(nativeElement: any) {
+    return this.debugContextFactory(nativeElement);
+  }
 
   /**
    * Factory function used to create a `DebugContext` when a node is created.
@@ -684,10 +841,12 @@ export class DebugRenderer2 implements Renderer2 {
    */
   debugContextFactory: (nativeElement?: any) => DebugContext | null = getCurrentDebugContext;
 
-  constructor(private delegate: Renderer2) { this.data = this.delegate.data; }
+  constructor(private delegate: Renderer2) {
+    this.data = this.delegate.data;
+  }
 
   destroyNode(node: any) {
-    const debugNode = getDebugNode(node) !;
+    const debugNode = getDebugNode(node)!;
     removeDebugNodeFromIndex(debugNode);
     if (debugNode instanceof DebugNode__PRE_R3__) {
       debugNode.listeners.length = 0;
@@ -697,14 +856,16 @@ export class DebugRenderer2 implements Renderer2 {
     }
   }
 
-  destroy() { this.delegate.destroy(); }
+  destroy() {
+    this.delegate.destroy();
+  }
 
   createElement(name: string, namespace?: string): any {
     const el = this.delegate.createElement(name, namespace);
     const debugCtx = this.createDebugContext(el);
     if (debugCtx) {
       const debugEl = new DebugElement__PRE_R3__(el, null, debugCtx);
-      (debugEl as{name: string}).name = name;
+      (debugEl as {name: string}).name = name;
       indexDebugNode(debugEl);
     }
     return el;
@@ -740,7 +901,7 @@ export class DebugRenderer2 implements Renderer2 {
   insertBefore(parent: any, newChild: any, refChild: any): void {
     const debugEl = getDebugNode(parent);
     const debugChildEl = getDebugNode(newChild);
-    const debugRefEl = getDebugNode(refChild) !;
+    const debugRefEl = getDebugNode(refChild)!;
     if (debugEl && debugChildEl && debugEl instanceof DebugElement__PRE_R3__) {
       debugEl.insertBefore(debugRefEl, debugChildEl);
     }
@@ -757,7 +918,7 @@ export class DebugRenderer2 implements Renderer2 {
     this.delegate.removeChild(parent, oldChild);
   }
 
-  selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {
+  selectRootElement(selectorOrNode: string | any, preserveContent?: boolean): any {
     const el = this.delegate.selectRootElement(selectorOrNode, preserveContent);
     const debugCtx = getCurrentDebugContext();
     if (debugCtx) {
@@ -825,8 +986,10 @@ export class DebugRenderer2 implements Renderer2 {
   }
 
   listen(
-      target: 'document'|'windows'|'body'|any, eventName: string,
-      callback: (event: any) => boolean): () => void {
+    target: 'document' | 'windows' | 'body' | any,
+    eventName: string,
+    callback: (event: any) => boolean
+  ): () => void {
     if (typeof target !== 'string') {
       const debugEl = getDebugNode(target);
       if (debugEl) {
@@ -837,7 +1000,13 @@ export class DebugRenderer2 implements Renderer2 {
     return this.delegate.listen(target, eventName, callback);
   }
 
-  parentNode(node: any): any { return this.delegate.parentNode(node); }
-  nextSibling(node: any): any { return this.delegate.nextSibling(node); }
-  setValue(node: any, value: string): void { return this.delegate.setValue(node, value); }
+  parentNode(node: any): any {
+    return this.delegate.parentNode(node);
+  }
+  nextSibling(node: any): any {
+    return this.delegate.nextSibling(node);
+  }
+  setValue(node: any, value: string): void {
+    return this.delegate.setValue(node, value);
+  }
 }

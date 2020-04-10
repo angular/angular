@@ -1,16 +1,35 @@
 /**
-  * @license
-  * Copyright Google Inc. All Rights Reserved.
-  *
-  * Use of this source code is governed by an MIT-style license that can be
-  * found in the LICENSE file at https://angular.io/license
-  */
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 import {DirectiveDef} from '@angular/core/src/render3';
 import {ɵɵdefineDirective} from '@angular/core/src/render3/definition';
-import {classStringParser, styleStringParser, toStylingKeyValueArray, ɵɵclassProp, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer} from '@angular/core/src/render3/instructions/styling';
+import {
+  classStringParser,
+  styleStringParser,
+  toStylingKeyValueArray,
+  ɵɵclassProp,
+  ɵɵstyleMap,
+  ɵɵstyleProp,
+  ɵɵstyleSanitizer,
+} from '@angular/core/src/render3/instructions/styling';
 import {AttributeMarker, TAttributes} from '@angular/core/src/render3/interfaces/node';
-import {StylingRange, TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, setTStylingRangeNext, setTStylingRangePrev, toTStylingRange} from '@angular/core/src/render3/interfaces/styling';
+import {
+  StylingRange,
+  TStylingKey,
+  TStylingRange,
+  getTStylingRangeNext,
+  getTStylingRangeNextDuplicate,
+  getTStylingRangePrev,
+  getTStylingRangePrevDuplicate,
+  setTStylingRangeNext,
+  setTStylingRangePrev,
+  toTStylingRange,
+} from '@angular/core/src/render3/interfaces/styling';
 import {HEADER_OFFSET, TVIEW} from '@angular/core/src/render3/interfaces/view';
 import {getLView, leaveView, setBindingRootForHostBindings} from '@angular/core/src/render3/state';
 import {getNativeByIndex} from '@angular/core/src/render3/util/view_utils';
@@ -27,8 +46,8 @@ describe('styling', () => {
   beforeEach(enterViewWithOneDiv);
   afterEach(leaveView);
 
-  let div !: HTMLElement;
-  beforeEach(() => div = getNativeByIndex(0, getLView()) as HTMLElement);
+  let div!: HTMLElement;
+  beforeEach(() => (div = getNativeByIndex(0, getLView()) as HTMLElement));
 
   it('should do set basic style', () => {
     ɵɵstyleProp('color', 'red');
@@ -65,64 +84,64 @@ describe('styling', () => {
 
   it('should set style based on priority', () => {
     ɵɵstyleProp('color', 'red');
-    ɵɵstyleProp('color', 'blue');  // Higher priority, should win.
+    ɵɵstyleProp('color', 'blue'); // Higher priority, should win.
     expectStyle(div).toEqual({color: 'blue'});
     // The intermediate value has to set since it does not know if it is last one.
-    expect(ngDevMode !.rendererSetStyle).toEqual(2);
+    expect(ngDevMode!.rendererSetStyle).toEqual(2);
     ngDevModeResetPerfCounters();
 
     clearFirstUpdatePass();
     rewindBindingIndex();
-    ɵɵstyleProp('color', 'red');    // no change
-    ɵɵstyleProp('color', 'green');  // change to green
+    ɵɵstyleProp('color', 'red'); // no change
+    ɵɵstyleProp('color', 'green'); // change to green
     expectStyle(div).toEqual({color: 'green'});
-    expect(ngDevMode !.rendererSetStyle).toEqual(1);
+    expect(ngDevMode!.rendererSetStyle).toEqual(1);
     ngDevModeResetPerfCounters();
 
     rewindBindingIndex();
-    ɵɵstyleProp('color', 'black');               // First binding update
-    expectStyle(div).toEqual({color: 'green'});  // Green still has priority.
-    expect(ngDevMode !.rendererSetStyle).toEqual(0);
+    ɵɵstyleProp('color', 'black'); // First binding update
+    expectStyle(div).toEqual({color: 'green'}); // Green still has priority.
+    expect(ngDevMode!.rendererSetStyle).toEqual(0);
     ngDevModeResetPerfCounters();
 
     rewindBindingIndex();
-    ɵɵstyleProp('color', 'black');               // no change
-    ɵɵstyleProp('color', undefined);             // Clear second binding
-    expectStyle(div).toEqual({color: 'black'});  // default to first binding
-    expect(ngDevMode !.rendererSetStyle).toEqual(1);
+    ɵɵstyleProp('color', 'black'); // no change
+    ɵɵstyleProp('color', undefined); // Clear second binding
+    expectStyle(div).toEqual({color: 'black'}); // default to first binding
+    expect(ngDevMode!.rendererSetStyle).toEqual(1);
     ngDevModeResetPerfCounters();
 
     rewindBindingIndex();
     ɵɵstyleProp('color', null);
-    expectStyle(div).toEqual({});  // default to first binding
-    expect(ngDevMode !.rendererSetStyle).toEqual(0);
-    expect(ngDevMode !.rendererRemoveStyle).toEqual(1);
+    expectStyle(div).toEqual({}); // default to first binding
+    expect(ngDevMode!.rendererSetStyle).toEqual(0);
+    expect(ngDevMode!.rendererRemoveStyle).toEqual(1);
   });
 
   it('should set class based on priority', () => {
     ɵɵclassProp('foo', false);
-    ɵɵclassProp('foo', true);  // Higher priority, should win.
+    ɵɵclassProp('foo', true); // Higher priority, should win.
     expectClass(div).toEqual({foo: true});
-    expect(ngDevMode !.rendererAddClass).toEqual(1);
+    expect(ngDevMode!.rendererAddClass).toEqual(1);
     ngDevModeResetPerfCounters();
 
     clearFirstUpdatePass();
     rewindBindingIndex();
-    ɵɵclassProp('foo', false);      // no change
-    ɵɵclassProp('foo', undefined);  // change (have no opinion)
+    ɵɵclassProp('foo', false); // no change
+    ɵɵclassProp('foo', undefined); // change (have no opinion)
     expectClass(div).toEqual({});
-    expect(ngDevMode !.rendererAddClass).toEqual(0);
-    expect(ngDevMode !.rendererRemoveClass).toEqual(1);
+    expect(ngDevMode!.rendererAddClass).toEqual(0);
+    expect(ngDevMode!.rendererRemoveClass).toEqual(1);
     ngDevModeResetPerfCounters();
 
     rewindBindingIndex();
-    ɵɵclassProp('foo', false);  // no change
+    ɵɵclassProp('foo', false); // no change
     ɵɵclassProp('foo', 'truthy' as any);
     expectClass(div).toEqual({foo: true});
 
     rewindBindingIndex();
-    ɵɵclassProp('foo', true);       // change
-    ɵɵclassProp('foo', undefined);  // change
+    ɵɵclassProp('foo', true); // change
+    ɵɵclassProp('foo', undefined); // change
     expectClass(div).toEqual({foo: true});
   });
 
@@ -130,8 +149,8 @@ describe('styling', () => {
     it('should work with maps', () => {
       ɵɵstyleMap({});
       expectStyle(div).toEqual({});
-      expect(ngDevMode !.rendererSetStyle).toEqual(0);
-      expect(ngDevMode !.rendererRemoveStyle).toEqual(0);
+      expect(ngDevMode!.rendererSetStyle).toEqual(0);
+      expect(ngDevMode!.rendererRemoveStyle).toEqual(0);
       ngDevModeResetPerfCounters();
 
       clearFirstUpdatePass();
@@ -139,30 +158,30 @@ describe('styling', () => {
       rewindBindingIndex();
       ɵɵstyleMap({color: 'blue'});
       expectStyle(div).toEqual({color: 'blue'});
-      expect(ngDevMode !.rendererSetStyle).toEqual(1);
-      expect(ngDevMode !.rendererRemoveStyle).toEqual(0);
+      expect(ngDevMode!.rendererSetStyle).toEqual(1);
+      expect(ngDevMode!.rendererRemoveStyle).toEqual(0);
       ngDevModeResetPerfCounters();
 
       rewindBindingIndex();
       ɵɵstyleMap({color: 'red'});
       expectStyle(div).toEqual({color: 'red'});
-      expect(ngDevMode !.rendererSetStyle).toEqual(1);
-      expect(ngDevMode !.rendererRemoveStyle).toEqual(0);
+      expect(ngDevMode!.rendererSetStyle).toEqual(1);
+      expect(ngDevMode!.rendererRemoveStyle).toEqual(0);
       ngDevModeResetPerfCounters();
 
       rewindBindingIndex();
       ɵɵstyleMap({color: null, width: '100px'});
       expectStyle(div).toEqual({width: '100px'});
-      expect(ngDevMode !.rendererSetStyle).toEqual(1);
-      expect(ngDevMode !.rendererRemoveStyle).toEqual(1);
+      expect(ngDevMode!.rendererSetStyle).toEqual(1);
+      expect(ngDevMode!.rendererRemoveStyle).toEqual(1);
       ngDevModeResetPerfCounters();
     });
 
     it('should work with object literal and strings', () => {
       ɵɵstyleMap('');
       expectStyle(div).toEqual({});
-      expect(ngDevMode !.rendererSetStyle).toEqual(0);
-      expect(ngDevMode !.rendererRemoveStyle).toEqual(0);
+      expect(ngDevMode!.rendererSetStyle).toEqual(0);
+      expect(ngDevMode!.rendererRemoveStyle).toEqual(0);
       ngDevModeResetPerfCounters();
 
       clearFirstUpdatePass();
@@ -170,22 +189,22 @@ describe('styling', () => {
       rewindBindingIndex();
       ɵɵstyleMap('color: blue');
       expectStyle(div).toEqual({color: 'blue'});
-      expect(ngDevMode !.rendererSetStyle).toEqual(1);
-      expect(ngDevMode !.rendererRemoveStyle).toEqual(0);
+      expect(ngDevMode!.rendererSetStyle).toEqual(1);
+      expect(ngDevMode!.rendererRemoveStyle).toEqual(0);
       ngDevModeResetPerfCounters();
 
       rewindBindingIndex();
       ɵɵstyleMap('color: red');
       expectStyle(div).toEqual({color: 'red'});
-      expect(ngDevMode !.rendererSetStyle).toEqual(1);
-      expect(ngDevMode !.rendererRemoveStyle).toEqual(0);
+      expect(ngDevMode!.rendererSetStyle).toEqual(1);
+      expect(ngDevMode!.rendererRemoveStyle).toEqual(0);
       ngDevModeResetPerfCounters();
 
       rewindBindingIndex();
       ɵɵstyleMap('width: 100px');
       expectStyle(div).toEqual({width: '100px'});
-      expect(ngDevMode !.rendererSetStyle).toEqual(1);
-      expect(ngDevMode !.rendererRemoveStyle).toEqual(1);
+      expect(ngDevMode!.rendererSetStyle).toEqual(1);
+      expect(ngDevMode!.rendererRemoveStyle).toEqual(1);
       ngDevModeResetPerfCounters();
     });
 
@@ -277,16 +296,19 @@ describe('styling', () => {
 
         ɵɵstyleProp('content', '"dynamic"');
         expectTStylingKeys('style').toEqual([
-          ['', 'content', 'content', '"TEMPLATE"'], 'prev',  // contains statics
-          null                                               // residual
+          ['', 'content', 'content', '"TEMPLATE"'],
+          'prev', // contains statics
+          null, // residual
         ]);
         expectStyle(div).toEqual({content: '"dynamic"'});
 
         ɵɵstyleProp('content', undefined);
         expectTStylingKeys('style').toEqual([
-          ['', 'content', 'content', '"TEMPLATE"'], 'both',  // contains statics
-          'content', 'prev',  // Making sure that second instruction does not have statics again.
-          null                // residual
+          ['', 'content', 'content', '"TEMPLATE"'],
+          'both', // contains statics
+          'content',
+          'prev', // Making sure that second instruction does not have statics again.
+          null, // residual
         ]);
         expectStyle(div).toEqual({content: '"dynamic"'});
       });
@@ -295,35 +317,41 @@ describe('styling', () => {
     describe('directives only', () => {
       it('should update residual on second directive', () => {
         givenDirectiveAttrs([
-          [AttributeMarker.Styles, 'content', '"lowest"'],  // 0
-          [AttributeMarker.Styles, 'content', '"middle"'],  // 1
+          [AttributeMarker.Styles, 'content', '"lowest"'], // 0
+          [AttributeMarker.Styles, 'content', '"middle"'], // 1
         ]);
         expectStyle(div).toEqual({content: '"middle"'});
 
         activateHostBindings(0);
         ɵɵstyleProp('content', '"dynamic"');
         expectTStylingKeys('style').toEqual([
-          ['', 'content', 'content', '"lowest"'], 'both',  // 1: contains statics
-          ['content', '"middle"'],                         // residual
+          ['', 'content', 'content', '"lowest"'],
+          'both', // 1: contains statics
+          ['content', '"middle"'], // residual
         ]);
         expectStyle(div).toEqual({content: '"middle"'});
 
         // second binding should not get statics
         ɵɵstyleProp('content', '"dynamic2"');
         expectTStylingKeys('style').toEqual([
-          ['', 'content', 'content', '"lowest"'], 'both',  // 1: contains statics
-          'content', 'both',                               // 1: Should not get statics
-          ['content', '"middle"']                          // residual
+          ['', 'content', 'content', '"lowest"'],
+          'both', // 1: contains statics
+          'content',
+          'both', // 1: Should not get statics
+          ['content', '"middle"'], // residual
         ]);
         expectStyle(div).toEqual({content: '"middle"'});
 
         activateHostBindings(1);
         ɵɵstyleProp('content', '"dynamic3"');
         expectTStylingKeys('style').toEqual([
-          ['', 'content', 'content', '"lowest"'], 'both',  // 1: contains statics
-          'content', 'both',                               // 1: Should not get statics
-          ['', 'content', 'content', '"middle"'], 'prev',  // 0: contains statics
-          null                                             // residual
+          ['', 'content', 'content', '"lowest"'],
+          'both', // 1: contains statics
+          'content',
+          'both', // 1: Should not get statics
+          ['', 'content', 'content', '"middle"'],
+          'prev', // 0: contains statics
+          null, // residual
         ]);
         expectStyle(div).toEqual({content: '"dynamic3"'});
       });
@@ -332,8 +360,8 @@ describe('styling', () => {
     describe('template and directives', () => {
       it('should combine property and map', () => {
         givenDirectiveAttrs([
-          [AttributeMarker.Styles, 'content', '"lowest"', 'color', 'blue'],   // 0
-          [AttributeMarker.Styles, 'content', '"middle"', 'width', '100px'],  // 1
+          [AttributeMarker.Styles, 'content', '"lowest"', 'color', 'blue'], // 0
+          [AttributeMarker.Styles, 'content', '"middle"', 'width', '100px'], // 1
         ]);
         givenTemplateAttrs([AttributeMarker.Styles, 'content', '"TEMPLATE"', 'color', 'red']);
 
@@ -341,9 +369,10 @@ describe('styling', () => {
         ɵɵstyleProp('content', undefined);
         expectTStylingKeys('style').toEqual([
           // TEMPLATE
-          ['', 'content', 'color', 'red', 'content', '"TEMPLATE"', 'width', '100px'], 'prev',
+          ['', 'content', 'color', 'red', 'content', '"TEMPLATE"', 'width', '100px'],
+          'prev',
           // RESIDUAL
-          null
+          null,
         ]);
         expectStyle(div).toEqual({content: '"TEMPLATE"', color: 'red', width: '100px'});
 
@@ -352,36 +381,49 @@ describe('styling', () => {
         ɵɵstyleMap('color: red; width: 0px; height: 50px');
         expectTStylingKeys('style').toEqual([
           // Host Binding 0
-          ['', null, 'color', 'blue', 'content', '"lowest"'], 'both',
+          ['', null, 'color', 'blue', 'content', '"lowest"'],
+          'both',
           // TEMPLATE
-          ['', 'content', 'color', 'red', 'content', '"TEMPLATE"', 'width', '100px'], 'prev',
+          ['', 'content', 'color', 'red', 'content', '"TEMPLATE"', 'width', '100px'],
+          'prev',
           // RESIDUAL
-          null
+          null,
         ]);
-        expectStyle(div).toEqual(
-            {content: '"TEMPLATE"', color: 'red', width: '100px', height: '50px'});
+        expectStyle(div).toEqual({
+          content: '"TEMPLATE"',
+          color: 'red',
+          width: '100px',
+          height: '50px',
+        });
 
         // Directive 1
         activateHostBindings(1);
         ɵɵstyleMap('color: red; width: 0px; height: 50px');
         expectTStylingKeys('style').toEqual([
           // Host Binding 0
-          ['', null, 'color', 'blue', 'content', '"lowest"'], 'both',
+          ['', null, 'color', 'blue', 'content', '"lowest"'],
+          'both',
           // Host Binding 1
-          ['', null, 'content', '"middle"', 'width', '100px'], 'both',
+          ['', null, 'content', '"middle"', 'width', '100px'],
+          'both',
           // TEMPLATE
-          ['', 'content', 'color', 'red', 'content', '"TEMPLATE"'], 'prev',
+          ['', 'content', 'color', 'red', 'content', '"TEMPLATE"'],
+          'prev',
           // RESIDUAL
-          null
+          null,
         ]);
-        expectStyle(div).toEqual(
-            {content: '"TEMPLATE"', color: 'red', width: '0px', height: '50px'});
+        expectStyle(div).toEqual({
+          content: '"TEMPLATE"',
+          color: 'red',
+          width: '0px',
+          height: '50px',
+        });
       });
 
       it('should read value from residual', () => {
         givenDirectiveAttrs([
-          [AttributeMarker.Styles, 'content', '"lowest"', 'color', 'blue'],   // 0
-          [AttributeMarker.Styles, 'content', '"middle"', 'width', '100px'],  // 1
+          [AttributeMarker.Styles, 'content', '"lowest"', 'color', 'blue'], // 0
+          [AttributeMarker.Styles, 'content', '"middle"', 'width', '100px'], // 1
         ]);
         givenTemplateAttrs([AttributeMarker.Styles, 'content', '"TEMPLATE"', 'color', 'red']);
 
@@ -390,59 +432,71 @@ describe('styling', () => {
         ɵɵstyleProp('color', 'white');
         expectTStylingKeys('style').toEqual([
           // Host Binding 0 + 1
-          ['', 'color', 'color', 'blue', 'content', '"middle"', 'width', '100px'], 'both',
+          ['', 'color', 'color', 'blue', 'content', '"middle"', 'width', '100px'],
+          'both',
           // RESIDUAL
-          ['color', 'red', 'content', '"TEMPLATE"']
+          ['color', 'red', 'content', '"TEMPLATE"'],
         ]);
         expectStyle(div).toEqual({content: '"TEMPLATE"', color: 'red', width: '100px'});
-
       });
     });
   });
 
-
   describe('toStylingArray', () => {
     describe('falsy', () => {
       it('should return empty KeyValueArray', () => {
-        expect(toStylingKeyValueArray(keyValueArraySet, null !, '')).toEqual([] as any);
-        expect(toStylingKeyValueArray(keyValueArraySet, null !, null)).toEqual([] as any);
-        expect(toStylingKeyValueArray(keyValueArraySet, null !, undefined)).toEqual([] as any);
-        expect(toStylingKeyValueArray(keyValueArraySet, null !, [])).toEqual([] as any);
-        expect(toStylingKeyValueArray(keyValueArraySet, null !, {})).toEqual([] as any);
+        expect(toStylingKeyValueArray(keyValueArraySet, null!, '')).toEqual([] as any);
+        expect(toStylingKeyValueArray(keyValueArraySet, null!, null)).toEqual([] as any);
+        expect(toStylingKeyValueArray(keyValueArraySet, null!, undefined)).toEqual([] as any);
+        expect(toStylingKeyValueArray(keyValueArraySet, null!, [])).toEqual([] as any);
+        expect(toStylingKeyValueArray(keyValueArraySet, null!, {})).toEqual([] as any);
       });
       describe('string', () => {
         it('should parse classes', () => {
-          expect(toStylingKeyValueArray(keyValueArraySet, classStringParser, '  ')).toEqual([
-          ] as any);
+          expect(toStylingKeyValueArray(keyValueArraySet, classStringParser, '  ')).toEqual(
+            [] as any
+          );
           expect(toStylingKeyValueArray(keyValueArraySet, classStringParser, ' X A ')).toEqual([
-            'A', true, 'X', true
+            'A',
+            true,
+            'X',
+            true,
           ] as any);
         });
         it('should parse styles', () => {
-          expect(toStylingKeyValueArray(keyValueArraySet, styleStringParser, '  ')).toEqual([
-          ] as any);
+          expect(toStylingKeyValueArray(keyValueArraySet, styleStringParser, '  ')).toEqual(
+            [] as any
+          );
           expect(toStylingKeyValueArray(keyValueArraySet, styleStringParser, 'B:b;A:a')).toEqual([
-            'A', 'a', 'B', 'b'
+            'A',
+            'a',
+            'B',
+            'b',
           ] as any);
         });
       });
       describe('array', () => {
         it('should parse', () => {
-          expect(toStylingKeyValueArray(keyValueArraySet, null !, ['X', 'A'])).toEqual([
-            'A', true, 'X', true
+          expect(toStylingKeyValueArray(keyValueArraySet, null!, ['X', 'A'])).toEqual([
+            'A',
+            true,
+            'X',
+            true,
           ] as any);
         });
       });
       describe('object', () => {
         it('should parse', () => {
-          expect(toStylingKeyValueArray(keyValueArraySet, null !, {X: 'x', A: 'a'})).toEqual([
-            'A', 'a', 'X', 'x'
+          expect(toStylingKeyValueArray(keyValueArraySet, null!, {X: 'x', A: 'a'})).toEqual([
+            'A',
+            'a',
+            'X',
+            'x',
           ] as any);
         });
       });
     });
   });
-
 
   describe('TStylingRange', () => {
     const MAX_VALUE = StylingRange.UNSIGNED_MASK;
@@ -479,7 +533,6 @@ describe('styling', () => {
   });
 });
 
-
 function expectStyle(element: HTMLElement) {
   return expect(getElementStyles(element));
 }
@@ -495,7 +548,7 @@ function givenTemplateAttrs(tAttrs: TAttributes) {
 }
 
 function getTNode() {
-  return getLView()[TVIEW].firstChild !;
+  return getLView()[TVIEW].firstChild!;
 }
 
 function getTData() {
@@ -550,7 +603,7 @@ function getBindingRootIndexFromDirectiveIndex(index: number) {
 }
 
 function getTDataIndexFromDirectiveIndex(index: number) {
-  return HEADER_OFFSET + index + 10;  // offset to give template bindings space.
+  return HEADER_OFFSET + index + 10; // offset to give template bindings space.
 }
 
 function expectTStylingKeys(styling: 'style' | 'class') {
@@ -572,11 +625,12 @@ function expectTStylingKeys(styling: 'style' | 'class') {
     const prevDup = getTStylingRangePrevDuplicate(tData[index + 1] as TStylingRange);
     const nextDup = getTStylingRangeNextDuplicate(tData[index + 1] as TStylingRange);
     tStylingKeys.push(tStylingKey as string[] | string | null);
-    tStylingKeys.push(prevDup ? (nextDup ? 'both' : 'prev') : (nextDup ? 'next' : ''));
+    tStylingKeys.push(prevDup ? (nextDup ? 'both' : 'prev') : nextDup ? 'next' : '');
     index = getTStylingRangeNext(tData[index + 1] as TStylingRange);
   }
   tStylingKeys.push(
-      (isClassBased ? tNode.residualClasses : tNode.residualStyles) as null | string[]);
+    (isClassBased ? tNode.residualClasses : tNode.residualStyles) as null | string[]
+  );
 
   return expect(tStylingKeys);
 }

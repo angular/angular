@@ -21,9 +21,10 @@ export class BasicComp {
   ctxBool: boolean;
   ctxArr: any[] = [];
   constructor(
-      @Inject(LOCALE_ID) public localeId: string,
-      @Inject(TRANSLATIONS_FORMAT) public translationsFormat: string,
-      @Inject(CUSTOM) public custom: Named) {
+    @Inject(LOCALE_ID) public localeId: string,
+    @Inject(TRANSLATIONS_FORMAT) public translationsFormat: string,
+    @Inject(CUSTOM) public custom: Named
+  ) {
     this.ctxProp = 'initialValue';
   }
 }

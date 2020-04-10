@@ -13,11 +13,10 @@ import {TNode, TNodeFlags} from './node';
 import {RNode} from './renderer';
 import {FLAGS, LView, LViewFlags} from './view';
 
-
 /**
-* True if `value` is `LView`.
-* @param value wrapped value of `RNode`, `LView`, `LContainer`
-*/
+ * True if `value` is `LView`.
+ * @param value wrapped value of `RNode`, `LView`, `LContainer`
+ */
 export function isLView(value: RNode | LView | LContainer | {} | null): value is LView {
   return Array.isArray(value) && typeof value[TYPE] === 'object';
 }

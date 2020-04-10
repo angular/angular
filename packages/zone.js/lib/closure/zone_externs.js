@@ -1,10 +1,10 @@
 /**
-* @license
-* Copyright Google Inc. All Rights Reserved.
-*
-* Use of this source code is governed by an MIT-style license that can be
-* found in the LICENSE file at https://angular.io/license
-*/
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 /**
  * @fileoverview Externs for zone.js
@@ -15,7 +15,7 @@
 /**
  * @interface
  */
-var Zone = function() {};
+var Zone = function () {};
 /**
  * @type {!Zone} The parent Zone.
  */
@@ -25,11 +25,11 @@ Zone.prototype.parent;
  */
 Zone.prototype.name;
 
-Zone.assertZonePatched = function() {};
+Zone.assertZonePatched = function () {};
 
-Zone.__symbol__ = function(name) {};
+Zone.__symbol__ = function (name) {};
 
-Zone.__load_patch = function(name, fn) {};
+Zone.__load_patch = function (name, fn) {};
 
 /**
  * @type {!Zone} Returns the current [Zone]. Returns the current zone. The only way to change
@@ -57,7 +57,7 @@ Zone.root;
  * @param {!string} key The key to retrieve.
  * @returns {?} The value for the key, or `undefined` if not found.
  */
-Zone.prototype.get = function(key) {};
+Zone.prototype.get = function (key) {};
 
 /**
  * Returns a Zone which defines a `key`.
@@ -67,7 +67,7 @@ Zone.prototype.get = function(key) {};
  * @param {!string} key The key to use for identification of the returned zone.
  * @returns {?Zone} The Zone which defines the `key`, `null` if not found.
  */
-Zone.prototype.getZoneWith = function(key) {};
+Zone.prototype.getZoneWith = function (key) {};
 
 /**
  * Used to create a child zone.
@@ -75,7 +75,7 @@ Zone.prototype.getZoneWith = function(key) {};
  * @param {!ZoneSpec} zoneSpec A set of rules which the child zone should follow.
  * @returns {!Zone} A new child zone.
  */
-Zone.prototype.fork = function(zoneSpec) {};
+Zone.prototype.fork = function (zoneSpec) {};
 
 /**
  * Wraps a callback function in a new function which will properly restore the current zone upon
@@ -90,7 +90,7 @@ Zone.prototype.fork = function(zoneSpec) {};
  * @param {!string=} source A unique debug location of the API being wrapped.
  * @returns {!Function} A function which will invoke the `callback` through [Zone.runGuarded].
  */
-Zone.prototype.wrap = function(callback, source) {};
+Zone.prototype.wrap = function (callback, source) {};
 
 /**
  * Invokes a function in a given zone.
@@ -103,7 +103,7 @@ Zone.prototype.wrap = function(callback, source) {};
  * @param {?string=} source A unique debug location of the API being invoked.
  * @returns {*} Value from the `callback` function.
  */
-Zone.prototype.run = function(callback, applyThis, applyArgs, source) {};
+Zone.prototype.run = function (callback, applyThis, applyArgs, source) {};
 
 /**
  * Invokes a function in a given zone and catches any exceptions.
@@ -119,7 +119,7 @@ Zone.prototype.run = function(callback, applyThis, applyArgs, source) {};
  * @param {?string=} source A unique debug location of the API being invoked.
  * @returns {*} Value from the `callback` function.
  */
-Zone.prototype.runGuarded = function(callback, applyThis, applyArgs, source) {};
+Zone.prototype.runGuarded = function (callback, applyThis, applyArgs, source) {};
 
 /**
  * Execute the Task by restoring the [Zone.currentTask] in the Task's zone.
@@ -129,7 +129,7 @@ Zone.prototype.runGuarded = function(callback, applyThis, applyArgs, source) {};
  * @param {?Array=} applyArgs
  * @returns {*}
  */
-Zone.prototype.runTask = function(task, applyThis, applyArgs) {};
+Zone.prototype.runTask = function (task, applyThis, applyArgs) {};
 
 /**
  * @param {string} source
@@ -138,7 +138,7 @@ Zone.prototype.runTask = function(task, applyThis, applyArgs) {};
  * @param {?function(!Task)=} customSchedule
  * @return {!MicroTask} microTask
  */
-Zone.prototype.scheduleMicroTask = function(source, callback, data, customSchedule) {};
+Zone.prototype.scheduleMicroTask = function (source, callback, data, customSchedule) {};
 
 /**
  * @param {string} source
@@ -148,8 +148,13 @@ Zone.prototype.scheduleMicroTask = function(source, callback, data, customSchedu
  * @param {?function(!Task)=} customCancel
  * @return {!MacroTask} macroTask
  */
-Zone.prototype.scheduleMacroTask = function(source, callback, data, customSchedule, customCancel) {
-};
+Zone.prototype.scheduleMacroTask = function (
+  source,
+  callback,
+  data,
+  customSchedule,
+  customCancel
+) {};
 
 /**
  * @param {string} source
@@ -159,25 +164,30 @@ Zone.prototype.scheduleMacroTask = function(source, callback, data, customSchedu
  * @param {?function(!Task)=} customCancel
  * @return {!EventTask} eventTask
  */
-Zone.prototype.scheduleEventTask = function(source, callback, data, customSchedule, customCancel) {
-};
+Zone.prototype.scheduleEventTask = function (
+  source,
+  callback,
+  data,
+  customSchedule,
+  customCancel
+) {};
 
 /**
  * @param {!Task} task
  * @return {!Task} task
  */
-Zone.prototype.scheduleTask = function(task) {};
+Zone.prototype.scheduleTask = function (task) {};
 
 /**
  * @param {!Task} task
  * @return {!Task} task
  */
-Zone.prototype.cancelTask = function(task) {};
+Zone.prototype.cancelTask = function (task) {};
 
 /**
  * @record
  */
-var ZoneSpec = function() {};
+var ZoneSpec = function () {};
 /**
  * @type {!string} The name of the zone. Usefull when debugging Zones.
  */
@@ -267,7 +277,7 @@ ZoneSpec.prototype.onHasTask;
 /**
  * @interface
  */
-var ZoneDelegate = function() {};
+var ZoneDelegate = function () {};
 /**
  * @type {!Zone} zone
  */
@@ -277,14 +287,14 @@ ZoneDelegate.prototype.zone;
  * @param {!ZoneSpec} zoneSpec the argument passed into the `fork` method.
  * @returns {!Zone} the new forked zone
  */
-ZoneDelegate.prototype.fork = function(targetZone, zoneSpec) {};
+ZoneDelegate.prototype.fork = function (targetZone, zoneSpec) {};
 /**
  * @param {!Zone} targetZone the [Zone] which originally received the request.
  * @param {!Function} callback the callback function passed into `wrap` function
  * @param {string=} source the argument passed into the `wrap` method.
  * @returns {!Function}
  */
-ZoneDelegate.prototype.intercept = function(targetZone, callback, source) {};
+ZoneDelegate.prototype.intercept = function (targetZone, callback, source) {};
 
 /**
  * @param {Zone} targetZone the [Zone] which originally received the request.
@@ -294,19 +304,19 @@ ZoneDelegate.prototype.intercept = function(targetZone, callback, source) {};
  * @param {?string=} source the argument passed into the `run` method.
  * @returns {*}
  */
-ZoneDelegate.prototype.invoke = function(targetZone, callback, applyThis, applyArgs, source) {};
+ZoneDelegate.prototype.invoke = function (targetZone, callback, applyThis, applyArgs, source) {};
 /**
  * @param {!Zone} targetZone the [Zone] which originally received the request.
  * @param {!Object} error the argument passed into the `handleError` method.
  * @returns {boolean}
  */
-ZoneDelegate.prototype.handleError = function(targetZone, error) {};
+ZoneDelegate.prototype.handleError = function (targetZone, error) {};
 /**
  * @param {!Zone} targetZone the [Zone] which originally received the request.
  * @param {!Task} task the argument passed into the `scheduleTask` method.
  * @returns {!Task} task
  */
-ZoneDelegate.prototype.scheduleTask = function(targetZone, task) {};
+ZoneDelegate.prototype.scheduleTask = function (targetZone, task) {};
 /**
  * @param {!Zone} targetZone The [Zone] which originally received the request.
  * @param {!Task} task The argument passed into the `scheduleTask` method.
@@ -314,23 +324,23 @@ ZoneDelegate.prototype.scheduleTask = function(targetZone, task) {};
  * @param {?Array=} applyArgs The argument passed into the `run` method.
  * @returns {*}
  */
-ZoneDelegate.prototype.invokeTask = function(targetZone, task, applyThis, applyArgs) {};
+ZoneDelegate.prototype.invokeTask = function (targetZone, task, applyThis, applyArgs) {};
 /**
  * @param {!Zone} targetZone The [Zone] which originally received the request.
  * @param {!Task} task The argument passed into the `cancelTask` method.
  * @returns {*}
  */
-ZoneDelegate.prototype.cancelTask = function(targetZone, task) {};
+ZoneDelegate.prototype.cancelTask = function (targetZone, task) {};
 /**
  * @param {!Zone} targetZone The [Zone] which originally received the request.
  * @param {!HasTaskState} hasTaskState
  */
-ZoneDelegate.prototype.hasTask = function(targetZone, hasTaskState) {};
+ZoneDelegate.prototype.hasTask = function (targetZone, hasTaskState) {};
 
 /**
  * @interface
  */
-var HasTaskState = function() {};
+var HasTaskState = function () {};
 
 /**
  * @type {boolean}
@@ -352,17 +362,17 @@ HasTaskState.prototype.change;
 /**
  * @interface
  */
-var TaskType = function() {};
+var TaskType = function () {};
 
 /**
  * @interface
  */
-var TaskState = function() {};
+var TaskState = function () {};
 
 /**
  * @interface
  */
-var TaskData = function() {};
+var TaskData = function () {};
 /**
  * @type {boolean|undefined}
  */
@@ -379,7 +389,7 @@ TaskData.prototype.handleId;
 /**
  * @interface
  */
-var Task = function() {};
+var Task = function () {};
 /**
  * @type {TaskType}
  */
@@ -407,11 +417,11 @@ Task.prototype.data;
 /**
  * @param {!Task} task
  */
-Task.prototype.scheduleFn = function(task) {};
+Task.prototype.scheduleFn = function (task) {};
 /**
  * @param {!Task} task
  */
-Task.prototype.cancelFn = function(task) {};
+Task.prototype.cancelFn = function (task) {};
 /**
  * @type {Zone}
  */
@@ -420,23 +430,23 @@ Task.prototype.zone;
  * @type {number}
  */
 Task.prototype.runCount;
-Task.prototype.cancelSchduleRequest = function() {};
+Task.prototype.cancelSchduleRequest = function () {};
 
 /**
  * @interface
  * @extends {Task}
  */
-var MicroTask = function() {};
+var MicroTask = function () {};
 /**
  * @interface
  * @extends {Task}
  */
-var MacroTask = function() {};
+var MacroTask = function () {};
 /**
  * @interface
  * @extends {Task}
  */
-var EventTask = function() {};
+var EventTask = function () {};
 
 /**
  * @type {?string}

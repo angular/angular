@@ -14,20 +14,19 @@ import {enterView, leaveView} from '@angular/core/src/render3/state';
 import {insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
 import {KeyValueArray} from '@angular/core/src/util/array_utils';
 
-
 describe('lView_debug', () => {
   const mockFirstUpdatePassLView: LView = [null, {firstUpdatePass: true}] as any;
   beforeEach(() => enterView(mockFirstUpdatePassLView, null));
   afterEach(() => leaveView());
 
   describe('TNode', () => {
-    let tNode !: TNodeDebug;
-    let tView !: TView;
+    let tNode!: TNodeDebug;
+    let tView!: TView;
     beforeEach(() => {
       tView = createTView(TViewType.Component, 0, null, 0, 0, null, null, null, null, null);
-      tNode = createTNode(tView, null !, TNodeType.Element, 0, '', null) as TNodeDebug;
+      tNode = createTNode(tView, null!, TNodeType.Element, 0, '', null) as TNodeDebug;
     });
-    afterEach(() => tNode = tView = null !);
+    afterEach(() => (tNode = tView = null!));
 
     describe('styling', () => {
       it('should decode no styling', () => {
@@ -57,7 +56,7 @@ describe('lView_debug', () => {
             prevIndex: 0,
             nextIndex: 0,
           },
-          null
+          null,
         ]);
         expect(tNode.classBindings_).toEqual([
           {
@@ -69,7 +68,7 @@ describe('lView_debug', () => {
             prevIndex: 0,
             nextIndex: 0,
           },
-          ['STATIC', true] as KeyValueArray<any>
+          ['STATIC', true] as KeyValueArray<any>,
         ]);
       });
 
@@ -88,7 +87,7 @@ describe('lView_debug', () => {
             prevIndex: 0,
             nextIndex: 0,
           },
-          null
+          null,
         ]);
         expect(tNode.classBindings_).toEqual([
           {
@@ -100,7 +99,7 @@ describe('lView_debug', () => {
             prevIndex: 0,
             nextIndex: 0,
           },
-          ['STATIC', true] as KeyValueArray<any>
+          ['STATIC', true] as KeyValueArray<any>,
         ]);
 
         insertTStylingBinding(tView.data, tNode, null, 6, true, true);
@@ -125,7 +124,7 @@ describe('lView_debug', () => {
             prevIndex: 8,
             nextIndex: 0,
           },
-          null
+          null,
         ]);
         expect(tNode.classBindings_).toEqual([
           {
@@ -146,7 +145,7 @@ describe('lView_debug', () => {
             prevIndex: 6,
             nextIndex: 0,
           },
-          ['STATIC', true] as KeyValueArray<any>
+          ['STATIC', true] as KeyValueArray<any>,
         ]);
       });
     });

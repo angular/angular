@@ -10,10 +10,10 @@ import {browser} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
-describe('Person Management CRUD', function() {
+describe('Person Management CRUD', function () {
   const URL = '/';
 
-  it('should work', function() {
+  it('should work', function () {
     browser.get(URL);
     verifyNoBrowserErrors();
   });

@@ -39,5 +39,4 @@ describe('nestedFormArray example', () => {
     expect(inputs.get(0).getAttribute('value')).toEqual('LA');
     expect(inputs.get(1).getAttribute('value')).toEqual('MTV');
   });
-
 });

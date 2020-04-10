@@ -35,7 +35,7 @@ import {DOCUMENT} from '../dom_tokens';
 @Injectable({
   providedIn: 'platform',
   // See #23917
-  useFactory: useBrowserPlatformLocation
+  useFactory: useBrowserPlatformLocation,
 })
 export abstract class PlatformLocation {
   abstract getBaseHrefFromDOM(): string;
@@ -86,9 +86,9 @@ export interface LocationChangeEvent {
 /**
  * @publicApi
  */
-export interface LocationChangeListener { (event: LocationChangeEvent): any; }
-
-
+export interface LocationChangeListener {
+  (event: LocationChangeEvent): any;
+}
 
 /**
  * `PlatformLocation` encapsulates all of the direct calls to platform APIs.
@@ -101,8 +101,8 @@ export interface LocationChangeListener { (event: LocationChangeEvent): any; }
   useFactory: createBrowserPlatformLocation,
 })
 export class BrowserPlatformLocation extends PlatformLocation {
-  public readonly location !: Location;
-  private _history !: History;
+  public readonly location!: Location;
+  private _history!: History;
 
   constructor(@Inject(DOCUMENT) private _doc: any) {
     super();
@@ -112,11 +112,13 @@ export class BrowserPlatformLocation extends PlatformLocation {
   // This is moved to its own method so that `MockPlatformLocationStrategy` can overwrite it
   /** @internal */
   _init() {
-    (this as{location: Location}).location = getDOM().getLocation();
+    (this as {location: Location}).location = getDOM().getLocation();
     this._history = getDOM().getHistory();
   }
 
-  getBaseHrefFromDOM(): string { return getDOM().getBaseHref(this._doc) !; }
+  getBaseHrefFromDOM(): string {
+    return getDOM().getBaseHref(this._doc)!;
+  }
 
   onPopState(fn: LocationChangeListener): void {
     getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('popstate', fn, false);
@@ -126,14 +128,30 @@ export class BrowserPlatformLocation extends PlatformLocation {
     getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('hashchange', fn, false);
   }
 
-  get href(): string { return this.location.href; }
-  get protocol(): string { return this.location.protocol; }
-  get hostname(): string { return this.location.hostname; }
-  get port(): string { return this.location.port; }
-  get pathname(): string { return this.location.pathname; }
-  get search(): string { return this.location.search; }
-  get hash(): string { return this.location.hash; }
-  set pathname(newPath: string) { this.location.pathname = newPath; }
+  get href(): string {
+    return this.location.href;
+  }
+  get protocol(): string {
+    return this.location.protocol;
+  }
+  get hostname(): string {
+    return this.location.hostname;
+  }
+  get port(): string {
+    return this.location.port;
+  }
+  get pathname(): string {
+    return this.location.pathname;
+  }
+  get search(): string {
+    return this.location.search;
+  }
+  get hash(): string {
+    return this.location.hash;
+  }
+  set pathname(newPath: string) {
+    this.location.pathname = newPath;
+  }
 
   pushState(state: any, title: string, url: string): void {
     if (supportsState()) {
@@ -151,11 +169,17 @@ export class BrowserPlatformLocation extends PlatformLocation {
     }
   }
 
-  forward(): void { this._history.forward(); }
+  forward(): void {
+    this._history.forward();
+  }
 
-  back(): void { this._history.back(); }
+  back(): void {
+    this._history.back();
+  }
 
-  getState(): unknown { return this._history.state; }
+  getState(): unknown {
+    return this._history.state;
+  }
 }
 
 export function supportsState(): boolean {

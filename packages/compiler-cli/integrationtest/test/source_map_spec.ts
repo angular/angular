@@ -27,16 +27,16 @@ xdescribe('source maps', () => {
   });
 });
 
-function getSourcePositionForStack(stack: string): {source: string, line: number, column: number} {
+function getSourcePositionForStack(stack: string): {source: string; line: number; column: number} {
   const htmlLocations = stack
-                            .split('\n')
-                            // e.g. at View_MyComp_0 (...html:153:40)
-                            .map(line => /\((.*\.html):(\d+):(\d+)/.exec(line)!)
-                            .filter(match => !!match)
-                            .map(match => ({
-                                   source: match[1],
-                                   line: parseInt(match[2], 10),
-                                   column: parseInt(match[3], 10)
-                                 }));
+    .split('\n')
+    // e.g. at View_MyComp_0 (...html:153:40)
+    .map((line) => /\((.*\.html):(\d+):(\d+)/.exec(line)!)
+    .filter((match) => !!match)
+    .map((match) => ({
+      source: match[1],
+      line: parseInt(match[2], 10),
+      column: parseInt(match[3], 10),
+    }));
   return htmlLocations[0];
 }

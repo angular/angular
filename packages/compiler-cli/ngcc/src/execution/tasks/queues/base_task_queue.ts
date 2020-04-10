@@ -5,17 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {Logger} from '../../../logging/logger';
 import {PartiallyOrderedTasks, Task, TaskDependencies, TaskQueue} from '../api';
 import {stringifyTask} from '../utils';
-
 
 /**
  * A base `TaskQueue` implementation to be used as base for concrete implementations.
  */
 export abstract class BaseTaskQueue implements TaskQueue {
   get allTasksCompleted(): boolean {
-    return (this.tasks.length === 0) && (this.inProgressTasks.size === 0);
+    return this.tasks.length === 0 && this.inProgressTasks.size === 0;
   }
   protected inProgressTasks = new Set<Task>();
 
@@ -25,12 +25,14 @@ export abstract class BaseTaskQueue implements TaskQueue {
   private tasksToSkip = new Map<Task, Task>();
 
   constructor(
-      protected logger: Logger, protected tasks: PartiallyOrderedTasks,
-      protected dependencies: TaskDependencies) {}
+    protected logger: Logger,
+    protected tasks: PartiallyOrderedTasks,
+    protected dependencies: TaskDependencies
+  ) {}
 
-  protected abstract computeNextTask(): Task|null;
+  protected abstract computeNextTask(): Task | null;
 
-  getNextTask(): Task|null {
+  getNextTask(): Task | null {
     let nextTask = this.computeNextTask();
     while (nextTask !== null) {
       if (!this.tasksToSkip.has(nextTask)) {
@@ -39,8 +41,9 @@ export abstract class BaseTaskQueue implements TaskQueue {
       // We are skipping this task so mark it as complete
       this.markTaskCompleted(nextTask);
       const failedTask = this.tasksToSkip.get(nextTask)!;
-      this.logger.warn(`Skipping processing of ${nextTask.entryPoint.name} because its dependency ${
-          failedTask.entryPoint.name} failed to compile.`);
+      this.logger.warn(
+        `Skipping processing of ${nextTask.entryPoint.name} because its dependency ${failedTask.entryPoint.name} failed to compile.`
+      );
       nextTask = this.computeNextTask();
     }
     return nextTask;
@@ -57,7 +60,8 @@ export abstract class BaseTaskQueue implements TaskQueue {
   markTaskCompleted(task: Task): void {
     if (!this.inProgressTasks.has(task)) {
       throw new Error(
-          `Trying to mark task that was not in progress as completed: ${stringifyTask(task)}`);
+        `Trying to mark task that was not in progress as completed: ${stringifyTask(task)}`
+      );
     }
 
     this.inProgressTasks.delete(task);
@@ -66,10 +70,12 @@ export abstract class BaseTaskQueue implements TaskQueue {
   toString(): string {
     const inProgTasks = Array.from(this.inProgressTasks);
 
-    return `${this.constructor.name}\n` +
-        `  All tasks completed: ${this.allTasksCompleted}\n` +
-        `  Unprocessed tasks (${this.tasks.length}): ${this.stringifyTasks(this.tasks, '    ')}\n` +
-        `  In-progress tasks (${inProgTasks.length}): ${this.stringifyTasks(inProgTasks, '    ')}`;
+    return (
+      `${this.constructor.name}\n` +
+      `  All tasks completed: ${this.allTasksCompleted}\n` +
+      `  Unprocessed tasks (${this.tasks.length}): ${this.stringifyTasks(this.tasks, '    ')}\n` +
+      `  In-progress tasks (${inProgTasks.length}): ${this.stringifyTasks(inProgTasks, '    ')}`
+    );
   }
 
   /**
@@ -88,6 +94,6 @@ export abstract class BaseTaskQueue implements TaskQueue {
   }
 
   protected stringifyTasks(tasks: Task[], indentation: string): string {
-    return tasks.map(task => `\n${indentation}- ${stringifyTask(task)}`).join('');
+    return tasks.map((task) => `\n${indentation}- ${stringifyTask(task)}`).join('');
   }
 }

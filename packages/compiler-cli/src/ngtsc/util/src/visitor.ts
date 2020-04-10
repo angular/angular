@@ -13,16 +13,19 @@ import * as ts from 'typescript';
  * nodes should be added before the visited node in the output.
  */
 export type VisitListEntryResult<B extends ts.Node, T extends B> = {
-  node: T,
-  before?: B[],
-  after?: B[],
+  node: T;
+  before?: B[];
+  after?: B[];
 };
 
 /**
  * Visit a node with the given visitor and return a transformed copy.
  */
 export function visit<T extends ts.Node>(
-    node: T, visitor: Visitor, context: ts.TransformationContext): T {
+  node: T,
+  visitor: Visitor,
+  context: ts.TransformationContext
+): T {
   return visitor._visit(node, context);
 }
 
@@ -45,13 +48,16 @@ export abstract class Visitor {
    * Visit a class declaration, returning at least the transformed declaration and optionally other
    * nodes to insert before the declaration.
    */
-  visitClassDeclaration(node: ts.ClassDeclaration):
-      VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
+  visitClassDeclaration(
+    node: ts.ClassDeclaration
+  ): VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
     return {node};
   }
 
   private _visitListEntryNode<T extends ts.Statement>(
-      node: T, visitor: (node: T) => VisitListEntryResult<ts.Statement, T>): T {
+    node: T,
+    visitor: (node: T) => VisitListEntryResult<ts.Statement, T>
+  ): T {
     const result = visitor(node);
     if (result.before !== undefined) {
       // Record that some nodes should be inserted before the given declaration. The declaration's
@@ -78,14 +84,14 @@ export abstract class Visitor {
   _visit<T extends ts.Node>(node: T, context: ts.TransformationContext): T {
     // First, visit the node. visitedNode starts off as `null` but should be set after visiting
     // is completed.
-    let visitedNode: T|null = null;
+    let visitedNode: T | null = null;
 
-    node = ts.visitEachChild(node, child => this._visit(child, context), context) as T;
+    node = ts.visitEachChild(node, (child) => this._visit(child, context), context) as T;
 
     if (ts.isClassDeclaration(node)) {
-      visitedNode =
-          this._visitListEntryNode(
-              node, (node: ts.ClassDeclaration) => this.visitClassDeclaration(node)) as typeof node;
+      visitedNode = this._visitListEntryNode(node, (node: ts.ClassDeclaration) =>
+        this.visitClassDeclaration(node)
+      ) as typeof node;
     } else {
       visitedNode = this.visitOtherNode(node);
     }
@@ -99,11 +105,12 @@ export abstract class Visitor {
     return visitedNode;
   }
 
-  private _maybeProcessStatements<T extends ts.Node&{statements: ts.NodeArray<ts.Statement>}>(
-      node: T): T {
+  private _maybeProcessStatements<T extends ts.Node & {statements: ts.NodeArray<ts.Statement>}>(
+    node: T
+  ): T {
     // Shortcut - if every statement doesn't require nodes to be prepended or appended,
     // this is a no-op.
-    if (node.statements.every(stmt => !this._before.has(stmt) && !this._after.has(stmt))) {
+    if (node.statements.every((stmt) => !this._before.has(stmt) && !this._after.has(stmt))) {
       return node;
     }
 
@@ -112,7 +119,7 @@ export abstract class Visitor {
 
     // Build a new list of statements and patch it onto the clone.
     const newStatements: ts.Statement[] = [];
-    clone.statements.forEach(stmt => {
+    clone.statements.forEach((stmt) => {
       if (this._before.has(stmt)) {
         newStatements.push(...(this._before.get(stmt)! as ts.Statement[]));
         this._before.delete(stmt);
@@ -128,7 +135,7 @@ export abstract class Visitor {
   }
 }
 
-function hasStatements(node: ts.Node): node is ts.Node&{statements: ts.NodeArray<ts.Statement>} {
+function hasStatements(node: ts.Node): node is ts.Node & {statements: ts.NodeArray<ts.Statement>} {
   const block = node as {statements?: any};
   return block.statements !== undefined && Array.isArray(block.statements);
 }

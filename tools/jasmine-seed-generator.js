@@ -10,7 +10,7 @@
 
 // Generate a "random" seed, suitable to be used for pseudo-randomizing jasmine tests.
 module.exports = {
-  generateSeed: caller => {
+  generateSeed: (caller) => {
     const seed = process.env.JASMINE_RANDOM_SEED || String(Math.random()).slice(-5);
     // tslint:disable-next-line: no-console
     console.log(`[${caller}] Jasmine random seed: ${seed}`);

@@ -8,8 +8,6 @@
 
 import {makeParamDecorator} from '../util/decorators';
 
-
-
 /**
  * Type of the Inject decorator / constructor function.
  *
@@ -55,7 +53,6 @@ export interface Inject {
  * @publicApi
  */
 export const Inject: InjectDecorator = makeParamDecorator('Inject', (token: any) => ({token}));
-
 
 /**
  * Type of the Optional decorator / constructor function.
@@ -146,7 +143,6 @@ export interface Self {}
  */
 export const Self: SelfDecorator = makeParamDecorator('Self');
 
-
 /**
  * Type of the SkipSelf decorator / constructor function.
  *
@@ -233,7 +229,6 @@ export interface Host {}
  */
 export const Host: HostDecorator = makeParamDecorator('Host');
 
-
 /**
  * Type of the Attribute decorator / constructor function.
  *
@@ -283,5 +278,7 @@ export interface Attribute {
  * @Annotation
  * @publicApi
  */
-export const Attribute: AttributeDecorator =
-    makeParamDecorator('Attribute', (attributeName?: string) => ({attributeName}));
+export const Attribute: AttributeDecorator = makeParamDecorator(
+  'Attribute',
+  (attributeName?: string) => ({attributeName})
+);

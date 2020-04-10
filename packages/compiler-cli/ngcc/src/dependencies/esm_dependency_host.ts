@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {DependencyHostBase} from './dependency_host';
@@ -27,8 +28,12 @@ export class EsmDependencyHost extends DependencyHostBase {
    * in a circular dependency loop.
    */
   protected recursivelyCollectDependencies(
-      file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
-      deepImports: Set<string>, alreadySeen: Set<AbsoluteFsPath>): void {
+    file: AbsoluteFsPath,
+    dependencies: Set<AbsoluteFsPath>,
+    missing: Set<string>,
+    deepImports: Set<string>,
+    alreadySeen: Set<AbsoluteFsPath>
+  ): void {
     const fromContents = this.fs.readFile(file);
 
     if (!hasImportOrReexportStatements(fromContents)) {
@@ -37,20 +42,31 @@ export class EsmDependencyHost extends DependencyHostBase {
     }
 
     // Parse the source into a TypeScript AST and then walk it looking for imports and re-exports.
-    const sf =
-        ts.createSourceFile(file, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
+    const sf = ts.createSourceFile(
+      file,
+      fromContents,
+      ts.ScriptTarget.ES2015,
+      false,
+      ts.ScriptKind.JS
+    );
     sf.statements
-        // filter out statements that are not imports or reexports
-        .filter(isStringImportOrReexport)
-        // Grab the id of the module that is being imported
-        .map(stmt => stmt.moduleSpecifier.text)
-        .forEach(importPath => {
-          const resolved =
-              this.processImport(importPath, file, dependencies, missing, deepImports, alreadySeen);
-          if (!resolved) {
-            missing.add(importPath);
-          }
-        });
+      // filter out statements that are not imports or reexports
+      .filter(isStringImportOrReexport)
+      // Grab the id of the module that is being imported
+      .map((stmt) => stmt.moduleSpecifier.text)
+      .forEach((importPath) => {
+        const resolved = this.processImport(
+          importPath,
+          file,
+          dependencies,
+          missing,
+          deepImports,
+          alreadySeen
+        );
+        if (!resolved) {
+          missing.add(importPath);
+        }
+      });
   }
 
   /**
@@ -60,8 +76,13 @@ export class EsmDependencyHost extends DependencyHostBase {
    * deep-import).
    */
   protected processImport(
-      importPath: string, file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>,
-      missing: Set<string>, deepImports: Set<string>, alreadySeen: Set<AbsoluteFsPath>): boolean {
+    importPath: string,
+    file: AbsoluteFsPath,
+    dependencies: Set<AbsoluteFsPath>,
+    missing: Set<string>,
+    deepImports: Set<string>,
+    alreadySeen: Set<AbsoluteFsPath>
+  ): boolean {
     const resolvedModule = this.moduleResolver.resolveModuleImport(importPath, file);
     if (resolvedModule === null) {
       return false;
@@ -71,7 +92,12 @@ export class EsmDependencyHost extends DependencyHostBase {
       if (!alreadySeen.has(internalDependency)) {
         alreadySeen.add(internalDependency);
         this.recursivelyCollectDependencies(
-            internalDependency, dependencies, missing, deepImports, alreadySeen);
+          internalDependency,
+          dependencies,
+          missing,
+          deepImports,
+          alreadySeen
+        );
       }
     } else if (resolvedModule instanceof ResolvedDeepImport) {
       deepImports.add(resolvedModule.importPath);
@@ -96,15 +122,18 @@ export function hasImportOrReexportStatements(source: string): boolean {
   return /(import|export)\s.+from/.test(source);
 }
 
-
 /**
  * Check whether the given statement is an import with a string literal module specifier.
  * @param stmt the statement node to check.
  * @returns true if the statement is an import with a string literal module specifier.
  */
-export function isStringImportOrReexport(stmt: ts.Statement): stmt is ts.ImportDeclaration&
-    {moduleSpecifier: ts.StringLiteral} {
-  return ts.isImportDeclaration(stmt) ||
-      ts.isExportDeclaration(stmt) && !!stmt.moduleSpecifier &&
-      ts.isStringLiteral(stmt.moduleSpecifier);
+export function isStringImportOrReexport(
+  stmt: ts.Statement
+): stmt is ts.ImportDeclaration & {moduleSpecifier: ts.StringLiteral} {
+  return (
+    ts.isImportDeclaration(stmt) ||
+    (ts.isExportDeclaration(stmt) &&
+      !!stmt.moduleSpecifier &&
+      ts.isStringLiteral(stmt.moduleSpecifier))
+  );
 }

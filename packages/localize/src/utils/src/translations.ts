@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {BLOCK_MARKER} from './constants';
 import {MessageId, ParsedMessage, TargetMessage, parseMessage} from './messages';
-
 
 /**
  * A translation message that has been processed to extract the message parts and placeholders.
@@ -50,8 +50,10 @@ export function isMissingTranslationError(e: any): e is MissingTranslationError 
  * error is thrown.
  */
 export function translate(
-    translations: Record<string, ParsedTranslation>, messageParts: TemplateStringsArray,
-    substitutions: readonly any[]): [TemplateStringsArray, readonly any[]] {
+  translations: Record<string, ParsedTranslation>,
+  messageParts: TemplateStringsArray,
+  substitutions: readonly any[]
+): [TemplateStringsArray, readonly any[]] {
   const message = parseMessage(messageParts, substitutions);
   // Look up the translation using the messageId, and then the legacyId if available.
   let translation = translations[message.messageId];
@@ -63,15 +65,19 @@ export function translate(
     throw new MissingTranslationError(message);
   }
   return [
-    translation.messageParts, translation.placeholderNames.map(placeholder => {
+    translation.messageParts,
+    translation.placeholderNames.map((placeholder) => {
       if (message.substitutions.hasOwnProperty(placeholder)) {
         return message.substitutions[placeholder];
       } else {
         throw new Error(
-            `There is a placeholder name mismatch with the translation provided for the message ${describeMessage(message)}.\n` +
-            `The translation contains a placeholder with name ${placeholder}, which does not exist in the message.`);
+          `There is a placeholder name mismatch with the translation provided for the message ${describeMessage(
+            message
+          )}.\n` +
+            `The translation contains a placeholder with name ${placeholder}, which does not exist in the message.`
+        );
       }
-    })
+    }),
   ];
 }
 
@@ -91,8 +97,9 @@ export function parseTranslation(message: TargetMessage): ParsedTranslation {
     placeholderNames.push(parts[i]);
     messageParts.push(`${parts[i + 1]}`);
   }
-  const rawMessageParts =
-      messageParts.map(part => part.charAt(0) === BLOCK_MARKER ? '\\' + part : part);
+  const rawMessageParts = messageParts.map((part) =>
+    part.charAt(0) === BLOCK_MARKER ? '\\' + part : part
+  );
   return {messageParts: makeTemplateObject(messageParts, rawMessageParts), placeholderNames};
 }
 
@@ -103,7 +110,9 @@ export function parseTranslation(message: TargetMessage): ParsedTranslation {
  * @param placeholderNames The names of the placeholders to intersperse between the `messageParts`.
  */
 export function makeParsedTranslation(
-    messageParts: string[], placeholderNames: string[] = []): ParsedTranslation {
+  messageParts: string[],
+  placeholderNames: string[] = []
+): ParsedTranslation {
   return {messageParts: makeTemplateObject(messageParts, messageParts), placeholderNames};
 }
 
@@ -117,7 +126,6 @@ export function makeTemplateObject(cooked: string[], raw: string[]): TemplateStr
   Object.defineProperty(cooked, 'raw', {value: raw});
   return cooked as any;
 }
-
 
 function describeMessage(message: ParsedMessage): string {
   const meaningString = message.meaning && ` - "${message.meaning}"`;

@@ -8,13 +8,13 @@ let $deferred;
 function define(modules, callback) {
   $deferred = {modules, callback};
 }
-module.exports = function(provided) {
+module.exports = function (provided) {
   const ts = provided['typescript'];
   if (!ts) {
     throw new Error('Caller does not provide typescript module');
   }
   const results = {};
-  const resolvedModules = $deferred.modules.map(m => {
+  const resolvedModules = $deferred.modules.map((m) => {
     if (m === 'exports') {
       return results;
     }

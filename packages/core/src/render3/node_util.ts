@@ -23,8 +23,10 @@ import {getParentInjectorViewOffset} from './util/injector_utils';
  * @returns The TNode of the parent injector
  */
 export function getParentInjectorTNode(
-    location: RelativeInjectorLocation, startView: LView, startTNode: TNode): TElementNode|
-    TContainerNode|null {
+  location: RelativeInjectorLocation,
+  startView: LView,
+  startTNode: TNode
+): TElementNode | TContainerNode | null {
   // If there is an injector on the parent TNode, retrieve the TNode for that injector.
   if (startTNode.parent && startTNode.parent.injectorIndex !== -1) {
     // view offset is 0
@@ -43,7 +45,7 @@ export function getParentInjectorTNode(
   let parentTNode = startView[T_HOST] as TElementNode;
   // view offset is superior to 1
   while (viewOffset > 1) {
-    parentView = parentView[DECLARATION_VIEW] !;
+    parentView = parentView[DECLARATION_VIEW]!;
     parentTNode = parentView[T_HOST] as TElementNode;
     viewOffset--;
   }

@@ -33,7 +33,7 @@ const urlParse = /^(([^:\/?#]+):)?(\/\/([^\/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/
 
 function parseUrl(urlStr: string, baseHref: string) {
   const verifyProtocol = /^((http[s]?|ftp):\/\/)/;
-  let serverBase: string|undefined;
+  let serverBase: string | undefined;
 
   // URL class requires full URL. If the URL string doesn't start with protocol, we need to add
   // an arbitrary base URL which can be removed afterward.
@@ -41,12 +41,12 @@ function parseUrl(urlStr: string, baseHref: string) {
     serverBase = 'http://empty.com/';
   }
   let parsedUrl: {
-    protocol: string,
-    hostname: string,
-    port: string,
-    pathname: string,
-    search: string,
-    hash: string
+    protocol: string;
+    hostname: string;
+    port: string;
+    pathname: string;
+    search: string;
+    hash: string;
   };
   try {
     parsedUrl = new URL(urlStr, serverBase);
@@ -69,9 +69,9 @@ function parseUrl(urlStr: string, baseHref: string) {
     parsedUrl.pathname = parsedUrl.pathname.substring(baseHref.length);
   }
   return {
-    hostname: !serverBase && parsedUrl.hostname || '',
-    protocol: !serverBase && parsedUrl.protocol || '',
-    port: !serverBase && parsedUrl.port || '',
+    hostname: (!serverBase && parsedUrl.hostname) || '',
+    protocol: (!serverBase && parsedUrl.protocol) || '',
+    port: (!serverBase && parsedUrl.port) || '',
     pathname: parsedUrl.pathname || '/',
     search: parsedUrl.search || '',
     hash: parsedUrl.hash || '',
@@ -93,8 +93,9 @@ export interface MockPlatformLocationConfig {
  *
  * @publicApi
  */
-export const MOCK_PLATFORM_LOCATION_CONFIG =
-    new InjectionToken<MockPlatformLocationConfig>('MOCK_PLATFORM_LOCATION_CONFIG');
+export const MOCK_PLATFORM_LOCATION_CONFIG = new InjectionToken<MockPlatformLocationConfig>(
+  'MOCK_PLATFORM_LOCATION_CONFIG'
+);
 
 /**
  * Mock implementation of URL state.
@@ -106,43 +107,64 @@ export class MockPlatformLocation implements PlatformLocation {
   private baseHref: string = '';
   private hashUpdate = new Subject<LocationChangeEvent>();
   private urlChanges: {
-    hostname: string,
-    protocol: string,
-    port: string,
-    pathname: string,
-    search: string,
-    hash: string,
-    state: unknown
+    hostname: string;
+    protocol: string;
+    port: string;
+    pathname: string;
+    search: string;
+    hash: string;
+    state: unknown;
   }[] = [{hostname: '', protocol: '', port: '', pathname: '/', search: '', hash: '', state: null}];
 
-  constructor(@Inject(MOCK_PLATFORM_LOCATION_CONFIG) @Optional() config?:
-                  MockPlatformLocationConfig) {
+  constructor(
+    @Inject(MOCK_PLATFORM_LOCATION_CONFIG) @Optional() config?: MockPlatformLocationConfig
+  ) {
     if (config) {
       this.baseHref = config.appBaseHref || '';
 
-      const parsedChanges =
-          this.parseChanges(null, config.startUrl || 'http://<empty>/', this.baseHref);
+      const parsedChanges = this.parseChanges(
+        null,
+        config.startUrl || 'http://<empty>/',
+        this.baseHref
+      );
       this.urlChanges[0] = {...parsedChanges};
     }
   }
 
-  get hostname() { return this.urlChanges[0].hostname; }
-  get protocol() { return this.urlChanges[0].protocol; }
-  get port() { return this.urlChanges[0].port; }
-  get pathname() { return this.urlChanges[0].pathname; }
-  get search() { return this.urlChanges[0].search; }
-  get hash() { return this.urlChanges[0].hash; }
-  get state() { return this.urlChanges[0].state; }
+  get hostname() {
+    return this.urlChanges[0].hostname;
+  }
+  get protocol() {
+    return this.urlChanges[0].protocol;
+  }
+  get port() {
+    return this.urlChanges[0].port;
+  }
+  get pathname() {
+    return this.urlChanges[0].pathname;
+  }
+  get search() {
+    return this.urlChanges[0].search;
+  }
+  get hash() {
+    return this.urlChanges[0].hash;
+  }
+  get state() {
+    return this.urlChanges[0].state;
+  }
 
-
-  getBaseHrefFromDOM(): string { return this.baseHref; }
+  getBaseHrefFromDOM(): string {
+    return this.baseHref;
+  }
 
   onPopState(fn: LocationChangeListener): void {
     // No-op: a state stack is not implemented, so
     // no events will ever come.
   }
 
-  onHashChange(fn: LocationChangeListener): void { this.hashUpdate.subscribe(fn); }
+  onHashChange(fn: LocationChangeListener): void {
+    this.hashUpdate.subscribe(fn);
+  }
 
   get href(): string {
     let url = `${this.protocol}//${this.hostname}${this.port ? ':' + this.port : ''}`;
@@ -150,7 +172,9 @@ export class MockPlatformLocation implements PlatformLocation {
     return url;
   }
 
-  get url(): string { return `${this.pathname}${this.search}${this.hash}`; }
+  get url(): string {
+    return `${this.pathname}${this.search}${this.hash}`;
+  }
 
   private parseChanges(state: unknown, url: string, baseHref: string = '') {
     // When the `history.state` value is stored, it is always copied.
@@ -169,7 +193,9 @@ export class MockPlatformLocation implements PlatformLocation {
     this.urlChanges.unshift({...this.urlChanges[0], pathname, search, hash, state: parsedState});
   }
 
-  forward(): void { throw new Error('Not implemented'); }
+  forward(): void {
+    throw new Error('Not implemented');
+  }
 
   back(): void {
     const oldUrl = this.url;
@@ -178,13 +204,20 @@ export class MockPlatformLocation implements PlatformLocation {
     const newHash = this.hash;
 
     if (oldHash !== newHash) {
-      scheduleMicroTask(() => this.hashUpdate.next({
-        type: 'hashchange', state: null, oldUrl, newUrl: this.url
-      } as LocationChangeEvent));
+      scheduleMicroTask(() =>
+        this.hashUpdate.next({
+          type: 'hashchange',
+          state: null,
+          oldUrl,
+          newUrl: this.url,
+        } as LocationChangeEvent)
+      );
     }
   }
 
-  getState(): unknown { return this.state; }
+  getState(): unknown {
+    return this.state;
+  }
 }
 
 export function scheduleMicroTask(cb: () => any) {

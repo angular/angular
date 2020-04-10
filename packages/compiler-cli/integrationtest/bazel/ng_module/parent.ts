@@ -9,5 +9,4 @@
 import {NgModule} from '@angular/core';
 
 @NgModule({})
-export class Parent {
-}
+export class Parent {}

@@ -9,18 +9,30 @@
 import * as ts from 'typescript';
 
 import {Reference, ReferenceEmitter} from '../../imports';
-import {CompoundMetadataRegistry, DirectiveMeta, LocalMetadataRegistry, MetadataRegistry, PipeMeta} from '../../metadata';
+import {
+  CompoundMetadataRegistry,
+  DirectiveMeta,
+  LocalMetadataRegistry,
+  MetadataRegistry,
+  PipeMeta,
+} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {ScopeData} from '../src/api';
 import {DtsModuleScopeResolver} from '../src/dependency';
 import {LocalModuleScope, LocalModuleScopeRegistry} from '../src/local';
 
-function registerFakeRefs(registry: MetadataRegistry):
-    {[name: string]: Reference<ClassDeclaration>} {
+function registerFakeRefs(
+  registry: MetadataRegistry
+): {[name: string]: Reference<ClassDeclaration>} {
   const get = (target: {}, name: string): Reference<ClassDeclaration> => {
     const sf = ts.createSourceFile(
-        name + '.ts', `export class ${name} {}`, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
-    const clazz = sf.statements[0] as unknown as ClassDeclaration;
+      name + '.ts',
+      `export class ${name} {}`,
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TS
+    );
+    const clazz = (sf.statements[0] as unknown) as ClassDeclaration;
     const ref = new Reference(clazz);
     if (name.startsWith('Dir') || name.startsWith('Cmp')) {
       registry.registerDirectiveMetadata(fakeDirective(ref));
@@ -40,7 +52,11 @@ describe('LocalModuleScopeRegistry', () => {
   beforeEach(() => {
     const localRegistry = new LocalMetadataRegistry();
     scopeRegistry = new LocalModuleScopeRegistry(
-        localRegistry, new MockDtsModuleScopeResolver(), refEmitter, null);
+      localRegistry,
+      new MockDtsModuleScopeResolver(),
+      refEmitter,
+      null
+    );
     metaRegistry = new CompoundMetadataRegistry([localRegistry, scopeRegistry]);
   });
 
@@ -175,7 +191,7 @@ describe('LocalModuleScopeRegistry', () => {
     expect(scope.compilation.directives[0].ref.getIdentityIn(idSf)).toBe(id);
   });
 
-  it('should allow directly exporting a directive that\'s not imported', () => {
+  it("should allow directly exporting a directive that's not imported", () => {
     const {Dir, ModuleA, ModuleB} = registerFakeRefs(metaRegistry);
 
     metaRegistry.registerNgModuleMetadata({
@@ -199,7 +215,7 @@ describe('LocalModuleScopeRegistry', () => {
     expect(scopeToRefs(scopeA.exported)).toEqual([Dir]);
   });
 
-  it('should not allow directly exporting a directive that\'s not imported', () => {
+  it("should not allow directly exporting a directive that's not imported", () => {
     const {Dir, ModuleA, ModuleB} = registerFakeRefs(metaRegistry);
 
     metaRegistry.registerNgModuleMetadata({
@@ -259,7 +275,7 @@ class MockDtsModuleScopeResolver implements DtsModuleScopeResolver {
 }
 
 function scopeToRefs(scopeData: ScopeData): Reference<ClassDeclaration>[] {
-  const directives = scopeData.directives.map(dir => dir.ref);
-  const pipes = scopeData.pipes.map(pipe => pipe.ref);
+  const directives = scopeData.directives.map((dir) => dir.ref);
+  const pipes = scopeData.pipes.map((pipe) => pipe.ref);
   return [...directives, ...pipes].sort((a, b) => a.debugName!.localeCompare(b.debugName!));
 }

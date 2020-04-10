@@ -6,8 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compareNumbers, compareVersions, isVersionBetween, toNumbers} from '../../src/diagnostics/typescript_version';
-
+import {
+  compareNumbers,
+  compareVersions,
+  isVersionBetween,
+  toNumbers,
+} from '../../src/diagnostics/typescript_version';
 
 describe('toNumbers', () => {
   it('should handle strings', () => {

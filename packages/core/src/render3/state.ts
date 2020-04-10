@@ -14,7 +14,6 @@ import {CONTEXT, DECLARATION_VIEW, LView, OpaqueViewState, TVIEW, TView} from '.
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 import {getTNode} from './util/view_utils';
 
-
 /**
  *
  */
@@ -31,7 +30,7 @@ interface LFrame {
    *
    * This is used to cache existing LFrames to relieve the memory pressure.
    */
-  child: LFrame|null;
+  child: LFrame | null;
 
   /**
    * State of the current view being processed.
@@ -94,13 +93,12 @@ interface LFrame {
   /**
    * Current namespace to be used when creating elements
    */
-  currentNamespace: string|null;
+  currentNamespace: string | null;
 
   /**
    * Current sanitizer
    */
-  currentSanitizer: StyleSanitizeFn|null;
-
+  currentSanitizer: StyleSanitizeFn | null;
 
   /**
    * The root index from which pure function instructions should calculate their binding
@@ -174,7 +172,6 @@ export const instructionState: InstructionState = {
   checkNoChangesMode: false,
 };
 
-
 export function getElementDepthCount() {
   return instructionState.lFrame.elementDepthCount;
 }
@@ -190,7 +187,6 @@ export function decreaseElementDepthCount() {
 export function getBindingsEnabled(): boolean {
   return instructionState.bindingsEnabled;
 }
-
 
 /**
  * Enables directive matching on elements.
@@ -264,7 +260,7 @@ export function getTView(): TView {
  * @codeGenApi
  */
 export function ɵɵrestoreView(viewToRestore: OpaqueViewState) {
-  instructionState.lFrame.contextLView = viewToRestore as any as LView;
+  instructionState.lFrame.contextLView = (viewToRestore as any) as LView;
 }
 
 export function getPreviousOrParentTNode(): TNode {
@@ -315,7 +311,7 @@ export function getBindingIndex(): number {
 }
 
 export function setBindingIndex(value: number): number {
-  return instructionState.lFrame.bindingIndex = value;
+  return (instructionState.lFrame.bindingIndex = value);
 }
 
 export function nextBindingIndex(): number {
@@ -341,7 +337,9 @@ export function incrementBindingIndex(count: number): number {
  *        whose `hostBindings` are being processed.
  */
 export function setBindingRootForHostBindings(
-    bindingRootIndex: number, currentDirectiveIndex: number) {
+  bindingRootIndex: number,
+  currentDirectiveIndex: number
+) {
   const lFrame = instructionState.lFrame;
   lFrame.bindingIndex = lFrame.bindingRootIndex = bindingRootIndex;
   lFrame.currentDirectiveIndex = currentDirectiveIndex;
@@ -373,7 +371,7 @@ export function enterDI(newView: LView, tNode: TNode) {
   ngDevMode && assertLViewOrUndefined(newView);
   const newLFrame = allocLFrame();
   instructionState.lFrame = newLFrame;
-  newLFrame.previousOrParentTNode = tNode !;
+  newLFrame.previousOrParentTNode = tNode!;
   newLFrame.lView = newView;
 }
 
@@ -406,10 +404,10 @@ export function enterView(newView: LView, tNode: TNode | null): void {
   }
   const tView = newView[TVIEW];
   instructionState.lFrame = newLFrame;
-  newLFrame.previousOrParentTNode = tNode !;
+  newLFrame.previousOrParentTNode = tNode!;
   newLFrame.lView = newView;
   newLFrame.tView = tView;
-  newLFrame.contextLView = newView !;
+  newLFrame.contextLView = newView!;
   newLFrame.bindingIndex = tView.bindingStartIndex;
 }
 
@@ -425,23 +423,23 @@ function allocLFrame() {
 
 function createLFrame(parent: LFrame | null): LFrame {
   const lFrame: LFrame = {
-    previousOrParentTNode: null !,  //
-    isParent: true,                 //
-    lView: null !,                  //
-    tView: null !,                  //
-    selectedIndex: 0,               //
-    contextLView: null !,           //
-    elementDepthCount: 0,           //
-    currentNamespace: null,         //
-    currentSanitizer: null,         //
-    currentDirectiveIndex: -1,      //
-    bindingRootIndex: -1,           //
-    bindingIndex: -1,               //
-    currentQueryIndex: 0,           //
-    parent: parent !,               //
-    child: null,                    //
+    previousOrParentTNode: null!, //
+    isParent: true, //
+    lView: null!, //
+    tView: null!, //
+    selectedIndex: 0, //
+    contextLView: null!, //
+    elementDepthCount: 0, //
+    currentNamespace: null, //
+    currentSanitizer: null, //
+    currentDirectiveIndex: -1, //
+    bindingRootIndex: -1, //
+    bindingIndex: -1, //
+    currentQueryIndex: 0, //
+    parent: parent!, //
+    child: null, //
   };
-  parent !== null && (parent.child = lFrame);  // link the new LFrame for reuse.
+  parent !== null && (parent.child = lFrame); // link the new LFrame for reuse.
   return lFrame;
 }
 
@@ -457,8 +455,8 @@ function createLFrame(parent: LFrame | null): LFrame {
 function leaveViewLight(): LFrame {
   const oldLFrame = instructionState.lFrame;
   instructionState.lFrame = oldLFrame.parent;
-  oldLFrame.previousOrParentTNode = null !;
-  oldLFrame.lView = null !;
+  oldLFrame.previousOrParentTNode = null!;
+  oldLFrame.lView = null!;
   return oldLFrame;
 }
 
@@ -481,9 +479,9 @@ export const leaveDI: () => void = leaveViewLight;
 export function leaveView() {
   const oldLFrame = leaveViewLight();
   oldLFrame.isParent = true;
-  oldLFrame.tView = null !;
+  oldLFrame.tView = null!;
   oldLFrame.selectedIndex = 0;
-  oldLFrame.contextLView = null !;
+  oldLFrame.contextLView = null!;
   oldLFrame.elementDepthCount = 0;
   oldLFrame.currentDirectiveIndex = -1;
   oldLFrame.currentNamespace = null;
@@ -494,17 +492,21 @@ export function leaveView() {
 }
 
 export function nextContextImpl<T = any>(level: number): T {
-  const contextLView = instructionState.lFrame.contextLView =
-      walkUpViews(level, instructionState.lFrame.contextLView !);
+  const contextLView = (instructionState.lFrame.contextLView = walkUpViews(
+    level,
+    instructionState.lFrame.contextLView!
+  ));
   return contextLView[CONTEXT] as T;
 }
 
 function walkUpViews(nestingLevel: number, currentView: LView): LView {
   while (nestingLevel > 0) {
-    ngDevMode && assertDefined(
-                     currentView[DECLARATION_VIEW],
-                     'Declaration view should be defined if nesting level is greater than 0.');
-    currentView = currentView[DECLARATION_VIEW] !;
+    ngDevMode &&
+      assertDefined(
+        currentView[DECLARATION_VIEW],
+        'Declaration view should be defined if nesting level is greater than 0.'
+      );
+    currentView = currentView[DECLARATION_VIEW]!;
     nestingLevel--;
   }
   return currentView;
@@ -577,7 +579,7 @@ export function namespaceHTMLInternal() {
   instructionState.lFrame.currentNamespace = null;
 }
 
-export function getNamespace(): string|null {
+export function getNamespace(): string | null {
   return instructionState.lFrame.currentNamespace;
 }
 

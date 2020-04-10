@@ -10,15 +10,25 @@
 /// <reference lib="es2017"/>
 
 import {format, parseTsconfig} from '@bazel/typescript';
-import {Extractor, ExtractorConfig, IConfigFile, IExtractorConfigPrepareOptions, IExtractorInvokeOptions} from '@microsoft/api-extractor';
+import {
+  Extractor,
+  ExtractorConfig,
+  IConfigFile,
+  IExtractorConfigPrepareOptions,
+  IExtractorInvokeOptions,
+} from '@microsoft/api-extractor';
 import * as fs from 'fs';
 import * as path from 'path';
 
 const DEBUG = false;
 
 export function runMain(
-    tsConfig: string, entryPoint: string, dtsBundleOut?: string, apiReviewFolder?: string,
-    acceptApiUpdates = false): 1|0 {
+  tsConfig: string,
+  entryPoint: string,
+  dtsBundleOut?: string,
+  apiReviewFolder?: string,
+  acceptApiUpdates = false
+): 1 | 0 {
   const [parsedConfig, errors] = parseTsconfig(tsConfig);
   if (errors && errors.length) {
     console.error(format('', errors));
@@ -28,17 +38,20 @@ export function runMain(
 
   const pkgJson = path.resolve(path.dirname(entryPoint), 'package.json');
   if (!fs.existsSync(pkgJson)) {
-    fs.writeFileSync(pkgJson, JSON.stringify({
-      'name': 'GENERATED-BY-BAZEL',
-      'version': '0.0.0',
-      'description': 'This is a dummy package.json as API Extractor always requires one.',
-    }));
+    fs.writeFileSync(
+      pkgJson,
+      JSON.stringify({
+        'name': 'GENERATED-BY-BAZEL',
+        'version': '0.0.0',
+        'description': 'This is a dummy package.json as API Extractor always requires one.',
+      })
+    );
   }
 
   // API extractor doesn't always support the version of TypeScript used in the repo
   // example: at the moment it is not compatable with 3.2
   // to use the internal TypeScript we shall not create a program but rather pass a parsed tsConfig.
-  const parsedTsConfig = parsedConfig !.config as any;
+  const parsedTsConfig = parsedConfig!.config as any;
   const compilerOptions = parsedTsConfig.compilerOptions;
   for (const [key, values] of Object.entries<string[]>(compilerOptions.paths)) {
     if (key === '*') {
@@ -48,7 +61,7 @@ export function runMain(
     // we shall not pass ts files as this will need to be parsed, and for example rxjs,
     // cannot be compiled with our tsconfig, as ours is more strict
     // hence amend the paths to point always to the '.d.ts' files.
-    compilerOptions.paths[key] = values.map(path => {
+    compilerOptions.paths[key] = values.map((path) => {
       const pathSuffix = /(\*|index)$/.test(path) ? '.d.ts' : '/index.d.ts';
 
       return path + pathSuffix;
@@ -69,7 +82,7 @@ export function runMain(
       enabled: !!apiReviewFolder,
       // TODO(alan-agius4): remove this folder name when the below issue is solved upstream
       // See: https://github.com/microsoft/web-build-tools/issues/1470
-      reportFileName: apiReviewFolder && path.resolve(apiReviewFolder) || 'invalid',
+      reportFileName: (apiReviewFolder && path.resolve(apiReviewFolder)) || 'invalid',
     },
     docModel: {
       enabled: false,
@@ -80,7 +93,7 @@ export function runMain(
     },
     tsdocMetadata: {
       enabled: false,
-    }
+    },
   };
 
   const options: IExtractorConfigPrepareOptions = {
@@ -114,7 +127,8 @@ api-extractor: running with
 
   if (entryPoints.length !== entryPoints.length) {
     throw new Error(
-        `Entry points count (${entryPoints.length}) does not match Bundle out count (${dtsBundleOuts.length})`);
+      `Entry points count (${entryPoints.length}) does not match Bundle out count (${dtsBundleOuts.length})`
+    );
   }
 
   for (let i = 0; i < entryPoints.length; i++) {

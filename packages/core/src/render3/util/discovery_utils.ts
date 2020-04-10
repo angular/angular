@@ -8,19 +8,32 @@
 
 import {Injector} from '../../di/injector';
 import {assertLView} from '../assert';
-import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from '../context_discovery';
+import {
+  discoverLocalRefs,
+  getComponentAtNodeIndex,
+  getDirectivesAtNodeIndex,
+  getLContext,
+} from '../context_discovery';
 import {NodeInjector} from '../di';
 import {DebugNode, buildDebugNode} from '../instructions/lview_debug';
 import {LContext} from '../interfaces/context';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
 import {isLView} from '../interfaces/type_checks';
-import {CLEANUP, CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, TVIEW, T_HOST} from '../interfaces/view';
+import {
+  CLEANUP,
+  CONTEXT,
+  FLAGS,
+  HEADER_OFFSET,
+  HOST,
+  LView,
+  LViewFlags,
+  TVIEW,
+  T_HOST,
+} from '../interfaces/view';
 import {stringifyForError} from './misc_utils';
 import {getLViewParent, getRootContext} from './view_traversal_utils';
 import {getTNode, unwrapRNode} from './view_utils';
-
-
 
 /**
  * Retrieves the component instance associated with a given DOM element.
@@ -47,7 +60,7 @@ import {getTNode, unwrapRNode} from './view_utils';
  * @publicApi
  * @globalApi ng
  */
-export function getComponent<T>(element: Element): T|null {
+export function getComponent<T>(element: Element): T | null {
   assertDomElement(element);
   const context = loadLContext(element, false);
   if (context === null) return null;
@@ -58,7 +71,6 @@ export function getComponent<T>(element: Element): T|null {
 
   return context.component as T;
 }
-
 
 /**
  * If inside an embedded view (e.g. `*ngIf` or `*ngFor`), retrieves the context of the embedded
@@ -72,10 +84,10 @@ export function getComponent<T>(element: Element): T|null {
  * @publicApi
  * @globalApi ng
  */
-export function getContext<T>(element: Element): T|null {
+export function getContext<T>(element: Element): T | null {
   assertDomElement(element);
   const context = loadLContext(element, false);
-  return context === null ? null : context.lView[CONTEXT] as T;
+  return context === null ? null : (context.lView[CONTEXT] as T);
 }
 
 /**
@@ -93,18 +105,18 @@ export function getContext<T>(element: Element): T|null {
  * @publicApi
  * @globalApi ng
  */
-export function getOwningComponent<T>(elementOrDir: Element | {}): T|null {
+export function getOwningComponent<T>(elementOrDir: Element | {}): T | null {
   const context = loadLContext(elementOrDir, false);
   if (context === null) return null;
 
   let lView = context.lView;
-  let parent: LView|null;
+  let parent: LView | null;
   ngDevMode && assertLView(lView);
-  while (lView[HOST] === null && (parent = getLViewParent(lView) !)) {
+  while (lView[HOST] === null && (parent = getLViewParent(lView)!)) {
     // As long as lView[HOST] is null we know we are part of sub-template such as `*ngIf`
     lView = parent;
   }
-  return lView[FLAGS] & LViewFlags.IsRoot ? null : lView[CONTEXT] as T;
+  return lView[FLAGS] & LViewFlags.IsRoot ? null : (lView[CONTEXT] as T);
 }
 
 /**
@@ -192,7 +204,7 @@ export function getInjectionTokens(element: Element): any[] {
  * @globalApi ng
  */
 export function getDirectives(element: Element): {}[] {
-  const context = loadLContext(element) !;
+  const context = loadLContext(element)!;
 
   if (context.directives === undefined) {
     context.directives = getDirectivesAtNodeIndex(context.nodeIndex, context.lView, false);
@@ -208,13 +220,15 @@ export function getDirectives(element: Element): {}[] {
  * Throws if a given target doesn't have associated LContext.
  */
 export function loadLContext(target: {}): LContext;
-export function loadLContext(target: {}, throwOnNotFound: false): LContext|null;
-export function loadLContext(target: {}, throwOnNotFound: boolean = true): LContext|null {
+export function loadLContext(target: {}, throwOnNotFound: false): LContext | null;
+export function loadLContext(target: {}, throwOnNotFound: boolean = true): LContext | null {
   const context = getLContext(target);
   if (!context && throwOnNotFound) {
     throw new Error(
-        ngDevMode ? `Unable to find context associated with ${stringifyForError(target)}` :
-                    'Invalid ng target');
+      ngDevMode
+        ? `Unable to find context associated with ${stringifyForError(target)}`
+        : 'Invalid ng target'
+    );
   }
   return context;
 }
@@ -250,7 +264,7 @@ export function getLocalRefs(target: {}): {[key: string]: any} {
  * @globalApi ng
  */
 export function getHostElement(componentOrDirective: {}): Element {
-  return getLContext(componentOrDirective) !.native as never as Element;
+  return (getLContext(componentOrDirective)!.native as never) as Element;
 }
 
 /**
@@ -270,7 +284,7 @@ export function getRenderedText(component: any): string {
 
 export function loadLContextFromNode(node: Node): LContext {
   if (!(node instanceof Node)) throw new Error('Expecting instance of DOM Element');
-  return loadLContext(node) !;
+  return loadLContext(node)!;
 }
 
 /**
@@ -289,9 +303,8 @@ export interface Listener {
   /**
    * Type of the listener (e.g. a native DOM event or a custom @Output).
    */
-  type: 'dom'|'output';
+  type: 'dom' | 'output';
 }
-
 
 /**
  * Retrieves a list of event listeners associated with a DOM element. The list does include host
@@ -333,19 +346,19 @@ export function getListeners(element: Element): Listener[] {
   const tCleanup = tView.cleanup;
   const listeners: Listener[] = [];
   if (tCleanup && lCleanup) {
-    for (let i = 0; i < tCleanup.length;) {
+    for (let i = 0; i < tCleanup.length; ) {
       const firstParam = tCleanup[i++];
       const secondParam = tCleanup[i++];
       if (typeof firstParam === 'string') {
         const name: string = firstParam;
-        const listenerElement = unwrapRNode(lView[secondParam]) as any as Element;
+        const listenerElement = (unwrapRNode(lView[secondParam]) as any) as Element;
         const callback: (value: any) => any = lCleanup[tCleanup[i++]];
         const useCaptureOrIndx = tCleanup[i++];
         // if useCaptureOrIndx is boolean then report it as is.
         // if useCaptureOrIndx is positive number then it in unsubscribe method
         // if useCaptureOrIndx is negative number then it is a Subscription
         const type =
-            (typeof useCaptureOrIndx === 'boolean' || useCaptureOrIndx >= 0) ? 'dom' : 'output';
+          typeof useCaptureOrIndx === 'boolean' || useCaptureOrIndx >= 0 ? 'dom' : 'output';
         const useCapture = typeof useCaptureOrIndx === 'boolean' ? useCaptureOrIndx : false;
         if (element == listenerElement) {
           listeners.push({element, name, callback, useCapture, type});
@@ -376,8 +389,8 @@ function isDirectiveDefHack(obj: any): obj is DirectiveDef<any> {
  *
  * @param element DOM element which is owned by an existing component's view.
  */
-export function getDebugNode(element: Element): DebugNode|null {
-  let debugNode: DebugNode|null = null;
+export function getDebugNode(element: Element): DebugNode | null {
+  let debugNode: DebugNode | null = null;
 
   const lContext = loadLContextFromNode(element);
   const lView = lContext.lView;
@@ -386,8 +399,9 @@ export function getDebugNode(element: Element): DebugNode|null {
     const valueInLView = lView[nodeIndex];
     // this means that value in the lView is a component with its own
     // data. In this situation the TNode is not accessed at the same spot.
-    const tNode = isLView(valueInLView) ? (valueInLView[T_HOST] as TNode) :
-                                          getTNode(lView[TVIEW], nodeIndex - HEADER_OFFSET);
+    const tNode = isLView(valueInLView)
+      ? (valueInLView[T_HOST] as TNode)
+      : getTNode(lView[TVIEW], nodeIndex - HEADER_OFFSET);
     debugNode = buildDebugNode(tNode, lView, nodeIndex);
   }
 

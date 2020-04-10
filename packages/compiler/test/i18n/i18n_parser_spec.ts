@@ -70,7 +70,7 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
 
       it('should extract from attributes in translatable element', () => {
         expect(
-          _humanizeMessages('<div i18n><p><b i18n-title="m|d" title="msg"></b></p></div>'),
+          _humanizeMessages('<div i18n><p><b i18n-title="m|d" title="msg"></b></p></div>')
         ).toEqual([
           [
             [
@@ -87,8 +87,8 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
       it('should extract from attributes in translatable block', () => {
         expect(
           _humanizeMessages(
-            '<!-- i18n --><p><b i18n-title="m|d" title="msg"></b></p><!-- /i18n -->',
-          ),
+            '<!-- i18n --><p><b i18n-title="m|d" title="msg"></b></p><!-- /i18n -->'
+          )
         ).toEqual([
           [['msg'], 'm', 'd', ''],
           [
@@ -105,8 +105,8 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
       it('should extract from attributes in translatable ICU', () => {
         expect(
           _humanizeMessages(
-            '<!-- i18n -->{count, plural, =0 {<p><b i18n-title="m|d" title="msg"></b></p>}}<!-- /i18n -->',
-          ),
+            '<!-- i18n -->{count, plural, =0 {<p><b i18n-title="m|d" title="msg"></b></p>}}<!-- /i18n -->'
+          )
         ).toEqual([
           [['msg'], 'm', 'd', ''],
           [
@@ -122,7 +122,7 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
 
       it('should extract from attributes in non translatable ICU', () => {
         expect(
-          _humanizeMessages('{count, plural, =0 {<p><b i18n-title="m|d" title="msg"></b></p>}}'),
+          _humanizeMessages('{count, plural, =0 {<p><b i18n-title="m|d" title="msg"></b></p>}}')
         ).toEqual([[['msg'], 'm', 'd', '']]);
       });
 
@@ -140,13 +140,13 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
 
       it('should support named interpolation', () => {
         expect(
-          _humanizeMessages('<div i18n="m|d">before{{ exp //i18n(ph="teSt") }}after</div>'),
+          _humanizeMessages('<div i18n="m|d">before{{ exp //i18n(ph="teSt") }}after</div>')
         ).toEqual([
           [['[before, <ph name="TEST"> exp //i18n(ph="teSt") </ph>, after]'], 'm', 'd', ''],
         ]);
 
         expect(
-          _humanizeMessages("<div i18n='m|d'>before{{ exp //i18n(ph='teSt') }}after</div>"),
+          _humanizeMessages("<div i18n='m|d'>before{{ exp //i18n(ph='teSt') }}after</div>")
         ).toEqual([
           [[`[before, <ph name="TEST"> exp //i18n(ph='teSt') </ph>, after]`], 'm', 'd', ''],
         ]);
@@ -158,7 +158,7 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
         expect(
           _humanizeMessages(`<!-- i18n: meaning1|desc1 -->message1<!-- /i18n -->
          <!-- i18n: desc2 -->message2<!-- /i18n -->
-         <!-- i18n -->message3<!-- /i18n -->`),
+         <!-- i18n -->message3<!-- /i18n -->`)
         ).toEqual([
           [['message1'], 'meaning1', 'desc1', ''],
           [['message2'], '', 'desc2', ''],
@@ -168,7 +168,7 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
 
       it('should extract all siblings', () => {
         expect(
-          _humanizeMessages(`<!-- i18n -->text<p>html<b>nested</b></p><!-- /i18n -->`),
+          _humanizeMessages(`<!-- i18n -->text<p>html<b>nested</b></p><!-- /i18n -->`)
         ).toEqual([
           [
             [
@@ -206,13 +206,13 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
 
       it('should extract as ICU when single child of a block', () => {
         expect(
-          _humanizeMessages('<!-- i18n:m|d -->{count, plural, =0 {zero}}<!-- /i18n -->'),
+          _humanizeMessages('<!-- i18n:m|d -->{count, plural, =0 {zero}}<!-- /i18n -->')
         ).toEqual([[['{count, plural, =0 {[zero]}}'], 'm', 'd', '']]);
       });
 
       it('should extract as ICU + ph when not single child of a block', () => {
         expect(
-          _humanizeMessages('<!-- i18n:m|d -->b{count, plural, =0 {zero}}a<!-- /i18n -->'),
+          _humanizeMessages('<!-- i18n:m|d -->b{count, plural, =0 {zero}}a<!-- /i18n -->')
         ).toEqual([
           [['{count, plural, =0 {[zero]}}'], '', '', ''],
           [['b', '<ph icu name="ICU">{count, plural, =0 {[zero]}}</ph>', 'a'], 'm', 'd', ''],
@@ -221,9 +221,7 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
 
       it('should not extract nested ICU messages', () => {
         expect(
-          _humanizeMessages(
-            '<div i18n="m|d">b{count, plural, =0 {{sex, select, male {m}}}}a</div>',
-          ),
+          _humanizeMessages('<div i18n="m|d">b{count, plural, =0 {{sex, select, male {m}}}}a</div>')
         ).toEqual([
           [
             ['b', '<ph icu name="ICU">{count, plural, =0 {[{sex, select, male {[m]}}]}}</ph>', 'a'],
@@ -247,7 +245,7 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
     describe('implicit attributes', () => {
       it('should extract implicit attributes', () => {
         expect(
-          _humanizeMessages('<b title="bb">bold</b><i title="ii">italic</i>', [], {'b': ['title']}),
+          _humanizeMessages('<b title="bb">bold</b><i title="ii">italic</i>', [], {'b': ['title']})
         ).toEqual([[['bb'], '', '', '']]);
       });
     });
@@ -332,7 +330,7 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
 export function _humanizeMessages(
   html: string,
   implicitTags: string[] = [],
-  implicitAttrs: {[k: string]: string[]} = {},
+  implicitAttrs: {[k: string]: string[]} = {}
 ): [string[], string, string, string][] {
   // https://github.com/angular/clang-format/issues/35
   return _extractMessages(html, implicitTags, implicitAttrs).map((message) => [
@@ -346,33 +344,33 @@ export function _humanizeMessages(
 function _humanizePlaceholders(
   html: string,
   implicitTags: string[] = [],
-  implicitAttrs: {[k: string]: string[]} = {},
+  implicitAttrs: {[k: string]: string[]} = {}
 ): string[] {
   // https://github.com/angular/clang-format/issues/35
   return _extractMessages(html, implicitTags, implicitAttrs).map((msg) =>
     Object.keys(msg.placeholders)
       .map((name) => `${name}=${msg.placeholders[name]}`)
-      .join(', '),
+      .join(', ')
   );
 }
 
 function _humanizePlaceholdersToMessage(
   html: string,
   implicitTags: string[] = [],
-  implicitAttrs: {[k: string]: string[]} = {},
+  implicitAttrs: {[k: string]: string[]} = {}
 ): string[] {
   // https://github.com/angular/clang-format/issues/35
   return _extractMessages(html, implicitTags, implicitAttrs).map((msg) =>
     Object.keys(msg.placeholderToMessage)
       .map((k) => `${k}=${digest(msg.placeholderToMessage[k])}`)
-      .join(', '),
+      .join(', ')
   );
 }
 
 export function _extractMessages(
   html: string,
   implicitTags: string[] = [],
-  implicitAttrs: {[k: string]: string[]} = {},
+  implicitAttrs: {[k: string]: string[]} = {}
 ): Message[] {
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(html, 'extractor spec', {tokenizeExpansionForms: true});
@@ -384,6 +382,6 @@ export function _extractMessages(
     parseResult.rootNodes,
     DEFAULT_INTERPOLATION_CONFIG,
     implicitTags,
-    implicitAttrs,
+    implicitAttrs
   ).messages;
 }

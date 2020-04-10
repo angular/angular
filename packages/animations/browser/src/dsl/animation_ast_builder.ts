@@ -5,13 +5,66 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimateTimings, AnimationAnimateChildMetadata, AnimationAnimateMetadata, AnimationAnimateRefMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationOptions, AnimationQueryMetadata, AnimationQueryOptions, AnimationReferenceMetadata, AnimationSequenceMetadata, AnimationStaggerMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, AnimationTriggerMetadata, style, ɵStyleData} from '@angular/animations';
+
+import {
+  AUTO_STYLE,
+  AnimateTimings,
+  AnimationAnimateChildMetadata,
+  AnimationAnimateMetadata,
+  AnimationAnimateRefMetadata,
+  AnimationGroupMetadata,
+  AnimationKeyframesSequenceMetadata,
+  AnimationMetadata,
+  AnimationMetadataType,
+  AnimationOptions,
+  AnimationQueryMetadata,
+  AnimationQueryOptions,
+  AnimationReferenceMetadata,
+  AnimationSequenceMetadata,
+  AnimationStaggerMetadata,
+  AnimationStateMetadata,
+  AnimationStyleMetadata,
+  AnimationTransitionMetadata,
+  AnimationTriggerMetadata,
+  style,
+  ɵStyleData,
+} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetAsInMap} from '../render/shared';
-import {ENTER_SELECTOR, LEAVE_SELECTOR, NG_ANIMATING_SELECTOR, NG_TRIGGER_SELECTOR, SUBSTITUTION_EXPR_START, copyObj, extractStyleParams, iteratorToArray, normalizeAnimationEntry, resolveTiming, validateStyleParams, visitDslNode} from '../util';
+import {
+  ENTER_SELECTOR,
+  LEAVE_SELECTOR,
+  NG_ANIMATING_SELECTOR,
+  NG_TRIGGER_SELECTOR,
+  SUBSTITUTION_EXPR_START,
+  copyObj,
+  extractStyleParams,
+  iteratorToArray,
+  normalizeAnimationEntry,
+  resolveTiming,
+  validateStyleParams,
+  visitDslNode,
+} from '../util';
 
-import {AnimateAst, AnimateChildAst, AnimateRefAst, Ast, DynamicTimingAst, GroupAst, KeyframesAst, QueryAst, ReferenceAst, SequenceAst, StaggerAst, StateAst, StyleAst, TimingAst, TransitionAst, TriggerAst} from './animation_ast';
+import {
+  AnimateAst,
+  AnimateChildAst,
+  AnimateRefAst,
+  Ast,
+  DynamicTimingAst,
+  GroupAst,
+  KeyframesAst,
+  QueryAst,
+  ReferenceAst,
+  SequenceAst,
+  StaggerAst,
+  StateAst,
+  StyleAst,
+  TimingAst,
+  TransitionAst,
+  TriggerAst,
+} from './animation_ast';
 import {AnimationDslVisitor} from './animation_dsl_visitor';
 import {parseTransitionExpr} from './animation_transition_expr';
 
@@ -55,8 +108,10 @@ const SELF_TOKEN_REGEX = new RegExp(`\s*${SELF_TOKEN}\s*,?`, 'g');
  * Otherwise an error will be thrown.
  */
 export function buildAnimationAst(
-    driver: AnimationDriver, metadata: AnimationMetadata | AnimationMetadata[],
-    errors: any[]): Ast<AnimationMetadataType> {
+  driver: AnimationDriver,
+  metadata: AnimationMetadata | AnimationMetadata[],
+  errors: any[]
+): Ast<AnimationMetadataType> {
   return new AnimationAstBuilderVisitor(driver).build(metadata, errors);
 }
 
@@ -65,12 +120,15 @@ const ROOT_SELECTOR = '';
 export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
   constructor(private _driver: AnimationDriver) {}
 
-  build(metadata: AnimationMetadata|AnimationMetadata[], errors: any[]):
-      Ast<AnimationMetadataType> {
+  build(
+    metadata: AnimationMetadata | AnimationMetadata[],
+    errors: any[]
+  ): Ast<AnimationMetadataType> {
     const context = new AnimationAstBuilderContext(errors);
     this._resetContextStyleTimingState(context);
-    return <Ast<AnimationMetadataType>>visitDslNode(
-        this, normalizeAnimationEntry(metadata), context);
+    return <Ast<AnimationMetadataType>>(
+      visitDslNode(this, normalizeAnimationEntry(metadata), context)
+    );
   }
 
   private _resetContextStyleTimingState(context: AnimationAstBuilderContext) {
@@ -80,26 +138,32 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     context.currentTime = 0;
   }
 
-  visitTrigger(metadata: AnimationTriggerMetadata, context: AnimationAstBuilderContext):
-      TriggerAst {
-    let queryCount = context.queryCount = 0;
-    let depCount = context.depCount = 0;
+  visitTrigger(
+    metadata: AnimationTriggerMetadata,
+    context: AnimationAstBuilderContext
+  ): TriggerAst {
+    let queryCount = (context.queryCount = 0);
+    let depCount = (context.depCount = 0);
     const states: StateAst[] = [];
     const transitions: TransitionAst[] = [];
     if (metadata.name.charAt(0) == '@') {
       context.errors.push(
-          'animation triggers cannot be prefixed with an `@` sign (e.g. trigger(\'@foo\', [...]))');
+        "animation triggers cannot be prefixed with an `@` sign (e.g. trigger('@foo', [...]))"
+      );
     }
 
-    metadata.definitions.forEach(def => {
+    metadata.definitions.forEach((def) => {
       this._resetContextStyleTimingState(context);
       if (def.type == AnimationMetadataType.State) {
         const stateDef = def as AnimationStateMetadata;
         const name = stateDef.name;
-        name.toString().split(/\s*,\s*/).forEach(n => {
-          stateDef.name = n;
-          states.push(this.visitState(stateDef, context));
-        });
+        name
+          .toString()
+          .split(/\s*,\s*/)
+          .forEach((n) => {
+            stateDef.name = n;
+            states.push(this.visitState(stateDef, context));
+          });
         stateDef.name = name;
       } else if (def.type == AnimationMetadataType.Transition) {
         const transition = this.visitTransition(def as AnimationTransitionMetadata, context);
@@ -108,14 +172,19 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
         transitions.push(transition);
       } else {
         context.errors.push(
-            'only state() and transition() definitions can sit inside of a trigger()');
+          'only state() and transition() definitions can sit inside of a trigger()'
+        );
       }
     });
 
     return {
       type: AnimationMetadataType.Trigger,
-      name: metadata.name, states, transitions, queryCount, depCount,
-      options: null
+      name: metadata.name,
+      states,
+      transitions,
+      queryCount,
+      depCount,
+      options: null,
     };
   }
 
@@ -125,11 +194,11 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     if (styleAst.containsDynamicStyles) {
       const missingSubs = new Set<string>();
       const params = astParams || {};
-      styleAst.styles.forEach(value => {
+      styleAst.styles.forEach((value) => {
         if (isObject(value)) {
           const stylesObj = value as any;
-          Object.keys(stylesObj).forEach(prop => {
-            extractStyleParams(stylesObj[prop]).forEach(sub => {
+          Object.keys(stylesObj).forEach((prop) => {
+            extractStyleParams(stylesObj[prop]).forEach((sub) => {
               if (!params.hasOwnProperty(sub)) {
                 missingSubs.add(sub);
               }
@@ -140,7 +209,12 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       if (missingSubs.size) {
         const missingSubsArr = iteratorToArray(missingSubs.values());
         context.errors.push(
-            `state("${metadata.name}", ...) must define default values for all the following style substitutions: ${missingSubsArr.join(', ')}`);
+          `state("${
+            metadata.name
+          }", ...) must define default values for all the following style substitutions: ${missingSubsArr.join(
+            ', '
+          )}`
+        );
       }
     }
 
@@ -148,12 +222,14 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       type: AnimationMetadataType.State,
       name: metadata.name,
       style: styleAst,
-      options: astParams ? {params: astParams} : null
+      options: astParams ? {params: astParams} : null,
     };
   }
 
-  visitTransition(metadata: AnimationTransitionMetadata, context: AnimationAstBuilderContext):
-      TransitionAst {
+  visitTransition(
+    metadata: AnimationTransitionMetadata,
+    context: AnimationAstBuilderContext
+  ): TransitionAst {
     context.queryCount = 0;
     context.depCount = 0;
     const animation = visitDslNode(this, normalizeAnimationEntry(metadata.animation), context);
@@ -165,23 +241,25 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       animation,
       queryCount: context.queryCount,
       depCount: context.depCount,
-      options: normalizeAnimationOptions(metadata.options)
+      options: normalizeAnimationOptions(metadata.options),
     };
   }
 
-  visitSequence(metadata: AnimationSequenceMetadata, context: AnimationAstBuilderContext):
-      SequenceAst {
+  visitSequence(
+    metadata: AnimationSequenceMetadata,
+    context: AnimationAstBuilderContext
+  ): SequenceAst {
     return {
       type: AnimationMetadataType.Sequence,
-      steps: metadata.steps.map(s => visitDslNode(this, s, context)),
-      options: normalizeAnimationOptions(metadata.options)
+      steps: metadata.steps.map((s) => visitDslNode(this, s, context)),
+      options: normalizeAnimationOptions(metadata.options),
     };
   }
 
   visitGroup(metadata: AnimationGroupMetadata, context: AnimationAstBuilderContext): GroupAst {
     const currentTime = context.currentTime;
     let furthestTime = 0;
-    const steps = metadata.steps.map(step => {
+    const steps = metadata.steps.map((step) => {
       context.currentTime = currentTime;
       const innerAst = visitDslNode(this, step, context);
       furthestTime = Math.max(furthestTime, context.currentTime);
@@ -192,16 +270,18 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     return {
       type: AnimationMetadataType.Group,
       steps,
-      options: normalizeAnimationOptions(metadata.options)
+      options: normalizeAnimationOptions(metadata.options),
     };
   }
 
-  visitAnimate(metadata: AnimationAnimateMetadata, context: AnimationAstBuilderContext):
-      AnimateAst {
+  visitAnimate(
+    metadata: AnimationAnimateMetadata,
+    context: AnimationAstBuilderContext
+  ): AnimateAst {
     const timingAst = constructTimingAst(metadata.timings, context.errors);
     context.currentAnimateTimings = timingAst;
 
-    let styleAst: StyleAst|KeyframesAst;
+    let styleAst: StyleAst | KeyframesAst;
     let styleMetadata: AnimationMetadata = metadata.styles ? metadata.styles : style({});
     if (styleMetadata.type == AnimationMetadataType.Keyframes) {
       styleAst = this.visitKeyframes(styleMetadata as AnimationKeyframesSequenceMetadata, context);
@@ -227,7 +307,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       type: AnimationMetadataType.Animate,
       timings: timingAst,
       style: styleAst,
-      options: null
+      options: null,
     };
   }
 
@@ -237,11 +317,13 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     return ast;
   }
 
-  private _makeStyleAst(metadata: AnimationStyleMetadata, context: AnimationAstBuilderContext):
-      StyleAst {
+  private _makeStyleAst(
+    metadata: AnimationStyleMetadata,
+    context: AnimationAstBuilderContext
+  ): StyleAst {
     const styles: (ɵStyleData | string)[] = [];
     if (Array.isArray(metadata.styles)) {
-      (metadata.styles as(ɵStyleData | string)[]).forEach(styleTuple => {
+      (metadata.styles as (ɵStyleData | string)[]).forEach((styleTuple) => {
         if (typeof styleTuple == 'string') {
           if (styleTuple == AUTO_STYLE) {
             styles.push(styleTuple);
@@ -257,8 +339,8 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     }
 
     let containsDynamicStyles = false;
-    let collectedEasing: string|null = null;
-    styles.forEach(styleData => {
+    let collectedEasing: string | null = null;
+    styles.forEach((styleData) => {
       if (isObject(styleData)) {
         const styleMap = styleData as ɵStyleData;
         const easing = styleMap['easing'];
@@ -282,8 +364,9 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       type: AnimationMetadataType.Style,
       styles,
       easing: collectedEasing,
-      offset: metadata.offset, containsDynamicStyles,
-      options: null
+      offset: metadata.offset,
+      containsDynamicStyles,
+      options: null,
     };
   }
 
@@ -295,24 +378,29 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       startTime -= timings.duration + timings.delay;
     }
 
-    ast.styles.forEach(tuple => {
+    ast.styles.forEach((tuple) => {
       if (typeof tuple == 'string') return;
 
-      Object.keys(tuple).forEach(prop => {
+      Object.keys(tuple).forEach((prop) => {
         if (!this._driver.validateStyleProperty(prop)) {
           context.errors.push(
-              `The provided animation property "${prop}" is not a supported CSS property for animations`);
+            `The provided animation property "${prop}" is not a supported CSS property for animations`
+          );
           return;
         }
 
-        const collectedStyles = context.collectedStyles[context.currentQuerySelector !];
+        const collectedStyles = context.collectedStyles[context.currentQuerySelector!];
         const collectedEntry = collectedStyles[prop];
         let updateCollectedStyle = true;
         if (collectedEntry) {
-          if (startTime != endTime && startTime >= collectedEntry.startTime &&
-              endTime <= collectedEntry.endTime) {
+          if (
+            startTime != endTime &&
+            startTime >= collectedEntry.startTime &&
+            endTime <= collectedEntry.endTime
+          ) {
             context.errors.push(
-                `The CSS property "${prop}" that exists between the times of "${collectedEntry.startTime}ms" and "${collectedEntry.endTime}ms" is also being animated in a parallel animation between the times of "${startTime}ms" and "${endTime}ms"`);
+              `The CSS property "${prop}" that exists between the times of "${collectedEntry.startTime}ms" and "${collectedEntry.endTime}ms" is also being animated in a parallel animation between the times of "${startTime}ms" and "${endTime}ms"`
+            );
             updateCollectedStyle = false;
           }
 
@@ -333,8 +421,10 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     });
   }
 
-  visitKeyframes(metadata: AnimationKeyframesSequenceMetadata, context: AnimationAstBuilderContext):
-      KeyframesAst {
+  visitKeyframes(
+    metadata: AnimationKeyframesSequenceMetadata,
+    context: AnimationAstBuilderContext
+  ): KeyframesAst {
     const ast: KeyframesAst = {type: AnimationMetadataType.Keyframes, styles: [], options: null};
     if (!context.currentAnimateTimings) {
       context.errors.push(`keyframes() must be placed inside of a call to animate()`);
@@ -349,10 +439,10 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     let keyframesOutOfRange = false;
     let previousOffset: number = 0;
 
-    const keyframes: StyleAst[] = metadata.steps.map(styles => {
+    const keyframes: StyleAst[] = metadata.steps.map((styles) => {
       const style = this._makeStyleAst(styles, context);
-      let offsetVal: number|null =
-          style.offset != null ? style.offset : consumeOffset(style.styles);
+      let offsetVal: number | null =
+        style.offset != null ? style.offset : consumeOffset(style.styles);
       let offset: number = 0;
       if (offsetVal != null) {
         totalKeyframesWithOffsets++;
@@ -383,10 +473,10 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
 
     const limit = length - 1;
     const currentTime = context.currentTime;
-    const currentAnimateTimings = context.currentAnimateTimings !;
+    const currentAnimateTimings = context.currentAnimateTimings!;
     const animateDuration = currentAnimateTimings.duration;
     keyframes.forEach((kf, i) => {
-      const offset = generatedOffset > 0 ? (i == limit ? 1 : (generatedOffset * i)) : offsets[i];
+      const offset = generatedOffset > 0 ? (i == limit ? 1 : generatedOffset * i) : offsets[i];
       const durationUpToThisFrame = offset * animateDuration;
       context.currentTime = currentTime + currentAnimateTimings.delay + durationUpToThisFrame;
       currentAnimateTimings.duration = durationUpToThisFrame;
@@ -399,42 +489,49 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     return ast;
   }
 
-  visitReference(metadata: AnimationReferenceMetadata, context: AnimationAstBuilderContext):
-      ReferenceAst {
+  visitReference(
+    metadata: AnimationReferenceMetadata,
+    context: AnimationAstBuilderContext
+  ): ReferenceAst {
     return {
       type: AnimationMetadataType.Reference,
       animation: visitDslNode(this, normalizeAnimationEntry(metadata.animation), context),
-      options: normalizeAnimationOptions(metadata.options)
+      options: normalizeAnimationOptions(metadata.options),
     };
   }
 
-  visitAnimateChild(metadata: AnimationAnimateChildMetadata, context: AnimationAstBuilderContext):
-      AnimateChildAst {
+  visitAnimateChild(
+    metadata: AnimationAnimateChildMetadata,
+    context: AnimationAstBuilderContext
+  ): AnimateChildAst {
     context.depCount++;
     return {
       type: AnimationMetadataType.AnimateChild,
-      options: normalizeAnimationOptions(metadata.options)
+      options: normalizeAnimationOptions(metadata.options),
     };
   }
 
-  visitAnimateRef(metadata: AnimationAnimateRefMetadata, context: AnimationAstBuilderContext):
-      AnimateRefAst {
+  visitAnimateRef(
+    metadata: AnimationAnimateRefMetadata,
+    context: AnimationAstBuilderContext
+  ): AnimateRefAst {
     return {
       type: AnimationMetadataType.AnimateRef,
       animation: this.visitReference(metadata.animation, context),
-      options: normalizeAnimationOptions(metadata.options)
+      options: normalizeAnimationOptions(metadata.options),
     };
   }
 
   visitQuery(metadata: AnimationQueryMetadata, context: AnimationAstBuilderContext): QueryAst {
-    const parentSelector = context.currentQuerySelector !;
+    const parentSelector = context.currentQuerySelector!;
     const options = (metadata.options || {}) as AnimationQueryOptions;
 
     context.queryCount++;
     context.currentQuery = metadata;
     const [selector, includeSelf] = normalizeSelector(metadata.selector);
-    context.currentQuerySelector =
-        parentSelector.length ? (parentSelector + ' ' + selector) : selector;
+    context.currentQuerySelector = parentSelector.length
+      ? parentSelector + ' ' + selector
+      : selector;
     getOrSetAsInMap(context.collectedStyles, context.currentQuerySelector, {});
 
     const animation = visitDslNode(this, normalizeAnimationEntry(metadata.animation), context);
@@ -445,72 +542,81 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       type: AnimationMetadataType.Query,
       selector,
       limit: options.limit || 0,
-      optional: !!options.optional, includeSelf, animation,
+      optional: !!options.optional,
+      includeSelf,
+      animation,
       originalSelector: metadata.selector,
-      options: normalizeAnimationOptions(metadata.options)
+      options: normalizeAnimationOptions(metadata.options),
     };
   }
 
-  visitStagger(metadata: AnimationStaggerMetadata, context: AnimationAstBuilderContext):
-      StaggerAst {
+  visitStagger(
+    metadata: AnimationStaggerMetadata,
+    context: AnimationAstBuilderContext
+  ): StaggerAst {
     if (!context.currentQuery) {
       context.errors.push(`stagger() can only be used inside of query()`);
     }
-    const timings = metadata.timings === 'full' ?
-        {duration: 0, delay: 0, easing: 'full'} :
-        resolveTiming(metadata.timings, context.errors, true);
+    const timings =
+      metadata.timings === 'full'
+        ? {duration: 0, delay: 0, easing: 'full'}
+        : resolveTiming(metadata.timings, context.errors, true);
 
     return {
       type: AnimationMetadataType.Stagger,
-      animation: visitDslNode(this, normalizeAnimationEntry(metadata.animation), context), timings,
-      options: null
+      animation: visitDslNode(this, normalizeAnimationEntry(metadata.animation), context),
+      timings,
+      options: null,
     };
   }
 }
 
 function normalizeSelector(selector: string): [string, boolean] {
-  const hasAmpersand = selector.split(/\s*,\s*/).find(token => token == SELF_TOKEN) ? true : false;
+  const hasAmpersand = selector.split(/\s*,\s*/).find((token) => token == SELF_TOKEN)
+    ? true
+    : false;
   if (hasAmpersand) {
     selector = selector.replace(SELF_TOKEN_REGEX, '');
   }
 
   // the :enter and :leave selectors are filled in at runtime during timeline building
-  selector = selector.replace(/@\*/g, NG_TRIGGER_SELECTOR)
-                 .replace(/@\w+/g, match => NG_TRIGGER_SELECTOR + '-' + match.substr(1))
-                 .replace(/:animating/g, NG_ANIMATING_SELECTOR);
+  selector = selector
+    .replace(/@\*/g, NG_TRIGGER_SELECTOR)
+    .replace(/@\w+/g, (match) => NG_TRIGGER_SELECTOR + '-' + match.substr(1))
+    .replace(/:animating/g, NG_ANIMATING_SELECTOR);
 
   return [selector, hasAmpersand];
 }
 
-
-function normalizeParams(obj: {[key: string]: any} | any): {[key: string]: any}|null {
+function normalizeParams(obj: {[key: string]: any} | any): {[key: string]: any} | null {
   return obj ? copyObj(obj) : null;
 }
 
 export type StyleTimeTuple = {
-  startTime: number; endTime: number;
+  startTime: number;
+  endTime: number;
 };
 
 export class AnimationAstBuilderContext {
   public queryCount: number = 0;
   public depCount: number = 0;
-  public currentTransition: AnimationTransitionMetadata|null = null;
-  public currentQuery: AnimationQueryMetadata|null = null;
-  public currentQuerySelector: string|null = null;
-  public currentAnimateTimings: TimingAst|null = null;
+  public currentTransition: AnimationTransitionMetadata | null = null;
+  public currentQuery: AnimationQueryMetadata | null = null;
+  public currentQuerySelector: string | null = null;
+  public currentAnimateTimings: TimingAst | null = null;
   public currentTime: number = 0;
   public collectedStyles: {[selectorName: string]: {[propName: string]: StyleTimeTuple}} = {};
-  public options: AnimationOptions|null = null;
+  public options: AnimationOptions | null = null;
   constructor(public errors: any[]) {}
 }
 
-function consumeOffset(styles: ɵStyleData | string | (ɵStyleData | string)[]): number|null {
+function consumeOffset(styles: ɵStyleData | string | (ɵStyleData | string)[]): number | null {
   if (typeof styles == 'string') return null;
 
-  let offset: number|null = null;
+  let offset: number | null = null;
 
   if (Array.isArray(styles)) {
-    styles.forEach(styleTuple => {
+    styles.forEach((styleTuple) => {
       if (isObject(styleTuple) && styleTuple.hasOwnProperty('offset')) {
         const obj = styleTuple as ɵStyleData;
         offset = parseFloat(obj['offset'] as string);
@@ -530,7 +636,7 @@ function isObject(value: any): boolean {
 }
 
 function constructTimingAst(value: string | number | AnimateTimings, errors: any[]) {
-  let timings: AnimateTimings|null = null;
+  let timings: AnimateTimings | null = null;
   if (value.hasOwnProperty('duration')) {
     timings = value as AnimateTimings;
   } else if (typeof value == 'number') {
@@ -539,7 +645,7 @@ function constructTimingAst(value: string | number | AnimateTimings, errors: any
   }
 
   const strValue = value as string;
-  const isDynamic = strValue.split(/\s+/).some(v => v.charAt(0) == '{' && v.charAt(1) == '{');
+  const isDynamic = strValue.split(/\s+/).some((v) => v.charAt(0) == '{' && v.charAt(1) == '{');
   if (isDynamic) {
     const ast = makeTimingAst(0, 0, '') as any;
     ast.dynamic = true;
@@ -555,7 +661,7 @@ function normalizeAnimationOptions(options: AnimationOptions | null): AnimationO
   if (options) {
     options = copyObj(options);
     if (options['params']) {
-      options['params'] = normalizeParams(options['params']) !;
+      options['params'] = normalizeParams(options['params'])!;
     }
   } else {
     options = {};

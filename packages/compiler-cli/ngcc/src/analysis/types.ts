@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 import {Reexport} from '../../../src/ngtsc/imports';
@@ -13,7 +14,7 @@ import {CompileResult} from '../../../src/ngtsc/transform';
 
 export interface CompiledClass {
   name: string;
-  decorators: Decorator[]|null;
+  decorators: Decorator[] | null;
   declaration: ClassDeclaration;
   compilation: CompileResult[];
 }

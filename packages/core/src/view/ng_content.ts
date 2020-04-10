@@ -25,7 +25,8 @@ export function ngContentDef(ngContentIndex: null | number, index: number): Node
     childMatchedQueries: 0,
     matchedQueries: {},
     matchedQueryIds: 0,
-    references: {}, ngContentIndex,
+    references: {},
+    ngContentIndex,
     childCount: 0,
     bindings: [],
     bindingFlags: 0,
@@ -34,7 +35,7 @@ export function ngContentDef(ngContentIndex: null | number, index: number): Node
     provider: null,
     text: null,
     query: null,
-    ngContent: {index}
+    ngContent: {index},
   };
 }
 
@@ -44,7 +45,13 @@ export function appendNgContent(view: ViewData, renderHost: any, def: NodeDef) {
     // Nothing to do if there is no parent element.
     return;
   }
-  const ngContentIndex = def.ngContent !.index;
+  const ngContentIndex = def.ngContent!.index;
   visitProjectedRenderNodes(
-      view, ngContentIndex, RenderNodeAction.AppendChild, parentEl, null, undefined);
+    view,
+    ngContentIndex,
+    RenderNodeAction.AppendChild,
+    parentEl,
+    null,
+    undefined
+  );
 }

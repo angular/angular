@@ -9,18 +9,28 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {ClassDeclaration, ClassMember, ClassMemberKind, isNamedClassDeclaration, ReflectionHost, reflectTypeEntityToDeclaration} from '../../reflection';
+import {
+  ClassDeclaration,
+  ClassMember,
+  ClassMemberKind,
+  isNamedClassDeclaration,
+  ReflectionHost,
+  reflectTypeEntityToDeclaration,
+} from '../../reflection';
 import {nodeDebugInfo} from '../../util/src/typescript';
 
 import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
 
 export function extractReferencesFromType(
-    checker: ts.TypeChecker, def: ts.TypeNode, ngModuleImportedFrom: string|null,
-    resolutionContext: string): Reference<ClassDeclaration>[] {
+  checker: ts.TypeChecker,
+  def: ts.TypeNode,
+  ngModuleImportedFrom: string | null,
+  resolutionContext: string
+): Reference<ClassDeclaration>[] {
   if (!ts.isTupleTypeNode(def)) {
     return [];
   }
-  return def.elementTypes.map(element => {
+  return def.elementTypes.map((element) => {
     if (!ts.isTypeQueryNode(element)) {
       throw new Error(`Expected TypeQueryNode: ${nodeDebugInfo(element)}`);
     }
@@ -29,7 +39,7 @@ export function extractReferencesFromType(
     if (!isNamedClassDeclaration(node)) {
       throw new Error(`Expected named ClassDeclaration: ${nodeDebugInfo(node)}`);
     }
-    const specifier = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
+    const specifier = from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom;
     if (specifier !== null) {
       return new Reference(node, {specifier, resolutionContext});
     } else {
@@ -38,7 +48,7 @@ export function extractReferencesFromType(
   });
 }
 
-export function readStringType(type: ts.TypeNode): string|null {
+export function readStringType(type: ts.TypeNode): string | null {
   if (!ts.isLiteralTypeNode(type) || !ts.isStringLiteral(type.literal)) {
     return null;
   }
@@ -50,9 +60,13 @@ export function readStringMapType(type: ts.TypeNode): {[key: string]: string} {
     return {};
   }
   const obj: {[key: string]: string} = {};
-  type.members.forEach(member => {
-    if (!ts.isPropertySignature(member) || member.type === undefined || member.name === undefined ||
-        !ts.isStringLiteral(member.name)) {
+  type.members.forEach((member) => {
+    if (
+      !ts.isPropertySignature(member) ||
+      member.type === undefined ||
+      member.name === undefined ||
+      !ts.isStringLiteral(member.name)
+    ) {
       return;
     }
     const value = readStringType(member.type);
@@ -69,7 +83,7 @@ export function readStringArrayType(type: ts.TypeNode): string[] {
     return [];
   }
   const res: string[] = [];
-  type.elementTypes.forEach(el => {
+  type.elementTypes.forEach((el) => {
     if (!ts.isLiteralTypeNode(el) || !ts.isStringLiteral(el.literal)) {
       return;
     }
@@ -78,33 +92,42 @@ export function readStringArrayType(type: ts.TypeNode): string[] {
   return res;
 }
 
-
-export function extractDirectiveGuards(node: ClassDeclaration, reflector: ReflectionHost): {
-  ngTemplateGuards: TemplateGuardMeta[],
-  hasNgTemplateContextGuard: boolean,
-  coercedInputFields: Set<string>,
+export function extractDirectiveGuards(
+  node: ClassDeclaration,
+  reflector: ReflectionHost
+): {
+  ngTemplateGuards: TemplateGuardMeta[];
+  hasNgTemplateContextGuard: boolean;
+  coercedInputFields: Set<string>;
 } {
-  const staticMembers = reflector.getMembersOfClass(node).filter(member => member.isStatic);
-  const ngTemplateGuards = staticMembers.map(extractTemplateGuard)
-                               .filter((guard): guard is TemplateGuardMeta => guard !== null);
+  const staticMembers = reflector.getMembersOfClass(node).filter((member) => member.isStatic);
+  const ngTemplateGuards = staticMembers
+    .map(extractTemplateGuard)
+    .filter((guard): guard is TemplateGuardMeta => guard !== null);
   const hasNgTemplateContextGuard = staticMembers.some(
-      member => member.kind === ClassMemberKind.Method && member.name === 'ngTemplateContextGuard');
+    (member) => member.kind === ClassMemberKind.Method && member.name === 'ngTemplateContextGuard'
+  );
 
-  const coercedInputFields =
-      new Set(staticMembers.map(extractCoercedInput)
-                  .filter((inputName): inputName is string => inputName !== null));
+  const coercedInputFields = new Set(
+    staticMembers
+      .map(extractCoercedInput)
+      .filter((inputName): inputName is string => inputName !== null)
+  );
   return {hasNgTemplateContextGuard, ngTemplateGuards, coercedInputFields};
 }
 
-function extractTemplateGuard(member: ClassMember): TemplateGuardMeta|null {
+function extractTemplateGuard(member: ClassMember): TemplateGuardMeta | null {
   if (!member.name.startsWith('ngTemplateGuard_')) {
     return null;
   }
   const inputName = afterUnderscore(member.name);
   if (member.kind === ClassMemberKind.Property) {
-    let type: string|null = null;
-    if (member.type !== null && ts.isLiteralTypeNode(member.type) &&
-        ts.isStringLiteral(member.type.literal)) {
+    let type: string | null = null;
+    if (
+      member.type !== null &&
+      ts.isLiteralTypeNode(member.type) &&
+      ts.isStringLiteral(member.type.literal)
+    ) {
       type = member.type.literal.text;
     }
 
@@ -120,7 +143,7 @@ function extractTemplateGuard(member: ClassMember): TemplateGuardMeta|null {
   }
 }
 
-function extractCoercedInput(member: ClassMember): string|null {
+function extractCoercedInput(member: ClassMember): string | null {
   if (member.kind !== ClassMemberKind.Property || !member.name.startsWith('ngAcceptInputType_')) {
     return null!;
   }
@@ -137,7 +160,7 @@ function extractCoercedInput(member: ClassMember): string|null {
 export class CompoundMetadataReader implements MetadataReader {
   constructor(private readers: MetadataReader[]) {}
 
-  getDirectiveMetadata(node: Reference<ClassDeclaration<ts.Declaration>>): DirectiveMeta|null {
+  getDirectiveMetadata(node: Reference<ClassDeclaration<ts.Declaration>>): DirectiveMeta | null {
     for (const reader of this.readers) {
       const meta = reader.getDirectiveMetadata(node);
       if (meta !== null) {
@@ -147,7 +170,7 @@ export class CompoundMetadataReader implements MetadataReader {
     return null;
   }
 
-  getNgModuleMetadata(node: Reference<ClassDeclaration<ts.Declaration>>): NgModuleMeta|null {
+  getNgModuleMetadata(node: Reference<ClassDeclaration<ts.Declaration>>): NgModuleMeta | null {
     for (const reader of this.readers) {
       const meta = reader.getNgModuleMetadata(node);
       if (meta !== null) {
@@ -156,7 +179,7 @@ export class CompoundMetadataReader implements MetadataReader {
     }
     return null;
   }
-  getPipeMetadata(node: Reference<ClassDeclaration<ts.Declaration>>): PipeMeta|null {
+  getPipeMetadata(node: Reference<ClassDeclaration<ts.Declaration>>): PipeMeta | null {
     for (const reader of this.readers) {
       const meta = reader.getPipeMetadata(node);
       if (meta !== null) {
@@ -179,5 +202,6 @@ function afterUnderscore(str: string): string {
 export function hasInjectableFields(clazz: ClassDeclaration, host: ReflectionHost): boolean {
   const members = host.getMembersOfClass(clazz);
   return members.some(
-      ({isStatic, name}) => isStatic && (name === 'ɵprov' || name === 'ɵfac' || name === 'ɵinj'));
+    ({isStatic, name}) => isStatic && (name === 'ɵprov' || name === 'ɵfac' || name === 'ɵinj')
+  );
 }

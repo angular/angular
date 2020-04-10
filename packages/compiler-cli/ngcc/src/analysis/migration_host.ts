@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
@@ -23,23 +24,30 @@ import {isWithinPackage} from './util';
  */
 export class DefaultMigrationHost implements MigrationHost {
   constructor(
-      readonly reflectionHost: NgccReflectionHost, readonly metadata: MetadataReader,
-      readonly evaluator: PartialEvaluator, private compiler: NgccTraitCompiler,
-      private entryPointPath: AbsoluteFsPath) {}
+    readonly reflectionHost: NgccReflectionHost,
+    readonly metadata: MetadataReader,
+    readonly evaluator: PartialEvaluator,
+    private compiler: NgccTraitCompiler,
+    private entryPointPath: AbsoluteFsPath
+  ) {}
 
-  injectSyntheticDecorator(clazz: ClassDeclaration, decorator: Decorator, flags?: HandlerFlags):
-      void {
+  injectSyntheticDecorator(
+    clazz: ClassDeclaration,
+    decorator: Decorator,
+    flags?: HandlerFlags
+  ): void {
     const migratedTraits = this.compiler.injectSyntheticDecorator(clazz, decorator, flags);
 
     for (const trait of migratedTraits) {
       if (trait.state === TraitState.ERRORED) {
-        trait.diagnostics =
-            trait.diagnostics.map(diag => createMigrationDiagnostic(diag, clazz, decorator));
+        trait.diagnostics = trait.diagnostics.map((diag) =>
+          createMigrationDiagnostic(diag, clazz, decorator)
+        );
       }
     }
   }
 
-  getAllDecorators(clazz: ClassDeclaration): Decorator[]|null {
+  getAllDecorators(clazz: ClassDeclaration): Decorator[] | null {
     return this.compiler.getAllDecorators(clazz);
   }
 
@@ -53,17 +61,22 @@ export class DefaultMigrationHost implements MigrationHost {
  * decorator.
  */
 function createMigrationDiagnostic(
-    diagnostic: ts.Diagnostic, source: ts.Node, decorator: Decorator): ts.Diagnostic {
+  diagnostic: ts.Diagnostic,
+  source: ts.Node,
+  decorator: Decorator
+): ts.Diagnostic {
   const clone = {...diagnostic};
 
-  const chain: ts.DiagnosticMessageChain[] = [{
-    messageText: `Occurs for @${decorator.name} decorator inserted by an automatic migration`,
-    category: ts.DiagnosticCategory.Message,
-    code: 0,
-  }];
+  const chain: ts.DiagnosticMessageChain[] = [
+    {
+      messageText: `Occurs for @${decorator.name} decorator inserted by an automatic migration`,
+      category: ts.DiagnosticCategory.Message,
+      code: 0,
+    },
+  ];
 
   if (decorator.args !== null) {
-    const args = decorator.args.map(arg => arg.getText()).join(', ');
+    const args = decorator.args.map((arg) => arg.getText()).join(', ');
     chain.push({
       messageText: `@${decorator.name}(${args})`,
       category: ts.DiagnosticCategory.Message,

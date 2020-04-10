@@ -6,29 +6,47 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DebugContext, NodeFlags, QueryValueType, Services, asElementData, asTextData, directiveDef, elementDef, textDef} from '@angular/core/src/view/index';
+import {
+  DebugContext,
+  NodeFlags,
+  QueryValueType,
+  Services,
+  asElementData,
+  asTextData,
+  directiveDef,
+  elementDef,
+  textDef,
+} from '@angular/core/src/view/index';
 
 import {compViewDef, createAndGetRootNodes} from './helper';
 
 {
   describe('View Services', () => {
-
     describe('DebugContext', () => {
       class AComp {}
 
       class AService {}
 
       function createViewWithData() {
-        const {view} = createAndGetRootNodes(compViewDef([
-          elementDef(
-              0, NodeFlags.None, null, null, 1, 'div', null, null, null, null,
-              () => compViewDef([
+        const {view} = createAndGetRootNodes(
+          compViewDef([
+            elementDef(0, NodeFlags.None, null, null, 1, 'div', null, null, null, null, () =>
+              compViewDef([
                 elementDef(
-                    0, NodeFlags.None, [['ref', QueryValueType.ElementRef]], null, 2, 'span'),
-                directiveDef(1, NodeFlags.None, null, 0, AService, []), textDef(2, null, ['a'])
-              ])),
-          directiveDef(1, NodeFlags.Component, null, 0, AComp, []),
-        ]));
+                  0,
+                  NodeFlags.None,
+                  [['ref', QueryValueType.ElementRef]],
+                  null,
+                  2,
+                  'span'
+                ),
+                directiveDef(1, NodeFlags.None, null, 0, AService, []),
+                textDef(2, null, ['a']),
+              ])
+            ),
+            directiveDef(1, NodeFlags.Component, null, 0, AComp, []),
+          ])
+        );
         return view;
       }
 
@@ -44,8 +62,9 @@ import {compViewDef, createAndGetRootNodes} from './helper';
         expect(debugCtx.component).toBe(compView.component);
         expect(debugCtx.context).toBe(compView.context);
         expect(debugCtx.providerTokens).toEqual([AService]);
-        expect(debugCtx.references['ref'].nativeElement)
-            .toBe(asElementData(compView, 0).renderElement);
+        expect(debugCtx.references['ref'].nativeElement).toBe(
+          asElementData(compView, 0).renderElement
+        );
       });
 
       it('should provide data for text nodes', () => {

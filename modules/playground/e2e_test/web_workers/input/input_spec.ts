@@ -10,7 +10,7 @@ import {ExpectedConditions, browser, by, element, protractor} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../../e2e_util/e2e_util';
 
-describe('WebWorkers Input', function() {
+describe('WebWorkers Input', function () {
   afterEach(() => {
     verifyNoBrowserErrors();
     browser.ignoreSynchronization = false;
@@ -58,18 +58,20 @@ describe('WebWorkers Input', function() {
   });
 
   function waitForBootstrap() {
-    browser.wait(protractor.until.elementLocated(by.css(selector + ' h2')), 5000)
-        .then(
-            () => {
-              const elem = element(by.css(selector + ' h2'));
-              browser.wait(
-                  protractor.ExpectedConditions.textToBePresentInElement(elem, 'Input App'), 5000);
-            },
-            () => {
-              // jasmine will timeout if this gets called too many times
-              console.error('>> unexpected timeout -> browser.refresh()');
-              browser.refresh();
-              waitForBootstrap();
-            });
+    browser.wait(protractor.until.elementLocated(by.css(selector + ' h2')), 5000).then(
+      () => {
+        const elem = element(by.css(selector + ' h2'));
+        browser.wait(
+          protractor.ExpectedConditions.textToBePresentInElement(elem, 'Input App'),
+          5000
+        );
+      },
+      () => {
+        // jasmine will timeout if this gets called too many times
+        console.error('>> unexpected timeout -> browser.refresh()');
+        browser.refresh();
+        waitForBootstrap();
+      }
+    );
   }
 });

@@ -255,9 +255,13 @@ export interface FactoryProvider extends FactorySansProvider {
  *
  * @publicApi
  */
-export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider |
-    ConstructorProvider | FactoryProvider | any[];
-
+export type StaticProvider =
+  | ValueProvider
+  | ExistingProvider
+  | StaticClassProvider
+  | ConstructorProvider
+  | FactoryProvider
+  | any[];
 
 /**
  * Configures the `Injector` to return an instance of `Type` when `Type' is used as the token.
@@ -329,8 +333,14 @@ export interface ClassProvider extends ClassSansProvider {
  *
  * @publicApi
  */
-export type Provider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider |
-    ExistingProvider | FactoryProvider | any[];
+export type Provider =
+  | TypeProvider
+  | ValueProvider
+  | ClassProvider
+  | ConstructorProvider
+  | ExistingProvider
+  | FactoryProvider
+  | any[];
 
 /**
  * Describes a function that is used to process provider lists (such as provider

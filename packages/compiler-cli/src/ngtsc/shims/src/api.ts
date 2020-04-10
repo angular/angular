@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 import {AbsoluteFsPath} from '../../file_system';
 
@@ -22,6 +23,8 @@ export interface ShimGenerator {
    *
    * If `generate` returns null, then the shim generator declines to generate the file after all.
    */
-  generate(genFileName: AbsoluteFsPath, readFile: (fileName: string) => ts.SourceFile | null):
-      ts.SourceFile|null;
+  generate(
+    genFileName: AbsoluteFsPath,
+    readFile: (fileName: string) => ts.SourceFile | null
+  ): ts.SourceFile | null;
 }

@@ -13,7 +13,10 @@ import * as o from '@angular/compiler/src/output/output_ast';
 import {SourceMap} from '@angular/compiler/src/output/source_map';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler/src/parse_util';
 
-import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/src/output/source_map_util';
+import {
+  extractSourceMap,
+  originalPositionFor,
+} from '@angular/compiler/testing/src/output/source_map_util';
 
 const someGenFilePath = 'somePackage/someGenFile';
 
@@ -26,7 +29,7 @@ const someGenFilePath = 'somePackage/someGenFile';
       emitter = new JavaScriptEmitter();
     });
 
-    function emitSourceMap(stmt: o.Statement|o.Statement[], preamble?: string): SourceMap {
+    function emitSourceMap(stmt: o.Statement | o.Statement[], preamble?: string): SourceMap {
       const stmts = Array.isArray(stmt) ? stmt : [stmt];
       const source = emitter.emitStatements(someGenFilePath, stmts, preamble);
       return extractSourceMap(source)!;
@@ -43,8 +46,11 @@ const someGenFilePath = 'somePackage/someGenFile';
 
         expect(sm.sources).toEqual([someGenFilePath, 'in.js']);
         expect(sm.sourcesContent).toEqual([' ', ';;;var']);
-        expect(originalPositionFor(sm, {line: 3, column: 0}))
-            .toEqual({line: 1, column: 3, source: 'in.js'});
+        expect(originalPositionFor(sm, {line: 3, column: 0})).toEqual({
+          line: 1,
+          column: 3,
+          source: 'in.js',
+        });
       });
     });
   });

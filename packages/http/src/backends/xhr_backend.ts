@@ -39,7 +39,7 @@ export class XHRConnection implements Connection {
    */
   response: Observable<Response>;
   // TODO(issue/24571): remove '!'.
-  readyState !: ReadyState;
+  readyState!: ReadyState;
   constructor(req: Request, browserXHR: BrowserXhr, baseResponseOptions?: ResponseOptions) {
     this.request = req;
     this.response = new Observable<Response>((responseObserver: Observer<Response>) => {
@@ -60,7 +60,7 @@ export class XHRConnection implements Connection {
           // responseText is the old-school way of retrieving response (supported by IE8 & 9)
           // response/responseType properties were introduced in ResourceLoader Level2 spec
           // (supported by IE10)
-          body = (typeof _xhr.response === 'undefined') ? _xhr.responseText : _xhr.response;
+          body = typeof _xhr.response === 'undefined' ? _xhr.responseText : _xhr.response;
 
           // Implicitly strip a potential XSSI prefix.
           if (typeof body === 'string') {
@@ -116,7 +116,7 @@ export class XHRConnection implements Connection {
       if (!req.headers.has('Accept')) {
         req.headers.append('Accept', 'application/json, text/plain, */*');
       }
-      req.headers.forEach((values, name) => _xhr.setRequestHeader(name !, values.join(',')));
+      req.headers.forEach((values, name) => _xhr.setRequestHeader(name!, values.join(',')));
 
       // Select the correct buffer type to store the response
       if (req.responseType != null && _xhr.responseType != null) {
@@ -194,7 +194,9 @@ export class XHRConnection implements Connection {
  */
 export class CookieXSRFStrategy implements XSRFStrategy {
   constructor(
-      private _cookieName: string = 'XSRF-TOKEN', private _headerName: string = 'X-XSRF-TOKEN') {}
+    private _cookieName: string = 'XSRF-TOKEN',
+    private _headerName: string = 'X-XSRF-TOKEN'
+  ) {}
 
   configureRequest(req: Request): void {
     const xsrfToken = getDOM().getCookie(this._cookieName);
@@ -235,8 +237,10 @@ export class CookieXSRFStrategy implements XSRFStrategy {
 @Injectable()
 export class XHRBackend implements ConnectionBackend {
   constructor(
-      private _browserXHR: BrowserXhr, private _baseResponseOptions: ResponseOptions,
-      private _xsrfStrategy: XSRFStrategy) {}
+    private _browserXHR: BrowserXhr,
+    private _baseResponseOptions: ResponseOptions,
+    private _xsrfStrategy: XSRFStrategy
+  ) {}
 
   createConnection(request: Request): XHRConnection {
     this._xsrfStrategy.configureRequest(request);

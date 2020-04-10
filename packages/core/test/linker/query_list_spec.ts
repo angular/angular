@@ -21,10 +21,11 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
       log = '';
     });
 
-    function logAppend(item: any /** TODO #9100 */) { log += (log.length == 0 ? '' : ', ') + item; }
+    function logAppend(item: any /** TODO #9100 */) {
+      log += (log.length == 0 ? '' : ', ') + item;
+    }
 
     describe('dirty and reset', () => {
-
       it('should initially be dirty and empty', () => {
         expect(queryList.dirty).toBeTruthy();
         expect(queryList.length).toBe(0);
@@ -36,7 +37,6 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
         expect(queryList.dirty).toBeFalsy();
         expect(queryList.length).toBe(2);
       });
-
     });
 
     it('should support resetting and iterating over the new objects', () => {
@@ -64,14 +64,14 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
     it('should support forEach', () => {
       queryList.reset(['one', 'two']);
       let join = '';
-      queryList.forEach((x) => join = join + x);
+      queryList.forEach((x) => (join = join + x));
       expect(join).toEqual('onetwo');
     });
 
     it('should support forEach with index', () => {
       queryList.reset(['one', 'two']);
       let join = '';
-      queryList.forEach((x, i) => join = join + x + i);
+      queryList.forEach((x, i) => (join = join + x + i));
       expect(join).toEqual('one0two1');
     });
 
@@ -102,8 +102,9 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
 
     it('should support reduce with index', () => {
       queryList.reset(['one', 'two']);
-      expect(queryList.reduce((a: string, x: string, i: number) => a + x + i, 'start:'))
-          .toEqual('start:one0two1');
+      expect(queryList.reduce((a: string, x: string, i: number) => a + x + i, 'start:')).toEqual(
+        'start:one0two1'
+      );
     });
 
     it('should support toArray', () => {
@@ -131,8 +132,8 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
 
     it('should support some', () => {
       queryList.reset(['one', 'two', 'three']);
-      expect(queryList.some(item => item === 'one')).toEqual(true);
-      expect(queryList.some(item => item === 'four')).toEqual(false);
+      expect(queryList.some((item) => item === 'one')).toEqual(true);
+      expect(queryList.some((item) => item === 'four')).toEqual(false);
     });
 
     it('should be iterable', () => {
@@ -146,7 +147,7 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
 
       // For loops use the iteration protocol.
       for (const value of queryListAsIterable) {
-        expect(value).toBe(data.shift() !);
+        expect(value).toBe(data.shift()!);
       }
       expect(data.length).toBe(0);
     });
@@ -154,30 +155,38 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
     if (getDOM().supportsDOMEvents()) {
       describe('simple observable interface', () => {
         it('should fire callbacks on change', fakeAsync(() => {
-             let fires = 0;
-             queryList.changes.subscribe({next: (_) => { fires += 1; }});
+          let fires = 0;
+          queryList.changes.subscribe({
+            next: (_) => {
+              fires += 1;
+            },
+          });
 
-             queryList.notifyOnChanges();
-             tick();
+          queryList.notifyOnChanges();
+          tick();
 
-             expect(fires).toEqual(1);
+          expect(fires).toEqual(1);
 
-             queryList.notifyOnChanges();
-             tick();
+          queryList.notifyOnChanges();
+          tick();
 
-             expect(fires).toEqual(2);
-           }));
+          expect(fires).toEqual(2);
+        }));
 
         it('should provides query list as an argument', fakeAsync(() => {
-             let recorded: any /** TODO #9100 */;
-             queryList.changes.subscribe({next: (v: any) => { recorded = v; }});
+          let recorded: any /** TODO #9100 */;
+          queryList.changes.subscribe({
+            next: (v: any) => {
+              recorded = v;
+            },
+          });
 
-             queryList.reset(['one']);
-             queryList.notifyOnChanges();
-             tick();
+          queryList.reset(['one']);
+          queryList.notifyOnChanges();
+          tick();
 
-             expect(recorded).toBe(queryList);
-           }));
+          expect(recorded).toBe(queryList);
+        }));
       });
     }
   });

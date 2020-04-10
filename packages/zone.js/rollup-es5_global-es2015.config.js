@@ -5,9 +5,9 @@ const commonjs = require('rollup-plugin-commonjs');
 let version = '<unknown>';
 if (bazel_stamp_file) {
   const versionTag = require('fs')
-                         .readFileSync(bazel_stamp_file, {encoding: 'utf-8'})
-                         .split('\n')
-                         .find(s => s.startsWith('BUILD_SCM_VERSION'));
+    .readFileSync(bazel_stamp_file, {encoding: 'utf-8'})
+    .split('\n')
+    .find((s) => s.startsWith('BUILD_SCM_VERSION'));
   // Don't assume BUILD_SCM_VERSION exists
   if (versionTag) {
     version = versionTag.split(' ')[1].trim();
@@ -28,4 +28,4 @@ module.exports = {
     commonjs(),
   ],
   output: {name: 'Zone', banner},
-}
+};

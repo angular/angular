@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AnimationPlayer} from '@angular/animations';
 
 import {computeStyle} from '../../util';
@@ -14,7 +15,12 @@ import {ElementAnimationStyleHandler} from './element_animation_style_handler';
 const DEFAULT_FILL_MODE = 'forwards';
 const DEFAULT_EASING = 'linear';
 
-export const enum AnimatorControlState {INITIALIZED = 1, STARTED = 2, FINISHED = 3, DESTROYED = 4}
+export const enum AnimatorControlState {
+  INITIALIZED = 1,
+  STARTED = 2,
+  FINISHED = 3,
+  DESTROYED = 4,
+}
 
 export class CssKeyframesPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
@@ -23,10 +29,10 @@ export class CssKeyframesPlayer implements AnimationPlayer {
 
   private _started = false;
   // TODO(issue/24571): remove '!'.
-  private _styler !: ElementAnimationStyleHandler;
+  private _styler!: ElementAnimationStyleHandler;
 
   // TODO(issue/24571): remove '!'.
-  public parentPlayer !: AnimationPlayer;
+  public parentPlayer!: AnimationPlayer;
   public readonly totalTime: number;
   public readonly easing: string;
   public currentSnapshot: {[key: string]: string} = {};
@@ -34,21 +40,31 @@ export class CssKeyframesPlayer implements AnimationPlayer {
   private _state: AnimatorControlState = 0;
 
   constructor(
-      public readonly element: any, public readonly keyframes: {[key: string]: string | number}[],
-      public readonly animationName: string, private readonly _duration: number,
-      private readonly _delay: number, easing: string,
-      private readonly _finalStyles: {[key: string]: any},
-      private readonly _specialStyles?: SpecialCasedStyles|null) {
+    public readonly element: any,
+    public readonly keyframes: {[key: string]: string | number}[],
+    public readonly animationName: string,
+    private readonly _duration: number,
+    private readonly _delay: number,
+    easing: string,
+    private readonly _finalStyles: {[key: string]: any},
+    private readonly _specialStyles?: SpecialCasedStyles | null
+  ) {
     this.easing = easing || DEFAULT_EASING;
     this.totalTime = _duration + _delay;
     this._buildStyler();
   }
 
-  onStart(fn: () => void): void { this._onStartFns.push(fn); }
+  onStart(fn: () => void): void {
+    this._onStartFns.push(fn);
+  }
 
-  onDone(fn: () => void): void { this._onDoneFns.push(fn); }
+  onDone(fn: () => void): void {
+    this._onDoneFns.push(fn);
+  }
 
-  onDestroy(fn: () => void): void { this._onDestroyFns.push(fn); }
+  onDestroy(fn: () => void): void {
+    this._onDestroyFns.push(fn);
+  }
 
   destroy() {
     this.init();
@@ -60,17 +76,17 @@ export class CssKeyframesPlayer implements AnimationPlayer {
     if (this._specialStyles) {
       this._specialStyles.destroy();
     }
-    this._onDestroyFns.forEach(fn => fn());
+    this._onDestroyFns.forEach((fn) => fn());
     this._onDestroyFns = [];
   }
 
   private _flushDoneFns() {
-    this._onDoneFns.forEach(fn => fn());
+    this._onDoneFns.forEach((fn) => fn());
     this._onDoneFns = [];
   }
 
   private _flushStartFns() {
-    this._onStartFns.forEach(fn => fn());
+    this._onStartFns.forEach((fn) => fn());
     this._onStartFns = [];
   }
 
@@ -86,11 +102,17 @@ export class CssKeyframesPlayer implements AnimationPlayer {
     this._flushDoneFns();
   }
 
-  setPosition(value: number) { this._styler.setPosition(value); }
+  setPosition(value: number) {
+    this._styler.setPosition(value);
+  }
 
-  getPosition(): number { return this._styler.getPosition(); }
+  getPosition(): number {
+    return this._styler.getPosition();
+  }
 
-  hasStarted(): boolean { return this._state >= AnimatorControlState.STARTED; }
+  hasStarted(): boolean {
+    return this._state >= AnimatorControlState.STARTED;
+  }
   init(): void {
     if (this._state >= AnimatorControlState.INITIALIZED) return;
     this._state = AnimatorControlState.INITIALIZED;
@@ -129,14 +151,20 @@ export class CssKeyframesPlayer implements AnimationPlayer {
 
   private _buildStyler() {
     this._styler = new ElementAnimationStyleHandler(
-        this.element, this.animationName, this._duration, this._delay, this.easing,
-        DEFAULT_FILL_MODE, () => this.finish());
+      this.element,
+      this.animationName,
+      this._duration,
+      this._delay,
+      this.easing,
+      DEFAULT_FILL_MODE,
+      () => this.finish()
+    );
   }
 
   /** @internal */
   triggerCallback(phaseName: string): void {
     const methods = phaseName == 'start' ? this._onStartFns : this._onDoneFns;
-    methods.forEach(fn => fn());
+    methods.forEach((fn) => fn());
     methods.length = 0;
   }
 
@@ -145,7 +173,7 @@ export class CssKeyframesPlayer implements AnimationPlayer {
     const styles: {[key: string]: string} = {};
     if (this.hasStarted()) {
       const finished = this._state >= AnimatorControlState.FINISHED;
-      Object.keys(this._finalStyles).forEach(prop => {
+      Object.keys(this._finalStyles).forEach((prop) => {
         if (prop != 'offset') {
           styles[prop] = finished ? this._finalStyles[prop] : computeStyle(this.element, prop);
         }

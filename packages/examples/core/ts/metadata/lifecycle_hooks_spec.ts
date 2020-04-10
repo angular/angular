@@ -6,10 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, DoCheck, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, Type} from '@angular/core';
+import {
+  AfterContentChecked,
+  AfterContentInit,
+  AfterViewChecked,
+  AfterViewInit,
+  Component,
+  DoCheck,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+  Type,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
-(function() {
+(function () {
   describe('lifecycle hooks examples', () => {
     it('should work with ngOnInit', () => {
       // #docregion OnInit
@@ -108,7 +121,7 @@ import {TestBed} from '@angular/core/testing';
       class MyComponent implements OnChanges {
         // TODO(issue/24571): remove '!'.
         @Input()
-        prop !: number;
+        prop!: number;
 
         ngOnChanges(changes: SimpleChanges) {
           // changes.prop contains the old and the new value...
@@ -128,15 +141,14 @@ import {TestBed} from '@angular/core/testing';
     const log: any[] = [];
     createLoggingSpiesFromProto(clazz, log);
 
-    const inputBindings = inputs.map(input => `[${input}] = true`).join(' ');
+    const inputBindings = inputs.map((input) => `[${input}] = true`).join(' ');
 
     @Component({template: `<my-cmp ${inputBindings}></my-cmp>`})
-    class ParentComponent {
-    }
+    class ParentComponent {}
 
-
-    const fixture = TestBed.configureTestingModule({declarations: [ParentComponent, clazz]})
-                        .createComponent(ParentComponent);
+    const fixture = TestBed.configureTestingModule({
+      declarations: [ParentComponent, clazz],
+    }).createComponent(ParentComponent);
     fixture.detectChanges();
     fixture.destroy();
     return log;
@@ -145,7 +157,9 @@ import {TestBed} from '@angular/core/testing';
   function createLoggingSpiesFromProto(clazz: Type<any>, log: any[]) {
     const proto = clazz.prototype;
     Object.keys(proto).forEach((method) => {
-      proto[method] = (...args: any[]) => { log.push([method, args]); };
+      proto[method] = (...args: any[]) => {
+        log.push([method, args]);
+      };
     });
   }
 })();

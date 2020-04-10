@@ -16,4 +16,9 @@ to the language service.
 */
 export {MetadataCollector, ModuleMetadata} from './metadata';
 export {CompilerOptions} from './transformers/api';
-export {createMetadataReaderCache, MetadataReaderCache, MetadataReaderHost, readMetadata} from './transformers/metadata_reader';
+export {
+  createMetadataReaderCache,
+  MetadataReaderCache,
+  MetadataReaderHost,
+  readMetadata,
+} from './transformers/metadata_reader';

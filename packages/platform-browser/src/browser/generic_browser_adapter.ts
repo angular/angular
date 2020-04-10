@@ -8,8 +8,6 @@
 
 import {ɵDomAdapter as DomAdapter} from '@angular/common';
 
-
-
 /**
  * Provides DOM operations in any browser environment.
  *
@@ -17,7 +15,11 @@ import {ɵDomAdapter as DomAdapter} from '@angular/common';
  * can introduce XSS risks.
  */
 export abstract class GenericBrowserDomAdapter extends DomAdapter {
-  constructor() { super(); }
+  constructor() {
+    super();
+  }
 
-  supportsDOMEvents(): boolean { return true; }
+  supportsDOMEvents(): boolean {
+    return true;
+  }
 }

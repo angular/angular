@@ -15,16 +15,28 @@ class BaseError extends Error {
 
   constructor(message: string) {
     super(message);
-    const nativeError = new Error(message) as any as Error;
+    const nativeError = (new Error(message) as any) as Error;
     this._nativeError = nativeError;
   }
 
-  get message() { return this._nativeError.message; }
-  set message(message) { this._nativeError.message = message; }
-  get name() { return this._nativeError.name; }
-  get stack() { return (this._nativeError as any).stack; }
-  set stack(value) { (this._nativeError as any).stack = value; }
-  toString() { return this._nativeError.toString(); }
+  get message() {
+    return this._nativeError.message;
+  }
+  set message(message) {
+    this._nativeError.message = message;
+  }
+  get name() {
+    return this._nativeError.name;
+  }
+  get stack() {
+    return (this._nativeError as any).stack;
+  }
+  set stack(value) {
+    (this._nativeError as any).stack = value;
+  }
+  toString() {
+    return this._nativeError.toString();
+  }
 }
 
 class WrappedError extends BaseError {
@@ -37,7 +49,7 @@ class WrappedError extends BaseError {
 
   get stack() {
     return ((this.originalError instanceof Error ? this.originalError : this._nativeError) as any)
-        .stack;
+      .stack;
   }
 }
 
@@ -46,7 +58,9 @@ class TestError extends WrappedError {
     super(`${message} caused by: ${error instanceof Error ? error.message : error}`, error);
   }
 
-  get message() { return 'test ' + this.originalError.message; }
+  get message() {
+    return 'test ' + this.originalError.message;
+  }
 }
 
 class TestMessageError extends WrappedError {
@@ -54,9 +68,13 @@ class TestMessageError extends WrappedError {
     super(`${message} caused by: ${error instanceof Error ? error.message : error}`, error);
   }
 
-  get message() { return 'test ' + this.originalError.message; }
+  get message() {
+    return 'test ' + this.originalError.message;
+  }
 
-  set message(value) { this.originalError.message = value; }
+  set message(value) {
+    this.originalError.message = value;
+  }
 }
 
 describe('ZoneAwareError', () => {
@@ -153,9 +171,11 @@ describe('ZoneAwareError', () => {
   it('should copy customized NativeError properties to ZoneAwareError', () => {
     const spy = jasmine.createSpy('errorCustomFunction');
     const NativeError = (global as any)[(Zone as any).__symbol__('Error')];
-    NativeError.customFunction = function(args: any) { spy(args); };
+    NativeError.customFunction = function (args: any) {
+      spy(args);
+    };
     expect((Error as any)['customProperty']).toBe('customProperty');
-    expect(typeof(Error as any)['customFunction']).toBe('function');
+    expect(typeof (Error as any)['customFunction']).toBe('function');
     (Error as any)['customFunction']('test');
     expect(spy).toHaveBeenCalledWith('test');
   });
@@ -166,8 +186,8 @@ describe('ZoneAwareError', () => {
     // there event without throw
     const error = new Error('test');
     const errorWithoutNew = Error('test');
-    expect(error.stack !.split('\n').length > 0).toBeTruthy();
-    expect(errorWithoutNew.stack !.split('\n').length > 0).toBeTruthy();
+    expect(error.stack!.split('\n').length > 0).toBeTruthy();
+    expect(errorWithoutNew.stack!.split('\n').length > 0).toBeTruthy();
   });
 
   it('should show zone names in stack frames and remove extra frames', () => {
@@ -218,14 +238,14 @@ describe('ZoneAwareError', () => {
 
       expect(outside.stack).toEqual(outside.zoneAwareStack);
       expect(outsideWithoutNew.stack).toEqual(outsideWithoutNew.zoneAwareStack);
-      expect(inside !.stack).toEqual(inside !.zoneAwareStack);
-      expect(insideWithoutNew !.stack).toEqual(insideWithoutNew !.zoneAwareStack);
-      expect(typeof inside !.originalStack).toEqual('string');
-      expect(typeof insideWithoutNew !.originalStack).toEqual('string');
-      const outsideFrames = outside.stack !.split(/\n/);
-      const insideFrames = inside !.stack !.split(/\n/);
-      const outsideWithoutNewFrames = outsideWithoutNew !.stack !.split(/\n/);
-      const insideWithoutNewFrames = insideWithoutNew !.stack !.split(/\n/);
+      expect(inside!.stack).toEqual(inside!.zoneAwareStack);
+      expect(insideWithoutNew!.stack).toEqual(insideWithoutNew!.zoneAwareStack);
+      expect(typeof inside!.originalStack).toEqual('string');
+      expect(typeof insideWithoutNew!.originalStack).toEqual('string');
+      const outsideFrames = outside.stack!.split(/\n/);
+      const insideFrames = inside!.stack!.split(/\n/);
+      const outsideWithoutNewFrames = outsideWithoutNew!.stack!.split(/\n/);
+      const insideWithoutNewFrames = insideWithoutNew!.stack!.split(/\n/);
 
       // throw away first line if it contains the error
       if (/Outside/.test(outsideFrames[0])) {
@@ -268,13 +288,24 @@ describe('ZoneAwareError', () => {
   });
 
   const zoneAwareFrames = [
-    'Zone.run', 'Zone.runGuarded', 'Zone.scheduleEventTask', 'Zone.scheduleMicroTask',
-    'Zone.scheduleMacroTask', 'Zone.runTask', 'ZoneDelegate.scheduleTask',
-    'ZoneDelegate.invokeTask', 'zoneAwareAddListener', 'Zone.prototype.run',
-    'Zone.prototype.runGuarded', 'Zone.prototype.scheduleEventTask',
-    'Zone.prototype.scheduleMicroTask', 'Zone.prototype.scheduleMacroTask',
-    'Zone.prototype.runTask', 'ZoneDelegate.prototype.scheduleTask',
-    'ZoneDelegate.prototype.invokeTask', 'ZoneTask.invokeTask'
+    'Zone.run',
+    'Zone.runGuarded',
+    'Zone.scheduleEventTask',
+    'Zone.scheduleMicroTask',
+    'Zone.scheduleMacroTask',
+    'Zone.runTask',
+    'ZoneDelegate.scheduleTask',
+    'ZoneDelegate.invokeTask',
+    'zoneAwareAddListener',
+    'Zone.prototype.run',
+    'Zone.prototype.runGuarded',
+    'Zone.prototype.scheduleEventTask',
+    'Zone.prototype.scheduleMicroTask',
+    'Zone.prototype.scheduleMacroTask',
+    'Zone.prototype.runTask',
+    'ZoneDelegate.prototype.scheduleTask',
+    'ZoneDelegate.prototype.invokeTask',
+    'ZoneTask.invokeTask',
   ];
 
   function assertStackDoesNotContainZoneFrames(err: any) {
@@ -285,7 +316,7 @@ describe('ZoneAwareError', () => {
         if (hasZoneStack) {
           break;
         }
-        hasZoneStack = zoneAwareFrames.filter(f => frames[i].indexOf(f) !== -1).length > 0;
+        hasZoneStack = zoneAwareFrames.filter((f) => frames[i].indexOf(f) !== -1).length > 0;
       }
       if (!hasZoneStack) {
         console.log('stack', err.originalStack);
@@ -293,122 +324,181 @@ describe('ZoneAwareError', () => {
       expect(hasZoneStack).toBe(true);
     } else {
       for (let i = 0; i < frames.length; i++) {
-        expect(zoneAwareFrames.filter(f => frames[i].indexOf(f) !== -1)).toEqual([]);
+        expect(zoneAwareFrames.filter((f) => frames[i].indexOf(f) !== -1)).toEqual([]);
       }
     }
-  };
+  }
 
   const errorZoneSpec = {
     name: 'errorZone',
-    done: <(() => void)|null>null,
-    onHandleError:
-        (parentDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, error: Error) => {
-          assertStackDoesNotContainZoneFrames(error);
-          setTimeout(() => { errorZoneSpec.done && errorZoneSpec.done(); }, 0);
-          return false;
-        }
+    done: <(() => void) | null>null,
+    onHandleError: (
+      parentDelegate: ZoneDelegate,
+      currentZone: Zone,
+      targetZone: Zone,
+      error: Error
+    ) => {
+      assertStackDoesNotContainZoneFrames(error);
+      setTimeout(() => {
+        errorZoneSpec.done && errorZoneSpec.done();
+      }, 0);
+      return false;
+    },
   };
 
   const errorZone = Zone.root.fork(errorZoneSpec);
 
-  const assertStackDoesNotContainZoneFramesTest = function(testFn: Function) {
-    return function(done: () => void) {
+  const assertStackDoesNotContainZoneFramesTest = function (testFn: Function) {
+    return function (done: () => void) {
       errorZoneSpec.done = done;
       errorZone.run(testFn);
     };
   };
 
   describe('Error stack', () => {
-    it('Error with new which occurs in setTimeout callback should not have zone frames visible',
-       assertStackDoesNotContainZoneFramesTest(
-           () => { setTimeout(() => { throw new Error('timeout test error'); }, 10); }));
+    it(
+      'Error with new which occurs in setTimeout callback should not have zone frames visible',
+      assertStackDoesNotContainZoneFramesTest(() => {
+        setTimeout(() => {
+          throw new Error('timeout test error');
+        }, 10);
+      })
+    );
 
-    it('Error without new which occurs in setTimeout callback should not have zone frames visible',
-       assertStackDoesNotContainZoneFramesTest(
-           () => { setTimeout(() => { throw Error('test error'); }, 10); }));
+    it(
+      'Error without new which occurs in setTimeout callback should not have zone frames visible',
+      assertStackDoesNotContainZoneFramesTest(() => {
+        setTimeout(() => {
+          throw Error('test error');
+        }, 10);
+      })
+    );
 
-    it('Error with new which cause by promise rejection should not have zone frames visible',
-       (done) => {
-         const p = new Promise(
-             (resolve, reject) => { setTimeout(() => { reject(new Error('test error')); }); });
-         p.catch(err => {
-           assertStackDoesNotContainZoneFrames(err);
-           done();
-         });
-       });
+    it('Error with new which cause by promise rejection should not have zone frames visible', (done) => {
+      const p = new Promise((resolve, reject) => {
+        setTimeout(() => {
+          reject(new Error('test error'));
+        });
+      });
+      p.catch((err) => {
+        assertStackDoesNotContainZoneFrames(err);
+        done();
+      });
+    });
 
-    it('Error without new which cause by promise rejection should not have zone frames visible',
-       (done) => {
-         const p = new Promise(
-             (resolve, reject) => { setTimeout(() => { reject(Error('test error')); }); });
-         p.catch(err => {
-           assertStackDoesNotContainZoneFrames(err);
-           done();
-         });
-       });
+    it('Error without new which cause by promise rejection should not have zone frames visible', (done) => {
+      const p = new Promise((resolve, reject) => {
+        setTimeout(() => {
+          reject(Error('test error'));
+        });
+      });
+      p.catch((err) => {
+        assertStackDoesNotContainZoneFrames(err);
+        done();
+      });
+    });
 
-    it('Error with new which occurs in eventTask callback should not have zone frames visible',
-       assertStackDoesNotContainZoneFramesTest(() => {
-         const task = Zone.current.scheduleEventTask('errorEvent', () => {
-           throw new Error('test error');
-         }, undefined, () => null, undefined);
-         task.invoke();
-       }));
+    it(
+      'Error with new which occurs in eventTask callback should not have zone frames visible',
+      assertStackDoesNotContainZoneFramesTest(() => {
+        const task = Zone.current.scheduleEventTask(
+          'errorEvent',
+          () => {
+            throw new Error('test error');
+          },
+          undefined,
+          () => null,
+          undefined
+        );
+        task.invoke();
+      })
+    );
 
-    it('Error without new which occurs in eventTask callback should not have zone frames visible',
-       assertStackDoesNotContainZoneFramesTest(() => {
-         const task = Zone.current.scheduleEventTask(
-             'errorEvent', () => { throw Error('test error'); }, undefined, () => null, undefined);
-         task.invoke();
-       }));
+    it(
+      'Error without new which occurs in eventTask callback should not have zone frames visible',
+      assertStackDoesNotContainZoneFramesTest(() => {
+        const task = Zone.current.scheduleEventTask(
+          'errorEvent',
+          () => {
+            throw Error('test error');
+          },
+          undefined,
+          () => null,
+          undefined
+        );
+        task.invoke();
+      })
+    );
 
-    it('Error with new which occurs in longStackTraceZone should not have zone frames and longStackTraceZone frames visible',
-       assertStackDoesNotContainZoneFramesTest(() => {
-         const task = Zone.current.fork((Zone as any)['longStackTraceZoneSpec'])
-                          .scheduleEventTask('errorEvent', () => {
-                            throw new Error('test error');
-                          }, undefined, () => null, undefined);
-         task.invoke();
-       }));
+    it(
+      'Error with new which occurs in longStackTraceZone should not have zone frames and longStackTraceZone frames visible',
+      assertStackDoesNotContainZoneFramesTest(() => {
+        const task = Zone.current.fork((Zone as any)['longStackTraceZoneSpec']).scheduleEventTask(
+          'errorEvent',
+          () => {
+            throw new Error('test error');
+          },
+          undefined,
+          () => null,
+          undefined
+        );
+        task.invoke();
+      })
+    );
 
-    it('Error without new which occurs in longStackTraceZone should not have zone frames and longStackTraceZone frames visible',
-       assertStackDoesNotContainZoneFramesTest(() => {
-         const task = Zone.current.fork((Zone as any)['longStackTraceZoneSpec'])
-                          .scheduleEventTask('errorEvent', () => {
-                            throw Error('test error');
-                          }, undefined, () => null, undefined);
-         task.invoke();
-       }));
+    it(
+      'Error without new which occurs in longStackTraceZone should not have zone frames and longStackTraceZone frames visible',
+      assertStackDoesNotContainZoneFramesTest(() => {
+        const task = Zone.current.fork((Zone as any)['longStackTraceZoneSpec']).scheduleEventTask(
+          'errorEvent',
+          () => {
+            throw Error('test error');
+          },
+          undefined,
+          () => null,
+          undefined
+        );
+        task.invoke();
+      })
+    );
 
-    it('stack frames of the callback in user customized zoneSpec should be kept',
-       assertStackDoesNotContainZoneFramesTest(() => {
-         const task = Zone.current.fork((Zone as any)['longStackTraceZoneSpec'])
-                          .fork({
-                            name: 'customZone',
-                            onScheduleTask: (parentDelegate, currentZone, targetZone, task) => {
-                              return parentDelegate.scheduleTask(targetZone, task);
-                            },
-                            onHandleError: (parentDelegate, currentZone, targetZone, error) => {
-                              parentDelegate.handleError(targetZone, error);
-                              const containsCustomZoneSpecStackTrace =
-                                  error.stack.indexOf('onScheduleTask') !== -1;
-                              expect(containsCustomZoneSpecStackTrace).toBeTruthy();
-                              return false;
-                            }
-                          })
-                          .scheduleEventTask('errorEvent', () => {
-                            throw new Error('test error');
-                          }, undefined, () => null, undefined);
-         task.invoke();
-       }));
+    it(
+      'stack frames of the callback in user customized zoneSpec should be kept',
+      assertStackDoesNotContainZoneFramesTest(() => {
+        const task = Zone.current
+          .fork((Zone as any)['longStackTraceZoneSpec'])
+          .fork({
+            name: 'customZone',
+            onScheduleTask: (parentDelegate, currentZone, targetZone, task) => {
+              return parentDelegate.scheduleTask(targetZone, task);
+            },
+            onHandleError: (parentDelegate, currentZone, targetZone, error) => {
+              parentDelegate.handleError(targetZone, error);
+              const containsCustomZoneSpecStackTrace = error.stack.indexOf('onScheduleTask') !== -1;
+              expect(containsCustomZoneSpecStackTrace).toBeTruthy();
+              return false;
+            },
+          })
+          .scheduleEventTask(
+            'errorEvent',
+            () => {
+              throw new Error('test error');
+            },
+            undefined,
+            () => null,
+            undefined
+          );
+        task.invoke();
+      })
+    );
 
-    it('should be able to generate zone free stack even NativeError stack is readonly', function() {
+    it('should be able to generate zone free stack even NativeError stack is readonly', function () {
       const _global: any =
-          typeof window === 'object' && window || typeof self === 'object' && self || global;
+        (typeof window === 'object' && window) || (typeof self === 'object' && self) || global;
       const NativeError = _global[zoneSymbol('Error')];
       const desc = Object.getOwnPropertyDescriptor(NativeError.prototype, 'stack');
       if (desc) {
-        const originalSet: ((value: any) => void)|undefined = desc.set;
+        const originalSet: ((value: any) => void) | undefined = desc.set;
         // make stack readonly
         desc.set = null as any;
 

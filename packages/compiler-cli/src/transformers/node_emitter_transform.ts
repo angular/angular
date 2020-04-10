@@ -30,11 +30,13 @@ function getPreamble(original: string) {
  *   list of statements as their body.
  */
 export function getAngularEmitterTransformFactory(
-    generatedFiles: Map<string, GeneratedFile>, program: ts.Program,
-    annotateForClosureCompiler: boolean): () => (sourceFile: ts.SourceFile) => ts.SourceFile {
-  return function() {
+  generatedFiles: Map<string, GeneratedFile>,
+  program: ts.Program,
+  annotateForClosureCompiler: boolean
+): () => (sourceFile: ts.SourceFile) => ts.SourceFile {
+  return function () {
     const emitter = new TypeScriptNodeEmitter(annotateForClosureCompiler);
-    return function(sourceFile: ts.SourceFile): ts.SourceFile {
+    return function (sourceFile: ts.SourceFile): ts.SourceFile {
       const g = generatedFiles.get(sourceFile.fileName);
       const orig = g && program.getSourceFile(g.srcFileUrl);
       let originalComment = '';
@@ -51,8 +53,9 @@ export function getAngularEmitterTransformFactory(
         // and various minutiae.
         // Clear out the source file entirely, only including the preamble comment, so that
         // ngc produces an empty .js file.
-        return ts.updateSourceFileNode(
-            sourceFile, [emitter.createCommentStatement(sourceFile, preamble)]);
+        return ts.updateSourceFileNode(sourceFile, [
+          emitter.createCommentStatement(sourceFile, preamble),
+        ]);
       }
       return sourceFile;
     };

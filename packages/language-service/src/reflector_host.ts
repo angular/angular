@@ -7,7 +7,12 @@
  */
 
 import {StaticSymbolResolverHost} from '@angular/compiler';
-import {createMetadataReaderCache, MetadataCollector, MetadataReaderHost, readMetadata} from '@angular/compiler-cli/src/language_services';
+import {
+  createMetadataReaderCache,
+  MetadataCollector,
+  MetadataReaderHost,
+  readMetadata,
+} from '@angular/compiler-cli/src/language_services';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -23,13 +28,14 @@ class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost, Me
   realpath?: (path: string) => string;
 
   constructor(
-      private readonly tsLSHost: ts.LanguageServiceHost,
-      private readonly getProgram: () => ts.Program) {
+    private readonly tsLSHost: ts.LanguageServiceHost,
+    private readonly getProgram: () => ts.Program
+  ) {
     if (tsLSHost.directoryExists) {
-      this.directoryExists = directoryName => tsLSHost.directoryExists!(directoryName);
+      this.directoryExists = (directoryName) => tsLSHost.directoryExists!(directoryName);
     }
     if (tsLSHost.realpath) {
-      this.realpath = path => tsLSHost.realpath!(path);
+      this.realpath = (path) => tsLSHost.realpath!(path);
     }
   }
 
@@ -90,16 +96,17 @@ export class ReflectorHost implements StaticSymbolResolverHost {
     this.fakeContainingPath = currentDir ? path.join(currentDir, 'fakeContainingFile.ts') : '';
     this.hostAdapter = new ReflectorModuleModuleResolutionHost(tsLSHost, getProgram);
     this.moduleResolutionCache = ts.createModuleResolutionCache(
-        currentDir,
-        s => s,  // getCanonicalFileName
-        tsLSHost.getCompilationSettings());
+      currentDir,
+      (s) => s, // getCanonicalFileName
+      tsLSHost.getCompilationSettings()
+    );
   }
 
-  getMetadataFor(modulePath: string): {[key: string]: any}[]|undefined {
+  getMetadataFor(modulePath: string): {[key: string]: any}[] | undefined {
     return readMetadata(modulePath, this.hostAdapter, this.metadataReaderCache);
   }
 
-  moduleNameToFileName(moduleName: string, containingFile?: string): string|null {
+  moduleNameToFileName(moduleName: string, containingFile?: string): string | null {
     if (!containingFile) {
       if (moduleName.startsWith('.')) {
         throw new Error('Resolution of relative paths requires a containing file.');
@@ -114,9 +121,12 @@ export class ReflectorHost implements StaticSymbolResolverHost {
     }
     const compilerOptions = this.tsLSHost.getCompilationSettings();
     const resolved = ts.resolveModuleName(
-                           moduleName, containingFile, compilerOptions, this.hostAdapter,
-                           this.moduleResolutionCache)
-                         .resolvedModule;
+      moduleName,
+      containingFile,
+      compilerOptions,
+      this.hostAdapter,
+      this.moduleResolutionCache
+    ).resolvedModule;
     return resolved ? resolved.resolvedFileName : null;
   }
 

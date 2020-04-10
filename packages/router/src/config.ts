@@ -14,7 +14,6 @@ import {ActivatedRouteSnapshot} from './router_state';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
-
 /**
  * Represents a route configuration for the Router service.
  * An array of `Route` objects, used in `Router.config` and for nested route configurations
@@ -64,8 +63,11 @@ export type UrlMatchResult = {
  *
  * @publicApi
  */
-export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) =>
-    UrlMatchResult|null;
+export type UrlMatcher = (
+  segments: UrlSegment[],
+  group: UrlSegmentGroup,
+  route: Route
+) => UrlMatchResult | null;
 
 /**
  *
@@ -76,7 +78,7 @@ export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route:
  * @publicApi
  */
 export type Data = {
-  [name: string]: any
+  [name: string]: any;
 };
 
 /**
@@ -88,7 +90,7 @@ export type Data = {
  * @publicApi
  */
 export type ResolveData = {
-  [name: string]: any
+  [name: string]: any;
 };
 
 /**
@@ -110,8 +112,11 @@ export type ResolveData = {
  * @see `Route#loadChildren`.
  * @publicApi
  */
-export type LoadChildrenCallback = () => Type<any>|NgModuleFactory<any>|Observable<Type<any>>|
-    Promise<NgModuleFactory<any>|Type<any>|any>;
+export type LoadChildrenCallback = () =>
+  | Type<any>
+  | NgModuleFactory<any>
+  | Observable<Type<any>>
+  | Promise<NgModuleFactory<any> | Type<any> | any>;
 
 /**
  *
@@ -124,7 +129,7 @@ export type LoadChildrenCallback = () => Type<any>|NgModuleFactory<any>|Observab
  * @see `Route#loadChildren`.
  * @publicApi
  */
-export type LoadChildren = LoadChildrenCallback|DeprecatedLoadChildren;
+export type LoadChildren = LoadChildrenCallback | DeprecatedLoadChildren;
 
 /**
  * A string of the form `path/to/file#exportName` that acts as a URL for a set of routes to load.
@@ -148,7 +153,7 @@ export type DeprecatedLoadChildren = string;
  * @see `RouterLink`
  * @publicApi
  */
-export type QueryParamsHandling = 'merge'|'preserve'|'';
+export type QueryParamsHandling = 'merge' | 'preserve' | '';
 
 /**
  *
@@ -158,8 +163,12 @@ export type QueryParamsHandling = 'merge'|'preserve'|'';
  * @publicApi
  */
 export type RunGuardsAndResolvers =
-    'pathParamsChange'|'pathParamsOrQueryParamsChange'|'paramsChange'|'paramsOrQueryParamsChange'|
-    'always'|((from: ActivatedRouteSnapshot, to: ActivatedRouteSnapshot) => boolean);
+  | 'pathParamsChange'
+  | 'pathParamsOrQueryParamsChange'
+  | 'paramsChange'
+  | 'paramsOrQueryParamsChange'
+  | 'always'
+  | ((from: ActivatedRouteSnapshot, to: ActivatedRouteSnapshot) => boolean);
 
 /**
  * A configuration object that defines a single route.
@@ -518,51 +527,65 @@ function validateNode(route: Route, fullPath: string): void {
   if (Array.isArray(route)) {
     throw new Error(`Invalid configuration of route '${fullPath}': Array cannot be specified`);
   }
-  if (!route.component && !route.children && !route.loadChildren &&
-      (route.outlet && route.outlet !== PRIMARY_OUTLET)) {
-    throw new Error(`Invalid configuration of route '${
-        fullPath}': a componentless route without children or loadChildren cannot have a named outlet set`);
+  if (
+    !route.component &&
+    !route.children &&
+    !route.loadChildren &&
+    route.outlet &&
+    route.outlet !== PRIMARY_OUTLET
+  ) {
+    throw new Error(
+      `Invalid configuration of route '${fullPath}': a componentless route without children or loadChildren cannot have a named outlet set`
+    );
   }
   if (route.redirectTo && route.children) {
-    throw new Error(`Invalid configuration of route '${
-        fullPath}': redirectTo and children cannot be used together`);
+    throw new Error(
+      `Invalid configuration of route '${fullPath}': redirectTo and children cannot be used together`
+    );
   }
   if (route.redirectTo && route.loadChildren) {
-    throw new Error(`Invalid configuration of route '${
-        fullPath}': redirectTo and loadChildren cannot be used together`);
+    throw new Error(
+      `Invalid configuration of route '${fullPath}': redirectTo and loadChildren cannot be used together`
+    );
   }
   if (route.children && route.loadChildren) {
-    throw new Error(`Invalid configuration of route '${
-        fullPath}': children and loadChildren cannot be used together`);
+    throw new Error(
+      `Invalid configuration of route '${fullPath}': children and loadChildren cannot be used together`
+    );
   }
   if (route.redirectTo && route.component) {
-    throw new Error(`Invalid configuration of route '${
-        fullPath}': redirectTo and component cannot be used together`);
+    throw new Error(
+      `Invalid configuration of route '${fullPath}': redirectTo and component cannot be used together`
+    );
   }
   if (route.path && route.matcher) {
     throw new Error(
-        `Invalid configuration of route '${fullPath}': path and matcher cannot be used together`);
+      `Invalid configuration of route '${fullPath}': path and matcher cannot be used together`
+    );
   }
   if (route.redirectTo === void 0 && !route.component && !route.children && !route.loadChildren) {
-    throw new Error(`Invalid configuration of route '${
-        fullPath}'. One of the following must be provided: component, redirectTo, children or loadChildren`);
+    throw new Error(
+      `Invalid configuration of route '${fullPath}'. One of the following must be provided: component, redirectTo, children or loadChildren`
+    );
   }
   if (route.path === void 0 && route.matcher === void 0) {
-    throw new Error(`Invalid configuration of route '${
-        fullPath}': routes must have either a path or a matcher specified`);
+    throw new Error(
+      `Invalid configuration of route '${fullPath}': routes must have either a path or a matcher specified`
+    );
   }
   if (typeof route.path === 'string' && route.path.charAt(0) === '/') {
     throw new Error(`Invalid configuration of route '${fullPath}': path cannot start with a slash`);
   }
   if (route.path === '' && route.redirectTo !== void 0 && route.pathMatch === void 0) {
-    const exp =
-        `The default value of 'pathMatch' is 'prefix', but often the intent is to use 'full'.`;
-    throw new Error(`Invalid configuration of route '{path: "${fullPath}", redirectTo: "${
-        route.redirectTo}"}': please provide 'pathMatch'. ${exp}`);
+    const exp = `The default value of 'pathMatch' is 'prefix', but often the intent is to use 'full'.`;
+    throw new Error(
+      `Invalid configuration of route '{path: "${fullPath}", redirectTo: "${route.redirectTo}"}': please provide 'pathMatch'. ${exp}`
+    );
   }
   if (route.pathMatch !== void 0 && route.pathMatch !== 'full' && route.pathMatch !== 'prefix') {
-    throw new Error(`Invalid configuration of route '${
-        fullPath}': pathMatch can only be set to 'prefix' or 'full'`);
+    throw new Error(
+      `Invalid configuration of route '${fullPath}': pathMatch can only be set to 'prefix' or 'full'`
+    );
   }
   if (route.children) {
     validateConfig(route.children, fullPath);
@@ -590,7 +613,7 @@ function getFullPath(parentPath: string, currentRoute: Route): string {
 export function standardizeConfig(r: Route): Route {
   const children = r.children && r.children.map(standardizeConfig);
   const c = children ? {...r, children} : {...r};
-  if (!c.component && (children || c.loadChildren) && (c.outlet && c.outlet !== PRIMARY_OUTLET)) {
+  if (!c.component && (children || c.loadChildren) && c.outlet && c.outlet !== PRIMARY_OUTLET) {
     c.component = EmptyOutletComponent;
   }
   return c;

@@ -10,7 +10,13 @@ import {SummaryResolver} from '../summary_resolver';
 import {ValueTransformer, visitValue} from '../util';
 
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
-import {isGeneratedFile, stripSummaryForJitFileSuffix, stripSummaryForJitNameSuffix, summaryForJitFileName, summaryForJitName} from './util';
+import {
+  isGeneratedFile,
+  stripSummaryForJitFileSuffix,
+  stripSummaryForJitNameSuffix,
+  summaryForJitFileName,
+  summaryForJitName,
+} from './util';
 
 const TS = /^(?!.*\.d\.ts$).*\.ts$/;
 
@@ -33,14 +39,14 @@ export interface StaticSymbolResolverHost {
    * @param modulePath is a string identifier for a module as an absolute path.
    * @returns the metadata for the given module.
    */
-  getMetadataFor(modulePath: string): {[key: string]: any}[]|undefined;
+  getMetadataFor(modulePath: string): {[key: string]: any}[] | undefined;
 
   /**
    * Converts a module name that is used in an `import` to a file path.
    * I.e.
    * `path/to/containingFile.ts` containing `import {...} from 'module-name'`.
    */
-  moduleNameToFileName(moduleName: string, containingFile?: string): string|null;
+  moduleNameToFileName(moduleName: string, containingFile?: string): string | null;
 
   /**
    * Get a file suitable for display to the user that should be relative to the project directory
@@ -70,9 +76,11 @@ export class StaticSymbolResolver {
   private knownFileNameToModuleNames = new Map<string, string>();
 
   constructor(
-      private host: StaticSymbolResolverHost, private staticSymbolCache: StaticSymbolCache,
-      private summaryResolver: SummaryResolver<StaticSymbol>,
-      private errorRecorder?: (error: any, fileName?: string) => void) {}
+    private host: StaticSymbolResolverHost,
+    private staticSymbolCache: StaticSymbolCache,
+    private summaryResolver: SummaryResolver<StaticSymbol>,
+    private errorRecorder?: (error: any, fileName?: string) => void
+  ) {}
 
   resolveSymbol(staticSymbol: StaticSymbol): ResolvedStaticSymbol {
     if (staticSymbol.members.length > 0) {
@@ -105,24 +113,30 @@ export class StaticSymbolResolver {
    *
    * @param staticSymbol the symbol for which to generate a import symbol
    */
-  getImportAs(staticSymbol: StaticSymbol, useSummaries: boolean = true): StaticSymbol|null {
+  getImportAs(staticSymbol: StaticSymbol, useSummaries: boolean = true): StaticSymbol | null {
     if (staticSymbol.members.length) {
       const baseSymbol = this.getStaticSymbol(staticSymbol.filePath, staticSymbol.name);
       const baseImportAs = this.getImportAs(baseSymbol, useSummaries);
-      return baseImportAs ?
-          this.getStaticSymbol(baseImportAs.filePath, baseImportAs.name, staticSymbol.members) :
-          null;
+      return baseImportAs
+        ? this.getStaticSymbol(baseImportAs.filePath, baseImportAs.name, staticSymbol.members)
+        : null;
     }
     const summarizedFileName = stripSummaryForJitFileSuffix(staticSymbol.filePath);
     if (summarizedFileName !== staticSymbol.filePath) {
       const summarizedName = stripSummaryForJitNameSuffix(staticSymbol.name);
-      const baseSymbol =
-          this.getStaticSymbol(summarizedFileName, summarizedName, staticSymbol.members);
+      const baseSymbol = this.getStaticSymbol(
+        summarizedFileName,
+        summarizedName,
+        staticSymbol.members
+      );
       const baseImportAs = this.getImportAs(baseSymbol, useSummaries);
-      return baseImportAs ? this.getStaticSymbol(
-                                summaryForJitFileName(baseImportAs.filePath),
-                                summaryForJitName(baseImportAs.name), baseSymbol.members) :
-                            null;
+      return baseImportAs
+        ? this.getStaticSymbol(
+            summaryForJitFileName(baseImportAs.filePath),
+            summaryForJitName(baseImportAs.name),
+            baseSymbol.members
+          )
+        : null;
     }
     let result = (useSummaries && this.summaryResolver.getImportAs(staticSymbol)) || null;
     if (!result) {
@@ -144,7 +158,7 @@ export class StaticSymbolResolver {
    * getTypeArity returns the number of generic type parameters the given symbol
    * has. If the symbol is not a type the result is null.
    */
-  getTypeArity(staticSymbol: StaticSymbol): number|null {
+  getTypeArity(staticSymbol: StaticSymbol): number | null {
     // If the file is a factory/ngsummary file, don't resolve the symbol as doing so would
     // cause the metadata for an factory/ngsummary file to be loaded which doesn't exist.
     // All references to generated classes must include the correct arity whenever
@@ -159,7 +173,7 @@ export class StaticSymbolResolver {
     return (resolvedSymbol && resolvedSymbol.metadata && resolvedSymbol.metadata.arity) || null;
   }
 
-  getKnownModuleName(filePath: string): string|null {
+  getKnownModuleName(filePath: string): string | null {
     return this.knownFileNameToModuleNames.get(filePath) || null;
   }
 
@@ -205,17 +219,20 @@ export class StaticSymbolResolver {
     }
   }
 
-  private _resolveSymbolMembers(staticSymbol: StaticSymbol): ResolvedStaticSymbol|null {
+  private _resolveSymbolMembers(staticSymbol: StaticSymbol): ResolvedStaticSymbol | null {
     const members = staticSymbol.members;
-    const baseResolvedSymbol =
-        this.resolveSymbol(this.getStaticSymbol(staticSymbol.filePath, staticSymbol.name));
+    const baseResolvedSymbol = this.resolveSymbol(
+      this.getStaticSymbol(staticSymbol.filePath, staticSymbol.name)
+    );
     if (!baseResolvedSymbol) {
       return null;
     }
     let baseMetadata = unwrapResolvedMetadata(baseResolvedSymbol.metadata);
     if (baseMetadata instanceof StaticSymbol) {
       return new ResolvedStaticSymbol(
-          staticSymbol, this.getStaticSymbol(baseMetadata.filePath, baseMetadata.name, members));
+        staticSymbol,
+        this.getStaticSymbol(baseMetadata.filePath, baseMetadata.name, members)
+      );
     } else if (baseMetadata && baseMetadata.__symbolic === 'class') {
       if (baseMetadata.statics && members.length === 1) {
         return new ResolvedStaticSymbol(staticSymbol, baseMetadata.statics[members[0]]);
@@ -230,7 +247,7 @@ export class StaticSymbolResolver {
     return null;
   }
 
-  private _resolveSymbolFromSummary(staticSymbol: StaticSymbol): ResolvedStaticSymbol|null {
+  private _resolveSymbolFromSummary(staticSymbol: StaticSymbol): ResolvedStaticSymbol | null {
     const summary = this.summaryResolver.resolveSummary(staticSymbol);
     return summary ? new ResolvedStaticSymbol(staticSymbol, summary.metadata) : null;
   }
@@ -330,8 +347,9 @@ export class StaticSymbolResolver {
     // of the current module to win ofter reexports.
     if (metadata['metadata']) {
       // handle direct declarations of the symbol
-      const topLevelSymbolNames =
-          new Set<string>(Object.keys(metadata['metadata']).map(unescapeIdentifier));
+      const topLevelSymbolNames = new Set<string>(
+        Object.keys(metadata['metadata']).map(unescapeIdentifier)
+      );
       const origins: {[index: string]: string} = metadata['origins'] || {};
       Object.keys(metadata['metadata']).forEach((metadataKey) => {
         const symbolMeta = metadata['metadata'][metadataKey];
@@ -346,14 +364,20 @@ export class StaticSymbolResolver {
           // correctly.
           const originFilePath = this.resolveModule(origin, filePath);
           if (!originFilePath) {
-            this.reportError(new Error(`Couldn't resolve original symbol for ${origin} from ${
-                this.host.getOutputName(filePath)}`));
+            this.reportError(
+              new Error(
+                `Couldn't resolve original symbol for ${origin} from ${this.host.getOutputName(
+                  filePath
+                )}`
+              )
+            );
           } else {
             this.symbolResourcePaths.set(symbol, originFilePath);
           }
         }
         resolvedSymbols.push(
-            this.createResolvedSymbol(symbol, filePath, topLevelSymbolNames, symbolMeta));
+          this.createResolvedSymbol(symbol, filePath, topLevelSymbolNames, symbolMeta)
+        );
       });
     }
     const uniqueSymbols = new Set<StaticSymbol>();
@@ -365,30 +389,37 @@ export class StaticSymbolResolver {
   }
 
   private createResolvedSymbol(
-      sourceSymbol: StaticSymbol, topLevelPath: string, topLevelSymbolNames: Set<string>,
-      metadata: any): ResolvedStaticSymbol {
+    sourceSymbol: StaticSymbol,
+    topLevelPath: string,
+    topLevelSymbolNames: Set<string>,
+    metadata: any
+  ): ResolvedStaticSymbol {
     // For classes that don't have Angular summaries / metadata,
     // we only keep their arity, but nothing else
     // (e.g. their constructor parameters).
     // We do this to prevent introducing deep imports
     // as we didn't generate .ngfactory.ts files with proper reexports.
     const isTsFile = TS.test(sourceSymbol.filePath);
-    if (this.summaryResolver.isLibraryFile(sourceSymbol.filePath) && !isTsFile && metadata &&
-        metadata['__symbolic'] === 'class') {
+    if (
+      this.summaryResolver.isLibraryFile(sourceSymbol.filePath) &&
+      !isTsFile &&
+      metadata &&
+      metadata['__symbolic'] === 'class'
+    ) {
       const transformedMeta = {__symbolic: 'class', arity: metadata.arity};
       return new ResolvedStaticSymbol(sourceSymbol, transformedMeta);
     }
 
-    let _originalFileMemo: string|undefined;
+    let _originalFileMemo: string | undefined;
     const getOriginalName: () => string = () => {
       if (!_originalFileMemo) {
         // Guess what the original file name is from the reference. If it has a `.d.ts` extension
         // replace it with `.ts`. If it already has `.ts` just leave it in place. If it doesn't have
         // .ts or .d.ts, append `.ts'. Also, if it is in `node_modules`, trim the `node_module`
         // location as it is not important to finding the file.
-        _originalFileMemo =
-            this.host.getOutputName(topLevelPath.replace(/((\.ts)|(\.d\.ts)|)$/, '.ts')
-                                        .replace(/^.*node_modules[/\\]/, ''));
+        _originalFileMemo = this.host.getOutputName(
+          topLevelPath.replace(/((\.ts)|(\.d\.ts)|)$/, '.ts').replace(/^.*node_modules[/\\]/, '')
+        );
       }
       return _originalFileMemo;
     };
@@ -416,11 +447,12 @@ export class StaticSymbolResolver {
             if (!filePath) {
               return {
                 __symbolic: 'error',
-                message: `Could not resolve ${module} relative to ${
-                    self.host.getMetadataFor(sourceSymbol.filePath)}.`,
+                message: `Could not resolve ${module} relative to ${self.host.getMetadataFor(
+                  sourceSymbol.filePath
+                )}.`,
                 line: map['line'],
                 character: map['character'],
-                fileName: getOriginalName()
+                fileName: getOriginalName(),
               };
             }
             return {
@@ -428,7 +460,7 @@ export class StaticSymbolResolver {
               symbol: self.getStaticSymbol(filePath, name),
               line: map['line'],
               character: map['character'],
-              fileName: getOriginalName()
+              fileName: getOriginalName(),
             };
           } else if (functionParams.indexOf(name) >= 0) {
             // reference to a function parameter
@@ -455,12 +487,16 @@ export class StaticSymbolResolver {
     return new ResolvedStaticSymbol(sourceSymbol, transformedMeta);
   }
 
-  private createExport(sourceSymbol: StaticSymbol, targetSymbol: StaticSymbol):
-      ResolvedStaticSymbol {
+  private createExport(
+    sourceSymbol: StaticSymbol,
+    targetSymbol: StaticSymbol
+  ): ResolvedStaticSymbol {
     sourceSymbol.assertNoMembers();
     targetSymbol.assertNoMembers();
-    if (this.summaryResolver.isLibraryFile(sourceSymbol.filePath) &&
-        this.summaryResolver.isLibraryFile(targetSymbol.filePath)) {
+    if (
+      this.summaryResolver.isLibraryFile(sourceSymbol.filePath) &&
+      this.summaryResolver.isLibraryFile(targetSymbol.filePath)
+    ) {
       // This case is for an ng library importing symbols from a plain ts library
       // transitively.
       // Note: We rely on the fact that we discover symbols in the direction
@@ -495,16 +531,20 @@ export class StaticSymbolResolver {
         });
       }
       if (!moduleMetadata) {
-        moduleMetadata =
-            {__symbolic: 'module', version: SUPPORTED_SCHEMA_VERSION, module: module, metadata: {}};
+        moduleMetadata = {
+          __symbolic: 'module',
+          version: SUPPORTED_SCHEMA_VERSION,
+          module: module,
+          metadata: {},
+        };
       }
       if (moduleMetadata['version'] != SUPPORTED_SCHEMA_VERSION) {
-        const errorMessage = moduleMetadata['version'] == 2 ?
-            `Unsupported metadata version ${moduleMetadata['version']} for module ${
-                module}. This module should be compiled with a newer version of ngc` :
-            `Metadata version mismatch for module ${
-                this.host.getOutputName(module)}, found version ${
-                moduleMetadata['version']}, expected ${SUPPORTED_SCHEMA_VERSION}`;
+        const errorMessage =
+          moduleMetadata['version'] == 2
+            ? `Unsupported metadata version ${moduleMetadata['version']} for module ${module}. This module should be compiled with a newer version of ngc`
+            : `Metadata version mismatch for module ${this.host.getOutputName(
+                module
+              )}, found version ${moduleMetadata['version']}, expected ${SUPPORTED_SCHEMA_VERSION}`;
         this.reportError(new Error(errorMessage));
       }
       this.metadataCache.set(module, moduleMetadata);
@@ -512,18 +552,22 @@ export class StaticSymbolResolver {
     return moduleMetadata;
   }
 
-
   getSymbolByModule(module: string, symbolName: string, containingFile?: string): StaticSymbol {
     const filePath = this.resolveModule(module, containingFile);
     if (!filePath) {
-      this.reportError(new Error(`Could not resolve module ${module}${
-          containingFile ? ' relative to ' + this.host.getOutputName(containingFile) : ''}`));
+      this.reportError(
+        new Error(
+          `Could not resolve module ${module}${
+            containingFile ? ' relative to ' + this.host.getOutputName(containingFile) : ''
+          }`
+        )
+      );
       return this.getStaticSymbol(`ERROR:${module}`, symbolName);
     }
     return this.getStaticSymbol(filePath, symbolName);
   }
 
-  private resolveModule(module: string, containingFile?: string): string|null {
+  private resolveModule(module: string, containingFile?: string): string | null {
     try {
       return this.host.moduleNameToFileName(module, containingFile);
     } catch (e) {

@@ -6,14 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentInit, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, Optional, QueryList, Renderer2, SimpleChanges} from '@angular/core';
+import {
+  AfterContentInit,
+  ContentChildren,
+  Directive,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Optional,
+  QueryList,
+  Renderer2,
+  SimpleChanges,
+} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {Event, NavigationEnd} from '../events';
 import {Router} from '../router';
 
 import {RouterLink, RouterLinkWithHref} from './router_link';
-
 
 /**
  *
@@ -76,14 +87,13 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
   selector: '[routerLinkActive]',
   exportAs: 'routerLinkActive',
 })
-export class RouterLinkActive implements OnChanges,
-    OnDestroy, AfterContentInit {
+export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
   // TODO(issue/24571): remove '!'.
   @ContentChildren(RouterLink, {descendants: true})
-  links !: QueryList<RouterLink>;
+  links!: QueryList<RouterLink>;
   // TODO(issue/24571): remove '!'.
   @ContentChildren(RouterLinkWithHref, {descendants: true})
-  linksWithHrefs !: QueryList<RouterLinkWithHref>;
+  linksWithHrefs!: QueryList<RouterLinkWithHref>;
 
   private classes: string[] = [];
   private subscription: Subscription;
@@ -92,9 +102,12 @@ export class RouterLinkActive implements OnChanges,
   @Input() routerLinkActiveOptions: {exact: boolean} = {exact: false};
 
   constructor(
-      private router: Router, private element: ElementRef, private renderer: Renderer2,
-      @Optional() private link?: RouterLink,
-      @Optional() private linkWithHref?: RouterLinkWithHref) {
+    private router: Router,
+    private element: ElementRef,
+    private renderer: Renderer2,
+    @Optional() private link?: RouterLink,
+    @Optional() private linkWithHref?: RouterLinkWithHref
+  ) {
     this.subscription = router.events.subscribe((s: Event) => {
       if (s instanceof NavigationEnd) {
         this.update();
@@ -102,21 +115,24 @@ export class RouterLinkActive implements OnChanges,
     });
   }
 
-
   ngAfterContentInit(): void {
-    this.links.changes.subscribe(_ => this.update());
-    this.linksWithHrefs.changes.subscribe(_ => this.update());
+    this.links.changes.subscribe((_) => this.update());
+    this.linksWithHrefs.changes.subscribe((_) => this.update());
     this.update();
   }
 
   @Input()
-  set routerLinkActive(data: string[]|string) {
+  set routerLinkActive(data: string[] | string) {
     const classes = Array.isArray(data) ? data : data.split(' ');
-    this.classes = classes.filter(c => !!c);
+    this.classes = classes.filter((c) => !!c);
   }
 
-  ngOnChanges(changes: SimpleChanges): void { this.update(); }
-  ngOnDestroy(): void { this.subscription.unsubscribe(); }
+  ngOnChanges(changes: SimpleChanges): void {
+    this.update();
+  }
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
 
   private update(): void {
     if (!this.links || !this.linksWithHrefs || !this.router.navigated) return;
@@ -135,15 +151,18 @@ export class RouterLinkActive implements OnChanges,
     });
   }
 
-  private isLinkActive(router: Router): (link: (RouterLink|RouterLinkWithHref)) => boolean {
+  private isLinkActive(router: Router): (link: RouterLink | RouterLinkWithHref) => boolean {
     return (link: RouterLink | RouterLinkWithHref) =>
-               router.isActive(link.urlTree, this.routerLinkActiveOptions.exact);
+      router.isActive(link.urlTree, this.routerLinkActiveOptions.exact);
   }
 
   private hasActiveLinks(): boolean {
     const isActiveCheckFn = this.isLinkActive(this.router);
-    return this.link && isActiveCheckFn(this.link) ||
-        this.linkWithHref && isActiveCheckFn(this.linkWithHref) ||
-        this.links.some(isActiveCheckFn) || this.linksWithHrefs.some(isActiveCheckFn);
+    return (
+      (this.link && isActiveCheckFn(this.link)) ||
+      (this.linkWithHref && isActiveCheckFn(this.linkWithHref)) ||
+      this.links.some(isActiveCheckFn) ||
+      this.linksWithHrefs.some(isActiveCheckFn)
+    );
   }
 }

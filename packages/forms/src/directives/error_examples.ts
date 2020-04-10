@@ -59,5 +59,5 @@ export const FormErrorExamples = {
        <input formControlName="firstName">
        <input [(ngModel)]="showMoreControls" [ngModelOptions]="{standalone: true}">
     </div>
-  `
+  `,
 };

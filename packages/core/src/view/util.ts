@@ -13,7 +13,26 @@ import {RendererType2} from '../render/api';
 import {looseIdentical} from '../util/comparison';
 import {stringify} from '../util/stringify';
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
-import {BindingDef, BindingFlags, Definition, DefinitionFactory, DepDef, DepFlags, ElementData, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asTextData} from './types';
+import {
+  BindingDef,
+  BindingFlags,
+  Definition,
+  DefinitionFactory,
+  DepDef,
+  DepFlags,
+  ElementData,
+  NodeDef,
+  NodeFlags,
+  QueryValueType,
+  Services,
+  ViewData,
+  ViewDefinition,
+  ViewDefinitionFactory,
+  ViewFlags,
+  ViewState,
+  asElementData,
+  asTextData,
+} from './types';
 
 export const NOOP: any = () => {};
 
@@ -44,26 +63,27 @@ const EMPTY_RENDERER_TYPE_ID = '$$empty';
 // Attention: this function is called as top level function.
 // Putting any logic in here will destroy closure tree shaking!
 export function createRendererType2(values: {
-  styles: (string | any[])[],
-  encapsulation: ViewEncapsulation,
-  data: {[kind: string]: any[]}
+  styles: (string | any[])[];
+  encapsulation: ViewEncapsulation;
+  data: {[kind: string]: any[]};
 }): RendererType2 {
   return {
     id: UNDEFINED_RENDERER_TYPE_ID,
     styles: values.styles,
     encapsulation: values.encapsulation,
-    data: values.data
+    data: values.data,
   };
 }
 
 let _renderCompCount = 0;
 
-export function resolveRendererType2(type?: RendererType2 | null): RendererType2|null {
+export function resolveRendererType2(type?: RendererType2 | null): RendererType2 | null {
   if (type && type.id === UNDEFINED_RENDERER_TYPE_ID) {
     // first time we see this RendererType2. Initialize it...
     const isFilled =
-        ((type.encapsulation != null && type.encapsulation !== ViewEncapsulation.None) ||
-         type.styles.length || Object.keys(type.data).length);
+      (type.encapsulation != null && type.encapsulation !== ViewEncapsulation.None) ||
+      type.styles.length ||
+      Object.keys(type.data).length;
     if (isFilled) {
       type.id = `c${_renderCompCount++}`;
     } else {
@@ -77,17 +97,27 @@ export function resolveRendererType2(type?: RendererType2 | null): RendererType2
 }
 
 export function checkBinding(
-    view: ViewData, def: NodeDef, bindingIdx: number, value: any): boolean {
+  view: ViewData,
+  def: NodeDef,
+  bindingIdx: number,
+  value: any
+): boolean {
   const oldValues = view.oldValues;
-  if ((view.state & ViewState.FirstCheck) ||
-      !looseIdentical(oldValues[def.bindingIndex + bindingIdx], value)) {
+  if (
+    view.state & ViewState.FirstCheck ||
+    !looseIdentical(oldValues[def.bindingIndex + bindingIdx], value)
+  ) {
     return true;
   }
   return false;
 }
 
 export function checkAndUpdateBinding(
-    view: ViewData, def: NodeDef, bindingIdx: number, value: any): boolean {
+  view: ViewData,
+  def: NodeDef,
+  bindingIdx: number,
+  value: any
+): boolean {
   if (checkBinding(view, def, bindingIdx, value)) {
     view.oldValues[def.bindingIndex + bindingIdx] = value;
     return true;
@@ -96,18 +126,25 @@ export function checkAndUpdateBinding(
 }
 
 export function checkBindingNoChanges(
-    view: ViewData, def: NodeDef, bindingIdx: number, value: any) {
+  view: ViewData,
+  def: NodeDef,
+  bindingIdx: number,
+  value: any
+) {
   const oldValue = view.oldValues[def.bindingIndex + bindingIdx];
-  if ((view.state & ViewState.BeforeFirstCheck) || !devModeEqual(oldValue, value)) {
+  if (view.state & ViewState.BeforeFirstCheck || !devModeEqual(oldValue, value)) {
     const bindingName = def.bindings[bindingIdx].name;
     throw expressionChangedAfterItHasBeenCheckedError(
-        Services.createDebugContext(view, def.nodeIndex), `${bindingName}: ${oldValue}`,
-        `${bindingName}: ${value}`, (view.state & ViewState.BeforeFirstCheck) !== 0);
+      Services.createDebugContext(view, def.nodeIndex),
+      `${bindingName}: ${oldValue}`,
+      `${bindingName}: ${value}`,
+      (view.state & ViewState.BeforeFirstCheck) !== 0
+    );
   }
 }
 
 export function markParentViewsForCheck(view: ViewData) {
-  let currView: ViewData|null = view;
+  let currView: ViewData | null = view;
   while (currView) {
     if (currView.def.flags & ViewFlags.OnPush) {
       currView.state |= ViewState.ChecksEnabled;
@@ -117,7 +154,7 @@ export function markParentViewsForCheck(view: ViewData) {
 }
 
 export function markParentViewsForCheckProjectedViews(view: ViewData, endView: ViewData) {
-  let currView: ViewData|null = view;
+  let currView: ViewData | null = view;
   while (currView && currView !== endView) {
     currView.state |= ViewState.CheckProjectedViews;
     currView = currView.viewContainerParent || currView.parent;
@@ -125,12 +162,15 @@ export function markParentViewsForCheckProjectedViews(view: ViewData, endView: V
 }
 
 export function dispatchEvent(
-    view: ViewData, nodeIndex: number, eventName: string, event: any): boolean|undefined {
+  view: ViewData,
+  nodeIndex: number,
+  eventName: string,
+  event: any
+): boolean | undefined {
   try {
     const nodeDef = view.def.nodes[nodeIndex];
-    const startView = nodeDef.flags & NodeFlags.ComponentView ?
-        asElementData(view, nodeIndex).componentView :
-        view;
+    const startView =
+      nodeDef.flags & NodeFlags.ComponentView ? asElementData(view, nodeIndex).componentView : view;
     markParentViewsForCheck(startView);
     return Services.handleEvent(view, nodeIndex, eventName, event);
   } catch (e) {
@@ -139,10 +179,10 @@ export function dispatchEvent(
   }
 }
 
-export function declaredViewContainer(view: ViewData): ElementData|null {
+export function declaredViewContainer(view: ViewData): ElementData | null {
   if (view.parent) {
     const parentView = view.parent;
-    return asElementData(parentView, view.parentNodeDef !.nodeIndex);
+    return asElementData(parentView, view.parentNodeDef!.nodeIndex);
   }
   return null;
 }
@@ -152,10 +192,10 @@ export function declaredViewContainer(view: ViewData): ElementData|null {
  * for embedded views, this is the index of the parent node
  * that contains the view container.
  */
-export function viewParentEl(view: ViewData): NodeDef|null {
+export function viewParentEl(view: ViewData): NodeDef | null {
   const parentView = view.parent;
   if (parentView) {
-    return view.parentNodeDef !.parent;
+    return view.parentNodeDef!.parent;
   } else {
     return null;
   }
@@ -175,22 +215,23 @@ export function elementEventFullName(target: string | null, name: string): strin
 }
 
 export function isComponentView(view: ViewData): boolean {
-  return !!view.parent && !!(view.parentNodeDef !.flags & NodeFlags.Component);
+  return !!view.parent && !!(view.parentNodeDef!.flags & NodeFlags.Component);
 }
 
 export function isEmbeddedView(view: ViewData): boolean {
-  return !!view.parent && !(view.parentNodeDef !.flags & NodeFlags.Component);
+  return !!view.parent && !(view.parentNodeDef!.flags & NodeFlags.Component);
 }
 
 export function filterQueryId(queryId: number): number {
-  return 1 << (queryId % 32);
+  return 1 << queryId % 32;
 }
 
 export function splitMatchedQueriesDsl(
-    matchedQueriesDsl: [string | number, QueryValueType][] | null): {
-  matchedQueries: {[queryId: string]: QueryValueType},
-  references: {[refId: string]: QueryValueType},
-  matchedQueryIds: number
+  matchedQueriesDsl: [string | number, QueryValueType][] | null
+): {
+  matchedQueries: {[queryId: string]: QueryValueType};
+  references: {[refId: string]: QueryValueType};
+  matchedQueryIds: number;
 } {
   const matchedQueries: {[queryId: string]: QueryValueType} = {};
   let matchedQueryIds = 0;
@@ -209,7 +250,7 @@ export function splitMatchedQueriesDsl(
 }
 
 export function splitDepsDsl(deps: ([DepFlags, any] | any)[], sourceName?: string): DepDef[] {
-  return deps.map(value => {
+  return deps.map((value) => {
     let token: any;
     let flags: DepFlags;
     if (Array.isArray(value)) {
@@ -228,14 +269,15 @@ export function splitDepsDsl(deps: ([DepFlags, any] | any)[], sourceName?: strin
 export function getParentRenderElement(view: ViewData, renderHost: any, def: NodeDef): any {
   let renderParent = def.renderParent;
   if (renderParent) {
-    if ((renderParent.flags & NodeFlags.TypeElement) === 0 ||
-        (renderParent.flags & NodeFlags.ComponentView) === 0 ||
-        (renderParent.element !.componentRendererType &&
-         renderParent.element !.componentRendererType !.encapsulation ===
-             ViewEncapsulation.Native)) {
+    if (
+      (renderParent.flags & NodeFlags.TypeElement) === 0 ||
+      (renderParent.flags & NodeFlags.ComponentView) === 0 ||
+      (renderParent.element!.componentRendererType &&
+        renderParent.element!.componentRendererType!.encapsulation === ViewEncapsulation.Native)
+    ) {
       // only children of non components, or children of components with native encapsulation should
       // be attached.
-      return asElementData(view, def.renderParent !.nodeIndex).renderElement;
+      return asElementData(view, def.renderParent!.nodeIndex).renderElement;
     }
   } else {
     return renderHost;
@@ -245,7 +287,7 @@ export function getParentRenderElement(view: ViewData, renderHost: any, def: Nod
 const DEFINITION_CACHE = new WeakMap<any, Definition<any>>();
 
 export function resolveDefinition<D extends Definition<any>>(factory: DefinitionFactory<D>): D {
-  let value = DEFINITION_CACHE.get(factory) !as D;
+  let value = DEFINITION_CACHE.get(factory)! as D;
   if (!value) {
     value = factory(() => NOOP);
     value.factory = factory;
@@ -260,21 +302,44 @@ export function rootRenderNodes(view: ViewData): any[] {
   return renderNodes;
 }
 
-export const enum RenderNodeAction {Collect, AppendChild, InsertBefore, RemoveChild}
+export const enum RenderNodeAction {
+  Collect,
+  AppendChild,
+  InsertBefore,
+  RemoveChild,
+}
 
 export function visitRootRenderNodes(
-    view: ViewData, action: RenderNodeAction, parentNode: any, nextSibling: any, target?: any[]) {
+  view: ViewData,
+  action: RenderNodeAction,
+  parentNode: any,
+  nextSibling: any,
+  target?: any[]
+) {
   // We need to re-compute the parent node in case the nodes have been moved around manually
   if (action === RenderNodeAction.RemoveChild) {
-    parentNode = view.renderer.parentNode(renderNode(view, view.def.lastRenderRootNode !));
+    parentNode = view.renderer.parentNode(renderNode(view, view.def.lastRenderRootNode!));
   }
   visitSiblingRenderNodes(
-      view, action, 0, view.def.nodes.length - 1, parentNode, nextSibling, target);
+    view,
+    action,
+    0,
+    view.def.nodes.length - 1,
+    parentNode,
+    nextSibling,
+    target
+  );
 }
 
 export function visitSiblingRenderNodes(
-    view: ViewData, action: RenderNodeAction, startIndex: number, endIndex: number, parentNode: any,
-    nextSibling: any, target?: any[]) {
+  view: ViewData,
+  action: RenderNodeAction,
+  startIndex: number,
+  endIndex: number,
+  parentNode: any,
+  nextSibling: any,
+  target?: any[]
+) {
   for (let i = startIndex; i <= endIndex; i++) {
     const nodeDef = view.def.nodes[i];
     if (nodeDef.flags & (NodeFlags.TypeElement | NodeFlags.TypeText | NodeFlags.TypeNgContent)) {
@@ -286,25 +351,30 @@ export function visitSiblingRenderNodes(
 }
 
 export function visitProjectedRenderNodes(
-    view: ViewData, ngContentIndex: number, action: RenderNodeAction, parentNode: any,
-    nextSibling: any, target?: any[]) {
-  let compView: ViewData|null = view;
+  view: ViewData,
+  ngContentIndex: number,
+  action: RenderNodeAction,
+  parentNode: any,
+  nextSibling: any,
+  target?: any[]
+) {
+  let compView: ViewData | null = view;
   while (compView && !isComponentView(compView)) {
     compView = compView.parent;
   }
-  const hostView = compView !.parent;
-  const hostElDef = viewParentEl(compView !);
-  const startIndex = hostElDef !.nodeIndex + 1;
-  const endIndex = hostElDef !.nodeIndex + hostElDef !.childCount;
+  const hostView = compView!.parent;
+  const hostElDef = viewParentEl(compView!);
+  const startIndex = hostElDef!.nodeIndex + 1;
+  const endIndex = hostElDef!.nodeIndex + hostElDef!.childCount;
   for (let i = startIndex; i <= endIndex; i++) {
-    const nodeDef = hostView !.def.nodes[i];
+    const nodeDef = hostView!.def.nodes[i];
     if (nodeDef.ngContentIndex === ngContentIndex) {
-      visitRenderNode(hostView !, nodeDef, action, parentNode, nextSibling, target);
+      visitRenderNode(hostView!, nodeDef, action, parentNode, nextSibling, target);
     }
     // jump to next sibling
     i += nodeDef.childCount;
   }
-  if (!hostView !.parent) {
+  if (!hostView!.parent) {
     // a root view
     const projectedNodes = view.root.projectableNodes[ngContentIndex];
     if (projectedNodes) {
@@ -316,20 +386,34 @@ export function visitProjectedRenderNodes(
 }
 
 function visitRenderNode(
-    view: ViewData, nodeDef: NodeDef, action: RenderNodeAction, parentNode: any, nextSibling: any,
-    target?: any[]) {
+  view: ViewData,
+  nodeDef: NodeDef,
+  action: RenderNodeAction,
+  parentNode: any,
+  nextSibling: any,
+  target?: any[]
+) {
   if (nodeDef.flags & NodeFlags.TypeNgContent) {
     visitProjectedRenderNodes(
-        view, nodeDef.ngContent !.index, action, parentNode, nextSibling, target);
+      view,
+      nodeDef.ngContent!.index,
+      action,
+      parentNode,
+      nextSibling,
+      target
+    );
   } else {
     const rn = renderNode(view, nodeDef);
-    if (action === RenderNodeAction.RemoveChild && (nodeDef.flags & NodeFlags.ComponentView) &&
-        (nodeDef.bindingFlags & BindingFlags.CatSyntheticProperty)) {
+    if (
+      action === RenderNodeAction.RemoveChild &&
+      nodeDef.flags & NodeFlags.ComponentView &&
+      nodeDef.bindingFlags & BindingFlags.CatSyntheticProperty
+    ) {
       // Note: we might need to do both actions.
-      if (nodeDef.bindingFlags & (BindingFlags.SyntheticProperty)) {
+      if (nodeDef.bindingFlags & BindingFlags.SyntheticProperty) {
         execRenderNodeAction(view, rn, action, parentNode, nextSibling, target);
       }
-      if (nodeDef.bindingFlags & (BindingFlags.SyntheticHostProperty)) {
+      if (nodeDef.bindingFlags & BindingFlags.SyntheticHostProperty) {
         const compView = asElementData(view, nodeDef.nodeIndex).componentView;
         execRenderNodeAction(compView, rn, action, parentNode, nextSibling, target);
       }
@@ -337,22 +421,33 @@ function visitRenderNode(
       execRenderNodeAction(view, rn, action, parentNode, nextSibling, target);
     }
     if (nodeDef.flags & NodeFlags.EmbeddedViews) {
-      const embeddedViews = asElementData(view, nodeDef.nodeIndex).viewContainer !._embeddedViews;
+      const embeddedViews = asElementData(view, nodeDef.nodeIndex).viewContainer!._embeddedViews;
       for (let k = 0; k < embeddedViews.length; k++) {
         visitRootRenderNodes(embeddedViews[k], action, parentNode, nextSibling, target);
       }
     }
-    if (nodeDef.flags & NodeFlags.TypeElement && !nodeDef.element !.name) {
+    if (nodeDef.flags & NodeFlags.TypeElement && !nodeDef.element!.name) {
       visitSiblingRenderNodes(
-          view, action, nodeDef.nodeIndex + 1, nodeDef.nodeIndex + nodeDef.childCount, parentNode,
-          nextSibling, target);
+        view,
+        action,
+        nodeDef.nodeIndex + 1,
+        nodeDef.nodeIndex + nodeDef.childCount,
+        parentNode,
+        nextSibling,
+        target
+      );
     }
   }
 }
 
 function execRenderNodeAction(
-    view: ViewData, renderNode: any, action: RenderNodeAction, parentNode: any, nextSibling: any,
-    target?: any[]) {
+  view: ViewData,
+  renderNode: any,
+  action: RenderNodeAction,
+  parentNode: any,
+  nextSibling: any,
+  target?: any[]
+) {
   const renderer = view.renderer;
   switch (action) {
     case RenderNodeAction.AppendChild:
@@ -365,7 +460,7 @@ function execRenderNodeAction(
       renderer.removeChild(parentNode, renderNode);
       break;
     case RenderNodeAction.Collect:
-      target !.push(renderNode);
+      target!.push(renderNode);
       break;
   }
 }
@@ -374,7 +469,7 @@ const NS_PREFIX_RE = /^:([^:]+):(.+)$/;
 
 export function splitNamespace(name: string): string[] {
   if (name[0] === ':') {
-    const match = name.match(NS_PREFIX_RE) !;
+    const match = name.match(NS_PREFIX_RE)!;
     return [match[1], match[2]];
   }
   return ['', name];
@@ -397,38 +492,138 @@ export function interpolate(valueCount: number, constAndInterp: string[]): strin
 }
 
 export function inlineInterpolate(
-    valueCount: number, c0: string, a1: any, c1: string, a2?: any, c2?: string, a3?: any,
-    c3?: string, a4?: any, c4?: string, a5?: any, c5?: string, a6?: any, c6?: string, a7?: any,
-    c7?: string, a8?: any, c8?: string, a9?: any, c9?: string): string {
+  valueCount: number,
+  c0: string,
+  a1: any,
+  c1: string,
+  a2?: any,
+  c2?: string,
+  a3?: any,
+  c3?: string,
+  a4?: any,
+  c4?: string,
+  a5?: any,
+  c5?: string,
+  a6?: any,
+  c6?: string,
+  a7?: any,
+  c7?: string,
+  a8?: any,
+  c8?: string,
+  a9?: any,
+  c9?: string
+): string {
   switch (valueCount) {
     case 1:
       return c0 + _toStringWithNull(a1) + c1;
     case 2:
       return c0 + _toStringWithNull(a1) + c1 + _toStringWithNull(a2) + c2;
     case 3:
-      return c0 + _toStringWithNull(a1) + c1 + _toStringWithNull(a2) + c2 + _toStringWithNull(a3) +
-          c3;
+      return (
+        c0 + _toStringWithNull(a1) + c1 + _toStringWithNull(a2) + c2 + _toStringWithNull(a3) + c3
+      );
     case 4:
-      return c0 + _toStringWithNull(a1) + c1 + _toStringWithNull(a2) + c2 + _toStringWithNull(a3) +
-          c3 + _toStringWithNull(a4) + c4;
+      return (
+        c0 +
+        _toStringWithNull(a1) +
+        c1 +
+        _toStringWithNull(a2) +
+        c2 +
+        _toStringWithNull(a3) +
+        c3 +
+        _toStringWithNull(a4) +
+        c4
+      );
     case 5:
-      return c0 + _toStringWithNull(a1) + c1 + _toStringWithNull(a2) + c2 + _toStringWithNull(a3) +
-          c3 + _toStringWithNull(a4) + c4 + _toStringWithNull(a5) + c5;
+      return (
+        c0 +
+        _toStringWithNull(a1) +
+        c1 +
+        _toStringWithNull(a2) +
+        c2 +
+        _toStringWithNull(a3) +
+        c3 +
+        _toStringWithNull(a4) +
+        c4 +
+        _toStringWithNull(a5) +
+        c5
+      );
     case 6:
-      return c0 + _toStringWithNull(a1) + c1 + _toStringWithNull(a2) + c2 + _toStringWithNull(a3) +
-          c3 + _toStringWithNull(a4) + c4 + _toStringWithNull(a5) + c5 + _toStringWithNull(a6) + c6;
+      return (
+        c0 +
+        _toStringWithNull(a1) +
+        c1 +
+        _toStringWithNull(a2) +
+        c2 +
+        _toStringWithNull(a3) +
+        c3 +
+        _toStringWithNull(a4) +
+        c4 +
+        _toStringWithNull(a5) +
+        c5 +
+        _toStringWithNull(a6) +
+        c6
+      );
     case 7:
-      return c0 + _toStringWithNull(a1) + c1 + _toStringWithNull(a2) + c2 + _toStringWithNull(a3) +
-          c3 + _toStringWithNull(a4) + c4 + _toStringWithNull(a5) + c5 + _toStringWithNull(a6) +
-          c6 + _toStringWithNull(a7) + c7;
+      return (
+        c0 +
+        _toStringWithNull(a1) +
+        c1 +
+        _toStringWithNull(a2) +
+        c2 +
+        _toStringWithNull(a3) +
+        c3 +
+        _toStringWithNull(a4) +
+        c4 +
+        _toStringWithNull(a5) +
+        c5 +
+        _toStringWithNull(a6) +
+        c6 +
+        _toStringWithNull(a7) +
+        c7
+      );
     case 8:
-      return c0 + _toStringWithNull(a1) + c1 + _toStringWithNull(a2) + c2 + _toStringWithNull(a3) +
-          c3 + _toStringWithNull(a4) + c4 + _toStringWithNull(a5) + c5 + _toStringWithNull(a6) +
-          c6 + _toStringWithNull(a7) + c7 + _toStringWithNull(a8) + c8;
+      return (
+        c0 +
+        _toStringWithNull(a1) +
+        c1 +
+        _toStringWithNull(a2) +
+        c2 +
+        _toStringWithNull(a3) +
+        c3 +
+        _toStringWithNull(a4) +
+        c4 +
+        _toStringWithNull(a5) +
+        c5 +
+        _toStringWithNull(a6) +
+        c6 +
+        _toStringWithNull(a7) +
+        c7 +
+        _toStringWithNull(a8) +
+        c8
+      );
     case 9:
-      return c0 + _toStringWithNull(a1) + c1 + _toStringWithNull(a2) + c2 + _toStringWithNull(a3) +
-          c3 + _toStringWithNull(a4) + c4 + _toStringWithNull(a5) + c5 + _toStringWithNull(a6) +
-          c6 + _toStringWithNull(a7) + c7 + _toStringWithNull(a8) + c8 + _toStringWithNull(a9) + c9;
+      return (
+        c0 +
+        _toStringWithNull(a1) +
+        c1 +
+        _toStringWithNull(a2) +
+        c2 +
+        _toStringWithNull(a3) +
+        c3 +
+        _toStringWithNull(a4) +
+        c4 +
+        _toStringWithNull(a5) +
+        c5 +
+        _toStringWithNull(a6) +
+        c6 +
+        _toStringWithNull(a7) +
+        c7 +
+        _toStringWithNull(a8) +
+        c8 +
+        _toStringWithNull(a9) +
+        c9
+      );
     default:
       throw new Error(`Does not support more than 9 expressions`);
   }

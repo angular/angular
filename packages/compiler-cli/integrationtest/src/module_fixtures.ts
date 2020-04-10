@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, Directive, Injectable, InjectionToken, Input, NgModule, Pipe} from '@angular/core';
+import {
+  ANALYZE_FOR_ENTRY_COMPONENTS,
+  Component,
+  Directive,
+  Injectable,
+  InjectionToken,
+  Input,
+  NgModule,
+  Pipe,
+} from '@angular/core';
 
 @Injectable()
 export class SomeService {
@@ -14,8 +23,7 @@ export class SomeService {
 }
 
 @Injectable()
-export class ServiceUsingLibModule {
-}
+export class ServiceUsingLibModule {}
 
 @Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
 export class SomeDirectiveInRootModule {
@@ -41,13 +49,11 @@ export class SomePipeInLibModule {
   }
 }
 
-@Component({selector: 'comp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
-export class CompUsingRootModuleDirectiveAndPipe {
-}
+@Component({selector: 'comp', template: `<div [someDir]="'someValue' | somePipe"></div>`})
+export class CompUsingRootModuleDirectiveAndPipe {}
 
-@Component({selector: 'comp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
-export class CompUsingLibModuleDirectiveAndPipe {
-}
+@Component({selector: 'comp', template: `<div [someDir]="'someValue' | somePipe"></div>`})
+export class CompUsingLibModuleDirectiveAndPipe {}
 
 export const SOME_TOKEN = new InjectionToken('someToken');
 
@@ -69,8 +75,8 @@ export class SomeLibModule {
       ngModule: SomeLibModule,
       providers: [
         ServiceUsingLibModule,
-        provideValueWithEntryComponents([{a: 'b', component: CompUsingLibModuleDirectiveAndPipe}])
-      ]
+        provideValueWithEntryComponents([{a: 'b', component: CompUsingLibModuleDirectiveAndPipe}]),
+      ],
     };
   }
 }

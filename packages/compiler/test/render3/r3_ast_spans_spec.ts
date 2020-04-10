@@ -10,14 +10,15 @@ import {ParseSourceSpan} from '../../src/parse_util';
 import * as t from '../../src/render3/r3_ast';
 import {parseR3 as parse} from './view/util';
 
-
 class R3AstSourceSpans implements t.Visitor<void> {
   result: any[] = [];
 
   visitElement(element: t.Element) {
     this.result.push([
-      'Element', humanizeSpan(element.sourceSpan), humanizeSpan(element.startSourceSpan),
-      humanizeSpan(element.endSourceSpan)
+      'Element',
+      humanizeSpan(element.sourceSpan),
+      humanizeSpan(element.startSourceSpan),
+      humanizeSpan(element.endSourceSpan),
     ]);
     this.visitAll([
       element.attributes,
@@ -30,8 +31,10 @@ class R3AstSourceSpans implements t.Visitor<void> {
 
   visitTemplate(template: t.Template) {
     this.result.push([
-      'Template', humanizeSpan(template.sourceSpan), humanizeSpan(template.startSourceSpan),
-      humanizeSpan(template.endSourceSpan)
+      'Template',
+      humanizeSpan(template.sourceSpan),
+      humanizeSpan(template.startSourceSpan),
+      humanizeSpan(template.endSourceSpan),
     ]);
     this.visitAll([
       template.attributes,
@@ -50,28 +53,43 @@ class R3AstSourceSpans implements t.Visitor<void> {
   }
 
   visitVariable(variable: t.Variable) {
-    this.result.push(
-        ['Variable', humanizeSpan(variable.sourceSpan), humanizeSpan(variable.valueSpan)]);
+    this.result.push([
+      'Variable',
+      humanizeSpan(variable.sourceSpan),
+      humanizeSpan(variable.valueSpan),
+    ]);
   }
 
   visitReference(reference: t.Reference) {
-    this.result.push(
-        ['Reference', humanizeSpan(reference.sourceSpan), humanizeSpan(reference.valueSpan)]);
+    this.result.push([
+      'Reference',
+      humanizeSpan(reference.sourceSpan),
+      humanizeSpan(reference.valueSpan),
+    ]);
   }
 
   visitTextAttribute(attribute: t.TextAttribute) {
-    this.result.push(
-        ['TextAttribute', humanizeSpan(attribute.sourceSpan), humanizeSpan(attribute.valueSpan)]);
+    this.result.push([
+      'TextAttribute',
+      humanizeSpan(attribute.sourceSpan),
+      humanizeSpan(attribute.valueSpan),
+    ]);
   }
 
   visitBoundAttribute(attribute: t.BoundAttribute) {
-    this.result.push(
-        ['BoundAttribute', humanizeSpan(attribute.sourceSpan), humanizeSpan(attribute.valueSpan)]);
+    this.result.push([
+      'BoundAttribute',
+      humanizeSpan(attribute.sourceSpan),
+      humanizeSpan(attribute.valueSpan),
+    ]);
   }
 
   visitBoundEvent(event: t.BoundEvent) {
-    this.result.push(
-        ['BoundEvent', humanizeSpan(event.sourceSpan), humanizeSpan(event.handlerSpan)]);
+    this.result.push([
+      'BoundEvent',
+      humanizeSpan(event.sourceSpan),
+      humanizeSpan(event.handlerSpan),
+    ]);
   }
 
   visitText(text: t.Text) {
@@ -87,11 +105,11 @@ class R3AstSourceSpans implements t.Visitor<void> {
   }
 
   private visitAll(nodes: t.Node[][]) {
-    nodes.forEach(node => t.visitAll(this, node));
+    nodes.forEach((node) => t.visitAll(this, node));
   }
 }
 
-function humanizeSpan(span: ParseSourceSpan|null|undefined): string {
+function humanizeSpan(span: ParseSourceSpan | null | undefined): string {
   if (span === null || span === undefined) {
     return `<empty>`;
   }
@@ -112,9 +130,7 @@ function expectFromR3Nodes(nodes: t.Node[]) {
 describe('R3 AST source spans', () => {
   describe('nodes without binding', () => {
     it('is correct for text nodes', () => {
-      expectFromHtml('a').toEqual([
-        ['Text', '0:1'],
-      ]);
+      expectFromHtml('a').toEqual([['Text', '0:1']]);
     });
 
     it('is correct for elements with attributes', () => {
@@ -134,9 +150,7 @@ describe('R3 AST source spans', () => {
 
   describe('bound text nodes', () => {
     it('is correct for bound text nodes', () => {
-      expectFromHtml('{{a}}').toEqual([
-        ['BoundText', '0:5'],
-      ]);
+      expectFromHtml('{{a}}').toEqual([['BoundText', '0:5']]);
     });
   });
 
@@ -238,8 +252,8 @@ describe('R3 AST source spans', () => {
       expectFromHtml('<div *ngFor="let item of items"></div>').toEqual([
         ['Template', '0:32', '0:32', '32:38'],
         ['TextAttribute', '5:31', '<empty>'],
-        ['BoundAttribute', '5:31', '25:30'],  // *ngFor="let item of items" -> items
-        ['Variable', '13:22', '<empty>'],     // let item
+        ['BoundAttribute', '5:31', '25:30'], // *ngFor="let item of items" -> items
+        ['Variable', '13:22', '<empty>'], // let item
         ['Element', '0:38', '0:32', '32:38'],
       ]);
 
@@ -251,8 +265,8 @@ describe('R3 AST source spans', () => {
       // </ng-template>
       expectFromHtml('<div *ngFor="item of items"></div>').toEqual([
         ['Template', '0:28', '0:28', '28:34'],
-        ['BoundAttribute', '5:27', '13:17'],  // ngFor="item of items" -> item
-        ['BoundAttribute', '5:27', '21:26'],  // ngFor="item of items" -> items
+        ['BoundAttribute', '5:27', '13:17'], // ngFor="item of items" -> item
+        ['BoundAttribute', '5:27', '21:26'], // ngFor="item of items" -> items
         ['Element', '0:34', '0:28', '28:34'],
       ]);
     });
@@ -261,7 +275,7 @@ describe('R3 AST source spans', () => {
       expectFromHtml('<div *ngIf="let a=b"></div>').toEqual([
         ['Template', '0:21', '0:21', '21:27'],
         ['TextAttribute', '5:20', '<empty>'],
-        ['Variable', '12:19', '18:19'],  // let a=b -> b
+        ['Variable', '12:19', '18:19'], // let a=b -> b
         ['Element', '0:27', '0:21', '21:27'],
       ]);
     });
@@ -269,8 +283,8 @@ describe('R3 AST source spans', () => {
     it('is correct for variables via as ...', () => {
       expectFromHtml('<div *ngIf="expr as local"></div>').toEqual([
         ['Template', '0:27', '0:27', '27:33'],
-        ['BoundAttribute', '5:26', '12:16'],  // ngIf="expr as local" -> expr
-        ['Variable', '6:25', '6:10'],         // ngIf="expr as local -> ngIf
+        ['BoundAttribute', '5:26', '12:16'], // ngIf="expr as local" -> expr
+        ['Variable', '6:25', '6:10'], // ngIf="expr as local -> ngIf
         ['Element', '0:33', '0:27', '27:33'],
       ]);
     });

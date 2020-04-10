@@ -5,13 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as chars from './chars';
 import {CompileIdentifierMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
 
 export class ParseLocation {
   constructor(
-      public file: ParseSourceFile, public offset: number, public line: number,
-      public col: number) {}
+    public file: ParseSourceFile,
+    public offset: number,
+    public line: number,
+    public col: number
+  ) {}
 
   toString(): string {
     return this.offset != null ? `${this.file.url}@${this.line}:${this.col}` : this.file.url;
@@ -51,7 +55,7 @@ export class ParseLocation {
 
   // Return the source around the location
   // Up to `maxChars` or `maxLines` on each side of the location
-  getContext(maxChars: number, maxLines: number): {before: string, after: string}|null {
+  getContext(maxChars: number, maxLines: number): {before: string; after: string} | null {
     const content = this.file.content;
     let startOffset = this.offset;
 
@@ -101,7 +105,10 @@ export class ParseSourceFile {
 
 export class ParseSourceSpan {
   constructor(
-      public start: ParseLocation, public end: ParseLocation, public details: string|null = null) {}
+    public start: ParseLocation,
+    public end: ParseLocation,
+    public details: string | null = null
+  ) {}
 
   toString(): string {
     return this.start.file.content.substring(this.start.offset, this.end.offset);
@@ -115,13 +122,16 @@ export enum ParseErrorLevel {
 
 export class ParseError {
   constructor(
-      public span: ParseSourceSpan, public msg: string,
-      public level: ParseErrorLevel = ParseErrorLevel.ERROR) {}
+    public span: ParseSourceSpan,
+    public msg: string,
+    public level: ParseErrorLevel = ParseErrorLevel.ERROR
+  ) {}
 
   contextualMessage(): string {
     const ctx = this.span.start.getContext(100, 3);
-    return ctx ? `${this.msg} ("${ctx.before}[${ParseErrorLevel[this.level]} ->]${ctx.after}")` :
-                 this.msg;
+    return ctx
+      ? `${this.msg} ("${ctx.before}[${ParseErrorLevel[this.level]} ->]${ctx.after}")`
+      : this.msg;
   }
 
   toString(): string {
@@ -132,11 +142,15 @@ export class ParseError {
 
 export function typeSourceSpan(kind: string, type: CompileIdentifierMetadata): ParseSourceSpan {
   const moduleUrl = identifierModuleUrl(type);
-  const sourceFileName = moduleUrl != null ? `in ${kind} ${identifierName(type)} in ${moduleUrl}` :
-                                             `in ${kind} ${identifierName(type)}`;
+  const sourceFileName =
+    moduleUrl != null
+      ? `in ${kind} ${identifierName(type)} in ${moduleUrl}`
+      : `in ${kind} ${identifierName(type)}`;
   const sourceFile = new ParseSourceFile('', sourceFileName);
   return new ParseSourceSpan(
-      new ParseLocation(sourceFile, -1, -1, -1), new ParseLocation(sourceFile, -1, -1, -1));
+    new ParseLocation(sourceFile, -1, -1, -1),
+    new ParseLocation(sourceFile, -1, -1, -1)
+  );
 }
 
 /**
@@ -148,9 +162,14 @@ export function typeSourceSpan(kind: string, type: CompileIdentifierMetadata): P
  * @returns instance of ParseSourceSpan that represent a given Component or Directive.
  */
 export function r3JitTypeSourceSpan(
-    kind: string, typeName: string, sourceUrl: string): ParseSourceSpan {
+  kind: string,
+  typeName: string,
+  sourceUrl: string
+): ParseSourceSpan {
   const sourceFileName = `in ${kind} ${typeName} in ${sourceUrl}`;
   const sourceFile = new ParseSourceFile('', sourceFileName);
   return new ParseSourceSpan(
-      new ParseLocation(sourceFile, -1, -1, -1), new ParseLocation(sourceFile, -1, -1, -1));
+    new ParseLocation(sourceFile, -1, -1, -1),
+    new ParseLocation(sourceFile, -1, -1, -1)
+  );
 }

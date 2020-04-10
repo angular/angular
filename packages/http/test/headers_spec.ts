@@ -10,7 +10,6 @@ import {Headers} from '@angular/http/src/headers';
 
 {
   describe('Headers', () => {
-
     describe('initialization', () => {
       it('should conform to spec', () => {
         const httpHeaders = {
@@ -165,8 +164,9 @@ import {Headers} from '@angular/http/src/headers';
         ref = {'Accept': values};
       });
 
-      it('should be serializable with toJSON',
-         () => { expect(JSON.stringify(headers)).toEqual(JSON.stringify(ref)); });
+      it('should be serializable with toJSON', () => {
+        expect(JSON.stringify(headers)).toEqual(JSON.stringify(ref));
+      });
 
       it('should be able to recreate serializedHeaders', () => {
         const parsedHeaders = JSON.parse(JSON.stringify(headers));
@@ -177,10 +177,11 @@ import {Headers} from '@angular/http/src/headers';
 
     describe('.fromResponseHeaderString()', () => {
       it('should parse a response header string', () => {
-        const response = `Date: Fri, 20 Nov 2015 01:45:26 GMT\n` +
-            `Content-Type: application/json; charset=utf-8\n` +
-            `Transfer-Encoding: chunked\n` +
-            `Connection: keep-alive`;
+        const response =
+          `Date: Fri, 20 Nov 2015 01:45:26 GMT\n` +
+          `Content-Type: application/json; charset=utf-8\n` +
+          `Transfer-Encoding: chunked\n` +
+          `Connection: keep-alive`;
         const headers = Headers.fromResponseHeaderString(response);
         expect(headers.get('Date')).toEqual('Fri, 20 Nov 2015 01:45:26 GMT');
         expect(headers.get('Content-Type')).toEqual('application/json; charset=utf-8');

@@ -14,13 +14,35 @@
 
 export * from './metadata';
 export {InjectFlags} from './interface/injector';
-export {ɵɵdefineInjectable, defineInjectable, ɵɵdefineInjector, InjectableType, InjectorType} from './interface/defs';
+export {
+  ɵɵdefineInjectable,
+  defineInjectable,
+  ɵɵdefineInjector,
+  InjectableType,
+  InjectorType,
+} from './interface/defs';
 export {forwardRef, resolveForwardRef, ForwardRefFn} from './forward_ref';
 export {Injectable, InjectableDecorator, InjectableProvider} from './injectable';
 export {Injector} from './injector';
 export {ɵɵinject, inject, INJECTOR, ɵɵinvalidFactoryDep} from './injector_compatibility';
 export {ReflectiveInjector} from './reflective_injector';
-export {ClassProvider, ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, Provider, StaticClassProvider, StaticClassSansProvider, StaticProvider, TypeProvider, ValueProvider, ValueSansProvider} from './interface/provider';
+export {
+  ClassProvider,
+  ClassSansProvider,
+  ConstructorProvider,
+  ConstructorSansProvider,
+  ExistingProvider,
+  ExistingSansProvider,
+  FactoryProvider,
+  FactorySansProvider,
+  Provider,
+  StaticClassProvider,
+  StaticClassSansProvider,
+  StaticProvider,
+  TypeProvider,
+  ValueProvider,
+  ValueSansProvider,
+} from './interface/provider';
 export {ResolvedReflectiveFactory, ResolvedReflectiveProvider} from './reflective_provider';
 export {ReflectiveKey} from './reflective_key';
 export {InjectionToken} from './injection_token';

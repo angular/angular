@@ -13,13 +13,20 @@ import {SpyComponentRef, callNgProfilerTimeChangeDetection} from './spies';
 {
   describe('profiler', () => {
     if (isNode) return;
-    beforeEach(() => { enableDebugTools((<any>new SpyComponentRef())); });
+    beforeEach(() => {
+      enableDebugTools(<any>new SpyComponentRef());
+    });
 
-    afterEach(() => { disableDebugTools(); });
+    afterEach(() => {
+      disableDebugTools();
+    });
 
-    it('should time change detection', () => { callNgProfilerTimeChangeDetection(); });
+    it('should time change detection', () => {
+      callNgProfilerTimeChangeDetection();
+    });
 
-    it('should time change detection with recording',
-       () => { callNgProfilerTimeChangeDetection({'record': true}); });
+    it('should time change detection with recording', () => {
+      callNgProfilerTimeChangeDetection({'record': true});
+    });
   });
 }

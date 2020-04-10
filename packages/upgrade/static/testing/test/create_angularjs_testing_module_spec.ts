@@ -12,7 +12,6 @@ import {createAngularJSTestingModule} from '../src/create_angularjs_testing_modu
 
 import {AppModule, Inventory, defineAppModule} from './mocks';
 
-
 withEachNg1Version(() => {
   describe('AngularJS entry point', () => {
     it('should allow us to get a downgraded Angular service from an AngularJS service', () => {
@@ -26,7 +25,9 @@ withEachNg1Version(() => {
       // Configure an AngularJS module that has the AngularJS and Angular injector wired up
       module(createAngularJSTestingModule([AppModule]));
       let inventory: any = undefined;
-      inject(function(shoppingCart: any) { inventory = shoppingCart.inventory; });
+      inject(function (shoppingCart: any) {
+        inventory = shoppingCart.inventory;
+      });
       expect(inventory).toEqual(jasmine.any(Inventory));
     });
   });

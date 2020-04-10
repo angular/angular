@@ -35,8 +35,8 @@ describe('r3_view_compiler', () => {
              declarations: [HelloWorldComponent]
            })
            export class HelloWorldModule {}
-        `
-        }
+        `,
+        },
       };
       compile(files, angularFiles);
     });
@@ -84,8 +84,8 @@ describe('r3_view_compiler', () => {
           declarations: [TodoComponent, MyApp],
         })
         export class TodoModule{}
-        `
-      }
+        `,
+      },
     };
     const result = compile(files, angularFiles);
     expect(result.source).toContain('@angular/core');
@@ -108,8 +108,8 @@ describe('r3_view_compiler', () => {
           }
 
           @NgModule({declarations: [MyApp]})
-          export class MyModule {}`
-        }
+          export class MyModule {}`,
+        },
       };
 
       const bV_call = `
@@ -144,8 +144,8 @@ describe('r3_view_compiler', () => {
           }
 
           @NgModule({declarations: [MyApp]})
-          export class MyModule {}`
-        }
+          export class MyModule {}`,
+        },
       };
 
       const template = `
@@ -175,8 +175,8 @@ describe('r3_view_compiler', () => {
           }
 
           @NgModule({declarations: [MyApp]})
-          export class MyModule {}`
-        }
+          export class MyModule {}`,
+        },
       };
 
       const template = `

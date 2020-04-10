@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_system';
 import {EntryPointWithDependencies} from '../dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
@@ -25,9 +26,14 @@ import {getBasePaths, trackDuration} from './utils';
 export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
   private basePaths = getBasePaths(this.logger, this.sourceDirectory, this.pathMappings);
   constructor(
-      private fs: FileSystem, private config: NgccConfiguration, private logger: Logger,
-      private resolver: DependencyResolver, private entryPointManifest: EntryPointManifest,
-      private sourceDirectory: AbsoluteFsPath, private pathMappings: PathMappings|undefined) {}
+    private fs: FileSystem,
+    private config: NgccConfiguration,
+    private logger: Logger,
+    private resolver: DependencyResolver,
+    private entryPointManifest: EntryPointManifest,
+    private sourceDirectory: AbsoluteFsPath,
+    private pathMappings: PathMappings | undefined
+  ) {}
   /**
    * Search the `sourceDirectory`, and sub-directories, using `pathMappings` as necessary, to find
    * all package entry-points.
@@ -35,9 +41,10 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
   findEntryPoints(): SortedEntryPointsInfo {
     const unsortedEntryPoints: EntryPointWithDependencies[] = [];
     for (const basePath of this.basePaths) {
-      const entryPoints = this.entryPointManifest.readEntryPointsUsingManifest(basePath) ||
-          this.walkBasePathForPackages(basePath);
-      entryPoints.forEach(e => unsortedEntryPoints.push(e));
+      const entryPoints =
+        this.entryPointManifest.readEntryPointsUsingManifest(basePath) ||
+        this.walkBasePathForPackages(basePath);
+      entryPoints.forEach((e) => unsortedEntryPoints.push(e));
     }
     return this.resolver.sortEntryPointsByDependency(unsortedEntryPoints);
   }
@@ -50,10 +57,12 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
    */
   walkBasePathForPackages(basePath: AbsoluteFsPath): EntryPointWithDependencies[] {
     this.logger.debug(
-        `No manifest found for ${basePath} so walking the directories for entry-points.`);
+      `No manifest found for ${basePath} so walking the directories for entry-points.`
+    );
     const entryPoints = trackDuration(
-        () => this.walkDirectoryForPackages(basePath),
-        duration => this.logger.debug(`Walking ${basePath} for entry-points took ${duration}s.`));
+      () => this.walkDirectoryForPackages(basePath),
+      (duration) => this.logger.debug(`Walking ${basePath} for entry-points took ${duration}s.`)
+    );
     this.entryPointManifest.writeEntryPointManifest(basePath, entryPoints);
     return entryPoints;
   }
@@ -67,8 +76,13 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
    */
   walkDirectoryForPackages(sourceDirectory: AbsoluteFsPath): EntryPointWithDependencies[] {
     // Try to get a primary entry point from this directory
-    const primaryEntryPoint =
-        getEntryPointInfo(this.fs, this.config, this.logger, sourceDirectory, sourceDirectory);
+    const primaryEntryPoint = getEntryPointInfo(
+      this.fs,
+      this.config,
+      this.logger,
+      sourceDirectory,
+      sourceDirectory
+    );
 
     // If there is an entry-point but it is not compatible with ngcc (it has a bad package.json or
     // invalid typings) then exit. It is unlikely that such an entry point has a dependency on an
@@ -81,11 +95,15 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
     if (primaryEntryPoint !== NO_ENTRY_POINT) {
       entryPoints.push(this.resolver.getEntryPointWithDependencies(primaryEntryPoint));
       this.collectSecondaryEntryPoints(
-          entryPoints, sourceDirectory, sourceDirectory, this.fs.readdir(sourceDirectory));
+        entryPoints,
+        sourceDirectory,
+        sourceDirectory,
+        this.fs.readdir(sourceDirectory)
+      );
 
       // Also check for any nested node_modules in this package but only if at least one of the
       // entry-points was compiled by Angular.
-      if (entryPoints.some(e => e.entryPoint.compiledByAngular)) {
+      if (entryPoints.some((e) => e.entryPoint.compiledByAngular)) {
         const nestedNodeModulesPath = this.fs.join(sourceDirectory, 'node_modules');
         if (this.fs.exists(nestedNodeModulesPath)) {
           entryPoints.push(...this.walkDirectoryForPackages(nestedNodeModulesPath));
@@ -126,8 +144,11 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
    * @param paths The paths contained in the current `directory`.
    */
   private collectSecondaryEntryPoints(
-      entryPoints: EntryPointWithDependencies[], packagePath: AbsoluteFsPath,
-      directory: AbsoluteFsPath, paths: PathSegment[]): void {
+    entryPoints: EntryPointWithDependencies[],
+    packagePath: AbsoluteFsPath,
+    directory: AbsoluteFsPath,
+    paths: PathSegment[]
+  ): void {
     for (const path of paths) {
       if (isIgnorablePath(path)) {
         // Ignore hidden files, node_modules and ngcc directory
@@ -151,8 +172,13 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
       // entry-point.
       const possibleEntryPointPath = isDirectory ? absolutePath : stripJsExtension(absolutePath);
       let isEntryPoint = false;
-      const subEntryPoint =
-          getEntryPointInfo(this.fs, this.config, this.logger, packagePath, possibleEntryPointPath);
+      const subEntryPoint = getEntryPointInfo(
+        this.fs,
+        this.config,
+        this.logger,
+        packagePath,
+        possibleEntryPointPath
+      );
       if (subEntryPoint !== NO_ENTRY_POINT && subEntryPoint !== INCOMPATIBLE_ENTRY_POINT) {
         entryPoints.push(this.resolver.getEntryPointWithDependencies(subEntryPoint));
         isEntryPoint = true;
@@ -165,10 +191,14 @@ export class DirectoryWalkerEntryPointFinder implements EntryPointFinder {
 
       // This directory may contain entry-points of its own.
       const childPaths = this.fs.readdir(absolutePath);
-      if (!isEntryPoint &&
-          childPaths.some(
-              childPath => childPath.endsWith('.js') &&
-                  this.fs.stat(this.fs.resolve(absolutePath, childPath)).isFile())) {
+      if (
+        !isEntryPoint &&
+        childPaths.some(
+          (childPath) =>
+            childPath.endsWith('.js') &&
+            this.fs.stat(this.fs.resolve(absolutePath, childPath)).isFile()
+        )
+      ) {
         // We do not consider non-entry-point directories that contain JS files as they are very
         // unlikely to be containers for sub-entry-points.
         continue;

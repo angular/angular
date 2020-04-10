@@ -29,14 +29,14 @@ import {FrLocalization, HTML, I18nComponent, validateHtml} from './integration_c
           FrLocalization.PROVIDE,
           {provide: TRANSLATIONS, useValue: XLIFF2_TOMERGE},
           {provide: TRANSLATIONS_FORMAT, useValue: 'xlf2'},
-        ]
+        ],
       });
 
       TestBed.configureTestingModule({declarations: [I18nComponent]});
     }));
 
     it('should extract from templates', () => {
-      const catalog = new MessageBundle(new HtmlParser, [], {});
+      const catalog = new MessageBundle(new HtmlParser(), [], {});
       const serializer = new Xliff2();
       catalog.updateFromTemplate(HTML, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
 
@@ -44,8 +44,10 @@ import {FrLocalization, HTML, I18nComponent, validateHtml} from './integration_c
     });
 
     it('should translate templates', () => {
-      const tb: ComponentFixture<I18nComponent> =
-          TestBed.overrideTemplate(I18nComponent, HTML).createComponent(I18nComponent);
+      const tb: ComponentFixture<I18nComponent> = TestBed.overrideTemplate(
+        I18nComponent,
+        HTML
+      ).createComponent(I18nComponent);
       const cmp: I18nComponent = tb.componentInstance;
       const el: DebugElement = tb.debugElement;
 

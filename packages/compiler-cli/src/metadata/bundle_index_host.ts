@@ -20,7 +20,9 @@ const DTS = /\.d\.ts$/;
 const JS_EXT = /(\.js|)$/;
 
 function createSyntheticIndexHost<H extends ts.CompilerHost>(
-    delegate: H, syntheticIndex: {name: string, content: string, getMetadata: () => string}): H {
+  delegate: H,
+  syntheticIndex: {name: string; content: string; getMetadata: () => string}
+): H {
   const normalSyntheticIndexName = path.normalize(syntheticIndex.name);
 
   const newHost = Object.create(delegate);
@@ -29,43 +31,57 @@ function createSyntheticIndexHost<H extends ts.CompilerHost>(
   };
 
   newHost.readFile = (fileName: string) => {
-    return path.normalize(fileName) == normalSyntheticIndexName ? syntheticIndex.content :
-                                                                  delegate.readFile(fileName);
+    return path.normalize(fileName) == normalSyntheticIndexName
+      ? syntheticIndex.content
+      : delegate.readFile(fileName);
   };
 
-  newHost.getSourceFile =
-      (fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void) => {
-        if (path.normalize(fileName) == normalSyntheticIndexName) {
-          const sf = ts.createSourceFile(fileName, syntheticIndex.content, languageVersion, true);
-          if ((delegate as any).fileNameToModuleName) {
-            sf.moduleName = (delegate as any).fileNameToModuleName(fileName);
-          }
-          return sf;
-        }
-        return delegate.getSourceFile(fileName, languageVersion, onError);
-      };
+  newHost.getSourceFile = (
+    fileName: string,
+    languageVersion: ts.ScriptTarget,
+    onError?: (message: string) => void
+  ) => {
+    if (path.normalize(fileName) == normalSyntheticIndexName) {
+      const sf = ts.createSourceFile(fileName, syntheticIndex.content, languageVersion, true);
+      if ((delegate as any).fileNameToModuleName) {
+        sf.moduleName = (delegate as any).fileNameToModuleName(fileName);
+      }
+      return sf;
+    }
+    return delegate.getSourceFile(fileName, languageVersion, onError);
+  };
 
-  newHost.writeFile =
-      (fileName: string, data: string, writeByteOrderMark: boolean,
-       onError: ((message: string) => void)|undefined, sourceFiles: Readonly<ts.SourceFile>[]) => {
-        delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
-        if (fileName.match(DTS) && sourceFiles && sourceFiles.length == 1 &&
-            path.normalize(sourceFiles[0].fileName) === normalSyntheticIndexName) {
-          // If we are writing the synthetic index, write the metadata along side.
-          const metadataName = fileName.replace(DTS, '.metadata.json');
-          const indexMetadata = syntheticIndex.getMetadata();
-          delegate.writeFile(metadataName, indexMetadata, writeByteOrderMark, onError, []);
-        }
-      };
+  newHost.writeFile = (
+    fileName: string,
+    data: string,
+    writeByteOrderMark: boolean,
+    onError: ((message: string) => void) | undefined,
+    sourceFiles: Readonly<ts.SourceFile>[]
+  ) => {
+    delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
+    if (
+      fileName.match(DTS) &&
+      sourceFiles &&
+      sourceFiles.length == 1 &&
+      path.normalize(sourceFiles[0].fileName) === normalSyntheticIndexName
+    ) {
+      // If we are writing the synthetic index, write the metadata along side.
+      const metadataName = fileName.replace(DTS, '.metadata.json');
+      const indexMetadata = syntheticIndex.getMetadata();
+      delegate.writeFile(metadataName, indexMetadata, writeByteOrderMark, onError, []);
+    }
+  };
   return newHost;
 }
 
 export function createBundleIndexHost<H extends ts.CompilerHost>(
-    ngOptions: CompilerOptions, rootFiles: ReadonlyArray<string>, host: H,
-    getMetadataCache: () =>
-        MetadataCache): {host: H, indexName?: string, errors?: ts.Diagnostic[]} {
-  const files = rootFiles.filter(f => !DTS.test(f));
-  let indexFile: string|undefined;
+  ngOptions: CompilerOptions,
+  rootFiles: ReadonlyArray<string>,
+  host: H,
+  getMetadataCache: () => MetadataCache
+): {host: H; indexName?: string; errors?: ts.Diagnostic[]} {
+  const files = rootFiles.filter((f) => !DTS.test(f));
+  let indexFile: string | undefined;
   if (files.length === 1) {
     indexFile = files[0];
   } else {
@@ -83,15 +99,17 @@ export function createBundleIndexHost<H extends ts.CompilerHost>(
   if (!indexFile) {
     return {
       host,
-      errors: [{
-        file: null as any as ts.SourceFile,
-        start: null as any as number,
-        length: null as any as number,
-        messageText:
+      errors: [
+        {
+          file: (null as any) as ts.SourceFile,
+          start: (null as any) as number,
+          length: (null as any) as number,
+          messageText:
             'Angular compiler option "flatModuleIndex" requires one and only one .ts file in the "files" field.',
-        category: ts.DiagnosticCategory.Error,
-        code: 0
-      }]
+          category: ts.DiagnosticCategory.Error,
+          code: 0,
+        },
+      ],
     };
   }
 
@@ -102,17 +120,22 @@ export function createBundleIndexHost<H extends ts.CompilerHost>(
   // contents of the flat module index. The bundle produced during emit does use the metadata cache
   // with associated transforms, so the metadata will have lowered expressions, resource inlining,
   // etc.
-  const getMetadataBundle = (cache: MetadataCache|null) => {
+  const getMetadataBundle = (cache: MetadataCache | null) => {
     const bundler = new MetadataBundler(
-        indexModule, ngOptions.flatModuleId, new CompilerHostAdapter(host, cache, ngOptions),
-        ngOptions.flatModulePrivateSymbolPrefix);
+      indexModule,
+      ngOptions.flatModuleId,
+      new CompilerHostAdapter(host, cache, ngOptions),
+      ngOptions.flatModulePrivateSymbolPrefix
+    );
     return bundler.getMetadataBundle();
   };
 
   // First, produce the bundle with no MetadataCache.
   const metadataBundle = getMetadataBundle(/* MetadataCache */ null);
-  const name =
-      path.join(path.dirname(indexModule), ngOptions.flatModuleOutFile!.replace(JS_EXT, '.ts'));
+  const name = path.join(
+    path.dirname(indexModule),
+    ngOptions.flatModuleOutFile!.replace(JS_EXT, '.ts')
+  );
   const libraryIndex = `./${path.basename(indexModule)}`;
   const content = privateEntriesToIndex(libraryIndex, metadataBundle.privates);
 
@@ -125,7 +148,7 @@ export function createBundleIndexHost<H extends ts.CompilerHost>(
       // transforms were used to produce the JS output.
       const metadataBundle = getMetadataBundle(getMetadataCache());
       return JSON.stringify(metadataBundle.metadata);
-    }
+    },
   });
   return {host, indexName: name};
 }

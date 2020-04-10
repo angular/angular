@@ -16,7 +16,6 @@ export class Identifiers {
   static ANALYZE_FOR_ENTRY_COMPONENTS: o.ExternalReference = {
     name: 'ANALYZE_FOR_ENTRY_COMPONENTS',
     moduleName: CORE,
-
   };
   static ElementRef: o.ExternalReference = {name: 'ElementRef', moduleName: CORE};
   static NgModuleRef: o.ExternalReference = {name: 'NgModuleRef', moduleName: CORE};
@@ -24,7 +23,6 @@ export class Identifiers {
   static ChangeDetectorRef: o.ExternalReference = {
     name: 'ChangeDetectorRef',
     moduleName: CORE,
-
   };
   static QueryList: o.ExternalReference = {name: 'QueryList', moduleName: CORE};
   static TemplateRef: o.ExternalReference = {name: 'TemplateRef', moduleName: CORE};
@@ -32,12 +30,10 @@ export class Identifiers {
   static CodegenComponentFactoryResolver: o.ExternalReference = {
     name: 'ɵCodegenComponentFactoryResolver',
     moduleName: CORE,
-
   };
   static ComponentFactoryResolver: o.ExternalReference = {
     name: 'ComponentFactoryResolver',
     moduleName: CORE,
-
   };
   static ComponentFactory: o.ExternalReference = {name: 'ComponentFactory', moduleName: CORE};
   static ComponentRef: o.ExternalReference = {name: 'ComponentRef', moduleName: CORE};
@@ -45,22 +41,18 @@ export class Identifiers {
   static createModuleFactory: o.ExternalReference = {
     name: 'ɵcmf',
     moduleName: CORE,
-
   };
   static moduleDef: o.ExternalReference = {
     name: 'ɵmod',
     moduleName: CORE,
-
   };
   static moduleProviderDef: o.ExternalReference = {
     name: 'ɵmpd',
     moduleName: CORE,
-
   };
   static RegisterModuleFactoryFn: o.ExternalReference = {
     name: 'ɵregisterModuleFactory',
     moduleName: CORE,
-
   };
   static inject: o.ExternalReference = {name: 'ɵɵinject', moduleName: CORE};
   static directiveInject: o.ExternalReference = {name: 'ɵɵdirectiveInject', moduleName: CORE};
@@ -71,23 +63,19 @@ export class Identifiers {
   static ViewEncapsulation: o.ExternalReference = {
     name: 'ViewEncapsulation',
     moduleName: CORE,
-
   };
   static ChangeDetectionStrategy: o.ExternalReference = {
     name: 'ChangeDetectionStrategy',
     moduleName: CORE,
-
   };
   static SecurityContext: o.ExternalReference = {
     name: 'SecurityContext',
     moduleName: CORE,
-
   };
   static LOCALE_ID: o.ExternalReference = {name: 'LOCALE_ID', moduleName: CORE};
   static TRANSLATIONS_FORMAT: o.ExternalReference = {
     name: 'TRANSLATIONS_FORMAT',
     moduleName: CORE,
-
   };
   static inlineInterpolate: o.ExternalReference = {
     name: 'ɵinlineInterpolate',
@@ -116,7 +104,6 @@ export class Identifiers {
   static RendererType2: o.ExternalReference = {
     name: 'RendererType2',
     moduleName: CORE,
-
   };
   // type only
   static ViewDefinition: o.ExternalReference = {
@@ -132,6 +119,8 @@ export function createTokenForReference(reference: any): CompileTokenMetadata {
 }
 
 export function createTokenForExternalReference(
-    reflector: CompileReflector, reference: o.ExternalReference): CompileTokenMetadata {
+  reflector: CompileReflector,
+  reference: o.ExternalReference
+): CompileTokenMetadata {
   return createTokenForReference(reflector.resolveExternalReference(reference));
 }

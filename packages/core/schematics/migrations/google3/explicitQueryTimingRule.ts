@@ -15,8 +15,9 @@ import {QueryTiming} from '../static-queries/angular/query-definition';
 import {QueryUsageStrategy} from '../static-queries/strategies/usage_strategy/usage_strategy';
 import {getTransformedQueryCallExpr} from '../static-queries/transform';
 
-const FAILURE_MESSAGE = 'Query does not explicitly specify its timing. Read more here: ' +
-    'https://github.com/angular/angular/pull/28810';
+const FAILURE_MESSAGE =
+  'Query does not explicitly specify its timing. Read more here: ' +
+  'https://github.com/angular/angular/pull/28810';
 
 /**
  * Rule that reports if an Angular "ViewChild" or "ContentChild" query is not explicitly
@@ -28,12 +29,12 @@ export class Rule extends Rules.TypedRule {
     const typeChecker = program.getTypeChecker();
     const queryVisitor = new NgQueryResolveVisitor(program.getTypeChecker());
     const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
-    const rootSourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f) !);
+    const rootSourceFiles = program.getRootFileNames().map((f) => program.getSourceFile(f)!);
     const printer = ts.createPrinter();
     const failures: RuleFailure[] = [];
 
     // Analyze source files by detecting queries, class relations and component templates.
-    rootSourceFiles.forEach(sourceFile => {
+    rootSourceFiles.forEach((sourceFile) => {
       queryVisitor.visitNode(sourceFile);
       templateVisitor.visitNode(sourceFile);
     });
@@ -42,9 +43,9 @@ export class Rule extends Rules.TypedRule {
 
     // Add all resolved templates to the class metadata so that we can also
     // check component templates for static query usage.
-    templateVisitor.resolvedTemplates.forEach(template => {
+    templateVisitor.resolvedTemplates.forEach((template) => {
       if (classMetadata.has(template.container)) {
-        classMetadata.get(template.container) !.template = template;
+        classMetadata.get(template.container)!.template = template;
       }
     });
 
@@ -58,7 +59,7 @@ export class Rule extends Rules.TypedRule {
 
     // Compute the query usage for all resolved queries and update the
     // query definitions to explicitly declare the query timing (static or dynamic)
-    queries.forEach(q => {
+    queries.forEach((q) => {
       const queryExpr = q.decorator.node.expression;
       const {timing, message} = usageStrategy.detectTiming(q);
       const result = getTransformedQueryCallExpr(q, timing, !!message);
@@ -72,12 +73,20 @@ export class Rule extends Rules.TypedRule {
       // Replace the existing query decorator call expression with the
       // updated call expression node.
       const fix = new Replacement(queryExpr.getStart(), queryExpr.getWidth(), newText);
-      const failureMessage = `${FAILURE_MESSAGE}. Based on analysis of the query it can be ` +
-          `marked as "{static: ${(timing === QueryTiming.STATIC).toString()}}".`;
+      const failureMessage =
+        `${FAILURE_MESSAGE}. Based on analysis of the query it can be ` +
+        `marked as "{static: ${(timing === QueryTiming.STATIC).toString()}}".`;
 
-      failures.push(new RuleFailure(
-          sourceFile, queryExpr.getStart(), queryExpr.getEnd(), failureMessage, this.ruleName,
-          fix));
+      failures.push(
+        new RuleFailure(
+          sourceFile,
+          queryExpr.getStart(),
+          queryExpr.getEnd(),
+          failureMessage,
+          this.ruleName,
+          fix
+        )
+      );
     });
 
     return failures;

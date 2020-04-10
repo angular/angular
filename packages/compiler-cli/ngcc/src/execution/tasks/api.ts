@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {EntryPoint, EntryPointJsonProperty, JsonObject} from '../../packages/entry_point';
 import {PartiallyOrderedList} from '../../utils';
 
@@ -65,8 +66,11 @@ export type CreateTaskCompletedCallback = (taskQueue: TaskQueue) => TaskComplete
 /**
  * A function to be called once a task has been processed.
  */
-export type TaskCompletedCallback =
-    (task: Task, outcome: TaskProcessingOutcome, message: string|null) => void;
+export type TaskCompletedCallback = (
+  task: Task,
+  outcome: TaskProcessingOutcome,
+  message: string | null
+) => void;
 
 /**
  * Represents the outcome of processing a `Task`.
@@ -98,7 +102,7 @@ export interface TaskQueue {
    * @return The next task available for processing or `null`, if no task can be processed at the
    *         moment (including if there are no more unprocessed tasks).
    */
-  getNextTask(): Task|null;
+  getNextTask(): Task | null;
 
   /**
    * Mark a task as completed.

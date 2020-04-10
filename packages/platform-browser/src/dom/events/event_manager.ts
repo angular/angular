@@ -14,8 +14,9 @@ import {Inject, Injectable, InjectionToken, NgZone} from '@angular/core';
  *
  * @publicApi
  */
-export const EVENT_MANAGER_PLUGINS =
-    new InjectionToken<EventManagerPlugin[]>('EventManagerPlugins');
+export const EVENT_MANAGER_PLUGINS = new InjectionToken<EventManagerPlugin[]>(
+  'EventManagerPlugins'
+);
 
 /**
  * An injectable service that provides event management for Angular
@@ -32,7 +33,7 @@ export class EventManager {
    * Initializes an instance of the event-manager service.
    */
   constructor(@Inject(EVENT_MANAGER_PLUGINS) plugins: EventManagerPlugin[], private _zone: NgZone) {
-    plugins.forEach(p => p.manager = this);
+    plugins.forEach((p) => (p.manager = this));
     this._plugins = plugins.slice().reverse();
   }
 
@@ -67,7 +68,9 @@ export class EventManager {
   /**
    * Retrieves the compilation zone in which event listeners are registered.
    */
-  getZone(): NgZone { return this._zone; }
+  getZone(): NgZone {
+    return this._zone;
+  }
 
   /** @internal */
   _findPluginFor(eventName: string): EventManagerPlugin {
@@ -92,7 +95,7 @@ export abstract class EventManagerPlugin {
   constructor(private _doc: any) {}
 
   // TODO(issue/24571): remove '!'.
-  manager !: EventManager;
+  manager!: EventManager;
 
   abstract supports(eventName: string): boolean;
 

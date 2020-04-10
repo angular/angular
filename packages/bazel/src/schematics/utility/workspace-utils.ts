@@ -17,12 +17,12 @@ import {isJsonAstObject} from './json-utils';
  * layout.
  * See https://github.com/angular/angular-cli/pull/13780
  */
-export function findE2eArchitect(ast: JsonAstObject, name: string): JsonAstObject|null {
+export function findE2eArchitect(ast: JsonAstObject, name: string): JsonAstObject | null {
   const projects = findPropertyInAstObject(ast, 'projects');
   if (!isJsonAstObject(projects)) {
     return null;
   }
-  let architect: JsonAstNode|null;
+  let architect: JsonAstNode | null;
   const e2e = findPropertyInAstObject(projects, `${name}-e2e`);
   if (isJsonAstObject(e2e)) {
     architect = findPropertyInAstObject(e2e, 'architect');

@@ -15,21 +15,18 @@ import {Contact} from './components/contact';
 import {Start} from './components/start';
 
 @Component({selector: 'app', templateUrl: 'app.html'})
-export class App {
-}
+export class App {}
 
 export const ROUTES = [
-  {path: '', component: Start}, {path: 'contact', component: Contact},
-  {path: 'about', component: About}
+  {path: '', component: Start},
+  {path: 'contact', component: Contact},
+  {path: 'about', component: About},
 ];
 
 @NgModule({
   imports: [WorkerAppModule, RouterModule.forRoot(ROUTES, {useHash: true})],
-  providers: [
-    WORKER_APP_LOCATION_PROVIDERS,
-  ],
+  providers: [WORKER_APP_LOCATION_PROVIDERS],
   bootstrap: [App],
-  declarations: [App, Start, Contact, About]
+  declarations: [App, Start, Contact, About],
 })
-export class AppModule {
-}
+export class AppModule {}

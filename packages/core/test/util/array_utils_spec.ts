@@ -6,15 +6,30 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {KeyValueArray, arrayIndexOfSorted, arrayInsert, arrayInsert2, arrayInsertSorted, arrayRemoveSorted, arraySplice, flatten, keyValueArrayDelete, keyValueArrayGet, keyValueArrayIndexOf, keyValueArraySet} from '../../src/util/array_utils';
+import {
+  KeyValueArray,
+  arrayIndexOfSorted,
+  arrayInsert,
+  arrayInsert2,
+  arrayInsertSorted,
+  arrayRemoveSorted,
+  arraySplice,
+  flatten,
+  keyValueArrayDelete,
+  keyValueArrayGet,
+  keyValueArrayIndexOf,
+  keyValueArraySet,
+} from '../../src/util/array_utils';
 
 describe('array_utils', () => {
-
   describe('flatten', () => {
+    it('should flatten an empty array', () => {
+      expect(flatten([])).toEqual([]);
+    });
 
-    it('should flatten an empty array', () => { expect(flatten([])).toEqual([]); });
-
-    it('should flatten a flat array', () => { expect(flatten([1, 2, 3])).toEqual([1, 2, 3]); });
+    it('should flatten a flat array', () => {
+      expect(flatten([1, 2, 3])).toEqual([1, 2, 3]);
+    });
 
     it('should flatten a nested array depth-first', () => {
       expect(flatten([1, [2], 3])).toEqual([1, 2, 3]);
@@ -69,14 +84,18 @@ describe('array_utils', () => {
       expectArrayInsert2([0, 1, 2], 2, 'A', 'B').toEqual([0, 1, 'A', 'B', 2]);
       expectArrayInsert2([0, 1, 2], 3, 'A', 'B').toEqual([0, 1, 2, 'A', 'B']);
       expectArrayInsert2(['height', '1px', 'width', '2000px'], 0, 'color', 'red').toEqual([
-        'color', 'red', 'height', '1px', 'width', '2000px'
+        'color',
+        'red',
+        'height',
+        '1px',
+        'width',
+        '2000px',
       ]);
     });
   });
 
   describe('arrayInsertSorted', () => {
-
-    it('should insert items don\'t allow duplicates', () => {
+    it("should insert items don't allow duplicates", () => {
       let a;
       a = ['a', 'c', 'e', 'g', 'i'];
       expect(arrayInsertSorted(a, 'a')).toEqual(0);
@@ -100,10 +119,7 @@ describe('array_utils', () => {
     });
   });
 
-
-
   describe('arrayRemoveSorted', () => {
-
     it('should remove items', () => {
       let a;
       a = ['a', 'b', 'c', 'd', 'e'];
@@ -127,7 +143,6 @@ describe('array_utils', () => {
       expect(a).toEqual(['a', 'b', 'c', 'd']);
     });
   });
-
 
   describe('arrayIndexOfSorted', () => {
     it('should get index of', () => {

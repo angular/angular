@@ -9,29 +9,33 @@
 /// <reference types="jasmine"/>
 
 'use strict';
-(function(global) {
+(function (global) {
   const log: string[] = [];
   const logArgs: any[][] = [];
   const wtfMock = {
     log: log,
     logArgs: logArgs,
-    reset: function() {
+    reset: function () {
       log.length = 0;
       logArgs.length = 0;
     },
     trace: {
-      leaveScope: function(scope: any, returnValue: any) { return scope(returnValue); },
-      beginTimeRange: function(type: any, action: any) {
+      leaveScope: function (scope: any, returnValue: any) {
+        return scope(returnValue);
+      },
+      beginTimeRange: function (type: any, action: any) {
         logArgs.push([]);
         log.push('>>> ' + type + '[' + action + ']');
-        return function() {
+        return function () {
           logArgs.push([]);
           log.push('<<< ' + type);
         };
       },
-      endTimeRange: function(range: Function) { range(); },
+      endTimeRange: function (range: Function) {
+        range();
+      },
       events: {
-        createScope: function(signature: string, flags: any) {
+        createScope: function (signature: string, flags: any) {
           const parts = signature.split('(');
           const name = parts[0];
           return function scopeFn() {
@@ -44,14 +48,14 @@
             }
             log.push('> ' + name + '(' + args.join(', ') + ')');
             logArgs.push(args);
-            return function(retValue: any) {
+            return function (retValue: any) {
               log.push('< ' + name + (retValue == undefined ? '' : ' => ' + retValue));
               logArgs.push(retValue);
               return retValue;
             };
           };
         },
-        createInstance: function(signature: string, flags: any) {
+        createInstance: function (signature: string, flags: any) {
           const parts = signature.split('(');
           const name = parts[0];
           return function eventFn() {
@@ -65,9 +69,9 @@
             log.push('# ' + name + '(' + args.join(', ') + ')');
             logArgs.push(args);
           };
-        }
-      }
-    }
+        },
+      },
+    },
   };
 
   function __stringify(obj: any): string {
@@ -80,10 +84,12 @@
     return str;
   }
 
-  beforeEach(function() { wtfMock.reset(); });
+  beforeEach(function () {
+    wtfMock.reset();
+  });
 
   (<any>global).wtfMock = wtfMock;
   (<any>global).wtf = wtfMock;
-})(typeof window === 'object' && window || typeof self === 'object' && self || global);
+})((typeof window === 'object' && window) || (typeof self === 'object' && self) || global);
 
 declare const wtfMock: any;

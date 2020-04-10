@@ -8,7 +8,28 @@
 
 import {CompileSummaryKind} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
-import {createAttribute, createComponent, createContentChild, createContentChildren, createDirective, createHost, createHostBinding, createHostListener, createInject, createInjectable, createInput, createNgModule, createOptional, createOutput, createPipe, createSelf, createSkipSelf, createViewChild, createViewChildren, MetadataFactory} from '../core';
+import {
+  createAttribute,
+  createComponent,
+  createContentChild,
+  createContentChildren,
+  createDirective,
+  createHost,
+  createHostBinding,
+  createHostListener,
+  createInject,
+  createInjectable,
+  createInput,
+  createNgModule,
+  createOptional,
+  createOutput,
+  createPipe,
+  createSelf,
+  createSkipSelf,
+  createViewChild,
+  createViewChildren,
+  MetadataFactory,
+} from '../core';
 import * as o from '../output/output_ast';
 import {SummaryResolver} from '../summary_resolver';
 import {syntaxError} from '../util';
@@ -23,7 +44,7 @@ const ANGULAR_ROUTER = '@angular/router';
 const HIDDEN_KEY = /^\$.*\$$/;
 
 const IGNORE = {
-  __symbolic: 'ignore'
+  __symbolic: 'ignore',
 };
 
 const USE_VALUE = 'useValue';
@@ -57,28 +78,38 @@ export class StaticReflector implements CompileReflector {
   ROUTES!: StaticSymbol;
   // TODO(issue/24571): remove '!'.
   private ANALYZE_FOR_ENTRY_COMPONENTS!: StaticSymbol;
-  private annotationForParentClassWithSummaryKind =
-      new Map<CompileSummaryKind, MetadataFactory<any>[]>();
+  private annotationForParentClassWithSummaryKind = new Map<
+    CompileSummaryKind,
+    MetadataFactory<any>[]
+  >();
 
   constructor(
-      private summaryResolver: SummaryResolver<StaticSymbol>,
-      private symbolResolver: StaticSymbolResolver,
-      knownMetadataClasses: {name: string, filePath: string, ctor: any}[] = [],
-      knownMetadataFunctions: {name: string, filePath: string, fn: any}[] = [],
-      private errorRecorder?: (error: any, fileName?: string) => void) {
+    private summaryResolver: SummaryResolver<StaticSymbol>,
+    private symbolResolver: StaticSymbolResolver,
+    knownMetadataClasses: {name: string; filePath: string; ctor: any}[] = [],
+    knownMetadataFunctions: {name: string; filePath: string; fn: any}[] = [],
+    private errorRecorder?: (error: any, fileName?: string) => void
+  ) {
     this.initializeConversionMap();
-    knownMetadataClasses.forEach(
-        (kc) => this._registerDecoratorOrConstructor(
-            this.getStaticSymbol(kc.filePath, kc.name), kc.ctor));
-    knownMetadataFunctions.forEach(
-        (kf) => this._registerFunction(this.getStaticSymbol(kf.filePath, kf.name), kf.fn));
-    this.annotationForParentClassWithSummaryKind.set(
-        CompileSummaryKind.Directive, [createDirective, createComponent]);
+    knownMetadataClasses.forEach((kc) =>
+      this._registerDecoratorOrConstructor(this.getStaticSymbol(kc.filePath, kc.name), kc.ctor)
+    );
+    knownMetadataFunctions.forEach((kf) =>
+      this._registerFunction(this.getStaticSymbol(kf.filePath, kf.name), kf.fn)
+    );
+    this.annotationForParentClassWithSummaryKind.set(CompileSummaryKind.Directive, [
+      createDirective,
+      createComponent,
+    ]);
     this.annotationForParentClassWithSummaryKind.set(CompileSummaryKind.Pipe, [createPipe]);
     this.annotationForParentClassWithSummaryKind.set(CompileSummaryKind.NgModule, [createNgModule]);
-    this.annotationForParentClassWithSummaryKind.set(
-        CompileSummaryKind.Injectable,
-        [createInjectable, createPipe, createDirective, createComponent, createNgModule]);
+    this.annotationForParentClassWithSummaryKind.set(CompileSummaryKind.Injectable, [
+      createInjectable,
+      createPipe,
+      createDirective,
+      createComponent,
+      createNgModule,
+    ]);
   }
 
   componentModuleUrl(typeOrFunc: StaticSymbol): string {
@@ -103,14 +134,17 @@ export class StaticReflector implements CompileReflector {
   }
 
   resolveExternalReference(ref: o.ExternalReference, containingFile?: string): StaticSymbol {
-    let key: string|undefined = undefined;
+    let key: string | undefined = undefined;
     if (!containingFile) {
       key = `${ref.moduleName}:${ref.name}`;
       const declarationSymbol = this.resolvedExternalReferences.get(key);
       if (declarationSymbol) return declarationSymbol;
     }
-    const refSymbol =
-        this.symbolResolver.getSymbolByModule(ref.moduleName!, ref.name!, containingFile);
+    const refSymbol = this.symbolResolver.getSymbolByModule(
+      ref.moduleName!,
+      ref.name!,
+      containingFile
+    );
     const declarationSymbol = this.findSymbolDeclaration(refSymbol);
     if (!containingFile) {
       this.symbolResolver.recordModuleNameForFileName(refSymbol.filePath, ref.moduleName!);
@@ -124,12 +158,14 @@ export class StaticReflector implements CompileReflector {
 
   findDeclaration(moduleUrl: string, name: string, containingFile?: string): StaticSymbol {
     return this.findSymbolDeclaration(
-        this.symbolResolver.getSymbolByModule(moduleUrl, name, containingFile));
+      this.symbolResolver.getSymbolByModule(moduleUrl, name, containingFile)
+    );
   }
 
   tryFindDeclaration(moduleUrl: string, name: string, containingFile?: string): StaticSymbol {
-    return this.symbolResolver.ignoreErrorsFor(
-        () => this.findDeclaration(moduleUrl, name, containingFile));
+    return this.symbolResolver.ignoreErrorsFor(() =>
+      this.findDeclaration(moduleUrl, name, containingFile)
+    );
   }
 
   findSymbolDeclaration(symbol: StaticSymbol): StaticSymbol {
@@ -158,19 +194,25 @@ export class StaticReflector implements CompileReflector {
 
   public annotations(type: StaticSymbol): any[] {
     return this._annotations(
-        type, (type: StaticSymbol, decorators: any) => this.simplify(type, decorators),
-        this.annotationCache);
+      type,
+      (type: StaticSymbol, decorators: any) => this.simplify(type, decorators),
+      this.annotationCache
+    );
   }
 
   public shallowAnnotations(type: StaticSymbol): any[] {
     return this._annotations(
-        type, (type: StaticSymbol, decorators: any) => this.simplify(type, decorators, true),
-        this.shallowAnnotationCache);
+      type,
+      (type: StaticSymbol, decorators: any) => this.simplify(type, decorators, true),
+      this.shallowAnnotationCache
+    );
   }
 
   private _annotations(
-      type: StaticSymbol, simplify: (type: StaticSymbol, decorators: any) => any,
-      annotationCache: Map<StaticSymbol, any[]>): any[] {
+    type: StaticSymbol,
+    simplify: (type: StaticSymbol, decorators: any) => any,
+    annotationCache: Map<StaticSymbol, any[]>
+  ): any[] {
     let annotations = annotationCache.get(type);
     if (!annotations) {
       annotations = [];
@@ -187,31 +229,42 @@ export class StaticReflector implements CompileReflector {
           annotations.push(...ownAnnotations);
         }
       }
-      if (parentType && !this.summaryResolver.isLibraryFile(type.filePath) &&
-          this.summaryResolver.isLibraryFile(parentType.filePath)) {
+      if (
+        parentType &&
+        !this.summaryResolver.isLibraryFile(type.filePath) &&
+        this.summaryResolver.isLibraryFile(parentType.filePath)
+      ) {
         const summary = this.summaryResolver.resolveSummary(parentType);
         if (summary && summary.type) {
-          const requiredAnnotationTypes =
-              this.annotationForParentClassWithSummaryKind.get(summary.type.summaryKind!)!;
-          const typeHasRequiredAnnotation = requiredAnnotationTypes.some(
-              (requiredType) => ownAnnotations.some(ann => requiredType.isTypeOf(ann)));
+          const requiredAnnotationTypes = this.annotationForParentClassWithSummaryKind.get(
+            summary.type.summaryKind!
+          )!;
+          const typeHasRequiredAnnotation = requiredAnnotationTypes.some((requiredType) =>
+            ownAnnotations.some((ann) => requiredType.isTypeOf(ann))
+          );
           if (!typeHasRequiredAnnotation) {
             this.reportError(
-                formatMetadataError(
-                    metadataError(
-                        `Class ${type.name} in ${type.filePath} extends from a ${
-                            CompileSummaryKind[summary.type.summaryKind!
-            ]} in another compilation unit without duplicating the decorator`,
-                        /* summary */ undefined,
-                        `Please add a ${
-                            requiredAnnotationTypes.map((type) => type.ngMetadataName)
-                                .join(' or ')} decorator to the class`),
-                    type),
-                type);
+              formatMetadataError(
+                metadataError(
+                  `Class ${type.name} in ${type.filePath} extends from a ${
+                    CompileSummaryKind[summary.type.summaryKind!]
+                  } in another compilation unit without duplicating the decorator`,
+                  /* summary */ undefined,
+                  `Please add a ${requiredAnnotationTypes
+                    .map((type) => type.ngMetadataName)
+                    .join(' or ')} decorator to the class`
+                ),
+                type
+              ),
+              type
+            );
           }
         }
       }
-      annotationCache.set(type, annotations.filter(ann => !!ann));
+      annotationCache.set(
+        type,
+        annotations.filter((ann) => !!ann)
+      );
     }
     return annotations;
   }
@@ -232,8 +285,9 @@ export class StaticReflector implements CompileReflector {
       const members = classMetadata['members'] || {};
       Object.keys(members).forEach((propName) => {
         const propData = members[propName];
-        const prop = (<any[]>propData)
-                         .find(a => a['__symbolic'] == 'property' || a['__symbolic'] == 'method');
+        const prop = (<any[]>propData).find(
+          (a) => a['__symbolic'] == 'property' || a['__symbolic'] == 'method'
+        );
         const decorators: any[] = [];
         if (propMetadata![propName]) {
           decorators.push(...propMetadata![propName]);
@@ -251,8 +305,9 @@ export class StaticReflector implements CompileReflector {
   public parameters(type: StaticSymbol): any[] {
     if (!(type instanceof StaticSymbol)) {
       this.reportError(
-          new Error(`parameters received ${JSON.stringify(type)} which is not a StaticSymbol`),
-          type);
+        new Error(`parameters received ${JSON.stringify(type)} which is not a StaticSymbol`),
+        type
+      );
       return [];
     }
     try {
@@ -263,7 +318,7 @@ export class StaticReflector implements CompileReflector {
         const members = classMetadata ? classMetadata['members'] : null;
         const ctorData = members ? members['__ctor__'] : null;
         if (ctorData) {
-          const ctor = (<any[]>ctorData).find(a => a['__symbolic'] == 'constructor');
+          const ctor = (<any[]>ctorData).find((a) => a['__symbolic'] == 'constructor');
           const rawParameterTypes = <any[]>ctor['parameters'] || [];
           const parameterDecorators = <any[]>this.simplify(type, ctor['parameterDecorators'] || []);
           parameters = [];
@@ -308,7 +363,7 @@ export class StaticReflector implements CompileReflector {
       const members = classMetadata['members'] || {};
       Object.keys(members).forEach((propName) => {
         const propData = members[propName];
-        const isMethod = (<any[]>propData).some(a => a['__symbolic'] == 'method');
+        const isMethod = (<any[]>propData).some((a) => a['__symbolic'] == 'method');
         methodNames![propName] = methodNames![propName] || isMethod;
       });
       this.methodCache.set(type, methodNames);
@@ -327,8 +382,7 @@ export class StaticReflector implements CompileReflector {
     return staticMembers;
   }
 
-
-  private findParentType(type: StaticSymbol, classMetadata: any): StaticSymbol|undefined {
+  private findParentType(type: StaticSymbol, classMetadata: any): StaticSymbol | undefined {
     const parentType = this.trySimplify(type, classMetadata['extends']);
     if (parentType instanceof StaticSymbol) {
       return parentType;
@@ -338,9 +392,9 @@ export class StaticReflector implements CompileReflector {
   hasLifecycleHook(type: any, lcProperty: string): boolean {
     if (!(type instanceof StaticSymbol)) {
       this.reportError(
-          new Error(
-              `hasLifecycleHook received ${JSON.stringify(type)} which is not a StaticSymbol`),
-          type);
+        new Error(`hasLifecycleHook received ${JSON.stringify(type)} which is not a StaticSymbol`),
+        type
+      );
     }
     try {
       return !!this._methodNames(type)[lcProperty];
@@ -353,7 +407,9 @@ export class StaticReflector implements CompileReflector {
   guards(type: any): {[key: string]: StaticSymbol} {
     if (!(type instanceof StaticSymbol)) {
       this.reportError(
-          new Error(`guards received ${JSON.stringify(type)} which is not a StaticSymbol`), type);
+        new Error(`guards received ${JSON.stringify(type)} which is not a StaticSymbol`),
+        type
+      );
       return {};
     }
     const staticMembers = this._staticMembers(type);
@@ -384,53 +440,89 @@ export class StaticReflector implements CompileReflector {
 
   private initializeConversionMap(): void {
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'Injectable'), createInjectable);
+      this.findDeclaration(ANGULAR_CORE, 'Injectable'),
+      createInjectable
+    );
     this.injectionToken = this.findDeclaration(ANGULAR_CORE, 'InjectionToken');
     this.opaqueToken = this.findDeclaration(ANGULAR_CORE, 'OpaqueToken');
     this.ROUTES = this.tryFindDeclaration(ANGULAR_ROUTER, 'ROUTES');
-    this.ANALYZE_FOR_ENTRY_COMPONENTS =
-        this.findDeclaration(ANGULAR_CORE, 'ANALYZE_FOR_ENTRY_COMPONENTS');
+    this.ANALYZE_FOR_ENTRY_COMPONENTS = this.findDeclaration(
+      ANGULAR_CORE,
+      'ANALYZE_FOR_ENTRY_COMPONENTS'
+    );
 
     this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Host'), createHost);
     this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Self'), createSelf);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'SkipSelf'), createSkipSelf);
+      this.findDeclaration(ANGULAR_CORE, 'SkipSelf'),
+      createSkipSelf
+    );
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'Inject'), createInject);
+      this.findDeclaration(ANGULAR_CORE, 'Inject'),
+      createInject
+    );
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'Optional'), createOptional);
+      this.findDeclaration(ANGULAR_CORE, 'Optional'),
+      createOptional
+    );
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'Attribute'), createAttribute);
+      this.findDeclaration(ANGULAR_CORE, 'Attribute'),
+      createAttribute
+    );
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'ContentChild'), createContentChild);
+      this.findDeclaration(ANGULAR_CORE, 'ContentChild'),
+      createContentChild
+    );
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'ContentChildren'), createContentChildren);
+      this.findDeclaration(ANGULAR_CORE, 'ContentChildren'),
+      createContentChildren
+    );
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'ViewChild'), createViewChild);
+      this.findDeclaration(ANGULAR_CORE, 'ViewChild'),
+      createViewChild
+    );
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'ViewChildren'), createViewChildren);
+      this.findDeclaration(ANGULAR_CORE, 'ViewChildren'),
+      createViewChildren
+    );
     this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Input'), createInput);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'Output'), createOutput);
+      this.findDeclaration(ANGULAR_CORE, 'Output'),
+      createOutput
+    );
     this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Pipe'), createPipe);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'HostBinding'), createHostBinding);
+      this.findDeclaration(ANGULAR_CORE, 'HostBinding'),
+      createHostBinding
+    );
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'HostListener'), createHostListener);
+      this.findDeclaration(ANGULAR_CORE, 'HostListener'),
+      createHostListener
+    );
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'Directive'), createDirective);
+      this.findDeclaration(ANGULAR_CORE, 'Directive'),
+      createDirective
+    );
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'Component'), createComponent);
+      this.findDeclaration(ANGULAR_CORE, 'Component'),
+      createComponent
+    );
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'NgModule'), createNgModule);
+      this.findDeclaration(ANGULAR_CORE, 'NgModule'),
+      createNgModule
+    );
 
     // Note: Some metadata classes can be used directly with Provider.deps.
     this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Host'), createHost);
     this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Self'), createSelf);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'SkipSelf'), createSkipSelf);
+      this.findDeclaration(ANGULAR_CORE, 'SkipSelf'),
+      createSkipSelf
+    );
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'Optional'), createOptional);
+      this.findDeclaration(ANGULAR_CORE, 'Optional'),
+      createOptional
+    );
   }
 
   /**
@@ -463,7 +555,11 @@ export class StaticReflector implements CompileReflector {
     const rootContext = context;
 
     function simplifyInContext(
-        context: StaticSymbol, value: any, depth: number, references: number): any {
+      context: StaticSymbol,
+      value: any,
+      depth: number,
+      references: number
+    ): any {
       function resolveReferenceValue(staticSymbol: StaticSymbol): any {
         const resolvedSymbol = self.symbolResolver.resolveSymbol(staticSymbol);
         return resolvedSymbol ? resolvedSymbol.metadata : null;
@@ -489,20 +585,21 @@ export class StaticReflector implements CompileReflector {
             // Propagate the message text up but add a message to the chain that explains how we got
             // here.
             // e.chain implies e.symbol
-            const summaryMsg = e.chain ? 'references \'' + e.symbol!.name + '\'' : errorSummary(e);
+            const summaryMsg = e.chain ? "references '" + e.symbol!.name + "'" : errorSummary(e);
             const summary = `'${nestedContext.name}' ${summaryMsg}`;
             const chain = {message: summary, position: e.position, next: e.chain};
             // TODO(chuckj): retrieve the position information indirectly from the collectors node
             // map if the metadata is from a .ts file.
             self.error(
-                {
-                  message: e.message,
-                  advise: e.advise,
-                  context: e.context,
-                  chain,
-                  symbol: nestedContext
-                },
-                context);
+              {
+                message: e.message,
+                advise: e.advise,
+                context: e.context,
+                chain,
+                symbol: nestedContext,
+              },
+              context
+            );
           } else {
             // It is probably an internal error.
             throw e;
@@ -511,24 +608,30 @@ export class StaticReflector implements CompileReflector {
       }
 
       function simplifyCall(
-          functionSymbol: StaticSymbol, targetFunction: any, args: any[], targetExpression: any) {
+        functionSymbol: StaticSymbol,
+        targetFunction: any,
+        args: any[],
+        targetExpression: any
+      ) {
         if (targetFunction && targetFunction['__symbolic'] == 'function') {
           if (calling.get(functionSymbol)) {
             self.error(
-                {
-                  message: 'Recursion is not supported',
-                  summary: `called '${functionSymbol.name}' recursively`,
-                  value: targetFunction
-                },
-                functionSymbol);
+              {
+                message: 'Recursion is not supported',
+                summary: `called '${functionSymbol.name}' recursively`,
+                value: targetFunction,
+              },
+              functionSymbol
+            );
           }
           try {
             const value = targetFunction['value'];
             if (value && (depth != 0 || value.__symbolic != 'error')) {
               const parameters: string[] = targetFunction['parameters'];
               const defaults: any[] = targetFunction.defaults;
-              args = args.map(arg => simplifyNested(context, arg))
-                         .map(arg => shouldIgnore(arg) ? undefined : arg);
+              args = args
+                .map((arg) => simplifyNested(context, arg))
+                .map((arg) => (shouldIgnore(arg) ? undefined : arg));
               if (defaults && defaults.length > args.length) {
                 args.push(...defaults.slice(args.length).map((value: any) => simplify(value)));
               }
@@ -558,7 +661,7 @@ export class StaticReflector implements CompileReflector {
           // non-angular decorator, and we should just ignore it.
           return IGNORE;
         }
-        let position: Position|undefined = undefined;
+        let position: Position | undefined = undefined;
         if (targetExpression && targetExpression.__symbolic == 'resolved') {
           const line = targetExpression.line;
           const character = targetExpression.character;
@@ -568,13 +671,14 @@ export class StaticReflector implements CompileReflector {
           }
         }
         self.error(
-            {
-              message: FUNCTION_CALL_NOT_SUPPORTED,
-              context: functionSymbol,
-              value: targetFunction,
-              position
-            },
-            context);
+          {
+            message: FUNCTION_CALL_NOT_SUPPORTED,
+            context: functionSymbol,
+            value: targetFunction,
+            position,
+          },
+          context
+        );
       }
 
       function simplify(expression: any): any {
@@ -583,7 +687,7 @@ export class StaticReflector implements CompileReflector {
         }
         if (Array.isArray(expression)) {
           const result: any[] = [];
-          for (const item of (<any>expression)) {
+          for (const item of <any>expression) {
             // Check for a spread expression
             if (item && item.__symbolic === 'spread') {
               // We call with references as 0 because we require the actual value and cannot
@@ -607,8 +711,11 @@ export class StaticReflector implements CompileReflector {
         if (expression instanceof StaticSymbol) {
           // Stop simplification at builtin symbols or if we are in a reference context and
           // the symbol doesn't have members.
-          if (expression === self.injectionToken || self.conversionMap.has(expression) ||
-              (references > 0 && !expression.members.length)) {
+          if (
+            expression === self.injectionToken ||
+            self.conversionMap.has(expression) ||
+            (references > 0 && !expression.members.length)
+          ) {
             return expression;
           } else {
             const staticSymbol = expression;
@@ -674,8 +781,9 @@ export class StaticReflector implements CompileReflector {
                 return null;
               case 'if':
                 let condition = simplify(expression['condition']);
-                return condition ? simplify(expression['thenExpression']) :
-                                   simplify(expression['elseExpression']);
+                return condition
+                  ? simplify(expression['thenExpression'])
+                  : simplify(expression['elseExpression']);
               case 'pre':
                 let operand = simplify(expression['operand']);
                 if (shouldIgnore(operand)) return operand;
@@ -701,8 +809,11 @@ export class StaticReflector implements CompileReflector {
                 let selectTarget = simplify(expression['expression']);
                 if (selectTarget instanceof StaticSymbol) {
                   const members = selectTarget.members.concat(member);
-                  selectContext =
-                      self.getStaticSymbol(selectTarget.filePath, selectTarget.name, members);
+                  selectContext = self.getStaticSymbol(
+                    selectTarget.filePath,
+                    selectTarget.name,
+                    members
+                  );
                   const declarationValue = resolveReferenceValue(selectContext);
                   if (declarationValue != null) {
                     return simplifyNested(selectContext, declarationValue);
@@ -730,12 +841,16 @@ export class StaticReflector implements CompileReflector {
                   // If an error is reported evaluating the symbol record the position of the
                   // reference in the error so it can
                   // be reported in the error message generated from the exception.
-                  if (isMetadataError(e) && expression.fileName != null &&
-                      expression.line != null && expression.character != null) {
+                  if (
+                    isMetadataError(e) &&
+                    expression.fileName != null &&
+                    expression.line != null &&
+                    expression.character != null
+                  ) {
                     e.position = {
                       fileName: expression.fileName,
                       line: expression.line,
-                      column: expression.character
+                      column: expression.character,
                     };
                   }
                   throw e;
@@ -748,7 +863,11 @@ export class StaticReflector implements CompileReflector {
               case 'call':
                 // Determine if the function is a built-in conversion
                 staticSymbol = simplifyInContext(
-                    context, expression['expression'], depth + 1, /* references */ 0);
+                  context,
+                  expression['expression'],
+                  depth + 1,
+                  /* references */ 0
+                );
                 if (staticSymbol instanceof StaticSymbol) {
                   if (staticSymbol === self.injectionToken || staticSymbol === self.opaqueToken) {
                     // if somebody calls new InjectionToken, don't create an InjectionToken,
@@ -761,14 +880,19 @@ export class StaticReflector implements CompileReflector {
                   const argExpressions: any[] = expression['arguments'] || [];
                   let converter = self.conversionMap.get(staticSymbol);
                   if (converter) {
-                    const args = argExpressions.map(arg => simplifyNested(context, arg))
-                                     .map(arg => shouldIgnore(arg) ? undefined : arg);
+                    const args = argExpressions
+                      .map((arg) => simplifyNested(context, arg))
+                      .map((arg) => (shouldIgnore(arg) ? undefined : arg));
                     return converter(context, args);
                   } else {
                     // Determine if the function is one we can simplify.
                     const targetFunction = resolveReferenceValue(staticSymbol);
                     return simplifyCall(
-                        staticSymbol, targetFunction, argExpressions, expression['expression']);
+                      staticSymbol,
+                      targetFunction,
+                      argExpressions,
+                      expression['expression']
+                    );
                   }
                 }
                 return IGNORE;
@@ -776,17 +900,18 @@ export class StaticReflector implements CompileReflector {
                 let message = expression.message;
                 if (expression['line'] != null) {
                   self.error(
-                      {
-                        message,
-                        context: expression.context,
-                        value: expression,
-                        position: {
-                          fileName: expression['fileName'],
-                          line: expression['line'],
-                          column: expression['character']
-                        }
+                    {
+                      message,
+                      context: expression.context,
+                      value: expression,
+                      position: {
+                        fileName: expression['fileName'],
+                        line: expression['line'],
+                        column: expression['character'],
                       },
-                      context);
+                    },
+                    context
+                  );
                 } else {
                   self.error({message, context: expression.context}, context);
                 }
@@ -835,34 +960,48 @@ export class StaticReflector implements CompileReflector {
 
   private getTypeMetadata(type: StaticSymbol): {[key: string]: any} {
     const resolvedSymbol = this.symbolResolver.resolveSymbol(type);
-    return resolvedSymbol && resolvedSymbol.metadata ? resolvedSymbol.metadata :
-                                                       {__symbolic: 'class'};
+    return resolvedSymbol && resolvedSymbol.metadata
+      ? resolvedSymbol.metadata
+      : {__symbolic: 'class'};
   }
 
   private reportError(error: Error, context: StaticSymbol, path?: string) {
     if (this.errorRecorder) {
       this.errorRecorder(
-          formatMetadataError(error, context), (context && context.filePath) || path);
+        formatMetadataError(error, context),
+        (context && context.filePath) || path
+      );
     } else {
       throw error;
     }
   }
 
   private error(
-      {message, summary, advise, position, context, value, symbol, chain}: {
-        message: string,
-        summary?: string,
-        advise?: string,
-        position?: Position,
-        context?: any,
-        value?: any,
-        symbol?: StaticSymbol,
-        chain?: MetadataMessageChain
-      },
-      reportingContext: StaticSymbol) {
+    {
+      message,
+      summary,
+      advise,
+      position,
+      context,
+      value,
+      symbol,
+      chain,
+    }: {
+      message: string;
+      summary?: string;
+      advise?: string;
+      position?: Position;
+      context?: any;
+      value?: any;
+      symbol?: StaticSymbol;
+      chain?: MetadataMessageChain;
+    },
+    reportingContext: StaticSymbol
+  ) {
     this.reportError(
-        metadataError(message, summary, advise, position, symbol, context, chain),
-        reportingContext);
+      metadataError(message, summary, advise, position, symbol, context, chain),
+      reportingContext
+    );
   }
 }
 
@@ -881,7 +1020,7 @@ interface MetadataMessageChain {
   next?: MetadataMessageChain;
 }
 
-type MetadataError = Error&{
+type MetadataError = Error & {
   position?: Position;
   advise?: string;
   summary?: string;
@@ -893,8 +1032,14 @@ type MetadataError = Error&{
 const METADATA_ERROR = 'ngMetadataError';
 
 function metadataError(
-    message: string, summary?: string, advise?: string, position?: Position, symbol?: StaticSymbol,
-    context?: any, chain?: MetadataMessageChain): MetadataError {
+  message: string,
+  summary?: string,
+  advise?: string,
+  position?: Position,
+  symbol?: StaticSymbol,
+  context?: any,
+  chain?: MetadataMessageChain
+): MetadataError {
   const error = syntaxError(message) as MetadataError;
   (error as any)[METADATA_ERROR] = true;
   if (advise) error.advise = advise;
@@ -922,8 +1067,7 @@ function expandedMessage(message: string, context: any): string {
   switch (message) {
     case REFERENCE_TO_NONEXPORTED_CLASS:
       if (context && context.className) {
-        return `References to a non-exported class are not supported in decorators but ${
-            context.className} was referenced.`;
+        return `References to a non-exported class are not supported in decorators but ${context.className} was referenced.`;
       }
       break;
     case VARIABLE_NOT_INITIALIZED:
@@ -942,8 +1086,7 @@ function expandedMessage(message: string, context: any): string {
       return 'Function calls are not supported in decorators';
     case REFERENCE_TO_LOCAL_SYMBOL:
       if (context && context.name) {
-        return `Reference to a local (non-exported) symbols are not supported in decorators but '${
-            context.name}' was referenced`;
+        return `Reference to a local (non-exported) symbols are not supported in decorators but '${context.name}' was referenced`;
       }
       break;
     case LAMBDA_NOT_SUPPORTED:
@@ -952,7 +1095,7 @@ function expandedMessage(message: string, context: any): string {
   return message;
 }
 
-function messageAdvise(message: string, context: any): string|undefined {
+function messageAdvise(message: string, context: any): string | undefined {
   switch (message) {
     case REFERENCE_TO_NONEXPORTED_CLASS:
       if (context && context.className) {
@@ -1002,8 +1145,10 @@ function errorSummary(error: MetadataError): string {
   return 'contains the error';
 }
 
-function mapStringMap(input: {[key: string]: any}, transform: (value: any, key: string) => any):
-    {[key: string]: any} {
+function mapStringMap(
+  input: {[key: string]: any},
+  transform: (value: any, key: string) => any
+): {[key: string]: any} {
   if (!input) return {};
   const result: {[key: string]: any} = {};
   Object.keys(input).forEach((key) => {
@@ -1031,18 +1176,18 @@ interface BindingScopeBuilder {
 abstract class BindingScope {
   abstract resolve(name: string): any;
   public static missing = {};
-  public static empty: BindingScope = {resolve: name => BindingScope.missing};
+  public static empty: BindingScope = {resolve: (name) => BindingScope.missing};
 
   public static build(): BindingScopeBuilder {
     const current = new Map<string, any>();
     return {
-      define: function(name, value) {
+      define: function (name, value) {
         current.set(name, value);
         return this;
       },
-      done: function() {
+      done: function () {
         return current.size > 0 ? new PopulatedScope(current) : BindingScope.empty;
-      }
+      },
     };
   }
 }
@@ -1058,14 +1203,18 @@ class PopulatedScope extends BindingScope {
 }
 
 function formatMetadataMessageChain(
-    chain: MetadataMessageChain, advise: string|undefined): FormattedMessageChain {
+  chain: MetadataMessageChain,
+  advise: string | undefined
+): FormattedMessageChain {
   const expanded = expandedMessage(chain.message, chain.context);
   const nesting = chain.symbol ? ` in '${chain.symbol.name}'` : '';
   const message = `${expanded}${nesting}`;
   const position = chain.position;
-  const next: FormattedMessageChain|undefined = chain.next ?
-      formatMetadataMessageChain(chain.next, advise) :
-      advise ? {message: advise} : undefined;
+  const next: FormattedMessageChain | undefined = chain.next
+    ? formatMetadataMessageChain(chain.next, advise)
+    : advise
+    ? {message: advise}
+    : undefined;
   return {message, position, next: next ? [next] : undefined};
 }
 
@@ -1077,7 +1226,7 @@ function formatMetadataError(e: Error, context: StaticSymbol): Error {
     const chain: MetadataMessageChain = {
       message: `Error during template compile of '${context.name}'`,
       position: position,
-      next: {message: e.message, next: e.chain, context: e.context, symbol: e.symbol}
+      next: {message: e.message, next: e.chain, context: e.context, symbol: e.symbol},
     };
     const advise = e.advise || messageAdvise(e.message, e.context);
     return formattedError(formatMetadataMessageChain(chain, advise));

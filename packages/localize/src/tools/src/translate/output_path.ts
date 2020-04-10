@@ -5,9 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {join} from 'path';
 
-export interface OutputPathFn { (locale: string, relativePath: string): string; }
+export interface OutputPathFn {
+  (locale: string, relativePath: string): string;
+}
 
 /**
  * Create a function that will compute the absolute path to where a translated file should be
@@ -18,6 +21,7 @@ export interface OutputPathFn { (locale: string, relativePath: string): string; 
  */
 export function getOutputPathFn(outputFolder: string): OutputPathFn {
   const [pre, post] = outputFolder.split('{{LOCALE}}');
-  return post === undefined ? (_locale, relativePath) => join(pre, relativePath) :
-                              (locale, relativePath) => join(pre + locale + post, relativePath);
+  return post === undefined
+    ? (_locale, relativePath) => join(pre, relativePath)
+    : (locale, relativePath) => join(pre + locale + post, relativePath);
 }

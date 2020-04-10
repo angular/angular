@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath} from '../../../src/ngtsc/file_system';
@@ -17,7 +18,7 @@ import {NgccReferencesRegistry} from './ngcc_references_registry';
 export interface ExportInfo {
   identifier: string;
   from: AbsoluteFsPath;
-  dtsFrom?: AbsoluteFsPath|null;
+  dtsFrom?: AbsoluteFsPath | null;
 }
 export type PrivateDeclarationsAnalyses = ExportInfo[];
 
@@ -27,7 +28,9 @@ export type PrivateDeclarationsAnalyses = ExportInfo[];
  */
 export class PrivateDeclarationsAnalyzer {
   constructor(
-      private host: NgccReflectionHost, private referencesRegistry: NgccReferencesRegistry) {}
+    private host: NgccReflectionHost,
+    private referencesRegistry: NgccReferencesRegistry
+  ) {}
 
   analyzeProgram(program: ts.Program): PrivateDeclarationsAnalyses {
     const rootFiles = this.getRootFiles(program);
@@ -35,15 +38,19 @@ export class PrivateDeclarationsAnalyzer {
   }
 
   private getRootFiles(program: ts.Program): ts.SourceFile[] {
-    return program.getRootFileNames().map(f => program.getSourceFile(f)).filter(isDefined);
+    return program
+      .getRootFileNames()
+      .map((f) => program.getSourceFile(f))
+      .filter(isDefined);
   }
 
   private getPrivateDeclarations(
-      rootFiles: ts.SourceFile[],
-      declarations: Map<ts.Identifier, ConcreteDeclaration>): PrivateDeclarationsAnalyses {
+    rootFiles: ts.SourceFile[],
+    declarations: Map<ts.Identifier, ConcreteDeclaration>
+  ): PrivateDeclarationsAnalyses {
     const privateDeclarations: Map<ts.Identifier, ConcreteDeclaration> = new Map(declarations);
 
-    rootFiles.forEach(f => {
+    rootFiles.forEach((f) => {
       const exports = this.host.getExportsOfModule(f);
       if (exports) {
         exports.forEach((declaration, exportedName) => {
@@ -61,7 +68,7 @@ export class PrivateDeclarationsAnalyzer {
       }
     });
 
-    return Array.from(privateDeclarations.keys()).map(id => {
+    return Array.from(privateDeclarations.keys()).map((id) => {
       const from = absoluteFromSourceFile(id.getSourceFile());
       const declaration = privateDeclarations.get(id)!;
       const dtsDeclaration = this.host.getDtsDeclaration(declaration.node);

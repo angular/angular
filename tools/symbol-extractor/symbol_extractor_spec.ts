@@ -14,7 +14,8 @@ import {Symbol, SymbolExtractor} from './symbol_extractor';
 
 describe('scenarios', () => {
   const symbolExtractorSpecDir = path.dirname(
-      require.resolve('angular/tools/symbol-extractor/symbol_extractor_spec/empty.json'));
+    require.resolve('angular/tools/symbol-extractor/symbol_extractor_spec/empty.json')
+  );
   const scenarioFiles = fs.readdirSync(symbolExtractorSpecDir);
   for (let i = 0; i < scenarioFiles.length; i = i + 2) {
     let jsFile = scenarioFiles[i];
@@ -28,8 +29,9 @@ describe('scenarios', () => {
 
     it(testName, () => {
       const jsFileContent = fs.readFileSync(path.join(symbolExtractorSpecDir, jsFile)).toString();
-      const jsonFileContent =
-          fs.readFileSync(path.join(symbolExtractorSpecDir, jsonFile)).toString();
+      const jsonFileContent = fs
+        .readFileSync(path.join(symbolExtractorSpecDir, jsonFile))
+        .toString();
       const symbols = SymbolExtractor.parse(testName, jsFileContent);
       const diff = SymbolExtractor.diff(symbols, jsonFileContent);
       expect(diff).toEqual({});

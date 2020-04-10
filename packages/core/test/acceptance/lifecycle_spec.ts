@@ -7,7 +7,21 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ChangeDetectorRef, Component, ComponentFactoryResolver, ContentChildren, Directive, Input, NgModule, OnChanges, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ComponentFactoryResolver,
+  ContentChildren,
+  Directive,
+  Input,
+  NgModule,
+  OnChanges,
+  QueryList,
+  SimpleChanges,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
 import {SimpleChange} from '@angular/core/src/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -31,8 +45,10 @@ describe('onChanges', () => {
       }
     }
 
-    @Component(
-        {selector: 'app-comp', template: '<child-comp [a]="a" [b]="b" [c]="c"></child-comp>'})
+    @Component({
+      selector: 'app-comp',
+      template: '<child-comp [a]="a" [b]="b" [c]="c"></child-comp>',
+    })
     class AppComp {
       a = 0;
       b = 0;
@@ -75,7 +91,9 @@ describe('onChanges', () => {
       @Input('publicVal2')
       val2 = 'b';
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'comp', changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'comp', changes});
+      }
     }
 
     @Component({template: `<comp [val1]="val1" [publicVal2]="val2"></comp>`})
@@ -91,27 +109,30 @@ describe('onChanges', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    expect(events).toEqual([{
-      name: 'comp',
-      changes: {
-        val1: new SimpleChange(undefined, 'a2', true),
-        val2: new SimpleChange(undefined, 'b2', true),
-      }
-    }]);
+    expect(events).toEqual([
+      {
+        name: 'comp',
+        changes: {
+          val1: new SimpleChange(undefined, 'a2', true),
+          val2: new SimpleChange(undefined, 'b2', true),
+        },
+      },
+    ]);
 
     events.length = 0;
     fixture.componentInstance.val1 = 'a3';
     fixture.componentInstance.val2 = 'b3';
     fixture.detectChanges();
 
-
-    expect(events).toEqual([{
-      name: 'comp',
-      changes: {
-        val1: new SimpleChange('a2', 'a3', false),
-        val2: new SimpleChange('b2', 'b3', false),
-      }
-    }]);
+    expect(events).toEqual([
+      {
+        name: 'comp',
+        changes: {
+          val1: new SimpleChange('a2', 'a3', false),
+          val2: new SimpleChange('b2', 'b3', false),
+        },
+      },
+    ]);
   });
 
   it('should call parent onChanges before child onChanges', () => {
@@ -125,7 +146,9 @@ describe('onChanges', () => {
       @Input()
       val = '';
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'parent', changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'parent', changes});
+      }
     }
 
     @Component({
@@ -136,7 +159,9 @@ describe('onChanges', () => {
       @Input()
       val = '';
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'child', changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'child', changes});
+      }
     }
 
     @Component({template: `<parent [val]="val"></parent>`})
@@ -155,14 +180,14 @@ describe('onChanges', () => {
         name: 'parent',
         changes: {
           val: new SimpleChange(undefined, 'foo', true),
-        }
+        },
       },
       {
         name: 'child',
         changes: {
           val: new SimpleChange(undefined, 'foo', true),
-        }
-      }
+        },
+      },
     ]);
 
     events.length = 0;
@@ -174,14 +199,14 @@ describe('onChanges', () => {
         name: 'parent',
         changes: {
           val: new SimpleChange('foo', 'bar', false),
-        }
+        },
       },
       {
         name: 'child',
         changes: {
           val: new SimpleChange('foo', 'bar', false),
-        }
-      }
+        },
+      },
     ]);
   });
 
@@ -199,7 +224,9 @@ describe('onChanges', () => {
       @Input()
       name = '';
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'parent ' + this.name, changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'parent ' + this.name, changes});
+      }
     }
 
     @Component({
@@ -213,14 +240,16 @@ describe('onChanges', () => {
       @Input()
       name = '';
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'child ' + this.name, changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'child ' + this.name, changes});
+      }
     }
 
     @Component({
       template: `
         <parent name="1" [val]="val"></parent>
         <parent name="2" [val]="val"></parent>
-      `
+      `,
     })
     class App {
       val = 'foo';
@@ -238,28 +267,28 @@ describe('onChanges', () => {
         changes: {
           name: new SimpleChange(undefined, '1', true),
           val: new SimpleChange(undefined, 'foo', true),
-        }
+        },
       },
       {
         name: 'parent 2',
         changes: {
           name: new SimpleChange(undefined, '2', true),
           val: new SimpleChange(undefined, 'foo', true),
-        }
+        },
       },
       {
         name: 'child 1',
         changes: {
           name: new SimpleChange(undefined, '1', true),
           val: new SimpleChange(undefined, 'foo', true),
-        }
+        },
       },
       {
         name: 'child 2',
         changes: {
           name: new SimpleChange(undefined, '2', true),
           val: new SimpleChange(undefined, 'foo', true),
-        }
+        },
       },
     ]);
 
@@ -272,25 +301,25 @@ describe('onChanges', () => {
         name: 'parent 1',
         changes: {
           val: new SimpleChange('foo', 'bar', false),
-        }
+        },
       },
       {
         name: 'parent 2',
         changes: {
           val: new SimpleChange('foo', 'bar', false),
-        }
+        },
       },
       {
         name: 'child 1',
         changes: {
           val: new SimpleChange('foo', 'bar', false),
-        }
+        },
       },
       {
         name: 'child 2',
         changes: {
           val: new SimpleChange('foo', 'bar', false),
-        }
+        },
       },
     ]);
   });
@@ -300,13 +329,15 @@ describe('onChanges', () => {
 
     @Component({
       selector: 'comp',
-      template: `<p>{{val}}</p>`,
+      template: `<p>{{ val }}</p>`,
     })
     class Comp {
       @Input()
       val = '';
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'comp', changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'comp', changes});
+      }
     }
 
     @Component({template: `<comp *ngIf="show" [val]="val"></comp>`})
@@ -323,12 +354,14 @@ describe('onChanges', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    expect(events).toEqual([{
-      name: 'comp',
-      changes: {
-        val: new SimpleChange(undefined, 'a', true),
-      }
-    }]);
+    expect(events).toEqual([
+      {
+        name: 'comp',
+        changes: {
+          val: new SimpleChange(undefined, 'a', true),
+        },
+      },
+    ]);
 
     events.length = 0;
     fixture.componentInstance.show = false;
@@ -340,25 +373,29 @@ describe('onChanges', () => {
     fixture.componentInstance.show = true;
     fixture.detectChanges();
 
-    expect(events).toEqual([{
-      name: 'comp',
-      changes: {
-        val: new SimpleChange(undefined, 'b', true),
-      }
-    }]);
+    expect(events).toEqual([
+      {
+        name: 'comp',
+        changes: {
+          val: new SimpleChange(undefined, 'b', true),
+        },
+      },
+    ]);
   });
 
   it('should call onChanges in hosts before their content children', () => {
     const events: any[] = [];
     @Component({
       selector: 'projected',
-      template: `<p>{{val}}</p>`,
+      template: `<p>{{ val }}</p>`,
     })
     class Projected {
       @Input()
       val = '';
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'projected', changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'projected', changes});
+      }
     }
 
     @Component({
@@ -369,7 +406,9 @@ describe('onChanges', () => {
       @Input()
       val = '';
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'comp', changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'comp', changes});
+      }
     }
 
     @Component({
@@ -390,13 +429,13 @@ describe('onChanges', () => {
         name: 'comp',
         changes: {
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'projected',
         changes: {
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
     ]);
 
@@ -409,13 +448,13 @@ describe('onChanges', () => {
         name: 'comp',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'projected',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
     ]);
   });
@@ -424,7 +463,7 @@ describe('onChanges', () => {
     const events: any[] = [];
     @Component({
       selector: 'projected',
-      template: `<p>{{val}}</p>`,
+      template: `<p>{{ val }}</p>`,
     })
     class Projected {
       @Input()
@@ -449,7 +488,9 @@ describe('onChanges', () => {
       @Input()
       name = '';
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'comp ' + this.name, changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'comp ' + this.name, changes});
+      }
     }
 
     @Component({
@@ -478,28 +519,28 @@ describe('onChanges', () => {
         changes: {
           name: new SimpleChange(undefined, '1', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'projected 1',
         changes: {
           name: new SimpleChange(undefined, '1', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'comp 2',
         changes: {
           name: new SimpleChange(undefined, '2', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'projected 2',
         changes: {
           name: new SimpleChange(undefined, '2', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
     ]);
 
@@ -512,25 +553,25 @@ describe('onChanges', () => {
         name: 'comp 1',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'projected 1',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'comp 2',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'projected 2',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
     ]);
   });
@@ -545,18 +586,22 @@ describe('onChanges', () => {
       @Input()
       dir = '';
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'dir', changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'dir', changes});
+      }
     }
 
     @Component({
       selector: 'comp',
-      template: `<p>{{val}}</p>`,
+      template: `<p>{{ val }}</p>`,
     })
     class Comp {
       @Input()
       val = '';
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'comp', changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'comp', changes});
+      }
     }
 
     @Component({
@@ -577,14 +622,14 @@ describe('onChanges', () => {
         name: 'comp',
         changes: {
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'dir',
         changes: {
           dir: new SimpleChange(undefined, 'a', true),
-        }
-      }
+        },
+      },
     ]);
 
     events.length = 0;
@@ -596,19 +641,18 @@ describe('onChanges', () => {
         name: 'comp',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'dir',
         changes: {
           dir: new SimpleChange('a', 'b', false),
-        }
-      }
+        },
+      },
     ]);
   });
 
   it('should be called on directives before component if component injects directives', () => {
-
     const events: any[] = [];
 
     @Directive({
@@ -618,12 +662,14 @@ describe('onChanges', () => {
       @Input()
       dir = '';
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'dir', changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'dir', changes});
+      }
     }
 
     @Component({
       selector: 'comp',
-      template: `<p>{{val}}</p>`,
+      template: `<p>{{ val }}</p>`,
     })
     class Comp {
       @Input()
@@ -631,7 +677,9 @@ describe('onChanges', () => {
 
       constructor(public dir: Dir) {}
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'comp', changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'comp', changes});
+      }
     }
 
     @Component({
@@ -652,14 +700,14 @@ describe('onChanges', () => {
         name: 'dir',
         changes: {
           dir: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'comp',
         changes: {
           val: new SimpleChange(undefined, 'a', true),
-        }
-      }
+        },
+      },
     ]);
 
     events.length = 0;
@@ -671,20 +719,18 @@ describe('onChanges', () => {
         name: 'dir',
         changes: {
           dir: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'comp',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
-      }
+        },
+      },
     ]);
-
   });
 
   it('should be called on multiple directives in injection order', () => {
-
     const events: any[] = [];
 
     @Directive({
@@ -694,7 +740,9 @@ describe('onChanges', () => {
       @Input()
       dir = '';
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'dir', changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'dir', changes});
+      }
     }
 
     @Directive({
@@ -706,7 +754,9 @@ describe('onChanges', () => {
 
       constructor(public dir: Dir) {}
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'injectionDir', changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'injectionDir', changes});
+      }
     }
 
     @Component({
@@ -727,17 +777,16 @@ describe('onChanges', () => {
         name: 'dir',
         changes: {
           dir: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'injectionDir',
         changes: {
           injectionDir: new SimpleChange(undefined, 'a', true),
-        }
-      }
+        },
+      },
     ]);
   });
-
 
   it('should be called on directives on an element', () => {
     const events: any[] = [];
@@ -752,7 +801,9 @@ describe('onChanges', () => {
       @Input('dir-val')
       val = '';
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'dir', changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'dir', changes});
+      }
     }
 
     @Component({template: `<div [dir]="val1" [dir-val]="val2"></div>`})
@@ -767,25 +818,29 @@ describe('onChanges', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    expect(events).toEqual([{
-      name: 'dir',
-      changes: {
-        dir: new SimpleChange(undefined, 'a', true),
-        val: new SimpleChange(undefined, 'b', true),
-      }
-    }]);
+    expect(events).toEqual([
+      {
+        name: 'dir',
+        changes: {
+          dir: new SimpleChange(undefined, 'a', true),
+          val: new SimpleChange(undefined, 'b', true),
+        },
+      },
+    ]);
 
     events.length = 0;
     fixture.componentInstance.val1 = 'a1';
     fixture.componentInstance.val2 = 'b1';
     fixture.detectChanges();
-    expect(events).toEqual([{
-      name: 'dir',
-      changes: {
-        dir: new SimpleChange('a', 'a1', false),
-        val: new SimpleChange('b', 'b1', false),
-      }
-    }]);
+    expect(events).toEqual([
+      {
+        name: 'dir',
+        changes: {
+          dir: new SimpleChange('a', 'a1', false),
+          val: new SimpleChange('b', 'b1', false),
+        },
+      },
+    ]);
   });
 
   it('should call onChanges properly in for loop', () => {
@@ -793,7 +848,7 @@ describe('onChanges', () => {
 
     @Component({
       selector: 'comp',
-      template: `<p>{{val}}</p>`,
+      template: `<p>{{ val }}</p>`,
     })
     class Comp {
       @Input()
@@ -802,15 +857,17 @@ describe('onChanges', () => {
       @Input()
       name = '';
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'comp ' + this.name, changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'comp ' + this.name, changes});
+      }
     }
 
     @Component({
       template: `
-      <comp name="0" [val]="val"></comp>
-      <comp *ngFor="let number of numbers" [name]="number" [val]="val"></comp>
-      <comp name="1" [val]="val"></comp>
-      `
+        <comp name="0" [val]="val"></comp>
+        <comp *ngFor="let number of numbers" [name]="number" [val]="val"></comp>
+        <comp name="1" [val]="val"></comp>
+      `,
     })
     class App {
       val = 'a';
@@ -831,36 +888,36 @@ describe('onChanges', () => {
         changes: {
           name: new SimpleChange(undefined, '0', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'comp 1',
         changes: {
           name: new SimpleChange(undefined, '1', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'comp 2',
         changes: {
           name: new SimpleChange(undefined, '2', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'comp 3',
         changes: {
           name: new SimpleChange(undefined, '3', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'comp 4',
         changes: {
           name: new SimpleChange(undefined, '4', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
-      }
+        },
+      },
     ]);
 
     events.length = 0;
@@ -872,32 +929,32 @@ describe('onChanges', () => {
         name: 'comp 0',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'comp 1',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'comp 2',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'comp 3',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'comp 4',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
-      }
+        },
+      },
     ]);
   });
 
@@ -906,7 +963,7 @@ describe('onChanges', () => {
 
     @Component({
       selector: 'child',
-      template: `<p>{{val}}</p>`,
+      template: `<p>{{ val }}</p>`,
     })
     class Child {
       @Input()
@@ -931,7 +988,9 @@ describe('onChanges', () => {
       @Input()
       name = '';
 
-      ngOnChanges(changes: SimpleChanges) { events.push({name: 'parent ' + this.name, changes}); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({name: 'parent ' + this.name, changes});
+      }
     }
 
     @Component({
@@ -939,7 +998,7 @@ describe('onChanges', () => {
         <parent name="0" [val]="val"></parent>
         <parent *ngFor="let number of numbers" [name]="number" [val]="val"></parent>
         <parent name="1" [val]="val"></parent>
-      `
+      `,
     })
     class App {
       val = 'a';
@@ -959,70 +1018,70 @@ describe('onChanges', () => {
         changes: {
           name: new SimpleChange(undefined, '0', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'parent 1',
         changes: {
           name: new SimpleChange(undefined, '1', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'parent 2',
         changes: {
           name: new SimpleChange(undefined, '2', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'child of parent 2',
         changes: {
           name: new SimpleChange(undefined, '2', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'parent 3',
         changes: {
           name: new SimpleChange(undefined, '3', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'child of parent 3',
         changes: {
           name: new SimpleChange(undefined, '3', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'parent 4',
         changes: {
           name: new SimpleChange(undefined, '4', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'child of parent 4',
         changes: {
           name: new SimpleChange(undefined, '4', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'child of parent 0',
         changes: {
           name: new SimpleChange(undefined, '0', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
       {
         name: 'child of parent 1',
         changes: {
           name: new SimpleChange(undefined, '1', true),
           val: new SimpleChange(undefined, 'a', true),
-        }
+        },
       },
     ]);
 
@@ -1035,61 +1094,61 @@ describe('onChanges', () => {
         name: 'parent 0',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'parent 1',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'parent 2',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'child of parent 2',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'parent 3',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'child of parent 3',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'parent 4',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'child of parent 4',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'child of parent 0',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
       {
         name: 'child of parent 1',
         changes: {
           val: new SimpleChange('a', 'b', false),
-        }
+        },
       },
     ]);
   });
@@ -1097,10 +1156,12 @@ describe('onChanges', () => {
   it('should not call onChanges if props are set directly', () => {
     const events: any[] = [];
 
-    @Component({template: `<p>{{value}}</p>`})
+    @Component({template: `<p>{{ value }}</p>`})
     class App {
       value = 'a';
-      ngOnChanges(changes: SimpleChanges) { events.push(changes); }
+      ngOnChanges(changes: SimpleChanges) {
+        events.push(changes);
+      }
     }
 
     TestBed.configureTestingModule({
@@ -1125,15 +1186,31 @@ it('should call all hooks in correct order when several directives on same node'
     id: number = -1;
 
     /** @internal */
-    private _log(hook: string, id: number) { log.push(hook + id); }
+    private _log(hook: string, id: number) {
+      log.push(hook + id);
+    }
 
-    ngOnChanges() { this._log('onChanges', this.id); }
-    ngOnInit() { this._log('onInit', this.id); }
-    ngDoCheck() { this._log('doCheck', this.id); }
-    ngAfterContentInit() { this._log('afterContentInit', this.id); }
-    ngAfterContentChecked() { this._log('afterContentChecked', this.id); }
-    ngAfterViewInit() { this._log('afterViewInit', this.id); }
-    ngAfterViewChecked() { this._log('afterViewChecked', this.id); }
+    ngOnChanges() {
+      this._log('onChanges', this.id);
+    }
+    ngOnInit() {
+      this._log('onInit', this.id);
+    }
+    ngDoCheck() {
+      this._log('doCheck', this.id);
+    }
+    ngAfterContentInit() {
+      this._log('afterContentInit', this.id);
+    }
+    ngAfterContentChecked() {
+      this._log('afterContentChecked', this.id);
+    }
+    ngAfterViewInit() {
+      this._log('afterViewInit', this.id);
+    }
+    ngAfterViewChecked() {
+      this._log('afterViewChecked', this.id);
+    }
   }
 
   @Directive({selector: 'div'})
@@ -1152,8 +1229,7 @@ it('should call all hooks in correct order when several directives on same node'
   }
 
   @Component({selector: 'app-comp', template: '<div [a]="1" [b]="2" [c]="3"></div>'})
-  class AppComp {
-  }
+  class AppComp {}
 
   TestBed.configureTestingModule({declarations: [AppComp, DirA, DirB, DirC]});
   const fixture = TestBed.createComponent(AppComp);
@@ -1180,7 +1256,7 @@ it('should call all hooks in correct order when several directives on same node'
     'afterViewInit2',
     'afterViewChecked2',
     'afterViewInit3',
-    'afterViewChecked3'
+    'afterViewChecked3',
   ]);
 });
 
@@ -1190,26 +1266,36 @@ it('should call hooks after setting directives inputs', () => {
   @Directive({selector: 'div'})
   class DirA {
     @Input() a: number = 0;
-    ngOnInit() { log.push('onInitA' + this.a); }
+    ngOnInit() {
+      log.push('onInitA' + this.a);
+    }
   }
 
   @Directive({selector: 'div'})
   class DirB {
     @Input() b: number = 0;
-    ngOnInit() { log.push('onInitB' + this.b); }
-    ngDoCheck() { log.push('doCheckB' + this.b); }
+    ngOnInit() {
+      log.push('onInitB' + this.b);
+    }
+    ngDoCheck() {
+      log.push('doCheckB' + this.b);
+    }
   }
 
   @Directive({selector: 'div'})
   class DirC {
     @Input() c: number = 0;
-    ngOnInit() { log.push('onInitC' + this.c); }
-    ngDoCheck() { log.push('doCheckC' + this.c); }
+    ngOnInit() {
+      log.push('onInitC' + this.c);
+    }
+    ngDoCheck() {
+      log.push('doCheckC' + this.c);
+    }
   }
 
   @Component({
     selector: 'app-comp',
-    template: '<div [a]="id" [b]="id" [c]="id"></div><div [a]="id" [b]="id" [c]="id"></div>'
+    template: '<div [a]="id" [b]="id" [c]="id"></div><div [a]="id" [b]="id" [c]="id"></div>',
   })
   class AppComp {
     id = 0;
@@ -1220,8 +1306,16 @@ it('should call hooks after setting directives inputs', () => {
   fixture.detectChanges();
 
   expect(log).toEqual([
-    'onInitA0', 'onInitB0', 'doCheckB0', 'onInitC0', 'doCheckC0', 'onInitA0', 'onInitB0',
-    'doCheckB0', 'onInitC0', 'doCheckC0'
+    'onInitA0',
+    'onInitB0',
+    'doCheckB0',
+    'onInitC0',
+    'doCheckC0',
+    'onInitA0',
+    'onInitB0',
+    'doCheckB0',
+    'onInitC0',
+    'doCheckC0',
   ]);
 
   log = [];
@@ -1253,9 +1347,7 @@ describe('onInit', () => {
     }
 
     @Component({
-      template: `
-        <my-comp [input1]="value1" [input2]="value2"></my-comp>
-      `,
+      template: ` <my-comp [input1]="value1" [input2]="value2"></my-comp> `,
     })
     class App {
       value1 = 'a';
@@ -1285,7 +1377,9 @@ describe('onInit', () => {
 
     @Component({template: ``})
     class App {
-      ngOnInit() { onInitCalled++; }
+      ngOnInit() {
+        onInitCalled++;
+      }
     }
 
     TestBed.configureTestingModule({
@@ -1305,14 +1399,18 @@ describe('onInit', () => {
       template: `<p>child</p>`,
     })
     class ChildComp {
-      ngOnInit() { initCalls.push('child'); }
+      ngOnInit() {
+        initCalls.push('child');
+      }
     }
 
     @Component({
       template: `<child-comp></child-comp>`,
     })
     class ParentComp {
-      ngOnInit() { initCalls.push('parent'); }
+      ngOnInit() {
+        initCalls.push('parent');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -1335,7 +1433,9 @@ describe('onInit', () => {
       @Input()
       name = '';
 
-      ngOnInit() { initCalls.push(`child of parent ${this.name}`); }
+      ngOnInit() {
+        initCalls.push(`child of parent ${this.name}`);
+      }
     }
 
     @Component({
@@ -1346,17 +1446,18 @@ describe('onInit', () => {
       @Input()
       name = '';
 
-      ngOnInit() { initCalls.push(`parent ${this.name}`); }
+      ngOnInit() {
+        initCalls.push(`parent ${this.name}`);
+      }
     }
 
     @Component({
       template: `
         <parent-comp name="1"></parent-comp>
         <parent-comp name="2"></parent-comp>
-      `
+      `,
     })
-    class App {
-    }
+    class App {}
 
     TestBed.configureTestingModule({
       declarations: [App, ParentComp, ChildComp],
@@ -1372,13 +1473,13 @@ describe('onInit', () => {
 
     @Component({selector: 'my-comp', template: '<p>test</p>'})
     class MyComp {
-      ngOnInit() { onInitCalls++; }
+      ngOnInit() {
+        onInitCalls++;
+      }
     }
 
     @Component({
-      template: `
-        <div *ngIf="show"><my-comp></my-comp></div>
-      `
+      template: ` <div *ngIf="show"><my-comp></my-comp></div> `,
     })
     class App {
       show = true;
@@ -1407,26 +1508,23 @@ describe('onInit', () => {
     class MyComp {
       onInitCalled = false;
 
-      ngOnInit() { this.onInitCalled = true; }
+      ngOnInit() {
+        this.onInitCalled = true;
+      }
     }
 
     @Component({
       selector: 'dynamic-comp',
-      template: `
-        <my-comp></my-comp>
-      `,
+      template: ` <my-comp></my-comp> `,
     })
-    class DynamicComp {
-    }
+    class DynamicComp {}
 
     @Component({
-      template: `
-        <div #container></div>
-      `,
+      template: ` <div #container></div> `,
     })
     class App {
       @ViewChild('container', {read: ViewContainerRef})
-      viewContainerRef !: ViewContainerRef;
+      viewContainerRef!: ViewContainerRef;
 
       constructor(public compFactoryResolver: ComponentFactoryResolver) {}
 
@@ -1441,8 +1539,7 @@ describe('onInit', () => {
       declarations: [App, MyComp, DynamicComp],
       entryComponents: [DynamicComp, App],
     })
-    class AppModule {
-    }
+    class AppModule {}
 
     TestBed.configureTestingModule({imports: [AppModule]});
 
@@ -1464,7 +1561,9 @@ describe('onInit', () => {
       template: '',
     })
     class Projected {
-      ngOnInit() { initialized.push('projected'); }
+      ngOnInit() {
+        initialized.push('projected');
+      }
     }
 
     @Component({
@@ -1472,7 +1571,9 @@ describe('onInit', () => {
       template: `<ng-content></ng-content>`,
     })
     class Comp {
-      ngOnInit() { initialized.push('comp'); }
+      ngOnInit() {
+        initialized.push('comp');
+      }
     }
 
     @Component({
@@ -1480,10 +1581,12 @@ describe('onInit', () => {
         <comp>
           <projected></projected>
         </comp>
-      `
+      `,
     })
     class App {
-      ngOnInit() { initialized.push('app'); }
+      ngOnInit() {
+        initialized.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -1494,7 +1597,6 @@ describe('onInit', () => {
 
     expect(initialized).toEqual(['app', 'comp', 'projected']);
   });
-
 
   it('should call onInit in host and its content children before next host', () => {
     const initialized: string[] = [];
@@ -1507,7 +1609,9 @@ describe('onInit', () => {
       @Input()
       name = '';
 
-      ngOnInit() { initialized.push('projected ' + this.name); }
+      ngOnInit() {
+        initialized.push('projected ' + this.name);
+      }
     }
 
     @Component({
@@ -1518,7 +1622,9 @@ describe('onInit', () => {
       @Input()
       name = '';
 
-      ngOnInit() { initialized.push('comp ' + this.name); }
+      ngOnInit() {
+        initialized.push('comp ' + this.name);
+      }
     }
 
     @Component({
@@ -1529,10 +1635,12 @@ describe('onInit', () => {
         <comp name="2">
           <projected name="2"></projected>
         </comp>
-      `
+      `,
     })
     class App {
-      ngOnInit() { initialized.push('app'); }
+      ngOnInit() {
+        initialized.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -1554,7 +1662,9 @@ describe('onInit', () => {
       @Input('dir-name')
       name = '';
 
-      ngOnInit() { initialized.push('dir ' + this.name); }
+      ngOnInit() {
+        initialized.push('dir ' + this.name);
+      }
     }
 
     @Component({
@@ -1565,17 +1675,21 @@ describe('onInit', () => {
       @Input()
       name = '';
 
-      ngOnInit() { initialized.push('comp ' + this.name); }
+      ngOnInit() {
+        initialized.push('comp ' + this.name);
+      }
     }
 
     @Component({
       template: `
         <comp name="1" dir dir-name="1"></comp>
         <comp name="2" dir dir-name="2"></comp>
-      `
+      `,
     })
     class App {
-      ngOnInit() { initialized.push('app'); }
+      ngOnInit() {
+        initialized.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -1588,7 +1702,6 @@ describe('onInit', () => {
   });
 
   it('should be called on multiple directives in injection order', () => {
-
     const events: any[] = [];
 
     @Directive({
@@ -1598,7 +1711,9 @@ describe('onInit', () => {
       @Input()
       dir = '';
 
-      ngOnInit() { events.push('dir'); }
+      ngOnInit() {
+        events.push('dir');
+      }
     }
 
     @Directive({
@@ -1610,7 +1725,9 @@ describe('onInit', () => {
 
       constructor(public dir: Dir) {}
 
-      ngOnInit() { events.push('injectionDir'); }
+      ngOnInit() {
+        events.push('injectionDir');
+      }
     }
 
     @Component({
@@ -1619,7 +1736,9 @@ describe('onInit', () => {
     class App {
       val = 'a';
 
-      ngOnInit() { events.push('app'); }
+      ngOnInit() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -1641,7 +1760,9 @@ describe('onInit', () => {
       @Input('dir-name')
       name = '';
 
-      ngOnInit() { initialized.push('dir ' + this.name); }
+      ngOnInit() {
+        initialized.push('dir ' + this.name);
+      }
     }
 
     @Component({
@@ -1654,17 +1775,21 @@ describe('onInit', () => {
 
       constructor(public dir: Dir) {}
 
-      ngOnInit() { initialized.push('comp ' + this.name); }
+      ngOnInit() {
+        initialized.push('comp ' + this.name);
+      }
     }
 
     @Component({
       template: `
         <comp name="1" dir dir-name="1"></comp>
         <comp name="2" dir dir-name="2"></comp>
-      `
+      `,
     })
     class App {
-      ngOnInit() { initialized.push('app'); }
+      ngOnInit() {
+        initialized.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -1686,17 +1811,21 @@ describe('onInit', () => {
       @Input('dir-name')
       name = '';
 
-      ngOnInit() { initialized.push('dir ' + this.name); }
+      ngOnInit() {
+        initialized.push('dir ' + this.name);
+      }
     }
 
     @Component({
       template: `
         <p name="1" dir dir-name="1"></p>
         <p name="2" dir dir-name="2"></p>
-      `
+      `,
     })
     class App {
-      ngOnInit() { initialized.push('app'); }
+      ngOnInit() {
+        initialized.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -1707,7 +1836,6 @@ describe('onInit', () => {
 
     expect(initialized).toEqual(['app', 'dir 1', 'dir 2']);
   });
-
 
   it('should call onInit properly in for loop', () => {
     const initialized: string[] = [];
@@ -1720,7 +1848,9 @@ describe('onInit', () => {
       @Input()
       name = '';
 
-      ngOnInit() { initialized.push('comp ' + this.name); }
+      ngOnInit() {
+        initialized.push('comp ' + this.name);
+      }
     }
 
     @Component({
@@ -1728,7 +1858,7 @@ describe('onInit', () => {
         <comp name="0"></comp>
         <comp *ngFor="let number of numbers" [name]="number"></comp>
         <comp name="1"></comp>
-      `
+      `,
     })
     class App {
       numbers = [2, 3, 4, 5, 6];
@@ -1742,7 +1872,13 @@ describe('onInit', () => {
     fixture.detectChanges();
 
     expect(initialized).toEqual([
-      'comp 0', 'comp 1', 'comp 2', 'comp 3', 'comp 4', 'comp 5', 'comp 6'
+      'comp 0',
+      'comp 1',
+      'comp 2',
+      'comp 3',
+      'comp 4',
+      'comp 5',
+      'comp 6',
     ]);
   });
 
@@ -1757,7 +1893,9 @@ describe('onInit', () => {
       @Input()
       name = '';
 
-      ngOnInit() { initialized.push('child of parent ' + this.name); }
+      ngOnInit() {
+        initialized.push('child of parent ' + this.name);
+      }
     }
 
     @Component({selector: 'parent', template: '<child [name]="name"></child>'})
@@ -1765,7 +1903,9 @@ describe('onInit', () => {
       @Input()
       name = '';
 
-      ngOnInit() { initialized.push('parent ' + this.name); }
+      ngOnInit() {
+        initialized.push('parent ' + this.name);
+      }
     }
 
     @Component({
@@ -1773,7 +1913,7 @@ describe('onInit', () => {
         <parent name="0"></parent>
         <parent *ngFor="let number of numbers" [name]="number"></parent>
         <parent name="1"></parent>
-      `
+      `,
     })
     class App {
       numbers = [2, 3, 4, 5, 6];
@@ -1816,7 +1956,9 @@ describe('doCheck', () => {
 
     @Component({template: ``})
     class App {
-      ngDoCheck() { doCheckCalled++; }
+      ngDoCheck() {
+        doCheckCalled++;
+      }
     }
 
     TestBed.configureTestingModule({
@@ -1840,7 +1982,9 @@ describe('doCheck', () => {
       template: `<child></child>`,
     })
     class Parent {
-      ngDoCheck() { doChecks.push('parent'); }
+      ngDoCheck() {
+        doChecks.push('parent');
+      }
     }
 
     @Component({
@@ -1848,12 +1992,16 @@ describe('doCheck', () => {
       template: ``,
     })
     class Child {
-      ngDoCheck() { doChecks.push('child'); }
+      ngDoCheck() {
+        doChecks.push('child');
+      }
     }
 
     @Component({template: `<parent></parent>`})
     class App {
-      ngDoCheck() { doChecks.push('app'); }
+      ngDoCheck() {
+        doChecks.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -1869,9 +2017,13 @@ describe('doCheck', () => {
     const events: string[] = [];
     @Component({template: ``})
     class App {
-      ngOnInit() { events.push('onInit'); }
+      ngOnInit() {
+        events.push('onInit');
+      }
 
-      ngDoCheck() { events.push('doCheck'); }
+      ngDoCheck() {
+        events.push('doCheck');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -1892,7 +2044,9 @@ describe('doCheck', () => {
       @Input('dir')
       name = '';
 
-      ngDoCheck() { doChecks.push('dir ' + this.name); }
+      ngDoCheck() {
+        doChecks.push('dir ' + this.name);
+      }
     }
 
     @Component({
@@ -1903,17 +2057,21 @@ describe('doCheck', () => {
       @Input()
       name = '';
 
-      ngDoCheck() { doChecks.push('comp ' + this.name); }
+      ngDoCheck() {
+        doChecks.push('comp ' + this.name);
+      }
     }
 
     @Component({
       template: `
-      <comp name="1" dir="1"></comp>
-      <comp name="2" dir="2"></comp>
-    `
+        <comp name="1" dir="1"></comp>
+        <comp name="2" dir="2"></comp>
+      `,
     })
     class App {
-      ngDoCheck() { doChecks.push('app'); }
+      ngDoCheck() {
+        doChecks.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -1934,7 +2092,9 @@ describe('doCheck', () => {
       @Input('dir')
       name = '';
 
-      ngDoCheck() { doChecks.push('dir ' + this.name); }
+      ngDoCheck() {
+        doChecks.push('dir ' + this.name);
+      }
     }
 
     @Component({
@@ -1947,17 +2107,21 @@ describe('doCheck', () => {
 
       constructor(public dir: Dir) {}
 
-      ngDoCheck() { doChecks.push('comp ' + this.name); }
+      ngDoCheck() {
+        doChecks.push('comp ' + this.name);
+      }
     }
 
     @Component({
       template: `
-      <comp name="1" dir="1"></comp>
-      <comp name="2" dir="2"></comp>
-    `
+        <comp name="1" dir="1"></comp>
+        <comp name="2" dir="2"></comp>
+      `,
     })
     class App {
-      ngDoCheck() { doChecks.push('app'); }
+      ngDoCheck() {
+        doChecks.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -1970,7 +2134,6 @@ describe('doCheck', () => {
   });
 
   it('should be called on multiple directives in injection order', () => {
-
     const events: any[] = [];
 
     @Directive({
@@ -1980,7 +2143,9 @@ describe('doCheck', () => {
       @Input()
       dir = '';
 
-      ngDoCheck() { events.push('dir'); }
+      ngDoCheck() {
+        events.push('dir');
+      }
     }
 
     @Directive({
@@ -1992,7 +2157,9 @@ describe('doCheck', () => {
 
       constructor(public dir: Dir) {}
 
-      ngDoCheck() { events.push('injectionDir'); }
+      ngDoCheck() {
+        events.push('injectionDir');
+      }
     }
 
     @Component({
@@ -2001,7 +2168,9 @@ describe('doCheck', () => {
     class App {
       val = 'a';
 
-      ngDoCheck() { events.push('app'); }
+      ngDoCheck() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2023,17 +2192,21 @@ describe('doCheck', () => {
       @Input('dir')
       name = '';
 
-      ngDoCheck() { doChecks.push('dir ' + this.name); }
+      ngDoCheck() {
+        doChecks.push('dir ' + this.name);
+      }
     }
 
     @Component({
       template: `
         <p dir="1"></p>
         <p dir="2"></p>
-      `
+      `,
     })
     class App {
-      ngDoCheck() { doChecks.push('app'); }
+      ngDoCheck() {
+        doChecks.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2055,11 +2228,12 @@ describe('afterContentinit', () => {
       template: `<p>test</p>`,
     })
     class Comp {
-      ngAfterContentInit() { afterContentInitCalls++; }
+      ngAfterContentInit() {
+        afterContentInitCalls++;
+      }
     }
     @Component({template: `<comp></comp>`})
-    class App {
-    }
+    class App {}
 
     TestBed.configureTestingModule({
       declarations: [App, Comp],
@@ -2079,7 +2253,9 @@ describe('afterContentinit', () => {
 
     @Component({template: `<p>test</p>`})
     class App {
-      ngAfterContentInit() { afterContentInitCalls++; }
+      ngAfterContentInit() {
+        afterContentInitCalls++;
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2103,14 +2279,18 @@ describe('afterContentinit', () => {
       template: `<p>test</p>`,
     })
     class Comp {
-      ngAfterContentInit() { events.push('comp afterContentInit'); }
+      ngAfterContentInit() {
+        events.push('comp afterContentInit');
+      }
     }
 
     @Component({template: `<comp *ngIf="show"></comp>`})
     class App {
       show = true;
 
-      ngAfterContentInit() { events.push('app afterContentInit'); }
+      ngAfterContentInit() {
+        events.push('app afterContentInit');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2130,9 +2310,11 @@ describe('afterContentinit', () => {
     fixture.componentInstance.show = true;
     fixture.detectChanges();
 
-
-    expect(events).toEqual(
-        ['app afterContentInit', 'comp afterContentInit', 'comp afterContentInit']);
+    expect(events).toEqual([
+      'app afterContentInit',
+      'comp afterContentInit',
+      'comp afterContentInit',
+    ]);
   });
 
   it('should be called in parents before children', () => {
@@ -2146,7 +2328,9 @@ describe('afterContentinit', () => {
       @Input()
       name = '';
 
-      ngAfterContentInit() { events.push('parent ' + this.name); }
+      ngAfterContentInit() {
+        events.push('parent ' + this.name);
+      }
     }
 
     @Component({
@@ -2157,17 +2341,21 @@ describe('afterContentinit', () => {
       @Input()
       name = '';
 
-      ngAfterContentInit() { events.push('child of parent ' + this.name); }
+      ngAfterContentInit() {
+        events.push('child of parent ' + this.name);
+      }
     }
 
     @Component({
       template: `
-      <parent name="1"></parent>
-      <parent name="2"></parent>
-      `
+        <parent name="1"></parent>
+        <parent name="2"></parent>
+      `,
     })
     class App {
-      ngAfterContentInit() { events.push('app'); }
+      ngAfterContentInit() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2176,8 +2364,13 @@ describe('afterContentinit', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    expect(events).toEqual(
-        ['app', 'parent 1', 'parent 2', 'child of parent 1', 'child of parent 2']);
+    expect(events).toEqual([
+      'app',
+      'parent 1',
+      'parent 2',
+      'child of parent 1',
+      'child of parent 2',
+    ]);
   });
 
   it('should be called in projected components before their hosts', () => {
@@ -2191,7 +2384,9 @@ describe('afterContentinit', () => {
       @Input()
       name = '';
 
-      ngAfterContentInit() { events.push('projected child ' + this.name); }
+      ngAfterContentInit() {
+        events.push('projected child ' + this.name);
+      }
     }
 
     @Component({
@@ -2202,18 +2397,22 @@ describe('afterContentinit', () => {
       @Input()
       name = '';
 
-      ngAfterContentInit() { events.push('comp ' + this.name); }
+      ngAfterContentInit() {
+        events.push('comp ' + this.name);
+      }
     }
 
     @Component({
       selector: 'projected',
-      template: `<projected-child [name]=name></projected-child>`,
+      template: `<projected-child [name]="name"></projected-child>`,
     })
     class Projected {
       @Input()
       name = '';
 
-      ngAfterContentInit() { events.push('projected ' + this.name); }
+      ngAfterContentInit() {
+        events.push('projected ' + this.name);
+      }
     }
 
     @Component({
@@ -2226,10 +2425,12 @@ describe('afterContentinit', () => {
           <projected name="3"></projected>
           <projected name="4"></projected>
         </comp>
-      `
+      `,
     })
     class App {
-      ngAfterContentInit() { events.push('app'); }
+      ngAfterContentInit() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2270,7 +2471,9 @@ describe('afterContentinit', () => {
       @Input()
       name = '';
 
-      ngAfterContentInit() { events.push('comp ' + this.name); }
+      ngAfterContentInit() {
+        events.push('comp ' + this.name);
+      }
     }
 
     @Component({
@@ -2278,12 +2481,14 @@ describe('afterContentinit', () => {
         <comp name="4"></comp>
         <comp *ngFor="let number of numbers" [name]="number"></comp>
         <comp name="5"></comp>
-      `
+      `,
     })
     class App {
       numbers = [0, 1, 2, 3];
 
-      ngAfterContentInit() { events.push('app'); }
+      ngAfterContentInit() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2301,13 +2506,15 @@ describe('afterContentinit', () => {
 
     @Component({
       selector: 'parent',
-      template: `<child [name]=name></child>`,
+      template: `<child [name]="name"></child>`,
     })
     class Parent {
       @Input()
       name = '';
 
-      ngAfterContentInit() { events.push('parent ' + this.name); }
+      ngAfterContentInit() {
+        events.push('parent ' + this.name);
+      }
     }
 
     @Component({
@@ -2318,7 +2525,9 @@ describe('afterContentinit', () => {
       @Input()
       name = '';
 
-      ngAfterContentInit() { events.push('child of parent ' + this.name); }
+      ngAfterContentInit() {
+        events.push('child of parent ' + this.name);
+      }
     }
 
     @Component({
@@ -2326,11 +2535,13 @@ describe('afterContentinit', () => {
         <parent name="4"></parent>
         <parent *ngFor="let number of numbers" [name]="number"></parent>
         <parent name="5"></parent>
-      `
+      `,
     })
     class App {
       numbers = [0, 1, 2, 3];
-      ngAfterContentInit() { events.push('app'); }
+      ngAfterContentInit() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2369,7 +2580,9 @@ describe('afterContentinit', () => {
       @Input('dir')
       name = '';
 
-      ngAfterContentInit() { events.push('dir ' + this.name); }
+      ngAfterContentInit() {
+        events.push('dir ' + this.name);
+      }
     }
 
     @Component({
@@ -2380,17 +2593,21 @@ describe('afterContentinit', () => {
       @Input()
       name = '';
 
-      ngAfterContentInit() { events.push('comp ' + this.name); }
+      ngAfterContentInit() {
+        events.push('comp ' + this.name);
+      }
     }
 
     @Component({
       template: `
         <comp name="1" dir="1"></comp>
         <comp name="2" dir="2"></comp>
-      `
+      `,
     })
     class App {
-      ngAfterContentInit() { events.push('app'); }
+      ngAfterContentInit() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2399,13 +2616,7 @@ describe('afterContentinit', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    expect(events).toEqual([
-      'app',
-      'comp 1',
-      'dir 1',
-      'comp 2',
-      'dir 2',
-    ]);
+    expect(events).toEqual(['app', 'comp 1', 'dir 1', 'comp 2', 'dir 2']);
   });
 });
 
@@ -2418,16 +2629,24 @@ describe('afterContentChecked', () => {
       template: `<p>test</p>`,
     })
     class Comp {
-      ngAfterContentInit() { events.push('comp afterContentInit'); }
+      ngAfterContentInit() {
+        events.push('comp afterContentInit');
+      }
 
-      ngAfterContentChecked() { events.push('comp afterContentChecked'); }
+      ngAfterContentChecked() {
+        events.push('comp afterContentChecked');
+      }
     }
 
     @Component({template: `<comp></comp>`})
     class App {
-      ngAfterContentInit() { events.push('app afterContentInit'); }
+      ngAfterContentInit() {
+        events.push('app afterContentInit');
+      }
 
-      ngAfterContentChecked() { events.push('app afterContentChecked'); }
+      ngAfterContentChecked() {
+        events.push('app afterContentChecked');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2454,12 +2673,13 @@ describe('afterViewInit', () => {
       template: `<p>test</p>`,
     })
     class Comp {
-      ngAfterViewInit() { afterViewInitCalls++; }
+      ngAfterViewInit() {
+        afterViewInitCalls++;
+      }
     }
 
     @Component({template: `<comp></comp>`})
-    class App {
-    }
+    class App {}
 
     TestBed.configureTestingModule({
       declarations: [App, Comp],
@@ -2472,7 +2692,6 @@ describe('afterViewInit', () => {
     fixture.detectChanges();
 
     expect(afterViewInitCalls).toBe(1);
-
   });
 
   it('should be called on root component in creation mode', () => {
@@ -2480,7 +2699,9 @@ describe('afterViewInit', () => {
 
     @Component({template: `<p>test</p>`})
     class App {
-      ngAfterViewInit() { afterViewInitCalls++; }
+      ngAfterViewInit() {
+        afterViewInitCalls++;
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2504,7 +2725,9 @@ describe('afterViewInit', () => {
       template: `<p>test</p>`,
     })
     class Comp {
-      ngAfterViewInit() { events.push('comp'); }
+      ngAfterViewInit() {
+        events.push('comp');
+      }
     }
 
     @Component({
@@ -2513,7 +2736,9 @@ describe('afterViewInit', () => {
     class App {
       show = true;
 
-      ngAfterViewInit() { events.push('app'); }
+      ngAfterViewInit() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2540,13 +2765,15 @@ describe('afterViewInit', () => {
 
     @Component({
       selector: 'parent',
-      template: `<child [name]=name></child>`,
+      template: `<child [name]="name"></child>`,
     })
     class Parent {
       @Input()
       name = '';
 
-      ngAfterViewInit() { events.push('parent ' + this.name); }
+      ngAfterViewInit() {
+        events.push('parent ' + this.name);
+      }
     }
 
     @Component({
@@ -2557,17 +2784,21 @@ describe('afterViewInit', () => {
       @Input()
       name = '';
 
-      ngAfterViewInit() { events.push('child of parent ' + this.name); }
+      ngAfterViewInit() {
+        events.push('child of parent ' + this.name);
+      }
     }
 
     @Component({
       template: `
         <parent name="1"></parent>
         <parent name="2"></parent>
-      `
+      `,
     })
     class App {
-      ngAfterViewInit() { events.push('app'); }
+      ngAfterViewInit() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2596,7 +2827,9 @@ describe('afterViewInit', () => {
       @Input()
       name = '';
 
-      ngAfterViewInit() { events.push('projected ' + this.name); }
+      ngAfterViewInit() {
+        events.push('projected ' + this.name);
+      }
     }
 
     @Component({
@@ -2607,17 +2840,21 @@ describe('afterViewInit', () => {
       @Input()
       name = '';
 
-      ngAfterViewInit() { events.push('comp ' + this.name); }
+      ngAfterViewInit() {
+        events.push('comp ' + this.name);
+      }
     }
 
     @Component({
       template: `
         <comp name="1"><projected name="1"></projected></comp>
         <comp name="2"><projected name="2"></projected></comp>
-      `
+      `,
     })
     class App {
-      ngAfterViewInit() { events.push('app'); }
+      ngAfterViewInit() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2626,14 +2863,7 @@ describe('afterViewInit', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-
-    expect(events).toEqual([
-      'projected 1',
-      'comp 1',
-      'projected 2',
-      'comp 2',
-      'app',
-    ]);
+    expect(events).toEqual(['projected 1', 'comp 1', 'projected 2', 'comp 2', 'app']);
   });
 
   it('should call afterViewInit in content children and host before next host', () => {
@@ -2647,7 +2877,9 @@ describe('afterViewInit', () => {
       @Input()
       name = '';
 
-      ngAfterViewInit() { events.push('child of projected ' + this.name); }
+      ngAfterViewInit() {
+        events.push('child of projected ' + this.name);
+      }
     }
 
     @Component({
@@ -2658,7 +2890,9 @@ describe('afterViewInit', () => {
       @Input()
       name = '';
 
-      ngAfterViewInit() { events.push('projected ' + this.name); }
+      ngAfterViewInit() {
+        events.push('projected ' + this.name);
+      }
     }
 
     @Component({
@@ -2669,17 +2903,21 @@ describe('afterViewInit', () => {
       @Input()
       name = '';
 
-      ngAfterViewInit() { events.push('comp ' + this.name); }
+      ngAfterViewInit() {
+        events.push('comp ' + this.name);
+      }
     }
 
     @Component({
       template: `
         <comp name="1"><projected name="1"></projected></comp>
         <comp name="2"><projected name="2"></projected></comp>
-      `
+      `,
     })
     class App {
-      ngAfterViewInit() { events.push('app'); }
+      ngAfterViewInit() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2710,7 +2948,9 @@ describe('afterViewInit', () => {
       @Input()
       name = '';
 
-      ngAfterViewInit() { events.push('comp ' + this.name); }
+      ngAfterViewInit() {
+        events.push('comp ' + this.name);
+      }
     }
 
     @Component({
@@ -2718,12 +2958,14 @@ describe('afterViewInit', () => {
         <comp name="4"></comp>
         <comp *ngFor="let number of numbers" [name]="number"></comp>
         <comp name="5"></comp>
-      `
+      `,
     })
     class App {
       numbers = [0, 1, 2, 3];
 
-      ngAfterViewInit() { events.push('app'); }
+      ngAfterViewInit() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2733,15 +2975,7 @@ describe('afterViewInit', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    expect(events).toEqual([
-      'comp 0',
-      'comp 1',
-      'comp 2',
-      'comp 3',
-      'comp 4',
-      'comp 5',
-      'app',
-    ]);
+    expect(events).toEqual(['comp 0', 'comp 1', 'comp 2', 'comp 3', 'comp 4', 'comp 5', 'app']);
   });
 
   it('should be called in correct order with for loops with children', () => {
@@ -2755,7 +2989,9 @@ describe('afterViewInit', () => {
       @Input()
       name = '';
 
-      ngAfterViewInit() { events.push('child of parent ' + this.name); }
+      ngAfterViewInit() {
+        events.push('child of parent ' + this.name);
+      }
     }
     @Component({
       selector: 'parent',
@@ -2765,7 +3001,9 @@ describe('afterViewInit', () => {
       @Input()
       name = '';
 
-      ngAfterViewInit() { events.push('parent ' + this.name); }
+      ngAfterViewInit() {
+        events.push('parent ' + this.name);
+      }
     }
 
     @Component({
@@ -2773,12 +3011,14 @@ describe('afterViewInit', () => {
         <parent name="4"></parent>
         <parent *ngFor="let number of numbers" [name]="number"></parent>
         <parent name="5"></parent>
-      `
+      `,
     })
     class App {
       numbers = [0, 1, 2, 3];
 
-      ngAfterViewInit() { events.push('app'); }
+      ngAfterViewInit() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2815,7 +3055,9 @@ describe('afterViewInit', () => {
       @Input('dir')
       name = '';
 
-      ngAfterViewInit() { events.push('dir ' + this.name); }
+      ngAfterViewInit() {
+        events.push('dir ' + this.name);
+      }
     }
 
     @Component({
@@ -2826,17 +3068,21 @@ describe('afterViewInit', () => {
       @Input()
       name = '';
 
-      ngAfterViewInit() { events.push('comp ' + this.name); }
+      ngAfterViewInit() {
+        events.push('comp ' + this.name);
+      }
     }
 
     @Component({
       template: `
         <comp name="1" dir="1"></comp>
         <comp name="2" dir="2"></comp>
-      `
+      `,
     })
     class App {
-      ngAfterViewInit() { events.push('app'); }
+      ngAfterViewInit() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2845,13 +3091,7 @@ describe('afterViewInit', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    expect(events).toEqual([
-      'comp 1',
-      'dir 1',
-      'comp 2',
-      'dir 2',
-      'app',
-    ]);
+    expect(events).toEqual(['comp 1', 'dir 1', 'comp 2', 'dir 2', 'app']);
   });
 
   it('should be called on directives on an element', () => {
@@ -2864,17 +3104,21 @@ describe('afterViewInit', () => {
       @Input('dir')
       name = '';
 
-      ngAfterViewInit() { events.push('dir ' + this.name); }
+      ngAfterViewInit() {
+        events.push('dir ' + this.name);
+      }
     }
 
     @Component({
       template: `
         <div dir="1"></div>
         <div dir="2"></div>
-      `
+      `,
     })
     class App {
-      ngAfterViewInit() { events.push('app'); }
+      ngAfterViewInit() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2883,11 +3127,7 @@ describe('afterViewInit', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    expect(events).toEqual([
-      'dir 1',
-      'dir 2',
-      'app',
-    ]);
+    expect(events).toEqual(['dir 1', 'dir 2', 'app']);
   });
 });
 
@@ -2900,12 +3140,13 @@ describe('afterViewChecked', () => {
       template: `<p>test</p>`,
     })
     class Comp {
-      ngAfterViewChecked() { afterViewCheckedCalls++; }
+      ngAfterViewChecked() {
+        afterViewCheckedCalls++;
+      }
     }
 
     @Component({template: `<comp></comp>`})
-    class App {
-    }
+    class App {}
 
     TestBed.configureTestingModule({
       declarations: [App, Comp],
@@ -2927,7 +3168,9 @@ describe('afterViewChecked', () => {
 
     @Component({template: `<p>test</p>`})
     class App {
-      ngAfterViewChecked() { afterViewCheckedCalls++; }
+      ngAfterViewChecked() {
+        afterViewCheckedCalls++;
+      }
     }
 
     TestBed.configureTestingModule({
@@ -2950,12 +3193,14 @@ describe('afterViewChecked', () => {
 
     @Component({
       selector: 'comp',
-      template: `<p>{{value}}</p>`,
+      template: `<p>{{ value }}</p>`,
     })
     class Comp {
       @Input()
       value = '';
-      ngAfterViewChecked() { afterViewCheckedCalls++; }
+      ngAfterViewChecked() {
+        afterViewCheckedCalls++;
+      }
     }
 
     @Component({template: `<comp [value]="value"></comp>`})
@@ -2986,7 +3231,9 @@ describe('afterViewChecked', () => {
       @Input()
       name = '';
 
-      ngAfterViewChecked() { events.push('child of parent ' + this.name); }
+      ngAfterViewChecked() {
+        events.push('child of parent ' + this.name);
+      }
     }
 
     @Component({
@@ -2997,20 +3244,24 @@ describe('afterViewChecked', () => {
       @Input()
       name = '';
 
-      ngAfterViewChecked() { events.push('parent ' + this.name); }
+      ngAfterViewChecked() {
+        events.push('parent ' + this.name);
+      }
     }
 
     @Component({
       template: `
-      <parent name="4"></parent>
-      <parent *ngFor="let number of numbers" [name]="number"></parent>
-      <parent name="5"></parent>
-      `
+        <parent name="4"></parent>
+        <parent *ngFor="let number of numbers" [name]="number"></parent>
+        <parent name="5"></parent>
+      `,
     })
     class App {
       numbers = [0, 1, 2, 3];
 
-      ngAfterViewChecked() { events.push('app'); }
+      ngAfterViewChecked() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -3046,7 +3297,9 @@ describe('afterViewChecked', () => {
       @Input('dir')
       name = '';
 
-      ngAfterViewChecked() { events.push('dir ' + this.name); }
+      ngAfterViewChecked() {
+        events.push('dir ' + this.name);
+      }
     }
 
     @Component({
@@ -3057,17 +3310,21 @@ describe('afterViewChecked', () => {
       @Input()
       name = '';
 
-      ngAfterViewChecked() { events.push('comp ' + this.name); }
+      ngAfterViewChecked() {
+        events.push('comp ' + this.name);
+      }
     }
 
     @Component({
       template: `
-      <comp name="1" dir="1"></comp>
-      <comp name="2" dir="2"></comp>
-    `
+        <comp name="1" dir="1"></comp>
+        <comp name="2" dir="2"></comp>
+      `,
     })
     class App {
-      ngAfterViewChecked() { events.push('app'); }
+      ngAfterViewChecked() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -3076,13 +3333,7 @@ describe('afterViewChecked', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    expect(events).toEqual([
-      'comp 1',
-      'dir 1',
-      'comp 2',
-      'dir 2',
-      'app',
-    ]);
+    expect(events).toEqual(['comp 1', 'dir 1', 'comp 2', 'dir 2', 'app']);
   });
 
   it('should be called on directives on an element', () => {
@@ -3095,17 +3346,21 @@ describe('afterViewChecked', () => {
       @Input('dir')
       name = '';
 
-      ngAfterViewChecked() { events.push('dir ' + this.name); }
+      ngAfterViewChecked() {
+        events.push('dir ' + this.name);
+      }
     }
 
     @Component({
       template: `
-      <div dir="1"></div>
-      <div dir="2"></div>
-    `
+        <div dir="1"></div>
+        <div dir="2"></div>
+      `,
     })
     class App {
-      ngAfterViewChecked() { events.push('app'); }
+      ngAfterViewChecked() {
+        events.push('app');
+      }
     }
 
     TestBed.configureTestingModule({
@@ -3114,18 +3369,11 @@ describe('afterViewChecked', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    expect(events).toEqual([
-      'dir 1',
-      'dir 2',
-      'app',
-    ]);
+    expect(events).toEqual(['dir 1', 'dir 2', 'app']);
   });
-
 });
 
 describe('onDestroy', () => {
-
-
   it('should call destroy when view is removed', () => {
     let destroyCalled = 0;
 
@@ -3134,7 +3382,9 @@ describe('onDestroy', () => {
       template: `<p>test</p>`,
     })
     class Comp {
-      ngOnDestroy() { destroyCalled++; }
+      ngOnDestroy() {
+        destroyCalled++;
+      }
     }
 
     @Component({
@@ -3180,7 +3430,9 @@ describe('onDestroy', () => {
       @Input()
       name = '';
 
-      ngOnDestroy() { events.push('comp ' + this.name); }
+      ngOnDestroy() {
+        events.push('comp ' + this.name);
+      }
     }
 
     @Component({
@@ -3189,7 +3441,7 @@ describe('onDestroy', () => {
           <comp name="1"></comp>
           <comp name="2"></comp>
         </div>
-      `
+      `,
     })
     class App {
       show = true;
@@ -3221,7 +3473,9 @@ describe('onDestroy', () => {
       @Input()
       name = '';
 
-      ngOnDestroy() { events.push('child of parent ' + this.name); }
+      ngOnDestroy() {
+        events.push('child of parent ' + this.name);
+      }
     }
 
     @Component({
@@ -3231,7 +3485,9 @@ describe('onDestroy', () => {
     class Parent {
       @Input()
       name = '';
-      ngOnDestroy() { events.push('parent ' + this.name); }
+      ngOnDestroy() {
+        events.push('parent ' + this.name);
+      }
     }
 
     @Component({
@@ -3240,7 +3496,7 @@ describe('onDestroy', () => {
           <parent name="1"></parent>
           <parent name="2"></parent>
         </div>
-      `
+      `,
     })
     class App {
       show = true;
@@ -3258,12 +3514,7 @@ describe('onDestroy', () => {
     fixture.componentInstance.show = false;
     fixture.detectChanges();
 
-    expect(events).toEqual([
-      'child of parent 1',
-      'child of parent 2',
-      'parent 1',
-      'parent 2',
-    ]);
+    expect(events).toEqual(['child of parent 1', 'child of parent 2', 'parent 1', 'parent 2']);
   });
 
   it('should be called bottom up with children nested 2 levels deep', () => {
@@ -3277,7 +3528,9 @@ describe('onDestroy', () => {
       @Input()
       name = '';
 
-      ngOnDestroy() { events.push('child ' + this.name); }
+      ngOnDestroy() {
+        events.push('child ' + this.name);
+      }
     }
 
     @Component({
@@ -3287,7 +3540,9 @@ describe('onDestroy', () => {
     class Parent {
       @Input()
       name = '';
-      ngOnDestroy() { events.push('parent ' + this.name); }
+      ngOnDestroy() {
+        events.push('parent ' + this.name);
+      }
     }
 
     @Component({
@@ -3298,7 +3553,9 @@ describe('onDestroy', () => {
       @Input()
       name = '';
 
-      ngOnDestroy() { events.push('grandparent ' + this.name); }
+      ngOnDestroy() {
+        events.push('grandparent ' + this.name);
+      }
     }
     @Component({
       template: `
@@ -3306,7 +3563,7 @@ describe('onDestroy', () => {
           <grandparent name="1"></grandparent>
           <grandparent name="2"></grandparent>
         </div>
-      `
+      `,
     })
     class App {
       show = true;
@@ -3345,7 +3602,9 @@ describe('onDestroy', () => {
       @Input()
       name = '';
 
-      ngOnDestroy() { events.push('projected ' + this.name); }
+      ngOnDestroy() {
+        events.push('projected ' + this.name);
+      }
     }
 
     @Component({
@@ -3356,7 +3615,9 @@ describe('onDestroy', () => {
       @Input()
       name = '';
 
-      ngOnDestroy() { events.push('comp ' + this.name); }
+      ngOnDestroy() {
+        events.push('comp ' + this.name);
+      }
     }
 
     @Component({
@@ -3369,7 +3630,7 @@ describe('onDestroy', () => {
             <projected name="2"></projected>
           </comp>
         </div>
-      `
+      `,
     })
     class App {
       show = true;
@@ -3386,14 +3647,8 @@ describe('onDestroy', () => {
     fixture.componentInstance.show = false;
     fixture.detectChanges();
 
-    expect(events).toEqual([
-      'projected 1',
-      'comp 1',
-      'projected 2',
-      'comp 2',
-    ]);
+    expect(events).toEqual(['projected 1', 'comp 1', 'projected 2', 'comp 2']);
   });
-
 
   it('should be called in consistent order if views are removed and re-added', () => {
     const events: string[] = [];
@@ -3406,17 +3661,19 @@ describe('onDestroy', () => {
       @Input()
       name = '';
 
-      ngOnDestroy() { events.push('comp ' + this.name); }
+      ngOnDestroy() {
+        events.push('comp ' + this.name);
+      }
     }
 
     @Component({
       template: `
-      <div *ngIf="showAll">
-        <comp name="1"></comp>
-        <comp *ngIf="showMiddle" name="2"></comp>
-        <comp name="3"></comp>
-      </div>
-      `
+        <div *ngIf="showAll">
+          <comp name="1"></comp>
+          <comp *ngIf="showMiddle" name="2"></comp>
+          <comp name="3"></comp>
+        </div>
+      `,
     })
     class App {
       showAll = true;
@@ -3438,31 +3695,16 @@ describe('onDestroy', () => {
 
     fixture.componentInstance.showAll = false;
     fixture.detectChanges();
-    expect(events).toEqual([
-      'comp 2',
-      'comp 1',
-      'comp 3',
-    ]);
+    expect(events).toEqual(['comp 2', 'comp 1', 'comp 3']);
 
     fixture.componentInstance.showAll = true;
     fixture.componentInstance.showMiddle = true;
     fixture.detectChanges();
-    expect(events).toEqual([
-      'comp 2',
-      'comp 1',
-      'comp 3',
-    ]);
+    expect(events).toEqual(['comp 2', 'comp 1', 'comp 3']);
 
     fixture.componentInstance.showAll = false;
     fixture.detectChanges();
-    expect(events).toEqual([
-      'comp 2',
-      'comp 1',
-      'comp 3',
-      'comp 2',
-      'comp 1',
-      'comp 3',
-    ]);
+    expect(events).toEqual(['comp 2', 'comp 1', 'comp 3', 'comp 2', 'comp 1', 'comp 3']);
   });
 
   it('should be called on every iteration of a destroyed for loop', () => {
@@ -3476,7 +3718,9 @@ describe('onDestroy', () => {
       @Input()
       name = '';
 
-      ngOnDestroy() { events.push('comp ' + this.name); }
+      ngOnDestroy() {
+        events.push('comp ' + this.name);
+      }
     }
 
     @Component({
@@ -3484,7 +3728,7 @@ describe('onDestroy', () => {
         <div *ngIf="show">
           <comp *ngFor="let number of numbers" [name]="number"></comp>
         </div>
-      `
+      `,
     })
     class App {
       show = true;
@@ -3502,32 +3746,16 @@ describe('onDestroy', () => {
     fixture.componentInstance.show = false;
     fixture.detectChanges();
 
-    expect(events).toEqual([
-      'comp 0',
-      'comp 1',
-      'comp 2',
-      'comp 3',
-    ]);
+    expect(events).toEqual(['comp 0', 'comp 1', 'comp 2', 'comp 3']);
 
     fixture.componentInstance.show = true;
     fixture.detectChanges();
 
-    expect(events).toEqual([
-      'comp 0',
-      'comp 1',
-      'comp 2',
-      'comp 3',
-    ]);
+    expect(events).toEqual(['comp 0', 'comp 1', 'comp 2', 'comp 3']);
 
     fixture.componentInstance.numbers.splice(1, 1);
     fixture.detectChanges();
-    expect(events).toEqual([
-      'comp 0',
-      'comp 1',
-      'comp 2',
-      'comp 3',
-      'comp 1',
-    ]);
+    expect(events).toEqual(['comp 0', 'comp 1', 'comp 2', 'comp 3', 'comp 1']);
 
     fixture.componentInstance.show = false;
     fixture.detectChanges();
@@ -3551,7 +3779,9 @@ describe('onDestroy', () => {
       template: `<p>test</p>`,
     })
     class Comp {
-      ngOnDestroy() { events.push('comp'); }
+      ngOnDestroy() {
+        events.push('comp');
+      }
     }
     @Component({
       template: `
@@ -3560,7 +3790,7 @@ describe('onDestroy', () => {
           <comp></comp>
           <button (click)="handleClick2()">test 2</button>
         </div>
-      `
+      `,
     })
     class App {
       show = true;
@@ -3569,9 +3799,13 @@ describe('onDestroy', () => {
 
       clicksToButton2 = 0;
 
-      handleClick1() { this.clicksToButton1++; }
+      handleClick1() {
+        this.clicksToButton1++;
+      }
 
-      handleClick2() { this.clicksToButton2++; }
+      handleClick2() {
+        this.clicksToButton2++;
+      }
     }
 
     TestBed.configureTestingModule({
@@ -3581,7 +3815,7 @@ describe('onDestroy', () => {
     fixture.detectChanges();
 
     const buttons = fixture.debugElement.queryAll(By.css('button'));
-    buttons.forEach(button => button.nativeElement.click());
+    buttons.forEach((button) => button.nativeElement.click());
 
     expect(fixture.componentInstance.clicksToButton1).toBe(1);
     expect(fixture.componentInstance.clicksToButton2).toBe(1);
@@ -3590,7 +3824,7 @@ describe('onDestroy', () => {
     fixture.componentInstance.show = false;
     fixture.detectChanges();
 
-    buttons.forEach(button => button.nativeElement.click());
+    buttons.forEach((button) => button.nativeElement.click());
     expect(fixture.componentInstance.clicksToButton1).toBe(1);
     expect(fixture.componentInstance.clicksToButton2).toBe(1);
 
@@ -3599,12 +3833,11 @@ describe('onDestroy', () => {
 
   it('should not produce errors if change detection is triggered during ngOnDestroy', () => {
     @Component({selector: 'child', template: `<ng-content></ng-content>`})
-    class Child {
-    }
+    class Child {}
 
     @Component({selector: 'parent', template: `<ng-content></ng-content>`})
     class Parent {
-      @ContentChildren(Child, {descendants: true}) child !: QueryList<Child>;
+      @ContentChildren(Child, {descendants: true}) child!: QueryList<Child>;
     }
 
     @Component({
@@ -3616,16 +3849,18 @@ describe('onDestroy', () => {
           </parent>
         </ng-template>
         <div #container dir></div>
-      `
+      `,
     })
     class App {
       @ViewChild('container', {read: ViewContainerRef, static: true})
-      container !: ViewContainerRef;
+      container!: ViewContainerRef;
 
       @ViewChild('tpl', {read: TemplateRef, static: true})
-      tpl !: TemplateRef<any>;
+      tpl!: TemplateRef<any>;
 
-      ngOnInit() { this.container.createEmbeddedView(this.tpl); }
+      ngOnInit() {
+        this.container.createEmbeddedView(this.tpl);
+      }
     }
 
     @Directive({selector: '[dir]'})
@@ -3651,62 +3886,61 @@ describe('onDestroy', () => {
   });
 
   onlyInIvy(
-      'View Engine has the opposite behavior, where it calls destroy on the directives first, then the components')
-      .it('should be called on directives after component', () => {
-        const events: string[] = [];
+    'View Engine has the opposite behavior, where it calls destroy on the directives first, then the components'
+  ).it('should be called on directives after component', () => {
+    const events: string[] = [];
 
-        @Directive({
-          selector: '[dir]',
-        })
-        class Dir {
-          @Input('dir')
-          name = '';
+    @Directive({
+      selector: '[dir]',
+    })
+    class Dir {
+      @Input('dir')
+      name = '';
 
-          ngOnDestroy() { events.push('dir ' + this.name); }
-        }
+      ngOnDestroy() {
+        events.push('dir ' + this.name);
+      }
+    }
 
-        @Component({
-          selector: 'comp',
-          template: `<p>test</p>`,
-        })
-        class Comp {
-          @Input()
-          name = '';
+    @Component({
+      selector: 'comp',
+      template: `<p>test</p>`,
+    })
+    class Comp {
+      @Input()
+      name = '';
 
-          ngOnDestroy() { events.push('comp ' + this.name); }
-        }
+      ngOnDestroy() {
+        events.push('comp ' + this.name);
+      }
+    }
 
-        @Component({
-          template: `
+    @Component({
+      template: `
         <div *ngIf="show">
           <comp name="1" dir="1"></comp>
           <comp name="2" dir="2"></comp>
         </div>
-      `
-        })
-        class App {
-          show = true;
-        }
+      `,
+    })
+    class App {
+      show = true;
+    }
 
-        TestBed.configureTestingModule({
-          declarations: [App, Dir, Comp],
-          imports: [CommonModule],
-        });
-        const fixture = TestBed.createComponent(App);
-        fixture.detectChanges();
+    TestBed.configureTestingModule({
+      declarations: [App, Dir, Comp],
+      imports: [CommonModule],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
 
-        expect(events).toEqual([]);
+    expect(events).toEqual([]);
 
-        fixture.componentInstance.show = false;
-        fixture.detectChanges();
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
 
-        expect(events).toEqual([
-          'comp 1',
-          'dir 1',
-          'comp 2',
-          'dir 2',
-        ]);
-      });
+    expect(events).toEqual(['comp 1', 'dir 1', 'comp 2', 'dir 2']);
+  });
 
   it('should be called on directives on an element', () => {
     const events: string[] = [];
@@ -3715,7 +3949,9 @@ describe('onDestroy', () => {
       selector: '[dir]',
     })
     class Dir {
-      ngOnDestroy() { events.push('dir'); }
+      ngOnDestroy() {
+        events.push('dir');
+      }
     }
 
     @Component({template: `<p *ngIf="show" dir></p>`})
@@ -3742,11 +3978,11 @@ describe('onDestroy', () => {
 describe('hook order', () => {
   let events: string[] = [];
 
-  beforeEach(() => events = []);
+  beforeEach(() => (events = []));
 
   @Component({
     selector: 'comp',
-    template: `{{value}}<div><ng-content></ng-content></div>`,
+    template: `{{ value }}<div><ng-content></ng-content></div>`,
   })
   class Comp {
     @Input()
@@ -3755,30 +3991,46 @@ describe('hook order', () => {
     @Input()
     name = '';
 
-    ngOnInit() { events.push(`${this.name} onInit`); }
+    ngOnInit() {
+      events.push(`${this.name} onInit`);
+    }
 
-    ngDoCheck() { events.push(`${this.name} doCheck`); }
+    ngDoCheck() {
+      events.push(`${this.name} doCheck`);
+    }
 
-    ngOnChanges() { events.push(`${this.name} onChanges`); }
+    ngOnChanges() {
+      events.push(`${this.name} onChanges`);
+    }
 
-    ngAfterContentInit() { events.push(`${this.name} afterContentInit`); }
+    ngAfterContentInit() {
+      events.push(`${this.name} afterContentInit`);
+    }
 
-    ngAfterContentChecked() { events.push(`${this.name} afterContentChecked`); }
+    ngAfterContentChecked() {
+      events.push(`${this.name} afterContentChecked`);
+    }
 
-    ngAfterViewInit() { events.push(`${this.name} afterViewInit`); }
+    ngAfterViewInit() {
+      events.push(`${this.name} afterViewInit`);
+    }
 
-    ngAfterViewChecked() { events.push(`${this.name} afterViewChecked`); }
+    ngAfterViewChecked() {
+      events.push(`${this.name} afterViewChecked`);
+    }
 
-    ngOnDestroy() { events.push(`${this.name} onDestroy`); }
+    ngOnDestroy() {
+      events.push(`${this.name} onDestroy`);
+    }
   }
 
   @Component({
     selector: 'parent',
-    template:
-        `<comp [name]="'child of ' + this.name" [value]="value"><ng-content></ng-content></comp>`,
+    template: `<comp [name]="'child of ' + this.name" [value]="value"
+      ><ng-content></ng-content
+    ></comp>`,
   })
-  class Parent extends Comp {
-  }
+  class Parent extends Comp {}
 
   it('should call all hooks in correct order', () => {
     @Component({template: `<comp *ngIf="show" name="comp" [value]="value"></comp>`})
@@ -3807,11 +4059,7 @@ describe('hook order', () => {
 
     events.length = 0;
     fixture.detectChanges();
-    expect(events).toEqual([
-      'comp doCheck',
-      'comp afterContentChecked',
-      'comp afterViewChecked',
-    ]);
+    expect(events).toEqual(['comp doCheck', 'comp afterContentChecked', 'comp afterViewChecked']);
 
     events.length = 0;
     fixture.componentInstance.value = 'b';
@@ -3826,9 +4074,7 @@ describe('hook order', () => {
     events.length = 0;
     fixture.componentInstance.show = false;
     fixture.detectChanges();
-    expect(events).toEqual([
-      'comp onDestroy',
-    ]);
+    expect(events).toEqual(['comp onDestroy']);
   });
 
   it('should call all hooks in correct order with children', () => {
@@ -3838,7 +4084,7 @@ describe('hook order', () => {
           <parent name="parent1" [value]="value"></parent>
           <parent name="parent2" [value]="value"></parent>
         </div>
-      `
+      `,
     })
     class App {
       value = 'a';
@@ -3931,7 +4177,7 @@ describe('hook order', () => {
             <comp name="projected2" [value]="value"></comp>
           </parent>
         </div>
-      `
+      `,
     })
     class App {
       value = 'a';
@@ -4044,13 +4290,15 @@ describe('non-regression', () => {
       selector: '[onDestroyDir]',
     })
     class OnDestroyDir {
-      ngOnDestroy() { destroyed = true; }
+      ngOnDestroy() {
+        destroyed = true;
+      }
     }
 
     @Component({
       template: `<ng-template [ngIf]="show">
         <ng-template onDestroyDir>content</ng-template>
-      </ng-template>`
+      </ng-template>`,
     })
     class App {
       show = true;

@@ -6,10 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {beforeEach, beforeEachProviders, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
+import {
+  beforeEach,
+  beforeEachProviders,
+  describe,
+  expect,
+  inject,
+  it,
+} from '@angular/core/testing/src/testing_internal';
 import {ON_WEB_WORKER} from '@angular/platform-webworker/src/web_workers/shared/api';
 import {RenderStore} from '@angular/platform-webworker/src/web_workers/shared/render_store';
-import {Serializer, SerializerTypes} from '@angular/platform-webworker/src/web_workers/shared/serializer';
+import {
+  Serializer,
+  SerializerTypes,
+} from '@angular/platform-webworker/src/web_workers/shared/serializer';
 import {ServiceMessageBroker} from '@angular/platform-webworker/src/web_workers/shared/service_message_broker';
 
 import {createPairedMessageBuses} from './web_worker_test_util';
@@ -32,42 +42,47 @@ import {createPairedMessageBuses} from './web_worker_test_util';
       messageBuses.ui.initChannel(CHANNEL);
       messageBuses.worker.initChannel(CHANNEL);
     });
-    it('should call registered method with correct arguments',
-       inject([Serializer], (serializer: Serializer) => {
-         const broker = new (ServiceMessageBroker as any)(messageBuses.ui, serializer, CHANNEL);
-         broker.registerMethod(
-             TEST_METHOD, [SerializerTypes.PRIMITIVE, SerializerTypes.PRIMITIVE],
-             (arg1: any, arg2: any) => {
-               expect(arg1).toEqual(PASSED_ARG_1);
-               expect(arg2).toEqual(PASSED_ARG_2);
-             });
-         messageBuses.worker.to(CHANNEL).emit({
-           'method': TEST_METHOD,
-           'args': [PASSED_ARG_1, PASSED_ARG_2],
-         });
-       }));
+    it('should call registered method with correct arguments', inject(
+      [Serializer],
+      (serializer: Serializer) => {
+        const broker = new (ServiceMessageBroker as any)(messageBuses.ui, serializer, CHANNEL);
+        broker.registerMethod(
+          TEST_METHOD,
+          [SerializerTypes.PRIMITIVE, SerializerTypes.PRIMITIVE],
+          (arg1: any, arg2: any) => {
+            expect(arg1).toEqual(PASSED_ARG_1);
+            expect(arg2).toEqual(PASSED_ARG_2);
+          }
+        );
+        messageBuses.worker.to(CHANNEL).emit({
+          'method': TEST_METHOD,
+          'args': [PASSED_ARG_1, PASSED_ARG_2],
+        });
+      }
+    ));
 
     it('should return promises to the worker', inject([Serializer], (serializer: Serializer) => {
-         const broker = new (ServiceMessageBroker as any)(messageBuses.ui, serializer, CHANNEL);
-         broker.registerMethod(TEST_METHOD, [SerializerTypes.PRIMITIVE], (arg1: any) => {
-           expect(arg1).toEqual(PASSED_ARG_1);
-           return new Promise((res, rej) => {
-             try {
-               res(RESULT);
-             } catch (e) {
-               rej(e);
-             }
-           });
-         });
-         messageBuses.worker.to(CHANNEL).emit(
-             {'method': TEST_METHOD, 'id': ID, 'args': [PASSED_ARG_1]});
-         messageBuses.worker.from(CHANNEL).subscribe({
-           next: (data: any) => {
-             expect(data.type).toEqual('result');
-             expect(data.id).toEqual(ID);
-             expect(data.value).toEqual(RESULT);
-           },
-         });
-       }));
+      const broker = new (ServiceMessageBroker as any)(messageBuses.ui, serializer, CHANNEL);
+      broker.registerMethod(TEST_METHOD, [SerializerTypes.PRIMITIVE], (arg1: any) => {
+        expect(arg1).toEqual(PASSED_ARG_1);
+        return new Promise((res, rej) => {
+          try {
+            res(RESULT);
+          } catch (e) {
+            rej(e);
+          }
+        });
+      });
+      messageBuses.worker
+        .to(CHANNEL)
+        .emit({'method': TEST_METHOD, 'id': ID, 'args': [PASSED_ARG_1]});
+      messageBuses.worker.from(CHANNEL).subscribe({
+        next: (data: any) => {
+          expect(data.type).toEqual('result');
+          expect(data.id).toEqual(ID);
+          expect(data.value).toEqual(RESULT);
+        },
+      });
+    }));
   });
 }

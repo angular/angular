@@ -12,7 +12,16 @@ import {Observable, Observer} from 'rxjs';
 import {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
 import {HttpRequest} from './request';
-import {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpJsonParseError, HttpResponse, HttpUploadProgressEvent} from './response';
+import {
+  HttpDownloadProgressEvent,
+  HttpErrorResponse,
+  HttpEvent,
+  HttpEventType,
+  HttpHeaderResponse,
+  HttpJsonParseError,
+  HttpResponse,
+  HttpUploadProgressEvent,
+} from './response';
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
 
@@ -20,7 +29,7 @@ const XSSI_PREFIX = /^\)\]\}',?\n/;
  * Determine an appropriate URL for the response, by checking either
  * XMLHttpRequest.responseURL or the X-Request-URL header.
  */
-function getResponseUrl(xhr: any): string|null {
+function getResponseUrl(xhr: any): string | null {
   if ('responseURL' in xhr && xhr.responseURL) {
     return xhr.responseURL;
   }
@@ -35,7 +44,9 @@ function getResponseUrl(xhr: any): string|null {
  *
  * @publicApi
  */
-export abstract class XhrFactory { abstract build(): XMLHttpRequest; }
+export abstract class XhrFactory {
+  abstract build(): XMLHttpRequest;
+}
 
 /**
  * A factory for `HttpXhrBackend` that uses the `XMLHttpRequest` browser API.
@@ -44,7 +55,9 @@ export abstract class XhrFactory { abstract build(): XMLHttpRequest; }
 @Injectable()
 export class BrowserXhr implements XhrFactory {
   constructor() {}
-  build(): any { return <any>(new XMLHttpRequest()); }
+  build(): any {
+    return <any>new XMLHttpRequest();
+  }
 }
 
 /**
@@ -115,7 +128,7 @@ export class HttpXhrBackend implements HttpBackend {
         // xhr.response will be null, and xhr.responseText cannot be accessed to
         // retrieve the prefixed JSON data in order to strip the prefix. Thus, all JSON
         // is parsed by first requesting text and then applying JSON.parse.
-        xhr.responseType = ((responseType !== 'json') ? responseType : 'text') as any;
+        xhr.responseType = (responseType !== 'json' ? responseType : 'text') as any;
       }
 
       // Serialize the request body if one is present. If not, this will be set to null.
@@ -127,7 +140,7 @@ export class HttpXhrBackend implements HttpBackend {
       // two events, it doesn't make sense to parse them twice. So headerResponse
       // caches the data extracted from the response whenever it's first parsed,
       // to ensure parsing isn't duplicated.
-      let headerResponse: HttpHeaderResponse|null = null;
+      let headerResponse: HttpHeaderResponse | null = null;
 
       // partialFromXhr extracts the HttpHeaderResponse from the current XMLHttpRequest
       // state, and memoizes it into headerResponse.
@@ -161,11 +174,11 @@ export class HttpXhrBackend implements HttpBackend {
         let {headers, status, statusText, url} = partialFromXhr();
 
         // The body will be read out if present.
-        let body: any|null = null;
+        let body: any | null = null;
 
         if (status !== 204) {
           // Use XMLHttpRequest.response if set, responseText otherwise.
-          body = (typeof xhr.response === 'undefined') ? xhr.responseText : xhr.response;
+          body = typeof xhr.response === 'undefined' ? xhr.responseText : xhr.response;
         }
 
         // Normalize another potential bug (this one comes from CORS).
@@ -200,33 +213,37 @@ export class HttpXhrBackend implements HttpBackend {
               // Even though the response status was 2xx, this is still an error.
               ok = false;
               // The parse error contains the text of the body that failed to parse.
-              body = { error, text: body } as HttpJsonParseError;
+              body = {error, text: body} as HttpJsonParseError;
             }
           }
         }
 
         if (ok) {
           // A successful response is delivered on the event stream.
-          observer.next(new HttpResponse({
-            body,
-            headers,
-            status,
-            statusText,
-            url: url || undefined,
-          }));
+          observer.next(
+            new HttpResponse({
+              body,
+              headers,
+              status,
+              statusText,
+              url: url || undefined,
+            })
+          );
           // The full body has been received and delivered, no further events
           // are possible. This request is complete.
           observer.complete();
         } else {
           // An unsuccessful request is delivered on the error channel.
-          observer.error(new HttpErrorResponse({
-            // The error in this case is the response body (error from the server).
-            error: body,
-            headers,
-            status,
-            statusText,
-            url: url || undefined,
-          }));
+          observer.error(
+            new HttpErrorResponse({
+              // The error in this case is the response body (error from the server).
+              error: body,
+              headers,
+              status,
+              statusText,
+              url: url || undefined,
+            })
+          );
         }
       };
 
@@ -318,7 +335,7 @@ export class HttpXhrBackend implements HttpBackend {
       }
 
       // Fire the request, and notify the event stream that it was fired.
-      xhr.send(reqBody !);
+      xhr.send(reqBody!);
       observer.next({type: HttpEventType.Sent});
 
       // This is the return from the Observable function, which is the

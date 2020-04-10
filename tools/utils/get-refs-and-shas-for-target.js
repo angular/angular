@@ -50,7 +50,7 @@ async function requestDataFromGithub(url) {
             error = new Error(`Request Failed.\nStatus Code: ${statusCode}.\nResponse: ${rawData}`);
           } else if (!/^application\/json/.test(contentType)) {
             error = new Error(
-              'Invalid content-type.\n' + `Expected application/json but received ${contentType}`,
+              'Invalid content-type.\n' + `Expected application/json but received ${contentType}`
             );
           }
 
@@ -94,7 +94,7 @@ async function getRefsAndShasForTarget(prNumber, suppressLog) {
   const {stdout: latestShaOfPrBranch} = await exec(`git rev-parse HEAD`);
   // The first common SHA in the history of the target branch and the latest commit in the PR.
   const {stdout: commonAncestorSha} = await exec(
-    `git merge-base origin/${result.base.ref} ${latestShaOfPrBranch}`,
+    `git merge-base origin/${result.base.ref} ${latestShaOfPrBranch}`
   );
 
   const output = {

@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
@@ -93,7 +94,7 @@ export class DecorationAnalyzer {
     this.program,
     this.options,
     this.host,
-    /* moduleResolutionCache */ null,
+    /* moduleResolutionCache */ null
   );
   resourceManager = new NgccResourceLoader(this.fs);
   metaRegistry = new LocalMetadataRegistry();
@@ -105,7 +106,7 @@ export class DecorationAnalyzer {
       this.program,
       this.typeChecker,
       this.moduleResolver,
-      this.reflectionHost,
+      this.reflectionHost
     ),
     // TODO(alxhub): there's no reason why ngcc needs the "logical file system" logic here, as ngcc
     // projects only ever have one rootDir. Instead, ngcc should just switch its emitted import
@@ -117,19 +118,19 @@ export class DecorationAnalyzer {
     : null;
   dtsModuleScopeResolver = new MetadataDtsModuleScopeResolver(
     this.dtsMetaReader,
-    this.aliasingHost,
+    this.aliasingHost
   );
   scopeRegistry = new LocalModuleScopeRegistry(
     this.metaRegistry,
     this.dtsModuleScopeResolver,
     this.refEmitter,
-    this.aliasingHost,
+    this.aliasingHost
   );
   fullRegistry = new CompoundMetadataRegistry([this.metaRegistry, this.scopeRegistry]);
   evaluator = new PartialEvaluator(
     this.reflectionHost,
     this.typeChecker,
-    /* dependencyTracker */ null,
+    /* dependencyTracker */ null
   );
   importGraph = new ImportGraph(this.moduleResolver);
   cycleAnalyzer = new CycleAnalyzer(this.importGraph);
@@ -154,7 +155,7 @@ export class DecorationAnalyzer {
       NOOP_DEFAULT_IMPORT_RECORDER,
       NOOP_DEPENDENCY_TRACKER,
       this.injectableRegistry,
-      /* annotateForClosureCompiler */ false,
+      /* annotateForClosureCompiler */ false
     ),
     // See the note in ngtsc about why this cast is needed.
 
@@ -167,7 +168,7 @@ export class DecorationAnalyzer {
       NOOP_DEFAULT_IMPORT_RECORDER,
       this.injectableRegistry,
       this.isCore,
-      /* annotateForClosureCompiler */ false,
+      /* annotateForClosureCompiler */ false
     ) as DecoratorHandler<unknown, unknown, unknown>,
 
     // Pipe handler must be before injectable handler in list so pipe factories are printed
@@ -179,7 +180,7 @@ export class DecorationAnalyzer {
       this.scopeRegistry,
       NOOP_DEFAULT_IMPORT_RECORDER,
       this.injectableRegistry,
-      this.isCore,
+      this.isCore
     ),
     new InjectableDecoratorHandler(
       this.reflectionHost,
@@ -187,7 +188,7 @@ export class DecorationAnalyzer {
       this.isCore,
       /* strictCtorDeps */ false,
       this.injectableRegistry,
-      /* errorOnDuplicateProv */ false,
+      /* errorOnDuplicateProv */ false
     ),
     new NgModuleDecoratorHandler(
       this.reflectionHost,
@@ -202,7 +203,7 @@ export class DecorationAnalyzer {
       /* factoryTracker */ null,
       NOOP_DEFAULT_IMPORT_RECORDER,
       /* annotateForClosureCompiler */ false,
-      this.injectableRegistry,
+      this.injectableRegistry
     ),
   ];
   compiler = new NgccTraitCompiler(this.handlers, this.reflectionHost);
@@ -218,7 +219,7 @@ export class DecorationAnalyzer {
     private reflectionHost: NgccReflectionHost,
     private referencesRegistry: ReferencesRegistry,
     private diagnosticHandler: (error: ts.Diagnostic) => void = () => {},
-    private tsConfig: ParsedConfiguration | null = null,
+    private tsConfig: ParsedConfiguration | null = null
   ) {}
 
   /**
@@ -253,7 +254,7 @@ export class DecorationAnalyzer {
       this.fullMetaReader,
       this.evaluator,
       this.compiler,
-      this.bundle.entryPoint.path,
+      this.bundle.entryPoint.path
     );
 
     this.migrations.forEach((migration) => {

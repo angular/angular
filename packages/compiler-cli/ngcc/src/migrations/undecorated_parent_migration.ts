@@ -5,14 +5,19 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 
 import {Reference} from '../../../src/ngtsc/imports';
 import {ClassDeclaration} from '../../../src/ngtsc/reflection';
 
 import {Migration, MigrationHost} from './migration';
-import {createDirectiveDecorator, hasConstructor, hasDirectiveDecorator, isClassDeclaration} from './utils';
-
+import {
+  createDirectiveDecorator,
+  hasConstructor,
+  hasDirectiveDecorator,
+  isClassDeclaration,
+} from './utils';
 
 /**
  * Ensure that the parents of directives and components that have no constructor are also decorated
@@ -53,7 +58,7 @@ import {createDirectiveDecorator, hasConstructor, hasDirectiveDecorator, isClass
  * ```
  */
 export class UndecoratedParentMigration implements Migration {
-  apply(clazz: ClassDeclaration, host: MigrationHost): ts.Diagnostic|null {
+  apply(clazz: ClassDeclaration, host: MigrationHost): ts.Diagnostic | null {
     // Only interested in `clazz` if it is a `Component` or a `Directive`,
     // and it has no constructor of its own.
     if (!hasDirectiveDecorator(host, clazz) || hasConstructor(host, clazz)) {
@@ -94,7 +99,9 @@ export class UndecoratedParentMigration implements Migration {
  * not be statically determined.
  */
 function determineBaseClass(
-    clazz: ClassDeclaration, host: MigrationHost): Reference<ClassDeclaration>|null {
+  clazz: ClassDeclaration,
+  host: MigrationHost
+): Reference<ClassDeclaration> | null {
   const baseClassExpr = host.reflectionHost.getBaseClassExpression(clazz);
   if (baseClassExpr === null) {
     return null;

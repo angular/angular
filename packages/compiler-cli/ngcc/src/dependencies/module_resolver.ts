@@ -5,7 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, dirname, FileSystem, isRoot, join, resolve} from '../../../src/ngtsc/file_system';
+
+import {
+  absoluteFrom,
+  AbsoluteFsPath,
+  dirname,
+  FileSystem,
+  isRoot,
+  join,
+  resolve,
+} from '../../../src/ngtsc/file_system';
 import {isRelativePath, PathMappings, resolveFileWithPostfixes} from '../utils';
 
 /**
@@ -24,9 +33,11 @@ import {isRelativePath, PathMappings, resolveFileWithPostfixes} from '../utils';
 export class ModuleResolver {
   private pathMappings: ProcessedPathMapping[];
 
-  constructor(private fs: FileSystem, pathMappings?: PathMappings, readonly relativeExtensions = [
-    '', '.js', '/index.js'
-  ]) {
+  constructor(
+    private fs: FileSystem,
+    pathMappings?: PathMappings,
+    readonly relativeExtensions = ['', '.js', '/index.js']
+  ) {
     this.pathMappings = pathMappings ? this.processPathMappings(pathMappings) : [];
   }
 
@@ -40,12 +51,14 @@ export class ModuleResolver {
    *  * a JavaScript file of an internal module
    *  * null if none exists.
    */
-  resolveModuleImport(moduleName: string, fromPath: AbsoluteFsPath): ResolvedModule|null {
+  resolveModuleImport(moduleName: string, fromPath: AbsoluteFsPath): ResolvedModule | null {
     if (isRelativePath(moduleName)) {
       return this.resolveAsRelativePath(moduleName, fromPath);
     } else {
-      return this.pathMappings.length && this.resolveByPathMappings(moduleName, fromPath) ||
-          this.resolveAsEntryPoint(moduleName, fromPath);
+      return (
+        (this.pathMappings.length && this.resolveByPathMappings(moduleName, fromPath)) ||
+        this.resolveAsEntryPoint(moduleName, fromPath)
+      );
     }
   }
 
@@ -54,7 +67,7 @@ export class ModuleResolver {
    */
   private processPathMappings(pathMappings: PathMappings): ProcessedPathMapping[] {
     const baseUrl = absoluteFrom(pathMappings.baseUrl);
-    return Object.keys(pathMappings.paths).map(pathPattern => {
+    return Object.keys(pathMappings.paths).map((pathPattern) => {
       const matcher = splitOnStar(pathPattern);
       const templates = pathMappings.paths[pathPattern].map(splitOnStar);
       return {matcher, templates, baseUrl};
@@ -68,9 +81,15 @@ export class ModuleResolver {
    * For example: `${moduleName}.js` or `${moduleName}/index.js`.
    * If neither of these files exist then the method returns `null`.
    */
-  private resolveAsRelativePath(moduleName: string, fromPath: AbsoluteFsPath): ResolvedModule|null {
+  private resolveAsRelativePath(
+    moduleName: string,
+    fromPath: AbsoluteFsPath
+  ): ResolvedModule | null {
     const resolvedPath = resolveFileWithPostfixes(
-        this.fs, resolve(dirname(fromPath), moduleName), this.relativeExtensions);
+      this.fs,
+      resolve(dirname(fromPath), moduleName),
+      this.relativeExtensions
+    );
     return resolvedPath && new ResolvedRelativeModule(resolvedPath);
   }
 
@@ -85,7 +104,10 @@ export class ModuleResolver {
    * check whether it would have resolved to a relative path, in which case it is marked as a
    * "deep-import".
    */
-  private resolveByPathMappings(moduleName: string, fromPath: AbsoluteFsPath): ResolvedModule|null {
+  private resolveByPathMappings(
+    moduleName: string,
+    fromPath: AbsoluteFsPath
+  ): ResolvedModule | null {
     const mappedPaths = this.findMappedPaths(moduleName);
     if (mappedPaths.length > 0) {
       const packagePath = this.findPackagePath(fromPath);
@@ -96,8 +118,9 @@ export class ModuleResolver {
           }
           const nonEntryPointImport = this.resolveAsRelativePath(mappedPath, fromPath);
           if (nonEntryPointImport !== null) {
-            return isRelativeImport(packagePath, mappedPath) ? nonEntryPointImport :
-                                                               new ResolvedDeepImport(mappedPath);
+            return isRelativeImport(packagePath, mappedPath)
+              ? nonEntryPointImport
+              : new ResolvedDeepImport(mappedPath);
           }
         }
       }
@@ -112,7 +135,7 @@ export class ModuleResolver {
    * If a folder is found but the path does not contain a `package.json` then it is marked as a
    * "deep-import".
    */
-  private resolveAsEntryPoint(moduleName: string, fromPath: AbsoluteFsPath): ResolvedModule|null {
+  private resolveAsEntryPoint(moduleName: string, fromPath: AbsoluteFsPath): ResolvedModule | null {
     let folder = fromPath;
     while (!isRoot(folder)) {
       folder = dirname(folder);
@@ -129,7 +152,6 @@ export class ModuleResolver {
     }
     return null;
   }
-
 
   /**
    * Can we consider the given path as an entry-point to a package?
@@ -149,10 +171,10 @@ export class ModuleResolver {
    * `template.prefix` and `template.postfix` strings.
    */
   private findMappedPaths(moduleName: string): AbsoluteFsPath[] {
-    const matches = this.pathMappings.map(mapping => this.matchMapping(moduleName, mapping));
+    const matches = this.pathMappings.map((mapping) => this.matchMapping(moduleName, mapping));
 
-    let bestMapping: ProcessedPathMapping|undefined;
-    let bestMatch: string|undefined;
+    let bestMapping: ProcessedPathMapping | undefined;
+    let bestMatch: string | undefined;
 
     for (let index = 0; index < this.pathMappings.length; index++) {
       const mapping = this.pathMappings[index];
@@ -172,9 +194,9 @@ export class ModuleResolver {
       }
     }
 
-    return (bestMapping !== undefined && bestMatch !== undefined) ?
-        this.computeMappedTemplates(bestMapping, bestMatch) :
-        [];
+    return bestMapping !== undefined && bestMatch !== undefined
+      ? this.computeMappedTemplates(bestMapping, bestMatch)
+      : [];
   }
 
   /**
@@ -185,14 +207,14 @@ export class ModuleResolver {
    *
    * @returns the wildcard segment of a matched `path`, or `null` if no match.
    */
-  private matchMapping(path: string, mapping: ProcessedPathMapping): string|null {
+  private matchMapping(path: string, mapping: ProcessedPathMapping): string | null {
     const {prefix, postfix, hasWildcard} = mapping.matcher;
     if (hasWildcard) {
-      return (path.startsWith(prefix) && path.endsWith(postfix)) ?
-          path.substring(prefix.length, path.length - postfix.length) :
-          null;
+      return path.startsWith(prefix) && path.endsWith(postfix)
+        ? path.substring(prefix.length, path.length - postfix.length)
+        : null;
     } else {
-      return (path === prefix) ? '' : null;
+      return path === prefix ? '' : null;
     }
   }
 
@@ -201,15 +223,16 @@ export class ModuleResolver {
    * string.
    */
   private computeMappedTemplates(mapping: ProcessedPathMapping, match: string) {
-    return mapping.templates.map(
-        template => resolve(mapping.baseUrl, template.prefix + match + template.postfix));
+    return mapping.templates.map((template) =>
+      resolve(mapping.baseUrl, template.prefix + match + template.postfix)
+    );
   }
 
   /**
    * Search up the folder tree for the first folder that contains `package.json`
    * or `null` if none is found.
    */
-  private findPackagePath(path: AbsoluteFsPath): AbsoluteFsPath|null {
+  private findPackagePath(path: AbsoluteFsPath): AbsoluteFsPath | null {
     let folder = path;
     while (!isRoot(folder)) {
       folder = dirname(folder);
@@ -222,7 +245,7 @@ export class ModuleResolver {
 }
 
 /** The result of resolving an import to a module. */
-export type ResolvedModule = ResolvedExternalModule|ResolvedRelativeModule|ResolvedDeepImport;
+export type ResolvedModule = ResolvedExternalModule | ResolvedRelativeModule | ResolvedDeepImport;
 
 /**
  * A module that is external to the package doing the importing.

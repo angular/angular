@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {RNode} from './renderer';
 import {LView} from './view';
 
@@ -44,16 +43,16 @@ export interface LContext {
   /**
    * The instance of the Component node.
    */
-  component: {}|null|undefined;
+  component: {} | null | undefined;
 
   /**
    * The list of active directives that exist on this element.
    */
-  directives: any[]|null|undefined;
+  directives: any[] | null | undefined;
 
   /**
    * The map of local references (local reference name => element or directive instance) that exist
    * on this element.
    */
-  localRefs: {[key: string]: any}|null|undefined;
+  localRefs: {[key: string]: any} | null | undefined;
 }

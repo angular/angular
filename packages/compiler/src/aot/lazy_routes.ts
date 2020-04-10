@@ -21,7 +21,9 @@ export interface LazyRoute {
 }
 
 export function listLazyRoutes(
-    moduleMeta: CompileNgModuleMetadata, reflector: StaticReflector): LazyRoute[] {
+  moduleMeta: CompileNgModuleMetadata,
+  reflector: StaticReflector
+): LazyRoute[] {
   const allLazyRoutes: LazyRoute[] = [];
   for (const {provider, module} of moduleMeta.transitiveModule.providers) {
     if (tokenReference(provider.token) === reflector.ROUTES) {
@@ -34,7 +36,7 @@ export function listLazyRoutes(
   return allLazyRoutes;
 }
 
-function _collectLoadChildren(routes: string|Route|Route[], target: string[] = []): string[] {
+function _collectLoadChildren(routes: string | Route | Route[], target: string[] = []): string[] {
   if (typeof routes === 'string') {
     target.push(routes);
   } else if (Array.isArray(routes)) {
@@ -50,13 +52,17 @@ function _collectLoadChildren(routes: string|Route|Route[], target: string[] = [
 }
 
 export function parseLazyRoute(
-    route: string, reflector: StaticReflector, module?: StaticSymbol): LazyRoute {
+  route: string,
+  reflector: StaticReflector,
+  module?: StaticSymbol
+): LazyRoute {
   const [routePath, routeName] = route.split('#');
   const referencedModule = reflector.resolveExternalReference(
-      {
-        moduleName: routePath,
-        name: routeName,
-      },
-      module ? module.filePath : undefined);
+    {
+      moduleName: routePath,
+      name: routeName,
+    },
+    module ? module.filePath : undefined
+  );
   return {route: route, module: module || referencedModule, referencedModule};
 }

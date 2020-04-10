@@ -20,21 +20,26 @@ function httpRequest(backend: ConnectionBackend, request: Request): Observable<R
 }
 
 function mergeOptions(
-    defaultOpts: BaseRequestOptions, providedOpts: RequestOptionsArgs | undefined,
-    method: RequestMethod, url: string): RequestArgs {
+  defaultOpts: BaseRequestOptions,
+  providedOpts: RequestOptionsArgs | undefined,
+  method: RequestMethod,
+  url: string
+): RequestArgs {
   const newOptions = defaultOpts;
   if (providedOpts) {
     // Hack so Dart can used named parameters
-    return newOptions.merge(new RequestOptions({
-      method: providedOpts.method || method,
-      url: providedOpts.url || url,
-      search: providedOpts.search,
-      params: providedOpts.params,
-      headers: providedOpts.headers,
-      body: providedOpts.body,
-      withCredentials: providedOpts.withCredentials,
-      responseType: providedOpts.responseType
-    })) as RequestArgs;
+    return newOptions.merge(
+      new RequestOptions({
+        method: providedOpts.method || method,
+        url: providedOpts.url || url,
+        search: providedOpts.search,
+        params: providedOpts.params,
+        headers: providedOpts.headers,
+        body: providedOpts.body,
+        withCredentials: providedOpts.withCredentials,
+        responseType: providedOpts.responseType,
+      })
+    ) as RequestArgs;
   }
 
   return newOptions.merge(new RequestOptions({method, url})) as RequestArgs;
@@ -113,12 +118,13 @@ export class Http {
    * object can be provided as the 2nd argument. The options object will be merged with the values
    * of {@link BaseRequestOptions} before performing the request.
    */
-  request(url: string|Request, options?: RequestOptionsArgs): Observable<Response> {
+  request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
     let responseObservable: any;
     if (typeof url === 'string') {
       responseObservable = httpRequest(
-          this._backend,
-          new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, url)));
+        this._backend,
+        new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, url))
+      );
     } else if (url instanceof Request) {
       responseObservable = httpRequest(this._backend, url);
     } else {
@@ -132,42 +138,65 @@ export class Http {
    */
   get(url: string, options?: RequestOptionsArgs): Observable<Response> {
     return this.request(
-        new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, url)));
+      new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, url))
+    );
   }
 
   /**
    * Performs a request with `post` http method.
    */
   post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
-    return this.request(new Request(mergeOptions(
-        this._defaultOptions.merge(new RequestOptions({body: body})), options, RequestMethod.Post,
-        url)));
+    return this.request(
+      new Request(
+        mergeOptions(
+          this._defaultOptions.merge(new RequestOptions({body: body})),
+          options,
+          RequestMethod.Post,
+          url
+        )
+      )
+    );
   }
 
   /**
    * Performs a request with `put` http method.
    */
   put(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
-    return this.request(new Request(mergeOptions(
-        this._defaultOptions.merge(new RequestOptions({body: body})), options, RequestMethod.Put,
-        url)));
+    return this.request(
+      new Request(
+        mergeOptions(
+          this._defaultOptions.merge(new RequestOptions({body: body})),
+          options,
+          RequestMethod.Put,
+          url
+        )
+      )
+    );
   }
 
   /**
    * Performs a request with `delete` http method.
    */
-  delete (url: string, options?: RequestOptionsArgs): Observable<Response> {
+  delete(url: string, options?: RequestOptionsArgs): Observable<Response> {
     return this.request(
-        new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Delete, url)));
+      new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Delete, url))
+    );
   }
 
   /**
    * Performs a request with `patch` http method.
    */
   patch(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
-    return this.request(new Request(mergeOptions(
-        this._defaultOptions.merge(new RequestOptions({body: body})), options, RequestMethod.Patch,
-        url)));
+    return this.request(
+      new Request(
+        mergeOptions(
+          this._defaultOptions.merge(new RequestOptions({body: body})),
+          options,
+          RequestMethod.Patch,
+          url
+        )
+      )
+    );
   }
 
   /**
@@ -175,7 +204,8 @@ export class Http {
    */
   head(url: string, options?: RequestOptionsArgs): Observable<Response> {
     return this.request(
-        new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Head, url)));
+      new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Head, url))
+    );
   }
 
   /**
@@ -183,10 +213,10 @@ export class Http {
    */
   options(url: string, options?: RequestOptionsArgs): Observable<Response> {
     return this.request(
-        new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Options, url)));
+      new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Options, url))
+    );
   }
 }
-
 
 /**
  * @deprecated see https://angular.io/guide/http
@@ -212,7 +242,7 @@ export class Jsonp extends Http {
    * future security issues (e.g. content sniffing).  For more detail, see the
    * [Security Guide](http://g.co/ng/security).
    */
-  request(url: string|Request, options?: RequestOptionsArgs): Observable<Response> {
+  request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
     let responseObservable: any;
     if (typeof url === 'string') {
       url = new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, url));

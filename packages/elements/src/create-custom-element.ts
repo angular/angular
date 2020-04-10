@@ -31,7 +31,7 @@ export interface NgElementConstructor<P> {
    * Initializes a constructor instance.
    * @param injector If provided, overrides the configured injector.
    */
-  new (injector?: Injector): NgElement&WithProperties<P>;
+  new (injector?: Injector): NgElement & WithProperties<P>;
 }
 
 /**
@@ -44,22 +44,26 @@ export abstract class NgElement extends HTMLElement {
    * The strategy that controls how a component is transformed in a custom element.
    */
   // TODO(issue/24571): remove '!'.
-  protected ngElementStrategy !: NgElementStrategy;
+  protected ngElementStrategy!: NgElementStrategy;
   /**
    * A subscription to change, connect, and disconnect events in the custom element.
    */
-  protected ngElementEventsSubscription: Subscription|null = null;
+  protected ngElementEventsSubscription: Subscription | null = null;
 
   /**
-    * Prototype for a handler that responds to a change in an observed attribute.
-    * @param attrName The name of the attribute that has changed.
-    * @param oldValue The previous value of the attribute.
-    * @param newValue The new value of the attribute.
-    * @param namespace The namespace in which the attribute is defined.
-    * @returns Nothing.
-    */
+   * Prototype for a handler that responds to a change in an observed attribute.
+   * @param attrName The name of the attribute that has changed.
+   * @param oldValue The previous value of the attribute.
+   * @param newValue The new value of the attribute.
+   * @param namespace The namespace in which the attribute is defined.
+   * @returns Nothing.
+   */
   abstract attributeChangedCallback(
-      attrName: string, oldValue: string|null, newValue: string, namespace?: string): void;
+    attrName: string,
+    oldValue: string | null,
+    newValue: string,
+    namespace?: string
+  ): void;
   /**
    * Prototype for a handler that responds to the insertion of the custom element in the DOM.
    * @returns Nothing.
@@ -80,7 +84,7 @@ export abstract class NgElement extends HTMLElement {
  * @publicApi
  */
 export type WithProperties<P> = {
-  [property in keyof P]: P[property]
+  [property in keyof P]: P[property];
 };
 
 /**
@@ -123,18 +127,20 @@ export interface NgElementConfig {
  * @publicApi
  */
 export function createCustomElement<P>(
-    component: Type<any>, config: NgElementConfig): NgElementConstructor<P> {
+  component: Type<any>,
+  config: NgElementConfig
+): NgElementConstructor<P> {
   const inputs = getComponentInputs(component, config.injector);
 
   const strategyFactory =
-      config.strategyFactory || new ComponentNgElementStrategyFactory(component, config.injector);
+    config.strategyFactory || new ComponentNgElementStrategyFactory(component, config.injector);
 
   const attributeToPropertyInputs = getDefaultAttributeToPropertyInputs(inputs);
 
   class NgElementImpl extends NgElement {
     // Work around a bug in closure typed optimizations(b/79557487) where it is not honoring static
     // field externs. So using quoted access to explicitly prevent renaming.
-    static readonly['observedAttributes'] = Object.keys(attributeToPropertyInputs);
+    static readonly ['observedAttributes'] = Object.keys(attributeToPropertyInputs);
 
     constructor(injector?: Injector) {
       super();
@@ -147,12 +153,16 @@ export function createCustomElement<P>(
     }
 
     attributeChangedCallback(
-        attrName: string, oldValue: string|null, newValue: string, namespace?: string): void {
+      attrName: string,
+      oldValue: string | null,
+      newValue: string,
+      namespace?: string
+    ): void {
       if (!this.ngElementStrategy) {
         this.ngElementStrategy = strategyFactory.create(config.injector);
       }
 
-      const propName = attributeToPropertyInputs[attrName] !;
+      const propName = attributeToPropertyInputs[attrName]!;
       this.ngElementStrategy.setInputValue(propName, newValue);
     }
 
@@ -164,8 +174,8 @@ export function createCustomElement<P>(
       this.ngElementStrategy.connect(this);
 
       // Listen for events from the strategy and dispatch them as custom events
-      this.ngElementEventsSubscription = this.ngElementStrategy.events.subscribe(e => {
-        const customEvent = createCustomEvent(this.ownerDocument !, e.name, e.value);
+      this.ngElementEventsSubscription = this.ngElementStrategy.events.subscribe((e) => {
+        const customEvent = createCustomEvent(this.ownerDocument!, e.name, e.value);
         this.dispatchEvent(customEvent);
       });
     }
@@ -184,14 +194,20 @@ export function createCustomElement<P>(
 
   // Add getters and setters to the prototype for each property input. If the config does not
   // contain property inputs, use all inputs by default.
-  inputs.map(({propName}) => propName).forEach(property => {
-    Object.defineProperty(NgElementImpl.prototype, property, {
-      get: function() { return this.ngElementStrategy.getInputValue(property); },
-      set: function(newValue: any) { this.ngElementStrategy.setInputValue(property, newValue); },
-      configurable: true,
-      enumerable: true,
+  inputs
+    .map(({propName}) => propName)
+    .forEach((property) => {
+      Object.defineProperty(NgElementImpl.prototype, property, {
+        get: function () {
+          return this.ngElementStrategy.getInputValue(property);
+        },
+        set: function (newValue: any) {
+          this.ngElementStrategy.setInputValue(property, newValue);
+        },
+        configurable: true,
+        enumerable: true,
+      });
     });
-  });
 
   return (NgElementImpl as any) as NgElementConstructor<P>;
 }

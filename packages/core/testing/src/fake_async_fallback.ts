@@ -13,10 +13,12 @@
 const _Zone: any = typeof Zone !== 'undefined' ? Zone : null;
 const FakeAsyncTestZoneSpec = _Zone && _Zone['FakeAsyncTestZoneSpec'];
 type ProxyZoneSpec = {
-  setDelegate(delegateSpec: ZoneSpec): void; getDelegate(): ZoneSpec; resetDelegate(): void;
+  setDelegate(delegateSpec: ZoneSpec): void;
+  getDelegate(): ZoneSpec;
+  resetDelegate(): void;
 };
 const ProxyZoneSpec: {get(): ProxyZoneSpec; assertPresent: () => ProxyZoneSpec} =
-    _Zone && _Zone['ProxyZoneSpec'];
+  _Zone && _Zone['ProxyZoneSpec'];
 
 let _fakeAsyncTestZoneSpec: any = null;
 
@@ -55,7 +57,7 @@ let _inFakeAsyncCall = false;
  */
 export function fakeAsyncFallback(fn: Function): (...args: any[]) => any {
   // Not using an arrow function to preserve context passed from call site
-  return function(this: unknown, ...args: any[]) {
+  return function (this: unknown, ...args: any[]) {
     const proxyZoneSpec = ProxyZoneSpec.assertPresent();
     if (_inFakeAsyncCall) {
       throw new Error('fakeAsync() calls can not be nested');
@@ -82,13 +84,15 @@ export function fakeAsyncFallback(fn: Function): (...args: any[]) => any {
 
       if (_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length > 0) {
         throw new Error(
-            `${_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length} ` +
-            `periodic timer(s) still in the queue.`);
+          `${_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length} ` +
+            `periodic timer(s) still in the queue.`
+        );
       }
 
       if (_fakeAsyncTestZoneSpec.pendingTimers.length > 0) {
         throw new Error(
-            `${_fakeAsyncTestZoneSpec.pendingTimers.length} timer(s) still in the queue.`);
+          `${_fakeAsyncTestZoneSpec.pendingTimers.length} timer(s) still in the queue.`
+        );
       }
       return res;
     } finally {
@@ -119,9 +123,11 @@ function _getFakeAsyncZoneSpec(): any {
  * @publicApi
  */
 export function tickFallback(
-    millis: number = 0, tickOptions: {processNewMacroTasksSynchronously: boolean} = {
-      processNewMacroTasksSynchronously: true
-    }): void {
+  millis: number = 0,
+  tickOptions: {processNewMacroTasksSynchronously: boolean} = {
+    processNewMacroTasksSynchronously: true,
+  }
+): void {
   _getFakeAsyncZoneSpec().tick(millis, null, tickOptions);
 }
 

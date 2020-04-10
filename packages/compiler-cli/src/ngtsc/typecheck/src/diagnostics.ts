@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
 
@@ -39,7 +40,7 @@ export interface TemplateSourceResolver {
    * `ParseSourceSpan`. The returned parse span has line and column numbers in addition to only
    * absolute offsets and gives access to the original template source.
    */
-  toParseSourceSpan(id: TemplateId, span: AbsoluteSourceSpan): ParseSourceSpan|null;
+  toParseSourceSpan(id: TemplateId, span: AbsoluteSourceSpan): ParseSourceSpan | null;
 }
 
 /**
@@ -63,14 +64,18 @@ const IGNORE_MARKER = 'ignore';
  */
 export function ignoreDiagnostics(node: ts.Node): void {
   ts.addSyntheticTrailingComment(
-      node, ts.SyntaxKind.MultiLineCommentTrivia, IGNORE_MARKER, /* hasTrailingNewLine */ false);
+    node,
+    ts.SyntaxKind.MultiLineCommentTrivia,
+    IGNORE_MARKER,
+    /* hasTrailingNewLine */ false
+  );
 }
 
 /**
  * Adds a synthetic comment to the expression that represents the parse span of the provided node.
  * This comment can later be retrieved as trivia of a node to recover original source locations.
  */
-export function addParseSpanInfo(node: ts.Node, span: AbsoluteSourceSpan|ParseSourceSpan): void {
+export function addParseSpanInfo(node: ts.Node, span: AbsoluteSourceSpan | ParseSourceSpan): void {
   let commentText: string;
   if (span instanceof AbsoluteSourceSpan) {
     commentText = `${span.start},${span.end}`;
@@ -78,7 +83,11 @@ export function addParseSpanInfo(node: ts.Node, span: AbsoluteSourceSpan|ParseSo
     commentText = `${span.start.offset},${span.end.offset}`;
   }
   ts.addSyntheticTrailingComment(
-      node, ts.SyntaxKind.MultiLineCommentTrivia, commentText, /* hasTrailingNewLine */ false);
+    node,
+    ts.SyntaxKind.MultiLineCommentTrivia,
+    commentText,
+    /* hasTrailingNewLine */ false
+  );
 }
 
 /**
@@ -117,7 +126,9 @@ export function shouldReportDiagnostic(diagnostic: ts.Diagnostic): boolean {
  * file from being reported as type-check errors.
  */
 export function translateDiagnostic(
-    diagnostic: ts.Diagnostic, resolver: TemplateSourceResolver): ts.Diagnostic|null {
+  diagnostic: ts.Diagnostic,
+  resolver: TemplateSourceResolver
+): ts.Diagnostic | null {
   if (diagnostic.file === undefined || diagnostic.start === undefined) {
     return null;
   }
@@ -137,29 +148,41 @@ export function translateDiagnostic(
 
   const mapping = resolver.getSourceMapping(sourceLocation.id);
   return makeTemplateDiagnostic(
-      mapping, span, diagnostic.category, diagnostic.code, diagnostic.messageText);
+    mapping,
+    span,
+    diagnostic.category,
+    diagnostic.code,
+    diagnostic.messageText
+  );
 }
 
 /**
  * Constructs a `ts.Diagnostic` for a given `ParseSourceSpan` within a template.
  */
 export function makeTemplateDiagnostic(
-    mapping: TemplateSourceMapping, span: ParseSourceSpan, category: ts.DiagnosticCategory,
-    code: number, messageText: string|ts.DiagnosticMessageChain, relatedMessage?: {
-      text: string,
-      span: ParseSourceSpan,
-    }): TemplateDiagnostic {
+  mapping: TemplateSourceMapping,
+  span: ParseSourceSpan,
+  category: ts.DiagnosticCategory,
+  code: number,
+  messageText: string | ts.DiagnosticMessageChain,
+  relatedMessage?: {
+    text: string;
+    span: ParseSourceSpan;
+  }
+): TemplateDiagnostic {
   if (mapping.type === 'direct') {
-    let relatedInformation: ts.DiagnosticRelatedInformation[]|undefined = undefined;
+    let relatedInformation: ts.DiagnosticRelatedInformation[] | undefined = undefined;
     if (relatedMessage !== undefined) {
-      relatedInformation = [{
-        category: ts.DiagnosticCategory.Message,
-        code: 0,
-        file: mapping.node.getSourceFile(),
-        start: relatedMessage.span.start.offset,
-        length: relatedMessage.span.end.offset - relatedMessage.span.start.offset,
-        messageText: relatedMessage.text,
-      }];
+      relatedInformation = [
+        {
+          category: ts.DiagnosticCategory.Message,
+          code: 0,
+          file: mapping.node.getSourceFile(),
+          start: relatedMessage.span.start.offset,
+          length: relatedMessage.span.end.offset - relatedMessage.span.start.offset,
+          messageText: relatedMessage.text,
+        },
+      ];
     }
     // For direct mappings, the error is shown inline as ngtsc was able to pinpoint a string
     // constant within the `@Component` decorator for the template. This allows us to map the error
@@ -183,14 +206,20 @@ export function makeTemplateDiagnostic(
     const componentSf = mapping.componentClass.getSourceFile();
     const componentName = mapping.componentClass.name.text;
     // TODO(alxhub): remove cast when TS in g3 supports this narrowing.
-    const fileName = mapping.type === 'indirect' ?
-        `${componentSf.fileName} (${componentName} template)` :
-        (mapping as ExternalTemplateSourceMapping).templateUrl;
+    const fileName =
+      mapping.type === 'indirect'
+        ? `${componentSf.fileName} (${componentName} template)`
+        : (mapping as ExternalTemplateSourceMapping).templateUrl;
     // TODO(alxhub): investigate creating a fake `ts.SourceFile` here instead of invoking the TS
     // parser against the template (HTML is just really syntactically invalid TypeScript code ;).
     // Also investigate caching the file to avoid running the parser multiple times.
     const sf = ts.createSourceFile(
-        fileName, mapping.template, ts.ScriptTarget.Latest, false, ts.ScriptKind.JSX);
+      fileName,
+      mapping.template,
+      ts.ScriptTarget.Latest,
+      false,
+      ts.ScriptKind.JSX
+    );
 
     let relatedInformation: ts.DiagnosticRelatedInformation[] = [];
     if (relatedMessage !== undefined) {
@@ -242,7 +271,7 @@ interface SourceLocation {
  * that have been emitted into the TCB. If the node does not exist within a TCB, or if an ignore
  * marker comment is found up the tree, this function returns null.
  */
-function findSourceLocation(node: ts.Node, sourceFile: ts.SourceFile): SourceLocation|null {
+function findSourceLocation(node: ts.Node, sourceFile: ts.SourceFile): SourceLocation | null {
   // Search for comments until the TCB's function declaration is encountered.
   while (node !== undefined && !ts.isFunctionDeclaration(node)) {
     if (hasIgnoreMarker(node, sourceFile)) {
@@ -267,7 +296,7 @@ function findSourceLocation(node: ts.Node, sourceFile: ts.SourceFile): SourceLoc
   return null;
 }
 
-function getTemplateId(node: ts.Node, sourceFile: ts.SourceFile): TemplateId|null {
+function getTemplateId(node: ts.Node, sourceFile: ts.SourceFile): TemplateId | null {
   // Walk up to the function declaration of the TCB, the file information is attached there.
   while (!ts.isFunctionDeclaration(node)) {
     if (hasIgnoreMarker(node, sourceFile)) {
@@ -283,43 +312,50 @@ function getTemplateId(node: ts.Node, sourceFile: ts.SourceFile): TemplateId|nul
   }
 
   const start = node.getFullStart();
-  return ts.forEachLeadingCommentRange(sourceFile.text, start, (pos, end, kind) => {
-    if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
-      return null;
-    }
-    const commentText = sourceFile.text.substring(pos + 2, end - 2);
-    return commentText;
-  }) as TemplateId || null;
+  return (
+    (ts.forEachLeadingCommentRange(sourceFile.text, start, (pos, end, kind) => {
+      if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
+        return null;
+      }
+      const commentText = sourceFile.text.substring(pos + 2, end - 2);
+      return commentText;
+    }) as TemplateId) || null
+  );
 }
 
 const parseSpanComment = /^(\d+),(\d+)$/;
 
-function readSpanComment(sourceFile: ts.SourceFile, node: ts.Node): AbsoluteSourceSpan|null {
-  return ts.forEachTrailingCommentRange(sourceFile.text, node.getEnd(), (pos, end, kind) => {
-    if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
-      return null;
-    }
-    const commentText = sourceFile.text.substring(pos + 2, end - 2);
-    const match = commentText.match(parseSpanComment);
-    if (match === null) {
-      return null;
-    }
+function readSpanComment(sourceFile: ts.SourceFile, node: ts.Node): AbsoluteSourceSpan | null {
+  return (
+    ts.forEachTrailingCommentRange(sourceFile.text, node.getEnd(), (pos, end, kind) => {
+      if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
+        return null;
+      }
+      const commentText = sourceFile.text.substring(pos + 2, end - 2);
+      const match = commentText.match(parseSpanComment);
+      if (match === null) {
+        return null;
+      }
 
-    return new AbsoluteSourceSpan(+match[1], +match[2]);
-  }) || null;
+      return new AbsoluteSourceSpan(+match[1], +match[2]);
+    }) || null
+  );
 }
 
 function hasIgnoreMarker(node: ts.Node, sourceFile: ts.SourceFile): boolean {
-  return ts.forEachTrailingCommentRange(sourceFile.text, node.getEnd(), (pos, end, kind) => {
-    if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
-      return null;
-    }
-    const commentText = sourceFile.text.substring(pos + 2, end - 2);
-    return commentText === IGNORE_MARKER;
-  }) === true;
+  return (
+    ts.forEachTrailingCommentRange(sourceFile.text, node.getEnd(), (pos, end, kind) => {
+      if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
+        return null;
+      }
+      const commentText = sourceFile.text.substring(pos + 2, end - 2);
+      return commentText === IGNORE_MARKER;
+    }) === true
+  );
 }
 
 export function isTemplateDiagnostic(diagnostic: ts.Diagnostic): diagnostic is TemplateDiagnostic {
-  return diagnostic.hasOwnProperty('componentFile') &&
-      ts.isSourceFile((diagnostic as any).componentFile);
+  return (
+    diagnostic.hasOwnProperty('componentFile') && ts.isSourceFile((diagnostic as any).componentFile)
+  );
 }

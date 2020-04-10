@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {Element, Node, ParseErrorLevel, visitAll} from '@angular/compiler';
 import {ɵParsedTranslation} from '@angular/localize';
 
@@ -14,7 +15,15 @@ import {MessageSerializer} from '../message_serialization/message_serializer';
 import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
 
 import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
-import {XmlTranslationParserHint, addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedElement, parseInnerRange} from './translation_utils';
+import {
+  XmlTranslationParserHint,
+  addParseDiagnostic,
+  addParseError,
+  canParseXml,
+  getAttribute,
+  isNamedElement,
+  parseInnerRange,
+} from './translation_utils';
 
 /**
  * A translation parser that can load translations from XLIFF 2 files.
@@ -23,12 +32,15 @@ import {XmlTranslationParserHint, addParseDiagnostic, addParseError, canParseXml
  *
  */
 export class Xliff2TranslationParser implements TranslationParser<XmlTranslationParserHint> {
-  canParse(filePath: string, contents: string): XmlTranslationParserHint|false {
+  canParse(filePath: string, contents: string): XmlTranslationParserHint | false {
     return canParseXml(filePath, contents, 'xliff', {version: '2.0'});
   }
 
-  parse(filePath: string, contents: string, hint?: XmlTranslationParserHint):
-      ParsedTranslationBundle {
+  parse(
+    filePath: string,
+    contents: string,
+    hint?: XmlTranslationParserHint
+  ): ParsedTranslationBundle {
     if (hint) {
       return this.extractBundle(hint);
     } else {
@@ -38,18 +50,24 @@ export class Xliff2TranslationParser implements TranslationParser<XmlTranslation
 
   private extractBundle({element, errors}: XmlTranslationParserHint): ParsedTranslationBundle {
     const diagnostics = new Diagnostics();
-    errors.forEach(e => addParseError(diagnostics, e));
+    errors.forEach((e) => addParseError(diagnostics, e));
 
     const locale = getAttribute(element, 'trgLang');
     const files = element.children.filter(isFileElement);
     if (files.length === 0) {
       addParseDiagnostic(
-          diagnostics, element.sourceSpan, 'No <file> elements found in <xliff>',
-          ParseErrorLevel.WARNING);
+        diagnostics,
+        element.sourceSpan,
+        'No <file> elements found in <xliff>',
+        ParseErrorLevel.WARNING
+      );
     } else if (files.length > 1) {
       addParseDiagnostic(
-          diagnostics, files[1].sourceSpan, 'More than one <file> element found in <xliff>',
-          ParseErrorLevel.WARNING);
+        diagnostics,
+        files[1].sourceSpan,
+        'More than one <file> element found in <xliff>',
+        ParseErrorLevel.WARNING
+      );
     }
 
     const bundle = {locale, translations: {}, diagnostics};
@@ -67,14 +85,14 @@ export class Xliff2TranslationParser implements TranslationParser<XmlTranslation
     }
     const bundle = this.extractBundle(hint);
     if (bundle.diagnostics.hasErrors) {
-      const message =
-          bundle.diagnostics.formatDiagnostics(`Failed to parse "${filePath}" as XLIFF 2.0 format`);
+      const message = bundle.diagnostics.formatDiagnostics(
+        `Failed to parse "${filePath}" as XLIFF 2.0 format`
+      );
       throw new Error(message);
     }
     return bundle;
   }
 }
-
 
 interface TranslationVisitorContext {
   unit?: string;
@@ -97,16 +115,22 @@ class Xliff2TranslationVisitor extends BaseVisitor {
     const externalId = getAttribute(element, 'id');
     if (externalId === undefined) {
       addParseDiagnostic(
-          bundle.diagnostics, element.sourceSpan,
-          `Missing required "id" attribute on <trans-unit> element.`, ParseErrorLevel.ERROR);
+        bundle.diagnostics,
+        element.sourceSpan,
+        `Missing required "id" attribute on <trans-unit> element.`,
+        ParseErrorLevel.ERROR
+      );
       return;
     }
 
     // Error if there is already a translation with the same id
     if (bundle.translations[externalId] !== undefined) {
       addParseDiagnostic(
-          bundle.diagnostics, element.sourceSpan,
-          `Duplicated translations for message "${externalId}"`, ParseErrorLevel.ERROR);
+        bundle.diagnostics,
+        element.sourceSpan,
+        `Duplicated translations for message "${externalId}"`,
+        ParseErrorLevel.ERROR
+      );
       return;
     }
 
@@ -114,21 +138,29 @@ class Xliff2TranslationVisitor extends BaseVisitor {
   }
 
   private visitSegmentElement(
-      element: Element, bundle: ParsedTranslationBundle, unit: string|undefined): void {
+    element: Element,
+    bundle: ParsedTranslationBundle,
+    unit: string | undefined
+  ): void {
     // A `<segment>` element must be below a `<unit>` element
     if (unit === undefined) {
       addParseDiagnostic(
-          bundle.diagnostics, element.sourceSpan,
-          'Invalid <segment> element: should be a child of a <unit> element.',
-          ParseErrorLevel.ERROR);
+        bundle.diagnostics,
+        element.sourceSpan,
+        'Invalid <segment> element: should be a child of a <unit> element.',
+        ParseErrorLevel.ERROR
+      );
       return;
     }
 
     const targetMessage = element.children.find(isNamedElement('target'));
     if (targetMessage === undefined) {
       addParseDiagnostic(
-          bundle.diagnostics, element.sourceSpan, 'Missing required <target> element',
-          ParseErrorLevel.ERROR);
+        bundle.diagnostics,
+        element.sourceSpan,
+        'Missing required <target> element',
+        ParseErrorLevel.ERROR
+      );
       return;
     }
 
@@ -149,8 +181,11 @@ function serializeTargetMessage(source: Element): ɵParsedTranslation {
   const serializer = new MessageSerializer(new TargetMessageRenderer(), {
     inlineElements: ['cp', 'sc', 'ec', 'mrk', 'sm', 'em'],
     placeholder: {elementName: 'ph', nameAttribute: 'equiv', bodyAttribute: 'disp'},
-    placeholderContainer:
-        {elementName: 'pc', startAttribute: 'equivStart', endAttribute: 'equivEnd'}
+    placeholderContainer: {
+      elementName: 'pc',
+      startAttribute: 'equivStart',
+      endAttribute: 'equivEnd',
+    },
   });
   return serializer.serialize(parseInnerRange(source));
 }

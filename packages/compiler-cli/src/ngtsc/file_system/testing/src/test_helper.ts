@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 /// <reference types="jasmine"/>
 import * as ts from 'typescript';
 
@@ -20,7 +21,7 @@ import {MockFileSystemWindows} from './mock_file_system_windows';
 export interface TestFile {
   name: AbsoluteFsPath;
   contents: string;
-  isRoot?: boolean|undefined;
+  isRoot?: boolean | undefined;
 }
 
 export interface RunInEachFileSystemFn {
@@ -38,7 +39,7 @@ const FS_WINDOWS = 'Windows';
 const FS_ALL = [FS_OS_X, FS_WINDOWS, FS_UNIX, FS_NATIVE];
 
 function runInEachFileSystemFn(callback: (os: string) => void) {
-  FS_ALL.forEach(os => runInFileSystem(os, callback, false));
+  FS_ALL.forEach((os) => runInFileSystem(os, callback, false));
 }
 
 function runInFileSystem(os: string, callback: (os: string) => void, error: boolean) {
@@ -54,17 +55,16 @@ function runInFileSystem(os: string, callback: (os: string) => void, error: bool
   });
 }
 
-export const runInEachFileSystem: RunInEachFileSystemFn =
-    runInEachFileSystemFn as RunInEachFileSystemFn;
+export const runInEachFileSystem: RunInEachFileSystemFn = runInEachFileSystemFn as RunInEachFileSystemFn;
 
 runInEachFileSystem.native = (callback: (os: string) => void) =>
-    runInFileSystem(FS_NATIVE, callback, true);
+  runInFileSystem(FS_NATIVE, callback, true);
 runInEachFileSystem.osX = (callback: (os: string) => void) =>
-    runInFileSystem(FS_OS_X, callback, true);
+  runInFileSystem(FS_OS_X, callback, true);
 runInEachFileSystem.unix = (callback: (os: string) => void) =>
-    runInFileSystem(FS_UNIX, callback, true);
+  runInFileSystem(FS_UNIX, callback, true);
 runInEachFileSystem.windows = (callback: (os: string) => void) =>
-    runInFileSystem(FS_WINDOWS, callback, true);
+  runInFileSystem(FS_WINDOWS, callback, true);
 
 export function initMockFileSystem(os: string, cwd?: AbsoluteFsPath): void {
   const fs = createMockFileSystem(os, cwd);
@@ -88,11 +88,11 @@ function createMockFileSystem(os: string, cwd?: AbsoluteFsPath): MockFileSystem 
 }
 
 function monkeyPatchTypeScript(os: string, fs: MockFileSystem) {
-  ts.sys.directoryExists = path => {
+  ts.sys.directoryExists = (path) => {
     const absPath = fs.resolve(path);
     return fs.exists(absPath) && fs.stat(absPath).isDirectory();
   };
-  ts.sys.fileExists = path => {
+  ts.sys.fileExists = (path) => {
     const absPath = fs.resolve(path);
     return fs.exists(absPath) && fs.stat(absPath).isFile();
   };
@@ -104,7 +104,7 @@ function monkeyPatchTypeScript(os: string, fs: MockFileSystem) {
   ts.sys.readDirectory = readDirectory;
 
   function getDirectories(path: string): string[] {
-    return fs.readdir(absoluteFrom(path)).filter(p => fs.stat(fs.resolve(path, p)).isDirectory());
+    return fs.readdir(absoluteFrom(path)).filter((p) => fs.stat(fs.resolve(path, p)).isDirectory());
   }
 
   function getFileSystemEntries(path: string): FileSystemEntries {
@@ -134,18 +134,35 @@ function monkeyPatchTypeScript(os: string, fs: MockFileSystem) {
   // Rather than completely re-implementing we are using the `ts.matchFiles` function,
   // which is internal to the `ts` namespace.
   const tsMatchFiles: (
-      path: string, extensions: ReadonlyArray<string>|undefined,
-      excludes: ReadonlyArray<string>|undefined, includes: ReadonlyArray<string>|undefined,
-      useCaseSensitiveFileNames: boolean, currentDirectory: string, depth: number|undefined,
-      getFileSystemEntries: (path: string) => FileSystemEntries,
-      realpath: (path: string) => string) => string[] = (ts as any).matchFiles;
+    path: string,
+    extensions: ReadonlyArray<string> | undefined,
+    excludes: ReadonlyArray<string> | undefined,
+    includes: ReadonlyArray<string> | undefined,
+    useCaseSensitiveFileNames: boolean,
+    currentDirectory: string,
+    depth: number | undefined,
+    getFileSystemEntries: (path: string) => FileSystemEntries,
+    realpath: (path: string) => string
+  ) => string[] = (ts as any).matchFiles;
 
   function readDirectory(
-      path: string, extensions?: ReadonlyArray<string>, excludes?: ReadonlyArray<string>,
-      includes?: ReadonlyArray<string>, depth?: number): string[] {
+    path: string,
+    extensions?: ReadonlyArray<string>,
+    excludes?: ReadonlyArray<string>,
+    includes?: ReadonlyArray<string>,
+    depth?: number
+  ): string[] {
     return tsMatchFiles(
-        path, extensions, excludes, includes, fs.isCaseSensitive(), fs.pwd(), depth,
-        getFileSystemEntries, realPath);
+      path,
+      extensions,
+      excludes,
+      includes,
+      fs.isCaseSensitive(),
+      fs.pwd(),
+      depth,
+      getFileSystemEntries,
+      realPath
+    );
   }
 }
 

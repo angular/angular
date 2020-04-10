@@ -9,7 +9,6 @@
 import {Injectable, RendererType2, Type, ɵstringify as stringify} from '@angular/core';
 import {RenderStore} from './render_store';
 
-
 /**
  * @publicApi
  * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
@@ -25,24 +24,31 @@ export const enum SerializerTypes {
 
 export class LocationType {
   constructor(
-      public href: string, public protocol: string, public host: string, public hostname: string,
-      public port: string, public pathname: string|null, public search: string, public hash: string,
-      public origin: string) {}
+    public href: string,
+    public protocol: string,
+    public host: string,
+    public hostname: string,
+    public port: string,
+    public pathname: string | null,
+    public search: string,
+    public hash: string,
+    public origin: string
+  ) {}
 }
 
 @Injectable()
 export class Serializer {
   constructor(private _renderStore: RenderStore) {}
 
-  serialize(obj: any, type: Type<any>|SerializerTypes = SerializerTypes.PRIMITIVE): Object {
+  serialize(obj: any, type: Type<any> | SerializerTypes = SerializerTypes.PRIMITIVE): Object {
     if (obj == null || type === SerializerTypes.PRIMITIVE) {
       return obj;
     }
     if (Array.isArray(obj)) {
-      return obj.map(v => this.serialize(v, type));
+      return obj.map((v) => this.serialize(v, type));
     }
     if (type === SerializerTypes.RENDER_STORE_OBJECT) {
-      return this._renderStore.serialize(obj) !;
+      return this._renderStore.serialize(obj)!;
     }
     if (type === SerializerTypes.RENDERER_TYPE_2) {
       return this._serializeRendererType2(obj);
@@ -53,13 +59,16 @@ export class Serializer {
     throw new Error(`No serializer for type ${stringify(type)}`);
   }
 
-  deserialize(map: any, type: Type<any>|SerializerTypes = SerializerTypes.PRIMITIVE, data?: any):
-      any {
+  deserialize(
+    map: any,
+    type: Type<any> | SerializerTypes = SerializerTypes.PRIMITIVE,
+    data?: any
+  ): any {
     if (map == null || type === SerializerTypes.PRIMITIVE) {
       return map;
     }
     if (Array.isArray(map)) {
-      return map.map(val => this.deserialize(val, type, data));
+      return map.map((val) => this.deserialize(val, type, data));
     }
     if (type === SerializerTypes.RENDER_STORE_OBJECT) {
       return this._renderStore.deserialize(map);
@@ -89,8 +98,16 @@ export class Serializer {
 
   private _deserializeLocation(loc: {[key: string]: any}): LocationType {
     return new LocationType(
-        loc['href'], loc['protocol'], loc['host'], loc['hostname'], loc['port'], loc['pathname'],
-        loc['search'], loc['hash'], loc['origin']);
+      loc['href'],
+      loc['protocol'],
+      loc['host'],
+      loc['hostname'],
+      loc['port'],
+      loc['pathname'],
+      loc['search'],
+      loc['hash'],
+      loc['origin']
+    );
   }
 
   private _serializeRendererType2(type: RendererType2): {[key: string]: any} {
@@ -107,7 +124,7 @@ export class Serializer {
       id: props['id'],
       encapsulation: props['encapsulation'],
       styles: this.deserialize(props['styles']),
-      data: this.deserialize(props['data'])
+      data: this.deserialize(props['data']),
     };
   }
 }

@@ -5,12 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {CompileReflector} from '../compile_reflector';
 import * as o from './output_ast';
 import {debugOutputAstAsTypeScript} from './ts_emitter';
 
 export function interpretStatements(
-    statements: o.Statement[], reflector: CompileReflector): {[key: string]: any} {
+  statements: o.Statement[],
+  reflector: CompileReflector
+): {[key: string]: any} {
   const ctx = new _ExecutionContext(null, null, null, new Map<string, any>());
   const visitor = new StatementInterpreter(reflector);
   visitor.visitAllStatements(statements, ctx);
@@ -22,8 +25,12 @@ export function interpretStatements(
 }
 
 function _executeFunctionStatements(
-    varNames: string[], varValues: any[], statements: o.Statement[], ctx: _ExecutionContext,
-    visitor: StatementInterpreter): any {
+  varNames: string[],
+  varValues: any[],
+  statements: o.Statement[],
+  ctx: _ExecutionContext,
+  visitor: StatementInterpreter
+): any {
   const childCtx = ctx.createChildWihtLocalVars();
   for (let i = 0; i < varNames.length; i++) {
     childCtx.vars.set(varNames[i], varValues[i]);
@@ -36,8 +43,11 @@ class _ExecutionContext {
   exports: string[] = [];
 
   constructor(
-      public parent: _ExecutionContext|null, public instance: Object|null,
-      public className: string|null, public vars: Map<string, any>) {}
+    public parent: _ExecutionContext | null,
+    public instance: Object | null,
+    public className: string | null,
+    public vars: Map<string, any>
+  ) {}
 
   createChildWihtLocalVars(): _ExecutionContext {
     return new _ExecutionContext(this, this.instance, this.className, new Map<string, any>());
@@ -49,41 +59,49 @@ class ReturnValue {
 }
 
 function createDynamicClass(
-    _classStmt: o.ClassStmt, _ctx: _ExecutionContext, _visitor: StatementInterpreter): Function {
+  _classStmt: o.ClassStmt,
+  _ctx: _ExecutionContext,
+  _visitor: StatementInterpreter
+): Function {
   const propertyDescriptors: {[key: string]: any} = {};
 
   _classStmt.getters.forEach((getter: o.ClassGetter) => {
     // Note: use `function` instead of arrow function to capture `this`
     propertyDescriptors[getter.name] = {
       configurable: false,
-      get: function() {
+      get: function () {
         const instanceCtx = new _ExecutionContext(_ctx, this, _classStmt.name, _ctx.vars);
         return _executeFunctionStatements([], [], getter.body, instanceCtx, _visitor);
-      }
+      },
     };
   });
-  _classStmt.methods.forEach(function(method: o.ClassMethod) {
-    const paramNames = method.params.map(param => param.name);
+  _classStmt.methods.forEach(function (method: o.ClassMethod) {
+    const paramNames = method.params.map((param) => param.name);
     // Note: use `function` instead of arrow function to capture `this`
     propertyDescriptors[method.name!] = {
       writable: false,
       configurable: false,
-      value: function(...args: any[]) {
+      value: function (...args: any[]) {
         const instanceCtx = new _ExecutionContext(_ctx, this, _classStmt.name, _ctx.vars);
         return _executeFunctionStatements(paramNames, args, method.body, instanceCtx, _visitor);
-      }
+      },
     };
   });
 
-  const ctorParamNames = _classStmt.constructorMethod.params.map(param => param.name);
+  const ctorParamNames = _classStmt.constructorMethod.params.map((param) => param.name);
   // Note: use `function` instead of arrow function to capture `this`
-  const ctor = function(this: Object, ...args: any[]) {
+  const ctor = function (this: Object, ...args: any[]) {
     const instanceCtx = new _ExecutionContext(_ctx, this, _classStmt.name, _ctx.vars);
     _classStmt.fields.forEach((field) => {
       (this as any)[field.name] = undefined;
     });
     _executeFunctionStatements(
-        ctorParamNames, args, _classStmt.constructorMethod.body, instanceCtx, _visitor);
+      ctorParamNames,
+      args,
+      _classStmt.constructorMethod.body,
+      instanceCtx,
+      _visitor
+    );
   };
   const superClass = _classStmt.parent ? _classStmt.parent.visitExpression(_visitor, _ctx) : Object;
   ctor.prototype = Object.create(superClass.prototype, propertyDescriptors);
@@ -92,7 +110,7 @@ function createDynamicClass(
 
 class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   constructor(private reflector: CompileReflector) {}
-  debugAst(ast: o.Expression|o.Statement|o.Type): string {
+  debugAst(ast: o.Expression | o.Statement | o.Type): string {
     return debugOutputAstAsTypeScript(ast);
   }
 
@@ -337,7 +355,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   }
   visitLiteralMapExpr(ast: o.LiteralMapExpr, ctx: _ExecutionContext): any {
     const result: {[k: string]: any} = {};
-    ast.entries.forEach(entry => result[entry.key] = entry.value.visitExpression(this, ctx));
+    ast.entries.forEach((entry) => (result[entry.key] = entry.value.visitExpression(this, ctx)));
     return result;
   }
   visitCommaExpr(ast: o.CommaExpr, context: any): any {
@@ -348,7 +366,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     return expressions.map((expr) => expr.visitExpression(this, ctx));
   }
 
-  visitAllStatements(statements: o.Statement[], ctx: _ExecutionContext): ReturnValue|null {
+  visitAllStatements(statements: o.Statement[], ctx: _ExecutionContext): ReturnValue | null {
     for (let i = 0; i < statements.length; i++) {
       const stmt = statements[i];
       const val = stmt.visitStatement(this, ctx);
@@ -361,8 +379,11 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
 }
 
 function _declareFn(
-    varNames: string[], statements: o.Statement[], ctx: _ExecutionContext,
-    visitor: StatementInterpreter): Function {
+  varNames: string[],
+  statements: o.Statement[],
+  ctx: _ExecutionContext,
+  visitor: StatementInterpreter
+): Function {
   return (...args: any[]) => _executeFunctionStatements(varNames, args, statements, ctx, visitor);
 }
 

@@ -15,8 +15,9 @@ class _SerializerVisitor implements html.Visitor {
       return `<${element.name}${this._visitAll(element.attrs, ' ')}/>`;
     }
 
-    return `<${element.name}${this._visitAll(element.attrs, ' ')}>${
-        this._visitAll(element.children)}</${element.name}>`;
+    return `<${element.name}${this._visitAll(element.attrs, ' ')}>${this._visitAll(
+      element.children
+    )}</${element.name}>`;
   }
 
   visitAttribute(attribute: html.Attribute, context: any): any {
@@ -43,12 +44,12 @@ class _SerializerVisitor implements html.Visitor {
     if (nodes.length == 0) {
       return '';
     }
-    return join + nodes.map(a => a.visit(this, null)).join(join);
+    return join + nodes.map((a) => a.visit(this, null)).join(join);
   }
 }
 
 const serializerVisitor = new _SerializerVisitor();
 
 export function serializeNodes(nodes: html.Node[]): string[] {
-  return nodes.map(node => node.visit(serializerVisitor, null));
+  return nodes.map((node) => node.visit(serializerVisitor, null));
 }

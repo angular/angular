@@ -74,7 +74,7 @@ function gulpStatus() {
         new Vinyl({
           path: path.resolve(opt.cwd, filePath),
           cwd: opt.cwd,
-        }),
+        })
       );
 
       RE_STATUS.lastIndex++;

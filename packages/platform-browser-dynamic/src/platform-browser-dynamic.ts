@@ -7,7 +7,14 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {CompilerFactory, PlatformRef, Provider, StaticProvider, createPlatformFactory, platformCore} from '@angular/core';
+import {
+  CompilerFactory,
+  PlatformRef,
+  Provider,
+  StaticProvider,
+  createPlatformFactory,
+  platformCore,
+} from '@angular/core';
 
 import {platformCoreDynamic} from './platform_core_dynamic';
 import {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './platform_providers';
@@ -20,11 +27,15 @@ export {JitCompilerFactory} from './compiler_factory';
 /**
  * @publicApi
  */
-export const RESOURCE_CACHE_PROVIDER: Provider[] =
-    [{provide: ResourceLoader, useClass: CachedResourceLoader, deps: []}];
+export const RESOURCE_CACHE_PROVIDER: Provider[] = [
+  {provide: ResourceLoader, useClass: CachedResourceLoader, deps: []},
+];
 
 /**
  * @publicApi
  */
 export const platformBrowserDynamic = createPlatformFactory(
-    platformCoreDynamic, 'browserDynamic', INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS);
+  platformCoreDynamic,
+  'browserDynamic',
+  INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS
+);

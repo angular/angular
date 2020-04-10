@@ -6,7 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef} from '@angular/core';
+import {
+  Attribute,
+  ChangeDetectorRef,
+  ComponentFactoryResolver,
+  ComponentRef,
+  Directive,
+  EventEmitter,
+  Injector,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewContainerRef,
+} from '@angular/core';
 
 import {Data} from '../config';
 import {ChildrenOutletContexts} from '../router_outlet_context';
@@ -41,22 +53,27 @@ import {PRIMARY_OUTLET} from '../shared';
  */
 @Directive({selector: 'router-outlet', exportAs: 'outlet'})
 export class RouterOutlet implements OnDestroy, OnInit {
-  private activated: ComponentRef<any>|null = null;
-  private _activatedRoute: ActivatedRoute|null = null;
+  private activated: ComponentRef<any> | null = null;
+  private _activatedRoute: ActivatedRoute | null = null;
   private name: string;
 
   @Output('activate') activateEvents = new EventEmitter<any>();
   @Output('deactivate') deactivateEvents = new EventEmitter<any>();
 
   constructor(
-      private parentContexts: ChildrenOutletContexts, private location: ViewContainerRef,
-      private resolver: ComponentFactoryResolver, @Attribute('name') name: string,
-      private changeDetector: ChangeDetectorRef) {
+    private parentContexts: ChildrenOutletContexts,
+    private location: ViewContainerRef,
+    private resolver: ComponentFactoryResolver,
+    @Attribute('name') name: string,
+    private changeDetector: ChangeDetectorRef
+  ) {
     this.name = name || PRIMARY_OUTLET;
     parentContexts.onChildOutletCreated(this.name, this);
   }
 
-  ngOnDestroy(): void { this.parentContexts.onChildOutletDestroyed(this.name); }
+  ngOnDestroy(): void {
+    this.parentContexts.onChildOutletDestroyed(this.name);
+  }
 
   ngOnInit(): void {
     if (!this.activated) {
@@ -75,7 +92,9 @@ export class RouterOutlet implements OnDestroy, OnInit {
     }
   }
 
-  get isActivated(): boolean { return !!this.activated; }
+  get isActivated(): boolean {
+    return !!this.activated;
+  }
 
   get component(): Object {
     if (!this.activated) throw new Error('Outlet is not activated');
@@ -125,13 +144,13 @@ export class RouterOutlet implements OnDestroy, OnInit {
     }
   }
 
-  activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver|null) {
+  activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null) {
     if (this.isActivated) {
       throw new Error('Cannot activate an already activated outlet');
     }
     this._activatedRoute = activatedRoute;
     const snapshot = activatedRoute._futureSnapshot;
-    const component = <any>snapshot.routeConfig !.component;
+    const component = <any>snapshot.routeConfig!.component;
     resolver = resolver || this.resolver;
     const factory = resolver.resolveComponentFactory(component);
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;
@@ -146,8 +165,10 @@ export class RouterOutlet implements OnDestroy, OnInit {
 
 class OutletInjector implements Injector {
   constructor(
-      private route: ActivatedRoute, private childContexts: ChildrenOutletContexts,
-      private parent: Injector) {}
+    private route: ActivatedRoute,
+    private childContexts: ChildrenOutletContexts,
+    private parent: Injector
+  ) {}
 
   get(token: any, notFoundValue?: any): any {
     if (token === ActivatedRoute) {

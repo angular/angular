@@ -8,7 +8,7 @@
 
 const ws = require('nodejs-websocket');
 
-const conn = ws.connect('ws://localhost:8001', {}, function() {
+const conn = ws.connect('ws://localhost:8001', {}, function () {
   conn.send('close');
   conn.close();
 });

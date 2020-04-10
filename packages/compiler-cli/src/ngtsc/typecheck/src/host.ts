@@ -34,16 +34,22 @@ export class TypeCheckProgramHost implements ts.CompilerHost {
   }
 
   getSourceFile(
-      fileName: string, languageVersion: ts.ScriptTarget,
-      onError?: ((message: string) => void)|undefined,
-      shouldCreateNewSourceFile?: boolean|undefined): ts.SourceFile|undefined {
+    fileName: string,
+    languageVersion: ts.ScriptTarget,
+    onError?: ((message: string) => void) | undefined,
+    shouldCreateNewSourceFile?: boolean | undefined
+  ): ts.SourceFile | undefined {
     // Look in the cache for the source file.
-    let sf: ts.SourceFile|undefined = this.sfMap.get(fileName);
+    let sf: ts.SourceFile | undefined = this.sfMap.get(fileName);
     if (sf === undefined) {
       // There should be no cache misses, but just in case, delegate getSourceFile in the event of
       // a cache miss.
       sf = this.delegate.getSourceFile(
-          fileName, languageVersion, onError, shouldCreateNewSourceFile);
+        fileName,
+        languageVersion,
+        onError,
+        shouldCreateNewSourceFile
+      );
       sf && this.sfMap.set(fileName, sf);
     } else {
       // TypeScript doesn't allow returning redirect source files. To avoid unforseen errors we
@@ -63,9 +69,12 @@ export class TypeCheckProgramHost implements ts.CompilerHost {
   }
 
   writeFile(
-      fileName: string, data: string, writeByteOrderMark: boolean,
-      onError: ((message: string) => void)|undefined,
-      sourceFiles: ReadonlyArray<ts.SourceFile>|undefined): void {
+    fileName: string,
+    data: string,
+    writeByteOrderMark: boolean,
+    onError: ((message: string) => void) | undefined,
+    sourceFiles: ReadonlyArray<ts.SourceFile> | undefined
+  ): void {
     throw new Error(`TypeCheckProgramHost should never write files`);
   }
 
@@ -91,7 +100,7 @@ export class TypeCheckProgramHost implements ts.CompilerHost {
     return this.sfMap.has(fileName) || this.delegate.fileExists(fileName);
   }
 
-  readFile(fileName: string): string|undefined {
+  readFile(fileName: string): string | undefined {
     return this.delegate.readFile(fileName);
   }
 }

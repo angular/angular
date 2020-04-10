@@ -8,5 +8,6 @@
  */
 
 console.error(
-    new Error('The \'ivy-ngcc\' command was renamed to just \'ngcc\'. Please update your usage.'));
+  new Error("The 'ivy-ngcc' command was renamed to just 'ngcc'. Please update your usage.")
+);
 process.exit(1);

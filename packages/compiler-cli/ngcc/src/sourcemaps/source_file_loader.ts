@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {commentRegex, fromComment, mapFileCommentRegex} from 'convert-source-map';
 
 import {absoluteFrom, AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
@@ -49,11 +50,16 @@ export class SourceFileLoader {
    * @returns a SourceFile if the content for one was provided or able to be loaded from disk,
    * `null` otherwise.
    */
-  loadSourceFile(sourcePath: AbsoluteFsPath, contents?: string|null, mapAndPath?: null): SourceFile
-      |null;
   loadSourceFile(
-      sourcePath: AbsoluteFsPath, contents: string|null = null,
-      mapAndPath: MapAndPath|null = null): SourceFile|null {
+    sourcePath: AbsoluteFsPath,
+    contents?: string | null,
+    mapAndPath?: null
+  ): SourceFile | null;
+  loadSourceFile(
+    sourcePath: AbsoluteFsPath,
+    contents: string | null = null,
+    mapAndPath: MapAndPath | null = null
+  ): SourceFile | null {
     const previousPaths = this.currentPaths.slice();
     try {
       if (contents === null) {
@@ -68,9 +74,9 @@ export class SourceFileLoader {
         mapAndPath = this.loadSourceMap(sourcePath, contents);
       }
 
-      let map: RawSourceMap|null = null;
+      let map: RawSourceMap | null = null;
       let inline = true;
-      let sources: (SourceFile|null)[] = [];
+      let sources: (SourceFile | null)[] = [];
       if (mapAndPath !== null) {
         const basePath = mapAndPath.mapPath || sourcePath;
         sources = this.processSources(basePath, mapAndPath.map);
@@ -81,7 +87,8 @@ export class SourceFileLoader {
       return new SourceFile(sourcePath, contents, map, inline, sources);
     } catch (e) {
       this.logger.warn(
-          `Unable to fully load ${sourcePath} for source-map flattening: ${e.message}`);
+        `Unable to fully load ${sourcePath} for source-map flattening: ${e.message}`
+      );
       return null;
     } finally {
       // We are finished with this recursion so revert the paths being tracked
@@ -96,7 +103,7 @@ export class SourceFileLoader {
    * Source maps can be inline, as part of a base64 encoded comment, or external as a separate file
    * whose path is indicated in a comment or implied from the name of the source file itself.
    */
-  private loadSourceMap(sourcePath: AbsoluteFsPath, contents: string): MapAndPath|null {
+  private loadSourceMap(sourcePath: AbsoluteFsPath, contents: string): MapAndPath | null {
     const inline = commentRegex.exec(contents);
     if (inline !== null) {
       return {map: fromComment(inline.pop()!).sourcemap, mapPath: null};
@@ -110,7 +117,8 @@ export class SourceFileLoader {
         return {map: this.readRawSourceMap(externalMapPath), mapPath: externalMapPath};
       } catch (e) {
         this.logger.warn(
-            `Unable to fully load ${sourcePath} for source-map flattening: ${e.message}`);
+          `Unable to fully load ${sourcePath} for source-map flattening: ${e.message}`
+        );
         return null;
       }
     }
@@ -127,11 +135,11 @@ export class SourceFileLoader {
    * Iterate over each of the "sources" for this source file's source map, recursively loading each
    * source file and its associated source map.
    */
-  private processSources(basePath: AbsoluteFsPath, map: RawSourceMap): (SourceFile|null)[] {
+  private processSources(basePath: AbsoluteFsPath, map: RawSourceMap): (SourceFile | null)[] {
     const sourceRoot = this.fs.resolve(this.fs.dirname(basePath), map.sourceRoot || '');
     return map.sources.map((source, index) => {
       const path = this.fs.resolve(sourceRoot, source);
-      const content = map.sourcesContent && map.sourcesContent[index] || null;
+      const content = (map.sourcesContent && map.sourcesContent[index]) || null;
       return this.loadSourceFile(path, content, null);
     });
   }
@@ -164,7 +172,8 @@ export class SourceFileLoader {
   private trackPath(path: AbsoluteFsPath): void {
     if (this.currentPaths.includes(path)) {
       throw new Error(
-          `Circular source file mapping dependency: ${this.currentPaths.join(' -> ')} -> ${path}`);
+        `Circular source file mapping dependency: ${this.currentPaths.join(' -> ')} -> ${path}`
+      );
     }
     this.currentPaths.push(path);
   }
@@ -173,7 +182,7 @@ export class SourceFileLoader {
 /** A small helper structure that is returned from `loadSourceMap()`. */
 interface MapAndPath {
   /** The path to the source map if it was external or `null` if it was inline. */
-  mapPath: AbsoluteFsPath|null;
+  mapPath: AbsoluteFsPath | null;
   /** The raw source map itself. */
   map: RawSourceMap;
 }

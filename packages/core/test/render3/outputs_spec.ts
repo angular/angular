@@ -9,7 +9,17 @@
 import {EventEmitter} from '@angular/core';
 
 import {ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
-import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵlistener, ɵɵtext} from '../../src/render3/instructions/all';
+import {
+  ɵɵcontainer,
+  ɵɵcontainerRefreshEnd,
+  ɵɵcontainerRefreshStart,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+  ɵɵembeddedViewEnd,
+  ɵɵembeddedViewStart,
+  ɵɵlistener,
+  ɵɵtext,
+} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {renderToHtml} from './render_util';
@@ -21,14 +31,14 @@ describe('outputs', () => {
     change = new EventEmitter();
     resetStream = new EventEmitter();
 
-    static ɵfac = () => buttonToggle = new ButtonToggle();
+    static ɵfac = () => (buttonToggle = new ButtonToggle());
     static ɵcmp = ɵɵdefineComponent({
       type: ButtonToggle,
       selectors: [['button-toggle']],
-      template: function(rf: RenderFlags, ctx: any) {},
+      template: function (rf: RenderFlags, ctx: any) {},
       decls: 0,
       vars: 0,
-      outputs: {change: 'change', resetStream: 'reset'}
+      outputs: {change: 'change', resetStream: 'reset'},
     });
   }
 
@@ -37,11 +47,13 @@ describe('outputs', () => {
   class OtherDir {
     changeStream = new EventEmitter();
 
-    static ɵfac = () => otherDir = new OtherDir;
-    static ɵdir = ɵɵdefineDirective(
-        {type: OtherDir, selectors: [['', 'otherDir', '']], outputs: {changeStream: 'change'}});
+    static ɵfac = () => (otherDir = new OtherDir());
+    static ɵdir = ɵɵdefineDirective({
+      type: OtherDir,
+      selectors: [['', 'otherDir', '']],
+      outputs: {changeStream: 'change'},
+    });
   }
-
 
   const deps = [ButtonToggle, OtherDir];
 
@@ -59,7 +71,9 @@ describe('outputs', () => {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'button');
         {
-          ɵɵlistener('click', function() { return ctx.onClick(); });
+          ɵɵlistener('click', function () {
+            return ctx.onClick();
+          });
           ɵɵtext(1, 'Click me');
         }
         ɵɵelementEnd();
@@ -73,7 +87,9 @@ describe('outputs', () => {
             if (rf1 & RenderFlags.Create) {
               ɵɵelementStart(0, 'button-toggle');
               {
-                ɵɵlistener('change', function() { return ctx.onChange(); });
+                ɵɵlistener('change', function () {
+                  return ctx.onChange();
+                });
               }
               ɵɵelementEnd();
             }
@@ -82,7 +98,9 @@ describe('outputs', () => {
             if (ɵɵembeddedViewStart(1, 1, 0)) {
               ɵɵelementStart(0, 'div', 0);
               {
-                ɵɵlistener('change', function() { return ctx.onChange(); });
+                ɵɵlistener('change', function () {
+                  return ctx.onChange();
+                });
               }
               ɵɵelementEnd();
             }
@@ -98,15 +116,14 @@ describe('outputs', () => {
     const attrs = [['otherDir', '']];
     renderToHtml(Template, ctx, 3, 0, deps, null, null, false, attrs);
 
-    buttonToggle !.change.next();
+    buttonToggle!.change.next();
     expect(counter).toEqual(1);
 
     ctx.condition = false;
     renderToHtml(Template, ctx, 3, 0, deps, null, null, false, attrs);
     expect(counter).toEqual(1);
 
-    otherDir !.changeStream.next();
+    otherDir!.changeStream.next();
     expect(counter).toEqual(2);
   });
-
 });

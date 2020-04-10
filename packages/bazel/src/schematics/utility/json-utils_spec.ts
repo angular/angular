@@ -12,9 +12,10 @@ import {UnitTestTree} from '@angular-devkit/schematics/testing';
 import {isJsonAstObject, removeKeyValueInAstObject, replacePropertyInAstObject} from './json-utils';
 
 describe('JsonUtils', () => {
-
   let tree: UnitTestTree;
-  beforeEach(() => { tree = new UnitTestTree(new HostTree()); });
+  beforeEach(() => {
+    tree = new UnitTestTree(new HostTree());
+  });
 
   describe('replacePropertyInAstObject', () => {
     it('should replace property', () => {
@@ -56,8 +57,9 @@ describe('JsonUtils', () => {
       tree.create('tmp', content);
       const ast = parseJsonAst(content) as JsonAstObject;
       const recorder = tree.beginUpdate('tmp');
-      expect(() => replacePropertyInAstObject(recorder, ast, 'foo', 'bar'))
-          .toThrowError(`Property 'foo' does not exist in JSON object`);
+      expect(() => replacePropertyInAstObject(recorder, ast, 'foo', 'bar')).toThrowError(
+        `Property 'foo' does not exist in JSON object`
+      );
     });
   });
 

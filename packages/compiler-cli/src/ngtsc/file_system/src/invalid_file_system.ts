@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AbsoluteFsPath, FileStats, FileSystem, PathSegment, PathString} from './types';
 
 /**
@@ -46,7 +47,7 @@ export class InvalidFileSystem implements FileSystem {
   chdir(path: AbsoluteFsPath): void {
     throw makeError();
   }
-  extname(path: AbsoluteFsPath|PathSegment): string {
+  extname(path: AbsoluteFsPath | PathSegment): string {
     throw makeError();
   }
   copyFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void {
@@ -98,5 +99,6 @@ export class InvalidFileSystem implements FileSystem {
 
 function makeError() {
   return new Error(
-      'FileSystem has not been configured. Please call `setFileSystem()` before calling this method.');
+    'FileSystem has not been configured. Please call `setFileSystem()` before calling this method.'
+  );
 }

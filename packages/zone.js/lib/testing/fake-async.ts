@@ -10,10 +10,12 @@ import '../zone-spec/fake-async-test';
 Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const FakeAsyncTestZoneSpec = Zone && (Zone as any)['FakeAsyncTestZoneSpec'];
   type ProxyZoneSpec = {
-    setDelegate(delegateSpec: ZoneSpec): void; getDelegate(): ZoneSpec; resetDelegate(): void;
+    setDelegate(delegateSpec: ZoneSpec): void;
+    getDelegate(): ZoneSpec;
+    resetDelegate(): void;
   };
   const ProxyZoneSpec: {get(): ProxyZoneSpec; assertPresent: () => ProxyZoneSpec} =
-      Zone && (Zone as any)['ProxyZoneSpec'];
+    Zone && (Zone as any)['ProxyZoneSpec'];
 
   let _fakeAsyncTestZoneSpec: any = null;
 
@@ -52,7 +54,7 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
    */
   function fakeAsync(fn: Function): (...args: any[]) => any {
     // Not using an arrow function to preserve context passed from call site
-    return function(this: unknown, ...args: any[]) {
+    return function (this: unknown, ...args: any[]) {
       const proxyZoneSpec = ProxyZoneSpec.assertPresent();
       if (Zone.current.get('FakeAsyncTestZoneSpec')) {
         throw new Error('fakeAsync() calls can not be nested');
@@ -80,13 +82,15 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
 
         if (_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length > 0) {
           throw new Error(
-              `${_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length} ` +
-              `periodic timer(s) still in the queue.`);
+            `${_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length} ` +
+              `periodic timer(s) still in the queue.`
+          );
         }
 
         if (_fakeAsyncTestZoneSpec.pendingTimers.length > 0) {
           throw new Error(
-              `${_fakeAsyncTestZoneSpec.pendingTimers.length} timer(s) still in the queue.`);
+            `${_fakeAsyncTestZoneSpec.pendingTimers.length} timer(s) still in the queue.`
+          );
         }
         return res;
       } finally {
@@ -131,7 +135,9 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
    *
    * @experimental
    */
-  function flush(maxTurns?: number): number { return _getFakeAsyncZoneSpec().flush(maxTurns); }
+  function flush(maxTurns?: number): number {
+    return _getFakeAsyncZoneSpec().flush(maxTurns);
+  }
 
   /**
    * Discard all remaining periodic tasks.
@@ -149,7 +155,15 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
    *
    * @experimental
    */
-  function flushMicrotasks(): void { _getFakeAsyncZoneSpec().flushMicrotasks(); }
+  function flushMicrotasks(): void {
+    _getFakeAsyncZoneSpec().flushMicrotasks();
+  }
   (Zone as any)[api.symbol('fakeAsyncTest')] = {
-      resetFakeAsyncZone, flushMicrotasks, discardPeriodicTasks, tick, flush, fakeAsync};
+    resetFakeAsyncZone,
+    flushMicrotasks,
+    discardPeriodicTasks,
+    tick,
+    flush,
+    fakeAsync,
+  };
 });

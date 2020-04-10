@@ -11,26 +11,60 @@ import '../util/ng_dev_mode';
 import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
 import {getFactoryDef} from '../render3/definition';
-import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors';
+import {
+  throwCyclicDependencyError,
+  throwInvalidProviderError,
+  throwMixedMultiProviderError,
+} from '../render3/errors';
 import {FactoryFn} from '../render3/interfaces/definition';
 import {deepForEach, newArray} from '../util/array_utils';
 import {stringify} from '../util/stringify';
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {Injector} from './injector';
-import {INJECTOR, NG_TEMP_TOKEN_PATH, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE, catchInjectorError, injectArgs, setCurrentInjector, ɵɵinject} from './injector_compatibility';
-import {InjectorType, InjectorTypeWithProviders, getInheritedInjectableDef, getInjectableDef, getInjectorDef, ɵɵInjectableDef} from './interface/defs';
+import {
+  INJECTOR,
+  NG_TEMP_TOKEN_PATH,
+  NullInjector,
+  THROW_IF_NOT_FOUND,
+  USE_VALUE,
+  catchInjectorError,
+  injectArgs,
+  setCurrentInjector,
+  ɵɵinject,
+} from './injector_compatibility';
+import {
+  InjectorType,
+  InjectorTypeWithProviders,
+  getInheritedInjectableDef,
+  getInjectableDef,
+  getInjectorDef,
+  ɵɵInjectableDef,
+} from './interface/defs';
 import {InjectFlags} from './interface/injector';
-import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './interface/provider';
+import {
+  ClassProvider,
+  ConstructorProvider,
+  ExistingProvider,
+  FactoryProvider,
+  StaticClassProvider,
+  StaticProvider,
+  TypeProvider,
+  ValueProvider,
+} from './interface/provider';
 import {INJECTOR_SCOPE} from './scope';
-
-
 
 /**
  * Internal type for a single provider in a deep provider array.
  */
-type SingleProvider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider |
-    ExistingProvider | FactoryProvider | StaticClassProvider;
+type SingleProvider =
+  | TypeProvider
+  | ValueProvider
+  | ClassProvider
+  | ConstructorProvider
+  | ExistingProvider
+  | FactoryProvider
+  | StaticClassProvider;
 
 /**
  * Marker which indicates that a value has not yet been created from the factory function.
@@ -51,7 +85,7 @@ const EMPTY_ARRAY = [] as any[];
 /**
  * A lazily initialized NullInjector.
  */
-let NULL_INJECTOR: Injector|undefined = undefined;
+let NULL_INJECTOR: Injector | undefined = undefined;
 
 function getNullInjector(): Injector {
   if (NULL_INJECTOR === undefined) {
@@ -65,9 +99,9 @@ function getNullInjector(): Injector {
  * current value.
  */
 interface Record<T> {
-  factory: (() => T)|undefined;
-  value: T|{};
-  multi: any[]|undefined;
+  factory: (() => T) | undefined;
+  value: T | {};
+  multi: any[] | undefined;
 }
 
 /**
@@ -76,10 +110,17 @@ interface Record<T> {
  * @publicApi
  */
 export function createInjector(
-    defType: /* InjectorType<any> */ any, parent: Injector | null = null,
-    additionalProviders: StaticProvider[] | null = null, name?: string): Injector {
-  const injector =
-      createInjectorWithoutInjectorInstances(defType, parent, additionalProviders, name);
+  defType: /* InjectorType<any> */ any,
+  parent: Injector | null = null,
+  additionalProviders: StaticProvider[] | null = null,
+  name?: string
+): Injector {
+  const injector = createInjectorWithoutInjectorInstances(
+    defType,
+    parent,
+    additionalProviders,
+    name
+  );
   injector._resolveInjectorDefTypes();
   return injector;
 }
@@ -90,8 +131,11 @@ export function createInjector(
  * should be resolved at a later point by calling `_resolveInjectorDefTypes`.
  */
 export function createInjectorWithoutInjectorInstances(
-    defType: /* InjectorType<any> */ any, parent: Injector | null = null,
-    additionalProviders: StaticProvider[] | null = null, name?: string): R3Injector {
+  defType: /* InjectorType<any> */ any,
+  parent: Injector | null = null,
+  additionalProviders: StaticProvider[] | null = null,
+  name?: string
+): R3Injector {
   return new R3Injector(defType, additionalProviders, parent || getNullInjector(), name);
 }
 
@@ -101,7 +145,7 @@ export class R3Injector {
    * - `null` value implies that we don't have the record. Used by tree-shakable injectors
    * to prevent further searches.
    */
-  private records = new Map<Type<any>|InjectionToken<any>, Record<any>|null>();
+  private records = new Map<Type<any> | InjectionToken<any>, Record<any> | null>();
 
   /**
    * The transitive set of `InjectorType`s which define this injector.
@@ -117,29 +161,35 @@ export class R3Injector {
    * Flag indicating this injector provides the APP_ROOT_SCOPE token, and thus counts as the
    * root scope.
    */
-  private readonly scope: 'root'|'platform'|null;
+  private readonly scope: 'root' | 'platform' | null;
 
-  readonly source: string|null;
+  readonly source: string | null;
 
   /**
    * Flag indicating that this injector was previously destroyed.
    */
-  get destroyed(): boolean { return this._destroyed; }
+  get destroyed(): boolean {
+    return this._destroyed;
+  }
   private _destroyed = false;
 
   constructor(
-      def: InjectorType<any>, additionalProviders: StaticProvider[]|null, readonly parent: Injector,
-      source: string|null = null) {
+    def: InjectorType<any>,
+    additionalProviders: StaticProvider[] | null,
+    readonly parent: Injector,
+    source: string | null = null
+  ) {
     const dedupStack: InjectorType<any>[] = [];
 
     // Start off by creating Records for every provider declared in every InjectorType
     // included transitively in additional providers then do the same for `def`. This order is
     // important because `def` may include providers that override ones in additionalProviders.
-    additionalProviders && deepForEach(
-                               additionalProviders, provider => this.processProvider(
-                                                        provider, def, additionalProviders));
+    additionalProviders &&
+      deepForEach(additionalProviders, (provider) =>
+        this.processProvider(provider, def, additionalProviders)
+      );
 
-    deepForEach([def], injectorDef => this.processInjectorType(injectorDef, [], dedupStack));
+    deepForEach([def], (injectorDef) => this.processInjectorType(injectorDef, [], dedupStack));
 
     // Make sure the INJECTOR token provides this injector.
     this.records.set(INJECTOR, makeRecord(undefined, this));
@@ -166,7 +216,7 @@ export class R3Injector {
     this._destroyed = true;
     try {
       // Call all the lifecycle hooks.
-      this.onDestroy.forEach(service => service.ngOnDestroy());
+      this.onDestroy.forEach((service) => service.ngOnDestroy());
     } finally {
       // Release all references.
       this.records.clear();
@@ -176,8 +226,10 @@ export class R3Injector {
   }
 
   get<T>(
-      token: Type<T>|InjectionToken<T>, notFoundValue: any = THROW_IF_NOT_FOUND,
-      flags = InjectFlags.Default): T {
+    token: Type<T> | InjectionToken<T>,
+    notFoundValue: any = THROW_IF_NOT_FOUND,
+    flags = InjectFlags.Default
+  ): T {
     this.assertNotDestroyed();
     // Set the injection context.
     const previousInjector = setCurrentInjector(this);
@@ -185,7 +237,7 @@ export class R3Injector {
       // Check for the SkipSelf flag.
       if (!(flags & InjectFlags.SkipSelf)) {
         // SkipSelf isn't set, check if the record belongs to this injector.
-        let record: Record<T>|undefined|null = this.records.get(token);
+        let record: Record<T> | undefined | null = this.records.get(token);
         if (record === undefined) {
           // No record, but maybe the token is scoped to this injector. Look for an injectable
           // def with a scope matching this injector.
@@ -210,13 +262,12 @@ export class R3Injector {
       const nextInjector = !(flags & InjectFlags.Self) ? this.parent : getNullInjector();
       // Set the notFoundValue based on the Optional flag - if optional is set and notFoundValue
       // is undefined, the value is null, otherwise it's the notFoundValue.
-      notFoundValue = (flags & InjectFlags.Optional) && notFoundValue === THROW_IF_NOT_FOUND ?
-          null :
-          notFoundValue;
+      notFoundValue =
+        flags & InjectFlags.Optional && notFoundValue === THROW_IF_NOT_FOUND ? null : notFoundValue;
       return nextInjector.get(token, notFoundValue);
     } catch (e) {
       if (e.name === 'NullInjectorError') {
-        const path: any[] = e[NG_TEMP_TOKEN_PATH] = e[NG_TEMP_TOKEN_PATH] || [];
+        const path: any[] = (e[NG_TEMP_TOKEN_PATH] = e[NG_TEMP_TOKEN_PATH] || []);
         path.unshift(stringify(token));
         if (previousInjector) {
           // We still have a parent injector, keep throwing
@@ -235,10 +286,13 @@ export class R3Injector {
   }
 
   /** @internal */
-  _resolveInjectorDefTypes() { this.injectorDefTypes.forEach(defType => this.get(defType)); }
+  _resolveInjectorDefTypes() {
+    this.injectorDefTypes.forEach((defType) => this.get(defType));
+  }
 
   toString() {
-    const tokens = <string[]>[], records = this.records;
+    const tokens = <string[]>[],
+      records = this.records;
     records.forEach((v, token) => tokens.push(stringify(token)));
     return `R3Injector[${tokens.join(', ')}]`;
   }
@@ -259,9 +313,10 @@ export class R3Injector {
    * an injector definition are processed. (following View Engine semantics: see FW-1349)
    */
   private processInjectorType(
-      defOrWrappedDef: InjectorType<any>|InjectorTypeWithProviders<any>,
-      parents: InjectorType<any>[],
-      dedupStack: InjectorType<any>[]): defOrWrappedDef is InjectorTypeWithProviders<any> {
+    defOrWrappedDef: InjectorType<any> | InjectorTypeWithProviders<any>,
+    parents: InjectorType<any>[],
+    dedupStack: InjectorType<any>[]
+  ): defOrWrappedDef is InjectorTypeWithProviders<any> {
     defOrWrappedDef = resolveForwardRef(defOrWrappedDef);
     if (!defOrWrappedDef) return false;
 
@@ -274,19 +329,22 @@ export class R3Injector {
 
     // If that's not present, then attempt to read ngModule from the InjectorDefTypeWithProviders.
     const ngModule =
-        (def == null) && (defOrWrappedDef as InjectorTypeWithProviders<any>).ngModule || undefined;
+      (def == null && (defOrWrappedDef as InjectorTypeWithProviders<any>).ngModule) || undefined;
 
     // Determine the InjectorType. In the case where `defOrWrappedDef` is an `InjectorType`,
     // then this is easy. In the case of an InjectorDefTypeWithProviders, then the definition type
     // is the `ngModule`.
     const defType: InjectorType<any> =
-        (ngModule === undefined) ? (defOrWrappedDef as InjectorType<any>) : ngModule;
+      ngModule === undefined ? (defOrWrappedDef as InjectorType<any>) : ngModule;
 
     // Check for circular dependencies.
     if (ngDevMode && parents.indexOf(defType) !== -1) {
       const defName = stringify(defType);
       throw new Error(
-          `Circular dependency in DI detected for type ${defName}. Dependency path: ${parents.map(defType => stringify(defType)).join(' > ')} > ${defName}.`);
+        `Circular dependency in DI detected for type ${defName}. Dependency path: ${parents
+          .map((defType) => stringify(defType))
+          .join(' > ')} > ${defName}.`
+      );
     }
 
     // Check for multiple imports of the same module
@@ -313,9 +371,9 @@ export class R3Injector {
       // Add it to the set of dedups. This way we can detect multiple imports of the same module
       dedupStack.push(defType);
 
-      let importTypesWithProviders: (InjectorTypeWithProviders<any>[])|undefined;
+      let importTypesWithProviders: InjectorTypeWithProviders<any>[] | undefined;
       try {
-        deepForEach(def.imports, imported => {
+        deepForEach(def.imports, (imported) => {
           if (this.processInjectorType(imported, parents, dedupStack)) {
             if (importTypesWithProviders === undefined) importTypesWithProviders = [];
             // If the processed import is an injector type with providers, we store it in the
@@ -334,9 +392,9 @@ export class R3Injector {
       if (importTypesWithProviders !== undefined) {
         for (let i = 0; i < importTypesWithProviders.length; i++) {
           const {ngModule, providers} = importTypesWithProviders[i];
-          deepForEach(
-              providers !,
-              provider => this.processProvider(provider, ngModule, providers || EMPTY_ARRAY));
+          deepForEach(providers!, (provider) =>
+            this.processProvider(provider, ngModule, providers || EMPTY_ARRAY)
+          );
         }
       }
     }
@@ -349,25 +407,31 @@ export class R3Injector {
     const defProviders = def.providers;
     if (defProviders != null && !isDuplicate) {
       const injectorType = defOrWrappedDef as InjectorType<any>;
-      deepForEach(
-          defProviders, provider => this.processProvider(provider, injectorType, defProviders));
+      deepForEach(defProviders, (provider) =>
+        this.processProvider(provider, injectorType, defProviders)
+      );
     }
 
     return (
-        ngModule !== undefined &&
-        (defOrWrappedDef as InjectorTypeWithProviders<any>).providers !== undefined);
+      ngModule !== undefined &&
+      (defOrWrappedDef as InjectorTypeWithProviders<any>).providers !== undefined
+    );
   }
 
   /**
    * Process a `SingleProvider` and add it.
    */
   private processProvider(
-      provider: SingleProvider, ngModuleType: InjectorType<any>, providers: any[]): void {
+    provider: SingleProvider,
+    ngModuleType: InjectorType<any>,
+    providers: any[]
+  ): void {
     // Determine the token from the provider. Either it's its own token, or has a {provide: ...}
     // property.
     provider = resolveForwardRef(provider);
-    let token: any =
-        isTypeProvider(provider) ? provider : resolveForwardRef(provider && provider.provide);
+    let token: any = isTypeProvider(provider)
+      ? provider
+      : resolveForwardRef(provider && provider.provide);
 
     // Construct a `Record` for the provider.
     const record = providerToRecord(provider, ngModuleType, providers);
@@ -383,11 +447,11 @@ export class R3Injector {
         }
       } else {
         multiRecord = makeRecord(undefined, NOT_YET, true);
-        multiRecord.factory = () => injectArgs(multiRecord !.multi !);
+        multiRecord.factory = () => injectArgs(multiRecord!.multi!);
         this.records.set(token, multiRecord);
       }
       token = provider;
-      multiRecord.multi !.push(provider);
+      multiRecord.multi!.push(provider);
     } else {
       const existing = this.records.get(token);
       if (existing && existing.multi !== undefined) {
@@ -397,12 +461,12 @@ export class R3Injector {
     this.records.set(token, record);
   }
 
-  private hydrate<T>(token: Type<T>|InjectionToken<T>, record: Record<T>): T {
+  private hydrate<T>(token: Type<T> | InjectionToken<T>, record: Record<T>): T {
     if (record.value === CIRCULAR) {
       throwCyclicDependencyError(stringify(token));
     } else if (record.value === NOT_YET) {
       record.value = CIRCULAR;
-      record.value = record.factory !();
+      record.value = record.factory!();
     }
     if (typeof record.value === 'object' && record.value && hasOnDestroy(record.value)) {
       this.onDestroy.add(record.value);
@@ -414,14 +478,14 @@ export class R3Injector {
     if (!def.providedIn) {
       return false;
     } else if (typeof def.providedIn === 'string') {
-      return def.providedIn === 'any' || (def.providedIn === this.scope);
+      return def.providedIn === 'any' || def.providedIn === this.scope;
     } else {
       return this.injectorDefTypes.has(def.providedIn);
     }
   }
 }
 
-function injectableDefOrInjectorDefFactory(token: Type<any>| InjectionToken<any>): FactoryFn<any> {
+function injectableDefOrInjectorDefFactory(token: Type<any> | InjectionToken<any>): FactoryFn<any> {
   // Most tokens will have an injectable def directly on them, which specifies a factory directly.
   const injectableDef = getInjectableDef(token);
   const factory = injectableDef !== null ? injectableDef.factory : getFactoryDef(token);
@@ -474,11 +538,14 @@ function getUndecoratedInjectableFactory(token: Function) {
 }
 
 function providerToRecord(
-    provider: SingleProvider, ngModuleType: InjectorType<any>, providers: any[]): Record<any> {
+  provider: SingleProvider,
+  ngModuleType: InjectorType<any>,
+  providers: any[]
+): Record<any> {
   if (isValueProvider(provider)) {
     return makeRecord(undefined, provider.useValue);
   } else {
-    const factory: (() => any)|undefined = providerToFactory(provider, ngModuleType, providers);
+    const factory: (() => any) | undefined = providerToFactory(provider, ngModuleType, providers);
     return makeRecord(factory, NOT_YET);
   }
 }
@@ -489,8 +556,11 @@ function providerToRecord(
  * @param provider provider to convert to factory
  */
 export function providerToFactory(
-    provider: SingleProvider, ngModuleType?: InjectorType<any>, providers?: any[]): () => any {
-  let factory: (() => any)|undefined = undefined;
+  provider: SingleProvider,
+  ngModuleType?: InjectorType<any>,
+  providers?: any[]
+): () => any {
+  let factory: (() => any) | undefined = undefined;
   if (isTypeProvider(provider)) {
     const unwrappedProvider = resolveForwardRef(provider);
     return getFactoryDef(unwrappedProvider) || injectableDefOrInjectorDefFactory(unwrappedProvider);
@@ -503,13 +573,13 @@ export function providerToFactory(
       factory = () => ɵɵinject(resolveForwardRef(provider.useExisting));
     } else {
       const classRef = resolveForwardRef(
-          provider &&
-          ((provider as StaticClassProvider | ClassProvider).useClass || provider.provide));
+        provider && ((provider as StaticClassProvider | ClassProvider).useClass || provider.provide)
+      );
       if (!classRef) {
         throwInvalidProviderError(ngModuleType, providers, provider);
       }
       if (hasDeps(provider)) {
-        factory = () => new (classRef)(...injectArgs(provider.deps));
+        factory = () => new classRef(...injectArgs(provider.deps));
       } else {
         return getFactoryDef(classRef) || injectableDefOrInjectorDefFactory(classRef);
       }
@@ -519,7 +589,10 @@ export function providerToFactory(
 }
 
 function makeRecord<T>(
-    factory: (() => T) | undefined, value: T | {}, multi: boolean = false): Record<T> {
+  factory: (() => T) | undefined,
+  value: T | {},
+  multi: boolean = false
+): Record<T> {
   return {
     factory: factory,
     value: value,
@@ -547,17 +620,22 @@ export function isClassProvider(value: SingleProvider): value is ClassProvider {
   return !!(value as StaticClassProvider | ClassProvider).useClass;
 }
 
-function hasDeps(value: ClassProvider | ConstructorProvider | StaticClassProvider):
-    value is ClassProvider&{deps: any[]} {
+function hasDeps(
+  value: ClassProvider | ConstructorProvider | StaticClassProvider
+): value is ClassProvider & {deps: any[]} {
   return !!(value as any).deps;
 }
 
 function hasOnDestroy(value: any): value is OnDestroy {
-  return value !== null && typeof value === 'object' &&
-      typeof(value as OnDestroy).ngOnDestroy === 'function';
+  return (
+    value !== null &&
+    typeof value === 'object' &&
+    typeof (value as OnDestroy).ngOnDestroy === 'function'
+  );
 }
 
-function couldBeInjectableType(value: any): value is Type<any>|InjectionToken<any> {
-  return (typeof value === 'function') ||
-      (typeof value === 'object' && value instanceof InjectionToken);
+function couldBeInjectableType(value: any): value is Type<any> | InjectionToken<any> {
+  return (
+    typeof value === 'function' || (typeof value === 'object' && value instanceof InjectionToken)
+  );
 }

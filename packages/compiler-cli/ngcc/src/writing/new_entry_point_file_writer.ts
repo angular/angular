@@ -1,4 +1,3 @@
-
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -6,7 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFromSourceFile, AbsoluteFsPath, dirname, FileSystem, join, relative} from '../../../src/ngtsc/file_system';
+
+import {
+  absoluteFromSourceFile,
+  AbsoluteFsPath,
+  dirname,
+  FileSystem,
+  join,
+  relative,
+} from '../../../src/ngtsc/file_system';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
 import {Logger} from '../logging/logger';
 import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
@@ -29,25 +36,33 @@ export const NGCC_PROPERTY_EXTENSION = '_ivy_ngcc';
  */
 export class NewEntryPointFileWriter extends InPlaceFileWriter {
   constructor(
-      fs: FileSystem, logger: Logger, errorOnFailedEntryPoint: boolean,
-      private pkgJsonUpdater: PackageJsonUpdater) {
+    fs: FileSystem,
+    logger: Logger,
+    errorOnFailedEntryPoint: boolean,
+    private pkgJsonUpdater: PackageJsonUpdater
+  ) {
     super(fs, logger, errorOnFailedEntryPoint);
   }
 
   writeBundle(
-      bundle: EntryPointBundle, transformedFiles: FileToWrite[],
-      formatProperties: EntryPointJsonProperty[]) {
+    bundle: EntryPointBundle,
+    transformedFiles: FileToWrite[],
+    formatProperties: EntryPointJsonProperty[]
+  ) {
     // The new folder is at the root of the overall package
     const entryPoint = bundle.entryPoint;
     const ngccFolder = join(entryPoint.package, NGCC_DIRECTORY);
     this.copyBundle(bundle, entryPoint.package, ngccFolder);
-    transformedFiles.forEach(file => this.writeFile(file, entryPoint.package, ngccFolder));
+    transformedFiles.forEach((file) => this.writeFile(file, entryPoint.package, ngccFolder));
     this.updatePackageJson(entryPoint, formatProperties, ngccFolder);
   }
 
   protected copyBundle(
-      bundle: EntryPointBundle, packagePath: AbsoluteFsPath, ngccFolder: AbsoluteFsPath) {
-    bundle.src.program.getSourceFiles().forEach(sourceFile => {
+    bundle: EntryPointBundle,
+    packagePath: AbsoluteFsPath,
+    ngccFolder: AbsoluteFsPath
+  ) {
+    bundle.src.program.getSourceFiles().forEach((sourceFile) => {
       const relativePath = relative(packagePath, absoluteFromSourceFile(sourceFile));
       const isOutsidePackage = relativePath.startsWith('..');
       if (!sourceFile.isDeclarationFile && !isOutsidePackage) {
@@ -58,8 +73,11 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
     });
   }
 
-  protected writeFile(file: FileToWrite, packagePath: AbsoluteFsPath, ngccFolder: AbsoluteFsPath):
-      void {
+  protected writeFile(
+    file: FileToWrite,
+    packagePath: AbsoluteFsPath,
+    ngccFolder: AbsoluteFsPath
+  ): void {
     if (isDtsPath(file.path.replace(/\.map$/, ''))) {
       // This is either `.d.ts` or `.d.ts.map` file
       super.writeFileAndBackup(file);
@@ -72,8 +90,10 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
   }
 
   protected updatePackageJson(
-      entryPoint: EntryPoint, formatProperties: EntryPointJsonProperty[],
-      ngccFolder: AbsoluteFsPath) {
+    entryPoint: EntryPoint,
+    formatProperties: EntryPointJsonProperty[],
+    ngccFolder: AbsoluteFsPath
+  ) {
     if (formatProperties.length === 0) {
       // No format properties need updating.
       return;
@@ -95,12 +115,14 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
     for (const formatProperty of formatProperties) {
       if (packageJson[formatProperty] !== oldFormatPath) {
         throw new Error(
-            `Unable to update '${packageJsonPath}': Format properties ` +
-            `(${formatProperties.join(', ')}) map to more than one format-path.`);
+          `Unable to update '${packageJsonPath}': Format properties ` +
+            `(${formatProperties.join(', ')}) map to more than one format-path.`
+        );
       }
 
-      update.addChange(
-          [`${formatProperty}${NGCC_PROPERTY_EXTENSION}`], newFormatPath, {before: formatProperty});
+      update.addChange([`${formatProperty}${NGCC_PROPERTY_EXTENSION}`], newFormatPath, {
+        before: formatProperty,
+      });
     }
 
     update.writeChanges(packageJsonPath, packageJson);

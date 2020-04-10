@@ -7,7 +7,13 @@
  */
 
 import {Ng1Token} from '../../src/common/src/angular1';
-import {compileFactory, injectorFactory, parseFactory, rootScopeFactory, setTempInjectorRef} from '../src/angular1_providers';
+import {
+  compileFactory,
+  injectorFactory,
+  parseFactory,
+  rootScopeFactory,
+  setTempInjectorRef,
+} from '../src/angular1_providers';
 
 {
   describe('upgrade angular1_providers', () => {
@@ -43,7 +49,7 @@ import {compileFactory, injectorFactory, parseFactory, rootScopeFactory, setTemp
         const mockInjector = {get: () => undefined, has: () => false};
         setTempInjectorRef(mockInjector);
         injectorFactory();
-        expect(injectorFactory).toThrowError();  // ...because it has been unset
+        expect(injectorFactory).toThrowError(); // ...because it has been unset
       });
     });
 

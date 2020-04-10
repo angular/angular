@@ -15,7 +15,9 @@ import {TestComponentRenderer} from '@angular/core/testing';
  */
 @Injectable()
 export class DOMTestComponentRenderer extends TestComponentRenderer {
-  constructor(@Inject(DOCUMENT) private _doc: any) { super(); }
+  constructor(@Inject(DOCUMENT) private _doc: any) {
+    super();
+  }
 
   insertRootElement(rootElId: string) {
     const template = getDOM().getDefaultDocument().createElement('template');

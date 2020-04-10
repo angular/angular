@@ -5,13 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {DepGraph} from 'dependency-graph';
 import {EntryPoint} from '../../packages/entry_point';
 import {PartiallyOrderedTasks, Task, TaskDependencies} from './api';
 
 /** Stringify a task for debugging purposes. */
-export const stringifyTask = (task: Task): string => `{entryPoint: ${
-    task.entryPoint.name}, formatProperty: ${task.formatProperty}, processDts: ${task.processDts}}`;
+export const stringifyTask = (task: Task): string =>
+  `{entryPoint: ${task.entryPoint.name}, formatProperty: ${task.formatProperty}, processDts: ${task.processDts}}`;
 
 /**
  * Compute a mapping of tasks to the tasks that are dependent on them (if any).
@@ -35,17 +36,20 @@ export const stringifyTask = (task: Task): string => `{entryPoint: ${
  * @return A map from each task to those tasks directly dependent upon it.
  */
 export function computeTaskDependencies(
-    tasks: PartiallyOrderedTasks, graph: DepGraph<EntryPoint>): TaskDependencies {
+  tasks: PartiallyOrderedTasks,
+  graph: DepGraph<EntryPoint>
+): TaskDependencies {
   const dependencies = new TaskDependencies();
   const candidateDependencies = new Map<string, Task>();
 
-  tasks.forEach(task => {
+  tasks.forEach((task) => {
     const entryPointPath = task.entryPoint.path;
 
     // Find the earlier tasks (`candidateDependencies`) that this task depends upon.
     const deps = graph.dependenciesOf(entryPointPath);
-    const taskDependencies = deps.filter(dep => candidateDependencies.has(dep))
-                                 .map(dep => candidateDependencies.get(dep)!);
+    const taskDependencies = deps
+      .filter((dep) => candidateDependencies.has(dep))
+      .map((dep) => candidateDependencies.get(dep)!);
 
     // If this task has dependencies, add it to the dependencies and dependents maps.
     if (taskDependencies.length > 0) {
@@ -63,8 +67,9 @@ export function computeTaskDependencies(
       if (candidateDependencies.has(entryPointPath)) {
         const otherTask = candidateDependencies.get(entryPointPath)!;
         throw new Error(
-            'Invariant violated: Multiple tasks are assigned generating typings for ' +
-            `'${entryPointPath}':\n  - ${stringifyTask(otherTask)}\n  - ${stringifyTask(task)}`);
+          'Invariant violated: Multiple tasks are assigned generating typings for ' +
+            `'${entryPointPath}':\n  - ${stringifyTask(otherTask)}\n  - ${stringifyTask(task)}`
+        );
       }
       // This task can potentially be a dependency (i.e. it generates typings), so add it to the
       // list of candidate dependencies for subsequent tasks.
@@ -122,10 +127,14 @@ export function getBlockedTasks(dependencies: TaskDependencies): Map<Task, Set<T
  * @return The list of tasks sorted by priority.
  */
 export function sortTasksByPriority(
-    tasks: PartiallyOrderedTasks, dependencies: TaskDependencies): PartiallyOrderedTasks {
+  tasks: PartiallyOrderedTasks,
+  dependencies: TaskDependencies
+): PartiallyOrderedTasks {
   const priorityPerTask = new Map<Task, [number, number]>();
-  const computePriority = (task: Task, idx: number):
-      [number, number] => [dependencies.has(task) ? dependencies.get(task)!.size : 0, idx];
+  const computePriority = (task: Task, idx: number): [number, number] => [
+    dependencies.has(task) ? dependencies.get(task)!.size : 0,
+    idx,
+  ];
 
   tasks.forEach((task, i) => priorityPerTask.set(task, computePriority(task, i)));
 
@@ -133,6 +142,6 @@ export function sortTasksByPriority(
     const [p1, idx1] = priorityPerTask.get(task1)!;
     const [p2, idx2] = priorityPerTask.get(task2)!;
 
-    return (p2 - p1) || (idx1 - idx2);
+    return p2 - p1 || idx1 - idx2;
   });
 }

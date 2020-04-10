@@ -5,38 +5,62 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompileProviderMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary} from '../compile_metadata';
+
+import {
+  CompileDirectiveMetadata,
+  CompileDirectiveSummary,
+  CompileNgModuleMetadata,
+  CompileNgModuleSummary,
+  CompilePipeMetadata,
+  CompileProviderMetadata,
+  CompileSummaryKind,
+  CompileTypeMetadata,
+  CompileTypeSummary,
+} from '../compile_metadata';
 import * as o from '../output/output_ast';
 import {Summary, SummaryResolver} from '../summary_resolver';
 import {OutputContext, ValueTransformer, ValueVisitor, visitValue} from '../util';
 
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
-import {ResolvedStaticSymbol, StaticSymbolResolver, unwrapResolvedMetadata} from './static_symbol_resolver';
+import {
+  ResolvedStaticSymbol,
+  StaticSymbolResolver,
+  unwrapResolvedMetadata,
+} from './static_symbol_resolver';
 import {isLoweredSymbol, ngfactoryFilePath, summaryForJitFileName, summaryForJitName} from './util';
 
 export function serializeSummaries(
-    srcFileName: string, forJitCtx: OutputContext|null,
-    summaryResolver: SummaryResolver<StaticSymbol>, symbolResolver: StaticSymbolResolver,
-    symbols: ResolvedStaticSymbol[], types: {
-      summary: CompileTypeSummary,
-      metadata: CompileNgModuleMetadata|CompileDirectiveMetadata|CompilePipeMetadata|
-      CompileTypeMetadata
-    }[],
-    createExternalSymbolReexports =
-        false): {json: string, exportAs: {symbol: StaticSymbol, exportAs: string}[]} {
+  srcFileName: string,
+  forJitCtx: OutputContext | null,
+  summaryResolver: SummaryResolver<StaticSymbol>,
+  symbolResolver: StaticSymbolResolver,
+  symbols: ResolvedStaticSymbol[],
+  types: {
+    summary: CompileTypeSummary;
+    metadata:
+      | CompileNgModuleMetadata
+      | CompileDirectiveMetadata
+      | CompilePipeMetadata
+      | CompileTypeMetadata;
+  }[],
+  createExternalSymbolReexports = false
+): {json: string; exportAs: {symbol: StaticSymbol; exportAs: string}[]} {
   const toJsonSerializer = new ToJsonSerializer(symbolResolver, summaryResolver, srcFileName);
 
   // for symbols, we use everything except for the class metadata itself
   // (we keep the statics though), as the class metadata is contained in the
   // CompileTypeSummary.
-  symbols.forEach(
-      (resolvedSymbol) => toJsonSerializer.addSummary(
-          {symbol: resolvedSymbol.symbol, metadata: resolvedSymbol.metadata}));
+  symbols.forEach((resolvedSymbol) =>
+    toJsonSerializer.addSummary({symbol: resolvedSymbol.symbol, metadata: resolvedSymbol.metadata})
+  );
 
   // Add type summaries.
   types.forEach(({summary, metadata}) => {
-    toJsonSerializer.addSummary(
-        {symbol: summary.type.reference, metadata: undefined, type: summary});
+    toJsonSerializer.addSummary({
+      symbol: summary.type.reference,
+      metadata: undefined,
+      type: summary,
+    });
   });
   const {json, exportAs} = toJsonSerializer.serialize(createExternalSymbolReexports);
   if (forJitCtx) {
@@ -55,11 +79,14 @@ export function serializeSummaries(
 }
 
 export function deserializeSummaries(
-    symbolCache: StaticSymbolCache, summaryResolver: SummaryResolver<StaticSymbol>,
-    libraryFileName: string, json: string): {
-  moduleName: string|null,
-  summaries: Summary<StaticSymbol>[],
-  importAs: {symbol: StaticSymbol, importAs: StaticSymbol}[]
+  symbolCache: StaticSymbolCache,
+  summaryResolver: SummaryResolver<StaticSymbol>,
+  libraryFileName: string,
+  json: string
+): {
+  moduleName: string | null;
+  summaries: Summary<StaticSymbol>[];
+  importAs: {symbol: StaticSymbol; importAs: StaticSymbol}[];
 } {
   const deserializer = new FromJsonDeserializer(symbolCache, summaryResolver);
   return deserializer.deserialize(libraryFileName, json);
@@ -70,12 +97,16 @@ export function createForJitStub(outputCtx: OutputContext, reference: StaticSymb
 }
 
 function createSummaryForJitFunction(
-    outputCtx: OutputContext, reference: StaticSymbol, value: o.Expression) {
+  outputCtx: OutputContext,
+  reference: StaticSymbol,
+  value: o.Expression
+) {
   const fnName = summaryForJitName(reference.name);
   outputCtx.statements.push(
-      o.fn([], [new o.ReturnStatement(value)], new o.ArrayType(o.DYNAMIC_TYPE)).toDeclStmt(fnName, [
-        o.StmtModifier.Final, o.StmtModifier.Exported
-      ]));
+    o
+      .fn([], [new o.ReturnStatement(value)], new o.ArrayType(o.DYNAMIC_TYPE))
+      .toDeclStmt(fnName, [o.StmtModifier.Final, o.StmtModifier.Exported])
+  );
 }
 
 const enum SerializationFlags {
@@ -92,13 +123,15 @@ class ToJsonSerializer extends ValueTransformer {
   // StaticSymbols, but otherwise has the same shape as the original objects.
   private processedSummaryBySymbol = new Map<StaticSymbol, any>();
   private processedSummaries: any[] = [];
-  private moduleName: string|null;
+  private moduleName: string | null;
 
   unprocessedSymbolSummariesBySymbol = new Map<StaticSymbol, Summary<StaticSymbol>>();
 
   constructor(
-      private symbolResolver: StaticSymbolResolver,
-      private summaryResolver: SummaryResolver<StaticSymbol>, private srcFileName: string) {
+    private symbolResolver: StaticSymbolResolver,
+    private summaryResolver: SummaryResolver<StaticSymbol>,
+    private srcFileName: string
+  ) {
     super();
     this.moduleName = symbolResolver.getKnownModuleName(srcFileName);
   }
@@ -144,8 +177,10 @@ class ToJsonSerializer extends ValueTransformer {
       // `export const x = new InjectionToken(...)`
       unprocessedSummary.metadata = metadata;
       processedSummary.metadata = this.processValue(metadata, SerializationFlags.ResolveValue);
-      if (metadata instanceof StaticSymbol &&
-          this.summaryResolver.isLibraryFile(metadata.filePath)) {
+      if (
+        metadata instanceof StaticSymbol &&
+        this.summaryResolver.isLibraryFile(metadata.filePath)
+      ) {
         const declarationSymbol = this.symbols[this.indexBySymbol.get(metadata)!];
         if (!isLoweredSymbol(declarationSymbol.name)) {
           // Note: symbols that were introduced during codegen in the user file can have a reexport
@@ -170,8 +205,10 @@ class ToJsonSerializer extends ValueTransformer {
         const ngModuleSummary = <CompileNgModuleSummary>summary.type;
         ngModuleSummary.exportedDirectives.concat(ngModuleSummary.exportedPipes).forEach((id) => {
           const symbol: StaticSymbol = id.reference;
-          if (this.summaryResolver.isLibraryFile(symbol.filePath) &&
-              !this.unprocessedSymbolSummariesBySymbol.has(symbol)) {
+          if (
+            this.summaryResolver.isLibraryFile(symbol.filePath) &&
+            !this.unprocessedSymbolSummariesBySymbol.has(symbol)
+          ) {
             const summary = this.summaryResolver.resolveSummary(symbol);
             if (summary) {
               this.addSummary(summary);
@@ -188,15 +225,16 @@ class ToJsonSerializer extends ValueTransformer {
    * order to avoid dynamically generated module dependencies which can break strict dependency
    * enforcements (as in Google3). Read more here: https://github.com/angular/angular/issues/25644
    */
-  serialize(createExternalSymbolReexports: boolean):
-      {json: string, exportAs: {symbol: StaticSymbol, exportAs: string}[]} {
-    const exportAs: {symbol: StaticSymbol, exportAs: string}[] = [];
+  serialize(
+    createExternalSymbolReexports: boolean
+  ): {json: string; exportAs: {symbol: StaticSymbol; exportAs: string}[]} {
+    const exportAs: {symbol: StaticSymbol; exportAs: string}[] = [];
     const json = JSON.stringify({
       moduleName: this.moduleName,
       summaries: this.processedSummaries,
       symbols: this.symbols.map((symbol, index) => {
         symbol.assertNoMembers();
-        let importAs: string|number = undefined!;
+        let importAs: string | number = undefined!;
         if (this.summaryResolver.isLibraryFile(symbol.filePath)) {
           const reexportSymbol = this.reexportedBy.get(symbol);
           if (reexportSymbol) {
@@ -223,9 +261,9 @@ class ToJsonSerializer extends ValueTransformer {
           __symbol: index,
           name: symbol.name,
           filePath: this.summaryResolver.toSummaryFileName(symbol.filePath, this.srcFileName),
-          importAs: importAs
+          importAs: importAs,
         };
-      })
+      }),
     });
     return {json, exportAs};
   }
@@ -265,10 +303,12 @@ class ToJsonSerializer extends ValueTransformer {
    * resolved to a type or could not be resolved.
    */
   private visitStaticSymbol(baseSymbol: StaticSymbol, flags: SerializationFlags): number {
-    let index: number|undefined|null = this.indexBySymbol.get(baseSymbol);
-    let summary: Summary<StaticSymbol>|null = null;
-    if (flags & SerializationFlags.ResolveValue &&
-        this.summaryResolver.isLibraryFile(baseSymbol.filePath)) {
+    let index: number | undefined | null = this.indexBySymbol.get(baseSymbol);
+    let summary: Summary<StaticSymbol> | null = null;
+    if (
+      flags & SerializationFlags.ResolveValue &&
+      this.summaryResolver.isLibraryFile(baseSymbol.filePath)
+    ) {
       if (this.unprocessedSymbolSummariesBySymbol.has(baseSymbol)) {
         // the summary for this symbol was already added
         // -> nothing to do.
@@ -298,7 +338,7 @@ class ToJsonSerializer extends ValueTransformer {
     return index;
   }
 
-  private loadSummary(symbol: StaticSymbol): Summary<StaticSymbol>|null {
+  private loadSummary(symbol: StaticSymbol): Summary<StaticSymbol> | null {
     let summary = this.summaryResolver.resolveSummary(symbol);
     if (!summary) {
       // some symbols might originate from a plain typescript library
@@ -315,20 +355,30 @@ class ToJsonSerializer extends ValueTransformer {
 
 class ForJitSerializer {
   private data: Array<{
-    summary: CompileTypeSummary,
-    metadata: CompileNgModuleMetadata|CompileDirectiveMetadata|CompilePipeMetadata|
-    CompileTypeMetadata|null,
-    isLibrary: boolean
+    summary: CompileTypeSummary;
+    metadata:
+      | CompileNgModuleMetadata
+      | CompileDirectiveMetadata
+      | CompilePipeMetadata
+      | CompileTypeMetadata
+      | null;
+    isLibrary: boolean;
   }> = [];
 
   constructor(
-      private outputCtx: OutputContext, private symbolResolver: StaticSymbolResolver,
-      private summaryResolver: SummaryResolver<StaticSymbol>) {}
+    private outputCtx: OutputContext,
+    private symbolResolver: StaticSymbolResolver,
+    private summaryResolver: SummaryResolver<StaticSymbol>
+  ) {}
 
   addSourceType(
-      summary: CompileTypeSummary,
-      metadata: CompileNgModuleMetadata|CompileDirectiveMetadata|CompilePipeMetadata|
-      CompileTypeMetadata) {
+    summary: CompileTypeSummary,
+    metadata:
+      | CompileNgModuleMetadata
+      | CompileDirectiveMetadata
+      | CompilePipeMetadata
+      | CompileTypeMetadata
+  ) {
     this.data.push({summary, metadata, isLibrary: false});
   }
 
@@ -336,7 +386,7 @@ class ForJitSerializer {
     this.data.push({summary, metadata: null, isLibrary: true});
   }
 
-  serialize(exportAsArr: {symbol: StaticSymbol, exportAs: string}[]): void {
+  serialize(exportAsArr: {symbol: StaticSymbol; exportAs: string}[]): void {
     const exportAsBySymbol = new Map<StaticSymbol, string>();
     for (const {symbol, exportAs} of exportAsArr) {
       exportAsBySymbol.set(symbol, exportAs);
@@ -358,8 +408,10 @@ class ForJitSerializer {
       if (!isLibrary) {
         const fnName = summaryForJitName(summary.type.reference.name);
         createSummaryForJitFunction(
-            this.outputCtx, summary.type.reference,
-            this.serializeSummaryWithDeps(summary, metadata!));
+          this.outputCtx,
+          summary.type.reference,
+          this.serializeSummaryWithDeps(summary, metadata!)
+        );
       }
     }
 
@@ -367,33 +419,45 @@ class ForJitSerializer {
       if (this.summaryResolver.isLibraryFile(ngModuleSymbol.filePath)) {
         let exportAs = exportAsBySymbol.get(ngModuleSymbol) || ngModuleSymbol.name;
         const jitExportAsName = summaryForJitName(exportAs);
-        this.outputCtx.statements.push(o.variable(jitExportAsName)
-                                           .set(this.serializeSummaryRef(ngModuleSymbol))
-                                           .toDeclStmt(null, [o.StmtModifier.Exported]));
+        this.outputCtx.statements.push(
+          o
+            .variable(jitExportAsName)
+            .set(this.serializeSummaryRef(ngModuleSymbol))
+            .toDeclStmt(null, [o.StmtModifier.Exported])
+        );
       }
     });
   }
 
   private serializeSummaryWithDeps(
-      summary: CompileTypeSummary,
-      metadata: CompileNgModuleMetadata|CompileDirectiveMetadata|CompilePipeMetadata|
-      CompileTypeMetadata): o.Expression {
+    summary: CompileTypeSummary,
+    metadata:
+      | CompileNgModuleMetadata
+      | CompileDirectiveMetadata
+      | CompilePipeMetadata
+      | CompileTypeMetadata
+  ): o.Expression {
     const expressions: o.Expression[] = [this.serializeSummary(summary)];
     let providers: CompileProviderMetadata[] = [];
     if (metadata instanceof CompileNgModuleMetadata) {
-      expressions.push(...
-                       // For directives / pipes, we only add the declared ones,
-                       // and rely on transitively importing NgModules to get the transitive
-                       // summaries.
-                       metadata.declaredDirectives.concat(metadata.declaredPipes)
-                           .map(type => type.reference)
-                           // For modules,
-                           // we also add the summaries for modules
-                           // from libraries.
-                           // This is ok as we produce reexports for all transitive modules.
-                           .concat(metadata.transitiveModule.modules.map(type => type.reference)
-                                       .filter(ref => ref !== metadata.type.reference))
-                           .map((ref) => this.serializeSummaryRef(ref)));
+      expressions.push(
+        ...// For directives / pipes, we only add the declared ones,
+        // and rely on transitively importing NgModules to get the transitive
+        // summaries.
+        metadata.declaredDirectives
+          .concat(metadata.declaredPipes)
+          .map((type) => type.reference)
+          // For modules,
+          // we also add the summaries for modules
+          // from libraries.
+          // This is ok as we produce reexports for all transitive modules.
+          .concat(
+            metadata.transitiveModule.modules
+              .map((type) => type.reference)
+              .filter((ref) => ref !== metadata.type.reference)
+          )
+          .map((ref) => this.serializeSummaryRef(ref))
+      );
       // Note: We don't use `NgModuleSummary.providers`, as that one is transitive,
       // and we already have transitive modules.
       providers = metadata.providers;
@@ -406,16 +470,23 @@ class ForJitSerializer {
     // providers without ctor arguments to skip the `@Injectable` decorator,
     // i.e. we didn't generate .ngsummary.ts files for these.
     expressions.push(
-        ...providers.filter(provider => !!provider.useClass).map(provider => this.serializeSummary({
-          summaryKind: CompileSummaryKind.Injectable,
-          type: provider.useClass
-        } as CompileTypeSummary)));
+      ...providers
+        .filter((provider) => !!provider.useClass)
+        .map((provider) =>
+          this.serializeSummary({
+            summaryKind: CompileSummaryKind.Injectable,
+            type: provider.useClass,
+          } as CompileTypeSummary)
+        )
+    );
     return o.literalArr(expressions);
   }
 
   private serializeSummaryRef(typeSymbol: StaticSymbol): o.Expression {
     const jitImportedSymbol = this.symbolResolver.getStaticSymbol(
-        summaryForJitFileName(typeSymbol.filePath), summaryForJitName(typeSymbol.name));
+      summaryForJitFileName(typeSymbol.filePath),
+      summaryForJitName(typeSymbol.name)
+    );
     return this.outputCtx.importExpr(jitImportedSymbol);
   }
 
@@ -424,11 +495,14 @@ class ForJitSerializer {
 
     class Transformer implements ValueVisitor {
       visitArray(arr: any[], context: any): any {
-        return o.literalArr(arr.map(entry => visitValue(entry, this, context)));
+        return o.literalArr(arr.map((entry) => visitValue(entry, this, context)));
       }
       visitStringMap(map: {[key: string]: any}, context: any): any {
-        return new o.LiteralMapExpr(Object.keys(map).map(
-            (key) => new o.LiteralMapEntry(key, visitValue(map[key], this, context), false)));
+        return new o.LiteralMapExpr(
+          Object.keys(map).map(
+            (key) => new o.LiteralMapEntry(key, visitValue(map[key], this, context), false)
+          )
+        );
       }
       visitPrimitive(value: any, context: any): any {
         return o.literal(value);
@@ -451,30 +525,38 @@ class FromJsonDeserializer extends ValueTransformer {
   private symbols!: StaticSymbol[];
 
   constructor(
-      private symbolCache: StaticSymbolCache,
-      private summaryResolver: SummaryResolver<StaticSymbol>) {
+    private symbolCache: StaticSymbolCache,
+    private summaryResolver: SummaryResolver<StaticSymbol>
+  ) {
     super();
   }
 
-  deserialize(libraryFileName: string, json: string): {
-    moduleName: string|null,
-    summaries: Summary<StaticSymbol>[],
-    importAs: {symbol: StaticSymbol, importAs: StaticSymbol}[]
+  deserialize(
+    libraryFileName: string,
+    json: string
+  ): {
+    moduleName: string | null;
+    summaries: Summary<StaticSymbol>[];
+    importAs: {symbol: StaticSymbol; importAs: StaticSymbol}[];
   } {
-    const data: {moduleName: string|null, summaries: any[], symbols: any[]} = JSON.parse(json);
-    const allImportAs: {symbol: StaticSymbol, importAs: StaticSymbol}[] = [];
-    this.symbols = data.symbols.map(
-        (serializedSymbol) => this.symbolCache.get(
-            this.summaryResolver.fromSummaryFileName(serializedSymbol.filePath, libraryFileName),
-            serializedSymbol.name));
+    const data: {moduleName: string | null; summaries: any[]; symbols: any[]} = JSON.parse(json);
+    const allImportAs: {symbol: StaticSymbol; importAs: StaticSymbol}[] = [];
+    this.symbols = data.symbols.map((serializedSymbol) =>
+      this.symbolCache.get(
+        this.summaryResolver.fromSummaryFileName(serializedSymbol.filePath, libraryFileName),
+        serializedSymbol.name
+      )
+    );
     data.symbols.forEach((serializedSymbol, index) => {
       const symbol = this.symbols[index];
       const importAs = serializedSymbol.importAs;
       if (typeof importAs === 'number') {
         allImportAs.push({symbol, importAs: this.symbols[importAs]});
       } else if (typeof importAs === 'string') {
-        allImportAs.push(
-            {symbol, importAs: this.symbolCache.get(ngfactoryFilePath(libraryFileName), importAs)});
+        allImportAs.push({
+          symbol,
+          importAs: this.symbolCache.get(ngfactoryFilePath(libraryFileName), importAs),
+        });
       }
     });
     const summaries = visitValue(data.summaries, this, null) as Summary<StaticSymbol>[];
@@ -485,8 +567,9 @@ class FromJsonDeserializer extends ValueTransformer {
     if ('__symbol' in map) {
       const baseSymbol = this.symbols[map['__symbol']];
       const members = map['members'];
-      return members.length ? this.symbolCache.get(baseSymbol.filePath, baseSymbol.name, members) :
-                              baseSymbol;
+      return members.length
+        ? this.symbolCache.get(baseSymbol.filePath, baseSymbol.name, members)
+        : baseSymbol;
     } else {
       return super.visitStringMap(map, context);
     }
@@ -502,6 +585,10 @@ function isFunctionCall(metadata: any): boolean {
 }
 
 function isMethodCallOnVariable(metadata: any): boolean {
-  return isCall(metadata) && metadata.expression && metadata.expression.__symbolic === 'select' &&
-      unwrapResolvedMetadata(metadata.expression.expression) instanceof StaticSymbol;
+  return (
+    isCall(metadata) &&
+    metadata.expression &&
+    metadata.expression.__symbolic === 'select' &&
+    unwrapResolvedMetadata(metadata.expression.expression) instanceof StaticSymbol
+  );
 }

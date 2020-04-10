@@ -14,7 +14,10 @@ import {SerializationOptions, publicApi} from './serializer';
 export {SerializationOptions, publicApi} from './serializer';
 
 export function generateGoldenFile(
-    entrypoint: string, outFile: string, options: SerializationOptions = {}): void {
+  entrypoint: string,
+  outFile: string,
+  options: SerializationOptions = {}
+): void {
   const output = publicApi(entrypoint, options);
 
   ensureDirectory(path.dirname(outFile));
@@ -22,7 +25,10 @@ export function generateGoldenFile(
 }
 
 export function verifyAgainstGoldenFile(
-    entrypoint: string, goldenFile: string, options: SerializationOptions = {}): string {
+  entrypoint: string,
+  goldenFile: string,
+  options: SerializationOptions = {}
+): string {
   const actual = publicApi(entrypoint, options);
   const expected = fs.existsSync(goldenFile) ? fs.readFileSync(goldenFile).toString() : '';
 

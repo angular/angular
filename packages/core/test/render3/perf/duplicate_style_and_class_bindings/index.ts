@@ -5,8 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ɵɵadvance} from '../../../../src/render3/instructions/advance';
-import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element';
+import {
+  ɵɵelement,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+} from '../../../../src/render3/instructions/element';
 import {refreshView} from '../../../../src/render3/instructions/shared';
 import {ɵɵclassProp, ɵɵstyleProp} from '../../../../src/render3/instructions/styling';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
@@ -149,19 +154,23 @@ function dirThatSetsFooClassHostBindings(rf: RenderFlags, ctx: any) {
 }
 
 const rootLView = setupRootViewWithEmbeddedViews(
-    testTemplate, 11, 10, 1000, null,
-    [
-      ['dir-that-sets-width', '', 'dir-that-sets-foo-class', ''],
-    ],
-    [
-      defineBenchmarkTestDirective('dir-that-sets-width', dirThatSetsWidthHostBindings),
-      defineBenchmarkTestDirective('dir-that-sets-foo-class', dirThatSetsFooClassHostBindings),
-    ]);
+  testTemplate,
+  11,
+  10,
+  1000,
+  null,
+  [['dir-that-sets-width', '', 'dir-that-sets-foo-class', '']],
+  [
+    defineBenchmarkTestDirective('dir-that-sets-width', dirThatSetsWidthHostBindings),
+    defineBenchmarkTestDirective('dir-that-sets-foo-class', dirThatSetsFooClassHostBindings),
+  ]
+);
 const rootTView = rootLView[TVIEW];
 
 // scenario to benchmark
-const duplicateStyleAndClassBindingsBenchmark =
-    createBenchmark('duplicate style and class bindings');
+const duplicateStyleAndClassBindingsBenchmark = createBenchmark(
+  'duplicate style and class bindings'
+);
 const refreshTime = duplicateStyleAndClassBindingsBenchmark('refresh');
 
 // run change detection in the update mode

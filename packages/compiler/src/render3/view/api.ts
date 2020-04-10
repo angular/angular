@@ -14,7 +14,6 @@ import * as t from '../r3_ast';
 import {R3DependencyMetadata} from '../r3_factory';
 import {R3Reference} from '../util';
 
-
 /**
  * Information needed to compile a directive for the render3 runtime.
  */
@@ -51,12 +50,12 @@ export interface R3DirectiveMetadata {
   /**
    * Dependencies of the directive's constructor.
    */
-  deps: R3DependencyMetadata[]|'invalid'|null;
+  deps: R3DependencyMetadata[] | 'invalid' | null;
 
   /**
    * Unparsed selector of the directive, or `null` if there was no selector.
    */
-  selector: string|null;
+  selector: string | null;
 
   /**
    * Information about the content queries made by the directive.
@@ -88,7 +87,7 @@ export interface R3DirectiveMetadata {
   /**
    * A mapping of input field names to the property names.
    */
-  inputs: {[field: string]: string|[string, string]};
+  inputs: {[field: string]: string | [string, string]};
 
   /**
    * A mapping of output field names to the property names.
@@ -109,12 +108,12 @@ export interface R3DirectiveMetadata {
    * Reference name under which to export the directive's type in a template,
    * if any.
    */
-  exportAs: string[]|null;
+  exportAs: string[] | null;
 
   /**
    * The list of providers defined in the directive.
    */
-  providers: o.Expression|null;
+  providers: o.Expression | null;
 }
 
 /**
@@ -147,7 +146,7 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
    * A list of directive selectors and an expression referencing the directive type which are in the
    * scope of the compilation.
    */
-  directives: {selector: string, expression: o.Expression}[];
+  directives: {selector: string; expression: o.Expression}[];
 
   /**
    * Whether to wrap the 'directives' and/or `pipes` array, if one is generated, in a closure.
@@ -175,12 +174,12 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
   /**
    * A collection of animation triggers that will be used in the component template.
    */
-  animations: o.Expression|null;
+  animations: o.Expression | null;
 
   /**
    * The list of view providers defined in the component.
    */
-  viewProviders: o.Expression|null;
+  viewProviders: o.Expression | null;
 
   /**
    * Path to the .ts file in which this template's generated code will be included, relative to
@@ -223,7 +222,7 @@ export interface R3QueryMetadata {
   /**
    * Either an expression representing a type for the query predicate, or a set of string selectors.
    */
-  predicate: o.Expression|string[];
+  predicate: o.Expression | string[];
 
   /**
    * Whether to include only direct children or all descendants.
@@ -234,7 +233,7 @@ export interface R3QueryMetadata {
    * An expression representing a type to read from each matched node, or null if the default value
    * for a given node is to be returned.
    */
-  read: o.Expression|null;
+  read: o.Expression | null;
 
   /**
    * Whether or not this query should collect only static results.
@@ -288,5 +287,5 @@ export interface R3HostMetadata {
    */
   properties: {[key: string]: string};
 
-  specialAttributes: {styleAttr?: string; classAttr?: string;};
+  specialAttributes: {styleAttr?: string; classAttr?: string};
 }

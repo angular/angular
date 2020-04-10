@@ -10,13 +10,12 @@ import {browser, by, element} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
-describe('Template-Driven Forms', function() {
-
+describe('Template-Driven Forms', function () {
   afterEach(verifyNoBrowserErrors);
 
   const URL = '/';
 
-  it('should display errors', function() {
+  it('should display errors', function () {
     browser.get(URL);
 
     const form = element.all(by.css('form')).first();

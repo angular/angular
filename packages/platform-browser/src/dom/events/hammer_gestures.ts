@@ -7,11 +7,17 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, InjectionToken, NgModule, Optional, Provider, ɵConsole as Console} from '@angular/core';
+import {
+  Inject,
+  Injectable,
+  InjectionToken,
+  NgModule,
+  Optional,
+  Provider,
+  ɵConsole as Console,
+} from '@angular/core';
 
 import {EVENT_MANAGER_PLUGINS, EventManagerPlugin} from './event_manager';
-
-
 
 /**
  * Supported HammerJS recognizer event names.
@@ -63,7 +69,6 @@ const EVENT_NAMES = {
  */
 export const HAMMER_GESTURE_CONFIG = new InjectionToken<HammerGestureConfig>('HammerGestureConfig');
 
-
 /**
  * Function that loads HammerJS, returning a promise that is resolved once HammerJs is loaded.
  *
@@ -99,21 +104,21 @@ export class HammerGestureConfig {
   events: string[] = [];
 
   /**
-  * Maps gesture event names to a set of configuration options
-  * that specify overrides to the default values for specific properties.
-  *
-  * The key is a supported event name to be configured,
-  * and the options object contains a set of properties, with override values
-  * to be applied to the named recognizer event.
-  * For example, to disable recognition of the rotate event, specify
-  *  `{"rotate": {"enable": false}}`.
-  *
-  * Properties that are not present take the HammerJS default values.
-  * For information about which properties are supported for which events,
-  * and their allowed and default values, see
-  * [HammerJS documentation](http://hammerjs.github.io/).
-  *
-  */
+   * Maps gesture event names to a set of configuration options
+   * that specify overrides to the default values for specific properties.
+   *
+   * The key is a supported event name to be configured,
+   * and the options object contains a set of properties, with override values
+   * to be applied to the named recognizer event.
+   * For example, to disable recognition of the rotate event, specify
+   *  `{"rotate": {"enable": false}}`.
+   *
+   * Properties that are not present take the HammerJS default values.
+   * For information about which properties are supported for which events,
+   * and their allowed and default values, see
+   * [HammerJS documentation](http://hammerjs.github.io/).
+   *
+   */
   overrides: {[key: string]: Object} = {};
 
   /**
@@ -124,7 +129,9 @@ export class HammerGestureConfig {
    * [HammerJS documentation](http://hammerjs.github.io/).
    */
   options?: {
-    cssProps?: any; domEvents?: boolean; enable?: boolean | ((manager: any) => boolean);
+    cssProps?: any;
+    domEvents?: boolean;
+    enable?: boolean | ((manager: any) => boolean);
     preset?: any[];
     touchAction?: string;
     recognizers?: any[];
@@ -139,7 +146,7 @@ export class HammerGestureConfig {
    * @returns A HammerJS event-manager object.
    */
   buildHammer(element: HTMLElement): HammerInstance {
-    const mc = new Hammer !(element, this.options);
+    const mc = new Hammer!(element, this.options);
 
     mc.get('pinch').set({enable: true});
     mc.get('rotate').set({enable: true});
@@ -160,9 +167,11 @@ export class HammerGestureConfig {
 @Injectable()
 export class HammerGesturesPlugin extends EventManagerPlugin {
   constructor(
-      @Inject(DOCUMENT) doc: any,
-      @Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig, private console: Console,
-      @Optional() @Inject(HAMMER_LOADER) private loader?: HammerLoader|null) {
+    @Inject(DOCUMENT) doc: any,
+    @Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig,
+    private console: Console,
+    @Optional() @Inject(HAMMER_LOADER) private loader?: HammerLoader | null
+  ) {
     super(doc);
   }
 
@@ -173,8 +182,9 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
 
     if (!(window as any).Hammer && !this.loader) {
       this.console.warn(
-          `The "${eventName}" event cannot be bound because Hammer.JS is not ` +
-          `loaded and no custom loader has been specified.`);
+        `The "${eventName}" event cannot be bound because Hammer.JS is not ` +
+          `loaded and no custom loader has been specified.`
+      );
       return false;
     }
 
@@ -192,42 +202,48 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
       // Until Hammer is loaded, the returned function needs to *cancel* the registration rather
       // than remove anything.
       let cancelRegistration = false;
-      let deregister: Function = () => { cancelRegistration = true; };
+      let deregister: Function = () => {
+        cancelRegistration = true;
+      };
 
       this.loader()
-          .then(() => {
-            // If Hammer isn't actually loaded when the custom loader resolves, give up.
-            if (!(window as any).Hammer) {
-              this.console.warn(
-                  `The custom HAMMER_LOADER completed, but Hammer.JS is not present.`);
-              deregister = () => {};
-              return;
-            }
-
-            if (!cancelRegistration) {
-              // Now that Hammer is loaded and the listener is being loaded for real,
-              // the deregistration function changes from canceling registration to removal.
-              deregister = this.addEventListener(element, eventName, handler);
-            }
-          })
-          .catch(() => {
-            this.console.warn(
-                `The "${eventName}" event cannot be bound because the custom ` +
-                `Hammer.JS loader failed.`);
+        .then(() => {
+          // If Hammer isn't actually loaded when the custom loader resolves, give up.
+          if (!(window as any).Hammer) {
+            this.console.warn(`The custom HAMMER_LOADER completed, but Hammer.JS is not present.`);
             deregister = () => {};
-          });
+            return;
+          }
+
+          if (!cancelRegistration) {
+            // Now that Hammer is loaded and the listener is being loaded for real,
+            // the deregistration function changes from canceling registration to removal.
+            deregister = this.addEventListener(element, eventName, handler);
+          }
+        })
+        .catch(() => {
+          this.console.warn(
+            `The "${eventName}" event cannot be bound because the custom ` +
+              `Hammer.JS loader failed.`
+          );
+          deregister = () => {};
+        });
 
       // Return a function that *executes* `deregister` (and not `deregister` itself) so that we
       // can change the behavior of `deregister` once the listener is added. Using a closure in
       // this way allows us to avoid any additional data structures to track listener removal.
-      return () => { deregister(); };
+      return () => {
+        deregister();
+      };
     }
 
     return zone.runOutsideAngular(() => {
       // Creating the manager bind events, must be done outside of angular
       const mc = this._config.buildHammer(element);
-      const callback = function(eventObj: HammerInput) {
-        zone.runGuarded(function() { handler(eventObj); });
+      const callback = function (eventObj: HammerInput) {
+        zone.runGuarded(function () {
+          handler(eventObj);
+        });
       };
       mc.on(eventName, callback);
       return () => {
@@ -240,7 +256,9 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
     });
   }
 
-  isCustomEvent(eventName: string): boolean { return this._config.events.indexOf(eventName) > -1; }
+  isCustomEvent(eventName: string): boolean {
+    return this._config.events.indexOf(eventName) > -1;
+  }
 }
 
 /**
@@ -258,7 +276,7 @@ export const HAMMER_PROVIDERS__PRE_R3__: Provider[] = [
     provide: EVENT_MANAGER_PLUGINS,
     useClass: HammerGesturesPlugin,
     multi: true,
-    deps: [DOCUMENT, HAMMER_GESTURE_CONFIG, Console, [new Optional(), HAMMER_LOADER]]
+    deps: [DOCUMENT, HAMMER_GESTURE_CONFIG, Console, [new Optional(), HAMMER_LOADER]],
   },
   {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig, deps: []},
 ];
@@ -277,5 +295,4 @@ export const HAMMER_PROVIDERS = HAMMER_PROVIDERS__PRE_R3__;
  * @publicApi
  */
 @NgModule({providers: HAMMER_PROVIDERS__PRE_R3__})
-export class HammerModule {
-}
+export class HammerModule {}

@@ -15,17 +15,11 @@ import {Lib2Module} from 'lib2_built/module';
   selector: 'id-app',
   template: '<lib2-cmp></lib2-cmp>',
 })
-export class AppComponent {
-}
+export class AppComponent {}
 
 @NgModule({
-  imports: [
-    Lib2Module,
-    BrowserModule.withServerTransition({appId: 'id-app'}),
-    ServerModule,
-  ],
+  imports: [Lib2Module, BrowserModule.withServerTransition({appId: 'id-app'}), ServerModule],
   declarations: [AppComponent],
   bootstrap: [AppComponent],
 })
-export class BasicAppModule {
-}
+export class BasicAppModule {}

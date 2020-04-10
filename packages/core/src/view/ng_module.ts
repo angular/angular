@@ -15,7 +15,14 @@ import {NgModuleRef} from '../linker/ng_module_factory';
 import {newArray} from '../util/array_utils';
 import {stringify} from '../util/stringify';
 
-import {DepDef, DepFlags, NgModuleData, NgModuleDefinition, NgModuleProviderDef, NodeFlags} from './types';
+import {
+  DepDef,
+  DepFlags,
+  NgModuleData,
+  NgModuleDefinition,
+  NgModuleProviderDef,
+  NodeFlags,
+} from './types';
 import {splitDepsDsl, tokenKey} from './util';
 
 const UNDEFINED_VALUE = {};
@@ -25,8 +32,11 @@ const INJECTORRefTokenKey = tokenKey(INJECTOR);
 const NgModuleRefTokenKey = tokenKey(NgModuleRef);
 
 export function moduleProvideDef(
-    flags: NodeFlags, token: any, value: any,
-    deps: ([DepFlags, any] | any)[]): NgModuleProviderDef {
+  flags: NodeFlags,
+  token: any,
+  value: any,
+  deps: ([DepFlags, any] | any)[]
+): NgModuleProviderDef {
   // Need to resolve forwardRefs as e.g. for `useValue` we
   // lowered the expression and then stopped evaluating it,
   // i.e. also didn't unwrap it.
@@ -35,14 +45,17 @@ export function moduleProvideDef(
   return {
     // will bet set by the module definition
     index: -1,
-    deps: depDefs, flags, token, value
+    deps: depDefs,
+    flags,
+    token,
+    value,
   };
 }
 
 export function moduleDef(providers: NgModuleProviderDef[]): NgModuleDefinition {
   const providersByKey: {[key: string]: NgModuleProviderDef} = {};
   const modules = [];
-  let scope: 'root'|'platform'|null = null;
+  let scope: 'root' | 'platform' | null = null;
   for (let i = 0; i < providers.length; i++) {
     const provider = providers[i];
     if (provider.token === INJECTOR_SCOPE) {
@@ -66,7 +79,7 @@ export function moduleDef(providers: NgModuleProviderDef[]): NgModuleDefinition 
 
 export function initNgModule(data: NgModuleData) {
   const def = data._def;
-  const providers = data._providers = newArray(def.providers.length);
+  const providers = (data._providers = newArray(def.providers.length));
   for (let i = 0; i < def.providers.length; i++) {
     const provDef = def.providers[i];
     if (!(provDef.flags & NodeFlags.LazyProvider)) {
@@ -79,7 +92,10 @@ export function initNgModule(data: NgModuleData) {
 }
 
 export function resolveNgModuleDep(
-    data: NgModuleData, depDef: DepDef, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
+  data: NgModuleData,
+  depDef: DepDef,
+  notFoundValue: any = Injector.THROW_IF_NOT_FOUND
+): any {
   const former = setCurrentInjector(data);
   try {
     if (depDef.flags & DepFlags.Value) {
@@ -99,27 +115,33 @@ export function resolveNgModuleDep(
         return data;
     }
     const providerDef = data._def.providersByKey[tokenKey];
-    let injectableDef: ɵɵInjectableDef<any>|null;
+    let injectableDef: ɵɵInjectableDef<any> | null;
     if (providerDef) {
       let providerInstance = data._providers[providerDef.index];
       if (providerInstance === undefined) {
-        providerInstance = data._providers[providerDef.index] =
-            _createProviderInstance(data, providerDef);
+        providerInstance = data._providers[providerDef.index] = _createProviderInstance(
+          data,
+          providerDef
+        );
       }
       return providerInstance === UNDEFINED_VALUE ? undefined : providerInstance;
     } else if (
-        (injectableDef = getInjectableDef(depDef.token)) && targetsModule(data, injectableDef)) {
+      (injectableDef = getInjectableDef(depDef.token)) &&
+      targetsModule(data, injectableDef)
+    ) {
       const index = data._providers.length;
       data._def.providers[index] = data._def.providersByKey[depDef.tokenKey] = {
         flags: NodeFlags.TypeFactoryProvider | NodeFlags.LazyProvider,
         value: injectableDef.factory,
-        deps: [], index,
+        deps: [],
+        index,
         token: depDef.token,
       };
       data._providers[index] = UNDEFINED_VALUE;
-      return (
-          data._providers[index] =
-              _createProviderInstance(data, data._def.providersByKey[depDef.tokenKey]));
+      return (data._providers[index] = _createProviderInstance(
+        data,
+        data._def.providersByKey[depDef.tokenKey]
+      ));
     } else if (depDef.flags & DepFlags.Self) {
       return notFoundValue;
     }
@@ -135,8 +157,12 @@ function moduleTransitivelyPresent(ngModule: NgModuleData, scope: any): boolean 
 
 function targetsModule(ngModule: NgModuleData, def: ɵɵInjectableDef<any>): boolean {
   const providedIn = def.providedIn;
-  return providedIn != null && (providedIn === 'any' || providedIn === ngModule._def.scope ||
-                                moduleTransitivelyPresent(ngModule, providedIn));
+  return (
+    providedIn != null &&
+    (providedIn === 'any' ||
+      providedIn === ngModule._def.scope ||
+      moduleTransitivelyPresent(ngModule, providedIn))
+  );
 }
 
 function _createProviderInstance(ngModule: NgModuleData, providerDef: NgModuleProviderDef): any {
@@ -160,8 +186,13 @@ function _createProviderInstance(ngModule: NgModuleData, providerDef: NgModulePr
   // avoided if possible. The sequence of checks here determines whether ngOnDestroy needs to be
   // checked. It might not if the `injectable` isn't an object or if NodeFlags.OnDestroy is already
   // set (ngOnDestroy was detected statically).
-  if (injectable !== UNDEFINED_VALUE && injectable !== null && typeof injectable === 'object' &&
-      !(providerDef.flags & NodeFlags.OnDestroy) && typeof injectable.ngOnDestroy === 'function') {
+  if (
+    injectable !== UNDEFINED_VALUE &&
+    injectable !== null &&
+    typeof injectable === 'object' &&
+    !(providerDef.flags & NodeFlags.OnDestroy) &&
+    typeof injectable.ngOnDestroy === 'function'
+  ) {
     providerDef.flags |= NodeFlags.OnDestroy;
   }
   return injectable === undefined ? UNDEFINED_VALUE : injectable;
@@ -178,8 +209,10 @@ function _createClass(ngModule: NgModuleData, ctor: any, deps: DepDef[]): any {
       return new ctor(resolveNgModuleDep(ngModule, deps[0]), resolveNgModuleDep(ngModule, deps[1]));
     case 3:
       return new ctor(
-          resolveNgModuleDep(ngModule, deps[0]), resolveNgModuleDep(ngModule, deps[1]),
-          resolveNgModuleDep(ngModule, deps[2]));
+        resolveNgModuleDep(ngModule, deps[0]),
+        resolveNgModuleDep(ngModule, deps[1]),
+        resolveNgModuleDep(ngModule, deps[2])
+      );
     default:
       const depValues = [];
       for (let i = 0; i < len; i++) {
@@ -200,8 +233,10 @@ function _callFactory(ngModule: NgModuleData, factory: any, deps: DepDef[]): any
       return factory(resolveNgModuleDep(ngModule, deps[0]), resolveNgModuleDep(ngModule, deps[1]));
     case 3:
       return factory(
-          resolveNgModuleDep(ngModule, deps[0]), resolveNgModuleDep(ngModule, deps[1]),
-          resolveNgModuleDep(ngModule, deps[2]));
+        resolveNgModuleDep(ngModule, deps[0]),
+        resolveNgModuleDep(ngModule, deps[1]),
+        resolveNgModuleDep(ngModule, deps[2])
+      );
     default:
       const depValues = [];
       for (let i = 0; i < len; i++) {
@@ -219,7 +254,7 @@ export function callNgModuleLifecycle(ngModule: NgModuleData, lifecycles: NodeFl
     if (provDef.flags & NodeFlags.OnDestroy) {
       const instance = ngModule._providers[i];
       if (instance && instance !== UNDEFINED_VALUE) {
-        const onDestroy: Function|undefined = instance.ngOnDestroy;
+        const onDestroy: Function | undefined = instance.ngOnDestroy;
         if (typeof onDestroy === 'function' && !destroyed.has(instance)) {
           onDestroy.apply(instance);
           destroyed.add(instance);

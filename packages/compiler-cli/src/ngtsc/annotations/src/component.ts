@@ -6,7 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileComponentFromMetadata, ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, Identifiers, InterpolationConfig, LexerRange, makeBindingParser, ParseError, ParseSourceFile, parseTemplate, ParseTemplateOptions, R3ComponentMetadata, R3FactoryTarget, R3TargetBinder, SchemaMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
+import {
+  compileComponentFromMetadata,
+  ConstantPool,
+  CssSelector,
+  DEFAULT_INTERPOLATION_CONFIG,
+  DomElementSchemaRegistry,
+  Expression,
+  ExternalExpr,
+  Identifiers,
+  InterpolationConfig,
+  LexerRange,
+  makeBindingParser,
+  ParseError,
+  ParseSourceFile,
+  parseTemplate,
+  ParseTemplateOptions,
+  R3ComponentMetadata,
+  R3FactoryTarget,
+  R3TargetBinder,
+  SchemaMetadata,
+  SelectorMatcher,
+  Statement,
+  TmplAstNode,
+  WrappedNodeExpr,
+} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
@@ -15,12 +39,26 @@ import {absoluteFrom, relative} from '../../file_system';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
-import {DirectiveMeta, extractDirectiveGuards, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
+import {
+  DirectiveMeta,
+  extractDirectiveGuards,
+  InjectableClassRegistry,
+  MetadataReader,
+  MetadataRegistry,
+} from '../../metadata';
 import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {ComponentScopeReader, LocalModuleScopeRegistry} from '../../scope';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
+import {
+  AnalysisOutput,
+  CompileResult,
+  DecoratorHandler,
+  DetectResult,
+  HandlerFlags,
+  HandlerPrecedence,
+  ResolveResult,
+} from '../../transform';
 import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck';
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {SubsetOfKeys} from '../../util/src/typescript';
@@ -30,7 +68,16 @@ import {getDirectiveDiagnostics, getProviderDiagnostics} from './diagnostics';
 import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, makeDuplicateDeclarationError, readBaseClass, resolveProvidersRequiringFactory, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
+import {
+  findAngularDecorator,
+  isAngularCoreReference,
+  isExpressionForwardReference,
+  makeDuplicateDeclarationError,
+  readBaseClass,
+  resolveProvidersRequiringFactory,
+  unwrapExpression,
+  wrapFunctionExpressionsInParens,
+} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -41,8 +88,10 @@ const EMPTY_ARRAY: any[] = [];
  * The `keyof R3ComponentMetadata &` condition ensures that only fields of `R3ComponentMetadata` can
  * be included here.
  */
-export type ComponentMetadataResolvedFields =
-    SubsetOfKeys<R3ComponentMetadata, 'directives'|'pipes'|'wrapDirectivesAndPipesInClosure'>;
+export type ComponentMetadataResolvedFields = SubsetOfKeys<
+  R3ComponentMetadata,
+  'directives' | 'pipes' | 'wrapDirectivesAndPipesInClosure'
+>;
 
 export interface ComponentAnalysisData {
   /**
@@ -50,22 +99,22 @@ export interface ComponentAnalysisData {
    * (not during resolve).
    */
   meta: Omit<R3ComponentMetadata, ComponentMetadataResolvedFields>;
-  baseClass: Reference<ClassDeclaration>|'dynamic'|null;
+  baseClass: Reference<ClassDeclaration> | 'dynamic' | null;
   guards: ReturnType<typeof extractDirectiveGuards>;
   template: ParsedTemplateWithSource;
-  metadataStmt: Statement|null;
+  metadataStmt: Statement | null;
 
   /**
    * Providers extracted from the `providers` field of the component annotation which will require
    * an Angular factory definition at runtime.
    */
-  providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
+  providersRequiringFactory: Set<Reference<ClassDeclaration>> | null;
 
   /**
    * Providers extracted from the `viewProviders` field of the component annotation which will
    * require an Angular factory definition at runtime.
    */
-  viewProvidersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
+  viewProvidersRequiringFactory: Set<Reference<ClassDeclaration>> | null;
 }
 
 export type ComponentResolutionData = Pick<R3ComponentMetadata, ComponentMetadataResolvedFields>;
@@ -73,20 +122,29 @@ export type ComponentResolutionData = Pick<R3ComponentMetadata, ComponentMetadat
 /**
  * `DecoratorHandler` which handles the `@Component` annotation.
  */
-export class ComponentDecoratorHandler implements
-    DecoratorHandler<Decorator, ComponentAnalysisData, ComponentResolutionData> {
+export class ComponentDecoratorHandler
+  implements DecoratorHandler<Decorator, ComponentAnalysisData, ComponentResolutionData> {
   constructor(
-      private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private metaRegistry: MetadataRegistry, private metaReader: MetadataReader,
-      private scopeReader: ComponentScopeReader, private scopeRegistry: LocalModuleScopeRegistry,
-      private isCore: boolean, private resourceLoader: ResourceLoader,
-      private rootDirs: ReadonlyArray<string>, private defaultPreserveWhitespaces: boolean,
-      private i18nUseExternalIds: boolean, private enableI18nLegacyMessageIdFormat: boolean,
-      private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
-      private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder,
-      private depTracker: DependencyTracker|null,
-      private injectableRegistry: InjectableClassRegistry,
-      private annotateForClosureCompiler: boolean) {}
+    private reflector: ReflectionHost,
+    private evaluator: PartialEvaluator,
+    private metaRegistry: MetadataRegistry,
+    private metaReader: MetadataReader,
+    private scopeReader: ComponentScopeReader,
+    private scopeRegistry: LocalModuleScopeRegistry,
+    private isCore: boolean,
+    private resourceLoader: ResourceLoader,
+    private rootDirs: ReadonlyArray<string>,
+    private defaultPreserveWhitespaces: boolean,
+    private i18nUseExternalIds: boolean,
+    private enableI18nLegacyMessageIdFormat: boolean,
+    private moduleResolver: ModuleResolver,
+    private cycleAnalyzer: CycleAnalyzer,
+    private refEmitter: ReferenceEmitter,
+    private defaultImportRecorder: DefaultImportRecorder,
+    private depTracker: DependencyTracker | null,
+    private injectableRegistry: InjectableClassRegistry,
+    private annotateForClosureCompiler: boolean
+  ) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
@@ -101,7 +159,10 @@ export class ComponentDecoratorHandler implements
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = ComponentDecoratorHandler.name;
 
-  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
+  detect(
+    node: ClassDeclaration,
+    decorators: Decorator[] | null
+  ): DetectResult<Decorator> | undefined {
     if (!decorators) {
       return undefined;
     }
@@ -117,7 +178,7 @@ export class ComponentDecoratorHandler implements
     }
   }
 
-  preanalyze(node: ClassDeclaration, decorator: Readonly<Decorator>): Promise<void>|undefined {
+  preanalyze(node: ClassDeclaration, decorator: Readonly<Decorator>): Promise<void> | undefined {
     // In preanalyze, resource URLs associated with the component are asynchronously preloaded via
     // the resourceLoader. This is the only time async operations are allowed for a component.
     // These resources are:
@@ -146,14 +207,18 @@ export class ComponentDecoratorHandler implements
     };
 
     // A Promise that waits for the template and all <link>ed styles within it to be preloaded.
-    const templateAndTemplateStyleResources =
-        this._preloadAndParseTemplate(node, decorator, component, containingFile).then(template => {
-          if (template === null) {
-            return undefined;
-          } else {
-            return Promise.all(template.styleUrls.map(resolveStyleUrl)).then(() => undefined);
-          }
-        });
+    const templateAndTemplateStyleResources = this._preloadAndParseTemplate(
+      node,
+      decorator,
+      component,
+      containingFile
+    ).then((template) => {
+      if (template === null) {
+        return undefined;
+      } else {
+        return Promise.all(template.styleUrls.map(resolveStyleUrl)).then(() => undefined);
+      }
+    });
 
     // Extract all the styleUrls in the decorator.
     const styleUrls = this._extractStyleUrls(component, []);
@@ -164,23 +229,34 @@ export class ComponentDecoratorHandler implements
       return templateAndTemplateStyleResources;
     } else {
       // Wait for both the template and all styleUrl resources to resolve.
-      return Promise.all([templateAndTemplateStyleResources, ...styleUrls.map(resolveStyleUrl)])
-          .then(() => undefined);
+      return Promise.all([
+        templateAndTemplateStyleResources,
+        ...styleUrls.map(resolveStyleUrl),
+      ]).then(() => undefined);
     }
   }
 
   analyze(
-      node: ClassDeclaration, decorator: Readonly<Decorator>,
-      flags: HandlerFlags = HandlerFlags.NONE): AnalysisOutput<ComponentAnalysisData> {
+    node: ClassDeclaration,
+    decorator: Readonly<Decorator>,
+    flags: HandlerFlags = HandlerFlags.NONE
+  ): AnalysisOutput<ComponentAnalysisData> {
     const containingFile = node.getSourceFile().fileName;
     this.literalCache.delete(decorator);
 
     // @Component inherits @Directive, so begin by extracting the @Directive metadata and building
     // on it.
     const directiveResult = extractDirectiveMetadata(
-        node, decorator, this.reflector, this.evaluator, this.defaultImportRecorder, this.isCore,
-        flags, this.annotateForClosureCompiler,
-        this.elementSchemaRegistry.getDefaultComponentElementName());
+      node,
+      decorator,
+      this.reflector,
+      this.evaluator,
+      this.defaultImportRecorder,
+      this.isCore,
+      flags,
+      this.annotateForClosureCompiler,
+      this.elementSchemaRegistry.getDefaultComponentElementName()
+    );
     if (directiveResult === undefined) {
       // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this
       // case, compilation of the decorator is skipped. Returning an empty object signifies
@@ -193,35 +269,45 @@ export class ComponentDecoratorHandler implements
 
     // Go through the root directories for this project, and select the one with the smallest
     // relative path representation.
-    const relativeContextFilePath = this.rootDirs.reduce<string|undefined>((previous, rootDir) => {
-      const candidate = relative(absoluteFrom(rootDir), absoluteFrom(containingFile));
-      if (previous === undefined || candidate.length < previous.length) {
-        return candidate;
-      } else {
-        return previous;
-      }
-    }, undefined)!;
-
+    const relativeContextFilePath = this.rootDirs.reduce<string | undefined>(
+      (previous, rootDir) => {
+        const candidate = relative(absoluteFrom(rootDir), absoluteFrom(containingFile));
+        if (previous === undefined || candidate.length < previous.length) {
+          return candidate;
+        } else {
+          return previous;
+        }
+      },
+      undefined
+    )!;
 
     // Note that we could technically combine the `viewProvidersRequiringFactory` and
     // `providersRequiringFactory` into a single set, but we keep the separate so that
     // we can distinguish where an error is coming from when logging the diagnostics in `resolve`.
-    let viewProvidersRequiringFactory: Set<Reference<ClassDeclaration>>|null = null;
-    let providersRequiringFactory: Set<Reference<ClassDeclaration>>|null = null;
-    let wrappedViewProviders: Expression|null = null;
+    let viewProvidersRequiringFactory: Set<Reference<ClassDeclaration>> | null = null;
+    let providersRequiringFactory: Set<Reference<ClassDeclaration>> | null = null;
+    let wrappedViewProviders: Expression | null = null;
 
     if (component.has('viewProviders')) {
       const viewProviders = component.get('viewProviders')!;
-      viewProvidersRequiringFactory =
-          resolveProvidersRequiringFactory(viewProviders, this.reflector, this.evaluator);
+      viewProvidersRequiringFactory = resolveProvidersRequiringFactory(
+        viewProviders,
+        this.reflector,
+        this.evaluator
+      );
       wrappedViewProviders = new WrappedNodeExpr(
-          this.annotateForClosureCompiler ? wrapFunctionExpressionsInParens(viewProviders) :
-                                            viewProviders);
+        this.annotateForClosureCompiler
+          ? wrapFunctionExpressionsInParens(viewProviders)
+          : viewProviders
+      );
     }
 
     if (component.has('providers')) {
       providersRequiringFactory = resolveProvidersRequiringFactory(
-          component.get('providers')!, this.reflector, this.evaluator);
+        component.get('providers')!,
+        this.reflector,
+        this.evaluator
+      );
     }
 
     // Parse the template.
@@ -243,7 +329,10 @@ export class ComponentDecoratorHandler implements
         const templateUrl = this.evaluator.evaluate(templateUrlExpr);
         if (typeof templateUrl !== 'string') {
           throw new FatalDiagnosticError(
-              ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
+            ErrorCode.VALUE_HAS_WRONG_TYPE,
+            templateUrlExpr,
+            'templateUrl must be a string'
+          );
         }
         const resourceUrl = this.resourceLoader.resolve(templateUrl, containingFile);
         template = this._extractExternalTemplate(node, component, templateUrlExpr, resourceUrl);
@@ -255,13 +344,14 @@ export class ComponentDecoratorHandler implements
 
     if (template.errors !== undefined) {
       throw new Error(
-          `Errors parsing template: ${template.errors.map(e => e.toString()).join(', ')}`);
+        `Errors parsing template: ${template.errors.map((e) => e.toString()).join(', ')}`
+      );
     }
 
     // Figure out the set of styles. The ordering here is important: external resources (styleUrls)
     // precede inline styles, and styles defined in the template override styles defined in the
     // component.
-    let styles: string[]|null = null;
+    let styles: string[] | null = null;
 
     const styleUrls = this._extractStyleUrls(component, template.styleUrls);
     if (styleUrls !== null) {
@@ -296,12 +386,15 @@ export class ComponentDecoratorHandler implements
     }
 
     const encapsulation: number =
-        this._resolveEnumValue(component, 'encapsulation', 'ViewEncapsulation') || 0;
+      this._resolveEnumValue(component, 'encapsulation', 'ViewEncapsulation') || 0;
 
-    const changeDetection: number|null =
-        this._resolveEnumValue(component, 'changeDetection', 'ChangeDetectionStrategy');
+    const changeDetection: number | null = this._resolveEnumValue(
+      component,
+      'changeDetection',
+      'ChangeDetectionStrategy'
+    );
 
-    let animations: Expression|null = null;
+    let animations: Expression | null = null;
     if (component.has('animations')) {
       animations = new WrappedNodeExpr(component.get('animations')!);
     }
@@ -328,8 +421,12 @@ export class ComponentDecoratorHandler implements
         },
         guards: extractDirectiveGuards(node, this.reflector),
         metadataStmt: generateSetClassMetadataCall(
-            node, this.reflector, this.defaultImportRecorder, this.isCore,
-            this.annotateForClosureCompiler),
+          node,
+          this.reflector,
+          this.defaultImportRecorder,
+          this.isCore,
+          this.annotateForClosureCompiler
+        ),
         template,
         providersRequiringFactory,
         viewProvidersRequiringFactory,
@@ -352,7 +449,7 @@ export class ComponentDecoratorHandler implements
       exportAs: analysis.meta.exportAs,
       inputs: analysis.meta.inputs,
       outputs: analysis.meta.outputs,
-      queries: analysis.meta.queries.map(query => query.propertyName),
+      queries: analysis.meta.queries.map((query) => query.propertyName),
       isComponent: true,
       baseClass: analysis.baseClass,
       ...analysis.guards,
@@ -362,7 +459,10 @@ export class ComponentDecoratorHandler implements
   }
 
   index(
-      context: IndexingContext, node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>) {
+    context: IndexingContext,
+    node: ClassDeclaration,
+    analysis: Readonly<ComponentAnalysisData>
+  ) {
     const scope = this.scopeReader.getScopeForComponent(node);
     const selector = analysis.meta.selector;
     const matcher = new SelectorMatcher<DirectiveMeta>();
@@ -392,8 +492,11 @@ export class ComponentDecoratorHandler implements
     });
   }
 
-  typeCheck(ctx: TypeCheckContext, node: ClassDeclaration, meta: Readonly<ComponentAnalysisData>):
-      void {
+  typeCheck(
+    ctx: TypeCheckContext,
+    node: ClassDeclaration,
+    meta: Readonly<ComponentAnalysisData>
+  ): void {
     if (!ts.isClassDeclaration(node)) {
       return;
     }
@@ -417,8 +520,11 @@ export class ComponentDecoratorHandler implements
       }
       for (const {name, ref} of scope.compilation.pipes) {
         if (!ts.isClassDeclaration(ref.node)) {
-          throw new Error(`Unexpected non-class declaration ${
-              ts.SyntaxKind[ref.node.kind]} for pipe ${ref.debugName}`);
+          throw new Error(
+            `Unexpected non-class declaration ${ts.SyntaxKind[ref.node.kind]} for pipe ${
+              ref.debugName
+            }`
+          );
         }
         pipes.set(name, ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
       }
@@ -427,12 +533,19 @@ export class ComponentDecoratorHandler implements
 
     const bound = new R3TargetBinder(matcher).bind({template: meta.template.diagNodes});
     ctx.addTemplate(
-        new Reference(node), bound, pipes, schemas, meta.template.sourceMapping,
-        meta.template.file);
+      new Reference(node),
+      bound,
+      pipes,
+      schemas,
+      meta.template.sourceMapping,
+      meta.template.file
+    );
   }
 
-  resolve(node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>):
-      ResolveResult<ComponentResolutionData> {
+  resolve(
+    node: ClassDeclaration,
+    analysis: Readonly<ComponentAnalysisData>
+  ): ResolveResult<ComponentResolutionData> {
     const context = node.getSourceFile();
     // Check whether this component was registered with an NgModule. If so, it should be compiled
     // under that module's compilation scope.
@@ -466,12 +579,11 @@ export class ComponentDecoratorHandler implements
       // an alternative implementation of template matching which is used for template type-checking
       // and will eventually replace matching in the TemplateDefinitionBuilder.
 
-
       // Set up the R3TargetBinder, as well as a 'directives' array and a 'pipes' map that are later
       // fed to the TemplateDefinitionBuilder. First, a SelectorMatcher is constructed to match
       // directives that are in scope.
-      const matcher = new SelectorMatcher<DirectiveMeta&{expression: Expression}>();
-      const directives: {selector: string, expression: Expression}[] = [];
+      const matcher = new SelectorMatcher<DirectiveMeta & {expression: Expression}>();
+      const directives: {selector: string; expression: Expression}[] = [];
 
       for (const dir of scope.compilation.directives) {
         const {ref, selector} = dir;
@@ -493,13 +605,13 @@ export class ComponentDecoratorHandler implements
 
       // The BoundTarget knows which directives and pipes matched the template.
       const usedDirectives = bound.getUsedDirectives();
-      const usedPipes = bound.getUsedPipes().map(name => pipes.get(name)!);
+      const usedPipes = bound.getUsedPipes().map((name) => pipes.get(name)!);
 
       // Scan through the directives/pipes actually used in the template and check whether any
       // import which needs to be generated would create a cycle.
       const cycleDetected =
-          usedDirectives.some(dir => this._isCyclicImport(dir.expression, context)) ||
-          usedPipes.some(pipe => this._isCyclicImport(pipe, context));
+        usedDirectives.some((dir) => this._isCyclicImport(dir.expression, context)) ||
+        usedPipes.some((pipe) => this._isCyclicImport(pipe, context));
 
       if (!cycleDetected) {
         // No cycle was detected. Record the imports that need to be created in the cycle detector
@@ -515,9 +627,9 @@ export class ComponentDecoratorHandler implements
         // This is required if any directive/pipe reference is to a declaration in the same file but
         // declared after this component.
         const wrapDirectivesAndPipesInClosure =
-            usedDirectives.some(
-                dir => isExpressionForwardReference(dir.expression, node.name, context)) ||
-            usedPipes.some(pipe => isExpressionForwardReference(pipe, node.name, context));
+          usedDirectives.some((dir) =>
+            isExpressionForwardReference(dir.expression, node.name, context)
+          ) || usedPipes.some((pipe) => isExpressionForwardReference(pipe, node.name, context));
 
         // Actual compilation still uses the full scope, not the narrowed scope determined by
         // R3TargetBinder. This is a hedge against potential issues with the R3TargetBinder - right
@@ -538,24 +650,38 @@ export class ComponentDecoratorHandler implements
 
     const diagnostics: ts.Diagnostic[] = [];
 
-    if (analysis.providersRequiringFactory !== null &&
-        analysis.meta.providers instanceof WrappedNodeExpr) {
+    if (
+      analysis.providersRequiringFactory !== null &&
+      analysis.meta.providers instanceof WrappedNodeExpr
+    ) {
       const providerDiagnostics = getProviderDiagnostics(
-          analysis.providersRequiringFactory, analysis.meta.providers!.node,
-          this.injectableRegistry);
+        analysis.providersRequiringFactory,
+        analysis.meta.providers!.node,
+        this.injectableRegistry
+      );
       diagnostics.push(...providerDiagnostics);
     }
 
-    if (analysis.viewProvidersRequiringFactory !== null &&
-        analysis.meta.viewProviders instanceof WrappedNodeExpr) {
+    if (
+      analysis.viewProvidersRequiringFactory !== null &&
+      analysis.meta.viewProviders instanceof WrappedNodeExpr
+    ) {
       const viewProviderDiagnostics = getProviderDiagnostics(
-          analysis.viewProvidersRequiringFactory, analysis.meta.viewProviders!.node,
-          this.injectableRegistry);
+        analysis.viewProvidersRequiringFactory,
+        analysis.meta.viewProviders!.node,
+        this.injectableRegistry
+      );
       diagnostics.push(...viewProviderDiagnostics);
     }
 
     const directiveDiagnostics = getDirectiveDiagnostics(
-        node, this.metaReader, this.evaluator, this.reflector, this.scopeRegistry, 'Component');
+      node,
+      this.metaReader,
+      this.evaluator,
+      this.reflector,
+      this.scopeRegistry,
+      'Component'
+    );
     if (directiveDiagnostics !== null) {
       diagnostics.push(...directiveDiagnostics);
     }
@@ -568,22 +694,29 @@ export class ComponentDecoratorHandler implements
   }
 
   compile(
-      node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>,
-      resolution: Readonly<ComponentResolutionData>, pool: ConstantPool): CompileResult[] {
+    node: ClassDeclaration,
+    analysis: Readonly<ComponentAnalysisData>,
+    resolution: Readonly<ComponentResolutionData>,
+    pool: ConstantPool
+  ): CompileResult[] {
     const meta: R3ComponentMetadata = {...analysis.meta, ...resolution};
     const res = compileComponentFromMetadata(meta, pool, makeBindingParser());
-    const factoryRes = compileNgFactoryDefField(
-        {...meta, injectFn: Identifiers.directiveInject, target: R3FactoryTarget.Component});
+    const factoryRes = compileNgFactoryDefField({
+      ...meta,
+      injectFn: Identifiers.directiveInject,
+      target: R3FactoryTarget.Component,
+    });
     if (analysis.metadataStmt !== null) {
       factoryRes.statements.push(analysis.metadataStmt);
     }
     return [
-      factoryRes, {
+      factoryRes,
+      {
         name: 'ɵcmp',
         initializer: res.expression,
         statements: [],
         type: res.type,
-      }
+      },
     ];
   }
 
@@ -593,14 +726,19 @@ export class ComponentDecoratorHandler implements
     }
     if (decorator.args === null || decorator.args.length !== 1) {
       throw new FatalDiagnosticError(
-          ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(decorator),
-          `Incorrect number of arguments to @Component decorator`);
+        ErrorCode.DECORATOR_ARITY_WRONG,
+        Decorator.nodeForError(decorator),
+        `Incorrect number of arguments to @Component decorator`
+      );
     }
     const meta = unwrapExpression(decorator.args[0]);
 
     if (!ts.isObjectLiteralExpression(meta)) {
       throw new FatalDiagnosticError(
-          ErrorCode.DECORATOR_ARG_NOT_LITERAL, meta, `Decorator argument must be literal.`);
+        ErrorCode.DECORATOR_ARG_NOT_LITERAL,
+        meta,
+        `Decorator argument must be literal.`
+      );
     }
 
     this.literalCache.set(decorator, meta);
@@ -608,8 +746,11 @@ export class ComponentDecoratorHandler implements
   }
 
   private _resolveEnumValue(
-      component: Map<string, ts.Expression>, field: string, enumSymbolName: string): number|null {
-    let resolved: number|null = null;
+    component: Map<string, ts.Expression>,
+    field: string,
+    enumSymbolName: string
+  ): number | null {
+    let resolved: number | null = null;
     if (component.has(field)) {
       const expr = component.get(field)!;
       const value = this.evaluator.evaluate(expr) as any;
@@ -617,39 +758,52 @@ export class ComponentDecoratorHandler implements
         resolved = value.resolved as number;
       } else {
         throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
-            `${field} must be a member of ${enumSymbolName} enum from @angular/core`);
+          ErrorCode.VALUE_HAS_WRONG_TYPE,
+          expr,
+          `${field} must be a member of ${enumSymbolName} enum from @angular/core`
+        );
       }
     }
     return resolved;
   }
 
-  private _extractStyleUrls(component: Map<string, ts.Expression>, extraUrls: string[]):
-      string[]|null {
+  private _extractStyleUrls(
+    component: Map<string, ts.Expression>,
+    extraUrls: string[]
+  ): string[] | null {
     if (!component.has('styleUrls')) {
       return extraUrls.length > 0 ? extraUrls : null;
     }
 
     const styleUrlsExpr = component.get('styleUrls')!;
     const styleUrls = this.evaluator.evaluate(styleUrlsExpr);
-    if (!Array.isArray(styleUrls) || !styleUrls.every(url => typeof url === 'string')) {
+    if (!Array.isArray(styleUrls) || !styleUrls.every((url) => typeof url === 'string')) {
       throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, styleUrlsExpr, 'styleUrls must be an array of strings');
+        ErrorCode.VALUE_HAS_WRONG_TYPE,
+        styleUrlsExpr,
+        'styleUrls must be an array of strings'
+      );
     }
     styleUrls.push(...extraUrls);
     return styleUrls as string[];
   }
 
   private _preloadAndParseTemplate(
-      node: ClassDeclaration, decorator: Decorator, component: Map<string, ts.Expression>,
-      containingFile: string): Promise<ParsedTemplate|null> {
+    node: ClassDeclaration,
+    decorator: Decorator,
+    component: Map<string, ts.Expression>,
+    containingFile: string
+  ): Promise<ParsedTemplate | null> {
     if (component.has('templateUrl')) {
       // Extract the templateUrl and preload it.
       const templateUrlExpr = component.get('templateUrl')!;
       const templateUrl = this.evaluator.evaluate(templateUrlExpr);
       if (typeof templateUrl !== 'string') {
         throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
+          ErrorCode.VALUE_HAS_WRONG_TYPE,
+          templateUrlExpr,
+          'templateUrl must be a string'
+        );
       }
       const resourceUrl = this.resourceLoader.resolve(templateUrl, containingFile);
       const templatePromise = this.resourceLoader.preload(resourceUrl);
@@ -658,8 +812,12 @@ export class ComponentDecoratorHandler implements
       // URLs to resolve.
       if (templatePromise !== undefined) {
         return templatePromise.then(() => {
-          const template =
-              this._extractExternalTemplate(node, component, templateUrlExpr, resourceUrl);
+          const template = this._extractExternalTemplate(
+            node,
+            component,
+            templateUrlExpr,
+            resourceUrl
+          );
           this.preanalyzeTemplateCache.set(node, template);
           return template;
         });
@@ -674,16 +832,23 @@ export class ComponentDecoratorHandler implements
   }
 
   private _extractExternalTemplate(
-      node: ClassDeclaration, component: Map<string, ts.Expression>, templateUrlExpr: ts.Expression,
-      resourceUrl: string): ParsedTemplateWithSource {
+    node: ClassDeclaration,
+    component: Map<string, ts.Expression>,
+    templateUrlExpr: ts.Expression,
+    resourceUrl: string
+  ): ParsedTemplateWithSource {
     const templateStr = this.resourceLoader.load(resourceUrl);
     if (this.depTracker !== null) {
       this.depTracker.addResourceDependency(node.getSourceFile(), absoluteFrom(resourceUrl));
     }
 
     const template = this._parseTemplate(
-        component, templateStr, sourceMapUrl(resourceUrl), /* templateRange */ undefined,
-        /* escapedString */ false);
+      component,
+      templateStr,
+      sourceMapUrl(resourceUrl),
+      /* templateRange */ undefined,
+      /* escapedString */ false
+    );
 
     return {
       ...template,
@@ -698,18 +863,23 @@ export class ComponentDecoratorHandler implements
   }
 
   private _extractInlineTemplate(
-      node: ClassDeclaration, decorator: Decorator, component: Map<string, ts.Expression>,
-      containingFile: string): ParsedTemplateWithSource {
+    node: ClassDeclaration,
+    decorator: Decorator,
+    component: Map<string, ts.Expression>,
+    containingFile: string
+  ): ParsedTemplateWithSource {
     if (!component.has('template')) {
       throw new FatalDiagnosticError(
-          ErrorCode.COMPONENT_MISSING_TEMPLATE, Decorator.nodeForError(decorator),
-          'component is missing a template');
+        ErrorCode.COMPONENT_MISSING_TEMPLATE,
+        Decorator.nodeForError(decorator),
+        'component is missing a template'
+      );
     }
     const templateExpr = component.get('template')!;
 
     let templateStr: string;
     let templateUrl: string = '';
-    let templateRange: LexerRange|undefined = undefined;
+    let templateRange: LexerRange | undefined = undefined;
     let sourceMapping: TemplateSourceMapping;
     let escapedString = false;
     // We only support SourceMaps for inline templates that are simple string literals.
@@ -723,13 +893,16 @@ export class ComponentDecoratorHandler implements
       escapedString = true;
       sourceMapping = {
         type: 'direct',
-        node: templateExpr as (ts.StringLiteral | ts.NoSubstitutionTemplateLiteral),
+        node: templateExpr as ts.StringLiteral | ts.NoSubstitutionTemplateLiteral,
       };
     } else {
       const resolvedTemplate = this.evaluator.evaluate(templateExpr);
       if (typeof resolvedTemplate !== 'string') {
         throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, templateExpr, 'template must be a string');
+          ErrorCode.VALUE_HAS_WRONG_TYPE,
+          templateExpr,
+          'template must be a string'
+        );
       }
       templateStr = resolvedTemplate;
       sourceMapping = {
@@ -740,22 +913,34 @@ export class ComponentDecoratorHandler implements
       };
     }
 
-    const template =
-        this._parseTemplate(component, templateStr, templateUrl, templateRange, escapedString);
+    const template = this._parseTemplate(
+      component,
+      templateStr,
+      templateUrl,
+      templateRange,
+      escapedString
+    );
 
     return {...template, sourceMapping};
   }
 
   private _parseTemplate(
-      component: Map<string, ts.Expression>, templateStr: string, templateUrl: string,
-      templateRange: LexerRange|undefined, escapedString: boolean): ParsedTemplate {
+    component: Map<string, ts.Expression>,
+    templateStr: string,
+    templateUrl: string,
+    templateRange: LexerRange | undefined,
+    escapedString: boolean
+  ): ParsedTemplate {
     let preserveWhitespaces: boolean = this.defaultPreserveWhitespaces;
     if (component.has('preserveWhitespaces')) {
       const expr = component.get('preserveWhitespaces')!;
       const value = this.evaluator.evaluate(expr);
       if (typeof value !== 'boolean') {
         throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr, 'preserveWhitespaces must be a boolean');
+          ErrorCode.VALUE_HAS_WRONG_TYPE,
+          expr,
+          'preserveWhitespaces must be a boolean'
+        );
       }
       preserveWhitespaces = value;
     }
@@ -764,23 +949,31 @@ export class ComponentDecoratorHandler implements
     if (component.has('interpolation')) {
       const expr = component.get('interpolation')!;
       const value = this.evaluator.evaluate(expr);
-      if (!Array.isArray(value) || value.length !== 2 ||
-          !value.every(element => typeof element === 'string')) {
+      if (
+        !Array.isArray(value) ||
+        value.length !== 2 ||
+        !value.every((element) => typeof element === 'string')
+      ) {
         throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
-            'interpolation must be an array with 2 elements of string type');
+          ErrorCode.VALUE_HAS_WRONG_TYPE,
+          expr,
+          'interpolation must be an array with 2 elements of string type'
+        );
       }
       interpolation = InterpolationConfig.fromArray(value as [string, string]);
     }
 
-    const {errors, nodes: emitNodes, styleUrls, styles, ngContentSelectors} =
-        parseTemplate(templateStr, templateUrl, {
-          preserveWhitespaces,
-          interpolationConfig: interpolation,
-          range: templateRange,
-          escapedString,
-          enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
-        });
+    const {errors, nodes: emitNodes, styleUrls, styles, ngContentSelectors} = parseTemplate(
+      templateStr,
+      templateUrl,
+      {
+        preserveWhitespaces,
+        interpolationConfig: interpolation,
+        range: templateRange,
+        escapedString,
+        enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
+      }
+    );
 
     // Unfortunately, the primary parse of the template above may not contain accurate source map
     // information. If used directly, it would result in incorrect code locations in template
@@ -819,7 +1012,7 @@ export class ComponentDecoratorHandler implements
     };
   }
 
-  private _expressionToImportedFile(expr: Expression, origin: ts.SourceFile): ts.SourceFile|null {
+  private _expressionToImportedFile(expr: Expression, origin: ts.SourceFile): ts.SourceFile | null {
     if (!(expr instanceof ExternalExpr)) {
       return null;
     }
@@ -850,8 +1043,10 @@ export class ComponentDecoratorHandler implements
 
 function getTemplateRange(templateExpr: ts.Expression) {
   const startPos = templateExpr.getStart() + 1;
-  const {line, character} =
-      ts.getLineAndCharacterOfPosition(templateExpr.getSourceFile(), startPos);
+  const {line, character} = ts.getLineAndCharacterOfPosition(
+    templateExpr.getSourceFile(),
+    startPos
+  );
   return {
     startPos,
     startLine: line,
@@ -870,7 +1065,6 @@ function sourceMapUrl(resourceUrl: string): string {
     return resourceUrl;
   }
 }
-
 
 /**
  * Information about the template which was extracted during parsing.
@@ -903,7 +1097,7 @@ export interface ParsedTemplate {
   /**
    * Any errors from parsing the template the first time.
    */
-  errors?: ParseError[]|undefined;
+  errors?: ParseError[] | undefined;
 
   /**
    * The template AST, parsed according to the user's specifications.

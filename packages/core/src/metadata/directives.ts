@@ -9,14 +9,15 @@
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di';
 import {Type} from '../interface/type';
-import {compileComponent as render3CompileComponent, compileDirective as render3CompileDirective} from '../render3/jit/directive';
+import {
+  compileComponent as render3CompileComponent,
+  compileDirective as render3CompileDirective,
+} from '../render3/jit/directive';
 import {compilePipe as render3CompilePipe} from '../render3/jit/pipe';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
 import {noop} from '../util/noop';
 
 import {ViewEncapsulation} from './view';
-
-
 
 /**
  * Type of the Directive decorator / constructor function.
@@ -296,8 +297,12 @@ export interface Directive {
  * @publicApi
  */
 export const Directive: DirectiveDecorator = makeDecorator(
-    'Directive', (dir: Directive = {}) => dir, undefined, undefined,
-    (type: Type<any>, meta: Directive) => SWITCH_COMPILE_DIRECTIVE(type, meta));
+  'Directive',
+  (dir: Directive = {}) => dir,
+  undefined,
+  undefined,
+  (type: Type<any>, meta: Directive) => SWITCH_COMPILE_DIRECTIVE(type, meta)
+);
 
 /**
  * Component decorator interface
@@ -544,7 +549,7 @@ export interface Component extends Directive {
    * {@link ComponentFactoryResolver}.
    * @deprecated Since 9.0.0. With Ivy, this property is no longer necessary.
    */
-  entryComponents?: Array<Type<any>|any[]>;
+  entryComponents?: Array<Type<any> | any[]>;
 
   /**
    * True to preserve or false to remove potentially superfluous whitespace characters
@@ -562,9 +567,12 @@ export interface Component extends Directive {
  * @publicApi
  */
 export const Component: ComponentDecorator = makeDecorator(
-    'Component', (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Default, ...c}),
-    Directive, undefined,
-    (type: Type<any>, meta: Component) => SWITCH_COMPILE_COMPONENT(type, meta));
+  'Component',
+  (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Default, ...c}),
+  Directive,
+  undefined,
+  (type: Type<any>, meta: Component) => SWITCH_COMPILE_COMPONENT(type, meta)
+);
 
 /**
  * Type of the Pipe decorator / constructor function.
@@ -632,59 +640,62 @@ export interface Pipe {
  * @publicApi
  */
 export const Pipe: PipeDecorator = makeDecorator(
-    'Pipe', (p: Pipe) => ({pure: true, ...p}), undefined, undefined,
-    (type: Type<any>, meta: Pipe) => SWITCH_COMPILE_PIPE(type, meta));
-
+  'Pipe',
+  (p: Pipe) => ({pure: true, ...p}),
+  undefined,
+  undefined,
+  (type: Type<any>, meta: Pipe) => SWITCH_COMPILE_PIPE(type, meta)
+);
 
 /**
  * @publicApi
  */
 export interface InputDecorator {
   /**
-  * Decorator that marks a class field as an input property and supplies configuration metadata.
-  * The input property is bound to a DOM property in the template. During change detection,
-  * Angular automatically updates the data property with the DOM property's value.
-  *
-  * @usageNotes
-  *
-  * You can supply an optional name to use in templates when the
-  * component is instantiated, that maps to the
-  * name of the bound property. By default, the original
-  * name of the bound property is used for input binding.
-  *
-  * The following example creates a component with two input properties,
-  * one of which is given a special binding name.
-  *
-  * ```typescript
-  * @Component({
-  *   selector: 'bank-account',
-  *   template: `
-  *     Bank Name: {{bankName}}
-  *     Account Id: {{id}}
-  *   `
-  * })
-  * class BankAccount {
-  *   // This property is bound using its original name.
-  *   @Input() bankName: string;
-  *   // this property value is bound to a different property name
-  *   // when this component is instantiated in a template.
-  *   @Input('account-id') id: string;
-  *
-  *   // this property is not bound, and is not automatically updated by Angular
-  *   normalizedBankName: string;
-  * }
-  *
-  * @Component({
-  *   selector: 'app',
-  *   template: `
-  *     <bank-account bankName="RBC" account-id="4747"></bank-account>
-  *   `
-  * })
-  * class App {}
-  * ```
-  *
-  * @see [Input and Output properties](guide/template-syntax#input-and-output-properties)
-  */
+   * Decorator that marks a class field as an input property and supplies configuration metadata.
+   * The input property is bound to a DOM property in the template. During change detection,
+   * Angular automatically updates the data property with the DOM property's value.
+   *
+   * @usageNotes
+   *
+   * You can supply an optional name to use in templates when the
+   * component is instantiated, that maps to the
+   * name of the bound property. By default, the original
+   * name of the bound property is used for input binding.
+   *
+   * The following example creates a component with two input properties,
+   * one of which is given a special binding name.
+   *
+   * ```typescript
+   * @Component({
+   *   selector: 'bank-account',
+   *   template: `
+   *     Bank Name: {{bankName}}
+   *     Account Id: {{id}}
+   *   `
+   * })
+   * class BankAccount {
+   *   // This property is bound using its original name.
+   *   @Input() bankName: string;
+   *   // this property value is bound to a different property name
+   *   // when this component is instantiated in a template.
+   *   @Input('account-id') id: string;
+   *
+   *   // this property is not bound, and is not automatically updated by Angular
+   *   normalizedBankName: string;
+   * }
+   *
+   * @Component({
+   *   selector: 'app',
+   *   template: `
+   *     <bank-account bankName="RBC" account-id="4747"></bank-account>
+   *   `
+   * })
+   * class App {}
+   * ```
+   *
+   * @see [Input and Output properties](guide/template-syntax#input-and-output-properties)
+   */
   (bindingPropertyName?: string): any;
   new (bindingPropertyName?: string): any;
 }
@@ -705,8 +716,9 @@ export interface Input {
  * @Annotation
  * @publicApi
  */
-export const Input: InputDecorator =
-    makePropDecorator('Input', (bindingPropertyName?: string) => ({bindingPropertyName}));
+export const Input: InputDecorator = makePropDecorator('Input', (bindingPropertyName?: string) => ({
+  bindingPropertyName,
+}));
 
 /**
  * Type of the Output decorator / constructor function.
@@ -715,21 +727,21 @@ export const Input: InputDecorator =
  */
 export interface OutputDecorator {
   /**
-  * Decorator that marks a class field as an output property and supplies configuration metadata.
-  * The DOM property bound to the output property is automatically updated during change detection.
-  *
-  * @usageNotes
-  *
-  * You can supply an optional name to use in templates when the
-  * component is instantiated, that maps to the
-  * name of the bound property. By default, the original
-  * name of the bound property is used for output binding.
-  *
-  * See `Input` decorator for an example of providing a binding name.
-  *
-  * @see [Input and Output properties](guide/template-syntax#input-and-output-properties)
-  *
-  */
+   * Decorator that marks a class field as an output property and supplies configuration metadata.
+   * The DOM property bound to the output property is automatically updated during change detection.
+   *
+   * @usageNotes
+   *
+   * You can supply an optional name to use in templates when the
+   * component is instantiated, that maps to the
+   * name of the bound property. By default, the original
+   * name of the bound property is used for output binding.
+   *
+   * See `Input` decorator for an example of providing a binding name.
+   *
+   * @see [Input and Output properties](guide/template-syntax#input-and-output-properties)
+   *
+   */
   (bindingPropertyName?: string): any;
   new (bindingPropertyName?: string): any;
 }
@@ -741,8 +753,8 @@ export interface OutputDecorator {
  */
 export interface Output {
   /**
-  * The name of the DOM property to which the output property is bound.
-  */
+   * The name of the DOM property to which the output property is bound.
+   */
   bindingPropertyName?: string;
 }
 
@@ -750,10 +762,10 @@ export interface Output {
  * @Annotation
  * @publicApi
  */
-export const Output: OutputDecorator =
-    makePropDecorator('Output', (bindingPropertyName?: string) => ({bindingPropertyName}));
-
-
+export const Output: OutputDecorator = makePropDecorator(
+  'Output',
+  (bindingPropertyName?: string) => ({bindingPropertyName})
+);
 
 /**
  * Type of the HostBinding decorator / constructor function.
@@ -810,9 +822,10 @@ export interface HostBinding {
  * @Annotation
  * @publicApi
  */
-export const HostBinding: HostBindingDecorator =
-    makePropDecorator('HostBinding', (hostPropertyName?: string) => ({hostPropertyName}));
-
+export const HostBinding: HostBindingDecorator = makePropDecorator(
+  'HostBinding',
+  (hostPropertyName?: string) => ({hostPropertyName})
+);
 
 /**
  * Type of the HostListener decorator / constructor function.
@@ -900,10 +913,10 @@ export interface HostListener {
  * @Annotation
  * @publicApi
  */
-export const HostListener: HostListenerDecorator =
-    makePropDecorator('HostListener', (eventName?: string, args?: string[]) => ({eventName, args}));
-
-
+export const HostListener: HostListenerDecorator = makePropDecorator(
+  'HostListener',
+  (eventName?: string, args?: string[]) => ({eventName, args})
+);
 
 export const SWITCH_COMPILE_COMPONENT__POST_R3__ = render3CompileComponent;
 export const SWITCH_COMPILE_DIRECTIVE__POST_R3__ = render3CompileDirective;

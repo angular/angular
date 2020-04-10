@@ -22,7 +22,7 @@ export class MockUpgradeModule {
       } else {
         throw new Error(`Unsupported mock service requested: ${key}`);
       }
-    }
+    },
   };
 }
 
@@ -43,15 +43,26 @@ export function injectorFactory() {
 export class $rootScopeMock {
   private watchers: any[] = [];
   private events: {[k: string]: any[]} = {};
-  runWatchers() { this.watchers.forEach(fn => fn()); }
+  runWatchers() {
+    this.watchers.forEach((fn) => fn());
+  }
 
-  $watch(fn: any) { this.watchers.push(fn); }
+  $watch(fn: any) {
+    this.watchers.push(fn);
+  }
 
   $broadcast(evt: string, ...args: any[]) {
     if (this.events[evt]) {
-      this.events[evt].forEach(fn => { fn.apply(fn, args); });
+      this.events[evt].forEach((fn) => {
+        fn.apply(fn, args);
+      });
     }
-    return {defaultPrevented: false, preventDefault() { this.defaultPrevented = true; }};
+    return {
+      defaultPrevented: false,
+      preventDefault() {
+        this.defaultPrevented = true;
+      },
+    };
   }
 
   $on(evt: string, fn: any) {
@@ -61,7 +72,9 @@ export class $rootScopeMock {
     this.events[evt].push(fn);
   }
 
-  $evalAsync(fn: any) { fn(); }
+  $evalAsync(fn: any) {
+    fn();
+  }
 }
 
 describe('LocationProvider', () => {
@@ -69,9 +82,7 @@ describe('LocationProvider', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        LocationUpgradeTestModule.config(),
-      ],
+      imports: [LocationUpgradeTestModule.config()],
       providers: [UpgradeModule],
     });
 
@@ -80,14 +91,12 @@ describe('LocationProvider', () => {
   });
 
   it('should instantiate LocationProvider', inject([$locationShim], ($location: $locationShim) => {
-       expect($location).toBeDefined();
-       expect($location instanceof $locationShim).toBe(true);
-     }));
-
+    expect($location).toBeDefined();
+    expect($location instanceof $locationShim).toBe(true);
+  }));
 });
 
-
-describe('LocationHtml5Url', function() {
+describe('LocationHtml5Url', function () {
   let $location: $locationShim;
   let upgradeModule: UpgradeModule;
 
@@ -95,18 +104,21 @@ describe('LocationHtml5Url', function() {
     TestBed.configureTestingModule({
       imports: [
         CommonModule,
-        LocationUpgradeTestModule.config(
-            {useHash: false, appBaseHref: '/pre', startUrl: 'http://server'}),
+        LocationUpgradeTestModule.config({
+          useHash: false,
+          appBaseHref: '/pre',
+          startUrl: 'http://server',
+        }),
       ],
       providers: [UpgradeModule],
-
     });
     upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
-
+  beforeEach(inject([$locationShim], (loc: $locationShim) => {
+    $location = loc;
+  }));
 
   it('should set the URL', () => {
     $location.url('');
@@ -123,11 +135,13 @@ describe('LocationHtml5Url', function() {
     expect(parseLinkAndReturn($location, 'http://other')).toEqual(undefined);
     expect(parseLinkAndReturn($location, 'http://server/pre')).toEqual('http://server/pre/');
     expect(parseLinkAndReturn($location, 'http://server/pre/')).toEqual('http://server/pre/');
-    expect(parseLinkAndReturn($location, 'http://server/pre/otherPath'))
-        .toEqual('http://server/pre/otherPath');
+    expect(parseLinkAndReturn($location, 'http://server/pre/otherPath')).toEqual(
+      'http://server/pre/otherPath'
+    );
     // Note: relies on the previous state!
-    expect(parseLinkAndReturn($location, 'someIgnoredAbsoluteHref', '#test'))
-        .toEqual('http://server/pre/otherPath#test');
+    expect(parseLinkAndReturn($location, 'someIgnoredAbsoluteHref', '#test')).toEqual(
+      'http://server/pre/otherPath#test'
+    );
   });
 
   it('should rewrite index URL', () => {
@@ -137,33 +151,35 @@ describe('LocationHtml5Url', function() {
 
     expect(parseLinkAndReturn($location, 'http://server/pre')).toEqual('http://server/pre/');
     expect(parseLinkAndReturn($location, 'http://server/pre/')).toEqual('http://server/pre/');
-    expect(parseLinkAndReturn($location, 'http://server/pre/otherPath'))
-        .toEqual('http://server/pre/otherPath');
+    expect(parseLinkAndReturn($location, 'http://server/pre/otherPath')).toEqual(
+      'http://server/pre/otherPath'
+    );
     // Note: relies on the previous state!
-    expect(parseLinkAndReturn($location, 'someIgnoredAbsoluteHref', '#test'))
-        .toEqual('http://server/pre/otherPath#test');
+    expect(parseLinkAndReturn($location, 'someIgnoredAbsoluteHref', '#test')).toEqual(
+      'http://server/pre/otherPath#test'
+    );
   });
 
-  it('should complain if the path starts with double slashes', function() {
-    expect(function() {
+  it('should complain if the path starts with double slashes', function () {
+    expect(function () {
       parseLinkAndReturn($location, 'http://server/pre///other/path');
     }).toThrow();
 
-    expect(function() {
+    expect(function () {
       parseLinkAndReturn($location, 'http://server/pre/\\\\other/path');
     }).toThrow();
 
-    expect(function() {
+    expect(function () {
       parseLinkAndReturn($location, 'http://server/pre//\\//other/path');
     }).toThrow();
   });
 
-  it('should support state',
-     function() { expect($location.state({a: 2}).state()).toEqual({a: 2}); });
+  it('should support state', function () {
+    expect($location.state({a: 2}).state()).toEqual({a: 2});
+  });
 });
 
-
-describe('NewUrl', function() {
+describe('NewUrl', function () {
   let $location: $locationShim;
   let upgradeModule: UpgradeModule;
 
@@ -180,12 +196,16 @@ describe('NewUrl', function() {
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => {
+    $location = loc;
+  }));
 
   // Sets the default most of these tests rely on
-  function setupUrl(url = '/path/b?search=a&b=c&d#hash') { $location.url(url); }
+  function setupUrl(url = '/path/b?search=a&b=c&d#hash') {
+    $location.url(url);
+  }
 
-  it('should provide common getters', function() {
+  it('should provide common getters', function () {
     setupUrl();
     expect($location.absUrl()).toBe('http://www.domain.com:9877/path/b?search=a&b=c&d#hash');
     expect($location.protocol()).toBe('http');
@@ -197,29 +217,28 @@ describe('NewUrl', function() {
     expect($location.url()).toBe('/path/b?search=a&b=c&d#hash');
   });
 
-
-  it('path() should change path', function() {
+  it('path() should change path', function () {
     setupUrl();
     $location.path('/new/path');
     expect($location.path()).toBe('/new/path');
     expect($location.absUrl()).toBe('http://www.domain.com:9877/new/path?search=a&b=c&d#hash');
   });
 
-  it('path() should not break on numeric values', function() {
+  it('path() should not break on numeric values', function () {
     setupUrl();
     $location.path(1);
     expect($location.path()).toBe('/1');
     expect($location.absUrl()).toBe('http://www.domain.com:9877/1?search=a&b=c&d#hash');
   });
 
-  it('path() should allow using 0 as path', function() {
+  it('path() should allow using 0 as path', function () {
     setupUrl();
     $location.path(0);
     expect($location.path()).toBe('/0');
     expect($location.absUrl()).toBe('http://www.domain.com:9877/0?search=a&b=c&d#hash');
   });
 
-  it('path() should set to empty path on null value', function() {
+  it('path() should set to empty path on null value', function () {
     setupUrl();
     $location.path('/foo');
     expect($location.path()).toBe('/foo');
@@ -227,34 +246,31 @@ describe('NewUrl', function() {
     expect($location.path()).toBe('/');
   });
 
-  it('search() should accept string', function() {
+  it('search() should accept string', function () {
     setupUrl();
     $location.search('x=y&c');
     expect($location.search()).toEqual({x: 'y', c: true});
     expect($location.absUrl()).toBe('http://www.domain.com:9877/path/b?x=y&c#hash');
   });
 
-
-  it('search() should accept object', function() {
+  it('search() should accept object', function () {
     setupUrl();
     $location.search({one: 1, two: true});
     expect($location.search()).toEqual({one: 1, two: true});
     expect($location.absUrl()).toBe('http://www.domain.com:9877/path/b?one=1&two#hash');
   });
 
-
-  it('search() should copy object', function() {
+  it('search() should copy object', function () {
     setupUrl();
     let obj = {one: 1, two: true, three: null};
     $location.search(obj);
     expect(obj).toEqual({one: 1, two: true, three: null});
-    obj.one = 100;  // changed value
+    obj.one = 100; // changed value
     expect($location.search()).toEqual({one: 1, two: true});
     expect($location.absUrl()).toBe('http://www.domain.com:9877/path/b?one=1&two#hash');
   });
 
-
-  it('search() should change single parameter', function() {
+  it('search() should change single parameter', function () {
     setupUrl();
     $location.search({id: 'old', preserved: true});
     $location.search('id', 'new');
@@ -262,8 +278,7 @@ describe('NewUrl', function() {
     expect($location.search()).toEqual({id: 'new', preserved: true});
   });
 
-
-  it('search() should remove single parameter', function() {
+  it('search() should remove single parameter', function () {
     setupUrl();
     $location.search({id: 'old', preserved: true});
     $location.search('id', null);
@@ -271,8 +286,7 @@ describe('NewUrl', function() {
     expect($location.search()).toEqual({preserved: true});
   });
 
-
-  it('search() should remove multiple parameters', function() {
+  it('search() should remove multiple parameters', function () {
     setupUrl();
     $location.search({one: 1, two: true});
     expect($location.search()).toEqual({one: 1, two: true});
@@ -281,16 +295,14 @@ describe('NewUrl', function() {
     expect($location.absUrl()).toBe('http://www.domain.com:9877/path/b#hash');
   });
 
-
-  it('search() should accept numeric keys', function() {
+  it('search() should accept numeric keys', function () {
     setupUrl();
     $location.search({1: 'one', 2: 'two'});
     expect($location.search()).toEqual({'1': 'one', '2': 'two'});
     expect($location.absUrl()).toBe('http://www.domain.com:9877/path/b?1=one&2=two#hash');
   });
 
-
-  it('search() should handle multiple value', function() {
+  it('search() should handle multiple value', function () {
     setupUrl();
     $location.search('a&b');
     expect($location.search()).toEqual({a: true, b: true});
@@ -303,8 +315,7 @@ describe('NewUrl', function() {
     expect($location.search()).toEqual({});
   });
 
-
-  it('search() should handle single value', function() {
+  it('search() should handle single value', function () {
     setupUrl();
     $location.search('ignore');
     expect($location.search()).toEqual({ignore: true});
@@ -312,46 +323,44 @@ describe('NewUrl', function() {
     expect($location.search()).toEqual({1: true});
   });
 
-  it('search() should throw error an incorrect argument', function() {
+  it('search() should throw error an incorrect argument', function () {
     expect(() => {
-      $location.search((null as any));
+      $location.search(null as any);
     }).toThrowError('LocationProvider.search(): First argument must be a string or an object.');
-    expect(function() {
-      $location.search((undefined as any));
+    expect(function () {
+      $location.search(undefined as any);
     }).toThrowError('LocationProvider.search(): First argument must be a string or an object.');
   });
 
-  it('hash() should change hash fragment', function() {
+  it('hash() should change hash fragment', function () {
     setupUrl();
     $location.hash('new-hash');
     expect($location.hash()).toBe('new-hash');
     expect($location.absUrl()).toBe('http://www.domain.com:9877/path/b?search=a&b=c&d#new-hash');
   });
 
-
-  it('hash() should accept numeric parameter', function() {
+  it('hash() should accept numeric parameter', function () {
     setupUrl();
     $location.hash(5);
     expect($location.hash()).toBe('5');
     expect($location.absUrl()).toBe('http://www.domain.com:9877/path/b?search=a&b=c&d#5');
   });
 
-  it('hash() should allow using 0', function() {
+  it('hash() should allow using 0', function () {
     setupUrl();
     $location.hash(0);
     expect($location.hash()).toBe('0');
     expect($location.absUrl()).toBe('http://www.domain.com:9877/path/b?search=a&b=c&d#0');
   });
 
-  it('hash() should accept null parameter', function() {
+  it('hash() should accept null parameter', function () {
     setupUrl();
     $location.hash(null);
     expect($location.hash()).toBe('');
     expect($location.absUrl()).toBe('http://www.domain.com:9877/path/b?search=a&b=c&d');
   });
 
-
-  it('url() should change the path, search and hash', function() {
+  it('url() should change the path, search and hash', function () {
     setupUrl();
     $location.url('/some/path?a=b&c=d#hhh');
     expect($location.url()).toBe('/some/path?a=b&c=d#hhh');
@@ -361,8 +370,7 @@ describe('NewUrl', function() {
     expect($location.hash()).toBe('hhh');
   });
 
-
-  it('url() should change only hash when no search and path specified', function() {
+  it('url() should change only hash when no search and path specified', function () {
     setupUrl();
     $location.url('#some-hash');
 
@@ -371,8 +379,7 @@ describe('NewUrl', function() {
     expect($location.absUrl()).toBe('http://www.domain.com:9877/path/b?search=a&b=c&d#some-hash');
   });
 
-
-  it('url() should change only search and hash when no path specified', function() {
+  it('url() should change only search and hash when no path specified', function () {
     setupUrl();
     $location.url('?a=b');
 
@@ -381,8 +388,7 @@ describe('NewUrl', function() {
     expect($location.path()).toBe('/path/b');
   });
 
-
-  it('url() should reset search and hash when only path specified', function() {
+  it('url() should reset search and hash when only path specified', function () {
     setupUrl();
     $location.url('/new/path');
 
@@ -391,7 +397,7 @@ describe('NewUrl', function() {
     expect($location.hash()).toBe('');
   });
 
-  it('url() should change path when empty string specified', function() {
+  it('url() should change path when empty string specified', function () {
     setupUrl();
     $location.url('');
 
@@ -400,7 +406,7 @@ describe('NewUrl', function() {
     expect($location.hash()).toBe('');
   });
 
-  it('replace should set $$replace flag and return itself', function() {
+  it('replace should set $$replace flag and return itself', function () {
     expect(($location as any).$$replace).toBe(false);
 
     $location.replace();
@@ -408,9 +414,8 @@ describe('NewUrl', function() {
     expect($location.replace()).toBe($location);
   });
 
-  describe('encoding', function() {
-
-    it('should encode special characters', function() {
+  describe('encoding', function () {
+    it('should encode special characters', function () {
       $location.path('/a <>#');
       $location.search({'i j': '<>#'});
       $location.hash('<>#');
@@ -418,11 +423,12 @@ describe('NewUrl', function() {
       expect($location.path()).toBe('/a <>#');
       expect($location.search()).toEqual({'i j': '<>#'});
       expect($location.hash()).toBe('<>#');
-      expect($location.absUrl())
-          .toBe('http://www.domain.com:9877/a%20%3C%3E%23?i%20j=%3C%3E%23#%3C%3E%23');
+      expect($location.absUrl()).toBe(
+        'http://www.domain.com:9877/a%20%3C%3E%23?i%20j=%3C%3E%23#%3C%3E%23'
+      );
     });
 
-    it('should not encode !$:@', function() {
+    it('should not encode !$:@', function () {
       $location.path('/!$:@');
       $location.search('');
       $location.hash('!$:@');
@@ -430,14 +436,14 @@ describe('NewUrl', function() {
       expect($location.absUrl()).toBe('http://www.domain.com:9877/!$:@#!$:@');
     });
 
-    it('should decode special characters', function() {
+    it('should decode special characters', function () {
       $location.$$parse('http://www.domain.com:9877/a%20%3C%3E%23?i%20j=%3C%3E%23#x%20%3C%3E%23');
       expect($location.path()).toBe('/a <>#');
       expect($location.search()).toEqual({'i j': '<>#'});
       expect($location.hash()).toBe('x <>#');
     });
 
-    it('should not decode encoded forward slashes in the path', function() {
+    it('should not decode encoded forward slashes in the path', function () {
       $location.$$parse('http://www.domain.com:9877/a/ng2;path=%2Fsome%2Fpath');
       expect($location.path()).toBe('/a/ng2;path=%2Fsome%2Fpath');
       expect($location.search()).toEqual({});
@@ -446,19 +452,18 @@ describe('NewUrl', function() {
       expect($location.absUrl()).toBe('http://www.domain.com:9877/a/ng2;path=%2Fsome%2Fpath');
     });
 
-    it('should decode pluses as spaces in urls', function() {
+    it('should decode pluses as spaces in urls', function () {
       $location.$$parse('http://www.domain.com:9877/?a+b=c+d');
       expect($location.search()).toEqual({'a b': 'c d'});
     });
 
-    it('should retain pluses when setting search queries', function() {
+    it('should retain pluses when setting search queries', function () {
       $location.search({'a+b': 'c+d'});
       expect($location.search()).toEqual({'a+b': 'c+d'});
     });
-
   });
 
-  it('should not preserve old properties when parsing new url', function() {
+  it('should not preserve old properties when parsing new url', function () {
     $location.$$parse('http://www.domain.com:9877/a');
 
     expect($location.path()).toBe('/a');
@@ -476,8 +481,11 @@ describe('New URL Parsing', () => {
     TestBed.configureTestingModule({
       imports: [
         CommonModule,
-        LocationUpgradeTestModule.config(
-            {useHash: false, appBaseHref: '/base', startUrl: 'http://server'}),
+        LocationUpgradeTestModule.config({
+          useHash: false,
+          appBaseHref: '/base',
+          startUrl: 'http://server',
+        }),
       ],
       providers: [UpgradeModule],
     });
@@ -486,9 +494,11 @@ describe('New URL Parsing', () => {
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => {
+    $location = loc;
+  }));
 
-  it('should prepend path with basePath', function() {
+  it('should prepend path with basePath', function () {
     $location.$$parse('http://server/base/abc?a');
     expect($location.path()).toBe('/abc');
     expect($location.search()).toEqual({a: true});
@@ -496,7 +506,6 @@ describe('New URL Parsing', () => {
     $location.path('/new/path');
     expect($location.absUrl()).toBe('http://server/base/new/path?a');
   });
-
 });
 
 describe('New URL Parsing', () => {
@@ -516,54 +525,56 @@ describe('New URL Parsing', () => {
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => {
+    $location = loc;
+  }));
 
-  it('should parse new url', function() {
+  it('should parse new url', function () {
     $location.$$parse('http://host.com/base');
     expect($location.path()).toBe('/base');
   });
 
-  it('should parse new url with #', function() {
+  it('should parse new url with #', function () {
     $location.$$parse('http://host.com/base#');
     expect($location.path()).toBe('/base');
   });
 
-  it('should prefix path with forward-slash', function() {
+  it('should prefix path with forward-slash', function () {
     $location.path('b');
 
     expect($location.path()).toBe('/b');
     expect($location.absUrl()).toBe('http://host.com/b');
   });
 
-  it('should set path to forward-slash when empty', function() {
+  it('should set path to forward-slash when empty', function () {
     $location.$$parse('http://host.com/');
     expect($location.path()).toBe('/');
     expect($location.absUrl()).toBe('http://host.com/');
   });
 
-  it('setters should return Url object to allow chaining', function() {
+  it('setters should return Url object to allow chaining', function () {
     expect($location.path('/any')).toBe($location);
     expect($location.search('')).toBe($location);
     expect($location.hash('aaa')).toBe($location);
     expect($location.url('/some')).toBe($location);
   });
 
-  it('should throw error when invalid server url given', function() {
-
-    expect(function() { $location.$$parse('http://other.server.org/path#/path'); })
-        .toThrowError(
-            'Invalid url "http://other.server.org/path#/path", missing path prefix "http://host.com/".');
+  it('should throw error when invalid server url given', function () {
+    expect(function () {
+      $location.$$parse('http://other.server.org/path#/path');
+    }).toThrowError(
+      'Invalid url "http://other.server.org/path#/path", missing path prefix "http://host.com/".'
+    );
   });
 
-
-  describe('state', function() {
+  describe('state', function () {
     let mock$rootScope: $rootScopeMock;
 
     beforeEach(inject([UpgradeModule], (ngUpgrade: UpgradeModule) => {
       mock$rootScope = ngUpgrade.$injector.get('$rootScope');
     }));
 
-    it('should set $$state and return itself', function() {
+    it('should set $$state and return itself', function () {
       expect(($location as any).$$state).toEqual(null);
 
       let returned = $location.state({a: 2});
@@ -571,18 +582,18 @@ describe('New URL Parsing', () => {
       expect(returned).toBe($location);
     });
 
-    it('should set state', function() {
+    it('should set state', function () {
       $location.state({a: 2});
       expect($location.state()).toEqual({a: 2});
     });
 
-    it('should allow to set both URL and state', function() {
+    it('should allow to set both URL and state', function () {
       $location.url('/foo').state({a: 2});
       expect($location.url()).toEqual('/foo');
       expect($location.state()).toEqual({a: 2});
     });
 
-    it('should allow to mix state and various URL functions', function() {
+    it('should allow to mix state and various URL functions', function () {
       $location.path('/foo').hash('abcd').state({a: 2}).search('bar', 'baz');
       expect($location.path()).toEqual('/foo');
       expect($location.state()).toEqual({a: 2});
@@ -590,7 +601,7 @@ describe('New URL Parsing', () => {
       expect($location.hash()).toEqual('abcd');
     });
 
-    it('should always have the same value by reference until the value is changed', function() {
+    it('should always have the same value by reference until the value is changed', function () {
       expect(($location as any).$$state).toEqual(null);
       expect($location.state()).toEqual(null);
 
@@ -620,12 +631,10 @@ describe('New URL Parsing', () => {
       // After watchers have been run, location should be updated and `state` should change
       expect($location.state()).toBe(null);
     });
-
   });
 });
 
 describe('$location.onChange()', () => {
-
   let $location: $locationShim;
   let upgradeModule: UpgradeModule;
   let mock$rootScope: $rootScopeMock;
@@ -644,13 +653,18 @@ describe('$location.onChange()', () => {
     mock$rootScope = upgradeModule.$injector.get('$rootScope');
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => {
+    $location = loc;
+  }));
 
-  it('should have onChange method', () => { expect(typeof $location.onChange).toBe('function'); });
+  it('should have onChange method', () => {
+    expect(typeof $location.onChange).toBe('function');
+  });
 
   it('should add registered functions to changeListeners', () => {
-
-    function changeListener(url: string, state: unknown) { return undefined; }
+    function changeListener(url: string, state: unknown) {
+      return undefined;
+    }
     function errorHandler(e: Error) {}
 
     expect(($location as any).$$changeListeners.length).toBe(0);
@@ -663,9 +677,12 @@ describe('$location.onChange()', () => {
   });
 
   it('should call changeListeners when URL is updated', () => {
-
-    const onChangeVals =
-        {url: 'url', state: 'state' as unknown, oldUrl: 'oldUrl', oldState: 'oldState' as unknown};
+    const onChangeVals = {
+      url: 'url',
+      state: 'state' as unknown,
+      oldUrl: 'oldUrl',
+      oldState: 'oldState' as unknown,
+    };
 
     function changeListener(url: string, state: unknown, oldUrl: string, oldState: unknown) {
       onChangeVals.url = url;
@@ -688,7 +705,6 @@ describe('$location.onChange()', () => {
   });
 
   it('should call changeListeners after $locationChangeSuccess', () => {
-
     let changeListenerCalled = false;
     let locationChangeSuccessEmitted = false;
 
@@ -715,13 +731,14 @@ describe('$location.onChange()', () => {
   });
 
   it('should call forward errors to error handler', () => {
-
-    let error !: Error;
+    let error!: Error;
 
     function changeListener(url: string, state: unknown, oldUrl: string, oldState: unknown) {
       throw new Error('Handle error');
     }
-    function errorHandler(e: Error) { error = e; }
+    function errorHandler(e: Error) {
+      error = e;
+    }
 
     $location.onChange(changeListener, errorHandler);
 
@@ -729,10 +746,9 @@ describe('$location.onChange()', () => {
     mock$rootScope.runWatchers();
     expect(error.message).toBe('Handle error');
   });
-
 });
 
 function parseLinkAndReturn(location: $locationShim, toUrl: string, relHref?: string) {
   const resetUrl = location.$$parseLinkUrl(toUrl, relHref);
-  return resetUrl && location.absUrl() || undefined;
+  return (resetUrl && location.absUrl()) || undefined;
 }

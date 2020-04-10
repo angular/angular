@@ -29,8 +29,13 @@ describe('cli: parseArguments', () => {
   });
 
   it('should show usage with error when supplied with both of --out/verify[Dir]', () => {
-    const {mode, errors} =
-        parseArguments(['--out', 'out.d.ts', '--verifyDir', 'golden.d.ts', 'input.d.ts']);
+    const {mode, errors} = parseArguments([
+      '--out',
+      'out.d.ts',
+      '--verifyDir',
+      'golden.d.ts',
+      'input.d.ts',
+    ]);
     chai.assert.equal(mode, 'help');
     chai.assert.deepEqual(errors, ['Specify either --out[Dir] or --verify[Dir]']);
   });
@@ -63,21 +68,17 @@ describe('cli: parseArguments', () => {
     chai.assert.deepEqual(errors, []);
   });
 
-  it('should show usage with error when supplied with --autoDiscoverEntrypoints without --baseDir',
-     () => {
-       const {mode, errors} =
-           parseArguments(['--autoDiscoverEntrypoints', '--outDir', 'something']);
-       chai.assert.equal(mode, 'help');
-       chai.assert.deepEqual(
-           errors, ['--rootDir must be provided with --autoDiscoverEntrypoints.']);
-     });
+  it('should show usage with error when supplied with --autoDiscoverEntrypoints without --baseDir', () => {
+    const {mode, errors} = parseArguments(['--autoDiscoverEntrypoints', '--outDir', 'something']);
+    chai.assert.equal(mode, 'help');
+    chai.assert.deepEqual(errors, ['--rootDir must be provided with --autoDiscoverEntrypoints.']);
+  });
 
-  it('should show usage with error when supplied with --autoDiscoverEntrypoints without --outDir/verifyDir',
-     () => {
-       const {mode, errors} =
-           parseArguments(['--autoDiscoverEntrypoints', '--rootDir', 'something']);
-       chai.assert.equal(mode, 'help');
-       chai.assert.deepEqual(
-           errors, ['--outDir or --verifyDir must be used with --autoDiscoverEntrypoints.']);
-     });
+  it('should show usage with error when supplied with --autoDiscoverEntrypoints without --outDir/verifyDir', () => {
+    const {mode, errors} = parseArguments(['--autoDiscoverEntrypoints', '--rootDir', 'something']);
+    chai.assert.equal(mode, 'help');
+    chai.assert.deepEqual(errors, [
+      '--outDir or --verifyDir must be used with --autoDiscoverEntrypoints.',
+    ]);
+  });
 });

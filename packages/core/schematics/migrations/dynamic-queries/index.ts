@@ -15,11 +15,10 @@ import {createMigrationProgram} from '../../utils/typescript/compiler_host';
 
 import {identifyDynamicQueryNodes, removeOptionsParameter, removeStaticFlag} from './util';
 
-
 /**
  * Runs the dynamic queries migration for all TypeScript projects in the current CLI workspace.
  */
-export default function(): Rule {
+export default function (): Rule {
   return (tree: Tree) => {
     const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
@@ -27,7 +26,8 @@ export default function(): Rule {
 
     if (!allPaths.length) {
       throw new SchematicsException(
-          'Could not find any tsconfig file. Cannot migrate dynamic queries.');
+        'Could not find any tsconfig file. Cannot migrate dynamic queries.'
+      );
     }
 
     for (const tsconfigPath of allPaths) {
@@ -39,28 +39,31 @@ export default function(): Rule {
 function runDynamicQueryMigration(tree: Tree, tsconfigPath: string, basePath: string) {
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();
-  const sourceFiles = program.getSourceFiles().filter(
-      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
+  const sourceFiles = program
+    .getSourceFiles()
+    .filter((f) => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
   const printer = ts.createPrinter();
 
-  sourceFiles.forEach(sourceFile => {
+  sourceFiles.forEach((sourceFile) => {
     const result = identifyDynamicQueryNodes(typeChecker, sourceFile);
 
     if (result.removeProperty.length || result.removeParameter.length) {
       const update = tree.beginUpdate(relative(basePath, sourceFile.fileName));
 
-      result.removeProperty.forEach(node => {
+      result.removeProperty.forEach((node) => {
         update.remove(node.getStart(), node.getWidth());
         update.insertRight(
-            node.getStart(),
-            printer.printNode(ts.EmitHint.Unspecified, removeStaticFlag(node), sourceFile));
+          node.getStart(),
+          printer.printNode(ts.EmitHint.Unspecified, removeStaticFlag(node), sourceFile)
+        );
       });
 
-      result.removeParameter.forEach(node => {
+      result.removeParameter.forEach((node) => {
         update.remove(node.getStart(), node.getWidth());
         update.insertRight(
-            node.getStart(),
-            printer.printNode(ts.EmitHint.Unspecified, removeOptionsParameter(node), sourceFile));
+          node.getStart(),
+          printer.printNode(ts.EmitHint.Unspecified, removeOptionsParameter(node), sourceFile)
+        );
       });
 
       tree.commitUpdate(update);

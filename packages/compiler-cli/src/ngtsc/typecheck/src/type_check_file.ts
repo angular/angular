@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath, join} from '../../file_system';
@@ -17,8 +18,6 @@ import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder} from './oob';
 import {generateTypeCheckBlock} from './type_check_block';
-
-
 
 /**
  * An `Environment` representing the single type-checking file into which most (if not all) Type
@@ -33,26 +32,37 @@ export class TypeCheckFile extends Environment {
   private tcbStatements: ts.Statement[] = [];
 
   constructor(
-      private fileName: string, config: TypeCheckingConfig, refEmitter: ReferenceEmitter,
-      reflector: ReflectionHost) {
+    private fileName: string,
+    config: TypeCheckingConfig,
+    refEmitter: ReferenceEmitter,
+    reflector: ReflectionHost
+  ) {
     super(
-        config, new ImportManager(new NoopImportRewriter(), 'i'), refEmitter, reflector,
-        ts.createSourceFile(fileName, '', ts.ScriptTarget.Latest, true));
+      config,
+      new ImportManager(new NoopImportRewriter(), 'i'),
+      refEmitter,
+      reflector,
+      ts.createSourceFile(fileName, '', ts.ScriptTarget.Latest, true)
+    );
   }
 
   addTypeCheckBlock(
-      ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, meta: TypeCheckBlockMetadata,
-      domSchemaChecker: DomSchemaChecker, oobRecorder: OutOfBandDiagnosticRecorder): void {
+    ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+    meta: TypeCheckBlockMetadata,
+    domSchemaChecker: DomSchemaChecker,
+    oobRecorder: OutOfBandDiagnosticRecorder
+  ): void {
     const fnId = ts.createIdentifier(`_tcb${this.nextTcbId++}`);
     const fn = generateTypeCheckBlock(this, ref, fnId, meta, domSchemaChecker, oobRecorder);
     this.tcbStatements.push(fn);
   }
 
   render(): ts.SourceFile {
-    let source: string = this.importManager.getAllImports(this.fileName)
-                             .map(i => `import * as ${i.qualifier} from '${i.specifier}';`)
-                             .join('\n') +
-        '\n\n';
+    let source: string =
+      this.importManager
+        .getAllImports(this.fileName)
+        .map((i) => `import * as ${i.qualifier} from '${i.specifier}';`)
+        .join('\n') + '\n\n';
     const printer = ts.createPrinter();
     source += '\n';
     for (const stmt of this.helperStatements) {
@@ -75,7 +85,12 @@ export class TypeCheckFile extends Environment {
     source += '\nexport const IS_A_MODULE = true;\n';
 
     return ts.createSourceFile(
-        this.fileName, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+      this.fileName,
+      source,
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TS
+    );
   }
 
   getPreludeStatements(): ts.Statement[] {

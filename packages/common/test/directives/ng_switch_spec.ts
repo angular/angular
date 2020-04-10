@@ -15,14 +15,18 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
   describe('NgSwitch', () => {
     let fixture: ComponentFixture<any>;
 
-    function getComponent(): TestComponent { return fixture.componentInstance; }
+    function getComponent(): TestComponent {
+      return fixture.componentInstance;
+    }
 
     function detectChangesAndExpectText(text: string): void {
       fixture.detectChanges();
       expect(fixture.nativeElement).toHaveText(text);
     }
 
-    afterEach(() => { fixture = null !; });
+    afterEach(() => {
+      fixture = null!;
+    });
 
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -33,10 +37,11 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
     describe('switch value changes', () => {
       it('should switch amongst when values', () => {
-        const template = '<ul [ngSwitch]="switchValue">' +
-            '<li *ngSwitchCase="\'a\'">when a</li>' +
-            '<li *ngSwitchCase="\'b\'">when b</li>' +
-            '</ul>';
+        const template =
+          '<ul [ngSwitch]="switchValue">' +
+          '<li *ngSwitchCase="\'a\'">when a</li>' +
+          '<li *ngSwitchCase="\'b\'">when b</li>' +
+          '</ul>';
 
         fixture = createTestComponent(template);
 
@@ -50,10 +55,11 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       });
 
       it('should switch amongst when values with fallback to default', () => {
-        const template = '<ul [ngSwitch]="switchValue">' +
-            '<li *ngSwitchCase="\'a\'">when a</li>' +
-            '<li *ngSwitchDefault>when default</li>' +
-            '</ul>';
+        const template =
+          '<ul [ngSwitch]="switchValue">' +
+          '<li *ngSwitchCase="\'a\'">when a</li>' +
+          '<li *ngSwitchDefault>when default</li>' +
+          '</ul>';
 
         fixture = createTestComponent(template);
         detectChangesAndExpectText('when default');
@@ -69,14 +75,15 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       });
 
       it('should support multiple whens with the same value', () => {
-        const template = '<ul [ngSwitch]="switchValue">' +
-            '<li *ngSwitchCase="\'a\'">when a1;</li>' +
-            '<li *ngSwitchCase="\'b\'">when b1;</li>' +
-            '<li *ngSwitchCase="\'a\'">when a2;</li>' +
-            '<li *ngSwitchCase="\'b\'">when b2;</li>' +
-            '<li *ngSwitchDefault>when default1;</li>' +
-            '<li *ngSwitchDefault>when default2;</li>' +
-            '</ul>';
+        const template =
+          '<ul [ngSwitch]="switchValue">' +
+          '<li *ngSwitchCase="\'a\'">when a1;</li>' +
+          '<li *ngSwitchCase="\'b\'">when b1;</li>' +
+          '<li *ngSwitchCase="\'a\'">when a2;</li>' +
+          '<li *ngSwitchCase="\'b\'">when b2;</li>' +
+          '<li *ngSwitchDefault>when default1;</li>' +
+          '<li *ngSwitchDefault>when default2;</li>' +
+          '</ul>';
 
         fixture = createTestComponent(template);
         detectChangesAndExpectText('when default1;when default2;');
@@ -91,11 +98,12 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
     describe('when values changes', () => {
       it('should switch amongst when values', () => {
-        const template = '<ul [ngSwitch]="switchValue">' +
-            '<li *ngSwitchCase="when1">when 1;</li>' +
-            '<li *ngSwitchCase="when2">when 2;</li>' +
-            '<li *ngSwitchDefault>when default;</li>' +
-            '</ul>';
+        const template =
+          '<ul [ngSwitch]="switchValue">' +
+          '<li *ngSwitchCase="when1">when 1;</li>' +
+          '<li *ngSwitchCase="when2">when 2;</li>' +
+          '<li *ngSwitchDefault>when default;</li>' +
+          '</ul>';
 
         fixture = createTestComponent(template);
         getComponent().when1 = 'a';
@@ -118,19 +126,21 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     });
 
     describe('corner cases', () => {
-
       it('should not create the default case if another case matches', () => {
         const log: string[] = [];
 
         @Directive({selector: '[test]'})
         class TestDirective {
-          constructor(@Attribute('test') test: string) { log.push(test); }
+          constructor(@Attribute('test') test: string) {
+            log.push(test);
+          }
         }
 
-        const template = '<div [ngSwitch]="switchValue">' +
-            '<div *ngSwitchCase="\'a\'" test="aCase"></div>' +
-            '<div *ngSwitchDefault test="defaultCase"></div>' +
-            '</div>';
+        const template =
+          '<div [ngSwitch]="switchValue">' +
+          '<div *ngSwitchCase="\'a\'" test="aCase"></div>' +
+          '<div *ngSwitchDefault test="defaultCase"></div>' +
+          '</div>';
 
         TestBed.configureTestingModule({declarations: [TestDirective]});
         const fixture = createTestComponent(template);
@@ -142,25 +152,26 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       });
 
       it('should create the default case if there is no other case', () => {
-        const template = '<ul [ngSwitch]="switchValue">' +
-            '<li *ngSwitchDefault>when default1;</li>' +
-            '<li *ngSwitchDefault>when default2;</li>' +
-            '</ul>';
+        const template =
+          '<ul [ngSwitch]="switchValue">' +
+          '<li *ngSwitchDefault>when default1;</li>' +
+          '<li *ngSwitchDefault>when default2;</li>' +
+          '</ul>';
 
         fixture = createTestComponent(template);
         detectChangesAndExpectText('when default1;when default2;');
-
       });
 
       it('should allow defaults before cases', () => {
-        const template = '<ul [ngSwitch]="switchValue">' +
-            '<li *ngSwitchDefault>when default1;</li>' +
-            '<li *ngSwitchDefault>when default2;</li>' +
-            '<li *ngSwitchCase="\'a\'">when a1;</li>' +
-            '<li *ngSwitchCase="\'b\'">when b1;</li>' +
-            '<li *ngSwitchCase="\'a\'">when a2;</li>' +
-            '<li *ngSwitchCase="\'b\'">when b2;</li>' +
-            '</ul>';
+        const template =
+          '<ul [ngSwitch]="switchValue">' +
+          '<li *ngSwitchDefault>when default1;</li>' +
+          '<li *ngSwitchDefault>when default2;</li>' +
+          '<li *ngSwitchCase="\'a\'">when a1;</li>' +
+          '<li *ngSwitchCase="\'b\'">when b1;</li>' +
+          '<li *ngSwitchCase="\'a\'">when a2;</li>' +
+          '<li *ngSwitchCase="\'b\'">when b2;</li>' +
+          '</ul>';
 
         fixture = createTestComponent(template);
         detectChangesAndExpectText('when default1;when default2;');
@@ -199,36 +210,37 @@ class TestComponent {
 @Component({
   selector: 'complex-cmp',
   template: `
-<div [ngSwitch]="state">
-  <ng-container *ngSwitchCase="'case1'" [ngSwitch]="true">
-    <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="foo"></ng-container>
-    <span *ngSwitchDefault>Should never render</span>
-  </ng-container>
-  <ng-container *ngSwitchCase="'case2'" [ngSwitch]="true">
-    <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="bar"></ng-container>
-    <span *ngSwitchDefault>Should never render</span>
-  </ng-container>
-  <ng-container *ngSwitchDefault [ngSwitch]="false">
-    <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="foo"></ng-container>
-    <span *ngSwitchDefault>Default</span>
-  </ng-container>
-</div>
+    <div [ngSwitch]="state">
+      <ng-container *ngSwitchCase="'case1'" [ngSwitch]="true">
+        <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="foo"></ng-container>
+        <span *ngSwitchDefault>Should never render</span>
+      </ng-container>
+      <ng-container *ngSwitchCase="'case2'" [ngSwitch]="true">
+        <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="bar"></ng-container>
+        <span *ngSwitchDefault>Should never render</span>
+      </ng-container>
+      <ng-container *ngSwitchDefault [ngSwitch]="false">
+        <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="foo"></ng-container>
+        <span *ngSwitchDefault>Default</span>
+      </ng-container>
+    </div>
 
-<ng-template #foo>
-  <span>Foo</span>
-</ng-template>
-<ng-template #bar>
-  <span>Bar</span>
-</ng-template>
-`
+    <ng-template #foo>
+      <span>Foo</span>
+    </ng-template>
+    <ng-template #bar>
+      <span>Bar</span>
+    </ng-template>
+  `,
 })
 class ComplexComponent {
-  @ViewChild('foo', {static: true}) foo !: TemplateRef<any>;
-  @ViewChild('bar', {static: true}) bar !: TemplateRef<any>;
+  @ViewChild('foo', {static: true}) foo!: TemplateRef<any>;
+  @ViewChild('bar', {static: true}) bar!: TemplateRef<any>;
   state: string = 'case1';
 }
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {
-  return TestBed.overrideComponent(TestComponent, {set: {template: template}})
-      .createComponent(TestComponent);
+  return TestBed.overrideComponent(TestComponent, {set: {template: template}}).createComponent(
+    TestComponent
+  );
 }

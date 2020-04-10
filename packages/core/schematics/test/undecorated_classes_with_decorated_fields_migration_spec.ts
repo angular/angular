@@ -25,9 +25,12 @@ describe('Undecorated classes with decorated fields migration', () => {
     tree = new UnitTestTree(new HostTree(host));
 
     writeFile('/tsconfig.json', JSON.stringify({compilerOptions: {lib: ['es2015']}}));
-    writeFile('/angular.json', JSON.stringify({
-      projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
-    }));
+    writeFile(
+      '/angular.json',
+      JSON.stringify({
+        projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}},
+      })
+    );
 
     previousWorkingDir = shx.pwd();
     tmpDirPath = getSystemPath(host.root);
@@ -43,21 +46,27 @@ describe('Undecorated classes with decorated fields migration', () => {
   });
 
   it(`should add an import for Directive if there isn't one already`, async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { Input } from '@angular/core';
 
       export class Base {
         @Input() isActive: boolean;
       }
-    `);
+    `
+    );
 
     await runMigration();
-    expect(tree.readContent('/index.ts'))
-        .toContain(`import { Input, Directive } from '@angular/core';`);
+    expect(tree.readContent('/index.ts')).toContain(
+      `import { Input, Directive } from '@angular/core';`
+    );
   });
 
   it('should not change the imports if there is an import for Directive already', async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { Directive, Input } from '@angular/core';
 
       export class Base {
@@ -67,18 +76,21 @@ describe('Undecorated classes with decorated fields migration', () => {
       @Directive()
       export class Child extends Base {
       }
-    `);
+    `
+    );
 
     await runMigration();
-    expect(tree.readContent('/index.ts'))
-        .toContain(`import { Directive, Input } from '@angular/core';`);
+    expect(tree.readContent('/index.ts')).toContain(
+      `import { Directive, Input } from '@angular/core';`
+    );
   });
 
-  it('should not generate conflicting imports there is a different `Directive` symbol',
-     async () => {
-       writeFile('/index.ts', `
+  it('should not generate conflicting imports there is a different `Directive` symbol', async () => {
+    writeFile(
+      '/index.ts',
+      `
       import { HostBinding } from '@angular/core';
-      
+
       export class Directive {
         // Simulates a scenario where a library defines a class named "Directive".
         // We don't want to generate a conflicting import.
@@ -87,30 +99,37 @@ describe('Undecorated classes with decorated fields migration', () => {
       export class MyLibrarySharedBaseClass {
         @HostBinding('class.active') isActive: boolean;
       }
-    `);
+    `
+    );
 
-       await runMigration();
-       const fileContent = tree.readContent('/index.ts');
-       expect(fileContent)
-           .toContain(`import { HostBinding, Directive as Directive_1 } from '@angular/core';`);
-       expect(fileContent).toMatch(/@Directive_1\(\)\s+export class MyLibrarySharedBaseClass/);
-     });
+    await runMigration();
+    const fileContent = tree.readContent('/index.ts');
+    expect(fileContent).toContain(
+      `import { HostBinding, Directive as Directive_1 } from '@angular/core';`
+    );
+    expect(fileContent).toMatch(/@Directive_1\(\)\s+export class MyLibrarySharedBaseClass/);
+  });
 
   it('should add @Directive to undecorated classes that have @Input', async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { Input } from '@angular/core';
 
       export class Base {
         @Input() isActive: boolean;
       }
-    `);
+    `
+    );
 
     await runMigration();
     expect(tree.readContent('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should not change decorated classes', async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { Input, Component, Output, EventEmitter } from '@angular/core';
 
       @Component({})
@@ -121,31 +140,38 @@ describe('Undecorated classes with decorated fields migration', () => {
       export class Child extends Base {
         @Output() clicked = new EventEmitter<void>();
       }
-    `);
+    `
+    );
 
     await runMigration();
     const content = tree.readContent('/index.ts');
     expect(content).toContain(
-        `import { Input, Component, Output, EventEmitter, Directive } from '@angular/core';`);
+      `import { Input, Component, Output, EventEmitter, Directive } from '@angular/core';`
+    );
     expect(content).toContain(`@Component({})\n      export class Base {`);
     expect(content).toContain(`@Directive()\nexport class Child extends Base {`);
   });
 
   it('should add @Directive to undecorated classes that have @Output', async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { Output, EventEmitter } from '@angular/core';
 
       export class Base {
         @Output() clicked = new EventEmitter<void>();
       }
-    `);
+    `
+    );
 
     await runMigration();
     expect(tree.readContent('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a host binding', async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { HostBinding } from '@angular/core';
 
       export class Base {
@@ -154,14 +180,17 @@ describe('Undecorated classes with decorated fields migration', () => {
           return 'id-' + Date.now();
         }
       }
-    `);
+    `
+    );
 
     await runMigration();
     expect(tree.readContent('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a host listener', async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { HostListener } from '@angular/core';
 
       export class Base {
@@ -170,84 +199,100 @@ describe('Undecorated classes with decorated fields migration', () => {
           console.log('Key has been pressed');
         }
       }
-    `);
+    `
+    );
 
     await runMigration();
     expect(tree.readContent('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a ViewChild query', async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { ViewChild, ElementRef } from '@angular/core';
 
       export class Base {
         @ViewChild('button') button: ElementRef<HTMLElement>;
       }
-    `);
+    `
+    );
 
     await runMigration();
     expect(tree.readContent('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a ViewChildren query', async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { ViewChildren, ElementRef } from '@angular/core';
 
       export class Base {
         @ViewChildren('button') button: ElementRef<HTMLElement>;
       }
-    `);
+    `
+    );
 
     await runMigration();
     expect(tree.readContent('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a ContentChild query', async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { ContentChild, ElementRef } from '@angular/core';
 
       export class Base {
         @ContentChild('button') button: ElementRef<HTMLElement>;
       }
-    `);
+    `
+    );
 
     await runMigration();
     expect(tree.readContent('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated classes that have a ContentChildren query', async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { ContentChildren, ElementRef } from '@angular/core';
 
       export class Base {
         @ContentChildren('button') button: ElementRef<HTMLElement>;
       }
-    `);
+    `
+    );
 
     await runMigration();
     expect(tree.readContent('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
   it('should add @Directive to undecorated derived classes of a migrated class', async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { Input, Directive, NgModule } from '@angular/core';
 
       export class Base {
         @Input() isActive: boolean;
       }
-      
+
       export class DerivedA extends Base {}
       export class DerivedB extends DerivedA {}
       export class DerivedC extends DerivedB {}
-      
+
       @Directive({selector: 'my-comp'})
       export class MyComp extends DerivedC {}
-      
+
       export class MyCompWrapped extends MyComp {}
-      
+
       @NgModule({declarations: [MyComp, MyCompWrapped]})
-      export class AppModule {} 
-    `);
+      export class AppModule {}
+    `
+    );
 
     await runMigration();
     const fileContent = tree.readContent('/index.ts');
@@ -261,26 +306,29 @@ describe('Undecorated classes with decorated fields migration', () => {
   });
 
   it('should add @Directive to derived undecorated classes of abstract directives', async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import { Input, Directive, NgModule } from '@angular/core';
 
       @Directive()
       export class Base {
         // ...
       }
-      
+
       export class DerivedA extends Base {}
       export class DerivedB extends DerivedA {}
       export class DerivedC extends DerivedB {}
-      
+
       @Directive({selector: 'my-comp'})
       export class MyComp extends DerivedC {}
-      
+
       export class MyCompWrapped extends MyComp {}
-      
+
       @NgModule({declarations: [MyComp, MyCompWrapped]})
-      export class AppModule {} 
-    `);
+      export class AppModule {}
+    `
+    );
 
     await runMigration();
     const fileContent = tree.readContent('/index.ts');
@@ -294,15 +342,21 @@ describe('Undecorated classes with decorated fields migration', () => {
   });
 
   it('should not throw if undecorated class extends from unresolved declaration', async () => {
-    writeFile('/lib.d.ts', `
+    writeFile(
+      '/lib.d.ts',
+      `
       // Fakes the ES5 error default lib types. Since we are in a virtual tree,
       // the default lib types from TypeScript are not available.
       interface ErrorConstructor {}
       declare var Error: ErrorConstructor;
-    `);
-    writeFile('/index.ts', `
+    `
+    );
+    writeFile(
+      '/index.ts',
+      `
       export class MyCustomErrorClass extends Error {}
-    `);
+    `
+    );
 
     let error: any = null;
     try {
@@ -320,7 +374,7 @@ describe('Undecorated classes with decorated fields migration', () => {
 
   function runMigration() {
     return runner
-        .runSchematicAsync('migration-v9-undecorated-classes-with-decorated-fields', {}, tree)
-        .toPromise();
+      .runSchematicAsync('migration-v9-undecorated-classes-with-decorated-fields', {}, tree)
+      .toPromise();
   }
 });

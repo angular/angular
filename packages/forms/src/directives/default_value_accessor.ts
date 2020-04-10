@@ -7,14 +7,22 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {Directive, ElementRef, forwardRef, Inject, InjectionToken, Optional, Renderer2} from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  forwardRef,
+  Inject,
+  InjectionToken,
+  Optional,
+  Renderer2,
+} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const DEFAULT_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => DefaultValueAccessor),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -61,7 +69,7 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionE
  */
 @Directive({
   selector:
-      'input:not([type=checkbox])[formControlName],textarea[formControlName],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]',
+    'input:not([type=checkbox])[formControlName],textarea[formControlName],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]',
   // TODO: vsavkin replace the above selector with the one below it once
   // https://github.com/angular/angular/issues/3011 is implemented
   // selector: '[ngModel],[formControl],[formControlName]',
@@ -69,9 +77,9 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionE
     '(input)': '$any(this)._handleInput($event.target.value)',
     '(blur)': 'onTouched()',
     '(compositionstart)': '$any(this)._compositionStart()',
-    '(compositionend)': '$any(this)._compositionEnd($event.target.value)'
+    '(compositionend)': '$any(this)._compositionEnd($event.target.value)',
   },
-  providers: [DEFAULT_VALUE_ACCESSOR]
+  providers: [DEFAULT_VALUE_ACCESSOR],
 })
 export class DefaultValueAccessor implements ControlValueAccessor {
   /**
@@ -90,8 +98,10 @@ export class DefaultValueAccessor implements ControlValueAccessor {
   private _composing = false;
 
   constructor(
-      private _renderer: Renderer2, private _elementRef: ElementRef,
-      @Optional() @Inject(COMPOSITION_BUFFER_MODE) private _compositionMode: boolean) {
+    private _renderer: Renderer2,
+    private _elementRef: ElementRef,
+    @Optional() @Inject(COMPOSITION_BUFFER_MODE) private _compositionMode: boolean
+  ) {
     if (this._compositionMode == null) {
       this._compositionMode = !_isAndroid();
     }

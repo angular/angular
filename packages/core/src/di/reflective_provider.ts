@@ -11,13 +11,27 @@ import {reflector} from '../reflection/reflection';
 
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
-import {ClassProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ValueProvider} from './interface/provider';
+import {
+  ClassProvider,
+  ExistingProvider,
+  FactoryProvider,
+  Provider,
+  TypeProvider,
+  ValueProvider,
+} from './interface/provider';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
-import {invalidProviderError, mixingMultiProvidersWithRegularProvidersError, noAnnotationError} from './reflective_errors';
+import {
+  invalidProviderError,
+  mixingMultiProvidersWithRegularProvidersError,
+  noAnnotationError,
+} from './reflective_errors';
 import {ReflectiveKey} from './reflective_key';
 
-
-interface NormalizedProvider extends TypeProvider, ValueProvider, ClassProvider, ExistingProvider,
+interface NormalizedProvider
+  extends TypeProvider,
+    ValueProvider,
+    ClassProvider,
+    ExistingProvider,
     FactoryProvider {}
 
 /**
@@ -26,7 +40,10 @@ interface NormalizedProvider extends TypeProvider, ValueProvider, ClassProvider,
  */
 export class ReflectiveDependency {
   constructor(
-      public key: ReflectiveKey, public optional: boolean, public visibility: Self|SkipSelf|null) {}
+    public key: ReflectiveKey,
+    public optional: boolean,
+    public visibility: Self | SkipSelf | null
+  ) {}
 
   static fromKey(key: ReflectiveKey): ReflectiveDependency {
     return new ReflectiveDependency(key, false, null);
@@ -75,8 +92,10 @@ export class ResolvedReflectiveProvider_ implements ResolvedReflectiveProvider {
   readonly resolvedFactory: ResolvedReflectiveFactory;
 
   constructor(
-      public key: ReflectiveKey, public resolvedFactories: ResolvedReflectiveFactory[],
-      public multiProvider: boolean) {
+    public key: ReflectiveKey,
+    public resolvedFactories: ResolvedReflectiveFactory[],
+    public multiProvider: boolean
+  ) {
     this.resolvedFactory = this.resolvedFactories[0];
   }
 }
@@ -87,17 +106,17 @@ export class ResolvedReflectiveProvider_ implements ResolvedReflectiveProvider {
  */
 export class ResolvedReflectiveFactory {
   constructor(
-      /**
-       * Factory function which can return an instance of an object represented by a key.
-       */
-      public factory: Function,
+    /**
+     * Factory function which can return an instance of an object represented by a key.
+     */
+    public factory: Function,
 
-      /**
-       * Arguments (dependencies) to the `factory` function.
-       */
-      public dependencies: ReflectiveDependency[]) {}
+    /**
+     * Arguments (dependencies) to the `factory` function.
+     */
+    public dependencies: ReflectiveDependency[]
+  ) {}
 }
-
 
 /**
  * Resolve a single provider.
@@ -130,8 +149,10 @@ function resolveReflectiveFactory(provider: NormalizedProvider): ResolvedReflect
  */
 function resolveReflectiveProvider(provider: NormalizedProvider): ResolvedReflectiveProvider {
   return new ResolvedReflectiveProvider_(
-      ReflectiveKey.get(provider.provide), [resolveReflectiveFactory(provider)],
-      provider.multi || false);
+    ReflectiveKey.get(provider.provide),
+    [resolveReflectiveFactory(provider)],
+    provider.multi || false
+  );
 }
 
 /**
@@ -149,9 +170,9 @@ export function resolveReflectiveProviders(providers: Provider[]): ResolvedRefle
  * multi providers have been merged.
  */
 export function mergeResolvedReflectiveProviders(
-    providers: ResolvedReflectiveProvider[],
-    normalizedProvidersMap: Map<number, ResolvedReflectiveProvider>):
-    Map<number, ResolvedReflectiveProvider> {
+  providers: ResolvedReflectiveProvider[],
+  normalizedProvidersMap: Map<number, ResolvedReflectiveProvider>
+): Map<number, ResolvedReflectiveProvider> {
   for (let i = 0; i < providers.length; i++) {
     const provider = providers[i];
     const existing = normalizedProvidersMap.get(provider.key.id);
@@ -170,7 +191,10 @@ export function mergeResolvedReflectiveProviders(
       let resolvedProvider: ResolvedReflectiveProvider;
       if (provider.multiProvider) {
         resolvedProvider = new ResolvedReflectiveProvider_(
-            provider.key, provider.resolvedFactories.slice(), provider.multiProvider);
+          provider.key,
+          provider.resolvedFactories.slice(),
+          provider.multiProvider
+        );
       } else {
         resolvedProvider = provider;
       }
@@ -181,17 +205,16 @@ export function mergeResolvedReflectiveProviders(
 }
 
 function _normalizeProviders(
-    providers: Provider[], res: NormalizedProvider[]): NormalizedProvider[] {
-  providers.forEach(b => {
+  providers: Provider[],
+  res: NormalizedProvider[]
+): NormalizedProvider[] {
+  providers.forEach((b) => {
     if (b instanceof Type) {
-      res.push({ provide: b, useClass: b } as NormalizedProvider);
-
+      res.push({provide: b, useClass: b} as NormalizedProvider);
     } else if (b && typeof b == 'object' && (b as any).provide !== undefined) {
       res.push(b as NormalizedProvider);
-
     } else if (Array.isArray(b)) {
       _normalizeProviders(b, res);
-
     } else {
       throw invalidProviderError(b);
     }
@@ -201,12 +224,14 @@ function _normalizeProviders(
 }
 
 export function constructDependencies(
-    typeOrFunc: any, dependencies?: any[]): ReflectiveDependency[] {
+  typeOrFunc: any,
+  dependencies?: any[]
+): ReflectiveDependency[] {
   if (!dependencies) {
     return _dependenciesFor(typeOrFunc);
   } else {
-    const params: any[][] = dependencies.map(t => [t]);
-    return dependencies.map(t => _extractToken(typeOrFunc, t, params));
+    const params: any[][] = dependencies.map((t) => [t]);
+    return dependencies.map((t) => _extractToken(typeOrFunc, t, params));
   }
 }
 
@@ -214,14 +239,17 @@ function _dependenciesFor(typeOrFunc: any): ReflectiveDependency[] {
   const params = reflector.parameters(typeOrFunc);
 
   if (!params) return [];
-  if (params.some(p => p == null)) {
+  if (params.some((p) => p == null)) {
     throw noAnnotationError(typeOrFunc, params);
   }
-  return params.map(p => _extractToken(typeOrFunc, p, params));
+  return params.map((p) => _extractToken(typeOrFunc, p, params));
 }
 
 function _extractToken(
-    typeOrFunc: any, metadata: any[] | any, params: any[][]): ReflectiveDependency {
+  typeOrFunc: any,
+  metadata: any[] | any,
+  params: any[][]
+): ReflectiveDependency {
   let token: any = null;
   let optional = false;
 
@@ -233,20 +261,17 @@ function _extractToken(
     }
   }
 
-  let visibility: Self|SkipSelf|null = null;
+  let visibility: Self | SkipSelf | null = null;
 
   for (let i = 0; i < metadata.length; ++i) {
     const paramMetadata = metadata[i];
 
     if (paramMetadata instanceof Type) {
       token = paramMetadata;
-
     } else if (paramMetadata instanceof Inject) {
       token = paramMetadata.token;
-
     } else if (paramMetadata instanceof Optional) {
       optional = true;
-
     } else if (paramMetadata instanceof Self || paramMetadata instanceof SkipSelf) {
       visibility = paramMetadata;
     } else if (paramMetadata instanceof InjectionToken) {
@@ -264,6 +289,9 @@ function _extractToken(
 }
 
 function _createDependency(
-    token: any, optional: boolean, visibility: Self | SkipSelf | null): ReflectiveDependency {
+  token: any,
+  optional: boolean,
+  visibility: Self | SkipSelf | null
+): ReflectiveDependency {
   return new ReflectiveDependency(ReflectiveKey.get(token), optional, visibility);
 }

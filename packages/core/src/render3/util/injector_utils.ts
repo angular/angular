@@ -5,7 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags} from '../interfaces/injector';
+
+import {
+  NO_PARENT_INJECTOR,
+  RelativeInjectorLocation,
+  RelativeInjectorLocationFlags,
+} from '../interfaces/injector';
 import {DECLARATION_VIEW, LView} from '../interfaces/view';
 /// Parent Injector Utils ///////////////////////////////////////////////////////////////
 export function hasParentInjector(parentLocation: RelativeInjectorLocation): boolean {
@@ -13,11 +18,11 @@ export function hasParentInjector(parentLocation: RelativeInjectorLocation): boo
 }
 
 export function getParentInjectorIndex(parentLocation: RelativeInjectorLocation): number {
-  return (parentLocation as any as number) & RelativeInjectorLocationFlags.InjectorIndexMask;
+  return ((parentLocation as any) as number) & RelativeInjectorLocationFlags.InjectorIndexMask;
 }
 
 export function getParentInjectorViewOffset(parentLocation: RelativeInjectorLocation): number {
-  return (parentLocation as any as number) >> RelativeInjectorLocationFlags.ViewOffsetShift;
+  return ((parentLocation as any) as number) >> RelativeInjectorLocationFlags.ViewOffsetShift;
 }
 
 /**
@@ -37,7 +42,7 @@ export function getParentInjectorView(location: RelativeInjectorLocation, startV
   // <ng-template> tags or inline views, where the parent injector might live many views
   // above the child injector.
   while (viewOffset > 0) {
-    parentView = parentView[DECLARATION_VIEW] !;
+    parentView = parentView[DECLARATION_VIEW]!;
     viewOffset--;
   }
   return parentView;

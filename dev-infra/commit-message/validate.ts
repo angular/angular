@@ -5,8 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {getAngularDevConfig} from '../utils/config';
+
 import {CommitMessageConfig} from './config';
+import {getAngularDevConfig} from '../utils/config';
 
 /** Options for commit message validation. */
 export interface ValidateCommitMessageOptions {
@@ -15,7 +16,7 @@ export interface ValidateCommitMessageOptions {
 }
 
 const FIXUP_PREFIX_RE = /^fixup! /i;
-const GITHUB_LINKING_RE = /((closed?s?)|(fix(es)?(ed)?)|(resolved?s?))\s\#(\d+)/ig;
+const GITHUB_LINKING_RE = /((closed?s?)|(fix(es)?(ed)?)|(resolved?s?))\s\#(\d+)/gi;
 const SQUASH_PREFIX_RE = /^squash! /i;
 const REVERT_PREFIX_RE = /^revert:? /i;
 const TYPE_SCOPE_RE = /^(\w+)(?:\(([^)]+)\))?\:\s(.+)$/;
@@ -33,8 +34,8 @@ export function parseCommitMessage(commitMsg: string) {
 
   if (COMMIT_HEADER_RE.test(commitMsg)) {
     header = COMMIT_HEADER_RE.exec(commitMsg)![1]
-                 .replace(FIXUP_PREFIX_RE, '')
-                 .replace(SQUASH_PREFIX_RE, '');
+      .replace(FIXUP_PREFIX_RE, '')
+      .replace(SQUASH_PREFIX_RE, '');
   }
   if (COMMIT_BODY_RE.test(commitMsg)) {
     body = COMMIT_BODY_RE.exec(commitMsg)![1];
@@ -62,10 +63,12 @@ export function parseCommitMessage(commitMsg: string) {
 
 /** Validate a commit message against using the local repo's config. */
 export function validateCommitMessage(
-    commitMsg: string, options: ValidateCommitMessageOptions = {}) {
+  commitMsg: string,
+  options: ValidateCommitMessageOptions = {}
+) {
   function error(errorMessage: string) {
     console.error(
-        `INVALID COMMIT MSG: \n` +
+      `INVALID COMMIT MSG: \n` +
         `${'─'.repeat(40)}\n` +
         `${commitMsg}\n` +
         `${'─'.repeat(40)}\n` +
@@ -73,7 +76,8 @@ export function validateCommitMessage(
         `  ${errorMessage}` +
         `\n\n` +
         `The expected format for a commit is: \n` +
-        `<type>(<scope>): <subject>\n\n<body>`);
+        `<type>(<scope>): <subject>\n\n<body>`
+    );
   }
 
   const config = getAngularDevConfig<'commitMessage', CommitMessageConfig>().commitMessage;
@@ -94,8 +98,9 @@ export function validateCommitMessage(
   if (commit.isFixup && options.nonFixupCommitHeaders) {
     if (!options.nonFixupCommitHeaders.includes(commit.header)) {
       error(
-          'Unable to find match for fixup commit among prior commits: ' +
-          (options.nonFixupCommitHeaders.map(x => `\n      ${x}`).join('') || '-'));
+        'Unable to find match for fixup commit among prior commits: ' +
+          (options.nonFixupCommitHeaders.map((x) => `\n      ${x}`).join('') || '-')
+      );
       return false;
     }
 
@@ -123,15 +128,17 @@ export function validateCommitMessage(
   }
 
   if (commit.bodyWithoutLinking.trim().length < config.minBodyLength) {
-    error(`The commit message body does not meet the minimum length of ${
-        config.minBodyLength} characters`);
+    error(
+      `The commit message body does not meet the minimum length of ${config.minBodyLength} characters`
+    );
     return false;
   }
 
   const bodyByLine = commit.body.split('\n');
-  if (bodyByLine.some(line => line.length > config.maxLineLength)) {
+  if (bodyByLine.some((line) => line.length > config.maxLineLength)) {
     error(
-        `The commit messsage body contains lines greater than ${config.maxLineLength} characters`);
+      `The commit messsage body contains lines greater than ${config.maxLineLength} characters`
+    );
     return false;
   }
 

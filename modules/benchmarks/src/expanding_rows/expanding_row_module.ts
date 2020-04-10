@@ -34,9 +34,6 @@ import {ExpandingRowSummary} from './expanding_row_summary';
     ExpandingRowSummary,
     ExpandingRowBlacklist,
   ],
-  imports: [
-    CommonModule,
-  ],
+  imports: [CommonModule],
 })
-export class ExpandingRowModule {
-}
+export class ExpandingRowModule {}

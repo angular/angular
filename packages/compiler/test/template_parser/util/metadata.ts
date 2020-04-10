@@ -5,13 +5,30 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CompileDirectiveMetadata, CompileEntryComponentMetadata, CompileProviderMetadata, CompileQueryMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, CompileTypeMetadata, preserveWhitespacesDefault, ProxyClass, StaticSymbol} from '@angular/compiler';
+
+import {
+  CompileDirectiveMetadata,
+  CompileEntryComponentMetadata,
+  CompileProviderMetadata,
+  CompileQueryMetadata,
+  CompileStylesheetMetadata,
+  CompileTemplateMetadata,
+  CompileTypeMetadata,
+  preserveWhitespacesDefault,
+  ProxyClass,
+  StaticSymbol,
+} from '@angular/compiler';
 import {ChangeDetectionStrategy, RendererType2, ViewEncapsulation} from '@angular/core';
 
 import {noUndefined} from '../../../src/util';
 
-export function createTypeMeta({reference, diDeps}: {reference: any, diDeps?: any[]}):
-    CompileTypeMetadata {
+export function createTypeMeta({
+  reference,
+  diDeps,
+}: {
+  reference: any;
+  diDeps?: any[];
+}): CompileTypeMetadata {
   return {reference: reference, diDeps: diDeps || [], lifecycleHooks: []};
 }
 
@@ -32,7 +49,7 @@ export function compileDirectiveMetadataCreate({
   entryComponents,
   template,
   componentViewType,
-  rendererType
+  rendererType,
 }: Partial<Parameters<typeof CompileDirectiveMetadata.create>[0]>) {
   return CompileDirectiveMetadata.create({
     isHost: !!isHost,
@@ -68,7 +85,7 @@ export function compileTemplateMetadata({
   ngContentSelectors,
   interpolation,
   isInline,
-  preserveWhitespaces
+  preserveWhitespaces,
 }: Partial<CompileTemplateMetadata>): CompileTemplateMetadata {
   return new CompileTemplateMetadata({
     encapsulation: noUndefined(encapsulation),

@@ -32,12 +32,12 @@ interface LruNode {
   /**
    * The previous (more recent) node in the chain, or null if this is the head.
    */
-  previous: string|null;
+  previous: string | null;
 
   /**
    * The next (less recent) node in the chain, or null if this is the tail.
    */
-  next: string|null;
+  next: string | null;
 }
 
 /**
@@ -49,12 +49,12 @@ interface LruState {
   /**
    * URL of the head node, or null if the chain is empty.
    */
-  head: string|null;
+  head: string | null;
 
   /**
    * URL of the tail node, or null if the chain is empty.
    */
-  tail: string|null;
+  tail: string | null;
 
   /**
    * Map of URLs to data for each URL (including next/prev pointers).
@@ -88,12 +88,14 @@ class LruList {
   /**
    * The current count of URLs in the list.
    */
-  get size(): number { return this.state.count; }
+  get size(): number {
+    return this.state.count;
+  }
 
   /**
    * Remove the tail.
    */
-  pop(): string|null {
+  pop(): string | null {
     // If there is no tail, return null.
     if (this.state.tail === null) {
       return null;
@@ -125,7 +127,7 @@ class LruList {
       }
 
       // There is at least one other node. Make the next node the new head.
-      const next = this.state.map[node.next !] !;
+      const next = this.state.map[node.next!]!;
       next.previous = null;
       this.state.head = next.url;
       node.next = null;
@@ -136,7 +138,7 @@ class LruList {
 
     // The node is not the head, so it has a previous. It may or may not be the tail.
     // If it is not, then it has a next. First, grab the previous node.
-    const previous = this.state.map[node.previous !] !;
+    const previous = this.state.map[node.previous!]!;
 
     // Fix the forward pointer to skip over node and go directly to node.next.
     previous.next = node.next;
@@ -146,10 +148,10 @@ class LruList {
     // updated to point to the previous node (removing the tail).
     if (node.next !== null) {
       // There is a next node, fix its back pointer to skip this node.
-      this.state.map[node.next] !.previous = node.previous !;
+      this.state.map[node.next]!.previous = node.previous!;
     } else {
       // There is no next node - the accessed node must be the tail. Move the tail pointer.
-      this.state.tail = node.previous !;
+      this.state.tail = node.previous!;
     }
 
     node.next = null;
@@ -189,7 +191,7 @@ class LruList {
     // First, check if there's an existing head node. If there is, it has previous: null.
     // Its previous pointer should be set to the node we're inserting.
     if (this.state.head !== null) {
-      this.state.map[this.state.head] !.previous = url;
+      this.state.map[this.state.head]!.previous = url;
     }
 
     // The next pointer of the node being inserted gets set to the old head, before the head
@@ -230,7 +232,7 @@ export class DataGroup {
   /**
    * Tracks the LRU state of resources in this cache.
    */
-  private _lru: LruList|null = null;
+  private _lru: LruList | null = null;
 
   /**
    * Database table used to store the state of the LRU cache.
@@ -243,10 +245,14 @@ export class DataGroup {
   private readonly ageTable: Promise<Table>;
 
   constructor(
-      private scope: ServiceWorkerGlobalScope, private adapter: Adapter,
-      private config: DataGroupConfig, private db: Database, private debugHandler: DebugHandler,
-      private prefix: string) {
-    this.patterns = this.config.patterns.map(pattern => new RegExp(pattern));
+    private scope: ServiceWorkerGlobalScope,
+    private adapter: Adapter,
+    private config: DataGroupConfig,
+    private db: Database,
+    private debugHandler: DebugHandler,
+    private prefix: string
+  ) {
+    this.patterns = this.config.patterns.map((pattern) => new RegExp(pattern));
     this.cache = this.scope.caches.open(`${this.prefix}:dynamic:${this.config.name}:cache`);
     this.lruTable = this.db.open(`${this.prefix}:dynamic:${this.config.name}:lru`);
     this.ageTable = this.db.open(`${this.prefix}:dynamic:${this.config.name}:age`);
@@ -276,7 +282,7 @@ export class DataGroup {
     }
     const table = await this.lruTable;
     try {
-      return table.write('lru', this._lru !.state);
+      return table.write('lru', this._lru!.state);
     } catch (err) {
       // Writing lru cache table failed. This could be a result of a full storage.
       // Continue serving clients as usual.
@@ -290,9 +296,9 @@ export class DataGroup {
    * Process a fetch event and return a `Response` if the resource is covered by this group,
    * or `null` otherwise.
    */
-  async handleFetch(req: Request, ctx: Context): Promise<Response|null> {
+  async handleFetch(req: Request, ctx: Context): Promise<Response | null> {
     // Do nothing
-    if (!this.patterns.some(pattern => pattern.test(req.url))) {
+    if (!this.patterns.some((pattern) => pattern.test(req.url))) {
       return null;
     }
 
@@ -333,9 +339,12 @@ export class DataGroup {
     }
   }
 
-  private async handleFetchWithPerformance(req: Request, ctx: Context, lru: LruList):
-      Promise<Response|null> {
-    let res: Response|null|undefined = null;
+  private async handleFetchWithPerformance(
+    req: Request,
+    ctx: Context,
+    lru: LruList
+  ): Promise<Response | null> {
+    let res: Response | null | undefined = null;
 
     // Check the cache first. If the resource exists there (and is not expired), the cached
     // version can be used.
@@ -372,12 +381,14 @@ export class DataGroup {
     return res;
   }
 
-  private async handleFetchWithFreshness(req: Request, ctx: Context, lru: LruList):
-      Promise<Response|null> {
+  private async handleFetchWithFreshness(
+    req: Request,
+    ctx: Context,
+    lru: LruList
+  ): Promise<Response | null> {
     // Start with a network fetch.
     const [timeoutFetch, networkFetch] = this.networkFetchWithTimeout(req);
-    let res: Response|null|undefined;
-
+    let res: Response | null | undefined;
 
     // If that fetch errors, treat it as a timed out request.
     try {
@@ -393,7 +404,7 @@ export class DataGroup {
       // Ignore the age, the network response will be cached anyway due to the
       // behavior of freshness.
       const fromCache = await this.loadFromCache(req, lru);
-      res = (fromCache !== null) ? fromCache.res : null;
+      res = fromCache !== null ? fromCache.res : null;
     } else {
       await this.safeCacheResponse(req, res, lru, true);
     }
@@ -408,12 +419,14 @@ export class DataGroup {
     return networkFetch;
   }
 
-  private networkFetchWithTimeout(req: Request): [Promise<Response|undefined>, Promise<Response>] {
+  private networkFetchWithTimeout(
+    req: Request
+  ): [Promise<Response | undefined>, Promise<Response>] {
     // If there is a timeout configured, race a timeout Promise with the network fetch.
     // Otherwise, just fetch from the network directly.
     if (this.config.timeoutMs !== undefined) {
       const networkFetch = this.scope.fetch(req);
-      const safeNetworkFetch = (async() => {
+      const safeNetworkFetch = (async () => {
         try {
           return await networkFetch;
         } catch {
@@ -423,7 +436,7 @@ export class DataGroup {
           });
         }
       })();
-      const networkFetchUndefinedError = (async() => {
+      const networkFetchUndefinedError = (async () => {
         try {
           return await networkFetch;
         } catch {
@@ -443,8 +456,11 @@ export class DataGroup {
   }
 
   private async safeCacheResponse(
-      req: Request, resOrPromise: Promise<Response>|Response, lru: LruList,
-      okToCacheOpaque?: boolean): Promise<void> {
+    req: Request,
+    resOrPromise: Promise<Response> | Response,
+    lru: LruList,
+    okToCacheOpaque?: boolean
+  ): Promise<void> {
     try {
       const res = await resOrPromise;
       try {
@@ -453,8 +469,9 @@ export class DataGroup {
         // Saving the API response failed. This could be a result of a full storage.
         // Since this data is cached lazily and temporarily, continue serving clients as usual.
         this.debugHandler.log(
-            err,
-            `DataGroup(${this.config.name}@${this.config.version}).safeCacheResponse(${req.url}, status: ${res.status})`);
+          err,
+          `DataGroup(${this.config.name}@${this.config.version}).safeCacheResponse(${req.url}, status: ${res.status})`
+        );
 
         // TODO: Better detect/handle full storage; e.g. using
         // [navigator.storage](https://developer.mozilla.org/en-US/docs/Web/API/NavigatorStorage/storage).
@@ -465,8 +482,10 @@ export class DataGroup {
     }
   }
 
-  private async loadFromCache(req: Request, lru: LruList):
-      Promise<{res: Response, age: number}|null> {
+  private async loadFromCache(
+    req: Request,
+    lru: LruList
+  ): Promise<{res: Response; age: number} | null> {
     // Look for a response in the cache. If one exists, return it.
     const cache = await this.cache;
     let res = await cache.match(req);
@@ -504,8 +523,12 @@ export class DataGroup {
    * If the request times out on the server, an error will be returned but the real network
    * request will still be running in the background, to be cached when it completes.
    */
-  private async cacheResponse(req: Request, res: Response, lru: LruList, okToCacheOpaque = false):
-      Promise<void> {
+  private async cacheResponse(
+    req: Request,
+    res: Response,
+    lru: LruList,
+    okToCacheOpaque = false
+  ): Promise<void> {
     // Only cache successful responses.
     if (!(res.ok || (okToCacheOpaque && res.type === 'opaque'))) {
       return;
@@ -529,7 +552,7 @@ export class DataGroup {
 
     // Store the response in the cache (cloning because the browser will consume
     // the body during the caching operation).
-    await(await this.cache).put(req, res.clone());
+    await (await this.cache).put(req, res.clone());
 
     // Store the age of the cache.
     const ageTable = await this.ageTable;

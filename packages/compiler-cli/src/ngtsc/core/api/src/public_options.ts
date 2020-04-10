@@ -115,7 +115,7 @@ export interface NgcCompatibilityOptions {
    * `true` - run the ngtsc compiler instead of the normal ngc compiler
    * `ngtsc` - alias for `true`
    */
-  enableIvy?: boolean|'ngtsc';
+  enableIvy?: boolean | 'ngtsc';
 }
 
 /**
@@ -132,7 +132,6 @@ export interface StrictTemplateOptions {
    * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
    */
   strictTemplates?: boolean;
-
 
   /**
    * Whether to check the type of a binding to a directive/component input against the type of the

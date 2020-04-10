@@ -11,12 +11,7 @@ import {NgModule} from '@angular/core';
 import {FlatComponent} from './flat.component';
 
 @NgModule({
-  declarations: [
-    FlatComponent,
-  ],
-  exports: [
-    FlatComponent,
-  ]
+  declarations: [FlatComponent],
+  exports: [FlatComponent],
 })
-export class FlatModule {
-}
+export class FlatModule {}

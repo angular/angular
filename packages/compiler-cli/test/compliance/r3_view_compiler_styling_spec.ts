@@ -18,11 +18,10 @@ describe('compiler compliance: styling', () => {
   });
 
   describe('@Component.styles', () => {
-    it('should pass in the component metadata styles into the component definition and shim them using style encapsulation',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should pass in the component metadata styles into the component definition and shim them using style encapsulation', () => {
+      const files = {
+        app: {
+          'spec.ts': `
                 import {Component, NgModule} from '@angular/core';
 
                 @Component({
@@ -35,21 +34,20 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-           }
-         };
+            `,
+        },
+      };
 
-         const template =
-             'styles: ["div.foo[_ngcontent-%COMP%] { color: red; }", "[_nghost-%COMP%]   p[_ngcontent-%COMP%]:nth-child(even) { --webkit-transition: 1s linear all; }"]';
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      const template =
+        'styles: ["div.foo[_ngcontent-%COMP%] { color: red; }", "[_nghost-%COMP%]   p[_ngcontent-%COMP%]:nth-child(even) { --webkit-transition: 1s linear all; }"]';
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-    it('should pass in styles, but skip shimming the styles if the view encapsulation signals not to',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should pass in styles, but skip shimming the styles if the view encapsulation signals not to', () => {
+      const files = {
+        app: {
+          'spec.ts': `
                 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 
                 @Component({
@@ -63,20 +61,19 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-           }
-         };
+            `,
+        },
+      };
 
-         const template = 'div.tall { height: 123px; }", ":host.small p { height:5px; }';
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      const template = 'div.tall { height: 123px; }", ":host.small p { height:5px; }';
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-    it('should pass in the component metadata styles into the component definition but skip shimming when style encapsulation is set to native',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should pass in the component metadata styles into the component definition but skip shimming when style encapsulation is set to native', () => {
+      const files = {
+        app: {
+          'spec.ts': `
                 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 
                 @Component({
@@ -90,20 +87,20 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-           }
-         };
+            `,
+        },
+      };
 
-         const template = `
+      const template = `
          MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
            …
            styles: ["div.cool { color: blue; }", ":host.nice p { color: gold; }"],
            encapsulation: 1
          })
          `;
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
   });
 
   describe('@Component.animations', () => {
@@ -123,8 +120,8 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-        }
+            `,
+        },
       };
 
       const template = `
@@ -162,8 +159,8 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-        }
+            `,
+        },
       };
 
       const template = `
@@ -203,8 +200,8 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-        }
+            `,
+        },
       };
 
       const template = `
@@ -264,8 +261,8 @@ describe('compiler compliance: styling', () => {
 
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const template = `
@@ -326,8 +323,8 @@ describe('compiler compliance: styling', () => {
 
             @NgModule({declarations: [MyComponent, MyAnimDir]})
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const template = `
@@ -367,8 +364,8 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-        }
+            `,
+        },
       };
 
       const template = `
@@ -386,11 +383,10 @@ describe('compiler compliance: styling', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
-    it('should correctly count the total slots required when style/class bindings include interpolation',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should correctly count the total slots required when style/class bindings include interpolation', () => {
+      const files = {
+        app: {
+          'spec.ts': `
                 import {Component, NgModule} from '@angular/core';
 
                 @Component({
@@ -426,11 +422,11 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponentWithInterpolation, MyComponentWithMuchosInterpolation, MyComponentWithoutInterpolation]})
                 export class MyModule {}
-            `
-           }
-         };
+            `,
+        },
+      };
 
-         const template = `
+      const template = `
         …
           decls: 1,
           vars: 3,
@@ -466,15 +462,14 @@ describe('compiler compliance: styling', () => {
           }
           `;
 
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-    it('should place initial, multi, singular and application followed by attribute style instructions in the template code in that order',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should place initial, multi, singular and application followed by attribute style instructions in the template code in that order', () => {
+      const files = {
+        app: {
+          'spec.ts': `
                 import {Component, NgModule} from '@angular/core';
 
                 @Component({
@@ -493,11 +488,11 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-           }
-         };
+            `,
+        },
+      };
 
-         const template = `
+      const template = `
           …
           MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
               type: MyComponent,
@@ -519,15 +514,14 @@ describe('compiler compliance: styling', () => {
             });
         `;
 
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-    it('should assign a sanitizer instance to the element style allocation instruction if any url-based properties are detected',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should assign a sanitizer instance to the element style allocation instruction if any url-based properties are detected', () => {
+      const files = {
+        app: {
+          'spec.ts': `
                 import {Component, NgModule} from '@angular/core';
 
                 @Component({
@@ -540,11 +534,11 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-           }
-         };
+            `,
+        },
+      };
 
-         const template = `
+      const template = `
           MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
             type: MyComponent,
             selectors: [["my-component"]],
@@ -562,9 +556,9 @@ describe('compiler compliance: styling', () => {
           });
         `;
 
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
     it('should support [style.foo.suffix] style bindings with a suffix', () => {
       const files = {
@@ -581,8 +575,8 @@ describe('compiler compliance: styling', () => {
 
              @NgModule({declarations: [MyComponent]})
              export class MyModule {}
-         `
-        }
+         `,
+        },
       };
 
       const template = `
@@ -615,8 +609,8 @@ describe('compiler compliance: styling', () => {
 
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -641,8 +635,8 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-        }
+            `,
+        },
       };
 
       const template = `
@@ -660,11 +654,10 @@ describe('compiler compliance: styling', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
-    it('should place initial, multi, singular and application followed by attribute class instructions in the template code in that order',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should place initial, multi, singular and application followed by attribute class instructions in the template code in that order', () => {
+      const files = {
+        app: {
+          'spec.ts': `
                 import {Component, NgModule} from '@angular/core';
 
                 @Component({
@@ -683,11 +676,11 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-           }
-         };
+            `,
+        },
+      };
 
-         const template = `
+      const template = `
           …
           MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
               type: MyComponent,
@@ -709,15 +702,14 @@ describe('compiler compliance: styling', () => {
             });
         `;
 
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-    it('should not generate the styling apply instruction if there are only static style/class attributes',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should not generate the styling apply instruction if there are only static style/class attributes', () => {
+      const files = {
+        app: {
+          'spec.ts': `
                 import {Component, NgModule} from '@angular/core';
 
                 @Component({
@@ -731,19 +723,18 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-           }
-         };
+            `,
+        },
+      };
 
-         const template = `
+      const template = `
           …
           MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
               type: MyComponent,
               selectors:[["my-component"]],
               decls: 1,
               vars: 2,
-              consts: [[${AttributeMarker.Classes}, "foo", ${
-             AttributeMarker.Styles}, "width", "100px"]],
+              consts: [[${AttributeMarker.Classes}, "foo", ${AttributeMarker.Styles}, "width", "100px"]],
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵɵelement(0, "div", 0);
@@ -756,9 +747,9 @@ describe('compiler compliance: styling', () => {
             });
         `;
 
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
     it('should not create instructions for empty class bindings', () => {
       const files = {
@@ -775,8 +766,8 @@ describe('compiler compliance: styling', () => {
 
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const result = compile(files, angularFiles);
@@ -802,8 +793,8 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-        }
+            `,
+        },
       };
 
       const template = `
@@ -822,11 +813,10 @@ describe('compiler compliance: styling', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
-    it('should stamp out pipe definitions in the creation block if used by styling bindings',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should stamp out pipe definitions in the creation block if used by styling bindings', () => {
+      const files = {
+        app: {
+          'spec.ts': `
                 import {Component, NgModule} from '@angular/core';
 
                 @Component({
@@ -840,11 +830,11 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-           }
-         };
+            `,
+        },
+      };
 
-         const template = `
+      const template = `
           template: function MyComponent_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵɵelementStart(0, "div");
@@ -859,9 +849,9 @@ describe('compiler compliance: styling', () => {
           }
           `;
 
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
     it('should properly offset multiple style pipe references for styling bindings', () => {
       const files = {
@@ -889,8 +879,8 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-        }
+            `,
+        },
       };
 
       const template = `
@@ -943,8 +933,8 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-        }
+            `,
+        },
       };
 
       const template = `
@@ -999,13 +989,12 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-        }
+            `,
+        },
       };
 
       const template = `
-          hostAttrs: [${AttributeMarker.Classes}, "foo", "baz", ${
-          AttributeMarker.Styles}, "width", "200px", "height", "500px"],
+          hostAttrs: [${AttributeMarker.Classes}, "foo", "baz", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"],
           hostVars: 8,
           hostBindings: function MyComponent_HostBindings(rf, ctx) {
             if (rf & 2) {
@@ -1056,8 +1045,8 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-        }
+            `,
+        },
       };
 
       const template = `
@@ -1078,11 +1067,10 @@ describe('compiler compliance: styling', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
-    it('should generate override instructions for only single-level styling bindings when !important is present',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should generate override instructions for only single-level styling bindings when !important is present', () => {
+      const files = {
+        app: {
+          'spec.ts': `
                 import {Component, NgModule, HostBinding} from '@angular/core';
 
                 @Component({
@@ -1111,11 +1099,11 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent]})
                 export class MyModule {}
-            `
-           }
-         };
+            `,
+        },
+      };
 
-         const template = `
+      const template = `
             function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵelement(0, "div");
@@ -1129,7 +1117,7 @@ describe('compiler compliance: styling', () => {
             },
           `;
 
-         const hostBindings = `
+      const hostBindings = `
             hostVars: 8,
             hostBindings: function MyComponent_HostBindings(rf, ctx) {
               if (rf & 2) {
@@ -1141,10 +1129,10 @@ describe('compiler compliance: styling', () => {
             },
           `;
 
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, hostBindings, 'Incorrect template');
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, hostBindings, 'Incorrect template');
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
     it('should support class interpolation', () => {
       const files = {
@@ -1181,8 +1169,8 @@ describe('compiler compliance: styling', () => {
   
                   @NgModule({declarations: [MyComponent]})
                   export class MyModule {}
-              `
-        }
+              `,
+        },
       };
 
       const template = `
@@ -1251,8 +1239,8 @@ describe('compiler compliance: styling', () => {
   
                   @NgModule({declarations: [MyComponent]})
                   export class MyModule {}
-              `
-        }
+              `,
+        },
       };
 
       const template = `
@@ -1286,11 +1274,10 @@ describe('compiler compliance: styling', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
-    it('should generate styling instructions for multiple directives that contain host binding definitions',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should generate styling instructions for multiple directives that contain host binding definitions', () => {
+      const files = {
+        app: {
+          'spec.ts': `
                 import {Directive, Component, NgModule, HostBinding} from '@angular/core';
 
                 @Directive({selector: '[myClassDir]'})
@@ -1326,13 +1313,13 @@ describe('compiler compliance: styling', () => {
 
                 @NgModule({declarations: [MyComponent, WidthDirective, HeightDirective, ClassDirective]})
                 export class MyModule {}
-            `
-           }
-         };
+            `,
+        },
+      };
 
-         // NOTE: IF YOU ARE CHANGING THIS COMPILER SPEC, YOU MAY NEED TO CHANGE THE DIRECTIVE
-         // DEF THAT'S HARD-CODED IN `ng_class.ts`.
-         const template = `
+      // NOTE: IF YOU ARE CHANGING THIS COMPILER SPEC, YOU MAY NEED TO CHANGE THE DIRECTIVE
+      // DEF THAT'S HARD-CODED IN `ng_class.ts`.
+      const template = `
           …
           hostVars: 2,
           hostBindings: function ClassDirective_HostBindings(rf, ctx) {
@@ -1359,9 +1346,9 @@ describe('compiler compliance: styling', () => {
           …
           `;
 
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
   });
 
   describe('interpolations', () => {
@@ -1387,8 +1374,8 @@ describe('compiler compliance: styling', () => {
             })
             export class MyComponent {
             }
-          `
-        }
+          `,
+        },
       };
 
       const template = `
@@ -1432,8 +1419,8 @@ describe('compiler compliance: styling', () => {
             })
             export class MyComponent {
             }
-          `
-        }
+          `,
+        },
       };
 
       expect(() => compile(files, angularFiles)).toThrowError(/Unexpected interpolation/);
@@ -1461,8 +1448,8 @@ describe('compiler compliance: styling', () => {
             })
             export class MyComponent {
             }
-          `
-        }
+          `,
+        },
       };
 
       const template = `
@@ -1495,11 +1482,10 @@ describe('compiler compliance: styling', () => {
       expectEmit(result.source, template, 'Incorrect handling of interpolated style properties');
     });
 
-    it('should generate update instructions for interpolated style properties with a suffix',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should generate update instructions for interpolated style properties with a suffix', () => {
+      const files = {
+        app: {
+          'spec.ts': `
             import {Component} from '@angular/core';
 
             @Component({
@@ -1509,27 +1495,26 @@ describe('compiler compliance: styling', () => {
             })
             export class MyComponent {
             }
-          `
-           }
-         };
+          `,
+        },
+      };
 
-         const template = `
+      const template = `
             …
             if (rf & 2) {
               $r3$.ɵɵstylePropInterpolate2("width", "a", ctx.one, "b", ctx.two, "c", "px");
             }
             …
           `;
-         const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-         expectEmit(result.source, template, 'Incorrect handling of interpolated style properties');
-       });
+      expectEmit(result.source, template, 'Incorrect handling of interpolated style properties');
+    });
 
-    it('should generate update instructions for interpolated style properties with a sanitizer',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should generate update instructions for interpolated style properties with a sanitizer', () => {
+      const files = {
+        app: {
+          'spec.ts': `
             import {Component} from '@angular/core';
 
             @Component({
@@ -1547,11 +1532,11 @@ describe('compiler compliance: styling', () => {
               myBoxWidth = '100px';
               myRepeat = 'no-repeat';
             }
-          `
-           }
-         };
+          `,
+        },
+      };
 
-         const template = `
+      const template = `
             …
             if (rf & 2) {
               $r3$.ɵɵstylePropInterpolate1("background", "url(", ctx.myUrl1, ")", $r3$.ɵɵdefaultStyleSanitizer);
@@ -1560,16 +1545,15 @@ describe('compiler compliance: styling', () => {
             }
             …
           `;
-         const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-         expectEmit(result.source, template, 'Incorrect handling of interpolated style properties');
-       });
+      expectEmit(result.source, template, 'Incorrect handling of interpolated style properties');
+    });
 
-    it('should generate update instructions for interpolated style properties with !important',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should generate update instructions for interpolated style properties with !important', () => {
+      const files = {
+        app: {
+          'spec.ts': `
             import {Component} from '@angular/core';
 
             @Component({
@@ -1579,21 +1563,21 @@ describe('compiler compliance: styling', () => {
             })
             export class MyComponent {
             }
-          `
-           }
-         };
+          `,
+        },
+      };
 
-         const template = `
+      const template = `
             …
             if (rf & 2) {
               $r3$.ɵɵstylePropInterpolate2("width", "a", ctx.one, "b", ctx.two, "c");
             }
             …
           `;
-         const result = compile(files, angularFiles);
+      const result = compile(files, angularFiles);
 
-         expectEmit(result.source, template, 'Incorrect handling of interpolated style properties');
-       });
+      expectEmit(result.source, template, 'Incorrect handling of interpolated style properties');
+    });
   });
 
   describe('instruction chaining', () => {
@@ -1613,8 +1597,8 @@ describe('compiler compliance: styling', () => {
                yesToOrange = true;
                tesToTomato = false;
              }
-         `
-        }
+         `,
+        },
       };
 
       const template = `
@@ -1651,8 +1635,8 @@ describe('compiler compliance: styling', () => {
                border = '1px solid purple';
                transition = 'all 1337ms ease';
              }
-         `
-        }
+         `,
+        },
       };
 
       const template = `
@@ -1696,8 +1680,8 @@ describe('compiler compliance: styling', () => {
                yesToOrange = true;
                tesToTomato = false;
              }
-         `
-        }
+         `,
+        },
       };
 
       const template = `
@@ -1733,8 +1717,8 @@ describe('compiler compliance: styling', () => {
              })
              export class MyComponent {
              }
-         `
-        }
+         `,
+        },
       };
 
       const template = `
@@ -1772,8 +1756,8 @@ describe('compiler compliance: styling', () => {
              })
              export class MyComponent {
              }
-         `
-        }
+         `,
+        },
       };
 
       const template = `
@@ -1796,11 +1780,10 @@ describe('compiler compliance: styling', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
-    it('should break into multiple chains if there are other styling instructions in between',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should break into multiple chains if there are other styling instructions in between', () => {
+      const files = {
+        app: {
+          'spec.ts': `
                   import {Component} from '@angular/core';
 
                   @Component({
@@ -1820,11 +1803,11 @@ describe('compiler compliance: styling', () => {
                     yesToApple = true;
                     yesToOrange = true;
                   }
-              `
-           }
-         };
+              `,
+        },
+      };
 
-         const template = `
+      const template = `
             …
             MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
               …
@@ -1841,15 +1824,14 @@ describe('compiler compliance: styling', () => {
             });
           `;
 
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-    it('should break into multiple chains if there are other styling interpolation instructions in between',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should break into multiple chains if there are other styling interpolation instructions in between', () => {
+      const files = {
+        app: {
+          'spec.ts': `
                   import {Component} from '@angular/core';
 
                   @Component({
@@ -1865,11 +1847,11 @@ describe('compiler compliance: styling', () => {
                     transition = 'all 1337ms ease';
                     width = '42px';
                   }
-              `
-           }
-         };
+              `,
+        },
+      };
 
-         const template = `
+      const template = `
             …
             MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
               …
@@ -1886,9 +1868,9 @@ describe('compiler compliance: styling', () => {
             });
           `;
 
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
     it('should chain styling instructions inside host bindings', () => {
       const files = {
@@ -1917,8 +1899,8 @@ describe('compiler compliance: styling', () => {
               @HostBinding('class.orange')
               yesToOrange = true;
             }
-           `
-        }
+           `,
+        },
       };
 
       const template = `
@@ -1975,13 +1957,12 @@ describe('compiler compliance: styling', () => {
 
           @NgModule({declarations: [MyComponent]})
           export class MyModule {}
-        `
-      }
+        `,
+      },
     };
 
     const template = `
-      hostAttrs: ["title", "foo title", ${AttributeMarker.Classes}, "foo", "baz", ${
-        AttributeMarker.Styles}, "width", "200px", "height", "500px"],
+      hostAttrs: ["title", "foo title", ${AttributeMarker.Classes}, "foo", "baz", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"],
       hostVars: 6,
       hostBindings: function MyComponent_HostBindings(rf, ctx) {
         if (rf & 2) {
@@ -2016,8 +1997,8 @@ describe('compiler compliance: styling', () => {
             @HostBinding('title')
             title = 'some title';
           }
-        `
-      }
+        `,
+      },
     };
 
     const template = `
@@ -2036,11 +2017,10 @@ describe('compiler compliance: styling', () => {
   });
 
   describe('new styling refactor', () => {
-    it('should generate a `styleSanitizer` instruction when one or more sanitizable style properties are statically detected',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should generate a `styleSanitizer` instruction when one or more sanitizable style properties are statically detected', () => {
+      const files = {
+        app: {
+          'spec.ts': `
             import {Component, NgModule} from '@angular/core';
 
             @Component({
@@ -2052,11 +2032,11 @@ describe('compiler compliance: styling', () => {
             export class MyAppComp {
               bgExp = '';
             }
-          `
-           }
-         };
+          `,
+        },
+      };
 
-         const template = `
+      const template = `
         template: function MyAppComp_Template(rf, ctx) {
           …
           if (rf & 2) {
@@ -2066,15 +2046,14 @@ describe('compiler compliance: styling', () => {
         }
       `;
 
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-    it('should generate a `styleSanitizer` instruction when a `styleMap` instruction is used',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it('should generate a `styleSanitizer` instruction when a `styleMap` instruction is used', () => {
+      const files = {
+        app: {
+          'spec.ts': `
             import {Component, NgModule} from '@angular/core';
 
             @Component({
@@ -2086,11 +2065,11 @@ describe('compiler compliance: styling', () => {
             export class MyAppComp {
               mapExp = {};
             }
-          `
-           }
-         };
+          `,
+        },
+      };
 
-         const template = `
+      const template = `
         template: function MyAppComp_Template(rf, ctx) {
           …
           if (rf & 2) {
@@ -2100,15 +2079,14 @@ describe('compiler compliance: styling', () => {
         }
       `;
 
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
-    it('shouldn\'t generate a `styleSanitizer` instruction when class-based instructions are used',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
+    it("shouldn't generate a `styleSanitizer` instruction when class-based instructions are used", () => {
+      const files = {
+        app: {
+          'spec.ts': `
             import {Component, NgModule} from '@angular/core';
 
             @Component({
@@ -2121,11 +2099,11 @@ describe('compiler compliance: styling', () => {
               mapExp = {};
               nameExp = true;
             }
-          `
-           }
-         };
+          `,
+        },
+      };
 
-         const template = `
+      const template = `
         template: function MyAppComp_Template(rf, ctx) {
           …
           if (rf & 2) {
@@ -2136,9 +2114,9 @@ describe('compiler compliance: styling', () => {
         }
       `;
 
-         const result = compile(files, angularFiles);
-         expectEmit(result.source, template, 'Incorrect template');
-       });
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
 
     it('should generate the correct amount of host bindings when styling is present', () => {
       const files = {
@@ -2178,8 +2156,8 @@ describe('compiler compliance: styling', () => {
 
             @NgModule({declarations: [MyAppComp, MyDir]})
             export class MyModule {}
-          `
-        }
+          `,
+        },
       };
 
       const template = `

@@ -13,7 +13,6 @@ import * as ts from 'typescript';
 import {NgDecorator, getAngularDecorators} from '../../utils/ng_decorators';
 import {getPropertyNameText} from '../../utils/typescript/property_name';
 
-
 /**
  * Visitor that walks through specified TypeScript nodes and collects all defined
  * directives and provider classes. Directives are separated by decorated and
@@ -36,7 +35,7 @@ export class NgDeclarationCollector {
       this._visitClassDeclaration(node);
     }
 
-    ts.forEachChild(node, n => this.visitNode(n));
+    ts.forEachChild(node, (n) => this.visitNode(n));
   }
 
   private _visitClassDeclaration(node: ts.ClassDeclaration) {
@@ -64,10 +63,10 @@ export class NgDeclarationCollector {
       return;
     }
 
-    let entryComponentsNode: ts.Expression|null = null;
-    let declarationsNode: ts.Expression|null = null;
+    let entryComponentsNode: ts.Expression | null = null;
+    let declarationsNode: ts.Expression | null = null;
 
-    metadata.properties.forEach(p => {
+    metadata.properties.forEach((p) => {
       if (!ts.isPropertyAssignment(p)) {
         return;
       }
@@ -84,9 +83,11 @@ export class NgDeclarationCollector {
     // In case the module specifies the "entryComponents" field, walk through all
     // resolved entry components and collect the referenced directives.
     if (entryComponentsNode) {
-      flattenTypeList(this.evaluator.evaluate(entryComponentsNode)).forEach(ref => {
-        if (ts.isClassDeclaration(ref.node) &&
-            !hasNgDeclarationDecorator(ref.node, this.typeChecker)) {
+      flattenTypeList(this.evaluator.evaluate(entryComponentsNode)).forEach((ref) => {
+        if (
+          ts.isClassDeclaration(ref.node) &&
+          !hasNgDeclarationDecorator(ref.node, this.typeChecker)
+        ) {
           this.undecoratedDeclarations.add(ref.node);
         }
       });
@@ -95,9 +96,11 @@ export class NgDeclarationCollector {
     // In case the module specifies the "declarations" field, walk through all
     // resolved declarations and collect the referenced directives.
     if (declarationsNode) {
-      flattenTypeList(this.evaluator.evaluate(declarationsNode)).forEach(ref => {
-        if (ts.isClassDeclaration(ref.node) &&
-            !hasNgDeclarationDecorator(ref.node, this.typeChecker)) {
+      flattenTypeList(this.evaluator.evaluate(declarationsNode)).forEach((ref) => {
+        if (
+          ts.isClassDeclaration(ref.node) &&
+          !hasNgDeclarationDecorator(ref.node, this.typeChecker)
+        ) {
           this.undecoratedDeclarations.add(ref.node);
         }
       });
@@ -108,8 +111,9 @@ export class NgDeclarationCollector {
 /** Flattens a list of type references. */
 function flattenTypeList(value: ResolvedValue): Reference[] {
   if (Array.isArray(value)) {
-    return <Reference[]>value.reduce(
-        (res: Reference[], v: ResolvedValue) => res.concat(flattenTypeList(v)), []);
+    return <Reference[]>(
+      value.reduce((res: Reference[], v: ResolvedValue) => res.concat(flattenTypeList(v)), [])
+    );
   } else if (value instanceof Reference) {
     return [value];
   }
@@ -118,28 +122,37 @@ function flattenTypeList(value: ResolvedValue): Reference[] {
 
 /** Checks whether the given node has the "@Directive" or "@Component" decorator set. */
 export function hasDirectiveDecorator(
-    node: ts.ClassDeclaration, typeChecker: ts.TypeChecker, ngDecorators?: NgDecorator[]): boolean {
-  return (ngDecorators || getNgClassDecorators(node, typeChecker))
-      .some(({name}) => name === 'Directive' || name === 'Component');
+  node: ts.ClassDeclaration,
+  typeChecker: ts.TypeChecker,
+  ngDecorators?: NgDecorator[]
+): boolean {
+  return (ngDecorators || getNgClassDecorators(node, typeChecker)).some(
+    ({name}) => name === 'Directive' || name === 'Component'
+  );
 }
-
-
 
 /** Checks whether the given node has the "@Injectable" decorator set. */
 export function hasInjectableDecorator(
-    node: ts.ClassDeclaration, typeChecker: ts.TypeChecker, ngDecorators?: NgDecorator[]): boolean {
-  return (ngDecorators || getNgClassDecorators(node, typeChecker))
-      .some(({name}) => name === 'Injectable');
+  node: ts.ClassDeclaration,
+  typeChecker: ts.TypeChecker,
+  ngDecorators?: NgDecorator[]
+): boolean {
+  return (ngDecorators || getNgClassDecorators(node, typeChecker)).some(
+    ({name}) => name === 'Injectable'
+  );
 }
 /** Whether the given node has an explicit decorator that describes an Angular declaration. */
 export function hasNgDeclarationDecorator(node: ts.ClassDeclaration, typeChecker: ts.TypeChecker) {
-  return getNgClassDecorators(node, typeChecker)
-      .some(({name}) => name === 'Component' || name === 'Directive' || name === 'Pipe');
+  return getNgClassDecorators(node, typeChecker).some(
+    ({name}) => name === 'Component' || name === 'Directive' || name === 'Pipe'
+  );
 }
 
 /** Gets all Angular decorators of a given class declaration. */
 export function getNgClassDecorators(
-    node: ts.ClassDeclaration, typeChecker: ts.TypeChecker): NgDecorator[] {
+  node: ts.ClassDeclaration,
+  typeChecker: ts.TypeChecker
+): NgDecorator[] {
   if (!node.decorators) {
     return [];
   }

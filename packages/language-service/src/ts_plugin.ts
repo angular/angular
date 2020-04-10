@@ -27,7 +27,10 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
   const ngLS = createLanguageService(ngLSHost);
 
   function getCompletionsAtPosition(
-      fileName: string, position: number, options: tss.GetCompletionsAtPositionOptions|undefined) {
+    fileName: string,
+    position: number,
+    options: tss.GetCompletionsAtPositionOptions | undefined
+  ) {
     if (!angularOnly) {
       const results = tsLS.getCompletionsAtPosition(fileName, position, options);
       if (results && results.entries.length) {
@@ -38,7 +41,7 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
     return ngLS.getCompletionsAtPosition(fileName, position, options);
   }
 
-  function getQuickInfoAtPosition(fileName: string, position: number): tss.QuickInfo|undefined {
+  function getQuickInfoAtPosition(fileName: string, position: number): tss.QuickInfo | undefined {
     if (!angularOnly) {
       const result = tsLS.getQuickInfoAtPosition(fileName, position);
       if (result) {
@@ -60,7 +63,9 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
   }
 
   function getDefinitionAtPosition(
-      fileName: string, position: number): ReadonlyArray<tss.DefinitionInfo>|undefined {
+    fileName: string,
+    position: number
+  ): ReadonlyArray<tss.DefinitionInfo> | undefined {
     if (!angularOnly) {
       const results = tsLS.getDefinitionAtPosition(fileName, position);
       if (results) {
@@ -76,7 +81,9 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
   }
 
   function getDefinitionAndBoundSpan(
-      fileName: string, position: number): tss.DefinitionInfoAndBoundSpan|undefined {
+    fileName: string,
+    position: number
+  ): tss.DefinitionInfoAndBoundSpan | undefined {
     if (!angularOnly) {
       const result = tsLS.getDefinitionAndBoundSpan(fileName, position);
       if (result) {
@@ -88,15 +95,17 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
   }
 
   const proxy: tss.LanguageService = Object.assign(
-      // First clone the original TS language service
-      {}, tsLS,
-      // Then override the methods supported by Angular language service
-      {
-        getCompletionsAtPosition,
-        getQuickInfoAtPosition,
-        getSemanticDiagnostics,
-        getDefinitionAtPosition,
-        getDefinitionAndBoundSpan,
-      });
+    // First clone the original TS language service
+    {},
+    tsLS,
+    // Then override the methods supported by Angular language service
+    {
+      getCompletionsAtPosition,
+      getQuickInfoAtPosition,
+      getSemanticDiagnostics,
+      getDefinitionAtPosition,
+      getDefinitionAndBoundSpan,
+    }
+  );
   return proxy;
 }

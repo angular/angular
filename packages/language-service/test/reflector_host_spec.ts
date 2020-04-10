@@ -19,12 +19,15 @@ describe('reflector_host_spec', () => {
   it('should be able to find angular under windows', () => {
     const originalJoin = path.join;
     const originalPosixJoin = path.posix.join;
-    const mockHost =
-        new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], 'node_modules', {
-          ...path,
-          join: (...args: string[]) => originalJoin.apply(path, args),
-          posix: {...path.posix, join: (...args: string[]) => originalPosixJoin.apply(path, args)}
-        });
+    const mockHost = new MockTypescriptHost(
+      ['/app/main.ts', '/app/parsing-cases.ts'],
+      'node_modules',
+      {
+        ...path,
+        join: (...args: string[]) => originalJoin.apply(path, args),
+        posix: {...path.posix, join: (...args: string[]) => originalPosixJoin.apply(path, args)},
+      }
+    );
     const reflectorHost = new ReflectorHost(() => undefined as any, mockHost);
 
     if (process.platform !== 'win32') {
@@ -64,7 +67,7 @@ describe('reflector_host_spec', () => {
     spy.calls.reset();
 
     // Third count is due to recompution after the program changes.
-    mockHost.addCode('');  // this will mark project as dirty
+    mockHost.addCode(''); // this will mark project as dirty
     ngLSHost.getAnalyzedModules();
     const thirdCount = spy.calls.count();
     expect(thirdCount).toBeGreaterThan(0);

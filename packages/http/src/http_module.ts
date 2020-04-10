@@ -23,7 +23,6 @@ import {BaseResponseOptions, ResponseOptions} from './base_response_options';
 import {Http, Jsonp} from './http';
 import {XSRFStrategy} from './interfaces';
 
-
 export function _createDefaultCookieXSRFStrategy() {
   return new CookieXSRFStrategy();
 }
@@ -35,7 +34,6 @@ export function httpFactory(xhrBackend: XHRBackend, requestOptions: RequestOptio
 export function jsonpFactory(jsonpBackend: JSONPBackend, requestOptions: RequestOptions): Jsonp {
   return new Jsonp(jsonpBackend, requestOptions);
 }
-
 
 /**
  * The module that includes http's providers
@@ -55,8 +53,7 @@ export function jsonpFactory(jsonpBackend: JSONPBackend, requestOptions: Request
     {provide: XSRFStrategy, useFactory: _createDefaultCookieXSRFStrategy},
   ],
 })
-export class HttpModule {
-}
+export class HttpModule {}
 
 /**
  * The module that includes jsonp's providers
@@ -75,5 +72,4 @@ export class HttpModule {
     JSONPBackend,
   ],
 })
-export class JsonpModule {
-}
+export class JsonpModule {}

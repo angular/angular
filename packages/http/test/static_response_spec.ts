@@ -11,8 +11,6 @@ import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {ResponseOptions} from '@angular/http/src/base_response_options';
 import {Response} from '@angular/http/src/static_response';
 
-
-
 {
   describe('Response', () => {
     it('should be ok for 200 statuses', () => {

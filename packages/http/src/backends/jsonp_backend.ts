@@ -28,9 +28,9 @@ const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
  */
 export class JSONPConnection implements Connection {
   // TODO(issue/24571): remove '!'.
-  private _id !: string;
+  private _id!: string;
   // TODO(issue/24571): remove '!'.
-  private _script !: Element;
+  private _script!: Element;
   private _responseData: any;
   private _finished: boolean = false;
 
@@ -38,7 +38,7 @@ export class JSONPConnection implements Connection {
    * The {@link ReadyState} of this request.
    */
   // TODO(issue/24571): remove '!'.
-  readyState !: ReadyState;
+  readyState!: ReadyState;
 
   /**
    * The outgoing HTTP request.
@@ -52,15 +52,17 @@ export class JSONPConnection implements Connection {
 
   /** @internal */
   constructor(
-      req: Request, private _dom: BrowserJsonp, private baseResponseOptions?: ResponseOptions) {
+    req: Request,
+    private _dom: BrowserJsonp,
+    private baseResponseOptions?: ResponseOptions
+  ) {
     if (req.method !== RequestMethod.Get) {
       throw new TypeError(JSONP_ERR_WRONG_METHOD);
     }
     this.request = req;
     this.response = new Observable<Response>((responseObserver: Observer<Response>) => {
-
       this.readyState = ReadyState.Loading;
-      const id = this._id = _dom.nextRequestID();
+      const id = (this._id = _dom.nextRequestID());
 
       _dom.exposeConnection(id, this);
 
@@ -74,15 +76,18 @@ export class JSONPConnection implements Connection {
         url = url.substring(0, url.length - '=JSONP_CALLBACK'.length) + `=${callback}`;
       }
 
-      const script = this._script = _dom.build(url);
+      const script = (this._script = _dom.build(url));
 
       const onLoad = (event: Event) => {
         if (this.readyState === ReadyState.Cancelled) return;
         this.readyState = ReadyState.Done;
         _dom.cleanup(script);
         if (!this._finished) {
-          let responseOptions =
-              new ResponseOptions({body: JSONP_ERR_NO_CALLBACK, type: ResponseType.Error, url});
+          let responseOptions = new ResponseOptions({
+            body: JSONP_ERR_NO_CALLBACK,
+            type: ResponseType.Error,
+            url,
+          });
           if (baseResponseOptions) {
             responseOptions = baseResponseOptions.merge(responseOptions);
           }

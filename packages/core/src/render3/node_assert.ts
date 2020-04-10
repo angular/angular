@@ -8,18 +8,36 @@
 
 import {assertDefined, assertEqual} from '../util/assert';
 
-import {TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeType, TProjectionNode} from './interfaces/node';
+import {
+  TContainerNode,
+  TElementContainerNode,
+  TElementNode,
+  TIcuContainerNode,
+  TNode,
+  TNodeType,
+  TProjectionNode,
+} from './interfaces/node';
 
 export function assertNodeType(
-    tNode: TNode, type: TNodeType.Container): asserts tNode is TContainerNode;
+  tNode: TNode,
+  type: TNodeType.Container
+): asserts tNode is TContainerNode;
 export function assertNodeType(
-    tNode: TNode, type: TNodeType.Element): asserts tNode is TElementNode;
+  tNode: TNode,
+  type: TNodeType.Element
+): asserts tNode is TElementNode;
 export function assertNodeType(
-    tNode: TNode, type: TNodeType.ElementContainer): asserts tNode is TElementContainerNode;
+  tNode: TNode,
+  type: TNodeType.ElementContainer
+): asserts tNode is TElementContainerNode;
 export function assertNodeType(
-    tNode: TNode, type: TNodeType.IcuContainer): asserts tNode is TIcuContainerNode;
+  tNode: TNode,
+  type: TNodeType.IcuContainer
+): asserts tNode is TIcuContainerNode;
 export function assertNodeType(
-    tNode: TNode, type: TNodeType.Projection): asserts tNode is TProjectionNode;
+  tNode: TNode,
+  type: TNodeType.Projection
+): asserts tNode is TProjectionNode;
 export function assertNodeType(tNode: TNode, type: TNodeType.View): asserts tNode is TContainerNode;
 export function assertNodeType(tNode: TNode, type: TNodeType): asserts tNode is TNode {
   assertDefined(tNode, 'should be called with a TNode');
@@ -28,10 +46,12 @@ export function assertNodeType(tNode: TNode, type: TNodeType): asserts tNode is 
 
 export function assertNodeOfPossibleTypes(tNode: TNode, ...types: TNodeType[]): void {
   assertDefined(tNode, 'should be called with a TNode');
-  const found = types.some(type => tNode.type === type);
+  const found = types.some((type) => tNode.type === type);
   assertEqual(
-      found, true,
-      `Should be one of ${types.map(typeName).join(', ')} but got ${typeName(tNode.type)}`);
+    found,
+    true,
+    `Should be one of ${types.map(typeName).join(', ')} but got ${typeName(tNode.type)}`
+  );
 }
 
 function typeName(type: TNodeType): string {

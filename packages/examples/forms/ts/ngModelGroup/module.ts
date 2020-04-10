@@ -14,9 +14,8 @@ import {NgModelGroupComp} from './ng_model_group_example';
 @NgModule({
   imports: [BrowserModule, FormsModule],
   declarations: [NgModelGroupComp],
-  bootstrap: [NgModelGroupComp]
+  bootstrap: [NgModelGroupComp],
 })
-export class AppModule {
-}
+export class AppModule {}
 
 export {NgModelGroupComp as AppComponent};

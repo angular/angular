@@ -18,7 +18,7 @@ export function ivySwitchTransform(_: ts.TransformationContext): ts.Transformer<
 function flipIvySwitchInFile(sf: ts.SourceFile): ts.SourceFile {
   // To replace the statements array, it must be copied. This only needs to happen if a statement
   // must actually be replaced within the array, so the newStatements array is lazily initialized.
-  let newStatements: ts.Statement[]|undefined = undefined;
+  let newStatements: ts.Statement[] | undefined = undefined;
 
   // Iterate over the statements in the file.
   for (let i = 0; i < sf.statements.length; i++) {
@@ -60,11 +60,14 @@ function flipIvySwitchInFile(sf: ts.SourceFile): ts.SourceFile {
  * Only variable, function, and class declarations are currently searched.
  */
 function findPostSwitchIdentifier(
-    statements: ReadonlyArray<ts.Statement>, name: string): ts.Identifier|null {
+  statements: ReadonlyArray<ts.Statement>,
+  name: string
+): ts.Identifier | null {
   for (const stmt of statements) {
     if (ts.isVariableStatement(stmt)) {
       const decl = stmt.declarationList.declarations.find(
-          decl => ts.isIdentifier(decl.name) && decl.name.text === name);
+        (decl) => ts.isIdentifier(decl.name) && decl.name.text === name
+      );
       if (decl !== undefined) {
         return decl.name as ts.Identifier;
       }
@@ -81,7 +84,9 @@ function findPostSwitchIdentifier(
  * Flip any Ivy switches which are discovered in the given ts.VariableStatement.
  */
 function flipIvySwitchesInVariableStatement(
-    stmt: ts.VariableStatement, statements: ReadonlyArray<ts.Statement>): ts.VariableStatement {
+  stmt: ts.VariableStatement,
+  statements: ReadonlyArray<ts.Statement>
+): ts.VariableStatement {
   // Build a new list of variable declarations. Specific declarations that are initialized to a
   // pre-switch identifier will be replaced with a declaration initialized to the post-switch
   // identifier.
@@ -100,15 +105,20 @@ function flipIvySwitchesInVariableStatement(
     }
 
     // Determine the name of the post-switch variable.
-    const postSwitchName =
-        decl.initializer.text.replace(IVY_SWITCH_PRE_SUFFIX, IVY_SWITCH_POST_SUFFIX);
+    const postSwitchName = decl.initializer.text.replace(
+      IVY_SWITCH_PRE_SUFFIX,
+      IVY_SWITCH_POST_SUFFIX
+    );
 
     // Find the post-switch variable identifier. If one can't be found, it's an error. This is
     // reported as a thrown error and not a diagnostic as transformers cannot output diagnostics.
     let newIdentifier = findPostSwitchIdentifier(statements, postSwitchName);
     if (newIdentifier === null) {
-      throw new Error(`Unable to find identifier ${postSwitchName} in ${
-          stmt.getSourceFile().fileName} for the Ivy switch.`);
+      throw new Error(
+        `Unable to find identifier ${postSwitchName} in ${
+          stmt.getSourceFile().fileName
+        } for the Ivy switch.`
+      );
     }
 
     // Copy the identifier with updateIdentifier(). This copies the internal information which
@@ -116,20 +126,23 @@ function flipIvySwitchesInVariableStatement(
     newIdentifier = ts.updateIdentifier(newIdentifier);
 
     newDeclarations[i] = ts.updateVariableDeclaration(
-        /* node */ decl,
-        /* name */ decl.name,
-        /* type */ decl.type,
-        /* initializer */ newIdentifier);
+      /* node */ decl,
+      /* name */ decl.name,
+      /* type */ decl.type,
+      /* initializer */ newIdentifier
+    );
   }
 
   const newDeclList = ts.updateVariableDeclarationList(
-      /* declarationList */ stmt.declarationList,
-      /* declarations */ newDeclarations);
+    /* declarationList */ stmt.declarationList,
+    /* declarations */ newDeclarations
+  );
 
   const newStmt = ts.updateVariableStatement(
-      /* statement */ stmt,
-      /* modifiers */ stmt.modifiers,
-      /* declarationList */ newDeclList);
+    /* statement */ stmt,
+    /* modifiers */ stmt.modifiers,
+    /* declarationList */ newDeclList
+  );
 
   return newStmt;
 }
@@ -139,6 +152,9 @@ function flipIvySwitchesInVariableStatement(
  */
 function hasIvySwitches(stmt: ts.VariableStatement) {
   return stmt.declarationList.declarations.some(
-      decl => decl.initializer !== undefined && ts.isIdentifier(decl.initializer) &&
-          decl.initializer.text.endsWith(IVY_SWITCH_PRE_SUFFIX));
+    (decl) =>
+      decl.initializer !== undefined &&
+      ts.isIdentifier(decl.initializer) &&
+      decl.initializer.text.endsWith(IVY_SWITCH_PRE_SUFFIX)
+  );
 }

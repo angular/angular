@@ -23,8 +23,10 @@ import '../lib/node/rollup-main';
 require('@bazel/jasmine').boot();
 // Zone symbol prefix is set to '__zone_symbol2__' in node-env-setup.ts.
 import './test-env-setup-jasmine';
-if (typeof global !== 'undefined' &&
-    (global as any)['__zone_symbol_test__fakeAsyncAutoFakeAsyncWhenClockPatched'] !== false) {
+if (
+  typeof global !== 'undefined' &&
+  (global as any)['__zone_symbol_test__fakeAsyncAutoFakeAsyncWhenClockPatched'] !== false
+) {
   (global as any)['__zone_symbol_test__fakeAsyncAutoFakeAsyncWhenClockPatched'] = true;
 }
 

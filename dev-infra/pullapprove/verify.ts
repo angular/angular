@@ -5,15 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {readFileSync} from 'fs';
-import * as path from 'path';
-import {cd, exec, set} from 'shelljs';
 
-import {getRepoBaseDir} from '../utils/config';
+import * as path from 'path';
+
+import {cd, exec, set} from 'shelljs';
+import {logGroup, logHeader} from './logging';
 
 import {PullApproveGroup} from './group';
-import {logGroup, logHeader} from './logging';
+import {getRepoBaseDir} from '../utils/config';
 import {parsePullApproveYaml} from './parse-yaml';
+import {readFileSync} from 'fs';
 
 export function verify() {
   // Exit early on shelljs errors
@@ -29,8 +30,10 @@ export function verify() {
   // All relative path file names in the git repo, this is retrieved using git rather
   // that a glob so that we only get files that are checked in, ignoring things like
   // node_modules, .bazelrc.user, etc
-  const REPO_FILES =
-      exec('git ls-files', {silent: true}).trim().split('\n').filter((_: string) => !!_);
+  const REPO_FILES = exec('git ls-files', {silent: true})
+    .trim()
+    .split('\n')
+    .filter((_: string) => !!_);
   // The pull approve config file.
   const pullApproveYamlRaw = readFileSync(PULL_APPROVE_YAML_PATH, 'utf8');
   // JSON representation of the pullapprove yaml file.
@@ -40,21 +43,22 @@ export function verify() {
     return new PullApproveGroup(groupName, group);
   });
   // PullApprove groups without matchers.
-  const groupsWithoutMatchers = groups.filter(group => !group.hasMatchers);
+  const groupsWithoutMatchers = groups.filter((group) => !group.hasMatchers);
   // PullApprove groups with matchers.
-  const groupsWithMatchers = groups.filter(group => group.hasMatchers);
+  const groupsWithMatchers = groups.filter((group) => group.hasMatchers);
   // All lines from group conditions which are not parsable.
-  const groupsWithBadLines = groups.filter(g => !!g.getBadLines().length);
+  const groupsWithBadLines = groups.filter((g) => !!g.getBadLines().length);
   // If any groups contains bad lines, log bad lines and exit failing.
   if (groupsWithBadLines.length) {
     logHeader('PullApprove config file parsing failure');
     console.info(`Discovered errors in ${groupsWithBadLines.length} groups`);
-    groupsWithBadLines.forEach(group => {
+    groupsWithBadLines.forEach((group) => {
       console.info(` - [${group.groupName}]`);
-      group.getBadLines().forEach(line => console.info(`    ${line}`));
+      group.getBadLines().forEach((line) => console.info(`    ${line}`));
     });
     console.info(
-        `Correct the invalid conditions, before PullApprove verification can be completed`);
+      `Correct the invalid conditions, before PullApprove verification can be completed`
+    );
     process.exit(1);
   }
   // Files which are matched by at least one group.
@@ -64,18 +68,18 @@ export function verify() {
 
   // Test each file in the repo against each group for being matched.
   REPO_FILES.forEach((file: string) => {
-    if (groupsWithMatchers.filter(group => group.testFile(file)).length) {
+    if (groupsWithMatchers.filter((group) => group.testFile(file)).length) {
       matchedFiles.push(file);
     } else {
       unmatchedFiles.push(file);
     }
   });
   // Results for each group
-  const resultsByGroup = groupsWithMatchers.map(group => group.getResults());
+  const resultsByGroup = groupsWithMatchers.map((group) => group.getResults());
   // Whether all group condition lines match at least one file and all files
   // are matched by at least one group.
   const verificationSucceeded =
-      resultsByGroup.every(r => !r.unmatchedCount) && !unmatchedFiles.length;
+    resultsByGroup.every((r) => !r.unmatchedCount) && !unmatchedFiles.length;
 
   /**
    * Overall result
@@ -94,25 +98,25 @@ export function verify() {
    */
   logHeader('PullApprove results by file');
   console.groupCollapsed(`Matched Files (${matchedFiles.length} files)`);
-  VERBOSE_MODE && matchedFiles.forEach(file => console.info(file));
+  VERBOSE_MODE && matchedFiles.forEach((file) => console.info(file));
   console.groupEnd();
   console.groupCollapsed(`Unmatched Files (${unmatchedFiles.length} files)`);
-  unmatchedFiles.forEach(file => console.info(file));
+  unmatchedFiles.forEach((file) => console.info(file));
   console.groupEnd();
   /**
    * Group by group Summary
    */
   logHeader('PullApprove results by group');
   console.groupCollapsed(`Groups without matchers (${groupsWithoutMatchers.length} groups)`);
-  VERBOSE_MODE && groupsWithoutMatchers.forEach(group => console.info(`${group.groupName}`));
+  VERBOSE_MODE && groupsWithoutMatchers.forEach((group) => console.info(`${group.groupName}`));
   console.groupEnd();
-  const matchedGroups = resultsByGroup.filter(group => !group.unmatchedCount);
+  const matchedGroups = resultsByGroup.filter((group) => !group.unmatchedCount);
   console.groupCollapsed(`Matched conditions by Group (${matchedGroups.length} groups)`);
-  VERBOSE_MODE && matchedGroups.forEach(group => logGroup(group));
+  VERBOSE_MODE && matchedGroups.forEach((group) => logGroup(group));
   console.groupEnd();
-  const unmatchedGroups = resultsByGroup.filter(group => group.unmatchedCount);
+  const unmatchedGroups = resultsByGroup.filter((group) => group.unmatchedCount);
   console.groupCollapsed(`Unmatched conditions by Group (${unmatchedGroups.length} groups)`);
-  unmatchedGroups.forEach(group => logGroup(group, false));
+  unmatchedGroups.forEach((group) => logGroup(group, false));
   console.groupEnd();
 
   // Provide correct exit code based on verification success.

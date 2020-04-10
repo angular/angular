@@ -14,7 +14,9 @@ import {ClassMetadataMap} from './ng_query_visitor';
  * by using the specified class metadata map.
  */
 export function getSuperClassDeclarations(
-    classDecl: ts.ClassDeclaration, classMetadataMap: ClassMetadataMap) {
+  classDecl: ts.ClassDeclaration,
+  classMetadataMap: ClassMetadataMap
+) {
   const declarations: ts.ClassDeclaration[] = [];
 
   let current = classMetadataMap.get(classDecl);

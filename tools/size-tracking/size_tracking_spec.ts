@@ -12,12 +12,14 @@ import {SourceMapGenerator} from 'source-map';
 
 import {SizeTracker} from './size_tracker';
 
-const testTempDir = process.env['TEST_TMPDIR'] !;
+const testTempDir = process.env['TEST_TMPDIR']!;
 
 describe('size tracking', () => {
   let generator: SourceMapGenerator;
 
-  beforeEach(() => { generator = new SourceMapGenerator(); });
+  beforeEach(() => {
+    generator = new SourceMapGenerator();
+  });
 
   function writeFile(filePath: string, content: string): string {
     const tmpFilePath = join(testTempDir, filePath);
@@ -46,16 +48,22 @@ describe('size tracking', () => {
   });
 
   it('should properly combine mapped characters from same source', () => {
-    generator.addMapping(
-        {generated: {line: 1, column: 0}, original: {line: 1, column: 0}, source: './origin-a.ts'});
+    generator.addMapping({
+      generated: {line: 1, column: 0},
+      original: {line: 1, column: 0},
+      source: './origin-a.ts',
+    });
 
-    generator.addMapping(
-        {generated: {line: 1, column: 1}, original: {line: 1, column: 0}, source: './origin-b.ts'});
+    generator.addMapping({
+      generated: {line: 1, column: 1},
+      original: {line: 1, column: 0},
+      source: './origin-b.ts',
+    });
 
     generator.addMapping({
       generated: {line: 1, column: 2},
       original: {line: 10, column: 0},
-      source: './origin-a.ts'
+      source: './origin-a.ts',
     });
 
     // A => origin-a (1 byte), B => origin-b (two bytes)
@@ -76,19 +84,19 @@ describe('size tracking', () => {
     generator.addMapping({
       generated: {line: 1, column: 0},
       original: {line: 1, column: 0},
-      source: '@angular/core/render3/a.ts'
+      source: '@angular/core/render3/a.ts',
     });
 
     generator.addMapping({
       generated: {line: 1, column: 2},
       original: {line: 1, column: 0},
-      source: '@angular/core/render3/b.ts'
+      source: '@angular/core/render3/b.ts',
     });
 
     generator.addMapping({
       generated: {line: 1, column: 3},
       original: {line: 1, column: 0},
-      source: '@angular/core/c.ts'
+      source: '@angular/core/c.ts',
     });
 
     // A => render3/a.ts (2 bytes), B => render3/b.ts (1 byte), C => c.ts (1 byte)

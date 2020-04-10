@@ -11,7 +11,6 @@ import {Connection, ConnectionBackend, ReadyState, Request, Response} from '@ang
 import {ReplaySubject, Subject} from 'rxjs';
 import {take} from 'rxjs/operators';
 
-
 /**
  *
  * Mock Connection to represent a {@link Connection} for tests.
@@ -202,7 +201,7 @@ export class MockBackend implements ConnectionBackend {
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  connections: any;  //<MockConnection>
+  connections: any; //<MockConnection>
 
   /**
    * An array representation of `connections`. This array will be updated with each connection that
@@ -219,12 +218,13 @@ export class MockBackend implements ConnectionBackend {
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  pendingConnections: any;  // Subject<MockConnection>
+  pendingConnections: any; // Subject<MockConnection>
   constructor() {
     this.connectionsArray = [];
     this.connections = new Subject();
-    this.connections.subscribe(
-        (connection: MockConnection) => this.connectionsArray.push(connection));
+    this.connections.subscribe((connection: MockConnection) =>
+      this.connectionsArray.push(connection)
+    );
     this.pendingConnections = new Subject();
   }
 
@@ -245,7 +245,9 @@ export class MockBackend implements ConnectionBackend {
    *
    * This method only exists in the mock implementation, not in real Backends.
    */
-  resolveAllConnections() { this.connections.subscribe((c: MockConnection) => c.readyState = 4); }
+  resolveAllConnections() {
+    this.connections.subscribe((c: MockConnection) => (c.readyState = 4));
+  }
 
   /**
    * Creates a new {@link MockConnection}. This is equivalent to calling `new

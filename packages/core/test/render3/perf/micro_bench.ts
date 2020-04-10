@@ -5,9 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-const performance = typeof require === 'undefined' ?  //
-    window.performance :                              // We are in browser
-    require('perf_hooks').performance;                // We are in node
+
+const performance =
+  typeof require === 'undefined' //
+    ? window.performance // We are in browser
+    : require('perf_hooks').performance; // We are in node
 
 // Higher number here makes it more likely that we are more sure of the result.
 const MIN_SAMPLE_COUNT_NO_IMPROVEMENT = 500;
@@ -54,7 +56,7 @@ export function createBenchmark(benchmarkName: string): Benchmark {
             profile.noImprovementCount = 0;
             runAgain = true;
           } else {
-            runAgain = (profile.noImprovementCount++) < MIN_SAMPLE_COUNT_NO_IMPROVEMENT;
+            runAgain = profile.noImprovementCount++ < MIN_SAMPLE_COUNT_NO_IMPROVEMENT;
           }
           if (duration_ms < MIN_SAMPLE_DURATION) {
             // we have not ran for long enough so increase the iteration count.
@@ -65,7 +67,10 @@ export function createBenchmark(benchmarkName: string): Benchmark {
           if (!runAgain) {
             // tslint:disable-next-line:no-console
             console.log(
-                `  ${formatTime(profile.bestTime)} (count: ${profile.sampleCount}, iterations: ${profile.iterationCount})`);
+              `  ${formatTime(profile.bestTime)} (count: ${profile.sampleCount}, iterations: ${
+                profile.iterationCount
+              })`
+            );
           }
         }
         iterationCounter = profile.iterationCount;
@@ -86,16 +91,20 @@ export function createBenchmark(benchmarkName: string): Benchmark {
     return profile;
   } as Benchmark;
 
-  benchmark.report = function(fn?: (report: string) => void) {
+  benchmark.report = function (fn?: (report: string) => void) {
     const fastest = profiles.reduce((previous: Profile, current: Profile) => {
-      return (previous.bestTime < current.bestTime) ? previous : current;
+      return previous.bestTime < current.bestTime ? previous : current;
     });
     const unitOffset = findUnit(fastest.bestTime);
-    (fn || console.info)(`\nBenchmark: ${benchmarkName}\n${profiles.map((profile: Profile) => {
-      const time = formatTime(profile.bestTime, unitOffset);
-      const percent = formatPercent(1 - profile.bestTime / fastest.bestTime);
-      return ` ${profile.profileName}: ${time}(${percent}) `;
-    }).join('\n')}`);
+    (fn || console.info)(
+      `\nBenchmark: ${benchmarkName}\n${profiles
+        .map((profile: Profile) => {
+          const time = formatTime(profile.bestTime, unitOffset);
+          const percent = formatPercent(1 - profile.bestTime / fastest.bestTime);
+          return ` ${profile.profileName}: ${time}(${percent}) `;
+        })
+        .join('\n')}`
+    );
   };
   return benchmark;
 }

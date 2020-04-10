@@ -14,13 +14,11 @@ import {TriggerComponent} from './trigger';
   selector: 'dep',
   template: 'dep',
 })
-export class DepComponent {
-}
+export class DepComponent {}
 
 @NgModule({
   declarations: [DepComponent, TriggerComponent],
 })
-export class Module {
-}
+export class Module {}
 
 renderComponent(TriggerComponent);

@@ -12,8 +12,7 @@
  * This is adapted from packages/compiler/src/render3/r3_template_transform.ts
  * to allow empty binding names and match template attributes.
  */
-const BIND_NAME_REGEXP =
-    /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@)|(\*))(.*))|\[\(([^\)]*)\)\]|\[([^\]]*)\]|\(([^\)]*)\))$/;
+const BIND_NAME_REGEXP = /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@)|(\*))(.*))|\[\(([^\)]*)\)\]|\[([^\]]*)\]|\(([^\)]*)\))$/;
 /**
  * Represents possible Angular attribute bindings, as indices on a match of `BIND_NAME_REGEXP`.
  */
@@ -53,7 +52,7 @@ export interface BindingDescriptor {
  * Returns a descriptor for a given Angular attribute, or undefined if the attribute is
  * not an Angular attribute.
  */
-export function getBindingDescriptor(attribute: string): BindingDescriptor|undefined {
+export function getBindingDescriptor(attribute: string): BindingDescriptor | undefined {
   const bindParts = attribute.match(BIND_NAME_REGEXP);
   if (!bindParts) return;
   // The first match element is skipped because it matches the entire attribute text, including the

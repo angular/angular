@@ -97,7 +97,9 @@ export class Location {
    * Reports the current state of the location history.
    * @returns The current value of the `history.state` object.
    */
-  getState(): unknown { return this._platformLocation.getState(); }
+  getState(): unknown {
+    return this._platformLocation.getState();
+  }
 
   /**
    * Normalizes the given path and compares to the current normalized path.
@@ -153,7 +155,9 @@ export class Location {
   go(path: string, query: string = '', state: any = null): void {
     this._platformStrategy.pushState(state, '', path, query);
     this._notifyUrlChangeListeners(
-        this.prepareExternalUrl(path + normalizeQueryParams(query)), state);
+      this.prepareExternalUrl(path + normalizeQueryParams(query)),
+      state
+    );
   }
 
   /**
@@ -167,18 +171,24 @@ export class Location {
   replaceState(path: string, query: string = '', state: any = null): void {
     this._platformStrategy.replaceState(state, '', path, query);
     this._notifyUrlChangeListeners(
-        this.prepareExternalUrl(path + normalizeQueryParams(query)), state);
+      this.prepareExternalUrl(path + normalizeQueryParams(query)),
+      state
+    );
   }
 
   /**
    * Navigates forward in the platform's history.
    */
-  forward(): void { this._platformStrategy.forward(); }
+  forward(): void {
+    this._platformStrategy.forward();
+  }
 
   /**
    * Navigates back in the platform's history.
    */
-  back(): void { this._platformStrategy.back(); }
+  back(): void {
+    this._platformStrategy.back();
+  }
 
   /**
    * Registers a URL change listener. Use to catch updates performed by the Angular
@@ -188,12 +198,14 @@ export class Location {
    */
   onUrlChange(fn: (url: string, state: unknown) => void) {
     this._urlChangeListeners.push(fn);
-    this.subscribe(v => { this._notifyUrlChangeListeners(v.url, v.state); });
+    this.subscribe((v) => {
+      this._notifyUrlChangeListeners(v.url, v.state);
+    });
   }
 
   /** @internal */
   _notifyUrlChangeListeners(url: string = '', state: unknown) {
-    this._urlChangeListeners.forEach(fn => fn(url, state));
+    this._urlChangeListeners.forEach((fn) => fn(url, state));
   }
 
   /**
@@ -205,8 +217,10 @@ export class Location {
    * @returns Subscribed events.
    */
   subscribe(
-      onNext: (value: PopStateEvent) => void, onThrow?: ((exception: any) => void)|null,
-      onReturn?: (() => void)|null): SubscriptionLike {
+    onNext: (value: PopStateEvent) => void,
+    onThrow?: ((exception: any) => void) | null,
+    onReturn?: (() => void) | null
+  ): SubscriptionLike {
     return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
   }
 

@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 /// <reference types="node" />
 import * as ng from '@angular/compiler-cli';
 import * as fs from 'fs';
@@ -15,15 +16,17 @@ import * as ts from 'typescript';
 import {expectNoDiagnostics, setup, TestSupport} from '../test_support';
 
 type MockFiles = {
-  [fileName: string]: string
+  [fileName: string]: string;
 };
 
 describe('ng type checker', () => {
-  let errorSpy: jasmine.Spy&((s: string) => void);
+  let errorSpy: jasmine.Spy & ((s: string) => void);
   let testSupport: TestSupport;
 
   function compileAndCheck(
-      mockDirs: MockFiles[], overrideOptions: ng.CompilerOptions = {}): ng.Diagnostics {
+    mockDirs: MockFiles[],
+    overrideOptions: ng.CompilerOptions = {}
+  ): ng.Diagnostics {
     testSupport.writeFiles(...mockDirs);
     const fileNames: string[] = [];
     mockDirs.forEach((dir) => {
@@ -48,19 +51,26 @@ describe('ng type checker', () => {
   }
 
   function reject(
-      message: string|RegExp, location: RegExp|null, files: MockFiles,
-      overrideOptions: ng.CompilerOptions = {}) {
+    message: string | RegExp,
+    location: RegExp | null,
+    files: MockFiles,
+    overrideOptions: ng.CompilerOptions = {}
+  ) {
     const diagnostics = compileAndCheck([QUICKSTART, files], overrideOptions);
     if (!diagnostics || !diagnostics.length) {
       throw new Error('Expected a diagnostic error message');
     } else {
-      const matches: (d: ng.Diagnostic|ts.Diagnostic) => boolean = typeof message === 'string' ?
-          d => ng.isNgDiagnostic(d)&& d.messageText == message :
-          d => ng.isNgDiagnostic(d) && message.test(d.messageText);
+      const matches: (d: ng.Diagnostic | ts.Diagnostic) => boolean =
+        typeof message === 'string'
+          ? (d) => ng.isNgDiagnostic(d) && d.messageText == message
+          : (d) => ng.isNgDiagnostic(d) && message.test(d.messageText);
       const matchingDiagnostics = diagnostics.filter(matches) as ng.Diagnostic[];
       if (!matchingDiagnostics || !matchingDiagnostics.length) {
-        throw new Error(`Expected a diagnostics matching ${message}, received\n  ${
-            diagnostics.map(d => d.messageText).join('\n  ')}`);
+        throw new Error(
+          `Expected a diagnostics matching ${message}, received\n  ${diagnostics
+            .map((d) => d.messageText)
+            .join('\n  ')}`
+        );
       }
 
       if (location) {
@@ -78,11 +88,14 @@ describe('ng type checker', () => {
   });
 
   it('should accept unmodified QuickStart with tests for unused variables', () => {
-    accept({}, {
-      strict: true,
-      noUnusedLocals: true,
-      noUnusedParameters: true,
-    });
+    accept(
+      {},
+      {
+        strict: true,
+        noUnusedLocals: true,
+        noUnusedParameters: true,
+      }
+    );
   });
 
   describe('type narrowing', () => {
@@ -127,7 +140,7 @@ describe('ng type checker', () => {
         @NgModule({
           declarations: [MainComp, MyIf],
         })
-        export class MainModule {}`
+        export class MainModule {}`,
       });
     });
 
@@ -168,7 +181,7 @@ describe('ng type checker', () => {
         @NgModule({
           declarations: [MainComp, MyIf],
         })
-        export class MainModule {}`
+        export class MainModule {}`,
       });
     });
 
@@ -215,7 +228,7 @@ describe('ng type checker', () => {
         @NgModule({
           declarations: [MainComp, MyIf],
         })
-        export class MainModule {}`
+        export class MainModule {}`,
       });
     });
 
@@ -256,7 +269,7 @@ describe('ng type checker', () => {
         @NgModule({
           declarations: [MainComp, MyIf],
         })
-        export class MainModule {}`
+        export class MainModule {}`,
       });
     });
 
@@ -297,7 +310,7 @@ describe('ng type checker', () => {
         @NgModule({
           declarations: [MainComp, MyIf],
         })
-        export class MainModule {}`
+        export class MainModule {}`,
       });
     });
 
@@ -344,7 +357,7 @@ describe('ng type checker', () => {
         @NgModule({
           declarations: [MainComp, MyIf],
         })
-        export class MainModule {}`
+        export class MainModule {}`,
       });
     });
 
@@ -390,7 +403,7 @@ describe('ng type checker', () => {
         @NgModule({
           declarations: [MainComp, MyIf],
         })
-        export class MainModule {}`
+        export class MainModule {}`,
       });
     });
 
@@ -431,7 +444,7 @@ describe('ng type checker', () => {
         @NgModule({
           declarations: [MainComp, MyIf],
         })
-        export class MainModule {}`
+        export class MainModule {}`,
       });
     });
 
@@ -472,7 +485,7 @@ describe('ng type checker', () => {
         @NgModule({
           declarations: [MainComp, MyIf],
         })
-        export class MainModule {}`
+        export class MainModule {}`,
       });
     });
 
@@ -513,7 +526,7 @@ describe('ng type checker', () => {
         @NgModule({
           declarations: [MainComp, MyIf],
         })
-        export class MainModule {}`
+        export class MainModule {}`,
       });
     });
   });
@@ -521,17 +534,24 @@ describe('ng type checker', () => {
   describe('casting $any', () => {
     const a = (files: MockFiles, options: ng.AngularCompilerOptions = {}) => {
       accept(
-          {'src/app.component.ts': '', 'src/lib.ts': '', ...files},
-          {fullTemplateTypeCheck: true, ...options});
+        {'src/app.component.ts': '', 'src/lib.ts': '', ...files},
+        {fullTemplateTypeCheck: true, ...options}
+      );
     };
 
-    const r =
-        (message: string|RegExp, location: RegExp|null, files: MockFiles,
-         options: ng.AngularCompilerOptions = {}) => {
-          reject(
-              message, location, {'src/app.component.ts': '', 'src/lib.ts': '', ...files},
-              {fullTemplateTypeCheck: true, ...options});
-        };
+    const r = (
+      message: string | RegExp,
+      location: RegExp | null,
+      files: MockFiles,
+      options: ng.AngularCompilerOptions = {}
+    ) => {
+      reject(
+        message,
+        location,
+        {'src/app.component.ts': '', 'src/lib.ts': '', ...files},
+        {fullTemplateTypeCheck: true, ...options}
+      );
+    };
 
     it('should allow member access of an expression', () => {
       a({
@@ -554,7 +574,7 @@ describe('ng type checker', () => {
           declarations: [MainComp],
         })
         export class MainModule {
-        }`
+        }`,
       });
     });
 
@@ -573,7 +593,7 @@ describe('ng type checker', () => {
           declarations: [MainComp],
         })
         export class MainModule {
-        }`
+        }`,
       });
     });
 
@@ -592,7 +612,7 @@ describe('ng type checker', () => {
           declarations: [MainComp],
         })
         export class MainModule {
-        }`
+        }`,
       });
     });
 
@@ -617,7 +637,7 @@ describe('ng type checker', () => {
           declarations: [MainComp],
         })
         export class MainModule {
-        }`
+        }`,
       });
     });
   });
@@ -652,7 +672,7 @@ describe('ng type checker', () => {
         @NgModule({
           declarations: [MainComp, SomeDirective],
         })
-        export class MainModule {}`
+        export class MainModule {}`,
       });
     });
   });
@@ -684,7 +704,7 @@ describe('ng type checker', () => {
           declarations: [MainComp],
           imports: [CommonModule]
         })
-        export class MainModule {}`
+        export class MainModule {}`,
       });
     });
   });
@@ -701,16 +721,17 @@ describe('ng type checker', () => {
     // #19485
     it('should accept if else (TemplateRef)', () => {
       accept(
-          {
-            'src/app.component.html': `
+        {
+          'src/app.component.html': `
               <div class="text-center" *ngIf="!person; else e">
                 No person supplied.
               </div>
               <ng-template #e>
                 Welcome {{person.name}}!
-              <ng-template>`
-          },
-          {fullTemplateTypeCheck: true});
+              <ng-template>`,
+        },
+        {fullTemplateTypeCheck: true}
+      );
     });
   });
 
@@ -719,14 +740,20 @@ describe('ng type checker', () => {
       accept({'src/app.component.html': template}, config);
     }
 
-    function r(template: string, message: string|RegExp, location: string) {
+    function r(template: string, message: string | RegExp, location: string) {
       reject(
-          message, new RegExp(`app\.component\.html\@${location}$`),
-          {'src/app.component.html': template}, config);
+        message,
+        new RegExp(`app\.component\.html\@${location}$`),
+        {'src/app.component.html': template},
+        config
+      );
     }
 
     function rejectOnlyWithFullTemplateTypeCheck(
-        template: string, message: string|RegExp, location: string) {
+      template: string,
+      message: string | RegExp,
+      location: string
+    ) {
       if (config.fullTemplateTypeCheck) {
         r(template, message, location);
       } else {
@@ -758,15 +785,21 @@ describe('ng type checker', () => {
       a('{{getName()}}');
     });
     it('should reject an invalid method', () => {
-      r('<div>{{getFame()}}</div>',
-        `Property 'getFame' does not exist on type 'AppComponent'. Did you mean 'getName'?`, '0:5');
+      r(
+        '<div>{{getFame()}}</div>',
+        `Property 'getFame' does not exist on type 'AppComponent'. Did you mean 'getName'?`,
+        '0:5'
+      );
     });
     it('should accept a field access of a method result', () => {
       a('{{getPerson().name}}');
     });
     it('should reject an invalid field reference of a method result', () => {
-      r('<div>{{getPerson().fame}}</div>', `Property 'fame' does not exist on type 'Person'.`,
-        '0:5');
+      r(
+        '<div>{{getPerson().fame}}</div>',
+        `Property 'fame' does not exist on type 'Person'.`,
+        '0:5'
+      );
     });
     it('should reject an access to a nullable field of a method result', () => {
       r('<div>{{getMaybePerson().name}}</div>', `Object is possibly 'undefined'.`, '0:5');
@@ -774,25 +807,30 @@ describe('ng type checker', () => {
     it('should accept a nullable assert of a nullable field references of a method result', () => {
       a('{{getMaybePerson()!.name}}');
     });
-    it('should accept a safe property access of a nullable field reference of a method result',
-       () => {
-         a('{{getMaybePerson()?.name}}');
-       });
+    it('should accept a safe property access of a nullable field reference of a method result', () => {
+      a('{{getMaybePerson()?.name}}');
+    });
 
     it('should report an invalid field access inside of an ng-template', () => {
       rejectOnlyWithFullTemplateTypeCheck(
-          '<ng-template>{{fame}}</ng-template>',
-          `Property 'fame' does not exist on type 'AppComponent'.`, '0:13');
+        '<ng-template>{{fame}}</ng-template>',
+        `Property 'fame' does not exist on type 'AppComponent'.`,
+        '0:13'
+      );
     });
     it('should report an invalid call to a pipe', () => {
       rejectOnlyWithFullTemplateTypeCheck(
-          '<div>{{"hello" | aPipe}}</div>',
-          `Argument of type '"hello"' is not assignable to parameter of type 'number'.`, '0:5');
+        '<div>{{"hello" | aPipe}}</div>',
+        `Argument of type '"hello"' is not assignable to parameter of type 'number'.`,
+        '0:5'
+      );
     });
     it('should report an invalid property on an exportAs directive', () => {
       rejectOnlyWithFullTemplateTypeCheck(
-          '<div aDir #aDir="aDir">{{aDir.fname}}</div>',
-          `Property 'fname' does not exist on type 'ADirective'. Did you mean 'name'?`, '0:23');
+        '<div aDir #aDir="aDir">{{aDir.fname}}</div>',
+        `Property 'fname' does not exist on type 'ADirective'. Did you mean 'name'?`,
+        '0:23'
+      );
     });
   }
 
@@ -887,7 +925,7 @@ const QUICKSTART = {
       imports:      [ LibModule, CommonModule ]
     })
     export class AppModule { }
-  `
+  `,
 };
 
 const LOWERING_QUICKSTART = {
@@ -913,7 +951,7 @@ const LOWERING_QUICKSTART = {
       bootstrap:    [ AppComponent ]
     })
     export class AppModule { }
-  `
+  `,
 };
 
 const tmpdir = process.env.TEST_TMPDIR || os.tmpdir();

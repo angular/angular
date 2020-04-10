@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, FileSystem, isRooted} from '../../src/ngtsc/file_system';
@@ -27,22 +28,24 @@ import {KnownDeclaration} from '../../src/ngtsc/reflection';
 export interface PartiallyOrderedList<T> extends Array<T> {
   _partiallyOrdered: true;
 
-  map<U>(callbackfn: (value: T, index: number, array: PartiallyOrderedList<T>) => U, thisArg?: any):
-      PartiallyOrderedList<U>;
+  map<U>(
+    callbackfn: (value: T, index: number, array: PartiallyOrderedList<T>) => U,
+    thisArg?: any
+  ): PartiallyOrderedList<U>;
   slice(...args: Parameters<Array<T>['slice']>): PartiallyOrderedList<T>;
 }
 
 export function getOriginalSymbol(checker: ts.TypeChecker): (symbol: ts.Symbol) => ts.Symbol {
-  return function(symbol: ts.Symbol) {
+  return function (symbol: ts.Symbol) {
     return ts.SymbolFlags.Alias & symbol.flags ? checker.getAliasedSymbol(symbol) : symbol;
   };
 }
 
-export function isDefined<T>(value: T|undefined|null): value is T {
-  return (value !== undefined) && (value !== null);
+export function isDefined<T>(value: T | undefined | null): value is T {
+  return value !== undefined && value !== null;
 }
 
-export function getNameText(name: ts.PropertyName|ts.BindingName): string {
+export function getNameText(name: ts.PropertyName | ts.BindingName): string {
   return ts.isIdentifier(name) || ts.isLiteralExpression(name) ? name.text : name.getText();
 }
 
@@ -61,7 +64,7 @@ export function findAll<T>(node: ts.Node, test: (node: ts.Node) => node is ts.No
     if (test(n)) {
       nodes.push(n);
     } else {
-      n.forEachChild(child => findAllVisitor(child));
+      n.forEachChild((child) => findAllVisitor(child));
     }
   }
 }
@@ -71,15 +74,16 @@ export function findAll<T>(node: ts.Node, test: (node: ts.Node) => node is ts.No
  * @param declaration The declaration to test.
  * @returns true if the declaration has an identifier for a name.
  */
-export function hasNameIdentifier(declaration: ts.Declaration): declaration is ts.Declaration&
-    {name: ts.Identifier} {
-  const namedDeclaration: ts.Declaration&{name?: ts.Node} = declaration;
+export function hasNameIdentifier(
+  declaration: ts.Declaration
+): declaration is ts.Declaration & {name: ts.Identifier} {
+  const namedDeclaration: ts.Declaration & {name?: ts.Node} = declaration;
   return namedDeclaration.name !== undefined && ts.isIdentifier(namedDeclaration.name);
 }
 
 export type PathMappings = {
-  baseUrl: string,
-  paths: {[key: string]: string[]}
+  baseUrl: string;
+  paths: {[key: string]: string[]};
 };
 
 /**
@@ -104,7 +108,7 @@ export function isRelativePath(path: string): boolean {
 export class FactoryMap<K, V> {
   private internalMap: Map<K, V>;
 
-  constructor(private factory: (key: K) => V, entries?: readonly(readonly[K, V])[]|null) {
+  constructor(private factory: (key: K) => V, entries?: readonly (readonly [K, V])[] | null) {
     this.internalMap = new Map(entries);
   }
 
@@ -127,7 +131,10 @@ export class FactoryMap<K, V> {
  * @returns An absolute path to the first matching existing file, or `null` if none exist.
  */
 export function resolveFileWithPostfixes(
-    fs: FileSystem, path: AbsoluteFsPath, postFixes: string[]): AbsoluteFsPath|null {
+  fs: FileSystem,
+  path: AbsoluteFsPath,
+  postFixes: string[]
+): AbsoluteFsPath | null {
   for (const postFix of postFixes) {
     const testPath = absoluteFrom(path + postFix);
     if (fs.exists(testPath) && fs.stat(testPath).isFile()) {
@@ -141,7 +148,7 @@ export function resolveFileWithPostfixes(
  * Determine whether a function declaration corresponds with a TypeScript helper function, returning
  * its kind if so or null if the declaration does not seem to correspond with such a helper.
  */
-export function getTsHelperFnFromDeclaration(decl: ts.Declaration): KnownDeclaration|null {
+export function getTsHelperFnFromDeclaration(decl: ts.Declaration): KnownDeclaration | null {
   if (!ts.isFunctionDeclaration(decl) && !ts.isVariableDeclaration(decl)) {
     return null;
   }
@@ -158,7 +165,7 @@ export function getTsHelperFnFromDeclaration(decl: ts.Declaration): KnownDeclara
  * name), returning its kind if so or null if the identifier does not seem to correspond with such a
  * helper.
  */
-export function getTsHelperFnFromIdentifier(id: ts.Identifier): KnownDeclaration|null {
+export function getTsHelperFnFromIdentifier(id: ts.Identifier): KnownDeclaration | null {
   switch (stripDollarSuffix(id.text)) {
     case '__assign':
       return KnownDeclaration.TsHelperAssign;

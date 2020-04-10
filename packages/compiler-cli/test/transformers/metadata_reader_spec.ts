@@ -23,17 +23,18 @@ describe('metadata reader', () => {
       readFile: (fileName) => context.readFile(fileName),
       getSourceFileMetadata: (fileName) => {
         const sourceText = context.readFile(fileName);
-        return sourceText != null ? metadataCollector.getMetadata(ts.createSourceFile(
-                                        fileName, sourceText, ts.ScriptTarget.Latest)) :
-                                    undefined;
+        return sourceText != null
+          ? metadataCollector.getMetadata(
+              ts.createSourceFile(fileName, sourceText, ts.ScriptTarget.Latest)
+            )
+          : undefined;
       },
     };
   });
 
-
   it('should be able to read a metadata file', () => {
     expect(readMetadata('node_modules/@angular/core.d.ts', host)).toEqual([
-      {__symbolic: 'module', version: METADATA_VERSION, metadata: {foo: {__symbolic: 'class'}}}
+      {__symbolic: 'module', version: METADATA_VERSION, metadata: {foo: {__symbolic: 'class'}}},
     ]);
   });
 
@@ -51,7 +52,8 @@ describe('metadata reader', () => {
 
   it(`should add missing v${METADATA_VERSION} metadata from v1 metadata and .d.ts files`, () => {
     expect(readMetadata('metadata_versions/v1.d.ts', host)).toEqual([
-      {__symbolic: 'module', version: 1, metadata: {foo: {__symbolic: 'class'}}}, {
+      {__symbolic: 'module', version: 1, metadata: {foo: {__symbolic: 'class'}}},
+      {
         __symbolic: 'module',
         version: METADATA_VERSION,
         metadata: {
@@ -62,22 +64,25 @@ describe('metadata reader', () => {
           ReExport: {__symbolic: 'reference', module: './lib/utils2', name: 'ReExport'},
         },
         exports: [{from: './lib/utils2', export: ['Export']}],
-      }
+      },
     ]);
   });
 
   it(`should upgrade a missing metadata file into v${METADATA_VERSION}`, () => {
-    expect(readMetadata('metadata_versions/v1_empty.d.ts', host)).toEqual([{
-      __symbolic: 'module',
-      version: METADATA_VERSION,
-      metadata: {},
-      exports: [{from: './lib/utils'}]
-    }]);
+    expect(readMetadata('metadata_versions/v1_empty.d.ts', host)).toEqual([
+      {
+        __symbolic: 'module',
+        version: METADATA_VERSION,
+        metadata: {},
+        exports: [{from: './lib/utils'}],
+      },
+    ]);
   });
 
   it(`should upgrade v3 metadata into v${METADATA_VERSION}`, () => {
     expect(readMetadata('metadata_versions/v3.d.ts', host)).toEqual([
-      {__symbolic: 'module', version: 3, metadata: {foo: {__symbolic: 'class'}}}, {
+      {__symbolic: 'module', version: 3, metadata: {foo: {__symbolic: 'class'}}},
+      {
         __symbolic: 'module',
         version: METADATA_VERSION,
         metadata: {
@@ -86,9 +91,9 @@ describe('metadata reader', () => {
           Bar: {__symbolic: 'class', members: {ngOnInit: [{__symbolic: 'method'}]}},
           BarChild: {__symbolic: 'class', extends: {__symbolic: 'reference', name: 'Bar'}},
           ReExport: {__symbolic: 'reference', module: './lib/utils2', name: 'ReExport'},
-        }
+        },
         // Note: exports is missing because it was elided in the original.
-      }
+      },
     ]);
   });
 });
@@ -97,8 +102,9 @@ const dummyModule = 'export let foo: any[];';
 const dummyMetadata: ModuleMetadata = {
   __symbolic: 'module',
   version: METADATA_VERSION,
-  metadata:
-      {foo: {__symbolic: 'error', message: 'Variable not initialized', line: 0, character: 11}}
+  metadata: {
+    foo: {__symbolic: 'error', message: 'Variable not initialized', line: 0, character: 11},
+  },
 };
 const FILES: Entry = {
   'tmp': {
@@ -118,13 +124,12 @@ const FILES: Entry = {
       'node_modules': {
         '@angular': {
           'core.d.ts': dummyModule,
-          'core.metadata.json': `{"__symbolic":"module", "version": ${
-              METADATA_VERSION}, "metadata": {"foo": {"__symbolic": "class"}}}`,
+          'core.metadata.json': `{"__symbolic":"module", "version": ${METADATA_VERSION}, "metadata": {"foo": {"__symbolic": "class"}}}`,
           'router': {'index.d.ts': dummyModule, 'src': {'providers.d.ts': dummyModule}},
           'unused.d.ts': dummyModule,
           'empty.d.ts': 'export declare var a: string;',
           'empty.metadata.json': '[]',
-        }
+        },
       },
       'metadata_versions': {
         'v1.d.ts': `
@@ -140,8 +145,7 @@ const FILES: Entry = {
           }
           export declare class BarChild extends Bar {}
         `,
-        'v1.metadata.json':
-            `{"__symbolic":"module", "version": 1, "metadata": {"foo": {"__symbolic": "class"}}}`,
+        'v1.metadata.json': `{"__symbolic":"module", "version": 1, "metadata": {"foo": {"__symbolic": "class"}}}`,
         'v1_empty.d.ts': `
           export * from './lib/utils';
         `,
@@ -158,11 +162,10 @@ const FILES: Entry = {
           }
           export declare class BarChild extends Bar {}
         `,
-        'v3.metadata.json':
-            `{"__symbolic":"module", "version": 3, "metadata": {"foo": {"__symbolic": "class"}}}`,
-      }
-    }
-  }
+        'v3.metadata.json': `{"__symbolic":"module", "version": 3, "metadata": {"foo": {"__symbolic": "class"}}}`,
+      },
+    },
+  },
 };
 
 function clone(entry: Entry): Entry {

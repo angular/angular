@@ -26,7 +26,7 @@ function emptyPipes(): SymbolTable {
     },
     values(): Symbol[] {
       return [];
-    }
+    },
   };
 }
 
@@ -39,7 +39,10 @@ describe('symbol query', () => {
   beforeEach(() => {
     const registry = ts.createDocumentRegistry(false, '/src');
     const host = new MockLanguageServiceHost(
-        ['/quickstart/app/app.component.ts'], QUICKSTART, '/quickstart');
+      ['/quickstart/app/app.component.ts'],
+      QUICKSTART,
+      '/quickstart'
+    );
     const service = ts.createLanguageService(host, registry);
     program = service.getProgram()!;
     checker = program.getTypeChecker();
@@ -134,7 +137,7 @@ const QUICKSTART: Directory = {
           bootstrap:    [ AppComponent ]
         })
         export class AppModule { }
-      `
-    }
-  }
+      `,
+    },
+  },
 };

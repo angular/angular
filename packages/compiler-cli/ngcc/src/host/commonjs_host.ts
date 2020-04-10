@@ -14,27 +14,47 @@ import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, getTsHelperFnFromIdentifier, isDefined, stripExtension} from '../utils';
 
-import {ExportDeclaration, ExportStatement, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isReexportStatement, isRequireCall, ReexportStatement, RequireCall} from './commonjs_umd_utils';
+import {
+  ExportDeclaration,
+  ExportStatement,
+  findNamespaceOfIdentifier,
+  findRequireCallReference,
+  isExportStatement,
+  isReexportStatement,
+  isRequireCall,
+  ReexportStatement,
+  RequireCall,
+} from './commonjs_umd_utils';
 import {Esm5ReflectionHost} from './esm5_host';
 import {NgccClassSymbol} from './ngcc_host';
 
 export class CommonJsReflectionHost extends Esm5ReflectionHost {
-  protected commonJsExports = new FactoryMap<ts.SourceFile, Map<string, Declaration>|null>(
-      sf => this.computeExportsOfCommonJsModule(sf));
-  protected topLevelHelperCalls =
-      new FactoryMap<string, FactoryMap<ts.SourceFile, ts.CallExpression[]>>(
-          helperName => new FactoryMap<ts.SourceFile, ts.CallExpression[]>(
-              sf => sf.statements.map(stmt => this.getHelperCall(stmt, [helperName]))
-                        .filter(isDefined)));
+  protected commonJsExports = new FactoryMap<ts.SourceFile, Map<string, Declaration> | null>((sf) =>
+    this.computeExportsOfCommonJsModule(sf)
+  );
+  protected topLevelHelperCalls = new FactoryMap<
+    string,
+    FactoryMap<ts.SourceFile, ts.CallExpression[]>
+  >(
+    (helperName) =>
+      new FactoryMap<ts.SourceFile, ts.CallExpression[]>((sf) =>
+        sf.statements.map((stmt) => this.getHelperCall(stmt, [helperName])).filter(isDefined)
+      )
+  );
   protected program: ts.Program;
   protected compilerHost: ts.CompilerHost;
-  constructor(logger: Logger, isCore: boolean, src: BundleProgram, dts: BundleProgram|null = null) {
+  constructor(
+    logger: Logger,
+    isCore: boolean,
+    src: BundleProgram,
+    dts: BundleProgram | null = null
+  ) {
     super(logger, isCore, src, dts);
     this.program = src.program;
     this.compilerHost = src.host;
   }
 
-  getImportOfIdentifier(id: ts.Identifier): Import|null {
+  getImportOfIdentifier(id: ts.Identifier): Import | null {
     const requireCall = this.findCommonJsImport(id);
     if (requireCall === null) {
       return null;
@@ -42,11 +62,11 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     return {from: requireCall.arguments[0].text, name: id.text};
   }
 
-  getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
+  getDeclarationOfIdentifier(id: ts.Identifier): Declaration | null {
     return this.getCommonJsImportedDeclaration(id) || super.getDeclarationOfIdentifier(id);
   }
 
-  getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
+  getExportsOfModule(module: ts.Node): Map<string, Declaration> | null {
     return super.getExportsOfModule(module) || this.commonJsExports.get(module.getSourceFile());
   }
 
@@ -63,8 +83,10 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
    * in.
    * @returns an array of nodes of calls to the helper with the given name.
    */
-  protected getHelperCallsForClass(classSymbol: NgccClassSymbol, helperNames: string[]):
-      ts.CallExpression[] {
+  protected getHelperCallsForClass(
+    classSymbol: NgccClassSymbol,
+    helperNames: string[]
+  ): ts.CallExpression[] {
     const esm5HelperCalls = super.getHelperCallsForClass(classSymbol, helperNames);
     if (esm5HelperCalls.length > 0) {
       return esm5HelperCalls;
@@ -85,10 +107,12 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
    * in.
    * @returns an array of nodes of calls to the helper with the given name.
    */
-  private getTopLevelHelperCalls(sourceFile: ts.SourceFile, helperNames: string[]):
-      ts.CallExpression[] {
+  private getTopLevelHelperCalls(
+    sourceFile: ts.SourceFile,
+    helperNames: string[]
+  ): ts.CallExpression[] {
     const calls: ts.CallExpression[] = [];
-    helperNames.forEach(helperName => {
+    helperNames.forEach((helperName) => {
       const helperCallsMap = this.topLevelHelperCalls.get(helperName);
       calls.push(...helperCallsMap.get(sourceFile));
     });
@@ -130,13 +154,17 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     }
   }
 
-  private extractCommonJsReexports(statement: ReexportStatement, containingFile: ts.SourceFile):
-      ExportDeclaration[] {
+  private extractCommonJsReexports(
+    statement: ReexportStatement,
+    containingFile: ts.SourceFile
+  ): ExportDeclaration[] {
     const reexportArg = statement.expression.arguments[0];
 
-    const requireCall = isRequireCall(reexportArg) ?
-        reexportArg :
-        ts.isIdentifier(reexportArg) ? findRequireCallReference(reexportArg, this.checker) : null;
+    const requireCall = isRequireCall(reexportArg)
+      ? reexportArg
+      : ts.isIdentifier(reexportArg)
+      ? findRequireCallReference(reexportArg, this.checker)
+      : null;
     if (requireCall === null) {
       return [];
     }
@@ -158,21 +186,23 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
       if (decl.node !== null) {
         reexports.push({name, declaration: {node: decl.node, known: null, viaModule}});
       } else {
-        reexports.push(
-            {name, declaration: {node: null, known: null, expression: decl.expression, viaModule}});
+        reexports.push({
+          name,
+          declaration: {node: null, known: null, expression: decl.expression, viaModule},
+        });
       }
     });
     return reexports;
   }
 
-  private findCommonJsImport(id: ts.Identifier): RequireCall|null {
+  private findCommonJsImport(id: ts.Identifier): RequireCall | null {
     // Is `id` a namespaced property access, e.g. `Directive` in `core.Directive`?
     // If so capture the symbol of the namespace, e.g. `core`.
     const nsIdentifier = findNamespaceOfIdentifier(id);
     return nsIdentifier && findRequireCallReference(nsIdentifier, this.checker);
   }
 
-  private getCommonJsImportedDeclaration(id: ts.Identifier): Declaration|null {
+  private getCommonJsImportedDeclaration(id: ts.Identifier): Declaration | null {
     const importInfo = this.getImportOfIdentifier(id);
     if (importInfo === null) {
       return null;
@@ -187,19 +217,30 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     return {node: importedFile, known: getTsHelperFnFromIdentifier(id), viaModule};
   }
 
-  private resolveModuleName(moduleName: string, containingFile: ts.SourceFile): ts.SourceFile
-      |undefined {
+  private resolveModuleName(
+    moduleName: string,
+    containingFile: ts.SourceFile
+  ): ts.SourceFile | undefined {
     if (this.compilerHost.resolveModuleNames) {
       const moduleInfo = this.compilerHost.resolveModuleNames(
-          [moduleName], containingFile.fileName, undefined, undefined,
-          this.program.getCompilerOptions())[0];
+        [moduleName],
+        containingFile.fileName,
+        undefined,
+        undefined,
+        this.program.getCompilerOptions()
+      )[0];
       return moduleInfo && this.program.getSourceFile(absoluteFrom(moduleInfo.resolvedFileName));
     } else {
       const moduleInfo = ts.resolveModuleName(
-          moduleName, containingFile.fileName, this.program.getCompilerOptions(),
-          this.compilerHost);
-      return moduleInfo.resolvedModule &&
-          this.program.getSourceFile(absoluteFrom(moduleInfo.resolvedModule.resolvedFileName));
+        moduleName,
+        containingFile.fileName,
+        this.program.getCompilerOptions(),
+        this.compilerHost
+      );
+      return (
+        moduleInfo.resolvedModule &&
+        this.program.getSourceFile(absoluteFrom(moduleInfo.resolvedModule.resolvedFileName))
+      );
     }
   }
 }

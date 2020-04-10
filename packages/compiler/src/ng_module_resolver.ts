@@ -11,7 +11,6 @@ import {createNgModule, NgModule, Type} from './core';
 import {findLast} from './directive_resolver';
 import {stringify} from './util';
 
-
 /**
  * Resolves types to {@link NgModule}.
  */
@@ -22,9 +21,11 @@ export class NgModuleResolver {
     return this._reflector.annotations(type).some(createNgModule.isTypeOf);
   }
 
-  resolve(type: Type, throwIfNotFound = true): NgModule|null {
-    const ngModuleMeta: NgModule =
-        findLast(this._reflector.annotations(type), createNgModule.isTypeOf);
+  resolve(type: Type, throwIfNotFound = true): NgModule | null {
+    const ngModuleMeta: NgModule = findLast(
+      this._reflector.annotations(type),
+      createNgModule.isTypeOf
+    );
 
     if (ngModuleMeta) {
       return ngModuleMeta;

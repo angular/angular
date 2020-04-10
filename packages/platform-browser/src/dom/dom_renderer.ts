@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Inject, Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {
+  APP_ID,
+  Inject,
+  Injectable,
+  Renderer2,
+  RendererFactory2,
+  RendererStyleFlags2,
+  RendererType2,
+  ViewEncapsulation,
+} from '@angular/core';
 
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
@@ -35,7 +44,10 @@ export function shimHostAttribute(componentShortId: string): string {
 }
 
 export function flattenStyles(
-    compId: string, styles: Array<any|any[]>, target: string[]): string[] {
+  compId: string,
+  styles: Array<any | any[]>,
+  target: string[]
+): string[] {
   for (let i = 0; i < styles.length; i++) {
     let style = styles[i];
 
@@ -80,12 +92,14 @@ export class DomRendererFactory2 implements RendererFactory2 {
   private defaultRenderer: Renderer2;
 
   constructor(
-      private eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
-      @Inject(APP_ID) private appId: string) {
+    private eventManager: EventManager,
+    private sharedStylesHost: DomSharedStylesHost,
+    @Inject(APP_ID) private appId: string
+  ) {
     this.defaultRenderer = new DefaultDomRenderer2(eventManager);
   }
 
-  createRenderer(element: any, type: RendererType2|null): Renderer2 {
+  createRenderer(element: any, type: RendererType2 | null): Renderer2 {
     if (!element || !type) {
       return this.defaultRenderer;
     }
@@ -94,7 +108,11 @@ export class DomRendererFactory2 implements RendererFactory2 {
         let renderer = this.rendererByCompId.get(type.id);
         if (!renderer) {
           renderer = new EmulatedEncapsulationDomRenderer2(
-              this.eventManager, this.sharedStylesHost, type, this.appId);
+            this.eventManager,
+            this.sharedStylesHost,
+            type,
+            this.appId
+          );
           this.rendererByCompId.set(type.id, renderer);
         }
         (<EmulatedEncapsulationDomRenderer2>renderer).applyToHost(element);
@@ -137,11 +155,17 @@ class DefaultDomRenderer2 implements Renderer2 {
     return document.createElement(name);
   }
 
-  createComment(value: string): any { return document.createComment(value); }
+  createComment(value: string): any {
+    return document.createComment(value);
+  }
 
-  createText(value: string): any { return document.createTextNode(value); }
+  createText(value: string): any {
+    return document.createTextNode(value);
+  }
 
-  appendChild(parent: any, newChild: any): void { parent.appendChild(newChild); }
+  appendChild(parent: any, newChild: any): void {
+    parent.appendChild(newChild);
+  }
 
   insertBefore(parent: any, newChild: any, refChild: any): void {
     if (parent) {
@@ -155,9 +179,9 @@ class DefaultDomRenderer2 implements Renderer2 {
     }
   }
 
-  selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {
-    let el: any = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) :
-                                                       selectorOrNode;
+  selectRootElement(selectorOrNode: string | any, preserveContent?: boolean): any {
+    let el: any =
+      typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) : selectorOrNode;
     if (!el) {
       throw new Error(`The selector "${selectorOrNode}" did not match any elements`);
     }
@@ -167,9 +191,13 @@ class DefaultDomRenderer2 implements Renderer2 {
     return el;
   }
 
-  parentNode(node: any): any { return node.parentNode; }
+  parentNode(node: any): any {
+    return node.parentNode;
+  }
 
-  nextSibling(node: any): any { return node.nextSibling; }
+  nextSibling(node: any): any {
+    return node.nextSibling;
+  }
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     if (namespace) {
@@ -205,14 +233,21 @@ class DefaultDomRenderer2 implements Renderer2 {
     }
   }
 
-  addClass(el: any, name: string): void { el.classList.add(name); }
+  addClass(el: any, name: string): void {
+    el.classList.add(name);
+  }
 
-  removeClass(el: any, name: string): void { el.classList.remove(name); }
+  removeClass(el: any, name: string): void {
+    el.classList.remove(name);
+  }
 
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
     if (flags & RendererStyleFlags2.DashCase) {
       el.style.setProperty(
-          style, value, !!(flags & RendererStyleFlags2.Important) ? 'important' : '');
+        style,
+        value,
+        !!(flags & RendererStyleFlags2.Important) ? 'important' : ''
+      );
     } else {
       el.style[style] = value;
     }
@@ -233,17 +268,24 @@ class DefaultDomRenderer2 implements Renderer2 {
     el[name] = value;
   }
 
-  setValue(node: any, value: string): void { node.nodeValue = value; }
+  setValue(node: any, value: string): void {
+    node.nodeValue = value;
+  }
 
-  listen(target: 'window'|'document'|'body'|any, event: string, callback: (event: any) => boolean):
-      () => void {
+  listen(
+    target: 'window' | 'document' | 'body' | any,
+    event: string,
+    callback: (event: any) => boolean
+  ): () => void {
     NG_DEV_MODE && checkNoSyntheticProp(event, 'listener');
     if (typeof target === 'string') {
-      return <() => void>this.eventManager.addGlobalEventListener(
-          target, event, decoratePreventDefault(callback));
+      return <() => void>(
+        this.eventManager.addGlobalEventListener(target, event, decoratePreventDefault(callback))
+      );
     }
-    return <() => void>this.eventManager.addEventListener(
-               target, event, decoratePreventDefault(callback)) as() => void;
+    return (<() => void>(
+      this.eventManager.addEventListener(target, event, decoratePreventDefault(callback))
+    )) as () => void;
   }
 }
 
@@ -251,7 +293,8 @@ const AT_CHARCODE = (() => '@'.charCodeAt(0))();
 function checkNoSyntheticProp(name: string, nameKind: string) {
   if (name.charCodeAt(0) === AT_CHARCODE) {
     throw new Error(
-        `Found the synthetic ${nameKind} ${name}. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.`);
+      `Found the synthetic ${nameKind} ${name}. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.`
+    );
   }
 }
 
@@ -260,8 +303,11 @@ class EmulatedEncapsulationDomRenderer2 extends DefaultDomRenderer2 {
   private hostAttr: string;
 
   constructor(
-      eventManager: EventManager, sharedStylesHost: DomSharedStylesHost,
-      private component: RendererType2, appId: string) {
+    eventManager: EventManager,
+    sharedStylesHost: DomSharedStylesHost,
+    private component: RendererType2,
+    appId: string
+  ) {
     super(eventManager);
     const styles = flattenStyles(appId + '-' + component.id, component.styles, []);
     sharedStylesHost.addStyles(styles);
@@ -270,7 +316,9 @@ class EmulatedEncapsulationDomRenderer2 extends DefaultDomRenderer2 {
     this.hostAttr = shimHostAttribute(appId + '-' + component.id);
   }
 
-  applyToHost(element: any) { super.setAttribute(element, this.hostAttr, ''); }
+  applyToHost(element: any) {
+    super.setAttribute(element, this.hostAttr, '');
+  }
 
   createElement(parent: any, name: string): Element {
     const el = super.createElement(parent, name);
@@ -283,8 +331,11 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   private shadowRoot: any;
 
   constructor(
-      eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
-      private hostEl: any, private component: RendererType2) {
+    eventManager: EventManager,
+    private sharedStylesHost: DomSharedStylesHost,
+    private hostEl: any,
+    private component: RendererType2
+  ) {
     super(eventManager);
     if (component.encapsulation === ViewEncapsulation.ShadowDom) {
       this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
@@ -300,9 +351,13 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     }
   }
 
-  private nodeOrShadowRoot(node: any): any { return node === this.hostEl ? this.shadowRoot : node; }
+  private nodeOrShadowRoot(node: any): any {
+    return node === this.hostEl ? this.shadowRoot : node;
+  }
 
-  destroy() { this.sharedStylesHost.removeHost(this.shadowRoot); }
+  destroy() {
+    this.sharedStylesHost.removeHost(this.shadowRoot);
+  }
 
   appendChild(parent: any, newChild: any): void {
     return super.appendChild(this.nodeOrShadowRoot(parent), newChild);

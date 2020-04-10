@@ -8,8 +8,6 @@
 
 import {EventEmitter, NgZone} from '@angular/core';
 
-
-
 /**
  * Message Bus is a low level API used to communicate between the UI and the background.
  * Communication is based on a channel abstraction. Messages published in a
@@ -42,7 +40,6 @@ export abstract class MessageBus implements MessageBusSource, MessageBusSink {
    * is received on the given channel.
    */
   abstract from(channel: string): EventEmitter<any>;
-
 
   /**
    * Returns an {@link EventEmitter} for the given channel

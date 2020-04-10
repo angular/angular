@@ -1,4 +1,3 @@
-
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -6,14 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {InjectorType} from '../di/interface/defs';
 import {stringify} from '../util/stringify';
 
 import {TNode} from './interfaces/node';
 import {LView, TVIEW} from './interfaces/view';
 import {INTERPOLATION_DELIMITER} from './util/misc_utils';
-
-
 
 /** Called when directives inject each other (creating a circular dependency) */
 export function throwCyclicDependencyError(token: any): never {
@@ -30,28 +28,36 @@ export function throwMixedMultiProviderError() {
 }
 
 export function throwInvalidProviderError(
-    ngModuleType?: InjectorType<any>, providers?: any[], provider?: any) {
+  ngModuleType?: InjectorType<any>,
+  providers?: any[],
+  provider?: any
+) {
   let ngModuleDetail = '';
   if (ngModuleType && providers) {
-    const providerDetail = providers.map(v => v == provider ? '?' + provider + '?' : '...');
-    ngModuleDetail =
-        ` - only instances of Provider and Type are allowed, got: [${providerDetail.join(', ')}]`;
+    const providerDetail = providers.map((v) => (v == provider ? '?' + provider + '?' : '...'));
+    ngModuleDetail = ` - only instances of Provider and Type are allowed, got: [${providerDetail.join(
+      ', '
+    )}]`;
   }
 
   throw new Error(
-      `Invalid provider for the NgModule '${stringify(ngModuleType)}'` + ngModuleDetail);
+    `Invalid provider for the NgModule '${stringify(ngModuleType)}'` + ngModuleDetail
+  );
 }
 
 /** Throws an ExpressionChangedAfterChecked error if checkNoChanges mode is on. */
 export function throwErrorIfNoChangesMode(
-    creationMode: boolean, oldValue: any, currValue: any, propName?: string): never|void {
+  creationMode: boolean,
+  oldValue: any,
+  currValue: any,
+  propName?: string
+): never | void {
   const field = propName ? ` for '${propName}'` : '';
-  let msg =
-      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value${field}: '${oldValue}'. Current value: '${currValue}'.`;
+  let msg = `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value${field}: '${oldValue}'. Current value: '${currValue}'.`;
   if (creationMode) {
     msg +=
-        ` It seems like the view has been created after its parent and its children have been dirty checked.` +
-        ` Has it been created in a change detection hook?`;
+      ` It seems like the view has been created after its parent and its children have been dirty checked.` +
+      ` Has it been created in a change detection hook?`;
   }
   // TODO: include debug context, see `viewDebugError` function in
   // `packages/core/src/view/errors.ts` for reference.
@@ -59,9 +65,15 @@ export function throwErrorIfNoChangesMode(
 }
 
 function constructDetailsForInterpolation(
-    lView: LView, rootIndex: number, expressionIndex: number, meta: string, changedValue: any) {
+  lView: LView,
+  rootIndex: number,
+  expressionIndex: number,
+  meta: string,
+  changedValue: any
+) {
   const [propName, prefix, ...chunks] = meta.split(INTERPOLATION_DELIMITER);
-  let oldValue = prefix, newValue = prefix;
+  let oldValue = prefix,
+    newValue = prefix;
   for (let i = 0; i < chunks.length; i++) {
     const slotIdx = rootIndex + i;
     oldValue += `${lView[slotIdx]}${chunks[i]}`;
@@ -79,8 +91,11 @@ function constructDetailsForInterpolation(
  * function description.
  */
 export function getExpressionChangedErrorDetails(
-    lView: LView, bindingIndex: number, oldValue: any,
-    newValue: any): {propName?: string, oldValue: any, newValue: any} {
+  lView: LView,
+  bindingIndex: number,
+  oldValue: any,
+  newValue: any
+): {propName?: string; oldValue: any; newValue: any} {
   const tData = lView[TVIEW].data;
   const metadata = tData[bindingIndex];
 
@@ -88,7 +103,12 @@ export function getExpressionChangedErrorDetails(
     // metadata for property interpolation
     if (metadata.indexOf(INTERPOLATION_DELIMITER) > -1) {
       return constructDetailsForInterpolation(
-          lView, bindingIndex, bindingIndex, metadata, newValue);
+        lView,
+        bindingIndex,
+        bindingIndex,
+        metadata,
+        newValue
+      );
     }
     // metadata for property binding
     return {propName: metadata, oldValue, newValue};
@@ -108,7 +128,7 @@ export function getExpressionChangedErrorDetails(
       const matches = meta.match(new RegExp(INTERPOLATION_DELIMITER, 'g'));
       // first interpolation delimiter separates property name from interpolation parts (in case of
       // property interpolations), so we subtract one from total number of found delimiters
-      if (matches && (matches.length - 1) > bindingIndex - idx) {
+      if (matches && matches.length - 1 > bindingIndex - idx) {
         return constructDetailsForInterpolation(lView, idx, bindingIndex, meta, newValue);
       }
     }

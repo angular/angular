@@ -14,26 +14,43 @@ import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, getTsHelperFnFromIdentifier, stripExtension} from '../utils';
 
-import {ExportDeclaration, ExportStatement, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isReexportStatement, isRequireCall, ReexportStatement} from './commonjs_umd_utils';
+import {
+  ExportDeclaration,
+  ExportStatement,
+  findNamespaceOfIdentifier,
+  findRequireCallReference,
+  isExportStatement,
+  isReexportStatement,
+  isRequireCall,
+  ReexportStatement,
+} from './commonjs_umd_utils';
 import {Esm5ReflectionHost, stripParentheses} from './esm5_host';
 
 export class UmdReflectionHost extends Esm5ReflectionHost {
-  protected umdModules =
-      new FactoryMap<ts.SourceFile, UmdModule|null>(sf => this.computeUmdModule(sf));
-  protected umdExports = new FactoryMap<ts.SourceFile, Map<string, Declaration>|null>(
-      sf => this.computeExportsOfUmdModule(sf));
-  protected umdImportPaths =
-      new FactoryMap<ts.ParameterDeclaration, string|null>(param => this.computeImportPath(param));
+  protected umdModules = new FactoryMap<ts.SourceFile, UmdModule | null>((sf) =>
+    this.computeUmdModule(sf)
+  );
+  protected umdExports = new FactoryMap<ts.SourceFile, Map<string, Declaration> | null>((sf) =>
+    this.computeExportsOfUmdModule(sf)
+  );
+  protected umdImportPaths = new FactoryMap<ts.ParameterDeclaration, string | null>((param) =>
+    this.computeImportPath(param)
+  );
   protected program: ts.Program;
   protected compilerHost: ts.CompilerHost;
 
-  constructor(logger: Logger, isCore: boolean, src: BundleProgram, dts: BundleProgram|null = null) {
+  constructor(
+    logger: Logger,
+    isCore: boolean,
+    src: BundleProgram,
+    dts: BundleProgram | null = null
+  ) {
     super(logger, isCore, src, dts);
     this.program = src.program;
     this.compilerHost = src.host;
   }
 
-  getImportOfIdentifier(id: ts.Identifier): Import|null {
+  getImportOfIdentifier(id: ts.Identifier): Import | null {
     // Is `id` a namespaced property access, e.g. `Directive` in `core.Directive`?
     // If so capture the symbol of the namespace, e.g. `core`.
     const nsIdentifier = findNamespaceOfIdentifier(id);
@@ -42,15 +59,15 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     return from !== null ? {from, name: id.text} : null;
   }
 
-  getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
+  getDeclarationOfIdentifier(id: ts.Identifier): Declaration | null {
     return this.getUmdImportedDeclaration(id) || super.getDeclarationOfIdentifier(id);
   }
 
-  getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
+  getExportsOfModule(module: ts.Node): Map<string, Declaration> | null {
     return super.getExportsOfModule(module) || this.umdExports.get(module.getSourceFile());
   }
 
-  getUmdModule(sourceFile: ts.SourceFile): UmdModule|null {
+  getUmdModule(sourceFile: ts.SourceFile): UmdModule | null {
     if (sourceFile.isDeclarationFile) {
       return null;
     }
@@ -58,7 +75,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     return this.umdModules.get(sourceFile);
   }
 
-  getUmdImportPath(importParameter: ts.ParameterDeclaration): string|null {
+  getUmdImportPath(importParameter: ts.ParameterDeclaration): string | null {
     return this.umdImportPaths.get(importParameter);
   }
 
@@ -75,17 +92,18 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     return umdModule !== null ? Array.from(umdModule.factoryFn.body.statements) : [];
   }
 
-  private computeUmdModule(sourceFile: ts.SourceFile): UmdModule|null {
+  private computeUmdModule(sourceFile: ts.SourceFile): UmdModule | null {
     if (sourceFile.statements.length !== 1) {
       throw new Error(
-          `Expected UMD module file (${sourceFile.fileName}) to contain exactly one statement, ` +
-          `but found ${sourceFile.statements.length}.`);
+        `Expected UMD module file (${sourceFile.fileName}) to contain exactly one statement, ` +
+          `but found ${sourceFile.statements.length}.`
+      );
     }
 
     return parseStatementForUmdModule(sourceFile.statements[0]);
   }
 
-  private computeExportsOfUmdModule(sourceFile: ts.SourceFile): Map<string, Declaration>|null {
+  private computeExportsOfUmdModule(sourceFile: ts.SourceFile): Map<string, Declaration> | null {
     const moduleMap = new Map<string, Declaration>();
     for (const statement of this.getModuleStatements(sourceFile)) {
       if (isExportStatement(statement)) {
@@ -101,7 +119,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     return moduleMap;
   }
 
-  private computeImportPath(param: ts.ParameterDeclaration): string|null {
+  private computeImportPath(param: ts.ParameterDeclaration): string | null {
     const umdModule = this.getUmdModule(param.getSourceFile());
     if (umdModule === null) {
       return null;
@@ -112,7 +130,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
       return null;
     }
 
-    let importPath: string|null = null;
+    let importPath: string | null = null;
 
     for (const i of imports) {
       // Add all imports to the map to speed up future look ups.
@@ -144,15 +162,19 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     }
   }
 
-  private extractUmdReexports(statement: ReexportStatement, containingFile: ts.SourceFile):
-      ExportDeclaration[] {
+  private extractUmdReexports(
+    statement: ReexportStatement,
+    containingFile: ts.SourceFile
+  ): ExportDeclaration[] {
     const reexportArg = statement.expression.arguments[0];
 
-    const requireCall = isRequireCall(reexportArg) ?
-        reexportArg :
-        ts.isIdentifier(reexportArg) ? findRequireCallReference(reexportArg, this.checker) : null;
+    const requireCall = isRequireCall(reexportArg)
+      ? reexportArg
+      : ts.isIdentifier(reexportArg)
+      ? findRequireCallReference(reexportArg, this.checker)
+      : null;
 
-    let importPath: string|null = null;
+    let importPath: string | null = null;
 
     if (requireCall !== null) {
       importPath = requireCall.arguments[0].text;
@@ -181,8 +203,10 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
       if (decl.node !== null) {
         reexports.push({name, declaration: {node: decl.node, known: null, viaModule}});
       } else {
-        reexports.push(
-            {name, declaration: {node: null, known: null, expression: decl.expression, viaModule}});
+        reexports.push({
+          name,
+          declaration: {node: null, known: null, expression: decl.expression, viaModule},
+        });
       }
     });
     return reexports;
@@ -192,13 +216,13 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
    * Is the identifier a parameter on a UMD factory function, e.g. `function factory(this, core)`?
    * If so then return its declaration.
    */
-  private findUmdImportParameter(id: ts.Identifier): ts.ParameterDeclaration|null {
-    const symbol = id && this.checker.getSymbolAtLocation(id) || null;
+  private findUmdImportParameter(id: ts.Identifier): ts.ParameterDeclaration | null {
+    const symbol = (id && this.checker.getSymbolAtLocation(id)) || null;
     const declaration = symbol && symbol.valueDeclaration;
     return declaration && ts.isParameter(declaration) ? declaration : null;
   }
 
-  private getUmdImportedDeclaration(id: ts.Identifier): Declaration|null {
+  private getUmdImportedDeclaration(id: ts.Identifier): Declaration | null {
     const importInfo = this.getImportOfIdentifier(id);
     if (importInfo === null) {
       return null;
@@ -214,24 +238,35 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     return {node: importedFile, known: getTsHelperFnFromIdentifier(id), viaModule: importInfo.from};
   }
 
-  private resolveModuleName(moduleName: string, containingFile: ts.SourceFile): ts.SourceFile
-      |undefined {
+  private resolveModuleName(
+    moduleName: string,
+    containingFile: ts.SourceFile
+  ): ts.SourceFile | undefined {
     if (this.compilerHost.resolveModuleNames) {
       const moduleInfo = this.compilerHost.resolveModuleNames(
-          [moduleName], containingFile.fileName, undefined, undefined,
-          this.program.getCompilerOptions())[0];
+        [moduleName],
+        containingFile.fileName,
+        undefined,
+        undefined,
+        this.program.getCompilerOptions()
+      )[0];
       return moduleInfo && this.program.getSourceFile(absoluteFrom(moduleInfo.resolvedFileName));
     } else {
       const moduleInfo = ts.resolveModuleName(
-          moduleName, containingFile.fileName, this.program.getCompilerOptions(),
-          this.compilerHost);
-      return moduleInfo.resolvedModule &&
-          this.program.getSourceFile(absoluteFrom(moduleInfo.resolvedModule.resolvedFileName));
+        moduleName,
+        containingFile.fileName,
+        this.program.getCompilerOptions(),
+        this.compilerHost
+      );
+      return (
+        moduleInfo.resolvedModule &&
+        this.program.getSourceFile(absoluteFrom(moduleInfo.resolvedModule.resolvedFileName))
+      );
     }
   }
 }
 
-export function parseStatementForUmdModule(statement: ts.Statement): UmdModule|null {
+export function parseStatementForUmdModule(statement: ts.Statement): UmdModule | null {
   const wrapperCall = getUmdWrapperCall(statement);
   if (!wrapperCall) return null;
 
@@ -239,7 +274,8 @@ export function parseStatementForUmdModule(statement: ts.Statement): UmdModule|n
   if (!ts.isFunctionExpression(wrapperFn)) return null;
 
   const factoryFnParamIndex = wrapperFn.parameters.findIndex(
-      parameter => ts.isIdentifier(parameter.name) && parameter.name.text === 'factory');
+    (parameter) => ts.isIdentifier(parameter.name) && parameter.name.text === 'factory'
+  );
   if (factoryFnParamIndex === -1) return null;
 
   const factoryFn = stripParentheses(wrapperCall.arguments[factoryFnParamIndex]);
@@ -248,24 +284,28 @@ export function parseStatementForUmdModule(statement: ts.Statement): UmdModule|n
   return {wrapperFn, factoryFn};
 }
 
-function getUmdWrapperCall(statement: ts.Statement): ts.CallExpression&
-    {expression: ts.FunctionExpression}|null {
-  if (!ts.isExpressionStatement(statement) || !ts.isParenthesizedExpression(statement.expression) ||
-      !ts.isCallExpression(statement.expression.expression) ||
-      !ts.isFunctionExpression(statement.expression.expression.expression)) {
+function getUmdWrapperCall(
+  statement: ts.Statement
+): (ts.CallExpression & {expression: ts.FunctionExpression}) | null {
+  if (
+    !ts.isExpressionStatement(statement) ||
+    !ts.isParenthesizedExpression(statement.expression) ||
+    !ts.isCallExpression(statement.expression.expression) ||
+    !ts.isFunctionExpression(statement.expression.expression.expression)
+  ) {
     return null;
   }
   return statement.expression.expression as ts.CallExpression & {expression: ts.FunctionExpression};
 }
 
-
-export function getImportsOfUmdModule(umdModule: UmdModule):
-    {parameter: ts.ParameterDeclaration, path: string}[] {
-  const imports: {parameter: ts.ParameterDeclaration, path: string}[] = [];
+export function getImportsOfUmdModule(
+  umdModule: UmdModule
+): {parameter: ts.ParameterDeclaration; path: string}[] {
+  const imports: {parameter: ts.ParameterDeclaration; path: string}[] = [];
   for (let i = 1; i < umdModule.factoryFn.parameters.length; i++) {
     imports.push({
       parameter: umdModule.factoryFn.parameters[i],
-      path: getRequiredModulePath(umdModule.wrapperFn, i)
+      path: getRequiredModulePath(umdModule.wrapperFn, i),
     });
   }
   return imports;
@@ -280,7 +320,8 @@ function getRequiredModulePath(wrapperFn: ts.FunctionExpression, paramIndex: num
   const statement = wrapperFn.body.statements[0];
   if (!ts.isExpressionStatement(statement)) {
     throw new Error(
-        'UMD wrapper body is not an expression statement:\n' + wrapperFn.body.getText());
+      'UMD wrapper body is not an expression statement:\n' + wrapperFn.body.getText()
+    );
   }
   const modulePaths: string[] = [];
   findModulePaths(statement.expression);

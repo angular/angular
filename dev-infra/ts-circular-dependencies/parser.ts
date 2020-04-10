@@ -16,8 +16,11 @@ import * as ts from 'typescript';
 export function getModuleReferences(node: ts.SourceFile): string[] {
   const references: string[] = [];
   const visitNode = (node: ts.Node) => {
-    if ((ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) &&
-        node.moduleSpecifier !== undefined && ts.isStringLiteral(node.moduleSpecifier)) {
+    if (
+      (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) &&
+      node.moduleSpecifier !== undefined &&
+      ts.isStringLiteral(node.moduleSpecifier)
+    ) {
       references.push(node.moduleSpecifier.text);
     }
     ts.forEachChild(node, visitNode);

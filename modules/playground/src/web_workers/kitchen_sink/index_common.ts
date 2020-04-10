@@ -41,17 +41,24 @@ export class RedDec {
   // The template for the component.
   // Expressions in the template (like {{greeting}}) are evaluated in the
   // context of the HelloCmp class below.
-  template: `<div class="greeting">{{greeting}} <span red>world</span>!</div>
-           <button class="changeButton" (click)="changeGreeting()">change greeting</button>
-           <div (keydown)="onKeyDown($event)" class="sample-area" tabindex="0">{{lastKey}}</div><br>`
+  template: `<div class="greeting">{{ greeting }} <span red>world</span>!</div>
+    <button class="changeButton" (click)="changeGreeting()">change greeting</button>
+    <div (keydown)="onKeyDown($event)" class="sample-area" tabindex="0">{{ lastKey }}</div
+    ><br />`,
 })
 export class HelloCmp {
   greeting: string;
   lastKey: string = '(none)';
 
-  constructor(service: GreetingService) { this.greeting = service.greeting; }
+  constructor(service: GreetingService) {
+    this.greeting = service.greeting;
+  }
 
-  changeGreeting(): void { this.greeting = 'howdy'; }
+  changeGreeting(): void {
+    this.greeting = 'howdy';
+  }
 
-  onKeyDown(event: KeyboardEvent): void { this.lastKey = String.fromCharCode(event.keyCode); }
+  onKeyDown(event: KeyboardEvent): void {
+    this.lastKey = String.fromCharCode(event.keyCode);
+  }
 }

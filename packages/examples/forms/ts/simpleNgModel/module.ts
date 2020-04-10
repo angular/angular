@@ -14,9 +14,8 @@ import {SimpleNgModelComp} from './simple_ng_model_example';
 @NgModule({
   imports: [BrowserModule, FormsModule],
   declarations: [SimpleNgModelComp],
-  bootstrap: [SimpleNgModelComp]
+  bootstrap: [SimpleNgModelComp],
 })
-export class AppModule {
-}
+export class AppModule {}
 
 export {SimpleNgModelComp as AppComponent};

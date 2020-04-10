@@ -12,21 +12,23 @@ import {Rule, Tree, chain, externalSchematic, schematic} from '@angular-devkit/s
 import {validateProjectName} from '@schematics/angular/utility/validation';
 import {Schema} from './schema';
 
-export default function(options: Schema): Rule {
+export default function (options: Schema): Rule {
   return (host: Tree) => {
     validateProjectName(options.name);
 
     return chain([
       externalSchematic('@schematics/angular', 'ng-new', options),
       schematic(
-          'ng-add', {
-            name: options.name,
-            // skip install since `ng-new` above will schedule the task
-            skipInstall: true,
-          },
-          {
-            scope: options.name,
-          }),
+        'ng-add',
+        {
+          name: options.name,
+          // skip install since `ng-new` above will schedule the task
+          skipInstall: true,
+        },
+        {
+          scope: options.name,
+        }
+      ),
     ]);
   };
 }

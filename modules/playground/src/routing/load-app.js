@@ -16,7 +16,7 @@
 System.config({
   packages: {
     'angular/modules/playground/src/routing': {defaultExtension: 'js'},
-  }
+  },
 });
 
-System.import('./main.js').catch(e => console.error(e));
+System.import('./main.js').catch((e) => console.error(e));

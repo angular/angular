@@ -10,13 +10,13 @@
  * A shared interface which contains an animation player
  */
 export interface Player {
-  parent?: Player|null;
+  parent?: Player | null;
   state: PlayState;
   play(): void;
   pause(): void;
   finish(): void;
   destroy(): void;
-  addEventListener(state: PlayState|string, cb: (data?: any) => any): void;
+  addEventListener(state: PlayState | string, cb: (data?: any) => any): void;
 }
 
 export const enum BindingType {
@@ -25,7 +25,9 @@ export const enum BindingType {
   Style = 2,
 }
 
-export interface BindingStore { setValue(prop: string, value: any): void; }
+export interface BindingStore {
+  setValue(prop: string, value: any): void;
+}
 
 /**
  * Defines the shape which produces the Player.
@@ -35,8 +37,13 @@ export interface BindingStore { setValue(prop: string, value: any): void; }
  * to be used with `PlayerFactory`.
  */
 export interface PlayerFactoryBuildFn {
-  (element: HTMLElement, type: BindingType, values: {[key: string]: any}, isFirstRender: boolean,
-   currentPlayer: Player|null): Player|null;
+  (
+    element: HTMLElement,
+    type: BindingType,
+    values: {[key: string]: any},
+    isFirstRender: boolean,
+    currentPlayer: Player | null
+  ): Player | null;
 }
 
 /**
@@ -50,10 +57,12 @@ export interface PlayerFactoryBuildFn {
  * `[style]`, `[style.prop]`, `[class]` and `[class.name]` template bindings
  * all accept a `PlayerFactory` as input and this player factories.
  */
-export interface PlayerFactory { '__brand__': 'Brand for PlayerFactory that nothing will match'; }
+export interface PlayerFactory {
+  '__brand__': 'Brand for PlayerFactory that nothing will match';
+}
 
 export interface PlayerBuilder extends BindingStore {
-  buildPlayer(currentPlayer: Player|null, isFirstRender: boolean): Player|undefined|null;
+  buildPlayer(currentPlayer: Player | null, isFirstRender: boolean): Player | undefined | null;
 }
 
 /**
@@ -63,17 +72,23 @@ export interface PlayerBuilder extends BindingStore {
  * code may compare state by checking if a number is higher or lower than
  * a certain numeric value.
  */
-export const enum PlayState {Pending = 0, Running = 1, Paused = 2, Finished = 100, Destroyed = 200}
+export const enum PlayState {
+  Pending = 0,
+  Running = 1,
+  Paused = 2,
+  Finished = 100,
+  Destroyed = 200,
+}
 
 /**
  * The context that stores all the active players and queued player factories present on an element.
  */
-export interface PlayerContext extends Array<null|number|Player|PlayerBuilder> {
+export interface PlayerContext extends Array<null | number | Player | PlayerBuilder> {
   [PlayerIndex.NonBuilderPlayersStart]: number;
-  [PlayerIndex.ClassMapPlayerBuilderPosition]: PlayerBuilder|null;
-  [PlayerIndex.ClassMapPlayerPosition]: Player|null;
-  [PlayerIndex.StyleMapPlayerBuilderPosition]: PlayerBuilder|null;
-  [PlayerIndex.StyleMapPlayerPosition]: Player|null;
+  [PlayerIndex.ClassMapPlayerBuilderPosition]: PlayerBuilder | null;
+  [PlayerIndex.ClassMapPlayerPosition]: Player | null;
+  [PlayerIndex.StyleMapPlayerBuilderPosition]: PlayerBuilder | null;
+  [PlayerIndex.StyleMapPlayerPosition]: Player | null;
 }
 
 /**
@@ -93,7 +108,7 @@ export interface PlayerHandler {
    * @param player The player that has been scheduled to run within the application.
    * @param context The context as to where the player was bound to
    */
-  queuePlayer(player: Player, context: ComponentInstance|DirectiveInstance|HTMLElement): void;
+  queuePlayer(player: Player, context: ComponentInstance | DirectiveInstance | HTMLElement): void;
 }
 
 export const enum PlayerIndex {

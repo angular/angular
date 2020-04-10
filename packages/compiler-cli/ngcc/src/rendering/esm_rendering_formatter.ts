@@ -5,11 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
-import {absoluteFromSourceFile, AbsoluteFsPath, dirname, relative} from '../../../src/ngtsc/file_system';
+import {
+  absoluteFromSourceFile,
+  AbsoluteFsPath,
+  dirname,
+  relative,
+} from '../../../src/ngtsc/file_system';
 import {NOOP_DEFAULT_IMPORT_RECORDER, Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager, translateStatement} from '../../../src/ngtsc/translator';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
@@ -17,7 +23,12 @@ import {ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyze
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {CompiledClass} from '../analysis/types';
 import {isAssignment} from '../host/esm2015_host';
-import {NgccReflectionHost, POST_R3_MARKER, PRE_R3_MARKER, SwitchableVariableDeclaration} from '../host/ngcc_host';
+import {
+  NgccReflectionHost,
+  POST_R3_MARKER,
+  PRE_R3_MARKER,
+  SwitchableVariableDeclaration,
+} from '../host/ngcc_host';
 
 import {RedundantDecoratorMap, RenderingFormatter} from './rendering_formatter';
 import {stripExtension} from './utils';
@@ -39,8 +50,9 @@ export class EsmRenderingFormatter implements RenderingFormatter {
     }
 
     const insertionPoint = this.findEndOfImports(sf);
-    const renderedImports =
-        imports.map(i => `import * as ${i.qualifier} from '${i.specifier}';\n`).join('');
+    const renderedImports = imports
+      .map((i) => `import * as ${i.qualifier} from '${i.specifier}';\n`)
+      .join('');
     output.appendLeft(insertionPoint, renderedImports);
   }
 
@@ -48,9 +60,13 @@ export class EsmRenderingFormatter implements RenderingFormatter {
    * Add the exports to the end of the file.
    */
   addExports(
-      output: MagicString, entryPointBasePath: AbsoluteFsPath, exports: ExportInfo[],
-      importManager: ImportManager, file: ts.SourceFile): void {
-    exports.forEach(e => {
+    output: MagicString,
+    entryPointBasePath: AbsoluteFsPath,
+    exports: ExportInfo[],
+    importManager: ImportManager,
+    file: ts.SourceFile
+  ): void {
+    exports.forEach((e) => {
       let exportFrom = '';
       const isDtsFile = isDtsPath(entryPointBasePath);
       const from = isDtsFile ? e.dtsFrom : e.from;
@@ -66,7 +82,6 @@ export class EsmRenderingFormatter implements RenderingFormatter {
     });
   }
 
-
   /**
    * Add plain exports to the end of the file.
    *
@@ -74,8 +89,11 @@ export class EsmRenderingFormatter implements RenderingFormatter {
    * an entrypoint.
    */
   addDirectExports(
-      output: MagicString, exports: Reexport[], importManager: ImportManager,
-      file: ts.SourceFile): void {
+    output: MagicString,
+    exports: Reexport[],
+    importManager: ImportManager,
+    file: ts.SourceFile
+  ): void {
     for (const e of exports) {
       const exportStatement = `\nexport {${e.symbolName} as ${e.asAlias}} from '${e.fromModule}';`;
       output.append(exportStatement);
@@ -112,8 +130,11 @@ export class EsmRenderingFormatter implements RenderingFormatter {
   /**
    * Add the adjacent statements after all static properties of the class.
    */
-  addAdjacentStatements(output: MagicString, compiledClass: CompiledClass, statements: string):
-      void {
+  addAdjacentStatements(
+    output: MagicString,
+    compiledClass: CompiledClass,
+    statements: string
+  ): void {
     const classSymbol = this.host.getClassSymbol(compiledClass.declaration);
     if (!classSymbol) {
       throw new Error(`Compiled class does not have a valid symbol: ${compiledClass.name}`);
@@ -138,8 +159,10 @@ export class EsmRenderingFormatter implements RenderingFormatter {
               // Remove it completely
               output.remove(statement.getFullStart(), statement.getEnd());
             } else if (
-                ts.isReturnStatement(statement) && statement.expression &&
-                isAssignment(statement.expression)) {
+              ts.isReturnStatement(statement) &&
+              statement.expression &&
+              isAssignment(statement.expression)
+            ) {
               // The statement looks like: `return SomeClass = __decorate(...);`
               // We only want to end up with: `return SomeClass;`
               const startOfRemoval = statement.expression.left.getEnd();
@@ -148,13 +171,15 @@ export class EsmRenderingFormatter implements RenderingFormatter {
             }
           }
         } else {
-          nodesToRemove.forEach(node => {
+          nodesToRemove.forEach((node) => {
             // remove any trailing comma
             const nextSibling = getNextSiblingInArray(node, items);
             let end: number;
 
-            if (nextSibling !== null &&
-                output.slice(nextSibling.getFullStart() - 1, nextSibling.getFullStart()) === ',') {
+            if (
+              nextSibling !== null &&
+              output.slice(nextSibling.getFullStart() - 1, nextSibling.getFullStart()) === ','
+            ) {
               end = nextSibling.getFullStart() - 1 + nextSibling.getLeadingTriviaWidth();
             } else if (output.slice(node.getEnd(), node.getEnd() + 1) === ',') {
               end = node.getEnd() + 1;
@@ -172,16 +197,17 @@ export class EsmRenderingFormatter implements RenderingFormatter {
    * Rewrite the the IVY switch markers to indicate we are in IVY mode.
    */
   rewriteSwitchableDeclarations(
-      outputText: MagicString, sourceFile: ts.SourceFile,
-      declarations: SwitchableVariableDeclaration[]): void {
-    declarations.forEach(declaration => {
+    outputText: MagicString,
+    sourceFile: ts.SourceFile,
+    declarations: SwitchableVariableDeclaration[]
+  ): void {
+    declarations.forEach((declaration) => {
       const start = declaration.initializer.getStart();
       const end = declaration.initializer.getEnd();
       const replacement = declaration.initializer.text.replace(PRE_R3_MARKER, POST_R3_MARKER);
       outputText.overwrite(start, end, replacement);
     });
   }
-
 
   /**
    * Add the type parameters to the appropriate functions that return `ModuleWithProviders`
@@ -190,46 +216,59 @@ export class EsmRenderingFormatter implements RenderingFormatter {
    * This function will only get called on typings files.
    */
   addModuleWithProvidersParams(
-      outputText: MagicString, moduleWithProviders: ModuleWithProvidersInfo[],
-      importManager: ImportManager): void {
-    moduleWithProviders.forEach(info => {
+    outputText: MagicString,
+    moduleWithProviders: ModuleWithProvidersInfo[],
+    importManager: ImportManager
+  ): void {
+    moduleWithProviders.forEach((info) => {
       const ngModuleName = info.ngModule.node.name.text;
       const declarationFile = absoluteFromSourceFile(info.declaration.getSourceFile());
       const ngModuleFile = absoluteFromSourceFile(info.ngModule.node.getSourceFile());
-      const importPath = info.ngModule.viaModule ||
-          (declarationFile !== ngModuleFile ?
-               stripExtension(`./${relative(dirname(declarationFile), ngModuleFile)}`) :
-               null);
+      const importPath =
+        info.ngModule.viaModule ||
+        (declarationFile !== ngModuleFile
+          ? stripExtension(`./${relative(dirname(declarationFile), ngModuleFile)}`)
+          : null);
       const ngModule = generateImportString(importManager, importPath, ngModuleName);
 
       if (info.declaration.type) {
-        const typeName = info.declaration.type && ts.isTypeReferenceNode(info.declaration.type) ?
-            info.declaration.type.typeName :
-            null;
+        const typeName =
+          info.declaration.type && ts.isTypeReferenceNode(info.declaration.type)
+            ? info.declaration.type.typeName
+            : null;
         if (this.isCoreModuleWithProvidersType(typeName)) {
           // The declaration already returns `ModuleWithProvider` but it needs the `NgModule` type
           // parameter adding.
           outputText.overwrite(
-              info.declaration.type.getStart(), info.declaration.type.getEnd(),
-              `ModuleWithProviders<${ngModule}>`);
+            info.declaration.type.getStart(),
+            info.declaration.type.getEnd(),
+            `ModuleWithProviders<${ngModule}>`
+          );
         } else {
           // The declaration returns an unknown type so we need to convert it to a union that
           // includes the ngModule property.
           const originalTypeString = info.declaration.type.getText();
           outputText.overwrite(
-              info.declaration.type.getStart(), info.declaration.type.getEnd(),
-              `(${originalTypeString})&{ngModule:${ngModule}}`);
+            info.declaration.type.getStart(),
+            info.declaration.type.getEnd(),
+            `(${originalTypeString})&{ngModule:${ngModule}}`
+          );
         }
       } else {
         // The declaration has no return type so provide one.
         const lastToken = info.declaration.getLastToken();
-        const insertPoint = lastToken && lastToken.kind === ts.SyntaxKind.SemicolonToken ?
-            lastToken.getStart() :
-            info.declaration.getEnd();
+        const insertPoint =
+          lastToken && lastToken.kind === ts.SyntaxKind.SemicolonToken
+            ? lastToken.getStart()
+            : info.declaration.getEnd();
         outputText.appendLeft(
-            insertPoint,
-            `: ${generateImportString(importManager, '@angular/core', 'ModuleWithProviders')}<${
-                ngModule}>`);
+          insertPoint,
+          `: ${generateImportString(
+            importManager,
+            '@angular/core',
+            'ModuleWithProviders'
+          )}<${ngModule}>`
+        );
       }
     });
   }
@@ -246,7 +285,11 @@ export class EsmRenderingFormatter implements RenderingFormatter {
    */
   printStatement(stmt: Statement, sourceFile: ts.SourceFile, importManager: ImportManager): string {
     const node = translateStatement(
-        stmt, importManager, NOOP_DEFAULT_IMPORT_RECORDER, ts.ScriptTarget.ES2015);
+      stmt,
+      importManager,
+      NOOP_DEFAULT_IMPORT_RECORDER,
+      ts.ScriptTarget.ES2015
+    );
     const code = this.printer.printNode(ts.EmitHint.Unspecified, node, sourceFile);
 
     return code;
@@ -254,26 +297,26 @@ export class EsmRenderingFormatter implements RenderingFormatter {
 
   protected findEndOfImports(sf: ts.SourceFile): number {
     for (const stmt of sf.statements) {
-      if (!ts.isImportDeclaration(stmt) && !ts.isImportEqualsDeclaration(stmt) &&
-          !ts.isNamespaceImport(stmt)) {
+      if (
+        !ts.isImportDeclaration(stmt) &&
+        !ts.isImportEqualsDeclaration(stmt) &&
+        !ts.isNamespaceImport(stmt)
+      ) {
         return stmt.getStart();
       }
     }
     return 0;
   }
 
-
-
   /**
    * Check whether the given type is the core Angular `ModuleWithProviders` interface.
    * @param typeName The type to check.
    * @returns true if the type is the core Angular `ModuleWithProviders` interface.
    */
-  private isCoreModuleWithProvidersType(typeName: ts.EntityName|null) {
+  private isCoreModuleWithProvidersType(typeName: ts.EntityName | null) {
     const id =
-        typeName && ts.isIdentifier(typeName) ? this.host.getImportOfIdentifier(typeName) : null;
-    return (
-        id && id.name === 'ModuleWithProviders' && (this.isCore || id.from === '@angular/core'));
+      typeName && ts.isIdentifier(typeName) ? this.host.getImportOfIdentifier(typeName) : null;
+    return id && id.name === 'ModuleWithProviders' && (this.isCore || id.from === '@angular/core');
   }
 }
 
@@ -288,7 +331,7 @@ function getDeclarationStatement(node: ts.Node): ts.Statement {
   throw new Error(`Class is not defined in a declaration statement: ${node.getText()}`);
 }
 
-function findStatement(node: ts.Node): ts.Statement|undefined {
+function findStatement(node: ts.Node): ts.Statement | undefined {
   while (node) {
     if (ts.isExpressionStatement(node) || ts.isReturnStatement(node)) {
       return node;
@@ -299,18 +342,22 @@ function findStatement(node: ts.Node): ts.Statement|undefined {
 }
 
 function generateImportString(
-    importManager: ImportManager, importPath: string|null, importName: string) {
+  importManager: ImportManager,
+  importPath: string | null,
+  importName: string
+) {
   const importAs = importPath ? importManager.generateNamedImport(importPath, importName) : null;
   return importAs ? `${importAs.moduleImport}.${importAs.symbol}` : `${importName}`;
 }
 
-function getNextSiblingInArray<T extends ts.Node>(node: T, array: ts.NodeArray<T>): T|null {
+function getNextSiblingInArray<T extends ts.Node>(node: T, array: ts.NodeArray<T>): T | null {
   const index = array.indexOf(node);
   return index !== -1 && array.length > index + 1 ? array[index + 1] : null;
 }
 
 function getEndExceptSemicolon(statement: ts.Statement): number {
   const lastToken = statement.getLastToken();
-  return (lastToken && lastToken.kind === ts.SyntaxKind.SemicolonToken) ? statement.getEnd() - 1 :
-                                                                          statement.getEnd();
+  return lastToken && lastToken.kind === ts.SyntaxKind.SemicolonToken
+    ? statement.getEnd() - 1
+    : statement.getEnd();
 }

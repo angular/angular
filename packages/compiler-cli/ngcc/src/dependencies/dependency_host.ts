@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_system';
 import {EntryPoint} from '../packages/entry_point';
 import {resolveFileWithPostfixes} from '../utils';
@@ -13,12 +14,14 @@ import {ModuleResolver} from './module_resolver';
 
 export interface DependencyHost {
   collectDependencies(
-      entryPointPath: AbsoluteFsPath, {dependencies, missing, deepImports}: DependencyInfo): void;
+    entryPointPath: AbsoluteFsPath,
+    {dependencies, missing, deepImports}: DependencyInfo
+  ): void;
 }
 
 export interface DependencyInfo {
   dependencies: Set<AbsoluteFsPath>;
-  missing: Set<AbsoluteFsPath|PathSegment>;
+  missing: Set<AbsoluteFsPath | PathSegment>;
   deepImports: Set<AbsoluteFsPath>;
 }
 
@@ -43,13 +46,23 @@ export abstract class DependencyHostBase implements DependencyHost {
    * sets in this object will be updated with new information about the entry-point's dependencies.
    */
   collectDependencies(
-      entryPointPath: AbsoluteFsPath, {dependencies, missing, deepImports}: DependencyInfo): void {
-    const resolvedFile =
-        resolveFileWithPostfixes(this.fs, entryPointPath, this.moduleResolver.relativeExtensions);
+    entryPointPath: AbsoluteFsPath,
+    {dependencies, missing, deepImports}: DependencyInfo
+  ): void {
+    const resolvedFile = resolveFileWithPostfixes(
+      this.fs,
+      entryPointPath,
+      this.moduleResolver.relativeExtensions
+    );
     if (resolvedFile !== null) {
       const alreadySeen = new Set<AbsoluteFsPath>();
       this.recursivelyCollectDependencies(
-          resolvedFile, dependencies, missing, deepImports, alreadySeen);
+        resolvedFile,
+        dependencies,
+        missing,
+        deepImports,
+        alreadySeen
+      );
     }
   }
 
@@ -66,6 +79,10 @@ export abstract class DependencyHostBase implements DependencyHost {
    * in a circular dependency loop.
    */
   protected abstract recursivelyCollectDependencies(
-      file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
-      deepImports: Set<AbsoluteFsPath>, alreadySeen: Set<AbsoluteFsPath>): void;
+    file: AbsoluteFsPath,
+    dependencies: Set<AbsoluteFsPath>,
+    missing: Set<string>,
+    deepImports: Set<AbsoluteFsPath>,
+    alreadySeen: Set<AbsoluteFsPath>
+  ): void;
 }

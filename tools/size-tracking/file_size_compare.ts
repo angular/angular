@@ -31,17 +31,23 @@ export interface Threshold {
 
 /** Compares two file size data objects and returns an array of size differences. */
 export function compareFileSizeData(
-    actual: FileSizeData, expected: FileSizeData, threshold: Threshold) {
+  actual: FileSizeData,
+  expected: FileSizeData,
+  threshold: Threshold
+) {
   return [
     ...compareSizeEntry(actual.files, expected.files, '/', threshold),
-    ...compareActualSizeToExpected(actual.unmapped, expected.unmapped, '<unmapped>', threshold)
+    ...compareActualSizeToExpected(actual.unmapped, expected.unmapped, '<unmapped>', threshold),
   ];
 }
 
 /** Compares two file size entries and returns an array of size differences. */
 function compareSizeEntry(
-    actual: DirectorySizeEntry | number, expected: DirectorySizeEntry | number, filePath: string,
-    threshold: Threshold) {
+  actual: DirectorySizeEntry | number,
+  expected: DirectorySizeEntry | number,
+  filePath: string,
+  threshold: Threshold
+) {
   if (typeof actual !== 'number' && typeof expected !== 'number') {
     return compareDirectorySizeEntry(actual, expected, filePath, threshold);
   } else {
@@ -55,23 +61,28 @@ function compareSizeEntry(
  * difference exceeds the maximum byte difference.
  */
 function compareActualSizeToExpected(
-    actualSize: number, expectedSize: number, filePath: string,
-    threshold: Threshold): SizeDifference[] {
+  actualSize: number,
+  expectedSize: number,
+  filePath: string,
+  threshold: Threshold
+): SizeDifference[] {
   const diffPercentage = getDifferencePercentage(actualSize, expectedSize);
   const byteDiff = Math.abs(expectedSize - actualSize);
   const diffs: SizeDifference[] = [];
   if (diffPercentage > threshold.maxPercentageDiff) {
     diffs.push({
       filePath: filePath,
-      message: `Differs by ${diffPercentage.toFixed(2)}% from the expected size ` +
-          `(actual = ${actualSize}, expected = ${expectedSize})`
+      message:
+        `Differs by ${diffPercentage.toFixed(2)}% from the expected size ` +
+        `(actual = ${actualSize}, expected = ${expectedSize})`,
     });
   }
   if (byteDiff > threshold.maxByteDiff) {
     diffs.push({
       filePath: filePath,
-      message: `Differs by ${byteDiff}B from the expected size ` +
-          `(actual = ${actualSize}, expected = ${expectedSize})`
+      message:
+        `Differs by ${byteDiff}B from the expected size ` +
+        `(actual = ${actualSize}, expected = ${expectedSize})`,
     });
   }
   return diffs;
@@ -82,27 +93,34 @@ function compareActualSizeToExpected(
  * differences within that directory.
  */
 function compareDirectorySizeEntry(
-    actual: DirectorySizeEntry, expected: DirectorySizeEntry, filePath: string,
-    threshold: Threshold): SizeDifference[] {
-  const diffs: SizeDifference[] =
-      [...compareActualSizeToExpected(actual.size, expected.size, filePath, threshold)];
+  actual: DirectorySizeEntry,
+  expected: DirectorySizeEntry,
+  filePath: string,
+  threshold: Threshold
+): SizeDifference[] {
+  const diffs: SizeDifference[] = [
+    ...compareActualSizeToExpected(actual.size, expected.size, filePath, threshold),
+  ];
 
-  getChildEntryNames(expected).forEach(childName => {
+  getChildEntryNames(expected).forEach((childName) => {
     if (actual[childName] === undefined) {
-      diffs.push(
-          {filePath: filePath + childName, message: 'Expected file/directory is not included.'});
+      diffs.push({
+        filePath: filePath + childName,
+        message: 'Expected file/directory is not included.',
+      });
       return;
     }
 
-    diffs.push(...compareSizeEntry(
-        actual[childName], expected[childName], filePath + childName, threshold));
+    diffs.push(
+      ...compareSizeEntry(actual[childName], expected[childName], filePath + childName, threshold)
+    );
   });
 
-  getChildEntryNames(actual).forEach(childName => {
+  getChildEntryNames(actual).forEach((childName) => {
     if (expected[childName] === undefined) {
       diffs.push({
         filePath: filePath + childName,
-        message: 'Unexpected file/directory included (not part of golden).'
+        message: 'Unexpected file/directory included (not part of golden).',
       });
     }
   });

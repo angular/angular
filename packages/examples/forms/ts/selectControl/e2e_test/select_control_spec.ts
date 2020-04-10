@@ -22,8 +22,9 @@ describe('selectControl example', () => {
     p = element(by.css('p'));
   });
 
-  it('should initially select the placeholder option',
-     () => { expect(options.get(0).getAttribute('selected')).toBe('true'); });
+  it('should initially select the placeholder option', () => {
+    expect(options.get(0).getAttribute('selected')).toBe('true');
+  });
 
   it('should update the model when the value changes in the UI', () => {
     select.click();
@@ -31,5 +32,4 @@ describe('selectControl example', () => {
 
     expect(p.getText()).toEqual('Form value: { "state": { "name": "Arizona", "abbrev": "AZ" } }');
   });
-
 });

@@ -11,30 +11,35 @@ import {existsSync, readFileSync} from 'fs';
 import {dirname, join} from 'path';
 
 describe('flat_module ng_module', () => {
-
   let packageOutput: string;
   let flatModuleOutFile: string;
 
   beforeAll(() => {
-    packageOutput =
-        dirname(require.resolve('angular/packages/bazel/test/ngc-wrapped/flat_module/index.js'));
+    packageOutput = dirname(
+      require.resolve('angular/packages/bazel/test/ngc-wrapped/flat_module/index.js')
+    );
     flatModuleOutFile = join(packageOutput, 'flat_module.js');
   });
 
-  it('should have a flat module out file',
-     () => { expect(existsSync(flatModuleOutFile)).toBe(true); });
+  it('should have a flat module out file', () => {
+    expect(existsSync(flatModuleOutFile)).toBe(true);
+  });
 
   describe('flat module out file', () => {
+    obsoleteInIvy('Ngtsc computes the AMD module name differently than NGC').it(
+      'should have a proper AMD module name',
+      () => {
+        expect(readFileSync(flatModuleOutFile, 'utf8')).toContain(
+          `define("flat_module/flat_module"`
+        );
+      }
+    );
 
-    obsoleteInIvy('Ngtsc computes the AMD module name differently than NGC')
-        .it('should have a proper AMD module name', () => {
-          expect(readFileSync(flatModuleOutFile, 'utf8'))
-              .toContain(`define("flat_module/flat_module"`);
-        });
-
-    onlyInIvy('Ngtsc computes the AMD module name differently than NGC')
-        .it('should have a proper AMD module name', () => {
-          expect(readFileSync(flatModuleOutFile, 'utf8')).toContain(`define("flat_module"`);
-        });
+    onlyInIvy('Ngtsc computes the AMD module name differently than NGC').it(
+      'should have a proper AMD module name',
+      () => {
+        expect(readFileSync(flatModuleOutFile, 'utf8')).toContain(`define("flat_module"`);
+      }
+    );
   });
 });

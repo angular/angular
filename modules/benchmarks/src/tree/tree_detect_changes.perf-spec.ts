@@ -10,11 +10,11 @@ import {$} from 'protractor';
 import {runTreeBenchmark} from './test_utils';
 
 describe('tree benchmark detect changes perf', () => {
-  it('should work for detectChanges', async() => {
+  it('should work for detectChanges', async () => {
     await runTreeBenchmark({
       id: 'detectChanges',
       work: () => $('#detectChanges').click(),
-      setup: () => $('#destroyDom').click()
+      setup: () => $('#destroyDom').click(),
     });
   });
 });

@@ -15,14 +15,17 @@ import {ReflectionHost} from '../../reflection';
 import {StaticInterpreter} from './interpreter';
 import {ResolvedValue} from './result';
 
-export type ForeignFunctionResolver =
-    (node: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-     args: ReadonlyArray<ts.Expression>) => ts.Expression|null;
+export type ForeignFunctionResolver = (
+  node: Reference<ts.FunctionDeclaration | ts.MethodDeclaration | ts.FunctionExpression>,
+  args: ReadonlyArray<ts.Expression>
+) => ts.Expression | null;
 
 export class PartialEvaluator {
   constructor(
-      private host: ReflectionHost, private checker: ts.TypeChecker,
-      private dependencyTracker: DependencyTracker|null) {}
+    private host: ReflectionHost,
+    private checker: ts.TypeChecker,
+    private dependencyTracker: DependencyTracker | null
+  ) {}
 
   evaluate(expr: ts.Expression, foreignFunctionResolver?: ForeignFunctionResolver): ResolvedValue {
     const interpreter = new StaticInterpreter(this.host, this.checker, this.dependencyTracker);

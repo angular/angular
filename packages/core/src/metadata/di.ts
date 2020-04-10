@@ -78,7 +78,6 @@ export interface AttributeDecorator {
   new (name: string): Attribute;
 }
 
-
 /**
  * Type of the Attribute metadata.
  *
@@ -157,8 +156,8 @@ export interface ContentChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {descendants?: boolean, read?: any}): any;
-  new (selector: Type<any>|Function|string, opts?: {descendants?: boolean, read?: any}): Query;
+  (selector: Type<any> | Function | string, opts?: {descendants?: boolean; read?: any}): any;
+  new (selector: Type<any> | Function | string, opts?: {descendants?: boolean; read?: any}): Query;
 }
 
 /**
@@ -178,10 +177,16 @@ export type ContentChildren = Query;
  * @publicApi
  */
 export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
-    'ContentChildren',
-    (selector?: any, data: any = {}) =>
-        ({selector, first: false, isViewQuery: false, descendants: false, ...data}),
-    Query);
+  'ContentChildren',
+  (selector?: any, data: any = {}) => ({
+    selector,
+    first: false,
+    isViewQuery: false,
+    descendants: false,
+    ...data,
+  }),
+  Query
+);
 
 /**
  * Type of the ContentChild decorator / constructor function.
@@ -218,8 +223,11 @@ export interface ContentChildDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): any;
-  new (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): ContentChild;
+  (selector: Type<any> | Function | string, opts?: {read?: any; static?: boolean}): any;
+  new (
+    selector: Type<any> | Function | string,
+    opts?: {read?: any; static?: boolean}
+  ): ContentChild;
 }
 
 /**
@@ -238,9 +246,16 @@ export type ContentChild = Query;
  * @publicApi
  */
 export const ContentChild: ContentChildDecorator = makePropDecorator(
-    'ContentChild', (selector?: any, data: any = {}) =>
-                        ({selector, first: true, isViewQuery: false, descendants: true, ...data}),
-    Query);
+  'ContentChild',
+  (selector?: any, data: any = {}) => ({
+    selector,
+    first: true,
+    isViewQuery: false,
+    descendants: true,
+    ...data,
+  }),
+  Query
+);
 
 /**
  * Type of the ViewChildren decorator / constructor function.
@@ -274,8 +289,8 @@ export interface ViewChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {read?: any}): any;
-  new (selector: Type<any>|Function|string, opts?: {read?: any}): ViewChildren;
+  (selector: Type<any> | Function | string, opts?: {read?: any}): any;
+  new (selector: Type<any> | Function | string, opts?: {read?: any}): ViewChildren;
 }
 
 /**
@@ -292,9 +307,16 @@ export type ViewChildren = Query;
  * @publicApi
  */
 export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
-    'ViewChildren', (selector?: any, data: any = {}) =>
-                        ({selector, first: false, isViewQuery: true, descendants: true, ...data}),
-    Query);
+  'ViewChildren',
+  (selector?: any, data: any = {}) => ({
+    selector,
+    first: false,
+    isViewQuery: true,
+    descendants: true,
+    ...data,
+  }),
+  Query
+);
 
 /**
  * Type of the ViewChild decorator / constructor function.
@@ -341,8 +363,8 @@ export interface ViewChildDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): any;
-  new (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): ViewChild;
+  (selector: Type<any> | Function | string, opts?: {read?: any; static?: boolean}): any;
+  new (selector: Type<any> | Function | string, opts?: {read?: any; static?: boolean}): ViewChild;
 }
 
 /**
@@ -359,6 +381,13 @@ export type ViewChild = Query;
  * @publicApi
  */
 export const ViewChild: ViewChildDecorator = makePropDecorator(
-    'ViewChild', (selector: any, data: any) =>
-                     ({selector, first: true, isViewQuery: true, descendants: true, ...data}),
-    Query);
+  'ViewChild',
+  (selector: any, data: any) => ({
+    selector,
+    first: true,
+    isViewQuery: true,
+    descendants: true,
+    ...data,
+  }),
+  Query
+);

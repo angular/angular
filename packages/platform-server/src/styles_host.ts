@@ -15,8 +15,9 @@ export class ServerStylesHost extends SharedStylesHost {
   private head: any = null;
 
   constructor(
-      @Inject(DOCUMENT) private doc: any,
-      @Optional() @Inject(ɵTRANSITION_ID) private transitionId: string) {
+    @Inject(DOCUMENT) private doc: any,
+    @Optional() @Inject(ɵTRANSITION_ID) private transitionId: string
+  ) {
     super();
     this.head = doc.getElementsByTagName('head')[0];
   }
@@ -31,5 +32,7 @@ export class ServerStylesHost extends SharedStylesHost {
     this.head.appendChild(el);
   }
 
-  onStylesAdded(additions: Set<string>) { additions.forEach(style => this._addStyle(style)); }
+  onStylesAdded(additions: Set<string>) {
+    additions.forEach((style) => this._addStyle(style));
+  }
 }

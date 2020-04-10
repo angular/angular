@@ -54,11 +54,11 @@ import {UrlResolver} from '@angular/compiler/src/url_resolver';
     });
 
     it('should keep /*# sourceURL... */ and /*# sourceMappingURL... */ comments', () => {
-      const css =
-          `/*regular comment*/\n/*# sourceURL=.... */\n/*# sourceMappingURL=... *//*#sourceMappingURL=... */`;
+      const css = `/*regular comment*/\n/*# sourceURL=.... */\n/*# sourceMappingURL=... *//*#sourceMappingURL=... */`;
       const styleWithSourceMaps = extractStyleUrls(urlResolver, 'http://ng.io', css);
-      expect(styleWithSourceMaps.style.trim())
-          .toEqual('/*# sourceURL=.... */\n/*# sourceMappingURL=... *//*#sourceMappingURL=... */');
+      expect(styleWithSourceMaps.style.trim()).toEqual(
+        '/*# sourceURL=.... */\n/*# sourceMappingURL=... *//*#sourceMappingURL=... */'
+      );
     });
 
     it('should extract "@import url()" urls', () => {
@@ -70,7 +70,9 @@ import {UrlResolver} from '@angular/compiler/src/url_resolver';
       const styleWithImports = extractStyleUrls(urlResolver, 'http://ng.io', css);
       expect(styleWithImports.style.trim()).toEqual('');
       expect(styleWithImports.styleUrls).toEqual([
-        'http://ng.io/3.css', 'http://ng.io/4.css', 'http://ng.io/5.css'
+        'http://ng.io/3.css',
+        'http://ng.io/4.css',
+        'http://ng.io/5.css',
       ]);
     });
 
@@ -89,7 +91,8 @@ import {UrlResolver} from '@angular/compiler/src/url_resolver';
       const styleWithImports = extractStyleUrls(urlResolver, 'http://ng.io', css);
       expect(styleWithImports.style.trim()).toEqual('');
       expect(styleWithImports.styleUrls).toEqual([
-        'http://ng.io/print1.css', 'http://ng.io/print2.css'
+        'http://ng.io/print1.css',
+        'http://ng.io/print2.css',
       ]);
     });
 

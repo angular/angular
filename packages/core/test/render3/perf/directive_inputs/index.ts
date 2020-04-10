@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ɵɵadvance, ɵɵdefineDirective, ɵɵelement, ɵɵproperty} from '../../../../src/render3/index';
 import {refreshView} from '../../../../src/render3/instructions/shared';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
@@ -21,7 +22,7 @@ class TestDirective {
   static ɵdir = ɵɵdefineDirective({
     type: TestDirective,
     selectors: [['', 'dir', '']],
-    inputs: {foo: 'foo', barPrivate: ['bar', 'barPrivate']}
+    inputs: {foo: 'foo', barPrivate: ['bar', 'barPrivate']},
   });
 }
 
@@ -46,13 +47,19 @@ function testTemplate(rf: RenderFlags, ctx: any) {
 }
 
 const ctx = {
-  counter: 0
+  counter: 0,
 };
 
 const rootLView = setupRootViewWithEmbeddedViews(
-    testTemplate, 3, 6, 1000, ctx, [['dir', '', 3, 'foo', 'bar']], [TestDirective.ɵdir]);
+  testTemplate,
+  3,
+  6,
+  1000,
+  ctx,
+  [['dir', '', 3, 'foo', 'bar']],
+  [TestDirective.ɵdir]
+);
 const rootTView = rootLView[TVIEW];
-
 
 // scenario to benchmark
 const directiveInputs = createBenchmark('directive inputs');

@@ -17,7 +17,8 @@ export class StaticSymbol {
   assertNoMembers() {
     if (this.members.length) {
       throw new Error(
-          `Illegal state: symbol without members expected, but got ${JSON.stringify(this)}.`);
+        `Illegal state: symbol without members expected, but got ${JSON.stringify(this)}.`
+      );
     }
   }
 }

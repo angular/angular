@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {concatStringsWithSpace} from '@angular/core/src/util/stringify';
 
 describe('stringify', () => {
@@ -21,7 +22,8 @@ describe('stringify', () => {
       expect(concatStringsWithSpace('', 'b')).toEqual('b');
     });
 
-    it('should concat when not empty',
-       () => { expect(concatStringsWithSpace('before', 'after')).toEqual('before after'); });
+    it('should concat when not empty', () => {
+      expect(concatStringsWithSpace('before', 'after')).toEqual('before after');
+    });
   });
 });

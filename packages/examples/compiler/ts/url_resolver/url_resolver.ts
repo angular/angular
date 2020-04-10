@@ -12,8 +12,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 @Component({selector: 'my-app', template: 'empty'})
-class MyApp {
-}
+class MyApp {}
 
 // #docregion url_resolver
 class MyUrlResolver extends UrlResolver {
@@ -29,10 +28,9 @@ class MyUrlResolver extends UrlResolver {
 @NgModule({
   imports: [BrowserModule],
   providers: [{provide: UrlResolver, useClass: MyUrlResolver}],
-  bootstrap: [MyApp]
+  bootstrap: [MyApp],
 })
-class AppModule {
-}
+class AppModule {}
 
 export function main() {
   platformBrowserDynamic().bootstrapModule(AppModule);

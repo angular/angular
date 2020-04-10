@@ -8,4 +8,10 @@
 
 export {DynamicValue} from './src/dynamic';
 export {ForeignFunctionResolver, PartialEvaluator} from './src/interface';
-export {EnumValue, KnownFn, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './src/result';
+export {
+  EnumValue,
+  KnownFn,
+  ResolvedValue,
+  ResolvedValueArray,
+  ResolvedValueMap,
+} from './src/result';

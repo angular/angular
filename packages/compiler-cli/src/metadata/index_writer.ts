@@ -33,16 +33,14 @@ export function privateEntriesToIndex(index: string, privates: BundlePrivateEntr
     entries.push(entry);
   }
 
-
   const compareEntries = compare((e: BundlePrivateEntry) => e.name);
   const compareModules = compare((e: MapEntry) => e[0]);
-  const orderedExports =
-      Array.from(exports)
-          .map(([module, entries]) => <MapEntry>[module, entries.sort(compareEntries)])
-          .sort(compareModules);
+  const orderedExports = Array.from(exports)
+    .map(([module, entries]) => <MapEntry>[module, entries.sort(compareEntries)])
+    .sort(compareModules);
 
   for (const [module, entries] of orderedExports) {
-    let symbols = entries.map(e => `${e.name} as ${e.privateName}`);
+    let symbols = entries.map((e) => `${e.name} as ${e.privateName}`);
     results.push(`export {${symbols}} from '${module}';`);
   }
 

@@ -20,22 +20,33 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 class OrderItem {
   constructor(
-      public orderItemId: number, public orderId: number, public productName: string,
-      public qty: number, public unitPrice: number) {}
+    public orderItemId: number,
+    public orderId: number,
+    public productName: string,
+    public qty: number,
+    public unitPrice: number
+  ) {}
 
-  get total(): number { return this.qty * this.unitPrice; }
+  get total(): number {
+    return this.qty * this.unitPrice;
+  }
 }
 
 class Order {
   constructor(
-      public orderId: number, public customerName: string, public limit: number,
-      private _dataService: DataService) {}
+    public orderId: number,
+    public customerName: string,
+    public limit: number,
+    private _dataService: DataService
+  ) {}
 
-  get items(): OrderItem[] { return this._dataService.itemsFor(this); }
-  get total(): number { return this.items.map(i => i.total).reduce((a, b) => a + b, 0); }
+  get items(): OrderItem[] {
+    return this._dataService.itemsFor(this);
+  }
+  get total(): number {
+    return this.items.map((i) => i.total).reduce((a, b) => a + b, 0);
+  }
 }
-
-
 
 // ---- services
 
@@ -48,7 +59,8 @@ export class DataService {
 
   constructor() {
     this.orders = [
-      new Order(_nextId++, 'J. Coltrane', 100, this), new Order(_nextId++, 'B. Evans', 200, this)
+      new Order(_nextId++, 'J. Coltrane', 100, this),
+      new Order(_nextId++, 'B. Evans', 200, this),
     ];
 
     this.orderItems = [
@@ -57,22 +69,22 @@ export class DataService {
       new OrderItem(_nextId++, this.orders[0].orderId, 'IPA', 5, 3),
 
       new OrderItem(_nextId++, this.orders[1].orderId, 'Mozzarella', 5, 2),
-      new OrderItem(_nextId++, this.orders[1].orderId, 'Wine', 5, 3)
+      new OrderItem(_nextId++, this.orders[1].orderId, 'Wine', 5, 3),
     ];
   }
 
   itemsFor(order: Order): OrderItem[] {
-    return this.orderItems.filter(i => i.orderId === order.orderId);
+    return this.orderItems.filter((i) => i.orderId === order.orderId);
   }
 
   addItemForOrder(order: Order): void {
     this.orderItems.push(new OrderItem(_nextId++, order.orderId, '', 0, 0));
   }
 
-  deleteItem(item: OrderItem): void { this.orderItems.splice(this.orderItems.indexOf(item), 1); }
+  deleteItem(item: OrderItem): void {
+    this.orderItems.splice(this.orderItems.indexOf(item), 1);
+  }
 }
-
-
 
 // ---- components
 
@@ -80,68 +92,80 @@ export class DataService {
   selector: 'order-list-cmp',
   template: `
     <h1>Orders</h1>
-  	<div *ngFor="let order of orders" [class.warning]="order.total > order.limit">
+    <div *ngFor="let order of orders" [class.warning]="order.total > order.limit">
       <div>
         <label>Customer name:</label>
-        {{order.customerName}}
+        {{ order.customerName }}
       </div>
 
       <div>
-        <label>Limit: <input [(ngModel)]="order.limit" type="number" placeholder="Limit"></label>
+        <label>Limit: <input [(ngModel)]="order.limit" type="number" placeholder="Limit" /></label>
       </div>
 
       <div>
         <label>Number of items:</label>
-        {{order.items.length}}
+        {{ order.items.length }}
       </div>
 
       <div>
         <label>Order total:</label>
-        {{order.total}}
+        {{ order.total }}
       </div>
 
       <button (click)="select(order)">Select</button>
-  	</div>
-  `
+    </div>
+  `,
 })
 export class OrderListComponent {
   orders: Order[];
 
-  constructor(private _service: DataService) { this.orders = _service.orders; }
-  select(order: Order): void { this._service.currentOrder = order; }
+  constructor(private _service: DataService) {
+    this.orders = _service.orders;
+  }
+  select(order: Order): void {
+    this._service.currentOrder = order;
+  }
 }
-
 
 @Component({
   selector: 'order-item-cmp',
   template: `
     <div>
       <div>
-        <label>Product name: <input [(ngModel)]="item.productName" type="text" placeholder="Product name"></label>
+        <label
+          >Product name:
+          <input [(ngModel)]="item.productName" type="text" placeholder="Product name"
+        /></label>
       </div>
 
       <div>
-        <label>Quantity: <input [(ngModel)]="item.qty" type="number" placeholder="Quantity"></label>
+        <label
+          >Quantity: <input [(ngModel)]="item.qty" type="number" placeholder="Quantity"
+        /></label>
       </div>
 
       <div>
-        <label>Unit Price: <input [(ngModel)]="item.unitPrice" type="number" placeholder="Unit price"></label>
+        <label
+          >Unit Price: <input [(ngModel)]="item.unitPrice" type="number" placeholder="Unit price"
+        /></label>
       </div>
 
       <div>
         <label>Total:</label>
-        {{item.total}}
+        {{ item.total }}
       </div>
 
       <button (click)="onDelete()">Delete</button>
     </div>
-  `
+  `,
 })
 export class OrderItemComponent {
   @Input() item: OrderItem;
   @Output() delete = new EventEmitter();
 
-  onDelete(): void { this.delete.emit(this.item); }
+  onDelete(): void {
+    this.delete.emit(this.item);
+  }
 }
 
 @Component({
@@ -150,37 +174,50 @@ export class OrderItemComponent {
     <div *ngIf="order !== null">
       <h1>Selected Order</h1>
       <div>
-        <label>Customer name: <input [(ngModel)]="order.customerName" type="text" placeholder="Customer name"></label>
+        <label
+          >Customer name:
+          <input [(ngModel)]="order.customerName" type="text" placeholder="Customer name"
+        /></label>
       </div>
 
       <div>
-        <label>Limit: <input [(ngModel)]="order.limit" type="number" placeholder="Limit"></label>
+        <label>Limit: <input [(ngModel)]="order.limit" type="number" placeholder="Limit" /></label>
       </div>
 
       <div>
         <label>Number of items:</label>
-        {{order.items.length}}
+        {{ order.items.length }}
       </div>
 
       <div>
         <label>Order total:</label>
-        {{order.total}}
+        {{ order.total }}
       </div>
 
       <h2>Items</h2>
       <button (click)="addItem()">Add Item</button>
-      <order-item-cmp *ngFor="let item of order.items" [item]="item" (delete)="deleteItem(item)"></order-item-cmp>
+      <order-item-cmp
+        *ngFor="let item of order.items"
+        [item]="item"
+        (delete)="deleteItem(item)"
+      ></order-item-cmp>
     </div>
-  `
+  `,
 })
 export class OrderDetailsComponent {
   constructor(private _service: DataService) {}
 
-  get order(): Order { return this._service.currentOrder; }
+  get order(): Order {
+    return this._service.currentOrder;
+  }
 
-  deleteItem(item: OrderItem): void { this._service.deleteItem(item); }
+  deleteItem(item: OrderItem): void {
+    this._service.deleteItem(item);
+  }
 
-  addItem(): void { this._service.addItemForOrder(this.order); }
+  addItem(): void {
+    this._service.addItemForOrder(this.order);
+  }
 }
 
 @Component({
@@ -189,18 +226,20 @@ export class OrderDetailsComponent {
   template: `
     <order-list-cmp></order-list-cmp>
     <order-details-cmp></order-details-cmp>
-  `
+  `,
 })
-export class OrderManagementApplication {
-}
+export class OrderManagementApplication {}
 
 @NgModule({
   bootstrap: [OrderManagementApplication],
-  declarations:
-      [OrderManagementApplication, OrderListComponent, OrderDetailsComponent, OrderItemComponent],
-  imports: [BrowserModule, FormsModule]
+  declarations: [
+    OrderManagementApplication,
+    OrderListComponent,
+    OrderDetailsComponent,
+    OrderItemComponent,
+  ],
+  imports: [BrowserModule, FormsModule],
 })
-export class ExampleModule {
-}
+export class ExampleModule {}
 
 platformBrowserDynamic().bootstrapModule(ExampleModule);

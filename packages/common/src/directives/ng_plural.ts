@@ -12,7 +12,6 @@ import {NgLocalization, getPluralCategory} from '../i18n/localization';
 
 import {SwitchView} from './ng_switch';
 
-
 /**
  * @ngModule CommonModule
  *
@@ -47,9 +46,9 @@ import {SwitchView} from './ng_switch';
 @Directive({selector: '[ngPlural]'})
 export class NgPlural {
   // TODO(issue/24571): remove '!'.
-  private _switchValue !: number;
+  private _switchValue!: number;
   // TODO(issue/24571): remove '!'.
-  private _activeView !: SwitchView;
+  private _activeView!: SwitchView;
   private _caseViews: {[k: string]: SwitchView} = {};
 
   constructor(private _localization: NgLocalization) {}
@@ -60,7 +59,9 @@ export class NgPlural {
     this._updateView();
   }
 
-  addCase(value: string, switchView: SwitchView): void { this._caseViews[value] = switchView; }
+  addCase(value: string, switchView: SwitchView): void {
+    this._caseViews[value] = switchView;
+  }
 
   private _updateView(): void {
     this._clearViews();
@@ -105,8 +106,11 @@ export class NgPlural {
 @Directive({selector: '[ngPluralCase]'})
 export class NgPluralCase {
   constructor(
-      @Attribute('ngPluralCase') public value: string, template: TemplateRef<Object>,
-      viewContainer: ViewContainerRef, @Host() ngPlural: NgPlural) {
+    @Attribute('ngPluralCase') public value: string,
+    template: TemplateRef<Object>,
+    viewContainer: ViewContainerRef,
+    @Host() ngPlural: NgPlural
+  ) {
     const isANumber: boolean = !isNaN(Number(value));
     ngPlural.addCase(isANumber ? `=${value}` : value, new SwitchView(viewContainer, template));
   }

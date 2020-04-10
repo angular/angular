@@ -11,8 +11,10 @@ import {ProceduralRenderer3} from '@angular/core/src/render3/interfaces/renderer
 import {MicroBenchmarkRenderNode, MicroBenchmarkRendererFactory} from './noop_renderer';
 
 describe('MicroBenchmarkRenderNode', () => {
-  const renderer =
-      new MicroBenchmarkRendererFactory().createRenderer(null, null) as ProceduralRenderer3;
+  const renderer = new MicroBenchmarkRendererFactory().createRenderer(
+    null,
+    null
+  ) as ProceduralRenderer3;
   describe('className', () => {
     it('should be available in global space', () => {
       expect(Node).toBeDefined();

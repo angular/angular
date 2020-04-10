@@ -5,7 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, FileSystem, PathSegment} from '../../../../src/ngtsc/file_system';
+
+import {
+  absoluteFrom,
+  AbsoluteFsPath,
+  FileSystem,
+  PathSegment,
+} from '../../../../src/ngtsc/file_system';
 import {cleanPackageJson} from '../../packages/build_marker';
 import {NGCC_BACKUP_EXTENSION} from '../in_place_file_writer';
 import {NGCC_DIRECTORY} from '../new_entry_point_file_writer';
@@ -57,8 +63,10 @@ export class NgccDirectoryCleaner implements CleaningStrategy {
 export class BackupFileCleaner implements CleaningStrategy {
   constructor(private fs: FileSystem) {}
   canClean(path: AbsoluteFsPath, basename: PathSegment): boolean {
-    return this.fs.extname(basename) === NGCC_BACKUP_EXTENSION &&
-        this.fs.exists(absoluteFrom(path.replace(NGCC_BACKUP_EXTENSION, '')));
+    return (
+      this.fs.extname(basename) === NGCC_BACKUP_EXTENSION &&
+      this.fs.exists(absoluteFrom(path.replace(NGCC_BACKUP_EXTENSION, '')))
+    );
   }
   clean(path: AbsoluteFsPath, _basename: PathSegment): void {
     this.fs.moveFile(path, absoluteFrom(path.replace(NGCC_BACKUP_EXTENSION, '')));

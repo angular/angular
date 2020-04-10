@@ -14,7 +14,9 @@ describe('UrlTree', () => {
   describe('DefaultUrlSerializer', () => {
     let serializer: DefaultUrlSerializer;
 
-    beforeEach(() => { serializer = new DefaultUrlSerializer(); });
+    beforeEach(() => {
+      serializer = new DefaultUrlSerializer();
+    });
 
     it('should parse query parameters', () => {
       const tree = serializer.parse('/path/to?k=v&k/(a;b)=c');

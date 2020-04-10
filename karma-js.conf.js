@@ -11,7 +11,7 @@ const {generateSeed} = require('./tools/jasmine-seed-generator');
 
 // Karma configuration
 // Generated on Thu Sep 25 2014 11:52:02 GMT-0700 (PDT)
-module.exports = function(config) {
+module.exports = function (config) {
   const conf = {
     frameworks: ['jasmine'],
 
@@ -49,7 +49,7 @@ module.exports = function(config) {
       {
         pattern: 'node_modules/@webcomponents/custom-elements/**/*.js',
         included: false,
-        watched: false
+        watched: false,
       },
       {pattern: 'node_modules/mutation-observer/index.js', included: false, watched: false},
 
@@ -197,7 +197,8 @@ module.exports = function(config) {
         break;
       default:
         throw new Error(
-            `Unrecognized process.env.KARMA_WEB_TEST_MODE: ${process.env.KARMA_WEB_TEST_MODE}`);
+          `Unrecognized process.env.KARMA_WEB_TEST_MODE: ${process.env.KARMA_WEB_TEST_MODE}`
+        );
     }
   } else {
     // Run the test locally

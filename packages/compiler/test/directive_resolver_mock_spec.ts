@@ -17,8 +17,9 @@ import {MockDirectiveResolver} from '../testing';
     let dirResolver: MockDirectiveResolver;
 
     beforeEach(() => {
-      TestBed.configureTestingModule(
-          {declarations: [SomeDirective, SomeOtherDirective, SomeComponent]});
+      TestBed.configureTestingModule({
+        declarations: [SomeDirective, SomeOtherDirective, SomeComponent],
+      });
     });
 
     beforeEach(inject([Injector], (injector: Injector) => {
@@ -26,11 +27,10 @@ import {MockDirectiveResolver} from '../testing';
     }));
 
     describe('Directive overriding', () => {
-      it('should fallback to the default DirectiveResolver when templates are not overridden',
-         () => {
-           const ngModule = dirResolver.resolve(SomeComponent);
-           expect(ngModule.selector).toEqual('cmp');
-         });
+      it('should fallback to the default DirectiveResolver when templates are not overridden', () => {
+        const ngModule = dirResolver.resolve(SomeComponent);
+        expect(ngModule.selector).toEqual('cmp');
+      });
 
       it('should allow overriding the @Directive', () => {
         dirResolver.setDirective(SomeComponent, new Component({selector: 'someOtherSelector'}));
@@ -42,13 +42,10 @@ import {MockDirectiveResolver} from '../testing';
 }
 
 @Directive({selector: 'some-directive'})
-class SomeDirective {
-}
+class SomeDirective {}
 
 @Component({selector: 'cmp', template: 'template'})
-class SomeComponent {
-}
+class SomeComponent {}
 
 @Directive({selector: 'some-other-directive'})
-class SomeOtherDirective {
-}
+class SomeOtherDirective {}

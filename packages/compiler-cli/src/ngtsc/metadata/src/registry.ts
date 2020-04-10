@@ -21,13 +21,13 @@ export class LocalMetadataRegistry implements MetadataRegistry, MetadataReader {
   private ngModules = new Map<ClassDeclaration, NgModuleMeta>();
   private pipes = new Map<ClassDeclaration, PipeMeta>();
 
-  getDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta|null {
+  getDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta | null {
     return this.directives.has(ref.node) ? this.directives.get(ref.node)! : null;
   }
-  getNgModuleMetadata(ref: Reference<ClassDeclaration>): NgModuleMeta|null {
+  getNgModuleMetadata(ref: Reference<ClassDeclaration>): NgModuleMeta | null {
     return this.ngModules.has(ref.node) ? this.ngModules.get(ref.node)! : null;
   }
-  getPipeMetadata(ref: Reference<ClassDeclaration>): PipeMeta|null {
+  getPipeMetadata(ref: Reference<ClassDeclaration>): PipeMeta | null {
     return this.pipes.has(ref.node) ? this.pipes.get(ref.node)! : null;
   }
 

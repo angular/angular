@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {Type, ɵglobal as global} from '@angular/core';
 import {ComponentFixture} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {childNodesAsList, hasClass, hasStyle, isCommentNode} from './browser_util';
-
 
 /**
  * Jasmine matchers that check Angular specific conditions.
@@ -68,7 +66,7 @@ export interface NgMatchers<T = any> extends jasmine.Matchers<T> {
    *
    * {@example testing/ts/matchers.ts region='toHaveCssStyle'}
    */
-  toHaveCssStyle(expected: {[k: string]: string}|string): boolean;
+  toHaveCssStyle(expected: {[k: string]: string} | string): boolean;
 
   /**
    * Expect a class to implement the interface of the given class.
@@ -112,22 +110,23 @@ const _global = <any>(typeof window === 'undefined' ? global : window);
  */
 export const expect: <T = any>(actual: T) => NgMatchers<T> = _global.expect;
 
-
 // Some Map polyfills don't polyfill Map.toString correctly, which
 // gives us bad error messages in tests.
 // The only way to do this in Jasmine is to monkey patch a method
 // to the object :-(
-(Map as any).prototype['jasmineToString'] = function() {
+(Map as any).prototype['jasmineToString'] = function () {
   const m = this;
   if (!m) {
     return '' + m;
   }
   const res: any[] = [];
-  m.forEach((v: any, k: any) => { res.push(`${String(k)}:${String(v)}`); });
+  m.forEach((v: any, k: any) => {
+    res.push(`${String(k)}:${String(v)}`);
+  });
   return `{ ${res.join(',')} }`;
 };
 
-_global.beforeEach(function() {
+_global.beforeEach(function () {
   // Custom handler for Map as we use Jasmine 2.4, and support for maps is not
   // added until Jasmine 2.6.
   jasmine.addCustomEqualityTester(function compareMap(actual: any, expected: any): boolean {
@@ -141,70 +140,80 @@ _global.beforeEach(function() {
       return pass;
     } else {
       // TODO(misko): we should change the return, but jasmine.d.ts is not null safe
-      return undefined !;
+      return undefined!;
     }
   });
   jasmine.addMatchers({
-    toBePromise: function() {
+    toBePromise: function () {
       return {
-        compare: function(actual: any) {
+        compare: function (actual: any) {
           const pass = typeof actual === 'object' && typeof actual.then === 'function';
-          return {pass: pass, get message() { return 'Expected ' + actual + ' to be a promise'; }};
-        }
+          return {
+            pass: pass,
+            get message() {
+              return 'Expected ' + actual + ' to be a promise';
+            },
+          };
+        },
       };
     },
 
-    toBeAnInstanceOf: function() {
+    toBeAnInstanceOf: function () {
       return {
-        compare: function(actual: any, expectedClass: any) {
+        compare: function (actual: any, expectedClass: any) {
           const pass = typeof actual === 'object' && actual instanceof expectedClass;
           return {
             pass: pass,
             get message() {
               return 'Expected ' + actual + ' to be an instance of ' + expectedClass;
-            }
+            },
           };
-        }
+        },
       };
     },
 
-    toHaveText: function() {
+    toHaveText: function () {
       return {
-        compare: function(actual: any, expectedText: string) {
+        compare: function (actual: any, expectedText: string) {
           const actualText = elementText(actual);
           return {
             pass: actualText == expectedText,
-            get message() { return 'Expected ' + actualText + ' to be equal to ' + expectedText; }
+            get message() {
+              return 'Expected ' + actualText + ' to be equal to ' + expectedText;
+            },
           };
-        }
+        },
       };
     },
 
-    toHaveCssClass: function() {
+    toHaveCssClass: function () {
       return {compare: buildError(false), negativeCompare: buildError(true)};
 
       function buildError(isNot: boolean) {
-        return function(actual: any, className: string) {
+        return function (actual: any, className: string) {
           return {
             pass: hasClass(actual, className) == !isNot,
             get message() {
-              return `Expected ${actual.outerHTML} ${isNot ? 'not ' : ''}to contain the CSS class "${className}"`;
-            }
+              return `Expected ${actual.outerHTML} ${
+                isNot ? 'not ' : ''
+              }to contain the CSS class "${className}"`;
+            },
           };
         };
       }
     },
 
-    toHaveCssStyle: function() {
+    toHaveCssStyle: function () {
       return {
-        compare: function(actual: any, styles: {[k: string]: string}|string) {
+        compare: function (actual: any, styles: {[k: string]: string} | string) {
           let allPassed: boolean;
           if (typeof styles === 'string') {
             allPassed = hasStyle(actual, styles);
           } else {
             allPassed = Object.keys(styles).length !== 0;
-            Object.keys(styles).forEach(
-                prop => { allPassed = allPassed && hasStyle(actual, prop, styles[prop]); });
+            Object.keys(styles).forEach((prop) => {
+              allPassed = allPassed && hasStyle(actual, prop, styles[prop]);
+            });
           }
 
           return {
@@ -212,28 +221,32 @@ _global.beforeEach(function() {
             get message() {
               const expectedValueStr = typeof styles === 'string' ? styles : JSON.stringify(styles);
               return `Expected ${actual.outerHTML} ${!allPassed ? ' ' : 'not '}to contain the
-                      CSS ${typeof styles === 'string' ? 'property' : 'styles'} "${expectedValueStr}"`;
-            }
+                      CSS ${
+                        typeof styles === 'string' ? 'property' : 'styles'
+                      } "${expectedValueStr}"`;
+            },
           };
-        }
+        },
       };
     },
 
-    toContainError: function() {
+    toContainError: function () {
       return {
-        compare: function(actual: any, expectedText: any) {
+        compare: function (actual: any, expectedText: any) {
           const errorMessage = actual.toString();
           return {
             pass: errorMessage.indexOf(expectedText) > -1,
-            get message() { return 'Expected ' + errorMessage + ' to contain ' + expectedText; }
+            get message() {
+              return 'Expected ' + errorMessage + ' to contain ' + expectedText;
+            },
           };
-        }
+        },
       };
     },
 
-    toImplement: function() {
+    toImplement: function () {
       return {
-        compare: function(actualObject: any, expectedInterface: any) {
+        compare: function (actualObject: any, expectedInterface: any) {
           const intProps = Object.keys(expectedInterface.prototype);
 
           const missedMethods: any[] = [];
@@ -244,17 +257,21 @@ _global.beforeEach(function() {
           return {
             pass: missedMethods.length == 0,
             get message() {
-              return 'Expected ' + actualObject + ' to have the following methods: ' +
-                  missedMethods.join(', ');
-            }
+              return (
+                'Expected ' +
+                actualObject +
+                ' to have the following methods: ' +
+                missedMethods.join(', ')
+              );
+            },
           };
-        }
+        },
       };
     },
 
-    toContainComponent: function() {
+    toContainComponent: function () {
       return {
-        compare: function(actualFixture: any, expectedComponentType: Type<any>) {
+        compare: function (actualFixture: any, expectedComponentType: Type<any>) {
           const failOutput = arguments[2];
           const msgFn = (msg: string): string => [msg, failOutput].filter(Boolean).join(', ');
 
@@ -263,17 +280,18 @@ _global.beforeEach(function() {
             return {
               pass: false,
               message: msgFn(
-                  `Expected actual to be of type \'ComponentFixture\' [actual=${actualFixture.constructor.name}]`)
+                `Expected actual to be of type \'ComponentFixture\' [actual=${actualFixture.constructor.name}]`
+              ),
             };
           }
 
           const found = !!actualFixture.debugElement.query(By.directive(expectedComponentType));
-          return found ?
-              {pass: true} :
-              {pass: false, message: msgFn(`Expected ${expectedComponentType.name} to show`)};
-        }
+          return found
+            ? {pass: true}
+            : {pass: false, message: msgFn(`Expected ${expectedComponentType.name} to show`)};
+        },
       };
-    }
+    },
   });
 });
 

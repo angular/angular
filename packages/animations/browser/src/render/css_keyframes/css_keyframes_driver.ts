@@ -5,11 +5,22 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AnimationPlayer, ɵStyleData} from '@angular/animations';
 
-import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, computeStyle} from '../../util';
+import {
+  allowPreviousPlayerStylesMerge,
+  balancePreviousStylesIntoKeyframes,
+  computeStyle,
+} from '../../util';
 import {AnimationDriver} from '../animation_driver';
-import {containsElement, hypenatePropsObject, invokeQuery, matchesElement, validateStyleProperty} from '../shared';
+import {
+  containsElement,
+  hypenatePropsObject,
+  invokeQuery,
+  matchesElement,
+  validateStyleProperty,
+} from '../shared';
 import {packageNonAnimatableStyles} from '../special_cased_styles';
 
 import {CssKeyframesPlayer} from './css_keyframes_player';
@@ -23,13 +34,17 @@ export class CssKeyframesDriver implements AnimationDriver {
   private readonly _head: any = document.querySelector('head');
   private _warningIssued = false;
 
-  validateStyleProperty(prop: string): boolean { return validateStyleProperty(prop); }
+  validateStyleProperty(prop: string): boolean {
+    return validateStyleProperty(prop);
+  }
 
   matchesElement(element: any, selector: string): boolean {
     return matchesElement(element, selector);
   }
 
-  containsElement(elm1: any, elm2: any): boolean { return containsElement(elm1, elm2); }
+  containsElement(elm1: any, elm2: any): boolean {
+    return containsElement(elm1, elm2);
+  }
 
   query(element: any, selector: string, multi: boolean): any[] {
     return invokeQuery(element, selector, multi);
@@ -40,15 +55,15 @@ export class CssKeyframesDriver implements AnimationDriver {
   }
 
   buildKeyframeElement(element: any, name: string, keyframes: {[key: string]: any}[]): any {
-    keyframes = keyframes.map(kf => hypenatePropsObject(kf));
+    keyframes = keyframes.map((kf) => hypenatePropsObject(kf));
     let keyframeStr = `@keyframes ${name} {\n`;
     let tab = '';
-    keyframes.forEach(kf => {
+    keyframes.forEach((kf) => {
       tab = TAB_SPACE;
       const offset = parseFloat(kf['offset']);
       keyframeStr += `${tab}${offset * 100}% {\n`;
       tab += TAB_SPACE;
-      Object.keys(kf).forEach(prop => {
+      Object.keys(kf).forEach((prop) => {
         const value = kf[prop];
         switch (prop) {
           case 'offset':
@@ -73,21 +88,28 @@ export class CssKeyframesDriver implements AnimationDriver {
   }
 
   animate(
-      element: any, keyframes: ɵStyleData[], duration: number, delay: number, easing: string,
-      previousPlayers: AnimationPlayer[] = [], scrubberAccessRequested?: boolean): AnimationPlayer {
+    element: any,
+    keyframes: ɵStyleData[],
+    duration: number,
+    delay: number,
+    easing: string,
+    previousPlayers: AnimationPlayer[] = [],
+    scrubberAccessRequested?: boolean
+  ): AnimationPlayer {
     if (scrubberAccessRequested) {
       this._notifyFaultyScrubber();
     }
 
-    const previousCssKeyframePlayers = <CssKeyframesPlayer[]>previousPlayers.filter(
-        player => player instanceof CssKeyframesPlayer);
+    const previousCssKeyframePlayers = <CssKeyframesPlayer[]>(
+      previousPlayers.filter((player) => player instanceof CssKeyframesPlayer)
+    );
 
     const previousStyles: {[key: string]: any} = {};
 
     if (allowPreviousPlayerStylesMerge(duration, delay)) {
-      previousCssKeyframePlayers.forEach(player => {
+      previousCssKeyframePlayers.forEach((player) => {
         let styles = player.currentSnapshot;
-        Object.keys(styles).forEach(prop => previousStyles[prop] = styles[prop]);
+        Object.keys(styles).forEach((prop) => (previousStyles[prop] = styles[prop]));
       });
     }
 
@@ -104,11 +126,19 @@ export class CssKeyframesDriver implements AnimationDriver {
 
     const animationName = `${KEYFRAMES_NAME_PREFIX}${this._count++}`;
     const kfElm = this.buildKeyframeElement(element, animationName, keyframes);
-    document.querySelector('head') !.appendChild(kfElm);
+    document.querySelector('head')!.appendChild(kfElm);
 
     const specialStyles = packageNonAnimatableStyles(element, keyframes);
     const player = new CssKeyframesPlayer(
-        element, keyframes, animationName, duration, delay, easing, finalStyles, specialStyles);
+      element,
+      keyframes,
+      animationName,
+      duration,
+      delay,
+      easing,
+      finalStyles,
+      specialStyles
+    );
 
     player.onDestroy(() => removeElement(kfElm));
     return player;
@@ -117,20 +147,22 @@ export class CssKeyframesDriver implements AnimationDriver {
   private _notifyFaultyScrubber() {
     if (!this._warningIssued) {
       console.warn(
-          '@angular/animations: please load the web-animations.js polyfill to allow programmatic access...\n',
-          '  visit http://bit.ly/IWukam to learn more about using the web-animation-js polyfill.');
+        '@angular/animations: please load the web-animations.js polyfill to allow programmatic access...\n',
+        '  visit http://bit.ly/IWukam to learn more about using the web-animation-js polyfill.'
+      );
       this._warningIssued = true;
     }
   }
 }
 
 function flattenKeyframesIntoStyles(
-    keyframes: null | {[key: string]: any} | {[key: string]: any}[]): {[key: string]: any} {
+  keyframes: null | {[key: string]: any} | {[key: string]: any}[]
+): {[key: string]: any} {
   let flatKeyframes: {[key: string]: any} = {};
   if (keyframes) {
     const kfs = Array.isArray(keyframes) ? keyframes : [keyframes];
-    kfs.forEach(kf => {
-      Object.keys(kf).forEach(prop => {
+    kfs.forEach((kf) => {
+      Object.keys(kf).forEach((prop) => {
         if (prop == 'offset' || prop == 'easing') return;
         flatKeyframes[prop] = kf[prop];
       });

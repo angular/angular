@@ -6,8 +6,34 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '../../../src/expression_parser/ast';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/interpolation_config';
+import {
+  AST,
+  AstVisitor,
+  Binary,
+  BindingPipe,
+  Chain,
+  Conditional,
+  FunctionCall,
+  ImplicitReceiver,
+  Interpolation,
+  KeyedRead,
+  KeyedWrite,
+  LiteralArray,
+  LiteralMap,
+  LiteralPrimitive,
+  MethodCall,
+  NonNullAssert,
+  PrefixNot,
+  PropertyRead,
+  PropertyWrite,
+  Quote,
+  SafeMethodCall,
+  SafePropertyRead,
+} from '../../../src/expression_parser/ast';
+import {
+  DEFAULT_INTERPOLATION_CONFIG,
+  InterpolationConfig,
+} from '../../../src/ml_parser/interpolation_config';
 
 class Unparser implements AstVisitor {
   private static _quoteRegExp = /"/g;
@@ -31,7 +57,7 @@ class Unparser implements AstVisitor {
   visitPropertyWrite(ast: PropertyWrite, context: any) {
     this._visit(ast.receiver);
     this._expression +=
-        ast.receiver instanceof ImplicitReceiver ? `${ast.name} = ` : `.${ast.name} = `;
+      ast.receiver instanceof ImplicitReceiver ? `${ast.name} = ` : `.${ast.name} = `;
     this._visit(ast.value);
   }
 
@@ -61,7 +87,7 @@ class Unparser implements AstVisitor {
     this._expression += '(';
     this._visit(ast.exp);
     this._expression += ` | ${ast.name}`;
-    ast.args.forEach(arg => {
+    ast.args.forEach((arg) => {
       this._expression += ':';
       this._visit(arg);
     });
@@ -72,7 +98,7 @@ class Unparser implements AstVisitor {
     this._visit(ast.target!);
     this._expression += '(';
     let isFirst = true;
-    ast.args.forEach(arg => {
+    ast.args.forEach((arg) => {
       if (!isFirst) this._expression += ', ';
       isFirst = false;
       this._visit(arg);
@@ -111,7 +137,7 @@ class Unparser implements AstVisitor {
   visitLiteralArray(ast: LiteralArray, context: any) {
     this._expression += '[';
     let isFirst = true;
-    ast.expressions.forEach(expression => {
+    ast.expressions.forEach((expression) => {
       if (!isFirst) this._expression += ', ';
       isFirst = false;
       this._visit(expression);
@@ -137,7 +163,7 @@ class Unparser implements AstVisitor {
 
   visitLiteralPrimitive(ast: LiteralPrimitive, context: any) {
     if (typeof ast.value === 'string') {
-      this._expression += `"${ast.value.replace(Unparser._quoteRegExp, '\"')}"`;
+      this._expression += `"${ast.value.replace(Unparser._quoteRegExp, '"')}"`;
     } else {
       this._expression += `${ast.value}`;
     }
@@ -147,7 +173,7 @@ class Unparser implements AstVisitor {
     this._visit(ast.receiver);
     this._expression += ast.receiver instanceof ImplicitReceiver ? `${ast.name}(` : `.${ast.name}(`;
     let isFirst = true;
-    ast.args.forEach(arg => {
+    ast.args.forEach((arg) => {
       if (!isFirst) this._expression += ', ';
       isFirst = false;
       this._visit(arg);
@@ -174,7 +200,7 @@ class Unparser implements AstVisitor {
     this._visit(ast.receiver);
     this._expression += `?.${ast.name}(`;
     let isFirst = true;
-    ast.args.forEach(arg => {
+    ast.args.forEach((arg) => {
       if (!isFirst) this._expression += ', ';
       isFirst = false;
       this._visit(arg);
@@ -194,6 +220,8 @@ class Unparser implements AstVisitor {
 const sharedUnparser = new Unparser();
 
 export function unparse(
-    ast: AST, interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): string {
+  ast: AST,
+  interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG
+): string {
   return sharedUnparser.unparse(ast, interpolationConfig);
 }

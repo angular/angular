@@ -7,7 +7,13 @@
  */
 
 import {SecurityContext} from '../core';
-import {AST, BindingType, BoundElementProperty, ParsedEvent, ParsedEventType} from '../expression_parser/ast';
+import {
+  AST,
+  BindingType,
+  BoundElementProperty,
+  ParsedEvent,
+  ParsedEventType,
+} from '../expression_parser/ast';
 import {I18nMeta} from '../i18n/i18n_ast';
 import {ParseSourceSpan} from '../parse_util';
 
@@ -32,8 +38,12 @@ export class BoundText implements Node {
 
 export class TextAttribute implements Node {
   constructor(
-      public name: string, public value: string, public sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan, public i18n?: I18nMeta) {}
+    public name: string,
+    public value: string,
+    public sourceSpan: ParseSourceSpan,
+    public valueSpan?: ParseSourceSpan,
+    public i18n?: I18nMeta
+  ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitTextAttribute(this);
   }
@@ -41,14 +51,27 @@ export class TextAttribute implements Node {
 
 export class BoundAttribute implements Node {
   constructor(
-      public name: string, public type: BindingType, public securityContext: SecurityContext,
-      public value: AST, public unit: string|null, public sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan, public i18n?: I18nMeta) {}
+    public name: string,
+    public type: BindingType,
+    public securityContext: SecurityContext,
+    public value: AST,
+    public unit: string | null,
+    public sourceSpan: ParseSourceSpan,
+    public valueSpan?: ParseSourceSpan,
+    public i18n?: I18nMeta
+  ) {}
 
   static fromBoundElementProperty(prop: BoundElementProperty, i18n?: I18nMeta) {
     return new BoundAttribute(
-        prop.name, prop.type, prop.securityContext, prop.value, prop.unit, prop.sourceSpan,
-        prop.valueSpan, i18n);
+      prop.name,
+      prop.type,
+      prop.securityContext,
+      prop.value,
+      prop.unit,
+      prop.sourceSpan,
+      prop.valueSpan,
+      i18n
+    );
   }
 
   visit<Result>(visitor: Visitor<Result>): Result {
@@ -58,16 +81,29 @@ export class BoundAttribute implements Node {
 
 export class BoundEvent implements Node {
   constructor(
-      public name: string, public type: ParsedEventType, public handler: AST,
-      public target: string|null, public phase: string|null, public sourceSpan: ParseSourceSpan,
-      public handlerSpan: ParseSourceSpan) {}
+    public name: string,
+    public type: ParsedEventType,
+    public handler: AST,
+    public target: string | null,
+    public phase: string | null,
+    public sourceSpan: ParseSourceSpan,
+    public handlerSpan: ParseSourceSpan
+  ) {}
 
   static fromParsedEvent(event: ParsedEvent) {
-    const target: string|null = event.type === ParsedEventType.Regular ? event.targetOrPhase : null;
-    const phase: string|null =
-        event.type === ParsedEventType.Animation ? event.targetOrPhase : null;
+    const target: string | null =
+      event.type === ParsedEventType.Regular ? event.targetOrPhase : null;
+    const phase: string | null =
+      event.type === ParsedEventType.Animation ? event.targetOrPhase : null;
     return new BoundEvent(
-        event.name, event.type, event.handler, target, phase, event.sourceSpan, event.handlerSpan);
+      event.name,
+      event.type,
+      event.handler,
+      target,
+      phase,
+      event.sourceSpan,
+      event.handlerSpan
+    );
   }
 
   visit<Result>(visitor: Visitor<Result>): Result {
@@ -77,10 +113,17 @@ export class BoundEvent implements Node {
 
 export class Element implements Node {
   constructor(
-      public name: string, public attributes: TextAttribute[], public inputs: BoundAttribute[],
-      public outputs: BoundEvent[], public children: Node[], public references: Reference[],
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
-      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nMeta) {
+    public name: string,
+    public attributes: TextAttribute[],
+    public inputs: BoundAttribute[],
+    public outputs: BoundEvent[],
+    public children: Node[],
+    public references: Reference[],
+    public sourceSpan: ParseSourceSpan,
+    public startSourceSpan: ParseSourceSpan | null,
+    public endSourceSpan: ParseSourceSpan | null,
+    public i18n?: I18nMeta
+  ) {
     // If the element is empty then the source span should include any closing tag
     if (children.length === 0 && startSourceSpan && endSourceSpan) {
       this.sourceSpan = new ParseSourceSpan(sourceSpan.start, endSourceSpan.end);
@@ -93,11 +136,19 @@ export class Element implements Node {
 
 export class Template implements Node {
   constructor(
-      public tagName: string, public attributes: TextAttribute[], public inputs: BoundAttribute[],
-      public outputs: BoundEvent[], public templateAttrs: (BoundAttribute|TextAttribute)[],
-      public children: Node[], public references: Reference[], public variables: Variable[],
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
-      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nMeta) {}
+    public tagName: string,
+    public attributes: TextAttribute[],
+    public inputs: BoundAttribute[],
+    public outputs: BoundEvent[],
+    public templateAttrs: (BoundAttribute | TextAttribute)[],
+    public children: Node[],
+    public references: Reference[],
+    public variables: Variable[],
+    public sourceSpan: ParseSourceSpan,
+    public startSourceSpan: ParseSourceSpan | null,
+    public endSourceSpan: ParseSourceSpan | null,
+    public i18n?: I18nMeta
+  ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitTemplate(this);
   }
@@ -105,8 +156,11 @@ export class Template implements Node {
 
 export class Content implements Node {
   constructor(
-      public selector: string, public attributes: TextAttribute[],
-      public sourceSpan: ParseSourceSpan, public i18n?: I18nMeta) {}
+    public selector: string,
+    public attributes: TextAttribute[],
+    public sourceSpan: ParseSourceSpan,
+    public i18n?: I18nMeta
+  ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitContent(this);
   }
@@ -114,8 +168,11 @@ export class Content implements Node {
 
 export class Variable implements Node {
   constructor(
-      public name: string, public value: string, public sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan) {}
+    public name: string,
+    public value: string,
+    public sourceSpan: ParseSourceSpan,
+    public valueSpan?: ParseSourceSpan
+  ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitVariable(this);
   }
@@ -123,8 +180,11 @@ export class Variable implements Node {
 
 export class Reference implements Node {
   constructor(
-      public name: string, public value: string, public sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan) {}
+    public name: string,
+    public value: string,
+    public sourceSpan: ParseSourceSpan,
+    public valueSpan?: ParseSourceSpan
+  ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitReference(this);
   }
@@ -132,9 +192,11 @@ export class Reference implements Node {
 
 export class Icu implements Node {
   constructor(
-      public vars: {[name: string]: BoundText},
-      public placeholders: {[name: string]: Text|BoundText}, public sourceSpan: ParseSourceSpan,
-      public i18n?: I18nMeta) {}
+    public vars: {[name: string]: BoundText},
+    public placeholders: {[name: string]: Text | BoundText},
+    public sourceSpan: ParseSourceSpan,
+    public i18n?: I18nMeta
+  ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitIcu(this);
   }
@@ -202,12 +264,24 @@ export class TransformVisitor implements Visitor<Node> {
     const newOutputs = transformAll(this, element.outputs);
     const newChildren = transformAll(this, element.children);
     const newReferences = transformAll(this, element.references);
-    if (newAttributes != element.attributes || newInputs != element.inputs ||
-        newOutputs != element.outputs || newChildren != element.children ||
-        newReferences != element.references) {
+    if (
+      newAttributes != element.attributes ||
+      newInputs != element.inputs ||
+      newOutputs != element.outputs ||
+      newChildren != element.children ||
+      newReferences != element.references
+    ) {
       return new Element(
-          element.name, newAttributes, newInputs, newOutputs, newChildren, newReferences,
-          element.sourceSpan, element.startSourceSpan, element.endSourceSpan);
+        element.name,
+        newAttributes,
+        newInputs,
+        newOutputs,
+        newChildren,
+        newReferences,
+        element.sourceSpan,
+        element.startSourceSpan,
+        element.endSourceSpan
+      );
     }
     return element;
   }
@@ -220,14 +294,28 @@ export class TransformVisitor implements Visitor<Node> {
     const newChildren = transformAll(this, template.children);
     const newReferences = transformAll(this, template.references);
     const newVariables = transformAll(this, template.variables);
-    if (newAttributes != template.attributes || newInputs != template.inputs ||
-        newOutputs != template.outputs || newTemplateAttrs != template.templateAttrs ||
-        newChildren != template.children || newReferences != template.references ||
-        newVariables != template.variables) {
+    if (
+      newAttributes != template.attributes ||
+      newInputs != template.inputs ||
+      newOutputs != template.outputs ||
+      newTemplateAttrs != template.templateAttrs ||
+      newChildren != template.children ||
+      newReferences != template.references ||
+      newVariables != template.variables
+    ) {
       return new Template(
-          template.tagName, newAttributes, newInputs, newOutputs, newTemplateAttrs, newChildren,
-          newReferences, newVariables, template.sourceSpan, template.startSourceSpan,
-          template.endSourceSpan);
+        template.tagName,
+        newAttributes,
+        newInputs,
+        newOutputs,
+        newTemplateAttrs,
+        newChildren,
+        newReferences,
+        newVariables,
+        template.sourceSpan,
+        template.startSourceSpan,
+        template.endSourceSpan
+      );
     }
     return template;
   }
@@ -280,7 +368,9 @@ export function visitAll<Result>(visitor: Visitor<Result>, nodes: Node[]): Resul
 }
 
 export function transformAll<Result extends Node>(
-    visitor: Visitor<Node>, nodes: Result[]): Result[] {
+  visitor: Visitor<Node>,
+  nodes: Result[]
+): Result[] {
   const result: Result[] = [];
   let changed = false;
   for (const node of nodes) {

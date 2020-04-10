@@ -10,7 +10,11 @@ import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {getTemplateCompletions} from './completions';
 import {getDefinitionAndBoundSpan, getTsDefinitionAndBoundSpan} from './definitions';
-import {getDeclarationDiagnostics, getTemplateDiagnostics, ngDiagnosticToTsDiagnostic} from './diagnostics';
+import {
+  getDeclarationDiagnostics,
+  getTemplateDiagnostics,
+  ngDiagnosticToTsDiagnostic,
+} from './diagnostics';
 import {getTemplateHover, getTsHover} from './hover';
 import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
@@ -28,7 +32,7 @@ class LanguageServiceImpl implements ng.LanguageService {
   constructor(private readonly host: TypeScriptServiceHost) {}
 
   getSemanticDiagnostics(fileName: string): tss.Diagnostic[] {
-    const analyzedModules = this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
+    const analyzedModules = this.host.getAnalyzedModules(); // same role as 'synchronizeHostData'
     const ngDiagnostics: ng.Diagnostic[] = [];
 
     const templates = this.host.getTemplates(fileName);
@@ -43,14 +47,16 @@ class LanguageServiceImpl implements ng.LanguageService {
     ngDiagnostics.push(...getDeclarationDiagnostics(declarations, analyzedModules, this.host));
 
     const sourceFile = fileName.endsWith('.ts') ? this.host.getSourceFile(fileName) : undefined;
-    const tsDiagnostics = ngDiagnostics.map(d => ngDiagnosticToTsDiagnostic(d, sourceFile));
+    const tsDiagnostics = ngDiagnostics.map((d) => ngDiagnosticToTsDiagnostic(d, sourceFile));
     return [...tss.sortAndDeduplicateDiagnostics(tsDiagnostics)];
   }
 
   getCompletionsAtPosition(
-      fileName: string, position: number,
-      options?: tss.GetCompletionsAtPositionOptions): tss.CompletionInfo|undefined {
-    this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
+    fileName: string,
+    position: number,
+    options?: tss.GetCompletionsAtPositionOptions
+  ): tss.CompletionInfo | undefined {
+    this.host.getAnalyzedModules(); // same role as 'synchronizeHostData'
     const ast = this.host.getTemplateAstAtPosition(fileName, position);
     if (!ast) {
       return;
@@ -64,13 +70,15 @@ class LanguageServiceImpl implements ng.LanguageService {
       isMemberCompletion: false,
       isNewIdentifierLocation: false,
       // Cast CompletionEntry.kind from ng.CompletionKind to ts.ScriptElementKind
-      entries: results as unknown as ts.CompletionEntry[],
+      entries: (results as unknown) as ts.CompletionEntry[],
     };
   }
 
-  getDefinitionAndBoundSpan(fileName: string, position: number): tss.DefinitionInfoAndBoundSpan
-      |undefined {
-    this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
+  getDefinitionAndBoundSpan(
+    fileName: string,
+    position: number
+  ): tss.DefinitionInfoAndBoundSpan | undefined {
+    this.host.getAnalyzedModules(); // same role as 'synchronizeHostData'
     const templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
       return getDefinitionAndBoundSpan(templateInfo, position);
@@ -86,8 +94,8 @@ class LanguageServiceImpl implements ng.LanguageService {
     }
   }
 
-  getQuickInfoAtPosition(fileName: string, position: number): tss.QuickInfo|undefined {
-    const analyzedModules = this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
+  getQuickInfoAtPosition(fileName: string, position: number): tss.QuickInfo | undefined {
+    const analyzedModules = this.host.getAnalyzedModules(); // same role as 'synchronizeHostData'
     const templateInfo = this.host.getTemplateAstAtPosition(fileName, position);
     if (templateInfo) {
       return getTemplateHover(templateInfo, position, analyzedModules);

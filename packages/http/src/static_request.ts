@@ -13,7 +13,6 @@ import {normalizeMethodName} from './http_utils';
 import {RequestArgs} from './interfaces';
 import {URLSearchParams} from './url_search_params';
 
-
 // TODO(jeffbcross): properly implement body accessors
 /**
  * Creates `Request` instances from provided values.
@@ -76,7 +75,7 @@ export class Request extends Body {
     super();
     // TODO: assert that url is present
     const url = requestOptions.url;
-    this.url = requestOptions.url !;
+    this.url = requestOptions.url!;
     const paramsArg = requestOptions.params || requestOptions.search;
     if (paramsArg) {
       let params: string;
@@ -88,20 +87,20 @@ export class Request extends Body {
       if (params.length > 0) {
         let prefix = '?';
         if (this.url.indexOf('?') != -1) {
-          prefix = (this.url[this.url.length - 1] == '&') ? '' : '&';
+          prefix = this.url[this.url.length - 1] == '&' ? '' : '&';
         }
         // TODO: just delete search-query-looking string in url?
         this.url = url + prefix + params;
       }
     }
     this._body = requestOptions.body;
-    this.method = normalizeMethodName(requestOptions.method !);
+    this.method = normalizeMethodName(requestOptions.method!);
     // TODO(jeffbcross): implement behavior
     // Defaults to 'omit', consistent with browser
     this.headers = new Headers(requestOptions.headers);
     this.contentType = this.detectContentType();
-    this.withCredentials = requestOptions.withCredentials !;
-    this.responseType = requestOptions.responseType !;
+    this.withCredentials = requestOptions.withCredentials!;
+    this.responseType = requestOptions.responseType!;
   }
 
   /**
@@ -172,10 +171,10 @@ export class Request extends Body {
 
 function urlEncodeParams(params: {[key: string]: any}): URLSearchParams {
   const searchParams = new URLSearchParams();
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     const value = params[key];
     if (value && Array.isArray(value)) {
-      value.forEach(element => searchParams.append(key, element.toString()));
+      value.forEach((element) => searchParams.append(key, element.toString()));
     } else {
       searchParams.append(key, value.toString());
     }
@@ -183,9 +182,9 @@ function urlEncodeParams(params: {[key: string]: any}): URLSearchParams {
   return searchParams;
 }
 
-const noop = function() {};
+const noop = function () {};
 const w = typeof window == 'object' ? window : noop;
-const FormData = (() => (w as any /** TODO #9100 */)['FormData'] || noop)();
-const Blob = (() => (w as any /** TODO #9100 */)['Blob'] || noop)();
-export const ArrayBuffer: ArrayBufferConstructor =
-    (() => (w as any /** TODO #9100 */)['ArrayBuffer'] || noop)();
+const FormData = (() => (w as any) /** TODO #9100 */['FormData'] || noop)();
+const Blob = (() => (w as any) /** TODO #9100 */['Blob'] || noop)();
+export const ArrayBuffer: ArrayBufferConstructor = (() =>
+  (w as any) /** TODO #9100 */['ArrayBuffer'] || noop)();

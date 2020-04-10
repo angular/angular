@@ -16,22 +16,30 @@ export enum LifecycleHooks {
   AfterContentInit,
   AfterContentChecked,
   AfterViewInit,
-  AfterViewChecked
+  AfterViewChecked,
 }
 
 export const LIFECYCLE_HOOKS_VALUES = [
-  LifecycleHooks.OnInit, LifecycleHooks.OnDestroy, LifecycleHooks.DoCheck, LifecycleHooks.OnChanges,
-  LifecycleHooks.AfterContentInit, LifecycleHooks.AfterContentChecked, LifecycleHooks.AfterViewInit,
-  LifecycleHooks.AfterViewChecked
+  LifecycleHooks.OnInit,
+  LifecycleHooks.OnDestroy,
+  LifecycleHooks.DoCheck,
+  LifecycleHooks.OnChanges,
+  LifecycleHooks.AfterContentInit,
+  LifecycleHooks.AfterContentChecked,
+  LifecycleHooks.AfterViewInit,
+  LifecycleHooks.AfterViewChecked,
 ];
 
 export function hasLifecycleHook(
-    reflector: CompileReflector, hook: LifecycleHooks, token: any): boolean {
+  reflector: CompileReflector,
+  hook: LifecycleHooks,
+  token: any
+): boolean {
   return reflector.hasLifecycleHook(token, getHookName(hook));
 }
 
 export function getAllLifecycleHooks(reflector: CompileReflector, token: any): LifecycleHooks[] {
-  return LIFECYCLE_HOOKS_VALUES.filter(hook => hasLifecycleHook(reflector, hook, token));
+  return LIFECYCLE_HOOKS_VALUES.filter((hook) => hasLifecycleHook(reflector, hook, token));
 }
 
 function getHookName(hook: LifecycleHooks): string {

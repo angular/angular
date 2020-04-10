@@ -6,14 +6,53 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, CompilerOptions, Injector, NgModule, NgModuleRef, NgZone, StaticProvider, Testability, Type, isDevMode, resolveForwardRef} from '@angular/core';
+import {
+  Compiler,
+  CompilerOptions,
+  Injector,
+  NgModule,
+  NgModuleRef,
+  NgZone,
+  StaticProvider,
+  Testability,
+  Type,
+  isDevMode,
+  resolveForwardRef,
+} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-import {IAngularBootstrapConfig, IAugmentedJQuery, IInjectorService, IModule, IProvideService, IRootScopeService, ITestabilityService, bootstrap, element as angularElement, module_ as angularModule} from '../../common/src/angular1';
-import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, LAZY_MODULE_REF, NG_ZONE_KEY, UPGRADE_APP_TYPE_KEY} from '../../common/src/constants';
+import {
+  IAngularBootstrapConfig,
+  IAugmentedJQuery,
+  IInjectorService,
+  IModule,
+  IProvideService,
+  IRootScopeService,
+  ITestabilityService,
+  bootstrap,
+  element as angularElement,
+  module_ as angularModule,
+} from '../../common/src/angular1';
+import {
+  $$TESTABILITY,
+  $COMPILE,
+  $INJECTOR,
+  $ROOT_SCOPE,
+  COMPILER_KEY,
+  INJECTOR_KEY,
+  LAZY_MODULE_REF,
+  NG_ZONE_KEY,
+  UPGRADE_APP_TYPE_KEY,
+} from '../../common/src/constants';
 import {downgradeComponent} from '../../common/src/downgrade_component';
 import {downgradeInjectable} from '../../common/src/downgrade_injectable';
-import {Deferred, LazyModuleRef, UpgradeAppType, controllerKey, onError} from '../../common/src/util';
+import {
+  Deferred,
+  LazyModuleRef,
+  UpgradeAppType,
+  controllerKey,
+  onError,
+} from '../../common/src/util';
 
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
 
@@ -115,17 +154,18 @@ export class UpgradeAdapter {
   private ng1ComponentsToBeUpgraded: {[name: string]: UpgradeNg1ComponentAdapterBuilder} = {};
   private upgradedProviders: StaticProvider[] = [];
   // TODO(issue/24571): remove '!'.
-  private ngZone !: NgZone;
+  private ngZone!: NgZone;
   // TODO(issue/24571): remove '!'.
-  private ng1Module !: IModule;
-  private moduleRef: NgModuleRef<any>|null = null;
+  private ng1Module!: IModule;
+  private moduleRef: NgModuleRef<any> | null = null;
   // TODO(issue/24571): remove '!'.
-  private ng2BootstrapDeferred !: Deferred<IInjectorService>;
+  private ng2BootstrapDeferred!: Deferred<IInjectorService>;
 
   constructor(private ng2AppModule: Type<any>, private compilerOptions?: CompilerOptions) {
     if (!ng2AppModule) {
       throw new Error(
-          'UpgradeAdapter cannot be instantiated without an NgModule of the Angular app.');
+        'UpgradeAdapter cannot be instantiated without an NgModule of the Angular app.'
+      );
     }
   }
 
@@ -278,7 +318,7 @@ export class UpgradeAdapter {
       return this.ng1ComponentsToBeUpgraded[name].type;
     } else {
       return (this.ng1ComponentsToBeUpgraded[name] = new UpgradeNg1ComponentAdapterBuilder(name))
-          .type;
+        .type;
     }
   }
 
@@ -327,13 +367,14 @@ export class UpgradeAdapter {
   registerForNg1Tests(modules?: string[]): UpgradeAdapterRef {
     const windowNgMock = (window as any)['angular'].mock;
     if (!windowNgMock || !windowNgMock.module) {
-      throw new Error('Failed to find \'angular.mock.module\'.');
+      throw new Error("Failed to find 'angular.mock.module'.");
     }
     this.declareNg1Module(modules);
     windowNgMock.module(this.ng1Module.name);
     const upgrade = new UpgradeAdapterRef();
-    this.ng2BootstrapDeferred.promise.then(
-        (ng1Injector) => { (<any>upgrade)._bootstrapDone(this.moduleRef, ng1Injector); }, onError);
+    this.ng2BootstrapDeferred.promise.then((ng1Injector) => {
+      (<any>upgrade)._bootstrapDone(this.moduleRef, ng1Injector);
+    }, onError);
     return upgrade;
   }
 
@@ -382,21 +423,26 @@ export class UpgradeAdapter {
    * });
    * ```
    */
-  bootstrap(element: Element, modules?: any[], config?: IAngularBootstrapConfig):
-      UpgradeAdapterRef {
+  bootstrap(
+    element: Element,
+    modules?: any[],
+    config?: IAngularBootstrapConfig
+  ): UpgradeAdapterRef {
     this.declareNg1Module(modules);
 
     const upgrade = new UpgradeAdapterRef();
 
     // Make sure resumeBootstrap() only exists if the current bootstrap is deferred
-    const windowAngular = (window as any /** TODO #???? */)['angular'];
+    const windowAngular = (window as any) /** TODO #???? */['angular'];
     windowAngular.resumeBootstrap = undefined;
 
-    this.ngZone.run(() => { bootstrap(element, [this.ng1Module.name], config !); });
+    this.ngZone.run(() => {
+      bootstrap(element, [this.ng1Module.name], config!);
+    });
     const ng1BootstrapPromise = new Promise((resolve) => {
       if (windowAngular.resumeBootstrap) {
         const originalResumeBootstrap: () => void = windowAngular.resumeBootstrap;
-        windowAngular.resumeBootstrap = function() {
+        windowAngular.resumeBootstrap = function () {
           windowAngular.resumeBootstrap = originalResumeBootstrap;
           const r = windowAngular.resumeBootstrap.apply(this, arguments);
           resolve();
@@ -408,9 +454,10 @@ export class UpgradeAdapter {
     });
 
     Promise.all([this.ng2BootstrapDeferred.promise, ng1BootstrapPromise]).then(([ng1Injector]) => {
-      angularElement(element).data !(controllerKey(INJECTOR_KEY), this.moduleRef !.injector);
-      this.moduleRef !.injector.get<NgZone>(NgZone).run(
-          () => { (<any>upgrade)._bootstrapDone(this.moduleRef, ng1Injector); });
+      angularElement(element).data!(controllerKey(INJECTOR_KEY), this.moduleRef!.injector);
+      this.moduleRef!.injector.get<NgZone>(NgZone).run(() => {
+        (<any>upgrade)._bootstrapDone(this.moduleRef, ng1Injector);
+      });
     }, onError);
     return upgrade;
   }
@@ -447,11 +494,11 @@ export class UpgradeAdapter {
    * ```
    */
   upgradeNg1Provider(name: string, options?: {asToken: any}) {
-    const token = options && options.asToken || name;
+    const token = (options && options.asToken) || name;
     this.upgradedProviders.push({
       provide: token,
       useFactory: ($injector: IInjectorService) => $injector.get(name),
-      deps: [$INJECTOR]
+      deps: [$INJECTOR],
     });
   }
 
@@ -476,7 +523,9 @@ export class UpgradeAdapter {
    *
    * ```
    */
-  downgradeNg2Provider(token: any): Function { return downgradeInjectable(token); }
+  downgradeNg2Provider(token: any): Function {
+    return downgradeInjectable(token);
+  }
 
   /**
    * Declare the AngularJS upgrade module for this adapter without bootstrapping the whole
@@ -501,122 +550,132 @@ export class UpgradeAdapter {
     let rootScopePrototype: any;
     let rootScope: IRootScopeService;
     const upgradeAdapter = this;
-    const ng1Module = this.ng1Module = angularModule(this.idPrefix, modules);
+    const ng1Module = (this.ng1Module = angularModule(this.idPrefix, modules));
     const platformRef = platformBrowserDynamic();
 
     this.ngZone = new NgZone({enableLongStackTrace: Zone.hasOwnProperty('longStackTraceZoneSpec')});
     this.ng2BootstrapDeferred = new Deferred();
-    ng1Module.constant(UPGRADE_APP_TYPE_KEY, UpgradeAppType.Dynamic)
-        .factory(INJECTOR_KEY, () => this.moduleRef !.injector.get(Injector))
-        .factory(
-            LAZY_MODULE_REF,
-            [INJECTOR_KEY, (injector: Injector) => ({ injector } as LazyModuleRef)])
-        .constant(NG_ZONE_KEY, this.ngZone)
-        .factory(COMPILER_KEY, () => this.moduleRef !.injector.get(Compiler))
-        .config([
-          '$provide', '$injector',
-          (provide: IProvideService, ng1Injector: IInjectorService) => {
-            provide.decorator($ROOT_SCOPE, [
-              '$delegate',
-              function(rootScopeDelegate: IRootScopeService) {
-                // Capture the root apply so that we can delay first call to $apply until we
-                // bootstrap Angular and then we replay and restore the $apply.
-                rootScopePrototype = rootScopeDelegate.constructor.prototype;
-                if (rootScopePrototype.hasOwnProperty('$apply')) {
-                  original$applyFn = rootScopePrototype.$apply;
-                  rootScopePrototype.$apply = (exp: any) => delayApplyExps.push(exp);
-                } else {
-                  throw new Error('Failed to find \'$apply\' on \'$rootScope\'!');
-                }
-                return rootScope = rootScopeDelegate;
+    ng1Module
+      .constant(UPGRADE_APP_TYPE_KEY, UpgradeAppType.Dynamic)
+      .factory(INJECTOR_KEY, () => this.moduleRef!.injector.get(Injector))
+      .factory(LAZY_MODULE_REF, [
+        INJECTOR_KEY,
+        (injector: Injector) => ({injector} as LazyModuleRef),
+      ])
+      .constant(NG_ZONE_KEY, this.ngZone)
+      .factory(COMPILER_KEY, () => this.moduleRef!.injector.get(Compiler))
+      .config([
+        '$provide',
+        '$injector',
+        (provide: IProvideService, ng1Injector: IInjectorService) => {
+          provide.decorator($ROOT_SCOPE, [
+            '$delegate',
+            function (rootScopeDelegate: IRootScopeService) {
+              // Capture the root apply so that we can delay first call to $apply until we
+              // bootstrap Angular and then we replay and restore the $apply.
+              rootScopePrototype = rootScopeDelegate.constructor.prototype;
+              if (rootScopePrototype.hasOwnProperty('$apply')) {
+                original$applyFn = rootScopePrototype.$apply;
+                rootScopePrototype.$apply = (exp: any) => delayApplyExps.push(exp);
+              } else {
+                throw new Error("Failed to find '$apply' on '$rootScope'!");
               }
-            ]);
-            if (ng1Injector.has($$TESTABILITY)) {
-              provide.decorator($$TESTABILITY, [
-                '$delegate',
-                function(testabilityDelegate: ITestabilityService) {
-                  const originalWhenStable: Function = testabilityDelegate.whenStable;
-                  // Cannot use arrow function below because we need the context
-                  const newWhenStable = function(this: unknown, callback: Function) {
-                    originalWhenStable.call(this, function(this: unknown) {
-                      const ng2Testability: Testability =
-                          upgradeAdapter.moduleRef !.injector.get(Testability);
-                      if (ng2Testability.isStable()) {
-                        callback.apply(this, arguments);
-                      } else {
-                        ng2Testability.whenStable(newWhenStable.bind(this, callback));
-                      }
-                    });
-                  };
+              return (rootScope = rootScopeDelegate);
+            },
+          ]);
+          if (ng1Injector.has($$TESTABILITY)) {
+            provide.decorator($$TESTABILITY, [
+              '$delegate',
+              function (testabilityDelegate: ITestabilityService) {
+                const originalWhenStable: Function = testabilityDelegate.whenStable;
+                // Cannot use arrow function below because we need the context
+                const newWhenStable = function (this: unknown, callback: Function) {
+                  originalWhenStable.call(this, function (this: unknown) {
+                    const ng2Testability: Testability = upgradeAdapter.moduleRef!.injector.get(
+                      Testability
+                    );
+                    if (ng2Testability.isStable()) {
+                      callback.apply(this, arguments);
+                    } else {
+                      ng2Testability.whenStable(newWhenStable.bind(this, callback));
+                    }
+                  });
+                };
 
-                  testabilityDelegate.whenStable = newWhenStable;
-                  return testabilityDelegate;
-                }
-              ]);
-            }
+                testabilityDelegate.whenStable = newWhenStable;
+                return testabilityDelegate;
+              },
+            ]);
           }
-        ]);
+        },
+      ]);
 
     ng1Module.run([
-      '$injector', '$rootScope',
+      '$injector',
+      '$rootScope',
       (ng1Injector: IInjectorService, rootScope: IRootScopeService) => {
         UpgradeNg1ComponentAdapterBuilder.resolve(this.ng1ComponentsToBeUpgraded, ng1Injector)
-            .then(() => {
-              // Note: There is a bug in TS 2.4 that prevents us from
-              // inlining this into @NgModule
-              // TODO(tbosch): find or file a bug against TypeScript for this.
-              const ngModule = {
-                providers: [
-                  {provide: $INJECTOR, useFactory: () => ng1Injector},
-                  {provide: $COMPILE, useFactory: () => ng1Injector.get($COMPILE)},
-                  this.upgradedProviders
-                ],
-                imports: [resolveForwardRef(this.ng2AppModule)],
-                entryComponents: this.downgradedComponents
-              };
-              // At this point we have ng1 injector and we have prepared
-              // ng1 components to be upgraded, we now can bootstrap ng2.
-              @NgModule({jit: true, ...ngModule})
-              class DynamicNgUpgradeModule {
-                constructor() {}
-                ngDoBootstrap() {}
-              }
-              platformRef
-                  .bootstrapModule(
-                      DynamicNgUpgradeModule, [this.compilerOptions !, {ngZone: this.ngZone}])
-                  .then((ref: NgModuleRef<any>) => {
-                    this.moduleRef = ref;
-                    this.ngZone.run(() => {
-                      if (rootScopePrototype) {
-                        rootScopePrototype.$apply = original$applyFn;  // restore original $apply
-                        while (delayApplyExps.length) {
-                          rootScope.$apply(delayApplyExps.shift());
-                        }
-                        rootScopePrototype = null;
+          .then(() => {
+            // Note: There is a bug in TS 2.4 that prevents us from
+            // inlining this into @NgModule
+            // TODO(tbosch): find or file a bug against TypeScript for this.
+            const ngModule = {
+              providers: [
+                {provide: $INJECTOR, useFactory: () => ng1Injector},
+                {provide: $COMPILE, useFactory: () => ng1Injector.get($COMPILE)},
+                this.upgradedProviders,
+              ],
+              imports: [resolveForwardRef(this.ng2AppModule)],
+              entryComponents: this.downgradedComponents,
+            };
+            // At this point we have ng1 injector and we have prepared
+            // ng1 components to be upgraded, we now can bootstrap ng2.
+            @NgModule({jit: true, ...ngModule})
+            class DynamicNgUpgradeModule {
+              constructor() {}
+              ngDoBootstrap() {}
+            }
+            platformRef
+              .bootstrapModule(DynamicNgUpgradeModule, [
+                this.compilerOptions!,
+                {ngZone: this.ngZone},
+              ])
+              .then((ref: NgModuleRef<any>) => {
+                this.moduleRef = ref;
+                this.ngZone.run(() => {
+                  if (rootScopePrototype) {
+                    rootScopePrototype.$apply = original$applyFn; // restore original $apply
+                    while (delayApplyExps.length) {
+                      rootScope.$apply(delayApplyExps.shift());
+                    }
+                    rootScopePrototype = null;
+                  }
+                });
+              })
+              .then(() => this.ng2BootstrapDeferred.resolve(ng1Injector), onError)
+              .then(() => {
+                let subscription = this.ngZone.onMicrotaskEmpty.subscribe({
+                  next: () => {
+                    if (rootScope.$$phase) {
+                      if (isDevMode()) {
+                        console.warn(
+                          'A digest was triggered while one was already in progress. This may mean that something is triggering digests outside the Angular zone.'
+                        );
                       }
-                    });
-                  })
-                  .then(() => this.ng2BootstrapDeferred.resolve(ng1Injector), onError)
-                  .then(() => {
-                    let subscription = this.ngZone.onMicrotaskEmpty.subscribe({
-                      next: () => {
-                        if (rootScope.$$phase) {
-                          if (isDevMode()) {
-                            console.warn(
-                                'A digest was triggered while one was already in progress. This may mean that something is triggering digests outside the Angular zone.');
-                          }
 
-                          return rootScope.$evalAsync(() => {});
-                        }
+                      return rootScope.$evalAsync(() => {});
+                    }
 
-                        return rootScope.$digest();
-                      }
-                    });
-                    rootScope.$on('$destroy', () => { subscription.unsubscribe(); });
-                  });
-            })
-            .catch((e) => this.ng2BootstrapDeferred.reject(e));
-      }
+                    return rootScope.$digest();
+                  },
+                });
+                rootScope.$on('$destroy', () => {
+                  subscription.unsubscribe();
+                });
+              });
+          })
+          .catch((e) => this.ng2BootstrapDeferred.reject(e));
+      },
     ]);
 
     return ng1Module;
@@ -629,12 +688,12 @@ export class UpgradeAdapter {
  */
 class ParentInjectorPromise {
   // TODO(issue/24571): remove '!'.
-  private injector !: Injector;
+  private injector!: Injector;
   private callbacks: ((injector: Injector) => any)[] = [];
 
   constructor(private element: IAugmentedJQuery) {
     // store the promise on the element
-    element.data !(controllerKey(INJECTOR_KEY), this);
+    element.data!(controllerKey(INJECTOR_KEY), this);
   }
 
   then(callback: (injector: Injector) => any) {
@@ -649,17 +708,16 @@ class ParentInjectorPromise {
     this.injector = injector;
 
     // reset the element data to point to the real injector
-    this.element.data !(controllerKey(INJECTOR_KEY), injector);
+    this.element.data!(controllerKey(INJECTOR_KEY), injector);
 
     // clean out the element to prevent memory leaks
-    this.element = null !;
+    this.element = null!;
 
     // run all the queued callbacks
     this.callbacks.forEach((callback) => callback(injector));
     this.callbacks.length = 0;
   }
 }
-
 
 /**
  * Use `UpgradeAdapterRef` to control a hybrid AngularJS / Angular application.
@@ -670,12 +728,12 @@ class ParentInjectorPromise {
  */
 export class UpgradeAdapterRef {
   /* @internal */
-  private _readyFn: ((upgradeAdapterRef: UpgradeAdapterRef) => void)|null = null;
+  private _readyFn: ((upgradeAdapterRef: UpgradeAdapterRef) => void) | null = null;
 
-  public ng1RootScope: IRootScopeService = null !;
-  public ng1Injector: IInjectorService = null !;
-  public ng2ModuleRef: NgModuleRef<any> = null !;
-  public ng2Injector: Injector = null !;
+  public ng1RootScope: IRootScopeService = null!;
+  public ng1Injector: IInjectorService = null!;
+  public ng2ModuleRef: NgModuleRef<any> = null!;
+  public ng2Injector: Injector = null!;
 
   /* @internal */
   private _bootstrapDone(ngModuleRef: NgModuleRef<any>, ng1Injector: IInjectorService) {
@@ -693,13 +751,15 @@ export class UpgradeAdapterRef {
    * The `ready` callback function is invoked inside the Angular zone, therefore it does not
    * require a call to `$apply()`.
    */
-  public ready(fn: (upgradeAdapterRef: UpgradeAdapterRef) => void) { this._readyFn = fn; }
+  public ready(fn: (upgradeAdapterRef: UpgradeAdapterRef) => void) {
+    this._readyFn = fn;
+  }
 
   /**
    * Dispose of running hybrid AngularJS / Angular application.
    */
   public dispose() {
-    this.ng1Injector !.get($ROOT_SCOPE).$destroy();
-    this.ng2ModuleRef !.destroy();
+    this.ng1Injector!.get($ROOT_SCOPE).$destroy();
+    this.ng2ModuleRef!.destroy();
   }
 }

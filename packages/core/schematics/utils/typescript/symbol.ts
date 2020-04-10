@@ -8,8 +8,10 @@
 
 import * as ts from 'typescript';
 
-export function getValueSymbolOfDeclaration(node: ts.Node, typeChecker: ts.TypeChecker): ts.Symbol|
-    undefined {
+export function getValueSymbolOfDeclaration(
+  node: ts.Node,
+  typeChecker: ts.TypeChecker
+): ts.Symbol | undefined {
   let symbol = typeChecker.getSymbolAtLocation(node);
 
   while (symbol && symbol.flags & ts.SymbolFlags.Alias) {

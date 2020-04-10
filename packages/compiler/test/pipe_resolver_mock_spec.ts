@@ -36,5 +36,4 @@ import {MockPipeResolver} from '../testing';
 }
 
 @Pipe({name: 'somePipe'})
-class SomePipe {
-}
+class SomePipe {}

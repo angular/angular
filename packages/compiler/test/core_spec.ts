@@ -27,27 +27,37 @@ import * as core from '@angular/core';
       typeExtends<compilerCore.Query, core.Query>();
       typeExtends<core.Query, compilerCore.Query>();
       compareRuntimeShape(
-          new core.ContentChild('someSelector'), compilerCore.createContentChild('someSelector'));
+        new core.ContentChild('someSelector'),
+        compilerCore.createContentChild('someSelector')
+      );
       compareRuntimeShape(
-          new core.ContentChild('someSelector', {read: 'someRead'}),
-          compilerCore.createContentChild('someSelector', {read: 'someRead'}));
+        new core.ContentChild('someSelector', {read: 'someRead'}),
+        compilerCore.createContentChild('someSelector', {read: 'someRead'})
+      );
       compareRuntimeShape(
-          new core.ContentChildren('someSelector'),
-          compilerCore.createContentChildren('someSelector'));
+        new core.ContentChildren('someSelector'),
+        compilerCore.createContentChildren('someSelector')
+      );
       compareRuntimeShape(
-          new core.ContentChildren('someSelector', {read: 'someRead', descendants: false}),
-          compilerCore.createContentChildren(
-              'someSelector', {read: 'someRead', descendants: false}));
+        new core.ContentChildren('someSelector', {read: 'someRead', descendants: false}),
+        compilerCore.createContentChildren('someSelector', {read: 'someRead', descendants: false})
+      );
       compareRuntimeShape(
-          new core.ViewChild('someSelector'), compilerCore.createViewChild('someSelector'));
+        new core.ViewChild('someSelector'),
+        compilerCore.createViewChild('someSelector')
+      );
       compareRuntimeShape(
-          new core.ViewChild('someSelector', {read: 'someRead'}),
-          compilerCore.createViewChild('someSelector', {read: 'someRead'}));
+        new core.ViewChild('someSelector', {read: 'someRead'}),
+        compilerCore.createViewChild('someSelector', {read: 'someRead'})
+      );
       compareRuntimeShape(
-          new core.ViewChildren('someSelector'), compilerCore.createViewChildren('someSelector'));
+        new core.ViewChildren('someSelector'),
+        compilerCore.createViewChildren('someSelector')
+      );
       compareRuntimeShape(
-          new core.ViewChildren('someSelector', {read: 'someRead'}),
-          compilerCore.createViewChildren('someSelector', {read: 'someRead'}));
+        new core.ViewChildren('someSelector', {read: 'someRead'}),
+        compilerCore.createViewChildren('someSelector', {read: 'someRead'})
+      );
     });
 
     it('Directive should be equal', () => {
@@ -66,7 +76,9 @@ import * as core from '@angular/core';
       typeExtends<compilerCore.Pipe, core.Pipe>();
       typeExtends<core.Pipe, compilerCore.Pipe>();
       compareRuntimeShape(
-          new core.Pipe({name: 'someName'}), compilerCore.createPipe({name: 'someName'}));
+        new core.Pipe({name: 'someName'}),
+        compilerCore.createPipe({name: 'someName'})
+      );
     });
 
     it('NgModule should be equal', () => {
@@ -85,7 +97,9 @@ import * as core from '@angular/core';
 
     it('InjectionToken should be equal', () => {
       compareRuntimeShape(
-          new core.InjectionToken('someName'), compilerCore.createInjectionToken('someName'));
+        new core.InjectionToken('someName'),
+        compilerCore.createInjectionToken('someName')
+      );
     });
 
     it('non const enums should be equal', () => {
@@ -120,13 +134,17 @@ import * as core from '@angular/core';
       expectToBe(compilerCore.NodeFlags.TypeClassProvider, core.ɵNodeFlags.TypeClassProvider);
       expectToBe(compilerCore.NodeFlags.TypeFactoryProvider, core.ɵNodeFlags.TypeFactoryProvider);
       expectToBe(
-          compilerCore.NodeFlags.TypeUseExistingProvider, core.ɵNodeFlags.TypeUseExistingProvider);
+        compilerCore.NodeFlags.TypeUseExistingProvider,
+        core.ɵNodeFlags.TypeUseExistingProvider
+      );
       expectToBe(compilerCore.NodeFlags.LazyProvider, core.ɵNodeFlags.LazyProvider);
       expectToBe(compilerCore.NodeFlags.PrivateProvider, core.ɵNodeFlags.PrivateProvider);
       expectToBe(compilerCore.NodeFlags.TypeDirective, core.ɵNodeFlags.TypeDirective);
       expectToBe(compilerCore.NodeFlags.Component, core.ɵNodeFlags.Component);
       expectToBe(
-          compilerCore.NodeFlags.CatProviderNoDirective, core.ɵNodeFlags.CatProviderNoDirective);
+        compilerCore.NodeFlags.CatProviderNoDirective,
+        core.ɵNodeFlags.CatProviderNoDirective
+      );
       expectToBe(compilerCore.NodeFlags.CatProvider, core.ɵNodeFlags.CatProvider);
       expectToBe(compilerCore.NodeFlags.OnInit, core.ɵNodeFlags.OnInit);
       expectToBe(compilerCore.NodeFlags.OnDestroy, core.ɵNodeFlags.OnDestroy);
@@ -154,21 +172,25 @@ import * as core from '@angular/core';
       expectToBe(compilerCore.InjectFlags.SkipSelf, core.InjectFlags.SkipSelf);
       expectToBe(compilerCore.InjectFlags.Self, core.InjectFlags.Self);
 
-
       expectToBe(compilerCore.ArgumentType.Inline, core.ɵArgumentType.Inline);
       expectToBe(compilerCore.ArgumentType.Dynamic, core.ɵArgumentType.Dynamic);
 
       expectToBe(
-          compilerCore.BindingFlags.TypeElementAttribute, core.ɵBindingFlags.TypeElementAttribute);
+        compilerCore.BindingFlags.TypeElementAttribute,
+        core.ɵBindingFlags.TypeElementAttribute
+      );
       expectToBe(compilerCore.BindingFlags.TypeElementClass, core.ɵBindingFlags.TypeElementClass);
       expectToBe(compilerCore.BindingFlags.TypeElementStyle, core.ɵBindingFlags.TypeElementStyle);
       expectToBe(compilerCore.BindingFlags.TypeProperty, core.ɵBindingFlags.TypeProperty);
       expectToBe(compilerCore.BindingFlags.SyntheticProperty, core.ɵBindingFlags.SyntheticProperty);
       expectToBe(
-          compilerCore.BindingFlags.SyntheticHostProperty,
-          core.ɵBindingFlags.SyntheticHostProperty);
+        compilerCore.BindingFlags.SyntheticHostProperty,
+        core.ɵBindingFlags.SyntheticHostProperty
+      );
       expectToBe(
-          compilerCore.BindingFlags.CatSyntheticProperty, core.ɵBindingFlags.CatSyntheticProperty);
+        compilerCore.BindingFlags.CatSyntheticProperty,
+        core.ɵBindingFlags.CatSyntheticProperty
+      );
       expectToBe(compilerCore.BindingFlags.Types, core.ɵBindingFlags.Types);
 
       expectToBe(compilerCore.QueryBindingType.First, core.ɵQueryBindingType.First);
@@ -178,7 +200,9 @@ import * as core from '@angular/core';
       expectToBe(compilerCore.QueryValueType.RenderElement, core.ɵQueryValueType.RenderElement);
       expectToBe(compilerCore.QueryValueType.TemplateRef, core.ɵQueryValueType.TemplateRef);
       expectToBe(
-          compilerCore.QueryValueType.ViewContainerRef, core.ɵQueryValueType.ViewContainerRef);
+        compilerCore.QueryValueType.ViewContainerRef,
+        core.ɵQueryValueType.ViewContainerRef
+      );
       expectToBe(compilerCore.QueryValueType.Provider, core.ɵQueryValueType.Provider);
 
       expectToBe(compilerCore.ViewFlags.None, core.ɵViewFlags.None);
@@ -190,7 +214,7 @@ import * as core from '@angular/core';
 function compareRuntimeShape(a: any, b: any) {
   const keys = metadataKeys(a);
   expect(keys).toEqual(metadataKeys(b));
-  keys.forEach(key => {
+  keys.forEach((key) => {
     expect(a[key]).toBe(b[key]);
   });
   // Need to check 'ngMetadataName' separately, as this is
@@ -199,7 +223,9 @@ function compareRuntimeShape(a: any, b: any) {
 }
 
 function metadataKeys(a: any): string[] {
-  return Object.keys(a).filter(prop => prop !== 'ngMetadataName' && !prop.startsWith('_')).sort();
+  return Object.keys(a)
+    .filter((prop) => prop !== 'ngMetadataName' && !prop.startsWith('_'))
+    .sort();
 }
 
 function typeExtends<T1 extends T2, T2>() {}

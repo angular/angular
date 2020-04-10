@@ -8,10 +8,33 @@
 
 import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
-import {Compiler, Injectable, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader, Optional} from '@angular/core';
-import {ChildrenOutletContexts, ExtraOptions, NoPreloading, PreloadingStrategy, ROUTER_CONFIGURATION, ROUTES, Route, Router, RouterModule, Routes, UrlHandlingStrategy, UrlSerializer, provideRoutes, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵflatten as flatten} from '@angular/router';
-
-
+import {
+  Compiler,
+  Injectable,
+  Injector,
+  ModuleWithProviders,
+  NgModule,
+  NgModuleFactory,
+  NgModuleFactoryLoader,
+  Optional,
+} from '@angular/core';
+import {
+  ChildrenOutletContexts,
+  ExtraOptions,
+  NoPreloading,
+  PreloadingStrategy,
+  ROUTER_CONFIGURATION,
+  ROUTES,
+  Route,
+  Router,
+  RouterModule,
+  Routes,
+  UrlHandlingStrategy,
+  UrlSerializer,
+  provideRoutes,
+  ɵROUTER_PROVIDERS as ROUTER_PROVIDERS,
+  ɵflatten as flatten,
+} from '@angular/router';
 
 /**
  * @description
@@ -63,7 +86,9 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
   /**
    * @docsNotRequired
    */
-  get stubbedModules(): {[path: string]: any} { return this._stubbedModules; }
+  get stubbedModules(): {[path: string]: any} {
+    return this._stubbedModules;
+  }
 
   constructor(private compiler: Compiler) {}
 
@@ -76,8 +101,9 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
   }
 }
 
-function isUrlHandlingStrategy(opts: ExtraOptions | UrlHandlingStrategy):
-    opts is UrlHandlingStrategy {
+function isUrlHandlingStrategy(
+  opts: ExtraOptions | UrlHandlingStrategy
+): opts is UrlHandlingStrategy {
   // This property check is needed because UrlHandlingStrategy is an interface and doesn't exist at
   // runtime.
   return 'shouldProcessUrl' in opts;
@@ -89,9 +115,16 @@ function isUrlHandlingStrategy(opts: ExtraOptions | UrlHandlingStrategy):
  * @publicApi
  */
 export function setupTestingRouter(
-    urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
-    loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][],
-    opts?: ExtraOptions, urlHandlingStrategy?: UrlHandlingStrategy): Router;
+  urlSerializer: UrlSerializer,
+  contexts: ChildrenOutletContexts,
+  location: Location,
+  loader: NgModuleFactoryLoader,
+  compiler: Compiler,
+  injector: Injector,
+  routes: Route[][],
+  opts?: ExtraOptions,
+  urlHandlingStrategy?: UrlHandlingStrategy
+): Router;
 
 /**
  * Router setup factory function used for testing.
@@ -101,9 +134,15 @@ export function setupTestingRouter(
  * @publicApi
  */
 export function setupTestingRouter(
-    urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
-    loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][],
-    urlHandlingStrategy?: UrlHandlingStrategy): Router;
+  urlSerializer: UrlSerializer,
+  contexts: ChildrenOutletContexts,
+  location: Location,
+  loader: NgModuleFactoryLoader,
+  compiler: Compiler,
+  injector: Injector,
+  routes: Route[][],
+  urlHandlingStrategy?: UrlHandlingStrategy
+): Router;
 
 /**
  * Router setup factory function used for testing.
@@ -111,11 +150,26 @@ export function setupTestingRouter(
  * @publicApi
  */
 export function setupTestingRouter(
-    urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
-    loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][],
-    opts?: ExtraOptions | UrlHandlingStrategy, urlHandlingStrategy?: UrlHandlingStrategy) {
+  urlSerializer: UrlSerializer,
+  contexts: ChildrenOutletContexts,
+  location: Location,
+  loader: NgModuleFactoryLoader,
+  compiler: Compiler,
+  injector: Injector,
+  routes: Route[][],
+  opts?: ExtraOptions | UrlHandlingStrategy,
+  urlHandlingStrategy?: UrlHandlingStrategy
+) {
   const router = new Router(
-      null !, urlSerializer, contexts, location, injector, loader, compiler, flatten(routes));
+    null!,
+    urlSerializer,
+    contexts,
+    location,
+    injector,
+    loader,
+    compiler,
+    flatten(routes)
+  );
   if (opts) {
     // Handle deprecated argument ordering.
     if (isUrlHandlingStrategy(opts)) {
@@ -168,28 +222,40 @@ export function setupTestingRouter(
 @NgModule({
   exports: [RouterModule],
   providers: [
-    ROUTER_PROVIDERS, {provide: Location, useClass: SpyLocation},
+    ROUTER_PROVIDERS,
+    {provide: Location, useClass: SpyLocation},
     {provide: LocationStrategy, useClass: MockLocationStrategy},
-    {provide: NgModuleFactoryLoader, useClass: SpyNgModuleFactoryLoader}, {
+    {provide: NgModuleFactoryLoader, useClass: SpyNgModuleFactoryLoader},
+    {
       provide: Router,
       useFactory: setupTestingRouter,
       deps: [
-        UrlSerializer, ChildrenOutletContexts, Location, NgModuleFactoryLoader, Compiler, Injector,
-        ROUTES, ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()]
-      ]
+        UrlSerializer,
+        ChildrenOutletContexts,
+        Location,
+        NgModuleFactoryLoader,
+        Compiler,
+        Injector,
+        ROUTES,
+        ROUTER_CONFIGURATION,
+        [UrlHandlingStrategy, new Optional()],
+      ],
     },
-    {provide: PreloadingStrategy, useExisting: NoPreloading}, provideRoutes([])
-  ]
+    {provide: PreloadingStrategy, useExisting: NoPreloading},
+    provideRoutes([]),
+  ],
 })
 export class RouterTestingModule {
-  static withRoutes(routes: Routes, config?: ExtraOptions):
-      ModuleWithProviders<RouterTestingModule> {
+  static withRoutes(
+    routes: Routes,
+    config?: ExtraOptions
+  ): ModuleWithProviders<RouterTestingModule> {
     return {
       ngModule: RouterTestingModule,
       providers: [
         provideRoutes(routes),
         {provide: ROUTER_CONFIGURATION, useValue: config ? config : {}},
-      ]
+      ],
     };
   }
 }

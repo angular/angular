@@ -14,7 +14,12 @@ const chalk = require('chalk');
 import * as minimist from 'minimist';
 import * as path from 'path';
 
-import {SerializationOptions, generateGoldenFile, verifyAgainstGoldenFile, discoverAllEntrypoints} from './main';
+import {
+  SerializationOptions,
+  generateGoldenFile,
+  verifyAgainstGoldenFile,
+  discoverAllEntrypoints,
+} from './main';
 
 /** Name of the CLI */
 const CMD = 'ts-api-guardian';
@@ -30,8 +35,9 @@ const bazelWorkspaceDirectory = process.env.BUILD_WORKSPACE_DIRECTORY;
  * Regular expression that matches Bazel manifest paths that start with the
  * current Bazel workspace, followed by a path delimiter.
  */
-const bazelWorkspaceManifestPathRegex =
-    bazelWorkspaceName ? new RegExp(`^${bazelWorkspaceName}[/\\\\]`) : null;
+const bazelWorkspaceManifestPathRegex = bazelWorkspaceName
+  ? new RegExp(`^${bazelWorkspaceName}[/\\\\]`)
+  : null;
 
 export function startCli() {
   const {argv, mode, errors} = parseArguments(process.argv.slice(2));
@@ -47,17 +53,17 @@ export function startCli() {
     options.exportTags = {
       requireAtLeastOne: ['publicApi', 'codeGenApi'],
       banned: ['experimental'],
-      toCopy: ['deprecated']
+      toCopy: ['deprecated'],
     };
     options.memberTags = {
       requireAtLeastOne: [],
       banned: ['experimental', 'publicApi', 'codeGenApi'],
-      toCopy: ['deprecated']
+      toCopy: ['deprecated'],
     };
     options.paramTags = {
       requireAtLeastOne: [],
       banned: ['experimental', 'publicApi', 'codeGenApi'],
-      toCopy: ['deprecated']
+      toCopy: ['deprecated'],
     };
   }
 
@@ -83,7 +89,8 @@ export function startCli() {
       for (const {entrypoint, goldenFile} of targets) {
         generateGoldenFile(entrypoint, goldenFile, options);
       }
-    } else {  // mode === 'verify'
+    } else {
+      // mode === 'verify'
       let hasDiff = false;
 
       for (const {entrypoint, goldenFile} of targets) {
@@ -92,11 +99,14 @@ export function startCli() {
           hasDiff = true;
           const lines = diff.split('\n');
           if (lines.length) {
-            lines.pop();  // Remove trailing newline
+            lines.pop(); // Remove trailing newline
           }
           for (const line of lines) {
-            const chalkMap:
-                {[key: string]: any} = {'-': chalk.red, '+': chalk.green, '@': chalk.cyan};
+            const chalkMap: {[key: string]: any} = {
+              '-': chalk.red,
+              '+': chalk.green,
+              '@': chalk.cyan,
+            };
             const chalkFunc = chalkMap[line[0]] || chalk.reset;
             console.log(chalkFunc(line));
           }
@@ -113,7 +123,8 @@ export function startCli() {
           if (process.env['TEST_WORKSPACE'] === 'angular') {
             console.error('\n\nFor more information, see');
             console.error(
-                '\n  https://github.com/angular/angular/blob/master/docs/PUBLIC_API.md#golden-files');
+              '\n  https://github.com/angular/angular/blob/master/docs/PUBLIC_API.md#golden-files'
+            );
           }
         }
 
@@ -123,31 +134,40 @@ export function startCli() {
   }
 }
 
-export function parseArguments(input: string[]):
-    {argv: minimist.ParsedArgs, mode: string, errors: string[]} {
+export function parseArguments(
+  input: string[]
+): {argv: minimist.ParsedArgs; mode: string; errors: string[]} {
   let help = false;
   const errors: string[] = [];
 
   const argv = minimist(input, {
     string: [
-      'out', 'outDir', 'verify', 'verifyDir', 'rootDir', 'stripExportPattern',
-      'allowModuleIdentifiers'
+      'out',
+      'outDir',
+      'verify',
+      'verifyDir',
+      'rootDir',
+      'stripExportPattern',
+      'allowModuleIdentifiers',
     ],
     boolean: [
-      'help', 'useAngularTagRules', 'autoDiscoverEntrypoints',
+      'help',
+      'useAngularTagRules',
+      'autoDiscoverEntrypoints',
       // Options used by chalk automagically
-      'color', 'no-color'
+      'color',
+      'no-color',
     ],
     alias: {'outFile': 'out', 'verifyFile': 'verify'},
     unknown: (option: string) => {
       if (option[0] === '-') {
         errors.push(`Unknown option: ${option}`);
         help = true;
-        return false;  // do not add to argv._
+        return false; // do not add to argv._
       } else {
-        return true;  // add to argv._
+        return true; // add to argv._
       }
-    }
+    },
   });
 
   help = help || argv['help'];
@@ -247,28 +267,36 @@ function resolveFilePath(fileName: string): string {
   // runfiles are specified (i.e. golden is approved but does not exist in the workspace yet).
   try {
     return require.resolve(fileName);
-  } catch {
-  }
+  } catch {}
   // This handles cases where file paths cannot be resolved through runfiles. This happens
   // commonly when goldens are approved while the golden does not exist in the workspace yet.
   // In those cases, we want to build up a relative path based on the manifest path, and join
   // it with the absolute bazel workspace directory (which is only set in `bazel run`).
   // e.g. `angular/goldens/<..>/common` should become `{workspace_dir}/goldens/<...>/common`.
-  if (bazelWorkspaceManifestPathRegex !== null && bazelWorkspaceDirectory &&
-      bazelWorkspaceManifestPathRegex.test(fileName)) {
+  if (
+    bazelWorkspaceManifestPathRegex !== null &&
+    bazelWorkspaceDirectory &&
+    bazelWorkspaceManifestPathRegex.test(fileName)
+  ) {
     return path.join(bazelWorkspaceDirectory, fileName.substr(bazelWorkspaceName.length + 1));
   }
   throw Error(`Could not resolve file path in runfiles: ${fileName}`);
 }
 
-function resolveFileNamePairs(argv: minimist.ParsedArgs, mode: string, entrypoints: string[]):
-    {entrypoint: string, goldenFile: string}[] {
+function resolveFileNamePairs(
+  argv: minimist.ParsedArgs,
+  mode: string,
+  entrypoints: string[]
+): {entrypoint: string; goldenFile: string}[] {
   if (argv[mode]) {
-    return [{
-      entrypoint: resolveFilePath(entrypoints[0]),
-      goldenFile: resolveFilePath(argv[mode]),
-    }];
-  } else {  // argv[mode + 'Dir']
+    return [
+      {
+        entrypoint: resolveFilePath(entrypoints[0]),
+        goldenFile: resolveFilePath(argv[mode]),
+      },
+    ];
+  } else {
+    // argv[mode + 'Dir']
     let rootDir = argv['rootDir'] || '.';
     const goldenDir = argv[mode + 'Dir'];
 

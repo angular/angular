@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseError, ParseErrorLevel, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../src/parse_util';
+import {
+  ParseError,
+  ParseErrorLevel,
+  ParseLocation,
+  ParseSourceFile,
+  ParseSourceSpan,
+} from '../src/parse_util';
 
 {
   describe('ParseError', () => {

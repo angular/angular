@@ -14,7 +14,14 @@ import * as ts from 'typescript';
 
 import {readConfiguration} from '../..';
 import {replaceTsWithNgInErrors} from '../../src/ngtsc/diagnostics';
-import {absoluteFrom, AbsoluteFsPath, dirname, FileSystem, getFileSystem, resolve} from '../../src/ngtsc/file_system';
+import {
+  absoluteFrom,
+  AbsoluteFsPath,
+  dirname,
+  FileSystem,
+  getFileSystem,
+  resolve,
+} from '../../src/ngtsc/file_system';
 
 import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
 import {DependencyResolver, InvalidEntryPoint} from './dependencies/dependency_resolver';
@@ -28,9 +35,23 @@ import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_poin
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from './execution/api';
 import {ClusterExecutor} from './execution/cluster/executor';
 import {ClusterPackageJsonUpdater} from './execution/cluster/package_json_updater';
-import {SingleProcessExecutorAsync, SingleProcessExecutorSync} from './execution/single_process_executor';
-import {CreateTaskCompletedCallback, PartiallyOrderedTasks, Task, TaskProcessingOutcome, TaskQueue} from './execution/tasks/api';
-import {composeTaskCompletedCallbacks, createLogErrorHandler, createMarkAsProcessedHandler, createThrowErrorHandler} from './execution/tasks/completion';
+import {
+  SingleProcessExecutorAsync,
+  SingleProcessExecutorSync,
+} from './execution/single_process_executor';
+import {
+  CreateTaskCompletedCallback,
+  PartiallyOrderedTasks,
+  Task,
+  TaskProcessingOutcome,
+  TaskQueue,
+} from './execution/tasks/api';
+import {
+  composeTaskCompletedCallbacks,
+  createLogErrorHandler,
+  createMarkAsProcessedHandler,
+  createThrowErrorHandler,
+} from './execution/tasks/completion';
 import {ParallelTaskQueue} from './execution/tasks/queues/parallel_task_queue';
 import {SerialTaskQueue} from './execution/tasks/queues/serial_task_queue';
 import {computeTaskDependencies} from './execution/tasks/utils';
@@ -41,7 +62,13 @@ import {ConsoleLogger} from './logging/console_logger';
 import {Logger, LogLevel} from './logging/logger';
 import {hasBeenProcessed} from './packages/build_marker';
 import {NgccConfiguration} from './packages/configuration';
-import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, getEntryPointFormat, SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point';
+import {
+  EntryPoint,
+  EntryPointJsonProperty,
+  EntryPointPackageJson,
+  getEntryPointFormat,
+  SUPPORTED_FORMAT_PROPERTIES,
+} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {EntryPointManifest, InvalidatingEntryPointManifest} from './packages/entry_point_manifest';
 import {PathMappings} from './utils';
@@ -157,18 +184,18 @@ export interface SyncNgccOptions {
    *
    * If `null`, ngcc will not attempt to load any TS config file at all.
    */
-  tsConfigPath?: string|null;
+  tsConfigPath?: string | null;
 }
 
 /**
  * The options to configure the ngcc compiler for asynchronous execution.
  */
-export type AsyncNgccOptions = Omit<SyncNgccOptions, 'async'>&{async: true};
+export type AsyncNgccOptions = Omit<SyncNgccOptions, 'async'> & {async: true};
 
 /**
  * The options to configure the ngcc compiler.
  */
-export type NgccOptions = AsyncNgccOptions|SyncNgccOptions;
+export type NgccOptions = AsyncNgccOptions | SyncNgccOptions;
 
 /**
  * This is the main entry-point into ngcc (aNGular Compatibility Compiler).
@@ -192,15 +219,15 @@ export function mainNgcc({
   errorOnFailedEntryPoint = false,
   enableI18nLegacyMessageIdFormat = true,
   invalidateEntryPointManifest = false,
-  tsConfigPath
-}: NgccOptions): void|Promise<void> {
+  tsConfigPath,
+}: NgccOptions): void | Promise<void> {
   if (!!targetEntryPointPath) {
     // targetEntryPointPath forces us to error if an entry-point fails.
     errorOnFailedEntryPoint = true;
   }
 
   // Execute in parallel, if async execution is acceptable and there are more than 1 CPU cores.
-  const inParallel = async && (os.cpus().length > 1);
+  const inParallel = async && os.cpus().length > 1;
 
   // Instantiate common utilities that are always used.
   // NOTE: Avoid eagerly instantiating anything that might not be used when running sync/async or in
@@ -212,8 +239,12 @@ export function mainNgcc({
   const tsConfig = tsConfigPath !== null ? readConfiguration(tsConfigPath || projectPath) : null;
 
   // If `pathMappings` is not provided directly, then try getting it from `tsConfig`, if available.
-  if (tsConfig !== null && pathMappings === undefined && tsConfig.options.baseUrl !== undefined &&
-      tsConfig.options.paths) {
+  if (
+    tsConfig !== null &&
+    pathMappings === undefined &&
+    tsConfig.options.baseUrl !== undefined &&
+    tsConfig.options.paths
+  ) {
     pathMappings = {
       baseUrl: resolve(projectPath, tsConfig.options.baseUrl),
       paths: tsConfig.options.paths,
@@ -221,19 +252,28 @@ export function mainNgcc({
   }
 
   const dependencyResolver = getDependencyResolver(fileSystem, logger, config, pathMappings);
-  const entryPointManifest = invalidateEntryPointManifest ?
-      new InvalidatingEntryPointManifest(fileSystem, config, logger) :
-      new EntryPointManifest(fileSystem, config, logger);
+  const entryPointManifest = invalidateEntryPointManifest
+    ? new InvalidatingEntryPointManifest(fileSystem, config, logger)
+    : new EntryPointManifest(fileSystem, config, logger);
 
   // Bail out early if the work is already done.
   const supportedPropertiesToConsider = ensureSupportedProperties(propertiesToConsider);
   const absoluteTargetEntryPointPath =
-      targetEntryPointPath !== undefined ? resolve(basePath, targetEntryPointPath) : null;
+    targetEntryPointPath !== undefined ? resolve(basePath, targetEntryPointPath) : null;
   const finder = getEntryPointFinder(
-      fileSystem, logger, dependencyResolver, config, entryPointManifest, absBasePath,
-      absoluteTargetEntryPointPath, pathMappings);
-  if (finder instanceof TargetedEntryPointFinder &&
-      !finder.targetNeedsProcessingOrCleaning(supportedPropertiesToConsider, compileAllFormats)) {
+    fileSystem,
+    logger,
+    dependencyResolver,
+    config,
+    entryPointManifest,
+    absBasePath,
+    absoluteTargetEntryPointPath,
+    pathMappings
+  );
+  if (
+    finder instanceof TargetedEntryPointFinder &&
+    !finder.targetNeedsProcessingOrCleaning(supportedPropertiesToConsider, compileAllFormats)
+  ) {
     logger.debug('The target entry-point has already been processed');
     return;
   }
@@ -266,8 +306,11 @@ export function mainNgcc({
     for (const entryPoint of entryPoints) {
       const packageJson = entryPoint.packageJson;
       const hasProcessedTypings = hasBeenProcessed(packageJson, 'typings');
-      const {propertiesToProcess, equivalentPropertiesMap} =
-          getPropertiesToProcess(packageJson, supportedPropertiesToConsider, compileAllFormats);
+      const {propertiesToProcess, equivalentPropertiesMap} = getPropertiesToProcess(
+        packageJson,
+        supportedPropertiesToConsider,
+        compileAllFormats
+      );
       let processDts = !hasProcessedTypings;
 
       if (propertiesToProcess.length === 0) {
@@ -297,30 +340,37 @@ export function mainNgcc({
     // Check for entry-points for which we could not process any format at all.
     if (unprocessableEntryPointPaths.length > 0) {
       throw new Error(
-          'Unable to process any formats for the following entry-points (tried ' +
+        'Unable to process any formats for the following entry-points (tried ' +
           `${propertiesToConsider.join(', ')}): ` +
-          unprocessableEntryPointPaths.map(path => `\n  - ${path}`).join(''));
+          unprocessableEntryPointPaths.map((path) => `\n  - ${path}`).join('')
+      );
     }
 
     const duration = Math.round((Date.now() - startTime) / 100) / 10;
     logger.debug(
-        `Analyzed ${entryPoints.length} entry-points in ${duration}s. ` +
-        `(Total tasks: ${tasks.length})`);
+      `Analyzed ${entryPoints.length} entry-points in ${duration}s. ` +
+        `(Total tasks: ${tasks.length})`
+    );
 
     return getTaskQueue(logger, inParallel, tasks, graph);
   };
 
   // The function for creating the `compile()` function.
-  const createCompileFn: CreateCompileFn = onTaskCompleted => {
+  const createCompileFn: CreateCompileFn = (onTaskCompleted) => {
     const fileWriter = getFileWriter(
-        fileSystem, logger, pkgJsonUpdater, createNewEntryPointFormats, errorOnFailedEntryPoint);
+      fileSystem,
+      logger,
+      pkgJsonUpdater,
+      createNewEntryPointFormats,
+      errorOnFailedEntryPoint
+    );
     const {Transformer} = require('./packages/transformer');
     const transformer = new Transformer(fileSystem, logger, tsConfig);
 
     return (task: Task) => {
       const {entryPoint, formatProperty, formatPropertiesToMarkAsProcessed, processDts} = task;
 
-      const isCore = entryPoint.name === '@angular/core';  // Are we compiling the Angular core?
+      const isCore = entryPoint.name === '@angular/core'; // Are we compiling the Angular core?
       const packageJson = entryPoint.packageJson;
       const formatPath = packageJson[formatProperty];
       const format = getEntryPointFormat(fileSystem, entryPoint, formatProperty);
@@ -333,21 +383,33 @@ export function mainNgcc({
       if (!formatPath || !format) {
         // This should never happen.
         throw new Error(
-            `Invariant violated: No format-path or format for ${entryPoint.path} : ` +
-            `${formatProperty} (formatPath: ${formatPath} | format: ${format})`);
+          `Invariant violated: No format-path or format for ${entryPoint.path} : ` +
+            `${formatProperty} (formatPath: ${formatPath} | format: ${format})`
+        );
       }
 
       const bundle = makeEntryPointBundle(
-          fileSystem, entryPoint, formatPath, isCore, format, processDts, pathMappings, true,
-          enableI18nLegacyMessageIdFormat);
+        fileSystem,
+        entryPoint,
+        formatPath,
+        isCore,
+        format,
+        processDts,
+        pathMappings,
+        true,
+        enableI18nLegacyMessageIdFormat
+      );
 
       logger.info(`Compiling ${entryPoint.name} : ${formatProperty} as ${format}`);
 
       const result = transformer.transform(bundle);
       if (result.success) {
         if (result.diagnostics.length > 0) {
-          logger.warn(replaceTsWithNgInErrors(
-              ts.formatDiagnosticsWithColorAndContext(result.diagnostics, bundle.src.host)));
+          logger.warn(
+            replaceTsWithNgInErrors(
+              ts.formatDiagnosticsWithColorAndContext(result.diagnostics, bundle.src.host)
+            )
+          );
         }
         fileWriter.writeBundle(bundle, result.transformedFiles, formatPropertiesToMarkAsProcessed);
 
@@ -356,17 +418,28 @@ export function mainNgcc({
         onTaskCompleted(task, TaskProcessingOutcome.Processed, null);
       } else {
         const errors = replaceTsWithNgInErrors(
-            ts.formatDiagnosticsWithColorAndContext(result.diagnostics, bundle.src.host));
+          ts.formatDiagnosticsWithColorAndContext(result.diagnostics, bundle.src.host)
+        );
         onTaskCompleted(task, TaskProcessingOutcome.Failed, `compilation errors:\n${errors}`);
       }
     };
   };
 
   // The executor for actually planning and getting the work done.
-  const createTaskCompletedCallback =
-      getCreateTaskCompletedCallback(pkgJsonUpdater, errorOnFailedEntryPoint, logger, fileSystem);
+  const createTaskCompletedCallback = getCreateTaskCompletedCallback(
+    pkgJsonUpdater,
+    errorOnFailedEntryPoint,
+    logger,
+    fileSystem
+  );
   const executor = getExecutor(
-      async, inParallel, logger, pkgJsonUpdater, fileSystem, createTaskCompletedCallback);
+    async,
+    inParallel,
+    logger,
+    pkgJsonUpdater,
+    fileSystem,
+    createTaskCompletedCallback
+  );
 
   return executor.execute(analyzeEntryPoints, createCompileFn);
 }
@@ -386,8 +459,9 @@ function ensureSupportedProperties(properties: string[]): EntryPointJsonProperty
 
   if (supportedProperties.length === 0) {
     throw new Error(
-        `No supported format property to consider among [${properties.join(', ')}]. ` +
-        `Supported properties: ${SUPPORTED_FORMAT_PROPERTIES.join(', ')}`);
+      `No supported format property to consider among [${properties.join(', ')}]. ` +
+        `Supported properties: ${SUPPORTED_FORMAT_PROPERTIES.join(', ')}`
+    );
   }
 
   return supportedProperties;
@@ -399,35 +473,52 @@ function getPackageJsonUpdater(inParallel: boolean, fs: FileSystem): PackageJson
 }
 
 function getFileWriter(
-    fs: FileSystem, logger: Logger, pkgJsonUpdater: PackageJsonUpdater,
-    createNewEntryPointFormats: boolean, errorOnFailedEntryPoint: boolean): FileWriter {
-  return createNewEntryPointFormats ?
-      new NewEntryPointFileWriter(fs, logger, errorOnFailedEntryPoint, pkgJsonUpdater) :
-      new InPlaceFileWriter(fs, logger, errorOnFailedEntryPoint);
+  fs: FileSystem,
+  logger: Logger,
+  pkgJsonUpdater: PackageJsonUpdater,
+  createNewEntryPointFormats: boolean,
+  errorOnFailedEntryPoint: boolean
+): FileWriter {
+  return createNewEntryPointFormats
+    ? new NewEntryPointFileWriter(fs, logger, errorOnFailedEntryPoint, pkgJsonUpdater)
+    : new InPlaceFileWriter(fs, logger, errorOnFailedEntryPoint);
 }
 
 function getTaskQueue(
-    logger: Logger, inParallel: boolean, tasks: PartiallyOrderedTasks,
-    graph: DepGraph<EntryPoint>): TaskQueue {
+  logger: Logger,
+  inParallel: boolean,
+  tasks: PartiallyOrderedTasks,
+  graph: DepGraph<EntryPoint>
+): TaskQueue {
   const dependencies = computeTaskDependencies(tasks, graph);
-  return inParallel ? new ParallelTaskQueue(logger, tasks, dependencies) :
-                      new SerialTaskQueue(logger, tasks, dependencies);
+  return inParallel
+    ? new ParallelTaskQueue(logger, tasks, dependencies)
+    : new SerialTaskQueue(logger, tasks, dependencies);
 }
 
 function getCreateTaskCompletedCallback(
-    pkgJsonUpdater: PackageJsonUpdater, errorOnFailedEntryPoint: boolean, logger: Logger,
-    fileSystem: FileSystem): CreateTaskCompletedCallback {
-  return taskQueue => composeTaskCompletedCallbacks({
-           [TaskProcessingOutcome.Processed]: createMarkAsProcessedHandler(pkgJsonUpdater),
-           [TaskProcessingOutcome.Failed]:
-               errorOnFailedEntryPoint ? createThrowErrorHandler(fileSystem) :
-                                         createLogErrorHandler(logger, fileSystem, taskQueue),
-         });
+  pkgJsonUpdater: PackageJsonUpdater,
+  errorOnFailedEntryPoint: boolean,
+  logger: Logger,
+  fileSystem: FileSystem
+): CreateTaskCompletedCallback {
+  return (taskQueue) =>
+    composeTaskCompletedCallbacks({
+      [TaskProcessingOutcome.Processed]: createMarkAsProcessedHandler(pkgJsonUpdater),
+      [TaskProcessingOutcome.Failed]: errorOnFailedEntryPoint
+        ? createThrowErrorHandler(fileSystem)
+        : createLogErrorHandler(logger, fileSystem, taskQueue),
+    });
 }
 
 function getExecutor(
-    async: boolean, inParallel: boolean, logger: Logger, pkgJsonUpdater: PackageJsonUpdater,
-    fileSystem: FileSystem, createTaskCompletedCallback: CreateTaskCompletedCallback): Executor {
+  async: boolean,
+  inParallel: boolean,
+  logger: Logger,
+  pkgJsonUpdater: PackageJsonUpdater,
+  fileSystem: FileSystem,
+  createTaskCompletedCallback: CreateTaskCompletedCallback
+): Executor {
   const lockFile = new LockFileWithChildProcess(fileSystem, logger);
   if (async) {
     // Execute asynchronously (either serially or in parallel)
@@ -436,7 +527,12 @@ function getExecutor(
       // Execute in parallel. Use up to 8 CPU cores for workers, always reserving one for master.
       const workerCount = Math.min(8, os.cpus().length - 1);
       return new ClusterExecutor(
-          workerCount, logger, pkgJsonUpdater, locker, createTaskCompletedCallback);
+        workerCount,
+        logger,
+        pkgJsonUpdater,
+        locker,
+        createTaskCompletedCallback
+      );
     } else {
       // Execute serially, on a single thread (async).
       return new SingleProcessExecutorAsync(logger, locker, createTaskCompletedCallback);
@@ -444,48 +540,78 @@ function getExecutor(
   } else {
     // Execute serially, on a single thread (sync).
     return new SingleProcessExecutorSync(
-        logger, new SyncLocker(lockFile), createTaskCompletedCallback);
+      logger,
+      new SyncLocker(lockFile),
+      createTaskCompletedCallback
+    );
   }
 }
 
 function getDependencyResolver(
-    fileSystem: FileSystem, logger: Logger, config: NgccConfiguration,
-    pathMappings: PathMappings|undefined): DependencyResolver {
+  fileSystem: FileSystem,
+  logger: Logger,
+  config: NgccConfiguration,
+  pathMappings: PathMappings | undefined
+): DependencyResolver {
   const moduleResolver = new ModuleResolver(fileSystem, pathMappings);
   const esmDependencyHost = new EsmDependencyHost(fileSystem, moduleResolver);
   const umdDependencyHost = new UmdDependencyHost(fileSystem, moduleResolver);
   const commonJsDependencyHost = new CommonJsDependencyHost(fileSystem, moduleResolver);
   const dtsDependencyHost = new DtsDependencyHost(fileSystem, pathMappings);
   return new DependencyResolver(
-      fileSystem, logger, config, {
-        esm5: esmDependencyHost,
-        esm2015: esmDependencyHost,
-        umd: umdDependencyHost,
-        commonjs: commonJsDependencyHost
-      },
-      dtsDependencyHost);
+    fileSystem,
+    logger,
+    config,
+    {
+      esm5: esmDependencyHost,
+      esm2015: esmDependencyHost,
+      umd: umdDependencyHost,
+      commonjs: commonJsDependencyHost,
+    },
+    dtsDependencyHost
+  );
 }
 
 function getEntryPointFinder(
-    fs: FileSystem, logger: Logger, resolver: DependencyResolver, config: NgccConfiguration,
-    entryPointManifest: EntryPointManifest, basePath: AbsoluteFsPath,
-    absoluteTargetEntryPointPath: AbsoluteFsPath|null,
-    pathMappings: PathMappings|undefined): EntryPointFinder {
+  fs: FileSystem,
+  logger: Logger,
+  resolver: DependencyResolver,
+  config: NgccConfiguration,
+  entryPointManifest: EntryPointManifest,
+  basePath: AbsoluteFsPath,
+  absoluteTargetEntryPointPath: AbsoluteFsPath | null,
+  pathMappings: PathMappings | undefined
+): EntryPointFinder {
   if (absoluteTargetEntryPointPath !== null) {
     return new TargetedEntryPointFinder(
-        fs, config, logger, resolver, basePath, absoluteTargetEntryPointPath, pathMappings);
+      fs,
+      config,
+      logger,
+      resolver,
+      basePath,
+      absoluteTargetEntryPointPath,
+      pathMappings
+    );
   } else {
     return new DirectoryWalkerEntryPointFinder(
-        fs, config, logger, resolver, entryPointManifest, basePath, pathMappings);
+      fs,
+      config,
+      logger,
+      resolver,
+      entryPointManifest,
+      basePath,
+      pathMappings
+    );
   }
 }
 
 function logInvalidEntryPoints(logger: Logger, invalidEntryPoints: InvalidEntryPoint[]): void {
-  invalidEntryPoints.forEach(invalidEntryPoint => {
+  invalidEntryPoints.forEach((invalidEntryPoint) => {
     logger.debug(
-        `Invalid entry-point ${invalidEntryPoint.entryPoint.path}.`,
-        `It is missing required dependencies:\n` +
-            invalidEntryPoint.missingDependencies.map(dep => ` - ${dep}`).join('\n'));
+      `Invalid entry-point ${invalidEntryPoint.entryPoint.path}.`,
+      `It is missing required dependencies:\n` +
+        invalidEntryPoint.missingDependencies.map((dep) => ` - ${dep}`).join('\n')
+    );
   });
 }
 
@@ -499,8 +625,10 @@ function logInvalidEntryPoints(logger: Logger, invalidEntryPoints: InvalidEntryP
  *   former has been processed.
  */
 function getPropertiesToProcess(
-    packageJson: EntryPointPackageJson, propertiesToConsider: EntryPointJsonProperty[],
-    compileAllFormats: boolean): {
+  packageJson: EntryPointPackageJson,
+  propertiesToConsider: EntryPointJsonProperty[],
+  compileAllFormats: boolean
+): {
   propertiesToProcess: EntryPointJsonProperty[];
   equivalentPropertiesMap: Map<EntryPointJsonProperty, EntryPointJsonProperty[]>;
 } {

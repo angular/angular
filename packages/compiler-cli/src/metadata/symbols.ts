@@ -17,7 +17,7 @@ export class Symbols {
 
   constructor(private sourceFile: ts.SourceFile) {}
 
-  resolve(name: string, preferReference?: boolean): MetadataValue|undefined {
+  resolve(name: string, preferReference?: boolean): MetadataValue | undefined {
     return (preferReference && this.references.get(name)) || this.symbols.get(name);
   }
 
@@ -50,10 +50,12 @@ export class Symbols {
       switch (node.kind) {
         case ts.SyntaxKind.ImportEqualsDeclaration:
           const importEqualsDeclaration = <ts.ImportEqualsDeclaration>node;
-          if (importEqualsDeclaration.moduleReference.kind ===
-              ts.SyntaxKind.ExternalModuleReference) {
-            const externalReference =
-                <ts.ExternalModuleReference>importEqualsDeclaration.moduleReference;
+          if (
+            importEqualsDeclaration.moduleReference.kind === ts.SyntaxKind.ExternalModuleReference
+          ) {
+            const externalReference = <ts.ExternalModuleReference>(
+              importEqualsDeclaration.moduleReference
+            );
             if (externalReference.expression) {
               // An `import <identifier> = require(<module-specifier>);
               if (!externalReference.expression.parent) {
@@ -66,14 +68,17 @@ export class Symbols {
                 externalReference.parent = this.sourceFile as any;
               }
               const from = stripQuotes(externalReference.expression.getText());
-              symbols.set(
-                  importEqualsDeclaration.name.text, {__symbolic: 'reference', module: from});
+              symbols.set(importEqualsDeclaration.name.text, {
+                __symbolic: 'reference',
+                module: from,
+              });
               break;
             }
           }
-          symbols.set(
-              importEqualsDeclaration.name.text,
-              {__symbolic: 'error', message: `Unsupported import syntax`});
+          symbols.set(importEqualsDeclaration.name.text, {
+            __symbolic: 'error',
+            message: `Unsupported import syntax`,
+          });
           break;
         case ts.SyntaxKind.ImportDeclaration:
           const importDecl = <ts.ImportDeclaration>node;
@@ -89,9 +94,11 @@ export class Symbols {
           const from = stripQuotes(importDecl.moduleSpecifier.getText());
           if (importDecl.importClause.name) {
             // An `import <identifier> form <module-specifier>` clause. Record the default symbol.
-            symbols.set(
-                importDecl.importClause.name.text,
-                {__symbolic: 'reference', module: from, default: true});
+            symbols.set(importDecl.importClause.name.text, {
+              __symbolic: 'reference',
+              module: from,
+              default: true,
+            });
           }
           const bindings = importDecl.importClause.namedBindings;
           if (bindings) {
@@ -102,15 +109,16 @@ export class Symbols {
                   symbols.set(binding.name.text, {
                     __symbolic: 'reference',
                     module: from,
-                    name: binding.propertyName ? binding.propertyName.text : binding.name.text
+                    name: binding.propertyName ? binding.propertyName.text : binding.name.text,
                   });
                 }
                 break;
               case ts.SyntaxKind.NamespaceImport:
                 // An `input * as <identifier> from <module-specifier>` clause.
-                symbols.set(
-                    (<ts.NamespaceImport>bindings).name.text,
-                    {__symbolic: 'reference', module: from});
+                symbols.set((<ts.NamespaceImport>bindings).name.text, {
+                  __symbolic: 'reference',
+                  module: from,
+                });
                 break;
             }
           }
@@ -126,10 +134,38 @@ export class Symbols {
 
 function populateBuiltins(symbols: Map<string, MetadataValue>) {
   // From lib.core.d.ts (all "define const")
-  ['Object', 'Function', 'String', 'Number', 'Array', 'Boolean', 'Map', 'NaN', 'Infinity', 'Math',
-   'Date', 'RegExp', 'Error', 'Error', 'EvalError', 'RangeError', 'ReferenceError', 'SyntaxError',
-   'TypeError', 'URIError', 'JSON', 'ArrayBuffer', 'DataView', 'Int8Array', 'Uint8Array',
-   'Uint8ClampedArray', 'Uint16Array', 'Int16Array', 'Int32Array', 'Uint32Array', 'Float32Array',
-   'Float64Array']
-      .forEach(name => symbols.set(name, {__symbolic: 'reference', name}));
+  [
+    'Object',
+    'Function',
+    'String',
+    'Number',
+    'Array',
+    'Boolean',
+    'Map',
+    'NaN',
+    'Infinity',
+    'Math',
+    'Date',
+    'RegExp',
+    'Error',
+    'Error',
+    'EvalError',
+    'RangeError',
+    'ReferenceError',
+    'SyntaxError',
+    'TypeError',
+    'URIError',
+    'JSON',
+    'ArrayBuffer',
+    'DataView',
+    'Int8Array',
+    'Uint8Array',
+    'Uint8ClampedArray',
+    'Uint16Array',
+    'Int16Array',
+    'Int32Array',
+    'Uint32Array',
+    'Float32Array',
+    'Float64Array',
+  ].forEach((name) => symbols.set(name, {__symbolic: 'reference', name}));
 }

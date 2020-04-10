@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {BoundTarget, ParseSourceFile} from '@angular/compiler';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {ClassDeclaration} from '../../reflection';
@@ -17,8 +18,13 @@ import * as util from './util';
  * Adds information about a component to a context.
  */
 function populateContext(
-    context: IndexingContext, component: ClassDeclaration, selector: string, template: string,
-    boundTemplate: BoundTarget<ComponentMeta>, isInline: boolean = false) {
+  context: IndexingContext,
+  component: ClassDeclaration,
+  selector: string,
+  template: string,
+  boundTemplate: BoundTarget<ComponentMeta>,
+  isInline: boolean = false
+) {
   context.addComponent({
     declaration: component,
     selector,
@@ -51,7 +57,7 @@ runInEachFileSystem(() => {
           usedComponents: new Set(),
           isInline: false,
           file: new ParseSourceFile('<div>{{foo}}</div>', util.getTestFilePath()),
-        }
+        },
       });
     });
 
@@ -60,16 +66,22 @@ runInEachFileSystem(() => {
       const decl = util.getComponentDeclaration('class C {}', 'C');
       const template = '<div>{{foo}}</div>';
       populateContext(
-          context, decl, 'c-selector', '<div>{{foo}}</div>', util.getBoundTemplate(template),
-          /* inline template */ true);
+        context,
+        decl,
+        'c-selector',
+        '<div>{{foo}}</div>',
+        util.getBoundTemplate(template),
+        /* inline template */ true
+      );
       const analysis = generateAnalysis(context);
 
       expect(analysis.size).toBe(1);
 
       const info = analysis.get(decl);
       expect(info).toBeDefined();
-      expect(info!.template.file)
-          .toEqual(new ParseSourceFile('class C {}', util.getTestFilePath()));
+      expect(info!.template.file).toEqual(
+        new ParseSourceFile('class C {}', util.getTestFilePath())
+      );
     });
 
     it('should give external templates their own source file', () => {
@@ -83,8 +95,9 @@ runInEachFileSystem(() => {
 
       const info = analysis.get(decl);
       expect(info).toBeDefined();
-      expect(info!.template.file)
-          .toEqual(new ParseSourceFile('<div>{{foo}}</div>', util.getTestFilePath()));
+      expect(info!.template.file).toEqual(
+        new ParseSourceFile('<div>{{foo}}</div>', util.getTestFilePath())
+      );
     });
 
     it('should emit used components', () => {
@@ -96,10 +109,12 @@ runInEachFileSystem(() => {
       const templateB = '<a-selector></a-selector>';
       const declB = util.getComponentDeclaration('class B {}', 'B');
 
-      const boundA =
-          util.getBoundTemplate(templateA, {}, [{selector: 'b-selector', declaration: declB}]);
-      const boundB =
-          util.getBoundTemplate(templateB, {}, [{selector: 'a-selector', declaration: declA}]);
+      const boundA = util.getBoundTemplate(templateA, {}, [
+        {selector: 'b-selector', declaration: declB},
+      ]);
+      const boundB = util.getBoundTemplate(templateB, {}, [
+        {selector: 'a-selector', declaration: declA},
+      ]);
 
       populateContext(context, declA, 'a-selector', templateA, boundA);
       populateContext(context, declB, 'b-selector', templateB, boundB);

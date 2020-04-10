@@ -121,7 +121,9 @@ describe('hover', () => {
 
       it('should work for ReadonlyArray members (#36191)', () => {
         mockHost.override(
-            TEST_TEMPLATE, `<div *ngFor="let hero of readonlyHeroes">{{«hero»}}</div>`);
+          TEST_TEMPLATE,
+          `<div *ngFor="let hero of readonlyHeroes">{{«hero»}}</div>`
+        );
         const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'hero');
         const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
         expect(quickInfo).toBeTruthy();
@@ -172,16 +174,19 @@ describe('hover', () => {
     });
 
     it('should work for pipes', () => {
-      mockHost.override(TEST_TEMPLATE, `
-        <p>The hero's birthday is {{birthday | «date»: "MM/dd/yy"}}</p>`);
+      mockHost.override(
+        TEST_TEMPLATE,
+        `
+        <p>The hero's birthday is {{birthday | «date»: "MM/dd/yy"}}</p>`
+      );
       const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'date');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
       const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual(marker);
-      expect(toText(displayParts))
-          .toBe(
-              '(pipe) date: (value: any, format?: string | undefined, timezone?: string | undefined, locale?: string | undefined) => string | null');
+      expect(toText(displayParts)).toBe(
+        '(pipe) date: (value: any, format?: string | undefined, timezone?: string | undefined, locale?: string | undefined) => string | null'
+      );
     });
 
     it('should work for the $any() cast function', () => {
@@ -214,8 +219,9 @@ describe('hover', () => {
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeDefined();
       const {displayParts, documentation} = quickInfo!;
-      expect(toText(displayParts))
-          .toBe('(component) AppModule.TestComponent: typeof TestComponent');
+      expect(toText(displayParts)).toBe(
+        '(component) AppModule.TestComponent: typeof TestComponent'
+      );
       expect(toText(documentation)).toBe('This Component provides the `test-comp` selector.');
     });
 
@@ -226,8 +232,9 @@ describe('hover', () => {
       expect(quickInfo).toBeDefined();
       const {displayParts, textSpan} = quickInfo!;
       expect(toText(displayParts)).toBe('(directive) AppModule.StringModel: typeof StringModel');
-      expect(content.substring(textSpan.start, textSpan.start + textSpan.length))
-          .toBe('string-model');
+      expect(content.substring(textSpan.start, textSpan.start + textSpan.length)).toBe(
+        'string-model'
+      );
     });
 
     it('should work for event providers', () => {
@@ -252,7 +259,9 @@ describe('hover', () => {
 
     it('should work for two-way binding providers', () => {
       mockHost.override(
-          TEST_TEMPLATE, `<test-comp string-model «[(ᐱmodelᐱ)]="title"»></test-comp>`);
+        TEST_TEMPLATE,
+        `<test-comp string-model «[(ᐱmodelᐱ)]="title"»></test-comp>`
+      );
       const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'model');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
@@ -323,5 +332,5 @@ describe('hover', () => {
 });
 
 function toText(displayParts?: ts.SymbolDisplayPart[]): string {
-  return (displayParts || []).map(p => p.text).join('');
+  return (displayParts || []).map((p) => p.text).join('');
 }

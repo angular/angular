@@ -139,6 +139,6 @@ describe('template i18n extraction output', () => {
 
   it('should not emit js', () => {
     const files = fs.readdirSync(outputDir);
-    files.forEach(f => expect(f).not.toMatch(/\.js$/));
+    files.forEach((f) => expect(f).not.toMatch(/\.js$/));
   });
 });

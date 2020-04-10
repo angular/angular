@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Host, OnDestroy} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Host,
+  OnDestroy,
+} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {ExpandingRow} from './expanding_row';
@@ -19,11 +25,9 @@ import {expanding_row_css} from './expanding_row_css';
 @Component({
   styles: [expanding_row_css],
   selector: 'cfc-expanding-row-details-content',
-  template: `
-    <div class="cfc-expanding-row-details-content"
-        *ngIf="expandingRow.isExpanded">
-      <ng-content></ng-content>
-    </div>`,
+  template: ` <div class="cfc-expanding-row-details-content" *ngIf="expandingRow.isExpanded">
+    <ng-content></ng-content>
+  </div>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExpandingRowDetailsContent implements OnDestroy {
@@ -35,10 +39,13 @@ export class ExpandingRowDetailsContent implements OnDestroy {
    * hide this component if the row is collapsed.
    */
   constructor(@Host() public expandingRow: ExpandingRow, changeDetectorRef: ChangeDetectorRef) {
-    this.isExpandedChangeSubscription =
-        this.expandingRow.isExpandedChange.subscribe(() => { changeDetectorRef.markForCheck(); });
+    this.isExpandedChangeSubscription = this.expandingRow.isExpandedChange.subscribe(() => {
+      changeDetectorRef.markForCheck();
+    });
   }
 
   /** Unsubscribe from changes in parent isExpanded property. */
-  ngOnDestroy(): void { this.isExpandedChangeSubscription.unsubscribe(); }
+  ngOnDestroy(): void {
+    this.isExpandedChangeSubscription.unsubscribe();
+  }
 }

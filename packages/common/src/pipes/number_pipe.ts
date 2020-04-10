@@ -12,7 +12,6 @@ import {getCurrencySymbol} from '../i18n/locale_data_api';
 
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
-
 /**
  * @ngModule CommonModule
  * @description
@@ -67,7 +66,7 @@ export class DecimalPipe implements PipeTransform {
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
    */
-  transform(value: any, digitsInfo?: string, locale?: string): string|null {
+  transform(value: any, digitsInfo?: string, locale?: string): string | null {
     if (isEmpty(value)) return null;
 
     locale = locale || this._locale;
@@ -121,7 +120,7 @@ export class PercentPipe implements PipeTransform {
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
    */
-  transform(value: any, digitsInfo?: string, locale?: string): string|null {
+  transform(value: any, digitsInfo?: string, locale?: string): string | null {
     if (isEmpty(value)) return null;
     locale = locale || this._locale;
     try {
@@ -176,8 +175,9 @@ export class PercentPipe implements PipeTransform {
 @Pipe({name: 'currency'})
 export class CurrencyPipe implements PipeTransform {
   constructor(
-      @Inject(LOCALE_ID) private _locale: string,
-      @Inject(DEFAULT_CURRENCY_CODE) private _defaultCurrencyCode: string = 'USD') {}
+    @Inject(LOCALE_ID) private _locale: string,
+    @Inject(DEFAULT_CURRENCY_CODE) private _defaultCurrencyCode: string = 'USD'
+  ) {}
 
   /**
    *
@@ -213,9 +213,12 @@ export class CurrencyPipe implements PipeTransform {
    * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
    */
   transform(
-      value: any, currencyCode?: string,
-      display: 'code'|'symbol'|'symbol-narrow'|string|boolean = 'symbol', digitsInfo?: string,
-      locale?: string): string|null {
+    value: any,
+    currencyCode?: string,
+    display: 'code' | 'symbol' | 'symbol-narrow' | string | boolean = 'symbol',
+    digitsInfo?: string,
+    locale?: string
+  ): string | null {
     if (isEmpty(value)) return null;
 
     locale = locale || this._locale;
@@ -223,7 +226,8 @@ export class CurrencyPipe implements PipeTransform {
     if (typeof display === 'boolean') {
       if (<any>console && <any>console.warn) {
         console.warn(
-            `Warning: the currency pipe has been changed in Angular v5. The symbolDisplay option (third parameter) is now a string instead of a boolean. The accepted values are "code", "symbol" or "symbol-narrow".`);
+          `Warning: the currency pipe has been changed in Angular v5. The symbolDisplay option (third parameter) is now a string instead of a boolean. The accepted values are "code", "symbol" or "symbol-narrow".`
+        );
       }
       display = display ? 'symbol' : 'code';
     }

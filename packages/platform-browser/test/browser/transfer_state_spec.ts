@@ -9,9 +9,14 @@
 import {DOCUMENT} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule, BrowserTransferStateModule, TransferState} from '@angular/platform-browser';
-import {StateKey, escapeHtml, makeStateKey, unescapeHtml} from '@angular/platform-browser/src/browser/transfer_state';
+import {
+  StateKey,
+  escapeHtml,
+  makeStateKey,
+  unescapeHtml,
+} from '@angular/platform-browser/src/browser/transfer_state';
 
-(function() {
+(function () {
   function removeScriptTag(doc: Document, id: string) {
     const existing = doc.getElementById(id);
     if (existing) {
@@ -41,15 +46,14 @@ import {StateKey, escapeHtml, makeStateKey, unescapeHtml} from '@angular/platfor
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [
-          BrowserModule.withServerTransition({appId: APP_ID}),
-          BrowserTransferStateModule,
-        ]
+        imports: [BrowserModule.withServerTransition({appId: APP_ID}), BrowserTransferStateModule],
       });
       doc = TestBed.inject(DOCUMENT);
     });
 
-    afterEach(() => { removeScriptTag(doc, APP_ID + '-state'); });
+    afterEach(() => {
+      removeScriptTag(doc, APP_ID + '-state');
+    });
 
     it('is initialized from script tag', () => {
       addScriptTag(doc, APP_ID, {test: 10});
@@ -69,21 +73,21 @@ import {StateKey, escapeHtml, makeStateKey, unescapeHtml} from '@angular/platfor
       expect(transferState.hasKey(TEST_KEY)).toBe(true);
     });
 
-    it('supports setting and accessing value \'0\' via get', () => {
+    it("supports setting and accessing value '0' via get", () => {
       const transferState: TransferState = TestBed.inject(TransferState);
       transferState.set(TEST_KEY, 0);
       expect(transferState.get(TEST_KEY, 20)).toBe(0);
       expect(transferState.hasKey(TEST_KEY)).toBe(true);
     });
 
-    it('supports setting and accessing value \'false\' via get', () => {
+    it("supports setting and accessing value 'false' via get", () => {
       const transferState: TransferState = TestBed.inject(TransferState);
       transferState.set(TEST_KEY, false);
       expect(transferState.get(TEST_KEY, true)).toBe(false);
       expect(transferState.hasKey(TEST_KEY)).toBe(true);
     });
 
-    it('supports setting and accessing value \'null\' via get', () => {
+    it("supports setting and accessing value 'null' via get", () => {
       const transferState: TransferState = TestBed.inject(TransferState);
       transferState.set(TEST_KEY, null);
       expect(transferState.get(TEST_KEY, 20 as any)).toBe(null);
@@ -122,8 +126,9 @@ import {StateKey, escapeHtml, makeStateKey, unescapeHtml} from '@angular/platfor
       const testObj = {testString};
       const escaped = escapeHtml(JSON.stringify(testObj));
       expect(escaped).toBe(
-          '{&q;testString&q;:&q;&l;/script&g;&l;script&g;' +
-          'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}');
+        '{&q;testString&q;:&q;&l;/script&g;&l;script&g;' +
+          'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}'
+      );
 
       const unescapedObj = JSON.parse(unescapeHtml(escaped));
       expect(unescapedObj['testString']).toBe(testString);

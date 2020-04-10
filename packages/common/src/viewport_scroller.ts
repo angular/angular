@@ -10,8 +10,6 @@ import {ErrorHandler, ɵɵdefineInjectable, ɵɵinject} from '@angular/core';
 
 import {DOCUMENT} from './dom_tokens';
 
-
-
 /**
  * Defines a scroll position manager. Implemented by `BrowserViewportScroller`.
  *
@@ -24,7 +22,7 @@ export abstract class ViewportScroller {
   static ɵprov = ɵɵdefineInjectable({
     token: ViewportScroller,
     providedIn: 'root',
-    factory: () => new BrowserViewportScroller(ɵɵinject(DOCUMENT), window, ɵɵinject(ErrorHandler))
+    factory: () => new BrowserViewportScroller(ɵɵinject(DOCUMENT), window, ɵɵinject(ErrorHandler)),
   });
 
   /**
@@ -33,7 +31,7 @@ export abstract class ViewportScroller {
    * or a function that returns the top offset position.
    *
    */
-  abstract setOffset(offset: [number, number]|(() => [number, number])): void;
+  abstract setOffset(offset: [number, number] | (() => [number, number])): void;
 
   /**
    * Retrieves the current scroll position.
@@ -58,7 +56,7 @@ export abstract class ViewportScroller {
    * See also [window.history.scrollRestoration
    * info](https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration).
    */
-  abstract setHistoryScrollRestoration(scrollRestoration: 'auto'|'manual'): void;
+  abstract setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void;
 }
 
 /**
@@ -75,7 +73,7 @@ export class BrowserViewportScroller implements ViewportScroller {
    * or a function that returns the top offset position.
    *
    */
-  setOffset(offset: [number, number]|(() => [number, number])): void {
+  setOffset(offset: [number, number] | (() => [number, number])): void {
     if (Array.isArray(offset)) {
       this.offset = () => offset;
     } else {
@@ -138,7 +136,7 @@ export class BrowserViewportScroller implements ViewportScroller {
   /**
    * Disables automatic scroll restoration provided by the browser.
    */
-  setHistoryScrollRestoration(scrollRestoration: 'auto'|'manual'): void {
+  setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void {
     if (this.supportScrollRestoration()) {
       const history = this.window.history;
       if (history && history.scrollRestoration) {
@@ -172,7 +170,6 @@ export class BrowserViewportScroller implements ViewportScroller {
   }
 }
 
-
 /**
  * Provides an empty implementation of the viewport scroller. This will
  * live in @angular/common as it will be used by both platform-server and platform-webworker.
@@ -181,12 +178,14 @@ export class NullViewportScroller implements ViewportScroller {
   /**
    * Empty implementation
    */
-  setOffset(offset: [number, number]|(() => [number, number])): void {}
+  setOffset(offset: [number, number] | (() => [number, number])): void {}
 
   /**
    * Empty implementation
    */
-  getScrollPosition(): [number, number] { return [0, 0]; }
+  getScrollPosition(): [number, number] {
+    return [0, 0];
+  }
 
   /**
    * Empty implementation
@@ -201,5 +200,5 @@ export class NullViewportScroller implements ViewportScroller {
   /**
    * Empty implementation
    */
-  setHistoryScrollRestoration(scrollRestoration: 'auto'|'manual'): void {}
+  setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void {}
 }

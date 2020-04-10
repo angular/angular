@@ -24,10 +24,10 @@ describe('file size data', () => {
             },
             'b/': {
               size: 0,
-            }
-          }
-        }
-      }
+            },
+          },
+        },
+      },
     };
 
     expect(omitCommonPathPrefix(data.files)).toEqual({
@@ -38,7 +38,7 @@ describe('file size data', () => {
       },
       'b/': {
         size: 0,
-      }
+      },
     });
   });
 
@@ -49,7 +49,7 @@ describe('file size data', () => {
         size: 7,
         'b/': {'c.ts': 3, 'a.ts': 3, size: 6},
         'a/': {'nested/': {size: 1, 'a.ts': 1}, size: 1},
-      }
+      },
     };
 
     expect(sortFileSizeData(data)).toEqual({

@@ -21,15 +21,18 @@ import {getDocument} from './document';
 // TODO: cleanup once the code is merged in angular/angular
 export enum RendererStyleFlags3 {
   Important = 1 << 0,
-  DashCase = 1 << 1
+  DashCase = 1 << 1,
 }
 
 export type Renderer3 = ObjectOrientedRenderer3 | ProceduralRenderer3;
 
 export type GlobalTargetName = 'document' | 'window' | 'body';
 
-export type GlobalTargetResolver = (element: any) => {
-  name: GlobalTargetName, target: EventTarget
+export type GlobalTargetResolver = (
+  element: any
+) => {
+  name: GlobalTargetName;
+  target: EventTarget;
 };
 
 /**
@@ -45,13 +48,14 @@ export interface ObjectOrientedRenderer3 {
   createElementNS(namespace: string, tagName: string): RElement;
   createTextNode(data: string): RText;
 
-  querySelector(selectors: string): RElement|null;
+  querySelector(selectors: string): RElement | null;
 }
 
 /** Returns whether the `renderer` is a `ProceduralRenderer3` */
-export function isProceduralRenderer(renderer: ProceduralRenderer3 | ObjectOrientedRenderer3):
-    renderer is ProceduralRenderer3 {
-  return !!((renderer as any).listen);
+export function isProceduralRenderer(
+  renderer: ProceduralRenderer3 | ObjectOrientedRenderer3
+): renderer is ProceduralRenderer3 {
+  return !!(renderer as any).listen;
 }
 
 /**
@@ -64,48 +68,54 @@ export function isProceduralRenderer(renderer: ProceduralRenderer3 | ObjectOrien
 export interface ProceduralRenderer3 {
   destroy(): void;
   createComment(value: string): RComment;
-  createElement(name: string, namespace?: string|null): RElement;
+  createElement(name: string, namespace?: string | null): RElement;
   createText(value: string): RText;
   /**
    * This property is allowed to be null / undefined,
    * in which case the view engine won't call it.
    * This is used as a performance optimization for production mode.
    */
-  destroyNode?: ((node: RNode) => void)|null;
+  destroyNode?: ((node: RNode) => void) | null;
   appendChild(parent: RElement, newChild: RNode): void;
-  insertBefore(parent: RNode, newChild: RNode, refChild: RNode|null): void;
+  insertBefore(parent: RNode, newChild: RNode, refChild: RNode | null): void;
   removeChild(parent: RElement, oldChild: RNode, isHostElement?: boolean): void;
-  selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): RElement;
+  selectRootElement(selectorOrNode: string | any, preserveContent?: boolean): RElement;
 
-  parentNode(node: RNode): RElement|null;
-  nextSibling(node: RNode): RNode|null;
+  parentNode(node: RNode): RElement | null;
+  nextSibling(node: RNode): RNode | null;
 
-  setAttribute(el: RElement, name: string, value: string, namespace?: string|null): void;
-  removeAttribute(el: RElement, name: string, namespace?: string|null): void;
+  setAttribute(el: RElement, name: string, value: string, namespace?: string | null): void;
+  removeAttribute(el: RElement, name: string, namespace?: string | null): void;
   addClass(el: RElement, name: string): void;
   removeClass(el: RElement, name: string): void;
   setStyle(
-      el: RElement, style: string, value: any,
-      flags?: RendererStyleFlags2|RendererStyleFlags3): void;
-  removeStyle(el: RElement, style: string, flags?: RendererStyleFlags2|RendererStyleFlags3): void;
+    el: RElement,
+    style: string,
+    value: any,
+    flags?: RendererStyleFlags2 | RendererStyleFlags3
+  ): void;
+  removeStyle(el: RElement, style: string, flags?: RendererStyleFlags2 | RendererStyleFlags3): void;
   setProperty(el: RElement, name: string, value: any): void;
-  setValue(node: RText|RComment, value: string): void;
+  setValue(node: RText | RComment, value: string): void;
 
   // TODO(misko): Deprecate in favor of addEventListener/removeEventListener
   listen(
-      target: GlobalTargetName|RNode, eventName: string,
-      callback: (event: any) => boolean | void): () => void;
+    target: GlobalTargetName | RNode,
+    eventName: string,
+    callback: (event: any) => boolean | void
+  ): () => void;
 }
 
 export interface RendererFactory3 {
-  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer3;
+  createRenderer(hostElement: RElement | null, rendererType: RendererType2 | null): Renderer3;
   begin?(): void;
   end?(): void;
 }
 
 export const domRendererFactory3: RendererFactory3 = {
-  createRenderer: (hostElement: RElement | null, rendererType: RendererType2 | null):
-                      Renderer3 => { return getDocument();}
+  createRenderer: (hostElement: RElement | null, rendererType: RendererType2 | null): Renderer3 => {
+    return getDocument();
+  },
 };
 
 /** Subset of API needed for appending elements and text nodes. */
@@ -113,18 +123,17 @@ export interface RNode {
   /**
    * Returns the parent Element, Document, or DocumentFragment
    */
-  parentNode: RNode|null;
-
+  parentNode: RNode | null;
 
   /**
    * Returns the parent Element if there is one
    */
-  parentElement: RElement|null;
+  parentElement: RElement | null;
 
   /**
    * Gets the Node immediately following this one in the parent's childNodes
    */
-  nextSibling: RNode|null;
+  nextSibling: RNode | null;
 
   /**
    * Removes a child from the current node and returns the removed node
@@ -137,7 +146,7 @@ export interface RNode {
    *
    * Used exclusively for adding View root nodes into ViewAnchor location.
    */
-  insertBefore(newChild: RNode, refChild: RNode|null, isViewRoot: boolean): void;
+  insertBefore(newChild: RNode, refChild: RNode | null, isViewRoot: boolean): void;
 
   /**
    * Append a child node.
@@ -155,7 +164,7 @@ export interface RElement extends RNode {
   style: RCssStyleDeclaration;
   classList: RDomTokenList;
   className: string;
-  textContent: string|null;
+  textContent: string | null;
   setAttribute(name: string, value: string): void;
   removeAttribute(name: string): void;
   setAttributeNS(namespaceURI: string, qualifiedName: string, value: string): void;
@@ -167,7 +176,7 @@ export interface RElement extends RNode {
 
 export interface RCssStyleDeclaration {
   removeProperty(propertyName: string): string;
-  setProperty(propertyName: string, value: string|null, priority?: string): void;
+  setProperty(propertyName: string, value: string | null, priority?: string): void;
 }
 
 export interface RDomTokenList {
@@ -175,9 +184,13 @@ export interface RDomTokenList {
   remove(token: string): void;
 }
 
-export interface RText extends RNode { textContent: string|null; }
+export interface RText extends RNode {
+  textContent: string | null;
+}
 
-export interface RComment extends RNode { textContent: string|null; }
+export interface RComment extends RNode {
+  textContent: string | null;
+}
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

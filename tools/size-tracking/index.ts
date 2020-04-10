@@ -13,27 +13,47 @@ import {compareFileSizeData} from './file_size_compare';
 import {FileSizeData} from './file_size_data';
 
 if (require.main === module) {
-  const
-      [filePath, sourceMapPath, goldenPath, maxPercentageDiffArg, maxSizeDiffArg, writeGoldenArg,
-       requiredCompileMode] = process.argv.slice(2);
+  const [
+    filePath,
+    sourceMapPath,
+    goldenPath,
+    maxPercentageDiffArg,
+    maxSizeDiffArg,
+    writeGoldenArg,
+    requiredCompileMode,
+  ] = process.argv.slice(2);
   const status = main(
-      require.resolve(filePath), require.resolve(sourceMapPath), require.resolve(goldenPath),
-      writeGoldenArg === 'true', parseInt(maxPercentageDiffArg), parseInt(maxSizeDiffArg),
-      requiredCompileMode);
+    require.resolve(filePath),
+    require.resolve(sourceMapPath),
+    require.resolve(goldenPath),
+    writeGoldenArg === 'true',
+    parseInt(maxPercentageDiffArg),
+    parseInt(maxSizeDiffArg),
+    requiredCompileMode
+  );
 
   process.exit(status ? 0 : 1);
 }
 
 export function main(
-    filePath: string, sourceMapPath: string, goldenSizeMapPath: string, writeGolden: boolean,
-    maxPercentageDiff: number, maxByteDiff: number, requiresIvy: string): boolean {
+  filePath: string,
+  sourceMapPath: string,
+  goldenSizeMapPath: string,
+  writeGolden: boolean,
+  maxPercentageDiff: number,
+  maxByteDiff: number,
+  requiresIvy: string
+): boolean {
   const {sizeResult} = new SizeTracker(filePath, sourceMapPath);
   const ivyEnabled = process.env['angular_ivy_enabled'] == 'True';
 
   if (requiresIvy && ivyEnabled) {
-    console.error(chalk.red(
+    console.error(
+      chalk.red(
         `Expected the size-tracking tool to be run with: ` +
-        `--config=${requiresIvy ? 'ivy' : 'view-engine'}`));
+          `--config=${requiresIvy ? 'ivy' : 'view-engine'}`
+      )
+    );
     return false;
   }
 
@@ -44,16 +64,19 @@ export function main(
   }
 
   const expectedSizeData = <FileSizeData>JSON.parse(readFileSync(goldenSizeMapPath, 'utf8'));
-  const differences =
-      compareFileSizeData(sizeResult, expectedSizeData, {maxByteDiff, maxPercentageDiff});
+  const differences = compareFileSizeData(sizeResult, expectedSizeData, {
+    maxByteDiff,
+    maxPercentageDiff,
+  });
 
   if (!differences.length) {
     return true;
   }
 
   console.error(
-      `Computed file size data does not match golden size data. ` +
-      `The following differences were found:\n`);
+    `Computed file size data does not match golden size data. ` +
+      `The following differences were found:\n`
+  );
   differences.forEach(({filePath, message}) => {
     const failurePrefix = filePath ? `"${filePath}": ` : '';
     console.error(chalk.red(`    ${failurePrefix}${message}`));
@@ -63,6 +86,7 @@ export function main(
 
   console.error(`\nThe golden file can be updated with the following command:`);
   console.error(
-      `    yarn bazel run --config=${ivyEnabled ? 'ivy' : 'view-engine'} ${bazelTargetName}.accept`);
+    `    yarn bazel run --config=${ivyEnabled ? 'ivy' : 'view-engine'} ${bazelTargetName}.accept`
+  );
   return false;
 }

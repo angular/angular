@@ -16,26 +16,29 @@ export class MultiReporter extends Reporter {
     return [
       {
         provide: _CHILDREN,
-        useFactory: (injector: Injector) => childTokens.map(token => injector.get(token)),
+        useFactory: (injector: Injector) => childTokens.map((token) => injector.get(token)),
         deps: [Injector],
       },
       {
         provide: MultiReporter,
         useFactory: (children: Reporter[]) => new MultiReporter(children),
-        deps: [_CHILDREN]
-      }
+        deps: [_CHILDREN],
+      },
     ];
   }
 
-  constructor(private _reporters: Reporter[]) { super(); }
+  constructor(private _reporters: Reporter[]) {
+    super();
+  }
 
   reportMeasureValues(values: MeasureValues): Promise<any[]> {
-    return Promise.all(this._reporters.map(reporter => reporter.reportMeasureValues(values)));
+    return Promise.all(this._reporters.map((reporter) => reporter.reportMeasureValues(values)));
   }
 
   reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]): Promise<any[]> {
     return Promise.all(
-        this._reporters.map(reporter => reporter.reportSample(completeSample, validSample)));
+      this._reporters.map((reporter) => reporter.reportSample(completeSample, validSample))
+    );
   }
 }
 

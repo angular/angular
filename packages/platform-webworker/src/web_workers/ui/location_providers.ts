@@ -15,8 +15,6 @@ import {ServiceMessageBrokerFactory} from '../shared/service_message_broker';
 
 import {MessageBasedPlatformLocation} from './platform_location';
 
-
-
 /**
  * A list of {@link Provider}s. To use the router in a Worker enabled application you must
  * include these providers when setting up the render thread.
@@ -24,10 +22,12 @@ import {MessageBasedPlatformLocation} from './platform_location';
  * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
  */
 export const WORKER_UI_LOCATION_PROVIDERS = <StaticProvider[]>[
-  {provide: MessageBasedPlatformLocation, deps: [ServiceMessageBrokerFactory,
-    BrowserPlatformLocation, MessageBus, Serializer]},
+  {
+    provide: MessageBasedPlatformLocation,
+    deps: [ServiceMessageBrokerFactory, BrowserPlatformLocation, MessageBus, Serializer],
+  },
   {provide: BrowserPlatformLocation, deps: [DOCUMENT]},
-  {provide: PLATFORM_INITIALIZER, useFactory: initUiLocation, multi: true, deps: [Injector]}
+  {provide: PLATFORM_INITIALIZER, useFactory: initUiLocation, multi: true, deps: [Injector]},
 ];
 
 function initUiLocation(injector: Injector): () => void {

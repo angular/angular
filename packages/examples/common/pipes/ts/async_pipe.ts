@@ -13,29 +13,33 @@ import {Observable, Observer} from 'rxjs';
 @Component({
   selector: 'async-promise-pipe',
   template: `<div>
-    <code>promise|async</code>: 
+    <code>promise|async</code>:
     <button (click)="clicked()">{{ arrived ? 'Reset' : 'Resolve' }}</button>
     <span>Wait for it... {{ greeting | async }}</span>
-  </div>`
+  </div>`,
 })
 export class AsyncPromisePipeComponent {
-  greeting: Promise<string>|null = null;
+  greeting: Promise<string> | null = null;
   arrived: boolean = false;
 
-  private resolve: Function|null = null;
+  private resolve: Function | null = null;
 
-  constructor() { this.reset(); }
+  constructor() {
+    this.reset();
+  }
 
   reset() {
     this.arrived = false;
-    this.greeting = new Promise<string>((resolve, reject) => { this.resolve = resolve; });
+    this.greeting = new Promise<string>((resolve, reject) => {
+      this.resolve = resolve;
+    });
   }
 
   clicked() {
     if (this.arrived) {
       this.reset();
     } else {
-      this.resolve !('hi there!');
+      this.resolve!('hi there!');
       this.arrived = true;
     }
   }
@@ -45,7 +49,7 @@ export class AsyncPromisePipeComponent {
 // #docregion AsyncPipeObservable
 @Component({
   selector: 'async-observable-pipe',
-  template: '<div><code>observable|async</code>: Time: {{ time | async }}</div>'
+  template: '<div><code>observable|async</code>: Time: {{ time | async }}</div>',
 })
 export class AsyncObservablePipeComponent {
   time = new Observable<string>((observer: Observer<string>) => {
@@ -64,6 +68,8 @@ function setInterval(fn: Function, delay: number) {
     rootZone = rootZone.parent;
   }
   rootZone.run(() => {
-    window.setInterval(function(this: unknown) { zone.run(fn, this, arguments as any); }, delay);
+    window.setInterval(function (this: unknown) {
+      zone.run(fn, this, arguments as any);
+    }, delay);
   });
 }

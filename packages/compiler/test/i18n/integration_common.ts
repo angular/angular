@@ -42,16 +42,20 @@ export class FrLocalization extends NgLocalization {
 }
 
 export function validateHtml(
-    tb: ComponentFixture<I18nComponent>, cmp: I18nComponent, el: DebugElement) {
+  tb: ComponentFixture<I18nComponent>,
+  cmp: I18nComponent,
+  el: DebugElement
+) {
   expectHtml(el, 'h1').toBe('<h1>attributs i18n sur les balises</h1>');
   expectHtml(el, '#i18n-1').toBe('<div id="i18n-1"><p>imbriqué</p></div>');
   expectHtml(el, '#i18n-2').toBe('<div id="i18n-2"><p>imbriqué</p></div>');
   expectHtml(el, '#i18n-3').toBe('<div id="i18n-3"><p><i>avec des espaces réservés</i></p></div>');
-  expectHtml(el, '#i18n-3b')
-      .toBe(
-          '<div id="i18n-3b"><p><i class="preserved-on-placeholders">avec des espaces réservés</i></p></div>');
-  expectHtml(el, '#i18n-4')
-      .toBe('<p data-html="<b>gras</b>" id="i18n-4" title="sur des balises non traductibles"></p>');
+  expectHtml(el, '#i18n-3b').toBe(
+    '<div id="i18n-3b"><p><i class="preserved-on-placeholders">avec des espaces réservés</i></p></div>'
+  );
+  expectHtml(el, '#i18n-4').toBe(
+    '<p data-html="<b>gras</b>" id="i18n-4" title="sur des balises non traductibles"></p>'
+  );
   expectHtml(el, '#i18n-5').toBe('<p id="i18n-5" title="sur des balises traductibles"></p>');
   expectHtml(el, '#i18n-6').toBe('<p id="i18n-6" title=""></p>');
 
@@ -100,8 +104,9 @@ export function validateHtml(
   expectHtml(el, '#i18n-13').toBe('<div id="i18n-13" title="dans une section traductible"></div>');
   expectHtml(el, '#i18n-15').toMatch(/ca <b>devrait<\/b> marcher/);
   expectHtml(el, '#i18n-16').toMatch(/avec un ID explicite/);
-  expectHtml(el, '#i18n-18')
-      .toEqual('<div id="i18n-18">FOO<a title="dans une section traductible">BAR</a></div>');
+  expectHtml(el, '#i18n-18').toEqual(
+    '<div id="i18n-18">FOO<a title="dans une section traductible">BAR</a></div>'
+  );
 }
 
 function expectHtml(el: DebugElement, cssSelector: string): any {

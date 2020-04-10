@@ -19,27 +19,36 @@ import {CreateTaskCompletedCallback} from '../tasks/api';
 import {ClusterMaster} from './master';
 import {ClusterWorker} from './worker';
 
-
 /**
  * An `Executor` that processes tasks in parallel (on multiple processes) and completes
  * asynchronously.
  */
 export class ClusterExecutor implements Executor {
   constructor(
-      private workerCount: number, private logger: Logger,
-      private pkgJsonUpdater: PackageJsonUpdater, private lockFile: AsyncLocker,
-      private createTaskCompletedCallback: CreateTaskCompletedCallback) {}
+    private workerCount: number,
+    private logger: Logger,
+    private pkgJsonUpdater: PackageJsonUpdater,
+    private lockFile: AsyncLocker,
+    private createTaskCompletedCallback: CreateTaskCompletedCallback
+  ) {}
 
-  async execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn):
-      Promise<void> {
+  async execute(
+    analyzeEntryPoints: AnalyzeEntryPointsFn,
+    createCompileFn: CreateCompileFn
+  ): Promise<void> {
     if (cluster.isMaster) {
       // This process is the cluster master.
       return this.lockFile.lock(() => {
-        this.logger.debug(`Running ngcc on ${this.constructor.name} (using ${
-            this.workerCount} worker processes).`);
+        this.logger.debug(
+          `Running ngcc on ${this.constructor.name} (using ${this.workerCount} worker processes).`
+        );
         const master = new ClusterMaster(
-            this.workerCount, this.logger, this.pkgJsonUpdater, analyzeEntryPoints,
-            this.createTaskCompletedCallback);
+          this.workerCount,
+          this.logger,
+          this.pkgJsonUpdater,
+          analyzeEntryPoints,
+          this.createTaskCompletedCallback
+        );
         return master.run();
       });
     } else {

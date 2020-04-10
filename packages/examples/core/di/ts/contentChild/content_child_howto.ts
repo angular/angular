@@ -10,12 +10,11 @@
 import {AfterContentInit, ContentChild, Directive} from '@angular/core';
 
 @Directive({selector: 'child-directive'})
-class ChildDirective {
-}
+class ChildDirective {}
 
 @Directive({selector: 'someDir'})
 class SomeDir implements AfterContentInit {
-  @ContentChild(ChildDirective) contentChild !: ChildDirective;
+  @ContentChild(ChildDirective) contentChild!: ChildDirective;
 
   ngAfterContentInit() {
     // contentChild is set

@@ -7,7 +7,15 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, EventEmitter, Input, OnDestroy, Output, ViewChild} from '@angular/core';
+import {
+  Component,
+  Directive,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('outputs', () => {
@@ -29,7 +37,9 @@ describe('outputs', () => {
   @Component({selector: 'destroy-comp', template: ''})
   class DestroyComp implements OnDestroy {
     events: string[] = [];
-    ngOnDestroy() { this.events.push('destroy'); }
+    ngOnDestroy() {
+      this.events.push('destroy');
+    }
   }
 
   @Directive({selector: '[myButton]'})
@@ -43,8 +53,10 @@ describe('outputs', () => {
 
     @Component({template: '<button-toggle (change)="onChange()"></button-toggle>'})
     class App {
-      @ViewChild(ButtonToggle) buttonToggle !: ButtonToggle;
-      onChange() { counter++; }
+      @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
+      onChange() {
+        counter++;
+      }
     }
     TestBed.configureTestingModule({declarations: [App, ButtonToggle]});
     const fixture = TestBed.createComponent(App);
@@ -61,12 +73,17 @@ describe('outputs', () => {
     let counter = 0;
     let resetCounter = 0;
 
-    @Component(
-        {template: '<button-toggle (change)="onChange()" (reset)="onReset()"></button-toggle>'})
+    @Component({
+      template: '<button-toggle (change)="onChange()" (reset)="onReset()"></button-toggle>',
+    })
     class App {
-      @ViewChild(ButtonToggle) buttonToggle !: ButtonToggle;
-      onChange() { counter++; }
-      onReset() { resetCounter++; }
+      @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
+      onChange() {
+        counter++;
+      }
+      onReset() {
+        resetCounter++;
+      }
     }
     TestBed.configureTestingModule({declarations: [App, ButtonToggle]});
     const fixture = TestBed.createComponent(App);
@@ -82,7 +99,7 @@ describe('outputs', () => {
   it('should eval component output expression when event is emitted', () => {
     @Component({template: '<button-toggle (change)="counter = counter + 1"></button-toggle>'})
     class App {
-      @ViewChild(ButtonToggle) buttonToggle !: ButtonToggle;
+      @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
       counter = 0;
     }
     TestBed.configureTestingModule({declarations: [App, ButtonToggle]});
@@ -99,13 +116,16 @@ describe('outputs', () => {
   it('should unsubscribe from output when view is destroyed', () => {
     let counter = 0;
 
-    @Component(
-        {template: '<button-toggle *ngIf="condition" (change)="onChange()"></button-toggle>'})
+    @Component({
+      template: '<button-toggle *ngIf="condition" (change)="onChange()"></button-toggle>',
+    })
     class App {
-      @ViewChild(ButtonToggle) buttonToggle !: ButtonToggle;
+      @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
       condition = true;
 
-      onChange() { counter++; }
+      onChange() {
+        counter++;
+      }
     }
     TestBed.configureTestingModule({imports: [CommonModule], declarations: [App, ButtonToggle]});
     const fixture = TestBed.createComponent(App);
@@ -130,14 +150,16 @@ describe('outputs', () => {
         <div *ngIf="condition">
           <button-toggle *ngIf="condition2" (change)="onChange()"></button-toggle>
         </div>
-      `
+      `,
     })
     class App {
-      @ViewChild(ButtonToggle) buttonToggle !: ButtonToggle;
+      @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
       condition = true;
       condition2 = true;
 
-      onChange() { counter++; }
+      onChange() {
+        counter++;
+      }
     }
     TestBed.configureTestingModule({imports: [CommonModule], declarations: [App, ButtonToggle]});
     const fixture = TestBed.createComponent(App);
@@ -165,18 +187,24 @@ describe('outputs', () => {
           <button-toggle (change)="onChange()"></button-toggle>
           <destroy-comp></destroy-comp>
         </div>
-      `
+      `,
     })
     class App {
-      @ViewChild(ButtonToggle) buttonToggle !: ButtonToggle;
-      @ViewChild(DestroyComp) destroyComp !: DestroyComp;
+      @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
+      @ViewChild(DestroyComp) destroyComp!: DestroyComp;
       condition = true;
 
-      onClick() { clickCounter++; }
-      onChange() { changeCounter++; }
+      onClick() {
+        clickCounter++;
+      }
+      onChange() {
+        changeCounter++;
+      }
     }
-    TestBed.configureTestingModule(
-        {imports: [CommonModule], declarations: [App, ButtonToggle, DestroyComp]});
+    TestBed.configureTestingModule({
+      imports: [CommonModule],
+      declarations: [App, ButtonToggle, DestroyComp],
+    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const {buttonToggle, destroyComp} = fixture.componentInstance;
@@ -206,8 +234,10 @@ describe('outputs', () => {
 
     @Component({template: '<button myButton (click)="onClick()">Click me</button>'})
     class App {
-      @ViewChild(MyButton) buttonDir !: MyButton;
-      onClick() { counter++; }
+      @ViewChild(MyButton) buttonDir!: MyButton;
+      onClick() {
+        counter++;
+      }
     }
     TestBed.configureTestingModule({declarations: [App, MyButton]});
     const fixture = TestBed.createComponent(App);
@@ -228,9 +258,11 @@ describe('outputs', () => {
 
     @Component({template: '<button-toggle (change)="onChange()" otherDir></button-toggle>'})
     class App {
-      @ViewChild(ButtonToggle) buttonToggle !: ButtonToggle;
-      @ViewChild(OtherDir) otherDir !: OtherDir;
-      onChange() { counter++; }
+      @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
+      @ViewChild(OtherDir) otherDir!: OtherDir;
+      onChange() {
+        counter++;
+      }
     }
     TestBed.configureTestingModule({declarations: [App, ButtonToggle, OtherDir]});
     const fixture = TestBed.createComponent(App);
@@ -249,19 +281,21 @@ describe('outputs', () => {
     @Directive({selector: '[otherChangeDir]'})
     class OtherChangeDir {
       @Input()
-      change !: boolean;
+      change!: boolean;
     }
 
     @Component({
       template:
-          '<button-toggle (change)="onChange()" otherChangeDir [change]="change"></button-toggle>'
+        '<button-toggle (change)="onChange()" otherChangeDir [change]="change"></button-toggle>',
     })
     class App {
-      @ViewChild(ButtonToggle) buttonToggle !: ButtonToggle;
-      @ViewChild(OtherChangeDir) otherDir !: OtherChangeDir;
+      @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
+      @ViewChild(OtherChangeDir) otherDir!: OtherChangeDir;
       change = true;
 
-      onChange() { counter++; }
+      onChange() {
+        counter++;
+      }
     }
     TestBed.configureTestingModule({declarations: [App, ButtonToggle, OtherChangeDir]});
     const fixture = TestBed.createComponent(App);
@@ -278,5 +312,4 @@ describe('outputs', () => {
     buttonToggle.change.next();
     expect(counter).toBe(1);
   });
-
 });

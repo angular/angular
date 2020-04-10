@@ -16,8 +16,30 @@ import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
 
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
-import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_LOC_ID_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
-import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory, ViewQueriesFunction} from './interfaces/definition';
+import {
+  NG_COMP_DEF,
+  NG_DIR_DEF,
+  NG_FACTORY_DEF,
+  NG_LOC_ID_DEF,
+  NG_MOD_DEF,
+  NG_PIPE_DEF,
+} from './fields';
+import {
+  ComponentDef,
+  ComponentDefFeature,
+  ComponentTemplate,
+  ComponentType,
+  ContentQueriesFunction,
+  DirectiveDef,
+  DirectiveDefFeature,
+  DirectiveTypesOrFactory,
+  FactoryFn,
+  HostBindingsFunction,
+  PipeDef,
+  PipeType,
+  PipeTypesOrFactory,
+  ViewQueriesFunction,
+} from './interfaces/definition';
 import {AttributeMarker, TAttributes, TConstants} from './interfaces/node';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 import {NgModuleType} from './ng_module_ref';
@@ -235,7 +257,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
    * execution is different as compared to all other instructions (after change detection hooks but
    * before view hooks).
    */
-  viewQuery?: ViewQueriesFunction<T>| null;
+  viewQuery?: ViewQueriesFunction<T> | null;
 
   /**
    * A list of optional features to apply.
@@ -303,7 +325,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       decls: componentDefinition.decls,
       vars: componentDefinition.vars,
       factory: null,
-      template: componentDefinition.template || null !,
+      template: componentDefinition.template || null!,
       consts: componentDefinition.consts || null,
       ngContentSelectors: componentDefinition.ngContentSelectors,
       hostBindings: componentDefinition.hostBindings || null,
@@ -311,8 +333,8 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       hostAttrs: componentDefinition.hostAttrs || null,
       contentQueries: componentDefinition.contentQueries || null,
       declaredInputs: declaredInputs,
-      inputs: null !,   // assigned in noSideEffects
-      outputs: null !,  // assigned in noSideEffects
+      inputs: null!, // assigned in noSideEffects
+      outputs: null!, // assigned in noSideEffects
       exportAs: componentDefinition.exportAs || null,
       onChanges: null,
       onInit: typePrototype.ngOnInit || null,
@@ -323,11 +345,11 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       afterViewChecked: typePrototype.ngAfterViewChecked || null,
       onDestroy: typePrototype.ngOnDestroy || null,
       onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
-      directiveDefs: null !,  // assigned in noSideEffects
-      pipeDefs: null !,       // assigned in noSideEffects
+      directiveDefs: null!, // assigned in noSideEffects
+      pipeDefs: null!, // assigned in noSideEffects
       selectors: componentDefinition.selectors || EMPTY_ARRAY,
       viewQuery: componentDefinition.viewQuery || null,
-      features: componentDefinition.features as DirectiveDefFeature[] || null,
+      features: (componentDefinition.features as DirectiveDefFeature[]) || null,
       data: componentDefinition.data || {},
       // TODO(misko): convert ViewEncapsulation into const enum so that it can be used directly in
       // the next line. Also `None` should be 0 not 2.
@@ -339,20 +361,22 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       schemas: componentDefinition.schemas || null,
       tView: null,
     };
-    const directiveTypes = componentDefinition.directives !;
+    const directiveTypes = componentDefinition.directives!;
     const feature = componentDefinition.features;
-    const pipeTypes = componentDefinition.pipes !;
+    const pipeTypes = componentDefinition.pipes!;
     def.id += _renderCompCount++;
-    def.inputs = invertObject(componentDefinition.inputs, declaredInputs),
-    def.outputs = invertObject(componentDefinition.outputs),
-    feature && feature.forEach((fn) => fn(def));
-    def.directiveDefs = directiveTypes ?
-        () => (typeof directiveTypes === 'function' ? directiveTypes() : directiveTypes)
-                  .map(extractDirectiveDef) :
-        null;
-    def.pipeDefs = pipeTypes ?
-        () => (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
-        null;
+    (def.inputs = invertObject(componentDefinition.inputs, declaredInputs)),
+      (def.outputs = invertObject(componentDefinition.outputs)),
+      feature && feature.forEach((fn) => fn(def));
+    def.directiveDefs = directiveTypes
+      ? () =>
+          (typeof directiveTypes === 'function' ? directiveTypes() : directiveTypes).map(
+            extractDirectiveDef
+          )
+      : null;
+    def.pipeDefs = pipeTypes
+      ? () => (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef)
+      : null;
 
     return def as never;
   });
@@ -362,18 +386,21 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
  * @codeGenApi
  */
 export function ɵɵsetComponentScope(
-    type: ComponentType<any>, directives: Type<any>[], pipes: Type<any>[]): void {
-  const def = (type.ɵcmp as ComponentDef<any>);
+  type: ComponentType<any>,
+  directives: Type<any>[],
+  pipes: Type<any>[]
+): void {
+  const def = type.ɵcmp as ComponentDef<any>;
   def.directiveDefs = () => directives.map(extractDirectiveDef);
   def.pipeDefs = () => pipes.map(extractPipeDef);
 }
 
-export function extractDirectiveDef(type: Type<any>): DirectiveDef<any>|ComponentDef<any> {
+export function extractDirectiveDef(type: Type<any>): DirectiveDef<any> | ComponentDef<any> {
   const def = getComponentDef(type) || getDirectiveDef(type);
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is neither 'ComponentType' or 'DirectiveType'.`);
   }
-  return def !;
+  return def!;
 }
 
 export function extractPipeDef(type: Type<any>): PipeDef<any> {
@@ -381,7 +408,7 @@ export function extractPipeDef(type: Type<any>): PipeDef<any> {
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is not a 'PipeType'.`);
   }
-  return def !;
+  return def!;
 }
 
 export const autoRegisterModuleById: {[id: string]: NgModuleType} = {};
@@ -425,8 +452,9 @@ export function ɵɵdefineNgModule<T>(def: {
     id: def.id || null,
   };
   if (def.id != null) {
-    noSideEffects(
-        () => { autoRegisterModuleById[def.id !] = def.type as unknown as NgModuleType; });
+    noSideEffects(() => {
+      autoRegisterModuleById[def.id!] = (def.type as unknown) as NgModuleType;
+    });
   }
   return res as never;
 }
@@ -441,19 +469,22 @@ export function ɵɵdefineNgModule<T>(def: {
  *
  * @codeGenApi
  */
-export function ɵɵsetNgModuleScope(type: any, scope: {
-  /** List of components, directives, and pipes declared by this module. */
-  declarations?: Type<any>[] | (() => Type<any>[]);
+export function ɵɵsetNgModuleScope(
+  type: any,
+  scope: {
+    /** List of components, directives, and pipes declared by this module. */
+    declarations?: Type<any>[] | (() => Type<any>[]);
 
-  /** List of modules or `ModuleWithProviders` imported by this module. */
-  imports?: Type<any>[] | (() => Type<any>[]);
+    /** List of modules or `ModuleWithProviders` imported by this module. */
+    imports?: Type<any>[] | (() => Type<any>[]);
 
-  /**
-   * List of modules, `ModuleWithProviders`, components, directives, or pipes exported by this
-   * module.
-   */
-  exports?: Type<any>[] | (() => Type<any>[]);
-}): void {
+    /**
+     * List of modules, `ModuleWithProviders`, components, directives, or pipes exported by this
+     * module.
+     */
+    exports?: Type<any>[] | (() => Type<any>[]);
+  }
+): void {
   return noSideEffects(() => {
     const ngModuleDef = getNgModuleDef(type, true);
     ngModuleDef.declarations = scope.declarations || EMPTY_ARRAY;
@@ -518,13 +549,14 @@ export function ɵɵsetNgModuleScope(type: any, scope: {
 
  */
 function invertObject<T>(
-    obj?: {[P in keyof T]?: string | [string, string]},
-    secondary?: {[key: string]: string}): {[P in keyof T]: string} {
+  obj?: {[P in keyof T]?: string | [string, string]},
+  secondary?: {[key: string]: string}
+): {[P in keyof T]: string} {
   if (obj == null) return EMPTY_OBJ as any;
   const newLookup: any = {};
   for (const minifiedKey in obj) {
     if (obj.hasOwnProperty(minifiedKey)) {
-      let publicName: string|[string, string] = obj[minifiedKey] !;
+      let publicName: string | [string, string] = obj[minifiedKey]!;
       let declaredName = publicName;
       if (Array.isArray(publicName)) {
         declaredName = publicName[1];
@@ -532,7 +564,7 @@ function invertObject<T>(
       }
       newLookup[publicName] = minifiedKey;
       if (secondary) {
-        (secondary[publicName] = declaredName as string);
+        secondary[publicName] = declaredName as string;
       }
     }
   }
@@ -555,7 +587,7 @@ function invertObject<T>(
  *
  * @codeGenApi
  */
-export const ɵɵdefineDirective = ɵɵdefineComponent as any as<T>(directiveDefinition: {
+export const ɵɵdefineDirective = (ɵɵdefineComponent as any) as <T>(directiveDefinition: {
   /**
    * Directive type, needed to configure the injector.
    */
@@ -682,7 +714,7 @@ export const ɵɵdefineDirective = ɵɵdefineComponent as any as<T>(directiveDef
    * Additional set of instructions specific to view query processing. This could be seen as a
    * set of instructions to be inserted into the template function.
    */
-  viewQuery?: ViewQueriesFunction<T>| null;
+  viewQuery?: ViewQueriesFunction<T> | null;
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
@@ -710,20 +742,20 @@ export const ɵɵdefineDirective = ɵɵdefineComponent as any as<T>(directiveDef
  */
 export function ɵɵdefinePipe<T>(pipeDef: {
   /** Name of the pipe. Used for matching pipes in template to pipe defs. */
-  name: string,
+  name: string;
 
   /** Pipe class reference. Needed to extract pipe lifecycle hooks. */
-  type: Type<T>,
+  type: Type<T>;
 
   /** Whether the pipe is pure. */
-  pure?: boolean
+  pure?: boolean;
 }): never {
   return (<PipeDef<T>>{
     type: pipeDef.type,
     name: pipeDef.name,
     factory: null,
     pure: pipeDef.pure !== false,
-    onDestroy: pipeDef.type.prototype.ngOnDestroy || null
+    onDestroy: pipeDef.type.prototype.ngOnDestroy || null,
   }) as never;
 }
 
@@ -733,21 +765,21 @@ export function ɵɵdefinePipe<T>(pipeDef: {
  * explicit. This would require some sort of migration strategy.
  */
 
-export function getComponentDef<T>(type: any): ComponentDef<T>|null {
+export function getComponentDef<T>(type: any): ComponentDef<T> | null {
   return type[NG_COMP_DEF] || null;
 }
 
-export function getDirectiveDef<T>(type: any): DirectiveDef<T>|null {
+export function getDirectiveDef<T>(type: any): DirectiveDef<T> | null {
   return type[NG_DIR_DEF] || null;
 }
 
-export function getPipeDef<T>(type: any): PipeDef<T>|null {
+export function getPipeDef<T>(type: any): PipeDef<T> | null {
   return type[NG_PIPE_DEF] || null;
 }
 
 export function getFactoryDef<T>(type: any, throwNotFound: true): FactoryFn<T>;
-export function getFactoryDef<T>(type: any): FactoryFn<T>|null;
-export function getFactoryDef<T>(type: any, throwNotFound?: boolean): FactoryFn<T>|null {
+export function getFactoryDef<T>(type: any): FactoryFn<T> | null;
+export function getFactoryDef<T>(type: any, throwNotFound?: boolean): FactoryFn<T> | null {
   const hasFactoryDef = type.hasOwnProperty(NG_FACTORY_DEF);
   if (!hasFactoryDef && throwNotFound === true && ngDevMode) {
     throw new Error(`Type ${stringify(type)} does not have 'ɵfac' property.`);
@@ -756,8 +788,8 @@ export function getFactoryDef<T>(type: any, throwNotFound?: boolean): FactoryFn<
 }
 
 export function getNgModuleDef<T>(type: any, throwNotFound: true): NgModuleDef<T>;
-export function getNgModuleDef<T>(type: any): NgModuleDef<T>|null;
-export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleDef<T>|null {
+export function getNgModuleDef<T>(type: any): NgModuleDef<T> | null;
+export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleDef<T> | null {
   const ngModuleDef = type[NG_MOD_DEF] || null;
   if (!ngModuleDef && throwNotFound === true) {
     throw new Error(`Type ${stringify(type)} does not have 'ɵmod' property.`);
@@ -765,6 +797,6 @@ export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleD
   return ngModuleDef;
 }
 
-export function getNgLocaleIdDef(type: any): string|null {
+export function getNgLocaleIdDef(type: any): string | null {
   return (type as any)[NG_LOC_ID_DEF] || null;
 }

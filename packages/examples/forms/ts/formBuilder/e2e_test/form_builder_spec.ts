@@ -33,5 +33,4 @@ describe('formBuilder example', () => {
     inputs.get(0).sendKeys('a');
     expect(paragraphs.get(1).getText()).toEqual('Validation status: INVALID');
   });
-
 });

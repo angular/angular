@@ -63,15 +63,17 @@ export interface IPropertySpyHelpers<T, P extends keyof T> {
  *
  * @return A function for updating the current value of the mocked property.
  */
-export const mockProperty =
-    <T, P extends keyof T>(ctx: T, prop: P): IPropertySpyHelpers<T, P>['setMockValue'] => {
-      const {setMockValue, installSpies, uninstallSpies} = spyProperty(ctx, prop);
+export const mockProperty = <T, P extends keyof T>(
+  ctx: T,
+  prop: P
+): IPropertySpyHelpers<T, P>['setMockValue'] => {
+  const {setMockValue, installSpies, uninstallSpies} = spyProperty(ctx, prop);
 
-      beforeEach(installSpies);
-      afterEach(uninstallSpies);
+  beforeEach(installSpies);
+  afterEach(uninstallSpies);
 
-      return setMockValue;
-    };
+  return setMockValue;
+};
 
 /**
  * Return utility functions to help mock and spy on an object's property.
@@ -92,7 +94,7 @@ export const spyProperty = <T, P extends keyof T>(ctx: T, prop: P): IPropertySpy
   const originalDescriptor = Object.getOwnPropertyDescriptor(ctx, prop);
 
   let value = ctx[prop];
-  const setMockValue = (mockValue: typeof value) => value = mockValue;
+  const setMockValue = (mockValue: typeof value) => (value = mockValue);
   const setSpy = jasmine.createSpy(`set ${prop}`).and.callFake(setMockValue);
   const getSpy = jasmine.createSpy(`get ${prop}`).and.callFake(() => value);
 
@@ -106,7 +108,7 @@ export const spyProperty = <T, P extends keyof T>(ctx: T, prop: P): IPropertySpy
     });
   };
   const uninstallSpies = () =>
-      originalDescriptor ? Object.defineProperty(ctx, prop, originalDescriptor) : delete ctx[prop];
+    originalDescriptor ? Object.defineProperty(ctx, prop, originalDescriptor) : delete ctx[prop];
 
   return {installSpies, uninstallSpies, setMockValue, getSpy, setSpy};
 };

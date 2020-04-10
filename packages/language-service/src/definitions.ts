@@ -7,7 +7,7 @@
  */
 
 import * as path from 'path';
-import * as ts from 'typescript';  // used as value and is provided at runtime
+import * as ts from 'typescript'; // used as value and is provided at runtime
 import {AstResult} from './common';
 import {locateSymbols} from './locate_symbol';
 import {getPropertyAssignmentFromValue, isClassDecoratorProperty} from './template';
@@ -33,7 +33,9 @@ function ngSpanToTsTextSpan(span: Span): ts.TextSpan {
  * @param position
  */
 export function getDefinitionAndBoundSpan(
-    info: AstResult, position: number): ts.DefinitionInfoAndBoundSpan|undefined {
+  info: AstResult,
+  position: number
+): ts.DefinitionInfoAndBoundSpan | undefined {
   const symbols = locateSymbols(info, position);
   if (!symbols.length) {
     return;
@@ -51,8 +53,9 @@ export function getDefinitionAndBoundSpan(
       continue;
     }
 
-    const containerKind =
-        container ? container.kind as ts.ScriptElementKind : ts.ScriptElementKind.unknown;
+    const containerKind = container
+      ? (container.kind as ts.ScriptElementKind)
+      : ts.ScriptElementKind.unknown;
     const containerName = container ? container.name : '';
 
     for (const {fileName, span} of locations) {
@@ -88,8 +91,10 @@ export function getDefinitionAndBoundSpan(
  * Gets an Angular-specific definition in a TypeScript source file.
  */
 export function getTsDefinitionAndBoundSpan(
-    sf: ts.SourceFile, position: number,
-    tsLsHost: Readonly<ts.LanguageServiceHost>): ts.DefinitionInfoAndBoundSpan|undefined {
+  sf: ts.SourceFile,
+  position: number,
+  tsLsHost: Readonly<ts.LanguageServiceHost>
+): ts.DefinitionInfoAndBoundSpan | undefined {
   const node = findTightestNode(sf, position);
   if (!node) return;
   switch (node.kind) {
@@ -108,8 +113,9 @@ export function getTsDefinitionAndBoundSpan(
  * Currently applies to `templateUrl` and `styleUrls` properties.
  */
 function getUrlFromProperty(
-    urlNode: ts.StringLiteralLike,
-    tsLsHost: Readonly<ts.LanguageServiceHost>): ts.DefinitionInfoAndBoundSpan|undefined {
+  urlNode: ts.StringLiteralLike,
+  tsLsHost: Readonly<ts.LanguageServiceHost>
+): ts.DefinitionInfoAndBoundSpan | undefined {
   // Get the property assignment node corresponding to the `templateUrl` or `styleUrls` assignment.
   // These assignments are specified differently; `templateUrl` is a string, and `styleUrls` is
   // an array of strings:
@@ -144,15 +150,17 @@ function getUrlFromProperty(
   // does not have a `fileExists` method, in which case optimistically assume the file exists.
   if (tsLsHost.fileExists && !tsLsHost.fileExists(url)) return;
 
-  const templateDefinitions: ts.DefinitionInfo[] = [{
-    kind: ts.ScriptElementKind.externalModuleName,
-    name: url,
-    containerKind: ts.ScriptElementKind.unknown,
-    containerName: '',
-    // Reading the template is expensive, so don't provide a preview.
-    textSpan: {start: 0, length: 0},
-    fileName: url,
-  }];
+  const templateDefinitions: ts.DefinitionInfo[] = [
+    {
+      kind: ts.ScriptElementKind.externalModuleName,
+      name: url,
+      containerKind: ts.ScriptElementKind.unknown,
+      containerName: '',
+      // Reading the template is expensive, so don't provide a preview.
+      textSpan: {start: 0, length: 0},
+      fileName: url,
+    },
+  ];
 
   return {
     definitions: templateDefinitions,

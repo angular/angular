@@ -7,7 +7,12 @@
  */
 
 import {StaticSymbol} from './aot/static_symbol';
-import {CompileInjectableMetadata, CompileNgModuleMetadata, CompileProviderMetadata, identifierName} from './compile_metadata';
+import {
+  CompileInjectableMetadata,
+  CompileNgModuleMetadata,
+  CompileProviderMetadata,
+  identifierName,
+} from './compile_metadata';
 import {CompileReflector} from './compile_reflector';
 import {InjectFlags, NodeFlags} from './core';
 import {Identifiers} from './identifiers';
@@ -16,12 +21,16 @@ import {convertValueToOutputAst} from './output/value_util';
 import {typeSourceSpan} from './parse_util';
 import {NgModuleProviderAnalyzer} from './provider_analyzer';
 import {OutputContext} from './util';
-import {componentFactoryResolverProviderDef, depDef, providerDef} from './view_compiler/provider_compiler';
+import {
+  componentFactoryResolverProviderDef,
+  depDef,
+  providerDef,
+} from './view_compiler/provider_compiler';
 
 type MapEntry = {
-  key: string,
-  quoted: boolean,
-  value: o.Expression
+  key: string;
+  quoted: boolean;
+  value: o.Expression;
 };
 type MapLiteral = MapEntry[];
 
@@ -36,7 +45,7 @@ export class InjectableCompiler {
   }
 
   private depsArray(deps: any[], ctx: OutputContext): o.Expression[] {
-    return deps.map(dep => {
+    return deps.map((dep) => {
       let token = dep;
       let args = [token];
       let flags: InjectFlags = InjectFlags.Default;
@@ -96,8 +105,12 @@ export class InjectableCompiler {
       retValue = new o.InstantiateExpr(ctx.importExpr(clazz), depArgs);
     }
     return o.fn(
-        [], [new o.ReturnStatement(retValue)], undefined, undefined,
-        injectable.symbol.name + '_Factory');
+      [],
+      [new o.ReturnStatement(retValue)],
+      undefined,
+      undefined,
+      injectable.symbol.name + '_Factory'
+    );
   }
 
   injectableDef(injectable: CompileInjectableMetadata, ctx: OutputContext): o.Expression {
@@ -123,13 +136,20 @@ export class InjectableCompiler {
     if (this.alwaysGenerateDef || injectable.providedIn !== undefined) {
       const className = identifierName(injectable.type)!;
       const clazz = new o.ClassStmt(
-          className, null,
-          [
-            new o.ClassField(
-                'ɵprov', o.INFERRED_TYPE, [o.StmtModifier.Static],
-                this.injectableDef(injectable, ctx)),
-          ],
-          [], new o.ClassMethod(null, [], []), []);
+        className,
+        null,
+        [
+          new o.ClassField(
+            'ɵprov',
+            o.INFERRED_TYPE,
+            [o.StmtModifier.Static],
+            this.injectableDef(injectable, ctx)
+          ),
+        ],
+        [],
+        new o.ClassMethod(null, [], []),
+        []
+      );
       ctx.statements.push(clazz);
     }
   }

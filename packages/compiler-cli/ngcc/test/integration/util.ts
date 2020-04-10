@@ -68,7 +68,10 @@ export interface FlatLayoutOptions {
  * @param options Allows for configuration of how the sources are compiled.
  */
 function compileIntoFlatPackage(
-    pkgName: string, sources: PackageSources, options: FlatLayoutOptions): void {
+  pkgName: string,
+  sources: PackageSources,
+  options: FlatLayoutOptions
+): void {
   const fs = getFileSystem();
   const {rootNames, compileFs} = setupCompileFs(sources);
 
@@ -101,7 +104,9 @@ function compileIntoFlatPackage(
   };
 
   fs.writeFile(
-      fs.resolve(`/node_modules/${pkgName}/package.json`), JSON.stringify(pkgJson, null, 2));
+    fs.resolve(`/node_modules/${pkgName}/package.json`),
+    JSON.stringify(pkgJson, null, 2)
+  );
 }
 
 /**
@@ -116,14 +121,20 @@ function compileIntoFlatPackage(
  * in testing ngcc.
  */
 export function compileIntoApf(
-    pkgName: string, sources: PackageSources, extraCompilerOptions: ts.CompilerOptions = {}): void {
+  pkgName: string,
+  sources: PackageSources,
+  extraCompilerOptions: ts.CompilerOptions = {}
+): void {
   const fs = getFileSystem();
   const {rootNames, compileFs} = setupCompileFs(sources);
 
   const emit = (options: ts.CompilerOptions) => {
     const host = new MockCompilerHost(compileFs);
-    const program =
-        ts.createProgram({host, rootNames, options: {...extraCompilerOptions, ...options}});
+    const program = ts.createProgram({
+      host,
+      rootNames,
+      options: {...extraCompilerOptions, ...options},
+    });
     program.emit();
   };
 
@@ -151,7 +162,9 @@ export function compileIntoApf(
     fs.writeFile(fs.resolve(`/node_modules/${pkgName}/esm2015/src/${inFileBase}.js`), jsContents);
   }
   fs.writeFile(
-      fs.resolve(`/node_modules/${pkgName}/esm2015/index.js`), `export * from './src/index';`);
+    fs.resolve(`/node_modules/${pkgName}/esm2015/index.js`),
+    `export * from './src/index';`
+  );
 
   // Compile esm5 into /esm5
   compileFs.ensureDir(compileFs.resolve('esm5'));
@@ -172,7 +185,9 @@ export function compileIntoApf(
     fs.writeFile(fs.resolve(`/node_modules/${pkgName}/esm5/src/${inFileBase}.js`), jsContents);
   }
   fs.writeFile(
-      fs.resolve(`/node_modules/${pkgName}/esm5/index.js`), `export * from './src/index';`);
+    fs.resolve(`/node_modules/${pkgName}/esm5/index.js`),
+    `export * from './src/index';`
+  );
 
   // Write a main declaration and metadata file to the root
   fs.writeFile(fs.resolve(`/node_modules/${pkgName}/index.d.ts`), `export * from './src/index';`);
@@ -189,14 +204,16 @@ export function compileIntoApf(
   };
 
   fs.writeFile(
-      fs.resolve(`/node_modules/${pkgName}/package.json`), JSON.stringify(pkgJson, null, 2));
+    fs.resolve(`/node_modules/${pkgName}/package.json`),
+    JSON.stringify(pkgJson, null, 2)
+  );
 }
 
 /**
  * Prepares a mock filesystem that contains all provided source files, which can be used to emit
  * compiled code into.
  */
-function setupCompileFs(sources: PackageSources): {rootNames: string[], compileFs: FileSystem} {
+function setupCompileFs(sources: PackageSources): {rootNames: string[]; compileFs: FileSystem} {
   const compileFs = new MockFileSystemPosix(true);
   compileFs.init(loadStandardTestFiles({fakeCore: false}));
 
@@ -218,12 +235,18 @@ function setupCompileFs(sources: PackageSources): {rootNames: string[], compileF
 class MockCompilerHost implements ts.CompilerHost {
   constructor(private fs: FileSystem) {}
   getSourceFile(
-      fileName: string, languageVersion: ts.ScriptTarget,
-      onError?: ((message: string) => void)|undefined,
-      shouldCreateNewSourceFile?: boolean|undefined): ts.SourceFile|undefined {
+    fileName: string,
+    languageVersion: ts.ScriptTarget,
+    onError?: ((message: string) => void) | undefined,
+    shouldCreateNewSourceFile?: boolean | undefined
+  ): ts.SourceFile | undefined {
     return ts.createSourceFile(
-        fileName, this.fs.readFile(this.fs.resolve(fileName)), languageVersion, true,
-        ts.ScriptKind.TS);
+      fileName,
+      this.fs.readFile(this.fs.resolve(fileName)),
+      languageVersion,
+      true,
+      ts.ScriptKind.TS
+    );
   }
 
   getDefaultLibFileName(options: ts.CompilerOptions): string {
@@ -249,7 +272,7 @@ class MockCompilerHost implements ts.CompilerHost {
   fileExists(fileName: string): boolean {
     return this.fs.exists(this.fs.resolve(fileName));
   }
-  readFile(fileName: string): string|undefined {
+  readFile(fileName: string): string | undefined {
     const abs = this.fs.resolve(fileName);
     return this.fs.exists(abs) ? this.fs.readFile(abs) : undefined;
   }

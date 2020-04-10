@@ -6,7 +6,32 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {analyzeNgModules, AotSummaryResolver, CompileMetadataResolver, CompilerConfig, createOfflineCompileUrlResolver, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, Parser, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost, TemplateParser} from '@angular/compiler';
+import {
+  analyzeNgModules,
+  AotSummaryResolver,
+  CompileMetadataResolver,
+  CompilerConfig,
+  createOfflineCompileUrlResolver,
+  DirectiveNormalizer,
+  DirectiveResolver,
+  DomElementSchemaRegistry,
+  HtmlParser,
+  I18NHtmlParser,
+  JitSummaryResolver,
+  Lexer,
+  NgAnalyzedModules,
+  NgModuleResolver,
+  Parser,
+  ParseTreeResult,
+  PipeResolver,
+  ResourceLoader,
+  StaticReflector,
+  StaticSymbol,
+  StaticSymbolCache,
+  StaticSymbolResolver,
+  StaticSymbolResolverHost,
+  TemplateParser,
+} from '@angular/compiler';
 import {Directory, MockAotContext} from '@angular/compiler-cli/test/mocks';
 import {setup} from '@angular/compiler-cli/test/test_support';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
@@ -40,7 +65,7 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost {
       strictNullChecks: true,
       baseUrl: currentDirectory,
       lib: ['lib.es2015.d.ts', 'lib.dom.d.ts'],
-      paths: {'@angular/*': [path.join(support.basePath, 'node_modules/@angular/*')]}
+      paths: {'@angular/*': [path.join(support.basePath, 'node_modules/@angular/*')]},
     };
     this.context = new MockAotContext(currentDirectory, files);
   }
@@ -57,7 +82,7 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost {
     return '0';
   }
 
-  getScriptSnapshot(fileName: string): ts.IScriptSnapshot|undefined {
+  getScriptSnapshot(fileName: string): ts.IScriptSnapshot | undefined {
     const content = this.internalReadFile(fileName);
     if (content) {
       return ts.ScriptSnapshot.fromString(content);
@@ -88,7 +113,7 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost {
     return this.assumedExist.has(fileName) || this.internalReadFile(fileName) != null;
   }
 
-  private internalReadFile(fileName: string): string|undefined {
+  private internalReadFile(fileName: string): string | undefined {
     let basename = path.basename(fileName);
     if (/^lib.*\.d\.ts$/.test(basename)) {
       let libPath = path.posix.dirname(ts.getDefaultLibFilePath(this.getCompilationSettings()));
@@ -114,32 +139,36 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost {
 
 const staticSymbolCache = new StaticSymbolCache();
 const summaryResolver = new AotSummaryResolver(
-    {
-      loadSummary(filePath: string) {
-        return null;
-      },
-      isSourceFile(sourceFilePath: string) {
-        return true;
-      },
-      toSummaryFileName(sourceFilePath: string) {
-        return sourceFilePath;
-      },
-      fromSummaryFileName(filePath: string): string {
-        return filePath;
-      },
+  {
+    loadSummary(filePath: string) {
+      return null;
     },
-    staticSymbolCache);
+    isSourceFile(sourceFilePath: string) {
+      return true;
+    },
+    toSummaryFileName(sourceFilePath: string) {
+      return sourceFilePath;
+    },
+    fromSummaryFileName(filePath: string): string {
+      return filePath;
+    },
+  },
+  staticSymbolCache
+);
 
 export class DiagnosticContext {
-  private _analyzedModules: NgAnalyzedModules|undefined;
-  private _staticSymbolResolver: StaticSymbolResolver|undefined;
-  private _reflector: StaticReflector|undefined;
-  private _errors: {e: any, path?: string}[] = [];
-  private _resolver: CompileMetadataResolver|undefined;
+  private _analyzedModules: NgAnalyzedModules | undefined;
+  private _staticSymbolResolver: StaticSymbolResolver | undefined;
+  private _reflector: StaticReflector | undefined;
+  private _errors: {e: any; path?: string}[] = [];
+  private _resolver: CompileMetadataResolver | undefined;
 
   constructor(
-      public service: ts.LanguageService, public program: ts.Program,
-      public checker: ts.TypeChecker, public host: StaticSymbolResolverHost) {}
+    public service: ts.LanguageService,
+    public program: ts.Program,
+    public checker: ts.TypeChecker,
+    public host: StaticSymbolResolverHost
+  ) {}
 
   private collectError(e: any, path?: string) {
     this._errors.push({e, path});
@@ -149,8 +178,11 @@ export class DiagnosticContext {
     let result = this._staticSymbolResolver;
     if (!result) {
       result = this._staticSymbolResolver = new StaticSymbolResolver(
-          this.host, staticSymbolCache, summaryResolver,
-          (e, filePath) => this.collectError(e, filePath));
+        this.host,
+        staticSymbolCache,
+        summaryResolver,
+        (e, filePath) => this.collectError(e, filePath)
+      );
     }
     return result;
   }
@@ -158,8 +190,13 @@ export class DiagnosticContext {
   get reflector(): StaticReflector {
     if (!this._reflector) {
       const ssr = this.staticSymbolResolver;
-      const result = this._reflector = new StaticReflector(
-          summaryResolver, ssr, [], [], (e, filePath) => this.collectError(e, filePath!));
+      const result = (this._reflector = new StaticReflector(
+        summaryResolver,
+        ssr,
+        [],
+        [],
+        (e, filePath) => this.collectError(e, filePath!)
+      ));
       this._reflector = result;
       return result;
     }
@@ -173,30 +210,45 @@ export class DiagnosticContext {
       const directiveResolver = new DirectiveResolver(this.reflector);
       const pipeResolver = new PipeResolver(this.reflector);
       const elementSchemaRegistry = new DomElementSchemaRegistry();
-      const resourceLoader = new class extends ResourceLoader {
+      const resourceLoader = new (class extends ResourceLoader {
         get(url: string): Promise<string> {
           return Promise.resolve('');
         }
-      };
+      })();
       const urlResolver = createOfflineCompileUrlResolver();
-      const htmlParser = new class extends HtmlParser {
+      const htmlParser = new (class extends HtmlParser {
         parse(): ParseTreeResult {
           return new ParseTreeResult([], []);
         }
-      };
+      })();
 
       // This tracks the CompileConfig in codegen.ts. Currently these options
       // are hard-coded.
-      const config =
-          new CompilerConfig({defaultEncapsulation: ViewEncapsulation.Emulated, useJit: false});
-      const directiveNormalizer =
-          new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
+      const config = new CompilerConfig({
+        defaultEncapsulation: ViewEncapsulation.Emulated,
+        useJit: false,
+      });
+      const directiveNormalizer = new DirectiveNormalizer(
+        resourceLoader,
+        urlResolver,
+        htmlParser,
+        config
+      );
 
       result = this._resolver = new CompileMetadataResolver(
-          config, htmlParser, moduleResolver, directiveResolver, pipeResolver,
-          new JitSummaryResolver(), elementSchemaRegistry, directiveNormalizer, new Console(),
-          staticSymbolCache, this.reflector,
-          (error, type) => this.collectError(error, type && type.filePath));
+        config,
+        htmlParser,
+        moduleResolver,
+        directiveResolver,
+        pipeResolver,
+        new JitSummaryResolver(),
+        elementSchemaRegistry,
+        directiveNormalizer,
+        new Console(),
+        staticSymbolCache,
+        this.reflector,
+        (error, type) => this.collectError(error, type && type.filePath)
+      );
     }
     return result;
   }
@@ -207,11 +259,15 @@ export class DiagnosticContext {
       const analyzeHost = {
         isSourceFile(filePath: string) {
           return true;
-        }
+        },
       };
-      const programFiles = this.program.getSourceFiles().map(sf => sf.fileName);
-      analyzedModules = this._analyzedModules =
-          analyzeNgModules(programFiles, analyzeHost, this.staticSymbolResolver, this.resolver);
+      const programFiles = this.program.getSourceFiles().map((sf) => sf.fileName);
+      analyzedModules = this._analyzedModules = analyzeNgModules(
+        programFiles,
+        analyzeHost,
+        this.staticSymbolResolver,
+        this.resolver
+      );
     }
     return analyzedModules;
   }
@@ -231,18 +287,26 @@ function compileTemplate(context: DiagnosticContext, type: StaticSymbol, templat
     const expressionParser = new Parser(new Lexer());
     const config = new CompilerConfig();
     const parser = new TemplateParser(
-        config, context.reflector, expressionParser, new DomElementSchemaRegistry(), htmlParser,
-        null!, []);
+      config,
+      context.reflector,
+      expressionParser,
+      new DomElementSchemaRegistry(),
+      htmlParser,
+      null!,
+      []
+    );
     const htmlResult = htmlParser.parse(template, '', {tokenizeExpansionForms: true});
     const analyzedModules = context.analyzedModules;
     // let errors: Diagnostic[]|undefined = undefined;
     let ngModule = analyzedModules.ngModuleByPipeOrDirective.get(type);
     if (ngModule) {
-      const resolvedDirectives = ngModule.transitiveModule.directives.map(
-          d => context.resolver.getNonNormalizedDirectiveMetadata(d.reference));
-      const directives = removeMissing(resolvedDirectives).map(d => d.metadata.toSummary());
-      const pipes = ngModule.transitiveModule.pipes.map(
-          p => context.resolver.getOrLoadPipeMetadata(p.reference).toSummary());
+      const resolvedDirectives = ngModule.transitiveModule.directives.map((d) =>
+        context.resolver.getNonNormalizedDirectiveMetadata(d.reference)
+      );
+      const directives = removeMissing(resolvedDirectives).map((d) => d.metadata.toSummary());
+      const pipes = ngModule.transitiveModule.pipes.map((p) =>
+        context.resolver.getOrLoadPipeMetadata(p.reference).toSummary()
+      );
       const schemas = ngModule.schemas;
       const parseResult = parser.tryParseHtml(htmlResult, metadata, directives, pipes, schemas);
       return {
@@ -252,25 +316,27 @@ function compileTemplate(context: DiagnosticContext, type: StaticSymbol, templat
         directives,
         pipes,
         parseErrors: parseResult.errors,
-        expressionParser
+        expressionParser,
       };
     }
   }
 }
 
 export function getDiagnosticTemplateInfo(
-    context: DiagnosticContext, type: StaticSymbol, templateFile: string,
-    template: string): DiagnosticTemplateInfo|undefined {
+  context: DiagnosticContext,
+  type: StaticSymbol,
+  templateFile: string,
+  template: string
+): DiagnosticTemplateInfo | undefined {
   const compiledTemplate = compileTemplate(context, type, template);
   if (compiledTemplate && compiledTemplate.templateAst) {
     const members = getClassMembers(context.program, context.checker, type);
     if (members) {
       const sourceFile = context.program.getSourceFile(type.filePath);
       if (sourceFile) {
-        const query = getSymbolQuery(
-            context.program, context.checker, sourceFile,
-            () => getPipesTable(
-                sourceFile, context.program, context.checker, compiledTemplate.pipes));
+        const query = getSymbolQuery(context.program, context.checker, sourceFile, () =>
+          getPipesTable(sourceFile, context.program, context.checker, compiledTemplate.pipes)
+        );
         return {
           fileName: templateFile,
           offset: 0,
@@ -285,6 +351,6 @@ export function getDiagnosticTemplateInfo(
   }
 }
 
-function removeMissing<T>(values: (T|null|undefined)[]): T[] {
-  return values.filter(e => !!e) as T[];
+function removeMissing<T>(values: (T | null | undefined)[]): T[] {
+  return values.filter((e) => !!e) as T[];
 }

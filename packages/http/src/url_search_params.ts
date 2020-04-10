@@ -13,7 +13,7 @@ function paramParser(rawParams: string = ''): Map<string, string[]> {
     params.forEach((param: string) => {
       const eqIdx = param.indexOf('=');
       const [key, val]: string[] =
-          eqIdx == -1 ? [param, ''] : [param.slice(0, eqIdx), param.slice(eqIdx + 1)];
+        eqIdx == -1 ? [param, ''] : [param.slice(0, eqIdx), param.slice(eqIdx + 1)];
       const list = map.get(key) || [];
       list.push(val);
       map.set(key, list);
@@ -26,22 +26,26 @@ function paramParser(rawParams: string = ''): Map<string, string[]> {
  * @publicApi
  **/
 export class QueryEncoder {
-  encodeKey(key: string): string { return standardEncoding(key); }
+  encodeKey(key: string): string {
+    return standardEncoding(key);
+  }
 
-  encodeValue(value: string): string { return standardEncoding(value); }
+  encodeValue(value: string): string {
+    return standardEncoding(value);
+  }
 }
 
 function standardEncoding(v: string): string {
   return encodeURIComponent(v)
-      .replace(/%40/gi, '@')
-      .replace(/%3A/gi, ':')
-      .replace(/%24/gi, '$')
-      .replace(/%2C/gi, ',')
-      .replace(/%3B/gi, ';')
-      .replace(/%2B/gi, '+')
-      .replace(/%3D/gi, '=')
-      .replace(/%3F/gi, '?')
-      .replace(/%2F/gi, '/');
+    .replace(/%40/gi, '@')
+    .replace(/%3A/gi, ':')
+    .replace(/%24/gi, '$')
+    .replace(/%2C/gi, ',')
+    .replace(/%3B/gi, ';')
+    .replace(/%2B/gi, '+')
+    .replace(/%3D/gi, '=')
+    .replace(/%3F/gi, '?')
+    .replace(/%2F/gi, '/');
 }
 
 /**
@@ -83,7 +87,9 @@ function standardEncoding(v: string): string {
 export class URLSearchParams {
   paramsMap: Map<string, string[]>;
   constructor(
-      public rawParams: string = '', private queryEncoder: QueryEncoder = new QueryEncoder()) {
+    public rawParams: string = '',
+    private queryEncoder: QueryEncoder = new QueryEncoder()
+  ) {
     this.paramsMap = paramParser(rawParams);
   }
 
@@ -93,15 +99,19 @@ export class URLSearchParams {
     return clone;
   }
 
-  has(param: string): boolean { return this.paramsMap.has(param); }
+  has(param: string): boolean {
+    return this.paramsMap.has(param);
+  }
 
-  get(param: string): string|null {
+  get(param: string): string | null {
     const storedParam = this.paramsMap.get(param);
 
     return Array.isArray(storedParam) ? storedParam[0] : null;
   }
 
-  getAll(param: string): string[] { return this.paramsMap.get(param) || []; }
+  getAll(param: string): string[] {
+    return this.paramsMap.get(param) || [];
+  }
 
   set(param: string, val: string) {
     if (val === void 0 || val === null) {
@@ -153,7 +163,6 @@ export class URLSearchParams {
     });
   }
 
-
   // A merge operation
   // For each name-values pair in `searchParams`, perform `delete(name)`,
   // followed by `set(name, values)`
@@ -175,12 +184,14 @@ export class URLSearchParams {
   toString(): string {
     const paramsList: string[] = [];
     this.paramsMap.forEach((values, k) => {
-      values.forEach(
-          v => paramsList.push(
-              this.queryEncoder.encodeKey(k) + '=' + this.queryEncoder.encodeValue(v)));
+      values.forEach((v) =>
+        paramsList.push(this.queryEncoder.encodeKey(k) + '=' + this.queryEncoder.encodeValue(v))
+      );
     });
     return paramsList.join('&');
   }
 
-  delete (param: string): void { this.paramsMap.delete(param); }
+  delete(param: string): void {
+    this.paramsMap.delete(param);
+  }
 }

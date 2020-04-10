@@ -17,7 +17,6 @@
  * explicitly.
  */
 
-
 export {ɵInternalFormsSharedModule} from './directives';
 export {AbstractControlDirective} from './directives/abstract_control_directive';
 export {AbstractFormGroupDirective} from './directives/abstract_form_group_directive';
@@ -40,10 +39,25 @@ export {FormControlName} from './directives/reactive_directives/form_control_nam
 export {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
 export {FormArrayName} from './directives/reactive_directives/form_group_name';
 export {FormGroupName} from './directives/reactive_directives/form_group_name';
-export {NgSelectOption, SelectControlValueAccessor} from './directives/select_control_value_accessor';
+export {
+  NgSelectOption,
+  SelectControlValueAccessor,
+} from './directives/select_control_value_accessor';
 export {SelectMultipleControlValueAccessor} from './directives/select_multiple_control_value_accessor';
 export {ɵNgSelectMultipleOption} from './directives/select_multiple_control_value_accessor';
-export {AsyncValidator, AsyncValidatorFn, CheckboxRequiredValidator, EmailValidator, MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValidator, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
+export {
+  AsyncValidator,
+  AsyncValidatorFn,
+  CheckboxRequiredValidator,
+  EmailValidator,
+  MaxLengthValidator,
+  MinLengthValidator,
+  PatternValidator,
+  RequiredValidator,
+  ValidationErrors,
+  Validator,
+  ValidatorFn,
+} from './directives/validators';
 export {FormBuilder} from './form_builder';
 export {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormGroup} from './model';
 export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './validators';

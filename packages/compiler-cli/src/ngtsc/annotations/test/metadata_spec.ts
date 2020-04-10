@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
@@ -24,7 +25,8 @@ runInEachFileSystem(() => {
     @Component('metadata') class Target {}
     `);
       expect(res).toEqual(
-          `/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Target, [{ type: Component, args: ['metadata'] }], null, null); })();`);
+        `/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Target, [{ type: Component, args: ['metadata'] }], null, null); })();`
+      );
     });
 
     it('should convert namespaced decorated class metadata', () => {
@@ -34,7 +36,8 @@ runInEachFileSystem(() => {
     @core.Component('metadata') class Target {}
     `);
       expect(res).toEqual(
-          `/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Target, [{ type: core.Component, args: ['metadata'] }], null, null); })();`);
+        `/*@__PURE__*/ (function () { i0.ɵsetClassMetadata(Target, [{ type: core.Component, args: ['metadata'] }], null, null); })();`
+      );
     });
 
     it('should convert decorated class constructor parameter metadata', () => {
@@ -47,7 +50,8 @@ runInEachFileSystem(() => {
     }
     `);
       expect(res).toContain(
-          `function () { return [{ type: undefined, decorators: [{ type: Inject, args: [FOO] }] }, { type: i0.Injector }]; }, null);`);
+        `function () { return [{ type: undefined, decorators: [{ type: Inject, args: [FOO] }] }, { type: i0.Injector }]; }, null);`
+      );
     });
 
     it('should convert decorated field metadata', () => {
@@ -101,17 +105,19 @@ runInEachFileSystem(() => {
       export declare function Inject(...args: any[]): any;
       export declare function Component(...args: any[]): any;
       export declare class Injector {}
-    `
+    `,
     };
 
     const {program} = makeProgram(
-        [
-          CORE, {
-            name: _('/index.ts'),
-            contents,
-          }
-        ],
-        {target: ts.ScriptTarget.ES2015});
+      [
+        CORE,
+        {
+          name: _('/index.ts'),
+          contents,
+        },
+      ],
+      {target: ts.ScriptTarget.ES2015}
+    );
     const host = new TypeScriptReflectionHost(program.getTypeChecker());
     const target = getDeclaration(program, _('/index.ts'), 'Target', ts.isClassDeclaration);
     const call = generateSetClassMetadataCall(target, host, NOOP_DEFAULT_IMPORT_RECORDER, false);
@@ -120,8 +126,12 @@ runInEachFileSystem(() => {
     }
     const sf = getSourceFileOrError(program, _('/index.ts'));
     const im = new ImportManager(new NoopImportRewriter(), 'i');
-    const tsStatement =
-        translateStatement(call, im, NOOP_DEFAULT_IMPORT_RECORDER, ts.ScriptTarget.ES2015);
+    const tsStatement = translateStatement(
+      call,
+      im,
+      NOOP_DEFAULT_IMPORT_RECORDER,
+      ts.ScriptTarget.ES2015
+    );
     const res = ts.createPrinter().printNode(ts.EmitHint.Unspecified, tsStatement, sf);
     return res.replace(/\s+/g, ' ');
   }

@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, templateSourceUrl} from './compile_metadata';
+import {
+  CompileDirectiveMetadata,
+  CompileStylesheetMetadata,
+  CompileTemplateMetadata,
+  templateSourceUrl,
+} from './compile_metadata';
 import {CompilerConfig, preserveWhitespacesDefault} from './config';
 import {ViewEncapsulation} from './core';
 import * as html from './ml_parser/ast';
@@ -23,22 +28,25 @@ export interface PrenormalizedTemplateMetadata {
   ngModuleType: any;
   componentType: any;
   moduleUrl: string;
-  template: string|null;
-  templateUrl: string|null;
+  template: string | null;
+  templateUrl: string | null;
   styles: string[];
   styleUrls: string[];
-  interpolation: [string, string]|null;
-  encapsulation: ViewEncapsulation|null;
+  interpolation: [string, string] | null;
+  encapsulation: ViewEncapsulation | null;
   animations: any[];
-  preserveWhitespaces: boolean|null;
+  preserveWhitespaces: boolean | null;
 }
 
 export class DirectiveNormalizer {
   private _resourceLoaderCache = new Map<string, SyncAsync<string>>();
 
   constructor(
-      private _resourceLoader: ResourceLoader, private _urlResolver: UrlResolver,
-      private _htmlParser: HtmlParser, private _config: CompilerConfig) {}
+    private _resourceLoader: ResourceLoader,
+    private _urlResolver: UrlResolver,
+    private _htmlParser: HtmlParser,
+    private _config: CompilerConfig
+  ) {}
 
   clearCache(): void {
     this._resourceLoaderCache.clear();
@@ -48,7 +56,7 @@ export class DirectiveNormalizer {
     if (!normalizedDirective.isComponent) {
       return;
     }
-    const template = normalizedDirective.template !;
+    const template = normalizedDirective.template!;
     this._resourceLoaderCache.delete(template.templateUrl!);
     template.externalStylesheets.forEach((stylesheet) => {
       this._resourceLoaderCache.delete(stylesheet.moduleUrl!);
@@ -64,41 +72,57 @@ export class DirectiveNormalizer {
     return result;
   }
 
-  normalizeTemplate(prenormData: PrenormalizedTemplateMetadata):
-      SyncAsync<CompileTemplateMetadata> {
+  normalizeTemplate(
+    prenormData: PrenormalizedTemplateMetadata
+  ): SyncAsync<CompileTemplateMetadata> {
     if (isDefined(prenormData.template)) {
       if (isDefined(prenormData.templateUrl)) {
-        throw syntaxError(`'${
-            stringify(prenormData
-                          .componentType)}' component cannot define both template and templateUrl`);
+        throw syntaxError(
+          `'${stringify(
+            prenormData.componentType
+          )}' component cannot define both template and templateUrl`
+        );
       }
       if (typeof prenormData.template !== 'string') {
-        throw syntaxError(`The template specified for component ${
-            stringify(prenormData.componentType)} is not a string`);
+        throw syntaxError(
+          `The template specified for component ${stringify(
+            prenormData.componentType
+          )} is not a string`
+        );
       }
     } else if (isDefined(prenormData.templateUrl)) {
       if (typeof prenormData.templateUrl !== 'string') {
-        throw syntaxError(`The templateUrl specified for component ${
-            stringify(prenormData.componentType)} is not a string`);
+        throw syntaxError(
+          `The templateUrl specified for component ${stringify(
+            prenormData.componentType
+          )} is not a string`
+        );
       }
     } else {
       throw syntaxError(
-          `No template specified for component ${stringify(prenormData.componentType)}`);
+        `No template specified for component ${stringify(prenormData.componentType)}`
+      );
     }
 
-    if (isDefined(prenormData.preserveWhitespaces) &&
-        typeof prenormData.preserveWhitespaces !== 'boolean') {
-      throw syntaxError(`The preserveWhitespaces option for component ${
-          stringify(prenormData.componentType)} must be a boolean`);
+    if (
+      isDefined(prenormData.preserveWhitespaces) &&
+      typeof prenormData.preserveWhitespaces !== 'boolean'
+    ) {
+      throw syntaxError(
+        `The preserveWhitespaces option for component ${stringify(
+          prenormData.componentType
+        )} must be a boolean`
+      );
     }
 
-    return SyncAsync.then(
-        this._preParseTemplate(prenormData),
-        (preparsedTemplate) => this._normalizeTemplateMetadata(prenormData, preparsedTemplate));
+    return SyncAsync.then(this._preParseTemplate(prenormData), (preparsedTemplate) =>
+      this._normalizeTemplateMetadata(prenormData, preparsedTemplate)
+    );
   }
 
-  private _preParseTemplate(prenomData: PrenormalizedTemplateMetadata):
-      SyncAsync<PreparsedTemplate> {
+  private _preParseTemplate(
+    prenomData: PrenormalizedTemplateMetadata
+  ): SyncAsync<PreparsedTemplate> {
     let template: SyncAsync<string>;
     let templateUrl: string;
     if (prenomData.template != null) {
@@ -108,40 +132,55 @@ export class DirectiveNormalizer {
       templateUrl = this._urlResolver.resolve(prenomData.moduleUrl, prenomData.templateUrl!);
       template = this._fetch(templateUrl);
     }
-    return SyncAsync.then(
-        template, (template) => this._preparseLoadedTemplate(prenomData, template, templateUrl));
+    return SyncAsync.then(template, (template) =>
+      this._preparseLoadedTemplate(prenomData, template, templateUrl)
+    );
   }
 
   private _preparseLoadedTemplate(
-      prenormData: PrenormalizedTemplateMetadata, template: string,
-      templateAbsUrl: string): PreparsedTemplate {
+    prenormData: PrenormalizedTemplateMetadata,
+    template: string,
+    templateAbsUrl: string
+  ): PreparsedTemplate {
     const isInline = !!prenormData.template;
     const interpolationConfig = InterpolationConfig.fromArray(prenormData.interpolation!);
     const templateUrl = templateSourceUrl(
-        {reference: prenormData.ngModuleType}, {type: {reference: prenormData.componentType}},
-        {isInline, templateUrl: templateAbsUrl});
-    const rootNodesAndErrors = this._htmlParser.parse(
-        template, templateUrl, {tokenizeExpansionForms: true, interpolationConfig});
+      {reference: prenormData.ngModuleType},
+      {type: {reference: prenormData.componentType}},
+      {isInline, templateUrl: templateAbsUrl}
+    );
+    const rootNodesAndErrors = this._htmlParser.parse(template, templateUrl, {
+      tokenizeExpansionForms: true,
+      interpolationConfig,
+    });
     if (rootNodesAndErrors.errors.length > 0) {
       const errorString = rootNodesAndErrors.errors.join('\n');
       throw syntaxError(`Template parse errors:\n${errorString}`);
     }
 
-    const templateMetadataStyles = this._normalizeStylesheet(new CompileStylesheetMetadata(
-        {styles: prenormData.styles, moduleUrl: prenormData.moduleUrl}));
+    const templateMetadataStyles = this._normalizeStylesheet(
+      new CompileStylesheetMetadata({styles: prenormData.styles, moduleUrl: prenormData.moduleUrl})
+    );
 
     const visitor = new TemplatePreparseVisitor();
     html.visitAll(visitor, rootNodesAndErrors.rootNodes);
-    const templateStyles = this._normalizeStylesheet(new CompileStylesheetMetadata(
-        {styles: visitor.styles, styleUrls: visitor.styleUrls, moduleUrl: templateAbsUrl}));
+    const templateStyles = this._normalizeStylesheet(
+      new CompileStylesheetMetadata({
+        styles: visitor.styles,
+        styleUrls: visitor.styleUrls,
+        moduleUrl: templateAbsUrl,
+      })
+    );
 
     const styles = templateMetadataStyles.styles.concat(templateStyles.styles);
 
     const inlineStyleUrls = templateMetadataStyles.styleUrls.concat(templateStyles.styleUrls);
-    const styleUrls = this
-                          ._normalizeStylesheet(new CompileStylesheetMetadata(
-                              {styleUrls: prenormData.styleUrls, moduleUrl: prenormData.moduleUrl}))
-                          .styleUrls;
+    const styleUrls = this._normalizeStylesheet(
+      new CompileStylesheetMetadata({
+        styleUrls: prenormData.styleUrls,
+        moduleUrl: prenormData.moduleUrl,
+      })
+    ).styleUrls;
     return {
       template,
       templateUrl: templateAbsUrl,
@@ -155,18 +194,23 @@ export class DirectiveNormalizer {
   }
 
   private _normalizeTemplateMetadata(
-      prenormData: PrenormalizedTemplateMetadata,
-      preparsedTemplate: PreparsedTemplate): SyncAsync<CompileTemplateMetadata> {
+    prenormData: PrenormalizedTemplateMetadata,
+    preparsedTemplate: PreparsedTemplate
+  ): SyncAsync<CompileTemplateMetadata> {
     return SyncAsync.then(
-        this._loadMissingExternalStylesheets(
-            preparsedTemplate.styleUrls.concat(preparsedTemplate.inlineStyleUrls)),
-        (externalStylesheets) => this._normalizeLoadedTemplateMetadata(
-            prenormData, preparsedTemplate, externalStylesheets));
+      this._loadMissingExternalStylesheets(
+        preparsedTemplate.styleUrls.concat(preparsedTemplate.inlineStyleUrls)
+      ),
+      (externalStylesheets) =>
+        this._normalizeLoadedTemplateMetadata(prenormData, preparsedTemplate, externalStylesheets)
+    );
   }
 
   private _normalizeLoadedTemplateMetadata(
-      prenormData: PrenormalizedTemplateMetadata, preparsedTemplate: PreparsedTemplate,
-      stylesheets: Map<string, CompileStylesheetMetadata>): CompileTemplateMetadata {
+    prenormData: PrenormalizedTemplateMetadata,
+    preparsedTemplate: PreparsedTemplate,
+    stylesheets: Map<string, CompileStylesheetMetadata>
+  ): CompileTemplateMetadata {
     // Algorithm:
     // - produce exactly 1 entry per original styleUrl in
     // CompileTemplateMetadata.externalStylesheets with all styles inlined
@@ -179,7 +223,7 @@ export class DirectiveNormalizer {
     this._inlineStyles(preparsedTemplate.inlineStyleUrls, stylesheets, styles);
     const styleUrls = preparsedTemplate.styleUrls;
 
-    const externalStylesheets = styleUrls.map(styleUrl => {
+    const externalStylesheets = styleUrls.map((styleUrl) => {
       const stylesheet = stylesheets.get(styleUrl)!;
       const styles = [...stylesheet.styles];
       this._inlineStyles(stylesheet.styleUrls, stylesheets, styles);
@@ -190,8 +234,11 @@ export class DirectiveNormalizer {
     if (encapsulation == null) {
       encapsulation = this._config.defaultEncapsulation;
     }
-    if (encapsulation === ViewEncapsulation.Emulated && styles.length === 0 &&
-        styleUrls.length === 0) {
+    if (
+      encapsulation === ViewEncapsulation.Emulated &&
+      styles.length === 0 &&
+      styleUrls.length === 0
+    ) {
       encapsulation = ViewEncapsulation.None;
     }
     return new CompileTemplateMetadata({
@@ -207,54 +254,66 @@ export class DirectiveNormalizer {
       isInline: preparsedTemplate.isInline,
       externalStylesheets,
       preserveWhitespaces: preserveWhitespacesDefault(
-          prenormData.preserveWhitespaces, this._config.preserveWhitespaces),
+        prenormData.preserveWhitespaces,
+        this._config.preserveWhitespaces
+      ),
     });
   }
 
   private _inlineStyles(
-      styleUrls: string[], stylesheets: Map<string, CompileStylesheetMetadata>,
-      targetStyles: string[]) {
-    styleUrls.forEach(styleUrl => {
+    styleUrls: string[],
+    stylesheets: Map<string, CompileStylesheetMetadata>,
+    targetStyles: string[]
+  ) {
+    styleUrls.forEach((styleUrl) => {
       const stylesheet = stylesheets.get(styleUrl)!;
-      stylesheet.styles.forEach(style => targetStyles.push(style));
+      stylesheet.styles.forEach((style) => targetStyles.push(style));
       this._inlineStyles(stylesheet.styleUrls, stylesheets, targetStyles);
     });
   }
 
   private _loadMissingExternalStylesheets(
-      styleUrls: string[],
-      loadedStylesheets:
-          Map<string, CompileStylesheetMetadata> = new Map<string, CompileStylesheetMetadata>()):
-      SyncAsync<Map<string, CompileStylesheetMetadata>> {
+    styleUrls: string[],
+    loadedStylesheets: Map<string, CompileStylesheetMetadata> = new Map<
+      string,
+      CompileStylesheetMetadata
+    >()
+  ): SyncAsync<Map<string, CompileStylesheetMetadata>> {
     return SyncAsync.then(
-        SyncAsync.all(styleUrls.filter((styleUrl) => !loadedStylesheets.has(styleUrl))
-                          .map(
-                              styleUrl => SyncAsync.then(
-                                  this._fetch(styleUrl),
-                                  (loadedStyle) => {
-                                    const stylesheet =
-                                        this._normalizeStylesheet(new CompileStylesheetMetadata(
-                                            {styles: [loadedStyle], moduleUrl: styleUrl}));
-                                    loadedStylesheets.set(styleUrl, stylesheet);
-                                    return this._loadMissingExternalStylesheets(
-                                        stylesheet.styleUrls, loadedStylesheets);
-                                  }))),
-        (_) => loadedStylesheets);
+      SyncAsync.all(
+        styleUrls
+          .filter((styleUrl) => !loadedStylesheets.has(styleUrl))
+          .map((styleUrl) =>
+            SyncAsync.then(this._fetch(styleUrl), (loadedStyle) => {
+              const stylesheet = this._normalizeStylesheet(
+                new CompileStylesheetMetadata({styles: [loadedStyle], moduleUrl: styleUrl})
+              );
+              loadedStylesheets.set(styleUrl, stylesheet);
+              return this._loadMissingExternalStylesheets(stylesheet.styleUrls, loadedStylesheets);
+            })
+          )
+      ),
+      (_) => loadedStylesheets
+    );
   }
 
   private _normalizeStylesheet(stylesheet: CompileStylesheetMetadata): CompileStylesheetMetadata {
     const moduleUrl = stylesheet.moduleUrl!;
-    const allStyleUrls = stylesheet.styleUrls.filter(isStyleUrlResolvable)
-                             .map(url => this._urlResolver.resolve(moduleUrl, url));
+    const allStyleUrls = stylesheet.styleUrls
+      .filter(isStyleUrlResolvable)
+      .map((url) => this._urlResolver.resolve(moduleUrl, url));
 
-    const allStyles = stylesheet.styles.map(style => {
+    const allStyles = stylesheet.styles.map((style) => {
       const styleWithImports = extractStyleUrls(this._urlResolver, moduleUrl, style);
       allStyleUrls.push(...styleWithImports.styleUrls);
       return styleWithImports.style;
     });
 
-    return new CompileStylesheetMetadata(
-        {styles: allStyles, styleUrls: allStyleUrls, moduleUrl: moduleUrl});
+    return new CompileStylesheetMetadata({
+      styles: allStyles,
+      styleUrls: allStyleUrls,
+      moduleUrl: moduleUrl,
+    });
   }
 }
 
@@ -285,7 +344,7 @@ class TemplatePreparseVisitor implements html.Visitor {
         break;
       case PreparsedElementType.STYLE:
         let textContent = '';
-        ast.children.forEach(child => {
+        ast.children.forEach((child) => {
           if (child instanceof html.Text) {
             textContent += child.value;
           }

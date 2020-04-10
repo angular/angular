@@ -33,13 +33,13 @@ describe('SpyNgModuleFactoryLoader', () => {
   });
 
   it('should return a rejected promise when given an invalid path', fakeAsync(() => {
-       const r = new SpyNgModuleFactoryLoader(<any>null);
+    const r = new SpyNgModuleFactoryLoader(<any>null);
 
-       let error: any = null;
-       r.load('two').catch((e: any) => error = e);
+    let error: any = null;
+    r.load('two').catch((e: any) => (error = e));
 
-       tick();
+    tick();
 
-       expect(error).toEqual(new Error('Cannot find module two'));
-     }));
+    expect(error).toEqual(new Error('Cannot find module two'));
+  }));
 });

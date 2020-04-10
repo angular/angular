@@ -19,13 +19,17 @@ export interface Inject {
 }
 export const createInject = makeMetadataFactory<Inject>('Inject', (token: any) => ({token}));
 export const createInjectionToken = makeMetadataFactory<object>(
-    'InjectionToken', (desc: string) => ({_desc: desc, ɵprov: undefined}));
+  'InjectionToken',
+  (desc: string) => ({_desc: desc, ɵprov: undefined})
+);
 
 export interface Attribute {
   attributeName?: string;
 }
-export const createAttribute =
-    makeMetadataFactory<Attribute>('Attribute', (attributeName?: string) => ({attributeName}));
+export const createAttribute = makeMetadataFactory<Attribute>(
+  'Attribute',
+  (attributeName?: string) => ({attributeName})
+);
 
 export interface Query {
   descendants: boolean;
@@ -37,21 +41,45 @@ export interface Query {
 }
 
 export const createContentChildren = makeMetadataFactory<Query>(
-    'ContentChildren',
-    (selector?: any, data: any = {}) =>
-        ({selector, first: false, isViewQuery: false, descendants: false, ...data}));
+  'ContentChildren',
+  (selector?: any, data: any = {}) => ({
+    selector,
+    first: false,
+    isViewQuery: false,
+    descendants: false,
+    ...data,
+  })
+);
 export const createContentChild = makeMetadataFactory<Query>(
-    'ContentChild',
-    (selector?: any, data: any = {}) =>
-        ({selector, first: true, isViewQuery: false, descendants: true, ...data}));
+  'ContentChild',
+  (selector?: any, data: any = {}) => ({
+    selector,
+    first: true,
+    isViewQuery: false,
+    descendants: true,
+    ...data,
+  })
+);
 export const createViewChildren = makeMetadataFactory<Query>(
-    'ViewChildren',
-    (selector?: any, data: any = {}) =>
-        ({selector, first: false, isViewQuery: true, descendants: true, ...data}));
+  'ViewChildren',
+  (selector?: any, data: any = {}) => ({
+    selector,
+    first: false,
+    isViewQuery: true,
+    descendants: true,
+    ...data,
+  })
+);
 export const createViewChild = makeMetadataFactory<Query>(
-    'ViewChild',
-    (selector: any, data: any) =>
-        ({selector, first: true, isViewQuery: true, descendants: true, ...data}));
+  'ViewChild',
+  (selector: any, data: any) => ({
+    selector,
+    first: true,
+    isViewQuery: true,
+    descendants: true,
+    ...data,
+  })
+);
 
 export interface Directive {
   selector?: string;
@@ -63,8 +91,10 @@ export interface Directive {
   queries?: {[key: string]: any};
   guards?: {[key: string]: any};
 }
-export const createDirective =
-    makeMetadataFactory<Directive>('Directive', (dir: Directive = {}) => dir);
+export const createDirective = makeMetadataFactory<Directive>(
+  'Directive',
+  (dir: Directive = {}) => dir
+);
 
 export interface Component extends Directive {
   changeDetection?: ChangeDetectionStrategy;
@@ -77,23 +107,25 @@ export interface Component extends Directive {
   animations?: any[];
   encapsulation?: ViewEncapsulation;
   interpolation?: [string, string];
-  entryComponents?: Array<Type|any[]>;
+  entryComponents?: Array<Type | any[]>;
   preserveWhitespaces?: boolean;
 }
 export enum ViewEncapsulation {
   Emulated = 0,
   Native = 1,
   None = 2,
-  ShadowDom = 3
+  ShadowDom = 3,
 }
 
 export enum ChangeDetectionStrategy {
   OnPush = 0,
-  Default = 1
+  Default = 1,
 }
 
-export const createComponent = makeMetadataFactory<Component>(
-    'Component', (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Default, ...c}));
+export const createComponent = makeMetadataFactory<Component>('Component', (c: Component = {}) => ({
+  changeDetection: ChangeDetectionStrategy.Default,
+  ...c,
+}));
 
 export interface Pipe {
   name: string;
@@ -104,65 +136,76 @@ export const createPipe = makeMetadataFactory<Pipe>('Pipe', (p: Pipe) => ({pure:
 export interface Input {
   bindingPropertyName?: string;
 }
-export const createInput =
-    makeMetadataFactory<Input>('Input', (bindingPropertyName?: string) => ({bindingPropertyName}));
+export const createInput = makeMetadataFactory<Input>('Input', (bindingPropertyName?: string) => ({
+  bindingPropertyName,
+}));
 
 export interface Output {
   bindingPropertyName?: string;
 }
 export const createOutput = makeMetadataFactory<Output>(
-    'Output', (bindingPropertyName?: string) => ({bindingPropertyName}));
+  'Output',
+  (bindingPropertyName?: string) => ({bindingPropertyName})
+);
 
 export interface HostBinding {
   hostPropertyName?: string;
 }
 export const createHostBinding = makeMetadataFactory<HostBinding>(
-    'HostBinding', (hostPropertyName?: string) => ({hostPropertyName}));
+  'HostBinding',
+  (hostPropertyName?: string) => ({hostPropertyName})
+);
 
 export interface HostListener {
   eventName?: string;
   args?: string[];
 }
 export const createHostListener = makeMetadataFactory<HostListener>(
-    'HostListener', (eventName?: string, args?: string[]) => ({eventName, args}));
+  'HostListener',
+  (eventName?: string, args?: string[]) => ({eventName, args})
+);
 
 export interface NgModule {
   providers?: Provider[];
-  declarations?: Array<Type|any[]>;
-  imports?: Array<Type|ModuleWithProviders|any[]>;
-  exports?: Array<Type|any[]>;
-  entryComponents?: Array<Type|any[]>;
-  bootstrap?: Array<Type|any[]>;
-  schemas?: Array<SchemaMetadata|any[]>;
+  declarations?: Array<Type | any[]>;
+  imports?: Array<Type | ModuleWithProviders | any[]>;
+  exports?: Array<Type | any[]>;
+  entryComponents?: Array<Type | any[]>;
+  bootstrap?: Array<Type | any[]>;
+  schemas?: Array<SchemaMetadata | any[]>;
   id?: string;
 }
-export const createNgModule =
-    makeMetadataFactory<NgModule>('NgModule', (ngModule: NgModule) => ngModule);
+export const createNgModule = makeMetadataFactory<NgModule>(
+  'NgModule',
+  (ngModule: NgModule) => ngModule
+);
 
 export interface ModuleWithProviders {
   ngModule: Type;
   providers?: Provider[];
 }
 export interface Injectable {
-  providedIn?: Type|'root'|any;
-  useClass?: Type|any;
-  useExisting?: Type|any;
+  providedIn?: Type | 'root' | any;
+  useClass?: Type | any;
+  useExisting?: Type | any;
   useValue?: any;
-  useFactory?: Type|any;
-  deps?: Array<Type|any[]>;
+  useFactory?: Type | any;
+  deps?: Array<Type | any[]>;
 }
-export const createInjectable =
-    makeMetadataFactory('Injectable', (injectable: Injectable = {}) => injectable);
+export const createInjectable = makeMetadataFactory(
+  'Injectable',
+  (injectable: Injectable = {}) => injectable
+);
 export interface SchemaMetadata {
   name: string;
 }
 
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {
-  name: 'custom-elements'
+  name: 'custom-elements',
 };
 
 export const NO_ERRORS_SCHEMA: SchemaMetadata = {
-  name: 'no-errors-schema'
+  name: 'no-errors-schema',
 };
 
 export const createOptional = makeMetadataFactory('Optional');
@@ -171,7 +214,7 @@ export const createSkipSelf = makeMetadataFactory('SkipSelf');
 export const createHost = makeMetadataFactory('Host');
 
 export interface Type extends Function {
-  new(...args: any[]): any;
+  new (...args: any[]): any;
 }
 export const Type = Function;
 
@@ -206,8 +249,10 @@ export const enum NodeFlags {
   PrivateProvider = 1 << 13,
   TypeDirective = 1 << 14,
   Component = 1 << 15,
-  CatProviderNoDirective =
-      TypeValueProvider | TypeClassProvider | TypeFactoryProvider | TypeUseExistingProvider,
+  CatProviderNoDirective = TypeValueProvider |
+    TypeClassProvider |
+    TypeFactoryProvider |
+    TypeUseExistingProvider,
   CatProvider = CatProviderNoDirective | TypeDirective,
   OnInit = 1 << 16,
   OnDestroy = 1 << 17,
@@ -227,7 +272,7 @@ export const enum NodeFlags {
   CatQuery = TypeContentQuery | TypeViewQuery,
 
   // mutually exclusive values...
-  Types = CatRenderNode | TypeNgContent | TypePipe | CatPureExpression | CatProvider | CatQuery
+  Types = CatRenderNode | TypeNgContent | TypePipe | CatPureExpression | CatProvider | CatQuery,
 }
 
 export const enum DepFlags {
@@ -259,7 +304,7 @@ export const enum InjectFlags {
 
 export const enum ArgumentType {
   Inline = 0,
-  Dynamic = 1
+  Dynamic = 1,
 }
 
 export const enum BindingFlags {
@@ -272,12 +317,12 @@ export const enum BindingFlags {
   CatSyntheticProperty = SyntheticProperty | SyntheticHostProperty,
 
   // mutually exclusive values...
-  Types = TypeElementAttribute | TypeElementClass | TypeElementStyle | TypeProperty
+  Types = TypeElementAttribute | TypeElementClass | TypeElementStyle | TypeProperty,
 }
 
 export const enum QueryBindingType {
   First = 0,
-  All = 1
+  All = 1,
 }
 
 export const enum QueryValueType {
@@ -285,7 +330,7 @@ export const enum QueryValueType {
   RenderElement = 1,
   TemplateRef = 2,
   ViewContainerRef = 3,
-  Provider = 4
+  Provider = 4,
 }
 
 export const enum ViewFlags {
@@ -324,7 +369,7 @@ function makeMetadataFactory<T>(name: string, props?: (...args: any[]) => T): Me
 
 export interface Route {
   children?: Route[];
-  loadChildren?: string|Type|any;
+  loadChildren?: string | Type | any;
 }
 
 /**
@@ -347,46 +392,52 @@ export const enum SelectorFlags {
 
 // These are a copy the CSS types from core/src/render3/interfaces/projection.ts
 // They are duplicated here as they cannot be directly referenced from core.
-export type R3CssSelector = (string|SelectorFlags)[];
+export type R3CssSelector = (string | SelectorFlags)[];
 export type R3CssSelectorList = R3CssSelector[];
 
 function parserSelectorToSimpleSelector(selector: CssSelector): R3CssSelector {
-  const classes = selector.classNames && selector.classNames.length ?
-      [SelectorFlags.CLASS, ...selector.classNames] :
-      [];
+  const classes =
+    selector.classNames && selector.classNames.length
+      ? [SelectorFlags.CLASS, ...selector.classNames]
+      : [];
   const elementName = selector.element && selector.element !== '*' ? selector.element : '';
   return [elementName, ...selector.attrs, ...classes];
 }
 
 function parserSelectorToNegativeSelector(selector: CssSelector): R3CssSelector {
-  const classes = selector.classNames && selector.classNames.length ?
-      [SelectorFlags.CLASS, ...selector.classNames] :
-      [];
+  const classes =
+    selector.classNames && selector.classNames.length
+      ? [SelectorFlags.CLASS, ...selector.classNames]
+      : [];
 
   if (selector.element) {
     return [
-      SelectorFlags.NOT | SelectorFlags.ELEMENT, selector.element, ...selector.attrs, ...classes
+      SelectorFlags.NOT | SelectorFlags.ELEMENT,
+      selector.element,
+      ...selector.attrs,
+      ...classes,
     ];
   } else if (selector.attrs.length) {
     return [SelectorFlags.NOT | SelectorFlags.ATTRIBUTE, ...selector.attrs, ...classes];
   } else {
-    return selector.classNames && selector.classNames.length ?
-        [SelectorFlags.NOT | SelectorFlags.CLASS, ...selector.classNames] :
-        [];
+    return selector.classNames && selector.classNames.length
+      ? [SelectorFlags.NOT | SelectorFlags.CLASS, ...selector.classNames]
+      : [];
   }
 }
 
 function parserSelectorToR3Selector(selector: CssSelector): R3CssSelector {
   const positive = parserSelectorToSimpleSelector(selector);
 
-  const negative: R3CssSelectorList = selector.notSelectors && selector.notSelectors.length ?
-      selector.notSelectors.map(notSelector => parserSelectorToNegativeSelector(notSelector)) :
-      [];
+  const negative: R3CssSelectorList =
+    selector.notSelectors && selector.notSelectors.length
+      ? selector.notSelectors.map((notSelector) => parserSelectorToNegativeSelector(notSelector))
+      : [];
 
   return positive.concat(...negative);
 }
 
-export function parseSelectorToR3Selector(selector: string|null): R3CssSelectorList {
+export function parseSelectorToR3Selector(selector: string | null): R3CssSelectorList {
   return selector ? CssSelector.parse(selector).map(parserSelectorToR3Selector) : [];
 }
 
@@ -404,7 +455,7 @@ export const enum RenderFlags {
   Create = 0b01,
 
   /* Whether to run the update block (e.g. refresh bindings) */
-  Update = 0b10
+  Update = 0b10,
 }
 
 // Pasted from render3/interfaces/node.ts

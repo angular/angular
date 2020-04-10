@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {InjectFlags, InjectionToken, resolveForwardRef} from '../../di';
 import {ɵɵinject} from '../../di/injector_compatibility';
 import {Type} from '../../interface/type';
@@ -37,17 +38,23 @@ import {getLView, getPreviousOrParentTNode} from '../state';
  *
  * @codeGenApi
  */
-export function ɵɵdirectiveInject<T>(token: Type<T>| InjectionToken<T>): T;
-export function ɵɵdirectiveInject<T>(token: Type<T>| InjectionToken<T>, flags: InjectFlags): T;
+export function ɵɵdirectiveInject<T>(token: Type<T> | InjectionToken<T>): T;
+export function ɵɵdirectiveInject<T>(token: Type<T> | InjectionToken<T>, flags: InjectFlags): T;
 export function ɵɵdirectiveInject<T>(
-    token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|null {
+  token: Type<T> | InjectionToken<T>,
+  flags = InjectFlags.Default
+): T | null {
   const lView = getLView();
   // Fall back to inject() if view hasn't been created. This situation can happen in tests
   // if inject utilities are used before bootstrapping.
   if (lView == null) return ɵɵinject(token, flags);
   const tNode = getPreviousOrParentTNode();
   return getOrCreateInjectable<T>(
-      tNode as TDirectiveHostNode, lView, resolveForwardRef(token), flags);
+    tNode as TDirectiveHostNode,
+    lView,
+    resolveForwardRef(token),
+    flags
+  );
 }
 
 /**
@@ -55,7 +62,7 @@ export function ɵɵdirectiveInject<T>(
  *
  * @codeGenApi
  */
-export function ɵɵinjectAttribute(attrNameToInject: string): string|null {
+export function ɵɵinjectAttribute(attrNameToInject: string): string | null {
   return injectAttributeImpl(getPreviousOrParentTNode(), attrNameToInject);
 }
 
@@ -72,7 +79,8 @@ export function ɵɵinjectAttribute(attrNameToInject: string): string|null {
  * @codeGenApi
  */
 export function ɵɵinvalidFactory(): never {
-  const msg =
-      ngDevMode ? `This constructor was not compatible with Dependency Injection.` : 'invalid';
+  const msg = ngDevMode
+    ? `This constructor was not compatible with Dependency Injection.`
+    : 'invalid';
   throw new Error(msg);
 }

@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-const win = typeof window !== 'undefined' && window || <any>{};
+const win = (typeof window !== 'undefined' && window) || <any>{};
 export {win as window};

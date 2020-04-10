@@ -29,7 +29,7 @@ export abstract class HttpXsrfTokenExtractor {
    *
    * Will be called for every request, so the token may change between requests.
    */
-  abstract getToken(): string|null;
+  abstract getToken(): string | null;
 }
 
 /**
@@ -38,7 +38,7 @@ export abstract class HttpXsrfTokenExtractor {
 @Injectable()
 export class HttpXsrfCookieExtractor implements HttpXsrfTokenExtractor {
   private lastCookieString: string = '';
-  private lastToken: string|null = null;
+  private lastToken: string | null = null;
 
   /**
    * @internal for testing
@@ -46,10 +46,12 @@ export class HttpXsrfCookieExtractor implements HttpXsrfTokenExtractor {
   parseCount: number = 0;
 
   constructor(
-      @Inject(DOCUMENT) private doc: any, @Inject(PLATFORM_ID) private platform: string,
-      @Inject(XSRF_COOKIE_NAME) private cookieName: string) {}
+    @Inject(DOCUMENT) private doc: any,
+    @Inject(PLATFORM_ID) private platform: string,
+    @Inject(XSRF_COOKIE_NAME) private cookieName: string
+  ) {}
 
-  getToken(): string|null {
+  getToken(): string | null {
     if (this.platform === 'server') {
       return null;
     }
@@ -69,8 +71,9 @@ export class HttpXsrfCookieExtractor implements HttpXsrfTokenExtractor {
 @Injectable()
 export class HttpXsrfInterceptor implements HttpInterceptor {
   constructor(
-      private tokenService: HttpXsrfTokenExtractor,
-      @Inject(XSRF_HEADER_NAME) private headerName: string) {}
+    private tokenService: HttpXsrfTokenExtractor,
+    @Inject(XSRF_HEADER_NAME) private headerName: string
+  ) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const lcUrl = req.url.toLowerCase();
@@ -78,8 +81,12 @@ export class HttpXsrfInterceptor implements HttpInterceptor {
     // Non-mutating requests don't require a token, and absolute URLs require special handling
     // anyway as the cookie set
     // on our origin is not the same as the token expected by another origin.
-    if (req.method === 'GET' || req.method === 'HEAD' || lcUrl.startsWith('http://') ||
-        lcUrl.startsWith('https://')) {
+    if (
+      req.method === 'GET' ||
+      req.method === 'HEAD' ||
+      lcUrl.startsWith('http://') ||
+      lcUrl.startsWith('https://')
+    ) {
       return next.handle(req);
     }
     const token = this.tokenService.getToken();

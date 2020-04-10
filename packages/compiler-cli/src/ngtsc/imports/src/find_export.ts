@@ -13,21 +13,25 @@ import {ReflectionHost} from '../../reflection';
  * Find the name, if any, by which a node is exported from a given file.
  */
 export function findExportedNameOfNode(
-    target: ts.Node, file: ts.SourceFile, reflector: ReflectionHost): string|null {
+  target: ts.Node,
+  file: ts.SourceFile,
+  reflector: ReflectionHost
+): string | null {
   const exports = reflector.getExportsOfModule(file);
   if (exports === null) {
     return null;
   }
   // Look for the export which declares the node.
   const keys = Array.from(exports.keys());
-  const name = keys.find(key => {
+  const name = keys.find((key) => {
     const decl = exports.get(key);
     return decl !== undefined && decl.node === target;
   });
 
   if (name === undefined) {
     throw new Error(
-        `Failed to find exported name of node (${target.getText()}) in '${file.fileName}'.`);
+      `Failed to find exported name of node (${target.getText()}) in '${file.fileName}'.`
+    );
   }
   return name;
 }
@@ -39,7 +43,7 @@ export function findExportedNameOfNode(
  * `ts.ExportSpecifier`s and need to be unwrapped.
  */
 function symbolDeclaresNode(sym: ts.Symbol, node: ts.Node, checker: ts.TypeChecker): boolean {
-  return sym.declarations.some(decl => {
+  return sym.declarations.some((decl) => {
     if (ts.isExportSpecifier(decl)) {
       const exportedSymbol = checker.getExportSpecifierLocalTargetSymbol(decl);
       if (exportedSymbol !== undefined) {

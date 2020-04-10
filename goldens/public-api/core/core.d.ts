@@ -855,7 +855,7 @@ export declare function ɵɵi18nEnd(): void;
 export declare function ɵɵi18nExp<T>(value: T): typeof ɵɵi18nExp;
 
 export declare function ɵɵi18nPostprocess(message: string, replacements?: {
-    [key: string]: (string | string[]);
+    [key: string]: string | string[];
 }): string;
 
 export declare function ɵɵi18nStart(index: number, message: string, subTemplateIndex?: number): void;

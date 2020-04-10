@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
@@ -30,8 +31,12 @@ export class CommonJsDependencyHost extends DependencyHostBase {
    * in a circular dependency loop.
    */
   protected recursivelyCollectDependencies(
-      file: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath>, missing: Set<string>,
-      deepImports: Set<AbsoluteFsPath>, alreadySeen: Set<AbsoluteFsPath>): void {
+    file: AbsoluteFsPath,
+    dependencies: Set<AbsoluteFsPath>,
+    missing: Set<string>,
+    deepImports: Set<AbsoluteFsPath>,
+    alreadySeen: Set<AbsoluteFsPath>
+  ): void {
     const fromContents = this.fs.readFile(file);
 
     if (!this.hasRequireCalls(fromContents)) {
@@ -40,8 +45,13 @@ export class CommonJsDependencyHost extends DependencyHostBase {
     }
 
     // Parse the source into a TypeScript AST and then walk it looking for imports and re-exports.
-    const sf =
-        ts.createSourceFile(file, fromContents, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS);
+    const sf = ts.createSourceFile(
+      file,
+      fromContents,
+      ts.ScriptTarget.ES2015,
+      false,
+      ts.ScriptKind.JS
+    );
     const requireCalls: RequireCall[] = [];
 
     for (const stmt of sf.statements) {
@@ -50,7 +60,7 @@ export class CommonJsDependencyHost extends DependencyHostBase {
         // `var foo = require('...')` or `var foo = require('...'), bar = require('...')`
         const declarations = stmt.declarationList.declarations;
         for (const declaration of declarations) {
-          if ((declaration.initializer !== undefined) && isRequireCall(declaration.initializer)) {
+          if (declaration.initializer !== undefined && isRequireCall(declaration.initializer)) {
             requireCalls.push(declaration.initializer);
           }
         }
@@ -73,8 +83,9 @@ export class CommonJsDependencyHost extends DependencyHostBase {
             requireCalls.push(firstExportArg);
           }
         } else if (
-            ts.isBinaryExpression(stmt.expression) &&
-            (stmt.expression.operatorToken.kind === ts.SyntaxKind.EqualsToken)) {
+          ts.isBinaryExpression(stmt.expression) &&
+          stmt.expression.operatorToken.kind === ts.SyntaxKind.EqualsToken
+        ) {
           if (isRequireCall(stmt.expression.right)) {
             // Import with assignment. E.g.:
             // `exports.foo = require('...')`
@@ -82,7 +93,7 @@ export class CommonJsDependencyHost extends DependencyHostBase {
           } else if (ts.isObjectLiteralExpression(stmt.expression.right)) {
             // Import in object literal. E.g.:
             // `module.exports = {foo: require('...')}`
-            stmt.expression.right.properties.forEach(prop => {
+            stmt.expression.right.properties.forEach((prop) => {
               if (ts.isPropertyAssignment(prop) && isRequireCall(prop.initializer)) {
                 requireCalls.push(prop.initializer);
               }
@@ -92,7 +103,7 @@ export class CommonJsDependencyHost extends DependencyHostBase {
       }
     }
 
-    const importPaths = new Set(requireCalls.map(call => call.arguments[0].text));
+    const importPaths = new Set(requireCalls.map((call) => call.arguments[0].text));
     for (const importPath of importPaths) {
       const resolvedModule = this.moduleResolver.resolveModuleImport(importPath, file);
       if (resolvedModule === null) {
@@ -102,7 +113,12 @@ export class CommonJsDependencyHost extends DependencyHostBase {
         if (!alreadySeen.has(internalDependency)) {
           alreadySeen.add(internalDependency);
           this.recursivelyCollectDependencies(
-              internalDependency, dependencies, missing, deepImports, alreadySeen);
+            internalDependency,
+            dependencies,
+            missing,
+            deepImports,
+            alreadySeen
+          );
         }
       } else if (resolvedModule instanceof ResolvedDeepImport) {
         deepImports.add(resolvedModule.importPath);

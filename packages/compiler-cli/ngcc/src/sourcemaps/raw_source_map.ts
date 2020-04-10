@@ -11,11 +11,11 @@
  * disk.
  */
 export interface RawSourceMap {
-  version: number|string;
+  version: number | string;
   file?: string;
   sourceRoot?: string;
   sources: string[];
   names: string[];
-  sourcesContent?: (string|null)[];
+  sourcesContent?: (string | null)[];
   mappings: string;
 }

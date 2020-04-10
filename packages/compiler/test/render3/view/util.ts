@@ -12,14 +12,17 @@ import {Parser} from '../../../src/expression_parser/parser';
 import * as html from '../../../src/ml_parser/ast';
 import {HtmlParser, ParseTreeResult} from '../../../src/ml_parser/html_parser';
 import {WhitespaceVisitor} from '../../../src/ml_parser/html_whitespaces';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/interpolation_config';
+import {
+  DEFAULT_INTERPOLATION_CONFIG,
+  InterpolationConfig,
+} from '../../../src/ml_parser/interpolation_config';
 import * as a from '../../../src/render3/r3_ast';
 import {htmlAstToRender3Ast, Render3ParseResult} from '../../../src/render3/r3_template_transform';
 import {I18nMetaVisitor} from '../../../src/render3/view/i18n/meta';
 import {BindingParser} from '../../../src/template_parser/binding_parser';
 import {MockSchemaRegistry} from '../../../testing';
 
-export function findExpression(tmpl: a.Node[], expr: string): e.AST|null {
+export function findExpression(tmpl: a.Node[], expr: string): e.AST | null {
   const res = tmpl.reduce((found, node) => {
     if (found !== null) {
       return found;
@@ -33,15 +36,9 @@ export function findExpression(tmpl: a.Node[], expr: string): e.AST|null {
   return res;
 }
 
-function findExpressionInNode(node: a.Node, expr: string): e.AST|null {
+function findExpressionInNode(node: a.Node, expr: string): e.AST | null {
   if (node instanceof a.Element || node instanceof a.Template) {
-    return findExpression(
-        [
-          ...node.inputs,
-          ...node.outputs,
-          ...node.children,
-        ],
-        expr);
+    return findExpression([...node.inputs, ...node.outputs, ...node.children], expr);
   } else if (node instanceof a.BoundAttribute || node instanceof a.BoundText) {
     const ts = toStringExpression(node.value);
     return toStringExpression(node.value) === expr ? node.value : null;
@@ -78,14 +75,17 @@ export function toStringExpression(expr: e.AST): string {
 
 // Parse an html string to IVY specific info
 export function parseR3(
-    input: string, options: {preserveWhitespaces?: boolean} = {}): Render3ParseResult {
+  input: string,
+  options: {preserveWhitespaces?: boolean} = {}
+): Render3ParseResult {
   const htmlParser = new HtmlParser();
 
-  const parseResult =
-      htmlParser.parse(input, 'path:://to/template', {tokenizeExpansionForms: true});
+  const parseResult = htmlParser.parse(input, 'path:://to/template', {
+    tokenizeExpansionForms: true,
+  });
 
   if (parseResult.errors.length > 0) {
-    const msg = parseResult.errors.map(e => e.toString()).join('\n');
+    const msg = parseResult.errors.map((e) => e.toString()).join('\n');
     throw new Error(msg);
   }
 
@@ -97,19 +97,31 @@ export function parseR3(
 
   const expressionParser = new Parser(new Lexer());
   const schemaRegistry = new MockSchemaRegistry(
-      {'invalidProp': false}, {'mappedAttr': 'mappedProp'}, {'unknown': false, 'un-known': false},
-      ['onEvent'], ['onEvent']);
-  const bindingParser =
-      new BindingParser(expressionParser, DEFAULT_INTERPOLATION_CONFIG, schemaRegistry, null, []);
+    {'invalidProp': false},
+    {'mappedAttr': 'mappedProp'},
+    {'unknown': false, 'un-known': false},
+    ['onEvent'],
+    ['onEvent']
+  );
+  const bindingParser = new BindingParser(
+    expressionParser,
+    DEFAULT_INTERPOLATION_CONFIG,
+    schemaRegistry,
+    null,
+    []
+  );
   return htmlAstToRender3Ast(htmlNodes, bindingParser);
 }
 
 export function processI18nMeta(
-    htmlAstWithErrors: ParseTreeResult,
-    interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
+  htmlAstWithErrors: ParseTreeResult,
+  interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG
+): ParseTreeResult {
   return new ParseTreeResult(
-      html.visitAll(
-          new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false),
-          htmlAstWithErrors.rootNodes),
-      htmlAstWithErrors.errors);
+    html.visitAll(
+      new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false),
+      htmlAstWithErrors.rootNodes
+    ),
+    htmlAstWithErrors.errors
+  );
 }

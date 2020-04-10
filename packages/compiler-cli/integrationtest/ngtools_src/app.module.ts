@@ -13,20 +13,18 @@ import {RouterModule} from '@angular/router';
 import {AppComponent} from './app.component';
 
 @Component({selector: 'home-view', template: 'home!'})
-export class HomeView {
-}
-
+export class HomeView {}
 
 @NgModule({
   declarations: [AppComponent, HomeView],
   imports: [
-    BrowserModule, RouterModule.forRoot([
+    BrowserModule,
+    RouterModule.forRoot([
       {path: 'lazy', loadChildren: './lazy.module#LazyModule'},
       {path: 'feature2', loadChildren: 'feature2/feature2.module#Feature2Module'},
-      {path: '', component: HomeView}
-    ])
+      {path: '', component: HomeView},
+    ]),
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

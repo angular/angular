@@ -29,8 +29,10 @@ export class ProvidersEvaluator extends StaticInterpreter {
   private _providerLiterals: ProviderLiteral[] = [];
 
   visitObjectLiteralExpression(node: ts.ObjectLiteralExpression, context: any) {
-    const resolvedValue =
-        super.visitObjectLiteralExpression(node, {...context, insideProviderDef: true});
+    const resolvedValue = super.visitObjectLiteralExpression(node, {
+      ...context,
+      insideProviderDef: true,
+    });
     // do not collect nested object literals. e.g. a provider could use a
     // spread assignment (which resolves to another object literal). In that
     // case the referenced object literal is not a provider object literal.
@@ -51,7 +53,7 @@ export class ProvidersEvaluator extends StaticInterpreter {
       absoluteModuleName: null,
       resolutionContext: expr.getSourceFile().fileName,
       scope: new Map(),
-      foreignFunctionResolver: forwardRefResolver
+      foreignFunctionResolver: forwardRefResolver,
     });
     return {resolvedValue, literals: this._providerLiterals};
   }

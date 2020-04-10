@@ -143,7 +143,7 @@ export class R3TestBedCompiler {
 
   constructor(
     private platform: PlatformRef,
-    private additionalModuleTypes: Type<any> | Type<any>[],
+    private additionalModuleTypes: Type<any> | Type<any>[]
   ) {
     class DynamicTestModule {}
     this.testModuleType = DynamicTestModule as any;
@@ -211,7 +211,7 @@ export class R3TestBedCompiler {
 
   overrideProvider(
     token: any,
-    provider: {useFactory?: Function; useValue?: any; deps?: any[]; multi?: boolean},
+    provider: {useFactory?: Function; useValue?: any; deps?: any[]; multi?: boolean}
   ): void {
     let providerDef: Provider;
     if (provider.useFactory !== undefined) {
@@ -408,7 +408,7 @@ export class R3TestBedCompiler {
   private applyTransitiveScopes(): void {
     const moduleToScope = new Map<Type<any> | TestingModuleOverride, NgModuleTransitiveScopes>();
     const getScopeOfModule = (
-      moduleType: Type<any> | TestingModuleOverride,
+      moduleType: Type<any> | TestingModuleOverride
     ): NgModuleTransitiveScopes => {
       if (!moduleToScope.has(moduleType)) {
         const isTestingModule = isTestingModuleOverride(moduleType);
@@ -494,7 +494,7 @@ export class R3TestBedCompiler {
 
   private patchComponentsWithExistingStyles(): void {
     this.existingComponentStyles.forEach(
-      (styles, type) => ((type as any)[NG_COMP_DEF].styles = styles),
+      (styles, type) => ((type as any)[NG_COMP_DEF].styles = styles)
     );
     this.existingComponentStyles.clear();
   }
@@ -617,7 +617,7 @@ export class R3TestBedCompiler {
       this.originalComponentResolutionQueue = new Map();
     }
     clearResolutionOfComponentResourcesQueue().forEach((value, key) =>
-      this.originalComponentResolutionQueue!.set(key, value),
+      this.originalComponentResolutionQueue!.set(key, value)
     );
   }
 
@@ -654,7 +654,7 @@ export class R3TestBedCompiler {
         } else {
           Object.defineProperty(type, prop, descriptor);
         }
-      },
+      }
     );
     this.initialNgDefs.clear();
     this.moduleProvidersOverridden.clear();
@@ -686,7 +686,7 @@ export class R3TestBedCompiler {
         schemas: this.schemas,
         providers,
       },
-      /* allowDuplicateDeclarationsInRoot */ true,
+      /* allowDuplicateDeclarationsInRoot */ true
     );
 
     this.applyProviderOverridesToModule(this.testModuleType);
@@ -731,7 +731,7 @@ export class R3TestBedCompiler {
     // done, the array can contain other empty arrays (e.g. `[[], []]`) which leak into the
     // providers array and contaminate any error messages that might be generated.
     return flatten(
-      flatten(providers, (provider: Provider) => this.getSingleProviderOverrides(provider) || []),
+      flatten(providers, (provider: Provider) => this.getSingleProviderOverrides(provider) || [])
     );
   }
 
@@ -853,7 +853,7 @@ class R3TestCompiler implements Compiler {
   }
 
   async compileModuleAndAllComponentsAsync<T>(
-    moduleType: Type<T>,
+    moduleType: Type<T>
   ): Promise<ModuleWithComponentFactories<T>> {
     const ngModuleFactory = await this.compileModuleAsync(moduleType);
     const componentFactories = this.testBed._getComponentFactories(moduleType as NgModuleType<T>);

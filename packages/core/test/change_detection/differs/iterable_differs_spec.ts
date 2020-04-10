@@ -12,7 +12,7 @@ import {IterableDiffers} from '@angular/core/src/change_detection/differs/iterab
 import {SpyIterableDifferFactory} from '../../spies';
 
 {
-  describe('IterableDiffers', function() {
+  describe('IterableDiffers', function () {
     let factory1: any;
     let factory2: any;
     let factory3: any;
@@ -25,8 +25,9 @@ import {SpyIterableDifferFactory} from '../../spies';
 
     it('should throw when no suitable implementation found', () => {
       const differs = new IterableDiffers([]);
-      expect(() => differs.find('some object'))
-          .toThrowError(/Cannot find a differ supporting object 'some object'/);
+      expect(() => differs.find('some object')).toThrowError(
+        /Cannot find a differ supporting object 'some object'/
+      );
     });
 
     it('should return the first suitable implementation', () => {
@@ -52,8 +53,9 @@ import {SpyIterableDifferFactory} from '../../spies';
       it('should throw if calling extend when creating root injector', () => {
         const injector = Injector.create([IterableDiffers.extend([])]);
 
-        expect(() => injector.get(IterableDiffers))
-            .toThrowError(/Cannot extend IterableDiffers without a parent injector/);
+        expect(() => injector.get(IterableDiffers)).toThrowError(
+          /Cannot extend IterableDiffers without a parent injector/
+        );
       });
 
       it('should extend di-inherited differs', () => {
@@ -63,7 +65,8 @@ import {SpyIterableDifferFactory} from '../../spies';
 
         expect(injector.get<IterableDiffers>(IterableDiffers).factories).toEqual([factory1]);
         expect(childInjector.get<IterableDiffers>(IterableDiffers).factories).toEqual([
-          factory2, factory1
+          factory2,
+          factory1,
         ]);
       });
     });

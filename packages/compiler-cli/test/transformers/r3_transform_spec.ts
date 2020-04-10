@@ -26,8 +26,9 @@ describe('r3_transform_spec', () => {
   });
 
   it('should be able to generate a simple identity function', () => {
-    expect(emitStaticMethod(new o.ReturnStatement(o.variable('v')), ['v']))
-        .toContain('static someMethod(v) { return v; }');
+    expect(emitStaticMethod(new o.ReturnStatement(o.variable('v')), ['v'])).toContain(
+      'static someMethod(v) { return v; }'
+    );
   });
 
   it('should be able to generate a static field declaration', () => {
@@ -35,22 +36,33 @@ describe('r3_transform_spec', () => {
   });
 
   it('should be able to import a symbol', () => {
-    expect(emitStaticMethod(new o.ReturnStatement(
-               o.importExpr(new o.ExternalReference('@angular/core', 'Component')))))
-        .toContain('static someMethod() { return i0.Component; } }');
+    expect(
+      emitStaticMethod(
+        new o.ReturnStatement(o.importExpr(new o.ExternalReference('@angular/core', 'Component')))
+      )
+    ).toContain('static someMethod() { return i0.Component; } }');
   });
 
   it('should be able to modify multiple classes in the same module', () => {
-    const result = emit(getAngularClassTransformerFactory(
-        [{
-          fileName: someGenFileName,
-          statements: [
-            classMethod(new o.ReturnStatement(o.variable('v')), ['v'], 'someMethod', 'SomeClass'),
-            classMethod(
-                new o.ReturnStatement(o.variable('v')), ['v'], 'someOtherMethod', 'SomeOtherClass')
-          ]
-        }],
-        false));
+    const result = emit(
+      getAngularClassTransformerFactory(
+        [
+          {
+            fileName: someGenFileName,
+            statements: [
+              classMethod(new o.ReturnStatement(o.variable('v')), ['v'], 'someMethod', 'SomeClass'),
+              classMethod(
+                new o.ReturnStatement(o.variable('v')),
+                ['v'],
+                'someOtherMethod',
+                'SomeOtherClass'
+              ),
+            ],
+          },
+        ],
+        false
+      )
+    );
     expect(result).toContain('static someMethod(v) { return v; }');
     expect(result).toContain('static someOtherMethod(v) { return v; }');
   });
@@ -65,47 +77,62 @@ describe('r3_transform_spec', () => {
         export class SomeClass {}
 
         export class SomeOtherClass {}
-      `
-      }
+      `,
+      },
     });
     host = new MockCompilerHost(context);
 
-    expect(emitStaticMethod(new o.ReturnStatement(
-               o.importExpr(new o.ExternalReference('@angular/core', 'Component')))))
-        .toContain('const core_1 = require("@angular/core"); const i0 = require("@angular/core");');
+    expect(
+      emitStaticMethod(
+        new o.ReturnStatement(o.importExpr(new o.ExternalReference('@angular/core', 'Component')))
+      )
+    ).toContain('const core_1 = require("@angular/core"); const i0 = require("@angular/core");');
   });
 
   function emit(factory: ts.TransformerFactory<ts.SourceFile>): string {
     let result: string = '';
     const program = ts.createProgram(
-        [someGenFileName], {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2017}, host);
+      [someGenFileName],
+      {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2017},
+      host
+    );
     const moduleSourceFile = program.getSourceFile(someGenFileName);
     const transformers: ts.CustomTransformers = {before: [factory]};
     const emitResult = program.emit(
-        moduleSourceFile, (fileName, data, writeByteOrderMark, onError, sourceFiles) => {
-          if (fileName.startsWith(someGenFilePath)) {
-            result = data;
-          }
-        }, undefined, undefined, transformers);
+      moduleSourceFile,
+      (fileName, data, writeByteOrderMark, onError, sourceFiles) => {
+        if (fileName.startsWith(someGenFilePath)) {
+          result = data;
+        }
+      },
+      undefined,
+      undefined,
+      transformers
+    );
     return normalizeResult(result);
   }
 
   function emitStaticMethod(
-      stmt: o.Statement|o.Statement[], parameters: string[] = [], methodName: string = 'someMethod',
-      className: string = 'SomeClass'): string {
+    stmt: o.Statement | o.Statement[],
+    parameters: string[] = [],
+    methodName: string = 'someMethod',
+    className: string = 'SomeClass'
+  ): string {
     const module: PartialModule = {
       fileName: someGenFileName,
-      statements: [classMethod(stmt, parameters, methodName, className)]
+      statements: [classMethod(stmt, parameters, methodName, className)],
     };
     return emit(getAngularClassTransformerFactory([module], false));
   }
 
   function emitStaticField(
-      initializer: o.Expression, fieldName: string = 'someField',
-      className: string = 'SomeClass'): string {
+    initializer: o.Expression,
+    fieldName: string = 'someField',
+    className: string = 'SomeClass'
+  ): string {
     const module: PartialModule = {
       fileName: someGenFileName,
-      statements: [classField(initializer, fieldName, className)]
+      statements: [classField(initializer, fieldName, className)],
     };
     return emit(getAngularClassTransformerFactory([module], false));
   }
@@ -118,35 +145,48 @@ const FILES: Directory = {
   export class SomeClass {}
 
   export class SomeOtherClass {}
-`
-  }
+`,
+  },
 };
 
 function classMethod(
-    stmt: o.Statement|o.Statement[], parameters: string[] = [], methodName: string = 'someMethod',
-    className: string = 'SomeClass'): o.ClassStmt {
+  stmt: o.Statement | o.Statement[],
+  parameters: string[] = [],
+  methodName: string = 'someMethod',
+  className: string = 'SomeClass'
+): o.ClassStmt {
   const statements = Array.isArray(stmt) ? stmt : [stmt];
   return new o.ClassStmt(
-      /* name */ className,
-      /* parent */ null,
-      /* fields */[],
-      /* getters */[],
-      /* constructorMethod */ new o.ClassMethod(null, [], []),
-      /* methods */[new o.ClassMethod(
-          methodName, parameters.map(name => new o.FnParam(name)), statements, null,
-          [o.StmtModifier.Static])]);
+    /* name */ className,
+    /* parent */ null,
+    /* fields */ [],
+    /* getters */ [],
+    /* constructorMethod */ new o.ClassMethod(null, [], []),
+    /* methods */ [
+      new o.ClassMethod(
+        methodName,
+        parameters.map((name) => new o.FnParam(name)),
+        statements,
+        null,
+        [o.StmtModifier.Static]
+      ),
+    ]
+  );
 }
 
 function classField(
-    initializer: o.Expression, fieldName: string = 'someField',
-    className: string = 'SomeClass'): o.ClassStmt {
+  initializer: o.Expression,
+  fieldName: string = 'someField',
+  className: string = 'SomeClass'
+): o.ClassStmt {
   return new o.ClassStmt(
-      /* name */ className,
-      /* parent */ null,
-      /* fields */[new o.ClassField(fieldName, null, [o.StmtModifier.Static], initializer)],
-      /* getters */[],
-      /* constructorMethod */ new o.ClassMethod(null, [], []),
-      /* methods */[]);
+    /* name */ className,
+    /* parent */ null,
+    /* fields */ [new o.ClassField(fieldName, null, [o.StmtModifier.Static], initializer)],
+    /* getters */ [],
+    /* constructorMethod */ new o.ClassMethod(null, [], []),
+    /* methods */ []
+  );
 }
 
 function normalizeResult(result: string): string {
@@ -154,11 +194,12 @@ function normalizeResult(result: string): string {
   // Remove new lines
   // Squish adjacent spaces
   // Remove prefix and postfix spaces
-  return result.replace('"use strict";', ' ')
-      .replace('exports.__esModule = true;', ' ')
-      .replace('Object.defineProperty(exports, "__esModule", { value: true });', ' ')
-      .replace(/\n/g, ' ')
-      .replace(/ +/g, ' ')
-      .replace(/^ /g, '')
-      .replace(/ $/g, '');
+  return result
+    .replace('"use strict";', ' ')
+    .replace('exports.__esModule = true;', ' ')
+    .replace('Object.defineProperty(exports, "__esModule", { value: true });', ' ')
+    .replace(/\n/g, ' ')
+    .replace(/ +/g, ' ')
+    .replace(/^ /g, '')
+    .replace(/ $/g, '');
 }

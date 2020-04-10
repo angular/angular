@@ -11,18 +11,18 @@ import {$, By, element} from 'protractor';
 import {openBrowser, verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
 describe('largeform benchmark', () => {
-
   afterEach(verifyNoBrowserErrors);
 
-  it('should work for ng2', async() => {
+  it('should work for ng2', async () => {
     openBrowser({
       url: '/',
       params: [{name: 'copies', value: 1}],
       ignoreBrowserSynchronization: true,
     });
     await $('#createDom').click();
-    expect(await element.all(By.css('input[name=value0]')).get(0).getAttribute('value'))
-        .toBe('someValue0');
+    expect(await element.all(By.css('input[name=value0]')).get(0).getAttribute('value')).toBe(
+      'someValue0'
+    );
     await $('#destroyDom').click();
     expect(await element.all(By.css('input[name=value0]')).count()).toBe(0);
   });

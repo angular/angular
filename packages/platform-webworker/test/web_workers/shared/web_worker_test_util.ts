@@ -8,8 +8,16 @@
 
 import {Type} from '@angular/core';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {ClientMessageBroker, ClientMessageBrokerFactory, UiArguments} from '@angular/platform-webworker/src/web_workers/shared/client_message_broker';
-import {MessageBus, MessageBusSink, MessageBusSource} from '@angular/platform-webworker/src/web_workers/shared/message_bus';
+import {
+  ClientMessageBroker,
+  ClientMessageBrokerFactory,
+  UiArguments,
+} from '@angular/platform-webworker/src/web_workers/shared/client_message_broker';
+import {
+  MessageBus,
+  MessageBusSink,
+  MessageBusSource,
+} from '@angular/platform-webworker/src/web_workers/shared/message_bus';
 import {SpyMessageBroker} from '../worker/spies';
 
 import {MockEventEmitter} from './mock_event_emitter';
@@ -28,8 +36,9 @@ export function createPairedMessageBuses(): PairedMessageBuses {
   const workerMessageBusSource = new MockMessageBusSource(secondChannels);
 
   return new PairedMessageBuses(
-      new MockMessageBus(uiMessageBusSink, uiMessageBusSource),
-      new MockMessageBus(workerMessageBusSink, workerMessageBusSource));
+    new MockMessageBus(uiMessageBusSink, uiMessageBusSource),
+    new MockMessageBus(workerMessageBusSink, workerMessageBusSource)
+  );
 }
 
 /**
@@ -39,17 +48,22 @@ export function createPairedMessageBuses(): PairedMessageBuses {
  * Only intended to be called on a given broker instance once.
  */
 export function expectBrokerCall(
-    broker: SpyMessageBroker, methodName: string, vals?: Array<any>,
-    handler?: (..._: any[]) => Promise<any>| void): void {
+  broker: SpyMessageBroker,
+  methodName: string,
+  vals?: Array<any>,
+  handler?: (..._: any[]) => Promise<any> | void
+): void {
   broker.spy('runOnService').and.callFake((args: UiArguments, returnType: Type<any>) => {
     expect(args.method).toEqual(methodName);
     if (vals != null) {
-      expect(args.args !.length).toEqual(vals.length);
-      vals.forEach((v, i) => { expect(v).toEqual(args.args ![i].value); });
+      expect(args.args!.length).toEqual(vals.length);
+      vals.forEach((v, i) => {
+        expect(v).toEqual(args.args![i].value);
+      });
     }
-    let promise: Promise<any>|void = null !;
+    let promise: Promise<any> | void = null!;
     if (handler != null) {
-      const givenValues = args.args !.map((arg) => arg.value);
+      const givenValues = args.args!.map((arg) => arg.value);
       if (givenValues.length > 0) {
         promise = handler(givenValues);
       } else {
@@ -116,23 +130,34 @@ export class MockMessageBusSink implements MessageBusSink {
  * Runs syncronously, and does not support running within the zone.
  */
 export class MockMessageBus extends MessageBus {
-  constructor(public sink: MockMessageBusSink, public source: MockMessageBusSource) { super(); }
+  constructor(public sink: MockMessageBusSink, public source: MockMessageBusSource) {
+    super();
+  }
 
   initChannel(channel: string, runInZone = true) {
     this.sink.initChannel(channel, runInZone);
     this.source.initChannel(channel, runInZone);
   }
 
-  to(channel: string): MockEventEmitter<any> { return this.sink.to(channel); }
+  to(channel: string): MockEventEmitter<any> {
+    return this.sink.to(channel);
+  }
 
-  from(channel: string): MockEventEmitter<any> { return this.source.from(channel); }
+  from(channel: string): MockEventEmitter<any> {
+    return this.source.from(channel);
+  }
 
   attachToZone(zone: NgZone) {}
 }
 
-export const _ClientMessageBrokerFactory: {new (a: any, b: any): ClientMessageBrokerFactory} =
-    ClientMessageBrokerFactory;
+export const _ClientMessageBrokerFactory: {
+  new (a: any, b: any): ClientMessageBrokerFactory;
+} = ClientMessageBrokerFactory;
 export class MockMessageBrokerFactory extends _ClientMessageBrokerFactory {
-  constructor(private _messageBroker: ClientMessageBroker) { super(null !, null !); }
-  createMessageBroker(channel: string, runInZone = true) { return this._messageBroker; }
+  constructor(private _messageBroker: ClientMessageBroker) {
+    super(null!, null!);
+  }
+  createMessageBroker(channel: string, runInZone = true) {
+    return this._messageBroker;
+  }
 }

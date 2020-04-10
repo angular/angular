@@ -5,28 +5,38 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ɵɵdefineComponent, ɵɵproperty, ɵɵselect} from '../../src/render3/index';
-import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart} from '../../src/render3/instructions/all';
+import {
+  ɵɵcontainer,
+  ɵɵcontainerRefreshEnd,
+  ɵɵcontainerRefreshStart,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+  ɵɵembeddedViewEnd,
+  ɵɵembeddedViewStart,
+} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {ɵɵpureFunction2} from '../../src/render3/pure_function';
 import {getDirectiveOnNode, renderToHtml} from '../../test/render3/render_util';
-
 
 describe('object literals', () => {
   let objectComp: ObjectComp;
 
   class ObjectComp {
     // TODO(issue/24571): remove '!'.
-    config !: {[key: string]: any};
+    config!: {[key: string]: any};
 
-    static ɵfac = function ObjectComp_Factory() { return objectComp = new ObjectComp(); };
+    static ɵfac = function ObjectComp_Factory() {
+      return (objectComp = new ObjectComp());
+    };
     static ɵcmp = ɵɵdefineComponent({
       type: ObjectComp,
       selectors: [['object-comp']],
       decls: 0,
       vars: 1,
       template: function ObjectComp_Template() {},
-      inputs: {config: 'config'}
+      inputs: {config: 'config'},
     });
   }
 
@@ -60,8 +70,9 @@ describe('object literals', () => {
             if (rf1 & RenderFlags.Update) {
               ɵɵselect(0);
               ɵɵproperty(
-                  'config',
-                  ɵɵpureFunction2(1, e0_ff, ctx.configs[i].opacity, ctx.configs[i].duration));
+                'config',
+                ɵɵpureFunction2(1, e0_ff, ctx.configs[i].opacity, ctx.configs[i].duration)
+              );
             }
             ɵɵembeddedViewEnd();
           }
@@ -70,9 +81,14 @@ describe('object literals', () => {
       }
     }
 
-    const e0_ff = (v1: any, v2: any) => { return {opacity: v1, duration: v2}; };
+    const e0_ff = (v1: any, v2: any) => {
+      return {opacity: v1, duration: v2};
+    };
 
-    const configs = [{opacity: 0, duration: 500}, {opacity: 1, duration: 600}];
+    const configs = [
+      {opacity: 0, duration: 500},
+      {opacity: 1, duration: 600},
+    ];
     renderToHtml(Template, {configs}, 1, 0, defs);
     expect(objectComps[0].config).toEqual({opacity: 0, duration: 500});
     expect(objectComps[1].config).toEqual({opacity: 1, duration: 600});
@@ -82,5 +98,4 @@ describe('object literals', () => {
     expect(objectComps[0].config).toEqual({opacity: 0, duration: 1000});
     expect(objectComps[1].config).toEqual({opacity: 1, duration: 600});
   });
-
 });

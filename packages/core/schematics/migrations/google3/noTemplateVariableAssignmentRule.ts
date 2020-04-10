@@ -13,8 +13,9 @@ import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 import {createHtmlSourceFile} from '../../utils/tslint/tslint_html_source_file';
 import {analyzeResolvedTemplate} from '../template-var-assignment/analyze_template';
 
-const FAILURE_MESSAGE = 'Found assignment to template variable. This does not work with Ivy and ' +
-    'needs to be updated.';
+const FAILURE_MESSAGE =
+  'Found assignment to template variable. This does not work with Ivy and ' +
+  'needs to be updated.';
 
 /**
  * Rule that reports if an Angular template contains property assignments to template variables.
@@ -32,20 +33,27 @@ export class Rule extends Rules.TypedRule {
 
     // Analyze each resolved template and print a warning for property writes to
     // template variables.
-    resolvedTemplates.forEach(template => {
+    resolvedTemplates.forEach((template) => {
       const filePath = template.filePath;
       const nodes = analyzeResolvedTemplate(template);
-      const templateFile =
-          template.inline ? sourceFile : createHtmlSourceFile(filePath, template.content);
+      const templateFile = template.inline
+        ? sourceFile
+        : createHtmlSourceFile(filePath, template.content);
 
       if (!nodes) {
         return;
       }
 
-      nodes.forEach(n => {
-        failures.push(new RuleFailure(
-            templateFile, template.start + n.start, template.start + n.end, FAILURE_MESSAGE,
-            this.ruleName));
+      nodes.forEach((n) => {
+        failures.push(
+          new RuleFailure(
+            templateFile,
+            template.start + n.start,
+            template.start + n.end,
+            FAILURE_MESSAGE,
+            this.ruleName
+          )
+        );
       });
     });
 

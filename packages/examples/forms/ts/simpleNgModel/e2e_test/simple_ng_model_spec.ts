@@ -42,5 +42,4 @@ describe('simpleNgModel example', () => {
     button.click();
     expect(input.getAttribute('value')).toEqual('Nancy');
   });
-
 });

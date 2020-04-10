@@ -6,18 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, DoBootstrap, EventEmitter, Injector, Input, NgModule, Output, destroyPlatform} from '@angular/core';
+import {
+  Component,
+  DoBootstrap,
+  EventEmitter,
+  Injector,
+  Input,
+  NgModule,
+  Output,
+  destroyPlatform,
+} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {Subject} from 'rxjs';
 
 import {NgElementConstructor, createCustomElement} from '../src/create-custom-element';
-import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from '../src/element-strategy';
+import {
+  NgElementStrategy,
+  NgElementStrategyEvent,
+  NgElementStrategyFactory,
+} from '../src/element-strategy';
 
 type WithFooBar = {
-  fooFoo: string,
-  barBar: string
+  fooFoo: string;
+  barBar: string;
 };
 
 if (browserDetection.supportsCustomElements) {
@@ -27,22 +40,22 @@ if (browserDetection.supportsCustomElements) {
     let strategyFactory: TestStrategyFactory;
     let injector: Injector;
 
-    beforeAll(done => {
+    beforeAll((done) => {
       destroyPlatform();
       platformBrowserDynamic()
-          .bootstrapModule(TestModule)
-          .then(ref => {
-            injector = ref.injector;
-            strategyFactory = new TestStrategyFactory();
-            strategy = strategyFactory.testStrategy;
+        .bootstrapModule(TestModule)
+        .then((ref) => {
+          injector = ref.injector;
+          strategyFactory = new TestStrategyFactory();
+          strategy = strategyFactory.testStrategy;
 
-            NgElementCtor = createCustomElement(TestComponent, {injector, strategyFactory});
+          NgElementCtor = createCustomElement(TestComponent, {injector, strategyFactory});
 
-            // The `@webcomponents/custom-elements/src/native-shim.js` polyfill allows us to create
-            // new instances of the NgElement which extends HTMLElement, as long as we define it.
-            customElements.define('test-element', NgElementCtor);
-          })
-          .then(done, done.fail);
+          // The `@webcomponents/custom-elements/src/native-shim.js` polyfill allows us to create
+          // new instances of the NgElement which extends HTMLElement, as long as we define it.
+          customElements.define('test-element', NgElementCtor);
+        })
+        .then(done, done.fail);
     });
 
     afterAll(() => destroyPlatform());
@@ -67,7 +80,10 @@ if (browserDetection.supportsCustomElements) {
       element.connectedCallback();
 
       let eventValue: any = null;
-      element.addEventListener('some-event', (e: Event) => eventValue = (e as CustomEvent).detail);
+      element.addEventListener(
+        'some-event',
+        (e: Event) => (eventValue = (e as CustomEvent).detail)
+      );
       strategy.events.next({name: 'some-event', value: 'event-value'});
 
       expect(eventValue).toEqual('event-value');
@@ -80,7 +96,10 @@ if (browserDetection.supportsCustomElements) {
       expect(strategy.disconnectCalled).toBe(true);
 
       let eventValue: any = null;
-      element.addEventListener('some-event', (e: Event) => eventValue = (e as CustomEvent).detail);
+      element.addEventListener(
+        'some-event',
+        (e: Event) => (eventValue = (e as CustomEvent).detail)
+      );
       strategy.events.next({name: 'some-event', value: 'event-value'});
 
       expect(eventValue).toEqual(null);
@@ -105,7 +124,7 @@ if (browserDetection.supportsCustomElements) {
 class TestComponent {
   @Input() fooFoo: string = 'foo';
   // TODO(issue/24571): remove '!'.
-  @Input('barbar') barBar !: string;
+  @Input('barbar') barBar!: string;
 
   @Output() bazBaz = new EventEmitter<boolean>();
   @Output('quxqux') quxQux = new EventEmitter<Object>();
@@ -120,23 +139,33 @@ class TestModule implements DoBootstrap {
 }
 
 export class TestStrategy implements NgElementStrategy {
-  connectedElement: HTMLElement|null = null;
+  connectedElement: HTMLElement | null = null;
   disconnectCalled = false;
   inputs = new Map<string, any>();
 
   events = new Subject<NgElementStrategyEvent>();
 
-  connect(element: HTMLElement): void { this.connectedElement = element; }
+  connect(element: HTMLElement): void {
+    this.connectedElement = element;
+  }
 
-  disconnect(): void { this.disconnectCalled = true; }
+  disconnect(): void {
+    this.disconnectCalled = true;
+  }
 
-  getInputValue(propName: string): any { return this.inputs.get(propName); }
+  getInputValue(propName: string): any {
+    return this.inputs.get(propName);
+  }
 
-  setInputValue(propName: string, value: string): void { this.inputs.set(propName, value); }
+  setInputValue(propName: string, value: string): void {
+    this.inputs.set(propName, value);
+  }
 }
 
 export class TestStrategyFactory implements NgElementStrategyFactory {
   testStrategy = new TestStrategy();
 
-  create(): NgElementStrategy { return this.testStrategy; }
+  create(): NgElementStrategy {
+    return this.testStrategy;
+  }
 }

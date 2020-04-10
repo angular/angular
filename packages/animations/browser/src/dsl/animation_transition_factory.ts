@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AnimationOptions, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
@@ -14,15 +15,20 @@ import {copyObj, interpolateParams, iteratorToArray, mergeAnimationOptions} from
 import {StyleAst, TransitionAst} from './animation_ast';
 import {buildAnimationTimelines} from './animation_timeline_builder';
 import {TransitionMatcherFn} from './animation_transition_expr';
-import {AnimationTransitionInstruction, createTransitionInstruction} from './animation_transition_instruction';
+import {
+  AnimationTransitionInstruction,
+  createTransitionInstruction,
+} from './animation_transition_instruction';
 import {ElementInstructionMap} from './element_instruction_map';
 
 const EMPTY_OBJECT = {};
 
 export class AnimationTransitionFactory {
   constructor(
-      private _triggerName: string, public ast: TransitionAst,
-      private _stateStyles: {[stateName: string]: AnimationStateStyles}) {}
+    private _triggerName: string,
+    public ast: TransitionAst,
+    private _stateStyles: {[stateName: string]: AnimationStateStyles}
+  ) {}
 
   match(currentState: any, nextState: any, element: any, params: {[key: string]: any}): boolean {
     return oneOrMoreTransitionsMatch(this.ast.matchers, currentState, nextState, element, params);
@@ -36,16 +42,23 @@ export class AnimationTransitionFactory {
   }
 
   build(
-      driver: AnimationDriver, element: any, currentState: any, nextState: any,
-      enterClassName: string, leaveClassName: string, currentOptions?: AnimationOptions,
-      nextOptions?: AnimationOptions, subInstructions?: ElementInstructionMap,
-      skipAstBuild?: boolean): AnimationTransitionInstruction {
+    driver: AnimationDriver,
+    element: any,
+    currentState: any,
+    nextState: any,
+    enterClassName: string,
+    leaveClassName: string,
+    currentOptions?: AnimationOptions,
+    nextOptions?: AnimationOptions,
+    subInstructions?: ElementInstructionMap,
+    skipAstBuild?: boolean
+  ): AnimationTransitionInstruction {
     const errors: any[] = [];
 
-    const transitionAnimationParams = this.ast.options && this.ast.options.params || EMPTY_OBJECT;
-    const currentAnimationParams = currentOptions && currentOptions.params || EMPTY_OBJECT;
+    const transitionAnimationParams = (this.ast.options && this.ast.options.params) || EMPTY_OBJECT;
+    const currentAnimationParams = (currentOptions && currentOptions.params) || EMPTY_OBJECT;
     const currentStateStyles = this.buildStyles(currentState, currentAnimationParams, errors);
-    const nextAnimationParams = nextOptions && nextOptions.params || EMPTY_OBJECT;
+    const nextAnimationParams = (nextOptions && nextOptions.params) || EMPTY_OBJECT;
     const nextStateStyles = this.buildStyles(nextState, nextAnimationParams, errors);
 
     const queriedElements = new Set<any>();
@@ -55,27 +68,51 @@ export class AnimationTransitionFactory {
 
     const animationOptions = {params: {...transitionAnimationParams, ...nextAnimationParams}};
 
-    const timelines = skipAstBuild ? [] : buildAnimationTimelines(
-                                              driver, element, this.ast.animation, enterClassName,
-                                              leaveClassName, currentStateStyles, nextStateStyles,
-                                              animationOptions, subInstructions, errors);
+    const timelines = skipAstBuild
+      ? []
+      : buildAnimationTimelines(
+          driver,
+          element,
+          this.ast.animation,
+          enterClassName,
+          leaveClassName,
+          currentStateStyles,
+          nextStateStyles,
+          animationOptions,
+          subInstructions,
+          errors
+        );
 
     let totalTime = 0;
-    timelines.forEach(tl => { totalTime = Math.max(tl.duration + tl.delay, totalTime); });
+    timelines.forEach((tl) => {
+      totalTime = Math.max(tl.duration + tl.delay, totalTime);
+    });
 
     if (errors.length) {
       return createTransitionInstruction(
-          element, this._triggerName, currentState, nextState, isRemoval, currentStateStyles,
-          nextStateStyles, [], [], preStyleMap, postStyleMap, totalTime, errors);
+        element,
+        this._triggerName,
+        currentState,
+        nextState,
+        isRemoval,
+        currentStateStyles,
+        nextStateStyles,
+        [],
+        [],
+        preStyleMap,
+        postStyleMap,
+        totalTime,
+        errors
+      );
     }
 
-    timelines.forEach(tl => {
+    timelines.forEach((tl) => {
       const elm = tl.element;
       const preProps = getOrSetAsInMap(preStyleMap, elm, {});
-      tl.preStyleProps.forEach(prop => preProps[prop] = true);
+      tl.preStyleProps.forEach((prop) => (preProps[prop] = true));
 
       const postProps = getOrSetAsInMap(postStyleMap, elm, {});
-      tl.postStyleProps.forEach(prop => postProps[prop] = true);
+      tl.postStyleProps.forEach((prop) => (postProps[prop] = true));
 
       if (elm !== element) {
         queriedElements.add(elm);
@@ -84,15 +121,30 @@ export class AnimationTransitionFactory {
 
     const queriedElementsList = iteratorToArray(queriedElements.values());
     return createTransitionInstruction(
-        element, this._triggerName, currentState, nextState, isRemoval, currentStateStyles,
-        nextStateStyles, timelines, queriedElementsList, preStyleMap, postStyleMap, totalTime);
+      element,
+      this._triggerName,
+      currentState,
+      nextState,
+      isRemoval,
+      currentStateStyles,
+      nextStateStyles,
+      timelines,
+      queriedElementsList,
+      preStyleMap,
+      postStyleMap,
+      totalTime
+    );
   }
 }
 
 function oneOrMoreTransitionsMatch(
-    matchFns: TransitionMatcherFn[], currentState: any, nextState: any, element: any,
-    params: {[key: string]: any}): boolean {
-  return matchFns.some(fn => fn(currentState, nextState, element, params));
+  matchFns: TransitionMatcherFn[],
+  currentState: any,
+  nextState: any,
+  element: any,
+  params: {[key: string]: any}
+): boolean {
+  return matchFns.some((fn) => fn(currentState, nextState, element, params));
 }
 
 export class AnimationStateStyles {
@@ -101,16 +153,16 @@ export class AnimationStateStyles {
   buildStyles(params: {[key: string]: any}, errors: string[]): ɵStyleData {
     const finalStyles: ɵStyleData = {};
     const combinedParams = copyObj(this.defaultParams);
-    Object.keys(params).forEach(key => {
+    Object.keys(params).forEach((key) => {
       const value = params[key];
       if (value != null) {
         combinedParams[key] = value;
       }
     });
-    this.styles.styles.forEach(value => {
+    this.styles.styles.forEach((value) => {
       if (typeof value !== 'string') {
         const styleObj = value as any;
-        Object.keys(styleObj).forEach(prop => {
+        Object.keys(styleObj).forEach((prop) => {
           let val = styleObj[prop];
           if (val.length > 1) {
             val = interpolateParams(val, combinedParams, errors);

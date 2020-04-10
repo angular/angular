@@ -21,12 +21,14 @@ describe('regressions', () => {
 
         @NgModule({declarations: [EmptyComp]})
         export class MyModule {}
-      `
+      `,
     };
     const rootDir = {'app': appDir};
     const {genFiles} = compile(
-        [rootDir, angularFiles], {postCompile: expectNoDiagnostics},
-        {noUnusedLocals: true, noUnusedParameters: true});
+      [rootDir, angularFiles],
+      {postCompile: expectNoDiagnostics},
+      {noUnusedLocals: true, noUnusedParameters: true}
+    );
     expect(genFiles.find((f) => f.genFileUrl === '/app/app.module.ngfactory.ts')).toBeTruthy();
   });
 });

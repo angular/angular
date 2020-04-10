@@ -15,7 +15,6 @@ import {SyncLocker} from '../../src/locking/sync_locker';
 import {MockLockFile} from '../helpers/mock_lock_file';
 import {MockLogger} from '../helpers/mock_logger';
 
-
 describe('SingleProcessExecutor', () => {
   let mockLogger: MockLogger;
   let lockFileLog: string[];
@@ -49,12 +48,11 @@ describe('SingleProcessExecutor', () => {
   };
 
   describe('execute()', () => {
-    it('should call LockFile.write() and LockFile.remove() if processing completes successfully',
-       () => {
-         const createCompileFn: () => any = () => undefined;
-         executor.execute(noTasks, createCompileFn);
-         expect(lockFileLog).toEqual(['write()', 'remove()']);
-       });
+    it('should call LockFile.write() and LockFile.remove() if processing completes successfully', () => {
+      const createCompileFn: () => any = () => undefined;
+      executor.execute(noTasks, createCompileFn);
+      expect(lockFileLog).toEqual(['write()', 'remove()']);
+    });
 
     it('should call LockFile.write() and LockFile.remove() if `analyzeEntryPoints` fails', () => {
       const errorFn: () => never = () => {
@@ -128,13 +126,15 @@ describe('SingleProcessExecutor', () => {
       const createCompileFn = jasmine.createSpy('createCompileFn');
       executor.execute(noTasks, createCompileFn);
       expect(createTaskCompletedCallback).toHaveBeenCalledTimes(1);
-      expect(createTaskCompletedCallback.calls.mostRecent().args).toEqual([jasmine.objectContaining(
-          {allTasksCompleted: true, getNextTask: jasmine.any(Function)})]);
+      expect(createTaskCompletedCallback.calls.mostRecent().args).toEqual([
+        jasmine.objectContaining({allTasksCompleted: true, getNextTask: jasmine.any(Function)}),
+      ]);
     });
 
     it('should pass the created TaskCompletedCallback to the createCompileFn', () => {
-      const createCompileFn =
-          jasmine.createSpy('createCompileFn').and.returnValue(function compileFn() {});
+      const createCompileFn = jasmine
+        .createSpy('createCompileFn')
+        .and.returnValue(function compileFn() {});
       function onTaskCompleted() {}
       createTaskCompletedCallback.and.returnValue(onTaskCompleted);
       executor.execute(noTasks, createCompileFn);

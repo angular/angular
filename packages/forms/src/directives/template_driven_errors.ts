@@ -38,11 +38,12 @@ export class TemplateDrivenErrors {
 
   static missingNameException() {
     throw new Error(
-        `If ngModel is used within a form tag, either the name attribute must be set or the form
+      `If ngModel is used within a form tag, either the name attribute must be set or the form
       control must be defined as 'standalone' in ngModelOptions.
 
       Example 1: <input [(ngModel)]="person.firstName" name="first">
-      Example 2: <input [(ngModel)]="person.firstName" [ngModelOptions]="{standalone: true}">`);
+      Example 2: <input [(ngModel)]="person.firstName" [ngModelOptions]="{standalone: true}">`
+    );
   }
 
   static modelGroupParentException() {

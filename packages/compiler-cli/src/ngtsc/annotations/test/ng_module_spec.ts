@@ -5,14 +5,24 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {WrappedNodeExpr} from '@angular/compiler';
 import {R3Reference} from '@angular/compiler/src/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {LocalIdentifierStrategy, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
-import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../metadata';
+import {
+  LocalIdentifierStrategy,
+  NOOP_DEFAULT_IMPORT_RECORDER,
+  ReferenceEmitter,
+} from '../../imports';
+import {
+  CompoundMetadataReader,
+  DtsMetadataReader,
+  InjectableClassRegistry,
+  LocalMetadataRegistry,
+} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
@@ -52,7 +62,7 @@ runInEachFileSystem(() => {
             imports: [forwardRef(() => TestModuleDependency)]
           })
           export class TestModule {}
-        `
+        `,
         },
       ]);
       const checker = program.getTypeChecker();
@@ -63,19 +73,39 @@ runInEachFileSystem(() => {
       const metaReader = new CompoundMetadataReader([metaRegistry]);
       const dtsReader = new DtsMetadataReader(checker, reflectionHost);
       const scopeRegistry = new LocalModuleScopeRegistry(
-          metaRegistry, new MetadataDtsModuleScopeResolver(dtsReader, null),
-          new ReferenceEmitter([]), null);
+        metaRegistry,
+        new MetadataDtsModuleScopeResolver(dtsReader, null),
+        new ReferenceEmitter([]),
+        null
+      );
       const refEmitter = new ReferenceEmitter([new LocalIdentifierStrategy()]);
       const injectableRegistry = new InjectableClassRegistry(reflectionHost);
 
       const handler = new NgModuleDecoratorHandler(
-          reflectionHost, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry,
-          /* isCore */ false, /* routeAnalyzer */ null, refEmitter, /* factoryTracker */ null,
-          NOOP_DEFAULT_IMPORT_RECORDER, /* annotateForClosureCompiler */ false, injectableRegistry);
-      const TestModule =
-          getDeclaration(program, _('/entry.ts'), 'TestModule', isNamedClassDeclaration);
-      const detected =
-          handler.detect(TestModule, reflectionHost.getDecoratorsOfDeclaration(TestModule));
+        reflectionHost,
+        evaluator,
+        metaReader,
+        metaRegistry,
+        scopeRegistry,
+        referencesRegistry,
+        /* isCore */ false,
+        /* routeAnalyzer */ null,
+        refEmitter,
+        /* factoryTracker */ null,
+        NOOP_DEFAULT_IMPORT_RECORDER,
+        /* annotateForClosureCompiler */ false,
+        injectableRegistry
+      );
+      const TestModule = getDeclaration(
+        program,
+        _('/entry.ts'),
+        'TestModule',
+        isNamedClassDeclaration
+      );
+      const detected = handler.detect(
+        TestModule,
+        reflectionHost.getDecoratorsOfDeclaration(TestModule)
+      );
       if (detected === undefined) {
         return fail('Failed to recognize @NgModule');
       }
@@ -86,7 +116,7 @@ runInEachFileSystem(() => {
       expect(getReferenceIdentifierTexts(moduleDef.imports)).toEqual(['TestModuleDependency']);
 
       function getReferenceIdentifierTexts(references: R3Reference[]) {
-        return references.map(ref => (ref.value as WrappedNodeExpr<ts.Identifier>).node.text);
+        return references.map((ref) => (ref.value as WrappedNodeExpr<ts.Identifier>).node.text);
       }
     });
   });

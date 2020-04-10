@@ -70,7 +70,7 @@ export class TestBedRender3 implements TestBed {
   static initTestEnvironment(
     ngModule: Type<any> | Type<any>[],
     platform: PlatformRef,
-    aotSummaries?: () => any[],
+    aotSummaries?: () => any[]
   ): TestBed {
     const testBed = _getTestBedRender3();
     testBed.initTestEnvironment(ngModule, platform, aotSummaries);
@@ -116,7 +116,7 @@ export class TestBedRender3 implements TestBed {
 
   static overrideComponent(
     component: Type<any>,
-    override: MetadataOverride<Component>,
+    override: MetadataOverride<Component>
   ): TestBedStatic {
     _getTestBedRender3().overrideComponent(component, override);
     return (TestBedRender3 as any) as TestBedStatic;
@@ -124,7 +124,7 @@ export class TestBedRender3 implements TestBed {
 
   static overrideDirective(
     directive: Type<any>,
-    override: MetadataOverride<Directive>,
+    override: MetadataOverride<Directive>
   ): TestBedStatic {
     _getTestBedRender3().overrideDirective(directive, override);
     return (TestBedRender3 as any) as TestBedStatic;
@@ -156,7 +156,7 @@ export class TestBedRender3 implements TestBed {
     provider: {
       useFactory: Function;
       deps: any[];
-    },
+    }
   ): TestBedStatic;
   static overrideProvider(token: any, provider: {useValue: any}): TestBedStatic;
   static overrideProvider(
@@ -165,7 +165,7 @@ export class TestBedRender3 implements TestBed {
       useFactory?: Function;
       useValue?: any;
       deps?: any[];
-    },
+    }
   ): TestBedStatic {
     _getTestBedRender3().overrideProvider(token, provider);
     return (TestBedRender3 as any) as TestBedStatic;
@@ -174,17 +174,17 @@ export class TestBedRender3 implements TestBed {
   static inject<T>(
     token: Type<T> | InjectionToken<T> | AbstractType<T>,
     notFoundValue?: T,
-    flags?: InjectFlags,
+    flags?: InjectFlags
   ): T;
   static inject<T>(
     token: Type<T> | InjectionToken<T> | AbstractType<T>,
     notFoundValue: null,
-    flags?: InjectFlags,
+    flags?: InjectFlags
   ): T | null;
   static inject<T>(
     token: Type<T> | InjectionToken<T> | AbstractType<T>,
     notFoundValue?: T | null,
-    flags?: InjectFlags,
+    flags?: InjectFlags
   ): T | null {
     return _getTestBedRender3().inject(token, notFoundValue, flags);
   }
@@ -197,7 +197,7 @@ export class TestBedRender3 implements TestBed {
   static get(
     token: any,
     notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
-    flags: InjectFlags = InjectFlags.Default,
+    flags: InjectFlags = InjectFlags.Default
   ): any {
     return _getTestBedRender3().inject(token, notFoundValue, flags);
   }
@@ -238,7 +238,7 @@ export class TestBedRender3 implements TestBed {
   initTestEnvironment(
     ngModule: Type<any> | Type<any>[],
     platform: PlatformRef,
-    aotSummaries?: () => any[],
+    aotSummaries?: () => any[]
   ): void {
     if (this.platform || this.ngModule) {
       throw new Error('Cannot set base providers because it has already been called');
@@ -293,17 +293,17 @@ export class TestBedRender3 implements TestBed {
   inject<T>(
     token: Type<T> | InjectionToken<T> | AbstractType<T>,
     notFoundValue?: T,
-    flags?: InjectFlags,
+    flags?: InjectFlags
   ): T;
   inject<T>(
     token: Type<T> | InjectionToken<T> | AbstractType<T>,
     notFoundValue: null,
-    flags?: InjectFlags,
+    flags?: InjectFlags
   ): T | null;
   inject<T>(
     token: Type<T> | InjectionToken<T> | AbstractType<T>,
     notFoundValue?: T | null,
-    flags?: InjectFlags,
+    flags?: InjectFlags
   ): T | null {
     if ((token as unknown) === TestBedRender3) {
       return this as any;
@@ -323,7 +323,7 @@ export class TestBedRender3 implements TestBed {
   get(
     token: any,
     notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
-    flags: InjectFlags = InjectFlags.Default,
+    flags: InjectFlags = InjectFlags.Default
   ): any {
     return this.inject(token, notFoundValue, flags);
   }
@@ -346,7 +346,7 @@ export class TestBedRender3 implements TestBed {
   overrideTemplateUsingTestingModule(component: Type<any>, template: string): void {
     this.assertNotInstantiated(
       'R3TestBed.overrideTemplateUsingTestingModule',
-      'Cannot override template when the test module has already been instantiated',
+      'Cannot override template when the test module has already been instantiated'
     );
     this.compiler.overrideTemplateUsingTestingModule(component, template);
   }
@@ -366,7 +366,7 @@ export class TestBedRender3 implements TestBed {
    */
   overrideProvider(
     token: any,
-    provider: {useFactory?: Function; useValue?: any; deps?: any[]},
+    provider: {useFactory?: Function; useValue?: any; deps?: any[]}
   ): void {
     this.compiler.overrideProvider(token, provider);
   }
@@ -380,7 +380,7 @@ export class TestBedRender3 implements TestBed {
 
     if (!componentDef) {
       throw new Error(
-        `It looks like '${stringify(type)}' has not been IVY compiled - it has no 'ɵcmp' field`,
+        `It looks like '${stringify(type)}' has not been IVY compiled - it has no 'ɵcmp' field`
       );
     }
 
@@ -389,7 +389,7 @@ export class TestBedRender3 implements TestBed {
     // TODO: Don't cast as `InjectionToken<boolean>`, proper type is boolean[]
     const autoDetect: boolean = this.inject(
       ComponentFixtureAutoDetect as InjectionToken<boolean>,
-      false,
+      false
     );
     const ngZone: NgZone | null = noNgZone ? null : this.inject(NgZone, null);
     const componentFactory = new ComponentFactory(componentDef);
@@ -398,7 +398,7 @@ export class TestBedRender3 implements TestBed {
         Injector.NULL,
         [],
         `#${rootElId}`,
-        this.testModuleRef,
+        this.testModuleRef
       );
       return new ComponentFixture<any>(componentRef, ngZone, autoDetect);
     };
@@ -433,7 +433,7 @@ export class TestBedRender3 implements TestBed {
     if (this._testModuleRef !== null) {
       throw new Error(
         `Cannot ${methodDescription} when the test module has already been instantiated. ` +
-          `Make sure you are not using \`inject\` before \`${methodName}\`.`,
+          `Make sure you are not using \`inject\` before \`${methodName}\`.`
       );
     }
   }

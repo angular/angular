@@ -23,14 +23,14 @@ import {createProgram, readConfiguration} from '@angular/compiler-cli';
  */
 function main() {
   Promise.resolve()
-      .then(() => lazyRoutesTest())
-      .then(() => {
-        process.exit(0);
-      })
-      .catch((err) => {
-        console.error(err.stack);
-        process.exit(1);
-      });
+    .then(() => lazyRoutesTest())
+    .then(() => {
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error(err.stack);
+      process.exit(1);
+    });
 }
 
 function lazyRoutesTest() {
@@ -57,10 +57,10 @@ function lazyRoutesTest() {
     './lazy-feature-nested.module#LazyFeatureNestedModule': 'feature/lazy-feature-nested.module.ts',
     'feature2/feature2.module#Feature2Module': 'feature2/feature2.module.ts',
     './default.module': 'feature2/default.module.ts',
-    'feature/feature.module#FeatureModule': 'feature/feature.module.ts'
+    'feature/feature.module#FeatureModule': 'feature/feature.module.ts',
   };
 
-  lazyRoutes.forEach(lazyRoute => {
+  lazyRoutes.forEach((lazyRoute) => {
     const routeName = lazyRoute.route;
 
     // Normalize the module path and the expected module path so that these can be compared
@@ -70,18 +70,21 @@ function lazyRoutesTest() {
 
     assert(routeName in expectations, `Found a route that was not expected: "${routeName}".`);
     assert(
-        modulePath === expectedModulePath,
-        `Route "${routeName}" does not point to the expected absolute path ` +
-            `"${expectedModulePath}". It points to "${modulePath}"`);
+      modulePath === expectedModulePath,
+      `Route "${routeName}" does not point to the expected absolute path ` +
+        `"${expectedModulePath}". It points to "${modulePath}"`
+    );
   });
 
   // Verify that all expectations were met.
   assert.deepEqual(
-      lazyRoutes.map(lazyRoute => lazyRoute.route), Object.keys(expectations),
-      `Expected routes listed to be: \n` +
-          `  ${JSON.stringify(Object.keys(expectations))}\n` +
-          `Actual:\n` +
-          `  ${JSON.stringify(Object.keys(lazyRoutes))}\n`);
+    lazyRoutes.map((lazyRoute) => lazyRoute.route),
+    Object.keys(expectations),
+    `Expected routes listed to be: \n` +
+      `  ${JSON.stringify(Object.keys(expectations))}\n` +
+      `Actual:\n` +
+      `  ${JSON.stringify(Object.keys(lazyRoutes))}\n`
+  );
 }
 
 main();

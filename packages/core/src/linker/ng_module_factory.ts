@@ -11,7 +11,6 @@ import {Type} from '../interface/type';
 
 import {ComponentFactoryResolver} from './component_factory_resolver';
 
-
 /**
  * Represents an instance of an NgModule created via a {@link NgModuleFactory}.
  *
@@ -59,5 +58,5 @@ export interface InternalNgModuleRef<T> extends NgModuleRef<T> {
  */
 export abstract class NgModuleFactory<T> {
   abstract get moduleType(): Type<T>;
-  abstract create(parentInjector: Injector|null): NgModuleRef<T>;
+  abstract create(parentInjector: Injector | null): NgModuleRef<T>;
 }

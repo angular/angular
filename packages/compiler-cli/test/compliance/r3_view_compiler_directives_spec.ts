@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AttributeMarker} from '@angular/compiler/src/core';
 import {setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
@@ -30,8 +31,8 @@ describe('compiler compliance: directives', () => {
                 export class MyComponent {}
 
                 @NgModule({declarations: [I18nDirective, MyComponent]})
-                export class MyModule{}`
-        }
+                export class MyModule{}`,
+        },
       };
 
       // MyComponent definition should be:
@@ -80,8 +81,8 @@ describe('compiler compliance: directives', () => {
                 export class MyComponent {}
 
                 @NgModule({declarations: [I18nDirective, I18nFooDirective, FooDirective, MyComponent]})
-                export class MyModule{}`
-        }
+                export class MyModule{}`,
+        },
       };
 
       // MyComponent definition should be:
@@ -127,10 +128,9 @@ describe('compiler compliance: directives', () => {
 
             @NgModule({declarations: [SomeDirective, MyComponent]})
             export class MyModule{}
-          `
-        }
+          `,
+        },
       };
-
 
       // MyComponent definition should be:
       const MyComponentDefinition = `
@@ -181,8 +181,8 @@ describe('compiler compliance: directives', () => {
 
             @NgModule({declarations: [DirectiveA, MyComponent]})
             export class MyModule{}
-          `
-        }
+          `,
+        },
       };
 
       const MyComponentDefinition = `
@@ -234,8 +234,8 @@ describe('compiler compliance: directives', () => {
 
               @NgModule({declarations: [DirectiveA, MyComponent]})
               export class MyModule{}
-            `
-        }
+            `,
+        },
       };
 
       const MyComponentDefinition = `
@@ -285,10 +285,9 @@ describe('compiler compliance: directives', () => {
 
             @NgModule({declarations: [SomeDirective, MyComponent]})
             export class MyModule{}
-          `
-        }
+          `,
+        },
       };
-
 
       // MyComponent definition should be:
       const MyComponentDefinition = `
@@ -332,8 +331,8 @@ describe('compiler compliance: directives', () => {
 
             @NgModule({declarations: [SomeDirective, MyComponent]})
             export class MyModule{}
-          `
-        }
+          `,
+        },
       };
 
       // MyComponent definition should be:
@@ -377,10 +376,9 @@ describe('compiler compliance: directives', () => {
 
             @NgModule({declarations: [SomeDirective, MyComponent]})
             export class MyModule{}
-          `
-        }
+          `,
+        },
       };
-
 
       // MyComponent definition should be:
       const MyComponentDefinition = `

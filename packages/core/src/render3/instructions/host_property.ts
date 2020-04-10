@@ -5,13 +5,18 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {RENDERER} from '../interfaces/view';
 import {getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 
-import {elementPropertyInternal, loadComponentRenderer, storePropertyBindingMetadata} from './shared';
+import {
+  elementPropertyInternal,
+  loadComponentRenderer,
+  storePropertyBindingMetadata,
+} from './shared';
 
 /**
  * Update a property on a host element. Only applies to native node properties, not inputs.
@@ -28,7 +33,10 @@ import {elementPropertyInternal, loadComponentRenderer, storePropertyBindingMeta
  * @codeGenApi
  */
 export function ɵɵhostProperty<T>(
-    propName: string, value: T, sanitizer?: SanitizerFn | null): typeof ɵɵhostProperty {
+  propName: string,
+  value: T,
+  sanitizer?: SanitizerFn | null
+): typeof ɵɵhostProperty {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
@@ -39,7 +47,6 @@ export function ɵɵhostProperty<T>(
   }
   return ɵɵhostProperty;
 }
-
 
 /**
  * Updates a synthetic host binding (e.g. `[@foo]`) on a component.
@@ -63,8 +70,10 @@ export function ɵɵhostProperty<T>(
  * @codeGenApi
  */
 export function ɵɵupdateSyntheticHostBinding<T>(
-    propName: string, value: T | NO_CHANGE,
-    sanitizer?: SanitizerFn | null): typeof ɵɵupdateSyntheticHostBinding {
+  propName: string,
+  value: T | NO_CHANGE,
+  sanitizer?: SanitizerFn | null
+): typeof ɵɵupdateSyntheticHostBinding {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {

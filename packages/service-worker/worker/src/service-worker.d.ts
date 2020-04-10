@@ -60,9 +60,9 @@ type WindowClientState = 'hidden' | 'visible' | 'prerender' | 'unloaded';
 // Fetch API
 
 interface FetchEvent extends ExtendableEvent {
-  clientId: string|null;
+  clientId: string | null;
   request: Request;
-  respondWith(response: Promise<Response>|Response): Promise<Response>;
+  respondWith(response: Promise<Response> | Response): Promise<Response>;
 }
 
 interface InstallEvent extends ExtendableEvent {
@@ -100,7 +100,7 @@ interface SyncEvent extends ExtendableEvent {
 
 interface ExtendableMessageEvent extends ExtendableEvent {
   data: any;
-  source: Client|Object;
+  source: Client | Object;
 }
 
 // ServiceWorkerGlobalScope
@@ -118,6 +118,6 @@ interface ServiceWorkerGlobalScope {
   addEventListener(event: 'notificationclick', fn: (event?: NotificationEvent) => any): void;
   addEventListener(event: 'sync', fn: (event?: SyncEvent) => any): void;
 
-  fetch(request: Request|string): Promise<Response>;
+  fetch(request: Request | string): Promise<Response>;
   skipWaiting(): Promise<void>;
 }

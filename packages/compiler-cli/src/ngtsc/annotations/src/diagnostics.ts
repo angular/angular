@@ -24,8 +24,10 @@ import {makeDuplicateDeclarationError, readBaseClass} from './util';
  * @param registry Registry that keeps track of the registered injectable classes.
  */
 export function getProviderDiagnostics(
-    providerClasses: Set<Reference<ClassDeclaration>>, providersDeclaration: ts.Expression,
-    registry: InjectableClassRegistry): ts.Diagnostic[] {
+  providerClasses: Set<Reference<ClassDeclaration>>,
+  providersDeclaration: ts.Expression,
+  registry: InjectableClassRegistry
+): ts.Diagnostic[] {
   const diagnostics: ts.Diagnostic[] = [];
 
   for (const provider of providerClasses) {
@@ -34,29 +36,33 @@ export function getProviderDiagnostics(
     }
 
     const contextNode = provider.getOriginForDiagnostics(providersDeclaration);
-    diagnostics.push(makeDiagnostic(
-        ErrorCode.UNDECORATED_PROVIDER, contextNode,
-        `The class '${
-            provider.node.name
-                .text}' cannot be created via dependency injection, as it does not have an Angular decorator. This will result in an error at runtime.
+    diagnostics.push(
+      makeDiagnostic(
+        ErrorCode.UNDECORATED_PROVIDER,
+        contextNode,
+        `The class '${provider.node.name.text}' cannot be created via dependency injection, as it does not have an Angular decorator. This will result in an error at runtime.
 
-Either add the @Injectable() decorator to '${
-            provider.node.name
-                .text}', or configure a different provider (such as a provider with 'useFactory').
+Either add the @Injectable() decorator to '${provider.node.name.text}', or configure a different provider (such as a provider with 'useFactory').
 `,
-        [{node: provider.node, messageText: `'${provider.node.name.text}' is declared here.`}]));
+        [{node: provider.node, messageText: `'${provider.node.name.text}' is declared here.`}]
+      )
+    );
   }
 
   return diagnostics;
 }
 
 export function getDirectiveDiagnostics(
-    node: ClassDeclaration, reader: MetadataReader, evaluator: PartialEvaluator,
-    reflector: ReflectionHost, scopeRegistry: LocalModuleScopeRegistry,
-    kind: string): ts.Diagnostic[]|null {
-  let diagnostics: ts.Diagnostic[]|null = [];
+  node: ClassDeclaration,
+  reader: MetadataReader,
+  evaluator: PartialEvaluator,
+  reflector: ReflectionHost,
+  scopeRegistry: LocalModuleScopeRegistry,
+  kind: string
+): ts.Diagnostic[] | null {
+  let diagnostics: ts.Diagnostic[] | null = [];
 
-  const addDiagnostics = (more: ts.Diagnostic|ts.Diagnostic[]|null) => {
+  const addDiagnostics = (more: ts.Diagnostic | ts.Diagnostic[] | null) => {
     if (more === null) {
       return;
     } else if (diagnostics === null) {
@@ -79,8 +85,11 @@ export function getDirectiveDiagnostics(
 }
 
 export function checkInheritanceOfDirective(
-    node: ClassDeclaration, reader: MetadataReader, reflector: ReflectionHost,
-    evaluator: PartialEvaluator): ts.Diagnostic|null {
+  node: ClassDeclaration,
+  reader: MetadataReader,
+  reflector: ReflectionHost,
+  evaluator: PartialEvaluator
+): ts.Diagnostic | null {
   if (!reflector.isClass(node) || reflector.getConstructorParameters(node) !== null) {
     // We should skip nodes that aren't classes. If a constructor exists, then no base class
     // definition is required on the runtime side - it's legal to inherit from any class.
@@ -124,17 +133,22 @@ export function checkInheritanceOfDirective(
 }
 
 function getInheritedUndecoratedCtorDiagnostic(
-    node: ClassDeclaration, baseClass: Reference, reader: MetadataReader) {
+  node: ClassDeclaration,
+  baseClass: Reference,
+  reader: MetadataReader
+) {
   const subclassMeta = reader.getDirectiveMetadata(new Reference(node))!;
   const dirOrComp = subclassMeta.isComponent ? 'Component' : 'Directive';
   const baseClassName = baseClass.debugName;
 
   return makeDiagnostic(
-      ErrorCode.DIRECTIVE_INHERITS_UNDECORATED_CTOR, node.name,
-      `The ${dirOrComp.toLowerCase()} ${node.name.text} inherits its constructor from ${
-          baseClassName}, ` +
-          `but the latter does not have an Angular decorator of its own. Dependency injection will not be able to ` +
-          `resolve the parameters of ${
-              baseClassName}'s constructor. Either add a @Directive decorator ` +
-          `to ${baseClassName}, or add an explicit constructor to ${node.name.text}.`);
+    ErrorCode.DIRECTIVE_INHERITS_UNDECORATED_CTOR,
+    node.name,
+    `The ${dirOrComp.toLowerCase()} ${
+      node.name.text
+    } inherits its constructor from ${baseClassName}, ` +
+      `but the latter does not have an Angular decorator of its own. Dependency injection will not be able to ` +
+      `resolve the parameters of ${baseClassName}'s constructor. Either add a @Directive decorator ` +
+      `to ${baseClassName}, or add an explicit constructor to ${node.name.text}.`
+  );
 }

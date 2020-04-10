@@ -15,10 +15,6 @@ import {ExpandingRowModule} from './expanding_row_module';
 @NgModule({
   declarations: [BenchmarkableExpandingRow],
   exports: [BenchmarkableExpandingRow],
-  imports: [
-    CommonModule,
-    ExpandingRowModule,
-  ],
+  imports: [CommonModule, ExpandingRowModule],
 })
-export class BenchmarkableExpandingRowModule {
-}
+export class BenchmarkableExpandingRowModule {}

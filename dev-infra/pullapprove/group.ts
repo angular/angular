@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {IMinimatch, Minimatch} from 'minimatch';
 
 import {PullApproveGroupConfig} from './parse-yaml';
@@ -55,20 +56,24 @@ export class PullApproveGroup {
 
         if (condition.match(CONDITION_TYPES.INCLUDE_GLOBS)) {
           const [conditions, misconfiguredLines] = getLinesForContainsAnyGlobs(condition);
-          conditions.forEach(globString => this.includeConditions.push({
-            glob: globString,
-            matcher: new Minimatch(globString, {dot: true}),
-            matchedFiles: new Set<string>(),
-          }));
+          conditions.forEach((globString) =>
+            this.includeConditions.push({
+              glob: globString,
+              matcher: new Minimatch(globString, {dot: true}),
+              matchedFiles: new Set<string>(),
+            })
+          );
           this.misconfiguredLines.push(...misconfiguredLines);
           this.hasMatchers = true;
         } else if (condition.match(CONDITION_TYPES.EXCLUDE_GLOBS)) {
           const [conditions, misconfiguredLines] = getLinesForContainsAnyGlobs(condition);
-          conditions.forEach(globString => this.excludeConditions.push({
-            glob: globString,
-            matcher: new Minimatch(globString, {dot: true}),
-            matchedFiles: new Set<string>(),
-          }));
+          conditions.forEach((globString) =>
+            this.excludeConditions.push({
+              glob: globString,
+              matcher: new Minimatch(globString, {dot: true}),
+              matchedFiles: new Set<string>(),
+            })
+          );
           this.misconfiguredLines.push(...misconfiguredLines);
           this.hasMatchers = true;
         } else if (condition.match(CONDITION_TYPES.ATTR_LENGTH)) {
@@ -77,13 +82,15 @@ export class PullApproveGroup {
           // Currently a noop as we don't take any action for global approval conditions.
         } else {
           const errMessage =
-              `Unrecognized condition found, unable to parse the following condition: \n\n` +
-              `From the [${groupName}] group:\n` +
-              ` - ${condition}` +
-              `\n\n` +
-              `Known condition regexs:\n` +
-              `${Object.entries(CONDITION_TYPES).map(([k, v]) => ` ${k} - ${v}`).join('\n')}` +
-              `\n\n`;
+            `Unrecognized condition found, unable to parse the following condition: \n\n` +
+            `From the [${groupName}] group:\n` +
+            ` - ${condition}` +
+            `\n\n` +
+            `Known condition regexs:\n` +
+            `${Object.entries(CONDITION_TYPES)
+              .map(([k, v]) => ` ${k} - ${v}`)
+              .join('\n')}` +
+            `\n\n`;
           console.error(errMessage);
           process.exit(1);
         }
@@ -98,10 +105,10 @@ export class PullApproveGroup {
 
   /** Retrieve the results for the Group, all matched and unmatched conditions. */
   getResults(): PullApproveGroupResult {
-    const matchedIncludes = this.includeConditions.filter(c => !!c.matchedFiles.size);
-    const matchedExcludes = this.excludeConditions.filter(c => !!c.matchedFiles.size);
-    const unmatchedIncludes = this.includeConditions.filter(c => !c.matchedFiles.size);
-    const unmatchedExcludes = this.excludeConditions.filter(c => !c.matchedFiles.size);
+    const matchedIncludes = this.includeConditions.filter((c) => !!c.matchedFiles.size);
+    const matchedExcludes = this.excludeConditions.filter((c) => !!c.matchedFiles.size);
+    const unmatchedIncludes = this.includeConditions.filter((c) => !c.matchedFiles.size);
+    const unmatchedExcludes = this.excludeConditions.filter((c) => !c.matchedFiles.size);
     const unmatchedCount = unmatchedIncludes.length + unmatchedExcludes.length;
     const matchedCount = matchedIncludes.length + matchedExcludes.length;
     return {
@@ -150,17 +157,18 @@ export class PullApproveGroup {
  */
 function getLinesForContainsAnyGlobs(lines: string) {
   const invalidLines: string[] = [];
-  const validLines = lines.split('\n')
-                         .slice(1, -1)
-                         .map((glob: string) => {
-                           const trimmedGlob = glob.trim();
-                           const match = trimmedGlob.match(CONTAINS_ANY_GLOBS_REGEX);
-                           if (!match) {
-                             invalidLines.push(trimmedGlob);
-                             return '';
-                           }
-                           return match[1];
-                         })
-                         .filter(globString => !!globString);
+  const validLines = lines
+    .split('\n')
+    .slice(1, -1)
+    .map((glob: string) => {
+      const trimmedGlob = glob.trim();
+      const match = trimmedGlob.match(CONTAINS_ANY_GLOBS_REGEX);
+      if (!match) {
+        invalidLines.push(trimmedGlob);
+        return '';
+      }
+      return match[1];
+    })
+    .filter((globString) => !!globString);
   return [validLines, invalidLines];
 }

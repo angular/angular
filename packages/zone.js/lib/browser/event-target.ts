@@ -11,8 +11,13 @@ export function eventTargetPatch(_global: any, api: _ZonePrivate) {
     // EventTarget is already patched.
     return;
   }
-  const {eventNames, zoneSymbolEventNames, TRUE_STR, FALSE_STR, ZONE_SYMBOL_PREFIX} =
-      api.getGlobalObjects() !;
+  const {
+    eventNames,
+    zoneSymbolEventNames,
+    TRUE_STR,
+    FALSE_STR,
+    ZONE_SYMBOL_PREFIX,
+  } = api.getGlobalObjects()!;
   //  predefine all __zone_symbol__ + eventName + true/false string
   for (let i = 0; i < eventNames.length; i++) {
     const eventName = eventNames[i];

@@ -8,12 +8,22 @@
 
 import {core} from '@angular/compiler';
 import {DirectiveResolver} from '@angular/compiler/src/directive_resolver';
-import {Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Input, Output, ViewChild, ViewChildren} from '@angular/core/src/metadata';
+import {
+  Component,
+  ContentChild,
+  ContentChildren,
+  Directive,
+  HostBinding,
+  HostListener,
+  Input,
+  Output,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core/src/metadata';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 @Directive({selector: 'someDirective'})
-class SomeDirective {
-}
+class SomeDirective {}
 
 @Directive({selector: 'someDirective', inputs: ['c']})
 class SomeDirectiveWithInputs {
@@ -32,8 +42,7 @@ class SomeDirectiveWithOutputs {
 @Directive({selector: 'someDirective'})
 class SomeDirectiveWithSetterProps {
   @Input('renamed')
-  set a(value: any) {
-  }
+  set a(value: any) {}
 }
 
 @Directive({selector: 'someDirective'})
@@ -54,11 +63,9 @@ class SomeDirectiveWithHostBindings {
 @Directive({selector: 'someDirective', host: {'(c)': 'onC()'}})
 class SomeDirectiveWithHostListeners {
   @HostListener('a')
-  onA() {
-  }
+  onA() {}
   @HostListener('b', ['$event.value'])
-  onB(value: any) {
-  }
+  onB(value: any) {}
 }
 
 @Directive({selector: 'someDirective', queries: {'cs': new ContentChildren('c')}})
@@ -89,10 +96,9 @@ class SomeDirectiveWithViewChild {
   selector: 'sample',
   template: 'some template',
   styles: ['some styles'],
-  preserveWhitespaces: true
+  preserveWhitespaces: true,
 })
-class ComponentWithTemplate {
-}
+class ComponentWithTemplate {}
 
 @Directive({
   selector: 'someDirective',
@@ -106,15 +112,13 @@ class SomeDirectiveWithSameHostBindingAndInput {
 @Directive({selector: 'someDirective'})
 class SomeDirectiveWithMalformedHostBinding1 {
   @HostBinding('(a)')
-  onA() {
-  }
+  onA() {}
 }
 
 @Directive({selector: 'someDirective'})
 class SomeDirectiveWithMalformedHostBinding2 {
   @HostBinding('[a]')
-  onA() {
-  }
+  onA() {}
 }
 
 class SomeDirectiveWithoutMetadata {}
@@ -129,16 +133,18 @@ class SomeDirectiveWithoutMetadata {}
 
     it('should read out the Directive metadata', () => {
       const directiveMetadata = resolver.resolve(SomeDirective);
-      expect(directiveMetadata).toEqual(core.createDirective({
-        selector: 'someDirective',
-        inputs: [],
-        outputs: [],
-        host: {},
-        queries: {},
-        guards: {},
-        exportAs: undefined,
-        providers: undefined
-      }));
+      expect(directiveMetadata).toEqual(
+        core.createDirective({
+          selector: 'someDirective',
+          inputs: [],
+          outputs: [],
+          host: {},
+          queries: {},
+          guards: {},
+          exportAs: undefined,
+          providers: undefined,
+        })
+      );
     });
 
     it('should throw if not matching metadata is found', () => {
@@ -147,38 +153,40 @@ class SomeDirectiveWithoutMetadata {}
       }).toThrowError('No Directive annotation found on SomeDirectiveWithoutMetadata');
     });
 
-    it('should support inheriting the Directive metadata', function() {
+    it('should support inheriting the Directive metadata', function () {
       @Directive({selector: 'p'})
-      class Parent {
-      }
+      class Parent {}
 
       class ChildNoDecorator extends Parent {}
 
       @Directive({selector: 'c'})
-      class ChildWithDecorator extends Parent {
-      }
+      class ChildWithDecorator extends Parent {}
 
-      expect(resolver.resolve(ChildNoDecorator)).toEqual(core.createDirective({
-        selector: 'p',
-        inputs: [],
-        outputs: [],
-        host: {},
-        queries: {},
-        guards: {},
-        exportAs: undefined,
-        providers: undefined
-      }));
+      expect(resolver.resolve(ChildNoDecorator)).toEqual(
+        core.createDirective({
+          selector: 'p',
+          inputs: [],
+          outputs: [],
+          host: {},
+          queries: {},
+          guards: {},
+          exportAs: undefined,
+          providers: undefined,
+        })
+      );
 
-      expect(resolver.resolve(ChildWithDecorator)).toEqual(core.createDirective({
-        selector: 'c',
-        inputs: [],
-        outputs: [],
-        host: {},
-        queries: {},
-        guards: {},
-        exportAs: undefined,
-        providers: undefined
-      }));
+      expect(resolver.resolve(ChildWithDecorator)).toEqual(
+        core.createDirective({
+          selector: 'c',
+          inputs: [],
+          outputs: [],
+          host: {},
+          queries: {},
+          guards: {},
+          exportAs: undefined,
+          providers: undefined,
+        })
+      );
     });
 
     describe('inputs', () => {
@@ -194,8 +202,7 @@ class SomeDirectiveWithoutMetadata {}
 
       it('should remove duplicate inputs', () => {
         @Directive({selector: 'someDirective', inputs: ['a', 'a']})
-        class SomeDirectiveWithDuplicateInputs {
-        }
+        class SomeDirectiveWithDuplicateInputs {}
 
         const directiveMetadata = resolver.resolve(SomeDirectiveWithDuplicateInputs);
         expect(directiveMetadata.inputs).toEqual(['a']);
@@ -203,8 +210,7 @@ class SomeDirectiveWithoutMetadata {}
 
       it('should use the last input if duplicate inputs (with rename)', () => {
         @Directive({selector: 'someDirective', inputs: ['a', 'localA: a']})
-        class SomeDirectiveWithDuplicateInputs {
-        }
+        class SomeDirectiveWithDuplicateInputs {}
 
         const directiveMetadata = resolver.resolve(SomeDirectiveWithDuplicateInputs);
         expect(directiveMetadata.inputs).toEqual(['localA: a']);
@@ -249,8 +255,7 @@ class SomeDirectiveWithoutMetadata {}
 
       it('should remove duplicate outputs', () => {
         @Directive({selector: 'someDirective', outputs: ['a', 'a']})
-        class SomeDirectiveWithDuplicateOutputs {
-        }
+        class SomeDirectiveWithDuplicateOutputs {}
 
         const directiveMetadata = resolver.resolve(SomeDirectiveWithDuplicateOutputs);
         expect(directiveMetadata.outputs).toEqual(['a']);
@@ -258,8 +263,7 @@ class SomeDirectiveWithoutMetadata {}
 
       it('should use the last output if duplicate outputs (with rename)', () => {
         @Directive({selector: 'someDirective', outputs: ['a', 'localA: a']})
-        class SomeDirectiveWithDuplicateOutputs {
-        }
+        class SomeDirectiveWithDuplicateOutputs {}
 
         const directiveMetadata = resolver.resolve(SomeDirectiveWithDuplicateOutputs);
         expect(directiveMetadata.outputs).toEqual(['localA: a']);
@@ -305,19 +309,23 @@ class SomeDirectiveWithoutMetadata {}
 
       it('should append host listeners', () => {
         const directiveMetadata = resolver.resolve(SomeDirectiveWithHostListeners);
-        expect(directiveMetadata.host)
-            .toEqual({'(c)': 'onC()', '(a)': 'onA()', '(b)': 'onB($event.value)'});
+        expect(directiveMetadata.host).toEqual({
+          '(c)': 'onC()',
+          '(a)': 'onA()',
+          '(b)': 'onB($event.value)',
+        });
       });
 
       it('should throw when @HostBinding name starts with "("', () => {
-        expect(() => resolver.resolve(SomeDirectiveWithMalformedHostBinding1))
-            .toThrowError('@HostBinding can not bind to events. Use @HostListener instead.');
+        expect(() => resolver.resolve(SomeDirectiveWithMalformedHostBinding1)).toThrowError(
+          '@HostBinding can not bind to events. Use @HostListener instead.'
+        );
       });
 
       it('should throw when @HostBinding name starts with "["', () => {
-        expect(() => resolver.resolve(SomeDirectiveWithMalformedHostBinding2))
-            .toThrowError(
-                `@HostBinding parameter should be a property name, 'class.<name>', or 'attr.<name>'.`);
+        expect(() => resolver.resolve(SomeDirectiveWithMalformedHostBinding2)).toThrowError(
+          `@HostBinding parameter should be a property name, 'class.<name>', or 'attr.<name>'.`
+        );
       });
 
       it('should support inheriting host bindings', () => {
@@ -333,33 +341,37 @@ class SomeDirectiveWithoutMetadata {}
         }
 
         const directiveMetadata = resolver.resolve(Child);
-        expect(directiveMetadata.host)
-            .toEqual({'[p1]': 'p1', '[p21]': 'p2', '[p22]': 'p2', '[p3]': 'p3'});
+        expect(directiveMetadata.host).toEqual({
+          '[p1]': 'p1',
+          '[p21]': 'p2',
+          '[p22]': 'p2',
+          '[p3]': 'p3',
+        });
       });
 
       it('should support inheriting host listeners', () => {
         @Directive({selector: 'p'})
         class Parent {
           @HostListener('p1')
-          p1() {
-          }
+          p1() {}
           @HostListener('p21')
-          p2() {
-          }
+          p2() {}
         }
 
         class Child extends Parent {
           @HostListener('p22')
-          p2() {
-          }
+          p2() {}
           @HostListener('p3')
-          p3() {
-          }
+          p3() {}
         }
 
         const directiveMetadata = resolver.resolve(Child);
-        expect(directiveMetadata.host)
-            .toEqual({'(p1)': 'p1()', '(p21)': 'p2()', '(p22)': 'p2()', '(p3)': 'p3()'});
+        expect(directiveMetadata.host).toEqual({
+          '(p1)': 'p1()',
+          '(p21)': 'p2()',
+          '(p22)': 'p2()',
+          '(p3)': 'p3()',
+        });
       });
 
       it('should combine host bindings and listeners during inheritance', () => {
@@ -367,16 +379,14 @@ class SomeDirectiveWithoutMetadata {}
         class Parent {
           @HostListener('p11')
           @HostListener('p12')
-          p1() {
-          }
+          p1() {}
 
           @HostBinding('p21') @HostBinding('p22') p2: any;
         }
 
         class Child extends Parent {
           @HostListener('c1')
-          p1() {
-          }
+          p1() {}
 
           @HostBinding('c2') p2: any;
         }
@@ -388,7 +398,7 @@ class SomeDirectiveWithoutMetadata {}
           '(c1)': 'p1()',
           '[p21]': 'p2',
           '[p22]': 'p2',
-          '[c2]': 'p2'
+          '[c2]': 'p2',
         });
       });
     });
@@ -396,26 +406,34 @@ class SomeDirectiveWithoutMetadata {}
     describe('queries', () => {
       it('should append ContentChildren', () => {
         const directiveMetadata = resolver.resolve(SomeDirectiveWithContentChildren);
-        expect(directiveMetadata.queries)
-            .toEqual({'cs': new ContentChildren('c'), 'as': new ContentChildren('a')});
+        expect(directiveMetadata.queries).toEqual({
+          'cs': new ContentChildren('c'),
+          'as': new ContentChildren('a'),
+        });
       });
 
       it('should append ViewChildren', () => {
         const directiveMetadata = resolver.resolve(SomeDirectiveWithViewChildren);
-        expect(directiveMetadata.queries)
-            .toEqual({'cs': new ViewChildren('c'), 'as': new ViewChildren('a')});
+        expect(directiveMetadata.queries).toEqual({
+          'cs': new ViewChildren('c'),
+          'as': new ViewChildren('a'),
+        });
       });
 
       it('should append ContentChild', () => {
         const directiveMetadata = resolver.resolve(SomeDirectiveWithContentChild);
-        expect(directiveMetadata.queries)
-            .toEqual({'c': new ContentChild('c'), 'a': new ContentChild('a')});
+        expect(directiveMetadata.queries).toEqual({
+          'c': new ContentChild('c'),
+          'a': new ContentChild('a'),
+        });
       });
 
       it('should append ViewChild', () => {
         const directiveMetadata = resolver.resolve(SomeDirectiveWithViewChild);
-        expect(directiveMetadata.queries)
-            .toEqual({'c': new ViewChild('c'), 'a': new ViewChild('a')});
+        expect(directiveMetadata.queries).toEqual({
+          'c': new ViewChild('c'),
+          'a': new ViewChild('a'),
+        });
       });
 
       it('should support inheriting queries', () => {
@@ -434,7 +452,7 @@ class SomeDirectiveWithoutMetadata {}
         expect(directiveMetadata.queries).toEqual({
           'p1': new ContentChild('p1'),
           'p2': new ContentChild('p22'),
-          'p3': new ContentChild('p3')
+          'p3': new ContentChild('p3'),
         });
       });
     });

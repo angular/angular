@@ -25,7 +25,7 @@ export interface Hero {
       <label>name: </label>
     </div>
     &~{entity-amp}amp;
-  `
+  `,
 })
 export class AppComponent {
   title = 'Tour of Heroes';

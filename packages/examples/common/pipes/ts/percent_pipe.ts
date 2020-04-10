@@ -19,14 +19,14 @@ registerLocaleData(localeFr);
   selector: 'percent-pipe',
   template: `<div>
     <!--output '26%'-->
-    <p>A: {{a | percent}}</p>
+    <p>A: {{ a | percent }}</p>
 
     <!--output '0,134.950%'-->
-    <p>B: {{b | percent:'4.3-5'}}</p>
+    <p>B: {{ b | percent: '4.3-5' }}</p>
 
     <!--output '0 134,950 %'-->
-    <p>B: {{b | percent:'4.3-5':'fr'}}</p>
-  </div>`
+    <p>B: {{ b | percent: '4.3-5':'fr' }}</p>
+  </div>`,
 })
 export class PercentPipeComponent {
   a: number = 0.259;
@@ -39,11 +39,11 @@ export class PercentPipeComponent {
   selector: 'deprecated-percent-pipe',
   template: `<div>
     <!--output '25.9%'-->
-    <p>A: {{a | percent}}</p>
+    <p>A: {{ a | percent }}</p>
 
     <!--output '0,134.95%'-->
-    <p>B: {{b | percent:'4.3-5'}}</p>
-  </div>`
+    <p>B: {{ b | percent: '4.3-5' }}</p>
+  </div>`,
 })
 export class DeprecatedPercentPipeComponent {
   a: number = 0.259;

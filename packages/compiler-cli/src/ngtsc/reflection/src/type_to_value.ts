@@ -18,7 +18,9 @@ import {TypeValueReference} from './host';
  * declaration, or if it is not possible to statically understand.
  */
 export function typeToValue(
-    typeNode: ts.TypeNode|null, checker: ts.TypeChecker): TypeValueReference|null {
+  typeNode: ts.TypeNode | null,
+  checker: ts.TypeChecker
+): TypeValueReference | null {
   // It's not possible to get a value expression if the parameter doesn't even have a type.
   if (typeNode === null || !ts.isTypeReferenceNode(typeNode)) {
     return null;
@@ -74,7 +76,7 @@ export function typeToValue(
         valueDeclaration: decl.valueDeclaration,
         moduleName,
         importedName,
-        nestedPath
+        nestedPath,
       };
     } else if (ts.isNamespaceImport(firstDecl)) {
       // The import is a namespace import
@@ -96,7 +98,7 @@ export function typeToValue(
         valueDeclaration: decl.valueDeclaration,
         moduleName,
         importedName,
-        nestedPath
+        nestedPath,
       };
     }
   }
@@ -120,7 +122,7 @@ export function typeToValue(
  *
  * This will return `null` if an equivalent expression cannot be constructed.
  */
-export function typeNodeToValueExpr(node: ts.TypeNode): ts.Expression|null {
+export function typeNodeToValueExpr(node: ts.TypeNode): ts.Expression | null {
   if (ts.isTypeReferenceNode(node)) {
     return entityNameToValue(node.typeName);
   } else {
@@ -139,11 +141,13 @@ export function typeNodeToValueExpr(node: ts.TypeNode): ts.Expression|null {
  * All symbol names that make up the type reference are returned left-to-right into the
  * `symbolNames` array, which is guaranteed to include at least one entry.
  */
-function resolveTypeSymbols(typeRef: ts.TypeReferenceNode, checker: ts.TypeChecker):
-    {local: ts.Symbol, decl: ts.Symbol, symbolNames: string[]}|null {
+function resolveTypeSymbols(
+  typeRef: ts.TypeReferenceNode,
+  checker: ts.TypeChecker
+): {local: ts.Symbol; decl: ts.Symbol; symbolNames: string[]} | null {
   const typeName = typeRef.typeName;
   // typeRefSymbol is the ts.Symbol of the entire type reference.
-  const typeRefSymbol: ts.Symbol|undefined = checker.getSymbolAtLocation(typeName);
+  const typeRefSymbol: ts.Symbol | undefined = checker.getSymbolAtLocation(typeName);
   if (typeRefSymbol === undefined) {
     return null;
   }
@@ -189,7 +193,7 @@ function resolveTypeSymbols(typeRef: ts.TypeReferenceNode, checker: ts.TypeCheck
   return {local, decl, symbolNames};
 }
 
-function entityNameToValue(node: ts.EntityName): ts.Expression|null {
+function entityNameToValue(node: ts.EntityName): ts.Expression | null {
   if (ts.isQualifiedName(node)) {
     const left = entityNameToValue(node.left);
     return left !== null ? ts.createPropertyAccess(left, node.right) : null;

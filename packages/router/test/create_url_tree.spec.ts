@@ -50,8 +50,9 @@ describe('createUrlTree', () => {
 
   it('should error when navigating to the root segment with params', () => {
     const p = serializer.parse('/');
-    expect(() => createRoot(p, ['/', {p: 11}]))
-        .toThrowError(/Root segment cannot have matrix parameters/);
+    expect(() => createRoot(p, ['/', {p: 11}])).toThrowError(
+      /Root segment cannot have matrix parameters/
+    );
   });
 
   it('should support nested segments', () => {
@@ -100,8 +101,9 @@ describe('createUrlTree', () => {
 
   it('should throw when outlets is not the last command', () => {
     const p = serializer.parse('/a');
-    expect(() => createRoot(p, ['a', {outlets: {right: ['c']}}, 'c']))
-        .toThrowError('{outlets:{}} has to be the last command');
+    expect(() => createRoot(p, ['a', {outlets: {right: ['c']}}, 'c'])).toThrowError(
+      '{outlets:{}} has to be the last command'
+    );
   });
 
   it('should support updating using a string', () => {
@@ -179,8 +181,10 @@ describe('createUrlTree', () => {
 
     it('should support parameters-only navigation (with a double dot)', () => {
       const p = serializer.parse('/a/(c//left:cp)(left:ap)');
-      const t =
-          create(p.root.children[PRIMARY_OUTLET].children[PRIMARY_OUTLET], 0, p, ['../', {x: 5}]);
+      const t = create(p.root.children[PRIMARY_OUTLET].children[PRIMARY_OUTLET], 0, p, [
+        '../',
+        {x: 5},
+      ]);
       expect(serializer.serialize(t)).toEqual('/a;x=5(left:ap)');
     });
 
@@ -199,8 +203,9 @@ describe('createUrlTree', () => {
     it('should support going to a parent (across segments)', () => {
       const p = serializer.parse('/q/(a/(c//left:cp)//left:qp)(left:ap)');
 
-      const t =
-          create(p.root.children[PRIMARY_OUTLET].children[PRIMARY_OUTLET], 0, p, ['../../q2']);
+      const t = create(p.root.children[PRIMARY_OUTLET].children[PRIMARY_OUTLET], 0, p, [
+        '../../q2',
+      ]);
       expect(serializer.serialize(t)).toEqual('/q2(left:ap)');
     });
 
@@ -224,8 +229,9 @@ describe('createUrlTree', () => {
 
     it('should throw when too many ..', () => {
       const p = serializer.parse('/a/(c//left:cp)(left:ap)');
-      expect(() => create(p.root.children[PRIMARY_OUTLET], 0, p, ['../../']))
-          .toThrowError('Invalid number of \'../\'');
+      expect(() => create(p.root.children[PRIMARY_OUTLET], 0, p, ['../../'])).toThrowError(
+        "Invalid number of '../'"
+      );
     });
 
     it('should support updating secondary segments', () => {
@@ -244,27 +250,66 @@ describe('createUrlTree', () => {
 
 function createRoot(tree: UrlTree, commands: any[], queryParams?: Params, fragment?: string) {
   const s = new (ActivatedRouteSnapshot as any)(
-      [], <any>{}, <any>{}, '', <any>{}, PRIMARY_OUTLET, 'someComponent', null, tree.root, -1,
-      <any>null);
+    [],
+    <any>{},
+    <any>{},
+    '',
+    <any>{},
+    PRIMARY_OUTLET,
+    'someComponent',
+    null,
+    tree.root,
+    -1,
+    <any>null
+  );
   const a = new (ActivatedRoute as any)(
-      new BehaviorSubject(null !), new BehaviorSubject(null !), new BehaviorSubject(null !),
-      new BehaviorSubject(null !), new BehaviorSubject(null !), PRIMARY_OUTLET, 'someComponent', s);
+    new BehaviorSubject(null!),
+    new BehaviorSubject(null!),
+    new BehaviorSubject(null!),
+    new BehaviorSubject(null!),
+    new BehaviorSubject(null!),
+    PRIMARY_OUTLET,
+    'someComponent',
+    s
+  );
   advanceActivatedRoute(a);
-  return createUrlTree(a, tree, commands, queryParams !, fragment !);
+  return createUrlTree(a, tree, commands, queryParams!, fragment!);
 }
 
 function create(
-    segment: UrlSegmentGroup, startIndex: number, tree: UrlTree, commands: any[],
-    queryParams?: Params, fragment?: string) {
+  segment: UrlSegmentGroup,
+  startIndex: number,
+  tree: UrlTree,
+  commands: any[],
+  queryParams?: Params,
+  fragment?: string
+) {
   if (!segment) {
     expect(segment).toBeDefined();
   }
   const s = new (ActivatedRouteSnapshot as any)(
-      [], <any>{}, <any>{}, '', <any>{}, PRIMARY_OUTLET, 'someComponent', null, <any>segment,
-      startIndex, <any>null);
+    [],
+    <any>{},
+    <any>{},
+    '',
+    <any>{},
+    PRIMARY_OUTLET,
+    'someComponent',
+    null,
+    <any>segment,
+    startIndex,
+    <any>null
+  );
   const a = new (ActivatedRoute as any)(
-      new BehaviorSubject(null !), new BehaviorSubject(null !), new BehaviorSubject(null !),
-      new BehaviorSubject(null !), new BehaviorSubject(null !), PRIMARY_OUTLET, 'someComponent', s);
+    new BehaviorSubject(null!),
+    new BehaviorSubject(null!),
+    new BehaviorSubject(null!),
+    new BehaviorSubject(null!),
+    new BehaviorSubject(null!),
+    PRIMARY_OUTLET,
+    'someComponent',
+    s
+  );
   advanceActivatedRoute(a);
-  return createUrlTree(a, tree, commands, queryParams !, fragment !);
+  return createUrlTree(a, tree, commands, queryParams!, fragment!);
 }

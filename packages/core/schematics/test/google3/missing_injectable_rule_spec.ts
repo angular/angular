@@ -12,13 +12,14 @@ import * as shx from 'shelljs';
 import {Configuration, Linter} from 'tslint';
 
 describe('Google3 missing injectable tslint rule', () => {
-  const rulesDirectory =
-      dirname(require.resolve('../../migrations/google3/noMissingInjectableRule'));
+  const rulesDirectory = dirname(
+    require.resolve('../../migrations/google3/noMissingInjectableRule')
+  );
 
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = join(process.env['TEST_TMPDIR'] !, 'google3-test');
+    tmpDir = join(process.env['TEST_TMPDIR']!, 'google3-test');
     shx.mkdir('-p', tmpDir);
 
     writeFile('tsconfig.json', JSON.stringify({compilerOptions: {module: 'es2015'}}));
@@ -31,8 +32,8 @@ describe('Google3 missing injectable tslint rule', () => {
     const linter = new Linter({fix, rulesDirectory: [rulesDirectory]}, program);
     const config = Configuration.parseConfigFile({rules: {'no-missing-injectable': true}});
 
-    program.getRootFileNames().forEach(fileName => {
-      linter.lint(fileName, program.getSourceFile(fileName) !.getFullText(), config);
+    program.getRootFileNames().forEach((fileName) => {
+      linter.lint(fileName, program.getSourceFile(fileName)!.getFullText(), config);
     });
 
     return linter;
@@ -42,7 +43,9 @@ describe('Google3 missing injectable tslint rule', () => {
     writeFileSync(join(tmpDir, fileName), content);
   }
 
-  function getFile(fileName: string) { return readFileSync(join(tmpDir, fileName), 'utf8'); }
+  function getFile(fileName: string) {
+    return readFileSync(join(tmpDir, fileName), 'utf8');
+  }
 
   describe('NgModule', () => createTests('NgModule', 'providers'));
   describe('Directive', () => createTests('Directive', 'providers'));
@@ -51,10 +54,13 @@ describe('Google3 missing injectable tslint rule', () => {
     createTests('Component', 'providers');
     createTests('Component', 'viewProviders');
 
-    it('should migrate all providers defined in "viewProviders" and "providers" in the ' +
-           'same component',
-       () => {
-         writeFile('/index.ts', `
+    it(
+      'should migrate all providers defined in "viewProviders" and "providers" in the ' +
+        'same component',
+      () => {
+        writeFile(
+          '/index.ts',
+          `
           import {Component} from '@angular/core';
         
           export class MyService {}
@@ -65,43 +71,55 @@ describe('Google3 missing injectable tslint rule', () => {
             viewProviders: [MySecondService],
           })
           export class TestClass {}
-        `);
+        `
+        );
 
-         const result = runTSLint().getResult();
+        const result = runTSLint().getResult();
 
-         expect(result.errorCount).toBe(0);
-         expect(getFile('/index.ts')).toMatch(/@Injectable\(\)\s+export class MyService/);
-         expect(getFile('/index.ts')).toMatch(/@Injectable\(\)\s+export class MySecondService/);
-         expect(getFile('/index.ts')).toContain(`{ Component, Injectable } from '@angular/core`);
-       });
+        expect(result.errorCount).toBe(0);
+        expect(getFile('/index.ts')).toMatch(/@Injectable\(\)\s+export class MyService/);
+        expect(getFile('/index.ts')).toMatch(/@Injectable\(\)\s+export class MySecondService/);
+        expect(getFile('/index.ts')).toContain(`{ Component, Injectable } from '@angular/core`);
+      }
+    );
   });
 
   function createTests(
-      type: 'NgModule' | 'Directive' | 'Component', propName: 'providers' | 'viewProviders') {
+    type: 'NgModule' | 'Directive' | 'Component',
+    propName: 'providers' | 'viewProviders'
+  ) {
     it('should create proper failures for missing injectable providers', () => {
-      writeFile('index.ts', `
+      writeFile(
+        'index.ts',
+        `
         import { ${type} } from '@angular/core';
   
         export class A {}
   
         @${type}({${propName}: [A]})
         export class TestClass {}
-      `);
+      `
+      );
 
       const linter = runTSLint(false);
       const failures = linter.getResult().failures;
 
       expect(failures.length).toBe(2);
-      expect(failures[0].getFailure())
-          .toMatch(/Class needs to be decorated with "@Injectable\(\)".*provided by "TestClass"/);
+      expect(failures[0].getFailure()).toMatch(
+        /Class needs to be decorated with "@Injectable\(\)".*provided by "TestClass"/
+      );
       expect(failures[0].getStartPosition().getLineAndCharacter()).toEqual({line: 3, character: 8});
       expect(failures[1].getFailure()).toMatch(/Import needs to be updated to import.*Injectable/);
-      expect(failures[1].getStartPosition().getLineAndCharacter())
-          .toEqual({line: 1, character: 15});
+      expect(failures[1].getStartPosition().getLineAndCharacter()).toEqual({
+        line: 1,
+        character: 15,
+      });
     });
 
     it('should update provider classes which need to be migrated in Ivy', () => {
-      writeFile('/index.ts', `
+      writeFile(
+        '/index.ts',
+        `
         import {Pipe, Directive, Component, NgModule} from '@angular/core';
       
         @Pipe()
@@ -138,16 +156,18 @@ describe('Google3 missing injectable tslint rule', () => {
           {provide: MyServiceH, deps: []},
         ]})
         export class TestClass {}
-      `);
-
+      `
+      );
 
       runTSLint();
 
       expect(getFile('/index.ts')).toMatch(/'@angular\/core';\s+@Pipe\(\)\s+export class WithPipe/);
-      expect(getFile('/index.ts'))
-          .toMatch(/WithPipe {}\s+@Directive\(\)\s+export class WithDirective/);
-      expect(getFile('/index.ts'))
-          .toMatch(/WithDirective {}\s+@Component\(\)\s+export class WithComponent/);
+      expect(getFile('/index.ts')).toMatch(
+        /WithPipe {}\s+@Directive\(\)\s+export class WithDirective/
+      );
+      expect(getFile('/index.ts')).toMatch(
+        /WithDirective {}\s+@Component\(\)\s+export class WithComponent/
+      );
       expect(getFile('/index.ts')).toMatch(/@Injectable\(\)\s+export class MyServiceA/);
       expect(getFile('/index.ts')).toMatch(/@Injectable\(\)\s+export class MyServiceB/);
       expect(getFile('/index.ts')).toMatch(/MyServiceB {}\s+export class MyServiceC/);
@@ -160,16 +180,21 @@ describe('Google3 missing injectable tslint rule', () => {
     });
 
     it(`should migrate provider once if referenced in multiple ${type} definitions`, () => {
-      writeFile('/index.ts', `
+      writeFile(
+        '/index.ts',
+        `
         import {${type}} from '@angular/core';
       
         export class ServiceA {}
                   
         @${type}({${propName}: [ServiceA]})
         export class TestClass {}
-      `);
+      `
+      );
 
-      writeFile('/second.ts', `
+      writeFile(
+        '/second.ts',
+        `
         import {${type}} from '@angular/core';
         import {ServiceA} from './index';
         
@@ -177,64 +202,82 @@ describe('Google3 missing injectable tslint rule', () => {
         
         @${type}({${propName}: [ServiceA, ServiceB]})
         export class TestClass2 {}
-      `);
+      `
+      );
 
       runTSLint();
 
-      expect(getFile('/index.ts'))
-          .toMatch(/@angular\/core';\s+@Injectable\(\)\s+export class ServiceA/);
+      expect(getFile('/index.ts')).toMatch(
+        /@angular\/core';\s+@Injectable\(\)\s+export class ServiceA/
+      );
       expect(getFile('/index.ts')).toContain(`{ ${type}, Injectable } from '@angular/core`);
       expect(getFile('/second.ts')).toMatch(/@Injectable\(\)\s+export class ServiceB/);
       expect(getFile('/second.ts')).toContain(`{ ${type}, Injectable } from '@angular/core`);
     });
 
     it('should warn if a referenced provider could not be resolved', () => {
-      writeFile('/index.ts', `
+      writeFile(
+        '/index.ts',
+        `
         import {${type}} from '@angular/core';
         
         @${type}({${propName}: [NotPresent]})
         export class TestClass {}
-      `);
+      `
+      );
 
       const linter = runTSLint();
       const failures = linter.getResult().failures;
 
       expect(failures.length).toBe(1);
       expect(failures[0].getFailure()).toMatch(/Provider is not statically analyzable./);
-      expect(failures[0].getStartPosition().getLineAndCharacter())
-          .toEqual({line: 3, character: 14 + type.length + propName.length});
+      expect(failures[0].getStartPosition().getLineAndCharacter()).toEqual({
+        line: 3,
+        character: 14 + type.length + propName.length,
+      });
     });
 
     it(`should warn if the "${propName}" value could not be resolved`, () => {
-      writeFile('/index.ts', `
+      writeFile(
+        '/index.ts',
+        `
         import {${type}} from '@angular/core';
         
         @${type}({${propName}: NOT_ANALYZABLE)
         export class TestClass {}
-      `);
+      `
+      );
 
       const linter = runTSLint();
       const failures = linter.getResult().failures;
 
       expect(failures.length).toBe(1);
       expect(failures[0].getFailure()).toMatch(/Providers.*not statically analyzable./);
-      expect(failures[0].getStartPosition().getLineAndCharacter())
-          .toEqual({line: 3, character: 13 + type.length + propName.length});
+      expect(failures[0].getStartPosition().getLineAndCharacter()).toEqual({
+        line: 3,
+        character: 13 + type.length + propName.length,
+      });
     });
 
     it('should create new import for @Injectable when migrating provider', () => {
-      writeFile('/index.ts', `
+      writeFile(
+        '/index.ts',
+        `
         import {${type}} from '@angular/core';
         import {MyService, MySecondService} from './service';
                       
         @${type}({${propName}: [MyService, MySecondService]})
         export class TestClass {}
-      `);
+      `
+      );
 
-      writeFile('/service.ts', `export class MyService {}
+      writeFile(
+        '/service.ts',
+        `export class MyService {}
       
         export class MySecondService {}
-      `);
+      `
+      );
 
       runTSLint();
 
@@ -244,28 +287,33 @@ describe('Google3 missing injectable tslint rule', () => {
     });
 
     it('should remove @Inject decorator for providers which are migrated', () => {
-      writeFile('/index.ts', `
+      writeFile(
+        '/index.ts',
+        `
         import {${type}} from '@angular/core';
         import {MyService} from './service';
                
         @${type}({${propName}: [MyService]})
         export class TestClass {}
-      `);
+      `
+      );
 
-      writeFile('/service.ts', `
+      writeFile(
+        '/service.ts',
+        `
         import {Inject} from '@angular/core';
       
         @Inject()
         export class MyService {}
-      `);
+      `
+      );
 
       runTSLint();
 
       expect(getFile('/service.ts')).toMatch(/core';\s+@Injectable\(\)\s+export class MyService/);
-      expect(getFile('/service.ts'))
-          .toMatch(/import { Inject, Injectable } from '@angular\/core';/);
+      expect(getFile('/service.ts')).toMatch(
+        /import { Inject, Injectable } from '@angular\/core';/
+      );
     });
   }
-
-
 });

@@ -9,7 +9,7 @@
 import {Observable, Subscriber, Subscription} from 'rxjs';
 
 type ZoneSubscriberContext = {
-  _zone: Zone
+  _zone: Zone;
 } & Subscriber<any>;
 
 (Zone as any).__load_patch('rxjs', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
@@ -20,10 +20,10 @@ type ZoneSubscriberContext = {
 
   const ObjectDefineProperties = Object.defineProperties;
 
-  const patchObservable = function() {
+  const patchObservable = function () {
     const ObservablePrototype: any = Observable.prototype;
     const _symbolSubscribe = symbol('_subscribe');
-    const _subscribe = ObservablePrototype[_symbolSubscribe] = ObservablePrototype._subscribe;
+    const _subscribe = (ObservablePrototype[_symbolSubscribe] = ObservablePrototype._subscribe);
 
     ObjectDefineProperties(Observable.prototype, {
       _zone: {value: null, writable: true, configurable: true},
@@ -31,15 +31,17 @@ type ZoneSubscriberContext = {
       _zoneSubscribe: {value: null, writable: true, configurable: true},
       source: {
         configurable: true,
-        get: function(this: Observable<any>) { return (this as any)._zoneSource; },
-        set: function(this: Observable<any>, source: any) {
+        get: function (this: Observable<any>) {
+          return (this as any)._zoneSource;
+        },
+        set: function (this: Observable<any>, source: any) {
           (this as any)._zone = Zone.current;
           (this as any)._zoneSource = source;
-        }
+        },
       },
       _subscribe: {
         configurable: true,
-        get: function(this: Observable<any>) {
+        get: function (this: Observable<any>) {
           if ((this as any)._zoneSubscribe) {
             return (this as any)._zoneSubscribe;
           } else if (this.constructor === Observable) {
@@ -48,17 +50,17 @@ type ZoneSubscriberContext = {
           const proto = Object.getPrototypeOf(this);
           return proto && proto._subscribe;
         },
-        set: function(this: Observable<any>, subscribe: any) {
+        set: function (this: Observable<any>, subscribe: any) {
           (this as any)._zone = Zone.current;
           if (!subscribe) {
             (this as any)._zoneSubscribe = subscribe;
           } else {
-            (this as any)._zoneSubscribe = function(this: ZoneSubscriberContext) {
+            (this as any)._zoneSubscribe = function (this: ZoneSubscriberContext) {
               if (this._zone && this._zone !== Zone.current) {
                 const tearDown = this._zone.run(subscribe, this, arguments as any);
                 if (typeof tearDown === 'function') {
                   const zone = this._zone;
-                  return function(this: ZoneSubscriberContext) {
+                  return function (this: ZoneSubscriberContext) {
                     if (zone !== Zone.current) {
                       return zone.run(tearDown, this, arguments as any);
                     }
@@ -72,20 +74,22 @@ type ZoneSubscriberContext = {
               }
             };
           }
-        }
+        },
       },
       subjectFactory: {
-        get: function() { return (this as any)._zoneSubjectFactory; },
-        set: function(factory: any) {
+        get: function () {
+          return (this as any)._zoneSubjectFactory;
+        },
+        set: function (factory: any) {
           const zone = this._zone;
-          this._zoneSubjectFactory = function() {
+          this._zoneSubjectFactory = function () {
             if (zone && zone !== Zone.current) {
               return zone.run(factory, this, arguments);
             }
             return factory.apply(this, arguments);
           };
-        }
-      }
+        },
+      },
     });
   };
 
@@ -94,35 +98,37 @@ type ZoneSubscriberContext = {
     if (observable.operator) {
       observable.operator._zone = Zone.current;
       api.patchMethod(
-          observable.operator, 'call',
-          (operatorDelegate: any) => (operatorSelf: any, operatorArgs: any[]) => {
-            if (operatorSelf._zone && operatorSelf._zone !== Zone.current) {
-              return operatorSelf._zone.run(operatorDelegate, operatorSelf, operatorArgs);
-            }
-            return operatorDelegate.apply(operatorSelf, operatorArgs);
-          });
+        observable.operator,
+        'call',
+        (operatorDelegate: any) => (operatorSelf: any, operatorArgs: any[]) => {
+          if (operatorSelf._zone && operatorSelf._zone !== Zone.current) {
+            return operatorSelf._zone.run(operatorDelegate, operatorSelf, operatorArgs);
+          }
+          return operatorDelegate.apply(operatorSelf, operatorArgs);
+        }
+      );
     }
     return observable;
   });
 
-  const patchSubscription = function() {
+  const patchSubscription = function () {
     ObjectDefineProperties(Subscription.prototype, {
       _zone: {value: null, writable: true, configurable: true},
       _zoneUnsubscribe: {value: null, writable: true, configurable: true},
       _unsubscribe: {
-        get: function(this: Subscription) {
+        get: function (this: Subscription) {
           if ((this as any)._zoneUnsubscribe) {
             return (this as any)._zoneUnsubscribe;
           }
           const proto = Object.getPrototypeOf(this);
           return proto && proto._unsubscribe;
         },
-        set: function(this: Subscription, unsubscribe: any) {
+        set: function (this: Subscription, unsubscribe: any) {
           (this as any)._zone = Zone.current;
           if (!unsubscribe) {
             (this as any)._zoneUnsubscribe = unsubscribe;
           } else {
-            (this as any)._zoneUnsubscribe = function() {
+            (this as any)._zoneUnsubscribe = function () {
               if (this._zone && this._zone !== Zone.current) {
                 return this._zone.run(unsubscribe, this, arguments);
               } else {
@@ -130,28 +136,30 @@ type ZoneSubscriberContext = {
               }
             };
           }
-        }
-      }
+        },
+      },
     });
   };
 
-  const patchSubscriber = function() {
+  const patchSubscriber = function () {
     const next = Subscriber.prototype.next;
     const error = Subscriber.prototype.error;
     const complete = Subscriber.prototype.complete;
 
     Object.defineProperty(Subscriber.prototype, 'destination', {
       configurable: true,
-      get: function(this: Subscriber<any>) { return (this as any)._zoneDestination; },
-      set: function(this: Subscriber<any>, destination: any) {
+      get: function (this: Subscriber<any>) {
+        return (this as any)._zoneDestination;
+      },
+      set: function (this: Subscriber<any>, destination: any) {
         (this as any)._zone = Zone.current;
         (this as any)._zoneDestination = destination;
-      }
+      },
     });
 
     // patch Subscriber.next to make sure it run
     // into SubscriptionZone
-    Subscriber.prototype.next = function(this: ZoneSubscriberContext) {
+    Subscriber.prototype.next = function (this: ZoneSubscriberContext) {
       const currentZone = Zone.current;
       const subscriptionZone = this._zone;
 
@@ -164,7 +172,7 @@ type ZoneSubscriberContext = {
       }
     };
 
-    Subscriber.prototype.error = function(this: ZoneSubscriberContext) {
+    Subscriber.prototype.error = function (this: ZoneSubscriberContext) {
       const currentZone = Zone.current;
       const subscriptionZone = this._zone;
 
@@ -177,7 +185,7 @@ type ZoneSubscriberContext = {
       }
     };
 
-    Subscriber.prototype.complete = function(this: ZoneSubscriberContext) {
+    Subscriber.prototype.complete = function (this: ZoneSubscriberContext) {
       const currentZone = Zone.current;
       const subscriptionZone = this._zone;
 

@@ -20,44 +20,43 @@ export function main() {
   const size = getIntParameter('size');
   testList = [];
 
-  platformBrowserDynamic().bootstrapModule(AppModule).then((ref) => {
-    const injector = ref.injector;
-    const app: AppComponent = ref.instance;
-    const appRef = injector.get(ApplicationRef);
+  platformBrowserDynamic()
+    .bootstrapModule(AppModule)
+    .then((ref) => {
+      const injector = ref.injector;
+      const app: AppComponent = ref.instance;
+      const appRef = injector.get(ApplicationRef);
 
-    bindAction('#reset', function() {
-      app.reset();
-      appRef.tick();
-    });
+      bindAction('#reset', function () {
+        app.reset();
+        appRef.tick();
+      });
 
-    // Baseline (plain components)
-    bindAction('#createPlainComponents', function() {
-      app.createPlainComponents();
-      appRef.tick();
-    });
+      // Baseline (plain components)
+      bindAction('#createPlainComponents', function () {
+        app.createPlainComponents();
+        appRef.tick();
+      });
 
-    // Components with decorators
-    bindAction('#createComponentsWithDirectives', function() {
-      app.createComponentsWithDirectives();
-      appRef.tick();
-    });
+      // Components with decorators
+      bindAction('#createComponentsWithDirectives', function () {
+        app.createComponentsWithDirectives();
+        appRef.tick();
+      });
 
-    // Components with decorators
-    bindAction('#createDynamicComponents', function() {
-      app.createDynamicComponents();
-      appRef.tick();
+      // Components with decorators
+      bindAction('#createDynamicComponents', function () {
+        app.createDynamicComponents();
+        appRef.tick();
+      });
     });
-  });
 }
-
 
 @Component({selector: 'dummy', template: `<div></div>`})
-class DummyComponent {
-}
+class DummyComponent {}
 
 @Directive({selector: '[dummy-decorator]'})
-class DummyDirective {
-}
+class DummyDirective {}
 
 @Directive({selector: 'dynamic-dummy'})
 class DynamicDummy {
@@ -81,7 +80,7 @@ class DynamicDummy {
     <div *ngIf="testingDynamicComponents">
       <dynamic-dummy *ngFor="let i of list"></dynamic-dummy>
     </div>
-  `
+  `,
 })
 class AppComponent {
   list: any[];
@@ -89,7 +88,9 @@ class AppComponent {
   testingWithDirectives: boolean;
   testingDynamicComponents: boolean;
 
-  constructor() { this.reset(); }
+  constructor() {
+    this.reset();
+  }
 
   reset(): void {
     this.list = [];
@@ -114,8 +115,5 @@ class AppComponent {
   }
 }
 
-
-
 @NgModule({imports: [BrowserModule], bootstrap: [AppComponent]})
-class AppModule {
-}
+class AppModule {}

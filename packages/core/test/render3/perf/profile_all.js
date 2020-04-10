@@ -24,14 +24,17 @@ const UNITS = {
 };
 
 // Contains the list of tests which should be built and profiled
-const profileTests =
-    shell.ls(baseDir).filter((filename) => fs.statSync(path.join(baseDir, filename)).isDirectory());
+const profileTests = shell
+  .ls(baseDir)
+  .filter((filename) => fs.statSync(path.join(baseDir, filename)).isDirectory());
 
 // build tests
 shell.exec(
-    `yarn bazel build --config=ivy ` +
-    profileTests.map((name) => `//packages/core/test/render3/perf:${name}_lib.min_debug.es2015.js`)
-        .join(' '));
+  `yarn bazel build --config=ivy ` +
+    profileTests
+      .map((name) => `//packages/core/test/render3/perf:${name}_lib.min_debug.es2015.js`)
+      .join(' ')
+);
 
 // profile tests
 // tslint:disable-next-line:no-console
@@ -43,7 +46,6 @@ console.log('------------------------------------------------');
 
 // This stores the results of the run
 const times = {};
-
 
 // If we have a readPath than read it into the `times`
 if (readPath) {
@@ -60,8 +62,9 @@ if (readPath) {
 profileTests.forEach((name) => {
   // tslint:disable-next-line:no-console
   console.log('----------------', name, '----------------');
-  const log =
-      shell.exec(`node dist/bin/packages/core/test/render3/perf/${name}_lib.min_debug.es2015.js`);
+  const log = shell.exec(
+    `node dist/bin/packages/core/test/render3/perf/${name}_lib.min_debug.es2015.js`
+  );
   if (log.code != 0) throw new Error(log);
   const matches = log.stdout.match(/: ([\d\.]+) (.s)/);
   const runTime = times[name] || (times[name] = {name: name});
@@ -70,7 +73,7 @@ profileTests.forEach((name) => {
   if (runTime.base_unit) {
     const time = runTime.time * UNITS[runTime.unit];
     const base_time = runTime.base_time * UNITS[runTime.base_unit];
-    const change = (time - base_time) / base_time * 100;
+    const change = ((time - base_time) / base_time) * 100;
     runTime['%'] = Number.parseFloat(change.toFixed(2));
   }
 });

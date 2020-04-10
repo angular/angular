@@ -19,7 +19,7 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
         }
 
         const injector = ReflectiveInjector.resolveAndCreate([
-          Greeting,  // Shorthand for { provide: Greeting, useClass: Greeting }
+          Greeting, // Shorthand for { provide: Greeting, useClass: Greeting }
         ]);
 
         expect(injector.get(Greeting).salutation).toBe('Hello');
@@ -55,7 +55,9 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
     describe('ClassProvider', () => {
       it('works', () => {
         // #docregion ClassProvider
-        abstract class Shape { name !: string; }
+        abstract class Shape {
+          name!: string;
+        }
 
         class Square extends Shape {
           name = 'square';
@@ -79,8 +81,10 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
           salutation = 'Greetings';
         }
 
-        const injector = ReflectiveInjector.resolveAndCreate(
-            [FormalGreeting, {provide: Greeting, useClass: FormalGreeting}]);
+        const injector = ReflectiveInjector.resolveAndCreate([
+          FormalGreeting,
+          {provide: Greeting, useClass: FormalGreeting},
+        ]);
 
         // The injector returns different instances.
         // See: {provide: ?, useExisting: ?} if you want the same instance.
@@ -92,7 +96,9 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
     describe('StaticClassProvider', () => {
       it('works', () => {
         // #docregion StaticClassProvider
-        abstract class Shape { name !: string; }
+        abstract class Shape {
+          name!: string;
+        }
 
         class Square extends Shape {
           name = 'square';
@@ -118,7 +124,7 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
 
         const injector = Injector.create([
           {provide: FormalGreeting, useClass: FormalGreeting, deps: []},
-          {provide: Greeting, useClass: FormalGreeting, deps: []}
+          {provide: Greeting, useClass: FormalGreeting, deps: []},
         ]);
 
         // The injector returns different instances.
@@ -156,7 +162,8 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
         }
 
         const injector = Injector.create([
-          {provide: FormalGreeting, deps: []}, {provide: Greeting, useExisting: FormalGreeting}
+          {provide: FormalGreeting, deps: []},
+          {provide: Greeting, useExisting: FormalGreeting},
         ]);
 
         expect(injector.get(Greeting).salutation).toEqual('Greetings');
@@ -173,11 +180,12 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
         const Hash = new InjectionToken('hash');
 
         const injector = Injector.create([
-          {provide: Location, useValue: 'http://angular.io/#someLocation'}, {
+          {provide: Location, useValue: 'http://angular.io/#someLocation'},
+          {
             provide: Hash,
             useFactory: (location: string) => location.split('#')[1],
-            deps: [Location]
-          }
+            deps: [Location],
+          },
         ]);
 
         expect(injector.get(Hash)).toEqual('someLocation');
@@ -189,17 +197,18 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
         const Location = new InjectionToken('location');
         const Hash = new InjectionToken('hash');
 
-        const injector = Injector.create([{
-          provide: Hash,
-          useFactory: (location: string) => `Hash for: ${location}`,
-          // use a nested array to define metadata for dependencies.
-          deps: [[new Optional(), Location]]
-        }]);
+        const injector = Injector.create([
+          {
+            provide: Hash,
+            useFactory: (location: string) => `Hash for: ${location}`,
+            // use a nested array to define metadata for dependencies.
+            deps: [[new Optional(), Location]],
+          },
+        ]);
 
         expect(injector.get(Hash)).toEqual('Hash for: null');
         // #enddocregion
       });
     });
-
   });
 }

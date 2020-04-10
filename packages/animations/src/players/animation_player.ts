@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {scheduleMicroTask} from '../util';
 
 /**
@@ -85,7 +86,7 @@ export interface AnimationPlayer {
   /**
    * The parent of this player, if any.
    */
-  parentPlayer: AnimationPlayer|null;
+  parentPlayer: AnimationPlayer | null;
   /**
    * The total run time of the animation, in milliseconds.
    */
@@ -122,20 +123,30 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   private _started = false;
   private _destroyed = false;
   private _finished = false;
-  public parentPlayer: AnimationPlayer|null = null;
+  public parentPlayer: AnimationPlayer | null = null;
   public readonly totalTime: number;
-  constructor(duration: number = 0, delay: number = 0) { this.totalTime = duration + delay; }
+  constructor(duration: number = 0, delay: number = 0) {
+    this.totalTime = duration + delay;
+  }
   private _onFinish() {
     if (!this._finished) {
       this._finished = true;
-      this._onDoneFns.forEach(fn => fn());
+      this._onDoneFns.forEach((fn) => fn());
       this._onDoneFns = [];
     }
   }
-  onStart(fn: () => void): void { this._onStartFns.push(fn); }
-  onDone(fn: () => void): void { this._onDoneFns.push(fn); }
-  onDestroy(fn: () => void): void { this._onDestroyFns.push(fn); }
-  hasStarted(): boolean { return this._started; }
+  onStart(fn: () => void): void {
+    this._onStartFns.push(fn);
+  }
+  onDone(fn: () => void): void {
+    this._onDoneFns.push(fn);
+  }
+  onDestroy(fn: () => void): void {
+    this._onDestroyFns.push(fn);
+  }
+  hasStarted(): boolean {
+    return this._started;
+  }
   init(): void {}
   play(): void {
     if (!this.hasStarted()) {
@@ -146,16 +157,20 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   }
 
   /** @internal */
-  triggerMicrotask() { scheduleMicroTask(() => this._onFinish()); }
+  triggerMicrotask() {
+    scheduleMicroTask(() => this._onFinish());
+  }
 
   private _onStart() {
-    this._onStartFns.forEach(fn => fn());
+    this._onStartFns.forEach((fn) => fn());
     this._onStartFns = [];
   }
 
   pause(): void {}
   restart(): void {}
-  finish(): void { this._onFinish(); }
+  finish(): void {
+    this._onFinish();
+  }
   destroy(): void {
     if (!this._destroyed) {
       this._destroyed = true;
@@ -163,18 +178,20 @@ export class NoopAnimationPlayer implements AnimationPlayer {
         this._onStart();
       }
       this.finish();
-      this._onDestroyFns.forEach(fn => fn());
+      this._onDestroyFns.forEach((fn) => fn());
       this._onDestroyFns = [];
     }
   }
   reset(): void {}
   setPosition(position: number): void {}
-  getPosition(): number { return 0; }
+  getPosition(): number {
+    return 0;
+  }
 
   /** @internal */
   triggerCallback(phaseName: string): void {
     const methods = phaseName == 'start' ? this._onStartFns : this._onDoneFns;
-    methods.forEach(fn => fn());
+    methods.forEach((fn) => fn());
     methods.length = 0;
   }
 }

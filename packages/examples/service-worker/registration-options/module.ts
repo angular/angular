@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 // tslint:disable: no-duplicate-imports
 import {Component} from '@angular/core';
 // #docregion registration-options
@@ -26,17 +27,10 @@ export class AppComponent {
 
 @NgModule({
   // #enddocregion registration-options
-  bootstrap: [
-    AppComponent,
-  ],
-  declarations: [
-    AppComponent,
-  ],
+  bootstrap: [AppComponent],
+  declarations: [AppComponent],
   // #docregion registration-options
-  imports: [
-    BrowserModule,
-    ServiceWorkerModule.register('ngsw-worker.js'),
-  ],
+  imports: [BrowserModule, ServiceWorkerModule.register('ngsw-worker.js')],
   providers: [
     {
       provide: SwRegistrationOptions,
@@ -44,6 +38,5 @@ export class AppComponent {
     },
   ],
 })
-export class AppModule {
-}
+export class AppModule {}
 // #enddocregion registration-options

@@ -11,7 +11,6 @@ import * as t from '../../src/render3/r3_ast';
 import {unparse} from '../expression_parser/utils/unparser';
 import {parseR3 as parse} from './view/util';
 
-
 // Transform an IVY AST to a flat list of nodes to ease testing
 class R3AstHumanizer implements t.Visitor<void> {
   result: any[] = [];
@@ -58,21 +57,11 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   visitBoundAttribute(attribute: t.BoundAttribute) {
-    this.result.push([
-      'BoundAttribute',
-      attribute.type,
-      attribute.name,
-      unparse(attribute.value),
-    ]);
+    this.result.push(['BoundAttribute', attribute.type, attribute.name, unparse(attribute.value)]);
   }
 
   visitBoundEvent(event: t.BoundEvent) {
-    this.result.push([
-      'BoundEvent',
-      event.name,
-      event.target,
-      unparse(event.handler),
-    ]);
+    this.result.push(['BoundEvent', event.name, event.target, unparse(event.handler)]);
   }
 
   visitText(text: t.Text) {
@@ -88,7 +77,7 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   private visitAll(nodes: t.Node[][]) {
-    nodes.forEach(node => t.visitAll(this, node));
+    nodes.forEach((node) => t.visitAll(this, node));
   }
 }
 
@@ -117,9 +106,7 @@ describe('R3 template transform', () => {
 
   describe('Nodes without binding', () => {
     it('should parse text nodes', () => {
-      expectFromHtml('a').toEqual([
-        ['Text', 'a'],
-      ]);
+      expectFromHtml('a').toEqual([['Text', 'a']]);
     });
 
     it('should parse elements with attributes', () => {
@@ -155,9 +142,7 @@ describe('R3 template transform', () => {
 
   describe('Bound text nodes', () => {
     it('should parse bound text nodes', () => {
-      expectFromHtml('{{a}}').toEqual([
-        ['BoundText', '{{ a }}'],
-      ]);
+      expectFromHtml('{{a}}').toEqual([['BoundText', '{{ a }}']]);
     });
   });
 
@@ -247,9 +232,7 @@ describe('R3 template transform', () => {
     });
 
     it('should support <ng-template>', () => {
-      expectFromHtml('<ng-template></ng-template>').toEqual([
-        ['Template'],
-      ]);
+      expectFromHtml('<ng-template></ng-template>').toEqual([['Template']]);
     });
 
     it('should support <ng-template> regardless the namespace', () => {
@@ -391,8 +374,9 @@ describe('R3 template transform', () => {
     });
 
     it('should report missing property names in bindon- syntax', () => {
-      expect(() => parse('<div bindon-></div>'))
-          .toThrowError(/Property name is missing in binding/);
+      expect(() => parse('<div bindon-></div>')).toThrowError(
+        /Property name is missing in binding/
+      );
     });
 
     it('should report an error on empty expression', () => {
@@ -403,13 +387,15 @@ describe('R3 template transform', () => {
 
   describe('variables', () => {
     it('should report variables not on template elements', () => {
-      expect(() => parse('<div let-a-name="b"></div>'))
-          .toThrowError(/"let-" is only supported on ng-template elements./);
+      expect(() => parse('<div let-a-name="b"></div>')).toThrowError(
+        /"let-" is only supported on ng-template elements./
+      );
     });
 
     it('should report missing variable names', () => {
-      expect(() => parse('<ng-template let-><ng-template>'))
-          .toThrowError(/Variable does not have a name/);
+      expect(() => parse('<ng-template let-><ng-template>')).toThrowError(
+        /Variable does not have a name/
+      );
     });
   });
 
@@ -453,9 +439,7 @@ describe('R3 template transform', () => {
   describe('ng-content', () => {
     it('should parse ngContent without selector', () => {
       const res = parse('<ng-content></ng-content>');
-      expectFromR3Nodes(res.nodes).toEqual([
-        ['Content', '*'],
-      ]);
+      expectFromR3Nodes(res.nodes).toEqual([['Content', '*']]);
     });
 
     it('should parse ngContent with a specific selector', () => {
@@ -469,7 +453,8 @@ describe('R3 template transform', () => {
 
     it('should parse ngContent with a selector', () => {
       const res = parse(
-          '<ng-content select="a"></ng-content><ng-content></ng-content><ng-content select="b"></ng-content>');
+        '<ng-content select="a"></ng-content><ng-content></ng-content><ng-content select="b"></ng-content>'
+      );
       const selectors = ['*', 'a', 'b'];
       expectFromR3Nodes(res.nodes).toEqual([
         ['Content', selectors[1]],
@@ -491,15 +476,11 @@ describe('R3 template transform', () => {
 
   describe('Ignored elements', () => {
     it('should ignore <script> elements', () => {
-      expectFromHtml('<script></script>a').toEqual([
-        ['Text', 'a'],
-      ]);
+      expectFromHtml('<script></script>a').toEqual([['Text', 'a']]);
     });
 
     it('should ignore <style> elements', () => {
-      expectFromHtml('<style></style>a').toEqual([
-        ['Text', 'a'],
-      ]);
+      expectFromHtml('<style></style>a').toEqual([['Text', 'a']]);
     });
   });
 
@@ -568,13 +549,12 @@ describe('R3 template transform', () => {
       ]);
     });
 
-    it('should ignore <link rel="stylesheet"> elements inside of elements with ngNonBindable',
-       () => {
-         expectFromHtml('<div ngNonBindable><link rel="stylesheet">a</div>').toEqual([
-           ['Element', 'div'],
-           ['TextAttribute', 'ngNonBindable', ''],
-           ['Text', 'a'],
-         ]);
-       });
+    it('should ignore <link rel="stylesheet"> elements inside of elements with ngNonBindable', () => {
+      expectFromHtml('<div ngNonBindable><link rel="stylesheet">a</div>').toEqual([
+        ['Element', 'div'],
+        ['TextAttribute', 'ngNonBindable', ''],
+        ['Text', 'a'],
+      ]);
+    });
   });
 });

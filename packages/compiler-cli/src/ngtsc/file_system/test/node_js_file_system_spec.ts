@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as realFs from 'fs';
 import * as fsExtra from 'fs-extra';
 import {absoluteFrom, dirname, relativeFrom, setFileSystem} from '../src/helpers';
@@ -161,46 +162,43 @@ describe('NodeJSFileSystem', () => {
       });
     });
 
-    it('should not fail if a directory (that did not exist before) does exist when trying to create it',
-       () => {
-         let abcPathExists = false;
+    it('should not fail if a directory (that did not exist before) does exist when trying to create it', () => {
+      let abcPathExists = false;
 
-         spyOn(fs, 'exists').and.callFake((path: AbsoluteFsPath) => {
-           if (path === abcPath) {
-             // Pretend `abcPath` is created (e.g. by another process) right after we check if it
-             // exists for the first time.
-             const exists = abcPathExists;
-             abcPathExists = true;
-             return exists;
-           }
-           return false;
-         });
-         spyOn(fs, 'stat').and.returnValue({isDirectory: () => true} as any);
-         const mkdirSyncSpy =
-             spyOn(realFs, 'mkdirSync').and.callFake(((path: string) => {
-                                                       if (path === abcPath) {
-                                                         throw new Error(
-                                                             'It exists already. Supposedly.');
-                                                       }
-                                                     }) as any);
+      spyOn(fs, 'exists').and.callFake((path: AbsoluteFsPath) => {
+        if (path === abcPath) {
+          // Pretend `abcPath` is created (e.g. by another process) right after we check if it
+          // exists for the first time.
+          const exists = abcPathExists;
+          abcPathExists = true;
+          return exists;
+        }
+        return false;
+      });
+      spyOn(fs, 'stat').and.returnValue({isDirectory: () => true} as any);
+      const mkdirSyncSpy = spyOn(realFs, 'mkdirSync').and.callFake(((path: string) => {
+        if (path === abcPath) {
+          throw new Error('It exists already. Supposedly.');
+        }
+      }) as any);
 
-         fs.ensureDir(abcPath);
-         expect(mkdirSyncSpy).toHaveBeenCalledTimes(3);
-         expect(mkdirSyncSpy).toHaveBeenCalledWith(abcPath);
-         expect(mkdirSyncSpy).toHaveBeenCalledWith(dirname(abcPath));
-       });
+      fs.ensureDir(abcPath);
+      expect(mkdirSyncSpy).toHaveBeenCalledTimes(3);
+      expect(mkdirSyncSpy).toHaveBeenCalledWith(abcPath);
+      expect(mkdirSyncSpy).toHaveBeenCalledWith(dirname(abcPath));
+    });
 
     it('should fail if creating the directory throws and the directory does not exist', () => {
       spyOn(fs, 'exists').and.returnValue(false);
-      spyOn(realFs, 'mkdirSync')
-          .and.callFake(((path: string) => {
-                          if (path === abcPath) {
-                            throw new Error('Unable to create directory (for whatever reason).');
-                          }
-                        }) as any);
+      spyOn(realFs, 'mkdirSync').and.callFake(((path: string) => {
+        if (path === abcPath) {
+          throw new Error('Unable to create directory (for whatever reason).');
+        }
+      }) as any);
 
-      expect(() => fs.ensureDir(abcPath))
-          .toThrowError('Unable to create directory (for whatever reason).');
+      expect(() => fs.ensureDir(abcPath)).toThrowError(
+        'Unable to create directory (for whatever reason).'
+      );
     });
 
     it('should fail if creating the directory throws and the path points to a file', () => {
@@ -219,10 +217,10 @@ describe('NodeJSFileSystem', () => {
       });
       spyOn(fs, 'stat').and.returnValue({isDirectory: isDirectorySpy} as any);
       spyOn(realFs, 'mkdirSync').and.callFake(((path: string) => {
-                                                if (path === abcPath) {
-                                                  throw new Error('It exists already. Supposedly.');
-                                                }
-                                              }) as any);
+        if (path === abcPath) {
+          throw new Error('It exists already. Supposedly.');
+        }
+      }) as any);
 
       expect(() => fs.ensureDir(abcPath)).toThrowError('It exists already. Supposedly.');
       expect(isDirectorySpy).toHaveBeenCalledTimes(1);

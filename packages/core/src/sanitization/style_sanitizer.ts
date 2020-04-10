@@ -10,7 +10,6 @@ import {isDevMode} from '../util/is_dev_mode';
 import {SafeValue} from './bypass';
 import {_sanitizeUrl} from './url_sanitizer';
 
-
 /**
  * Regular expression for safe style values.
  *
@@ -32,10 +31,11 @@ const GRADIENTS = '(?:repeating-)?(?:linear|radial)-gradient';
 const CSS3_FNS = '(?:attr|calc|var)';
 const FN_ARGS = '\\([-0-9.%, #a-zA-Z]+\\)';
 const SAFE_STYLE_VALUE = new RegExp(
-    `^(${VALUES}|` +
-        `(?:${TRANSFORMATION_FNS}|${COLOR_FNS}|${GRADIENTS}|${CSS3_FNS})` +
-        `${FN_ARGS})$`,
-    'g');
+  `^(${VALUES}|` +
+    `(?:${TRANSFORMATION_FNS}|${COLOR_FNS}|${GRADIENTS}|${CSS3_FNS})` +
+    `${FN_ARGS})$`,
+  'g'
+);
 
 /**
  * Matches a `url(...)` value with an arbitrary argument as long as it does
@@ -70,7 +70,7 @@ function hasBalancedQuotes(value: string) {
   let outsideDouble = true;
   for (let i = 0; i < value.length; i++) {
     const c = value.charAt(i);
-    if (c === '\'' && outsideDouble) {
+    if (c === "'" && outsideDouble) {
       outsideSingle = !outsideSingle;
     } else if (c === '"' && outsideSingle) {
       outsideDouble = !outsideDouble;
@@ -84,25 +84,27 @@ function hasBalancedQuotes(value: string) {
  * value) and returns a value that is safe to use in a browser environment.
  */
 export function _sanitizeStyle(value: string): string {
-  value = String(value).trim();  // Make sure it's actually a string.
+  value = String(value).trim(); // Make sure it's actually a string.
   if (!value) return '';
 
   // Single url(...) values are supported, but only for URLs that sanitize cleanly. See above for
   // reasoning behind this.
   const urlMatch = value.match(URL_RE);
-  if ((urlMatch && _sanitizeUrl(urlMatch[1]) === urlMatch[1]) ||
-      value.match(SAFE_STYLE_VALUE) && hasBalancedQuotes(value)) {
-    return value;  // Safe style values.
+  if (
+    (urlMatch && _sanitizeUrl(urlMatch[1]) === urlMatch[1]) ||
+    (value.match(SAFE_STYLE_VALUE) && hasBalancedQuotes(value))
+  ) {
+    return value; // Safe style values.
   }
 
   if (isDevMode()) {
     console.warn(
-        `WARNING: sanitizing unsafe style value ${value} (see http://g.co/ng/security#xss).`);
+      `WARNING: sanitizing unsafe style value ${value} (see http://g.co/ng/security#xss).`
+    );
   }
 
   return 'unsafe';
 }
-
 
 /**
  * A series of flags to instruct a style sanitizer to either validate
@@ -136,5 +138,5 @@ export const enum StyleSanitizeMode {
  * If a value is provided then the sanitized version of that will be returned.
  */
 export interface StyleSanitizeFn {
-  (prop: string, value: string|SafeValue|null, mode?: StyleSanitizeMode): any;
+  (prop: string, value: string | SafeValue | null, mode?: StyleSanitizeMode): any;
 }

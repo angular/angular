@@ -6,7 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵRenderFlags, ɵrenderComponent as renderComponent, ɵɵadvance, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵdefineComponent, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵstyleProp, ɵɵtext, ɵɵtextInterpolate1} from '@angular/core';
+import {
+  ɵRenderFlags,
+  ɵrenderComponent as renderComponent,
+  ɵɵadvance,
+  ɵɵcontainer,
+  ɵɵcontainerRefreshEnd,
+  ɵɵcontainerRefreshStart,
+  ɵɵdefineComponent,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+  ɵɵembeddedViewEnd,
+  ɵɵembeddedViewStart,
+  ɵɵstyleProp,
+  ɵɵtext,
+  ɵɵtextInterpolate1,
+} from '@angular/core';
 
 import {bindAction, profile} from '../../util';
 import {createDom, destroyDom, detectChanges} from '../render3/tree';
@@ -18,7 +33,7 @@ export class TreeFunction {
   data: TreeNode = emptyTree;
 
   /** @nocollapse */
-  static ɵfac = () => new TreeFunction;
+  static ɵfac = () => new TreeFunction();
 
   /** @nocollapse */
   static ɵcmp = ɵɵdefineComponent({
@@ -26,21 +41,23 @@ export class TreeFunction {
     selectors: [['tree']],
     decls: 5,
     vars: 2,
-    template: function(rf: ɵRenderFlags, ctx: TreeFunction) {
+    template: function (rf: ɵRenderFlags, ctx: TreeFunction) {
       // bit of a hack
       TreeTpl(rf, ctx.data);
     },
-    inputs: {data: 'data'}
+    inputs: {data: 'data'},
   });
 }
 
-const TreeFunctionCmpDef = TreeFunction.ɵcmp as{decls: number, vars: number};
+const TreeFunctionCmpDef = TreeFunction.ɵcmp as {decls: number; vars: number};
 export function TreeTpl(rf: ɵRenderFlags, ctx: TreeNode) {
   if (rf & ɵRenderFlags.Create) {
     ɵɵelementStart(0, 'tree');
     {
       ɵɵelementStart(1, 'span');
-      { ɵɵtext(2); }
+      {
+        ɵɵtext(2);
+      }
       ɵɵelementEnd();
       ɵɵcontainer(3);
       ɵɵcontainer(4);
@@ -56,7 +73,9 @@ export function TreeTpl(rf: ɵRenderFlags, ctx: TreeNode) {
     {
       if (ctx.left != null) {
         let rf0 = ɵɵembeddedViewStart(0, 5, 2);
-        { TreeTpl(rf0, ctx.left); }
+        {
+          TreeTpl(rf0, ctx.left);
+        }
         ɵɵembeddedViewEnd();
       }
     }
@@ -65,7 +84,9 @@ export function TreeTpl(rf: ɵRenderFlags, ctx: TreeNode) {
     {
       if (ctx.right != null) {
         let rf0 = ɵɵembeddedViewStart(0, TreeFunctionCmpDef.decls, TreeFunctionCmpDef.vars);
-        { TreeTpl(rf0, ctx.right); }
+        {
+          TreeTpl(rf0, ctx.right);
+        }
         ɵɵembeddedViewEnd();
       }
     }
@@ -80,10 +101,19 @@ if (typeof window !== 'undefined') {
   bindAction('#destroyDom', () => destroyDom(component as any));
   bindAction('#detectChanges', () => detectChanges(component as any));
   bindAction(
-      '#detectChangesProfile',
-      profile(() => detectChanges(component as any), noop, 'detectChanges'));
-  bindAction('#updateDomProfile', profile(() => createDom(component as any), noop, 'update'));
+    '#detectChangesProfile',
+    profile(() => detectChanges(component as any), noop, 'detectChanges')
+  );
   bindAction(
-      '#createDomProfile',
-      profile(() => createDom(component as any), () => destroyDom(component as any), 'create'));
+    '#updateDomProfile',
+    profile(() => createDom(component as any), noop, 'update')
+  );
+  bindAction(
+    '#createDomProfile',
+    profile(
+      () => createDom(component as any),
+      () => destroyDom(component as any),
+      'create'
+    )
+  );
 }

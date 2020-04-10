@@ -5,12 +5,25 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 export {verifyNoBrowserErrors} from './e2e_util';
 
 const nodeUuid = require('node-uuid');
 import * as fs from 'fs-extra';
 
-import {SeleniumWebDriverAdapter, Options, JsonFileReporter, Validator, RegressionSlopeValidator, ConsoleReporter, SizeValidator, MultiReporter, MultiMetric, Runner, StaticProvider} from '@angular/benchpress';
+import {
+  SeleniumWebDriverAdapter,
+  Options,
+  JsonFileReporter,
+  Validator,
+  RegressionSlopeValidator,
+  ConsoleReporter,
+  SizeValidator,
+  MultiReporter,
+  MultiMetric,
+  Runner,
+  StaticProvider,
+} from '@angular/benchpress';
 import {openBrowser} from './e2e_util';
 
 // Note: Keep the `modules/benchmarks/README.md` file in sync with the supported options.
@@ -23,27 +36,27 @@ const globalOptions = {
 const runner = createBenchpressRunner();
 
 export function runBenchmark(config: {
-  id: string,
-  url: string,
-  params: {name: string, value: any}[],
-  ignoreBrowserSynchronization?: boolean,
-  microMetrics?: {[key: string]: string},
-  work?: () => void,
-  prepare?: () => void,
-  setup?: () => void
+  id: string;
+  url: string;
+  params: {name: string; value: any}[];
+  ignoreBrowserSynchronization?: boolean;
+  microMetrics?: {[key: string]: string};
+  work?: () => void;
+  prepare?: () => void;
+  setup?: () => void;
 }): Promise<any> {
   openBrowser(config);
   if (config.setup) {
     config.setup();
   }
   const description: {[key: string]: any} = {};
-  config.params.forEach((param) => description[param.name] = param.value);
+  config.params.forEach((param) => (description[param.name] = param.value));
   return runner.sample({
     id: config.id,
     execute: config.work,
     prepare: config.prepare,
     microMetrics: config.microMetrics,
-    providers: [{provide: Options.SAMPLE_DESCRIPTION, useValue: {}}]
+    providers: [{provide: Options.SAMPLE_DESCRIPTION, useValue: {}}],
   });
 }
 
@@ -57,13 +70,16 @@ function createBenchpressRunner(): Runner {
   const providers: StaticProvider[] = [
     SeleniumWebDriverAdapter.PROTRACTOR_PROVIDERS,
     {provide: Options.FORCE_GC, useValue: globalOptions.forceGc},
-    {provide: Options.DEFAULT_DESCRIPTION, useValue: {'runId': runId}}, JsonFileReporter.PROVIDERS,
-    {provide: JsonFileReporter.PATH, useValue: resultsFolder}
+    {provide: Options.DEFAULT_DESCRIPTION, useValue: {'runId': runId}},
+    JsonFileReporter.PROVIDERS,
+    {provide: JsonFileReporter.PATH, useValue: resultsFolder},
   ];
   if (!globalOptions.dryRun) {
     providers.push({provide: Validator, useExisting: RegressionSlopeValidator});
-    providers.push(
-        {provide: RegressionSlopeValidator.SAMPLE_SIZE, useValue: globalOptions.sampleSize});
+    providers.push({
+      provide: RegressionSlopeValidator.SAMPLE_SIZE,
+      useValue: globalOptions.sampleSize,
+    });
     providers.push(MultiReporter.provideWith([ConsoleReporter, JsonFileReporter]));
   } else {
     providers.push({provide: Validator, useExisting: SizeValidator});

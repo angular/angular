@@ -15,14 +15,9 @@ import {AotRouterModuleNgSummary} from './aot_router_module.ngsummary';
 
 describe('The Aot Routing Component', () => {
   it('should be able to compile the components while using aotSummaries', () => {
-    TestBed
-        .configureTestingModule({
-          imports: [
-            AotRouterModule,
-            RouterTestingModule.withRoutes(ROUTES),
-          ],
-          aotSummaries: () => [AotRouterModuleNgSummary],
-        })
-        .compileComponents();
+    TestBed.configureTestingModule({
+      imports: [AotRouterModule, RouterTestingModule.withRoutes(ROUTES)],
+      aotSummaries: () => [AotRouterModuleNgSummary],
+    }).compileComponents();
   });
 });

@@ -9,7 +9,13 @@
 import {createLoweredSymbol, isLoweredSymbol} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {CollectorOptions, isMetadataGlobalReferenceExpression, MetadataCollector, MetadataValue, ModuleMetadata} from '../metadata/index';
+import {
+  CollectorOptions,
+  isMetadataGlobalReferenceExpression,
+  MetadataCollector,
+  MetadataValue,
+  ModuleMetadata,
+} from '../metadata/index';
 
 import {MetadataCache, MetadataTransformer, ValueTransform} from './metadata_cache';
 
@@ -24,7 +30,7 @@ export type RequestLocationMap = Map<number, LoweringRequest>;
 
 const enum DeclarationOrder {
   BeforeStmt,
-  AfterStmt
+  AfterStmt,
 }
 
 interface Declaration {
@@ -39,7 +45,9 @@ interface DeclarationInsert {
 }
 
 function toMap<T, K>(items: T[], select: (item: T) => K): Map<K, T> {
-  return new Map(items.map<[K, T]>(i => [select(i), i]));
+  return new Map(
+    items.map<[K, T]>((i) => [select(i), i])
+  );
 }
 
 // We will never lower expressions in a nested lexical scope so avoid entering them.
@@ -61,8 +69,10 @@ function isLexicalScope(node: ts.Node): boolean {
 }
 
 function transformSourceFile(
-    sourceFile: ts.SourceFile, requests: RequestLocationMap,
-    context: ts.TransformationContext): ts.SourceFile {
+  sourceFile: ts.SourceFile,
+  requests: RequestLocationMap,
+  context: ts.TransformationContext
+): ts.SourceFile {
   const inserts: DeclarationInsert[] = [];
 
   // Calculate the range of interesting locations. The transform will only visit nodes in this
@@ -97,7 +107,7 @@ function transformSourceFile(
               declarations.push({
                 name: exportName,
                 node: ts.createIdentifier(varName),
-                order: DeclarationOrder.AfterStmt
+                order: DeclarationOrder.AfterStmt,
               });
               return node;
             }
@@ -133,17 +143,17 @@ function transformSourceFile(
 
     if (inserts.length) {
       // Insert the declarations relative to the rewritten statement that references them.
-      const insertMap = toMap(inserts, i => i.relativeTo);
+      const insertMap = toMap(inserts, (i) => i.relativeTo);
       const tmpStatements: ts.Statement[] = [];
-      newStatements.forEach(statement => {
+      newStatements.forEach((statement) => {
         const insert = insertMap.get(statement);
         if (insert) {
-          const before = insert.declarations.filter(d => d.order === DeclarationOrder.BeforeStmt);
+          const before = insert.declarations.filter((d) => d.order === DeclarationOrder.BeforeStmt);
           if (before.length) {
             tmpStatements.push(createVariableStatementForDeclarations(before));
           }
           tmpStatements.push(statement);
-          const after = insert.declarations.filter(d => d.order === DeclarationOrder.AfterStmt);
+          const after = insert.declarations.filter((d) => d.order === DeclarationOrder.AfterStmt);
           if (after.length) {
             tmpStatements.push(createVariableStatementForDeclarations(after));
           }
@@ -153,17 +163,22 @@ function transformSourceFile(
       });
 
       // Insert an exports clause to export the declarations
-      tmpStatements.push(ts.createExportDeclaration(
+      tmpStatements.push(
+        ts.createExportDeclaration(
           /* decorators */ undefined,
           /* modifiers */ undefined,
           ts.createNamedExports(
-              inserts
-                  .reduce(
-                      (accumulator, insert) => [...accumulator, ...insert.declarations],
-                      [] as Declaration[])
-                  .map(
-                      declaration => ts.createExportSpecifier(
-                          /* propertyName */ undefined, declaration.name)))));
+            inserts
+              .reduce(
+                (accumulator, insert) => [...accumulator, ...insert.declarations],
+                [] as Declaration[]
+              )
+              .map((declaration) =>
+                ts.createExportSpecifier(/* propertyName */ undefined, declaration.name)
+              )
+          )
+        )
+      );
 
       newStatements = tmpStatements;
     }
@@ -182,15 +197,19 @@ function transformSourceFile(
 }
 
 function createVariableStatementForDeclarations(declarations: Declaration[]): ts.VariableStatement {
-  const varDecls = declarations.map(
-      i => ts.createVariableDeclaration(i.name, /* type */ undefined, i.node as ts.Expression));
+  const varDecls = declarations.map((i) =>
+    ts.createVariableDeclaration(i.name, /* type */ undefined, i.node as ts.Expression)
+  );
   return ts.createVariableStatement(
-      /* modifiers */ undefined, ts.createVariableDeclarationList(varDecls, ts.NodeFlags.Const));
+    /* modifiers */ undefined,
+    ts.createVariableDeclarationList(varDecls, ts.NodeFlags.Const)
+  );
 }
 
 export function getExpressionLoweringTransformFactory(
-    requestsMap: RequestsMap, program: ts.Program): (context: ts.TransformationContext) =>
-    (sourceFile: ts.SourceFile) => ts.SourceFile {
+  requestsMap: RequestsMap,
+  program: ts.Program
+): (context: ts.TransformationContext) => (sourceFile: ts.SourceFile) => ts.SourceFile {
   // Return the factory
   return (context: ts.TransformationContext) => (sourceFile: ts.SourceFile): ts.SourceFile => {
     // We need to use the original SourceFile for reading metadata, and not the transformed one.
@@ -210,11 +229,11 @@ export interface RequestsMap {
 }
 
 interface MetadataAndLoweringRequests {
-  metadata: ModuleMetadata|undefined;
+  metadata: ModuleMetadata | undefined;
   requests: RequestLocationMap;
 }
 
-function isEligibleForLowering(node: ts.Node|undefined): boolean {
+function isEligibleForLowering(node: ts.Node | undefined): boolean {
   if (node) {
     switch (node.kind) {
       case ts.SyntaxKind.SourceFile:
@@ -229,8 +248,9 @@ function isEligibleForLowering(node: ts.Node|undefined): boolean {
         // Don't lower expressions in a declaration.
         return false;
       case ts.SyntaxKind.VariableDeclaration:
-        const isExported = (ts.getCombinedModifierFlags(node as ts.VariableDeclaration) &
-                            ts.ModifierFlags.Export) == 0;
+        const isExported =
+          (ts.getCombinedModifierFlags(node as ts.VariableDeclaration) & ts.ModifierFlags.Export) ==
+          0;
         // This might be unnecessary, as the variable might be exported and only used as a reference
         // in another expression. However, the variable also might be involved in provider
         // definitions. If that's the case, there is a specific token (`ROUTES`) which the compiler
@@ -238,11 +258,13 @@ function isEligibleForLowering(node: ts.Node|undefined): boolean {
         // example) might also require lowering even if the top-level declaration is already
         // properly exported.
         const varNode = node as ts.VariableDeclaration;
-        return isExported ||
-            (varNode.initializer !== undefined &&
-             (ts.isObjectLiteralExpression(varNode.initializer) ||
+        return (
+          isExported ||
+          (varNode.initializer !== undefined &&
+            (ts.isObjectLiteralExpression(varNode.initializer) ||
               ts.isArrayLiteralExpression(varNode.initializer) ||
-              ts.isCallExpression(varNode.initializer)));
+              ts.isCallExpression(varNode.initializer)))
+        );
     }
     return isEligibleForLowering(node.parent);
   }
@@ -260,8 +282,12 @@ function isRewritten(value: any): boolean {
 function isLiteralFieldNamed(node: ts.Node, names: Set<string>): boolean {
   if (node.parent && node.parent.kind == ts.SyntaxKind.PropertyAssignment) {
     const property = node.parent as ts.PropertyAssignment;
-    if (property.parent && property.parent.kind == ts.SyntaxKind.ObjectLiteralExpression &&
-        property.name && property.name.kind == ts.SyntaxKind.Identifier) {
+    if (
+      property.parent &&
+      property.parent.kind == ts.SyntaxKind.ObjectLiteralExpression &&
+      property.name &&
+      property.name.kind == ts.SyntaxKind.Identifier
+    ) {
       const propertyName = property.name as ts.Identifier;
       return names.has(propertyName.text);
     }
@@ -299,7 +325,7 @@ export class LowerMetadataTransform implements RequestsMap, MetadataTransformer 
     this.cache = cache;
   }
 
-  start(sourceFile: ts.SourceFile): ValueTransform|undefined {
+  start(sourceFile: ts.SourceFile): ValueTransform | undefined {
     let identNumber = 0;
     const freshIdent = () => createLoweredSymbol(identNumber++);
     const requests = new Map<number, LoweringRequest>();
@@ -338,35 +364,42 @@ export class LowerMetadataTransform implements RequestsMap, MetadataTransformer 
 
     const hasLowerableParentCache = new Map<ts.Node, boolean>();
 
-    const shouldBeLowered = (node: ts.Node|undefined): boolean => {
+    const shouldBeLowered = (node: ts.Node | undefined): boolean => {
       if (node === undefined) {
         return false;
       }
       let lowerable: boolean = false;
-      if ((node.kind === ts.SyntaxKind.ArrowFunction ||
-           node.kind === ts.SyntaxKind.FunctionExpression) &&
-          isEligibleForLowering(node)) {
+      if (
+        (node.kind === ts.SyntaxKind.ArrowFunction ||
+          node.kind === ts.SyntaxKind.FunctionExpression) &&
+        isEligibleForLowering(node)
+      ) {
         lowerable = true;
       } else if (
-          isLiteralFieldNamed(node, this.lowerableFieldNames) && isEligibleForLowering(node) &&
-          !isExportedSymbol(node) && !isExportedPropertyAccess(node)) {
+        isLiteralFieldNamed(node, this.lowerableFieldNames) &&
+        isEligibleForLowering(node) &&
+        !isExportedSymbol(node) &&
+        !isExportedPropertyAccess(node)
+      ) {
         lowerable = true;
       }
       return lowerable;
     };
 
-    const hasLowerableParent = (node: ts.Node|undefined): boolean => {
+    const hasLowerableParent = (node: ts.Node | undefined): boolean => {
       if (node === undefined) {
         return false;
       }
       if (!hasLowerableParentCache.has(node)) {
         hasLowerableParentCache.set(
-            node, shouldBeLowered(node.parent) || hasLowerableParent(node.parent));
+          node,
+          shouldBeLowered(node.parent) || hasLowerableParent(node.parent)
+        );
       }
       return hasLowerableParentCache.get(node)!;
     };
 
-    const isLowerable = (node: ts.Node|undefined): boolean => {
+    const isLowerable = (node: ts.Node | undefined): boolean => {
       if (node === undefined) {
         return false;
       }
@@ -391,8 +424,10 @@ function createExportTableFor(sourceFile: ts.SourceFile): Set<string> {
       case ts.SyntaxKind.FunctionDeclaration:
       case ts.SyntaxKind.InterfaceDeclaration:
         if ((ts.getCombinedModifierFlags(node as ts.Declaration) & ts.ModifierFlags.Export) != 0) {
-          const classDeclaration =
-              node as (ts.ClassDeclaration | ts.FunctionDeclaration | ts.InterfaceDeclaration);
+          const classDeclaration = node as
+            | ts.ClassDeclaration
+            | ts.FunctionDeclaration
+            | ts.InterfaceDeclaration;
           const name = classDeclaration.name;
           if (name) exportTable.add(name.text);
         }
@@ -405,8 +440,10 @@ function createExportTableFor(sourceFile: ts.SourceFile): Set<string> {
         break;
       case ts.SyntaxKind.VariableDeclaration:
         const variableDeclaration = node as ts.VariableDeclaration;
-        if ((ts.getCombinedModifierFlags(variableDeclaration) & ts.ModifierFlags.Export) != 0 &&
-            variableDeclaration.name.kind == ts.SyntaxKind.Identifier) {
+        if (
+          (ts.getCombinedModifierFlags(variableDeclaration) & ts.ModifierFlags.Export) != 0 &&
+          variableDeclaration.name.kind == ts.SyntaxKind.Identifier
+        ) {
           const name = variableDeclaration.name as ts.Identifier;
           exportTable.add(name.text);
         }
@@ -415,7 +452,7 @@ function createExportTableFor(sourceFile: ts.SourceFile): Set<string> {
         const exportDeclaration = node as ts.ExportDeclaration;
         const {moduleSpecifier, exportClause} = exportDeclaration;
         if (!moduleSpecifier && exportClause && ts.isNamedExports(exportClause)) {
-          exportClause.elements.forEach(spec => {
+          exportClause.elements.forEach((spec) => {
             exportTable.add(spec.name.text);
           });
         }

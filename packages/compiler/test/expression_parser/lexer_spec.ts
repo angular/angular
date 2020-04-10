@@ -128,7 +128,7 @@ function expectErrorToken(token: Token, index: any, end: number, message: string
         expectOperatorToken(tokens[10], 14, 15, '|');
         expectIdentifierToken(tokens[11], 15, 16, 'f');
         expectCharacterToken(tokens[12], 16, 17, ':');
-        expectStringToken(tokens[13], 17, 23, 'a\'c');
+        expectStringToken(tokens[13], 17, 23, "a'c");
         expectCharacterToken(tokens[14], 23, 24, ':');
         expectStringToken(tokens[15], 24, 30, 'd"e');
       });
@@ -148,7 +148,7 @@ function expectErrorToken(token: Token, index: any, end: number, message: string
       it('should tokenize quoted string', () => {
         const str = '[\'\\\'\', "\\""]';
         const tokens: Token[] = lex(str);
-        expectStringToken(tokens[1], 1, 5, '\'');
+        expectStringToken(tokens[1], 1, 5, "'");
         expectStringToken(tokens[3], 7, 11, '"');
       });
 
@@ -223,19 +223,25 @@ function expectErrorToken(token: Token, index: any, end: number, message: string
       it('should tokenize number with exponent', () => {
         let tokens: Token[] = lex('0.5E-10');
         expect(tokens.length).toEqual(1);
-        expectNumberToken(tokens[0], 0, 7, 0.5E-10);
+        expectNumberToken(tokens[0], 0, 7, 0.5e-10);
         tokens = lex('0.5E+10');
-        expectNumberToken(tokens[0], 0, 7, 0.5E+10);
+        expectNumberToken(tokens[0], 0, 7, 0.5e10);
       });
 
       it('should return exception for invalid exponent', () => {
         expectErrorToken(
-            lex('0.5E-')[0], 4, 5,
-            'Lexer Error: Invalid exponent at column 4 in expression [0.5E-]');
+          lex('0.5E-')[0],
+          4,
+          5,
+          'Lexer Error: Invalid exponent at column 4 in expression [0.5E-]'
+        );
 
         expectErrorToken(
-            lex('0.5E-A')[0], 4, 5,
-            'Lexer Error: Invalid exponent at column 4 in expression [0.5E-A]');
+          lex('0.5E-A')[0],
+          4,
+          5,
+          'Lexer Error: Invalid exponent at column 4 in expression [0.5E-A]'
+        );
       });
 
       it('should tokenize number starting with a dot', () => {
@@ -244,8 +250,11 @@ function expectErrorToken(token: Token, index: any, end: number, message: string
 
       it('should throw error on invalid unicode', () => {
         expectErrorToken(
-            lex('\'\\u1\'\'bla\'')[0], 2, 2,
-            'Lexer Error: Invalid unicode escape [\\u1\'\'b] at column 2 in expression [\'\\u1\'\'bla\']');
+          lex("'\\u1''bla'")[0],
+          2,
+          2,
+          "Lexer Error: Invalid unicode escape [\\u1''b] at column 2 in expression ['\\u1''bla']"
+        );
       });
 
       it('should tokenize hash as operator', () => {

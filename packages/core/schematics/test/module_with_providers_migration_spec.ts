@@ -24,14 +24,20 @@ describe('ModuleWithProviders migration', () => {
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
-    writeFile('/tsconfig.json', JSON.stringify({
-      compilerOptions: {
-        lib: ['es2015'],
-      }
-    }));
-    writeFile('/angular.json', JSON.stringify({
-      projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
-    }));
+    writeFile(
+      '/tsconfig.json',
+      JSON.stringify({
+        compilerOptions: {
+          lib: ['es2015'],
+        },
+      })
+    );
+    writeFile(
+      '/angular.json',
+      JSON.stringify({
+        projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}},
+      })
+    );
 
     previousWorkingDir = shx.pwd();
     tmpDirPath = getSystemPath(host.root);
@@ -46,8 +52,10 @@ describe('ModuleWithProviders migration', () => {
     shx.rm('-r', tmpDirPath);
   });
 
-  it('should add generic type for function return', async() => {
-    writeFile('/index.ts', `
+  it('should add generic type for function return', async () => {
+    writeFile(
+      '/index.ts',
+      `
         import {NgModule, ModuleWithProviders} from '@angular/core';
 
         @NgModule({})
@@ -63,20 +71,26 @@ describe('ModuleWithProviders migration', () => {
             return getProvider();
           }
         }
-      `);
+      `
+    );
 
     await runMigration();
     expect(tree.readContent('/index.ts')).toContain(`ModuleWithProviders<BaseModule>`);
   });
 
-  it('should add generic type for function return; external file', async() => {
-    writeFile('/module.ts', `
+  it('should add generic type for function return; external file', async () => {
+    writeFile(
+      '/module.ts',
+      `
         import {NgModule} from '@angular/core';
 
         @NgModule({})
         export class BaseModule {}
-      `);
-    writeFile('/index.ts', `
+      `
+    );
+    writeFile(
+      '/index.ts',
+      `
         import {NgModule, ModuleWithProviders} from '@angular/core';
         import {BaseModule} from './module';
 
@@ -90,14 +104,17 @@ describe('ModuleWithProviders migration', () => {
             return getProvider();
           }
         }
-      `);
+      `
+    );
 
     await runMigration();
     expect(tree.readContent('/index.ts')).toContain(`ModuleWithProviders<BaseModule>`);
   });
 
-  it('should add generic type for function return without explicit type', async() => {
-    writeFile('/index.ts', `
+  it('should add generic type for function return without explicit type', async () => {
+    writeFile(
+      '/index.ts',
+      `
         import {NgModule} from '@angular/core';
 
         @NgModule({})
@@ -113,14 +130,17 @@ describe('ModuleWithProviders migration', () => {
             return getProvider();
           }
         }
-      `);
+      `
+    );
 
     await runMigration();
     expect(tree.readContent('/index.ts')).toContain(`ModuleWithProviders<BaseModule>`);
   });
 
-  it('should add generic type for const variable', async() => {
-    writeFile('/index.ts', `
+  it('should add generic type for const variable', async () => {
+    writeFile(
+      '/index.ts',
+      `
         import {ModuleWithProviders, NgModule} from '@angular/core';
 
         @NgModule({})
@@ -134,14 +154,17 @@ describe('ModuleWithProviders migration', () => {
             return myModuleWithProviders;
           }
         }
-      `);
+      `
+    );
 
     await runMigration();
     expect(tree.readContent('/index.ts')).toContain(`ModuleWithProviders<BaseModule>`);
   });
 
-  it('should add generic type for const variable without explicit type', async() => {
-    writeFile('/index.ts', `
+  it('should add generic type for const variable without explicit type', async () => {
+    writeFile(
+      '/index.ts',
+      `
         import {NgModule} from '@angular/core';
 
         @NgModule({})
@@ -155,14 +178,17 @@ describe('ModuleWithProviders migration', () => {
             return myModuleWithProviders;
           }
         }
-      `);
+      `
+    );
 
     await runMigration();
     expect(tree.readContent('/index.ts')).toContain(`ModuleWithProviders<BaseModule>`);
   });
 
-  it('should not add generic type for const variable with invalid base object', async() => {
-    writeFile('/index.ts', `
+  it('should not add generic type for const variable with invalid base object', async () => {
+    writeFile(
+      '/index.ts',
+      `
         import {NgModule} from '@angular/core';
 
         @NgModule({})
@@ -176,14 +202,17 @@ describe('ModuleWithProviders migration', () => {
             return myModuleWithProviders;
           }
         }
-      `);
+      `
+    );
 
     await runMigration();
     expect(tree.readContent('/index.ts')).not.toContain(`ModuleWithProviders<BaseModule>`);
   });
 
-  it('should add generic type for const variables and functions with incomplete type', async() => {
-    writeFile('/index.ts', `
+  it('should add generic type for const variables and functions with incomplete type', async () => {
+    writeFile(
+      '/index.ts',
+      `
       import {ModuleWithProviders, NgModule} from '@angular/core';
 
       @NgModule({})
@@ -207,19 +236,23 @@ describe('ModuleWithProviders migration', () => {
           return myModuleWithProviders;
         }
       }
-    `);
+    `
+    );
 
     await runMigration();
     // Note the explicit space at the end here
     expect(tree.readContent('/index.ts')).not.toContain(`ModuleWithProviders `);
   });
 
-  it('should not add generic type for const variables without initialization', async() => {
-    writeFile('/index.ts', `
+  it('should not add generic type for const variables without initialization', async () => {
+    writeFile(
+      '/index.ts',
+      `
       import {ModuleWithProviders} from '@angular/core';
 
       export const myModuleWithProviders: ModuleWithProviders;
-    `);
+    `
+    );
 
     await runMigration();
     expect(tree.readContent('/index.ts')).toContain(`TODO`);

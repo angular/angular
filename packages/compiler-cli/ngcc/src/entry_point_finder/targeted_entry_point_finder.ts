@@ -5,13 +5,27 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, join, PathSegment, relative, relativeFrom} from '../../../src/ngtsc/file_system';
+
+import {
+  AbsoluteFsPath,
+  FileSystem,
+  join,
+  PathSegment,
+  relative,
+  relativeFrom,
+} from '../../../src/ngtsc/file_system';
 import {EntryPointWithDependencies} from '../dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {Logger} from '../logging/logger';
 import {hasBeenProcessed} from '../packages/build_marker';
 import {NgccConfiguration} from '../packages/configuration';
-import {EntryPoint, EntryPointJsonProperty, getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT} from '../packages/entry_point';
+import {
+  EntryPoint,
+  EntryPointJsonProperty,
+  getEntryPointInfo,
+  INCOMPATIBLE_ENTRY_POINT,
+  NO_ENTRY_POINT,
+} from '../packages/entry_point';
 import {PathMappings} from '../utils';
 
 import {EntryPointFinder} from './interface';
@@ -30,9 +44,14 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
   private basePaths = getBasePaths(this.logger, this.basePath, this.pathMappings);
 
   constructor(
-      private fs: FileSystem, private config: NgccConfiguration, private logger: Logger,
-      private resolver: DependencyResolver, private basePath: AbsoluteFsPath,
-      private targetPath: AbsoluteFsPath, private pathMappings: PathMappings|undefined) {}
+    private fs: FileSystem,
+    private config: NgccConfiguration,
+    private logger: Logger,
+    private resolver: DependencyResolver,
+    private basePath: AbsoluteFsPath,
+    private targetPath: AbsoluteFsPath,
+    private pathMappings: PathMappings | undefined
+  ) {}
 
   findEntryPoints(): SortedEntryPointsInfo {
     this.unprocessedPaths = [this.targetPath];
@@ -41,20 +60,26 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
     }
     const targetEntryPoint = this.unsortedEntryPoints.get(this.targetPath);
     const entryPoints = this.resolver.sortEntryPointsByDependency(
-        Array.from(this.unsortedEntryPoints.values()), targetEntryPoint?.entryPoint);
+      Array.from(this.unsortedEntryPoints.values()),
+      targetEntryPoint?.entryPoint
+    );
 
-    const invalidTarget =
-        entryPoints.invalidEntryPoints.find(i => i.entryPoint.path === this.targetPath);
+    const invalidTarget = entryPoints.invalidEntryPoints.find(
+      (i) => i.entryPoint.path === this.targetPath
+    );
     if (invalidTarget !== undefined) {
       throw new Error(
-          `The target entry-point "${invalidTarget.entryPoint.name}" has missing dependencies:\n` +
-          invalidTarget.missingDependencies.map(dep => ` - ${dep}\n`).join(''));
+        `The target entry-point "${invalidTarget.entryPoint.name}" has missing dependencies:\n` +
+          invalidTarget.missingDependencies.map((dep) => ` - ${dep}\n`).join('')
+      );
     }
     return entryPoints;
   }
 
   targetNeedsProcessingOrCleaning(
-      propertiesToConsider: EntryPointJsonProperty[], compileAllFormats: boolean): boolean {
+    propertiesToConsider: EntryPointJsonProperty[],
+    compileAllFormats: boolean
+  ): boolean {
     const entryPoint = this.getEntryPoint(this.targetPath);
     if (entryPoint === null || !entryPoint.compiledByAngular) {
       return false;
@@ -85,17 +110,22 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
     }
     const entryPointWithDeps = this.resolver.getEntryPointWithDependencies(entryPoint);
     this.unsortedEntryPoints.set(entryPoint.path, entryPointWithDeps);
-    entryPointWithDeps.depInfo.dependencies.forEach(dep => {
+    entryPointWithDeps.depInfo.dependencies.forEach((dep) => {
       if (!this.unsortedEntryPoints.has(dep)) {
         this.unprocessedPaths.push(dep);
       }
     });
   }
 
-  private getEntryPoint(entryPointPath: AbsoluteFsPath): EntryPoint|null {
+  private getEntryPoint(entryPointPath: AbsoluteFsPath): EntryPoint | null {
     const packagePath = this.computePackagePath(entryPointPath);
-    const entryPoint =
-        getEntryPointInfo(this.fs, this.config, this.logger, packagePath, entryPointPath);
+    const entryPoint = getEntryPointInfo(
+      this.fs,
+      this.config,
+      this.logger,
+      packagePath,
+      entryPointPath
+    );
     if (entryPoint === NO_ENTRY_POINT || entryPoint === INCOMPATIBLE_ENTRY_POINT) {
       return null;
     }
@@ -168,8 +198,9 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
       // The directory directly below `node_modules` is a package - use it
       return packagePath;
     } else if (
-        this.fs.basename(packagePath).startsWith('@') &&
-        this.fs.exists(join(scopedPackagePath, 'package.json'))) {
+      this.fs.basename(packagePath).startsWith('@') &&
+      this.fs.exists(join(scopedPackagePath, 'package.json'))
+    ) {
       // The directory directly below the `node_modules` is a scope and the directory directly
       // below that is a scoped package - use it
       return scopedPackagePath;

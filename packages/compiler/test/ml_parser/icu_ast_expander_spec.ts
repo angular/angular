@@ -120,5 +120,5 @@ import {humanizeNodes} from './ast_spec_utils';
 }
 
 function humanizeErrors(errors: ParseError[]): string[] {
-  return errors.map(error => error.msg);
+  return errors.map((error) => error.msg);
 }

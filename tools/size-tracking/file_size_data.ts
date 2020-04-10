@@ -8,7 +8,7 @@
 
 export interface DirectorySizeEntry {
   size: number;
-  [filePath: string]: DirectorySizeEntry|number;
+  [filePath: string]: DirectorySizeEntry | number;
 }
 
 export interface FileSizeData {
@@ -24,7 +24,7 @@ export function sortFileSizeData({unmapped, files}: FileSizeData): FileSizeData 
 /** Gets the name of all child size entries of the specified one. */
 export function getChildEntryNames(entry: DirectorySizeEntry): string[] {
   // The "size" property is reserved for the stored size value.
-  return Object.keys(entry).filter(key => key !== 'size');
+  return Object.keys(entry).filter((key) => key !== 'size');
 }
 
 /**
@@ -48,17 +48,15 @@ export function omitCommonPathPrefix(entry: DirectorySizeEntry): DirectorySizeEn
 
 function _sortDirectorySizeEntryObject(oldObject: DirectorySizeEntry): DirectorySizeEntry {
   return Object.keys(oldObject)
-      .sort(_sortSizeEntryKeys)
-      .reduce(
-          (result, key) => {
-            if (typeof oldObject[key] === 'number') {
-              result[key] = oldObject[key];
-            } else {
-              result[key] = _sortDirectorySizeEntryObject(oldObject[key] as DirectorySizeEntry);
-            }
-            return result;
-          },
-          {} as DirectorySizeEntry);
+    .sort(_sortSizeEntryKeys)
+    .reduce((result, key) => {
+      if (typeof oldObject[key] === 'number') {
+        result[key] = oldObject[key];
+      } else {
+        result[key] = _sortDirectorySizeEntryObject(oldObject[key] as DirectorySizeEntry);
+      }
+      return result;
+    }, {} as DirectorySizeEntry);
 }
 
 function _sortSizeEntryKeys(a: string, b: string) {

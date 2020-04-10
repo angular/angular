@@ -22,8 +22,10 @@ export interface ImportManagerUpdateRecorder {
  */
 export class ImportManager {
   /** Map of import declarations that need to be updated to include the given symbols. */
-  private updatedImports =
-      new Map<ts.ImportDeclaration, {propertyName?: ts.Identifier, importName: ts.Identifier}[]>();
+  private updatedImports = new Map<
+    ts.ImportDeclaration,
+    {propertyName?: ts.Identifier; importName: ts.Identifier}[]
+  >();
   /** Map of source-files and their previously used identifier names. */
   private usedIdentifierNames = new Map<ts.SourceFile, string[]>();
   /**
@@ -31,32 +33,37 @@ export class ImportManager {
    * the same identifier without checking the source-file again.
    */
   private importCache: {
-    sourceFile: ts.SourceFile,
-    symbolName: string|null,
-    moduleName: string,
-    identifier: ts.Identifier
+    sourceFile: ts.SourceFile;
+    symbolName: string | null;
+    moduleName: string;
+    identifier: ts.Identifier;
   }[] = [];
 
   constructor(
-      private getUpdateRecorder: (sf: ts.SourceFile) => ImportManagerUpdateRecorder,
-      private printer: ts.Printer) {}
+    private getUpdateRecorder: (sf: ts.SourceFile) => ImportManagerUpdateRecorder,
+    private printer: ts.Printer
+  ) {}
 
   /**
    * Adds an import to the given source-file and returns the TypeScript
    * identifier that can be used to access the newly imported symbol.
    */
   addImportToSourceFile(
-      sourceFile: ts.SourceFile, symbolName: string|null, moduleName: string,
-      typeImport = false): ts.Expression {
+    sourceFile: ts.SourceFile,
+    symbolName: string | null,
+    moduleName: string,
+    typeImport = false
+  ): ts.Expression {
     const sourceDir = dirname(sourceFile.fileName);
     let importStartIndex = 0;
-    let existingImport: ts.ImportDeclaration|null = null;
+    let existingImport: ts.ImportDeclaration | null = null;
 
     // In case the given import has been already generated previously, we just return
     // the previous generated identifier in order to avoid duplicate generated imports.
     const cachedImport = this.importCache.find(
-        c => c.sourceFile === sourceFile && c.symbolName === symbolName &&
-            c.moduleName === moduleName);
+      (c) =>
+        c.sourceFile === sourceFile && c.symbolName === symbolName && c.moduleName === moduleName
+    );
     if (cachedImport) {
       return cachedImport.identifier;
     }
@@ -68,8 +75,11 @@ export class ImportManager {
     for (let i = sourceFile.statements.length - 1; i >= 0; i--) {
       const statement = sourceFile.statements[i];
 
-      if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier) ||
-          !statement.importClause) {
+      if (
+        !ts.isImportDeclaration(statement) ||
+        !ts.isStringLiteral(statement.moduleSpecifier) ||
+        !statement.importClause
+      ) {
         continue;
       }
 
@@ -79,9 +89,11 @@ export class ImportManager {
 
       const moduleSpecifier = statement.moduleSpecifier.text;
 
-      if (moduleSpecifier.startsWith('.') &&
-              resolve(sourceDir, moduleSpecifier) !== resolve(sourceDir, moduleName) ||
-          moduleSpecifier !== moduleName) {
+      if (
+        (moduleSpecifier.startsWith('.') &&
+          resolve(sourceDir, moduleSpecifier) !== resolve(sourceDir, moduleName)) ||
+        moduleSpecifier !== moduleName
+      ) {
         continue;
       }
 
@@ -92,12 +104,13 @@ export class ImportManager {
         // because these only export symbols available at runtime (no types)
         if (ts.isNamespaceImport(namedBindings) && !typeImport) {
           return ts.createPropertyAccess(
-              ts.createIdentifier(namedBindings.name.text),
-              ts.createIdentifier(symbolName || 'default'));
+            ts.createIdentifier(namedBindings.name.text),
+            ts.createIdentifier(symbolName || 'default')
+          );
         } else if (ts.isNamedImports(namedBindings) && symbolName) {
-          const existingElement = namedBindings.elements.find(
-              e =>
-                  e.propertyName ? e.propertyName.text === symbolName : e.name.text === symbolName);
+          const existingElement = namedBindings.elements.find((e) =>
+            e.propertyName ? e.propertyName.text === symbolName : e.name.text === symbolName
+          );
 
           if (existingElement) {
             return ts.createIdentifier(existingElement.name.text);
@@ -114,8 +127,8 @@ export class ImportManager {
     }
 
     if (existingImport) {
-      const propertyIdentifier = ts.createIdentifier(symbolName !);
-      const generatedUniqueIdentifier = this._getUniqueIdentifier(sourceFile, symbolName !);
+      const propertyIdentifier = ts.createIdentifier(symbolName!);
+      const generatedUniqueIdentifier = this._getUniqueIdentifier(sourceFile, symbolName!);
       const needsGeneratedUniqueName = generatedUniqueIdentifier.text !== symbolName;
       const importName = needsGeneratedUniqueName ? generatedUniqueIdentifier : propertyIdentifier;
 
@@ -126,10 +139,12 @@ export class ImportManager {
       // would throw off the recorder offsets. We need to keep track of the new identifiers
       // for the import and perform the import transformation as batches per source-file.
       this.updatedImports.set(
-          existingImport, (this.updatedImports.get(existingImport) || []).concat({
-            propertyName: needsGeneratedUniqueName ? propertyIdentifier : undefined,
-            importName: importName,
-          }));
+        existingImport,
+        (this.updatedImports.get(existingImport) || []).concat({
+          propertyName: needsGeneratedUniqueName ? propertyIdentifier : undefined,
+          importName: importName,
+        })
+      );
 
       // Keep track of all updated imports so that we don't generate duplicate
       // similar imports as these can't be statically analyzed in the source-file yet.
@@ -138,8 +153,8 @@ export class ImportManager {
       return importName;
     }
 
-    let identifier: ts.Identifier|null = null;
-    let newImport: ts.ImportDeclaration|null = null;
+    let identifier: ts.Identifier | null = null;
+    let newImport: ts.ImportDeclaration | null = null;
 
     if (symbolName) {
       const propertyIdentifier = ts.createIdentifier(symbolName);
@@ -148,17 +163,27 @@ export class ImportManager {
       identifier = needsGeneratedUniqueName ? generatedUniqueIdentifier : propertyIdentifier;
 
       newImport = ts.createImportDeclaration(
-          undefined, undefined,
-          ts.createImportClause(
-              undefined,
-              ts.createNamedImports([ts.createImportSpecifier(
-                  needsGeneratedUniqueName ? propertyIdentifier : undefined, identifier)])),
-          ts.createStringLiteral(moduleName));
+        undefined,
+        undefined,
+        ts.createImportClause(
+          undefined,
+          ts.createNamedImports([
+            ts.createImportSpecifier(
+              needsGeneratedUniqueName ? propertyIdentifier : undefined,
+              identifier
+            ),
+          ])
+        ),
+        ts.createStringLiteral(moduleName)
+      );
     } else {
       identifier = this._getUniqueIdentifier(sourceFile, 'defaultExport');
       newImport = ts.createImportDeclaration(
-          undefined, undefined, ts.createImportClause(identifier, undefined),
-          ts.createStringLiteral(moduleName));
+        undefined,
+        undefined,
+        ts.createImportClause(identifier, undefined),
+        ts.createStringLiteral(moduleName)
+      );
     }
 
     const newImportText = this.printer.printNode(ts.EmitHint.Unspecified, newImport, sourceFile);
@@ -166,9 +191,10 @@ export class ImportManager {
     // a new-line after the import. Otherwise if the import is generated after an
     // existing import, we need to prepend a new-line so that the import is not on
     // the same line as the existing import anchor.
-    this.getUpdateRecorder(sourceFile)
-        .addNewImport(
-            importStartIndex, importStartIndex === 0 ? `${newImportText}\n` : `\n${newImportText}`);
+    this.getUpdateRecorder(sourceFile).addNewImport(
+      importStartIndex,
+      importStartIndex === 0 ? `${newImportText}\n` : `\n${newImportText}`
+    );
 
     // Keep track of all generated imports so that we don't generate duplicate
     // similar imports as these can't be statically analyzed in the source-file yet.
@@ -186,14 +212,21 @@ export class ImportManager {
     this.updatedImports.forEach((expressions, importDecl) => {
       const sourceFile = importDecl.getSourceFile();
       const recorder = this.getUpdateRecorder(sourceFile);
-      const namedBindings = importDecl.importClause !.namedBindings as ts.NamedImports;
+      const namedBindings = importDecl.importClause!.namedBindings as ts.NamedImports;
       const newNamedBindings = ts.updateNamedImports(
-          namedBindings,
-          namedBindings.elements.concat(expressions.map(
-              ({propertyName, importName}) => ts.createImportSpecifier(propertyName, importName))));
+        namedBindings,
+        namedBindings.elements.concat(
+          expressions.map(({propertyName, importName}) =>
+            ts.createImportSpecifier(propertyName, importName)
+          )
+        )
+      );
 
-      const newNamedBindingsText =
-          this.printer.printNode(ts.EmitHint.Unspecified, newNamedBindings, sourceFile);
+      const newNamedBindingsText = this.printer.printNode(
+        ts.EmitHint.Unspecified,
+        newNamedBindings,
+        sourceFile
+      );
       recorder.updateExistingImport(namedBindings, newNamedBindingsText);
     });
   }
@@ -211,8 +244,8 @@ export class ImportManager {
       name = `${baseName}_${counter++}`;
     } while (!this.isUniqueIdentifierName(sourceFile, name));
 
-    this._recordUsedIdentifier(sourceFile, name !);
-    return ts.createIdentifier(name !);
+    this._recordUsedIdentifier(sourceFile, name!);
+    return ts.createIdentifier(name!);
   }
 
   /**
@@ -220,8 +253,10 @@ export class ImportManager {
    * source file.
    */
   private isUniqueIdentifierName(sourceFile: ts.SourceFile, name: string) {
-    if (this.usedIdentifierNames.has(sourceFile) &&
-        this.usedIdentifierNames.get(sourceFile) !.indexOf(name) !== -1) {
+    if (
+      this.usedIdentifierNames.has(sourceFile) &&
+      this.usedIdentifierNames.get(sourceFile)!.indexOf(name) !== -1
+    ) {
       return false;
     }
 
@@ -230,7 +265,7 @@ export class ImportManager {
     // is unique in the given declaration scope and we just return false.
     const nodeQueue: ts.Node[] = [sourceFile];
     while (nodeQueue.length) {
-      const node = nodeQueue.shift() !;
+      const node = nodeQueue.shift()!;
       if (ts.isIdentifier(node) && node.text === name) {
         return false;
       }
@@ -241,7 +276,9 @@ export class ImportManager {
 
   private _recordUsedIdentifier(sourceFile: ts.SourceFile, identifierName: string) {
     this.usedIdentifierNames.set(
-        sourceFile, (this.usedIdentifierNames.get(sourceFile) || []).concat(identifierName));
+      sourceFile,
+      (this.usedIdentifierNames.get(sourceFile) || []).concat(identifierName)
+    );
   }
 
   /**
@@ -254,6 +291,6 @@ export class ImportManager {
     if (!commentRanges || !commentRanges.length) {
       return nodeEndPos;
     }
-    return commentRanges[commentRanges.length - 1] !.end;
+    return commentRanges[commentRanges.length - 1]!.end;
   }
 }

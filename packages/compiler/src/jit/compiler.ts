@@ -6,7 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeSummary, CompileProviderMetadata, CompileStylesheetMetadata, CompileTypeSummary, identifierName, ngModuleJitUrl, ProviderMeta, ProxyClass, sharedStylesheetJitUrl, templateJitUrl, templateSourceUrl} from '../compile_metadata';
+import {
+  CompileDirectiveMetadata,
+  CompileIdentifierMetadata,
+  CompileNgModuleMetadata,
+  CompilePipeSummary,
+  CompileProviderMetadata,
+  CompileStylesheetMetadata,
+  CompileTypeSummary,
+  identifierName,
+  ngModuleJitUrl,
+  ProviderMeta,
+  ProxyClass,
+  sharedStylesheetJitUrl,
+  templateJitUrl,
+  templateSourceUrl,
+} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {CompilerConfig} from '../config';
 import {ConstantPool} from '../constant_pool';
@@ -46,12 +61,18 @@ export class JitCompiler {
   private _addedAotSummaries = new Set<() => any[]>();
 
   constructor(
-      private _metadataResolver: CompileMetadataResolver, private _templateParser: TemplateParser,
-      private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
-      private _ngModuleCompiler: NgModuleCompiler, private _summaryResolver: SummaryResolver<Type>,
-      private _reflector: CompileReflector, private _jitEvaluator: JitEvaluator,
-      private _compilerConfig: CompilerConfig, private _console: Console,
-      private getExtraNgModuleProviders: (ngModule: any) => CompileProviderMetadata[]) {}
+    private _metadataResolver: CompileMetadataResolver,
+    private _templateParser: TemplateParser,
+    private _styleCompiler: StyleCompiler,
+    private _viewCompiler: ViewCompiler,
+    private _ngModuleCompiler: NgModuleCompiler,
+    private _summaryResolver: SummaryResolver<Type>,
+    private _reflector: CompileReflector,
+    private _jitEvaluator: JitEvaluator,
+    private _compilerConfig: CompilerConfig,
+    private _console: Console,
+    private getExtraNgModuleProviders: (ngModule: any) => CompileProviderMetadata[]
+  ) {}
 
   compileModuleSync(moduleType: Type): object {
     return SyncAsync.assertSync(this._compileModuleAndComponents(moduleType, true));
@@ -91,8 +112,11 @@ export class JitCompiler {
         this._addAotSummaries(entry);
       } else {
         const summary = entry as CompileTypeSummary;
-        this._summaryResolver.addSummary(
-            {symbol: summary.type.reference, metadata: null, type: summary});
+        this._summaryResolver.addSummary({
+          symbol: summary.type.reference,
+          metadata: null,
+          type: summary,
+        });
       }
     }
   }
@@ -102,7 +126,7 @@ export class JitCompiler {
   }
 
   private _filterJitIdentifiers(ids: CompileIdentifierMetadata[]): any[] {
-    return ids.map(mod => mod.reference).filter((ref) => !this.hasAotSummary(ref));
+    return ids.map((mod) => mod.reference).filter((ref) => !this.hasAotSummary(ref));
   }
 
   private _compileModuleAndComponents(moduleType: Type, isSync: boolean): SyncAsync<object> {
@@ -112,14 +136,16 @@ export class JitCompiler {
     });
   }
 
-  private _compileModuleAndAllComponents(moduleType: Type, isSync: boolean):
-      SyncAsync<ModuleWithComponentFactories> {
+  private _compileModuleAndAllComponents(
+    moduleType: Type,
+    isSync: boolean
+  ): SyncAsync<ModuleWithComponentFactories> {
     return SyncAsync.then(this._loadModules(moduleType, isSync), () => {
       const componentFactories: object[] = [];
       this._compileComponents(moduleType, componentFactories);
       return {
         ngModuleFactory: this._compileModule(moduleType),
-        componentFactories: componentFactories
+        componentFactories: componentFactories,
       };
     });
   }
@@ -133,14 +159,18 @@ export class JitCompiler {
       // getNgModuleMetadata only returns null if the value passed in is not an NgModule
       const moduleMeta = this._metadataResolver.getNgModuleMetadata(nestedNgModule)!;
       this._filterJitIdentifiers(moduleMeta.declaredDirectives).forEach((ref) => {
-        const promise =
-            this._metadataResolver.loadDirectiveMetadata(moduleMeta.type.reference, ref, isSync);
+        const promise = this._metadataResolver.loadDirectiveMetadata(
+          moduleMeta.type.reference,
+          ref,
+          isSync
+        );
         if (promise) {
           loading.push(promise);
         }
       });
-      this._filterJitIdentifiers(moduleMeta.declaredPipes)
-          .forEach((ref) => this._metadataResolver.getOrLoadPipeMetadata(ref));
+      this._filterJitIdentifiers(moduleMeta.declaredPipes).forEach((ref) =>
+        this._metadataResolver.getOrLoadPipeMetadata(ref)
+      );
     });
     return SyncAsync.all(loading);
   }
@@ -153,8 +183,9 @@ export class JitCompiler {
       const extraProviders = this.getExtraNgModuleProviders(moduleMeta.type.reference);
       const outputCtx = createOutputContext();
       const compileResult = this._ngModuleCompiler.compile(outputCtx, moduleMeta, extraProviders);
-      ngModuleFactory = this._interpretOrJit(
-          ngModuleJitUrl(moduleMeta), outputCtx.statements)[compileResult.ngModuleFactoryVar];
+      ngModuleFactory = this._interpretOrJit(ngModuleJitUrl(moduleMeta), outputCtx.statements)[
+        compileResult.ngModuleFactoryVar
+      ];
       this._compiledNgModuleCache.set(moduleMeta.type.reference, ngModuleFactory);
     }
     return ngModuleFactory;
@@ -163,7 +194,7 @@ export class JitCompiler {
   /**
    * @internal
    */
-  _compileComponents(mainModule: Type, allComponentFactories: object[]|null) {
+  _compileComponents(mainModule: Type, allComponentFactories: object[] | null) {
     const ngModule = this._metadataResolver.getNgModuleMetadata(mainModule)!;
     const moduleByJitDirective = new Map<any, CompileNgModuleMetadata>();
     const templates = new Set<CompiledTemplate>();
@@ -177,8 +208,10 @@ export class JitCompiler {
         if (dirMeta.isComponent) {
           templates.add(this._createCompiledTemplate(dirMeta, localModuleMeta));
           if (allComponentFactories) {
-            const template =
-                this._createCompiledHostTemplate(dirMeta.type.reference, localModuleMeta);
+            const template = this._createCompiledHostTemplate(
+              dirMeta.type.reference,
+              localModuleMeta
+            );
             templates.add(template);
             allComponentFactories.push(dirMeta.componentFactory as object);
           }
@@ -193,7 +226,8 @@ export class JitCompiler {
           dirMeta.entryComponents.forEach((entryComponentType) => {
             const moduleMeta = moduleByJitDirective.get(entryComponentType.componentType)!;
             templates.add(
-                this._createCompiledHostTemplate(entryComponentType.componentType, moduleMeta));
+              this._createCompiledHostTemplate(entryComponentType.componentType, moduleMeta)
+            );
           });
         }
       });
@@ -201,7 +235,8 @@ export class JitCompiler {
         if (!this.hasAotSummary(entryComponentType.componentType)) {
           const moduleMeta = moduleByJitDirective.get(entryComponentType.componentType)!;
           templates.add(
-              this._createCompiledHostTemplate(entryComponentType.componentType, moduleMeta));
+            this._createCompiledHostTemplate(entryComponentType.componentType, moduleMeta)
+          );
         }
       });
     });
@@ -226,12 +261,16 @@ export class JitCompiler {
     this._compiledNgModuleCache.clear();
   }
 
-  private _createCompiledHostTemplate(compType: Type, ngModule: CompileNgModuleMetadata):
-      CompiledTemplate {
+  private _createCompiledHostTemplate(
+    compType: Type,
+    ngModule: CompileNgModuleMetadata
+  ): CompiledTemplate {
     if (!ngModule) {
-      throw new Error(`Component ${
-          stringify(
-              compType)} is not part of any NgModule or the module has not been imported into your module.`);
+      throw new Error(
+        `Component ${stringify(
+          compType
+        )} is not part of any NgModule or the module has not been imported into your module.`
+      );
     }
     let compiledTemplate = this._compiledHostTemplateCache.get(compType);
     if (!compiledTemplate) {
@@ -239,21 +278,31 @@ export class JitCompiler {
       assertComponent(compMeta);
 
       const hostMeta = this._metadataResolver.getHostComponentMetadata(
-          compMeta, (compMeta.componentFactory as any).viewDefFactory);
-      compiledTemplate =
-          new CompiledTemplate(true, compMeta.type, hostMeta, ngModule, [compMeta.type]);
+        compMeta,
+        (compMeta.componentFactory as any).viewDefFactory
+      );
+      compiledTemplate = new CompiledTemplate(true, compMeta.type, hostMeta, ngModule, [
+        compMeta.type,
+      ]);
       this._compiledHostTemplateCache.set(compType, compiledTemplate);
     }
     return compiledTemplate;
   }
 
   private _createCompiledTemplate(
-      compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata): CompiledTemplate {
+    compMeta: CompileDirectiveMetadata,
+    ngModule: CompileNgModuleMetadata
+  ): CompiledTemplate {
     let compiledTemplate = this._compiledTemplateCache.get(compMeta.type.reference);
     if (!compiledTemplate) {
       assertComponent(compMeta);
       compiledTemplate = new CompiledTemplate(
-          false, compMeta.type, compMeta, ngModule, ngModule.transitiveModule.directives);
+        false,
+        compMeta.type,
+        compMeta,
+        ngModule,
+        ngModule.transitiveModule.directives
+      );
       this._compiledTemplateCache.set(compMeta.type.reference, compiledTemplate);
     }
     return compiledTemplate;
@@ -267,58 +316,86 @@ export class JitCompiler {
     const externalStylesheetsByModuleUrl = new Map<string, CompiledStylesheet>();
     const outputContext = createOutputContext();
     const componentStylesheet = this._styleCompiler.compileComponent(outputContext, compMeta);
-    compMeta.template !.externalStylesheets.forEach((stylesheetMeta) => {
-      const compiledStylesheet =
-          this._styleCompiler.compileStyles(createOutputContext(), compMeta, stylesheetMeta);
+    compMeta.template!.externalStylesheets.forEach((stylesheetMeta) => {
+      const compiledStylesheet = this._styleCompiler.compileStyles(
+        createOutputContext(),
+        compMeta,
+        stylesheetMeta
+      );
       externalStylesheetsByModuleUrl.set(stylesheetMeta.moduleUrl!, compiledStylesheet);
     });
     this._resolveStylesCompileResult(componentStylesheet, externalStylesheetsByModuleUrl);
-    const pipes = template.ngModule.transitiveModule.pipes.map(
-        pipe => this._metadataResolver.getPipeSummary(pipe.reference));
-    const {template: parsedTemplate, pipes: usedPipes} =
-        this._parseTemplate(compMeta, template.ngModule, template.directives);
+    const pipes = template.ngModule.transitiveModule.pipes.map((pipe) =>
+      this._metadataResolver.getPipeSummary(pipe.reference)
+    );
+    const {template: parsedTemplate, pipes: usedPipes} = this._parseTemplate(
+      compMeta,
+      template.ngModule,
+      template.directives
+    );
     const compileResult = this._viewCompiler.compileComponent(
-        outputContext, compMeta, parsedTemplate, ir.variable(componentStylesheet.stylesVar),
-        usedPipes);
+      outputContext,
+      compMeta,
+      parsedTemplate,
+      ir.variable(componentStylesheet.stylesVar),
+      usedPipes
+    );
     const evalResult = this._interpretOrJit(
-        templateJitUrl(template.ngModule.type, template.compMeta), outputContext.statements);
+      templateJitUrl(template.ngModule.type, template.compMeta),
+      outputContext.statements
+    );
     const viewClass = evalResult[compileResult.viewClassVar];
     const rendererType = evalResult[compileResult.rendererTypeVar];
     template.compiled(viewClass, rendererType);
   }
 
   private _parseTemplate(
-      compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata,
-      directiveIdentifiers: CompileIdentifierMetadata[]):
-      {template: TemplateAst[], pipes: CompilePipeSummary[]} {
+    compMeta: CompileDirectiveMetadata,
+    ngModule: CompileNgModuleMetadata,
+    directiveIdentifiers: CompileIdentifierMetadata[]
+  ): {template: TemplateAst[]; pipes: CompilePipeSummary[]} {
     // Note: ! is ok here as components always have a template.
-    const preserveWhitespaces = compMeta.template !.preserveWhitespaces;
-    const directives =
-        directiveIdentifiers.map(dir => this._metadataResolver.getDirectiveSummary(dir.reference));
-    const pipes = ngModule.transitiveModule.pipes.map(
-        pipe => this._metadataResolver.getPipeSummary(pipe.reference));
+    const preserveWhitespaces = compMeta.template!.preserveWhitespaces;
+    const directives = directiveIdentifiers.map((dir) =>
+      this._metadataResolver.getDirectiveSummary(dir.reference)
+    );
+    const pipes = ngModule.transitiveModule.pipes.map((pipe) =>
+      this._metadataResolver.getPipeSummary(pipe.reference)
+    );
     return this._templateParser.parse(
-        compMeta, compMeta.template !.htmlAst!, directives, pipes, ngModule.schemas,
-        templateSourceUrl(ngModule.type, compMeta, compMeta.template !), preserveWhitespaces);
+      compMeta,
+      compMeta.template!.htmlAst!,
+      directives,
+      pipes,
+      ngModule.schemas,
+      templateSourceUrl(ngModule.type, compMeta, compMeta.template!),
+      preserveWhitespaces
+    );
   }
 
   private _resolveStylesCompileResult(
-      result: CompiledStylesheet, externalStylesheetsByModuleUrl: Map<string, CompiledStylesheet>) {
+    result: CompiledStylesheet,
+    externalStylesheetsByModuleUrl: Map<string, CompiledStylesheet>
+  ) {
     result.dependencies.forEach((dep, i) => {
       const nestedCompileResult = externalStylesheetsByModuleUrl.get(dep.moduleUrl)!;
       const nestedStylesArr = this._resolveAndEvalStylesCompileResult(
-          nestedCompileResult, externalStylesheetsByModuleUrl);
+        nestedCompileResult,
+        externalStylesheetsByModuleUrl
+      );
       dep.setValue(nestedStylesArr);
     });
   }
 
   private _resolveAndEvalStylesCompileResult(
-      result: CompiledStylesheet,
-      externalStylesheetsByModuleUrl: Map<string, CompiledStylesheet>): string[] {
+    result: CompiledStylesheet,
+    externalStylesheetsByModuleUrl: Map<string, CompiledStylesheet>
+  ): string[] {
     this._resolveStylesCompileResult(result, externalStylesheetsByModuleUrl);
     return this._interpretOrJit(
-        sharedStylesheetJitUrl(result.meta, this._sharedStylesheetCount++),
-        result.outputCtx.statements)[result.stylesVar];
+      sharedStylesheetJitUrl(result.meta, this._sharedStylesheetCount++),
+      result.outputCtx.statements
+    )[result.stylesVar];
   }
 
   private _interpretOrJit(sourceUrl: string, statements: ir.Statement[]): any {
@@ -326,7 +403,11 @@ export class JitCompiler {
       return interpretStatements(statements, this._reflector);
     } else {
       return this._jitEvaluator.evaluateStatements(
-          sourceUrl, statements, this._reflector, this._compilerConfig.jitDevMode);
+        sourceUrl,
+        statements,
+        this._reflector,
+        this._compilerConfig.jitDevMode
+      );
     }
   }
 }
@@ -336,9 +417,12 @@ class CompiledTemplate {
   isCompiled = false;
 
   constructor(
-      public isHost: boolean, public compType: CompileIdentifierMetadata,
-      public compMeta: CompileDirectiveMetadata, public ngModule: CompileNgModuleMetadata,
-      public directives: CompileIdentifierMetadata[]) {}
+    public isHost: boolean,
+    public compType: CompileIdentifierMetadata,
+    public compMeta: CompileDirectiveMetadata,
+    public ngModule: CompileNgModuleMetadata,
+    public directives: CompileIdentifierMetadata[]
+  ) {}
 
   compiled(viewClass: Function, rendererType: any) {
     this._viewClass = viewClass;
@@ -353,12 +437,13 @@ class CompiledTemplate {
 function assertComponent(meta: CompileDirectiveMetadata) {
   if (!meta.isComponent) {
     throw new Error(
-        `Could not compile '${identifierName(meta.type)}' because it is not a component.`);
+      `Could not compile '${identifierName(meta.type)}' because it is not a component.`
+    );
   }
 }
 
 function createOutputContext(): OutputContext {
   const importExpr = (symbol: any) =>
-      ir.importExpr({name: identifierName(symbol), moduleName: null, runtime: symbol});
+    ir.importExpr({name: identifierName(symbol), moduleName: null, runtime: symbol});
   return {statements: [], genFilePath: '', importExpr, constantPool: new ConstantPool()};
 }

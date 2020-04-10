@@ -9,10 +9,10 @@
 const protractorUtils = require('@bazel/protractor/protractor-utils');
 const protractor = require('protractor');
 
-module.exports = async function(config) {
+module.exports = async function (config) {
   const {port} = await protractorUtils.runServer(config.workspace, config.server, '-port', []);
   const processedConfig = await protractor.browser.getProcessedConfig();
   const serverUrl = `http://localhost:${port}`;
 
-  return processedConfig.baseUrl = protractor.browser.baseUrl = serverUrl;
+  return (processedConfig.baseUrl = protractor.browser.baseUrl = serverUrl);
 };

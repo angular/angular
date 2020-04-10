@@ -7,12 +7,23 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {Component, ComponentRef, Renderer2, RendererFactory2, RendererType2, destroyPlatform} from '@angular/core';
+import {
+  Component,
+  ComponentRef,
+  Renderer2,
+  RendererFactory2,
+  RendererType2,
+  destroyPlatform,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {BrowserTestingModule} from '@angular/platform-browser/testing';
-import {browserDetection, dispatchEvent, hasClass} from '@angular/platform-browser/testing/src/browser_util';
+import {
+  browserDetection,
+  dispatchEvent,
+  hasClass,
+} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ClientMessageBrokerFactory} from '@angular/platform-webworker/src/web_workers/shared/client_message_broker';
 import {RenderStore} from '@angular/platform-webworker/src/web_workers/shared/render_store';
@@ -52,13 +63,13 @@ let lastCreatedRenderer: Renderer2;
           {provide: RenderStore, useValue: uiRenderStore},
           DomRendererFactory2,
           {provide: RendererFactory2, useExisting: DomRendererFactory2},
-        ]
+        ],
       });
       const uiSerializer = uiInjector.get(Serializer);
       const domRendererFactory = uiInjector.get(RendererFactory2);
 
       // Worker side
-      lastCreatedRenderer = null !;
+      lastCreatedRenderer = null!;
 
       wwRenderStore = new RenderStore();
 
@@ -69,9 +80,14 @@ let lastCreatedRenderer: Renderer2;
           {provide: RenderStore, useValue: wwRenderStore},
           {
             provide: RendererFactory2,
-            useFactory:
-                (wwSerializer: Serializer) => createWebWorkerRendererFactory2(
-                    wwSerializer, uiSerializer, domRendererFactory, uiRenderStore, wwRenderStore),
+            useFactory: (wwSerializer: Serializer) =>
+              createWebWorkerRendererFactory2(
+                wwSerializer,
+                uiSerializer,
+                domRendererFactory,
+                uiRenderStore,
+                wwRenderStore
+              ),
             deps: [Serializer],
           },
         ],
@@ -79,13 +95,14 @@ let lastCreatedRenderer: Renderer2;
     });
 
     function getRenderElement(workerEl: any): any {
-      const id = wwRenderStore.serialize(workerEl) !;
+      const id = wwRenderStore.serialize(workerEl)!;
       return uiRenderStore.deserialize(id);
     }
 
     it('should update text nodes', () => {
-      const fixture =
-          TestBed.overrideTemplate(MyComp2, '<div>{{ctxProp}}</div>').createComponent(MyComp2);
+      const fixture = TestBed.overrideTemplate(MyComp2, '<div>{{ctxProp}}</div>').createComponent(
+        MyComp2
+      );
       const renderEl = getRenderElement(fixture.nativeElement);
       expect(renderEl).toHaveText('');
 
@@ -94,46 +111,49 @@ let lastCreatedRenderer: Renderer2;
       expect(renderEl).toHaveText('Hello World!');
     });
 
-    modifiedInIvy('DebugElements are not supported on web-worker')
-        .it('should update any element property/attributes/class/style(s) independent of the compilation on the root element and other elements',
-            () => {
-              const fixture =
-                  TestBed.overrideTemplate(MyComp2, '<input [title]="y" style="position:absolute">')
-                      .createComponent(MyComp2);
+    modifiedInIvy('DebugElements are not supported on web-worker').it(
+      'should update any element property/attributes/class/style(s) independent of the compilation on the root element and other elements',
+      () => {
+        const fixture = TestBed.overrideTemplate(
+          MyComp2,
+          '<input [title]="y" style="position:absolute">'
+        ).createComponent(MyComp2);
 
-              const checkSetters = (componentRef: ComponentRef<any>, workerEl: any) => {
-                expect(lastCreatedRenderer).not.toBeNull();
+        const checkSetters = (componentRef: ComponentRef<any>, workerEl: any) => {
+          expect(lastCreatedRenderer).not.toBeNull();
 
-                const el = getRenderElement(workerEl);
-                lastCreatedRenderer.setProperty(workerEl, 'tabIndex', 1);
-                expect(el.tabIndex).toEqual(1);
+          const el = getRenderElement(workerEl);
+          lastCreatedRenderer.setProperty(workerEl, 'tabIndex', 1);
+          expect(el.tabIndex).toEqual(1);
 
-                lastCreatedRenderer.addClass(workerEl, 'a');
-                expect(hasClass(el, 'a')).toBe(true);
+          lastCreatedRenderer.addClass(workerEl, 'a');
+          expect(hasClass(el, 'a')).toBe(true);
 
-                lastCreatedRenderer.removeClass(workerEl, 'a');
-                expect(hasClass(el, 'a')).toBe(false);
+          lastCreatedRenderer.removeClass(workerEl, 'a');
+          expect(hasClass(el, 'a')).toBe(false);
 
-                lastCreatedRenderer.setStyle(workerEl, 'width', '10px');
-                expect(el.style['width']).toEqual('10px');
+          lastCreatedRenderer.setStyle(workerEl, 'width', '10px');
+          expect(el.style['width']).toEqual('10px');
 
-                lastCreatedRenderer.removeStyle(workerEl, 'width');
-                expect(el.style['width']).toEqual('');
+          lastCreatedRenderer.removeStyle(workerEl, 'width');
+          expect(el.style['width']).toEqual('');
 
-                lastCreatedRenderer.setAttribute(workerEl, 'someattr', 'someValue');
-                expect(el.getAttribute('someattr')).toEqual('someValue');
-              };
+          lastCreatedRenderer.setAttribute(workerEl, 'someattr', 'someValue');
+          expect(el.getAttribute('someattr')).toEqual('someValue');
+        };
 
-              // root element
-              checkSetters(fixture.componentRef, fixture.nativeElement);
-              // nested elements
-              checkSetters(fixture.componentRef, fixture.debugElement.children[0].nativeElement);
-            });
+        // root element
+        checkSetters(fixture.componentRef, fixture.nativeElement);
+        // nested elements
+        checkSetters(fixture.componentRef, fixture.debugElement.children[0].nativeElement);
+      }
+    );
 
     it('should update any template comment property/attributes', () => {
-      const fixture =
-          TestBed.overrideTemplate(MyComp2, '<ng-container *ngIf="ctxBoolProp"></ng-container>')
-              .createComponent(MyComp2);
+      const fixture = TestBed.overrideTemplate(
+        MyComp2,
+        '<ng-container *ngIf="ctxBoolProp"></ng-container>'
+      ).createComponent(MyComp2);
       fixture.componentInstance.ctxBoolProp = true;
       fixture.detectChanges();
       const el = getRenderElement(fixture.nativeElement);
@@ -141,10 +161,10 @@ let lastCreatedRenderer: Renderer2;
     });
 
     it('should add and remove fragments', () => {
-      const fixture =
-          TestBed
-              .overrideTemplate(MyComp2, '<ng-container *ngIf="ctxBoolProp">hello</ng-container>')
-              .createComponent(MyComp2);
+      const fixture = TestBed.overrideTemplate(
+        MyComp2,
+        '<ng-container *ngIf="ctxBoolProp">hello</ng-container>'
+      ).createComponent(MyComp2);
 
       const rootEl = getRenderElement(fixture.nativeElement);
       expect(rootEl).toHaveText('');
@@ -159,17 +179,21 @@ let lastCreatedRenderer: Renderer2;
     });
 
     if (getDOM().supportsDOMEvents()) {
-      modifiedInIvy('DebugElements are not supported on web-worker')
-          .it('should listen to events', () => {
-            const fixture = TestBed.overrideTemplate(MyComp2, '<input (change)="ctxNumProp = 1">')
-                                .createComponent(MyComp2);
+      modifiedInIvy('DebugElements are not supported on web-worker').it(
+        'should listen to events',
+        () => {
+          const fixture = TestBed.overrideTemplate(
+            MyComp2,
+            '<input (change)="ctxNumProp = 1">'
+          ).createComponent(MyComp2);
 
-            const el = fixture.debugElement.children[0];
-            dispatchEvent(getRenderElement(el.nativeElement), 'change');
-            expect(fixture.componentInstance.ctxNumProp).toBe(1);
+          const el = fixture.debugElement.children[0];
+          dispatchEvent(getRenderElement(el.nativeElement), 'change');
+          expect(fixture.componentInstance.ctxNumProp).toBe(1);
 
-            fixture.destroy();
-          });
+          fixture.destroy();
+        }
+      );
     }
   });
 }
@@ -182,9 +206,12 @@ class MyComp2 {
 }
 
 function createWebWorkerBrokerFactory(
-    messageBuses: PairedMessageBuses, wwSerializer: Serializer, uiSerializer: Serializer,
-    domRendererFactory: DomRendererFactory2,
-    uiRenderStore: RenderStore): ClientMessageBrokerFactory {
+  messageBuses: PairedMessageBuses,
+  wwSerializer: Serializer,
+  uiSerializer: Serializer,
+  domRendererFactory: DomRendererFactory2,
+  uiRenderStore: RenderStore
+): ClientMessageBrokerFactory {
   const uiMessageBus = messageBuses.ui;
   const wwMessageBus = messageBuses.worker;
 
@@ -194,27 +221,45 @@ function createWebWorkerBrokerFactory(
   // set up the ui side
   const uiBrokerFactory = new (ServiceMessageBrokerFactory as any)(uiMessageBus, uiSerializer);
   const renderer = new MessageBasedRenderer2(
-      uiBrokerFactory, uiMessageBus, uiSerializer, uiRenderStore, domRendererFactory);
+    uiBrokerFactory,
+    uiMessageBus,
+    uiSerializer,
+    uiRenderStore,
+    domRendererFactory
+  );
   renderer.start();
 
   return wwBrokerFactory;
 }
 
 function createWebWorkerRendererFactory2(
-    workerSerializer: Serializer, uiSerializer: Serializer, domRendererFactory: DomRendererFactory2,
-    uiRenderStore: RenderStore, workerRenderStore: RenderStore): RendererFactory2 {
+  workerSerializer: Serializer,
+  uiSerializer: Serializer,
+  domRendererFactory: DomRendererFactory2,
+  uiRenderStore: RenderStore,
+  workerRenderStore: RenderStore
+): RendererFactory2 {
   const messageBuses = createPairedMessageBuses();
   const brokerFactory = createWebWorkerBrokerFactory(
-      messageBuses, workerSerializer, uiSerializer, domRendererFactory, uiRenderStore);
+    messageBuses,
+    workerSerializer,
+    uiSerializer,
+    domRendererFactory,
+    uiRenderStore
+  );
 
-  const rendererFactory =
-      new RenderFactory(brokerFactory, messageBuses.worker, workerSerializer, workerRenderStore);
+  const rendererFactory = new RenderFactory(
+    brokerFactory,
+    messageBuses.worker,
+    workerSerializer,
+    workerRenderStore
+  );
 
   return rendererFactory;
 }
 
 class RenderFactory extends WebWorkerRendererFactory2 {
-  createRenderer(element: any, type: RendererType2|null): Renderer2 {
+  createRenderer(element: any, type: RendererType2 | null): Renderer2 {
     lastCreatedRenderer = super.createRenderer(element, type);
     return lastCreatedRenderer;
   }

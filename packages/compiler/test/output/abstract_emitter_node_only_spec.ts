@@ -9,7 +9,10 @@
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
 import {EmitterVisitorContext} from '@angular/compiler/src/output/abstract_emitter';
 import {SourceMap} from '@angular/compiler/src/output/source_map';
-import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/src/output/source_map_util';
+import {
+  extractSourceMap,
+  originalPositionFor,
+} from '@angular/compiler/testing/src/output/source_map_util';
 
 {
   describe('AbstractEmitter', () => {
@@ -109,12 +112,16 @@ import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/s
   });
 }
 
-
 // All lines / columns indexes are 0-based
 // Note: source-map line indexes are 1-based, column 0-based
 function expectMap(
-    ctx: EmitterVisitorContext, genLine: number, genCol: number, source: string|null = null,
-    srcLine: number|null = null, srcCol: number|null = null) {
+  ctx: EmitterVisitorContext,
+  genLine: number,
+  genCol: number,
+  source: string | null = null,
+  srcLine: number | null = null,
+  srcCol: number | null = null
+) {
   const sm = ctx.toSourceMapGenerator('o.ts').toJSON()!;
   const genPosition = {line: genLine + 1, column: genCol};
   const origPosition = originalPositionFor(sm, genPosition);
@@ -128,7 +135,7 @@ function expectMap(
 function nbSegmentsPerLine(ctx: EmitterVisitorContext) {
   const sm = ctx.toSourceMapGenerator('o.ts').toJSON()!;
   const lines = sm.mappings.split(';');
-  return lines.map(l => {
+  return lines.map((l) => {
     const m = l.match(/,/g);
     return m === null ? 1 : m.length + 1;
   });

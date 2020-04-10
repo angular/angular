@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 import {Reference} from '../../imports';
 
@@ -12,7 +13,7 @@ import {Reference} from '../../imports';
  * A resolved type reference can either be a `Reference`, the original `ts.TypeReferenceNode` itself
  * or null to indicate the no reference could be resolved.
  */
-export type ResolvedTypeReference = Reference|ts.TypeReferenceNode|null;
+export type ResolvedTypeReference = Reference | ts.TypeReferenceNode | null;
 
 /**
  * A type reference resolver function is responsible for finding the declaration of the type
@@ -33,8 +34,8 @@ export function canEmitType(type: ts.TypeNode, resolver: TypeReferenceResolver):
 
   function canEmitTypeWorker(type: ts.TypeNode): boolean {
     return visitTypeNode(type, {
-      visitTypeReferenceNode: type => canEmitTypeReference(type),
-      visitArrayTypeNode: type => canEmitTypeWorker(type.elementType),
+      visitTypeReferenceNode: (type) => canEmitTypeReference(type),
+      visitArrayTypeNode: (type) => canEmitTypeWorker(type.elementType),
       visitKeywordType: () => true,
       visitOtherType: () => false,
     });
@@ -108,9 +109,9 @@ export class TypeEmitter {
 
   emitType(type: ts.TypeNode): ts.TypeNode {
     return visitTypeNode(type, {
-      visitTypeReferenceNode: type => this.emitTypeReference(type),
-      visitArrayTypeNode: type => ts.updateArrayTypeNode(type, this.emitType(type.elementType)),
-      visitKeywordType: type => type,
+      visitTypeReferenceNode: (type) => this.emitTypeReference(type),
+      visitArrayTypeNode: (type) => ts.updateArrayTypeNode(type, this.emitType(type.elementType)),
+      visitKeywordType: (type) => type,
       visitOtherType: () => {
         throw new Error('Unable to emit a complex type');
       },
@@ -125,9 +126,11 @@ export class TypeEmitter {
     }
 
     // Emit the type arguments, if any.
-    let typeArguments: ts.NodeArray<ts.TypeNode>|undefined = undefined;
+    let typeArguments: ts.NodeArray<ts.TypeNode> | undefined = undefined;
     if (type.typeArguments !== undefined) {
-      typeArguments = ts.createNodeArray(type.typeArguments.map(typeArg => this.emitType(typeArg)));
+      typeArguments = ts.createNodeArray(
+        type.typeArguments.map((typeArg) => this.emitType(typeArg))
+      );
     }
 
     // Emit the type name.
@@ -139,8 +142,9 @@ export class TypeEmitter {
 
       const emittedType = this.emitReference(reference);
       if (!ts.isTypeReferenceNode(emittedType)) {
-        throw new Error(`Expected TypeReferenceNode for emitted reference, got ${
-            ts.SyntaxKind[emittedType.kind]}`);
+        throw new Error(
+          `Expected TypeReferenceNode for emitted reference, got ${ts.SyntaxKind[emittedType.kind]}`
+        );
       }
 
       typeName = emittedType.typeName;

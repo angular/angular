@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import localeEn from './locale_en';
 import {global} from '../util/global';
 
@@ -72,7 +73,7 @@ export function findLocaleData(locale: string): any {
  * @returns The code of the default currency for the given locale.
  *
  */
-export function getLocaleCurrencyCode(locale: string): string|null {
+export function getLocaleCurrencyCode(locale: string): string | null {
   const data = findLocaleData(locale);
   return data[LocaleDataIndex.CurrencyCode] || null;
 }
@@ -90,16 +91,17 @@ export function getLocalePluralCase(locale: string): (value: number) => number {
   return data[LocaleDataIndex.PluralCase];
 }
 
-
-
 /**
  * Helper function to get the given `normalizedLocale` from `LOCALE_DATA`
  * or from the global `ng.common.locale`.
  */
 export function getLocaleData(normalizedLocale: string): any {
   if (!(normalizedLocale in LOCALE_DATA)) {
-    LOCALE_DATA[normalizedLocale] = global.ng && global.ng.common && global.ng.common.locales &&
-        global.ng.common.locales[normalizedLocale];
+    LOCALE_DATA[normalizedLocale] =
+      global.ng &&
+      global.ng.common &&
+      global.ng.common.locales &&
+      global.ng.common.locales[normalizedLocale];
   }
   return LOCALE_DATA[normalizedLocale];
 }
@@ -136,7 +138,7 @@ export enum LocaleDataIndex {
   Currencies,
   Directionality,
   PluralCase,
-  ExtraData
+  ExtraData,
 }
 
 /**
@@ -145,13 +147,17 @@ export enum LocaleDataIndex {
 export const enum ExtraLocaleDataIndex {
   ExtraDayPeriodFormats = 0,
   ExtraDayPeriodStandalone,
-  ExtraDayPeriodsRules
+  ExtraDayPeriodsRules,
 }
 
 /**
  * Index of each value in currency data (used to describe CURRENCIES_EN in currencies.ts)
  */
-export const enum CurrencyIndex {Symbol = 0, SymbolNarrow, NbOfDigits}
+export const enum CurrencyIndex {
+  Symbol = 0,
+  SymbolNarrow,
+  NbOfDigits,
+}
 
 /**
  * Returns the canonical form of a locale name - lowercase with `_` replaced with `-`.

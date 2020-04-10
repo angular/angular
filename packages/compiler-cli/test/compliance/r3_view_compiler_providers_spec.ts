@@ -39,15 +39,16 @@ describe('compiler compliance: providers', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const result = compile(files, angularFiles);
     expectEmit(
-        result.source,
-        'features: [i0.ɵɵProvidersFeature([GreeterEN, {provide: Greeter, useClass: GreeterEN}], [GreeterEN])],',
-        'Incorrect features');
+      result.source,
+      'features: [i0.ɵɵProvidersFeature([GreeterEN, {provide: Greeter, useClass: GreeterEN}], [GreeterEN])],',
+      'Incorrect features'
+    );
   });
 
   it('should emit the ProvidersFeature feature when providers only', () => {
@@ -72,15 +73,16 @@ describe('compiler compliance: providers', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const result = compile(files, angularFiles);
     expectEmit(
-        result.source,
-        'features: [i0.ɵɵProvidersFeature([GreeterEN, {provide: Greeter, useClass: GreeterEN}])],',
-        'Incorrect features');
+      result.source,
+      'features: [i0.ɵɵProvidersFeature([GreeterEN, {provide: Greeter, useClass: GreeterEN}])],',
+      'Incorrect features'
+    );
   });
 
   it('should emit the ProvidersFeature feature when viewProviders only', () => {
@@ -105,13 +107,16 @@ describe('compiler compliance: providers', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const result = compile(files, angularFiles);
     expectEmit(
-        result.source, 'features: [i0.ɵɵProvidersFeature([], [GreeterEN])],', 'Incorrect features');
+      result.source,
+      'features: [i0.ɵɵProvidersFeature([], [GreeterEN])],',
+      'Incorrect features'
+    );
   });
 
   it('should not emit the ProvidersFeature feature when no providers', () => {
@@ -135,13 +140,14 @@ describe('compiler compliance: providers', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const result = compile(files, angularFiles);
     expectEmit(
-        result.source, `
+      result.source,
+      `
     export class MyComponent {
     }
     MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
@@ -157,6 +163,7 @@ describe('compiler compliance: providers', () => {
       },
       encapsulation: 2
     });`,
-        'Incorrect features');
+      'Incorrect features'
+    );
   });
 });

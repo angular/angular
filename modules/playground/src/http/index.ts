@@ -13,9 +13,11 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {HttpCmp} from './app/http_comp';
 
-@NgModule(
-    {declarations: [HttpCmp], bootstrap: [HttpCmp], imports: [BrowserModule, HttpClientModule]})
-export class ExampleModule {
-}
+@NgModule({
+  declarations: [HttpCmp],
+  bootstrap: [HttpCmp],
+  imports: [BrowserModule, HttpClientModule],
+})
+export class ExampleModule {}
 
 platformBrowserDynamic().bootstrapModule(ExampleModule);

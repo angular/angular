@@ -12,7 +12,6 @@ import {ObjectAssignBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
 import {KnownFn, ResolvedValueArray} from './result';
 
-
 // Use the same implementation we use for `Object.assign()`. Semantically these functions are the
 // same, so they can also share the same evaluation code.
 export class AssignHelperFn extends ObjectAssignBuiltinFn {}

@@ -15,36 +15,48 @@ import {UrlSegment, UrlSegmentGroup, UrlTree, equalSegments} from '../src/url_tr
 
 export class Logger {
   logs: string[] = [];
-  add(thing: string) { this.logs.push(thing); }
-  empty() { this.logs.length = 0; }
+  add(thing: string) {
+    this.logs.push(thing);
+  }
+  empty() {
+    this.logs.length = 0;
+  }
 }
 
 export function provideTokenLogger(token: string, returnValue = true as boolean | UrlTree) {
   return {
     provide: token,
     useFactory: (logger: Logger) => () => (logger.add(token), returnValue),
-    deps: [Logger]
+    deps: [Logger],
   };
 }
 
 export declare type ARSArgs = {
-  url?: UrlSegment[],
-  params?: Params,
-  queryParams?: Params,
-  fragment?: string,
-  data?: Data,
-  outlet?: string,
-  component: Type<any>| string | null,
-  routeConfig?: Route | null,
-  urlSegment?: UrlSegmentGroup,
-  lastPathIndex?: number,
-  resolve?: ResolveData
+  url?: UrlSegment[];
+  params?: Params;
+  queryParams?: Params;
+  fragment?: string;
+  data?: Data;
+  outlet?: string;
+  component: Type<any> | string | null;
+  routeConfig?: Route | null;
+  urlSegment?: UrlSegmentGroup;
+  lastPathIndex?: number;
+  resolve?: ResolveData;
 };
 
 export function createActivatedRouteSnapshot(args: ARSArgs): ActivatedRouteSnapshot {
   return new (ActivatedRouteSnapshot as any)(
-      args.url || <any>[], args.params || {}, args.queryParams || <any>null,
-      args.fragment || <any>null, args.data || <any>null, args.outlet || <any>null,
-      <any>args.component, args.routeConfig || <any>{}, args.urlSegment || <any>null,
-      args.lastPathIndex || -1, args.resolve || {});
+    args.url || <any>[],
+    args.params || {},
+    args.queryParams || <any>null,
+    args.fragment || <any>null,
+    args.data || <any>null,
+    args.outlet || <any>null,
+    <any>args.component,
+    args.routeConfig || <any>{},
+    args.urlSegment || <any>null,
+    args.lastPathIndex || -1,
+    args.resolve || {}
+  );
 }

@@ -28,7 +28,7 @@ function findFirstClosedCycle(keys: any[]): any[] {
 function constructResolvingPath(keys: any[]): string {
   if (keys.length > 1) {
     const reversed = findFirstClosedCycle(keys.slice().reverse());
-    const tokenStrs = reversed.map(k => stringify(k.token));
+    const tokenStrs = reversed.map((k) => stringify(k.token));
     return ' (' + tokenStrs.join(' -> ') + ')';
   }
 
@@ -43,13 +43,16 @@ export interface InjectionError extends Error {
 }
 
 function injectionError(
-    injector: ReflectiveInjector, key: ReflectiveKey,
-    constructResolvingMessage: (keys: ReflectiveKey[]) => string,
-    originalError?: Error): InjectionError {
+  injector: ReflectiveInjector,
+  key: ReflectiveKey,
+  constructResolvingMessage: (keys: ReflectiveKey[]) => string,
+  originalError?: Error
+): InjectionError {
   const keys = [key];
   const errMsg = constructResolvingMessage(keys);
-  const error =
-      (originalError ? wrappedError(errMsg, originalError) : Error(errMsg)) as InjectionError;
+  const error = (originalError
+    ? wrappedError(errMsg, originalError)
+    : Error(errMsg)) as InjectionError;
   error.addKey = addKey;
   error.keys = keys;
   error.injectors = [injector];
@@ -81,7 +84,7 @@ function addKey(this: InjectionError, injector: ReflectiveInjector, key: Reflect
  * ```
  */
 export function noProviderError(injector: ReflectiveInjector, key: ReflectiveKey): InjectionError {
-  return injectionError(injector, key, function(keys: ReflectiveKey[]) {
+  return injectionError(injector, key, function (keys: ReflectiveKey[]) {
     const first = stringify(keys[0].token);
     return `No provider for ${first}!${constructResolvingPath(keys)}`;
   });
@@ -105,8 +108,10 @@ export function noProviderError(injector: ReflectiveInjector, key: ReflectiveKey
  * Retrieving `A` or `B` throws a `CyclicDependencyError` as the graph above cannot be constructed.
  */
 export function cyclicDependencyError(
-    injector: ReflectiveInjector, key: ReflectiveKey): InjectionError {
-  return injectionError(injector, key, function(keys: ReflectiveKey[]) {
+  injector: ReflectiveInjector,
+  key: ReflectiveKey
+): InjectionError {
+  return injectionError(injector, key, function (keys: ReflectiveKey[]) {
     return `Cannot instantiate cyclic dependency!${constructResolvingPath(keys)}`;
   });
 }
@@ -139,12 +144,22 @@ export function cyclicDependencyError(
  * ```
  */
 export function instantiationError(
-    injector: ReflectiveInjector, originalException: any, originalStack: any,
-    key: ReflectiveKey): InjectionError {
-  return injectionError(injector, key, function(keys: ReflectiveKey[]) {
-    const first = stringify(keys[0].token);
-    return `${originalException.message}: Error during instantiation of ${first}!${constructResolvingPath(keys)}.`;
-  }, originalException);
+  injector: ReflectiveInjector,
+  originalException: any,
+  originalStack: any,
+  key: ReflectiveKey
+): InjectionError {
+  return injectionError(
+    injector,
+    key,
+    function (keys: ReflectiveKey[]) {
+      const first = stringify(keys[0].token);
+      return `${
+        originalException.message
+      }: Error during instantiation of ${first}!${constructResolvingPath(keys)}.`;
+    },
+    originalException
+  );
 }
 
 /**
@@ -160,7 +175,8 @@ export function instantiationError(
  */
 export function invalidProviderError(provider: any) {
   return Error(
-      `Invalid provider - only instances of Provider and Type are allowed, got: ${provider}`);
+    `Invalid provider - only instances of Provider and Type are allowed, got: ${provider}`
+  );
 }
 
 /**
@@ -193,7 +209,7 @@ export function invalidProviderError(provider: any) {
  * ```
  *
  */
-export function noAnnotationError(typeOrFunc: Type<any>| Function, params: any[][]): Error {
+export function noAnnotationError(typeOrFunc: Type<any> | Function, params: any[][]): Error {
   const signature: string[] = [];
   for (let i = 0, ii = params.length; i < ii; i++) {
     const parameter = params[i];
@@ -204,10 +220,15 @@ export function noAnnotationError(typeOrFunc: Type<any>| Function, params: any[]
     }
   }
   return Error(
-      'Cannot resolve all parameters for \'' + stringify(typeOrFunc) + '\'(' +
-      signature.join(', ') + '). ' +
-      'Make sure that all the parameters are decorated with Inject or have valid type annotations and that \'' +
-      stringify(typeOrFunc) + '\' is decorated with Injectable.');
+    "Cannot resolve all parameters for '" +
+      stringify(typeOrFunc) +
+      "'(" +
+      signature.join(', ') +
+      '). ' +
+      "Make sure that all the parameters are decorated with Inject or have valid type annotations and that '" +
+      stringify(typeOrFunc) +
+      "' is decorated with Injectable."
+  );
 }
 
 /**
@@ -244,6 +265,8 @@ export function outOfBoundsError(index: number) {
  * ```
  */
 export function mixingMultiProvidersWithRegularProvidersError(
-    provider1: any, provider2: any): Error {
+  provider1: any,
+  provider2: any
+): Error {
   return Error(`Cannot mix multi providers and regular providers, got: ${provider1} ${provider2}`);
 }

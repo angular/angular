@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
@@ -32,20 +33,34 @@ export interface RenderingFormatter {
   addConstants(output: MagicString, constants: string, file: ts.SourceFile): void;
   addImports(output: MagicString, imports: Import[], sf: ts.SourceFile): void;
   addExports(
-      output: MagicString, entryPointBasePath: string, exports: ExportInfo[],
-      importManager: ImportManager, file: ts.SourceFile): void;
+    output: MagicString,
+    entryPointBasePath: string,
+    exports: ExportInfo[],
+    importManager: ImportManager,
+    file: ts.SourceFile
+  ): void;
   addDirectExports(
-      output: MagicString, exports: Reexport[], importManager: ImportManager,
-      file: ts.SourceFile): void;
+    output: MagicString,
+    exports: Reexport[],
+    importManager: ImportManager,
+    file: ts.SourceFile
+  ): void;
   addDefinitions(output: MagicString, compiledClass: CompiledClass, definitions: string): void;
-  addAdjacentStatements(output: MagicString, compiledClass: CompiledClass, statements: string):
-      void;
+  addAdjacentStatements(
+    output: MagicString,
+    compiledClass: CompiledClass,
+    statements: string
+  ): void;
   removeDecorators(output: MagicString, decoratorsToRemove: RedundantDecoratorMap): void;
   rewriteSwitchableDeclarations(
-      outputText: MagicString, sourceFile: ts.SourceFile,
-      declarations: SwitchableVariableDeclaration[]): void;
+    outputText: MagicString,
+    sourceFile: ts.SourceFile,
+    declarations: SwitchableVariableDeclaration[]
+  ): void;
   addModuleWithProvidersParams(
-      outputText: MagicString, moduleWithProviders: ModuleWithProvidersInfo[],
-      importManager: ImportManager): void;
+    outputText: MagicString,
+    moduleWithProviders: ModuleWithProvidersInfo[],
+    importManager: ImportManager
+  ): void;
   printStatement(stmt: Statement, sourceFile: ts.SourceFile, importManager: ImportManager): string;
 }

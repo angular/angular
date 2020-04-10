@@ -31,7 +31,7 @@ export interface ResolvedTemplate {
    * If the template is declared inline within a TypeScript source file, the line and
    * character are based on the full source file content.
    */
-  getCharacterAndLineOfPosition: (pos: number) => { character: number, line: number };
+  getCharacterAndLineOfPosition: (pos: number) => {character: number; line: number};
 }
 
 /**
@@ -48,7 +48,7 @@ export class NgComponentTemplateVisitor {
       this.visitClassDeclaration(node as ts.ClassDeclaration);
     }
 
-    ts.forEachChild(node, n => this.visitNode(n));
+    ts.forEachChild(node, (n) => this.visitNode(n));
   }
 
   private visitClassDeclaration(node: ts.ClassDeclaration) {
@@ -57,7 +57,7 @@ export class NgComponentTemplateVisitor {
     }
 
     const ngDecorators = getAngularDecorators(this.typeChecker, node.decorators);
-    const componentDecorator = ngDecorators.find(dec => dec.name === 'Component');
+    const componentDecorator = ngDecorators.find((dec) => dec.name === 'Component');
 
     // In case no "@Component" decorator could be found on the current class, skip.
     if (!componentDecorator) {
@@ -83,7 +83,7 @@ export class NgComponentTemplateVisitor {
 
     // Walk through all component metadata properties and determine the referenced
     // HTML templates (either external or inline)
-    componentMetadata.properties.forEach(property => {
+    componentMetadata.properties.forEach((property) => {
       if (!ts.isPropertyAssignment(property)) {
         return;
       }
@@ -103,8 +103,8 @@ export class NgComponentTemplateVisitor {
           content: property.initializer.text,
           inline: true,
           start: templateStartIdx,
-          getCharacterAndLineOfPosition:
-              pos => ts.getLineAndCharacterOfPosition(sourceFile, pos + templateStartIdx)
+          getCharacterAndLineOfPosition: (pos) =>
+            ts.getLineAndCharacterOfPosition(sourceFile, pos + templateStartIdx),
         });
       }
       if (propertyName === 'templateUrl' && ts.isStringLiteralLike(property.initializer)) {
@@ -125,7 +125,8 @@ export class NgComponentTemplateVisitor {
           content: fileContent,
           inline: false,
           start: 0,
-          getCharacterAndLineOfPosition: pos => getLineAndCharacterFromPosition(lineStartsMap, pos),
+          getCharacterAndLineOfPosition: (pos) =>
+            getLineAndCharacterFromPosition(lineStartsMap, pos),
         });
       }
     });

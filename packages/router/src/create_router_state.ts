@@ -9,19 +9,28 @@
 import {BehaviorSubject} from 'rxjs';
 
 import {DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
-import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './router_state';
+import {
+  ActivatedRoute,
+  ActivatedRouteSnapshot,
+  RouterState,
+  RouterStateSnapshot,
+} from './router_state';
 import {TreeNode} from './utils/tree';
 
 export function createRouterState(
-    routeReuseStrategy: RouteReuseStrategy, curr: RouterStateSnapshot,
-    prevState: RouterState): RouterState {
+  routeReuseStrategy: RouteReuseStrategy,
+  curr: RouterStateSnapshot,
+  prevState: RouterState
+): RouterState {
   const root = createNode(routeReuseStrategy, curr._root, prevState ? prevState._root : undefined);
   return new RouterState(root, curr);
 }
 
 function createNode(
-    routeReuseStrategy: RouteReuseStrategy, curr: TreeNode<ActivatedRouteSnapshot>,
-    prevState?: TreeNode<ActivatedRoute>): TreeNode<ActivatedRoute> {
+  routeReuseStrategy: RouteReuseStrategy,
+  curr: TreeNode<ActivatedRouteSnapshot>,
+  prevState?: TreeNode<ActivatedRoute>
+): TreeNode<ActivatedRoute> {
   // reuse an activated route that is currently displayed on the screen
   if (prevState && routeReuseStrategy.shouldReuseRoute(curr.value, prevState.value.snapshot)) {
     const value = prevState.value;
@@ -31,23 +40,25 @@ function createNode(
 
     // retrieve an activated route that is used to be displayed, but is not currently displayed
   } else {
-    const detachedRouteHandle =
-        <DetachedRouteHandleInternal>routeReuseStrategy.retrieve(curr.value);
+    const detachedRouteHandle = <DetachedRouteHandleInternal>(
+      routeReuseStrategy.retrieve(curr.value)
+    );
     if (detachedRouteHandle) {
       const tree: TreeNode<ActivatedRoute> = detachedRouteHandle.route;
       setFutureSnapshotsOfActivatedRoutes(curr, tree);
       return tree;
-
     } else {
       const value = createActivatedRoute(curr.value);
-      const children = curr.children.map(c => createNode(routeReuseStrategy, c));
+      const children = curr.children.map((c) => createNode(routeReuseStrategy, c));
       return new TreeNode<ActivatedRoute>(value, children);
     }
   }
 }
 
 function setFutureSnapshotsOfActivatedRoutes(
-    curr: TreeNode<ActivatedRouteSnapshot>, result: TreeNode<ActivatedRoute>): void {
+  curr: TreeNode<ActivatedRouteSnapshot>,
+  result: TreeNode<ActivatedRoute>
+): void {
   if (curr.value.routeConfig !== result.value.routeConfig) {
     throw new Error('Cannot reattach ActivatedRouteSnapshot created from a different route');
   }
@@ -61,9 +72,11 @@ function setFutureSnapshotsOfActivatedRoutes(
 }
 
 function createOrReuseChildren(
-    routeReuseStrategy: RouteReuseStrategy, curr: TreeNode<ActivatedRouteSnapshot>,
-    prevState: TreeNode<ActivatedRoute>) {
-  return curr.children.map(child => {
+  routeReuseStrategy: RouteReuseStrategy,
+  curr: TreeNode<ActivatedRouteSnapshot>,
+  prevState: TreeNode<ActivatedRoute>
+) {
+  return curr.children.map((child) => {
     for (const p of prevState.children) {
       if (routeReuseStrategy.shouldReuseRoute(p.value.snapshot, child.value)) {
         return createNode(routeReuseStrategy, child, p);
@@ -75,6 +88,13 @@ function createOrReuseChildren(
 
 function createActivatedRoute(c: ActivatedRouteSnapshot) {
   return new ActivatedRoute(
-      new BehaviorSubject(c.url), new BehaviorSubject(c.params), new BehaviorSubject(c.queryParams),
-      new BehaviorSubject(c.fragment), new BehaviorSubject(c.data), c.outlet, c.component, c);
+    new BehaviorSubject(c.url),
+    new BehaviorSubject(c.params),
+    new BehaviorSubject(c.queryParams),
+    new BehaviorSubject(c.fragment),
+    new BehaviorSubject(c.data),
+    c.outlet,
+    c.component,
+    c
+  );
 }

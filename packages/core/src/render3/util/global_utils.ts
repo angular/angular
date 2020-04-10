@@ -5,12 +5,20 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {assertDefined} from '../../util/assert';
 import {global} from '../../util/global';
 import {applyChanges} from './change_detection_utils';
-import {getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './discovery_utils';
-
-
+import {
+  getComponent,
+  getContext,
+  getDirectives,
+  getHostElement,
+  getInjector,
+  getListeners,
+  getOwningComponent,
+  getRootComponents,
+} from './discovery_utils';
 
 /**
  * This file introduces series of globally accessible debug tools
@@ -66,7 +74,7 @@ export function publishGlobalUtil(name: string, fn: Function): void {
     // - closure declares globals itself for minified names, which sometimes clobber our `ng` global
     // - we can't declare a closure extern as the namespace `ng` is already used within Google
     //   for typings for AngularJS (via `goog.provide('ng....')`).
-    const w = global as any as GlobalDevModeContainer;
+    const w = (global as any) as GlobalDevModeContainer;
     ngDevMode && assertDefined(fn, 'function not defined');
     if (w) {
       let container = w[GLOBAL_PUBLISH_EXPANDO_KEY];

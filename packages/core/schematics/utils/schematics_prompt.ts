@@ -8,7 +8,7 @@
 
 type Inquirer = typeof import('inquirer');
 
-let resolvedInquirerModule: Inquirer|null;
+let resolvedInquirerModule: Inquirer | null;
 
 try {
   // "inquirer" is the prompt module also used by the devkit schematics CLI
@@ -30,5 +30,5 @@ export function supportsPrompt(): boolean {
  * create prompts.
  */
 export function getInquirer(): Inquirer {
-  return resolvedInquirerModule !;
+  return resolvedInquirerModule!;
 }

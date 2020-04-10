@@ -146,7 +146,7 @@ module.exports = (gulp, done) => {
   console.log(`Writing file ${I18N_DATA_FOLDER}/${OUTPUT_NAME}`);
   fs.writeFileSync(
     `${RELATIVE_I18N_DATA_FOLDER}/${OUTPUT_NAME}`,
-    generateAllLocalesFile(GOOG_LOCALES, ALIASES),
+    generateAllLocalesFile(GOOG_LOCALES, ALIASES)
   );
 
   console.log(`Formatting ${I18N_DATA_FOLDER}/${OUTPUT_NAME}..."`);

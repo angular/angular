@@ -39,8 +39,10 @@ export interface LocalizeFn {
 }
 
 export interface TranslateFn {
-  (messageParts: TemplateStringsArray,
-   expressions: readonly any[]): [TemplateStringsArray, readonly any[]];
+  (messageParts: TemplateStringsArray, expressions: readonly any[]): [
+    TemplateStringsArray,
+    readonly any[]
+  ];
 }
 
 /**
@@ -134,8 +136,10 @@ export interface TranslateFn {
  * @param expressions a collection of the values of each placeholder in the template string.
  * @returns the translated string, with the `messageParts` and `expressions` interleaved together.
  */
-export const $localize: LocalizeFn = function(
-    messageParts: TemplateStringsArray, ...expressions: readonly any[]) {
+export const $localize: LocalizeFn = function (
+  messageParts: TemplateStringsArray,
+  ...expressions: readonly any[]
+) {
   if ($localize.translate) {
     // Don't use array expansion here to avoid the compiler adding `__read()` helper unnecessarily.
     const translation = $localize.translate(messageParts, expressions);
@@ -165,9 +169,9 @@ const BLOCK_MARKER = ':';
  * @throws an error if the block is unterminated
  */
 function stripBlock(messagePart: string, rawMessagePart: string) {
-  return rawMessagePart.charAt(0) === BLOCK_MARKER ?
-      messagePart.substring(findEndOfBlock(messagePart, rawMessagePart) + 1) :
-      messagePart;
+  return rawMessagePart.charAt(0) === BLOCK_MARKER
+    ? messagePart.substring(findEndOfBlock(messagePart, rawMessagePart) + 1)
+    : messagePart;
 }
 
 /**

@@ -32,7 +32,7 @@ describe('perform watch', () => {
       rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')],
       project: path.resolve(testSupport.basePath, 'src/tsconfig.json'),
       emitFlags: ng.EmitFlags.Default,
-      errors: []
+      errors: [],
     };
   }
 
@@ -65,8 +65,9 @@ describe('perform watch', () => {
     expectNoDiagnostics(config.options, watchResult.firstCompileResult);
 
     const htmlPath = path.join(testSupport.basePath, 'src', 'main.html');
-    const genPath = ivyEnabled ? path.posix.join(outDir, 'src', 'main.js') :
-                                 path.posix.join(outDir, 'src', 'main.ngfactory.js');
+    const genPath = ivyEnabled
+      ? path.posix.join(outDir, 'src', 'main.js')
+      : path.posix.join(outDir, 'src', 'main.ngfactory.js');
 
     const initial = fs.readFileSync(genPath, {encoding: 'utf8'});
     expect(initial).toContain('"initial"');
@@ -126,7 +127,9 @@ describe('perform watch', () => {
     // trigger a folder change
     // -> nothing should be cached
     host.triggerFileChange(
-        FileChangeEvent.CreateDeleteDir, path.resolve(testSupport.basePath, 'src'));
+      FileChangeEvent.CreateDeleteDir,
+      path.resolve(testSupport.basePath, 'src')
+    );
     expectNoDiagnostics(config.options, host.diagnostics);
 
     expect(fileExistsSpy!).toHaveBeenCalledWith(mainTsPath);
@@ -175,7 +178,6 @@ describe('perform watch', () => {
     expectNoDiagnostics(config.options, host.diagnostics);
   });
 
-
   it('should recover from static analysis errors', () => {
     const config = createConfig();
     const host = new MockWatchHost(config);
@@ -211,7 +213,7 @@ describe('perform watch', () => {
       testSupport.write(indexTsPath, errorFileContent);
       host.triggerFileChange(FileChangeEvent.Change, indexTsPath);
 
-      const errDiags = host.diagnostics.filter(d => d.category === ts.DiagnosticCategory.Error);
+      const errDiags = host.diagnostics.filter((d) => d.category === ts.DiagnosticCategory.Error);
       expect(errDiags.length).toBe(1);
       expect(errDiags[0].messageText).toContain('Function expressions are not supported');
     }
@@ -219,8 +221,9 @@ describe('perform watch', () => {
 });
 
 function createModuleAndCompSource(prefix: string, template: string = prefix + 'template') {
-  const templateEntry =
-      template.endsWith('.html') ? `templateUrl: '${template}'` : `template: \`${template}\``;
+  const templateEntry = template.endsWith('.html')
+    ? `templateUrl: '${template}'`
+    : `template: \`${template}\``;
   return `
     import {Component, NgModule} from '@angular/core';
 
@@ -234,8 +237,8 @@ function createModuleAndCompSource(prefix: string, template: string = prefix + '
 
 class MockWatchHost {
   nextTimeoutListenerId = 1;
-  timeoutListeners: {[id: string]: (() => void)} = {};
-  fileChangeListeners: Array<((event: FileChangeEvent, fileName: string) => void)|null> = [];
+  timeoutListeners: {[id: string]: () => void} = {};
+  fileChangeListeners: Array<((event: FileChangeEvent, fileName: string) => void) | null> = [];
   diagnostics: ng.Diagnostic[] = [];
   constructor(public config: ng.ParsedConfiguration) {}
 
@@ -252,13 +255,15 @@ class MockWatchHost {
     return undefined;
   }
   onFileChange(
-      options: ng.CompilerOptions, listener: (event: FileChangeEvent, fileName: string) => void,
-      ready: () => void) {
+    options: ng.CompilerOptions,
+    listener: (event: FileChangeEvent, fileName: string) => void,
+    ready: () => void
+  ) {
     const id = this.fileChangeListeners.length;
     this.fileChangeListeners.push(listener);
     ready();
     return {
-      close: () => this.fileChangeListeners[id] = null,
+      close: () => (this.fileChangeListeners[id] = null),
     };
   }
   setTimeout(callback: () => void): any {
@@ -272,10 +277,10 @@ class MockWatchHost {
   flushTimeouts() {
     const listeners = this.timeoutListeners;
     this.timeoutListeners = {};
-    Object.keys(listeners).forEach(id => listeners[id]());
+    Object.keys(listeners).forEach((id) => listeners[id]());
   }
   triggerFileChange(event: FileChangeEvent, fileName: string) {
-    this.fileChangeListeners.forEach(listener => {
+    this.fileChangeListeners.forEach((listener) => {
       if (listener) {
         listener(event, fileName);
       }

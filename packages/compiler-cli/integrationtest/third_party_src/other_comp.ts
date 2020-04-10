@@ -10,8 +10,8 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'another-third-party-comp',
+  // prettier-ignore
   template: `<div i18n>other-3rdP-component
-multi-lines</div>`,
+multi-lines</div>`
 })
-export class AnotherThirdpartyComponent {
-}
+export class AnotherThirdpartyComponent {}

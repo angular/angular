@@ -41,22 +41,26 @@ describe('plugin', () => {
 
   it('should produce TypeScript diagnostics', () => {
     const fileName = '/foo.ts';
-    mockHost.addScript(fileName, `
+    mockHost.addScript(
+      fileName,
+      `
       function add(x: number) {
         return x + 42;
       }
       add('hello');
-    `);
+    `
+    );
     const diags = plugin.getSemanticDiagnostics(fileName);
     expect(diags.length).toBe(1);
-    expect(diags[0].messageText)
-        .toBe(`Argument of type '"hello"' is not assignable to parameter of type 'number'.`);
+    expect(diags[0].messageText).toBe(
+      `Argument of type '"hello"' is not assignable to parameter of type 'number'.`
+    );
   });
 
   it('should not report TypeScript errors on tour of heroes', () => {
     const compilerDiags = tsLS.getCompilerOptionsDiagnostics();
     expect(compilerDiags).toEqual([]);
-    const sourceFiles = program.getSourceFiles().filter(f => !f.fileName.endsWith('.d.ts'));
+    const sourceFiles = program.getSourceFiles().filter((f) => !f.fileName.endsWith('.d.ts'));
     // there are three .ts files in the test project
     expect(sourceFiles.length).toBe(3);
     for (const {fileName} of sourceFiles) {
@@ -85,12 +89,17 @@ describe('plugin', () => {
       baseUrl: '/app',
       paths: {'bar/*': ['foo/bar/*']},
     });
-    mockHost.addScript(SHARED_MODULE, `
+    mockHost.addScript(
+      SHARED_MODULE,
+      `
       export interface Node {
         children: Node[];
       }
-    `);
-    mockHost.addScript(MY_COMPONENT, `
+    `
+    );
+    mockHost.addScript(
+      MY_COMPONENT,
+      `
       import { Component, NgModule } from '@angular/core';
       import { Node } from 'bar/shared';
 
@@ -108,7 +117,8 @@ describe('plugin', () => {
         declarations: [MyComponent],
       })
       export class MyModule {}
-    `);
+    `
+    );
     // First, make sure there are no errors in newly added scripts.
     for (const fileName of [SHARED_MODULE, MY_COMPONENT]) {
       const syntacticDiags = plugin.getSyntacticDiagnostics(fileName);
@@ -146,12 +156,15 @@ describe(`with config 'angularOnly = true`, () => {
 
   it('should not produce TypeScript diagnostics', () => {
     const fileName = '/foo.ts';
-    mockHost.addScript(fileName, `
+    mockHost.addScript(
+      fileName,
+      `
       function add(x: number) {
         return x + 42;
       }
       add('hello');
-    `);
+    `
+    );
     const diags = plugin.getSemanticDiagnostics(fileName);
     expect(diags).toEqual([]);
   });

@@ -6,7 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, forwardRef, Host, Inject, Input, OnDestroy, OnInit, Optional, Self, SkipSelf} from '@angular/core';
+import {
+  Directive,
+  forwardRef,
+  Host,
+  Inject,
+  Input,
+  OnDestroy,
+  OnInit,
+  Optional,
+  Self,
+  SkipSelf,
+} from '@angular/core';
 
 import {FormArray} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
@@ -20,7 +31,7 @@ import {FormGroupDirective} from './form_group_directive';
 
 export const formGroupNameProvider: any = {
   provide: ControlContainer,
-  useExisting: forwardRef(() => FormGroupName)
+  useExisting: forwardRef(() => FormGroupName),
 };
 
 /**
@@ -82,12 +93,13 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
    * to indices when iterating over groups in a `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('formGroupName') name!: string|number|null;
+  @Input('formGroupName') name!: string | number | null;
 
   constructor(
-      @Optional() @Host() @SkipSelf() parent: ControlContainer,
-      @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
+    @Optional() @Host() @SkipSelf() parent: ControlContainer,
+    @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
+    @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]
+  ) {
     super();
     this._parent = parent;
     this._validators = validators;
@@ -104,7 +116,7 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
 
 export const formArrayNameProvider: any = {
   provide: ControlContainer,
-  useExisting: forwardRef(() => FormArrayName)
+  useExisting: forwardRef(() => FormArrayName),
 };
 
 /**
@@ -152,12 +164,13 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * to indices when iterating over arrays in a `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('formArrayName') name!: string|number|null;
+  @Input('formArrayName') name!: string | number | null;
 
   constructor(
-      @Optional() @Host() @SkipSelf() parent: ControlContainer,
-      @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
+    @Optional() @Host() @SkipSelf() parent: ControlContainer,
+    @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
+    @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]
+  ) {
     super();
     this._parent = parent;
     this._validators = validators;
@@ -197,7 +210,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * @description
    * The top-level directive for this group if present, otherwise null.
    */
-  get formDirective(): FormGroupDirective|null {
+  get formDirective(): FormGroupDirective | null {
     return this._parent ? <FormGroupDirective>this._parent.formDirective : null;
   }
 
@@ -215,7 +228,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * Synchronous validator function composed of all the synchronous validators registered with this
    * directive.
    */
-  get validator(): ValidatorFn|null {
+  get validator(): ValidatorFn | null {
     return composeValidators(this._validators);
   }
 
@@ -223,7 +236,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * @description
    * Async validator function composed of all the async validators registered with this directive.
    */
-  get asyncValidator(): AsyncValidatorFn|null {
+  get asyncValidator(): AsyncValidatorFn | null {
     return composeAsyncValidators(this._asyncValidators);
   }
 
@@ -235,6 +248,9 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
 }
 
 function _hasInvalidParent(parent: ControlContainer): boolean {
-  return !(parent instanceof FormGroupName) && !(parent instanceof FormGroupDirective) &&
-      !(parent instanceof FormArrayName);
+  return (
+    !(parent instanceof FormGroupName) &&
+    !(parent instanceof FormGroupDirective) &&
+    !(parent instanceof FormArrayName)
+  );
 }

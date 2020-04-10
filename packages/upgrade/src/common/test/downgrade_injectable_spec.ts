@@ -39,7 +39,7 @@ describe('downgradeInjectable', () => {
     expect(mockNg2Injector.get).toHaveBeenCalledWith('someToken');
   });
 
-  it('should inject the specified module\'s injector when specifying a module name', () => {
+  it("should inject the specified module's injector when specifying a module name", () => {
     const factory = downgradeInjectable('someToken', 'someModule');
     expect(factory).toEqual(jasmine.any(Function));
     expect((factory as any).$inject).toEqual([$INJECTOR]);

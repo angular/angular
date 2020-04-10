@@ -15,11 +15,10 @@ import {Injector, MeasureValues, SizeValidator} from '../../index';
     let validator: SizeValidator;
 
     function createValidator(size: number) {
-      validator =
-          Injector
-              .create(
-                  [SizeValidator.PROVIDERS, {provide: SizeValidator.SAMPLE_SIZE, useValue: size}])
-              .get(SizeValidator);
+      validator = Injector.create([
+        SizeValidator.PROVIDERS,
+        {provide: SizeValidator.SAMPLE_SIZE, useValue: size},
+      ]).get(SizeValidator);
     }
 
     it('should return sampleSize as description', () => {
@@ -39,7 +38,6 @@ import {Injector, MeasureValues, SizeValidator} from '../../index';
       expect(validator.validate(sample.slice(0, 2))).toEqual(sample.slice(0, 2));
       expect(validator.validate(sample)).toEqual(sample.slice(1, 3));
     });
-
   });
 }
 

@@ -18,14 +18,18 @@ import {DeclarationUsageVisitor, FunctionContext, ResolvedUsage} from './declara
 import {updateSuperClassAbstractMembersContext} from './super_class_context';
 import {TemplateUsageVisitor} from './template_usage_visitor';
 
-
 /**
  * Object that maps a given type of query to a list of lifecycle hooks that
  * could be used to access such a query statically.
  */
 const STATIC_QUERY_LIFECYCLE_HOOKS = {
-  [QueryType.ViewChild]:
-      ['ngOnChanges', 'ngOnInit', 'ngDoCheck', 'ngAfterContentInit', 'ngAfterContentChecked'],
+  [QueryType.ViewChild]: [
+    'ngOnChanges',
+    'ngOnInit',
+    'ngDoCheck',
+    'ngAfterContentInit',
+    'ngAfterContentChecked',
+  ],
   [QueryType.ContentChild]: ['ngOnChanges', 'ngOnInit', 'ngDoCheck'],
 };
 
@@ -53,7 +57,7 @@ export class QueryUsageStrategy implements TimingStrategy {
     if (usage === ResolvedUsage.AMBIGUOUS) {
       return {
         timing: QueryTiming.STATIC,
-        message: 'Query timing is ambiguous. Please check if the query can be marked as dynamic.'
+        message: 'Query timing is ambiguous. Please check if the query can be marked as dynamic.',
       };
     } else if (usage === ResolvedUsage.SYNCHRONOUS) {
       return {timing: QueryTiming.STATIC};
@@ -67,10 +71,17 @@ export class QueryUsageStrategy implements TimingStrategy {
    * class or derived classes.
    */
   private analyzeQueryUsage(
-      classDecl: ts.ClassDeclaration, query: NgQueryDefinition, knownInputNames: string[],
-      functionCtx: FunctionContext = new Map(), visitInheritedClasses = true): ResolvedUsage {
-    const usageVisitor =
-        new DeclarationUsageVisitor(query.property !, this.typeChecker, functionCtx);
+    classDecl: ts.ClassDeclaration,
+    query: NgQueryDefinition,
+    knownInputNames: string[],
+    functionCtx: FunctionContext = new Map(),
+    visitInheritedClasses = true
+  ): ResolvedUsage {
+    const usageVisitor = new DeclarationUsageVisitor(
+      query.property!,
+      this.typeChecker,
+      functionCtx
+    );
     const classMetadata = this.classMetadata.get(classDecl);
     let usage: ResolvedUsage = ResolvedUsage.ASYNCHRONOUS;
 
@@ -89,7 +100,8 @@ export class QueryUsageStrategy implements TimingStrategy {
     // if the query declaration is synchronously used within any of these nodes.
     if (possibleStaticQueryNodes.length) {
       possibleStaticQueryNodes.forEach(
-          n => usage = combineResolvedUsage(usage, usageVisitor.getResolvedNodeUsage(n)));
+        (n) => (usage = combineResolvedUsage(usage, usageVisitor.getResolvedNodeUsage(n)))
+      );
     }
 
     if (!classMetadata) {
@@ -99,10 +111,10 @@ export class QueryUsageStrategy implements TimingStrategy {
     // In case there is a component template for the current class, we check if the
     // template statically accesses the current query. In case that's true, the query
     // can be marked as static.
-    if (classMetadata.template && hasPropertyNameText(query.property !.name)) {
+    if (classMetadata.template && hasPropertyNameText(query.property!.name)) {
       const template = classMetadata.template;
       const parsedHtml = parseHtmlGracefully(template.content, template.filePath);
-      const htmlVisitor = new TemplateUsageVisitor(query.property !.name.text);
+      const htmlVisitor = new TemplateUsageVisitor(query.property!.name.text);
 
       if (parsedHtml && htmlVisitor.isQueryUsedStatically(parsedHtml)) {
         return ResolvedUsage.SYNCHRONOUS;
@@ -113,9 +125,11 @@ export class QueryUsageStrategy implements TimingStrategy {
     // from the current class and check if these have input setters or lifecycle hooks that
     // use the query statically.
     if (visitInheritedClasses) {
-      classMetadata.derivedClasses.forEach(derivedClass => {
+      classMetadata.derivedClasses.forEach((derivedClass) => {
         usage = combineResolvedUsage(
-            usage, this.analyzeQueryUsage(derivedClass, query, knownInputNames));
+          usage,
+          this.analyzeQueryUsage(derivedClass, query, knownInputNames)
+        );
       });
     }
 
@@ -133,7 +147,9 @@ export class QueryUsageStrategy implements TimingStrategy {
       updateSuperClassAbstractMembersContext(classDecl, functionCtx, this.classMetadata);
 
       usage = combineResolvedUsage(
-          usage, this.analyzeQueryUsage(superClassDecl, query, [], functionCtx, false));
+        usage,
+        this.analyzeQueryUsage(superClassDecl, query, [], functionCtx, false)
+      );
     }
 
     return usage;
@@ -159,25 +175,33 @@ function combineResolvedUsage(base: ResolvedUsage, target: ResolvedUsage): Resol
  * given query statically (e.g. ngOnInit lifecycle hook or @Input setters)
  */
 function filterQueryClassMemberNodes(
-    classDecl: ts.ClassDeclaration, query: NgQueryDefinition,
-    knownInputNames: string[]): ts.Block[] {
+  classDecl: ts.ClassDeclaration,
+  query: NgQueryDefinition,
+  knownInputNames: string[]
+): ts.Block[] {
   // Returns an array of TypeScript nodes which can contain usages of the given query
   // in order to access it statically. e.g.
   //  (1) queries used in the "ngOnInit" lifecycle hook are static.
   //  (2) inputs with setters can access queries statically.
   return classDecl.members
-      .filter(
-          (m):
-              m is(ts.SetAccessorDeclaration | ts.MethodDeclaration) => {
-                if (ts.isMethodDeclaration(m) && m.body && hasPropertyNameText(m.name) &&
-                    STATIC_QUERY_LIFECYCLE_HOOKS[query.type].indexOf(m.name.text) !== -1) {
-                  return true;
-                } else if (
-                    knownInputNames && ts.isSetAccessor(m) && m.body &&
-                    hasPropertyNameText(m.name) && knownInputNames.indexOf(m.name.text) !== -1) {
-                  return true;
-                }
-                return false;
-              })
-      .map(member => member.body !);
+    .filter((m): m is ts.SetAccessorDeclaration | ts.MethodDeclaration => {
+      if (
+        ts.isMethodDeclaration(m) &&
+        m.body &&
+        hasPropertyNameText(m.name) &&
+        STATIC_QUERY_LIFECYCLE_HOOKS[query.type].indexOf(m.name.text) !== -1
+      ) {
+        return true;
+      } else if (
+        knownInputNames &&
+        ts.isSetAccessor(m) &&
+        m.body &&
+        hasPropertyNameText(m.name) &&
+        knownInputNames.indexOf(m.name.text) !== -1
+      ) {
+        return true;
+      }
+      return false;
+    })
+    .map((member) => member.body!);
 }

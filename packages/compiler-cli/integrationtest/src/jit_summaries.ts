@@ -25,16 +25,13 @@ export class Base {
 }
 
 @Component({templateUrl: './jit_summaries.html'})
-export class SomePrivateComponent extends Base {
-}
+export class SomePrivateComponent extends Base {}
 
 @Component({templateUrl: './jit_summaries.html'})
-export class SomePublicComponent extends Base {
-}
+export class SomePublicComponent extends Base {}
 
 @Directive({selector: '[someDir]'})
-export class SomeDirective extends Base {
-}
+export class SomeDirective extends Base {}
 
 @Pipe({name: 'somePipe'})
 export class SomePipe extends Base {
@@ -44,13 +41,11 @@ export class SomePipe extends Base {
 }
 
 @Injectable()
-export class SomeService extends Base {
-}
+export class SomeService extends Base {}
 
 @NgModule({
   declarations: [SomePublicComponent, SomePrivateComponent, SomeDirective, SomePipe],
   exports: [SomeDirective, SomePipe, SomePublicComponent],
-  providers: [SomeService]
+  providers: [SomeService],
 })
-export class SomeModule extends Base {
-}
+export class SomeModule extends Base {}

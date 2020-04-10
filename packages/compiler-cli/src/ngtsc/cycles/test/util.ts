@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 import {FileSystem} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
@@ -31,24 +32,27 @@ import {makeProgram} from '../../testing';
  *
  * represents a program where a.ts exports from b.ts and imports from c.ts.
  */
-export function makeProgramFromGraph(fs: FileSystem, graph: string): {
-  program: ts.Program,
-  host: ts.CompilerHost,
-  options: ts.CompilerOptions,
+export function makeProgramFromGraph(
+  fs: FileSystem,
+  graph: string
+): {
+  program: ts.Program;
+  host: ts.CompilerHost;
+  options: ts.CompilerOptions;
 } {
-  const files: TestFile[] = graph.split(';').map(fileSegment => {
+  const files: TestFile[] = graph.split(';').map((fileSegment) => {
     const [name, importList] = fileSegment.split(':');
-    const contents = (importList ? importList.split(',') : [])
-                         .map(i => {
-                           if (i.startsWith('*')) {
-                             const sym = i.substr(1);
-                             return `export {${sym}} from './${sym}';`;
-                           } else {
-                             return `import {${i}} from './${i}';`;
-                           }
-                         })
-                         .join('\n') +
-        `export const ${name} = '${name}';\n`;
+    const contents =
+      (importList ? importList.split(',') : [])
+        .map((i) => {
+          if (i.startsWith('*')) {
+            const sym = i.substr(1);
+            return `export {${sym}} from './${sym}';`;
+          } else {
+            return `import {${i}} from './${i}';`;
+          }
+        })
+        .join('\n') + `export const ${name} = '${name}';\n`;
     return {
       name: fs.resolve(`/${name}.ts`),
       contents,

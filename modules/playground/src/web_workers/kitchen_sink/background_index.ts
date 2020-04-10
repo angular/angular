@@ -17,7 +17,6 @@ import {HelloCmp, RedDec} from './index_common';
   bootstrap: [HelloCmp],
   declarations: [HelloCmp, RedDec],
 })
-export class ExampleModule {
-}
+export class ExampleModule {}
 
 platformWorkerAppDynamic().bootstrapModule(ExampleModule);

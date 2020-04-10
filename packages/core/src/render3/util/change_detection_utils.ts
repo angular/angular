@@ -20,5 +20,5 @@ import {getRootComponents} from './discovery_utils';
  */
 export function applyChanges(component: {}): void {
   markDirty(component);
-  getRootComponents(component).forEach(rootComponent => detectChanges(rootComponent));
+  getRootComponents(component).forEach((rootComponent) => detectChanges(rootComponent));
 }

@@ -61,7 +61,7 @@ class HasDefinedDep {
 }
 
 class HasOptionalDep {
-  constructor(public baz: Baz|null) {}
+  constructor(public baz: Baz | null) {}
 
   static ɵprov: ɵɵInjectableDef<HasOptionalDep> = ɵɵdefineInjectable({
     token: HasOptionalDep,
@@ -79,7 +79,7 @@ class ChildDep {
 }
 
 class FromChildWithOptionalDep {
-  constructor(public baz: Baz|null) {}
+  constructor(public baz: Baz | null) {}
   static ɵprov: ɵɵInjectableDef<FromChildWithOptionalDep> = ɵɵdefineInjectable({
     token: FromChildWithOptionalDep,
     factory: () => new FromChildWithOptionalDep(inject(Baz, InjectFlags.Default)),
@@ -89,48 +89,56 @@ class FromChildWithOptionalDep {
 
 class FromChildWithSkipSelfDep {
   constructor(
-      public skipSelfChildDep: ChildDep|null, public selfChildDep: ChildDep|null,
-      public optionalSelfBar: Bar|null) {}
+    public skipSelfChildDep: ChildDep | null,
+    public selfChildDep: ChildDep | null,
+    public optionalSelfBar: Bar | null
+  ) {}
   static ɵprov: ɵɵInjectableDef<FromChildWithSkipSelfDep> = ɵɵdefineInjectable({
     token: FromChildWithSkipSelfDep,
-    factory: () => new FromChildWithSkipSelfDep(
-                 inject(ChildDep, InjectFlags.SkipSelf|InjectFlags.Optional),
-                 inject(ChildDep, InjectFlags.Self),
-                 inject(Bar, InjectFlags.Self|InjectFlags.Optional), ),
+    factory: () =>
+      new FromChildWithSkipSelfDep(
+        inject(ChildDep, InjectFlags.SkipSelf | InjectFlags.Optional),
+        inject(ChildDep, InjectFlags.Self),
+        inject(Bar, InjectFlags.Self | InjectFlags.Optional)
+      ),
     providedIn: MyChildModule,
   });
 }
 
 class UsesInject {
-  constructor() { inject(INJECTOR); }
+  constructor() {
+    inject(INJECTOR);
+  }
 }
 
 function makeProviders(classes: any[], modules: any[]): NgModuleDefinition {
-  const providers =
-      classes.map((token, index) => ({
-                    index,
-                    deps: [],
-                    flags: NodeFlags.TypeClassProvider | NodeFlags.LazyProvider, token,
-                    value: token,
-                  }));
+  const providers = classes.map((token, index) => ({
+    index,
+    deps: [],
+    flags: NodeFlags.TypeClassProvider | NodeFlags.LazyProvider,
+    token,
+    value: token,
+  }));
   return makeModule(modules, providers);
 }
 
 function makeFactoryProviders(
-    factories: {token: any, factory: Function}[], modules: any[]): NgModuleDefinition {
+  factories: {token: any; factory: Function}[],
+  modules: any[]
+): NgModuleDefinition {
   const providers = factories.map((factory, index) => ({
-                                    index,
-                                    deps: [],
-                                    flags: NodeFlags.TypeFactoryProvider | NodeFlags.LazyProvider,
-                                    token: factory.token,
-                                    value: factory.factory,
-                                  }));
+    index,
+    deps: [],
+    flags: NodeFlags.TypeFactoryProvider | NodeFlags.LazyProvider,
+    token: factory.token,
+    value: factory.factory,
+  }));
   return makeModule(modules, providers);
 }
 
 function makeModule(modules: any[], providers: NgModuleProviderDef[]): NgModuleDefinition {
   const providersByKey: {[key: string]: NgModuleProviderDef} = {};
-  providers.forEach(provider => providersByKey[tokenKey(provider.token)] = provider);
+  providers.forEach((provider) => (providersByKey[tokenKey(provider.token)] = provider));
   return {factory: null, providers, providersByKey, modules, scope: 'root'};
 }
 
@@ -139,19 +147,30 @@ describe('NgModuleRef_ injector', () => {
   let childRef: NgModuleRef<any>;
   beforeEach(() => {
     ref = createNgModuleRef(
-        MyModule, Injector.NULL, [], makeProviders([MyModule, Foo, UsesInject], [MyModule]));
+      MyModule,
+      Injector.NULL,
+      [],
+      makeProviders([MyModule, Foo, UsesInject], [MyModule])
+    );
     childRef = createNgModuleRef(
-        MyChildModule, ref.injector, [], makeProviders([MyChildModule], [MyChildModule]));
+      MyChildModule,
+      ref.injector,
+      [],
+      makeProviders([MyChildModule], [MyChildModule])
+    );
   });
 
-  it('injects a provided value',
-     () => { expect(ref.injector.get(Foo) instanceof Foo).toBeTruthy(); });
+  it('injects a provided value', () => {
+    expect(ref.injector.get(Foo) instanceof Foo).toBeTruthy();
+  });
 
-  it('injects an InjectableDef value',
-     () => { expect(ref.injector.get(Bar) instanceof Bar).toBeTruthy(); });
+  it('injects an InjectableDef value', () => {
+    expect(ref.injector.get(Bar) instanceof Bar).toBeTruthy();
+  });
 
-  it('caches InjectableDef values',
-     () => { expect(ref.injector.get(Bar)).toBe(ref.injector.get(Bar)); });
+  it('caches InjectableDef values', () => {
+    expect(ref.injector.get(Bar)).toBe(ref.injector.get(Bar));
+  });
 
   it('injects provided deps properly', () => {
     const instance = ref.injector.get(HasNormalDep);
@@ -179,27 +198,38 @@ describe('NgModuleRef_ injector', () => {
     expect(instance.optionalSelfBar).toBeNull();
   });
 
-  it('does not inject something not scoped to the module',
-     () => { expect(ref.injector.get(Baz, null)).toBeNull(); });
+  it('does not inject something not scoped to the module', () => {
+    expect(ref.injector.get(Baz, null)).toBeNull();
+  });
 
-  it('injects with the current injector always set',
-     () => { expect(() => ref.injector.get(UsesInject)).not.toThrow(); });
+  it('injects with the current injector always set', () => {
+    expect(() => ref.injector.get(UsesInject)).not.toThrow();
+  });
 
   it('calls ngOnDestroy on services created via factory', () => {
     class Module {}
 
     class Service {
       static destroyed = 0;
-      ngOnDestroy(): void { Service.destroyed++; }
+      ngOnDestroy(): void {
+        Service.destroyed++;
+      }
     }
 
     const ref = createNgModuleRef(
-        Module, Injector.NULL, [], makeFactoryProviders(
-                                       [{
-                                         token: Service,
-                                         factory: () => new Service(),
-                                       }],
-                                       [Module]));
+      Module,
+      Injector.NULL,
+      [],
+      makeFactoryProviders(
+        [
+          {
+            token: Service,
+            factory: () => new Service(),
+          },
+        ],
+        [Module]
+      )
+    );
 
     expect(ref.injector.get(Service)).toBeDefined();
     expect(Service.destroyed).toBe(0);
@@ -213,7 +243,9 @@ describe('NgModuleRef_ injector', () => {
     class Service {
       static destroyed = 0;
 
-      ngOnDestroy(): void { Service.destroyed++; }
+      ngOnDestroy(): void {
+        Service.destroyed++;
+      }
 
       static ɵprov: ɵɵInjectableDef<Service> = ɵɵdefineInjectable({
         token: Service,
@@ -235,25 +267,32 @@ describe('NgModuleRef_ injector', () => {
 
     class Service {
       static destroyed = 0;
-      ngOnDestroy(): void { Service.destroyed++; }
+      ngOnDestroy(): void {
+        Service.destroyed++;
+      }
     }
 
     class OtherToken {}
 
     const instance = new Service();
     const ref = createNgModuleRef(
-        Module, Injector.NULL, [], makeFactoryProviders(
-                                       [
-                                         {
-                                           token: Service,
-                                           factory: () => instance,
-                                         },
-                                         {
-                                           token: OtherToken,
-                                           factory: () => instance,
-                                         }
-                                       ],
-                                       [Module]));
+      Module,
+      Injector.NULL,
+      [],
+      makeFactoryProviders(
+        [
+          {
+            token: Service,
+            factory: () => instance,
+          },
+          {
+            token: OtherToken,
+            factory: () => instance,
+          },
+        ],
+        [Module]
+      )
+    );
 
     expect(ref.injector.get(Service)).toBe(instance);
     expect(ref.injector.get(OtherToken)).toBe(instance);
@@ -267,7 +306,9 @@ describe('NgModuleRef_ injector', () => {
       return {
         index: 0,
         flags: NodeFlags.TypeValueProvider | NodeFlags.LazyProvider,
-        deps: [], token, value
+        deps: [],
+        token,
+        value,
       };
     }
 

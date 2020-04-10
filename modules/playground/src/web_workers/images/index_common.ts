@@ -10,10 +10,9 @@ import {Component} from '@angular/core';
 
 import {BitmapService} from './services/bitmap';
 
-
 @Component({selector: 'image-demo', viewProviders: [BitmapService], templateUrl: 'image_demo.html'})
 export class ImageDemo {
-  images: {src: string, buffer: ArrayBuffer, filtering: boolean}[] = [];
+  images: {src: string; buffer: ArrayBuffer; filtering: boolean}[] = [];
   fileInput: String;
 
   constructor(private _bitmapService: BitmapService) {}
@@ -32,7 +31,7 @@ export class ImageDemo {
       this.images.push({
         src: this._bitmapService.arrayBufferToDataUri(new Uint8Array(buffer)),
         buffer: buffer,
-        filtering: false
+        filtering: false,
       });
     };
   }

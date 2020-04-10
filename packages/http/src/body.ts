@@ -9,7 +9,6 @@
 import {stringToArrayBuffer} from './http_utils';
 import {URLSearchParams} from './url_search_params';
 
-
 /**
  * HTTP request body used by both {@link Request} and {@link Response}
  * https://fetch.spec.whatwg.org/#body
@@ -49,7 +48,7 @@ export abstract class Body {
    *
    * - `iso-8859` - interpret the bytes as ISO-8859 (which can be used for ASCII encoded text).
    */
-  text(encodingHint: 'legacy'|'iso-8859' = 'legacy'): string {
+  text(encodingHint: 'legacy' | 'iso-8859' = 'legacy'): string {
     if (this._body instanceof URLSearchParams) {
       return this._body.toString();
     }
@@ -92,8 +91,8 @@ export abstract class Body {
   }
 
   /**
-    * Returns the request's body as a Blob, assuming that body exists.
-    */
+   * Returns the request's body as a Blob, assuming that body exists.
+   */
   blob(): Blob {
     if (this._body instanceof Blob) {
       return this._body;
@@ -103,6 +102,6 @@ export abstract class Body {
       return new Blob([this._body]);
     }
 
-    throw new Error('The request body isn\'t either a blob or an array buffer');
+    throw new Error("The request body isn't either a blob or an array buffer");
   }
 }

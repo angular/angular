@@ -13,15 +13,17 @@ import {runInEachFileSystem} from '../testing';
 runInEachFileSystem(() => {
   describe('logical paths', () => {
     let _: typeof absoluteFrom;
-    beforeEach(() => _ = absoluteFrom);
+    beforeEach(() => (_ = absoluteFrom));
 
     describe('LogicalFileSystem', () => {
       it('should determine logical paths in a single root file system', () => {
         const fs = new LogicalFileSystem([_('/test')]);
-        expect(fs.logicalPathOfFile(_('/test/foo/foo.ts')))
-            .toEqual('/foo/foo' as LogicalProjectPath);
-        expect(fs.logicalPathOfFile(_('/test/bar/bar.ts')))
-            .toEqual('/bar/bar' as LogicalProjectPath);
+        expect(fs.logicalPathOfFile(_('/test/foo/foo.ts'))).toEqual(
+          '/foo/foo' as LogicalProjectPath
+        );
+        expect(fs.logicalPathOfFile(_('/test/bar/bar.ts'))).toEqual(
+          '/bar/bar' as LogicalProjectPath
+        );
         expect(fs.logicalPathOfFile(_('/not-test/bar.ts'))).toBeNull();
       });
 
@@ -39,25 +41,31 @@ runInEachFileSystem(() => {
 
       it('should always return `/` prefixed logical paths', () => {
         const rootFs = new LogicalFileSystem([_('/')]);
-        expect(rootFs.logicalPathOfFile(_('/foo/foo.ts')))
-            .toEqual('/foo/foo' as LogicalProjectPath);
+        expect(rootFs.logicalPathOfFile(_('/foo/foo.ts'))).toEqual(
+          '/foo/foo' as LogicalProjectPath
+        );
 
         const nonRootFs = new LogicalFileSystem([_('/test/')]);
-        expect(nonRootFs.logicalPathOfFile(_('/test/foo/foo.ts')))
-            .toEqual('/foo/foo' as LogicalProjectPath);
+        expect(nonRootFs.logicalPathOfFile(_('/test/foo/foo.ts'))).toEqual(
+          '/foo/foo' as LogicalProjectPath
+        );
       });
     });
 
     describe('utilities', () => {
       it('should give a relative path between two adjacent logical files', () => {
         const res = LogicalProjectPath.relativePathBetween(
-            '/foo' as LogicalProjectPath, '/bar' as LogicalProjectPath);
+          '/foo' as LogicalProjectPath,
+          '/bar' as LogicalProjectPath
+        );
         expect(res).toEqual('./bar');
       });
 
       it('should give a relative path between two non-adjacent logical files', () => {
         const res = LogicalProjectPath.relativePathBetween(
-            '/foo/index' as LogicalProjectPath, '/bar/index' as LogicalProjectPath);
+          '/foo/index' as LogicalProjectPath,
+          '/bar/index' as LogicalProjectPath
+        );
         expect(res).toEqual('../bar/index');
       });
     });

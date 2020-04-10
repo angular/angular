@@ -20,11 +20,21 @@ export function main() {
     bindAction('#destroyDom', () => destroyDom(component));
     bindAction('#detectChanges', () => detectChanges(component));
     bindAction(
-        '#detectChangesProfile', profile(() => detectChanges(component), noop, 'detectChanges'));
-    bindAction('#updateDomProfile', profile(() => createDom(component), noop, 'update'));
+      '#detectChangesProfile',
+      profile(() => detectChanges(component), noop, 'detectChanges')
+    );
     bindAction(
-        '#createDomProfile',
-        profile(() => createDom(component), () => destroyDom(component), 'create'));
+      '#updateDomProfile',
+      profile(() => createDom(component), noop, 'update')
+    );
+    bindAction(
+      '#createDomProfile',
+      profile(
+        () => createDom(component),
+        () => destroyDom(component),
+        'create'
+      )
+    );
   }
 }
 

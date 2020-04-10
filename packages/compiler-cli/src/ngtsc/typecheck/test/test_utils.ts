@@ -6,16 +6,44 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssSelector, ParseSourceFile, ParseSourceSpan, parseTemplate, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, TmplAstReference, Type} from '@angular/compiler';
+import {
+  CssSelector,
+  ParseSourceFile,
+  ParseSourceSpan,
+  parseTemplate,
+  R3TargetBinder,
+  SchemaMetadata,
+  SelectorMatcher,
+  TmplAstElement,
+  TmplAstReference,
+  Type,
+} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, LogicalFileSystem} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
-import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
-import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
+import {
+  AbsoluteModuleStrategy,
+  LocalIdentifierStrategy,
+  LogicalProjectStrategy,
+  ModuleResolver,
+  Reference,
+  ReferenceEmitter,
+} from '../../imports';
+import {
+  ClassDeclaration,
+  isNamedClassDeclaration,
+  TypeScriptReflectionHost,
+} from '../../reflection';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
-import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig} from '../src/api';
+import {
+  TemplateId,
+  TemplateSourceMapping,
+  TypeCheckableDirectiveMeta,
+  TypeCheckBlockMetadata,
+  TypeCheckingConfig,
+} from '../src/api';
 import {TypeCheckContext} from '../src/context';
 import {DomSchemaChecker} from '../src/dom';
 import {Environment} from '../src/environment';
@@ -76,7 +104,7 @@ export function typescriptLibDts(): TestFile {
         createElement(tagName: string): HTMLElement;
       }
       declare const document: Document;
-  `
+  `,
   };
 }
 
@@ -94,7 +122,7 @@ export function angularCoreDts(): TestFile {
     }
     
     export declare type NgIterable<T> = Array<T> | Iterable<T>;
-  `
+  `,
   };
 }
 
@@ -105,7 +133,7 @@ export function angularAnimationsDts(): TestFile {
     export declare class AnimationEvent {
       element: any;
     }
-  `
+  `,
   };
 }
 
@@ -168,33 +196,42 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
-export type TestDirective = Partial<Pick<
+export type TestDirective = Partial<
+  Pick<
     TypeCheckableDirectiveMeta,
-    Exclude<keyof TypeCheckableDirectiveMeta, 'ref'|'coercedInputFields'>>>&{
-  selector: string,
-  name: string,
-  file?: AbsoluteFsPath, type: 'directive',
-  coercedInputFields?: string[],
+    Exclude<keyof TypeCheckableDirectiveMeta, 'ref' | 'coercedInputFields'>
+  >
+> & {
+  selector: string;
+  name: string;
+  file?: AbsoluteFsPath;
+  type: 'directive';
+  coercedInputFields?: string[];
 };
 export type TestPipe = {
-  name: string,
-  file?: AbsoluteFsPath, pipeName: string, type: 'pipe',
+  name: string;
+  file?: AbsoluteFsPath;
+  pipeName: string;
+  type: 'pipe';
 };
 
-export type TestDeclaration = TestDirective|TestPipe;
+export type TestDeclaration = TestDirective | TestPipe;
 
 export function tcb(
-    template: string, declarations: TestDeclaration[] = [], config?: TypeCheckingConfig,
-    options?: {emitSpans?: boolean}): string {
-  const classes = ['Test', ...declarations.map(decl => decl.name)];
-  const code = classes.map(name => `class ${name}<T extends string> {}`).join('\n');
+  template: string,
+  declarations: TestDeclaration[] = [],
+  config?: TypeCheckingConfig,
+  options?: {emitSpans?: boolean}
+): string {
+  const classes = ['Test', ...declarations.map((decl) => decl.name)];
+  const code = classes.map((name) => `class ${name}<T extends string> {}`).join('\n');
 
   const sf = ts.createSourceFile('synthetic.ts', code, ts.ScriptTarget.Latest, true);
   const clazz = getClass(sf, 'Test');
   const templateUrl = 'synthetic.html';
   const {nodes} = parseTemplate(template, templateUrl);
 
-  const {matcher, pipes} = prepareDeclarations(declarations, decl => getClass(sf, decl.name));
+  const {matcher, pipes} = prepareDeclarations(declarations, (decl) => getClass(sf, decl.name));
   const binder = new R3TargetBinder(matcher);
   const boundTarget = binder.bind({template: nodes});
 
@@ -224,8 +261,13 @@ export function tcb(
   };
 
   const tcb = generateTypeCheckBlock(
-      FakeEnvironment.newFake(config), new Reference(clazz), ts.createIdentifier('Test_TCB'), meta,
-      new NoopSchemaChecker(), new NoopOobRecorder());
+    FakeEnvironment.newFake(config),
+    new Reference(clazz),
+    ts.createIdentifier('Test_TCB'),
+    meta,
+    new NoopSchemaChecker(),
+    new NoopOobRecorder()
+  );
 
   const removeComments = !options.emitSpans;
   const res = ts.createPrinter({removeComments}).printNode(ts.EmitHint.Unspecified, tcb, sf);
@@ -233,9 +275,13 @@ export function tcb(
 }
 
 export function typecheck(
-    template: string, source: string, declarations: TestDeclaration[] = [],
-    additionalSources: {name: AbsoluteFsPath; contents: string}[] = [],
-    config: Partial<TypeCheckingConfig> = {}, opts: ts.CompilerOptions = {}): ts.Diagnostic[] {
+  template: string,
+  source: string,
+  declarations: TestDeclaration[] = [],
+  additionalSources: {name: AbsoluteFsPath; contents: string}[] = [],
+  config: Partial<TypeCheckingConfig> = {},
+  opts: ts.CompilerOptions = {}
+): ts.Diagnostic[] {
   const typeCheckFilePath = absoluteFrom('/_typecheck_.ts');
   const files = [
     typescriptLibDts(),
@@ -247,22 +293,38 @@ export function typecheck(
     {name: absoluteFrom('/main.ts'), contents: source},
     ...additionalSources,
   ];
-  const {program, host, options} =
-      makeProgram(files, {strictNullChecks: true, noImplicitAny: true, ...opts}, undefined, false);
+  const {program, host, options} = makeProgram(
+    files,
+    {strictNullChecks: true, noImplicitAny: true, ...opts},
+    undefined,
+    false
+  );
   const sf = program.getSourceFile(absoluteFrom('/main.ts'))!;
   const checker = program.getTypeChecker();
   const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
   const reflectionHost = new TypeScriptReflectionHost(checker);
-  const moduleResolver =
-      new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
+  const moduleResolver = new ModuleResolver(
+    program,
+    options,
+    host,
+    /* moduleResolutionCache */ null
+  );
   const emitter = new ReferenceEmitter([
     new LocalIdentifierStrategy(),
     new AbsoluteModuleStrategy(
-        program, checker, moduleResolver, new TypeScriptReflectionHost(checker)),
+      program,
+      checker,
+      moduleResolver,
+      new TypeScriptReflectionHost(checker)
+    ),
     new LogicalProjectStrategy(reflectionHost, logicalFs),
   ]);
   const ctx = new TypeCheckContext(
-      {...ALL_ENABLED_CONFIG, ...config}, emitter, reflectionHost, typeCheckFilePath);
+    {...ALL_ENABLED_CONFIG, ...config},
+    emitter,
+    reflectionHost,
+    typeCheckFilePath
+  );
 
   const templateUrl = 'synthetic.html';
   const templateFile = new ParseSourceFile(template, templateUrl);
@@ -271,7 +333,7 @@ export function typecheck(
     throw new Error('Template parse errors: \n' + errors.join('\n'));
   }
 
-  const {matcher, pipes} = prepareDeclarations(declarations, decl => {
+  const {matcher, pipes} = prepareDeclarations(declarations, (decl) => {
     let declFile = sf;
     if (decl.file !== undefined) {
       declFile = program.getSourceFile(decl.file)!;
@@ -299,8 +361,9 @@ export function typecheck(
 }
 
 function prepareDeclarations(
-    declarations: TestDeclaration[],
-    resolveDeclaration: (decl: TestDeclaration) => ClassDeclaration<ts.ClassDeclaration>) {
+  declarations: TestDeclaration[],
+  resolveDeclaration: (decl: TestDeclaration) => ClassDeclaration<ts.ClassDeclaration>
+) {
   const matcher = new SelectorMatcher();
   for (const decl of declarations) {
     if (decl.type !== 'directive') {
@@ -394,8 +457,12 @@ export class NoopSchemaChecker implements DomSchemaChecker {
 
   checkElement(id: string, element: TmplAstElement, schemas: SchemaMetadata[]): void {}
   checkProperty(
-      id: string, element: TmplAstElement, name: string, span: ParseSourceSpan,
-      schemas: SchemaMetadata[]): void {}
+    id: string,
+    element: TmplAstElement,
+    name: string,
+    span: ParseSourceSpan,
+    schemas: SchemaMetadata[]
+  ): void {}
 }
 
 export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {

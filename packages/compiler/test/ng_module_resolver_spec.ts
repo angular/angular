@@ -22,10 +22,9 @@ class SomeClass5 {}
   imports: [SomeClass2],
   exports: [SomeClass3],
   providers: [SomeClass4],
-  entryComponents: [SomeClass5]
+  entryComponents: [SomeClass5],
 })
-class SomeModule {
-}
+class SomeModule {}
 
 class SimpleClass {}
 
@@ -39,30 +38,31 @@ class SimpleClass {}
 
     it('should read out the metadata from the class', () => {
       const moduleMetadata = resolver.resolve(SomeModule);
-      expect(moduleMetadata).toEqual(new NgModule({
-        declarations: [SomeClass1],
-        imports: [SomeClass2],
-        exports: [SomeClass3],
-        providers: [SomeClass4],
-        entryComponents: [SomeClass5]
-      }));
+      expect(moduleMetadata).toEqual(
+        new NgModule({
+          declarations: [SomeClass1],
+          imports: [SomeClass2],
+          exports: [SomeClass3],
+          providers: [SomeClass4],
+          entryComponents: [SomeClass5],
+        })
+      );
     });
 
     it('should throw when simple class has no NgModule decorator', () => {
-      expect(() => resolver.resolve(SimpleClass))
-          .toThrowError(`No NgModule metadata found for '${stringify(SimpleClass)}'.`);
+      expect(() => resolver.resolve(SimpleClass)).toThrowError(
+        `No NgModule metadata found for '${stringify(SimpleClass)}'.`
+      );
     });
 
-    it('should support inheriting the metadata', function() {
+    it('should support inheriting the metadata', function () {
       @NgModule({id: 'p'})
-      class Parent {
-      }
+      class Parent {}
 
       class ChildNoDecorator extends Parent {}
 
       @NgModule({id: 'c'})
-      class ChildWithDecorator extends Parent {
-      }
+      class ChildWithDecorator extends Parent {}
 
       expect(resolver.resolve(ChildNoDecorator)).toEqual(new NgModule({id: 'p'}));
 

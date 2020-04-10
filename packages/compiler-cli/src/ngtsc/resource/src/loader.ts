@@ -69,7 +69,7 @@ export class HostResourceLoader implements ResourceLoader {
   preload(resolvedUrl: string): Promise<void> | undefined {
     if (!this.host.readResource) {
       throw new Error(
-        'HostResourceLoader: the CompilerHost provided does not support pre-loading resources.',
+        'HostResourceLoader: the CompilerHost provided does not support pre-loading resources.'
       );
     }
     if (this.cache.has(resolvedUrl)) {
@@ -178,12 +178,12 @@ export class HostResourceLoader implements ResourceLoader {
       url + '.$ngresource$',
       fromFile,
       this.options,
-      this.host,
+      this.host
     ) as ResolvedModuleWithFailedLookupLocations;
 
     if (failedLookup.failedLookupLocations === undefined) {
       throw new Error(
-        `Internal error: expected to find failedLookupLocations during resolution of resource '${url}' in context of ${fromFile}`,
+        `Internal error: expected to find failedLookupLocations during resolution of resource '${url}' in context of ${fromFile}`
       );
     }
 

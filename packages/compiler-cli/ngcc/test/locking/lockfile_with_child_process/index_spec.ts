@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ChildProcess} from 'child_process';
 import * as process from 'process';
 
@@ -50,7 +51,7 @@ runInEachFileSystem(() => {
         return <any>{
           disconnect() {
             log.push('unlocker.disconnect()');
-          }
+          },
         };
       }
     }
@@ -98,17 +99,16 @@ runInEachFileSystem(() => {
         expect(lockFile.read()).toEqual('{unknown}');
       });
 
-      it('should not read file from the cache, since the file may have been modified externally',
-         () => {
-           const rawFs = getFileSystem();
-           const fs = new CachedFileSystem(rawFs);
-           const lockFile = new LockFileUnderTest(fs);
-           rawFs.writeFile(lockFile.path, '' + process.pid);
-           expect(lockFile.read()).toEqual('' + process.pid);
-           // We need to write to the rawFs to ensure that we don't update the cache at this point
-           rawFs.writeFile(lockFile.path, '444');
-           expect(lockFile.read()).toEqual('444');
-         });
+      it('should not read file from the cache, since the file may have been modified externally', () => {
+        const rawFs = getFileSystem();
+        const fs = new CachedFileSystem(rawFs);
+        const lockFile = new LockFileUnderTest(fs);
+        rawFs.writeFile(lockFile.path, '' + process.pid);
+        expect(lockFile.read()).toEqual('' + process.pid);
+        // We need to write to the rawFs to ensure that we don't update the cache at this point
+        rawFs.writeFile(lockFile.path, '444');
+        expect(lockFile.read()).toEqual('444');
+      });
     });
 
     describe('remove()', () => {

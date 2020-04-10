@@ -14,9 +14,8 @@ import {Pane, ViewChildrenComp} from './view_children_example';
 @NgModule({
   imports: [BrowserModule],
   declarations: [ViewChildrenComp, Pane],
-  bootstrap: [ViewChildrenComp]
+  bootstrap: [ViewChildrenComp],
 })
-export class AppModule {
-}
+export class AppModule {}
 
 export {ViewChildrenComp as AppComponent};

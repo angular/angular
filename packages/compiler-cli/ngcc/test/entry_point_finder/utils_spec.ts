@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {absoluteFrom, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
@@ -37,7 +38,7 @@ runInEachFileSystem(() => {
       const sourceDirectory = _('/path/to/project/node_modules');
       const pathMappings = {
         baseUrl: projectDirectory,
-        paths: {'@dist': ['dist-1', 'sub-folder/dist-2'], '@lib/*': ['libs/*']}
+        paths: {'@dist': ['dist-1', 'sub-folder/dist-2'], '@lib/*': ['libs/*']},
       };
       const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
       expect(basePaths).toEqual([
@@ -58,13 +59,10 @@ runInEachFileSystem(() => {
       const sourceDirectory = _('/path/to/project/node_modules');
       const pathMappings = {
         baseUrl: projectDirectory,
-        paths: {'@dist': ['dist-1', 'dist-1/sub-folder'], '@lib/*': ['node_modules/libs/*']}
+        paths: {'@dist': ['dist-1', 'dist-1/sub-folder'], '@lib/*': ['node_modules/libs/*']},
       };
       const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
-      expect(basePaths).toEqual([
-        sourceDirectory,
-        fs.resolve(projectDirectory, 'dist-1'),
-      ]);
+      expect(basePaths).toEqual([sourceDirectory, fs.resolve(projectDirectory, 'dist-1')]);
     });
 
     it('should use the containing directory of path mapped files', () => {
@@ -76,26 +74,19 @@ runInEachFileSystem(() => {
       const sourceDirectory = _('/path/to/project/node_modules');
       const pathMappings = {baseUrl: projectDirectory, paths: {'@dist': ['dist-1/file.js']}};
       const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
-      expect(basePaths).toEqual([
-        sourceDirectory,
-        fs.resolve(projectDirectory, 'dist-1'),
-      ]);
+      expect(basePaths).toEqual([sourceDirectory, fs.resolve(projectDirectory, 'dist-1')]);
     });
 
-    it('should always include the `sourceDirectory` if it is a node_modules directory in the returned basePaths, even if it is contained by another basePath',
-       () => {
-         const projectDirectory = _('/path/to/project');
-         const sourceDirectory = _('/path/to/project/node_modules');
-         const fs = getFileSystem();
-         fs.ensureDir(fs.resolve(sourceDirectory));
+    it('should always include the `sourceDirectory` if it is a node_modules directory in the returned basePaths, even if it is contained by another basePath', () => {
+      const projectDirectory = _('/path/to/project');
+      const sourceDirectory = _('/path/to/project/node_modules');
+      const fs = getFileSystem();
+      fs.ensureDir(fs.resolve(sourceDirectory));
 
-         const pathMappings = {baseUrl: projectDirectory, paths: {'*': ['./*']}};
-         const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
-         expect(basePaths).toEqual([
-           sourceDirectory,
-           projectDirectory,
-         ]);
-       });
+      const pathMappings = {baseUrl: projectDirectory, paths: {'*': ['./*']}};
+      const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
+      expect(basePaths).toEqual([sourceDirectory, projectDirectory]);
+    });
 
     it('should log a warning if baseUrl is the root path', () => {
       const fs = getFileSystem();
@@ -104,14 +95,13 @@ runInEachFileSystem(() => {
       const sourceDirectory = _('/path/to/project/node_modules');
       const pathMappings = {baseUrl: _('/'), paths: {'@dist': ['dist']}};
       const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
-      expect(basePaths).toEqual([
-        sourceDirectory,
-        fs.resolve('/dist'),
-      ]);
+      expect(basePaths).toEqual([sourceDirectory, fs.resolve('/dist')]);
       expect(logger.logs.warn).toEqual([
-        [`The provided pathMappings baseUrl is the root path ${_('/')}.\n` +
-         `This is likely to mess up how ngcc finds entry-points and is probably not correct.\n` +
-         `Please check your path mappings configuration such as in the tsconfig.json file.`]
+        [
+          `The provided pathMappings baseUrl is the root path ${_('/')}.\n` +
+            `This is likely to mess up how ngcc finds entry-points and is probably not correct.\n` +
+            `Please check your path mappings configuration such as in the tsconfig.json file.`,
+        ],
       ]);
     });
 
@@ -124,21 +114,25 @@ runInEachFileSystem(() => {
       const sourceDirectory = _('/path/to/project/node_modules');
       const pathMappings = {
         baseUrl: projectDirectory,
-        paths: {'@dist': ['dist-1', 'sub-folder/dist-2'], '@lib/*': ['libs/*']}
+        paths: {'@dist': ['dist-1', 'sub-folder/dist-2'], '@lib/*': ['libs/*']},
       };
       const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
-      expect(basePaths).toEqual([
-        sourceDirectory,
-        fs.resolve(projectDirectory, 'dist-1'),
-      ]);
+      expect(basePaths).toEqual([sourceDirectory, fs.resolve(projectDirectory, 'dist-1')]);
       expect(logger.logs.debug).toEqual([
-        [`The basePath "${
-             fs.resolve(projectDirectory, 'sub-folder/dist-2')}" computed from baseUrl "${
-             projectDirectory}" and path mapping "sub-folder/dist-2" does not exist in the file-system.\n` +
-         `It will not be scanned for entry-points.`],
-        [`The basePath "${fs.resolve(projectDirectory, 'libs')}" computed from baseUrl "${
-             projectDirectory}" and path mapping "libs/*" does not exist in the file-system.\n` +
-         `It will not be scanned for entry-points.`],
+        [
+          `The basePath "${fs.resolve(
+            projectDirectory,
+            'sub-folder/dist-2'
+          )}" computed from baseUrl "${projectDirectory}" and path mapping "sub-folder/dist-2" does not exist in the file-system.\n` +
+            `It will not be scanned for entry-points.`,
+        ],
+        [
+          `The basePath "${fs.resolve(
+            projectDirectory,
+            'libs'
+          )}" computed from baseUrl "${projectDirectory}" and path mapping "libs/*" does not exist in the file-system.\n` +
+            `It will not be scanned for entry-points.`,
+        ],
       ]);
     });
   });

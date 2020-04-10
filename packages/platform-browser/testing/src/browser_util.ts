@@ -10,7 +10,7 @@ import {ɵgetDOM as getDOM} from '@angular/common';
 import {NgZone, ɵglobal as global} from '@angular/core';
 
 export class BrowserDetection {
-  private _overrideUa: string|null;
+  private _overrideUa: string | null;
   private get _ua(): string {
     if (typeof this._overrideUa === 'string') {
       return this._overrideUa;
@@ -19,33 +19,54 @@ export class BrowserDetection {
     return getDOM() ? getDOM().getUserAgent() : '';
   }
 
-  static setup() { return new BrowserDetection(null); }
-
-  constructor(ua: string|null) { this._overrideUa = ua; }
-
-  get isFirefox(): boolean { return this._ua.indexOf('Firefox') > -1; }
-
-  get isAndroid(): boolean {
-    return this._ua.indexOf('Mozilla/5.0') > -1 && this._ua.indexOf('Android') > -1 &&
-        this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Chrome') == -1 &&
-        this._ua.indexOf('IEMobile') == -1;
+  static setup() {
+    return new BrowserDetection(null);
   }
 
-  get isEdge(): boolean { return this._ua.indexOf('Edge') > -1; }
+  constructor(ua: string | null) {
+    this._overrideUa = ua;
+  }
 
-  get isIE(): boolean { return this._ua.indexOf('Trident') > -1; }
+  get isFirefox(): boolean {
+    return this._ua.indexOf('Firefox') > -1;
+  }
+
+  get isAndroid(): boolean {
+    return (
+      this._ua.indexOf('Mozilla/5.0') > -1 &&
+      this._ua.indexOf('Android') > -1 &&
+      this._ua.indexOf('AppleWebKit') > -1 &&
+      this._ua.indexOf('Chrome') == -1 &&
+      this._ua.indexOf('IEMobile') == -1
+    );
+  }
+
+  get isEdge(): boolean {
+    return this._ua.indexOf('Edge') > -1;
+  }
+
+  get isIE(): boolean {
+    return this._ua.indexOf('Trident') > -1;
+  }
 
   get isWebkit(): boolean {
-    return this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Edge') == -1 &&
-        this._ua.indexOf('IEMobile') == -1;
+    return (
+      this._ua.indexOf('AppleWebKit') > -1 &&
+      this._ua.indexOf('Edge') == -1 &&
+      this._ua.indexOf('IEMobile') == -1
+    );
   }
 
   get isIOS7(): boolean {
-    return (this._ua.indexOf('iPhone OS 7') > -1 || this._ua.indexOf('iPad OS 7') > -1) &&
-        this._ua.indexOf('IEMobile') == -1;
+    return (
+      (this._ua.indexOf('iPhone OS 7') > -1 || this._ua.indexOf('iPad OS 7') > -1) &&
+      this._ua.indexOf('IEMobile') == -1
+    );
   }
 
-  get isSlow(): boolean { return this.isAndroid || this.isIE || this.isIOS7; }
+  get isSlow(): boolean {
+    return this.isAndroid || this.isIE || this.isIOS7;
+  }
 
   // The Intl API is only natively supported in Chrome, Firefox, IE11 and Edge.
   // This detector is needed in tests to make the difference between:
@@ -56,33 +77,43 @@ export class BrowserDetection {
   }
 
   get isChromeDesktop(): boolean {
-    return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Mobile Safari') == -1 &&
-        this._ua.indexOf('Edge') == -1;
+    return (
+      this._ua.indexOf('Chrome') > -1 &&
+      this._ua.indexOf('Mobile Safari') == -1 &&
+      this._ua.indexOf('Edge') == -1
+    );
   }
 
   // "Old Chrome" means Chrome 3X, where there are some discrepancies in the Intl API.
   // Android 4.4 and 5.X have such browsers by default (respectively 30 and 39).
   get isOldChrome(): boolean {
-    return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Chrome/3') > -1 &&
-        this._ua.indexOf('Edge') == -1;
+    return (
+      this._ua.indexOf('Chrome') > -1 &&
+      this._ua.indexOf('Chrome/3') > -1 &&
+      this._ua.indexOf('Edge') == -1
+    );
   }
 
-  get supportsCustomElements() { return (typeof(<any>global).customElements !== 'undefined'); }
+  get supportsCustomElements() {
+    return typeof (<any>global).customElements !== 'undefined';
+  }
 
   get supportsDeprecatedCustomCustomElementsV0() {
-    return (typeof(document as any).registerElement !== 'undefined');
+    return typeof (document as any).registerElement !== 'undefined';
   }
 
-  get supportsRegExUnicodeFlag(): boolean { return RegExp.prototype.hasOwnProperty('unicode'); }
+  get supportsRegExUnicodeFlag(): boolean {
+    return RegExp.prototype.hasOwnProperty('unicode');
+  }
 
   get supportsShadowDom() {
     const testEl = document.createElement('div');
-    return (typeof testEl.attachShadow !== 'undefined');
+    return typeof testEl.attachShadow !== 'undefined';
   }
 
   get supportsDeprecatedShadowDomV0() {
     const testEl = document.createElement('div') as any;
-    return (typeof testEl.createShadowRoot !== 'undefined');
+    return typeof testEl.createShadowRoot !== 'undefined';
   }
 }
 
@@ -105,12 +136,13 @@ export function el(html: string): HTMLElement {
 }
 
 export function normalizeCSS(css: string): string {
-  return css.replace(/\s+/g, ' ')
-      .replace(/:\s/g, ':')
-      .replace(/'/g, '"')
-      .replace(/ }/g, '}')
-      .replace(/url\((\"|\s)(.+)(\"|\s)\)(\s*)/g, (...match: string[]) => `url("${match[2]}")`)
-      .replace(/\[(.+)=([^"\]]+)\]/g, (...match: string[]) => `[${match[1]}="${match[2]}"]`);
+  return css
+    .replace(/\s+/g, ' ')
+    .replace(/:\s/g, ':')
+    .replace(/'/g, '"')
+    .replace(/ }/g, '}')
+    .replace(/url\((\"|\s)(.+)(\"|\s)\)(\s*)/g, (...match: string[]) => `url("${match[2]}")`)
+    .replace(/\[(.+)=([^"\]]+)\]/g, (...match: string[]) => `[${match[1]}="${match[2]}"]`);
 }
 
 function getAttributeMap(element: any): Map<string, string> {
@@ -144,7 +176,12 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
       } else {
         // Browsers order style rules differently. Order them alphabetically for consistency.
         if (lowerCaseKey === 'style') {
-          attValue = attValue.split(/; ?/).filter(s => !!s).sort().map(s => `${s};`).join(' ');
+          attValue = attValue
+            .split(/; ?/)
+            .filter((s) => !!s)
+            .sort()
+            .map((s) => `${s};`)
+            .join(' ');
         }
 
         result += ` ${lowerCaseKey}="${attValue}"`;
@@ -203,7 +240,7 @@ export function setCookie(name: string, value: string) {
 }
 
 export function supportsWebAnimation(): boolean {
-  return typeof(<any>Element).prototype['animate'] === 'function';
+  return typeof (<any>Element).prototype['animate'] === 'function';
 }
 
 export function hasStyle(element: any, styleName: string, styleValue?: string | null): boolean {

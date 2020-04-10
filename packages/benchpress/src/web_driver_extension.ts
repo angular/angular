@@ -11,20 +11,20 @@ import {InjectionToken, Injector} from '@angular/core';
 import {Options} from './common_options';
 
 export type PerfLogEvent = {
-  [key: string]: any
+  [key: string]: any;
 } & {
-  ph?: 'X' | 'B' | 'E' | 'I',
-  ts?: number,
-  dur?: number,
-  name?: string,
-  pid?: string,
+  ph?: 'X' | 'B' | 'E' | 'I';
+  ts?: number;
+  dur?: number;
+  name?: string;
+  pid?: string;
   args?: {
-    encodedDataLength?: number,
-    usedHeapSize?: number,
-    majorGc?: boolean,
-    url?: string,
-    method?: string
-  }
+    encodedDataLength?: number;
+    usedHeapSize?: number;
+    majorGc?: boolean;
+    url?: string;
+    method?: string;
+  };
 };
 
 /**
@@ -37,14 +37,14 @@ export abstract class WebDriverExtension {
     const res = [
       {
         provide: _CHILDREN,
-        useFactory: (injector: Injector) => childTokens.map(token => injector.get(token)),
-        deps: [Injector]
+        useFactory: (injector: Injector) => childTokens.map((token) => injector.get(token)),
+        deps: [Injector],
       },
       {
         provide: WebDriverExtension,
         useFactory: (children: WebDriverExtension[], capabilities: {[key: string]: any}) => {
-          let delegate: WebDriverExtension = undefined !;
-          children.forEach(extension => {
+          let delegate: WebDriverExtension = undefined!;
+          children.forEach((extension) => {
             if (extension.supports(capabilities)) {
               delegate = extension;
             }
@@ -54,17 +54,23 @@ export abstract class WebDriverExtension {
           }
           return delegate;
         },
-        deps: [_CHILDREN, Options.CAPABILITIES]
-      }
+        deps: [_CHILDREN, Options.CAPABILITIES],
+      },
     ];
     return res;
   }
 
-  gc(): Promise<any> { throw new Error('NYI'); }
+  gc(): Promise<any> {
+    throw new Error('NYI');
+  }
 
-  timeBegin(name: string): Promise<any> { throw new Error('NYI'); }
+  timeBegin(name: string): Promise<any> {
+    throw new Error('NYI');
+  }
 
-  timeEnd(name: string, restartName: string|null): Promise<any> { throw new Error('NYI'); }
+  timeEnd(name: string, restartName: string | null): Promise<any> {
+    throw new Error('NYI');
+  }
 
   /**
    * Format:
@@ -78,11 +84,17 @@ export abstract class WebDriverExtension {
    * Based on [Chrome Trace Event
    *Format](https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/edit)
    **/
-  readPerfLog(): Promise<PerfLogEvent[]> { throw new Error('NYI'); }
+  readPerfLog(): Promise<PerfLogEvent[]> {
+    throw new Error('NYI');
+  }
 
-  perfLogFeatures(): PerfLogFeatures { throw new Error('NYI'); }
+  perfLogFeatures(): PerfLogFeatures {
+    throw new Error('NYI');
+  }
 
-  supports(capabilities: {[key: string]: any}): boolean { return true; }
+  supports(capabilities: {[key: string]: any}): boolean {
+    return true;
+  }
 }
 
 export class PerfLogFeatures {
@@ -91,9 +103,12 @@ export class PerfLogFeatures {
   frameCapture: boolean;
   userTiming: boolean;
 
-  constructor(
-      {render = false, gc = false, frameCapture = false, userTiming = false}:
-          {render?: boolean, gc?: boolean, frameCapture?: boolean, userTiming?: boolean} = {}) {
+  constructor({
+    render = false,
+    gc = false,
+    frameCapture = false,
+    userTiming = false,
+  }: {render?: boolean; gc?: boolean; frameCapture?: boolean; userTiming?: boolean} = {}) {
     this.render = render;
     this.gc = gc;
     this.frameCapture = frameCapture;

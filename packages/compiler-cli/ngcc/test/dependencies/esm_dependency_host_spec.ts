@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
@@ -12,7 +13,11 @@ import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {createDependencyInfo} from '../../src/dependencies/dependency_host';
 import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
-import {EsmDependencyHost, hasImportOrReexportStatements, isStringImportOrReexport} from '../../src/dependencies/esm_dependency_host';
+import {
+  EsmDependencyHost,
+  hasImportOrReexportStatements,
+  isStringImportOrReexport,
+} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 
 runInEachFileSystem(() => {
@@ -27,18 +32,19 @@ runInEachFileSystem(() => {
     });
 
     describe('collectDependencies()', () => {
-      it('should not generate a TS AST if the source does not contain any imports or re-exports',
-         () => {
-           spyOn(ts, 'createSourceFile');
-           host.collectDependencies(
-               _('/no/imports/or/re-exports/index.js'), createDependencyInfo());
-           expect(ts.createSourceFile).not.toHaveBeenCalled();
-         });
+      it('should not generate a TS AST if the source does not contain any imports or re-exports', () => {
+        spyOn(ts, 'createSourceFile');
+        host.collectDependencies(_('/no/imports/or/re-exports/index.js'), createDependencyInfo());
+        expect(ts.createSourceFile).not.toHaveBeenCalled();
+      });
 
       it('should resolve all the external imports of the source file', () => {
         const {dependencies, missing, deepImports} = createDependencyInfo();
-        host.collectDependencies(
-            _('/external/imports/index.js'), {dependencies, missing, deepImports});
+        host.collectDependencies(_('/external/imports/index.js'), {
+          dependencies,
+          missing,
+          deepImports,
+        });
         expect(dependencies.size).toBe(2);
         expect(missing.size).toBe(0);
         expect(deepImports.size).toBe(0);
@@ -48,8 +54,11 @@ runInEachFileSystem(() => {
 
       it('should resolve all the external re-exports of the source file', () => {
         const {dependencies, missing, deepImports} = createDependencyInfo();
-        host.collectDependencies(
-            _('/external/re-exports/index.js'), {dependencies, missing, deepImports});
+        host.collectDependencies(_('/external/re-exports/index.js'), {
+          dependencies,
+          missing,
+          deepImports,
+        });
         expect(dependencies.size).toBe(2);
         expect(missing.size).toBe(0);
         expect(deepImports.size).toBe(0);
@@ -59,8 +68,11 @@ runInEachFileSystem(() => {
 
       it('should capture missing external imports', () => {
         const {dependencies, missing, deepImports} = createDependencyInfo();
-        host.collectDependencies(
-            _('/external/imports-missing/index.js'), {dependencies, missing, deepImports});
+        host.collectDependencies(_('/external/imports-missing/index.js'), {
+          dependencies,
+          missing,
+          deepImports,
+        });
 
         expect(dependencies.size).toBe(1);
         expect(dependencies.has(_('/node_modules/lib-1'))).toBe(true);
@@ -74,8 +86,11 @@ runInEachFileSystem(() => {
         // is found that does not map to an entry-point but still exists on disk, i.e. a deep
         // import. Such deep imports are captured for diagnostics purposes.
         const {dependencies, missing, deepImports} = createDependencyInfo();
-        host.collectDependencies(
-            _('/external/deep-import/index.js'), {dependencies, missing, deepImports});
+        host.collectDependencies(_('/external/deep-import/index.js'), {
+          dependencies,
+          missing,
+          deepImports,
+        });
 
         expect(dependencies.size).toBe(0);
         expect(missing.size).toBe(0);
@@ -85,8 +100,11 @@ runInEachFileSystem(() => {
 
       it('should recurse into internal dependencies', () => {
         const {dependencies, missing, deepImports} = createDependencyInfo();
-        host.collectDependencies(
-            _('/internal/outer/index.js'), {dependencies, missing, deepImports});
+        host.collectDependencies(_('/internal/outer/index.js'), {
+          dependencies,
+          missing,
+          deepImports,
+        });
 
         expect(dependencies.size).toBe(1);
         expect(dependencies.has(_('/node_modules/lib-1/sub-1'))).toBe(true);
@@ -96,8 +114,11 @@ runInEachFileSystem(() => {
 
       it('should handle circular internal dependencies', () => {
         const {dependencies, missing, deepImports} = createDependencyInfo();
-        host.collectDependencies(
-            _('/internal/circular-a/index.js'), {dependencies, missing, deepImports});
+        host.collectDependencies(_('/internal/circular-a/index.js'), {
+          dependencies,
+          missing,
+          deepImports,
+        });
         expect(dependencies.size).toBe(2);
         expect(dependencies.has(_('/node_modules/lib-1'))).toBe(true);
         expect(dependencies.has(_('/node_modules/lib-1/sub-1'))).toBe(true);
@@ -107,13 +128,16 @@ runInEachFileSystem(() => {
 
       it('should support `paths` alias mappings when resolving modules', () => {
         const fs = getFileSystem();
-        host = new EsmDependencyHost(fs, new ModuleResolver(fs, {
-                                       baseUrl: '/dist',
-                                       paths: {
-                                         '@app/*': ['*'],
-                                         '@lib/*/test': ['lib/*/test'],
-                                       }
-                                     }));
+        host = new EsmDependencyHost(
+          fs,
+          new ModuleResolver(fs, {
+            baseUrl: '/dist',
+            paths: {
+              '@app/*': ['*'],
+              '@lib/*/test': ['lib/*/test'],
+            },
+          })
+        );
         const {dependencies, missing, deepImports} = createDependencyInfo();
         host.collectDependencies(_('/path-alias/index.js'), {dependencies, missing, deepImports});
         expect(dependencies.size).toBe(4);
@@ -127,8 +151,11 @@ runInEachFileSystem(() => {
 
       it('should handle entry-point paths with no extension', () => {
         const {dependencies, missing, deepImports} = createDependencyInfo();
-        host.collectDependencies(
-            _('/external/imports/index'), {dependencies, missing, deepImports});
+        host.collectDependencies(_('/external/imports/index'), {
+          dependencies,
+          missing,
+          deepImports,
+        });
         expect(dependencies.size).toBe(2);
         expect(missing.size).toBe(0);
         expect(deepImports.size).toBe(0);
@@ -146,7 +173,7 @@ runInEachFileSystem(() => {
           {
             name: _('/external/internal-typings.d.ts'),
             contents: `export {X} from 'lib-1';\nexport {Y} from 'lib-1/sub-1';`,
-          }
+          },
         ]);
 
         // Default JS mode will not pick up `internal-typings.d.ts` dependency
@@ -174,31 +201,31 @@ runInEachFileSystem(() => {
       loadTestFiles([
         {
           name: _('/no/imports/or/re-exports/index.js'),
-          contents: '// some text but no import-like statements'
+          contents: '// some text but no import-like statements',
         },
         {name: _('/no/imports/or/re-exports/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/no/imports/or/re-exports/index.metadata.json'), contents: 'MOCK METADATA'},
         {
           name: _('/external/imports/index.js'),
-          contents: `import {X} from 'lib-1';\nimport {Y} from 'lib-1/sub-1';`
+          contents: `import {X} from 'lib-1';\nimport {Y} from 'lib-1/sub-1';`,
         },
         {name: _('/external/imports/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/external/imports/index.metadata.json'), contents: 'MOCK METADATA'},
         {
           name: _('/external/re-exports/index.js'),
-          contents: `export {X} from 'lib-1';\nexport {Y} from 'lib-1/sub-1';`
+          contents: `export {X} from 'lib-1';\nexport {Y} from 'lib-1/sub-1';`,
         },
         {name: _('/external/re-exports/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/external/re-exports/index.metadata.json'), contents: 'MOCK METADATA'},
         {
           name: _('/external/imports-missing/index.js'),
-          contents: `import {X} from 'lib-1';\nimport {Y} from 'missing';`
+          contents: `import {X} from 'lib-1';\nimport {Y} from 'missing';`,
         },
         {name: _('/external/imports-missing/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/external/imports-missing/index.metadata.json'), contents: 'MOCK METADATA'},
         {
           name: _('/external/deep-import/index.js'),
-          contents: `import {Y} from 'lib-1/deep/import';`
+          contents: `import {Y} from 'lib-1/deep/import';`,
         },
         {name: _('/external/deep-import/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/external/deep-import/index.metadata.json'), contents: 'MOCK METADATA'},
@@ -207,17 +234,15 @@ runInEachFileSystem(() => {
         {name: _('/internal/outer/index.metadata.json'), contents: 'MOCK METADATA'},
         {
           name: _('/internal/inner/index.js'),
-          contents: `import {Y} from 'lib-1/sub-1'; export class X {}`
+          contents: `import {Y} from 'lib-1/sub-1'; export class X {}`,
         },
         {
           name: _('/internal/circular-a/index.js'),
-          contents:
-              `import {B} from '../circular-b'; import {X} from '../circular-b'; export {Y} from 'lib-1/sub-1';`
+          contents: `import {B} from '../circular-b'; import {X} from '../circular-b'; export {Y} from 'lib-1/sub-1';`,
         },
         {
           name: _('/internal/circular-b/index.js'),
-          contents:
-              `import {A} from '../circular-a'; import {Y} from '../circular-a'; export {X} from 'lib-1';`
+          contents: `import {A} from '../circular-a'; import {Y} from '../circular-a'; export {X} from 'lib-1';`,
         },
         {name: _('/internal/circular-a/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/internal/circular-a/index.metadata.json'), contents: 'MOCK METADATA'},
@@ -226,8 +251,7 @@ runInEachFileSystem(() => {
         {name: _('/re-directed/index.metadata.json'), contents: 'MOCK METADATA'},
         {
           name: _('/path-alias/index.js'),
-          contents:
-              `import {TestHelper} from '@app/components';\nimport {Service} from '@app/shared';\nimport {TestHelper} from '@lib/shared/test';\nimport {X} from 'lib-1';`
+          contents: `import {TestHelper} from '@app/components';\nimport {Service} from '@app/shared';\nimport {TestHelper} from '@lib/shared/test';\nimport {X} from 'lib-1';`,
         },
         {name: _('/path-alias/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/path-alias/index.metadata.json'), contents: 'MOCK METADATA'},
@@ -236,7 +260,7 @@ runInEachFileSystem(() => {
         {name: _('/node_modules/lib-1/index.metadata.json'), contents: 'MOCK METADATA'},
         {
           name: _('/node_modules/lib-1/deep/import/index.js'),
-          contents: 'export class DeepImport {}'
+          contents: 'export class DeepImport {}',
         },
         {name: _('/node_modules/lib-1/sub-1/index.js'), contents: 'export class Y {}'},
         {name: _('/node_modules/lib-1/sub-1/package.json'), contents: '{"esm2015": "./index.js"}'},
@@ -250,7 +274,7 @@ runInEachFileSystem(() => {
         {name: _('/dist/components/index.metadata.json'), contents: 'MOCK METADATA'},
         {
           name: _('/dist/shared/index.js'),
-          contents: `import {X} from 'lib-1';\nexport class Service {}`
+          contents: `import {X} from 'lib-1';\nexport class Service {}`,
         },
         {name: _('/dist/shared/package.json'), contents: '{"esm2015": "./index.js"}'},
         {name: _('/dist/shared/index.metadata.json'), contents: 'MOCK METADATA'},
@@ -263,8 +287,9 @@ runInEachFileSystem(() => {
     describe('isStringImportOrReexport', () => {
       it('should return true if the statement is an import', () => {
         expect(isStringImportOrReexport(createStatement('import {X} from "some/x";'))).toBe(true);
-        expect(isStringImportOrReexport(createStatement('import * as X from "some/x";')))
-            .toBe(true);
+        expect(isStringImportOrReexport(createStatement('import * as X from "some/x";'))).toBe(
+          true
+        );
       });
 
       it('should return true if the statement is a re-export', () => {
@@ -279,9 +304,13 @@ runInEachFileSystem(() => {
       });
 
       function createStatement(source: string) {
-        return ts
-            .createSourceFile('source.js', source, ts.ScriptTarget.ES2015, false, ts.ScriptKind.JS)
-            .statements[0];
+        return ts.createSourceFile(
+          'source.js',
+          source,
+          ts.ScriptTarget.ES2015,
+          false,
+          ts.ScriptKind.JS
+        ).statements[0];
       }
     });
 
@@ -289,24 +318,27 @@ runInEachFileSystem(() => {
       it('should return true if there is an import statement', () => {
         expect(hasImportOrReexportStatements('import {X} from "some/x";')).toBe(true);
         expect(hasImportOrReexportStatements('import * as X from "some/x";')).toBe(true);
-        expect(hasImportOrReexportStatements('blah blah\n\n  import {X} from "some/x";\nblah blah'))
-            .toBe(true);
+        expect(
+          hasImportOrReexportStatements('blah blah\n\n  import {X} from "some/x";\nblah blah')
+        ).toBe(true);
         expect(hasImportOrReexportStatements('\t\timport {X} from "some/x";')).toBe(true);
       });
       it('should return true if there is a re-export statement', () => {
         expect(hasImportOrReexportStatements('export {X} from "some/x";')).toBe(true);
-        expect(hasImportOrReexportStatements('blah blah\n\n  export {X} from "some/x";\nblah blah'))
-            .toBe(true);
+        expect(
+          hasImportOrReexportStatements('blah blah\n\n  export {X} from "some/x";\nblah blah')
+        ).toBe(true);
         expect(hasImportOrReexportStatements('\t\texport {X} from "some/x";')).toBe(true);
-        expect(hasImportOrReexportStatements(
-                   'blah blah\n\n  export * from "@angular/core;\nblah blah'))
-            .toBe(true);
+        expect(
+          hasImportOrReexportStatements('blah blah\n\n  export * from "@angular/core;\nblah blah')
+        ).toBe(true);
       });
       it('should return false if there is no import nor re-export statement', () => {
         expect(hasImportOrReexportStatements('blah blah')).toBe(false);
         expect(hasImportOrReexportStatements('export function moo() {}')).toBe(false);
-        expect(hasImportOrReexportStatements('Some text that happens to include the word import'))
-            .toBe(false);
+        expect(
+          hasImportOrReexportStatements('Some text that happens to include the word import')
+        ).toBe(false);
       });
     });
   });

@@ -5,17 +5,23 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AotCompilerOptions} from '@angular/compiler';
 import {escapeRegExp} from '@angular/compiler/src/util';
-import {arrayToMockDir, MockCompilerHost, MockData, MockDirectory, toMockFileArray} from '@angular/compiler/test/aot/test_util';
+import {
+  arrayToMockDir,
+  MockCompilerHost,
+  MockData,
+  MockDirectory,
+  toMockFileArray,
+} from '@angular/compiler/test/aot/test_util';
 import * as ts from 'typescript';
 
 import {NodeJSFileSystem, setFileSystem} from '../../src/ngtsc/file_system';
 import {NgtscProgram} from '../../src/ngtsc/program';
 
 const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
-const OPERATOR =
-    /!|\?|%|\*|\/|\^|&&?|\|\|?|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!==?|=>|\+\+?|--?|@|,|\.|\.\.\.|`|\\'/;
+const OPERATOR = /!|\?|%|\*|\/|\^|&&?|\|\|?|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!==?|=>|\+\+?|--?|@|,|\.|\.\.\.|`|\\'/;
 const STRING = /'(\\'|[^'])*'|"(\\"|[^"])*"/;
 const BACKTICK_STRING = /\\`(([\s\S]*?)(\$\{[^}]*?\})?)*?[^\\]\\`/;
 const BACKTICK_INTERPOLATION = /(\$\{[^}]*\})/;
@@ -23,11 +29,11 @@ const NUMBER = /\d+/;
 
 const ELLIPSIS = '…';
 const TOKEN = new RegExp(
-    `\\s*((${IDENTIFIER.source})|(${BACKTICK_STRING.source})|(${OPERATOR.source})|(${
-        STRING.source})|${NUMBER.source}|${ELLIPSIS})\\s*`,
-    'y');
+  `\\s*((${IDENTIFIER.source})|(${BACKTICK_STRING.source})|(${OPERATOR.source})|(${STRING.source})|${NUMBER.source}|${ELLIPSIS})\\s*`,
+  'y'
+);
 
-type Piece = string|RegExp;
+type Piece = string | RegExp;
 
 const SKIP = /(?:.|\n|\r)*/;
 
@@ -38,7 +44,7 @@ function tokenize(text: string): Piece[] {
   const lastIndex = TOKEN.lastIndex;
   TOKEN.lastIndex = 0;
 
-  let match: RegExpMatchArray|null;
+  let match: RegExpMatchArray | null;
   let tokenizedTextEnd = 0;
   const pieces: Piece[] = [];
 
@@ -48,7 +54,7 @@ function tokenize(text: string): Piece[] {
       pieces.push(IDENTIFIER);
     } else if (token === ELLIPSIS) {
       pieces.push(SKIP);
-    } else if (match = BACKTICK_STRING.exec(token)) {
+    } else if ((match = BACKTICK_STRING.exec(token))) {
       pieces.push(...tokenizeBackTickString(token));
     } else {
       pieces.push(token);
@@ -62,8 +68,9 @@ function tokenize(text: string): Piece[] {
     const from = tokenizedTextEnd;
     const to = from + ERROR_CONTEXT_WIDTH;
     throw Error(
-        `Invalid test, no token found for "${text[tokenizedTextEnd]}" ` +
-        `(context = '${text.substr(from, to)}...'`);
+      `Invalid test, no token found for "${text[tokenizedTextEnd]}" ` +
+        `(context = '${text.substr(from, to)}...'`
+    );
   }
   // Reset the lastIndex in case we are in a recursive `tokenize()` call.
   TOKEN.lastIndex = lastIndex;
@@ -96,8 +103,11 @@ function tokenizeBackTickString(str: string): Piece[] {
 }
 
 export function expectEmit(
-    source: string, expected: string, description: string,
-    assertIdentifiers?: {[name: string]: RegExp}) {
+  source: string,
+  expected: string,
+  description: string,
+  assertIdentifiers?: {[name: string]: RegExp}
+) {
   // turns `// ...` into `…`
   // remove `// TODO` comment lines
   expected = expected.replace(/\/\/\s*\.\.\./g, ELLIPSIS).replace(/\/\/\s*TODO.*?\n/g, '');
@@ -115,19 +125,24 @@ export function expectEmit(
         // display at most `contextLength` characters of the line preceding the error location
         const contextLength = 50;
         const fullContext = source.substring(source.lastIndexOf('\n', last) + 1, last);
-        const context = fullContext.length > contextLength ?
-            `...${fullContext.substr(-contextLength)}` :
-            fullContext;
-        fail(`${description}: Failed to find "${expectedPiece}" after "${context}" in:\n'${
-            source.substr(0, last)}[<---HERE expected "${expectedPiece}"]${source.substr(last)}'`);
+        const context =
+          fullContext.length > contextLength
+            ? `...${fullContext.substr(-contextLength)}`
+            : fullContext;
+        fail(
+          `${description}: Failed to find "${expectedPiece}" after "${context}" in:\n'${source.substr(
+            0,
+            last
+          )}[<---HERE expected "${expectedPiece}"]${source.substr(last)}'`
+        );
         return;
       } else {
         last = (m.index || 0) + m[0].length;
       }
     }
     fail(
-        `Test helper failure: Expected expression failed but the reporting logic could not find where it failed in: ${
-            source}`);
+      `Test helper failure: Expected expression failed but the reporting logic could not find where it failed in: ${source}`
+    );
   } else {
     if (assertIdentifiers) {
       // It might be possible to add the constraints in the original regexp (see `buildMatcher`)
@@ -144,8 +159,9 @@ export function expectEmit(
           const name = matches[groups.get(id) as number];
           const regexp = assertIdentifiers[id];
           if (!regexp.test(name)) {
-            throw Error(`${description}: The matching identifier "${id}" is "${
-                name}" which doesn't match ${regexp}`);
+            throw Error(
+              `${description}: The matching identifier "${id}" is "${name}" which doesn't match ${regexp}`
+            );
           }
         }
       }
@@ -163,7 +179,7 @@ const MATCHING_IDENT = /^\$.*\$$/;
  * - the `regexp` to be used to match the generated code,
  * - the `groups` which maps `$...$` identifier to their position in the regexp matches.
  */
-function buildMatcher(pieces: (string|RegExp)[]): {regexp: RegExp, groups: Map<string, number>} {
+function buildMatcher(pieces: (string | RegExp)[]): {regexp: RegExp; groups: Map<string, number>} {
   const results: string[] = [];
   let first = true;
   let group = 0;
@@ -196,33 +212,38 @@ function buildMatcher(pieces: (string|RegExp)[]): {regexp: RegExp, groups: Map<s
   };
 }
 
-
 export function compile(
-    data: MockDirectory, angularFiles: MockData, options: AotCompilerOptions = {},
-    errorCollector: (error: any, fileName?: string) => void = error => {
-      throw error;
-    }): {
-  source: string,
+  data: MockDirectory,
+  angularFiles: MockData,
+  options: AotCompilerOptions = {},
+  errorCollector: (error: any, fileName?: string) => void = (error) => {
+    throw error;
+  }
+): {
+  source: string;
 } {
   setFileSystem(new NodeJSFileSystem());
   const testFiles = toMockFileArray(data);
-  const scripts = testFiles.map(entry => entry.fileName);
+  const scripts = testFiles.map((entry) => entry.fileName);
   const angularFilesArray = toMockFileArray(angularFiles);
   const files = arrayToMockDir([...testFiles, ...angularFilesArray]);
   const mockCompilerHost = new MockCompilerHost(scripts, files);
 
   const program = new NgtscProgram(
-      scripts, {
-        target: ts.ScriptTarget.ES2015,
-        module: ts.ModuleKind.ES2015,
-        moduleResolution: ts.ModuleResolutionKind.NodeJs,
-        enableI18nLegacyMessageIdFormat: false,
-        ...options,
-      },
-      mockCompilerHost);
+    scripts,
+    {
+      target: ts.ScriptTarget.ES2015,
+      module: ts.ModuleKind.ES2015,
+      moduleResolution: ts.ModuleResolutionKind.NodeJs,
+      enableI18nLegacyMessageIdFormat: false,
+      ...options,
+    },
+    mockCompilerHost
+  );
   program.emit();
-  const source =
-      scripts.map(script => mockCompilerHost.readFile(script.replace(/\.ts$/, '.js'))).join('\n');
+  const source = scripts
+    .map((script) => mockCompilerHost.readFile(script.replace(/\.ts$/, '.js')))
+    .join('\n');
 
   return {source};
 }

@@ -5,23 +5,23 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ɵcomputeMsgId, ɵmakeParsedTranslation} from '@angular/localize';
 import {Diagnostics} from '../../../../src/diagnostics';
 import {XtbTranslationParser} from '../../../../src/translate/translation_files/translation_parsers/xtb_translation_parser';
 
 describe('XtbTranslationParser', () => {
   describe('canParse()', () => {
-    it('should return true if the file extension is `.xtb` or `.xmb` and it contains the `<translationbundle>` tag',
-       () => {
-         const parser = new XtbTranslationParser();
-         expect(parser.canParse('/some/file.xtb', '<translationbundle>')).toBeTruthy();
-         expect(parser.canParse('/some/file.xmb', '<translationbundle>')).toBeTruthy();
-         expect(parser.canParse('/some/file.xtb', '<translationbundle lang="en">')).toBeTruthy();
-         expect(parser.canParse('/some/file.xmb', '<translationbundle lang="en">')).toBeTruthy();
-         expect(parser.canParse('/some/file.json', '<translationbundle>')).toBe(false);
-         expect(parser.canParse('/some/file.xmb', '')).toBe(false);
-         expect(parser.canParse('/some/file.xtb', '')).toBe(false);
-       });
+    it('should return true if the file extension is `.xtb` or `.xmb` and it contains the `<translationbundle>` tag', () => {
+      const parser = new XtbTranslationParser();
+      expect(parser.canParse('/some/file.xtb', '<translationbundle>')).toBeTruthy();
+      expect(parser.canParse('/some/file.xmb', '<translationbundle>')).toBeTruthy();
+      expect(parser.canParse('/some/file.xtb', '<translationbundle lang="en">')).toBeTruthy();
+      expect(parser.canParse('/some/file.xmb', '<translationbundle lang="en">')).toBeTruthy();
+      expect(parser.canParse('/some/file.json', '<translationbundle>')).toBe(false);
+      expect(parser.canParse('/some/file.xmb', '')).toBe(false);
+      expect(parser.canParse('/some/file.xtb', '')).toBe(false);
+    });
   });
 
   describe('parse() [without hint]', () => {
@@ -63,8 +63,9 @@ describe('XtbTranslationParser', () => {
       const parser = new XtbTranslationParser();
       const result = parser.parse('/some/file.xtb', XTB);
 
-      expect(result.translations['8877975308926375834'])
-          .toEqual(ɵmakeParsedTranslation(['', 'rab', ''], ['START_PARAGRAPH', 'CLOSE_PARAGRAPH']));
+      expect(result.translations['8877975308926375834']).toEqual(
+        ɵmakeParsedTranslation(['', 'rab', ''], ['START_PARAGRAPH', 'CLOSE_PARAGRAPH'])
+      );
     });
 
     it('should extract translations with simple ICU expressions', () => {
@@ -76,11 +77,15 @@ describe('XtbTranslationParser', () => {
       const parser = new XtbTranslationParser();
       const result = parser.parse('/some/file.xtb', XTB);
 
-      expect(result.translations['7717087045075616176'])
-          .toEqual(ɵmakeParsedTranslation(['*', '*'], ['ICU']));
-      expect(result.translations['5115002811911870583'])
-          .toEqual(ɵmakeParsedTranslation(
-              ['{VAR_PLURAL, plural, =1 {{START_PARAGRAPH}rab{CLOSE_PARAGRAPH}}}'], []));
+      expect(result.translations['7717087045075616176']).toEqual(
+        ɵmakeParsedTranslation(['*', '*'], ['ICU'])
+      );
+      expect(result.translations['5115002811911870583']).toEqual(
+        ɵmakeParsedTranslation(
+          ['{VAR_PLURAL, plural, =1 {{START_PARAGRAPH}rab{CLOSE_PARAGRAPH}}}'],
+          []
+        )
+      );
     });
 
     it('should extract translations with duplicate source messages', () => {
@@ -106,9 +111,9 @@ describe('XtbTranslationParser', () => {
       const parser = new XtbTranslationParser();
       const result = parser.parse('/some/file.xtb', XTB);
 
-      expect(result.translations[ɵcomputeMsgId('{$LINE_BREAK}{$TAG_IMG}{$TAG_IMG_1}')])
-          .toEqual(
-              ɵmakeParsedTranslation(['', '', '', ''], ['TAG_IMG_1', 'TAG_IMG', 'LINE_BREAK']));
+      expect(result.translations[ɵcomputeMsgId('{$LINE_BREAK}{$TAG_IMG}{$TAG_IMG_1}')]).toEqual(
+        ɵmakeParsedTranslation(['', '', '', ''], ['TAG_IMG_1', 'TAG_IMG', 'LINE_BREAK'])
+      );
     });
 
     it('should extract translations with empty target', () => {
@@ -126,8 +131,9 @@ describe('XtbTranslationParser', () => {
       const parser = new XtbTranslationParser();
       const result = parser.parse('/some/file.xtb', XTB);
 
-      expect(result.translations[ɵcomputeMsgId('hello {$START_TAG_SPAN}{$CLOSE_TAG_SPAN}')])
-          .toEqual(ɵmakeParsedTranslation(['']));
+      expect(
+        result.translations[ɵcomputeMsgId('hello {$START_TAG_SPAN}{$CLOSE_TAG_SPAN}')]
+      ).toEqual(ɵmakeParsedTranslation(['']));
     });
 
     it('should extract translations with deeply nested ICUs', () => {
@@ -153,15 +159,21 @@ describe('XtbTranslationParser', () => {
       const parser = new XtbTranslationParser();
       const result = parser.parse('/some/file.xtb', XTB);
 
-      expect(result.translations[ɵcomputeMsgId('Test: {$ICU}')])
-          .toEqual(ɵmakeParsedTranslation(['Le test: ', ''], ['ICU']));
+      expect(result.translations[ɵcomputeMsgId('Test: {$ICU}')]).toEqual(
+        ɵmakeParsedTranslation(['Le test: ', ''], ['ICU'])
+      );
 
       expect(
-          result.translations[ɵcomputeMsgId(
-              '{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {{START_PARAGRAPH}deeply nested{CLOSE_PARAGRAPH}}}} =other {beaucoup}}')])
-          .toEqual(ɵmakeParsedTranslation([
-            '{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {{START_PARAGRAPH}profondément imbriqué{CLOSE_PARAGRAPH}}}} =other {beaucoup}}'
-          ]));
+        result.translations[
+          ɵcomputeMsgId(
+            '{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {{START_PARAGRAPH}deeply nested{CLOSE_PARAGRAPH}}}} =other {beaucoup}}'
+          )
+        ]
+      ).toEqual(
+        ɵmakeParsedTranslation([
+          '{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {{START_PARAGRAPH}profondément imbriqué{CLOSE_PARAGRAPH}}}} =other {beaucoup}}',
+        ])
+      );
     });
 
     it('should extract translations containing multiple lines', () => {
@@ -180,8 +192,9 @@ describe('XtbTranslationParser', () => {
       const parser = new XtbTranslationParser();
       const result = parser.parse('/some/file.xtb', XTB);
 
-      expect(result.translations[ɵcomputeMsgId('multi\nlines')])
-          .toEqual(ɵmakeParsedTranslation(['multi\nlignes']));
+      expect(result.translations[ɵcomputeMsgId('multi\nlines')]).toEqual(
+        ɵmakeParsedTranslation(['multi\nlignes'])
+      );
     });
 
     it('should warn on unrecognised ICU messages', () => {
@@ -198,24 +211,25 @@ describe('XtbTranslationParser', () => {
       const result = parser.parse('/some/file.xtb', XTB);
 
       // We should be able to read the valid message
-      expect(result.translations['valid'])
-          .toEqual(ɵmakeParsedTranslation(['This is a valid message']));
+      expect(result.translations['valid']).toEqual(
+        ɵmakeParsedTranslation(['This is a valid message'])
+      );
 
       // Trying to access the invalid message should fail
       expect(result.translations['invalid']).toBeUndefined();
       expect(result.diagnostics.messages).toContain({
         type: 'warning',
         message:
-            `Could not parse message with id "invalid" - perhaps it has an unrecognised ICU format?\n` +
-            `Error: Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)\n` +
-            `Error: Invalid ICU message. Missing '}'.`
+          `Could not parse message with id "invalid" - perhaps it has an unrecognised ICU format?\n` +
+          `Error: Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)\n` +
+          `Error: Invalid ICU message. Missing '}'.`,
       });
     });
 
     describe('[structure errors]', () => {
       it('should throw when there are nested translationbundle tags', () => {
         const XTB =
-            '<translationbundle><translationbundle></translationbundle></translationbundle>';
+          '<translationbundle><translationbundle></translationbundle></translationbundle>';
 
         expect(() => {
           const parser = new XtbTranslationParser();
@@ -331,8 +345,9 @@ ERRORS:
       }
       const result = parser.parse('/some/file.xtb', XTB, hint);
 
-      expect(result.translations['8877975308926375834'])
-          .toEqual(ɵmakeParsedTranslation(['', 'rab', ''], ['START_PARAGRAPH', 'CLOSE_PARAGRAPH']));
+      expect(result.translations['8877975308926375834']).toEqual(
+        ɵmakeParsedTranslation(['', 'rab', ''], ['START_PARAGRAPH', 'CLOSE_PARAGRAPH'])
+      );
     });
 
     it('should extract translations with simple ICU expressions', () => {
@@ -348,11 +363,15 @@ ERRORS:
       }
       const result = parser.parse('/some/file.xtb', XTB, hint);
 
-      expect(result.translations['7717087045075616176'])
-          .toEqual(ɵmakeParsedTranslation(['*', '*'], ['ICU']));
-      expect(result.translations['5115002811911870583'])
-          .toEqual(ɵmakeParsedTranslation(
-              ['{VAR_PLURAL, plural, =1 {{START_PARAGRAPH}rab{CLOSE_PARAGRAPH}}}'], []));
+      expect(result.translations['7717087045075616176']).toEqual(
+        ɵmakeParsedTranslation(['*', '*'], ['ICU'])
+      );
+      expect(result.translations['5115002811911870583']).toEqual(
+        ɵmakeParsedTranslation(
+          ['{VAR_PLURAL, plural, =1 {{START_PARAGRAPH}rab{CLOSE_PARAGRAPH}}}'],
+          []
+        )
+      );
     });
 
     it('should extract translations with duplicate source messages', () => {
@@ -386,9 +405,9 @@ ERRORS:
       }
       const result = parser.parse('/some/file.xtb', XTB, hint);
 
-      expect(result.translations[ɵcomputeMsgId('{$LINE_BREAK}{$TAG_IMG}{$TAG_IMG_1}')])
-          .toEqual(
-              ɵmakeParsedTranslation(['', '', '', ''], ['TAG_IMG_1', 'TAG_IMG', 'LINE_BREAK']));
+      expect(result.translations[ɵcomputeMsgId('{$LINE_BREAK}{$TAG_IMG}{$TAG_IMG_1}')]).toEqual(
+        ɵmakeParsedTranslation(['', '', '', ''], ['TAG_IMG_1', 'TAG_IMG', 'LINE_BREAK'])
+      );
     });
 
     it('should extract translations with empty target', () => {
@@ -410,8 +429,9 @@ ERRORS:
       }
       const result = parser.parse('/some/file.xtb', XTB, hint);
 
-      expect(result.translations[ɵcomputeMsgId('hello {$START_TAG_SPAN}{$CLOSE_TAG_SPAN}')])
-          .toEqual(ɵmakeParsedTranslation(['']));
+      expect(
+        result.translations[ɵcomputeMsgId('hello {$START_TAG_SPAN}{$CLOSE_TAG_SPAN}')]
+      ).toEqual(ɵmakeParsedTranslation(['']));
     });
 
     it('should extract translations with deeply nested ICUs', () => {
@@ -441,15 +461,21 @@ ERRORS:
       }
       const result = parser.parse('/some/file.xtb', XTB, hint);
 
-      expect(result.translations[ɵcomputeMsgId('Test: {$ICU}')])
-          .toEqual(ɵmakeParsedTranslation(['Le test: ', ''], ['ICU']));
+      expect(result.translations[ɵcomputeMsgId('Test: {$ICU}')]).toEqual(
+        ɵmakeParsedTranslation(['Le test: ', ''], ['ICU'])
+      );
 
       expect(
-          result.translations[ɵcomputeMsgId(
-              '{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {{START_PARAGRAPH}deeply nested{CLOSE_PARAGRAPH}}}} =other {beaucoup}}')])
-          .toEqual(ɵmakeParsedTranslation([
-            '{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {{START_PARAGRAPH}profondément imbriqué{CLOSE_PARAGRAPH}}}} =other {beaucoup}}'
-          ]));
+        result.translations[
+          ɵcomputeMsgId(
+            '{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {{START_PARAGRAPH}deeply nested{CLOSE_PARAGRAPH}}}} =other {beaucoup}}'
+          )
+        ]
+      ).toEqual(
+        ɵmakeParsedTranslation([
+          '{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {{START_PARAGRAPH}profondément imbriqué{CLOSE_PARAGRAPH}}}} =other {beaucoup}}',
+        ])
+      );
     });
 
     it('should extract translations containing multiple lines', () => {
@@ -472,8 +498,9 @@ ERRORS:
       }
       const result = parser.parse('/some/file.xtb', XTB, hint);
 
-      expect(result.translations[ɵcomputeMsgId('multi\nlines')])
-          .toEqual(ɵmakeParsedTranslation(['multi\nlignes']));
+      expect(result.translations[ɵcomputeMsgId('multi\nlines')]).toEqual(
+        ɵmakeParsedTranslation(['multi\nlignes'])
+      );
     });
 
     it('should warn on unrecognised ICU messages', () => {
@@ -494,24 +521,25 @@ ERRORS:
       const result = parser.parse('/some/file.xtb', XTB, hint);
 
       // We should be able to read the valid message
-      expect(result.translations['valid'])
-          .toEqual(ɵmakeParsedTranslation(['This is a valid message']));
+      expect(result.translations['valid']).toEqual(
+        ɵmakeParsedTranslation(['This is a valid message'])
+      );
 
       // Trying to access the invalid message should fail
       expect(result.translations['invalid']).toBeUndefined();
       expect(result.diagnostics.messages).toContain({
         type: 'warning',
         message:
-            `Could not parse message with id "invalid" - perhaps it has an unrecognised ICU format?\n` +
-            `Error: Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)\n` +
-            `Error: Invalid ICU message. Missing '}'.`
+          `Could not parse message with id "invalid" - perhaps it has an unrecognised ICU format?\n` +
+          `Error: Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)\n` +
+          `Error: Invalid ICU message. Missing '}'.`,
       });
     });
 
     describe('[structure errors]', () => {
       it('should throw when there are nested translationbundle tags', () => {
         const XTB =
-            '<translationbundle><translationbundle></translationbundle></translationbundle>';
+          '<translationbundle><translationbundle></translationbundle></translationbundle>';
 
         const parser = new XtbTranslationParser();
         const hint = parser.canParse('/some/file.xtb', XTB);
@@ -520,9 +548,9 @@ ERRORS:
         }
         const result = parser.parse('/some/file.xtb', XTB, hint);
         expect(result.diagnostics.messages.length).toEqual(1);
-        expect(result.diagnostics.messages[0].message)
-            .toEqual(
-                `Unexpected <translationbundle> tag. ("<translationbundle>[ERROR ->]<translationbundle></translationbundle></translationbundle>"): /some/file.xtb@0:19`);
+        expect(result.diagnostics.messages[0].message).toEqual(
+          `Unexpected <translationbundle> tag. ("<translationbundle>[ERROR ->]<translationbundle></translationbundle></translationbundle>"): /some/file.xtb@0:19`
+        );
       });
 
       it('should throw when a translation has no id attribute', () => {
@@ -539,7 +567,7 @@ ERRORS:
         const result = parser.parse('/some/file.xtb', XTB, hint);
         expect(result.diagnostics.messages.length).toEqual(1);
         expect(result.diagnostics.messages[0].message)
-            .toEqual(`Missing required "id" attribute on <trans-unit> element. ("
+          .toEqual(`Missing required "id" attribute on <trans-unit> element. ("
           <translationbundle>
             [ERROR ->]<translation></translation>
           </translationbundle>"): /some/file.xtb@2:12`);
@@ -560,7 +588,7 @@ ERRORS:
         const result = parser.parse('/some/file.xtb', XTB, hint);
         expect(result.diagnostics.messages.length).toEqual(1);
         expect(result.diagnostics.messages[0].message)
-            .toEqual(`Duplicated translations for message "deadbeef" ("
+          .toEqual(`Duplicated translations for message "deadbeef" ("
           <translationbundle>
             <translation id="deadbeef"></translation>
             [ERROR ->]<translation id="deadbeef"></translation>
@@ -606,7 +634,7 @@ ERRORS:
         const result = parser.parse('/some/file.xtb', XTB, hint);
         expect(result.diagnostics.messages.length).toEqual(1);
         expect(result.diagnostics.messages[0].message)
-            .toEqual(`Missing required "name" attribute: ("
+          .toEqual(`Missing required "name" attribute: ("
           <translationbundle>
             <translation id="deadbeef">[ERROR ->]<ph/></translation>
           </translationbundle>"): /some/file.xtb@2:39`);

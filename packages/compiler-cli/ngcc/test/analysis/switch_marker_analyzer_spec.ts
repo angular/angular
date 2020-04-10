@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {absoluteFrom, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
@@ -78,8 +79,9 @@ runInEachFileSystem(() => {
     describe('analyzeProgram()', () => {
       it('should check for switchable markers in all the files of the program', () => {
         loadTestFiles(TEST_PROGRAM);
-        const bundle = makeTestEntryPointBundle(
-            'test', 'esm2015', false, [_('/node_modules/test/entrypoint.js')]);
+        const bundle = makeTestEntryPointBundle('test', 'esm2015', false, [
+          _('/node_modules/test/entrypoint.js'),
+        ]);
         const program = bundle.src.program;
         const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle.src);
         const analyzer = new SwitchMarkerAnalyzer(host, bundle.entryPoint.package);
@@ -95,13 +97,13 @@ runInEachFileSystem(() => {
         expect(analysis.has(a)).toBe(false);
         expect(analysis.has(b)).toBe(true);
         expect(analysis.get(b)!.sourceFile).toBe(b);
-        expect(analysis.get(b)!.declarations.map(decl => decl.getText())).toEqual([
-          'factoryB = factory__PRE_R3__'
+        expect(analysis.get(b)!.declarations.map((decl) => decl.getText())).toEqual([
+          'factoryB = factory__PRE_R3__',
         ]);
 
         expect(analysis.has(c)).toBe(true);
         expect(analysis.get(c)!.sourceFile).toBe(c);
-        expect(analysis.get(c)!.declarations.map(decl => decl.getText())).toEqual([
+        expect(analysis.get(c)!.declarations.map((decl) => decl.getText())).toEqual([
           'factoryC = factory__PRE_R3__',
           'factoryD = factory__PRE_R3__',
         ]);
@@ -109,8 +111,9 @@ runInEachFileSystem(() => {
 
       it('should ignore files that are outside the package', () => {
         loadTestFiles(TEST_PROGRAM);
-        const bundle = makeTestEntryPointBundle(
-            'test', 'esm2015', false, [_('/node_modules/test/entrypoint.js')]);
+        const bundle = makeTestEntryPointBundle('test', 'esm2015', false, [
+          _('/node_modules/test/entrypoint.js'),
+        ]);
         const program = bundle.src.program;
         const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle.src);
         const analyzer = new SwitchMarkerAnalyzer(host, bundle.entryPoint.package);
@@ -120,10 +123,11 @@ runInEachFileSystem(() => {
         expect(analysis.has(x)).toBe(false);
       });
 
-      it('should ignore files that are inside the package\'s `node_modules/`', () => {
+      it("should ignore files that are inside the package's `node_modules/`", () => {
         loadTestFiles(TEST_PROGRAM);
-        const bundle = makeTestEntryPointBundle(
-            'test', 'esm2015', false, [_('/node_modules/test/entrypoint.js')]);
+        const bundle = makeTestEntryPointBundle('test', 'esm2015', false, [
+          _('/node_modules/test/entrypoint.js'),
+        ]);
         const program = bundle.src.program;
         const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle.src);
         const analyzer = new SwitchMarkerAnalyzer(host, bundle.entryPoint.package);

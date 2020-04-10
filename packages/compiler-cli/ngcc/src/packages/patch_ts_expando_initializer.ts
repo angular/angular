@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 import {hasNameIdentifier} from '../utils';
 
@@ -58,8 +59,10 @@ export function patchTsGetExpandoInitializer(): unknown {
   }
 
   // Override the function to add support for recognizing the IIFE structure used in ES5 bundles.
-  (ts as any).getExpandoInitializer = (initializer: ts.Node,
-                                       isPrototypeAssignment: boolean): ts.Expression|undefined => {
+  (ts as any).getExpandoInitializer = (
+    initializer: ts.Node,
+    isPrototypeAssignment: boolean
+  ): ts.Expression | undefined => {
     // If the initializer is a call expression within parenthesis, unwrap the parenthesis
     // upfront such that unsupported IIFE syntax `(function(){}())` becomes `function(){}()`,
     // which is supported.
@@ -77,7 +80,7 @@ export function restoreGetExpandoInitializer(originalGetExpandoInitializer: unkn
   }
 }
 
-let ts31778FixedResult: boolean|null = null;
+let ts31778FixedResult: boolean | null = null;
 
 function isTs31778GetExpandoInitializerFixed(): boolean {
   // If the result has already been computed, return early.
@@ -121,20 +124,23 @@ function checkIfExpandoPropertyIsPresent(): boolean {
       }());
       A.expando = true;
     }());`;
-  const sourceFile =
-      ts.createSourceFile('test.js', sourceText, ts.ScriptTarget.ES5, true, ts.ScriptKind.JS);
+  const sourceFile = ts.createSourceFile(
+    'test.js',
+    sourceText,
+    ts.ScriptTarget.ES5,
+    true,
+    ts.ScriptKind.JS
+  );
   const host: ts.CompilerHost = {
-    getSourceFile(): ts.SourceFile |
-        undefined {
-          return sourceFile;
-        },
+    getSourceFile(): ts.SourceFile | undefined {
+      return sourceFile;
+    },
     fileExists(): boolean {
       return true;
     },
-    readFile(): string |
-        undefined {
-          return '';
-        },
+    readFile(): string | undefined {
+      return '';
+    },
     writeFile() {},
     getDefaultLibFileName(): string {
       return '';
@@ -158,7 +164,7 @@ function checkIfExpandoPropertyIsPresent(): boolean {
   const options = {noResolve: true, noLib: true, noEmit: true, allowJs: true};
   const program = ts.createProgram(['test.js'], options, host);
 
-  function visitor(node: ts.Node): ts.VariableDeclaration|undefined {
+  function visitor(node: ts.Node): ts.VariableDeclaration | undefined {
     if (ts.isVariableDeclaration(node) && hasNameIdentifier(node) && node.name.text === 'A') {
       return node;
     }

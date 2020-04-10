@@ -5,9 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {createHash} from 'crypto';
 
-import {absoluteFrom, FileSystem, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
+import {
+  absoluteFrom,
+  FileSystem,
+  getFileSystem,
+  relativeFrom,
+} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {EntryPointWithDependencies} from '../../src/dependencies/dependency_host';
@@ -42,7 +48,7 @@ runInEachFileSystem(() => {
           ngccVersion: NGCC_VERSION,
           lockFileHash: createHash('md5').update('LOCK FILE CONTENTS').digest('hex'),
           configFileHash: config.hash,
-          entryPointPaths: []
+          entryPointPaths: [],
         };
       });
 
@@ -50,7 +56,9 @@ runInEachFileSystem(() => {
         fs.ensureDir(_Abs('/project/dist'));
         fs.writeFile(_Abs('/project/yarn.lock'), 'LOCK FILE CONTENTS');
         fs.writeFile(
-            _Abs('/project/dist/__ngcc_entry_points__.json'), JSON.stringify(manifestFile));
+          _Abs('/project/dist/__ngcc_entry_points__.json'),
+          JSON.stringify(manifestFile)
+        );
         const entryPoints = manifest.readEntryPointsUsingManifest(_Abs('/project/dist'));
         expect(entryPoints).toBe(null);
       });
@@ -58,7 +66,9 @@ runInEachFileSystem(() => {
       it('should return null if there is no package lock-file', () => {
         fs.ensureDir(_Abs('/project/node_modules'));
         fs.writeFile(
-            _Abs('/project/node_modules/__ngcc_entry_points__.json'), JSON.stringify(manifestFile));
+          _Abs('/project/node_modules/__ngcc_entry_points__.json'),
+          JSON.stringify(manifestFile)
+        );
         const entryPoints = manifest.readEntryPointsUsingManifest(_Abs('/project/node_modules'));
         expect(entryPoints).toBe(null);
       });
@@ -75,7 +85,9 @@ runInEachFileSystem(() => {
         fs.writeFile(_Abs('/project/yarn.lock'), 'LOCK FILE CONTENTS');
         manifestFile.ngccVersion = 'bad-version';
         fs.writeFile(
-            _Abs('/project/node_modules/__ngcc_entry_points__.json'), JSON.stringify(manifestFile));
+          _Abs('/project/node_modules/__ngcc_entry_points__.json'),
+          JSON.stringify(manifestFile)
+        );
         const entryPoints = manifest.readEntryPointsUsingManifest(_Abs('/project/node_modules'));
         expect(entryPoints).toBe(null);
       });
@@ -85,19 +97,22 @@ runInEachFileSystem(() => {
         fs.writeFile(_Abs('/project/yarn.lock'), 'LOCK FILE CONTENTS');
         manifestFile.configFileHash = 'bad-hash';
         fs.writeFile(
-            _Abs('/project/node_modules/__ngcc_entry_points__.json'), JSON.stringify(manifestFile));
+          _Abs('/project/node_modules/__ngcc_entry_points__.json'),
+          JSON.stringify(manifestFile)
+        );
         const entryPoints = manifest.readEntryPointsUsingManifest(_Abs('/project/node_modules'));
         expect(entryPoints).toBe(null);
       });
 
-      ['yarn.lock', 'package-lock.json'].forEach(packageLockFilePath => {
+      ['yarn.lock', 'package-lock.json'].forEach((packageLockFilePath) => {
         it('should return null if the lockfile hash does not match', () => {
           fs.ensureDir(_Abs('/project/node_modules'));
           fs.writeFile(_Abs(`/project/${packageLockFilePath}`), 'LOCK FILE CONTENTS');
           manifestFile.lockFileHash = 'bad-hash';
           fs.writeFile(
-              _Abs('/project/node_modules/__ngcc_entry_points__.json'),
-              JSON.stringify(manifestFile));
+            _Abs('/project/node_modules/__ngcc_entry_points__.json'),
+            JSON.stringify(manifestFile)
+          );
           const entryPoints = manifest.readEntryPointsUsingManifest(_Abs('/project/node_modules'));
           expect(entryPoints).toBe(null);
         });
@@ -106,8 +121,9 @@ runInEachFileSystem(() => {
           fs.ensureDir(_Abs('/project/node_modules'));
           fs.writeFile(_Abs(`/project/${packageLockFilePath}`), 'LOCK FILE CONTENTS');
           fs.writeFile(
-              _Abs('/project/node_modules/__ngcc_entry_points__.json'),
-              JSON.stringify(manifestFile));
+            _Abs('/project/node_modules/__ngcc_entry_points__.json'),
+            JSON.stringify(manifestFile)
+          );
           const entryPoints = manifest.readEntryPointsUsingManifest(_Abs('/project/node_modules'));
           expect(entryPoints).toEqual([]);
         });
@@ -119,12 +135,13 @@ runInEachFileSystem(() => {
         loadTestFiles([
           {
             name: _Abs('/project/node_modules/some_package/valid_entry_point/package.json'),
-            contents: createPackageJson('valid_entry_point')
+            contents: createPackageJson('valid_entry_point'),
           },
           {
             name: _Abs(
-                '/project/node_modules/some_package/valid_entry_point/valid_entry_point.metadata.json'),
-            contents: 'some meta data'
+              '/project/node_modules/some_package/valid_entry_point/valid_entry_point.metadata.json'
+            ),
+            contents: 'some meta data',
           },
         ]);
         manifestFile.entryPointPaths.push([
@@ -134,43 +151,41 @@ runInEachFileSystem(() => {
             _Abs('/project/node_modules/other_package_1'),
             _Abs('/project/node_modules/other_package_2'),
           ],
-          [
-            _Abs('/project/node_modules/missing_1'),
-            relativeFrom('missing_2'),
-          ],
-          [
-            _Abs('/project/node_modules/deep/import/path'),
-          ],
+          [_Abs('/project/node_modules/missing_1'), relativeFrom('missing_2')],
+          [_Abs('/project/node_modules/deep/import/path')],
         ]);
         fs.writeFile(
-            _Abs('/project/node_modules/__ngcc_entry_points__.json'), JSON.stringify(manifestFile));
+          _Abs('/project/node_modules/__ngcc_entry_points__.json'),
+          JSON.stringify(manifestFile)
+        );
         const entryPoints = manifest.readEntryPointsUsingManifest(_Abs('/project/node_modules'));
-        expect(entryPoints).toEqual([{
-          entryPoint: {
-            name: 'some_package/valid_entry_point',
-            packageJson: jasmine.any(Object),
-            package: _Abs('/project/node_modules/some_package'),
-            path: _Abs('/project/node_modules/some_package/valid_entry_point'),
-            typings:
-                _Abs('/project/node_modules/some_package/valid_entry_point/valid_entry_point.d.ts'),
-            compiledByAngular: true,
-            ignoreMissingDependencies: false,
-            generateDeepReexports: false,
-          } as any,
-          depInfo: {
-            dependencies: new Set([
-              _Abs('/project/node_modules/other_package_1'),
-              _Abs('/project/node_modules/other_package_2'),
-            ]),
-            missing: new Set([
-              _Abs('/project/node_modules/missing_1'),
-              relativeFrom('missing_2'),
-            ]),
-            deepImports: new Set([
-              _Abs('/project/node_modules/deep/import/path'),
-            ])
-          }
-        }]);
+        expect(entryPoints).toEqual([
+          {
+            entryPoint: {
+              name: 'some_package/valid_entry_point',
+              packageJson: jasmine.any(Object),
+              package: _Abs('/project/node_modules/some_package'),
+              path: _Abs('/project/node_modules/some_package/valid_entry_point'),
+              typings: _Abs(
+                '/project/node_modules/some_package/valid_entry_point/valid_entry_point.d.ts'
+              ),
+              compiledByAngular: true,
+              ignoreMissingDependencies: false,
+              generateDeepReexports: false,
+            } as any,
+            depInfo: {
+              dependencies: new Set([
+                _Abs('/project/node_modules/other_package_1'),
+                _Abs('/project/node_modules/other_package_2'),
+              ]),
+              missing: new Set([
+                _Abs('/project/node_modules/missing_1'),
+                relativeFrom('missing_2'),
+              ]),
+              deepImports: new Set([_Abs('/project/node_modules/deep/import/path')]),
+            },
+          },
+        ]);
       });
 
       it('should return null if any of the entry-points are not valid', () => {
@@ -178,10 +193,15 @@ runInEachFileSystem(() => {
         fs.writeFile(_Abs('/project/yarn.lock'), 'LOCK FILE CONTENTS');
         manifestFile.entryPointPaths.push([
           _Abs('/project/node_modules/some_package'),
-          _Abs('/project/node_modules/some_package/valid_entry_point'), [], [], []
+          _Abs('/project/node_modules/some_package/valid_entry_point'),
+          [],
+          [],
+          [],
         ]);
         fs.writeFile(
-            _Abs('/project/node_modules/__ngcc_entry_points__.json'), JSON.stringify(manifestFile));
+          _Abs('/project/node_modules/__ngcc_entry_points__.json'),
+          JSON.stringify(manifestFile)
+        );
         const entryPoints = manifest.readEntryPointsUsingManifest(_Abs('/project/node_modules'));
         expect(entryPoints).toEqual(null);
       });
@@ -199,51 +219,55 @@ runInEachFileSystem(() => {
         expect(fs.exists(_Abs('/project/dist/__ngcc_entry_points__.json'))).toBe(false);
       });
 
-      it('should write an __ngcc_entry_points__.json file below the base path if there is a yarn.lock file',
-         () => {
-           fs.writeFile(_Abs('/project/yarn.lock'), 'LOCK FILE CONTENTS');
-           manifest.writeEntryPointManifest(_Abs('/project/node_modules'), []);
-           expect(fs.exists(_Abs('/project/node_modules/__ngcc_entry_points__.json'))).toBe(true);
-         });
+      it('should write an __ngcc_entry_points__.json file below the base path if there is a yarn.lock file', () => {
+        fs.writeFile(_Abs('/project/yarn.lock'), 'LOCK FILE CONTENTS');
+        manifest.writeEntryPointManifest(_Abs('/project/node_modules'), []);
+        expect(fs.exists(_Abs('/project/node_modules/__ngcc_entry_points__.json'))).toBe(true);
+      });
 
-      it('should write an __ngcc_entry_points__.json file below the base path if there is a package-lock.json file',
-         () => {
-           fs.writeFile(_Abs('/project/package-lock.json'), 'LOCK FILE CONTENTS');
-           manifest.writeEntryPointManifest(_Abs('/project/node_modules'), []);
-           expect(fs.exists(_Abs('/project/node_modules/__ngcc_entry_points__.json'))).toBe(true);
-         });
+      it('should write an __ngcc_entry_points__.json file below the base path if there is a package-lock.json file', () => {
+        fs.writeFile(_Abs('/project/package-lock.json'), 'LOCK FILE CONTENTS');
+        manifest.writeEntryPointManifest(_Abs('/project/node_modules'), []);
+        expect(fs.exists(_Abs('/project/node_modules/__ngcc_entry_points__.json'))).toBe(true);
+      });
 
       it('should write the ngcc version', () => {
         fs.writeFile(_Abs('/project/yarn.lock'), 'LOCK FILE CONTENTS');
         manifest.writeEntryPointManifest(_Abs('/project/node_modules'), []);
-        const file: EntryPointManifestFile =
-            JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json')));
+        const file: EntryPointManifestFile = JSON.parse(
+          fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json'))
+        );
         expect(file.ngccVersion).toEqual(NGCC_VERSION);
       });
 
       it('should write a hash of the yarn.lock file', () => {
         fs.writeFile(_Abs('/project/yarn.lock'), 'LOCK FILE CONTENTS');
         manifest.writeEntryPointManifest(_Abs('/project/node_modules'), []);
-        const file: EntryPointManifestFile =
-            JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json')));
-        expect(file.lockFileHash)
-            .toEqual(createHash('md5').update('LOCK FILE CONTENTS').digest('hex'));
+        const file: EntryPointManifestFile = JSON.parse(
+          fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json'))
+        );
+        expect(file.lockFileHash).toEqual(
+          createHash('md5').update('LOCK FILE CONTENTS').digest('hex')
+        );
       });
 
       it('should write a hash of the package-lock.json file', () => {
         fs.writeFile(_Abs('/project/package-lock.json'), 'LOCK FILE CONTENTS');
         manifest.writeEntryPointManifest(_Abs('/project/node_modules'), []);
-        const file: EntryPointManifestFile =
-            JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json')));
-        expect(file.lockFileHash)
-            .toEqual(createHash('md5').update('LOCK FILE CONTENTS').digest('hex'));
+        const file: EntryPointManifestFile = JSON.parse(
+          fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json'))
+        );
+        expect(file.lockFileHash).toEqual(
+          createHash('md5').update('LOCK FILE CONTENTS').digest('hex')
+        );
       });
 
       it('should write a hash of the project config', () => {
         fs.writeFile(_Abs('/project/package-lock.json'), 'LOCK FILE CONTENTS');
         manifest.writeEntryPointManifest(_Abs('/project/node_modules'), []);
-        const file: EntryPointManifestFile =
-            JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json')));
+        const file: EntryPointManifestFile = JSON.parse(
+          fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json'))
+        );
         expect(file.configFileHash).toEqual(config.hash);
       });
 
@@ -260,8 +284,8 @@ runInEachFileSystem(() => {
               _Abs('/project/node_modules/other_package_2'),
             ]),
             missing: new Set(),
-            deepImports: new Set()
-          }
+            deepImports: new Set(),
+          },
         };
         const entryPoint2: EntryPointWithDependencies = {
           entryPoint: {
@@ -270,18 +294,14 @@ runInEachFileSystem(() => {
           } as any,
           depInfo: {
             dependencies: new Set(),
-            missing: new Set([
-              _Abs('/project/node_modules/missing_1'),
-              relativeFrom('missing_2'),
-            ]),
-            deepImports: new Set([
-              _Abs('/project/node_modules/deep/import/path'),
-            ])
-          }
+            missing: new Set([_Abs('/project/node_modules/missing_1'), relativeFrom('missing_2')]),
+            deepImports: new Set([_Abs('/project/node_modules/deep/import/path')]),
+          },
         };
         manifest.writeEntryPointManifest(_Abs('/project/node_modules'), [entryPoint1, entryPoint2]);
-        const file: EntryPointManifestFile =
-            JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json')));
+        const file: EntryPointManifestFile = JSON.parse(
+          fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json'))
+        );
         expect(file.entryPointPaths).toEqual([
           [
             'package-1',
@@ -295,14 +315,9 @@ runInEachFileSystem(() => {
             'package-2',
             'package-2/entry-point',
             [],
-            [
-              _Abs('/project/node_modules/missing_1'),
-              relativeFrom('missing_2'),
-            ],
-            [
-              _Abs('/project/node_modules/deep/import/path'),
-            ],
-          ]
+            [_Abs('/project/node_modules/missing_1'), relativeFrom('missing_2')],
+            [_Abs('/project/node_modules/deep/import/path')],
+          ],
         ]);
       });
     });

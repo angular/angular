@@ -9,7 +9,15 @@
 /// <reference types='node'/>
 
 import {spawn} from 'child_process';
-import {copyFileSync, existsSync, readFileSync, readdirSync, statSync, unlinkSync, writeFileSync} from 'fs';
+import {
+  copyFileSync,
+  existsSync,
+  readFileSync,
+  readdirSync,
+  statSync,
+  unlinkSync,
+  writeFileSync,
+} from 'fs';
 import {platform} from 'os';
 import {dirname, join, normalize} from 'path';
 
@@ -20,8 +28,12 @@ export type Command = 'build' | 'test' | 'run' | 'coverage' | 'query';
  * Spawn the Bazel process. Trap SINGINT to make sure Bazel process is killed.
  */
 export function runBazel(
-    projectDir: string, binary: string, command: Command, workspaceTarget: string,
-    flags: string[]) {
+  projectDir: string,
+  binary: string,
+  command: Command,
+  workspaceTarget: string,
+  flags: string[]
+) {
   projectDir = normalize(projectDir);
   binary = normalize(binary);
   return new Promise((resolve, reject) => {
@@ -61,9 +73,10 @@ export function checkInstallation(name: Executable, projectDir: string): string 
   } catch (error) {
     if (error.code === 'MODULE_NOT_FOUND') {
       throw new Error(
-          `Could not run ${name}. Please make sure that the ` +
+        `Could not run ${name}. Please make sure that the ` +
           `"${name}" command is installed by running ` +
-          `"npm install ${packageName}" or "yarn install ${packageName}".`);
+          `"npm install ${packageName}" or "yarn install ${packageName}".`
+      );
     }
     throw error;
   }
@@ -111,7 +124,7 @@ function listR(dir: string): string[] {
  * Return the name of the lock file that is present in the specified 'root'
  * directory. If none exists, default to creating an empty yarn.lock file.
  */
-function getOrCreateLockFile(root: string): 'yarn.lock'|'package-lock.json' {
+function getOrCreateLockFile(root: string): 'yarn.lock' | 'package-lock.json' {
   const yarnLock = join(root, 'yarn.lock');
   if (existsSync(yarnLock)) {
     return 'yarn.lock';
@@ -128,9 +141,10 @@ function getOrCreateLockFile(root: string): 'yarn.lock'|'package-lock.json' {
 // Replace yarn_install rule with npm_install and copy from 'source' to 'dest'.
 function replaceYarnWithNpm(source: string, dest: string) {
   const srcContent = readFileSync(source, 'utf-8');
-  const destContent = srcContent.replace(/yarn_install/g, 'npm_install')
-                          .replace('yarn_lock', 'package_lock_json')
-                          .replace('yarn.lock', 'package-lock.json');
+  const destContent = srcContent
+    .replace(/yarn_install/g, 'npm_install')
+    .replace('yarn_lock', 'package_lock_json')
+    .replace('yarn.lock', 'package-lock.json');
   writeFileSync(dest, destContent);
 }
 
@@ -180,8 +194,7 @@ export function copyBazelFiles(root: string, templateDir: string) {
         }
         bazelFiles.push(dest);
       }
-    } catch {
-    }
+    } catch {}
   }
 
   return bazelFiles;
@@ -194,7 +207,6 @@ export function deleteBazelFiles(files: string[]) {
   for (const file of files) {
     try {
       unlinkSync(file);
-    } catch {
-    }
+    } catch {}
   }
 }

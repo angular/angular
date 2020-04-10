@@ -13,9 +13,9 @@ import * as webdriver from 'selenium-webdriver';
 declare var expect: any;
 
 export function openBrowser(config: {
-  url: string,
-  params?: {name: string, value: any}[],
-  ignoreBrowserSynchronization?: boolean
+  url: string;
+  params?: {name: string; value: any}[];
+  ignoreBrowserSynchronization?: boolean;
 }) {
   if (config.ignoreBrowserSynchronization) {
     browser.ignoreSynchronization = true;
@@ -38,13 +38,17 @@ export function verifyNoBrowserErrors() {
   // TODO(tbosch): Bug in ChromeDriver: Need to execute at least one command
   // so that the browser logs can be read out!
   browser.executeScript('1+1');
-  browser.manage().logs().get('browser').then(function(browserLog: any) {
-    const filteredLog = browserLog.filter(function(logEntry: any) {
-      if (logEntry.level.value >= webdriver.logging.Level.INFO.value) {
-        console.log('>> ' + logEntry.message);
-      }
-      return logEntry.level.value > webdriver.logging.Level.WARNING.value;
+  browser
+    .manage()
+    .logs()
+    .get('browser')
+    .then(function (browserLog: any) {
+      const filteredLog = browserLog.filter(function (logEntry: any) {
+        if (logEntry.level.value >= webdriver.logging.Level.INFO.value) {
+          console.log('>> ' + logEntry.message);
+        }
+        return logEntry.level.value > webdriver.logging.Level.WARNING.value;
+      });
+      expect(filteredLog).toEqual([]);
     });
-    expect(filteredLog).toEqual([]);
-  });
 }

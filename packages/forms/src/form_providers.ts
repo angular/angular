@@ -8,7 +8,12 @@
 
 import {ModuleWithProviders, NgModule} from '@angular/core';
 
-import {InternalFormsSharedModule, NG_MODEL_WITH_FORM_CONTROL_WARNING, REACTIVE_DRIVEN_DIRECTIVES, TEMPLATE_DRIVEN_DIRECTIVES} from './directives';
+import {
+  InternalFormsSharedModule,
+  NG_MODEL_WITH_FORM_CONTROL_WARNING,
+  REACTIVE_DRIVEN_DIRECTIVES,
+  TEMPLATE_DRIVEN_DIRECTIVES,
+} from './directives';
 import {RadioControlRegistry} from './directives/radio_control_value_accessor';
 import {FormBuilder} from './form_builder';
 
@@ -24,10 +29,9 @@ import {FormBuilder} from './form_builder';
 @NgModule({
   declarations: TEMPLATE_DRIVEN_DIRECTIVES,
   providers: [RadioControlRegistry],
-  exports: [InternalFormsSharedModule, TEMPLATE_DRIVEN_DIRECTIVES]
+  exports: [InternalFormsSharedModule, TEMPLATE_DRIVEN_DIRECTIVES],
 })
-export class FormsModule {
-}
+export class FormsModule {}
 
 /**
  * Exports the required infrastructure and directives for reactive forms,
@@ -41,7 +45,7 @@ export class FormsModule {
 @NgModule({
   declarations: [REACTIVE_DRIVEN_DIRECTIVES],
   providers: [FormBuilder, RadioControlRegistry],
-  exports: [InternalFormsSharedModule, REACTIVE_DRIVEN_DIRECTIVES]
+  exports: [InternalFormsSharedModule, REACTIVE_DRIVEN_DIRECTIVES],
 })
 export class ReactiveFormsModule {
   /**
@@ -53,13 +57,13 @@ export class ReactiveFormsModule {
    * binding is used with reactive form directives.
    */
   static withConfig(opts: {
-    /** @deprecated as of v6 */ warnOnNgModelWithFormControl: 'never'|'once'|'always'
+    /** @deprecated as of v6 */ warnOnNgModelWithFormControl: 'never' | 'once' | 'always';
   }): ModuleWithProviders<ReactiveFormsModule> {
     return {
       ngModule: ReactiveFormsModule,
       providers: [
-        {provide: NG_MODEL_WITH_FORM_CONTROL_WARNING, useValue: opts.warnOnNgModelWithFormControl}
-      ]
+        {provide: NG_MODEL_WITH_FORM_CONTROL_WARNING, useValue: opts.warnOnNgModelWithFormControl},
+      ],
     };
   }
 }

@@ -30,9 +30,9 @@ export function normalizeMethodName(method: string | RequestMethod): RequestMeth
   throw new Error(`Invalid request method. The method "${method}" is not supported.`);
 }
 
-export const isSuccess = (status: number): boolean => (status >= 200 && status < 300);
+export const isSuccess = (status: number): boolean => status >= 200 && status < 300;
 
-export function getResponseURL(xhr: any): string|null {
+export function getResponseURL(xhr: any): string | null {
   if ('responseURL' in xhr) {
     return xhr.responseURL;
   }
@@ -49,7 +49,6 @@ export function stringToArrayBuffer8(input: String): ArrayBuffer {
   }
   return view.buffer;
 }
-
 
 export function stringToArrayBuffer(input: String): ArrayBuffer {
   const view = new Uint16Array(input.length);

@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ExternalExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
@@ -22,9 +23,17 @@ runInEachFileSystem(() => {
       const {program, host} = makeProgram(files);
       const checker = program.getTypeChecker();
       const moduleResolver = new ModuleResolver(
-          program, program.getCompilerOptions(), host, /* moduleResolutionCache */ null);
+        program,
+        program.getCompilerOptions(),
+        host,
+        /* moduleResolutionCache */ null
+      );
       const strategy = new AbsoluteModuleStrategy(
-          program, checker, moduleResolver, new TypeScriptReflectionHost(checker));
+        program,
+        checker,
+        moduleResolver,
+        new TypeScriptReflectionHost(checker)
+      );
 
       return {strategy, program};
     }
@@ -40,8 +49,12 @@ runInEachFileSystem(() => {
           contents: 'export class Context {}',
         },
       ]);
-      const decl =
-          getDeclaration(program, _('/node_modules/external.d.ts'), 'Foo', ts.isClassDeclaration);
+      const decl = getDeclaration(
+        program,
+        _('/node_modules/external.d.ts'),
+        'Foo',
+        ts.isClassDeclaration
+      );
       const context = program.getSourceFile(_('/context.ts'))!;
 
       const reference = new Reference(decl);
@@ -63,8 +76,12 @@ runInEachFileSystem(() => {
           contents: 'export class Context {}',
         },
       ]);
-      const decl =
-          getDeclaration(program, _('/node_modules/external.d.ts'), 'Foo', ts.isClassDeclaration);
+      const decl = getDeclaration(
+        program,
+        _('/node_modules/external.d.ts'),
+        'Foo',
+        ts.isClassDeclaration
+      );
       const context = program.getSourceFile(_('/context.ts'))!;
 
       const reference = new Reference(decl, {
@@ -91,16 +108,20 @@ runInEachFileSystem(() => {
         },
       ]);
       const decl = getDeclaration(
-          program, _('/node_modules/external.d.ts'), 'Foo', ts.isInterfaceDeclaration);
+        program,
+        _('/node_modules/external.d.ts'),
+        'Foo',
+        ts.isInterfaceDeclaration
+      );
       const context = program.getSourceFile(_('/context.ts'))!;
 
       const reference = new Reference(decl, {
         specifier: 'external',
         resolutionContext: context.fileName,
       });
-      expect(() => strategy.emit(reference, context, ImportFlags.None))
-          .toThrowError(
-              'Importing a type-only declaration of type InterfaceDeclaration in a value position is not allowed.');
+      expect(() => strategy.emit(reference, context, ImportFlags.None)).toThrowError(
+        'Importing a type-only declaration of type InterfaceDeclaration in a value position is not allowed.'
+      );
     });
 
     it('should generate an import to a type-only declaration when allowed', () => {
@@ -115,11 +136,17 @@ runInEachFileSystem(() => {
         },
       ]);
       const decl = getDeclaration(
-          program, _('/node_modules/external.d.ts'), 'Foo', ts.isInterfaceDeclaration);
+        program,
+        _('/node_modules/external.d.ts'),
+        'Foo',
+        ts.isInterfaceDeclaration
+      );
       const context = program.getSourceFile(_('/context.ts'))!;
 
-      const reference =
-          new Reference(decl, {specifier: 'external', resolutionContext: context.fileName});
+      const reference = new Reference(decl, {
+        specifier: 'external',
+        resolutionContext: context.fileName,
+      });
       const emitted = strategy.emit(reference, context, ImportFlags.AllowTypeImports);
       if (!(emitted instanceof ExternalExpr)) {
         return fail('Reference should be emitted as ExternalExpr');
@@ -133,7 +160,7 @@ runInEachFileSystem(() => {
     it('should enumerate exports with the ReflectionHost', () => {
       // Use a modified ReflectionHost that prefixes all export names that it enumerates.
       class TestHost extends TypeScriptReflectionHost {
-        getExportsOfModule(node: ts.Node): Map<string, Declaration>|null {
+        getExportsOfModule(node: ts.Node): Map<string, Declaration> | null {
           const realExports = super.getExportsOfModule(node);
           if (realExports === null) {
             return null;
@@ -154,7 +181,7 @@ runInEachFileSystem(() => {
         {
           name: _('/context.ts'),
           contents: 'export class Context {}',
-        }
+        },
       ]);
       const checker = program.getTypeChecker();
       const logicalFs = new LogicalFileSystem([_('/')]);

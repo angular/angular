@@ -14,9 +14,9 @@ export const DOCUMENT_TOKEN_NAME = 'DOCUMENT';
 
 /** This contains the metadata necessary to move items from one import to another */
 export interface ResolvedDocumentImport {
-  platformBrowserImport: ts.NamedImports|null;
-  commonImport: ts.NamedImports|null;
-  documentElement: ts.ImportSpecifier|null;
+  platformBrowserImport: ts.NamedImports | null;
+  commonImport: ts.NamedImports | null;
+  documentElement: ts.ImportSpecifier | null;
 }
 
 /** Visitor that can be used to find a set of imports in a TypeScript file. */
@@ -30,7 +30,7 @@ export class DocumentImportVisitor {
       this.visitNamedImport(node);
     }
 
-    ts.forEachChild(node, node => this.visitNode(node));
+    ts.forEachChild(node, (node) => this.visitNode(node));
   }
 
   private visitNamedImport(node: ts.NamedImports) {
@@ -65,8 +65,8 @@ export class DocumentImportVisitor {
     this.importsMap.set(sourceFile, imports);
   }
 
-  private getDocumentElement(node: ts.NamedImports): ts.ImportSpecifier|undefined {
+  private getDocumentElement(node: ts.NamedImports): ts.ImportSpecifier | undefined {
     const elements = node.elements;
-    return elements.find(el => (el.propertyName || el.name).escapedText === DOCUMENT_TOKEN_NAME);
+    return elements.find((el) => (el.propertyName || el.name).escapedText === DOCUMENT_TOKEN_NAME);
   }
 }

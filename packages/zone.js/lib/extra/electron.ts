@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 Zone.__load_patch('electron', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
-  function patchArguments(target: any, name: string, source: string): Function|null {
+  function patchArguments(target: any, name: string, source: string): Function | null {
     return api.patchMethod(target, name, (delegate: Function) => (self: any, args: any[]) => {
       return delegate && delegate.apply(self, api.bindArguments(args, source));
     });

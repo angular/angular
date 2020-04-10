@@ -12,7 +12,7 @@ import {bootstrap} from '@angular/platform-browser';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {ComponentResolver, Component, Directive, ViewContainerRef,} from '@angular/core';
+import {ComponentResolver, Component, Directive, ViewContainerRef} from '@angular/core';
 
 import {ViewMetadata} from '@angular/core/src/metadata/view';
 
@@ -25,17 +25,19 @@ function _createBindings(): any[] {
   return [
     {
       provide: DirectiveResolver,
-      useFactory:
-          () => new MultiplyDirectiveResolver(
-              multiplyTemplatesBy, [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]),
-      deps: []
+      useFactory: () =>
+        new MultiplyDirectiveResolver(multiplyTemplatesBy, [
+          BenchmarkComponentNoBindings,
+          BenchmarkComponentWithBindings,
+        ]),
+      deps: [],
     },
     // Use interpretative mode as Dart does not support JIT and
     // we want to be able to compare the numbers between JS and Dart
     {
       provide: CompilerConfig,
-      useValue: new CompilerConfig({genDebugInfo: false, useJit: false, logBindingUpdate: false})
-    }
+      useValue: new CompilerConfig({genDebugInfo: false, useJit: false, logBindingUpdate: false}),
+    },
   ];
 }
 
@@ -43,25 +45,31 @@ export function main() {
   BrowserDomAdapter.makeCurrent();
   bootstrap(CompilerAppComponent, _createBindings()).then((ref) => {
     const app = ref.instance;
-    bindAction('#compileNoBindings', measureWrapper(() => app.compileNoBindings(), 'No Bindings'));
     bindAction(
-        '#compileWithBindings', measureWrapper(() => app.compileWithBindings(), 'With Bindings'));
+      '#compileNoBindings',
+      measureWrapper(() => app.compileNoBindings(), 'No Bindings')
+    );
+    bindAction(
+      '#compileWithBindings',
+      measureWrapper(() => app.compileWithBindings(), 'With Bindings')
+    );
   });
 }
 
 function measureWrapper(func, desc) {
-  return function() {
+  return function () {
     const begin = new Date();
     print(`[${desc}] Begin...`);
-    const onSuccess = function(_) {
+    const onSuccess = function (_) {
       const elapsedMs = new Date().getTime() - begin.getTime();
       print(`[${desc}] ...done, took ${elapsedMs} ms`);
     };
-    const onError = function(e) { DOM.logError(e); };
+    const onError = function (e) {
+      DOM.logError(e);
+    };
     PromiseWrapper.then(func(), onSuccess, onError);
   };
 }
-
 
 class MultiplyDirectiveResolver extends DirectiveResolver {
   private _multiplyBy: number;
@@ -70,7 +78,7 @@ class MultiplyDirectiveResolver extends DirectiveResolver {
   constructor(multiple: number, components: Type[]) {
     super();
     this._multiplyBy = multiple;
-    components.forEach(c => this._fillCache(c));
+    components.forEach((c) => this._fillCache(c));
   }
 
   private _fillCache(component: Type) {
@@ -80,8 +88,9 @@ class MultiplyDirectiveResolver extends DirectiveResolver {
       multipliedTemplates[i] = view.template;
     }
     this._cache.set(
-        component,
-        new ViewMetadata({template: multipliedTemplates.join(''), directives: view.directives}));
+      component,
+      new ViewMetadata({template: multipliedTemplates.join(''), directives: view.directives})
+    );
   }
 
   resolve(component: Type): ViewMetadata {
@@ -132,44 +141,160 @@ class Dir4 {
   constructor(dir3: Dir3) {}
 }
 
-
 @Component({
   selector: 'cmp-nobind',
   directives: [Dir0, Dir1, Dir2, Dir3, Dir4],
-  template: `
-<div class="class0 class1 class2 class3 class4 " nodir0="" attr0="value0" nodir1="" attr1="value1" nodir2="" attr2="value2" nodir3="" attr3="value3" nodir4="" attr4="value4">
-  <div class="class0 class1 class2 class3 class4 " nodir0="" attr0="value0" nodir1="" attr1="value1" nodir2="" attr2="value2" nodir3="" attr3="value3" nodir4="" attr4="value4">
-    <div class="class0 class1 class2 class3 class4 " nodir0="" attr0="value0" nodir1="" attr1="value1" nodir2="" attr2="value2" nodir3="" attr3="value3" nodir4="" attr4="value4">
-      <div class="class0 class1 class2 class3 class4 " nodir0="" attr0="value0" nodir1="" attr1="value1" nodir2="" attr2="value2" nodir3="" attr3="value3" nodir4="" attr4="value4">
-        <div class="class0 class1 class2 class3 class4 " nodir0="" attr0="value0" nodir1="" attr1="value1" nodir2="" attr2="value2" nodir3="" attr3="value3" nodir4="" attr4="value4">
+  template: ` <div
+    class="class0 class1 class2 class3 class4 "
+    nodir0=""
+    attr0="value0"
+    nodir1=""
+    attr1="value1"
+    nodir2=""
+    attr2="value2"
+    nodir3=""
+    attr3="value3"
+    nodir4=""
+    attr4="value4"
+  >
+    <div
+      class="class0 class1 class2 class3 class4 "
+      nodir0=""
+      attr0="value0"
+      nodir1=""
+      attr1="value1"
+      nodir2=""
+      attr2="value2"
+      nodir3=""
+      attr3="value3"
+      nodir4=""
+      attr4="value4"
+    >
+      <div
+        class="class0 class1 class2 class3 class4 "
+        nodir0=""
+        attr0="value0"
+        nodir1=""
+        attr1="value1"
+        nodir2=""
+        attr2="value2"
+        nodir3=""
+        attr3="value3"
+        nodir4=""
+        attr4="value4"
+      >
+        <div
+          class="class0 class1 class2 class3 class4 "
+          nodir0=""
+          attr0="value0"
+          nodir1=""
+          attr1="value1"
+          nodir2=""
+          attr2="value2"
+          nodir3=""
+          attr3="value3"
+          nodir4=""
+          attr4="value4"
+        >
+          <div
+            class="class0 class1 class2 class3 class4 "
+            nodir0=""
+            attr0="value0"
+            nodir1=""
+            attr1="value1"
+            nodir2=""
+            attr2="value2"
+            nodir3=""
+            attr3="value3"
+            nodir4=""
+            attr4="value4"
+          >
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>`
+  </div>`,
 })
-class BenchmarkComponentNoBindings {
-}
+class BenchmarkComponentNoBindings {}
 
 @Component({
   selector: 'cmp-withbind',
   directives: [Dir0, Dir1, Dir2, Dir3, Dir4],
-  template: `
-<div class="class0 class1 class2 class3 class4 " dir0="" [attr0]="value0" dir1="" [attr1]="value1" dir2="" [attr2]="value2" dir3="" [attr3]="value3" dir4="" [attr4]="value4">
-  {{inter0}}{{inter1}}{{inter2}}{{inter3}}{{inter4}}
-  <div class="class0 class1 class2 class3 class4 " dir0="" [attr0]="value0" dir1="" [attr1]="value1" dir2="" [attr2]="value2" dir3="" [attr3]="value3" dir4="" [attr4]="value4">
-    {{inter0}}{{inter1}}{{inter2}}{{inter3}}{{inter4}}
-    <div class="class0 class1 class2 class3 class4 " dir0="" [attr0]="value0" dir1="" [attr1]="value1" dir2="" [attr2]="value2" dir3="" [attr3]="value3" dir4="" [attr4]="value4">
-      {{inter0}}{{inter1}}{{inter2}}{{inter3}}{{inter4}}
-      <div class="class0 class1 class2 class3 class4 " dir0="" [attr0]="value0" dir1="" [attr1]="value1" dir2="" [attr2]="value2" dir3="" [attr3]="value3" dir4="" [attr4]="value4">
-        {{inter0}}{{inter1}}{{inter2}}{{inter3}}{{inter4}}
-        <div class="class0 class1 class2 class3 class4 " dir0="" [attr0]="value0" dir1="" [attr1]="value1" dir2="" [attr2]="value2" dir3="" [attr3]="value3" dir4="" [attr4]="value4">
-          {{inter0}}{{inter1}}{{inter2}}{{inter3}}{{inter4}}
+  template: ` <div
+    class="class0 class1 class2 class3 class4 "
+    dir0=""
+    [attr0]="value0"
+    dir1=""
+    [attr1]="value1"
+    dir2=""
+    [attr2]="value2"
+    dir3=""
+    [attr3]="value3"
+    dir4=""
+    [attr4]="value4"
+  >
+    {{ inter0 }}{{ inter1 }}{{ inter2 }}{{ inter3 }}{{ inter4 }}
+    <div
+      class="class0 class1 class2 class3 class4 "
+      dir0=""
+      [attr0]="value0"
+      dir1=""
+      [attr1]="value1"
+      dir2=""
+      [attr2]="value2"
+      dir3=""
+      [attr3]="value3"
+      dir4=""
+      [attr4]="value4"
+    >
+      {{ inter0 }}{{ inter1 }}{{ inter2 }}{{ inter3 }}{{ inter4 }}
+      <div
+        class="class0 class1 class2 class3 class4 "
+        dir0=""
+        [attr0]="value0"
+        dir1=""
+        [attr1]="value1"
+        dir2=""
+        [attr2]="value2"
+        dir3=""
+        [attr3]="value3"
+        dir4=""
+        [attr4]="value4"
+      >
+        {{ inter0 }}{{ inter1 }}{{ inter2 }}{{ inter3 }}{{ inter4 }}
+        <div
+          class="class0 class1 class2 class3 class4 "
+          dir0=""
+          [attr0]="value0"
+          dir1=""
+          [attr1]="value1"
+          dir2=""
+          [attr2]="value2"
+          dir3=""
+          [attr3]="value3"
+          dir4=""
+          [attr4]="value4"
+        >
+          {{ inter0 }}{{ inter1 }}{{ inter2 }}{{ inter3 }}{{ inter4 }}
+          <div
+            class="class0 class1 class2 class3 class4 "
+            dir0=""
+            [attr0]="value0"
+            dir1=""
+            [attr1]="value1"
+            dir2=""
+            [attr2]="value2"
+            dir3=""
+            [attr3]="value3"
+            dir4=""
+            [attr4]="value4"
+          >
+            {{ inter0 }}{{ inter1 }}{{ inter2 }}{{ inter3 }}{{ inter4 }}
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>`
+  </div>`,
 })
 class BenchmarkComponentWithBindings {
   value0: any;

@@ -17,10 +17,16 @@ import {ClassDeclaration, Decorator, ReflectionHost} from '../../reflection';
 import {TypeCheckContext} from '../../typecheck';
 import {getSourceFile, isExported} from '../../util/src/typescript';
 
-import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerFlags, HandlerPrecedence, ResolveResult} from './api';
+import {
+  AnalysisOutput,
+  CompileResult,
+  DecoratorHandler,
+  HandlerFlags,
+  HandlerPrecedence,
+  ResolveResult,
+} from './api';
 import {DtsTransformRegistry} from './declaration';
 import {PendingTrait, Trait, TraitState} from './trait';
-
 
 /**
  * Records information about a specific class that has matched traits.
@@ -40,7 +46,7 @@ export interface ClassRecord {
    * Meta-diagnostics about the class, which are usually related to whether certain combinations of
    * Angular decorators are not permitted.
    */
-  metaDiagnostics: ts.Diagnostic[]|null;
+  metaDiagnostics: ts.Diagnostic[] | null;
 
   // Subsequent fields are "internal" and used during the matching of `DecoratorHandler`s. This is
   // mutable state during the `detect`/`analyze` phases of compilation.
@@ -85,10 +91,13 @@ export class TraitCompiler {
   private handlersByName = new Map<string, DecoratorHandler<unknown, unknown, unknown>>();
 
   constructor(
-      private handlers: DecoratorHandler<unknown, unknown, unknown>[],
-      private reflector: ReflectionHost, private perf: PerfRecorder,
-      private incrementalBuild: IncrementalBuild<ClassRecord>,
-      private compileNonExportedClasses: boolean, private dtsTransforms: DtsTransformRegistry) {
+    private handlers: DecoratorHandler<unknown, unknown, unknown>[],
+    private reflector: ReflectionHost,
+    private perf: PerfRecorder,
+    private incrementalBuild: IncrementalBuild<ClassRecord>,
+    private compileNonExportedClasses: boolean,
+    private dtsTransforms: DtsTransformRegistry
+  ) {
     for (const handler of handlers) {
       this.handlersByName.set(handler.name, handler);
     }
@@ -98,13 +107,13 @@ export class TraitCompiler {
     this.analyze(sf, false);
   }
 
-  analyzeAsync(sf: ts.SourceFile): Promise<void>|undefined {
+  analyzeAsync(sf: ts.SourceFile): Promise<void> | undefined {
     return this.analyze(sf, true);
   }
 
   private analyze(sf: ts.SourceFile, preanalyze: false): void;
-  private analyze(sf: ts.SourceFile, preanalyze: true): Promise<void>|undefined;
-  private analyze(sf: ts.SourceFile, preanalyze: boolean): Promise<void>|undefined {
+  private analyze(sf: ts.SourceFile, preanalyze: true): Promise<void> | undefined;
+  private analyze(sf: ts.SourceFile, preanalyze: boolean): Promise<void> | undefined {
     // We shouldn't analyze declaration files.
     if (sf.isDeclarationFile) {
       return undefined;
@@ -140,7 +149,7 @@ export class TraitCompiler {
     }
   }
 
-  recordFor(clazz: ClassDeclaration): ClassRecord|null {
+  recordFor(clazz: ClassDeclaration): ClassRecord | null {
     if (this.classes.has(clazz)) {
       return this.classes.get(clazz)!;
     } else {
@@ -148,7 +157,7 @@ export class TraitCompiler {
     }
   }
 
-  recordsFor(sf: ts.SourceFile): ClassRecord[]|null {
+  recordsFor(sf: ts.SourceFile): ClassRecord[] | null {
     if (!this.fileToClasses.has(sf)) {
       return null;
     }
@@ -202,8 +211,9 @@ export class TraitCompiler {
     this.fileToClasses.get(sf)!.add(record.node);
   }
 
-  private scanClassForTraits(clazz: ClassDeclaration):
-      PendingTrait<unknown, unknown, unknown>[]|null {
+  private scanClassForTraits(
+    clazz: ClassDeclaration
+  ): PendingTrait<unknown, unknown, unknown>[] | null {
     if (!this.compileNonExportedClasses && !isExported(clazz)) {
       return null;
     }
@@ -213,9 +223,11 @@ export class TraitCompiler {
     return this.detectTraits(clazz, decorators);
   }
 
-  protected detectTraits(clazz: ClassDeclaration, decorators: Decorator[]|null):
-      PendingTrait<unknown, unknown, unknown>[]|null {
-    let record: ClassRecord|null = this.recordFor(clazz);
+  protected detectTraits(
+    clazz: ClassDeclaration,
+    decorators: Decorator[] | null
+  ): PendingTrait<unknown, unknown, unknown>[] | null {
+    let record: ClassRecord | null = this.recordFor(clazz);
     let foundTraits: PendingTrait<unknown, unknown, unknown>[] = [];
 
     for (const handler of this.handlers) {
@@ -261,8 +273,9 @@ export class TraitCompiler {
         if (!isWeakHandler && record.hasWeakHandlers) {
           // The current handler is not a WEAK handler, but the class has other WEAK handlers.
           // Remove them.
-          record.traits =
-              record.traits.filter(field => field.handler.precedence !== HandlerPrecedence.WEAK);
+          record.traits = record.traits.filter(
+            (field) => field.handler.precedence !== HandlerPrecedence.WEAK
+          );
           record.hasWeakHandlers = false;
         } else if (isWeakHandler && !record.hasWeakHandlers) {
           // The current handler is a WEAK handler, but the class has non-WEAK handlers already.
@@ -272,14 +285,16 @@ export class TraitCompiler {
 
         if (isPrimaryHandler && record.hasPrimaryHandler) {
           // The class already has a PRIMARY handler, and another one just matched.
-          record.metaDiagnostics = [{
-            category: ts.DiagnosticCategory.Error,
-            code: Number('-99' + ErrorCode.DECORATOR_COLLISION),
-            file: getSourceFile(clazz),
-            start: clazz.getStart(undefined, false),
-            length: clazz.getWidth(),
-            messageText: 'Two incompatible decorators on class',
-          }];
+          record.metaDiagnostics = [
+            {
+              category: ts.DiagnosticCategory.Error,
+              code: Number('-99' + ErrorCode.DECORATOR_COLLISION),
+              file: getSourceFile(clazz),
+              start: clazz.getStart(undefined, false),
+              length: clazz.getWidth(),
+              messageText: 'Two incompatible decorators on class',
+            },
+          ];
           record.traits = foundTraits = [];
           break;
         }
@@ -294,7 +309,7 @@ export class TraitCompiler {
     return foundTraits.length > 0 ? foundTraits : null;
   }
 
-  protected analyzeClass(clazz: ClassDeclaration, preanalyzeQueue: Promise<void>[]|null): void {
+  protected analyzeClass(clazz: ClassDeclaration, preanalyzeQueue: Promise<void>[] | null): void {
     const traits = this.scanClassForTraits(clazz);
 
     if (traits === null) {
@@ -305,7 +320,7 @@ export class TraitCompiler {
     for (const trait of traits) {
       const analyze = () => this.analyzeTrait(clazz, trait);
 
-      let preanalysis: Promise<void>|null = null;
+      let preanalysis: Promise<void> | null = null;
       if (preanalyzeQueue !== null && trait.handler.preanalyze !== undefined) {
         // Attempt to run preanalysis. This could fail with a `FatalDiagnosticError`; catch it if it
         // does.
@@ -329,11 +344,16 @@ export class TraitCompiler {
   }
 
   protected analyzeTrait(
-      clazz: ClassDeclaration, trait: Trait<unknown, unknown, unknown>,
-      flags?: HandlerFlags): void {
+    clazz: ClassDeclaration,
+    trait: Trait<unknown, unknown, unknown>,
+    flags?: HandlerFlags
+  ): void {
     if (trait.state !== TraitState.PENDING) {
-      throw new Error(`Attempt to analyze trait of ${clazz.name.text} in state ${
-          TraitState[trait.state]} (expected DETECTED)`);
+      throw new Error(
+        `Attempt to analyze trait of ${clazz.name.text} in state ${
+          TraitState[trait.state]
+        } (expected DETECTED)`
+      );
     }
 
     // Attempt analysis. This could fail with a `FatalDiagnosticError`; catch it if it does.
@@ -375,8 +395,11 @@ export class TraitCompiler {
           case TraitState.ERRORED:
             continue;
           case TraitState.PENDING:
-            throw new Error(`Resolving a trait that hasn't been analyzed: ${clazz.name.text} / ${
-                Object.getPrototypeOf(trait.handler).constructor.name}`);
+            throw new Error(
+              `Resolving a trait that hasn't been analyzed: ${clazz.name.text} / ${
+                Object.getPrototypeOf(trait.handler).constructor.name
+              }`
+            );
           case TraitState.RESOLVED:
             throw new Error(`Resolving an already resolved trait`);
         }
@@ -454,10 +477,13 @@ export class TraitCompiler {
     }
   }
 
-  compile(clazz: ts.Declaration, constantPool: ConstantPool): CompileResult[]|null {
+  compile(clazz: ts.Declaration, constantPool: ConstantPool): CompileResult[] | null {
     const original = ts.getOriginalNode(clazz) as typeof clazz;
-    if (!this.reflector.isClass(clazz) || !this.reflector.isClass(original) ||
-        !this.classes.has(original)) {
+    if (
+      !this.reflector.isClass(clazz) ||
+      !this.reflector.isClass(original) ||
+      !this.classes.has(original)
+    ) {
       return null;
     }
 
@@ -471,24 +497,29 @@ export class TraitCompiler {
       }
 
       const compileSpan = this.perf.start('compileClass', original);
-      const compileMatchRes =
-          trait.handler.compile(clazz, trait.analysis, trait.resolution, constantPool);
+      const compileMatchRes = trait.handler.compile(
+        clazz,
+        trait.analysis,
+        trait.resolution,
+        constantPool
+      );
       this.perf.stop(compileSpan);
       if (Array.isArray(compileMatchRes)) {
         for (const result of compileMatchRes) {
-          if (!res.some(r => r.name === result.name)) {
+          if (!res.some((r) => r.name === result.name)) {
             res.push(result);
           }
         }
-      } else if (!res.some(result => result.name === compileMatchRes.name)) {
+      } else if (!res.some((result) => result.name === compileMatchRes.name)) {
         res.push(compileMatchRes);
       }
     }
 
     // Look up the .d.ts transformer for the input file and record that at least one field was
     // generated, which will allow the .d.ts to be transformed later.
-    this.dtsTransforms.getIvyDeclarationTransform(original.getSourceFile())
-        .addFields(original, res);
+    this.dtsTransforms
+      .getIvyDeclarationTransform(original.getSourceFile())
+      .addFields(original, res);
 
     // Return the instruction to the transformer so the fields will be added.
     return res.length > 0 ? res : null;

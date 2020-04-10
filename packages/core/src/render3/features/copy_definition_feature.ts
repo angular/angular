@@ -64,20 +64,20 @@ const COPY_COMPONENT_FIELDS: Exclude<keyof ComponentDef<unknown>, keyof Directiv
  *
  * @codeGenApi
  */
-export function ɵɵCopyDefinitionFeature(definition: DirectiveDef<any>| ComponentDef<any>): void {
-  let superType = getSuperType(definition.type) !;
+export function ɵɵCopyDefinitionFeature(definition: DirectiveDef<any> | ComponentDef<any>): void {
+  let superType = getSuperType(definition.type)!;
 
-  let superDef: DirectiveDef<any>|ComponentDef<any>|undefined = undefined;
+  let superDef: DirectiveDef<any> | ComponentDef<any> | undefined = undefined;
   if (isComponentDef(definition)) {
     // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
-    superDef = superType.ɵcmp !;
+    superDef = superType.ɵcmp!;
   } else {
     // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
-    superDef = superType.ɵdir !;
+    superDef = superType.ɵdir!;
   }
 
   // Needed because `definition` fields are readonly.
-  const defAny = (definition as any);
+  const defAny = definition as any;
 
   // Copy over any fields that apply to either directives or components.
   for (const field of COPY_DIRECTIVE_FIELDS) {

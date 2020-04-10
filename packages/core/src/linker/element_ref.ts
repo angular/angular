@@ -48,7 +48,9 @@ export class ElementRef<T extends any = any> {
    */
   public nativeElement: T;
 
-  constructor(nativeElement: T) { this.nativeElement = nativeElement; }
+  constructor(nativeElement: T) {
+    this.nativeElement = nativeElement;
+  }
 
   /**
    * @internal
@@ -59,5 +61,4 @@ export class ElementRef<T extends any = any> {
 
 export const SWITCH_ELEMENT_REF_FACTORY__POST_R3__ = render3InjectElementRef;
 const SWITCH_ELEMENT_REF_FACTORY__PRE_R3__ = noop;
-const SWITCH_ELEMENT_REF_FACTORY: typeof render3InjectElementRef =
-    SWITCH_ELEMENT_REF_FACTORY__PRE_R3__;
+const SWITCH_ELEMENT_REF_FACTORY: typeof render3InjectElementRef = SWITCH_ELEMENT_REF_FACTORY__PRE_R3__;

@@ -10,5 +10,7 @@ import {SpyObject} from '@angular/core/testing/src/testing_internal';
 import {ClientMessageBroker} from '@angular/platform-webworker/src/web_workers/shared/client_message_broker';
 
 export class SpyMessageBroker extends SpyObject {
-  constructor() { super(ClientMessageBroker); }
+  constructor() {
+    super(ClientMessageBroker);
+  }
 }

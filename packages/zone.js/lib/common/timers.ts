@@ -20,8 +20,8 @@ interface TimerOptions extends TaskData {
 }
 
 export function patchTimer(window: any, setName: string, cancelName: string, nameSuffix: string) {
-  let setNative: Function|null = null;
-  let clearNative: Function|null = null;
+  let setNative: Function | null = null;
+  let clearNative: Function | null = null;
   setName += nameSuffix;
   cancelName += nameSuffix;
 
@@ -50,23 +50,32 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
       }
     }
     data.args[0] = timer;
-    data.handleId = setNative !.apply(window, data.args);
+    data.handleId = setNative!.apply(window, data.args);
     return task;
   }
 
-  function clearTask(task: Task) { return clearNative !((<TimerOptions>task.data).handleId); }
+  function clearTask(task: Task) {
+    return clearNative!((<TimerOptions>task.data).handleId);
+  }
 
-  setNative =
-      patchMethod(window, setName, (delegate: Function) => function(self: any, args: any[]) {
+  setNative = patchMethod(
+    window,
+    setName,
+    (delegate: Function) =>
+      function (self: any, args: any[]) {
         if (typeof args[0] === 'function') {
           const options: TimerOptions = {
             isPeriodic: nameSuffix === 'Interval',
-            delay: (nameSuffix === 'Timeout' || nameSuffix === 'Interval') ? args[1] || 0 :
-                                                                             undefined,
-            args: args
+            delay: nameSuffix === 'Timeout' || nameSuffix === 'Interval' ? args[1] || 0 : undefined,
+            args: args,
           };
-          const task =
-              scheduleMacroTaskWithCurrentZone(setName, args[0], options, scheduleTask, clearTask);
+          const task = scheduleMacroTaskWithCurrentZone(
+            setName,
+            args[0],
+            options,
+            scheduleTask,
+            clearTask
+          );
           if (!task) {
             return task;
           }
@@ -84,8 +93,13 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
 
           // check whether handle is null, because some polyfill or browser
           // may return undefined from setTimeout/setInterval/setImmediate/requestAnimationFrame
-          if (handle && handle.ref && handle.unref && typeof handle.ref === 'function' &&
-              typeof handle.unref === 'function') {
+          if (
+            handle &&
+            handle.ref &&
+            handle.unref &&
+            typeof handle.ref === 'function' &&
+            typeof handle.unref === 'function'
+          ) {
             (<any>task).ref = (<any>handle).ref.bind(handle);
             (<any>task).unref = (<any>handle).unref.bind(handle);
           }
@@ -97,10 +111,14 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
           // cause an error by calling it directly.
           return delegate.apply(window, args);
         }
-      });
+      }
+  );
 
-  clearNative =
-      patchMethod(window, cancelName, (delegate: Function) => function(self: any, args: any[]) {
+  clearNative = patchMethod(
+    window,
+    cancelName,
+    (delegate: Function) =>
+      function (self: any, args: any[]) {
         const id = args[0];
         let task: Task;
         if (typeof id === 'number') {
@@ -115,8 +133,10 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
           }
         }
         if (task && typeof task.type === 'string') {
-          if (task.state !== 'notScheduled' &&
-              (task.cancelFn && task.data !.isPeriodic || task.runCount === 0)) {
+          if (
+            task.state !== 'notScheduled' &&
+            ((task.cancelFn && task.data!.isPeriodic) || task.runCount === 0)
+          ) {
             if (typeof id === 'number') {
               delete tasksByHandleId[id];
             } else if (id) {
@@ -129,5 +149,6 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
           // cause an error by calling it directly.
           delegate.apply(window, args);
         }
-      });
+      }
+  );
 }

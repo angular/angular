@@ -5,7 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {hyphenate, parse as parseStyle, stripUnnecessaryQuotes} from '../../src/render3/view/style_parser';
+
+import {
+  hyphenate,
+  parse as parseStyle,
+  stripUnnecessaryQuotes,
+} from '../../src/render3/view/style_parser';
 
 describe('style parsing', () => {
   it('should parse empty or blank strings', () => {
@@ -33,9 +38,16 @@ describe('style parsing', () => {
 
   it('should chomp out start/end quotes', () => {
     const result = parseStyle(
-        'content: "foo"; opacity: \'0.5\'; font-family: "Verdana", Helvetica, "sans-serif"');
-    expect(result).toEqual(
-        ['content', 'foo', 'opacity', '0.5', 'font-family', '"Verdana", Helvetica, "sans-serif"']);
+      'content: "foo"; opacity: \'0.5\'; font-family: "Verdana", Helvetica, "sans-serif"'
+    );
+    expect(result).toEqual([
+      'content',
+      'foo',
+      'opacity',
+      '0.5',
+      'font-family',
+      '"Verdana", Helvetica, "sans-serif"',
+    ]);
   });
 
   it('should not mess up with quoted strings that contain [:;] values', () => {
@@ -44,7 +56,7 @@ describe('style parsing', () => {
   });
 
   it('should not mess up with quoted strings that contain inner quote values', () => {
-    const quoteStr = '"one \'two\' three \"four\" five"';
+    const quoteStr = '"one \'two\' three "four" five"';
     const result = parseStyle(`content: ${quoteStr}; width: 123px`);
     expect(result).toEqual(['content', quoteStr, 'width', '123px']);
   });
@@ -66,14 +78,14 @@ describe('style parsing', () => {
 
   describe('quote chomping', () => {
     it('should remove the start and end quotes', () => {
-      expect(stripUnnecessaryQuotes('\'foo bar\'')).toEqual('foo bar');
+      expect(stripUnnecessaryQuotes("'foo bar'")).toEqual('foo bar');
       expect(stripUnnecessaryQuotes('"foo bar"')).toEqual('foo bar');
     });
 
     it('should not remove quotes if the quotes are not at the start and end', () => {
       expect(stripUnnecessaryQuotes('foo bar')).toEqual('foo bar');
       expect(stripUnnecessaryQuotes('   foo bar   ')).toEqual('   foo bar   ');
-      expect(stripUnnecessaryQuotes('\'foo\' bar')).toEqual('\'foo\' bar');
+      expect(stripUnnecessaryQuotes("'foo' bar")).toEqual("'foo' bar");
       expect(stripUnnecessaryQuotes('foo "bar"')).toEqual('foo "bar"');
     });
 

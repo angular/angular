@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AST} from '../../../src/expression_parser/ast';
 import {Lexer} from '../../../src/expression_parser/lexer';
 import {Parser} from '../../../src/expression_parser/parser';
@@ -21,7 +22,7 @@ import {formatI18nPlaceholderName} from '../../../src/render3/view/i18n/util';
 import {parseR3 as parse} from './util';
 
 const expressionParser = new Parser(new Lexer());
-const i18nOf = (element: t.Node&{i18n?: i18n.I18nMeta}) => element.i18n!;
+const i18nOf = (element: t.Node & {i18n?: i18n.I18nMeta}) => element.i18n!;
 
 describe('I18nContext', () => {
   it('should support i18n content collection', () => {
@@ -42,10 +43,10 @@ describe('I18nContext', () => {
 
     // data collection checks
     expect(ctx.placeholders.size).toBe(0);
-    ctx.appendBoundText(i18nOf(boundText));       // interpolation
-    ctx.appendElement(i18nOf(element), 1);        // open tag
-    ctx.appendElement(i18nOf(element), 1, true);  // close tag
-    ctx.appendTemplate(i18nOf(template), 2);      // open + close tags
+    ctx.appendBoundText(i18nOf(boundText)); // interpolation
+    ctx.appendElement(i18nOf(element), 1); // open tag
+    ctx.appendElement(i18nOf(element), 1, true); // close tag
+    ctx.appendTemplate(i18nOf(template), 2); // open + close tags
     expect(ctx.placeholders.size).toBe(5);
 
     // binding collection checks
@@ -114,9 +115,13 @@ describe('I18nContext', () => {
 
     // verify placeholders
     const expected = new Map([
-      ['INTERPOLATION', '�0�'], ['START_TAG_DIV', '�#0�|�#1:1�'],
-      ['START_BOLD_TEXT', '�*1:1��#0:1�'], ['CLOSE_BOLD_TEXT', '�/#0:1��/*1:1�'],
-      ['CLOSE_TAG_DIV', '�/#0�|�/#1:1�'], ['INTERPOLATION_1', '�0:1�'], ['INTERPOLATION_2', '�1:1�']
+      ['INTERPOLATION', '�0�'],
+      ['START_TAG_DIV', '�#0�|�#1:1�'],
+      ['START_BOLD_TEXT', '�*1:1��#0:1�'],
+      ['CLOSE_BOLD_TEXT', '�/#0:1��/*1:1�'],
+      ['CLOSE_TAG_DIV', '�/#0�|�/#1:1�'],
+      ['INTERPOLATION_1', '�0:1�'],
+      ['INTERPOLATION_2', '�1:1�'],
     ]);
     const phs = ctx.getSerializedPlaceholders();
     expected.forEach((value, key) => {
@@ -174,8 +179,10 @@ describe('I18nContext', () => {
     ctxLevelA.reconcileChildContext(ctxLevelB);
 
     // verify placeholders
-    const expected = new Map(
-        [['START_TAG_NG-TEMPLATE', '�*1:1�|�*1:2�'], ['CLOSE_TAG_NG-TEMPLATE', '�/*1:2�|�/*1:1�']]);
+    const expected = new Map([
+      ['START_TAG_NG-TEMPLATE', '�*1:1�|�*1:2�'],
+      ['CLOSE_TAG_NG-TEMPLATE', '�/*1:2�|�/*1:1�'],
+    ]);
     const phs = ctxLevelA.getSerializedPlaceholders();
     expected.forEach((value, key) => {
       expect(phs.get(key)!.join('|')).toEqual(value);
@@ -193,10 +200,14 @@ describe('Utils', () => {
   it('formatI18nPlaceholderName', () => {
     const cases = [
       // input, output
-      ['', ''], ['ICU', 'icu'], ['ICU_1', 'icu_1'], ['ICU_1000', 'icu_1000'],
+      ['', ''],
+      ['ICU', 'icu'],
+      ['ICU_1', 'icu_1'],
+      ['ICU_1000', 'icu_1000'],
       ['START_TAG_NG-CONTAINER', 'startTagNgContainer'],
-      ['START_TAG_NG-CONTAINER_1', 'startTagNgContainer_1'], ['CLOSE_TAG_ITALIC', 'closeTagItalic'],
-      ['CLOSE_TAG_BOLD_1', 'closeTagBold_1']
+      ['START_TAG_NG-CONTAINER_1', 'startTagNgContainer_1'],
+      ['CLOSE_TAG_ITALIC', 'closeTagItalic'],
+      ['CLOSE_TAG_BOLD_1', 'closeTagBold_1'],
     ];
     cases.forEach(([input, output]) => {
       expect(formatI18nPlaceholderName(input)).toEqual(output);
@@ -221,66 +232,91 @@ describe('Utils', () => {
     });
 
     it('serializeI18nHead()', () => {
-      expect(o.localizedString(meta(), [''], [], []).serializeI18nHead())
-          .toEqual({cooked: '', raw: ''});
-      expect(o.localizedString(meta('', '', 'desc'), [''], [], []).serializeI18nHead())
-          .toEqual({cooked: ':desc:', raw: ':desc:'});
-      expect(o.localizedString(meta('id', '', 'desc'), [''], [], []).serializeI18nHead())
-          .toEqual({cooked: ':desc@@id:', raw: ':desc@@id:'});
-      expect(o.localizedString(meta('', 'meaning', 'desc'), [''], [], []).serializeI18nHead())
-          .toEqual({cooked: ':meaning|desc:', raw: ':meaning|desc:'});
-      expect(o.localizedString(meta('id', 'meaning', 'desc'), [''], [], []).serializeI18nHead())
-          .toEqual({cooked: ':meaning|desc@@id:', raw: ':meaning|desc@@id:'});
-      expect(o.localizedString(meta('id', '', ''), [''], [], []).serializeI18nHead())
-          .toEqual({cooked: ':@@id:', raw: ':@@id:'});
+      expect(o.localizedString(meta(), [''], [], []).serializeI18nHead()).toEqual({
+        cooked: '',
+        raw: '',
+      });
+      expect(o.localizedString(meta('', '', 'desc'), [''], [], []).serializeI18nHead()).toEqual({
+        cooked: ':desc:',
+        raw: ':desc:',
+      });
+      expect(o.localizedString(meta('id', '', 'desc'), [''], [], []).serializeI18nHead()).toEqual({
+        cooked: ':desc@@id:',
+        raw: ':desc@@id:',
+      });
+      expect(
+        o.localizedString(meta('', 'meaning', 'desc'), [''], [], []).serializeI18nHead()
+      ).toEqual({cooked: ':meaning|desc:', raw: ':meaning|desc:'});
+      expect(
+        o.localizedString(meta('id', 'meaning', 'desc'), [''], [], []).serializeI18nHead()
+      ).toEqual({cooked: ':meaning|desc@@id:', raw: ':meaning|desc@@id:'});
+      expect(o.localizedString(meta('id', '', ''), [''], [], []).serializeI18nHead()).toEqual({
+        cooked: ':@@id:',
+        raw: ':@@id:',
+      });
 
       // Escaping colons (block markers)
       expect(
-          o.localizedString(meta('id:sub_id', 'meaning', 'desc'), [''], [], []).serializeI18nHead())
-          .toEqual({cooked: ':meaning|desc@@id:sub_id:', raw: ':meaning|desc@@id\\:sub_id:'});
-      expect(o.localizedString(meta('id', 'meaning:sub_meaning', 'desc'), [''], [], [])
-                 .serializeI18nHead())
-          .toEqual(
-              {cooked: ':meaning:sub_meaning|desc@@id:', raw: ':meaning\\:sub_meaning|desc@@id:'});
-      expect(o.localizedString(meta('id', 'meaning', 'desc:sub_desc'), [''], [], [])
-                 .serializeI18nHead())
-          .toEqual({cooked: ':meaning|desc:sub_desc@@id:', raw: ':meaning|desc\\:sub_desc@@id:'});
-      expect(o.localizedString(meta('id', 'meaning', 'desc'), ['message source'], [], [])
-                 .serializeI18nHead())
-          .toEqual({
-            cooked: ':meaning|desc@@id:message source',
-            raw: ':meaning|desc@@id:message source'
-          });
-      expect(o.localizedString(meta('id', 'meaning', 'desc'), [':message source'], [], [])
-                 .serializeI18nHead())
-          .toEqual({
-            cooked: ':meaning|desc@@id::message source',
-            raw: ':meaning|desc@@id::message source'
-          });
-      expect(o.localizedString(meta('', '', ''), ['message source'], [], []).serializeI18nHead())
-          .toEqual({cooked: 'message source', raw: 'message source'});
-      expect(o.localizedString(meta('', '', ''), [':message source'], [], []).serializeI18nHead())
-          .toEqual({cooked: ':message source', raw: '\\:message source'});
+        o.localizedString(meta('id:sub_id', 'meaning', 'desc'), [''], [], []).serializeI18nHead()
+      ).toEqual({cooked: ':meaning|desc@@id:sub_id:', raw: ':meaning|desc@@id\\:sub_id:'});
+      expect(
+        o
+          .localizedString(meta('id', 'meaning:sub_meaning', 'desc'), [''], [], [])
+          .serializeI18nHead()
+      ).toEqual({
+        cooked: ':meaning:sub_meaning|desc@@id:',
+        raw: ':meaning\\:sub_meaning|desc@@id:',
+      });
+      expect(
+        o.localizedString(meta('id', 'meaning', 'desc:sub_desc'), [''], [], []).serializeI18nHead()
+      ).toEqual({cooked: ':meaning|desc:sub_desc@@id:', raw: ':meaning|desc\\:sub_desc@@id:'});
+      expect(
+        o
+          .localizedString(meta('id', 'meaning', 'desc'), ['message source'], [], [])
+          .serializeI18nHead()
+      ).toEqual({
+        cooked: ':meaning|desc@@id:message source',
+        raw: ':meaning|desc@@id:message source',
+      });
+      expect(
+        o
+          .localizedString(meta('id', 'meaning', 'desc'), [':message source'], [], [])
+          .serializeI18nHead()
+      ).toEqual({
+        cooked: ':meaning|desc@@id::message source',
+        raw: ':meaning|desc@@id::message source',
+      });
+      expect(
+        o.localizedString(meta('', '', ''), ['message source'], [], []).serializeI18nHead()
+      ).toEqual({cooked: 'message source', raw: 'message source'});
+      expect(
+        o.localizedString(meta('', '', ''), [':message source'], [], []).serializeI18nHead()
+      ).toEqual({cooked: ':message source', raw: '\\:message source'});
     });
 
     it('serializeI18nPlaceholderBlock()', () => {
-      expect(o.localizedString(meta('', '', ''), ['', ''], [''], []).serializeI18nTemplatePart(1))
-          .toEqual({cooked: '', raw: ''});
       expect(
-          o.localizedString(meta('', '', ''), ['', ''], ['abc'], []).serializeI18nTemplatePart(1))
-          .toEqual({cooked: ':abc:', raw: ':abc:'});
-      expect(o.localizedString(meta('', '', ''), ['', 'message'], [''], [])
-                 .serializeI18nTemplatePart(1))
-          .toEqual({cooked: 'message', raw: 'message'});
-      expect(o.localizedString(meta('', '', ''), ['', 'message'], ['abc'], [])
-                 .serializeI18nTemplatePart(1))
-          .toEqual({cooked: ':abc:message', raw: ':abc:message'});
-      expect(o.localizedString(meta('', '', ''), ['', ':message'], [''], [])
-                 .serializeI18nTemplatePart(1))
-          .toEqual({cooked: ':message', raw: '\\:message'});
-      expect(o.localizedString(meta('', '', ''), ['', ':message'], ['abc'], [])
-                 .serializeI18nTemplatePart(1))
-          .toEqual({cooked: ':abc::message', raw: ':abc::message'});
+        o.localizedString(meta('', '', ''), ['', ''], [''], []).serializeI18nTemplatePart(1)
+      ).toEqual({cooked: '', raw: ''});
+      expect(
+        o.localizedString(meta('', '', ''), ['', ''], ['abc'], []).serializeI18nTemplatePart(1)
+      ).toEqual({cooked: ':abc:', raw: ':abc:'});
+      expect(
+        o.localizedString(meta('', '', ''), ['', 'message'], [''], []).serializeI18nTemplatePart(1)
+      ).toEqual({cooked: 'message', raw: 'message'});
+      expect(
+        o
+          .localizedString(meta('', '', ''), ['', 'message'], ['abc'], [])
+          .serializeI18nTemplatePart(1)
+      ).toEqual({cooked: ':abc:message', raw: ':abc:message'});
+      expect(
+        o.localizedString(meta('', '', ''), ['', ':message'], [''], []).serializeI18nTemplatePart(1)
+      ).toEqual({cooked: ':message', raw: '\\:message'});
+      expect(
+        o
+          .localizedString(meta('', '', ''), ['', ':message'], ['abc'], [])
+          .serializeI18nTemplatePart(1)
+      ).toEqual({cooked: ':abc::message', raw: ':abc::message'});
     });
 
     function meta(customId?: string, meaning?: string, description?: string): I18nMeta {
@@ -301,43 +337,49 @@ describe('serializeI18nMessageForGetMsg', () => {
   });
 
   it('should serialize text with interpolation for `GetMsg()`', () => {
-    expect(serialize('Some text {{ valueA }} and {{ valueB + valueC }}'))
-        .toEqual('Some text {$interpolation} and {$interpolation_1}');
+    expect(serialize('Some text {{ valueA }} and {{ valueB + valueC }}')).toEqual(
+      'Some text {$interpolation} and {$interpolation_1}'
+    );
   });
 
   it('should serialize interpolation with named placeholder for `GetMsg()`', () => {
-    expect(serialize('{{ valueB + valueC // i18n(ph="PLACEHOLDER NAME") }}'))
-        .toEqual('{$placeholderName}');
+    expect(serialize('{{ valueB + valueC // i18n(ph="PLACEHOLDER NAME") }}')).toEqual(
+      '{$placeholderName}'
+    );
   });
 
   it('should serialize content with HTML tags for `GetMsg()`', () => {
-    expect(serialize('A <span>B<div>C</div></span> D'))
-        .toEqual('A {$startTagSpan}B{$startTagDiv}C{$closeTagDiv}{$closeTagSpan} D');
+    expect(serialize('A <span>B<div>C</div></span> D')).toEqual(
+      'A {$startTagSpan}B{$startTagDiv}C{$closeTagDiv}{$closeTagSpan} D'
+    );
   });
 
   it('should serialize simple ICU for `GetMsg()`', () => {
-    expect(serialize('{age, plural, 10 {ten} other {other}}'))
-        .toEqual('{VAR_PLURAL, plural, 10 {ten} other {other}}');
+    expect(serialize('{age, plural, 10 {ten} other {other}}')).toEqual(
+      '{VAR_PLURAL, plural, 10 {ten} other {other}}'
+    );
   });
 
   it('should serialize nested ICUs for `GetMsg()`', () => {
-    expect(serialize(
-               '{age, plural, 10 {ten {size, select, 1 {one} 2 {two} other {2+}}} other {other}}'))
-        .toEqual(
-            '{VAR_PLURAL, plural, 10 {ten {VAR_SELECT, select, 1 {one} 2 {two} other {2+}}} other {other}}');
+    expect(
+      serialize('{age, plural, 10 {ten {size, select, 1 {one} 2 {two} other {2+}}} other {other}}')
+    ).toEqual(
+      '{VAR_PLURAL, plural, 10 {ten {VAR_SELECT, select, 1 {one} 2 {two} other {2+}}} other {other}}'
+    );
   });
 
   it('should serialize ICU with nested HTML for `GetMsg()`', () => {
-    expect(serialize('{age, plural, 10 {<b>ten</b>} other {<div class="A">other</div>}}'))
-        .toEqual(
-            '{VAR_PLURAL, plural, 10 {{START_BOLD_TEXT}ten{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}other{CLOSE_TAG_DIV}}}');
+    expect(serialize('{age, plural, 10 {<b>ten</b>} other {<div class="A">other</div>}}')).toEqual(
+      '{VAR_PLURAL, plural, 10 {{START_BOLD_TEXT}ten{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}other{CLOSE_TAG_DIV}}}'
+    );
   });
 
   it('should serialize ICU with nested HTML containing further ICUs for `GetMsg()`', () => {
     expect(
-        serialize(
-            '{gender, select, male {male} female {female} other {other}}<div>{gender, select, male {male} female {female} other {other}}</div>'))
-        .toEqual('{$icu}{$startTagDiv}{$icu}{$closeTagDiv}');
+      serialize(
+        '{gender, select, male {male} female {female} other {other}}<div>{gender, select, male {male} female {female} other {other}}</div>'
+      )
+    ).toEqual('{$icu}{$startTagDiv}{$icu}{$closeTagDiv}');
   });
 });
 
@@ -355,83 +397,81 @@ describe('serializeI18nMessageForLocalize', () => {
   it('should serialize text with interpolation for `$localize()`', () => {
     expect(serialize('Some text {{ valueA }} and {{ valueB + valueC }} done')).toEqual({
       messageParts: ['Some text ', ' and ', ' done'],
-      placeHolders: ['INTERPOLATION', 'INTERPOLATION_1']
+      placeHolders: ['INTERPOLATION', 'INTERPOLATION_1'],
     });
   });
 
   it('should serialize text with interpolation at start for `$localize()`', () => {
     expect(serialize('{{ valueA }} and {{ valueB + valueC }} done')).toEqual({
       messageParts: ['', ' and ', ' done'],
-      placeHolders: ['INTERPOLATION', 'INTERPOLATION_1']
+      placeHolders: ['INTERPOLATION', 'INTERPOLATION_1'],
     });
   });
-
 
   it('should serialize text with interpolation at end for `$localize()`', () => {
     expect(serialize('Some text {{ valueA }} and {{ valueB + valueC }}')).toEqual({
       messageParts: ['Some text ', ' and ', ''],
-      placeHolders: ['INTERPOLATION', 'INTERPOLATION_1']
+      placeHolders: ['INTERPOLATION', 'INTERPOLATION_1'],
     });
   });
 
-
   it('should serialize only interpolation for `$localize()`', () => {
-    expect(serialize('{{ valueB + valueC }}'))
-        .toEqual({messageParts: ['', ''], placeHolders: ['INTERPOLATION']});
+    expect(serialize('{{ valueB + valueC }}')).toEqual({
+      messageParts: ['', ''],
+      placeHolders: ['INTERPOLATION'],
+    });
   });
-
 
   it('should serialize interpolation with named placeholder for `$localize()`', () => {
-    expect(serialize('{{ valueB + valueC // i18n(ph="PLACEHOLDER NAME") }}'))
-        .toEqual({messageParts: ['', ''], placeHolders: ['PLACEHOLDER_NAME']});
+    expect(serialize('{{ valueB + valueC // i18n(ph="PLACEHOLDER NAME") }}')).toEqual({
+      messageParts: ['', ''],
+      placeHolders: ['PLACEHOLDER_NAME'],
+    });
   });
-
 
   it('should serialize content with HTML tags for `$localize()`', () => {
     expect(serialize('A <span>B<div>C</div></span> D')).toEqual({
       messageParts: ['A ', 'B', 'C', '', ' D'],
-      placeHolders: ['START_TAG_SPAN', 'START_TAG_DIV', 'CLOSE_TAG_DIV', 'CLOSE_TAG_SPAN']
+      placeHolders: ['START_TAG_SPAN', 'START_TAG_DIV', 'CLOSE_TAG_DIV', 'CLOSE_TAG_SPAN'],
     });
   });
-
 
   it('should serialize simple ICU for `$localize()`', () => {
     expect(serialize('{age, plural, 10 {ten} other {other}}')).toEqual({
       messageParts: ['{VAR_PLURAL, plural, 10 {ten} other {other}}'],
-      placeHolders: []
+      placeHolders: [],
     });
   });
 
-
   it('should serialize nested ICUs for `$localize()`', () => {
-    expect(serialize(
-               '{age, plural, 10 {ten {size, select, 1 {one} 2 {two} other {2+}}} other {other}}'))
-        .toEqual({
-          messageParts: [
-            '{VAR_PLURAL, plural, 10 {ten {VAR_SELECT, select, 1 {one} 2 {two} other {2+}}} other {other}}'
-          ],
-          placeHolders: []
-        });
+    expect(
+      serialize('{age, plural, 10 {ten {size, select, 1 {one} 2 {two} other {2+}}} other {other}}')
+    ).toEqual({
+      messageParts: [
+        '{VAR_PLURAL, plural, 10 {ten {VAR_SELECT, select, 1 {one} 2 {two} other {2+}}} other {other}}',
+      ],
+      placeHolders: [],
+    });
   });
-
 
   it('should serialize ICU with nested HTML for `$localize()`', () => {
     expect(serialize('{age, plural, 10 {<b>ten</b>} other {<div class="A">other</div>}}')).toEqual({
       messageParts: [
-        '{VAR_PLURAL, plural, 10 {{START_BOLD_TEXT}ten{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}other{CLOSE_TAG_DIV}}}'
+        '{VAR_PLURAL, plural, 10 {{START_BOLD_TEXT}ten{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}other{CLOSE_TAG_DIV}}}',
       ],
-      placeHolders: []
+      placeHolders: [],
     });
   });
 
   it('should serialize ICU with nested HTML containing further ICUs for `$localize()`', () => {
     expect(
-        serialize(
-            '{gender, select, male {male} female {female} other {other}}<div>{gender, select, male {male} female {female} other {other}}</div>'))
-        .toEqual({
-          messageParts: ['', '', '', '', ''],
-          placeHolders: ['ICU', 'START_TAG_DIV', 'ICU', 'CLOSE_TAG_DIV']
-        });
+      serialize(
+        '{gender, select, male {male} female {female} other {other}}<div>{gender, select, male {male} female {female} other {other}}</div>'
+      )
+    ).toEqual({
+      messageParts: ['', '', '', '', ''],
+      placeHolders: ['ICU', 'START_TAG_DIV', 'ICU', 'CLOSE_TAG_DIV'],
+    });
   });
 });
 
@@ -443,20 +483,22 @@ describe('serializeIcuNode', () => {
   };
 
   it('should serialize a simple ICU', () => {
-    expect(serialize('{age, plural, 10 {ten} other {other}}'))
-        .toEqual('{VAR_PLURAL, plural, 10 {ten} other {other}}');
+    expect(serialize('{age, plural, 10 {ten} other {other}}')).toEqual(
+      '{VAR_PLURAL, plural, 10 {ten} other {other}}'
+    );
   });
 
   it('should serialize a next ICU', () => {
-    expect(serialize(
-               '{age, plural, 10 {ten {size, select, 1 {one} 2 {two} other {2+}}} other {other}}'))
-        .toEqual(
-            '{VAR_PLURAL, plural, 10 {ten {VAR_SELECT, select, 1 {one} 2 {two} other {2+}}} other {other}}');
+    expect(
+      serialize('{age, plural, 10 {ten {size, select, 1 {one} 2 {two} other {2+}}} other {other}}')
+    ).toEqual(
+      '{VAR_PLURAL, plural, 10 {ten {VAR_SELECT, select, 1 {one} 2 {two} other {2+}}} other {other}}'
+    );
   });
 
   it('should serialize ICU with nested HTML', () => {
-    expect(serialize('{age, plural, 10 {<b>ten</b>} other {<div class="A">other</div>}}'))
-        .toEqual(
-            '{VAR_PLURAL, plural, 10 {{START_BOLD_TEXT}ten{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}other{CLOSE_TAG_DIV}}}');
+    expect(serialize('{age, plural, 10 {<b>ten</b>} other {<div class="A">other</div>}}')).toEqual(
+      '{VAR_PLURAL, plural, 10 {{START_BOLD_TEXT}ten{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}other{CLOSE_TAG_DIV}}}'
+    );
   });
 });

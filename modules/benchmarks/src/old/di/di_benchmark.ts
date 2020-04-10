@@ -29,11 +29,12 @@ export function main() {
 
   const D_KEY = ReflectiveKey.get(D);
   const E_KEY = ReflectiveKey.get(E);
-  const childInjector = injector.resolveAndCreateChild([])
-                            .resolveAndCreateChild([])
-                            .resolveAndCreateChild([])
-                            .resolveAndCreateChild([])
-                            .resolveAndCreateChild([]);
+  const childInjector = injector
+    .resolveAndCreateChild([])
+    .resolveAndCreateChild([])
+    .resolveAndCreateChild([])
+    .resolveAndCreateChild([])
+    .resolveAndCreateChild([]);
 
   const variousProviders = [A, {provide: B, useClass: C}, [D, [E]], {provide: F, useValue: 6}];
 
@@ -89,39 +90,49 @@ export function main() {
   bindAction('#getChild', () => microBenchmark('injectAvg', iterations, getChild));
   bindAction('#instantiate', () => microBenchmark('injectAvg', iterations, instantiate));
   bindAction('#createVariety', () => microBenchmark('injectAvg', iterations, createVariety));
-  bindAction(
-      '#createVarietyResolved',
-      () => microBenchmark('injectAvg', iterations, createVarietyResolved));
+  bindAction('#createVarietyResolved', () =>
+    microBenchmark('injectAvg', iterations, createVarietyResolved)
+  );
 }
-
-
 
 @Injectable()
 class A {
-  constructor() { count++; }
+  constructor() {
+    count++;
+  }
 }
 
 @Injectable()
 class B {
-  constructor(a: A) { count++; }
+  constructor(a: A) {
+    count++;
+  }
 }
 
 @Injectable()
 class C {
-  constructor(b: B) { count++; }
+  constructor(b: B) {
+    count++;
+  }
 }
 
 @Injectable()
 class D {
-  constructor(c: C, b: B) { count++; }
+  constructor(c: C, b: B) {
+    count++;
+  }
 }
 
 @Injectable()
 class E {
-  constructor(d: D, c: C) { count++; }
+  constructor(d: D, c: C) {
+    count++;
+  }
 }
 
 @Injectable()
 class F {
-  constructor(e: E, d: D) { count++; }
+  constructor(e: E, d: D) {
+    count++;
+  }
 }

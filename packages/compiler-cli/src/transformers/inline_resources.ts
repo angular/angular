@@ -8,26 +8,32 @@
 
 import * as ts from 'typescript';
 
-import {isClassMetadata, isMetadataImportedSymbolReferenceExpression, isMetadataSymbolicCallExpression, MetadataObject, MetadataValue} from '../metadata/index';
+import {
+  isClassMetadata,
+  isMetadataImportedSymbolReferenceExpression,
+  isMetadataSymbolicCallExpression,
+  MetadataObject,
+  MetadataValue,
+} from '../metadata/index';
 
 import {MetadataTransformer, ValueTransform} from './metadata_cache';
 
 const PRECONDITIONS_TEXT =
-    'angularCompilerOptions.enableResourceInlining requires all resources to be statically resolvable.';
+  'angularCompilerOptions.enableResourceInlining requires all resources to be statically resolvable.';
 
 /** A subset of members from AotCompilerHost */
 export type ResourcesHost = {
-  resourceNameToFileName(resourceName: string, containingFileName: string): string|null;
-  loadResource(path: string): Promise<string>| string;
+  resourceNameToFileName(resourceName: string, containingFileName: string): string | null;
+  loadResource(path: string): Promise<string> | string;
 };
 
 export type StaticResourceLoader = {
-  get(url: string|MetadataValue): string;
+  get(url: string | MetadataValue): string;
 };
 
 function getResourceLoader(host: ResourcesHost, containingFileName: string): StaticResourceLoader {
   return {
-    get(url: string|MetadataValue): string {
+    get(url: string | MetadataValue): string {
       if (typeof url !== 'string') {
         throw new Error('templateUrl and stylesUrl must be string literals. ' + PRECONDITIONS_TEXT);
       }
@@ -40,26 +46,30 @@ function getResourceLoader(host: ResourcesHost, containingFileName: string): Sta
         return content;
       }
       throw new Error(`Failed to resolve ${url} from ${containingFileName}. ${PRECONDITIONS_TEXT}`);
-    }
+    },
   };
 }
 
 export class InlineResourcesMetadataTransformer implements MetadataTransformer {
   constructor(private host: ResourcesHost) {}
 
-  start(sourceFile: ts.SourceFile): ValueTransform|undefined {
+  start(sourceFile: ts.SourceFile): ValueTransform | undefined {
     const loader = getResourceLoader(this.host, sourceFile.fileName);
     return (value: MetadataValue, node: ts.Node): MetadataValue => {
       if (isClassMetadata(value) && ts.isClassDeclaration(node) && value.decorators) {
-        value.decorators.forEach(d => {
-          if (isMetadataSymbolicCallExpression(d) &&
-              isMetadataImportedSymbolReferenceExpression(d.expression) &&
-              d.expression.module === '@angular/core' && d.expression.name === 'Component' &&
-              d.arguments) {
+        value.decorators.forEach((d) => {
+          if (
+            isMetadataSymbolicCallExpression(d) &&
+            isMetadataImportedSymbolReferenceExpression(d.expression) &&
+            d.expression.module === '@angular/core' &&
+            d.expression.name === 'Component' &&
+            d.arguments
+          ) {
             // Arguments to an @Component that was compiled successfully are always
             // MetadataObject(s).
-            d.arguments = (d.arguments as MetadataObject[])
-                              .map(this.updateDecoratorMetadata.bind(this, loader));
+            d.arguments = (d.arguments as MetadataObject[]).map(
+              this.updateDecoratorMetadata.bind(this, loader)
+            );
           }
         });
       }
@@ -78,7 +88,7 @@ export class InlineResourcesMetadataTransformer implements MetadataTransformer {
     if (!Array.isArray(styles)) throw new Error('styles should be an array');
     if (!Array.isArray(styleUrls)) throw new Error('styleUrls should be an array');
 
-    styles.push(...styleUrls.map(styleUrl => loader.get(styleUrl)));
+    styles.push(...styleUrls.map((styleUrl) => loader.get(styleUrl)));
     if (styles.length > 0) {
       arg['styles'] = styles;
       delete arg['styleUrls'];
@@ -89,10 +99,12 @@ export class InlineResourcesMetadataTransformer implements MetadataTransformer {
 }
 
 export function getInlineResourcesTransformFactory(
-    program: ts.Program, host: ResourcesHost): ts.TransformerFactory<ts.SourceFile> {
+  program: ts.Program,
+  host: ResourcesHost
+): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext) => (sourceFile: ts.SourceFile) => {
     const loader = getResourceLoader(host, sourceFile.fileName);
-    const visitor: ts.Visitor = node => {
+    const visitor: ts.Visitor = (node) => {
       // Components are always classes; skip any other node
       if (!ts.isClassDeclaration(node)) {
         return node;
@@ -119,8 +131,14 @@ export function getInlineResourcesTransformFactory(
 
       // Create a new AST subtree with our modifications
       return ts.updateClassDeclaration(
-          node, newDecorators, node.modifiers, node.name, node.typeParameters,
-          node.heritageClauses || [], newMembers);
+        node,
+        newDecorators,
+        node.modifiers,
+        node.name,
+        node.typeParameters,
+        node.heritageClauses || [],
+        newMembers
+      );
     };
 
     return ts.visitEachChild(sourceFile, visitor, context);
@@ -140,7 +158,9 @@ function updateDecorator(node: ts.Decorator, loader: StaticResourceLoader): ts.D
   const expr = node.expression;
   const newArguments = updateComponentProperties(expr.arguments, loader);
   return ts.updateDecorator(
-      node, ts.updateCall(expr, expr.expression, expr.typeArguments, newArguments));
+    node,
+    ts.updateCall(expr, expr.expression, expr.typeArguments, newArguments)
+  );
 }
 
 /**
@@ -150,8 +170,10 @@ function updateDecorator(node: ts.Decorator, loader: StaticResourceLoader): ts.D
  * @param typeChecker provides access to symbol table
  */
 function updateAnnotations(
-    node: ts.ClassElement, loader: StaticResourceLoader,
-    typeChecker: ts.TypeChecker): ts.ClassElement {
+  node: ts.ClassElement,
+  loader: StaticResourceLoader,
+  typeChecker: ts.TypeChecker
+): ts.ClassElement {
   // Looking for a member of this shape:
   // PropertyDeclaration called decorators, with static modifier
   // Initializer is ArrayLiteralExpression
@@ -166,34 +188,46 @@ function updateAnnotations(
   //       styleUrls: ['./my.component.css'],
   //     }],
   //   }];
-  if (!ts.isPropertyDeclaration(node) ||  // ts.ModifierFlags.Static &&
-      !ts.isIdentifier(node.name) || node.name.text !== 'decorators' || !node.initializer ||
-      !ts.isArrayLiteralExpression(node.initializer)) {
+  if (
+    !ts.isPropertyDeclaration(node) || // ts.ModifierFlags.Static &&
+    !ts.isIdentifier(node.name) ||
+    node.name.text !== 'decorators' ||
+    !node.initializer ||
+    !ts.isArrayLiteralExpression(node.initializer)
+  ) {
     return node;
   }
 
-  const newAnnotations = node.initializer.elements.map(annotation => {
+  const newAnnotations = node.initializer.elements.map((annotation) => {
     // No-op if there's a non-object-literal mixed in the decorators values
     if (!ts.isObjectLiteralExpression(annotation)) return annotation;
 
-    const decoratorType = annotation.properties.find(p => isIdentifierNamed(p, 'type'));
+    const decoratorType = annotation.properties.find((p) => isIdentifierNamed(p, 'type'));
 
     // No-op if there's no 'type' property, or if it's not initialized to the Component symbol
-    if (!decoratorType || !ts.isPropertyAssignment(decoratorType) ||
-        !ts.isIdentifier(decoratorType.initializer) ||
-        !isComponentSymbol(decoratorType.initializer, typeChecker)) {
+    if (
+      !decoratorType ||
+      !ts.isPropertyAssignment(decoratorType) ||
+      !ts.isIdentifier(decoratorType.initializer) ||
+      !isComponentSymbol(decoratorType.initializer, typeChecker)
+    ) {
       return annotation;
     }
 
-    const newAnnotation = annotation.properties.map(prop => {
+    const newAnnotation = annotation.properties.map((prop) => {
       // No-op if this isn't the 'args' property or if it's not initialized to an array
-      if (!isIdentifierNamed(prop, 'args') || !ts.isPropertyAssignment(prop) ||
-          !ts.isArrayLiteralExpression(prop.initializer))
+      if (
+        !isIdentifierNamed(prop, 'args') ||
+        !ts.isPropertyAssignment(prop) ||
+        !ts.isArrayLiteralExpression(prop.initializer)
+      )
         return prop;
 
       const newDecoratorArgs = ts.updatePropertyAssignment(
-          prop, prop.name,
-          ts.createArrayLiteral(updateComponentProperties(prop.initializer.elements, loader)));
+        prop,
+        prop.name,
+        ts.createArrayLiteral(updateComponentProperties(prop.initializer.elements, loader))
+      );
 
       return newDecoratorArgs;
     });
@@ -202,8 +236,14 @@ function updateAnnotations(
   });
 
   return ts.updateProperty(
-      node, node.decorators, node.modifiers, node.name, node.questionToken, node.type,
-      ts.updateArrayLiteral(node.initializer, newAnnotations));
+    node,
+    node.decorators,
+    node.modifiers,
+    node.name,
+    node.questionToken,
+    node.type,
+    ts.updateArrayLiteral(node.initializer, newAnnotations)
+  );
 }
 
 function isIdentifierNamed(p: ts.ObjectLiteralElementLike, name: string): boolean {
@@ -238,7 +278,8 @@ function isComponentSymbol(identifier: ts.Node, typeChecker: ts.TypeChecker) {
 
   if (!symbol || !symbol.declarations || !symbol.declarations.length) {
     console.error(
-        `Unable to resolve symbol '${identifier.text}' in the program, does it type-check?`);
+      `Unable to resolve symbol '${identifier.text}' in the program, does it type-check?`
+    );
     return false;
   }
 
@@ -263,7 +304,9 @@ function isComponentSymbol(identifier: ts.Node, typeChecker: ts.TypeChecker) {
  * @returns updated arguments
  */
 function updateComponentProperties(
-    args: ts.NodeArray<ts.Expression>, loader: StaticResourceLoader): ts.NodeArray<ts.Expression> {
+  args: ts.NodeArray<ts.Expression>,
+  loader: StaticResourceLoader
+): ts.NodeArray<ts.Expression> {
   if (args.length !== 1) {
     // User should have gotten a type-check error because @Component takes one argument
     return args;
@@ -277,7 +320,7 @@ function updateComponentProperties(
 
   const newProperties: ts.ObjectLiteralElementLike[] = [];
   const newStyleExprs: ts.Expression[] = [];
-  componentArg.properties.forEach(prop => {
+  componentArg.properties.forEach((prop) => {
     if (!ts.isPropertyAssignment(prop) || ts.isComputedPropertyName(prop.name)) {
       newProperties.push(prop);
       return;
@@ -295,25 +338,36 @@ function updateComponentProperties(
         if (!ts.isArrayLiteralExpression(prop.initializer)) {
           throw new Error('styleUrls takes an array argument');
         }
-        newStyleExprs.push(...prop.initializer.elements.map((expr: ts.Expression) => {
-          if (!ts.isStringLiteral(expr) && !ts.isNoSubstitutionTemplateLiteral(expr)) {
-            throw new Error(
-                'Can only accept string literal arguments to styleUrls. ' + PRECONDITIONS_TEXT);
-          }
-          const styles = loader.get(expr.text);
-          return ts.createLiteral(styles);
-        }));
+        newStyleExprs.push(
+          ...prop.initializer.elements.map((expr: ts.Expression) => {
+            if (!ts.isStringLiteral(expr) && !ts.isNoSubstitutionTemplateLiteral(expr)) {
+              throw new Error(
+                'Can only accept string literal arguments to styleUrls. ' + PRECONDITIONS_TEXT
+              );
+            }
+            const styles = loader.get(expr.text);
+            return ts.createLiteral(styles);
+          })
+        );
         break;
 
       case 'templateUrl':
-        if (!ts.isStringLiteral(prop.initializer) &&
-            !ts.isNoSubstitutionTemplateLiteral(prop.initializer)) {
+        if (
+          !ts.isStringLiteral(prop.initializer) &&
+          !ts.isNoSubstitutionTemplateLiteral(prop.initializer)
+        ) {
           throw new Error(
-              'Can only accept a string literal argument to templateUrl. ' + PRECONDITIONS_TEXT);
+            'Can only accept a string literal argument to templateUrl. ' + PRECONDITIONS_TEXT
+          );
         }
         const template = loader.get(prop.initializer.text);
-        newProperties.push(ts.updatePropertyAssignment(
-            prop, ts.createIdentifier('template'), ts.createLiteral(template)));
+        newProperties.push(
+          ts.updatePropertyAssignment(
+            prop,
+            ts.createIdentifier('template'),
+            ts.createLiteral(template)
+          )
+        );
         break;
 
       default:
@@ -324,7 +378,9 @@ function updateComponentProperties(
   // Add the non-inline styles
   if (newStyleExprs.length > 0) {
     const newStyles = ts.createPropertyAssignment(
-        ts.createIdentifier('styles'), ts.createArrayLiteral(newStyleExprs));
+      ts.createIdentifier('styles'),
+      ts.createArrayLiteral(newStyleExprs)
+    );
     newProperties.push(newStyles);
   }
 

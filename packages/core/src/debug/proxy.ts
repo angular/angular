@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {global} from '../util/global';
 
 /**
@@ -22,7 +23,7 @@ interface GlobalWithProxy {
  * the `Proxy` class. For this reason an error must be thrown.
  */
 export function createProxy(handler: ProxyHandler<any>): {} {
-  const g = global as any as GlobalWithProxy;
+  const g = (global as any) as GlobalWithProxy;
   if (!g.Proxy) {
     throw new Error('Proxy is not supported in this browser');
   }

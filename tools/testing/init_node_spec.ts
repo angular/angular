@@ -26,11 +26,14 @@ import 'zone.js/lib/jasmine/jasmine';
 import '@angular/compiler'; // For JIT mode. Must be in front of any other @angular/* imports.
 // Init TestBed
 import {TestBed} from '@angular/core/testing';
-import {ServerTestingModule, platformServerTesting} from '@angular/platform-server/testing/src/server';
+import {
+  ServerTestingModule,
+  platformServerTesting,
+} from '@angular/platform-server/testing/src/server';
 import {DominoAdapter} from '@angular/platform-server/src/domino_adapter';
 import {createDocument} from 'domino';
 
 TestBed.initTestEnvironment(ServerTestingModule, platformServerTesting());
 DominoAdapter.makeCurrent();
 (global as any).document =
-    (DominoAdapter as any).defaultDoc || ((DominoAdapter as any).defaultDoc = createDocument());
+  (DominoAdapter as any).defaultDoc || ((DominoAdapter as any).defaultDoc = createDocument());

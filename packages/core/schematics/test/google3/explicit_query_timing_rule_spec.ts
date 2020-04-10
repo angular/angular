@@ -12,18 +12,18 @@ import * as shx from 'shelljs';
 import {Configuration, Linter} from 'tslint';
 
 describe('Google3 explicitQueryTiming TSLint rule', () => {
-
   /**
    * Path to the static-query schematic rules directory. The path needs to be resolved through
    * the Bazel runfiles, because on Windows runfiles are not symlinked into the working directory.
    */
-  const rulesDirectory =
-      dirname(require.resolve('../../migrations/google3/explicitQueryTimingRule'));
+  const rulesDirectory = dirname(
+    require.resolve('../../migrations/google3/explicitQueryTimingRule')
+  );
 
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = join(process.env['TEST_TMPDIR'] !, 'google3-test');
+    tmpDir = join(process.env['TEST_TMPDIR']!, 'google3-test');
     shx.mkdir('-p', tmpDir);
 
     writeFile('tsconfig.json', JSON.stringify({compilerOptions: {module: 'es2015'}}));
@@ -40,8 +40,8 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
     const linter = new Linter({fix, rulesDirectory: [rulesDirectory]}, program);
     const config = Configuration.parseConfigFile({rules: {'explicit-query-timing': true}});
 
-    program.getRootFileNames().forEach(fileName => {
-      linter.lint(fileName, program.getSourceFile(fileName) !.getFullText(), config);
+    program.getRootFileNames().forEach((fileName) => {
+      linter.lint(fileName, program.getSourceFile(fileName)!.getFullText(), config);
     });
 
     return linter;
@@ -58,7 +58,9 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
   }
 
   it('should properly apply query timing replacements', () => {
-    writeFile('index.ts', `
+    writeFile(
+      'index.ts',
+      `
       import {Component, ViewChild} from '@angular/core';
       
       @Component({template: '<span #test></span>'})
@@ -71,9 +73,12 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
           this.query.classList.add('test');
         }
       }
-    `);
+    `
+    );
 
-    writeFile('external.ts', `
+    writeFile(
+      'external.ts',
+      `
       import {MyComp} from './index';
     
       export class Test extends MyComp {
@@ -81,7 +86,8 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
           this.query3.doSomething();
         }
       }
-    `);
+    `
+    );
 
     runTSLint();
 
@@ -91,7 +97,9 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
   });
 
   it('should report non-explicit static query definitions', () => {
-    writeFile('index.ts', `
+    writeFile(
+      'index.ts',
+      `
       import {Component, ViewChild} from '@angular/core';
       
       @Component({template: '<span #test></span>'})
@@ -102,7 +110,8 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
           this.query.classList.add('test');
         }
       }
-    `);
+    `
+    );
 
     const linter = runTSLint(false);
     const failures = linter.getResult().failures;
@@ -112,14 +121,17 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
   });
 
   it('should report non-explicit dynamic query definitions', () => {
-    writeFile('index.ts', `
+    writeFile(
+      'index.ts',
+      `
       import {Component, ContentChild} from '@angular/core';
       
       @Component({template: '<span #test></span>'})
       export class MyComp {
         @ContentChild('test') query: any;
       }
-    `);
+    `
+    );
 
     const linter = runTSLint(false);
     const failures = linter.getResult().failures;
@@ -129,7 +141,9 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
   });
 
   it('should detect query usage in component template', () => {
-    writeFile('index.ts', `
+    writeFile(
+      'index.ts',
+      `
       import {Component, ViewChild} from '@angular/core';
       
       @Component({
@@ -141,7 +155,8 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
       export class MyComp {
         @ViewChild('test') query: any;
       }
-    `);
+    `
+    );
 
     runTSLint();
 

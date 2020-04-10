@@ -13,10 +13,16 @@ class DecoratedParent {}
 class DecoratedChild extends DecoratedParent {}
 
 {
-  const TerminalDecorator =
-      makeDecorator('TerminalDecorator', (data: any) => ({terminal: true, ...data}));
+  const TerminalDecorator = makeDecorator('TerminalDecorator', (data: any) => ({
+    terminal: true,
+    ...data,
+  }));
   const TestDecorator = makeDecorator(
-      'TestDecorator', (data: any) => data, Object, (fn: any) => fn.Terminal = TerminalDecorator);
+    'TestDecorator',
+    (data: any) => data,
+    Object,
+    (fn: any) => (fn.Terminal = TerminalDecorator)
+  );
 
   describe('Property decorators', () => {
     // https://github.com/angular/angular/issues/12224
@@ -33,8 +39,9 @@ class DecoratedChild extends DecoratedParent {}
     });
 
     it('should work with any default plain values', () => {
-      const Default =
-          makePropDecorator('Default', (data: any) => ({value: data != null ? data : 5}));
+      const Default = makePropDecorator('Default', (data: any) => ({
+        value: data != null ? data : 5,
+      }));
       expect(new Default(0)['value']).toEqual(0);
     });
 
@@ -60,7 +67,7 @@ class DecoratedChild extends DecoratedParent {}
       expect(annotation.marker).toEqual('WORKS');
     });
 
-    it('should not apply decorators from the prototype chain', function() {
+    it('should not apply decorators from the prototype chain', function () {
       TestDecorator({marker: 'parent'})(DecoratedParent);
       TestDecorator({marker: 'child'})(DecoratedChild);
 

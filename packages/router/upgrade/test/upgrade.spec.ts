@@ -23,14 +23,15 @@ describe('setUpLocationSync', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        UpgradeModule, {provide: Router, useValue: RouterMock},
-        {provide: Location, useValue: LocationMock}
+        UpgradeModule,
+        {provide: Router, useValue: RouterMock},
+        {provide: Location, useValue: LocationMock},
       ],
     });
 
     upgradeModule = TestBed.inject(UpgradeModule);
     upgradeModule.$injector = {
-      get: jasmine.createSpy('$injector.get').and.returnValue({'$on': () => undefined})
+      get: jasmine.createSpy('$injector.get').and.returnValue({'$on': () => undefined}),
     };
   });
 
@@ -43,18 +44,16 @@ describe('setUpLocationSync', () => {
       `);
   });
 
-  it('should get the $rootScope from AngularJS and set an $on watch on $locationChangeStart',
-     () => {
-       const $rootScope = jasmine.createSpyObj('$rootScope', ['$on']);
+  it('should get the $rootScope from AngularJS and set an $on watch on $locationChangeStart', () => {
+    const $rootScope = jasmine.createSpyObj('$rootScope', ['$on']);
 
-       upgradeModule.$injector.get.and.callFake(
-           (name: string) => (name === '$rootScope') && $rootScope);
+    upgradeModule.$injector.get.and.callFake((name: string) => name === '$rootScope' && $rootScope);
 
-       setUpLocationSync(upgradeModule);
+    setUpLocationSync(upgradeModule);
 
-       expect($rootScope.$on).toHaveBeenCalledTimes(1);
-       expect($rootScope.$on).toHaveBeenCalledWith('$locationChangeStart', jasmine.any(Function));
-     });
+    expect($rootScope.$on).toHaveBeenCalledTimes(1);
+    expect($rootScope.$on).toHaveBeenCalledWith('$locationChangeStart', jasmine.any(Function));
+  });
 
   it('should navigate by url every time $locationChangeStart is broadcasted', () => {
     const url = 'https://google.com';
@@ -119,8 +118,7 @@ describe('setUpLocationSync', () => {
 
       expect(LocationMock.normalize).toHaveBeenCalledWith('/foo/bar');
     } finally {
-      Object.defineProperty(anchorProto, 'pathname', originalDescriptor !);
+      Object.defineProperty(anchorProto, 'pathname', originalDescriptor!);
     }
   });
-
 });

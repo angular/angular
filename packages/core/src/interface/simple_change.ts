@@ -20,7 +20,9 @@ export class SimpleChange {
   /**
    * Check whether the new value is the first value assigned.
    */
-  isFirstChange(): boolean { return this.firstChange; }
+  isFirstChange(): boolean {
+    return this.firstChange;
+  }
 }
 
 /**
@@ -32,4 +34,6 @@ export class SimpleChange {
  *
  * @publicApi
  */
-export interface SimpleChanges { [propName: string]: SimpleChange; }
+export interface SimpleChanges {
+  [propName: string]: SimpleChange;
+}

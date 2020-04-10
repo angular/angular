@@ -18,14 +18,18 @@ export type TransformerFactory = (context: ts.TransformationContext) => Transfor
  * Returns a transformer that adds the requested static methods specified by modules.
  */
 export function getAngularClassTransformerFactory(
-    modules: PartialModule[], annotateForClosureCompiler: boolean): TransformerFactory {
+  modules: PartialModule[],
+  annotateForClosureCompiler: boolean
+): TransformerFactory {
   if (modules.length === 0) {
     // If no modules are specified, just return an identity transform.
-    return () => sf => sf;
+    return () => (sf) => sf;
   }
-  const moduleMap = new Map(modules.map<[string, PartialModule]>(m => [m.fileName, m]));
-  return function(context: ts.TransformationContext) {
-    return function(sourceFile: ts.SourceFile): ts.SourceFile {
+  const moduleMap = new Map(
+    modules.map<[string, PartialModule]>((m) => [m.fileName, m])
+  );
+  return function (context: ts.TransformationContext) {
+    return function (sourceFile: ts.SourceFile): ts.SourceFile {
       const module = moduleMap.get(sourceFile.fileName);
       if (module && module.statements.length > 0) {
         const [newSourceFile] = updateSourceFile(sourceFile, module, annotateForClosureCompiler);

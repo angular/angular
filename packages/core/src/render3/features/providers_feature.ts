@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ProcessProvidersFunction, Provider} from '../../di/interface/provider';
 import {providersResolver} from '../di_setup';
 import {DirectiveDef} from '../interfaces/definition';
@@ -43,12 +44,15 @@ import {DirectiveDef} from '../interfaces/definition';
  */
 export function ɵɵProvidersFeature<T>(providers: Provider[], viewProviders: Provider[] = []) {
   return (definition: DirectiveDef<T>) => {
-    definition.providersResolver =
-        (def: DirectiveDef<T>, processProvidersFn?: ProcessProvidersFunction) => {
-          return providersResolver(
-              def,                                                             //
-              processProvidersFn ? processProvidersFn(providers) : providers,  //
-              viewProviders);
-        };
+    definition.providersResolver = (
+      def: DirectiveDef<T>,
+      processProvidersFn?: ProcessProvidersFunction
+    ) => {
+      return providersResolver(
+        def, //
+        processProvidersFn ? processProvidersFn(providers) : providers, //
+        viewProviders
+      );
+    };
   };
 }

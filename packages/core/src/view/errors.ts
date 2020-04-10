@@ -12,13 +12,16 @@ import {ERROR_DEBUG_CONTEXT, ERROR_LOGGER} from '../util/errors';
 import {DebugContext} from './types';
 
 export function expressionChangedAfterItHasBeenCheckedError(
-    context: DebugContext, oldValue: any, currValue: any, isFirstCheck: boolean): Error {
-  let msg =
-      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: '${oldValue}'. Current value: '${currValue}'.`;
+  context: DebugContext,
+  oldValue: any,
+  currValue: any,
+  isFirstCheck: boolean
+): Error {
+  let msg = `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: '${oldValue}'. Current value: '${currValue}'.`;
   if (isFirstCheck) {
     msg +=
-        ` It seems like the view has been created after its parent and its children have been dirty checked.` +
-        ` Has it been created in a change detection hook ?`;
+      ` It seems like the view has been created after its parent and its children have been dirty checked.` +
+      ` Has it been created in a change detection hook ?`;
   }
   return viewDebugError(msg, context);
 }

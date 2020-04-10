@@ -24,8 +24,9 @@ export function sanitizeIdentifier(name: string): string {
 
 let _anonymousTypeIndex = 0;
 
-export function identifierName(compileIdentifier: CompileIdentifierMetadata|null|undefined): string|
-    null {
+export function identifierName(
+  compileIdentifier: CompileIdentifierMetadata | null | undefined
+): string | null {
   if (!compileIdentifier || !compileIdentifier.reference) {
     return null;
   }
@@ -84,7 +85,7 @@ export enum CompileSummaryKind {
   Pipe,
   Directive,
   NgModule,
-  Injectable
+  Injectable,
 }
 
 /**
@@ -93,7 +94,7 @@ export enum CompileSummaryKind {
  * the directive / module itself.
  */
 export interface CompileTypeSummary {
-  summaryKind: CompileSummaryKind|null;
+  summaryKind: CompileSummaryKind | null;
   type: CompileTypeMetadata;
 }
 
@@ -137,7 +138,7 @@ export function tokenReference(token: CompileTokenMetadata) {
 
 export interface CompileTokenMetadata {
   value?: any;
-  identifier?: CompileIdentifierMetadata|CompileTypeMetadata;
+  identifier?: CompileIdentifierMetadata | CompileTypeMetadata;
 }
 
 export interface CompileInjectableMetadata {
@@ -175,12 +176,14 @@ export interface CompileQueryMetadata {
  * Metadata about a stylesheet
  */
 export class CompileStylesheetMetadata {
-  moduleUrl: string|null;
+  moduleUrl: string | null;
   styles: string[];
   styleUrls: string[];
-  constructor(
-      {moduleUrl, styles, styleUrls}:
-          {moduleUrl?: string, styles?: string[], styleUrls?: string[]} = {}) {
+  constructor({
+    moduleUrl,
+    styles,
+    styleUrls,
+  }: {moduleUrl?: string; styles?: string[]; styleUrls?: string[]} = {}) {
     this.moduleUrl = moduleUrl || null;
     this.styles = _normalizeArray(styles);
     this.styleUrls = _normalizeArray(styleUrls);
@@ -192,26 +195,26 @@ export class CompileStylesheetMetadata {
  */
 export interface CompileTemplateSummary {
   ngContentSelectors: string[];
-  encapsulation: ViewEncapsulation|null;
+  encapsulation: ViewEncapsulation | null;
   styles: string[];
-  animations: any[]|null;
+  animations: any[] | null;
 }
 
 /**
  * Metadata regarding compilation of a template.
  */
 export class CompileTemplateMetadata {
-  encapsulation: ViewEncapsulation|null;
-  template: string|null;
-  templateUrl: string|null;
-  htmlAst: HtmlParseTreeResult|null;
+  encapsulation: ViewEncapsulation | null;
+  template: string | null;
+  templateUrl: string | null;
+  htmlAst: HtmlParseTreeResult | null;
   isInline: boolean;
   styles: string[];
   styleUrls: string[];
   externalStylesheets: CompileStylesheetMetadata[];
   animations: any[];
   ngContentSelectors: string[];
-  interpolation: [string, string]|null;
+  interpolation: [string, string] | null;
   preserveWhitespaces: boolean;
   constructor({
     encapsulation,
@@ -225,20 +228,20 @@ export class CompileTemplateMetadata {
     ngContentSelectors,
     interpolation,
     isInline,
-    preserveWhitespaces
+    preserveWhitespaces,
   }: {
-    encapsulation: ViewEncapsulation|null,
-    template: string|null,
-    templateUrl: string|null,
-    htmlAst: HtmlParseTreeResult|null,
-    styles: string[],
-    styleUrls: string[],
-    externalStylesheets: CompileStylesheetMetadata[],
-    ngContentSelectors: string[],
-    animations: any[],
-    interpolation: [string, string]|null,
-    isInline: boolean,
-    preserveWhitespaces: boolean
+    encapsulation: ViewEncapsulation | null;
+    template: string | null;
+    templateUrl: string | null;
+    htmlAst: HtmlParseTreeResult | null;
+    styles: string[];
+    styleUrls: string[];
+    externalStylesheets: CompileStylesheetMetadata[];
+    ngContentSelectors: string[];
+    animations: any[];
+    interpolation: [string, string] | null;
+    isInline: boolean;
+    preserveWhitespaces: boolean;
   }) {
     this.encapsulation = encapsulation;
     this.template = template;
@@ -262,14 +265,14 @@ export class CompileTemplateMetadata {
       ngContentSelectors: this.ngContentSelectors,
       encapsulation: this.encapsulation,
       styles: this.styles,
-      animations: this.animations
+      animations: this.animations,
     };
   }
 }
 
 export interface CompileEntryComponentMetadata {
   componentType: any;
-  componentFactory: StaticSymbol|object;
+  componentFactory: StaticSymbol | object;
 }
 
 // Note: This should only use interfaces as nested data types
@@ -277,8 +280,8 @@ export interface CompileEntryComponentMetadata {
 export interface CompileDirectiveSummary extends CompileTypeSummary {
   type: CompileTypeMetadata;
   isComponent: boolean;
-  selector: string|null;
-  exportAs: string|null;
+  selector: string | null;
+  exportAs: string | null;
   inputs: {[key: string]: string};
   outputs: {[key: string]: string};
   hostListeners: {[key: string]: string};
@@ -290,11 +293,11 @@ export interface CompileDirectiveSummary extends CompileTypeSummary {
   guards: {[key: string]: any};
   viewQueries: CompileQueryMetadata[];
   entryComponents: CompileEntryComponentMetadata[];
-  changeDetection: ChangeDetectionStrategy|null;
-  template: CompileTemplateSummary|null;
-  componentViewType: StaticSymbol|ProxyClass|null;
-  rendererType: StaticSymbol|object|null;
-  componentFactory: StaticSymbol|object|null;
+  changeDetection: ChangeDetectionStrategy | null;
+  template: CompileTemplateSummary | null;
+  componentViewType: StaticSymbol | ProxyClass | null;
+  rendererType: StaticSymbol | object | null;
+  componentFactory: StaticSymbol | object | null;
 }
 
 /**
@@ -320,33 +323,33 @@ export class CompileDirectiveMetadata {
     template,
     componentViewType,
     rendererType,
-    componentFactory
+    componentFactory,
   }: {
-    isHost: boolean,
-    type: CompileTypeMetadata,
-    isComponent: boolean,
-    selector: string|null,
-    exportAs: string|null,
-    changeDetection: ChangeDetectionStrategy|null,
-    inputs: string[],
-    outputs: string[],
-    host: {[key: string]: string},
-    providers: CompileProviderMetadata[],
-    viewProviders: CompileProviderMetadata[],
-    queries: CompileQueryMetadata[],
+    isHost: boolean;
+    type: CompileTypeMetadata;
+    isComponent: boolean;
+    selector: string | null;
+    exportAs: string | null;
+    changeDetection: ChangeDetectionStrategy | null;
+    inputs: string[];
+    outputs: string[];
+    host: {[key: string]: string};
+    providers: CompileProviderMetadata[];
+    viewProviders: CompileProviderMetadata[];
+    queries: CompileQueryMetadata[];
     guards: {[key: string]: any};
-    viewQueries: CompileQueryMetadata[],
-    entryComponents: CompileEntryComponentMetadata[],
-    template: CompileTemplateMetadata,
-    componentViewType: StaticSymbol|ProxyClass|null,
-    rendererType: StaticSymbol|object|null,
-    componentFactory: StaticSymbol|object|null,
+    viewQueries: CompileQueryMetadata[];
+    entryComponents: CompileEntryComponentMetadata[];
+    template: CompileTemplateMetadata;
+    componentViewType: StaticSymbol | ProxyClass | null;
+    rendererType: StaticSymbol | object | null;
+    componentFactory: StaticSymbol | object | null;
   }): CompileDirectiveMetadata {
     const hostListeners: {[key: string]: string} = {};
     const hostProperties: {[key: string]: string} = {};
     const hostAttributes: {[key: string]: string} = {};
     if (host != null) {
-      Object.keys(host).forEach(key => {
+      Object.keys(host).forEach((key) => {
         const value = host[key];
         const matches = key.match(HOST_REG_EXP);
         if (matches === null) {
@@ -404,9 +407,9 @@ export class CompileDirectiveMetadata {
   isHost: boolean;
   type: CompileTypeMetadata;
   isComponent: boolean;
-  selector: string|null;
-  exportAs: string|null;
-  changeDetection: ChangeDetectionStrategy|null;
+  selector: string | null;
+  exportAs: string | null;
+  changeDetection: ChangeDetectionStrategy | null;
   inputs: {[key: string]: string};
   outputs: {[key: string]: string};
   hostListeners: {[key: string]: string};
@@ -419,11 +422,11 @@ export class CompileDirectiveMetadata {
   viewQueries: CompileQueryMetadata[];
   entryComponents: CompileEntryComponentMetadata[];
 
-  template: CompileTemplateMetadata|null;
+  template: CompileTemplateMetadata | null;
 
-  componentViewType: StaticSymbol|ProxyClass|null;
-  rendererType: StaticSymbol|object|null;
-  componentFactory: StaticSymbol|object|null;
+  componentViewType: StaticSymbol | ProxyClass | null;
+  rendererType: StaticSymbol | object | null;
+  componentFactory: StaticSymbol | object | null;
 
   constructor({
     isHost,
@@ -446,29 +449,29 @@ export class CompileDirectiveMetadata {
     template,
     componentViewType,
     rendererType,
-    componentFactory
+    componentFactory,
   }: {
-    isHost: boolean,
-    type: CompileTypeMetadata,
-    isComponent: boolean,
-    selector: string|null,
-    exportAs: string|null,
-    changeDetection: ChangeDetectionStrategy|null,
-    inputs: {[key: string]: string},
-    outputs: {[key: string]: string},
-    hostListeners: {[key: string]: string},
-    hostProperties: {[key: string]: string},
-    hostAttributes: {[key: string]: string},
-    providers: CompileProviderMetadata[],
-    viewProviders: CompileProviderMetadata[],
-    queries: CompileQueryMetadata[],
-    guards: {[key: string]: any},
-    viewQueries: CompileQueryMetadata[],
-    entryComponents: CompileEntryComponentMetadata[],
-    template: CompileTemplateMetadata|null,
-    componentViewType: StaticSymbol|ProxyClass|null,
-    rendererType: StaticSymbol|object|null,
-    componentFactory: StaticSymbol|object|null,
+    isHost: boolean;
+    type: CompileTypeMetadata;
+    isComponent: boolean;
+    selector: string | null;
+    exportAs: string | null;
+    changeDetection: ChangeDetectionStrategy | null;
+    inputs: {[key: string]: string};
+    outputs: {[key: string]: string};
+    hostListeners: {[key: string]: string};
+    hostProperties: {[key: string]: string};
+    hostAttributes: {[key: string]: string};
+    providers: CompileProviderMetadata[];
+    viewProviders: CompileProviderMetadata[];
+    queries: CompileQueryMetadata[];
+    guards: {[key: string]: any};
+    viewQueries: CompileQueryMetadata[];
+    entryComponents: CompileEntryComponentMetadata[];
+    template: CompileTemplateMetadata | null;
+    componentViewType: StaticSymbol | ProxyClass | null;
+    rendererType: StaticSymbol | object | null;
+    componentFactory: StaticSymbol | object | null;
   }) {
     this.isHost = !!isHost;
     this.type = type;
@@ -516,7 +519,7 @@ export class CompileDirectiveMetadata {
       template: this.template && this.template.toSummary(),
       componentViewType: this.componentViewType,
       rendererType: this.rendererType,
-      componentFactory: this.componentFactory
+      componentFactory: this.componentFactory,
     };
   }
 }
@@ -532,11 +535,7 @@ export class CompilePipeMetadata {
   name: string;
   pure: boolean;
 
-  constructor({type, name, pure}: {
-    type: CompileTypeMetadata,
-    name: string,
-    pure: boolean,
-  }) {
+  constructor({type, name, pure}: {type: CompileTypeMetadata; name: string; pure: boolean}) {
     this.type = type;
     this.name = name;
     this.pure = !!pure;
@@ -547,7 +546,7 @@ export class CompilePipeMetadata {
       summaryKind: CompileSummaryKind.Pipe,
       type: this.type,
       name: this.name,
-      pure: this.pure
+      pure: this.pure,
     };
   }
 }
@@ -565,7 +564,7 @@ export interface CompileNgModuleSummary extends CompileTypeSummary {
   // Note: This is transitive.
   entryComponents: CompileEntryComponentMetadata[];
   // Note: This is transitive.
-  providers: {provider: CompileProviderMetadata, module: CompileIdentifierMetadata}[];
+  providers: {provider: CompileProviderMetadata; module: CompileIdentifierMetadata}[];
   // Note: This is transitive.
   modules: CompileTypeMetadata[];
 }
@@ -596,7 +595,7 @@ export class CompileNgModuleMetadata {
   importedModules: CompileNgModuleSummary[];
   exportedModules: CompileNgModuleSummary[];
   schemas: SchemaMetadata[];
-  id: string|null;
+  id: string | null;
 
   transitiveModule: TransitiveCompileNgModuleMetadata;
 
@@ -613,21 +612,21 @@ export class CompileNgModuleMetadata {
     exportedModules,
     schemas,
     transitiveModule,
-    id
+    id,
   }: {
-    type: CompileTypeMetadata,
-    providers: CompileProviderMetadata[],
-    declaredDirectives: CompileIdentifierMetadata[],
-    exportedDirectives: CompileIdentifierMetadata[],
-    declaredPipes: CompileIdentifierMetadata[],
-    exportedPipes: CompileIdentifierMetadata[],
-    entryComponents: CompileEntryComponentMetadata[],
-    bootstrapComponents: CompileIdentifierMetadata[],
-    importedModules: CompileNgModuleSummary[],
-    exportedModules: CompileNgModuleSummary[],
-    transitiveModule: TransitiveCompileNgModuleMetadata,
-    schemas: SchemaMetadata[],
-    id: string|null
+    type: CompileTypeMetadata;
+    providers: CompileProviderMetadata[];
+    declaredDirectives: CompileIdentifierMetadata[];
+    exportedDirectives: CompileIdentifierMetadata[];
+    declaredPipes: CompileIdentifierMetadata[];
+    exportedPipes: CompileIdentifierMetadata[];
+    entryComponents: CompileEntryComponentMetadata[];
+    bootstrapComponents: CompileIdentifierMetadata[];
+    importedModules: CompileNgModuleSummary[];
+    exportedModules: CompileNgModuleSummary[];
+    transitiveModule: TransitiveCompileNgModuleMetadata;
+    schemas: SchemaMetadata[];
+    id: string | null;
   }) {
     this.type = type || null;
     this.declaredDirectives = _normalizeArray(declaredDirectives);
@@ -653,7 +652,7 @@ export class CompileNgModuleMetadata {
       providers: module.providers,
       modules: module.modules,
       exportedDirectives: module.exportedDirectives,
-      exportedPipes: module.exportedPipes
+      exportedPipes: module.exportedPipes,
     };
   }
 }
@@ -672,7 +671,7 @@ export class TransitiveCompileNgModuleMetadata {
   entryComponentsSet = new Set<any>();
   entryComponents: CompileEntryComponentMetadata[] = [];
 
-  providers: {provider: CompileProviderMetadata, module: CompileIdentifierMetadata}[] = [];
+  providers: {provider: CompileProviderMetadata; module: CompileIdentifierMetadata}[] = [];
 
   addProvider(provider: CompileProviderMetadata, module: CompileIdentifierMetadata) {
     this.providers.push({provider: provider, module: module});
@@ -716,27 +715,37 @@ export class TransitiveCompileNgModuleMetadata {
   }
 }
 
-function _normalizeArray(obj: any[]|undefined|null): any[] {
+function _normalizeArray(obj: any[] | undefined | null): any[] {
   return obj || [];
 }
 
 export class ProviderMeta {
   token: any;
-  useClass: Type|null;
+  useClass: Type | null;
   useValue: any;
   useExisting: any;
-  useFactory: Function|null;
-  dependencies: Object[]|null;
+  useFactory: Function | null;
+  dependencies: Object[] | null;
   multi: boolean;
 
-  constructor(token: any, {useClass, useValue, useExisting, useFactory, deps, multi}: {
-    useClass?: Type,
-    useValue?: any,
-    useExisting?: any,
-    useFactory?: Function|null,
-    deps?: Object[]|null,
-    multi?: boolean
-  }) {
+  constructor(
+    token: any,
+    {
+      useClass,
+      useValue,
+      useExisting,
+      useFactory,
+      deps,
+      multi,
+    }: {
+      useClass?: Type;
+      useValue?: any;
+      useExisting?: any;
+      useFactory?: Function | null;
+      deps?: Object[] | null;
+      multi?: boolean;
+    }
+  ) {
     this.token = token;
     this.useClass = useClass || null;
     this.useValue = useValue;
@@ -747,8 +756,8 @@ export class ProviderMeta {
   }
 }
 
-export function flatten<T>(list: Array<T|T[]>): T[] {
-  return list.reduce((flat: any[], item: T|T[]): T[] => {
+export function flatten<T>(list: Array<T | T[]>): T[] {
+  return list.reduce((flat: any[], item: T | T[]): T[] => {
     const flatItem = Array.isArray(item) ? flatten(item) : item;
     return (<T[]>flat).concat(flatItem);
   }, []);
@@ -761,8 +770,10 @@ function jitSourceUrl(url: string) {
 }
 
 export function templateSourceUrl(
-    ngModuleType: CompileIdentifierMetadata, compMeta: {type: CompileIdentifierMetadata},
-    templateMeta: {isInline: boolean, templateUrl: string|null}) {
+  ngModuleType: CompileIdentifierMetadata,
+  compMeta: {type: CompileIdentifierMetadata},
+  templateMeta: {isInline: boolean; templateUrl: string | null}
+) {
   let url: string;
   if (templateMeta.isInline) {
     if (compMeta.type.reference instanceof StaticSymbol) {
@@ -789,7 +800,10 @@ export function ngModuleJitUrl(moduleMeta: CompileNgModuleMetadata): string {
 }
 
 export function templateJitUrl(
-    ngModuleType: CompileIdentifierMetadata, compMeta: CompileDirectiveMetadata): string {
+  ngModuleType: CompileIdentifierMetadata,
+  compMeta: CompileDirectiveMetadata
+): string {
   return jitSourceUrl(
-      `${identifierName(ngModuleType)}/${identifierName(compMeta.type)}.ngfactory.js`);
+    `${identifierName(ngModuleType)}/${identifierName(compMeta.type)}.ngfactory.js`
+  );
 }

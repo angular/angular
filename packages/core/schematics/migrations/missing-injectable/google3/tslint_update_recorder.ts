@@ -20,16 +20,30 @@ export class TslintUpdateRecorder implements UpdateRecorder {
     // Adding a decorator should be the last replacement. Replacements/rule failures
     // are handled in reverse and in case a decorator and import are inserted at
     // the start of the file, the class decorator should come after the import.
-    this.failures.unshift(new RuleFailure(
-        this.sourceFile, node.getStart(), 0, `Class needs to be decorated with ` +
-            `"${decoratorText}" because it has been provided by "${className}".`,
-        this.ruleName, Replacement.appendText(node.getStart(), `${decoratorText}\n`)));
+    this.failures.unshift(
+      new RuleFailure(
+        this.sourceFile,
+        node.getStart(),
+        0,
+        `Class needs to be decorated with ` +
+          `"${decoratorText}" because it has been provided by "${className}".`,
+        this.ruleName,
+        Replacement.appendText(node.getStart(), `${decoratorText}\n`)
+      )
+    );
   }
 
   addNewImport(start: number, importText: string) {
-    this.failures.push(new RuleFailure(
-        this.sourceFile, start, 0, `Source file needs to have import: "${importText}"`,
-        this.ruleName, Replacement.appendText(start, importText)));
+    this.failures.push(
+      new RuleFailure(
+        this.sourceFile,
+        start,
+        0,
+        `Source file needs to have import: "${importText}"`,
+        this.ruleName,
+        Replacement.appendText(start, importText)
+      )
+    );
   }
 
   updateExistingImport(namedBindings: ts.NamedImports, newNamedBindings: string): void {
@@ -37,9 +51,16 @@ export class TslintUpdateRecorder implements UpdateRecorder {
       Replacement.deleteText(namedBindings.getStart(), namedBindings.getWidth()),
       Replacement.appendText(namedBindings.getStart(), newNamedBindings),
     ];
-    this.failures.push(new RuleFailure(
-        this.sourceFile, namedBindings.getStart(), namedBindings.getEnd(),
-        `Import needs to be updated to import symbols: "${newNamedBindings}"`, this.ruleName, fix));
+    this.failures.push(
+      new RuleFailure(
+        this.sourceFile,
+        namedBindings.getStart(),
+        namedBindings.getEnd(),
+        `Import needs to be updated to import symbols: "${newNamedBindings}"`,
+        this.ruleName,
+        fix
+      )
+    );
   }
 
   replaceDecorator(decorator: ts.Node, newText: string, className: string): void {
@@ -47,19 +68,30 @@ export class TslintUpdateRecorder implements UpdateRecorder {
       Replacement.deleteText(decorator.getStart(), decorator.getWidth()),
       Replacement.appendText(decorator.getStart(), newText),
     ];
-    this.failures.push(new RuleFailure(
-        this.sourceFile, decorator.getStart(), decorator.getEnd(),
+    this.failures.push(
+      new RuleFailure(
+        this.sourceFile,
+        decorator.getStart(),
+        decorator.getEnd(),
         `Decorator needs to be replaced with "${newText}" because it has been provided ` +
-            `by "${className}"`,
-        this.ruleName, fix));
+          `by "${className}"`,
+        this.ruleName,
+        fix
+      )
+    );
   }
 
-
   updateObjectLiteral(node: ts.ObjectLiteralExpression, newText: string): void {
-    this.failures.push(new RuleFailure(
-        this.sourceFile, node.getStart(), node.getEnd(),
-        `Object literal needs to be updated to: ${newText}`, this.ruleName,
-        Replacement.replaceFromTo(node.getStart(), node.getEnd(), newText)));
+    this.failures.push(
+      new RuleFailure(
+        this.sourceFile,
+        node.getStart(),
+        node.getEnd(),
+        `Object literal needs to be updated to: ${newText}`,
+        this.ruleName,
+        Replacement.replaceFromTo(node.getStart(), node.getEnd(), newText)
+      )
+    );
   }
 
   commitUpdate() {}

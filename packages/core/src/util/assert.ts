@@ -19,7 +19,10 @@ export function assertNumber(actual: any, msg: string): asserts actual is number
 }
 
 export function assertNumberInRange(
-    actual: any, minInclusive: number, maxInclusive: number): asserts actual is number {
+  actual: any,
+  minInclusive: number,
+  maxInclusive: number
+): asserts actual is number {
   assertNumber(actual, 'Expected a number');
   assertLessThanOrEqual(actual, maxInclusive, 'Expected number to be less than or equal to');
   assertGreaterThanOrEqual(actual, minInclusive, 'Expected number to be greater than or equal to');
@@ -74,7 +77,10 @@ export function assertGreaterThan<T>(actual: T, expected: T, msg: string): asser
 }
 
 export function assertGreaterThanOrEqual<T>(
-    actual: T, expected: T, msg: string): asserts actual is T {
+  actual: T,
+  expected: T,
+  msg: string
+): asserts actual is T {
   if (!(actual >= expected)) {
     throwError(msg, actual, expected, '>=');
   }
@@ -96,19 +102,20 @@ export function throwError(msg: string): never;
 export function throwError(msg: string, actual: any, expected: any, comparison: string): never;
 export function throwError(msg: string, actual?: any, expected?: any, comparison?: string): never {
   throw new Error(
-      `ASSERTION ERROR: ${msg}` +
-      (comparison == null ? '' : ` [Expected=> ${expected} ${comparison} ${actual} <=Actual]`));
+    `ASSERTION ERROR: ${msg}` +
+      (comparison == null ? '' : ` [Expected=> ${expected} ${comparison} ${actual} <=Actual]`)
+  );
 }
 
 export function assertDomNode(node: any): asserts node is Node {
   // If we're in a worker, `Node` will not be defined.
   assertEqual(
-      (typeof Node !== 'undefined' && node instanceof Node) ||
-          (typeof node === 'object' && node != null &&
-           node.constructor.name === 'WebWorkerRenderNode'),
-      true, `The provided value must be an instance of a DOM Node but got ${stringify(node)}`);
+    (typeof Node !== 'undefined' && node instanceof Node) ||
+      (typeof node === 'object' && node != null && node.constructor.name === 'WebWorkerRenderNode'),
+    true,
+    `The provided value must be an instance of a DOM Node but got ${stringify(node)}`
+  );
 }
-
 
 export function assertDataInRange(arr: any[], index: number) {
   const maxLen = arr ? arr.length : 0;

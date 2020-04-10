@@ -5,14 +5,25 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Rule, SchematicContext, SchematicsException, Tree, chain, noop} from '@angular-devkit/schematics';
+
+import {
+  Rule,
+  SchematicContext,
+  SchematicsException,
+  Tree,
+  chain,
+  noop,
+} from '@angular-devkit/schematics';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
-import {NodeDependencyType, addPackageJsonDependency} from '@schematics/angular/utility/dependencies';
+import {
+  NodeDependencyType,
+  addPackageJsonDependency,
+} from '@schematics/angular/utility/dependencies';
 import {getWorkspace} from '@schematics/angular/utility/workspace';
 
 import {Schema} from './schema';
 
-export default function(options: Schema): Rule {
+export default function (options: Schema): Rule {
   return chain([
     options && options.skipPackageJson ? noop() : addPolyfillDependency(),
     addPolyfill(options),
@@ -36,7 +47,7 @@ function addPolyfillDependency(): Rule {
 
 /** Adds the document-register-element.js to the polyfills file. */
 function addPolyfill(options: Schema): Rule {
-  return async(host: Tree, context: SchematicContext) => {
+  return async (host: Tree, context: SchematicContext) => {
     const projectName = options.project;
 
     if (!projectName) {
@@ -52,7 +63,8 @@ function addPolyfill(options: Schema): Rule {
 
     if (project.extensions['projectType'] !== 'application') {
       throw new SchematicsException(
-          `@angular/elements requires a project type of "application" but ${projectName} isn't.`);
+        `@angular/elements requires a project type of "application" but ${projectName} isn't.`
+      );
     }
 
     const buildTarget = project.targets.get('build');

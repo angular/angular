@@ -15,8 +15,7 @@ describe('attribute creation', () => {
     @Component({
       template: `<div id="test" title="Hello"></div>`,
     })
-    class Comp {
-    }
+    class Comp {}
 
     TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
@@ -30,13 +29,11 @@ describe('attribute creation', () => {
     @Component({
       template: `<div id="test" xlink:href="bar" title="Hello"></div>`,
     })
-    class Comp {
-    }
+    class Comp {}
 
     TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
-
 
     const div = fixture.debugElement.query(By.css('div')).nativeElement;
     const attrs = div.attributes;
@@ -115,11 +112,11 @@ describe('attribute binding', () => {
 
   it('should be able to bind attributes with interpolations', () => {
     @Component({
-      template: `
-        <button
-          attr.id="my-{{id}}-button"
-          [attr.title]="title"
-          attr.tabindex="{{1 + 3 + 7}}"></button>`,
+      template: ` <button
+        attr.id="my-{{ id }}-button"
+        [attr.title]="title"
+        attr.tabindex="{{ 1 + 3 + 7 }}"
+      ></button>`,
     })
     class Comp {
       title = 'hello';
@@ -137,16 +134,11 @@ describe('attribute binding', () => {
     expect(button.getAttribute('title')).toBe('hello');
   });
 
-
   it('should be able to bind attributes both to parent and child nodes', () => {
     @Component({
       template: `
-        <button
-          attr.id="my-{{id}}-button"
-          [attr.title]="title"
-          attr.tabindex="{{1 + 3 + 7}}">
-
-          <span attr.title="span-{{title}}" id="custom-span" [attr.tabindex]="-1"></span>
+        <button attr.id="my-{{ id }}-button" [attr.title]="title" attr.tabindex="{{ 1 + 3 + 7 }}">
+          <span attr.title="span-{{ title }}" id="custom-span" [attr.tabindex]="-1"></span>
         </button>
       `,
     })
@@ -176,7 +168,7 @@ describe('attribute binding', () => {
       template: `<a [attr.href]="badUrl"></a>`,
     })
     class Comp {
-      badUrl: string|SafeUrl = 'javascript:true';
+      badUrl: string | SafeUrl = 'javascript:true';
     }
 
     TestBed.configureTestingModule({declarations: [Comp]});
@@ -188,8 +180,9 @@ describe('attribute binding', () => {
     expect(a.href.indexOf('unsafe:')).toBe(0);
 
     const domSanitizer: DomSanitizer = TestBed.inject(DomSanitizer);
-    fixture.componentInstance.badUrl =
-        domSanitizer.bypassSecurityTrustUrl('javascript:alert("this is fine")');
+    fixture.componentInstance.badUrl = domSanitizer.bypassSecurityTrustUrl(
+      'javascript:alert("this is fine")'
+    );
     fixture.detectChanges();
 
     // should not start with `unsafe:`.
@@ -201,17 +194,19 @@ describe('attribute interpolation', () => {
   it('should handle all varieties of interpolation', () => {
     @Component({
       template: `
-        <div attr.title="a{{a}}b{{b}}c{{c}}d{{d}}e{{e}}f{{f}}g{{g}}h{{h}}i{{i}}j"></div>
-        <div attr.title="a{{a}}b{{b}}c{{c}}d{{d}}e{{e}}f{{f}}g{{g}}h{{h}}i"></div>
-        <div attr.title="a{{a}}b{{b}}c{{c}}d{{d}}e{{e}}f{{f}}g{{g}}h"></div>
-        <div attr.title="a{{a}}b{{b}}c{{c}}d{{d}}e{{e}}f{{f}}g"></div>
-        <div attr.title="a{{a}}b{{b}}c{{c}}d{{d}}e{{e}}f"></div>
-        <div attr.title="a{{a}}b{{b}}c{{c}}d{{d}}e"></div>
-        <div attr.title="a{{a}}b{{b}}c{{c}}d"></div>
-        <div attr.title="a{{a}}b{{b}}c"></div>
-        <div attr.title="a{{a}}b"></div>
-        <div attr.title="{{a}}"></div>
-      `
+        <div
+          attr.title="a{{ a }}b{{ b }}c{{ c }}d{{ d }}e{{ e }}f{{ f }}g{{ g }}h{{ h }}i{{ i }}j"
+        ></div>
+        <div attr.title="a{{ a }}b{{ b }}c{{ c }}d{{ d }}e{{ e }}f{{ f }}g{{ g }}h{{ h }}i"></div>
+        <div attr.title="a{{ a }}b{{ b }}c{{ c }}d{{ d }}e{{ e }}f{{ f }}g{{ g }}h"></div>
+        <div attr.title="a{{ a }}b{{ b }}c{{ c }}d{{ d }}e{{ e }}f{{ f }}g"></div>
+        <div attr.title="a{{ a }}b{{ b }}c{{ c }}d{{ d }}e{{ e }}f"></div>
+        <div attr.title="a{{ a }}b{{ b }}c{{ c }}d{{ d }}e"></div>
+        <div attr.title="a{{ a }}b{{ b }}c{{ c }}d"></div>
+        <div attr.title="a{{ a }}b{{ b }}c"></div>
+        <div attr.title="a{{ a }}b"></div>
+        <div attr.title="{{ a }}"></div>
+      `,
     })
     class App {
       a = 1;
@@ -233,7 +228,7 @@ describe('attribute interpolation', () => {
 
     const divs = fixture.debugElement.queryAll(By.css('div[title]'));
 
-    expect(divs.map(el => el.nativeElement.getAttribute('title'))).toEqual([
+    expect(divs.map((el) => el.nativeElement.getAttribute('title'))).toEqual([
       'a1b2c3d4e5f6g7h8i9j',
       'a1b2c3d4e5f6g7h8i',
       'a1b2c3d4e5f6g7h',

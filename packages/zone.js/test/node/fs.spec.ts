@@ -6,7 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {closeSync, exists, fstatSync, openSync, read, unlink, unlinkSync, unwatchFile, watch, watchFile, write, writeFile} from 'fs';
+import {
+  closeSync,
+  exists,
+  fstatSync,
+  openSync,
+  read,
+  unlink,
+  unlinkSync,
+  unwatchFile,
+  watch,
+  watchFile,
+  write,
+  writeFile,
+} from 'fs';
 import * as util from 'util';
 
 describe('nodejs file system', () => {
@@ -24,8 +37,14 @@ describe('nodejs file system', () => {
     it('has patched exists as macroTask', (done) => {
       const zoneASpec = {
         name: 'A',
-        onScheduleTask: (delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
-                            Task => { return delegate.scheduleTask(targetZone, task); }
+        onScheduleTask: (
+          delegate: ZoneDelegate,
+          currentZone: Zone,
+          targetZone: Zone,
+          task: Task
+        ): Task => {
+          return delegate.scheduleTask(targetZone, task);
+        },
       };
       const zoneA = Zone.current.fork(zoneASpec);
       spyOn(zoneASpec, 'onScheduleTask').and.callThrough();
@@ -41,8 +60,14 @@ describe('nodejs file system', () => {
   describe('watcher related methods test', () => {
     const zoneASpec = {
       name: 'A',
-      onScheduleTask: (delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
-                          Task => { return delegate.scheduleTask(targetZone, task); }
+      onScheduleTask: (
+        delegate: ZoneDelegate,
+        currentZone: Zone,
+        targetZone: Zone,
+        task: Task
+      ): Task => {
+        return delegate.scheduleTask(targetZone, task);
+      },
     };
 
     it('fs.watch has been patched as eventTask', (done) => {
@@ -56,7 +81,9 @@ describe('nodejs file system', () => {
             expect(zoneASpec.onScheduleTask).toHaveBeenCalled();
             expect(Zone.current.name).toBe('A');
             watcher.close();
-            unlink('testfile', () => { done(); });
+            unlink('testfile', () => {
+              done();
+            });
           });
           writeFile('testfile', 'test new content', () => {});
         });
@@ -74,7 +101,9 @@ describe('nodejs file system', () => {
             expect(zoneASpec.onScheduleTask).toHaveBeenCalled();
             expect(Zone.current.name).toBe('A');
             unwatchFile('testfile');
-            unlink('testfile', () => { done(); });
+            unlink('testfile', () => {
+              done();
+            });
           });
           writeFile('testfile', 'test new content', () => {});
         });
@@ -86,13 +115,15 @@ describe('nodejs file system', () => {
 describe('util.promisify', () => {
   it('fs.exists should work with util.promisify', (done: DoneFn) => {
     const promisifyExists = util.promisify(exists);
-    promisifyExists(__filename)
-        .then(
-            r => {
-              expect(r).toBe(true);
-              done();
-            },
-            err => { fail(`should not be here with error: ${err}`); });
+    promisifyExists(__filename).then(
+      (r) => {
+        expect(r).toBe(true);
+        done();
+      },
+      (err) => {
+        fail(`should not be here with error: ${err}`);
+      }
+    );
   });
 
   it('fs.read should work with util.promisify', (done: DoneFn) => {
@@ -104,17 +135,17 @@ describe('util.promisify', () => {
     const buffer = new Buffer(bufferSize);
     let bytesRead = 0;
     // fd, buffer, offset, length, position, callback
-    promisifyRead(fd, buffer, bytesRead, chunkSize, bytesRead)
-        .then(
-            (value) => {
-              expect(value.bytesRead).toBe(chunkSize);
-              closeSync(fd);
-              done();
-            },
-            err => {
-              closeSync(fd);
-              fail(`should not be here with error: ${error}.`);
-            });
+    promisifyRead(fd, buffer, bytesRead, chunkSize, bytesRead).then(
+      (value) => {
+        expect(value.bytesRead).toBe(chunkSize);
+        closeSync(fd);
+        done();
+      },
+      (err) => {
+        closeSync(fd);
+        fail(`should not be here with error: ${error}.`);
+      }
+    );
   });
 
   it('fs.write should work with util.promisify', (done: DoneFn) => {
@@ -128,18 +159,18 @@ describe('util.promisify', () => {
       buffer[i] = 0;
     }
     // fd, buffer, offset, length, position, callback
-    promisifyWrite(fd, buffer, 0, chunkSize, 0)
-        .then(
-            (value) => {
-              expect(value.bytesWritten).toBe(chunkSize);
-              closeSync(fd);
-              unlinkSync(dest);
-              done();
-            },
-            err => {
-              closeSync(fd);
-              unlinkSync(dest);
-              fail(`should not be here with error: ${error}.`);
-            });
+    promisifyWrite(fd, buffer, 0, chunkSize, 0).then(
+      (value) => {
+        expect(value.bytesWritten).toBe(chunkSize);
+        closeSync(fd);
+        unlinkSync(dest);
+        done();
+      },
+      (err) => {
+        closeSync(fd);
+        unlinkSync(dest);
+        fail(`should not be here with error: ${error}.`);
+      }
+    );
   });
 });

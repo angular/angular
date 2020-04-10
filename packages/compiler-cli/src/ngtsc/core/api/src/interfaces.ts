@@ -34,7 +34,7 @@ export interface ResourceHost {
    * Converts a file path for a resource that is used in a source file or another resource
    * into a filepath.
    */
-  resourceNameToFileName(resourceName: string, containingFilePath: string): string|null;
+  resourceNameToFileName(resourceName: string, containingFilePath: string): string | null;
 
   /**
    * Load a referenced resource either statically or asynchronously. If the host returns a
@@ -42,24 +42,26 @@ export interface ResourceHost {
    * `loadNgStructureAsync()`. Returning  `Promise<string>` outside `loadNgStructureAsync()` will
    * cause a diagnostics diagnostic error or an exception to be thrown.
    */
-  readResource(fileName: string): Promise<string>|string;
+  readResource(fileName: string): Promise<string> | string;
 
   /**
    * Get the absolute paths to the changed files that triggered the current compilation
    * or `undefined` if this is not an incremental build.
    */
-  getModifiedResourceFiles?(): Set<string>|undefined;
+  getModifiedResourceFiles?(): Set<string> | undefined;
 }
 
 /**
  * A `ts.CompilerHost` interface which supports some number of optional methods in addition to the
  * core interface.
  */
-export interface ExtendedTsCompilerHost extends ts.CompilerHost, Partial<ResourceHost>,
-                                                Partial<UnifiedModulesHost> {}
+export interface ExtendedTsCompilerHost
+  extends ts.CompilerHost,
+    Partial<ResourceHost>,
+    Partial<UnifiedModulesHost> {}
 
 export interface LazyRoute {
   route: string;
-  module: {name: string, filePath: string};
-  referencedModule: {name: string, filePath: string};
+  module: {name: string; filePath: string};
+  referencedModule: {name: string; filePath: string};
 }

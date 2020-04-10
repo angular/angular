@@ -17,9 +17,13 @@ import {EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event
 import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
 
 export class SimpleDomEventsPlugin extends EventManagerPlugin {
-  constructor(doc: any) { super(doc); }
+  constructor(doc: any) {
+    super(doc);
+  }
 
-  supports(eventName: string): boolean { return true; }
+  supports(eventName: string): boolean {
+    return true;
+  }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     let callback: EventListener = handler as EventListener;
@@ -35,10 +39,13 @@ export class SimpleDomEventsPlugin extends EventManagerPlugin {
 export function getRendererFactory2(document: any): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   const eventManager = new EventManager([new SimpleDomEventsPlugin(document)], fakeNgZone);
-  const rendererFactory =
-      new ɵDomRendererFactory2(eventManager, new ɵDomSharedStylesHost(document), 'dummyappid');
+  const rendererFactory = new ɵDomRendererFactory2(
+    eventManager,
+    new ɵDomSharedStylesHost(document),
+    'dummyappid'
+  );
   const origCreateRenderer = rendererFactory.createRenderer;
-  rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
+  rendererFactory.createRenderer = function (element: any, type: RendererType2 | null) {
     const renderer = origCreateRenderer.call(this, element, type);
     renderer.destroyNode = () => {};
     return renderer;
@@ -49,10 +56,14 @@ export function getRendererFactory2(document: any): RendererFactory2 {
 export function getAnimationRendererFactory2(document: any): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   return new ɵAnimationRendererFactory(
-      getRendererFactory2(document),
-      new ɵAnimationEngine(
-          document.body, new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
-      fakeNgZone);
+    getRendererFactory2(document),
+    new ɵAnimationEngine(
+      document.body,
+      new MockAnimationDriver(),
+      new ɵNoopAnimationStyleNormalizer()
+    ),
+    fakeNgZone
+  );
 }
 
 // TODO: code duplicated from ../linker/change_detection_integration_spec.ts, to be removed
@@ -87,7 +98,7 @@ export function patchLoggingRenderer2(rendererFactory: RendererFactory2, log: Re
   }
   (<any>rendererFactory).__patchedForLogging = true;
   const origCreateRenderer = rendererFactory.createRenderer;
-  rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
+  rendererFactory.createRenderer = function (element: any, type: RendererType2 | null) {
     const renderer = origCreateRenderer.call(this, element, type);
     if ((<any>renderer).__patchedForLogging) {
       return renderer;
@@ -95,11 +106,11 @@ export function patchLoggingRenderer2(rendererFactory: RendererFactory2, log: Re
     (<any>renderer).__patchedForLogging = true;
     const origSetProperty = renderer.setProperty;
     const origSetValue = renderer.setValue;
-    renderer.setProperty = function(el: any, name: string, value: any): void {
+    renderer.setProperty = function (el: any, name: string, value: any): void {
       log.setElementProperty(el, name, value);
       origSetProperty.call(renderer, el, name, value);
     };
-    renderer.setValue = function(node: any, value: string): void {
+    renderer.setValue = function (node: any, value: string): void {
       if (isTextNode(node)) {
         log.setText(node, value);
       }

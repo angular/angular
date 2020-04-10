@@ -8,12 +8,18 @@
 
 import * as ts from 'typescript';
 
-import {absoluteFrom as _, FileSystem, getFileSystem, getSourceFileOrError, NgtscCompilerHost, setFileSystem} from '../../file_system';
+import {
+  absoluteFrom as _,
+  FileSystem,
+  getFileSystem,
+  getSourceFileOrError,
+  NgtscCompilerHost,
+  setFileSystem,
+} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {NgCompilerOptions} from '../api';
 import {NgCompiler} from '../src/compiler';
 import {NgCompilerHost} from '../src/host';
-
 
 runInEachFileSystem(() => {
   describe('NgCompiler', () => {
@@ -22,21 +28,27 @@ runInEachFileSystem(() => {
     beforeEach(() => {
       fs = getFileSystem();
       fs.ensureDir(_('/node_modules/@angular/core'));
-      fs.writeFile(_('/node_modules/@angular/core/index.d.ts'), `
+      fs.writeFile(
+        _('/node_modules/@angular/core/index.d.ts'),
+        `
         export declare const Component: any;
-      `);
+      `
+      );
     });
 
     it('should also return template diagnostics when asked for component diagnostics', () => {
       const COMPONENT = _('/cmp.ts');
-      fs.writeFile(COMPONENT, `
+      fs.writeFile(
+        COMPONENT,
+        `
         import {Component} from '@angular/core';
         @Component({
           selector: 'test-cmp',
           templateUrl: './template.html',
         })
         export class Cmp {}
-      `);
+      `
+      );
       fs.writeFile(_('/template.html'), `{{does_not_exist.foo}}`);
 
       const options: NgCompilerOptions = {

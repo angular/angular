@@ -6,21 +6,40 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges} from '@angular/core';
+import {
+  Directive,
+  EventEmitter,
+  forwardRef,
+  Inject,
+  Input,
+  OnChanges,
+  Optional,
+  Output,
+  Self,
+  SimpleChanges,
+} from '@angular/core';
 
 import {FormArray, FormControl, FormGroup} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../../validators';
 import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
 import {ReactiveErrors} from '../reactive_errors';
-import {cleanUpControl, composeAsyncValidators, composeValidators, removeDir, setUpControl, setUpFormContainer, syncPendingControls} from '../shared';
+import {
+  cleanUpControl,
+  composeAsyncValidators,
+  composeValidators,
+  removeDir,
+  setUpControl,
+  setUpFormContainer,
+  syncPendingControls,
+} from '../shared';
 
 import {FormControlName} from './form_control_name';
 import {FormArrayName, FormGroupName} from './form_group_name';
 
 export const formDirectiveProvider: any = {
   provide: ControlContainer,
-  useExisting: forwardRef(() => FormGroupDirective)
+  useExisting: forwardRef(() => FormGroupDirective),
 };
 
 /**
@@ -50,7 +69,7 @@ export const formDirectiveProvider: any = {
   selector: '[formGroup]',
   providers: [formDirectiveProvider],
   host: {'(submit)': 'onSubmit($event)', '(reset)': 'onReset()'},
-  exportAs: 'ngForm'
+  exportAs: 'ngForm',
 })
 export class FormGroupDirective extends ControlContainer implements Form, OnChanges {
   /**
@@ -81,8 +100,9 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   @Output() ngSubmit = new EventEmitter();
 
   constructor(
-      @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
+    @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
+    @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]
+  ) {
     super();
   }
 
@@ -224,7 +244,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @param value The new value for the directive's control.
    */
   updateModel(dir: FormControlName, value: any): void {
-    const ctrl  = <FormControl>this.form.get(dir.path);
+    const ctrl = <FormControl>this.form.get(dir.path);
     ctrl.setValue(value);
   }
 
@@ -261,10 +281,9 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     (this as {submitted: boolean}).submitted = false;
   }
 
-
   /** @internal */
   _updateDomValue() {
-    this.directives.forEach(dir => {
+    this.directives.forEach((dir) => {
       const newCtrl: any = this.form.get(dir.path);
       if (dir.control !== newCtrl) {
         cleanUpControl(dir.control, dir);

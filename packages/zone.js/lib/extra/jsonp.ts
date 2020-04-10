@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 Zone.__load_patch('jsonp', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
-  const noop = function() {};
+  const noop = function () {};
   // because jsonp is not a standard api, there are a lot of
   // implementations, so zone.js just provide a helper util to
   // patch the jsonp send and onSuccess/onError callback
@@ -19,9 +19,9 @@ Zone.__load_patch('jsonp', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
     if (!options || !options.jsonp || !options.sendFuncName) {
       return;
     }
-    const noop = function() {};
+    const noop = function () {};
 
-    [options.successFuncName, options.failedFuncName].forEach(methodName => {
+    [options.successFuncName, options.failedFuncName].forEach((methodName) => {
       if (!methodName) {
         return;
       }
@@ -41,8 +41,8 @@ Zone.__load_patch('jsonp', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
         Object.defineProperty(global, methodName, {
           configurable: true,
           enumerable: true,
-          get: function() {
-            return function(this: unknown) {
+          get: function () {
+            return function (this: unknown) {
               const task = global[api.symbol('jsonpTask')];
               const target = this ? this : global;
               const delegate = global[api.symbol(`jsonp${methodName}callback`)];
@@ -61,17 +61,27 @@ Zone.__load_patch('jsonp', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
               return null;
             };
           },
-          set: function(callback: Function) {
+          set: function (callback: Function) {
             this[api.symbol(`jsonp${methodName}callback`)] = callback;
-          }
+          },
         });
       }
     });
 
     api.patchMethod(
-        options.jsonp, options.sendFuncName, (delegate: Function) => (self: any, args: any[]) => {
-          global[api.symbol('jsonpTask')] = Zone.current.scheduleMacroTask(
-              'jsonp', noop, {}, (task: Task) => { return delegate.apply(self, args); }, noop);
-        });
+      options.jsonp,
+      options.sendFuncName,
+      (delegate: Function) => (self: any, args: any[]) => {
+        global[api.symbol('jsonpTask')] = Zone.current.scheduleMacroTask(
+          'jsonp',
+          noop,
+          {},
+          (task: Task) => {
+            return delegate.apply(self, args);
+          },
+          noop
+        );
+      }
+    );
   };
 });

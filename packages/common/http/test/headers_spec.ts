@@ -10,7 +10,6 @@ import {HttpHeaders} from '@angular/common/http/src/headers';
 
 {
   describe('HttpHeaders', () => {
-
     describe('initialization', () => {
       it('should conform to spec', () => {
         const httpHeaders = {
@@ -129,10 +128,11 @@ import {HttpHeaders} from '@angular/common/http/src/headers';
 
     describe('response header strings', () => {
       it('should be parsed by the constructor', () => {
-        const response = `Date: Fri, 20 Nov 2015 01:45:26 GMT\n` +
-            `Content-Type: application/json; charset=utf-8\n` +
-            `Transfer-Encoding: chunked\n` +
-            `Connection: keep-alive`;
+        const response =
+          `Date: Fri, 20 Nov 2015 01:45:26 GMT\n` +
+          `Content-Type: application/json; charset=utf-8\n` +
+          `Transfer-Encoding: chunked\n` +
+          `Connection: keep-alive`;
         const headers = new HttpHeaders(response);
         expect(headers.get('Date')).toEqual('Fri, 20 Nov 2015 01:45:26 GMT');
         expect(headers.get('Content-Type')).toEqual('application/json; charset=utf-8');

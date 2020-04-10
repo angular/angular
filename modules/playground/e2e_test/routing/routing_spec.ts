@@ -16,7 +16,6 @@ function waitForElement(selector: string) {
 }
 
 describe('routing inbox-app', () => {
-
   afterEach(verifyNoBrowserErrors);
 
   describe('index view', () => {

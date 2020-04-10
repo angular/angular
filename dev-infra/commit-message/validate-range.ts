@@ -5,8 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+import {ValidateCommitMessageOptions, parseCommitMessage, validateCommitMessage} from './validate';
+
 import {exec} from 'shelljs';
-import {parseCommitMessage, validateCommitMessage, ValidateCommitMessageOptions} from './validate';
 
 // Whether the provided commit is a fixup commit.
 const isNonFixup = (m: string) => !parseCommitMessage(m).isFixup;
@@ -26,7 +28,10 @@ export function validateCommitRange(range: string) {
   }
 
   // Separate the commits from a single string into individual commits
-  const commits = result.split(randomValueSeparator).map(l => l.trim()).filter(line => !!line);
+  const commits = result
+    .split(randomValueSeparator)
+    .map((l) => l.trim())
+    .filter((line) => !!line);
 
   console.info(`Examining ${commits.length} commit(s) in the provided range: ${range}`);
 
@@ -35,7 +40,7 @@ export function validateCommitRange(range: string) {
   const allCommitsInRangeValid = commits.every((m, i) => {
     const options: ValidateCommitMessageOptions = {
       disallowSquash: true,
-      nonFixupCommitHeaders: isNonFixup(m) ? undefined : commits.slice(0, i).filter(isNonFixup)
+      nonFixupCommitHeaders: isNonFixup(m) ? undefined : commits.slice(0, i).filter(isNonFixup),
     };
     return validateCommitMessage(m, options);
   });

@@ -16,20 +16,24 @@ import {Folder, MockFileSystemPosix, TestFile} from '../../../src/ngtsc/file_sys
 
 export function loadTestFiles(files: TestFile[]) {
   const fs = getFileSystem();
-  files.forEach(file => {
+  files.forEach((file) => {
     fs.ensureDir(fs.dirname(file.name));
     fs.writeFile(file.name, file.contents);
   });
 }
 
-export function loadStandardTestFiles(
-    {fakeCore = true, rxjs = false}: {fakeCore?: boolean, rxjs?: boolean} = {}): Folder {
+export function loadStandardTestFiles({
+  fakeCore = true,
+  rxjs = false,
+}: {fakeCore?: boolean; rxjs?: boolean} = {}): Folder {
   const tmpFs = new MockFileSystemPosix(true);
   const basePath = '/' as AbsoluteFsPath;
 
   loadTestDirectory(
-      tmpFs, resolveNpmTreeArtifact('typescript'),
-      tmpFs.resolve(basePath, 'node_modules/typescript'));
+    tmpFs,
+    resolveNpmTreeArtifact('typescript'),
+    tmpFs.resolve(basePath, 'node_modules/typescript')
+  );
 
   loadTsLib(tmpFs, basePath);
 
@@ -43,7 +47,10 @@ export function loadStandardTestFiles(
 
   if (rxjs) {
     loadTestDirectory(
-        tmpFs, resolveNpmTreeArtifact('rxjs'), tmpFs.resolve(basePath, 'node_modules/rxjs'));
+      tmpFs,
+      resolveNpmTreeArtifact('rxjs'),
+      tmpFs.resolve(basePath, 'node_modules/rxjs')
+    );
   }
 
   return tmpFs.dump();
@@ -51,13 +58,18 @@ export function loadStandardTestFiles(
 
 export function loadTsLib(fs: FileSystem, basePath: string = '/') {
   loadTestDirectory(
-      fs, resolveNpmTreeArtifact('tslib'), fs.resolve(basePath, 'node_modules/tslib'));
+    fs,
+    resolveNpmTreeArtifact('tslib'),
+    fs.resolve(basePath, 'node_modules/tslib')
+  );
 }
 
 export function loadFakeCore(fs: FileSystem, basePath: string = '/') {
   loadTestDirectory(
-      fs, resolveNpmTreeArtifact('angular/packages/compiler-cli/test/ngtsc/fake_core/npm_package'),
-      fs.resolve(basePath, 'node_modules/@angular/core'));
+    fs,
+    resolveNpmTreeArtifact('angular/packages/compiler-cli/test/ngtsc/fake_core/npm_package'),
+    fs.resolve(basePath, 'node_modules/@angular/core')
+  );
 }
 
 /**
@@ -67,7 +79,7 @@ export function loadFakeCore(fs: FileSystem, basePath: string = '/') {
  * @param mockPath the path within the mock file-system where the directory is to be loaded.
  */
 function loadTestDirectory(fs: FileSystem, directoryPath: string, mockPath: AbsoluteFsPath): void {
-  readdirSync(directoryPath).forEach(item => {
+  readdirSync(directoryPath).forEach((item) => {
     const srcPath = resolve(directoryPath, item);
     const targetPath = fs.resolve(mockPath, item);
     try {

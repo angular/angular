@@ -16,7 +16,6 @@ import {NgModuleRef} from './ng_module_factory';
 import {TemplateRef} from './template_ref';
 import {EmbeddedViewRef, ViewRef} from './view_ref';
 
-
 /**
  * Represents a container where one or more views can be attached to a component.
  *
@@ -66,7 +65,7 @@ export abstract class ViewContainerRef {
    * @param index The 0-based index of the view to retrieve.
    * @returns The `ViewRef` instance, or null if the index is out of range.
    */
-  abstract get(index: number): ViewRef|null;
+  abstract get(index: number): ViewRef | null;
 
   /**
    * Reports how many views are currently attached to this container.
@@ -83,8 +82,11 @@ export abstract class ViewContainerRef {
    *
    * @returns The `ViewRef` instance for the newly created view.
    */
-  abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number):
-      EmbeddedViewRef<C>;
+  abstract createEmbeddedView<C>(
+    templateRef: TemplateRef<C>,
+    context?: C,
+    index?: number
+  ): EmbeddedViewRef<C>;
 
   /**
    * Instantiates a single component and inserts its host view into this container.
@@ -100,8 +102,12 @@ export abstract class ViewContainerRef {
    *
    */
   abstract createComponent<C>(
-      componentFactory: ComponentFactory<C>, index?: number, injector?: Injector,
-      projectableNodes?: any[][], ngModule?: NgModuleRef<any>): ComponentRef<C>;
+    componentFactory: ComponentFactory<C>,
+    index?: number,
+    injector?: Injector,
+    projectableNodes?: any[][],
+    ngModule?: NgModuleRef<any>
+  ): ComponentRef<C>;
 
   /**
    * Inserts a view into this container.
@@ -142,17 +148,16 @@ export abstract class ViewContainerRef {
    * @param index The 0-based index of the view to detach.
    * If not specified, the last view in the container is detached.
    */
-  abstract detach(index?: number): ViewRef|null;
+  abstract detach(index?: number): ViewRef | null;
 
   /**
    * @internal
    * @nocollapse
    */
-  static __NG_ELEMENT_ID__:
-      () => ViewContainerRef = () => SWITCH_VIEW_CONTAINER_REF_FACTORY(ViewContainerRef, ElementRef)
+  static __NG_ELEMENT_ID__: () => ViewContainerRef = () =>
+    SWITCH_VIEW_CONTAINER_REF_FACTORY(ViewContainerRef, ElementRef);
 }
 
 export const SWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__ = render3InjectViewContainerRef;
 const SWITCH_VIEW_CONTAINER_REF_FACTORY__PRE_R3__ = noop;
-const SWITCH_VIEW_CONTAINER_REF_FACTORY: typeof render3InjectViewContainerRef =
-    SWITCH_VIEW_CONTAINER_REF_FACTORY__PRE_R3__;
+const SWITCH_VIEW_CONTAINER_REF_FACTORY: typeof render3InjectViewContainerRef = SWITCH_VIEW_CONTAINER_REF_FACTORY__PRE_R3__;

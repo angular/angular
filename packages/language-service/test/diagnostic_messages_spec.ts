@@ -17,8 +17,12 @@ describe('create diagnostic', () => {
       kind: 'Error',
     };
 
-    const diagnostic =
-        createDiagnostic({start: 0, end: 1}, diagnosticMessage, 'testCls', 'testMethod');
+    const diagnostic = createDiagnostic(
+      {start: 0, end: 1},
+      diagnosticMessage,
+      'testCls',
+      'testMethod'
+    );
 
     expect(diagnostic).toEqual({
       kind: ts.DiagnosticCategory.Error,

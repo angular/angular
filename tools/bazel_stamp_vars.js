@@ -42,13 +42,15 @@ console.log(`BUILD_SCM_LOCAL_CHANGES ${LOCAL_CHANGES}`);
 // Only match the latest tag that is a version such as 6.0.0, 6.0.0-rc.5, etc...
 // This will ignore non-version tags which would break unit tests expecting a valid version
 // number in the package headers
-const BUILD_SCM_VERSION_RAW =
-    _exec(`git describe --match [0-9]*.[0-9]*.[0-9]* --abbrev=7 --tags HEAD`);
+const BUILD_SCM_VERSION_RAW = _exec(
+  `git describe --match [0-9]*.[0-9]*.[0-9]* --abbrev=7 --tags HEAD`
+);
 
 // Reformat `git describe` version string into a more semver-ish string
 //   From:   5.2.0-rc.0-57-g757f886
 //   To:     5.2.0-rc.0+57.sha-757f886
 //   Or:     5.2.0-rc.0+57.sha-757f886.with-local-changes
-const BUILD_SCM_VERSION = BUILD_SCM_VERSION_RAW.replace(/-([0-9]+)-g/, '+$1.sha-') +
-    (LOCAL_CHANGES ? '.with-local-changes' : '');
+const BUILD_SCM_VERSION =
+  BUILD_SCM_VERSION_RAW.replace(/-([0-9]+)-g/, '+$1.sha-') +
+  (LOCAL_CHANGES ? '.with-local-changes' : '');
 console.log(`BUILD_SCM_VERSION ${BUILD_SCM_VERSION}`);

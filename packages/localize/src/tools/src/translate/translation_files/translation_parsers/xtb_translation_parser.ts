@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {Element, ParseErrorLevel, visitAll} from '@angular/compiler';
 import {ɵParsedTranslation} from '@angular/localize';
 import {extname} from 'path';
@@ -15,14 +16,20 @@ import {MessageSerializer} from '../message_serialization/message_serializer';
 import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
 
 import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
-import {XmlTranslationParserHint, addParseDiagnostic, addParseError, canParseXml, getAttribute, parseInnerRange} from './translation_utils';
-
+import {
+  XmlTranslationParserHint,
+  addParseDiagnostic,
+  addParseError,
+  canParseXml,
+  getAttribute,
+  parseInnerRange,
+} from './translation_utils';
 
 /**
  * A translation parser that can load XB files.
  */
 export class XtbTranslationParser implements TranslationParser<XmlTranslationParserHint> {
-  canParse(filePath: string, contents: string): XmlTranslationParserHint|false {
+  canParse(filePath: string, contents: string): XmlTranslationParserHint | false {
     const extension = extname(filePath);
     if (extension !== '.xtb' && extension !== '.xmb') {
       return false;
@@ -30,8 +37,11 @@ export class XtbTranslationParser implements TranslationParser<XmlTranslationPar
     return canParseXml(filePath, contents, 'translationbundle', {});
   }
 
-  parse(filePath: string, contents: string, hint?: XmlTranslationParserHint):
-      ParsedTranslationBundle {
+  parse(
+    filePath: string,
+    contents: string,
+    hint?: XmlTranslationParserHint
+  ): ParsedTranslationBundle {
     if (hint) {
       return this.extractBundle(hint);
     } else {
@@ -44,9 +54,9 @@ export class XtbTranslationParser implements TranslationParser<XmlTranslationPar
     const bundle: ParsedTranslationBundle = {
       locale: langAttr && langAttr.value,
       translations: {},
-      diagnostics: new Diagnostics()
+      diagnostics: new Diagnostics(),
     };
-    errors.forEach(e => addParseError(bundle.diagnostics, e));
+    errors.forEach((e) => addParseError(bundle.diagnostics, e));
 
     const bundleVisitor = new XtbVisitor();
     visitAll(bundleVisitor, element.children, bundle);
@@ -60,8 +70,9 @@ export class XtbTranslationParser implements TranslationParser<XmlTranslationPar
     }
     const bundle = this.extractBundle(hint);
     if (bundle.diagnostics.hasErrors) {
-      const message =
-          bundle.diagnostics.formatDiagnostics(`Failed to parse "${filePath}" as XMB/XTB format`);
+      const message = bundle.diagnostics.formatDiagnostics(
+        `Failed to parse "${filePath}" as XMB/XTB format`
+      );
       throw new Error(message);
     }
     return bundle;
@@ -76,16 +87,22 @@ class XtbVisitor extends BaseVisitor {
         const id = getAttribute(element, 'id');
         if (id === undefined) {
           addParseDiagnostic(
-              bundle.diagnostics, element.sourceSpan,
-              `Missing required "id" attribute on <trans-unit> element.`, ParseErrorLevel.ERROR);
+            bundle.diagnostics,
+            element.sourceSpan,
+            `Missing required "id" attribute on <trans-unit> element.`,
+            ParseErrorLevel.ERROR
+          );
           return;
         }
 
         // Error if there is already a translation with the same id
         if (bundle.translations[id] !== undefined) {
           addParseDiagnostic(
-              bundle.diagnostics, element.sourceSpan, `Duplicated translations for message "${id}"`,
-              ParseErrorLevel.ERROR);
+            bundle.diagnostics,
+            element.sourceSpan,
+            `Duplicated translations for message "${id}"`,
+            ParseErrorLevel.ERROR
+          );
           return;
         }
 
@@ -94,8 +111,9 @@ class XtbVisitor extends BaseVisitor {
         } catch (error) {
           if (typeof error === 'string') {
             bundle.diagnostics.warn(
-                `Could not parse message with id "${id}" - perhaps it has an unrecognised ICU format?\n` +
-                error);
+              `Could not parse message with id "${id}" - perhaps it has an unrecognised ICU format?\n` +
+                error
+            );
           } else if (error.span && error.msg && error.level) {
             addParseDiagnostic(bundle.diagnostics, error.span, error.msg, error.level);
           } else {
@@ -106,15 +124,19 @@ class XtbVisitor extends BaseVisitor {
 
       default:
         addParseDiagnostic(
-            bundle.diagnostics, element.sourceSpan, `Unexpected <${element.name}> tag.`,
-            ParseErrorLevel.ERROR);
+          bundle.diagnostics,
+          element.sourceSpan,
+          `Unexpected <${element.name}> tag.`,
+          ParseErrorLevel.ERROR
+        );
     }
   }
 }
 
 function serializeTargetMessage(source: Element): ɵParsedTranslation {
-  const serializer = new MessageSerializer(
-      new TargetMessageRenderer(),
-      {inlineElements: [], placeholder: {elementName: 'ph', nameAttribute: 'name'}});
+  const serializer = new MessageSerializer(new TargetMessageRenderer(), {
+    inlineElements: [],
+    placeholder: {elementName: 'ph', nameAttribute: 'name'},
+  });
   return serializer.serialize(parseInnerRange(source));
 }

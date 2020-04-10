@@ -42,7 +42,7 @@ export class DtsTransformRegistry {
    * Gets the dts transforms to be applied for the given source file, or `null` if no transform is
    * necessary.
    */
-  getAllTransforms(sf: ts.SourceFile): DtsTransform[]|null {
+  getAllTransforms(sf: ts.SourceFile): DtsTransform[] | null {
     // No need to transform if it's not a declarations file, or if no changes have been requested
     // to the input file. Due to the way TypeScript afterDeclarations transformers work, the
     // `ts.SourceFile` path is the same as the original .ts. The only way we know it's actually a
@@ -52,7 +52,7 @@ export class DtsTransformRegistry {
     }
     const originalSf = ts.getOriginalNode(sf) as ts.SourceFile;
 
-    let transforms: DtsTransform[]|null = null;
+    let transforms: DtsTransform[] | null = null;
     if (this.ivyDeclarationTransforms.has(originalSf)) {
       transforms = [];
       transforms.push(this.ivyDeclarationTransforms.get(originalSf)!);
@@ -66,8 +66,10 @@ export class DtsTransformRegistry {
 }
 
 export function declarationTransformFactory(
-    transformRegistry: DtsTransformRegistry, importRewriter: ImportRewriter,
-    importPrefix?: string): ts.TransformerFactory<ts.SourceFile> {
+  transformRegistry: DtsTransformRegistry,
+  importRewriter: ImportRewriter,
+  importPrefix?: string
+): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext) => {
     const transformer = new DtsTransformer(context, importRewriter, importPrefix);
     return (fileOrBundle) => {
@@ -89,8 +91,10 @@ export function declarationTransformFactory(
  */
 class DtsTransformer {
   constructor(
-      private ctx: ts.TransformationContext, private importRewriter: ImportRewriter,
-      private importPrefix?: string) {}
+    private ctx: ts.TransformationContext,
+    private importRewriter: ImportRewriter,
+    private importPrefix?: string
+  ) {}
 
   /**
    * Transform the declaration file and add any declarations which were recorded.
@@ -117,9 +121,11 @@ class DtsTransformer {
   }
 
   private transformClassDeclaration(
-      clazz: ts.ClassDeclaration, transforms: DtsTransform[],
-      imports: ImportManager): ts.ClassDeclaration {
-    let elements: ts.ClassElement[]|ReadonlyArray<ts.ClassElement> = clazz.members;
+    clazz: ts.ClassDeclaration,
+    transforms: DtsTransform[],
+    imports: ImportManager
+  ): ts.ClassDeclaration {
+    let elements: ts.ClassElement[] | ReadonlyArray<ts.ClassElement> = clazz.members;
     let elementsChanged = false;
 
     for (const transform of transforms) {
@@ -143,7 +149,7 @@ class DtsTransformer {
       if (transform.transformClass !== undefined) {
         // If no DtsTransform has changed the class yet, then the (possibly mutated) elements have
         // not yet been incorporated. Otherwise, `newClazz.members` holds the latest class members.
-        const inputMembers = (clazz === newClazz ? elements : newClazz.members);
+        const inputMembers = clazz === newClazz ? elements : newClazz.members;
 
         newClazz = transform.transformClass(newClazz, inputMembers, imports);
       }
@@ -153,21 +159,24 @@ class DtsTransformer {
     // an updated class declaration with the updated elements.
     if (elementsChanged && clazz === newClazz) {
       newClazz = ts.updateClassDeclaration(
-          /* node */ clazz,
-          /* decorators */ clazz.decorators,
-          /* modifiers */ clazz.modifiers,
-          /* name */ clazz.name,
-          /* typeParameters */ clazz.typeParameters,
-          /* heritageClauses */ clazz.heritageClauses,
-          /* members */ elements);
+        /* node */ clazz,
+        /* decorators */ clazz.decorators,
+        /* modifiers */ clazz.modifiers,
+        /* name */ clazz.name,
+        /* typeParameters */ clazz.typeParameters,
+        /* heritageClauses */ clazz.heritageClauses,
+        /* members */ elements
+      );
     }
 
     return newClazz;
   }
 
   private transformFunctionDeclaration(
-      declaration: ts.FunctionDeclaration, transforms: DtsTransform[],
-      imports: ImportManager): ts.FunctionDeclaration {
+    declaration: ts.FunctionDeclaration,
+    transforms: DtsTransform[],
+    imports: ImportManager
+  ): ts.FunctionDeclaration {
     let newDecl = declaration;
 
     for (const transform of transforms) {
@@ -193,8 +202,10 @@ export class IvyDeclarationDtsTransform implements DtsTransform {
   }
 
   transformClass(
-      clazz: ts.ClassDeclaration, members: ReadonlyArray<ts.ClassElement>,
-      imports: ImportManager): ts.ClassDeclaration {
+    clazz: ts.ClassDeclaration,
+    members: ReadonlyArray<ts.ClassElement>,
+    imports: ImportManager
+  ): ts.ClassDeclaration {
     const original = ts.getOriginalNode(clazz) as ClassDeclaration;
 
     if (!this.declarationFields.has(original)) {
@@ -202,27 +213,29 @@ export class IvyDeclarationDtsTransform implements DtsTransform {
     }
     const fields = this.declarationFields.get(original)!;
 
-    const newMembers = fields.map(decl => {
+    const newMembers = fields.map((decl) => {
       const modifiers = [ts.createModifier(ts.SyntaxKind.StaticKeyword)];
       const typeRef = translateType(decl.type, imports);
       markForEmitAsSingleLine(typeRef);
       return ts.createProperty(
-          /* decorators */ undefined,
-          /* modifiers */ modifiers,
-          /* name */ decl.name,
-          /* questionOrExclamationToken */ undefined,
-          /* type */ typeRef,
-          /* initializer */ undefined);
+        /* decorators */ undefined,
+        /* modifiers */ modifiers,
+        /* name */ decl.name,
+        /* questionOrExclamationToken */ undefined,
+        /* type */ typeRef,
+        /* initializer */ undefined
+      );
     });
 
     return ts.updateClassDeclaration(
-        /* node */ clazz,
-        /* decorators */ clazz.decorators,
-        /* modifiers */ clazz.modifiers,
-        /* name */ clazz.name,
-        /* typeParameters */ clazz.typeParameters,
-        /* heritageClauses */ clazz.heritageClauses,
-        /* members */[...members, ...newMembers]);
+      /* node */ clazz,
+      /* decorators */ clazz.decorators,
+      /* modifiers */ clazz.modifiers,
+      /* name */ clazz.name,
+      /* typeParameters */ clazz.typeParameters,
+      /* heritageClauses */ clazz.heritageClauses,
+      /* members */ [...members, ...newMembers]
+    );
   }
 }
 
@@ -251,12 +264,13 @@ export class ReturnTypeTransform implements DtsTransform {
     const tsReturnType = translateType(returnType, imports);
 
     const methodSignature = ts.updateMethodSignature(
-        /* node */ element,
-        /* typeParameters */ element.typeParameters,
-        /* parameters */ element.parameters,
-        /* type */ tsReturnType,
-        /* name */ element.name,
-        /* questionToken */ element.questionToken);
+      /* node */ element,
+      /* typeParameters */ element.typeParameters,
+      /* parameters */ element.parameters,
+      /* type */ tsReturnType,
+      /* name */ element.name,
+      /* questionToken */ element.questionToken
+    );
 
     // Copy over any modifiers, these cannot be set during the `ts.updateMethodSignature` call.
     methodSignature.modifiers = element.modifiers;
@@ -264,11 +278,13 @@ export class ReturnTypeTransform implements DtsTransform {
     // A bug in the TypeScript declaration causes `ts.MethodSignature` not to be assignable to
     // `ts.ClassElement`. Since `element` was a `ts.MethodSignature` already, transforming it into
     // this type is actually correct.
-    return methodSignature as unknown as ts.ClassElement;
+    return (methodSignature as unknown) as ts.ClassElement;
   }
 
-  transformFunctionDeclaration(element: ts.FunctionDeclaration, imports: ImportManager):
-      ts.FunctionDeclaration {
+  transformFunctionDeclaration(
+    element: ts.FunctionDeclaration,
+    imports: ImportManager
+  ): ts.FunctionDeclaration {
     const original = ts.getOriginalNode(element) as ts.FunctionDeclaration;
     if (!this.typeReplacements.has(original)) {
       return element;
@@ -277,14 +293,15 @@ export class ReturnTypeTransform implements DtsTransform {
     const tsReturnType = translateType(returnType, imports);
 
     return ts.updateFunctionDeclaration(
-        /* node */ element,
-        /* decorators */ element.decorators,
-        /* modifiers */ element.modifiers,
-        /* asteriskToken */ element.asteriskToken,
-        /* name */ element.name,
-        /* typeParameters */ element.typeParameters,
-        /* parameters */ element.parameters,
-        /* type */ tsReturnType,
-        /* body */ element.body);
+      /* node */ element,
+      /* decorators */ element.decorators,
+      /* modifiers */ element.modifiers,
+      /* asteriskToken */ element.asteriskToken,
+      /* name */ element.name,
+      /* typeParameters */ element.typeParameters,
+      /* parameters */ element.parameters,
+      /* type */ tsReturnType,
+      /* body */ element.body
+    );
   }
 }

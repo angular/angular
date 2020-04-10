@@ -7,13 +7,19 @@
  */
 
 import {R3DirectiveMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
-import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
+import {
+  R3ComponentMetadataFacade,
+  R3QueryMetadataFacade,
+} from '../../compiler/compiler_facade_interface';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {getReflect, reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Query} from '../../metadata/di';
 import {Component, Directive, Input} from '../../metadata/directives';
-import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
+import {
+  componentNeedsResolution,
+  maybeQueueResolutionOfComponentResources,
+} from '../../metadata/resource_loading';
 import {ViewEncapsulation} from '../../metadata/view';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {getComponentDef, getDirectiveDef} from '../definition';
@@ -24,9 +30,11 @@ import {stringifyForError} from '../util/misc_utils';
 
 import {angularCoreEnv} from './environment';
 import {getJitOptions} from './jit_options';
-import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, transitiveScopesFor} from './module';
-
-
+import {
+  flushModuleScopingQueueAsMuchAsPossible,
+  patchComponentDefWithScope,
+  transitiveScopesFor,
+} from './module';
 
 /**
  * Compile an Angular component according to its decorator metadata, and patch the resulting
@@ -95,12 +103,14 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
         const meta: R3ComponentMetadataFacade = {
           ...directiveMetadata(type, metadata),
           typeSourceSpan: compiler.createParseSourceSpan('Component', type.name, templateUrl),
-          template: metadata.template || '', preserveWhitespaces,
+          template: metadata.template || '',
+          preserveWhitespaces,
           styles: metadata.styles || EMPTY_ARRAY,
           animations: metadata.animations,
           directives: [],
           changeDetection: metadata.changeDetection,
-          pipes: new Map(), encapsulation,
+          pipes: new Map(),
+          encapsulation,
           interpolation: metadata.interpolation,
           viewProviders: metadata.viewProviders || null,
         };
@@ -133,9 +143,10 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
   });
 }
 
-function hasSelectorScope<T>(component: Type<T>): component is Type<T>&
-    {ngSelectorScope: Type<any>} {
-  return (component as{ngSelectorScope?: any}).ngSelectorScope !== undefined;
+function hasSelectorScope<T>(
+  component: Type<T>
+): component is Type<T> & {ngSelectorScope: Type<any>} {
+  return (component as {ngSelectorScope?: any}).ngSelectorScope !== undefined;
 }
 
 /**
@@ -157,8 +168,11 @@ export function compileDirective(type: Type<any>, directive: Directive | null): 
         // that use `@Directive()` with no selector. In that case, pass empty object to the
         // `directiveMetadata` function instead of null.
         const meta = getDirectiveMetadata(type, directive || {});
-        ngDirectiveDef =
-            getCompilerFacade().compileDirective(angularCoreEnv, meta.sourceMapUrl, meta.metadata);
+        ngDirectiveDef = getCompilerFacade().compileDirective(
+          angularCoreEnv,
+          meta.sourceMapUrl,
+          meta.metadata
+        );
       }
       return ngDirectiveDef;
     },
@@ -190,7 +204,7 @@ function addDirectiveFactoryDef(type: Type<any>, metadata: Directive | Component
         ngFactoryDef = compiler.compileFactory(angularCoreEnv, `ng:///${type.name}/ɵfac.js`, {
           ...meta.metadata,
           injectFn: 'directiveInject',
-          target: compiler.R3FactoryTarget.Directive
+          target: compiler.R3FactoryTarget.Directive,
         });
       }
       return ngFactoryDef;
@@ -225,11 +239,11 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     outputs: metadata.outputs || EMPTY_ARRAY,
     queries: extractQueriesMetadata(type, propMetadata, isContentQuery),
     lifecycle: {usesOnChanges: reflect.hasLifecycleHook(type, 'ngOnChanges')},
-    typeSourceSpan: null !,
+    typeSourceSpan: null!,
     usesInheritance: !extendsDirectlyFromObject(type),
     exportAs: extractExportAs(metadata.exportAs),
     providers: metadata.providers || null,
-    viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery)
+    viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery),
   };
 }
 
@@ -244,15 +258,18 @@ function addDirectiveDefToUndecoratedParents(type: Type<any>) {
   while (parent && parent !== objPrototype) {
     // Since inheritance works if the class was annotated already, we only need to add
     // the def if there are no annotations and the def hasn't been created already.
-    if (!getDirectiveDef(parent) && !getComponentDef(parent) &&
-        shouldAddAbstractDirective(parent)) {
+    if (
+      !getDirectiveDef(parent) &&
+      !getComponentDef(parent) &&
+      shouldAddAbstractDirective(parent)
+    ) {
       compileDirective(parent, null);
     }
     parent = Object.getPrototypeOf(parent);
   }
 }
 
-function convertToR3QueryPredicate(selector: any): any|string[] {
+function convertToR3QueryPredicate(selector: any): any | string[] {
   return typeof selector === 'string' ? splitByComma(selector) : resolveForwardRef(selector);
 }
 
@@ -263,22 +280,25 @@ export function convertToR3QueryMetadata(propertyName: string, ann: Query): R3Qu
     descendants: ann.descendants,
     first: ann.first,
     read: ann.read ? ann.read : null,
-    static: !!ann.static
+    static: !!ann.static,
   };
 }
 function extractQueriesMetadata(
-    type: Type<any>, propMetadata: {[key: string]: any[]},
-    isQueryAnn: (ann: any) => ann is Query): R3QueryMetadataFacade[] {
+  type: Type<any>,
+  propMetadata: {[key: string]: any[]},
+  isQueryAnn: (ann: any) => ann is Query
+): R3QueryMetadataFacade[] {
   const queriesMeta: R3QueryMetadataFacade[] = [];
   for (const field in propMetadata) {
     if (propMetadata.hasOwnProperty(field)) {
       const annotations = propMetadata[field];
-      annotations.forEach(ann => {
+      annotations.forEach((ann) => {
         if (isQueryAnn(ann)) {
           if (!ann.selector) {
             throw new Error(
-                `Can't construct a query for the property "${field}" of ` +
-                `"${stringifyForError(type)}" since the query selector wasn't defined.`);
+              `Can't construct a query for the property "${field}" of ` +
+                `"${stringifyForError(type)}" since the query selector wasn't defined.`
+            );
           }
           if (annotations.some(isInputAnnotation)) {
             throw new Error(`Cannot combine @Input decorators with query decorators`);
@@ -291,7 +311,7 @@ function extractQueriesMetadata(
   return queriesMeta;
 }
 
-function extractExportAs(exportAs: string | undefined): string[]|null {
+function extractExportAs(exportAs: string | undefined): string[] | null {
   return exportAs === undefined ? null : splitByComma(exportAs);
 }
 
@@ -310,18 +330,24 @@ function isInputAnnotation(value: any): value is Input {
 }
 
 function splitByComma(value: string): string[] {
-  return value.split(',').map(piece => piece.trim());
+  return value.split(',').map((piece) => piece.trim());
 }
 
 const LIFECYCLE_HOOKS = [
-  'ngOnChanges', 'ngOnInit', 'ngOnDestroy', 'ngDoCheck', 'ngAfterViewInit', 'ngAfterViewChecked',
-  'ngAfterContentInit', 'ngAfterContentChecked'
+  'ngOnChanges',
+  'ngOnInit',
+  'ngOnDestroy',
+  'ngDoCheck',
+  'ngAfterViewInit',
+  'ngAfterViewChecked',
+  'ngAfterContentInit',
+  'ngAfterContentChecked',
 ];
 
 function shouldAddAbstractDirective(type: Type<any>): boolean {
   const reflect = getReflect();
 
-  if (LIFECYCLE_HOOKS.some(hookName => reflect.hasLifecycleHook(type, hookName))) {
+  if (LIFECYCLE_HOOKS.some((hookName) => reflect.hasLifecycleHook(type, hookName))) {
     return true;
   }
 
@@ -334,9 +360,14 @@ function shouldAddAbstractDirective(type: Type<any>): boolean {
       const current = annotations[i];
       const metadataName = current.ngMetadataName;
 
-      if (isInputAnnotation(current) || isContentQuery(current) || isViewQuery(current) ||
-          metadataName === 'Output' || metadataName === 'HostBinding' ||
-          metadataName === 'HostListener') {
+      if (
+        isInputAnnotation(current) ||
+        isContentQuery(current) ||
+        isViewQuery(current) ||
+        metadataName === 'Output' ||
+        metadataName === 'HostBinding' ||
+        metadataName === 'HostListener'
+      ) {
         return true;
       }
     }

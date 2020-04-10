@@ -20,7 +20,9 @@ import {URLSearchParams} from './url_search_params';
  * @deprecated see https://angular.io/guide/http
  * @publicApi
  */
-export abstract class ConnectionBackend { abstract createConnection(request: any): Connection; }
+export abstract class ConnectionBackend {
+  abstract createConnection(request: any): Connection;
+}
 
 /**
  * Abstract class from which real connections are derived.
@@ -30,10 +32,10 @@ export abstract class ConnectionBackend { abstract createConnection(request: any
  */
 export abstract class Connection {
   // TODO(issue/24571): remove '!'.
-  readyState !: ReadyState;
+  readyState!: ReadyState;
   // TODO(issue/24571): remove '!'.
-  request !: Request;
-  response: any;  // TODO: generic of <Response>;
+  request!: Request;
+  response: any; // TODO: generic of <Response>;
 }
 
 /**
@@ -42,7 +44,9 @@ export abstract class Connection {
  * @deprecated see https://angular.io/guide/http
  * @publicApi
  */
-export abstract class XSRFStrategy { abstract configureRequest(req: Request): void; }
+export abstract class XSRFStrategy {
+  abstract configureRequest(req: Request): void;
+}
 
 /**
  * Interface for options to construct a RequestOptions, based on
@@ -52,21 +56,23 @@ export abstract class XSRFStrategy { abstract configureRequest(req: Request): vo
  * @publicApi
  */
 export interface RequestOptionsArgs {
-  url?: string|null;
-  method?: string|RequestMethod|null;
+  url?: string | null;
+  method?: string | RequestMethod | null;
   /** @deprecated from 4.0.0. Use params instead. */
-  search?: string|URLSearchParams|{[key: string]: any | any[]}|null;
-  params?: string|URLSearchParams|{[key: string]: any | any[]}|null;
-  headers?: Headers|null;
+  search?: string | URLSearchParams | {[key: string]: any | any[]} | null;
+  params?: string | URLSearchParams | {[key: string]: any | any[]} | null;
+  headers?: Headers | null;
   body?: any;
-  withCredentials?: boolean|null;
-  responseType?: ResponseContentType|null;
+  withCredentials?: boolean | null;
+  responseType?: ResponseContentType | null;
 }
 
 /**
  * Required structure when constructing new Request();
  */
-export interface RequestArgs extends RequestOptionsArgs { url: string|null; }
+export interface RequestArgs extends RequestOptionsArgs {
+  url: string | null;
+}
 
 /**
  * Interface for options to construct a Response, based on
@@ -76,10 +82,10 @@ export interface RequestArgs extends RequestOptionsArgs { url: string|null; }
  * @publicApi
  */
 export interface ResponseOptionsArgs {
-  body?: string|Object|FormData|ArrayBuffer|Blob|null;
-  status?: number|null;
-  statusText?: string|null;
-  headers?: Headers|null;
-  type?: ResponseType|null;
-  url?: string|null;
+  body?: string | Object | FormData | ArrayBuffer | Blob | null;
+  status?: number | null;
+  statusText?: string | null;
+  headers?: Headers | null;
+  type?: ResponseType | null;
+  url?: string | null;
 }

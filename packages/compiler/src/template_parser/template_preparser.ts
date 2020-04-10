@@ -25,7 +25,7 @@ export function preparseElement(ast: html.Element): PreparsedElement {
   let relAttr: string = null!;
   let nonBindable = false;
   let projectAs = '';
-  ast.attrs.forEach(attr => {
+  ast.attrs.forEach((attr) => {
     const lcAttrName = attr.name.toLowerCase();
     if (lcAttrName == NG_CONTENT_SELECT_ATTR) {
       selectAttr = attr.value;
@@ -61,15 +61,18 @@ export enum PreparsedElementType {
   STYLE,
   STYLESHEET,
   SCRIPT,
-  OTHER
+  OTHER,
 }
 
 export class PreparsedElement {
   constructor(
-      public type: PreparsedElementType, public selectAttr: string, public hrefAttr: string,
-      public nonBindable: boolean, public projectAs: string) {}
+    public type: PreparsedElementType,
+    public selectAttr: string,
+    public hrefAttr: string,
+    public nonBindable: boolean,
+    public projectAs: string
+  ) {}
 }
-
 
 function normalizeNgContentSelect(selectAttr: string): string {
   if (selectAttr === null || selectAttr.length === 0) {

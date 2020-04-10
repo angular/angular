@@ -16,8 +16,6 @@ import {UrlSegment, UrlSegmentGroup, UrlTree, equalSegments} from './url_tree';
 import {shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
 
-
-
 /**
  * Represents the state of the router as a tree of activated routes.
  *
@@ -50,17 +48,20 @@ import {Tree, TreeNode} from './utils/tree';
 export class RouterState extends Tree<ActivatedRoute> {
   /** @internal */
   constructor(
-      root: TreeNode<ActivatedRoute>,
-      /** The current snapshot of the router state */
-      public snapshot: RouterStateSnapshot) {
+    root: TreeNode<ActivatedRoute>,
+    /** The current snapshot of the router state */
+    public snapshot: RouterStateSnapshot
+  ) {
     super(root);
     setRouterState(<RouterState>this, root);
   }
 
-  toString(): string { return this.snapshot.toString(); }
+  toString(): string {
+    return this.snapshot.toString();
+  }
 }
 
-export function createEmptyState(urlTree: UrlTree, rootComponent: Type<any>| null): RouterState {
+export function createEmptyState(urlTree: UrlTree, rootComponent: Type<any> | null): RouterState {
   const snapshot = createEmptyStateSnapshot(urlTree, rootComponent);
   const emptyUrl = new BehaviorSubject([new UrlSegment('', {})]);
   const emptyParams = new BehaviorSubject({});
@@ -68,21 +69,40 @@ export function createEmptyState(urlTree: UrlTree, rootComponent: Type<any>| nul
   const emptyQueryParams = new BehaviorSubject({});
   const fragment = new BehaviorSubject('');
   const activated = new ActivatedRoute(
-      emptyUrl, emptyParams, emptyQueryParams, fragment, emptyData, PRIMARY_OUTLET, rootComponent,
-      snapshot.root);
+    emptyUrl,
+    emptyParams,
+    emptyQueryParams,
+    fragment,
+    emptyData,
+    PRIMARY_OUTLET,
+    rootComponent,
+    snapshot.root
+  );
   activated.snapshot = snapshot.root;
   return new RouterState(new TreeNode<ActivatedRoute>(activated, []), snapshot);
 }
 
 export function createEmptyStateSnapshot(
-    urlTree: UrlTree, rootComponent: Type<any>| null): RouterStateSnapshot {
+  urlTree: UrlTree,
+  rootComponent: Type<any> | null
+): RouterStateSnapshot {
   const emptyParams = {};
   const emptyData = {};
   const emptyQueryParams = {};
   const fragment = '';
   const activated = new ActivatedRouteSnapshot(
-      [], emptyParams, emptyQueryParams, fragment, emptyData, PRIMARY_OUTLET, rootComponent, null,
-      urlTree.root, -1, {});
+    [],
+    emptyParams,
+    emptyQueryParams,
+    fragment,
+    emptyData,
+    PRIMARY_OUTLET,
+    rootComponent,
+    null,
+    urlTree.root,
+    -1,
+    {}
+  );
   return new RouterStateSnapshot('', new TreeNode<ActivatedRouteSnapshot>(activated, []));
 }
 
@@ -98,53 +118,67 @@ export function createEmptyStateSnapshot(
  */
 export class ActivatedRoute {
   /** The current snapshot of this route */
-  snapshot !: ActivatedRouteSnapshot;
+  snapshot!: ActivatedRouteSnapshot;
   /** @internal */
   _futureSnapshot: ActivatedRouteSnapshot;
   /** @internal */
-  _routerState !: RouterState;
+  _routerState!: RouterState;
   /** @internal */
-  _paramMap !: Observable<ParamMap>;
+  _paramMap!: Observable<ParamMap>;
   /** @internal */
-  _queryParamMap !: Observable<ParamMap>;
+  _queryParamMap!: Observable<ParamMap>;
 
   /** @internal */
   constructor(
-      /** An observable of the URL segments matched by this route. */
-      public url: Observable<UrlSegment[]>,
-      /** An observable of the matrix parameters scoped to this route. */
-      public params: Observable<Params>,
-      /** An observable of the query parameters shared by all the routes. */
-      public queryParams: Observable<Params>,
-      /** An observable of the URL fragment shared by all the routes. */
-      public fragment: Observable<string>,
-      /** An observable of the static and resolved data of this route. */
-      public data: Observable<Data>,
-      /** The outlet name of the route, a constant. */
-      public outlet: string,
-      /** The component of the route, a constant. */
-      // TODO(vsavkin): remove |string
-      public component: Type<any>|string|null, futureSnapshot: ActivatedRouteSnapshot) {
+    /** An observable of the URL segments matched by this route. */
+    public url: Observable<UrlSegment[]>,
+    /** An observable of the matrix parameters scoped to this route. */
+    public params: Observable<Params>,
+    /** An observable of the query parameters shared by all the routes. */
+    public queryParams: Observable<Params>,
+    /** An observable of the URL fragment shared by all the routes. */
+    public fragment: Observable<string>,
+    /** An observable of the static and resolved data of this route. */
+    public data: Observable<Data>,
+    /** The outlet name of the route, a constant. */
+    public outlet: string,
+    /** The component of the route, a constant. */
+    // TODO(vsavkin): remove |string
+    public component: Type<any> | string | null,
+    futureSnapshot: ActivatedRouteSnapshot
+  ) {
     this._futureSnapshot = futureSnapshot;
   }
 
   /** The configuration used to match this route. */
-  get routeConfig(): Route|null { return this._futureSnapshot.routeConfig; }
+  get routeConfig(): Route | null {
+    return this._futureSnapshot.routeConfig;
+  }
 
   /** The root of the router state. */
-  get root(): ActivatedRoute { return this._routerState.root; }
+  get root(): ActivatedRoute {
+    return this._routerState.root;
+  }
 
   /** The parent of this route in the router state tree. */
-  get parent(): ActivatedRoute|null { return this._routerState.parent(this); }
+  get parent(): ActivatedRoute | null {
+    return this._routerState.parent(this);
+  }
 
   /** The first child of this route in the router state tree. */
-  get firstChild(): ActivatedRoute|null { return this._routerState.firstChild(this); }
+  get firstChild(): ActivatedRoute | null {
+    return this._routerState.firstChild(this);
+  }
 
   /** The children of this route in the router state tree. */
-  get children(): ActivatedRoute[] { return this._routerState.children(this); }
+  get children(): ActivatedRoute[] {
+    return this._routerState.children(this);
+  }
 
   /** The path from the root of the router state tree to this route. */
-  get pathFromRoot(): ActivatedRoute[] { return this._routerState.pathFromRoot(this); }
+  get pathFromRoot(): ActivatedRoute[] {
+    return this._routerState.pathFromRoot(this);
+  }
 
   /** An Observable that contains a map of the required and optional parameters
    * specific to the route.
@@ -162,8 +196,9 @@ export class ActivatedRoute {
    */
   get queryParamMap(): Observable<ParamMap> {
     if (!this._queryParamMap) {
-      this._queryParamMap =
-          this.queryParams.pipe(map((p: Params): ParamMap => convertToParamMap(p)));
+      this._queryParamMap = this.queryParams.pipe(
+        map((p: Params): ParamMap => convertToParamMap(p))
+      );
     }
     return this._queryParamMap;
   }
@@ -177,9 +212,9 @@ export type ParamsInheritanceStrategy = 'emptyOnly' | 'always';
 
 /** @internal */
 export type Inherited = {
-  params: Params,
-  data: Data,
-  resolve: Data,
+  params: Params;
+  data: Data;
+  resolve: Data;
 };
 
 /**
@@ -188,8 +223,9 @@ export type Inherited = {
  * @internal
  */
 export function inheritedParamsDataResolve(
-    route: ActivatedRouteSnapshot,
-    paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly'): Inherited {
+  route: ActivatedRouteSnapshot,
+  paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly'
+): Inherited {
   const pathFromRoot = route.pathFromRoot;
 
   let inheritingStartingFrom = 0;
@@ -206,7 +242,6 @@ export function inheritedParamsDataResolve(
         // parent is componentless => current route should inherit its params and data
       } else if (!parent.component) {
         inheritingStartingFrom--;
-
       } else {
         break;
       }
@@ -218,12 +253,15 @@ export function inheritedParamsDataResolve(
 
 /** @internal */
 function flattenInherited(pathFromRoot: ActivatedRouteSnapshot[]): Inherited {
-  return pathFromRoot.reduce((res, curr) => {
-    const params = {...res.params, ...curr.params};
-    const data = {...res.data, ...curr.data};
-    const resolve = {...res.resolve, ...curr._resolvedData};
-    return {params, data, resolve};
-  }, <any>{params: {}, data: {}, resolve: {}});
+  return pathFromRoot.reduce(
+    (res, curr) => {
+      const params = {...res.params, ...curr.params};
+      const data = {...res.data, ...curr.data};
+      const resolve = {...res.resolve, ...curr._resolvedData};
+      return {params, data, resolve};
+    },
+    <any>{params: {}, data: {}, resolve: {}}
+  );
 }
 
 /**
@@ -248,7 +286,7 @@ function flattenInherited(pathFromRoot: ActivatedRouteSnapshot[]): Inherited {
  */
 export class ActivatedRouteSnapshot {
   /** The configuration used to match this route **/
-  public readonly routeConfig: Route|null;
+  public readonly routeConfig: Route | null;
   /** @internal **/
   _urlSegment: UrlSegmentGroup;
   /** @internal */
@@ -257,34 +295,38 @@ export class ActivatedRouteSnapshot {
   _resolve: ResolveData;
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _resolvedData !: Data;
+  _resolvedData!: Data;
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _routerState !: RouterStateSnapshot;
+  _routerState!: RouterStateSnapshot;
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _paramMap !: ParamMap;
+  _paramMap!: ParamMap;
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _queryParamMap !: ParamMap;
+  _queryParamMap!: ParamMap;
 
   /** @internal */
   constructor(
-      /** The URL segments matched by this route */
-      public url: UrlSegment[],
-      /** The matrix parameters scoped to this route */
-      public params: Params,
-      /** The query parameters shared by all the routes */
-      public queryParams: Params,
-      /** The URL fragment shared by all the routes */
-      public fragment: string,
-      /** The static and resolved data of this route */
-      public data: Data,
-      /** The outlet name of the route */
-      public outlet: string,
-      /** The component of the route */
-      public component: Type<any>|string|null, routeConfig: Route|null, urlSegment: UrlSegmentGroup,
-      lastPathIndex: number, resolve: ResolveData) {
+    /** The URL segments matched by this route */
+    public url: UrlSegment[],
+    /** The matrix parameters scoped to this route */
+    public params: Params,
+    /** The query parameters shared by all the routes */
+    public queryParams: Params,
+    /** The URL fragment shared by all the routes */
+    public fragment: string,
+    /** The static and resolved data of this route */
+    public data: Data,
+    /** The outlet name of the route */
+    public outlet: string,
+    /** The component of the route */
+    public component: Type<any> | string | null,
+    routeConfig: Route | null,
+    urlSegment: UrlSegmentGroup,
+    lastPathIndex: number,
+    resolve: ResolveData
+  ) {
     this.routeConfig = routeConfig;
     this._urlSegment = urlSegment;
     this._lastPathIndex = lastPathIndex;
@@ -292,19 +334,29 @@ export class ActivatedRouteSnapshot {
   }
 
   /** The root of the router state */
-  get root(): ActivatedRouteSnapshot { return this._routerState.root; }
+  get root(): ActivatedRouteSnapshot {
+    return this._routerState.root;
+  }
 
   /** The parent of this route in the router state tree */
-  get parent(): ActivatedRouteSnapshot|null { return this._routerState.parent(this); }
+  get parent(): ActivatedRouteSnapshot | null {
+    return this._routerState.parent(this);
+  }
 
   /** The first child of this route in the router state tree */
-  get firstChild(): ActivatedRouteSnapshot|null { return this._routerState.firstChild(this); }
+  get firstChild(): ActivatedRouteSnapshot | null {
+    return this._routerState.firstChild(this);
+  }
 
   /** The children of this route in the router state tree */
-  get children(): ActivatedRouteSnapshot[] { return this._routerState.children(this); }
+  get children(): ActivatedRouteSnapshot[] {
+    return this._routerState.children(this);
+  }
 
   /** The path from the root of the router state tree to this route */
-  get pathFromRoot(): ActivatedRouteSnapshot[] { return this._routerState.pathFromRoot(this); }
+  get pathFromRoot(): ActivatedRouteSnapshot[] {
+    return this._routerState.pathFromRoot(this);
+  }
 
   get paramMap(): ParamMap {
     if (!this._paramMap) {
@@ -321,7 +373,7 @@ export class ActivatedRouteSnapshot {
   }
 
   toString(): string {
-    const url = this.url.map(segment => segment.toString()).join('/');
+    const url = this.url.map((segment) => segment.toString()).join('/');
     const matched = this.routeConfig ? this.routeConfig.path : '';
     return `Route(url:'${url}', path:'${matched}')`;
   }
@@ -357,18 +409,22 @@ export class ActivatedRouteSnapshot {
 export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
   /** @internal */
   constructor(
-      /** The url from which this snapshot was created */
-      public url: string, root: TreeNode<ActivatedRouteSnapshot>) {
+    /** The url from which this snapshot was created */
+    public url: string,
+    root: TreeNode<ActivatedRouteSnapshot>
+  ) {
     super(root);
     setRouterState(<RouterStateSnapshot>this, root);
   }
 
-  toString(): string { return serializeNode(this._root); }
+  toString(): string {
+    return serializeNode(this._root);
+  }
 }
 
-function setRouterState<U, T extends{_routerState: U}>(state: U, node: TreeNode<T>): void {
+function setRouterState<U, T extends {_routerState: U}>(state: U, node: TreeNode<T>): void {
   node.value._routerState = state;
-  node.children.forEach(c => setRouterState(state, c));
+  node.children.forEach((c) => setRouterState(state, c));
 }
 
 function serializeNode(node: TreeNode<ActivatedRouteSnapshot>): string {
@@ -409,12 +465,16 @@ export function advanceActivatedRoute(route: ActivatedRoute): void {
   }
 }
 
-
 export function equalParamsAndUrlSegments(
-    a: ActivatedRouteSnapshot, b: ActivatedRouteSnapshot): boolean {
+  a: ActivatedRouteSnapshot,
+  b: ActivatedRouteSnapshot
+): boolean {
   const equalUrlParams = shallowEqual(a.params, b.params) && equalSegments(a.url, b.url);
   const parentsMismatch = !a.parent !== !b.parent;
 
-  return equalUrlParams && !parentsMismatch &&
-      (!a.parent || equalParamsAndUrlSegments(a.parent, b.parent !));
+  return (
+    equalUrlParams &&
+    !parentsMismatch &&
+    (!a.parent || equalParamsAndUrlSegments(a.parent, b.parent!))
+  );
 }

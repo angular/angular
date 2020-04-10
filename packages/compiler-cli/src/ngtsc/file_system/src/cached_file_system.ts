@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileStats, FileSystem, PathSegment, PathString} from './types';
 
+import {AbsoluteFsPath, FileStats, FileSystem, PathSegment, PathString} from './types';
 
 /**
  * A wrapper around `FileSystem` that caches hits to `exists()` and
@@ -115,7 +115,6 @@ export class CachedFileSystem implements FileSystem {
     }
   }
 
-
   lstat(path: AbsoluteFsPath): FileStats {
     const stat = this.delegate.lstat(path);
     // if the `path` does not exist then `lstat` will thrown an error.
@@ -140,7 +139,7 @@ export class CachedFileSystem implements FileSystem {
   chdir(path: AbsoluteFsPath): void {
     this.delegate.chdir(path);
   }
-  extname(path: AbsoluteFsPath|PathSegment): string {
+  extname(path: AbsoluteFsPath | PathSegment): string {
     return this.delegate.extname(path);
   }
   isCaseSensitive(): boolean {
@@ -164,7 +163,7 @@ export class CachedFileSystem implements FileSystem {
   relative<T extends PathString>(from: T, to: T): PathSegment {
     return this.delegate.relative(from, to);
   }
-  basename(filePath: string, extension?: string|undefined): PathSegment {
+  basename(filePath: string, extension?: string | undefined): PathSegment {
     return this.delegate.basename(filePath, extension);
   }
   realpath(filePath: AbsoluteFsPath): AbsoluteFsPath {

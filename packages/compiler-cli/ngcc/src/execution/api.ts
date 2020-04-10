@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {Task, TaskCompletedCallback, TaskQueue} from './tasks/api';
 
 /**
@@ -26,6 +27,8 @@ export type CreateCompileFn = (onTaskCompleted: TaskCompletedCallback) => Compil
  * processes the resulting tasks, does book-keeping and validates the final outcome).
  */
 export interface Executor {
-  execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn):
-      void|Promise<void>;
+  execute(
+    analyzeEntryPoints: AnalyzeEntryPointsFn,
+    createCompileFn: CreateCompileFn
+  ): void | Promise<void>;
 }

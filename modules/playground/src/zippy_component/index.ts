@@ -19,18 +19,19 @@ import {Zippy} from './app/zippy';
       This is some content.
     </zippy>
     <ul>
-      <li *ngFor="let  log of logs">{{log}}</li>
+      <li *ngFor="let log of logs">{{ log }}</li>
     </ul>
-  `
+  `,
 })
 export class ZippyApp {
   logs: string[] = [];
 
-  pushLog(log: string) { this.logs.push(log); }
+  pushLog(log: string) {
+    this.logs.push(log);
+  }
 }
 
 @NgModule({declarations: [ZippyApp, Zippy], bootstrap: [ZippyApp], imports: [BrowserModule]})
-export class ExampleModule {
-}
+export class ExampleModule {}
 
 platformBrowserDynamic().bootstrapModule(ExampleModule);

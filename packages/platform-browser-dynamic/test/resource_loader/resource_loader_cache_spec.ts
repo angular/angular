@@ -30,42 +30,47 @@ if (isBrowser) {
     });
 
     it('should resolve the Promise with the cached file content on success', async(() => {
-         resourceLoader = createCachedResourceLoader();
-         resourceLoader.get('test.html').then((text) => { expect(text).toBe('<div>Hello</div>'); });
-       }));
+      resourceLoader = createCachedResourceLoader();
+      resourceLoader.get('test.html').then((text) => {
+        expect(text).toBe('<div>Hello</div>');
+      });
+    }));
 
     it('should reject the Promise on failure', async(() => {
-         resourceLoader = createCachedResourceLoader();
-         resourceLoader.get('unknown.html').then(() => {
-           throw new Error('Not expected to succeed.');
-         }, () => {/* success */});
-       }));
+      resourceLoader = createCachedResourceLoader();
+      resourceLoader.get('unknown.html').then(
+        () => {
+          throw new Error('Not expected to succeed.');
+        },
+        () => {
+          /* success */
+        }
+      );
+    }));
 
-    it('should allow fakeAsync Tests to load components with templateUrl synchronously',
-       fakeAsync(() => {
-         TestBed.configureCompiler({
-           providers: [
-             {provide: UrlResolver, useClass: TestUrlResolver, deps: []},
-             {provide: ResourceLoader, useFactory: createCachedResourceLoader, deps: []}
-           ]
-         });
-         TestBed.configureTestingModule({declarations: [TestComponent]});
-         TestBed.compileComponents();
-         tick();
+    it('should allow fakeAsync Tests to load components with templateUrl synchronously', fakeAsync(() => {
+      TestBed.configureCompiler({
+        providers: [
+          {provide: UrlResolver, useClass: TestUrlResolver, deps: []},
+          {provide: ResourceLoader, useFactory: createCachedResourceLoader, deps: []},
+        ],
+      });
+      TestBed.configureTestingModule({declarations: [TestComponent]});
+      TestBed.compileComponents();
+      tick();
 
-         const fixture = TestBed.createComponent(TestComponent);
+      const fixture = TestBed.createComponent(TestComponent);
 
-         // This should initialize the fixture.
-         tick();
+      // This should initialize the fixture.
+      tick();
 
-         expect(fixture.debugElement.children[0].nativeElement).toHaveText('Hello');
-       }));
+      expect(fixture.debugElement.children[0].nativeElement).toHaveText('Hello');
+    }));
   });
 }
 
 @Component({selector: 'test-cmp', templateUrl: 'test.html'})
-class TestComponent {
-}
+class TestComponent {}
 
 class TestUrlResolver extends UrlResolver {
   resolve(baseUrl: string, url: string): string {

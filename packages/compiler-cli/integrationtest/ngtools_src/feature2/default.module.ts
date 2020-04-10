@@ -10,14 +10,10 @@ import {Component, NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 
 @Component({selector: 'feature-component', template: 'foo.html'})
-export class FeatureComponent {
-}
+export class FeatureComponent {}
 
 @NgModule({
   declarations: [FeatureComponent],
-  imports: [RouterModule.forChild([
-    {path: '', component: FeatureComponent},
-  ])]
+  imports: [RouterModule.forChild([{path: '', component: FeatureComponent}])],
 })
-export default class DefaultModule {
-}
+export default class DefaultModule {}

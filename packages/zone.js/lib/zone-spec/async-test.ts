@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-(function(_global: any) {
+(function (_global: any) {
   class AsyncTestZoneSpec implements ZoneSpec {
     static symbolParentUnresolved = Zone.__symbol__('parentUnresolved');
 
@@ -19,19 +19,28 @@
     supportWaitUnresolvedChainedPromise = false;
 
     constructor(
-        private finishCallback: Function, private failCallback: Function, namePrefix: string) {
+      private finishCallback: Function,
+      private failCallback: Function,
+      namePrefix: string
+    ) {
       this.name = 'asyncTestZone for ' + namePrefix;
       this.properties = {'AsyncTestZoneSpec': this};
       this.supportWaitUnresolvedChainedPromise =
-          _global[Zone.__symbol__('supportWaitUnResolvedChainedPromise')] === true;
+        _global[Zone.__symbol__('supportWaitUnResolvedChainedPromise')] === true;
     }
 
-    isUnresolvedChainedPromisePending() { return this.unresolvedChainedPromiseCount > 0; }
+    isUnresolvedChainedPromisePending() {
+      return this.unresolvedChainedPromiseCount > 0;
+    }
 
     _finishCallbackIfDone() {
-      if (!(this._pendingMicroTasks || this._pendingMacroTasks ||
-            (this.supportWaitUnresolvedChainedPromise &&
-             this.isUnresolvedChainedPromisePending()))) {
+      if (
+        !(
+          this._pendingMicroTasks ||
+          this._pendingMacroTasks ||
+          (this.supportWaitUnresolvedChainedPromise && this.isUnresolvedChainedPromisePending())
+        )
+      ) {
         // We do this because we would like to catch unhandled rejected promises.
         this.runZone.run(() => {
           setTimeout(() => {
@@ -84,8 +93,13 @@
     }
 
     onInvokeTask(
-        delegate: ZoneDelegate, current: Zone, target: Zone, task: Task, applyThis: any,
-        applyArgs: any) {
+      delegate: ZoneDelegate,
+      current: Zone,
+      target: Zone,
+      task: Task,
+      applyThis: any,
+      applyArgs: any
+    ) {
       if (task.type !== 'eventTask') {
         this._isSync = false;
       }
@@ -105,8 +119,14 @@
     // updated by(JiaLiPassion), only call finish callback when no task
     // was scheduled/invoked/canceled.
     onInvoke(
-        parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, delegate: Function,
-        applyThis: any, applyArgs?: any[], source?: string): any {
+      parentZoneDelegate: ZoneDelegate,
+      currentZone: Zone,
+      targetZone: Zone,
+      delegate: Function,
+      applyThis: any,
+      applyArgs?: any[],
+      source?: string
+    ): any {
       let previousTaskCounts: any = null;
       try {
         this._isSync = true;
@@ -120,8 +140,11 @@
     }
 
     onHandleError(
-        parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-        error: any): boolean {
+      parentZoneDelegate: ZoneDelegate,
+      currentZone: Zone,
+      targetZone: Zone,
+      error: any
+    ): boolean {
       // Let the parent try to handle the error.
       const result = parentZoneDelegate.handleError(targetZone, error);
       if (result) {
@@ -146,4 +169,4 @@
   // Export the class so that new instances can be created with proper
   // constructor params.
   (Zone as any)['AsyncTestZoneSpec'] = AsyncTestZoneSpec;
-})(typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || global);
+})((typeof window !== 'undefined' && window) || (typeof self !== 'undefined' && self) || global);

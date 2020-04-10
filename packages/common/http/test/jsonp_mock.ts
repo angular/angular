@@ -10,27 +10,31 @@ export class MockScriptElement {
   constructor() {}
 
   listeners: {
-    load?: (event: Event) => void,
-    error?: (err: Error) => void,
+    load?: (event: Event) => void;
+    error?: (err: Error) => void;
   } = {};
 
-  addEventListener(event: 'load'|'error', handler: Function): void {
+  addEventListener(event: 'load' | 'error', handler: Function): void {
     this.listeners[event] = handler as any;
   }
 
-  removeEventListener(event: 'load'|'error'): void { delete this.listeners[event]; }
+  removeEventListener(event: 'load' | 'error'): void {
+    delete this.listeners[event];
+  }
 }
 
 export class MockDocument {
   // TODO(issue/24571): remove '!'.
-  mock !: MockScriptElement | null;
+  mock!: MockScriptElement | null;
   readonly body: any = this;
 
   createElement(tag: 'script'): HTMLScriptElement {
-    return new MockScriptElement() as any as HTMLScriptElement;
+    return (new MockScriptElement() as any) as HTMLScriptElement;
   }
 
-  appendChild(node: any): void { this.mock = node; }
+  appendChild(node: any): void {
+    this.mock = node;
+  }
 
   removeNode(node: any): void {
     if (this.mock === node) {
@@ -38,7 +42,11 @@ export class MockDocument {
     }
   }
 
-  mockLoad(): void { this.mock !.listeners.load !(null as any); }
+  mockLoad(): void {
+    this.mock!.listeners.load!(null as any);
+  }
 
-  mockError(err: Error) { this.mock !.listeners.error !(err); }
+  mockError(err: Error) {
+    this.mock!.listeners.error!(err);
+  }
 }

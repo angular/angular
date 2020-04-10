@@ -6,16 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDataInRange, assertDefined, assertDomNode, assertGreaterThan, assertLessThan} from '../../util/assert';
+import {
+  assertDataInRange,
+  assertDefined,
+  assertDomNode,
+  assertGreaterThan,
+  assertLessThan,
+} from '../../util/assert';
 import {assertTNodeForLView} from '../assert';
 import {ACTIVE_INDEX, ActiveIndexFlag, LContainer, TYPE} from '../interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from '../interfaces/context';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode, isProceduralRenderer} from '../interfaces/renderer';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, RENDERER, TData, TView} from '../interfaces/view';
-
-
+import {
+  FLAGS,
+  HEADER_OFFSET,
+  HOST,
+  LView,
+  LViewFlags,
+  PARENT,
+  PREORDER_HOOK_FLAGS,
+  RENDERER,
+  TData,
+  TView,
+} from '../interfaces/view';
 
 /**
  * For efficiency reasons we often put several different data types (`RNode`, `LView`, `LContainer`)
@@ -49,7 +64,7 @@ export function unwrapRNode(value: RNode | LView | LContainer): RNode {
  * Returns `LView` or `null` if not found.
  * @param value wrapped value of `RNode`, `LView`, `LContainer`
  */
-export function unwrapLView(value: RNode | LView | LContainer): LView|null {
+export function unwrapLView(value: RNode | LView | LContainer): LView | null {
   while (Array.isArray(value)) {
     // This check is same as `isLView()` but we don't call at as we don't want to call
     // `Array.isArray()` twice and give JITer more work for inlining.
@@ -63,7 +78,7 @@ export function unwrapLView(value: RNode | LView | LContainer): LView|null {
  * Returns `LContainer` or `null` if not found.
  * @param value wrapped value of `RNode`, `LView`, `LContainer`
  */
-export function unwrapLContainer(value: RNode | LView | LContainer): LContainer|null {
+export function unwrapLContainer(value: RNode | LView | LContainer): LContainer | null {
   while (Array.isArray(value)) {
     // This check is same as `isLContainer()` but we don't call at as we don't want to call
     // `Array.isArray()` twice and give JITer more work for inlining.
@@ -105,17 +120,16 @@ export function getNativeByTNode(tNode: TNode, lView: LView): RNode {
  * @param tNode
  * @param lView
  */
-export function getNativeByTNodeOrNull(tNode: TNode, lView: LView): RNode|null {
+export function getNativeByTNodeOrNull(tNode: TNode, lView: LView): RNode | null {
   const index = tNode.index;
   if (index !== -1) {
     ngDevMode && assertTNodeForLView(tNode, lView);
-    const node: RNode|null = unwrapRNode(lView[index]);
+    const node: RNode | null = unwrapRNode(lView[index]);
     ngDevMode && node !== null && !isProceduralRenderer(lView[RENDERER]) && assertDomNode(node);
     return node;
   }
   return null;
 }
-
 
 export function getTNode(tView: TView, index: number): TNode {
   ngDevMode && assertGreaterThan(index, -1, 'wrong index for TNode');
@@ -137,17 +151,16 @@ export function getComponentLViewByIndex(nodeIndex: number, hostView: LView): LV
   return lView;
 }
 
-
 /**
  * Returns the monkey-patch value data present on the target (which could be
  * a component, directive or a DOM node).
  */
-export function readPatchedData(target: any): LView|LContext|null {
+export function readPatchedData(target: any): LView | LContext | null {
   ngDevMode && assertDefined(target, 'Target expected');
   return target[MONKEY_PATCH_KEY_NAME] || null;
 }
 
-export function readPatchedLView(target: any): LView|null {
+export function readPatchedLView(target: any): LView | null {
   const value = readPatchedData(target);
   if (value) {
     return Array.isArray(value) ? value : (value as LContext).lView;
@@ -176,9 +189,11 @@ export function viewAttachedToContainer(view: LView): boolean {
 }
 
 /** Returns a constant from `TConstants` instance. */
-export function getConstant<T>(consts: TConstants | null, index: number | null | undefined): T|
-    null {
-  return consts === null || index == null ? null : consts[index] as unknown as T;
+export function getConstant<T>(
+  consts: TConstants | null,
+  index: number | null | undefined
+): T | null {
+  return consts === null || index == null ? null : ((consts[index] as unknown) as T);
 }
 
 /**

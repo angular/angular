@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
@@ -25,14 +26,20 @@ export class Esm5RenderingFormatter extends EsmRenderingFormatter {
   addDefinitions(output: MagicString, compiledClass: CompiledClass, definitions: string): void {
     const iifeBody = getIifeBody(compiledClass.declaration);
     if (!iifeBody) {
-      throw new Error(`Compiled class declaration is not inside an IIFE: ${compiledClass.name} in ${
-          compiledClass.declaration.getSourceFile().fileName}`);
+      throw new Error(
+        `Compiled class declaration is not inside an IIFE: ${compiledClass.name} in ${
+          compiledClass.declaration.getSourceFile().fileName
+        }`
+      );
     }
 
     const returnStatement = iifeBody.statements.find(ts.isReturnStatement);
     if (!returnStatement) {
-      throw new Error(`Compiled class wrapper IIFE does not have a return statement: ${
-          compiledClass.name} in ${compiledClass.declaration.getSourceFile().fileName}`);
+      throw new Error(
+        `Compiled class wrapper IIFE does not have a return statement: ${compiledClass.name} in ${
+          compiledClass.declaration.getSourceFile().fileName
+        }`
+      );
     }
 
     const insertionPoint = returnStatement.getFullStart();
@@ -50,8 +57,12 @@ export class Esm5RenderingFormatter extends EsmRenderingFormatter {
    * @return The JavaScript code corresponding to `stmt` (in the appropriate format).
    */
   printStatement(stmt: Statement, sourceFile: ts.SourceFile, importManager: ImportManager): string {
-    const node =
-        translateStatement(stmt, importManager, NOOP_DEFAULT_IMPORT_RECORDER, ts.ScriptTarget.ES5);
+    const node = translateStatement(
+      stmt,
+      importManager,
+      NOOP_DEFAULT_IMPORT_RECORDER,
+      ts.ScriptTarget.ES5
+    );
     const code = this.printer.printNode(ts.EmitHint.Unspecified, node, sourceFile);
 
     return code;

@@ -6,25 +6,47 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, LiteralExpr, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, ReadPropExpr, WrappedNodeExpr} from '@angular/compiler';
+import {
+  Expression,
+  ExternalExpr,
+  LiteralExpr,
+  ParseLocation,
+  ParseSourceFile,
+  ParseSourceSpan,
+  R3DependencyMetadata,
+  R3Reference,
+  R3ResolvedDependencyType,
+  ReadPropExpr,
+  WrappedNodeExpr,
+} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics';
 import {DefaultImportRecorder, ImportFlags, Reference, ReferenceEmitter} from '../../imports';
 import {ForeignFunctionResolver, PartialEvaluator} from '../../partial_evaluator';
-import {ClassDeclaration, CtorParameter, Decorator, Import, isNamedClassDeclaration, ReflectionHost, TypeValueReference} from '../../reflection';
+import {
+  ClassDeclaration,
+  CtorParameter,
+  Decorator,
+  Import,
+  isNamedClassDeclaration,
+  ReflectionHost,
+  TypeValueReference,
+} from '../../reflection';
 import {DeclarationData} from '../../scope';
 
 export enum ConstructorDepErrorKind {
   NO_SUITABLE_TOKEN,
 }
 
-export type ConstructorDeps = {
-  deps: R3DependencyMetadata[];
-}|{
-  deps: null;
-  errors: ConstructorDepError[];
-};
+export type ConstructorDeps =
+  | {
+      deps: R3DependencyMetadata[];
+    }
+  | {
+      deps: null;
+      errors: ConstructorDepError[];
+    };
 
 export interface ConstructorDepError {
   index: number;
@@ -33,8 +55,11 @@ export interface ConstructorDepError {
 }
 
 export function getConstructorDependencies(
-    clazz: ClassDeclaration, reflector: ReflectionHost,
-    defaultImportRecorder: DefaultImportRecorder, isCore: boolean): ConstructorDeps|null {
+  clazz: ClassDeclaration,
+  reflector: ReflectionHost,
+  defaultImportRecorder: DefaultImportRecorder,
+  isCore: boolean
+): ConstructorDeps | null {
   const deps: R3DependencyMetadata[] = [];
   const errors: ConstructorDepError[] = [];
   let ctorParams = reflector.getConstructorParameters(clazz);
@@ -47,50 +72,64 @@ export function getConstructorDependencies(
   }
   ctorParams.forEach((param, idx) => {
     let token = valueReferenceToExpression(param.typeValueReference, defaultImportRecorder);
-    let attribute: Expression|null = null;
-    let optional = false, self = false, skipSelf = false, host = false;
+    let attribute: Expression | null = null;
+    let optional = false,
+      self = false,
+      skipSelf = false,
+      host = false;
     let resolved = R3ResolvedDependencyType.Token;
 
-    (param.decorators || []).filter(dec => isCore || isAngularCore(dec)).forEach(dec => {
-      const name = isCore || dec.import === null ? dec.name : dec.import!.name;
-      if (name === 'Inject') {
-        if (dec.args === null || dec.args.length !== 1) {
-          throw new FatalDiagnosticError(
-              ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(dec),
-              `Unexpected number of arguments to @Inject().`);
-        }
-        token = new WrappedNodeExpr(dec.args[0]);
-      } else if (name === 'Optional') {
-        optional = true;
-      } else if (name === 'SkipSelf') {
-        skipSelf = true;
-      } else if (name === 'Self') {
-        self = true;
-      } else if (name === 'Host') {
-        host = true;
-      } else if (name === 'Attribute') {
-        if (dec.args === null || dec.args.length !== 1) {
-          throw new FatalDiagnosticError(
-              ErrorCode.DECORATOR_ARITY_WRONG, Decorator.nodeForError(dec),
-              `Unexpected number of arguments to @Attribute().`);
-        }
-        const attributeName = dec.args[0];
-        token = new WrappedNodeExpr(attributeName);
-        if (ts.isStringLiteralLike(attributeName)) {
-          attribute = new LiteralExpr(attributeName.text);
+    (param.decorators || [])
+      .filter((dec) => isCore || isAngularCore(dec))
+      .forEach((dec) => {
+        const name = isCore || dec.import === null ? dec.name : dec.import!.name;
+        if (name === 'Inject') {
+          if (dec.args === null || dec.args.length !== 1) {
+            throw new FatalDiagnosticError(
+              ErrorCode.DECORATOR_ARITY_WRONG,
+              Decorator.nodeForError(dec),
+              `Unexpected number of arguments to @Inject().`
+            );
+          }
+          token = new WrappedNodeExpr(dec.args[0]);
+        } else if (name === 'Optional') {
+          optional = true;
+        } else if (name === 'SkipSelf') {
+          skipSelf = true;
+        } else if (name === 'Self') {
+          self = true;
+        } else if (name === 'Host') {
+          host = true;
+        } else if (name === 'Attribute') {
+          if (dec.args === null || dec.args.length !== 1) {
+            throw new FatalDiagnosticError(
+              ErrorCode.DECORATOR_ARITY_WRONG,
+              Decorator.nodeForError(dec),
+              `Unexpected number of arguments to @Attribute().`
+            );
+          }
+          const attributeName = dec.args[0];
+          token = new WrappedNodeExpr(attributeName);
+          if (ts.isStringLiteralLike(attributeName)) {
+            attribute = new LiteralExpr(attributeName.text);
+          } else {
+            attribute = new WrappedNodeExpr(ts.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword));
+          }
+          resolved = R3ResolvedDependencyType.Attribute;
         } else {
-          attribute = new WrappedNodeExpr(ts.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword));
+          throw new FatalDiagnosticError(
+            ErrorCode.DECORATOR_UNEXPECTED,
+            Decorator.nodeForError(dec),
+            `Unexpected decorator ${name} on parameter.`
+          );
         }
-        resolved = R3ResolvedDependencyType.Attribute;
-      } else {
-        throw new FatalDiagnosticError(
-            ErrorCode.DECORATOR_UNEXPECTED, Decorator.nodeForError(dec),
-            `Unexpected decorator ${name} on parameter.`);
-      }
-    });
+      });
 
-    if (token instanceof ExternalExpr && token.value.name === 'ChangeDetectorRef' &&
-        token.value.moduleName === '@angular/core') {
+    if (
+      token instanceof ExternalExpr &&
+      token.value.name === 'ChangeDetectorRef' &&
+      token.value.moduleName === '@angular/core'
+    ) {
       resolved = R3ResolvedDependencyType.ChangeDetectorRef;
     }
     if (token === null) {
@@ -118,22 +157,33 @@ export function getConstructorDependencies(
  * file in which the `TypeValueReference` originated.
  */
 export function valueReferenceToExpression(
-    valueRef: TypeValueReference, defaultImportRecorder: DefaultImportRecorder): Expression;
+  valueRef: TypeValueReference,
+  defaultImportRecorder: DefaultImportRecorder
+): Expression;
 export function valueReferenceToExpression(
-    valueRef: null, defaultImportRecorder: DefaultImportRecorder): null;
+  valueRef: null,
+  defaultImportRecorder: DefaultImportRecorder
+): null;
 export function valueReferenceToExpression(
-    valueRef: TypeValueReference|null, defaultImportRecorder: DefaultImportRecorder): Expression|
-    null;
+  valueRef: TypeValueReference | null,
+  defaultImportRecorder: DefaultImportRecorder
+): Expression | null;
 export function valueReferenceToExpression(
-    valueRef: TypeValueReference|null, defaultImportRecorder: DefaultImportRecorder): Expression|
-    null {
+  valueRef: TypeValueReference | null,
+  defaultImportRecorder: DefaultImportRecorder
+): Expression | null {
   if (valueRef === null) {
     return null;
   } else if (valueRef.local) {
-    if (defaultImportRecorder !== null && valueRef.defaultImportStatement !== null &&
-        ts.isIdentifier(valueRef.expression)) {
+    if (
+      defaultImportRecorder !== null &&
+      valueRef.defaultImportStatement !== null &&
+      ts.isIdentifier(valueRef.expression)
+    ) {
       defaultImportRecorder.recordImportedIdentifier(
-          valueRef.expression, valueRef.defaultImportStatement);
+        valueRef.expression,
+        valueRef.defaultImportStatement
+      );
     }
     return new WrappedNodeExpr(valueRef.expression);
   } else {
@@ -141,10 +191,12 @@ export function valueReferenceToExpression(
     const ref = valueRef as {
       moduleName: string;
       importedName: string;
-      nestedPath: string[]|null;
+      nestedPath: string[] | null;
     };
-    let importExpr: Expression =
-        new ExternalExpr({moduleName: ref.moduleName, name: ref.importedName});
+    let importExpr: Expression = new ExternalExpr({
+      moduleName: ref.moduleName,
+      name: ref.importedName,
+    });
     if (ref.nestedPath !== null) {
       for (const property of ref.nestedPath) {
         importExpr = new ReadPropExpr(importExpr, property);
@@ -160,8 +212,9 @@ export function valueReferenceToExpression(
  *
  * This is a companion function to `validateConstructorDependencies` which accepts invalid deps.
  */
-export function unwrapConstructorDependencies(deps: ConstructorDeps|null): R3DependencyMetadata[]|
-    'invalid'|null {
+export function unwrapConstructorDependencies(
+  deps: ConstructorDeps | null
+): R3DependencyMetadata[] | 'invalid' | null {
   if (deps === null) {
     return null;
   } else if (deps.deps !== null) {
@@ -174,10 +227,15 @@ export function unwrapConstructorDependencies(deps: ConstructorDeps|null): R3Dep
 }
 
 export function getValidConstructorDependencies(
-    clazz: ClassDeclaration, reflector: ReflectionHost,
-    defaultImportRecorder: DefaultImportRecorder, isCore: boolean): R3DependencyMetadata[]|null {
+  clazz: ClassDeclaration,
+  reflector: ReflectionHost,
+  defaultImportRecorder: DefaultImportRecorder,
+  isCore: boolean
+): R3DependencyMetadata[] | null {
   return validateConstructorDependencies(
-      clazz, getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore));
+    clazz,
+    getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore)
+  );
 }
 
 /**
@@ -188,7 +246,9 @@ export function getValidConstructorDependencies(
  * deps.
  */
 export function validateConstructorDependencies(
-    clazz: ClassDeclaration, deps: ConstructorDeps|null): R3DependencyMetadata[]|null {
+  clazz: ClassDeclaration,
+  deps: ConstructorDeps | null
+): R3DependencyMetadata[] | null {
   if (deps === null) {
     return null;
   } else if (deps.deps !== null) {
@@ -198,27 +258,36 @@ export function validateConstructorDependencies(
     const {param, index} = (deps as {errors: ConstructorDepError[]}).errors[0];
     // There is at least one error.
     throw new FatalDiagnosticError(
-        ErrorCode.PARAM_MISSING_TOKEN, param.nameNode,
-        `No suitable injection token for parameter '${param.name || index}' of class '${
-            clazz.name.text}'.\n` +
-            (param.typeNode !== null ? `Found ${param.typeNode.getText()}` :
-                                       'no type or decorator'));
+      ErrorCode.PARAM_MISSING_TOKEN,
+      param.nameNode,
+      `No suitable injection token for parameter '${param.name || index}' of class '${
+        clazz.name.text
+      }'.\n` +
+        (param.typeNode !== null ? `Found ${param.typeNode.getText()}` : 'no type or decorator')
+    );
   }
 }
 
 export function toR3Reference(
-    valueRef: Reference, typeRef: Reference, valueContext: ts.SourceFile,
-    typeContext: ts.SourceFile, refEmitter: ReferenceEmitter): R3Reference {
+  valueRef: Reference,
+  typeRef: Reference,
+  valueContext: ts.SourceFile,
+  typeContext: ts.SourceFile,
+  refEmitter: ReferenceEmitter
+): R3Reference {
   const value = refEmitter.emit(valueRef, valueContext);
   const type = refEmitter.emit(
-      typeRef, typeContext, ImportFlags.ForceNewImport | ImportFlags.AllowTypeImports);
+    typeRef,
+    typeContext,
+    ImportFlags.ForceNewImport | ImportFlags.AllowTypeImports
+  );
   if (value === null || type === null) {
     throw new Error(`Could not refer to ${ts.SyntaxKind[valueRef.node.kind]}`);
   }
   return {value, type};
 }
 
-export function isAngularCore(decorator: Decorator): decorator is Decorator&{import: Import} {
+export function isAngularCore(decorator: Decorator): decorator is Decorator & {import: Import} {
   return decorator.import !== null && decorator.import.from === '@angular/core';
 }
 
@@ -227,8 +296,11 @@ export function isAngularCoreReference(reference: Reference, symbolName: string)
 }
 
 export function findAngularDecorator(
-    decorators: Decorator[], name: string, isCore: boolean): Decorator|undefined {
-  return decorators.find(decorator => isAngularDecorator(decorator, name, isCore));
+  decorators: Decorator[],
+  name: string,
+  isCore: boolean
+): Decorator | undefined {
+  return decorators.find((decorator) => isAngularDecorator(decorator, name, isCore));
 }
 
 export function isAngularDecorator(decorator: Decorator, name: string, isCore: boolean): boolean {
@@ -253,7 +325,7 @@ export function unwrapExpression(node: ts.Expression): ts.Expression {
   return node;
 }
 
-function expandForwardRef(arg: ts.Expression): ts.Expression|null {
+function expandForwardRef(arg: ts.Expression): ts.Expression | null {
   arg = unwrapExpression(arg);
   if (!ts.isArrowFunction(arg) && !ts.isFunctionExpression(arg)) {
     return null;
@@ -291,8 +363,9 @@ export function unwrapForwardRef(node: ts.Expression, reflector: ReflectionHost)
     return node;
   }
 
-  const fn =
-      ts.isPropertyAccessExpression(node.expression) ? node.expression.name : node.expression;
+  const fn = ts.isPropertyAccessExpression(node.expression)
+    ? node.expression.name
+    : node.expression;
   if (!ts.isIdentifier(fn)) {
     return node;
   }
@@ -318,8 +391,9 @@ export function unwrapForwardRef(node: ts.Expression, reflector: ReflectionHost)
  * @returns an unwrapped argument if `ref` pointed to forwardRef, or null otherwise
  */
 export function forwardRefResolver(
-    ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-    args: ReadonlyArray<ts.Expression>): ts.Expression|null {
+  ref: Reference<ts.FunctionDeclaration | ts.MethodDeclaration | ts.FunctionExpression>,
+  args: ReadonlyArray<ts.Expression>
+): ts.Expression | null {
   if (!isAngularCoreReference(ref, 'forwardRef') || args.length !== 1) {
     return null;
   }
@@ -331,8 +405,10 @@ export function forwardRefResolver(
  * @param resolvers Resolvers to be combined.
  */
 export function combineResolvers(resolvers: ForeignFunctionResolver[]): ForeignFunctionResolver {
-  return (ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-          args: ReadonlyArray<ts.Expression>): ts.Expression|null => {
+  return (
+    ref: Reference<ts.FunctionDeclaration | ts.MethodDeclaration | ts.FunctionExpression>,
+    args: ReadonlyArray<ts.Expression>
+  ): ts.Expression | null => {
     for (const resolver of resolvers) {
       const resolved = resolver(ref, args);
       if (resolved !== null) {
@@ -344,7 +420,10 @@ export function combineResolvers(resolvers: ForeignFunctionResolver[]): ForeignF
 }
 
 export function isExpressionForwardReference(
-    expr: Expression, context: ts.Node, contextSource: ts.SourceFile): boolean {
+  expr: Expression,
+  context: ts.Node,
+  contextSource: ts.SourceFile
+): boolean {
   if (isWrappedTsNodeExpr(expr)) {
     const node = ts.getOriginalNode(expr.node);
     return node.getSourceFile() === contextSource && context.pos < node.pos;
@@ -358,8 +437,10 @@ export function isWrappedTsNodeExpr(expr: Expression): expr is WrappedNodeExpr<t
 }
 
 export function readBaseClass(
-    node: ClassDeclaration, reflector: ReflectionHost,
-    evaluator: PartialEvaluator): Reference<ClassDeclaration>|'dynamic'|null {
+  node: ClassDeclaration,
+  reflector: ReflectionHost,
+  evaluator: PartialEvaluator
+): Reference<ClassDeclaration> | 'dynamic' | null {
   const baseExpression = reflector.getBaseClassExpression(node);
   if (baseExpression !== null) {
     const baseClass = evaluator.evaluate(baseExpression);
@@ -373,17 +454,18 @@ export function readBaseClass(
   return null;
 }
 
-const parensWrapperTransformerFactory: ts.TransformerFactory<ts.Expression> =
-    (context: ts.TransformationContext) => {
-      const visitor: ts.Visitor = (node: ts.Node): ts.Node => {
-        const visited = ts.visitEachChild(node, visitor, context);
-        if (ts.isArrowFunction(visited) || ts.isFunctionExpression(visited)) {
-          return ts.createParen(visited);
-        }
-        return visited;
-      };
-      return (node: ts.Expression) => ts.visitEachChild(node, visitor, context);
-    };
+const parensWrapperTransformerFactory: ts.TransformerFactory<ts.Expression> = (
+  context: ts.TransformationContext
+) => {
+  const visitor: ts.Visitor = (node: ts.Node): ts.Node => {
+    const visited = ts.visitEachChild(node, visitor, context);
+    if (ts.isArrowFunction(visited) || ts.isFunctionExpression(visited)) {
+      return ts.createParen(visited);
+    }
+    return visited;
+  };
+  return (node: ts.Expression) => ts.visitEachChild(node, visitor, context);
+};
 
 /**
  * Wraps all functions in a given expression in parentheses. This is needed to avoid problems
@@ -407,8 +489,11 @@ export function wrapFunctionExpressionsInParens(expression: ts.Expression): ts.E
  * the directive/pipe exists in its `declarations` (if possible).
  */
 export function makeDuplicateDeclarationError(
-    node: ClassDeclaration, data: DeclarationData[], kind: string): ts.Diagnostic {
-  const context: {node: ts.Node; messageText: string;}[] = [];
+  node: ClassDeclaration,
+  data: DeclarationData[],
+  kind: string
+): ts.Diagnostic {
+  const context: {node: ts.Node; messageText: string}[] = [];
   for (const decl of data) {
     if (decl.rawDeclarations === null) {
       continue;
@@ -418,15 +503,17 @@ export function makeDuplicateDeclarationError(
     const contextNode = decl.ref.getOriginForDiagnostics(decl.rawDeclarations, decl.ngModule.name);
     context.push({
       node: contextNode,
-      messageText: `'${node.name.text}' is listed in the declarations of the NgModule '${
-          decl.ngModule.name.text}'.`,
+      messageText: `'${node.name.text}' is listed in the declarations of the NgModule '${decl.ngModule.name.text}'.`,
     });
   }
 
   // Finally, produce the diagnostic.
   return makeDiagnostic(
-      ErrorCode.NGMODULE_DECLARATION_NOT_UNIQUE, node.name,
-      `The ${kind} '${node.name.text}' is declared by more than one NgModule.`, context);
+    ErrorCode.NGMODULE_DECLARATION_NOT_UNIQUE,
+    node.name,
+    `The ${kind} '${node.name.text}' is declared by more than one NgModule.`,
+    context
+  );
 }
 
 /**
@@ -435,8 +522,10 @@ export function makeDuplicateDeclarationError(
  * @param rawProviders Expression that declared the providers array in the source.
  */
 export function resolveProvidersRequiringFactory(
-    rawProviders: ts.Expression, reflector: ReflectionHost,
-    evaluator: PartialEvaluator): Set<Reference<ClassDeclaration>> {
+  rawProviders: ts.Expression,
+  reflector: ReflectionHost,
+  evaluator: PartialEvaluator
+): Set<Reference<ClassDeclaration>> {
   const providers = new Set<Reference<ClassDeclaration>>();
   const resolvedProviders = evaluator.evaluate(rawProviders);
 
@@ -445,7 +534,7 @@ export function resolveProvidersRequiringFactory(
   }
 
   resolvedProviders.forEach(function processProviders(provider) {
-    let tokenClass: Reference|null = null;
+    let tokenClass: Reference | null = null;
 
     if (Array.isArray(provider)) {
       // If we ran into an array, recurse into it until we've resolve all the classes.
@@ -482,9 +571,10 @@ export function resolveProvidersRequiringFactory(
 export function wrapTypeReference(reflector: ReflectionHost, clazz: ClassDeclaration): R3Reference {
   const dtsClass = reflector.getDtsDeclaration(clazz);
   const value = new WrappedNodeExpr(clazz.name);
-  const type = dtsClass !== null && isNamedClassDeclaration(dtsClass) ?
-      new WrappedNodeExpr(dtsClass.name) :
-      value;
+  const type =
+    dtsClass !== null && isNamedClassDeclaration(dtsClass)
+      ? new WrappedNodeExpr(dtsClass.name)
+      : value;
   return {value, type};
 }
 
@@ -498,6 +588,7 @@ export function createSourceSpan(node: ts.Node): ParseSourceSpan {
 
   // +1 because values are zero-indexed.
   return new ParseSourceSpan(
-      new ParseLocation(parseSf, startOffset, startLine + 1, startCol + 1),
-      new ParseLocation(parseSf, endOffset, endLine + 1, endCol + 1));
+    new ParseLocation(parseSf, startOffset, startLine + 1, startCol + 1),
+    new ParseLocation(parseSf, endOffset, endLine + 1, endCol + 1)
+  );
 }

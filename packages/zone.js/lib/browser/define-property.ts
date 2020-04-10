@@ -21,12 +21,12 @@ export function propertyPatch() {
   zoneSymbol = Zone.__symbol__;
   _defineProperty = (Object as any)[zoneSymbol('defineProperty')] = Object.defineProperty;
   _getOwnPropertyDescriptor = (Object as any)[zoneSymbol('getOwnPropertyDescriptor')] =
-      Object.getOwnPropertyDescriptor;
+    Object.getOwnPropertyDescriptor;
   _create = Object.create;
   unconfigurablesKey = zoneSymbol('unconfigurables');
-  Object.defineProperty = function(obj: any, prop: string, desc: any) {
+  Object.defineProperty = function (obj: any, prop: string, desc: any) {
     if (isUnconfigurable(obj, prop)) {
-      throw new TypeError('Cannot assign to read only property \'' + prop + '\' of ' + obj);
+      throw new TypeError("Cannot assign to read only property '" + prop + "' of " + obj);
     }
     const originalConfigurableFlag = desc.configurable;
     if (prop !== 'prototype') {
@@ -35,21 +35,23 @@ export function propertyPatch() {
     return _tryDefineProperty(obj, prop, desc, originalConfigurableFlag);
   };
 
-  Object.defineProperties = function(obj, props) {
-    Object.keys(props).forEach(function(prop) { Object.defineProperty(obj, prop, props[prop]); });
+  Object.defineProperties = function (obj, props) {
+    Object.keys(props).forEach(function (prop) {
+      Object.defineProperty(obj, prop, props[prop]);
+    });
     return obj;
   };
 
-  Object.create = <any>function(obj: any, proto: any) {
+  Object.create = <any>function (obj: any, proto: any) {
     if (typeof proto === 'object' && !Object.isFrozen(proto)) {
-      Object.keys(proto).forEach(function(prop) {
+      Object.keys(proto).forEach(function (prop) {
         proto[prop] = rewriteDescriptor(obj, prop, proto[prop]);
       });
     }
     return _create(obj, proto);
   };
 
-  Object.getOwnPropertyDescriptor = function(obj, prop) {
+  Object.getOwnPropertyDescriptor = function (obj, prop) {
     const desc = _getOwnPropertyDescriptor(obj, prop);
     if (desc && isUnconfigurable(obj, prop)) {
       desc.configurable = false;
@@ -100,14 +102,15 @@ function _tryDefineProperty(obj: any, prop: string, desc: any, originalConfigura
       try {
         return _defineProperty(obj, prop, desc);
       } catch (error) {
-        let descJson: string|null = null;
+        let descJson: string | null = null;
         try {
           descJson = JSON.stringify(desc);
         } catch (error) {
           descJson = desc.toString();
         }
-        console.log(`Attempting to configure '${prop}' with descriptor '${descJson}' on object '${
-            obj}' and got error, giving up: ${error}`);
+        console.log(
+          `Attempting to configure '${prop}' with descriptor '${descJson}' on object '${obj}' and got error, giving up: ${error}`
+        );
       }
     } else {
       throw error;

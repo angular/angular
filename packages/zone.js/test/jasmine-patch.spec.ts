@@ -22,9 +22,9 @@ ifEnvSupports(supportJasmineSpec, () => {
 
   describe('jasmine', () => {
     let throwOnAsync = false;
-    let beforeEachZone: Zone|null = null;
-    let beforeAllZone: Zone|null = null;
-    let itZone: Zone|null = null;
+    let beforeEachZone: Zone | null = null;
+    let beforeAllZone: Zone | null = null;
+    let itZone: Zone | null = null;
     const syncZone = Zone.current;
     try {
       Zone.current.scheduleMicroTask('dontallow', (): any => null);
@@ -32,9 +32,9 @@ ifEnvSupports(supportJasmineSpec, () => {
       throwOnAsync = true;
     }
 
-    beforeAll(() => beforeAllZone = Zone.current);
+    beforeAll(() => (beforeAllZone = Zone.current));
 
-    beforeEach(() => beforeEachZone = Zone.current);
+    beforeEach(() => (beforeEachZone = Zone.current));
 
     it('should throw on async in describe', () => {
       expect(throwOnAsync).toBe(true);
@@ -47,20 +47,22 @@ ifEnvSupports(supportJasmineSpec, () => {
     afterEach(() => {
       let zone = Zone.current;
       expect(zone.name).toEqual('ProxyZone');
-      expect(beforeEachZone !.name).toEqual(zone.name);
+      expect(beforeEachZone!.name).toEqual(zone.name);
       expect(itZone).toBe(zone);
     });
 
     afterAll(() => {
       let zone = Zone.current;
       expect(zone.name).toEqual('ProxyZone');
-      expect(beforeAllZone !.name).toEqual(zone.name);
+      expect(beforeAllZone!.name).toEqual(zone.name);
     });
   });
 
   describe('return promise', () => {
     let log: string[];
-    beforeEach(() => { log = []; });
+    beforeEach(() => {
+      log = [];
+    });
 
     it('should wait for promise to resolve', () => {
       return new Promise((res, _) => {
@@ -71,6 +73,8 @@ ifEnvSupports(supportJasmineSpec, () => {
       });
     });
 
-    afterEach(() => { expect(log).toEqual(['resolved']); });
+    afterEach(() => {
+      expect(log).toEqual(['resolved']);
+    });
   });
 })();

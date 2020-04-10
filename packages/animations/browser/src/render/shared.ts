@@ -5,7 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationEvent, AnimationPlayer, NoopAnimationPlayer, ɵAnimationGroupPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
+
+import {
+  AUTO_STYLE,
+  AnimationEvent,
+  AnimationPlayer,
+  NoopAnimationPlayer,
+  ɵAnimationGroupPlayer,
+  ɵPRE_STYLE as PRE_STYLE,
+  ɵStyleData,
+} from '@angular/animations';
 
 import {AnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
 import {AnimationDriver} from '../../src/render/animation_driver';
@@ -16,7 +25,7 @@ import {AnimationDriver} from '../../src/render/animation_driver';
 declare const process: any;
 
 export function isBrowser(): boolean {
-  return (typeof window !== 'undefined' && typeof window.document !== 'undefined');
+  return typeof window !== 'undefined' && typeof window.document !== 'undefined';
 }
 
 export function isNode(): boolean {
@@ -40,18 +49,22 @@ export function optimizeGroupPlayer(players: AnimationPlayer[]): AnimationPlayer
 }
 
 export function normalizeKeyframes(
-    driver: AnimationDriver, normalizer: AnimationStyleNormalizer, element: any,
-    keyframes: ɵStyleData[], preStyles: ɵStyleData = {},
-    postStyles: ɵStyleData = {}): ɵStyleData[] {
+  driver: AnimationDriver,
+  normalizer: AnimationStyleNormalizer,
+  element: any,
+  keyframes: ɵStyleData[],
+  preStyles: ɵStyleData = {},
+  postStyles: ɵStyleData = {}
+): ɵStyleData[] {
   const errors: string[] = [];
   const normalizedKeyframes: ɵStyleData[] = [];
   let previousOffset = -1;
-  let previousKeyframe: ɵStyleData|null = null;
-  keyframes.forEach(kf => {
+  let previousKeyframe: ɵStyleData | null = null;
+  keyframes.forEach((kf) => {
     const offset = kf['offset'] as number;
     const isSameOffset = offset == previousOffset;
     const normalizedKeyframe: ɵStyleData = (isSameOffset && previousKeyframe) || {};
-    Object.keys(kf).forEach(prop => {
+    Object.keys(kf).forEach((prop) => {
       let normalizedProp = prop;
       let normalizedValue = kf[prop];
       if (prop !== 'offset') {
@@ -66,8 +79,12 @@ export function normalizeKeyframes(
             break;
 
           default:
-            normalizedValue =
-                normalizer.normalizeStyleValue(prop, normalizedProp, normalizedValue, errors);
+            normalizedValue = normalizer.normalizeStyleValue(
+              prop,
+              normalizedProp,
+              normalizedValue,
+              errors
+            );
             break;
         }
       }
@@ -82,15 +99,19 @@ export function normalizeKeyframes(
   if (errors.length) {
     const LINE_START = '\n - ';
     throw new Error(
-        `Unable to animate due to the following errors:${LINE_START}${errors.join(LINE_START)}`);
+      `Unable to animate due to the following errors:${LINE_START}${errors.join(LINE_START)}`
+    );
   }
 
   return normalizedKeyframes;
 }
 
 export function listenOnPlayer(
-    player: AnimationPlayer, eventName: string, event: AnimationEvent | undefined,
-    callback: (event: any) => any) {
+  player: AnimationPlayer,
+  eventName: string,
+  event: AnimationEvent | undefined,
+  callback: (event: any) => any
+) {
   switch (eventName) {
     case 'start':
       player.onStart(() => callback(event && copyAnimationEvent(event, 'start', player)));
@@ -105,12 +126,21 @@ export function listenOnPlayer(
 }
 
 export function copyAnimationEvent(
-    e: AnimationEvent, phaseName: string, player: AnimationPlayer): AnimationEvent {
+  e: AnimationEvent,
+  phaseName: string,
+  player: AnimationPlayer
+): AnimationEvent {
   const totalTime = player.totalTime;
   const disabled = (player as any).disabled ? true : false;
   const event = makeAnimationEvent(
-      e.element, e.triggerName, e.fromState, e.toState, phaseName || e.phaseName,
-      totalTime == undefined ? e.totalTime : totalTime, disabled);
+    e.element,
+    e.triggerName,
+    e.fromState,
+    e.toState,
+    phaseName || e.phaseName,
+    totalTime == undefined ? e.totalTime : totalTime,
+    disabled
+  );
   const data = (e as any)['_data'];
   if (data != null) {
     (event as any)['_data'] = data;
@@ -119,18 +149,27 @@ export function copyAnimationEvent(
 }
 
 export function makeAnimationEvent(
-    element: any, triggerName: string, fromState: string, toState: string, phaseName: string = '',
-    totalTime: number = 0, disabled?: boolean): AnimationEvent {
+  element: any,
+  triggerName: string,
+  fromState: string,
+  toState: string,
+  phaseName: string = '',
+  totalTime: number = 0,
+  disabled?: boolean
+): AnimationEvent {
   return {element, triggerName, fromState, toState, phaseName, totalTime, disabled: !!disabled};
 }
 
 export function getOrSetAsInMap(
-    map: Map<any, any>| {[key: string]: any}, key: any, defaultValue: any) {
+  map: Map<any, any> | {[key: string]: any},
+  key: any,
+  defaultValue: any
+) {
   let value: any;
   if (map instanceof Map) {
     value = map.get(key);
     if (!value) {
-      map.set(key, value = defaultValue);
+      map.set(key, (value = defaultValue));
     }
   } else {
     value = map[key];
@@ -150,26 +189,35 @@ export function parseTimelineCommand(command: string): [string, string] {
 
 let _contains: (elm1: any, elm2: any) => boolean = (elm1: any, elm2: any) => false;
 let _matches: (element: any, selector: string) => boolean = (element: any, selector: string) =>
-    false;
-let _query: (element: any, selector: string, multi: boolean) => any[] =
-    (element: any, selector: string, multi: boolean) => {
-      return [];
-    };
+  false;
+let _query: (element: any, selector: string, multi: boolean) => any[] = (
+  element: any,
+  selector: string,
+  multi: boolean
+) => {
+  return [];
+};
 
 // Define utility methods for browsers and platform-server(domino) where Element
 // and utility methods exist.
 const _isNode = isNode();
 if (_isNode || typeof Element !== 'undefined') {
   // this is well supported in all browsers
-  _contains = (elm1: any, elm2: any) => { return elm1.contains(elm2) as boolean; };
+  _contains = (elm1: any, elm2: any) => {
+    return elm1.contains(elm2) as boolean;
+  };
 
   _matches = (() => {
     if (_isNode || Element.prototype.matches) {
       return (element: any, selector: string) => element.matches(selector);
     } else {
       const proto = Element.prototype as any;
-      const fn = proto.matchesSelector || proto.mozMatchesSelector || proto.msMatchesSelector ||
-          proto.oMatchesSelector || proto.webkitMatchesSelector;
+      const fn =
+        proto.matchesSelector ||
+        proto.mozMatchesSelector ||
+        proto.msMatchesSelector ||
+        proto.oMatchesSelector ||
+        proto.webkitMatchesSelector;
       if (fn) {
         return (element: any, selector: string) => fn.apply(element, [selector]);
       } else {
@@ -195,30 +243,30 @@ if (_isNode || typeof Element !== 'undefined') {
 function containsVendorPrefix(prop: string): boolean {
   // Webkit is the only real popular vendor prefix nowadays
   // cc: http://shouldiprefix.com/
-  return prop.substring(1, 6) == 'ebkit';  // webkit or Webkit
+  return prop.substring(1, 6) == 'ebkit'; // webkit or Webkit
 }
 
-let _CACHED_BODY: {style: any}|null = null;
+let _CACHED_BODY: {style: any} | null = null;
 let _IS_WEBKIT = false;
 export function validateStyleProperty(prop: string): boolean {
   if (!_CACHED_BODY) {
     _CACHED_BODY = getBodyNode() || {};
-    _IS_WEBKIT = _CACHED_BODY !.style ? ('WebkitAppearance' in _CACHED_BODY !.style) : false;
+    _IS_WEBKIT = _CACHED_BODY!.style ? 'WebkitAppearance' in _CACHED_BODY!.style : false;
   }
 
   let result = true;
-  if (_CACHED_BODY !.style && !containsVendorPrefix(prop)) {
-    result = prop in _CACHED_BODY !.style;
+  if (_CACHED_BODY!.style && !containsVendorPrefix(prop)) {
+    result = prop in _CACHED_BODY!.style;
     if (!result && _IS_WEBKIT) {
       const camelProp = 'Webkit' + prop.charAt(0).toUpperCase() + prop.substr(1);
-      result = camelProp in _CACHED_BODY !.style;
+      result = camelProp in _CACHED_BODY!.style;
     }
   }
 
   return result;
 }
 
-export function getBodyNode(): any|null {
+export function getBodyNode(): any | null {
   if (typeof document != 'undefined') {
     return document.body;
   }
@@ -231,7 +279,7 @@ export const invokeQuery = _query;
 
 export function hypenatePropsObject(object: {[key: string]: any}): {[key: string]: any} {
   const newObj: {[key: string]: any} = {};
-  Object.keys(object).forEach(prop => {
+  Object.keys(object).forEach((prop) => {
     const newProp = prop.replace(/([a-z])([A-Z])/g, '$1-$2');
     newObj[newProp] = object[prop];
   });

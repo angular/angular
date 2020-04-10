@@ -9,7 +9,6 @@
 import {Inject, Injectable, LOCALE_ID} from '@angular/core';
 import {Plural, getLocalePluralCase} from './locale_data_api';
 
-
 /**
  * @publicApi
  */
@@ -17,14 +16,17 @@ export abstract class NgLocalization {
   abstract getPluralCategory(value: any, locale?: string): string;
 }
 
-
 /**
  * Returns the plural category for a given value.
  * - "=value" when the case exists,
  * - the plural category otherwise
  */
 export function getPluralCategory(
-    value: number, cases: string[], ngLocalization: NgLocalization, locale?: string): string {
+  value: number,
+  cases: string[],
+  ngLocalization: NgLocalization,
+  locale?: string
+): string {
   let key = `=${value}`;
 
   if (cases.indexOf(key) > -1) {
@@ -51,7 +53,9 @@ export function getPluralCategory(
  */
 @Injectable()
 export class NgLocaleLocalization extends NgLocalization {
-  constructor(@Inject(LOCALE_ID) protected locale: string) { super(); }
+  constructor(@Inject(LOCALE_ID) protected locale: string) {
+    super();
+  }
 
   getPluralCategory(value: any, locale?: string): string {
     const plural = getLocalePluralCase(locale || this.locale)(value);

@@ -37,12 +37,17 @@ interface TscPlugin {
   readonly name: string;
 
   wrapHost(
-      host: ts.CompilerHost&Partial<UnifiedModulesHost>, inputFiles: ReadonlyArray<string>,
-      options: ts.CompilerOptions): PluginCompilerHost;
+    host: ts.CompilerHost & Partial<UnifiedModulesHost>,
+    inputFiles: ReadonlyArray<string>,
+    options: ts.CompilerOptions
+  ): PluginCompilerHost;
 
-  setupCompilation(program: ts.Program, oldProgram?: ts.Program): {
-    ignoreForDiagnostics: Set<ts.SourceFile>,
-    ignoreForEmit: Set<ts.SourceFile>,
+  setupCompilation(
+    program: ts.Program,
+    oldProgram?: ts.Program
+  ): {
+    ignoreForDiagnostics: Set<ts.SourceFile>;
+    ignoreForEmit: Set<ts.SourceFile>;
   };
 
   getDiagnostics(file?: ts.SourceFile): ts.Diagnostic[];
@@ -60,9 +65,9 @@ interface TscPlugin {
 export class NgTscPlugin implements TscPlugin {
   name = 'ngtsc';
 
-  private options: NgCompilerOptions|null = null;
-  private host: NgCompilerHost|null = null;
-  private _compiler: NgCompiler|null = null;
+  private options: NgCompilerOptions | null = null;
+  private host: NgCompilerHost | null = null;
+  private _compiler: NgCompiler | null = null;
 
   get compiler(): NgCompiler {
     if (this._compiler === null) {
@@ -76,22 +81,32 @@ export class NgTscPlugin implements TscPlugin {
   }
 
   wrapHost(
-      host: ts.CompilerHost&UnifiedModulesHost, inputFiles: readonly string[],
-      options: ts.CompilerOptions): PluginCompilerHost {
+    host: ts.CompilerHost & UnifiedModulesHost,
+    inputFiles: readonly string[],
+    options: ts.CompilerOptions
+  ): PluginCompilerHost {
     this.options = {...this.ngOptions, ...options} as NgCompilerOptions;
     this.host = NgCompilerHost.wrap(host, inputFiles, this.options);
     return this.host;
   }
 
-  setupCompilation(program: ts.Program, oldProgram?: ts.Program): {
-    ignoreForDiagnostics: Set<ts.SourceFile>,
-    ignoreForEmit: Set<ts.SourceFile>,
+  setupCompilation(
+    program: ts.Program,
+    oldProgram?: ts.Program
+  ): {
+    ignoreForDiagnostics: Set<ts.SourceFile>;
+    ignoreForEmit: Set<ts.SourceFile>;
   } {
     if (this.host === null || this.options === null) {
       throw new Error('Lifecycle error: setupCompilation() before wrapHost().');
     }
-    this._compiler =
-        new NgCompiler(this.host, this.options, program, oldProgram, NOOP_PERF_RECORDER);
+    this._compiler = new NgCompiler(
+      this.host,
+      this.options,
+      program,
+      oldProgram,
+      NOOP_PERF_RECORDER
+    );
     return {
       ignoreForDiagnostics: this._compiler.ignoreForDiagnostics,
       ignoreForEmit: this._compiler.ignoreForEmit,

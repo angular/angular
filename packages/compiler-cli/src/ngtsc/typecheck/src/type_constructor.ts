@@ -14,8 +14,12 @@ import {TypeCtorMetadata} from './api';
 import {TypeParameterEmitter} from './type_parameter_emitter';
 
 export function generateTypeCtorDeclarationFn(
-    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata, nodeTypeRef: ts.EntityName,
-    typeParams: ts.TypeParameterDeclaration[]|undefined, reflector: ReflectionHost): ts.Statement {
+  node: ClassDeclaration<ts.ClassDeclaration>,
+  meta: TypeCtorMetadata,
+  nodeTypeRef: ts.EntityName,
+  typeParams: ts.TypeParameterDeclaration[] | undefined,
+  reflector: ReflectionHost
+): ts.Statement {
   if (requiresInlineTypeCtor(node, reflector)) {
     throw new Error(`${node.name.text} requires an inline type constructor`);
   }
@@ -29,29 +33,29 @@ export function generateTypeCtorDeclarationFn(
 
   if (meta.body) {
     const fnType = ts.createFunctionTypeNode(
-        /* typeParameters */ typeParameters,
-        /* parameters */[initParam],
-        /* type */ rawType,
+      /* typeParameters */ typeParameters,
+      /* parameters */ [initParam],
+      /* type */ rawType
     );
 
     const decl = ts.createVariableDeclaration(
-        /* name */ meta.fnName,
-        /* type */ fnType,
-        /* body */ ts.createNonNullExpression(ts.createNull()));
+      /* name */ meta.fnName,
+      /* type */ fnType,
+      /* body */ ts.createNonNullExpression(ts.createNull())
+    );
     const declList = ts.createVariableDeclarationList([decl], ts.NodeFlags.Const);
-    return ts.createVariableStatement(
-        /* modifiers */ undefined,
-        /* declarationList */ declList);
+    return ts.createVariableStatement(/* modifiers */ undefined, /* declarationList */ declList);
   } else {
     return ts.createFunctionDeclaration(
-        /* decorators */ undefined,
-        /* modifiers */[ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
-        /* asteriskToken */ undefined,
-        /* name */ meta.fnName,
-        /* typeParameters */ typeParameters,
-        /* parameters */[initParam],
-        /* type */ rawType,
-        /* body */ undefined);
+      /* decorators */ undefined,
+      /* modifiers */ [ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
+      /* asteriskToken */ undefined,
+      /* name */ meta.fnName,
+      /* typeParameters */ typeParameters,
+      /* parameters */ [initParam],
+      /* type */ rawType,
+      /* body */ undefined
+    );
   }
 }
 
@@ -91,12 +95,14 @@ export function generateTypeCtorDeclarationFn(
  * @returns a `ts.MethodDeclaration` for the type constructor.
  */
 export function generateInlineTypeCtor(
-    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata): ts.MethodDeclaration {
+  node: ClassDeclaration<ts.ClassDeclaration>,
+  meta: TypeCtorMetadata
+): ts.MethodDeclaration {
   // Build rawType, a `ts.TypeNode` of the class with its generic parameters passed through from
   // the definition without any type bounds. For example, if the class is
   // `FooDirective<T extends Bar>`, its rawType would be `FooDirective<T>`.
   const rawTypeArgs =
-      node.typeParameters !== undefined ? generateGenericArgs(node.typeParameters) : undefined;
+    node.typeParameters !== undefined ? generateGenericArgs(node.typeParameters) : undefined;
   const rawType = ts.createTypeReferenceNode(node.name, rawTypeArgs);
 
   const initParam = constructTypeCtorParameter(node, meta, rawType);
@@ -104,30 +110,30 @@ export function generateInlineTypeCtor(
   // If this constructor is being generated into a .ts file, then it needs a fake body. The body
   // is set to a return of `null!`. If the type constructor is being generated into a .d.ts file,
   // it needs no body.
-  let body: ts.Block|undefined = undefined;
+  let body: ts.Block | undefined = undefined;
   if (meta.body) {
-    body = ts.createBlock([
-      ts.createReturn(ts.createNonNullExpression(ts.createNull())),
-    ]);
+    body = ts.createBlock([ts.createReturn(ts.createNonNullExpression(ts.createNull()))]);
   }
 
   // Create the type constructor method declaration.
   return ts.createMethod(
-      /* decorators */ undefined,
-      /* modifiers */[ts.createModifier(ts.SyntaxKind.StaticKeyword)],
-      /* asteriskToken */ undefined,
-      /* name */ meta.fnName,
-      /* questionToken */ undefined,
-      /* typeParameters */ typeParametersWithDefaultTypes(node.typeParameters),
-      /* parameters */[initParam],
-      /* type */ rawType,
-      /* body */ body,
+    /* decorators */ undefined,
+    /* modifiers */ [ts.createModifier(ts.SyntaxKind.StaticKeyword)],
+    /* asteriskToken */ undefined,
+    /* name */ meta.fnName,
+    /* questionToken */ undefined,
+    /* typeParameters */ typeParametersWithDefaultTypes(node.typeParameters),
+    /* parameters */ [initParam],
+    /* type */ rawType,
+    /* body */ body
   );
 }
 
 function constructTypeCtorParameter(
-    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata,
-    rawType: ts.TypeReferenceNode): ts.ParameterDeclaration {
+  node: ClassDeclaration<ts.ClassDeclaration>,
+  meta: TypeCtorMetadata,
+  rawType: ts.TypeReferenceNode
+): ts.ParameterDeclaration {
   // initType is the type of 'init', the single argument to the type constructor method.
   // If the Directive has any inputs, its initType will be:
   //
@@ -137,7 +143,7 @@ function constructTypeCtorParameter(
   // directive will be inferred.
   //
   // In the special case there are no inputs, initType is set to {}.
-  let initType: ts.TypeNode|null = null;
+  let initType: ts.TypeNode | null = null;
 
   const keys: string[] = meta.fields.inputs;
   const plainKeys: ts.LiteralTypeNode[] = [];
@@ -146,14 +152,18 @@ function constructTypeCtorParameter(
     if (!meta.coercedInputFields.has(key)) {
       plainKeys.push(ts.createLiteralTypeNode(ts.createStringLiteral(key)));
     } else {
-      coercedKeys.push(ts.createPropertySignature(
+      coercedKeys.push(
+        ts.createPropertySignature(
           /* modifiers */ undefined,
           /* name */ key,
           /* questionToken */ undefined,
           /* type */
           ts.createTypeQueryNode(
-              ts.createQualifiedName(rawType.typeName, `ngAcceptInputType_${key}`)),
-          /* initializer */ undefined));
+            ts.createQualifiedName(rawType.typeName, `ngAcceptInputType_${key}`)
+          ),
+          /* initializer */ undefined
+        )
+      );
     }
   }
   if (plainKeys.length > 0) {
@@ -167,7 +177,7 @@ function constructTypeCtorParameter(
     const coercedLiteral = ts.createTypeLiteralNode(coercedKeys);
 
     initType =
-        initType !== null ? ts.createUnionTypeNode([initType, coercedLiteral]) : coercedLiteral;
+      initType !== null ? ts.createUnionTypeNode([initType, coercedLiteral]) : coercedLiteral;
   }
 
   if (initType === null) {
@@ -177,28 +187,33 @@ function constructTypeCtorParameter(
 
   // Create the 'init' parameter itself.
   return ts.createParameter(
-      /* decorators */ undefined,
-      /* modifiers */ undefined,
-      /* dotDotDotToken */ undefined,
-      /* name */ 'init',
-      /* questionToken */ undefined,
-      /* type */ initType,
-      /* initializer */ undefined);
+    /* decorators */ undefined,
+    /* modifiers */ undefined,
+    /* dotDotDotToken */ undefined,
+    /* name */ 'init',
+    /* questionToken */ undefined,
+    /* type */ initType,
+    /* initializer */ undefined
+  );
 }
 
 function generateGenericArgs(params: ReadonlyArray<ts.TypeParameterDeclaration>): ts.TypeNode[] {
-  return params.map(param => ts.createTypeReferenceNode(param.name, undefined));
+  return params.map((param) => ts.createTypeReferenceNode(param.name, undefined));
 }
 
 export function requiresInlineTypeCtor(
-    node: ClassDeclaration<ts.ClassDeclaration>, host: ReflectionHost): boolean {
+  node: ClassDeclaration<ts.ClassDeclaration>,
+  host: ReflectionHost
+): boolean {
   // The class requires an inline type constructor if it has generic type bounds that can not be
   // emitted into a different context.
   return !checkIfGenericTypeBoundsAreContextFree(node, host);
 }
 
 function checkIfGenericTypeBoundsAreContextFree(
-    node: ClassDeclaration<ts.ClassDeclaration>, reflector: ReflectionHost): boolean {
+  node: ClassDeclaration<ts.ClassDeclaration>,
+  reflector: ReflectionHost
+): boolean {
   // Generic type parameters are considered context free if they can be emitted into any context.
   return new TypeParameterEmitter(node.typeParameters, reflector).canEmit();
 }
@@ -245,19 +260,21 @@ function checkIfGenericTypeBoundsAreContextFree(
  *
  * This correctly infers `T` as `any`, and therefore `_t3` as `NgFor<any>`.
  */
-function typeParametersWithDefaultTypes(params: ReadonlyArray<ts.TypeParameterDeclaration>|
-                                        undefined): ts.TypeParameterDeclaration[]|undefined {
+function typeParametersWithDefaultTypes(
+  params: ReadonlyArray<ts.TypeParameterDeclaration> | undefined
+): ts.TypeParameterDeclaration[] | undefined {
   if (params === undefined) {
     return undefined;
   }
 
-  return params.map(param => {
+  return params.map((param) => {
     if (param.default === undefined) {
       return ts.updateTypeParameterDeclaration(
-          /* node */ param,
-          /* name */ param.name,
-          /* constraint */ param.constraint,
-          /* defaultType */ ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+        /* node */ param,
+        /* name */ param.name,
+        /* constraint */ param.constraint,
+        /* defaultType */ ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)
+      );
     } else {
       return param;
     }

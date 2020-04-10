@@ -17,21 +17,21 @@ describe('Symbols', () => {
   let symbols: Symbols;
   const someValue = 'some-value';
 
-  beforeEach(() => symbols = new Symbols(null as any as ts.SourceFile));
+  beforeEach(() => (symbols = new Symbols((null as any) as ts.SourceFile)));
 
   it('should be able to add a symbol', () => symbols.define('someSymbol', someValue));
 
   beforeEach(() => symbols.define('someSymbol', someValue));
 
   it('should be able to `has` a symbol', () => expect(symbols.has('someSymbol')).toBeTruthy());
-  it('should be able to `get` a symbol value',
-     () => expect(symbols.resolve('someSymbol')).toBe(someValue));
-  it('should be able to `get` a symbol value',
-     () => expect(symbols.resolve('someSymbol')).toBe(someValue));
-  it('should be able to determine symbol is missing',
-     () => expect(symbols.has('missingSymbol')).toBeFalsy());
-  it('should return undefined from `get` for a missing symbol',
-     () => expect(symbols.resolve('missingSymbol')).toBeUndefined());
+  it('should be able to `get` a symbol value', () =>
+    expect(symbols.resolve('someSymbol')).toBe(someValue));
+  it('should be able to `get` a symbol value', () =>
+    expect(symbols.resolve('someSymbol')).toBe(someValue));
+  it('should be able to determine symbol is missing', () =>
+    expect(symbols.has('missingSymbol')).toBeFalsy());
+  it('should return undefined from `get` for a missing symbol', () =>
+    expect(symbols.resolve('missingSymbol')).toBeUndefined());
 
   let host: ts.LanguageServiceHost;
   let service: ts.LanguageService;
@@ -64,15 +64,20 @@ describe('Symbols', () => {
     expect(symbols).toBeDefined();
   });
 
-
   it('should be able to find symbols in expression', () => {
     const symbols = new Symbols(expressions);
     expect(symbols.has('someName')).toBeTruthy();
-    expect(symbols.resolve('someName'))
-        .toEqual({__symbolic: 'reference', module: './consts', name: 'someName'});
+    expect(symbols.resolve('someName')).toEqual({
+      __symbolic: 'reference',
+      module: './consts',
+      name: 'someName',
+    });
     expect(symbols.has('someBool')).toBeTruthy();
-    expect(symbols.resolve('someBool'))
-        .toEqual({__symbolic: 'reference', module: './consts', name: 'someBool'});
+    expect(symbols.resolve('someBool')).toEqual({
+      __symbolic: 'reference',
+      module: './consts',
+      name: 'someBool',
+    });
   });
 
   it('should be able to detect a * import', () => {
@@ -91,8 +96,9 @@ describe('Symbols', () => {
   });
 
   it('should be able to resolve any symbol in core global scope', () => {
-    const core = (program.getSourceFiles() as ts.SourceFile[])
-                     .find(source => source.fileName.endsWith('lib.d.ts'));
+    const core = (program.getSourceFiles() as ts.SourceFile[]).find((source) =>
+      source.fileName.endsWith('lib.d.ts')
+    );
     expect(core).toBeDefined();
     const visit = (node: ts.Node): boolean => {
       switch (node.kind) {
@@ -130,5 +136,5 @@ const FILES: Directory = {
     import 'c';
     import d from 'd';
     import {f as g} from 'f';
-  `
+  `,
 };

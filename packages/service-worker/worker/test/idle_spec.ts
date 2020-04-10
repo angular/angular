@@ -9,7 +9,7 @@
 import {IdleScheduler} from '../src/idle';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
-(function() {
+(function () {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
     return;
@@ -28,10 +28,12 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
     // Validate that a single idle task executes when trigger()
     // is called and the idle timeout passes.
-    it('executes scheduled work on time', async() => {
+    it('executes scheduled work on time', async () => {
       // Set up a single idle task to set the completed flag to true when it runs.
       let completed: boolean = false;
-      idle.schedule('work', async() => { completed = true; });
+      idle.schedule('work', async () => {
+        completed = true;
+      });
 
       // Simply scheduling the task should not cause it to execute.
       expect(completed).toEqual(false);
@@ -52,19 +54,19 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
       expect(completed).toEqual(true);
     });
 
-    it('waits for multiple tasks to complete serially', async() => {
+    it('waits for multiple tasks to complete serially', async () => {
       // Schedule several tasks that will increase a counter according to its
       // current value. If these tasks execute in parallel, the writes to the counter
       // will race, and the test will fail.
       let counter: number = 2;
-      idle.schedule('double counter', async() => {
+      idle.schedule('double counter', async () => {
         let local = counter;
         await Promise.resolve();
         local *= 2;
         await Promise.resolve();
         counter = local * 2;
       });
-      idle.schedule('triple counter', async() => {
+      idle.schedule('triple counter', async () => {
         // If this expect fails, it comes out of the 'await trigger' below.
         expect(counter).toEqual(8);
 
@@ -92,10 +94,12 @@ import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
     // Validate that a single idle task does not execute until trigger() has been called
     // and sufficient time passes without it being called again.
-    it('does not execute work until timeout passes with no triggers', async() => {
+    it('does not execute work until timeout passes with no triggers', async () => {
       // Set up a single idle task to set the completed flag to true when it runs.
       let completed: boolean = false;
-      idle.schedule('work', async() => { completed = true; });
+      idle.schedule('work', async () => {
+        completed = true;
+      });
 
       // Trigger the queue once. This trigger will start a timer for the idle timeout,
       // but another trigger() will be called before that timeout passes.

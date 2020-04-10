@@ -5,29 +5,33 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ɵcomputeMsgId, ɵmakeParsedTranslation} from '@angular/localize';
 import {Xliff2TranslationParser} from '../../../../src/translate/translation_files/translation_parsers/xliff2_translation_parser';
 
 describe('Xliff2TranslationParser', () => {
   describe('canParse()', () => {
-    it('should return true if the file contains an <xliff> element with version="2.0" attribute',
-       () => {
-         const parser = new Xliff2TranslationParser();
-         expect(parser.canParse(
-                    '/some/file.xlf',
-                    '<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0">'))
-             .toBeTruthy();
-         expect(parser.canParse(
-                    '/some/file.json',
-                    '<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0">'))
-             .toBeTruthy();
-         expect(parser.canParse('/some/file.xliff', '<xliff version="2.0">')).toBeTruthy();
-         expect(parser.canParse('/some/file.json', '<xliff version="2.0">')).toBeTruthy();
-         expect(parser.canParse('/some/file.xlf', '<xliff>')).toBe(false);
-         expect(parser.canParse('/some/file.xlf', '<xliff version="1.2">')).toBe(false);
-         expect(parser.canParse('/some/file.xlf', '')).toBe(false);
-         expect(parser.canParse('/some/file.json', '')).toBe(false);
-       });
+    it('should return true if the file contains an <xliff> element with version="2.0" attribute', () => {
+      const parser = new Xliff2TranslationParser();
+      expect(
+        parser.canParse(
+          '/some/file.xlf',
+          '<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0">'
+        )
+      ).toBeTruthy();
+      expect(
+        parser.canParse(
+          '/some/file.json',
+          '<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0">'
+        )
+      ).toBeTruthy();
+      expect(parser.canParse('/some/file.xliff', '<xliff version="2.0">')).toBeTruthy();
+      expect(parser.canParse('/some/file.json', '<xliff version="2.0">')).toBeTruthy();
+      expect(parser.canParse('/some/file.xlf', '<xliff>')).toBe(false);
+      expect(parser.canParse('/some/file.xlf', '<xliff version="1.2">')).toBe(false);
+      expect(parser.canParse('/some/file.xlf', '')).toBe(false);
+      expect(parser.canParse('/some/file.json', '')).toBe(false);
+    });
   });
 
   describe('parse() [without hint]', () => {
@@ -78,8 +82,9 @@ describe('Xliff2TranslationParser', () => {
       const parser = new Xliff2TranslationParser();
       const result = parser.parse('/some/file.xlf', XLIFF);
 
-      expect(result.translations[ɵcomputeMsgId('translatable attribute', '')])
-          .toEqual(ɵmakeParsedTranslation(['etubirtta elbatalsnart']));
+      expect(result.translations[ɵcomputeMsgId('translatable attribute', '')]).toEqual(
+        ɵmakeParsedTranslation(['etubirtta elbatalsnart'])
+      );
     });
 
     it('should extract translations with simple placeholders', () => {
@@ -108,11 +113,17 @@ describe('Xliff2TranslationParser', () => {
       const result = parser.parse('/some/file.xlf', XLIFF);
 
       expect(
-          result.translations[ɵcomputeMsgId(
-              'translatable element {$START_BOLD_TEXT}with placeholders{$LOSE_BOLD_TEXT} {$INTERPOLATION}')])
-          .toEqual(ɵmakeParsedTranslation(
-              ['', ' tnemele elbatalsnart ', 'sredlohecalp htiw', ''],
-              ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']));
+        result.translations[
+          ɵcomputeMsgId(
+            'translatable element {$START_BOLD_TEXT}with placeholders{$LOSE_BOLD_TEXT} {$INTERPOLATION}'
+          )
+        ]
+      ).toEqual(
+        ɵmakeParsedTranslation(
+          ['', ' tnemele elbatalsnart ', 'sredlohecalp htiw', ''],
+          ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']
+        )
+      );
     });
 
     it('should extract translations with simple ICU expressions', () => {
@@ -140,10 +151,16 @@ describe('Xliff2TranslationParser', () => {
       const parser = new Xliff2TranslationParser();
       const result = parser.parse('/some/file.xlf', XLIFF);
 
-      expect(result.translations[ɵcomputeMsgId(
-                 '{VAR_PLURAL, plural, =0 {{START_PARAGRAPH}test{CLOSE_PARAGRAPH}}}')])
-          .toEqual(ɵmakeParsedTranslation(
-              ['{VAR_PLURAL, plural, =0 {{START_PARAGRAPH}TEST{CLOSE_PARAGRAPH}}}'], []));
+      expect(
+        result.translations[
+          ɵcomputeMsgId('{VAR_PLURAL, plural, =0 {{START_PARAGRAPH}test{CLOSE_PARAGRAPH}}}')
+        ]
+      ).toEqual(
+        ɵmakeParsedTranslation(
+          ['{VAR_PLURAL, plural, =0 {{START_PARAGRAPH}TEST{CLOSE_PARAGRAPH}}}'],
+          []
+        )
+      );
     });
 
     it('should extract translations with duplicate source messages', () => {
@@ -228,9 +245,9 @@ describe('Xliff2TranslationParser', () => {
       const parser = new Xliff2TranslationParser();
       const result = parser.parse('/some/file.xlf', XLIFF);
 
-      expect(result.translations[ɵcomputeMsgId('{$LINE_BREAK}{$TAG_IMG}{$TAG_IMG_1}')])
-          .toEqual(
-              ɵmakeParsedTranslation(['', '', '', ''], ['TAG_IMG_1', 'TAG_IMG', 'LINE_BREAK']));
+      expect(result.translations[ɵcomputeMsgId('{$LINE_BREAK}{$TAG_IMG}{$TAG_IMG_1}')]).toEqual(
+        ɵmakeParsedTranslation(['', '', '', ''], ['TAG_IMG_1', 'TAG_IMG', 'LINE_BREAK'])
+      );
     });
 
     it('should extract translations with empty target', () => {
@@ -259,8 +276,9 @@ describe('Xliff2TranslationParser', () => {
       const parser = new Xliff2TranslationParser();
       const result = parser.parse('/some/file.xlf', XLIFF);
 
-      expect(result.translations[ɵcomputeMsgId('hello {$START_TAG_SPAN}{$CLOSE_TAG_SPAN}')])
-          .toEqual(ɵmakeParsedTranslation(['']));
+      expect(
+        result.translations[ɵcomputeMsgId('hello {$START_TAG_SPAN}{$CLOSE_TAG_SPAN}')]
+      ).toEqual(ɵmakeParsedTranslation(['']));
     });
 
     it('should extract translations with deeply nested ICUs', () => {
@@ -304,15 +322,21 @@ describe('Xliff2TranslationParser', () => {
       const parser = new Xliff2TranslationParser();
       const result = parser.parse('/some/file.xlf', XLIFF);
 
-      expect(result.translations[ɵcomputeMsgId('Test: {$ICU}')])
-          .toEqual(ɵmakeParsedTranslation(['Le test: ', ''], ['ICU']));
+      expect(result.translations[ɵcomputeMsgId('Test: {$ICU}')]).toEqual(
+        ɵmakeParsedTranslation(['Le test: ', ''], ['ICU'])
+      );
 
       expect(
-          result.translations[ɵcomputeMsgId(
-              '{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {{START_PARAGRAPH}deeply nested{CLOSE_PARAGRAPH}}}} =other {beaucoup}}')])
-          .toEqual(ɵmakeParsedTranslation([
-            '{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {{START_PARAGRAPH}profondément imbriqué{CLOSE_PARAGRAPH}}}} =other {beaucoup}}'
-          ]));
+        result.translations[
+          ɵcomputeMsgId(
+            '{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {{START_PARAGRAPH}deeply nested{CLOSE_PARAGRAPH}}}} =other {beaucoup}}'
+          )
+        ]
+      ).toEqual(
+        ɵmakeParsedTranslation([
+          '{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {{START_PARAGRAPH}profondément imbriqué{CLOSE_PARAGRAPH}}}} =other {beaucoup}}',
+        ])
+      );
     });
 
     it('should extract translations containing multiple lines', () => {
@@ -341,8 +365,9 @@ describe('Xliff2TranslationParser', () => {
       const parser = new Xliff2TranslationParser();
       const result = parser.parse('/some/file.xlf', XLIFF);
 
-      expect(result.translations[ɵcomputeMsgId('multi\nlines')])
-          .toEqual(ɵmakeParsedTranslation(['multi\nlignes']));
+      expect(result.translations[ɵcomputeMsgId('multi\nlines')]).toEqual(
+        ɵmakeParsedTranslation(['multi\nlignes'])
+      );
     });
 
     it('should extract translations with <mrk> elements', () => {
@@ -366,11 +391,13 @@ describe('Xliff2TranslationParser', () => {
       const parser = new Xliff2TranslationParser();
       const result = parser.parse('/some/file.xlf', XLIFF);
 
-      expect(result.translations['mrk-test'])
-          .toEqual(ɵmakeParsedTranslation(['Translated first sentence.']));
+      expect(result.translations['mrk-test']).toEqual(
+        ɵmakeParsedTranslation(['Translated first sentence.'])
+      );
 
-      expect(result.translations['mrk-test2'])
-          .toEqual(ɵmakeParsedTranslation(['Translated first sentence.']));
+      expect(result.translations['mrk-test2']).toEqual(
+        ɵmakeParsedTranslation(['Translated first sentence.'])
+      );
     });
 
     it('should merge messages from each `<file>` element', () => {
@@ -413,15 +440,21 @@ describe('Xliff2TranslationParser', () => {
       const parser = new Xliff2TranslationParser();
       const result = parser.parse('/some/file.xlf', XLIFF);
 
-      expect(result.translations[ɵcomputeMsgId('translatable attribute', '')])
-          .toEqual(ɵmakeParsedTranslation(['etubirtta elbatalsnart']));
+      expect(result.translations[ɵcomputeMsgId('translatable attribute', '')]).toEqual(
+        ɵmakeParsedTranslation(['etubirtta elbatalsnart'])
+      );
       expect(
-          result.translations[ɵcomputeMsgId(
-              'translatable element {$START_BOLD_TEXT}with placeholders{$LOSE_BOLD_TEXT} {$INTERPOLATION}')])
-          .toEqual(ɵmakeParsedTranslation(
-              ['', ' tnemele elbatalsnart ', 'sredlohecalp htiw', ''],
-              ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']));
-
+        result.translations[
+          ɵcomputeMsgId(
+            'translatable element {$START_BOLD_TEXT}with placeholders{$LOSE_BOLD_TEXT} {$INTERPOLATION}'
+          )
+        ]
+      ).toEqual(
+        ɵmakeParsedTranslation(
+          ['', ' tnemele elbatalsnart ', 'sredlohecalp htiw', ''],
+          ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']
+        )
+      );
     });
 
     describe('[structure errors]', () => {
@@ -442,7 +475,6 @@ describe('Xliff2TranslationParser', () => {
           parser.parse('/some/file.xlf', XLIFF);
         }).toThrowError(/Missing required <target> element/);
       });
-
 
       it('should throw when a trans-unit has no id attribute', () => {
         const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
@@ -590,8 +622,9 @@ describe('Xliff2TranslationParser', () => {
       }
       const result = parser.parse('/some/file.xlf', XLIFF, hint);
 
-      expect(result.translations[ɵcomputeMsgId('translatable attribute', '')])
-          .toEqual(ɵmakeParsedTranslation(['etubirtta elbatalsnart']));
+      expect(result.translations[ɵcomputeMsgId('translatable attribute', '')]).toEqual(
+        ɵmakeParsedTranslation(['etubirtta elbatalsnart'])
+      );
     });
 
     it('should extract translations with simple placeholders', () => {
@@ -624,11 +657,17 @@ describe('Xliff2TranslationParser', () => {
       const result = parser.parse('/some/file.xlf', XLIFF, hint);
 
       expect(
-          result.translations[ɵcomputeMsgId(
-              'translatable element {$START_BOLD_TEXT}with placeholders{$LOSE_BOLD_TEXT} {$INTERPOLATION}')])
-          .toEqual(ɵmakeParsedTranslation(
-              ['', ' tnemele elbatalsnart ', 'sredlohecalp htiw', ''],
-              ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']));
+        result.translations[
+          ɵcomputeMsgId(
+            'translatable element {$START_BOLD_TEXT}with placeholders{$LOSE_BOLD_TEXT} {$INTERPOLATION}'
+          )
+        ]
+      ).toEqual(
+        ɵmakeParsedTranslation(
+          ['', ' tnemele elbatalsnart ', 'sredlohecalp htiw', ''],
+          ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']
+        )
+      );
     });
 
     it('should extract translations with simple ICU expressions', () => {
@@ -660,10 +699,16 @@ describe('Xliff2TranslationParser', () => {
       }
       const result = parser.parse('/some/file.xlf', XLIFF, hint);
 
-      expect(result.translations[ɵcomputeMsgId(
-                 '{VAR_PLURAL, plural, =0 {{START_PARAGRAPH}test{CLOSE_PARAGRAPH}}}')])
-          .toEqual(ɵmakeParsedTranslation(
-              ['{VAR_PLURAL, plural, =0 {{START_PARAGRAPH}TEST{CLOSE_PARAGRAPH}}}'], []));
+      expect(
+        result.translations[
+          ɵcomputeMsgId('{VAR_PLURAL, plural, =0 {{START_PARAGRAPH}test{CLOSE_PARAGRAPH}}}')
+        ]
+      ).toEqual(
+        ɵmakeParsedTranslation(
+          ['{VAR_PLURAL, plural, =0 {{START_PARAGRAPH}TEST{CLOSE_PARAGRAPH}}}'],
+          []
+        )
+      );
     });
 
     it('should extract translations with duplicate source messages', () => {
@@ -756,9 +801,9 @@ describe('Xliff2TranslationParser', () => {
       }
       const result = parser.parse('/some/file.xlf', XLIFF, hint);
 
-      expect(result.translations[ɵcomputeMsgId('{$LINE_BREAK}{$TAG_IMG}{$TAG_IMG_1}')])
-          .toEqual(
-              ɵmakeParsedTranslation(['', '', '', ''], ['TAG_IMG_1', 'TAG_IMG', 'LINE_BREAK']));
+      expect(result.translations[ɵcomputeMsgId('{$LINE_BREAK}{$TAG_IMG}{$TAG_IMG_1}')]).toEqual(
+        ɵmakeParsedTranslation(['', '', '', ''], ['TAG_IMG_1', 'TAG_IMG', 'LINE_BREAK'])
+      );
     });
 
     it('should extract translations with empty target', () => {
@@ -791,8 +836,9 @@ describe('Xliff2TranslationParser', () => {
       }
       const result = parser.parse('/some/file.xlf', XLIFF, hint);
 
-      expect(result.translations[ɵcomputeMsgId('hello {$START_TAG_SPAN}{$CLOSE_TAG_SPAN}')])
-          .toEqual(ɵmakeParsedTranslation(['']));
+      expect(
+        result.translations[ɵcomputeMsgId('hello {$START_TAG_SPAN}{$CLOSE_TAG_SPAN}')]
+      ).toEqual(ɵmakeParsedTranslation(['']));
     });
 
     it('should extract translations with deeply nested ICUs', () => {
@@ -840,15 +886,21 @@ describe('Xliff2TranslationParser', () => {
       }
       const result = parser.parse('/some/file.xlf', XLIFF, hint);
 
-      expect(result.translations[ɵcomputeMsgId('Test: {$ICU}')])
-          .toEqual(ɵmakeParsedTranslation(['Le test: ', ''], ['ICU']));
+      expect(result.translations[ɵcomputeMsgId('Test: {$ICU}')]).toEqual(
+        ɵmakeParsedTranslation(['Le test: ', ''], ['ICU'])
+      );
 
       expect(
-          result.translations[ɵcomputeMsgId(
-              '{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {{START_PARAGRAPH}deeply nested{CLOSE_PARAGRAPH}}}} =other {beaucoup}}')])
-          .toEqual(ɵmakeParsedTranslation([
-            '{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {{START_PARAGRAPH}profondément imbriqué{CLOSE_PARAGRAPH}}}} =other {beaucoup}}'
-          ]));
+        result.translations[
+          ɵcomputeMsgId(
+            '{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {{START_PARAGRAPH}deeply nested{CLOSE_PARAGRAPH}}}} =other {beaucoup}}'
+          )
+        ]
+      ).toEqual(
+        ɵmakeParsedTranslation([
+          '{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {{START_PARAGRAPH}profondément imbriqué{CLOSE_PARAGRAPH}}}} =other {beaucoup}}',
+        ])
+      );
     });
 
     it('should extract translations containing multiple lines', () => {
@@ -881,8 +933,9 @@ describe('Xliff2TranslationParser', () => {
       }
       const result = parser.parse('/some/file.xlf', XLIFF, hint);
 
-      expect(result.translations[ɵcomputeMsgId('multi\nlines')])
-          .toEqual(ɵmakeParsedTranslation(['multi\nlignes']));
+      expect(result.translations[ɵcomputeMsgId('multi\nlines')]).toEqual(
+        ɵmakeParsedTranslation(['multi\nlignes'])
+      );
     });
 
     it('should extract translations with <mrk> elements', () => {
@@ -910,11 +963,13 @@ describe('Xliff2TranslationParser', () => {
       }
       const result = parser.parse('/some/file.xlf', XLIFF, hint);
 
-      expect(result.translations['mrk-test'])
-          .toEqual(ɵmakeParsedTranslation(['Translated first sentence.']));
+      expect(result.translations['mrk-test']).toEqual(
+        ɵmakeParsedTranslation(['Translated first sentence.'])
+      );
 
-      expect(result.translations['mrk-test2'])
-          .toEqual(ɵmakeParsedTranslation(['Translated first sentence.']));
+      expect(result.translations['mrk-test2']).toEqual(
+        ɵmakeParsedTranslation(['Translated first sentence.'])
+      );
     });
 
     it('should merge messages from each `<file>` element', () => {
@@ -961,15 +1016,21 @@ describe('Xliff2TranslationParser', () => {
       }
       const result = parser.parse('/some/file.xlf', XLIFF, hint);
 
-      expect(result.translations[ɵcomputeMsgId('translatable attribute', '')])
-          .toEqual(ɵmakeParsedTranslation(['etubirtta elbatalsnart']));
+      expect(result.translations[ɵcomputeMsgId('translatable attribute', '')]).toEqual(
+        ɵmakeParsedTranslation(['etubirtta elbatalsnart'])
+      );
       expect(
-          result.translations[ɵcomputeMsgId(
-              'translatable element {$START_BOLD_TEXT}with placeholders{$LOSE_BOLD_TEXT} {$INTERPOLATION}')])
-          .toEqual(ɵmakeParsedTranslation(
-              ['', ' tnemele elbatalsnart ', 'sredlohecalp htiw', ''],
-              ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']));
-
+        result.translations[
+          ɵcomputeMsgId(
+            'translatable element {$START_BOLD_TEXT}with placeholders{$LOSE_BOLD_TEXT} {$INTERPOLATION}'
+          )
+        ]
+      ).toEqual(
+        ɵmakeParsedTranslation(
+          ['', ' tnemele elbatalsnart ', 'sredlohecalp htiw', ''],
+          ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']
+        )
+      );
     });
 
     describe('[structure errors]', () => {
@@ -1001,7 +1062,6 @@ describe('Xliff2TranslationParser', () => {
 "): /some/file.xlf@4:12`);
       });
 
-
       it('should provide a diagnostic error when a trans-unit has no id attribute', () => {
         const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
         <xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en" trgLang="fr">
@@ -1022,14 +1082,14 @@ describe('Xliff2TranslationParser', () => {
         }
         const result = parser.parse('/some/file.xlf', XLIFF, hint);
         expect(result.diagnostics.messages.length).toEqual(1);
-        expect(result.diagnostics.messages[0].message)
-            .toEqual(
-                `Missing required "id" attribute on <trans-unit> element. ("ocument:2.0" srcLang="en" trgLang="fr">
+        expect(result.diagnostics.messages[0].message).toEqual(
+          `Missing required "id" attribute on <trans-unit> element. ("ocument:2.0" srcLang="en" trgLang="fr">
         <file original="ng.template" id="ngi18n">
           [ERROR ->]<unit>
             <segment>
               <source/>
-"): /some/file.xlf@3:10`);
+"): /some/file.xlf@3:10`
+        );
       });
 
       it('should provide a diagnostic error on duplicate trans-unit id', () => {
@@ -1059,7 +1119,7 @@ describe('Xliff2TranslationParser', () => {
         const result = parser.parse('/some/file.xlf', XLIFF, hint);
         expect(result.diagnostics.messages.length).toEqual(1);
         expect(result.diagnostics.messages[0].message)
-            .toEqual(`Duplicated translations for message "deadbeef" ("
+          .toEqual(`Duplicated translations for message "deadbeef" ("
             </segment>
           </unit>
           [ERROR ->]<unit id="deadbeef">
@@ -1120,7 +1180,7 @@ describe('Xliff2TranslationParser', () => {
         const result = parser.parse('/some/file.xlf', XLIFF, hint);
         expect(result.diagnostics.messages.length).toEqual(1);
         expect(result.diagnostics.messages[0].message)
-            .toEqual(`Missing required "equiv" attribute: ("
+          .toEqual(`Missing required "equiv" attribute: ("
             <segment>
               <source/>
               <target>[ERROR ->]<ph/></target>

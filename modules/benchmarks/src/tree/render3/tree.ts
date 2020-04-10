@@ -21,7 +21,7 @@ export function createDom(component: TreeComponent) {
   ɵdetectChanges(component);
 }
 
-const numberOfChecksEl = document.getElementById('numberOfChecks') !;
+const numberOfChecksEl = document.getElementById('numberOfChecks')!;
 let detectChangesRuns = 0;
 export function detectChanges(component: TreeComponent) {
   for (let i = 0; i < 10; i++) {
@@ -35,16 +35,17 @@ export function detectChanges(component: TreeComponent) {
   selector: 'tree',
   inputs: ['data'],
   template: `
-    <span [style.backgroundColor]="bgColor"> {{data.value}} </span>
-    <tree *ngIf='data.right != null' [data]='data.right'></tree>
-    <tree *ngIf='data.left != null' [data]='data.left'></tree>
+    <span [style.backgroundColor]="bgColor"> {{ data.value }} </span>
+    <tree *ngIf="data.right != null" [data]="data.right"></tree>
+    <tree *ngIf="data.left != null" [data]="data.left"></tree>
   `,
 })
 export class TreeComponent {
   data: any = emptyTree;
-  get bgColor() { return this.data.depth % 2 ? '' : 'grey'; }
+  get bgColor() {
+    return this.data.depth % 2 ? '' : 'grey';
+  }
 }
 
 @NgModule({declarations: [TreeComponent], imports: [CommonModule]})
-export class TreeModule {
-}
+export class TreeModule {}

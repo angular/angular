@@ -59,7 +59,6 @@ export enum HandlerFlags {
   FULL_INHERITANCE = 0x00000001,
 }
 
-
 /**
  * Provides the interface between a decorator compiler from @angular/compiler and the Typescript
  * compiler/transform.
@@ -87,8 +86,7 @@ export interface DecoratorHandler<D, A, R> {
    * Scan a set of reflected decorators and determine if this handler is responsible for compilation
    * of one of them.
    */
-  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<D>|undefined;
-
+  detect(node: ClassDeclaration, decorators: Decorator[] | null): DetectResult<D> | undefined;
 
   /**
    * Asynchronously perform pre-analysis on the decorator/class combination.
@@ -96,7 +94,7 @@ export interface DecoratorHandler<D, A, R> {
    * `preanalyze` is optional and is not guaranteed to be called through all compilation flows. It
    * will only be called if asynchronicity is supported in the CompilerHost.
    */
-  preanalyze?(node: ClassDeclaration, metadata: Readonly<D>): Promise<void>|undefined;
+  preanalyze?(node: ClassDeclaration, metadata: Readonly<D>): Promise<void> | undefined;
 
   /**
    * Perform analysis on the decorator/class combination, extracting information from the class
@@ -110,8 +108,11 @@ export interface DecoratorHandler<D, A, R> {
    * builds. Any side effects required for compilation (e.g. registration of metadata) should happen
    * in the `register` phase, which is guaranteed to run even for incremental builds.
    */
-  analyze(node: ClassDeclaration, metadata: Readonly<D>, handlerFlags?: HandlerFlags):
-      AnalysisOutput<A>;
+  analyze(
+    node: ClassDeclaration,
+    metadata: Readonly<D>,
+    handlerFlags?: HandlerFlags
+  ): AnalysisOutput<A>;
 
   /**
    * Post-process the analysis of a decorator/class combination and record any necessary information
@@ -127,9 +128,12 @@ export interface DecoratorHandler<D, A, R> {
    * `IndexingContext`, which stores information about components discovered in the
    * program.
    */
-  index?
-      (context: IndexingContext, node: ClassDeclaration, analysis: Readonly<A>,
-       resolution: Readonly<R>): void;
+  index?(
+    context: IndexingContext,
+    node: ClassDeclaration,
+    analysis: Readonly<A>,
+    resolution: Readonly<R>
+  ): void;
 
   /**
    * Perform resolution on the given decorator along with the result of analysis.
@@ -140,17 +144,23 @@ export interface DecoratorHandler<D, A, R> {
    */
   resolve?(node: ClassDeclaration, analysis: Readonly<A>): ResolveResult<R>;
 
-  typeCheck?
-      (ctx: TypeCheckContext, node: ClassDeclaration, analysis: Readonly<A>,
-       resolution: Readonly<R>): void;
+  typeCheck?(
+    ctx: TypeCheckContext,
+    node: ClassDeclaration,
+    analysis: Readonly<A>,
+    resolution: Readonly<R>
+  ): void;
 
   /**
    * Generate a description of the field which should be added to the class, including any
    * initialization code to be generated.
    */
   compile(
-      node: ClassDeclaration, analysis: Readonly<A>, resolution: Readonly<R>,
-      constantPool: ConstantPool): CompileResult|CompileResult[];
+    node: ClassDeclaration,
+    analysis: Readonly<A>,
+    resolution: Readonly<R>,
+    constantPool: ConstantPool
+  ): CompileResult | CompileResult[];
 }
 
 /**
@@ -161,14 +171,14 @@ export interface DetectResult<M> {
   /**
    * The node that triggered the match, which is typically a decorator.
    */
-  trigger: ts.Node|null;
+  trigger: ts.Node | null;
 
   /**
    * Refers to the decorator that was recognized for this detection, if any. This can be a concrete
    * decorator that is actually present in a file, or a synthetic decorator as inserted
    * programmatically.
    */
-  decorator: Decorator|null;
+  decorator: Decorator | null;
 
   /**
    * An arbitrary object to carry over from the detection phase into the analysis phase.
@@ -205,9 +215,13 @@ export interface ResolveResult<R> {
 
 export interface DtsTransform {
   transformClassElement?(element: ts.ClassElement, imports: ImportManager): ts.ClassElement;
-  transformFunctionDeclaration?
-      (element: ts.FunctionDeclaration, imports: ImportManager): ts.FunctionDeclaration;
-  transformClass?
-      (clazz: ts.ClassDeclaration, elements: ReadonlyArray<ts.ClassElement>,
-       imports: ImportManager): ts.ClassDeclaration;
+  transformFunctionDeclaration?(
+    element: ts.FunctionDeclaration,
+    imports: ImportManager
+  ): ts.FunctionDeclaration;
+  transformClass?(
+    clazz: ts.ClassDeclaration,
+    elements: ReadonlyArray<ts.ClassElement>,
+    imports: ImportManager
+  ): ts.ClassDeclaration;
 }

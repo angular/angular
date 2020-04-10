@@ -5,16 +5,24 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 export const ANY_STATE = '*';
-export declare type TransitionMatcherFn =
-    (fromState: any, toState: any, element: any, params: {[key: string]: any}) => boolean;
+export declare type TransitionMatcherFn = (
+  fromState: any,
+  toState: any,
+  element: any,
+  params: {[key: string]: any}
+) => boolean;
 
 export function parseTransitionExpr(
-    transitionValue: string | TransitionMatcherFn, errors: string[]): TransitionMatcherFn[] {
+  transitionValue: string | TransitionMatcherFn,
+  errors: string[]
+): TransitionMatcherFn[] {
   const expressions: TransitionMatcherFn[] = [];
   if (typeof transitionValue == 'string') {
-    transitionValue.split(/\s*,\s*/).forEach(
-        str => parseInnerTransitionStr(str, expressions, errors));
+    transitionValue
+      .split(/\s*,\s*/)
+      .forEach((str) => parseInnerTransitionStr(str, expressions, errors));
   } else {
     expressions.push(<TransitionMatcherFn>transitionValue);
   }
@@ -22,7 +30,10 @@ export function parseTransitionExpr(
 }
 
 function parseInnerTransitionStr(
-    eventStr: string, expressions: TransitionMatcherFn[], errors: string[]) {
+  eventStr: string,
+  expressions: TransitionMatcherFn[],
+  errors: string[]
+) {
   if (eventStr[0] == ':') {
     const result = parseAnimationAlias(eventStr, errors);
     if (typeof result == 'function') {
@@ -49,7 +60,7 @@ function parseInnerTransitionStr(
   }
 }
 
-function parseAnimationAlias(alias: string, errors: string[]): string|TransitionMatcherFn {
+function parseAnimationAlias(alias: string, errors: string[]): string | TransitionMatcherFn {
   switch (alias) {
     case ':enter':
       return 'void => *';

@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 /// <reference types="node" />
 import * as fs from 'fs';
 import * as ts from 'typescript';
@@ -24,14 +25,22 @@ export class PerfTracker implements PerfRecorder {
     return new PerfTracker(mark());
   }
 
-  mark(name: string, node?: ts.SourceFile|ts.Declaration, category?: string, detail?: string):
-      void {
+  mark(
+    name: string,
+    node?: ts.SourceFile | ts.Declaration,
+    category?: string,
+    detail?: string
+  ): void {
     const msg = this.makeLogMessage(PerfLogEventType.MARK, name, node, category, detail, undefined);
     this.log.push(msg);
   }
 
-  start(name: string, node?: ts.SourceFile|ts.Declaration, category?: string, detail?: string):
-      number {
+  start(
+    name: string,
+    node?: ts.SourceFile | ts.Declaration,
+    category?: string,
+    detail?: string
+  ): number {
     const span = this.nextSpanId++;
     const msg = this.makeLogMessage(PerfLogEventType.SPAN_OPEN, name, node, category, detail, span);
     this.log.push(msg);
@@ -47,8 +56,13 @@ export class PerfTracker implements PerfRecorder {
   }
 
   private makeLogMessage(
-      type: PerfLogEventType, name: string, node: ts.SourceFile|ts.Declaration|undefined,
-      category: string|undefined, detail: string|undefined, span: number|undefined): PerfLogEvent {
+    type: PerfLogEventType,
+    name: string,
+    node: ts.SourceFile | ts.Declaration | undefined,
+    category: string | undefined,
+    detail: string | undefined,
+    span: number | undefined
+  ): PerfLogEvent {
     const msg: PerfLogEvent = {
       type,
       name,

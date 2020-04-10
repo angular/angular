@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AnimationPlayer} from '@angular/animations';
 
 import {computeStyle} from '../../util';
@@ -23,19 +24,21 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _started = false;
   private _destroyed = false;
   // TODO(issue/24571): remove '!'.
-  private _finalKeyframe !: {[key: string]: string | number};
+  private _finalKeyframe!: {[key: string]: string | number};
 
   // TODO(issue/24571): remove '!'.
-  public readonly domPlayer !: DOMAnimation;
+  public readonly domPlayer!: DOMAnimation;
   public time = 0;
 
-  public parentPlayer: AnimationPlayer|null = null;
+  public parentPlayer: AnimationPlayer | null = null;
   public currentSnapshot: {[styleName: string]: string | number} = {};
 
   constructor(
-      public element: any, public keyframes: {[key: string]: string | number}[],
-      public options: {[key: string]: string | number},
-      private _specialStyles?: SpecialCasedStyles|null) {
+    public element: any,
+    public keyframes: {[key: string]: string | number}[],
+    public options: {[key: string]: string | number},
+    private _specialStyles?: SpecialCasedStyles | null
+  ) {
     this._duration = <number>options['duration'];
     this._delay = <number>options['delay'] || 0;
     this.time = this._duration + this._delay;
@@ -44,7 +47,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _onFinish() {
     if (!this._finished) {
       this._finished = true;
-      this._onDoneFns.forEach(fn => fn());
+      this._onDoneFns.forEach((fn) => fn());
       this._onDoneFns = [];
     }
   }
@@ -59,8 +62,11 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     this._initialized = true;
 
     const keyframes = this.keyframes;
-    (this as{domPlayer: DOMAnimation}).domPlayer =
-        this._triggerWebAnimation(this.element, keyframes, this.options);
+    (this as {domPlayer: DOMAnimation}).domPlayer = this._triggerWebAnimation(
+      this.element,
+      keyframes,
+      this.options
+    );
     this._finalKeyframe = keyframes.length ? keyframes[keyframes.length - 1] : {};
     this.domPlayer.addEventListener('finish', () => this._onFinish());
   }
@@ -81,16 +87,22 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     return element['animate'](keyframes, options) as DOMAnimation;
   }
 
-  onStart(fn: () => void): void { this._onStartFns.push(fn); }
+  onStart(fn: () => void): void {
+    this._onStartFns.push(fn);
+  }
 
-  onDone(fn: () => void): void { this._onDoneFns.push(fn); }
+  onDone(fn: () => void): void {
+    this._onDoneFns.push(fn);
+  }
 
-  onDestroy(fn: () => void): void { this._onDestroyFns.push(fn); }
+  onDestroy(fn: () => void): void {
+    this._onDestroyFns.push(fn);
+  }
 
   play(): void {
     this._buildPlayer();
     if (!this.hasStarted()) {
-      this._onStartFns.forEach(fn => fn());
+      this._onStartFns.forEach((fn) => fn());
       this._onStartFns = [];
       this._started = true;
       if (this._specialStyles) {
@@ -132,7 +144,9 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     this.play();
   }
 
-  hasStarted(): boolean { return this._started; }
+  hasStarted(): boolean {
+    return this._started;
+  }
 
   destroy(): void {
     if (!this._destroyed) {
@@ -142,24 +156,31 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       if (this._specialStyles) {
         this._specialStyles.destroy();
       }
-      this._onDestroyFns.forEach(fn => fn());
+      this._onDestroyFns.forEach((fn) => fn());
       this._onDestroyFns = [];
     }
   }
 
-  setPosition(p: number): void { this.domPlayer.currentTime = p * this.time; }
+  setPosition(p: number): void {
+    this.domPlayer.currentTime = p * this.time;
+  }
 
-  getPosition(): number { return this.domPlayer.currentTime / this.time; }
+  getPosition(): number {
+    return this.domPlayer.currentTime / this.time;
+  }
 
-  get totalTime(): number { return this._delay + this._duration; }
+  get totalTime(): number {
+    return this._delay + this._duration;
+  }
 
   beforeDestroy() {
     const styles: {[key: string]: string | number} = {};
     if (this.hasStarted()) {
-      Object.keys(this._finalKeyframe).forEach(prop => {
+      Object.keys(this._finalKeyframe).forEach((prop) => {
         if (prop != 'offset') {
-          styles[prop] =
-              this._finished ? this._finalKeyframe[prop] : computeStyle(this.element, prop);
+          styles[prop] = this._finished
+            ? this._finalKeyframe[prop]
+            : computeStyle(this.element, prop);
         }
       });
     }
@@ -169,7 +190,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   /** @internal */
   triggerCallback(phaseName: string): void {
     const methods = phaseName == 'start' ? this._onStartFns : this._onDoneFns;
-    methods.forEach(fn => fn());
+    methods.forEach((fn) => fn());
     methods.length = 0;
   }
 }

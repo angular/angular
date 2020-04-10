@@ -7,5 +7,5 @@
  */
 
 process.env['errorpolicy'] = (global as any)['__Zone_Error_BlacklistedStackFrames_policy'] =
-    'disable';
+  'disable';
 import './node_error_entry_point';

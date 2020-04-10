@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AttributeMarker} from '@angular/compiler/src/core';
 import {setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
@@ -44,8 +45,8 @@ describe('compiler compliance: template', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     // The template should look like this (where IDENT is a wild card for an identifier):
@@ -103,10 +104,7 @@ describe('compiler compliance: template', () => {
         }
       }
       // ...
-      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${
-        AttributeMarker.Bindings}, "title", "click", ${
-        AttributeMarker.Template}, "ngFor", "ngForOf"], [${
-        AttributeMarker.Bindings}, "title", "click"]],
+      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Bindings}, "title", "click", ${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Bindings}, "title", "click"]],
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
           $i0$.ɵɵtemplate(0, MyComponent_ul_0_Template, 2, 1, "ul", 0);
@@ -140,8 +138,8 @@ describe('compiler compliance: template', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const template = `
@@ -160,8 +158,7 @@ describe('compiler compliance: template', () => {
           }
         }
         // ...
-        consts: [[${AttributeMarker.Bindings}, "click", ${
-        AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Bindings}, "click"]],
+        consts: [[${AttributeMarker.Bindings}, "click", ${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Bindings}, "click"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 1, 0, "div", 0);
@@ -196,8 +193,8 @@ describe('compiler compliance: template', () => {
 
           @NgModule({declarations: [MyComponent]})
           export class MyModule {}
-        `
-      }
+        `,
+      },
     };
 
     const template = `
@@ -246,8 +243,8 @@ describe('compiler compliance: template', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const template = `
@@ -299,8 +296,8 @@ describe('compiler compliance: template', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const template = `
@@ -333,8 +330,7 @@ describe('compiler compliance: template', () => {
       }
 
       // ...
-      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${
-        AttributeMarker.Template}, "ngIf"]],
+      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Template}, "ngIf"]],
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
           $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 2, 1, "div", 0);
@@ -370,8 +366,8 @@ describe('compiler compliance: template', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     // The template should look like this (where IDENT is a wild card for an identifier):
@@ -448,8 +444,8 @@ describe('compiler compliance: template', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const template = `
@@ -490,8 +486,8 @@ describe('compiler compliance: template', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const template = `
@@ -528,8 +524,8 @@ describe('compiler compliance: template', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const template = `
@@ -568,8 +564,8 @@ describe('compiler compliance: template', () => {
           export class TestComp {
             message = 'Hello';
           }
-        `
-      }
+        `,
+      },
     };
     const result = compile(files, angularFiles);
     const expectedTemplate = `
@@ -586,11 +582,10 @@ describe('compiler compliance: template', () => {
     expectEmit(result.source, expectedTemplate, 'Incorrect template');
   });
 
-  it('should allow directive inputs as an interpolated prop on <ng-template> (with structural directives)',
-     () => {
-       const files = {
-         app: {
-           'spec.ts': `
+  it('should allow directive inputs as an interpolated prop on <ng-template> (with structural directives)', () => {
+    const files = {
+      app: {
+        'spec.ts': `
               import {Component, Directive, Input} from '@angular/core';
 
               @Directive({selector: '[dir]'})
@@ -605,13 +600,13 @@ describe('compiler compliance: template', () => {
               export class TestComp {
                 message = 'Hello';
               }
-            `
-         }
-       };
-       const result = compile(files, angularFiles);
+            `,
+      },
+    };
+    const result = compile(files, angularFiles);
 
-       // Expect that `ɵɵpropertyInterpolate` is generated in the inner template function.
-       const expectedInnerTemplate = `
+    // Expect that `ɵɵpropertyInterpolate` is generated in the inner template function.
+    const expectedInnerTemplate = `
           function $TestComp_0_Template$(rf, ctx) {
             if (rf & 1) {
               $i0$.ɵɵtemplate(0, $TestComp_0_ng_template_0_Template$, 0, 0, "ng-template", 1);
@@ -622,10 +617,10 @@ describe('compiler compliance: template', () => {
             }
           }
         `;
-       expectEmit(result.source, expectedInnerTemplate, 'Incorrect template');
+    expectEmit(result.source, expectedInnerTemplate, 'Incorrect template');
 
-       // Main template should just contain *ngIf property.
-       const expectedMainTemplate = `
+    // Main template should just contain *ngIf property.
+    const expectedMainTemplate = `
           consts: [[4, "ngIf"], [3, "dir"]],
           template: function TestComp_Template(rf, ctx) {
             if (rf & 1) {
@@ -636,14 +631,13 @@ describe('compiler compliance: template', () => {
             }
           },
         `;
-       expectEmit(result.source, expectedMainTemplate, 'Incorrect template');
-     });
+    expectEmit(result.source, expectedMainTemplate, 'Incorrect template');
+  });
 
-  it('should create unique template function names even for similar nested template structures',
-     () => {
-       const files = {
-         app: {
-           'spec1.ts': `
+  it('should create unique template function names even for similar nested template structures', () => {
+    const files = {
+      app: {
+        'spec1.ts': `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -665,7 +659,7 @@ describe('compiler compliance: template', () => {
           @NgModule({declarations: [AComponent]})
           export class AModule {}
         `,
-           'spec2.ts': `
+        'spec2.ts': `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -697,24 +691,24 @@ describe('compiler compliance: template', () => {
           @NgModule({declarations: [BComponent]})
           export class BModule {}
         `,
-         },
-       };
+      },
+    };
 
-       const result = compile(files, angularFiles);
+    const result = compile(files, angularFiles);
 
-       const allTemplateFunctionsNames = (result.source.match(/function ([^\s(]+)/g) || [])
-                                             .map(x => x.slice(9))
-                                             .filter(x => x.includes('Template'))
-                                             .sort();
-       const uniqueTemplateFunctionNames = Array.from(new Set(allTemplateFunctionsNames));
+    const allTemplateFunctionsNames = (result.source.match(/function ([^\s(]+)/g) || [])
+      .map((x) => x.slice(9))
+      .filter((x) => x.includes('Template'))
+      .sort();
+    const uniqueTemplateFunctionNames = Array.from(new Set(allTemplateFunctionsNames));
 
-       // Expected template function:
-       // - 5 for AComponent's template.
-       // - 9 for BComponent's template.
-       // - 2 for the two components.
-       expect(allTemplateFunctionsNames.length).toBe(5 + 9 + 2);
-       expect(allTemplateFunctionsNames).toEqual(uniqueTemplateFunctionNames);
-     });
+    // Expected template function:
+    // - 5 for AComponent's template.
+    // - 9 for BComponent's template.
+    // - 2 for the two components.
+    expect(allTemplateFunctionsNames.length).toBe(5 + 9 + 2);
+    expect(allTemplateFunctionsNames).toEqual(uniqueTemplateFunctionNames);
+  });
 
   it('should create unique template function names for ng-content templates', () => {
     const files = {
@@ -744,16 +738,16 @@ describe('compiler compliance: template', () => {
 
           @NgModule({declarations: [AComponent, BComponent]})
           export class AModule {}
-        `
+        `,
       },
     };
 
     const result = compile(files, angularFiles);
 
     const allTemplateFunctionsNames = (result.source.match(/function ([^\s(]+)/g) || [])
-                                          .map(x => x.slice(9))
-                                          .filter(x => x.includes('Template'))
-                                          .sort();
+      .map((x) => x.slice(9))
+      .filter((x) => x.includes('Template'))
+      .sort();
     const uniqueTemplateFunctionNames = Array.from(new Set(allTemplateFunctionsNames));
 
     // Expected template function:
@@ -764,11 +758,10 @@ describe('compiler compliance: template', () => {
     expect(allTemplateFunctionsNames).toEqual(uniqueTemplateFunctionNames);
   });
 
-  it('should create unique listener function names even for similar nested template structures',
-     () => {
-       const files = {
-         app: {
-           'spec.ts': `
+  it('should create unique listener function names even for similar nested template structures', () => {
+    const files = {
+      app: {
+        'spec.ts': `
           import {Component, NgModule} from '@angular/core';
 
           @Component({
@@ -790,20 +783,20 @@ describe('compiler compliance: template', () => {
           @NgModule({declarations: [MyComponent]})
           export class MyModule {}
         `,
-         },
-       };
+      },
+    };
 
-       const result = compile(files, angularFiles);
+    const result = compile(files, angularFiles);
 
-       const allListenerFunctionsNames = (result.source.match(/function ([^\s(]+)/g) || [])
-                                             .map(x => x.slice(9))
-                                             .filter(x => x.includes('listener'))
-                                             .sort();
-       const uniqueListenerFunctionNames = Array.from(new Set(allListenerFunctionsNames));
+    const allListenerFunctionsNames = (result.source.match(/function ([^\s(]+)/g) || [])
+      .map((x) => x.slice(9))
+      .filter((x) => x.includes('listener'))
+      .sort();
+    const uniqueListenerFunctionNames = Array.from(new Set(allListenerFunctionsNames));
 
-       expect(allListenerFunctionsNames.length).toBe(3);
-       expect(allListenerFunctionsNames).toEqual(uniqueListenerFunctionNames);
-     });
+    expect(allListenerFunctionsNames.length).toBe(3);
+    expect(allListenerFunctionsNames).toEqual(uniqueListenerFunctionNames);
+  });
 
   it('should support pipes in template bindings', () => {
     const files = {
@@ -820,8 +813,8 @@ describe('compiler compliance: template', () => {
 
               @NgModule({declarations: [MyComponent]})
               export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const template = `
@@ -862,8 +855,8 @@ describe('compiler compliance: template', () => {
 
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
-        `
-      }
+        `,
+      },
     };
 
     const template = `i0.ɵɵtextInterpolate1(" ", (ctx.a == null ? null : ctx.a.b) ? 1 : 2, "")`;

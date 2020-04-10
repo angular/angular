@@ -7,5 +7,9 @@
  */
 
 export {$locationShim, $locationShimProvider} from './location_shim';
-export {LOCATION_UPGRADE_CONFIGURATION, LocationUpgradeConfig, LocationUpgradeModule} from './location_upgrade_module';
+export {
+  LOCATION_UPGRADE_CONFIGURATION,
+  LocationUpgradeConfig,
+  LocationUpgradeModule,
+} from './location_upgrade_module';
 export {AngularJSUrlCodec, UrlCodec} from './params';

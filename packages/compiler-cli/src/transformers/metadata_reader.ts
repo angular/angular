@@ -13,7 +13,7 @@ import {METADATA_VERSION, ModuleMetadata} from '../metadata';
 import {DTS} from './util';
 
 export interface MetadataReaderHost {
-  getSourceFileMetadata(filePath: string): ModuleMetadata|undefined;
+  getSourceFileMetadata(filePath: string): ModuleMetadata | undefined;
   cacheMetadata?(fileName: string): boolean;
   fileExists(filePath: string): boolean;
   readFile(filePath: string): string;
@@ -23,17 +23,19 @@ export interface MetadataReaderCache {
   /**
    * @internal
    */
-  data: Map<string, ModuleMetadata[]|undefined>;
+  data: Map<string, ModuleMetadata[] | undefined>;
 }
 
 export function createMetadataReaderCache(): MetadataReaderCache {
-  const data = new Map<string, ModuleMetadata[]|undefined>();
+  const data = new Map<string, ModuleMetadata[] | undefined>();
   return {data};
 }
 
 export function readMetadata(
-    filePath: string, host: MetadataReaderHost, cache?: MetadataReaderCache): ModuleMetadata[]|
-    undefined {
+  filePath: string,
+  host: MetadataReaderHost,
+  cache?: MetadataReaderCache
+): ModuleMetadata[] | undefined {
   let metadatas = cache && cache.data.get(filePath);
   if (metadatas) {
     return metadatas;
@@ -48,8 +50,13 @@ export function readMetadata(
         // If there is a .d.ts file but no metadata file we need to produce a
         // metadata from the .d.ts file as metadata files capture reexports
         // (starting with v3).
-        metadatas = [upgradeMetadataWithDtsData(
-            host, {'__symbolic': 'module', 'version': 1, 'metadata': {}}, filePath)];
+        metadatas = [
+          upgradeMetadataWithDtsData(
+            host,
+            {'__symbolic': 'module', 'version': 1, 'metadata': {}},
+            filePath
+          ),
+        ];
       }
     } else {
       const metadata = host.getSourceFileMetadata(filePath);
@@ -62,20 +69,23 @@ export function readMetadata(
   return metadatas;
 }
 
-
-function readMetadataFile(host: MetadataReaderHost, dtsFilePath: string): ModuleMetadata[]|
-    undefined {
+function readMetadataFile(
+  host: MetadataReaderHost,
+  dtsFilePath: string
+): ModuleMetadata[] | undefined {
   const metadataPath = dtsFilePath.replace(DTS, '.metadata.json');
   if (!host.fileExists(metadataPath)) {
     return undefined;
   }
   try {
     const metadataOrMetadatas = JSON.parse(host.readFile(metadataPath));
-    const metadatas: ModuleMetadata[] = metadataOrMetadatas ?
-        (Array.isArray(metadataOrMetadatas) ? metadataOrMetadatas : [metadataOrMetadatas]) :
-        [];
+    const metadatas: ModuleMetadata[] = metadataOrMetadatas
+      ? Array.isArray(metadataOrMetadatas)
+        ? metadataOrMetadatas
+        : [metadataOrMetadatas]
+      : [];
     if (metadatas.length) {
-      let maxMetadata = metadatas.reduce((p, c) => p.version > c.version ? p : c);
+      let maxMetadata = metadatas.reduce((p, c) => (p.version > c.version ? p : c));
       if (maxMetadata.version < METADATA_VERSION) {
         metadatas.push(upgradeMetadataWithDtsData(host, maxMetadata, dtsFilePath));
       }
@@ -88,7 +98,10 @@ function readMetadataFile(host: MetadataReaderHost, dtsFilePath: string): Module
 }
 
 function upgradeMetadataWithDtsData(
-    host: MetadataReaderHost, oldMetadata: ModuleMetadata, dtsFilePath: string): ModuleMetadata {
+  host: MetadataReaderHost,
+  oldMetadata: ModuleMetadata,
+  dtsFilePath: string
+): ModuleMetadata {
   // patch v1 to v3 by adding exports and the `extends` clause.
   // patch v3 to v4 by adding `interface` symbols for TypeAlias
   let newMetadata: ModuleMetadata = {

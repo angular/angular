@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 
 import {MetadataReader} from '../../../src/ngtsc/metadata';
@@ -12,7 +13,6 @@ import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
 import {HandlerFlags} from '../../../src/ngtsc/transform';
 import {NgccReflectionHost} from '../host/ngcc_host';
-
 
 /**
  * Implement this interface and add it to the `DecorationAnalyzer.migrations` collection to get ngcc
@@ -28,7 +28,7 @@ import {NgccReflectionHost} from '../host/ngcc_host';
  * interfaces, which should be used.
  */
 export interface Migration {
-  apply(clazz: ClassDeclaration, host: MigrationHost): ts.Diagnostic|null;
+  apply(clazz: ClassDeclaration, host: MigrationHost): ts.Diagnostic | null;
 }
 
 export interface MigrationHost {
@@ -45,8 +45,11 @@ export interface MigrationHost {
    * @param decorator the decorator to inject.
    * @param flags optional bitwise flag to influence the compilation of the decorator.
    */
-  injectSyntheticDecorator(clazz: ClassDeclaration, decorator: Decorator, flags?: HandlerFlags):
-      void;
+  injectSyntheticDecorator(
+    clazz: ClassDeclaration,
+    decorator: Decorator,
+    flags?: HandlerFlags
+  ): void;
 
   /**
    * Retrieves all decorators that are associated with the class, including synthetic decorators
@@ -54,7 +57,7 @@ export interface MigrationHost {
    * @param clazz the class for which all decorators are retrieved.
    * @returns the list of the decorators, or null if the class was not decorated.
    */
-  getAllDecorators(clazz: ClassDeclaration): Decorator[]|null;
+  getAllDecorators(clazz: ClassDeclaration): Decorator[] | null;
 
   /**
    * Determines whether the provided class in within scope of the entry-point that is currently

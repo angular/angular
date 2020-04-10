@@ -8,11 +8,38 @@
 
 import {RendererType2} from '../../src/render/api';
 import {getLContext} from '../../src/render3/context_discovery';
-import {AttributeMarker, ɵɵadvance, ɵɵattribute, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵhostProperty, ɵɵproperty} from '../../src/render3/index';
-import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵprojection, ɵɵprojectionDef, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
+import {
+  AttributeMarker,
+  ɵɵadvance,
+  ɵɵattribute,
+  ɵɵdefineComponent,
+  ɵɵdefineDirective,
+  ɵɵhostProperty,
+  ɵɵproperty,
+} from '../../src/render3/index';
+import {
+  ɵɵcontainer,
+  ɵɵcontainerRefreshEnd,
+  ɵɵcontainerRefreshStart,
+  ɵɵelement,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+  ɵɵembeddedViewEnd,
+  ɵɵembeddedViewStart,
+  ɵɵprojection,
+  ɵɵprojectionDef,
+  ɵɵtemplate,
+  ɵɵtext,
+  ɵɵtextInterpolate,
+} from '../../src/render3/instructions/all';
 import {MONKEY_PATCH_KEY_NAME} from '../../src/render3/interfaces/context';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
+import {
+  RElement,
+  Renderer3,
+  RendererFactory3,
+  domRendererFactory3,
+} from '../../src/render3/interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET} from '../../src/render3/interfaces/view';
 import {ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
@@ -22,7 +49,6 @@ import {NgIf} from './common_with_def';
 import {ComponentFixture, MockRendererFactory, renderToHtml} from './render_util';
 
 describe('render3 integration test', () => {
-
   describe('render', () => {
     describe('text bindings', () => {
       it('should support creation-time values in text nodes', () => {
@@ -36,7 +62,7 @@ describe('render3 integration test', () => {
         expect(ngDevMode).toHaveProperties({
           firstCreatePass: 0,
           tNode: 2,
-          tView: 2,  // 1 for root view, 1 for template
+          tView: 2, // 1 for root view, 1 for template
           rendererSetText: 1,
         });
       });
@@ -88,7 +114,9 @@ describe('render3 integration test', () => {
         ɵɵcontainerRefreshStart(0);
         {
           const rf0 = ɵɵembeddedViewStart(0, 1, 0);
-          { showLabel(rf0, {label: ctx.tree.beforeLabel}); }
+          {
+            showLabel(rf0, {label: ctx.tree.beforeLabel});
+          }
           ɵɵembeddedViewEnd();
         }
         ɵɵcontainerRefreshEnd();
@@ -96,7 +124,9 @@ describe('render3 integration test', () => {
         {
           for (let subTree of ctx.tree.subTrees || []) {
             const rf0 = ɵɵembeddedViewStart(0, 3, 0);
-            { showTree(rf0, {tree: subTree}); }
+            {
+              showTree(rf0, {tree: subTree});
+            }
             ɵɵembeddedViewEnd();
           }
         }
@@ -104,7 +134,9 @@ describe('render3 integration test', () => {
         ɵɵcontainerRefreshStart(2);
         {
           const rf0 = ɵɵembeddedViewStart(0, 1, 0);
-          { showLabel(rf0, {label: ctx.tree.afterLabel}); }
+          {
+            showLabel(rf0, {label: ctx.tree.afterLabel});
+          }
           ɵɵembeddedViewEnd();
         }
         ɵɵcontainerRefreshEnd();
@@ -113,18 +145,20 @@ describe('render3 integration test', () => {
 
     class ChildComponent {
       // TODO(issue/24571): remove '!'.
-      beforeTree !: Tree;
+      beforeTree!: Tree;
       // TODO(issue/24571): remove '!'.
-      afterTree !: Tree;
+      afterTree!: Tree;
 
-      static ɵfac = () => new ChildComponent;
+      static ɵfac = () => new ChildComponent();
       static ɵcmp = ɵɵdefineComponent({
         selectors: [['child']],
         type: ChildComponent,
         decls: 3,
         vars: 0,
         template: function ChildComponentTemplate(
-            rf: RenderFlags, ctx: {beforeTree: Tree, afterTree: Tree}) {
+          rf: RenderFlags,
+          ctx: {beforeTree: Tree; afterTree: Tree}
+        ) {
           if (rf & RenderFlags.Create) {
             ɵɵprojectionDef();
             ɵɵcontainer(0);
@@ -135,27 +169,33 @@ describe('render3 integration test', () => {
             ɵɵcontainerRefreshStart(0);
             {
               const rf0 = ɵɵembeddedViewStart(0, 3, 0);
-              { showTree(rf0, {tree: ctx.beforeTree}); }
+              {
+                showTree(rf0, {tree: ctx.beforeTree});
+              }
               ɵɵembeddedViewEnd();
             }
             ɵɵcontainerRefreshEnd();
             ɵɵcontainerRefreshStart(2);
             {
               const rf0 = ɵɵembeddedViewStart(0, 3, 0);
-              { showTree(rf0, {tree: ctx.afterTree}); }
+              {
+                showTree(rf0, {tree: ctx.afterTree});
+              }
               ɵɵembeddedViewEnd();
             }
             ɵɵcontainerRefreshEnd();
           }
         },
-        inputs: {beforeTree: 'beforeTree', afterTree: 'afterTree'}
+        inputs: {beforeTree: 'beforeTree', afterTree: 'afterTree'},
       });
     }
 
     function parentTemplate(rf: RenderFlags, ctx: ParentCtx) {
       if (rf & RenderFlags.Create) {
         ɵɵelementStart(0, 'child');
-        { ɵɵcontainer(1); }
+        {
+          ɵɵcontainer(1);
+        }
         ɵɵelementEnd();
       }
       if (rf & RenderFlags.Update) {
@@ -164,7 +204,9 @@ describe('render3 integration test', () => {
         ɵɵcontainerRefreshStart(1);
         {
           const rf0 = ɵɵembeddedViewStart(0, 3, 0);
-          { showTree(rf0, {tree: ctx.projectedTree}); }
+          {
+            showTree(rf0, {tree: ctx.projectedTree});
+          }
           ɵɵembeddedViewEnd();
         }
         ɵɵcontainerRefreshEnd();
@@ -172,28 +214,25 @@ describe('render3 integration test', () => {
     }
 
     it('should work with a tree', () => {
-
       const ctx: ParentCtx = {
         beforeTree: {subTrees: [{beforeLabel: 'a'}]},
         projectedTree: {beforeLabel: 'p'},
-        afterTree: {afterLabel: 'z'}
+        afterTree: {afterLabel: 'z'},
       };
       const defs = [ChildComponent];
       expect(renderToHtml(parentTemplate, ctx, 2, 2, defs)).toEqual('<child>apz</child>');
       ctx.projectedTree = {subTrees: [{}, {}, {subTrees: [{}, {}]}, {}]};
-      ctx.beforeTree.subTrees !.push({afterLabel: 'b'});
+      ctx.beforeTree.subTrees!.push({afterLabel: 'b'});
       expect(renderToHtml(parentTemplate, ctx, 2, 2, defs)).toEqual('<child>abz</child>');
-      ctx.projectedTree.subTrees ![1].afterLabel = 'h';
+      ctx.projectedTree.subTrees![1].afterLabel = 'h';
       expect(renderToHtml(parentTemplate, ctx, 2, 2, defs)).toEqual('<child>abhz</child>');
-      ctx.beforeTree.subTrees !.push({beforeLabel: 'c'});
+      ctx.beforeTree.subTrees!.push({beforeLabel: 'c'});
       expect(renderToHtml(parentTemplate, ctx, 2, 2, defs)).toEqual('<child>abchz</child>');
 
       // To check the context easily:
       // console.log(JSON.stringify(ctx));
     });
-
   });
-
 });
 
 describe('component styles', () => {
@@ -211,13 +250,13 @@ describe('component styles', () => {
           if (rf & RenderFlags.Create) {
             ɵɵelement(0, 'div');
           }
-        }
+        },
       });
     }
     const rendererFactory = new ProxyRenderer3Factory();
     new ComponentFixture(StyledComp, {rendererFactory});
-    expect(rendererFactory.lastCapturedType !.styles).toEqual(['div { color: red; }']);
-    expect(rendererFactory.lastCapturedType !.encapsulation).toEqual(100);
+    expect(rendererFactory.lastCapturedType!.styles).toEqual(['div { color: red; }']);
+    expect(rendererFactory.lastCapturedType!.encapsulation).toEqual(100);
   });
 });
 
@@ -233,19 +272,16 @@ describe('component animations', () => {
         decls: 0,
         vars: 0,
         data: {
-          animation: [
-            animA,
-            animB,
-          ],
+          animation: [animA, animB],
         },
         selectors: [['foo']],
-        template: (rf: RenderFlags, ctx: AnimComp) => {}
+        template: (rf: RenderFlags, ctx: AnimComp) => {},
       });
     }
     const rendererFactory = new ProxyRenderer3Factory();
     new ComponentFixture(AnimComp, {rendererFactory});
 
-    const capturedAnimations = rendererFactory.lastCapturedType !.data !['animation'];
+    const capturedAnimations = rendererFactory.lastCapturedType!.data!['animation'];
     expect(Array.isArray(capturedAnimations)).toBeTruthy();
     expect(capturedAnimations.length).toEqual(2);
     expect(capturedAnimations).toContain(animA);
@@ -263,12 +299,12 @@ describe('component animations', () => {
           animation: [],
         },
         selectors: [['foo']],
-        template: (rf: RenderFlags, ctx: AnimComp) => {}
+        template: (rf: RenderFlags, ctx: AnimComp) => {},
       });
     }
     const rendererFactory = new ProxyRenderer3Factory();
     new ComponentFixture(AnimComp, {rendererFactory});
-    const data = rendererFactory.lastCapturedType !.data;
+    const data = rendererFactory.lastCapturedType!.data;
     expect(data.animation).toEqual([]);
   });
 
@@ -288,7 +324,7 @@ describe('component animations', () => {
           if (rf & RenderFlags.Update) {
             ɵɵattribute('@fooAnimation', ctx.animationValue);
           }
-        }
+        },
       });
 
       animationValue = '123';
@@ -297,7 +333,7 @@ describe('component animations', () => {
     const rendererFactory = new MockRendererFactory(['setAttribute']);
     const fixture = new ComponentFixture(AnimComp, {rendererFactory});
 
-    const renderer = rendererFactory.lastRenderer !;
+    const renderer = rendererFactory.lastRenderer!;
     fixture.component.animationValue = '456';
     fixture.update();
 
@@ -308,34 +344,33 @@ describe('component animations', () => {
     expect(value).toEqual('456');
   });
 
-  it('should allow creation-level [@trigger] properties to be picked up by the underlying renderer',
-     () => {
-       class AnimComp {
-         static ɵfac = () => new AnimComp();
-         static ɵcmp = ɵɵdefineComponent({
-           type: AnimComp,
-           decls: 1,
-           vars: 1,
-           selectors: [['foo']],
-           consts: [['@fooAnimation', '']],
-           template: (rf: RenderFlags, ctx: AnimComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'div', 0);
-             }
-           }
-         });
-       }
+  it('should allow creation-level [@trigger] properties to be picked up by the underlying renderer', () => {
+    class AnimComp {
+      static ɵfac = () => new AnimComp();
+      static ɵcmp = ɵɵdefineComponent({
+        type: AnimComp,
+        decls: 1,
+        vars: 1,
+        selectors: [['foo']],
+        consts: [['@fooAnimation', '']],
+        template: (rf: RenderFlags, ctx: AnimComp) => {
+          if (rf & RenderFlags.Create) {
+            ɵɵelement(0, 'div', 0);
+          }
+        },
+      });
+    }
 
-       const rendererFactory = new MockRendererFactory(['setProperty']);
-       const fixture = new ComponentFixture(AnimComp, {rendererFactory});
+    const rendererFactory = new MockRendererFactory(['setProperty']);
+    const fixture = new ComponentFixture(AnimComp, {rendererFactory});
 
-       const renderer = rendererFactory.lastRenderer !;
-       fixture.update();
+    const renderer = rendererFactory.lastRenderer!;
+    fixture.update();
 
-       const spy = renderer.spies['setProperty'];
-       const [elm, attr, value] = spy.calls.mostRecent().args;
-       expect(attr).toEqual('@fooAnimation');
-     });
+    const spy = renderer.spies['setProperty'];
+    const [elm, attr, value] = spy.calls.mostRecent().args;
+    expect(attr).toEqual('@fooAnimation');
+  });
 
   // TODO(benlesh): this test does not seem to be testing anything we could actually generate with
   // these instructions. ɵɵbind should be present in the ɵɵelementProperty call in the hostBindings,
@@ -405,7 +440,7 @@ describe('element discovery', () => {
           }
           if (rf & RenderFlags.Update) {
           }
-        }
+        },
       });
     }
 
@@ -434,7 +469,7 @@ describe('element discovery', () => {
             ɵɵelement(1, 'div');
             ɵɵelement(2, 'div');
           }
-        }
+        },
       });
     }
 
@@ -453,7 +488,7 @@ describe('element discovery', () => {
             ɵɵelementEnd();
             ɵɵelementEnd();
           }
-        }
+        },
       });
     }
 
@@ -483,21 +518,28 @@ describe('element discovery', () => {
         template: (rf: RenderFlags, ctx: StructuredComp) => {
           if (rf & RenderFlags.Create) {
             ɵɵelementStart(0, 'section');
-            ɵɵtemplate(1, (rf, ctx) => {
-              if (rf & RenderFlags.Create) {
-                ɵɵelementStart(0, 'div');
-                ɵɵelement(1, 'p');
-                ɵɵelementEnd();
-                ɵɵelement(2, 'div');
-              }
-            }, 3, 0, 'ng-template', 0);
+            ɵɵtemplate(
+              1,
+              (rf, ctx) => {
+                if (rf & RenderFlags.Create) {
+                  ɵɵelementStart(0, 'div');
+                  ɵɵelement(1, 'p');
+                  ɵɵelementEnd();
+                  ɵɵelement(2, 'div');
+                }
+              },
+              3,
+              0,
+              'ng-template',
+              0
+            );
             ɵɵelementEnd();
           }
           if (rf & RenderFlags.Update) {
             ɵɵadvance(1);
             ɵɵproperty('ngIf', true);
           }
-        }
+        },
       });
     }
 
@@ -534,23 +576,23 @@ describe('element discovery', () => {
             ɵɵelement(0, 'section');
             ɵɵelement(1, 'div');
           }
-        }
+        },
       });
     }
 
     const fixture = new ComponentFixture(StructuredComp);
     fixture.update();
 
-    const section = fixture.hostElement.querySelector('section') !;
-    const sectionContext = getLContext(section) !;
-    const sectionLView = sectionContext.lView !;
+    const section = fixture.hostElement.querySelector('section')!;
+    const sectionContext = getLContext(section)!;
+    const sectionLView = sectionContext.lView!;
     expect(sectionContext.nodeIndex).toEqual(HEADER_OFFSET);
     expect(sectionLView.length).toBeGreaterThan(HEADER_OFFSET);
     expect(sectionContext.native).toBe(section);
 
-    const div = fixture.hostElement.querySelector('div') !;
-    const divContext = getLContext(div) !;
-    const divLView = divContext.lView !;
+    const div = fixture.hostElement.querySelector('div')!;
+    const divContext = getLContext(div)!;
+    const divLView = divContext.lView!;
     expect(divContext.nodeIndex).toEqual(HEADER_OFFSET + 1);
     expect(divLView.length).toBeGreaterThan(HEADER_OFFSET);
     expect(divContext.native).toBe(div);
@@ -570,18 +612,18 @@ describe('element discovery', () => {
           if (rf & RenderFlags.Create) {
             ɵɵelement(0, 'section');
           }
-        }
+        },
       });
     }
 
     const fixture = new ComponentFixture(StructuredComp);
     fixture.update();
 
-    const section = fixture.hostElement.querySelector('section') !as any;
+    const section = fixture.hostElement.querySelector('section')! as any;
     const result1 = section[MONKEY_PATCH_KEY_NAME];
     expect(Array.isArray(result1)).toBeTruthy();
 
-    const context = getLContext(section) !;
+    const context = getLContext(section)!;
     const result2 = section[MONKEY_PATCH_KEY_NAME];
     expect(Array.isArray(result2)).toBeFalsy();
 
@@ -589,76 +631,73 @@ describe('element discovery', () => {
     expect(result2.lView).toBe(result1);
   });
 
-  it('should cache the element context on an intermediate element that isn\'t pre-emptively monkey-patched',
-     () => {
-       class StructuredComp {
-         static ɵfac = () => new StructuredComp();
-         static ɵcmp = ɵɵdefineComponent({
-           type: StructuredComp,
-           selectors: [['structured-comp']],
-           decls: 2,
-           vars: 0,
-           template: (rf: RenderFlags, ctx: StructuredComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelementStart(0, 'section');
-               ɵɵelement(1, 'p');
-               ɵɵelementEnd();
-             }
-           }
-         });
-       }
+  it("should cache the element context on an intermediate element that isn't pre-emptively monkey-patched", () => {
+    class StructuredComp {
+      static ɵfac = () => new StructuredComp();
+      static ɵcmp = ɵɵdefineComponent({
+        type: StructuredComp,
+        selectors: [['structured-comp']],
+        decls: 2,
+        vars: 0,
+        template: (rf: RenderFlags, ctx: StructuredComp) => {
+          if (rf & RenderFlags.Create) {
+            ɵɵelementStart(0, 'section');
+            ɵɵelement(1, 'p');
+            ɵɵelementEnd();
+          }
+        },
+      });
+    }
 
-       const fixture = new ComponentFixture(StructuredComp);
-       fixture.update();
+    const fixture = new ComponentFixture(StructuredComp);
+    fixture.update();
 
-       const section = fixture.hostElement.querySelector('section') !as any;
-       expect(section[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+    const section = fixture.hostElement.querySelector('section')! as any;
+    expect(section[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
 
-       const p = fixture.hostElement.querySelector('p') !as any;
-       expect(p[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
+    const p = fixture.hostElement.querySelector('p')! as any;
+    expect(p[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
 
-       const pContext = getLContext(p) !;
-       expect(pContext.native).toBe(p);
-       expect(p[MONKEY_PATCH_KEY_NAME]).toBe(pContext);
-     });
+    const pContext = getLContext(p)!;
+    expect(pContext.native).toBe(p);
+    expect(p[MONKEY_PATCH_KEY_NAME]).toBe(pContext);
+  });
 
-  it('should be able to pull in element context data even if the element is decorated using styling',
-     () => {
-       class StructuredComp {
-         static ɵfac = () => new StructuredComp();
-         static ɵcmp = ɵɵdefineComponent({
-           type: StructuredComp,
-           selectors: [['structured-comp']],
-           decls: 1,
-           vars: 0,
-           template: (rf: RenderFlags, ctx: StructuredComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'section');
-             }
-           }
-         });
-       }
+  it('should be able to pull in element context data even if the element is decorated using styling', () => {
+    class StructuredComp {
+      static ɵfac = () => new StructuredComp();
+      static ɵcmp = ɵɵdefineComponent({
+        type: StructuredComp,
+        selectors: [['structured-comp']],
+        decls: 1,
+        vars: 0,
+        template: (rf: RenderFlags, ctx: StructuredComp) => {
+          if (rf & RenderFlags.Create) {
+            ɵɵelement(0, 'section');
+          }
+        },
+      });
+    }
 
-       const fixture = new ComponentFixture(StructuredComp);
-       fixture.update();
+    const fixture = new ComponentFixture(StructuredComp);
+    fixture.update();
 
-       const section = fixture.hostElement.querySelector('section') !as any;
-       const result1 = section[MONKEY_PATCH_KEY_NAME];
-       expect(Array.isArray(result1)).toBeTruthy();
+    const section = fixture.hostElement.querySelector('section')! as any;
+    const result1 = section[MONKEY_PATCH_KEY_NAME];
+    expect(Array.isArray(result1)).toBeTruthy();
 
-       const elementResult = result1[HEADER_OFFSET];  // first element
-       expect(elementResult).toBe(section);
+    const elementResult = result1[HEADER_OFFSET]; // first element
+    expect(elementResult).toBe(section);
 
-       const context = getLContext(section) !;
-       const result2 = section[MONKEY_PATCH_KEY_NAME];
-       expect(Array.isArray(result2)).toBeFalsy();
+    const context = getLContext(section)!;
+    const result2 = section[MONKEY_PATCH_KEY_NAME];
+    expect(Array.isArray(result2)).toBeFalsy();
 
-       expect(context.native).toBe(section);
-     });
+    expect(context.native).toBe(section);
+  });
 
-  it('should monkey-patch immediate child nodes in a content-projected region with a reference to the parent component',
-     () => {
-       /*
+  it('should monkey-patch immediate child nodes in a content-projected region with a reference to the parent component', () => {
+    /*
          <!-- DOM view -->
          <section>
            <projection-comp>
@@ -672,128 +711,126 @@ describe('element discovery', () => {
            </projection-comp>
          </section>
        */
-       class ProjectorComp {
-         static ɵfac = () => new ProjectorComp();
-         static ɵcmp = ɵɵdefineComponent({
-           type: ProjectorComp,
-           selectors: [['projector-comp']],
-           decls: 4,
-           vars: 0,
-           template: (rf: RenderFlags, ctx: ProjectorComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵprojectionDef();
-               ɵɵtext(0, 'welcome');
-               ɵɵelementStart(1, 'header');
-               ɵɵelementStart(2, 'h1');
-               ɵɵprojection(3);
-               ɵɵelementEnd();
-               ɵɵelementEnd();
-             }
-             if (rf & RenderFlags.Update) {
-             }
-           }
-         });
-       }
+    class ProjectorComp {
+      static ɵfac = () => new ProjectorComp();
+      static ɵcmp = ɵɵdefineComponent({
+        type: ProjectorComp,
+        selectors: [['projector-comp']],
+        decls: 4,
+        vars: 0,
+        template: (rf: RenderFlags, ctx: ProjectorComp) => {
+          if (rf & RenderFlags.Create) {
+            ɵɵprojectionDef();
+            ɵɵtext(0, 'welcome');
+            ɵɵelementStart(1, 'header');
+            ɵɵelementStart(2, 'h1');
+            ɵɵprojection(3);
+            ɵɵelementEnd();
+            ɵɵelementEnd();
+          }
+          if (rf & RenderFlags.Update) {
+          }
+        },
+      });
+    }
 
-       class ParentComp {
-         static ɵfac = () => new ParentComp();
-         static ɵcmp = ɵɵdefineComponent({
-           type: ParentComp,
-           selectors: [['parent-comp']],
-           directives: [ProjectorComp],
-           decls: 5,
-           vars: 0,
-           template: (rf: RenderFlags, ctx: ParentComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelementStart(0, 'section');
-               ɵɵelementStart(1, 'projector-comp');
-               ɵɵelementStart(2, 'p');
-               ɵɵtext(3, 'this content is projected');
-               ɵɵelementEnd();
-               ɵɵtext(4, 'this content is projected also');
-               ɵɵelementEnd();
-               ɵɵelementEnd();
-             }
-           }
-         });
-       }
+    class ParentComp {
+      static ɵfac = () => new ParentComp();
+      static ɵcmp = ɵɵdefineComponent({
+        type: ParentComp,
+        selectors: [['parent-comp']],
+        directives: [ProjectorComp],
+        decls: 5,
+        vars: 0,
+        template: (rf: RenderFlags, ctx: ParentComp) => {
+          if (rf & RenderFlags.Create) {
+            ɵɵelementStart(0, 'section');
+            ɵɵelementStart(1, 'projector-comp');
+            ɵɵelementStart(2, 'p');
+            ɵɵtext(3, 'this content is projected');
+            ɵɵelementEnd();
+            ɵɵtext(4, 'this content is projected also');
+            ɵɵelementEnd();
+            ɵɵelementEnd();
+          }
+        },
+      });
+    }
 
-       const fixture = new ComponentFixture(ParentComp);
-       fixture.update();
+    const fixture = new ComponentFixture(ParentComp);
+    fixture.update();
 
-       const host = fixture.hostElement;
-       const textNode = host.firstChild as any;
-       const section = host.querySelector('section') !as any;
-       const projectorComp = host.querySelector('projector-comp') !as any;
-       const header = host.querySelector('header') !as any;
-       const h1 = host.querySelector('h1') !as any;
-       const p = host.querySelector('p') !as any;
-       const pText = p.firstChild as any;
-       const projectedTextNode = p.nextSibling;
+    const host = fixture.hostElement;
+    const textNode = host.firstChild as any;
+    const section = host.querySelector('section')! as any;
+    const projectorComp = host.querySelector('projector-comp')! as any;
+    const header = host.querySelector('header')! as any;
+    const h1 = host.querySelector('h1')! as any;
+    const p = host.querySelector('p')! as any;
+    const pText = p.firstChild as any;
+    const projectedTextNode = p.nextSibling;
 
-       expect(projectorComp.children).toContain(header);
-       expect(h1.children).toContain(p);
+    expect(projectorComp.children).toContain(header);
+    expect(h1.children).toContain(p);
 
-       expect(textNode[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
-       expect(section[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
-       expect(projectorComp[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
-       expect(header[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
-       expect(h1[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
-       expect(p[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
-       expect(pText[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
-       expect(projectedTextNode[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+    expect(textNode[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+    expect(section[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+    expect(projectorComp[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+    expect(header[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+    expect(h1[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
+    expect(p[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+    expect(pText[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
+    expect(projectedTextNode[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
 
-       const parentContext = getLContext(section) !;
-       const shadowContext = getLContext(header) !;
-       const projectedContext = getLContext(p) !;
+    const parentContext = getLContext(section)!;
+    const shadowContext = getLContext(header)!;
+    const projectedContext = getLContext(p)!;
 
-       const parentComponentData = parentContext.lView;
-       const shadowComponentData = shadowContext.lView;
-       const projectedComponentData = projectedContext.lView;
+    const parentComponentData = parentContext.lView;
+    const shadowComponentData = shadowContext.lView;
+    const projectedComponentData = projectedContext.lView;
 
-       expect(projectedComponentData).toBe(parentComponentData);
-       expect(shadowComponentData).not.toBe(parentComponentData);
-     });
+    expect(projectedComponentData).toBe(parentComponentData);
+    expect(shadowComponentData).not.toBe(parentComponentData);
+  });
 
-  it('should return `null` when an element context is retrieved that isn\'t situated in Angular',
-     () => {
-       const elm1 = document.createElement('div');
-       const context1 = getLContext(elm1);
-       expect(context1).toBeFalsy();
+  it("should return `null` when an element context is retrieved that isn't situated in Angular", () => {
+    const elm1 = document.createElement('div');
+    const context1 = getLContext(elm1);
+    expect(context1).toBeFalsy();
 
-       const elm2 = document.createElement('div');
-       document.body.appendChild(elm2);
-       const context2 = getLContext(elm2);
-       expect(context2).toBeFalsy();
-     });
+    const elm2 = document.createElement('div');
+    document.body.appendChild(elm2);
+    const context2 = getLContext(elm2);
+    expect(context2).toBeFalsy();
+  });
 
-  it('should return `null` when an element context is retrieved that is a DOM node that was not created by Angular',
-     () => {
-       class StructuredComp {
-         static ɵfac = () => new StructuredComp();
-         static ɵcmp = ɵɵdefineComponent({
-           type: StructuredComp,
-           selectors: [['structured-comp']],
-           decls: 1,
-           vars: 0,
-           template: (rf: RenderFlags, ctx: StructuredComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'section');
-             }
-           }
-         });
-       }
+  it('should return `null` when an element context is retrieved that is a DOM node that was not created by Angular', () => {
+    class StructuredComp {
+      static ɵfac = () => new StructuredComp();
+      static ɵcmp = ɵɵdefineComponent({
+        type: StructuredComp,
+        selectors: [['structured-comp']],
+        decls: 1,
+        vars: 0,
+        template: (rf: RenderFlags, ctx: StructuredComp) => {
+          if (rf & RenderFlags.Create) {
+            ɵɵelement(0, 'section');
+          }
+        },
+      });
+    }
 
-       const fixture = new ComponentFixture(StructuredComp);
-       fixture.update();
+    const fixture = new ComponentFixture(StructuredComp);
+    fixture.update();
 
-       const section = fixture.hostElement.querySelector('section') !as any;
-       const manuallyCreatedElement = document.createElement('div');
-       section.appendChild(manuallyCreatedElement);
+    const section = fixture.hostElement.querySelector('section')! as any;
+    const manuallyCreatedElement = document.createElement('div');
+    section.appendChild(manuallyCreatedElement);
 
-       const context = getLContext(manuallyCreatedElement);
-       expect(context).toBeFalsy();
-     });
+    const context = getLContext(manuallyCreatedElement);
+    expect(context).toBeFalsy();
+  });
 
   it('should by default monkey-patch the bootstrap component with context details', () => {
     class StructuredComp {
@@ -803,7 +840,7 @@ describe('element discovery', () => {
         selectors: [['structured-comp']],
         decls: 0,
         vars: 0,
-        template: (rf: RenderFlags, ctx: StructuredComp) => {}
+        template: (rf: RenderFlags, ctx: StructuredComp) => {},
       });
     }
 
@@ -819,248 +856,245 @@ describe('element discovery', () => {
     const hostLView = (hostElm as any)[MONKEY_PATCH_KEY_NAME];
     expect(hostLView).toBe(componentLView);
 
-    const context1 = getLContext(hostElm) !;
+    const context1 = getLContext(hostElm)!;
     expect(context1.lView).toBe(hostLView);
     expect(context1.native).toEqual(hostElm);
 
-    const context2 = getLContext(component) !;
+    const context2 = getLContext(component)!;
     expect(context2).toBe(context1);
     expect(context2.lView).toBe(hostLView);
     expect(context2.native).toEqual(hostElm);
   });
 
-  it('should by default monkey-patch the directives with LView so that they can be examined',
-     () => {
-       let myDir1Instance: MyDir1|null = null;
-       let myDir2Instance: MyDir2|null = null;
-       let myDir3Instance: MyDir2|null = null;
+  it('should by default monkey-patch the directives with LView so that they can be examined', () => {
+    let myDir1Instance: MyDir1 | null = null;
+    let myDir2Instance: MyDir2 | null = null;
+    let myDir3Instance: MyDir2 | null = null;
 
-       class MyDir1 {
-         static ɵfac = () => myDir1Instance = new MyDir1();
-         static ɵdir = ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
-       }
+    class MyDir1 {
+      static ɵfac = () => (myDir1Instance = new MyDir1());
+      static ɵdir = ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
+    }
 
-       class MyDir2 {
-         static ɵfac = () => myDir2Instance = new MyDir2();
-         static ɵdir = ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
-       }
+    class MyDir2 {
+      static ɵfac = () => (myDir2Instance = new MyDir2());
+      static ɵdir = ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
+    }
 
-       class MyDir3 {
-         static ɵfac = () => myDir3Instance = new MyDir2();
-         static ɵdir = ɵɵdefineDirective({type: MyDir3, selectors: [['', 'my-dir-3', '']]});
-       }
+    class MyDir3 {
+      static ɵfac = () => (myDir3Instance = new MyDir2());
+      static ɵdir = ɵɵdefineDirective({type: MyDir3, selectors: [['', 'my-dir-3', '']]});
+    }
 
-       class StructuredComp {
-         static ɵfac = () => new StructuredComp();
-         static ɵcmp = ɵɵdefineComponent({
-           type: StructuredComp,
-           selectors: [['structured-comp']],
-           directives: [MyDir1, MyDir2, MyDir3],
-           decls: 2,
-           vars: 0,
-           consts: [['my-dir-1', '', 'my-dir-2', ''], ['my-dir-3']],
-           template: (rf: RenderFlags, ctx: StructuredComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'div', 0);
-               ɵɵelement(1, 'div', 1);
-             }
-           }
-         });
-       }
+    class StructuredComp {
+      static ɵfac = () => new StructuredComp();
+      static ɵcmp = ɵɵdefineComponent({
+        type: StructuredComp,
+        selectors: [['structured-comp']],
+        directives: [MyDir1, MyDir2, MyDir3],
+        decls: 2,
+        vars: 0,
+        consts: [['my-dir-1', '', 'my-dir-2', ''], ['my-dir-3']],
+        template: (rf: RenderFlags, ctx: StructuredComp) => {
+          if (rf & RenderFlags.Create) {
+            ɵɵelement(0, 'div', 0);
+            ɵɵelement(1, 'div', 1);
+          }
+        },
+      });
+    }
 
-       const fixture = new ComponentFixture(StructuredComp);
-       fixture.update();
+    const fixture = new ComponentFixture(StructuredComp);
+    fixture.update();
 
-       const hostElm = fixture.hostElement;
-       const div1 = hostElm.querySelector('div:first-child') !as any;
-       const div2 = hostElm.querySelector('div:last-child') !as any;
-       const context = getLContext(hostElm) !;
-       const componentView = context.lView[context.nodeIndex];
+    const hostElm = fixture.hostElement;
+    const div1 = hostElm.querySelector('div:first-child')! as any;
+    const div2 = hostElm.querySelector('div:last-child')! as any;
+    const context = getLContext(hostElm)!;
+    const componentView = context.lView[context.nodeIndex];
 
-       expect(componentView).toContain(myDir1Instance);
-       expect(componentView).toContain(myDir2Instance);
-       expect(componentView).toContain(myDir3Instance);
+    expect(componentView).toContain(myDir1Instance);
+    expect(componentView).toContain(myDir2Instance);
+    expect(componentView).toContain(myDir3Instance);
 
-       expect(Array.isArray((myDir1Instance as any)[MONKEY_PATCH_KEY_NAME])).toBeTruthy();
-       expect(Array.isArray((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME])).toBeTruthy();
-       expect(Array.isArray((myDir3Instance as any)[MONKEY_PATCH_KEY_NAME])).toBeTruthy();
+    expect(Array.isArray((myDir1Instance as any)[MONKEY_PATCH_KEY_NAME])).toBeTruthy();
+    expect(Array.isArray((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME])).toBeTruthy();
+    expect(Array.isArray((myDir3Instance as any)[MONKEY_PATCH_KEY_NAME])).toBeTruthy();
 
-       const d1Context = getLContext(myDir1Instance) !;
-       const d2Context = getLContext(myDir2Instance) !;
-       const d3Context = getLContext(myDir3Instance) !;
+    const d1Context = getLContext(myDir1Instance)!;
+    const d2Context = getLContext(myDir2Instance)!;
+    const d3Context = getLContext(myDir3Instance)!;
 
-       expect(d1Context.lView).toEqual(componentView);
-       expect(d2Context.lView).toEqual(componentView);
-       expect(d3Context.lView).toEqual(componentView);
+    expect(d1Context.lView).toEqual(componentView);
+    expect(d2Context.lView).toEqual(componentView);
+    expect(d3Context.lView).toEqual(componentView);
 
-       expect((myDir1Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(d1Context);
-       expect((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(d2Context);
-       expect((myDir3Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(d3Context);
+    expect((myDir1Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(d1Context);
+    expect((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(d2Context);
+    expect((myDir3Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(d3Context);
 
-       expect(d1Context.nodeIndex).toEqual(HEADER_OFFSET);
-       expect(d1Context.native).toBe(div1);
-       expect(d1Context.directives as any[]).toEqual([myDir1Instance, myDir2Instance]);
+    expect(d1Context.nodeIndex).toEqual(HEADER_OFFSET);
+    expect(d1Context.native).toBe(div1);
+    expect(d1Context.directives as any[]).toEqual([myDir1Instance, myDir2Instance]);
 
-       expect(d2Context.nodeIndex).toEqual(HEADER_OFFSET);
-       expect(d2Context.native).toBe(div1);
-       expect(d2Context.directives as any[]).toEqual([myDir1Instance, myDir2Instance]);
+    expect(d2Context.nodeIndex).toEqual(HEADER_OFFSET);
+    expect(d2Context.native).toBe(div1);
+    expect(d2Context.directives as any[]).toEqual([myDir1Instance, myDir2Instance]);
 
-       expect(d3Context.nodeIndex).toEqual(HEADER_OFFSET + 1);
-       expect(d3Context.native).toBe(div2);
-       expect(d3Context.directives as any[]).toEqual([myDir3Instance]);
-     });
+    expect(d3Context.nodeIndex).toEqual(HEADER_OFFSET + 1);
+    expect(d3Context.native).toBe(div2);
+    expect(d3Context.directives as any[]).toEqual([myDir3Instance]);
+  });
 
-  it('should monkey-patch the exact same context instance of the DOM node, component and any directives on the same element',
-     () => {
-       let myDir1Instance: MyDir1|null = null;
-       let myDir2Instance: MyDir2|null = null;
-       let childComponentInstance: ChildComp|null = null;
+  it('should monkey-patch the exact same context instance of the DOM node, component and any directives on the same element', () => {
+    let myDir1Instance: MyDir1 | null = null;
+    let myDir2Instance: MyDir2 | null = null;
+    let childComponentInstance: ChildComp | null = null;
 
-       class MyDir1 {
-         static ɵfac = () => myDir1Instance = new MyDir1();
-         static ɵdir = ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
-       }
+    class MyDir1 {
+      static ɵfac = () => (myDir1Instance = new MyDir1());
+      static ɵdir = ɵɵdefineDirective({type: MyDir1, selectors: [['', 'my-dir-1', '']]});
+    }
 
-       class MyDir2 {
-         static ɵfac = () => myDir2Instance = new MyDir2();
-         static ɵdir = ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
-       }
+    class MyDir2 {
+      static ɵfac = () => (myDir2Instance = new MyDir2());
+      static ɵdir = ɵɵdefineDirective({type: MyDir2, selectors: [['', 'my-dir-2', '']]});
+    }
 
-       class ChildComp {
-         static ɵfac = () => childComponentInstance = new ChildComp();
-         static ɵcmp = ɵɵdefineComponent({
-           type: ChildComp,
-           selectors: [['child-comp']],
-           decls: 1,
-           vars: 0,
-           template: (rf: RenderFlags, ctx: ChildComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'div');
-             }
-           }
-         });
-       }
+    class ChildComp {
+      static ɵfac = () => (childComponentInstance = new ChildComp());
+      static ɵcmp = ɵɵdefineComponent({
+        type: ChildComp,
+        selectors: [['child-comp']],
+        decls: 1,
+        vars: 0,
+        template: (rf: RenderFlags, ctx: ChildComp) => {
+          if (rf & RenderFlags.Create) {
+            ɵɵelement(0, 'div');
+          }
+        },
+      });
+    }
 
-       class ParentComp {
-         static ɵfac = () => new ParentComp();
-         static ɵcmp = ɵɵdefineComponent({
-           type: ParentComp,
-           selectors: [['parent-comp']],
-           directives: [ChildComp, MyDir1, MyDir2],
-           decls: 1,
-           vars: 0,
-           consts: [['my-dir-1', '', 'my-dir-2', '']],
-           template: (rf: RenderFlags, ctx: ParentComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'child-comp', 0);
-             }
-           }
-         });
-       }
+    class ParentComp {
+      static ɵfac = () => new ParentComp();
+      static ɵcmp = ɵɵdefineComponent({
+        type: ParentComp,
+        selectors: [['parent-comp']],
+        directives: [ChildComp, MyDir1, MyDir2],
+        decls: 1,
+        vars: 0,
+        consts: [['my-dir-1', '', 'my-dir-2', '']],
+        template: (rf: RenderFlags, ctx: ParentComp) => {
+          if (rf & RenderFlags.Create) {
+            ɵɵelement(0, 'child-comp', 0);
+          }
+        },
+      });
+    }
 
-       const fixture = new ComponentFixture(ParentComp);
-       fixture.update();
+    const fixture = new ComponentFixture(ParentComp);
+    fixture.update();
 
-       const childCompHostElm = fixture.hostElement.querySelector('child-comp') !as any;
+    const childCompHostElm = fixture.hostElement.querySelector('child-comp')! as any;
 
-       const lView = childCompHostElm[MONKEY_PATCH_KEY_NAME];
-       expect(Array.isArray(lView)).toBeTruthy();
-       expect((myDir1Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lView);
-       expect((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lView);
-       expect((childComponentInstance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lView);
+    const lView = childCompHostElm[MONKEY_PATCH_KEY_NAME];
+    expect(Array.isArray(lView)).toBeTruthy();
+    expect((myDir1Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lView);
+    expect((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lView);
+    expect((childComponentInstance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lView);
 
-       const childNodeContext = getLContext(childCompHostElm) !;
-       expect(childNodeContext.component).toBeFalsy();
-       expect(childNodeContext.directives).toBeFalsy();
-       assertMonkeyPatchValueIsLView(myDir1Instance);
-       assertMonkeyPatchValueIsLView(myDir2Instance);
-       assertMonkeyPatchValueIsLView(childComponentInstance);
+    const childNodeContext = getLContext(childCompHostElm)!;
+    expect(childNodeContext.component).toBeFalsy();
+    expect(childNodeContext.directives).toBeFalsy();
+    assertMonkeyPatchValueIsLView(myDir1Instance);
+    assertMonkeyPatchValueIsLView(myDir2Instance);
+    assertMonkeyPatchValueIsLView(childComponentInstance);
 
-       expect(getLContext(myDir1Instance)).toBe(childNodeContext);
-       expect(childNodeContext.component).toBeFalsy();
-       expect(childNodeContext.directives !.length).toEqual(2);
-       assertMonkeyPatchValueIsLView(myDir1Instance, false);
-       assertMonkeyPatchValueIsLView(myDir2Instance, false);
-       assertMonkeyPatchValueIsLView(childComponentInstance);
+    expect(getLContext(myDir1Instance)).toBe(childNodeContext);
+    expect(childNodeContext.component).toBeFalsy();
+    expect(childNodeContext.directives!.length).toEqual(2);
+    assertMonkeyPatchValueIsLView(myDir1Instance, false);
+    assertMonkeyPatchValueIsLView(myDir2Instance, false);
+    assertMonkeyPatchValueIsLView(childComponentInstance);
 
-       expect(getLContext(myDir2Instance)).toBe(childNodeContext);
-       expect(childNodeContext.component).toBeFalsy();
-       expect(childNodeContext.directives !.length).toEqual(2);
-       assertMonkeyPatchValueIsLView(myDir1Instance, false);
-       assertMonkeyPatchValueIsLView(myDir2Instance, false);
-       assertMonkeyPatchValueIsLView(childComponentInstance);
+    expect(getLContext(myDir2Instance)).toBe(childNodeContext);
+    expect(childNodeContext.component).toBeFalsy();
+    expect(childNodeContext.directives!.length).toEqual(2);
+    assertMonkeyPatchValueIsLView(myDir1Instance, false);
+    assertMonkeyPatchValueIsLView(myDir2Instance, false);
+    assertMonkeyPatchValueIsLView(childComponentInstance);
 
-       expect(getLContext(childComponentInstance)).toBe(childNodeContext);
-       expect(childNodeContext.component).toBeTruthy();
-       expect(childNodeContext.directives !.length).toEqual(2);
-       assertMonkeyPatchValueIsLView(myDir1Instance, false);
-       assertMonkeyPatchValueIsLView(myDir2Instance, false);
-       assertMonkeyPatchValueIsLView(childComponentInstance, false);
+    expect(getLContext(childComponentInstance)).toBe(childNodeContext);
+    expect(childNodeContext.component).toBeTruthy();
+    expect(childNodeContext.directives!.length).toEqual(2);
+    assertMonkeyPatchValueIsLView(myDir1Instance, false);
+    assertMonkeyPatchValueIsLView(myDir2Instance, false);
+    assertMonkeyPatchValueIsLView(childComponentInstance, false);
 
-       function assertMonkeyPatchValueIsLView(value: any, yesOrNo = true) {
-         expect(Array.isArray((value as any)[MONKEY_PATCH_KEY_NAME])).toBe(yesOrNo);
-       }
-     });
+    function assertMonkeyPatchValueIsLView(value: any, yesOrNo = true) {
+      expect(Array.isArray((value as any)[MONKEY_PATCH_KEY_NAME])).toBe(yesOrNo);
+    }
+  });
 
-  it('should monkey-patch sub components with the view data and then replace them with the context result once a lookup occurs',
-     () => {
-       class ChildComp {
-         static ɵfac = () => new ChildComp();
-         static ɵcmp = ɵɵdefineComponent({
-           type: ChildComp,
-           selectors: [['child-comp']],
-           decls: 3,
-           vars: 0,
-           template: (rf: RenderFlags, ctx: ChildComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelement(0, 'div');
-               ɵɵelement(1, 'div');
-               ɵɵelement(2, 'div');
-             }
-           }
-         });
-       }
+  it('should monkey-patch sub components with the view data and then replace them with the context result once a lookup occurs', () => {
+    class ChildComp {
+      static ɵfac = () => new ChildComp();
+      static ɵcmp = ɵɵdefineComponent({
+        type: ChildComp,
+        selectors: [['child-comp']],
+        decls: 3,
+        vars: 0,
+        template: (rf: RenderFlags, ctx: ChildComp) => {
+          if (rf & RenderFlags.Create) {
+            ɵɵelement(0, 'div');
+            ɵɵelement(1, 'div');
+            ɵɵelement(2, 'div');
+          }
+        },
+      });
+    }
 
-       class ParentComp {
-         static ɵfac = () => new ParentComp();
-         static ɵcmp = ɵɵdefineComponent({
-           type: ParentComp,
-           selectors: [['parent-comp']],
-           directives: [ChildComp],
-           decls: 2,
-           vars: 0,
-           template: (rf: RenderFlags, ctx: ParentComp) => {
-             if (rf & RenderFlags.Create) {
-               ɵɵelementStart(0, 'section');
-               ɵɵelementStart(1, 'child-comp');
-               ɵɵelementEnd();
-               ɵɵelementEnd();
-             }
-           }
-         });
-       }
+    class ParentComp {
+      static ɵfac = () => new ParentComp();
+      static ɵcmp = ɵɵdefineComponent({
+        type: ParentComp,
+        selectors: [['parent-comp']],
+        directives: [ChildComp],
+        decls: 2,
+        vars: 0,
+        template: (rf: RenderFlags, ctx: ParentComp) => {
+          if (rf & RenderFlags.Create) {
+            ɵɵelementStart(0, 'section');
+            ɵɵelementStart(1, 'child-comp');
+            ɵɵelementEnd();
+            ɵɵelementEnd();
+          }
+        },
+      });
+    }
 
-       const fixture = new ComponentFixture(ParentComp);
-       fixture.update();
+    const fixture = new ComponentFixture(ParentComp);
+    fixture.update();
 
-       const host = fixture.hostElement;
-       const child = host.querySelector('child-comp') as any;
-       expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+    const host = fixture.hostElement;
+    const child = host.querySelector('child-comp') as any;
+    expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
 
-       const context = getLContext(child) !;
-       expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+    const context = getLContext(child)!;
+    expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
 
-       const componentData = context.lView[context.nodeIndex];
-       const component = componentData[CONTEXT];
-       expect(component instanceof ChildComp).toBeTruthy();
-       expect(component[MONKEY_PATCH_KEY_NAME]).toBe(context.lView);
+    const componentData = context.lView[context.nodeIndex];
+    const component = componentData[CONTEXT];
+    expect(component instanceof ChildComp).toBeTruthy();
+    expect(component[MONKEY_PATCH_KEY_NAME]).toBe(context.lView);
 
-       const componentContext = getLContext(component) !;
-       expect(component[MONKEY_PATCH_KEY_NAME]).toBe(componentContext);
-       expect(componentContext.nodeIndex).toEqual(context.nodeIndex);
-       expect(componentContext.native).toEqual(context.native);
-       expect(componentContext.lView).toEqual(context.lView);
-     });
+    const componentContext = getLContext(component)!;
+    expect(component[MONKEY_PATCH_KEY_NAME]).toBe(componentContext);
+    expect(componentContext.nodeIndex).toEqual(context.nodeIndex);
+    expect(componentContext.native).toEqual(context.native);
+    expect(componentContext.lView).toEqual(context.lView);
+  });
 });
 
 describe('sanitization', () => {
@@ -1079,21 +1113,25 @@ describe('sanitization', () => {
           if (rf & RenderFlags.Update) {
             ɵɵproperty('href', ctx.href, ɵɵsanitizeUrl);
           }
-        }
+        },
       });
 
       private href = '';
 
-      updateLink(href: any) { this.href = href; }
+      updateLink(href: any) {
+        this.href = href;
+      }
     }
 
-    const sanitizer = new LocalSanitizer((value) => { return 'http://bar'; });
+    const sanitizer = new LocalSanitizer((value) => {
+      return 'http://bar';
+    });
 
     const fixture = new ComponentFixture(SanitizationComp, {sanitizer});
     fixture.component.updateLink('http://foo');
     fixture.update();
 
-    const anchor = fixture.hostElement.querySelector('a') !;
+    const anchor = fixture.hostElement.querySelector('a')!;
     expect(anchor.getAttribute('href')).toEqual('http://bar');
 
     fixture.component.updateLink(sanitizer.bypassSecurityTrustUrl('http://foo'));
@@ -1108,7 +1146,7 @@ describe('sanitization', () => {
       // @HostBinding()
       cite: any = 'http://cite-dir-value';
 
-      static ɵfac = () => hostBindingDir = new UnsafeUrlHostBindingDir();
+      static ɵfac = () => (hostBindingDir = new UnsafeUrlHostBindingDir());
       static ɵdir = ɵɵdefineDirective({
         type: UnsafeUrlHostBindingDir,
         selectors: [['', 'unsafeUrlHostBindingDir', '']],
@@ -1117,7 +1155,7 @@ describe('sanitization', () => {
           if (rf & RenderFlags.Update) {
             ɵɵhostProperty('cite', ctx.cite, ɵɵsanitizeUrl);
           }
-        }
+        },
       });
     }
 
@@ -1134,20 +1172,20 @@ describe('sanitization', () => {
             ɵɵelement(0, 'blockquote', 0);
           }
         },
-        directives: [UnsafeUrlHostBindingDir]
+        directives: [UnsafeUrlHostBindingDir],
       });
     }
 
     const sanitizer = new LocalSanitizer((value) => 'http://bar');
 
     const fixture = new ComponentFixture(SimpleComp, {sanitizer});
-    hostBindingDir !.cite = 'http://foo';
+    hostBindingDir!.cite = 'http://foo';
     fixture.update();
 
-    const anchor = fixture.hostElement.querySelector('blockquote') !;
+    const anchor = fixture.hostElement.querySelector('blockquote')!;
     expect(anchor.getAttribute('cite')).toEqual('http://bar');
 
-    hostBindingDir !.cite = sanitizer.bypassSecurityTrustUrl('http://foo');
+    hostBindingDir!.cite = sanitizer.bypassSecurityTrustUrl('http://foo');
     fixture.update();
 
     expect(anchor.getAttribute('cite')).toEqual('http://foo');
@@ -1156,13 +1194,15 @@ describe('sanitization', () => {
 
 class LocalSanitizedValue {
   constructor(public value: any) {}
-  toString() { return this.value; }
+  toString() {
+    return this.value;
+  }
 }
 
 class LocalSanitizer implements Sanitizer {
-  constructor(private _interceptor: (value: string|null|any) => string) {}
+  constructor(private _interceptor: (value: string | null | any) => string) {}
 
-  sanitize(context: SecurityContext, value: LocalSanitizedValue|string|null): string|null {
+  sanitize(context: SecurityContext, value: LocalSanitizedValue | string | null): string | null {
     if (value instanceof LocalSanitizedValue) {
       return value.toString();
     }
@@ -1174,13 +1214,15 @@ class LocalSanitizer implements Sanitizer {
   bypassSecurityTrustScript(value: string) {}
   bypassSecurityTrustResourceUrl(value: string) {}
 
-  bypassSecurityTrustUrl(value: string) { return new LocalSanitizedValue(value); }
+  bypassSecurityTrustUrl(value: string) {
+    return new LocalSanitizedValue(value);
+  }
 }
 
 class ProxyRenderer3Factory implements RendererFactory3 {
-  lastCapturedType: RendererType2|null = null;
+  lastCapturedType: RendererType2 | null = null;
 
-  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer3 {
+  createRenderer(hostElement: RElement | null, rendererType: RendererType2 | null): Renderer3 {
     this.lastCapturedType = rendererType;
     return domRendererFactory3.createRenderer(hostElement, rendererType);
   }

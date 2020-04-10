@@ -43,14 +43,14 @@ export class Headers {
   _normalizedNames: Map<string, string> = new Map();
 
   // TODO(vicb): any -> string|string[]
-  constructor(headers?: Headers|{[name: string]: any}|null) {
+  constructor(headers?: Headers | {[name: string]: any} | null) {
     if (!headers) {
       return;
     }
 
     if (headers instanceof Headers) {
       headers.forEach((values: string[], name: string) => {
-        values.forEach(value => this.append(name, value));
+        values.forEach((value) => this.append(name, value));
       });
       return;
     }
@@ -58,7 +58,7 @@ export class Headers {
     Object.keys(headers).forEach((name: string) => {
       const values: string[] = Array.isArray(headers[name]) ? headers[name] : [headers[name]];
       this.delete(name);
-      values.forEach(value => this.append(name, value));
+      values.forEach((value) => this.append(name, value));
     });
   }
 
@@ -68,7 +68,7 @@ export class Headers {
   static fromResponseHeaderString(headersString: string): Headers {
     const headers = new Headers();
 
-    headersString.split('\n').forEach(line => {
+    headersString.split('\n').forEach((line) => {
       const index = line.indexOf(':');
       if (index > 0) {
         const name = line.slice(0, index);
@@ -96,22 +96,24 @@ export class Headers {
   /**
    * Deletes all header values for the given name.
    */
-  delete (name: string): void {
+  delete(name: string): void {
     const lcName = name.toLowerCase();
     this._normalizedNames.delete(lcName);
     this._headers.delete(lcName);
   }
 
-  forEach(fn: (values: string[], name: string|undefined, headers: Map<string, string[]>) => void):
-      void {
-    this._headers.forEach(
-        (values, lcName) => fn(values, this._normalizedNames.get(lcName), this._headers));
+  forEach(
+    fn: (values: string[], name: string | undefined, headers: Map<string, string[]>) => void
+  ): void {
+    this._headers.forEach((values, lcName) =>
+      fn(values, this._normalizedNames.get(lcName), this._headers)
+    );
   }
 
   /**
    * Returns first header that matches given name.
    */
-  get(name: string): string|null {
+  get(name: string): string | null {
     const values = this.getAll(name);
 
     if (values === null) {
@@ -124,17 +126,21 @@ export class Headers {
   /**
    * Checks for existence of header by given name.
    */
-  has(name: string): boolean { return this._headers.has(name.toLowerCase()); }
+  has(name: string): boolean {
+    return this._headers.has(name.toLowerCase());
+  }
 
   /**
    * Returns the names of the headers
    */
-  keys(): string[] { return Array.from(this._normalizedNames.values()); }
+  keys(): string[] {
+    return Array.from(this._normalizedNames.values());
+  }
 
   /**
    * Sets or overrides header value for given name.
    */
-  set(name: string, value: string|string[]): void {
+  set(name: string, value: string | string[]): void {
     if (Array.isArray(value)) {
       if (value.length) {
         this._headers.set(name.toLowerCase(), [value.join(',')]);
@@ -148,7 +154,9 @@ export class Headers {
   /**
    * Returns values of all headers.
    */
-  values(): string[][] { return Array.from(this._headers.values()); }
+  values(): string[][] {
+    return Array.from(this._headers.values());
+  }
 
   /**
    * Returns string of all headers.
@@ -159,8 +167,8 @@ export class Headers {
 
     this._headers.forEach((values: string[], name: string) => {
       const split: string[] = [];
-      values.forEach(v => split.push(...v.split(',')));
-      serialized[this._normalizedNames.get(name) !] = split;
+      values.forEach((v) => split.push(...v.split(',')));
+      serialized[this._normalizedNames.get(name)!] = split;
     });
 
     return serialized;
@@ -169,14 +177,16 @@ export class Headers {
   /**
    * Returns list of header values for a given name.
    */
-  getAll(name: string): string[]|null {
+  getAll(name: string): string[] | null {
     return this.has(name) ? this._headers.get(name.toLowerCase()) || null : null;
   }
 
   /**
    * This method is not implemented.
    */
-  entries() { throw new Error('"entries" method is not implemented on Headers class'); }
+  entries() {
+    throw new Error('"entries" method is not implemented on Headers class');
+  }
 
   private mayBeSetNormalizedName(name: string): void {
     const lcName = name.toLowerCase();

@@ -15,7 +15,7 @@ export enum TokenType {
   String,
   Operator,
   Number,
-  Error
+  Error,
 }
 
 const KEYWORDS = ['var', 'let', 'as', 'null', 'undefined', 'true', 'false', 'if', 'else', 'this'];
@@ -35,8 +35,12 @@ export class Lexer {
 
 export class Token {
   constructor(
-      public index: number, public end: number, public type: TokenType, public numValue: number,
-      public strValue: string) {}
+    public index: number,
+    public end: number,
+    public type: TokenType,
+    public numValue: number,
+    public strValue: string
+  ) {}
 
   isCharacter(code: number): boolean {
     return this.type == TokenType.Character && this.numValue == code;
@@ -98,7 +102,7 @@ export class Token {
     return this.type == TokenType.Number ? this.numValue : -1;
   }
 
-  toString(): string|null {
+  toString(): string | null {
     switch (this.type) {
       case TokenType.Character:
       case TokenType.Identifier:
@@ -159,9 +163,11 @@ class _Scanner {
     this.peek = ++this.index >= this.length ? chars.$EOF : this.input.charCodeAt(this.index);
   }
 
-  scanToken(): Token|null {
-    const input = this.input, length = this.length;
-    let peek = this.peek, index = this.index;
+  scanToken(): Token | null {
+    const input = this.input,
+      length = this.length;
+    let peek = this.peek,
+      index = this.index;
 
     // Skip whitespace.
     while (peek <= chars.$SPACE) {
@@ -188,8 +194,9 @@ class _Scanner {
     switch (peek) {
       case chars.$PERIOD:
         this.advance();
-        return chars.isDigit(this.peek) ? this.scanNumber(start) :
-                                          newCharacterToken(start, this.index, chars.$PERIOD);
+        return chars.isDigit(this.peek)
+          ? this.scanNumber(start)
+          : newCharacterToken(start, this.index, chars.$PERIOD);
       case chars.$LPAREN:
       case chars.$RPAREN:
       case chars.$LBRACE:
@@ -219,7 +226,13 @@ class _Scanner {
       case chars.$BANG:
       case chars.$EQ:
         return this.scanComplexOperator(
-            start, String.fromCharCode(peek), chars.$EQ, '=', chars.$EQ, '=');
+          start,
+          String.fromCharCode(peek),
+          chars.$EQ,
+          '=',
+          chars.$EQ,
+          '='
+        );
       case chars.$AMPERSAND:
         return this.scanComplexOperator(start, '&', chars.$AMPERSAND, '&');
       case chars.$BAR:
@@ -238,7 +251,6 @@ class _Scanner {
     return newCharacterToken(start, this.index, code);
   }
 
-
   scanOperator(start: number, str: string): Token {
     this.advance();
     return newOperatorToken(start, this.index, str);
@@ -255,8 +267,13 @@ class _Scanner {
    * @param three third symbol (part of the operator when provided and matches source expression)
    */
   scanComplexOperator(
-      start: number, one: string, twoCode: number, two: string, threeCode?: number,
-      three?: string): Token {
+    start: number,
+    one: string,
+    twoCode: number,
+    two: string,
+    threeCode?: number,
+    three?: string
+  ): Token {
     this.advance();
     let str: string = one;
     if (this.peek == twoCode) {
@@ -275,13 +292,14 @@ class _Scanner {
     this.advance();
     while (isIdentifierPart(this.peek)) this.advance();
     const str: string = this.input.substring(start, this.index);
-    return KEYWORDS.indexOf(str) > -1 ? newKeywordToken(start, this.index, str) :
-                                        newIdentifierToken(start, this.index, str);
+    return KEYWORDS.indexOf(str) > -1
+      ? newKeywordToken(start, this.index, str)
+      : newIdentifierToken(start, this.index, str);
   }
 
   scanNumber(start: number): Token {
-    let simple: boolean = (this.index === start);
-    this.advance();  // Skip initial digit.
+    let simple: boolean = this.index === start;
+    this.advance(); // Skip initial digit.
     while (true) {
       if (chars.isDigit(this.peek)) {
         // Do nothing.
@@ -305,7 +323,7 @@ class _Scanner {
   scanString(): Token {
     const start: number = this.index;
     const quote: number = this.peek;
-    this.advance();  // Skip initial quote.
+    this.advance(); // Skip initial quote.
 
     let buffer: string = '';
     let marker: number = this.index;
@@ -343,7 +361,7 @@ class _Scanner {
     }
 
     const last: string = input.substring(marker, this.index);
-    this.advance();  // Skip terminating quote.
+    this.advance(); // Skip terminating quote.
 
     return newStringToken(start, this.index, buffer + last);
   }
@@ -351,14 +369,20 @@ class _Scanner {
   error(message: string, offset: number): Token {
     const position: number = this.index + offset;
     return newErrorToken(
-        position, this.index,
-        `Lexer Error: ${message} at column ${position} in expression [${this.input}]`);
+      position,
+      this.index,
+      `Lexer Error: ${message} at column ${position} in expression [${this.input}]`
+    );
   }
 }
 
 function isIdentifierStart(code: number): boolean {
-  return (chars.$a <= code && code <= chars.$z) || (chars.$A <= code && code <= chars.$Z) ||
-      (code == chars.$_) || (code == chars.$$);
+  return (
+    (chars.$a <= code && code <= chars.$z) ||
+    (chars.$A <= code && code <= chars.$Z) ||
+    code == chars.$_ ||
+    code == chars.$$
+  );
 }
 
 export function isIdentifier(input: string): boolean {
@@ -374,8 +398,7 @@ export function isIdentifier(input: string): boolean {
 }
 
 function isIdentifierPart(code: number): boolean {
-  return chars.isAsciiLetter(code) || chars.isDigit(code) || (code == chars.$_) ||
-      (code == chars.$$);
+  return chars.isAsciiLetter(code) || chars.isDigit(code) || code == chars.$_ || code == chars.$$;
 }
 
 function isExponentStart(code: number): boolean {

@@ -6,30 +6,53 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, EventEmitter, OnDestroy, Pipe, PipeTransform, WrappedValue, ɵisObservable, ɵisPromise, ɵlooseIdentical} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  EventEmitter,
+  OnDestroy,
+  Pipe,
+  PipeTransform,
+  WrappedValue,
+  ɵisObservable,
+  ɵisPromise,
+  ɵlooseIdentical,
+} from '@angular/core';
 import {Observable, SubscriptionLike} from 'rxjs';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 interface SubscriptionStrategy {
-  createSubscription(async: Observable<any>|Promise<any>, updateLatestValue: any): SubscriptionLike
-      |Promise<any>;
-  dispose(subscription: SubscriptionLike|Promise<any>): void;
-  onDestroy(subscription: SubscriptionLike|Promise<any>): void;
+  createSubscription(
+    async: Observable<any> | Promise<any>,
+    updateLatestValue: any
+  ): SubscriptionLike | Promise<any>;
+  dispose(subscription: SubscriptionLike | Promise<any>): void;
+  onDestroy(subscription: SubscriptionLike | Promise<any>): void;
 }
 
 class ObservableStrategy implements SubscriptionStrategy {
   createSubscription(async: Observable<any>, updateLatestValue: any): SubscriptionLike {
-    return async.subscribe({next: updateLatestValue, error: (e: any) => { throw e; }});
+    return async.subscribe({
+      next: updateLatestValue,
+      error: (e: any) => {
+        throw e;
+      },
+    });
   }
 
-  dispose(subscription: SubscriptionLike): void { subscription.unsubscribe(); }
+  dispose(subscription: SubscriptionLike): void {
+    subscription.unsubscribe();
+  }
 
-  onDestroy(subscription: SubscriptionLike): void { subscription.unsubscribe(); }
+  onDestroy(subscription: SubscriptionLike): void {
+    subscription.unsubscribe();
+  }
 }
 
 class PromiseStrategy implements SubscriptionStrategy {
   createSubscription(async: Promise<any>, updateLatestValue: (v: any) => any): Promise<any> {
-    return async.then(updateLatestValue, e => { throw e; });
+    return async.then(updateLatestValue, (e) => {
+      throw e;
+    });
   }
 
   dispose(subscription: Promise<any>): void {}
@@ -72,9 +95,9 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   private _latestValue: any = null;
   private _latestReturnedValue: any = null;
 
-  private _subscription: SubscriptionLike|Promise<any>|null = null;
-  private _obj: Observable<any>|Promise<any>|EventEmitter<any>|null = null;
-  private _strategy: SubscriptionStrategy = null !;
+  private _subscription: SubscriptionLike | Promise<any> | null = null;
+  private _obj: Observable<any> | Promise<any> | EventEmitter<any> | null = null;
+  private _strategy: SubscriptionStrategy = null!;
 
   constructor(private _ref: ChangeDetectorRef) {}
 
@@ -86,9 +109,9 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
 
   transform<T>(obj: null): null;
   transform<T>(obj: undefined): undefined;
-  transform<T>(obj: Observable<T>|null|undefined): T|null;
-  transform<T>(obj: Promise<T>|null|undefined): T|null;
-  transform(obj: Observable<any>|Promise<any>|null|undefined): any {
+  transform<T>(obj: Observable<T> | null | undefined): T | null;
+  transform<T>(obj: Promise<T> | null | undefined): T | null;
+  transform(obj: Observable<any> | Promise<any> | null | undefined): any {
     if (!this._obj) {
       if (obj) {
         this._subscribe(obj);
@@ -110,14 +133,15 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     return WrappedValue.wrap(this._latestValue);
   }
 
-  private _subscribe(obj: Observable<any>|Promise<any>|EventEmitter<any>): void {
+  private _subscribe(obj: Observable<any> | Promise<any> | EventEmitter<any>): void {
     this._obj = obj;
     this._strategy = this._selectStrategy(obj);
-    this._subscription = this._strategy.createSubscription(
-        obj, (value: Object) => this._updateLatestValue(obj, value));
+    this._subscription = this._strategy.createSubscription(obj, (value: Object) =>
+      this._updateLatestValue(obj, value)
+    );
   }
 
-  private _selectStrategy(obj: Observable<any>|Promise<any>|EventEmitter<any>): any {
+  private _selectStrategy(obj: Observable<any> | Promise<any> | EventEmitter<any>): any {
     if (ɵisPromise(obj)) {
       return _promiseStrategy;
     }
@@ -130,7 +154,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   }
 
   private _dispose(): void {
-    this._strategy.dispose(this._subscription !);
+    this._strategy.dispose(this._subscription!);
     this._latestValue = null;
     this._latestReturnedValue = null;
     this._subscription = null;

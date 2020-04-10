@@ -15,10 +15,12 @@ import {MainModuleNgFactory} from '../src/module.ngfactory';
 
 let mainModuleRef: NgModuleRef<MainModule> = null!;
 beforeEach((done) => {
-  platformServerTesting().bootstrapModuleFactory(MainModuleNgFactory).then((moduleRef: any) => {
-    mainModuleRef = moduleRef;
-    done();
-  });
+  platformServerTesting()
+    .bootstrapModuleFactory(MainModuleNgFactory)
+    .then((moduleRef: any) => {
+      mainModuleRef = moduleRef;
+      done();
+    });
 });
 
 export function createModule(): NgModuleRef<MainModule> {
@@ -27,7 +29,8 @@ export function createModule(): NgModuleRef<MainModule> {
 
 export function createComponent<C>(comp: {new (...args: any[]): C}): ComponentFixture<C> {
   const moduleRef = createModule();
-  const compRef =
-      moduleRef.componentFactoryResolver.resolveComponentFactory(comp).create(moduleRef.injector);
+  const compRef = moduleRef.componentFactoryResolver
+    .resolveComponentFactory(comp)
+    .create(moduleRef.injector);
   return new ComponentFixture(compRef, null, false);
 }

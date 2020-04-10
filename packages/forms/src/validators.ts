@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
+import {
+  InjectionToken,
+  ɵisObservable as isObservable,
+  ɵisPromise as isPromise,
+} from '@angular/core';
 import {forkJoin, from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -46,7 +50,7 @@ function isEmptyInputValue(value: any): boolean {
  *
  * @publicApi
  */
-export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgValidators');
+export const NG_VALIDATORS = new InjectionToken<Array<Validator | Function>>('NgValidators');
 
 /**
  * @description
@@ -57,8 +61,9 @@ export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgVa
  *
  * @publicApi
  */
-export const NG_ASYNC_VALIDATORS =
-    new InjectionToken<Array<Validator|Function>>('NgAsyncValidators');
+export const NG_ASYNC_VALIDATORS = new InjectionToken<Array<Validator | Function>>(
+  'NgAsyncValidators'
+);
 
 /**
  * A regular expression that matches valid e-mail addresses.
@@ -90,8 +95,7 @@ export const NG_ASYNC_VALIDATORS =
  *
  * See [this commit](https://github.com/angular/angular.js/commit/f3f5cf72e) for more details.
  */
-const EMAIL_REGEXP =
-    /^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+const EMAIL_REGEXP = /^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 /**
  * @description
@@ -127,9 +131,9 @@ export class Validators {
    *
    */
   static min(min: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors|null => {
+    return (control: AbstractControl): ValidationErrors | null => {
       if (isEmptyInputValue(control.value) || isEmptyInputValue(min)) {
-        return null;  // don't validate empty values to allow optional controls
+        return null; // don't validate empty values to allow optional controls
       }
       const value = parseFloat(control.value);
       // Controls with NaN values after parsing should be treated as not having a
@@ -160,9 +164,9 @@ export class Validators {
    *
    */
   static max(max: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors|null => {
+    return (control: AbstractControl): ValidationErrors | null => {
       if (isEmptyInputValue(control.value) || isEmptyInputValue(max)) {
-        return null;  // don't validate empty values to allow optional controls
+        return null; // don't validate empty values to allow optional controls
       }
       const value = parseFloat(control.value);
       // Controls with NaN values after parsing should be treated as not having a
@@ -191,7 +195,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static required(control: AbstractControl): ValidationErrors|null {
+  static required(control: AbstractControl): ValidationErrors | null {
     return isEmptyInputValue(control.value) ? {'required': true} : null;
   }
 
@@ -216,7 +220,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static requiredTrue(control: AbstractControl): ValidationErrors|null {
+  static requiredTrue(control: AbstractControl): ValidationErrors | null {
     return control.value === true ? null : {'required': true};
   }
 
@@ -256,9 +260,9 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static email(control: AbstractControl): ValidationErrors|null {
+  static email(control: AbstractControl): ValidationErrors | null {
     if (isEmptyInputValue(control.value)) {
-      return null;  // don't validate empty values to allow optional controls
+      return null; // don't validate empty values to allow optional controls
     }
     return EMAIL_REGEXP.test(control.value) ? null : {'email': true};
   }
@@ -294,14 +298,14 @@ export class Validators {
    *
    */
   static minLength(minLength: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors|null => {
+    return (control: AbstractControl): ValidationErrors | null => {
       if (isEmptyInputValue(control.value)) {
-        return null;  // don't validate empty values to allow optional controls
+        return null; // don't validate empty values to allow optional controls
       }
       const length: number = control.value ? control.value.length : 0;
-      return length < minLength ?
-          {'minlength': {'requiredLength': minLength, 'actualLength': length}} :
-          null;
+      return length < minLength
+        ? {'minlength': {'requiredLength': minLength, 'actualLength': length}}
+        : null;
     };
   }
 
@@ -333,11 +337,11 @@ export class Validators {
    *
    */
   static maxLength(maxLength: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors|null => {
+    return (control: AbstractControl): ValidationErrors | null => {
       const length: number = control.value ? control.value.length : 0;
-      return length > maxLength ?
-          {'maxlength': {'requiredLength': maxLength, 'actualLength': length}} :
-          null;
+      return length > maxLength
+        ? {'maxlength': {'requiredLength': maxLength, 'actualLength': length}}
+        : null;
     };
   }
 
@@ -371,7 +375,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static pattern(pattern: string|RegExp): ValidatorFn {
+  static pattern(pattern: string | RegExp): ValidatorFn {
     if (!pattern) return Validators.nullValidator;
     let regex: RegExp;
     let regexStr: string;
@@ -389,13 +393,14 @@ export class Validators {
       regexStr = pattern.toString();
       regex = pattern;
     }
-    return (control: AbstractControl): ValidationErrors|null => {
+    return (control: AbstractControl): ValidationErrors | null => {
       if (isEmptyInputValue(control.value)) {
-        return null;  // don't validate empty values to allow optional controls
+        return null; // don't validate empty values to allow optional controls
       }
       const value: string = control.value;
-      return regex.test(value) ? null :
-                                 {'pattern': {'requiredPattern': regexStr, 'actualValue': value}};
+      return regex.test(value)
+        ? null
+        : {'pattern': {'requiredPattern': regexStr, 'actualValue': value}};
     };
   }
 
@@ -406,7 +411,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static nullValidator(control: AbstractControl): ValidationErrors|null {
+  static nullValidator(control: AbstractControl): ValidationErrors | null {
     return null;
   }
 
@@ -422,13 +427,13 @@ export class Validators {
    *
    */
   static compose(validators: null): null;
-  static compose(validators: (ValidatorFn|null|undefined)[]): ValidatorFn|null;
-  static compose(validators: (ValidatorFn|null|undefined)[]|null): ValidatorFn|null {
+  static compose(validators: (ValidatorFn | null | undefined)[]): ValidatorFn | null;
+  static compose(validators: (ValidatorFn | null | undefined)[] | null): ValidatorFn | null {
     if (!validators) return null;
     const presentValidators: ValidatorFn[] = validators.filter(isPresent) as any;
     if (presentValidators.length == 0) return null;
 
-    return function(control: AbstractControl) {
+    return function (control: AbstractControl) {
       return _mergeErrors(_executeValidators(control, presentValidators));
     };
   }
@@ -444,12 +449,12 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|null {
+  static composeAsync(validators: (AsyncValidatorFn | null)[]): AsyncValidatorFn | null {
     if (!validators) return null;
     const presentValidators: AsyncValidatorFn[] = validators.filter(isPresent) as any;
     if (presentValidators.length == 0) return null;
 
-    return function(control: AbstractControl) {
+    return function (control: AbstractControl) {
       const observables = _executeAsyncValidators(control, presentValidators).map(toObservable);
       return forkJoin(observables).pipe(map(_mergeErrors));
     };
@@ -462,26 +467,26 @@ function isPresent(o: any): boolean {
 
 export function toObservable(r: any): Observable<any> {
   const obs = isPromise(r) ? from(r) : r;
-  if (!(isObservable(obs))) {
+  if (!isObservable(obs)) {
     throw new Error(`Expected validator to return Promise or Observable.`);
   }
   return obs;
 }
 
 function _executeValidators(control: AbstractControl, validators: ValidatorFn[]): any[] {
-  return validators.map(v => v(control));
+  return validators.map((v) => v(control));
 }
 
 function _executeAsyncValidators(control: AbstractControl, validators: AsyncValidatorFn[]): any[] {
-  return validators.map(v => v(control));
+  return validators.map((v) => v(control));
 }
 
-function _mergeErrors(arrayOfErrors: ValidationErrors[]): ValidationErrors|null {
+function _mergeErrors(arrayOfErrors: ValidationErrors[]): ValidationErrors | null {
   let res: {[key: string]: any} = {};
 
   // Not using Array.reduce here due to a Chrome 80 bug
   // https://bugs.chromium.org/p/chromium/issues/detail?id=1049982
-  arrayOfErrors.forEach((errors: ValidationErrors|null) => {
+  arrayOfErrors.forEach((errors: ValidationErrors | null) => {
     res = errors != null ? {...res!, ...errors} : res!;
   });
 

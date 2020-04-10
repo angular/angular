@@ -19,13 +19,15 @@ import {ClassDeclaration} from '../../reflection';
  * followed.
  */
 export function flattenInheritedDirectiveMetadata(
-    reader: MetadataReader, dir: Reference<ClassDeclaration>): DirectiveMeta {
+  reader: MetadataReader,
+  dir: Reference<ClassDeclaration>
+): DirectiveMeta {
   const topMeta = reader.getDirectiveMetadata(dir);
   if (topMeta === null) {
     throw new Error(`Metadata not found for directive: ${dir.debugName}`);
   }
 
-  let inputs: {[key: string]: string|[string, string]} = {};
+  let inputs: {[key: string]: string | [string, string]} = {};
   let outputs: {[key: string]: string} = {};
   let coercedInputFields = new Set<string>();
   let isDynamic = false;

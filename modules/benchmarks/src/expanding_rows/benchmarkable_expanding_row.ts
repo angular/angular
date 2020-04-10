@@ -18,25 +18,22 @@ export interface MlbTeam {
 
 @Component({
   selector: 'benchmarkable-expanding-row',
-  template: `
-    <cfc-expanding-row-host *ngIf="showExpandingRow">
+  template: ` <cfc-expanding-row-host *ngIf="showExpandingRow">
     <cfc-expanding-row *ngFor="let team of teams" [rowId]="$any(team.id)">
-      <cfc-expanding-row-summary>
-        Team {{team.id}}
-      </cfc-expanding-row-summary>
+      <cfc-expanding-row-summary> Team {{ team.id }} </cfc-expanding-row-summary>
       <cfc-expanding-row-details-caption>
-        {{team.name}}
+        {{ team.name }}
         <a href="https://www.google.com" class="cfc-demo-expanding-row-caption-link">
-          {{team.id}}
+          {{ team.id }}
         </a>
       </cfc-expanding-row-details-caption>
       <cfc-expanding-row-details-content>
         <ul ace-list>
-          <li>Division: {{team.division}}</li>
+          <li>Division: {{ team.division }}</li>
           <li>
-            <a href="https://www.google.com">{{team.stadium}}</a>
+            <a href="https://www.google.com">{{ team.stadium }}</a>
           </li>
-          <li>Projected Record: {{team.projection}}</li>
+          <li>Projected Record: {{ team.projection }}</li>
         </ul>
       </cfc-expanding-row-details-content>
     </cfc-expanding-row>
@@ -44,12 +41,12 @@ export interface MlbTeam {
 })
 export class BenchmarkableExpandingRow {
   // TODO(b/109816955): remove '!', see go/strict-prop-init-fix.
-  showExpandingRow !: boolean;
+  showExpandingRow!: boolean;
 
   // TODO(b/109816955): remove '!', see go/strict-prop-init-fix.
-  teams !: MlbTeam[];
+  teams!: MlbTeam[];
   // TODO(b/109816955): remove '!', see go/strict-prop-init-fix.
-  private fakeTeams !: MlbTeam[];
+  private fakeTeams!: MlbTeam[];
 
   init(): void {
     this.teams = this.fakeTeams;

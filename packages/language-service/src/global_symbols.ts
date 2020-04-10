@@ -21,9 +21,9 @@ export const EMPTY_SYMBOL_TABLE: Readonly<ng.SymbolTable> = {
  * This function creates the table the first time it is called, and return a cached
  * value for all subsequent calls.
  */
-export const createGlobalSymbolTable: (query: ng.SymbolQuery) => ng.SymbolTable = (function() {
-  let GLOBAL_SYMBOL_TABLE: ng.SymbolTable|undefined;
-  return function(query: ng.SymbolQuery) {
+export const createGlobalSymbolTable: (query: ng.SymbolQuery) => ng.SymbolTable = (function () {
+  let GLOBAL_SYMBOL_TABLE: ng.SymbolTable | undefined;
+  return function (query: ng.SymbolQuery) {
     if (GLOBAL_SYMBOL_TABLE) {
       return GLOBAL_SYMBOL_TABLE;
     }
@@ -43,10 +43,12 @@ export const createGlobalSymbolTable: (query: ng.SymbolQuery) => ng.SymbolTable 
           callable: true,
           definition: undefined,
           nullable: false,
-          documentation: [{
-            kind: 'text',
-            text: 'function to cast an expression to the `any` type',
-          }],
+          documentation: [
+            {
+              kind: 'text',
+              text: 'function to cast an expression to the `any` type',
+            },
+          ],
           members: () => EMPTY_SYMBOL_TABLE,
           signatures: () => [],
           selectSignature(args: ng.Symbol[]) {
@@ -54,7 +56,7 @@ export const createGlobalSymbolTable: (query: ng.SymbolQuery) => ng.SymbolTable 
               return;
             }
             return {
-              arguments: EMPTY_SYMBOL_TABLE,  // not used
+              arguments: EMPTY_SYMBOL_TABLE, // not used
               result: query.getBuiltinType(ng.BuiltinType.Any),
             };
           },

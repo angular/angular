@@ -13,10 +13,10 @@ import * as o from './output/output_ast';
 import {noUndefined} from './util';
 
 export class CompilerConfig {
-  public defaultEncapsulation: ViewEncapsulation|null;
+  public defaultEncapsulation: ViewEncapsulation | null;
   public useJit: boolean;
   public jitDevMode: boolean;
-  public missingTranslation: MissingTranslationStrategy|null;
+  public missingTranslation: MissingTranslationStrategy | null;
   public preserveWhitespaces: boolean;
   public strictInjectionParameters: boolean;
 
@@ -26,14 +26,14 @@ export class CompilerConfig {
     jitDevMode = false,
     missingTranslation = null,
     preserveWhitespaces,
-    strictInjectionParameters
+    strictInjectionParameters,
   }: {
-    defaultEncapsulation?: ViewEncapsulation,
-    useJit?: boolean,
-    jitDevMode?: boolean,
-    missingTranslation?: MissingTranslationStrategy|null,
-    preserveWhitespaces?: boolean,
-    strictInjectionParameters?: boolean,
+    defaultEncapsulation?: ViewEncapsulation;
+    useJit?: boolean;
+    jitDevMode?: boolean;
+    missingTranslation?: MissingTranslationStrategy | null;
+    preserveWhitespaces?: boolean;
+    strictInjectionParameters?: boolean;
   } = {}) {
     this.defaultEncapsulation = defaultEncapsulation;
     this.useJit = !!useJit;
@@ -45,6 +45,8 @@ export class CompilerConfig {
 }
 
 export function preserveWhitespacesDefault(
-    preserveWhitespacesOption: boolean|null, defaultSetting = false): boolean {
+  preserveWhitespacesOption: boolean | null,
+  defaultSetting = false
+): boolean {
   return preserveWhitespacesOption === null ? defaultSetting : preserveWhitespacesOption;
 }

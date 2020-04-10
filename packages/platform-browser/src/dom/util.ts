@@ -11,7 +11,6 @@ import {ɵglobal as global} from '@angular/core';
 const CAMEL_CASE_REGEXP = /([A-Z])/g;
 const DASH_CASE_REGEXP = /-([a-z])/g;
 
-
 export function camelCaseToDashCase(input: string): string {
   return input.replace(CAMEL_CASE_REGEXP, (...m: string[]) => '-' + m[1].toLowerCase());
 }
@@ -33,7 +32,7 @@ export function exportNgVar(name: string, value: any): void {
     // - closure declares globals itself for minified names, which sometimes clobber our `ng` global
     // - we can't declare a closure extern as the namespace `ng` is already used within Google
     //   for typings for angularJS (via `goog.provide('ng....')`).
-    const ng = global['ng'] = (global['ng'] as{[key: string]: any} | undefined) || {};
+    const ng = (global['ng'] = (global['ng'] as {[key: string]: any} | undefined) || {});
     ng[name] = value;
   }
 }

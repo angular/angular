@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {OutputContext, ValueTransformer, visitValue} from '../util';
 
 import * as o from './output_ast';
@@ -14,7 +13,10 @@ import * as o from './output_ast';
 export const QUOTED_KEYS = '$quoted$';
 
 export function convertValueToOutputAst(
-    ctx: OutputContext, value: any, type: o.Type|null = null): o.Expression {
+  ctx: OutputContext,
+  value: any,
+  type: o.Type | null = null
+): o.Expression {
   return visitValue(value, new _ValueOutputAstTransformer(ctx), type);
 }
 
@@ -36,9 +38,10 @@ class _ValueOutputAstTransformer implements ValueTransformer {
   visitStringMap(map: {[key: string]: any}, type: o.MapType): o.Expression {
     const entries: o.LiteralMapEntry[] = [];
     const quotedSet = new Set<string>(map && map[QUOTED_KEYS]);
-    Object.keys(map).forEach(key => {
+    Object.keys(map).forEach((key) => {
       entries.push(
-          new o.LiteralMapEntry(key, visitValue(map[key], this, null), quotedSet.has(key)));
+        new o.LiteralMapEntry(key, visitValue(map[key], this, null), quotedSet.has(key))
+      );
     });
     return new o.LiteralMapExpr(entries, type);
   }

@@ -11,7 +11,6 @@ import {Statistic} from '../src/statistic';
 
 {
   describe('statistic', () => {
-
     it('should calculate the mean', () => {
       expect(Statistic.calculateMean([])).toBeNaN();
       expect(Statistic.calculateMean([1, 2, 3])).toBe(2.0);
@@ -34,6 +33,5 @@ import {Statistic} from '../src/statistic';
       expect(Statistic.calculateRegressionSlope([1], 1, [2], 2)).toBeNaN();
       expect(Statistic.calculateRegressionSlope([1, 2], 1.5, [2, 4], 3)).toBe(2.0);
     });
-
   });
 }

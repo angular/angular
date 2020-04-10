@@ -6,7 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
+import {
+  Directive,
+  EventEmitter,
+  forwardRef,
+  Host,
+  Inject,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Optional,
+  Output,
+  Self,
+  SimpleChanges,
+} from '@angular/core';
 
 import {FormControl, FormHooks} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
@@ -17,13 +30,20 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor'
 import {NgControl} from './ng_control';
 import {NgForm} from './ng_form';
 import {NgModelGroup} from './ng_model_group';
-import {composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared';
+import {
+  composeAsyncValidators,
+  composeValidators,
+  controlPath,
+  isPropertyUpdated,
+  selectValueAccessor,
+  setUpControl,
+} from './shared';
 import {TemplateDrivenErrors} from './template_driven_errors';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 export const formControlBinding: any = {
   provide: NgControl,
-  useExisting: forwardRef(() => NgModel)
+  useExisting: forwardRef(() => NgModel),
 };
 
 /**
@@ -131,7 +151,7 @@ const resolvedPromise = (() => Promise.resolve(null))();
 @Directive({
   selector: '[ngModel]:not([formControlName]):not([formControl])',
   providers: [formControlBinding],
-  exportAs: 'ngModel'
+  exportAs: 'ngModel',
 })
 export class NgModel extends NgControl implements OnChanges, OnDestroy {
   public readonly control: FormControl = new FormControl();
@@ -143,7 +163,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   // This static member tells the compiler that values of type "string" can also be assigned
   // to the input in a template.
   /** @nodoc */
-  static ngAcceptInputType_isDisabled: boolean|string;
+  static ngAcceptInputType_isDisabled: boolean | string;
 
   /** @internal */
   _registered = false;
@@ -191,7 +211,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    *
    */
   // TODO(issue/24571): remove '!'.
-  @Input('ngModelOptions') options!: {name?: string, standalone?: boolean, updateOn?: FormHooks};
+  @Input('ngModelOptions') options!: {name?: string; standalone?: boolean; updateOn?: FormHooks};
 
   /**
    * @description
@@ -201,11 +221,14 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   @Output('ngModelChange') update = new EventEmitter();
 
   constructor(
-      @Optional() @Host() parent: ControlContainer,
-      @Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator|ValidatorFn>,
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
-          Array<AsyncValidator|AsyncValidatorFn>,
-      @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]) {
+    @Optional() @Host() parent: ControlContainer,
+    @Optional() @Self() @Inject(NG_VALIDATORS) validators: Array<Validator | ValidatorFn>,
+    @Optional()
+    @Self()
+    @Inject(NG_ASYNC_VALIDATORS)
+    asyncValidators: Array<AsyncValidator | AsyncValidatorFn>,
+    @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]
+  ) {
     super();
     this._parent = parent;
     this._rawValidators = validators || [];
@@ -264,7 +287,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * Synchronous validator function composed of all the synchronous validators
    * registered with this directive.
    */
-  get validator(): ValidatorFn|null {
+  get validator(): ValidatorFn | null {
     return composeValidators(this._rawValidators);
   }
 
@@ -273,7 +296,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * Async validator function composed of all the async validators registered with this
    * directive.
    */
-  get asyncValidator(): AsyncValidatorFn|null {
+  get asyncValidator(): AsyncValidatorFn | null {
     return composeAsyncValidators(this._rawAsyncValidators);
   }
 
@@ -317,8 +340,10 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   }
 
   private _checkParentType(): void {
-    if (!(this._parent instanceof NgModelGroup) &&
-        this._parent instanceof AbstractFormGroupDirective) {
+    if (
+      !(this._parent instanceof NgModelGroup) &&
+      this._parent instanceof AbstractFormGroupDirective
+    ) {
       TemplateDrivenErrors.formGroupNameException();
     } else if (!(this._parent instanceof NgModelGroup) && !(this._parent instanceof NgForm)) {
       TemplateDrivenErrors.modelParentException();

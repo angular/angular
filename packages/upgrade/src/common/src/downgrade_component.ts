@@ -8,12 +8,37 @@
 
 import {ComponentFactory, ComponentFactoryResolver, Injector, NgZone, Type} from '@angular/core';
 
-import {IAnnotatedFunction, IAttributes, IAugmentedJQuery, ICompileService, IDirective, IInjectorService, INgModelController, IParseService, IScope} from './angular1';
-import {$COMPILE, $INJECTOR, $PARSE, INJECTOR_KEY, LAZY_MODULE_REF, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from './constants';
+import {
+  IAnnotatedFunction,
+  IAttributes,
+  IAugmentedJQuery,
+  ICompileService,
+  IDirective,
+  IInjectorService,
+  INgModelController,
+  IParseService,
+  IScope,
+} from './angular1';
+import {
+  $COMPILE,
+  $INJECTOR,
+  $PARSE,
+  INJECTOR_KEY,
+  LAZY_MODULE_REF,
+  REQUIRE_INJECTOR,
+  REQUIRE_NG_MODEL,
+} from './constants';
 import {DowngradeComponentAdapter} from './downgrade_component_adapter';
 import {SyncPromise, Thenable} from './promise_util';
-import {LazyModuleRef, UpgradeAppType, controllerKey, getDowngradedModuleCount, getTypeName, getUpgradeAppType, validateInjectionKey} from './util';
-
+import {
+  LazyModuleRef,
+  UpgradeAppType,
+  controllerKey,
+  getDowngradedModuleCount,
+  getTypeName,
+  getUpgradeAppType,
+  validateInjectionKey,
+} from './util';
 
 /**
  * @description
@@ -65,7 +90,9 @@ import {LazyModuleRef, UpgradeAppType, controllerKey, getDowngradedModuleCount, 
  * @publicApi
  */
 export function downgradeComponent(info: {
-  component: Type<any>; downgradedModule?: string; propagateDigest?: boolean;
+  component: Type<any>;
+  downgradedModule?: string;
+  propagateDigest?: boolean;
   /** @deprecated since v4. This parameter is no longer used */
   inputs?: string[];
   /** @deprecated since v4. This parameter is no longer used */
@@ -73,8 +100,11 @@ export function downgradeComponent(info: {
   /** @deprecated since v4. This parameter is no longer used */
   selectors?: string[];
 }): any /* angular.IInjectable */ {
-  const directiveFactory: IAnnotatedFunction = function(
-      $compile: ICompileService, $injector: IInjectorService, $parse: IParseService): IDirective {
+  const directiveFactory: IAnnotatedFunction = function (
+    $compile: ICompileService,
+    $injector: IInjectorService,
+    $parse: IParseService
+  ): IDirective {
     // When using `downgradeModule()`, we need to handle certain things specially. For example:
     // - We always need to attach the component view to the `ApplicationRef` for it to be
     //   dirty-checked.
@@ -84,13 +114,13 @@ export function downgradeComponent(info: {
     //         inside the Angular zone (except if explicitly escaped, in which case we shouldn't
     //         force it back in).
     const isNgUpgradeLite = getUpgradeAppType($injector) === UpgradeAppType.Lite;
-    const wrapCallback: <T>(cb: () => T) => typeof cb =
-        !isNgUpgradeLite ? cb => cb : cb => () => NgZone.isInAngularZone() ? cb() : ngZone.run(cb);
+    const wrapCallback: <T>(cb: () => T) => typeof cb = !isNgUpgradeLite
+      ? (cb) => cb
+      : (cb) => () => (NgZone.isInAngularZone() ? cb() : ngZone.run(cb));
     let ngZone: NgZone;
 
     // When downgrading multiple modules, special handling is needed wrt injectors.
-    const hasMultipleDowngradedModules =
-        isNgUpgradeLite && (getDowngradedModuleCount($injector) > 1);
+    const hasMultipleDowngradedModules = isNgUpgradeLite && getDowngradedModuleCount($injector) > 1;
 
     return {
       restrict: 'E',
@@ -102,8 +132,8 @@ export function downgradeComponent(info: {
         // been compiled.
 
         const ngModel: INgModelController = required[1];
-        const parentInjector: Injector|Thenable<Injector>|undefined = required[0];
-        let moduleInjector: Injector|Thenable<Injector>|undefined = undefined;
+        const parentInjector: Injector | Thenable<Injector> | undefined = required[0];
+        let moduleInjector: Injector | Thenable<Injector> | undefined = undefined;
         let ranAsync = false;
 
         if (!parentInjector || hasMultipleDowngradedModules) {
@@ -114,7 +144,7 @@ export function downgradeComponent(info: {
           validateInjectionKey($injector, downgradedModule, lazyModuleRefKey, attemptedAction);
 
           const lazyModuleRef = $injector.get(lazyModuleRefKey) as LazyModuleRef;
-          moduleInjector = lazyModuleRef.injector || lazyModuleRef.promise as Promise<Injector>;
+          moduleInjector = lazyModuleRef.injector || (lazyModuleRef.promise as Promise<Injector>);
         }
 
         // Notes:
@@ -151,20 +181,22 @@ export function downgradeComponent(info: {
 
         // If there is a parent component, use its injector as parent injector.
         // If this is a "top-level" Angular component, use the module injector.
-        const finalParentInjector = parentInjector || moduleInjector !;
+        const finalParentInjector = parentInjector || moduleInjector!;
 
         // If this is a "top-level" Angular component or the parent component may belong to a
         // different `NgModule`, use the module injector for module-specific dependencies.
         // If there is a parent component that belongs to the same `NgModule`, use its injector.
-        const finalModuleInjector = moduleInjector || parentInjector !;
+        const finalModuleInjector = moduleInjector || parentInjector!;
 
         const doDowngrade = (injector: Injector, moduleInjector: Injector) => {
           // Retrieve `ComponentFactoryResolver` from the injector tied to the `NgModule` this
           // component belongs to.
-          const componentFactoryResolver: ComponentFactoryResolver =
-              moduleInjector.get(ComponentFactoryResolver);
-          const componentFactory: ComponentFactory<any> =
-              componentFactoryResolver.resolveComponentFactory(info.component) !;
+          const componentFactoryResolver: ComponentFactoryResolver = moduleInjector.get(
+            ComponentFactoryResolver
+          );
+          const componentFactory: ComponentFactory<any> = componentFactoryResolver.resolveComponentFactory(
+            info.component
+          )!;
 
           if (!componentFactory) {
             throw new Error(`Expecting ComponentFactory for: ${getTypeName(info.component)}`);
@@ -172,8 +204,17 @@ export function downgradeComponent(info: {
 
           const injectorPromise = new ParentInjectorPromise(element);
           const facade = new DowngradeComponentAdapter(
-              element, attrs, scope, ngModel, injector, $injector, $compile, $parse,
-              componentFactory, wrapCallback);
+            element,
+            attrs,
+            scope,
+            ngModel,
+            injector,
+            $injector,
+            $compile,
+            $parse,
+            componentFactory,
+            wrapCallback
+          );
 
           const projectableNodes = facade.compileContents();
           facade.createComponent(projectableNodes);
@@ -190,8 +231,9 @@ export function downgradeComponent(info: {
           }
         };
 
-        const downgradeFn =
-            !isNgUpgradeLite ? doDowngrade : (pInjector: Injector, mInjector: Injector) => {
+        const downgradeFn = !isNgUpgradeLite
+          ? doDowngrade
+          : (pInjector: Injector, mInjector: Injector) => {
               if (!ngZone) {
                 ngZone = pInjector.get(NgZone);
               }
@@ -203,11 +245,12 @@ export function downgradeComponent(info: {
         // Not using `ParentInjectorPromise.all()` (which is inherited from `SyncPromise`), because
         // Closure Compiler (or some related tool) complains:
         // `TypeError: ...$src$downgrade_component_ParentInjectorPromise.all is not a function`
-        SyncPromise.all([finalParentInjector, finalModuleInjector])
-            .then(([pInjector, mInjector]) => downgradeFn(pInjector, mInjector));
+        SyncPromise.all([finalParentInjector, finalModuleInjector]).then(([pInjector, mInjector]) =>
+          downgradeFn(pInjector, mInjector)
+        );
 
         ranAsync = true;
-      }
+      },
     };
   };
 
@@ -227,15 +270,15 @@ class ParentInjectorPromise extends SyncPromise<Injector> {
     super();
 
     // Store the promise on the element.
-    element.data !(this.injectorKey, this);
+    element.data!(this.injectorKey, this);
   }
 
   resolve(injector: Injector): void {
     // Store the real injector on the element.
-    this.element.data !(this.injectorKey, injector);
+    this.element.data!(this.injectorKey, injector);
 
     // Release the element to prevent memory leaks.
-    this.element = null !;
+    this.element = null!;
 
     // Resolve the promise.
     super.resolve(injector);

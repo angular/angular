@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 /* tslint:disable:no-console  */
 import {Component, Directive, EventEmitter, NgModule} from '@angular/core';
 
@@ -12,30 +13,21 @@ import {Component, Directive, EventEmitter, NgModule} from '@angular/core';
 @Component({
   selector: 'app-bank-account',
   inputs: ['bankName', 'id: account-id'],
-  template: `
-    Bank Name: {{ bankName }}
-    Account Id: {{ id }}
-  `
+  template: ` Bank Name: {{ bankName }} Account Id: {{ id }} `,
 })
 export class BankAccountComponent {
-  bankName: string|null = null;
-  id: string|null = null;
+  bankName: string | null = null;
+  id: string | null = null;
 
   // this property is not bound, and won't be automatically updated by Angular
-  normalizedBankName: string|null = null;
+  normalizedBankName: string | null = null;
 }
 
 @Component({
   selector: 'app-my-input',
-  template: `
-    <app-bank-account
-      bankName="RBC"
-      account-id="4747">
-    </app-bank-account>
-  `
+  template: ` <app-bank-account bankName="RBC" account-id="4747"> </app-bank-account> `,
 })
-export class MyInputComponent {
-}
+export class MyInputComponent {}
 // #enddocregion component-input
 
 // #docregion component-output-interval
@@ -53,20 +45,21 @@ export class IntervalDirComponent {
 @Component({
   selector: 'app-my-output',
   template: `
-    <app-interval-dir
-      (everySecond)="onEverySecond()"
-      (everyFiveSeconds)="onEveryFiveSeconds()">
+    <app-interval-dir (everySecond)="onEverySecond()" (everyFiveSeconds)="onEveryFiveSeconds()">
     </app-interval-dir>
-  `
+  `,
 })
 export class MyOutputComponent {
-  onEverySecond() { console.log('second'); }
-  onEveryFiveSeconds() { console.log('five seconds'); }
+  onEverySecond() {
+    console.log('second');
+  }
+  onEveryFiveSeconds() {
+    console.log('five seconds');
+  }
 }
 // #enddocregion component-output-interval
 
 @NgModule({
-  declarations: [BankAccountComponent, MyInputComponent, IntervalDirComponent, MyOutputComponent]
+  declarations: [BankAccountComponent, MyInputComponent, IntervalDirComponent, MyOutputComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

@@ -17,14 +17,17 @@ export class PartialModuleMetadataTransformer implements MetadataTransformer {
   private moduleMap: Map<string, PartialModule>;
 
   constructor(modules: PartialModule[]) {
-    this.moduleMap = new Map(modules.map<[string, PartialModule]>(m => [m.fileName, m]));
+    this.moduleMap = new Map(
+      modules.map<[string, PartialModule]>((m) => [m.fileName, m])
+    );
   }
 
-  start(sourceFile: ts.SourceFile): ValueTransform|undefined {
+  start(sourceFile: ts.SourceFile): ValueTransform | undefined {
     const partialModule = this.moduleMap.get(sourceFile.fileName);
     if (partialModule) {
       const classMap = new Map<string, ClassStmt>(
-          partialModule.statements.filter(isClassStmt).map<[string, ClassStmt]>(s => [s.name, s]));
+        partialModule.statements.filter(isClassStmt).map<[string, ClassStmt]>((s) => [s.name, s])
+      );
       if (classMap.size > 0) {
         return (value: MetadataValue, node: ts.Node): MetadataValue => {
           // For class metadata that is going to be transformed to have a static method ensure the
@@ -35,8 +38,11 @@ export class PartialModuleMetadataTransformer implements MetadataTransformer {
               const partialClass = classMap.get(classDeclaration.name.text);
               if (partialClass) {
                 for (const field of partialClass.fields) {
-                  if (field.name && field.modifiers &&
-                      field.modifiers.some(modifier => modifier === StmtModifier.Static)) {
+                  if (
+                    field.name &&
+                    field.modifiers &&
+                    field.modifiers.some((modifier) => modifier === StmtModifier.Static)
+                  ) {
                     value.statics = {...(value.statics || {}), [field.name]: {}};
                   }
                 }

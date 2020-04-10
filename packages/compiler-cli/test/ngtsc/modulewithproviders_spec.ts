@@ -25,7 +25,9 @@ runInEachFileSystem(() => {
     });
 
     it('should add a generic type for static methods on exported classes', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {NgModule} from '@angular/core';
 
         @NgModule()
@@ -36,7 +38,8 @@ runInEachFileSystem(() => {
             };
           }
         }
-      `);
+      `
+      );
 
       env.driveMain();
 
@@ -46,7 +49,9 @@ runInEachFileSystem(() => {
     });
 
     it('should not add a generic type for non-static methods', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {NgModule} from '@angular/core';
 
         @NgModule()
@@ -57,7 +62,8 @@ runInEachFileSystem(() => {
             };
           }
         }
-      `);
+      `
+      );
 
       env.driveMain();
 
@@ -68,7 +74,9 @@ runInEachFileSystem(() => {
     });
 
     it('should add a generic type for exported functions', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {NgModule} from '@angular/core';
 
         export function forRoot() {
@@ -79,18 +87,22 @@ runInEachFileSystem(() => {
 
         @NgModule()
         export class TestModule {}
-      `);
+      `
+      );
 
       env.driveMain();
 
       const dtsContents = trim(env.getContents('test.d.ts'));
       expect(dtsContents).toContain('import * as i0 from "@angular/core";');
-      expect(dtsContents)
-          .toContain('export declare function forRoot(): i0.ModuleWithProviders<TestModule>;');
+      expect(dtsContents).toContain(
+        'export declare function forRoot(): i0.ModuleWithProviders<TestModule>;'
+      );
     });
 
     it('should not add a generic type when already present', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {NgModule, ModuleWithProviders} from '@angular/core';
 
         export class TestModule {
@@ -103,7 +115,8 @@ runInEachFileSystem(() => {
 
         @NgModule()
         export class InternalTestModule {}
-      `);
+      `
+      );
 
       env.driveMain();
 
@@ -112,7 +125,9 @@ runInEachFileSystem(() => {
     });
 
     it('should add a generic type when missing the generic type parameter', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {NgModule, ModuleWithProviders} from '@angular/core';
 
         @NgModule()
@@ -123,7 +138,8 @@ runInEachFileSystem(() => {
             };
           }
         }
-      `);
+      `
+      );
 
       env.driveMain();
 
@@ -132,7 +148,9 @@ runInEachFileSystem(() => {
     });
 
     it('should add a generic type when missing the generic type parameter (qualified name)', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import * as ng from '@angular/core';
 
         @ng.NgModule()
@@ -143,7 +161,8 @@ runInEachFileSystem(() => {
             };
           }
         }
-      `);
+      `
+      );
 
       env.driveMain();
 
@@ -152,7 +171,9 @@ runInEachFileSystem(() => {
     });
 
     it('should add a generic type and add an import for external references', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {ModuleWithProviders} from '@angular/core';
         import {InternalTestModule} from './internal';
 
@@ -163,24 +184,31 @@ runInEachFileSystem(() => {
             };
           }
         }
-      `);
-      env.write('internal.ts', `
+      `
+      );
+      env.write(
+        'internal.ts',
+        `
         import {NgModule} from '@angular/core';
 
         @NgModule()
         export class InternalTestModule {}
-      `);
+      `
+      );
 
       env.driveMain();
 
       const dtsContents = trim(env.getContents('test.d.ts'));
       expect(dtsContents).toContain('import * as i1 from "./internal";');
-      expect(dtsContents)
-          .toContain('static forRoot(): i0.ModuleWithProviders<i1.InternalTestModule>;');
+      expect(dtsContents).toContain(
+        'static forRoot(): i0.ModuleWithProviders<i1.InternalTestModule>;'
+      );
     });
 
     it('should not add a generic type if the return type is not ModuleWithProviders', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {NgModule} from '@angular/core';
 
         @NgModule()
@@ -191,7 +219,8 @@ runInEachFileSystem(() => {
             };
           }
         }
-      `);
+      `
+      );
 
       env.driveMain();
 
@@ -199,9 +228,10 @@ runInEachFileSystem(() => {
       expect(dtsContents).toContain('static forRoot(): { ngModule: typeof TestModule; };');
     });
 
-    it('should not add a generic type if the return type is not ModuleWithProviders from @angular/core',
-       () => {
-         env.write('test.ts', `
+    it('should not add a generic type if the return type is not ModuleWithProviders from @angular/core', () => {
+      env.write(
+        'test.ts',
+        `
         import {NgModule} from '@angular/core';
         import {ModuleWithProviders} from './mwp';
 
@@ -213,19 +243,25 @@ runInEachFileSystem(() => {
             };
           }
         }
-      `);
-         env.write('mwp.ts', `
+      `
+      );
+      env.write(
+        'mwp.ts',
+        `
       export type ModuleWithProviders = { ngModule: any };
-      `);
+      `
+      );
 
-         env.driveMain();
+      env.driveMain();
 
-         const dtsContents = trim(env.getContents('test.d.ts'));
-         expect(dtsContents).toContain('static forRoot(): ModuleWithProviders;');
-       });
+      const dtsContents = trim(env.getContents('test.d.ts'));
+      expect(dtsContents).toContain('static forRoot(): ModuleWithProviders;');
+    });
 
     it('should not add a generic type when the "ngModule" property is not a reference', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {NgModule} from '@angular/core';
 
         @NgModule()
@@ -236,7 +272,8 @@ runInEachFileSystem(() => {
             };
           }
         }
-      `);
+      `
+      );
 
       env.driveMain();
 
@@ -245,7 +282,9 @@ runInEachFileSystem(() => {
     });
 
     it('should not add a generic type when the class is not exported', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {NgModule} from '@angular/core';
 
         @NgModule()
@@ -256,7 +295,8 @@ runInEachFileSystem(() => {
             };
           }
         }
-      `);
+      `
+      );
 
       env.driveMain();
 
@@ -266,7 +306,9 @@ runInEachFileSystem(() => {
     });
 
     it('should add a generic type only when ngModule/providers are present', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {NgModule, ModuleWithProviders} from '@angular/core';
 
         @NgModule()
@@ -284,15 +326,18 @@ runInEachFileSystem(() => {
             };
           }
         }
-      `);
+      `
+      );
 
       env.driveMain();
 
       const dtsContents = trim(env.getContents('test.d.ts'));
-      expect(dtsContents)
-          .toContain('static hasNgModuleAndProviders(): i0.ModuleWithProviders<TestModule>;');
-      expect(dtsContents)
-          .toContain('static hasNgModuleAndFoo(): { ngModule: typeof TestModule; foo: string; };');
+      expect(dtsContents).toContain(
+        'static hasNgModuleAndProviders(): i0.ModuleWithProviders<TestModule>;'
+      );
+      expect(dtsContents).toContain(
+        'static hasNgModuleAndFoo(): { ngModule: typeof TestModule; foo: string; };'
+      );
     });
   });
 });

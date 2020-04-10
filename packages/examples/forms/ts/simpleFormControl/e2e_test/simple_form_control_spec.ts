@@ -49,6 +49,5 @@ describe('simpleFormControl example', () => {
       element(by.css('button')).click();
       expect(input.getAttribute('value')).toEqual('new value');
     });
-
   });
 });

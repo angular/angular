@@ -18,7 +18,7 @@ interface Worker {
 const CreateOnlyWorker: Worker = {
   id: 'createOnly',
   prepare: () => $('#destroyDom').click(),
-  work: () => $('#createDom').click()
+  work: () => $('#createDom').click(),
 };
 
 const CreateAndDestroyWorker: Worker = {
@@ -26,12 +26,12 @@ const CreateAndDestroyWorker: Worker = {
   work: () => {
     $('#createDom').click();
     $('#destroyDom').click();
-  }
+  },
 };
 
 const UpdateWorker: Worker = {
   id: 'update',
-  work: () => $('#createDom').click()
+  work: () => $('#createDom').click(),
 };
 
 // In order to make sure that we don't change the ids of the benchmarks, we need to
@@ -40,34 +40,40 @@ const UpdateWorker: Worker = {
 // name. e.g. "largeTable.ng2_switch.createDestroy". We determine the name of the
 // Bazel package where this test runs from the current test target. The Bazel target
 // looks like: "//modules/benchmarks/src/largetable/{pkg_name}:{target_name}".
-const testPackageName = process.env['BAZEL_TARGET'] !.split(':')[0].split('/').pop();
+const testPackageName = process.env['BAZEL_TARGET']!.split(':')[0].split('/').pop();
 
 describe('largetable benchmark perf', () => {
-
   afterEach(verifyNoBrowserErrors);
 
   [CreateOnlyWorker, CreateAndDestroyWorker, UpdateWorker].forEach((worker) => {
     describe(worker.id, () => {
-      it(`should run benchmark for ${testPackageName}`, async() => {
+      it(`should run benchmark for ${testPackageName}`, async () => {
         await runTableBenchmark({
           id: `largeTable.${testPackageName}.${worker.id}`,
           url: '/',
           ignoreBrowserSynchronization: true,
-          worker: worker
+          worker: worker,
         });
       });
     });
   });
 });
 
-function runTableBenchmark(
-    config: {id: string, url: string, ignoreBrowserSynchronization?: boolean, worker: Worker}) {
+function runTableBenchmark(config: {
+  id: string;
+  url: string;
+  ignoreBrowserSynchronization?: boolean;
+  worker: Worker;
+}) {
   return runBenchmark({
     id: config.id,
     url: config.url,
     ignoreBrowserSynchronization: config.ignoreBrowserSynchronization,
-    params: [{name: 'cols', value: 40}, {name: 'rows', value: 200}],
+    params: [
+      {name: 'cols', value: 40},
+      {name: 'rows', value: 200},
+    ],
     prepare: config.worker.prepare,
-    work: config.worker.work
+    work: config.worker.work,
   });
 }

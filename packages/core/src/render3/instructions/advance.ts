@@ -5,11 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {assertDataInRange, assertGreaterThan} from '../../util/assert';
 import {executeCheckHooks, executeInitAndCheckHooks} from '../hooks';
 import {FLAGS, HEADER_OFFSET, InitPhaseState, LView, LViewFlags, TView} from '../interfaces/view';
-import {getCheckNoChangesMode, getLView, getSelectedIndex, getTView, setSelectedIndex} from '../state';
-
+import {
+  getCheckNoChangesMode,
+  getLView,
+  getSelectedIndex,
+  getTView,
+  setSelectedIndex,
+} from '../state';
 
 /**
  * Advances to an element for later binding instructions.
@@ -19,21 +25,21 @@ import {getCheckNoChangesMode, getLView, getSelectedIndex, getTView, setSelected
  *
  * ```ts
  * (rf: RenderFlags, ctx: any) => {
-  *   if (rf & 1) {
-  *     text(0, 'Hello');
-  *     text(1, 'Goodbye')
-  *     element(2, 'div');
-  *   }
-  *   if (rf & 2) {
-  *     advance(2); // Advance twice to the <div>.
-  *     property('title', 'test');
-  *   }
-  *  }
-  * ```
-  * @param delta Number of elements to advance forwards by.
-  *
-  * @codeGenApi
-  */
+ *   if (rf & 1) {
+ *     text(0, 'Hello');
+ *     text(1, 'Goodbye')
+ *     element(2, 'div');
+ *   }
+ *   if (rf & 2) {
+ *     advance(2); // Advance twice to the <div>.
+ *     property('title', 'test');
+ *   }
+ *  }
+ * ```
+ * @param delta Number of elements to advance forwards by.
+ *
+ * @codeGenApi
+ */
 export function ɵɵadvance(delta: number): void {
   ngDevMode && assertGreaterThan(delta, 0, 'Can only advance forward');
   selectIndexInternal(getTView(), getLView(), getSelectedIndex() + delta, getCheckNoChangesMode());
@@ -50,7 +56,11 @@ export function ɵɵselect(index: number): void {
 }
 
 export function selectIndexInternal(
-    tView: TView, lView: LView, index: number, checkNoChangesMode: boolean) {
+  tView: TView,
+  lView: LView,
+  index: number,
+  checkNoChangesMode: boolean
+) {
   ngDevMode && assertGreaterThan(index, -1, 'Invalid index');
   ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
 
@@ -58,7 +68,7 @@ export function selectIndexInternal(
   // PERF WARNING: do NOT extract this to a separate function without running benchmarks
   if (!checkNoChangesMode) {
     const hooksInitPhaseCompleted =
-        (lView[FLAGS] & LViewFlags.InitPhaseStateMask) === InitPhaseState.InitPhaseCompleted;
+      (lView[FLAGS] & LViewFlags.InitPhaseStateMask) === InitPhaseState.InitPhaseCompleted;
     if (hooksInitPhaseCompleted) {
       const preOrderCheckHooks = tView.preOrderCheckHooks;
       if (preOrderCheckHooks !== null) {

@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as os from 'os';
 
 import {absoluteFrom, relativeFrom, setFileSystem} from '../src/helpers';
@@ -24,10 +25,9 @@ describe('path types', () => {
       it('should not throw when creating one from a windows absolute path', () => {
         expect(absoluteFrom('C:\\test.txt')).toEqual('C:/test.txt');
       });
-      it('should not throw when creating one from a windows absolute path with POSIX separators',
-         () => {
-           expect(absoluteFrom('C:/test.txt')).toEqual('C:/test.txt');
-         });
+      it('should not throw when creating one from a windows absolute path with POSIX separators', () => {
+        expect(absoluteFrom('C:/test.txt')).toEqual('C:/test.txt');
+      });
       it('should support windows drive letters', () => {
         expect(absoluteFrom('D:\\foo\\test.txt')).toEqual('D:/foo/test.txt');
       });

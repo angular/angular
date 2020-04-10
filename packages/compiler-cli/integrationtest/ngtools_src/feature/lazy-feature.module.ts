@@ -10,16 +10,19 @@ import {Component, NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 
 @Component({selector: 'lazy-feature-comp', template: 'lazy feature!'})
-export class LazyFeatureComponent {
-}
+export class LazyFeatureComponent {}
 
 @NgModule({
-  imports: [RouterModule.forChild([
-    {path: '', component: LazyFeatureComponent, pathMatch: 'full'},
-    {path: 'feature', loadChildren: './feature.module#FeatureModule'},
-    {path: 'nested-feature', loadChildren: './lazy-feature-nested.module#LazyFeatureNestedModule'}
-  ])],
-  declarations: [LazyFeatureComponent]
+  imports: [
+    RouterModule.forChild([
+      {path: '', component: LazyFeatureComponent, pathMatch: 'full'},
+      {path: 'feature', loadChildren: './feature.module#FeatureModule'},
+      {
+        path: 'nested-feature',
+        loadChildren: './lazy-feature-nested.module#LazyFeatureNestedModule',
+      },
+    ]),
+  ],
+  declarations: [LazyFeatureComponent],
 })
-export class LazyFeatureModule {
-}
+export class LazyFeatureModule {}

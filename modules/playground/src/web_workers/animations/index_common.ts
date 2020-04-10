@@ -11,32 +11,35 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'animation-app',
-  styles: [`
-    .box {
-      border:10px solid black;
-      text-align:center;
-      overflow:hidden;
-      background:red;
-      color:white;
-      font-size:100px;
-      line-height:200px;
-    }
-  `],
-  animations: [trigger(
-      'animate',
-      [
-        state('off', style({width: '0px'})), state('on', style({width: '750px'})),
-        transition('off <=> on', animate(500))
-      ])],
+  styles: [
+    `
+      .box {
+        border: 10px solid black;
+        text-align: center;
+        overflow: hidden;
+        background: red;
+        color: white;
+        font-size: 100px;
+        line-height: 200px;
+      }
+    `,
+  ],
+  animations: [
+    trigger('animate', [
+      state('off', style({width: '0px'})),
+      state('on', style({width: '750px'})),
+      transition('off <=> on', animate(500)),
+    ]),
+  ],
   template: `
-    <button (click)="animate=!animate">
-      Start Animation 
+    <button (click)="animate = !animate">
+      Start Animation
     </button>
-    
+
     <div class="box" [@animate]="animate ? 'on' : 'off'">
-      ... 
+      ...
     </div>
-  `
+  `,
 })
 export class AnimationCmp {
   animate = false;

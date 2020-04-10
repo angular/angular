@@ -13,7 +13,6 @@ import {RComment, RElement} from './renderer';
 
 import {HOST, LView, NEXT, PARENT, T_HOST} from './view';
 
-
 /**
  * Special location which allows easy identification of type. If we have an array which was
  * retrieved from the `LView` and that array has `true` at `TYPE` location, we know it is
@@ -46,7 +45,6 @@ export const VIEW_REFS = 8;
  */
 export const CONTAINER_HEADER_OFFSET = 9;
 
-
 /**
  * Used to track:
  *  - Inline embedded views (see: `ɵɵembeddedViewStart`)
@@ -73,7 +71,6 @@ export const enum ActiveIndexFlag {
    */
   SHIFT = 1,
 
-
   /**
    * When incrementing the active index for inline embedded views, the amount to increment to leave
    * space for other flags.
@@ -96,7 +93,7 @@ export interface LContainer extends Array<any> {
    * The host could be an LView if this container is on a component node.
    * In that case, the component LView is its HOST.
    */
-  readonly[HOST]: RElement|RComment|LView;
+  readonly [HOST]: RElement | RComment | LView;
 
   /**
    * This is a type field which allows us to differentiate `LContainer` from `StylingContext` in an
@@ -130,14 +127,14 @@ export interface LContainer extends Array<any> {
    * This allows us to jump from a container to a sibling container or component
    * view with the same parent, so we can remove listeners efficiently.
    */
-  [NEXT]: LView|LContainer|null;
+  [NEXT]: LView | LContainer | null;
 
   /**
    * A collection of views created based on the underlying `<ng-template>` element but inserted into
    * a different `LContainer`. We need to track views created from a given declaration point since
    * queries collect matches from the embedded view declaration point and _not_ the insertion point.
    */
-  [MOVED_VIEWS]: LView[]|null;
+  [MOVED_VIEWS]: LView[] | null;
 
   /**
    * Pointer to the `TNode` which represents the host of the container.
@@ -145,15 +142,14 @@ export interface LContainer extends Array<any> {
   [T_HOST]: TNode;
 
   /** The comment element that serves as an anchor for this LContainer. */
-  readonly[NATIVE]:
-      RComment;  // TODO(misko): remove as this value can be gotten by unwrapping `[HOST]`
+  readonly [NATIVE]: RComment; // TODO(misko): remove as this value can be gotten by unwrapping `[HOST]`
 
   /**
    * Array of `ViewRef`s used by any `ViewContainerRef`s that point to this container.
    *
    * This is lazily initialized by `ViewContainerRef` when the first view is inserted.
    */
-  [VIEW_REFS]: ViewRef[]|null;
+  [VIEW_REFS]: ViewRef[] | null;
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

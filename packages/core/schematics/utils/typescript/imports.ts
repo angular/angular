@@ -9,14 +9,16 @@
 import * as ts from 'typescript';
 
 export type Import = {
-  name: string,
-  importModule: string,
-  node: ts.ImportDeclaration
+  name: string;
+  importModule: string;
+  node: ts.ImportDeclaration;
 };
 
 /** Gets import information about the specified identifier by using the Type checker. */
-export function getImportOfIdentifier(typeChecker: ts.TypeChecker, node: ts.Identifier): Import|
-    null {
+export function getImportOfIdentifier(
+  typeChecker: ts.TypeChecker,
+  node: ts.Identifier
+): Import | null {
   const symbol = typeChecker.getSymbolAtLocation(node);
 
   if (!symbol || !symbol.declarations.length) {
@@ -39,6 +41,6 @@ export function getImportOfIdentifier(typeChecker: ts.TypeChecker, node: ts.Iden
     // Handles aliased imports: e.g. "import {Component as myComp} from ...";
     name: decl.propertyName ? decl.propertyName.text : decl.name.text,
     importModule: importDecl.moduleSpecifier.text,
-    node: importDecl
+    node: importDecl,
   };
 }

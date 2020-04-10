@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {CompileReflector, core, DirectiveResolver} from '@angular/compiler';
 
 /**
@@ -20,8 +21,8 @@ export class MockDirectiveResolver extends DirectiveResolver {
 
   resolve(type: core.Type): core.Directive;
   resolve(type: core.Type, throwIfNotFound: true): core.Directive;
-  resolve(type: core.Type, throwIfNotFound: boolean): core.Directive|null;
-  resolve(type: core.Type, throwIfNotFound = true): core.Directive|null {
+  resolve(type: core.Type, throwIfNotFound: boolean): core.Directive | null;
+  resolve(type: core.Type, throwIfNotFound = true): core.Directive | null {
     return this._directives.get(type) || super.resolve(type, throwIfNotFound);
   }
 

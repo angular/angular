@@ -12,7 +12,9 @@ import * as ts from 'typescript';
 
 /** Creates an NGC program that can be used to read and parse metadata for files. */
 export function createNgcProgram(
-    createHost: (options: ts.CompilerOptions) => CompilerHost, tsconfigPath: string) {
+  createHost: (options: ts.CompilerOptions) => CompilerHost,
+  tsconfigPath: string
+) {
   const {rootNames, options} = readConfiguration(tsconfigPath);
 
   // https://github.com/angular/angular/commit/ec4381dd401f03bded652665b047b6b90f2b425f made Ivy

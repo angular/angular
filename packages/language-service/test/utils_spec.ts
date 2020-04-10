@@ -14,14 +14,16 @@ import {getDirectiveClassLike, getPathToNodeAtPosition} from '../src/utils';
 describe('getDirectiveClassLike', () => {
   it('should return a directive class', () => {
     const sourceFile = ts.createSourceFile(
-        'foo.ts', `
+      'foo.ts',
+      `
       @NgModule({
         declarations: [],
       })
       class AppModule {}
     `,
-        ts.ScriptTarget.ES2015);
-    const result = sourceFile.forEachChild(c => {
+      ts.ScriptTarget.ES2015
+    );
+    const result = sourceFile.forEachChild((c) => {
       const directive = getDirectiveClassLike(c);
       if (directive) {
         return directive;

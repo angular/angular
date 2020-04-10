@@ -5,13 +5,20 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 
 import {FatalDiagnosticError, makeDiagnostic} from '../../../src/ngtsc/diagnostics';
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
+import {
+  AnalysisOutput,
+  CompileResult,
+  DecoratorHandler,
+  DetectResult,
+  HandlerPrecedence,
+} from '../../../src/ngtsc/transform';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
@@ -21,7 +28,7 @@ import {Migration, MigrationHost} from '../../src/migrations/migration';
 import {MockLogger} from '../helpers/mock_logger';
 import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
 
-type DecoratorHandlerWithResolve = DecoratorHandler<unknown, unknown, unknown>&{
+type DecoratorHandlerWithResolve = DecoratorHandler<unknown, unknown, unknown> & {
   resolve: NonNullable<DecoratorHandler<unknown, unknown, unknown>['resolve']>;
 };
 
@@ -42,7 +49,7 @@ runInEachFileSystem(() => {
       let result: DecorationAnalyses;
 
       // Helpers
-      const createTestHandler = (options: {analyzeError: boolean, resolveError: boolean}) => {
+      const createTestHandler = (options: {analyzeError: boolean; resolveError: boolean}) => {
         const handler = jasmine.createSpyObj<DecoratorHandlerWithResolve>('TestDecoratorHandler', [
           'detect',
           'analyze',
@@ -51,37 +58,37 @@ runInEachFileSystem(() => {
           'compile',
         ]);
         // Only detect the Component and Directive decorators
-        handler.detect.and.callFake(
-            (node: ts.Declaration, decorators: Decorator[]|null): DetectResult<unknown>|
-            undefined => {
-              const className = (node as any).name.text;
-              if (decorators === null) {
-                logs.push(`detect: ${className} (no decorators)`);
-              } else {
-                logs.push(`detect: ${className}@${decorators.map(d => d.name)}`);
-              }
-              if (!decorators) {
-                return undefined;
-              }
-              const metadata =
-                  decorators.find(d => d.name === 'Component' || d.name === 'Directive');
-              if (metadata === undefined) {
-                return undefined;
-              } else {
-                return {
-                  metadata,
-                  decorator: metadata,
-                  trigger: metadata.node,
-                };
-              }
-            });
+        handler.detect.and.callFake((node: ts.Declaration, decorators: Decorator[] | null):
+          | DetectResult<unknown>
+          | undefined => {
+          const className = (node as any).name.text;
+          if (decorators === null) {
+            logs.push(`detect: ${className} (no decorators)`);
+          } else {
+            logs.push(`detect: ${className}@${decorators.map((d) => d.name)}`);
+          }
+          if (!decorators) {
+            return undefined;
+          }
+          const metadata = decorators.find((d) => d.name === 'Component' || d.name === 'Directive');
+          if (metadata === undefined) {
+            return undefined;
+          } else {
+            return {
+              metadata,
+              decorator: metadata,
+              trigger: metadata.node,
+            };
+          }
+        });
         // The "test" analysis is an object with the name of the decorator being analyzed
         handler.analyze.and.callFake((decl: ts.Declaration, dec: Decorator) => {
           logs.push(`analyze: ${(decl as any).name.text}@${dec.name}`);
           return {
             analysis: {decoratorName: dec.name},
-            diagnostics: options.analyzeError ? [makeDiagnostic(9999, decl, 'analyze diagnostic')] :
-                                                undefined
+            diagnostics: options.analyzeError
+              ? [makeDiagnostic(9999, decl, 'analyze diagnostic')]
+              : undefined,
           };
         });
         // The "test" resolution is just setting `resolved: true` on the analysis
@@ -89,24 +96,31 @@ runInEachFileSystem(() => {
           logs.push(`resolve: ${(decl as any).name.text}@${analysis.decoratorName}`);
           analysis.resolved = true;
           return {
-            diagnostics: options.resolveError ? [makeDiagnostic(9998, decl, 'resolve diagnostic')] :
-                                                undefined
+            diagnostics: options.resolveError
+              ? [makeDiagnostic(9998, decl, 'resolve diagnostic')]
+              : undefined,
           };
         });
         // The "test" compilation result is just the name of the decorator being compiled
         // (suffixed with `(compiled)`)
         (handler.compile as any).and.callFake((decl: ts.Declaration, analysis: any) => {
-          logs.push(`compile: ${(decl as any).name.text}@${analysis.decoratorName} (resolved: ${
-              analysis.resolved})`);
+          logs.push(
+            `compile: ${(decl as any).name.text}@${analysis.decoratorName} (resolved: ${
+              analysis.resolved
+            })`
+          );
           return `@${analysis.decoratorName} (compiled)`;
         });
         return handler;
       };
 
-      function setUpAnalyzer(testFiles: TestFile[], options: {
-        analyzeError: boolean,
-        resolveError: boolean
-      } = {analyzeError: false, resolveError: false}) {
+      function setUpAnalyzer(
+        testFiles: TestFile[],
+        options: {
+          analyzeError: boolean;
+          resolveError: boolean;
+        } = {analyzeError: false, resolveError: false}
+      ) {
         logs = [];
         loadTestFiles(testFiles);
         loadFakeCore(getFileSystem());
@@ -118,8 +132,12 @@ runInEachFileSystem(() => {
         const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
         diagnosticLogs = [];
         const analyzer = new DecorationAnalyzer(
-            getFileSystem(), bundle, reflectionHost, referencesRegistry,
-            (error) => diagnosticLogs.push(error));
+          getFileSystem(),
+          bundle,
+          reflectionHost,
+          referencesRegistry,
+          (error) => diagnosticLogs.push(error)
+        );
         testHandler = createTestHandler(options);
 
         // Replace the default handlers with the test handler in the original array of handlers
@@ -180,38 +198,43 @@ runInEachFileSystem(() => {
           expect(result.get(otherFile)!.sourceFile).toBe(otherFile);
         });
 
-        it('should call detect on the decorator handlers with each class from the parsed file',
-           () => {
-             expect(testHandler.detect).toHaveBeenCalledTimes(5);
-             expect(testHandler.detect.calls.allArgs().map((args: any[]) => args[1])).toEqual([
-               null,
-               jasmine.arrayContaining([jasmine.objectContaining({name: 'Component'})]),
-               jasmine.arrayContaining([jasmine.objectContaining({name: 'Directive'})]),
-               jasmine.arrayContaining([jasmine.objectContaining({name: 'Injectable'})]),
-               jasmine.arrayContaining([jasmine.objectContaining({name: 'Component'})]),
-             ]);
-           });
+        it('should call detect on the decorator handlers with each class from the parsed file', () => {
+          expect(testHandler.detect).toHaveBeenCalledTimes(5);
+          expect(testHandler.detect.calls.allArgs().map((args: any[]) => args[1])).toEqual([
+            null,
+            jasmine.arrayContaining([jasmine.objectContaining({name: 'Component'})]),
+            jasmine.arrayContaining([jasmine.objectContaining({name: 'Directive'})]),
+            jasmine.arrayContaining([jasmine.objectContaining({name: 'Injectable'})]),
+            jasmine.arrayContaining([jasmine.objectContaining({name: 'Component'})]),
+          ]);
+        });
 
         it('should return an object containing the classes that were analyzed', () => {
           const file1 = getSourceFileOrError(program, _('/node_modules/test-package/test.js'));
           const compiledFile1 = result.get(file1)!;
           expect(compiledFile1.compiledClasses.length).toEqual(2);
-          expect(compiledFile1.compiledClasses[0]).toEqual(jasmine.objectContaining({
-            name: 'MyComponent',
-            compilation: ['@Component (compiled)'],
-          } as unknown as CompiledClass));
-          expect(compiledFile1.compiledClasses[1]).toEqual(jasmine.objectContaining({
-            name: 'MyDirective',
-            compilation: ['@Directive (compiled)'],
-          } as unknown as CompiledClass));
+          expect(compiledFile1.compiledClasses[0]).toEqual(
+            jasmine.objectContaining(({
+              name: 'MyComponent',
+              compilation: ['@Component (compiled)'],
+            } as unknown) as CompiledClass)
+          );
+          expect(compiledFile1.compiledClasses[1]).toEqual(
+            jasmine.objectContaining(({
+              name: 'MyDirective',
+              compilation: ['@Directive (compiled)'],
+            } as unknown) as CompiledClass)
+          );
 
           const file2 = getSourceFileOrError(program, _('/node_modules/test-package/other.js'));
           const compiledFile2 = result.get(file2)!;
           expect(compiledFile2.compiledClasses.length).toEqual(1);
-          expect(compiledFile2.compiledClasses[0]).toEqual(jasmine.objectContaining({
-            name: 'MyOtherComponent',
-            compilation: ['@Component (compiled)'],
-          } as unknown as CompiledClass));
+          expect(compiledFile2.compiledClasses[0]).toEqual(
+            jasmine.objectContaining(({
+              name: 'MyOtherComponent',
+              compilation: ['@Component (compiled)'],
+            } as unknown) as CompiledClass)
+          );
         });
 
         it('should call `apply()` on each migration for each class', () => {
@@ -224,7 +247,6 @@ runInEachFileSystem(() => {
             'migration2:MyOtherComponent',
           ]);
         });
-
 
         it('should analyze, resolve and compile the classes that are detected', () => {
           expect(logs).toEqual([
@@ -267,7 +289,7 @@ runInEachFileSystem(() => {
                         declarations: [ImportedComponent, LocalComponent],
                         exports: [ImportedComponent, LocalComponent],
                     },] }];
-          `
+          `,
             },
             {
               name: _('/node_modules/test-package/component.js'),
@@ -277,7 +299,7 @@ runInEachFileSystem(() => {
             ImportedComponent.decorators = [{type: Component}];
           `,
               isRoot: false,
-            }
+            },
           ];
           const analyzer = setUpAnalyzer(INTERNAL_COMPONENT_PROGRAM);
           result = analyzer.analyzeProgram();
@@ -285,22 +307,21 @@ runInEachFileSystem(() => {
 
         // The problem of exposing the type of these internal components in the .d.ts typing
         // files is not yet solved.
-        it('should analyze an internally imported component, which is not publicly exported from the entry-point',
-           () => {
-             const file =
-                 getSourceFileOrError(program, _('/node_modules/test-package/component.js'));
-             const analysis = result.get(file)!;
-             expect(analysis).toBeDefined();
-             const ImportedComponent =
-                 analysis.compiledClasses.find(f => f.name === 'ImportedComponent')!;
-             expect(ImportedComponent).toBeDefined();
-           });
+        it('should analyze an internally imported component, which is not publicly exported from the entry-point', () => {
+          const file = getSourceFileOrError(program, _('/node_modules/test-package/component.js'));
+          const analysis = result.get(file)!;
+          expect(analysis).toBeDefined();
+          const ImportedComponent = analysis.compiledClasses.find(
+            (f) => f.name === 'ImportedComponent'
+          )!;
+          expect(ImportedComponent).toBeDefined();
+        });
 
         it('should analyze an internally defined component, which is not exported at all', () => {
           const file = getSourceFileOrError(program, _('/node_modules/test-package/entrypoint.js'));
           const analysis = result.get(file)!;
           expect(analysis).toBeDefined();
-          const LocalComponent = analysis.compiledClasses.find(f => f.name === 'LocalComponent')!;
+          const LocalComponent = analysis.compiledClasses.find((f) => f.name === 'LocalComponent')!;
           expect(LocalComponent).toBeDefined();
         });
       });
@@ -323,7 +344,7 @@ runInEachFileSystem(() => {
                     declarations: [ImportedComponent, NestedDependencyComponent, LocalComponent],
                     exports: [ImportedComponent, NestedDependencyComponent, LocalComponent],
                 },] }];
-      `
+      `,
             },
             // Do not define a `.d.ts` file to ensure that the `.js` file will be part of the TS
             // program.
@@ -360,7 +381,8 @@ runInEachFileSystem(() => {
 
         it('should ignore classes from a file imported from a nested `node_modules/`', () => {
           const file = program.getSourceFile(
-              _('/node_modules/test-package/node_modules/nested/component.js'))!;
+            _('/node_modules/test-package/node_modules/nested/component.js')
+          )!;
           expect(result.has(file)).toBe(false);
         });
       });
@@ -381,13 +403,13 @@ runInEachFileSystem(() => {
             {
               apply(clazz: ClassDeclaration) {
                 return makeDiagnostic(9999, clazz, 'normal diagnostic');
-              }
+              },
             },
             {
               apply(clazz: ClassDeclaration) {
                 throw new FatalDiagnosticError(6666, clazz, 'fatal diagnostic');
-              }
-            }
+              },
+            },
           ];
           analyzer.analyzeProgram();
           expect(diagnosticLogs.length).toEqual(2);
@@ -397,17 +419,18 @@ runInEachFileSystem(() => {
 
         it('should report analyze diagnostics to the `diagnosticHandler` callback', () => {
           const analyzer = setUpAnalyzer(
-              [
-                {
-                  name: _('/node_modules/test-package/index.js'),
-                  contents: `
+            [
+              {
+                name: _('/node_modules/test-package/index.js'),
+                contents: `
                   import {Component, Directive, Injectable} from '@angular/core';
                   export class MyComponent {}
                   MyComponent.decorators = [{type: Component}];
                 `,
-                },
-              ],
-              {analyzeError: true, resolveError: true});
+              },
+            ],
+            {analyzeError: true, resolveError: true}
+          );
           analyzer.analyzeProgram();
           expect(diagnosticLogs.length).toEqual(1);
           expect(diagnosticLogs[0]).toEqual(jasmine.objectContaining({code: -999999}));
@@ -419,17 +442,18 @@ runInEachFileSystem(() => {
 
         it('should report resolve diagnostics to the `diagnosticHandler` callback', () => {
           const analyzer = setUpAnalyzer(
-              [
-                {
-                  name: _('/node_modules/test-package/index.js'),
-                  contents: `
+            [
+              {
+                name: _('/node_modules/test-package/index.js'),
+                contents: `
                   import {Component, Directive, Injectable} from '@angular/core';
                   export class MyComponent {}
                   MyComponent.decorators = [{type: Component}];
                 `,
-                },
-              ],
-              {analyzeError: false, resolveError: true});
+              },
+            ],
+            {analyzeError: false, resolveError: true}
+          );
           analyzer.analyzeProgram();
           expect(diagnosticLogs.length).toEqual(1);
           expect(diagnosticLogs[0]).toEqual(jasmine.objectContaining({code: -999998}));
@@ -442,7 +466,7 @@ runInEachFileSystem(() => {
 
       describe('declaration files', () => {
         it('should not run decorator handlers against declaration files', () => {
-          class FakeDecoratorHandler implements DecoratorHandler<{}|null, unknown, unknown> {
+          class FakeDecoratorHandler implements DecoratorHandler<{} | null, unknown, unknown> {
             name = 'FakeDecoratorHandler';
             precedence = HandlerPrecedence.PRIMARY;
 
@@ -457,10 +481,12 @@ runInEachFileSystem(() => {
             }
           }
 
-          const analyzer = setUpAnalyzer([{
-            name: _('/node_modules/test-package/index.d.ts'),
-            contents: 'export declare class SomeDirective {}',
-          }]);
+          const analyzer = setUpAnalyzer([
+            {
+              name: _('/node_modules/test-package/index.d.ts'),
+              contents: 'export declare class SomeDirective {}',
+            },
+          ]);
 
           // Replace the default handlers with the test handler in the original array of handlers
           analyzer.handlers.splice(0, analyzer.handlers.length, new FakeDecoratorHandler());
@@ -474,7 +500,7 @@ runInEachFileSystem(() => {
 
 class MockMigration implements Migration {
   constructor(private name: string, private log: string[]) {}
-  apply(clazz: ClassDeclaration, host: MigrationHost): ts.Diagnostic|null {
+  apply(clazz: ClassDeclaration, host: MigrationHost): ts.Diagnostic | null {
     this.log.push(`${this.name}:${clazz.name.text}`);
     return null;
   }

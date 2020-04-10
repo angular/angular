@@ -10,14 +10,13 @@ import {browser} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
-describe('http', function() {
-
+describe('http', function () {
   afterEach(verifyNoBrowserErrors);
 
-  describe('fetching', function() {
+  describe('fetching', function () {
     const URL = '/';
 
-    it('should fetch and display people', function() {
+    it('should fetch and display people', function () {
       browser.get(URL);
       expect(getComponentText('http-app', '.people')).toEqual('hello, Jeff');
     });
@@ -26,5 +25,6 @@ describe('http', function() {
 
 function getComponentText(selector: string, innerSelector: string) {
   return browser.executeScript(
-      `return document.querySelector("${selector}").querySelector("${innerSelector}").textContent.trim()`);
+    `return document.querySelector("${selector}").querySelector("${innerSelector}").textContent.trim()`
+  );
 }

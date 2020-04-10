@@ -66,7 +66,10 @@ export const enum DynamicValueReason {
  */
 export class DynamicValue<R = unknown> {
   private constructor(
-      readonly node: ts.Node, readonly reason: R, private code: DynamicValueReason) {}
+    readonly node: ts.Node,
+    readonly reason: R,
+    private code: DynamicValueReason
+  ) {}
 
   static fromDynamicInput(node: ts.Node, input: DynamicValue): DynamicValue<DynamicValue> {
     return new DynamicValue(node, input, DynamicValueReason.DYNAMIC_INPUT);
@@ -76,8 +79,10 @@ export class DynamicValue<R = unknown> {
     return new DynamicValue(node, undefined, DynamicValueReason.DYNAMIC_STRING);
   }
 
-  static fromExternalReference(node: ts.Node, ref: Reference<ts.Declaration>):
-      DynamicValue<Reference<ts.Declaration>> {
+  static fromExternalReference(
+    node: ts.Node,
+    ref: Reference<ts.Declaration>
+  ): DynamicValue<Reference<ts.Declaration>> {
     return new DynamicValue(node, ref, DynamicValueReason.EXTERNAL_REFERENCE);
   }
 

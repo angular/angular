@@ -25,7 +25,7 @@ export interface TypeCheckableDirectiveMeta extends DirectiveMeta {
   hasNgTemplateContextGuard: boolean;
 }
 
-export type TemplateId = string&{__brand: 'TemplateId'};
+export type TemplateId = string & {__brand: 'TemplateId'};
 
 /**
  * Metadata required in addition to a component class in order to generate a type check block (TCB)
@@ -69,7 +69,7 @@ export interface TypeCtorMetadata {
   /**
    * Input, output, and query field names in the type which should be included as constructor input.
    */
-  fields: {inputs: string[]; outputs: string[]; queries: string[];};
+  fields: {inputs: string[]; outputs: string[]; queries: string[]};
 
   /**
    * `Set` of field names which have type coercion enabled.
@@ -166,7 +166,6 @@ export interface TypeCheckingConfig {
    */
   checkTypeOfDomReferences: boolean;
 
-
   /**
    * Whether to infer the type of local references.
    *
@@ -231,9 +230,10 @@ export interface TypeCheckingConfig {
   strictLiteralTypes: boolean;
 }
 
-
 export type TemplateSourceMapping =
-    DirectTemplateSourceMapping|IndirectTemplateSourceMapping|ExternalTemplateSourceMapping;
+  | DirectTemplateSourceMapping
+  | IndirectTemplateSourceMapping
+  | ExternalTemplateSourceMapping;
 
 /**
  * A mapping to an inline template in a TS file.
@@ -243,7 +243,7 @@ export type TemplateSourceMapping =
  */
 export interface DirectTemplateSourceMapping {
   type: 'direct';
-  node: ts.StringLiteral|ts.NoSubstitutionTemplateLiteral;
+  node: ts.StringLiteral | ts.NoSubstitutionTemplateLiteral;
 }
 
 /**

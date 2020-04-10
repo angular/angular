@@ -10,7 +10,14 @@
  * @suppress {globalThis}
  */
 
-import {ObjectGetPrototypeOf, isBrowser, isIE, isMix, isNode, patchOnProperties} from '../common/utils';
+import {
+  ObjectGetPrototypeOf,
+  isBrowser,
+  isIE,
+  isMix,
+  isNode,
+  patchOnProperties,
+} from '../common/utils';
 
 const globalEventHandlersEventNames = [
   'abort',
@@ -108,13 +115,24 @@ const globalEventHandlersEventNames = [
   'transitioncancel',
   'transitionend',
   'waiting',
-  'wheel'
+  'wheel',
 ];
 const documentEventNames = [
-  'afterscriptexecute', 'beforescriptexecute', 'DOMContentLoaded', 'freeze', 'fullscreenchange',
-  'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange', 'fullscreenerror',
-  'mozfullscreenerror', 'webkitfullscreenerror', 'msfullscreenerror', 'readystatechange',
-  'visibilitychange', 'resume'
+  'afterscriptexecute',
+  'beforescriptexecute',
+  'DOMContentLoaded',
+  'freeze',
+  'fullscreenchange',
+  'mozfullscreenchange',
+  'webkitfullscreenchange',
+  'msfullscreenchange',
+  'fullscreenerror',
+  'mozfullscreenerror',
+  'webkitfullscreenerror',
+  'msfullscreenerror',
+  'readystatechange',
+  'visibilitychange',
+  'resume',
 ];
 const windowEventNames = [
   'absolutedeviceorientation',
@@ -146,15 +164,33 @@ const windowEventNames = [
   'userproximity',
   'vrdisplayconnected',
   'vrdisplaydisconnected',
-  'vrdisplaypresentchange'
+  'vrdisplaypresentchange',
 ];
 const htmlElementEventNames = [
-  'beforecopy', 'beforecut', 'beforepaste', 'copy', 'cut', 'paste', 'dragstart', 'loadend',
-  'animationstart', 'search', 'transitionrun', 'transitionstart', 'webkitanimationend',
-  'webkitanimationiteration', 'webkitanimationstart', 'webkittransitionend'
+  'beforecopy',
+  'beforecut',
+  'beforepaste',
+  'copy',
+  'cut',
+  'paste',
+  'dragstart',
+  'loadend',
+  'animationstart',
+  'search',
+  'transitionrun',
+  'transitionstart',
+  'webkitanimationend',
+  'webkitanimationiteration',
+  'webkitanimationstart',
+  'webkittransitionend',
 ];
-const mediaElementEventNames =
-    ['encrypted', 'waitingforkey', 'msneedkey', 'mozinterruptbegin', 'mozinterruptend'];
+const mediaElementEventNames = [
+  'encrypted',
+  'waitingforkey',
+  'msneedkey',
+  'mozinterruptbegin',
+  'mozinterruptend',
+];
 const ieElementEventNames = [
   'activate',
   'afterupdate',
@@ -210,7 +246,7 @@ const ieElementEventNames = [
   'mssitemodejumplistitemremoved',
   'msthumbnailclick',
   'stop',
-  'storagecommit'
+  'storagecommit',
 ];
 const webglEventNames = ['webglcontextrestored', 'webglcontextlost', 'webglcontextcreationerror'];
 const formEventNames = ['autocomplete', 'autocompleteerror'];
@@ -220,17 +256,38 @@ const frameSetEventNames = ['blur', 'error', 'focus', 'load', 'resize', 'scroll'
 const marqueeEventNames = ['bounce', 'finish', 'start'];
 
 const XMLHttpRequestEventNames = [
-  'loadstart', 'progress', 'abort', 'error', 'load', 'progress', 'timeout', 'loadend',
-  'readystatechange'
+  'loadstart',
+  'progress',
+  'abort',
+  'error',
+  'load',
+  'progress',
+  'timeout',
+  'loadend',
+  'readystatechange',
 ];
-const IDBIndexEventNames =
-    ['upgradeneeded', 'complete', 'abort', 'success', 'error', 'blocked', 'versionchange', 'close'];
+const IDBIndexEventNames = [
+  'upgradeneeded',
+  'complete',
+  'abort',
+  'success',
+  'error',
+  'blocked',
+  'versionchange',
+  'close',
+];
 const websocketEventNames = ['close', 'error', 'open', 'message'];
 const workerEventNames = ['error', 'message'];
 
 export const eventNames = globalEventHandlersEventNames.concat(
-    webglEventNames, formEventNames, detailEventNames, documentEventNames, windowEventNames,
-    htmlElementEventNames, ieElementEventNames);
+  webglEventNames,
+  formEventNames,
+  detailEventNames,
+  documentEventNames,
+  windowEventNames,
+  htmlElementEventNames,
+  ieElementEventNames
+);
 
 export interface IgnoreProperty {
   target: any;
@@ -238,22 +295,29 @@ export interface IgnoreProperty {
 }
 
 export function filterProperties(
-    target: any, onProperties: string[], ignoreProperties: IgnoreProperty[]): string[] {
+  target: any,
+  onProperties: string[],
+  ignoreProperties: IgnoreProperty[]
+): string[] {
   if (!ignoreProperties || ignoreProperties.length === 0) {
     return onProperties;
   }
 
-  const tip: IgnoreProperty[] = ignoreProperties.filter(ip => ip.target === target);
+  const tip: IgnoreProperty[] = ignoreProperties.filter((ip) => ip.target === target);
   if (!tip || tip.length === 0) {
     return onProperties;
   }
 
   const targetIgnoreProperties: string[] = tip[0].ignoreProperties;
-  return onProperties.filter(op => targetIgnoreProperties.indexOf(op) === -1);
+  return onProperties.filter((op) => targetIgnoreProperties.indexOf(op) === -1);
 }
 
 export function patchFilteredProperties(
-    target: any, onProperties: string[], ignoreProperties: IgnoreProperty[], prototype?: any) {
+  target: any,
+  onProperties: string[],
+  ignoreProperties: IgnoreProperty[],
+  prototype?: any
+) {
   // check whether target is available, sometimes target will be undefined
   // because different browser or some 3rd party plugin.
   if (!target) {
@@ -276,14 +340,17 @@ export function propertyDescriptorPatch(api: _ZonePrivate, _global: any) {
   // for browsers that we can patch the descriptor:  Chrome & Firefox
   if (isBrowser) {
     const internalWindow: any = window;
-    const ignoreErrorProperties =
-        isIE ? [{target: internalWindow, ignoreProperties: ['error']}] : [];
+    const ignoreErrorProperties = isIE
+      ? [{target: internalWindow, ignoreProperties: ['error']}]
+      : [];
     // in IE/Edge, onProp not exist in window object, but in WindowPrototype
     // so we need to pass WindowPrototype to check onProp exist or not
     patchFilteredProperties(
-        internalWindow, eventNames.concat(['messageerror']),
-        ignoreProperties ? ignoreProperties.concat(ignoreErrorProperties) : ignoreProperties,
-        ObjectGetPrototypeOf(internalWindow));
+      internalWindow,
+      eventNames.concat(['messageerror']),
+      ignoreProperties ? ignoreProperties.concat(ignoreErrorProperties) : ignoreProperties,
+      ObjectGetPrototypeOf(internalWindow)
+    );
     patchFilteredProperties(Document.prototype, eventNames, ignoreProperties);
 
     if (typeof internalWindow['SVGElement'] !== 'undefined') {
@@ -293,10 +360,15 @@ export function propertyDescriptorPatch(api: _ZonePrivate, _global: any) {
     patchFilteredProperties(HTMLElement.prototype, eventNames, ignoreProperties);
     patchFilteredProperties(HTMLMediaElement.prototype, mediaElementEventNames, ignoreProperties);
     patchFilteredProperties(
-        HTMLFrameSetElement.prototype, windowEventNames.concat(frameSetEventNames),
-        ignoreProperties);
+      HTMLFrameSetElement.prototype,
+      windowEventNames.concat(frameSetEventNames),
+      ignoreProperties
+    );
     patchFilteredProperties(
-        HTMLBodyElement.prototype, windowEventNames.concat(frameSetEventNames), ignoreProperties);
+      HTMLBodyElement.prototype,
+      windowEventNames.concat(frameSetEventNames),
+      ignoreProperties
+    );
     patchFilteredProperties(HTMLFrameElement.prototype, frameEventNames, ignoreProperties);
     patchFilteredProperties(HTMLIFrameElement.prototype, frameEventNames, ignoreProperties);
 
@@ -317,8 +389,10 @@ export function propertyDescriptorPatch(api: _ZonePrivate, _global: any) {
   const XMLHttpRequestEventTarget = _global['XMLHttpRequestEventTarget'];
   if (XMLHttpRequestEventTarget) {
     patchFilteredProperties(
-        XMLHttpRequestEventTarget && XMLHttpRequestEventTarget.prototype, XMLHttpRequestEventNames,
-        ignoreProperties);
+      XMLHttpRequestEventTarget && XMLHttpRequestEventTarget.prototype,
+      XMLHttpRequestEventNames,
+      ignoreProperties
+    );
   }
   if (typeof IDBIndex !== 'undefined') {
     patchFilteredProperties(IDBIndex.prototype, IDBIndexEventNames, ignoreProperties);

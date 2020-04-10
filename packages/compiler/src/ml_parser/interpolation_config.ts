@@ -9,7 +9,7 @@
 import {assertInterpolationSymbols} from '../assertions';
 
 export class InterpolationConfig {
-  static fromArray(markers: [string, string]|null): InterpolationConfig {
+  static fromArray(markers: [string, string] | null): InterpolationConfig {
     if (!markers) {
       return DEFAULT_INTERPOLATION_CONFIG;
     }
@@ -21,5 +21,7 @@ export class InterpolationConfig {
   constructor(public start: string, public end: string) {}
 }
 
-export const DEFAULT_INTERPOLATION_CONFIG: InterpolationConfig =
-    new InterpolationConfig('{{', '}}');
+export const DEFAULT_INTERPOLATION_CONFIG: InterpolationConfig = new InterpolationConfig(
+  '{{',
+  '}}'
+);

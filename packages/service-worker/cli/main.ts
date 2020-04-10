@@ -11,7 +11,6 @@ const fs = require('fs');
 const path = require('path');
 import {NodeFilesystem} from './filesystem';
 
-
 const cwd = process.cwd();
 
 const distDir = path.join(cwd, process.argv[2]);
@@ -23,7 +22,7 @@ const configParsed = JSON.parse(fs.readFileSync(config).toString());
 const filesystem = new NodeFilesystem(distDir);
 const gen = new Generator(filesystem, baseHref);
 
-(async() => {
+(async () => {
   const control = await gen.process(configParsed);
   await filesystem.write('/ngsw.json', JSON.stringify(control, null, 2));
 })();

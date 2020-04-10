@@ -21,18 +21,24 @@ const _expParser = new ExpressionParser(new ExpressionLexer());
 export type VisitNodeFn = (html: html.Node, i18n: i18n.Node) => i18n.Node;
 
 export interface I18nMessageFactory {
-  (nodes: html.Node[], meaning: string|undefined, description: string|undefined,
-   customId: string|undefined, visitNodeFn?: VisitNodeFn): i18n.Message;
+  (
+    nodes: html.Node[],
+    meaning: string | undefined,
+    description: string | undefined,
+    customId: string | undefined,
+    visitNodeFn?: VisitNodeFn
+  ): i18n.Message;
 }
 
 /**
  * Returns a function converting html nodes to an i18n Message given an interpolationConfig
  */
-export function createI18nMessageFactory(interpolationConfig: InterpolationConfig):
-    I18nMessageFactory {
+export function createI18nMessageFactory(
+  interpolationConfig: InterpolationConfig
+): I18nMessageFactory {
   const visitor = new _I18nVisitor(_expParser, interpolationConfig);
   return (nodes, meaning, description, customId, visitNodeFn) =>
-             visitor.toI18nMessage(nodes, meaning, description, customId, visitNodeFn);
+    visitor.toI18nMessage(nodes, meaning, description, customId, visitNodeFn);
 }
 
 interface I18nMessageVisitorContext {
@@ -50,12 +56,17 @@ function noopVisitNodeFn(_html: html.Node, i18n: i18n.Node): i18n.Node {
 
 class _I18nVisitor implements html.Visitor {
   constructor(
-      private _expressionParser: ExpressionParser,
-      private _interpolationConfig: InterpolationConfig) {}
+    private _expressionParser: ExpressionParser,
+    private _interpolationConfig: InterpolationConfig
+  ) {}
 
   public toI18nMessage(
-      nodes: html.Node[], meaning = '', description = '', customId = '',
-      visitNodeFn: VisitNodeFn|undefined): i18n.Message {
+    nodes: html.Node[],
+    meaning = '',
+    description = '',
+    customId = '',
+    visitNodeFn: VisitNodeFn | undefined
+  ): i18n.Message {
     const context: I18nMessageVisitorContext = {
       isIcu: nodes.length == 1 && nodes[0] instanceof html.Expansion,
       icuDepth: 0,
@@ -68,21 +79,29 @@ class _I18nVisitor implements html.Visitor {
     const i18nodes: i18n.Node[] = html.visitAll(this, nodes, context);
 
     return new i18n.Message(
-        i18nodes, context.placeholderToContent, context.placeholderToMessage, meaning, description,
-        customId);
+      i18nodes,
+      context.placeholderToContent,
+      context.placeholderToMessage,
+      meaning,
+      description,
+      customId
+    );
   }
 
   visitElement(el: html.Element, context: I18nMessageVisitorContext): i18n.Node {
     const children = html.visitAll(this, el.children, context);
     const attrs: {[k: string]: string} = {};
-    el.attrs.forEach(attr => {
+    el.attrs.forEach((attr) => {
       // Do not visit the attributes, translatable ones are top-level ASTs
       attrs[attr.name] = attr.value;
     });
 
     const isVoid: boolean = getHtmlTagDefinition(el.name).isVoid;
-    const startPhName =
-        context.placeholderRegistry.getStartTagPlaceholderName(el.name, attrs, isVoid);
+    const startPhName = context.placeholderRegistry.getStartTagPlaceholderName(
+      el.name,
+      attrs,
+      isVoid
+    );
     context.placeholderToContent[startPhName] = el.sourceSpan!.toString();
 
     let closePhName = '';
@@ -93,7 +112,14 @@ class _I18nVisitor implements html.Visitor {
     }
 
     const node = new i18n.TagPlaceholder(
-        el.name, attrs, startPhName, closePhName, children, isVoid, el.sourceSpan!);
+      el.name,
+      attrs,
+      startPhName,
+      closePhName,
+      children,
+      isVoid,
+      el.sourceSpan!
+    );
     return context.visitNodeFn(el, node);
   }
 
@@ -107,7 +133,7 @@ class _I18nVisitor implements html.Visitor {
     return context.visitNodeFn(text, node);
   }
 
-  visitComment(comment: html.Comment, context: I18nMessageVisitorContext): i18n.Node|null {
+  visitComment(comment: html.Comment, context: I18nMessageVisitorContext): i18n.Node | null {
     return null;
   }
 
@@ -117,7 +143,9 @@ class _I18nVisitor implements html.Visitor {
     const i18nIcu = new i18n.Icu(icu.switchValue, icu.type, i18nIcuCases, icu.sourceSpan);
     icu.cases.forEach((caze): void => {
       i18nIcuCases[caze.value] = new i18n.Container(
-          caze.expression.map((node) => node.visit(this, context)), caze.expSourceSpan);
+        caze.expression.map((node) => node.visit(this, context)),
+        caze.expSourceSpan
+      );
     });
     context.icuDepth--;
 
@@ -146,9 +174,15 @@ class _I18nVisitor implements html.Visitor {
   }
 
   private _visitTextWithInterpolation(
-      text: string, sourceSpan: ParseSourceSpan, context: I18nMessageVisitorContext): i18n.Node {
+    text: string,
+    sourceSpan: ParseSourceSpan,
+    context: I18nMessageVisitorContext
+  ): i18n.Node {
     const splitInterpolation = this._expressionParser.splitInterpolation(
-        text, sourceSpan.start.toString(), this._interpolationConfig);
+      text,
+      sourceSpan.start.toString(),
+      this._interpolationConfig
+    );
 
     if (!splitInterpolation) {
       // No expression, return a single text
@@ -183,8 +217,7 @@ class _I18nVisitor implements html.Visitor {
   }
 }
 
-const _CUSTOM_PH_EXP =
-    /\/\/[\s\S]*i18n[\s\S]*\([\s\S]*ph[\s\S]*=[\s\S]*("|')([\s\S]*?)\1[\s\S]*\)/g;
+const _CUSTOM_PH_EXP = /\/\/[\s\S]*i18n[\s\S]*\([\s\S]*ph[\s\S]*=[\s\S]*("|')([\s\S]*?)\1[\s\S]*\)/g;
 
 function _extractPlaceholderName(input: string): string {
   return input.split(_CUSTOM_PH_EXP)[2];

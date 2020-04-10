@@ -12,8 +12,6 @@ import * as cluster from 'cluster';
 
 import {MessageFromWorker, MessageToWorker} from './api';
 
-
-
 /** Expose a `Promise` instance as well as APIs for resolving/rejecting it. */
 export class Deferred<T> {
   /**
@@ -72,9 +70,10 @@ export const sendMessageToWorker = (workerId: number, msg: MessageToWorker): voi
 
   const worker = cluster.workers[workerId];
 
-  if ((worker === undefined) || worker.isDead() || !worker.isConnected()) {
+  if (worker === undefined || worker.isDead() || !worker.isConnected()) {
     throw new Error(
-        'Unable to send message to worker process: Recipient does not exist or has disconnected.');
+      'Unable to send message to worker process: Recipient does not exist or has disconnected.'
+    );
   }
 
   worker.send(msg);

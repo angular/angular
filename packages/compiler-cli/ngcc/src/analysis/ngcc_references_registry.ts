@@ -30,7 +30,7 @@ export class NgccReferencesRegistry implements ReferencesRegistry {
    * @param references A collection of references to register.
    */
   add(source: ts.Declaration, ...references: Reference<ts.Declaration>[]): void {
-    references.forEach(ref => {
+    references.forEach((ref) => {
       // Only store relative references. We are not interested in literals.
       if (ref.bestGuessOwningModule === null && hasNameIdentifier(ref.node)) {
         const declaration = this.host.getDeclarationOfIdentifier(ref.node.name);

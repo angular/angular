@@ -8,8 +8,14 @@
 
 import * as ts from 'typescript';
 
-import {BazelAndG3Options, I18nOptions, LegacyNgcOptions, MiscOptions, NgcCompatibilityOptions, StrictTemplateOptions} from './public_options';
-
+import {
+  BazelAndG3Options,
+  I18nOptions,
+  LegacyNgcOptions,
+  MiscOptions,
+  NgcCompatibilityOptions,
+  StrictTemplateOptions,
+} from './public_options';
 
 /**
  * Non-public options which are useful during testing of the compiler.
@@ -54,6 +60,12 @@ export interface TestOnlyOptions {
  *
  * Also includes a few miscellaneous options.
  */
-export interface NgCompilerOptions extends ts.CompilerOptions, LegacyNgcOptions, BazelAndG3Options,
-                                           NgcCompatibilityOptions, StrictTemplateOptions,
-                                           TestOnlyOptions, I18nOptions, MiscOptions {}
+export interface NgCompilerOptions
+  extends ts.CompilerOptions,
+    LegacyNgcOptions,
+    BazelAndG3Options,
+    NgcCompatibilityOptions,
+    StrictTemplateOptions,
+    TestOnlyOptions,
+    I18nOptions,
+    MiscOptions {}

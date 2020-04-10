@@ -7,8 +7,11 @@
  */
 
 import {MessageBus} from '@angular/platform-webworker/src/web_workers/shared/message_bus';
-import {PostMessageBus, PostMessageBusSink, PostMessageBusSource} from '@angular/platform-webworker/src/web_workers/shared/post_message_bus';
-
+import {
+  PostMessageBus,
+  PostMessageBusSink,
+  PostMessageBusSource,
+} from '@angular/platform-webworker/src/web_workers/shared/post_message_bus';
 
 /*
  * Returns a PostMessageBus that's sink is connected to its own source.
@@ -24,7 +27,7 @@ export function createConnectedMessageBus(): MessageBus {
 
 class MockPostMessage {
   // TODO(issue/24571): remove '!'.
-  private _listener !: EventListener;
+  private _listener!: EventListener;
 
   addEventListener(type: string, listener: EventListener, useCapture?: boolean): void {
     if (type === 'message') {
@@ -32,5 +35,7 @@ class MockPostMessage {
     }
   }
 
-  postMessage(data: any, transfer?: [Transferable]): void { this._listener(<any>{data: data}); }
+  postMessage(data: any, transfer?: [Transferable]): void {
+    this._listener(<any>{data: data});
+  }
 }

@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {Element, Expansion, ExpansionCase, Node, Text, visitAll} from '@angular/compiler';
 
 import {BaseVisitor} from '../base_visitor';
@@ -15,8 +16,8 @@ import {MessageRenderer} from './message_renderer';
 
 interface MessageSerializerConfig {
   inlineElements: string[];
-  placeholder?: {elementName: string; nameAttribute: string; bodyAttribute?: string;};
-  placeholderContainer?: {elementName: string; startAttribute: string; endAttribute: string;};
+  placeholder?: {elementName: string; nameAttribute: string; bodyAttribute?: string};
+  placeholderContainer?: {elementName: string; startAttribute: string; endAttribute: string};
 }
 
 /**
@@ -39,12 +40,14 @@ export class MessageSerializer<T> extends BaseVisitor {
   visitElement(element: Element): void {
     if (this.config.placeholder && element.name === this.config.placeholder.elementName) {
       const name = getAttrOrThrow(element, this.config.placeholder.nameAttribute);
-      const body = this.config.placeholder.bodyAttribute &&
-          getAttribute(element, this.config.placeholder.bodyAttribute);
+      const body =
+        this.config.placeholder.bodyAttribute &&
+        getAttribute(element, this.config.placeholder.bodyAttribute);
       this.visitPlaceholder(name, body);
     } else if (
-        this.config.placeholderContainer &&
-        element.name === this.config.placeholderContainer.elementName) {
+      this.config.placeholderContainer &&
+      element.name === this.config.placeholderContainer.elementName
+    ) {
       const start = getAttrOrThrow(element, this.config.placeholderContainer.startAttribute);
       const end = getAttrOrThrow(element, this.config.placeholderContainer.endAttribute);
       this.visitPlaceholderContainer(start, element.children, end);
@@ -55,7 +58,9 @@ export class MessageSerializer<T> extends BaseVisitor {
     }
   }
 
-  visitText(text: Text): void { this.renderer.text(text.value); }
+  visitText(text: Text): void {
+    this.renderer.text(text.value);
+  }
 
   visitExpansion(expansion: Expansion): void {
     this.renderer.startIcu();
@@ -98,7 +103,7 @@ export class MessageSerializer<T> extends BaseVisitor {
     }
   }
 
-  visitPlaceholder(name: string, body: string|undefined): void {
+  visitPlaceholder(name: string, body: string | undefined): void {
     this.renderer.placeholder(name, body);
   }
 
@@ -109,6 +114,6 @@ export class MessageSerializer<T> extends BaseVisitor {
   }
 
   private isPlaceholderContainer(node: Node): boolean {
-    return node instanceof Element && node.name === this.config.placeholderContainer !.elementName;
+    return node instanceof Element && node.name === this.config.placeholderContainer!.elementName;
   }
 }

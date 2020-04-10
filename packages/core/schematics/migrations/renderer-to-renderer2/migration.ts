@@ -29,11 +29,12 @@ export function replaceImport(node: ts.NamedImports, oldImport: string, newImpor
   }
 
   return ts.updateNamedImports(node, [
-    ...node.elements.filter(current => current !== existingImport),
+    ...node.elements.filter((current) => current !== existingImport),
     // Create a new import while trying to preserve the alias of the old one.
     ts.createImportSpecifier(
-        existingImport.propertyName ? ts.createIdentifier(newImport) : undefined,
-        existingImport.propertyName ? existingImport.name : ts.createIdentifier(newImport))
+      existingImport.propertyName ? ts.createIdentifier(newImport) : undefined,
+      existingImport.propertyName ? existingImport.name : ts.createIdentifier(newImport)
+    ),
   ]);
 }
 
@@ -41,8 +42,10 @@ export function replaceImport(node: ts.NamedImports, oldImport: string, newImpor
  * Migrates a function call expression from `Renderer` to `Renderer2`.
  * Returns null if the expression should be dropped.
  */
-export function migrateExpression(node: ts.CallExpression, typeChecker: ts.TypeChecker):
-    {node: ts.Node | null, requiredHelpers?: HelperFunction[]} {
+export function migrateExpression(
+  node: ts.CallExpression,
+  typeChecker: ts.TypeChecker
+): {node: ts.Node | null; requiredHelpers?: HelperFunction[]} {
   if (isPropertyAccessCallExpression(node)) {
     switch (node.expression.name.getText()) {
       case 'setElementProperty':
@@ -67,50 +70,58 @@ export function migrateExpression(node: ts.CallExpression, typeChecker: ts.TypeC
         return {
           node: switchToHelperCall(node, HelperFunction.setElementAttribute, node.arguments),
           requiredHelpers: [
-            HelperFunction.any, HelperFunction.splitNamespace, HelperFunction.setElementAttribute
-          ]
+            HelperFunction.any,
+            HelperFunction.splitNamespace,
+            HelperFunction.setElementAttribute,
+          ],
         };
       case 'createElement':
         return {
           node: switchToHelperCall(node, HelperFunction.createElement, node.arguments.slice(0, 2)),
-          requiredHelpers:
-              [HelperFunction.any, HelperFunction.splitNamespace, HelperFunction.createElement]
+          requiredHelpers: [
+            HelperFunction.any,
+            HelperFunction.splitNamespace,
+            HelperFunction.createElement,
+          ],
         };
       case 'createText':
         return {
           node: switchToHelperCall(node, HelperFunction.createText, node.arguments.slice(0, 2)),
-          requiredHelpers: [HelperFunction.any, HelperFunction.createText]
+          requiredHelpers: [HelperFunction.any, HelperFunction.createText],
         };
       case 'createTemplateAnchor':
         return {
           node: switchToHelperCall(
-              node, HelperFunction.createTemplateAnchor, node.arguments.slice(0, 1)),
-          requiredHelpers: [HelperFunction.any, HelperFunction.createTemplateAnchor]
+            node,
+            HelperFunction.createTemplateAnchor,
+            node.arguments.slice(0, 1)
+          ),
+          requiredHelpers: [HelperFunction.any, HelperFunction.createTemplateAnchor],
         };
       case 'projectNodes':
         return {
           node: switchToHelperCall(node, HelperFunction.projectNodes, node.arguments),
-          requiredHelpers: [HelperFunction.any, HelperFunction.projectNodes]
+          requiredHelpers: [HelperFunction.any, HelperFunction.projectNodes],
         };
       case 'animate':
         return {
           node: migrateAnimateCall(),
-          requiredHelpers: [HelperFunction.any, HelperFunction.animate]
+          requiredHelpers: [HelperFunction.any, HelperFunction.animate],
         };
       case 'destroyView':
         return {
           node: switchToHelperCall(node, HelperFunction.destroyView, [node.arguments[1]]),
-          requiredHelpers: [HelperFunction.any, HelperFunction.destroyView]
+          requiredHelpers: [HelperFunction.any, HelperFunction.destroyView],
         };
       case 'detachView':
         return {
           node: switchToHelperCall(node, HelperFunction.detachView, [node.arguments[0]]),
-          requiredHelpers: [HelperFunction.any, HelperFunction.detachView]
+          requiredHelpers: [HelperFunction.any, HelperFunction.detachView],
         };
       case 'attachViewAfter':
         return {
           node: switchToHelperCall(node, HelperFunction.attachViewAfter, node.arguments),
-          requiredHelpers: [HelperFunction.any, HelperFunction.attachViewAfter]
+          requiredHelpers: [HelperFunction.any, HelperFunction.attachViewAfter],
         };
     }
   }
@@ -126,7 +137,10 @@ function isPropertyAccessCallExpression(node: ts.Node): node is PropertyAccessCa
 /** Renames a method call while keeping all of the parameters in place. */
 function renameMethodCall(node: PropertyAccessCallExpression, newName: string): ts.CallExpression {
   const newExpression = ts.updatePropertyAccess(
-      node.expression, node.expression.expression, ts.createIdentifier(newName));
+    node.expression,
+    node.expression.expression,
+    ts.createIdentifier(newName)
+  );
 
   return ts.updateCall(node, newExpression, node.typeArguments, node.arguments);
 }
@@ -152,19 +166,23 @@ function migrateSetElementClass(node: PropertyAccessCallExpression): ts.Node {
   // Clone so we don't mutate by accident. Note that we assume that
   // the user's code is providing all three required arguments.
   const outputMethodArgs = node.arguments.slice();
-  const isAddArgument = outputMethodArgs.pop() !;
+  const isAddArgument = outputMethodArgs.pop()!;
   const createRendererCall = (isAdd: boolean) => {
     const innerExpression = node.expression.expression;
-    const topExpression =
-        ts.createPropertyAccess(innerExpression, isAdd ? 'addClass' : 'removeClass');
+    const topExpression = ts.createPropertyAccess(
+      innerExpression,
+      isAdd ? 'addClass' : 'removeClass'
+    );
     return ts.createCall(topExpression, [], node.arguments.slice(0, 2));
   };
 
   // If the call has the `isAdd` argument as a literal boolean, we can map it directly to
   // `addClass` or `removeClass`. Note that we can't use the type checker here, because it
   // won't tell us whether the value resolves to true or false.
-  if (isAddArgument.kind === ts.SyntaxKind.TrueKeyword ||
-      isAddArgument.kind === ts.SyntaxKind.FalseKeyword) {
+  if (
+    isAddArgument.kind === ts.SyntaxKind.TrueKeyword ||
+    isAddArgument.kind === ts.SyntaxKind.FalseKeyword
+  ) {
     return createRendererCall(isAddArgument.kind === ts.SyntaxKind.TrueKeyword);
   }
 
@@ -178,14 +196,19 @@ function migrateSetElementClass(node: PropertyAccessCallExpression): ts.Node {
  * `value == null ? removeStyle(el, key) : setStyle(el, key, value)`.
  */
 function migrateSetElementStyle(
-    node: PropertyAccessCallExpression, typeChecker: ts.TypeChecker): ts.Node {
+  node: PropertyAccessCallExpression,
+  typeChecker: ts.TypeChecker
+): ts.Node {
   const args = node.arguments;
   const addMethodName = 'setStyle';
   const removeMethodName = 'removeStyle';
-  const lastArgType = args[2] ?
-      typeChecker.typeToString(
-          typeChecker.getTypeAtLocation(args[2]), node, ts.TypeFormatFlags.AddUndefined) :
-      null;
+  const lastArgType = args[2]
+    ? typeChecker.typeToString(
+        typeChecker.getTypeAtLocation(args[2]),
+        node,
+        ts.TypeFormatFlags.AddUndefined
+      )
+    : null;
 
   // Note that for a literal null, TS considers it a `NullKeyword`,
   // whereas a literal `undefined` is just an Identifier.
@@ -198,8 +221,13 @@ function migrateSetElementStyle(
   } else if (args.length === 3) {
     // We need the checks for string literals, because the type of something
     // like `"blue"` is the literal `blue`, not `string`.
-    if (lastArgType === 'string' || lastArgType === 'number' || ts.isStringLiteral(args[2]) ||
-        ts.isNoSubstitutionTemplateLiteral(args[2]) || ts.isNumericLiteral(args[2])) {
+    if (
+      lastArgType === 'string' ||
+      lastArgType === 'number' ||
+      ts.isStringLiteral(args[2]) ||
+      ts.isNoSubstitutionTemplateLiteral(args[2]) ||
+      ts.isNumericLiteral(args[2])
+    ) {
       // If we've got three arguments and the last one is a string literal or a number, we
       // can safely rename to `setStyle`.
       return renameMethodCall(node, addMethodName);
@@ -208,8 +236,9 @@ function migrateSetElementStyle(
       // `value == null ? removeStyle(el, key) : setStyle(el, key, value)`
       const condition = ts.createBinary(args[2], ts.SyntaxKind.EqualsEqualsToken, ts.createNull());
       const whenNullCall = renameMethodCall(
-          ts.createCall(node.expression, [], args.slice(0, 2)) as PropertyAccessCallExpression,
-          removeMethodName);
+        ts.createCall(node.expression, [], args.slice(0, 2)) as PropertyAccessCallExpression,
+        removeMethodName
+      );
       return ts.createConditional(condition, whenNullCall, renameMethodCall(node, addMethodName));
     }
   }
@@ -230,13 +259,16 @@ function migrateInvokeElementMethod(node: ts.CallExpression): ts.Node {
     // If the name is a static string and the arguments are an array literal,
     // we can safely convert the node into a call expression.
     const expression = ts.createPropertyAccess(
-        target, (name as ts.StringLiteral | ts.NoSubstitutionTemplateLiteral).text);
+      target,
+      (name as ts.StringLiteral | ts.NoSubstitutionTemplateLiteral).text
+    );
     const callArguments = args ? (args as ts.ArrayLiteralExpression).elements : [];
     return ts.createCall(expression, [], callArguments);
   } else {
     // Otherwise create an expression in the form of `(target as any)[name].apply(target, args)`.
     const asExpression = ts.createParen(
-        ts.createAsExpression(target, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)));
+      ts.createAsExpression(target, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword))
+    );
     const elementAccess = ts.createElementAccess(asExpression, name);
     const applyExpression = ts.createPropertyAccess(elementAccess, 'apply');
     return ts.createCall(applyExpression, [], args ? [target, args] : [target]);
@@ -262,7 +294,9 @@ function migrateAnimateCall() {
  * @param args Arguments that should be passed into the helper after the renderer argument.
  */
 function switchToHelperCall(
-    node: PropertyAccessCallExpression, helper: HelperFunction,
-    args: ts.Expression[] | ts.NodeArray<ts.Expression>): ts.Node {
+  node: PropertyAccessCallExpression,
+  helper: HelperFunction,
+  args: ts.Expression[] | ts.NodeArray<ts.Expression>
+): ts.Node {
   return ts.createCall(ts.createIdentifier(helper), [], [node.expression.expression, ...args]);
 }

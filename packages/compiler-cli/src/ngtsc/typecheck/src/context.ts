@@ -14,7 +14,13 @@ import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 
-import {TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig, TypeCtorMetadata} from './api';
+import {
+  TemplateSourceMapping,
+  TypeCheckableDirectiveMeta,
+  TypeCheckBlockMetadata,
+  TypeCheckingConfig,
+  TypeCtorMetadata,
+} from './api';
 import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
 import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
@@ -24,8 +30,6 @@ import {TemplateSourceManager} from './source';
 import {generateTypeCheckBlock, requiresInlineTypeCheckBlock} from './type_check_block';
 import {TypeCheckFile} from './type_check_file';
 import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor';
-
-
 
 /**
  * A template type checking context for a program.
@@ -38,8 +42,11 @@ export class TypeCheckContext {
   private typeCheckFile: TypeCheckFile;
 
   constructor(
-      private config: TypeCheckingConfig, private refEmitter: ReferenceEmitter,
-      private reflector: ReflectionHost, typeCheckFilePath: AbsoluteFsPath) {
+    private config: TypeCheckingConfig,
+    private refEmitter: ReferenceEmitter,
+    private reflector: ReflectionHost,
+    typeCheckFilePath: AbsoluteFsPath
+  ) {
     this.typeCheckFile = new TypeCheckFile(typeCheckFilePath, config, refEmitter, reflector);
   }
 
@@ -70,11 +77,13 @@ export class TypeCheckContext {
    * @param matcher `SelectorMatcher` which tracks directives that are in scope for this template.
    */
   addTemplate(
-      ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
-      pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
-      schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping,
-      file: ParseSourceFile): void {
+    ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+    boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
+    pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
+    schemas: SchemaMetadata[],
+    sourceMapping: TemplateSourceMapping,
+    file: ParseSourceFile
+  ): void {
     const id = this.sourceManager.captureSource(sourceMapping, file);
     // Get all of the directives used in the template and record type constructors for all of them.
     for (const dir of boundTarget.getUsedDirectives()) {
@@ -106,7 +115,11 @@ export class TypeCheckContext {
     } else {
       // The class can be type-checked externally as normal.
       this.typeCheckFile.addTypeCheckBlock(
-          ref, tcbMetadata, this.domSchemaChecker, this.oobRecorder);
+        ref,
+        tcbMetadata,
+        this.domSchemaChecker,
+        this.oobRecorder
+      );
     }
   }
 
@@ -114,8 +127,10 @@ export class TypeCheckContext {
    * Record a type constructor for the given `node` with the given `ctorMetadata`.
    */
   addInlineTypeCtor(
-      sf: ts.SourceFile, ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      ctorMeta: TypeCtorMetadata): void {
+    sf: ts.SourceFile,
+    ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+    ctorMeta: TypeCtorMetadata
+  ): void {
     if (this.typeCtorPending.has(ref.node)) {
       return;
     }
@@ -153,7 +168,10 @@ export class TypeCheckContext {
     // original source text into chunks at these split points, where code will be inserted between
     // the chunks.
     const ops = this.opMap.get(sf)!.sort(orderOps);
-    const textParts = splitStringAtPoints(sf.text, ops.map(op => op.splitPoint));
+    const textParts = splitStringAtPoints(
+      sf.text,
+      ops.map((op) => op.splitPoint)
+    );
 
     // Use a `ts.Printer` to generate source code.
     const printer = ts.createPrinter({omitTrailingSemicolon: true});
@@ -169,9 +187,10 @@ export class TypeCheckContext {
     });
 
     // Write out the imports that need to be added to the beginning of the file.
-    let imports = importManager.getAllImports(sf.fileName)
-                      .map(i => `import * as ${i.qualifier} from '${i.specifier}';`)
-                      .join('\n');
+    let imports = importManager
+      .getAllImports(sf.fileName)
+      .map((i) => `import * as ${i.qualifier} from '${i.specifier}';`)
+      .join('\n');
     code = imports + '\n' + code;
 
     // Parse the new source file and return it.
@@ -179,10 +198,12 @@ export class TypeCheckContext {
   }
 
   calculateTemplateDiagnostics(
-      originalProgram: ts.Program, originalHost: ts.CompilerHost,
-      originalOptions: ts.CompilerOptions): {
-    diagnostics: ts.Diagnostic[],
-    program: ts.Program,
+    originalProgram: ts.Program,
+    originalHost: ts.CompilerHost,
+    originalOptions: ts.CompilerOptions
+  ): {
+    diagnostics: ts.Diagnostic[];
+    program: ts.Program;
   } {
     const typeCheckSf = this.typeCheckFile.render();
     // First, build the map of original source files.
@@ -232,15 +253,17 @@ export class TypeCheckContext {
   }
 
   private addInlineTypeCheckBlock(
-      ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      tcbMeta: TypeCheckBlockMetadata): void {
+    ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+    tcbMeta: TypeCheckBlockMetadata
+  ): void {
     const sf = ref.node.getSourceFile();
     if (!this.opMap.has(sf)) {
       this.opMap.set(sf, []);
     }
     const ops = this.opMap.get(sf)!;
-    ops.push(new TcbOp(
-        ref, tcbMeta, this.config, this.reflector, this.domSchemaChecker, this.oobRecorder));
+    ops.push(
+      new TcbOp(ref, tcbMeta, this.config, this.reflector, this.domSchemaChecker, this.oobRecorder)
+    );
   }
 }
 
@@ -261,8 +284,12 @@ interface Op {
   /**
    * Execute the operation and return the generated code as text.
    */
-  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
-      string;
+  execute(
+    im: ImportManager,
+    sf: ts.SourceFile,
+    refEmitter: ReferenceEmitter,
+    printer: ts.Printer
+  ): string;
 }
 
 /**
@@ -270,10 +297,13 @@ interface Op {
  */
 class TcbOp implements Op {
   constructor(
-      readonly ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      readonly meta: TypeCheckBlockMetadata, readonly config: TypeCheckingConfig,
-      readonly reflector: ReflectionHost, readonly domSchemaChecker: DomSchemaChecker,
-      readonly oobRecorder: OutOfBandDiagnosticRecorder) {}
+    readonly ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+    readonly meta: TypeCheckBlockMetadata,
+    readonly config: TypeCheckingConfig,
+    readonly reflector: ReflectionHost,
+    readonly domSchemaChecker: DomSchemaChecker,
+    readonly oobRecorder: OutOfBandDiagnosticRecorder
+  ) {}
 
   /**
    * Type check blocks are inserted immediately after the end of the component class.
@@ -282,12 +312,22 @@ class TcbOp implements Op {
     return this.ref.node.end + 1;
   }
 
-  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
-      string {
+  execute(
+    im: ImportManager,
+    sf: ts.SourceFile,
+    refEmitter: ReferenceEmitter,
+    printer: ts.Printer
+  ): string {
     const env = new Environment(this.config, im, refEmitter, this.reflector, sf);
     const fnName = ts.createIdentifier(`_tcb_${this.ref.node.pos}`);
     const fn = generateTypeCheckBlock(
-        env, this.ref, fnName, this.meta, this.domSchemaChecker, this.oobRecorder);
+      env,
+      this.ref,
+      fnName,
+      this.meta,
+      this.domSchemaChecker,
+      this.oobRecorder
+    );
     return printer.printNode(ts.EmitHint.Unspecified, fn, sf);
   }
 }
@@ -297,8 +337,9 @@ class TcbOp implements Op {
  */
 class TypeCtorOp implements Op {
   constructor(
-      readonly ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      readonly meta: TypeCtorMetadata) {}
+    readonly ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+    readonly meta: TypeCtorMetadata
+  ) {}
 
   /**
    * Type constructor operations are inserted immediately before the end of the directive class.
@@ -307,8 +348,12 @@ class TypeCtorOp implements Op {
     return this.ref.node.end - 1;
   }
 
-  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
-      string {
+  execute(
+    im: ImportManager,
+    sf: ts.SourceFile,
+    refEmitter: ReferenceEmitter,
+    printer: ts.Printer
+  ): string {
     const tcb = generateInlineTypeCtor(this.ref.node, this.meta);
     return printer.printNode(ts.EmitHint.Unspecified, tcb, sf);
   }

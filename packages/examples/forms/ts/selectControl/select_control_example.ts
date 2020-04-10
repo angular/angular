@@ -20,9 +20,9 @@ import {Component} from '@angular/core';
         </option>
       </select>
     </form>
-    
-     <p>Form value: {{ f.value | json }}</p>
-     <!-- example value: {state: {name: 'New York', abbrev: 'NY'} } -->
+
+    <p>Form value: {{ f.value | json }}</p>
+    <!-- example value: {state: {name: 'New York', abbrev: 'NY'} } -->
   `,
 })
 export class SelectControlComp {

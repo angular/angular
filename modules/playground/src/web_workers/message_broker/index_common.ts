@@ -16,8 +16,14 @@ export class App {
   constructor(private _serviceBrokerFactory: ServiceMessageBrokerFactory) {
     const broker = _serviceBrokerFactory.createMessageBroker(ECHO_CHANNEL, false);
     broker.registerMethod(
-        'echo', [SerializerTypes.PRIMITIVE], this._echo, SerializerTypes.PRIMITIVE);
+      'echo',
+      [SerializerTypes.PRIMITIVE],
+      this._echo,
+      SerializerTypes.PRIMITIVE
+    );
   }
 
-  private _echo(val: string) { return new Promise((res) => res(val)); }
+  private _echo(val: string) {
+    return new Promise((res) => res(val));
+  }
 }

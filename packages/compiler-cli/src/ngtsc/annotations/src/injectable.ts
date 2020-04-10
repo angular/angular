@@ -6,47 +6,79 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileInjectable as compileIvyInjectable, Expression, Identifiers, LiteralExpr, R3DependencyMetadata, R3FactoryTarget, R3InjectableMetadata, R3ResolvedDependencyType, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {
+  compileInjectable as compileIvyInjectable,
+  Expression,
+  Identifiers,
+  LiteralExpr,
+  R3DependencyMetadata,
+  R3FactoryTarget,
+  R3InjectableMetadata,
+  R3ResolvedDependencyType,
+  Statement,
+  WrappedNodeExpr,
+} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder} from '../../imports';
 import {InjectableClassRegistry} from '../../metadata';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
+import {
+  AnalysisOutput,
+  CompileResult,
+  DecoratorHandler,
+  DetectResult,
+  HandlerPrecedence,
+} from '../../transform';
 
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, unwrapConstructorDependencies, unwrapForwardRef, validateConstructorDependencies, wrapTypeReference} from './util';
+import {
+  findAngularDecorator,
+  getConstructorDependencies,
+  getValidConstructorDependencies,
+  isAngularCore,
+  unwrapConstructorDependencies,
+  unwrapForwardRef,
+  validateConstructorDependencies,
+  wrapTypeReference,
+} from './util';
 
 export interface InjectableHandlerData {
   meta: R3InjectableMetadata;
-  metadataStmt: Statement|null;
-  ctorDeps: R3DependencyMetadata[]|'invalid'|null;
+  metadataStmt: Statement | null;
+  ctorDeps: R3DependencyMetadata[] | 'invalid' | null;
   needsFactory: boolean;
 }
 
 /**
  * Adapts the `compileIvyInjectable` compiler for `@Injectable` decorators to the Ivy compiler.
  */
-export class InjectableDecoratorHandler implements
-    DecoratorHandler<Decorator, InjectableHandlerData, unknown> {
+export class InjectableDecoratorHandler
+  implements DecoratorHandler<Decorator, InjectableHandlerData, unknown> {
   constructor(
-      private reflector: ReflectionHost, private defaultImportRecorder: DefaultImportRecorder,
-      private isCore: boolean, private strictCtorDeps: boolean,
-      private injectableRegistry: InjectableClassRegistry,
-      /**
-       * What to do if the injectable already contains a ɵprov property.
-       *
-       * If true then an error diagnostic is reported.
-       * If false then there is no error and a new ɵprov property is not added.
-       */
-      private errorOnDuplicateProv = true) {}
+    private reflector: ReflectionHost,
+    private defaultImportRecorder: DefaultImportRecorder,
+    private isCore: boolean,
+    private strictCtorDeps: boolean,
+    private injectableRegistry: InjectableClassRegistry,
+    /**
+     * What to do if the injectable already contains a ɵprov property.
+     *
+     * If true then an error diagnostic is reported.
+     * If false then there is no error and a new ɵprov property is not added.
+     */
+    private errorOnDuplicateProv = true
+  ) {}
 
   readonly precedence = HandlerPrecedence.SHARED;
   readonly name = InjectableDecoratorHandler.name;
 
-  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
+  detect(
+    node: ClassDeclaration,
+    decorators: Decorator[] | null
+  ): DetectResult<Decorator> | undefined {
     if (!decorators) {
       return undefined;
     }
@@ -62,8 +94,10 @@ export class InjectableDecoratorHandler implements
     }
   }
 
-  analyze(node: ClassDeclaration, decorator: Readonly<Decorator>):
-      AnalysisOutput<InjectableHandlerData> {
+  analyze(
+    node: ClassDeclaration,
+    decorator: Readonly<Decorator>
+  ): AnalysisOutput<InjectableHandlerData> {
     const meta = extractInjectableMetadata(node, decorator, this.reflector);
     const decorators = this.reflector.getDecoratorsOfDeclaration(node);
 
@@ -71,14 +105,25 @@ export class InjectableDecoratorHandler implements
       analysis: {
         meta,
         ctorDeps: extractInjectableCtorDeps(
-            node, meta, decorator, this.reflector, this.defaultImportRecorder, this.isCore,
-            this.strictCtorDeps),
+          node,
+          meta,
+          decorator,
+          this.reflector,
+          this.defaultImportRecorder,
+          this.isCore,
+          this.strictCtorDeps
+        ),
         metadataStmt: generateSetClassMetadataCall(
-            node, this.reflector, this.defaultImportRecorder, this.isCore),
+          node,
+          this.reflector,
+          this.defaultImportRecorder,
+          this.isCore
+        ),
         // Avoid generating multiple factories if a class has
         // more Angular decorators, apart from Injectable.
-        needsFactory: !decorators ||
-            decorators.every(current => !isAngularCore(current) || current.name === 'Injectable')
+        needsFactory:
+          !decorators ||
+          decorators.every((current) => !isAngularCore(current) || current.name === 'Injectable'),
       },
     };
   }
@@ -109,18 +154,19 @@ export class InjectableDecoratorHandler implements
       results.push(factoryRes);
     }
 
-    const ɵprov = this.reflector.getMembersOfClass(node).find(member => member.name === 'ɵprov');
+    const ɵprov = this.reflector.getMembersOfClass(node).find((member) => member.name === 'ɵprov');
     if (ɵprov !== undefined && this.errorOnDuplicateProv) {
       throw new FatalDiagnosticError(
-          ErrorCode.INJECTABLE_DUPLICATE_PROV, ɵprov.nameNode || ɵprov.node || node,
-          'Injectables cannot contain a static ɵprov property, because the compiler is going to generate one.');
+        ErrorCode.INJECTABLE_DUPLICATE_PROV,
+        ɵprov.nameNode || ɵprov.node || node,
+        'Injectables cannot contain a static ɵprov property, because the compiler is going to generate one.'
+      );
     }
 
     if (ɵprov === undefined) {
       // Only add a new ɵprov if there is not one already
       results.push({name: 'ɵprov', initializer: res.expression, statements, type: res.type});
     }
-
 
     return results;
   }
@@ -133,16 +179,20 @@ export class InjectableDecoratorHandler implements
  * A `null` return value indicates this is @Injectable has invalid data.
  */
 function extractInjectableMetadata(
-    clazz: ClassDeclaration, decorator: Decorator,
-    reflector: ReflectionHost): R3InjectableMetadata {
+  clazz: ClassDeclaration,
+  decorator: Decorator,
+  reflector: ReflectionHost
+): R3InjectableMetadata {
   const name = clazz.name.text;
   const type = wrapTypeReference(reflector, clazz);
   const internalType = new WrappedNodeExpr(reflector.getInternalNameOfClass(clazz));
   const typeArgumentCount = reflector.getGenericArityOfClass(clazz) || 0;
   if (decorator.args === null) {
     throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_NOT_CALLED, Decorator.nodeForError(decorator),
-        '@Injectable must be called');
+      ErrorCode.DECORATOR_NOT_CALLED,
+      Decorator.nodeForError(decorator),
+      '@Injectable must be called'
+    );
   }
   if (decorator.args.length === 0) {
     return {
@@ -159,8 +209,10 @@ function extractInjectableMetadata(
     // used to solve - if this restriction proves too undesirable we can re-implement lowering.
     if (!ts.isObjectLiteralExpression(metaNode)) {
       throw new FatalDiagnosticError(
-          ErrorCode.DECORATOR_ARG_NOT_LITERAL, metaNode,
-          `@Injectable argument must be an object literal`);
+        ErrorCode.DECORATOR_ARG_NOT_LITERAL,
+        metaNode,
+        `@Injectable argument must be an object literal`
+      );
     }
 
     // Resolve the fields of the literal into a map of field name to expression.
@@ -170,15 +222,17 @@ function extractInjectableMetadata(
       providedIn = new WrappedNodeExpr(meta.get('providedIn')!);
     }
 
-    let userDeps: R3DependencyMetadata[]|undefined = undefined;
+    let userDeps: R3DependencyMetadata[] | undefined = undefined;
     if ((meta.has('useClass') || meta.has('useFactory')) && meta.has('deps')) {
       const depsExpr = meta.get('deps')!;
       if (!ts.isArrayLiteralExpression(depsExpr)) {
         throw new FatalDiagnosticError(
-            ErrorCode.VALUE_NOT_LITERAL, depsExpr,
-            `@Injectable deps metadata must be an inline array`);
+          ErrorCode.VALUE_NOT_LITERAL,
+          depsExpr,
+          `@Injectable deps metadata must be an inline array`
+        );
       }
-      userDeps = depsExpr.elements.map(dep => getDep(dep, reflector));
+      userDeps = depsExpr.elements.map((dep) => getDep(dep, reflector));
     }
 
     if (meta.has('useValue')) {
@@ -226,21 +280,31 @@ function extractInjectableMetadata(
     }
   } else {
     throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_ARITY_WRONG, decorator.args[2], 'Too many arguments to @Injectable');
+      ErrorCode.DECORATOR_ARITY_WRONG,
+      decorator.args[2],
+      'Too many arguments to @Injectable'
+    );
   }
 }
 
 function extractInjectableCtorDeps(
-    clazz: ClassDeclaration, meta: R3InjectableMetadata, decorator: Decorator,
-    reflector: ReflectionHost, defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
-    strictCtorDeps: boolean) {
+  clazz: ClassDeclaration,
+  meta: R3InjectableMetadata,
+  decorator: Decorator,
+  reflector: ReflectionHost,
+  defaultImportRecorder: DefaultImportRecorder,
+  isCore: boolean,
+  strictCtorDeps: boolean
+) {
   if (decorator.args === null) {
     throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_NOT_CALLED, Decorator.nodeForError(decorator),
-        '@Injectable must be called');
+      ErrorCode.DECORATOR_NOT_CALLED,
+      Decorator.nodeForError(decorator),
+      '@Injectable must be called'
+    );
   }
 
-  let ctorDeps: R3DependencyMetadata[]|'invalid'|null = null;
+  let ctorDeps: R3DependencyMetadata[] | 'invalid' | null = null;
 
   if (decorator.args.length === 0) {
     // Ideally, using @Injectable() would have the same effect as using @Injectable({...}), and be
@@ -255,15 +319,21 @@ function extractInjectableCtorDeps(
       ctorDeps = getValidConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore);
     } else {
       ctorDeps = unwrapConstructorDependencies(
-          getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore));
+        getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore)
+      );
     }
 
     return ctorDeps;
   } else if (decorator.args.length === 1) {
     const rawCtorDeps = getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore);
 
-    if (strictCtorDeps && meta.useValue === undefined && meta.useExisting === undefined &&
-        meta.useClass === undefined && meta.useFactory === undefined) {
+    if (
+      strictCtorDeps &&
+      meta.useValue === undefined &&
+      meta.useExisting === undefined &&
+      meta.useClass === undefined &&
+      meta.useFactory === undefined
+    ) {
       // Since use* was not provided, validate the deps according to strictCtorDeps.
       ctorDeps = validateConstructorDependencies(clazz, rawCtorDeps);
     } else {
@@ -286,7 +356,10 @@ function getDep(dep: ts.Expression, reflector: ReflectionHost): R3DependencyMeta
   };
 
   function maybeUpdateDecorator(
-      dec: ts.Identifier, reflector: ReflectionHost, token?: ts.Expression): void {
+    dec: ts.Identifier,
+    reflector: ReflectionHost,
+    token?: ts.Expression
+  ): void {
     const source = reflector.getImportOfIdentifier(dec);
     if (source === null || source.from !== '@angular/core') {
       return;
@@ -310,11 +383,11 @@ function getDep(dep: ts.Expression, reflector: ReflectionHost): R3DependencyMeta
   }
 
   if (ts.isArrayLiteralExpression(dep)) {
-    dep.elements.forEach(el => {
+    dep.elements.forEach((el) => {
       if (ts.isIdentifier(el)) {
         maybeUpdateDecorator(el, reflector);
       } else if (ts.isNewExpression(el) && ts.isIdentifier(el.expression)) {
-        const token = el.arguments && el.arguments.length > 0 && el.arguments[0] || undefined;
+        const token = (el.arguments && el.arguments.length > 0 && el.arguments[0]) || undefined;
         maybeUpdateDecorator(el.expression, reflector, token);
       }
     });

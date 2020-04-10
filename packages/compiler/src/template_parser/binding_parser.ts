@@ -8,7 +8,23 @@
 
 import {CompileDirectiveSummary, CompilePipeSummary} from '../compile_metadata';
 import {SecurityContext} from '../core';
-import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding, VariableBinding} from '../expression_parser/ast';
+import {
+  AbsoluteSourceSpan,
+  ASTWithSource,
+  BindingPipe,
+  BindingType,
+  BoundElementProperty,
+  EmptyExpr,
+  ParsedEvent,
+  ParsedEventType,
+  ParsedProperty,
+  ParsedPropertyType,
+  ParsedVariable,
+  ParserError,
+  RecursiveAstVisitor,
+  TemplateBinding,
+  VariableBinding,
+} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {mergeNsAndName} from '../ml_parser/tags';
@@ -28,19 +44,22 @@ const ANIMATE_PROP_PREFIX = 'animate-';
  * Parses bindings in templates and in the directive host area.
  */
 export class BindingParser {
-  pipesByName: Map<string, CompilePipeSummary>|null = null;
+  pipesByName: Map<string, CompilePipeSummary> | null = null;
 
   private _usedPipes: Map<string, CompilePipeSummary> = new Map();
 
   constructor(
-      private _exprParser: Parser, private _interpolationConfig: InterpolationConfig,
-      private _schemaRegistry: ElementSchemaRegistry, pipes: CompilePipeSummary[]|null,
-      public errors: ParseError[]) {
+    private _exprParser: Parser,
+    private _interpolationConfig: InterpolationConfig,
+    private _schemaRegistry: ElementSchemaRegistry,
+    pipes: CompilePipeSummary[] | null,
+    public errors: ParseError[]
+  ) {
     // When the `pipes` parameter is `null`, do not check for used pipes
     // This is used in IVY when we might not know the available pipes at compile time
     if (pipes) {
       const pipesByName: Map<string, CompilePipeSummary> = new Map();
-      pipes.forEach(pipe => pipesByName.set(pipe.name, pipe));
+      pipes.forEach((pipe) => pipesByName.set(pipe.name, pipe));
       this.pipesByName = pipesByName;
     }
   }
@@ -53,22 +72,30 @@ export class BindingParser {
     return Array.from(this._usedPipes.values());
   }
 
-  createBoundHostProperties(dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan):
-      ParsedProperty[]|null {
+  createBoundHostProperties(
+    dirMeta: CompileDirectiveSummary,
+    sourceSpan: ParseSourceSpan
+  ): ParsedProperty[] | null {
     if (dirMeta.hostProperties) {
       const boundProps: ParsedProperty[] = [];
-      Object.keys(dirMeta.hostProperties).forEach(propName => {
+      Object.keys(dirMeta.hostProperties).forEach((propName) => {
         const expression = dirMeta.hostProperties[propName];
         if (typeof expression === 'string') {
           this.parsePropertyBinding(
-              propName, expression, true, sourceSpan, sourceSpan.start.offset, undefined, [],
-              boundProps);
+            propName,
+            expression,
+            true,
+            sourceSpan,
+            sourceSpan.start.offset,
+            undefined,
+            [],
+            boundProps
+          );
         } else {
           this._reportError(
-              `Value of the host property binding "${
-                  propName}" needs to be a string representing an expression but got "${
-                  expression}" (${typeof expression})`,
-              sourceSpan);
+            `Value of the host property binding "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
+            sourceSpan
+          );
         }
       });
       return boundProps;
@@ -77,28 +104,32 @@ export class BindingParser {
   }
 
   createDirectiveHostPropertyAsts(
-      dirMeta: CompileDirectiveSummary, elementSelector: string,
-      sourceSpan: ParseSourceSpan): BoundElementProperty[]|null {
+    dirMeta: CompileDirectiveSummary,
+    elementSelector: string,
+    sourceSpan: ParseSourceSpan
+  ): BoundElementProperty[] | null {
     const boundProps = this.createBoundHostProperties(dirMeta, sourceSpan);
-    return boundProps &&
-        boundProps.map((prop) => this.createBoundElementProperty(elementSelector, prop));
+    return (
+      boundProps && boundProps.map((prop) => this.createBoundElementProperty(elementSelector, prop))
+    );
   }
 
-  createDirectiveHostEventAsts(dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan):
-      ParsedEvent[]|null {
+  createDirectiveHostEventAsts(
+    dirMeta: CompileDirectiveSummary,
+    sourceSpan: ParseSourceSpan
+  ): ParsedEvent[] | null {
     if (dirMeta.hostListeners) {
       const targetEvents: ParsedEvent[] = [];
-      Object.keys(dirMeta.hostListeners).forEach(propName => {
+      Object.keys(dirMeta.hostListeners).forEach((propName) => {
         const expression = dirMeta.hostListeners[propName];
         if (typeof expression === 'string') {
           // TODO: pass a more accurate handlerSpan for this event.
           this.parseEvent(propName, expression, sourceSpan, sourceSpan, [], targetEvents);
         } else {
           this._reportError(
-              `Value of the host listener "${
-                  propName}" needs to be a string representing an expression but got "${
-                  expression}" (${typeof expression})`,
-              sourceSpan);
+            `Value of the host listener "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
+            sourceSpan
+          );
         }
       });
       return targetEvents;
@@ -111,7 +142,11 @@ export class BindingParser {
 
     try {
       const ast = this._exprParser.parseInterpolation(
-          value, sourceInfo, sourceSpan.start.offset, this._interpolationConfig)!;
+        value,
+        sourceInfo,
+        sourceSpan.start.offset,
+        this._interpolationConfig
+      )!;
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       return ast;
@@ -134,12 +169,22 @@ export class BindingParser {
    * @param targetVars target variables in the template
    */
   parseInlineTemplateBinding(
-      tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan, absoluteValueOffset: number,
-      targetMatchableAttrs: string[][], targetProps: ParsedProperty[],
-      targetVars: ParsedVariable[]) {
+    tplKey: string,
+    tplValue: string,
+    sourceSpan: ParseSourceSpan,
+    absoluteValueOffset: number,
+    targetMatchableAttrs: string[][],
+    targetProps: ParsedProperty[],
+    targetVars: ParsedVariable[]
+  ) {
     const absoluteKeyOffset = sourceSpan.start.offset + TEMPLATE_ATTR_PREFIX.length;
     const bindings = this._parseTemplateBindings(
-        tplKey, tplValue, sourceSpan, absoluteKeyOffset, absoluteValueOffset);
+      tplKey,
+      tplValue,
+      sourceSpan,
+      absoluteKeyOffset,
+      absoluteValueOffset
+    );
 
     for (const binding of bindings) {
       // sourceSpan is for the entire HTML attribute. bindingSpan is for a particular
@@ -149,18 +194,31 @@ export class BindingParser {
       const keySpan = moveParseSourceSpan(sourceSpan, binding.key.span);
       if (binding instanceof VariableBinding) {
         const value = binding.value ? binding.value.source : '$implicit';
-        const valueSpan =
-            binding.value ? moveParseSourceSpan(sourceSpan, binding.value.span) : undefined;
+        const valueSpan = binding.value
+          ? moveParseSourceSpan(sourceSpan, binding.value.span)
+          : undefined;
         targetVars.push(new ParsedVariable(key, value, bindingSpan, keySpan, valueSpan));
       } else if (binding.value) {
         const valueSpan = moveParseSourceSpan(sourceSpan, binding.value.ast.sourceSpan);
         this._parsePropertyAst(
-            key, binding.value, sourceSpan, valueSpan, targetMatchableAttrs, targetProps);
+          key,
+          binding.value,
+          sourceSpan,
+          valueSpan,
+          targetMatchableAttrs,
+          targetProps
+        );
       } else {
         targetMatchableAttrs.push([key, '']);
         this.parseLiteralAttr(
-            key, null, sourceSpan, absoluteValueOffset, undefined, targetMatchableAttrs,
-            targetProps);
+          key,
+          null,
+          sourceSpan,
+          absoluteValueOffset,
+          undefined,
+          targetMatchableAttrs,
+          targetProps
+        );
       }
     }
   }
@@ -178,13 +236,22 @@ export class BindingParser {
    * @param absoluteValueOffset start of the `tplValue`
    */
   private _parseTemplateBindings(
-      tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan, absoluteKeyOffset: number,
-      absoluteValueOffset: number): TemplateBinding[] {
+    tplKey: string,
+    tplValue: string,
+    sourceSpan: ParseSourceSpan,
+    absoluteKeyOffset: number,
+    absoluteValueOffset: number
+  ): TemplateBinding[] {
     const sourceInfo = sourceSpan.start.toString();
 
     try {
       const bindingsResult = this._exprParser.parseTemplateBindings(
-          tplKey, tplValue, sourceInfo, absoluteKeyOffset, absoluteValueOffset);
+        tplKey,
+        tplValue,
+        sourceInfo,
+        absoluteKeyOffset,
+        absoluteValueOffset
+      );
       this._reportExpressionParserErrors(bindingsResult.errors, sourceSpan);
       bindingsResult.templateBindings.forEach((binding) => {
         if (binding.value instanceof ASTWithSource) {
@@ -202,30 +269,56 @@ export class BindingParser {
   }
 
   parseLiteralAttr(
-      name: string, value: string|null, sourceSpan: ParseSourceSpan, absoluteOffset: number,
-      valueSpan: ParseSourceSpan|undefined, targetMatchableAttrs: string[][],
-      targetProps: ParsedProperty[]) {
+    name: string,
+    value: string | null,
+    sourceSpan: ParseSourceSpan,
+    absoluteOffset: number,
+    valueSpan: ParseSourceSpan | undefined,
+    targetMatchableAttrs: string[][],
+    targetProps: ParsedProperty[]
+  ) {
     if (isAnimationLabel(name)) {
       name = name.substring(1);
       if (value) {
         this._reportError(
-            `Assigning animation triggers via @prop="exp" attributes with an expression is invalid.` +
-                ` Use property bindings (e.g. [@prop]="exp") or use an attribute without a value (e.g. @prop) instead.`,
-            sourceSpan, ParseErrorLevel.ERROR);
+          `Assigning animation triggers via @prop="exp" attributes with an expression is invalid.` +
+            ` Use property bindings (e.g. [@prop]="exp") or use an attribute without a value (e.g. @prop) instead.`,
+          sourceSpan,
+          ParseErrorLevel.ERROR
+        );
       }
       this._parseAnimation(
-          name, value, sourceSpan, absoluteOffset, valueSpan, targetMatchableAttrs, targetProps);
+        name,
+        value,
+        sourceSpan,
+        absoluteOffset,
+        valueSpan,
+        targetMatchableAttrs,
+        targetProps
+      );
     } else {
-      targetProps.push(new ParsedProperty(
-          name, this._exprParser.wrapLiteralPrimitive(value, '', absoluteOffset),
-          ParsedPropertyType.LITERAL_ATTR, sourceSpan, valueSpan));
+      targetProps.push(
+        new ParsedProperty(
+          name,
+          this._exprParser.wrapLiteralPrimitive(value, '', absoluteOffset),
+          ParsedPropertyType.LITERAL_ATTR,
+          sourceSpan,
+          valueSpan
+        )
+      );
     }
   }
 
   parsePropertyBinding(
-      name: string, expression: string, isHost: boolean, sourceSpan: ParseSourceSpan,
-      absoluteOffset: number, valueSpan: ParseSourceSpan|undefined,
-      targetMatchableAttrs: string[][], targetProps: ParsedProperty[]) {
+    name: string,
+    expression: string,
+    isHost: boolean,
+    sourceSpan: ParseSourceSpan,
+    absoluteOffset: number,
+    valueSpan: ParseSourceSpan | undefined,
+    targetMatchableAttrs: string[][],
+    targetProps: ParsedProperty[]
+  ) {
     if (name.length === 0) {
       this._reportError(`Property name is missing in binding`, sourceSpan);
     }
@@ -241,19 +334,34 @@ export class BindingParser {
 
     if (isAnimationProp) {
       this._parseAnimation(
-          name, expression, sourceSpan, absoluteOffset, valueSpan, targetMatchableAttrs,
-          targetProps);
+        name,
+        expression,
+        sourceSpan,
+        absoluteOffset,
+        valueSpan,
+        targetMatchableAttrs,
+        targetProps
+      );
     } else {
       this._parsePropertyAst(
-          name, this._parseBinding(expression, isHost, valueSpan || sourceSpan, absoluteOffset),
-          sourceSpan, valueSpan, targetMatchableAttrs, targetProps);
+        name,
+        this._parseBinding(expression, isHost, valueSpan || sourceSpan, absoluteOffset),
+        sourceSpan,
+        valueSpan,
+        targetMatchableAttrs,
+        targetProps
+      );
     }
   }
 
   parsePropertyInterpolation(
-      name: string, value: string, sourceSpan: ParseSourceSpan,
-      valueSpan: ParseSourceSpan|undefined, targetMatchableAttrs: string[][],
-      targetProps: ParsedProperty[]): boolean {
+    name: string,
+    value: string,
+    sourceSpan: ParseSourceSpan,
+    valueSpan: ParseSourceSpan | undefined,
+    targetMatchableAttrs: string[][],
+    targetProps: ParsedProperty[]
+  ): boolean {
     const expr = this.parseInterpolation(value, valueSpan || sourceSpan);
     if (expr) {
       this._parsePropertyAst(name, expr, sourceSpan, valueSpan, targetMatchableAttrs, targetProps);
@@ -263,18 +371,28 @@ export class BindingParser {
   }
 
   private _parsePropertyAst(
-      name: string, ast: ASTWithSource, sourceSpan: ParseSourceSpan,
-      valueSpan: ParseSourceSpan|undefined, targetMatchableAttrs: string[][],
-      targetProps: ParsedProperty[]) {
+    name: string,
+    ast: ASTWithSource,
+    sourceSpan: ParseSourceSpan,
+    valueSpan: ParseSourceSpan | undefined,
+    targetMatchableAttrs: string[][],
+    targetProps: ParsedProperty[]
+  ) {
     targetMatchableAttrs.push([name, ast.source!]);
     targetProps.push(
-        new ParsedProperty(name, ast, ParsedPropertyType.DEFAULT, sourceSpan, valueSpan));
+      new ParsedProperty(name, ast, ParsedPropertyType.DEFAULT, sourceSpan, valueSpan)
+    );
   }
 
   private _parseAnimation(
-      name: string, expression: string|null, sourceSpan: ParseSourceSpan, absoluteOffset: number,
-      valueSpan: ParseSourceSpan|undefined, targetMatchableAttrs: string[][],
-      targetProps: ParsedProperty[]) {
+    name: string,
+    expression: string | null,
+    sourceSpan: ParseSourceSpan,
+    absoluteOffset: number,
+    valueSpan: ParseSourceSpan | undefined,
+    targetMatchableAttrs: string[][],
+    targetProps: ParsedProperty[]
+  ) {
     if (name.length === 0) {
       this._reportError('Animation trigger is missing', sourceSpan);
     }
@@ -283,23 +401,39 @@ export class BindingParser {
     // For animations it is valid to not have an expression since */void
     // states will be applied by angular when the element is attached/detached
     const ast = this._parseBinding(
-        expression || 'undefined', false, valueSpan || sourceSpan, absoluteOffset);
+      expression || 'undefined',
+      false,
+      valueSpan || sourceSpan,
+      absoluteOffset
+    );
     targetMatchableAttrs.push([name, ast.source!]);
     targetProps.push(
-        new ParsedProperty(name, ast, ParsedPropertyType.ANIMATION, sourceSpan, valueSpan));
+      new ParsedProperty(name, ast, ParsedPropertyType.ANIMATION, sourceSpan, valueSpan)
+    );
   }
 
   private _parseBinding(
-      value: string, isHostBinding: boolean, sourceSpan: ParseSourceSpan,
-      absoluteOffset: number): ASTWithSource {
-    const sourceInfo = (sourceSpan && sourceSpan.start || '(unknown)').toString();
+    value: string,
+    isHostBinding: boolean,
+    sourceSpan: ParseSourceSpan,
+    absoluteOffset: number
+  ): ASTWithSource {
+    const sourceInfo = ((sourceSpan && sourceSpan.start) || '(unknown)').toString();
 
     try {
-      const ast = isHostBinding ?
-          this._exprParser.parseSimpleBinding(
-              value, sourceInfo, absoluteOffset, this._interpolationConfig) :
-          this._exprParser.parseBinding(
-              value, sourceInfo, absoluteOffset, this._interpolationConfig);
+      const ast = isHostBinding
+        ? this._exprParser.parseSimpleBinding(
+            value,
+            sourceInfo,
+            absoluteOffset,
+            this._interpolationConfig
+          )
+        : this._exprParser.parseBinding(
+            value,
+            sourceInfo,
+            absoluteOffset,
+            this._interpolationConfig
+          );
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       return ast;
@@ -310,17 +444,26 @@ export class BindingParser {
   }
 
   createBoundElementProperty(
-      elementSelector: string, boundProp: ParsedProperty, skipValidation: boolean = false,
-      mapPropertyName: boolean = true): BoundElementProperty {
+    elementSelector: string,
+    boundProp: ParsedProperty,
+    skipValidation: boolean = false,
+    mapPropertyName: boolean = true
+  ): BoundElementProperty {
     if (boundProp.isAnimation) {
       return new BoundElementProperty(
-          boundProp.name, BindingType.Animation, SecurityContext.NONE, boundProp.expression, null,
-          boundProp.sourceSpan, boundProp.valueSpan);
+        boundProp.name,
+        BindingType.Animation,
+        SecurityContext.NONE,
+        boundProp.expression,
+        null,
+        boundProp.sourceSpan,
+        boundProp.valueSpan
+      );
     }
 
-    let unit: string|null = null;
+    let unit: string | null = null;
     let bindingType: BindingType = undefined!;
-    let boundPropertyName: string|null = null;
+    let boundPropertyName: string | null = null;
     const parts = boundProp.name.split(PROPERTY_PARTS_SEPARATOR);
     let securityContexts: SecurityContext[] = undefined!;
 
@@ -332,7 +475,11 @@ export class BindingParser {
           this._validatePropertyOrAttributeName(boundPropertyName, boundProp.sourceSpan, true);
         }
         securityContexts = calcPossibleSecurityContexts(
-            this._schemaRegistry, elementSelector, boundPropertyName, true);
+          this._schemaRegistry,
+          elementSelector,
+          boundPropertyName,
+          true
+        );
 
         const nsSeparatorIdx = boundPropertyName.indexOf(':');
         if (nsSeparatorIdx > -1) {
@@ -359,7 +506,11 @@ export class BindingParser {
       const mappedPropName = this._schemaRegistry.getMappedPropName(boundProp.name);
       boundPropertyName = mapPropertyName ? mappedPropName : boundProp.name;
       securityContexts = calcPossibleSecurityContexts(
-          this._schemaRegistry, elementSelector, mappedPropName, false);
+        this._schemaRegistry,
+        elementSelector,
+        mappedPropName,
+        false
+      );
       bindingType = BindingType.Property;
       if (!skipValidation) {
         this._validatePropertyOrAttributeName(mappedPropName, boundProp.sourceSpan, false);
@@ -367,13 +518,24 @@ export class BindingParser {
     }
 
     return new BoundElementProperty(
-        boundPropertyName, bindingType, securityContexts[0], boundProp.expression, unit,
-        boundProp.sourceSpan, boundProp.valueSpan);
+      boundPropertyName,
+      bindingType,
+      securityContexts[0],
+      boundProp.expression,
+      unit,
+      boundProp.sourceSpan,
+      boundProp.valueSpan
+    );
   }
 
   parseEvent(
-      name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
-      targetMatchableAttrs: string[][], targetEvents: ParsedEvent[]) {
+    name: string,
+    expression: string,
+    sourceSpan: ParseSourceSpan,
+    handlerSpan: ParseSourceSpan,
+    targetMatchableAttrs: string[][],
+    targetEvents: ParsedEvent[]
+  ) {
     if (name.length === 0) {
       this._reportError(`Event name is missing in binding`, sourceSpan);
     }
@@ -383,19 +545,32 @@ export class BindingParser {
       this._parseAnimationEvent(name, expression, sourceSpan, handlerSpan, targetEvents);
     } else {
       this._parseRegularEvent(
-          name, expression, sourceSpan, handlerSpan, targetMatchableAttrs, targetEvents);
+        name,
+        expression,
+        sourceSpan,
+        handlerSpan,
+        targetMatchableAttrs,
+        targetEvents
+      );
     }
   }
 
-  calcPossibleSecurityContexts(selector: string, propName: string, isAttribute: boolean):
-      SecurityContext[] {
+  calcPossibleSecurityContexts(
+    selector: string,
+    propName: string,
+    isAttribute: boolean
+  ): SecurityContext[] {
     const prop = this._schemaRegistry.getMappedPropName(propName);
     return calcPossibleSecurityContexts(this._schemaRegistry, selector, prop, isAttribute);
   }
 
   private _parseAnimationEvent(
-      name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
-      targetEvents: ParsedEvent[]) {
+    name: string,
+    expression: string,
+    sourceSpan: ParseSourceSpan,
+    handlerSpan: ParseSourceSpan,
+    targetEvents: ParsedEvent[]
+  ) {
     const matches = splitAtPeriod(name, [name, '']);
     const eventName = matches[0];
     const phase = matches[1].toLowerCase();
@@ -404,45 +579,63 @@ export class BindingParser {
         case 'start':
         case 'done':
           const ast = this._parseAction(expression, handlerSpan);
-          targetEvents.push(new ParsedEvent(
-              eventName, phase, ParsedEventType.Animation, ast, sourceSpan, handlerSpan));
+          targetEvents.push(
+            new ParsedEvent(
+              eventName,
+              phase,
+              ParsedEventType.Animation,
+              ast,
+              sourceSpan,
+              handlerSpan
+            )
+          );
           break;
 
         default:
           this._reportError(
-              `The provided animation output phase value "${phase}" for "@${
-                  eventName}" is not supported (use start or done)`,
-              sourceSpan);
+            `The provided animation output phase value "${phase}" for "@${eventName}" is not supported (use start or done)`,
+            sourceSpan
+          );
           break;
       }
     } else {
       this._reportError(
-          `The animation trigger output event (@${
-              eventName}) is missing its phase value name (start or done are currently supported)`,
-          sourceSpan);
+        `The animation trigger output event (@${eventName}) is missing its phase value name (start or done are currently supported)`,
+        sourceSpan
+      );
     }
   }
 
   private _parseRegularEvent(
-      name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
-      targetMatchableAttrs: string[][], targetEvents: ParsedEvent[]) {
+    name: string,
+    expression: string,
+    sourceSpan: ParseSourceSpan,
+    handlerSpan: ParseSourceSpan,
+    targetMatchableAttrs: string[][],
+    targetEvents: ParsedEvent[]
+  ) {
     // long format: 'target: eventName'
     const [target, eventName] = splitAtColon(name, [null!, name]);
     const ast = this._parseAction(expression, handlerSpan);
     targetMatchableAttrs.push([name!, ast.source!]);
     targetEvents.push(
-        new ParsedEvent(eventName, target, ParsedEventType.Regular, ast, sourceSpan, handlerSpan));
+      new ParsedEvent(eventName, target, ParsedEventType.Regular, ast, sourceSpan, handlerSpan)
+    );
     // Don't detect directives for event names for now,
     // so don't add the event name to the matchableAttrs
   }
 
   private _parseAction(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
-    const sourceInfo = (sourceSpan && sourceSpan.start || '(unknown').toString();
-    const absoluteOffset = (sourceSpan && sourceSpan.start) ? sourceSpan.start.offset : 0;
+    const sourceInfo = ((sourceSpan && sourceSpan.start) || '(unknown').toString();
+    const absoluteOffset = sourceSpan && sourceSpan.start ? sourceSpan.start.offset : 0;
 
     try {
       const ast = this._exprParser.parseAction(
-          value, sourceInfo, absoluteOffset, this._interpolationConfig);
+        value,
+        sourceInfo,
+        absoluteOffset,
+        this._interpolationConfig
+      );
       if (ast) {
         this._reportExpressionParserErrors(ast.errors, sourceSpan);
       }
@@ -459,8 +652,10 @@ export class BindingParser {
   }
 
   private _reportError(
-      message: string, sourceSpan: ParseSourceSpan,
-      level: ParseErrorLevel = ParseErrorLevel.ERROR) {
+    message: string,
+    sourceSpan: ParseSourceSpan,
+    level: ParseErrorLevel = ParseErrorLevel.ERROR
+  ) {
     this.errors.push(new ParseError(sourceSpan, message, level));
   }
 
@@ -479,9 +674,12 @@ export class BindingParser {
         const pipeMeta = this.pipesByName!.get(pipeName);
         if (!pipeMeta) {
           this._reportError(
-              `The pipe '${pipeName}' could not be found`,
-              new ParseSourceSpan(
-                  sourceSpan.start.moveBy(ast.span.start), sourceSpan.start.moveBy(ast.span.end)));
+            `The pipe '${pipeName}' could not be found`,
+            new ParseSourceSpan(
+              sourceSpan.start.moveBy(ast.span.start),
+              sourceSpan.start.moveBy(ast.span.end)
+            )
+          );
         } else {
           this._usedPipes.set(pipeName, pipeMeta);
         }
@@ -495,9 +693,13 @@ export class BindingParser {
    * @param isAttr true when binding to an attribute
    */
   private _validatePropertyOrAttributeName(
-      propName: string, sourceSpan: ParseSourceSpan, isAttr: boolean): void {
-    const report = isAttr ? this._schemaRegistry.validateAttribute(propName) :
-                            this._schemaRegistry.validateProperty(propName);
+    propName: string,
+    sourceSpan: ParseSourceSpan,
+    isAttr: boolean
+  ): void {
+    const report = isAttr
+      ? this._schemaRegistry.validateAttribute(propName)
+      : this._schemaRegistry.validateProperty(propName);
     if (report.error) {
       this._reportError(report.msg!, sourceSpan, ParseErrorLevel.ERROR);
     }
@@ -519,19 +721,28 @@ function isAnimationLabel(name: string): boolean {
 }
 
 export function calcPossibleSecurityContexts(
-    registry: ElementSchemaRegistry, selector: string, propName: string,
-    isAttribute: boolean): SecurityContext[] {
+  registry: ElementSchemaRegistry,
+  selector: string,
+  propName: string,
+  isAttribute: boolean
+): SecurityContext[] {
   const ctxs: SecurityContext[] = [];
   CssSelector.parse(selector).forEach((selector) => {
     const elementNames = selector.element ? [selector.element] : registry.allKnownElementNames();
-    const notElementNames =
-        new Set(selector.notSelectors.filter(selector => selector.isElementSelector())
-                    .map((selector) => selector.element));
-    const possibleElementNames =
-        elementNames.filter(elementName => !notElementNames.has(elementName));
+    const notElementNames = new Set(
+      selector.notSelectors
+        .filter((selector) => selector.isElementSelector())
+        .map((selector) => selector.element)
+    );
+    const possibleElementNames = elementNames.filter(
+      (elementName) => !notElementNames.has(elementName)
+    );
 
-    ctxs.push(...possibleElementNames.map(
-        elementName => registry.securityContext(elementName, propName, isAttribute)));
+    ctxs.push(
+      ...possibleElementNames.map((elementName) =>
+        registry.securityContext(elementName, propName, isAttribute)
+      )
+    );
   });
   return ctxs.length === 0 ? [SecurityContext.NONE] : Array.from(new Set(ctxs)).sort();
 }
@@ -544,7 +755,9 @@ export function calcPossibleSecurityContexts(
  * @param absoluteSpan absolute source span to move to
  */
 function moveParseSourceSpan(
-    sourceSpan: ParseSourceSpan, absoluteSpan: AbsoluteSourceSpan): ParseSourceSpan {
+  sourceSpan: ParseSourceSpan,
+  absoluteSpan: AbsoluteSourceSpan
+): ParseSourceSpan {
   // The difference of two absolute offsets provide the relative offset
   const startDiff = absoluteSpan.start - sourceSpan.start.offset;
   const endDiff = absoluteSpan.end - sourceSpan.end.offset;

@@ -5,18 +5,30 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ConcreteDeclaration, Declaration, Decorator, ReflectionHost} from '../../../src/ngtsc/reflection';
+import {
+  ClassDeclaration,
+  ConcreteDeclaration,
+  Declaration,
+  Decorator,
+  ReflectionHost,
+} from '../../../src/ngtsc/reflection';
 
 export const PRE_R3_MARKER = '__PRE_R3__';
 export const POST_R3_MARKER = '__POST_R3__';
 
-export type SwitchableVariableDeclaration = ts.VariableDeclaration&{initializer: ts.Identifier};
-export function isSwitchableVariableDeclaration(node: ts.Node):
-    node is SwitchableVariableDeclaration {
-  return ts.isVariableDeclaration(node) && !!node.initializer &&
-      ts.isIdentifier(node.initializer) && node.initializer.text.endsWith(PRE_R3_MARKER);
+export type SwitchableVariableDeclaration = ts.VariableDeclaration & {initializer: ts.Identifier};
+export function isSwitchableVariableDeclaration(
+  node: ts.Node
+): node is SwitchableVariableDeclaration {
+  return (
+    ts.isVariableDeclaration(node) &&
+    !!node.initializer &&
+    ts.isIdentifier(node.initializer) &&
+    node.initializer.text.endsWith(PRE_R3_MARKER)
+  );
 }
 
 /**
@@ -35,7 +47,7 @@ export interface ModuleWithProvidersFunction {
   /**
    * Declaration of the containing class (if this is a method)
    */
-  container: ts.Declaration|null;
+  container: ts.Declaration | null;
   /**
    * The declaration of the class that the `ngModule` property on the `ModuleWithProviders` object
    * refers to.
@@ -47,7 +59,7 @@ export interface ModuleWithProvidersFunction {
  * The symbol corresponding to a "class" declaration. I.e. a `ts.Symbol` whose `valueDeclaration` is
  * a `ClassDeclaration`.
  */
-export type ClassSymbol = ts.Symbol&{valueDeclaration: ClassDeclaration};
+export type ClassSymbol = ts.Symbol & {valueDeclaration: ClassDeclaration};
 
 /**
  * A representation of a class that accounts for the potential existence of two `ClassSymbol`s for a
@@ -84,7 +96,7 @@ export interface NgccReflectionHost extends ReflectionHost {
    * @returns the symbol for the declaration or `undefined` if it is not
    * a "class" or has no symbol.
    */
-  getClassSymbol(declaration: ts.Node): NgccClassSymbol|undefined;
+  getClassSymbol(declaration: ts.Node): NgccClassSymbol | undefined;
 
   /**
    * Search the given module for variable declarations in which the initializer
@@ -99,7 +111,7 @@ export interface NgccReflectionHost extends ReflectionHost {
    * @param symbol Class symbol that can refer to a declaration which can hold decorators.
    * @returns An array of decorators or null if none are declared.
    */
-  getDecoratorsOfSymbol(symbol: NgccClassSymbol): Decorator[]|null;
+  getDecoratorsOfSymbol(symbol: NgccClassSymbol): Decorator[] | null;
 
   /**
    * Retrieves all class symbols of a given source file.
@@ -136,5 +148,5 @@ export interface NgccReflectionHost extends ReflectionHost {
    * @param decl The `Declaration` to check or `null` if there is no declaration.
    * @return The passed in `Declaration` (potentially enhanced with a `KnownDeclaration`).
    */
-  detectKnownDeclaration<T extends Declaration>(decl: T|null): T|null;
+  detectKnownDeclaration<T extends Declaration>(decl: T | null): T | null;
 }

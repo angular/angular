@@ -15,10 +15,14 @@ import {CreateTaskCompletedCallback} from './tasks/api';
 
 export abstract class SingleProcessorExecutorBase {
   constructor(
-      private logger: Logger, private createTaskCompletedCallback: CreateTaskCompletedCallback) {}
+    private logger: Logger,
+    private createTaskCompletedCallback: CreateTaskCompletedCallback
+  ) {}
 
-  doExecute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn):
-      void|Promise<void> {
+  doExecute(
+    analyzeEntryPoints: AnalyzeEntryPointsFn,
+    createCompileFn: CreateCompileFn
+  ): void | Promise<void> {
     this.logger.debug(`Running ngcc on ${this.constructor.name}.`);
 
     const taskQueue = analyzeEntryPoints();
@@ -45,8 +49,10 @@ export abstract class SingleProcessorExecutorBase {
  */
 export class SingleProcessExecutorSync extends SingleProcessorExecutorBase implements Executor {
   constructor(
-      logger: Logger, private lockFile: SyncLocker,
-      createTaskCompletedCallback: CreateTaskCompletedCallback) {
+    logger: Logger,
+    private lockFile: SyncLocker,
+    createTaskCompletedCallback: CreateTaskCompletedCallback
+  ) {
     super(logger, createTaskCompletedCallback);
   }
   execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn): void {
@@ -59,12 +65,16 @@ export class SingleProcessExecutorSync extends SingleProcessorExecutorBase imple
  */
 export class SingleProcessExecutorAsync extends SingleProcessorExecutorBase implements Executor {
   constructor(
-      logger: Logger, private lockFile: AsyncLocker,
-      createTaskCompletedCallback: CreateTaskCompletedCallback) {
+    logger: Logger,
+    private lockFile: AsyncLocker,
+    createTaskCompletedCallback: CreateTaskCompletedCallback
+  ) {
     super(logger, createTaskCompletedCallback);
   }
-  async execute(analyzeEntryPoints: AnalyzeEntryPointsFn, createCompileFn: CreateCompileFn):
-      Promise<void> {
+  async execute(
+    analyzeEntryPoints: AnalyzeEntryPointsFn,
+    createCompileFn: CreateCompileFn
+  ): Promise<void> {
     await this.lockFile.lock(async () => this.doExecute(analyzeEntryPoints, createCompileFn));
   }
 }

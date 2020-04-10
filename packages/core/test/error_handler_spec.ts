@@ -6,22 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ERROR_DEBUG_CONTEXT, ERROR_LOGGER, ERROR_TYPE, wrappedError} from '@angular/core/src/util/errors';
+import {
+  ERROR_DEBUG_CONTEXT,
+  ERROR_LOGGER,
+  ERROR_TYPE,
+  wrappedError,
+} from '@angular/core/src/util/errors';
 
 import {ErrorHandler} from '../src/error_handler';
 
 class MockConsole {
   res: any[][] = [];
-  error(...s: any[]): void { this.res.push(s); }
+  error(...s: any[]): void {
+    this.res.push(s);
+  }
 }
 
-(function() {
+(function () {
   function errorToString(error: any) {
     const logger = new MockConsole();
     const errorHandler = new ErrorHandler();
     (errorHandler as any)._console = logger as any;
     errorHandler.handleError(error);
-    return logger.res.map(line => line.join('#')).join('\n');
+    return logger.res.map((line) => line.join('#')).join('\n');
   }
 
   describe('ErrorHandler', () => {
@@ -33,7 +40,12 @@ class MockConsole {
     describe('context', () => {
       it('should print nested context', () => {
         const cause = new Error('message!');
-        const context = { source: 'context!', toString() { return 'Context'; } } as any;
+        const context = {
+          source: 'context!',
+          toString() {
+            return 'Context';
+          },
+        } as any;
         const original = debugError(cause, context);
         const e = errorToString(wrappedError('message', original));
         expect(e).toEqual(`ERROR#Error: message caused by: Error in context! caused by: message!

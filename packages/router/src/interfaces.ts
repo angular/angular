@@ -12,7 +12,6 @@ import {Route} from './config';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
 import {UrlSegment, UrlTree} from './url_tree';
 
-
 /**
  * @description
  *
@@ -83,12 +82,16 @@ import {UrlSegment, UrlTree} from './url_tree';
  * @publicApi
  */
 export interface CanActivate {
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
-      Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 }
 
-export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
-    Observable<boolean|UrlTree>| Promise<boolean|UrlTree>| boolean | UrlTree;
+export type CanActivateFn = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 
 /**
  * @description
@@ -170,12 +173,16 @@ export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSn
  * @publicApi
  */
 export interface CanActivateChild {
-  canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot):
-      Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
+  canActivateChild(
+    childRoute: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 }
 
-export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
-    Observable<boolean|UrlTree>| Promise<boolean|UrlTree>| boolean | UrlTree;
+export type CanActivateChildFn = (
+  childRoute: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 
 /**
  * @description
@@ -251,15 +258,19 @@ export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: Rou
  */
 export interface CanDeactivate<T> {
   canDeactivate(
-      component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot,
-      nextState?: RouterStateSnapshot): Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean
-      |UrlTree;
+    component: T,
+    currentRoute: ActivatedRouteSnapshot,
+    currentState: RouterStateSnapshot,
+    nextState?: RouterStateSnapshot
+  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 }
 
-export type CanDeactivateFn<T> =
-    (component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot,
-     nextState?: RouterStateSnapshot) =>
-        Observable<boolean|UrlTree>| Promise<boolean|UrlTree>| boolean | UrlTree;
+export type CanDeactivateFn<T> = (
+  component: T,
+  currentRoute: ActivatedRouteSnapshot,
+  currentState: RouterStateSnapshot,
+  nextState?: RouterStateSnapshot
+) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 
 /**
  * @description
@@ -331,9 +342,11 @@ export type CanDeactivateFn<T> =
  * @publicApi
  */
 export interface Resolve<T> {
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<T>|Promise<T>|T;
+  resolve(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Observable<T> | Promise<T> | T;
 }
-
 
 /**
  * @description
@@ -400,8 +413,10 @@ export interface Resolve<T> {
  * @publicApi
  */
 export interface CanLoad {
-  canLoad(route: Route, segments: UrlSegment[]): Observable<boolean>|Promise<boolean>|boolean;
+  canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> | Promise<boolean> | boolean;
 }
 
-export type CanLoadFn = (route: Route, segments: UrlSegment[]) =>
-    Observable<boolean>| Promise<boolean>| boolean;
+export type CanLoadFn = (
+  route: Route,
+  segments: UrlSegment[]
+) => Observable<boolean> | Promise<boolean> | boolean;

@@ -47,8 +47,8 @@ describe('compiler compliance: listen()', () => {
 
               @NgModule({declarations: [MyComponent, MyDirective]})
               export class MyModule {}
-          `
-      }
+          `,
+      },
     };
 
     const componentDef = `
@@ -78,7 +78,6 @@ describe('compiler compliance: listen()', () => {
         }
         …
       });`;
-
 
     const result = compile(files, angularFiles);
 

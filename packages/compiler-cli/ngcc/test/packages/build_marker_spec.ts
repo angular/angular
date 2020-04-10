@@ -5,10 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
-import {cleanPackageJson, hasBeenProcessed, markAsProcessed, needsCleaning, NGCC_VERSION} from '../../src/packages/build_marker';
+import {
+  cleanPackageJson,
+  hasBeenProcessed,
+  markAsProcessed,
+  needsCleaning,
+  NGCC_VERSION,
+} from '../../src/packages/build_marker';
 import {EntryPointPackageJson} from '../../src/packages/entry_point';
 import {DirectPackageJsonUpdater} from '../../src/writing/package_json_updater';
 
@@ -20,62 +27,59 @@ runInEachFileSystem(() => {
       loadTestFiles([
         {
           name: _('/node_modules/@angular/common/package.json'),
-          contents:
-              `{"fesm2015": "./fesm2015/common.js", "fesm5": "./fesm5/common.js", "typings": "./common.d.ts"}`
+          contents: `{"fesm2015": "./fesm2015/common.js", "fesm5": "./fesm5/common.js", "typings": "./common.d.ts"}`,
         },
         {name: _('/node_modules/@angular/common/fesm2015/common.js'), contents: 'DUMMY CONTENT'},
         {name: _('/node_modules/@angular/common/fesm2015/http.js'), contents: 'DUMMY CONTENT'},
         {
           name: _('/node_modules/@angular/common/fesm2015/http/testing.js'),
-          contents: 'DUMMY CONTENT'
+          contents: 'DUMMY CONTENT',
         },
         {name: _('/node_modules/@angular/common/fesm2015/testing.js'), contents: 'DUMMY CONTENT'},
         {
           name: _('/node_modules/@angular/common/http/package.json'),
-          contents:
-              `{"fesm2015": "../fesm2015/http.js", "fesm5": "../fesm5/http.js", "typings": "./http.d.ts"}`
+          contents: `{"fesm2015": "../fesm2015/http.js", "fesm5": "../fesm5/http.js", "typings": "./http.d.ts"}`,
         },
         {
           name: _('/node_modules/@angular/common/http/testing/package.json'),
-          contents:
-              `{"fesm2015": "../../fesm2015/http/testing.js", "fesm5": "../../fesm5/http/testing.js", "typings": "../http/testing.d.ts" }`
+          contents: `{"fesm2015": "../../fesm2015/http/testing.js", "fesm5": "../../fesm5/http/testing.js", "typings": "../http/testing.d.ts" }`,
         },
         {name: _('/node_modules/@angular/common/other/package.json'), contents: '{ }'},
         {
           name: _('/node_modules/@angular/common/testing/package.json'),
-          contents:
-              `{"fesm2015": "../fesm2015/testing.js", "fesm5": "../fesm5/testing.js", "typings": "../testing.d.ts"}`
+          contents: `{"fesm2015": "../fesm2015/testing.js", "fesm5": "../fesm5/testing.js", "typings": "../testing.d.ts"}`,
         },
         {name: _('/node_modules/@angular/common/node_modules/tslib/package.json'), contents: '{ }'},
         {
           name: _(
-              '/node_modules/@angular/common/node_modules/tslib/node_modules/other-lib/package.json'),
-          contents: '{ }'
+            '/node_modules/@angular/common/node_modules/tslib/node_modules/other-lib/package.json'
+          ),
+          contents: '{ }',
         },
         {
           name: _('/node_modules/@angular/no-typings/package.json'),
-          contents: `{ "fesm2015": "./fesm2015/index.js" }`
+          contents: `{ "fesm2015": "./fesm2015/index.js" }`,
         },
         {name: _('/node_modules/@angular/no-typings/fesm2015/index.js'), contents: 'DUMMY CONTENT'},
         {
           name: _('/node_modules/@angular/no-typings/fesm2015/index.d.ts'),
-          contents: 'DUMMY CONTENT'
+          contents: 'DUMMY CONTENT',
         },
         {
           name: _('/node_modules/@angular/other/not-package.json'),
-          contents: '{ "fesm2015": "./fesm2015/other.js" }'
+          contents: '{ "fesm2015": "./fesm2015/other.js" }',
         },
         {
           name: _('/node_modules/@angular/other/package.jsonot'),
-          contents: '{ "fesm5": "./fesm5/other.js" }'
+          contents: '{ "fesm5": "./fesm5/other.js" }',
         },
         {
           name: _('/node_modules/@angular/other2/node_modules_not/lib1/package.json'),
-          contents: '{ }'
+          contents: '{ }',
         },
         {
           name: _('/node_modules/@angular/other2/not_node_modules/lib2/package.json'),
-          contents: '{ }'
+          contents: '{ }',
         },
       ]);
     });
@@ -136,8 +140,12 @@ runInEachFileSystem(() => {
         const writeFileSpy = spyOn(fs, 'writeFile');
         let pkg = JSON.parse(fs.readFile(COMMON_PACKAGE_PATH));
 
-        markAsProcessed(
-            pkgUpdater, pkg, COMMON_PACKAGE_PATH, ['fesm2015', 'fesm5', 'esm2015', 'esm5']);
+        markAsProcessed(pkgUpdater, pkg, COMMON_PACKAGE_PATH, [
+          'fesm2015',
+          'fesm5',
+          'esm2015',
+          'esm5',
+        ]);
         expect(writeFileSpy).toHaveBeenCalledTimes(1);
       });
 
@@ -179,17 +187,21 @@ runInEachFileSystem(() => {
 
     describe('hasBeenProcessed', () => {
       it('should return true if the marker exists for the given format property', () => {
-        expect(hasBeenProcessed(
-                   {name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': '0.0.0-PLACEHOLDER'}},
-                   'fesm2015'))
-            .toBe(true);
+        expect(
+          hasBeenProcessed(
+            {name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': '0.0.0-PLACEHOLDER'}},
+            'fesm2015'
+          )
+        ).toBe(true);
       });
 
       it('should return false if the marker does not exist for the given format property', () => {
-        expect(hasBeenProcessed(
-                   {name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': '0.0.0-PLACEHOLDER'}},
-                   'module'))
-            .toBe(false);
+        expect(
+          hasBeenProcessed(
+            {name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': '0.0.0-PLACEHOLDER'}},
+            'module'
+          )
+        ).toBe(false);
       });
 
       it('should return false if no markers exist', () => {
@@ -199,15 +211,18 @@ runInEachFileSystem(() => {
 
     describe('needsCleaning()', () => {
       it('should return true if any format has been compiled with a different version', () => {
-        expect(needsCleaning({
-          name: 'test',
-          __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0', 'esm5': NGCC_VERSION}
-        })).toBe(true);
+        expect(
+          needsCleaning({
+            name: 'test',
+            __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0', 'esm5': NGCC_VERSION},
+          })
+        ).toBe(true);
       });
 
       it('should return false if all formats have been compiled with the current version', () => {
-        expect(needsCleaning({name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': NGCC_VERSION}}))
-            .toBe(false);
+        expect(
+          needsCleaning({name: 'test', __processed_by_ivy_ngcc__: {'fesm2015': NGCC_VERSION}})
+        ).toBe(false);
       });
 
       it('should return false if no formats have been compiled', () => {
@@ -227,7 +242,7 @@ runInEachFileSystem(() => {
       it('should remove the processed marker', () => {
         const packageJson: EntryPointPackageJson = {
           name: 'test-package',
-          __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'}
+          __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'},
         };
         const result = cleanPackageJson(packageJson);
         expect(result).toBe(true);
@@ -239,7 +254,7 @@ runInEachFileSystem(() => {
           name: 'test-package',
           __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'},
           fesm2015: 'index.js',
-          fesm2015_ivy_ngcc: '__ivy_ngcc__/index.js'
+          fesm2015_ivy_ngcc: '__ivy_ngcc__/index.js',
         };
         const result = cleanPackageJson(packageJson);
         expect(result).toBe(true);
@@ -260,24 +275,23 @@ runInEachFileSystem(() => {
         });
       });
 
-      it('should revert and remove the backup for the prepublish script if there was a processed marker',
-         () => {
-           const packageJson: EntryPointPackageJson = {
-             name: 'test-package',
-             __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'},
-             scripts: {
-               prepublishOnly: 'added by ngcc',
-               prepublishOnly__ivy_ngcc_bak: 'original',
-               test: 'do testing'
-             },
-           };
-           const result = cleanPackageJson(packageJson);
-           expect(result).toBe(true);
-           expect(packageJson).toEqual({
-             name: 'test-package',
-             scripts: {prepublishOnly: 'original', test: 'do testing'},
-           });
-         });
+      it('should revert and remove the backup for the prepublish script if there was a processed marker', () => {
+        const packageJson: EntryPointPackageJson = {
+          name: 'test-package',
+          __processed_by_ivy_ngcc__: {'fesm2015': '8.0.0'},
+          scripts: {
+            prepublishOnly: 'added by ngcc',
+            prepublishOnly__ivy_ngcc_bak: 'original',
+            test: 'do testing',
+          },
+        };
+        const result = cleanPackageJson(packageJson);
+        expect(result).toBe(true);
+        expect(packageJson).toEqual({
+          name: 'test-package',
+          scripts: {prepublishOnly: 'original', test: 'do testing'},
+        });
+      });
 
       it('should not touch the scripts if there was no processed marker', () => {
         const packageJson: EntryPointPackageJson = {
@@ -285,7 +299,7 @@ runInEachFileSystem(() => {
           scripts: {
             prepublishOnly: 'added by ngcc',
             prepublishOnly__ivy_ngcc_bak: 'original',
-            test: 'do testing'
+            test: 'do testing',
           },
         };
         const result = cleanPackageJson(packageJson);
@@ -295,8 +309,8 @@ runInEachFileSystem(() => {
           scripts: {
             prepublishOnly: 'added by ngcc',
             prepublishOnly__ivy_ngcc_bak: 'original',
-            test: 'do testing'
-          }
+            test: 'do testing',
+          },
         });
       });
     });

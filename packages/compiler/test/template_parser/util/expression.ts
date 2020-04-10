@@ -22,7 +22,7 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Templ
   // This method is defined to reconcile the type of ExpressionSourceHumanizer
   // since both RecursiveAstVisitor and TemplateAstVisitor define the visit()
   // method in their interfaces.
-  visit(node: e.AST|t.TemplateAst, context?: any) {
+  visit(node: e.AST | t.TemplateAst, context?: any) {
     node.visit(this, context);
   }
 
@@ -159,8 +159,9 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Templ
  * for each expression in the template.
  * @param templateAsts template AST to humanize
  */
-export function humanizeExpressionSource(templateAsts: t.TemplateAst[]):
-    HumanizedExpressionSource[] {
+export function humanizeExpressionSource(
+  templateAsts: t.TemplateAst[]
+): HumanizedExpressionSource[] {
   const humanizer = new ExpressionSourceHumanizer();
   t.templateVisitAll(humanizer, templateAsts);
   return humanizer.result;

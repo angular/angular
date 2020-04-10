@@ -10,10 +10,19 @@ import {Injector} from './injector';
 import {THROW_IF_NOT_FOUND} from './injector_compatibility';
 import {Provider} from './interface/provider';
 import {Self, SkipSelf} from './metadata';
-import {cyclicDependencyError, instantiationError, noProviderError, outOfBoundsError} from './reflective_errors';
+import {
+  cyclicDependencyError,
+  instantiationError,
+  noProviderError,
+  outOfBoundsError,
+} from './reflective_errors';
 import {ReflectiveKey} from './reflective_key';
-import {ReflectiveDependency, ResolvedReflectiveFactory, ResolvedReflectiveProvider, resolveReflectiveProviders} from './reflective_provider';
-
+import {
+  ReflectiveDependency,
+  ResolvedReflectiveFactory,
+  ResolvedReflectiveProvider,
+  resolveReflectiveProviders,
+} from './reflective_provider';
 
 // Threshold for the dynamic version
 const UNDEFINED = {};
@@ -144,11 +153,12 @@ export abstract class ReflectiveInjector implements Injector {
    * expect(injector.get(Car) instanceof Car).toBe(true);
    * ```
    */
-  static fromResolvedProviders(providers: ResolvedReflectiveProvider[], parent?: Injector):
-      ReflectiveInjector {
+  static fromResolvedProviders(
+    providers: ResolvedReflectiveProvider[],
+    parent?: Injector
+  ): ReflectiveInjector {
     return new ReflectiveInjector_(providers, parent);
   }
-
 
   /**
    * Parent of this injector.
@@ -156,7 +166,7 @@ export abstract class ReflectiveInjector implements Injector {
    * <!-- TODO: Add a link to the section of the user guide talking about hierarchical injection.
    * -->
    */
-  abstract get parent(): Injector|null;
+  abstract get parent(): Injector | null;
 
   /**
    * Resolves an array of providers and creates a child injector from those providers.
@@ -275,7 +285,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   _constructionCounter: number = 0;
   /** @internal */
   public _providers: ResolvedReflectiveProvider[];
-  public readonly parent: Injector|null;
+  public readonly parent: Injector | null;
 
   keyIds: number[];
   objs: any[];
@@ -308,7 +318,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
 
   createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector {
     const inj = new ReflectiveInjector_(providers);
-    (inj as{parent: Injector | null}).parent = this;
+    (inj as {parent: Injector | null}).parent = this;
     return inj;
   }
 
@@ -335,7 +345,9 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     return this._instantiateProvider(provider);
   }
 
-  private _getMaxNumberOfObjects(): number { return this.objs.length; }
+  private _getMaxNumberOfObjects(): number {
+    return this.objs.length;
+  }
 
   private _instantiateProvider(provider: ResolvedReflectiveProvider): any {
     if (provider.multiProvider) {
@@ -350,14 +362,16 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   }
 
   private _instantiate(
-      provider: ResolvedReflectiveProvider,
-      ResolvedReflectiveFactory: ResolvedReflectiveFactory): any {
+    provider: ResolvedReflectiveProvider,
+    ResolvedReflectiveFactory: ResolvedReflectiveFactory
+  ): any {
     const factory = ResolvedReflectiveFactory.factory;
 
     let deps: any[];
     try {
-      deps =
-          ResolvedReflectiveFactory.dependencies.map(dep => this._getByReflectiveDependency(dep));
+      deps = ResolvedReflectiveFactory.dependencies.map((dep) =>
+        this._getByReflectiveDependency(dep)
+      );
     } catch (e) {
       if (e.addKey) {
         e.addKey(this, provider.key);
@@ -379,14 +393,17 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     return this._getByKey(dep.key, dep.visibility, dep.optional ? null : THROW_IF_NOT_FOUND);
   }
 
-  private _getByKey(key: ReflectiveKey, visibility: Self|SkipSelf|null, notFoundValue: any): any {
+  private _getByKey(
+    key: ReflectiveKey,
+    visibility: Self | SkipSelf | null,
+    notFoundValue: any
+  ): any {
     if (key === ReflectiveInjector_.INJECTOR_KEY) {
       return this;
     }
 
     if (visibility instanceof Self) {
       return this._getByKeySelf(key, notFoundValue);
-
     } else {
       return this._getByKeyDefault(key, notFoundValue, visibility);
     }
@@ -418,12 +435,16 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   /** @internal */
   _getByKeySelf(key: ReflectiveKey, notFoundValue: any): any {
     const obj = this._getObjByKeyId(key.id);
-    return (obj !== UNDEFINED) ? obj : this._throwOrNull(key, notFoundValue);
+    return obj !== UNDEFINED ? obj : this._throwOrNull(key, notFoundValue);
   }
 
   /** @internal */
-  _getByKeyDefault(key: ReflectiveKey, notFoundValue: any, visibility: Self|SkipSelf|null): any {
-    let inj: Injector|null;
+  _getByKeyDefault(
+    key: ReflectiveKey,
+    notFoundValue: any,
+    visibility: Self | SkipSelf | null
+  ): any {
+    let inj: Injector | null;
 
     if (visibility instanceof SkipSelf) {
       inj = this.parent;
@@ -445,13 +466,16 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
   }
 
   get displayName(): string {
-    const providers =
-        _mapProviders(this, (b: ResolvedReflectiveProvider) => ' "' + b.key.displayName + '" ')
-            .join(', ');
+    const providers = _mapProviders(
+      this,
+      (b: ResolvedReflectiveProvider) => ' "' + b.key.displayName + '" '
+    ).join(', ');
     return `ReflectiveInjector(providers: [${providers}])`;
   }
 
-  toString(): string { return this.displayName; }
+  toString(): string {
+    return this.displayName;
+  }
 }
 
 function _mapProviders(injector: ReflectiveInjector_, fn: Function): any[] {

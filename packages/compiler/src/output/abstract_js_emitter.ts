@@ -6,8 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext, escapeIdentifier} from './abstract_emitter';
+import {
+  AbstractEmitterVisitor,
+  CATCH_ERROR_VAR,
+  CATCH_STACK_VAR,
+  EmitterVisitorContext,
+  escapeIdentifier,
+} from './abstract_emitter';
 import * as o from './output_ast';
 
 export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
@@ -48,8 +53,9 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
 
   private _visitClassGetter(stmt: o.ClassStmt, getter: o.ClassGetter, ctx: EmitterVisitorContext) {
     ctx.println(
-        stmt,
-        `Object.defineProperty(${stmt.name}.prototype, '${getter.name}', { get: function() {`);
+      stmt,
+      `Object.defineProperty(${stmt.name}.prototype, '${getter.name}', { get: function() {`
+    );
     ctx.incIndent();
     if (getter.body.length > 0) {
       ctx.println(stmt, `var self = this;`);
@@ -76,12 +82,13 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     throw new Error('Cannot emit a WrappedNodeExpr in Javascript.');
   }
 
-  visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): string|null {
+  visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): string | null {
     if (ast.builtin === o.BuiltinVar.This) {
       ctx.print(ast, 'self');
     } else if (ast.builtin === o.BuiltinVar.Super) {
       throw new Error(
-          `'super' needs to be handled at a parent ast node, not at the variable level!`);
+        `'super' needs to be handled at a parent ast node, not at the variable level!`
+      );
     } else {
       super.visitReadVarExpr(ast, ctx);
     }
@@ -100,7 +107,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ast.value.visitExpression(this, ctx);
     return null;
   }
-  visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): string|null {
+  visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): string | null {
     const fnExpr = expr.fn;
     if (fnExpr instanceof o.ReadVarExpr && fnExpr.builtin === o.BuiltinVar.Super) {
       ctx.currentClass!.parent!.visitExpression(this, ctx);
@@ -142,10 +149,11 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.decIndent();
     ctx.println(stmt, `} catch (${CATCH_ERROR_VAR.name}) {`);
     ctx.incIndent();
-    const catchStmts =
-        [<o.Statement>CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack')).toDeclStmt(null, [
-          o.StmtModifier.Final
-        ])].concat(stmt.catchStmts);
+    const catchStmts = [
+      <o.Statement>(
+        CATCH_STACK_VAR.set(CATCH_ERROR_VAR.prop('stack')).toDeclStmt(null, [o.StmtModifier.Final])
+      ),
+    ].concat(stmt.catchStmts);
     this.visitAllStatements(catchStmts, ctx);
     ctx.decIndent();
     ctx.println(stmt, `}`);
@@ -172,15 +180,16 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     // In the inline function, if `Object.defineProperty` is available we use that to attach the
     // `raw` array.
     ctx.print(
-        ast,
-        '$localize((this&&this.__makeTemplateObject||function(e,t){return Object.defineProperty?Object.defineProperty(e,"raw",{value:t}):e.raw=t,e})(');
+      ast,
+      '$localize((this&&this.__makeTemplateObject||function(e,t){return Object.defineProperty?Object.defineProperty(e,"raw",{value:t}):e.raw=t,e})('
+    );
     const parts = [ast.serializeI18nHead()];
     for (let i = 1; i < ast.messageParts.length; i++) {
       parts.push(ast.serializeI18nTemplatePart(i));
     }
-    ctx.print(ast, `[${parts.map(part => escapeIdentifier(part.cooked, false)).join(', ')}], `);
-    ctx.print(ast, `[${parts.map(part => escapeIdentifier(part.raw, false)).join(', ')}])`);
-    ast.expressions.forEach(expression => {
+    ctx.print(ast, `[${parts.map((part) => escapeIdentifier(part.cooked, false)).join(', ')}], `);
+    ctx.print(ast, `[${parts.map((part) => escapeIdentifier(part.raw, false)).join(', ')}])`);
+    ast.expressions.forEach((expression) => {
       ctx.print(ast, ', ');
       expression.visitExpression(this, ctx);
     });
@@ -189,7 +198,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
   }
 
   private _visitParams(params: o.FnParam[], ctx: EmitterVisitorContext): void {
-    this.visitAllObjects(param => ctx.print(null, param.name), params, ctx, ',');
+    this.visitAllObjects((param) => ctx.print(null, param.name), params, ctx, ',');
   }
 
   getBuiltinMethodName(method: o.BuiltinMethod): string {

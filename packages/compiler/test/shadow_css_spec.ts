@@ -10,7 +10,7 @@ import {CssRule, processRules, ShadowCss} from '@angular/compiler/src/shadow_css
 import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
 
 {
-  describe('ShadowCss', function() {
+  describe('ShadowCss', function () {
     function s(css: string, contentAttr: string, hostAttr: string = '') {
       const shadowCss = new ShadowCss();
       const shim = shadowCss.shimCssText(css, contentAttr, hostAttr);
@@ -49,7 +49,7 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
     it('should handle media rules', () => {
       const css = '@media screen and (max-width:800px, max-height:100%) {div {font-size:50px;}}';
       const expected =
-          '@media screen and (max-width:800px, max-height:100%) {div[contenta] {font-size:50px;}}';
+        '@media screen and (max-width:800px, max-height:100%) {div[contenta] {font-size:50px;}}';
       expect(s(css, 'contenta')).toEqual(expected);
     });
 
@@ -68,7 +68,7 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
     it('should handle media rules with simple rules', () => {
       const css = '@media screen and (max-width: 800px) {div {font-size: 50px;}} div {}';
       const expected =
-          '@media screen and (max-width:800px) {div[contenta] {font-size:50px;}} div[contenta] {}';
+        '@media screen and (max-width:800px) {div[contenta] {font-size:50px;}} div[contenta] {}';
       expect(s(css, 'contenta')).toEqual(expected);
     });
 
@@ -95,11 +95,11 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       expect(s('one > two {}', 'contenta')).toEqual('one[contenta] > two[contenta] {}');
       expect(s('one + two {}', 'contenta')).toEqual('one[contenta] + two[contenta] {}');
       expect(s('one ~ two {}', 'contenta')).toEqual('one[contenta] ~ two[contenta] {}');
-      const res = s('.one.two > three {}', 'contenta');  // IE swap classes
+      const res = s('.one.two > three {}', 'contenta'); // IE swap classes
       expect(
-          res == '.one.two[contenta] > three[contenta] {}' ||
-          res == '.two.one[contenta] > three[contenta] {}')
-          .toEqual(true);
+        res == '.one.two[contenta] > three[contenta] {}' ||
+          res == '.two.one[contenta] > three[contenta] {}'
+      ).toEqual(true);
       expect(s('one[attr="value"] {}', 'contenta')).toEqual('one[attr="value"][contenta] {}');
       expect(s('one[attr=value] {}', 'contenta')).toEqual('one[attr="value"][contenta] {}');
       expect(s('one[attr^="value"] {}', 'contenta')).toEqual('one[attr^="value"][contenta] {}');
@@ -112,7 +112,7 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       expect(s('[is="one"] {}', 'contenta')).toEqual('[is="one"][contenta] {}');
     });
 
-    describe((':host'), () => {
+    describe(':host', () => {
       it('should handle no context', () => {
         expect(s(':host {}', 'contenta', 'a-host')).toEqual('[a-host] {}');
       });
@@ -132,77 +132,93 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
 
       it('should handle multiple tag selectors', () => {
         expect(s(':host(ul,li) {}', 'contenta', 'a-host')).toEqual('ul[a-host], li[a-host] {}');
-        expect(s(':host(ul,li) > .z {}', 'contenta', 'a-host'))
-            .toEqual('ul[a-host] > .z[contenta], li[a-host] > .z[contenta] {}');
+        expect(s(':host(ul,li) > .z {}', 'contenta', 'a-host')).toEqual(
+          'ul[a-host] > .z[contenta], li[a-host] > .z[contenta] {}'
+        );
       });
 
       it('should handle multiple class selectors', () => {
         expect(s(':host(.x,.y) {}', 'contenta', 'a-host')).toEqual('.x[a-host], .y[a-host] {}');
-        expect(s(':host(.x,.y) > .z {}', 'contenta', 'a-host'))
-            .toEqual('.x[a-host] > .z[contenta], .y[a-host] > .z[contenta] {}');
+        expect(s(':host(.x,.y) > .z {}', 'contenta', 'a-host')).toEqual(
+          '.x[a-host] > .z[contenta], .y[a-host] > .z[contenta] {}'
+        );
       });
 
       it('should handle multiple attribute selectors', () => {
-        expect(s(':host([a="b"],[c=d]) {}', 'contenta', 'a-host'))
-            .toEqual('[a="b"][a-host], [c="d"][a-host] {}');
+        expect(s(':host([a="b"],[c=d]) {}', 'contenta', 'a-host')).toEqual(
+          '[a="b"][a-host], [c="d"][a-host] {}'
+        );
       });
 
       it('should handle pseudo selectors', () => {
         expect(s(':host(:before) {}', 'contenta', 'a-host')).toEqual('[a-host]:before {}');
         expect(s(':host:before {}', 'contenta', 'a-host')).toEqual('[a-host]:before {}');
-        expect(s(':host:nth-child(8n+1) {}', 'contenta', 'a-host'))
-            .toEqual('[a-host]:nth-child(8n+1) {}');
-        expect(s(':host:nth-of-type(8n+1) {}', 'contenta', 'a-host'))
-            .toEqual('[a-host]:nth-of-type(8n+1) {}');
-        expect(s(':host(.class):before {}', 'contenta', 'a-host'))
-            .toEqual('.class[a-host]:before {}');
-        expect(s(':host.class:before {}', 'contenta', 'a-host'))
-            .toEqual('.class[a-host]:before {}');
-        expect(s(':host(:not(p)):before {}', 'contenta', 'a-host'))
-            .toEqual('[a-host]:not(p):before {}');
+        expect(s(':host:nth-child(8n+1) {}', 'contenta', 'a-host')).toEqual(
+          '[a-host]:nth-child(8n+1) {}'
+        );
+        expect(s(':host:nth-of-type(8n+1) {}', 'contenta', 'a-host')).toEqual(
+          '[a-host]:nth-of-type(8n+1) {}'
+        );
+        expect(s(':host(.class):before {}', 'contenta', 'a-host')).toEqual(
+          '.class[a-host]:before {}'
+        );
+        expect(s(':host.class:before {}', 'contenta', 'a-host')).toEqual(
+          '.class[a-host]:before {}'
+        );
+        expect(s(':host(:not(p)):before {}', 'contenta', 'a-host')).toEqual(
+          '[a-host]:not(p):before {}'
+        );
       });
 
       // see b/63672152
       it('should handle unexpected selectors in the most reasonable way', () => {
         expect(s('cmp:host {}', 'contenta', 'a-host')).toEqual('cmp[a-host] {}');
         expect(s('cmp:host >>> {}', 'contenta', 'a-host')).toEqual('cmp[a-host] {}');
-        expect(s('cmp:host child {}', 'contenta', 'a-host'))
-            .toEqual('cmp[a-host] child[contenta] {}');
+        expect(s('cmp:host child {}', 'contenta', 'a-host')).toEqual(
+          'cmp[a-host] child[contenta] {}'
+        );
         expect(s('cmp:host >>> child {}', 'contenta', 'a-host')).toEqual('cmp[a-host] child {}');
         expect(s('cmp :host {}', 'contenta', 'a-host')).toEqual('cmp [a-host] {}');
         expect(s('cmp :host >>> {}', 'contenta', 'a-host')).toEqual('cmp [a-host] {}');
-        expect(s('cmp :host child {}', 'contenta', 'a-host'))
-            .toEqual('cmp [a-host] child[contenta] {}');
+        expect(s('cmp :host child {}', 'contenta', 'a-host')).toEqual(
+          'cmp [a-host] child[contenta] {}'
+        );
         expect(s('cmp :host >>> child {}', 'contenta', 'a-host')).toEqual('cmp [a-host] child {}');
       });
     });
 
-    describe((':host-context'), () => {
+    describe(':host-context', () => {
       it('should handle tag selector', () => {
-        expect(s(':host-context(div) {}', 'contenta', 'a-host'))
-            .toEqual('div[a-host], div [a-host] {}');
-        expect(s(':host-context(ul) > .y {}', 'contenta', 'a-host'))
-            .toEqual('ul[a-host] > .y[contenta], ul [a-host] > .y[contenta] {}');
+        expect(s(':host-context(div) {}', 'contenta', 'a-host')).toEqual(
+          'div[a-host], div [a-host] {}'
+        );
+        expect(s(':host-context(ul) > .y {}', 'contenta', 'a-host')).toEqual(
+          'ul[a-host] > .y[contenta], ul [a-host] > .y[contenta] {}'
+        );
       });
 
       it('should handle class selector', () => {
-        expect(s(':host-context(.x) {}', 'contenta', 'a-host'))
-            .toEqual('.x[a-host], .x [a-host] {}');
+        expect(s(':host-context(.x) {}', 'contenta', 'a-host')).toEqual(
+          '.x[a-host], .x [a-host] {}'
+        );
 
-        expect(s(':host-context(.x) > .y {}', 'contenta', 'a-host'))
-            .toEqual('.x[a-host] > .y[contenta], .x [a-host] > .y[contenta] {}');
+        expect(s(':host-context(.x) > .y {}', 'contenta', 'a-host')).toEqual(
+          '.x[a-host] > .y[contenta], .x [a-host] > .y[contenta] {}'
+        );
       });
 
       it('should handle attribute selector', () => {
-        expect(s(':host-context([a="b"]) {}', 'contenta', 'a-host'))
-            .toEqual('[a="b"][a-host], [a="b"] [a-host] {}');
-        expect(s(':host-context([a=b]) {}', 'contenta', 'a-host'))
-            .toEqual('[a=b][a-host], [a="b"] [a-host] {}');
+        expect(s(':host-context([a="b"]) {}', 'contenta', 'a-host')).toEqual(
+          '[a="b"][a-host], [a="b"] [a-host] {}'
+        );
+        expect(s(':host-context([a=b]) {}', 'contenta', 'a-host')).toEqual(
+          '[a=b][a-host], [a="b"] [a-host] {}'
+        );
       });
     });
 
     it('should support polyfill-next-selector', () => {
-      let css = s('polyfill-next-selector {content: \'x > y\'} z {}', 'contenta');
+      let css = s("polyfill-next-selector {content: 'x > y'} z {}", 'contenta');
       expect(css).toEqual('x[contenta] > y[contenta]{}');
 
       css = s('polyfill-next-selector {content: "x > y"} z {}', 'contenta');
@@ -213,7 +229,7 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
     });
 
     it('should support polyfill-unscoped-rule', () => {
-      let css = s('polyfill-unscoped-rule {content: \'#menu > .bar\';color: blue;}', 'contenta');
+      let css = s("polyfill-unscoped-rule {content: '#menu > .bar';color: blue;}", 'contenta');
       expect(css).toContain('#menu > .bar {;color:blue;}');
 
       css = s('polyfill-unscoped-rule {content: "#menu > .bar";color: blue;}', 'contenta');
@@ -224,16 +240,17 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
     });
 
     it('should support multiple instances polyfill-unscoped-rule', () => {
-      const css =
-          s('polyfill-unscoped-rule {content: \'foo\';color: blue;}' +
-                'polyfill-unscoped-rule {content: \'bar\';color: blue;}',
-            'contenta');
+      const css = s(
+        "polyfill-unscoped-rule {content: 'foo';color: blue;}" +
+          "polyfill-unscoped-rule {content: 'bar';color: blue;}",
+        'contenta'
+      );
       expect(css).toContain('foo {;color:blue;}');
       expect(css).toContain('bar {;color:blue;}');
     });
 
     it('should support polyfill-rule', () => {
-      let css = s('polyfill-rule {content: \':host.foo .bar\';color: blue;}', 'contenta', 'a-host');
+      let css = s("polyfill-rule {content: ':host.foo .bar';color: blue;}", 'contenta', 'a-host');
       expect(css).toEqual('.foo[a-host] .bar[contenta] {;color:blue;}');
 
       css = s('polyfill-rule {content: ":host.foo .bar";color:blue;}', 'contenta', 'a-host');
@@ -302,15 +319,18 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
     });
 
     it('should keep sourceMappingURL comments', () => {
-      expect(s('b {c}/*# sourceMappingURL=data:x */', 'contenta'))
-          .toEqual('b[contenta] {c}/*# sourceMappingURL=data:x */');
-      expect(s('b {c}/* #sourceMappingURL=data:x */', 'contenta'))
-          .toEqual('b[contenta] {c}/* #sourceMappingURL=data:x */');
+      expect(s('b {c}/*# sourceMappingURL=data:x */', 'contenta')).toEqual(
+        'b[contenta] {c}/*# sourceMappingURL=data:x */'
+      );
+      expect(s('b {c}/* #sourceMappingURL=data:x */', 'contenta')).toEqual(
+        'b[contenta] {c}/* #sourceMappingURL=data:x */'
+      );
     });
 
     it('should keep sourceURL comments', () => {
-      expect(s('/*# sourceMappingURL=data:x */b {c}/*# sourceURL=xxx */', 'contenta'))
-          .toEqual('b[contenta] {c}/*# sourceMappingURL=data:x *//*# sourceURL=xxx */');
+      expect(s('/*# sourceMappingURL=data:x */b {c}/*# sourceURL=xxx */', 'contenta')).toEqual(
+        'b[contenta] {c}/*# sourceMappingURL=data:x *//*# sourceURL=xxx */'
+      );
     });
   });
 
@@ -354,17 +374,21 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
 
     describe('modify rules', () => {
       it('should allow to change the selector while preserving whitespaces', () => {
-        expect(processRules(
-                   '@import a; b {c {d}} e {f}',
-                   (cssRule: CssRule) => new CssRule(cssRule.selector + '2', cssRule.content)))
-            .toEqual('@import a2; b2 {c {d}} e2 {f}');
+        expect(
+          processRules(
+            '@import a; b {c {d}} e {f}',
+            (cssRule: CssRule) => new CssRule(cssRule.selector + '2', cssRule.content)
+          )
+        ).toEqual('@import a2; b2 {c {d}} e2 {f}');
       });
 
       it('should allow to change the content', () => {
-        expect(processRules(
-                   'a {b}',
-                   (cssRule: CssRule) => new CssRule(cssRule.selector, cssRule.content + '2')))
-            .toEqual('a {b2}');
+        expect(
+          processRules(
+            'a {b}',
+            (cssRule: CssRule) => new CssRule(cssRule.selector, cssRule.content + '2')
+          )
+        ).toEqual('a {b2}');
       });
     });
   });

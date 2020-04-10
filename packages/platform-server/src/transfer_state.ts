@@ -13,7 +13,10 @@ import {TransferState, ɵescapeHtml as escapeHtml} from '@angular/platform-brows
 import {BEFORE_APP_SERIALIZED} from './tokens';
 
 export function serializeTransferStateFactory(
-    doc: Document, appId: string, transferStore: TransferState) {
+  doc: Document,
+  appId: string,
+  transferStore: TransferState
+) {
   return () => {
     const script = doc.createElement('script');
     script.id = appId + '-state';
@@ -31,13 +34,13 @@ export function serializeTransferStateFactory(
  */
 @NgModule({
   providers: [
-    TransferState, {
+    TransferState,
+    {
       provide: BEFORE_APP_SERIALIZED,
       useFactory: serializeTransferStateFactory,
       deps: [DOCUMENT, APP_ID, TransferState],
       multi: true,
-    }
-  ]
+    },
+  ],
 })
-export class ServerTransferStateModule {
-}
+export class ServerTransferStateModule {}

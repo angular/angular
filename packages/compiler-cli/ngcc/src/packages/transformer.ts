@@ -5,13 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 
 import {ParsedConfiguration} from '../../..';
 import {FileSystem} from '../../../src/ngtsc/file_system';
 import {TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
 import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
-import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../analysis/module_with_providers_analyzer';
+import {
+  ModuleWithProvidersAnalyses,
+  ModuleWithProvidersAnalyzer,
+} from '../analysis/module_with_providers_analyzer';
 import {NgccReferencesRegistry} from '../analysis/ngcc_references_registry';
 import {ExportInfo, PrivateDeclarationsAnalyzer} from '../analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyses, SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
@@ -34,12 +38,16 @@ import {FileToWrite} from '../rendering/utils';
 
 import {EntryPointBundle} from './entry_point_bundle';
 
-export type TransformResult = {
-  success: true; diagnostics: ts.Diagnostic[]; transformedFiles: FileToWrite[];
-}|{
-  success: false;
-  diagnostics: ts.Diagnostic[];
-};
+export type TransformResult =
+  | {
+      success: true;
+      diagnostics: ts.Diagnostic[];
+      transformedFiles: FileToWrite[];
+    }
+  | {
+      success: false;
+      diagnostics: ts.Diagnostic[];
+    };
 
 /**
  * A Package is stored in a directory on disk and that directory can contain one or more package
@@ -64,8 +72,10 @@ export type TransformResult = {
  */
 export class Transformer {
   constructor(
-      private fs: FileSystem, private logger: Logger,
-      private tsConfig: ParsedConfiguration|null = null) {}
+    private fs: FileSystem,
+    private logger: Logger,
+    private tsConfig: ParsedConfiguration | null = null
+  ) {}
 
   /**
    * Transform the source (and typings) files of a bundle.
@@ -83,7 +93,7 @@ export class Transformer {
       switchMarkerAnalyses,
       privateDeclarationsAnalyses,
       moduleWithProvidersAnalyses,
-      diagnostics
+      diagnostics,
     } = this.analyzeProgram(reflectionHost, bundle);
 
     // Bail if the analysis produced any errors.
@@ -96,14 +106,25 @@ export class Transformer {
 
     const renderer = new Renderer(reflectionHost, srcFormatter, this.fs, this.logger, bundle);
     let renderedFiles = renderer.renderProgram(
-        decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
+      decorationAnalyses,
+      switchMarkerAnalyses,
+      privateDeclarationsAnalyses
+    );
 
     if (bundle.dts) {
       const dtsFormatter = new EsmRenderingFormatter(reflectionHost, bundle.isCore);
-      const dtsRenderer =
-          new DtsRenderer(dtsFormatter, this.fs, this.logger, reflectionHost, bundle);
+      const dtsRenderer = new DtsRenderer(
+        dtsFormatter,
+        this.fs,
+        this.logger,
+        reflectionHost,
+        bundle
+      );
       const renderedDtsFiles = dtsRenderer.renderProgram(
-          decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
+        decorationAnalyses,
+        privateDeclarationsAnalyses,
+        moduleWithProvidersAnalyses
+      );
       renderedFiles = renderedFiles.concat(renderedDtsFiles);
     }
 
@@ -146,44 +167,57 @@ export class Transformer {
   analyzeProgram(reflectionHost: NgccReflectionHost, bundle: EntryPointBundle): ProgramAnalyses {
     const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
 
-    const switchMarkerAnalyzer =
-        new SwitchMarkerAnalyzer(reflectionHost, bundle.entryPoint.package);
+    const switchMarkerAnalyzer = new SwitchMarkerAnalyzer(
+      reflectionHost,
+      bundle.entryPoint.package
+    );
     const switchMarkerAnalyses = switchMarkerAnalyzer.analyzeProgram(bundle.src.program);
 
     const diagnostics: ts.Diagnostic[] = [];
     const decorationAnalyzer = new DecorationAnalyzer(
-        this.fs, bundle, reflectionHost, referencesRegistry,
-        diagnostic => diagnostics.push(diagnostic), this.tsConfig);
+      this.fs,
+      bundle,
+      reflectionHost,
+      referencesRegistry,
+      (diagnostic) => diagnostics.push(diagnostic),
+      this.tsConfig
+    );
     const decorationAnalyses = decorationAnalyzer.analyzeProgram();
 
-    const moduleWithProvidersAnalyzer =
-        new ModuleWithProvidersAnalyzer(reflectionHost, referencesRegistry, bundle.dts !== null);
-    const moduleWithProvidersAnalyses = moduleWithProvidersAnalyzer &&
-        moduleWithProvidersAnalyzer.analyzeProgram(bundle.src.program);
+    const moduleWithProvidersAnalyzer = new ModuleWithProvidersAnalyzer(
+      reflectionHost,
+      referencesRegistry,
+      bundle.dts !== null
+    );
+    const moduleWithProvidersAnalyses =
+      moduleWithProvidersAnalyzer && moduleWithProvidersAnalyzer.analyzeProgram(bundle.src.program);
 
-    const privateDeclarationsAnalyzer =
-        new PrivateDeclarationsAnalyzer(reflectionHost, referencesRegistry);
-    const privateDeclarationsAnalyses =
-        privateDeclarationsAnalyzer.analyzeProgram(bundle.src.program);
+    const privateDeclarationsAnalyzer = new PrivateDeclarationsAnalyzer(
+      reflectionHost,
+      referencesRegistry
+    );
+    const privateDeclarationsAnalyses = privateDeclarationsAnalyzer.analyzeProgram(
+      bundle.src.program
+    );
 
     return {
       decorationAnalyses,
       switchMarkerAnalyses,
       privateDeclarationsAnalyses,
       moduleWithProvidersAnalyses,
-      diagnostics
+      diagnostics,
     };
   }
 }
 
 export function hasErrors(diagnostics: ts.Diagnostic[]) {
-  return diagnostics.some(d => d.category === ts.DiagnosticCategory.Error);
+  return diagnostics.some((d) => d.category === ts.DiagnosticCategory.Error);
 }
 
 interface ProgramAnalyses {
   decorationAnalyses: Map<ts.SourceFile, CompiledFile>;
   switchMarkerAnalyses: SwitchMarkerAnalyses;
   privateDeclarationsAnalyses: ExportInfo[];
-  moduleWithProvidersAnalyses: ModuleWithProvidersAnalyses|null;
+  moduleWithProvidersAnalyses: ModuleWithProvidersAnalyses | null;
   diagnostics: ts.Diagnostic[];
 }

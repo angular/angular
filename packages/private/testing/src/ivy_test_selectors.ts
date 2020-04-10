@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ivyEnabled} from './angular_ivy_enabled';
 
 /**
@@ -120,7 +121,7 @@ const PASSTHROUGH: JasmineMethods = {
 function noop() {}
 
 function expectPerfCounters(expectedCounters: Partial<NgDevModePerfCounters>) {
-  Object.keys(expectedCounters).forEach(key => {
+  Object.keys(expectedCounters).forEach((key) => {
     const expected = (expectedCounters as any)[key];
     const actual = (ngDevMode as any)[key];
     expect(actual).toBe(expected, `ngDevMode.${key}`);

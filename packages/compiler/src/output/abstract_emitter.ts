@@ -17,13 +17,13 @@ export const CATCH_ERROR_VAR = o.variable('error', null, null);
 export const CATCH_STACK_VAR = o.variable('stack', null, null);
 
 export interface OutputEmitter {
-  emitStatements(genFilePath: string, stmts: o.Statement[], preamble?: string|null): string;
+  emitStatements(genFilePath: string, stmts: o.Statement[], preamble?: string | null): string;
 }
 
 class _EmittedLine {
   partsLength = 0;
   parts: string[] = [];
-  srcSpans: (ParseSourceSpan|null)[] = [];
+  srcSpans: (ParseSourceSpan | null)[] = [];
   constructor(public indent: number) {}
 }
 
@@ -48,7 +48,7 @@ export class EmitterVisitorContext {
     return this._lines[this._lines.length - 1];
   }
 
-  println(from?: {sourceSpan: ParseSourceSpan|null}|null, lastPart: string = ''): void {
+  println(from?: {sourceSpan: ParseSourceSpan | null} | null, lastPart: string = ''): void {
     this.print(from || null, lastPart, true);
   }
 
@@ -60,11 +60,11 @@ export class EmitterVisitorContext {
     return this._currentLine.indent * _INDENT_WITH.length + this._currentLine.partsLength;
   }
 
-  print(from: {sourceSpan: ParseSourceSpan|null}|null, part: string, newLine: boolean = false) {
+  print(from: {sourceSpan: ParseSourceSpan | null} | null, part: string, newLine: boolean = false) {
     if (part.length > 0) {
       this._currentLine.parts.push(part);
       this._currentLine.partsLength += part.length;
-      this._currentLine.srcSpans.push(from && from.sourceSpan || null);
+      this._currentLine.srcSpans.push((from && from.sourceSpan) || null);
     }
     if (newLine) {
       this._lines.push(new _EmittedLine(this._indent));
@@ -99,14 +99,14 @@ export class EmitterVisitorContext {
     return this._classes.pop()!;
   }
 
-  get currentClass(): o.ClassStmt|null {
+  get currentClass(): o.ClassStmt | null {
     return this._classes.length > 0 ? this._classes[this._classes.length - 1] : null;
   }
 
   toSource(): string {
     return this.sourceLines
-        .map(l => l.parts.length > 0 ? _createIndent(l.indent) + l.parts.join('') : '')
-        .join('\n');
+      .map((l) => (l.parts.length > 0 ? _createIndent(l.indent) + l.parts.join('') : ''))
+      .join('\n');
   }
 
   toSourceMapGenerator(genFilePath: string, startsAtLine: number = 0): SourceMapGenerator {
@@ -151,8 +151,9 @@ export class EmitterVisitorContext {
         const source = span.start.file;
         const sourceLine = span.start.line;
         const sourceCol = span.start.col;
-        map.addSource(source.url, source.content)
-            .addMapping(col0, source.url, sourceLine, sourceCol);
+        map
+          .addSource(source.url, source.content)
+          .addMapping(col0, source.url, sourceLine, sourceCol);
 
         col0 += parts[spanIdx].length;
         spanIdx++;
@@ -169,10 +170,10 @@ export class EmitterVisitorContext {
   }
 
   setPreambleLineCount(count: number) {
-    return this._preambleLineCount = count;
+    return (this._preambleLineCount = count);
   }
 
-  spanOf(line: number, column: number): ParseSourceSpan|null {
+  spanOf(line: number, column: number): ParseSourceSpan | null {
     const emittedLine = this._lines[line - this._preambleLineCount];
     if (emittedLine) {
       let columnsLeft = column - _createIndent(emittedLine.indent).length;
@@ -503,10 +504,18 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   }
   visitLiteralMapExpr(ast: o.LiteralMapExpr, ctx: EmitterVisitorContext): any {
     ctx.print(ast, `{`);
-    this.visitAllObjects(entry => {
-      ctx.print(ast, `${escapeIdentifier(entry.key, this._escapeDollarInStrings, entry.quoted)}:`);
-      entry.value.visitExpression(this, ctx);
-    }, ast.entries, ctx, ',');
+    this.visitAllObjects(
+      (entry) => {
+        ctx.print(
+          ast,
+          `${escapeIdentifier(entry.key, this._escapeDollarInStrings, entry.quoted)}:`
+        );
+        entry.value.visitExpression(this, ctx);
+      },
+      ast.entries,
+      ctx,
+      ','
+    );
     ctx.print(ast, `}`);
     return null;
   }
@@ -516,14 +525,20 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(ast, ')');
     return null;
   }
-  visitAllExpressions(expressions: o.Expression[], ctx: EmitterVisitorContext, separator: string):
-      void {
-    this.visitAllObjects(expr => expr.visitExpression(this, ctx), expressions, ctx, separator);
+  visitAllExpressions(
+    expressions: o.Expression[],
+    ctx: EmitterVisitorContext,
+    separator: string
+  ): void {
+    this.visitAllObjects((expr) => expr.visitExpression(this, ctx), expressions, ctx, separator);
   }
 
   visitAllObjects<T>(
-      handler: (t: T) => void, expressions: T[], ctx: EmitterVisitorContext,
-      separator: string): void {
+    handler: (t: T) => void,
+    expressions: T[],
+    ctx: EmitterVisitorContext,
+    separator: string
+  ): void {
     let incrementedIndent = false;
     for (let i = 0; i < expressions.length; i++) {
       if (i > 0) {
@@ -554,7 +569,10 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
 }
 
 export function escapeIdentifier(
-    input: string, escapeDollar: boolean, alwaysQuote: boolean = true): any {
+  input: string,
+  escapeDollar: boolean,
+  alwaysQuote: boolean = true
+): any {
   if (input == null) {
     return null;
   }

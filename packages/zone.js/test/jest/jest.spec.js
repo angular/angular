@@ -44,7 +44,7 @@ describe('test', () => {
 it('it', () => {
   assertInsideProxyZone();
 });
-it('it with done', done => {
+it('it with done', (done) => {
   assertInsideProxyZone();
   done();
 });
@@ -56,7 +56,7 @@ it.each([[1, 2]])('it.each', (arg1, arg2, done) => {
   done();
 });
 
-it.each([2])('it.each with 1D array', arg1 => {
+it.each([2])('it.each with 1D array', (arg1) => {
   assertInsideProxyZone();
   expect(arg1).toBe(2);
 });
@@ -68,26 +68,26 @@ it.each([2])('it.each with 1D array and done', (arg1, done) => {
 });
 
 it.each`
-    foo  | bar
-    ${1} | ${2}
-  `('it.each should work with table as a tagged template literal', ({foo, bar}) => {
+  foo  | bar
+  ${1} | ${2}
+`('it.each should work with table as a tagged template literal', ({foo, bar}) => {
   expect(foo).toBe(1);
   expect(bar).toBe(2);
 });
 
 it.each`
-    foo  | bar
-    ${1} | ${2}
-  `('it.each should work with table as a tagged template literal with done', ({foo, bar}, done) => {
+  foo  | bar
+  ${1} | ${2}
+`('it.each should work with table as a tagged template literal with done', ({foo, bar}, done) => {
   expect(foo).toBe(1);
   expect(bar).toBe(2);
   done();
 });
 
 it.each`
-    foo  | bar
-    ${1} | ${2}
-  `('(async) it.each should work with table as a tagged template literal', async ({foo, bar}) => {
+  foo  | bar
+  ${1} | ${2}
+`('(async) it.each should work with table as a tagged template literal', async ({foo, bar}) => {
   expect(foo).toBe(1);
   expect(bar).toBe(2);
 });

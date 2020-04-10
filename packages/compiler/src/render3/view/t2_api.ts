@@ -7,8 +7,16 @@
  */
 
 import {AST} from '../../expression_parser/ast';
-import {BoundAttribute, BoundEvent, Element, Node, Reference, Template, TextAttribute, Variable} from '../r3_ast';
-
+import {
+  BoundAttribute,
+  BoundEvent,
+  Element,
+  Node,
+  Reference,
+  Template,
+  TextAttribute,
+  Variable,
+} from '../r3_ast';
 
 /*
  * t2 is the replacement for the `TemplateDefinitionBuilder`. It handles the operations of
@@ -46,7 +54,7 @@ export interface DirectiveMeta {
    *
    * Goes from property names to field names.
    */
-  inputs: {[property: string]: string|[string, string]};
+  inputs: {[property: string]: string | [string, string]};
 
   /**
    * Set of outputs which this directive claims.
@@ -60,7 +68,7 @@ export interface DirectiveMeta {
    *
    * Null otherwise
    */
-  exportAs: string[]|null;
+  exportAs: string[] | null;
 }
 
 /**
@@ -91,22 +99,24 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * For a given template node (either an `Element` or a `Template`), get the set of directives
    * which matched the node, if any.
    */
-  getDirectivesOfNode(node: Element|Template): DirectiveT[]|null;
+  getDirectivesOfNode(node: Element | Template): DirectiveT[] | null;
 
   /**
    * For a given `Reference`, get the reference's target - either an `Element`, a `Template`, or
    * a directive on a particular node.
    */
-  getReferenceTarget(ref: Reference): {directive: DirectiveT, node: Element|Template}|Element
-      |Template|null;
+  getReferenceTarget(
+    ref: Reference
+  ): {directive: DirectiveT; node: Element | Template} | Element | Template | null;
 
   /**
    * For a given binding, get the entity to which the binding is being made.
    *
    * This will either be a directive or the node itself.
    */
-  getConsumerOfBinding(binding: BoundAttribute|BoundEvent|TextAttribute): DirectiveT|Element
-      |Template|null;
+  getConsumerOfBinding(
+    binding: BoundAttribute | BoundEvent | TextAttribute
+  ): DirectiveT | Element | Template | null;
 
   /**
    * If the given `AST` expression refers to a `Reference` or `Variable` within the `Target`, then
@@ -117,7 +127,7 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * This is only defined for `AST` expressions that read or write to a property of an
    * `ImplicitReceiver`.
    */
-  getExpressionTarget(expr: AST): Reference|Variable|null;
+  getExpressionTarget(expr: AST): Reference | Variable | null;
 
   /**
    * Given a particular `Reference` or `Variable`, get the `Template` which created it.
@@ -126,7 +136,7 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * from the `Target`. For `Reference`s this only returns a value if the `Reference` points to a
    * `Template`. Returns `null` otherwise.
    */
-  getTemplateOfSymbol(symbol: Reference|Variable): Template|null;
+  getTemplateOfSymbol(symbol: Reference | Variable): Template | null;
 
   /**
    * Get the nesting level of a particular `Template`.

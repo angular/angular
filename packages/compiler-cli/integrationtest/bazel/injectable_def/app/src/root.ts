@@ -17,27 +17,22 @@ import {LazyModuleNgFactory} from './root_lazy.ngfactory';
   selector: 'root-app',
   template: '<router-outlet></router-outlet>',
 })
-export class AppComponent {
-}
+export class AppComponent {}
 
 export function children(): any {
   console.error('children', LazyModuleNgFactory);
   return LazyModuleNgFactory;
 }
 
-
 @NgModule({
   imports: [
     BrowserModule.withServerTransition({appId: 'id-app'}),
     ServerModule,
-    RouterModule.forRoot(
-        [
-          {path: '', pathMatch: 'prefix', loadChildren: children},
-        ],
-        {initialNavigation: 'enabled'}),
+    RouterModule.forRoot([{path: '', pathMatch: 'prefix', loadChildren: children}], {
+      initialNavigation: 'enabled',
+    }),
   ],
   declarations: [AppComponent],
   bootstrap: [AppComponent],
 })
-export class RootAppModule {
-}
+export class RootAppModule {}

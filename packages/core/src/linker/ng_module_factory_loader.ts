@@ -11,7 +11,6 @@ import {NgModuleFactory as R3NgModuleFactory, NgModuleType} from '../render3/ng_
 import {NgModuleFactory} from './ng_module_factory';
 import {getRegisteredNgModuleType} from './ng_module_factory_registration';
 
-
 /**
  * Used to load ng module factories.
  *
@@ -24,7 +23,7 @@ export abstract class NgModuleFactoryLoader {
 }
 
 export function getModuleFactory__PRE_R3__(id: string): NgModuleFactory<any> {
-  const factory = getRegisteredNgModuleType(id) as NgModuleFactory<any>| null;
+  const factory = getRegisteredNgModuleType(id) as NgModuleFactory<any> | null;
   if (!factory) throw noModuleError(id);
   return factory;
 }
@@ -43,6 +42,6 @@ export function getModuleFactory__POST_R3__(id: string): NgModuleFactory<any> {
  */
 export const getModuleFactory: (id: string) => NgModuleFactory<any> = getModuleFactory__PRE_R3__;
 
-function noModuleError(id: string, ): Error {
+function noModuleError(id: string): Error {
   return new Error(`No module with ID ${id} loaded`);
 }

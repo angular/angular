@@ -19,7 +19,7 @@ export interface IncrementalBuild<W> {
   /**
    * Retrieve the prior analysis work, if any, done for the given source file.
    */
-  priorWorkFor(sf: ts.SourceFile): W[]|null;
+  priorWorkFor(sf: ts.SourceFile): W[] | null;
 }
 
 /**

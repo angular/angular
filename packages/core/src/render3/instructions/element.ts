@@ -10,23 +10,55 @@ import {assertDataInRange, assertDefined, assertEqual} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
-import {TAttributes, TElementNode, TNode, TNodeType, hasClassInput, hasStyleInput} from '../interfaces/node';
+import {
+  TAttributes,
+  TElementNode,
+  TNode,
+  TNodeType,
+  hasClassInput,
+  hasStyleInput,
+} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {appendChild, writeDirectClass, writeDirectStyle} from '../node_manipulation';
-import {decreaseElementDepthCount, getBindingIndex, getElementDepthCount, getIsParent, getLView, getNamespace, getPreviousOrParentTNode, getTView, increaseElementDepthCount, setIsNotParent, setPreviousOrParentTNode} from '../state';
+import {
+  decreaseElementDepthCount,
+  getBindingIndex,
+  getElementDepthCount,
+  getIsParent,
+  getLView,
+  getNamespace,
+  getPreviousOrParentTNode,
+  getTView,
+  increaseElementDepthCount,
+  setIsNotParent,
+  setPreviousOrParentTNode,
+} from '../state';
 import {computeStaticStyling} from '../styling/static_styling';
 import {setUpAttributes} from '../util/attrs_utils';
 import {getConstant} from '../util/view_utils';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
-import {createDirectivesInstances, elementCreate, executeContentQueries, getOrCreateTNode, matchingSchemas, resolveDirectives, saveResolvedLocalsInData} from './shared';
-
+import {
+  createDirectivesInstances,
+  elementCreate,
+  executeContentQueries,
+  getOrCreateTNode,
+  matchingSchemas,
+  resolveDirectives,
+  saveResolvedLocalsInData,
+} from './shared';
 
 function elementStartFirstCreatePass(
-    index: number, tView: TView, lView: LView, native: RElement, name: string,
-    attrsIndex?: number | null, localRefsIndex?: number): TElementNode {
+  index: number,
+  tView: TView,
+  lView: LView,
+  native: RElement,
+  name: string,
+  attrsIndex?: number | null,
+  localRefsIndex?: number
+): TElementNode {
   ngDevMode && assertFirstCreatePass(tView);
   ngDevMode && ngDevMode.firstCreatePass++;
 
@@ -34,8 +66,12 @@ function elementStartFirstCreatePass(
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
   const tNode = getOrCreateTNode(tView, lView[T_HOST], index, TNodeType.Element, name, attrs);
 
-  const hasDirectives =
-      resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
+  const hasDirectives = resolveDirectives(
+    tView,
+    lView,
+    tNode,
+    getConstant<string[]>(tViewConsts, localRefsIndex)
+  );
   ngDevMode && warnAboutUnknownElement(tView, lView, native, tNode, hasDirectives);
 
   if (tNode.mergedAttrs !== null) {
@@ -64,23 +100,30 @@ function elementStartFirstCreatePass(
  * @codeGenApi
  */
 export function ɵɵelementStart(
-    index: number, name: string, attrsIndex?: number | null, localRefsIndex?: number): void {
+  index: number,
+  name: string,
+  attrsIndex?: number | null,
+  localRefsIndex?: number
+): void {
   const lView = getLView();
   const tView = getTView();
   const adjustedIndex = HEADER_OFFSET + index;
 
-  ngDevMode && assertEqual(
-                   getBindingIndex(), tView.bindingStartIndex,
-                   'elements should be created before any bindings');
+  ngDevMode &&
+    assertEqual(
+      getBindingIndex(),
+      tView.bindingStartIndex,
+      'elements should be created before any bindings'
+    );
   ngDevMode && ngDevMode.rendererCreateElement++;
   ngDevMode && assertDataInRange(lView, adjustedIndex);
 
   const renderer = lView[RENDERER];
-  const native = lView[adjustedIndex] = elementCreate(name, renderer, getNamespace());
+  const native = (lView[adjustedIndex] = elementCreate(name, renderer, getNamespace()));
 
-  const tNode = tView.firstCreatePass ?
-      elementStartFirstCreatePass(index, tView, lView, native, name, attrsIndex, localRefsIndex) :
-      tView.data[adjustedIndex] as TElementNode;
+  const tNode = tView.firstCreatePass
+    ? elementStartFirstCreatePass(index, tView, lView, native, name, attrsIndex, localRefsIndex)
+    : (tView.data[adjustedIndex] as TElementNode);
   setPreviousOrParentTNode(tNode, true);
 
   const mergedAttrs = tNode.mergedAttrs;
@@ -106,7 +149,6 @@ export function ɵɵelementStart(
   }
   increaseElementDepthCount();
 
-
   if (isDirectiveHost(tNode)) {
     createDirectivesInstances(tView, lView, tNode);
     executeContentQueries(tView, tNode, lView);
@@ -128,13 +170,12 @@ export function ɵɵelementEnd(): void {
     setIsNotParent();
   } else {
     ngDevMode && assertHasParent(getPreviousOrParentTNode());
-    previousOrParentTNode = previousOrParentTNode.parent !;
+    previousOrParentTNode = previousOrParentTNode.parent!;
     setPreviousOrParentTNode(previousOrParentTNode, false);
   }
 
   const tNode = previousOrParentTNode;
   ngDevMode && assertNodeType(tNode, TNodeType.Element);
-
 
   decreaseElementDepthCount();
 
@@ -142,7 +183,7 @@ export function ɵɵelementEnd(): void {
   if (tView.firstCreatePass) {
     registerPostOrderHooks(tView, previousOrParentTNode);
     if (isContentQueryHost(previousOrParentTNode)) {
-      tView.queries !.elementEnd(previousOrParentTNode);
+      tView.queries!.elementEnd(previousOrParentTNode);
     }
   }
 
@@ -166,13 +207,22 @@ export function ɵɵelementEnd(): void {
  * @codeGenApi
  */
 export function ɵɵelement(
-    index: number, name: string, attrsIndex?: number | null, localRefsIndex?: number): void {
+  index: number,
+  name: string,
+  attrsIndex?: number | null,
+  localRefsIndex?: number
+): void {
   ɵɵelementStart(index, name, attrsIndex, localRefsIndex);
   ɵɵelementEnd();
 }
 
 function warnAboutUnknownElement(
-    tView: TView, lView: LView, element: RElement, tNode: TNode, hasDirectives: boolean): void {
+  tView: TView,
+  lView: LView,
+  element: RElement,
+  tNode: TNode,
+  hasDirectives: boolean
+): void {
   const schemas = tView.schemas;
 
   // If `schemas` is set to `null`, that's an indication that this Component was compiled in AOT
@@ -189,23 +239,22 @@ function warnAboutUnknownElement(
     // as a custom element. Note that unknown elements with a dash in their name won't be instances
     // of HTMLUnknownElement in browsers that support web components.
     const isUnknown =
-        // Note that we can't check for `typeof HTMLUnknownElement === 'function'`,
-        // because while most browsers return 'function', IE returns 'object'.
-        (typeof HTMLUnknownElement !== 'undefined' && HTMLUnknownElement &&
-         element instanceof HTMLUnknownElement) ||
-        (typeof customElements !== 'undefined' && tagName.indexOf('-') > -1 &&
-         !customElements.get(tagName));
+      // Note that we can't check for `typeof HTMLUnknownElement === 'function'`,
+      // because while most browsers return 'function', IE returns 'object'.
+      (typeof HTMLUnknownElement !== 'undefined' &&
+        HTMLUnknownElement &&
+        element instanceof HTMLUnknownElement) ||
+      (typeof customElements !== 'undefined' &&
+        tagName.indexOf('-') > -1 &&
+        !customElements.get(tagName));
 
     if (isUnknown && !matchingSchemas(tView, lView, tagName)) {
       let warning = `'${tagName}' is not a known element:\n`;
-      warning +=
-          `1. If '${tagName}' is an Angular component, then verify that it is part of this module.\n`;
+      warning += `1. If '${tagName}' is an Angular component, then verify that it is part of this module.\n`;
       if (tagName && tagName.indexOf('-') > -1) {
-        warning +=
-            `2. If '${tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
+        warning += `2. If '${tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
       } else {
-        warning +=
-            `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+        warning += `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
       }
       console.warn(warning);
     }

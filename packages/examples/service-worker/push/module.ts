@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 // tslint:disable: no-duplicate-imports
 import {Component, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
@@ -40,10 +41,9 @@ export class AppComponent {
 
   private subscribeToNotificationClicks() {
     // #docregion subscribe-to-notification-clicks
-    this.swPush.notificationClicks.subscribe(
-        ({action, notification}) => {
-            // TODO: Do something in response to notification click.
-        });
+    this.swPush.notificationClicks.subscribe(({action, notification}) => {
+      // TODO: Do something in response to notification click.
+    });
     // #enddocregion subscribe-to-notification-clicks
   }
   // #docregion inject-sw-push
@@ -51,16 +51,8 @@ export class AppComponent {
 // #enddocregion inject-sw-push
 
 @NgModule({
-  bootstrap: [
-    AppComponent,
-  ],
-  declarations: [
-    AppComponent,
-  ],
-  imports: [
-    BrowserModule,
-    ServiceWorkerModule.register('ngsw-worker.js'),
-  ],
+  bootstrap: [AppComponent],
+  declarations: [AppComponent],
+  imports: [BrowserModule, ServiceWorkerModule.register('ngsw-worker.js')],
 })
-export class AppModule {
-}
+export class AppModule {}

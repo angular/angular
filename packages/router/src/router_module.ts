@@ -6,9 +6,38 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, HashLocationStrategy, LOCATION_INITIALIZED, Location, LocationStrategy, PathLocationStrategy, PlatformLocation, ViewportScroller, ɵgetDOM as getDOM} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
-import {Subject, of } from 'rxjs';
+import {
+  APP_BASE_HREF,
+  HashLocationStrategy,
+  LOCATION_INITIALIZED,
+  Location,
+  LocationStrategy,
+  PathLocationStrategy,
+  PlatformLocation,
+  ViewportScroller,
+  ɵgetDOM as getDOM,
+} from '@angular/common';
+import {
+  ANALYZE_FOR_ENTRY_COMPONENTS,
+  APP_BOOTSTRAP_LISTENER,
+  APP_INITIALIZER,
+  ApplicationRef,
+  Compiler,
+  ComponentRef,
+  Inject,
+  Injectable,
+  InjectionToken,
+  Injector,
+  ModuleWithProviders,
+  NgModule,
+  NgModuleFactoryLoader,
+  NgProbeToken,
+  Optional,
+  Provider,
+  SkipSelf,
+  SystemJsNgModuleLoader,
+} from '@angular/core';
+import {Subject, of} from 'rxjs';
 import {EmptyOutletComponent} from './components/empty_outlet';
 import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
@@ -19,7 +48,12 @@ import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, Router} from './router';
 import {ROUTES} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
-import {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';
+import {
+  NoPreloading,
+  PreloadAllModules,
+  PreloadingStrategy,
+  RouterPreloader,
+} from './router_preloader';
 import {RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
 import {UrlHandlingStrategy} from './url_handling_strategy';
@@ -29,8 +63,13 @@ import {flatten} from './utils/collection';
 /**
  * The directives defined in the `RouterModule`.
  */
-const ROUTER_DIRECTIVES =
-    [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive, EmptyOutletComponent];
+const ROUTER_DIRECTIVES = [
+  RouterOutlet,
+  RouterLink,
+  RouterLinkWithHref,
+  RouterLinkActive,
+  EmptyOutletComponent,
+];
 
 /**
  * A [DI token](guide/glossary/#di-token) for the router service.
@@ -51,10 +90,17 @@ export const ROUTER_PROVIDERS: Provider[] = [
     provide: Router,
     useFactory: setupRouter,
     deps: [
-      UrlSerializer, ChildrenOutletContexts, Location, Injector, NgModuleFactoryLoader, Compiler,
-      ROUTES, ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()],
-      [RouteReuseStrategy, new Optional()]
-    ]
+      UrlSerializer,
+      ChildrenOutletContexts,
+      Location,
+      Injector,
+      NgModuleFactoryLoader,
+      Compiler,
+      ROUTES,
+      ROUTER_CONFIGURATION,
+      [UrlHandlingStrategy, new Optional()],
+      [RouteReuseStrategy, new Optional()],
+    ],
   },
   ChildrenOutletContexts,
   {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
@@ -123,7 +169,7 @@ export function routerNgProbeToken() {
 @NgModule({
   declarations: ROUTER_DIRECTIVES,
   exports: ROUTER_DIRECTIVES,
-  entryComponents: [EmptyOutletComponent]
+  entryComponents: [EmptyOutletComponent],
 })
 export class RouterModule {
   // Note: We are injecting the Router so it gets created eagerly...
@@ -136,7 +182,7 @@ export class RouterModule {
    * @param routes An array of `Route` objects that define the navigation paths for the application.
    * @param config An `ExtraOptions` configuration object that controls how navigation is performed.
    * @return The new router module.
-  */
+   */
   static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterModule> {
     return {
       ngModule: RouterModule,
@@ -146,25 +192,27 @@ export class RouterModule {
         {
           provide: ROUTER_FORROOT_GUARD,
           useFactory: provideForRootGuard,
-          deps: [[Router, new Optional(), new SkipSelf()]]
+          deps: [[Router, new Optional(), new SkipSelf()]],
         },
         {provide: ROUTER_CONFIGURATION, useValue: config ? config : {}},
         {
           provide: LocationStrategy,
           useFactory: provideLocationStrategy,
           deps: [
-            PlatformLocation, [new Inject(APP_BASE_HREF), new Optional()], ROUTER_CONFIGURATION
-          ]
+            PlatformLocation,
+            [new Inject(APP_BASE_HREF), new Optional()],
+            ROUTER_CONFIGURATION,
+          ],
         },
         {
           provide: RouterScroller,
           useFactory: createRouterScroller,
-          deps: [Router, ViewportScroller, ROUTER_CONFIGURATION]
+          deps: [Router, ViewportScroller, ROUTER_CONFIGURATION],
         },
         {
           provide: PreloadingStrategy,
-          useExisting: config && config.preloadingStrategy ? config.preloadingStrategy :
-                                                             NoPreloading
+          useExisting:
+            config && config.preloadingStrategy ? config.preloadingStrategy : NoPreloading,
         },
         {provide: NgProbeToken, multi: true, useFactory: routerNgProbeToken},
         provideRouterInitializer(),
@@ -181,7 +229,10 @@ export class RouterModule {
 }
 
 export function createRouterScroller(
-    router: Router, viewportScroller: ViewportScroller, config: ExtraOptions): RouterScroller {
+  router: Router,
+  viewportScroller: ViewportScroller,
+  config: ExtraOptions
+): RouterScroller {
   if (config.scrollOffset) {
     viewportScroller.setOffset(config.scrollOffset);
   }
@@ -189,15 +240,20 @@ export function createRouterScroller(
 }
 
 export function provideLocationStrategy(
-    platformLocationStrategy: PlatformLocation, baseHref: string, options: ExtraOptions = {}) {
-  return options.useHash ? new HashLocationStrategy(platformLocationStrategy, baseHref) :
-                           new PathLocationStrategy(platformLocationStrategy, baseHref);
+  platformLocationStrategy: PlatformLocation,
+  baseHref: string,
+  options: ExtraOptions = {}
+) {
+  return options.useHash
+    ? new HashLocationStrategy(platformLocationStrategy, baseHref)
+    : new PathLocationStrategy(platformLocationStrategy, baseHref);
 }
 
 export function provideForRootGuard(router: Router): any {
   if (router) {
     throw new Error(
-        `RouterModule.forRoot() called twice. Lazy loaded modules should use RouterModule.forChild() instead.`);
+      `RouterModule.forRoot() called twice. Lazy loaded modules should use RouterModule.forChild() instead.`
+    );
   }
   return 'guarded';
 }
@@ -250,7 +306,12 @@ export function provideRoutes(routes: Routes): any {
  * @publicApi
  */
 export type InitialNavigation =
-    true | false | 'enabled' | 'disabled' | 'legacy_enabled' | 'legacy_disabled';
+  | true
+  | false
+  | 'enabled'
+  | 'disabled'
+  | 'legacy_enabled'
+  | 'legacy_disabled';
 
 /**
  * A set of configuration options for a router module, provided in the
@@ -311,7 +372,7 @@ export interface ExtraOptions {
    * Use this option to configure the behavior when navigating to the
    * current URL. Default is 'ignore'.
    */
-  onSameUrlNavigation?: 'reload'|'ignore';
+  onSameUrlNavigation?: 'reload' | 'ignore';
 
   /**
    * Configures if the scroll position needs to be restored when navigating back.
@@ -346,7 +407,7 @@ export interface ExtraOptions {
    * }
    * ```
    */
-  scrollPositionRestoration?: 'disabled'|'enabled'|'top';
+  scrollPositionRestoration?: 'disabled' | 'enabled' | 'top';
 
   /**
    * When set to 'enabled', scrolls to the anchor element when the URL has a fragment.
@@ -355,7 +416,7 @@ export interface ExtraOptions {
    * Anchor scrolling does not happen on 'popstate'. Instead, we restore the position
    * that we stored or scroll to the top.
    */
-  anchorScrolling?: 'disabled'|'enabled';
+  anchorScrolling?: 'disabled' | 'enabled';
 
   /**
    * Configures the scroll offset the router will use when scrolling to an element.
@@ -365,7 +426,7 @@ export interface ExtraOptions {
    * When given a function, the router invokes the function every time
    * it restores scroll position.
    */
-  scrollOffset?: [number, number]|(() => [number, number]);
+  scrollOffset?: [number, number] | (() => [number, number]);
 
   /**
    * Defines how the router merges parameters, data, and resolved data from parent to child
@@ -373,7 +434,7 @@ export interface ExtraOptions {
    * path-less or component-less routes.
    * Set to 'always' to enable unconditional inheritance of parent parameters.
    */
-  paramsInheritanceStrategy?: 'emptyOnly'|'always';
+  paramsInheritanceStrategy?: 'emptyOnly' | 'always';
 
   /**
    * A custom handler for malformed URI errors. The handler is invoked when `encodedURI` contains
@@ -385,8 +446,11 @@ export interface ExtraOptions {
    * - `'UrlSerializer'` - UrlSerializer that’s configured with the router.
    * - `'url'` -  The malformed URL that caused the URIError
    * */
-  malformedUriErrorHandler?:
-      (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
+  malformedUriErrorHandler?: (
+    error: URIError,
+    urlSerializer: UrlSerializer,
+    url: string
+  ) => UrlTree;
 
   /**
    * Defines when the router updates the browser URL. By default ('deferred'),
@@ -395,7 +459,7 @@ export interface ExtraOptions {
    * Updating the URL early allows you to handle a failure of navigation by
    * showing an error message with the URL that failed.
    */
-  urlUpdateStrategy?: 'deferred'|'eager';
+  urlUpdateStrategy?: 'deferred' | 'eager';
 
   /**
    * Enables a bug fix that corrects relative link resolution in components with empty paths.
@@ -425,16 +489,31 @@ export interface ExtraOptions {
    * In other words, you're required to use `../` rather than `./`. This is currently the default
    * behavior. Setting this option to `corrected` enables the fix.
    */
-  relativeLinkResolution?: 'legacy'|'corrected';
+  relativeLinkResolution?: 'legacy' | 'corrected';
 }
 
 export function setupRouter(
-    urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
-    injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Route[][],
-    opts: ExtraOptions = {}, urlHandlingStrategy?: UrlHandlingStrategy,
-    routeReuseStrategy?: RouteReuseStrategy) {
+  urlSerializer: UrlSerializer,
+  contexts: ChildrenOutletContexts,
+  location: Location,
+  injector: Injector,
+  loader: NgModuleFactoryLoader,
+  compiler: Compiler,
+  config: Route[][],
+  opts: ExtraOptions = {},
+  urlHandlingStrategy?: UrlHandlingStrategy,
+  routeReuseStrategy?: RouteReuseStrategy
+) {
   const router = new Router(
-      null, urlSerializer, contexts, location, injector, loader, compiler, flatten(config));
+    null,
+    urlSerializer,
+    contexts,
+    location,
+    injector,
+    loader,
+    compiler,
+    flatten(config)
+  );
 
   if (urlHandlingStrategy) {
     router.urlHandlingStrategy = urlHandlingStrategy;
@@ -506,18 +585,16 @@ export class RouterInitializer {
   appInitializer(): Promise<any> {
     const p: Promise<any> = this.injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
     return p.then(() => {
-      let resolve: Function = null !;
-      const res = new Promise(r => resolve = r);
+      let resolve: Function = null!;
+      const res = new Promise((r) => (resolve = r));
       const router = this.injector.get(Router);
       const opts = this.injector.get(ROUTER_CONFIGURATION);
 
       if (this.isLegacyDisabled(opts) || this.isLegacyEnabled(opts)) {
         resolve(true);
-
       } else if (opts.initialNavigation === 'disabled') {
         router.setUpLocationChangeListener();
         resolve(true);
-
       } else if (opts.initialNavigation === 'enabled') {
         router.hooks.afterPreactivation = () => {
           // only the initial navigation should be delayed
@@ -528,11 +605,10 @@ export class RouterInitializer {
 
             // subsequent navigations should not be delayed
           } else {
-            return of (null) as any;
+            return of(null) as any;
           }
         };
         router.initialNavigation();
-
       } else {
         throw new Error(`Invalid initialNavigation options: '${opts.initialNavigation}'`);
       }
@@ -561,13 +637,16 @@ export class RouterInitializer {
     preloader.setUpPreloading();
     routerScroller.init();
     router.resetRootComponentType(ref.componentTypes[0]);
-    this.resultOfPreactivationDone.next(null !);
+    this.resultOfPreactivationDone.next(null!);
     this.resultOfPreactivationDone.complete();
   }
 
   private isLegacyEnabled(opts: ExtraOptions): boolean {
-    return opts.initialNavigation === 'legacy_enabled' || opts.initialNavigation === true ||
-        opts.initialNavigation === undefined;
+    return (
+      opts.initialNavigation === 'legacy_enabled' ||
+      opts.initialNavigation === true ||
+      opts.initialNavigation === undefined
+    );
   }
 
   private isLegacyDisabled(opts: ExtraOptions): boolean {
@@ -589,8 +668,9 @@ export function getBootstrapListener(r: RouterInitializer) {
  *
  * @publicApi
  */
-export const ROUTER_INITIALIZER =
-    new InjectionToken<(compRef: ComponentRef<any>) => void>('Router Initializer');
+export const ROUTER_INITIALIZER = new InjectionToken<(compRef: ComponentRef<any>) => void>(
+  'Router Initializer'
+);
 
 export function provideRouterInitializer() {
   return [
@@ -599,7 +679,7 @@ export function provideRouterInitializer() {
       provide: APP_INITIALIZER,
       multi: true,
       useFactory: getAppInitializer,
-      deps: [RouterInitializer]
+      deps: [RouterInitializer],
     },
     {provide: ROUTER_INITIALIZER, useFactory: getBootstrapListener, deps: [RouterInitializer]},
     {provide: APP_BOOTSTRAP_LISTENER, multi: true, useExisting: ROUTER_INITIALIZER},

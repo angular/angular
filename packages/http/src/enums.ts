@@ -18,7 +18,7 @@ export enum RequestMethod {
   Delete,
   Options,
   Head,
-  Patch
+  Patch,
 }
 
 /**
@@ -34,7 +34,7 @@ export enum ReadyState {
   HeadersReceived,
   Loading,
   Done,
-  Cancelled
+  Cancelled,
 }
 
 /**
@@ -48,7 +48,7 @@ export enum ResponseType {
   Cors,
   Default,
   Error,
-  Opaque
+  Opaque,
 }
 
 /**
@@ -62,7 +62,7 @@ export enum ContentType {
   FORM_DATA,
   TEXT,
   BLOB,
-  ARRAY_BUFFER
+  ARRAY_BUFFER,
 }
 
 /**
@@ -74,5 +74,5 @@ export enum ResponseContentType {
   Text,
   Json,
   ArrayBuffer,
-  Blob
+  Blob,
 }

@@ -11,7 +11,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 export interface Directory {
-  [name: string]: (Directory|string);
+  [name: string]: Directory | string;
 }
 
 export class Host implements ts.LanguageServiceHost {
@@ -24,7 +24,7 @@ export class Host implements ts.LanguageServiceHost {
     return {
       experimentalDecorators: true,
       module: ts.ModuleKind.CommonJS,
-      target: ts.ScriptTarget.ES5
+      target: ts.ScriptTarget.ES5,
     };
   }
 
@@ -36,7 +36,7 @@ export class Host implements ts.LanguageServiceHost {
     return this.version.toString();
   }
 
-  getScriptSnapshot(fileName: string): ts.IScriptSnapshot|undefined {
+  getScriptSnapshot(fileName: string): ts.IScriptSnapshot | undefined {
     const content = this.getFileContent(fileName);
     if (content) return ts.ScriptSnapshot.fromString(content);
   }
@@ -63,7 +63,7 @@ export class Host implements ts.LanguageServiceHost {
     this.version++;
   }
 
-  private getFileContent(fileName: string): string|undefined {
+  private getFileContent(fileName: string): string | undefined {
     if (this.overrides.has(fileName)) {
       return this.overrides.get(fileName);
     }
@@ -77,11 +77,11 @@ export class Host implements ts.LanguageServiceHost {
   }
 }
 
-export function open(directory: Directory, fileName: string): Directory|string|undefined {
+export function open(directory: Directory, fileName: string): Directory | string | undefined {
   // Path might be normalized by the current node environment. But it could also happen that this
   // path directly comes from the compiler in POSIX format. Support both separators for development.
   const names = fileName.split(/[\\/]/);
-  let current: Directory|string = directory;
+  let current: Directory | string = directory;
   if (names.length && names[0] === '') names.shift();
   for (const name of names) {
     if (!current || typeof current === 'string') return undefined;
@@ -95,16 +95,19 @@ export class MockNode implements ts.Node {
   modifiers?: ts.NodeArray<ts.Modifier>;
   parent!: ts.Node;
   constructor(
-      public kind: ts.SyntaxKind = ts.SyntaxKind.Identifier, public flags: ts.NodeFlags = 0,
-      public pos: number = 0, public end: number = 0) {}
+    public kind: ts.SyntaxKind = ts.SyntaxKind.Identifier,
+    public flags: ts.NodeFlags = 0,
+    public pos: number = 0,
+    public end: number = 0
+  ) {}
   getSourceFile(): ts.SourceFile {
-    return null as any as ts.SourceFile;
+    return (null as any) as ts.SourceFile;
   }
   getChildCount(sourceFile?: ts.SourceFile): number {
     return 0;
   }
   getChildAt(index: number, sourceFile?: ts.SourceFile): ts.Node {
-    return null as any as ts.Node;
+    return (null as any) as ts.Node;
   }
   getChildren(sourceFile?: ts.SourceFile): ts.Node[] {
     return [];
@@ -134,14 +137,15 @@ export class MockNode implements ts.Node {
     return '';
   }
   getFirstToken(sourceFile?: ts.SourceFile): ts.Node {
-    return null as any as ts.Node;
+    return (null as any) as ts.Node;
   }
   getLastToken(sourceFile?: ts.SourceFile): ts.Node {
-    return null as any as ts.Node;
+    return (null as any) as ts.Node;
   }
   forEachChild<T>(
-      cbNode: (node: ts.Node) => T | undefined,
-      cbNodeArray?: (nodes: ts.NodeArray<ts.Node>) => T | undefined): T|undefined {
+    cbNode: (node: ts.Node) => T | undefined,
+    cbNodeArray?: (nodes: ts.NodeArray<ts.Node>) => T | undefined
+  ): T | undefined {
     return undefined;
   }
 }
@@ -167,15 +171,19 @@ export class MockIdentifier extends MockNode implements ts.Identifier {
   // tslint:enable
 
   constructor(
-      public name: string, public kind: ts.SyntaxKind.Identifier = ts.SyntaxKind.Identifier,
-      flags: ts.NodeFlags = 0, pos: number = 0, end: number = 0) {
+    public name: string,
+    public kind: ts.SyntaxKind.Identifier = ts.SyntaxKind.Identifier,
+    flags: ts.NodeFlags = 0,
+    pos: number = 0,
+    end: number = 0
+  ) {
     super(kind, flags, pos, end);
     this.text = name;
   }
 }
 
 export class MockVariableDeclaration extends MockNode implements ts.VariableDeclaration {
-  parent!: ts.VariableDeclarationList|ts.CatchClause;
+  parent!: ts.VariableDeclarationList | ts.CatchClause;
   exclamationToken?: ts.Token<ts.SyntaxKind.ExclamationToken>;
   type?: ts.TypeNode;
   initializer?: ts.Expression;
@@ -185,9 +193,12 @@ export class MockVariableDeclaration extends MockNode implements ts.VariableDecl
   public _declarationBrand: any;
 
   constructor(
-      public name: ts.Identifier,
-      public kind: ts.SyntaxKind.VariableDeclaration = ts.SyntaxKind.VariableDeclaration,
-      flags: ts.NodeFlags = 0, pos: number = 0, end: number = 0) {
+    public name: ts.Identifier,
+    public kind: ts.SyntaxKind.VariableDeclaration = ts.SyntaxKind.VariableDeclaration,
+    flags: ts.NodeFlags = 0,
+    pos: number = 0,
+    end: number = 0
+  ) {
     super(kind, flags, pos, end);
   }
 
@@ -205,8 +216,10 @@ export class MockSymbol implements ts.Symbol {
   // TODO(issue/24571): remove '!'.
   public escapedName!: ts.__String;
   constructor(
-      public name: string, private node: ts.Declaration = MockVariableDeclaration.of(name),
-      public flags: ts.SymbolFlags = 0) {}
+    public name: string,
+    private node: ts.Declaration = MockVariableDeclaration.of(name),
+    public flags: ts.SymbolFlags = 0
+  ) {}
 
   getFlags(): ts.SymbolFlags {
     return this.flags;
@@ -256,18 +269,26 @@ export function expectValidSources(service: ts.LanguageService, program: ts.Prog
   }
 }
 
-export function allChildren<T>(node: ts.Node, cb: (node: ts.Node) => T | undefined): T|undefined {
-  return ts.forEachChild(node, child => cb(node) || allChildren(child, cb));
+export function allChildren<T>(node: ts.Node, cb: (node: ts.Node) => T | undefined): T | undefined {
+  return ts.forEachChild(node, (child) => cb(node) || allChildren(child, cb));
 }
 
-export function findClass(sourceFile: ts.SourceFile, name: string): ts.ClassDeclaration|undefined {
-  return ts.forEachChild(
-      sourceFile, node => isClass(node) && isNamed(node.name, name) ? node : undefined);
+export function findClass(
+  sourceFile: ts.SourceFile,
+  name: string
+): ts.ClassDeclaration | undefined {
+  return ts.forEachChild(sourceFile, (node) =>
+    isClass(node) && isNamed(node.name, name) ? node : undefined
+  );
 }
 
-export function findVar(sourceFile: ts.SourceFile, name: string): ts.VariableDeclaration|undefined {
-  return allChildren(
-      sourceFile, node => isVar(node) && isNamed(node.name, name) ? node : undefined);
+export function findVar(
+  sourceFile: ts.SourceFile,
+  name: string
+): ts.VariableDeclaration | undefined {
+  return allChildren(sourceFile, (node) =>
+    isVar(node) && isNamed(node.name, name) ? node : undefined
+  );
 }
 
 export function findVarInitializer(sourceFile: ts.SourceFile, name: string): ts.Expression {
@@ -280,7 +301,7 @@ export function isClass(node: ts.Node): node is ts.ClassDeclaration {
   return node.kind === ts.SyntaxKind.ClassDeclaration;
 }
 
-export function isNamed(node: ts.Node|undefined, name: string): node is ts.Identifier {
+export function isNamed(node: ts.Node | undefined, name: string): node is ts.Identifier {
   return !!node && node.kind === ts.SyntaxKind.Identifier && (<ts.Identifier>node).text === name;
 }
 

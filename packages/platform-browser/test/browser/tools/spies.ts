@@ -11,15 +11,18 @@ import {ApplicationRef} from '@angular/core/src/application_ref';
 import {SpyObject} from '@angular/core/testing/src/testing_internal';
 
 export class SpyApplicationRef extends SpyObject {
-  constructor() { super(ApplicationRef); }
+  constructor() {
+    super(ApplicationRef);
+  }
 }
 
 export class SpyComponentRef extends SpyObject {
   injector: any /** TODO #9100 */;
   constructor() {
     super();
-    this.injector =
-        Injector.create([{provide: ApplicationRef, useClass: SpyApplicationRef, deps: []}]);
+    this.injector = Injector.create([
+      {provide: ApplicationRef, useClass: SpyApplicationRef, deps: []},
+    ]);
   }
 }
 

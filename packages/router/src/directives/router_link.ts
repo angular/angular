@@ -7,7 +7,18 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, isDevMode, OnChanges, OnDestroy, Renderer2} from '@angular/core';
+import {
+  Attribute,
+  Directive,
+  ElementRef,
+  HostBinding,
+  HostListener,
+  Input,
+  isDevMode,
+  OnChanges,
+  OnDestroy,
+  Renderer2,
+} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {QueryParamsHandling} from '../config';
@@ -15,7 +26,6 @@ import {Event, NavigationEnd} from '../events';
 import {Router} from '../router';
 import {ActivatedRoute} from '../router_state';
 import {UrlTree} from '../url_tree';
-
 
 /**
  * @description
@@ -131,15 +141,19 @@ export class RouterLink {
   private preserve!: boolean;
 
   constructor(
-      private router: Router, private route: ActivatedRoute,
-      @Attribute('tabindex') tabIndex: string, renderer: Renderer2, el: ElementRef) {
+    private router: Router,
+    private route: ActivatedRoute,
+    @Attribute('tabindex') tabIndex: string,
+    renderer: Renderer2,
+    el: ElementRef
+  ) {
     if (tabIndex == null) {
       renderer.setAttribute(el.nativeElement, 'tabindex', '0');
     }
   }
 
   @Input()
-  set routerLink(commands: any[]|string) {
+  set routerLink(commands: any[] | string) {
     if (commands != null) {
       this.commands = Array.isArray(commands) ? commands : [commands];
     } else {
@@ -219,8 +233,10 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   @HostBinding() href!: string;
 
   constructor(
-      private router: Router, private route: ActivatedRoute,
-      private locationStrategy: LocationStrategy) {
+    private router: Router,
+    private route: ActivatedRoute,
+    private locationStrategy: LocationStrategy
+  ) {
     this.subscription = router.events.subscribe((s: Event) => {
       if (s instanceof NavigationEnd) {
         this.updateTargetUrlAndHref();
@@ -229,7 +245,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   @Input()
-  set routerLink(commands: any[]|string) {
+  set routerLink(commands: any[] | string) {
     if (commands != null) {
       this.commands = Array.isArray(commands) ? commands : [commands];
     } else {
@@ -265,7 +281,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     const extras = {
       skipLocationChange: attrBoolValue(this.skipLocationChange),
       replaceUrl: attrBoolValue(this.replaceUrl),
-      state: this.state
+      state: this.state,
     };
     this.router.navigateByUrl(this.urlTree, extras);
     return false;

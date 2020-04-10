@@ -5,9 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AnimationTriggerMetadata} from '@angular/animations';
 import {ɵAnimationEngine as AnimationEngine} from '@angular/animations/browser';
-import {Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '@angular/core';
+import {
+  Injectable,
+  NgZone,
+  Renderer2,
+  RendererFactory2,
+  RendererStyleFlags2,
+  RendererType2,
+} from '@angular/core';
 
 const ANIMATION_PREFIX = '@';
 const DISABLE_ANIMATIONS_FLAG = '@.disabled';
@@ -28,7 +36,10 @@ export class AnimationRendererFactory implements RendererFactory2 {
   private promise: Promise<any> = Promise.resolve(0);
 
   constructor(
-      private delegate: RendererFactory2, private engine: AnimationEngine, private _zone: NgZone) {
+    private delegate: RendererFactory2,
+    private engine: AnimationEngine,
+    private _zone: NgZone
+  ) {
     engine.onRemovalComplete = (element: any, delegate: Renderer2) => {
       // Note: if an component element has a leave animation, and the component
       // a host leave animation, the view engine will call `removeChild` for the parent
@@ -47,7 +58,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
     // be used by which cached renderer
     const delegate = this.delegate.createRenderer(hostElement, type);
     if (!hostElement || !type || !type.data || !type.data['animation']) {
-      let renderer: BaseAnimationRenderer|undefined = this._rendererCache.get(delegate);
+      let renderer: BaseAnimationRenderer | undefined = this._rendererCache.get(delegate);
       if (!renderer) {
         renderer = new BaseAnimationRenderer(EMPTY_NAMESPACE_ID, delegate, this.engine);
         // only cache this result when the base renderer is used
@@ -84,7 +95,9 @@ export class AnimationRendererFactory implements RendererFactory2 {
 
   private _scheduleCountTask() {
     // always use promise to schedule microtask instead of use Zone
-    this.promise.then(() => { this._microtaskId++; });
+    this.promise.then(() => {
+      this._microtaskId++;
+    });
   }
 
   /** @internal */
@@ -97,7 +110,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
     if (this._animationCallbacksBuffer.length == 0) {
       Promise.resolve(null).then(() => {
         this._zone.run(() => {
-          this._animationCallbacksBuffer.forEach(tuple => {
+          this._animationCallbacksBuffer.forEach((tuple) => {
             const [fn, data] = tuple;
             fn(data);
           });
@@ -125,31 +138,42 @@ export class AnimationRendererFactory implements RendererFactory2 {
     }
   }
 
-  whenRenderingDone(): Promise<any> { return this.engine.whenRenderingDone(); }
+  whenRenderingDone(): Promise<any> {
+    return this.engine.whenRenderingDone();
+  }
 }
 
 export class BaseAnimationRenderer implements Renderer2 {
   constructor(
-      protected namespaceId: string, public delegate: Renderer2, public engine: AnimationEngine) {
-    this.destroyNode = this.delegate.destroyNode ? (n) => delegate.destroyNode !(n) : null;
+    protected namespaceId: string,
+    public delegate: Renderer2,
+    public engine: AnimationEngine
+  ) {
+    this.destroyNode = this.delegate.destroyNode ? (n) => delegate.destroyNode!(n) : null;
   }
 
-  get data() { return this.delegate.data; }
+  get data() {
+    return this.delegate.data;
+  }
 
-  destroyNode: ((n: any) => void)|null;
+  destroyNode: ((n: any) => void) | null;
 
   destroy(): void {
     this.engine.destroy(this.namespaceId, this.delegate);
     this.delegate.destroy();
   }
 
-  createElement(name: string, namespace?: string|null|undefined) {
+  createElement(name: string, namespace?: string | null | undefined) {
     return this.delegate.createElement(name, namespace);
   }
 
-  createComment(value: string) { return this.delegate.createComment(value); }
+  createComment(value: string) {
+    return this.delegate.createComment(value);
+  }
 
-  createText(value: string) { return this.delegate.createText(value); }
+  createText(value: string) {
+    return this.delegate.createText(value);
+  }
 
   appendChild(parent: any, newChild: any): void {
     this.delegate.appendChild(parent, newChild);
@@ -169,27 +193,35 @@ export class BaseAnimationRenderer implements Renderer2 {
     return this.delegate.selectRootElement(selectorOrNode, preserveContent);
   }
 
-  parentNode(node: any) { return this.delegate.parentNode(node); }
+  parentNode(node: any) {
+    return this.delegate.parentNode(node);
+  }
 
-  nextSibling(node: any) { return this.delegate.nextSibling(node); }
+  nextSibling(node: any) {
+    return this.delegate.nextSibling(node);
+  }
 
-  setAttribute(el: any, name: string, value: string, namespace?: string|null|undefined): void {
+  setAttribute(el: any, name: string, value: string, namespace?: string | null | undefined): void {
     this.delegate.setAttribute(el, name, value, namespace);
   }
 
-  removeAttribute(el: any, name: string, namespace?: string|null|undefined): void {
+  removeAttribute(el: any, name: string, namespace?: string | null | undefined): void {
     this.delegate.removeAttribute(el, name, namespace);
   }
 
-  addClass(el: any, name: string): void { this.delegate.addClass(el, name); }
+  addClass(el: any, name: string): void {
+    this.delegate.addClass(el, name);
+  }
 
-  removeClass(el: any, name: string): void { this.delegate.removeClass(el, name); }
+  removeClass(el: any, name: string): void {
+    this.delegate.removeClass(el, name);
+  }
 
-  setStyle(el: any, style: string, value: any, flags?: RendererStyleFlags2|undefined): void {
+  setStyle(el: any, style: string, value: any, flags?: RendererStyleFlags2 | undefined): void {
     this.delegate.setStyle(el, style, value, flags);
   }
 
-  removeStyle(el: any, style: string, flags?: RendererStyleFlags2|undefined): void {
+  removeStyle(el: any, style: string, flags?: RendererStyleFlags2 | undefined): void {
     this.delegate.removeStyle(el, style, flags);
   }
 
@@ -201,7 +233,9 @@ export class BaseAnimationRenderer implements Renderer2 {
     }
   }
 
-  setValue(node: any, value: string): void { this.delegate.setValue(node, value); }
+  setValue(node: any, value: string): void {
+    this.delegate.setValue(node, value);
+  }
 
   listen(target: any, eventName: string, callback: (event: any) => boolean | void): () => void {
     return this.delegate.listen(target, eventName, callback);
@@ -214,8 +248,11 @@ export class BaseAnimationRenderer implements Renderer2 {
 
 export class AnimationRenderer extends BaseAnimationRenderer implements Renderer2 {
   constructor(
-      public factory: AnimationRendererFactory, namespaceId: string, delegate: Renderer2,
-      engine: AnimationEngine) {
+    public factory: AnimationRendererFactory,
+    namespaceId: string,
+    delegate: Renderer2,
+    engine: AnimationEngine
+  ) {
     super(namespaceId, delegate, engine);
     this.namespaceId = namespaceId;
   }
@@ -233,8 +270,11 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
     }
   }
 
-  listen(target: 'window'|'document'|'body'|any, eventName: string, callback: (event: any) => any):
-      () => void {
+  listen(
+    target: 'window' | 'document' | 'body' | any,
+    eventName: string,
+    callback: (event: any) => any
+  ): () => void {
     if (eventName.charAt(0) == ANIMATION_PREFIX) {
       const element = resolveElementFromTarget(target);
       let name = eventName.substr(1);
@@ -244,7 +284,7 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
       if (name.charAt(0) != ANIMATION_PREFIX) {
         [name, phase] = parseTriggerCallbackName(name);
       }
-      return this.engine.listen(this.namespaceId, element, name, phase, event => {
+      return this.engine.listen(this.namespaceId, element, name, phase, (event) => {
         const countId = (event as any)['_data'] || -1;
         this.factory.scheduleListenerCallback(countId, callback, event);
       });

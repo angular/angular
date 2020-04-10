@@ -5,7 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {addToViewTree, createLContainer, createLView, createTNode, createTView, getOrCreateTNode, refreshView, renderView} from '../../../src/render3/instructions/shared';
+
+import {
+  addToViewTree,
+  createLContainer,
+  createLView,
+  createTNode,
+  createTView,
+  getOrCreateTNode,
+  refreshView,
+  renderView,
+} from '../../../src/render3/instructions/shared';
 import {ComponentTemplate, DirectiveDefList} from '../../../src/render3/interfaces/definition';
 import {TAttributes, TNodeType, TViewNode} from '../../../src/render3/interfaces/node';
 import {RendererFactory3, domRendererFactory3} from '../../../src/render3/interfaces/renderer';
@@ -15,25 +25,48 @@ import {insertView} from '../../../src/render3/node_manipulation';
 import {MicroBenchmarkRendererFactory} from './noop_renderer';
 
 const isBrowser = typeof process === 'undefined';
-const rendererFactory: RendererFactory3 =
-    isBrowser ? domRendererFactory3 : new MicroBenchmarkRendererFactory;
+const rendererFactory: RendererFactory3 = isBrowser
+  ? domRendererFactory3
+  : new MicroBenchmarkRendererFactory();
 const renderer = rendererFactory.createRenderer(null, null);
 
 export function createAndRenderLView(
-    parentLView: LView, tView: TView, hostTNode: TViewNode): LView {
+  parentLView: LView,
+  tView: TView,
+  hostTNode: TViewNode
+): LView {
   const embeddedLView = createLView(
-      parentLView, tView, {}, LViewFlags.CheckAlways, null, hostTNode, rendererFactory, renderer);
+    parentLView,
+    tView,
+    {},
+    LViewFlags.CheckAlways,
+    null,
+    hostTNode,
+    rendererFactory,
+    renderer
+  );
   renderView(tView, embeddedLView, null);
   return embeddedLView;
 }
 
 export function setupRootViewWithEmbeddedViews(
-    templateFn: ComponentTemplate<any>| null, decls: number, vars: number, noOfViews: number,
-    embeddedViewContext: any = {}, consts: TAttributes[] | null = null,
-    directiveRegistry: DirectiveDefList | null = null): LView {
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  noOfViews: number,
+  embeddedViewContext: any = {},
+  consts: TAttributes[] | null = null,
+  directiveRegistry: DirectiveDefList | null = null
+): LView {
   return setupTestHarness(
-             templateFn, decls, vars, noOfViews, embeddedViewContext, consts, directiveRegistry)
-      .hostLView;
+    templateFn,
+    decls,
+    vars,
+    noOfViews,
+    embeddedViewContext,
+    consts,
+    directiveRegistry
+  ).hostLView;
 }
 
 export interface TestHarness {
@@ -45,31 +78,63 @@ export interface TestHarness {
 }
 
 export function setupTestHarness(
-    templateFn: ComponentTemplate<any>| null, decls: number, vars: number, noOfViews: number,
-    embeddedViewContext: any = {}, consts: TAttributes[] | null = null,
-    directiveRegistry: DirectiveDefList | null = null): TestHarness {
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  noOfViews: number,
+  embeddedViewContext: any = {},
+  consts: TAttributes[] | null = null,
+  directiveRegistry: DirectiveDefList | null = null
+): TestHarness {
   // Create a root view with a container
   const hostTView = createTView(TViewType.Root, -1, null, 1, 0, null, null, null, null, consts);
   const tContainerNode = getOrCreateTNode(hostTView, null, 0, TNodeType.Container, null, null);
   const hostNode = renderer.createElement('div');
   const hostLView = createLView(
-      null, hostTView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, hostNode, null,
-      rendererFactory, renderer);
+    null,
+    hostTView,
+    {},
+    LViewFlags.CheckAlways | LViewFlags.IsRoot,
+    hostNode,
+    null,
+    rendererFactory,
+    renderer
+  );
   const mockRCommentNode = renderer.createComment('');
-  const lContainer =
-      createLContainer(mockRCommentNode, hostLView, mockRCommentNode, tContainerNode);
+  const lContainer = createLContainer(
+    mockRCommentNode,
+    hostLView,
+    mockRCommentNode,
+    tContainerNode
+  );
   addToViewTree(hostLView, lContainer);
-
 
   // create test embedded views
   const embeddedTView = createTView(
-      TViewType.Embedded, -1, templateFn, decls, vars, directiveRegistry, null, null, null, consts);
+    TViewType.Embedded,
+    -1,
+    templateFn,
+    decls,
+    vars,
+    directiveRegistry,
+    null,
+    null,
+    null,
+    consts
+  );
   const viewTNode = createTNode(hostTView, null, TNodeType.View, -1, null, null) as TViewNode;
 
   function createEmbeddedLView(): LView {
     const embeddedLView = createLView(
-        hostLView, embeddedTView, embeddedViewContext, LViewFlags.CheckAlways, null, viewTNode,
-        rendererFactory, renderer);
+      hostLView,
+      embeddedTView,
+      embeddedViewContext,
+      LViewFlags.CheckAlways,
+      null,
+      viewTNode,
+      rendererFactory,
+      renderer
+    );
     renderView(embeddedTView, embeddedLView, embeddedViewContext);
     return embeddedLView;
   }

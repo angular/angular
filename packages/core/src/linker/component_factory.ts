@@ -92,15 +92,18 @@ export abstract class ComponentFactory<C> {
   /**
    * The inputs of the component.
    */
-  abstract get inputs(): {propName: string, templateName: string}[];
+  abstract get inputs(): {propName: string; templateName: string}[];
   /**
    * The outputs of the component.
    */
-  abstract get outputs(): {propName: string, templateName: string}[];
+  abstract get outputs(): {propName: string; templateName: string}[];
   /**
    * Creates a new component.
    */
   abstract create(
-      injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any,
-      ngModule?: NgModuleRef<any>): ComponentRef<C>;
+    injector: Injector,
+    projectableNodes?: any[][],
+    rootSelectorOrNode?: string | any,
+    ngModule?: NgModuleRef<any>
+  ): ComponentRef<C>;
 }

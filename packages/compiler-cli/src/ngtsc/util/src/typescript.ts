@@ -21,20 +21,22 @@ export function isNonDeclarationTsPath(filePath: string): boolean {
 }
 
 export function isFromDtsFile(node: ts.Node): boolean {
-  let sf: ts.SourceFile|undefined = node.getSourceFile();
+  let sf: ts.SourceFile | undefined = node.getSourceFile();
   if (sf === undefined) {
     sf = ts.getOriginalNode(node).getSourceFile();
   }
   return sf !== undefined && sf.isDeclarationFile;
 }
 
-export function nodeNameForError(node: ts.Node&{name?: ts.Node}): string {
+export function nodeNameForError(node: ts.Node & {name?: ts.Node}): string {
   if (node.name !== undefined && ts.isIdentifier(node.name)) {
     return node.name.text;
   } else {
     const kind = ts.SyntaxKind[node.kind];
-    const {line, character} =
-        ts.getLineAndCharacterOfPosition(node.getSourceFile(), node.getStart());
+    const {line, character} = ts.getLineAndCharacterOfPosition(
+      node.getSourceFile(),
+      node.getStart()
+    );
     return `${kind}@${line}:${character}`;
   }
 }
@@ -47,18 +49,19 @@ export function getSourceFile(node: ts.Node): ts.SourceFile {
   return directSf !== undefined ? directSf : ts.getOriginalNode(node).getSourceFile();
 }
 
-export function getSourceFileOrNull(program: ts.Program, fileName: AbsoluteFsPath): ts.SourceFile|
-    null {
+export function getSourceFileOrNull(
+  program: ts.Program,
+  fileName: AbsoluteFsPath
+): ts.SourceFile | null {
   return program.getSourceFile(fileName) || null;
 }
-
 
 export function getTokenAtPosition(sf: ts.SourceFile, pos: number): ts.Node {
   // getTokenAtPosition is part of TypeScript's private API.
   return (ts as any).getTokenAtPosition(sf, pos);
 }
 
-export function identifierOfNode(decl: ts.Node&{name?: ts.Node}): ts.Identifier|null {
+export function identifierOfNode(decl: ts.Node & {name?: ts.Node}): ts.Identifier | null {
   if (decl.name !== undefined && ts.isIdentifier(decl.name)) {
     return decl.name;
   } else {
@@ -70,16 +73,20 @@ export function isDeclaration(node: ts.Node): node is ts.Declaration {
   return isValueDeclaration(node) || isTypeDeclaration(node);
 }
 
-export function isValueDeclaration(node: ts.Node): node is ts.ClassDeclaration|
-    ts.FunctionDeclaration|ts.VariableDeclaration {
-  return ts.isClassDeclaration(node) || ts.isFunctionDeclaration(node) ||
-      ts.isVariableDeclaration(node);
+export function isValueDeclaration(
+  node: ts.Node
+): node is ts.ClassDeclaration | ts.FunctionDeclaration | ts.VariableDeclaration {
+  return (
+    ts.isClassDeclaration(node) || ts.isFunctionDeclaration(node) || ts.isVariableDeclaration(node)
+  );
 }
 
-export function isTypeDeclaration(node: ts.Node): node is ts.EnumDeclaration|
-    ts.TypeAliasDeclaration|ts.InterfaceDeclaration {
-  return ts.isEnumDeclaration(node) || ts.isTypeAliasDeclaration(node) ||
-      ts.isInterfaceDeclaration(node);
+export function isTypeDeclaration(
+  node: ts.Node
+): node is ts.EnumDeclaration | ts.TypeAliasDeclaration | ts.InterfaceDeclaration {
+  return (
+    ts.isEnumDeclaration(node) || ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node)
+  );
 }
 
 export function isExported(node: ts.Declaration): boolean {
@@ -87,8 +94,10 @@ export function isExported(node: ts.Declaration): boolean {
   if (ts.isVariableDeclaration(node) && ts.isVariableDeclarationList(node.parent)) {
     topLevel = node.parent.parent;
   }
-  return topLevel.modifiers !== undefined &&
-      topLevel.modifiers.some(modifier => modifier.kind === ts.SyntaxKind.ExportKeyword);
+  return (
+    topLevel.modifiers !== undefined &&
+    topLevel.modifiers.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword)
+  );
 }
 
 export function getRootDirs(host: ts.CompilerHost, options: ts.CompilerOptions): AbsoluteFsPath[] {
@@ -105,7 +114,7 @@ export function getRootDirs(host: ts.CompilerHost, options: ts.CompilerOptions):
   // See:
   // https://github.com/Microsoft/TypeScript/blob/3f7357d37f66c842d70d835bc925ec2a873ecfec/src/compiler/sys.ts#L650
   // Also compiler options might be set via an API which doesn't normalize paths
-  return rootDirs.map(rootDir => absoluteFrom(rootDir));
+  return rootDirs.map((rootDir) => absoluteFrom(rootDir));
 }
 
 export function nodeDebugInfo(node: ts.Node): string {
@@ -121,20 +130,30 @@ export function nodeDebugInfo(node: ts.Node): string {
  * Otherwise it will fallback on the `ts.ResolveModuleName()` function.
  */
 export function resolveModuleName(
-    moduleName: string, containingFile: string, compilerOptions: ts.CompilerOptions,
-    compilerHost: ts.CompilerHost,
-    moduleResolutionCache: ts.ModuleResolutionCache|null): ts.ResolvedModule|undefined {
+  moduleName: string,
+  containingFile: string,
+  compilerOptions: ts.CompilerOptions,
+  compilerHost: ts.CompilerHost,
+  moduleResolutionCache: ts.ModuleResolutionCache | null
+): ts.ResolvedModule | undefined {
   if (compilerHost.resolveModuleNames) {
     // FIXME: Additional parameters are required in TS3.6, but ignored in 3.5.
     // Remove the any cast once google3 is fully on TS3.6.
-    return (compilerHost as any)
-        .resolveModuleNames([moduleName], containingFile, undefined, undefined, compilerOptions)[0];
+    return (compilerHost as any).resolveModuleNames(
+      [moduleName],
+      containingFile,
+      undefined,
+      undefined,
+      compilerOptions
+    )[0];
   } else {
-    return ts
-        .resolveModuleName(
-            moduleName, containingFile, compilerOptions, compilerHost,
-            moduleResolutionCache !== null ? moduleResolutionCache : undefined)
-        .resolvedModule;
+    return ts.resolveModuleName(
+      moduleName,
+      containingFile,
+      compilerOptions,
+      compilerHost,
+      moduleResolutionCache !== null ? moduleResolutionCache : undefined
+    ).resolvedModule;
   }
 }
 

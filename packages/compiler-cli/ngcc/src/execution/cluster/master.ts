@@ -20,7 +20,6 @@ import {stringifyTask} from '../tasks/utils';
 import {MessageFromWorker, TaskCompletedMessage, UpdatePackageJsonMessage} from './api';
 import {Deferred, sendMessageToWorker} from './utils';
 
-
 /**
  * The cluster master is responsible for analyzing all entry-points, planning the work that needs to
  * be done, distributing it to worker-processes and collecting/post-processing the results.
@@ -28,14 +27,17 @@ import {Deferred, sendMessageToWorker} from './utils';
 export class ClusterMaster {
   private finishedDeferred = new Deferred<void>();
   private processingStartTime: number = -1;
-  private taskAssignments = new Map<number, Task|null>();
+  private taskAssignments = new Map<number, Task | null>();
   private taskQueue: TaskQueue;
   private onTaskCompleted: TaskCompletedCallback;
 
   constructor(
-      private maxWorkerCount: number, private logger: Logger,
-      private pkgJsonUpdater: PackageJsonUpdater, analyzeEntryPoints: AnalyzeEntryPointsFn,
-      createTaskCompletedCallback: CreateTaskCompletedCallback) {
+    private maxWorkerCount: number,
+    private logger: Logger,
+    private pkgJsonUpdater: PackageJsonUpdater,
+    analyzeEntryPoints: AnalyzeEntryPointsFn,
+    createTaskCompletedCallback: CreateTaskCompletedCallback
+  ) {
     if (!cluster.isMaster) {
       throw new Error('Tried to instantiate `ClusterMaster` on a worker process.');
     }
@@ -50,22 +52,31 @@ export class ClusterMaster {
     }
 
     // Set up listeners for worker events (emitted on `cluster`).
-    cluster.on('online', this.wrapEventHandler(worker => this.onWorkerOnline(worker.id)));
+    cluster.on(
+      'online',
+      this.wrapEventHandler((worker) => this.onWorkerOnline(worker.id))
+    );
 
     cluster.on(
-        'message', this.wrapEventHandler((worker, msg) => this.onWorkerMessage(worker.id, msg)));
+      'message',
+      this.wrapEventHandler((worker, msg) => this.onWorkerMessage(worker.id, msg))
+    );
 
     cluster.on(
-        'exit',
-        this.wrapEventHandler((worker, code, signal) => this.onWorkerExit(worker, code, signal)));
+      'exit',
+      this.wrapEventHandler((worker, code, signal) => this.onWorkerExit(worker, code, signal))
+    );
 
     // Since we have pending tasks at the very minimum we need a single worker.
     cluster.fork();
 
-    return this.finishedDeferred.promise.then(() => this.stopWorkers(), err => {
-      this.stopWorkers();
-      return Promise.reject(err);
-    });
+    return this.finishedDeferred.promise.then(
+      () => this.stopWorkers(),
+      (err) => {
+        this.stopWorkers();
+        return Promise.reject(err);
+      }
+    );
   }
 
   /** Try to find available (idle) workers and assign them available (non-blocked) tasks. */
@@ -112,32 +123,35 @@ export class ClusterMaster {
       } else {
         // If there are no available workers or no available tasks, log (for debugging purposes).
         this.logger.debug(
-            `All ${spawnedWorkerCount} workers are currently busy and cannot take on more work.`);
+          `All ${spawnedWorkerCount} workers are currently busy and cannot take on more work.`
+        );
       }
     } else {
       const busyWorkers = Array.from(this.taskAssignments)
-                              .filter(([_workerId, task]) => task !== null)
-                              .map(([workerId]) => workerId);
+        .filter(([_workerId, task]) => task !== null)
+        .map(([workerId]) => workerId);
       const totalWorkerCount = this.taskAssignments.size;
       const idleWorkerCount = totalWorkerCount - busyWorkers.length;
 
       this.logger.debug(
-          `No assignments for ${idleWorkerCount} idle (out of ${totalWorkerCount} total) ` +
-          `workers. Busy workers: ${busyWorkers.join(', ')}`);
+        `No assignments for ${idleWorkerCount} idle (out of ${totalWorkerCount} total) ` +
+          `workers. Busy workers: ${busyWorkers.join(', ')}`
+      );
 
       if (busyWorkers.length === 0) {
         // This is a bug:
         // All workers are idle (meaning no tasks are in progress) and `taskQueue.allTasksCompleted`
         // is `false`, but there is still no assignable work.
         throw new Error(
-            'There are still unprocessed tasks in the queue and no tasks are currently in ' +
-            `progress, yet the queue did not return any available tasks: ${this.taskQueue}`);
+          'There are still unprocessed tasks in the queue and no tasks are currently in ' +
+            `progress, yet the queue did not return any available tasks: ${this.taskQueue}`
+        );
       }
     }
   }
 
   /** Handle a worker's exiting. (Might be intentional or not.) */
-  private onWorkerExit(worker: cluster.Worker, code: number|null, signal: string|null): void {
+  private onWorkerExit(worker: cluster.Worker, code: number | null, signal: string | null): void {
     // If the worker's exiting was intentional, nothing to do.
     if (worker.exitedAfterDisconnect) return;
 
@@ -145,8 +159,9 @@ export class ClusterMaster {
     const currentTask = this.taskAssignments.get(worker.id);
 
     this.logger.warn(
-        `Worker #${worker.id} exited unexpectedly (code: ${code} | signal: ${signal}).\n` +
-        `  Current assignment: ${(currentTask == null) ? '-' : stringifyTask(currentTask)}`);
+      `Worker #${worker.id} exited unexpectedly (code: ${code} | signal: ${signal}).\n` +
+        `  Current assignment: ${currentTask == null ? '-' : stringifyTask(currentTask)}`
+    );
 
     if (currentTask == null) {
       // The crashed worker process was not in the middle of a task:
@@ -158,8 +173,9 @@ export class ClusterMaster {
       // The crashed worker process was in the middle of a task:
       // Impossible to know whether we can recover (without ending up with a corrupted entry-point).
       throw new Error(
-          'Process unexpectedly crashed, while processing format property ' +
-          `${currentTask.formatProperty} for entry-point '${currentTask.entryPoint.path}'.`);
+        'Process unexpectedly crashed, while processing format property ' +
+          `${currentTask.formatProperty} for entry-point '${currentTask.entryPoint.path}'.`
+      );
     }
   }
 
@@ -168,8 +184,9 @@ export class ClusterMaster {
     if (!this.taskAssignments.has(workerId)) {
       const knownWorkers = Array.from(this.taskAssignments.keys());
       throw new Error(
-          `Received message from unknown worker #${workerId} (known workers: ` +
-          `${knownWorkers.join(', ')}): ${JSON.stringify(msg)}`);
+        `Received message from unknown worker #${workerId} (known workers: ` +
+          `${knownWorkers.join(', ')}): ${JSON.stringify(msg)}`
+      );
     }
 
     switch (msg.type) {
@@ -181,7 +198,8 @@ export class ClusterMaster {
         return this.onWorkerUpdatePackageJson(workerId, msg);
       default:
         throw new Error(
-            `Invalid message received from worker #${workerId}: ${JSON.stringify(msg)}`);
+          `Invalid message received from worker #${workerId}: ${JSON.stringify(msg)}`
+        );
     }
   }
 
@@ -206,8 +224,9 @@ export class ClusterMaster {
 
     if (task === null) {
       throw new Error(
-          `Expected worker #${workerId} to have a task assigned, while handling message: ` +
-          JSON.stringify(msg));
+        `Expected worker #${workerId} to have a task assigned, while handling message: ` +
+          JSON.stringify(msg)
+      );
     }
 
     this.onTaskCompleted(task, msg.outcome, msg.message);
@@ -223,8 +242,9 @@ export class ClusterMaster {
 
     if (task === null) {
       throw new Error(
-          `Expected worker #${workerId} to have a task assigned, while handling message: ` +
-          JSON.stringify(msg));
+        `Expected worker #${workerId} to have a task assigned, while handling message: ` +
+          JSON.stringify(msg)
+      );
     }
 
     const expectedPackageJsonPath = resolve(task.entryPoint.path, 'package.json');
@@ -232,8 +252,9 @@ export class ClusterMaster {
 
     if (expectedPackageJsonPath !== msg.packageJsonPath) {
       throw new Error(
-          `Received '${msg.type}' message from worker #${workerId} for '${msg.packageJsonPath}', ` +
-          `but was expecting '${expectedPackageJsonPath}' (based on task assignment).`);
+        `Received '${msg.type}' message from worker #${workerId} for '${msg.packageJsonPath}', ` +
+          `but was expecting '${expectedPackageJsonPath}' (based on task assignment).`
+      );
     }
 
     // NOTE: Although the change in the parsed `package.json` will be reflected in tasks objects
@@ -253,15 +274,16 @@ export class ClusterMaster {
     this.logger.debug(`Stopping ${workers.length} workers...`);
 
     cluster.removeAllListeners();
-    workers.forEach(worker => worker.kill());
+    workers.forEach((worker) => worker.kill());
   }
 
   /**
    * Wrap an event handler to ensure that `finishedDeferred` will be rejected on error (regardless
    * if the handler completes synchronously or asynchronously).
    */
-  private wrapEventHandler<Args extends unknown[]>(fn: (...args: Args) => void|Promise<void>):
-      (...args: Args) => Promise<void> {
+  private wrapEventHandler<Args extends unknown[]>(
+    fn: (...args: Args) => void | Promise<void>
+  ): (...args: Args) => Promise<void> {
     return async (...args: Args) => {
       try {
         await fn(...args);

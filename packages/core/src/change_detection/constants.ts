@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 /**
  * The strategy that the default change detector uses to detect changes.
  * When set, takes effect the next time change detection is triggered.
@@ -78,8 +77,10 @@ export enum ChangeDetectorStatus {
  * @see `ChangeDetectorStatus`
  * @see `ChangeDetectorRef`
  */
-export function isDefaultChangeDetectionStrategy(changeDetectionStrategy: ChangeDetectionStrategy):
-    boolean {
-  return changeDetectionStrategy == null ||
-      changeDetectionStrategy === ChangeDetectionStrategy.Default;
+export function isDefaultChangeDetectionStrategy(
+  changeDetectionStrategy: ChangeDetectionStrategy
+): boolean {
+  return (
+    changeDetectionStrategy == null || changeDetectionStrategy === ChangeDetectionStrategy.Default
+  );
 }

@@ -10,19 +10,21 @@ import * as ts from 'typescript';
 
 import {ResolvedTemplate} from '../../../utils/ng_component_template';
 import {getAngularDecorators} from '../../../utils/ng_decorators';
-import {findParentClassDeclaration, getBaseTypeIdentifiers} from '../../../utils/typescript/class_declaration';
+import {
+  findParentClassDeclaration,
+  getBaseTypeIdentifiers,
+} from '../../../utils/typescript/class_declaration';
 import {getPropertyNameText} from '../../../utils/typescript/property_name';
 
 import {getInputNamesOfClass} from './directive_inputs';
 import {NgQueryDefinition, QueryType} from './query-definition';
-
 
 /** Resolved metadata of a given class. */
 export interface ClassMetadata {
   /** List of class declarations that derive from the given class. */
   derivedClasses: ts.ClassDeclaration[];
   /** Super class of the given class. */
-  superClass: ts.ClassDeclaration|null;
+  superClass: ts.ClassDeclaration | null;
   /** List of property names that declare an Angular input within the given class. */
   ngInputNames: string[];
   /** Component template that belongs to that class if present. */
@@ -60,7 +62,7 @@ export class NgQueryResolveVisitor {
         break;
     }
 
-    ts.forEachChild(node, n => this.visitNode(n));
+    ts.forEachChild(node, (n) => this.visitNode(n));
   }
 
   private visitPropertyDeclaration(node: ts.PropertyDeclaration) {
@@ -77,14 +79,18 @@ export class NgQueryResolveVisitor {
   }
 
   private _recordQueryDeclaration(
-      node: ts.Node, property: ts.PropertyDeclaration|null, queryName: string|null) {
+    node: ts.Node,
+    property: ts.PropertyDeclaration | null,
+    queryName: string | null
+  ) {
     if (!node.decorators || !node.decorators.length) {
       return;
     }
 
     const ngDecorators = getAngularDecorators(this.typeChecker, node.decorators);
-    const queryDecorator =
-        ngDecorators.find(({name}) => name === 'ViewChild' || name === 'ContentChild');
+    const queryDecorator = ngDecorators.find(
+      ({name}) => name === 'ViewChild' || name === 'ContentChild'
+    );
 
     // Ensure that the current property declaration is defining a query.
     if (!queryDecorator) {
@@ -101,14 +107,17 @@ export class NgQueryResolveVisitor {
     const sourceFile = node.getSourceFile();
     const newQueries = this.resolvedQueries.get(sourceFile) || [];
 
-    this.resolvedQueries.set(sourceFile, newQueries.concat({
-      name: queryName,
-      type: queryDecorator.name === 'ViewChild' ? QueryType.ViewChild : QueryType.ContentChild,
-      node,
-      property,
-      decorator: queryDecorator,
-      container: queryContainer,
-    }));
+    this.resolvedQueries.set(
+      sourceFile,
+      newQueries.concat({
+        name: queryName,
+        type: queryDecorator.name === 'ViewChild' ? QueryType.ViewChild : QueryType.ContentChild,
+        node,
+        property,
+        decorator: queryDecorator,
+        container: queryContainer,
+      })
+    );
   }
 
   private _recordClassInputSetters(node: ts.ClassDeclaration) {

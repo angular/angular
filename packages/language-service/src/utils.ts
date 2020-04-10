@@ -6,7 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AstPath, BoundEventAst, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, HtmlAstPath, identifierName, Identifiers, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, RecursiveVisitor, TemplateAst, TemplateAstPath, templateVisitAll, visitAll} from '@angular/compiler';
+import {
+  AstPath,
+  BoundEventAst,
+  CompileDirectiveSummary,
+  CompileTypeMetadata,
+  CssSelector,
+  DirectiveAst,
+  ElementAst,
+  EmbeddedTemplateAst,
+  HtmlAstPath,
+  identifierName,
+  Identifiers,
+  Node,
+  ParseSourceSpan,
+  RecursiveTemplateAstVisitor,
+  RecursiveVisitor,
+  TemplateAst,
+  TemplateAstPath,
+  templateVisitAll,
+  visitAll,
+} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AstResult, SelectorInfo} from './common';
@@ -14,7 +34,7 @@ import {Span, Symbol, SymbolQuery} from './types';
 
 export interface SpanHolder {
   sourceSpan: ParseSourceSpan;
-  endSourceSpan?: ParseSourceSpan|null;
+  endSourceSpan?: ParseSourceSpan | null;
   children?: SpanHolder[];
 }
 
@@ -24,8 +44,8 @@ export function isParseSourceSpan(value: any): value is ParseSourceSpan {
 
 export function spanOf(span: SpanHolder): Span;
 export function spanOf(span: ParseSourceSpan): Span;
-export function spanOf(span: SpanHolder|ParseSourceSpan|undefined): Span|undefined;
-export function spanOf(span?: SpanHolder|ParseSourceSpan): Span|undefined {
+export function spanOf(span: SpanHolder | ParseSourceSpan | undefined): Span | undefined;
+export function spanOf(span?: SpanHolder | ParseSourceSpan): Span | undefined {
   if (!span) return undefined;
   if (isParseSourceSpan(span)) {
     return {start: span.start.offset, end: span.end.offset};
@@ -35,7 +55,7 @@ export function spanOf(span?: SpanHolder|ParseSourceSpan): Span|undefined {
     } else if (span.children && span.children.length) {
       return {
         start: span.sourceSpan.start.offset,
-        end: spanOf(span.children[span.children.length - 1])!.end
+        end: spanOf(span.children[span.children.length - 1])!.end,
       };
     }
     return {start: span.sourceSpan.start.offset, end: span.sourceSpan.end.offset};
@@ -43,9 +63,12 @@ export function spanOf(span?: SpanHolder|ParseSourceSpan): Span|undefined {
 }
 
 export function inSpan(position: number, span?: Span, exclusive?: boolean): boolean {
-  return span != null &&
-      (exclusive ? position >= span.start && position < span.end :
-                   position >= span.start && position <= span.end);
+  return (
+    span != null &&
+    (exclusive
+      ? position >= span.start && position < span.end
+      : position >= span.start && position <= span.end)
+  );
 }
 
 export function offsetSpan(span: Span, amount: number): Span {
@@ -59,8 +82,10 @@ export function isNarrower(spanA: Span, spanB: Span): boolean {
 export function isStructuralDirective(type: CompileTypeMetadata): boolean {
   for (const diDep of type.diDeps) {
     const diDepName = identifierName(diDep.token?.identifier);
-    if (diDepName === Identifiers.TemplateRef.name ||
-        diDepName === Identifiers.ViewContainerRef.name) {
+    if (
+      diDepName === Identifiers.TemplateRef.name ||
+      diDepName === Identifiers.ViewContainerRef.name
+    ) {
       return true;
     }
   }
@@ -85,14 +110,14 @@ export function isTypescriptVersion(low: string, high?: string) {
 
   if (version.substring(0, low.length) < low) return false;
 
-  if (high && (version.substring(0, high.length) > high)) return false;
+  if (high && version.substring(0, high.length) > high) return false;
 
   return true;
 }
 
 export function findTemplateAstAt(ast: TemplateAst[], position: number): TemplateAstPath {
   const path: TemplateAst[] = [];
-  const visitor = new class extends RecursiveTemplateAstVisitor {
+  const visitor = new (class extends RecursiveTemplateAstVisitor {
     visit(ast: TemplateAst): any {
       let span = spanOf(ast);
       if (inSpan(position, span)) {
@@ -107,7 +132,7 @@ export function findTemplateAstAt(ast: TemplateAst[], position: number): Templat
     }
 
     visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
-      return this.visitChildren(context, visit => {
+      return this.visitChildren(context, (visit) => {
         // Ignore reference, variable and providers
         visit(ast.attrs);
         visit(ast.directives);
@@ -116,7 +141,7 @@ export function findTemplateAstAt(ast: TemplateAst[], position: number): Templat
     }
 
     visitElement(ast: ElementAst, context: any): any {
-      return this.visitChildren(context, visit => {
+      return this.visitChildren(context, (visit) => {
         // Ingnore providers
         visit(ast.attrs);
         visit(ast.inputs);
@@ -129,7 +154,7 @@ export function findTemplateAstAt(ast: TemplateAst[], position: number): Templat
 
     visitDirective(ast: DirectiveAst, context: any): any {
       // Ignore the host properties of a directive
-      const result = this.visitChildren(context, visit => {
+      const result = this.visitChildren(context, (visit) => {
         visit(ast.inputs);
       });
       // We never care about the diretive itself, just its inputs.
@@ -138,7 +163,7 @@ export function findTemplateAstAt(ast: TemplateAst[], position: number): Templat
       }
       return result;
     }
-  };
+  })();
 
   templateVisitAll(visitor, ast);
 
@@ -150,14 +175,14 @@ export function findTemplateAstAt(ast: TemplateAst[], position: number): Templat
  * @param node
  * @param position
  */
-export function findTightestNode(node: ts.Node, position: number): ts.Node|undefined {
+export function findTightestNode(node: ts.Node, position: number): ts.Node | undefined {
   if (node.getStart() <= position && position < node.getEnd()) {
-    return node.forEachChild(c => findTightestNode(c, position)) || node;
+    return node.forEachChild((c) => findTightestNode(c, position)) || node;
   }
 }
 
 interface DirectiveClassLike {
-  decoratorId: ts.Identifier;  // decorator identifier, like @Component
+  decoratorId: ts.Identifier; // decorator identifier, like @Component
   classId: ts.Identifier;
 }
 
@@ -179,14 +204,17 @@ interface DirectiveClassLike {
  *
  * @param node Potential node that represents an Angular directive.
  */
-export function getDirectiveClassLike(node: ts.Node): DirectiveClassLike|undefined {
+export function getDirectiveClassLike(node: ts.Node): DirectiveClassLike | undefined {
   if (!ts.isClassDeclaration(node) || !node.name || !node.decorators) {
     return;
   }
   for (const d of node.decorators) {
     const expr = d.expression;
-    if (!ts.isCallExpression(expr) || expr.arguments.length !== 1 ||
-        !ts.isIdentifier(expr.expression)) {
+    if (
+      !ts.isCallExpression(expr) ||
+      expr.arguments.length !== 1 ||
+      !ts.isIdentifier(expr.expression)
+    ) {
       continue;
     }
     const arg = expr.arguments[0];
@@ -209,12 +237,15 @@ export function getDirectiveClassLike(node: ts.Node): DirectiveClassLike|undefin
  * @return node property assignment value of type T, or undefined if none is found
  */
 export function findPropertyValueOfType<T extends ts.Node>(
-    startNode: ts.Node, propName: string, predicate: (node: ts.Node) => node is T): T|undefined {
+  startNode: ts.Node,
+  propName: string,
+  predicate: (node: ts.Node) => node is T
+): T | undefined {
   if (ts.isPropertyAssignment(startNode) && startNode.name.getText() === propName) {
     const {initializer} = startNode;
     if (predicate(initializer)) return initializer;
   }
-  return startNode.forEachChild(c => findPropertyValueOfType(c, propName, predicate));
+  return startNode.forEachChild((c) => findPropertyValueOfType(c, propName, predicate));
 }
 
 /**
@@ -225,7 +256,7 @@ export function findPropertyValueOfType<T extends ts.Node>(
  */
 export function getPathToNodeAtPosition(nodes: Node[], position: number): HtmlAstPath {
   const path: Node[] = [];
-  const visitor = new class extends RecursiveVisitor {
+  const visitor = new (class extends RecursiveVisitor {
     visit(ast: Node) {
       const span = spanOf(ast);
       if (inSpan(position, span)) {
@@ -236,11 +267,10 @@ export function getPathToNodeAtPosition(nodes: Node[], position: number): HtmlAs
         return true;
       }
     }
-  };
+  })();
   visitAll(visitor, nodes);
   return new AstPath<Node>(path, position);
 }
-
 
 /**
  * Inverts an object's key-value pairs.
@@ -254,14 +284,16 @@ export function invertMap(obj: {[name: string]: string}): {[name: string]: strin
   return result;
 }
 
-
 /**
  * Finds the directive member providing a template output binding, if one exists.
  * @param info aggregate template AST information
  * @param path narrowing
  */
 export function findOutputBinding(
-    binding: BoundEventAst, path: TemplateAstPath, query: SymbolQuery): Symbol|undefined {
+  binding: BoundEventAst,
+  path: TemplateAstPath,
+  query: SymbolQuery
+): Symbol | undefined {
   const element = path.first(ElementAst);
   if (element) {
     for (const directive of element.directives) {

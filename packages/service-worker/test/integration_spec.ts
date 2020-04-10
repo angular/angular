@@ -9,17 +9,24 @@
 import {NgswCommChannel} from '@angular/service-worker/src/low_level';
 import {SwPush} from '@angular/service-worker/src/push';
 import {SwUpdate} from '@angular/service-worker/src/update';
-import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '@angular/service-worker/testing/mock';
+import {
+  MockServiceWorkerContainer,
+  MockServiceWorkerRegistration,
+} from '@angular/service-worker/testing/mock';
 import {CacheDatabase} from '@angular/service-worker/worker/src/db-cache';
 import {Driver} from '@angular/service-worker/worker/src/driver';
 import {Manifest} from '@angular/service-worker/worker/src/manifest';
 import {MockRequest} from '@angular/service-worker/worker/testing/fetch';
-import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '@angular/service-worker/worker/testing/mock';
+import {
+  MockFileSystemBuilder,
+  MockServerStateBuilder,
+  tmpHashTableForFs,
+} from '@angular/service-worker/worker/testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '@angular/service-worker/worker/testing/scope';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/operators';
 
-(function() {
+(function () {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
     return;
@@ -38,13 +45,15 @@ import {take} from 'rxjs/operators';
     timestamp: 1234567890123,
     appData: {version: '1'},
     index: '/only.txt',
-    assetGroups: [{
-      name: 'assets',
-      installMode: 'prefetch',
-      updateMode: 'prefetch',
-      urls: ['/only.txt'],
-      patterns: [],
-    }],
+    assetGroups: [
+      {
+        name: 'assets',
+        installMode: 'prefetch',
+        updateMode: 'prefetch',
+        urls: ['/only.txt'],
+        patterns: [],
+      },
+    ],
     navigationUrls: [],
     hashTable: tmpHashTableForFs(dist),
   };
@@ -54,22 +63,25 @@ import {take} from 'rxjs/operators';
     timestamp: 1234567890123,
     appData: {version: '2'},
     index: '/only.txt',
-    assetGroups: [{
-      name: 'assets',
-      installMode: 'prefetch',
-      updateMode: 'prefetch',
-      urls: ['/only.txt'],
-      patterns: [],
-    }],
+    assetGroups: [
+      {
+        name: 'assets',
+        installMode: 'prefetch',
+        updateMode: 'prefetch',
+        urls: ['/only.txt'],
+        patterns: [],
+      },
+    ],
     navigationUrls: [],
     hashTable: tmpHashTableForFs(distUpdate),
   };
 
   const server = new MockServerStateBuilder().withStaticFiles(dist).withManifest(manifest).build();
 
-  const serverUpdate =
-      new MockServerStateBuilder().withStaticFiles(distUpdate).withManifest(manifestUpdate).build();
-
+  const serverUpdate = new MockServerStateBuilder()
+    .withStaticFiles(distUpdate)
+    .withManifest(manifestUpdate)
+    .build();
 
   describe('ngsw + companion lib', () => {
     let mock: MockServiceWorkerContainer;
@@ -78,7 +90,7 @@ import {take} from 'rxjs/operators';
     let scope: SwTestHarness;
     let driver: Driver;
 
-    beforeEach(async() => {
+    beforeEach(async () => {
       // Fire up the client.
       mock = new MockServiceWorkerContainer();
       comm = new NgswCommChannel(mock as any);
@@ -86,39 +98,46 @@ import {take} from 'rxjs/operators';
       driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
 
       scope.clients.add('default');
-      scope.clients.getMock('default') !.queue.subscribe(msg => { mock.sendMessage(msg); });
+      scope.clients.getMock('default')!.queue.subscribe((msg) => {
+        mock.sendMessage(msg);
+      });
 
-      mock.messages.subscribe(msg => { scope.handleMessage(msg, 'default'); });
-      mock.notificationClicks.subscribe((msg: Object) => { scope.handleMessage(msg, 'default'); });
+      mock.messages.subscribe((msg) => {
+        scope.handleMessage(msg, 'default');
+      });
+      mock.notificationClicks.subscribe((msg: Object) => {
+        scope.handleMessage(msg, 'default');
+      });
 
       mock.setupSw();
-      reg = mock.mockRegistration !;
+      reg = mock.mockRegistration!;
 
       await Promise.all(scope.handleFetch(new MockRequest('/only.txt'), 'default'));
       await driver.initialized;
     });
 
-    it('communicates back and forth via update check', async() => {
+    it('communicates back and forth via update check', async () => {
       const update = new SwUpdate(comm);
       await update.checkForUpdate();
     });
 
-    it('detects an actual update', async() => {
+    it('detects an actual update', async () => {
       const update = new SwUpdate(comm);
       scope.updateServerState(serverUpdate);
 
-      const gotUpdateNotice =
-          (async() => { const notice = await obsToSinglePromise(update.available); })();
+      const gotUpdateNotice = (async () => {
+        const notice = await obsToSinglePromise(update.available);
+      })();
 
       await update.checkForUpdate();
       await gotUpdateNotice;
     });
 
-    it('receives push message notifications', async() => {
+    it('receives push message notifications', async () => {
       const push = new SwPush(comm);
       scope.updateServerState(serverUpdate);
 
-      const gotPushNotice = (async() => {
+      const gotPushNotice = (async () => {
         const message = await obsToSinglePromise(push.messages);
         expect(message).toEqual({
           test: 'success',
@@ -131,11 +150,11 @@ import {take} from 'rxjs/operators';
       await gotPushNotice;
     });
 
-    it('receives push message click events', async() => {
+    it('receives push message click events', async () => {
       const push = new SwPush(comm);
       scope.updateServerState(serverUpdate);
 
-      const gotNotificationClick = (async() => {
+      const gotNotificationClick = (async () => {
         const event: any = await obsToSinglePromise(push.notificationClicks);
         expect(event.action).toEqual('clicked');
         expect(event.notification.title).toEqual('This is a test');

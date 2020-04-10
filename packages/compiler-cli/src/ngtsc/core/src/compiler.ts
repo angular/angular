@@ -147,7 +147,7 @@ export class NgCompiler {
     private options: NgCompilerOptions,
     private tsProgram: ts.Program,
     oldProgram: ts.Program | null = null,
-    private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER,
+    private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER
   ) {
     this.constructionDiagnostics.push(...this.host.diagnostics);
     const incompatibleTypeCheckOptionsDiagnostic = verifyCompatibleTypeCheckOptions(this.options);
@@ -164,13 +164,13 @@ export class NgCompiler {
     this.typeCheckFile = getSourceFileOrError(tsProgram, host.typeCheckFile);
     const moduleResolutionCache = ts.createModuleResolutionCache(
       this.host.getCurrentDirectory(),
-      (fileName) => this.host.getCanonicalFileName(fileName),
+      (fileName) => this.host.getCanonicalFileName(fileName)
     );
     this.moduleResolver = new ModuleResolver(
       tsProgram,
       this.options,
       this.host,
-      moduleResolutionCache,
+      moduleResolutionCache
     );
     this.resourceManager = new HostResourceLoader(host, this.options);
     this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(this.moduleResolver));
@@ -189,7 +189,7 @@ export class NgCompiler {
           oldProgram,
           oldDriver,
           tsProgram,
-          modifiedResourceFiles,
+          modifiedResourceFiles
         );
       } else {
         // A previous ts.Program was used to create the current one, but it wasn't from an
@@ -226,8 +226,8 @@ export class NgCompiler {
           ...checkForPrivateExports(
             this.entryPoint,
             this.tsProgram.getTypeChecker(),
-            compilation.exportReferenceGraph,
-          ),
+            compilation.exportReferenceGraph
+          )
         );
       }
     }
@@ -329,7 +329,7 @@ export class NgCompiler {
       // Relative entry paths are disallowed.
       if (entryRoute.startsWith('.')) {
         throw new Error(
-          `Failed to list lazy routes: Resolution of relative paths (${entryRoute}) is not supported.`,
+          `Failed to list lazy routes: Resolution of relative paths (${entryRoute}) is not supported.`
         );
       }
 
@@ -349,7 +349,7 @@ export class NgCompiler {
         containingFile,
         this.options,
         this.host,
-        null,
+        null
       );
 
       if (resolvedModule) {
@@ -385,7 +385,7 @@ export class NgCompiler {
         importRewriter,
         compilation.defaultImportTracker,
         compilation.isCore,
-        this.closureCompilerEnabled,
+        this.closureCompilerEnabled
       ),
       aliasTransformFactory(compilation.traitCompiler.exportStatements),
       compilation.defaultImportTracker.importPreservingTransformer(),
@@ -394,7 +394,7 @@ export class NgCompiler {
     const afterDeclarations: ts.TransformerFactory<ts.SourceFile>[] = [];
     if (compilation.dtsTransforms !== null) {
       afterDeclarations.push(
-        declarationTransformFactory(compilation.dtsTransforms, importRewriter),
+        declarationTransformFactory(compilation.dtsTransforms, importRewriter)
       );
     }
 
@@ -563,7 +563,7 @@ export class NgCompiler {
       typeCheckingConfig,
       compilation.refEmitter!,
       compilation.reflector,
-      host.typeCheckFile,
+      host.typeCheckFile
     );
     compilation.traitCompiler.typeCheck(ctx);
     this.perfRecorder.stop(prepSpan);
@@ -573,7 +573,7 @@ export class NgCompiler {
     const {diagnostics, program} = ctx.calculateTemplateDiagnostics(
       this.tsProgram,
       this.host,
-      this.options,
+      this.options
     );
     this.perfRecorder.stop(typeCheckSpan);
     setIncrementalDriver(program, this.incrementalDriver);
@@ -602,7 +602,7 @@ export class NgCompiler {
       depGraph.addDependency(file, ngModuleFile);
 
       const meta = this.compilation!.metaReader.getDirectiveMetadata(
-        new Reference(scope.declaration),
+        new Reference(scope.declaration)
       );
       if (meta !== null && meta.isComponent) {
         // If a component's template changes, it might have affected the import graph, and thus the
@@ -662,7 +662,7 @@ export class NgCompiler {
         // imports.
         localImportStrategy = new LogicalProjectStrategy(
           reflector,
-          new LogicalFileSystem([...this.host.rootDirs]),
+          new LogicalFileSystem([...this.host.rootDirs])
         );
       } else {
         // Plain relative imports are all that's needed.
@@ -712,7 +712,7 @@ export class NgCompiler {
       localMetaReader,
       depScopeReader,
       refEmitter,
-      aliasingHost,
+      aliasingHost
     );
     const scopeReader: ComponentScopeReader = scopeRegistry;
     const metaRegistry = new CompoundMetadataRegistry([localMetaRegistry, scopeRegistry]);
@@ -763,7 +763,7 @@ export class NgCompiler {
         defaultImportTracker,
         this.incrementalDriver.depGraph,
         injectableRegistry,
-        this.closureCompilerEnabled,
+        this.closureCompilerEnabled
       ),
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
@@ -777,7 +777,7 @@ export class NgCompiler {
         defaultImportTracker,
         injectableRegistry,
         isCore,
-        this.closureCompilerEnabled,
+        this.closureCompilerEnabled
       ) as Readonly<DecoratorHandler<unknown, unknown, unknown>>,
 
       // Pipe handler must be before injectable handler in list so pipe factories are printed
@@ -789,14 +789,14 @@ export class NgCompiler {
         scopeRegistry,
         defaultImportTracker,
         injectableRegistry,
-        isCore,
+        isCore
       ),
       new InjectableDecoratorHandler(
         reflector,
         defaultImportTracker,
         isCore,
         this.options.strictInjectionParameters || false,
-        injectableRegistry,
+        injectableRegistry
       ),
       new NgModuleDecoratorHandler(
         reflector,
@@ -812,7 +812,7 @@ export class NgCompiler {
         defaultImportTracker,
         this.closureCompilerEnabled,
         injectableRegistry,
-        this.options.i18nInLocale,
+        this.options.i18nInLocale
       ),
     ];
 
@@ -822,7 +822,7 @@ export class NgCompiler {
       this.perfRecorder,
       this.incrementalDriver,
       this.options.compileNonExportedClasses !== false,
-      dtsTransforms,
+      dtsTransforms
     );
 
     return {

@@ -14,7 +14,9 @@ export class RenderStore {
   private _lookupById = new Map<number, any>();
   private _lookupByObject = new Map<any, number>();
 
-  allocateId(): number { return this._nextIndex++; }
+  allocateId(): number {
+    return this._nextIndex++;
+  }
 
   store(obj: any, id: number): void {
     if (id == null) return;
@@ -34,7 +36,7 @@ export class RenderStore {
     return this._lookupById.has(id) ? this._lookupById.get(id) : null;
   }
 
-  serialize(obj: any): number|null|undefined {
+  serialize(obj: any): number | null | undefined {
     return obj == null ? null : this._lookupByObject.get(obj);
   }
 }

@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {dirname, relative} from 'canonical-path';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
@@ -38,8 +39,9 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
     }
 
     const insertionPoint = this.findEndOfImports(file);
-    const renderedImports =
-        imports.map(i => `var ${i.qualifier} = require('${i.specifier}');\n`).join('');
+    const renderedImports = imports
+      .map((i) => `var ${i.qualifier} = require('${i.specifier}');\n`)
+      .join('');
     output.appendLeft(insertionPoint, renderedImports);
   }
 
@@ -47,14 +49,19 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
    * Add the exports to the bottom of the file.
    */
   addExports(
-      output: MagicString, entryPointBasePath: string, exports: ExportInfo[],
-      importManager: ImportManager, file: ts.SourceFile): void {
-    exports.forEach(e => {
+    output: MagicString,
+    entryPointBasePath: string,
+    exports: ExportInfo[],
+    importManager: ImportManager,
+    file: ts.SourceFile
+  ): void {
+    exports.forEach((e) => {
       const basePath = stripExtension(e.from);
       const relativePath = './' + relative(dirname(entryPointBasePath), basePath);
-      const namedImport = entryPointBasePath !== basePath ?
-          importManager.generateNamedImport(relativePath, e.identifier) :
-          {symbol: e.identifier, moduleImport: null};
+      const namedImport =
+        entryPointBasePath !== basePath
+          ? importManager.generateNamedImport(relativePath, e.identifier)
+          : {symbol: e.identifier, moduleImport: null};
       const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport}.` : '';
       const exportStr = `\nexports.${e.identifier} = ${importNamespace}${namedImport.symbol};`;
       output.append(exportStr);
@@ -62,8 +69,11 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
   }
 
   addDirectExports(
-      output: MagicString, exports: Reexport[], importManager: ImportManager,
-      file: ts.SourceFile): void {
+    output: MagicString,
+    exports: Reexport[],
+    importManager: ImportManager,
+    file: ts.SourceFile
+  ): void {
     for (const e of exports) {
       const namedImport = importManager.generateNamedImport(e.fromModule, e.symbolName);
       const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport}.` : '';
@@ -77,10 +87,10 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
       if (ts.isExpressionStatement(statement) && isRequireCall(statement.expression)) {
         continue;
       }
-      const declarations = ts.isVariableStatement(statement) ?
-          Array.from(statement.declarationList.declarations) :
-          [];
-      if (declarations.some(d => !d.initializer || !isRequireCall(d.initializer))) {
+      const declarations = ts.isVariableStatement(statement)
+        ? Array.from(statement.declarationList.declarations)
+        : [];
+      if (declarations.some((d) => !d.initializer || !isRequireCall(d.initializer))) {
         return statement.getStart();
       }
     }

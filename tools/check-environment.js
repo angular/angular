@@ -31,9 +31,10 @@ try {
 if (issues.length) {
   printWarning(issues);
   console.error(
-      'Your environment doesn\'t provide the prerequisite dependencies.\n' +
+    "Your environment doesn't provide the prerequisite dependencies.\n" +
       'Please fix the issues listed above and then rerun the gulp command.\n' +
-      'Check out https://github.com/angular/angular/blob/master/docs/DEVELOPER.md for more info.');
+      'Check out https://github.com/angular/angular/blob/master/docs/DEVELOPER.md for more info.'
+  );
   process.exit(1);
 }
 
@@ -55,38 +56,48 @@ if (require.main === module) {
   checkEnvironment({
     requiredNodeVersion: engines.node,
     requiredNpmVersion: engines.npm,
-    requiredYarnVersion: engines.yarn
+    requiredYarnVersion: engines.yarn,
   });
 }
 
 function checkEnvironment(reqs) {
-  exec('yarn --version', function(yarnErr, yarnStdout) {
+  exec('yarn --version', function (yarnErr, yarnStdout) {
     var foundNodeVersion = process.version;
     var foundYarnVersion = !yarnErr && semver.clean(yarnStdout);
     var issues = [];
 
     if (!semver.satisfies(foundNodeVersion, reqs.requiredNodeVersion)) {
       issues.push(
-          'You are running unsupported node version. Found: ' + foundNodeVersion + ' Expected: ' +
-          reqs.requiredNodeVersion + '. Use nvm to update your node version.');
+        'You are running unsupported node version. Found: ' +
+          foundNodeVersion +
+          ' Expected: ' +
+          reqs.requiredNodeVersion +
+          '. Use nvm to update your node version.'
+      );
     }
 
     if (yarnErr) {
       issues.push(
-          'You don\'t have yarn globally installed. This is required because we use yarn to ' +
+        "You don't have yarn globally installed. This is required because we use yarn to " +
           'ensure that we all use the exact same npm dependencies. Installation instructions: ' +
-          'https://yarnpkg.com/lang/en/docs/install/');
+          'https://yarnpkg.com/lang/en/docs/install/'
+      );
     } else if (!semver.satisfies(foundYarnVersion, reqs.requiredYarnVersion)) {
       issues.push(
-          'You are running an unsupported yarn version. Found: ' + foundYarnVersion +
-          ' Expected: ' + reqs.requiredYarnVersion + '. This is required because we use yarn to ' +
+        'You are running an unsupported yarn version. Found: ' +
+          foundYarnVersion +
+          ' Expected: ' +
+          reqs.requiredYarnVersion +
+          '. This is required because we use yarn to ' +
           'ensure that we all use the exact same npm dependencies. Installation instructions: ' +
-          'https://yarnpkg.com/lang/en/docs/install/');
+          'https://yarnpkg.com/lang/en/docs/install/'
+      );
     }
 
     if (!checkNodeModules()) {
       issues.push(
-          'Your node_modules directory is stale or out of sync with yarn.lock. Run: yarn install');
+        'Your node_modules directory is stale or out of sync with yarn.lock. Run: yarn install'
+      );
     }
 
     printWarning(issues);
@@ -99,7 +110,9 @@ function printWarning(issues) {
   console.warn('');
   console.warn('!'.repeat(110));
   console.warn('!!!  Your environment is not in a good shape. Following issues were found:');
-  issues.forEach(function(issue) { console.warn('!!!   - ' + issue); });
+  issues.forEach(function (issue) {
+    console.warn('!!!   - ' + issue);
+  });
   console.warn('!'.repeat(110));
   console.warn('');
 
@@ -107,6 +120,5 @@ function printWarning(issues) {
     process.exit(1);
   }
 }
-
 
 module.exports = checkEnvironment;

@@ -13,7 +13,7 @@ import {MockFilesystem} from '../testing/mock';
 describe('Generator', () => {
   beforeEach(() => spyOn(Date, 'now').and.returnValue(1234567890123));
 
-  it('generates a correct config', async() => {
+  it('generates a correct config', async () => {
     const fs = new MockFilesystem({
       '/index.html': 'This is a test',
       '/main.css': 'This is a CSS file',
@@ -29,35 +29,26 @@ describe('Generator', () => {
         test: true,
       },
       index: '/index.html',
-      assetGroups: [{
-        name: 'test',
-        resources: {
-          files: [
-            '/**/*.html',
-            '/**/*.?s',
-            '!/ignored/**',
-            '/**/*.txt',
-          ],
-          urls: [
-            '/absolute/**',
-            '/some/url?with+escaped+chars',
-            'relative/*.txt',
-          ],
+      assetGroups: [
+        {
+          name: 'test',
+          resources: {
+            files: ['/**/*.html', '/**/*.?s', '!/ignored/**', '/**/*.txt'],
+            urls: ['/absolute/**', '/some/url?with+escaped+chars', 'relative/*.txt'],
+          },
         },
-      }],
-      dataGroups: [{
-        name: 'other',
-        urls: [
-          '/api/**',
-          'relapi/**',
-          'https://example.com/**/*?with+escaped+chars',
-        ],
-        cacheConfig: {
-          maxSize: 100,
-          maxAge: '3d',
-          timeout: '1m',
+      ],
+      dataGroups: [
+        {
+          name: 'other',
+          urls: ['/api/**', 'relapi/**', 'https://example.com/**/*?with+escaped+chars'],
+          cacheConfig: {
+            maxSize: 100,
+            maxAge: '3d',
+            timeout: '1m',
+          },
         },
-      }],
+      ],
       navigationUrls: [
         '/included/absolute/**',
         '!/excluded/absolute/**',
@@ -76,36 +67,40 @@ describe('Generator', () => {
         test: true,
       },
       index: '/test/index.html',
-      assetGroups: [{
-        name: 'test',
-        installMode: 'prefetch',
-        updateMode: 'prefetch',
-        urls: [
-          '/test/foo/test.html',
-          '/test/index.html',
-          '/test/main.js',
-          '/test/main.ts',
-          '/test/test.txt',
-        ],
-        patterns: [
-          '\\/absolute\\/.*',
-          '\\/some\\/url\\?with\\+escaped\\+chars',
-          '\\/test\\/relative\\/[^/]*\\.txt',
-        ],
-      }],
-      dataGroups: [{
-        name: 'other',
-        patterns: [
-          '\\/api\\/.*',
-          '\\/test\\/relapi\\/.*',
-          'https:\\/\\/example\\.com\\/(?:.+\\/)?[^/]*\\?with\\+escaped\\+chars',
-        ],
-        strategy: 'performance',
-        maxSize: 100,
-        maxAge: 259200000,
-        timeoutMs: 60000,
-        version: 1,
-      }],
+      assetGroups: [
+        {
+          name: 'test',
+          installMode: 'prefetch',
+          updateMode: 'prefetch',
+          urls: [
+            '/test/foo/test.html',
+            '/test/index.html',
+            '/test/main.js',
+            '/test/main.ts',
+            '/test/test.txt',
+          ],
+          patterns: [
+            '\\/absolute\\/.*',
+            '\\/some\\/url\\?with\\+escaped\\+chars',
+            '\\/test\\/relative\\/[^/]*\\.txt',
+          ],
+        },
+      ],
+      dataGroups: [
+        {
+          name: 'other',
+          patterns: [
+            '\\/api\\/.*',
+            '\\/test\\/relapi\\/.*',
+            'https:\\/\\/example\\.com\\/(?:.+\\/)?[^/]*\\?with\\+escaped\\+chars',
+          ],
+          strategy: 'performance',
+          maxSize: 100,
+          maxAge: 259200000,
+          timeoutMs: 60000,
+          version: 1,
+        },
+      ],
       navigationUrls: [
         {positive: true, regex: '^\\/included\\/absolute\\/.*$'},
         {positive: false, regex: '^\\/excluded\\/absolute\\/.*$'},
@@ -125,7 +120,7 @@ describe('Generator', () => {
     });
   });
 
-  it('uses default `navigationUrls` if not provided', async() => {
+  it('uses default `navigationUrls` if not provided', async () => {
     const fs = new MockFilesystem({
       '/index.html': 'This is a test',
     });
@@ -151,7 +146,7 @@ describe('Generator', () => {
     });
   });
 
-  it('throws if the obsolete `versionedFiles` is used', async() => {
+  it('throws if the obsolete `versionedFiles` is used', async () => {
     const fs = new MockFilesystem({
       '/index.html': 'This is a test',
       '/main.js': 'This is a JS file',
@@ -161,24 +156,24 @@ describe('Generator', () => {
     try {
       await gen.process({
         index: '/index.html',
-        assetGroups: [{
-          name: 'test',
-          resources: {
-            files: [
-              '/*.html',
-            ],
-            versionedFiles: [
-              '/*.js',
-            ],
-          } as AssetGroup['resources'] &
-              {versionedFiles: string[]},
-        }],
+        assetGroups: [
+          {
+            name: 'test',
+            resources: {
+              files: ['/*.html'],
+              versionedFiles: ['/*.js'],
+            } as AssetGroup['resources'] & {versionedFiles: string[]},
+          },
+        ],
       });
-      throw new Error('Processing should have failed due to \'versionedFiles\'.');
+      throw new Error("Processing should have failed due to 'versionedFiles'.");
     } catch (err) {
-      expect(err).toEqual(new Error(
-          'Asset-group \'test\' in \'ngsw-config.json\' uses the \'versionedFiles\' option, ' +
-          'which is no longer supported. Use \'files\' instead.'));
+      expect(err).toEqual(
+        new Error(
+          "Asset-group 'test' in 'ngsw-config.json' uses the 'versionedFiles' option, " +
+            "which is no longer supported. Use 'files' instead."
+        )
+      );
     }
   });
 });

@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, collectExternalReferences, EmitterVisitorContext, GeneratedFile, ParseSourceSpan, syntaxError, TypeScriptEmitter} from '@angular/compiler';
+import {
+  AotCompilerHost,
+  collectExternalReferences,
+  EmitterVisitorContext,
+  GeneratedFile,
+  ParseSourceSpan,
+  syntaxError,
+  TypeScriptEmitter,
+} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -22,16 +30,21 @@ const NODE_MODULES_PACKAGE_NAME = /node_modules\/((\w|-|\.)+|(@(\w|-|\.)+\/(\w|-
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const CSS_PREPROCESSOR_EXT = /(\.scss|\.sass|\.less|\.styl)$/;
 
-let wrapHostForTest: ((host: ts.CompilerHost) => ts.CompilerHost)|null = null;
+let wrapHostForTest: ((host: ts.CompilerHost) => ts.CompilerHost) | null = null;
 
-export function setWrapHostForTest(wrapFn: ((host: ts.CompilerHost) => ts.CompilerHost)|
-                                   null): void {
+export function setWrapHostForTest(
+  wrapFn: ((host: ts.CompilerHost) => ts.CompilerHost) | null
+): void {
   wrapHostForTest = wrapFn;
 }
 
-export function createCompilerHost(
-    {options, tsHost = ts.createCompilerHost(options, true)}:
-        {options: CompilerOptions, tsHost?: ts.CompilerHost}): CompilerHost {
+export function createCompilerHost({
+  options,
+  tsHost = ts.createCompilerHost(options, true),
+}: {
+  options: CompilerOptions;
+  tsHost?: ts.CompilerHost;
+}): CompilerHost {
   if (wrapHostForTest !== null) {
     tsHost = wrapHostForTest(tsHost);
   }
@@ -39,7 +52,7 @@ export function createCompilerHost(
 }
 
 export interface MetadataProvider {
-  getMetadata(sourceFile: ts.SourceFile): ModuleMetadata|undefined;
+  getMetadata(sourceFile: ts.SourceFile): ModuleMetadata | undefined;
 }
 
 interface GenSourceFile {
@@ -53,7 +66,7 @@ export interface CodeGenerator {
   findGeneratedFileNames(fileName: string): string[];
 }
 
-function assert<T>(condition: T|null|undefined) {
+function assert<T>(condition: T | null | undefined) {
   if (!condition) {
     // TODO(chuckjaz): do the right thing
   }
@@ -66,8 +79,8 @@ function assert<T>(condition: T|null|undefined) {
  * - AotCompilerHost for @angular/compiler
  * - TypeCheckHost for mapping ts errors to ng errors (via translateDiagnostics)
  */
-export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHost, AotCompilerHost,
-                                                                  TypeCheckHost {
+export class TsCompilerAotCompilerTypeCheckHostAdapter
+  implements ts.CompilerHost, AotCompilerHost, TypeCheckHost {
   private metadataReaderCache = createMetadataReaderCache();
   private fileNameToModuleNameCache = new Map<string, string>();
   private flatModuleIndexCache = new Map<string, boolean>();
@@ -75,7 +88,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   private flatModuleIndexRedirectNames = new Set<string>();
   private rootDirs: string[];
   private moduleResolutionCache: ts.ModuleResolutionCache;
-  private originalSourceFiles = new Map<string, ts.SourceFile|null>();
+  private originalSourceFiles = new Map<string, ts.SourceFile | null>();
   private originalFileExistsCache = new Map<string, boolean>();
   private generatedSourceFiles = new Map<string, GenSourceFile>();
   private generatedCodeFor = new Map<string, string[]>();
@@ -90,25 +103,33 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   trace!: (s: string) => void;
   // TODO(issue/24571): remove '!'.
   getDirectories!: (path: string) => string[];
-  resolveTypeReferenceDirectives?:
-      (names: string[], containingFile: string) => ts.ResolvedTypeReferenceDirective[];
+  resolveTypeReferenceDirectives?: (
+    names: string[],
+    containingFile: string
+  ) => ts.ResolvedTypeReferenceDirective[];
   directoryExists?: (directoryName: string) => boolean;
 
   constructor(
-      private rootFiles: ReadonlyArray<string>, private options: CompilerOptions,
-      private context: CompilerHost, private metadataProvider: MetadataProvider,
-      private codeGenerator: CodeGenerator,
-      private librarySummaries = new Map<string, LibrarySummary>()) {
+    private rootFiles: ReadonlyArray<string>,
+    private options: CompilerOptions,
+    private context: CompilerHost,
+    private metadataProvider: MetadataProvider,
+    private codeGenerator: CodeGenerator,
+    private librarySummaries = new Map<string, LibrarySummary>()
+  ) {
     this.moduleResolutionCache = ts.createModuleResolutionCache(
-        this.context.getCurrentDirectory!(), this.context.getCanonicalFileName.bind(this.context));
+      this.context.getCurrentDirectory!(),
+      this.context.getCanonicalFileName.bind(this.context)
+    );
     const basePath = this.options.basePath!;
-    this.rootDirs =
-        (this.options.rootDirs || [this.options.basePath!]).map(p => path.resolve(basePath, p));
+    this.rootDirs = (this.options.rootDirs || [this.options.basePath!]).map((p) =>
+      path.resolve(basePath, p)
+    );
     if (context.getDirectories) {
-      this.getDirectories = path => context.getDirectories!(path);
+      this.getDirectories = (path) => context.getDirectories!(path);
     }
     if (context.directoryExists) {
-      this.directoryExists = directoryName => context.directoryExists!(directoryName);
+      this.directoryExists = (directoryName) => context.directoryExists!(directoryName);
     }
     if (context.getCancellationToken) {
       this.getCancellationToken = () => context.getCancellationToken!();
@@ -120,14 +141,18 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
       // Backward compatibility with TypeScript 2.9 and older since return
       // type has changed from (ts.ResolvedTypeReferenceDirective | undefined)[]
       // to ts.ResolvedTypeReferenceDirective[] in Typescript 3.0
-      type ts3ResolveTypeReferenceDirectives = (names: string[], containingFile: string) =>
-          ts.ResolvedTypeReferenceDirective[];
+      type ts3ResolveTypeReferenceDirectives = (
+        names: string[],
+        containingFile: string
+      ) => ts.ResolvedTypeReferenceDirective[];
       this.resolveTypeReferenceDirectives = (names: string[], containingFile: string) =>
-          (context.resolveTypeReferenceDirectives as ts3ResolveTypeReferenceDirectives)!
-          (names, containingFile);
+        (context.resolveTypeReferenceDirectives as ts3ResolveTypeReferenceDirectives)!(
+          names,
+          containingFile
+        );
     }
     if (context.trace) {
-      this.trace = s => context.trace!(s);
+      this.trace = (s) => context.trace!(s);
     }
     if (context.fileNameToModuleName) {
       this.fileNameToModuleName = context.fileNameToModuleName.bind(context);
@@ -154,12 +179,17 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     };
   }
 
-  private resolveModuleName(moduleName: string, containingFile: string): ts.ResolvedModule
-      |undefined {
+  private resolveModuleName(
+    moduleName: string,
+    containingFile: string
+  ): ts.ResolvedModule | undefined {
     const rm = ts.resolveModuleName(
-                     moduleName, containingFile.replace(/\\/g, '/'), this.options, this,
-                     this.moduleResolutionCache)
-                   .resolvedModule;
+      moduleName,
+      containingFile.replace(/\\/g, '/'),
+      this.options,
+      this,
+      this.moduleResolutionCache
+    ).resolvedModule;
     if (rm && this.isSourceFile(rm.resolvedFileName) && DTS.test(rm.resolvedFileName)) {
       // Case: generateCodeForLibraries = true and moduleName is
       // a .d.ts file in a node_modules folder.
@@ -179,11 +209,12 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     // TODO(tbosch): this seems to be a typing error in TypeScript,
     // as it contains assertions that the result contains the same number of entries
     // as the given module names.
-    return <ts.ResolvedModule[]>moduleNames.map(
-        moduleName => this.resolveModuleName(moduleName, containingFile));
+    return <ts.ResolvedModule[]>(
+      moduleNames.map((moduleName) => this.resolveModuleName(moduleName, containingFile))
+    );
   }
 
-  moduleNameToFileName(m: string, containingFile?: string): string|null {
+  moduleNameToFileName(m: string, containingFile?: string): string | null {
     if (!containingFile) {
       if (m.indexOf('.') === 0) {
         throw new Error('Resolution of relative paths requires a containing file.');
@@ -225,8 +256,11 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     const originalImportedFile = importedFile;
     if (this.options.traceResolution) {
       console.error(
-          'fileNameToModuleName from containingFile', containingFile, 'to importedFile',
-          importedFile);
+        'fileNameToModuleName from containingFile',
+        containingFile,
+        'to importedFile',
+        importedFile
+      );
     }
 
     // drop extension
@@ -234,8 +268,10 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     const importedFilePackageName = getPackageName(importedFile);
     const containingFilePackageName = getPackageName(containingFile);
 
-    if (importedFilePackageName === containingFilePackageName ||
-        GENERATED_FILES.test(originalImportedFile)) {
+    if (
+      importedFilePackageName === containingFilePackageName ||
+      GENERATED_FILES.test(originalImportedFile)
+    ) {
       const rootedContainingFile = relativeToRootDirs(containingFile, this.rootDirs);
       const rootedImportedFile = relativeToRootDirs(importedFile, this.rootDirs);
 
@@ -251,8 +287,9 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
         // the moduleName for these typings could be shortented to the npm package name
         // if the npm package typings matches the importedFile
         try {
-          const modulePath = importedFile.substring(0, importedFile.length - moduleName.length) +
-              importedFilePackageName;
+          const modulePath =
+            importedFile.substring(0, importedFile.length - moduleName.length) +
+            importedFilePackageName;
           const packageJson = require(modulePath + '/package.json');
           const packageTypings = join(modulePath, packageJson.typings);
           if (packageTypings === originalImportedFile) {
@@ -265,15 +302,16 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
         }
       }
     } else {
-      throw new Error(`Trying to import a source file from a node_modules package: import ${
-          originalImportedFile} from ${containingFile}`);
+      throw new Error(
+        `Trying to import a source file from a node_modules package: import ${originalImportedFile} from ${containingFile}`
+      );
     }
 
     this.fileNameToModuleNameCache.set(cacheKey, moduleName);
     return moduleName;
   }
 
-  resourceNameToFileName(resourceName: string, containingFile: string): string|null {
+  resourceNameToFileName(resourceName: string, containingFile: string): string | null {
     // Note: we convert package paths into relative paths to be compatible with the the
     // previous implementation of UrlResolver.
     const firstChar = resourceName[0];
@@ -282,14 +320,18 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     } else if (firstChar !== '.') {
       resourceName = `./${resourceName}`;
     }
-    let filePathWithNgResource =
-        this.moduleNameToFileName(addNgResourceSuffix(resourceName), containingFile);
+    let filePathWithNgResource = this.moduleNameToFileName(
+      addNgResourceSuffix(resourceName),
+      containingFile
+    );
     // If the user specified styleUrl pointing to *.scss, but the Sass compiler was run before
     // Angular, then the resource may have been generated as *.css. Simply try the resolution again.
     if (!filePathWithNgResource && CSS_PREPROCESSOR_EXT.test(resourceName)) {
       const fallbackResourceName = resourceName.replace(CSS_PREPROCESSOR_EXT, '.css');
-      filePathWithNgResource =
-          this.moduleNameToFileName(addNgResourceSuffix(fallbackResourceName), containingFile);
+      filePathWithNgResource = this.moduleNameToFileName(
+        addNgResourceSuffix(fallbackResourceName),
+        containingFile
+      );
     }
     const result = filePathWithNgResource ? stripNgResourceSuffix(filePathWithNgResource) : null;
     // Used under Bazel to report more specific error with remediation advice
@@ -311,7 +353,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     return resolved;
   }
 
-  parseSourceSpanOf(fileName: string, line: number, character: number): ParseSourceSpan|null {
+  parseSourceSpanOf(fileName: string, line: number, character: number): ParseSourceSpan | null {
     const data = this.generatedSourceFiles.get(fileName);
     if (data && data.emitCtx) {
       return data.emitCtx.spanOf(line, character);
@@ -320,8 +362,10 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   }
 
   private getOriginalSourceFile(
-      filePath: string, languageVersion?: ts.ScriptTarget,
-      onError?: ((message: string) => void)|undefined): ts.SourceFile|null {
+    filePath: string,
+    languageVersion?: ts.ScriptTarget,
+    onError?: ((message: string) => void) | undefined
+  ): ts.SourceFile | null {
     // Note: we need the explicit check via `has` as we also cache results
     // that were null / undefined.
     if (this.originalSourceFiles.has(filePath)) {
@@ -340,7 +384,8 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   updateGeneratedFile(genFile: GeneratedFile): ts.SourceFile {
     if (!genFile.stmts) {
       throw new Error(
-          `Invalid Argument: Expected a GenerateFile with statements. ${genFile.genFileUrl}`);
+        `Invalid Argument: Expected a GenerateFile with statements. ${genFile.genFileUrl}`
+      );
     }
     const oldGenFile = this.generatedSourceFiles.get(genFile.genFileUrl);
     if (!oldGenFile) {
@@ -350,11 +395,14 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     const oldRefs = oldGenFile.externalReferences;
     let refsAreEqual = oldRefs.size === newRefs.size;
     if (refsAreEqual) {
-      newRefs.forEach(r => refsAreEqual = refsAreEqual && oldRefs.has(r));
+      newRefs.forEach((r) => (refsAreEqual = refsAreEqual && oldRefs.has(r)));
     }
     if (!refsAreEqual) {
-      throw new Error(`Illegal State: external references changed in ${genFile.genFileUrl}.\nOld: ${
-          Array.from(oldRefs)}.\nNew: ${Array.from(newRefs)}`);
+      throw new Error(
+        `Illegal State: external references changed in ${genFile.genFileUrl}.\nOld: ${Array.from(
+          oldRefs
+        )}.\nNew: ${Array.from(newRefs)}`
+      );
     }
     return this.addGeneratedFile(genFile, newRefs);
   }
@@ -362,13 +410,20 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   private addGeneratedFile(genFile: GeneratedFile, externalReferences: Set<string>): ts.SourceFile {
     if (!genFile.stmts) {
       throw new Error(
-          `Invalid Argument: Expected a GenerateFile with statements. ${genFile.genFileUrl}`);
+        `Invalid Argument: Expected a GenerateFile with statements. ${genFile.genFileUrl}`
+      );
     }
     const {sourceText, context} = this.emitter.emitStatementsAndContext(
-        genFile.genFileUrl, genFile.stmts, /* preamble */ '',
-        /* emitSourceMaps */ false);
+      genFile.genFileUrl,
+      genFile.stmts,
+      /* preamble */ '',
+      /* emitSourceMaps */ false
+    );
     const sf = ts.createSourceFile(
-        genFile.genFileUrl, sourceText, this.options.target || ts.ScriptTarget.Latest);
+      genFile.genFileUrl,
+      sourceText,
+      this.options.target || ts.ScriptTarget.Latest
+    );
     if (this.options.module === ts.ModuleKind.AMD || this.options.module === ts.ModuleKind.UMD) {
       if (this.context.amdModuleName) {
         const moduleName = this.context.amdModuleName(sf);
@@ -387,7 +442,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     return sf;
   }
 
-  shouldGenerateFile(fileName: string): {generate: boolean, baseFileName?: string} {
+  shouldGenerateFile(fileName: string): {generate: boolean; baseFileName?: string} {
     // TODO(tbosch): allow generating files that are not in the rootDir
     // See https://github.com/angular/angular/issues/19337
     if (!isInRootDir(fileName, this.options)) {
@@ -401,7 +456,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     if (suffix !== 'ts' && suffix !== 'tsx') {
       return {generate: false};
     }
-    let baseFileName: string|undefined;
+    let baseFileName: string | undefined;
     if (genSuffix.indexOf('ngstyle') >= 0) {
       // Note: ngstyle files have names like `afile.css.ngstyle.ts`
       if (!this.originalFileExists(base)) {
@@ -412,7 +467,8 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
       // but the file from which we generated it can be a `.ts`/ `.tsx`/ `.d.ts`
       // (see options.generateCodeForLibraries).
       baseFileName = [`${base}.ts`, `${base}.tsx`, `${base}.d.ts`].find(
-          baseFileName => this.isSourceFile(baseFileName) && this.originalFileExists(baseFileName));
+        (baseFileName) => this.isSourceFile(baseFileName) && this.originalFileExists(baseFileName)
+      );
       if (!baseFileName) {
         return {generate: false};
       }
@@ -423,13 +479,18 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   shouldGenerateFilesFor(fileName: string) {
     // TODO(tbosch): allow generating files that are not in the rootDir
     // See https://github.com/angular/angular/issues/19337
-    return !GENERATED_FILES.test(fileName) && this.isSourceFile(fileName) &&
-        isInRootDir(fileName, this.options);
+    return (
+      !GENERATED_FILES.test(fileName) &&
+      this.isSourceFile(fileName) &&
+      isInRootDir(fileName, this.options)
+    );
   }
 
   getSourceFile(
-      fileName: string, languageVersion: ts.ScriptTarget,
-      onError?: ((message: string) => void)|undefined): ts.SourceFile {
+    fileName: string,
+    languageVersion: ts.ScriptTarget,
+    onError?: ((message: string) => void) | undefined
+  ): ts.SourceFile {
     // Note: Don't exit early in this method to make sure
     // we always have up to date references on the file!
     let genFileNames: string[] = [];
@@ -439,7 +500,10 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
       if (summary) {
         if (!summary.sourceFile) {
           summary.sourceFile = ts.createSourceFile(
-              fileName, summary.text, this.options.target || ts.ScriptTarget.Latest);
+            fileName,
+            summary.text,
+            this.options.target || ts.ScriptTarget.Latest
+          );
         }
         sf = summary.sourceFile;
         // TypeScript doesn't allow returning redirect source files. To avoid unforseen errors we
@@ -458,8 +522,9 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
         genFileNames = cachedGenFiles;
       } else {
         if (!this.options.noResolve && this.shouldGenerateFilesFor(fileName)) {
-          genFileNames = this.codeGenerator.findGeneratedFileNames(fileName).filter(
-              fileName => this.shouldGenerateFile(fileName).generate);
+          genFileNames = this.codeGenerator
+            .findGeneratedFileNames(fileName)
+            .filter((fileName) => this.shouldGenerateFile(fileName).generate);
         }
         this.generatedCodeFor.set(fileName, genFileNames);
       }
@@ -472,7 +537,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     return sf!;
   }
 
-  private getGeneratedFile(fileName: string): ts.SourceFile|null {
+  private getGeneratedFile(fileName: string): ts.SourceFile | null {
     const genSrcFile = this.generatedSourceFiles.get(fileName);
     if (genSrcFile) {
       return genSrcFile.sourceFile;
@@ -505,7 +570,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     return this.originalFileExists(fileName);
   }
 
-  loadSummary(filePath: string): string|null {
+  loadSummary(filePath: string): string | null {
     const summary = this.librarySummaries.get(filePath);
     if (summary) {
       return summary.text;
@@ -538,8 +603,10 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
       // Check for a bundle index.
       if (this.hasBundleIndex(filePath)) {
         const normalFilePath = path.normalize(filePath);
-        return this.flatModuleIndexNames.has(normalFilePath) ||
-            this.flatModuleIndexRedirectNames.has(normalFilePath);
+        return (
+          this.flatModuleIndexNames.has(normalFilePath) ||
+          this.flatModuleIndexRedirectNames.has(normalFilePath)
+        );
       }
     }
     return true;
@@ -553,11 +620,11 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     return this.context.readFile(fileName);
   }
 
-  getMetadataFor(filePath: string): ModuleMetadata[]|undefined {
+  getMetadataFor(filePath: string): ModuleMetadata[] | undefined {
     return readMetadata(filePath, this.metadataReaderHost, this.metadataReaderCache);
   }
 
-  loadResource(filePath: string): Promise<string>|string {
+  loadResource(filePath: string): Promise<string> | string {
     if (this.context.readResource) return this.context.readResource(filePath);
     if (!this.originalFileExists(filePath)) {
       throw syntaxError(`Error: Resource file not found: ${filePath}`);
@@ -627,7 +694,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   }
 
   getDefaultLibFileName = (options: ts.CompilerOptions) =>
-      this.context.getDefaultLibFileName(options)
+    this.context.getDefaultLibFileName(options);
   getCurrentDirectory = () => this.context.getCurrentDirectory();
   getCanonicalFileName = (fileName: string) => this.context.getCanonicalFileName(fileName);
   useCaseSensitiveFileNames = () => this.context.useCaseSensitiveFileNames();
@@ -639,7 +706,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
 }
 
 function genFileExternalReferences(genFile: GeneratedFile): Set<string> {
-  return new Set(collectExternalReferences(genFile.stmts!).map(er => er.moduleName!));
+  return new Set(collectExternalReferences(genFile.stmts!).map((er) => er.moduleName!));
 }
 
 function addReferencesToSourceFile(sf: ts.SourceFile, genFileNames: string[]) {
@@ -647,18 +714,18 @@ function addReferencesToSourceFile(sf: ts.SourceFile, genFileNames: string[]) {
   // value for `referencedFiles` around in cache the original host is caching ts.SourceFiles.
   // Note: cloning the ts.SourceFile is expensive as the nodes in have parent pointers,
   // i.e. we would also need to clone and adjust all nodes.
-  let originalReferencedFiles: ReadonlyArray<ts.FileReference> =
-      (sf as any).originalReferencedFiles;
+  let originalReferencedFiles: ReadonlyArray<ts.FileReference> = (sf as any)
+    .originalReferencedFiles;
   if (!originalReferencedFiles) {
     originalReferencedFiles = sf.referencedFiles;
     (sf as any).originalReferencedFiles = originalReferencedFiles;
   }
   const newReferencedFiles = [...originalReferencedFiles];
-  genFileNames.forEach(gf => newReferencedFiles.push({fileName: gf, pos: 0, end: 0}));
+  genFileNames.forEach((gf) => newReferencedFiles.push({fileName: gf, pos: 0, end: 0}));
   sf.referencedFiles = newReferencedFiles;
 }
 
-export function getOriginalReferences(sourceFile: ts.SourceFile): ts.FileReference[]|undefined {
+export function getOriginalReferences(sourceFile: ts.SourceFile): ts.FileReference[] | undefined {
   return sourceFile && (sourceFile as any).originalReferencedFiles;
 }
 
@@ -670,7 +737,7 @@ function dotRelative(from: string, to: string): string {
 /**
  * Moves the path into `genDir` folder while preserving the `node_modules` directory.
  */
-function getPackageName(filePath: string): string|null {
+function getPackageName(filePath: string): string | null {
   const match = NODE_MODULES_PACKAGE_NAME.exec(filePath);
   return match ? match[1] : null;
 }
@@ -679,7 +746,7 @@ function stripNodeModulesPrefix(filePath: string): string {
   return filePath.replace(/.*node_modules\//, '');
 }
 
-function getNodeModulesPrefix(filePath: string): string|null {
+function getNodeModulesPrefix(filePath: string): string | null {
   const match = /.*node_modules\//.exec(filePath);
   return match ? match[1] : null;
 }

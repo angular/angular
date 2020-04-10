@@ -26,8 +26,11 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
   private state: BuildState;
 
   private constructor(
-      state: PendingBuildState, private allTsFiles: Set<ts.SourceFile>,
-      readonly depGraph: FileDependencyGraph, private logicalChanges: Set<string>|null) {
+    state: PendingBuildState,
+    private allTsFiles: Set<ts.SourceFile>,
+    readonly depGraph: FileDependencyGraph,
+    private logicalChanges: Set<string> | null
+  ) {
     this.state = state;
   }
 
@@ -39,8 +42,11 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
    * are merged into the new build's `PendingBuildState`.
    */
   static reconcile(
-      oldProgram: ts.Program, oldDriver: IncrementalDriver, newProgram: ts.Program,
-      modifiedResourceFiles: Set<string>|null): IncrementalDriver {
+    oldProgram: ts.Program,
+    oldDriver: IncrementalDriver,
+    newProgram: ts.Program,
+    modifiedResourceFiles: Set<string> | null
+  ): IncrementalDriver {
     // Initialize the state of the current build based on the previous one.
     let state: PendingBuildState;
     if (oldDriver.state.kind === BuildStateKind.Pending) {
@@ -76,7 +82,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
     const oldFiles = new Set<ts.SourceFile>(oldProgram.getSourceFiles());
 
     // Assume all the old files were deleted to begin with. Only TS files are tracked.
-    const deletedTsPaths = new Set<string>(tsOnlyFiles(oldProgram).map(sf => sf.fileName));
+    const deletedTsPaths = new Set<string>(tsOnlyFiles(oldProgram).map((sf) => sf.fileName));
 
     for (const newFile of newProgram.getSourceFiles()) {
       if (!newFile.isDeclarationFile) {
@@ -117,14 +123,17 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
 
     // If a previous compilation exists, use its dependency graph to determine the set of logically
     // changed files.
-    let logicalChanges: Set<string>|null = null;
+    let logicalChanges: Set<string> | null = null;
     if (state.lastGood !== null) {
       // Extract the set of logically changed files. At the same time, this operation populates the
       // current (fresh) dependency graph with information about those files which have not
       // logically changed.
       logicalChanges = depGraph.updateWithPhysicalChanges(
-          state.lastGood.depGraph, state.changedTsPaths, deletedTsPaths,
-          state.changedResourcePaths);
+        state.lastGood.depGraph,
+        state.changedTsPaths,
+        deletedTsPaths,
+        state.changedResourcePaths
+      );
       for (const fileName of state.changedTsPaths) {
         logicalChanges.add(fileName);
       }
@@ -143,7 +152,11 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
     // `state` now reflects the initial pending state of the current compilation.
 
     return new IncrementalDriver(
-        state, new Set<ts.SourceFile>(tsOnlyFiles(newProgram)), depGraph, logicalChanges);
+      state,
+      new Set<ts.SourceFile>(tsOnlyFiles(newProgram)),
+      depGraph,
+      logicalChanges
+    );
   }
 
   static fresh(program: ts.Program): IncrementalDriver {
@@ -153,14 +166,18 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
 
     const state: PendingBuildState = {
       kind: BuildStateKind.Pending,
-      pendingEmit: new Set<string>(tsFiles.map(sf => sf.fileName)),
+      pendingEmit: new Set<string>(tsFiles.map((sf) => sf.fileName)),
       changedResourcePaths: new Set<AbsoluteFsPath>(),
       changedTsPaths: new Set<string>(),
       lastGood: null,
     };
 
     return new IncrementalDriver(
-        state, new Set(tsFiles), new FileDependencyGraph(), /* logicalChanges */ null);
+      state,
+      new Set(tsFiles),
+      new FileDependencyGraph(),
+      /* logicalChanges */ null
+    );
   }
 
   recordSuccessfulAnalysis(traitCompiler: TraitCompiler): void {
@@ -190,7 +207,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
       lastGood: {
         depGraph: this.depGraph,
         traitCompiler: traitCompiler,
-      }
+      },
     };
   }
 
@@ -202,7 +219,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
     return !this.state.pendingEmit.has(sf.fileName);
   }
 
-  priorWorkFor(sf: ts.SourceFile): ClassRecord[]|null {
+  priorWorkFor(sf: ts.SourceFile): ClassRecord[] | null {
     if (this.state.lastGood === null || this.logicalChanges === null) {
       // There is no previous good build, so no prior work exists.
       return null;
@@ -216,7 +233,7 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord> {
   }
 }
 
-type BuildState = PendingBuildState|AnalyzedBuildState;
+type BuildState = PendingBuildState | AnalyzedBuildState;
 
 enum BuildStateKind {
   Pending,
@@ -249,7 +266,6 @@ interface BaseBuildState {
    */
   pendingEmit: Set<string>;
 
-
   /**
    * Specific aspects of the last compilation which successfully completed analysis, if any.
    */
@@ -267,7 +283,7 @@ interface BaseBuildState {
      * This is used to extract "prior work" which might be reusable in this compilation.
      */
     traitCompiler: TraitCompiler;
-  }|null;
+  } | null;
 }
 
 /**
@@ -309,5 +325,5 @@ interface AnalyzedBuildState extends BaseBuildState {
 }
 
 function tsOnlyFiles(program: ts.Program): ReadonlyArray<ts.SourceFile> {
-  return program.getSourceFiles().filter(sf => !sf.isDeclarationFile);
+  return program.getSourceFiles().filter((sf) => !sf.isDeclarationFile);
 }

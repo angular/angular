@@ -5,7 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relative} from '../../../src/ngtsc/file_system';
+
+import {
+  absoluteFrom,
+  AbsoluteFsPath,
+  FileSystem,
+  getFileSystem,
+  relative,
+} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {DependencyResolver} from '../../src/dependencies/dependency_resolver';
@@ -45,12 +52,21 @@ runInEachFileSystem(() => {
         loadTestFiles([
           ...createPackage(basePath, 'common'),
           ...createPackage(fs.resolve(basePath, 'common'), 'http', ['common']),
-          ...createPackage(
-              fs.resolve(basePath, 'common/http'), 'testing', ['common/http', 'common/testing']),
+          ...createPackage(fs.resolve(basePath, 'common/http'), 'testing', [
+            'common/http',
+            'common/testing',
+          ]),
           ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
         ]);
         const finder = new DirectoryWalkerEntryPointFinder(
-            fs, config, logger, resolver, manifest, basePath, undefined);
+          fs,
+          config,
+          logger,
+          resolver,
+          manifest,
+          basePath,
+          undefined
+        );
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
           ['common', 'common'],
@@ -65,13 +81,21 @@ runInEachFileSystem(() => {
         loadTestFiles([
           ...createPackage(fs.resolve(basePath, '@angular'), 'common'),
           ...createPackage(fs.resolve(basePath, '@angular/common'), 'http', ['@angular/common']),
-          ...createPackage(
-              fs.resolve(basePath, '@angular/common/http'), 'testing',
-              ['@angular/common/http', '@angular/common/testing']),
+          ...createPackage(fs.resolve(basePath, '@angular/common/http'), 'testing', [
+            '@angular/common/http',
+            '@angular/common/testing',
+          ]),
           ...createPackage(fs.resolve(basePath, '@angular/common'), 'testing', ['@angular/common']),
         ]);
         const finder = new DirectoryWalkerEntryPointFinder(
-            fs, config, logger, resolver, manifest, basePath, undefined);
+          fs,
+          config,
+          logger,
+          resolver,
+          manifest,
+          basePath,
+          undefined
+        );
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
           ['@angular/common', '@angular/common'],
@@ -84,7 +108,14 @@ runInEachFileSystem(() => {
       it('should return an empty array if there are no packages', () => {
         fs.ensureDir(_Abs('/no_packages/node_modules/should_not_be_found'));
         const finder = new DirectoryWalkerEntryPointFinder(
-            fs, config, logger, resolver, manifest, _Abs('/no_packages/node_modules'), undefined);
+          fs,
+          config,
+          logger,
+          resolver,
+          manifest,
+          _Abs('/no_packages/node_modules'),
+          undefined
+        );
         const {entryPoints} = finder.findEntryPoints();
         expect(entryPoints).toEqual([]);
       });
@@ -93,52 +124,76 @@ runInEachFileSystem(() => {
         loadTestFiles([
           {
             name: _Abs('/no_valid_entry_points/node_modules/some_package/package.json'),
-            contents: '{}'
+            contents: '{}',
           },
         ]);
         const finder = new DirectoryWalkerEntryPointFinder(
-            fs, config, logger, resolver, manifest, _Abs('/no_valid_entry_points/node_modules'),
-            undefined);
+          fs,
+          config,
+          logger,
+          resolver,
+          manifest,
+          _Abs('/no_valid_entry_points/node_modules'),
+          undefined
+        );
         const {entryPoints} = finder.findEntryPoints();
         expect(entryPoints).toEqual([]);
       });
 
-      it('should write an entry-point manifest file if none was found and basePath is `node_modules`',
-         () => {
-           const basePath = _Abs('/sub_entry_points/node_modules');
-           loadTestFiles([
-             ...createPackage(basePath, 'common'),
-             ...createPackage(fs.resolve(basePath, 'common'), 'http', ['common']),
-             ...createPackage(
-                 fs.resolve(basePath, 'common/http'), 'testing', ['common/http', 'common/testing']),
-             ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
-             {name: _Abs('/sub_entry_points/yarn.lock'), contents: 'MOCK LOCK FILE'},
-           ]);
-           spyOn(manifest, 'readEntryPointsUsingManifest').and.callThrough();
-           spyOn(manifest, 'writeEntryPointManifest').and.callThrough();
-           const finder = new DirectoryWalkerEntryPointFinder(
-               fs, config, logger, resolver, manifest, basePath, undefined);
-           finder.findEntryPoints();
-           expect(manifest.readEntryPointsUsingManifest).toHaveBeenCalled();
-           expect(manifest.writeEntryPointManifest).toHaveBeenCalled();
-           expect(fs.exists(_Abs('/sub_entry_points/node_modules/__ngcc_entry_points__.json')))
-               .toBe(true);
-         });
-
-      it('should not write an entry-point manifest file if basePath is not `node_modules`', () => {
-        const basePath = _Abs('/sub_entry_points/dist');
+      it('should write an entry-point manifest file if none was found and basePath is `node_modules`', () => {
+        const basePath = _Abs('/sub_entry_points/node_modules');
         loadTestFiles([
           ...createPackage(basePath, 'common'),
           ...createPackage(fs.resolve(basePath, 'common'), 'http', ['common']),
-          ...createPackage(
-              fs.resolve(basePath, 'common/http'), 'testing', ['common/http', 'common/testing']),
+          ...createPackage(fs.resolve(basePath, 'common/http'), 'testing', [
+            'common/http',
+            'common/testing',
+          ]),
           ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
           {name: _Abs('/sub_entry_points/yarn.lock'), contents: 'MOCK LOCK FILE'},
         ]);
         spyOn(manifest, 'readEntryPointsUsingManifest').and.callThrough();
         spyOn(manifest, 'writeEntryPointManifest').and.callThrough();
         const finder = new DirectoryWalkerEntryPointFinder(
-            fs, config, logger, resolver, manifest, basePath, undefined);
+          fs,
+          config,
+          logger,
+          resolver,
+          manifest,
+          basePath,
+          undefined
+        );
+        finder.findEntryPoints();
+        expect(manifest.readEntryPointsUsingManifest).toHaveBeenCalled();
+        expect(manifest.writeEntryPointManifest).toHaveBeenCalled();
+        expect(fs.exists(_Abs('/sub_entry_points/node_modules/__ngcc_entry_points__.json'))).toBe(
+          true
+        );
+      });
+
+      it('should not write an entry-point manifest file if basePath is not `node_modules`', () => {
+        const basePath = _Abs('/sub_entry_points/dist');
+        loadTestFiles([
+          ...createPackage(basePath, 'common'),
+          ...createPackage(fs.resolve(basePath, 'common'), 'http', ['common']),
+          ...createPackage(fs.resolve(basePath, 'common/http'), 'testing', [
+            'common/http',
+            'common/testing',
+          ]),
+          ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
+          {name: _Abs('/sub_entry_points/yarn.lock'), contents: 'MOCK LOCK FILE'},
+        ]);
+        spyOn(manifest, 'readEntryPointsUsingManifest').and.callThrough();
+        spyOn(manifest, 'writeEntryPointManifest').and.callThrough();
+        const finder = new DirectoryWalkerEntryPointFinder(
+          fs,
+          config,
+          logger,
+          resolver,
+          manifest,
+          basePath,
+          undefined
+        );
         finder.findEntryPoints();
         expect(manifest.readEntryPointsUsingManifest).toHaveBeenCalled();
         expect(manifest.writeEntryPointManifest).toHaveBeenCalled();
@@ -150,13 +205,22 @@ runInEachFileSystem(() => {
         loadTestFiles([
           ...createPackage(basePath, 'common'),
           ...createPackage(fs.resolve(basePath, 'common'), 'http', ['common']),
-          ...createPackage(
-              fs.resolve(basePath, 'common/http'), 'testing', ['common/http', 'common/testing']),
+          ...createPackage(fs.resolve(basePath, 'common/http'), 'testing', [
+            'common/http',
+            'common/testing',
+          ]),
           ...createPackage(fs.resolve(basePath, 'common'), 'testing', ['common']),
           {name: _Abs('/sub_entry_points/yarn.lock'), contents: 'MOCK LOCK FILE'},
         ]);
         const finder = new DirectoryWalkerEntryPointFinder(
-            fs, config, logger, resolver, manifest, basePath, undefined);
+          fs,
+          config,
+          logger,
+          resolver,
+          manifest,
+          basePath,
+          undefined
+        );
 
         // Prime the manifest by calling findEntryPoints() once.
         finder.findEntryPoints();
@@ -181,12 +245,16 @@ runInEachFileSystem(() => {
       });
 
       it('should ignore folders starting with .', () => {
-        loadTestFiles([
-          ...createPackage(_Abs('/dotted_folders/node_modules/'), '.common'),
-        ]);
+        loadTestFiles([...createPackage(_Abs('/dotted_folders/node_modules/'), '.common')]);
         const finder = new DirectoryWalkerEntryPointFinder(
-            fs, config, logger, resolver, manifest, _Abs('/dotted_folders/node_modules'),
-            undefined);
+          fs,
+          config,
+          logger,
+          resolver,
+          manifest,
+          _Abs('/dotted_folders/node_modules'),
+          undefined
+        );
         const {entryPoints} = finder.findEntryPoints();
         expect(entryPoints).toEqual([]);
       });
@@ -194,11 +262,19 @@ runInEachFileSystem(() => {
       it('should ignore folders that are symlinked', () => {
         fs.ensureDir(_Abs('/symlinked_folders/node_modules'));
         fs.symlink(
-            _Abs('/external/node_modules/common'), _Abs('/symlinked_folders/node_modules/common'));
+          _Abs('/external/node_modules/common'),
+          _Abs('/symlinked_folders/node_modules/common')
+        );
         loadTestFiles(createPackage(_Abs('/external/node_modules'), 'common'));
         const finder = new DirectoryWalkerEntryPointFinder(
-            fs, config, logger, resolver, manifest, _Abs('/symlinked_folders/node_modules'),
-            undefined);
+          fs,
+          config,
+          logger,
+          resolver,
+          manifest,
+          _Abs('/symlinked_folders/node_modules'),
+          undefined
+        );
         const {entryPoints} = finder.findEntryPoints();
         expect(entryPoints).toEqual([]);
       });
@@ -209,15 +285,22 @@ runInEachFileSystem(() => {
           ...createPackage(_Abs('/nested_node_modules/node_modules/outer/node_modules'), 'inner'),
         ]);
         const finder = new DirectoryWalkerEntryPointFinder(
-            fs, config, logger, resolver, manifest, _Abs('/nested_node_modules/node_modules'),
-            undefined);
+          fs,
+          config,
+          logger,
+          resolver,
+          manifest,
+          _Abs('/nested_node_modules/node_modules'),
+          undefined
+        );
         const {entryPoints} = finder.findEntryPoints();
         // Note that the `inner` entry-point is not part of the `outer` package
-        expect(dumpEntryPointPaths(_Abs('/nested_node_modules/node_modules'), entryPoints))
-            .toEqual([
-              ['outer/node_modules/inner', 'outer/node_modules/inner'],
-              ['outer', 'outer'],
-            ]);
+        expect(dumpEntryPointPaths(_Abs('/nested_node_modules/node_modules'), entryPoints)).toEqual(
+          [
+            ['outer/node_modules/inner', 'outer/node_modules/inner'],
+            ['outer', 'outer'],
+          ]
+        );
       });
 
       it('should not try to process nested node_modules of non Angular packages', () => {
@@ -228,14 +311,17 @@ runInEachFileSystem(() => {
         ]);
 
         const finder = new DirectoryWalkerEntryPointFinder(
-            fs, config, logger, resolver, manifest, _Abs('/nested_node_modules/node_modules'),
-            undefined);
+          fs,
+          config,
+          logger,
+          resolver,
+          manifest,
+          _Abs('/nested_node_modules/node_modules'),
+          undefined
+        );
         const spy = spyOn(finder, 'walkDirectoryForPackages').and.callThrough();
         const {entryPoints} = finder.findEntryPoints();
-        expect(spy.calls.allArgs()).toEqual([
-          [_Abs(basePath)],
-          [_Abs(`${basePath}/outer`)],
-        ]);
+        expect(spy.calls.allArgs()).toEqual([[_Abs(basePath)], [_Abs(`${basePath}/outer`)]]);
 
         expect(entryPoints).toEqual([]);
       });
@@ -251,7 +337,14 @@ runInEachFileSystem(() => {
         ]);
 
         const finder = new DirectoryWalkerEntryPointFinder(
-            fs, config, logger, resolver, manifest, basePath, undefined);
+          fs,
+          config,
+          logger,
+          resolver,
+          manifest,
+          basePath,
+          undefined
+        );
         const spy = spyOn(finder, 'walkDirectoryForPackages').and.callThrough();
         const {entryPoints} = finder.findEntryPoints();
         expect(spy.calls.allArgs()).toEqual([
@@ -275,7 +368,14 @@ runInEachFileSystem(() => {
         ]);
 
         const finder = new DirectoryWalkerEntryPointFinder(
-            fs, config, logger, resolver, manifest, basePath, undefined);
+          fs,
+          config,
+          logger,
+          resolver,
+          manifest,
+          basePath,
+          undefined
+        );
         const spy = spyOn(finder, 'walkDirectoryForPackages').and.callThrough();
         const {entryPoints} = finder.findEntryPoints();
         expect(spy.calls.allArgs()).toEqual([
@@ -287,21 +387,27 @@ runInEachFileSystem(() => {
         expect(entryPoints).toEqual([]);
       });
 
-      it('should process sub-entry-points within a non-entry-point containing folder in a package',
-         () => {
-           const basePath = _Abs('/containing_folders/node_modules');
-           loadTestFiles([
-             ...createPackage(basePath, 'package'),
-             ...createPackage(fs.resolve(basePath, 'package/container'), 'entry-point-1'),
-           ]);
-           const finder = new DirectoryWalkerEntryPointFinder(
-               fs, config, logger, resolver, manifest, basePath, undefined);
-           const {entryPoints} = finder.findEntryPoints();
-           expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
-             ['package', 'package'],
-             ['package', 'package/container/entry-point-1'],
-           ]);
-         });
+      it('should process sub-entry-points within a non-entry-point containing folder in a package', () => {
+        const basePath = _Abs('/containing_folders/node_modules');
+        loadTestFiles([
+          ...createPackage(basePath, 'package'),
+          ...createPackage(fs.resolve(basePath, 'package/container'), 'entry-point-1'),
+        ]);
+        const finder = new DirectoryWalkerEntryPointFinder(
+          fs,
+          config,
+          logger,
+          resolver,
+          manifest,
+          basePath,
+          undefined
+        );
+        const {entryPoints} = finder.findEntryPoints();
+        expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
+          ['package', 'package'],
+          ['package', 'package/container/entry-point-1'],
+        ]);
+      });
 
       it('should handle dependencies via pathMappings', () => {
         const basePath = _Abs('/path_mapped/node_modules');
@@ -310,11 +416,14 @@ runInEachFileSystem(() => {
           paths: {
             '@x/*': ['*'],
             '@y/*/test': ['lib/*/test'],
-          }
+          },
         };
         loadTestFiles([
-          ...createPackage(
-              _Abs('/path_mapped/node_modules'), 'test', ['pkg1', '@x/pkg2', '@y/pkg3/test']),
+          ...createPackage(_Abs('/path_mapped/node_modules'), 'test', [
+            'pkg1',
+            '@x/pkg2',
+            '@y/pkg3/test',
+          ]),
           ...createPackage(_Abs('/path_mapped/node_modules'), 'pkg1'),
           ...createPackage(_Abs('/path_mapped/dist'), 'pkg2', ['pkg4']),
           ...createPackage(_Abs('/path_mapped/dist/pkg2/node_modules'), 'pkg4'),
@@ -324,7 +433,14 @@ runInEachFileSystem(() => {
         const dtsHost = new DtsDependencyHost(fs, pathMappings);
         resolver = new DependencyResolver(fs, logger, config, {esm2015: srcHost}, dtsHost);
         const finder = new DirectoryWalkerEntryPointFinder(
-            fs, config, logger, resolver, manifest, basePath, pathMappings);
+          fs,
+          config,
+          logger,
+          resolver,
+          manifest,
+          basePath,
+          pathMappings
+        );
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
           ['pkg1', 'pkg1'],
@@ -342,7 +458,7 @@ runInEachFileSystem(() => {
           paths: {
             '@test': ['pkg2/pkg2.d.ts'],
             '@missing': ['pkg3'],
-          }
+          },
         };
         loadTestFiles([
           ...createPackage(_Abs('/path_mapped/node_modules'), 'test', []),
@@ -352,7 +468,14 @@ runInEachFileSystem(() => {
         const dtsHost = new DtsDependencyHost(fs, pathMappings);
         resolver = new DependencyResolver(fs, logger, config, {esm2015: srcHost}, dtsHost);
         const finder = new DirectoryWalkerEntryPointFinder(
-            fs, config, logger, resolver, manifest, basePath, pathMappings);
+          fs,
+          config,
+          logger,
+          resolver,
+          manifest,
+          basePath,
+          pathMappings
+        );
         const {entryPoints} = finder.findEntryPoints();
         expect(dumpEntryPointPaths(basePath, entryPoints)).toEqual([
           ['test', 'test'],
@@ -361,15 +484,18 @@ runInEachFileSystem(() => {
       });
 
       function createPackage(
-          basePath: AbsoluteFsPath, packageName: string, deps: string[] = [],
-          isCompiledByAngular = true): TestFile[] {
+        basePath: AbsoluteFsPath,
+        packageName: string,
+        deps: string[] = [],
+        isCompiledByAngular = true
+      ): TestFile[] {
         const files: TestFile[] = [
           {
             name: _Abs(`${basePath}/${packageName}/package.json`),
             contents: JSON.stringify({
               typings: `./${packageName}.d.ts`,
               fesm2015: `./fesm2015/${packageName}.js`,
-            })
+            }),
           },
           {
             name: _Abs(`${basePath}/${packageName}/${packageName}.d.ts`),
@@ -384,7 +510,7 @@ runInEachFileSystem(() => {
         if (isCompiledByAngular) {
           files.push({
             name: _Abs(`${basePath}/${packageName}/${packageName}.metadata.json`),
-            contents: 'metadata info'
+            contents: 'metadata info',
           });
         }
 
@@ -392,13 +518,16 @@ runInEachFileSystem(() => {
       }
 
       function createNonTsPackage(
-          basePath: AbsoluteFsPath, packageName: string, deps: string[] = []): TestFile[] {
+        basePath: AbsoluteFsPath,
+        packageName: string,
+        deps: string[] = []
+      ): TestFile[] {
         return [
           {
             name: _Abs(`${basePath}/${packageName}/package.json`),
             contents: JSON.stringify({
               fesm2015: `./fesm2015/${packageName}.js`,
-            })
+            }),
           },
           {
             name: _Abs(`${basePath}/${packageName}/fesm2015/${packageName}.js`),
@@ -408,8 +537,10 @@ runInEachFileSystem(() => {
       }
 
       function dumpEntryPointPaths(
-          basePath: AbsoluteFsPath, entryPoints: EntryPoint[]): [string, string][] {
-        return entryPoints.map(x => [relative(basePath, x.package), relative(basePath, x.path)]);
+        basePath: AbsoluteFsPath,
+        entryPoints: EntryPoint[]
+      ): [string, string][] {
+        return entryPoints.map((x) => [relative(basePath, x.package), relative(basePath, x.path)]);
       }
     });
   });

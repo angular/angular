@@ -12,19 +12,27 @@
 export abstract class AnimationStyleNormalizer {
   abstract normalizePropertyName(propertyName: string, errors: string[]): string;
   abstract normalizeStyleValue(
-      userProvidedProperty: string, normalizedProperty: string, value: string|number,
-      errors: string[]): string;
+    userProvidedProperty: string,
+    normalizedProperty: string,
+    value: string | number,
+    errors: string[]
+  ): string;
 }
 
 /**
  * @publicApi
  */
 export class NoopAnimationStyleNormalizer {
-  normalizePropertyName(propertyName: string, errors: string[]): string { return propertyName; }
+  normalizePropertyName(propertyName: string, errors: string[]): string {
+    return propertyName;
+  }
 
   normalizeStyleValue(
-      userProvidedProperty: string, normalizedProperty: string, value: string|number,
-      errors: string[]): string {
+    userProvidedProperty: string,
+    normalizedProperty: string,
+    value: string | number,
+    errors: string[]
+  ): string {
     return <any>value;
   }
 }

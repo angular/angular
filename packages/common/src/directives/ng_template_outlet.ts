@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChange, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
+import {
+  Directive,
+  EmbeddedViewRef,
+  Input,
+  OnChanges,
+  SimpleChange,
+  SimpleChanges,
+  TemplateRef,
+  ViewContainerRef,
+} from '@angular/core';
 
 /**
  * @ngModule CommonModule
@@ -34,7 +43,7 @@ import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChange, SimpleChange
  */
 @Directive({selector: '[ngTemplateOutlet]'})
 export class NgTemplateOutlet implements OnChanges {
-  private _viewRef: EmbeddedViewRef<any>|null = null;
+  private _viewRef: EmbeddedViewRef<any> | null = null;
 
   /**
    * A context object to attach to the {@link EmbeddedViewRef}. This should be an
@@ -42,12 +51,12 @@ export class NgTemplateOutlet implements OnChanges {
    * declarations.
    * Using the key `$implicit` in the context object will set its value as default.
    */
-  @Input() public ngTemplateOutletContext: Object|null = null;
+  @Input() public ngTemplateOutletContext: Object | null = null;
 
   /**
    * A string defining the template reference and optionally the context object for the template.
    */
-  @Input() public ngTemplateOutlet: TemplateRef<any>|null = null;
+  @Input() public ngTemplateOutlet: TemplateRef<any> | null = null;
 
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
@@ -61,9 +70,9 @@ export class NgTemplateOutlet implements OnChanges {
         viewContainerRef.remove(viewContainerRef.indexOf(this._viewRef));
       }
 
-      this._viewRef = this.ngTemplateOutlet ?
-          viewContainerRef.createEmbeddedView(this.ngTemplateOutlet, this.ngTemplateOutletContext) :
-          null;
+      this._viewRef = this.ngTemplateOutlet
+        ? viewContainerRef.createEmbeddedView(this.ngTemplateOutlet, this.ngTemplateOutletContext)
+        : null;
     } else if (this._viewRef && this.ngTemplateOutletContext) {
       this._updateExistingContext(this.ngTemplateOutletContext);
     }
@@ -101,7 +110,7 @@ export class NgTemplateOutlet implements OnChanges {
 
   private _updateExistingContext(ctx: Object): void {
     for (let propName of Object.keys(ctx)) {
-      (<any>this._viewRef !.context)[propName] = (<any>this.ngTemplateOutletContext)[propName];
+      (<any>this._viewRef!.context)[propName] = (<any>this.ngTemplateOutletContext)[propName];
     }
   }
 }

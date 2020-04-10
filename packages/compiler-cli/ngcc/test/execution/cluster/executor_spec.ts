@@ -20,7 +20,6 @@ import {MockLockFile} from '../../helpers/mock_lock_file';
 import {MockLogger} from '../../helpers/mock_logger';
 import {mockProperty} from '../../helpers/spy_utils';
 
-
 describe('ClusterExecutor', () => {
   const runAsClusterMaster = mockProperty(cluster, 'isMaster');
   let masterRunSpy: jasmine.Spy;
@@ -33,10 +32,12 @@ describe('ClusterExecutor', () => {
   let createTaskCompletedCallback: jasmine.Spy;
 
   beforeEach(() => {
-    masterRunSpy = spyOn(ClusterMaster.prototype, 'run')
-                       .and.returnValue(Promise.resolve('CusterMaster#run()' as any));
-    workerRunSpy = spyOn(ClusterWorker.prototype, 'run')
-                       .and.returnValue(Promise.resolve('CusterWorker#run()' as any));
+    masterRunSpy = spyOn(ClusterMaster.prototype, 'run').and.returnValue(
+      Promise.resolve('CusterMaster#run()' as any)
+    );
+    workerRunSpy = spyOn(ClusterWorker.prototype, 'run').and.returnValue(
+      Promise.resolve('CusterWorker#run()' as any)
+    );
     createTaskCompletedCallback = jasmine.createSpy('createTaskCompletedCallback');
 
     mockLogger = new MockLogger();
@@ -44,7 +45,12 @@ describe('ClusterExecutor', () => {
     mockLockFile = new MockLockFile(new MockFileSystemNative(), lockFileLog);
     locker = new AsyncLocker(mockLockFile, mockLogger, 200, 2);
     executor = new ClusterExecutor(
-        42, mockLogger, null as unknown as PackageJsonUpdater, locker, createTaskCompletedCallback);
+      42,
+      mockLogger,
+      (null as unknown) as PackageJsonUpdater,
+      locker,
+      createTaskCompletedCallback
+    );
   });
 
   describe('execute()', () => {
@@ -64,8 +70,9 @@ describe('ClusterExecutor', () => {
         const analyzeEntryPointsSpy = jasmine.createSpy('analyzeEntryPoints');
         const createCompilerFnSpy = jasmine.createSpy('createCompilerFn');
 
-        expect(await executor.execute(analyzeEntryPointsSpy, createCompilerFnSpy))
-            .toBe('CusterMaster#run()' as any);
+        expect(await executor.execute(analyzeEntryPointsSpy, createCompilerFnSpy)).toBe(
+          'CusterMaster#run()' as any
+        );
 
         expect(masterRunSpy).toHaveBeenCalledWith();
         expect(workerRunSpy).not.toHaveBeenCalled();
@@ -74,12 +81,11 @@ describe('ClusterExecutor', () => {
         expect(createCompilerFnSpy).not.toHaveBeenCalled();
       });
 
-      it('should call LockFile.write() and LockFile.remove() if master runner completes successfully',
-         async () => {
-           const anyFn: () => any = () => undefined;
-           await executor.execute(anyFn, anyFn);
-           expect(lockFileLog).toEqual(['write()', 'remove()']);
-         });
+      it('should call LockFile.write() and LockFile.remove() if master runner completes successfully', async () => {
+        const anyFn: () => any = () => undefined;
+        await executor.execute(anyFn, anyFn);
+        expect(lockFileLog).toEqual(['write()', 'remove()']);
+      });
 
       it('should call LockFile.write() and LockFile.remove() if master runner fails', async () => {
         const anyFn: () => any = () => undefined;
@@ -102,8 +108,12 @@ describe('ClusterExecutor', () => {
         });
 
         executor = new ClusterExecutor(
-            42, mockLogger, null as unknown as PackageJsonUpdater, locker,
-            createTaskCompletedCallback);
+          42,
+          mockLogger,
+          (null as unknown) as PackageJsonUpdater,
+          locker,
+          createTaskCompletedCallback
+        );
         let error = '';
         try {
           await executor.execute(anyFn, anyFn);
@@ -122,8 +132,12 @@ describe('ClusterExecutor', () => {
         });
 
         executor = new ClusterExecutor(
-            42, mockLogger, null as unknown as PackageJsonUpdater, locker,
-            createTaskCompletedCallback);
+          42,
+          mockLogger,
+          (null as unknown) as PackageJsonUpdater,
+          locker,
+          createTaskCompletedCallback
+        );
         let error = '';
         try {
           await executor.execute(anyFn, anyFn);
@@ -150,8 +164,9 @@ describe('ClusterExecutor', () => {
         const analyzeEntryPointsSpy = jasmine.createSpy('analyzeEntryPoints');
         const createCompilerFnSpy = jasmine.createSpy('createCompilerFn');
 
-        expect(await executor.execute(analyzeEntryPointsSpy, createCompilerFnSpy))
-            .toBe('CusterWorker#run()' as any);
+        expect(await executor.execute(analyzeEntryPointsSpy, createCompilerFnSpy)).toBe(
+          'CusterWorker#run()' as any
+        );
 
         expect(masterRunSpy).not.toHaveBeenCalledWith();
         expect(workerRunSpy).toHaveBeenCalled();

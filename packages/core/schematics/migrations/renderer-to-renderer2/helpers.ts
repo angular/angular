@@ -20,12 +20,15 @@ export const enum HelperFunction {
   detachView = '__ngRendererDetachViewHelper',
   attachViewAfter = '__ngRendererAttachViewAfterHelper',
   splitNamespace = '__ngRendererSplitNamespaceHelper',
-  setElementAttribute = '__ngRendererSetElementAttributeHelper'
+  setElementAttribute = '__ngRendererSetElementAttributeHelper',
 }
 
 /** Gets the string representation of a helper function. */
 export function getHelper(
-    name: HelperFunction, sourceFile: ts.SourceFile, printer: ts.Printer): string {
+  name: HelperFunction,
+  sourceFile: ts.SourceFile,
+  printer: ts.Printer
+): string {
   const helperDeclaration = getHelperDeclaration(name);
   return '\n' + printer.printNode(ts.EmitHint.Unspecified, helperDeclaration, sourceFile) + '\n';
 }
@@ -64,19 +67,31 @@ function getHelperDeclaration(name: HelperFunction): ts.Node {
 function createAnyTypeHelper(): ts.TypeAliasDeclaration {
   // type AnyDuringRendererMigration = any;
   return ts.createTypeAliasDeclaration(
-      [], [], HelperFunction.any, [], ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+    [],
+    [],
+    HelperFunction.any,
+    [],
+    ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)
+  );
 }
 
 /** Creates a function parameter that is typed as `any`. */
 function getAnyTypedParameter(
-    parameterName: string | ts.Identifier, isRequired = true): ts.ParameterDeclaration {
+  parameterName: string | ts.Identifier,
+  isRequired = true
+): ts.ParameterDeclaration {
   // Declare the parameter as `any` so we don't have to add extra logic to ensure that the
   // generated code will pass type checking. Use our custom `any` type so people have an incentive
   // to clean it up afterwards and to avoid potentially introducing lint warnings in G3.
   const type = ts.createTypeReferenceNode(HelperFunction.any, []);
   return ts.createParameter(
-      [], [], undefined, parameterName,
-      isRequired ? undefined : ts.createToken(ts.SyntaxKind.QuestionToken), type);
+    [],
+    [],
+    undefined,
+    parameterName,
+    isRequired ? undefined : ts.createToken(ts.SyntaxKind.QuestionToken),
+    type
+  );
 }
 
 /** Creates a helper for `createElement`. */
@@ -89,20 +104,33 @@ function getCreateElementHelper(): ts.FunctionDeclaration {
 
   // [namespace, name] = splitNamespace(namespaceAndName);
   const namespaceAndNameVariable = ts.createVariableDeclaration(
-      ts.createArrayBindingPattern(
-          [namespace, name].map(id => ts.createBindingElement(undefined, undefined, id))),
-      undefined,
-      ts.createCall(ts.createIdentifier(HelperFunction.splitNamespace), [], [namespaceAndName]));
+    ts.createArrayBindingPattern(
+      [namespace, name].map((id) => ts.createBindingElement(undefined, undefined, id))
+    ),
+    undefined,
+    ts.createCall(ts.createIdentifier(HelperFunction.splitNamespace), [], [namespaceAndName])
+  );
 
   // `renderer.createElement(name, namespace)`.
-  const creationCall =
-      ts.createCall(ts.createPropertyAccess(renderer, 'createElement'), [], [name, namespace]);
+  const creationCall = ts.createCall(
+    ts.createPropertyAccess(renderer, 'createElement'),
+    [],
+    [name, namespace]
+  );
 
   return getCreationHelper(
-      HelperFunction.createElement, creationCall, renderer, parent, [namespaceAndName],
-      [ts.createVariableStatement(
-          undefined,
-          ts.createVariableDeclarationList([namespaceAndNameVariable], ts.NodeFlags.Const))]);
+    HelperFunction.createElement,
+    creationCall,
+    renderer,
+    parent,
+    [namespaceAndName],
+    [
+      ts.createVariableStatement(
+        undefined,
+        ts.createVariableDeclarationList([namespaceAndNameVariable], ts.NodeFlags.Const)
+      ),
+    ]
+  );
 }
 
 /** Creates a helper for `createText`. */
@@ -124,7 +152,10 @@ function getCreateTemplateAnchorHelper(): ts.FunctionDeclaration {
 
   // `renderer.createComment('')`.
   const creationCall = ts.createCall(
-      ts.createPropertyAccess(renderer, 'createComment'), [], [ts.createStringLiteral('')]);
+    ts.createPropertyAccess(renderer, 'createComment'),
+    [],
+    [ts.createStringLiteral('')]
+  );
 
   return getCreationHelper(HelperFunction.createTemplateAnchor, creationCall, renderer, parent);
 }
@@ -140,33 +171,50 @@ function getCreateTemplateAnchorHelper(): ts.FunctionDeclaration {
  * @param precedingVariables Extra variables to be added before the one that creates the `node`.
  */
 function getCreationHelper(
-    functionName: HelperFunction, creationCall: ts.CallExpression, renderer: ts.Identifier,
-    parent: ts.Identifier, extraParameters: ts.Identifier[] = [],
-    precedingVariables: ts.VariableStatement[] = []): ts.FunctionDeclaration {
+  functionName: HelperFunction,
+  creationCall: ts.CallExpression,
+  renderer: ts.Identifier,
+  parent: ts.Identifier,
+  extraParameters: ts.Identifier[] = [],
+  precedingVariables: ts.VariableStatement[] = []
+): ts.FunctionDeclaration {
   const node = ts.createIdentifier('node');
 
   // `const node = {{creationCall}}`.
   const nodeVariableStatement = ts.createVariableStatement(
-      undefined,
-      ts.createVariableDeclarationList(
-          [ts.createVariableDeclaration(node, undefined, creationCall)], ts.NodeFlags.Const));
+    undefined,
+    ts.createVariableDeclarationList(
+      [ts.createVariableDeclaration(node, undefined, creationCall)],
+      ts.NodeFlags.Const
+    )
+  );
 
   // `if (parent) { renderer.appendChild(parent, node) }`.
   const guardedAppendChildCall = ts.createIf(
-      parent, ts.createBlock(
-                  [ts.createExpressionStatement(ts.createCall(
-                      ts.createPropertyAccess(renderer, 'appendChild'), [], [parent, node]))],
-                  true));
+    parent,
+    ts.createBlock(
+      [
+        ts.createExpressionStatement(
+          ts.createCall(ts.createPropertyAccess(renderer, 'appendChild'), [], [parent, node])
+        ),
+      ],
+      true
+    )
+  );
 
   return ts.createFunctionDeclaration(
-      [], [], undefined, functionName, [],
-      [renderer, parent, ...extraParameters].map(name => getAnyTypedParameter(name)), undefined,
-      ts.createBlock(
-          [
-            ...precedingVariables, nodeVariableStatement, guardedAppendChildCall,
-            ts.createReturn(node)
-          ],
-          true));
+    [],
+    [],
+    undefined,
+    functionName,
+    [],
+    [renderer, parent, ...extraParameters].map((name) => getAnyTypedParameter(name)),
+    undefined,
+    ts.createBlock(
+      [...precedingVariables, nodeVariableStatement, guardedAppendChildCall, ts.createReturn(node)],
+      true
+    )
+  );
 }
 
 /** Creates a helper for `projectNodes`. */
@@ -180,34 +228,61 @@ function getProjectNodesHelper(): ts.FunctionDeclaration {
   //   renderer.appendChild(parent, nodes[i]);
   // }
   const loopInitializer = ts.createVariableDeclarationList(
-      [ts.createVariableDeclaration(incrementor, undefined, ts.createNumericLiteral('0'))],
-      ts.NodeFlags.Let);
+    [ts.createVariableDeclaration(incrementor, undefined, ts.createNumericLiteral('0'))],
+    ts.NodeFlags.Let
+  );
   const loopCondition = ts.createBinary(
-      incrementor, ts.SyntaxKind.LessThanToken,
-      ts.createPropertyAccess(nodes, ts.createIdentifier('length')));
-  const appendStatement = ts.createExpressionStatement(ts.createCall(
-      ts.createPropertyAccess(renderer, 'appendChild'), [],
-      [parent, ts.createElementAccess(nodes, incrementor)]));
+    incrementor,
+    ts.SyntaxKind.LessThanToken,
+    ts.createPropertyAccess(nodes, ts.createIdentifier('length'))
+  );
+  const appendStatement = ts.createExpressionStatement(
+    ts.createCall(
+      ts.createPropertyAccess(renderer, 'appendChild'),
+      [],
+      [parent, ts.createElementAccess(nodes, incrementor)]
+    )
+  );
   const loop = ts.createFor(
-      loopInitializer, loopCondition, ts.createPostfix(incrementor, ts.SyntaxKind.PlusPlusToken),
-      ts.createBlock([appendStatement]));
+    loopInitializer,
+    loopCondition,
+    ts.createPostfix(incrementor, ts.SyntaxKind.PlusPlusToken),
+    ts.createBlock([appendStatement])
+  );
 
   return ts.createFunctionDeclaration(
-      [], [], undefined, HelperFunction.projectNodes, [],
-      [renderer, parent, nodes].map(name => getAnyTypedParameter(name)), undefined,
-      ts.createBlock([loop], true));
+    [],
+    [],
+    undefined,
+    HelperFunction.projectNodes,
+    [],
+    [renderer, parent, nodes].map((name) => getAnyTypedParameter(name)),
+    undefined,
+    ts.createBlock([loop], true)
+  );
 }
 
 /** Creates a helper for `animate`. */
 function getAnimateHelper(): ts.FunctionDeclaration {
   // throw new Error('...');
-  const throwStatement = ts.createThrow(ts.createNew(
-      ts.createIdentifier('Error'), [],
-      [ts.createStringLiteral('Renderer.animate is no longer supported!')]));
+  const throwStatement = ts.createThrow(
+    ts.createNew(
+      ts.createIdentifier('Error'),
+      [],
+      [ts.createStringLiteral('Renderer.animate is no longer supported!')]
+    )
+  );
 
   return ts.createFunctionDeclaration(
-      [], [], undefined, HelperFunction.animate, [], [], undefined,
-      ts.createBlock([throwStatement], true));
+    [],
+    [],
+    undefined,
+    HelperFunction.animate,
+    [],
+    [],
+    undefined,
+    ts.createBlock([throwStatement], true)
+  );
 }
 
 /** Creates a helper for `destroyView`. */
@@ -220,22 +295,38 @@ function getDestroyViewHelper(): ts.FunctionDeclaration {
   //   renderer.destroyNode(allNodes[i]);
   // }
   const loopInitializer = ts.createVariableDeclarationList(
-      [ts.createVariableDeclaration(incrementor, undefined, ts.createNumericLiteral('0'))],
-      ts.NodeFlags.Let);
+    [ts.createVariableDeclaration(incrementor, undefined, ts.createNumericLiteral('0'))],
+    ts.NodeFlags.Let
+  );
   const loopCondition = ts.createBinary(
-      incrementor, ts.SyntaxKind.LessThanToken,
-      ts.createPropertyAccess(allNodes, ts.createIdentifier('length')));
-  const destroyStatement = ts.createExpressionStatement(ts.createCall(
-      ts.createPropertyAccess(renderer, 'destroyNode'), [],
-      [ts.createElementAccess(allNodes, incrementor)]));
+    incrementor,
+    ts.SyntaxKind.LessThanToken,
+    ts.createPropertyAccess(allNodes, ts.createIdentifier('length'))
+  );
+  const destroyStatement = ts.createExpressionStatement(
+    ts.createCall(
+      ts.createPropertyAccess(renderer, 'destroyNode'),
+      [],
+      [ts.createElementAccess(allNodes, incrementor)]
+    )
+  );
   const loop = ts.createFor(
-      loopInitializer, loopCondition, ts.createPostfix(incrementor, ts.SyntaxKind.PlusPlusToken),
-      ts.createBlock([destroyStatement]));
+    loopInitializer,
+    loopCondition,
+    ts.createPostfix(incrementor, ts.SyntaxKind.PlusPlusToken),
+    ts.createBlock([destroyStatement])
+  );
 
   return ts.createFunctionDeclaration(
-      [], [], undefined, HelperFunction.destroyView, [],
-      [renderer, allNodes].map(name => getAnyTypedParameter(name)), undefined,
-      ts.createBlock([loop], true));
+    [],
+    [],
+    undefined,
+    HelperFunction.destroyView,
+    [],
+    [renderer, allNodes].map((name) => getAnyTypedParameter(name)),
+    undefined,
+    ts.createBlock([loop], true)
+  );
 }
 
 /** Creates a helper for `detachView`. */
@@ -250,31 +341,53 @@ function getDetachViewHelper(): ts.FunctionDeclaration {
   //   renderer.removeChild(renderer.parentNode(node), node);
   // }
   const loopInitializer = ts.createVariableDeclarationList(
-      [ts.createVariableDeclaration(incrementor, undefined, ts.createNumericLiteral('0'))],
-      ts.NodeFlags.Let);
+    [ts.createVariableDeclaration(incrementor, undefined, ts.createNumericLiteral('0'))],
+    ts.NodeFlags.Let
+  );
   const loopCondition = ts.createBinary(
-      incrementor, ts.SyntaxKind.LessThanToken,
-      ts.createPropertyAccess(rootNodes, ts.createIdentifier('length')));
+    incrementor,
+    ts.SyntaxKind.LessThanToken,
+    ts.createPropertyAccess(rootNodes, ts.createIdentifier('length'))
+  );
 
   // const node = rootNodes[i];
   const nodeVariableStatement = ts.createVariableStatement(
-      undefined, ts.createVariableDeclarationList(
-                     [ts.createVariableDeclaration(
-                         node, undefined, ts.createElementAccess(rootNodes, incrementor))],
-                     ts.NodeFlags.Const));
+    undefined,
+    ts.createVariableDeclarationList(
+      [
+        ts.createVariableDeclaration(
+          node,
+          undefined,
+          ts.createElementAccess(rootNodes, incrementor)
+        ),
+      ],
+      ts.NodeFlags.Const
+    )
+  );
   // renderer.removeChild(renderer.parentNode(node), node);
   const removeCall = ts.createCall(
-      ts.createPropertyAccess(renderer, 'removeChild'), [],
-      [ts.createCall(ts.createPropertyAccess(renderer, 'parentNode'), [], [node]), node]);
+    ts.createPropertyAccess(renderer, 'removeChild'),
+    [],
+    [ts.createCall(ts.createPropertyAccess(renderer, 'parentNode'), [], [node]), node]
+  );
 
   const loop = ts.createFor(
-      loopInitializer, loopCondition, ts.createPostfix(incrementor, ts.SyntaxKind.PlusPlusToken),
-      ts.createBlock([nodeVariableStatement, ts.createExpressionStatement(removeCall)]));
+    loopInitializer,
+    loopCondition,
+    ts.createPostfix(incrementor, ts.SyntaxKind.PlusPlusToken),
+    ts.createBlock([nodeVariableStatement, ts.createExpressionStatement(removeCall)])
+  );
 
   return ts.createFunctionDeclaration(
-      [], [], undefined, HelperFunction.detachView, [],
-      [renderer, rootNodes].map(name => getAnyTypedParameter(name)), undefined,
-      ts.createBlock([loop], true));
+    [],
+    [],
+    undefined,
+    HelperFunction.detachView,
+    [],
+    [renderer, rootNodes].map((name) => getAnyTypedParameter(name)),
+    undefined,
+    ts.createBlock([loop], true)
+  );
 }
 
 /** Creates a helper for `attachViewAfter` */
@@ -287,41 +400,63 @@ function getAttachViewAfterHelper(): ts.FunctionDeclaration {
   const incrementor = ts.createIdentifier('i');
   const createConstWithMethodCallInitializer = (constName: ts.Identifier, methodToCall: string) => {
     return ts.createVariableStatement(
-        undefined,
-        ts.createVariableDeclarationList(
-            [ts.createVariableDeclaration(
-                constName, undefined,
-                ts.createCall(ts.createPropertyAccess(renderer, methodToCall), [], [node]))],
-            ts.NodeFlags.Const));
+      undefined,
+      ts.createVariableDeclarationList(
+        [
+          ts.createVariableDeclaration(
+            constName,
+            undefined,
+            ts.createCall(ts.createPropertyAccess(renderer, methodToCall), [], [node])
+          ),
+        ],
+        ts.NodeFlags.Const
+      )
+    );
   };
 
   // const parent = renderer.parentNode(node);
   const parentVariableStatement = createConstWithMethodCallInitializer(parent, 'parentNode');
 
   // const nextSibling = renderer.nextSibling(node);
-  const nextSiblingVariableStatement =
-      createConstWithMethodCallInitializer(nextSibling, 'nextSibling');
+  const nextSiblingVariableStatement = createConstWithMethodCallInitializer(
+    nextSibling,
+    'nextSibling'
+  );
 
   // for (let i = 0; i < rootNodes.length; i++) {
   //   renderer.insertBefore(parentElement, rootNodes[i], nextSibling);
   // }
   const loopInitializer = ts.createVariableDeclarationList(
-      [ts.createVariableDeclaration(incrementor, undefined, ts.createNumericLiteral('0'))],
-      ts.NodeFlags.Let);
+    [ts.createVariableDeclaration(incrementor, undefined, ts.createNumericLiteral('0'))],
+    ts.NodeFlags.Let
+  );
   const loopCondition = ts.createBinary(
-      incrementor, ts.SyntaxKind.LessThanToken,
-      ts.createPropertyAccess(rootNodes, ts.createIdentifier('length')));
+    incrementor,
+    ts.SyntaxKind.LessThanToken,
+    ts.createPropertyAccess(rootNodes, ts.createIdentifier('length'))
+  );
   const insertBeforeCall = ts.createCall(
-      ts.createPropertyAccess(renderer, 'insertBefore'), [],
-      [parent, ts.createElementAccess(rootNodes, incrementor), nextSibling]);
+    ts.createPropertyAccess(renderer, 'insertBefore'),
+    [],
+    [parent, ts.createElementAccess(rootNodes, incrementor), nextSibling]
+  );
   const loop = ts.createFor(
-      loopInitializer, loopCondition, ts.createPostfix(incrementor, ts.SyntaxKind.PlusPlusToken),
-      ts.createBlock([ts.createExpressionStatement(insertBeforeCall)]));
+    loopInitializer,
+    loopCondition,
+    ts.createPostfix(incrementor, ts.SyntaxKind.PlusPlusToken),
+    ts.createBlock([ts.createExpressionStatement(insertBeforeCall)])
+  );
 
   return ts.createFunctionDeclaration(
-      [], [], undefined, HelperFunction.attachViewAfter, [],
-      [renderer, node, rootNodes].map(name => getAnyTypedParameter(name)), undefined,
-      ts.createBlock([parentVariableStatement, nextSiblingVariableStatement, loop], true));
+    [],
+    [],
+    undefined,
+    HelperFunction.attachViewAfter,
+    [],
+    [renderer, node, rootNodes].map((name) => getAnyTypedParameter(name)),
+    undefined,
+    ts.createBlock([parentVariableStatement, nextSiblingVariableStatement, loop], true)
+  );
 }
 
 /** Creates a helper for `setElementAttribute` */
@@ -335,41 +470,60 @@ function getSetElementAttributeHelper(): ts.FunctionDeclaration {
 
   // [namespace, name] = splitNamespace(namespaceAndName);
   const namespaceAndNameVariable = ts.createVariableDeclaration(
-      ts.createArrayBindingPattern(
-          [namespace, name].map(id => ts.createBindingElement(undefined, undefined, id))),
-      undefined,
-      ts.createCall(ts.createIdentifier(HelperFunction.splitNamespace), [], [namespaceAndName]));
+    ts.createArrayBindingPattern(
+      [namespace, name].map((id) => ts.createBindingElement(undefined, undefined, id))
+    ),
+    undefined,
+    ts.createCall(ts.createIdentifier(HelperFunction.splitNamespace), [], [namespaceAndName])
+  );
 
   // renderer.setAttribute(element, name, value, namespace);
   const setCall = ts.createCall(
-      ts.createPropertyAccess(renderer, 'setAttribute'), [], [element, name, value, namespace]);
+    ts.createPropertyAccess(renderer, 'setAttribute'),
+    [],
+    [element, name, value, namespace]
+  );
 
   // renderer.removeAttribute(element, name, namespace);
   const removeCall = ts.createCall(
-      ts.createPropertyAccess(renderer, 'removeAttribute'), [], [element, name, namespace]);
+    ts.createPropertyAccess(renderer, 'removeAttribute'),
+    [],
+    [element, name, namespace]
+  );
 
   // if (value != null) { setCall() } else { removeCall }
   const ifStatement = ts.createIf(
-      ts.createBinary(value, ts.SyntaxKind.ExclamationEqualsToken, ts.createNull()),
-      ts.createBlock([ts.createExpressionStatement(setCall)], true),
-      ts.createBlock([ts.createExpressionStatement(removeCall)], true));
+    ts.createBinary(value, ts.SyntaxKind.ExclamationEqualsToken, ts.createNull()),
+    ts.createBlock([ts.createExpressionStatement(setCall)], true),
+    ts.createBlock([ts.createExpressionStatement(removeCall)], true)
+  );
 
   const functionBody = ts.createBlock(
-      [
-        ts.createVariableStatement(
-            undefined,
-            ts.createVariableDeclarationList([namespaceAndNameVariable], ts.NodeFlags.Const)),
-        ifStatement
-      ],
-      true);
+    [
+      ts.createVariableStatement(
+        undefined,
+        ts.createVariableDeclarationList([namespaceAndNameVariable], ts.NodeFlags.Const)
+      ),
+      ifStatement,
+    ],
+    true
+  );
 
   return ts.createFunctionDeclaration(
-      [], [], undefined, HelperFunction.setElementAttribute, [],
-      [
-        getAnyTypedParameter(renderer), getAnyTypedParameter(element),
-        getAnyTypedParameter(namespaceAndName), getAnyTypedParameter(value, false)
-      ],
-      undefined, functionBody);
+    [],
+    [],
+    undefined,
+    HelperFunction.setElementAttribute,
+    [],
+    [
+      getAnyTypedParameter(renderer),
+      getAnyTypedParameter(element),
+      getAnyTypedParameter(namespaceAndName),
+      getAnyTypedParameter(value, false),
+    ],
+    undefined,
+    functionBody
+  );
 }
 
 /** Creates a helper for splitting a name that might contain a namespace. */
@@ -381,23 +535,36 @@ function getSplitNamespaceHelper(): ts.FunctionDeclaration {
 
   // const match = name.split(regex);
   const matchVariable = ts.createVariableDeclarationList(
-      [ts.createVariableDeclaration(match, undefined, matchCall)], ts.NodeFlags.Const);
+    [ts.createVariableDeclaration(match, undefined, matchCall)],
+    ts.NodeFlags.Const
+  );
 
   // return [match[1], match[2]];
   const matchReturn = ts.createReturn(
-      ts.createArrayLiteral([ts.createElementAccess(match, 1), ts.createElementAccess(match, 2)]));
+    ts.createArrayLiteral([ts.createElementAccess(match, 1), ts.createElementAccess(match, 2)])
+  );
 
   // if (name[0] === ':') { const match = ...; return ...; }
   const ifStatement = ts.createIf(
-      ts.createBinary(
-          ts.createElementAccess(name, 0), ts.SyntaxKind.EqualsEqualsEqualsToken,
-          ts.createStringLiteral(':')),
-      ts.createBlock([ts.createVariableStatement([], matchVariable), matchReturn], true));
+    ts.createBinary(
+      ts.createElementAccess(name, 0),
+      ts.SyntaxKind.EqualsEqualsEqualsToken,
+      ts.createStringLiteral(':')
+    ),
+    ts.createBlock([ts.createVariableStatement([], matchVariable), matchReturn], true)
+  );
 
   // return ['', name];
   const elseReturn = ts.createReturn(ts.createArrayLiteral([ts.createStringLiteral(''), name]));
 
   return ts.createFunctionDeclaration(
-      [], [], undefined, HelperFunction.splitNamespace, [], [getAnyTypedParameter(name)], undefined,
-      ts.createBlock([ifStatement, elseReturn], true));
+    [],
+    [],
+    undefined,
+    HelperFunction.splitNamespace,
+    [],
+    [getAnyTypedParameter(name)],
+    undefined,
+    ts.createBlock([ifStatement, elseReturn], true)
+  );
 }

@@ -5,11 +5,18 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {DeclareVarStmt, LiteralExpr, StmtModifier} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
-import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
+import {
+  absoluteFrom,
+  absoluteFromSourceFile,
+  AbsoluteFsPath,
+  getFileSystem,
+  getSourceFileOrError,
+} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {NoopImportRewriter} from '../../../src/ngtsc/imports';
 import {getDeclaration} from '../../../src/ngtsc/testing';
@@ -24,17 +31,23 @@ import {Esm5RenderingFormatter} from '../../src/rendering/esm5_rendering_formatt
 import {MockLogger} from '../helpers/mock_logger';
 import {makeTestEntryPointBundle} from '../helpers/utils';
 
-function setup(file: {name: AbsoluteFsPath, contents: string}) {
+function setup(file: {name: AbsoluteFsPath; contents: string}) {
   loadTestFiles([file]);
   const fs = getFileSystem();
   const logger = new MockLogger();
   const bundle = makeTestEntryPointBundle('test-package', 'esm5', false, [file.name]);
   const host = new Esm5ReflectionHost(logger, false, bundle.src);
   const referencesRegistry = new NgccReferencesRegistry(host);
-  const decorationAnalyses =
-      new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
-  const switchMarkerAnalyses =
-      new SwitchMarkerAnalyzer(host, bundle.entryPoint.package).analyzeProgram(bundle.src.program);
+  const decorationAnalyses = new DecorationAnalyzer(
+    fs,
+    bundle,
+    host,
+    referencesRegistry
+  ).analyzeProgram();
+  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(
+    host,
+    bundle.entryPoint.package
+  ).analyzeProgram(bundle.src.program);
   const renderer = new Esm5RenderingFormatter(host, false);
   const importManager = new ImportManager(new NoopImportRewriter(), IMPORT_PREFIX);
   return {
@@ -44,7 +57,7 @@ function setup(file: {name: AbsoluteFsPath, contents: string}) {
     renderer,
     decorationAnalyses,
     switchMarkerAnalyses,
-    importManager
+    importManager,
   };
 }
 
@@ -113,7 +126,7 @@ function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {
   return Promise.resolve(new R3NgModuleFactory(moduleType));
 }
 // Some other content
-export {A, B, C, NoIife, BadIife};`
+export {A, B, C, NoIife, BadIife};`,
       };
 
       PROGRAM_DECORATE_HELPER = {
@@ -178,7 +191,7 @@ var F = /** @class */ (function () {
   ], F)
 }());
 export { F };
-// Some other content`
+// Some other content`,
       };
     });
 
@@ -187,12 +200,13 @@ export { F };
         const {renderer, sourceFile} = setup(PROGRAM);
         const output = new MagicString(PROGRAM.contents);
         renderer.addImports(
-            output,
-            [
-              {specifier: '@angular/core', qualifier: 'i0'},
-              {specifier: '@angular/common', qualifier: 'i1'}
-            ],
-            sourceFile);
+          output,
+          [
+            {specifier: '@angular/core', qualifier: 'i0'},
+            {specifier: '@angular/common', qualifier: 'i1'},
+          ],
+          sourceFile
+        );
         expect(output.toString()).toContain(`/* A copyright notice */
 import 'some-side-effect';
 import {Directive} from '@angular/core';
@@ -217,26 +231,29 @@ import * as i1 from '@angular/common';`);
         const {importManager, renderer, sourceFile} = setup(PROGRAM);
         const output = new MagicString(PROGRAM.contents);
         renderer.addExports(
-            output, _(PROGRAM.name.replace(/\.js$/, '')),
-            [
-              {
-                from: _('/node_modules/test-package/some/a.js'),
-                dtsFrom: _('/node_modules/test-package/some/a.d.ts'),
-                identifier: 'ComponentA1'
-              },
-              {
-                from: _('/node_modules/test-package/some/a.js'),
-                dtsFrom: _('/node_modules/test-package/some/a.d.ts'),
-                identifier: 'ComponentA2'
-              },
-              {
-                from: _('/node_modules/test-package/some/foo/b.js'),
-                dtsFrom: _('/node_modules/test-package/some/foo/b.d.ts'),
-                identifier: 'ComponentB'
-              },
-              {from: PROGRAM.name, dtsFrom: PROGRAM.name, identifier: 'TopLevelComponent'},
-            ],
-            importManager, sourceFile);
+          output,
+          _(PROGRAM.name.replace(/\.js$/, '')),
+          [
+            {
+              from: _('/node_modules/test-package/some/a.js'),
+              dtsFrom: _('/node_modules/test-package/some/a.d.ts'),
+              identifier: 'ComponentA1',
+            },
+            {
+              from: _('/node_modules/test-package/some/a.js'),
+              dtsFrom: _('/node_modules/test-package/some/a.d.ts'),
+              identifier: 'ComponentA2',
+            },
+            {
+              from: _('/node_modules/test-package/some/foo/b.js'),
+              dtsFrom: _('/node_modules/test-package/some/foo/b.d.ts'),
+              identifier: 'ComponentB',
+            },
+            {from: PROGRAM.name, dtsFrom: PROGRAM.name, identifier: 'TopLevelComponent'},
+          ],
+          importManager,
+          sourceFile
+        );
         expect(output.toString()).toContain(`
 export {A, B, C, NoIife, BadIife};
 export {ComponentA1} from './a';
@@ -280,100 +297,124 @@ var A = (function() {`);
         const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
         const output = new MagicString(PROGRAM.contents);
         renderer.rewriteSwitchableDeclarations(
-            output, file, switchMarkerAnalyses.get(sourceFile)!.declarations);
-        expect(output.toString())
-            .not.toContain(`var compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;`);
-        expect(output.toString())
-            .toContain(`var badlyFormattedVariable = __PRE_R3__badlyFormattedVariable;`);
-        expect(output.toString())
-            .toContain(`var compileNgModuleFactory = compileNgModuleFactory__POST_R3__;`);
-        expect(output.toString())
-            .toContain(
-                `function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {`);
-        expect(output.toString())
-            .toContain(
-                `function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {`);
+          output,
+          file,
+          switchMarkerAnalyses.get(sourceFile)!.declarations
+        );
+        expect(output.toString()).not.toContain(
+          `var compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;`
+        );
+        expect(output.toString()).toContain(
+          `var badlyFormattedVariable = __PRE_R3__badlyFormattedVariable;`
+        );
+        expect(output.toString()).toContain(
+          `var compileNgModuleFactory = compileNgModuleFactory__POST_R3__;`
+        );
+        expect(output.toString()).toContain(
+          `function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {`
+        );
+        expect(output.toString()).toContain(
+          `function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {`
+        );
       });
     });
 
     describe('addDefinitions', () => {
-      it('should insert the definitions directly before the return statement of the class IIFE',
-         () => {
-           const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
-           const output = new MagicString(PROGRAM.contents);
-           const compiledClass =
-               decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'A')!;
-           renderer.addDefinitions(output, compiledClass, 'SOME DEFINITION TEXT');
-           expect(output.toString()).toContain(`
+      it('should insert the definitions directly before the return statement of the class IIFE', () => {
+        const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
+        const output = new MagicString(PROGRAM.contents);
+        const compiledClass = decorationAnalyses
+          .get(sourceFile)!
+          .compiledClasses.find((c) => c.name === 'A')!;
+        renderer.addDefinitions(output, compiledClass, 'SOME DEFINITION TEXT');
+        expect(output.toString()).toContain(`
   A.prototype.ngDoCheck = function() {
     //
   };
 SOME DEFINITION TEXT
   return A;
 `);
-         });
+      });
 
       it('should error if the compiledClass is not valid', () => {
         const {renderer, sourceFile, program} = setup(PROGRAM);
         const output = new MagicString(PROGRAM.contents);
 
         const noIifeDeclaration = getDeclaration(
-            program, absoluteFromSourceFile(sourceFile), 'NoIife', ts.isFunctionDeclaration);
+          program,
+          absoluteFromSourceFile(sourceFile),
+          'NoIife',
+          ts.isFunctionDeclaration
+        );
         const mockNoIifeClass: any = {declaration: noIifeDeclaration, name: 'NoIife'};
-        expect(() => renderer.addDefinitions(output, mockNoIifeClass, 'SOME DEFINITION TEXT'))
-            .toThrowError(`Compiled class declaration is not inside an IIFE: NoIife in ${
-                _('/node_modules/test-package/some/file.js')}`);
+        expect(() =>
+          renderer.addDefinitions(output, mockNoIifeClass, 'SOME DEFINITION TEXT')
+        ).toThrowError(
+          `Compiled class declaration is not inside an IIFE: NoIife in ${_(
+            '/node_modules/test-package/some/file.js'
+          )}`
+        );
 
         const badIifeDeclaration = getDeclaration(
-            program, absoluteFromSourceFile(sourceFile), 'BadIife', ts.isVariableDeclaration);
+          program,
+          absoluteFromSourceFile(sourceFile),
+          'BadIife',
+          ts.isVariableDeclaration
+        );
         const mockBadIifeClass: any = {declaration: badIifeDeclaration, name: 'BadIife'};
-        expect(() => renderer.addDefinitions(output, mockBadIifeClass, 'SOME DEFINITION TEXT'))
-            .toThrowError(
-                `Compiled class wrapper IIFE does not have a return statement: BadIife in ${
-                    _('/node_modules/test-package/some/file.js')}`);
+        expect(() =>
+          renderer.addDefinitions(output, mockBadIifeClass, 'SOME DEFINITION TEXT')
+        ).toThrowError(
+          `Compiled class wrapper IIFE does not have a return statement: BadIife in ${_(
+            '/node_modules/test-package/some/file.js'
+          )}`
+        );
       });
     });
 
     describe('addAdjacentStatements', () => {
-      const contents = `import {Directive, NgZone, Console} from '@angular/core';\n` +
-          `var SomeDirective = /** @class **/ (function () {\n` +
-          `  function SomeDirective(zone, cons) {}\n` +
-          `  SomeDirective.prototype.method = function() {}\n` +
-          `  SomeDirective.decorators = [\n` +
-          `    { type: Directive, args: [{ selector: '[a]' }] },\n` +
-          `    { type: OtherA }\n` +
-          `  ];\n` +
-          `  SomeDirective.ctorParameters = function() { return [\n` +
-          `    { type: NgZone },\n` +
-          `    { type: Console }\n` +
-          `  ]; };\n` +
-          `  return SomeDirective;\n` +
-          `}());\n` +
-          `export {SomeDirective};`;
+      const contents =
+        `import {Directive, NgZone, Console} from '@angular/core';\n` +
+        `var SomeDirective = /** @class **/ (function () {\n` +
+        `  function SomeDirective(zone, cons) {}\n` +
+        `  SomeDirective.prototype.method = function() {}\n` +
+        `  SomeDirective.decorators = [\n` +
+        `    { type: Directive, args: [{ selector: '[a]' }] },\n` +
+        `    { type: OtherA }\n` +
+        `  ];\n` +
+        `  SomeDirective.ctorParameters = function() { return [\n` +
+        `    { type: NgZone },\n` +
+        `    { type: Console }\n` +
+        `  ]; };\n` +
+        `  return SomeDirective;\n` +
+        `}());\n` +
+        `export {SomeDirective};`;
 
       it('should insert the statements after all the static methods of the class', () => {
         const program = {name: _('/node_modules/test-package/some/file.js'), contents};
         const {renderer, decorationAnalyses, sourceFile} = setup(program);
         const output = new MagicString(contents);
-        const compiledClass = decorationAnalyses.get(sourceFile)!.compiledClasses.find(
-            c => c.name === 'SomeDirective')!;
+        const compiledClass = decorationAnalyses
+          .get(sourceFile)!
+          .compiledClasses.find((c) => c.name === 'SomeDirective')!;
         renderer.addAdjacentStatements(output, compiledClass, 'SOME STATEMENTS');
-        expect(output.toString())
-            .toContain(
-                `  SomeDirective.ctorParameters = function() { return [\n` +
-                `    { type: NgZone },\n` +
-                `    { type: Console }\n` +
-                `  ]; };\n` +
-                `SOME STATEMENTS\n` +
-                `  return SomeDirective;\n`);
+        expect(output.toString()).toContain(
+          `  SomeDirective.ctorParameters = function() { return [\n` +
+            `    { type: NgZone },\n` +
+            `    { type: Console }\n` +
+            `  ]; };\n` +
+            `SOME STATEMENTS\n` +
+            `  return SomeDirective;\n`
+        );
       });
 
       it('should insert the statements after any definitions', () => {
         const program = {name: _('/node_modules/test-package/some/file.js'), contents};
         const {renderer, decorationAnalyses, sourceFile} = setup(program);
         const output = new MagicString(contents);
-        const compiledClass = decorationAnalyses.get(sourceFile)!.compiledClasses.find(
-            c => c.name === 'SomeDirective')!;
+        const compiledClass = decorationAnalyses
+          .get(sourceFile)!
+          .compiledClasses.find((c) => c.name === 'SomeDirective')!;
         renderer.addDefinitions(output, compiledClass, 'SOME DEFINITIONS');
         renderer.addAdjacentStatements(output, compiledClass, 'SOME STATEMENTS');
         const definitionsPosition = output.toString().indexOf('SOME DEFINITIONS');
@@ -384,150 +425,145 @@ SOME DEFINITION TEXT
       });
     });
 
-
     describe('removeDecorators', () => {
-      it('should delete the decorator (and following comma) that was matched in the analysis',
-         () => {
-           const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
-           const output = new MagicString(PROGRAM.contents);
-           const compiledClass =
-               decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'A')!;
-           const decorator = compiledClass.decorators![0];
-           const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
-           renderer.removeDecorators(output, decoratorsToRemove);
-           expect(output.toString())
-               .not.toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
-           expect(output.toString()).toContain(`{ type: OtherA }`);
-           expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[b]' }] }`);
-           expect(output.toString()).toContain(`{ type: OtherB }`);
-           expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[c]' }] }`);
-         });
+      it('should delete the decorator (and following comma) that was matched in the analysis', () => {
+        const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
+        const output = new MagicString(PROGRAM.contents);
+        const compiledClass = decorationAnalyses
+          .get(sourceFile)!
+          .compiledClasses.find((c) => c.name === 'A')!;
+        const decorator = compiledClass.decorators![0];
+        const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
+        decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
+        renderer.removeDecorators(output, decoratorsToRemove);
+        expect(output.toString()).not.toContain(
+          `{ type: Directive, args: [{ selector: '[a]' }] },`
+        );
+        expect(output.toString()).toContain(`{ type: OtherA }`);
+        expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[b]' }] }`);
+        expect(output.toString()).toContain(`{ type: OtherB }`);
+        expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[c]' }] }`);
+      });
 
+      it('should delete the decorator (but cope with no trailing comma) that was matched in the analysis', () => {
+        const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
+        const output = new MagicString(PROGRAM.contents);
+        const compiledClass = decorationAnalyses
+          .get(sourceFile)!
+          .compiledClasses.find((c) => c.name === 'B')!;
+        const decorator = compiledClass.decorators![0];
+        const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
+        decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
+        renderer.removeDecorators(output, decoratorsToRemove);
+        expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
+        expect(output.toString()).toContain(`{ type: OtherA }`);
+        expect(output.toString()).not.toContain(`{ type: Directive, args: [{ selector: '[b]' }] }`);
+        expect(output.toString()).toContain(`{ type: OtherB }`);
+        expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[c]' }] }`);
+      });
 
-      it('should delete the decorator (but cope with no trailing comma) that was matched in the analysis',
-         () => {
-           const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
-           const output = new MagicString(PROGRAM.contents);
-           const compiledClass =
-               decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'B')!;
-           const decorator = compiledClass.decorators![0];
-           const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
-           renderer.removeDecorators(output, decoratorsToRemove);
-           expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
-           expect(output.toString()).toContain(`{ type: OtherA }`);
-           expect(output.toString())
-               .not.toContain(`{ type: Directive, args: [{ selector: '[b]' }] }`);
-           expect(output.toString()).toContain(`{ type: OtherB }`);
-           expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[c]' }] }`);
-         });
-
-
-      it('should delete the decorator (and its container if there are not other decorators left) that was matched in the analysis',
-         () => {
-           const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
-           const output = new MagicString(PROGRAM.contents);
-           const compiledClass =
-               decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'C')!;
-           const decorator = compiledClass.decorators![0];
-           const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-           decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
-           renderer.removeDecorators(output, decoratorsToRemove);
-           renderer.addDefinitions(output, compiledClass, 'SOME DEFINITION TEXT');
-           expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
-           expect(output.toString()).toContain(`{ type: OtherA }`);
-           expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[b]' }] }`);
-           expect(output.toString()).toContain(`{ type: OtherB }`);
-           expect(output.toString())
-               .toContain(`function C() {}\nSOME DEFINITION TEXT\n  return C;`);
-           expect(output.toString()).not.toContain(`C.decorators`);
-         });
-
+      it('should delete the decorator (and its container if there are not other decorators left) that was matched in the analysis', () => {
+        const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
+        const output = new MagicString(PROGRAM.contents);
+        const compiledClass = decorationAnalyses
+          .get(sourceFile)!
+          .compiledClasses.find((c) => c.name === 'C')!;
+        const decorator = compiledClass.decorators![0];
+        const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
+        decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
+        renderer.removeDecorators(output, decoratorsToRemove);
+        renderer.addDefinitions(output, compiledClass, 'SOME DEFINITION TEXT');
+        expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
+        expect(output.toString()).toContain(`{ type: OtherA }`);
+        expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[b]' }] }`);
+        expect(output.toString()).toContain(`{ type: OtherB }`);
+        expect(output.toString()).toContain(`function C() {}\nSOME DEFINITION TEXT\n  return C;`);
+        expect(output.toString()).not.toContain(`C.decorators`);
+      });
 
       describe('[__decorate declarations]', () => {
-        it('should delete the decorator (and following comma) that was matched in the analysis',
-           () => {
-             const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
-             const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
-             const compiledClass =
-                 decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'A')!;
-             const decorator = compiledClass.decorators!.find(d => d.name === 'Directive')!;
-             const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-             decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
-             renderer.removeDecorators(output, decoratorsToRemove);
-             expect(output.toString()).not.toContain(`Directive({ selector: '[a]' }),`);
-             expect(output.toString()).toContain(`OtherA()`);
-             expect(output.toString()).toContain(`Directive({ selector: '[b]' })`);
-             expect(output.toString()).toContain(`OtherB()`);
-             expect(output.toString()).toContain(`Directive({ selector: '[c]' })`);
-           });
+        it('should delete the decorator (and following comma) that was matched in the analysis', () => {
+          const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
+          const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
+          const compiledClass = decorationAnalyses
+            .get(sourceFile)!
+            .compiledClasses.find((c) => c.name === 'A')!;
+          const decorator = compiledClass.decorators!.find((d) => d.name === 'Directive')!;
+          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
+          decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
+          renderer.removeDecorators(output, decoratorsToRemove);
+          expect(output.toString()).not.toContain(`Directive({ selector: '[a]' }),`);
+          expect(output.toString()).toContain(`OtherA()`);
+          expect(output.toString()).toContain(`Directive({ selector: '[b]' })`);
+          expect(output.toString()).toContain(`OtherB()`);
+          expect(output.toString()).toContain(`Directive({ selector: '[c]' })`);
+        });
 
-        it('should delete the decorator (but cope with no trailing comma) that was matched in the analysis',
-           () => {
-             const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
-             const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
-             const compiledClass =
-                 decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'B')!;
-             const decorator = compiledClass.decorators!.find(d => d.name === 'Directive')!;
-             const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-             decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
-             renderer.removeDecorators(output, decoratorsToRemove);
-             expect(output.toString()).toContain(`Directive({ selector: '[a]' }),`);
-             expect(output.toString()).toContain(`OtherA()`);
-             expect(output.toString()).not.toContain(`Directive({ selector: '[b]' })`);
-             expect(output.toString()).toContain(`OtherB()`);
-             expect(output.toString()).toContain(`Directive({ selector: '[c]' })`);
-           });
+        it('should delete the decorator (but cope with no trailing comma) that was matched in the analysis', () => {
+          const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
+          const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
+          const compiledClass = decorationAnalyses
+            .get(sourceFile)!
+            .compiledClasses.find((c) => c.name === 'B')!;
+          const decorator = compiledClass.decorators!.find((d) => d.name === 'Directive')!;
+          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
+          decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
+          renderer.removeDecorators(output, decoratorsToRemove);
+          expect(output.toString()).toContain(`Directive({ selector: '[a]' }),`);
+          expect(output.toString()).toContain(`OtherA()`);
+          expect(output.toString()).not.toContain(`Directive({ selector: '[b]' })`);
+          expect(output.toString()).toContain(`OtherB()`);
+          expect(output.toString()).toContain(`Directive({ selector: '[c]' })`);
+        });
 
-        it('should delete the decorator (and its container if there are not other decorators left) that was matched in the analysis',
-           () => {
-             const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
-             const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
-             const compiledClass =
-                 decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'C')!;
-             const decorator = compiledClass.decorators!.find(d => d.name === 'Directive')!;
-             const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-             decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
-             renderer.removeDecorators(output, decoratorsToRemove);
-             expect(output.toString()).toContain(`Directive({ selector: '[a]' }),`);
-             expect(output.toString()).toContain(`OtherA()`);
-             expect(output.toString()).toContain(`Directive({ selector: '[b]' })`);
-             expect(output.toString()).toContain(`OtherB()`);
-             expect(output.toString()).not.toContain(`Directive({ selector: '[c]' })`);
-             expect(output.toString()).not.toContain(`C = tslib_1.__decorate([`);
-             expect(output.toString()).toContain(`function C() {\n    }\n    return C;`);
-           });
+        it('should delete the decorator (and its container if there are not other decorators left) that was matched in the analysis', () => {
+          const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
+          const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
+          const compiledClass = decorationAnalyses
+            .get(sourceFile)!
+            .compiledClasses.find((c) => c.name === 'C')!;
+          const decorator = compiledClass.decorators!.find((d) => d.name === 'Directive')!;
+          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
+          decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
+          renderer.removeDecorators(output, decoratorsToRemove);
+          expect(output.toString()).toContain(`Directive({ selector: '[a]' }),`);
+          expect(output.toString()).toContain(`OtherA()`);
+          expect(output.toString()).toContain(`Directive({ selector: '[b]' })`);
+          expect(output.toString()).toContain(`OtherB()`);
+          expect(output.toString()).not.toContain(`Directive({ selector: '[c]' })`);
+          expect(output.toString()).not.toContain(`C = tslib_1.__decorate([`);
+          expect(output.toString()).toContain(`function C() {\n    }\n    return C;`);
+        });
 
-        it('should delete call to `__decorate` but keep a return statement and semi-colon if there are no other decorators left',
-           () => {
-             const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
-             const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
-             const compiledClass =
-                 decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'E')!;
-             const decorator = compiledClass.decorators!.find(d => d.name === 'Directive')!;
-             const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-             decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
-             renderer.removeDecorators(output, decoratorsToRemove);
-             expect(output.toString()).not.toContain(`Directive({ selector: '[e]' })`);
-             expect(output.toString()).not.toContain(`E = tslib_1.__decorate([`);
-             expect(output.toString()).toContain(`function E() {}\n  return E;`);
-           });
+        it('should delete call to `__decorate` but keep a return statement and semi-colon if there are no other decorators left', () => {
+          const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
+          const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
+          const compiledClass = decorationAnalyses
+            .get(sourceFile)!
+            .compiledClasses.find((c) => c.name === 'E')!;
+          const decorator = compiledClass.decorators!.find((d) => d.name === 'Directive')!;
+          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
+          decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
+          renderer.removeDecorators(output, decoratorsToRemove);
+          expect(output.toString()).not.toContain(`Directive({ selector: '[e]' })`);
+          expect(output.toString()).not.toContain(`E = tslib_1.__decorate([`);
+          expect(output.toString()).toContain(`function E() {}\n  return E;`);
+        });
 
-        it('should delete call to `__decorate` but keep a return statement and no semi-colon if there are no other decorators left',
-           () => {
-             const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
-             const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
-             const compiledClass =
-                 decorationAnalyses.get(sourceFile)!.compiledClasses.find(c => c.name === 'F')!;
-             const decorator = compiledClass.decorators!.find(d => d.name === 'Directive')!;
-             const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-             decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
-             renderer.removeDecorators(output, decoratorsToRemove);
-             expect(output.toString()).not.toContain(`Directive({ selector: '[f]' })`);
-             expect(output.toString()).not.toContain(`F = tslib_1.__decorate([`);
-             expect(output.toString()).toContain(`function F() {}\n  return F\n`);
-           });
+        it('should delete call to `__decorate` but keep a return statement and no semi-colon if there are no other decorators left', () => {
+          const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
+          const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
+          const compiledClass = decorationAnalyses
+            .get(sourceFile)!
+            .compiledClasses.find((c) => c.name === 'F')!;
+          const decorator = compiledClass.decorators!.find((d) => d.name === 'Directive')!;
+          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
+          decoratorsToRemove.set(decorator.node!.parent!, [decorator.node!]);
+          renderer.removeDecorators(output, decoratorsToRemove);
+          expect(output.toString()).not.toContain(`Directive({ selector: '[f]' })`);
+          expect(output.toString()).not.toContain(`F = tslib_1.__decorate([`);
+          expect(output.toString()).toContain(`function F() {}\n  return F\n`);
+        });
       });
     });
 

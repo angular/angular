@@ -25,7 +25,6 @@ export function getErrorLogger(error: Error): (console: Console, ...values: any[
   return (error as any)[ERROR_LOGGER] || defaultErrorLogger;
 }
 
-
 function defaultErrorLogger(console: Console, ...values: any[]) {
   (<any>console.error)(...values);
 }

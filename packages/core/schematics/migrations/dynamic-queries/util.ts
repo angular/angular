@@ -23,37 +23,41 @@ export function identifyDynamicQueryNodes(typeChecker: ts.TypeChecker, sourceFil
 
   sourceFile.forEachChild(function walk(node: ts.Node) {
     if (ts.isClassDeclaration(node)) {
-      node.members.forEach(member => {
+      node.members.forEach((member) => {
         const angularDecorators =
-            member.decorators && getAngularDecorators(typeChecker, member.decorators);
+          member.decorators && getAngularDecorators(typeChecker, member.decorators);
 
         if (angularDecorators) {
           angularDecorators
-              // Filter out the queries that can have the `static` flag.
-              .filter(decorator => {
-                return decorator.name === 'ViewChild' || decorator.name === 'ContentChild';
-              })
-              // Filter out the queries where the `static` flag is explicitly set to `false`.
-              .filter(decorator => {
-                const options = decorator.node.expression.arguments[1];
-                return options && ts.isObjectLiteralExpression(options) &&
-                    options.properties.some(
-                        property => ts.isPropertyAssignment(property) &&
-                            property.initializer.kind === ts.SyntaxKind.FalseKeyword);
-              })
-              .forEach(decorator => {
-                const options =
-                    decorator.node.expression.arguments[1] as ts.ObjectLiteralExpression;
+            // Filter out the queries that can have the `static` flag.
+            .filter((decorator) => {
+              return decorator.name === 'ViewChild' || decorator.name === 'ContentChild';
+            })
+            // Filter out the queries where the `static` flag is explicitly set to `false`.
+            .filter((decorator) => {
+              const options = decorator.node.expression.arguments[1];
+              return (
+                options &&
+                ts.isObjectLiteralExpression(options) &&
+                options.properties.some(
+                  (property) =>
+                    ts.isPropertyAssignment(property) &&
+                    property.initializer.kind === ts.SyntaxKind.FalseKeyword
+                )
+              );
+            })
+            .forEach((decorator) => {
+              const options = decorator.node.expression.arguments[1] as ts.ObjectLiteralExpression;
 
-                // At this point we know that at least one property is the `static` flag. If this is
-                // the only property we can drop the entire object literal, otherwise we have to
-                // drop only the property.
-                if (options.properties.length === 1) {
-                  removeParameter.push(decorator.node.expression);
-                } else {
-                  removeProperty.push(options);
-                }
-              });
+              // At this point we know that at least one property is the `static` flag. If this is
+              // the only property we can drop the entire object literal, otherwise we have to
+              // drop only the property.
+              if (options.properties.length === 1) {
+                removeParameter.push(decorator.node.expression);
+              } else {
+                removeProperty.push(options);
+              }
+            });
         }
       });
     }
@@ -72,6 +76,7 @@ export function removeOptionsParameter(node: ts.CallExpression): ts.CallExpressi
 /** Removes the `static` property from an object literal expression. */
 export function removeStaticFlag(node: ts.ObjectLiteralExpression): ts.ObjectLiteralExpression {
   return ts.updateObjectLiteral(
-      node,
-      node.properties.filter(property => property.name && property.name.getText() !== 'static'));
+    node,
+    node.properties.filter((property) => property.name && property.name.getText() !== 'static')
+  );
 }

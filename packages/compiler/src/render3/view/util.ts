@@ -16,7 +16,6 @@ import * as t from '../r3_ast';
 import {R3QueryMetadata} from './api';
 import {isI18nAttribute} from './i18n/util';
 
-
 /**
  * Checks whether an object key contains potentially unsafe chars, thus the key should be wrapped in
  * quotes. Note: we do not wrap all keys into quotes, as it may have impact on minification and may
@@ -51,7 +50,7 @@ export const NON_BINDABLE_ATTR = 'ngNonBindable';
  * A variable declaration is added to the statements the first time the allocator is invoked.
  */
 export function temporaryAllocator(statements: o.Statement[], name: string): () => o.ReadVarExpr {
-  let temp: o.ReadVarExpr|null = null;
+  let temp: o.ReadVarExpr | null = null;
   return () => {
     if (!temp) {
       statements.push(new o.DeclareVarStmt(TEMPORARY_NAME, undefined, o.DYNAMIC_TYPE));
@@ -61,17 +60,17 @@ export function temporaryAllocator(statements: o.Statement[], name: string): () 
   };
 }
 
-
-export function unsupported(this: void|Function, feature: string): never {
+export function unsupported(this: void | Function, feature: string): never {
   if (this) {
     throw new Error(`Builder ${this.constructor.name} doesn't support ${feature} yet`);
   }
   throw new Error(`Feature ${feature} is not supported yet`);
 }
 
-export function invalid<T>(this: t.Visitor, arg: o.Expression|o.Statement|t.Node): never {
+export function invalid<T>(this: t.Visitor, arg: o.Expression | o.Statement | t.Node): never {
   throw new Error(
-      `Invalid state: Visitor ${this.constructor.name} doesn't handle ${arg.constructor.name}`);
+    `Invalid state: Visitor ${this.constructor.name} doesn't handle ${arg.constructor.name}`
+  );
 }
 
 export function asLiteral(value: any): o.Expression {
@@ -82,7 +81,9 @@ export function asLiteral(value: any): o.Expression {
 }
 
 export function conditionallyCreateMapObjectLiteral(
-    keys: {[key: string]: string|string[]}, keepDeclared?: boolean): o.Expression|null {
+  keys: {[key: string]: string | string[]},
+  keepDeclared?: boolean
+): o.Expression | null {
   if (Object.getOwnPropertyNames(keys).length > 0) {
     return mapToExpression(keys, keepDeclared);
   }
@@ -90,29 +91,34 @@ export function conditionallyCreateMapObjectLiteral(
 }
 
 function mapToExpression(
-    map: {[key: string]: string|string[]}, keepDeclared?: boolean): o.Expression {
-  return o.literalMap(Object.getOwnPropertyNames(map).map(key => {
-    // canonical syntax: `dirProp: publicProp`
-    // if there is no `:`, use dirProp = elProp
-    const value = map[key];
-    let declaredName: string;
-    let publicName: string;
-    let minifiedName: string;
-    if (Array.isArray(value)) {
-      [publicName, declaredName] = value;
-    } else {
-      [declaredName, publicName] = splitAtColon(key, [key, value]);
-    }
-    minifiedName = declaredName;
-    return {
-      key: minifiedName,
-      // put quotes around keys that contain potentially unsafe characters
-      quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(minifiedName),
-      value: (keepDeclared && publicName !== declaredName) ?
-          o.literalArr([asLiteral(publicName), asLiteral(declaredName)]) :
-          asLiteral(publicName)
-    };
-  }));
+  map: {[key: string]: string | string[]},
+  keepDeclared?: boolean
+): o.Expression {
+  return o.literalMap(
+    Object.getOwnPropertyNames(map).map((key) => {
+      // canonical syntax: `dirProp: publicProp`
+      // if there is no `:`, use dirProp = elProp
+      const value = map[key];
+      let declaredName: string;
+      let publicName: string;
+      let minifiedName: string;
+      if (Array.isArray(value)) {
+        [publicName, declaredName] = value;
+      } else {
+        [declaredName, publicName] = splitAtColon(key, [key, value]);
+      }
+      minifiedName = declaredName;
+      return {
+        key: minifiedName,
+        // put quotes around keys that contain potentially unsafe characters
+        quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(minifiedName),
+        value:
+          keepDeclared && publicName !== declaredName
+            ? o.literalArr([asLiteral(publicName), asLiteral(declaredName)])
+            : asLiteral(publicName),
+      };
+    })
+  );
 }
 
 /**
@@ -126,14 +132,16 @@ export function trimTrailingNulls(parameters: o.Expression[]): o.Expression[] {
 }
 
 export function getQueryPredicate(
-    query: R3QueryMetadata, constantPool: ConstantPool): o.Expression {
+  query: R3QueryMetadata,
+  constantPool: ConstantPool
+): o.Expression {
   if (Array.isArray(query.predicate)) {
     let predicate: o.Expression[] = [];
     query.predicate.forEach((selector: string): void => {
       // Each item in predicates array may contain strings with comma-separated refs
       // (for ex. 'ref, ref1, ..., refN'), thus we extract individual refs and store them
       // as separate array entities
-      const selectors = selector.split(',').map(token => o.literal(token.trim()));
+      const selectors = selector.split(',').map((token) => o.literal(token.trim()));
       predicate.push(...selectors);
     });
     return constantPool.getConstLiteral(o.literalArr(predicate), true);
@@ -145,9 +153,9 @@ export function getQueryPredicate(
 export function noop() {}
 
 export class DefinitionMap {
-  values: {key: string, quoted: boolean, value: o.Expression}[] = [];
+  values: {key: string; quoted: boolean; value: o.Expression}[] = [];
 
-  set(key: string, value: o.Expression|null): void {
+  set(key: string, value: o.Expression | null): void {
     if (value) {
       this.values.push({key, value, quoted: false});
     }
@@ -167,24 +175,24 @@ export class DefinitionMap {
  * object maps a property name to its (static) value. For any bindings, this map simply maps the
  * property name to an empty string.
  */
-export function getAttrsForDirectiveMatching(elOrTpl: t.Element|
-                                             t.Template): {[name: string]: string} {
+export function getAttrsForDirectiveMatching(
+  elOrTpl: t.Element | t.Template
+): {[name: string]: string} {
   const attributesMap: {[name: string]: string} = {};
 
-
   if (elOrTpl instanceof t.Template && elOrTpl.tagName !== 'ng-template') {
-    elOrTpl.templateAttrs.forEach(a => attributesMap[a.name] = '');
+    elOrTpl.templateAttrs.forEach((a) => (attributesMap[a.name] = ''));
   } else {
-    elOrTpl.attributes.forEach(a => {
+    elOrTpl.attributes.forEach((a) => {
       if (!isI18nAttribute(a.name)) {
         attributesMap[a.name] = a.value;
       }
     });
 
-    elOrTpl.inputs.forEach(i => {
+    elOrTpl.inputs.forEach((i) => {
       attributesMap[i.name] = '';
     });
-    elOrTpl.outputs.forEach(o => {
+    elOrTpl.outputs.forEach((o) => {
       attributesMap[o.name] = '';
     });
   }
@@ -194,7 +202,10 @@ export function getAttrsForDirectiveMatching(elOrTpl: t.Element|
 
 /** Returns a call expression to a chained instruction, e.g. `property(params[0])(params[1])`. */
 export function chainedInstruction(
-    reference: o.ExternalReference, calls: o.Expression[][], span?: ParseSourceSpan|null) {
+  reference: o.ExternalReference,
+  calls: o.Expression[][],
+  span?: ParseSourceSpan | null
+) {
   let expression = o.importExpr(reference, null, span) as o.Expression;
 
   if (calls.length > 0) {

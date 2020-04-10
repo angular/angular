@@ -9,7 +9,6 @@
 import {Optional, SkipSelf, StaticProvider, ɵɵdefineInjectable} from '../../di';
 import {DefaultKeyValueDifferFactory} from './default_keyvalue_differ';
 
-
 /**
  * A differ that tracks changes made to an object over time.
  *
@@ -23,7 +22,7 @@ export interface KeyValueDiffer<K, V> {
    * @returns an object describing the difference. The return value is only valid until the next
    * `diff()` invocation.
    */
-  diff(object: Map<K, V>): KeyValueChanges<K, V>|null;
+  diff(object: Map<K, V>): KeyValueChanges<K, V> | null;
 
   /**
    * Compute a difference between the previous state and the new `object` state.
@@ -32,7 +31,7 @@ export interface KeyValueDiffer<K, V> {
    * @returns an object describing the difference. The return value is only valid until the next
    * `diff()` invocation.
    */
-  diff(object: {[key: string]: V}): KeyValueChanges<string, V>|null;
+  diff(object: {[key: string]: V}): KeyValueChanges<string, V> | null;
   // TODO(TS2.1): diff<KP extends string>(this: KeyValueDiffer<KP, V>, object: Record<KP, V>):
   // KeyValueDiffer<KP, V>;
 }
@@ -86,12 +85,12 @@ export interface KeyValueChangeRecord<K, V> {
   /**
    * Current value for the key or `null` if removed.
    */
-  readonly currentValue: V|null;
+  readonly currentValue: V | null;
 
   /**
    * Previous value for the key or `null` if added.
    */
-  readonly previousValue: V|null;
+  readonly previousValue: V | null;
 }
 
 /**
@@ -121,7 +120,7 @@ export class KeyValueDiffers {
   static ɵprov = ɵɵdefineInjectable({
     token: KeyValueDiffers,
     providedIn: 'root',
-    factory: () => new KeyValueDiffers([new DefaultKeyValueDifferFactory()])
+    factory: () => new KeyValueDiffers([new DefaultKeyValueDifferFactory()]),
   });
 
   /**
@@ -129,7 +128,9 @@ export class KeyValueDiffers {
    */
   factories: KeyValueDifferFactory[];
 
-  constructor(factories: KeyValueDifferFactory[]) { this.factories = factories; }
+  constructor(factories: KeyValueDifferFactory[]) {
+    this.factories = factories;
+  }
 
   static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers {
     if (parent) {
@@ -171,12 +172,12 @@ export class KeyValueDiffers {
         return KeyValueDiffers.create(factories, parent);
       },
       // Dependency technically isn't optional, but we can provide a better error message this way.
-      deps: [[KeyValueDiffers, new SkipSelf(), new Optional()]]
+      deps: [[KeyValueDiffers, new SkipSelf(), new Optional()]],
     };
   }
 
   find(kv: any): KeyValueDifferFactory {
-    const factory = this.factories.find(f => f.supports(kv));
+    const factory = this.factories.find((f) => f.supports(kv));
     if (factory) {
       return factory;
     }

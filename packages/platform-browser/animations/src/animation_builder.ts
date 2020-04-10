@@ -5,9 +5,23 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationBuilder, AnimationFactory, AnimationMetadata, AnimationOptions, AnimationPlayer, sequence} from '@angular/animations';
+
+import {
+  AnimationBuilder,
+  AnimationFactory,
+  AnimationMetadata,
+  AnimationOptions,
+  AnimationPlayer,
+  sequence,
+} from '@angular/animations';
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, RendererFactory2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {
+  Inject,
+  Injectable,
+  RendererFactory2,
+  RendererType2,
+  ViewEncapsulation,
+} from '@angular/core';
 
 import {AnimationRenderer} from './animation_renderer';
 
@@ -22,12 +36,12 @@ export class BrowserAnimationBuilder extends AnimationBuilder {
       id: '0',
       encapsulation: ViewEncapsulation.None,
       styles: [],
-      data: {animation: []}
+      data: {animation: []},
     } as RendererType2;
     this._renderer = rootRenderer.createRenderer(doc.body, typeData) as AnimationRenderer;
   }
 
-  build(animation: AnimationMetadata|AnimationMetadata[]): AnimationFactory {
+  build(animation: AnimationMetadata | AnimationMetadata[]): AnimationFactory {
     const id = this._nextAnimationId.toString();
     this._nextAnimationId++;
     const entry = Array.isArray(animation) ? sequence(animation) : animation;
@@ -37,7 +51,9 @@ export class BrowserAnimationBuilder extends AnimationBuilder {
 }
 
 export class BrowserAnimationFactory extends AnimationFactory {
-  constructor(private _id: string, private _renderer: AnimationRenderer) { super(); }
+  constructor(private _id: string, private _renderer: AnimationRenderer) {
+    super();
+  }
 
   create(element: any, options?: AnimationOptions): AnimationPlayer {
     return new RendererAnimationPlayer(this._id, element, options || {}, this._renderer);
@@ -45,12 +61,15 @@ export class BrowserAnimationFactory extends AnimationFactory {
 }
 
 export class RendererAnimationPlayer implements AnimationPlayer {
-  public parentPlayer: AnimationPlayer|null = null;
+  public parentPlayer: AnimationPlayer | null = null;
   private _started = false;
 
   constructor(
-      public id: string, public element: any, options: AnimationOptions,
-      private _renderer: AnimationRenderer) {
+    public id: string,
+    public element: any,
+    options: AnimationOptions,
+    private _renderer: AnimationRenderer
+  ) {
     this._command('create', options);
   }
 
@@ -62,39 +81,68 @@ export class RendererAnimationPlayer implements AnimationPlayer {
     return issueAnimationCommand(this._renderer, this.element, this.id, command, args);
   }
 
-  onDone(fn: () => void): void { this._listen('done', fn); }
+  onDone(fn: () => void): void {
+    this._listen('done', fn);
+  }
 
-  onStart(fn: () => void): void { this._listen('start', fn); }
+  onStart(fn: () => void): void {
+    this._listen('start', fn);
+  }
 
-  onDestroy(fn: () => void): void { this._listen('destroy', fn); }
+  onDestroy(fn: () => void): void {
+    this._listen('destroy', fn);
+  }
 
-  init(): void { this._command('init'); }
+  init(): void {
+    this._command('init');
+  }
 
-  hasStarted(): boolean { return this._started; }
+  hasStarted(): boolean {
+    return this._started;
+  }
 
   play(): void {
     this._command('play');
     this._started = true;
   }
 
-  pause(): void { this._command('pause'); }
+  pause(): void {
+    this._command('pause');
+  }
 
-  restart(): void { this._command('restart'); }
+  restart(): void {
+    this._command('restart');
+  }
 
-  finish(): void { this._command('finish'); }
+  finish(): void {
+    this._command('finish');
+  }
 
-  destroy(): void { this._command('destroy'); }
+  destroy(): void {
+    this._command('destroy');
+  }
 
-  reset(): void { this._command('reset'); }
+  reset(): void {
+    this._command('reset');
+  }
 
-  setPosition(p: number): void { this._command('setPosition', p); }
+  setPosition(p: number): void {
+    this._command('setPosition', p);
+  }
 
-  getPosition(): number { return 0; }
+  getPosition(): number {
+    return 0;
+  }
 
   public totalTime = 0;
 }
 
 function issueAnimationCommand(
-    renderer: AnimationRenderer, element: any, id: string, command: string, args: any[]): any {
+  renderer: AnimationRenderer,
+  element: any,
+  id: string,
+  command: string,
+  args: any[]
+): any {
   return renderer.setProperty(element, `@@${id}:${command}`, args);
 }

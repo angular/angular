@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-export type Entry = string|Directory;
+export type Entry = string | Directory;
 
 export interface Directory {
   [name: string]: Entry;
@@ -58,14 +58,14 @@ export class MockAotContext {
     this.writeFile(fileName, '');
   }
 
-  getEntry(fileName: string|string[]): Entry|undefined {
+  getEntry(fileName: string | string[]): Entry | undefined {
     let parts = typeof fileName === 'string' ? fileName.split('/') : fileName;
     if (parts[0]) {
       parts = this.currentDirectory.split('/').concat(parts);
     }
     parts.shift();
     parts = normalize(parts);
-    return first(this.files, files => getEntryFromFiles(parts, files));
+    return first(this.files, (files) => getEntryFromFiles(parts, files));
   }
 
   getDirectories(path: string): string[] {
@@ -73,7 +73,7 @@ export class MockAotContext {
     if (typeof dir !== 'object') {
       return [];
     } else {
-      return Object.keys(dir).filter(key => typeof dir[key] === 'object');
+      return Object.keys(dir).filter((key) => typeof dir[key] === 'object');
     }
   }
 
@@ -82,7 +82,7 @@ export class MockAotContext {
   }
 }
 
-function first<T>(a: T[], cb: (value: T) => T | undefined): T|undefined {
+function first<T>(a: T[], cb: (value: T) => T | undefined): T | undefined {
   for (const value of a) {
     const result = cb(value);
     if (result != null) return result;
@@ -138,8 +138,10 @@ export class MockCompilerHost implements ts.CompilerHost {
   }
 
   getSourceFile(
-      fileName: string, languageVersion: ts.ScriptTarget,
-      onError?: (message: string) => void): ts.SourceFile {
+    fileName: string,
+    languageVersion: ts.ScriptTarget,
+    onError?: (message: string) => void
+  ): ts.SourceFile {
     const sourceText = this.context.readFile(fileName);
     if (sourceText != null) {
       return ts.createSourceFile(fileName, sourceText, languageVersion);
@@ -152,10 +154,9 @@ export class MockCompilerHost implements ts.CompilerHost {
     return ts.getDefaultLibFileName(options);
   }
 
-  writeFile: ts.WriteFileCallback =
-      (fileName, text) => {
-        this.context.writeFile(fileName, text);
-      }
+  writeFile: ts.WriteFileCallback = (fileName, text) => {
+    this.context.writeFile(fileName, text);
+  };
 
   getCurrentDirectory(): string {
     return this.context.currentDirectory;

@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {AnimationMetadata, AnimationPlayer, AnimationTriggerMetadata} from '@angular/animations';
 import {TriggerAst} from '../dsl/animation_ast';
 import {buildAnimationAst} from '../dsl/animation_ast_builder';
@@ -26,27 +27,39 @@ export class AnimationEngine {
   public onRemovalComplete = (element: any, context: any) => {};
 
   constructor(
-      private bodyNode: any, private _driver: AnimationDriver,
-      normalizer: AnimationStyleNormalizer) {
+    private bodyNode: any,
+    private _driver: AnimationDriver,
+    normalizer: AnimationStyleNormalizer
+  ) {
     this._transitionEngine = new TransitionAnimationEngine(bodyNode, _driver, normalizer);
     this._timelineEngine = new TimelineAnimationEngine(bodyNode, _driver, normalizer);
 
     this._transitionEngine.onRemovalComplete = (element: any, context: any) =>
-        this.onRemovalComplete(element, context);
+      this.onRemovalComplete(element, context);
   }
 
   registerTrigger(
-      componentId: string, namespaceId: string, hostElement: any, name: string,
-      metadata: AnimationTriggerMetadata): void {
+    componentId: string,
+    namespaceId: string,
+    hostElement: any,
+    name: string,
+    metadata: AnimationTriggerMetadata
+  ): void {
     const cacheKey = componentId + '-' + name;
     let trigger = this._triggerCache[cacheKey];
     if (!trigger) {
       const errors: any[] = [];
-      const ast =
-          buildAnimationAst(this._driver, metadata as AnimationMetadata, errors) as TriggerAst;
+      const ast = buildAnimationAst(
+        this._driver,
+        metadata as AnimationMetadata,
+        errors
+      ) as TriggerAst;
       if (errors.length) {
         throw new Error(
-            `The animation trigger "${name}" has failed to build due to the following errors:\n - ${errors.join("\n - ")}`);
+          `The animation trigger "${name}" has failed to build due to the following errors:\n - ${errors.join(
+            '\n - '
+          )}`
+        );
       }
       trigger = buildTrigger(name, ast);
       this._triggerCache[cacheKey] = trigger;
@@ -85,8 +98,12 @@ export class AnimationEngine {
   }
 
   listen(
-      namespaceId: string, element: any, eventName: string, eventPhase: string,
-      callback: (event: any) => any): () => any {
+    namespaceId: string,
+    element: any,
+    eventName: string,
+    eventPhase: string,
+    callback: (event: any) => any
+  ): () => any {
     // @@listen
     if (eventName.charAt(0) == '@') {
       const [id, action] = parseTimelineCommand(eventName);
@@ -95,12 +112,17 @@ export class AnimationEngine {
     return this._transitionEngine.listen(namespaceId, element, eventName, eventPhase, callback);
   }
 
-  flush(microtaskId: number = -1): void { this._transitionEngine.flush(microtaskId); }
-
-  get players(): AnimationPlayer[] {
-    return (this._transitionEngine.players as AnimationPlayer[])
-        .concat(this._timelineEngine.players as AnimationPlayer[]);
+  flush(microtaskId: number = -1): void {
+    this._transitionEngine.flush(microtaskId);
   }
 
-  whenRenderingDone(): Promise<any> { return this._transitionEngine.whenRenderingDone(); }
+  get players(): AnimationPlayer[] {
+    return (this._transitionEngine.players as AnimationPlayer[]).concat(
+      this._timelineEngine.players as AnimationPlayer[]
+    );
+  }
+
+  whenRenderingDone(): Promise<any> {
+    return this._transitionEngine.whenRenderingDone();
+  }
 }

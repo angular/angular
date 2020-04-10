@@ -23,10 +23,15 @@ export class FatalDiagnosticError {
   }
 }
 
-export function makeDiagnostic(code: ErrorCode, node: ts.Node, messageText: string, relatedInfo?: {
+export function makeDiagnostic(
+  code: ErrorCode,
   node: ts.Node,
   messageText: string,
-}[]): ts.DiagnosticWithLocation {
+  relatedInfo?: {
+    node: ts.Node;
+    messageText: string;
+  }[]
+): ts.DiagnosticWithLocation {
   node = ts.getOriginalNode(node);
   const diag: ts.DiagnosticWithLocation = {
     category: ts.DiagnosticCategory.Error,
@@ -37,7 +42,7 @@ export function makeDiagnostic(code: ErrorCode, node: ts.Node, messageText: stri
     messageText,
   };
   if (relatedInfo !== undefined) {
-    diag.relatedInformation = relatedInfo.map(info => {
+    diag.relatedInformation = relatedInfo.map((info) => {
       const infoNode = ts.getOriginalNode(info.node);
       return {
         category: ts.DiagnosticCategory.Message,

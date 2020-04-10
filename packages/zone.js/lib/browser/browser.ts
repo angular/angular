@@ -12,7 +12,15 @@
 
 import {findEventTasks} from '../common/events';
 import {patchTimer} from '../common/timers';
-import {ZONE_SYMBOL_ADD_EVENT_LISTENER, ZONE_SYMBOL_REMOVE_EVENT_LISTENER, patchClass, patchMethod, patchPrototype, scheduleMacroTaskWithCurrentZone, zoneSymbol} from '../common/utils';
+import {
+  ZONE_SYMBOL_ADD_EVENT_LISTENER,
+  ZONE_SYMBOL_REMOVE_EVENT_LISTENER,
+  patchClass,
+  patchMethod,
+  patchPrototype,
+  scheduleMacroTaskWithCurrentZone,
+  zoneSymbol,
+} from '../common/utils';
 
 import {patchCustomElements} from './custom-elements';
 import {eventTargetPatch, patchEvent} from './event-target';
@@ -44,7 +52,7 @@ Zone.__load_patch('blocking', (global: any, Zone: ZoneType) => {
   for (let i = 0; i < blockingMethods.length; i++) {
     const name = blockingMethods[i];
     patchMethod(global, name, (delegate, symbol, name) => {
-      return function(s: any, args: any[]) {
+      return function (s: any, args: any[]) {
         return Zone.current.run(delegate, global, args, name);
       };
     });
@@ -99,7 +107,9 @@ Zone.__load_patch('XHR', (global: any, Zone: ZoneType) => {
     }
     const XMLHttpRequestPrototype: any = XMLHttpRequest.prototype;
 
-    function findPendingTask(target: any) { return target[XHR_TASK]; }
+    function findPendingTask(target: any) {
+      return target[XHR_TASK];
+    }
 
     let oriAddListener = XMLHttpRequestPrototype[ZONE_SYMBOL_ADD_EVENT_LISTENER];
     let oriRemoveListener = XMLHttpRequestPrototype[ZONE_SYMBOL_REMOVE_EVENT_LISTENER];
@@ -130,7 +140,7 @@ Zone.__load_patch('XHR', (global: any, Zone: ZoneType) => {
       if (listener) {
         oriRemoveListener.call(target, READY_STATE_CHANGE, listener);
       }
-      const newListener = target[XHR_LISTENER] = () => {
+      const newListener = (target[XHR_LISTENER] = () => {
         if (target.readyState === target.DONE) {
           // sometimes on some browsers XMLHttpRequest will fire onreadystatechange with
           // readyState=4 multiple times, so we need to check task state here
@@ -141,7 +151,7 @@ Zone.__load_patch('XHR', (global: any, Zone: ZoneType) => {
             const loadTasks = target[Zone.__symbol__('loadfalse')];
             if (loadTasks && loadTasks.length > 0) {
               const oriInvoke = task.invoke;
-              task.invoke = function() {
+              task.invoke = function () {
                 // need to load the tasks again, because in other
                 // load listener, they may remove themselves
                 const loadTasks = target[Zone.__symbol__('loadfalse')];
@@ -163,14 +173,14 @@ Zone.__load_patch('XHR', (global: any, Zone: ZoneType) => {
             target[XHR_ERROR_BEFORE_SCHEDULED] = true;
           }
         }
-      };
+      });
       oriAddListener.call(target, READY_STATE_CHANGE, newListener);
 
       const storedTask: Task = target[XHR_TASK];
       if (!storedTask) {
         target[XHR_TASK] = task;
       }
-      sendNative !.apply(target, data.args);
+      sendNative!.apply(target, data.args);
       target[XHR_SCHEDULED] = true;
       return task;
     }
@@ -182,47 +192,72 @@ Zone.__load_patch('XHR', (global: any, Zone: ZoneType) => {
       // Note - ideally, we would call data.target.removeEventListener here, but it's too late
       // to prevent it from firing. So instead, we store info for the event listener.
       data.aborted = true;
-      return abortNative !.apply(data.target, data.args);
+      return abortNative!.apply(data.target, data.args);
     }
 
-    const openNative =
-        patchMethod(XMLHttpRequestPrototype, 'open', () => function(self: any, args: any[]) {
+    const openNative = patchMethod(
+      XMLHttpRequestPrototype,
+      'open',
+      () =>
+        function (self: any, args: any[]) {
           self[XHR_SYNC] = args[2] == false;
           self[XHR_URL] = args[1];
-          return openNative !.apply(self, args);
-        });
+          return openNative!.apply(self, args);
+        }
+    );
 
     const XMLHTTPREQUEST_SOURCE = 'XMLHttpRequest.send';
     const fetchTaskAborting = zoneSymbol('fetchTaskAborting');
     const fetchTaskScheduling = zoneSymbol('fetchTaskScheduling');
-    const sendNative: Function|null =
-        patchMethod(XMLHttpRequestPrototype, 'send', () => function(self: any, args: any[]) {
+    const sendNative: Function | null = patchMethod(
+      XMLHttpRequestPrototype,
+      'send',
+      () =>
+        function (self: any, args: any[]) {
           if ((Zone.current as any)[fetchTaskScheduling] === true) {
             // a fetch is scheduling, so we are using xhr to polyfill fetch
             // and because we already schedule macroTask for fetch, we should
             // not schedule a macroTask for xhr again
-            return sendNative !.apply(self, args);
+            return sendNative!.apply(self, args);
           }
           if (self[XHR_SYNC]) {
             // if the XHR is sync there is no task to schedule, just execute the code.
-            return sendNative !.apply(self, args);
+            return sendNative!.apply(self, args);
           } else {
-            const options: XHROptions =
-                {target: self, url: self[XHR_URL], isPeriodic: false, args: args, aborted: false};
+            const options: XHROptions = {
+              target: self,
+              url: self[XHR_URL],
+              isPeriodic: false,
+              args: args,
+              aborted: false,
+            };
             const task = scheduleMacroTaskWithCurrentZone(
-                XMLHTTPREQUEST_SOURCE, placeholderCallback, options, scheduleTask, clearTask);
-            if (self && self[XHR_ERROR_BEFORE_SCHEDULED] === true && !options.aborted &&
-                task.state === SCHEDULED) {
+              XMLHTTPREQUEST_SOURCE,
+              placeholderCallback,
+              options,
+              scheduleTask,
+              clearTask
+            );
+            if (
+              self &&
+              self[XHR_ERROR_BEFORE_SCHEDULED] === true &&
+              !options.aborted &&
+              task.state === SCHEDULED
+            ) {
               // xhr request throw error when send
               // we should invoke task instead of leaving a scheduled
               // pending macroTask
               task.invoke();
             }
           }
-        });
+        }
+    );
 
-    const abortNative =
-        patchMethod(XMLHttpRequestPrototype, 'abort', () => function(self: any, args: any[]) {
+    const abortNative = patchMethod(
+      XMLHttpRequestPrototype,
+      'abort',
+      () =>
+        function (self: any, args: any[]) {
           const task: Task = findPendingTask(self);
           if (task && typeof task.type == 'string') {
             // If the XHR has already completed, do nothing.
@@ -235,12 +270,13 @@ Zone.__load_patch('XHR', (global: any, Zone: ZoneType) => {
             task.zone.cancelTask(task);
           } else if ((Zone.current as any)[fetchTaskAborting] === true) {
             // the abort is called from fetch polyfill, we need to call native abort of XHR.
-            return abortNative !.apply(self, args);
+            return abortNative!.apply(self, args);
           }
           // Otherwise, we are trying to abort an XHR which has not yet been sent, so there is no
           // task
           // to cancel. Do nothing.
-        });
+        }
+    );
   }
 });
 
@@ -254,9 +290,9 @@ Zone.__load_patch('geolocation', (global: any) => {
 Zone.__load_patch('PromiseRejectionEvent', (global: any, Zone: ZoneType) => {
   // handle unhandled promise rejection
   function findPromiseRejectionHandler(evtName: string) {
-    return function(e: any) {
+    return function (e: any) {
       const eventTasks = findEventTasks(global, evtName);
-      eventTasks.forEach(eventTask => {
+      eventTasks.forEach((eventTask) => {
         // windows has added unhandledrejection event listener
         // trigger the event listener
         const PromiseRejectionEvent = global['PromiseRejectionEvent'];
@@ -269,10 +305,12 @@ Zone.__load_patch('PromiseRejectionEvent', (global: any, Zone: ZoneType) => {
   }
 
   if (global['PromiseRejectionEvent']) {
-    (Zone as any)[zoneSymbol('unhandledPromiseRejectionHandler')] =
-        findPromiseRejectionHandler('unhandledrejection');
+    (Zone as any)[zoneSymbol('unhandledPromiseRejectionHandler')] = findPromiseRejectionHandler(
+      'unhandledrejection'
+    );
 
-    (Zone as any)[zoneSymbol('rejectionHandledHandler')] =
-        findPromiseRejectionHandler('rejectionhandled');
+    (Zone as any)[zoneSymbol('rejectionHandledHandler')] = findPromiseRejectionHandler(
+      'rejectionhandled'
+    );
   }
 });

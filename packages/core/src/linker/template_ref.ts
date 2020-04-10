@@ -12,7 +12,6 @@ import {noop} from '../util/noop';
 import {ElementRef} from './element_ref';
 import {EmbeddedViewRef} from './view_ref';
 
-
 /**
  * Represents an embedded template that can be used to instantiate embedded views.
  * To instantiate embedded views based on a template, use the `ViewContainerRef`
@@ -59,11 +58,10 @@ export abstract class TemplateRef<C> {
    * @internal
    * @nocollapse
    */
-  static __NG_ELEMENT_ID__:
-      () => TemplateRef<any>| null = () => SWITCH_TEMPLATE_REF_FACTORY(TemplateRef, ElementRef)
+  static __NG_ELEMENT_ID__: () => TemplateRef<any> | null = () =>
+    SWITCH_TEMPLATE_REF_FACTORY(TemplateRef, ElementRef);
 }
 
 export const SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ = render3InjectTemplateRef;
 const SWITCH_TEMPLATE_REF_FACTORY__PRE_R3__ = noop;
-const SWITCH_TEMPLATE_REF_FACTORY: typeof render3InjectTemplateRef =
-    SWITCH_TEMPLATE_REF_FACTORY__PRE_R3__;
+const SWITCH_TEMPLATE_REF_FACTORY: typeof render3InjectTemplateRef = SWITCH_TEMPLATE_REF_FACTORY__PRE_R3__;

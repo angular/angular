@@ -29,22 +29,29 @@ export class Rule extends Rules.TypedRule {
       return failures;
     }
 
-    const {typedNodes, methodCalls, forwardRefs} =
-        findRendererReferences(sourceFile, typeChecker, rendererImport);
+    const {typedNodes, methodCalls, forwardRefs} = findRendererReferences(
+      sourceFile,
+      typeChecker,
+      rendererImport
+    );
     const helpersToAdd = new Set<HelperFunction>();
 
     failures.push(this._getNamedImportsFailure(rendererImport, sourceFile, printer));
-    typedNodes.forEach(node => failures.push(this._getTypedNodeFailure(node, sourceFile)));
-    forwardRefs.forEach(node => failures.push(this._getIdentifierNodeFailure(node, sourceFile)));
+    typedNodes.forEach((node) => failures.push(this._getTypedNodeFailure(node, sourceFile)));
+    forwardRefs.forEach((node) => failures.push(this._getIdentifierNodeFailure(node, sourceFile)));
 
-    methodCalls.forEach(call => {
-      const {failure, requiredHelpers} =
-          this._getMethodCallFailure(call, sourceFile, typeChecker, printer);
+    methodCalls.forEach((call) => {
+      const {failure, requiredHelpers} = this._getMethodCallFailure(
+        call,
+        sourceFile,
+        typeChecker,
+        printer
+      );
 
       failures.push(failure);
 
       if (requiredHelpers) {
-        requiredHelpers.forEach(helperName => helpersToAdd.add(helperName));
+        requiredHelpers.forEach((helperName) => helpersToAdd.add(helperName));
       }
     });
 
@@ -61,48 +68,72 @@ export class Rule extends Rules.TypedRule {
 
   /** Gets a failure for an import of the Renderer. */
   private _getNamedImportsFailure(
-      node: ts.NamedImports, sourceFile: ts.SourceFile, printer: ts.Printer): RuleFailure {
+    node: ts.NamedImports,
+    sourceFile: ts.SourceFile,
+    printer: ts.Printer
+  ): RuleFailure {
     const replacementText = printer.printNode(
-        ts.EmitHint.Unspecified, replaceImport(node, 'Renderer', 'Renderer2'), sourceFile);
+      ts.EmitHint.Unspecified,
+      replaceImport(node, 'Renderer', 'Renderer2'),
+      sourceFile
+    );
 
     return new RuleFailure(
-        sourceFile, node.getStart(), node.getEnd(),
-        'Imports of deprecated Renderer are not allowed. Please use Renderer2 instead.',
-        this.ruleName, new Replacement(node.getStart(), node.getWidth(), replacementText));
+      sourceFile,
+      node.getStart(),
+      node.getEnd(),
+      'Imports of deprecated Renderer are not allowed. Please use Renderer2 instead.',
+      this.ruleName,
+      new Replacement(node.getStart(), node.getWidth(), replacementText)
+    );
   }
 
   /** Gets a failure for a typed node (e.g. function parameter or property). */
   private _getTypedNodeFailure(
-      node: ts.ParameterDeclaration|ts.PropertyDeclaration|ts.AsExpression,
-      sourceFile: ts.SourceFile): RuleFailure {
-    const type = node.type !;
+    node: ts.ParameterDeclaration | ts.PropertyDeclaration | ts.AsExpression,
+    sourceFile: ts.SourceFile
+  ): RuleFailure {
+    const type = node.type!;
 
     return new RuleFailure(
-        sourceFile, type.getStart(), type.getEnd(),
-        'References to deprecated Renderer are not allowed. Please use Renderer2 instead.',
-        this.ruleName, new Replacement(type.getStart(), type.getWidth(), 'Renderer2'));
+      sourceFile,
+      type.getStart(),
+      type.getEnd(),
+      'References to deprecated Renderer are not allowed. Please use Renderer2 instead.',
+      this.ruleName,
+      new Replacement(type.getStart(), type.getWidth(), 'Renderer2')
+    );
   }
 
   /** Gets a failure for an identifier node. */
   private _getIdentifierNodeFailure(node: ts.Identifier, sourceFile: ts.SourceFile): RuleFailure {
     return new RuleFailure(
-        sourceFile, node.getStart(), node.getEnd(),
-        'References to deprecated Renderer are not allowed. Please use Renderer2 instead.',
-        this.ruleName, new Replacement(node.getStart(), node.getWidth(), 'Renderer2'));
+      sourceFile,
+      node.getStart(),
+      node.getEnd(),
+      'References to deprecated Renderer are not allowed. Please use Renderer2 instead.',
+      this.ruleName,
+      new Replacement(node.getStart(), node.getWidth(), 'Renderer2')
+    );
   }
 
   /** Gets a failure for a Renderer method call. */
   private _getMethodCallFailure(
-      call: ts.CallExpression, sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker,
-      printer: ts.Printer): {failure: RuleFailure, requiredHelpers?: HelperFunction[]} {
+    call: ts.CallExpression,
+    sourceFile: ts.SourceFile,
+    typeChecker: ts.TypeChecker,
+    printer: ts.Printer
+  ): {failure: RuleFailure; requiredHelpers?: HelperFunction[]} {
     const {node, requiredHelpers} = migrateExpression(call, typeChecker);
-    let fix: Replacement|undefined;
+    let fix: Replacement | undefined;
 
     if (node) {
       // If we migrated the node to a new expression, replace only the call expression.
       fix = new Replacement(
-          call.getStart(), call.getWidth(),
-          printer.printNode(ts.EmitHint.Unspecified, node, sourceFile));
+        call.getStart(),
+        call.getWidth(),
+        printer.printNode(ts.EmitHint.Unspecified, node, sourceFile)
+      );
     } else if (call.parent && ts.isExpressionStatement(call.parent)) {
       // Otherwise if the call is inside an expression statement, drop the entire statement.
       // This takes care of any trailing semicolons. We only need to drop nodes for cases like
@@ -112,28 +143,44 @@ export class Rule extends Rules.TypedRule {
 
     return {
       failure: new RuleFailure(
-          sourceFile, call.getStart(), call.getEnd(), 'Calls to Renderer methods are not allowed',
-          this.ruleName, fix),
-      requiredHelpers
+        sourceFile,
+        call.getStart(),
+        call.getEnd(),
+        'Calls to Renderer methods are not allowed',
+        this.ruleName,
+        fix
+      ),
+      requiredHelpers,
     };
   }
 
   /** Gets a failure that inserts the required helper functions at the bottom of the file. */
   private _getHelpersFailure(
-      helpersToAdd: Set<HelperFunction>, sourceFile: ts.SourceFile,
-      printer: ts.Printer): RuleFailure {
+    helpersToAdd: Set<HelperFunction>,
+    sourceFile: ts.SourceFile,
+    printer: ts.Printer
+  ): RuleFailure {
     const helpers: Replacement[] = [];
     const endOfFile = sourceFile.endOfFileToken;
 
-    helpersToAdd.forEach(helperName => {
-      helpers.push(new Replacement(
-          endOfFile.getStart(), endOfFile.getWidth(), getHelper(helperName, sourceFile, printer)));
+    helpersToAdd.forEach((helperName) => {
+      helpers.push(
+        new Replacement(
+          endOfFile.getStart(),
+          endOfFile.getWidth(),
+          getHelper(helperName, sourceFile, printer)
+        )
+      );
     });
 
     // Add a failure at the end of the file which we can use as an anchor to insert the helpers.
     return new RuleFailure(
-        sourceFile, endOfFile.getStart(), endOfFile.getStart() + 1,
-        'File should contain Renderer helper functions. Run tslint with --fix to generate them.',
-        this.ruleName, helpers);
+      sourceFile,
+      endOfFile.getStart(),
+      endOfFile.getStart() + 1,
+      'File should contain Renderer helper functions. Run tslint with --fix to generate them.',
+      this.ruleName,
+      helpers
+    );
   }
 }

@@ -12,19 +12,25 @@ import {getPropertyNameText, hasPropertyNameText} from '../../../utils/typescrip
 
 /** Analyzes the given class and resolves the name of all inputs which are declared. */
 export function getInputNamesOfClass(
-    node: ts.ClassDeclaration, typeChecker: ts.TypeChecker): string[] {
+  node: ts.ClassDeclaration,
+  typeChecker: ts.TypeChecker
+): string[] {
   const resolvedInputSetters: string[] = [];
 
   // Determines the names of all inputs defined in the current class declaration by
   // checking whether a given property/getter/setter has the "@Input" decorator applied.
-  node.members.forEach(m => {
-    if (!m.decorators || !m.decorators.length ||
-        !ts.isPropertyDeclaration(m) && !ts.isSetAccessor(m) && !ts.isGetAccessor(m)) {
+  node.members.forEach((m) => {
+    if (
+      !m.decorators ||
+      !m.decorators.length ||
+      (!ts.isPropertyDeclaration(m) && !ts.isSetAccessor(m) && !ts.isGetAccessor(m))
+    ) {
       return;
     }
 
-    const inputDecorator =
-        getAngularDecorators(typeChecker, m.decorators !).find(d => d.name === 'Input');
+    const inputDecorator = getAngularDecorators(typeChecker, m.decorators!).find(
+      (d) => d.name === 'Input'
+    );
 
     if (inputDecorator && hasPropertyNameText(m.name)) {
       resolvedInputSetters.push(m.name.text);
@@ -48,13 +54,16 @@ export function getInputNamesOfClass(
  * of the given class.
  */
 function getInputNamesFromMetadata(
-    node: ts.ClassDeclaration, typeChecker: ts.TypeChecker): string[]|null {
+  node: ts.ClassDeclaration,
+  typeChecker: ts.TypeChecker
+): string[] | null {
   if (!node.decorators || !node.decorators.length) {
     return null;
   }
 
-  const decorator = getAngularDecorators(typeChecker, node.decorators)
-                        .find(d => d.name === 'Directive' || d.name === 'Component');
+  const decorator = getAngularDecorators(typeChecker, node.decorators).find(
+    (d) => d.name === 'Directive' || d.name === 'Component'
+  );
 
   // In case no directive/component decorator could be found for this class, just
   // return null as there is no metadata where an input could be declared.
@@ -68,14 +77,17 @@ function getInputNamesFromMetadata(
   // where inputs could be declared. This is an edge case because there
   // always needs to be an object literal, but in case there isn't we just
   // want to skip the invalid decorator and return null.
-  if (decoratorCall.arguments.length !== 1 ||
-      !ts.isObjectLiteralExpression(decoratorCall.arguments[0])) {
+  if (
+    decoratorCall.arguments.length !== 1 ||
+    !ts.isObjectLiteralExpression(decoratorCall.arguments[0])
+  ) {
     return null;
   }
 
   const metadata = decoratorCall.arguments[0] as ts.ObjectLiteralExpression;
-  const inputs = metadata.properties.filter(ts.isPropertyAssignment)
-                     .find(p => getPropertyNameText(p.name) === 'inputs');
+  const inputs = metadata.properties
+    .filter(ts.isPropertyAssignment)
+    .find((p) => getPropertyNameText(p.name) === 'inputs');
 
   // In case there is no "inputs" property in the directive metadata,
   // just return "null" as no inputs can be declared for this class.
@@ -83,6 +95,7 @@ function getInputNamesFromMetadata(
     return null;
   }
 
-  return inputs.initializer.elements.filter(ts.isStringLiteralLike)
-      .map(element => element.text.split(':')[0].trim());
+  return inputs.initializer.elements
+    .filter(ts.isStringLiteralLike)
+    .map((element) => element.text.split(':')[0].trim());
 }

@@ -17,15 +17,19 @@ export class UnexpectedMetadataValueError extends Error {}
  * if metadata cannot be cleanly converted.
  */
 export function convertDirectiveMetadataToExpression(
-    metadata: any, resolveSymbolImport: (symbol: StaticSymbol) => string | null,
-    createImport: (moduleName: string, name: string) => ts.Expression,
-    convertProperty?: (key: string, value: any) => ts.Expression | null): ts.Expression {
+  metadata: any,
+  resolveSymbolImport: (symbol: StaticSymbol) => string | null,
+  createImport: (moduleName: string, name: string) => ts.Expression,
+  convertProperty?: (key: string, value: any) => ts.Expression | null
+): ts.Expression {
   if (typeof metadata === 'string') {
     return ts.createStringLiteral(metadata);
   } else if (Array.isArray(metadata)) {
-    return ts.createArrayLiteral(metadata.map(
-        el => convertDirectiveMetadataToExpression(
-            el, resolveSymbolImport, createImport, convertProperty)));
+    return ts.createArrayLiteral(
+      metadata.map((el) =>
+        convertDirectiveMetadataToExpression(el, resolveSymbolImport, createImport, convertProperty)
+      )
+    );
   } else if (typeof metadata === 'number') {
     return ts.createNumericLiteral(metadata.toString());
   } else if (typeof metadata === 'boolean') {
@@ -50,7 +54,7 @@ export function convertDirectiveMetadataToExpression(
 
     for (const key of Object.keys(metadata)) {
       const metadataValue = metadata[key];
-      let propertyValue: ts.Expression|null = null;
+      let propertyValue: ts.Expression | null = null;
 
       // Allows custom conversion of properties in an object. This is useful for special
       // cases where we don't want to store the enum values as integers, but rather use the
@@ -63,7 +67,11 @@ export function convertDirectiveMetadataToExpression(
       // the resolved metadata value into a TypeScript expression.
       if (propertyValue === null) {
         propertyValue = convertDirectiveMetadataToExpression(
-            metadataValue, resolveSymbolImport, createImport, convertProperty);
+          metadataValue,
+          resolveSymbolImport,
+          createImport,
+          convertProperty
+        );
       }
 
       literalProperties.push(ts.createPropertyAssignment(getPropertyName(key), propertyValue));
@@ -78,8 +86,8 @@ export function convertDirectiveMetadataToExpression(
 /**
  * Gets a valid property name from the given text. If the text cannot be used
  * as unquoted identifier, the name will be wrapped in a string literal.
-*/
-function getPropertyName(name: string): string|ts.StringLiteral {
+ */
+function getPropertyName(name: string): string | ts.StringLiteral {
   // Matches the most common identifiers that do not need quotes. Constructing a
   // regular expression that matches the ECMAScript specification in order to determine
   // whether quotes are needed is out of scope for this migration. For those more complex

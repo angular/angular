@@ -5,7 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ConstantPool, Expression, Statement, WrappedNodeExpr, WritePropExpr} from '@angular/compiler';
+
+import {
+  ConstantPool,
+  Expression,
+  Statement,
+  WrappedNodeExpr,
+  WritePropExpr,
+} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
@@ -31,22 +38,37 @@ import {FileToWrite, getImportRewriter, stripExtension} from './utils';
  */
 export class Renderer {
   constructor(
-      private host: NgccReflectionHost, private srcFormatter: RenderingFormatter,
-      private fs: FileSystem, private logger: Logger, private bundle: EntryPointBundle) {}
+    private host: NgccReflectionHost,
+    private srcFormatter: RenderingFormatter,
+    private fs: FileSystem,
+    private logger: Logger,
+    private bundle: EntryPointBundle
+  ) {}
 
   renderProgram(
-      decorationAnalyses: DecorationAnalyses, switchMarkerAnalyses: SwitchMarkerAnalyses,
-      privateDeclarationsAnalyses: PrivateDeclarationsAnalyses): FileToWrite[] {
+    decorationAnalyses: DecorationAnalyses,
+    switchMarkerAnalyses: SwitchMarkerAnalyses,
+    privateDeclarationsAnalyses: PrivateDeclarationsAnalyses
+  ): FileToWrite[] {
     const renderedFiles: FileToWrite[] = [];
 
     // Transform the source files.
-    this.bundle.src.program.getSourceFiles().forEach(sourceFile => {
-      if (decorationAnalyses.has(sourceFile) || switchMarkerAnalyses.has(sourceFile) ||
-          sourceFile === this.bundle.src.file) {
+    this.bundle.src.program.getSourceFiles().forEach((sourceFile) => {
+      if (
+        decorationAnalyses.has(sourceFile) ||
+        switchMarkerAnalyses.has(sourceFile) ||
+        sourceFile === this.bundle.src.file
+      ) {
         const compiledFile = decorationAnalyses.get(sourceFile);
         const switchMarkerAnalysis = switchMarkerAnalyses.get(sourceFile);
-        renderedFiles.push(...this.renderFile(
-            sourceFile, compiledFile, switchMarkerAnalysis, privateDeclarationsAnalyses));
+        renderedFiles.push(
+          ...this.renderFile(
+            sourceFile,
+            compiledFile,
+            switchMarkerAnalysis,
+            privateDeclarationsAnalyses
+          )
+        );
       }
     });
 
@@ -59,21 +81,26 @@ export class Renderer {
    * @param targetPath The absolute path where the rendered file will be written.
    */
   renderFile(
-      sourceFile: ts.SourceFile, compiledFile: CompiledFile|undefined,
-      switchMarkerAnalysis: SwitchMarkerAnalysis|undefined,
-      privateDeclarationsAnalyses: PrivateDeclarationsAnalyses): FileToWrite[] {
+    sourceFile: ts.SourceFile,
+    compiledFile: CompiledFile | undefined,
+    switchMarkerAnalysis: SwitchMarkerAnalysis | undefined,
+    privateDeclarationsAnalyses: PrivateDeclarationsAnalyses
+  ): FileToWrite[] {
     const isEntryPoint = sourceFile === this.bundle.src.file;
     const outputText = new MagicString(sourceFile.text);
 
     if (switchMarkerAnalysis) {
       this.srcFormatter.rewriteSwitchableDeclarations(
-          outputText, switchMarkerAnalysis.sourceFile, switchMarkerAnalysis.declarations);
+        outputText,
+        switchMarkerAnalysis.sourceFile,
+        switchMarkerAnalysis.declarations
+      );
     }
 
     const importManager = new ImportManager(
-        getImportRewriter(
-            this.bundle.src.r3SymbolsFile, this.bundle.isCore, this.bundle.isFlatCore),
-        IMPORT_PREFIX);
+      getImportRewriter(this.bundle.src.r3SymbolsFile, this.bundle.isCore, this.bundle.isFlatCore),
+      IMPORT_PREFIX
+    );
 
     if (compiledFile) {
       // TODO: remove constructor param metadata and property decorators (we need info from the
@@ -81,38 +108,61 @@ export class Renderer {
       const decoratorsToRemove = this.computeDecoratorsToRemove(compiledFile.compiledClasses);
       this.srcFormatter.removeDecorators(outputText, decoratorsToRemove);
 
-      compiledFile.compiledClasses.forEach(clazz => {
-        const renderedDefinition =
-            this.renderDefinitions(compiledFile.sourceFile, clazz, importManager);
+      compiledFile.compiledClasses.forEach((clazz) => {
+        const renderedDefinition = this.renderDefinitions(
+          compiledFile.sourceFile,
+          clazz,
+          importManager
+        );
         this.srcFormatter.addDefinitions(outputText, clazz, renderedDefinition);
 
-        const renderedStatements =
-            this.renderAdjacentStatements(compiledFile.sourceFile, clazz, importManager);
+        const renderedStatements = this.renderAdjacentStatements(
+          compiledFile.sourceFile,
+          clazz,
+          importManager
+        );
         this.srcFormatter.addAdjacentStatements(outputText, clazz, renderedStatements);
       });
 
       if (!isEntryPoint && compiledFile.reexports.length > 0) {
         this.srcFormatter.addDirectExports(
-            outputText, compiledFile.reexports, importManager, compiledFile.sourceFile);
+          outputText,
+          compiledFile.reexports,
+          importManager,
+          compiledFile.sourceFile
+        );
       }
 
       this.srcFormatter.addConstants(
-          outputText,
-          renderConstantPool(
-              this.srcFormatter, compiledFile.sourceFile, compiledFile.constantPool, importManager),
-          compiledFile.sourceFile);
+        outputText,
+        renderConstantPool(
+          this.srcFormatter,
+          compiledFile.sourceFile,
+          compiledFile.constantPool,
+          importManager
+        ),
+        compiledFile.sourceFile
+      );
     }
 
     // Add exports to the entry-point file
     if (isEntryPoint) {
       const entryPointBasePath = stripExtension(this.bundle.src.path);
       this.srcFormatter.addExports(
-          outputText, entryPointBasePath, privateDeclarationsAnalyses, importManager, sourceFile);
+        outputText,
+        entryPointBasePath,
+        privateDeclarationsAnalyses,
+        importManager,
+        sourceFile
+      );
     }
 
     if (isEntryPoint || compiledFile) {
       this.srcFormatter.addImports(
-          outputText, importManager.getAllImports(sourceFile.fileName), sourceFile);
+        outputText,
+        importManager.getAllImports(sourceFile.fileName),
+        sourceFile
+      );
     }
 
     if (compiledFile || switchMarkerAnalysis || isEntryPoint) {
@@ -131,12 +181,12 @@ export class Renderer {
    */
   private computeDecoratorsToRemove(classes: CompiledClass[]): RedundantDecoratorMap {
     const decoratorsToRemove = new RedundantDecoratorMap();
-    classes.forEach(clazz => {
+    classes.forEach((clazz) => {
       if (clazz.decorators === null) {
         return;
       }
 
-      clazz.decorators.forEach(dec => {
+      clazz.decorators.forEach((dec) => {
         if (dec.node === null) {
           return;
         }
@@ -160,9 +210,12 @@ export class Renderer {
    * @param imports An object that tracks the imports that are needed by the rendered definitions.
    */
   private renderDefinitions(
-      sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: ImportManager): string {
+    sourceFile: ts.SourceFile,
+    compiledClass: CompiledClass,
+    imports: ImportManager
+  ): string {
     const name = this.host.getInternalNameOfClass(compiledClass.declaration);
-    const statements: Statement[] = compiledClass.compilation.map(c => {
+    const statements: Statement[] = compiledClass.compilation.map((c) => {
       return createAssignmentStatement(name, c.name, c.initializer);
     });
     return this.renderStatements(sourceFile, statements, imports);
@@ -177,7 +230,10 @@ export class Renderer {
    * @param imports An object that tracks the imports that are needed by the rendered definitions.
    */
   private renderAdjacentStatements(
-      sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: ImportManager): string {
+    sourceFile: ts.SourceFile,
+    compiledClass: CompiledClass,
+    imports: ImportManager
+  ): string {
     const statements: Statement[] = [];
     for (const c of compiledClass.compilation) {
       statements.push(...c.statements);
@@ -186,9 +242,12 @@ export class Renderer {
   }
 
   private renderStatements(
-      sourceFile: ts.SourceFile, statements: Statement[], imports: ImportManager): string {
+    sourceFile: ts.SourceFile,
+    statements: Statement[],
+    imports: ImportManager
+  ): string {
     const printStatement = (stmt: Statement) =>
-        this.srcFormatter.printStatement(stmt, sourceFile, imports);
+      this.srcFormatter.printStatement(stmt, sourceFile, imports);
     return statements.map(printStatement).join('\n');
   }
 }
@@ -197,8 +256,11 @@ export class Renderer {
  * Render the constant pool as source code for the given class.
  */
 export function renderConstantPool(
-    formatter: RenderingFormatter, sourceFile: ts.SourceFile, constantPool: ConstantPool,
-    imports: ImportManager): string {
+  formatter: RenderingFormatter,
+  sourceFile: ts.SourceFile,
+  constantPool: ConstantPool,
+  imports: ImportManager
+): string {
   const printStatement = (stmt: Statement) => formatter.printStatement(stmt, sourceFile, imports);
   return constantPool.statements.map(printStatement).join('\n');
 }
@@ -209,7 +271,10 @@ export function renderConstantPool(
  * @param analyzedClass The info about the class whose statement we want to create.
  */
 function createAssignmentStatement(
-    receiverName: ts.DeclarationName, propName: string, initializer: Expression): Statement {
+  receiverName: ts.DeclarationName,
+  propName: string,
+  initializer: Expression
+): Statement {
   const receiver = new WrappedNodeExpr(receiverName);
   return new WritePropExpr(receiver, propName, initializer).toStmt();
 }

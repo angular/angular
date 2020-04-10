@@ -13,12 +13,13 @@ import {DEFAULT_ERROR_CODE, Diagnostic, SOURCE} from '../transformers/api';
 import {GENERATED_FILES} from '../transformers/util';
 
 export interface TypeCheckHost {
-  parseSourceSpanOf(fileName: string, line: number, character: number): ParseSourceSpan|null;
+  parseSourceSpanOf(fileName: string, line: number, character: number): ParseSourceSpan | null;
 }
 
 export function translateDiagnostics(
-    host: TypeCheckHost, untranslatedDiagnostics: ReadonlyArray<ts.Diagnostic>):
-    {ts: ts.Diagnostic[], ng: Diagnostic[]} {
+  host: TypeCheckHost,
+  untranslatedDiagnostics: ReadonlyArray<ts.Diagnostic>
+): {ts: ts.Diagnostic[]; ng: Diagnostic[]} {
   const ts: ts.Diagnostic[] = [];
   const ng: Diagnostic[] = [];
 
@@ -38,7 +39,7 @@ export function translateDiagnostics(
           category: diagnostic.category,
           span,
           source: SOURCE,
-          code: DEFAULT_ERROR_CODE
+          code: DEFAULT_ERROR_CODE,
         });
       }
     } else {
@@ -48,12 +49,15 @@ export function translateDiagnostics(
   return {ts, ng};
 }
 
-function sourceSpanOf(host: TypeCheckHost, source: ts.SourceFile, start: number): ParseSourceSpan|
-    null {
+function sourceSpanOf(
+  host: TypeCheckHost,
+  source: ts.SourceFile,
+  start: number
+): ParseSourceSpan | null {
   const {line, character} = ts.getLineAndCharacterOfPosition(source, start);
   return host.parseSourceSpanOf(source.fileName, line, character);
 }
 
-function diagnosticMessageToString(message: ts.DiagnosticMessageChain|string): string {
+function diagnosticMessageToString(message: ts.DiagnosticMessageChain | string): string {
   return ts.flattenDiagnosticMessageText(message, '\n');
 }

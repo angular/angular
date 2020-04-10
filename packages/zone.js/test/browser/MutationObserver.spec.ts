@@ -9,59 +9,72 @@
 import {ifEnvSupports} from '../test-util';
 declare const global: any;
 
+describe(
+  'MutationObserver',
+  ifEnvSupports('MutationObserver', function () {
+    let elt: HTMLDivElement;
+    const testZone = Zone.current.fork({name: 'test'});
 
-describe('MutationObserver', ifEnvSupports('MutationObserver', function() {
-           let elt: HTMLDivElement;
-           const testZone = Zone.current.fork({name: 'test'});
+    beforeEach(function () {
+      elt = document.createElement('div');
+    });
 
-           beforeEach(function() { elt = document.createElement('div'); });
+    it('should run observers within the zone', function (done) {
+      let ob;
 
-           it('should run observers within the zone', function(done) {
-             let ob;
+      testZone.run(function () {
+        ob = new MutationObserver(function () {
+          expect(Zone.current).toBe(testZone);
+          done();
+        });
 
-             testZone.run(function() {
-               ob = new MutationObserver(function() {
-                 expect(Zone.current).toBe(testZone);
-                 done();
-               });
+        ob.observe(elt, {childList: true});
+      });
 
-               ob.observe(elt, {childList: true});
-             });
+      elt.innerHTML = '<p>hey</p>';
+    });
 
-             elt.innerHTML = '<p>hey</p>';
-           });
+    it('should only dequeue upon disconnect if something is observed', function () {
+      let ob: MutationObserver;
+      let flag = false;
+      const elt = document.createElement('div');
+      const childZone = Zone.current.fork({
+        name: 'test',
+        onInvokeTask: function () {
+          flag = true;
+        },
+      });
 
-           it('should only dequeue upon disconnect if something is observed', function() {
-             let ob: MutationObserver;
-             let flag = false;
-             const elt = document.createElement('div');
-             const childZone =
-                 Zone.current.fork({name: 'test', onInvokeTask: function() { flag = true; }});
+      childZone.run(function () {
+        ob = new MutationObserver(function () {});
+      });
 
-             childZone.run(function() { ob = new MutationObserver(function() {}); });
+      ob!.disconnect();
+      expect(flag).toBe(false);
+    });
+  })
+);
 
-             ob !.disconnect();
-             expect(flag).toBe(false);
-           });
-         }));
+describe(
+  'WebKitMutationObserver',
+  ifEnvSupports('WebKitMutationObserver', function () {
+    const testZone = Zone.current.fork({name: 'test'});
 
-describe('WebKitMutationObserver', ifEnvSupports('WebKitMutationObserver', function() {
-           const testZone = Zone.current.fork({name: 'test'});
+    it('should run observers within the zone', function (done) {
+      let elt: HTMLDivElement;
 
-           it('should run observers within the zone', function(done) {
-             let elt: HTMLDivElement;
+      testZone.run(function () {
+        elt = document.createElement('div');
 
-             testZone.run(function() {
-               elt = document.createElement('div');
+        const ob = new global['WebKitMutationObserver'](function () {
+          expect(Zone.current).toBe(testZone);
+          done();
+        });
 
-               const ob = new global['WebKitMutationObserver'](function() {
-                 expect(Zone.current).toBe(testZone);
-                 done();
-               });
+        ob.observe(elt, {childList: true});
+      });
 
-               ob.observe(elt, {childList: true});
-             });
-
-             elt !.innerHTML = '<p>hey</p>';
-           });
-         }));
+      elt!.innerHTML = '<p>hey</p>';
+    });
+  })
+);

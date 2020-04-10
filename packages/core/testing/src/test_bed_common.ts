@@ -6,7 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbstractType, Component, Directive, InjectFlags, InjectionToken, NgModule, Pipe, PlatformRef, SchemaMetadata, Type} from '@angular/core';
+import {
+  AbstractType,
+  Component,
+  Directive,
+  InjectFlags,
+  InjectionToken,
+  NgModule,
+  Pipe,
+  PlatformRef,
+  SchemaMetadata,
+  Type,
+} from '@angular/core';
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
@@ -24,8 +35,9 @@ export class TestComponentRenderer {
 /**
  * @publicApi
  */
-export const ComponentFixtureAutoDetect =
-    new InjectionToken<boolean[]>('ComponentFixtureAutoDetect');
+export const ComponentFixtureAutoDetect = new InjectionToken<boolean[]>(
+  'ComponentFixtureAutoDetect'
+);
 
 /**
  * @publicApi
@@ -36,11 +48,11 @@ export const ComponentFixtureNoNgZone = new InjectionToken<boolean[]>('Component
  * @publicApi
  */
 export type TestModuleMetadata = {
-  providers?: any[],
-  declarations?: any[],
-  imports?: any[],
-  schemas?: Array<SchemaMetadata|any[]>,
-  aotSummaries?: () => any[],
+  providers?: any[];
+  declarations?: any[];
+  imports?: any[];
+  schemas?: Array<SchemaMetadata | any[]>;
+  aotSummaries?: () => any[];
 };
 
 /**
@@ -52,7 +64,10 @@ export interface TestBedStatic {
   new (...args: any[]): TestBed;
 
   initTestEnvironment(
-      ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed;
+    ngModule: Type<any> | Type<any>[],
+    platform: PlatformRef,
+    aotSummaries?: () => any[]
+  ): TestBed;
 
   /**
    * Reset the providers for the test injector.
@@ -65,7 +80,7 @@ export interface TestBedStatic {
    * Allows overriding default compiler providers and settings
    * which are defined in test_injector.js
    */
-  configureCompiler(config: {providers?: any[]; useJit?: boolean;}): TestBedStatic;
+  configureCompiler(config: {providers?: any[]; useJit?: boolean}): TestBedStatic;
 
   /**
    * Allows overriding default providers, directives, pipes, modules of the test injector,
@@ -103,25 +118,36 @@ export interface TestBedStatic {
    *
    * Note: This works for JIT and AOTed components as well.
    */
-  overrideProvider(token: any, provider: {
-    useFactory: Function,
-    deps: any[],
-  }): TestBedStatic;
-  overrideProvider(token: any, provider: {useValue: any;}): TestBedStatic;
-  overrideProvider(token: any, provider: {
-    useFactory?: Function,
-    useValue?: any,
-    deps?: any[],
-  }): TestBedStatic;
+  overrideProvider(
+    token: any,
+    provider: {
+      useFactory: Function;
+      deps: any[];
+    }
+  ): TestBedStatic;
+  overrideProvider(token: any, provider: {useValue: any}): TestBedStatic;
+  overrideProvider(
+    token: any,
+    provider: {
+      useFactory?: Function;
+      useValue?: any;
+      deps?: any[];
+    }
+  ): TestBedStatic;
 
   inject<T>(
-      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
+    token: Type<T> | InjectionToken<T> | AbstractType<T>,
+    notFoundValue?: T,
+    flags?: InjectFlags
+  ): T;
   inject<T>(
-      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
-      |null;
+    token: Type<T> | InjectionToken<T> | AbstractType<T>,
+    notFoundValue: null,
+    flags?: InjectFlags
+  ): T | null;
 
   /** @deprecated from v9.0.0 use TestBed.inject */
-  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
   /** @deprecated from v9.0.0 use TestBed.inject */
   get(token: any, notFoundValue?: any): any;
 

@@ -13,32 +13,19 @@ import {RouterModule, Routes} from '@angular/router';
   selector: 'aot-router',
   template: '<router-outlet></router-outlet>',
 })
-export class AotRouterCmp {
-}
+export class AotRouterCmp {}
 
 @Component({
   selector: 'aot-router-child',
   template: 'arc',
 })
-export class AotRouterChildCmp {
-}
+export class AotRouterChildCmp {}
 
-export const ROUTES: Routes = [
-  {path: '', component: AotRouterChildCmp},
-];
+export const ROUTES: Routes = [{path: '', component: AotRouterChildCmp}];
 
 @NgModule({
-  declarations: [
-    AotRouterCmp,
-    AotRouterChildCmp,
-  ],
-  exports: [
-    AotRouterCmp,
-    AotRouterChildCmp,
-  ],
-  imports: [
-    RouterModule.forRoot(ROUTES),
-  ],
+  declarations: [AotRouterCmp, AotRouterChildCmp],
+  exports: [AotRouterCmp, AotRouterChildCmp],
+  imports: [RouterModule.forRoot(ROUTES)],
 })
-export class AotRouterModule {
-}
+export class AotRouterModule {}

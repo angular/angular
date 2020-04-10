@@ -128,10 +128,12 @@ function copy(files, root, to) {
  * Utility function to copy a list of files to a tmp folder based on their common root.
  */
 function copyToTmp(files) {
-  const resolved = files.map(f => runfiles.resolveWorkspaceRelative(f));
+  const resolved = files.map((f) => runfiles.resolveWorkspaceRelative(f));
   return copy(
-      resolved, rootDirectory(resolved),
-      tmp.dirSync({keep: KEEP_TMP, unsafeCleanup: !KEEP_TMP}).name);
+    resolved,
+    rootDirectory(resolved),
+    tmp.dirSync({keep: KEEP_TMP, unsafeCleanup: !KEEP_TMP}).name
+  );
 }
 
 /**
@@ -172,16 +174,22 @@ class TestRunner {
       //       and quoted arguments that contain spaces
       const split = command.split(' ');
       let binary = split[0];
-      const args = split.slice(1).map(a => expandEnv(a));
+      const args = split.slice(1).map((a) => expandEnv(a));
       switch (binary) {
-        case 'patch-package-json': {
-          let packageJsonFile = 'package.json';
-          if (args.length > 0) {
-            packageJsonFile = args[0];
+        case 'patch-package-json':
+          {
+            let packageJsonFile = 'package.json';
+            if (args.length > 0) {
+              packageJsonFile = args[0];
+            }
+            log(
+              `running test command ${this.successful + 1} of ${
+                this.config.commands.length
+              }: patching '${packageJsonFile}' in '${this.testRoot}'`
+            );
+            this._patchPackageJson(packageJsonFile);
           }
-          log(`running test command ${this.successful+1} of ${this.config.commands.length}: patching '${packageJsonFile}' in '${this.testRoot}'`);
-          this._patchPackageJson(packageJsonFile);
-        } break;
+          break;
 
         default: {
           if (binary.startsWith('external/')) {
@@ -189,14 +197,25 @@ class TestRunner {
           }
           const runfilesBinary = runfiles.resolveWorkspaceRelative(binary);
           binary = fs.existsSync(runfilesBinary) ? runfilesBinary : binary;
-          log(`running test command ${this.successful+1} of ${this.config.commands.length}: '${binary} ${args.join(' ')}' in '${this.testRoot}'`);
+          log(
+            `running test command ${this.successful + 1} of ${
+              this.config.commands.length
+            }: '${binary} ${args.join(' ')}' in '${this.testRoot}'`
+          );
           const spawnedProcess = spawnSync(binary, args, {cwd: this.testRoot, stdio: 'inherit'});
           if (spawnedProcess.error) {
             fail(
-                `test command ${testRunner.successful+1} '${binary} ${args.join(' ')}' failed with ${spawnedProcess.error.code}`);
+              `test command ${testRunner.successful + 1} '${binary} ${args.join(
+                ' '
+              )}' failed with ${spawnedProcess.error.code}`
+            );
           }
           if (spawnedProcess.status) {
-            log(`test command ${testRunner.successful+1} '${binary} ${args.join(' ')}' failed with status code ${spawnedProcess.status}`);
+            log(
+              `test command ${testRunner.successful + 1} '${binary} ${args.join(
+                ' '
+              )}' failed with status code ${spawnedProcess.status}`
+            );
             return spawnedProcess.status;
           }
         }
@@ -225,17 +244,23 @@ class TestRunner {
       if (contents.dependencies && contents.dependencies[key]) {
         replacements++;
         contents.dependencies[key] = replacement;
-        log(`overriding dependencies['${key}'] npm package with 'file:${path}' in package.json file`);
+        log(
+          `overriding dependencies['${key}'] npm package with 'file:${path}' in package.json file`
+        );
       }
       if (contents.devDependencies && contents.devDependencies[key]) {
         replacements++;
         contents.devDependencies[key] = replacement;
-        log(`overriding devDependencies['${key}'] npm package with 'file:${path}' in package.json file`);
+        log(
+          `overriding devDependencies['${key}'] npm package with 'file:${path}' in package.json file`
+        );
       }
       if (contents.resolutions && contents.resolutions[key]) {
         replacements++;
         contents.resolutions[key] = replacement;
-        log(`overriding resolutions['${key}'] npm package with 'file:${path}' in package.json file`);
+        log(
+          `overriding resolutions['${key}'] npm package with 'file:${path}' in package.json file`
+        );
       }
       // TODO: handle other formats for resolutions such as `some-package/${key}` or
       // `some-package/**/${key}`
@@ -243,20 +268,27 @@ class TestRunner {
       if (contents.resolutions && contents.resolutions[altKey]) {
         replacements++;
         contents.resolutions[altKey] = replacement;
-        log(`overriding resolutions['${altKey}'] npm package with 'file:${path}' in package.json file`);
+        log(
+          `overriding resolutions['${altKey}'] npm package with 'file:${path}' in package.json file`
+        );
       }
     }
     // check packages that must be replaced
     const failedPackages = [];
     for (const key of this.config.checkNpmPackages) {
-      if (contents.dependencies && contents.dependencies[key] &&
-          (!contents.dependencies[key].startsWith('file:') ||
-           contents.dependencies[key].startsWith('file:.'))) {
+      if (
+        contents.dependencies &&
+        contents.dependencies[key] &&
+        (!contents.dependencies[key].startsWith('file:') ||
+          contents.dependencies[key].startsWith('file:.'))
+      ) {
         failedPackages.push(key);
       } else if (
-          contents.devDependencies && contents.devDependencies[key] &&
-          (!contents.devDependencies[key].startsWith('file:') ||
-           contents.devDependencies[key].startsWith('file:.'))) {
+        contents.devDependencies &&
+        contents.devDependencies[key] &&
+        (!contents.devDependencies[key].startsWith('file:') ||
+          contents.devDependencies[key].startsWith('file:.'))
+      ) {
         failedPackages.push(key);
       }
     }
@@ -264,7 +296,10 @@ class TestRunner {
     log(`package.json file:\n${contentsEncoded}`);
     if (failedPackages.length) {
       fail(
-          `expected replacements of npm packages ${JSON.stringify(failedPackages)} not found; add these to the npm_packages attribute`);
+        `expected replacements of npm packages ${JSON.stringify(
+          failedPackages
+        )} not found; add these to the npm_packages attribute`
+      );
     }
     if (replacements) {
       fs.writeFileSync(packageJson, contentsEncoded);
@@ -307,14 +342,19 @@ class TestRunner {
           fail(`no /execroot/ in runfiles path`);
         }
         const outputBase = runfilesPath.substr(0, index);
-        workspaceDirectory =
-            fs.readFileSync(`${outputBase}/DO_NOT_BUILD_HERE`, {encoding: 'utf-8'});
+        workspaceDirectory = fs.readFileSync(`${outputBase}/DO_NOT_BUILD_HERE`, {
+          encoding: 'utf-8',
+        });
       }
       this.testRoot = `${workspaceDirectory}/${root}`;
       log(`configuring test in-place under ${this.testRoot}`);
     } else {
       this.testRoot = copyToTmp(this.config.testFiles);
-      log(`test files from '${rootDirectory(this.config.testFiles)}' copied to tmp folder ${this.testRoot}`);
+      log(
+        `test files from '${rootDirectory(this.config.testFiles)}' copied to tmp folder ${
+          this.testRoot
+        }`
+      );
     }
   }
 

@@ -25,7 +25,7 @@ export const enum DefinitionKind {
   Injector,
   Directive,
   Component,
-  Pipe
+  Pipe,
 }
 
 /**
@@ -114,15 +114,20 @@ export class ConstantPool {
       // Replace the expression with a variable
       const name = this.freshName();
       this.statements.push(
-          o.variable(name).set(literal).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
+        o.variable(name).set(literal).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final])
+      );
       fixup.fixup(o.variable(name));
     }
 
     return fixup;
   }
 
-  getDefinition(type: any, kind: DefinitionKind, ctx: OutputContext, forceShared: boolean = false):
-      o.Expression {
+  getDefinition(
+    type: any,
+    kind: DefinitionKind,
+    ctx: OutputContext,
+    forceShared: boolean = false
+  ): o.Expression {
     const definitions = this.definitionsOf(kind);
     let fixup = definitions.get(type);
     let newValue = false;
@@ -136,54 +141,71 @@ export class ConstantPool {
     if ((!newValue && !fixup.shared) || (newValue && forceShared)) {
       const name = this.freshName();
       this.statements.push(
-          o.variable(name).set(fixup.resolved).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
+        o.variable(name).set(fixup.resolved).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final])
+      );
       fixup.fixup(o.variable(name));
     }
     return fixup;
   }
 
-  getLiteralFactory(literal: o.LiteralArrayExpr|o.LiteralMapExpr):
-      {literalFactory: o.Expression, literalFactoryArguments: o.Expression[]} {
+  getLiteralFactory(
+    literal: o.LiteralArrayExpr | o.LiteralMapExpr
+  ): {literalFactory: o.Expression; literalFactoryArguments: o.Expression[]} {
     // Create a pure function that builds an array of a mix of constant and variable expressions
     if (literal instanceof o.LiteralArrayExpr) {
-      const argumentsForKey = literal.entries.map(e => e.isConstant() ? e : UNKNOWN_VALUE_KEY);
+      const argumentsForKey = literal.entries.map((e) => (e.isConstant() ? e : UNKNOWN_VALUE_KEY));
       const key = this.keyOf(o.literalArr(argumentsForKey));
-      return this._getLiteralFactory(key, literal.entries, entries => o.literalArr(entries));
+      return this._getLiteralFactory(key, literal.entries, (entries) => o.literalArr(entries));
     } else {
       const expressionForKey = o.literalMap(
-          literal.entries.map(e => ({
-                                key: e.key,
-                                value: e.value.isConstant() ? e.value : UNKNOWN_VALUE_KEY,
-                                quoted: e.quoted
-                              })));
+        literal.entries.map((e) => ({
+          key: e.key,
+          value: e.value.isConstant() ? e.value : UNKNOWN_VALUE_KEY,
+          quoted: e.quoted,
+        }))
+      );
       const key = this.keyOf(expressionForKey);
       return this._getLiteralFactory(
-          key, literal.entries.map(e => e.value),
-          entries => o.literalMap(entries.map((value, index) => ({
-                                                key: literal.entries[index].key,
-                                                value,
-                                                quoted: literal.entries[index].quoted
-                                              }))));
+        key,
+        literal.entries.map((e) => e.value),
+        (entries) =>
+          o.literalMap(
+            entries.map((value, index) => ({
+              key: literal.entries[index].key,
+              value,
+              quoted: literal.entries[index].quoted,
+            }))
+          )
+      );
     }
   }
 
   private _getLiteralFactory(
-      key: string, values: o.Expression[], resultMap: (parameters: o.Expression[]) => o.Expression):
-      {literalFactory: o.Expression, literalFactoryArguments: o.Expression[]} {
+    key: string,
+    values: o.Expression[],
+    resultMap: (parameters: o.Expression[]) => o.Expression
+  ): {literalFactory: o.Expression; literalFactoryArguments: o.Expression[]} {
     let literalFactory = this.literalFactories.get(key);
-    const literalFactoryArguments = values.filter((e => !e.isConstant()));
+    const literalFactoryArguments = values.filter((e) => !e.isConstant());
     if (!literalFactory) {
-      const resultExpressions = values.map(
-          (e, index) => e.isConstant() ? this.getConstLiteral(e, true) : o.variable(`a${index}`));
-      const parameters =
-          resultExpressions.filter(isVariable).map(e => new o.FnParam(e.name!, o.DYNAMIC_TYPE));
-      const pureFunctionDeclaration =
-          o.fn(parameters, [new o.ReturnStatement(resultMap(resultExpressions))], o.INFERRED_TYPE);
+      const resultExpressions = values.map((e, index) =>
+        e.isConstant() ? this.getConstLiteral(e, true) : o.variable(`a${index}`)
+      );
+      const parameters = resultExpressions
+        .filter(isVariable)
+        .map((e) => new o.FnParam(e.name!, o.DYNAMIC_TYPE));
+      const pureFunctionDeclaration = o.fn(
+        parameters,
+        [new o.ReturnStatement(resultMap(resultExpressions))],
+        o.INFERRED_TYPE
+      );
       const name = this.freshName();
       this.statements.push(
-          o.variable(name).set(pureFunctionDeclaration).toDeclStmt(o.INFERRED_TYPE, [
-            o.StmtModifier.Final
-          ]));
+        o
+          .variable(name)
+          .set(pureFunctionDeclaration)
+          .toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final])
+      );
       literalFactory = o.variable(name);
       this.literalFactories.set(key, literalFactory);
     }
@@ -252,7 +274,7 @@ class KeyVisitor implements o.ExpressionVisitor {
   }
 
   visitLiteralArrayExpr(ast: o.LiteralArrayExpr, context: object): string {
-    return `[${ast.entries.map(entry => entry.visitExpression(this, context)).join(',')}]`;
+    return `[${ast.entries.map((entry) => entry.visitExpression(this, context)).join(',')}]`;
   }
 
   visitLiteralMapExpr(ast: o.LiteralMapExpr, context: object): string {
@@ -261,13 +283,14 @@ class KeyVisitor implements o.ExpressionVisitor {
       return `${quote}${entry.key}${quote}`;
     };
     const mapEntry = (entry: o.LiteralMapEntry) =>
-        `${mapKey(entry)}:${entry.value.visitExpression(this, context)}`;
+      `${mapKey(entry)}:${entry.value.visitExpression(this, context)}`;
     return `{${ast.entries.map(mapEntry).join(',')}`;
   }
 
   visitExternalExpr(ast: o.ExternalExpr): string {
-    return ast.value.moduleName ? `EX:${ast.value.moduleName}:${ast.value.name}` :
-                                  `EX:${ast.value.runtime.name}`;
+    return ast.value.moduleName
+      ? `EX:${ast.value.moduleName}:${ast.value.name}`
+      : `EX:${ast.value.runtime.name}`;
   }
 
   visitReadVarExpr(node: o.ReadVarExpr) {
@@ -297,9 +320,10 @@ class KeyVisitor implements o.ExpressionVisitor {
   visitLocalizedString = invalid;
 }
 
-function invalid<T>(this: o.ExpressionVisitor, arg: o.Expression|o.Statement): never {
+function invalid<T>(this: o.ExpressionVisitor, arg: o.Expression | o.Statement): never {
   throw new Error(
-      `Invalid state: Visitor ${this.constructor.name} doesn't handle ${arg.constructor.name}`);
+    `Invalid state: Visitor ${this.constructor.name} doesn't handle ${arg.constructor.name}`
+  );
 }
 
 function isVariable(e: o.Expression): e is o.ReadVarExpr {

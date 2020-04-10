@@ -5,9 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {NodeJSFileSystem, setFileSystem} from './src/ngtsc/file_system';
 
-export {AotCompilerHost, AotCompilerHost as StaticReflectorHost, StaticReflector, StaticSymbol} from '@angular/compiler';
+export {
+  AotCompilerHost,
+  AotCompilerHost as StaticReflectorHost,
+  StaticReflector,
+  StaticSymbol,
+} from '@angular/compiler';
 export {VERSION} from './src/version';
 
 export * from './src/metadata';

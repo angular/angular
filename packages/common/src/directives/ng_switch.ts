@@ -12,7 +12,9 @@ export class SwitchView {
   private _created = false;
 
   constructor(
-      private _viewContainerRef: ViewContainerRef, private _templateRef: TemplateRef<Object>) {}
+    private _viewContainerRef: ViewContainerRef,
+    private _templateRef: TemplateRef<Object>
+  ) {}
 
   create(): void {
     this._created = true;
@@ -104,7 +106,7 @@ export class SwitchView {
 @Directive({selector: '[ngSwitch]'})
 export class NgSwitch {
   // TODO(issue/24571): remove '!'.
-  private _defaultViews !: SwitchView[];
+  private _defaultViews!: SwitchView[];
   private _defaultUsed = false;
   private _caseCount = 0;
   private _lastCaseCheckIndex = 0;
@@ -120,7 +122,9 @@ export class NgSwitch {
   }
 
   /** @internal */
-  _addCase(): number { return this._caseCount++; }
+  _addCase(): number {
+    return this._caseCount++;
+  }
 
   /** @internal */
   _addDefault(view: SwitchView) {
@@ -197,8 +201,10 @@ export class NgSwitchCase implements DoCheck {
   ngSwitchCase: any;
 
   constructor(
-      viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
-      @Host() private ngSwitch: NgSwitch) {
+    viewContainer: ViewContainerRef,
+    templateRef: TemplateRef<Object>,
+    @Host() private ngSwitch: NgSwitch
+  ) {
     ngSwitch._addCase();
     this._view = new SwitchView(viewContainer, templateRef);
   }
@@ -206,7 +212,9 @@ export class NgSwitchCase implements DoCheck {
   /**
    * Performs case matching. For internal use only.
    */
-  ngDoCheck() { this._view.enforceState(this.ngSwitch._matchCase(this.ngSwitchCase)); }
+  ngDoCheck() {
+    this._view.enforceState(this.ngSwitch._matchCase(this.ngSwitchCase));
+  }
 }
 
 /**
@@ -226,8 +234,10 @@ export class NgSwitchCase implements DoCheck {
 @Directive({selector: '[ngSwitchDefault]'})
 export class NgSwitchDefault {
   constructor(
-      viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
-      @Host() ngSwitch: NgSwitch) {
+    viewContainer: ViewContainerRef,
+    templateRef: TemplateRef<Object>,
+    @Host() ngSwitch: NgSwitch
+  ) {
     ngSwitch._addDefault(new SwitchView(viewContainer, templateRef));
   }
 }

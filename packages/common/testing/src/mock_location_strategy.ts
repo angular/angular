@@ -9,8 +9,6 @@
 import {LocationStrategy} from '@angular/common';
 import {EventEmitter, Injectable} from '@angular/core';
 
-
-
 /**
  * A mock implementation of {@link LocationStrategy} that allows tests to fire simulated
  * location events.
@@ -26,14 +24,18 @@ export class MockLocationStrategy extends LocationStrategy {
   /** @internal */
   _subject: EventEmitter<any> = new EventEmitter();
   private stateChanges: any[] = [];
-  constructor() { super(); }
+  constructor() {
+    super();
+  }
 
   simulatePopState(url: string): void {
     this.internalPath = url;
     this._subject.emit(new _MockPopStateEvent(this.path()));
   }
 
-  path(includeHash: boolean = false): string { return this.internalPath; }
+  path(includeHash: boolean = false): string {
+    return this.internalPath;
+  }
 
   prepareExternalUrl(internal: string): string {
     if (internal.startsWith('/') && this.internalBaseHref.endsWith('/')) {
@@ -48,7 +50,7 @@ export class MockLocationStrategy extends LocationStrategy {
 
     this.internalTitle = title;
 
-    const url = path + (query.length > 0 ? ('?' + query) : '');
+    const url = path + (query.length > 0 ? '?' + query : '');
     this.internalPath = url;
 
     const externalUrl = this.prepareExternalUrl(url);
@@ -61,16 +63,20 @@ export class MockLocationStrategy extends LocationStrategy {
 
     this.internalTitle = title;
 
-    const url = path + (query.length > 0 ? ('?' + query) : '');
+    const url = path + (query.length > 0 ? '?' + query : '');
     this.internalPath = url;
 
     const externalUrl = this.prepareExternalUrl(url);
     this.urlChanges.push('replace: ' + externalUrl);
   }
 
-  onPopState(fn: (value: any) => void): void { this._subject.subscribe({next: fn}); }
+  onPopState(fn: (value: any) => void): void {
+    this._subject.subscribe({next: fn});
+  }
 
-  getBaseHref(): string { return this.internalBaseHref; }
+  getBaseHref(): string {
+    return this.internalBaseHref;
+  }
 
   back(): void {
     if (this.urlChanges.length > 0) {
@@ -81,9 +87,13 @@ export class MockLocationStrategy extends LocationStrategy {
     }
   }
 
-  forward(): void { throw 'not implemented'; }
+  forward(): void {
+    throw 'not implemented';
+  }
 
-  getState(): unknown { return this.stateChanges[(this.stateChanges.length || 1) - 1]; }
+  getState(): unknown {
+    return this.stateChanges[(this.stateChanges.length || 1) - 1];
+  }
 }
 
 class _MockPopStateEvent {

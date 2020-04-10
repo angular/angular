@@ -11,9 +11,9 @@ import {ngDevModeResetPerfCounters} from '../../src/util/ng_dev_mode';
 beforeEach(ngDevModeResetPerfCounters);
 beforeEach(() => {
   jasmine.addMatchers({
-    toHaveProperties: function(util, customEqualityTesters) {
+    toHaveProperties: function (util, customEqualityTesters) {
       return {compare: toHavePropertiesCompare};
-    }
+    },
   });
 });
 function toHavePropertiesCompare(actual: any, expected: any) {
@@ -39,8 +39,7 @@ describe('toHaveProperties', () => {
   it('should fail', () => {
     expect(toHavePropertiesCompare({tNode: 2, tView: 4}, {tNode: 3, tView: 5})).toEqual({
       pass: false,
-      message:
-          'Expected \'tNode\' to be \'3\' but was \'2\'.\nExpected \'tView\' to be \'5\' but was \'4\'.'
+      message: "Expected 'tNode' to be '3' but was '2'.\nExpected 'tView' to be '5' but was '4'.",
     });
   });
 });

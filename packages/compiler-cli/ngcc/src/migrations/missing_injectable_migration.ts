@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
 
 import {forwardRefResolver} from '../../../src/ngtsc/annotations';
@@ -33,7 +34,7 @@ import {createInjectableDecorator, isClassDeclaration} from './utils';
  * This implementation mirrors the "missing-injectable" schematic.
  */
 export class MissingInjectableMigration implements Migration {
-  apply(clazz: ClassDeclaration, host: MigrationHost): ts.Diagnostic|null {
+  apply(clazz: ClassDeclaration, host: MigrationHost): ts.Diagnostic | null {
     const decorators = host.reflectionHost.getDecoratorsOfDeclaration(clazz);
     if (decorators === null) {
       return null;
@@ -78,7 +79,10 @@ function migrateNgModuleProviders(decorator: Decorator, host: MigrationHost): vo
  * otherwise decorated.
  */
 function migrateDirectiveProviders(
-    decorator: Decorator, host: MigrationHost, isComponent: boolean): void {
+  decorator: Decorator,
+  host: MigrationHost,
+  isComponent: boolean
+): void {
   if (decorator.args === null || decorator.args.length !== 1) {
     return;
   }
@@ -118,8 +122,12 @@ function migrateProviders(metadata: ResolvedValueMap, field: string, host: Migra
  */
 function migrateProvider(provider: ResolvedValue, host: MigrationHost): void {
   if (provider instanceof Map) {
-    if (!provider.has('provide') || provider.has('useValue') || provider.has('useFactory') ||
-        provider.has('useExisting')) {
+    if (
+      !provider.has('provide') ||
+      provider.has('useValue') ||
+      provider.has('useFactory') ||
+      provider.has('useExisting')
+    ) {
       return;
     }
     if (provider.has('useClass')) {
@@ -183,7 +191,7 @@ function needsInjectableDecorator(clazz: ClassDeclaration, host: MigrationHost):
  * Determines the original name of a decorator if it is from '@angular/core'. For other decorators,
  * null is returned.
  */
-export function getAngularCoreDecoratorName(decorator: Decorator): string|null {
+export function getAngularCoreDecoratorName(decorator: Decorator): string | null {
   if (decorator.import === null || decorator.import.from !== '@angular/core') {
     return null;
   }

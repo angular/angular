@@ -25,8 +25,10 @@ export class SummaryGenerator implements ShimGenerator {
     return this.map.has(fileName);
   }
 
-  generate(genFilePath: AbsoluteFsPath, readFile: (fileName: string) => ts.SourceFile | null):
-      ts.SourceFile|null {
+  generate(
+    genFilePath: AbsoluteFsPath,
+    readFile: (fileName: string) => ts.SourceFile | null
+  ): ts.SourceFile | null {
     const originalPath = this.map.get(genFilePath)!;
     const original = readFile(originalPath);
     if (original === null) {
@@ -49,8 +51,11 @@ export class SummaryGenerator implements ShimGenerator {
       } else if (ts.isExportDeclaration(stmt)) {
         // Look for an export statement of the form "export {...};". If it doesn't match that, then
         // skip it.
-        if (stmt.exportClause === undefined || stmt.moduleSpecifier !== undefined ||
-            !ts.isNamedExports(stmt.exportClause)) {
+        if (
+          stmt.exportClause === undefined ||
+          stmt.moduleSpecifier !== undefined ||
+          !ts.isNamedExports(stmt.exportClause)
+        ) {
           continue;
         }
 
@@ -65,7 +70,7 @@ export class SummaryGenerator implements ShimGenerator {
       }
     }
 
-    const varLines = symbolNames.map(name => `export const ${name}NgSummary: any = null;`);
+    const varLines = symbolNames.map((name) => `export const ${name}NgSummary: any = null;`);
 
     if (varLines.length === 0) {
       // In the event there are no other exports, add an empty export to ensure the generated
@@ -74,25 +79,36 @@ export class SummaryGenerator implements ShimGenerator {
     }
     const sourceText = varLines.join('\n');
     const genFile = ts.createSourceFile(
-        genFilePath, sourceText, original.languageVersion, true, ts.ScriptKind.TS);
+      genFilePath,
+      sourceText,
+      original.languageVersion,
+      true,
+      ts.ScriptKind.TS
+    );
     if (original.moduleName !== undefined) {
-      genFile.moduleName =
-          generatedModuleName(original.moduleName, original.fileName, '.ngsummary');
+      genFile.moduleName = generatedModuleName(
+        original.moduleName,
+        original.fileName,
+        '.ngsummary'
+      );
     }
     return genFile;
   }
 
   static forRootFiles(files: ReadonlyArray<AbsoluteFsPath>): SummaryGenerator {
     const map = new Map<AbsoluteFsPath, AbsoluteFsPath>();
-    files.filter(sourceFile => isNonDeclarationTsPath(sourceFile))
-        .forEach(
-            sourceFile =>
-                map.set(absoluteFrom(sourceFile.replace(/\.ts$/, '.ngsummary.ts')), sourceFile));
+    files
+      .filter((sourceFile) => isNonDeclarationTsPath(sourceFile))
+      .forEach((sourceFile) =>
+        map.set(absoluteFrom(sourceFile.replace(/\.ts$/, '.ngsummary.ts')), sourceFile)
+      );
     return new SummaryGenerator(map);
   }
 }
 
 function isExported(decl: ts.Declaration): boolean {
-  return decl.modifiers !== undefined &&
-      decl.modifiers.some(mod => mod.kind == ts.SyntaxKind.ExportKeyword);
+  return (
+    decl.modifiers !== undefined &&
+    decl.modifiers.some((mod) => mod.kind == ts.SyntaxKind.ExportKeyword)
+  );
 }

@@ -9,7 +9,12 @@
 import {readFileSync} from 'fs';
 import {SourceMapConsumer} from 'source-map';
 
-import {DirectorySizeEntry, FileSizeData, omitCommonPathPrefix, sortFileSizeData} from './file_size_data';
+import {
+  DirectorySizeEntry,
+  FileSizeData,
+  omitCommonPathPrefix,
+  sortFileSizeData,
+} from './file_size_data';
 
 export class SizeTracker {
   private fileContent: string;
@@ -94,9 +99,10 @@ export class SizeTracker {
 
     // Workaround for https://github.com/angular/angular/issues/30060
     if (process.env['BAZEL_TARGET'].includes('test/bundling/core_all:size_test')) {
-      return filePath.replace(/^(\.\.\/)+external/, 'external')
-          .replace(/^(\.\.\/)+packages\/core\//, '@angular/core/')
-          .replace(/^(\.\.\/){3}/, '@angular/core/');
+      return filePath
+        .replace(/^(\.\.\/)+external/, 'external')
+        .replace(/^(\.\.\/)+packages\/core\//, '@angular/core/')
+        .replace(/^(\.\.\/){3}/, '@angular/core/');
     }
 
     return filePath;

@@ -20,7 +20,6 @@ export function renderStringify(value: any): string {
   return '' + value;
 }
 
-
 /**
  * Used to stringify a value so that it can be displayed in an error message.
  * Important! This function contains a megamorphic read and should only be
@@ -35,12 +34,12 @@ export function stringifyForError(value: any): string {
   return renderStringify(value);
 }
 
-
-export const defaultScheduler =
-    (() =>
-         (typeof requestAnimationFrame !== 'undefined' && requestAnimationFrame ||  // browser only
-          setTimeout  // everything else
-          ).bind(global))();
+export const defaultScheduler = (() =>
+  (
+    (typeof requestAnimationFrame !== 'undefined' && requestAnimationFrame) || // browser only
+    setTimeout
+  ) // everything else
+    .bind(global))();
 
 /**
  *

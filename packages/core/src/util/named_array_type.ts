@@ -1,4 +1,3 @@
-
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -12,7 +11,6 @@ import './ng_dev_mode';
 /**
  * THIS FILE CONTAINS CODE WHICH SHOULD BE TREE SHAKEN AND NEVER CALLED FROM PRODUCTION CODE!!!
  */
-
 
 /**
  * Creates an `Array` construction with a given name. This is useful when
@@ -29,13 +27,14 @@ export function createNamedArrayType(name: string): typeof Array {
     try {
       // We need to do it this way so that TypeScript does not down-level the below code.
       const FunctionConstructor: any = createNamedArrayType.constructor;
-      return (new FunctionConstructor('Array', `return class ${name} extends Array{}`))(Array);
+      return new FunctionConstructor('Array', `return class ${name} extends Array{}`)(Array);
     } catch (e) {
       // If it does not work just give up and fall back to regular Array.
       return Array;
     }
   } else {
     throw new Error(
-        'Looks like we are in \'prod mode\', but we are creating a named Array type, which is wrong! Check your code');
+      "Looks like we are in 'prod mode', but we are creating a named Array type, which is wrong! Check your code"
+    );
   }
 }

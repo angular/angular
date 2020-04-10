@@ -7,7 +7,14 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ChangeDetectorRef, Component, Directive, NgModule, TemplateRef, ViewContainerRef} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Directive,
+  NgModule,
+  TemplateRef,
+  ViewContainerRef,
+} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 @Directive({selector: '[viewManipulationDirective]', exportAs: 'vm'})
@@ -20,33 +27,37 @@ export class ViewManipulationDirective {
     }
   }
 
-  clear() { this._vcRef.clear(); }
+  clear() {
+    this._vcRef.clear();
+  }
 }
 
 @Component({
   selector: 'benchmark-root',
   template: `
+    <section>
+      <button (click)="create(vm)">Create</button>
+      <button (click)="destroy(vm)">Destroy</button>
+      <button (click)="check()">Check</button>
+    </section>
 
-  <section>
-    <button (click)="create(vm)">Create</button>
-    <button (click)="destroy(vm)">Destroy</button>  
-    <button (click)="check()">Check</button>
-  </section>
-
-  <ng-template viewManipulationDirective #vm="vm">
-    <div>text</div>
-  </ng-template>  
-  
-  `
+    <ng-template viewManipulationDirective #vm="vm">
+      <div>text</div>
+    </ng-template>
+  `,
 })
 export class ViewsBenchmark {
-  items: number[]|undefined = undefined;
+  items: number[] | undefined = undefined;
 
   constructor(private _cdRef: ChangeDetectorRef) {}
 
-  create(vm: ViewManipulationDirective) { vm.create(1000); }
+  create(vm: ViewManipulationDirective) {
+    vm.create(1000);
+  }
 
-  destroy(vm: ViewManipulationDirective) { vm.clear(); }
+  destroy(vm: ViewManipulationDirective) {
+    vm.clear();
+  }
 
   check() {
     for (let i = 0; i < 10000; i++) {
@@ -57,11 +68,7 @@ export class ViewsBenchmark {
 
 @NgModule({
   declarations: [ViewsBenchmark, ViewManipulationDirective],
-  imports: [
-    CommonModule,
-    BrowserModule,
-  ],
-  bootstrap: [ViewsBenchmark]
+  imports: [CommonModule, BrowserModule],
+  bootstrap: [ViewsBenchmark],
 })
-export class ViewsBenchmarkModule {
-}
+export class ViewsBenchmarkModule {}

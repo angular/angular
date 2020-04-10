@@ -7,13 +7,21 @@
  */
 
 import {ɵɵdefineComponent} from '../../src/render3/index';
-import {ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵtext} from '../../src/render3/instructions/all';
+import {
+  ɵɵcontainer,
+  ɵɵcontainerRefreshEnd,
+  ɵɵcontainerRefreshStart,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+  ɵɵembeddedViewEnd,
+  ɵɵembeddedViewStart,
+  ɵɵtext,
+} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {document, renderComponent} from './render_util';
 
 describe('iv perf test', () => {
-
   const count = 100000;
   const noOfIterations = 10;
 
@@ -33,7 +41,7 @@ describe('iv perf test', () => {
 
       it(`${iteration}. create ${count} divs in Render3`, () => {
         class Component {
-          static ɵfac = () => new Component;
+          static ɵfac = () => new Component();
           static ɵcmp = ɵɵdefineComponent({
             type: Component,
             selectors: [['div']],
@@ -60,7 +68,7 @@ describe('iv perf test', () => {
                 }
                 ɵɵcontainerRefreshEnd();
               }
-            }
+            },
           });
         }
 

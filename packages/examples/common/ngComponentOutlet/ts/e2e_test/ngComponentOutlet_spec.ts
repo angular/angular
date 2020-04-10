@@ -28,13 +28,15 @@ describe('ngComponentOutlet', () => {
       expect(element.all(by.css('hello-world')).getText()).toEqual(['Hello World!']);
     });
 
-    modifiedInIvy('Different behavior for projectableNodes in ViewContainerRef.createComponent')
-        .it('should render complete', () => {
-          browser.get(URL);
-          waitForElement('ng-component-outlet-complete-example');
-          expect(element.all(by.css('complete-component')).getText()).toEqual([
-            'Complete: AhojSvet!'
-          ]);
-        });
+    modifiedInIvy('Different behavior for projectableNodes in ViewContainerRef.createComponent').it(
+      'should render complete',
+      () => {
+        browser.get(URL);
+        waitForElement('ng-component-outlet-complete-example');
+        expect(element.all(by.css('complete-component')).getText()).toEqual([
+          'Complete: AhojSvet!',
+        ]);
+      }
+    );
   });
 });

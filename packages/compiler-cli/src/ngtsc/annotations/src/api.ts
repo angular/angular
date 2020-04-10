@@ -41,7 +41,7 @@ export interface ResourceLoader {
    * if the file has already been loaded.
    * @throws An Error if pre-loading is not available.
    */
-  preload(resolvedUrl: string): Promise<void>|undefined;
+  preload(resolvedUrl: string): Promise<void> | undefined;
 
   /**
    * Load the resource at the given url, synchronously.

@@ -6,12 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, forwardRef, Input, OnChanges, SimpleChanges, StaticProvider} from '@angular/core';
+import {
+  Directive,
+  forwardRef,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  StaticProvider,
+} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {AbstractControl} from '../model';
 import {NG_VALIDATORS, Validators} from '../validators';
-
 
 /**
  * @description
@@ -20,7 +26,7 @@ import {NG_VALIDATORS, Validators} from '../validators';
  * @publicApi
  */
 export type ValidationErrors = {
-  [key: string]: any
+  [key: string]: any;
 };
 
 /**
@@ -58,7 +64,7 @@ export interface Validator {
    * @returns A map of validation errors if validation fails,
    * otherwise null.
    */
-  validate(control: AbstractControl): ValidationErrors|null;
+  validate(control: AbstractControl): ValidationErrors | null;
 
   /**
    * @description
@@ -107,8 +113,9 @@ export interface AsyncValidator extends Validator {
    * @returns A promise or observable that resolves a map of validation errors
    * if validation fails, otherwise null.
    */
-  validate(control: AbstractControl):
-      Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
+  validate(
+    control: AbstractControl
+  ): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
 }
 
 /**
@@ -118,7 +125,7 @@ export interface AsyncValidator extends Validator {
 export const REQUIRED_VALIDATOR: StaticProvider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => RequiredValidator),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -128,9 +135,8 @@ export const REQUIRED_VALIDATOR: StaticProvider = {
 export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => CheckboxRequiredValidator),
-  multi: true
+  multi: true,
 };
-
 
 /**
  * @description
@@ -153,9 +159,9 @@ export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
  */
 @Directive({
   selector:
-      ':not([type=checkbox])[required][formControlName],:not([type=checkbox])[required][formControl],:not([type=checkbox])[required][ngModel]',
+    ':not([type=checkbox])[required][formControlName],:not([type=checkbox])[required][formControl],:not([type=checkbox])[required][ngModel]',
   providers: [REQUIRED_VALIDATOR],
-  host: {'[attr.required]': 'required ? "" : null'}
+  host: {'[attr.required]': 'required ? "" : null'},
 })
 export class RequiredValidator implements Validator {
   // TODO(issue/24571): remove '!'.
@@ -168,11 +174,11 @@ export class RequiredValidator implements Validator {
    * Tracks changes to the required attribute bound to this directive.
    */
   @Input()
-  get required(): boolean|string {
+  get required(): boolean | string {
     return this._required;
   }
 
-  set required(value: boolean|string) {
+  set required(value: boolean | string) {
     this._required = value != null && value !== false && `${value}` !== 'false';
     if (this._onChange) this._onChange();
   }
@@ -182,7 +188,7 @@ export class RequiredValidator implements Validator {
    * Method that validates whether the control is empty.
    * Returns the validation result if enabled, otherwise null.
    */
-  validate(control: AbstractControl): ValidationErrors|null {
+  validate(control: AbstractControl): ValidationErrors | null {
     return this.required ? Validators.required(control) : null;
   }
 
@@ -196,7 +202,6 @@ export class RequiredValidator implements Validator {
     this._onChange = fn;
   }
 }
-
 
 /**
  * A Directive that adds the `required` validator to checkbox controls marked with the
@@ -221,9 +226,9 @@ export class RequiredValidator implements Validator {
  */
 @Directive({
   selector:
-      'input[type=checkbox][required][formControlName],input[type=checkbox][required][formControl],input[type=checkbox][required][ngModel]',
+    'input[type=checkbox][required][formControlName],input[type=checkbox][required][formControl],input[type=checkbox][required][ngModel]',
   providers: [CHECKBOX_REQUIRED_VALIDATOR],
-  host: {'[attr.required]': 'required ? "" : null'}
+  host: {'[attr.required]': 'required ? "" : null'},
 })
 export class CheckboxRequiredValidator extends RequiredValidator {
   /**
@@ -231,7 +236,7 @@ export class CheckboxRequiredValidator extends RequiredValidator {
    * Method that validates whether or not the checkbox has been checked.
    * Returns the validation result if enabled, otherwise null.
    */
-  validate(control: AbstractControl): ValidationErrors|null {
+  validate(control: AbstractControl): ValidationErrors | null {
     return this.required ? Validators.requiredTrue(control) : null;
   }
 }
@@ -243,7 +248,7 @@ export class CheckboxRequiredValidator extends RequiredValidator {
 export const EMAIL_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => EmailValidator),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -271,7 +276,7 @@ export const EMAIL_VALIDATOR: any = {
  */
 @Directive({
   selector: '[email][formControlName],[email][formControl],[email][ngModel]',
-  providers: [EMAIL_VALIDATOR]
+  providers: [EMAIL_VALIDATOR],
 })
 export class EmailValidator implements Validator {
   // TODO(issue/24571): remove '!'.
@@ -284,7 +289,7 @@ export class EmailValidator implements Validator {
    * Tracks changes to the email attribute bound to this directive.
    */
   @Input()
-  set email(value: boolean|string) {
+  set email(value: boolean | string) {
     this._enabled = value === '' || value === true || value === 'true';
     if (this._onChange) this._onChange();
   }
@@ -294,7 +299,7 @@ export class EmailValidator implements Validator {
    * Method that validates whether an email address is valid.
    * Returns the validation result if enabled, otherwise null.
    */
-  validate(control: AbstractControl): ValidationErrors|null {
+  validate(control: AbstractControl): ValidationErrors | null {
     return this._enabled ? Validators.email(control) : null;
   }
 
@@ -317,7 +322,7 @@ export class EmailValidator implements Validator {
  * @publicApi
  */
 export interface ValidatorFn {
-  (control: AbstractControl): ValidationErrors|null;
+  (control: AbstractControl): ValidationErrors | null;
 }
 
 /**
@@ -328,7 +333,9 @@ export interface ValidatorFn {
  * @publicApi
  */
 export interface AsyncValidatorFn {
-  (control: AbstractControl): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
+  (control: AbstractControl):
+    | Promise<ValidationErrors | null>
+    | Observable<ValidationErrors | null>;
 }
 
 /**
@@ -338,7 +345,7 @@ export interface AsyncValidatorFn {
 export const MIN_LENGTH_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => MinLengthValidator),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -365,7 +372,7 @@ export const MIN_LENGTH_VALIDATOR: any = {
 @Directive({
   selector: '[minlength][formControlName],[minlength][formControl],[minlength][ngModel]',
   providers: [MIN_LENGTH_VALIDATOR],
-  host: {'[attr.minlength]': 'minlength ? minlength : null'}
+  host: {'[attr.minlength]': 'minlength ? minlength : null'},
 })
 export class MinLengthValidator implements Validator, OnChanges {
   // TODO(issue/24571): remove '!'.
@@ -378,7 +385,7 @@ export class MinLengthValidator implements Validator, OnChanges {
    * Tracks changes to the the minimum length bound to this directive.
    */
   // TODO(issue/24571): remove '!'.
-  @Input() minlength!: string|number;
+  @Input() minlength!: string | number;
 
   /**
    * @description
@@ -399,7 +406,7 @@ export class MinLengthValidator implements Validator, OnChanges {
    * Method that validates whether the value meets a minimum length
    * requirement. Returns the validation result if enabled, otherwise null.
    */
-  validate(control: AbstractControl): ValidationErrors|null {
+  validate(control: AbstractControl): ValidationErrors | null {
     return this.minlength == null ? null : this._validator(control);
   }
 
@@ -415,7 +422,8 @@ export class MinLengthValidator implements Validator, OnChanges {
 
   private _createValidator(): void {
     this._validator = Validators.minLength(
-        typeof this.minlength === 'number' ? this.minlength : parseInt(this.minlength, 10));
+      typeof this.minlength === 'number' ? this.minlength : parseInt(this.minlength, 10)
+    );
   }
 }
 
@@ -426,7 +434,7 @@ export class MinLengthValidator implements Validator, OnChanges {
 export const MAX_LENGTH_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => MaxLengthValidator),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -453,7 +461,7 @@ export const MAX_LENGTH_VALIDATOR: any = {
 @Directive({
   selector: '[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]',
   providers: [MAX_LENGTH_VALIDATOR],
-  host: {'[attr.maxlength]': 'maxlength ? maxlength : null'}
+  host: {'[attr.maxlength]': 'maxlength ? maxlength : null'},
 })
 export class MaxLengthValidator implements Validator, OnChanges {
   // TODO(issue/24571): remove '!'.
@@ -466,7 +474,7 @@ export class MaxLengthValidator implements Validator, OnChanges {
    * Tracks changes to the the maximum length bound to this directive.
    */
   // TODO(issue/24571): remove '!'.
-  @Input() maxlength!: string|number;
+  @Input() maxlength!: string | number;
 
   /**
    * @description
@@ -487,7 +495,7 @@ export class MaxLengthValidator implements Validator, OnChanges {
    * Method that validates whether the value exceeds
    * the maximum length requirement.
    */
-  validate(control: AbstractControl): ValidationErrors|null {
+  validate(control: AbstractControl): ValidationErrors | null {
     return this.maxlength != null ? this._validator(control) : null;
   }
 
@@ -503,7 +511,8 @@ export class MaxLengthValidator implements Validator, OnChanges {
 
   private _createValidator(): void {
     this._validator = Validators.maxLength(
-        typeof this.maxlength === 'number' ? this.maxlength : parseInt(this.maxlength, 10));
+      typeof this.maxlength === 'number' ? this.maxlength : parseInt(this.maxlength, 10)
+    );
   }
 }
 
@@ -514,9 +523,8 @@ export class MaxLengthValidator implements Validator, OnChanges {
 export const PATTERN_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => PatternValidator),
-  multi: true
+  multi: true,
 };
-
 
 /**
  * @description
@@ -544,7 +552,7 @@ export const PATTERN_VALIDATOR: any = {
 @Directive({
   selector: '[pattern][formControlName],[pattern][formControl],[pattern][ngModel]',
   providers: [PATTERN_VALIDATOR],
-  host: {'[attr.pattern]': 'pattern ? pattern : null'}
+  host: {'[attr.pattern]': 'pattern ? pattern : null'},
 })
 export class PatternValidator implements Validator, OnChanges {
   // TODO(issue/24571): remove '!'.
@@ -557,7 +565,7 @@ export class PatternValidator implements Validator, OnChanges {
    * Tracks changes to the pattern bound to this directive.
    */
   // TODO(issue/24571): remove '!'.
-  @Input() pattern!: string|RegExp;
+  @Input() pattern!: string | RegExp;
 
   /**
    * @description
@@ -578,7 +586,7 @@ export class PatternValidator implements Validator, OnChanges {
    * Method that validates whether the value matches the
    * the pattern requirement.
    */
-  validate(control: AbstractControl): ValidationErrors|null {
+  validate(control: AbstractControl): ValidationErrors | null {
     return this._validator(control);
   }
 

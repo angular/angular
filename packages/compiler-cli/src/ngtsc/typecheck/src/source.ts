@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
+import {
+  AbsoluteSourceSpan,
+  ParseLocation,
+  ParseSourceFile,
+  ParseSourceSpan,
+} from '@angular/compiler';
 
 import {TemplateId, TemplateSourceMapping} from './api';
 import {TemplateSourceResolver} from './diagnostics';
@@ -17,7 +22,7 @@ import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mapp
  * used when translating parse offsets in diagnostics back to their original line/column location.
  */
 export class TemplateSource {
-  private lineStarts: number[]|null = null;
+  private lineStarts: number[] | null = null;
 
   constructor(readonly mapping: TemplateSourceMapping, private file: ParseSourceFile) {}
 
@@ -68,7 +73,7 @@ export class TemplateSourceManager implements TemplateSourceResolver {
     return this.templateSources.get(id)!.mapping;
   }
 
-  toParseSourceSpan(id: TemplateId, span: AbsoluteSourceSpan): ParseSourceSpan|null {
+  toParseSourceSpan(id: TemplateId, span: AbsoluteSourceSpan): ParseSourceSpan | null {
     if (!this.templateSources.has(id)) {
       return null;
     }

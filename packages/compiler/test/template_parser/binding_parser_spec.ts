@@ -31,19 +31,24 @@ import {calcPossibleSecurityContexts} from '../../src/template_parser/binding_pa
 
       it('should return the possible security contexts if the selector has no element name', () => {
         expect(hrefSecurityContexts('[myDir]')).toEqual([
-          SecurityContext.NONE, SecurityContext.URL, SecurityContext.RESOURCE_URL
+          SecurityContext.NONE,
+          SecurityContext.URL,
+          SecurityContext.RESOURCE_URL,
         ]);
       });
 
       it('should exclude possible elements via :not', () => {
         expect(hrefSecurityContexts('[myDir]:not(link):not(base)')).toEqual([
-          SecurityContext.NONE, SecurityContext.URL
+          SecurityContext.NONE,
+          SecurityContext.URL,
         ]);
       });
 
       it('should not exclude possible narrowed elements via :not', () => {
         expect(hrefSecurityContexts('[myDir]:not(link.someClass):not(base.someClass)')).toEqual([
-          SecurityContext.NONE, SecurityContext.URL, SecurityContext.RESOURCE_URL
+          SecurityContext.NONE,
+          SecurityContext.URL,
+          SecurityContext.RESOURCE_URL,
         ]);
       });
 
@@ -51,12 +56,12 @@ import {calcPossibleSecurityContexts} from '../../src/template_parser/binding_pa
         expect(hrefSecurityContexts('img:not(img)')).toEqual([SecurityContext.NONE]);
       });
 
-      it('should return the union of the possible security contexts if multiple selectors are specified',
-         () => {
-           expect(calcPossibleSecurityContexts(registry, 'a,link', 'href', false)).toEqual([
-             SecurityContext.URL, SecurityContext.RESOURCE_URL
-           ]);
-         });
+      it('should return the union of the possible security contexts if multiple selectors are specified', () => {
+        expect(calcPossibleSecurityContexts(registry, 'a,link', 'href', false)).toEqual([
+          SecurityContext.URL,
+          SecurityContext.RESOURCE_URL,
+        ]);
+      });
     });
   });
 }

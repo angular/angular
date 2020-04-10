@@ -16,7 +16,7 @@ export interface AotSummaryResolverHost {
   /**
    * Loads an NgModule/Directive/Pipe summary file
    */
-  loadSummary(filePath: string): string|null;
+  loadSummary(filePath: string): string | null;
 
   /**
    * Returns whether a file is a source file or not.
@@ -64,10 +64,10 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
     return this.host.fromSummaryFileName(fileName, referringLibFileName);
   }
 
-  resolveSummary(staticSymbol: StaticSymbol): Summary<StaticSymbol>|null {
-    const rootSymbol = staticSymbol.members.length ?
-        this.staticSymbolCache.get(staticSymbol.filePath, staticSymbol.name) :
-        staticSymbol;
+  resolveSummary(staticSymbol: StaticSymbol): Summary<StaticSymbol> | null {
+    const rootSymbol = staticSymbol.members.length
+      ? this.staticSymbolCache.get(staticSymbol.filePath, staticSymbol.name)
+      : staticSymbol;
     let summary = this.summaryCache.get(rootSymbol);
     if (!summary) {
       this._loadSummaryFile(staticSymbol.filePath);
@@ -76,7 +76,7 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
     return (rootSymbol === staticSymbol && summary) || null;
   }
 
-  getSymbolsOf(filePath: string): StaticSymbol[]|null {
+  getSymbolsOf(filePath: string): StaticSymbol[] | null {
     if (this._loadSummaryFile(filePath)) {
       return Array.from(this.summaryCache.keys()).filter((symbol) => symbol.filePath === filePath);
     }
@@ -91,7 +91,7 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
   /**
    * Converts a file path to a module name that can be used as an `import`.
    */
-  getKnownModuleName(importedFilePath: string): string|null {
+  getKnownModuleName(importedFilePath: string): string | null {
     return this.knownFileNameToModuleNames.get(importedFilePath) || null;
   }
 
@@ -104,7 +104,7 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
     if (hasSummary != null) {
       return hasSummary;
     }
-    let json: string|null = null;
+    let json: string | null = null;
     if (this.isLibraryFile(filePath)) {
       const summaryFilePath = summaryFileName(filePath);
       try {
@@ -117,8 +117,12 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
     hasSummary = json != null;
     this.loadedFilePaths.set(filePath, hasSummary);
     if (json) {
-      const {moduleName, summaries, importAs} =
-          deserializeSummaries(this.staticSymbolCache, this, filePath, json);
+      const {moduleName, summaries, importAs} = deserializeSummaries(
+        this.staticSymbolCache,
+        this,
+        filePath,
+        json
+      );
       summaries.forEach((summary) => this.summaryCache.set(summary.symbol, summary));
       if (moduleName) {
         this.knownFileNameToModuleNames.set(filePath, moduleName);

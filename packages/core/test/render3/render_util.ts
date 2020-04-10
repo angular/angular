@@ -12,7 +12,13 @@ import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {TemplateRef} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {Renderer2} from '@angular/core/src/render/api';
-import {createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, renderComponentOrTemplate} from '@angular/core/src/render3/instructions/shared';
+import {
+  createLView,
+  createTView,
+  getOrCreateTComponentView,
+  getOrCreateTNode,
+  renderComponentOrTemplate,
+} from '@angular/core/src/render3/instructions/shared';
 import {TConstants, TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {enterView, getLView} from '@angular/core/src/render3/state';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
@@ -23,23 +29,67 @@ import {Type} from '../../src/interface/type';
 import {SWITCH_ELEMENT_REF_FACTORY__POST_R3__ as R3_ELEMENT_REF_FACTORY} from '../../src/linker/element_ref';
 import {SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ as R3_TEMPLATE_REF_FACTORY} from '../../src/linker/template_ref';
 import {SWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__ as R3_VIEW_CONTAINER_REF_FACTORY} from '../../src/linker/view_container_ref';
-import {RendererStyleFlags2, RendererType2, SWITCH_RENDERER2_FACTORY__POST_R3__ as R3_RENDERER2_FACTORY} from '../../src/render/api';
+import {
+  RendererStyleFlags2,
+  RendererType2,
+  SWITCH_RENDERER2_FACTORY__POST_R3__ as R3_RENDERER2_FACTORY,
+} from '../../src/render/api';
 import {CreateComponentOptions} from '../../src/render3/component';
-import {getDirectivesAtNodeIndex, getLContext, isComponentInstance} from '../../src/render3/context_discovery';
+import {
+  getDirectivesAtNodeIndex,
+  getLContext,
+  isComponentInstance,
+} from '../../src/render3/context_discovery';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
 import {NG_ELEMENT_ID} from '../../src/render3/fields';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, RenderFlags, renderComponent as _renderComponent, tick, ɵɵProvidersFeature, ɵɵdefineComponent, ɵɵdefineDirective} from '../../src/render3/index';
-import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
+import {
+  ComponentDef,
+  ComponentTemplate,
+  ComponentType,
+  DirectiveDef,
+  DirectiveType,
+  RenderFlags,
+  renderComponent as _renderComponent,
+  tick,
+  ɵɵProvidersFeature,
+  ɵɵdefineComponent,
+  ɵɵdefineDirective,
+} from '../../src/render3/index';
+import {
+  DirectiveDefList,
+  DirectiveDefListOrFactory,
+  DirectiveTypesOrFactory,
+  HostBindingsFunction,
+  PipeDef,
+  PipeDefList,
+  PipeDefListOrFactory,
+  PipeTypesOrFactory,
+} from '../../src/render3/interfaces/definition';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
-import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, RendererStyleFlags3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {HEADER_OFFSET, LView, LViewFlags, TVIEW, TViewType, T_HOST} from '../../src/render3/interfaces/view';
+import {
+  ProceduralRenderer3,
+  RComment,
+  RElement,
+  RNode,
+  RText,
+  Renderer3,
+  RendererFactory3,
+  RendererStyleFlags3,
+  domRendererFactory3,
+} from '../../src/render3/interfaces/renderer';
+import {
+  HEADER_OFFSET,
+  LView,
+  LViewFlags,
+  TVIEW,
+  TViewType,
+  T_HOST,
+} from '../../src/render3/interfaces/view';
 import {destroyLView} from '../../src/render3/node_manipulation';
 import {getRootView} from '../../src/render3/util/view_traversal_utils';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 
 import {getRendererFactory2} from './imported_renderer2';
-
-
 
 export abstract class BaseFixture {
   /**
@@ -69,13 +119,17 @@ export abstract class BaseFixture {
   /**
    * Current state of HTML rendered by the bootstrapped component.
    */
-  get html(): string { return toHtml(this.hostElement as any as Element); }
+  get html(): string {
+    return toHtml((this.hostElement as any) as Element);
+  }
 
   /**
    * Current state of HTML rendered by the fixture (will include HTML rendered by the bootstrapped
    * component as well as any elements outside of the component's host).
    */
-  get outerHtml(): string { return toHtml(this.containerElement as any as Element); }
+  get outerHtml(): string {
+    return toHtml((this.containerElement as any) as Element);
+  }
 }
 
 function noop() {}
@@ -89,9 +143,9 @@ function noop() {}
  */
 export class TemplateFixture extends BaseFixture {
   hostView: LView;
-  private _directiveDefs: DirectiveDefList|null;
-  private _pipeDefs: PipeDefList|null;
-  private _sanitizer: Sanitizer|null;
+  private _directiveDefs: DirectiveDefList | null;
+  private _pipeDefs: PipeDefList | null;
+  private _sanitizer: Sanitizer | null;
   private _rendererFactory: RendererFactory3;
 
   /**
@@ -102,27 +156,41 @@ export class TemplateFixture extends BaseFixture {
    *          `if (rf & RenderFlags.Update) { __here__ }`.
    */
   constructor(
-      private createBlock: () => void, private updateBlock: () => void = noop, decls: number = 0,
-      private vars: number = 0, directives?: DirectiveTypesOrFactory|null,
-      pipes?: PipeTypesOrFactory|null, sanitizer?: Sanitizer|null,
-      rendererFactory?: RendererFactory3, private _consts?: TConstants) {
+    private createBlock: () => void,
+    private updateBlock: () => void = noop,
+    decls: number = 0,
+    private vars: number = 0,
+    directives?: DirectiveTypesOrFactory | null,
+    pipes?: PipeTypesOrFactory | null,
+    sanitizer?: Sanitizer | null,
+    rendererFactory?: RendererFactory3,
+    private _consts?: TConstants
+  ) {
     super();
     this._directiveDefs = toDefs(directives, extractDirectiveDef);
     this._pipeDefs = toDefs(pipes, extractPipeDef);
     this._sanitizer = sanitizer || null;
     this._rendererFactory = rendererFactory || domRendererFactory3;
     this.hostView = renderTemplate(
-        this.hostElement,
-        (rf: RenderFlags, ctx: any) => {
-          if (rf & RenderFlags.Create) {
-            this.createBlock();
-          }
-          if (rf & RenderFlags.Update) {
-            this.updateBlock();
-          }
-        },
-        decls, vars, null !, this._rendererFactory, null, this._directiveDefs, this._pipeDefs,
-        sanitizer, this._consts);
+      this.hostElement,
+      (rf: RenderFlags, ctx: any) => {
+        if (rf & RenderFlags.Create) {
+          this.createBlock();
+        }
+        if (rf & RenderFlags.Update) {
+          this.updateBlock();
+        }
+      },
+      decls,
+      vars,
+      null!,
+      this._rendererFactory,
+      null,
+      this._directiveDefs,
+      this._pipeDefs,
+      sanitizer,
+      this._consts
+    );
   }
 
   /**
@@ -132,9 +200,18 @@ export class TemplateFixture extends BaseFixture {
    */
   update(updateBlock?: () => void): void {
     renderTemplate(
-        this.hostElement, updateBlock || this.updateBlock, 0, this.vars, null !,
-        this._rendererFactory, this.hostView, this._directiveDefs, this._pipeDefs, this._sanitizer,
-        this._consts);
+      this.hostElement,
+      updateBlock || this.updateBlock,
+      0,
+      this.vars,
+      null!,
+      this._rendererFactory,
+      this.hostView,
+      this._directiveDefs,
+      this._pipeDefs,
+      this._sanitizer,
+      this._consts
+    );
   }
 
   destroy(): void {
@@ -143,28 +220,30 @@ export class TemplateFixture extends BaseFixture {
   }
 }
 
-
 /**
  * Fixture for testing Components in a convenient way.
  */
 export class ComponentFixture<T> extends BaseFixture {
   component: T;
-  requestAnimationFrame: {(fn: () => void): void; flush(): void; queue: (() => void)[];};
+  requestAnimationFrame: {(fn: () => void): void; flush(): void; queue: (() => void)[]};
 
-  constructor(private componentType: ComponentType<T>, opts: {
-    injector?: Injector,
-    sanitizer?: Sanitizer,
-    rendererFactory?: RendererFactory3,
-    playerHandler?: PlayerHandler
-  } = {}) {
+  constructor(
+    private componentType: ComponentType<T>,
+    opts: {
+      injector?: Injector;
+      sanitizer?: Sanitizer;
+      rendererFactory?: RendererFactory3;
+      playerHandler?: PlayerHandler;
+    } = {}
+  ) {
     super();
-    this.requestAnimationFrame = function(fn: () => void) {
+    this.requestAnimationFrame = function (fn: () => void) {
       requestAnimationFrame.queue.push(fn);
     } as any;
     this.requestAnimationFrame.queue = [];
-    this.requestAnimationFrame.flush = function() {
+    this.requestAnimationFrame.flush = function () {
       while (requestAnimationFrame.queue.length) {
-        requestAnimationFrame.queue.shift() !();
+        requestAnimationFrame.queue.shift()!();
       }
     };
 
@@ -174,7 +253,7 @@ export class ComponentFixture<T> extends BaseFixture {
       injector: opts.injector,
       sanitizer: opts.sanitizer,
       rendererFactory: opts.rendererFactory || domRendererFactory3,
-      playerHandler: opts.playerHandler
+      playerHandler: opts.playerHandler,
     });
   }
 
@@ -200,23 +279,27 @@ export class ComponentFixture<T> extends BaseFixture {
 // Fixtures above are preferred way of testing Components and Templates
 ///////////////////////////////////////////////////////////////////////////////////
 
-export const document = ((typeof global == 'object' && global || window) as any).document;
-export let containerEl: HTMLElement = null !;
-let hostView: LView|null;
+export const document = (((typeof global == 'object' && global) || window) as any).document;
+export let containerEl: HTMLElement = null!;
+let hostView: LView | null;
 const isRenderer2 =
-    typeof process == 'object' && process.argv[3] && process.argv[3] === '--r=renderer2';
+  typeof process == 'object' && process.argv[3] && process.argv[3] === '--r=renderer2';
 // tslint:disable-next-line:no-console
 console.log(`Running tests with ${!isRenderer2 ? 'document' : 'Renderer2'} renderer...`);
-const testRendererFactory: RendererFactory3 =
-    isRenderer2 ? getRendererFactory2(document) : domRendererFactory3;
+const testRendererFactory: RendererFactory3 = isRenderer2
+  ? getRendererFactory2(document)
+  : domRendererFactory3;
 
-export const requestAnimationFrame:
-    {(fn: () => void): void; flush(): void; queue: (() => void)[];} = function(fn: () => void) {
-      requestAnimationFrame.queue.push(fn);
-    } as any;
-requestAnimationFrame.flush = function() {
+export const requestAnimationFrame: {
+  (fn: () => void): void;
+  flush(): void;
+  queue: (() => void)[];
+} = function (fn: () => void) {
+  requestAnimationFrame.queue.push(fn);
+} as any;
+requestAnimationFrame.flush = function () {
   while (requestAnimationFrame.queue.length) {
-    requestAnimationFrame.queue.shift() !();
+    requestAnimationFrame.queue.shift()!();
   }
 };
 
@@ -225,8 +308,7 @@ export function resetDOM() {
   if (containerEl) {
     try {
       document.body.removeChild(containerEl);
-    } catch (e) {
-    }
+    } catch (e) {}
   }
   containerEl = document.createElement('div');
   containerEl.setAttribute('host', '');
@@ -234,7 +316,6 @@ export function resetDOM() {
   hostView = null;
   // TODO: assert that the global state is clean (e.g. ngData, previousOrParentNode, etc)
 }
-
 
 /**
  *
@@ -249,18 +330,33 @@ export function resetDOM() {
  * @param consts Constants associated with the template.
  */
 export function renderTemplate<T>(
-    hostNode: RElement, templateFn: ComponentTemplate<T>, decls: number, vars: number, context: T,
-    providedRendererFactory: RendererFactory3, componentView: LView | null,
-    directives?: DirectiveDefListOrFactory | null, pipes?: PipeDefListOrFactory | null,
-    sanitizer?: Sanitizer | null, consts?: TConstants): LView {
+  hostNode: RElement,
+  templateFn: ComponentTemplate<T>,
+  decls: number,
+  vars: number,
+  context: T,
+  providedRendererFactory: RendererFactory3,
+  componentView: LView | null,
+  directives?: DirectiveDefListOrFactory | null,
+  pipes?: PipeDefListOrFactory | null,
+  sanitizer?: Sanitizer | null,
+  consts?: TConstants
+): LView {
   if (componentView === null) {
     const renderer = providedRendererFactory.createRenderer(null, null);
 
     // We need to create a root view so it's possible to look up the host element through its index
     const tView = createTView(TViewType.Root, -1, null, 1, 0, null, null, null, null, null);
     const hostLView = createLView(
-        null, tView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null,
-        providedRendererFactory, renderer);
+      null,
+      tView,
+      {},
+      LViewFlags.CheckAlways | LViewFlags.IsRoot,
+      null,
+      null,
+      providedRendererFactory,
+      renderer
+    );
     enterView(hostLView, null);
 
     const def: ComponentDef<any> = ɵɵdefineComponent({
@@ -277,37 +373,63 @@ export function renderTemplate<T>(
     const hostTNode = getOrCreateTNode(tView, hostLView[T_HOST], 0, TNodeType.Element, null, null);
     hostLView[hostTNode.index] = hostNode;
     componentView = createLView(
-        hostLView, componentTView, context, LViewFlags.CheckAlways, hostNode, hostTNode,
-        providedRendererFactory, renderer, sanitizer);
+      hostLView,
+      componentTView,
+      context,
+      LViewFlags.CheckAlways,
+      hostNode,
+      hostTNode,
+      providedRendererFactory,
+      renderer,
+      sanitizer
+    );
   }
   renderComponentOrTemplate(componentView[TVIEW], componentView, templateFn, context);
   return componentView;
 }
 
-
 /**
  * @deprecated use `TemplateFixture` or `ComponentFixture`
  */
 export function renderToHtml(
-    template: ComponentTemplate<any>, ctx: any, decls: number = 0, vars: number = 0,
-    directives?: DirectiveTypesOrFactory | null, pipes?: PipeTypesOrFactory | null,
-    providedRendererFactory?: RendererFactory3 | null, keepNgReflect = false, consts?: TConstants) {
+  template: ComponentTemplate<any>,
+  ctx: any,
+  decls: number = 0,
+  vars: number = 0,
+  directives?: DirectiveTypesOrFactory | null,
+  pipes?: PipeTypesOrFactory | null,
+  providedRendererFactory?: RendererFactory3 | null,
+  keepNgReflect = false,
+  consts?: TConstants
+) {
   hostView = renderTemplate(
-      containerEl, template, decls, vars, ctx, providedRendererFactory || testRendererFactory,
-      hostView, toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef), null,
-      consts);
+    containerEl,
+    template,
+    decls,
+    vars,
+    ctx,
+    providedRendererFactory || testRendererFactory,
+    hostView,
+    toDefs(directives, extractDirectiveDef),
+    toDefs(pipes, extractPipeDef),
+    null,
+    consts
+  );
   return toHtml(containerEl, keepNgReflect);
 }
 
 function toDefs(
-    types: DirectiveTypesOrFactory | undefined | null,
-    mapFn: (type: Type<any>) => DirectiveDef<any>): DirectiveDefList|null;
+  types: DirectiveTypesOrFactory | undefined | null,
+  mapFn: (type: Type<any>) => DirectiveDef<any>
+): DirectiveDefList | null;
 function toDefs(
-    types: PipeTypesOrFactory | undefined | null,
-    mapFn: (type: Type<any>) => PipeDef<any>): PipeDefList|null;
+  types: PipeTypesOrFactory | undefined | null,
+  mapFn: (type: Type<any>) => PipeDef<any>
+): PipeDefList | null;
 function toDefs(
-    types: Type<any>[] | (() => Type<any>[]) | undefined | null,
-    mapFn: (type: Type<any>) => PipeDef<any>| DirectiveDef<any>): any {
+  types: Type<any>[] | (() => Type<any>[]) | undefined | null,
+  mapFn: (type: Type<any>) => PipeDef<any> | DirectiveDef<any>
+): any {
   if (!types) return null;
   if (typeof types == 'function') {
     types = types();
@@ -326,11 +448,11 @@ beforeEach(enableIvyInjectableFactories);
  */
 export function renderComponent<T>(type: ComponentType<T>, opts?: CreateComponentOptions): T {
   return _renderComponent(type, {
-    rendererFactory: opts && opts.rendererFactory || testRendererFactory,
+    rendererFactory: (opts && opts.rendererFactory) || testRendererFactory,
     host: containerEl,
     scheduler: requestAnimationFrame,
     sanitizer: opts ? opts.sanitizer : undefined,
-    hostFeatures: opts && opts.hostFeatures
+    hostFeatures: opts && opts.hostFeatures,
   });
 }
 
@@ -350,16 +472,18 @@ export function toHtml<T>(componentOrElement: T | RElement, keepNgReflect = fals
     let html = stringifyElement(element);
 
     if (!keepNgReflect) {
-      html = html.replace(/\sng-reflect-\S*="[^"]*"/g, '')
-                 .replace(/<!--bindings=\{(\W.*\W\s*)?\}-->/g, '');
+      html = html
+        .replace(/\sng-reflect-\S*="[^"]*"/g, '')
+        .replace(/<!--bindings=\{(\W.*\W\s*)?\}-->/g, '');
     }
 
-    html = html.replace(/^<div host="">(.*)<\/div>$/, '$1')
-               .replace(/^<div fixture="mark">(.*)<\/div>$/, '$1')
-               .replace(/^<div host="mark">(.*)<\/div>$/, '$1')
-               .replace(' style=""', '')
-               .replace(/<!--container-->/g, '')
-               .replace(/<!--ng-container-->/g, '');
+    html = html
+      .replace(/^<div host="">(.*)<\/div>$/, '$1')
+      .replace(/^<div fixture="mark">(.*)<\/div>$/, '$1')
+      .replace(/^<div host="mark">(.*)<\/div>$/, '$1')
+      .replace(' style=""', '')
+      .replace(/<!--container-->/g, '')
+      .replace(/<!--ng-container-->/g, '');
     return html;
   } else {
     return '';
@@ -367,14 +491,21 @@ export function toHtml<T>(componentOrElement: T | RElement, keepNgReflect = fals
 }
 
 export function createComponent(
-    name: string, template: ComponentTemplate<any>, decls: number = 0, vars: number = 0,
-    directives: DirectiveTypesOrFactory = [], pipes: PipeTypesOrFactory = [],
-    viewQuery: ComponentTemplate<any>| null = null, providers: Provider[] = [],
-    viewProviders: Provider[] = [], hostBindings?: HostBindingsFunction<any>,
-    consts: TConstants = []): ComponentType<any> {
+  name: string,
+  template: ComponentTemplate<any>,
+  decls: number = 0,
+  vars: number = 0,
+  directives: DirectiveTypesOrFactory = [],
+  pipes: PipeTypesOrFactory = [],
+  viewQuery: ComponentTemplate<any> | null = null,
+  providers: Provider[] = [],
+  viewProviders: Provider[] = [],
+  hostBindings?: HostBindingsFunction<any>,
+  consts: TConstants = []
+): ComponentType<any> {
   return class Component {
     value: any;
-    static ɵfac = () => new Component;
+    static ɵfac = () => new Component();
     static ɵcmp = ɵɵdefineComponent({
       type: Component,
       selectors: [[name]],
@@ -382,17 +513,22 @@ export function createComponent(
       vars: vars,
       template: template,
       viewQuery: viewQuery,
-      directives: directives, hostBindings,
+      directives: directives,
+      hostBindings,
       pipes: pipes,
-      features: (providers.length > 0 || viewProviders.length > 0)?
-      [ɵɵProvidersFeature(providers || [], viewProviders || [])]: [],
+      features:
+        providers.length > 0 || viewProviders.length > 0
+          ? [ɵɵProvidersFeature(providers || [], viewProviders || [])]
+          : [],
       consts: consts,
     });
   };
 }
 
 export function createDirective(
-    name: string, {exportAs}: {exportAs?: string[]} = {}): DirectiveType<any> {
+  name: string,
+  {exportAs}: {exportAs?: string[]} = {}
+): DirectiveType<any> {
   return class Directive {
     static ɵfac = () => new Directive();
     static ɵdir = ɵɵdefineDirective({
@@ -412,12 +548,10 @@ export function getDirectiveOnNode(nodeIndex: number, dirIndex: number = 0) {
   return directives[dirIndex];
 }
 
-
 // Verify that DOM is a type of render. This is here for error checking only and has no use.
-export const renderer: Renderer3 = null as any as Document;
-export const element: RElement = null as any as HTMLElement;
-export const text: RText = null as any as Text;
-
+export const renderer: Renderer3 = (null as any) as Document;
+export const element: RElement = (null as any) as HTMLElement;
+export const text: RText = (null as any) as Text;
 
 /**
  *  Switches between Render2 version of special objects like ElementRef and the Ivy version
@@ -428,7 +562,7 @@ export function enableIvyInjectableFactories() {
   (ElementRef as any)[NG_ELEMENT_ID] = () => R3_ELEMENT_REF_FACTORY(ElementRef);
   (TemplateRef as any)[NG_ELEMENT_ID] = () => R3_TEMPLATE_REF_FACTORY(TemplateRef, ElementRef);
   (ViewContainerRef as any)[NG_ELEMENT_ID] = () =>
-      R3_VIEW_CONTAINER_REF_FACTORY(ViewContainerRef, ElementRef);
+    R3_VIEW_CONTAINER_REF_FACTORY(ViewContainerRef, ElementRef);
   (ChangeDetectorRef as any)[NG_ELEMENT_ID] = () => R3_CHANGE_DETECTOR_REF_FACTORY();
   (Renderer2 as any)[NG_ELEMENT_ID] = () => R3_RENDERER2_FACTORY();
 }
@@ -437,10 +571,12 @@ export class MockRendererFactory implements RendererFactory3 {
   lastRenderer: any;
   private _spyOnMethods: string[];
 
-  constructor(spyOnMethods?: string[]) { this._spyOnMethods = spyOnMethods || []; }
+  constructor(spyOnMethods?: string[]) {
+    this._spyOnMethods = spyOnMethods || [];
+  }
 
-  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer3 {
-    const renderer = this.lastRenderer = new MockRenderer(this._spyOnMethods);
+  createRenderer(hostElement: RElement | null, rendererType: RendererType2 | null): Renderer3 {
+    const renderer = (this.lastRenderer = new MockRenderer(this._spyOnMethods));
     return renderer;
   }
 }
@@ -449,29 +585,42 @@ class MockRenderer implements ProceduralRenderer3 {
   public spies: {[methodName: string]: any} = {};
 
   constructor(spyOnMethods: string[]) {
-    spyOnMethods.forEach(methodName => {
+    spyOnMethods.forEach((methodName) => {
       this.spies[methodName] = spyOn(this as any, methodName).and.callThrough();
     });
   }
 
   destroy(): void {}
-  createComment(value: string): RComment { return document.createComment(value); }
-  createElement(name: string, namespace?: string|null): RElement {
+  createComment(value: string): RComment {
+    return document.createComment(value);
+  }
+  createElement(name: string, namespace?: string | null): RElement {
     return namespace ? document.createElementNS(namespace, name) : document.createElement(name);
   }
-  createText(value: string): RText { return document.createTextNode(value); }
-  appendChild(parent: RElement, newChild: RNode): void { parent.appendChild(newChild); }
-  insertBefore(parent: RNode, newChild: RNode, refChild: RNode|null): void {
+  createText(value: string): RText {
+    return document.createTextNode(value);
+  }
+  appendChild(parent: RElement, newChild: RNode): void {
+    parent.appendChild(newChild);
+  }
+  insertBefore(parent: RNode, newChild: RNode, refChild: RNode | null): void {
     parent.insertBefore(newChild, refChild, false);
   }
-  removeChild(parent: RElement, oldChild: RNode): void { parent.removeChild(oldChild); }
-  selectRootElement(selectorOrNode: string|any): RElement {
-    return typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) :
-                                                selectorOrNode;
+  removeChild(parent: RElement, oldChild: RNode): void {
+    parent.removeChild(oldChild);
   }
-  parentNode(node: RNode): RElement|null { return node.parentNode as RElement; }
-  nextSibling(node: RNode): RNode|null { return node.nextSibling; }
-  setAttribute(el: RElement, name: string, value: string, namespace?: string|null): void {
+  selectRootElement(selectorOrNode: string | any): RElement {
+    return typeof selectorOrNode === 'string'
+      ? document.querySelector(selectorOrNode)
+      : selectorOrNode;
+  }
+  parentNode(node: RNode): RElement | null {
+    return node.parentNode as RElement;
+  }
+  nextSibling(node: RNode): RNode | null {
+    return node.nextSibling;
+  }
+  setAttribute(el: RElement, name: string, value: string, namespace?: string | null): void {
     // set all synthetic attributes as properties
     if (name[0] === '@') {
       this.setProperty(el, name, value);
@@ -479,15 +628,26 @@ class MockRenderer implements ProceduralRenderer3 {
       el.setAttribute(name, value);
     }
   }
-  removeAttribute(el: RElement, name: string, namespace?: string|null): void {}
+  removeAttribute(el: RElement, name: string, namespace?: string | null): void {}
   addClass(el: RElement, name: string): void {}
   removeClass(el: RElement, name: string): void {}
   setStyle(
-      el: RElement, style: string, value: any,
-      flags?: RendererStyleFlags2|RendererStyleFlags3): void {}
-  removeStyle(el: RElement, style: string, flags?: RendererStyleFlags2|RendererStyleFlags3): void {}
-  setProperty(el: RElement, name: string, value: any): void { (el as any)[name] = value; }
-  setValue(node: RText, value: string): void { node.textContent = value; }
+    el: RElement,
+    style: string,
+    value: any,
+    flags?: RendererStyleFlags2 | RendererStyleFlags3
+  ): void {}
+  removeStyle(
+    el: RElement,
+    style: string,
+    flags?: RendererStyleFlags2 | RendererStyleFlags3
+  ): void {}
+  setProperty(el: RElement, name: string, value: any): void {
+    (el as any)[name] = value;
+  }
+  setValue(node: RText, value: string): void {
+    node.textContent = value;
+  }
 
   // TODO(misko): Deprecate in favor of addEventListener/removeEventListener
   listen(target: RNode, eventName: string, callback: (event: any) => boolean | void): () => void {

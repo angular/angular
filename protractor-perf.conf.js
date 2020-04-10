@@ -10,12 +10,16 @@ const CHROME_OPTIONS = {
   'args': ['--js-flags=--expose-gc', '--no-sandbox', '--headless', '--disable-dev-shm-usage'],
   'perfLoggingPrefs': {
     'traceCategories':
-        'v8,blink.console,devtools.timeline,disabled-by-default-devtools.timeline,blink.user_timing'
-  }
+      'v8,blink.console,devtools.timeline,disabled-by-default-devtools.timeline,blink.user_timing',
+  },
 };
 
 exports.config = {
-  onPrepare: function() { beforeEach(function() { browser.ignoreSynchronization = false; }); },
+  onPrepare: function () {
+    beforeEach(function () {
+      browser.ignoreSynchronization = false;
+    });
+  },
   restartBrowserBetweenTests: true,
   allScriptsTimeout: 11000,
   capabilities: {
@@ -24,14 +28,16 @@ exports.config = {
     loggingPrefs: {
       performance: 'ALL',
       browser: 'ALL',
-    }
+    },
   },
   directConnect: true,
   framework: 'jasmine2',
   jasmineNodeOpts: {
     showColors: true,
     defaultTimeoutInterval: 90000,
-    print: function(msg) { console.log(msg); },
+    print: function (msg) {
+      console.log(msg);
+    },
   },
-  useAllAngular2AppRoots: true
+  useAllAngular2AppRoots: true,
 };

@@ -7,42 +7,52 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {existsSync, readFileSync, writeFileSync} from 'fs';
-import {sync as globSync} from 'glob';
-import {isAbsolute, relative, resolve} from 'path';
 import * as ts from 'typescript';
 import * as yargs from 'yargs';
-import chalk from 'chalk';
 
 import {Analyzer, ReferenceChain} from './analyzer';
-import {compareGoldens, convertReferenceChainToGolden, Golden} from './golden';
-import {convertPathToForwardSlash} from './file_system';
-import {loadTestConfig, CircularDependenciesTestConfig} from './config';
+import {CircularDependenciesTestConfig, loadTestConfig} from './config';
+import {Golden, compareGoldens, convertReferenceChainToGolden} from './golden';
+import {existsSync, readFileSync, writeFileSync} from 'fs';
+import {isAbsolute, relative, resolve} from 'path';
 
+import chalk from 'chalk';
+import {convertPathToForwardSlash} from './file_system';
+import {sync as globSync} from 'glob';
 
 export function tsCircularDependenciesBuilder(localYargs: yargs.Argv) {
-  return localYargs.help()
-      .strict()
-      .demandCommand()
-      .option(
-          'config',
-          {type: 'string', demandOption: true, description: 'Path to the configuration file.'})
-      .option('warnings', {type: 'boolean', description: 'Prints all warnings.'})
-      .command(
-          'check', 'Checks if the circular dependencies have changed.', {},
-          (argv: yargs.Arguments) => {
-            const {config: configArg, warnings} = argv;
-            const configPath = isAbsolute(configArg) ? configArg : resolve(configArg);
-            const config = loadTestConfig(configPath);
-            process.exit(main(false, config, warnings));
-          })
-      .command(
-          'approve', 'Approves the current circular dependencies.', {}, (argv: yargs.Arguments) => {
-            const {config: configArg, warnings} = argv;
-            const configPath = isAbsolute(configArg) ? configArg : resolve(configArg);
-            const config = loadTestConfig(configPath);
-            process.exit(main(true, config, warnings));
-          });
+  return localYargs
+    .help()
+    .strict()
+    .demandCommand()
+    .option('config', {
+      type: 'string',
+      demandOption: true,
+      description: 'Path to the configuration file.',
+    })
+    .option('warnings', {type: 'boolean', description: 'Prints all warnings.'})
+    .command(
+      'check',
+      'Checks if the circular dependencies have changed.',
+      {},
+      (argv: yargs.Arguments) => {
+        const {config: configArg, warnings} = argv;
+        const configPath = isAbsolute(configArg) ? configArg : resolve(configArg);
+        const config = loadTestConfig(configPath);
+        process.exit(main(false, config, warnings));
+      }
+    )
+    .command(
+      'approve',
+      'Approves the current circular dependencies.',
+      {},
+      (argv: yargs.Arguments) => {
+        const {config: configArg, warnings} = argv;
+        const configPath = isAbsolute(configArg) ? configArg : resolve(configArg);
+        const config = loadTestConfig(configPath);
+        process.exit(main(true, config, warnings));
+      }
+    );
 }
 
 /**
@@ -53,13 +63,16 @@ export function tsCircularDependenciesBuilder(localYargs: yargs.Argv) {
  * @returns Status code.
  */
 export function main(
-    approve: boolean, config: CircularDependenciesTestConfig, printWarnings: boolean): number {
+  approve: boolean,
+  config: CircularDependenciesTestConfig,
+  printWarnings: boolean
+): number {
   const {baseDir, goldenFile, glob, resolveModule, approveCommand} = config;
   const analyzer = new Analyzer(resolveModule);
   const cycles: ReferenceChain[] = [];
   const checkedNodes = new WeakSet<ts.SourceFile>();
 
-  globSync(glob, {absolute: true}).forEach(filePath => {
+  globSync(glob, {absolute: true}).forEach((filePath) => {
     const sourceFile = analyzer.getSourceFile(filePath);
     cycles.push(...analyzer.findCycles(sourceFile, checkedNodes));
   });
@@ -67,7 +80,8 @@ export function main(
   const actual = convertReferenceChainToGolden(cycles, baseDir);
 
   console.info(
-      chalk.green(`   Current number of cycles: ${chalk.yellow(cycles.length.toString())}`));
+    chalk.green(`   Current number of cycles: ${chalk.yellow(cycles.length.toString())}`)
+  );
 
   if (approve) {
     writeFileSync(goldenFile, JSON.stringify(actual, null, 2));
@@ -86,11 +100,11 @@ export function main(
   if (printWarnings && warningsCount !== 0) {
     console.info(chalk.yellow('⚠  The following imports could not be resolved:'));
     Array.from(analyzer.unresolvedModules)
-        .sort()
-        .forEach(specifier => console.info(`  • ${specifier}`));
+      .sort()
+      .forEach((specifier) => console.info(`  • ${specifier}`));
     analyzer.unresolvedFiles.forEach((value, key) => {
       console.info(`  • ${getRelativePath(baseDir, key)}`);
-      value.sort().forEach(specifier => console.info(`      ${specifier}`));
+      value.sort().forEach((specifier) => console.info(`      ${specifier}`));
     });
   } else {
     console.info(chalk.yellow(`⚠  ${warningsCount} imports could not be resolved.`));
@@ -109,20 +123,24 @@ export function main(
   console.error(chalk.red('❌  Golden does not match current circular dependencies.'));
   if (newCircularDeps.length !== 0) {
     console.error(chalk.yellow(`   New circular dependencies which are not allowed:`));
-    newCircularDeps.forEach(c => console.error(`     • ${convertReferenceChainToString(c)}`));
+    newCircularDeps.forEach((c) => console.error(`     • ${convertReferenceChainToString(c)}`));
     console.error();
   }
   if (fixedCircularDeps.length !== 0) {
     console.error(
-        chalk.yellow(`   Fixed circular dependencies that need to be removed from the golden:`));
-    fixedCircularDeps.forEach(c => console.error(`     • ${convertReferenceChainToString(c)}`));
+      chalk.yellow(`   Fixed circular dependencies that need to be removed from the golden:`)
+    );
+    fixedCircularDeps.forEach((c) => console.error(`     • ${convertReferenceChainToString(c)}`));
     console.error();
     if (approveCommand) {
       console.info(chalk.yellow(`   Please approve the new golden with: ${approveCommand}`));
     } else {
-      console.info(chalk.yellow(
+      console.info(
+        chalk.yellow(
           `   Please update the golden. The following command can be ` +
-          `run: yarn ts-circular-deps approve ${getRelativePath(process.cwd(), goldenFile)}.`));
+            `run: yarn ts-circular-deps approve ${getRelativePath(process.cwd(), goldenFile)}.`
+        )
+      );
     }
   }
   return 1;

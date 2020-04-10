@@ -8,20 +8,24 @@
 
 import {getSymbolIterator} from './symbol';
 
-
 export function isIterable(obj: any): obj is Iterable<any> {
   return obj !== null && typeof obj === 'object' && (obj as any)[getSymbolIterator()] !== undefined;
 }
 
 export function isListLikeIterable(obj: any): boolean {
   if (!isJsObject(obj)) return false;
-  return Array.isArray(obj) ||
-      (!(obj instanceof Map) &&      // JS Map are iterables but return entries as [k, v]
-       getSymbolIterator() in obj);  // JS Iterable have a Symbol.iterator prop
+  return (
+    Array.isArray(obj) ||
+    (!(obj instanceof Map) && // JS Map are iterables but return entries as [k, v]
+      getSymbolIterator() in obj)
+  ); // JS Iterable have a Symbol.iterator prop
 }
 
 export function areIterablesEqual(
-    a: any, b: any, comparator: (a: any, b: any) => boolean): boolean {
+  a: any,
+  b: any,
+  comparator: (a: any, b: any) => boolean
+): boolean {
   const iterator1 = a[getSymbolIterator()]();
   const iterator2 = b[getSymbolIterator()]();
 
@@ -42,7 +46,7 @@ export function iterateListLike(obj: any, fn: (p: any) => any) {
   } else {
     const iterator = obj[getSymbolIterator()]();
     let item: any;
-    while (!((item = iterator.next()).done)) {
+    while (!(item = iterator.next()).done) {
       fn(item.value);
     }
   }
