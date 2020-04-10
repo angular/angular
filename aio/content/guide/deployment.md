@@ -304,7 +304,7 @@ In addition to build optimizations, Angular also has a runtime production mode. 
 
 <code-example format="nocode">
 
-  Angular is running in the development mode. Call enableProdMode() to enable the production mode.
+  Angular is running in development mode. Call enableProdMode() to enable production mode.
 
 </code-example>
 
