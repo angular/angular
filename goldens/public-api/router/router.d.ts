@@ -266,7 +266,7 @@ export declare interface Resolve<T> {
 
 export declare type ResolveData = {
     [name: string]: any;
-};
+} | any;
 
 export declare class ResolveEnd extends RouterEvent {
     state: RouterStateSnapshot;

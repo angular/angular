@@ -1564,6 +1564,7 @@ describe('Integration', () => {
           {provide: 'resolveSix', useClass: ResolveSix},
           {provide: 'resolveError', useValue: (a: any, b: any) => Promise.reject('error')},
           {provide: 'resolveNullError', useValue: (a: any, b: any) => Promise.reject(null)},
+          {provide: 'resolveObject', useValue: (a: any, b: any) => ({foo: 4})},
           {provide: 'numberOfUrlSegments', useValue: (a: any, b: any) => a.url.length},
         ]
       });
@@ -1690,6 +1691,65 @@ describe('Integration', () => {
          advance(fixture);
 
          expect(cmp.route.snapshot.data).toEqual({numberOfUrlSegments: 3});
+       })));
+
+    it('should allow using single service name as a resolver',
+       fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{
+           path: 'simple',
+           component: CollectParamsCmp,
+           resolve: 'resolveTwo',
+         }]);
+
+         router.navigateByUrl('/simple');
+         advance(fixture);
+
+         const cmp = fixture.debugElement.children[1].componentInstance;
+         expect(cmp.route.snapshot.data).toEqual(2);
+       })));
+
+    it('should override route data when resolved value is not an object',
+       fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{
+           path: 'simple',
+           component: CollectParamsCmp,
+           data: {
+             foo: 1,
+             bar: 2,
+           },
+           resolve: 'resolveTwo',
+         }]);
+
+         router.navigateByUrl('/simple');
+         advance(fixture);
+
+         const cmp = fixture.debugElement.children[1].componentInstance;
+         expect(cmp.route.snapshot.data).toEqual(2);
+       })));
+
+    it('should merge route data with service resolver data',
+       fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{
+           path: 'simple',
+           component: CollectParamsCmp,
+           data: {
+             foo: 1,
+             bar: 2,
+           },
+           resolve: 'resolveObject',
+         }]);
+
+         router.navigateByUrl('/simple');
+         advance(fixture);
+
+         const cmp = fixture.debugElement.children[1].componentInstance;
+         expect(cmp.route.snapshot.data).toEqual({foo: 4, bar: 2});
        })));
 
     describe('should run resolvers for the same route concurrently', () => {

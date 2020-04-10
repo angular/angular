@@ -89,7 +89,7 @@ export type Data = {
  */
 export type ResolveData = {
   [name: string]: any
-};
+}|any;
 
 /**
  *

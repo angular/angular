@@ -273,7 +273,7 @@ export class ActivatedRouteSnapshot {
   _resolve: ResolveData;
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _resolvedData!: Data;
+  _resolvedData!: Data|any;
   /** @internal */
   // TODO(issue/24571): remove '!'.
   _routerState!: RouterStateSnapshot;

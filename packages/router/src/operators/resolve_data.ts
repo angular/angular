@@ -44,10 +44,14 @@ function runResolve(
   return resolveNode(resolve, futureARS, futureRSS, moduleInjector)
       .pipe(map((resolvedData: any) => {
         futureARS._resolvedData = resolvedData;
-        futureARS.data = {
-          ...futureARS.data,
-          ...inheritedParamsDataResolve(futureARS, paramsInheritanceStrategy).resolve
-        };
+        if (typeof resolvedData === 'object') {
+          futureARS.data = {
+            ...futureARS.data,
+            ...inheritedParamsDataResolve(futureARS, paramsInheritanceStrategy).resolve
+          };
+        } else {
+          futureARS.data = resolvedData;
+        }
         return null;
       }));
 }
@@ -55,6 +59,10 @@ function runResolve(
 function resolveNode(
     resolve: ResolveData, futureARS: ActivatedRouteSnapshot, futureRSS: RouterStateSnapshot,
     moduleInjector: Injector): Observable<any> {
+  if (isSingleValueResolver(resolve)) {
+    return getResolver(resolve, futureARS, futureRSS, moduleInjector);
+  }
+
   const keys = Object.keys(resolve);
   if (keys.length === 0) {
     return of({});
@@ -83,4 +91,8 @@ function getResolver(
   const resolver = getToken(injectionToken, futureARS, moduleInjector);
   return resolver.resolve ? wrapIntoObservable(resolver.resolve(futureARS, futureRSS)) :
                             wrapIntoObservable(resolver(futureARS, futureRSS));
+}
+
+function isSingleValueResolver(resolve: any) {
+  return typeof resolve === 'string' || typeof resolve === 'function';
 }
