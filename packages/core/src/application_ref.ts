@@ -693,7 +693,7 @@ export class ApplicationRef {
     this._loadComponent(compRef);
     if (isDevMode()) {
       this._console.log(
-          `Angular is running in the development mode. Call enableProdMode() to enable the production mode.`);
+          `Angular is running in development mode. Call enableProdMode() to enable production mode.`);
     }
     return compRef;
   }
