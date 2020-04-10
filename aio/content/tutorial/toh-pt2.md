@@ -3,6 +3,12 @@
 In this page, you'll expand the Tour of Heroes app to display a list of heroes, and
 allow users to select a hero and display the hero's details.
 
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+
+</div>
+
 
 ## Create mock heroes
 
@@ -219,8 +225,6 @@ The finished `<li>` looks like this:
 {@a final-code-review}
 
 ## Final code review
-
-Your app should look like this <live-example></live-example>.
 
 Here are the code files discussed on this page, including the `HeroesComponent` styles.
 
