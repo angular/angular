@@ -10,6 +10,12 @@ In this page, you'll take the first step in that direction by moving the hero de
 The `HeroesComponent` will only present the list of heroes.
 The `HeroDetailComponent` will present details of a selected hero.
 
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+
+</div>
+
 ## Make the `HeroDetailComponent`
 
 Use the Angular CLI to generate a new component named `hero-detail`.
@@ -136,7 +142,7 @@ without touching the parent `HeroesComponent`.
 
 ## Final code review
 
-Here are the code files discussed on this page and your app should look like this <live-example></live-example>.
+Here are the code files discussed on this page.
 
 <code-tabs>
 
