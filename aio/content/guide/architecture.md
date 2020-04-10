@@ -25,6 +25,11 @@ An app's components typically define many views, arranged hierarchically. Angula
 
 </div>
 
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+</div>
+
 ## Modules
 
 Angular *NgModules* differ from and complement JavaScript (ES2015) modules. An NgModule declares a compilation context for a set of components that is dedicated to an application domain, a workflow, or a closely related set of capabilities. An NgModule can associate its components with related code, such as services, to form functional units.
@@ -147,11 +152,6 @@ Each of these subjects is introduced in more detail in the following pages.
   * [Pipes](guide/architecture-components#pipes)
 
 * [Introduction to services and dependency injection](guide/architecture-services)
-
-<div class="alert is-helpful">
-
-   Note that the code referenced on these pages is available as a <live-example></live-example>.
-</div>
 
 When you're familiar with these fundamental building blocks, you can explore them in more detail in the documentation. To learn about more tools and techniques that are available to help you build and deploy Angular applications, see [Next steps: tools and techniques](guide/architecture-next-steps).
 </div>
