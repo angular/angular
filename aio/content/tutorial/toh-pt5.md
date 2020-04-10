@@ -13,6 +13,13 @@ When you’re done, users will be able to navigate the app like this:
   <img src='generated/images/guide/toh/nav-diagram.png' alt="View navigations">
 </div>
 
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+
+</div>
+
+
 ## Add the `AppRoutingModule`
 
 In Angular, the best practice is to load and configure the router in a separate, top-level module
@@ -466,7 +473,7 @@ from heroes list to the mini detail to the hero details and back to the heroes a
 
 ## Final code review
 
-Here are the code files discussed on this page and your app should look like this <live-example></live-example>.
+Here are the code files discussed on this page.
 
 {@a approutingmodule}
 {@a appmodule}

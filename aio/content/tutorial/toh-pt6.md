@@ -7,7 +7,11 @@ Angular's `HttpClient`.
 * Users can add, edit, and delete heroes and save these changes over HTTP.
 * Users can search for heroes by name.
 
-When you're done with this page, the app should look like this <live-example></live-example>.
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+
+</div>
 
 ## Enable HTTP services
 
@@ -518,8 +522,6 @@ If you enter characters that match any existing hero names, you'll see something
 </div>
 
 ## Final code review
-
-Your app should look like this <live-example></live-example>.
 
 Here are the code files discussed on this page (all in the `src/app/` folder).
 

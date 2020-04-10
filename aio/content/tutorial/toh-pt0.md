@@ -9,6 +9,11 @@ In this part of the tutorial, you'll do the following:
 3. Serve the application.
 4. Make changes to the application.
 
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+
+</div>
 
 ## Set up your environment
 
@@ -112,9 +117,6 @@ Open `src/styles.css` and add the code below to the file.
 </code-example>
 
 ## Final code review
-
-The source code for this tutorial and the complete _Tour of Heroes_ global styles
-are available in the <live-example></live-example>.
 
 Here are the code files discussed on this page.
 

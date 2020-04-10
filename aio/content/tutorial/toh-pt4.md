@@ -5,6 +5,13 @@ The Tour of Heroes `HeroesComponent` is currently getting and displaying fake da
 After the refactoring in this tutorial, `HeroesComponent` will be lean and focused on supporting the view.
 It will also be easier to unit-test with a mock service.
 
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
+
+</div>
+
+
 ## Why services
 
 Components shouldn't fetch or save data directly and they certainly shouldn't knowingly present fake data.
@@ -387,7 +394,7 @@ the selection. Use the "clear" button to clear the message history.
 
 ## Final code review
 
-Here are the code files discussed on this page and your app should look like this <live-example></live-example>.
+Here are the code files discussed on this page.
 
 <code-tabs>
 
