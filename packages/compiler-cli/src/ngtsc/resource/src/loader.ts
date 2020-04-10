@@ -43,7 +43,7 @@ export class HostResourceLoader implements ResourceLoader {
    * @throws An error if the resource cannot be resolved.
    */
   resolve(url: string, fromFile: string): string {
-    let resolvedUrl: string|null = null;
+    let resolvedUrl: string | null = null;
     if (this.host.resourceNameToFileName) {
       resolvedUrl = this.host.resourceNameToFileName(url, fromFile);
     } else {
@@ -66,10 +66,11 @@ export class HostResourceLoader implements ResourceLoader {
    * file has already been loaded.
    * @throws An Error if pre-loading is not available.
    */
-  preload(resolvedUrl: string): Promise<void>|undefined {
+  preload(resolvedUrl: string): Promise<void> | undefined {
     if (!this.host.readResource) {
       throw new Error(
-          'HostResourceLoader: the CompilerHost provided does not support pre-loading resources.');
+        'HostResourceLoader: the CompilerHost provided does not support pre-loading resources.',
+      );
     }
     if (this.cache.has(resolvedUrl)) {
       return undefined;
@@ -82,7 +83,7 @@ export class HostResourceLoader implements ResourceLoader {
       this.cache.set(resolvedUrl, result);
       return undefined;
     } else {
-      const fetchCompletion = result.then(str => {
+      const fetchCompletion = result.then((str) => {
         this.fetching.delete(resolvedUrl);
         this.cache.set(resolvedUrl, str);
       });
@@ -104,8 +105,9 @@ export class HostResourceLoader implements ResourceLoader {
       return this.cache.get(resolvedUrl)!;
     }
 
-    const result = this.host.readResource ? this.host.readResource(resolvedUrl) :
-                                            this.host.readFile(resolvedUrl);
+    const result = this.host.readResource
+      ? this.host.readResource(resolvedUrl)
+      : this.host.readFile(resolvedUrl);
     if (typeof result !== 'string') {
       throw new Error(`HostResourceLoader: loader(${resolvedUrl}) returned a Promise`);
     }
@@ -117,7 +119,7 @@ export class HostResourceLoader implements ResourceLoader {
    * Attempt to resolve `url` in the context of `fromFile`, while respecting the rootDirs
    * option from the tsconfig. First, normalize the file name.
    */
-  private fallbackResolve(url: string, fromFile: string): string|null {
+  private fallbackResolve(url: string, fromFile: string): string | null {
     let candidateLocations: string[];
     if (url.startsWith('/')) {
       // This path is not really an absolute path, but instead the leading '/' means that it's
@@ -154,7 +156,7 @@ export class HostResourceLoader implements ResourceLoader {
   private getRootedCandidateLocations(url: string): AbsoluteFsPath[] {
     // The path already starts with '/', so add a '.' to make it relative.
     const segment: PathSegment = ('.' + url) as PathSegment;
-    return this.rootDirs.map(rootDir => join(rootDir, segment));
+    return this.rootDirs.map((rootDir) => join(rootDir, segment));
   }
 
   /**
@@ -168,20 +170,25 @@ export class HostResourceLoader implements ResourceLoader {
     // `failedLookupLocations` is in the name of the type ts.ResolvedModuleWithFailedLookupLocations
     // but is marked @internal in TypeScript. See
     // https://github.com/Microsoft/TypeScript/issues/28770.
-    type ResolvedModuleWithFailedLookupLocations =
-        ts.ResolvedModuleWithFailedLookupLocations&{failedLookupLocations: ReadonlyArray<string>};
+    type ResolvedModuleWithFailedLookupLocations = ts.ResolvedModuleWithFailedLookupLocations & {
+      failedLookupLocations: ReadonlyArray<string>;
+    };
 
-    // clang-format off
-    const failedLookup = ts.resolveModuleName(url + '.$ngresource$', fromFile, this.options, this.host) as ResolvedModuleWithFailedLookupLocations;
-    // clang-format on
+    const failedLookup = ts.resolveModuleName(
+      url + '.$ngresource$',
+      fromFile,
+      this.options,
+      this.host,
+    ) as ResolvedModuleWithFailedLookupLocations;
+
     if (failedLookup.failedLookupLocations === undefined) {
       throw new Error(
-          `Internal error: expected to find failedLookupLocations during resolution of resource '${
-              url}' in context of ${fromFile}`);
+        `Internal error: expected to find failedLookupLocations during resolution of resource '${url}' in context of ${fromFile}`,
+      );
     }
 
     return failedLookup.failedLookupLocations
-        .filter(candidate => candidate.endsWith('.$ngresource$.ts'))
-        .map(candidate => candidate.replace(/\.\$ngresource\$\.ts$/, ''));
+      .filter((candidate) => candidate.endsWith('.$ngresource$.ts'))
+      .map((candidate) => candidate.replace(/\.\$ngresource\$\.ts$/, ''));
   }
 }

@@ -10,7 +10,6 @@ import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
 import {formatDate} from '../i18n/format_date';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
-// clang-format off
 /**
  * @ngModule CommonModule
  * @description
@@ -149,7 +148,6 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * @publicApi
  */
-// clang-format on
 @Pipe({name: 'date', pure: true})
 export class DatePipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private locale: string) {}
@@ -167,7 +165,7 @@ export class DatePipe implements PipeTransform {
    * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
    * @returns A date string in the desired format.
    */
-  transform(value: any, format = 'mediumDate', timezone?: string, locale?: string): string|null {
+  transform(value: any, format = 'mediumDate', timezone?: string, locale?: string): string | null {
     if (value == null || value === '' || value !== value) return null;
 
     try {

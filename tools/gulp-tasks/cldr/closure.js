@@ -18,16 +18,106 @@ module.exports = (gulp, done) => {
   // extracted from:
   // https://github.com/google/closure-library/blob/master/closure/goog/i18n/datetimepatterns.js#L2136
   let GOOG_LOCALES = [
-    'af',    'am',    'ar',    'ar-DZ', 'az',    'be',    'bg',    'bn',     'br',    'bs',
-    'ca',    'chr',   'cs',    'cy',    'da',    'de',    'de-AT', 'de-CH',  'el',    'en-AU',
-    'en-CA', 'en-GB', 'en-IE', 'en-IN', 'en-SG', 'en-ZA', 'es',    'es-419', 'es-MX', 'es-US',
-    'et',    'eu',    'fa',    'fi',    'fr',    'fr-CA', 'ga',    'gl',     'gsw',   'gu',
-    'haw',   'hi',    'hr',    'hu',    'hy',    'in',    'is',    'it',     'iw',    'ja',
-    'ka',    'kk',    'km',    'kn',    'ko',    'ky',    'ln',    'lo',     'lt',    'lv',
-    'mk',    'ml',    'mn',    'mo',    'mr',    'ms',    'mt',    'my',     'ne',    'nl',
-    'no',    'or',    'pa',    'pl',    'pt',    'pt-PT', 'ro',    'ru',     'sh',    'si',
-    'sk',    'sl',    'sq',    'sr',    'sv',    'sw',    'ta',    'te',     'th',    'tl',
-    'tr',    'uk',    'ur',    'uz',    'vi',    'zh',    'zh-CN', 'zh-HK',  'zh-TW', 'zu'
+    'af',
+    'am',
+    'ar',
+    'ar-DZ',
+    'az',
+    'be',
+    'bg',
+    'bn',
+    'br',
+    'bs',
+    'ca',
+    'chr',
+    'cs',
+    'cy',
+    'da',
+    'de',
+    'de-AT',
+    'de-CH',
+    'el',
+    'en-AU',
+    'en-CA',
+    'en-GB',
+    'en-IE',
+    'en-IN',
+    'en-SG',
+    'en-ZA',
+    'es',
+    'es-419',
+    'es-MX',
+    'es-US',
+    'et',
+    'eu',
+    'fa',
+    'fi',
+    'fr',
+    'fr-CA',
+    'ga',
+    'gl',
+    'gsw',
+    'gu',
+    'haw',
+    'hi',
+    'hr',
+    'hu',
+    'hy',
+    'in',
+    'is',
+    'it',
+    'iw',
+    'ja',
+    'ka',
+    'kk',
+    'km',
+    'kn',
+    'ko',
+    'ky',
+    'ln',
+    'lo',
+    'lt',
+    'lv',
+    'mk',
+    'ml',
+    'mn',
+    'mo',
+    'mr',
+    'ms',
+    'mt',
+    'my',
+    'ne',
+    'nl',
+    'no',
+    'or',
+    'pa',
+    'pl',
+    'pt',
+    'pt-PT',
+    'ro',
+    'ru',
+    'sh',
+    'si',
+    'sk',
+    'sl',
+    'sq',
+    'sr',
+    'sv',
+    'sw',
+    'ta',
+    'te',
+    'th',
+    'tl',
+    'tr',
+    'uk',
+    'ur',
+    'uz',
+    'vi',
+    'zh',
+    'zh-CN',
+    'zh-HK',
+    'zh-TW',
+    'zu',
   ];
 
   // locale id aliases to support deprecated locale ids used by closure
@@ -55,7 +145,9 @@ module.exports = (gulp, done) => {
 
   console.log(`Writing file ${I18N_DATA_FOLDER}/${OUTPUT_NAME}`);
   fs.writeFileSync(
-      `${RELATIVE_I18N_DATA_FOLDER}/${OUTPUT_NAME}`, generateAllLocalesFile(GOOG_LOCALES, ALIASES));
+    `${RELATIVE_I18N_DATA_FOLDER}/${OUTPUT_NAME}`,
+    generateAllLocalesFile(GOOG_LOCALES, ALIASES),
+  );
 
   console.log(`Formatting ${I18N_DATA_FOLDER}/${OUTPUT_NAME}..."`);
   shelljs.exec(`yarn prettier --write ${I18N_DATA_FOLDER}/${OUTPUT_NAME}`, {silent: true});
@@ -71,7 +163,7 @@ function generateAllLocalesFile(LOCALES, ALIASES) {
   const existingLocalesData = {};
 
   // for each locale, get the data and the list of equivalent locales
-  LOCALES.forEach(locale => {
+  LOCALES.forEach((locale) => {
     const eqLocales = new Set();
     eqLocales.add(locale);
     if (locale.match(/-/)) {
@@ -109,13 +201,13 @@ function generateAllLocalesFile(LOCALES, ALIASES) {
       const path = `${RELATIVE_I18N_DATA_FOLDER}/${l}.ts`;
       if (fs.existsSync(`${RELATIVE_I18N_DATA_FOLDER}/${l}.ts`)) {
         const localeName = formatLocale(locale);
-        existingLocalesData[locale] =
-            fs.readFileSync(path, 'utf8')
-                .replace(`${HEADER}\n`, '')
-                .replace('export default ', `export const locale_${localeName} = `)
-                .replace('function plural', `function plural_${localeName}`)
-                .replace(/,(\n  | )plural/, `, plural_${localeName}`)
-                .replace('const u = undefined;\n\n', '');
+        existingLocalesData[locale] = fs
+          .readFileSync(path, 'utf8')
+          .replace(`${HEADER}\n`, '')
+          .replace('export default ', `export const locale_${localeName} = `)
+          .replace('function plural', `function plural_${localeName}`)
+          .replace(/,(\n  | )plural/, `, plural_${localeName}`)
+          .replace('const u = undefined;\n\n', '');
       }
     }
 
@@ -138,24 +230,25 @@ function generateAllLocalesFile(LOCALES, ALIASES) {
     return str;
   }
 
-  function formatLocale(locale) { return locale.replace(/-/g, '_'); }
-  // clang-format off
+  function formatLocale(locale) {
+    return locale.replace(/-/g, '_');
+  }
+
   return `${HEADER}
 import {registerLocaleData} from '../src/i18n/locale_data';
 
 const u = undefined;
 
-${LOCALES.map(locale => `${existingLocalesData[locale]}`).join('\n')}
+${LOCALES.map((locale) => `${existingLocalesData[locale]}`).join('\n')}
 
 let l: any;
 let locales: string[] = [];
 
 switch (goog.LOCALE) {
-${LOCALES.map(locale => generateCases(locale)).join('')}}
+${LOCALES.map((locale) => generateCases(locale)).join('')}}
 
 if(l) {
   locales.forEach(locale => registerLocaleData(l, locale));
 }
 `;
-  // clang-format on
 }

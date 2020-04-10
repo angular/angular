@@ -9,12 +9,41 @@ import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ParsedConfiguration} from '../../..';
-import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
+import {
+  ComponentDecoratorHandler,
+  DirectiveDecoratorHandler,
+  InjectableDecoratorHandler,
+  NgModuleDecoratorHandler,
+  PipeDecoratorHandler,
+  ReferencesRegistry,
+  ResourceLoader,
+} from '../../../src/ngtsc/annotations';
 import {CycleAnalyzer, ImportGraph} from '../../../src/ngtsc/cycles';
 import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
-import {absoluteFrom, dirname, FileSystem, LogicalFileSystem, resolve} from '../../../src/ngtsc/file_system';
-import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, PrivateExportAliasingHost, Reexport, ReferenceEmitter} from '../../../src/ngtsc/imports';
-import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../../src/ngtsc/metadata';
+import {
+  absoluteFrom,
+  dirname,
+  FileSystem,
+  LogicalFileSystem,
+  resolve,
+} from '../../../src/ngtsc/file_system';
+import {
+  AbsoluteModuleStrategy,
+  LocalIdentifierStrategy,
+  LogicalProjectStrategy,
+  ModuleResolver,
+  NOOP_DEFAULT_IMPORT_RECORDER,
+  PrivateExportAliasingHost,
+  Reexport,
+  ReferenceEmitter,
+} from '../../../src/ngtsc/imports';
+import {
+  CompoundMetadataReader,
+  CompoundMetadataRegistry,
+  DtsMetadataReader,
+  InjectableClassRegistry,
+  LocalMetadataRegistry,
+} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../src/ngtsc/scope';
 import {DecoratorHandler} from '../../../src/ngtsc/transform';
@@ -30,15 +59,13 @@ import {NgccTraitCompiler} from './ngcc_trait_compiler';
 import {CompiledClass, CompiledFile, DecorationAnalyses} from './types';
 import {isWithinPackage, NOOP_DEPENDENCY_TRACKER} from './util';
 
-
-
 /**
  * Simple class that resolves and loads files directly from the filesystem.
  */
 class NgccResourceLoader implements ResourceLoader {
   constructor(private fs: FileSystem) {}
   canPreload = false;
-  preload(): undefined|Promise<void> {
+  preload(): undefined | Promise<void> {
     throw new Error('Not implemented.');
   }
   load(url: string): string {
@@ -62,8 +89,12 @@ export class DecorationAnalyzer {
   private isCore = this.bundle.isCore;
   private compilerOptions = this.tsConfig !== null ? this.tsConfig.options : {};
 
-  moduleResolver =
-      new ModuleResolver(this.program, this.options, this.host, /* moduleResolutionCache */ null);
+  moduleResolver = new ModuleResolver(
+    this.program,
+    this.options,
+    this.host,
+    /* moduleResolutionCache */ null,
+  );
   resourceManager = new NgccResourceLoader(this.fs);
   metaRegistry = new LocalMetadataRegistry();
   dtsMetaReader = new DtsMetadataReader(this.typeChecker, this.reflectionHost);
@@ -71,54 +102,108 @@ export class DecorationAnalyzer {
   refEmitter = new ReferenceEmitter([
     new LocalIdentifierStrategy(),
     new AbsoluteModuleStrategy(
-        this.program, this.typeChecker, this.moduleResolver, this.reflectionHost),
+      this.program,
+      this.typeChecker,
+      this.moduleResolver,
+      this.reflectionHost,
+    ),
     // TODO(alxhub): there's no reason why ngcc needs the "logical file system" logic here, as ngcc
     // projects only ever have one rootDir. Instead, ngcc should just switch its emitted import
     // based on whether a bestGuessOwningModule is present in the Reference.
     new LogicalProjectStrategy(this.reflectionHost, new LogicalFileSystem(this.rootDirs)),
   ]);
-  aliasingHost = this.bundle.entryPoint.generateDeepReexports ?
-      new PrivateExportAliasingHost(this.reflectionHost) :
-      null;
-  dtsModuleScopeResolver =
-      new MetadataDtsModuleScopeResolver(this.dtsMetaReader, this.aliasingHost);
+  aliasingHost = this.bundle.entryPoint.generateDeepReexports
+    ? new PrivateExportAliasingHost(this.reflectionHost)
+    : null;
+  dtsModuleScopeResolver = new MetadataDtsModuleScopeResolver(
+    this.dtsMetaReader,
+    this.aliasingHost,
+  );
   scopeRegistry = new LocalModuleScopeRegistry(
-      this.metaRegistry, this.dtsModuleScopeResolver, this.refEmitter, this.aliasingHost);
+    this.metaRegistry,
+    this.dtsModuleScopeResolver,
+    this.refEmitter,
+    this.aliasingHost,
+  );
   fullRegistry = new CompoundMetadataRegistry([this.metaRegistry, this.scopeRegistry]);
-  evaluator =
-      new PartialEvaluator(this.reflectionHost, this.typeChecker, /* dependencyTracker */ null);
+  evaluator = new PartialEvaluator(
+    this.reflectionHost,
+    this.typeChecker,
+    /* dependencyTracker */ null,
+  );
   importGraph = new ImportGraph(this.moduleResolver);
   cycleAnalyzer = new CycleAnalyzer(this.importGraph);
   injectableRegistry = new InjectableClassRegistry(this.reflectionHost);
   handlers: DecoratorHandler<unknown, unknown, unknown>[] = [
     new ComponentDecoratorHandler(
-        this.reflectionHost, this.evaluator, this.fullRegistry, this.fullMetaReader,
-        this.scopeRegistry, this.scopeRegistry, this.isCore, this.resourceManager, this.rootDirs,
-        !!this.compilerOptions.preserveWhitespaces,
-        /* i18nUseExternalIds */ true, this.bundle.enableI18nLegacyMessageIdFormat,
-        this.moduleResolver, this.cycleAnalyzer, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER,
-        NOOP_DEPENDENCY_TRACKER, this.injectableRegistry, /* annotateForClosureCompiler */ false),
+      this.reflectionHost,
+      this.evaluator,
+      this.fullRegistry,
+      this.fullMetaReader,
+      this.scopeRegistry,
+      this.scopeRegistry,
+      this.isCore,
+      this.resourceManager,
+      this.rootDirs,
+      !!this.compilerOptions.preserveWhitespaces,
+      /* i18nUseExternalIds */ true,
+      this.bundle.enableI18nLegacyMessageIdFormat,
+      this.moduleResolver,
+      this.cycleAnalyzer,
+      this.refEmitter,
+      NOOP_DEFAULT_IMPORT_RECORDER,
+      NOOP_DEPENDENCY_TRACKER,
+      this.injectableRegistry,
+      /* annotateForClosureCompiler */ false,
+    ),
     // See the note in ngtsc about why this cast is needed.
-    // clang-format off
+
     new DirectiveDecoratorHandler(
-        this.reflectionHost, this.evaluator, this.fullRegistry, this.scopeRegistry,
-        this.fullMetaReader, NOOP_DEFAULT_IMPORT_RECORDER, this.injectableRegistry, this.isCore,
-        /* annotateForClosureCompiler */ false) as DecoratorHandler<unknown, unknown, unknown>,
-    // clang-format on
+      this.reflectionHost,
+      this.evaluator,
+      this.fullRegistry,
+      this.scopeRegistry,
+      this.fullMetaReader,
+      NOOP_DEFAULT_IMPORT_RECORDER,
+      this.injectableRegistry,
+      this.isCore,
+      /* annotateForClosureCompiler */ false,
+    ) as DecoratorHandler<unknown, unknown, unknown>,
+
     // Pipe handler must be before injectable handler in list so pipe factories are printed
     // before injectable factories (so injectable factories can delegate to them)
     new PipeDecoratorHandler(
-        this.reflectionHost, this.evaluator, this.metaRegistry, this.scopeRegistry,
-        NOOP_DEFAULT_IMPORT_RECORDER, this.injectableRegistry, this.isCore),
+      this.reflectionHost,
+      this.evaluator,
+      this.metaRegistry,
+      this.scopeRegistry,
+      NOOP_DEFAULT_IMPORT_RECORDER,
+      this.injectableRegistry,
+      this.isCore,
+    ),
     new InjectableDecoratorHandler(
-        this.reflectionHost, NOOP_DEFAULT_IMPORT_RECORDER, this.isCore,
-        /* strictCtorDeps */ false, this.injectableRegistry, /* errorOnDuplicateProv */ false),
+      this.reflectionHost,
+      NOOP_DEFAULT_IMPORT_RECORDER,
+      this.isCore,
+      /* strictCtorDeps */ false,
+      this.injectableRegistry,
+      /* errorOnDuplicateProv */ false,
+    ),
     new NgModuleDecoratorHandler(
-        this.reflectionHost, this.evaluator, this.fullMetaReader, this.fullRegistry,
-        this.scopeRegistry, this.referencesRegistry, this.isCore, /* routeAnalyzer */ null,
-        this.refEmitter,
-        /* factoryTracker */ null, NOOP_DEFAULT_IMPORT_RECORDER,
-        /* annotateForClosureCompiler */ false, this.injectableRegistry),
+      this.reflectionHost,
+      this.evaluator,
+      this.fullMetaReader,
+      this.fullRegistry,
+      this.scopeRegistry,
+      this.referencesRegistry,
+      this.isCore,
+      /* routeAnalyzer */ null,
+      this.refEmitter,
+      /* factoryTracker */ null,
+      NOOP_DEFAULT_IMPORT_RECORDER,
+      /* annotateForClosureCompiler */ false,
+      this.injectableRegistry,
+    ),
   ];
   compiler = new NgccTraitCompiler(this.handlers, this.reflectionHost);
   migrations: Migration[] = [
@@ -128,10 +213,13 @@ export class DecorationAnalyzer {
   ];
 
   constructor(
-      private fs: FileSystem, private bundle: EntryPointBundle,
-      private reflectionHost: NgccReflectionHost, private referencesRegistry: ReferencesRegistry,
-      private diagnosticHandler: (error: ts.Diagnostic) => void = () => {},
-      private tsConfig: ParsedConfiguration|null = null) {}
+    private fs: FileSystem,
+    private bundle: EntryPointBundle,
+    private reflectionHost: NgccReflectionHost,
+    private referencesRegistry: ReferencesRegistry,
+    private diagnosticHandler: (error: ts.Diagnostic) => void = () => {},
+    private tsConfig: ParsedConfiguration | null = null,
+  ) {}
 
   /**
    * Analyze a program to find all the decorated files should be transformed.
@@ -161,17 +249,21 @@ export class DecorationAnalyzer {
 
   protected applyMigrations(): void {
     const migrationHost = new DefaultMigrationHost(
-        this.reflectionHost, this.fullMetaReader, this.evaluator, this.compiler,
-        this.bundle.entryPoint.path);
+      this.reflectionHost,
+      this.fullMetaReader,
+      this.evaluator,
+      this.compiler,
+      this.bundle.entryPoint.path,
+    );
 
-    this.migrations.forEach(migration => {
-      this.compiler.analyzedFiles.forEach(analyzedFile => {
+    this.migrations.forEach((migration) => {
+      this.compiler.analyzedFiles.forEach((analyzedFile) => {
         const records = this.compiler.recordsFor(analyzedFile);
         if (records === null) {
           throw new Error('Assertion error: file to migrate must have records.');
         }
 
-        records.forEach(record => {
+        records.forEach((record) => {
           const addDiagnostic = (diagnostic: ts.Diagnostic) => {
             if (record.metaDiagnostics === null) {
               record.metaDiagnostics = [];
@@ -219,7 +311,7 @@ export class DecorationAnalyzer {
         name: record.node.name.text,
         decorators: this.compiler.getAllDecorators(record.node),
         declaration: record.node,
-        compilation
+        compilation,
       });
     }
 

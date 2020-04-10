@@ -30,59 +30,58 @@ async function requestDataFromGithub(url) {
       headers: {
         Authorization: `token ${githubToken}`,
         ...options.headers,
-      }
+      },
     };
   }
 
   return new Promise((resolve, reject) => {
     https
-        .get(
-            url, options,
-            (res) => {
-              const {statusCode} = res;
-              const contentType = res.headers['content-type'];
-              let rawData = '';
+      .get(url, options, (res) => {
+        const {statusCode} = res;
+        const contentType = res.headers['content-type'];
+        let rawData = '';
 
-              res.on('data', (chunk) => { rawData += chunk; });
-              res.on('end', () => {
-                let error;
-                if (statusCode !== 200) {
-                  error = new Error(
-                      `Request Failed.\nStatus Code: ${statusCode}.\nResponse: ${rawData}`);
-                } else if (!/^application\/json/.test(contentType)) {
-                  error = new Error(
-                      'Invalid content-type.\n' +
-                      `Expected application/json but received ${contentType}`);
-                }
+        res.on('data', (chunk) => {
+          rawData += chunk;
+        });
+        res.on('end', () => {
+          let error;
+          if (statusCode !== 200) {
+            error = new Error(`Request Failed.\nStatus Code: ${statusCode}.\nResponse: ${rawData}`);
+          } else if (!/^application\/json/.test(contentType)) {
+            error = new Error(
+              'Invalid content-type.\n' + `Expected application/json but received ${contentType}`,
+            );
+          }
 
-                if (error) {
-                  reject(error);
-                  return;
-                }
+          if (error) {
+            reject(error);
+            return;
+          }
 
-                try {
-                  resolve(JSON.parse(rawData));
-                } catch (e) {
-                  reject(e);
-                }
-              });
-            })
-        .on('error', (e) => { reject(e); });
+          try {
+            resolve(JSON.parse(rawData));
+          } catch (e) {
+            reject(e);
+          }
+        });
+      })
+      .on('error', (e) => {
+        reject(e);
+      });
   });
 }
-// clang-format off
-// clang keeps trying to put the function name on the next line.
+
 async function getRefsAndShasForTarget(prNumber, suppressLog) {
-  // clang-format on
   // If the environment variable already contains the refs and shas, reuse them.
   if (process.env['GITHUB_REFS_AND_SHAS']) {
     suppressLog ||
-        console.info(`Retrieved refs and SHAs for PR ${prNumber} from environment variables.`);
+      console.info(`Retrieved refs and SHAs for PR ${prNumber} from environment variables.`);
     return JSON.parse(process.env['GITHUB_REFS_AND_SHAS']);
   }
 
   suppressLog ||
-      console.info(`Getting refs and SHAs for PR ${prNumber} on angular/angular from Github.`);
+    console.info(`Getting refs and SHAs for PR ${prNumber} on angular/angular from Github.`);
   const pullsUrl = `https://api.github.com/repos/angular/angular/pulls/${prNumber}`;
   const result = await requestDataFromGithub(pullsUrl);
 
@@ -94,8 +93,9 @@ async function getRefsAndShasForTarget(prNumber, suppressLog) {
   // The sha of the latest commit on the PR.
   const {stdout: latestShaOfPrBranch} = await exec(`git rev-parse HEAD`);
   // The first common SHA in the history of the target branch and the latest commit in the PR.
-  const {stdout: commonAncestorSha} =
-      await exec(`git merge-base origin/${result.base.ref} ${latestShaOfPrBranch}`);
+  const {stdout: commonAncestorSha} = await exec(
+    `git merge-base origin/${result.base.ref} ${latestShaOfPrBranch}`,
+  );
 
   const output = {
     base: {
@@ -116,7 +116,7 @@ async function getRefsAndShasForTarget(prNumber, suppressLog) {
 // If the script is called directly, log the output of the refs and sha for the
 // requested PR.
 if (require.main === module) {
-  const run = async() => {
+  const run = async () => {
     const prNumber = Number.parseInt(process.argv[2], 10);
     if (!!prNumber) {
       console.info(JSON.stringify(await getRefsAndShasForTarget(prNumber, true)));

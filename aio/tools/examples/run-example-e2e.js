@@ -387,9 +387,7 @@ function getE2eSpecs(basePath, filter) {
 function getE2eSpecsFor(basePath, specFile, filter) {
   // Only get spec file at the example root.
   // The formatter doesn't understand nested template string expressions (honestly, neither do I).
-  // clang-format off
   const e2eSpecGlob = `${filter ? `*${filter}*` : '*'}/${specFile}`;
-  // clang-format on
   return globby(e2eSpecGlob, {cwd: basePath, nodir: true})
       .then(
           paths => paths.filter(file => !IGNORED_EXAMPLES.some(ignored => file.startsWith(ignored)))

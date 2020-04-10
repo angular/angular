@@ -36,7 +36,7 @@ export function decimalDigest(message: i18n.Message): string {
  */
 export function computeDecimalDigest(message: i18n.Message): string {
   const visitor = new _SerializerIgnoreIcuExpVisitor();
-  const parts = message.nodes.map(a => a.visit(visitor, null));
+  const parts = message.nodes.map((a) => a.visit(visitor, null));
   return computeMsgId(parts.join(''), message.meaning);
 }
 
@@ -53,20 +53,22 @@ class _SerializerVisitor implements i18n.Visitor {
   }
 
   visitContainer(container: i18n.Container, context: any): any {
-    return `[${container.children.map(child => child.visit(this)).join(', ')}]`;
+    return `[${container.children.map((child) => child.visit(this)).join(', ')}]`;
   }
 
   visitIcu(icu: i18n.Icu, context: any): any {
-    const strCases =
-        Object.keys(icu.cases).map((k: string) => `${k} {${icu.cases[k].visit(this)}}`);
+    const strCases = Object.keys(icu.cases).map(
+      (k: string) => `${k} {${icu.cases[k].visit(this)}}`,
+    );
     return `{${icu.expression}, ${icu.type}, ${strCases.join(', ')}}`;
   }
 
   visitTagPlaceholder(ph: i18n.TagPlaceholder, context: any): any {
-    return ph.isVoid ?
-        `<ph tag name="${ph.startName}"/>` :
-        `<ph tag name="${ph.startName}">${
-            ph.children.map(child => child.visit(this)).join(', ')}</ph name="${ph.closeName}">`;
+    return ph.isVoid
+      ? `<ph tag name="${ph.startName}"/>`
+      : `<ph tag name="${ph.startName}">${ph.children
+          .map((child) => child.visit(this))
+          .join(', ')}</ph name="${ph.closeName}">`;
   }
 
   visitPlaceholder(ph: i18n.Placeholder, context: any): any {
@@ -81,7 +83,7 @@ class _SerializerVisitor implements i18n.Visitor {
 const serializerVisitor = new _SerializerVisitor();
 
 export function serializeNodes(nodes: i18n.Node[]): string[] {
-  return nodes.map(a => a.visit(serializerVisitor, null));
+  return nodes.map((a) => a.visit(serializerVisitor, null));
 }
 
 /**
@@ -113,13 +115,21 @@ export function sha1(str: string): string {
   const len = utf8.length * 8;
 
   const w = newArray(80);
-  let a = 0x67452301, b = 0xefcdab89, c = 0x98badcfe, d = 0x10325476, e = 0xc3d2e1f0;
+  let a = 0x67452301,
+    b = 0xefcdab89,
+    c = 0x98badcfe,
+    d = 0x10325476,
+    e = 0xc3d2e1f0;
 
-  words32[len >> 5] |= 0x80 << (24 - len % 32);
-  words32[((len + 64 >> 9) << 4) + 15] = len;
+  words32[len >> 5] |= 0x80 << (24 - (len % 32));
+  words32[(((len + 64) >> 9) << 4) + 15] = len;
 
   for (let i = 0; i < words32.length; i += 16) {
-    const h0 = a, h1 = b, h2 = c, h3 = d, h4 = e;
+    const h0 = a,
+      h1 = b,
+      h2 = c,
+      h3 = d,
+      h4 = e;
 
     for (let j = 0; j < 80; j++) {
       if (j < 16) {
@@ -201,7 +211,8 @@ export function computeMsgId(msg: string, meaning: string = ''): string {
 }
 
 function hash32(str: string, c: number): number {
-  let a = 0x9e3779b9, b = 0x9e3779b9;
+  let a = 0x9e3779b9,
+    b = 0x9e3779b9;
   let i: number;
 
   const len = str.length;
@@ -211,7 +222,7 @@ function hash32(str: string, c: number): number {
     b = add32(b, wordAt(str, i + 4, Endian.Little));
     c = add32(c, wordAt(str, i + 8, Endian.Little));
     const res = mix(a, b, c);
-    a = res[0], b = res[1], c = res[2];
+    (a = res[0]), (b = res[1]), (c = res[2]);
   }
 
   a = add32(a, wordAt(str, i, Endian.Little));
@@ -223,20 +234,36 @@ function hash32(str: string, c: number): number {
   return mix(a, b, c)[2];
 }
 
-// clang-format off
 function mix(a: number, b: number, c: number): [number, number, number] {
-  a = sub32(a, b); a = sub32(a, c); a ^= c >>> 13;
-  b = sub32(b, c); b = sub32(b, a); b ^= a << 8;
-  c = sub32(c, a); c = sub32(c, b); c ^= b >>> 13;
-  a = sub32(a, b); a = sub32(a, c); a ^= c >>> 12;
-  b = sub32(b, c); b = sub32(b, a); b ^= a << 16;
-  c = sub32(c, a); c = sub32(c, b); c ^= b >>> 5;
-  a = sub32(a, b); a = sub32(a, c); a ^= c >>> 3;
-  b = sub32(b, c); b = sub32(b, a); b ^= a << 10;
-  c = sub32(c, a); c = sub32(c, b); c ^= b >>> 15;
+  a = sub32(a, b);
+  a = sub32(a, c);
+  a ^= c >>> 13;
+  b = sub32(b, c);
+  b = sub32(b, a);
+  b ^= a << 8;
+  c = sub32(c, a);
+  c = sub32(c, b);
+  c ^= b >>> 13;
+  a = sub32(a, b);
+  a = sub32(a, c);
+  a ^= c >>> 12;
+  b = sub32(b, c);
+  b = sub32(b, a);
+  b ^= a << 16;
+  c = sub32(c, a);
+  c = sub32(c, b);
+  c ^= b >>> 5;
+  a = sub32(a, b);
+  a = sub32(a, c);
+  a ^= c >>> 3;
+  b = sub32(b, c);
+  b = sub32(b, a);
+  b ^= a << 10;
+  c = sub32(c, a);
+  c = sub32(c, b);
+  c ^= b >>> 15;
   return [a, b, c];
 }
-// clang-format on
 
 // Utils
 
@@ -256,8 +283,10 @@ function add32to64(a: number, b: number): [number, number] {
 }
 
 function add64(a: [number, number], b: [number, number]): [number, number] {
-  const ah = a[0], al = a[1];
-  const bh = b[0], bl = b[1];
+  const ah = a[0],
+    al = a[1];
+  const bh = b[0],
+    bl = b[1];
   const result = add32to64(al, bl);
   const carry = result[0];
   const l = result[1];
@@ -278,7 +307,8 @@ function rol32(a: number, count: number): number {
 
 // Rotate a 64b number left `count` position
 function rol64(num: [number, number], count: number): [number, number] {
-  const hi = num[0], lo = num[1];
+  const hi = num[0],
+    lo = num[1];
   const h = (hi << count) | (lo >>> (32 - count));
   const l = (lo << count) | (hi >>> (32 - count));
   return [h, l];
@@ -307,7 +337,7 @@ function wordAt(str: string, index: number, endian: Endian): number {
     }
   } else {
     for (let i = 0; i < 4; i++) {
-      word += byteAt(str, index + i) << 8 * i;
+      word += byteAt(str, index + i) << (8 * i);
     }
   }
   return word;
@@ -320,7 +350,7 @@ function words32ToByteString(words32: number[]): string {
 function word32ToByteString(word: number): string {
   let str = '';
   for (let i = 0; i < 4; i++) {
-    str += String.fromCharCode((word >>> 8 * (3 - i)) & 0xff);
+    str += String.fromCharCode((word >>> (8 * (3 - i))) & 0xff);
   }
   return str;
 }

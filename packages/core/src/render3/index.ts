@@ -17,7 +17,7 @@ import {getComponent, getDirectives, getHostElement, getRenderedText} from './ut
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef, injectComponentFactoryResolver} from './component_ref';
 export {ɵɵgetFactoryOf, ɵɵgetInheritedFactory} from './di';
 
-// clang-format off
+// prettier-ignore
 export {
   detectChanges,
   markDirty,
@@ -141,6 +141,7 @@ export {
 export {RenderFlags} from './interfaces/definition';
 export {CssSelectorList, ProjectionSlots} from './interfaces/projection';
 
+// prettier-ignore
 export {
   ɵɵrestoreView,
 
@@ -204,8 +205,6 @@ export {
 export {ɵɵtemplateRefExtractor, ɵɵinjectPipeChangeDetectorRef} from './view_engine_compatibility_prebound';
 
 export {ɵɵresolveWindow, ɵɵresolveDocument, ɵɵresolveBody} from './util/misc_utils';
-
-// clang-format on
 
 export {
   ComponentDef,

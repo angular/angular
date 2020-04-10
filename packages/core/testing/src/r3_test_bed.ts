@@ -9,7 +9,7 @@
 // The formatter and CI disagree on how this import statement should be formatted. Both try to keep
 // it on one line, too, which has gotten very hard to read & manage. So disable the formatter for
 // this statement only.
-// clang-format off
+
 import {
   AbstractType,
   Component,
@@ -28,16 +28,20 @@ import {
   ɵresetCompiledComponents as resetCompiledComponents,
   ɵstringify as stringify,
 } from '@angular/core';
-// clang-format on
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {TestBed} from './test_bed';
-import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBedStatic, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
+import {
+  ComponentFixtureAutoDetect,
+  ComponentFixtureNoNgZone,
+  TestBedStatic,
+  TestComponentRenderer,
+  TestModuleMetadata,
+} from './test_bed_common';
 import {R3TestBedCompiler} from './r3_test_bed_compiler';
 
 let _nextRootElementId = 0;
-
 
 /**
  * @description
@@ -64,7 +68,10 @@ export class TestBedRender3 implements TestBed {
    * @publicApi
    */
   static initTestEnvironment(
-      ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed {
+    ngModule: Type<any> | Type<any>[],
+    platform: PlatformRef,
+    aotSummaries?: () => any[],
+  ): TestBed {
     const testBed = _getTestBedRender3();
     testBed.initTestEnvironment(ngModule, platform, aotSummaries);
     return testBed;
@@ -75,11 +82,13 @@ export class TestBedRender3 implements TestBed {
    *
    * @publicApi
    */
-  static resetTestEnvironment(): void { _getTestBedRender3().resetTestEnvironment(); }
+  static resetTestEnvironment(): void {
+    _getTestBedRender3().resetTestEnvironment();
+  }
 
-  static configureCompiler(config: {providers?: any[]; useJit?: boolean;}): TestBedStatic {
+  static configureCompiler(config: {providers?: any[]; useJit?: boolean}): TestBedStatic {
     _getTestBedRender3().configureCompiler(config);
-    return TestBedRender3 as any as TestBedStatic;
+    return (TestBedRender3 as any) as TestBedStatic;
   }
 
   /**
@@ -88,7 +97,7 @@ export class TestBedRender3 implements TestBed {
    */
   static configureTestingModule(moduleDef: TestModuleMetadata): TestBedStatic {
     _getTestBedRender3().configureTestingModule(moduleDef);
-    return TestBedRender3 as any as TestBedStatic;
+    return (TestBedRender3 as any) as TestBedStatic;
   }
 
   /**
@@ -96,33 +105,39 @@ export class TestBedRender3 implements TestBed {
    * It is necessary to call this function
    * as fetching urls is asynchronous.
    */
-  static compileComponents(): Promise<any> { return _getTestBedRender3().compileComponents(); }
+  static compileComponents(): Promise<any> {
+    return _getTestBedRender3().compileComponents();
+  }
 
   static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): TestBedStatic {
     _getTestBedRender3().overrideModule(ngModule, override);
-    return TestBedRender3 as any as TestBedStatic;
+    return (TestBedRender3 as any) as TestBedStatic;
   }
 
-  static overrideComponent(component: Type<any>, override: MetadataOverride<Component>):
-      TestBedStatic {
+  static overrideComponent(
+    component: Type<any>,
+    override: MetadataOverride<Component>,
+  ): TestBedStatic {
     _getTestBedRender3().overrideComponent(component, override);
-    return TestBedRender3 as any as TestBedStatic;
+    return (TestBedRender3 as any) as TestBedStatic;
   }
 
-  static overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>):
-      TestBedStatic {
+  static overrideDirective(
+    directive: Type<any>,
+    override: MetadataOverride<Directive>,
+  ): TestBedStatic {
     _getTestBedRender3().overrideDirective(directive, override);
-    return TestBedRender3 as any as TestBedStatic;
+    return (TestBedRender3 as any) as TestBedStatic;
   }
 
   static overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): TestBedStatic {
     _getTestBedRender3().overridePipe(pipe, override);
-    return TestBedRender3 as any as TestBedStatic;
+    return (TestBedRender3 as any) as TestBedStatic;
   }
 
   static overrideTemplate(component: Type<any>, template: string): TestBedStatic {
-    _getTestBedRender3().overrideComponent(component, {set: {template, templateUrl: null !}});
-    return TestBedRender3 as any as TestBedStatic;
+    _getTestBedRender3().overrideComponent(component, {set: {template, templateUrl: null!}});
+    return (TestBedRender3 as any) as TestBedStatic;
   }
 
   /**
@@ -133,42 +148,57 @@ export class TestBedRender3 implements TestBed {
    */
   static overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBedStatic {
     _getTestBedRender3().overrideTemplateUsingTestingModule(component, template);
-    return TestBedRender3 as any as TestBedStatic;
+    return (TestBedRender3 as any) as TestBedStatic;
   }
 
-  static overrideProvider(token: any, provider: {
-    useFactory: Function,
-    deps: any[],
-  }): TestBedStatic;
-  static overrideProvider(token: any, provider: {useValue: any;}): TestBedStatic;
-  static overrideProvider(token: any, provider: {
-    useFactory?: Function,
-    useValue?: any,
-    deps?: any[],
-  }): TestBedStatic {
+  static overrideProvider(
+    token: any,
+    provider: {
+      useFactory: Function;
+      deps: any[];
+    },
+  ): TestBedStatic;
+  static overrideProvider(token: any, provider: {useValue: any}): TestBedStatic;
+  static overrideProvider(
+    token: any,
+    provider: {
+      useFactory?: Function;
+      useValue?: any;
+      deps?: any[];
+    },
+  ): TestBedStatic {
     _getTestBedRender3().overrideProvider(token, provider);
-    return TestBedRender3 as any as TestBedStatic;
+    return (TestBedRender3 as any) as TestBedStatic;
   }
 
   static inject<T>(
-      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
+    token: Type<T> | InjectionToken<T> | AbstractType<T>,
+    notFoundValue?: T,
+    flags?: InjectFlags,
+  ): T;
   static inject<T>(
-      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
-      |null;
+    token: Type<T> | InjectionToken<T> | AbstractType<T>,
+    notFoundValue: null,
+    flags?: InjectFlags,
+  ): T | null;
   static inject<T>(
-      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T|null,
-      flags?: InjectFlags): T|null {
+    token: Type<T> | InjectionToken<T> | AbstractType<T>,
+    notFoundValue?: T | null,
+    flags?: InjectFlags,
+  ): T | null {
     return _getTestBedRender3().inject(token, notFoundValue, flags);
   }
 
   /** @deprecated from v9.0.0 use TestBed.inject */
-  static get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  static get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
   /** @deprecated from v9.0.0 use TestBed.inject */
   static get(token: any, notFoundValue?: any): any;
   /** @deprecated from v9.0.0 use TestBed.inject */
   static get(
-      token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
-      flags: InjectFlags = InjectFlags.Default): any {
+    token: any,
+    notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
+    flags: InjectFlags = InjectFlags.Default,
+  ): any {
     return _getTestBedRender3().inject(token, notFoundValue, flags);
   }
 
@@ -178,16 +208,16 @@ export class TestBedRender3 implements TestBed {
 
   static resetTestingModule(): TestBedStatic {
     _getTestBedRender3().resetTestingModule();
-    return TestBedRender3 as any as TestBedStatic;
+    return (TestBedRender3 as any) as TestBedStatic;
   }
 
   // Properties
 
-  platform: PlatformRef = null !;
-  ngModule: Type<any>|Type<any>[] = null !;
+  platform: PlatformRef = null!;
+  ngModule: Type<any> | Type<any>[] = null!;
 
-  private _compiler: R3TestBedCompiler|null = null;
-  private _testModuleRef: NgModuleRef<any>|null = null;
+  private _compiler: R3TestBedCompiler | null = null;
+  private _testModuleRef: NgModuleRef<any> | null = null;
 
   private _activeFixtures: ComponentFixture<any>[] = [];
   private _globalCompilationChecked = false;
@@ -206,7 +236,10 @@ export class TestBedRender3 implements TestBed {
    * @publicApi
    */
   initTestEnvironment(
-      ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void {
+    ngModule: Type<any> | Type<any>[],
+    platform: PlatformRef,
+    aotSummaries?: () => any[],
+  ): void {
     if (this.platform || this.ngModule) {
       throw new Error('Cannot set base providers because it has already been called');
     }
@@ -223,8 +256,8 @@ export class TestBedRender3 implements TestBed {
   resetTestEnvironment(): void {
     this.resetTestingModule();
     this._compiler = null;
-    this.platform = null !;
-    this.ngModule = null !;
+    this.platform = null!;
+    this.ngModule = null!;
   }
 
   resetTestingModule(): void {
@@ -238,7 +271,7 @@ export class TestBedRender3 implements TestBed {
     this.destroyActiveFixtures();
   }
 
-  configureCompiler(config: {providers?: any[]; useJit?: boolean;}): void {
+  configureCompiler(config: {providers?: any[]; useJit?: boolean}): void {
     if (config.useJit != null) {
       throw new Error('the Render3 compiler JiT mode is not configurable !');
     }
@@ -253,37 +286,50 @@ export class TestBedRender3 implements TestBed {
     this.compiler.configureTestingModule(moduleDef);
   }
 
-  compileComponents(): Promise<any> { return this.compiler.compileComponents(); }
+  compileComponents(): Promise<any> {
+    return this.compiler.compileComponents();
+  }
 
   inject<T>(
-      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
+    token: Type<T> | InjectionToken<T> | AbstractType<T>,
+    notFoundValue?: T,
+    flags?: InjectFlags,
+  ): T;
   inject<T>(
-      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
-      |null;
+    token: Type<T> | InjectionToken<T> | AbstractType<T>,
+    notFoundValue: null,
+    flags?: InjectFlags,
+  ): T | null;
   inject<T>(
-      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T|null,
-      flags?: InjectFlags): T|null {
-    if (token as unknown === TestBedRender3) {
+    token: Type<T> | InjectionToken<T> | AbstractType<T>,
+    notFoundValue?: T | null,
+    flags?: InjectFlags,
+  ): T | null {
+    if ((token as unknown) === TestBedRender3) {
       return this as any;
     }
     const UNDEFINED = {};
     const result = this.testModuleRef.injector.get(token, UNDEFINED, flags);
-    return result === UNDEFINED ? this.compiler.injector.get(token, notFoundValue, flags) as any :
-                                  result;
+    return result === UNDEFINED
+      ? (this.compiler.injector.get(token, notFoundValue, flags) as any)
+      : result;
   }
 
   /** @deprecated from v9.0.0 use TestBed.inject */
-  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
   /** @deprecated from v9.0.0 use TestBed.inject */
   get(token: any, notFoundValue?: any): any;
   /** @deprecated from v9.0.0 use TestBed.inject */
-  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
-      flags: InjectFlags = InjectFlags.Default): any {
+  get(
+    token: any,
+    notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
+    flags: InjectFlags = InjectFlags.Default,
+  ): any {
     return this.inject(token, notFoundValue, flags);
   }
 
   execute(tokens: any[], fn: Function, context?: any): any {
-    const params = tokens.map(t => this.inject(t));
+    const params = tokens.map((t) => this.inject(t));
     return fn.apply(context, params);
   }
 
@@ -299,8 +345,9 @@ export class TestBedRender3 implements TestBed {
 
   overrideTemplateUsingTestingModule(component: Type<any>, template: string): void {
     this.assertNotInstantiated(
-        'R3TestBed.overrideTemplateUsingTestingModule',
-        'Cannot override template when the test module has already been instantiated');
+      'R3TestBed.overrideTemplateUsingTestingModule',
+      'Cannot override template when the test module has already been instantiated',
+    );
     this.compiler.overrideTemplateUsingTestingModule(component, template);
   }
 
@@ -317,8 +364,10 @@ export class TestBedRender3 implements TestBed {
   /**
    * Overwrites all providers for the given token with the given provider definition.
    */
-  overrideProvider(token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}):
-      void {
+  overrideProvider(
+    token: any,
+    provider: {useFactory?: Function; useValue?: any; deps?: any[]},
+  ): void {
     this.compiler.overrideProvider(token, provider);
   }
 
@@ -331,19 +380,26 @@ export class TestBedRender3 implements TestBed {
 
     if (!componentDef) {
       throw new Error(
-          `It looks like '${stringify(type)}' has not been IVY compiled - it has no 'ɵcmp' field`);
+        `It looks like '${stringify(type)}' has not been IVY compiled - it has no 'ɵcmp' field`,
+      );
     }
 
     // TODO: Don't cast as `InjectionToken<boolean>`, proper type is boolean[]
     const noNgZone = this.inject(ComponentFixtureNoNgZone as InjectionToken<boolean>, false);
     // TODO: Don't cast as `InjectionToken<boolean>`, proper type is boolean[]
-    const autoDetect: boolean =
-        this.inject(ComponentFixtureAutoDetect as InjectionToken<boolean>, false);
-    const ngZone: NgZone|null = noNgZone ? null : this.inject(NgZone, null);
+    const autoDetect: boolean = this.inject(
+      ComponentFixtureAutoDetect as InjectionToken<boolean>,
+      false,
+    );
+    const ngZone: NgZone | null = noNgZone ? null : this.inject(NgZone, null);
     const componentFactory = new ComponentFactory(componentDef);
     const initComponent = () => {
-      const componentRef =
-          componentFactory.create(Injector.NULL, [], `#${rootElId}`, this.testModuleRef);
+      const componentRef = componentFactory.create(
+        Injector.NULL,
+        [],
+        `#${rootElId}`,
+        this.testModuleRef,
+      );
       return new ComponentFixture<any>(componentRef, ngZone, autoDetect);
     };
     const fixture = ngZone ? ngZone.run(initComponent) : initComponent();
@@ -376,8 +432,9 @@ export class TestBedRender3 implements TestBed {
   private assertNotInstantiated(methodName: string, methodDescription: string) {
     if (this._testModuleRef !== null) {
       throw new Error(
-          `Cannot ${methodDescription} when the test module has already been instantiated. ` +
-          `Make sure you are not using \`inject\` before \`${methodName}\`.`);
+        `Cannot ${methodDescription} when the test module has already been instantiated. ` +
+          `Make sure you are not using \`inject\` before \`${methodName}\`.`,
+      );
     }
   }
 
@@ -420,5 +477,5 @@ export class TestBedRender3 implements TestBed {
 let testBed: TestBedRender3;
 
 export function _getTestBedRender3(): TestBedRender3 {
-  return testBed = testBed || new TestBedRender3();
+  return (testBed = testBed || new TestBedRender3());
 }
