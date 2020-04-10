@@ -19,12 +19,12 @@ E.g. The `format.js` file contains two tasks:
 
 ```js
 module.exports = {
-  // Check source code for formatting errors (clang-format)
+  // Check source code for formatting errors
   enforce: (gulp) => () => {
     ...
   },
 
-  // Format the source code with clang-format (see .clang-format)
+  // Format the source code
   format: (gulp) => () => {
     ...
   }

@@ -58,7 +58,7 @@ module.exports = (gulp, done) => {
       `${RELATIVE_I18N_DATA_FOLDER}/${OUTPUT_NAME}`, generateAllLocalesFile(GOOG_LOCALES, ALIASES));
 
   console.log(`Formatting ${I18N_DATA_FOLDER}/${OUTPUT_NAME}..."`);
-  shelljs.exec(`yarn clang-format -i ${I18N_DATA_FOLDER}/${OUTPUT_NAME}`, {silent: true});
+  shelljs.exec(`yarn prettier --write ${I18N_DATA_FOLDER}/${OUTPUT_NAME}`, {silent: true});
   done();
 };
 

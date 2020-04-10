@@ -8,11 +8,11 @@
 
 const {I18N_FOLDER, I18N_DATA_FOLDER} = require('./cldr/extract');
 
-// clang-format entry points
+// Glob matches for files to be automatically formatted.
 const srcsToFmt = [
   'dev-infra/**/*.{js,ts}',
   'packages/**/*.{js,ts}',
-  '!packages/zone.js',  // Ignore the `zone.js/` directory itself. (The contents are still matched.)
+  '!packages/zone.js', // Ignore the `zone.js/` directory itself. (The contents are still matched.)
   `!${I18N_DATA_FOLDER}/**/*.{js,ts}`,
   `!${I18N_FOLDER}/available_locales.ts`,
   `!${I18N_FOLDER}/currencies.ts`,
@@ -48,7 +48,7 @@ function gulpStatus() {
   // https://git-scm.com/docs/git-status#_short_format
   const RE_STATUS = /((\s\w)|(\w+)|\?{0,2})\s([\w\+\-\/\\\.]+)(\s->\s)?([\w\+\-\/\\\.]+)*\n{0,1}/gm;
 
-  gulpGit.status({args: '--porcelain', quiet: true}, function(err, stdout) {
+  gulpGit.status({args: '--porcelain', quiet: true}, function (err, stdout) {
     if (err) return srcStream.emit('error', err);
 
     const data = stdout.toString();
@@ -70,10 +70,12 @@ function gulpStatus() {
       const newFilePath = currentMatch[6];
       const filePath = newFilePath || currentFilePath;
 
-      srcStream.write(new Vinyl({
-        path: path.resolve(opt.cwd, filePath),
-        cwd: opt.cwd,
-      }));
+      srcStream.write(
+        new Vinyl({
+          path: path.resolve(opt.cwd, filePath),
+          cwd: opt.cwd,
+        }),
+      );
 
       RE_STATUS.lastIndex++;
     }
@@ -85,30 +87,27 @@ function gulpStatus() {
 }
 
 module.exports = {
-  // Check source code for formatting errors with clang-format
+  // Check source code for formatting errors
   enforce: (gulp) => () => {
-    const format = require('gulp-clang-format');
-    const clangFormat = require('clang-format');
-    return gulp.src(srcsToFmt).pipe(
-        format.checkFormat('file', clangFormat, {verbose: true, fail: true}));
+    const prettierConfig = require('../../package.json').prettier;
+    const prettier = require('gulp-prettier');
+    return gulp.src(srcsToFmt).pipe(prettier.check(prettierConfig));
   },
 
-  // Check only the untracked source code files for formatting errors with .clang-format
+  // Check only the untracked source code files for formatting errors
   'enforce-untracked': (gulp) => () => {
-    const format = require('gulp-clang-format');
-    const clangFormat = require('clang-format');
+    const prettierConfig = require('../../package.json').prettier;
+    const prettier = require('gulp-prettier');
     const gulpFilter = require('gulp-filter');
 
-    return gulpStatus()
-        .pipe(gulpFilter(srcsToFmt))
-        .pipe(format.checkFormat('file', clangFormat, {verbose: true, fail: true}));
+    return gulpStatus().pipe(gulpFilter(srcsToFmt)).pipe(prettier.check(prettierConfig));
   },
 
   // Check only the changed source code files diffed from the provided branch for formatting
-  // errors with clang-format
+  // errors
   'enforce-diff': (gulp) => () => {
-    const format = require('gulp-clang-format');
-    const clangFormat = require('clang-format');
+    const prettierConfig = require('../../package.json').prettier;
+    const prettier = require('gulp-prettier');
     const gulpFilter = require('gulp-filter');
     const minimist = require('minimist');
     const gulpGit = require('gulp-git');
@@ -116,37 +115,38 @@ module.exports = {
     const args = minimist(process.argv.slice(2));
     const branch = args.branch || 'master';
 
-    return gulpGit.diff(branch, {log: false})
-        .pipe(gulpFilter(srcsToFmt))
-        .pipe(format.checkFormat('file', clangFormat, {verbose: true, fail: true}));
+    return gulpGit
+      .diff(branch, {log: false})
+      .pipe(gulpFilter(srcsToFmt))
+      .pipe(prettier.check(prettierConfig));
   },
 
-  // Format the source code with clang-format (see .clang-format)
+  // Format the source code
   format: (gulp) => () => {
-    const format = require('gulp-clang-format');
-    const clangFormat = require('clang-format');
-    return gulp.src(srcsToFmt, {base: '.'})
-        .pipe(format.format('file', clangFormat))
-        .pipe(gulp.dest('.'));
+    const prettierConfig = require('../../package.json').prettier;
+    const prettier = require('gulp-prettier');
+    return gulp
+      .src(srcsToFmt)
+      .pipe(prettier(prettierConfig))
+      .pipe(gulp.dest((file) => file.base));
   },
 
-  // Format only the untracked source code files with clang-format (see .clang-format)
+  // Format only the untracked source code files
   'format-untracked': (gulp) => () => {
-    const format = require('gulp-clang-format');
-    const clangFormat = require('clang-format');
+    const prettierConfig = require('../../package.json').prettier;
+    const prettier = require('gulp-prettier');
     const gulpFilter = require('gulp-filter');
 
     return gulpStatus()
-        .pipe(gulpFilter(srcsToFmt))
-        .pipe(format.format('file', clangFormat))
-        .pipe(gulp.dest('.'));
+      .pipe(gulpFilter(srcsToFmt))
+      .pipe(prettier(prettierConfig))
+      .pipe(gulp.dest((file) => file.base));
   },
 
-  // Format only the changed source code files diffed from the provided branch with clang-format
-  // (see .clang-format)
+  // Format only the changed source code files diffed from the provided branch
   'format-diff': (gulp) => () => {
-    const format = require('gulp-clang-format');
-    const clangFormat = require('clang-format');
+    const prettierConfig = require('../../package.json').prettier;
+    const prettier = require('gulp-prettier');
     const gulpFilter = require('gulp-filter');
     const minimist = require('minimist');
     const gulpGit = require('gulp-git');
@@ -154,9 +154,10 @@ module.exports = {
     const args = minimist(process.argv.slice(2));
     const branch = args.branch || 'master';
 
-    return gulpGit.diff(branch, {log: false})
-        .pipe(gulpFilter(srcsToFmt))
-        .pipe(format.format('file', clangFormat))
-        .pipe(gulp.dest('.'));
-  }
+    return gulpGit
+      .diff(branch, {log: false})
+      .pipe(gulpFilter(srcsToFmt))
+      .pipe(prettier(prettierConfig))
+      .pipe(gulp.dest((f) => f.base));
+  },
 };

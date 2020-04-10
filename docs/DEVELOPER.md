@@ -90,9 +90,10 @@ All the tests are executed on our Continuous Integration infrastructure. PRs can
 merged if the code is formatted properly and all tests are passing.
 
 <a name="clang-format"></a>
+<a name="code-formatting"></a>
 ## Formatting your source code
 
-Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code.
+Angular uses [prettier](http://http://prettier.io/) to format the source code.
 If the source code is not properly formatted, the CI will fail and the PR cannot be merged.
 
 You can automatically format your code by running:
@@ -102,27 +103,15 @@ You can automatically format your code by running:
 A better way is to set up your IDE to format the changed file on each file save.
 
 ### VS Code
-1. Install [Clang-Format](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format) extension for VS Code.
+1. Install [prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) extension for VS Code.
 2. It will automatically pick up the settings from `.vscode/settings.json`.
 If you haven't already, create a `settings.json` file by following the instructions [here](../.vscode/README.md).
 
 ### WebStorm / IntelliJ
-1. Install the [ClangFormatIJ](https://plugins.jetbrains.com/plugin/8396-clangformatij) plugin
-1. Open `Preferences->Tools->clang-format`
-1. Find the field named "PATH"
-1. Add `<PATH_TO_YOUR_WORKSPACE>/angular/node_modules/clang-format/bin/<OS>/`
-  where the OS options are: `darwin_x64`, `linux_x64`, and `win32`.
+1. Set up prettier to automatically run on save using the instructions found [here](https://prettier.io/docs/en/webstorm.html).
 
 ### Vim
-1. Install [Vim Clang-Format](https://github.com/rhysd/vim-clang-format).
-2. Create a [project-specific `.vimrc`](https://andrew.stwrt.ca/posts/project-specific-vimrc/) in
-   your Angular directory containing
-
-```vim
-let g:clang_format#command = '$ANGULAR_PATH/node_modules/.bin/clang-format'
-```
-
-where `$ANGULAR_PATH` is an environment variable of the absolute path of your Angular directory.
+1. Install [vim-prettier](https://github.com/prettier/vim-prettier).
 
 ## Linting/verifying your Source Code
 

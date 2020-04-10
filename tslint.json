@@ -8,7 +8,11 @@
   "rules": {
     "file-header": [
       true,
-      "Copyright Google Inc\\."
+      {
+        "match": "Copyright Google Inc\\.",
+        "default": "Copyright Google Inc. All Rights Reserved.\n\nUse of this source code is governed by an MIT-style license that can be\nfound in the LICENSE file at https://angular.io/license",
+        "enforce-trailing-newline": true
+      }
     ],
     "no-console": [
       true,
@@ -36,9 +40,7 @@
       "packages/platform-browser/src/",
       "packages/router/src/"
     ],
-    "semicolon": [
-      true
-    ],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
     "variable-name": [
       true,
       "ban-keywords"
@@ -52,7 +54,11 @@
   "jsRules": {
     "file-header": [
       true,
-      "Copyright Google Inc\\."
+      {
+        "match": "Copyright Google Inc\\.",
+        "default": "Copyright Google Inc. All Rights Reserved.\n\nUse of this source code is governed by an MIT-style license that can be\nfound in the LICENSE file at https://angular.io/license",
+        "enforce-trailing-newline": true
+      }
     ],
     "no-console": [
       true,

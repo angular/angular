@@ -13,7 +13,7 @@ const stringify = require('./util').stringify;
 const cldr = require('cldr');
 // used to extract all other cldr data
 const cldrJs = require('cldrjs');
-// used to call to clang-format
+// used to call to prettier
 const shelljs = require('shelljs');
 
 const COMMON_PACKAGE = 'packages/common';
@@ -97,7 +97,7 @@ module.exports = (gulp, done) => {
 
   console.log(`All i18n cldr files have been generated, formatting files..."`);
   shelljs.exec(
-      `yarn clang-format -i ${I18N_DATA_FOLDER}/**/*.ts ${I18N_DATA_FOLDER}/*.ts ${I18N_FOLDER}/currencies.ts ${I18N_CORE_FOLDER}/locale_en.ts ${I18N_GLOBAL_FOLDER}/*.js`,
+      `yarn prettier --write ${I18N_DATA_FOLDER}/**/*.ts ${I18N_DATA_FOLDER}/*.ts ${I18N_FOLDER}/currencies.ts ${I18N_CORE_FOLDER}/locale_en.ts ${I18N_GLOBAL_FOLDER}/*.js`,
       {silent: true});
   done();
 };
