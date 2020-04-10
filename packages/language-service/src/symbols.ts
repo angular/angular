@@ -192,7 +192,10 @@ export enum BuiltinType {
   /**
    * The type is a type that can hold any other type.
    */
-  Any = -1,
+  Any = -1,  // equivalent to b11..11 = String | Union | ...
+
+  /** Unknown types are functionally identical to any. */
+  Unknown = -1,
 
   /**
    * The type of a string literal.
@@ -228,6 +231,10 @@ export enum BuiltinType {
    * Not a built-in type.
    */
   Other = 1 << 6,
+
+  Never = 1 << 7,
+  Object = 1 << 8,
+  Object = 1 << 8,
 }
 
 /**
