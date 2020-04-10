@@ -24,45 +24,53 @@ runInEachFileSystem(() => {
         {
           name: _('/node_modules/test/entrypoint.js'),
           contents: `
-        import {a} from './a';
-        import {b} from './b';
-        import {x} from '../other/x';
-        `
+            import {a} from './a';
+            import {b} from './b';
+            import {x} from '../other/x';
+            import {e} from 'nested/e';
+          `,
         },
         {
           name: _('/node_modules/test/a.js'),
           contents: `
-        import {c} from './c';
-        export const a = 1;
-        `
+            import {c} from './c';
+            export const a = 1;
+          `,
         },
         {
           name: _('/node_modules/test/b.js'),
           contents: `
-        export const b = 42;
-        var factoryB = factory__PRE_R3__;
-        `
+            export const b = 42;
+            var factoryB = factory__PRE_R3__;
+          `,
         },
         {
           name: _('/node_modules/test/c.js'),
           contents: `
-        export const c = 'So long, and thanks for all the fish!';
-        var factoryC = factory__PRE_R3__;
-        var factoryD = factory__PRE_R3__;
-        `
+            export const c = 'So long, and thanks for all the fish!';
+            var factoryC = factory__PRE_R3__;
+            var factoryD = factory__PRE_R3__;
+          `,
+        },
+        {
+          name: _('/node_modules/test/node_modules/nested/e.js'),
+          contents: `
+            export const e = 1337;
+            var factoryE = factory__PRE_R3__;
+          `,
         },
         {
           name: _('/node_modules/other/x.js'),
           contents: `
-          export const x = 3.142;
-          var factoryX = factory__PRE_R3__;
-          `
+            export const x = 3.142;
+            var factoryX = factory__PRE_R3__;
+          `,
         },
         {
           name: _('/node_modules/other/x.d.ts'),
           contents: `
-          export const x: number;
-          `
+            export const x: number;
+          `,
         },
       ];
     });
@@ -109,6 +117,19 @@ runInEachFileSystem(() => {
         const analysis = analyzer.analyzeProgram(program);
 
         const x = getSourceFileOrError(program, _('/node_modules/other/x.js'));
+        expect(analysis.has(x)).toBe(false);
+      });
+
+      it('should ignore files that are inside the package\'s `node_modules/`', () => {
+        loadTestFiles(TEST_PROGRAM);
+        const bundle = makeTestEntryPointBundle(
+            'test', 'esm2015', false, [_('/node_modules/test/entrypoint.js')]);
+        const program = bundle.src.program;
+        const host = new Esm2015ReflectionHost(new MockLogger(), false, bundle.src);
+        const analyzer = new SwitchMarkerAnalyzer(host, bundle.entryPoint.package);
+        const analysis = analyzer.analyzeProgram(program);
+
+        const x = getSourceFileOrError(program, _('/node_modules/test/node_modules/nested/e.js'));
         expect(analysis.has(x)).toBe(false);
       });
     });

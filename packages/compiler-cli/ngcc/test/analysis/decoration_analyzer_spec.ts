@@ -313,17 +313,31 @@ runInEachFileSystem(() => {
               contents: `
         import {Component, NgModule} from '@angular/core';
         import {ImportedComponent} from 'other/component';
+        import {NestedDependencyComponent} from 'nested/component';
 
         export class LocalComponent {}
         LocalComponent.decorators = [{type: Component}];
 
         export class MyModule {}
         MyModule.decorators = [{type: NgModule, args: [{
-                    declarations: [ImportedComponent, LocalComponent],
-                    exports: [ImportedComponent, LocalComponent],
+                    declarations: [ImportedComponent, NestedDependencyComponent, LocalComponent],
+                    exports: [ImportedComponent, NestedDependencyComponent, LocalComponent],
                 },] }];
       `
             },
+            // Do not define a `.d.ts` file to ensure that the `.js` file will be part of the TS
+            // program.
+            {
+              name: _('/node_modules/test-package/node_modules/nested/component.js'),
+              contents: `
+        import {Component} from '@angular/core';
+        export class NestedDependencyComponent {}
+        NestedDependencyComponent.decorators = [{type: Component}];
+      `,
+              isRoot: false,
+            },
+            // Do not define a `.d.ts` file to ensure that the `.js` file will be part of the TS
+            // program.
             {
               name: _('/node_modules/other/component.js'),
               contents: `
@@ -333,12 +347,6 @@ runInEachFileSystem(() => {
       `,
               isRoot: false,
             },
-            {
-              name: _('/node_modules/other/component.d.ts'),
-              contents: `
-        import {Component} from '@angular/core';
-        export class ImportedComponent {}`
-            },
           ];
 
           const analyzer = setUpAnalyzer(EXTERNAL_COMPONENT_PROGRAM);
@@ -347,6 +355,12 @@ runInEachFileSystem(() => {
 
         it('should ignore classes from an externally imported file', () => {
           const file = program.getSourceFile(_('/node_modules/other/component.js'))!;
+          expect(result.has(file)).toBe(false);
+        });
+
+        it('should ignore classes from a file imported from a nested `node_modules/`', () => {
+          const file = program.getSourceFile(
+              _('/node_modules/test-package/node_modules/nested/component.js'))!;
           expect(result.has(file)).toBe(false);
         });
       });
