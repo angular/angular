@@ -68,27 +68,27 @@
 "@bazel/bazelisk@file:../../node_modules/@bazel/bazelisk":
   version "1.3.0"
 
-"@bazel/karma@https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+a54a87ed/@bazel_karma-labs-snapshot.tar.gz":
-  version "1.5.0-48-ga54a87e"
-  resolved "https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+a54a87ed/@bazel_karma-labs-snapshot.tar.gz#6a84202ec2ea83c925c96c76d542ea167891623b"
+"@bazel/karma@https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+86daff34/@bazel_karma-labs-snapshot.tar.gz":
+  version "1.5.0-48-g86daff3"
+  resolved "https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+86daff34/@bazel_karma-labs-snapshot.tar.gz#c395871e1f63972b6fcc02fe3951344eeff29afc"
   dependencies:
     tmp "0.1.0"
 
-"@bazel/protractor@https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+a54a87ed/@bazel_protractor-labs-snapshot.tar.gz":
-  version "1.5.0-48-ga54a87e"
-  resolved "https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+a54a87ed/@bazel_protractor-labs-snapshot.tar.gz#ac2479ef655e2e396393338d1a45c885971a162a"
+"@bazel/protractor@https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+86daff34/@bazel_protractor-labs-snapshot.tar.gz":
+  version "1.5.0-48-g86daff3"
+  resolved "https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+86daff34/@bazel_protractor-labs-snapshot.tar.gz#c3e4d5f55f1128a8c324b606999be0c40fe70b30"
 
-"@bazel/rollup@https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+a54a87ed/@bazel_rollup-labs-snapshot.tar.gz":
-  version "1.5.0-48-ga54a87e"
-  resolved "https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+a54a87ed/@bazel_rollup-labs-snapshot.tar.gz#13e748e840c707c0a5548fd81bc6c091d351148d"
+"@bazel/rollup@https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+86daff34/@bazel_rollup-labs-snapshot.tar.gz":
+  version "1.5.0-48-g86daff3"
+  resolved "https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+86daff34/@bazel_rollup-labs-snapshot.tar.gz#b079259e97d5979ee075e9bc55bd911b3f4cb966"
 
-"@bazel/terser@https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+a54a87ed/@bazel_terser-labs-snapshot.tar.gz":
-  version "1.5.0-48-ga54a87e"
-  resolved "https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+a54a87ed/@bazel_terser-labs-snapshot.tar.gz#730b8ac3d95d7170e9dff111378c6893d67c67de"
+"@bazel/terser@https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+86daff34/@bazel_terser-labs-snapshot.tar.gz":
+  version "1.5.0-48-g86daff3"
+  resolved "https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+86daff34/@bazel_terser-labs-snapshot.tar.gz#954459f6e8d7f545516d1321d8e68f07625b7e95"
 
-"@bazel/typescript@https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+a54a87ed/@bazel_typescript-labs-snapshot.tar.gz":
-  version "1.5.0-48-ga54a87e"
-  resolved "https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+a54a87ed/@bazel_typescript-labs-snapshot.tar.gz#e137e11a68794c53362a348f998cb087fbc1f0cc"
+"@bazel/typescript@https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+86daff34/@bazel_typescript-labs-snapshot.tar.gz":
+  version "1.5.0-48-g86daff3"
+  resolved "https://github.com/aspect-dev/rules_nodejs-builds/raw/1.5.0+86daff34/@bazel_typescript-labs-snapshot.tar.gz#a85e931656bfe940da3bb5c4c18122fc074a7e9c"
   dependencies:
     protobufjs "6.8.8"
     semver "5.6.0"
