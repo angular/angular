@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {core, ElementSchemaRegistry} from '@angular/compiler';
+import {ElementSchemaRegistry, core} from '@angular/compiler';
 
 export class MockSchemaRegistry implements ElementSchemaRegistry {
   constructor(

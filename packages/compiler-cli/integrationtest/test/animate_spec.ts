@@ -7,7 +7,9 @@
  */
 
 import './init';
+
 import {DebugElement} from '@angular/core';
+
 import {AnimateCmp} from '../src/animate';
 import {createComponent} from './util';
 

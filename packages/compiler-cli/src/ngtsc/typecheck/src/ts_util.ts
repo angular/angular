@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {ClassDeclaration} from '../../reflection';
 
 /**

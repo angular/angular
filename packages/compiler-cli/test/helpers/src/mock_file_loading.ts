@@ -7,12 +7,12 @@
  */
 
 /// <reference types="node" />
-import {readdirSync, readFileSync, statSync} from 'fs';
+import {readFileSync, readdirSync, statSync} from 'fs';
 import {resolve} from 'path';
 
-import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '..';
 import {AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {Folder, MockFileSystemPosix, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '..';
 
 export function loadTestFiles(files: TestFile[]) {
   const fs = getFileSystem();

@@ -25,10 +25,10 @@ import {
   Pipe,
   Type,
   ViewChild,
-  ɵsetClassMetadata as setClassMetadata,
   ɵɵdefineComponent as defineComponent,
   ɵɵdefineInjector as defineInjector,
   ɵɵdefineNgModule as defineNgModule,
+  ɵsetClassMetadata as setClassMetadata,
   ɵɵsetNgModuleScope as setNgModuleScope,
   ɵɵtext as text,
 } from '@angular/core';

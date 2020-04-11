@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as url from 'url';
+
 import {
   DOCUMENT,
   LocationChangeEvent,
@@ -15,7 +17,7 @@ import {
 } from '@angular/common';
 import {Inject, Injectable, Optional} from '@angular/core';
 import {Subject} from 'rxjs';
-import * as url from 'url';
+
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 
 function parseUrl(urlStr: string) {

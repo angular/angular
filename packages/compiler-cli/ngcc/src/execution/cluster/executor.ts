@@ -15,7 +15,6 @@ import {Logger} from '../../logging/logger';
 import {PackageJsonUpdater} from '../../writing/package_json_updater';
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from '../api';
 import {CreateTaskCompletedCallback} from '../tasks/api';
-
 import {ClusterMaster} from './master';
 import {ClusterWorker} from './worker';
 

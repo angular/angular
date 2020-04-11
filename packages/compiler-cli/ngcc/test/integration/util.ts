@@ -10,7 +10,6 @@ import * as ts from 'typescript';
 
 import {FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {MockFileSystemPosix} from '../../../src/ngtsc/file_system/testing';
-
 import {loadStandardTestFiles} from '../../../test/helpers';
 
 export type PackageSources = {

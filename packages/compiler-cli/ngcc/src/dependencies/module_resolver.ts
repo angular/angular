@@ -7,15 +7,15 @@
  */
 
 import {
-  absoluteFrom,
   AbsoluteFsPath,
-  dirname,
   FileSystem,
+  absoluteFrom,
+  dirname,
   isRoot,
   join,
   resolve,
 } from '../../../src/ngtsc/file_system';
-import {isRelativePath, PathMappings, resolveFileWithPostfixes} from '../utils';
+import {PathMappings, isRelativePath, resolveFileWithPostfixes} from '../utils';
 
 /**
  * This is a very cut-down implementation of the TypeScript module resolution strategy.

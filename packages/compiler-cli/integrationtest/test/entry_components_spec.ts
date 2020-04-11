@@ -13,7 +13,6 @@ import {
   CompWithAnalyzeEntryComponentsProvider,
   CompWithEntryComponents,
 } from '../src/entry_components';
-
 import {createComponent} from './util';
 
 describe('content projection', () => {

@@ -8,11 +8,11 @@
 
 import {
   Directive,
-  forwardRef,
   Input,
   OnChanges,
   SimpleChanges,
   StaticProvider,
+  forwardRef,
 } from '@angular/core';
 import {Observable} from 'rxjs';
 

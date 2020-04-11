@@ -9,9 +9,9 @@
 import {DepGraph} from 'dependency-graph';
 
 import {
-  absoluteFrom,
   AbsoluteFsPath,
   FileSystem,
+  absoluteFrom,
   getFileSystem,
   relativeFrom,
 } from '../../../src/ngtsc/file_system';

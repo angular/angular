@@ -8,6 +8,7 @@
 
 import {readFileSync, writeFileSync} from 'fs';
 import {dirname, join} from 'path';
+
 import * as shx from 'shelljs';
 import {Configuration, Linter} from 'tslint';
 

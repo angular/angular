@@ -15,11 +15,10 @@ import {
   NgModuleFactory,
   ɵstringify as stringify,
 } from '@angular/core';
-import {async, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {MockDirectiveResolver} from '../testing';
-
 import {SpyResourceLoader} from './spies';
 
 @Component({selector: 'child-cmp'})

@@ -10,7 +10,6 @@ import * as html from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {PRESERVE_WS_ATTR_NAME, removeWhitespaces} from '../../src/ml_parser/html_whitespaces';
 import {TokenizeOptions} from '../../src/ml_parser/lexer';
-
 import {humanizeDom} from './ast_spec_utils';
 
 {

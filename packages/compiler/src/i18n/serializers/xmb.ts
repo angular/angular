@@ -8,7 +8,6 @@
 
 import {decimalDigest} from '../digest';
 import * as i18n from '../i18n_ast';
-
 import {PlaceholderMapper, Serializer, SimplePlaceholderMapper} from './serializer';
 import * as xml from './xml_helper';
 

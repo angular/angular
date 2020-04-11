@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ivyEnabled} from '@angular/private/testing';
 import * as fs from 'fs';
 import * as path from 'path';
+
+import {ivyEnabled} from '@angular/private/testing';
 import * as ts from 'typescript';
 
 import * as ng from '../index';
 import {FileChangeEvent, performWatchCompilation} from '../src/perform_watch';
-
-import {expectNoDiagnostics, setup, TestSupport} from './test_support';
+import {TestSupport, expectNoDiagnostics, setup} from './test_support';
 
 describe('perform watch', () => {
   let testSupport: TestSupport;

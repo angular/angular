@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import * as ng from './types';
 
 export interface DiagnosticMessage {

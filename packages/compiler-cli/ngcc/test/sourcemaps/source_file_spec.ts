@@ -13,13 +13,13 @@ import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {RawSourceMap} from '../../src/sourcemaps/raw_source_map';
 import {SegmentMarker} from '../../src/sourcemaps/segment_marker';
 import {
+  Mapping,
+  SourceFile,
   computeStartOfLinePositions,
   ensureOriginalSegmentLinks,
   extractOriginalSegments,
   findLastMappingIndexBefore,
-  Mapping,
   parseMappings,
-  SourceFile,
 } from '../../src/sourcemaps/source_file';
 
 runInEachFileSystem(() => {

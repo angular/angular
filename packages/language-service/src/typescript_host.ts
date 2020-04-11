@@ -7,14 +7,12 @@
  */
 
 import {
-  analyzeNgModules,
   AotSummaryResolver,
   CompileDirectiveSummary,
   CompileMetadataResolver,
   CompileNgModuleMetadata,
   CompilePipeSummary,
   CompilerConfig,
-  createOfflineCompileUrlResolver,
   DirectiveNormalizer,
   DirectiveResolver,
   DomElementSchemaRegistry,
@@ -22,13 +20,12 @@ import {
   FormattedMessageChain,
   HtmlParser,
   I18NHtmlParser,
-  isFormattedError,
   JitSummaryResolver,
   Lexer,
   NgAnalyzedModules,
   NgModuleResolver,
-  Parser,
   ParseTreeResult,
+  Parser,
   PipeResolver,
   ResourceLoader,
   StaticReflector,
@@ -36,8 +33,11 @@ import {
   StaticSymbolCache,
   StaticSymbolResolver,
   TemplateParser,
+  analyzeNgModules,
+  createOfflineCompileUrlResolver,
+  isFormattedError,
 } from '@angular/compiler';
-import {SchemaMetadata, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
+import {ɵConsole as Console, SchemaMetadata, ViewEncapsulation} from '@angular/core';
 import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {AstResult} from './common';
@@ -45,9 +45,9 @@ import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
 import {
   ExternalTemplate,
+  InlineTemplate,
   getClassDeclFromDecoratorProp,
   getPropertyAssignmentFromValue,
-  InlineTemplate,
 } from './template';
 import {
   Declaration,

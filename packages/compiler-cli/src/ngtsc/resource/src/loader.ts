@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {ResourceLoader} from '../../annotations';
 import {ExtendedTsCompilerHost} from '../../core/api';
-import {AbsoluteFsPath, join, PathSegment} from '../../file_system';
+import {AbsoluteFsPath, PathSegment, join} from '../../file_system';
 import {getRootDirs} from '../../util/src/typescript';
 
 const CSS_PREPROCESSOR_EXT = /(\.scss|\.sass|\.less|\.styl)$/;

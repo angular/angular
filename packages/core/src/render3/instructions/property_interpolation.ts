@@ -10,7 +10,6 @@ import {SanitizerFn} from '../interfaces/sanitization';
 import {RENDERER} from '../interfaces/view';
 import {getBindingIndex, getLView, getSelectedTNode, getTView} from '../state';
 import {NO_CHANGE} from '../tokens';
-
 import {
   interpolation1,
   interpolation2,

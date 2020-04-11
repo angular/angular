@@ -26,7 +26,6 @@ import {
 } from '../state';
 import {computeStaticStyling} from '../styling/static_styling';
 import {getConstant} from '../util/view_utils';
-
 import {
   createDirectivesInstances,
   executeContentQueries,

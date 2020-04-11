@@ -23,7 +23,6 @@ import {
   validateStyleProperty,
 } from '../shared';
 import {packageNonAnimatableStyles} from '../special_cased_styles';
-
 import {WebAnimationsPlayer} from './web_animations_player';
 
 export class WebAnimationsDriver implements AnimationDriver {

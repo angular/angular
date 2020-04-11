@@ -11,7 +11,6 @@ import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Pipe} from '../../metadata/directives';
 import {NG_FACTORY_DEF, NG_PIPE_DEF} from '../fields';
-
 import {angularCoreEnv} from './environment';
 
 export function compilePipe(type: Type<any>, meta: Pipe): void {

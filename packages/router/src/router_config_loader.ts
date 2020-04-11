@@ -15,6 +15,7 @@ import {
 } from '@angular/core';
 import {Observable, from, of} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
+
 import {LoadChildren, LoadedRouterConfig, Route, standardizeConfig} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
 

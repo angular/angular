@@ -11,7 +11,7 @@ import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {NOOP_DEFAULT_IMPORT_RECORDER} from '../../imports';
 import {InjectableClassRegistry} from '../../metadata';
-import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
+import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {InjectableDecoratorHandler} from '../src/injectable';
 

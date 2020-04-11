@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {runOneBuild} from '@angular/bazel';
 import * as fs from 'fs';
 import * as path from 'path';
+
+import {runOneBuild} from '@angular/bazel';
 import * as ts from 'typescript';
 
 import {createTsConfig} from './tsconfig_template';

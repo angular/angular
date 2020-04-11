@@ -14,7 +14,6 @@ import {InjectableClassRegistry, MetadataReader} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
-
 import {makeDuplicateDeclarationError, readBaseClass} from './util';
 
 /**

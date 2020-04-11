@@ -8,7 +8,6 @@
 
 import {Reference} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
-
 import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from './api';
 import {hasInjectableFields} from './util';
 

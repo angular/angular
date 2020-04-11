@@ -12,10 +12,10 @@ import * as ts from 'typescript';
 
 import {
   AbsoluteFsPath,
+  NgtscCompilerHost,
   dirname,
   getFileSystem,
   getSourceFileOrError,
-  NgtscCompilerHost,
 } from '../../file_system';
 
 export function makeProgram(

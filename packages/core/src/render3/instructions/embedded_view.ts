@@ -39,7 +39,6 @@ import {
   setPreviousOrParentTNode,
 } from '../state';
 import {getLContainerActiveIndex, isCreationMode} from '../util/view_utils';
-
 import {assignTViewNodeToLView, createLView, createTView, refreshView, renderView} from './shared';
 
 /**

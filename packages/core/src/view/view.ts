@@ -7,7 +7,6 @@
  */
 
 import {Renderer2} from '../render/api';
-
 import {
   checkAndUpdateElementDynamic,
   checkAndUpdateElementInline,

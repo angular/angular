@@ -14,7 +14,6 @@ import {ViewEncapsulation} from '../metadata/view';
 import {noSideEffects} from '../util/closure';
 import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
-
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
 import {
   NG_COMP_DEF,

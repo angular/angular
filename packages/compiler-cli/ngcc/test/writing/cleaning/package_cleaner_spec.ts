@@ -7,11 +7,11 @@
  */
 
 import {
-  absoluteFrom,
   AbsoluteFsPath,
   FileSystem,
-  getFileSystem,
   PathSegment,
+  absoluteFrom,
+  getFileSystem,
 } from '@angular/compiler-cli/src/ngtsc/file_system';
 
 import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';

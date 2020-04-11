@@ -8,7 +8,6 @@
 
 import {identifierName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
-
 import {EmitterVisitorContext} from './abstract_emitter';
 import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
 import * as o from './output_ast';

@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵMessageId, ɵParsedTranslation, ɵparseTranslation} from '@angular/localize';
 import {extname} from 'path';
+
+import {ɵMessageId, ɵParsedTranslation, ɵparseTranslation} from '@angular/localize';
+
 import {Diagnostics} from '../../../diagnostics';
 import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
 

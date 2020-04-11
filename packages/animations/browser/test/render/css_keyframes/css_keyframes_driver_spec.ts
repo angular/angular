@@ -11,7 +11,6 @@ import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {CssKeyframesDriver} from '../../../src/render/css_keyframes/css_keyframes_driver';
 import {CssKeyframesPlayer} from '../../../src/render/css_keyframes/css_keyframes_player';
 import {DirectStylePlayer} from '../../../src/render/css_keyframes/direct_style_player';
-
 import {
   assertElementExistsInDom,
   createElement,

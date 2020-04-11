@@ -8,6 +8,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+
 import * as shx from 'shelljs';
 
 function main(args: string[]): number {

@@ -8,15 +8,15 @@
 
 import * as common from '@angular/common';
 import {
-  Component,
   CUSTOM_ELEMENTS_SCHEMA,
+  Component,
   Directive,
   EventEmitter,
-  forwardRef,
   Inject,
   InjectionToken,
   NgModule,
   Output,
+  forwardRef,
 } from '@angular/core';
 import {Observable} from 'rxjs';
 

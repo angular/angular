@@ -14,17 +14,16 @@ import {
   InvokeFunctionExpr,
   LiteralArrayExpr,
   LiteralExpr,
-  literalMap,
   NONE_TYPE,
   ReturnStatement,
   Statement,
   WrappedNodeExpr,
+  literalMap,
 } from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {DefaultImportRecorder} from '../../imports';
 import {CtorParameter, Decorator, ReflectionHost} from '../../reflection';
-
 import {valueReferenceToExpression, wrapFunctionExpressionsInParens} from './util';
 
 /**

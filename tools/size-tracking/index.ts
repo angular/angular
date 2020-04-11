@@ -7,10 +7,12 @@
  */
 
 import {readFileSync, writeFileSync} from 'fs';
-import {SizeTracker} from './size_tracker';
+
 import chalk from 'chalk';
+
 import {compareFileSizeData} from './file_size_compare';
 import {FileSizeData} from './file_size_data';
+import {SizeTracker} from './size_tracker';
 
 if (require.main === module) {
   const [

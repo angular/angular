@@ -7,7 +7,6 @@
  */
 
 import {Type} from '../interface/type';
-
 import {ɵɵdefineInjectable} from './interface/defs';
 
 /**

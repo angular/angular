@@ -16,7 +16,6 @@ import {
 import {compilePipe as render3CompilePipe} from '../render3/jit/pipe';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
 import {noop} from '../util/noop';
-
 import {ViewEncapsulation} from './view';
 
 /**

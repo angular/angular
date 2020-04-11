@@ -8,7 +8,6 @@
 
 import {ElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
-
 import {
   NodeDef,
   NodeFlags,

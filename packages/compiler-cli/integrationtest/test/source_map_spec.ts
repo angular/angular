@@ -7,6 +7,7 @@
  */
 
 import './init';
+
 import {BindingErrorComp} from '../src/errors';
 import {createComponent} from './util';
 

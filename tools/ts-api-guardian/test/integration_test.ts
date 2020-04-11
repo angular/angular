@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as chai from 'chai';
 import * as fs from 'fs';
 import * as path from 'path';
+
+import * as chai from 'chai';
+
 import * as main from '../lib/main';
 import {assertFileEqual, unlinkRecursively} from './helpers';
 

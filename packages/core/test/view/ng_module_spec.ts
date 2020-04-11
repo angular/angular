@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleRef, ɵINJECTOR_SCOPE as INJECTOR_SCOPE} from '@angular/core';
+import {ɵINJECTOR_SCOPE as INJECTOR_SCOPE, NgModuleRef} from '@angular/core';
 import {InjectFlags, inject} from '@angular/core/src/di';
 import {Injector} from '@angular/core/src/di/injector';
 import {INJECTOR} from '@angular/core/src/di/injector_compatibility';

@@ -10,7 +10,6 @@ import * as ml from '../../ml_parser/ast';
 import {XmlParser} from '../../ml_parser/xml_parser';
 import * as i18n from '../i18n_ast';
 import {I18nError} from '../parse_util';
-
 import {PlaceholderMapper, Serializer, SimplePlaceholderMapper} from './serializer';
 import {digest, toPublicName} from './xmb';
 

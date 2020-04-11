@@ -7,7 +7,6 @@
  */
 
 import {ParseLocation, ParseSourceSpan} from '../parse_util';
-
 import {CssToken, CssTokenType} from './css_lexer';
 
 export enum BlockType {

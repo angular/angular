@@ -6,24 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as path from 'path';
+
 import {
   AotCompilerHost,
-  collectExternalReferences,
   EmitterVisitorContext,
   GeneratedFile,
   ParseSourceSpan,
-  syntaxError,
   TypeScriptEmitter,
+  collectExternalReferences,
+  syntaxError,
 } from '@angular/compiler';
-import * as path from 'path';
 import * as ts from 'typescript';
 
 import {TypeCheckHost} from '../diagnostics/translate_diagnostics';
 import {ModuleMetadata} from '../metadata/index';
 import {join} from '../ngtsc/file_system';
-
 import {CompilerHost, CompilerOptions, LibrarySummary} from './api';
-import {createMetadataReaderCache, MetadataReaderHost, readMetadata} from './metadata_reader';
+import {MetadataReaderHost, createMetadataReaderCache, readMetadata} from './metadata_reader';
 import {DTS, GENERATED_FILES, isInRootDir, relativeToRootDirs} from './util';
 
 const NODE_MODULES_PACKAGE_NAME = /node_modules\/((\w|-|\.)+|(@(\w|-|\.)+\/(\w|-|\.)+))/;

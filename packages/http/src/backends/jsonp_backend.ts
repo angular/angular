@@ -14,7 +14,6 @@ import {ReadyState, RequestMethod, ResponseType} from '../enums';
 import {Connection, ConnectionBackend} from '../interfaces';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
-
 import {BrowserJsonp} from './browser_jsonp';
 
 const JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';

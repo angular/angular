@@ -7,6 +7,7 @@
  */
 
 import {$, browser} from 'protractor';
+
 import {runBenchmark} from '../../../e2e_util/perf_util';
 
 describe('benchmarks', () => {

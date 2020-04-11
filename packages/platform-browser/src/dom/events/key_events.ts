@@ -8,6 +8,7 @@
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {Inject, Injectable, NgZone} from '@angular/core';
+
 import {EventManagerPlugin} from './event_manager';
 
 /**

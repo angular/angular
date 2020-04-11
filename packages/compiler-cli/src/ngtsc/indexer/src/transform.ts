@@ -8,6 +8,7 @@
 
 import {ParseSourceFile} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import {IndexedComponent} from './api';
 import {IndexingContext} from './context';
 import {getTemplateIdentifiers} from './template';

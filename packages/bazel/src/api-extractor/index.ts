@@ -9,6 +9,9 @@
 /// <reference types="node"/>
 /// <reference lib="es2017"/>
 
+import * as fs from 'fs';
+import * as path from 'path';
+
 import {format, parseTsconfig} from '@bazel/typescript';
 import {
   Extractor,
@@ -17,8 +20,6 @@ import {
   IExtractorConfigPrepareOptions,
   IExtractorInvokeOptions,
 } from '@microsoft/api-extractor';
-import * as fs from 'fs';
-import * as path from 'path';
 
 const DEBUG = false;
 

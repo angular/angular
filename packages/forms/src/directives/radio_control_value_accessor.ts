@@ -9,13 +9,13 @@
 import {
   Directive,
   ElementRef,
-  forwardRef,
   Injectable,
   Injector,
   Input,
   OnDestroy,
   OnInit,
   Renderer2,
+  forwardRef,
 } from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';

@@ -26,7 +26,6 @@ import {
   multiTrim,
   withEachNg1Version,
 } from '../../../src/common/test/helpers/common_test_helpers';
-
 import {bootstrap} from './static_test_helpers';
 
 withEachNg1Version(() => {

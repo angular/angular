@@ -23,7 +23,6 @@ import {ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef, InternalViewRef, ViewRef} from '../linker/view_ref';
 import {stringify} from '../util/stringify';
 import {VERSION} from '../version';
-
 import {callNgModuleLifecycle, initNgModule, resolveNgModuleDep} from './ng_module';
 import {
   DepFlags,

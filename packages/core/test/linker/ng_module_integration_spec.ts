@@ -27,10 +27,10 @@ import {
   Provider,
   Self,
   Type,
+  ɵɵdefineNgModule as defineNgModule,
   forwardRef,
   getModuleFactory,
   ɵivyEnabled as ivyEnabled,
-  ɵɵdefineNgModule as defineNgModule,
 } from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {ɵɵInjectableDef, ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';

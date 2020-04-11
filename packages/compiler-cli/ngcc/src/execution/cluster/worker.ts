@@ -13,7 +13,6 @@ import * as cluster from 'cluster';
 import {Logger} from '../../logging/logger';
 import {CompileFn, CreateCompileFn} from '../api';
 import {stringifyTask} from '../tasks/utils';
-
 import {MessageToWorker} from './api';
 import {sendMessageToMaster} from './utils';
 

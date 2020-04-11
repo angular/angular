@@ -13,16 +13,15 @@ import {Declaration, Import} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, getTsHelperFnFromIdentifier, stripExtension} from '../utils';
-
 import {
   ExportDeclaration,
   ExportStatement,
+  ReexportStatement,
   findNamespaceOfIdentifier,
   findRequireCallReference,
   isExportStatement,
   isReexportStatement,
   isRequireCall,
-  ReexportStatement,
 } from './commonjs_umd_utils';
 import {Esm5ReflectionHost, stripParentheses} from './esm5_host';
 

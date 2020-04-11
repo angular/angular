@@ -7,6 +7,7 @@
  */
 
 import {ɵrenderComponent as renderComponent} from '@angular/core';
+
 import {bindAction, profile} from '../../util';
 import {TreeComponent, createDom, destroyDom, detectChanges} from './tree';
 

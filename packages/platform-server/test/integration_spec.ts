@@ -7,7 +7,7 @@
  */
 
 import {AnimationBuilder, animate, state, style, transition, trigger} from '@angular/animations';
-import {DOCUMENT, PlatformLocation, isPlatformServer, ɵgetDOM as getDOM} from '@angular/common';
+import {DOCUMENT, PlatformLocation, ɵgetDOM as getDOM, isPlatformServer} from '@angular/common';
 import {
   HTTP_INTERCEPTORS,
   HttpClient,

@@ -15,8 +15,8 @@ import {
   Declaration,
   Decorator,
   FunctionDefinition,
-  isNamedVariableDeclaration,
   Parameter,
+  isNamedVariableDeclaration,
   reflectObjectLiteral,
 } from '../../../src/ngtsc/reflection';
 import {
@@ -25,13 +25,12 @@ import {
   getTsHelperFnFromIdentifier,
   hasNameIdentifier,
 } from '../utils';
-
 import {
   Esm2015ReflectionHost,
+  ParamInfo,
   getPropertyValueFromSymbol,
   isAssignment,
   isAssignmentStatement,
-  ParamInfo,
 } from './esm2015_host';
 import {NgccClassSymbol} from './ngcc_host';
 

@@ -9,14 +9,14 @@
 import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {
   ClassMemberKind,
   CtorParameter,
+  TypeScriptReflectionHost,
   isNamedClassDeclaration,
   isNamedFunctionDeclaration,
   isNamedVariableDeclaration,
-  TypeScriptReflectionHost,
 } from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
@@ -25,7 +25,6 @@ import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {BundleProgram} from '../../src/packages/bundle_program';
 import {MockLogger} from '../helpers/mock_logger';
 import {getRootFiles, makeTestBundleProgram, makeTestDtsBundleProgram} from '../helpers/utils';
-
 import {expectTypeValueReferencesForParameters} from './util';
 
 runInEachFileSystem(() => {

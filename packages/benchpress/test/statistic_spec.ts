@@ -7,6 +7,7 @@
  */
 
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
+
 import {Statistic} from '../src/statistic';
 
 {

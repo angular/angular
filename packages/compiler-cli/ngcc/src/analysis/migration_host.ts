@@ -15,7 +15,6 @@ import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
 import {HandlerFlags, TraitState} from '../../../src/ngtsc/transform';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {MigrationHost} from '../migrations/migration';
-
 import {NgccTraitCompiler} from './ngcc_trait_compiler';
 import {isWithinPackage} from './util';
 

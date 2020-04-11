@@ -7,10 +7,12 @@
  */
 
 import '@angular/compiler';
+
+import * as path from 'path';
+
 import {ɵwhenRendered as whenRendered} from '@angular/core';
 import {getComponent} from '@angular/core/src/render3';
 import {withBody} from '@angular/private/testing';
-import * as path from 'path';
 
 const UTF8 = {
   encoding: 'utf-8',

@@ -38,25 +38,25 @@ import {
 import {JitEvaluator} from './output/output_jit';
 import {ParseError, ParseSourceSpan, r3JitTypeSourceSpan} from './parse_util';
 import {
-  compileFactoryFunction,
   R3DependencyMetadata,
   R3FactoryTarget,
   R3ResolvedDependencyType,
+  compileFactoryFunction,
 } from './render3/r3_factory';
 import {R3JitReflector} from './render3/r3_jit';
 import {
-  compileInjector,
-  compileNgModule,
   R3InjectorMetadata,
   R3NgModuleMetadata,
+  compileInjector,
+  compileNgModule,
 } from './render3/r3_module_compiler';
-import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
+import {R3PipeMetadata, compilePipeFromMetadata} from './render3/r3_pipe_compiler';
 import {R3Reference} from './render3/util';
 import {R3DirectiveMetadata, R3QueryMetadata} from './render3/view/api';
 import {
+  ParsedHostBindings,
   compileComponentFromMetadata,
   compileDirectiveFromMetadata,
-  ParsedHostBindings,
   parseHostBindings,
   verifyHostBindings,
 } from './render3/view/compiler';

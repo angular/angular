@@ -7,7 +7,6 @@
  */
 
 import {newArray, utf8Encode} from '../util';
-
 import * as i18n from './i18n_ast';
 
 /**

@@ -10,7 +10,6 @@ import {ApplicationRef, NgModuleRef} from '@angular/core';
 
 import {bindAction, profile} from '../../util';
 import {numViews} from '../util';
-
 import {DeclarationComponent, TransplantedViewsModule} from './transplanted_views';
 
 export function init(moduleRef: NgModuleRef<TransplantedViewsModule>) {

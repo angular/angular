@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {CtorParameter} from '../../../src/ngtsc/reflection';
 
 /**

@@ -8,8 +8,8 @@
 
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {AbsoluteFsPath, absoluteFrom} from '../../../src/ngtsc/file_system';
+import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {Reference} from '../../../src/ngtsc/imports';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadTestFiles} from '../../../test/helpers/src/mock_file_loading';

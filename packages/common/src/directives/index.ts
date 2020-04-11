@@ -7,6 +7,7 @@
  */
 
 import {Provider} from '@angular/core';
+
 import {NgClass} from './ng_class';
 import {NgComponentOutlet} from './ng_component_outlet';
 import {NgForOf, NgForOfContext} from './ng_for_of';

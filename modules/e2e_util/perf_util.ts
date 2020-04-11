@@ -9,21 +9,22 @@
 export {verifyNoBrowserErrors} from './e2e_util';
 
 const nodeUuid = require('node-uuid');
-import * as fs from 'fs-extra';
 
 import {
-  SeleniumWebDriverAdapter,
-  Options,
-  JsonFileReporter,
-  Validator,
-  RegressionSlopeValidator,
   ConsoleReporter,
-  SizeValidator,
-  MultiReporter,
+  JsonFileReporter,
   MultiMetric,
+  MultiReporter,
+  Options,
+  RegressionSlopeValidator,
   Runner,
+  SeleniumWebDriverAdapter,
+  SizeValidator,
   StaticProvider,
+  Validator,
 } from '@angular/benchpress';
+import * as fs from 'fs-extra';
+
 import {openBrowser} from './e2e_util';
 
 // Note: Keep the `modules/benchmarks/README.md` file in sync with the supported options.

@@ -7,12 +7,12 @@
  */
 
 import {
-  forwardRef,
   Injectable,
   InjectionToken,
   Injector,
   NgModule,
   ɵcreateInjector as createInjector,
+  forwardRef,
 } from '@angular/core';
 import {AOT_TOKEN, AotModule, AotService} from 'app_built/src/module';
 

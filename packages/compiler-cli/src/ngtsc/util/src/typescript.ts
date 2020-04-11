@@ -10,6 +10,7 @@ const TS = /\.tsx?$/i;
 const D_TS = /\.d\.ts$/i;
 
 import * as ts from 'typescript';
+
 import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
 
 export function isDtsPath(filePath: string): boolean {

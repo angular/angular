@@ -12,7 +12,6 @@ import {readBaseClass} from '../../../src/ngtsc/annotations/src/util';
 import {Reference} from '../../../src/ngtsc/imports';
 import {ClassDeclaration} from '../../../src/ngtsc/reflection';
 import {HandlerFlags} from '../../../src/ngtsc/transform';
-
 import {Migration, MigrationHost} from './migration';
 import {
   createComponentDecorator,

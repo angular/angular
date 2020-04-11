@@ -7,11 +7,11 @@
  */
 
 import {AnimationMetadata, AnimationPlayer, AnimationTriggerMetadata} from '@angular/animations';
+
 import {TriggerAst} from '../dsl/animation_ast';
 import {buildAnimationAst} from '../dsl/animation_ast_builder';
 import {AnimationTrigger, buildTrigger} from '../dsl/animation_trigger';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
-
 import {AnimationDriver} from './animation_driver';
 import {parseTimelineCommand} from './shared';
 import {TimelineAnimationEngine} from './timeline_animation_engine';

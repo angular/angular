@@ -9,13 +9,13 @@
 import {
   Directive,
   ElementRef,
-  forwardRef,
   Host,
   Input,
   OnDestroy,
   Optional,
   Renderer2,
   StaticProvider,
+  forwardRef,
   ɵlooseIdentical as looseIdentical,
 } from '@angular/core';
 

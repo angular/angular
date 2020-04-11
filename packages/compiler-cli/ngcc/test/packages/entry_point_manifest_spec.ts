@@ -9,8 +9,8 @@
 import {createHash} from 'crypto';
 
 import {
-  absoluteFrom,
   FileSystem,
+  absoluteFrom,
   getFileSystem,
   relativeFrom,
 } from '../../../src/ngtsc/file_system';
@@ -21,7 +21,6 @@ import {NGCC_VERSION} from '../../src/packages/build_marker';
 import {NgccConfiguration} from '../../src/packages/configuration';
 import {EntryPointManifest, EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
 import {MockLogger} from '../helpers/mock_logger';
-
 import {createPackageJson} from './entry_point_spec';
 
 runInEachFileSystem(() => {

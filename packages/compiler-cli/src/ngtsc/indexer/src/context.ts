@@ -7,6 +7,7 @@
  */
 
 import {BoundTarget, DirectiveMeta, ParseSourceFile} from '@angular/compiler';
+
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 

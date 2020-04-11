@@ -8,7 +8,6 @@
 
 import {
   Directive,
-  forwardRef,
   Host,
   Inject,
   Input,
@@ -17,6 +16,7 @@ import {
   Optional,
   Self,
   SkipSelf,
+  forwardRef,
 } from '@angular/core';
 
 import {FormArray} from '../../model';
@@ -26,7 +26,6 @@ import {ControlContainer} from '../control_container';
 import {ReactiveErrors} from '../reactive_errors';
 import {composeAsyncValidators, composeValidators, controlPath} from '../shared';
 import {AsyncValidatorFn, ValidatorFn} from '../validators';
-
 import {FormGroupDirective} from './form_group_directive';
 
 export const formGroupNameProvider: any = {

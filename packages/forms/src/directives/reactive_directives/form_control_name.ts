@@ -9,7 +9,6 @@
 import {
   Directive,
   EventEmitter,
-  forwardRef,
   Host,
   Inject,
   Input,
@@ -20,6 +19,7 @@ import {
   Self,
   SimpleChanges,
   SkipSelf,
+  forwardRef,
 } from '@angular/core';
 
 import {FormControl} from '../../model';
@@ -38,7 +38,6 @@ import {
   selectValueAccessor,
 } from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
-
 import {NG_MODEL_WITH_FORM_CONTROL_WARNING} from './form_control_directive';
 import {FormGroupDirective} from './form_group_directive';
 import {FormArrayName, FormGroupName} from './form_group_name';

@@ -9,6 +9,7 @@
 import {ɵParsedTranslation} from '@angular/localize';
 import {NodePath, PluginObj} from '@babel/core';
 import {TaggedTemplateExpression} from '@babel/types';
+
 import {Diagnostics} from '../../diagnostics';
 import {
   TranslatePluginOptions,

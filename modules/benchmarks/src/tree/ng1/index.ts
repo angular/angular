@@ -8,7 +8,6 @@
 
 import {bindAction, profile} from '../../util';
 import {buildTree, emptyTree} from '../util';
-
 import {addTreeToModule} from './tree';
 
 declare var angular: any;

@@ -7,7 +7,7 @@
  */
 
 import {Component, Directive, EventEmitter, Input, Output, Type, ViewChild} from '@angular/core';
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {
   AbstractControl,
   ControlValueAccessor,

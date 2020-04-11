@@ -7,7 +7,7 @@
  */
 
 import {CompileReflector} from './compile_reflector';
-import {createNgModule, NgModule, Type} from './core';
+import {NgModule, Type, createNgModule} from './core';
 import {findLast} from './directive_resolver';
 import {stringify} from './util';
 

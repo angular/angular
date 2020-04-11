@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {Reference} from '../../../src/ngtsc/imports';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';

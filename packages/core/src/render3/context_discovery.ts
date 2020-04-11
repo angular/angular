@@ -9,7 +9,6 @@
 import '../util/ng_dev_mode';
 
 import {assertDomNode} from '../util/assert';
-
 import {EMPTY_ARRAY} from './empty';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {TNode, TNodeFlags} from './interfaces/node';

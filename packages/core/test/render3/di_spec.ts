@@ -34,7 +34,6 @@ import {TNodeType} from '../../src/render3/interfaces/node';
 import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
 import {LViewFlags, TVIEW, TViewType} from '../../src/render3/interfaces/view';
 import {enterView, leaveView} from '../../src/render3/state';
-
 import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, createComponent, createDirective} from './render_util';
 

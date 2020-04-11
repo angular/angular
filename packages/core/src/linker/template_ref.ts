@@ -8,7 +8,6 @@
 
 import {injectTemplateRef as render3InjectTemplateRef} from '../render3/view_engine_compatibility';
 import {noop} from '../util/noop';
-
 import {ElementRef} from './element_ref';
 import {EmbeddedViewRef} from './view_ref';
 

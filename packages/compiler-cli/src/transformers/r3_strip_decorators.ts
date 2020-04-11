@@ -10,12 +10,11 @@ import {StaticReflector, StaticSymbol} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {
+  MetadataValue,
   isClassMetadata,
   isMetadataImportedSymbolReferenceExpression,
   isMetadataSymbolicCallExpression,
-  MetadataValue,
 } from '../metadata';
-
 import {MetadataTransformer, ValueTransform} from './metadata_cache';
 
 export type Transformer = (sourceFile: ts.SourceFile) => ts.SourceFile;

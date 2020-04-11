@@ -18,7 +18,6 @@ import {
   inheritedParamsDataResolve,
 } from '../router_state';
 import {wrapIntoObservable} from '../utils/collection';
-
 import {getToken} from '../utils/preactivation';
 
 export function resolveData(

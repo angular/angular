@@ -25,7 +25,6 @@ import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
 import {NgModuleType} from '../ng_module_ref';
 import {maybeUnwrapFn, stringifyForError} from '../util/misc_utils';
-
 import {angularCoreEnv} from './environment';
 
 const EMPTY_ARRAY: Type<any>[] = [];

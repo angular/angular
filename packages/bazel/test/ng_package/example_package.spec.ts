@@ -7,9 +7,10 @@
  */
 
 import * as crypto from 'crypto';
-import {createPatch} from 'diff';
 import * as fs from 'fs';
 import * as path from 'path';
+
+import {createPatch} from 'diff';
 
 type TestPackage = {
   displayName: string;

@@ -7,6 +7,7 @@
  */
 
 import {dirname, resolve} from 'path';
+
 import * as ts from 'typescript';
 
 /** Update recorder for managing imports. */

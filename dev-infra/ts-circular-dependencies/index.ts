@@ -7,18 +7,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {existsSync, readFileSync, writeFileSync} from 'fs';
+import {isAbsolute, relative, resolve} from 'path';
+
+import chalk from 'chalk';
+import {sync as globSync} from 'glob';
 import * as ts from 'typescript';
 import * as yargs from 'yargs';
 
 import {Analyzer, ReferenceChain} from './analyzer';
 import {CircularDependenciesTestConfig, loadTestConfig} from './config';
-import {Golden, compareGoldens, convertReferenceChainToGolden} from './golden';
-import {existsSync, readFileSync, writeFileSync} from 'fs';
-import {isAbsolute, relative, resolve} from 'path';
-
-import chalk from 'chalk';
 import {convertPathToForwardSlash} from './file_system';
-import {sync as globSync} from 'glob';
+import {Golden, compareGoldens, convertReferenceChainToGolden} from './golden';
 
 export function tsCircularDependenciesBuilder(localYargs: yargs.Argv) {
   return localYargs

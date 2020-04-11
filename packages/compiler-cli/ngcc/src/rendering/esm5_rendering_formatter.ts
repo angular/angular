@@ -9,6 +9,7 @@
 import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
+
 import {NOOP_DEFAULT_IMPORT_RECORDER} from '../../../src/ngtsc/imports';
 import {ImportManager, translateStatement} from '../../../src/ngtsc/translator';
 import {CompiledClass} from '../analysis/types';

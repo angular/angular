@@ -22,7 +22,6 @@ import {RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {VERSION} from '../version';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider';
-
 import {assertComponentType} from './assert';
 import {
   LifecycleHooksFeature,

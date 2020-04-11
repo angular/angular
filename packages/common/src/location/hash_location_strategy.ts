@@ -7,6 +7,7 @@
  */
 
 import {Inject, Injectable, Optional} from '@angular/core';
+
 import {APP_BASE_HREF, LocationStrategy} from './location_strategy';
 import {LocationChangeListener, PlatformLocation} from './platform_location';
 import {joinWithSlash, normalizeQueryParams} from './util';

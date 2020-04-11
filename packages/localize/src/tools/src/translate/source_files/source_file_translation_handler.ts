@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {extname, join} from 'path';
+
 import {parseSync, transformFromAstSync} from '@babel/core';
 import {File, Program} from '@babel/types';
-import {extname, join} from 'path';
+
 import {Diagnostics} from '../../diagnostics';
 import {FileUtils} from '../../file_utils';
 import {OutputPathFn} from '../output_path';

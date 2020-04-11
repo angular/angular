@@ -12,8 +12,7 @@ import {ReflectorHost} from '@angular/language-service/src/reflector_host';
 import * as ts from 'typescript';
 
 import {getTemplateExpressionDiagnostics} from '../src/expression_diagnostics';
-
-import {DiagnosticContext, getDiagnosticTemplateInfo, MockLanguageServiceHost} from './mocks';
+import {DiagnosticContext, MockLanguageServiceHost, getDiagnosticTemplateInfo} from './mocks';
 
 describe('expression diagnostics', () => {
   let registry: ts.DocumentRegistry;

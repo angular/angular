@@ -9,8 +9,8 @@
 import {
   AbsoluteFsPath,
   FileSystem,
-  join,
   PathSegment,
+  join,
   relative,
   relativeFrom,
 } from '../../../src/ngtsc/file_system';
@@ -22,12 +22,11 @@ import {NgccConfiguration} from '../packages/configuration';
 import {
   EntryPoint,
   EntryPointJsonProperty,
-  getEntryPointInfo,
   INCOMPATIBLE_ENTRY_POINT,
   NO_ENTRY_POINT,
+  getEntryPointInfo,
 } from '../packages/entry_point';
 import {PathMappings} from '../utils';
-
 import {EntryPointFinder} from './interface';
 import {getBasePaths} from './utils';
 

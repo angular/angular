@@ -8,6 +8,7 @@
 
 import {CompileDirectiveMetadata, NgAnalyzedModules, StaticSymbol} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import {AstResult} from './common';
 import {
   BuiltinType,

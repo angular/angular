@@ -7,9 +7,9 @@
  */
 
 import {
-  absoluteFrom,
   AbsoluteFsPath,
   FileSystem,
+  absoluteFrom,
   getFileSystem,
 } from '../../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';

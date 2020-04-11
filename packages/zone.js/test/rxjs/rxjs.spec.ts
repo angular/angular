@@ -11,6 +11,7 @@
     obj.__proto__ = proto;
     return obj;
   };
+
 import '../../lib/rxjs/rxjs';
 import './rxjs.common.spec';
 import './rxjs.asap.spec';

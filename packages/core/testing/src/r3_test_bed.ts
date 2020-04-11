@@ -13,17 +13,17 @@
 import {
   AbstractType,
   Component,
+  ɵRender3ComponentFactory as ComponentFactory,
   Directive,
   InjectFlags,
   InjectionToken,
   Injector,
   NgModule,
+  ɵRender3NgModuleRef as NgModuleRef,
   NgZone,
   Pipe,
   PlatformRef,
   Type,
-  ɵRender3ComponentFactory as ComponentFactory,
-  ɵRender3NgModuleRef as NgModuleRef,
   ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
   ɵresetCompiledComponents as resetCompiledComponents,
   ɵstringify as stringify,
@@ -31,6 +31,7 @@ import {
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
+import {R3TestBedCompiler} from './r3_test_bed_compiler';
 import {TestBed} from './test_bed';
 import {
   ComponentFixtureAutoDetect,
@@ -39,7 +40,6 @@ import {
   TestComponentRenderer,
   TestModuleMetadata,
 } from './test_bed_common';
-import {R3TestBedCompiler} from './r3_test_bed_compiler';
 
 let _nextRootElementId = 0;
 

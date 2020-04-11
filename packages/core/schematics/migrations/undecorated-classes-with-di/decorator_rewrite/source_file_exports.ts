@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {getValueSymbolOfDeclaration} from '../../../utils/typescript/symbol';
 
 export interface ResolvedExport {

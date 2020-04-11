@@ -9,6 +9,7 @@
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
+
 import {ReactiveSelectComp} from './reactive_select_control_example';
 
 @NgModule({

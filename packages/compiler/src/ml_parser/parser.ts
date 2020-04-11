@@ -7,10 +7,9 @@
  */
 
 import {ParseError, ParseSourceSpan} from '../parse_util';
-
 import * as html from './ast';
 import * as lex from './lexer';
-import {getNsPrefix, isNgContainer, mergeNsAndName, TagDefinition} from './tags';
+import {TagDefinition, getNsPrefix, isNgContainer, mergeNsAndName} from './tags';
 
 export class TreeError extends ParseError {
   static create(elementName: string | null, span: ParseSourceSpan, msg: string): TreeError {

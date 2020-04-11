@@ -16,7 +16,6 @@ import {PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost} from '../../reflection';
 import {TypeCheckContext} from '../../typecheck';
 import {getSourceFile, isExported} from '../../util/src/typescript';
-
 import {
   AnalysisOutput,
   CompileResult,

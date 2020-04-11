@@ -8,7 +8,6 @@
 
 import * as chars from '../chars';
 import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../parse_util';
-
 import {
   BlockType,
   CssAst,
@@ -26,9 +25,9 @@ import {
   CssSelectorAst,
   CssSelectorRuleAst,
   CssSimpleSelectorAst,
-  CssStylesBlockAst,
   CssStyleSheetAst,
   CssStyleValueAst,
+  CssStylesBlockAst,
   CssUnknownRuleAst,
   CssUnknownTokenListAst,
   mergeTokens,

@@ -7,6 +7,7 @@
  */
 
 import {Inject, Injectable, InjectionToken, ɵɵinject} from '@angular/core';
+
 import {getDOM} from '../dom_adapter';
 import {DOCUMENT} from '../dom_tokens';
 

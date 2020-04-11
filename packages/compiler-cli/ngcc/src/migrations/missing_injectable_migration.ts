@@ -12,7 +12,6 @@ import {forwardRefResolver} from '../../../src/ngtsc/annotations';
 import {Reference} from '../../../src/ngtsc/imports';
 import {ResolvedValue, ResolvedValueMap} from '../../../src/ngtsc/partial_evaluator';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
-
 import {Migration, MigrationHost} from './migration';
 import {createInjectableDecorator, isClassDeclaration} from './utils';
 

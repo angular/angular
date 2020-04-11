@@ -20,7 +20,6 @@ import {
   getAngularJSGlobal,
   setAngularJSGlobal,
 } from '../../index';
-
 import {bootstrap} from './static_test_helpers';
 
 withEachNg1Version(() => {

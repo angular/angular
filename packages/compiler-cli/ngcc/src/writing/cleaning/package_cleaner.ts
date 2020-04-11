@@ -9,7 +9,6 @@
 import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system';
 import {needsCleaning} from '../../packages/build_marker';
 import {EntryPoint} from '../../packages/entry_point';
-
 import {
   BackupFileCleaner,
   CleaningStrategy,

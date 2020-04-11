@@ -13,6 +13,12 @@ import {
   ClassMetadata,
   FunctionMetadata,
   InterfaceMetadata,
+  MetadataEntry,
+  MetadataError,
+  MetadataImportedSymbolReferenceExpression,
+  MetadataSourceLocationInfo,
+  MetadataSymbolicCallExpression,
+  MetadataValue,
   isMetadataError,
   isMetadataGlobalReferenceExpression,
   isMetadataImportDefaultReference,
@@ -20,12 +26,6 @@ import {
   isMetadataModuleReferenceExpression,
   isMetadataSymbolicReferenceExpression,
   isMetadataSymbolicSpreadExpression,
-  MetadataEntry,
-  MetadataError,
-  MetadataImportedSymbolReferenceExpression,
-  MetadataSourceLocationInfo,
-  MetadataSymbolicCallExpression,
-  MetadataValue,
 } from './schema';
 import {Symbols} from './symbols';
 

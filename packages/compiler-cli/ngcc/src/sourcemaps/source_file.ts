@@ -7,12 +7,11 @@
  */
 
 import {removeComments, removeMapFileComments} from 'convert-source-map';
-import {decode, encode, SourceMapMappings, SourceMapSegment} from 'sourcemap-codec';
+import {SourceMapMappings, SourceMapSegment, decode, encode} from 'sourcemap-codec';
 
 import {AbsoluteFsPath, dirname, relative} from '../../../src/ngtsc/file_system';
-
 import {RawSourceMap} from './raw_source_map';
-import {compareSegments, offsetSegment, SegmentMarker} from './segment_marker';
+import {SegmentMarker, compareSegments, offsetSegment} from './segment_marker';
 
 export function removeSourceMapComments(contents: string): string {
   return removeMapFileComments(removeComments(contents)).replace(/\n\n$/, '\n');

@@ -8,12 +8,12 @@
 
 import {
   Component,
-  forwardRef,
   Inject,
-  inject,
   Injectable,
   InjectionToken,
   NgModule,
+  forwardRef,
+  inject,
 } from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {ServerModule} from '@angular/platform-server';

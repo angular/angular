@@ -9,6 +9,7 @@
 import {CompileSummaryKind} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {
+  MetadataFactory,
   createAttribute,
   createComponent,
   createContentChild,
@@ -28,13 +29,11 @@ import {
   createSkipSelf,
   createViewChild,
   createViewChildren,
-  MetadataFactory,
 } from '../core';
 import * as o from '../output/output_ast';
 import {SummaryResolver} from '../summary_resolver';
 import {syntaxError} from '../util';
-
-import {formattedError, FormattedMessageChain} from './formatted_error';
+import {FormattedMessageChain, formattedError} from './formatted_error';
 import {StaticSymbol} from './static_symbol';
 import {StaticSymbolResolver} from './static_symbol_resolver';
 

@@ -7,7 +7,7 @@
  */
 
 import {TokenizeOptions} from './lexer';
-import {Parser, ParseTreeResult} from './parser';
+import {ParseTreeResult, Parser} from './parser';
 import {getXmlTagDefinition} from './xml_tags';
 
 export {ParseTreeResult, TreeError} from './parser';

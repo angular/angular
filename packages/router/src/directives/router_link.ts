@@ -14,10 +14,10 @@ import {
   HostBinding,
   HostListener,
   Input,
-  isDevMode,
   OnChanges,
   OnDestroy,
   Renderer2,
+  isDevMode,
 } from '@angular/core';
 import {Subscription} from 'rxjs';
 

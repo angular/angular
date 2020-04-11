@@ -8,7 +8,6 @@
 
 import {ComponentDef, DirectiveDef} from '../interfaces/definition';
 import {isComponentDef} from '../interfaces/type_checks';
-
 import {getSuperType} from './inherit_definition_feature';
 
 /**

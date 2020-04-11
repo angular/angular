@@ -9,7 +9,6 @@
 import {NgLocalization} from '@angular/common';
 import {Component, DebugElement} from '@angular/core';
 import {ComponentFixture} from '@angular/core/testing';
-
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';

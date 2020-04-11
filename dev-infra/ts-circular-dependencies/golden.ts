@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {relative} from 'path';
+
 import {ReferenceChain} from './analyzer';
 import {convertPathToForwardSlash} from './file_system';
-import {relative} from 'path';
 
 export type CircularDependency = ReferenceChain<string>;
 export type Golden = CircularDependency[];

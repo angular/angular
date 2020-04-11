@@ -8,6 +8,7 @@
 
 import {writeFileSync} from 'fs';
 import {join} from 'path';
+
 import {SourceMapGenerator} from 'source-map';
 
 import {SizeTracker} from './size_tracker';

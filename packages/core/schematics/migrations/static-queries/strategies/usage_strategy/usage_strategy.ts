@@ -13,7 +13,6 @@ import {hasPropertyNameText} from '../../../../utils/typescript/property_name';
 import {ClassMetadataMap} from '../../angular/ng_query_visitor';
 import {NgQueryDefinition, QueryTiming, QueryType} from '../../angular/query-definition';
 import {TimingResult, TimingStrategy} from '../timing-strategy';
-
 import {DeclarationUsageVisitor, FunctionContext, ResolvedUsage} from './declaration_usage_visitor';
 import {updateSuperClassAbstractMembersContext} from './super_class_context';
 import {TemplateUsageVisitor} from './template_usage_visitor';

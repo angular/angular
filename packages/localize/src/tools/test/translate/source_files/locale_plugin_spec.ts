@@ -7,6 +7,7 @@
  */
 
 import {transformSync} from '@babel/core';
+
 import {makeLocalePlugin} from '../../../src/translate/source_files/locale_plugin';
 
 describe('makeLocalePlugin', () => {

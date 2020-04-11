@@ -12,7 +12,6 @@ import {JavaScriptEmitter} from '@angular/compiler/src/output/js_emitter';
 import * as o from '@angular/compiler/src/output/output_ast';
 import {SourceMap} from '@angular/compiler/src/output/source_map';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler/src/parse_util';
-
 import {
   extractSourceMap,
   originalPositionFor,

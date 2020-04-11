@@ -26,6 +26,7 @@ import {
   TmplAstTemplate,
   TmplAstVariable,
 } from '@angular/compiler';
+
 import {
   AbsoluteSourceSpan,
   AttributeIdentifier,

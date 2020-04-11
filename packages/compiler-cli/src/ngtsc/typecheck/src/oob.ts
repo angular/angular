@@ -10,9 +10,8 @@ import {BindingPipe, PropertyWrite, TmplAstReference, TmplAstVariable} from '@an
 import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
-
 import {TemplateId} from './api';
-import {makeTemplateDiagnostic, TemplateSourceResolver} from './diagnostics';
+import {TemplateSourceResolver, makeTemplateDiagnostic} from './diagnostics';
 
 /**
  * Collects `ts.Diagnostic`s on problems which occur in the template which aren't directly sourced

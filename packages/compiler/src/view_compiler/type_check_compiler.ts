@@ -12,11 +12,11 @@ import {StaticSymbol} from '../aot/static_symbol';
 import {CompileDirectiveMetadata, CompilePipeSummary} from '../compile_metadata';
 import {
   BindingForm,
+  EventHandlerVars,
+  LocalResolver,
   convertActionBinding,
   convertPropertyBinding,
   convertPropertyBindingBuiltins,
-  EventHandlerVars,
-  LocalResolver,
 } from '../compiler_util/expression_converter';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
 import * as o from '../output/output_ast';
@@ -34,9 +34,9 @@ import {
   ReferenceAst,
   TemplateAst,
   TemplateAstVisitor,
-  templateVisitAll,
   TextAst,
   VariableAst,
+  templateVisitAll,
 } from '../template_parser/template_ast';
 import {OutputContext} from '../util';
 

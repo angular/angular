@@ -14,6 +14,7 @@ import {
   EventManager,
   EventManagerPlugin,
 } from '@angular/platform-browser/src/dom/events/event_manager';
+
 import {createMouseEvent, el} from '../../../testing/src/browser_util';
 
 (function () {

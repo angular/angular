@@ -10,10 +10,10 @@ import {flatten, sanitizeIdentifier} from '../../compile_metadata';
 import {
   BindingForm,
   BuiltinFunctionCall,
+  LocalResolver,
   convertActionBinding,
   convertPropertyBinding,
   convertUpdateArguments,
-  LocalResolver,
 } from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
@@ -58,37 +58,36 @@ import {
   prepareSyntheticListenerName,
   prepareSyntheticPropertyName,
 } from '../util';
-
 import {I18nContext} from './i18n/context';
 import {createGoogleGetMsgStatements} from './i18n/get_msg_utils';
 import {createLocalizeStatements} from './i18n/localize_utils';
 import {I18nMetaVisitor} from './i18n/meta';
 import {
+  I18N_ICU_MAPPING_PREFIX,
+  TRANSLATION_PREFIX,
   assembleBoundTextPlaceholders,
   assembleI18nBoundString,
   declareI18nVariable,
   getTranslationConstPrefix,
-  I18N_ICU_MAPPING_PREFIX,
   i18nFormatPlaceholderNames,
   icuFromI18nMessage,
   isI18nRootNode,
   isSingleI18nIcu,
   placeholdersToParams,
-  TRANSLATION_PREFIX,
   wrapI18nPlaceholder,
 } from './i18n/util';
 import {StylingBuilder, StylingInstruction} from './styling_builder';
 import {
-  asLiteral,
-  chainedInstruction,
   CONTEXT_NAME,
-  getAttrsForDirectiveMatching,
-  getInterpolationArgsLength,
   IMPLICIT_REFERENCE,
-  invalid,
   NON_BINDABLE_ATTR,
   REFERENCE_PREFIX,
   RENDER_FLAGS,
+  asLiteral,
+  chainedInstruction,
+  getAttrsForDirectiveMatching,
+  getInterpolationArgsLength,
+  invalid,
   trimTrailingNulls,
   unsupported,
 } from './util';

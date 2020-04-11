@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {Reference} from '../../../src/ngtsc/imports';
 import {
   ClassDeclaration,

@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {relative} from 'path';
+
 import {
   Rule,
   SchematicContext,
@@ -13,12 +15,10 @@ import {
   Tree,
   UpdateRecorder,
 } from '@angular-devkit/schematics';
-import {relative} from 'path';
 import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {createMigrationProgram} from '../../utils/typescript/compiler_host';
-
 import {Collector} from './collector';
 import {AnalysisFailure, ModuleWithProvidersTransform} from './transform';
 

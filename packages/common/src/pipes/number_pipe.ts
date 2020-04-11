@@ -7,9 +7,9 @@
  */
 
 import {DEFAULT_CURRENCY_CODE, Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
+
 import {formatCurrency, formatNumber, formatPercent} from '../i18n/format_number';
 import {getCurrencySymbol} from '../i18n/locale_data_api';
-
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**

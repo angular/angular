@@ -38,6 +38,7 @@ import {
   CompilerFactory,
   CompilerOptions,
   ComponentFactory,
+  ɵConsole as Console,
   Inject,
   InjectionToken,
   Injector,
@@ -52,7 +53,6 @@ import {
   Type,
   ViewEncapsulation,
   isDevMode,
-  ɵConsole as Console,
 } from '@angular/core';
 
 import {JitReflector} from './compiler_reflector';

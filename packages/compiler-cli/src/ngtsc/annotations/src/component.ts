@@ -7,7 +7,6 @@
  */
 
 import {
-  compileComponentFromMetadata,
   ConstantPool,
   CssSelector,
   DEFAULT_INTERPOLATION_CONFIG,
@@ -17,10 +16,8 @@ import {
   Identifiers,
   InterpolationConfig,
   LexerRange,
-  makeBindingParser,
   ParseError,
   ParseSourceFile,
-  parseTemplate,
   ParseTemplateOptions,
   R3ComponentMetadata,
   R3FactoryTarget,
@@ -30,6 +27,9 @@ import {
   Statement,
   TmplAstNode,
   WrappedNodeExpr,
+  compileComponentFromMetadata,
+  makeBindingParser,
+  parseTemplate,
 } from '@angular/compiler';
 import * as ts from 'typescript';
 
@@ -41,10 +41,10 @@ import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
 import {
   DirectiveMeta,
-  extractDirectiveGuards,
   InjectableClassRegistry,
   MetadataReader,
   MetadataRegistry,
+  extractDirectiveGuards,
 } from '../../metadata';
 import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
@@ -62,7 +62,6 @@ import {
 import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck';
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {SubsetOfKeys} from '../../util/src/typescript';
-
 import {ResourceLoader} from './api';
 import {getDirectiveDiagnostics, getProviderDiagnostics} from './diagnostics';
 import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';

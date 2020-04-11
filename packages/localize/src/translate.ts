@@ -11,8 +11,8 @@ import {
   MessageId,
   ParsedTranslation,
   TargetMessage,
-  parseTranslation,
   translate as _translate,
+  parseTranslation,
 } from './utils';
 
 /**

@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {getAngularDecorators} from '../../../utils/ng_decorators';
 import {getPropertyNameText, hasPropertyNameText} from '../../../utils/typescript/property_name';
 

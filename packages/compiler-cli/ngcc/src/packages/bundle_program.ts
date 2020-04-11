@@ -8,8 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, dirname, FileSystem, resolve} from '../../../src/ngtsc/file_system';
-
+import {AbsoluteFsPath, FileSystem, dirname, resolve} from '../../../src/ngtsc/file_system';
 import {
   patchTsGetExpandoInitializer,
   restoreGetExpandoInitializer,

@@ -7,6 +7,7 @@
  */
 
 import {ElementArrayFinder, browser, by, element} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 describe('simpleForm example', () => {

@@ -7,6 +7,7 @@
  */
 
 import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
+
 import {compile, expectEmit} from './mock_compile';
 
 describe('r3_view_compiler', () => {

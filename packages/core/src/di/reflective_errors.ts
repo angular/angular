@@ -9,7 +9,6 @@
 import {Type} from '../interface/type';
 import {ERROR_ORIGINAL_ERROR, wrappedError} from '../util/errors';
 import {stringify} from '../util/stringify';
-
 import {ReflectiveInjector} from './reflective_injector';
 import {ReflectiveKey} from './reflective_key';
 

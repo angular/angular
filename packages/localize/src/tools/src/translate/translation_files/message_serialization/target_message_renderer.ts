@@ -7,6 +7,7 @@
  */
 
 import {ɵParsedTranslation, ɵmakeParsedTranslation} from '@angular/localize';
+
 import {MessageRenderer} from './message_renderer';
 
 /**

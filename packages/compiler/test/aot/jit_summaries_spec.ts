@@ -15,7 +15,7 @@ import {
   toTypeScript,
 } from '@angular/compiler';
 
-import {compile, MockDirectory, setup} from './test_util';
+import {MockDirectory, compile, setup} from './test_util';
 
 describe('aot summaries for jit', () => {
   let angularFiles = setup();

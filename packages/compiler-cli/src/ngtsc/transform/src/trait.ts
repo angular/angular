@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {DecoratorHandler, DetectResult} from './api';
 
 export enum TraitState {

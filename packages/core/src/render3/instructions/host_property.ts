@@ -11,7 +11,6 @@ import {SanitizerFn} from '../interfaces/sanitization';
 import {RENDERER} from '../interfaces/view';
 import {getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
-
 import {
   elementPropertyInternal,
   loadComponentRenderer,

@@ -12,10 +12,11 @@
  */
 // Must be imported first, because Angular decorators throw on load.
 import 'reflect-metadata';
-import * as api from './transformers/api';
-import {ParsedConfiguration} from './perform_compile';
+
 import {main, readCommandLineAndConfiguration} from './main';
-import {setFileSystem, NodeJSFileSystem} from './ngtsc/file_system';
+import {NodeJSFileSystem, setFileSystem} from './ngtsc/file_system';
+import {ParsedConfiguration} from './perform_compile';
+import * as api from './transformers/api';
 
 export function mainXi18n(
   args: string[],

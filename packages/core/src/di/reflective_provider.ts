@@ -8,7 +8,6 @@
 
 import {Type} from '../interface/type';
 import {reflector} from '../reflection/reflection';
-
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {

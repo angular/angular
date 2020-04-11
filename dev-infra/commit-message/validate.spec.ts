@@ -8,7 +8,6 @@
 
 // Imports
 import * as utilConfig from '../utils/config';
-
 import {validateCommitMessage} from './validate';
 
 // Constants

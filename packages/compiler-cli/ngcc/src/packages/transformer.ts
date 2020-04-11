@@ -8,9 +8,9 @@
 
 import * as ts from 'typescript';
 
-import {ParsedConfiguration} from '../../..';
 import {FileSystem} from '../../../src/ngtsc/file_system';
 import {TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
+import {ParsedConfiguration} from '../../..';
 import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
 import {
   ModuleWithProvidersAnalyses,
@@ -29,13 +29,12 @@ import {UmdReflectionHost} from '../host/umd_host';
 import {Logger} from '../logging/logger';
 import {CommonJsRenderingFormatter} from '../rendering/commonjs_rendering_formatter';
 import {DtsRenderer} from '../rendering/dts_renderer';
-import {Esm5RenderingFormatter} from '../rendering/esm5_rendering_formatter';
 import {EsmRenderingFormatter} from '../rendering/esm_rendering_formatter';
+import {Esm5RenderingFormatter} from '../rendering/esm5_rendering_formatter';
 import {Renderer} from '../rendering/renderer';
 import {RenderingFormatter} from '../rendering/rendering_formatter';
 import {UmdRenderingFormatter} from '../rendering/umd_rendering_formatter';
 import {FileToWrite} from '../rendering/utils';
-
 import {EntryPointBundle} from './entry_point_bundle';
 
 export type TransformResult =

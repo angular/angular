@@ -7,6 +7,7 @@
  */
 
 import {Inject, Injectable, InjectionToken, Optional, ɵɵinject} from '@angular/core';
+
 import {DOCUMENT} from '../dom_tokens';
 import {LocationChangeListener, PlatformLocation} from './platform_location';
 import {joinWithSlash, normalizeQueryParams} from './util';

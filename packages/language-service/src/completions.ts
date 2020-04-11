@@ -7,8 +7,8 @@
  */
 
 import {
-  AbsoluteSourceSpan,
   AST,
+  AbsoluteSourceSpan,
   AstPath,
   AttrAst,
   Attribute,
@@ -20,10 +20,9 @@ import {
   ElementAst,
   EmptyExpr,
   ExpressionBinding,
-  getHtmlTagDefinition,
+  Node as HtmlAst,
   HtmlAstPath,
   NAMED_ENTITIES,
-  Node as HtmlAst,
   NullTemplateVisitor,
   ParseSpan,
   ReferenceAst,
@@ -31,6 +30,7 @@ import {
   TemplateBinding,
   Text,
   VariableBinding,
+  getHtmlTagDefinition,
 } from '@angular/compiler';
 import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 

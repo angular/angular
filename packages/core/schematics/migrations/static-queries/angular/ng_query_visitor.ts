@@ -15,7 +15,6 @@ import {
   getBaseTypeIdentifiers,
 } from '../../../utils/typescript/class_declaration';
 import {getPropertyNameText} from '../../../utils/typescript/property_name';
-
 import {getInputNamesOfClass} from './directive_inputs';
 import {NgQueryDefinition, QueryType} from './query-definition';
 

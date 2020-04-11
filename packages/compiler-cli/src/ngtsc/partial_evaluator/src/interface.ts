@@ -11,7 +11,6 @@ import * as ts from 'typescript';
 import {Reference} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
 import {ReflectionHost} from '../../reflection';
-
 import {StaticInterpreter} from './interpreter';
 import {ResolvedValue} from './result';
 

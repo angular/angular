@@ -8,9 +8,9 @@
 
 import {
   Component,
-  NgModule,
   ɵɵCopyDefinitionFeature as CopyDefinitionFeature,
   ɵɵInheritDefinitionFeature as InheritDefinitionFeature,
+  NgModule,
   ɵɵdefineComponent as defineComponent,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';

@@ -7,14 +7,13 @@
  */
 
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {ClassMemberKind, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {UmdReflectionHost} from '../../src/host/umd_host';
 import {MockLogger} from '../helpers/mock_logger';
 import {makeTestBundleProgram} from '../helpers/utils';
-
 import {expectTypeValueReferencesForParameters} from './util';
 
 runInEachFileSystem(() => {

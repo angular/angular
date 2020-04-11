@@ -8,6 +8,7 @@
 
 import {AttributeMarker} from '@angular/compiler/src/core';
 import {setup} from '@angular/compiler/test/aot/test_util';
+
 import {compile, expectEmit} from './mock_compile';
 
 /* These tests are codified version of the tests in compiler_canonical_spec.ts. Every

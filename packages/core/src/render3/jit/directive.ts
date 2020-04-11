@@ -27,7 +27,6 @@ import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF} from '../fields';
 import {ComponentType} from '../interfaces/definition';
 import {stringifyForError} from '../util/misc_utils';
-
 import {angularCoreEnv} from './environment';
 import {getJitOptions} from './jit_options';
 import {

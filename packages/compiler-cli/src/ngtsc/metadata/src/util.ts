@@ -13,12 +13,11 @@ import {
   ClassDeclaration,
   ClassMember,
   ClassMemberKind,
-  isNamedClassDeclaration,
   ReflectionHost,
+  isNamedClassDeclaration,
   reflectTypeEntityToDeclaration,
 } from '../../reflection';
 import {nodeDebugInfo} from '../../util/src/typescript';
-
 import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
 
 export function extractReferencesFromType(

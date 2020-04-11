@@ -12,7 +12,6 @@ import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import {splitAtColon} from '../../util';
 import * as t from '../r3_ast';
-
 import {R3QueryMetadata} from './api';
 import {isI18nAttribute} from './i18n/util';
 

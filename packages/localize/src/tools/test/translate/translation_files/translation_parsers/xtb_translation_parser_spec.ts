@@ -7,6 +7,7 @@
  */
 
 import {ɵcomputeMsgId, ɵmakeParsedTranslation} from '@angular/localize';
+
 import {Diagnostics} from '../../../../src/diagnostics';
 import {XtbTranslationParser} from '../../../../src/translate/translation_files/translation_parsers/xtb_translation_parser';
 

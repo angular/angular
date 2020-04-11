@@ -6,17 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isSyntaxError, Position} from '@angular/compiler';
+import {Position, isSyntaxError} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {
-  absoluteFrom,
   AbsoluteFsPath,
+  absoluteFrom,
   getFileSystem,
   relative,
   resolve,
 } from '../src/ngtsc/file_system';
-
 import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
 import * as api from './transformers/api';
 import * as ng from './transformers/entry_points';

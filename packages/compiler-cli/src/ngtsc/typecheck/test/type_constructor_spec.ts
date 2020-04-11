@@ -8,8 +8,8 @@
 
 import * as ts from 'typescript';
 
-import {absoluteFrom, getSourceFileOrError, LogicalFileSystem} from '../../file_system';
-import {runInEachFileSystem, TestFile} from '../../file_system/testing';
+import {LogicalFileSystem, absoluteFrom, getSourceFileOrError} from '../../file_system';
+import {TestFile, runInEachFileSystem} from '../../file_system/testing';
 import {
   AbsoluteModuleStrategy,
   LocalIdentifierStrategy,
@@ -18,12 +18,11 @@ import {
   Reference,
   ReferenceEmitter,
 } from '../../imports';
-import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
+import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {TypeCheckContext} from '../src/context';
 import {TypeCheckFile} from '../src/type_check_file';
-
 import {ALL_ENABLED_CONFIG} from './test_utils';
 
 runInEachFileSystem(() => {

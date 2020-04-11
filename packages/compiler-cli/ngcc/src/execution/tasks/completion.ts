@@ -9,9 +9,8 @@
 import {FileSystem, resolve} from '../../../../src/ngtsc/file_system';
 import {Logger} from '../../logging/logger';
 import {markAsProcessed} from '../../packages/build_marker';
-import {getEntryPointFormat, PackageJsonFormatProperties} from '../../packages/entry_point';
+import {PackageJsonFormatProperties, getEntryPointFormat} from '../../packages/entry_point';
 import {PackageJsonUpdater} from '../../writing/package_json_updater';
-
 import {Task, TaskCompletedCallback, TaskProcessingOutcome, TaskQueue} from './api';
 
 /**

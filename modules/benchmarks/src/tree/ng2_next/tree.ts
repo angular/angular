@@ -8,19 +8,19 @@
 
 import {NgIf} from '@angular/common';
 import {
+  ɵArgumentType as ArgumentType,
+  ɵBindingFlags as BindingFlags,
   ComponentFactory,
   ComponentFactoryResolver,
   ComponentRef,
   ErrorHandler,
   Injector,
   NgModuleRef,
+  ɵNodeFlags as NodeFlags,
   RendererFactory2,
   Sanitizer,
   TemplateRef,
   ViewContainerRef,
-  ɵArgumentType as ArgumentType,
-  ɵBindingFlags as BindingFlags,
-  ɵNodeFlags as NodeFlags,
   ɵViewDefinition as ViewDefinition,
   ɵViewFlags as ViewFlags,
   ɵand as anchorDef,
@@ -32,9 +32,9 @@ import {
   ɵvid as viewDef,
 } from '@angular/core';
 import {
-  SafeStyle,
   ɵDomRendererFactory2 as DomRendererFactory2,
   ɵDomSanitizerImpl as DomSanitizerImpl,
+  SafeStyle,
 } from '@angular/platform-browser';
 
 import {TreeNode, emptyTree} from '../util';

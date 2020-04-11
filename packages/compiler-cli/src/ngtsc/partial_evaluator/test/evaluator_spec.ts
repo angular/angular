@@ -17,7 +17,6 @@ import {getDeclaration, makeProgram} from '../../testing';
 import {DynamicValue} from '../src/dynamic';
 import {PartialEvaluator} from '../src/interface';
 import {EnumValue, ResolvedValue} from '../src/result';
-
 import {evaluate, firstArgFfr, makeEvaluator, makeExpression, owningModuleOf} from './utils';
 
 runInEachFileSystem(() => {

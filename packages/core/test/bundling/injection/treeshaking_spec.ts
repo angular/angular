@@ -7,6 +7,7 @@
  */
 
 import '@angular/compiler';
+
 import {INJECTOR, ScopedService} from './usage';
 
 describe('functional test for injection system bundling', () => {

@@ -9,7 +9,6 @@
 import {
   Directive,
   EventEmitter,
-  forwardRef,
   Inject,
   Input,
   OnChanges,
@@ -17,6 +16,7 @@ import {
   Output,
   Self,
   SimpleChanges,
+  forwardRef,
 } from '@angular/core';
 
 import {FormArray, FormControl, FormGroup} from '../../model';
@@ -33,7 +33,6 @@ import {
   setUpFormContainer,
   syncPendingControls,
 } from '../shared';
-
 import {FormControlName} from './form_control_name';
 import {FormArrayName, FormGroupName} from './form_group_name';
 

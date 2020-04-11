@@ -11,7 +11,6 @@ import {Injector} from '../../di/injector';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata';
 import {Sanitizer} from '../../sanitization/sanitizer';
-
 import {LContainer} from './container';
 import {
   ComponentDef,

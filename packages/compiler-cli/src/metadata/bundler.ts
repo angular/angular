@@ -7,15 +7,27 @@
  */
 
 import * as path from 'path';
+
 import * as ts from 'typescript';
 
 import {MetadataCache} from '../transformers/metadata_cache';
-
 import {MetadataCollector} from './collector';
 import {
   ClassMetadata,
   ConstructorMetadata,
   FunctionMetadata,
+  METADATA_VERSION,
+  MemberMetadata,
+  MetadataEntry,
+  MetadataError,
+  MetadataMap,
+  MetadataObject,
+  MetadataSymbolicExpression,
+  MetadataSymbolicReferenceExpression,
+  MetadataValue,
+  MethodMetadata,
+  ModuleExportMetadata,
+  ModuleMetadata,
   isClassMetadata,
   isConstructorMetadata,
   isFunctionMetadata,
@@ -27,18 +39,6 @@ import {
   isMetadataSymbolicCallExpression,
   isMetadataSymbolicExpression,
   isMethodMetadata,
-  MemberMetadata,
-  METADATA_VERSION,
-  MetadataEntry,
-  MetadataError,
-  MetadataMap,
-  MetadataObject,
-  MetadataSymbolicExpression,
-  MetadataSymbolicReferenceExpression,
-  MetadataValue,
-  MethodMetadata,
-  ModuleExportMetadata,
-  ModuleMetadata,
 } from './schema';
 
 // The character set used to produce private names.

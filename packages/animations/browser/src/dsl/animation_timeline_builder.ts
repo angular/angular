@@ -27,7 +27,6 @@ import {
   resolveTimingValue,
   visitDslNode,
 } from '../util';
-
 import {
   AnimateAst,
   AnimateChildAst,

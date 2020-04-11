@@ -17,7 +17,7 @@ import {
   InterpolationConfig,
 } from '../../../src/ml_parser/interpolation_config';
 import * as a from '../../../src/render3/r3_ast';
-import {htmlAstToRender3Ast, Render3ParseResult} from '../../../src/render3/r3_template_transform';
+import {Render3ParseResult, htmlAstToRender3Ast} from '../../../src/render3/r3_template_transform';
 import {I18nMetaVisitor} from '../../../src/render3/view/i18n/meta';
 import {BindingParser} from '../../../src/template_parser/binding_parser';
 import {MockSchemaRegistry} from '../../../testing';

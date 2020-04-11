@@ -15,11 +15,11 @@ import {
   NO_ERRORS_SCHEMA,
   NgModule,
   NgModuleRef,
-  ɵsetClassMetadata as setClassMetadata,
   ɵɵdefineComponent as defineComponent,
   ɵɵdefineInjector as defineInjector,
   ɵɵdefineNgModule as defineNgModule,
   ɵɵelement as element,
+  ɵsetClassMetadata as setClassMetadata,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';

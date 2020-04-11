@@ -10,7 +10,6 @@ import {getDocument} from '../render3/interfaces/document';
 import {SANITIZER} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
 import {renderStringify} from '../render3/util/misc_utils';
-
 import {BypassType, allowSanitizationBypassAndThrow, unwrapSafeValue} from './bypass';
 import {_sanitizeHtml} from './html_sanitizer';
 import {Sanitizer} from './sanitizer';

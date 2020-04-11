@@ -11,14 +11,13 @@ import {InjectableCompiler} from '../injectable_compiler';
 import {mapLiteral} from '../output/map_util';
 import * as o from '../output/output_ast';
 import {OutputContext} from '../util';
-
-import {compileFactoryFunction, R3DependencyMetadata, R3FactoryTarget} from './r3_factory';
+import {R3DependencyMetadata, R3FactoryTarget, compileFactoryFunction} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
 import {
+  R3Reference,
   convertMetaToOutput,
   jitOnlyGuardedExpression,
   mapToMapExpression,
-  R3Reference,
 } from './util';
 
 export interface R3NgModuleDef {

@@ -35,20 +35,20 @@ import {
   ReferenceAst,
   TemplateAst,
   TemplateAstVisitor,
-  templateVisitAll,
   TextAst,
   VariableAst,
+  templateVisitAll,
 } from '@angular/compiler/src/template_parser/template_ast';
-import {splitClasses, TemplateParser} from '@angular/compiler/src/template_parser/template_parser';
+import {TemplateParser, splitClasses} from '@angular/compiler/src/template_parser/template_parser';
 import {SchemaMetadata, SecurityContext} from '@angular/core';
 import {Console} from '@angular/core/src/console';
-import {inject, TestBed} from '@angular/core/testing';
+import {TestBed, inject} from '@angular/core/testing';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 import {
+  Identifiers,
   createTokenForExternalReference,
   createTokenForReference,
-  Identifiers,
 } from '../../src/identifiers';
 import {
   DEFAULT_INTERPOLATION_CONFIG,
@@ -58,7 +58,6 @@ import {newArray} from '../../src/util';
 import {MockSchemaRegistry} from '../../testing';
 import {unparse} from '../expression_parser/utils/unparser';
 import {TEST_COMPILER_PROVIDERS} from '../test_bindings';
-
 import {
   compileDirectiveMetadataCreate,
   compileTemplateMetadata,

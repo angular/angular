@@ -7,7 +7,6 @@
  */
 
 import {ParseError, ParseSourceSpan} from '../parse_util';
-
 import * as html from './ast';
 
 // http://cldr.unicode.org/index/cldr-spec/plural-rules

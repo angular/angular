@@ -8,7 +8,6 @@
 
 import {InjectorType} from '../di/interface/defs';
 import {stringify} from '../util/stringify';
-
 import {TNode} from './interfaces/node';
 import {LView, TVIEW} from './interfaces/view';
 import {INTERPOLATION_DELIMITER} from './util/misc_utils';

@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {compareVersions} from './diagnostics/typescript_version';
 
 /**

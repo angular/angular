@@ -12,12 +12,12 @@ import {LoadedRouterConfig, RunGuardsAndResolvers} from '../config';
 import {ChildrenOutletContexts, OutletContext} from '../router_outlet_context';
 import {
   ActivatedRouteSnapshot,
-  equalParamsAndUrlSegments,
   RouterStateSnapshot,
+  equalParamsAndUrlSegments,
 } from '../router_state';
 import {equalPath} from '../url_tree';
 import {forEach, shallowEqual} from '../utils/collection';
-import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
+import {TreeNode, nodeChildrenAsMap} from '../utils/tree';
 
 export class CanActivate {
   readonly route: ActivatedRouteSnapshot;

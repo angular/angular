@@ -7,6 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
+
 import {COMMON_DIRECTIVES} from './directives/index';
 import {NgLocaleLocalization, NgLocalization} from './i18n/localization';
 import {COMMON_PIPES} from './pipes/index';

@@ -34,7 +34,6 @@ import {
   patchOnProperties,
   wrapWithCurrentZone,
 } from '../common/utils';
-
 import {patchCallbacks} from './browser-util';
 import {eventNames, filterProperties} from './property-descriptor';
 

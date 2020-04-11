@@ -39,8 +39,8 @@ import {TestBed, TestComponentRenderer} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {
   By,
-  DomSanitizer,
   ɵDomRendererFactory2 as DomRendererFactory2,
+  DomSanitizer,
 } from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';

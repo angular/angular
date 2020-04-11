@@ -7,7 +7,6 @@
  */
 
 import {
-  compileInjectable as compileIvyInjectable,
   Expression,
   Identifiers,
   LiteralExpr,
@@ -17,6 +16,7 @@ import {
   R3ResolvedDependencyType,
   Statement,
   WrappedNodeExpr,
+  compileInjectable as compileIvyInjectable,
 } from '@angular/compiler';
 import * as ts from 'typescript';
 
@@ -31,7 +31,6 @@ import {
   DetectResult,
   HandlerPrecedence,
 } from '../../transform';
-
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
 import {

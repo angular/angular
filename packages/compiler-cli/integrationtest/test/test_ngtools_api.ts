@@ -10,10 +10,11 @@
 // Must be imported first, because Angular decorators throw on load.
 import 'reflect-metadata';
 
-import * as path from 'path';
-import * as ts from 'typescript';
 import * as assert from 'assert';
+import * as path from 'path';
+
 import {createProgram, readConfiguration} from '@angular/compiler-cli';
+import * as ts from 'typescript';
 
 /* tslint:disable:no-console  */
 /**

@@ -7,8 +7,6 @@
  */
 
 import {
-  compileInjector,
-  compileNgModule,
   CUSTOM_ELEMENTS_SCHEMA,
   Expression,
   ExternalExpr,
@@ -20,10 +18,12 @@ import {
   R3InjectorMetadata,
   R3NgModuleMetadata,
   R3Reference,
+  STRING_TYPE,
   SchemaMetadata,
   Statement,
-  STRING_TYPE,
   WrappedNodeExpr,
+  compileInjector,
+  compileNgModule,
 } from '@angular/compiler';
 import * as ts from 'typescript';
 
@@ -50,7 +50,6 @@ import {
   ResolveResult,
 } from '../../transform';
 import {getSourceFile} from '../../util/src/typescript';
-
 import {getProviderDiagnostics} from './diagnostics';
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';

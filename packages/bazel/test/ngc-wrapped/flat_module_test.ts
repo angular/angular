@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 import {existsSync, readFileSync} from 'fs';
 import {dirname, join} from 'path';
+
+import {obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 
 describe('flat_module ng_module', () => {
   let packageOutput: string;

@@ -13,6 +13,7 @@ import {
   Component,
   ComponentFactoryResolver,
   ComponentRef,
+  ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID,
   Directive,
   ElementRef,
   EventEmitter,
@@ -38,7 +39,6 @@ import {
   ViewChild,
   ViewContainerRef,
   forwardRef,
-  ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID,
 } from '@angular/core';
 import {ɵINJECTOR_SCOPE} from '@angular/core/src/core';
 import {ViewRef} from '@angular/core/src/render3/view_ref';

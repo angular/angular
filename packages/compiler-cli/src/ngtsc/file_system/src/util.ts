@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {AbsoluteFsPath} from './types';
 
 const TS_DTS_JS_EXTENSION = /(?:\.d)?\.ts$|\.js$/;

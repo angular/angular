@@ -7,10 +7,8 @@
  */
 
 import {ViewRef} from '../../linker/view_ref';
-
 import {TNode} from './node';
 import {RComment, RElement} from './renderer';
-
 import {HOST, LView, NEXT, PARENT, T_HOST} from './view';
 
 /**

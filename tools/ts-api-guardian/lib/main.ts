@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createPatch} from 'diff';
 import * as fs from 'fs';
 import * as path from 'path';
+
+import {createPatch} from 'diff';
+
 import {SerializationOptions, publicApi} from './serializer';
 
 export {SerializationOptions, publicApi} from './serializer';

@@ -10,17 +10,17 @@ import {
   CssSelector,
   ParseSourceFile,
   ParseSourceSpan,
-  parseTemplate,
   R3TargetBinder,
   SchemaMetadata,
   SelectorMatcher,
   TmplAstElement,
   TmplAstReference,
   Type,
+  parseTemplate,
 } from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, LogicalFileSystem} from '../../file_system';
+import {AbsoluteFsPath, LogicalFileSystem, absoluteFrom} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
 import {
   AbsoluteModuleStrategy,
@@ -32,16 +32,16 @@ import {
 } from '../../imports';
 import {
   ClassDeclaration,
-  isNamedClassDeclaration,
   TypeScriptReflectionHost,
+  isNamedClassDeclaration,
 } from '../../reflection';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {
   TemplateId,
   TemplateSourceMapping,
-  TypeCheckableDirectiveMeta,
   TypeCheckBlockMetadata,
+  TypeCheckableDirectiveMeta,
   TypeCheckingConfig,
 } from '../src/api';
 import {TypeCheckContext} from '../src/context';

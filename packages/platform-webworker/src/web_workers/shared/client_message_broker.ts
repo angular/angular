@@ -7,6 +7,7 @@
  */
 
 import {EventEmitter, Injectable, Type, ɵstringify as stringify} from '@angular/core';
+
 import {MessageBus} from './message_bus';
 import {Serializer, SerializerTypes} from './serializer';
 

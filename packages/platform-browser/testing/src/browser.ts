@@ -17,10 +17,11 @@ import {
   platformCore,
 } from '@angular/core';
 import {
-  BrowserModule,
   ɵBrowserDomAdapter as BrowserDomAdapter,
+  BrowserModule,
   ɵELEMENT_PROBE_PROVIDERS as ELEMENT_PROBE_PROVIDERS,
 } from '@angular/platform-browser';
+
 import {BrowserDetection, createNgZone} from './browser_util';
 
 function initBrowserTests() {

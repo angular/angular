@@ -11,8 +11,8 @@ import {
   AnimationEvent,
   AnimationPlayer,
   NoopAnimationPlayer,
-  ɵAnimationGroupPlayer,
   ɵPRE_STYLE as PRE_STYLE,
+  ɵAnimationGroupPlayer,
   ɵStyleData,
 } from '@angular/animations';
 

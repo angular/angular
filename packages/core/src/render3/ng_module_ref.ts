@@ -21,7 +21,6 @@ import {registerNgModuleType} from '../linker/ng_module_factory_registration';
 import {NgModuleDef} from '../metadata/ng_module';
 import {assertDefined} from '../util/assert';
 import {stringify} from '../util/stringify';
-
 import {ComponentFactoryResolver} from './component_ref';
 import {getNgLocaleIdDef, getNgModuleDef} from './definition';
 import {setLocaleId} from './i18n';

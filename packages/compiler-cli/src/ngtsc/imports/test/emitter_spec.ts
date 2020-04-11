@@ -9,8 +9,8 @@
 import {ExternalExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {absoluteFrom as _, LogicalFileSystem} from '../../file_system';
-import {runInEachFileSystem, TestFile} from '../../file_system/testing';
+import {LogicalFileSystem, absoluteFrom as _} from '../../file_system';
+import {TestFile, runInEachFileSystem} from '../../file_system/testing';
 import {Declaration, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {AbsoluteModuleStrategy, ImportFlags, LogicalProjectStrategy} from '../src/emitter';

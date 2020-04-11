@@ -9,14 +9,15 @@
 import {ɵAnimationEngine} from '@angular/animations/browser';
 import {
   DOCUMENT,
-  PlatformLocation,
-  ViewportScroller,
   ɵNullViewportScroller as NullViewportScroller,
   ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID,
+  PlatformLocation,
+  ViewportScroller,
   ɵgetDOM as getDOM,
 } from '@angular/common';
 import {HttpClientModule} from '@angular/common/http';
 import {
+  ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS,
   Injector,
   NgModule,
   NgZone,
@@ -30,7 +31,6 @@ import {
   Testability,
   createPlatformFactory,
   platformCore,
-  ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS,
   ɵsetDocument,
 } from '@angular/core';
 import {

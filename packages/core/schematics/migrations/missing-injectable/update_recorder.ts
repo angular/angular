@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {ImportManagerUpdateRecorder} from '../../utils/import_manager';
 
 /**

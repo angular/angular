@@ -7,12 +7,12 @@
  */
 
 import {
-  core as compilerCore,
   StaticReflector,
   StaticSymbol,
   StaticSymbolCache,
   StaticSymbolResolver,
   StaticSymbolResolverHost,
+  core as compilerCore,
 } from '@angular/compiler';
 import {CollectorOptions, METADATA_VERSION} from '@angular/compiler-cli';
 

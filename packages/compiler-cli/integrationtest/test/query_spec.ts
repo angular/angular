@@ -7,8 +7,10 @@
  */
 
 import './init';
+
 import {QueryList} from '@angular/core';
 import {By} from '@angular/platform-browser';
+
 import {CompForChildQuery, CompWithChildQuery} from '../src/queries';
 import {createComponent} from './util';
 

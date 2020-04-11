@@ -8,10 +8,10 @@
 
 import * as ts from 'typescript';
 
-import {isClassMetadata, MetadataCollector} from '../../src/metadata/index';
+import {MetadataCollector, isClassMetadata} from '../../src/metadata/index';
 import {
-  getInlineResourcesTransformFactory,
   InlineResourcesMetadataTransformer,
+  getInlineResourcesTransformFactory,
 } from '../../src/transformers/inline_resources';
 import {MetadataCache} from '../../src/transformers/metadata_cache';
 import {MockAotContext, MockCompilerHost} from '../mocks';

@@ -10,8 +10,7 @@ import * as ts from 'typescript';
 
 import {OwningModule, Reference} from '../../imports';
 import {ReflectionHost} from '../../reflection';
-
-import {canEmitType, ResolvedTypeReference, TypeEmitter} from './type_emitter';
+import {ResolvedTypeReference, TypeEmitter, canEmitType} from './type_emitter';
 
 /**
  * See `TypeEmitter` for more information on the emitting process.

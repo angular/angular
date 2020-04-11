@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {relative} from 'path';
+
+import {Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
 import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {createMigrationProgram} from '../../utils/typescript/compiler_host';
-
 import {
   COMMON_IMPORT,
   DOCUMENT_TOKEN_NAME,

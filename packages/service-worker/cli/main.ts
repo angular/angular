@@ -9,6 +9,7 @@
 const {Generator, NgswConfig} = require('@angular/service-worker/config');
 const fs = require('fs');
 const path = require('path');
+
 import {NodeFilesystem} from './filesystem';
 
 const cwd = process.cwd();

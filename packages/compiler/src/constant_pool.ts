@@ -7,7 +7,7 @@
  */
 
 import * as o from './output/output_ast';
-import {error, OutputContext} from './util';
+import {OutputContext, error} from './util';
 
 const CONSTANT_PREFIX = '_c';
 

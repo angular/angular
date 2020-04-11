@@ -7,6 +7,7 @@
  */
 
 import {
+  ɵAnimationGroupPlayer as AnimationGroupPlayer,
   animate,
   animateChild,
   group,
@@ -15,7 +16,6 @@ import {
   style,
   transition,
   trigger,
-  ɵAnimationGroupPlayer as AnimationGroupPlayer,
 } from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
 import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';

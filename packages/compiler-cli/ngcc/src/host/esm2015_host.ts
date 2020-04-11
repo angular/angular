@@ -16,25 +16,24 @@ import {
   CtorParameter,
   Declaration,
   Decorator,
-  isDecoratorIdentifier,
   KnownDeclaration,
-  reflectObjectLiteral,
   TypeScriptReflectionHost,
   TypeValueReference,
+  isDecoratorIdentifier,
+  reflectObjectLiteral,
 } from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
-
 import {
   ClassSymbol,
-  isSwitchableVariableDeclaration,
   ModuleWithProvidersFunction,
   NgccClassSymbol,
   NgccReflectionHost,
   PRE_R3_MARKER,
   SwitchableVariableDeclaration,
+  isSwitchableVariableDeclaration,
 } from './ngcc_host';
 
 export const DECORATORS = 'decorators' as ts.__String;

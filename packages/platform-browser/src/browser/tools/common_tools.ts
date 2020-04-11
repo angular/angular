@@ -8,6 +8,7 @@
 
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {ApplicationRef, ComponentRef} from '@angular/core';
+
 import {window} from './browser';
 
 export class ChangeDetectionPerfRecord {

@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {getImportsOfUmdModule, parseStatementForUmdModule} from '../host/umd_host';
 import {DependencyHostBase} from './dependency_host';

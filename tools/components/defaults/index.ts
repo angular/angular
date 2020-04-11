@@ -8,7 +8,6 @@
 
 // @ts-ignore Cannot find module
 import {enableProdMode} from '@angular/core';
-
 // @ts-ignore Cannot find module
 import {platformBrowser} from '@angular/platform-browser';
 

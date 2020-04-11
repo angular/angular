@@ -11,7 +11,6 @@ import {Subject} from 'rxjs';
 import {Adapter, Context} from '../src/adapter';
 import {AssetGroupConfig, Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
-
 import {MockCacheStorage} from './cache';
 import {MockHeaders, MockRequest, MockResponse} from './fetch';
 import {MockServerState, MockServerStateBuilder} from './mock';

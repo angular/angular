@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommitMessageConfig} from './config';
 import {getAngularDevConfig} from '../utils/config';
+import {CommitMessageConfig} from './config';
 
 /** Options for commit message validation. */
 export interface ValidateCommitMessageOptions {

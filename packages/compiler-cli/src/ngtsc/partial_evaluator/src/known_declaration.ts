@@ -7,7 +7,6 @@
  */
 
 import {KnownDeclaration} from '../../reflection/src/host';
-
 import {ObjectAssignBuiltinFn} from './builtin';
 import {ResolvedValue} from './result';
 import {AssignHelperFn, SpreadHelperFn} from './ts_helpers';

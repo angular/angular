@@ -9,13 +9,12 @@
 import * as ts from 'typescript';
 
 import {
+  MetadataObject,
+  MetadataValue,
   isClassMetadata,
   isMetadataImportedSymbolReferenceExpression,
   isMetadataSymbolicCallExpression,
-  MetadataObject,
-  MetadataValue,
 } from '../metadata/index';
-
 import {MetadataTransformer, ValueTransform} from './metadata_cache';
 
 const PRECONDITIONS_TEXT =

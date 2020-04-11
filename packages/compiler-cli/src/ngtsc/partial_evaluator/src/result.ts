@@ -10,7 +10,6 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {Declaration} from '../../reflection';
-
 import {DynamicValue} from './dynamic';
 
 /**

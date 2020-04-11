@@ -11,7 +11,6 @@ import {XmlParser} from '../../ml_parser/xml_parser';
 import {decimalDigest} from '../digest';
 import * as i18n from '../i18n_ast';
 import {I18nError} from '../parse_util';
-
 import {Serializer} from './serializer';
 import * as xml from './xml_helper';
 

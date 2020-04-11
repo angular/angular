@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {exec} from 'shelljs';
-import {join} from 'path';
-import {parse} from 'json5';
 import {readFileSync} from 'fs';
+import {join} from 'path';
+
+import {parse} from 'json5';
+import {exec} from 'shelljs';
 
 /**
  * Gets the path of the directory for the repository base.

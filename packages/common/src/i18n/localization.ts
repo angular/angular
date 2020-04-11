@@ -7,6 +7,7 @@
  */
 
 import {Inject, Injectable, LOCALE_ID} from '@angular/core';
+
 import {Plural, getLocalePluralCase} from './locale_data_api';
 
 /**

@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {relative} from 'path';
+
 import {logging, normalize} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
-import {relative} from 'path';
 
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {createMigrationProgram} from '../../utils/typescript/compiler_host';
-
 import {analyzeResolvedTemplate} from './analyze_template';
 
 type Logger = logging.LoggerApi;

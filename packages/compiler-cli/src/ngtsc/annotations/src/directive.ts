@@ -7,21 +7,21 @@
  */
 
 import {
-  compileDirectiveFromMetadata,
   ConstantPool,
   Expression,
   Identifiers,
-  makeBindingParser,
-  ParsedHostBindings,
   ParseError,
-  parseHostBindings,
+  ParsedHostBindings,
   R3DependencyMetadata,
   R3DirectiveMetadata,
   R3FactoryTarget,
   R3QueryMetadata,
   Statement,
-  verifyHostBindings,
   WrappedNodeExpr,
+  compileDirectiveFromMetadata,
+  makeBindingParser,
+  parseHostBindings,
+  verifyHostBindings,
 } from '@angular/compiler';
 import * as ts from 'typescript';
 
@@ -35,8 +35,8 @@ import {
   ClassMember,
   ClassMemberKind,
   Decorator,
-  filterToMembersWithDecorator,
   ReflectionHost,
+  filterToMembersWithDecorator,
   reflectObjectLiteral,
 } from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
@@ -49,7 +49,6 @@ import {
   HandlerPrecedence,
   ResolveResult,
 } from '../../transform';
-
 import {getDirectiveDiagnostics, getProviderDiagnostics} from './diagnostics';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';

@@ -29,7 +29,6 @@ import {
   getDowngradedModuleCount,
   isFunction,
 } from '../../src/common/src/util';
-
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 import {NgAdapterInjector} from './util';
 

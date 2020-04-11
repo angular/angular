@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {readFileSync} from 'fs';
 import * as path from 'path';
 
 import {cd, exec, set} from 'shelljs';
-import {logGroup, logHeader} from './logging';
 
-import {PullApproveGroup} from './group';
 import {getRepoBaseDir} from '../utils/config';
+import {PullApproveGroup} from './group';
+import {logGroup, logHeader} from './logging';
 import {parsePullApproveYaml} from './parse-yaml';
-import {readFileSync} from 'fs';
 
 export function verify() {
   // Exit early on shelljs errors

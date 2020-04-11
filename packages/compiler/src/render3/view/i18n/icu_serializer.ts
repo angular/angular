@@ -7,7 +7,6 @@
  */
 
 import * as i18n from '../../../i18n/i18n_ast';
-
 import {formatI18nPlaceholderName} from './util';
 
 class IcuSerializerVisitor implements i18n.Visitor {

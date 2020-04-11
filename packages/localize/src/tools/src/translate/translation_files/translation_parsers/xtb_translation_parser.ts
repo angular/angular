@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {extname} from 'path';
+
 import {Element, ParseErrorLevel, visitAll} from '@angular/compiler';
 import {ɵParsedTranslation} from '@angular/localize';
-import {extname} from 'path';
 
 import {Diagnostics} from '../../../diagnostics';
 import {BaseVisitor} from '../base_visitor';
 import {MessageSerializer} from '../message_serialization/message_serializer';
 import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
-
 import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
 import {
   XmlTranslationParserHint,

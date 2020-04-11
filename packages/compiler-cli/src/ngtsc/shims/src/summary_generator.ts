@@ -8,9 +8,8 @@
 
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
+import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
-
 import {ShimGenerator} from './api';
 import {generatedModuleName} from './util';
 

@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {runInEachFileSystem} from '../../file_system/testing';
+import {getTemplateIdentifiers} from '../src/template';
+import * as util from './util';
 import {
   AbsoluteSourceSpan,
   AttributeIdentifier,
@@ -16,9 +19,6 @@ import {
   TopLevelIdentifier,
   VariableIdentifier,
 } from '..';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {getTemplateIdentifiers} from '../src/template';
-import * as util from './util';
 
 function bind(template: string) {
   return util.getBoundTemplate(template, {

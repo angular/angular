@@ -31,7 +31,7 @@ import {
   SafePropertyRead,
 } from '@angular/compiler';
 
-import {createDiagnostic, Diagnostic} from './diagnostic_messages';
+import {Diagnostic, createDiagnostic} from './diagnostic_messages';
 import {BuiltinType, Signature, Symbol, SymbolQuery, SymbolTable} from './symbols';
 import * as ng from './types';
 

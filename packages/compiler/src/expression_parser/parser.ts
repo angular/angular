@@ -9,12 +9,11 @@
 import * as chars from '../chars';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 import {escapeRegExp} from '../util';
-
 import {
-  AbsoluteSourceSpan,
   AST,
-  AstVisitor,
   ASTWithSource,
+  AbsoluteSourceSpan,
+  AstVisitor,
   Binary,
   BindingPipe,
   Chain,
@@ -32,8 +31,8 @@ import {
   LiteralPrimitive,
   MethodCall,
   NonNullAssert,
-  ParserError,
   ParseSpan,
+  ParserError,
   PrefixNot,
   PropertyRead,
   PropertyWrite,
@@ -44,7 +43,7 @@ import {
   TemplateBindingIdentifier,
   VariableBinding,
 } from './ast';
-import {EOF, isIdentifier, isQuote, Lexer, Token, TokenType} from './lexer';
+import {EOF, Lexer, Token, TokenType, isIdentifier, isQuote} from './lexer';
 
 export class SplitInterpolation {
   constructor(public strings: string[], public expressions: string[], public offsets: number[]) {}

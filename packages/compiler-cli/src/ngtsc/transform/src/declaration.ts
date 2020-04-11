@@ -12,7 +12,6 @@ import * as ts from 'typescript';
 import {ImportRewriter} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 import {ImportManager, translateType} from '../../translator';
-
 import {DtsTransform} from './api';
 import {addImports} from './utils';
 

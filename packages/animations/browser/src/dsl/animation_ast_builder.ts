@@ -46,7 +46,6 @@ import {
   validateStyleParams,
   visitDslNode,
 } from '../util';
-
 import {
   AnimateAst,
   AnimateChildAst,

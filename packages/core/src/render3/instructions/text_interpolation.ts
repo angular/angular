@@ -8,7 +8,6 @@
 
 import {getLView, getSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
-
 import {
   interpolation1,
   interpolation2,

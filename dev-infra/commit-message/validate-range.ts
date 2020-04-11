@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ValidateCommitMessageOptions, parseCommitMessage, validateCommitMessage} from './validate';
-
 import {exec} from 'shelljs';
+
+import {ValidateCommitMessageOptions, parseCommitMessage, validateCommitMessage} from './validate';
 
 // Whether the provided commit is a fixup commit.
 const isNonFixup = (m: string) => !parseCommitMessage(m).isFixup;

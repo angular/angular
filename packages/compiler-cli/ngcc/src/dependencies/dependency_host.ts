@@ -9,7 +9,6 @@
 import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_system';
 import {EntryPoint} from '../packages/entry_point';
 import {resolveFileWithPostfixes} from '../utils';
-
 import {ModuleResolver} from './module_resolver';
 
 export interface DependencyHost {

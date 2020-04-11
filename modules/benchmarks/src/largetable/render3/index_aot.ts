@@ -9,7 +9,6 @@
 import {ɵrenderComponent as renderComponent} from '@angular/core';
 
 import {bindAction, profile} from '../../util';
-
 import {LargeTableComponent, createDom, destroyDom} from './table';
 
 function noop() {}

@@ -7,7 +7,9 @@
  */
 
 import '@angular/core/test/bundling/util/src/reflect_metadata';
+
 import './translations';
+
 import {CommonModule} from '@angular/common';
 import {
   Component,

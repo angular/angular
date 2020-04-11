@@ -6,16 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as chokidar from 'chokidar';
 import * as path from 'path';
+
+import * as chokidar from 'chokidar';
 import * as ts from 'typescript';
 
 import {
   Diagnostics,
-  exitCodeFromResult,
   ParsedConfiguration,
-  performCompilation,
   PerformCompilationResult,
+  exitCodeFromResult,
+  performCompilation,
   readConfiguration,
 } from './perform_compile';
 import * as api from './transformers/api';

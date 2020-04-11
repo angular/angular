@@ -11,14 +11,16 @@
 // TODO(alexeagle): why not import chalk from 'chalk'?
 // Something to do with TS default export in UMD emit...
 const chalk = require('chalk');
-import * as minimist from 'minimist';
+
 import * as path from 'path';
+
+import * as minimist from 'minimist';
 
 import {
   SerializationOptions,
+  discoverAllEntrypoints,
   generateGoldenFile,
   verifyAgainstGoldenFile,
-  discoverAllEntrypoints,
 } from './main';
 
 /** Name of the CLI */

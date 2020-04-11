@@ -11,12 +11,11 @@ import * as ts from 'typescript';
 
 import {
   CollectorOptions,
-  isMetadataGlobalReferenceExpression,
   MetadataCollector,
   MetadataValue,
   ModuleMetadata,
+  isMetadataGlobalReferenceExpression,
 } from '../metadata/index';
-
 import {MetadataCache, MetadataTransformer, ValueTransform} from './metadata_cache';
 
 export interface LoweringRequest {

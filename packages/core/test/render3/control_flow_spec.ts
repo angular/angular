@@ -21,7 +21,6 @@ import {
   ɵɵtextInterpolate,
 } from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-
 import {ComponentFixture, TemplateFixture, createComponent} from './render_util';
 
 describe('JS control flow', () => {

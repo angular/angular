@@ -7,6 +7,7 @@
  */
 
 import {NoopAnimationPlayer} from '@angular/animations';
+
 import {hypenatePropsObject} from '../shared';
 
 export class DirectStylePlayer extends NoopAnimationPlayer {

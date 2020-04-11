@@ -12,7 +12,6 @@ import * as o from '@angular/compiler/src/output/output_ast';
 import {SourceMap} from '@angular/compiler/src/output/source_map';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
 import {ParseSourceSpan} from '@angular/compiler/src/parse_util';
-
 import {
   extractSourceMap,
   originalPositionFor,

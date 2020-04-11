@@ -19,20 +19,20 @@ import {
   DirectiveAst,
   ElementAst,
   EmbeddedTemplateAst,
-  identifierName,
   Node,
   ParseSourceSpan,
   RecursiveTemplateAstVisitor,
   ReferenceAst,
   TemplateAst,
   TemplateAstPath,
+  VariableAst,
+  identifierName,
   templateVisitAll,
   tokenReference,
-  VariableAst,
 } from '@angular/compiler';
 
 import {AstResult} from './common';
-import {createDiagnostic, Diagnostic} from './diagnostic_messages';
+import {Diagnostic, createDiagnostic} from './diagnostic_messages';
 import {AstType} from './expression_type';
 import {
   BuiltinType,

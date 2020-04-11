@@ -7,6 +7,7 @@
  */
 
 import {setup} from '@angular/compiler/test/aot/test_util';
+
 import {compile, expectEmit} from './mock_compile';
 
 describe('mock_compiler', () => {

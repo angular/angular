@@ -13,11 +13,10 @@ import {AbsoluteFsPath} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
-
 import {
   TemplateSourceMapping,
-  TypeCheckableDirectiveMeta,
   TypeCheckBlockMetadata,
+  TypeCheckableDirectiveMeta,
   TypeCheckingConfig,
   TypeCtorMetadata,
 } from './api';

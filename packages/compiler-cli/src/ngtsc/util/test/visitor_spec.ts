@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {makeProgram} from '../../testing';
-import {visit, VisitListEntryResult, Visitor} from '../src/visitor';
+import {VisitListEntryResult, Visitor, visit} from '../src/visitor';
 
 class TestAstVisitor extends Visitor {
   visitClassDeclaration(

@@ -36,7 +36,6 @@ import {
   ɵɵtextInterpolate,
 } from '../../src/render3/instructions/all';
 import {ComponentDef, RenderFlags} from '../../src/render3/interfaces/definition';
-
 import {NgIf} from './common_with_def';
 import {
   ComponentFixture,

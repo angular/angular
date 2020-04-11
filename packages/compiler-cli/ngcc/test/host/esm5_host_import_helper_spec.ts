@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {
   ClassMemberKind,
   isNamedFunctionDeclaration,
@@ -24,7 +24,6 @@ import {
   convertToInlineTsLib,
   makeTestBundleProgram,
 } from '../helpers/utils';
-
 import {expectTypeValueReferencesForParameters} from './util';
 
 runInEachFileSystem(() => {

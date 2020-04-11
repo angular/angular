@@ -8,21 +8,21 @@
 
 /// <reference types="node" />
 
-import {DepGraph} from 'dependency-graph';
 import * as os from 'os';
+
+import {DepGraph} from 'dependency-graph';
 import * as ts from 'typescript';
 
-import {readConfiguration} from '../..';
 import {replaceTsWithNgInErrors} from '../../src/ngtsc/diagnostics';
 import {
-  absoluteFrom,
   AbsoluteFsPath,
-  dirname,
   FileSystem,
+  absoluteFrom,
+  dirname,
   getFileSystem,
   resolve,
 } from '../../src/ngtsc/file_system';
-
+import {readConfiguration} from '../..';
 import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
 import {DependencyResolver, InvalidEntryPoint} from './dependencies/dependency_resolver';
 import {DtsDependencyHost} from './dependencies/dts_dependency_host';
@@ -59,15 +59,15 @@ import {AsyncLocker} from './locking/async_locker';
 import {LockFileWithChildProcess} from './locking/lock_file_with_child_process';
 import {SyncLocker} from './locking/sync_locker';
 import {ConsoleLogger} from './logging/console_logger';
-import {Logger, LogLevel} from './logging/logger';
+import {LogLevel, Logger} from './logging/logger';
 import {hasBeenProcessed} from './packages/build_marker';
 import {NgccConfiguration} from './packages/configuration';
 import {
   EntryPoint,
   EntryPointJsonProperty,
   EntryPointPackageJson,
-  getEntryPointFormat,
   SUPPORTED_FORMAT_PROPERTIES,
+  getEntryPointFormat,
 } from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {EntryPointManifest, InvalidatingEntryPointManifest} from './packages/entry_point_manifest';

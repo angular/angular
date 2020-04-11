@@ -8,9 +8,8 @@
 
 import {commentRegex, fromComment, mapFileCommentRegex} from 'convert-source-map';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, absoluteFrom} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
-
 import {RawSourceMap} from './raw_source_map';
 import {SourceFile} from './source_file';
 

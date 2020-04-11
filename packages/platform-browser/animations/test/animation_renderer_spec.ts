@@ -26,8 +26,8 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
-  BrowserAnimationsModule,
   ɵAnimationRendererFactory as AnimationRendererFactory,
+  BrowserAnimationsModule,
   ɵInjectableAnimationEngine as InjectableAnimationEngine,
 } from '@angular/platform-browser/animations';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';

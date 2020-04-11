@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT, isPlatformBrowser, ɵgetDOM as getDOM} from '@angular/common';
+import {DOCUMENT, ɵgetDOM as getDOM, isPlatformBrowser} from '@angular/common';
 import {
   APP_INITIALIZER,
   CUSTOM_ELEMENTS_SCHEMA,

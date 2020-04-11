@@ -7,7 +7,6 @@
  */
 
 import {assertDefined, assertEqual} from '../util/assert';
-
 import {
   TContainerNode,
   TElementContainerNode,

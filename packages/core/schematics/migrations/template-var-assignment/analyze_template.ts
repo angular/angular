@@ -8,6 +8,7 @@
 
 import {PropertyWrite} from '@angular/compiler';
 import {visitAll} from '@angular/compiler/src/render3/r3_ast';
+
 import {ResolvedTemplate} from '../../utils/ng_component_template';
 import {parseHtmlGracefully} from '../../utils/parse_html';
 import {HtmlVariableAssignmentVisitor} from './angular/html_variable_assignment_visitor';

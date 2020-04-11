@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import '../lib/common/error-rewrite';
-
 // import 'core-js/features/set';
 // import 'core-js/features/map';
 // List all tests here:

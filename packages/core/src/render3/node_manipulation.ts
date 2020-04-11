@@ -10,7 +10,6 @@ import {Renderer2} from '../core';
 import {ViewEncapsulation} from '../metadata/view';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertDomNode, assertEqual, assertString} from '../util/assert';
-
 import {assertLContainer, assertLView, assertTNodeForLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {
@@ -35,12 +34,12 @@ import {
 } from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {
-  isProceduralRenderer,
   ProceduralRenderer3,
   RElement,
-  Renderer3,
   RNode,
   RText,
+  Renderer3,
+  isProceduralRenderer,
   unusedValueExportToPlacateAjd as unused4,
 } from './interfaces/renderer';
 import {isLContainer, isLView} from './interfaces/type_checks';
@@ -51,18 +50,18 @@ import {
   DECLARATION_LCONTAINER,
   DestroyHookData,
   FLAGS,
+  HOST,
   HookData,
   HookFn,
-  HOST,
   LView,
   LViewFlags,
   NEXT,
   PARENT,
   QUERIES,
   RENDERER,
-  T_HOST,
   TVIEW,
   TView,
+  T_HOST,
   unusedValueExportToPlacateAjd as unused5,
 } from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';

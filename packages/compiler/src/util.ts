@@ -7,7 +7,6 @@
  */
 
 import {ConstantPool} from './constant_pool';
-
 import * as o from './output/output_ast';
 import {ParseError} from './parse_util';
 

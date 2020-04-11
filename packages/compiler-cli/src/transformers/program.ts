@@ -6,18 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as fs from 'fs';
+import * as path from 'path';
+
 import {
   AotCompiler,
   AotCompilerHost,
   AotCompilerOptions,
-  core,
-  createAotCompiler,
   EmitterVisitorContext,
   FormattedMessageChain,
   GeneratedFile,
-  getParseErrors,
-  isFormattedError,
-  isSyntaxError,
   MessageBundle,
   NgAnalyzedFile,
   NgAnalyzedFileWithInjectables,
@@ -31,16 +29,18 @@ import {
   Xliff,
   Xliff2,
   Xmb,
+  core,
+  createAotCompiler,
+  getParseErrors,
+  isFormattedError,
+  isSyntaxError,
 } from '@angular/compiler';
-import * as fs from 'fs';
-import * as path from 'path';
 import * as ts from 'typescript';
 
-import {translateDiagnostics, TypeCheckHost} from '../diagnostics/translate_diagnostics';
-import {createBundleIndexHost, MetadataCollector, ModuleMetadata} from '../metadata';
+import {TypeCheckHost, translateDiagnostics} from '../diagnostics/translate_diagnostics';
+import {MetadataCollector, ModuleMetadata, createBundleIndexHost} from '../metadata';
 import {NgtscProgram} from '../ngtsc/program';
 import {verifySupportedTypeScriptVersion} from '../typescript_support';
-
 import {
   CompilerHost,
   CompilerOptions,
@@ -59,30 +59,30 @@ import {
 } from './api';
 import {
   CodeGenerator,
-  getOriginalReferences,
   TsCompilerAotCompilerTypeCheckHostAdapter,
+  getOriginalReferences,
 } from './compiler_host';
 import {
-  getInlineResourcesTransformFactory,
   InlineResourcesMetadataTransformer,
+  getInlineResourcesTransformFactory,
 } from './inline_resources';
-import {getExpressionLoweringTransformFactory, LowerMetadataTransform} from './lower_expressions';
+import {LowerMetadataTransform, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {MetadataCache, MetadataTransformer} from './metadata_cache';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 import {PartialModuleMetadataTransformer} from './r3_metadata_transform';
 import {
-  getDecoratorStripTransformerFactory,
   StripDecoratorsMetadataTransformer,
+  getDecoratorStripTransformerFactory,
 } from './r3_strip_decorators';
 import {getAngularClassTransformerFactory} from './r3_transform';
 import {
-  createMessageDiagnostic,
   DTS,
   GENERATED_FILES,
-  isInRootDir,
-  ngToTsDiagnostic,
   StructureIsReused,
   TS,
+  createMessageDiagnostic,
+  isInRootDir,
+  ngToTsDiagnostic,
   tsStructureIsReused,
   userError,
 } from './util';

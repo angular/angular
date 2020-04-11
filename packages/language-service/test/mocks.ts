@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as fs from 'fs';
+import * as path from 'path';
+
 import {
-  analyzeNgModules,
   AotSummaryResolver,
   CompileMetadataResolver,
   CompilerConfig,
-  createOfflineCompileUrlResolver,
   DirectiveNormalizer,
   DirectiveResolver,
   DomElementSchemaRegistry,
@@ -21,8 +22,8 @@ import {
   Lexer,
   NgAnalyzedModules,
   NgModuleResolver,
-  Parser,
   ParseTreeResult,
+  Parser,
   PipeResolver,
   ResourceLoader,
   StaticReflector,
@@ -31,12 +32,12 @@ import {
   StaticSymbolResolver,
   StaticSymbolResolverHost,
   TemplateParser,
+  analyzeNgModules,
+  createOfflineCompileUrlResolver,
 } from '@angular/compiler';
 import {Directory, MockAotContext} from '@angular/compiler-cli/test/mocks';
 import {setup} from '@angular/compiler-cli/test/test_support';
-import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
-import * as fs from 'fs';
-import * as path from 'path';
+import {ɵConsole as Console, ViewEncapsulation} from '@angular/core';
 import * as ts from 'typescript';
 
 import {DiagnosticTemplateInfo} from '../src/expression_diagnostics';

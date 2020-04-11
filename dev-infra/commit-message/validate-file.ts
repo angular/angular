@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getRepoBaseDir} from '../utils/config';
 import {readFileSync} from 'fs';
 import {resolve} from 'path';
+
+import {getRepoBaseDir} from '../utils/config';
 import {validateCommitMessage} from './validate';
 
 /** Validate commit message at the provided file path. */

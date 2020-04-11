@@ -19,7 +19,6 @@ import {
 } from 'rxjs/operators';
 
 import {asyncTest, ifEnvSupports} from '../test-util';
-
 import {supportFeature} from './rxjs.util';
 
 describe('Observable.merge', () => {

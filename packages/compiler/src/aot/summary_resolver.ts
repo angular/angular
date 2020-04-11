@@ -7,7 +7,6 @@
  */
 
 import {Summary, SummaryResolver} from '../summary_resolver';
-
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
 import {deserializeSummaries} from './summary_serializer';
 import {stripGeneratedFileSuffix, summaryFileName} from './util';

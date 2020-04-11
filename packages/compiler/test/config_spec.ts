@@ -7,6 +7,7 @@
  */
 
 import {MissingTranslationStrategy} from '@angular/core';
+
 import {CompilerConfig, preserveWhitespacesDefault} from '../src/config';
 
 {

@@ -14,12 +14,11 @@ import {MainModule} from '../src/module';
 import {
   CompUsingLibModuleDirectiveAndPipe,
   CompUsingRootModuleDirectiveAndPipe,
-  ServiceUsingLibModule,
   SOME_TOKEN,
+  ServiceUsingLibModule,
   SomeLibModule,
   SomeService,
 } from '../src/module_fixtures';
-
 import {createComponent, createModule} from './util';
 
 describe('NgModule', () => {

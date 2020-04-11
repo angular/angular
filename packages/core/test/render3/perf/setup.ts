@@ -21,7 +21,6 @@ import {TAttributes, TNodeType, TViewNode} from '../../../src/render3/interfaces
 import {RendererFactory3, domRendererFactory3} from '../../../src/render3/interfaces/renderer';
 import {LView, LViewFlags, TVIEW, TView, TViewType} from '../../../src/render3/interfaces/view';
 import {insertView} from '../../../src/render3/node_manipulation';
-
 import {MicroBenchmarkRendererFactory} from './noop_renderer';
 
 const isBrowser = typeof process === 'undefined';

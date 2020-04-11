@@ -9,7 +9,6 @@
 import '../util/ng_dev_mode';
 
 import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
-
 import {
   AttributeMarker,
   TAttributes,

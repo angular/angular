@@ -10,7 +10,6 @@ import {ApplicationRef, NgModuleRef} from '@angular/core';
 
 import {bindAction, profile} from '../../util';
 import {buildTree, emptyTree} from '../util';
-
 import {AppModule, TreeComponent} from './tree';
 
 export function init(moduleRef: NgModuleRef<AppModule>) {

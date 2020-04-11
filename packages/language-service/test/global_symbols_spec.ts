@@ -8,9 +8,8 @@
 
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {createGlobalSymbolTable, EMPTY_SYMBOL_TABLE} from '../src/global_symbols';
+import {EMPTY_SYMBOL_TABLE, createGlobalSymbolTable} from '../src/global_symbols';
 import {getSymbolQuery} from '../src/typescript_symbols';
-
 import {MockTypescriptHost} from './test_utils';
 
 describe('GlobalSymbolTable', () => {

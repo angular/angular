@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileReflector, core, DirectiveResolver} from '@angular/compiler';
+import {CompileReflector, DirectiveResolver, core} from '@angular/compiler';
 
 /**
  * An implementation of {@link DirectiveResolver} that allows overriding

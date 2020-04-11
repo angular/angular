@@ -7,11 +7,11 @@
  */
 
 import * as path from 'path';
+
 import * as ts from 'typescript';
 
 import {ReflectorHost} from '../src/reflector_host';
 import {TypeScriptServiceHost} from '../src/typescript_host';
-
 import {MockTypescriptHost} from './test_utils';
 
 describe('reflector_host_spec', () => {

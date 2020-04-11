@@ -13,7 +13,6 @@ import * as ts from 'typescript';
 import {ImportManager} from '../../../utils/import_manager';
 import {NgDecorator} from '../../../utils/ng_decorators';
 import {unwrapExpression} from '../../../utils/typescript/functions';
-
 import {ImportRewriteTransformerFactory, UnresolvedIdentifierError} from './import_rewrite_visitor';
 
 /**

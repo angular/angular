@@ -9,7 +9,6 @@
 import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ParsedConfiguration} from '../../..';
 import {
   ComponentDecoratorHandler,
   DirectiveDecoratorHandler,
@@ -22,10 +21,10 @@ import {
 import {CycleAnalyzer, ImportGraph} from '../../../src/ngtsc/cycles';
 import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
 import {
-  absoluteFrom,
-  dirname,
   FileSystem,
   LogicalFileSystem,
+  absoluteFrom,
+  dirname,
   resolve,
 } from '../../../src/ngtsc/file_system';
 import {
@@ -48,17 +47,17 @@ import {
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../src/ngtsc/scope';
 import {DecoratorHandler} from '../../../src/ngtsc/transform';
+import {ParsedConfiguration} from '../../..';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {Migration} from '../migrations/migration';
 import {MissingInjectableMigration} from '../migrations/missing_injectable_migration';
 import {UndecoratedChildMigration} from '../migrations/undecorated_child_migration';
 import {UndecoratedParentMigration} from '../migrations/undecorated_parent_migration';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
-
 import {DefaultMigrationHost} from './migration_host';
 import {NgccTraitCompiler} from './ngcc_trait_compiler';
 import {CompiledClass, CompiledFile, DecorationAnalyses} from './types';
-import {isWithinPackage, NOOP_DEPENDENCY_TRACKER} from './util';
+import {NOOP_DEPENDENCY_TRACKER, isWithinPackage} from './util';
 
 /**
  * Simple class that resolves and loads files directly from the filesystem.

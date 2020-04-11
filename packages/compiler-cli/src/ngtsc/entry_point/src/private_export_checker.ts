@@ -9,7 +9,6 @@
 import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
-
 import {ReferenceGraph} from './reference_graph';
 
 /**

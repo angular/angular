@@ -7,7 +7,6 @@
  */
 
 import {assertDefined, assertEqual, throwError} from '../util/assert';
-
 import {getComponentDef, getNgModuleDef} from './definition';
 import {LContainer} from './interfaces/container';
 import {DirectiveDef} from './interfaces/definition';

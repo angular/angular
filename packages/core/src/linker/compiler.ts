@@ -16,7 +16,6 @@ import {ComponentFactory as ComponentFactoryR3} from '../render3/component_ref';
 import {getComponentDef, getNgModuleDef} from '../render3/definition';
 import {NgModuleFactory as NgModuleFactoryR3} from '../render3/ng_module_ref';
 import {maybeUnwrapFn} from '../render3/util/misc_utils';
-
 import {ComponentFactory} from './component_factory';
 import {NgModuleFactory} from './ng_module_factory';
 

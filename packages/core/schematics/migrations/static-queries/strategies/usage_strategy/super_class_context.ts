@@ -13,7 +13,6 @@ import {hasModifier} from '../../../../utils/typescript/nodes';
 import {getPropertyNameText} from '../../../../utils/typescript/property_name';
 import {ClassMetadataMap} from '../../angular/ng_query_visitor';
 import {getSuperClassDeclarations} from '../../angular/super_class';
-
 import {FunctionContext} from './declaration_usage_visitor';
 
 /**

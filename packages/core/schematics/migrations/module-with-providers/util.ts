@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {getImportOfIdentifier} from '../../utils/typescript/imports';
 
 /** Add a generic type to a type reference. */

@@ -7,6 +7,7 @@
  */
 
 import {BoundTarget, ParseSourceFile} from '@angular/compiler';
+
 import {runInEachFileSystem} from '../../file_system/testing';
 import {ClassDeclaration} from '../../reflection';
 import {ComponentMeta, IndexingContext} from '../src/context';

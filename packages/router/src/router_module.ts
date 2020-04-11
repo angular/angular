@@ -38,6 +38,7 @@ import {
   SystemJsNgModuleLoader,
 } from '@angular/core';
 import {Subject, of} from 'rxjs';
+
 import {EmptyOutletComponent} from './components/empty_outlet';
 import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';

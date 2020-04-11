@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {absoluteFrom} from '../../file_system';
 import {getSourceFileOrNull, resolveModuleName} from '../../util/src/typescript';
 

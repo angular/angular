@@ -13,7 +13,6 @@ import {
   HttpXsrfInterceptor,
   HttpXsrfTokenExtractor,
 } from '@angular/common/http/src/xsrf';
-
 import {HttpClientTestingBackend} from '@angular/common/http/testing/src/backend';
 
 class SampleTokenExtractor extends HttpXsrfTokenExtractor {

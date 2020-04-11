@@ -7,11 +7,11 @@
  */
 
 import {
-  absoluteFrom,
   AbsoluteFsPath,
   FileSystem,
-  getFileSystem,
   PathSegment,
+  absoluteFrom,
+  getFileSystem,
 } from '../../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';
 import {EntryPointPackageJson} from '../../../src/packages/entry_point';

@@ -8,10 +8,10 @@
 
 import {
   AUTO_STYLE,
+  ɵAnimationGroupPlayer as AnimationGroupPlayer,
   AnimationOptions,
   AnimationPlayer,
   NoopAnimationPlayer,
-  ɵAnimationGroupPlayer as AnimationGroupPlayer,
   ɵPRE_STYLE as PRE_STYLE,
   ɵStyleData,
 } from '@angular/animations';
@@ -34,7 +34,6 @@ import {
   iteratorToArray,
   setStyles,
 } from '../util';
-
 import {AnimationDriver} from './animation_driver';
 import {
   getOrSetAsInMap,

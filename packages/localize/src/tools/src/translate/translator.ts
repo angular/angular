@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵMessageId, ɵParsedTranslation} from '@angular/localize';
 import {relative} from 'path';
+
+import {ɵMessageId, ɵParsedTranslation} from '@angular/localize';
 
 import {Diagnostics} from '../diagnostics';
 import {FileUtils} from '../file_utils';
-
 import {OutputPathFn} from './output_path';
 
 /**

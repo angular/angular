@@ -10,16 +10,15 @@ import {
   AfterViewInit,
   Directive,
   EventEmitter,
-  forwardRef,
   Inject,
   Input,
   Optional,
   Self,
+  forwardRef,
 } from '@angular/core';
 
 import {AbstractControl, FormControl, FormGroup, FormHooks} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
-
 import {ControlContainer} from './control_container';
 import {Form} from './form_interface';
 import {NgControl} from './ng_control';

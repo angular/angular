@@ -10,17 +10,17 @@
 import * as os from 'os';
 
 import {
-  absoluteFrom,
   AbsoluteFsPath,
   FileSystem,
+  absoluteFrom,
   getFileSystem,
   join,
 } from '../../../src/ngtsc/file_system';
 import {
   Folder,
   MockFileSystem,
-  runInEachFileSystem,
   TestFile,
+  runInEachFileSystem,
 } from '../../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles, loadTestFiles} from '../../../test/helpers';
 import {getLockFilePath} from '../../src/locking/lock_file';
@@ -35,7 +35,6 @@ import {EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
 import {Transformer} from '../../src/packages/transformer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
 import {MockLogger} from '../helpers/mock_logger';
-
 import {compileIntoApf, compileIntoFlatEs5Package} from './util';
 
 const testFiles = loadStandardTestFiles({fakeCore: false, rxjs: true});

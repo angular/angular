@@ -10,7 +10,6 @@ import {enableProdMode} from '@angular/core';
 
 import {bindAction, profile} from '../../util';
 import {buildTree, emptyTree} from '../util';
-
 import {AppModule, TreeComponent} from './tree';
 
 let tree: TreeComponent;

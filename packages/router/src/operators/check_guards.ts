@@ -24,7 +24,6 @@ import {
   isCanDeactivate,
   isFunction,
 } from '../utils/type_guards';
-
 import {prioritizedGuardValue} from './prioritized_guard_value';
 
 export function checkGuards(

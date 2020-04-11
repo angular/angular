@@ -7,7 +7,6 @@
  */
 
 import {newArray} from '../util/array_utils';
-
 import {
   BindingDef,
   BindingFlags,

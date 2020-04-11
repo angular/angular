@@ -8,7 +8,6 @@
 
 import {StaticSymbol} from '../aot/static_symbol';
 import {CompileIdentifierMetadata} from '../compile_metadata';
-
 import {
   AbstractEmitterVisitor,
   CATCH_ERROR_VAR,

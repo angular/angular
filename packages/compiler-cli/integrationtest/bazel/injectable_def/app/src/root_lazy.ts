@@ -8,6 +8,7 @@
 
 import {Component, NgModule, Optional, Self} from '@angular/core';
 import {RouterModule} from '@angular/router';
+
 import {Service} from './root_service';
 
 @Component({

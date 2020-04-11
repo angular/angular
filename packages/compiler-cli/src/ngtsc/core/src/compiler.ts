@@ -20,12 +20,12 @@ import {
 } from '../../annotations';
 import {CycleAnalyzer, ImportGraph} from '../../cycles';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
-import {getSourceFileOrError, LogicalFileSystem} from '../../file_system';
+import {ReferenceGraph, checkForPrivateExports} from '../../entry_point';
+import {LogicalFileSystem, getSourceFileOrError} from '../../file_system';
 import {
   AbsoluteModuleStrategy,
-  AliasingHost,
   AliasStrategy,
+  AliasingHost,
   DefaultImportTracker,
   ImportRewriter,
   LocalIdentifierStrategy,
@@ -42,7 +42,7 @@ import {
   UnifiedModulesStrategy,
 } from '../../imports';
 import {IncrementalDriver} from '../../incremental';
-import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
+import {IndexedComponent, IndexingContext, generateAnalysis} from '../../indexer';
 import {
   CompoundMetadataReader,
   CompoundMetadataRegistry,
@@ -56,7 +56,7 @@ import {PartialEvaluator} from '../../partial_evaluator';
 import {NOOP_PERF_RECORDER, PerfRecorder} from '../../perf';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {HostResourceLoader} from '../../resource';
-import {entryPointKeyFor, NgModuleRouteAnalyzer} from '../../routing';
+import {NgModuleRouteAnalyzer, entryPointKeyFor} from '../../routing';
 import {
   ComponentScopeReader,
   LocalModuleScopeRegistry,
@@ -65,17 +65,16 @@ import {
 import {generatedFactoryTransform} from '../../shims';
 import {ivySwitchTransform} from '../../switch';
 import {
-  aliasTransformFactory,
-  declarationTransformFactory,
   DecoratorHandler,
   DtsTransformRegistry,
-  ivyTransformFactory,
   TraitCompiler,
+  aliasTransformFactory,
+  declarationTransformFactory,
+  ivyTransformFactory,
 } from '../../transform';
-import {isTemplateDiagnostic, TypeCheckContext, TypeCheckingConfig} from '../../typecheck';
+import {TypeCheckContext, TypeCheckingConfig, isTemplateDiagnostic} from '../../typecheck';
 import {getSourceFileOrNull, isDtsPath, resolveModuleName} from '../../util/src/typescript';
 import {LazyRoute, NgCompilerOptions} from '../api';
-
 import {NgCompilerHost} from './host';
 
 /**

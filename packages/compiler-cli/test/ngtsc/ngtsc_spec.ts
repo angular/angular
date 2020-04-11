@@ -7,6 +7,7 @@
  */
 
 import {platform} from 'os';
+
 import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
@@ -18,7 +19,6 @@ import {
   setTypeScriptVersionForTesting,
 } from '../../src/typescript_support';
 import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
-
 import {NgtscTestEnvironment} from './env';
 
 const trim = (input: string): string => input.replace(/\s+/g, ' ').trim();

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as path from 'path';
+
 import * as shx from 'shelljs';
 
 describe('Zone.js npm_package', () => {

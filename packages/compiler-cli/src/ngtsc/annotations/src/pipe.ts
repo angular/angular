@@ -7,12 +7,12 @@
  */
 
 import {
-  compilePipeFromMetadata,
   Identifiers,
   R3FactoryTarget,
   R3PipeMetadata,
   Statement,
   WrappedNodeExpr,
+  compilePipeFromMetadata,
 } from '@angular/compiler';
 import * as ts from 'typescript';
 
@@ -30,7 +30,6 @@ import {
   HandlerPrecedence,
   ResolveResult,
 } from '../../transform';
-
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
 import {

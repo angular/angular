@@ -8,7 +8,6 @@
 
 import {AbstractType, Type} from '../interface/type';
 import {stringify} from '../util/stringify';
-
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {

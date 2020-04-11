@@ -7,6 +7,7 @@
  */
 
 import {$} from 'protractor';
+
 import {runTreeBenchmark} from './test_utils';
 
 describe('tree benchmark detect changes perf', () => {

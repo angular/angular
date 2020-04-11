@@ -9,8 +9,8 @@
 import {CompileDirectiveSummary, CompilePipeSummary} from '../compile_metadata';
 import {SecurityContext} from '../core';
 import {
-  AbsoluteSourceSpan,
   ASTWithSource,
+  AbsoluteSourceSpan,
   BindingPipe,
   BindingType,
   BoundElementProperty,

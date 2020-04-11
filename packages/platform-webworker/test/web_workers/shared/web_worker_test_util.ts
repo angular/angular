@@ -18,8 +18,8 @@ import {
   MessageBusSink,
   MessageBusSource,
 } from '@angular/platform-webworker/src/web_workers/shared/message_bus';
-import {SpyMessageBroker} from '../worker/spies';
 
+import {SpyMessageBroker} from '../worker/spies';
 import {MockEventEmitter} from './mock_event_emitter';
 
 /**

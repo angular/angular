@@ -8,6 +8,7 @@
 
 import {DOCUMENT, ɵPLATFORM_WORKER_UI_ID as PLATFORM_WORKER_UI_ID} from '@angular/common';
 import {
+  ɵAPP_ID_RANDOM_PROVIDER as APP_ID_RANDOM_PROVIDER,
   ErrorHandler,
   Injectable,
   InjectionToken,
@@ -21,20 +22,19 @@ import {
   createPlatformFactory,
   isDevMode,
   platformCore,
-  ɵAPP_ID_RANDOM_PROVIDER as APP_ID_RANDOM_PROVIDER,
   ɵsetDocument,
 } from '@angular/core';
 import {
-  EVENT_MANAGER_PLUGINS,
-  EventManager,
-  HAMMER_GESTURE_CONFIG,
-  HammerGestureConfig,
   ɵBROWSER_SANITIZATION_PROVIDERS as BROWSER_SANITIZATION_PROVIDERS,
   ɵBrowserDomAdapter as BrowserDomAdapter,
   ɵBrowserGetTestability as BrowserGetTestability,
   ɵDomEventsPlugin as DomEventsPlugin,
   ɵDomRendererFactory2 as DomRendererFactory2,
   ɵDomSharedStylesHost as DomSharedStylesHost,
+  EVENT_MANAGER_PLUGINS,
+  EventManager,
+  HAMMER_GESTURE_CONFIG,
+  HammerGestureConfig,
   ɵHammerGesturesPlugin as HammerGesturesPlugin,
   ɵKeyEventsPlugin as KeyEventsPlugin,
   ɵSharedStylesHost as SharedStylesHost,

@@ -7,10 +7,11 @@
  */
 
 import {
+  AUTO_STYLE,
+  ɵAnimationGroupPlayer as AnimationGroupPlayer,
+  AnimationPlayer,
   animate,
   animateChild,
-  AnimationPlayer,
-  AUTO_STYLE,
   group,
   query,
   sequence,
@@ -19,7 +20,6 @@ import {
   style,
   transition,
   trigger,
-  ɵAnimationGroupPlayer as AnimationGroupPlayer,
 } from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
 import {matchesElement} from '@angular/animations/browser/src/render/shared';
@@ -28,7 +28,7 @@ import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '@angular/animations/browser/src/
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule} from '@angular/common';
 import {Component, HostBinding, ViewChild} from '@angular/core';
-import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
+import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 import {HostListener} from '../../src/metadata/directives';

@@ -22,9 +22,9 @@ import {
   CssSelectorAst,
   CssSelectorRuleAst,
   CssSimpleSelectorAst,
-  CssStylesBlockAst,
   CssStyleSheetAst,
   CssStyleValueAst,
+  CssStylesBlockAst,
   CssUnknownRuleAst,
   CssUnknownTokenListAst,
 } from '../../src/css_parser/css_ast';

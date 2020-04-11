@@ -9,7 +9,6 @@
 import {looseIdentical} from '../../util/comparison';
 import {stringify} from '../../util/stringify';
 import {isListLikeIterable, iterateListLike} from '../change_detection_util';
-
 import {
   IterableChangeRecord,
   IterableChanges,

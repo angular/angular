@@ -20,7 +20,6 @@ import {
   createPairedMessageBuses,
   expectBrokerCall,
 } from '../shared/web_worker_test_util';
-
 import {SpyMessageBroker} from './spies';
 
 {

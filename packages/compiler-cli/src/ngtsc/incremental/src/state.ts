@@ -8,10 +8,9 @@
 
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
+import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
 import {ClassRecord, TraitCompiler} from '../../transform';
 import {IncrementalBuild} from '../api';
-
 import {FileDependencyGraph} from './dependency_tracking';
 
 /**

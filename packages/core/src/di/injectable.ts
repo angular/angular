@@ -8,7 +8,6 @@
 
 import {Type} from '../interface/type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
-
 import {InjectableType, getInjectableDef, ɵɵdefineInjectable} from './interface/defs';
 import {
   ClassSansProvider,

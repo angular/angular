@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable, INJECTOR, NgModule} from '@angular/core';
+import {Component, INJECTOR, Injectable, NgModule} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {renderModuleFactory} from '@angular/platform-server';
 import {BasicAppModuleNgFactory} from 'app_built/src/basic.ngfactory';

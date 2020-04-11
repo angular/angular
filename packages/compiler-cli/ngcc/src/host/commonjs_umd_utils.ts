@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {Declaration} from '../../../src/ngtsc/reflection';
 
 export interface ExportDeclaration {

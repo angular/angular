@@ -11,7 +11,6 @@ import {TNode} from '../interfaces/node';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {LView, RENDERER, TView} from '../interfaces/view';
 import {getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
-
 import {
   elementPropertyInternal,
   setInputsForProperty,

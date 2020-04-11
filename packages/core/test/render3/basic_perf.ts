@@ -18,7 +18,6 @@ import {
   ɵɵtext,
 } from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-
 import {document, renderComponent} from './render_util';
 
 describe('iv perf test', () => {

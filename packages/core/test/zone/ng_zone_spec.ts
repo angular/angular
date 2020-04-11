@@ -19,6 +19,7 @@ import {
   xit,
 } from '@angular/core/testing/src/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
+
 import {scheduleMicroTask} from '../../src/util/microtask';
 import {NoopNgZone} from '../../src/zone/ng_zone';
 

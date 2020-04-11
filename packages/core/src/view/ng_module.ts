@@ -14,7 +14,6 @@ import {INJECTOR_SCOPE} from '../di/scope';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {newArray} from '../util/array_utils';
 import {stringify} from '../util/stringify';
-
 import {
   DepDef,
   DepFlags,

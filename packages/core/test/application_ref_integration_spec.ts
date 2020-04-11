@@ -18,6 +18,7 @@ import {
 import {getTestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
+
 import {NgModuleFactory} from '../src/render3/ng_module_ref';
 
 ivyEnabled &&

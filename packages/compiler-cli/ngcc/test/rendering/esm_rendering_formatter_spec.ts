@@ -11,7 +11,7 @@ import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {NoopImportRewriter} from '../../../src/ngtsc/imports';
 import {ImportManager} from '../../../src/ngtsc/translator';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';

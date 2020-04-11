@@ -9,7 +9,6 @@
 import {ApplicationRef, NgModuleRef} from '@angular/core';
 
 import {bindAction} from '../../util';
-
 import {JsWebFrameworksComponent, JsWebFrameworksModule, RowData} from './rows';
 
 function _random(max: number) {

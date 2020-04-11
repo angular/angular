@@ -12,7 +12,6 @@ import {DirectiveMeta} from '../../../src/render3/view/t2_api';
 import {R3TargetBinder} from '../../../src/render3/view/t2_binder';
 import {parseTemplate} from '../../../src/render3/view/template';
 import {CssSelector, SelectorMatcher} from '../../../src/selector';
-
 import {findExpression} from './util';
 
 function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta> {

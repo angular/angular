@@ -11,16 +11,16 @@ import {SpyLocation} from '@angular/common/testing';
 import {
   ChangeDetectionStrategy,
   Component,
+  ɵConsole as Console,
   Injectable,
   NgModule,
   NgModuleFactoryLoader,
   NgModuleRef,
   NgZone,
-  OnDestroy,
-  ɵConsole as Console,
   ɵNoopNgZone as NoopNgZone,
+  OnDestroy,
 } from '@angular/core';
-import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {
@@ -42,18 +42,18 @@ import {
   NavigationEnd,
   NavigationError,
   NavigationStart,
+  PRIMARY_OUTLET,
   ParamMap,
   Params,
   PreloadAllModules,
   PreloadingStrategy,
-  PRIMARY_OUTLET,
   Resolve,
   ResolveEnd,
   ResolveStart,
   RouteConfigLoadEnd,
   RouteConfigLoadStart,
-  Router,
   RouteReuseStrategy,
+  Router,
   RouterEvent,
   RouterModule,
   RouterPreloader,
@@ -65,7 +65,7 @@ import {
   UrlSerializer,
   UrlTree,
 } from '@angular/router';
-import {Observable, Observer, of, Subscription} from 'rxjs';
+import {Observable, Observer, Subscription, of} from 'rxjs';
 import {filter, first, map, tap} from 'rxjs/operators';
 
 import {forEach} from '../src/utils/collection';

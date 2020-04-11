@@ -7,8 +7,8 @@
  */
 
 import {ElementArrayFinder, ElementFinder, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../../test-utils';
 
+import {verifyNoBrowserErrors} from '../../../../../test-utils';
 import {addCustomMatchers} from './e2e_util';
 
 function loadPage() {

@@ -10,13 +10,12 @@ import * as ts from 'typescript';
 
 import {Evaluator} from '../../src/metadata/evaluator';
 import {Symbols} from '../../src/metadata/symbols';
-
 import {
   Directory,
+  Host,
   expectNoDiagnostics,
   findVar,
   findVarInitializer,
-  Host,
 } from './typescript.mocks';
 
 describe('Evaluator', () => {

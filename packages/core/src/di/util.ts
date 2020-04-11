@@ -9,7 +9,6 @@
 import {Type} from '../interface/type';
 import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
 import {getClosureSafeProperty} from '../util/property';
-
 import {resolveForwardRef} from './forward_ref';
 import {injectArgs, ɵɵinject} from './injector_compatibility';
 import {

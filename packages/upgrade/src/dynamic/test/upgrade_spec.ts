@@ -9,20 +9,20 @@
 import {
   ChangeDetectorRef,
   Component,
-  destroyPlatform,
   EventEmitter,
-  forwardRef,
   Input,
+  NO_ERRORS_SCHEMA,
   NgModule,
   NgModuleFactory,
   NgZone,
-  NO_ERRORS_SCHEMA,
   OnChanges,
   OnDestroy,
   Output,
   SimpleChange,
   SimpleChanges,
   Testability,
+  destroyPlatform,
+  forwardRef,
 } from '@angular/core';
 import {async, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';

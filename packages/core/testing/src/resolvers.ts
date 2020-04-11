@@ -11,8 +11,8 @@ import {
   Directive,
   NgModule,
   Pipe,
-  Type,
   ɵReflectionCapabilities as ReflectionCapabilities,
+  Type,
 } from '@angular/core';
 
 import {MetadataOverride} from './metadata_override';

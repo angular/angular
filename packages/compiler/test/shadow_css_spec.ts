@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssRule, processRules, ShadowCss} from '@angular/compiler/src/shadow_css';
+import {CssRule, ShadowCss, processRules} from '@angular/compiler/src/shadow_css';
 import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
 
 {

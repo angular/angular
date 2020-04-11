@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, StaticProvider} from '@angular/core';
 import * as fs from 'fs';
+
+import {Inject, Injectable, StaticProvider} from '@angular/core';
 
 import {Options} from '../common_options';
 import {WebDriverAdapter} from '../web_driver_adapter';

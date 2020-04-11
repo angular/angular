@@ -10,6 +10,7 @@ if (typeof window !== 'undefined') {
   (window as any)['__Zone_enable_cross_context_check'] = true;
   (window as any)[zoneSymbol('fakeAsyncAutoFakeAsyncWhenClockPatched')] = true;
 }
+
 import '../lib/common/to-string';
 import '../lib/browser/api-util';
 import '../lib/browser/browser-legacy';

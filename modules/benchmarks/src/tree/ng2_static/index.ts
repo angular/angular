@@ -11,7 +11,6 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {bindAction, profile} from '../../util';
 import {buildTree, emptyTree} from '../util';
-
 import {AppModule, RootTreeComponent} from './tree';
 
 let tree: RootTreeComponent;

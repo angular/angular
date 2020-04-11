@@ -23,15 +23,15 @@ import {NodeFlags} from '@angular/core/src/view/index';
 import * as ts from 'typescript';
 
 import {
-  arrayToMockDir,
-  compile,
   EmittingCompilerHost,
-  expectNoDiagnostics,
-  isInBazel,
   MockAotCompilerHost,
   MockCompilerHost,
   MockDirectory,
   MockMetadataBundlerHost,
+  arrayToMockDir,
+  compile,
+  expectNoDiagnostics,
+  isInBazel,
   settings,
   setup,
   toMockFileArray,

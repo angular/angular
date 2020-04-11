@@ -18,6 +18,7 @@ import {
   ɵlooseIdentical,
 } from '@angular/core';
 import {Observable, SubscriptionLike} from 'rxjs';
+
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 interface SubscriptionStrategy {

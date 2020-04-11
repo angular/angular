@@ -20,7 +20,6 @@ import {
 } from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {identifierOfNode, nodeNameForError} from '../../util/src/typescript';
-
 import {ExportScope, ScopeData} from './api';
 import {ComponentScopeReader} from './component_scope';
 import {DtsModuleScopeResolver} from './dependency';

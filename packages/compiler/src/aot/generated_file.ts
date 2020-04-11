@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {areAllEquivalent, Statement} from '../output/output_ast';
+import {Statement, areAllEquivalent} from '../output/output_ast';
 import {TypeScriptEmitter} from '../output/ts_emitter';
 
 export class GeneratedFile {

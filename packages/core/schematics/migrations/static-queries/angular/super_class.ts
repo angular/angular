@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {ClassMetadataMap} from './ng_query_visitor';
 
 /**

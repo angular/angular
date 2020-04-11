@@ -14,7 +14,6 @@ import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
 import {Identifiers as R3} from '../render3/r3_identifiers';
 import {OutputContext} from '../util';
-
 import {R3Reference, typeWithParameters} from './util';
 import {unsupported} from './view/util';
 

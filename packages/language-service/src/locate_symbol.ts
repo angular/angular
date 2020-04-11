@@ -19,9 +19,9 @@ import {
   StaticSymbol,
   TemplateAst,
   TemplateAstPath,
+  VariableBinding,
   templateVisitAll,
   tokenReference,
-  VariableBinding,
 } from '@angular/compiler';
 import * as tss from 'typescript/lib/tsserverlibrary';
 

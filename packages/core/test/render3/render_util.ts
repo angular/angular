@@ -30,9 +30,9 @@ import {SWITCH_ELEMENT_REF_FACTORY__POST_R3__ as R3_ELEMENT_REF_FACTORY} from '.
 import {SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ as R3_TEMPLATE_REF_FACTORY} from '../../src/linker/template_ref';
 import {SWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__ as R3_VIEW_CONTAINER_REF_FACTORY} from '../../src/linker/view_container_ref';
 import {
+  SWITCH_RENDERER2_FACTORY__POST_R3__ as R3_RENDERER2_FACTORY,
   RendererStyleFlags2,
   RendererType2,
-  SWITCH_RENDERER2_FACTORY__POST_R3__ as R3_RENDERER2_FACTORY,
 } from '../../src/render/api';
 import {CreateComponentOptions} from '../../src/render3/component';
 import {
@@ -88,7 +88,6 @@ import {
 import {destroyLView} from '../../src/render3/node_manipulation';
 import {getRootView} from '../../src/render3/util/view_traversal_utils';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
-
 import {getRendererFactory2} from './imported_renderer2';
 
 export abstract class BaseFixture {

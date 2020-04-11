@@ -6,19 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as fs from 'fs';
+import * as path from 'path';
+
 import {
   AotCompilerHost,
   AotCompilerOptions,
-  createAotCompiler,
   GeneratedFile,
+  createAotCompiler,
   toTypeScript,
 } from '@angular/compiler';
 import {MetadataBundlerHost} from '@angular/compiler-cli/src/metadata/bundler';
 import {MetadataCollector} from '@angular/compiler-cli/src/metadata/collector';
 import {ModuleMetadata} from '@angular/compiler-cli/src/metadata/index';
 import {newArray} from '@angular/compiler/src/util';
-import * as fs from 'fs';
-import * as path from 'path';
 import * as ts from 'typescript';
 
 export interface MetadataProvider {

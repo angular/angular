@@ -9,7 +9,6 @@
 import {
   Directive,
   EventEmitter,
-  forwardRef,
   Host,
   Inject,
   Input,
@@ -19,11 +18,11 @@ import {
   Output,
   Self,
   SimpleChanges,
+  forwardRef,
 } from '@angular/core';
 
 import {FormControl, FormHooks} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
-
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';

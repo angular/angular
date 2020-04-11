@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath, dirname, FileSystem} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, dirname} from '../../../src/ngtsc/file_system';
 import {JsonObject, JsonValue} from '../packages/entry_point';
 
 export type PackageJsonChange = [string[], JsonValue, PackageJsonPropertyPositioning];

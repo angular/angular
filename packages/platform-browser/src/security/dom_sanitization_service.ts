@@ -8,13 +8,12 @@
 
 import {DOCUMENT} from '@angular/common';
 import {
+  ɵBypassType as BypassType,
   Inject,
   Injectable,
   Injector,
   Sanitizer,
   SecurityContext,
-  forwardRef,
-  ɵBypassType as BypassType,
   ɵ_sanitizeHtml as _sanitizeHtml,
   ɵ_sanitizeStyle as _sanitizeStyle,
   ɵ_sanitizeUrl as _sanitizeUrl,
@@ -24,6 +23,7 @@ import {
   ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript,
   ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle,
   ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl,
+  forwardRef,
   ɵgetSanitizationBypassType as getSanitizationBypassType,
   ɵunwrapSafeValue as unwrapSafeValue,
 } from '@angular/core';

@@ -7,9 +7,11 @@
  */
 
 import '@angular/compiler';
-import {withBody} from '@angular/private/testing';
+
 import * as fs from 'fs';
 import * as path from 'path';
+
+import {withBody} from '@angular/private/testing';
 
 const UTF8 = {
   encoding: 'utf-8',

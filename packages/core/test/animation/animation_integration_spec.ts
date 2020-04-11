@@ -10,6 +10,7 @@ import {
   AUTO_STYLE,
   AnimationEvent,
   AnimationOptions,
+  ɵPRE_STYLE as PRE_STYLE,
   animate,
   animateChild,
   group,
@@ -19,12 +20,11 @@ import {
   style,
   transition,
   trigger,
-  ɵPRE_STYLE as PRE_STYLE,
 } from '@angular/animations';
 import {
   AnimationDriver,
-  ɵAnimationEngine,
   ɵNoopAnimationDriver as NoopAnimationDriver,
+  ɵAnimationEngine,
 } from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {ɵgetDOM as getDOM} from '@angular/common';

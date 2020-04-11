@@ -13,7 +13,6 @@ import * as ts from 'typescript';
 
 import {ImportManager} from '../../utils/import_manager';
 import {getAngularDecorators} from '../../utils/ng_decorators';
-
 import {ResolvedDirective, ResolvedNgModule} from './definition_collector';
 import {ProviderLiteral, ProvidersEvaluator} from './providers_evaluator';
 import {UpdateRecorder} from './update_recorder';

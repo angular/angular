@@ -29,9 +29,9 @@ import {
   IProvideService,
   IRootScopeService,
   ITestabilityService,
-  bootstrap,
   element as angularElement,
   module_ as angularModule,
+  bootstrap,
 } from '../../common/src/angular1';
 import {
   $$TESTABILITY,
@@ -53,7 +53,6 @@ import {
   controllerKey,
   onError,
 } from '../../common/src/util';
-
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
 
 let upgradeCount: number = 0;

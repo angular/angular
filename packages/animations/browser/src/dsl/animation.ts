@@ -15,7 +15,6 @@ import {
 
 import {AnimationDriver} from '../render/animation_driver';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME, normalizeStyles} from '../util';
-
 import {Ast} from './animation_ast';
 import {buildAnimationAst} from './animation_ast_builder';
 import {buildAnimationTimelines} from './animation_timeline_builder';

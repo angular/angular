@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {getAngularDecorators} from '../../utils/ng_decorators';
 
 /**

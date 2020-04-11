@@ -13,11 +13,11 @@ import {Component} from '@angular/core';
 // #enddocregion activated-route
 import {BrowserModule} from '@angular/platform-browser';
 import {RouterModule} from '@angular/router';
-
 // #docregion activated-route
 import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+
 // #enddocregion activated-route
 // tslint:enable: no-duplicate-imports
 // #docregion activated-route

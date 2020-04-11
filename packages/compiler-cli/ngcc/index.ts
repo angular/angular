@@ -7,8 +7,7 @@
  */
 
 import {CachedFileSystem, NodeJSFileSystem, setFileSystem} from '../src/ngtsc/file_system';
-
-import {AsyncNgccOptions, mainNgcc, NgccOptions, SyncNgccOptions} from './src/main';
+import {AsyncNgccOptions, NgccOptions, SyncNgccOptions, mainNgcc} from './src/main';
 
 export {ConsoleLogger} from './src/logging/console_logger';
 export {Logger, LogLevel} from './src/logging/logger';

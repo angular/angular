@@ -18,11 +18,11 @@ import {CompileReflector} from '../compile_reflector';
 import {
   BindingForm,
   BuiltinConverter,
+  EventHandlerVars,
+  LocalResolver,
   convertActionBinding,
   convertPropertyBinding,
   convertPropertyBindingBuiltins,
-  EventHandlerVars,
-  LocalResolver,
 } from '../compiler_util/expression_converter';
 import {
   ArgumentType,
@@ -56,12 +56,11 @@ import {
   ReferenceAst,
   TemplateAst,
   TemplateAstVisitor,
-  templateVisitAll,
   TextAst,
   VariableAst,
+  templateVisitAll,
 } from '../template_parser/template_ast';
 import {OutputContext} from '../util';
-
 import {
   componentFactoryResolverProviderDef,
   depDef,

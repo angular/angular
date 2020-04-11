@@ -10,11 +10,11 @@ import {ɵgetDOM as getDOM} from '@angular/common';
 import {
   Directive,
   ElementRef,
-  forwardRef,
   Inject,
   InjectionToken,
   Optional,
   Renderer2,
+  forwardRef,
 } from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';

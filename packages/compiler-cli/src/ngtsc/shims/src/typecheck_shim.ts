@@ -9,7 +9,6 @@
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
-
 import {ShimGenerator} from './api';
 
 /**

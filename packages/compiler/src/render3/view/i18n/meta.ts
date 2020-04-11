@@ -8,15 +8,14 @@
 
 import {computeDecimalDigest, computeDigest, decimalDigest} from '../../../i18n/digest';
 import * as i18n from '../../../i18n/i18n_ast';
-import {createI18nMessageFactory, VisitNodeFn} from '../../../i18n/i18n_parser';
+import {VisitNodeFn, createI18nMessageFactory} from '../../../i18n/i18n_parser';
 import * as html from '../../../ml_parser/ast';
 import {
   DEFAULT_INTERPOLATION_CONFIG,
   InterpolationConfig,
 } from '../../../ml_parser/interpolation_config';
 import * as o from '../../../output/output_ast';
-
-import {hasI18nAttrs, I18N_ATTR, I18N_ATTR_PREFIX, icuFromI18nMessage} from './util';
+import {I18N_ATTR, I18N_ATTR_PREFIX, hasI18nAttrs, icuFromI18nMessage} from './util';
 
 export type I18nMeta = {
   id?: string;

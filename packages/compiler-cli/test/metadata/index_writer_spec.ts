@@ -9,7 +9,6 @@
 import {MetadataBundler} from '../../src/metadata/bundler';
 import {MetadataCollector} from '../../src/metadata/collector';
 import {privateEntriesToIndex} from '../../src/metadata/index_writer';
-
 import {MockStringBundlerHost, SIMPLE_LIBRARY} from './bundler_spec';
 
 describe('index_writer', () => {

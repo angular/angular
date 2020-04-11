@@ -8,7 +8,6 @@
 
 import {ElementAnimationStyleHandler} from '../../../src/render/css_keyframes/element_animation_style_handler';
 import {computeStyle} from '../../../src/util';
-
 import {
   assertStyle,
   createElement,

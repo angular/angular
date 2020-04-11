@@ -12,7 +12,6 @@ import {TestBed} from '@angular/core/testing';
 import {$INJECTOR} from '../../../src/common/src/constants';
 import {withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
 import {createAngularTestingModule} from '../src/create_angular_testing_module';
-
 import {AppModule, Inventory, defineAppModule, serverRequestInstance} from './mocks';
 
 withEachNg1Version(() => {

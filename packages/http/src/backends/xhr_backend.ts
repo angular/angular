@@ -9,6 +9,7 @@
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {Injectable} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
+
 import {ResponseOptions} from '../base_response_options';
 import {ContentType, ReadyState, RequestMethod, ResponseContentType, ResponseType} from '../enums';
 import {Headers} from '../headers';

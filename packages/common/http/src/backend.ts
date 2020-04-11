@@ -7,6 +7,7 @@
  */
 
 import {Observable} from 'rxjs';
+
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
 

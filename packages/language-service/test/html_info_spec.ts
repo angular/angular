@@ -7,6 +7,7 @@
  */
 
 import {DomElementSchemaRegistry} from '@angular/compiler';
+
 import {SchemaInformation} from '../src/html_info';
 
 describe('html_info', () => {

@@ -29,9 +29,9 @@ import {
   CtorParameter,
   Decorator,
   Import,
-  isNamedClassDeclaration,
   ReflectionHost,
   TypeValueReference,
+  isNamedClassDeclaration,
 } from '../../reflection';
 import {DeclarationData} from '../../scope';
 

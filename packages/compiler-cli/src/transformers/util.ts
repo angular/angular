@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {syntaxError} from '@angular/compiler';
 import * as path from 'path';
+
+import {syntaxError} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {CompilerOptions, DEFAULT_ERROR_CODE, Diagnostic, SOURCE} from './api';

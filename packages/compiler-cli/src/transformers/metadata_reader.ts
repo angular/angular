@@ -9,7 +9,6 @@
 import * as ts from 'typescript';
 
 import {METADATA_VERSION, ModuleMetadata} from '../metadata';
-
 import {DTS} from './util';
 
 export interface MetadataReaderHost {

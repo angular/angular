@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {ClassMemberKind, Import, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles, loadTsLib} from '../../../test/helpers';
@@ -20,7 +20,6 @@ import {
   convertToInlineTsLib,
   makeTestBundleProgram,
 } from '../helpers/utils';
-
 import {expectTypeValueReferencesForParameters} from './util';
 
 runInEachFileSystem(() => {

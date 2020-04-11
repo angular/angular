@@ -8,7 +8,9 @@
 
 /// <reference types="node" />
 import * as fs from 'fs';
+
 import * as ts from 'typescript';
+
 import {resolve} from '../../file_system';
 import {PerfRecorder} from './api';
 import {HrTime, mark, timeSinceInMicros} from './clock';

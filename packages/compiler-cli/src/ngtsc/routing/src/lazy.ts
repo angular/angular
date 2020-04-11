@@ -10,9 +10,8 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ForeignFunctionResolver, PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
-
 import {NgModuleRawRouteData} from './analyzer';
-import {entryPointKeyFor, RouterEntryPoint, RouterEntryPointManager} from './route';
+import {RouterEntryPoint, RouterEntryPointManager, entryPointKeyFor} from './route';
 
 const ROUTES_MARKER = '__ngRoutesMarker__';
 

@@ -7,6 +7,7 @@
  */
 
 import {ComponentRef} from '@angular/core';
+
 import {exportNgVar} from '../../dom/util';
 import {AngularProfiler} from './common_tools';
 

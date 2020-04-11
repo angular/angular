@@ -24,7 +24,6 @@ import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '.
 import {Sanitizer} from '../sanitization/sanitizer';
 import {isDevMode} from '../util/is_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../util/ng_reflect';
-
 import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
 import {resolveDep} from './provider';
 import {dirtyParentQueries, getQueryValue} from './query';

@@ -7,7 +7,9 @@
  */
 
 import * as realFs from 'fs';
+
 import * as fsExtra from 'fs-extra';
+
 import {absoluteFrom, dirname, relativeFrom, setFileSystem} from '../src/helpers';
 import {NodeJSFileSystem} from '../src/node_js_file_system';
 import {AbsoluteFsPath} from '../src/types';

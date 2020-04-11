@@ -27,9 +27,9 @@ import {
 } from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {
+  Identifiers,
   createTokenForExternalReference,
   createTokenForReference,
-  Identifiers,
 } from '../identifiers';
 import * as html from '../ml_parser/ast';
 import {HtmlParser, ParseTreeResult} from '../ml_parser/html_parser';
@@ -43,7 +43,6 @@ import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector, SelectorMatcher} from '../selector';
 import {isStyleUrlResolvable} from '../style_url_resolver';
 import {Console, newArray, syntaxError} from '../util';
-
 import {BindingParser} from './binding_parser';
 import * as t from './template_ast';
 import {PreparsedElementType, preparseElement} from './template_preparser';

@@ -9,7 +9,6 @@
 import {AnimationMetadataType, ɵStyleData} from '@angular/animations';
 
 import {copyStyles, interpolateParams} from '../util';
-
 import {SequenceAst, StyleAst, TransitionAst, TriggerAst} from './animation_ast';
 import {AnimationStateStyles, AnimationTransitionFactory} from './animation_transition_factory';
 

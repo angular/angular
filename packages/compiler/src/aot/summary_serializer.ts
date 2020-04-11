@@ -20,7 +20,6 @@ import {
 import * as o from '../output/output_ast';
 import {Summary, SummaryResolver} from '../summary_resolver';
 import {OutputContext, ValueTransformer, ValueVisitor, visitValue} from '../util';
-
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
 import {
   ResolvedStaticSymbol,

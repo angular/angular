@@ -9,11 +9,10 @@
 import * as ts from 'typescript';
 
 import {absoluteFrom} from '../../file_system';
-import {runInEachFileSystem, TestFile} from '../../file_system/testing';
-import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
+import {TestFile, runInEachFileSystem} from '../../file_system/testing';
+import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {TypeParameterEmitter} from '../src/type_parameter_emitter';
-
 import {angularCoreDts} from './test_utils';
 
 runInEachFileSystem(() => {

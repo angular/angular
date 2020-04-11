@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgAnalyzedModules} from '@angular/compiler';
 import * as path from 'path';
+
+import {NgAnalyzedModules} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AstResult} from './common';
-import {createDiagnostic, Diagnostic} from './diagnostic_messages';
+import {Diagnostic, createDiagnostic} from './diagnostic_messages';
 import {getTemplateExpressionDiagnostics} from './expression_diagnostics';
 import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';

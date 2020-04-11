@@ -7,11 +7,11 @@
  */
 
 import {createHash} from 'crypto';
-import {satisfies} from 'semver';
 import * as vm from 'vm';
 
-import {AbsoluteFsPath, dirname, FileSystem, join, resolve} from '../../../src/ngtsc/file_system';
+import {satisfies} from 'semver';
 
+import {AbsoluteFsPath, FileSystem, dirname, join, resolve} from '../../../src/ngtsc/file_system';
 import {PackageJsonFormatPropertiesMap} from './entry_point';
 
 /**

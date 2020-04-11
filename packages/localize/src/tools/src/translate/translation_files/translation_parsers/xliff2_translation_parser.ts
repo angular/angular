@@ -13,7 +13,6 @@ import {Diagnostics} from '../../../diagnostics';
 import {BaseVisitor} from '../base_visitor';
 import {MessageSerializer} from '../message_serialization/message_serializer';
 import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
-
 import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
 import {
   XmlTranslationParserHint,

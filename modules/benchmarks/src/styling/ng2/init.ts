@@ -7,6 +7,7 @@
  */
 
 import {ApplicationRef, NgModuleRef} from '@angular/core';
+
 import {bindAction, profile} from '../../util';
 import {StylingModule} from './styling';
 

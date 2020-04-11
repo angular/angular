@@ -7,10 +7,10 @@
  */
 
 import {
-  Injectable as _Injectable,
-  Pipe as _Pipe,
   PipeTransform,
   WrappedValue,
+  Injectable as _Injectable,
+  Pipe as _Pipe,
   ɵɵdefineInjectable,
   ɵɵdefinePipe,
   ɵɵgetInheritedFactory,
@@ -20,7 +20,6 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/instructions/all';
 import {ɵɵpipe, ɵɵpipeBind1} from '../../src/render3/pipe';
-
 import {TemplateFixture} from './render_util';
 
 const Pipe: typeof _Pipe = function (...args: any[]): any {

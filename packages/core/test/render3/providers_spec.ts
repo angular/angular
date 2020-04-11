@@ -7,17 +7,17 @@
  */
 
 import {
-  Component as _Component,
   ComponentFactoryResolver,
   ElementRef,
   InjectFlags,
-  Injectable as _Injectable,
   InjectionToken,
   InjectorType,
+  ɵNgModuleDef as NgModuleDef,
   Provider,
   RendererFactory2,
   ViewContainerRef,
-  ɵNgModuleDef as NgModuleDef,
+  Component as _Component,
+  Injectable as _Injectable,
   ɵɵdefineInjectable,
   ɵɵdefineInjector,
   ɵɵinject,
@@ -48,7 +48,6 @@ import {
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';
 import {getInjector} from '../../src/render3/util/discovery_utils';
-
 import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture} from './render_util';
 

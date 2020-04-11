@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as path from 'path';
+
 import {
   AotSummaryResolver,
   AotSummaryResolverHost,
@@ -23,7 +25,6 @@ import {
 import {ConstantPool} from '@angular/compiler/src/constant_pool';
 import * as o from '@angular/compiler/src/output/output_ast';
 import {OutputContext} from '@angular/compiler/src/util';
-import * as path from 'path';
 
 import {MockStaticSymbolResolverHost, MockSummaryResolver} from './static_symbol_resolver_spec';
 

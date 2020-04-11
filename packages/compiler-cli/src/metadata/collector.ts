@@ -8,25 +8,14 @@
 
 import * as ts from 'typescript';
 
-import {errorSymbol, Evaluator, recordMapEntry} from './evaluator';
+import {Evaluator, errorSymbol, recordMapEntry} from './evaluator';
 import {
   ClassMetadata,
   ConstructorMetadata,
   FunctionMetadata,
   InterfaceMetadata,
-  isClassMetadata,
-  isConstructorMetadata,
-  isFunctionMetadata,
-  isMetadataError,
-  isMetadataGlobalReferenceExpression,
-  isMetadataImportDefaultReference,
-  isMetadataImportedSymbolReferenceExpression,
-  isMetadataSymbolicExpression,
-  isMetadataSymbolicReferenceExpression,
-  isMetadataSymbolicSelectExpression,
-  isMethodMetadata,
-  MemberMetadata,
   METADATA_VERSION,
+  MemberMetadata,
   MetadataEntry,
   MetadataError,
   MetadataMap,
@@ -43,6 +32,17 @@ import {
   MethodMetadata,
   ModuleExportMetadata,
   ModuleMetadata,
+  isClassMetadata,
+  isConstructorMetadata,
+  isFunctionMetadata,
+  isMetadataError,
+  isMetadataGlobalReferenceExpression,
+  isMetadataImportDefaultReference,
+  isMetadataImportedSymbolReferenceExpression,
+  isMetadataSymbolicExpression,
+  isMetadataSymbolicReferenceExpression,
+  isMetadataSymbolicSelectExpression,
+  isMethodMetadata,
 } from './schema';
 import {Symbols} from './symbols';
 

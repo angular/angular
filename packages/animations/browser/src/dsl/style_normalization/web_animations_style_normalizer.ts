@@ -7,7 +7,6 @@
  */
 
 import {dashCaseToCamelCase} from '../../util';
-
 import {AnimationStyleNormalizer} from './animation_style_normalizer';
 
 export class WebAnimationsStyleNormalizer extends AnimationStyleNormalizer {

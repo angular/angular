@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {ModuleResolver} from '../../imports';

@@ -22,7 +22,6 @@ import {
   validateStyleProperty,
 } from '../shared';
 import {packageNonAnimatableStyles} from '../special_cased_styles';
-
 import {CssKeyframesPlayer} from './css_keyframes_player';
 import {DirectStylePlayer} from './direct_style_player';
 

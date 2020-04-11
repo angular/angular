@@ -12,7 +12,6 @@ import * as ts from 'typescript';
 
 import {BuiltinType, Symbol, SymbolQuery, SymbolTable} from '../src/symbols';
 import {getSymbolQuery, toSymbolTableFactory} from '../src/typescript_symbols';
-
 import {DiagnosticContext, MockLanguageServiceHost} from './mocks';
 
 function emptyPipes(): SymbolTable {

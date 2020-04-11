@@ -7,8 +7,8 @@
  */
 
 import {
-  ɵRenderFlags,
   ɵrenderComponent as renderComponent,
+  ɵRenderFlags,
   ɵɵadvance,
   ɵɵcontainer,
   ɵɵcontainerRefreshEnd,

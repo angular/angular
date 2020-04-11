@@ -11,7 +11,6 @@ import {Element, Expansion, ExpansionCase, Node, Text, visitAll} from '@angular/
 import {BaseVisitor} from '../base_visitor';
 import {TranslationParseError} from '../translation_parsers/translation_parse_error';
 import {getAttrOrThrow, getAttribute} from '../translation_parsers/translation_utils';
-
 import {MessageRenderer} from './message_renderer';
 
 interface MessageSerializerConfig {

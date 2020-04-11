@@ -9,33 +9,34 @@
 // Make the `$localize()` global function available to the compiled templates, and the direct calls
 // below. This would normally be done inside the application `polyfills.ts` file.
 import '@angular/localize/init';
+
 import {CommonModule, registerLocaleData} from '@angular/common';
 import localeRo from '@angular/common/locales/ro';
+import {computeMsgId} from '@angular/compiler';
 import {
   Component,
   ContentChild,
-  ElementRef,
   ContentChildren,
   Directive,
+  ElementRef,
   HostBinding,
   Input,
   LOCALE_ID,
+  NO_ERRORS_SCHEMA,
+  Pipe,
+  PipeTransform,
   QueryList,
   TemplateRef,
   Type,
   ViewChild,
   ViewContainerRef,
-  Pipe,
-  PipeTransform,
-  NO_ERRORS_SCHEMA,
 } from '@angular/core';
 import {setDelayProjection} from '@angular/core/src/render3/instructions/projection';
 import {TestBed} from '@angular/core/testing';
-import {loadTranslations, clearTranslations} from '@angular/localize';
+import {clearTranslations, loadTranslations} from '@angular/localize';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
-import {computeMsgId} from '@angular/compiler';
 import {BehaviorSubject} from 'rxjs';
 
 onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {

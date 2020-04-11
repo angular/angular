@@ -9,7 +9,6 @@
 import {TestBed} from '@angular/core/testing';
 
 import {RouterTestingModule} from '../../testing';
-
 import {AotRouterModule, ROUTES} from './aot_router_module';
 import {AotRouterModuleNgSummary} from './aot_router_module.ngsummary';
 

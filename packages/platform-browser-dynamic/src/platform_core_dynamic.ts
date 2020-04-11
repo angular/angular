@@ -14,6 +14,7 @@ import {
   createPlatformFactory,
   platformCore,
 } from '@angular/core';
+
 import {JitCompilerFactory} from './compiler_factory';
 
 /**

@@ -7,6 +7,7 @@
  */
 
 import chai = require('chai');
+
 import {parseArguments} from '../lib/cli';
 
 describe('cli: parseArguments', () => {

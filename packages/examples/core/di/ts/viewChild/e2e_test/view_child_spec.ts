@@ -7,6 +7,7 @@
  */
 
 import {ElementFinder, browser, by, element} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../../test-utils';
 
 describe('viewChild example', () => {

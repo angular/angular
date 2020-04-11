@@ -8,6 +8,7 @@
 
 import {NgAnalyzedModules} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import {AstResult} from './common';
 import {locateSymbols} from './locate_symbol';
 import * as ng from './types';

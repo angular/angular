@@ -8,6 +8,7 @@
 
 import {JsonAstNode, JsonAstObject} from '@angular-devkit/core';
 import {findPropertyInAstObject} from '@schematics/angular/utility/json-utils';
+
 import {isJsonAstObject} from './json-utils';
 
 /**

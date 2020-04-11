@@ -7,6 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
+
 import {Parent} from './parent';
 
 @NgModule({imports: [Parent]})

@@ -20,7 +20,6 @@ import {
   ValueProvider,
   ValueSansProvider,
 } from '../interface/provider';
-
 import {angularCoreDiEnv} from './environment';
 import {convertDependencies, reflectDependencies} from './util';
 

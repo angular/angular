@@ -8,6 +8,7 @@
 
 import {registerLocaleData} from '@angular/common';
 import {Component} from '@angular/core';
+
 // we need to import data for the french locale
 import localeFr from './locale-fr';
 

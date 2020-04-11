@@ -9,7 +9,6 @@
 import {SchemaMetadata, ViewEncapsulation} from '../../core';
 import {ProcessProvidersFunction} from '../../di/interface/provider';
 import {Type} from '../../interface/type';
-
 import {TAttributes, TConstants} from './node';
 import {CssSelectorList} from './projection';
 import {TView} from './view';

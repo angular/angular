@@ -30,10 +30,10 @@ const srcsToFmt = [
   '!**/built/**',
   '!shims_for_IE.js',
   // These files are not formated as they rely on import order
-  "!packages/zone.js/test/node_bluebird_entry_point.ts",
-  "!packages/zone.js/test/node_entry_point_no_patch_clock.ts",
-  "!packages/zone.js/test/node_entry_point.ts",
-  "!packages/zone.js/test/node_error_entry_point.ts",
+  '!packages/zone.js/test/node_bluebird_entry_point.ts',
+  '!packages/zone.js/test/node_entry_point_no_patch_clock.ts',
+  '!packages/zone.js/test/node_entry_point.ts',
+  '!packages/zone.js/test/node_error_entry_point.ts',
 ];
 
 /**

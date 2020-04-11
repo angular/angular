@@ -23,7 +23,6 @@ import {getAngularDecorators} from '../../utils/ng_decorators';
 import {hasExplicitConstructor} from '../../utils/typescript/class_declaration';
 import {findBaseClassDeclarations} from '../../utils/typescript/find_base_classes';
 import {getImportOfIdentifier} from '../../utils/typescript/imports';
-
 import {
   UnexpectedMetadataValueError,
   convertDirectiveMetadataToExpression,

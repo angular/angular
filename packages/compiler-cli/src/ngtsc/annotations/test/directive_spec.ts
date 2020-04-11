@@ -15,8 +15,8 @@ import {DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from 
 import {PartialEvaluator} from '../../partial_evaluator';
 import {
   ClassDeclaration,
-  isNamedClassDeclaration,
   TypeScriptReflectionHost,
+  isNamedClassDeclaration,
 } from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing';

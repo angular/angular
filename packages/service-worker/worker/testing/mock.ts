@@ -8,7 +8,6 @@
 
 import {AssetGroupConfig, Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
-
 import {MockResponse} from './fetch';
 
 export type HeaderMap = {

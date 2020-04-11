@@ -11,8 +11,8 @@ import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
 import {
-  absoluteFromSourceFile,
   AbsoluteFsPath,
+  absoluteFromSourceFile,
   dirname,
   relative,
 } from '../../../src/ngtsc/file_system';
@@ -29,7 +29,6 @@ import {
   PRE_R3_MARKER,
   SwitchableVariableDeclaration,
 } from '../host/ngcc_host';
-
 import {RedundantDecoratorMap, RenderingFormatter} from './rendering_formatter';
 import {stripExtension} from './utils';
 

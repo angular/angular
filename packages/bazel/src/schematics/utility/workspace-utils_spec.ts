@@ -7,6 +7,7 @@
  */
 
 import {JsonAstObject, parseJsonAst} from '@angular-devkit/core';
+
 import {isJsonAstObject} from './json-utils';
 import {findE2eArchitect} from './workspace-utils';
 

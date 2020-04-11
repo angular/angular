@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {resolve} from 'path';
+
 import {
   AotCompiler,
   CompileDirectiveMetadata,
@@ -20,7 +22,6 @@ import {
   TemplateAst,
 } from '@angular/compiler';
 import {Diagnostic, createProgram, readConfiguration} from '@angular/compiler-cli';
-import {resolve} from 'path';
 import * as ts from 'typescript';
 
 import {ClassMetadataMap} from '../../angular/ng_query_visitor';

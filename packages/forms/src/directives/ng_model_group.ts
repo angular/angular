@@ -8,7 +8,6 @@
 
 import {
   Directive,
-  forwardRef,
   Host,
   Inject,
   Input,
@@ -17,10 +16,10 @@ import {
   Optional,
   Self,
   SkipSelf,
+  forwardRef,
 } from '@angular/core';
 
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
-
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {ControlContainer} from './control_container';
 import {NgForm} from './ng_form';

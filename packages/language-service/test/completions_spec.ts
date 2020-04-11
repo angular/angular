@@ -11,7 +11,6 @@ import * as ts from 'typescript';
 import {createLanguageService} from '../src/language_service';
 import {CompletionKind} from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
-
 import {MockTypescriptHost} from './test_utils';
 
 const APP_COMPONENT = '/app/app.component.ts';

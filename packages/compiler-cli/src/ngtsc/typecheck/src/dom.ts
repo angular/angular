@@ -15,9 +15,8 @@ import {
 import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
-
 import {TemplateId} from './api';
-import {makeTemplateDiagnostic, TemplateSourceResolver} from './diagnostics';
+import {TemplateSourceResolver, makeTemplateDiagnostic} from './diagnostics';
 
 const REGISTRY = new DomElementSchemaRegistry();
 const REMOVE_XHTML_REGEX = /^:xhtml:/;

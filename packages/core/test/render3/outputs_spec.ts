@@ -21,7 +21,6 @@ import {
   ɵɵtext,
 } from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-
 import {renderToHtml} from './render_util';
 
 describe('outputs', () => {

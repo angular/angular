@@ -7,6 +7,7 @@
  */
 
 import {ɵmakeTemplateObject} from '@angular/localize';
+
 import {SimpleJsonTranslationParser} from '../../../../src/translate/translation_files/translation_parsers/simple_json_translation_parser';
 
 describe('SimpleJsonTranslationParser', () => {

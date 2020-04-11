@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
-
+import {readFileSync} from 'fs';
 import {dirname, join, resolve} from 'path';
+
+import * as ts from 'typescript';
 
 import {getFileStatus} from './file_system';
 import {getModuleReferences} from './parser';
-import {readFileSync} from 'fs';
 
 export type ModuleResolver = (specifier: string) => string | null;
 

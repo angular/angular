@@ -14,12 +14,11 @@ import {NgccConfiguration} from '../packages/configuration';
 import {
   EntryPoint,
   EntryPointFormat,
-  getEntryPointFormat,
   SUPPORTED_FORMAT_PROPERTIES,
+  getEntryPointFormat,
 } from '../packages/entry_point';
 import {PartiallyOrderedList} from '../utils';
-
-import {createDependencyInfo, DependencyHost, EntryPointWithDependencies} from './dependency_host';
+import {DependencyHost, EntryPointWithDependencies, createDependencyInfo} from './dependency_host';
 
 const builtinNodeJsModules = new Set<string>(require('module').builtinModules);
 

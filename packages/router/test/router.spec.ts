@@ -21,7 +21,6 @@ import {RouterStateSnapshot, createEmptyStateSnapshot} from '../src/router_state
 import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
 import {getAllRouteGuards} from '../src/utils/preactivation';
 import {TreeNode} from '../src/utils/tree';
-
 import {Logger, createActivatedRouteSnapshot, provideTokenLogger} from './helpers';
 
 describe('Router', () => {

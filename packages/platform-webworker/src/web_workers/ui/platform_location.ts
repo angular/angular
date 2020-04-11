@@ -7,10 +7,11 @@
  */
 
 import {
-  LocationChangeListener,
   ɵBrowserPlatformLocation as BrowserPlatformLocation,
+  LocationChangeListener,
 } from '@angular/common';
 import {EventEmitter, Injectable} from '@angular/core';
+
 import {MessageBus} from '../shared/message_bus';
 import {ROUTER_CHANNEL} from '../shared/messaging_api';
 import {LocationType, Serializer, SerializerTypes} from '../shared/serializer';

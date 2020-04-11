@@ -14,7 +14,6 @@ import * as path from 'path';
 import {CUSTOM} from '../src/custom_token';
 import {CompWithProviders} from '../src/features';
 import {MainModule} from '../src/module';
-
 import {createComponent, createModule} from './util';
 
 describe('template codegen output', () => {

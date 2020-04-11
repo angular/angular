@@ -23,7 +23,6 @@ import {IMPORT_PREFIX} from '../constants';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {Logger} from '../logging/logger';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
-
 import {RenderingFormatter} from './rendering_formatter';
 import {renderSourceAndMap} from './source_maps';
 import {FileToWrite, getImportRewriter} from './utils';

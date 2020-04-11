@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {getPropertyNameText} from '../../utils/typescript/property_name';
 import {NgQueryDefinition, QueryTiming} from './angular/query-definition';
 

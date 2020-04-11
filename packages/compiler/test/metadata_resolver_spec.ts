@@ -26,13 +26,12 @@ import {
   ViewEncapsulation,
   ɵstringify as stringify,
 } from '@angular/core';
-import {async, inject, TestBed} from '@angular/core/testing';
+import {TestBed, async, inject} from '@angular/core/testing';
 
 import {CompileDiDependencyMetadata, identifierName} from '../src/compile_metadata';
 import {CompileMetadataResolver} from '../src/metadata_resolver';
 import {ResourceLoader} from '../src/resource_loader';
 import {MockResourceLoader} from '../testing/src/resource_loader_mock';
-
 import {MalformedStylesComponent} from './metadata_resolver_fixture';
 import {TEST_COMPILER_PROVIDERS} from './test_bindings';
 

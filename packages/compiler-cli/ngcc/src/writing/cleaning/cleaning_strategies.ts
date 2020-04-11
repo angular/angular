@@ -7,15 +7,14 @@
  */
 
 import {
-  absoluteFrom,
   AbsoluteFsPath,
   FileSystem,
   PathSegment,
+  absoluteFrom,
 } from '../../../../src/ngtsc/file_system';
 import {cleanPackageJson} from '../../packages/build_marker';
 import {NGCC_BACKUP_EXTENSION} from '../in_place_file_writer';
 import {NGCC_DIRECTORY} from '../new_entry_point_file_writer';
-
 import {isLocalDirectory} from './utils';
 
 /**

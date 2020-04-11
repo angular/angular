@@ -9,7 +9,6 @@
 import {
   Directive,
   EventEmitter,
-  forwardRef,
   Inject,
   InjectionToken,
   Input,
@@ -18,6 +17,7 @@ import {
   Output,
   Self,
   SimpleChanges,
+  forwardRef,
 } from '@angular/core';
 
 import {FormControl} from '../../model';

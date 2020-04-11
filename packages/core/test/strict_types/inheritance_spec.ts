@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵɵComponentDefWithMeta, ɵɵPipeDefWithMeta as PipeDefWithMeta} from '@angular/core';
+import {ɵɵPipeDefWithMeta as PipeDefWithMeta, ɵɵComponentDefWithMeta} from '@angular/core';
 
 declare class SuperComponent {
   static ɵcmp: ɵɵComponentDefWithMeta<SuperComponent, '[super]', never, {}, {}, never, never>;

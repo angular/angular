@@ -10,10 +10,10 @@ import * as ts from 'typescript';
 
 import {MetadataCollector, ModuleMetadata} from '../../src/metadata/index';
 import {
-  getExpressionLoweringTransformFactory,
-  LoweringRequest,
   LowerMetadataTransform,
+  LoweringRequest,
   RequestLocationMap,
+  getExpressionLoweringTransformFactory,
 } from '../../src/transformers/lower_expressions';
 import {MetadataCache} from '../../src/transformers/metadata_cache';
 import {Directory, MockAotContext, MockCompilerHost} from '../mocks';

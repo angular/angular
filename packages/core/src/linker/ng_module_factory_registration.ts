@@ -10,7 +10,6 @@ import {Type} from '../interface/type';
 import {autoRegisterModuleById} from '../render3/definition';
 import {NgModuleType} from '../render3/ng_module_ref';
 import {stringify} from '../util/stringify';
-
 import {NgModuleFactory} from './ng_module_factory';
 
 /**

@@ -7,7 +7,6 @@
  */
 
 import {assertEqual, assertNotEqual} from '../util/assert';
-
 import {assertFirstCreatePass} from './assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';

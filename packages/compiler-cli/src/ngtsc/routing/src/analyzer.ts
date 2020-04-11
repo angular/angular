@@ -10,9 +10,8 @@ import * as ts from 'typescript';
 
 import {ModuleResolver} from '../../imports';
 import {PartialEvaluator} from '../../partial_evaluator';
-
 import {scanForCandidateTransitiveModules, scanForRouteEntryPoints} from './lazy';
-import {entryPointKeyFor, RouterEntryPointManager} from './route';
+import {RouterEntryPointManager, entryPointKeyFor} from './route';
 
 export interface NgModuleRawRouteData {
   sourceFile: ts.SourceFile;

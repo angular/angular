@@ -9,15 +9,15 @@
 import {
   Component,
   Directive,
-  forwardRef,
   Inject,
   Injectable,
   InjectionToken,
   Injector,
   NgModule,
   Optional,
+  forwardRef,
 } from '@angular/core';
-import {async, inject, TestBed} from '@angular/core/testing';
+import {TestBed, async, inject} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';

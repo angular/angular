@@ -12,16 +12,15 @@ import {MetadataCollector} from '../../src/metadata/collector';
 import {
   ClassMetadata,
   ConstructorMetadata,
-  isClassMetadata,
-  isMetadataGlobalReferenceExpression,
   METADATA_VERSION,
   MetadataEntry,
   MetadataMap,
   MetadataSymbolicExpression,
   ModuleMetadata,
+  isClassMetadata,
+  isMetadataGlobalReferenceExpression,
 } from '../../src/metadata/schema';
-
-import {Directory, expectValidSources, Host} from './typescript.mocks';
+import {Directory, Host, expectValidSources} from './typescript.mocks';
 
 describe('Collector', () => {
   const documentRegistry = ts.createDocumentRegistry();

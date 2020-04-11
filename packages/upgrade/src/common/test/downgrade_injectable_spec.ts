@@ -7,6 +7,7 @@
  */
 
 import {Injector} from '@angular/core';
+
 import * as angular from '../src/angular1';
 import {$INJECTOR, INJECTOR_KEY, UPGRADE_APP_TYPE_KEY} from '../src/constants';
 import {downgradeInjectable} from '../src/downgrade_injectable';

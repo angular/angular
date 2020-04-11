@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Logger, LogLevel} from './logger';
+import {LogLevel, Logger} from './logger';
 
 const RESET = '\x1b[0m';
 const RED = '\x1b[31m';

@@ -7,8 +7,7 @@
  */
 
 import {TypeCheckingConfig} from '../src/api';
-
-import {ALL_ENABLED_CONFIG, tcb, TestDeclaration, TestDirective} from './test_utils';
+import {ALL_ENABLED_CONFIG, TestDeclaration, TestDirective, tcb} from './test_utils';
 
 describe('type check blocks', () => {
   it('should generate a basic block for a binding', () => {

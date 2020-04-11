@@ -14,9 +14,9 @@ import {
   CompileStylesheetMetadata,
   CompileTemplateMetadata,
   CompileTypeMetadata,
-  preserveWhitespacesDefault,
   ProxyClass,
   StaticSymbol,
+  preserveWhitespacesDefault,
 } from '@angular/compiler';
 import {ChangeDetectionStrategy, RendererType2, ViewEncapsulation} from '@angular/core';
 

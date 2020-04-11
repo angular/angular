@@ -13,8 +13,8 @@ import localeEnExtra from '@angular/common/locales/extra/en';
 import localeHu from '@angular/common/locales/hu';
 import localeSr from '@angular/common/locales/sr';
 import localeTh from '@angular/common/locales/th';
-import {isDate, toDate, formatDate} from '@angular/common/src/i18n/format_date';
-import {ɵDEFAULT_LOCALE_ID, ɵunregisterLocaleData, ɵregisterLocaleData} from '@angular/core';
+import {formatDate, isDate, toDate} from '@angular/common/src/i18n/format_date';
+import {ɵDEFAULT_LOCALE_ID, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 
 describe('Format date', () => {
   describe('toDate', () => {

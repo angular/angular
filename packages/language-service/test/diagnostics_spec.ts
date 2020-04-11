@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {createLanguageService} from '../src/language_service';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 import {MockTypescriptHost} from './test_utils';

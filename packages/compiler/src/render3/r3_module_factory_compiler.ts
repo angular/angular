@@ -10,7 +10,6 @@ import {CompileNgModuleMetadata, CompileTypeMetadata, identifierName} from '../c
 import {CompileMetadataResolver} from '../metadata_resolver';
 import * as o from '../output/output_ast';
 import {OutputContext} from '../util';
-
 import {Identifiers as R3} from './r3_identifiers';
 
 /**

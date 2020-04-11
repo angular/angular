@@ -15,6 +15,14 @@ import {CompilerConfig} from './config';
 import {
   ChangeDetectionStrategy,
   Component,
+  Directive,
+  Injectable,
+  ModuleWithProviders,
+  Provider,
+  Query,
+  SchemaMetadata,
+  Type,
+  ViewEncapsulation,
   createAttribute,
   createComponent,
   createHost,
@@ -25,14 +33,6 @@ import {
   createOptional,
   createSelf,
   createSkipSelf,
-  Directive,
-  Injectable,
-  ModuleWithProviders,
-  Provider,
-  Query,
-  SchemaMetadata,
-  Type,
-  ViewEncapsulation,
 } from './core';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {DirectiveResolver, findLast} from './directive_resolver';
@@ -46,13 +46,13 @@ import {CssSelector} from './selector';
 import {SummaryResolver} from './summary_resolver';
 import {
   Console,
+  SyncAsync,
+  ValueTransformer,
   isPromise,
   noUndefined,
   resolveForwardRef,
   stringify,
-  SyncAsync,
   syntaxError,
-  ValueTransformer,
   visitValue,
 } from './util';
 

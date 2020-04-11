@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as fs from 'fs';
+import * as path from 'path';
+
 import * as ng from '@angular/compiler-cli';
 import {
   BazelOptions,
@@ -21,8 +24,6 @@ import {
   runAsWorker,
   runWorkerLoop,
 } from '@bazel/typescript';
-import * as fs from 'fs';
-import * as path from 'path';
 import * as tsickle from 'tsickle';
 import * as ts from 'typescript';
 

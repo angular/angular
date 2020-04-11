@@ -27,13 +27,13 @@ import {CssSelector, SelectorMatcher} from '../../selector';
 import {ShadowCss} from '../../shadow_css';
 import {CONTENT_ATTR, HOST_ATTR} from '../../style_compiler';
 import {BindingParser} from '../../template_parser/binding_parser';
-import {error, OutputContext} from '../../util';
+import {OutputContext, error} from '../../util';
 import {BoundEvent} from '../r3_ast';
 import {
-  compileFactoryFunction,
   R3DependencyMetadata,
   R3FactoryTarget,
   R3ResolvedDependencyType,
+  compileFactoryFunction,
 } from '../r3_factory';
 import {Identifiers as R3} from '../r3_identifiers';
 import {Render3ParseResult} from '../r3_template_transform';
@@ -42,7 +42,6 @@ import {
   prepareSyntheticPropertyName,
   typeWithParameters,
 } from '../util';
-
 import {
   R3ComponentDef,
   R3ComponentMetadata,
@@ -58,22 +57,22 @@ import {
 } from './styling_builder';
 import {
   BindingScope,
+  TemplateDefinitionBuilder,
+  ValueConverter,
   makeBindingParser,
   prepareEventListenerParameters,
   renderFlagCheckIfStmt,
   resolveSanitizationFn,
-  TemplateDefinitionBuilder,
-  ValueConverter,
 } from './template';
 import {
+  CONTEXT_NAME,
+  DefinitionMap,
+  RENDER_FLAGS,
+  TEMPORARY_NAME,
   asLiteral,
   chainedInstruction,
   conditionallyCreateMapObjectLiteral,
-  CONTEXT_NAME,
-  DefinitionMap,
   getQueryPredicate,
-  RENDER_FLAGS,
-  TEMPORARY_NAME,
   temporaryAllocator,
 } from './util';
 

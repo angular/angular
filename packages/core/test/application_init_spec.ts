@@ -8,6 +8,7 @@
 
 import {Injector} from '@angular/core';
 import {APP_INITIALIZER, ApplicationInitStatus} from '@angular/core/src/application_init';
+
 import {TestBed, async, inject} from '../testing';
 
 {

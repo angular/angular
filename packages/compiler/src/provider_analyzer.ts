@@ -19,7 +19,7 @@ import {
   tokenReference,
 } from './compile_metadata';
 import {CompileReflector} from './compile_reflector';
-import {createTokenForExternalReference, Identifiers} from './identifiers';
+import {Identifiers, createTokenForExternalReference} from './identifiers';
 import {ParseError, ParseSourceSpan} from './parse_util';
 import {
   AttrAst,

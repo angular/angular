@@ -11,7 +11,6 @@ import {AnimationOptions, ɵStyleData} from '@angular/animations';
 import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetAsInMap} from '../render/shared';
 import {copyObj, interpolateParams, iteratorToArray, mergeAnimationOptions} from '../util';
-
 import {StyleAst, TransitionAst} from './animation_ast';
 import {buildAnimationTimelines} from './animation_timeline_builder';
 import {TransitionMatcherFn} from './animation_transition_expr';

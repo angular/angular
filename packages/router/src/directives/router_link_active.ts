@@ -23,7 +23,6 @@ import {Subscription} from 'rxjs';
 
 import {Event, NavigationEnd} from '../events';
 import {Router} from '../router';
-
 import {RouterLink, RouterLinkWithHref} from './router_link';
 
 /**

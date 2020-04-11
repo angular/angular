@@ -9,10 +9,10 @@
 import {AotCompilerOptions} from '@angular/compiler';
 import {escapeRegExp} from '@angular/compiler/src/util';
 import {
-  arrayToMockDir,
   MockCompilerHost,
   MockData,
   MockDirectory,
+  arrayToMockDir,
   toMockFileArray,
 } from '@angular/compiler/test/aot/test_util';
 import * as ts from 'typescript';

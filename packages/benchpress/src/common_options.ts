@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '@angular/core';
 import * as fs from 'fs';
+
+import {InjectionToken} from '@angular/core';
 
 export class Options {
   static SAMPLE_ID = new InjectionToken('Options.sampleId');

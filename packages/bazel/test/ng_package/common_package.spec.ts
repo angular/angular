@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {obsoleteInIvy} from '@angular/private/testing';
 import * as fs from 'fs';
 import * as path from 'path';
+
+import {obsoleteInIvy} from '@angular/private/testing';
 import * as shx from 'shelljs';
 
 // Resolve the "npm_package" directory by using the runfile resolution. Note that we need to

@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {isFunctionLikeDeclaration, unwrapExpression} from '../../../../utils/typescript/functions';
 import {getPropertyNameText} from '../../../../utils/typescript/property_name';
 

@@ -12,7 +12,6 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '../ml_parser/interpolation_config';
 import {TokenizeOptions} from '../ml_parser/lexer';
 import {ParseTreeResult} from '../ml_parser/parser';
 import {Console} from '../util';
-
 import {digest} from './digest';
 import {mergeTranslations} from './extractor_merger';
 import {Serializer} from './serializers/serializer';

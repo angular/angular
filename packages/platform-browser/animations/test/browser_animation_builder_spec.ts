@@ -12,8 +12,8 @@ import {MockAnimationDriver} from '@angular/animations/browser/testing';
 import {Component, ViewChild} from '@angular/core';
 import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {
-  NoopAnimationsModule,
   ɵBrowserAnimationBuilder as BrowserAnimationBuilder,
+  NoopAnimationsModule,
 } from '@angular/platform-browser/animations';
 
 import {el} from '../../testing/src/browser_util';

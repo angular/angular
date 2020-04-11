@@ -10,7 +10,6 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../../src/ngtsc/imports';
 import {ClassDeclaration} from '../../../src/ngtsc/reflection';
-
 import {Migration, MigrationHost} from './migration';
 import {
   createDirectiveDecorator,

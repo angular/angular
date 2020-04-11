@@ -13,9 +13,9 @@ import {
   IIntervalService,
   IProvideService,
   ITestabilityService,
-  bootstrap,
   element as angularElement,
   module_ as angularModule,
+  bootstrap,
 } from '../../src/common/src/angular1';
 import {
   $$TESTABILITY,
@@ -29,7 +29,6 @@ import {
   UPGRADE_MODULE_NAME,
 } from '../../src/common/src/constants';
 import {LazyModuleRef, UpgradeAppType, controllerKey} from '../../src/common/src/util';
-
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 import {NgAdapterInjector} from './util';
 

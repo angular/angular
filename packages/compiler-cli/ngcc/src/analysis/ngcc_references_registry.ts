@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {ReferencesRegistry} from '../../../src/ngtsc/annotations';
 import {Reference} from '../../../src/ngtsc/imports';
 import {ConcreteDeclaration, ReflectionHost} from '../../../src/ngtsc/reflection';

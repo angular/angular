@@ -7,7 +7,6 @@
  */
 
 import {isPromise} from '../src/util/lang';
-
 import {Inject, Injectable, InjectionToken, Optional} from './di';
 
 /**

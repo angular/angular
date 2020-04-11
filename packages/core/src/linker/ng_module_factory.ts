@@ -8,7 +8,6 @@
 
 import {Injector} from '../di/injector';
 import {Type} from '../interface/type';
-
 import {ComponentFactoryResolver} from './component_factory_resolver';
 
 /**

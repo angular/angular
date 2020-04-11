@@ -7,6 +7,7 @@
  */
 
 import './translations';
+
 import {Component, NgModule, ɵrenderComponent as renderComponent} from '@angular/core';
 
 @Component({

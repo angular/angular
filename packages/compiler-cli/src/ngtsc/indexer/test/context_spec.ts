@@ -7,6 +7,7 @@
  */
 
 import {ParseSourceFile} from '@angular/compiler';
+
 import {runInEachFileSystem} from '../../file_system/testing';
 import {IndexingContext} from '../src/context';
 import * as util from './util';

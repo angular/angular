@@ -9,7 +9,6 @@ import {Observable, observable, of} from 'rxjs';
 import {pairwise, partition, pluck} from 'rxjs/operators';
 
 import {ifEnvSupports} from '../test-util';
-
 import {supportFeature} from './rxjs.util';
 
 describe('Observable.map', () => {

@@ -10,7 +10,6 @@ import * as ts from 'typescript';
 
 import {create} from '../src/ts_plugin';
 import {CompletionKind} from '../src/types';
-
 import {MockTypescriptHost} from './test_utils';
 
 const mockProject = {

@@ -8,7 +8,6 @@
 
 import {devModeEqual} from '../change_detection/change_detection_util';
 import {assertDataInRange, assertLessThan, assertNotSame} from '../util/assert';
-
 import {getExpressionChangedErrorDetails, throwErrorIfNoChangesMode} from './errors';
 import {LView} from './interfaces/view';
 import {getCheckNoChangesMode} from './state';

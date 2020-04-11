@@ -9,6 +9,7 @@
 // Make the `$localize()` global function available to the compiled templates, and the direct calls
 // below. This would normally be done inside the application `polyfills.ts` file.
 import '@angular/localize/init';
+
 import {computeMsgId} from '@angular/compiler';
 import {loadTranslations} from '@angular/localize';
 

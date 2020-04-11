@@ -9,7 +9,6 @@
 import {HtmlParser} from '../ml_parser/html_parser';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseError} from '../parse_util';
-
 import {extractMessages} from './extractor_merger';
 import * as i18n from './i18n_ast';
 import {PlaceholderMapper, Serializer} from './serializers/serializer';

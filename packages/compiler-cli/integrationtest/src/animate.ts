@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {animate, AUTO_STYLE, state, style, transition, trigger} from '@angular/animations';
+import {AUTO_STYLE, animate, state, style, transition, trigger} from '@angular/animations';
 import {Component} from '@angular/core';
 
 @Component({

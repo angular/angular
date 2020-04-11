@@ -8,10 +8,9 @@
 
 import * as ts from 'typescript';
 
-import {runInEachFileSystem, TestFile} from '../../file_system/testing';
+import {TestFile, runInEachFileSystem} from '../../file_system/testing';
 import {TypeCheckingConfig} from '../src/api';
-
-import {ngForDeclaration, ngForDts, TestDeclaration, typecheck} from './test_utils';
+import {TestDeclaration, ngForDeclaration, ngForDts, typecheck} from './test_utils';
 
 runInEachFileSystem(() => {
   describe('template diagnostics', () => {

@@ -9,9 +9,8 @@
 import * as html from '../ml_parser/ast';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseTreeResult} from '../ml_parser/parser';
-
 import * as i18n from './i18n_ast';
-import {createI18nMessageFactory, I18nMessageFactory} from './i18n_parser';
+import {I18nMessageFactory, createI18nMessageFactory} from './i18n_parser';
 import {I18nError} from './parse_util';
 import {TranslationBundle} from './translation_bundle';
 

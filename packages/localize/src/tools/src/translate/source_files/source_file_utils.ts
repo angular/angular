@@ -14,6 +14,7 @@ import {
 } from '@angular/localize';
 import {NodePath} from '@babel/traverse';
 import * as t from '@babel/types';
+
 import {Diagnostics} from '../../diagnostics';
 
 /**

@@ -86,5 +86,5 @@ if (ngDevMode) {
           'For server-side rendering applications add the import to your `main.server.ts` file.)'
       );
     };
-    // tslint:enable: no-toplevel-property-access
+  // tslint:enable: no-toplevel-property-access
 }

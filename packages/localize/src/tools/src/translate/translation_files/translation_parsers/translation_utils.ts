@@ -15,6 +15,7 @@ import {
   ParseSourceSpan,
   XmlParser,
 } from '@angular/compiler';
+
 import {Diagnostics} from '../../../diagnostics';
 import {TranslationParseError} from './translation_parse_error';
 

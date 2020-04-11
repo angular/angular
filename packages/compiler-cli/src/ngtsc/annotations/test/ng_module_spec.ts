@@ -24,7 +24,7 @@ import {
   LocalMetadataRegistry,
 } from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
-import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
+import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing';
 import {NgModuleDecoratorHandler} from '../src/ng_module';

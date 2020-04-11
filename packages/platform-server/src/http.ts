@@ -8,17 +8,15 @@
 
 const xhr2: any = require('xhr2');
 
-import {Injectable, Injector, Provider} from '@angular/core';
-
 import {
-  HttpEvent,
-  HttpRequest,
-  HttpHandler,
   HttpBackend,
-  XhrFactory,
+  HttpEvent,
+  HttpHandler,
   ɵHttpInterceptingHandler as HttpInterceptingHandler,
+  HttpRequest,
+  XhrFactory,
 } from '@angular/common/http';
-
+import {Injectable, Injector, Provider} from '@angular/core';
 import {Observable, Observer, Subscription} from 'rxjs';
 
 @Injectable()

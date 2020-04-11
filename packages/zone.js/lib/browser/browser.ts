@@ -21,7 +21,6 @@ import {
   scheduleMacroTaskWithCurrentZone,
   zoneSymbol,
 } from '../common/utils';
-
 import {patchCustomElements} from './custom-elements';
 import {eventTargetPatch, patchEvent} from './event-target';
 import {propertyDescriptorPatch} from './property-descriptor';

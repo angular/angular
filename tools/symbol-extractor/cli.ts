@@ -7,6 +7,7 @@
  */
 
 import * as fs from 'fs';
+
 import {SymbolExtractor} from './symbol_extractor';
 
 const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER'] as string);

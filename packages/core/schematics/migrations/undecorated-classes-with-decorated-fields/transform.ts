@@ -17,7 +17,6 @@ import {ImportManager} from '../../utils/import_manager';
 import {NgDecorator, getAngularDecorators} from '../../utils/ng_decorators';
 import {findBaseClassDeclarations} from '../../utils/typescript/find_base_classes';
 import {unwrapExpression} from '../../utils/typescript/functions';
-
 import {UpdateRecorder} from './update_recorder';
 
 /** Analyzed class declaration. */

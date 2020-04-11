@@ -9,7 +9,6 @@
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererType2} from '../render/api';
 import {SecurityContext} from '../sanitization/security';
-
 import {
   BindingDef,
   BindingFlags,

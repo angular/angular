@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵgetDOM as getDOM} from '@angular/common';
 import {
   AfterContentChecked,
   AfterContentInit,
@@ -39,16 +40,15 @@ import {
   textDef,
 } from '@angular/core/src/view/index';
 import {TestBed, withModule} from '@angular/core/testing';
-import {ɵgetDOM as getDOM} from '@angular/common';
 import {ivyEnabled} from '@angular/private/testing';
 
 import {
   ARG_TYPE_VALUES,
   checkNodeInlineOrDynamic,
-  createRootView,
-  createAndGetRootNodes,
   compViewDef,
   compViewDefFactory,
+  createAndGetRootNodes,
+  createRootView,
 } from './helper';
 
 {

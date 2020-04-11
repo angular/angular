@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
+import localeAr from '@angular/common/locales/ar';
+import localeDa from '@angular/common/locales/da';
+import localeDeAt from '@angular/common/locales/de-AT';
 import localeEn from '@angular/common/locales/en';
 import localeEsUS from '@angular/common/locales/es-US';
 import localeFr from '@angular/common/locales/fr';
-import localeAr from '@angular/common/locales/ar';
-import localeDeAt from '@angular/common/locales/de-AT';
-import localeDa from '@angular/common/locales/da';
-import {ɵunregisterLocaleData, ɵregisterLocaleData} from '@angular/core';
-import {CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
+import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 {

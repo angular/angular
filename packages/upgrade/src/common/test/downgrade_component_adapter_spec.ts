@@ -15,9 +15,9 @@ import {
   TestabilityRegistry,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+
 import * as angular from '../src/angular1';
 import {DowngradeComponentAdapter, groupNodesBySelector} from '../src/downgrade_component_adapter';
-
 import {nodes, withEachNg1Version} from './helpers/common_test_helpers';
 
 withEachNg1Version(() => {

@@ -7,13 +7,13 @@
  */
 
 import {Statement} from '@angular/compiler';
-import {fromObject, generateMapFileComment, SourceMapConverter} from 'convert-source-map';
+import {SourceMapConverter, fromObject, generateMapFileComment} from 'convert-source-map';
 import MagicString from 'magic-string';
-import {encode, SourceMapMappings} from 'sourcemap-codec';
+import {SourceMapMappings, encode} from 'sourcemap-codec';
 import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {NOOP_DEFAULT_IMPORT_RECORDER, Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager, translateStatement} from '../../../src/ngtsc/translator';
 import {loadTestFiles} from '../../../test/helpers';

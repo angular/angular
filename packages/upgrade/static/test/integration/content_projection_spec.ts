@@ -19,8 +19,8 @@ import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
-import * as angular from '../../../src/common/src/angular1';
 
+import * as angular from '../../../src/common/src/angular1';
 import {
   html,
   multiTrim,

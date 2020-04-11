@@ -14,10 +14,9 @@ import {CompilerConfig, preserveWhitespacesDefault} from '@angular/compiler/src/
 import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
 import {ResourceLoader} from '@angular/compiler/src/resource_loader';
 import {ViewEncapsulation} from '@angular/core/src/metadata/view';
-import {inject, TestBed} from '@angular/core/testing';
+import {TestBed, inject} from '@angular/core/testing';
 
 import {noUndefined} from '../src/util';
-
 import {TEST_COMPILER_PROVIDERS} from './test_bindings';
 
 const SOME_MODULE_URL = 'package:some/module/a.js';

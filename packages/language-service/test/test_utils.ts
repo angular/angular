@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileNgModuleMetadata, NgAnalyzedModules} from '@angular/compiler';
-import {setup} from '@angular/compiler-cli/test/test_support';
 import * as fs from 'fs';
 import * as path from 'path';
+
+import {CompileNgModuleMetadata, NgAnalyzedModules} from '@angular/compiler';
+import {setup} from '@angular/compiler-cli/test/test_support';
 import * as ts from 'typescript';
 
 import {Span} from '../src/types';

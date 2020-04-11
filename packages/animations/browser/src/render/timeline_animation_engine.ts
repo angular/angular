@@ -22,7 +22,6 @@ import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instructio
 import {ElementInstructionMap} from '../dsl/element_instruction_map';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '../util';
-
 import {AnimationDriver} from './animation_driver';
 import {
   getOrSetAsInMap,

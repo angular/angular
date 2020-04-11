@@ -9,14 +9,14 @@
 import {
   BoundTarget,
   CssSelector,
-  parseTemplate,
   ParseTemplateOptions,
   R3TargetBinder,
   SelectorMatcher,
+  parseTemplate,
 } from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
+import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';

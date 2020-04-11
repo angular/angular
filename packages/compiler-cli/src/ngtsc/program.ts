@@ -11,7 +11,6 @@ import * as ts from 'typescript';
 
 import * as api from '../transformers/api';
 import {verifySupportedTypeScriptVersion} from '../typescript_support';
-
 import {NgCompilerHost} from './core';
 import {NgCompilerOptions} from './core/api';
 import {NgCompiler} from './core/src/compiler';

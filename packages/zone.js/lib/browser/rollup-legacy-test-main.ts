@@ -7,6 +7,5 @@
  */
 
 import './rollup-legacy-main';
-
 // load test related files into bundle
 import '../testing/zone-testing';

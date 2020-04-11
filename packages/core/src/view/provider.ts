@@ -19,7 +19,6 @@ import {ViewContainerRef} from '../linker/view_container_ref';
 import {Renderer2} from '../render/api';
 import {isObservable} from '../util/lang';
 import {stringify} from '../util/stringify';
-
 import {createChangeDetectorRef, createInjector} from './refs';
 import {
   BindingDef,

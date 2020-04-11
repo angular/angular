@@ -7,6 +7,7 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
+
 import {NgLocalization, getPluralCategory} from '../i18n/localization';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 

@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {NgtscCompilerHost} from '../src/compiler_host';
 import {absoluteFrom, getFileSystem} from '../src/helpers';
 import {runInEachFileSystem} from '../testing';

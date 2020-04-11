@@ -8,8 +8,10 @@
 
 /// <reference types="node" />
 import * as fs from 'fs';
-import * as fsExtra from 'fs-extra';
 import * as p from 'path';
+
+import * as fsExtra from 'fs-extra';
+
 import {absoluteFrom, relativeFrom} from './helpers';
 import {AbsoluteFsPath, FileStats, FileSystem, PathSegment, PathString} from './types';
 

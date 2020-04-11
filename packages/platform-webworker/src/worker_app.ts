@@ -9,14 +9,15 @@
 import {
   CommonModule,
   DOCUMENT,
-  ViewportScroller,
   ɵNullViewportScroller as NullViewportScroller,
   ɵPLATFORM_WORKER_APP_ID as PLATFORM_WORKER_APP_ID,
+  ViewportScroller,
 } from '@angular/common';
 import {
   APP_INITIALIZER,
   ApplicationModule,
   ErrorHandler,
+  ɵINJECTOR_SCOPE as INJECTOR_SCOPE,
   NgModule,
   NgZone,
   PLATFORM_ID,
@@ -25,7 +26,6 @@ import {
   StaticProvider,
   createPlatformFactory,
   platformCore,
-  ɵINJECTOR_SCOPE as INJECTOR_SCOPE,
 } from '@angular/core';
 import {ɵBROWSER_SANITIZATION_PROVIDERS as BROWSER_SANITIZATION_PROVIDERS} from '@angular/platform-browser';
 

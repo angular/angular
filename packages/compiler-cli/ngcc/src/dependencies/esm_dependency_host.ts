@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {DependencyHostBase} from './dependency_host';
 import {ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';

@@ -9,7 +9,6 @@
 import {AsyncLocker} from '../locking/async_locker';
 import {SyncLocker} from '../locking/sync_locker';
 import {Logger} from '../logging/logger';
-
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from './api';
 import {CreateTaskCompletedCallback} from './tasks/api';
 

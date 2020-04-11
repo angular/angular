@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, isRooted} from '../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, absoluteFrom, isRooted} from '../../src/ngtsc/file_system';
 import {KnownDeclaration} from '../../src/ngtsc/reflection';
 
 /**

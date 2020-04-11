@@ -9,7 +9,6 @@
 import * as ts from 'typescript';
 
 import {MetadataCollector, MetadataValue, ModuleMetadata} from '../metadata/index';
-
 import {MetadataProvider} from './compiler_host';
 import {TS} from './util';
 

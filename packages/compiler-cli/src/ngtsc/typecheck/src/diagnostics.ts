@@ -10,7 +10,6 @@ import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {getTokenAtPosition} from '../../util/src/typescript';
-
 import {ExternalTemplateSourceMapping, TemplateId, TemplateSourceMapping} from './api';
 
 /**

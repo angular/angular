@@ -8,9 +8,10 @@
  */
 
 import * as yargs from 'yargs';
-import {tsCircularDependenciesBuilder} from './ts-circular-dependencies/index';
-import {buildPullapproveParser} from './pullapprove/cli';
+
 import {buildCommitMessageParser} from './commit-message/cli';
+import {buildPullapproveParser} from './pullapprove/cli';
+import {tsCircularDependenciesBuilder} from './ts-circular-dependencies/index';
 
 yargs
   .scriptName('ng-dev')

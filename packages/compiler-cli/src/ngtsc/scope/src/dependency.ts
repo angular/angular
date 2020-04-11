@@ -11,7 +11,6 @@ import * as ts from 'typescript';
 import {AliasingHost, Reference} from '../../imports';
 import {DirectiveMeta, MetadataReader, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
-
 import {ExportScope} from './api';
 
 export interface DtsModuleScopeResolver {

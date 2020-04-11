@@ -8,7 +8,6 @@
 
 import {Task} from '../api';
 import {stringifyTask} from '../utils';
-
 import {BaseTaskQueue} from './base_task_queue';
 
 /**

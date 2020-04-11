@@ -8,8 +8,8 @@
 
 import {
   AST,
-  AstVisitor,
   ASTWithSource,
+  AstVisitor,
   Binary,
   BindingPipe,
   Chain,

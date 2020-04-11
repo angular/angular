@@ -8,11 +8,11 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+
 import * as ts from 'typescript';
 
 import {CompilerOptions} from '../transformers/api';
 import {MetadataCache} from '../transformers/metadata_cache';
-
 import {CompilerHostAdapter, MetadataBundler} from './bundler';
 import {privateEntriesToIndex} from './index_writer';
 

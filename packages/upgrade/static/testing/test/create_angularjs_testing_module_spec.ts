@@ -9,7 +9,6 @@
 import {getAngularJSGlobal} from '../../../src/common/src/angular1';
 import {withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
 import {createAngularJSTestingModule} from '../src/create_angularjs_testing_module';
-
 import {AppModule, Inventory, defineAppModule} from './mocks';
 
 withEachNg1Version(() => {

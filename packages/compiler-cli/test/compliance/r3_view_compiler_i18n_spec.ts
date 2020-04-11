@@ -13,7 +13,6 @@ import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../compil
 import {decimalDigest} from '../../../compiler/src/i18n/digest';
 import {extractMessages} from '../../../compiler/src/i18n/extractor_merger';
 import {HtmlParser} from '../../../compiler/src/ml_parser/html_parser';
-
 import {compile, expectEmit} from './mock_compile';
 
 const angularFiles = setup({

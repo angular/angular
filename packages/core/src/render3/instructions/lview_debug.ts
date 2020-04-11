@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AttributeMarker, ComponentTemplate} from '..';
 import {Injector, SchemaMetadata} from '../../core';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import {KeyValueArray} from '../../util/array_utils';
@@ -32,11 +31,11 @@ import {
   TIcu,
 } from '../interfaces/i18n';
 import {
+  TNode as ITNode,
   PropertyAliases,
   TConstants,
   TContainerNode,
   TElementNode,
-  TNode as ITNode,
   TNodeFlags,
   TNodeProviderIndexes,
   TNodeType,
@@ -44,14 +43,14 @@ import {
 } from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
 import {LQueries, TQueries} from '../interfaces/query';
-import {RComment, RElement, Renderer3, RendererFactory3, RNode} from '../interfaces/renderer';
+import {RComment, RElement, RNode, Renderer3, RendererFactory3} from '../interfaces/renderer';
 import {
+  TStylingKey,
+  TStylingRange,
   getTStylingRangeNext,
   getTStylingRangeNextDuplicate,
   getTStylingRangePrev,
   getTStylingRangePrevDuplicate,
-  TStylingKey,
-  TStylingRange,
 } from '../interfaces/styling';
 import {
   CHILD_HEAD,
@@ -63,9 +62,10 @@ import {
   ExpandoInstructions,
   FLAGS,
   HEADER_OFFSET,
-  HookData,
   HOST,
+  HookData,
   INJECTOR,
+  TView as ITView,
   LView,
   LViewFlags,
   NEXT,
@@ -74,15 +74,15 @@ import {
   RENDERER,
   RENDERER_FACTORY,
   SANITIZER,
-  T_HOST,
   TData,
   TVIEW,
-  TView as ITView,
   TView,
   TViewType,
+  T_HOST,
 } from '../interfaces/view';
 import {attachDebugObject} from '../util/debug_utils';
 import {getLContainerActiveIndex, getTNode, unwrapRNode} from '../util/view_utils';
+import {AttributeMarker, ComponentTemplate} from '..';
 
 const NG_DEV_MODE = (typeof ngDevMode === 'undefined' || !!ngDevMode) && initNgDevMode();
 

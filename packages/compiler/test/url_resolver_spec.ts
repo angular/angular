@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createOfflineCompileUrlResolver, UrlResolver} from '@angular/compiler/src/url_resolver';
+import {UrlResolver, createOfflineCompileUrlResolver} from '@angular/compiler/src/url_resolver';
 import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
 {

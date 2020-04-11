@@ -7,7 +7,9 @@
  */
 
 import './init';
+
 import {By} from '@angular/platform-browser';
+
 import {CompWithNgContent, ProjectingComp} from '../src/projection';
 import {createComponent} from './util';
 

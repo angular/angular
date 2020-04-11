@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost} from '@angular/compiler';
 import {dirname, resolve} from 'path';
+
+import {AotCompilerHost} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ImportManager} from '../../../utils/import_manager';
 import {Import, getImportOfIdentifier} from '../../../utils/typescript/imports';
 import {getValueSymbolOfDeclaration} from '../../../utils/typescript/symbol';
-
 import {getPosixPath} from './path_format';
 import {ResolvedExport, getExportSymbolsOfFile} from './source_file_exports';
 

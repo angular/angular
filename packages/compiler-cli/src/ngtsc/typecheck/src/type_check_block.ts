@@ -14,8 +14,8 @@ import {
   DYNAMIC_TYPE,
   ImplicitReceiver,
   MethodCall,
-  ParsedEventType,
   ParseSourceSpan,
+  ParsedEventType,
   PropertyRead,
   PropertyWrite,
   SchemaMetadata,
@@ -33,8 +33,7 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
-
-import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from './api';
+import {TemplateId, TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from './api';
 import {
   addParseSpanInfo,
   addTemplateId,
@@ -43,7 +42,7 @@ import {
 } from './diagnostics';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
-import {astToTypescript, NULL_AS_ANY} from './expression';
+import {NULL_AS_ANY, astToTypescript} from './expression';
 import {OutOfBandDiagnosticRecorder} from './oob';
 import {ExpressionSemanticVisitor} from './template_semantics';
 import {

@@ -18,7 +18,6 @@ import {serializeIcuNode} from '../../../src/render3/view/i18n/icu_serializer';
 import {serializeI18nMessageForLocalize} from '../../../src/render3/view/i18n/localize_utils';
 import {I18nMeta, parseI18nMeta} from '../../../src/render3/view/i18n/meta';
 import {formatI18nPlaceholderName} from '../../../src/render3/view/i18n/util';
-
 import {parseR3 as parse} from './util';
 
 const expressionParser = new Parser(new Lexer());

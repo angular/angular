@@ -8,7 +8,7 @@
 
 import {getHtmlTagDefinition} from './html_tags';
 import {TokenizeOptions} from './lexer';
-import {Parser, ParseTreeResult} from './parser';
+import {ParseTreeResult, Parser} from './parser';
 
 export {ParseTreeResult, TreeError} from './parser';
 

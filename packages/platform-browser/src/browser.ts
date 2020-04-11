@@ -10,7 +10,9 @@ import {CommonModule, DOCUMENT, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} fr
 import {
   APP_ID,
   ApplicationModule,
+  ɵConsole as Console,
   ErrorHandler,
+  ɵINJECTOR_SCOPE as INJECTOR_SCOPE,
   Inject,
   ModuleWithProviders,
   NgModule,
@@ -26,10 +28,9 @@ import {
   Testability,
   createPlatformFactory,
   platformCore,
-  ɵConsole as Console,
-  ɵINJECTOR_SCOPE as INJECTOR_SCOPE,
   ɵsetDocument,
 } from '@angular/core';
+
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {SERVER_TRANSITION_PROVIDERS, TRANSITION_ID} from './browser/server-transition';
 import {BrowserGetTestability} from './browser/testability';

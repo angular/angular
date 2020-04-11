@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/// <reference types="node" />
-import * as ng from '@angular/compiler-cli';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+
+/// <reference types="node" />
+import * as ng from '@angular/compiler-cli';
 import * as ts from 'typescript';
 
-import {expectNoDiagnostics, setup, TestSupport} from '../test_support';
+import {TestSupport, expectNoDiagnostics, setup} from '../test_support';
 
 type MockFiles = {
   [fileName: string]: string;

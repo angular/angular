@@ -11,7 +11,7 @@ import {
   ɵisObservable as isObservable,
   ɵisPromise as isPromise,
 } from '@angular/core';
-import {forkJoin, from, Observable} from 'rxjs';
+import {Observable, forkJoin, from} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';

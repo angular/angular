@@ -6,17 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/// <reference types="node" />
-import * as ng from '@angular/compiler-cli';
 import * as fs from 'fs';
 import * as path from 'path';
+
+/// <reference types="node" />
+import * as ng from '@angular/compiler-cli';
 import * as ts from 'typescript';
 
 import {formatDiagnostics} from '../../src/perform_compile';
 import {CompilerHost, EmitFlags, LazyRoute} from '../../src/transformers/api';
 import {createSrcToOutPathMapper} from '../../src/transformers/program';
 import {StructureIsReused, tsStructureIsReused} from '../../src/transformers/util';
-import {expectNoDiagnosticsInProgram, setup, stripAnsi, TestSupport} from '../test_support';
+import {TestSupport, expectNoDiagnosticsInProgram, setup, stripAnsi} from '../test_support';
 
 describe('ng program', () => {
   let testSupport: TestSupport;

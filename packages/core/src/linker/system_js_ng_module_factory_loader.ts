@@ -8,7 +8,6 @@
 
 import {Injectable, Optional} from '../di';
 import {ivyEnabled} from '../ivy_switch';
-
 import {Compiler} from './compiler';
 import {NgModuleFactory} from './ng_module_factory';
 import {NgModuleFactoryLoader} from './ng_module_factory_loader';

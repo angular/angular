@@ -12,7 +12,6 @@ import {Options} from '../common_options';
 import {MeasureValues} from '../measure_values';
 import {Reporter} from '../reporter';
 import {SampleDescription} from '../sample_description';
-
 import {formatStats, sortedProps} from './util';
 
 /**

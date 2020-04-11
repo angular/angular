@@ -8,7 +8,6 @@
 
 import {
   ChangeDetectorRef,
-  Component as _Component,
   ComponentFactoryResolver,
   ComponentRef,
   ElementRef,
@@ -16,6 +15,7 @@ import {
   TemplateRef,
   ViewContainerRef,
   ViewRef,
+  Component as _Component,
 } from '../../src/core';
 import {ViewEncapsulation} from '../../src/metadata';
 import {
@@ -27,7 +27,6 @@ import {
   ɵɵqueryRefresh,
   ɵɵviewQuery,
 } from '../../src/render3/index';
-
 import {
   ɵɵcontainer,
   ɵɵcontainerRefreshEnd,
@@ -45,7 +44,7 @@ import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement} from '../../src/render3/interfaces/renderer';
 import {getLView} from '../../src/render3/state';
 import {getNativeByIndex} from '../../src/render3/util/view_utils';
-import {ComponentFixture, createComponent, TemplateFixture} from './render_util';
+import {ComponentFixture, TemplateFixture, createComponent} from './render_util';
 
 const Component: typeof _Component = function (...args: any[]): any {
   // In test we use @Component for documentation only so it's safe to mock out the implementation.

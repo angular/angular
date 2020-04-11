@@ -7,6 +7,7 @@
  */
 
 import {Injectable, RendererType2, Type, ɵstringify as stringify} from '@angular/core';
+
 import {RenderStore} from './render_store';
 
 /**

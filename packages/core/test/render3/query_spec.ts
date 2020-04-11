@@ -8,7 +8,6 @@
 
 import {ElementRef, QueryList, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import {EventEmitter} from '../..';
 import {
   AttributeMarker,
   ɵɵProvidersFeature,
@@ -35,7 +34,7 @@ import {ɵɵcontentQuery, ɵɵloadQuery, ɵɵqueryRefresh, ɵɵviewQuery} from '
 import {getLView} from '../../src/render3/state';
 import {getNativeByIndex, load} from '../../src/render3/util/view_utils';
 import {ɵɵtemplateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
-
+import {EventEmitter} from '../..';
 import {
   ComponentFixture,
   TemplateFixture,

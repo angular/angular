@@ -12,7 +12,6 @@ import * as html from '../ml_parser/ast';
 import {getHtmlTagDefinition} from '../ml_parser/html_tags';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseSourceSpan} from '../parse_util';
-
 import * as i18n from './i18n_ast';
 import {PlaceholderRegistry} from './serializers/placeholder';
 

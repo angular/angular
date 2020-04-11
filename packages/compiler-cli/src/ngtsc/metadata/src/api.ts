@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectiveMeta as T2DirectiveMeta, SchemaMetadata} from '@angular/compiler';
+import {SchemaMetadata, DirectiveMeta as T2DirectiveMeta} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';

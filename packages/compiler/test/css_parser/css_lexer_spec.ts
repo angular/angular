@@ -10,9 +10,9 @@ import {describe, expect, it} from '../../../core/testing/src/testing_internal';
 import {
   CssLexer,
   CssLexerMode,
-  cssScannerError,
   CssToken,
   CssTokenType,
+  cssScannerError,
   getRawMessage,
   getToken,
 } from '../../src/css_parser/css_lexer';

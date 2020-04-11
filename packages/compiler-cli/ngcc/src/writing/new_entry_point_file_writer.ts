@@ -7,10 +7,10 @@
  */
 
 import {
-  absoluteFromSourceFile,
   AbsoluteFsPath,
-  dirname,
   FileSystem,
+  absoluteFromSourceFile,
+  dirname,
   join,
   relative,
 } from '../../../src/ngtsc/file_system';
@@ -19,7 +19,6 @@ import {Logger} from '../logging/logger';
 import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {FileToWrite} from '../rendering/utils';
-
 import {InPlaceFileWriter} from './in_place_file_writer';
 import {PackageJsonUpdater} from './package_json_updater';
 

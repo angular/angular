@@ -7,6 +7,7 @@
  */
 
 import {platformWorkerAppDynamic} from '@angular/platform-webworker-dynamic';
+
 import {AppModule} from './index_common';
 
 platformWorkerAppDynamic().bootstrapModule(AppModule);

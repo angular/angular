@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+
 import {FileSystem} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
 import {makeProgram} from '../../testing';

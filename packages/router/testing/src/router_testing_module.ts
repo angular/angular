@@ -24,6 +24,7 @@ import {
   NoPreloading,
   PreloadingStrategy,
   ROUTER_CONFIGURATION,
+  ɵROUTER_PROVIDERS as ROUTER_PROVIDERS,
   ROUTES,
   Route,
   Router,
@@ -31,9 +32,8 @@ import {
   Routes,
   UrlHandlingStrategy,
   UrlSerializer,
-  provideRoutes,
-  ɵROUTER_PROVIDERS as ROUTER_PROVIDERS,
   ɵflatten as flatten,
+  provideRoutes,
 } from '@angular/router';
 
 /**

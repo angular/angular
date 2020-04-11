@@ -7,6 +7,7 @@
  */
 
 import {ɵStyleData} from '@angular/animations';
+
 import {
   AnimationEngineInstruction,
   AnimationTransitionInstructionType,

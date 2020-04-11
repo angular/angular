@@ -8,7 +8,6 @@
 
 import {SummaryResolver} from '../summary_resolver';
 import {ValueTransformer, visitValue} from '../util';
-
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
 import {
   isGeneratedFile,

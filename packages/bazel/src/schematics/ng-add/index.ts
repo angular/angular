@@ -36,7 +36,6 @@ import {validateProjectName} from '@schematics/angular/utility/validation';
 
 import {isJsonAstObject, replacePropertyInAstObject} from '../utility/json-utils';
 import {findE2eArchitect} from '../utility/workspace-utils';
-
 import {Schema} from './schema';
 
 /**

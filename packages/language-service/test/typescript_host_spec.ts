@@ -9,8 +9,7 @@
 import * as ts from 'typescript';
 
 import {TypeScriptServiceHost} from '../src/typescript_host';
-
-import {findDirectiveMetadataByName, MockTypescriptHost} from './test_utils';
+import {MockTypescriptHost, findDirectiveMetadataByName} from './test_utils';
 
 describe('TypeScriptServiceHost', () => {
   it('should be able to create a typescript host and analyze modules', () => {

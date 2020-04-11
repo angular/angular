@@ -7,6 +7,7 @@
  */
 
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
+
 import {serializeNodes} from './util/util';
 
 {

@@ -14,7 +14,7 @@ import {
 } from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {DepFlags, NodeFlags} from '../core';
-import {createTokenForExternalReference, Identifiers} from '../identifiers';
+import {Identifiers, createTokenForExternalReference} from '../identifiers';
 import {LifecycleHooks} from '../lifecycle_reflector';
 import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';

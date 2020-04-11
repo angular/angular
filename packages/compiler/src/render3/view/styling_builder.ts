@@ -20,7 +20,6 @@ import {ParseSourceSpan} from '../../parse_util';
 import {isEmptyExpression} from '../../template_parser/template_parser';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
-
 import {hyphenate, parse as parseStyle} from './style_parser';
 import {ValueConverter} from './template';
 import {DefinitionMap, getInterpolationArgsLength} from './util';

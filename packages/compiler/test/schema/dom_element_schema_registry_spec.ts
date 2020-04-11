@@ -13,7 +13,6 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 
 import {Element} from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
-
 import {extractSchema} from './schema_extractor';
 
 {

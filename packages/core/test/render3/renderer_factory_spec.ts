@@ -20,7 +20,6 @@ import {
   ɵɵtext,
 } from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-
 import {getRendererFactory2} from './imported_renderer2';
 import {TemplateFixture, document, renderToHtml} from './render_util';
 

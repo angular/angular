@@ -7,6 +7,7 @@
  */
 
 import {ɵcomputeMsgId, ɵmakeParsedTranslation} from '@angular/localize';
+
 import {Xliff2TranslationParser} from '../../../../src/translate/translation_files/translation_parsers/xliff2_translation_parser';
 
 describe('Xliff2TranslationParser', () => {

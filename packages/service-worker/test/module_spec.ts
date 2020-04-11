@@ -7,7 +7,7 @@
  */
 
 import {ApplicationRef, PLATFORM_ID} from '@angular/core';
-import {fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
+import {TestBed, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {Subject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 

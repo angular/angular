@@ -10,24 +10,23 @@
 // Must be imported first, because Angular decorators throw on load.
 import 'reflect-metadata';
 
-import * as ts from 'typescript';
 import * as tsickle from 'tsickle';
+import * as ts from 'typescript';
 
 import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
-import * as api from './transformers/api';
-import {GENERATED_FILES} from './transformers/util';
-
+import {NodeJSFileSystem, setFileSystem} from './ngtsc/file_system';
 import {
-  exitCodeFromResult,
-  performCompilation,
-  readConfiguration,
-  formatDiagnostics,
   Diagnostics,
   ParsedConfiguration,
+  exitCodeFromResult,
   filterErrorsAndWarnings,
+  formatDiagnostics,
+  performCompilation,
+  readConfiguration,
 } from './perform_compile';
-import {performWatchCompilation, createPerformWatchHost} from './perform_watch';
-import {NodeJSFileSystem, setFileSystem} from './ngtsc/file_system';
+import {createPerformWatchHost, performWatchCompilation} from './perform_watch';
+import * as api from './transformers/api';
+import {GENERATED_FILES} from './transformers/util';
 
 export function main(
   args: string[],

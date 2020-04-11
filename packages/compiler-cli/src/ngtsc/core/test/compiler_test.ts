@@ -9,11 +9,11 @@
 import * as ts from 'typescript';
 
 import {
-  absoluteFrom as _,
   FileSystem,
+  NgtscCompilerHost,
+  absoluteFrom as _,
   getFileSystem,
   getSourceFileOrError,
-  NgtscCompilerHost,
   setFileSystem,
 } from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';

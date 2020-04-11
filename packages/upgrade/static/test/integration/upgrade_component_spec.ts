@@ -32,7 +32,6 @@ import {
   withEachNg1Version,
 } from '../../../src/common/test/helpers/common_test_helpers';
 import {UpgradeComponent, UpgradeModule, downgradeComponent} from '../../index';
-
 import {$digest, bootstrap} from './static_test_helpers';
 
 withEachNg1Version(() => {

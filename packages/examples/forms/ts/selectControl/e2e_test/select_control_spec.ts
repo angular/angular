@@ -7,6 +7,7 @@
  */
 
 import {ElementArrayFinder, ElementFinder, browser, by, element} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 describe('selectControl example', () => {

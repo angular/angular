@@ -8,8 +8,8 @@
 
 import * as yargs from 'yargs';
 
-import {validateCommitRange} from './validate-range';
 import {validateFile} from './validate-file';
+import {validateCommitRange} from './validate-range';
 
 /** Build the parser for the commit-message commands. */
 export function buildCommitMessageParser(localYargs: yargs.Argv) {

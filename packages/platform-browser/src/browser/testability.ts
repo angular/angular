@@ -11,8 +11,8 @@ import {
   GetTestability,
   Testability,
   TestabilityRegistry,
-  setTestabilityGetter,
   ɵglobal as global,
+  setTestabilityGetter,
 } from '@angular/core';
 
 export class BrowserGetTestability implements GetTestability {

@@ -7,8 +7,8 @@
  */
 
 import {EventEmitter} from '@angular/core';
-import {Serializer, SerializerTypes} from '../shared/serializer';
 
+import {Serializer, SerializerTypes} from '../shared/serializer';
 import {
   serializeEventWithTarget,
   serializeGenericEvent,

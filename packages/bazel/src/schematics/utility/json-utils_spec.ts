@@ -9,6 +9,7 @@
 import {JsonAstObject, parseJsonAst} from '@angular-devkit/core';
 import {HostTree} from '@angular-devkit/schematics';
 import {UnitTestTree} from '@angular-devkit/schematics/testing';
+
 import {isJsonAstObject, removeKeyValueInAstObject, replacePropertyInAstObject} from './json-utils';
 
 describe('JsonUtils', () => {

@@ -14,10 +14,10 @@ import {
   CompileProviderMetadata,
   CompileStylesheetMetadata,
   CompileTypeSummary,
-  identifierName,
-  ngModuleJitUrl,
   ProviderMeta,
   ProxyClass,
+  identifierName,
+  ngModuleJitUrl,
   sharedStylesheetJitUrl,
   templateJitUrl,
   templateSourceUrl,
@@ -35,7 +35,7 @@ import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
 import {TemplateAst} from '../template_parser/template_ast';
 import {TemplateParser} from '../template_parser/template_parser';
-import {Console, OutputContext, stringify, SyncAsync} from '../util';
+import {Console, OutputContext, SyncAsync, stringify} from '../util';
 import {ViewCompiler} from '../view_compiler/view_compiler';
 
 export interface ModuleWithComponentFactories {

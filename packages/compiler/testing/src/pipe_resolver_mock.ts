@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileReflector, core, PipeResolver} from '@angular/compiler';
+import {CompileReflector, PipeResolver, core} from '@angular/compiler';
 
 export class MockPipeResolver extends PipeResolver {
   private _pipes = new Map<core.Type, core.Pipe>();

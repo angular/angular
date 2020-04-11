@@ -16,7 +16,6 @@ import {
   ElementAst,
   EmbeddedTemplateAst,
   HtmlAstPath,
-  identifierName,
   Identifiers,
   Node,
   ParseSourceSpan,
@@ -24,6 +23,7 @@ import {
   RecursiveVisitor,
   TemplateAst,
   TemplateAstPath,
+  identifierName,
   templateVisitAll,
   visitAll,
 } from '@angular/compiler';

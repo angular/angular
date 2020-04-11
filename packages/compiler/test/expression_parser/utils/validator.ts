@@ -30,7 +30,6 @@ import {
   SafeMethodCall,
   SafePropertyRead,
 } from '../../../src/expression_parser/ast';
-
 import {unparse} from './unparser';
 
 class ASTValidator extends RecursiveAstVisitor {

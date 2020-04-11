@@ -7,9 +7,11 @@
  */
 
 import chai = require('chai');
+
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
+
 import {assertFileEqual, unlinkRecursively} from './helpers';
 
 const BINARY_PATH = require.resolve('../ts-api-guardian/bin/ts-api-guardian');

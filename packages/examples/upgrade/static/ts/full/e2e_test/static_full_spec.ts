@@ -7,6 +7,7 @@
  */
 
 import {browser, by, element} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../../test-utils';
 
 function loadPage() {

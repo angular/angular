@@ -17,8 +17,8 @@ import {
   Decorator,
   FunctionDefinition,
   Import,
-  isDecoratorIdentifier,
   ReflectionHost,
+  isDecoratorIdentifier,
 } from './host';
 import {typeToValue} from './type_to_value';
 

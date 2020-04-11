@@ -7,6 +7,7 @@
  */
 
 import {MappingItem, SourceMapConsumer} from 'source-map';
+
 import {NgtscTestEnvironment} from './env';
 
 class TestSourceFile {

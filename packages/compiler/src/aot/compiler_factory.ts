@@ -27,7 +27,6 @@ import {UrlResolver} from '../url_resolver';
 import {syntaxError} from '../util';
 import {TypeCheckCompiler} from '../view_compiler/type_check_compiler';
 import {ViewCompiler} from '../view_compiler/view_compiler';
-
 import {AotCompiler} from './compiler';
 import {AotCompilerHost} from './compiler_host';
 import {AotCompilerOptions} from './compiler_options';

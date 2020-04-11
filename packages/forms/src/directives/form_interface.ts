@@ -7,7 +7,6 @@
  */
 
 import {FormControl, FormGroup} from '../model';
-
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {NgControl} from './ng_control';
 

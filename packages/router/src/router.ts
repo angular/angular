@@ -9,13 +9,13 @@
 import {Location} from '@angular/common';
 import {
   Compiler,
+  ɵConsole as Console,
   Injector,
   NgModuleFactoryLoader,
   NgModuleRef,
   NgZone,
   Type,
   isDevMode,
-  ɵConsole as Console,
 } from '@angular/core';
 import {BehaviorSubject, EMPTY, Observable, Subject, Subscription, defer, of} from 'rxjs';
 import {catchError, filter, finalize, map, switchMap, tap} from 'rxjs/operators';

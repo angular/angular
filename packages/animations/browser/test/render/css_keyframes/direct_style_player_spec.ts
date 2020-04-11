@@ -9,7 +9,6 @@
 import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 
 import {DirectStylePlayer} from '../../../src/render/css_keyframes/direct_style_player';
-
 import {assertStyle, createElement} from './shared';
 
 const CSS_KEYFRAME_RULE_TYPE = 7;

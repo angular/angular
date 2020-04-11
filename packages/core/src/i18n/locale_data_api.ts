@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import localeEn from './locale_en';
 import {global} from '../util/global';
+import localeEn from './locale_en';
 
 /**
  * This const is used to store the locale data registered with `registerLocaleData`

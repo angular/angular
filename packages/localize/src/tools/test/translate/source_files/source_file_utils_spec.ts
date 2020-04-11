@@ -11,28 +11,29 @@ import {NodePath, transformSync} from '@babel/core';
 import generate from '@babel/generator';
 import template from '@babel/template';
 import {
+  CallExpression,
   Expression,
-  Identifier,
-  TaggedTemplateExpression,
   ExpressionStatement,
   FunctionDeclaration,
-  CallExpression,
+  Identifier,
+  NumericLiteral,
+  TaggedTemplateExpression,
+  binaryExpression,
   isParenthesizedExpression,
   numericLiteral,
-  binaryExpression,
-  NumericLiteral,
 } from '@babel/types';
+
 import {
+  buildLocalizeReplacement,
+  isArrayOfExpressions,
   isGlobalIdentifier,
   isNamedIdentifier,
   isStringLiteralArray,
-  isArrayOfExpressions,
-  unwrapStringLiteralArray,
   unwrapMessagePartsFromLocalizeCall,
-  wrapInParensIfNecessary,
-  buildLocalizeReplacement,
-  unwrapSubstitutionsFromLocalizeCall,
   unwrapMessagePartsFromTemplateLiteral,
+  unwrapStringLiteralArray,
+  unwrapSubstitutionsFromLocalizeCall,
+  wrapInParensIfNecessary,
 } from '../../../src/translate/source_files/source_file_utils';
 
 describe('utils', () => {

@@ -7,6 +7,7 @@
  */
 
 import {$, by, element} from 'protractor';
+
 import {openBrowser, verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 import {runBenchmark} from '../../../e2e_util/perf_util';
 

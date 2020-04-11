@@ -15,7 +15,6 @@ import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {isRequireCall} from '../host/commonjs_umd_utils';
 import {NgccReflectionHost} from '../host/ngcc_host';
-
 import {Esm5RenderingFormatter} from './esm5_rendering_formatter';
 import {stripExtension} from './utils';
 

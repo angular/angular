@@ -9,7 +9,6 @@
 import {ApplicationRef, NgModuleRef} from '@angular/core';
 
 import {bindAction, getIntParameter, profile} from '../../util';
-
 import {AppComponent, AppModule} from './app';
 
 const copies = getIntParameter('copies');

@@ -7,9 +7,9 @@
  */
 
 import {
-  absoluteFrom,
   AbsoluteFsPath,
   FileSystem,
+  absoluteFrom,
   getFileSystem,
 } from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
@@ -18,11 +18,11 @@ import {NgccConfiguration} from '../../src/packages/configuration';
 import {
   EntryPoint,
   EntryPointJsonProperty,
-  getEntryPointFormat,
-  getEntryPointInfo,
   INCOMPATIBLE_ENTRY_POINT,
   NO_ENTRY_POINT,
   SUPPORTED_FORMAT_PROPERTIES,
+  getEntryPointFormat,
+  getEntryPointInfo,
 } from '../../src/packages/entry_point';
 import {MockLogger} from '../helpers/mock_logger';
 

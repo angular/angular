@@ -23,7 +23,7 @@ import {
 import {summaryFileName} from '@angular/compiler/src/aot/util';
 
 import {MockStaticSymbolResolverHost} from './static_symbol_resolver_spec';
-import {createMockOutputContext, MockAotSummaryResolverHost} from './summary_resolver_spec';
+import {MockAotSummaryResolverHost, createMockOutputContext} from './summary_resolver_spec';
 
 {
   describe('summary serializer', () => {

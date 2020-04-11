@@ -7,6 +7,7 @@
  */
 
 import {Injector} from '@angular/core';
+
 import {IInjectorService} from './angular1';
 import {$INJECTOR, INJECTOR_KEY} from './constants';
 import {getTypeName, isFunction, validateInjectionKey} from './util';

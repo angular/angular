@@ -9,7 +9,6 @@
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
 import {ResourceLoader} from '@angular/compiler';
 import {COMPILER_OPTIONS, PLATFORM_ID, StaticProvider} from '@angular/core';
-
 import {ɵINTERNAL_BROWSER_PLATFORM_PROVIDERS as INTERNAL_BROWSER_PLATFORM_PROVIDERS} from '@angular/platform-browser';
 
 import {ResourceLoaderImpl} from './resource_loader/resource_loader_impl';

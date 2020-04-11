@@ -19,7 +19,6 @@ import {
   ReflectionHost,
 } from '../../../src/ngtsc/reflection';
 import {isFromDtsFile} from '../../../src/ngtsc/util/src/typescript';
-
 import {
   ModuleWithProvidersFunction,
   NgccClassSymbol,

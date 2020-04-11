@@ -9,6 +9,8 @@
 import {CompileReflector} from './compile_reflector';
 import {
   Component,
+  Directive,
+  Type,
   createComponent,
   createContentChild,
   createContentChildren,
@@ -19,8 +21,6 @@ import {
   createOutput,
   createViewChild,
   createViewChildren,
-  Directive,
-  Type,
 } from './core';
 import {resolveForwardRef, splitAtColon, stringify} from './util';
 

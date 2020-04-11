@@ -56,8 +56,8 @@ import {
   InitialInputData,
   InitialInputs,
   LocalRefExtractor,
-  PropertyAliases,
   PropertyAliasValue,
+  PropertyAliases,
   TAttributes,
   TConstants,
   TContainerNode,
@@ -73,13 +73,13 @@ import {
   TViewNode,
 } from '../interfaces/node';
 import {
-  isProceduralRenderer,
   RComment,
   RElement,
-  Renderer3,
-  RendererFactory3,
   RNode,
   RText,
+  Renderer3,
+  RendererFactory3,
+  isProceduralRenderer,
 } from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {
@@ -99,8 +99,8 @@ import {
   FLAGS,
   HEADER_OFFSET,
   HOST,
-  InitPhaseState,
   INJECTOR,
+  InitPhaseState,
   LView,
   LViewFlags,
   NEXT,
@@ -110,11 +110,11 @@ import {
   RootContext,
   RootContextFlags,
   SANITIZER,
-  T_HOST,
   TData,
   TVIEW,
   TView,
   TViewType,
+  T_HOST,
 } from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {isNodeMatchingSelectorList} from '../node_selector_matcher';
@@ -149,13 +149,8 @@ import {
   unwrapLView,
   viewAttachedToChangeDetector,
 } from '../util/view_utils';
-
 import {selectIndexInternal} from './advance';
 import {
-  attachLContainerDebug,
-  attachLViewDebug,
-  cloneToLViewFromTViewBlueprint,
-  cloneToTViewData,
   LCleanup,
   LViewBlueprint,
   MatchesArray,
@@ -165,6 +160,10 @@ import {
   TNodeLocalNames,
   TViewComponents,
   TViewConstructor,
+  attachLContainerDebug,
+  attachLViewDebug,
+  cloneToLViewFromTViewBlueprint,
+  cloneToTViewData,
 } from './lview_debug';
 
 /**

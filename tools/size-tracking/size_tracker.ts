@@ -7,6 +7,7 @@
  */
 
 import {readFileSync} from 'fs';
+
 import {SourceMapConsumer} from 'source-map';
 
 import {

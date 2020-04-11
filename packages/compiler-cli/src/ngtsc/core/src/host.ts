@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {findFlatIndexEntryPoint, FlatIndexGenerator} from '../../entry_point';
+import {FlatIndexGenerator, findFlatIndexEntryPoint} from '../../entry_point';
 import {AbsoluteFsPath, resolve} from '../../file_system';
 import {
   FactoryGenerator,

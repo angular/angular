@@ -7,6 +7,7 @@
  */
 
 import {from} from 'rxjs';
+
 import {asyncTest} from '../test-util';
 
 describe('Observable.fromPromise', () => {

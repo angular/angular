@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {FileSystem, absoluteFrom, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {fromObject} from 'convert-source-map';
 
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';

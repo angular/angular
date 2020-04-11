@@ -7,8 +7,8 @@
  */
 
 import {
-  hasLifecycleHook as hasLifecycleHookImpl,
   LifecycleHooks as Hooks,
+  hasLifecycleHook as hasLifecycleHookImpl,
 } from '@angular/compiler/src/lifecycle_reflector';
 import {SimpleChanges} from '@angular/core';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';

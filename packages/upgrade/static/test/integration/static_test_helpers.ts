@@ -8,6 +8,7 @@
 
 import {NgZone, PlatformRef, Type} from '@angular/core';
 import {UpgradeModule} from '@angular/upgrade/static';
+
 import * as angular from '../../../src/common/src/angular1';
 import {$EXCEPTION_HANDLER, $ROOT_SCOPE} from '../../../src/common/src/constants';
 

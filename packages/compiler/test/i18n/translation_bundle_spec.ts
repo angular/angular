@@ -13,7 +13,6 @@ import {TranslationBundle} from '../../src/i18n/translation_bundle';
 import * as html from '../../src/ml_parser/ast';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_util';
 import {serializeNodes} from '../ml_parser/util/util';
-
 import {_extractMessages} from './i18n_parser_spec';
 
 {

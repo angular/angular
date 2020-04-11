@@ -9,11 +9,12 @@
 import '@angular/localize/init';
 import '@angular/compiler';
 
+import * as path from 'path';
+
 import {ɵwhenRendered as whenRendered} from '@angular/core';
 import {getComponent} from '@angular/core/src/render3';
 import {clearTranslations} from '@angular/localize';
 import {withBody} from '@angular/private/testing';
-import * as path from 'path';
 
 const PACKAGE = 'angular/packages/core/test/bundling/todo_i18n';
 const BUNDLES = ['bundle.js', 'bundle.min_debug.js', 'bundle.min.js'];

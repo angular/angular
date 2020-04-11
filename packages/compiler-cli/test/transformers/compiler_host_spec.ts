@@ -12,8 +12,8 @@ import * as ts from 'typescript';
 import {MetadataCollector} from '../../src/metadata/collector';
 import {CompilerHost, CompilerOptions, LibrarySummary} from '../../src/transformers/api';
 import {
-  createCompilerHost,
   TsCompilerAotCompilerTypeCheckHostAdapter,
+  createCompilerHost,
 } from '../../src/transformers/compiler_host';
 import {Directory, Entry, MockAotContext, MockCompilerHost} from '../mocks';
 

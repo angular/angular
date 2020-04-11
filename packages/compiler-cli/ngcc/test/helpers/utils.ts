@@ -9,10 +9,10 @@
 import * as ts from 'typescript';
 
 import {
-  absoluteFrom,
   AbsoluteFsPath,
-  getFileSystem,
   NgtscCompilerHost,
+  absoluteFrom,
+  getFileSystem,
 } from '../../../src/ngtsc/file_system';
 import {TestFile} from '../../../src/ngtsc/file_system/testing';
 import {BundleProgram, makeBundleProgram} from '../../src/packages/bundle_program';
