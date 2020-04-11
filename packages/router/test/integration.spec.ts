@@ -5291,6 +5291,10 @@ describe('Integration', () => {
       class LoadedModule1 {
       }
 
+      @NgModule({})
+      class EmptyModule {
+      }
+
       beforeEach(() => {
         log.length = 0;
         TestBed.configureTestingModule({
@@ -5354,6 +5358,19 @@ describe('Integration', () => {
 
            expect(firstConfig).toBeUndefined();
            expect(log.length).toBe(0);
+         }));
+
+      it('should allow navigation to modules with no routes', fakeAsync(() => {
+           (TestBed.inject(NgModuleFactoryLoader) as SpyNgModuleFactoryLoader).stubbedModules = {
+             empty: EmptyModule,
+           };
+           const router = TestBed.inject(Router);
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([{path: 'lazy', loadChildren: 'empty'}]);
+
+           router.navigateByUrl('/lazy');
+           advance(fixture);
          }));
     });
 
