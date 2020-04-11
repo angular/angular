@@ -9,49 +9,26 @@
 /**
  * This helper class is used to get hold of an inert tree of DOM elements containing dirty HTML
  * that needs sanitizing.
- * Depending upon browser support we must use one of three strategies for doing this.
- * Support: Safari 10.x -> XHR strategy
- * Support: Firefox -> DomParser strategy
- * Default: InertDocument strategy
+ * Depending upon browser support we use one of two strategies for doing this.
+ * Default: DomParser strategy
+ * Fallback: InertDocument strategy
  */
 export class InertBodyHelper {
   private inertDocument: Document;
 
   constructor(private defaultDoc: Document) {
     this.inertDocument = this.defaultDoc.implementation.createHTMLDocument('sanitization-inert');
-    let inertBodyElement = this.inertDocument.body;
-
-    if (inertBodyElement == null) {
+    if (this.inertDocument.body == null) {
       // usually there should be only one body element in the document, but IE doesn't have any, so
       // we need to create one.
       const inertHtml = this.inertDocument.createElement('html');
       this.inertDocument.appendChild(inertHtml);
-      inertBodyElement = this.inertDocument.createElement('body');
+      const inertBodyElement = this.inertDocument.createElement('body');
       inertHtml.appendChild(inertBodyElement);
     }
 
-    inertBodyElement.innerHTML = '<svg><g onload="this.parentNode.remove()"></g></svg>';
-    if (inertBodyElement.querySelector && !inertBodyElement.querySelector('svg')) {
-      // We just hit the Safari 10.1 bug - which allows JS to run inside the SVG G element
-      // so use the XHR strategy.
-      this.getInertBodyElement = this.getInertBodyElement_XHR;
-      return;
-    }
-
-    inertBodyElement.innerHTML = '<svg><p><style><img src="</style><img src=x onerror=alert(1)//">';
-    if (inertBodyElement.querySelector && inertBodyElement.querySelector('svg img')) {
-      // We just hit the Firefox bug - which prevents the inner img JS from being sanitized
-      // so use the DOMParser strategy, if it is available.
-      // If the DOMParser is not available then we are not in Firefox (Server/WebWorker?) so we
-      // fall through to the default strategy below.
-      if (isDOMParserAvailable()) {
-        this.getInertBodyElement = this.getInertBodyElement_DOMParser;
-        return;
-      }
-    }
-
-    // None of the bugs were hit so it is safe for us to use the default InertDocument strategy
-    this.getInertBodyElement = this.getInertBodyElement_InertDocument;
+    this.getInertBodyElement = isDOMParserAvailable() ? this.getInertBodyElement_DOMParser :
+                                                        this.getInertBodyElement_InertDocument;
   }
 
   /**
@@ -61,33 +38,7 @@ export class InertBodyHelper {
   getInertBodyElement: (html: string) => HTMLElement | null;
 
   /**
-   * Use XHR to create and fill an inert body element (on Safari 10.1)
-   * See
-   * https://github.com/cure53/DOMPurify/blob/a992d3a75031cb8bb032e5ea8399ba972bdf9a65/src/purify.js#L439-L449
-   */
-  private getInertBodyElement_XHR(html: string) {
-    // We add these extra elements to ensure that the rest of the content is parsed as expected
-    // e.g. leading whitespace is maintained and tags like `<meta>` do not get hoisted to the
-    // `<head>` tag.
-    html = '<body><remove></remove>' + html + '</body>';
-    try {
-      html = encodeURI(html);
-    } catch {
-      return null;
-    }
-    const xhr = new XMLHttpRequest();
-    xhr.responseType = 'document';
-    xhr.open('GET', 'data:text/html;charset=utf-8,' + html, false);
-    xhr.send(undefined);
-    const body: HTMLBodyElement = xhr.response.body;
-    body.removeChild(body.firstChild!);
-    return body;
-  }
-
-  /**
-   * Use DOMParser to create and fill an inert body element (on Firefox)
-   * See https://github.com/cure53/DOMPurify/releases/tag/0.6.7
-   *
+   * Use DOMParser to create and fill an inert body element in browsers that support it.
    */
   private getInertBodyElement_DOMParser(html: string) {
     // We add these extra elements to ensure that the rest of the content is parsed as expected
@@ -107,8 +58,7 @@ export class InertBodyHelper {
   /**
    * Use an HTML5 `template` element, if supported, or an inert body element created via
    * `createHtmlDocument` to create and fill an inert DOM element.
-   * This is the default sane strategy to use if the browser does not require one of the specialised
-   * strategies above.
+   * This is the fallback strategy if the browser does not support DOMParser.
    */
   private getInertBodyElement_InertDocument(html: string) {
     // Prefer using <template> element if supported.
