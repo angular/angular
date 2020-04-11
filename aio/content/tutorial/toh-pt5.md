@@ -227,7 +227,7 @@ That doesn't match any existing route so the router doesn't navigate anywhere.
 The space below the `<router-outlet>` is blank.
 
 To make the app navigate to the dashboard automatically, add the following
-route to the `AppRoutingModule.Routes` array.
+route to the `AppRoutingModule.routes` array.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts" region="redirect-route">
 </code-example>
