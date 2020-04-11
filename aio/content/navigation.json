@@ -680,7 +680,7 @@
         },
         {
           "!title": "Upgrading from AngularJS",
-          "title": "업그레이드",
+          "title": "AngularJS 앱 업그레이드",
           "!tooltip": "Incrementally upgrade an AngularJS application to Angular.",
           "tooltip": "AngularJS 애플리케이션을 Angular로 업그레이드 하세요.",
           "children": [
@@ -693,7 +693,7 @@
             {
               "url": "guide/upgrade",
               "!title": "Upgrading Instructions",
-              "title": "AngularJS 앱 업그레이드하기",
+              "title": "업그레이드 방법",
               "!tooltip": "Incrementally upgrade an AngularJS application to Angular.",
               "tooltip": "AngularJS 애플리케이션을 Angular로 업그레이드 하세요."
             },
@@ -707,9 +707,9 @@
             {
               "url": "guide/ajs-quick-reference",
               "!title": "AngularJS-Angular Concepts",
-              "title": "AngularJS와 Angular 컨셉 비교",
+              "title": "컨셉 비교",
               "!tooltip": "Learn how AngularJS concepts and techniques map to Angular.",
-              "tooltip": "AngularJS에서 사용하는 컨셉과 테크닉을 Angular에 어떻게 적용할 수 있는지 확인해 보세요."
+              "tooltip": "AngularJS에 사용하던 컨셉과 테크닉을 Angular에서 어떻게 적용할 수 있는지 확인해 보세요."
             }
           ]
         },

@@ -1,5 +1,9 @@
+<!--
 # Upgrading from AngularJS to Angular
+-->
+# AngularJS 앱을 Angular 앱으로 업그레이드하기
 
+<!--
 _Angular_ is the name for the Angular of today and tomorrow.<br />
 _AngularJS_ is the name for all 1.x versions of Angular.
 
@@ -24,19 +28,47 @@ to upgrade even large and complex applications without disrupting other
 business, because the work can be done collaboratively and spread over
 a period of time. The `upgrade` module in Angular has been designed to
 make incremental upgrading seamless.
+-->
+_Angular_ 는 지금부터 Angular를 부를때 사용하는 이름입니다.<br/>
+그리고 _AngularJS_ 는 1.x 버전대의 Angular를 부를때 사용하는 이름입니다.
 
+AngularJS 앱도 훌륭합니다.
+AngularJS 앱을 Angular로 꼭 전환하는 것이 좋을지 충분히 검토해 보세요.
+전환하는 데에 들어가는 시간과 노력을 생각해 보는 것이 가장 중요합니다.
+이 문서에서는 Angular가 제공하는 툴을 사용해서 AngularJS 프로젝트를 Angular 프로젝트를 단계적으로 적용하는 방법에 대해 설명합니다.
+
+AngularJS 애플리케이션이 그 자체로 간결하고 최신 개발 툴을 적용하면서 유지보수하기 편하게 관리되고 있었다면 아닌 경우와 비교했을 때 Angular로 전환하는 작업이 더 수월합니다.
+따라서 AngularJS 앱을 Angular로 전환하기 전에 AngularJS 앱 자체를 잘 관리하는 것도 중요합니다.
+
+업그레이드를 할 때 가장 권장하는 방법은 한 애플리케이션에 AngularJS와 Angular를 모두 띄워두고 AngualrJS 컴포넌트를 Angular 컴포넌트로 하나씩 바꿔가면서 점진적으로 전환하는 것입니다.
+이렇게하면 아무리 크고 복잡한 애플리케이션이라도 시간만 충분히 들이면 비즈니스 로직이 틀어지는 일 없이 애플리케이션을 재구성할 수 있습니다.
+이렇게 점진적으로 업그레이드하는 작업을 위해 Angular는 `upgrade` 모듈을 제공합니다.
+
+
+{@a preparation}
+<!--
 ## Preparation
+-->
+## 사전준비
 
+<!--
 There are many ways to structure AngularJS applications. When you begin
 to upgrade these applications to Angular, some will turn out to be
 much more easy to work with than others. There are a few key techniques
 and patterns that you can apply to future proof apps even before you
 begin the migration.
+-->
+AngularJS 애플리케이션을 구성하는 방식은 다양하지만 이 중에서 Angular로 전환하기 쉬운 구조도 있습니다.
+이 섹션에서는 앱을 마이그레이션하기 전에 알아두면 좋을 테크닉을 소개합니다.
+
 
 {@a follow-the-angular-styleguide}
-
+<!--
 ### Follow the AngularJS Style Guide
+-->
+### AngularJS 스타일 가이드를 따르세요.
 
+<!--
 The [AngularJS Style Guide](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md)
 collects patterns and practices that have been proven to result in
 cleaner and more maintainable AngularJS applications. It contains a wealth
@@ -69,9 +101,33 @@ migrated one feature at a time. For applications that don't already look like
 this, applying the rules in the AngularJS style guide is a highly recommended
 preparation step. And this is not just for the sake of the upgrade - it is just
 solid advice in general!
+-->
+[AngularJS 스타일 가이드](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md) 문서는 AngularJS 애플리케이션을 깔끔하고 유지보수하기 쉽게 구현하기 위해 사용되는 패턴과 예제들을 다루고 있습니다.
+AngularJS 코드를 어떻게 작성하고 관리해야 하는지, 어떤 방식으로는 작성하면 **안되는지** 에 대해 방대하게 안내하는 문서입니다.
 
+Angular는 이 중에서도 가장 효율적인 내용을 모아서 새롭게 설계되었습니다.
+그래서 AngularJS 스타일 가이드에서 안내한 대로 최대한 좋은 방식으로 구현하면서 안좋은 방식은 최소화하는 방향도 그대로입니다.
+물론 Angular는 여기에서 더 많은 것을 제공하지만 결국 *Angular 스타일 가이드를 충실하게 따르는 것이 Angular 앱을 구현하는 방향과 같다는 것은 마찬가지 입니다.*
+
+Angular가 제공하는 `upgrade/static` 모듈을 사용해서 점진적으로 업그레이드할 때는 명심해야 할 내용이 몇가지 있습니다:
+
+* [하나만 구현하는 규칙](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#single-responsibility)은 파일 하나에 한 컴포넌트만 구현하는 것이 좋다는 것을 설명하고 있습니다.
+그리고 이렇게 구현하면 컴포넌트를 찾기 쉽다는 장점 외에도 AngularJS에서 Angular로 점진적으로 업그레이드하는 데에 도움이 됩니다.
+이 문서에서 설명하는 예제 애플리케이션은 컨트롤러, 컴포넌트, 서비스, 필터는 모두 한 파일에 하나씩 정의되어 있습니다.
+
+* [폴더를 기능별로 구분하는 구조](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#folders-by-feature-structure)와 [모듈화(Modularity)](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#modularity)는 이 규칙을 좀 더 확장한 것으로 볼 수 있습니다.
+애플리케이션에서 서로 연관되지 않은 기능은 서로 다른 폴더나 NgModule로 구분되는 것이 좋습니다.
+
+애플리케이션이 기능별로 구성되어 있다면 앱을 마이그레이션할 때도 기능단위로 작업할 수 있습니다.
+지금은 이렇게 구현되어 있지 않다고 해도 AngularJS 스타일 가이드는 최대한 따르는 것을 권장하며, 애플리케이션을 Angular 버전으로 업그레이드하는 것 뿐만 아니라 좋은 애플리케이션을 만드는 관점에서도 강력하게 권장합니다!
+
+
+<!--
 ### Using a Module Loader
+-->
+### 모듈 로더 사용하기
 
+<!--
 When you break application code down into one component per file, you often end
 up with a project structure with a large number of relatively small files. This is
 a much neater way to organize things than a small number of large files, but it
@@ -90,9 +146,27 @@ in the correct order.
 
 When moving applications into production, module loaders also make it easier
 to package them all up into production bundles with batteries included.
+-->
+파일 하나에 컴포넌트를 하나씩만 구현한다는 것은 애플리케이션을 세분화한다는 것을 의미하며, 결국 프로젝트는 작은 파일들이 많이 존재하는 구조가 됩니다.
+하지만 반대로 큰 파일 몇개로만 이루어진 애플리케이션은 이 파일들을 모두 내려받아 HTML 페이지의 `<script>` 태그에 로드되기 전까지는 동작하지 않아서 문제가 됩니다.
+게다가 이 파일들은 `<script>`에 올바른 순서로 로드되어야 합니다.
+이 방식보다는 *모듈 로더*를 사용하는 것이 더 좋습니다.
 
+[SystemJS](https://github.com/systemjs/systemjs)나 [Webpack](http://webpack.github.io/), [Browserify](http://browserify.org/)와 같은 모듈 로더를 사용하면 TypeScript나 ES2015로 작성한 코드도 내장 모듈 시스템에 로드할 수 있습니다.
+그리고 `import`, `export` 키워드를 사용하면 애플리케이션의 다른 모듈에 있는 코드를 가져다 활용할 수도 있습니다.
+애플리케이션 코드가 ES5로 작성되었다면 CommonJS 스타일로 `require`와 `module.exports`를 사용하면 됩니다.
+두 방식 모두 모듈을 로드할 때 자동으로 순서를 맞춰서 에러 없이 로드할 수 있습니다.
+
+모듈 로더는 애플리케이션을 운영용으로 빌드할 때도 활용됩니다.
+모듈 로더를 사용하면 운영용 빌드 파일과 라이브러리를 패키지 하나로 간단하게 빌드할 수 있습니다.
+
+
+<!--
 ### Migrating to TypeScript
+-->
+### TypeScript 도입하기
 
+<!--
 If part of the Angular upgrade plan is to also take TypeScript into use, it makes
 sense to bring in the TypeScript compiler even before the upgrade itself begins.
 This means there's one less thing to learn and think about during the actual upgrade.
@@ -119,9 +193,33 @@ Additional steps like the following can give us much more bang for the buck:
 * Services and controllers can be turned into *classes*. That way they'll be a step
   closer to becoming Angular service and component classes, which will make
   life easier after the upgrade.
+-->
+Angular로 업그레이드하면서 TypeScript도 사용하기로 정했다면 Angular보다 TypeScript 컴파일러를 먼저 도입하는 것이 좋습니다.
+그러면 이후에 Angular로 업그레이드 했을 때는 물론이고 AngularJS 코드에도 TypeScript 기능을 활용할 수 있습니다.
 
+TypeScript는 ECMAScript 201의 상위 집합(superset)이기 때문에 ECMAScript 5의 상위 집합이기도 합니다.
+그래서 TypeScript 컴파일러를 설치하고 `*.js` 파일을 `*.ts` 파일로 바꾸면 그 자체로도 애플리케이션은 동작합니다.
+물론 아직까지 TypeScript 스타일로 작성한 것처럼 효율적이진 않습니다.
+TypeScript 컴파일러를 도입하고 나면 다음 과정을 진행하면 됩니다:
+
+* TypeScript가 제공하는 `import`, `export`를 활용하면 코드를 모듈 단위로 구성할 수 있습니다. 이 기능은 ECMAScript 2015 스펙입니다.
+
+* 타입 어노테이션을 활용하면 기존에 있던 함수나 변수에 타입을 추가할 수 있고 빌드 시점에 발생하는 에러를 찾아내는 데에도 도움이 됩니다.
+코드 자동완성 기능도 이에 맞게 확장됩니다.
+
+* ES2015에 추가된 화살표 함수나 `let`, `const`, 함수 인자 기본값 지정, 분해연산자를 활용하면 코드를 더 간결하게 작성할 수 있습니다.
+
+* 서비스나 컨트롤러는 *클래스*로 변경할 수 있습니다.
+클래스로 변경하고 나면 이후에 Angular 서비스나 컴포넌트 클래스로 변환하는 작업도 수월해집니다.
+
+
+{@a using-component-directives}
+<!--
 ### Using Component Directives
+-->
+### 컴포넌트 디렉티브 사용하기
 
+<!--
 In Angular, components are the main primitive from which user interfaces
 are built. You define the different portions of the UI as components and
 compose them into a full user experience.
@@ -161,10 +259,40 @@ Component directives **should not** use the following attributes:
 
 An AngularJS component directive that is fully aligned with the Angular
 architecture may look something like this:
+-->
+Angular에서 사용자가 보는 화면을 구성하는 기본 단위는 컴포넌트입니다.
+그래서 화면은 컴포넌트를 조합하는 방식으로 구성하며 이 컴포넌트가 모여 모든 UX를 완성합니다.
+
+이 방식은 AngularJS에서 *컴포넌트 디렉티브*를 사용해서 구현할 수 있습니다.
+템플릿을 구성하거나 컨트롤러 클래스를 구현하고 입출력 프로퍼티를 바인딩하는 방식도 Angular의 컴포넌트와 같습니다.
+그래서 컴포넌트 디렉티브를 기반으로 작성된 AngularJS 애플리케이션은 Angular 애플리케이션으로 업그레이드하기 쉽습니다.
+
+Angular로 업그레이드하는 것을 대비하기 위해 AngularJS에는 컴포넌트 디렉티브 어트리뷰트를 이렇게 구성합니다:
+
+* `restrict: 'E'` - 컴포넌트는 일반적으로 엘리먼트입니다.
+* `scope: {}` - 독립된 스코프를 구성합니다. Angular에서 컴포넌트는 그 자체로 독립적인 스코프를 구성하기 때문에 AngularJS에서도 이렇게 지정하는 것이 좋습니다.
+* `bindToController: {}` - 컴포넌트의 입출력 프로퍼티는 `$scope`가 아니라 컨트롤러에 직접 바인딩하는 것이 좋습니다.
+* `controller`, `controllerAs` - 컴포넌트 컨트롤러 클래스를 구성합니다.
+* `template`, `templateUrl` - 컴포넌트 템플릿을 구성합니다.
+
+그리고 컴포넌트 디렉티브에는 이런 어트리뷰트를 활용할 수도 있습니다:
+
+* `transclude: true/{}` - 컴포넌트에 들어갈 내용물이 다른 컴포넌트에서 올 때 사용합니다.
+* `require` - 부모 컴포넌트의 컨트롤러를 활용할 때 사용합니다.
+
+그리고 컴포넌트 디렉티브에는 이런 어트리뷰트가 들어가면 **안됩니다**:
+
+* `compile` - Angular에서 지원하지 않습니다.
+* `replace: true` - Angular에서는 템플릿에 사용된 컴포넌트의 호스트 엘리먼트가 사라지지 않습니다.
+이 어트리뷰트는 AngularJS에서도 지원이 중단되었습니다.
+* `priority`, `teminal` - Angular에서 지원하지 않습니다. 이 어트리뷰트를 사용하는 코드는 작성하지 않는 것이 좋습니다.
+
+이 내용대로 AngularJS 컴포넌트를 구현하면 이런 모습이 됩니다:
 
 <code-example path="upgrade-module/src/app/hero-detail.directive.ts" header="hero-detail.directive.ts">
 </code-example>
 
+<!--
 AngularJS 1.5 introduces the [component API](https://docs.angularjs.org/api/ng/type/angular.Module#component)
 that makes it easier to define component directives like these. It is a good idea to use
 this API for component directives for several reasons:
@@ -175,14 +303,29 @@ this API for component directives for several reasons:
 
 The component directive example from above looks like this when expressed
 using the component API:
+-->
+[컴포넌트 API](https://docs.angularjs.org/api/ng/type/angular.Module#component)는 AngularJS 1.5 버전부터 지원합니다.
+이 API는 AngularJS 컴포넌트를 Angular 스타일로 구현하기 위해 도입되었으며 이런 장점이 있습니다:
+
+* 기본 코드가 더 단순합니다.
+* AngularJS 컴포넌트를 Angular 스타일로 작성하도록 강제합니다.
+* `scope`나 `restrict`를 활용해서 디렉티브 어트리뷰트의 기본값을 지정할 수 있습니다.
+
+위에서 살펴본 AngularJS 컴포넌트 코드에 컴포넌트 API를 적용하면 이렇게 작성할 수 있습니다:
 
 <code-example path="upgrade-module/src/app/upgrade-io/hero-detail.component.ts" region="hero-detail-io" header="hero-detail.component.ts">
 </code-example>
 
+<!--
 Controller lifecycle hook methods `$onInit()`, `$onDestroy()`, and `$onChanges()`
 are another convenient feature that AngularJS 1.5 introduces. They all have nearly
 exact [equivalents in Angular](guide/lifecycle-hooks), so organizing component lifecycle
 logic around them will ease the eventual Angular upgrade process.
+-->
+AngularJS 1.5 버전에는 컴포넌트 라이프싸이클 후킹 함수 `$onInit()`, `$onDestroy()`, `$onChanges()`도 도입되었습니다.
+이 메소드들은 [Angular에도 정확히 동일한 역할을 하는 함수](guide/lifecycle-hooks)가 존재합니다.
+그래서 AngularJS에서 활용하는 컴포넌트 라이프싸이클 관련 로직은 Angular에도 그대로 활용할 수 있습니다.
+
 
 ## Upgrading with ngUpgrade
 
