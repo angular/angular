@@ -49,7 +49,7 @@ gulp.task('format:changed:enforce', ['format:untracked:enforce', 'format:diff:en
 // Alias for `format:changed` that formerly formatted all files.
 gulp.task('format', ['format:changed']);
 
-gulp.task('lint', ['format:changed:enforce']);
+gulp.task('lint', ['format:all:enforce']);
 gulp.task('source-map-test', loadTask('source-map-test'));
 gulp.task('changelog', loadTask('changelog'));
 gulp.task('changelog:zonejs', loadTask('changelog-zonejs'));
