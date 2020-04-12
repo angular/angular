@@ -326,7 +326,11 @@ export declare class FormGroupName extends AbstractFormGroupDirective implements
     constructor(parent: ControlContainer, validators: any[], asyncValidators: any[]);
 }
 
+export declare interface FormsConfigurationOptions extends SharedFormsConfigurationOptions {
+}
+
 export declare class FormsModule {
+    static withConfig(opts: FormsConfigurationOptions): ModuleWithProviders<FormsModule>;
 }
 
 export declare class MaxLengthValidator implements Validator, OnChanges {
@@ -454,7 +458,7 @@ export declare class RadioControlValueAccessor implements ControlValueAccessor, 
     onChange: () => void;
     onTouched: () => void;
     value: any;
-    constructor(_renderer: Renderer2, _elementRef: ElementRef, _registry: ɵangular_packages_forms_forms_n, _injector: Injector);
+    constructor(_renderer: Renderer2, _elementRef: ElementRef, _registry: ɵangular_packages_forms_forms_p, _injector: Injector);
     fireUncheck(value: any): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
@@ -474,9 +478,12 @@ export declare class RangeValueAccessor implements ControlValueAccessor {
     writeValue(value: any): void;
 }
 
+export declare interface ReactiveFormsConfigurationOptions extends SharedFormsConfigurationOptions {
+    /** @deprecated */ warnOnNgModelWithFormControl?: 'never' | 'once' | 'always';
+}
+
 export declare class ReactiveFormsModule {
-    static withConfig(opts: { warnOnNgModelWithFormControl: 'never' | 'once' | 'always';
-    }): ModuleWithProviders<ReactiveFormsModule>;
+    static withConfig(opts: ReactiveFormsConfigurationOptions): ModuleWithProviders<ReactiveFormsModule>;
 }
 
 export declare class RequiredValidator implements Validator {
@@ -508,6 +515,10 @@ export declare class SelectMultipleControlValueAccessor implements ControlValueA
     registerOnTouched(fn: () => any): void;
     setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
+}
+
+export declare interface SharedFormsConfigurationOptions {
+    useNativeValidationAsDefaultFormValidation?: boolean;
 }
 
 export declare type ValidationErrors = {

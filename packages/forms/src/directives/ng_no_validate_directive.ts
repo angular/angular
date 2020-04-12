@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive} from '@angular/core';
+import {Directive, HostBinding, Inject, InjectionToken, Optional} from '@angular/core';
+
+/**
+ * Token to provide to use native validation as the default form validation.
+ */
+export const USE_NATIVE_VALIDATION_AS_DEFAULT_FORM_VALIDATION =
+    new InjectionToken('UseNativeValidationAsDefaultFormValidation');
 
 /**
  * @description
@@ -27,9 +33,14 @@ import {Directive} from '@angular/core';
  */
 @Directive({
   selector: 'form:not([ngNoForm]):not([ngNativeValidate])',
-  host: {'novalidate': ''},
 })
 export class ɵNgNoValidate {
+  @HostBinding('attr.novalidate') readonly novalidate: string|null;
+
+  constructor(@Optional() @Inject(USE_NATIVE_VALIDATION_AS_DEFAULT_FORM_VALIDATION)
+              useNativeValidationAsDefaultFormValidation: boolean|null) {
+    this.novalidate = useNativeValidationAsDefaultFormValidation ? null : '';
+  }
 }
 
 export {ɵNgNoValidate as NgNoValidate};

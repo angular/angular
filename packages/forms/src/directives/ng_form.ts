@@ -85,6 +85,11 @@ const resolvedPromise = (() => Promise.resolve(null))();
  *   ...
  * </form>
  * ```
+ * Or you can make native DOM validation the default by configuring the forms module:
+ * ```typescript
+ * FormsModule.withConfig({useNativeValidationAsDefaultFormValidation: true});
+ * ReactiveFormsModule.withConfig({useNativeValidationAsDefaultFormValidation: true});
+ * ```
  *
  * @ngModule FormsModule
  * @publicApi

@@ -34,6 +34,7 @@ export {NgControlStatus, NgControlStatusGroup} from './directives/ng_control_sta
 export {NgForm} from './directives/ng_form';
 export {NgModel} from './directives/ng_model';
 export {NgModelGroup} from './directives/ng_model_group';
+export {USE_NATIVE_VALIDATION_AS_DEFAULT_FORM_VALIDATION} from './directives/ng_no_validate_directive';
 export {NumberValueAccessor} from './directives/number_value_accessor';
 export {RadioControlValueAccessor} from './directives/radio_control_value_accessor';
 export {RangeValueAccessor} from './directives/range_value_accessor';

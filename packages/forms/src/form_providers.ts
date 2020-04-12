@@ -8,7 +8,7 @@
 
 import {ModuleWithProviders, NgModule} from '@angular/core';
 
-import {InternalFormsSharedModule, NG_MODEL_WITH_FORM_CONTROL_WARNING, REACTIVE_DRIVEN_DIRECTIVES, TEMPLATE_DRIVEN_DIRECTIVES} from './directives';
+import {InternalFormsSharedModule, NG_MODEL_WITH_FORM_CONTROL_WARNING, REACTIVE_DRIVEN_DIRECTIVES, TEMPLATE_DRIVEN_DIRECTIVES, USE_NATIVE_VALIDATION_AS_DEFAULT_FORM_VALIDATION} from './directives';
 import {RadioControlRegistry} from './directives/radio_control_value_accessor';
 import {FormBuilder} from './form_builder';
 
@@ -27,6 +27,21 @@ import {FormBuilder} from './form_builder';
   exports: [InternalFormsSharedModule, TEMPLATE_DRIVEN_DIRECTIVES]
 })
 export class FormsModule {
+  /**
+   * @description
+   * Provides options for configuring the forms module.
+   *
+   * @param opts An object of configuration options.
+   */
+  static withConfig(opts: FormsConfigurationOptions): ModuleWithProviders<FormsModule> {
+    return {
+      ngModule: FormsModule,
+      providers: [{
+        provide: USE_NATIVE_VALIDATION_AS_DEFAULT_FORM_VALIDATION,
+        useValue: opts.useNativeValidationAsDefaultFormValidation
+      }]
+    };
+  }
 }
 
 /**
@@ -48,18 +63,52 @@ export class ReactiveFormsModule {
    * @description
    * Provides options for configuring the reactive forms module.
    *
-   * @param opts An object of configuration options
-   * * `warnOnNgModelWithFormControl` Configures when to emit a warning when an `ngModel`
-   * binding is used with reactive form directives.
+   * @param opts An object of configuration options.
    */
-  static withConfig(opts: {
-    /** @deprecated as of v6 */ warnOnNgModelWithFormControl: 'never'|'once'|'always'
-  }): ModuleWithProviders<ReactiveFormsModule> {
+  static withConfig(opts: ReactiveFormsConfigurationOptions):
+      ModuleWithProviders<ReactiveFormsModule> {
     return {
       ngModule: ReactiveFormsModule,
       providers: [
-        {provide: NG_MODEL_WITH_FORM_CONTROL_WARNING, useValue: opts.warnOnNgModelWithFormControl}
+        {provide: NG_MODEL_WITH_FORM_CONTROL_WARNING, useValue: opts.warnOnNgModelWithFormControl},
+        {
+          provide: USE_NATIVE_VALIDATION_AS_DEFAULT_FORM_VALIDATION,
+          useValue: opts.useNativeValidationAsDefaultFormValidation
+        }
       ]
     };
   }
+}
+
+/**
+ * A set of configuration options for the forms or reactive forms module
+ *
+ * @publicApi
+ */
+export interface SharedFormsConfigurationOptions {
+  /**
+   * Configures native validation as the default form validation.
+   */
+  useNativeValidationAsDefaultFormValidation?: boolean;
+}
+
+/**
+ * A set of configuration options for the forms module
+ *
+ * @publicApi
+ */
+export interface FormsConfigurationOptions extends SharedFormsConfigurationOptions {}
+
+/**
+ * A set of configuration options for the reactive forms module
+ *
+ * @publicApi
+ */
+export interface ReactiveFormsConfigurationOptions extends SharedFormsConfigurationOptions {
+  /**
+   * Configures when to emit a warning when an `ngModel` binding is used with reactive form
+   * directives.
+   * @deprecated as of v6
+   */
+  warnOnNgModelWithFormControl?: 'never'|'once'|'always';
 }

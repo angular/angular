@@ -87,6 +87,21 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(form.nativeElement.getAttribute('novalidate')).toEqual('');
          }));
 
+      it('should not add novalidate by default to form when native validation is to be used as the default form validation',
+         fakeAsync(() => {
+           TestBed.configureTestingModule({
+             declarations: [NgModelForm],
+             imports: [FormsModule.withConfig({useNativeValidationAsDefaultFormValidation: true})]
+           });
+           const fixture = TestBed.createComponent(NgModelForm);
+
+           fixture.detectChanges();
+           tick();
+
+           const form = fixture.debugElement.query(By.css('form'));
+           expect(form.nativeElement.hasAttribute('novalidate')).toEqual(false);
+         }));
+
       it('should be possible to use native validation and angular forms', fakeAsync(() => {
            const fixture = initTest(NgModelNativeValidateForm);
 

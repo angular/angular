@@ -61,6 +61,21 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         expect(form.nativeElement.getAttribute('novalidate')).toEqual('');
       });
 
+      it('should not add novalidate by default to form when native validation is to be used as the default form validation',
+         () => {
+           TestBed.configureTestingModule({
+             imports: [ReactiveFormsModule.withConfig(
+                 {useNativeValidationAsDefaultFormValidation: true})]
+           });
+
+           const fixture = initTest(FormGroupComp);
+           fixture.componentInstance.form = new FormGroup({'login': new FormControl('loginValue')});
+           fixture.detectChanges();
+
+           const form = fixture.debugElement.query(By.css('form'));
+           expect(form.nativeElement.hasAttribute('novalidate')).toEqual(false);
+         });
+
       it('work with formGroups (view -> model)', () => {
         const fixture = initTest(FormGroupComp);
         const form = new FormGroup({'login': new FormControl('oldValue')});
