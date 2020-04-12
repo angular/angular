@@ -29,8 +29,8 @@ To clarify how changes are detected and values updated, consider the following c
 ```javascript
 <html>
   <div id="dataDiv"></div>
-  <button id="btn">updateData<btn>
-  <canvas id="canvas"><canvas>
+  <button id="btn">updateData</button>
+  <canvas id="canvas"></canvas>
   <script>
     let value = 'initialValue';
     // initial rendering
