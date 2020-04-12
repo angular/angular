@@ -260,6 +260,7 @@ test_srcs = glob(
     ],
 ) + [
     "extra/cordova.spec.ts",
+    "extra/web-ext.spec.ts",
     "mocha-patch.spec.ts",
     "jasmine-patch.spec.ts",
     "common_tests.ts",

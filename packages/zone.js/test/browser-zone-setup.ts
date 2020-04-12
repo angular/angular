@@ -22,6 +22,7 @@ import '../lib/testing/zone-testing';
 import '../lib/zone-spec/task-tracking';
 import '../lib/zone-spec/wtf';
 import '../lib/extra/cordova';
+import '../lib/extra/web-ext';
 import '../lib/testing/promise-testing';
 import '../lib/testing/async-testing';
 import '../lib/testing/fake-async';

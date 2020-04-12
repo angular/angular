@@ -218,6 +218,23 @@ user need to patch `io` themselves just like following code.
 please reference the sample repo [zone-socketio](https://github.com/JiaLiPassion/zone-socketio) about
 detail usage.
 
+* web-ext-client
+
+user need to patch `io` themselves just like following code.
+
+```javascript
+    <script src="webextension-polyfill/dist/browser-polyfill.min.js"></script>
+    <script src="zone.js/dist/zone.js"></script>
+    <script src="zone.js/dist/zone-patch-web-ext.js"></script>
+    <script>
+      // patch io here
+      Zone[Zone.__symbol__('webext')](browser);
+    </script>
+```
+
+<!-- please reference the sample repo [zone-socketio](https://github.com/JiaLiPassion/zone-socketio) about
+detail usage. -->
+
 * jsonp
 
 ## Usage.
