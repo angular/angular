@@ -327,17 +327,32 @@ AngularJS 1.5 버전에는 컴포넌트 라이프싸이클 후킹 함수 `$onIni
 그래서 AngularJS에서 활용하는 컴포넌트 라이프싸이클 관련 로직은 Angular에도 그대로 활용할 수 있습니다.
 
 
+{@a upgrading-with-ngupgrade}
+<!--
 ## Upgrading with ngUpgrade
+-->
+## ngUpgrade로 업그레이드하기
 
+<!--
 The ngUpgrade library in Angular is a very useful tool for upgrading
 anything but the smallest of applications. With it you can mix and match
 AngularJS and Angular components in the same application and have them interoperate
 seamlessly. That means you don't have to do the upgrade work all at once,
 since there's a natural coexistence between the two frameworks during the
 transition period.
+-->
+애플리케이션의 규모가 그렇게 크지 않다면 Angular가 제공하는 ngUpgrade 라이브러리만 사용해도 업그레이드하는 데에는 문제가 없습니다.
+애플리케이션에 AngularJS 컴포넌트와 Angular 컴포넌트를 함께 사용하면서 상호작용하는 것도 물론 가능합니다.
+업그레이드는 한번에 끝내는 것이 아니라 시간을 충분히 들여 전환하는 것이 좋습니다.
 
+
+{@a how-ngupgrade-works}
+<!--
 ### How ngUpgrade Works
+-->
+### ngUpgrade가 동작하는 방식
 
+<!--
 One of the primary tools provided by ngUpgrade is called the `UpgradeModule`.
 This is a module that contains utilities for bootstrapping and managing hybrid
 applications that support both Angular and AngularJS code.
@@ -351,12 +366,30 @@ so you can expect to have all the features and natural behavior of both framewor
 What happens on top of this is that components and services managed by one
 framework can interoperate with those from the other framework. This happens
 in three main areas: Dependency injection, the DOM, and change detection.
+-->
+ngUpgrade의 중심이 되는 툴은 `UpgradeModule`입니다.
+이 모듈은 Angular와 AngularJS 코드가 동시에 존재하는 애플리케이션을 부트스트랩하고 관리하는 도구를 제공합니다.
 
+ngUpgrade를 사용할 때 개발자가 해야하는 것은 *AngularJS와 Angular를 동시에 실행하는 것*뿐입니다.
+이 때 Angular 코드는 Angular 프레임워크 환경에서 동작하고 AngularJS 코드는 AngularJS 프레임워크 환경에서 동작합니다.
+두 프레임워크는 동시에 존재할 수 있으며 각 프레임워크의 기능도 모두 활용할 수 있습니다.
+프레임워크를 중개하기 위한 에뮬레이터 기능은 필요없습니다.
+
+각 프레임워크에 속한 컴포넌트와 서비스는 다른 프레임워크에 속한 것들과 상호작용할 수 있습니다.
+의존성 주입, DOM 관리, 변화 감지 측면에서 그렇습니다.
+
+
+<!--
 #### Dependency Injection
+-->
+#### 의존성 주입
 
+<!--
 Dependency injection is front and center in both AngularJS and
 Angular, but there are some key differences between the two
 frameworks in how it actually works.
+-->
+의존성 주입은 AngularJS와 Angular에 모두 중요한 기능이지만, 두 프레임워크에서 동작하는 방식은 조금 다릅니다.
 
 <table>
   <tr>
@@ -369,31 +402,46 @@ frameworks in how it actually works.
   </tr>
   <tr>
     <td>
+      <!--
       Dependency injection tokens are always strings
+      -->
+      의존성 객체 토큰은 언제나 문자열입니다.
     </td>
     <td>
 
+      <!--
       Tokens [can have different types](guide/dependency-injection).
       They are often classes. They may also be strings.
+      -->
+      의존성 객체 토큰은 일반적으로 클래스를 사용하지만 문자열을 사용할 수도 있습니다.
+      [이 문서](guide/dependency-injection)를 참고하세요.
 
     </td>
   </tr>
   <tr>
     <td>
 
+      <!--
       There is exactly one injector. Even in multi-module applications,
       everything is poured into one big namespace.
+      -->
+      인젝터는 하나만 존재합니다. 애플리케이션에 모듈이 여러개 존재하더라도 의존성 토큰은 모두 한 네임스페이스에 존재합니다.
 
     </td>
     <td>
 
+      <!--
       There is a [tree hierarchy of injectors](guide/hierarchical-dependency-injection),
       with a root injector and an additional injector for each component.
+      -->
+      인젝터는 [트리 계층](guide/hierarchical-dependency-injection)으로 구성됩니다.
+      최상위 인젝터를 시작으로 각 컴포넌트마다 인젝터가 구성될 수 있습니다.
 
     </td>
   </tr>
 </table>
 
+<!--
 Even accounting for these differences you can still have dependency injection
 interoperability. `upgrade/static` resolves the differences and makes
 everything work seamlessly:
@@ -408,13 +456,29 @@ everything work seamlessly:
   be downgraded. Again, the same singleton instances are shared between the frameworks.
   When you register a downgraded service, you must explicitly specify a *string token* that you want to
   use in AngularJS.
+-->
+두 프레임워크에서 동작하는 의존성 주입 객체는 이렇게 다르지만 두 체계가 상호작용할 수 있다는 것은 여전히 유효합니다.
+두 프레임워크의 차이는 `upgrad/estatic`이 다음과 같이 처리합니다:
+
+* AngularJS 서비스를 *업그레이드해서* Angular에 의존성으로 주입할 수 있게 만들어 줍니다.
+그러면 프레임워크와 무관하게 서비스의 인스턴스는 싱글턴으로 존재합니다.
+Angular의 관점에서 보면 이렇게 변환된 서비스는 *루트 인젝터*에 존재하기 때문에 모든 컴포넌트에 사용할 수 있습니다.
+
+* Angular 서비스를 *다운그레이드해서* AngularJS에 의존성으로 주입할 수 있게 만들어 줍니다.
+이 때 Angular의 루트 인젝터에 존재하는 서비스만 다운그레이드할 수 있으며, 이 경우에도 서비스 인스턴스는 프레임워크와 관계없이 싱글턴으로 존재합니다.
+다운그레이드한 Angular 서비스는 AngularJS 의존성 주입 체계에 맞게 *문자열 토큰*으로 로 주입합니다.
+
 
 <div class="lightbox">
   <img src="generated/images/guide/upgrade/injectors.png" alt="The two injectors in a hybrid application">
 </div>
 
+<!--
 #### Components and the DOM
+-->
+#### 컴포넌트와 DOM
 
+<!--
 In the DOM of a hybrid ngUpgrade application are components and
 directives from both AngularJS and Angular. These components
 communicate with each other by using the input and output bindings
@@ -464,9 +528,52 @@ means you can apply additional AngularJS directives to it, but *not*
 Angular directives. It is only in the template of the `<a-component>`
 where Angular steps in. This same rule also applies when you
 use AngularJS component directives from Angular.
+-->
+ngUpgrade가 적용된 하이브리으 애플리케이션에는 AngularJS 스타일과 Angular 스타일의 컴포넌트/디렉티브가 존재합니다.
+이 컴포넌트는 입출력 프로퍼티로 상호작용할 수 있으며 각 프레임워크가 제대로 동작하도록 ngUpgrade가 중개합니다.
+위에서 설명한 것처럼 컴포넌트는 의존성으로 주입받은 서비스도 활용할 수 있습니다.
 
+하이브리드 애플리케이션에서 중요한 것은 DOM에 존재하는 컴포넌트는 반드시 두 프레임워크 중 하나에만 속한다는 것입니다.
+속하지 않은 프레임워크는 영향을 주지 않습니다.
+AngularJS 위에서 동작하는 컴포넌트는 Angular의 영향을 받지 않으며, 반대 경우도 마찬가지입니다.
+
+일반적으로 하이브리드 애플리케이션은 AngularJS 애플리케이션이 기본틀을 구성하기 때문에 `index.html` 파일에서 루트 컴포넌트가 되는 것은 AngularJS 컴포넌트일 것입니다.
+그리고 Angular 컴포넌트는 AngularJS 템플릿에 추가되는 방식으로 동작합니다.
+Angular 컴포넌트의 템플릿은 Angular가 관리하며 템플릿 안에서는 Angular 컴포넌트나 디렉티브를 자유롭게 사용할 수 있습니다.
+
+두 프레임워크는 서로 호환되기 때문에 이런 방식으로 사용할 수 있습니다.
+
+1. 다릍 프레임워크에 있는 컴포넌트를 사용할 수 있습니다:
+AngularJS 템플릿에 Angular 컴포넌트를 사용할 수 있으며, Angular 템플릿에 AngularJS 컴포넌트를 사용할 수도 있습니다.
+
+2. 다른 프레임워크의 컴포넌트에 HTML 조각을 프로젝션할 수 있습니다.
+ngUpgrade는 AngularJS 트랜스클루전(transclusion)과 Angular 프로젝션(projection)을 중개합니다.
+
+<div class="lightbox">
+  <img src="generated/images/guide/upgrade/dom.png" alt="DOM element ownership in a hybrid application">
+</div>
+
+컴포넌트를 다른 프레임워크 영역에 사용하면 프레임워크의 경계를 넘어서는 동작이 발생합니다.
+그런데 이 작업은 컴포넌트의 템플릿에서만 발생합니다.
+AngularJS 템플릿에 Angular 컴포넌트를 사용하는 경우를 생각해 봅시다:
+
+<code-example language="html" escape="html">
+  &lt;a-component&gt;&lt;/a-component&gt;
+</code-example>
+
+DOM 엘리먼트 `<a-component>`는 AngularJS 템플릿에 사용되었기 때문에 AngularJS가 관리하는 엘리먼트입니다.
+따라서 이 엘리먼트에는 AngularJS 디렉티브를 자유롭게 사용할 수 있지만 Angular 디렉티브는 *사용할 수 없습니다*.
+Angular가 동작하는 영역은 `<a-component>` 템플릿 내부입니다.
+이 동작 방식은 Angular 템플릿에 사용하느느 AngularJS 컴포넌트 디렉티브에서도 마찬가지입니다.
+
+
+{@a change-detection}
+<!--
 #### Change Detection
+-->
+#### 변화 감지
 
+<!--
 The `scope.$apply()` is how AngularJS detects changes and updates data bindings.
 After every event that occurs, `scope.$apply()` gets called. This is done either
 automatically by the framework, or manually by you.
@@ -489,11 +596,30 @@ AngularJS and Angular approaches. Here's what happens:
 * The `UpgradeModule` will invoke the AngularJS `$rootScope.$apply()` after
   every turn of the Angular zone. This also triggers AngularJS change
   detection after every event.
+-->
+AngularJS에서 변화 감지를 시작하고 바인딩된 데이터를 갱신하는 것은 `scope.$apply()`입니다.
+그리고 이 메소드는 이벤트가 발생할 때마다 프레임워크가 자동으로 실행하며, 필요하면 개발자가 직접 실행할 수도 있습니다.
+
+Angular에서는 조금 다릅니다.
+이벤트가 발생할 때마다 변화 감지 로직이 시작되는 것은 동일하지만, 이 때 `scope.$apply()`는 실행되지 않습니다.
+이 현상은 Angular 코드가 [Angular 존](api/core/NgZone) 안에서 실행되기 때문입니다.
+Angular는 실행된 코드가 종료되는 것을 감지하고 있으며 필요할 때만 변화 감지 로직을 시작합니다.
+코드 자체는 `scope.$apply()`를 실행하지 않습니다.
+
+하이브리드 애플리케이션에서는 `UpgradeModule`이 AngularJS와 Angular를 이렇게 중개합니다:
+
+* 애플리케이션에서 발생하는 모든 이벤트는 Angular 존 안에서 동작합니다.
+이벤트가 AngularJS 코드에서 발생했더라도 그렇습니다.
+그래서 이벤트를 처리하는 변화 감지 로직은 Angular 존에서 시작됩니다.
+
+* Angular 존에서 작업이 종료된 이후에 `UpgradeModule`이 AngularJS `$rootScope.$apply()`를 실행합니다.
+그래서 모든 이벤트가 발애한 후에는 AngularJS의 변화 감지 로직도 시작됩니다.
 
 <div class="lightbox">
   <img src="generated/images/guide/upgrade/change_detection.png" alt="Change detection in a hybrid application">
 </div>
 
+<!--
 In practice, you do not need to call `$apply()`,
 regardless of whether it is in AngularJS or Angular. The
 `UpgradeModule` does it for us. You *can* still call `$apply()` so there
@@ -512,9 +638,26 @@ all the bindings defined for the component directive's `scope` (or `bindToContro
 will be hooked into Angular change detection. They will be treated
 as regular Angular inputs. Their values will be written to the upgraded component's
 scope (or controller) when they change.
+-->
+실제로는 `UpgradeModule`이 `$apply()`를 자동으로 실행하기 때문에 AngularJS 코드나 Angular 코드에서 이 함수를 직접 실행할 필요가 없습니다.
+그래서 기존에 있던 코드에 `$apply()`를 사용하던 코드는 모두 제거해도 됩니다.
+이 코드를 제거해도 하이브리드 애플리케이션에 필요한 AngularJS 변화 감지 로직은 자동으로 실행됩니다.
 
+Angular 컴포넌트를 AngularJS 용으로 다운그레이드해서 사용하면 AngularJS 변화 감지 로직이 컴포넌트의 입력 프로퍼티를 감시합니다.
+그래서 입력값이 변경되면 컴포넌트의 프로퍼티 값도 변경됩니다.
+그리고 이 변경시점은 [OnChanges](api/core/OnChanges)로 받아서 확장할 수 있습니다.
+
+이와 비슷하게 AngularJS 컴포넌트를 업그레이드해서 Angular에 사용하면 Angular 변화 감지 로직이 컴포넌트 디렉티브의 `scope`나 `bindToController`에 바인딩된 항목들을 감시합니다.
+그래서 이 항목들은 Angular의 입력 프로퍼티와 동일하게 처리됩니다.
+입력값이 변경될 때 입력 프로퍼티의 값이 변경되는 것도 같은 방식으로 이루어집니다.
+
+
+<!--
 ### Using UpgradeModule with Angular _NgModules_
+-->
+### Angular _NgModule_ 과 UpgradeModule 사용하기
 
+<!--
 Both AngularJS and Angular have their own concept of modules
 to help organize an application into cohesive blocks of functionality.
 
@@ -527,15 +670,34 @@ In a hybrid application you run both versions of Angular at the same time.
 That means that you need at least one module each from both AngularJS and Angular.
 You will import `UpgradeModule` inside the NgModule, and then use it for
 bootstrapping the AngularJS module.
+-->
+AngularJS와 Angular는 애플리케이션을 모듈 단위로 구성합니다.
+
+그런데 두 프레임워크가 모듈을 구성하는 방식은 설계 구조나 구현 코드의 관점에서 볼 때 상당히 다릅니다.
+AngularJS에서는 Angular 구성요소를 `angular.module` 프로퍼티에 등록하며, Angular에서는 클래스에 `NgModule` 데코레이터를 사용해서 등록합니다.
+두 방식의 차이는 여기에서 시작됩니다.
+
+하이브리드 앱에서는 두 버전의 Angular가 동시에 실행됩니다.
+따라서 AngularJS와 Angular 양쪽에 각각 모듈 하나씩은 반드시 존재해야 합니다.
+Angular의 NgModule 안에서 `UpgradeModule` 심볼을 사용하면 AngularJS 모듈을 부트스트랩할 수 있습니다.
 
 <div class="alert is-helpful">
 
+<!--
 For more information, see [NgModules](guide/ngmodules).
+-->
+더 자세한 내용은 [NgModules](guide/ngmodules) 문서를 참고하세요.
 
 </div>
 
-### Bootstrapping hybrid applications
 
+{@a bootstrapping-hybrid-applications}
+<!--
+### Bootstrapping hybrid applications
+-->
+### 하이브리드 앱 부트스트랩하기
+
+<!--
 To bootstrap a hybrid application, you must bootstrap each of the Angular and
 AngularJS parts of the application. You must bootstrap the Angular bits first and
 then ask the `UpgradeModule` to bootstrap the AngularJS bits next.
@@ -600,6 +762,64 @@ Now you can bootstrap `AppModule` using the `platformBrowserDynamic.bootstrapMod
 
 Congratulations! You're running a hybrid application! The
 existing AngularJS code works as before _and_ you're ready to start adding Angular code.
+-->
+하이브리드 애플리케이션을 부트스트랩하려면 Angular 부분과 AngularJS 부분을 따로 부트스트랩해야 합니다.
+그리고 이 때 Angular 부분을 먼저 부트스트랩해야 하며 그 다음에 `UpgradeModule`을 사용해서 AngularJS를 부트스트랩해야 합니다.
+
+하이브리드 애플리케이션의 AngularJS 부분은 원래 AngularJS 애플리케이션을 부트스트랩 하듯이 최상위 AngularJS 모듈을 대상으로 합니다.
+
+<code-example path="upgrade-module/src/app/ajs-bootstrap/app.module.ts" region="ng1module" header="app.module.ts">
+</code-example>
+
+AngularJS 애플리케이션은 HTML 페이지에 있는 `ng-app` 디렉티브를 자동으로 찾아서 부트스트랩 하지만, 하이브리드 애플리케이션에서는 `UpgradeModule`로 대상을 직접 찾아서 부트스트랩해야 합니다.
+그래서 AngularJS 애플리케이션을 하이브리드 모드로 실행하기 위해 JavaScript 메소드 [`angular.bootstrap`](https://docs.angularjs.org/api/ng/function/angular.bootstrap)를 사용합니다.
+
+이런 애플리케이션 코드가 있다고 합시다:
+
+<code-example path="upgrade-module/src/index-ng-app.html">
+</code-example>
+
+이 코드에서 `ng-app`과 `ng-strict-di` 디렉티브를 HTML 문서에서 제거하고 `angular.bootstrap` 메소드를 실행하는 방식으로 대체해도 이 애플리케이션은 이전처럼 동작합니다:
+
+<code-example path="upgrade-module/src/app/ajs-bootstrap/app.module.ts" region="bootstrap" header="app.module.ts">
+</code-example>
+
+그리고 AngularJS 애플리케이션을 하이브리드 모드로 시작하려면 Angular 프레임워크를 로드해야 합니다.
+이 작업은 SystemJS를 활용하며 자세한 과정은 [Setup for Upgrading to AngularJS](guide/upgrade-setup)에서 확인할 수 있으며, [QuickStart github 저장소](https://github.com/angular/quickstart)에서 코드를 내려받아 필요한 부분만 적용할 수도 있습니다.
+
+그 다음에는 `npm install @angular/upgrade --save` 명령을 실행해서 `@angular/upgrade` 패키지를 설치해야 합니다.
+패키지를 설치한 후에는 SystemJS 환경설정 파일에 다음과 같이 로드합니다:
+
+<code-example path="upgrade-module/src/systemjs.config.1.js" region="upgrade-static-umd" header="systemjs.config.js (map)">
+</code-example>
+
+그리고 `app.module.ts` 파일을 만들어서 다음과 같은 `NgModule` 클래스를 정의합니다:
+
+<code-example path="upgrade-module/src/app/ajs-a-hybrid-bootstrap/app.module.ts" region="ngmodule" header="app.module.ts">
+</code-example>
+
+이 코드는 모듈에 필요한 설정을 최소한으로 구현한 코드입니다.
+이 모듈은 Angular를 브라우저에서 실행하기 위해 `BrowserModule`을 로드하고 있으며, `@angular/upgrade/static`이 제공하는 `UpgradeModule`도 로드하고 있습니다.
+그리고 서비스와 컴포넌트를 업그레이드하거나 다운그레이드하는 서비스 프로바이더도 등록했습니다.
+
+`AppModule`의 생성자에는 `UpgradeModule` 인스턴스를 의존성으로 주입하는데, 이 인스턴스는 `AppModule.ngDoBootstrap()` 메소드에서 `UpgradeModule.bootstrap` 메소드로 AngularJS 애플리케이션을 부트스트랩합니다.
+이 메소드의 사용방법은 [angular.bootstrap](https://docs.angularjs.org/api/ng/function/angular.bootstrap)과 같습니다:
+
+<div class="alert is-helpful">
+
+`@NgModule` 데코레이터의 `bootstrap` 항목은 사용하지 않았습니다.
+AngularJS는 독립적인 최상위 템플릿을 구성합니다.
+
+</div>
+
+이제 `platformBrowserDynamic.bootstrapModule` 메소드를 사용하면 `AppModule`을 부트스트랩할 수 있습니다.
+
+<code-example path="upgrade-module/src/app/ajs-a-hybrid-bootstrap/app.module.ts" region="bootstrap" header="app.module.ts'">
+</code-example>
+
+축하합니다! 이제 하이브리드 애플리케이션이 동작합니다!
+이제 AngularJS 코드로 작성한 애플리케이션에 Angular 코드를 추가할 준비는 끝났습니다.
+
 
 ### Using Angular Components from AngularJS Code
 
