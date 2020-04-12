@@ -10,7 +10,8 @@ import * as ts from 'typescript';
 import {OwningModule, Reference} from '../../imports';
 import {ReflectionHost} from '../../reflection';
 
-import {canEmitType, ResolvedTypeReference, TypeEmitter} from './type_emitter';
+import {ResolvedTypeReference, TypeEmitter, canEmitType} from './type_emitter';
+
 
 
 /**
@@ -92,6 +93,6 @@ export class TypeParameterEmitter {
   private isLocalTypeParameter(decl: ts.Declaration): boolean {
     // Checking for local type parameters only occurs during resolution of type parameters, so it is
     // guaranteed that type parameters are present.
-    return this.typeParameters!.some(param => param === decl);
+    return this.typeParameters !.some(param => param === decl);
   }
 }

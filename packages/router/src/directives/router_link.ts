@@ -7,7 +7,7 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, isDevMode, OnChanges, OnDestroy, Renderer2} from '@angular/core';
+import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, isDevMode} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {QueryParamsHandling} from '../config';
@@ -15,6 +15,7 @@ import {Event, NavigationEnd} from '../events';
 import {Router} from '../router';
 import {ActivatedRoute} from '../router_state';
 import {UrlTree} from '../url_tree';
+
 
 
 /**
@@ -114,21 +115,21 @@ import {UrlTree} from '../url_tree';
 @Directive({selector: ':not(a):not(area)[routerLink]'})
 export class RouterLink {
   // TODO(issue/24571): remove '!'.
-  @Input() queryParams!: {[k: string]: any};
+  @Input() queryParams !: {[k: string]: any};
   // TODO(issue/24571): remove '!'.
-  @Input() fragment!: string;
+  @Input() fragment !: string;
   // TODO(issue/24571): remove '!'.
-  @Input() queryParamsHandling!: QueryParamsHandling;
+  @Input() queryParamsHandling !: QueryParamsHandling;
   // TODO(issue/24571): remove '!'.
-  @Input() preserveFragment!: boolean;
+  @Input() preserveFragment !: boolean;
   // TODO(issue/24571): remove '!'.
-  @Input() skipLocationChange!: boolean;
+  @Input() skipLocationChange !: boolean;
   // TODO(issue/24571): remove '!'.
-  @Input() replaceUrl!: boolean;
+  @Input() replaceUrl !: boolean;
   @Input() state?: {[k: string]: any};
   private commands: any[] = [];
   // TODO(issue/24571): remove '!'.
-  private preserve!: boolean;
+  private preserve !: boolean;
 
   constructor(
       private router: Router, private route: ActivatedRoute,
@@ -195,28 +196,28 @@ export class RouterLink {
 @Directive({selector: 'a[routerLink],area[routerLink]'})
 export class RouterLinkWithHref implements OnChanges, OnDestroy {
   // TODO(issue/24571): remove '!'.
-  @HostBinding('attr.target') @Input() target!: string;
+  @HostBinding('attr.target') @Input() target !: string;
   // TODO(issue/24571): remove '!'.
-  @Input() queryParams!: {[k: string]: any};
+  @Input() queryParams !: {[k: string]: any};
   // TODO(issue/24571): remove '!'.
-  @Input() fragment!: string;
+  @Input() fragment !: string;
   // TODO(issue/24571): remove '!'.
-  @Input() queryParamsHandling!: QueryParamsHandling;
+  @Input() queryParamsHandling !: QueryParamsHandling;
   // TODO(issue/24571): remove '!'.
-  @Input() preserveFragment!: boolean;
+  @Input() preserveFragment !: boolean;
   // TODO(issue/24571): remove '!'.
-  @Input() skipLocationChange!: boolean;
+  @Input() skipLocationChange !: boolean;
   // TODO(issue/24571): remove '!'.
-  @Input() replaceUrl!: boolean;
+  @Input() replaceUrl !: boolean;
   @Input() state?: {[k: string]: any};
   private commands: any[] = [];
   private subscription: Subscription;
   // TODO(issue/24571): remove '!'.
-  private preserve!: boolean;
+  private preserve !: boolean;
 
   // the url displayed on the anchor element.
   // TODO(issue/24571): remove '!'.
-  @HostBinding() href!: string;
+  @HostBinding() href !: string;
 
   constructor(
       private router: Router, private route: ActivatedRoute,
@@ -245,12 +246,8 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     this.preserve = value;
   }
 
-  ngOnChanges(changes: {}): any {
-    this.updateTargetUrlAndHref();
-  }
-  ngOnDestroy(): any {
-    this.subscription.unsubscribe();
-  }
+  ngOnChanges(changes: {}): any { this.updateTargetUrlAndHref(); }
+  ngOnDestroy(): any { this.subscription.unsubscribe(); }
 
   @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey', '$event.shiftKey'])
   onClick(button: number, ctrlKey: boolean, metaKey: boolean, shiftKey: boolean): boolean {

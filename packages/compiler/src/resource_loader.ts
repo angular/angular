@@ -11,7 +11,5 @@
  * to load templates.
  */
 export class ResourceLoader {
-  get(url: string): Promise<string>|string {
-    return '';
-  }
+  get(url: string): Promise<string>|string { return ''; }
 }

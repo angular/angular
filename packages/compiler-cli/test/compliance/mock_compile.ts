@@ -7,7 +7,7 @@
  */
 import {AotCompilerOptions} from '@angular/compiler';
 import {escapeRegExp} from '@angular/compiler/src/util';
-import {arrayToMockDir, MockCompilerHost, MockData, MockDirectory, toMockFileArray} from '@angular/compiler/test/aot/test_util';
+import {MockCompilerHost, MockData, MockDirectory, arrayToMockDir, toMockFileArray} from '@angular/compiler/test/aot/test_util';
 import * as ts from 'typescript';
 
 import {NodeJSFileSystem, setFileSystem} from '../../src/ngtsc/file_system';
@@ -27,7 +27,7 @@ const TOKEN = new RegExp(
         STRING.source})|${NUMBER.source}|${ELLIPSIS})\\s*`,
     'y');
 
-type Piece = string|RegExp;
+type Piece = string | RegExp;
 
 const SKIP = /(?:.|\n|\r)*/;
 
@@ -163,7 +163,7 @@ const MATCHING_IDENT = /^\$.*\$$/;
  * - the `regexp` to be used to match the generated code,
  * - the `groups` which maps `$...$` identifier to their position in the regexp matches.
  */
-function buildMatcher(pieces: (string|RegExp)[]): {regexp: RegExp, groups: Map<string, number>} {
+function buildMatcher(pieces: (string | RegExp)[]): {regexp: RegExp, groups: Map<string, number>} {
   const results: string[] = [];
   let first = true;
   let group = 0;
@@ -199,9 +199,7 @@ function buildMatcher(pieces: (string|RegExp)[]): {regexp: RegExp, groups: Map<s
 
 export function compile(
     data: MockDirectory, angularFiles: MockData, options: AotCompilerOptions = {},
-    errorCollector: (error: any, fileName?: string) => void = error => {
-      throw error;
-    }): {
+    errorCollector: (error: any, fileName?: string) => void = error => { throw error;}): {
   source: string,
 } {
   setFileSystem(new NodeJSFileSystem());
@@ -216,8 +214,7 @@ export function compile(
         target: ts.ScriptTarget.ES2015,
         module: ts.ModuleKind.ES2015,
         moduleResolution: ts.ModuleResolutionKind.NodeJs,
-        enableI18nLegacyMessageIdFormat: false,
-        ...options,
+        enableI18nLegacyMessageIdFormat: false, ...options,
       },
       mockCompilerHost);
   program.emit();

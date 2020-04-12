@@ -57,9 +57,8 @@ export class Xmb extends Serializer {
 
       let sourceTags: xml.Tag[] = [];
       message.sources.forEach((source: i18n.MessageSpan) => {
-        sourceTags.push(new xml.Tag(
-            _SOURCE_TAG, {},
-            [new xml.Text(`${source.filePath}:${source.startLine}${
+        sourceTags.push(
+            new xml.Tag(_SOURCE_TAG, {}, [new xml.Text(`${source.filePath}:${source.startLine}${
                 source.endLine !== source.startLine ? ',' + source.endLine : ''}`)]));
       });
 
@@ -85,9 +84,7 @@ export class Xmb extends Serializer {
     throw new Error('Unsupported');
   }
 
-  digest(message: i18n.Message): string {
-    return digest(message);
-  }
+  digest(message: i18n.Message): string { return digest(message); }
 
 
   createNameMapper(message: i18n.Message): PlaceholderMapper {
@@ -96,9 +93,7 @@ export class Xmb extends Serializer {
 }
 
 class _Visitor implements i18n.Visitor {
-  visitText(text: i18n.Text, context?: any): xml.Node[] {
-    return [new xml.Text(text.value)];
-  }
+  visitText(text: i18n.Text, context?: any): xml.Node[] { return [new xml.Text(text.value)]; }
 
   visitContainer(container: i18n.Container, context: any): xml.Node[] {
     const nodes: xml.Node[] = [];

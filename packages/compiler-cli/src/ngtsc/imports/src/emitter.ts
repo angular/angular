@@ -9,7 +9,7 @@ import {Expression, ExternalExpr, ExternalReference, WrappedNodeExpr} from '@ang
 import * as ts from 'typescript';
 
 import {UnifiedModulesHost} from '../../core/api';
-import {absoluteFromSourceFile, dirname, LogicalFileSystem, LogicalProjectPath, PathSegment, relative} from '../../file_system';
+import {LogicalFileSystem, LogicalProjectPath, PathSegment, absoluteFromSourceFile, dirname, relative} from '../../file_system';
 import {stripExtension} from '../../file_system/src/util';
 import {ReflectionHost} from '../../reflection';
 import {getSourceFile, isDeclaration, isTypeDeclaration, nodeNameForError} from '../../util/src/typescript';
@@ -17,6 +17,7 @@ import {getSourceFile, isDeclaration, isTypeDeclaration, nodeNameForError} from 
 import {findExportedNameOfNode} from './find_export';
 import {Reference} from './references';
 import {ModuleResolver} from './resolver';
+
 
 
 /**
@@ -174,7 +175,7 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
       |null {
     const exports = this.getExportsOfModule(moduleName, fromFile);
     if (exports !== null && exports.has(target)) {
-      return exports.get(target)!;
+      return exports.get(target) !;
     } else {
       return null;
     }
@@ -185,7 +186,7 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
     if (!this.moduleExportsCache.has(moduleName)) {
       this.moduleExportsCache.set(moduleName, this.enumerateExportsOfModule(moduleName, fromFile));
     }
-    return this.moduleExportsCache.get(moduleName)!;
+    return this.moduleExportsCache.get(moduleName) !;
   }
 
   protected enumerateExportsOfModule(specifier: string, fromFile: string):

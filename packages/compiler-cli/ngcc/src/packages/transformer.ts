@@ -36,7 +36,8 @@ import {EntryPointBundle} from './entry_point_bundle';
 
 export type TransformResult = {
   success: true; diagnostics: ts.Diagnostic[]; transformedFiles: FileToWrite[];
-}|{
+} |
+{
   success: false;
   diagnostics: ts.Diagnostic[];
 };
@@ -78,13 +79,8 @@ export class Transformer {
     const reflectionHost = new DelegatingReflectionHost(tsReflectionHost, ngccReflectionHost);
 
     // Parse and analyze the files.
-    const {
-      decorationAnalyses,
-      switchMarkerAnalyses,
-      privateDeclarationsAnalyses,
-      moduleWithProvidersAnalyses,
-      diagnostics
-    } = this.analyzeProgram(reflectionHost, bundle);
+    const {decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+           moduleWithProvidersAnalyses, diagnostics} = this.analyzeProgram(reflectionHost, bundle);
 
     // Bail if the analysis produced any errors.
     if (hasErrors(diagnostics)) {
@@ -166,13 +162,8 @@ export class Transformer {
     const privateDeclarationsAnalyses =
         privateDeclarationsAnalyzer.analyzeProgram(bundle.src.program);
 
-    return {
-      decorationAnalyses,
-      switchMarkerAnalyses,
-      privateDeclarationsAnalyses,
-      moduleWithProvidersAnalyses,
-      diagnostics
-    };
+    return {decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+            moduleWithProvidersAnalyses, diagnostics};
   }
 }
 

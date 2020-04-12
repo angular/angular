@@ -32,16 +32,13 @@ class SomeDirectiveWithOutputs {
 @Directive({selector: 'someDirective'})
 class SomeDirectiveWithSetterProps {
   @Input('renamed')
-  set a(value: any) {
-  }
+  set a(value: any) {}
 }
 
 @Directive({selector: 'someDirective'})
 class SomeDirectiveWithGetterOutputs {
   @Output('renamed')
-  get a(): any {
-    return null;
-  }
+  get a(): any { return null; }
 }
 
 @Directive({selector: 'someDirective', host: {'[c]': 'c'}})
@@ -54,11 +51,9 @@ class SomeDirectiveWithHostBindings {
 @Directive({selector: 'someDirective', host: {'(c)': 'onC()'}})
 class SomeDirectiveWithHostListeners {
   @HostListener('a')
-  onA() {
-  }
+  onA() {}
   @HostListener('b', ['$event.value'])
-  onB(value: any) {
-  }
+  onB(value: any) {}
 }
 
 @Directive({selector: 'someDirective', queries: {'cs': new ContentChildren('c')}})
@@ -106,15 +101,13 @@ class SomeDirectiveWithSameHostBindingAndInput {
 @Directive({selector: 'someDirective'})
 class SomeDirectiveWithMalformedHostBinding1 {
   @HostBinding('(a)')
-  onA() {
-  }
+  onA() {}
 }
 
 @Directive({selector: 'someDirective'})
 class SomeDirectiveWithMalformedHostBinding2 {
   @HostBinding('[a]')
-  onA() {
-  }
+  onA() {}
 }
 
 class SomeDirectiveWithoutMetadata {}
@@ -123,9 +116,7 @@ class SomeDirectiveWithoutMetadata {}
   describe('DirectiveResolver', () => {
     let resolver: DirectiveResolver;
 
-    beforeEach(() => {
-      resolver = new DirectiveResolver(new JitReflector());
-    });
+    beforeEach(() => { resolver = new DirectiveResolver(new JitReflector()); });
 
     it('should read out the Directive metadata', () => {
       const directiveMetadata = resolver.resolve(SomeDirective);
@@ -341,20 +332,16 @@ class SomeDirectiveWithoutMetadata {}
         @Directive({selector: 'p'})
         class Parent {
           @HostListener('p1')
-          p1() {
-          }
+          p1() {}
           @HostListener('p21')
-          p2() {
-          }
+          p2() {}
         }
 
         class Child extends Parent {
           @HostListener('p22')
-          p2() {
-          }
+          p2() {}
           @HostListener('p3')
-          p3() {
-          }
+          p3() {}
         }
 
         const directiveMetadata = resolver.resolve(Child);
@@ -365,18 +352,15 @@ class SomeDirectiveWithoutMetadata {}
       it('should combine host bindings and listeners during inheritance', () => {
         @Directive({selector: 'p'})
         class Parent {
-          @HostListener('p11')
-          @HostListener('p12')
-          p1() {
-          }
+          @HostListener('p11') @HostListener('p12')
+          p1() {}
 
           @HostBinding('p21') @HostBinding('p22') p2: any;
         }
 
         class Child extends Parent {
           @HostListener('c1')
-          p1() {
-          }
+          p1() {}
 
           @HostBinding('c2') p2: any;
         }

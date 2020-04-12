@@ -7,9 +7,10 @@
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, dirname, FileSystem, resolve} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, dirname, resolve} from '../../../src/ngtsc/file_system';
 
 import {patchTsGetExpandoInitializer, restoreGetExpandoInitializer} from './patch_ts_expando_initializer';
+
 
 /**
  * An entry point bundle contains one or two programs, e.g. `src` and `dts`,
@@ -48,7 +49,7 @@ export function makeBundleProgram(
   program.getTypeChecker();
   restoreGetExpandoInitializer(originalGetExpandoInitializer);
 
-  const file = program.getSourceFile(path)!;
+  const file = program.getSourceFile(path) !;
   const r3SymbolsFile = r3SymbolsPath && program.getSourceFile(r3SymbolsPath) || null;
 
   return {program, options, host, package: pkg, path, file, r3SymbolsPath, r3SymbolsFile};

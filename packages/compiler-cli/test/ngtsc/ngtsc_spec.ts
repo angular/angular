@@ -38,12 +38,12 @@ const setClassMetadataRegExp = (expectedType: string): RegExp =>
 const testFiles = loadStandardTestFiles();
 
 function getDiagnosticSourceCode(diag: ts.Diagnostic): string {
-  return diag.file!.text.substr(diag.start!, diag.length!);
+  return diag.file !.text.substr(diag.start !, diag.length !);
 }
 
 runInEachFileSystem(os => {
   describe('ngtsc behavioral tests', () => {
-    let env!: NgtscTestEnvironment;
+    let env !: NgtscTestEnvironment;
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
@@ -3464,9 +3464,7 @@ runInEachFileSystem(os => {
     });
 
     describe('ngfactory shims', () => {
-      beforeEach(() => {
-        env.tsconfig({'generateNgFactoryShims': true});
-      });
+      beforeEach(() => { env.tsconfig({'generateNgFactoryShims': true}); });
 
       it('should generate correct type annotation for NgModuleFactory calls in ngfactories', () => {
         env.write('test.ts', `
@@ -3568,9 +3566,7 @@ runInEachFileSystem(os => {
 
 
     describe('ngsummary shim generation', () => {
-      beforeEach(() => {
-        env.tsconfig({'generateNgSummaryShims': true});
-      });
+      beforeEach(() => { env.tsconfig({'generateNgSummaryShims': true}); });
 
       it('should generate a summary stub for decorated classes in the input file only', () => {
         env.write('test.ts', `
@@ -4478,7 +4474,7 @@ runInEachFileSystem(os => {
           }
         });
 
-        it('should throw if @Component is missing a template', async () => {
+        it('should throw if @Component is missing a template', async() => {
           env.write('test.ts', `
             import {Component} from '@angular/core';
 
@@ -4490,10 +4486,10 @@ runInEachFileSystem(os => {
 
           const diags = await driveDiagnostics();
           expect(diags[0].messageText).toBe('component is missing a template');
-          expect(diags[0].file!.fileName).toBe(absoluteFrom('/test.ts'));
+          expect(diags[0].file !.fileName).toBe(absoluteFrom('/test.ts'));
         });
 
-        it('should throw if `styleUrls` is defined incorrectly in @Component', async () => {
+        it('should throw if `styleUrls` is defined incorrectly in @Component', async() => {
           env.write('test.ts', `
             import {Component} from '@angular/core';
 
@@ -4507,7 +4503,7 @@ runInEachFileSystem(os => {
 
           const diags = await driveDiagnostics();
           expect(diags[0].messageText).toBe('styleUrls must be an array of strings');
-          expect(diags[0].file!.fileName).toBe(absoluteFrom('/test.ts'));
+          expect(diags[0].file !.fileName).toBe(absoluteFrom('/test.ts'));
         });
       });
     });
@@ -4628,7 +4624,7 @@ runInEachFileSystem(os => {
 
         // Verify that the error is for the correct class.
         const error = errors[0] as ts.Diagnostic;
-        const id = expectTokenAtPosition(error.file!, error.start!, ts.isIdentifier);
+        const id = expectTokenAtPosition(error.file !, error.start !, ts.isIdentifier);
         expect(id.text).toBe('Dir');
         expect(ts.isClassDeclaration(id.parent)).toBe(true);
       });
@@ -4935,7 +4931,7 @@ runInEachFileSystem(os => {
 
            const diag = env.driveDiagnostics();
            expect(diag.length).toBe(1);
-           expect(diag[0]!.code).toEqual(ngErrorCode(ErrorCode.NGMODULE_REEXPORT_NAME_COLLISION));
+           expect(diag[0] !.code).toEqual(ngErrorCode(ErrorCode.NGMODULE_REEXPORT_NAME_COLLISION));
          });
 
       it('should not error when two directives with the same declared name are exported from the same NgModule, but one is exported from the file directly',
@@ -6843,7 +6839,5 @@ export const Foo = Foo__PRE_R3__;
     return node as T;
   }
 
-  function normalize(input: string): string {
-    return input.replace(/\s+/g, ' ').trim();
-  }
+  function normalize(input: string): string { return input.replace(/\s+/g, ' ').trim(); }
 });

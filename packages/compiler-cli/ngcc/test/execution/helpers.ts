@@ -52,7 +52,7 @@ export function createTasksAndGraph(
     graph.addNode(entryPoint.path);
 
     for (let tIdx = 0; tIdx < tasksPerEntryPointCount; tIdx++) {
-      tasks.push({entryPoint, formatProperty: `prop-${tIdx}`, processDts: tIdx === 0} as Task);
+      tasks.push({ entryPoint, formatProperty: `prop-${tIdx}`, processDts: tIdx === 0 } as Task);
     }
   }
 

@@ -7,7 +7,7 @@
  */
 
 import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
-import {forkJoin, from, Observable} from 'rxjs';
+import {Observable, forkJoin, from} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
@@ -127,7 +127,7 @@ export class Validators {
    *
    */
   static min(min: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors|null => {
+    return (control: AbstractControl): ValidationErrors | null => {
       if (isEmptyInputValue(control.value) || isEmptyInputValue(min)) {
         return null;  // don't validate empty values to allow optional controls
       }
@@ -160,7 +160,7 @@ export class Validators {
    *
    */
   static max(max: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors|null => {
+    return (control: AbstractControl): ValidationErrors | null => {
       if (isEmptyInputValue(control.value) || isEmptyInputValue(max)) {
         return null;  // don't validate empty values to allow optional controls
       }
@@ -294,7 +294,7 @@ export class Validators {
    *
    */
   static minLength(minLength: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors|null => {
+    return (control: AbstractControl): ValidationErrors | null => {
       if (isEmptyInputValue(control.value)) {
         return null;  // don't validate empty values to allow optional controls
       }
@@ -333,7 +333,7 @@ export class Validators {
    *
    */
   static maxLength(maxLength: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors|null => {
+    return (control: AbstractControl): ValidationErrors | null => {
       const length: number = control.value ? control.value.length : 0;
       return length > maxLength ?
           {'maxlength': {'requiredLength': maxLength, 'actualLength': length}} :
@@ -389,7 +389,7 @@ export class Validators {
       regexStr = pattern.toString();
       regex = pattern;
     }
-    return (control: AbstractControl): ValidationErrors|null => {
+    return (control: AbstractControl): ValidationErrors | null => {
       if (isEmptyInputValue(control.value)) {
         return null;  // don't validate empty values to allow optional controls
       }
@@ -406,9 +406,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static nullValidator(control: AbstractControl): ValidationErrors|null {
-    return null;
-  }
+  static nullValidator(control: AbstractControl): ValidationErrors|null { return null; }
 
   /**
    * @description
@@ -481,8 +479,8 @@ function _mergeErrors(arrayOfErrors: ValidationErrors[]): ValidationErrors|null 
 
   // Not using Array.reduce here due to a Chrome 80 bug
   // https://bugs.chromium.org/p/chromium/issues/detail?id=1049982
-  arrayOfErrors.forEach((errors: ValidationErrors|null) => {
-    res = errors != null ? {...res!, ...errors} : res!;
+  arrayOfErrors.forEach((errors: ValidationErrors | null) => {
+    res = errors != null ? {...res !, ...errors} : res !;
   });
 
   return Object.keys(res).length === 0 ? null : res;

@@ -5,12 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, FileSystem, PathSegment} from '../../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, PathSegment, absoluteFrom} from '../../../../src/ngtsc/file_system';
 import {cleanPackageJson} from '../../packages/build_marker';
 import {NGCC_BACKUP_EXTENSION} from '../in_place_file_writer';
 import {NGCC_DIRECTORY} from '../new_entry_point_file_writer';
 
 import {isLocalDirectory} from './utils';
+
 
 /**
  * Implement this interface to extend the cleaning strategies of the `PackageCleaner`.
@@ -45,9 +46,7 @@ export class NgccDirectoryCleaner implements CleaningStrategy {
   canClean(path: AbsoluteFsPath, basename: PathSegment): boolean {
     return basename === NGCC_DIRECTORY && isLocalDirectory(this.fs, path);
   }
-  clean(path: AbsoluteFsPath, _basename: PathSegment): void {
-    this.fs.removeDeep(path);
-  }
+  clean(path: AbsoluteFsPath, _basename: PathSegment): void { this.fs.removeDeep(path); }
 }
 
 /**

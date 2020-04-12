@@ -35,8 +35,7 @@ export function getProviderDiagnostics(
 
     const contextNode = provider.getOriginForDiagnostics(providersDeclaration);
     diagnostics.push(makeDiagnostic(
-        ErrorCode.UNDECORATED_PROVIDER, contextNode,
-        `The class '${
+        ErrorCode.UNDECORATED_PROVIDER, contextNode, `The class '${
             provider.node.name
                 .text}' cannot be created via dependency injection, as it does not have an Angular decorator. This will result in an error at runtime.
 
@@ -56,7 +55,7 @@ export function getDirectiveDiagnostics(
     kind: string): ts.Diagnostic[]|null {
   let diagnostics: ts.Diagnostic[]|null = [];
 
-  const addDiagnostics = (more: ts.Diagnostic|ts.Diagnostic[]|null) => {
+  const addDiagnostics = (more: ts.Diagnostic | ts.Diagnostic[] | null) => {
     if (more === null) {
       return;
     } else if (diagnostics === null) {
@@ -125,7 +124,7 @@ export function checkInheritanceOfDirective(
 
 function getInheritedUndecoratedCtorDiagnostic(
     node: ClassDeclaration, baseClass: Reference, reader: MetadataReader) {
-  const subclassMeta = reader.getDirectiveMetadata(new Reference(node))!;
+  const subclassMeta = reader.getDirectiveMetadata(new Reference(node)) !;
   const dirOrComp = subclassMeta.isComponent ? 'Component' : 'Directive';
   const baseClassName = baseClass.debugName;
 

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, forwardRef, Inject, Injectable, InjectionToken, Injector, NgModule, Optional} from '@angular/core';
-import {async, inject, TestBed} from '@angular/core/testing';
+import {Component, Directive, Inject, Injectable, InjectionToken, Injector, NgModule, Optional, forwardRef} from '@angular/core';
+import {TestBed, async, inject} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
@@ -58,9 +58,7 @@ describe('providers', () => {
 
       @Injectable()
       class SuperInjectableWithDestroyHook {
-        ngOnDestroy() {
-          logs.push('OnDestroy');
-        }
+        ngOnDestroy() { logs.push('OnDestroy'); }
       }
 
       @Injectable()
@@ -85,9 +83,7 @@ describe('providers', () => {
 
       @Injectable()
       class InjectableWithDestroyHook {
-        ngOnDestroy() {
-          logs.push('OnDestroy');
-        }
+        ngOnDestroy() { logs.push('OnDestroy'); }
       }
 
       @Component({template: '', providers: [InjectableWithDestroyHook]})
@@ -107,9 +103,7 @@ describe('providers', () => {
 
       @Injectable()
       class InjectableWithDestroyHook {
-        ngOnDestroy() {
-          logs.push('OnDestroy');
-        }
+        ngOnDestroy() { logs.push('OnDestroy'); }
       }
 
       @Component({selector: 'my-cmp', template: ''})
@@ -140,9 +134,7 @@ describe('providers', () => {
 
       @Injectable()
       class InjectableWithDestroyHook {
-        ngOnDestroy() {
-          logs.push('OnDestroy');
-        }
+        ngOnDestroy() { logs.push('OnDestroy'); }
       }
 
       @Component({
@@ -167,16 +159,12 @@ describe('providers', () => {
 
           @Injectable()
           class InjectableWithDestroyHookToken {
-            ngOnDestroy() {
-              logs.push('OnDestroy Token');
-            }
+            ngOnDestroy() { logs.push('OnDestroy Token'); }
           }
 
           @Injectable()
           class InjectableWithDestroyHookValue {
-            ngOnDestroy() {
-              logs.push('OnDestroy Value');
-            }
+            ngOnDestroy() { logs.push('OnDestroy Value'); }
           }
 
           @Component({
@@ -202,23 +190,21 @@ describe('providers', () => {
 
       @Injectable()
       class InjectableWithDestroyHookToken {
-        ngOnDestroy() {
-          logs.push('OnDestroy Token');
-        }
+        ngOnDestroy() { logs.push('OnDestroy Token'); }
       }
 
       @Injectable()
       class InjectableWithDestroyHookExisting {
-        ngOnDestroy() {
-          logs.push('OnDestroy Existing');
-        }
+        ngOnDestroy() { logs.push('OnDestroy Existing'); }
       }
 
       @Component({
         template: '',
         providers: [
-          InjectableWithDestroyHookExisting,
-          {provide: InjectableWithDestroyHookToken, useExisting: InjectableWithDestroyHookExisting}
+          InjectableWithDestroyHookExisting, {
+            provide: InjectableWithDestroyHookToken,
+            useExisting: InjectableWithDestroyHookExisting
+          }
         ]
       })
       class App {
@@ -236,40 +222,30 @@ describe('providers', () => {
 
     it('should invoke ngOnDestroy with the correct context when providing a type provider multiple times on the same node',
        () => {
-         const resolvedServices: (DestroyService|undefined)[] = [];
-         const destroyContexts: (DestroyService|undefined)[] = [];
+         const resolvedServices: (DestroyService | undefined)[] = [];
+         const destroyContexts: (DestroyService | undefined)[] = [];
          let parentService: DestroyService|undefined;
          let childService: DestroyService|undefined;
 
          @Injectable()
          class DestroyService {
-           constructor() {
-             resolvedServices.push(this);
-           }
-           ngOnDestroy() {
-             destroyContexts.push(this);
-           }
+           constructor() { resolvedServices.push(this); }
+           ngOnDestroy() { destroyContexts.push(this); }
          }
 
          @Directive({selector: '[dir-one]', providers: [DestroyService]})
          class DirOne {
-           constructor(service: DestroyService) {
-             childService = service;
-           }
+           constructor(service: DestroyService) { childService = service; }
          }
 
          @Directive({selector: '[dir-two]', providers: [DestroyService]})
          class DirTwo {
-           constructor(service: DestroyService) {
-             childService = service;
-           }
+           constructor(service: DestroyService) { childService = service; }
          }
 
          @Component({template: '<div dir-one dir-two></div>', providers: [DestroyService]})
          class App {
-           constructor(service: DestroyService) {
-             parentService = service;
-           }
+           constructor(service: DestroyService) { parentService = service; }
          }
 
          TestBed.configureTestingModule({declarations: [App, DirOne, DirTwo]});
@@ -287,36 +263,28 @@ describe('providers', () => {
     onlyInIvy('Destroy hook of useClass provider is invoked correctly')
         .it('should invoke ngOnDestroy with the correct context when providing a class provider multiple times on the same node',
             () => {
-              const resolvedServices: (DestroyService|undefined)[] = [];
-              const destroyContexts: (DestroyService|undefined)[] = [];
+              const resolvedServices: (DestroyService | undefined)[] = [];
+              const destroyContexts: (DestroyService | undefined)[] = [];
               const token = new InjectionToken<any>('token');
               let parentService: DestroyService|undefined;
               let childService: DestroyService|undefined;
 
               @Injectable()
               class DestroyService {
-                constructor() {
-                  resolvedServices.push(this);
-                }
-                ngOnDestroy() {
-                  destroyContexts.push(this);
-                }
+                constructor() { resolvedServices.push(this); }
+                ngOnDestroy() { destroyContexts.push(this); }
               }
 
               @Directive(
                   {selector: '[dir-one]', providers: [{provide: token, useClass: DestroyService}]})
               class DirOne {
-                constructor(@Inject(token) service: DestroyService) {
-                  childService = service;
-                }
+                constructor(@Inject(token) service: DestroyService) { childService = service; }
               }
 
               @Directive(
                   {selector: '[dir-two]', providers: [{provide: token, useClass: DestroyService}]})
               class DirTwo {
-                constructor(@Inject(token) service: DestroyService) {
-                  childService = service;
-                }
+                constructor(@Inject(token) service: DestroyService) { childService = service; }
               }
 
               @Component({
@@ -324,9 +292,7 @@ describe('providers', () => {
                 providers: [{provide: token, useClass: DestroyService}]
               })
               class App {
-                constructor(@Inject(token) service: DestroyService) {
-                  parentService = service;
-                }
+                constructor(@Inject(token) service: DestroyService) { parentService = service; }
               }
 
               TestBed.configureTestingModule({declarations: [App, DirOne, DirTwo]});
@@ -350,16 +316,12 @@ describe('providers', () => {
 
             @Injectable()
             class DestroyService {
-              ngOnDestroy() {
-                destroyCalls.push(this);
-              }
+              ngOnDestroy() { destroyCalls.push(this); }
             }
 
             @Injectable()
             class OtherDestroyService {
-              ngOnDestroy() {
-                destroyCalls.push(this);
-              }
+              ngOnDestroy() { destroyCalls.push(this); }
             }
 
             @Component({
@@ -394,9 +356,7 @@ describe('providers', () => {
 
                @Injectable()
                class Service2 {
-                 ngOnDestroy() {
-                   destroyCalls.push(this);
-                 }
+                 ngOnDestroy() { destroyCalls.push(this); }
                }
 
                @Injectable()
@@ -405,9 +365,7 @@ describe('providers', () => {
 
                @Injectable()
                class Service4 {
-                 ngOnDestroy() {
-                   destroyCalls.push(this);
-                 }
+                 ngOnDestroy() { destroyCalls.push(this); }
                }
 
                @Component({
@@ -437,16 +395,12 @@ describe('providers', () => {
 
             @Injectable()
             class DestroyService {
-              ngOnDestroy() {
-                destroyCalls++;
-              }
+              ngOnDestroy() { destroyCalls++; }
             }
 
             @Injectable()
             class OtherDestroyService {
-              ngOnDestroy() {
-                destroyCalls++;
-              }
+              ngOnDestroy() { destroyCalls++; }
             }
 
             @Component({
@@ -476,16 +430,12 @@ describe('providers', () => {
 
           @Injectable()
           class DestroyService {
-            ngOnDestroy() {
-              destroyCalls++;
-            }
+            ngOnDestroy() { destroyCalls++; }
           }
 
           @Injectable()
           class OtherDestroyService {
-            ngOnDestroy() {
-              destroyCalls++;
-            }
+            ngOnDestroy() { destroyCalls++; }
           }
 
           @Component({

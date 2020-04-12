@@ -10,7 +10,7 @@ import * as chokidar from 'chokidar';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {Diagnostics, exitCodeFromResult, ParsedConfiguration, performCompilation, PerformCompilationResult, readConfiguration} from './perform_compile';
+import {Diagnostics, ParsedConfiguration, PerformCompilationResult, exitCodeFromResult, performCompilation, readConfiguration} from './perform_compile';
 import * as api from './transformers/api';
 import {createCompilerHost} from './transformers/entry_points';
 import {createMessageDiagnostic} from './transformers/util';
@@ -50,9 +50,8 @@ export interface PerformWatchHost {
 
 export function createPerformWatchHost(
     configFileName: string, reportDiagnostics: (diagnostics: Diagnostics) => void,
-    existingOptions?: ts.CompilerOptions,
-    createEmitCallback?: (options: api.CompilerOptions) =>
-        api.TsEmitCallback | undefined): PerformWatchHost {
+    existingOptions?: ts.CompilerOptions, createEmitCallback?: (options: api.CompilerOptions) =>
+                                              api.TsEmitCallback | undefined): PerformWatchHost {
   return {
     reportDiagnostics: reportDiagnostics,
     createCompilerHost: options => createCompilerHost({options}),
@@ -131,7 +130,7 @@ export function performWatchCompilation(host: PerformWatchHost):
   // Note: ! is ok as options are filled after the first compilation
   // Note: ! is ok as resolvedReadyPromise is filled by the previous call
   const fileWatcher =
-      host.onFileChange(cachedOptions!.options, watchedFileChanged, resolveReadyPromise!);
+      host.onFileChange(cachedOptions !.options, watchedFileChanged, resolveReadyPromise !);
 
   return {close, ready: cb => readyPromise.then(cb), firstCompileResult};
 
@@ -178,7 +177,7 @@ export function performWatchCompilation(host: PerformWatchHost):
         if (ce.exists == null) {
           ce.exists = originalFileExists.call(this, fileName);
         }
-        return ce.exists!;
+        return ce.exists !;
       };
       const originalGetSourceFile = cachedCompilerHost.getSourceFile;
       cachedCompilerHost.getSourceFile = function(
@@ -187,7 +186,7 @@ export function performWatchCompilation(host: PerformWatchHost):
         if (!ce.sf) {
           ce.sf = originalGetSourceFile.call(this, fileName, languageVersion);
         }
-        return ce.sf!;
+        return ce.sf !;
       };
       const originalReadFile = cachedCompilerHost.readFile;
       cachedCompilerHost.readFile = function(fileName: string) {
@@ -195,7 +194,7 @@ export function performWatchCompilation(host: PerformWatchHost):
         if (ce.content == null) {
           ce.content = originalReadFile.call(this, fileName);
         }
-        return ce.content!;
+        return ce.content !;
       };
       // Provide access to the file paths that triggered this rebuild
       cachedCompilerHost.getModifiedResourceFiles = function() {

@@ -24,41 +24,25 @@ export class R3JitReflector implements CompileReflector {
       throw new Error(`Cannot resolve external reference to ${
           ref.moduleName}, only references to @angular/core are supported.`);
     }
-    if (!this.context.hasOwnProperty(ref.name!)) {
+    if (!this.context.hasOwnProperty(ref.name !)) {
       throw new Error(`No value provided for @angular/core symbol '${ref.name!}'.`);
     }
-    return this.context[ref.name!];
+    return this.context[ref.name !];
   }
 
-  parameters(typeOrFunc: any): any[][] {
-    throw new Error('Not implemented.');
-  }
+  parameters(typeOrFunc: any): any[][] { throw new Error('Not implemented.'); }
 
-  annotations(typeOrFunc: any): any[] {
-    throw new Error('Not implemented.');
-  }
+  annotations(typeOrFunc: any): any[] { throw new Error('Not implemented.'); }
 
-  shallowAnnotations(typeOrFunc: any): any[] {
-    throw new Error('Not implemented.');
-  }
+  shallowAnnotations(typeOrFunc: any): any[] { throw new Error('Not implemented.'); }
 
-  tryAnnotations(typeOrFunc: any): any[] {
-    throw new Error('Not implemented.');
-  }
+  tryAnnotations(typeOrFunc: any): any[] { throw new Error('Not implemented.'); }
 
-  propMetadata(typeOrFunc: any): {[key: string]: any[];} {
-    throw new Error('Not implemented.');
-  }
+  propMetadata(typeOrFunc: any): {[key: string]: any[];} { throw new Error('Not implemented.'); }
 
-  hasLifecycleHook(type: any, lcProperty: string): boolean {
-    throw new Error('Not implemented.');
-  }
+  hasLifecycleHook(type: any, lcProperty: string): boolean { throw new Error('Not implemented.'); }
 
-  guards(typeOrFunc: any): {[key: string]: any;} {
-    throw new Error('Not implemented.');
-  }
+  guards(typeOrFunc: any): {[key: string]: any;} { throw new Error('Not implemented.'); }
 
-  componentModuleUrl(type: any, cmpMetadata: any): string {
-    throw new Error('Not implemented.');
-  }
+  componentModuleUrl(type: any, cmpMetadata: any): string { throw new Error('Not implemented.'); }
 }

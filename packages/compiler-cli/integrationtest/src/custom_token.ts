@@ -8,8 +8,6 @@
 
 import {InjectionToken} from '@angular/core';
 
-export interface Named {
-  name: string;
-}
+export interface Named { name: string; }
 
 export const CUSTOM = new InjectionToken<Named>('CUSTOM');

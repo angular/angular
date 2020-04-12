@@ -21,9 +21,7 @@ export class NormalService {
 })
 export class AppComponent {
   found: boolean;
-  constructor(service: NormalService) {
-    this.found = !!service.shakeable;
-  }
+  constructor(service: NormalService) { this.found = !!service.shakeable; }
 }
 
 @NgModule({

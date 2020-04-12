@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges} from '@angular/core';
+import {Directive, EventEmitter, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
 
 import {FormArray, FormControl, FormGroup} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../../validators';
@@ -52,7 +52,8 @@ export const formDirectiveProvider: any = {
   host: {'(submit)': 'onSubmit($event)', '(reset)': 'onReset()'},
   exportAs: 'ngForm'
 })
-export class FormGroupDirective extends ControlContainer implements Form, OnChanges {
+export class FormGroupDirective extends ControlContainer implements Form,
+    OnChanges {
   /**
    * @description
    * Reports whether the form submission has been triggered.
@@ -60,7 +61,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   public readonly submitted: boolean = false;
 
   // TODO(issue/24571): remove '!'.
-  private _oldForm!: FormGroup;
+  private _oldForm !: FormGroup;
 
   /**
    * @description
@@ -72,7 +73,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @description
    * Tracks the `FormGroup` bound to this directive.
    */
-  @Input('formGroup') form: FormGroup = null!;
+  @Input('formGroup') form: FormGroup = null !;
 
   /**
    * @description
@@ -105,26 +106,20 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @description
    * Returns this directive's instance.
    */
-  get formDirective(): Form {
-    return this;
-  }
+  get formDirective(): Form { return this; }
 
   /**
    * @description
    * Returns the `FormGroup` bound to this directive.
    */
-  get control(): FormGroup {
-    return this.form;
-  }
+  get control(): FormGroup { return this.form; }
 
   /**
    * @description
    * Returns an array representing the path to this group. Because this directive
    * always lives at the top level of a form, it always an empty array.
    */
-  get path(): string[] {
-    return [];
-  }
+  get path(): string[] { return []; }
 
   /**
    * @description
@@ -147,9 +142,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    *
    * @param dir The `FormControlName` directive instance.
    */
-  getControl(dir: FormControlName): FormControl {
-    return <FormControl>this.form.get(dir.path);
-  }
+  getControl(dir: FormControlName): FormControl { return <FormControl>this.form.get(dir.path); }
 
   /**
    * @description
@@ -157,9 +150,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    *
    * @param dir The `FormControlName` directive instance.
    */
-  removeControl(dir: FormControlName): void {
-    removeDir<FormControlName>(this.directives, dir);
-  }
+  removeControl(dir: FormControlName): void { removeDir<FormControlName>(this.directives, dir); }
 
   /**
    * Adds a new `FormGroupName` directive instance to the form.
@@ -185,9 +176,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    *
    * @param dir The `FormGroupName` directive instance.
    */
-  getFormGroup(dir: FormGroupName): FormGroup {
-    return <FormGroup>this.form.get(dir.path);
-  }
+  getFormGroup(dir: FormGroupName): FormGroup { return <FormGroup>this.form.get(dir.path); }
 
   /**
    * Adds a new `FormArrayName` directive instance to the form.
@@ -213,9 +202,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    *
    * @param dir The `FormArrayName` directive instance.
    */
-  getFormArray(dir: FormArrayName): FormArray {
-    return <FormArray>this.form.get(dir.path);
-  }
+  getFormArray(dir: FormArrayName): FormArray { return <FormArray>this.form.get(dir.path); }
 
   /**
    * Sets the new value for the provided `FormControlName` directive.
@@ -236,7 +223,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @param $event The "submit" event object
    */
   onSubmit($event: Event): boolean {
-    (this as {submitted: boolean}).submitted = true;
+    (this as{submitted: boolean}).submitted = true;
     syncPendingControls(this.form, this.directives);
     this.ngSubmit.emit($event);
     return false;
@@ -246,9 +233,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @description
    * Method called when the "reset" event is triggered on the form.
    */
-  onReset(): void {
-    this.resetForm();
-  }
+  onReset(): void { this.resetForm(); }
 
   /**
    * @description
@@ -258,7 +243,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    */
   resetForm(value: any = undefined): void {
     this.form.reset(value);
-    (this as {submitted: boolean}).submitted = false;
+    (this as{submitted: boolean}).submitted = false;
   }
 
 
@@ -269,7 +254,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
       if (dir.control !== newCtrl) {
         cleanUpControl(dir.control, dir);
         if (newCtrl) setUpControl(newCtrl, dir);
-        (dir as {control: FormControl}).control = newCtrl;
+        (dir as{control: FormControl}).control = newCtrl;
       }
     });
 
@@ -284,10 +269,10 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
 
   private _updateValidators() {
     const sync = composeValidators(this._validators);
-    this.form.validator = Validators.compose([this.form.validator!, sync!]);
+    this.form.validator = Validators.compose([this.form.validator !, sync !]);
 
     const async = composeAsyncValidators(this._asyncValidators);
-    this.form.asyncValidator = Validators.composeAsync([this.form.asyncValidator!, async!]);
+    this.form.asyncValidator = Validators.composeAsync([this.form.asyncValidator !, async !]);
   }
 
   private _checkFormPresent() {

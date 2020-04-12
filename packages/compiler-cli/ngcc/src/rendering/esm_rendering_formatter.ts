@@ -299,7 +299,7 @@ function findStatement(node: ts.Node): ts.Statement|undefined {
 }
 
 function generateImportString(
-    importManager: ImportManager, importPath: string|null, importName: string) {
+    importManager: ImportManager, importPath: string | null, importName: string) {
   const importAs = importPath ? importManager.generateNamedImport(importPath, importName) : null;
   return importAs ? `${importAs.moduleImport}.${importAs.symbol}` : `${importName}`;
 }

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {FileSystem, absoluteFrom, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {fromObject} from 'convert-source-map';
 
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
@@ -143,26 +143,26 @@ runInEachFileSystem(() => {
 
            expect(sourceFile.sources.length).toEqual(3);
 
-           expect(sourceFile.sources[0]!.contents).toEqual('x content');
-           expect(sourceFile.sources[0]!.sourcePath).toEqual(_('/foo/src/x.js'));
-           expect(sourceFile.sources[0]!.rawMap).toEqual(null);
-           expect(sourceFile.sources[0]!.sources).toEqual([]);
+           expect(sourceFile.sources[0] !.contents).toEqual('x content');
+           expect(sourceFile.sources[0] !.sourcePath).toEqual(_('/foo/src/x.js'));
+           expect(sourceFile.sources[0] !.rawMap).toEqual(null);
+           expect(sourceFile.sources[0] !.sources).toEqual([]);
 
 
-           expect(sourceFile.sources[1]!.contents).toEqual('y content');
-           expect(sourceFile.sources[1]!.sourcePath).toEqual(_('/foo/src/y.js'));
-           expect(sourceFile.sources[1]!.rawMap).toEqual(ySourceMap);
+           expect(sourceFile.sources[1] !.contents).toEqual('y content');
+           expect(sourceFile.sources[1] !.sourcePath).toEqual(_('/foo/src/y.js'));
+           expect(sourceFile.sources[1] !.rawMap).toEqual(ySourceMap);
 
-           expect(sourceFile.sources[1]!.sources.length).toEqual(1);
-           expect(sourceFile.sources[1]!.sources[0]!.contents).toEqual('a content');
-           expect(sourceFile.sources[1]!.sources[0]!.sourcePath).toEqual(_('/foo/src/a.js'));
-           expect(sourceFile.sources[1]!.sources[0]!.rawMap).toEqual(null);
-           expect(sourceFile.sources[1]!.sources[0]!.sources).toEqual([]);
+           expect(sourceFile.sources[1] !.sources.length).toEqual(1);
+           expect(sourceFile.sources[1] !.sources[0] !.contents).toEqual('a content');
+           expect(sourceFile.sources[1] !.sources[0] !.sourcePath).toEqual(_('/foo/src/a.js'));
+           expect(sourceFile.sources[1] !.sources[0] !.rawMap).toEqual(null);
+           expect(sourceFile.sources[1] !.sources[0] !.sources).toEqual([]);
 
-           expect(sourceFile.sources[2]!.contents).toEqual('z content');
-           expect(sourceFile.sources[2]!.sourcePath).toEqual(_('/foo/src/z.js'));
-           expect(sourceFile.sources[2]!.rawMap).toEqual(null);
-           expect(sourceFile.sources[2]!.sources).toEqual([]);
+           expect(sourceFile.sources[2] !.contents).toEqual('z content');
+           expect(sourceFile.sources[2] !.sourcePath).toEqual(_('/foo/src/z.js'));
+           expect(sourceFile.sources[2] !.rawMap).toEqual(null);
+           expect(sourceFile.sources[2] !.sources).toEqual([]);
          });
 
       it('should handle a missing source file referenced from a source-map', () => {
@@ -196,18 +196,16 @@ runInEachFileSystem(() => {
 
          const bPath = _('/foo/src/b.js');
          fs.writeFile(
-             bPath,
-             'b content\n' +
+             bPath, 'b content\n' +
                  fromObject(createRawSourceMap({file: 'b.js', sources: ['c.js']})).toComment());
 
          const cPath = _('/foo/src/c.js');
          fs.writeFile(
-             cPath,
-             'c content\n' +
+             cPath, 'c content\n' +
                  fromObject(createRawSourceMap({file: 'c.js', sources: ['a.js']})).toComment());
 
-         const sourceFile = registry.loadSourceFile(aPath)!;
-         expect(sourceFile).not.toBe(null!);
+         const sourceFile = registry.loadSourceFile(aPath) !;
+         expect(sourceFile).not.toBe(null !);
          expect(sourceFile.contents).toEqual('a content\n');
          expect(sourceFile.sourcePath).toEqual(_('/foo/src/a.js'));
          expect(sourceFile.rawMap).toEqual(aMap);
@@ -235,8 +233,8 @@ runInEachFileSystem(() => {
          const aPath = _('/foo/src/a.js');
          fs.writeFile(aPath, 'a.js content\n//# sourceMappingURL=a.js.map');
 
-         const sourceFile = registry.loadSourceFile(aPath)!;
-         expect(sourceFile).not.toBe(null!);
+         const sourceFile = registry.loadSourceFile(aPath) !;
+         expect(sourceFile).not.toBe(null !);
          expect(sourceFile.contents).toEqual('a.js content\n');
          expect(sourceFile.sourcePath).toEqual(_('/foo/src/a.js'));
          expect(sourceFile.rawMap).toEqual(aMap);
@@ -247,8 +245,8 @@ runInEachFileSystem(() => {
                  `Circular source file mapping dependency: ` +
                  `${aPath} -> ${aMapPath} -> ${aMapPath}`);
 
-         const innerSourceFile = sourceFile.sources[0]!;
-         expect(innerSourceFile).not.toBe(null!);
+         const innerSourceFile = sourceFile.sources[0] !;
+         expect(innerSourceFile).not.toBe(null !);
          expect(innerSourceFile.contents).toEqual('inline a.js content\n');
          expect(innerSourceFile.sourcePath).toEqual(_('/foo/src/a.js'));
          expect(innerSourceFile.rawMap).toEqual(null);
@@ -260,8 +258,7 @@ runInEachFileSystem(() => {
 
       const aPath = _('/foo/src/a.js');
       fs.writeFile(
-          aPath,
-          'a content\n' +
+          aPath, 'a content\n' +
               fromObject(createRawSourceMap({file: 'a.js', sources: ['b.js']})).toComment());
 
       const bPath = _('/foo/src/b.js');
@@ -290,7 +287,6 @@ function createRawSourceMap(custom: Partial<RawSourceMap>): RawSourceMap {
     'sources': [],
     'sourcesContent': [],
     'names': [],
-    'mappings': '',
-    ...custom
+    'mappings': '', ...custom
   };
 }

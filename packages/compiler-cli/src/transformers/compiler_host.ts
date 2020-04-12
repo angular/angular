@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, collectExternalReferences, EmitterVisitorContext, GeneratedFile, ParseSourceSpan, syntaxError, TypeScriptEmitter} from '@angular/compiler';
+import {AotCompilerHost, EmitterVisitorContext, GeneratedFile, ParseSourceSpan, TypeScriptEmitter, collectExternalReferences, syntaxError} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -15,7 +15,7 @@ import {ModuleMetadata} from '../metadata/index';
 import {join} from '../ngtsc/file_system';
 
 import {CompilerHost, CompilerOptions, LibrarySummary} from './api';
-import {createMetadataReaderCache, MetadataReaderHost, readMetadata} from './metadata_reader';
+import {MetadataReaderHost, createMetadataReaderCache, readMetadata} from './metadata_reader';
 import {DTS, GENERATED_FILES, isInRootDir, relativeToRootDirs} from './util';
 
 const NODE_MODULES_PACKAGE_NAME = /node_modules\/((\w|-|\.)+|(@(\w|-|\.)+\/(\w|-|\.)+))/;
@@ -24,8 +24,8 @@ const CSS_PREPROCESSOR_EXT = /(\.scss|\.sass|\.less|\.styl)$/;
 
 let wrapHostForTest: ((host: ts.CompilerHost) => ts.CompilerHost)|null = null;
 
-export function setWrapHostForTest(wrapFn: ((host: ts.CompilerHost) => ts.CompilerHost)|
-                                   null): void {
+export function setWrapHostForTest(wrapFn: ((host: ts.CompilerHost) => ts.CompilerHost) | null):
+    void {
   wrapHostForTest = wrapFn;
 }
 
@@ -53,11 +53,11 @@ export interface CodeGenerator {
   findGeneratedFileNames(fileName: string): string[];
 }
 
-function assert<T>(condition: T|null|undefined) {
+function assert<T>(condition: T | null | undefined) {
   if (!condition) {
     // TODO(chuckjaz): do the right thing
   }
-  return condition!;
+  return condition !;
 }
 
 /**
@@ -67,7 +67,7 @@ function assert<T>(condition: T|null|undefined) {
  * - TypeCheckHost for mapping ts errors to ng errors (via translateDiagnostics)
  */
 export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHost, AotCompilerHost,
-                                                                  TypeCheckHost {
+    TypeCheckHost {
   private metadataReaderCache = createMetadataReaderCache();
   private fileNameToModuleNameCache = new Map<string, string>();
   private flatModuleIndexCache = new Map<string, boolean>();
@@ -83,13 +83,13 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   private metadataReaderHost: MetadataReaderHost;
 
   // TODO(issue/24571): remove '!'.
-  getCancellationToken!: () => ts.CancellationToken;
+  getCancellationToken !: () => ts.CancellationToken;
   // TODO(issue/24571): remove '!'.
-  getDefaultLibLocation!: () => string;
+  getDefaultLibLocation !: () => string;
   // TODO(issue/24571): remove '!'.
-  trace!: (s: string) => void;
+  trace !: (s: string) => void;
   // TODO(issue/24571): remove '!'.
-  getDirectories!: (path: string) => string[];
+  getDirectories !: (path: string) => string[];
   resolveTypeReferenceDirectives?:
       (names: string[], containingFile: string) => ts.ResolvedTypeReferenceDirective[];
   directoryExists?: (directoryName: string) => boolean;
@@ -100,21 +100,21 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
       private codeGenerator: CodeGenerator,
       private librarySummaries = new Map<string, LibrarySummary>()) {
     this.moduleResolutionCache = ts.createModuleResolutionCache(
-        this.context.getCurrentDirectory!(), this.context.getCanonicalFileName.bind(this.context));
-    const basePath = this.options.basePath!;
+        this.context.getCurrentDirectory !(), this.context.getCanonicalFileName.bind(this.context));
+    const basePath = this.options.basePath !;
     this.rootDirs =
-        (this.options.rootDirs || [this.options.basePath!]).map(p => path.resolve(basePath, p));
+        (this.options.rootDirs || [this.options.basePath !]).map(p => path.resolve(basePath, p));
     if (context.getDirectories) {
-      this.getDirectories = path => context.getDirectories!(path);
+      this.getDirectories = path => context.getDirectories !(path);
     }
     if (context.directoryExists) {
-      this.directoryExists = directoryName => context.directoryExists!(directoryName);
+      this.directoryExists = directoryName => context.directoryExists !(directoryName);
     }
     if (context.getCancellationToken) {
-      this.getCancellationToken = () => context.getCancellationToken!();
+      this.getCancellationToken = () => context.getCancellationToken !();
     }
     if (context.getDefaultLibLocation) {
-      this.getDefaultLibLocation = () => context.getDefaultLibLocation!();
+      this.getDefaultLibLocation = () => context.getDefaultLibLocation !();
     }
     if (context.resolveTypeReferenceDirectives) {
       // Backward compatibility with TypeScript 2.9 and older since return
@@ -123,11 +123,11 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
       type ts3ResolveTypeReferenceDirectives = (names: string[], containingFile: string) =>
           ts.ResolvedTypeReferenceDirective[];
       this.resolveTypeReferenceDirectives = (names: string[], containingFile: string) =>
-          (context.resolveTypeReferenceDirectives as ts3ResolveTypeReferenceDirectives)!
-          (names, containingFile);
+          (context.resolveTypeReferenceDirectives as ts3ResolveTypeReferenceDirectives) !(
+              names, containingFile);
     }
     if (context.trace) {
-      this.trace = s => context.trace!(s);
+      this.trace = s => context.trace !(s);
     }
     if (context.fileNameToModuleName) {
       this.fileNameToModuleName = context.fileNameToModuleName.bind(context);
@@ -325,7 +325,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     // Note: we need the explicit check via `has` as we also cache results
     // that were null / undefined.
     if (this.originalSourceFiles.has(filePath)) {
-      return this.originalSourceFiles.get(filePath)!;
+      return this.originalSourceFiles.get(filePath) !;
     }
     if (!languageVersion) {
       languageVersion = this.options.target || ts.ScriptTarget.Latest;
@@ -381,8 +381,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     }
     this.generatedSourceFiles.set(genFile.genFileUrl, {
       sourceFile: sf,
-      emitCtx: context,
-      externalReferences,
+      emitCtx: context, externalReferences,
     });
     return sf;
   }
@@ -469,7 +468,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     }
     // TODO(tbosch): TypeScript's typings for getSourceFile are incorrect,
     // as it can very well return undefined.
-    return sf!;
+    return sf !;
   }
 
   private getGeneratedFile(fileName: string): ts.SourceFile|null {
@@ -639,7 +638,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
 }
 
 function genFileExternalReferences(genFile: GeneratedFile): Set<string> {
-  return new Set(collectExternalReferences(genFile.stmts!).map(er => er.moduleName!));
+  return new Set(collectExternalReferences(genFile.stmts !).map(er => er.moduleName !));
 }
 
 function addReferencesToSourceFile(sf: ts.SourceFile, genFileNames: string[]) {

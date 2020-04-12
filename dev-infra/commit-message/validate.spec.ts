@@ -213,19 +213,23 @@ describe('validate-commit-message.js', () => {
         it('should check that the fixup commit matches a non-fixup one', () => {
           const msg = 'fixup! foo';
 
-          expect(validateCommitMessage(
-                     msg, {disallowSquash: false, nonFixupCommitHeaders: ['foo', 'bar', 'baz']}))
-              .toBe(VALID);
-          expect(validateCommitMessage(
-                     msg, {disallowSquash: false, nonFixupCommitHeaders: ['bar', 'baz', 'foo']}))
-              .toBe(VALID);
-          expect(validateCommitMessage(
-                     msg, {disallowSquash: false, nonFixupCommitHeaders: ['baz', 'foo', 'bar']}))
-              .toBe(VALID);
+          expect(validateCommitMessage(msg, {
+            disallowSquash: false,
+            nonFixupCommitHeaders: ['foo', 'bar', 'baz']
+          })).toBe(VALID);
+          expect(validateCommitMessage(msg, {
+            disallowSquash: false,
+            nonFixupCommitHeaders: ['bar', 'baz', 'foo']
+          })).toBe(VALID);
+          expect(validateCommitMessage(msg, {
+            disallowSquash: false,
+            nonFixupCommitHeaders: ['baz', 'foo', 'bar']
+          })).toBe(VALID);
 
-          expect(validateCommitMessage(
-                     msg, {disallowSquash: false, nonFixupCommitHeaders: ['qux', 'quux', 'quuux']}))
-              .toBe(INVALID);
+          expect(validateCommitMessage(msg, {
+            disallowSquash: false,
+            nonFixupCommitHeaders: ['qux', 'quux', 'quuux']
+          })).toBe(INVALID);
           expect(lastError).toContain(
               'Unable to find match for fixup commit among prior commits: \n' +
               '      qux\n' +
@@ -238,9 +242,10 @@ describe('validate-commit-message.js', () => {
             disallowSquash: false,
             nonFixupCommitHeaders: []
           })).toBe(VALID);
-          expect(validateCommitMessage(
-                     'fixup! foo', {disallowSquash: false, nonFixupCommitHeaders: []}))
-              .toBe(INVALID);
+          expect(validateCommitMessage('fixup! foo', {
+            disallowSquash: false,
+            nonFixupCommitHeaders: []
+          })).toBe(INVALID);
           expect(lastError).toContain(
               `Unable to find match for fixup commit among prior commits: -`);
         });

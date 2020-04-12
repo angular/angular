@@ -13,7 +13,8 @@ import {Logger} from '../logging/logger';
 
 import {NGCC_VERSION} from './build_marker';
 import {NgccConfiguration} from './configuration';
-import {getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT} from './entry_point';
+import {INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT, getEntryPointInfo} from './entry_point';
+
 
 /**
  * Manages reading and writing a manifest file that contains a list of all the entry-points that

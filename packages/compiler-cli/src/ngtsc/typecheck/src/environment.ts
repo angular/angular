@@ -59,7 +59,7 @@ export class Environment {
     const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
     const node = dirRef.node;
     if (this.typeCtors.has(node)) {
-      return this.typeCtors.get(node)!;
+      return this.typeCtors.get(node) !;
     }
 
     if (requiresInlineTypeCtor(node, this.reflector)) {
@@ -101,7 +101,7 @@ export class Environment {
    */
   pipeInst(ref: Reference<ClassDeclaration<ts.ClassDeclaration>>): ts.Expression {
     if (this.pipeInsts.has(ref.node)) {
-      return this.pipeInsts.get(ref.node)!;
+      return this.pipeInsts.get(ref.node) !;
     }
 
     const pipeType = this.referenceType(ref);

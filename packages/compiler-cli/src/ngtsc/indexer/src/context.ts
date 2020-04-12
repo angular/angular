@@ -56,7 +56,5 @@ export class IndexingContext {
   /**
    * Adds a component to the context.
    */
-  addComponent(info: ComponentInfo) {
-    this.components.add(info);
-  }
+  addComponent(info: ComponentInfo) { this.components.add(info); }
 }

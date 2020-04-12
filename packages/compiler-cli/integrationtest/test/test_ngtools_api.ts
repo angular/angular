@@ -22,15 +22,10 @@ import {createProgram, readConfiguration} from '@angular/compiler-cli';
  * properly read and wrote.
  */
 function main() {
-  Promise.resolve()
-      .then(() => lazyRoutesTest())
-      .then(() => {
-        process.exit(0);
-      })
-      .catch((err) => {
-        console.error(err.stack);
-        process.exit(1);
-      });
+  Promise.resolve().then(() => lazyRoutesTest()).then(() => { process.exit(0); }).catch((err) => {
+    console.error(err.stack);
+    process.exit(1);
+  });
 }
 
 function lazyRoutesTest() {
@@ -41,8 +36,7 @@ function lazyRoutesTest() {
   const host = ts.createCompilerHost(config.options, true);
   const program = createProgram({
     rootNames: config.rootNames,
-    options: config.options,
-    host,
+    options: config.options, host,
   });
 
   config.options.basePath = basePath;

@@ -12,7 +12,7 @@ import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
 import * as cpl from './compile_metadata';
 import {CompileReflector} from './compile_reflector';
 import {CompilerConfig} from './config';
-import {ChangeDetectionStrategy, Component, createAttribute, createComponent, createHost, createInject, createInjectable, createInjectionToken, createNgModule, createOptional, createSelf, createSkipSelf, Directive, Injectable, ModuleWithProviders, Provider, Query, SchemaMetadata, Type, ViewEncapsulation} from './core';
+import {ChangeDetectionStrategy, Component, Directive, Injectable, ModuleWithProviders, Provider, Query, SchemaMetadata, Type, ViewEncapsulation, createAttribute, createComponent, createHost, createInject, createInjectable, createInjectionToken, createNgModule, createOptional, createSelf, createSkipSelf} from './core';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {DirectiveResolver, findLast} from './directive_resolver';
 import {Identifiers} from './identifiers';
@@ -23,7 +23,7 @@ import {PipeResolver} from './pipe_resolver';
 import {ElementSchemaRegistry} from './schema/element_schema_registry';
 import {CssSelector} from './selector';
 import {SummaryResolver} from './summary_resolver';
-import {Console, isPromise, noUndefined, resolveForwardRef, stringify, SyncAsync, syntaxError, ValueTransformer, visitValue} from './util';
+import {Console, SyncAsync, ValueTransformer, isPromise, noUndefined, resolveForwardRef, stringify, syntaxError, visitValue} from './util';
 
 export type ErrorCollector = (error: any, type?: any) => void;
 
@@ -55,9 +55,7 @@ export class CompileMetadataResolver {
       private _staticSymbolCache: StaticSymbolCache, private _reflector: CompileReflector,
       private _errorCollector?: ErrorCollector) {}
 
-  getReflector(): CompileReflector {
-    return this._reflector;
-  }
+  getReflector(): CompileReflector { return this._reflector; }
 
   clearCacheFor(type: Type) {
     const dirMeta = this._directiveCache.get(type);
@@ -178,7 +176,7 @@ export class CompileMetadataResolver {
     }
     // Note: ! is ok here as this method should only be called with normalized directive
     // metadata, which always fills in the selector.
-    const template = CssSelector.parse(compMeta.selector!)[0].getMatchingElementTemplate();
+    const template = CssSelector.parse(compMeta.selector !)[0].getMatchingElementTemplate();
     const templateUrl = '';
     const htmlAst = this._htmlParser.parse(template, templateUrl);
     return cpl.CompileDirectiveMetadata.create({
@@ -211,8 +209,8 @@ export class CompileMetadataResolver {
       guards: {},
       viewQueries: [],
       componentViewType: hostViewType,
-      rendererType: {id: '__Host__', encapsulation: ViewEncapsulation.None, styles: [], data: {}} as
-          object,
+      rendererType:
+          {id: '__Host__', encapsulation: ViewEncapsulation.None, styles: [], data: {}} as object,
       entryComponents: [],
       componentFactory: null
     });
@@ -223,9 +221,9 @@ export class CompileMetadataResolver {
       return null;
     }
     directiveType = resolveForwardRef(directiveType);
-    const {annotation, metadata} = this.getNonNormalizedDirectiveMetadata(directiveType)!;
+    const {annotation, metadata} = this.getNonNormalizedDirectiveMetadata(directiveType) !;
 
-    const createDirectiveMetadata = (templateMetadata: cpl.CompileTemplateMetadata|null) => {
+    const createDirectiveMetadata = (templateMetadata: cpl.CompileTemplateMetadata | null) => {
       const normalizedDirMeta = new cpl.CompileDirectiveMetadata({
         isHost: false,
         type: metadata.type,
@@ -250,7 +248,7 @@ export class CompileMetadataResolver {
         template: templateMetadata
       });
       if (templateMetadata) {
-        this.initComponentFactory(metadata.componentFactory!, templateMetadata.ngContentSelectors);
+        this.initComponentFactory(metadata.componentFactory !, templateMetadata.ngContentSelectors);
       }
       this._directiveCache.set(directiveType, normalizedDirMeta);
       this._summaryCache.set(directiveType, normalizedDirMeta.toSummary());
@@ -298,7 +296,7 @@ export class CompileMetadataResolver {
     if (!dirMeta) {
       return null;
     }
-    let nonNormalizedTemplateMetadata: cpl.CompileTemplateMetadata = undefined!;
+    let nonNormalizedTemplateMetadata: cpl.CompileTemplateMetadata = undefined !;
 
     if (createComponent.isTypeOf(dirMeta)) {
       // component
@@ -325,7 +323,7 @@ export class CompileMetadataResolver {
       });
     }
 
-    let changeDetectionStrategy: ChangeDetectionStrategy = null!;
+    let changeDetectionStrategy: ChangeDetectionStrategy = null !;
     let viewProviders: cpl.CompileProviderMetadata[] = [];
     let entryComponentMetadata: cpl.CompileEntryComponentMetadata[] = [];
     let selector = dirMeta.selector;
@@ -333,7 +331,7 @@ export class CompileMetadataResolver {
     if (createComponent.isTypeOf(dirMeta)) {
       // Component
       const compMeta = dirMeta as Component;
-      changeDetectionStrategy = compMeta.changeDetection!;
+      changeDetectionStrategy = compMeta.changeDetection !;
       if (compMeta.viewProviders) {
         viewProviders = this._getProvidersMetadata(
             compMeta.viewProviders, entryComponentMetadata,
@@ -341,7 +339,7 @@ export class CompileMetadataResolver {
       }
       if (compMeta.entryComponents) {
         entryComponentMetadata = flattenAndDedupeArray(compMeta.entryComponents)
-                                     .map((type) => this._getEntryComponentMetadata(type)!)
+                                     .map((type) => this._getEntryComponentMetadata(type) !)
                                      .concat(entryComponentMetadata);
       }
       if (!selector) {
@@ -350,7 +348,7 @@ export class CompileMetadataResolver {
     } else {
       // Directive
       if (!selector) {
-        selector = null!;
+        selector = null !;
       }
     }
 
@@ -403,7 +401,7 @@ export class CompileMetadataResolver {
    * This assumes `loadNgModuleDirectiveAndPipeMetadata` has been called first.
    */
   getDirectiveMetadata(directiveType: any): cpl.CompileDirectiveMetadata {
-    const dirMeta = this._directiveCache.get(directiveType)!;
+    const dirMeta = this._directiveCache.get(directiveType) !;
     if (!dirMeta) {
       this._reportError(
           syntaxError(
@@ -533,7 +531,7 @@ export class CompileMetadataResolver {
 
     if (meta.imports) {
       flattenAndDedupeArray(meta.imports).forEach((importedType) => {
-        let importedModuleType: Type = undefined!;
+        let importedModuleType: Type = undefined !;
         if (isValidType(importedType)) {
           importedModuleType = importedType;
         } else if (importedType && importedType.ngModule) {
@@ -682,7 +680,7 @@ export class CompileMetadataResolver {
 
     if (meta.entryComponents) {
       entryComponents.push(...flattenAndDedupeArray(meta.entryComponents)
-                               .map(type => this._getEntryComponentMetadata(type)!));
+                               .map(type => this._getEntryComponentMetadata(type) !));
     }
 
     if (meta.bootstrap) {
@@ -700,7 +698,7 @@ export class CompileMetadataResolver {
     }
 
     entryComponents.push(
-        ...bootstrapComponents.map(type => this._getEntryComponentMetadata(type.reference)!));
+        ...bootstrapComponents.map(type => this._getEntryComponentMetadata(type.reference) !));
 
     if (meta.schemas) {
       schemas.push(...flattenAndDedupeArray(meta.schemas));
@@ -723,7 +721,7 @@ export class CompileMetadataResolver {
     });
 
     entryComponents.forEach((id) => transitiveModule.addEntryComponent(id));
-    providers.forEach((provider) => transitiveModule.addProvider(provider, compileMeta!.type));
+    providers.forEach((provider) => transitiveModule.addProvider(provider, compileMeta !.type));
     transitiveModule.addModule(compileMeta.type);
     this._ngModuleCache.set(moduleType, compileMeta);
     return compileMeta;
@@ -916,7 +914,7 @@ export class CompileMetadataResolver {
 
   private _loadPipeMetadata(pipeType: any): cpl.CompilePipeMetadata {
     pipeType = resolveForwardRef(pipeType);
-    const pipeAnnotation = this._pipeResolver.resolve(pipeType)!;
+    const pipeAnnotation = this._pipeResolver.resolve(pipeType) !;
 
     const pipeMeta = new cpl.CompilePipeMetadata({
       type: this._getTypeMetadata(pipeType),
@@ -1017,7 +1015,7 @@ export class CompileMetadataResolver {
         this._getProvidersMetadata(provider, targetEntryComponents, debugInfo, compileProviders);
       } else {
         provider = resolveForwardRef(provider);
-        let providerMeta: cpl.ProviderMeta = undefined!;
+        let providerMeta: cpl.ProviderMeta = undefined !;
         if (provider && typeof provider === 'object' && provider.hasOwnProperty('provide')) {
           this._validateProvider(provider);
           providerMeta = new cpl.ProviderMeta(provider.provide, provider);
@@ -1105,12 +1103,12 @@ export class CompileMetadataResolver {
       cpl.CompileEntryComponentMetadata|null {
     const dirMeta = this.getNonNormalizedDirectiveMetadata(dirType);
     if (dirMeta && dirMeta.metadata.isComponent) {
-      return {componentType: dirType, componentFactory: dirMeta.metadata.componentFactory!};
+      return {componentType: dirType, componentFactory: dirMeta.metadata.componentFactory !};
     }
     const dirSummary =
         <cpl.CompileDirectiveSummary>this._loadSummary(dirType, cpl.CompileSummaryKind.Directive);
     if (dirSummary && dirSummary.isComponent) {
-      return {componentType: dirType, componentFactory: dirSummary.componentFactory!};
+      return {componentType: dirType, componentFactory: dirSummary.componentFactory !};
     }
     if (throwIfNotFound) {
       throw syntaxError(`${dirType.name} cannot be used as an entry component.`);
@@ -1128,9 +1126,9 @@ export class CompileMetadataResolver {
   }
 
   getProviderMetadata(provider: cpl.ProviderMeta): cpl.CompileProviderMetadata {
-    let compileDeps: cpl.CompileDiDependencyMetadata[] = undefined!;
-    let compileTypeMetadata: cpl.CompileTypeMetadata = null!;
-    let compileFactoryMetadata: cpl.CompileFactoryMetadata = null!;
+    let compileDeps: cpl.CompileDiDependencyMetadata[] = undefined !;
+    let compileTypeMetadata: cpl.CompileTypeMetadata = null !;
+    let compileFactoryMetadata: cpl.CompileFactoryMetadata = null !;
     let token: cpl.CompileTokenMetadata = this._getTokenMetadata(provider.token);
 
     if (provider.useClass) {
@@ -1172,9 +1170,7 @@ export class CompileMetadataResolver {
     return res;
   }
 
-  private _queryVarBindings(selector: any): string[] {
-    return selector.split(/\s*,\s*/);
-  }
+  private _queryVarBindings(selector: any): string[] { return selector.split(/\s*,\s*/); }
 
   private _getQueryMetadata(q: Query, propertyName: string, typeOrFunc: Type|Function):
       cpl.CompileQueryMetadata {
@@ -1197,9 +1193,8 @@ export class CompileMetadataResolver {
     return {
       selectors,
       first: q.first,
-      descendants: q.descendants,
-      propertyName,
-      read: q.read ? this._getTokenMetadata(q.read) : null!,
+      descendants: q.descendants, propertyName,
+      read: q.read ? this._getTokenMetadata(q.read) : null !,
       static: q.static
     };
   }

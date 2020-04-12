@@ -33,13 +33,9 @@ export function createOfflineCompileUrlResolver(): UrlResolver {
  * Attacker-controlled data introduced by a template could expose your
  * application to XSS risks. For more detail, see the [Security Guide](http://g.co/ng/security).
  */
-export interface UrlResolver {
-  resolve(baseUrl: string, url: string): string;
-}
+export interface UrlResolver { resolve(baseUrl: string, url: string): string; }
 
-export interface UrlResolverCtor {
-  new(packagePrefix?: string|null): UrlResolver;
-}
+export interface UrlResolverCtor { new (packagePrefix?: string|null): UrlResolver; }
 
 export const UrlResolver: UrlResolverCtor = class UrlResolverImpl {
   constructor(private _packagePrefix: string|null = null) {}
@@ -246,7 +242,7 @@ enum _ComponentIndex {
  *     arbitrary strings may still look like path names.
  */
 function _split(uri: string): Array<string|any> {
-  return uri.match(_splitRe)!;
+  return uri.match(_splitRe) !;
 }
 
 /**

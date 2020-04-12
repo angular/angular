@@ -68,7 +68,7 @@ export function getClassFromStaticSymbol(
           return classDeclaration;
         }
       }
-    }) as (ts.ClassDeclaration | undefined);
+    }) as(ts.ClassDeclaration | undefined);
   }
 
   return undefined;
@@ -123,9 +123,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
     return result || this.getBuiltinType(BuiltinType.Any);
   }
 
-  getArrayType(type: Symbol): Symbol {
-    return this.getBuiltinType(BuiltinType.Any);
-  }
+  getArrayType(type: Symbol): Symbol { return this.getBuiltinType(BuiltinType.Any); }
 
   getElementType(type: Symbol): Symbol|undefined {
     if (type instanceof TypeWrapper) {
@@ -195,13 +193,13 @@ class TypeScriptSymbolQuery implements SymbolQuery {
   private getTemplateRefContextType(typeSymbol: ts.Symbol, context: TypeContext): Symbol|undefined {
     const type = this.checker.getTypeOfSymbolAtLocation(typeSymbol, this.source);
     const constructor = type.symbol && type.symbol.members &&
-        getFromSymbolTable(type.symbol.members!, '__constructor');
+        getFromSymbolTable(type.symbol.members !, '__constructor');
 
     if (constructor) {
-      const constructorDeclaration = constructor.declarations![0] as ts.ConstructorTypeNode;
+      const constructorDeclaration = constructor.declarations ![0] as ts.ConstructorTypeNode;
       for (const parameter of constructorDeclaration.parameters) {
-        const type = this.checker.getTypeAtLocation(parameter.type!);
-        if (type.symbol!.name == 'TemplateRef' && isReferenceType(type)) {
+        const type = this.checker.getTypeAtLocation(parameter.type !);
+        if (type.symbol !.name == 'TemplateRef' && isReferenceType(type)) {
           const typeWrapper = new TypeWrapper(type, context);
           const typeArguments = typeWrapper.typeArguments();
           if (typeArguments && typeArguments.length === 1) {
@@ -239,9 +237,7 @@ class TypeWrapper implements Symbol {
     }
   }
 
-  get name(): string {
-    return this.context.checker.typeToString(this.tsType);
-  }
+  get name(): string { return this.context.checker.typeToString(this.tsType); }
 
   public readonly kind: DeclarationKind = 'type';
 
@@ -253,9 +249,7 @@ class TypeWrapper implements Symbol {
 
   public readonly public: boolean = true;
 
-  get callable(): boolean {
-    return typeCallable(this.tsType);
-  }
+  get callable(): boolean { return typeCallable(this.tsType); }
 
   get nullable(): boolean {
     return this.context.checker.getNonNullableType(this.tsType) != this.tsType;
@@ -282,9 +276,7 @@ class TypeWrapper implements Symbol {
     return new SymbolTableWrapper(this.tsType.getApparentProperties(), this.context, this.tsType);
   }
 
-  signatures(): Signature[] {
-    return signaturesOf(this.tsType, this.context);
-  }
+  signatures(): Signature[] { return signaturesOf(this.tsType, this.context); }
 
   selectSignature(types: Symbol[]): Signature|undefined {
     return selectSignature(this.tsType, this.context, types);
@@ -350,34 +342,22 @@ class SymbolWrapper implements Symbol {
         symbol;
   }
 
-  get name(): string {
-    return this.symbol.name;
-  }
+  get name(): string { return this.symbol.name; }
 
-  get kind(): DeclarationKind {
-    return this.callable ? 'method' : 'property';
-  }
+  get kind(): DeclarationKind { return this.callable ? 'method' : 'property'; }
 
-  get type(): TypeWrapper {
-    return new TypeWrapper(this.tsType, this.context);
-  }
+  get type(): TypeWrapper { return new TypeWrapper(this.tsType, this.context); }
 
-  get container(): Symbol|undefined {
-    return getContainerOf(this.symbol, this.context);
-  }
+  get container(): Symbol|undefined { return getContainerOf(this.symbol, this.context); }
 
   get public(): boolean {
     // Symbols that are not explicitly made private are public.
     return !isSymbolPrivate(this.symbol);
   }
 
-  get callable(): boolean {
-    return typeCallable(this.tsType);
-  }
+  get callable(): boolean { return typeCallable(this.tsType); }
 
-  get definition(): Definition {
-    return definitionFromTsSymbol(this.symbol);
-  }
+  get definition(): Definition { return definitionFromTsSymbol(this.symbol); }
 
   get documentation(): ts.SymbolDisplayPart[] {
     return this.symbol.getDocumentationComment(this.context.checker);
@@ -390,27 +370,21 @@ class SymbolWrapper implements Symbol {
         const typeWrapper = new TypeWrapper(declaredType, this.context);
         this._members = typeWrapper.members();
       } else {
-        this._members = new SymbolTableWrapper(this.symbol.members!, this.context, this.tsType);
+        this._members = new SymbolTableWrapper(this.symbol.members !, this.context, this.tsType);
       }
     }
     return this._members;
   }
 
-  signatures(): Signature[] {
-    return signaturesOf(this.tsType, this.context);
-  }
+  signatures(): Signature[] { return signaturesOf(this.tsType, this.context); }
 
   selectSignature(types: Symbol[]): Signature|undefined {
     return selectSignature(this.tsType, this.context, types);
   }
 
-  indexed(argument: Symbol): Symbol|undefined {
-    return undefined;
-  }
+  indexed(argument: Symbol): Symbol|undefined { return undefined; }
 
-  typeArguments(): Symbol[]|undefined {
-    return this.type.typeArguments();
-  }
+  typeArguments(): Symbol[]|undefined { return this.type.typeArguments(); }
 
   private get tsType(): ts.Type {
     let type = this._tsType;
@@ -431,53 +405,29 @@ class DeclaredSymbol implements Symbol {
 
   constructor(private declaration: SymbolDeclaration) {}
 
-  get name() {
-    return this.declaration.name;
-  }
+  get name() { return this.declaration.name; }
 
-  get kind() {
-    return this.declaration.kind;
-  }
+  get kind() { return this.declaration.kind; }
 
-  get container(): Symbol|undefined {
-    return undefined;
-  }
+  get container(): Symbol|undefined { return undefined; }
 
-  get type(): Symbol {
-    return this.declaration.type;
-  }
+  get type(): Symbol { return this.declaration.type; }
 
-  get callable(): boolean {
-    return this.type.callable;
-  }
+  get callable(): boolean { return this.type.callable; }
 
-  get definition(): Definition {
-    return this.declaration.definition;
-  }
+  get definition(): Definition { return this.declaration.definition; }
 
-  get documentation(): ts.SymbolDisplayPart[] {
-    return this.declaration.type.documentation;
-  }
+  get documentation(): ts.SymbolDisplayPart[] { return this.declaration.type.documentation; }
 
-  members(): SymbolTable {
-    return this.type.members();
-  }
+  members(): SymbolTable { return this.type.members(); }
 
-  signatures(): Signature[] {
-    return this.type.signatures();
-  }
+  signatures(): Signature[] { return this.type.signatures(); }
 
-  selectSignature(types: Symbol[]): Signature|undefined {
-    return this.type.selectSignature(types);
-  }
+  selectSignature(types: Symbol[]): Signature|undefined { return this.type.selectSignature(types); }
 
-  typeArguments(): Symbol[]|undefined {
-    return this.type.typeArguments();
-  }
+  typeArguments(): Symbol[]|undefined { return this.type.typeArguments(); }
 
-  indexed(argument: Symbol): Symbol|undefined {
-    return undefined;
-  }
+  indexed(argument: Symbol): Symbol|undefined { return undefined; }
 }
 
 class SignatureWrapper implements Signature {
@@ -487,21 +437,15 @@ class SignatureWrapper implements Signature {
     return new SymbolTableWrapper(this.signature.getParameters(), this.context);
   }
 
-  get result(): Symbol {
-    return new TypeWrapper(this.signature.getReturnType(), this.context);
-  }
+  get result(): Symbol { return new TypeWrapper(this.signature.getReturnType(), this.context); }
 }
 
 class SignatureResultOverride implements Signature {
   constructor(private signature: Signature, private resultType: Symbol) {}
 
-  get arguments(): SymbolTable {
-    return this.signature.arguments;
-  }
+  get arguments(): SymbolTable { return this.signature.arguments; }
 
-  get result(): Symbol {
-    return this.resultType;
-  }
+  get result(): Symbol { return this.resultType; }
 }
 
 export function toSymbolTableFactory(symbols: ts.Symbol[]): ts.SymbolTable {
@@ -514,7 +458,7 @@ export function toSymbolTableFactory(symbols: ts.Symbol[]): ts.SymbolTable {
   return result as ts.SymbolTable;
 }
 
-function toSymbols(symbolTable: ts.SymbolTable|undefined): ts.Symbol[] {
+function toSymbols(symbolTable: ts.SymbolTable | undefined): ts.Symbol[] {
   if (!symbolTable) return [];
 
   const table = symbolTable as any;
@@ -565,9 +509,7 @@ class SymbolTableWrapper implements SymbolTable {
     }
   }
 
-  get size(): number {
-    return this.symbols.length;
-  }
+  get size(): number { return this.symbols.length; }
 
   get(key: string): Symbol|undefined {
     const symbol = getFromSymbolTable(this.symbolTable, key);
@@ -595,26 +537,20 @@ class SymbolTableWrapper implements SymbolTable {
         this.stringIndexType !== undefined;
   }
 
-  values(): Symbol[] {
-    return this.symbols.map(s => new SymbolWrapper(s, this.context));
-  }
+  values(): Symbol[] { return this.symbols.map(s => new SymbolWrapper(s, this.context)); }
 }
 
 class MapSymbolTable implements SymbolTable {
   private map = new Map<string, Symbol>();
   private _values: Symbol[] = [];
 
-  get size(): number {
-    return this.map.size;
-  }
+  get size(): number { return this.map.size; }
 
-  get(key: string): Symbol|undefined {
-    return this.map.get(key);
-  }
+  get(key: string): Symbol|undefined { return this.map.get(key); }
 
   add(symbol: Symbol) {
     if (this.map.has(symbol.name)) {
-      const previous = this.map.get(symbol.name)!;
+      const previous = this.map.get(symbol.name) !;
       this._values[this._values.indexOf(previous)] = symbol;
     }
     this.map.set(symbol.name, symbol);
@@ -627,9 +563,7 @@ class MapSymbolTable implements SymbolTable {
     }
   }
 
-  has(key: string): boolean {
-    return this.map.has(key);
-  }
+  has(key: string): boolean { return this.map.has(key); }
 
   values(): Symbol[] {
     // Switch to this.map.values once iterables are supported by the target language.
@@ -640,9 +574,7 @@ class MapSymbolTable implements SymbolTable {
 class PipesTable implements SymbolTable {
   constructor(private pipes: CompilePipeSummary[], private context: TypeContext) {}
 
-  get size() {
-    return this.pipes.length;
-  }
+  get size() { return this.pipes.length; }
 
   get(key: string): Symbol|undefined {
     const pipe = this.pipes.find(pipe => pipe.name == key);
@@ -651,13 +583,9 @@ class PipesTable implements SymbolTable {
     }
   }
 
-  has(key: string): boolean {
-    return this.pipes.find(pipe => pipe.name == key) != null;
-  }
+  has(key: string): boolean { return this.pipes.find(pipe => pipe.name == key) != null; }
 
-  values(): Symbol[] {
-    return this.pipes.map(pipe => new PipeSymbol(pipe, this.context));
-  }
+  values(): Symbol[] { return this.pipes.map(pipe => new PipeSymbol(pipe, this.context)); }
 }
 
 // This matches .d.ts files that look like ".../<package-name>/<package-name>.d.ts",
@@ -674,13 +602,9 @@ class PipeSymbol implements Symbol {
 
   constructor(private pipe: CompilePipeSummary, private context: TypeContext) {}
 
-  get name(): string {
-    return this.pipe.name;
-  }
+  get name(): string { return this.pipe.name; }
 
-  get type(): TypeWrapper {
-    return new TypeWrapper(this.tsType, this.context);
-  }
+  get type(): TypeWrapper { return new TypeWrapper(this.tsType, this.context); }
 
   get definition(): Definition|undefined {
     const symbol = this.tsType.getSymbol();
@@ -695,16 +619,12 @@ class PipeSymbol implements Symbol {
     return symbol.getDocumentationComment(this.context.checker);
   }
 
-  members(): SymbolTable {
-    return EmptyTable.instance;
-  }
+  members(): SymbolTable { return EmptyTable.instance; }
 
-  signatures(): Signature[] {
-    return signaturesOf(this.tsType, this.context);
-  }
+  signatures(): Signature[] { return signaturesOf(this.tsType, this.context); }
 
   selectSignature(types: Symbol[]): Signature|undefined {
-    let signature = selectSignature(this.tsType, this.context, types)!;
+    let signature = selectSignature(this.tsType, this.context, types) !;
     if (types.length > 0) {
       const parameterType = types[0];
       let resultType: Symbol|undefined = undefined;
@@ -727,20 +647,16 @@ class PipeSymbol implements Symbol {
     return signature;
   }
 
-  indexed(argument: Symbol): Symbol|undefined {
-    return undefined;
-  }
+  indexed(argument: Symbol): Symbol|undefined { return undefined; }
 
-  typeArguments(): Symbol[]|undefined {
-    return this.type.typeArguments();
-  }
+  typeArguments(): Symbol[]|undefined { return this.type.typeArguments(); }
 
   private get tsType(): ts.Type {
     let type = this._tsType;
     if (!type) {
       const classSymbol = this.findClassSymbol(this.pipe.type.reference);
       if (classSymbol) {
-        type = this._tsType = this.findTransformMethodType(classSymbol)!;
+        type = this._tsType = this.findTransformMethodType(classSymbol) !;
       }
       if (!type) {
         type = this._tsType = getTsTypeFromBuiltinType(BuiltinType.Any, this.context);
@@ -786,15 +702,9 @@ function findClassSymbolInContext(type: StaticSymbol, context: TypeContext): ts.
 
 class EmptyTable implements SymbolTable {
   public readonly size: number = 0;
-  get(key: string): Symbol|undefined {
-    return undefined;
-  }
-  has(key: string): boolean {
-    return false;
-  }
-  values(): Symbol[] {
-    return [];
-  }
+  get(key: string): Symbol|undefined { return undefined; }
+  has(key: string): boolean { return false; }
+  values(): Symbol[] { return []; }
   static instance = new EmptyTable();
 }
 
@@ -835,7 +745,7 @@ function getTsTypeFromBuiltinType(builtinType: BuiltinType, ctx: TypeContext): t
 function spanAt(sourceFile: ts.SourceFile, line: number, column: number): Span|undefined {
   if (line != null && column != null) {
     const position = ts.getPositionOfLineAndCharacter(sourceFile, line, column);
-    const findChild = function findChild(node: ts.Node): ts.Node|undefined {
+    const findChild = function findChild(node: ts.Node): ts.Node | undefined {
       if (node.kind > ts.SyntaxKind.LastToken && node.pos <= position && node.end > position) {
         const betterNode = ts.forEachChild(node, findChild);
         return betterNode || node;
@@ -871,7 +781,7 @@ function parentDeclarationOf(node: ts.Node): ts.Node|undefined {
       case ts.SyntaxKind.SourceFile:
         return undefined;
     }
-    node = node.parent!;
+    node = node.parent !;
   }
 }
 
@@ -889,7 +799,7 @@ function getContainerOf(symbol: ts.Symbol, context: TypeContext): Symbol|undefin
   }
 }
 
-function typeKindOf(type: ts.Type|undefined): BuiltinType {
+function typeKindOf(type: ts.Type | undefined): BuiltinType {
   if (type) {
     if (type.flags & ts.TypeFlags.Any) {
       return BuiltinType.Any;

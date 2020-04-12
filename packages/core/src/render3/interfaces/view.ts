@@ -686,11 +686,7 @@ export interface TView {
   consts: TConstants|null;
 }
 
-export const enum RootContextFlags {
-  Empty = 0b00,
-  DetectChanges = 0b01,
-  FlushPlayers = 0b10
-}
+export const enum RootContextFlags {Empty = 0b00, DetectChanges = 0b01, FlushPlayers = 0b10}
 
 
 /**
@@ -735,7 +731,7 @@ export type HookFn = () => void;
  * Information necessary to call a hook. E.g. the callback that
  * needs to invoked and the index at which to find its context.
  */
-export type HookEntry = number|HookFn;
+export type HookEntry = number | HookFn;
 
 /**
  * Array of hooks that should be executed for a view and their directive indices.
@@ -769,7 +765,7 @@ export type HookData = HookEntry[];
  * `CService` and `DService` are part of a `multi` provider where only `BService` and `DService`
  * have an `ngOnDestroy` hook.
  */
-export type DestroyHookData = (HookEntry|HookData)[];
+export type DestroyHookData = (HookEntry | HookData)[];
 
 /**
  * Static data that corresponds to the instance-specific data array on an LView.
@@ -799,8 +795,8 @@ export type DestroyHookData = (HookEntry|HookData)[];
  * Injector bloom filters are also stored here.
  */
 export type TData =
-    (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|number|TStylingRange|TStylingKey|
-     Type<any>|InjectionToken<any>|TI18n|I18nUpdateOpCodes|null|string)[];
+    (TNode | PipeDef<any>| DirectiveDef<any>| ComponentDef<any>| number | TStylingRange |
+     TStylingKey | Type<any>| InjectionToken<any>| TI18n | I18nUpdateOpCodes | null | string)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

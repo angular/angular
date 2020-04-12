@@ -32,17 +32,17 @@ export function parseCommitMessage(commitMsg: string) {
   let subject = '';
 
   if (COMMIT_HEADER_RE.test(commitMsg)) {
-    header = COMMIT_HEADER_RE.exec(commitMsg)![1]
+    header = COMMIT_HEADER_RE.exec(commitMsg) ![1]
                  .replace(FIXUP_PREFIX_RE, '')
                  .replace(SQUASH_PREFIX_RE, '');
   }
   if (COMMIT_BODY_RE.test(commitMsg)) {
-    body = COMMIT_BODY_RE.exec(commitMsg)![1];
+    body = COMMIT_BODY_RE.exec(commitMsg) ![1];
     bodyWithoutLinking = body.replace(GITHUB_LINKING_RE, '');
   }
 
   if (TYPE_SCOPE_RE.test(header)) {
-    const parsedCommitHeader = TYPE_SCOPE_RE.exec(header)!;
+    const parsedCommitHeader = TYPE_SCOPE_RE.exec(header) !;
     type = parsedCommitHeader[1];
     scope = parsedCommitHeader[2];
     subject = parsedCommitHeader[3];

@@ -10,7 +10,5 @@ import {Component} from '@angular/core';
 
 @Component({selector: 'comp-with-error', templateUrl: 'errors.html'})
 export class BindingErrorComp {
-  createError() {
-    throw new Error('Test');
-  }
+  createError() { throw new Error('Test'); }
 }

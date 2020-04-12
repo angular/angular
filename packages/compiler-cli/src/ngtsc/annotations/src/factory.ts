@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileFactoryFunction, R3FactoryMetadata} from '@angular/compiler';
+import {R3FactoryMetadata, compileFactoryFunction} from '@angular/compiler';
 
 import {CompileResult} from '../../transform';
 

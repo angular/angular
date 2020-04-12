@@ -7,9 +7,10 @@
  */
 
 import {CompileReflector} from './compile_reflector';
-import {createNgModule, NgModule, Type} from './core';
+import {NgModule, Type, createNgModule} from './core';
 import {findLast} from './directive_resolver';
 import {stringify} from './util';
+
 
 
 /**
@@ -18,9 +19,7 @@ import {stringify} from './util';
 export class NgModuleResolver {
   constructor(private _reflector: CompileReflector) {}
 
-  isNgModule(type: any) {
-    return this._reflector.annotations(type).some(createNgModule.isTypeOf);
-  }
+  isNgModule(type: any) { return this._reflector.annotations(type).some(createNgModule.isTypeOf); }
 
   resolve(type: Type, throwIfNotFound = true): NgModule|null {
     const ngModuleMeta: NgModule =

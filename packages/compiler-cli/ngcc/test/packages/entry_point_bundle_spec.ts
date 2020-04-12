@@ -195,7 +195,7 @@ runInEachFileSystem(() => {
                '/node_modules/other/index.d.ts',
              ].map(p => absoluteFrom(p).toString())));
 
-         expect(esm5bundle.dts!.program.getSourceFiles().map(sf => sf.fileName))
+         expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
              .toEqual(jasmine.arrayWithExactContents([
                // All modules in the dts program should be declaration files
                '/node_modules/test/index.d.ts',
@@ -230,7 +230,7 @@ runInEachFileSystem(() => {
                 /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
             expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
                 .toContain(absoluteFrom('/node_modules/test/internal.js'));
-            expect(esm5bundle.dts!.program.getSourceFiles().map(sf => sf.fileName))
+            expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
                 .toContain(absoluteFrom('/node_modules/test/internal.d.ts'));
           });
 
@@ -252,7 +252,7 @@ runInEachFileSystem(() => {
                 /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
             expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
                 .toContain(absoluteFrom('/node_modules/internal/esm2015/src/internal.js'));
-            expect(esm5bundle.dts!.program.getSourceFiles().map(sf => sf.fileName))
+            expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
                 .toContain(absoluteFrom('/node_modules/internal/src/internal.d.ts'));
           });
 
@@ -274,7 +274,7 @@ runInEachFileSystem(() => {
                 /* pathMappings */ undefined, /* mirrorDtsFromSrc */ false);
             expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
                 .toContain(absoluteFrom('/node_modules/test/internal.js'));
-            expect(esm5bundle.dts!.program.getSourceFiles().map(sf => sf.fileName))
+            expect(esm5bundle.dts !.program.getSourceFiles().map(sf => sf.fileName))
                 .not.toContain(absoluteFrom('/node_modules/test/internal.d.ts'));
           });
         });

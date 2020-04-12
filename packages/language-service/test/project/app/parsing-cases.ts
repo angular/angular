@@ -131,6 +131,6 @@ export class TemplateReference {
   myClick(event: any) {}
   birthday = new Date();
   readonlyHeroes: ReadonlyArray<Readonly<Hero>> = this.heroes;
-  constNames = [{name: 'name'}] as const;
+  constNames = [{name: 'name'}] as const ;
   private myField = 'My Field';
 }

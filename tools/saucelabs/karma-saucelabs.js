@@ -61,7 +61,7 @@ try {
   }
 
   console.error(`Launching karma ${karmaBin}...`);
-  module.constructor._load(karmaBin, this, /*isMain=*/ true);
+  module.constructor._load(karmaBin, this, /*isMain=*/true);
 } catch (e) {
   console.error(e.stack || e);
   process.exit(1);

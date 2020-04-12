@@ -6,23 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {forwardRef, Injectable, InjectionToken, Injector, NgModule, ɵcreateInjector as createInjector} from '@angular/core';
+import {Injectable, InjectionToken, Injector, NgModule, forwardRef, ɵcreateInjector as createInjector} from '@angular/core';
 import {AOT_TOKEN, AotModule, AotService} from 'app_built/src/module';
 
 describe('Ivy NgModule', () => {
   describe('AOT', () => {
     let injector: Injector;
 
-    beforeEach(() => {
-      injector = createInjector(AotModule);
-    });
-    it('works', () => {
-      expect(injector.get(AotService) instanceof AotService).toBeTruthy();
-    });
+    beforeEach(() => { injector = createInjector(AotModule); });
+    it('works', () => { expect(injector.get(AotService) instanceof AotService).toBeTruthy(); });
 
-    it('merges imports and exports', () => {
-      expect(injector.get(AOT_TOKEN)).toEqual('exports');
-    });
+    it('merges imports and exports', () => { expect(injector.get(AOT_TOKEN)).toEqual('exports'); });
   });
 
 
@@ -44,9 +38,7 @@ describe('Ivy NgModule', () => {
     class JitAppModule {
     }
 
-    it('works', () => {
-      createInjector(JitAppModule);
-    });
+    it('works', () => { createInjector(JitAppModule); });
 
     it('throws an error on circular module dependencies', () => {
       @NgModule({

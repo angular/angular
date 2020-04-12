@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 
 import {TemplateId} from './api';
-import {makeTemplateDiagnostic, TemplateSourceResolver} from './diagnostics';
+import {TemplateSourceResolver, makeTemplateDiagnostic} from './diagnostics';
 
 const REGISTRY = new DomElementSchemaRegistry();
 const REMOVE_XHTML_REGEX = /^:xhtml:/;
@@ -66,9 +66,7 @@ export interface DomSchemaChecker {
 export class RegistryDomSchemaChecker implements DomSchemaChecker {
   private _diagnostics: ts.Diagnostic[] = [];
 
-  get diagnostics(): ReadonlyArray<ts.Diagnostic> {
-    return this._diagnostics;
-  }
+  get diagnostics(): ReadonlyArray<ts.Diagnostic> { return this._diagnostics; }
 
   constructor(private resolver: TemplateSourceResolver) {}
 
@@ -108,13 +106,11 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
       let errorMsg =
           `Can't bind to '${name}' since it isn't a known property of '${element.name}'.`;
       if (element.name.startsWith('ng-')) {
-        errorMsg +=
-            `\n1. If '${
+        errorMsg += `\n1. If '${
                 name}' is an Angular directive, then add 'CommonModule' to the '@NgModule.imports' of this component.` +
             `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
       } else if (element.name.indexOf('-') > -1) {
-        errorMsg +=
-            `\n1. If '${element.name}' is an Angular component and it has '${
+        errorMsg += `\n1. If '${element.name}' is an Angular component and it has '${
                 name}' input, then verify that it is part of this module.` +
             `\n2. If '${
                 element

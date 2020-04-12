@@ -7,7 +7,7 @@
  */
 
 import * as o from './output/output_ast';
-import {error, OutputContext} from './util';
+import {OutputContext, error} from './util';
 
 const CONSTANT_PREFIX = '_c';
 
@@ -21,12 +21,7 @@ const CONSTANT_PREFIX = '_c';
  */
 const UNKNOWN_VALUE_KEY = o.variable('<unknown>');
 
-export const enum DefinitionKind {
-  Injector,
-  Directive,
-  Component,
-  Pipe
-}
+export const enum DefinitionKind {Injector, Directive, Component, Pipe}
 
 /**
  * Context to use when producing a key.
@@ -48,7 +43,7 @@ class FixupExpression extends o.Expression {
   private original: o.Expression;
 
   // TODO(issue/24571): remove '!'.
-  shared!: boolean;
+  shared !: boolean;
 
   constructor(public resolved: o.Expression) {
     super(resolved.type);
@@ -69,9 +64,7 @@ class FixupExpression extends o.Expression {
     return e instanceof FixupExpression && this.resolved.isEquivalent(e.resolved);
   }
 
-  isConstant() {
-    return true;
-  }
+  isConstant() { return true; }
 
   fixup(expression: o.Expression) {
     this.resolved = expression;
@@ -176,7 +169,7 @@ export class ConstantPool {
       const resultExpressions = values.map(
           (e, index) => e.isConstant() ? this.getConstLiteral(e, true) : o.variable(`a${index}`));
       const parameters =
-          resultExpressions.filter(isVariable).map(e => new o.FnParam(e.name!, o.DYNAMIC_TYPE));
+          resultExpressions.filter(isVariable).map(e => new o.FnParam(e.name !, o.DYNAMIC_TYPE));
       const pureFunctionDeclaration =
           o.fn(parameters, [new o.ReturnStatement(resultMap(resultExpressions))], o.INFERRED_TYPE);
       const name = this.freshName();
@@ -197,9 +190,7 @@ export class ConstantPool {
    * a digit so the prefix should be a constant string (not based on user input) and
    * must not end in a digit.
    */
-  uniqueName(prefix: string): string {
-    return `${prefix}${this.nextNameIndex++}`;
-  }
+  uniqueName(prefix: string): string { return `${prefix}${this.nextNameIndex++}`; }
 
   private definitionsOf(kind: DefinitionKind): Map<any, FixupExpression> {
     switch (kind) {
@@ -231,9 +222,7 @@ export class ConstantPool {
     return '<unknown>';
   }
 
-  private freshName(): string {
-    return this.uniqueName(CONSTANT_PREFIX);
-  }
+  private freshName(): string { return this.uniqueName(CONSTANT_PREFIX); }
 
   private keyOf(expression: o.Expression) {
     return expression.visitExpression(new KeyVisitor(), KEY_CONTEXT);
@@ -270,9 +259,7 @@ class KeyVisitor implements o.ExpressionVisitor {
                                   `EX:${ast.value.runtime.name}`;
   }
 
-  visitReadVarExpr(node: o.ReadVarExpr) {
-    return `VAR:${node.name}`;
-  }
+  visitReadVarExpr(node: o.ReadVarExpr) { return `VAR:${node.name}`; }
 
   visitTypeofExpr(node: o.TypeofExpr, context: any): string {
     return `TYPEOF:${node.expr.visitExpression(this, context)}`;
@@ -297,7 +284,7 @@ class KeyVisitor implements o.ExpressionVisitor {
   visitLocalizedString = invalid;
 }
 
-function invalid<T>(this: o.ExpressionVisitor, arg: o.Expression|o.Statement): never {
+function invalid<T>(this: o.ExpressionVisitor, arg: o.Expression | o.Statement): never {
   throw new Error(
       `Invalid state: Visitor ${this.constructor.name} doesn't handle ${arg.constructor.name}`);
 }

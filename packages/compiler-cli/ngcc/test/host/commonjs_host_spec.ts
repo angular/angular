@@ -8,8 +8,8 @@
 import * as ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {ClassMemberKind, CtorParameter, InlineDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
+import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {ClassMemberKind, CtorParameter, InlineDeclaration, KnownDeclaration, TypeScriptReflectionHost, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {CommonJsReflectionHost} from '../../src/host/commonjs_host';
@@ -933,7 +933,7 @@ exports.ExternalModule = ExternalModule;
           const classNode = getDeclaration(
               bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
               isNamedVariableDeclaration);
-          const decorators = host.getDecoratorsOfDeclaration(classNode)!;
+          const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
           expect(decorators).toBeDefined();
           expect(decorators.length).toEqual(1);
@@ -941,7 +941,7 @@ exports.ExternalModule = ExternalModule;
           const decorator = decorators[0];
           expect(decorator.name).toEqual('Directive');
           expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
-          expect(decorator.args!.map(arg => arg.getText())).toEqual([
+          expect(decorator.args !.map(arg => arg.getText())).toEqual([
             '{ selector: \'[someDirective]\' }',
           ]);
         });
@@ -954,7 +954,7 @@ exports.ExternalModule = ExternalModule;
           const classNode = getDeclaration(
               bundle.program, TOPLEVEL_DECORATORS_FILE.name, 'SomeDirective',
               isNamedVariableDeclaration);
-          const decorators = host.getDecoratorsOfDeclaration(classNode)!;
+          const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
           expect(decorators).toBeDefined();
           expect(decorators.length).toEqual(1);
@@ -962,7 +962,7 @@ exports.ExternalModule = ExternalModule;
           const decorator = decorators[0];
           expect(decorator.name).toEqual('Directive');
           expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
-          expect(decorator.args!.map(arg => arg.getText())).toEqual([
+          expect(decorator.args !.map(arg => arg.getText())).toEqual([
             '{ selector: \'[someDirective]\' }',
           ]);
         });
@@ -1009,7 +1009,7 @@ exports.ExternalModule = ExternalModule;
           const classNode = getDeclaration(
               bundle.program, INVALID_DECORATORS_FILE.name, 'NotObjectLiteral',
               isNamedVariableDeclaration);
-          const decorators = host.getDecoratorsOfDeclaration(classNode)!;
+          const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
           expect(decorators.length).toBe(1);
           expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Directive'}));
@@ -1023,7 +1023,7 @@ exports.ExternalModule = ExternalModule;
           const classNode = getDeclaration(
               bundle.program, INVALID_DECORATORS_FILE.name, 'NoTypeProperty',
               isNamedVariableDeclaration);
-          const decorators = host.getDecoratorsOfDeclaration(classNode)!;
+          const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
           expect(decorators.length).toBe(1);
           expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Directive'}));
@@ -1037,7 +1037,7 @@ exports.ExternalModule = ExternalModule;
           const classNode = getDeclaration(
               bundle.program, INVALID_DECORATORS_FILE.name, 'NotIdentifier',
               isNamedVariableDeclaration);
-          const decorators = host.getDecoratorsOfDeclaration(classNode)!;
+          const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
           expect(decorators.length).toBe(1);
           expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Directive'}));
@@ -1052,7 +1052,7 @@ exports.ExternalModule = ExternalModule;
             const classNode = getDeclaration(
                 bundle.program, INVALID_DECORATOR_ARGS_FILE.name, 'NoArgsProperty',
                 isNamedVariableDeclaration);
-            const decorators = host.getDecoratorsOfDeclaration(classNode)!;
+            const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
             expect(decorators.length).toBe(1);
             expect(decorators[0].name).toBe('Directive');
@@ -1067,7 +1067,7 @@ exports.ExternalModule = ExternalModule;
             const classNode = getDeclaration(
                 bundle.program, INVALID_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
                 isNamedVariableDeclaration);
-            const decorators = host.getDecoratorsOfDeclaration(classNode)!;
+            const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
             expect(decorators.length).toBe(1);
             expect(decorators[0].name).toBe('Directive');
@@ -1082,7 +1082,7 @@ exports.ExternalModule = ExternalModule;
             const classNode = getDeclaration(
                 bundle.program, INVALID_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral',
                 isNamedVariableDeclaration);
-            const decorators = host.getDecoratorsOfDeclaration(classNode)!;
+            const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
             expect(decorators.length).toBe(1);
             expect(decorators[0].name).toBe('Directive');
@@ -1102,15 +1102,15 @@ exports.ExternalModule = ExternalModule;
               isNamedVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
 
-          const input1 = members.find(member => member.name === 'input1')!;
+          const input1 = members.find(member => member.name === 'input1') !;
           expect(input1.kind).toEqual(ClassMemberKind.Property);
           expect(input1.isStatic).toEqual(false);
-          expect(input1.decorators!.map(d => d.name)).toEqual(['Input']);
+          expect(input1.decorators !.map(d => d.name)).toEqual(['Input']);
 
-          const input2 = members.find(member => member.name === 'input2')!;
+          const input2 = members.find(member => member.name === 'input2') !;
           expect(input2.kind).toEqual(ClassMemberKind.Property);
           expect(input2.isStatic).toEqual(false);
-          expect(input1.decorators!.map(d => d.name)).toEqual(['Input']);
+          expect(input1.decorators !.map(d => d.name)).toEqual(['Input']);
         });
 
         it('should find decorated members on a class at the top level', () => {
@@ -1123,15 +1123,15 @@ exports.ExternalModule = ExternalModule;
               isNamedVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
 
-          const input1 = members.find(member => member.name === 'input1')!;
+          const input1 = members.find(member => member.name === 'input1') !;
           expect(input1.kind).toEqual(ClassMemberKind.Property);
           expect(input1.isStatic).toEqual(false);
-          expect(input1.decorators!.map(d => d.name)).toEqual(['Input']);
+          expect(input1.decorators !.map(d => d.name)).toEqual(['Input']);
 
-          const input2 = members.find(member => member.name === 'input2')!;
+          const input2 = members.find(member => member.name === 'input2') !;
           expect(input2.kind).toEqual(ClassMemberKind.Property);
           expect(input2.isStatic).toEqual(false);
-          expect(input1.decorators!.map(d => d.name)).toEqual(['Input']);
+          expect(input1.decorators !.map(d => d.name)).toEqual(['Input']);
         });
 
         it('should find non decorated properties on a class', () => {
@@ -1144,11 +1144,11 @@ exports.ExternalModule = ExternalModule;
               isNamedVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
 
-          const instanceProperty = members.find(member => member.name === 'instanceProperty')!;
+          const instanceProperty = members.find(member => member.name === 'instanceProperty') !;
           expect(instanceProperty.kind).toEqual(ClassMemberKind.Property);
           expect(instanceProperty.isStatic).toEqual(false);
-          expect(ts.isBinaryExpression(instanceProperty.implementation!)).toEqual(true);
-          expect(instanceProperty.value!.getText()).toEqual(`'instance'`);
+          expect(ts.isBinaryExpression(instanceProperty.implementation !)).toEqual(true);
+          expect(instanceProperty.value !.getText()).toEqual(`'instance'`);
         });
 
         it('should find static methods on a class', () => {
@@ -1161,10 +1161,10 @@ exports.ExternalModule = ExternalModule;
               isNamedVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
 
-          const staticMethod = members.find(member => member.name === 'staticMethod')!;
+          const staticMethod = members.find(member => member.name === 'staticMethod') !;
           expect(staticMethod.kind).toEqual(ClassMemberKind.Method);
           expect(staticMethod.isStatic).toEqual(true);
-          expect(ts.isFunctionExpression(staticMethod.implementation!)).toEqual(true);
+          expect(ts.isFunctionExpression(staticMethod.implementation !)).toEqual(true);
         });
 
         it('should find static properties on a class', () => {
@@ -1177,11 +1177,11 @@ exports.ExternalModule = ExternalModule;
               isNamedVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
 
-          const staticProperty = members.find(member => member.name === 'staticProperty')!;
+          const staticProperty = members.find(member => member.name === 'staticProperty') !;
           expect(staticProperty.kind).toEqual(ClassMemberKind.Property);
           expect(staticProperty.isStatic).toEqual(true);
-          expect(ts.isPropertyAccessExpression(staticProperty.implementation!)).toEqual(true);
-          expect(staticProperty.value!.getText()).toEqual(`'static'`);
+          expect(ts.isPropertyAccessExpression(staticProperty.implementation !)).toEqual(true);
+          expect(staticProperty.value !.getText()).toEqual(`'static'`);
         });
 
         it('should throw if the symbol is not a class', () => {
@@ -1231,8 +1231,8 @@ exports.ExternalModule = ExternalModule;
               bundle.program, INVALID_PROP_DECORATORS_FILE.name, 'NotObjectLiteralProp',
               isNamedVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
-          const prop = members.find(m => m.name === 'prop')!;
-          const decorators = prop.decorators!;
+          const prop = members.find(m => m.name === 'prop') !;
+          const decorators = prop.decorators !;
 
           expect(decorators.length).toBe(1);
           expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Directive'}));
@@ -1247,8 +1247,8 @@ exports.ExternalModule = ExternalModule;
               bundle.program, INVALID_PROP_DECORATORS_FILE.name, 'NoTypeProperty',
               isNamedVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
-          const prop = members.find(m => m.name === 'prop')!;
-          const decorators = prop.decorators!;
+          const prop = members.find(m => m.name === 'prop') !;
+          const decorators = prop.decorators !;
 
           expect(decorators.length).toBe(1);
           expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Directive'}));
@@ -1263,8 +1263,8 @@ exports.ExternalModule = ExternalModule;
               bundle.program, INVALID_PROP_DECORATORS_FILE.name, 'NotIdentifier',
               isNamedVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
-          const prop = members.find(m => m.name === 'prop')!;
-          const decorators = prop.decorators!;
+          const prop = members.find(m => m.name === 'prop') !;
+          const decorators = prop.decorators !;
 
           expect(decorators.length).toBe(1);
           expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Directive'}));
@@ -1279,7 +1279,7 @@ exports.ExternalModule = ExternalModule;
           const classNode = getDeclaration(
               bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
               isNamedVariableDeclaration);
-          const decorators = host.getDecoratorsOfDeclaration(classNode)!;
+          const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
           expect(decorators.length).toEqual(1);
           expect(decorators[0].import).toEqual({name: 'Directive', from: '@angular/core'});
@@ -1295,8 +1295,8 @@ exports.ExternalModule = ExternalModule;
                 bundle.program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NoArgsProperty',
                 isNamedVariableDeclaration);
             const members = host.getMembersOfClass(classNode);
-            const prop = members.find(m => m.name === 'prop')!;
-            const decorators = prop.decorators!;
+            const prop = members.find(m => m.name === 'prop') !;
+            const decorators = prop.decorators !;
 
             expect(decorators.length).toBe(1);
             expect(decorators[0].name).toBe('Input');
@@ -1313,8 +1313,8 @@ exports.ExternalModule = ExternalModule;
                    bundle.program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
                    isNamedVariableDeclaration);
                const members = host.getMembersOfClass(classNode);
-               const prop = members.find(m => m.name === 'prop')!;
-               const decorators = prop.decorators!;
+               const prop = members.find(m => m.name === 'prop') !;
+               const decorators = prop.decorators !;
 
                expect(decorators.length).toBe(1);
                expect(decorators[0].name).toBe('Input');
@@ -1330,8 +1330,8 @@ exports.ExternalModule = ExternalModule;
                 bundle.program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral',
                 isNamedVariableDeclaration);
             const members = host.getMembersOfClass(classNode);
-            const prop = members.find(m => m.name === 'prop')!;
-            const decorators = prop.decorators!;
+            const prop = members.find(m => m.name === 'prop') !;
+            const decorators = prop.decorators !;
 
             expect(decorators.length).toBe(1);
             expect(decorators[0].name).toBe('Input');
@@ -1352,10 +1352,10 @@ exports.ExternalModule = ExternalModule;
           const parameters = host.getConstructorParameters(classNode);
 
           expect(parameters).toBeDefined();
-          expect(parameters!.map(parameter => parameter.name)).toEqual([
+          expect(parameters !.map(parameter => parameter.name)).toEqual([
             '_viewContainer', '_template', 'injected'
           ]);
-          expectTypeValueReferencesForParameters(parameters!, [
+          expectTypeValueReferencesForParameters(parameters !, [
             'ViewContainerRef',
             'TemplateRef',
             null,
@@ -1373,10 +1373,10 @@ exports.ExternalModule = ExternalModule;
           const parameters = host.getConstructorParameters(classNode);
 
           expect(parameters).toBeDefined();
-          expect(parameters!.map(parameter => parameter.name)).toEqual([
+          expect(parameters !.map(parameter => parameter.name)).toEqual([
             '_viewContainer', '_template', 'injected'
           ]);
-          expectTypeValueReferencesForParameters(parameters!, [
+          expectTypeValueReferencesForParameters(parameters !, [
             'ViewContainerRef',
             'TemplateRef',
             null,
@@ -1391,7 +1391,7 @@ exports.ExternalModule = ExternalModule;
           const classNode = getDeclaration(
               bundle.program, CTOR_DECORATORS_ARRAY_FILE.name, 'CtorDecoratedAsArray',
               isNamedVariableDeclaration);
-          const parameters = host.getConstructorParameters(classNode)!;
+          const parameters = host.getConstructorParameters(classNode) !;
 
           expect(parameters).toBeDefined();
           expect(parameters.map(parameter => parameter.name)).toEqual(['arg1']);
@@ -1405,9 +1405,7 @@ exports.ExternalModule = ExternalModule;
               createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
           const functionNode = getDeclaration(
               bundle.program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
-          expect(() => {
-            host.getConstructorParameters(functionNode);
-          })
+          expect(() => { host.getConstructorParameters(functionNode); })
               .toThrowError(
                   'Attempted to get constructor parameters of a non-class: "function foo() {}"');
         });
@@ -1426,9 +1424,9 @@ exports.ExternalModule = ExternalModule;
           const parameters = host.getConstructorParameters(classNode);
 
           expect(parameters).toEqual(jasmine.any(Array));
-          expect(parameters!.length).toEqual(1);
-          expect(parameters![0].name).toEqual('foo');
-          expect(parameters![0].decorators).toBe(null);
+          expect(parameters !.length).toEqual(1);
+          expect(parameters ![0].name).toEqual('foo');
+          expect(parameters ![0].decorators).toBe(null);
         });
 
         it('should return an empty array if there are no constructor parameters', () => {
@@ -1457,8 +1455,8 @@ exports.ExternalModule = ExternalModule;
               isNamedVariableDeclaration);
           const parameters = host.getConstructorParameters(classNode);
 
-          expect(parameters!.length).toBe(1);
-          expect(parameters![0]).toEqual(jasmine.objectContaining<CtorParameter>({
+          expect(parameters !.length).toBe(1);
+          expect(parameters ![0]).toEqual(jasmine.objectContaining<CtorParameter>({
             name: 'arg1',
             decorators: null,
           }));
@@ -1475,12 +1473,12 @@ exports.ExternalModule = ExternalModule;
                 isNamedVariableDeclaration);
             const parameters = host.getConstructorParameters(classNode);
 
-            expect(parameters!.length).toBe(2);
-            expect(parameters![0]).toEqual(jasmine.objectContaining<CtorParameter>({
+            expect(parameters !.length).toBe(2);
+            expect(parameters ![0]).toEqual(jasmine.objectContaining<CtorParameter>({
               name: 'arg1',
               decorators: null,
             }));
-            expect(parameters![1]).toEqual(jasmine.objectContaining<CtorParameter>({
+            expect(parameters ![1]).toEqual(jasmine.objectContaining<CtorParameter>({
               name: 'arg2',
               decorators: jasmine.any(Array) as any
             }));
@@ -1495,7 +1493,7 @@ exports.ExternalModule = ExternalModule;
                 bundle.program, INVALID_CTOR_DECORATORS_FILE.name, 'NoTypeProperty',
                 isNamedVariableDeclaration);
             const parameters = host.getConstructorParameters(classNode);
-            const decorators = parameters![0].decorators!;
+            const decorators = parameters ![0].decorators !;
 
             expect(decorators.length).toBe(1);
             expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Inject'}));
@@ -1511,7 +1509,7 @@ exports.ExternalModule = ExternalModule;
                    bundle.program, INVALID_CTOR_DECORATORS_FILE.name, 'NotIdentifier',
                    isNamedVariableDeclaration);
                const parameters = host.getConstructorParameters(classNode);
-               const decorators = parameters![0].decorators!;
+               const decorators = parameters ![0].decorators !;
 
                expect(decorators.length).toBe(1);
                expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Inject'}));
@@ -1527,7 +1525,7 @@ exports.ExternalModule = ExternalModule;
                 isNamedVariableDeclaration);
 
             const parameters = host.getConstructorParameters(classNode);
-            const decorators = parameters![2].decorators!;
+            const decorators = parameters ![2].decorators !;
 
             expect(decorators.length).toEqual(1);
             expect(decorators[0].name).toBe('Inject');
@@ -1545,8 +1543,8 @@ exports.ExternalModule = ExternalModule;
                 bundle.program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NoArgsProperty',
                 isNamedVariableDeclaration);
             const parameters = host.getConstructorParameters(classNode);
-            expect(parameters!.length).toBe(1);
-            const decorators = parameters![0].decorators!;
+            expect(parameters !.length).toBe(1);
+            const decorators = parameters ![0].decorators !;
 
             expect(decorators.length).toBe(1);
             expect(decorators[0].name).toBe('Inject');
@@ -1563,7 +1561,7 @@ exports.ExternalModule = ExternalModule;
                    bundle.program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
                    isNamedVariableDeclaration);
                const parameters = host.getConstructorParameters(classNode);
-               const decorators = parameters![0].decorators!;
+               const decorators = parameters ![0].decorators !;
 
                expect(decorators.length).toBe(1);
                expect(decorators[0].name).toBe('Inject');
@@ -1579,7 +1577,7 @@ exports.ExternalModule = ExternalModule;
                 bundle.program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral',
                 isNamedVariableDeclaration);
             const parameters = host.getConstructorParameters(classNode);
-            const decorators = parameters![0].decorators!;
+            const decorators = parameters ![0].decorators !;
 
             expect(decorators.length).toBe(1);
             expect(decorators[0].name).toBe('Inject');
@@ -1597,42 +1595,42 @@ exports.ExternalModule = ExternalModule;
                  createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
 
              const fooNode = getDeclaration(
-                 bundle.program, FUNCTION_BODY_FILE.name, 'foo', isNamedFunctionDeclaration)!;
-             const fooDef = host.getDefinitionOfFunction(fooNode)!;
+                 bundle.program, FUNCTION_BODY_FILE.name, 'foo', isNamedFunctionDeclaration) !;
+             const fooDef = host.getDefinitionOfFunction(fooNode) !;
              expect(fooDef.node).toBe(fooNode);
-             expect(fooDef.body!.length).toEqual(1);
-             expect(fooDef.body![0].getText()).toEqual(`return x;`);
+             expect(fooDef.body !.length).toEqual(1);
+             expect(fooDef.body ![0].getText()).toEqual(`return x;`);
              expect(fooDef.parameters.length).toEqual(1);
              expect(fooDef.parameters[0].name).toEqual('x');
              expect(fooDef.parameters[0].initializer).toBe(null);
 
              const barNode = getDeclaration(
-                 bundle.program, FUNCTION_BODY_FILE.name, 'bar', isNamedFunctionDeclaration)!;
-             const barDef = host.getDefinitionOfFunction(barNode)!;
+                 bundle.program, FUNCTION_BODY_FILE.name, 'bar', isNamedFunctionDeclaration) !;
+             const barDef = host.getDefinitionOfFunction(barNode) !;
              expect(barDef.node).toBe(barNode);
-             expect(barDef.body!.length).toEqual(1);
-             expect(ts.isReturnStatement(barDef.body![0])).toBeTruthy();
-             expect(barDef.body![0].getText()).toEqual(`return x + y;`);
+             expect(barDef.body !.length).toEqual(1);
+             expect(ts.isReturnStatement(barDef.body ![0])).toBeTruthy();
+             expect(barDef.body ![0].getText()).toEqual(`return x + y;`);
              expect(barDef.parameters.length).toEqual(2);
              expect(barDef.parameters[0].name).toEqual('x');
              expect(fooDef.parameters[0].initializer).toBe(null);
              expect(barDef.parameters[1].name).toEqual('y');
-             expect(barDef.parameters[1].initializer!.getText()).toEqual('42');
+             expect(barDef.parameters[1].initializer !.getText()).toEqual('42');
 
              const bazNode = getDeclaration(
-                 bundle.program, FUNCTION_BODY_FILE.name, 'baz', isNamedFunctionDeclaration)!;
-             const bazDef = host.getDefinitionOfFunction(bazNode)!;
+                 bundle.program, FUNCTION_BODY_FILE.name, 'baz', isNamedFunctionDeclaration) !;
+             const bazDef = host.getDefinitionOfFunction(bazNode) !;
              expect(bazDef.node).toBe(bazNode);
-             expect(bazDef.body!.length).toEqual(3);
+             expect(bazDef.body !.length).toEqual(3);
              expect(bazDef.parameters.length).toEqual(1);
              expect(bazDef.parameters[0].name).toEqual('x');
              expect(bazDef.parameters[0].initializer).toBe(null);
 
              const quxNode = getDeclaration(
-                 bundle.program, FUNCTION_BODY_FILE.name, 'qux', isNamedFunctionDeclaration)!;
-             const quxDef = host.getDefinitionOfFunction(quxNode)!;
+                 bundle.program, FUNCTION_BODY_FILE.name, 'qux', isNamedFunctionDeclaration) !;
+             const quxDef = host.getDefinitionOfFunction(quxNode) !;
              expect(quxDef.node).toBe(quxNode);
-             expect(quxDef.body!.length).toEqual(2);
+             expect(quxDef.body !.length).toEqual(2);
              expect(quxDef.parameters.length).toEqual(1);
              expect(quxDef.parameters[0].name).toEqual('x');
              expect(quxDef.parameters[0].initializer).toBe(null);
@@ -1654,7 +1652,7 @@ exports.ExternalModule = ExternalModule;
               null;
 
           expect(identifier).not.toBe(null);
-          const importOfIdent = host.getImportOfIdentifier(identifier!);
+          const importOfIdent = host.getImportOfIdentifier(identifier !);
           expect(importOfIdent).toEqual({name: 'a', from: './file_a'});
         });
 
@@ -1685,7 +1683,7 @@ exports.ExternalModule = ExternalModule;
               null;
 
           expect(identifier).not.toBe(null);
-          const importOfIdent = host.getImportOfIdentifier(identifier!);
+          const importOfIdent = host.getImportOfIdentifier(identifier !);
           expect(importOfIdent).toEqual({name: 'a', from: './file_a'});
         });
       });
@@ -1696,7 +1694,7 @@ exports.ExternalModule = ExternalModule;
             (program: ts.Program, host: NgccReflectionHost, srcFile: TestFile,
              getHelperDeclaration: (name: string) => ts.Declaration) =>
                 (varName: string, helperName: string, knownAs: KnownDeclaration,
-                 viaModule: string|null = null) => {
+                 viaModule: string | null = null) => {
                   const node =
                       getDeclaration(program, srcFile.name, varName, ts.isVariableDeclaration);
                   const helperIdentifier = getIdentifierFromCallExpression(node);
@@ -1704,8 +1702,7 @@ exports.ExternalModule = ExternalModule;
 
                   expect(helperDeclaration).toEqual({
                     known: knownAs,
-                    node: getHelperDeclaration(helperName),
-                    viaModule,
+                    node: getHelperDeclaration(helperName), viaModule,
                   });
                 };
 
@@ -1726,8 +1723,8 @@ exports.ExternalModule = ExternalModule;
           const classNode = getDeclaration(
               bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
               isNamedVariableDeclaration);
-          const ctrDecorators = host.getConstructorParameters(classNode)!;
-          const identifierOfViewContainerRef = (ctrDecorators[0].typeValueReference! as {
+          const ctrDecorators = host.getConstructorParameters(classNode) !;
+          const identifierOfViewContainerRef = (ctrDecorators[0].typeValueReference !as{
                                                  local: true,
                                                  expression: ts.Identifier,
                                                  defaultImportStatement: null,
@@ -1738,8 +1735,8 @@ exports.ExternalModule = ExternalModule;
               isNamedVariableDeclaration);
           const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfViewContainerRef);
           expect(actualDeclaration).not.toBe(null);
-          expect(actualDeclaration!.node).toBe(expectedDeclarationNode);
-          expect(actualDeclaration!.viaModule).toBe(null);
+          expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
+          expect(actualDeclaration !.viaModule).toBe(null);
         });
 
         it('should return the correct declaration for an outer alias identifier', () => {
@@ -1769,7 +1766,7 @@ exports.ExternalModule = ExternalModule;
 
           expect(aliasIdentifier.getText()).toBe('AliasedClass_1');
           expect(actualDeclaration).not.toBe(null);
-          expect(actualDeclaration!.node).toBe(expectedDeclaration);
+          expect(actualDeclaration !.node).toBe(expectedDeclaration);
         });
 
         it('should return the source-file of an import namespace', () => {
@@ -1781,19 +1778,18 @@ exports.ExternalModule = ExternalModule;
           const classNode = getDeclaration(
               bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
               isNamedVariableDeclaration);
-          const classDecorators = host.getDecoratorsOfDeclaration(classNode)!;
-          const identifierOfDirective =
-              (((classDecorators[0].node as ts.ObjectLiteralExpression).properties[0] as
-                ts.PropertyAssignment)
-                   .initializer as ts.PropertyAccessExpression)
-                  .expression as ts.Identifier;
+          const classDecorators = host.getDecoratorsOfDeclaration(classNode) !;
+          const identifierOfDirective = (((classDecorators[0].node as ts.ObjectLiteralExpression)
+                                              .properties[0] as ts.PropertyAssignment)
+                                             .initializer as ts.PropertyAccessExpression)
+                                            .expression as ts.Identifier;
 
           const expectedDeclarationNode =
               getSourceFileOrError(bundle.program, _('/node_modules/@angular/core/index.d.ts'));
           const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfDirective);
           expect(actualDeclaration).not.toBe(null);
-          expect(actualDeclaration!.node).toBe(expectedDeclarationNode);
-          expect(actualDeclaration!.viaModule).toBe('@angular/core');
+          expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
+          expect(actualDeclaration !.viaModule).toBe('@angular/core');
         });
 
         it('should return viaModule: null for relative imports', () => {
@@ -1820,7 +1816,7 @@ exports.ExternalModule = ExternalModule;
               getDeclaration(bundle.program, _('/index.js'), 'b', isNamedVariableDeclaration);
           const identifier = variableNode.name as ts.Identifier;
 
-          const importOfIdent = host.getDeclarationOfIdentifier(identifier!)!;
+          const importOfIdent = host.getDeclarationOfIdentifier(identifier !) !;
           expect(importOfIdent.node).not.toBeNull();
           expect(importOfIdent.viaModule).toBeNull();
         });
@@ -1846,9 +1842,9 @@ exports.ExternalModule = ExternalModule;
           const variableNode =
               getDeclaration(bundle.program, _('/index.js'), 'b', isNamedVariableDeclaration);
           const identifier =
-              (variableNode.initializer! as ts.PropertyAccessExpression).name as ts.Identifier;
+              (variableNode.initializer !as ts.PropertyAccessExpression).name as ts.Identifier;
 
-          const importOfIdent = host.getDeclarationOfIdentifier(identifier!)!;
+          const importOfIdent = host.getDeclarationOfIdentifier(identifier !) !;
           expect(importOfIdent.viaModule).toBe('lib');
         });
 
@@ -2080,8 +2076,8 @@ exports.ExternalModule = ExternalModule;
           const file = getSourceFileOrError(bundle.program, _('/b_module.js'));
           const exportDeclarations = host.getExportsOfModule(file);
           expect(exportDeclarations).not.toBe(null);
-          expect(Array.from(exportDeclarations!.entries())
-                     .map(entry => [entry[0], entry[1].node!.getText(), entry[1].viaModule]))
+          expect(Array.from(exportDeclarations !.entries())
+                     .map(entry => [entry[0], entry[1].node !.getText(), entry[1].viaModule]))
               .toEqual([
                 ['Directive', `Directive: FnWithArg<(clazz: any) => any>`, '@angular/core'],
                 ['a', `a = 'a'`, null],
@@ -2108,8 +2104,8 @@ exports.ExternalModule = ExternalModule;
               getSourceFileOrError(bundle.program, _('/wildcard_reexports_emitted_helpers.js'));
           const exportDeclarations = host.getExportsOfModule(file);
           expect(exportDeclarations).not.toBe(null);
-          expect(Array.from(exportDeclarations!.entries())
-                     .map(entry => [entry[0], entry[1].node!.getText(), entry[1].viaModule]))
+          expect(Array.from(exportDeclarations !.entries())
+                     .map(entry => [entry[0], entry[1].node !.getText(), entry[1].viaModule]))
               .toEqual([
                 ['Directive', `Directive: FnWithArg<(clazz: any) => any>`, _('/b_module')],
                 ['a', `a = 'a'`, _('/b_module')],
@@ -2138,8 +2134,8 @@ exports.ExternalModule = ExternalModule;
               getSourceFileOrError(bundle.program, _('/wildcard_reexports_imported_helpers.js'));
           const exportDeclarations = host.getExportsOfModule(file);
           expect(exportDeclarations).not.toBe(null);
-          expect(Array.from(exportDeclarations!.entries())
-                     .map(entry => [entry[0], entry[1].node!.getText(), entry[1].viaModule]))
+          expect(Array.from(exportDeclarations !.entries())
+                     .map(entry => [entry[0], entry[1].node !.getText(), entry[1].viaModule]))
               .toEqual([
                 ['Directive', `Directive: FnWithArg<(clazz: any) => any>`, _('/b_module')],
                 ['a', `a = 'a'`, _('/b_module')],
@@ -2166,7 +2162,7 @@ exports.ExternalModule = ExternalModule;
           const file = getSourceFileOrError(bundle.program, _('/inline_export.js'));
           const exportDeclarations = host.getExportsOfModule(file);
           expect(exportDeclarations).not.toBeNull();
-          const decl = exportDeclarations!.get('directives') as InlineDeclaration;
+          const decl = exportDeclarations !.get('directives') as InlineDeclaration;
           expect(decl).not.toBeUndefined();
           expect(decl.node).toBeNull();
           expect(decl.expression).toBeDefined();
@@ -2187,7 +2183,7 @@ exports.ExternalModule = ExternalModule;
           const host =
               createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
           const sf = getSourceFileOrError(bundle.program, tslib.name);
-          const exportDeclarations = host.getExportsOfModule(sf)!;
+          const exportDeclarations = host.getExportsOfModule(sf) !;
 
           expect([...exportDeclarations].map(([exportName, {known}]) => [exportName, known]))
               .toEqual([
@@ -2210,8 +2206,8 @@ exports.ExternalModule = ExternalModule;
           const classSymbol = host.getClassSymbol(node);
 
           expect(classSymbol).toBeDefined();
-          expect(classSymbol!.declaration.valueDeclaration).toBe(node);
-          expect(classSymbol!.implementation.valueDeclaration).toBe(node);
+          expect(classSymbol !.declaration.valueDeclaration).toBe(node);
+          expect(classSymbol !.implementation.valueDeclaration).toBe(node);
         });
 
         it('should return the class symbol for an ES5 class (outer variable declaration)', () => {
@@ -2221,12 +2217,12 @@ exports.ExternalModule = ExternalModule;
               createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
           const outerNode = getDeclaration(
               bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-          const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+          const innerNode = getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
           const classSymbol = host.getClassSymbol(outerNode);
 
           expect(classSymbol).toBeDefined();
-          expect(classSymbol!.declaration.valueDeclaration).toBe(outerNode);
-          expect(classSymbol!.implementation.valueDeclaration).toBe(innerNode);
+          expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
+          expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
         });
 
         it('should return the class symbol for an ES5 class (inner function declaration)', () => {
@@ -2236,12 +2232,12 @@ exports.ExternalModule = ExternalModule;
               createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
           const outerNode = getDeclaration(
               bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-          const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+          const innerNode = getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
           const classSymbol = host.getClassSymbol(innerNode);
 
           expect(classSymbol).toBeDefined();
-          expect(classSymbol!.declaration.valueDeclaration).toBe(outerNode);
-          expect(classSymbol!.implementation.valueDeclaration).toBe(innerNode);
+          expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
+          expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
         });
 
         it('should return the same class symbol (of the outer declaration) for outer and inner declarations',
@@ -2252,10 +2248,11 @@ exports.ExternalModule = ExternalModule;
                  createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
              const outerNode = getDeclaration(
                  bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-             const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+             const innerNode =
+                 getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
 
-             const innerSymbol = host.getClassSymbol(innerNode)!;
-             const outerSymbol = host.getClassSymbol(outerNode)!;
+             const innerSymbol = host.getClassSymbol(innerNode) !;
+             const outerSymbol = host.getClassSymbol(outerNode) !;
              expect(innerSymbol.declaration).toBe(outerSymbol.declaration);
              expect(innerSymbol.implementation).toBe(outerSymbol.implementation);
            });
@@ -2269,12 +2266,13 @@ exports.ExternalModule = ExternalModule;
              const outerNode = getDeclaration(
                  bundle.program, SIMPLE_CLASS_FILE.name, 'NoParensClass',
                  isNamedVariableDeclaration);
-             const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+             const innerNode =
+                 getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
              const classSymbol = host.getClassSymbol(outerNode);
 
              expect(classSymbol).toBeDefined();
-             expect(classSymbol!.declaration.valueDeclaration).toBe(outerNode);
-             expect(classSymbol!.implementation.valueDeclaration).toBe(innerNode);
+             expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
+             expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
            });
 
         it('should return the class symbol for an ES5 class whose IIFE is not wrapped with inner parens',
@@ -2286,12 +2284,13 @@ exports.ExternalModule = ExternalModule;
              const outerNode = getDeclaration(
                  bundle.program, SIMPLE_CLASS_FILE.name, 'InnerParensClass',
                  isNamedVariableDeclaration);
-             const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+             const innerNode =
+                 getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
              const classSymbol = host.getClassSymbol(outerNode);
 
              expect(classSymbol).toBeDefined();
-             expect(classSymbol!.declaration.valueDeclaration).toBe(outerNode);
-             expect(classSymbol!.implementation.valueDeclaration).toBe(innerNode);
+             expect(classSymbol !.declaration.valueDeclaration).toBe(outerNode);
+             expect(classSymbol !.implementation.valueDeclaration).toBe(innerNode);
            });
 
         it('should return undefined if node is not an ES5 class', () => {
@@ -2354,7 +2353,8 @@ exports.ExternalModule = ExternalModule;
                  createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
              const outerNode = getDeclaration(
                  bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
-             const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+             const innerNode =
+                 getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
              expect(host.isClass(innerNode)).toBe(true);
            });
 
@@ -2449,7 +2449,7 @@ exports.ExternalModule = ExternalModule;
             function TestClass() {}
             return TestClass;
           }(BaseClass));`);
-          expect(identifier!.text).toBe('BaseClass');
+          expect(identifier !.text).toBe('BaseClass');
         });
 
         it('should find the base class of an IIFE with a unique name generated for the _super parameter',
@@ -2464,7 +2464,7 @@ exports.ExternalModule = ExternalModule;
             function TestClass() {}
             return TestClass;
           }(BaseClass));`);
-             expect(identifier!.text).toBe('BaseClass');
+             expect(identifier !.text).toBe('BaseClass');
            });
 
         it('should not find a base class for an IIFE without parameter', () => {
@@ -2503,7 +2503,7 @@ exports.ExternalModule = ExternalModule;
               createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
           const classNode =
               getDeclaration(bundle.program, file.name, 'TestClass', isNamedVariableDeclaration);
-          const expression = host.getBaseClassExpression(classNode)!;
+          const expression = host.getBaseClassExpression(classNode) !;
           expect(expression.getText()).toBe('foo()');
         });
       });
@@ -2540,14 +2540,14 @@ exports.ExternalModule = ExternalModule;
           const classDecoratorsPrimary =
               classSymbolsPrimary.map(s => host.getDecoratorsOfSymbol(s));
           expect(classDecoratorsPrimary.length).toEqual(2);
-          expect(classDecoratorsPrimary[0]!.map(d => d.name)).toEqual(['Directive']);
-          expect(classDecoratorsPrimary[1]!.map(d => d.name)).toEqual(['Directive']);
+          expect(classDecoratorsPrimary[0] !.map(d => d.name)).toEqual(['Directive']);
+          expect(classDecoratorsPrimary[1] !.map(d => d.name)).toEqual(['Directive']);
 
           const classSymbolsSecondary = host.findClassSymbols(secondaryFile);
           const classDecoratorsSecondary =
               classSymbolsSecondary.map(s => host.getDecoratorsOfSymbol(s));
           expect(classDecoratorsSecondary.length).toEqual(1);
-          expect(classDecoratorsSecondary[0]!.map(d => d.name)).toEqual(['Directive']);
+          expect(classDecoratorsSecondary[0] !.map(d => d.name)).toEqual(['Directive']);
         });
       });
 
@@ -2564,7 +2564,8 @@ exports.ExternalModule = ExternalModule;
                  bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle, dts));
 
              const dtsDeclaration = host.getDtsDeclaration(class1);
-             expect(dtsDeclaration!.getSourceFile().fileName).toEqual(_('/ep/typings/class1.d.ts'));
+             expect(dtsDeclaration !.getSourceFile().fileName)
+                 .toEqual(_('/ep/typings/class1.d.ts'));
            });
 
         it('should find the dts declaration for exported functions', () => {
@@ -2577,7 +2578,7 @@ exports.ExternalModule = ExternalModule;
           const host =
               createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle, dts));
           const dtsDeclaration = host.getDtsDeclaration(mooFn);
-          expect(dtsDeclaration!.getSourceFile().fileName).toEqual(_('/ep/typings/func1.d.ts'));
+          expect(dtsDeclaration !.getSourceFile().fileName).toEqual(_('/ep/typings/func1.d.ts'));
         });
 
         it('should return null if there is no matching class in the matching dts file', () => {
@@ -2619,7 +2620,8 @@ exports.ExternalModule = ExternalModule;
                  bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle, dts));
 
              const dtsDeclaration = host.getDtsDeclaration(class1);
-             expect(dtsDeclaration!.getSourceFile().fileName).toEqual(_('/ep/typings/class1.d.ts'));
+             expect(dtsDeclaration !.getSourceFile().fileName)
+                 .toEqual(_('/ep/typings/class1.d.ts'));
            });
 
         it('should find aliased exports', () => {
@@ -2657,7 +2659,7 @@ exports.ExternalModule = ExternalModule;
                  bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle, dts));
 
              const dtsDeclaration = host.getDtsDeclaration(internalClass);
-             expect(dtsDeclaration!.getSourceFile().fileName)
+             expect(dtsDeclaration !.getSourceFile().fileName)
                  .toEqual(_('/ep/typings/internal.d.ts'));
            });
 
@@ -2673,13 +2675,13 @@ exports.ExternalModule = ExternalModule;
              const class2 = getDeclaration(
                  bundle.program, _('/ep/src/class2.js'), 'Class2', isNamedVariableDeclaration);
              const class2DtsDeclaration = host.getDtsDeclaration(class2);
-             expect(class2DtsDeclaration!.getSourceFile().fileName)
+             expect(class2DtsDeclaration !.getSourceFile().fileName)
                  .toEqual(_('/ep/typings/class2.d.ts'));
 
              const internalClass2 = getDeclaration(
                  bundle.program, _('/ep/src/internal.js'), 'Class2', isNamedVariableDeclaration);
              const internalClass2DtsDeclaration = host.getDtsDeclaration(internalClass2);
-             expect(internalClass2DtsDeclaration!.getSourceFile().fileName)
+             expect(internalClass2DtsDeclaration !.getSourceFile().fileName)
                  .toEqual(_('/ep/typings/internal.d.ts'));
            });
       });
@@ -2743,7 +2745,7 @@ exports.ExternalModule = ExternalModule;
                  createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
              const file = getSourceFileOrError(bundle.program, _('/src/functions.js'));
              const fns = host.getModuleWithProvidersFunctions(file);
-             expect(fns.map(fn => [fn.declaration.name!.getText(), fn.ngModule.node.name.text]))
+             expect(fns.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text]))
                  .toEqual([
                    ['ngModuleIdentifier', 'InternalModule'],
                    ['ngModuleWithEmptyProviders', 'InternalModule'],

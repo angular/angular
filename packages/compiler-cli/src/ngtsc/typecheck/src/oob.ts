@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 
 import {TemplateId} from './api';
-import {makeTemplateDiagnostic, TemplateSourceResolver} from './diagnostics';
+import {TemplateSourceResolver, makeTemplateDiagnostic} from './diagnostics';
 
 
 
@@ -68,9 +68,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
 
   constructor(private resolver: TemplateSourceResolver) {}
 
-  get diagnostics(): ReadonlyArray<ts.Diagnostic> {
-    return this._diagnostics;
-  }
+  get diagnostics(): ReadonlyArray<ts.Diagnostic> { return this._diagnostics; }
 
   missingReferenceTarget(templateId: TemplateId, ref: TmplAstReference): void {
     const mapping = this.resolver.getSourceMapping(templateId);

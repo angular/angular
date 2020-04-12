@@ -15,13 +15,11 @@ import * as xml from '../../../src/i18n/serializers/xml_helper';
           .toEqual('<?xml version="1.0" ?>');
     });
 
-    it('should serialize text node', () => {
-      expect(xml.serialize([new xml.Text('foo bar')])).toEqual('foo bar');
-    });
+    it('should serialize text node',
+       () => { expect(xml.serialize([new xml.Text('foo bar')])).toEqual('foo bar'); });
 
-    it('should escape text nodes', () => {
-      expect(xml.serialize([new xml.Text('<>')])).toEqual('&lt;&gt;');
-    });
+    it('should escape text nodes',
+       () => { expect(xml.serialize([new xml.Text('<>')])).toEqual('&lt;&gt;'); });
 
     it('should serialize xml nodes without children', () => {
       expect(xml.serialize([new xml.Tag('el', {foo: 'bar'}, [])])).toEqual('<el foo="bar"/>');

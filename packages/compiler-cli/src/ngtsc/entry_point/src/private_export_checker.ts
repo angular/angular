@@ -95,8 +95,7 @@ export function checkForPrivateExports(
         const diagnostic: ts.Diagnostic = {
           category: ts.DiagnosticCategory.Error,
           code: ngErrorCode(ErrorCode.SYMBOL_NOT_EXPORTED),
-          file: transitiveReference.getSourceFile(),
-          ...getPosOfDeclaration(transitiveReference),
+          file: transitiveReference.getSourceFile(), ...getPosOfDeclaration(transitiveReference),
           messageText: `Unsupported private ${descriptor} ${name}. This ${
               descriptor} is visible to consumers via ${
               visibleVia}, but is not exported from the top-level library entrypoint.`,

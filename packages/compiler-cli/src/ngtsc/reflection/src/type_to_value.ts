@@ -18,7 +18,7 @@ import {TypeValueReference} from './host';
  * declaration, or if it is not possible to statically understand.
  */
 export function typeToValue(
-    typeNode: ts.TypeNode|null, checker: ts.TypeChecker): TypeValueReference|null {
+    typeNode: ts.TypeNode | null, checker: ts.TypeChecker): TypeValueReference|null {
   // It's not possible to get a value expression if the parameter doesn't even have a type.
   if (typeNode === null || !ts.isTypeReferenceNode(typeNode)) {
     return null;
@@ -71,10 +71,7 @@ export function typeToValue(
       const moduleName = extractModuleName(firstDecl.parent.parent.parent);
       return {
         local: false,
-        valueDeclaration: decl.valueDeclaration,
-        moduleName,
-        importedName,
-        nestedPath
+        valueDeclaration: decl.valueDeclaration, moduleName, importedName, nestedPath
       };
     } else if (ts.isNamespaceImport(firstDecl)) {
       // The import is a namespace import
@@ -93,10 +90,7 @@ export function typeToValue(
       const moduleName = extractModuleName(firstDecl.parent.parent);
       return {
         local: false,
-        valueDeclaration: decl.valueDeclaration,
-        moduleName,
-        importedName,
-        nestedPath
+        valueDeclaration: decl.valueDeclaration, moduleName, importedName, nestedPath
       };
     }
   }

@@ -8,7 +8,7 @@
 
 import {DirectiveResolver, ResourceLoader} from '@angular/compiler';
 import {Compiler, Component, Injector, NgModule, NgModuleFactory, ɵstringify as stringify} from '@angular/core';
-import {async, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {MockDirectiveResolver} from '../testing';
@@ -32,9 +32,7 @@ class SomeCompWithUrlTemplate {
     describe('compilerComponentSync', () => {
       describe('never resolving loader', () => {
         class StubResourceLoader {
-          get(url: string) {
-            return new Promise(() => {});
-          }
+          get(url: string) { return new Promise(() => {}); }
         }
 
         beforeEach(() => {
@@ -66,9 +64,7 @@ class SomeCompWithUrlTemplate {
 
       describe('resolving loader', () => {
         class StubResourceLoader {
-          get(url: string) {
-            return Promise.resolve('hello');
-          }
+          get(url: string) { return Promise.resolve('hello'); }
         }
 
         beforeEach(() => {
@@ -93,9 +89,7 @@ class SomeCompWithUrlTemplate {
     let dirResolver: MockDirectiveResolver;
     let injector: Injector;
 
-    beforeEach(() => {
-      TestBed.configureCompiler({providers: [SpyResourceLoader.PROVIDE]});
-    });
+    beforeEach(() => { TestBed.configureCompiler({providers: [SpyResourceLoader.PROVIDE]}); });
 
     beforeEach(fakeAsync(inject(
         [Compiler, ResourceLoader, DirectiveResolver, Injector],
@@ -117,7 +111,7 @@ class SomeCompWithUrlTemplate {
            }
 
            resourceLoader.spy('get').and.callFake(() => Promise.resolve('hello'));
-           let ngModuleFactory: NgModuleFactory<any> = undefined!;
+           let ngModuleFactory: NgModuleFactory<any> = undefined !;
            compiler.compileModuleAsync(SomeModule).then((f) => ngModuleFactory = f);
            tick();
            expect(ngModuleFactory.moduleType).toBe(SomeModule);

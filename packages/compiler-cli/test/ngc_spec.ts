@@ -41,9 +41,7 @@ describe('ngc transformer command-line', () => {
     basePath = support.basePath;
     outDir = path.join(basePath, 'built');
     process.chdir(basePath);
-    write = (fileName: string, content: string) => {
-      support.write(fileName, content);
-    };
+    write = (fileName: string, content: string) => { support.write(fileName, content); };
 
     write('tsconfig-base.json', `{
       "compilerOptions": {
@@ -98,9 +96,7 @@ describe('ngc transformer command-line', () => {
   });
 
   describe('errors', () => {
-    beforeEach(() => {
-      errorSpy.and.stub();
-    });
+    beforeEach(() => { errorSpy.and.stub(); });
 
     it('should not print the stack trace if user input file does not exist', () => {
       writeConfig(`{
@@ -1620,9 +1616,7 @@ describe('ngc transformer command-line', () => {
       `);
     });
 
-    afterEach(() => {
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-    });
+    afterEach(() => { jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout; });
 
     function writeAppConfig(location: string) {
       writeConfig(`{
@@ -1677,13 +1671,11 @@ describe('ngc transformer command-line', () => {
         `);
        }));
 
-    it('should recompile when the html file changes', expectRecompile(() => {
-         write('greet.html', '<p> Hello {{name}} again!</p>');
-       }));
+    it('should recompile when the html file changes',
+       expectRecompile(() => { write('greet.html', '<p> Hello {{name}} again!</p>'); }));
 
-    it('should recompile when the css file changes', expectRecompile(() => {
-         write('greet.css', `p.greeting { color: blue }`);
-       }));
+    it('should recompile when the css file changes',
+       expectRecompile(() => { write('greet.css', `p.greeting { color: blue }`); }));
   });
 
   describe('regressions', () => {
@@ -2047,8 +2039,7 @@ describe('ngc transformer command-line', () => {
           main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
       expect(exitCode).toBe(1, 'Compile was expected to fail');
       const srcPathWithSep = `lib/`;
-      expect(messages[0])
-          .toEqual(`${
+      expect(messages[0]).toEqual(`${
               srcPathWithSep}test.component.ts(6,21): Error during template compile of 'TestComponent'
   Tagged template expressions are not supported in metadata in 't1'
     't1' references 't2' at ${srcPathWithSep}indirect1.ts(3,27)

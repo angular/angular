@@ -20,7 +20,7 @@ export interface FormattedMessageChain {
   next?: FormattedMessageChain[];
 }
 
-export type FormattedError = Error&{
+export type FormattedError = Error & {
   chain: FormattedMessageChain;
   position?: Position;
 };
@@ -34,7 +34,7 @@ function indentStr(level: number): string {
   return half + half + (level % 2 === 1 ? ' ' : '');
 }
 
-function formatChain(chain: FormattedMessageChain|undefined, indent: number = 0): string {
+function formatChain(chain: FormattedMessageChain | undefined, indent: number = 0): string {
   if (!chain) return '';
   const position = chain.position ?
       `${chain.position.fileName}(${chain.position.line + 1},${chain.position.column + 1})` :

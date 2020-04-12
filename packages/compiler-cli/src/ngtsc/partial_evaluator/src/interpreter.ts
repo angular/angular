@@ -255,7 +255,7 @@ export class StaticInterpreter {
     } else if (ts.isVariableDeclaration(node)) {
       return this.visitVariableDeclaration(node, context);
     } else if (ts.isParameter(node) && context.scope.has(node)) {
-      return context.scope.get(node)!;
+      return context.scope.get(node) !;
     } else if (ts.isExportAssignment(node)) {
       return this.visitExpression(node.expression, context);
     } else if (ts.isEnumDeclaration(node)) {
@@ -331,8 +331,7 @@ export class StaticInterpreter {
       }
 
       const declContext = {
-        ...context,
-        ...joinModuleContext(context, node, decl),
+          ...context, ...joinModuleContext(context, node, decl),
       };
 
       // Visit both concrete and inline declarations.
@@ -349,7 +348,7 @@ export class StaticInterpreter {
     const strIndex = `${rhs}`;
     if (lhs instanceof Map) {
       if (lhs.has(strIndex)) {
-        return lhs.get(strIndex)!;
+        return lhs.get(strIndex) !;
       } else {
         return undefined;
       }
@@ -496,7 +495,7 @@ export class StaticInterpreter {
       return DynamicValue.fromUnsupportedSyntax(node);
     }
 
-    const op = UNARY_OPERATORS.get(operatorKind)!;
+    const op = UNARY_OPERATORS.get(operatorKind) !;
     const value = this.visitExpression(node.operand, context);
     if (value instanceof DynamicValue) {
       return DynamicValue.fromDynamicInput(node, value);
@@ -511,7 +510,7 @@ export class StaticInterpreter {
       return DynamicValue.fromUnsupportedSyntax(node);
     }
 
-    const opRecord = BINARY_OPERATORS.get(tokenKind)!;
+    const opRecord = BINARY_OPERATORS.get(tokenKind) !;
     let lhs: ResolvedValue, rhs: ResolvedValue;
     if (opRecord.literal) {
       lhs = literal(
@@ -624,7 +623,7 @@ function joinModuleContext(existing: Context, node: ts.Node, decl: Declaration):
   }
 }
 
-function owningModule(context: Context, override: OwningModule|null = null): OwningModule|null {
+function owningModule(context: Context, override: OwningModule | null = null): OwningModule|null {
   let specifier = context.absoluteModuleName;
   if (override !== null) {
     specifier = override.specifier;

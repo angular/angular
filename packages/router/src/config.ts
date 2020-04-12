@@ -36,8 +36,7 @@ export type Routes = Route[];
  * @publicApi
  */
 export type UrlMatchResult = {
-  consumed: UrlSegment[];
-  posParams?: {[name: string]: UrlSegment};
+  consumed: UrlSegment[]; posParams?: {[name: string]: UrlSegment};
 };
 
 /**
@@ -65,7 +64,7 @@ export type UrlMatchResult = {
  * @publicApi
  */
 export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) =>
-    UrlMatchResult|null;
+    UrlMatchResult | null;
 
 /**
  *
@@ -110,7 +109,7 @@ export type ResolveData = {
  * @see `Route#loadChildren`.
  * @publicApi
  */
-export type LoadChildrenCallback = () => Type<any>|NgModuleFactory<any>|Observable<Type<any>>|
+export type LoadChildrenCallback = () => Type<any>| NgModuleFactory<any>| Observable<Type<any>>|
     Promise<NgModuleFactory<any>|Type<any>|any>;
 
 /**
@@ -124,7 +123,7 @@ export type LoadChildrenCallback = () => Type<any>|NgModuleFactory<any>|Observab
  * @see `Route#loadChildren`.
  * @publicApi
  */
-export type LoadChildren = LoadChildrenCallback|DeprecatedLoadChildren;
+export type LoadChildren = LoadChildrenCallback | DeprecatedLoadChildren;
 
 /**
  * A string of the form `path/to/file#exportName` that acts as a URL for a set of routes to load.
@@ -148,7 +147,7 @@ export type DeprecatedLoadChildren = string;
  * @see `RouterLink`
  * @publicApi
  */
-export type QueryParamsHandling = 'merge'|'preserve'|'';
+export type QueryParamsHandling = 'merge' | 'preserve' | '';
 
 /**
  *
@@ -157,9 +156,9 @@ export type QueryParamsHandling = 'merge'|'preserve'|'';
  * @see `Route#runGuardsAndResolvers`
  * @publicApi
  */
-export type RunGuardsAndResolvers =
-    'pathParamsChange'|'pathParamsOrQueryParamsChange'|'paramsChange'|'paramsOrQueryParamsChange'|
-    'always'|((from: ActivatedRouteSnapshot, to: ActivatedRouteSnapshot) => boolean);
+export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParamsChange' |
+    'paramsChange' | 'paramsOrQueryParamsChange' | 'always' |
+    ((from: ActivatedRouteSnapshot, to: ActivatedRouteSnapshot) => boolean);
 
 /**
  * A configuration object that defines a single route.

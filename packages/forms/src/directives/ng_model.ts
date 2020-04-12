@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
+import {Directive, EventEmitter, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
 
 import {FormControl, FormHooks} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
@@ -133,7 +133,8 @@ const resolvedPromise = (() => Promise.resolve(null))();
   providers: [formControlBinding],
   exportAs: 'ngModel'
 })
-export class NgModel extends NgControl implements OnChanges, OnDestroy {
+export class NgModel extends NgControl implements OnChanges,
+    OnDestroy {
   public readonly control: FormControl = new FormControl();
 
   // At runtime we coerce arbitrary values assigned to the "disabled" input to a "boolean".
@@ -160,14 +161,14 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * uses this name as a key to retrieve this control's value.
    */
   // TODO(issue/24571): remove '!'.
-  @Input() name!: string;
+  @Input() name !: string;
 
   /**
    * @description
    * Tracks whether the control is disabled.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('disabled') isDisabled!: boolean;
+  @Input('disabled') isDisabled !: boolean;
 
   /**
    * @description
@@ -191,7 +192,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    *
    */
   // TODO(issue/24571): remove '!'.
-  @Input('ngModelOptions') options!: {name?: string, standalone?: boolean, updateOn?: FormHooks};
+  @Input('ngModelOptions') options !: {name?: string, standalone?: boolean, updateOn?: FormHooks};
 
   /**
    * @description
@@ -238,35 +239,27 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * Lifecycle method called before the directive's instance is destroyed. For internal
    * use only.
    */
-  ngOnDestroy(): void {
-    this.formDirective && this.formDirective.removeControl(this);
-  }
+  ngOnDestroy(): void { this.formDirective && this.formDirective.removeControl(this); }
 
   /**
    * @description
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
    */
-  get path(): string[] {
-    return this._parent ? controlPath(this.name, this._parent) : [this.name];
-  }
+  get path(): string[] { return this._parent ? controlPath(this.name, this._parent) : [this.name]; }
 
   /**
    * @description
    * The top-level directive for this control if present, otherwise null.
    */
-  get formDirective(): any {
-    return this._parent ? this._parent.formDirective : null;
-  }
+  get formDirective(): any { return this._parent ? this._parent.formDirective : null; }
 
   /**
    * @description
    * Synchronous validator function composed of all the synchronous validators
    * registered with this directive.
    */
-  get validator(): ValidatorFn|null {
-    return composeValidators(this._rawValidators);
-  }
+  get validator(): ValidatorFn|null { return composeValidators(this._rawValidators); }
 
   /**
    * @description
@@ -334,9 +327,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   }
 
   private _updateValue(value: any): void {
-    resolvedPromise.then(() => {
-      this.control.setValue(value, {emitViewToModelChange: false});
-    });
+    resolvedPromise.then(() => { this.control.setValue(value, {emitViewToModelChange: false}); });
   }
 
   private _updateDisabled(changes: SimpleChanges) {

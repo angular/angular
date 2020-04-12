@@ -11,7 +11,7 @@ import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseTreeResult} from '../ml_parser/parser';
 
 import * as i18n from './i18n_ast';
-import {createI18nMessageFactory, I18nMessageFactory} from './i18n_parser';
+import {I18nMessageFactory, createI18nMessageFactory} from './i18n_parser';
 import {I18nError} from './parse_util';
 import {TranslationBundle} from './translation_bundle';
 
@@ -57,44 +57,44 @@ enum _VisitorMode {
  */
 class _Visitor implements html.Visitor {
   // TODO(issue/24571): remove '!'.
-  private _depth!: number;
+  private _depth !: number;
 
   // <el i18n>...</el>
   // TODO(issue/24571): remove '!'.
-  private _inI18nNode!: boolean;
+  private _inI18nNode !: boolean;
   // TODO(issue/24571): remove '!'.
-  private _inImplicitNode!: boolean;
+  private _inImplicitNode !: boolean;
 
   // <!--i18n-->...<!--/i18n-->
   // TODO(issue/24571): remove '!'.
-  private _inI18nBlock!: boolean;
+  private _inI18nBlock !: boolean;
   // TODO(issue/24571): remove '!'.
-  private _blockMeaningAndDesc!: string;
+  private _blockMeaningAndDesc !: string;
   // TODO(issue/24571): remove '!'.
-  private _blockChildren!: html.Node[];
+  private _blockChildren !: html.Node[];
   // TODO(issue/24571): remove '!'.
-  private _blockStartDepth!: number;
+  private _blockStartDepth !: number;
 
   // {<icu message>}
   // TODO(issue/24571): remove '!'.
-  private _inIcu!: boolean;
+  private _inIcu !: boolean;
 
   // set to void 0 when not in a section
   private _msgCountAtSectionStart: number|undefined;
   // TODO(issue/24571): remove '!'.
-  private _errors!: I18nError[];
+  private _errors !: I18nError[];
   // TODO(issue/24571): remove '!'.
-  private _mode!: _VisitorMode;
+  private _mode !: _VisitorMode;
 
   // _VisitorMode.Extract only
   // TODO(issue/24571): remove '!'.
-  private _messages!: i18n.Message[];
+  private _messages !: i18n.Message[];
 
   // _VisitorMode.Merge only
   // TODO(issue/24571): remove '!'.
-  private _translations!: TranslationBundle;
+  private _translations !: TranslationBundle;
   // TODO(issue/24571): remove '!'.
-  private _createI18nMessage!: I18nMessageFactory;
+  private _createI18nMessage !: I18nMessageFactory;
 
 
   constructor(private _implicitTags: string[], private _implicitAttrs: {[k: string]: string[]}) {}
@@ -124,7 +124,7 @@ class _Visitor implements html.Visitor {
     this._translations = translations;
 
     // Construct a single fake root element
-    const wrapper = new html.Element('wrapper', [], nodes, undefined!, undefined, undefined);
+    const wrapper = new html.Element('wrapper', [], nodes, undefined !, undefined, undefined);
 
     const translatedNode = wrapper.visit(this, null);
 
@@ -201,7 +201,7 @@ class _Visitor implements html.Visitor {
           this._blockStartDepth = this._depth;
           this._blockChildren = [];
           this._blockMeaningAndDesc =
-              comment.value!.replace(_I18N_COMMENT_PREFIX_REGEXP, '').trim();
+              comment.value !.replace(_I18N_COMMENT_PREFIX_REGEXP, '').trim();
           this._openTranslatableSection(comment);
         }
       } else {
@@ -209,7 +209,7 @@ class _Visitor implements html.Visitor {
           if (this._depth == this._blockStartDepth) {
             this._closeTranslatableSection(comment, this._blockChildren);
             this._inI18nBlock = false;
-            const message = this._addMessage(this._blockChildren, this._blockMeaningAndDesc)!;
+            const message = this._addMessage(this._blockChildren, this._blockMeaningAndDesc) !;
             // merge attributes in sections
             const nodes = this._translateMessage(comment, message);
             return html.visitAll(this, nodes);
@@ -235,7 +235,7 @@ class _Visitor implements html.Visitor {
     const wasInI18nNode = this._inI18nNode;
     const wasInImplicitNode = this._inImplicitNode;
     let childNodes: html.Node[] = [];
-    let translatedChildNodes: html.Node[] = undefined!;
+    let translatedChildNodes: html.Node[] = undefined !;
 
     // Extract:
     // - top level nodes with the (implicit) "i18n" attribute if not already in a section
@@ -250,7 +250,7 @@ class _Visitor implements html.Visitor {
     if (!this._isInTranslatableSection && !this._inIcu) {
       if (i18nAttr || isTopLevelImplicit) {
         this._inI18nNode = true;
-        const message = this._addMessage(el.children, i18nMeta)!;
+        const message = this._addMessage(el.children, i18nMeta) !;
         translatedChildNodes = this._translateMessage(el, message);
       }
 
@@ -399,15 +399,11 @@ class _Visitor implements html.Visitor {
             const value = (nodes[0] as html.Text).value;
             translatedAttributes.push(new html.Attribute(attr.name, value, attr.sourceSpan));
           } else {
-            this._reportError(
-                el,
-                `Unexpected translation for attribute "${attr.name}" (id="${
+            this._reportError(el, `Unexpected translation for attribute "${attr.name}" (id="${
                     id || this._translations.digest(message)}")`);
           }
         } else {
-          this._reportError(
-              el,
-              `Translation unavailable for attribute "${attr.name}" (id="${
+          this._reportError(el, `Translation unavailable for attribute "${attr.name}" (id="${
                   id || this._translations.digest(message)}")`);
         }
       } else {
@@ -479,7 +475,7 @@ class _Visitor implements html.Visitor {
         0);
 
     if (significantChildren == 1) {
-      for (let i = this._messages.length - 1; i >= startIndex!; i--) {
+      for (let i = this._messages.length - 1; i >= startIndex !; i--) {
         const ast = this._messages[i].nodes;
         if (!(ast.length == 1 && ast[0] instanceof i18n.Text)) {
           this._messages.splice(i, 1);
@@ -492,7 +488,7 @@ class _Visitor implements html.Visitor {
   }
 
   private _reportError(node: html.Node, msg: string): void {
-    this._errors.push(new I18nError(node.sourceSpan!, msg));
+    this._errors.push(new I18nError(node.sourceSpan !, msg));
   }
 }
 

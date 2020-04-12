@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Inject, InjectionToken, Input, OnChanges, Optional, Output, Self, SimpleChanges} from '@angular/core';
+import {Directive, EventEmitter, Inject, InjectionToken, Input, OnChanges, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
 
 import {FormControl} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
@@ -15,6 +15,7 @@ import {NgControl} from '../ng_control';
 import {ReactiveErrors} from '../reactive_errors';
 import {_ngModelWarning, composeAsyncValidators, composeValidators, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
+
 
 
 /**
@@ -64,16 +65,14 @@ export class FormControlDirective extends NgControl implements OnChanges {
    * Tracks the `FormControl` instance bound to the directive.
    */
   // TODO(issue/24571): remove '!'.
-  @Input('formControl') form!: FormControl;
+  @Input('formControl') form !: FormControl;
 
   /**
    * @description
    * Triggers a warning that this input should not be used with reactive forms.
    */
   @Input('disabled')
-  set isDisabled(isDisabled: boolean) {
-    ReactiveErrors.disabledAttrWarning();
-  }
+  set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
 
   // TODO(kara): remove next 4 properties once deprecation period is over
 
@@ -124,8 +123,8 @@ export class FormControlDirective extends NgControl implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (this._isControlChanged(changes)) {
       setUpControl(this.form, this);
-      if (this.control.disabled && this.valueAccessor!.setDisabledState) {
-        this.valueAccessor!.setDisabledState!(true);
+      if (this.control.disabled && this.valueAccessor !.setDisabledState) {
+        this.valueAccessor !.setDisabledState !(true);
       }
       this.form.updateValueAndValidity({emitEvent: false});
     }
@@ -141,18 +140,14 @@ export class FormControlDirective extends NgControl implements OnChanges {
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
    */
-  get path(): string[] {
-    return [];
-  }
+  get path(): string[] { return []; }
 
   /**
    * @description
    * Synchronous validator function composed of all the synchronous validators
    * registered with this directive.
    */
-  get validator(): ValidatorFn|null {
-    return composeValidators(this._rawValidators);
-  }
+  get validator(): ValidatorFn|null { return composeValidators(this._rawValidators); }
 
   /**
    * @description
@@ -167,9 +162,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
    * @description
    * The `FormControl` bound to this directive.
    */
-  get control(): FormControl {
-    return this.form;
-  }
+  get control(): FormControl { return this.form; }
 
   /**
    * @description

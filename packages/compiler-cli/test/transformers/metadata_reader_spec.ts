@@ -23,9 +23,10 @@ describe('metadata reader', () => {
       readFile: (fileName) => context.readFile(fileName),
       getSourceFileMetadata: (fileName) => {
         const sourceText = context.readFile(fileName);
-        return sourceText != null ? metadataCollector.getMetadata(ts.createSourceFile(
-                                        fileName, sourceText, ts.ScriptTarget.Latest)) :
-                                    undefined;
+        return sourceText != null ?
+            metadataCollector.getMetadata(
+                ts.createSourceFile(fileName, sourceText, ts.ScriptTarget.Latest)) :
+            undefined;
       },
     };
   });
@@ -41,13 +42,11 @@ describe('metadata reader', () => {
     expect(readMetadata('node_modules/@angular/unused.d.ts', host)).toEqual([dummyMetadata]);
   });
 
-  it('should be able to read empty metadata ', () => {
-    expect(readMetadata('node_modules/@angular/empty.d.ts', host)).toEqual([]);
-  });
+  it('should be able to read empty metadata ',
+     () => { expect(readMetadata('node_modules/@angular/empty.d.ts', host)).toEqual([]); });
 
-  it('should return undefined for missing modules', () => {
-    expect(readMetadata('node_modules/@angular/missing.d.ts', host)).toBeUndefined();
-  });
+  it('should return undefined for missing modules',
+     () => { expect(readMetadata('node_modules/@angular/missing.d.ts', host)).toBeUndefined(); });
 
   it(`should add missing v${METADATA_VERSION} metadata from v1 metadata and .d.ts files`, () => {
     expect(readMetadata('metadata_versions/v1.d.ts', host)).toEqual([

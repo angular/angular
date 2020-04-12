@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Statement} from '@angular/compiler';
-import {fromObject, generateMapFileComment, SourceMapConverter} from 'convert-source-map';
+import {SourceMapConverter, fromObject, generateMapFileComment} from 'convert-source-map';
+
 import MagicString from 'magic-string';
 import {encode, SourceMapMappings} from 'sourcemap-codec';
 import * as ts from 'typescript';
@@ -107,14 +108,12 @@ function createTestRenderer(
 
   const renderer = new Renderer(host, testFormatter, fs, logger, bundle);
 
-  return {
-    renderer,
-    testFormatter,
-    decorationAnalyses,
-    switchMarkerAnalyses,
-    privateDeclarationsAnalyses,
-    bundle
-  };
+  return {renderer,
+          testFormatter,
+          decorationAnalyses,
+          switchMarkerAnalyses,
+          privateDeclarationsAnalyses,
+          bundle};
 }
 
 runInEachFileSystem(() => {
@@ -230,13 +229,8 @@ runInEachFileSystem(() => {
 
 
       it('should render as JavaScript', () => {
-        const {
-          renderer,
-          decorationAnalyses,
-          switchMarkerAnalyses,
-          privateDeclarationsAnalyses,
-          testFormatter
-        } = createTestRenderer('test-package', [COMPONENT_PROGRAM]);
+        const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+               testFormatter} = createTestRenderer('test-package', [COMPONENT_PROGRAM]);
         renderer.renderProgram(
             decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
         const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
@@ -261,13 +255,8 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
       describe('calling RenderingFormatter methods', () => {
         it('should call addImports with the source code and info about the core Angular library.',
            () => {
-             const {
-               renderer,
-               decorationAnalyses,
-               switchMarkerAnalyses,
-               privateDeclarationsAnalyses,
-               testFormatter
-             } = createTestRenderer('test-package', [JS_CONTENT]);
+             const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+                    testFormatter} = createTestRenderer('test-package', [JS_CONTENT]);
              const result = renderer.renderProgram(
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
              const addImportsSpy = testFormatter.addImports as jasmine.Spy;
@@ -279,13 +268,8 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
 
         it('should call addDefinitions with the source code, the analyzed class and the rendered definitions.',
            () => {
-             const {
-               renderer,
-               decorationAnalyses,
-               switchMarkerAnalyses,
-               privateDeclarationsAnalyses,
-               testFormatter
-             } = createTestRenderer('test-package', [JS_CONTENT]);
+             const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+                    testFormatter} = createTestRenderer('test-package', [JS_CONTENT]);
              renderer.renderProgram(
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
              const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
@@ -302,13 +286,8 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
 
         it('should call addAdjacentStatements with the source code, the analyzed class and the rendered statements',
            () => {
-             const {
-               renderer,
-               decorationAnalyses,
-               switchMarkerAnalyses,
-               privateDeclarationsAnalyses,
-               testFormatter
-             } = createTestRenderer('test-package', [JS_CONTENT]);
+             const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+                    testFormatter} = createTestRenderer('test-package', [JS_CONTENT]);
              renderer.renderProgram(
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
              const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
@@ -326,13 +305,8 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
 
         it('should call removeDecorators with the source code, a map of class decorators that have been analyzed',
            () => {
-             const {
-               renderer,
-               decorationAnalyses,
-               switchMarkerAnalyses,
-               privateDeclarationsAnalyses,
-               testFormatter
-             } = createTestRenderer('test-package', [JS_CONTENT]);
+             const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+                    testFormatter} = createTestRenderer('test-package', [JS_CONTENT]);
              renderer.renderProgram(
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
              const removeDecoratorsSpy = testFormatter.removeDecorators as jasmine.Spy;
@@ -354,13 +328,8 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
            });
 
         it('should render definitions as static fields', () => {
-          const {
-            renderer,
-            decorationAnalyses,
-            switchMarkerAnalyses,
-            privateDeclarationsAnalyses,
-            testFormatter
-          } = createTestRenderer('test-package', [NGMODULE_PROGRAM]);
+          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+                 testFormatter} = createTestRenderer('test-package', [NGMODULE_PROGRAM]);
           renderer.renderProgram(
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
@@ -370,13 +339,8 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
         });
 
         it('should render adjacent statements', () => {
-          const {
-            renderer,
-            decorationAnalyses,
-            switchMarkerAnalyses,
-            privateDeclarationsAnalyses,
-            testFormatter
-          } = createTestRenderer('test-package', [NGMODULE_PROGRAM]);
+          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+                 testFormatter} = createTestRenderer('test-package', [NGMODULE_PROGRAM]);
           renderer.renderProgram(
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
@@ -385,13 +349,8 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
         });
 
         it('should render directives using the inner class name if different from outer', () => {
-          const {
-            renderer,
-            decorationAnalyses,
-            switchMarkerAnalyses,
-            privateDeclarationsAnalyses,
-            testFormatter
-          } =
+          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+                 testFormatter} =
               createTestRenderer(
                   'test-package', [{
                     name: _('/node_modules/test-package/src/file.js'),
@@ -422,13 +381,8 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
         });
 
         it('should render injectables using the inner class name if different from outer', () => {
-          const {
-            renderer,
-            decorationAnalyses,
-            switchMarkerAnalyses,
-            privateDeclarationsAnalyses,
-            testFormatter
-          } =
+          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+                 testFormatter} =
               createTestRenderer(
                   'test-package', [{
                     name: _('/node_modules/test-package/src/file.js'),
@@ -459,13 +413,8 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
         });
 
         it('should render ng-modules using the inner class name if different from outer', () => {
-          const {
-            renderer,
-            decorationAnalyses,
-            switchMarkerAnalyses,
-            privateDeclarationsAnalyses,
-            testFormatter
-          } =
+          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+                 testFormatter} =
               createTestRenderer(
                   'test-package', [{
                     name: _('/node_modules/test-package/src/file.js'),
@@ -501,13 +450,8 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
         });
 
         it('should render pipes using the inner class name if different from outer', () => {
-          const {
-            renderer,
-            decorationAnalyses,
-            switchMarkerAnalyses,
-            privateDeclarationsAnalyses,
-            testFormatter
-          } =
+          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+                 testFormatter} =
               createTestRenderer(
                   'test-package', [{
                     name: _('/node_modules/test-package/src/file.js'),
@@ -537,13 +481,9 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
         });
 
         it('should render classes without decorators if class fields are decorated', () => {
-          const {
-            renderer,
-            decorationAnalyses,
-            switchMarkerAnalyses,
-            privateDeclarationsAnalyses,
-            testFormatter
-          } = createTestRenderer('test-package', [{
+          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+                 testFormatter} =
+              createTestRenderer('test-package', [{
                                    name: _('/node_modules/test-package/src/file.js'),
                                    contents: `
                   import { Directive, ViewChild } from '@angular/core';
@@ -576,13 +516,8 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
 
         it('should call renderImports after other abstract methods', () => {
           // This allows the other methods to add additional imports if necessary
-          const {
-            renderer,
-            decorationAnalyses,
-            switchMarkerAnalyses,
-            privateDeclarationsAnalyses,
-            testFormatter
-          } = createTestRenderer('test-package', [JS_CONTENT]);
+          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+                 testFormatter} = createTestRenderer('test-package', [JS_CONTENT]);
           const addExportsSpy = testFormatter.addExports as jasmine.Spy;
           const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
           const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
@@ -604,12 +539,8 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
                name: JS_CONTENT.name,
                contents: JS_CONTENT.contents + '\n' + JS_CONTENT_MAP.toComment()
              }];
-             const {
-               decorationAnalyses,
-               renderer,
-               switchMarkerAnalyses,
-               privateDeclarationsAnalyses
-             } = createTestRenderer('test-package', sourceFiles);
+             const {decorationAnalyses, renderer, switchMarkerAnalyses,
+                    privateDeclarationsAnalyses} = createTestRenderer('test-package', sourceFiles);
              const [sourceFile, mapFile] = renderer.renderProgram(
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
              expect(sourceFile.path).toEqual(_('/node_modules/test-package/src/file.js'));
@@ -626,12 +557,9 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
              }];
              const mappingFiles: TestFile[] =
                  [{name: _(JS_CONTENT.name + '.map'), contents: JS_CONTENT_MAP.toJSON()}];
-             const {
-               decorationAnalyses,
-               renderer,
-               switchMarkerAnalyses,
-               privateDeclarationsAnalyses
-             } = createTestRenderer('test-package', sourceFiles, undefined, mappingFiles);
+             const {decorationAnalyses, renderer, switchMarkerAnalyses,
+                    privateDeclarationsAnalyses} =
+                 createTestRenderer('test-package', sourceFiles, undefined, mappingFiles);
              const [sourceFile, mapFile] = renderer.renderProgram(
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
              expect(sourceFile.path).toEqual(_('/node_modules/test-package/src/file.js'));
@@ -656,13 +584,8 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
             contents: `export const NgModule = () => null;`
           };
           // The package name of `@angular/core` indicates that we are compiling the core library.
-          const {
-            decorationAnalyses,
-            renderer,
-            switchMarkerAnalyses,
-            privateDeclarationsAnalyses,
-            testFormatter
-          } = createTestRenderer('@angular/core', [CORE_FILE, R3_SYMBOLS_FILE]);
+          const {decorationAnalyses, renderer, switchMarkerAnalyses, privateDeclarationsAnalyses,
+                 testFormatter} = createTestRenderer('@angular/core', [CORE_FILE, R3_SYMBOLS_FILE]);
           renderer.renderProgram(
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
@@ -681,13 +604,8 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
             export class MyModule {}\nMyModule.decorators = [\n    { type: NgModule, args: [] }\n];\n`
           };
 
-          const {
-            decorationAnalyses,
-            renderer,
-            switchMarkerAnalyses,
-            privateDeclarationsAnalyses,
-            testFormatter
-          } = createTestRenderer('@angular/core', [CORE_FILE]);
+          const {decorationAnalyses, renderer, switchMarkerAnalyses, privateDeclarationsAnalyses,
+                 testFormatter} = createTestRenderer('@angular/core', [CORE_FILE]);
           renderer.renderProgram(
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;

@@ -15,9 +15,7 @@ import {escapeRegExp, splitAtColon, stringify, utf8Encode} from '../src/util';
         expect(splitAtColon('a:b', [])).toEqual(['a', 'b']);
       });
 
-      it('should trim parts', () => {
-        expect(splitAtColon(' a : b ', [])).toEqual(['a', 'b']);
-      });
+      it('should trim parts', () => { expect(splitAtColon(' a : b ', [])).toEqual(['a', 'b']); });
 
       it('should support multiple ":"', () => {
         expect(splitAtColon('a:b:c', [])).toEqual(['a', 'b:c']);
@@ -72,16 +70,13 @@ import {escapeRegExp, splitAtColon, stringify, utf8Encode} from '../src/util';
           ['\uDEEE', '\xED\xBB\xAE'],
           ['\uDFFF', '\xED\xBF\xBF'],
         ];
-        tests.forEach(([input, output]) => {
-          expect(utf8Encode(input)).toEqual(output);
-        });
+        tests.forEach(([input, output]) => { expect(utf8Encode(input)).toEqual(output); });
       });
     });
 
     describe('stringify()', () => {
-      it('should handle objects with no prototype.', () => {
-        expect(stringify(Object.create(null))).toEqual('object');
-      });
+      it('should handle objects with no prototype.',
+         () => { expect(stringify(Object.create(null))).toEqual('object'); });
     });
   });
 }

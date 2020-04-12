@@ -7,10 +7,10 @@
  */
 import * as ts from 'typescript';
 
-import {absoluteFrom, getSourceFileOrError, LogicalFileSystem} from '../../file_system';
-import {runInEachFileSystem, TestFile} from '../../file_system/testing';
+import {LogicalFileSystem, absoluteFrom, getSourceFileOrError} from '../../file_system';
+import {TestFile, runInEachFileSystem} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
-import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
+import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {TypeCheckContext} from '../src/context';
@@ -44,7 +44,7 @@ runInEachFileSystem(() => {
     it('should not produce an empty SourceFile when there is nothing to typecheck', () => {
       const file = new TypeCheckFile(
           _('/_typecheck_.ts'), ALL_ENABLED_CONFIG, new ReferenceEmitter([]),
-          /* reflector */ null!);
+          /* reflector */ null !);
       const sf = file.render();
       expect(sf.statements.length).toBe(1);
     });
@@ -128,7 +128,7 @@ TestClass.ngTypeCtor({value: 'test'});
         const res = ctx.calculateTemplateDiagnostics(program, host, options);
         const TestClassWithCtor =
             getDeclaration(res.program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
-        const typeCtor = TestClassWithCtor.members.find(isTypeCtor)!;
+        const typeCtor = TestClassWithCtor.members.find(isTypeCtor) !;
         expect(typeCtor.getText()).not.toContain('queryField');
       });
     });
@@ -170,7 +170,7 @@ TestClass.ngTypeCtor({value: 'test'});
         const res = ctx.calculateTemplateDiagnostics(program, host, options);
         const TestClassWithCtor =
             getDeclaration(res.program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
-        const typeCtor = TestClassWithCtor.members.find(isTypeCtor)!;
+        const typeCtor = TestClassWithCtor.members.find(isTypeCtor) !;
         const ctorText = typeCtor.getText().replace(/[ \r\n]+/g, ' ');
         expect(ctorText).toContain(
             'init: Pick<TestClass, "foo"> | { bar: typeof TestClass.ngAcceptInputType_bar; }');

@@ -8,8 +8,8 @@
 import * as ts from 'typescript';
 
 import {absoluteFrom} from '../../file_system';
-import {runInEachFileSystem, TestFile} from '../../file_system/testing';
-import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
+import {TestFile, runInEachFileSystem} from '../../file_system/testing';
+import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {TypeParameterEmitter} from '../src/type_parameter_emitter';
 
@@ -34,7 +34,7 @@ runInEachFileSystem(() => {
 
     function emit(emitter: TypeParameterEmitter) {
       const emitted = emitter.emit(ref => {
-        const typeName = ts.createQualifiedName(ts.createIdentifier('test'), ref.debugName!);
+        const typeName = ts.createQualifiedName(ts.createIdentifier('test'), ref.debugName !);
         return ts.createTypeReferenceNode(typeName, /* typeArguments */ undefined);
       });
 

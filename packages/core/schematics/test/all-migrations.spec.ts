@@ -59,13 +59,11 @@ describe('all migrations', () => {
     throw Error('No migration schematics found.');
   }
 
-  allMigrationSchematics.forEach(name => {
-    describe(name, () => createTests(name));
-  });
+  allMigrationSchematics.forEach(name => { describe(name, () => createTests(name)); });
 
   function createTests(migrationName: string) {
     // Regression test for: https://github.com/angular/angular/issues/36346.
-    it('should not throw if non-existent symbols are imported with rootDirs', async () => {
+    it('should not throw if non-existent symbols are imported with rootDirs', async() => {
       writeFile(`/tsconfig.json`, JSON.stringify({
         compilerOptions: {
           rootDirs: [

@@ -14,13 +14,13 @@ import {tsSourceMapBug29300Fixed} from '../../src/ngtsc/util/src/ts_source_map_b
 import {loadStandardTestFiles} from '../helpers/src/mock_file_loading';
 
 import {NgtscTestEnvironment} from './env';
-import {getMappedSegments, SegmentMapping} from './sourcemap_utils';
+import {SegmentMapping, getMappedSegments} from './sourcemap_utils';
 
 const testFiles = loadStandardTestFiles();
 
 runInEachFileSystem((os) => {
   describe('template source-mapping', () => {
-    let env!: NgtscTestEnvironment;
+    let env !: NgtscTestEnvironment;
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
@@ -517,7 +517,7 @@ runInEachFileSystem((os) => {
       });
     }
 
-    function compileAndMap(template: string, templateUrl: string|null = null) {
+    function compileAndMap(template: string, templateUrl: string | null = null) {
       const templateConfig = templateUrl ? `templateUrl: '${templateUrl}'` :
                                            ('template: `' + template.replace(/`/g, '\\`') + '`');
       env.tsconfig({sourceMap: true});

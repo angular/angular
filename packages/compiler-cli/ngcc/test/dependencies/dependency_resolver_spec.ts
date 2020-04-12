@@ -8,7 +8,7 @@
 
 import {DepGraph} from 'dependency-graph';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {DependencyInfo, EntryPointWithDependencies} from '../../src/dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../../src/dependencies/dependency_resolver';
@@ -309,7 +309,7 @@ runInEachFileSystem(() => {
 
       it('should error if the entry point does not have a suitable format', () => {
         expect(() => resolver.sortEntryPointsByDependency(getEntryPointsWithDeps(resolver, [
-          {path: '/first', packageJson: {}, compiledByAngular: true} as EntryPoint
+          { path: '/first', packageJson: {}, compiledByAngular: true } as EntryPoint
         ]))).toThrowError(`There is no appropriate source code format in '/first' entry-point.`);
       });
 
@@ -477,7 +477,7 @@ runInEachFileSystem(() => {
           deps[entryPointPath].missing.forEach(
               dep => missing.add(fs.isRooted(dep) ? absoluteFrom(dep) : relativeFrom(dep)));
           if (deps[entryPointPath].deepImports) {
-            deps[entryPointPath].deepImports!.forEach(dep => deepImports.add(dep));
+            deps[entryPointPath].deepImports !.forEach(dep => deepImports.add(dep));
           }
           return {dependencies, missing, deepImports};
         };

@@ -7,7 +7,7 @@
  */
 import {createHash} from 'crypto';
 
-import {absoluteFrom, FileSystem, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
+import {FileSystem, absoluteFrom, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {EntryPointWithDependencies} from '../../src/dependencies/dependency_host';

@@ -75,9 +75,10 @@ export class ModuleWithProvidersAnalyzer {
       const dtsClass = this.host.getDtsDeclaration(containerClass.declaration.valueDeclaration);
       // Get the declaration of the matching static method
       dtsFn = dtsClass && ts.isClassDeclaration(dtsClass) ?
-          dtsClass.members.find(
-              member => ts.isMethodDeclaration(member) && ts.isIdentifier(member.name) &&
-                  member.name.text === fn.name) as ts.Declaration :
+          dtsClass.members
+              .find(
+                  member => ts.isMethodDeclaration(member) && ts.isIdentifier(member.name) &&
+                      member.name.text === fn.name) as ts.Declaration :
           null;
     } else {
       dtsFn = this.host.getDtsDeclaration(fn.declaration);

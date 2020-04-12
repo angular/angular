@@ -33,13 +33,11 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
         ]);
       });
 
-      it('should not create a message for empty elements', () => {
-        expect(_humanizeMessages('<div i18n="m|d"></div>')).toEqual([]);
-      });
+      it('should not create a message for empty elements',
+         () => { expect(_humanizeMessages('<div i18n="m|d"></div>')).toEqual([]); });
 
-      it('should not create a message for plain elements', () => {
-        expect(_humanizeMessages('<div></div>')).toEqual([]);
-      });
+      it('should not create a message for plain elements',
+         () => { expect(_humanizeMessages('<div></div>')).toEqual([]); });
 
       it('should support void elements', () => {
         expect(_humanizeMessages('<div i18n="m|d"><p><br></p></div>')).toEqual([
@@ -116,9 +114,8 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
             ]);
       });
 
-      it('should not create a message for empty attributes', () => {
-        expect(_humanizeMessages('<div i18n-title="m|d" title></div>')).toEqual([]);
-      });
+      it('should not create a message for empty attributes',
+         () => { expect(_humanizeMessages('<div i18n-title="m|d" title></div>')).toEqual([]); });
     });
 
     describe('interpolation', () => {

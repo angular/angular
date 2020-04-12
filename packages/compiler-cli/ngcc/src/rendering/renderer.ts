@@ -140,11 +140,11 @@ export class Renderer {
         if (dec.node === null) {
           return;
         }
-        const decoratorArray = dec.node.parent!;
+        const decoratorArray = dec.node.parent !;
         if (!decoratorsToRemove.has(decoratorArray)) {
           decoratorsToRemove.set(decoratorArray, [dec.node]);
         } else {
-          decoratorsToRemove.get(decoratorArray)!.push(dec.node);
+          decoratorsToRemove.get(decoratorArray) !.push(dec.node);
         }
       });
     });
@@ -162,9 +162,8 @@ export class Renderer {
   private renderDefinitions(
       sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: ImportManager): string {
     const name = this.host.getInternalNameOfClass(compiledClass.declaration);
-    const statements: Statement[] = compiledClass.compilation.map(c => {
-      return createAssignmentStatement(name, c.name, c.initializer);
-    });
+    const statements: Statement[] = compiledClass.compilation.map(
+        c => { return createAssignmentStatement(name, c.name, c.initializer); });
     return this.renderStatements(sourceFile, statements, imports);
   }
 

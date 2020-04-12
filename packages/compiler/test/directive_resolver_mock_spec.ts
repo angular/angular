@@ -7,7 +7,7 @@
  */
 
 import {Component, Directive, Injector} from '@angular/core';
-import {inject, TestBed} from '@angular/core/testing';
+import {TestBed, inject} from '@angular/core/testing';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 import {MockDirectiveResolver} from '../testing';

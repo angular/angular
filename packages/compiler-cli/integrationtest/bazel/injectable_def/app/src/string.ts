@@ -17,9 +17,7 @@ import {ServerModule} from '@angular/platform-server';
 })
 export class AppComponent {
   data: string;
-  constructor(service: Service) {
-    this.data = service.data;
-  }
+  constructor(service: Service) { this.data = service.data; }
 }
 
 @NgModule({

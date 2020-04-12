@@ -12,15 +12,15 @@ import {AttributeMarker, TAttributes, TNode, TNodeType} from '../../src/render3/
 import {CssSelector, CssSelectorList, SelectorFlags} from '../../src/render3/interfaces/projection';
 import {extractAttrsAndClassesFromSelector, getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorList, stringifyCSSSelectorList} from '../../src/render3/node_selector_matcher';
 
-function testLStaticData(tagName: string, attrs: TAttributes|null): TNode {
-  return createTNode(null!, null, TNodeType.Element, 0, tagName, attrs);
+function testLStaticData(tagName: string, attrs: TAttributes | null): TNode {
+  return createTNode(null !, null, TNodeType.Element, 0, tagName, attrs);
 }
 
 describe('css selector matching', () => {
   function isMatching(
-      tagName: string, attrsOrTNode: TAttributes|TNode|null, selector: CssSelector): boolean {
+      tagName: string, attrsOrTNode: TAttributes | TNode | null, selector: CssSelector): boolean {
     const tNode = (!attrsOrTNode || Array.isArray(attrsOrTNode)) ?
-        createTNode(null!, null, TNodeType.Element, 0, tagName, attrsOrTNode as TAttributes) :
+        createTNode(null !, null, TNodeType.Element, 0, tagName, attrsOrTNode as TAttributes) :
         (attrsOrTNode as TNode);
     return isNodeMatchingSelector(tNode, selector, true);
   }
@@ -434,7 +434,7 @@ describe('css selector matching', () => {
 
   describe('isNodeMatchingSelectorList', () => {
     function isAnyMatching(
-        tagName: string, attrs: string[]|null, selector: CssSelectorList): boolean {
+        tagName: string, attrs: string[] | null, selector: CssSelectorList): boolean {
       return isNodeMatchingSelectorList(testLStaticData(tagName, attrs), selector, false);
     }
 
@@ -460,18 +460,15 @@ describe('css selector matching', () => {
   });
 
   describe('reading the ngProjectAs attribute value', function() {
-    function testTNode(attrs: TAttributes|null) {
-      return testLStaticData('tag', attrs);
-    }
+    function testTNode(attrs: TAttributes | null) { return testLStaticData('tag', attrs); }
 
     it('should get ngProjectAs value if present', function() {
       expect(getProjectAsAttrValue(testTNode([AttributeMarker.ProjectAs, ['tag', 'foo', 'bar']])))
           .toEqual(['tag', 'foo', 'bar']);
     });
 
-    it('should return null if there are no attributes', function() {
-      expect(getProjectAsAttrValue(testTNode(null))).toBe(null);
-    });
+    it('should return null if there are no attributes',
+       function() { expect(getProjectAsAttrValue(testTNode(null))).toBe(null); });
 
     it('should return if ngProjectAs is not present', function() {
       expect(getProjectAsAttrValue(testTNode(['foo', 'bar']))).toBe(null);
@@ -484,9 +481,8 @@ describe('css selector matching', () => {
 });
 
 describe('stringifyCSSSelectorList', () => {
-  it('should stringify selector with a tag name only', () => {
-    expect(stringifyCSSSelectorList([['button']])).toBe('button');
-  });
+  it('should stringify selector with a tag name only',
+     () => { expect(stringifyCSSSelectorList([['button']])).toBe('button'); });
 
   it('should stringify selector with attributes', () => {
     expect(stringifyCSSSelectorList([['', 'id', '']])).toBe('[id]');

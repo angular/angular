@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath as AstPathBase, ASTWithSource, RecursiveAstVisitor} from '@angular/compiler';
+import {AST, ASTWithSource, AstPath as AstPathBase, RecursiveAstVisitor} from '@angular/compiler';
 
 import {AstType} from './expression_type';
 import {BuiltinType, Span, Symbol, SymbolTable, TemplateSource} from './types';
@@ -42,7 +42,7 @@ export function getExpressionCompletions(
     undefined {
   const path = findAstAt(ast, position);
   if (path.empty) return undefined;
-  const tail = path.tail!;
+  const tail = path.tail !;
   let result: SymbolTable|undefined = scope;
 
   function getType(ast: AST): Symbol {
@@ -58,9 +58,7 @@ export function getExpressionCompletions(
     visitConditional(ast) {},
     visitFunctionCall(ast) {},
     visitImplicitReceiver(ast) {},
-    visitInterpolation(ast) {
-      result = undefined;
-    },
+    visitInterpolation(ast) { result = undefined; },
     visitKeyedRead(ast) {},
     visitKeyedWrite(ast) {},
     visitLiteralArray(ast) {},
@@ -114,7 +112,7 @@ export function getExpressionSymbol(
     templateInfo: TemplateSource): {symbol: Symbol, span: Span}|undefined {
   const path = findAstAt(ast, position, /* excludeEmpty */ true);
   if (path.empty) return undefined;
-  const tail = path.tail!;
+  const tail = path.tail !;
 
   function getType(ast: AST): Symbol {
     return new AstType(scope, templateInfo.query, {}, templateInfo.source).getType(ast);

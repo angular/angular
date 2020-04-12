@@ -9,8 +9,8 @@
 /// <reference types="node" />
 import * as os from 'os';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, join} from '../../../src/ngtsc/file_system';
-import {Folder, MockFileSystem, runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem, join} from '../../../src/ngtsc/file_system';
+import {Folder, MockFileSystem, TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles, loadTestFiles} from '../../../test/helpers';
 import {getLockFilePath} from '../../src/locking/lock_file';
 import {mainNgcc} from '../../src/main';
@@ -38,7 +38,7 @@ runInEachFileSystem(() => {
       initMockFileSystem(fs, testFiles);
 
       // Force single-process execution in unit tests by mocking available CPUs to 1.
-      spyOn(os, 'cpus').and.returnValue([{model: 'Mock CPU'} as any]);
+      spyOn(os, 'cpus').and.returnValue([{ model: 'Mock CPU' } as any]);
     });
 
     it('should run ngcc without errors for esm2015', () => {
@@ -330,7 +330,7 @@ runInEachFileSystem(() => {
       });
 
       const before = fs.readFile(_(`/node_modules/test-package/index.js`));
-      const originalProp = /ɵprov[^;]+/.exec(before)![0];
+      const originalProp = /ɵprov[^;]+/.exec(before) ![0];
       mainNgcc({
         basePath: '/node_modules',
         targetEntryPointPath: 'test-package',
@@ -500,7 +500,7 @@ runInEachFileSystem(() => {
     });
 
     describe('in async mode', () => {
-      it('should run ngcc without errors for fesm2015', async () => {
+      it('should run ngcc without errors for fesm2015', async() => {
         const promise = mainNgcc({
           basePath: '/node_modules',
           propertiesToConsider: ['fesm2015'],
@@ -511,7 +511,7 @@ runInEachFileSystem(() => {
         await promise;
       });
 
-      it('should reject, if some of the entry-points are unprocessable', async () => {
+      it('should reject, if some of the entry-points are unprocessable', async() => {
         const createEntryPoint = (name: string, prop: EntryPointJsonProperty): TestFile[] => {
           return [
             {
@@ -545,7 +545,7 @@ runInEachFileSystem(() => {
                 `  - ${_('/dist/unprocessable-3')}`)));
       });
 
-      it('should reject, if an error happens during processing', async () => {
+      it('should reject, if an error happens during processing', async() => {
         spyOn(Transformer.prototype, 'transform').and.throwError('Test error.');
 
         const promise = mainNgcc({
@@ -655,8 +655,7 @@ runInEachFileSystem(() => {
           markPropertiesAsProcessed('@angular/common/http/testing', SUPPORTED_FORMAT_PROPERTIES);
           mainNgcc({
             basePath: '/node_modules',
-            targetEntryPointPath: '@angular/common/http/testing',
-            logger,
+            targetEntryPointPath: '@angular/common/http/testing', logger,
           });
           expect(logger.logs.debug).toContain([
             'The target entry-point has already been processed'
@@ -670,8 +669,7 @@ runInEachFileSystem(() => {
              mainNgcc({
                basePath: '/node_modules',
                targetEntryPointPath: '@angular/common/http/testing',
-               propertiesToConsider: ['fesm2015', 'esm5', 'esm2015'],
-               logger,
+               propertiesToConsider: ['fesm2015', 'esm5', 'esm2015'], logger,
              });
              expect(logger.logs.debug).not.toContain([
                'The target entry-point has already been processed'
@@ -688,8 +686,7 @@ runInEachFileSystem(() => {
                basePath: '/node_modules',
                targetEntryPointPath: '@angular/common/http/testing',
                propertiesToConsider: ['esm5', 'esm2015'],
-               compileAllFormats: false,
-               logger,
+               compileAllFormats: false, logger,
              });
 
              expect(logger.logs.debug).not.toContain([
@@ -706,8 +703,7 @@ runInEachFileSystem(() => {
                targetEntryPointPath: '@angular/common/http/testing',
                // Simulate a property that does not exist on the package.json and will be ignored.
                propertiesToConsider: ['missing', 'esm2015', 'esm5'],
-               compileAllFormats: false,
-               logger,
+               compileAllFormats: false, logger,
              });
 
              expect(logger.logs.debug).toContain([
@@ -725,8 +721,7 @@ runInEachFileSystem(() => {
              targetEntryPointPath: '@angular/common/http/testing',
              // Simulate a property that does not exist on the package.json and will be ignored.
              propertiesToConsider: ['missing', 'esm2015', 'esm5'],
-             compileAllFormats: false,
-             logger,
+             compileAllFormats: false, logger,
            });
 
            expect(logger.logs.debug).toContain([
@@ -761,7 +756,7 @@ runInEachFileSystem(() => {
 
       // Now hack the files to look like it was processed by an outdated version of ngcc
       const packageJson = loadPackage('test-package', _('/node_modules'));
-      packageJson.__processed_by_ivy_ngcc__!.typings = '8.0.0';
+      packageJson.__processed_by_ivy_ngcc__ !.typings = '8.0.0';
       packageJson.main_ivy_ngcc = '__ivy_ngcc__/main.js';
       fs.writeFile(_('/node_modules/test-package/package.json'), JSON.stringify(packageJson));
       fs.writeFile(_('/node_modules/test-package/x.js'), 'processed content');
@@ -847,8 +842,7 @@ runInEachFileSystem(() => {
            // `fesm2015` and `es2015` map to the same file: `./fesm2015/common.js`
            mainNgcc({
              basePath: '/node_modules/@angular/common',
-             propertiesToConsider: ['fesm2015'],
-             logger,
+             propertiesToConsider: ['fesm2015'], logger,
            });
 
            expect(logs).not.toContain(['Skipping @angular/common : es2015 (already compiled).']);
@@ -861,8 +855,7 @@ runInEachFileSystem(() => {
            // Now, compiling `es2015` should be a no-op.
            mainNgcc({
              basePath: '/node_modules/@angular/common',
-             propertiesToConsider: ['es2015'],
-             logger,
+             propertiesToConsider: ['es2015'], logger,
            });
 
            expect(logs).toContain(['Skipping @angular/common : es2015 (already compiled).']);
@@ -1009,21 +1002,21 @@ runInEachFileSystem(() => {
            expectNotToHaveProp(pkg, 'esm5_ivy_ngcc');
            expectToHaveProp(pkg, 'fesm2015_ivy_ngcc');
            expectNotToHaveProp(pkg, 'fesm5_ivy_ngcc');
-           expectToHaveProp(pkg.__processed_by_ivy_ngcc__!, 'fesm2015');
+           expectToHaveProp(pkg.__processed_by_ivy_ngcc__ !, 'fesm2015');
 
            // Process `fesm5` and update `package.json`.
            pkg = processFormatAndUpdatePackageJson('fesm5');
            expectNotToHaveProp(pkg, 'esm5_ivy_ngcc');
            expectToHaveProp(pkg, 'fesm2015_ivy_ngcc');
            expectToHaveProp(pkg, 'fesm5_ivy_ngcc');
-           expectToHaveProp(pkg.__processed_by_ivy_ngcc__!, 'fesm5');
+           expectToHaveProp(pkg.__processed_by_ivy_ngcc__ !, 'fesm5');
 
            // Process `esm5` and update `package.json`.
            pkg = processFormatAndUpdatePackageJson('esm5');
            expectToHaveProp(pkg, 'esm5_ivy_ngcc');
            expectToHaveProp(pkg, 'fesm2015_ivy_ngcc');
            expectToHaveProp(pkg, 'fesm5_ivy_ngcc');
-           expectToHaveProp(pkg.__processed_by_ivy_ngcc__!, 'esm5');
+           expectToHaveProp(pkg.__processed_by_ivy_ngcc__ !, 'esm5');
 
            // Ensure the properties are in deterministic order (regardless of processing order).
            const pkgKeys = stringifyKeys(pkg);
@@ -1038,15 +1031,13 @@ runInEachFileSystem(() => {
            // For example:
            // - `fesm2015` <=> `es2015`
            // - `fesm5` <=> `module`
-           expect(stringifyKeys(pkg.__processed_by_ivy_ngcc__!))
+           expect(stringifyKeys(pkg.__processed_by_ivy_ngcc__ !))
                .toBe('|es2015|esm5|fesm2015|fesm5|module|typings|');
 
            // Helpers
            function expectNotToHaveProp(obj: object, prop: string) {
              expect(obj.hasOwnProperty(prop))
-                 .toBe(
-                     false,
-                     `Expected object not to have property '${prop}': ${
+                 .toBe(false, `Expected object not to have property '${prop}': ${
                          JSON.stringify(obj, null, 2)}`);
            }
 
@@ -1066,9 +1057,7 @@ runInEachFileSystem(() => {
              return loadPackage('@angular/core');
            }
 
-           function stringifyKeys(obj: object) {
-             return `|${Object.keys(obj).join('|')}|`;
-           }
+           function stringifyKeys(obj: object) { return `|${Object.keys(obj).join('|')}|`; }
          });
     });
 
@@ -1226,8 +1215,7 @@ runInEachFileSystem(() => {
            mainNgcc({
              basePath: '/node_modules',
              propertiesToConsider: ['es2015'],
-             errorOnFailedEntryPoint: false,
-             logger,
+             errorOnFailedEntryPoint: false, logger,
            });
            expect(logger.logs.error.length).toEqual(1);
            const message = logger.logs.error[0][0];
@@ -1257,8 +1245,7 @@ runInEachFileSystem(() => {
         const logger = new MockLogger();
         mainNgcc({
           basePath: '/node_modules',
-          propertiesToConsider: ['esm2015'],
-          logger,
+          propertiesToConsider: ['esm2015'], logger,
         });
         expect(logger.logs.info).toContain(['Compiling @angular/common/http : esm2015 as esm2015']);
       });
@@ -1303,8 +1290,7 @@ runInEachFileSystem(() => {
         mainNgcc({
           basePath: '/dist',
           propertiesToConsider: ['es2015'],
-          tsConfigPath: _('/tsconfig.app.json'),
-          logger
+          tsConfigPath: _('/tsconfig.app.json'), logger
         });
         expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
           es2015: '0.0.0-PLACEHOLDER',
@@ -1339,8 +1325,7 @@ runInEachFileSystem(() => {
            mainNgcc({
              basePath: '/node_modules',
              propertiesToConsider: ['es2015'],
-             pathMappings: {paths: {'*': ['dist/*']}, baseUrl: '/'},
-             logger
+             pathMappings: {paths: {'*': ['dist/*']}, baseUrl: '/'}, logger
            });
            expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
              es2015: '0.0.0-PLACEHOLDER',
@@ -1380,8 +1365,7 @@ runInEachFileSystem(() => {
            mainNgcc({
              basePath: '/dist',
              propertiesToConsider: ['es2015'],
-             tsConfigPath: null,
-             logger,
+             tsConfigPath: null, logger,
            });
            expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
              es2015: '0.0.0-PLACEHOLDER',
@@ -1846,7 +1830,7 @@ runInEachFileSystem(() => {
         expect(jsContents).toContain('exports.ɵngExportɵFooModuleɵFoo = ɵngcc1.Foo;');
         expect(dtsContents)
             .toContain(`export {Foo as ɵngExportɵFooModuleɵFoo} from './directive';`);
-        expect(dtsContents.match(/ɵngExportɵFooModuleɵFoo/g)!.length).toBe(1);
+        expect(dtsContents.match(/ɵngExportɵFooModuleɵFoo/g) !.length).toBe(1);
         expect(dtsContents).not.toContain(`ɵngExportɵFooModuleɵLocalDir`);
       });
     });

@@ -162,18 +162,15 @@ function resolveProvider(
       } else {
         // Cases 1.b and 2.b
         const indexInFactory = multiFactoryAdd(
-            lInjectablesBlueprint!
-                [isViewProvider ? existingViewProvidersFactoryIndex :
-                                  existingProvidersFactoryIndex],
+            lInjectablesBlueprint ![isViewProvider ? existingViewProvidersFactoryIndex : existingProvidersFactoryIndex],
             providerFactory, !isViewProvider && isComponent);
         registerDestroyHooksIfSupported(
-            tView, provider,
-            existingProvidersFactoryIndex > -1 ? existingProvidersFactoryIndex :
-                                                 existingViewProvidersFactoryIndex,
+            tView, provider, existingProvidersFactoryIndex > -1 ? existingProvidersFactoryIndex :
+                                                                  existingViewProvidersFactoryIndex,
             indexInFactory);
       }
       if (!isViewProvider && isComponent && doesViewProvidersFactoryExist) {
-        lInjectablesBlueprint[existingViewProvidersFactoryIndex].componentProviders!++;
+        lInjectablesBlueprint[existingViewProvidersFactoryIndex].componentProviders !++;
       }
     }
   }
@@ -206,7 +203,8 @@ function registerDestroyHooksIfSupported(
         if (existingCallbacksIndex === -1) {
           hooks.push(contextIndex, [indexInFactory, ngOnDestroy]);
         } else {
-          (hooks[existingCallbacksIndex + 1] as DestroyHookData).push(indexInFactory!, ngOnDestroy);
+          (hooks[existingCallbacksIndex + 1] as DestroyHookData)
+              .push(indexInFactory !, ngOnDestroy);
         }
       } else {
         hooks.push(contextIndex, ngOnDestroy);
@@ -222,9 +220,9 @@ function registerDestroyHooksIfSupported(
 function multiFactoryAdd(
     multiFactory: NodeInjectorFactory, factory: () => any, isComponentProvider: boolean): number {
   if (isComponentProvider) {
-    multiFactory.componentProviders!++;
+    multiFactory.componentProviders !++;
   }
-  return multiFactory.multi!.push(factory) - 1;
+  return multiFactory.multi !.push(factory) - 1;
 }
 
 /**
@@ -243,7 +241,7 @@ function indexOf(item: any, arr: any[], begin: number, end: number) {
 function multiProvidersFactoryResolver(
     this: NodeInjectorFactory, _: undefined, tData: TData, lData: LView,
     tNode: TDirectiveHostNode): any[] {
-  return multiResolve(this.multi!, []);
+  return multiResolve(this.multi !, []);
 }
 
 /**
@@ -254,12 +252,12 @@ function multiProvidersFactoryResolver(
 function multiViewProvidersFactoryResolver(
     this: NodeInjectorFactory, _: undefined, tData: TData, lView: LView,
     tNode: TDirectiveHostNode): any[] {
-  const factories = this.multi!;
+  const factories = this.multi !;
   let result: any[];
   if (this.providerFactory) {
-    const componentCount = this.providerFactory.componentProviders!;
+    const componentCount = this.providerFactory.componentProviders !;
     const multiProviders =
-        getNodeInjectable(lView, lView[TVIEW], this.providerFactory!.index!, tNode);
+        getNodeInjectable(lView, lView[TVIEW], this.providerFactory !.index !, tNode);
     // Copy the section of the array which contains `multi` `providers` from the component
     result = multiProviders.slice(0, componentCount);
     // Insert the `viewProvider` instances.
@@ -281,7 +279,7 @@ function multiViewProvidersFactoryResolver(
  */
 function multiResolve(factories: Array<() => any>, result: any[]): any[] {
   for (let i = 0; i < factories.length; i++) {
-    const factory = factories[i]! as () => null;
+    const factory = factories[i] !as() => null;
     result.push(factory());
   }
   return result;

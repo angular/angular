@@ -22,9 +22,7 @@ import {ShimGenerator} from './api';
 export class TypeCheckShimGenerator implements ShimGenerator {
   constructor(private typeCheckFile: AbsoluteFsPath) {}
 
-  recognize(fileName: AbsoluteFsPath): boolean {
-    return fileName === this.typeCheckFile;
-  }
+  recognize(fileName: AbsoluteFsPath): boolean { return fileName === this.typeCheckFile; }
 
   generate(genFileName: AbsoluteFsPath, readFile: (fileName: string) => ts.SourceFile | null):
       ts.SourceFile|null {

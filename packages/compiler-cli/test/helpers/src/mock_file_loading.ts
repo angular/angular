@@ -7,7 +7,7 @@
  */
 
 /// <reference types="node" />
-import {readdirSync, readFileSync, statSync} from 'fs';
+import {readFileSync, readdirSync, statSync} from 'fs';
 import {resolve} from 'path';
 
 import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '..';

@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NgccConfiguration} from '../../src/packages/configuration';
-import {EntryPoint, EntryPointJsonProperty, getEntryPointFormat, getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat, getEntryPointInfo} from '../../src/packages/entry_point';
 import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
@@ -102,9 +102,8 @@ runInEachFileSystem(() => {
           fs, config, new MockLogger(), SOME_PACKAGE,
           _('/project/node_modules/some_package/valid_entry_point'));
       const overriddenPackageJson = {
-        ...loadPackageJson(fs, '/project/node_modules/some_package/valid_entry_point'),
-        ...override
-      };
+          ...loadPackageJson(fs, '/project/node_modules/some_package/valid_entry_point'),
+          ...override};
       expect(entryPoint).toEqual({
         name: 'some_package/valid_entry_point',
         package: SOME_PACKAGE,
@@ -405,29 +404,23 @@ runInEachFileSystem(() => {
       entryPoint = result as any;
     });
 
-    it('should return `esm2015` format for `fesm2015` property', () => {
-      expect(getEntryPointFormat(fs, entryPoint, 'fesm2015')).toBe('esm2015');
-    });
+    it('should return `esm2015` format for `fesm2015` property',
+       () => { expect(getEntryPointFormat(fs, entryPoint, 'fesm2015')).toBe('esm2015'); });
 
-    it('should return `esm5` format for `fesm5` property', () => {
-      expect(getEntryPointFormat(fs, entryPoint, 'fesm5')).toBe('esm5');
-    });
+    it('should return `esm5` format for `fesm5` property',
+       () => { expect(getEntryPointFormat(fs, entryPoint, 'fesm5')).toBe('esm5'); });
 
-    it('should return `esm2015` format for `es2015` property', () => {
-      expect(getEntryPointFormat(fs, entryPoint, 'es2015')).toBe('esm2015');
-    });
+    it('should return `esm2015` format for `es2015` property',
+       () => { expect(getEntryPointFormat(fs, entryPoint, 'es2015')).toBe('esm2015'); });
 
-    it('should return `esm2015` format for `esm2015` property', () => {
-      expect(getEntryPointFormat(fs, entryPoint, 'esm2015')).toBe('esm2015');
-    });
+    it('should return `esm2015` format for `esm2015` property',
+       () => { expect(getEntryPointFormat(fs, entryPoint, 'esm2015')).toBe('esm2015'); });
 
-    it('should return `esm5` format for `esm5` property', () => {
-      expect(getEntryPointFormat(fs, entryPoint, 'esm5')).toBe('esm5');
-    });
+    it('should return `esm5` format for `esm5` property',
+       () => { expect(getEntryPointFormat(fs, entryPoint, 'esm5')).toBe('esm5'); });
 
-    it('should return `esm5` format for `module` property', () => {
-      expect(getEntryPointFormat(fs, entryPoint, 'module')).toBe('esm5');
-    });
+    it('should return `esm5` format for `module` property',
+       () => { expect(getEntryPointFormat(fs, entryPoint, 'module')).toBe('esm5'); });
 
     (['browser', 'main'] as EntryPointJsonProperty[]).forEach(browserOrMain => {
       it('should return `esm5` for `' + browserOrMain +

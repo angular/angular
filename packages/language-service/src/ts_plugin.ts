@@ -27,7 +27,8 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
   const ngLS = createLanguageService(ngLSHost);
 
   function getCompletionsAtPosition(
-      fileName: string, position: number, options: tss.GetCompletionsAtPositionOptions|undefined) {
+      fileName: string, position: number,
+      options: tss.GetCompletionsAtPositionOptions | undefined) {
     if (!angularOnly) {
       const results = tsLS.getCompletionsAtPosition(fileName, position, options);
       if (results && results.entries.length) {
@@ -92,11 +93,8 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
       {}, tsLS,
       // Then override the methods supported by Angular language service
       {
-        getCompletionsAtPosition,
-        getQuickInfoAtPosition,
-        getSemanticDiagnostics,
-        getDefinitionAtPosition,
-        getDefinitionAndBoundSpan,
+          getCompletionsAtPosition, getQuickInfoAtPosition, getSemanticDiagnostics,
+          getDefinitionAtPosition, getDefinitionAndBoundSpan,
       });
   return proxy;
 }

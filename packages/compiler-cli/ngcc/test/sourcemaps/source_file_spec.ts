@@ -11,15 +11,13 @@ import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {RawSourceMap} from '../../src/sourcemaps/raw_source_map';
 import {SegmentMarker} from '../../src/sourcemaps/segment_marker';
-import {computeStartOfLinePositions, ensureOriginalSegmentLinks, extractOriginalSegments, findLastMappingIndexBefore, Mapping, parseMappings, SourceFile} from '../../src/sourcemaps/source_file';
+import {Mapping, SourceFile, computeStartOfLinePositions, ensureOriginalSegmentLinks, extractOriginalSegments, findLastMappingIndexBefore, parseMappings} from '../../src/sourcemaps/source_file';
 
 runInEachFileSystem(() => {
   describe('SourceFile and utilities', () => {
     let _: typeof absoluteFrom;
 
-    beforeEach(() => {
-      _ = absoluteFrom;
-    });
+    beforeEach(() => { _ = absoluteFrom; });
 
     describe('parseMappings()', () => {
       it('should be an empty array for source files with no source map', () => {
@@ -120,7 +118,7 @@ runInEachFileSystem(() => {
            const marker2: SegmentMarker = {line: 0, column: 20, position: 20, next: marker3};
            const marker1: SegmentMarker = {line: 0, column: 10, position: 10, next: marker2};
            const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
-               marker => ({generatedSegment: marker} as Mapping));
+               marker => ({ generatedSegment: marker } as Mapping));
 
            const marker: SegmentMarker = {line: 0, column: 35, position: 35, next: undefined};
            const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false, 0);
@@ -135,7 +133,7 @@ runInEachFileSystem(() => {
            const marker2: SegmentMarker = {line: 0, column: 20, position: 20, next: marker3};
            const marker1: SegmentMarker = {line: 0, column: 10, position: 10, next: marker2};
            const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
-               marker => ({generatedSegment: marker} as Mapping));
+               marker => ({ generatedSegment: marker } as Mapping));
 
            const marker: SegmentMarker = {line: 0, column: 35, position: 35, next: undefined};
            const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false, 0);
@@ -149,7 +147,7 @@ runInEachFileSystem(() => {
         const marker2: SegmentMarker = {line: 0, column: 20, position: 20, next: marker3};
         const marker1: SegmentMarker = {line: 0, column: 10, position: 10, next: marker2};
         const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
-            marker => ({generatedSegment: marker} as Mapping));
+            marker => ({ generatedSegment: marker } as Mapping));
 
         const marker: SegmentMarker = {line: 0, column: 60, position: 60, next: undefined};
 
@@ -164,7 +162,7 @@ runInEachFileSystem(() => {
         const marker2: SegmentMarker = {line: 0, column: 20, position: 20, next: marker3};
         const marker1: SegmentMarker = {line: 0, column: 10, position: 10, next: marker2};
         const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
-            marker => ({generatedSegment: marker} as Mapping));
+            marker => ({ generatedSegment: marker } as Mapping));
 
         const marker: SegmentMarker = {line: 0, column: 5, position: 5, next: undefined};
 
@@ -182,7 +180,7 @@ runInEachFileSystem(() => {
              const marker1: SegmentMarker = {line: 0, column: 10, position: 10, next: marker2};
 
              const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
-                 marker => ({generatedSegment: marker} as Mapping));
+                 marker => ({ generatedSegment: marker } as Mapping));
              const index = findLastMappingIndexBefore(mappings, marker3, /* exclusive */ false, 0);
              expect(index).toEqual(2);
            });
@@ -196,7 +194,7 @@ runInEachFileSystem(() => {
              const marker1: SegmentMarker = {line: 0, column: 10, position: 10, next: marker2};
 
              const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
-                 marker => ({generatedSegment: marker} as Mapping));
+                 marker => ({ generatedSegment: marker } as Mapping));
              const index = findLastMappingIndexBefore(mappings, marker3, /* exclusive */ false, 0);
              expect(index).toEqual(3);
            });
@@ -211,7 +209,7 @@ runInEachFileSystem(() => {
           const marker1: SegmentMarker = {line: 0, column: 10, position: 10, next: marker2};
 
           const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
-              marker => ({generatedSegment: marker} as Mapping));
+              marker => ({ generatedSegment: marker } as Mapping));
           const index = findLastMappingIndexBefore(mappings, marker3, /* exclusive */ true, 0);
           expect(index).toEqual(1);
         });
@@ -225,7 +223,7 @@ runInEachFileSystem(() => {
              const marker1: SegmentMarker = {line: 0, column: 10, position: 10, next: marker2};
 
              const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
-                 marker => ({generatedSegment: marker} as Mapping));
+                 marker => ({ generatedSegment: marker } as Mapping));
              const index = findLastMappingIndexBefore(mappings, marker3, /* exclusive */ false, 0);
              expect(index).toEqual(3);
            });
@@ -240,7 +238,7 @@ runInEachFileSystem(() => {
              const marker2: SegmentMarker = {line: 0, column: 20, position: 20, next: marker3};
              const marker1: SegmentMarker = {line: 0, column: 10, position: 10, next: marker2};
              const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
-                 marker => ({generatedSegment: marker} as Mapping));
+                 marker => ({ generatedSegment: marker } as Mapping));
 
              const marker: SegmentMarker = {line: 0, column: 35, position: 35, next: undefined};
              const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false, 1);
@@ -255,7 +253,7 @@ runInEachFileSystem(() => {
              const marker2: SegmentMarker = {line: 0, column: 20, position: 20, next: marker3};
              const marker1: SegmentMarker = {line: 0, column: 10, position: 10, next: marker2};
              const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
-                 marker => ({generatedSegment: marker} as Mapping));
+                 marker => ({ generatedSegment: marker } as Mapping));
 
              const marker: SegmentMarker = {line: 0, column: 30, position: 30, next: undefined};
              const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false, 2);
@@ -270,7 +268,7 @@ runInEachFileSystem(() => {
              const marker2: SegmentMarker = {line: 0, column: 20, position: 20, next: marker3};
              const marker1: SegmentMarker = {line: 0, column: 10, position: 10, next: marker2};
              const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
-                 marker => ({generatedSegment: marker} as Mapping));
+                 marker => ({ generatedSegment: marker } as Mapping));
 
              const marker: SegmentMarker = {line: 0, column: 30, position: 30, next: undefined};
              const index = findLastMappingIndexBefore(mappings, marker, /* exclusive */ false, 3);
@@ -284,7 +282,7 @@ runInEachFileSystem(() => {
           const marker2: SegmentMarker = {line: 0, column: 20, position: 20, next: marker3};
           const marker1: SegmentMarker = {line: 0, column: 10, position: 10, next: marker2};
           const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
-              marker => ({generatedSegment: marker} as Mapping));
+              marker => ({ generatedSegment: marker } as Mapping));
 
           const marker: SegmentMarker = {line: 0, column: 25, position: 25, next: undefined};
 
@@ -300,7 +298,7 @@ runInEachFileSystem(() => {
              const marker2: SegmentMarker = {line: 0, column: 20, position: 20, next: marker3};
              const marker1: SegmentMarker = {line: 0, column: 10, position: 10, next: marker2};
              const mappings: Mapping[] = [marker1, marker2, marker3, marker4, marker5].map(
-                 marker => ({generatedSegment: marker} as Mapping));
+                 marker => ({ generatedSegment: marker } as Mapping));
 
              const marker: SegmentMarker = {line: 0, column: 30, position: 30, next: undefined};
 

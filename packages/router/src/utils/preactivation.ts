@@ -10,10 +10,10 @@ import {Injector} from '@angular/core';
 
 import {LoadedRouterConfig, RunGuardsAndResolvers} from '../config';
 import {ChildrenOutletContexts, OutletContext} from '../router_outlet_context';
-import {ActivatedRouteSnapshot, equalParamsAndUrlSegments, RouterStateSnapshot} from '../router_state';
+import {ActivatedRouteSnapshot, RouterStateSnapshot, equalParamsAndUrlSegments} from '../router_state';
 import {equalPath} from '../url_tree';
 import {forEach, shallowEqual} from '../utils/collection';
-import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
+import {TreeNode, nodeChildrenAsMap} from '../utils/tree';
 
 export class CanActivate {
   readonly route: ActivatedRouteSnapshot;
@@ -66,8 +66,9 @@ function getClosestLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterC
 }
 
 function getChildRouteGuards(
-    futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot>|null,
-    contexts: ChildrenOutletContexts|null, futurePath: ActivatedRouteSnapshot[], checks: Checks = {
+    futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot>| null,
+    contexts: ChildrenOutletContexts | null, futurePath: ActivatedRouteSnapshot[],
+    checks: Checks = {
       canDeactivateChecks: [],
       canActivateChecks: []
     }): Checks {
@@ -83,14 +84,14 @@ function getChildRouteGuards(
   forEach(
       prevChildren,
       (v: TreeNode<ActivatedRouteSnapshot>, k: string) =>
-          deactivateRouteAndItsChildren(v, contexts!.getContext(k), contexts, checks));
+          deactivateRouteAndItsChildren(v, contexts !.getContext(k), contexts, checks));
 
   return checks;
 }
 
 function getRouteGuards(
     futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot>,
-    parentContexts: ChildrenOutletContexts|null, futurePath: ActivatedRouteSnapshot[],
+    parentContexts: ChildrenOutletContexts | null, futurePath: ActivatedRouteSnapshot[],
     checks: Checks = {
       canDeactivateChecks: [],
       canActivateChecks: []
@@ -102,7 +103,7 @@ function getRouteGuards(
   // reusing the node
   if (curr && future.routeConfig === curr.routeConfig) {
     const shouldRun =
-        shouldRunGuardsAndResolvers(curr, future, future.routeConfig!.runGuardsAndResolvers);
+        shouldRunGuardsAndResolvers(curr, future, future.routeConfig !.runGuardsAndResolvers);
     if (shouldRun) {
       checks.canActivateChecks.push(new CanActivate(futurePath));
     } else {
@@ -146,7 +147,7 @@ function getRouteGuards(
 
 function shouldRunGuardsAndResolvers(
     curr: ActivatedRouteSnapshot, future: ActivatedRouteSnapshot,
-    mode: RunGuardsAndResolvers|undefined): boolean {
+    mode: RunGuardsAndResolvers | undefined): boolean {
   if (typeof mode === 'function') {
     return mode(curr, future);
   }
@@ -172,8 +173,8 @@ function shouldRunGuardsAndResolvers(
 }
 
 function deactivateRouteAndItsChildren(
-    route: TreeNode<ActivatedRouteSnapshot>, context: OutletContext|null,
-    parentContexts: ChildrenOutletContexts|null, checks: Checks): void {
+    route: TreeNode<ActivatedRouteSnapshot>, context: OutletContext | null,
+    parentContexts: ChildrenOutletContexts | null, checks: Checks): void {
   const children = nodeChildrenAsMap(route);
   const r = route.value;
 

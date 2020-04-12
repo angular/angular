@@ -8,11 +8,12 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, Declaration, Decorator, FunctionDefinition, isNamedVariableDeclaration, Parameter, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, Declaration, Decorator, FunctionDefinition, Parameter, isNamedVariableDeclaration, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {getNameText, getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, hasNameIdentifier} from '../utils';
 
-import {Esm2015ReflectionHost, getPropertyValueFromSymbol, isAssignment, isAssignmentStatement, ParamInfo} from './esm2015_host';
+import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignment, isAssignmentStatement} from './esm2015_host';
 import {NgccClassSymbol} from './ngcc_host';
+
 
 
 /**
@@ -392,9 +393,9 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     if (expression && ts.isArrayLiteralExpression(expression)) {
       const elements = expression.elements;
       return elements.map(reflectArrayElement).map(paramInfo => {
-        const typeExpression = paramInfo && paramInfo.has('type') ? paramInfo.get('type')! : null;
+        const typeExpression = paramInfo && paramInfo.has('type') ? paramInfo.get('type') ! : null;
         const decoratorInfo =
-            paramInfo && paramInfo.has('decorators') ? paramInfo.get('decorators')! : null;
+            paramInfo && paramInfo.has('decorators') ? paramInfo.get('decorators') ! : null;
         const decorators = decoratorInfo && this.reflectDecorators(decoratorInfo);
         return {typeExpression, decorators};
       });
@@ -658,7 +659,7 @@ function getReturnIdentifier(body: ts.Block): ts.Identifier|undefined {
   return undefined;
 }
 
-function getReturnStatement(declaration: ts.Expression|undefined): ts.ReturnStatement|undefined {
+function getReturnStatement(declaration: ts.Expression | undefined): ts.ReturnStatement|undefined {
   return declaration && ts.isFunctionExpression(declaration) ?
       declaration.body.statements.find(ts.isReturnStatement) :
       undefined;

@@ -7,8 +7,9 @@
  */
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, isRooted} from '../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, absoluteFrom, isRooted} from '../../src/ngtsc/file_system';
 import {KnownDeclaration} from '../../src/ngtsc/reflection';
+
 
 /**
  * A list (`Array`) of partially ordered `T` items.
@@ -38,11 +39,11 @@ export function getOriginalSymbol(checker: ts.TypeChecker): (symbol: ts.Symbol) 
   };
 }
 
-export function isDefined<T>(value: T|undefined|null): value is T {
+export function isDefined<T>(value: T | undefined | null): value is T {
   return (value !== undefined) && (value !== null);
 }
 
-export function getNameText(name: ts.PropertyName|ts.BindingName): string {
+export function getNameText(name: ts.PropertyName | ts.BindingName): string {
   return ts.isIdentifier(name) || ts.isLiteralExpression(name) ? name.text : name.getText();
 }
 
@@ -113,12 +114,10 @@ export class FactoryMap<K, V> {
       this.internalMap.set(key, this.factory(key));
     }
 
-    return this.internalMap.get(key)!;
+    return this.internalMap.get(key) !;
   }
 
-  set(key: K, value: V): void {
-    this.internalMap.set(key, value);
-  }
+  set(key: K, value: V): void { this.internalMap.set(key, value); }
 }
 
 /**

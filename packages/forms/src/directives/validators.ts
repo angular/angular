@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, forwardRef, Input, OnChanges, SimpleChanges, StaticProvider} from '@angular/core';
+import {Directive, Input, OnChanges, SimpleChanges, StaticProvider, forwardRef} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {AbstractControl} from '../model';
 import {NG_VALIDATORS, Validators} from '../validators';
+
 
 
 /**
@@ -159,18 +160,16 @@ export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
 })
 export class RequiredValidator implements Validator {
   // TODO(issue/24571): remove '!'.
-  private _required!: boolean;
+  private _required !: boolean;
   // TODO(issue/24571): remove '!'.
-  private _onChange!: () => void;
+  private _onChange !: () => void;
 
   /**
    * @description
    * Tracks changes to the required attribute bound to this directive.
    */
   @Input()
-  get required(): boolean|string {
-    return this._required;
-  }
+  get required(): boolean|string { return this._required; }
 
   set required(value: boolean|string) {
     this._required = value != null && value !== false && `${value}` !== 'false';
@@ -192,9 +191,7 @@ export class RequiredValidator implements Validator {
    *
    * @param fn The callback function
    */
-  registerOnValidatorChange(fn: () => void): void {
-    this._onChange = fn;
-  }
+  registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
 }
 
 
@@ -275,9 +272,9 @@ export const EMAIL_VALIDATOR: any = {
 })
 export class EmailValidator implements Validator {
   // TODO(issue/24571): remove '!'.
-  private _enabled!: boolean;
+  private _enabled !: boolean;
   // TODO(issue/24571): remove '!'.
-  private _onChange!: () => void;
+  private _onChange !: () => void;
 
   /**
    * @description
@@ -304,9 +301,7 @@ export class EmailValidator implements Validator {
    *
    * @param fn The callback function
    */
-  registerOnValidatorChange(fn: () => void): void {
-    this._onChange = fn;
-  }
+  registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
 }
 
 /**
@@ -316,9 +311,7 @@ export class EmailValidator implements Validator {
  *
  * @publicApi
  */
-export interface ValidatorFn {
-  (control: AbstractControl): ValidationErrors|null;
-}
+export interface ValidatorFn { (control: AbstractControl): ValidationErrors|null; }
 
 /**
  * @description
@@ -367,18 +360,19 @@ export const MIN_LENGTH_VALIDATOR: any = {
   providers: [MIN_LENGTH_VALIDATOR],
   host: {'[attr.minlength]': 'minlength ? minlength : null'}
 })
-export class MinLengthValidator implements Validator, OnChanges {
+export class MinLengthValidator implements Validator,
+    OnChanges {
   // TODO(issue/24571): remove '!'.
-  private _validator!: ValidatorFn;
+  private _validator !: ValidatorFn;
   // TODO(issue/24571): remove '!'.
-  private _onChange!: () => void;
+  private _onChange !: () => void;
 
   /**
    * @description
    * Tracks changes to the the minimum length bound to this directive.
    */
   // TODO(issue/24571): remove '!'.
-  @Input() minlength!: string|number;
+  @Input() minlength !: string | number;
 
   /**
    * @description
@@ -409,9 +403,7 @@ export class MinLengthValidator implements Validator, OnChanges {
    *
    * @param fn The callback function
    */
-  registerOnValidatorChange(fn: () => void): void {
-    this._onChange = fn;
-  }
+  registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
 
   private _createValidator(): void {
     this._validator = Validators.minLength(
@@ -455,18 +447,19 @@ export const MAX_LENGTH_VALIDATOR: any = {
   providers: [MAX_LENGTH_VALIDATOR],
   host: {'[attr.maxlength]': 'maxlength ? maxlength : null'}
 })
-export class MaxLengthValidator implements Validator, OnChanges {
+export class MaxLengthValidator implements Validator,
+    OnChanges {
   // TODO(issue/24571): remove '!'.
-  private _validator!: ValidatorFn;
+  private _validator !: ValidatorFn;
   // TODO(issue/24571): remove '!'.
-  private _onChange!: () => void;
+  private _onChange !: () => void;
 
   /**
    * @description
    * Tracks changes to the the maximum length bound to this directive.
    */
   // TODO(issue/24571): remove '!'.
-  @Input() maxlength!: string|number;
+  @Input() maxlength !: string | number;
 
   /**
    * @description
@@ -497,9 +490,7 @@ export class MaxLengthValidator implements Validator, OnChanges {
    *
    * @param fn The callback function
    */
-  registerOnValidatorChange(fn: () => void): void {
-    this._onChange = fn;
-  }
+  registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
 
   private _createValidator(): void {
     this._validator = Validators.maxLength(
@@ -546,18 +537,19 @@ export const PATTERN_VALIDATOR: any = {
   providers: [PATTERN_VALIDATOR],
   host: {'[attr.pattern]': 'pattern ? pattern : null'}
 })
-export class PatternValidator implements Validator, OnChanges {
+export class PatternValidator implements Validator,
+    OnChanges {
   // TODO(issue/24571): remove '!'.
-  private _validator!: ValidatorFn;
+  private _validator !: ValidatorFn;
   // TODO(issue/24571): remove '!'.
-  private _onChange!: () => void;
+  private _onChange !: () => void;
 
   /**
    * @description
    * Tracks changes to the pattern bound to this directive.
    */
   // TODO(issue/24571): remove '!'.
-  @Input() pattern!: string|RegExp;
+  @Input() pattern !: string | RegExp;
 
   /**
    * @description
@@ -578,9 +570,7 @@ export class PatternValidator implements Validator, OnChanges {
    * Method that validates whether the value matches the
    * the pattern requirement.
    */
-  validate(control: AbstractControl): ValidationErrors|null {
-    return this._validator(control);
-  }
+  validate(control: AbstractControl): ValidationErrors|null { return this._validator(control); }
 
   /**
    * @description
@@ -588,11 +578,7 @@ export class PatternValidator implements Validator, OnChanges {
    *
    * @param fn The callback function
    */
-  registerOnValidatorChange(fn: () => void): void {
-    this._onChange = fn;
-  }
+  registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
 
-  private _createValidator(): void {
-    this._validator = Validators.pattern(this.pattern);
-  }
+  private _createValidator(): void { this._validator = Validators.pattern(this.pattern); }
 }

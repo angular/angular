@@ -3843,7 +3843,7 @@ describe('compiler compliance', () => {
         }
       };
       const result = compile(files, angularFiles);
-      expect(result.source.match(/ɵdir/g)!.length).toBe(1);
+      expect(result.source.match(/ɵdir/g) !.length).toBe(1);
     });
   });
 });

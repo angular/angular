@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, STRING_TYPE, WrappedNodeExpr} from '@angular/compiler';
+import {CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, STRING_TYPE, SchemaMetadata, Statement, WrappedNodeExpr, compileInjector, compileNgModule} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../diagnostics';
@@ -40,9 +40,7 @@ export interface NgModuleAnalysis {
   providers: ts.Expression|null;
 }
 
-export interface NgModuleResolution {
-  injectorImports: Expression[];
-}
+export interface NgModuleResolution { injectorImports: Expression[]; }
 
 /**
  * Compiles @NgModule annotations to ngModuleDef fields.
@@ -118,7 +116,7 @@ export class NgModuleDecoratorHandler implements
     let declarationRefs: Reference<ClassDeclaration>[] = [];
     let rawDeclarations: ts.Expression|null = null;
     if (ngModule.has('declarations')) {
-      rawDeclarations = ngModule.get('declarations')!;
+      rawDeclarations = ngModule.get('declarations') !;
       const declarationMeta = this.evaluator.evaluate(rawDeclarations, forwardRefResolver);
       declarationRefs =
           this.resolveTypeList(rawDeclarations, declarationMeta, name, 'declarations');
@@ -129,8 +127,7 @@ export class NgModuleDecoratorHandler implements
           const errorNode: ts.Expression = ref.getOriginForDiagnostics(rawDeclarations);
 
           diagnostics.push(makeDiagnostic(
-              ErrorCode.NGMODULE_INVALID_DECLARATION, errorNode,
-              `Cannot declare '${
+              ErrorCode.NGMODULE_INVALID_DECLARATION, errorNode, `Cannot declare '${
                   ref.node.name
                       .text}' in an NgModule as it's not a part of the current compilation.`,
               [{
@@ -148,28 +145,28 @@ export class NgModuleDecoratorHandler implements
     let importRefs: Reference<ClassDeclaration>[] = [];
     let rawImports: ts.Expression|null = null;
     if (ngModule.has('imports')) {
-      rawImports = ngModule.get('imports')!;
+      rawImports = ngModule.get('imports') !;
       const importsMeta = this.evaluator.evaluate(rawImports, moduleResolvers);
       importRefs = this.resolveTypeList(rawImports, importsMeta, name, 'imports');
     }
     let exportRefs: Reference<ClassDeclaration>[] = [];
     let rawExports: ts.Expression|null = null;
     if (ngModule.has('exports')) {
-      rawExports = ngModule.get('exports')!;
+      rawExports = ngModule.get('exports') !;
       const exportsMeta = this.evaluator.evaluate(rawExports, moduleResolvers);
       exportRefs = this.resolveTypeList(rawExports, exportsMeta, name, 'exports');
       this.referencesRegistry.add(node, ...exportRefs);
     }
     let bootstrapRefs: Reference<ClassDeclaration>[] = [];
     if (ngModule.has('bootstrap')) {
-      const expr = ngModule.get('bootstrap')!;
+      const expr = ngModule.get('bootstrap') !;
       const bootstrapMeta = this.evaluator.evaluate(expr, forwardRefResolver);
       bootstrapRefs = this.resolveTypeList(expr, bootstrapMeta, name, 'bootstrap');
     }
 
     const schemas: SchemaMetadata[] = [];
     if (ngModule.has('schemas')) {
-      const rawExpr = ngModule.get('schemas')!;
+      const rawExpr = ngModule.get('schemas') !;
       const result = this.evaluator.evaluate(rawExpr);
       if (!Array.isArray(result)) {
         throw new FatalDiagnosticError(
@@ -207,7 +204,7 @@ export class NgModuleDecoratorHandler implements
     }
 
     const id: Expression|null =
-        ngModule.has('id') ? new WrappedNodeExpr(ngModule.get('id')!) : null;
+        ngModule.has('id') ? new WrappedNodeExpr(ngModule.get('id') !) : null;
     const valueContext = node.getSourceFile();
 
     let typeContext = valueContext;
@@ -224,7 +221,7 @@ export class NgModuleDecoratorHandler implements
     const exports = exportRefs.map(exp => this._toR3Reference(exp, valueContext, typeContext));
 
     const isForwardReference = (ref: R3Reference) =>
-        isExpressionForwardReference(ref.value, node.name!, valueContext);
+        isExpressionForwardReference(ref.value, node.name !, valueContext);
     const containsForwardDecls = bootstrap.some(isForwardReference) ||
         declarations.some(isForwardReference) || imports.some(isForwardReference) ||
         exports.some(isForwardReference);
@@ -248,7 +245,7 @@ export class NgModuleDecoratorHandler implements
       schemas: [],
     };
 
-    const rawProviders = ngModule.has('providers') ? ngModule.get('providers')! : null;
+    const rawProviders = ngModule.has('providers') ? ngModule.get('providers') ! : null;
     const wrapperProviders = rawProviders !== null ?
         new WrappedNodeExpr(
             this.annotateForClosureCompiler ? wrapFunctionExpressionsInParens(rawProviders) :
@@ -260,7 +257,7 @@ export class NgModuleDecoratorHandler implements
     // and pipes from the module exports.
     const injectorImports: WrappedNodeExpr<ts.Expression>[] = [];
     if (ngModule.has('imports')) {
-      injectorImports.push(new WrappedNodeExpr(ngModule.get('imports')!));
+      injectorImports.push(new WrappedNodeExpr(ngModule.get('imports') !));
     }
 
     if (this.routeAnalyzer !== null) {
@@ -283,8 +280,7 @@ export class NgModuleDecoratorHandler implements
         schemas: schemas,
         mod: ngModuleDef,
         inj: ngInjectorDef,
-        declarations: declarationRefs,
-        rawDeclarations,
+        declarations: declarationRefs, rawDeclarations,
         imports: importRefs,
         exports: exportRefs,
         providers: rawProviders,
@@ -331,7 +327,7 @@ export class NgModuleDecoratorHandler implements
 
     if (analysis.providersRequiringFactory !== null) {
       const providerDiagnostics = getProviderDiagnostics(
-          analysis.providersRequiringFactory, analysis.providers!, this.injectableRegistry);
+          analysis.providersRequiringFactory, analysis.providers !, this.injectableRegistry);
       diagnostics.push(...providerDiagnostics);
     }
 
@@ -401,7 +397,7 @@ export class NgModuleDecoratorHandler implements
         const pipes = scope.compilation.pipes.map(pipe => this.refEmitter.emit(pipe.ref, context));
         const directiveArray = new LiteralArrayExpr(directives);
         const pipesArray = new LiteralArrayExpr(pipes);
-        const declExpr = this.refEmitter.emit(decl, context)!;
+        const declExpr = this.refEmitter.emit(decl, context) !;
         const setComponentScope = new ExternalExpr(R3Identifiers.setComponentScope);
         const callExpr =
             new InvokeFunctionExpr(setComponentScope, [declExpr, directiveArray, pipesArray]);
@@ -477,9 +473,8 @@ export class NgModuleDecoratorHandler implements
       return null;
     }
 
-    const typeName = type &&
-            (ts.isIdentifier(type.typeName) && type.typeName ||
-             ts.isQualifiedName(type.typeName) && type.typeName.right) ||
+    const typeName = type && (ts.isIdentifier(type.typeName) && type.typeName ||
+                              ts.isQualifiedName(type.typeName) && type.typeName.right) ||
         null;
     if (typeName === null) {
       return null;
@@ -565,7 +560,7 @@ export class NgModuleDecoratorHandler implements
       // Unwrap ModuleWithProviders for modules that are locally declared (and thus static
       // resolution was able to descend into the function and return an object literal, a Map).
       if (entry instanceof Map && entry.has('ngModule')) {
-        entry = entry.get('ngModule')!;
+        entry = entry.get('ngModule') !;
       }
 
       if (Array.isArray(entry)) {

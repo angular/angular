@@ -12,7 +12,7 @@ import {ClassDeclaration, ConcreteDeclaration, Declaration, Decorator, Reflectio
 export const PRE_R3_MARKER = '__PRE_R3__';
 export const POST_R3_MARKER = '__POST_R3__';
 
-export type SwitchableVariableDeclaration = ts.VariableDeclaration&{initializer: ts.Identifier};
+export type SwitchableVariableDeclaration = ts.VariableDeclaration & {initializer: ts.Identifier};
 export function isSwitchableVariableDeclaration(node: ts.Node):
     node is SwitchableVariableDeclaration {
   return ts.isVariableDeclaration(node) && !!node.initializer &&
@@ -47,7 +47,7 @@ export interface ModuleWithProvidersFunction {
  * The symbol corresponding to a "class" declaration. I.e. a `ts.Symbol` whose `valueDeclaration` is
  * a `ClassDeclaration`.
  */
-export type ClassSymbol = ts.Symbol&{valueDeclaration: ClassDeclaration};
+export type ClassSymbol = ts.Symbol & {valueDeclaration: ClassDeclaration};
 
 /**
  * A representation of a class that accounts for the potential existence of two `ClassSymbol`s for a

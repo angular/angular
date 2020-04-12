@@ -12,9 +12,10 @@ import * as cluster from 'cluster';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {JsonObject} from '../../packages/entry_point';
-import {applyChange, PackageJsonChange, PackageJsonUpdate, PackageJsonUpdater} from '../../writing/package_json_updater';
+import {PackageJsonChange, PackageJsonUpdate, PackageJsonUpdater, applyChange} from '../../writing/package_json_updater';
 
 import {sendMessageToMaster} from './utils';
+
 
 
 /**

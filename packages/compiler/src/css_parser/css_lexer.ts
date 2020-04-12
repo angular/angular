@@ -117,7 +117,7 @@ function _trackWhitespace(mode: CssLexerMode) {
 
 export class CssScanner {
   // TODO(issue/24571): remove '!'.
-  peek!: number;
+  peek !: number;
   peekPeek: number;
   length: number = 0;
   index: number = -1;
@@ -135,9 +135,7 @@ export class CssScanner {
     this.advance();
   }
 
-  getMode(): CssLexerMode {
-    return this._currentMode;
-  }
+  getMode(): CssLexerMode { return this._currentMode; }
 
   setMode(mode: CssLexerMode) {
     if (this._currentMode != mode) {
@@ -200,7 +198,7 @@ export class CssScanner {
     const previousLine = this.line;
     const previousColumn = this.column;
 
-    let next: CssToken = undefined!;
+    let next: CssToken = undefined !;
     const output = this.scan();
     if (output != null) {
       // just incase the inner scan method returned an error
@@ -238,10 +236,9 @@ export class CssScanner {
       }
 
       error = cssScannerError(
-          next,
-          generateErrorMessage(
-              this.input, errorMessage, next.strValue, previousIndex, previousLine,
-              previousColumn));
+          next, generateErrorMessage(
+                    this.input, errorMessage, next.strValue, previousIndex, previousLine,
+                    previousColumn));
     }
 
     return new LexedCssResult(error, next);
@@ -257,7 +254,7 @@ export class CssScanner {
     const token = this._scan();
     if (token == null) return null;
 
-    const error = this._currentError!;
+    const error = this._currentError !;
     this._currentError = null;
 
     if (!trackWS) {
@@ -464,7 +461,7 @@ export class CssScanner {
     const startingColumn = this.column;
     this.advance();
     if (isIdentifierStart(this.peek, this.peekPeek)) {
-      const ident = this.scanIdentifier()!;
+      const ident = this.scanIdentifier() !;
       const strValue = '@' + ident.strValue;
       return new CssToken(start, startingColumn, this.line, CssTokenType.AtKeyword, strValue);
     } else {

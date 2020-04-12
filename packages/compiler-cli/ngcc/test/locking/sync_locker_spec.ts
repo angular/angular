@@ -50,9 +50,7 @@ runInEachFileSystem(() => {
         const lockFile = new MockLockFile(fs, log);
         const locker = new SyncLocker(lockFile);
 
-        spyOn(lockFile, 'write').and.callFake(() => {
-          throw {code: 'EEXIST'};
-        });
+        spyOn(lockFile, 'write').and.callFake(() => { throw {code: 'EEXIST'}; });
         spyOn(lockFile, 'read').and.returnValue('188');
 
         expect(() => locker.lock(() => {}))

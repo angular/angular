@@ -52,7 +52,7 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
     }
 
     if (this.cache.has(clazz)) {
-      return this.cache.get(clazz)!;
+      return this.cache.get(clazz) !;
     }
 
     // Build up the export scope - those directives and pipes made visible by this module.

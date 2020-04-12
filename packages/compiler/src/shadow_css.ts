@@ -175,9 +175,8 @@ export class ShadowCss {
    **/
   private _insertPolyfillDirectivesInCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
-    return cssText.replace(_cssContentNextSelectorRe, function(...m: string[]) {
-      return m[2] + '{';
-    });
+    return cssText.replace(
+        _cssContentNextSelectorRe, function(...m: string[]) { return m[2] + '{'; });
   }
 
   /*
@@ -506,9 +505,7 @@ class SafeSelector {
     return content.replace(/__ph-(\d+)__/g, (ph, index) => this.placeholders[+index]);
   }
 
-  content(): string {
-    return this._content;
-  }
+  content(): string { return this._content; }
 }
 
 const _cssContentNextSelectorRe =

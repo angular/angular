@@ -15,7 +15,7 @@ import {formatDiagnostics} from '../../src/perform_compile';
 import {CompilerHost, EmitFlags, LazyRoute} from '../../src/transformers/api';
 import {createSrcToOutPathMapper} from '../../src/transformers/program';
 import {StructureIsReused, tsStructureIsReused} from '../../src/transformers/util';
-import {expectNoDiagnosticsInProgram, setup, stripAnsi, TestSupport} from '../test_support';
+import {TestSupport, expectNoDiagnosticsInProgram, setup, stripAnsi} from '../test_support';
 
 describe('ng program', () => {
   let testSupport: TestSupport;
@@ -84,21 +84,21 @@ describe('ng program', () => {
 
     const originalGetSourceFile = host.getSourceFile;
     const cache = new Map<string, ts.SourceFile>();
-    host.getSourceFile = function(fileName: string, languageVersion: ts.ScriptTarget):
-                             ts.SourceFile|
-                         undefined {
-                           const sf = originalGetSourceFile.call(host, fileName, languageVersion);
-                           if (sf) {
-                             if (cache.has(sf.fileName)) {
-                               const oldSf = cache.get(sf.fileName)!;
-                               if (oldSf.getFullText() === sf.getFullText()) {
-                                 return oldSf;
-                               }
-                             }
-                             cache.set(sf.fileName, sf);
-                           }
-                           return sf;
-                         };
+    host.getSourceFile = function(
+                             fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile |
+        undefined {
+          const sf = originalGetSourceFile.call(host, fileName, languageVersion);
+          if (sf) {
+            if (cache.has(sf.fileName)) {
+              const oldSf = cache.get(sf.fileName) !;
+              if (oldSf.getFullText() === sf.getFullText()) {
+                return oldSf;
+              }
+            }
+            cache.set(sf.fileName, sf);
+          }
+          return sf;
+        };
     return host;
   }
 
@@ -249,8 +249,7 @@ describe('ng program', () => {
       fileCache.delete(path.posix.join(testSupport.basePath, 'src/index.ts'));
       const p6 = ng.createProgram({
         rootNames: [path.posix.join(testSupport.basePath, 'src/index.ts')],
-        options: testSupport.createCompilerOptions(options),
-        host,
+        options: testSupport.createCompilerOptions(options), host,
         oldProgram: p5
       });
       const p7 = compile(p6, options, undefined, host).program;
@@ -473,7 +472,7 @@ describe('ng program', () => {
 
     host.writeFile =
         (fileName: string, data: string, writeByteOrderMark: boolean,
-         onError: ((message: string) => void)|undefined,
+         onError: ((message: string) => void) | undefined,
          sourceFiles?: ReadonlyArray<ts.SourceFile>) => {
           written.set(fileName, {original: sourceFiles, data});
         };
@@ -487,19 +486,19 @@ describe('ng program', () => {
       const writeData = written.get(path.posix.join(testSupport.basePath, fileName));
       expect(writeData).toBeTruthy();
       expect(
-          writeData!.original!.some(
+          writeData !.original !.some(
               sf => sf.fileName === path.posix.join(testSupport.basePath, checks.originalFileName)))
           .toBe(true);
       switch (checks.shouldBe) {
         case ShouldBe.Empty:
-          expect(writeData!.data).toMatch(/^(\s*\/\*([^*]|\*[^/])*\*\/\s*)?$/);
+          expect(writeData !.data).toMatch(/^(\s*\/\*([^*]|\*[^/])*\*\/\s*)?$/);
           break;
         case ShouldBe.EmptyExport:
-          expect(writeData!.data)
+          expect(writeData !.data)
               .toMatch(/^((\s*\/\*([^*]|\*[^/])*\*\/\s*)|(\s*export\s*{\s*}\s*;\s*)|())$/);
           break;
         case ShouldBe.NoneEmpty:
-          expect(writeData!.data).not.toBe('');
+          expect(writeData !.data).not.toBe('');
           break;
       }
     }
@@ -1099,15 +1098,15 @@ describe('ng program', () => {
          });
          const host = ng.createCompilerHost({options});
          const originalGetSourceFile = host.getSourceFile;
-         host.getSourceFile =
-             (fileName: string, languageVersion: ts.ScriptTarget,
-              onError?: ((message: string) => void)|undefined): ts.SourceFile|undefined => {
-               // We should never try to load .ngfactory.ts files
-               if (fileName.match(/\.ngfactory\.ts$/)) {
-                 throw new Error(`Non existent ngfactory file: ` + fileName);
-               }
-               return originalGetSourceFile.call(host, fileName, languageVersion, onError);
-             };
+         host.getSourceFile = (fileName: string, languageVersion: ts.ScriptTarget,
+                               onError?: ((message: string) => void) | undefined): ts.SourceFile |
+             undefined => {
+           // We should never try to load .ngfactory.ts files
+           if (fileName.match(/\.ngfactory\.ts$/)) {
+             throw new Error(`Non existent ngfactory file: ` + fileName);
+           }
+           return originalGetSourceFile.call(host, fileName, languageVersion, onError);
+         };
          const program = ng.createProgram({rootNames: allRootNames, options, host});
          const structuralErrors = program.getNgStructuralDiagnostics();
          expect(structuralErrors.length).toBe(1);

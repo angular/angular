@@ -105,21 +105,17 @@ export class Xliff2 extends Serializer {
       throw new Error(`xliff2 parse errors:\n${errors.join('\n')}`);
     }
 
-    return {locale: locale!, i18nNodesByMsgId};
+    return {locale: locale !, i18nNodesByMsgId};
   }
 
-  digest(message: i18n.Message): string {
-    return decimalDigest(message);
-  }
+  digest(message: i18n.Message): string { return decimalDigest(message); }
 }
 
 class _WriteVisitor implements i18n.Visitor {
   // TODO(issue/24571): remove '!'.
-  private _nextPlaceholderId!: number;
+  private _nextPlaceholderId !: number;
 
-  visitText(text: i18n.Text, context?: any): xml.Node[] {
-    return [new xml.Text(text.value)];
-  }
+  visitText(text: i18n.Text, context?: any): xml.Node[] { return [new xml.Text(text.value)]; }
 
   visitContainer(container: i18n.Container, context?: any): xml.Node[] {
     const nodes: xml.Node[] = [];
@@ -196,11 +192,11 @@ class _WriteVisitor implements i18n.Visitor {
 // Extract messages as xml nodes from the xliff file
 class Xliff2Parser implements ml.Visitor {
   // TODO(issue/24571): remove '!'.
-  private _unitMlString!: string|null;
+  private _unitMlString !: string | null;
   // TODO(issue/24571): remove '!'.
-  private _errors!: I18nError[];
+  private _errors !: I18nError[];
   // TODO(issue/24571): remove '!'.
-  private _msgIdToHtml!: {[msgId: string]: string};
+  private _msgIdToHtml !: {[msgId: string]: string};
   private _locale: string|null = null;
 
   parse(xliff: string, url: string) {
@@ -246,9 +242,9 @@ class Xliff2Parser implements ml.Visitor {
         break;
 
       case _TARGET_TAG:
-        const innerTextStart = element.startSourceSpan!.end.offset;
-        const innerTextEnd = element.endSourceSpan!.start.offset;
-        const content = element.startSourceSpan!.start.file.content;
+        const innerTextStart = element.startSourceSpan !.end.offset;
+        const innerTextEnd = element.endSourceSpan !.start.offset;
+        const content = element.startSourceSpan !.start.file.content;
         const innerText = content.slice(innerTextStart, innerTextEnd);
         this._unitMlString = innerText;
         break;
@@ -294,7 +290,7 @@ class Xliff2Parser implements ml.Visitor {
 // Convert ml nodes (xliff syntax) to i18n nodes
 class XmlToI18n implements ml.Visitor {
   // TODO(issue/24571): remove '!'.
-  private _errors!: I18nError[];
+  private _errors !: I18nError[];
 
   convert(message: string, url: string) {
     const xmlIcu = new XmlParser().parse(message, url, {tokenizeExpansionForms: true});
@@ -310,9 +306,7 @@ class XmlToI18n implements ml.Visitor {
     };
   }
 
-  visitText(text: ml.Text, context: any) {
-    return new i18n.Text(text.value, text.sourceSpan);
-  }
+  visitText(text: ml.Text, context: any) { return new i18n.Text(text.value, text.sourceSpan); }
 
   visitElement(el: ml.Element, context: any): i18n.Node[]|null {
     switch (el.name) {

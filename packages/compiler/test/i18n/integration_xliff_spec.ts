@@ -13,7 +13,7 @@ import {Xliff} from '@angular/compiler/src/i18n/serializers/xliff';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
 import {DebugElement, TRANSLATIONS, TRANSLATIONS_FORMAT} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {SpyResourceLoader} from '../spies';

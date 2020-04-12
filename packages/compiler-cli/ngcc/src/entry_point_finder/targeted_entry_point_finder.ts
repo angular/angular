@@ -5,17 +5,18 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, join, PathSegment, relative, relativeFrom} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, PathSegment, join, relative, relativeFrom} from '../../../src/ngtsc/file_system';
 import {EntryPointWithDependencies} from '../dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {Logger} from '../logging/logger';
 import {hasBeenProcessed} from '../packages/build_marker';
 import {NgccConfiguration} from '../packages/configuration';
-import {EntryPoint, EntryPointJsonProperty, getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT} from '../packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT, getEntryPointInfo} from '../packages/entry_point';
 import {PathMappings} from '../utils';
 
 import {EntryPointFinder} from './interface';
 import {getBasePaths} from './utils';
+
 
 /**
  * An EntryPointFinder that starts from a target entry-point and only finds
@@ -78,7 +79,7 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
   }
 
   private processNextPath(): void {
-    const path = this.unprocessedPaths.shift()!;
+    const path = this.unprocessedPaths.shift() !;
     const entryPoint = this.getEntryPoint(path);
     if (entryPoint === null || !entryPoint.compiledByAngular) {
       return;
@@ -132,7 +133,7 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
         // Start the search at the deepest nested `node_modules` folder that is below the `basePath`
         // but above the `entryPointPath`, if there are any.
         while (nodeModulesIndex >= 0) {
-          packagePath = join(packagePath, segments.shift()!);
+          packagePath = join(packagePath, segments.shift() !);
           nodeModulesIndex--;
         }
 

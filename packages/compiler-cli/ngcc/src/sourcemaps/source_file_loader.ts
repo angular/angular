@@ -7,11 +7,12 @@
  */
 import {commentRegex, fromComment, mapFileCommentRegex} from 'convert-source-map';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, absoluteFrom} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
 
 import {RawSourceMap} from './raw_source_map';
 import {SourceFile} from './source_file';
+
 
 /**
  * This class can be used to load a source file, its associated source map and any upstream sources.
@@ -70,7 +71,7 @@ export class SourceFileLoader {
 
       let map: RawSourceMap|null = null;
       let inline = true;
-      let sources: (SourceFile|null)[] = [];
+      let sources: (SourceFile | null)[] = [];
       if (mapAndPath !== null) {
         const basePath = mapAndPath.mapPath || sourcePath;
         sources = this.processSources(basePath, mapAndPath.map);
@@ -99,7 +100,7 @@ export class SourceFileLoader {
   private loadSourceMap(sourcePath: AbsoluteFsPath, contents: string): MapAndPath|null {
     const inline = commentRegex.exec(contents);
     if (inline !== null) {
-      return {map: fromComment(inline.pop()!).sourcemap, mapPath: null};
+      return {map: fromComment(inline.pop() !).sourcemap, mapPath: null};
     }
 
     const external = mapFileCommentRegex.exec(contents);

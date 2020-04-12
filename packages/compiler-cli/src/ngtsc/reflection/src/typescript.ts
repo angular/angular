@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, isDecoratorIdentifier, ReflectionHost} from './host';
+import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, ReflectionHost, isDecoratorIdentifier} from './host';
 import {typeToValue} from './type_to_value';
 
 /**
@@ -76,10 +76,8 @@ export class TypeScriptReflectionHost implements ReflectionHost {
 
       return {
         name,
-        nameNode: node.name,
-        typeValueReference,
-        typeNode: originalTypeNode,
-        decorators,
+        nameNode: node.name, typeValueReference,
+        typeNode: originalTypeNode, decorators,
       };
     });
   }
@@ -185,17 +183,11 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return declaration.initializer || null;
   }
 
-  getDtsDeclaration(_: ts.Declaration): ts.Declaration|null {
-    return null;
-  }
+  getDtsDeclaration(_: ts.Declaration): ts.Declaration|null { return null; }
 
-  getInternalNameOfClass(clazz: ClassDeclaration): ts.Identifier {
-    return clazz.name;
-  }
+  getInternalNameOfClass(clazz: ClassDeclaration): ts.Identifier { return clazz.name; }
 
-  getAdjacentNameOfClass(clazz: ClassDeclaration): ts.Identifier {
-    return clazz.name;
-  }
+  getAdjacentNameOfClass(clazz: ClassDeclaration): ts.Identifier { return clazz.name; }
 
   protected getDirectImportOfIdentifier(id: ts.Identifier): Import|null {
     const symbol = this.checker.getSymbolAtLocation(id);
@@ -313,14 +305,12 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     if (symbol.valueDeclaration !== undefined) {
       return {
         node: symbol.valueDeclaration,
-        known: null,
-        viaModule,
+        known: null, viaModule,
       };
     } else if (symbol.declarations !== undefined && symbol.declarations.length > 0) {
       return {
         node: symbol.declarations[0],
-        known: null,
-        viaModule,
+        known: null, viaModule,
       };
     } else {
       return null;
@@ -352,9 +342,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return {
       name: decoratorIdentifier.text,
       identifier: decoratorExpr,
-      import: importDecl,
-      node,
-      args,
+      import: importDecl, node, args,
     };
   }
 
@@ -394,14 +382,8 @@ export class TypeScriptReflectionHost implements ReflectionHost {
 
     return {
       node,
-      implementation: node,
-      kind,
-      type: node.type || null,
-      name,
-      nameNode,
-      decorators,
-      value,
-      isStatic,
+      implementation: node, kind,
+      type: node.type || null, name, nameNode, decorators, value, isStatic,
     };
   }
 }
@@ -423,7 +405,7 @@ export function reflectIdentifierOfDeclaration(decl: ts.Declaration): ts.Identif
 }
 
 export function reflectTypeEntityToDeclaration(
-    type: ts.EntityName, checker: ts.TypeChecker): {node: ts.Declaration, from: string|null} {
+    type: ts.EntityName, checker: ts.TypeChecker): {node: ts.Declaration, from: string | null} {
   let realSymbol = checker.getSymbolAtLocation(type);
   if (realSymbol === undefined) {
     throw new Error(`Cannot resolve type entity ${type.getText()} to symbol`);
@@ -452,8 +434,8 @@ export function reflectTypeEntityToDeclaration(
     }
     const decl = symbol.declarations[0];
     if (ts.isNamespaceImport(decl)) {
-      const clause = decl.parent!;
-      const importDecl = clause.parent!;
+      const clause = decl.parent !;
+      const importDecl = clause.parent !;
       if (!ts.isStringLiteral(importDecl.moduleSpecifier)) {
         throw new Error(`Module specifier is not a string`);
       }
@@ -570,7 +552,7 @@ function getFarLeftIdentifier(propertyAccess: ts.PropertyAccessExpression): ts.I
  * `NamespaceImport`. If not return `null`.
  */
 function getContainingImportDeclaration(node: ts.Node): ts.ImportDeclaration|null {
-  return ts.isImportSpecifier(node) ? node.parent!.parent!.parent! :
+  return ts.isImportSpecifier(node) ? node.parent !.parent !.parent ! :
                                       ts.isNamespaceImport(node) ? node.parent.parent : null;
 }
 

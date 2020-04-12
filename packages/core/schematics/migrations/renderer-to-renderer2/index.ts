@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {createMigrationProgram} from '../../utils/typescript/compiler_host';
 
-import {getHelper, HelperFunction} from './helpers';
+import {HelperFunction, getHelper} from './helpers';
 import {migrateExpression, replaceImport} from './migration';
 import {findCoreImport, findRendererReferences} from './util';
 

@@ -12,23 +12,17 @@ import {runInEachFileSystem} from '../../file_system/testing';
 import {ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
 import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
-import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
+import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing';
 import {ResourceLoader} from '../src/api';
 import {ComponentDecoratorHandler} from '../src/component';
 
 export class NoopResourceLoader implements ResourceLoader {
-  resolve(): string {
-    throw new Error('Not implemented.');
-  }
+  resolve(): string { throw new Error('Not implemented.'); }
   canPreload = false;
-  load(): string {
-    throw new Error('Not implemented');
-  }
-  preload(): Promise<void>|undefined {
-    throw new Error('Not implemented');
-  }
+  load(): string { throw new Error('Not implemented'); }
+  preload(): Promise<void>|undefined { throw new Error('Not implemented'); }
 }
 runInEachFileSystem(() => {
   describe('ComponentDecoratorHandler', () => {
@@ -89,12 +83,10 @@ runInEachFileSystem(() => {
         const diag = err.toDiagnostic();
         expect(diag.code).toEqual(ivyCode(ErrorCode.DECORATOR_ARG_NOT_LITERAL));
         expect(diag.file.fileName.endsWith('entry.ts')).toBe(true);
-        expect(diag.start).toBe(detected.metadata.args![0].getStart());
+        expect(diag.start).toBe(detected.metadata.args ![0].getStart());
       }
     });
   });
 
-  function ivyCode(code: ErrorCode): number {
-    return Number('-99' + code.valueOf());
-  }
+  function ivyCode(code: ErrorCode): number { return Number('-99' + code.valueOf()); }
 });

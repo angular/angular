@@ -34,4 +34,4 @@ export class AppModule {
 
 declare function bootstrap(v: any): void;
 
-bootstrap(AppComponent);
+    bootstrap(AppComponent);

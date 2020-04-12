@@ -12,9 +12,9 @@ import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml
 class Unparser implements AstVisitor {
   private static _quoteRegExp = /"/g;
   // TODO(issue/24571): remove '!'.
-  private _expression!: string;
+  private _expression !: string;
   // TODO(issue/24571): remove '!'.
-  private _interpolationConfig!: InterpolationConfig;
+  private _interpolationConfig !: InterpolationConfig;
 
   unparse(ast: AST, interpolationConfig: InterpolationConfig) {
     this._expression = '';
@@ -69,7 +69,7 @@ class Unparser implements AstVisitor {
   }
 
   visitFunctionCall(ast: FunctionCall, context: any) {
-    this._visit(ast.target!);
+    this._visit(ast.target !);
     this._expression += '(';
     let isFirst = true;
     ast.args.forEach(arg => {
@@ -186,9 +186,7 @@ class Unparser implements AstVisitor {
     this._expression += `${ast.prefix}:${ast.uninterpretedExpression}`;
   }
 
-  private _visit(ast: AST) {
-    ast.visit(this);
-  }
+  private _visit(ast: AST) { ast.visit(this); }
 }
 
 const sharedUnparser = new Unparser();

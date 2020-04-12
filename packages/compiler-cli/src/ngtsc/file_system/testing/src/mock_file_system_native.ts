@@ -15,9 +15,7 @@ import {MockFileSystem} from './mock_file_system';
 const isWindows = os.platform() === 'win32';
 
 export class MockFileSystemNative extends MockFileSystem {
-  constructor(cwd: AbsoluteFsPath = '/' as AbsoluteFsPath) {
-    super(undefined, cwd);
-  }
+  constructor(cwd: AbsoluteFsPath = '/' as AbsoluteFsPath) { super(undefined, cwd); }
 
   // Delegate to the real NodeJSFileSystem for these path related methods
 
@@ -38,13 +36,9 @@ export class MockFileSystemNative extends MockFileSystem {
     return NodeJSFileSystem.prototype.basename.call(this, filePath, extension);
   }
 
-  isCaseSensitive() {
-    return NodeJSFileSystem.prototype.isCaseSensitive.call(this);
-  }
+  isCaseSensitive() { return NodeJSFileSystem.prototype.isCaseSensitive.call(this); }
 
-  isRooted(path: string): boolean {
-    return NodeJSFileSystem.prototype.isRooted.call(this, path);
-  }
+  isRooted(path: string): boolean { return NodeJSFileSystem.prototype.isRooted.call(this, path); }
 
   isRoot(path: AbsoluteFsPath): boolean {
     return NodeJSFileSystem.prototype.isRoot.call(this, path);
@@ -63,7 +57,5 @@ export class MockFileSystemNative extends MockFileSystem {
     return NodeJSFileSystem.prototype.normalize.call(this, path) as T;
   }
 
-  protected splitPath<T>(path: string): string[] {
-    return path.split(/[\\\/]/);
-  }
+  protected splitPath<T>(path: string): string[] { return path.split(/[\\\/]/); }
 }

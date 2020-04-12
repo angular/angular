@@ -82,7 +82,10 @@ export class PullApproveGroup {
               ` - ${condition}` +
               `\n\n` +
               `Known condition regexs:\n` +
-              `${Object.entries(CONDITION_TYPES).map(([k, v]) => ` ${k} - ${v}`).join('\n')}` +
+              `${Object.entries(CONDITION_TYPES).map(([k, v]) => ` ${k} - $ {
+            v
+          }
+          `).join('\n')}` +
               `\n\n`;
           console.error(errMessage);
           process.exit(1);
@@ -92,9 +95,7 @@ export class PullApproveGroup {
   }
 
   /** Retrieve all of the lines which were not able to be parsed. */
-  getBadLines(): string[] {
-    return this.misconfiguredLines;
-  }
+  getBadLines(): string[] { return this.misconfiguredLines; }
 
   /** Retrieve the results for the Group, all matched and unmatched conditions. */
   getResults(): PullApproveGroupResult {

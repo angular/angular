@@ -50,8 +50,8 @@ export enum TraitState {
  * This not only simplifies the implementation, but ensures traits are monomorphic objects as
  * they're all just "views" in the type system of the same object (which never changes shape).
  */
-export type Trait<D, A, R> = PendingTrait<D, A, R>|SkippedTrait<D, A, R>|AnalyzedTrait<D, A, R>|
-    ResolvedTrait<D, A, R>|ErroredTrait<D, A, R>;
+export type Trait<D, A, R> = PendingTrait<D, A, R>| SkippedTrait<D, A, R>| AnalyzedTrait<D, A, R>|
+    ResolvedTrait<D, A, R>| ErroredTrait<D, A, R>;
 
 /**
  * The value side of `Trait` exposes a helper to create a `Trait` in a pending state (by delegating
@@ -59,7 +59,7 @@ export type Trait<D, A, R> = PendingTrait<D, A, R>|SkippedTrait<D, A, R>|Analyze
  */
 export const Trait = {
   pending: <D, A, R>(handler: DecoratorHandler<D, A, R>, detected: DetectResult<D>):
-      PendingTrait<D, A, R> => TraitImpl.pending(handler, detected),
+               PendingTrait<D, A, R> => TraitImpl.pending(handler, detected),
 };
 
 /**
@@ -137,9 +137,7 @@ export interface ErroredTrait<D, A, R> extends TraitBase<D, A, R> {
  *
  * This is a terminal state.
  */
-export interface SkippedTrait<D, A, R> extends TraitBase<D, A, R> {
-  state: TraitState.SKIPPED;
-}
+export interface SkippedTrait<D, A, R> extends TraitBase<D, A, R> { state: TraitState.SKIPPED; }
 
 /**
  * The part of the `Trait` interface for any trait which has been successfully analyzed.

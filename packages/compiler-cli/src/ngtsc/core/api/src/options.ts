@@ -55,5 +55,4 @@ export interface TestOnlyOptions {
  * Also includes a few miscellaneous options.
  */
 export interface NgCompilerOptions extends ts.CompilerOptions, LegacyNgcOptions, BazelAndG3Options,
-                                           NgcCompatibilityOptions, StrictTemplateOptions,
-                                           TestOnlyOptions, I18nOptions, MiscOptions {}
+    NgcCompatibilityOptions, StrictTemplateOptions, TestOnlyOptions, I18nOptions, MiscOptions {}

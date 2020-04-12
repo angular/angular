@@ -12,7 +12,7 @@ import {deserializeSummaries, serializeSummaries} from '@angular/compiler/src/ao
 import {summaryFileName} from '@angular/compiler/src/aot/util';
 
 import {MockStaticSymbolResolverHost} from './static_symbol_resolver_spec';
-import {createMockOutputContext, MockAotSummaryResolverHost} from './summary_resolver_spec';
+import {MockAotSummaryResolverHost, createMockOutputContext} from './summary_resolver_spec';
 
 
 {
@@ -22,9 +22,7 @@ import {createMockOutputContext, MockAotSummaryResolverHost} from './summary_res
     let symbolCache: StaticSymbolCache;
     let host: MockAotSummaryResolverHost;
 
-    beforeEach(() => {
-      symbolCache = new StaticSymbolCache();
-    });
+    beforeEach(() => { symbolCache = new StaticSymbolCache(); });
 
     function init(
         summaries: {[filePath: string]: string} = {}, metadata: {[key: string]: any} = {}) {
@@ -103,7 +101,7 @@ import {createMockOutputContext, MockAotSummaryResolverHost} from './summary_res
         members: {aMethod: {__symbolic: 'function'}},
         statics: {aStatic: true}
       });
-      expect(summaries[1].type!.type.reference)
+      expect(summaries[1].type !.type.reference)
           .toBe(symbolCache.get('/tmp/some_service.d.ts', 'SomeService'));
     });
 
@@ -276,7 +274,7 @@ import {createMockOutputContext, MockAotSummaryResolverHost} from './summary_res
              '/tmp/external_svc.d.ts', 'SomeService')]);
          // SomService is a transitive dep, but should have been serialized as well.
          expect(summaries[2].symbol).toBe(symbolCache.get('/tmp/external_svc.d.ts', 'SomeService'));
-         expect(summaries[2].type!.type.reference)
+         expect(summaries[2].type !.type.reference)
              .toBe(symbolCache.get('/tmp/external_svc.d.ts', 'SomeService'));
          // there was no summary for non_summary, but it should have
          // been serialized as well.

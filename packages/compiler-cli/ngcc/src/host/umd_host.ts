@@ -14,7 +14,7 @@ import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, getTsHelperFnFromIdentifier, stripExtension} from '../utils';
 
-import {ExportDeclaration, ExportStatement, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isReexportStatement, isRequireCall, ReexportStatement} from './commonjs_umd_utils';
+import {ExportDeclaration, ExportStatement, ReexportStatement, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isReexportStatement, isRequireCall} from './commonjs_umd_utils';
 import {Esm5ReflectionHost, stripParentheses} from './esm5_host';
 
 export class UmdReflectionHost extends Esm5ReflectionHost {

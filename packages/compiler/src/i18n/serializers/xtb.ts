@@ -19,9 +19,7 @@ const _TRANSLATION_TAG = 'translation';
 const _PLACEHOLDER_TAG = 'ph';
 
 export class Xtb extends Serializer {
-  write(messages: i18n.Message[], locale: string|null): string {
-    throw new Error('Unsupported');
-  }
+  write(messages: i18n.Message[], locale: string|null): string { throw new Error('Unsupported'); }
 
   load(content: string, url: string):
       {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
@@ -51,12 +49,10 @@ export class Xtb extends Serializer {
       throw new Error(`xtb parse errors:\n${errors.join('\n')}`);
     }
 
-    return {locale: locale!, i18nNodesByMsgId};
+    return {locale: locale !, i18nNodesByMsgId};
   }
 
-  digest(message: i18n.Message): string {
-    return digest(message);
-  }
+  digest(message: i18n.Message): string { return digest(message); }
 
   createNameMapper(message: i18n.Message): PlaceholderMapper {
     return new SimplePlaceholderMapper(message, toPublicName);
@@ -72,20 +68,18 @@ function createLazyProperty(messages: any, id: string, valueFn: () => any) {
       Object.defineProperty(messages, id, {enumerable: true, value});
       return value;
     },
-    set: _ => {
-      throw new Error('Could not overwrite an XTB translation');
-    },
+    set: _ => { throw new Error('Could not overwrite an XTB translation'); },
   });
 }
 
 // Extract messages as xml nodes from the xtb file
 class XtbParser implements ml.Visitor {
   // TODO(issue/24571): remove '!'.
-  private _bundleDepth!: number;
+  private _bundleDepth !: number;
   // TODO(issue/24571): remove '!'.
-  private _errors!: I18nError[];
+  private _errors !: I18nError[];
   // TODO(issue/24571): remove '!'.
-  private _msgIdToHtml!: {[msgId: string]: string};
+  private _msgIdToHtml !: {[msgId: string]: string};
   private _locale: string|null = null;
 
   parse(xtb: string, url: string) {
@@ -130,10 +124,10 @@ class XtbParser implements ml.Visitor {
           if (this._msgIdToHtml.hasOwnProperty(id)) {
             this._addError(element, `Duplicated translations for msg ${id}`);
           } else {
-            const innerTextStart = element.startSourceSpan!.end.offset;
-            const innerTextEnd = element.endSourceSpan!.start.offset;
-            const content = element.startSourceSpan!.start.file.content;
-            const innerText = content.slice(innerTextStart!, innerTextEnd!);
+            const innerTextStart = element.startSourceSpan !.end.offset;
+            const innerTextEnd = element.endSourceSpan !.start.offset;
+            const content = element.startSourceSpan !.start.file.content;
+            const innerText = content.slice(innerTextStart !, innerTextEnd !);
             this._msgIdToHtml[id] = innerText;
           }
         }
@@ -155,14 +149,14 @@ class XtbParser implements ml.Visitor {
   visitExpansionCase(expansionCase: ml.ExpansionCase, context: any): any {}
 
   private _addError(node: ml.Node, message: string): void {
-    this._errors.push(new I18nError(node.sourceSpan!, message));
+    this._errors.push(new I18nError(node.sourceSpan !, message));
   }
 }
 
 // Convert ml nodes (xtb syntax) to i18n nodes
 class XmlToI18n implements ml.Visitor {
   // TODO(issue/24571): remove '!'.
-  private _errors!: I18nError[];
+  private _errors !: I18nError[];
 
   convert(message: string, url: string) {
     const xmlIcu = new XmlParser().parse(message, url, {tokenizeExpansionForms: true});
@@ -178,9 +172,7 @@ class XmlToI18n implements ml.Visitor {
     };
   }
 
-  visitText(text: ml.Text, context: any) {
-    return new i18n.Text(text.value, text.sourceSpan!);
-  }
+  visitText(text: ml.Text, context: any) { return new i18n.Text(text.value, text.sourceSpan !); }
 
   visitExpansion(icu: ml.Expansion, context: any) {
     const caseMap: {[value: string]: i18n.Node} = {};
@@ -203,7 +195,7 @@ class XmlToI18n implements ml.Visitor {
     if (el.name === _PLACEHOLDER_TAG) {
       const nameAttr = el.attrs.find((attr) => attr.name === 'name');
       if (nameAttr) {
-        return new i18n.Placeholder('', nameAttr.value, el.sourceSpan!);
+        return new i18n.Placeholder('', nameAttr.value, el.sourceSpan !);
       }
 
       this._addError(el, `<${_PLACEHOLDER_TAG}> misses the "name" attribute`);
@@ -218,6 +210,6 @@ class XmlToI18n implements ml.Visitor {
   visitAttribute(attribute: ml.Attribute, context: any) {}
 
   private _addError(node: ml.Node, message: string): void {
-    this._errors.push(new I18nError(node.sourceSpan!, message));
+    this._errors.push(new I18nError(node.sourceSpan !, message));
   }
 }

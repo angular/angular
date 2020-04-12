@@ -7,8 +7,8 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {Component, Directive, forwardRef, Type} from '@angular/core';
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {Component, Directive, Type, forwardRef} from '@angular/core';
+import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, FormControl, FormsModule, NG_ASYNC_VALIDATORS, NgForm, NgModel} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
@@ -56,7 +56,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(form.valid).toBe(false);
          }));
 
-      it('should report properties which are written outside of template bindings', async () => {
+      it('should report properties which are written outside of template bindings', async() => {
         // For example ngModel writes to `checked` property programmatically
         // (template does not contain binding to `checked` explicitly)
         // https://github.com/angular/angular/issues/33695
@@ -130,9 +130,9 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            tick();
 
            const form = fixture.debugElement.children[0].injector.get(NgForm);
-           expect(form.control.get('name')!.value).toEqual({first: 'Nancy', last: 'Drew'});
-           expect(form.control.get('name.first')!.value).toEqual('Nancy');
-           expect(form.control.get('email')!.value).toEqual('some email');
+           expect(form.control.get('name') !.value).toEqual({first: 'Nancy', last: 'Drew'});
+           expect(form.control.get('name.first') !.value).toEqual('Nancy');
+           expect(form.control.get('email') !.value).toEqual('some email');
          }));
 
       it('should remove controls and control groups from form control model', fakeAsync(() => {
@@ -144,7 +144,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            tick();
 
            const form = fixture.debugElement.children[0].injector.get(NgForm);
-           expect(form.control.get('email')!.value).toEqual('some email');
+           expect(form.control.get('email') !.value).toEqual('some email');
            expect(form.value).toEqual({name: {first: 'Nancy'}, email: 'some email'});
 
            // should remove individual control successfully
@@ -155,8 +155,8 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(form.control.get('email')).toBe(null);
            expect(form.value).toEqual({name: {first: 'Nancy'}});
 
-           expect(form.control.get('name')!.value).toEqual({first: 'Nancy'});
-           expect(form.control.get('name.first')!.value).toEqual('Nancy');
+           expect(form.control.get('name') !.value).toEqual({first: 'Nancy'});
+           expect(form.control.get('name.first') !.value).toEqual('Nancy');
 
            // should remove form group successfully
            fixture.componentInstance.groupShowing = false;
@@ -250,7 +250,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
       it('should not create a template-driven form when ngNoForm is used', () => {
         const fixture = initTest(NgNoFormComp);
         fixture.detectChanges();
-        expect(fixture.debugElement.children[0].providerTokens!.length).toEqual(0);
+        expect(fixture.debugElement.children[0].providerTokens !.length).toEqual(0);
       });
 
       it('should not add novalidate when ngNoForm is used', () => {
@@ -480,8 +480,8 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              const values: any[] = [];
              const form = fixture.debugElement.children[0].injector.get(NgForm);
 
-             const sub =
-                 merge(form.valueChanges!, form.statusChanges!).subscribe(val => values.push(val));
+             const sub = merge(form.valueChanges !, form.statusChanges !)
+                             .subscribe(val => values.push(val));
 
              const input = fixture.debugElement.query(By.css('input')).nativeElement;
              input.value = 'Nancy Drew';
@@ -693,8 +693,8 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              tick();
 
              const form = fixture.debugElement.children[0].injector.get(NgForm);
-             form.control.get('name')!.setValidators(groupValidatorSpy);
-             form.control.get('name.last')!.setValidators(validatorSpy);
+             form.control.get('name') !.setValidators(groupValidatorSpy);
+             form.control.get('name.last') !.setValidators(validatorSpy);
 
              const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
              dispatchEvent(formEl, 'submit');
@@ -809,8 +809,8 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              const values: any[] = [];
              const form = fixture.debugElement.children[0].injector.get(NgForm);
 
-             const sub =
-                 merge(form.valueChanges!, form.statusChanges!).subscribe(val => values.push(val));
+             const sub = merge(form.valueChanges !, form.statusChanges !)
+                             .subscribe(val => values.push(val));
 
              const input = fixture.debugElement.query(By.css('input')).nativeElement;
              input.value = 'Nancy Drew';
@@ -902,12 +902,12 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              tick();
 
              const form = fixture.debugElement.children[0].injector.get(NgForm);
-             const controlOne = form.control.get('one')! as FormControl;
+             const controlOne = form.control.get('one') !as FormControl;
              expect((controlOne as any)._updateOn).toBeUndefined();
              expect(controlOne.updateOn)
                  .toEqual('blur', 'Expected first control to inherit updateOn from parent form.');
 
-             const controlTwo = form.control.get('two')! as FormControl;
+             const controlTwo = form.control.get('two') !as FormControl;
              expect((controlTwo as any)._updateOn).toBeUndefined();
              expect(controlTwo.updateOn)
                  .toEqual('blur', 'Expected last control to inherit updateOn from parent form.');
@@ -943,12 +943,12 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              tick();
 
              const form = fixture.debugElement.children[0].injector.get(NgForm);
-             const controlOne = form.control.get('one')! as FormControl;
+             const controlOne = form.control.get('one') !as FormControl;
              expect((controlOne as any)._updateOn).toBeUndefined();
              expect(controlOne.updateOn)
                  .toEqual('change', 'Expected control updateOn to inherit form updateOn.');
 
-             const controlTwo = form.control.get('two')! as FormControl;
+             const controlTwo = form.control.get('two') !as FormControl;
              expect((controlTwo as any)._updateOn)
                  .toEqual('blur', 'Expected control to set blur override.');
              expect(controlTwo.updateOn)
@@ -1013,7 +1013,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
     describe('submit and reset events', () => {
       it('should emit ngSubmit event with the original submit event on submit', fakeAsync(() => {
            const fixture = initTest(NgModelForm);
-           fixture.componentInstance.event = null!;
+           fixture.componentInstance.event = null !;
 
            const form = fixture.debugElement.query(By.css('form'));
            dispatchEvent(form.nativeElement, 'submit');
@@ -1086,11 +1086,11 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(form.valid).toEqual(true);
            expect(form.value).toEqual({});
 
-           let formValidity: string = undefined!;
-           let formValue: Object = undefined!;
+           let formValidity: string = undefined !;
+           let formValue: Object = undefined !;
 
-           form.statusChanges!.subscribe((status: string) => formValidity = status);
-           form.valueChanges!.subscribe((value: string) => formValue = value);
+           form.statusChanges !.subscribe((status: string) => formValidity = status);
+           form.valueChanges !.subscribe((value: string) => formValue = value);
 
            tick();
 
@@ -1105,9 +1105,8 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            fixture.detectChanges();
            tick();
 
-           form.get('name')!.valueChanges.subscribe(() => {
-             expect(form.get('name')!.dirty).toBe(true);
-           });
+           form.get('name') !.valueChanges.subscribe(
+               () => { expect(form.get('name') !.dirty).toBe(true); });
 
            const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
            inputEl.value = 'newValue';
@@ -1128,11 +1127,10 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            inputEl.value = 'newValue';
            dispatchEvent(inputEl, 'input');
 
-           expect(form.get('name')!.pristine).toBe(false);
+           expect(form.get('name') !.pristine).toBe(false);
 
-           form.get('name')!.valueChanges.subscribe(() => {
-             expect(form.get('name')!.pristine).toBe(true);
-           });
+           form.get('name') !.valueChanges.subscribe(
+               () => { expect(form.get('name') !.pristine).toBe(true); });
 
            dispatchEvent(formEl, 'reset');
          }));
@@ -1151,7 +1149,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            const form = fixture.debugElement.children[0].injector.get(NgForm);
            expect(form.value).toEqual({name: {first: '', last: 'Drew'}, email: 'some email'});
            expect(form.valid).toBe(false);
-           expect(form.control.get('name.first')!.disabled).toBe(false);
+           expect(form.control.get('name.first') !.disabled).toBe(false);
 
            fixture.componentInstance.isDisabled = true;
            fixture.detectChanges();
@@ -1159,7 +1157,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
            expect(form.value).toEqual({name: {last: 'Drew'}, email: 'some email'});
            expect(form.valid).toBe(true);
-           expect(form.control.get('name.first')!.disabled).toBe(true);
+           expect(form.control.get('name.first') !.disabled).toBe(true);
          }));
 
       it('should add disabled attribute in the UI if disable() is called programmatically',
@@ -1171,7 +1169,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            tick();
 
            const form = fixture.debugElement.children[0].injector.get(NgForm);
-           form.control.get('name.first')!.disable();
+           form.control.get('name.first') !.disable();
            fixture.detectChanges();
            tick();
 
@@ -1188,7 +1186,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              fixture.whenStable().then(() => {
                const form = fixture.debugElement.children[0].injector.get(NgForm);
-               expect(form.control.get('name')!.disabled).toBe(true);
+               expect(form.control.get('name') !.disabled).toBe(true);
 
                const customInput = fixture.debugElement.query(By.css('[name="custom"]'));
                expect(customInput.nativeElement.disabled).toEqual(true);
@@ -1210,7 +1208,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            fixture.detectChanges();
            tick();
            const form = fixture.debugElement.children[0].injector.get(NgForm);
-           expect(form.control.get('name')!.disabled).toBe(true);
+           expect(form.control.get('name') !.disabled).toBe(true);
 
            const input = fixture.debugElement.query(By.css('input'));
            expect(input.nativeElement.disabled).toEqual(true);
@@ -1229,7 +1227,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            tick();
 
            const control =
-               fixture.debugElement.children[0].injector.get(NgForm).control.get('checkbox')!;
+               fixture.debugElement.children[0].injector.get(NgForm).control.get('checkbox') !;
 
            const input = fixture.debugElement.query(By.css('input'));
            expect(input.nativeElement.checked).toBe(false);
@@ -1265,7 +1263,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            tick();
 
            const control =
-               fixture.debugElement.children[0].injector.get(NgForm).control.get('email')!;
+               fixture.debugElement.children[0].injector.get(NgForm).control.get('email') !;
 
            const input = fixture.debugElement.query(By.css('input'));
            expect(control.hasError('email')).toBe(false);
@@ -1465,9 +1463,9 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
                .toEqual(pattern.nativeElement.getAttribute('pattern'));
 
            fixture.componentInstance.required = false;
-           fixture.componentInstance.minLen = null!;
-           fixture.componentInstance.maxLen = null!;
-           fixture.componentInstance.pattern = null!;
+           fixture.componentInstance.minLen = null !;
+           fixture.componentInstance.maxLen = null !;
+           fixture.componentInstance.pattern = null !;
            fixture.detectChanges();
 
            expect(form.control.hasError('required', ['required'])).toEqual(false);
@@ -1648,7 +1646,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 })
 class StandaloneNgModel {
   // TODO(issue/24571): remove '!'.
-  name!: string;
+  name !: string;
 }
 
 @Component({
@@ -1661,9 +1659,9 @@ class StandaloneNgModel {
 })
 class NgModelForm {
   // TODO(issue/24571): remove '!'.
-  name!: string|null;
+  name !: string | null;
   // TODO(issue/24571): remove '!'.
-  event!: Event;
+  event !: Event;
   options = {};
 
   onReset() {}
@@ -1687,13 +1685,13 @@ class NgModelNativeValidateForm {
 })
 class NgModelGroupForm {
   // TODO(issue/24571): remove '!'.
-  first!: string;
+  first !: string;
   // TODO(issue/24571): remove '!'.
-  last!: string;
+  last !: string;
   // TODO(issue/24571): remove '!'.
-  email!: string;
+  email !: string;
   // TODO(issue/24571): remove '!'.
-  isDisabled!: boolean;
+  isDisabled !: boolean;
   options = {updateOn: 'change'};
 }
 
@@ -1710,7 +1708,7 @@ class NgModelGroupForm {
 })
 class NgModelValidBinding {
   // TODO(issue/24571): remove '!'.
-  first!: string;
+  first !: string;
 }
 
 
@@ -1727,11 +1725,11 @@ class NgModelValidBinding {
 })
 class NgModelNgIfForm {
   // TODO(issue/24571): remove '!'.
-  first!: string;
+  first !: string;
   groupShowing = true;
   emailShowing = true;
   // TODO(issue/24571): remove '!'.
-  email!: string;
+  email !: string;
 }
 
 @Component({
@@ -1767,9 +1765,9 @@ class InvalidNgModelNoName {
 })
 class NgModelOptionsStandalone {
   // TODO(issue/24571): remove '!'.
-  one!: string;
+  one !: string;
   // TODO(issue/24571): remove '!'.
-  two!: string;
+  two !: string;
   options: {name?: string, standalone?: boolean, updateOn?: string} = {standalone: true};
   formOptions = {};
 }
@@ -1787,13 +1785,13 @@ class NgModelOptionsStandalone {
 })
 class NgModelValidationBindings {
   // TODO(issue/24571): remove '!'.
-  required!: boolean;
+  required !: boolean;
   // TODO(issue/24571): remove '!'.
-  minLen!: number;
+  minLen !: number;
   // TODO(issue/24571): remove '!'.
-  maxLen!: number;
+  maxLen !: number;
   // TODO(issue/24571): remove '!'.
-  pattern!: string;
+  pattern !: string;
 }
 
 @Component({
@@ -1806,11 +1804,11 @@ class NgModelValidationBindings {
 })
 class NgModelMultipleValidators {
   // TODO(issue/24571): remove '!'.
-  required!: boolean;
+  required !: boolean;
   // TODO(issue/24571): remove '!'.
-  minLen!: number;
+  minLen !: number;
   // TODO(issue/24571): remove '!'.
-  pattern!: string|RegExp;
+  pattern !: string | RegExp;
 }
 
 @Component({
@@ -1833,13 +1831,12 @@ class NgModelEmailValidator {
 
 @Directive({
   selector: '[ng-async-validator]',
-  providers:
-      [{provide: NG_ASYNC_VALIDATORS, useExisting: forwardRef(() => NgAsyncValidator), multi: true}]
+  providers: [
+    {provide: NG_ASYNC_VALIDATORS, useExisting: forwardRef(() => NgAsyncValidator), multi: true}
+  ]
 })
 class NgAsyncValidator implements AsyncValidator {
-  validate(c: AbstractControl) {
-    return Promise.resolve(null);
-  }
+  validate(c: AbstractControl) { return Promise.resolve(null); }
 }
 
 @Component({
@@ -1860,13 +1857,11 @@ class NgModelAsyncValidation {
 })
 class NgModelChangesForm {
   // TODO(issue/24571): remove '!'.
-  name!: string;
+  name !: string;
   events: string[] = [];
   options: any;
 
-  log() {
-    this.events.push('fired');
-  }
+  log() { this.events.push('fired'); }
 }
 
 @Component({

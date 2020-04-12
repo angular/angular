@@ -5,7 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CompileReflector, core, DirectiveResolver} from '@angular/compiler';
+import {CompileReflector, DirectiveResolver, core} from '@angular/compiler';
+
 
 /**
  * An implementation of {@link DirectiveResolver} that allows overriding
@@ -14,9 +15,7 @@ import {CompileReflector, core, DirectiveResolver} from '@angular/compiler';
 export class MockDirectiveResolver extends DirectiveResolver {
   private _directives = new Map<core.Type, core.Directive>();
 
-  constructor(reflector: CompileReflector) {
-    super(reflector);
-  }
+  constructor(reflector: CompileReflector) { super(reflector); }
 
   resolve(type: core.Type): core.Directive;
   resolve(type: core.Type, throwIfNotFound: true): core.Directive;

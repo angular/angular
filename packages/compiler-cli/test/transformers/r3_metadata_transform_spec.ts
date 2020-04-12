@@ -9,7 +9,7 @@
 import {ClassField, ClassMethod, ClassStmt, PartialModule, Statement, StmtModifier} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {isClassMetadata, MetadataCollector} from '../../src/metadata/index';
+import {MetadataCollector, isClassMetadata} from '../../src/metadata/index';
 import {MetadataCache} from '../../src/transformers/metadata_cache';
 import {PartialModuleMetadataTransformer} from '../../src/transformers/r3_metadata_transform';
 

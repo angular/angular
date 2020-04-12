@@ -10,7 +10,7 @@ import {dirname, relative, resolve} from 'path';
 import * as ts from 'typescript';
 import {parseTsconfigFile} from './parse_tsconfig';
 
-export type FakeReadFileFn = (fileName: string) => string|null;
+export type FakeReadFileFn = (fileName: string) => string | null;
 
 /**
  * Creates a TypeScript program instance for a TypeScript project within

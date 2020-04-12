@@ -8,7 +8,7 @@
 import * as ts from 'typescript';
 
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
-import {runInEachFileSystem, TestFile} from '../../file_system/testing';
+import {TestFile, runInEachFileSystem} from '../../file_system/testing';
 import {NOOP_DEFAULT_IMPORT_RECORDER, NoopImportRewriter} from '../../imports';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';

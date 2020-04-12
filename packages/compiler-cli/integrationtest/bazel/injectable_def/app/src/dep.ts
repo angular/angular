@@ -20,9 +20,7 @@ export class NormalService {
 })
 export class AppComponent {
   found: boolean;
-  constructor(service: ShakeableService) {
-    this.found = !!service.normal;
-  }
+  constructor(service: ShakeableService) { this.found = !!service.normal; }
 }
 
 @NgModule({

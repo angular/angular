@@ -74,11 +74,9 @@ runInEachFileSystem(() => {
          const logger = new MockLogger();
          const fileWriter = new InPlaceFileWriter(fs, logger, /* errorOnFailedEntryPoint */ true);
          const absoluteBackupPath = _('/package/path/already-backed-up.js');
-         expect(
-             () => fileWriter.writeBundle(
-                 {} as EntryPointBundle,
-                 [{path: absoluteBackupPath, contents: 'MODIFIED BACKED UP'}]))
-             .toThrowError(`Tried to overwrite ${
+         expect(() => fileWriter.writeBundle({} as EntryPointBundle, [
+           {path: absoluteBackupPath, contents: 'MODIFIED BACKED UP'}
+         ])).toThrowError(`Tried to overwrite ${
                  absoluteBackupPath}.__ivy_ngcc_bak with an ngcc back up file, which is disallowed.`);
        });
 

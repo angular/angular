@@ -95,8 +95,8 @@ export function startCli() {
             lines.pop();  // Remove trailing newline
           }
           for (const line of lines) {
-            const chalkMap:
-                {[key: string]: any} = {'-': chalk.red, '+': chalk.green, '@': chalk.cyan};
+            const chalkMap: {[key: string]:
+                                 any} = {'-': chalk.red, '+': chalk.green, '@': chalk.cyan};
             const chalkFunc = chalkMap[line[0]] || chalk.reset;
             console.log(chalkFunc(line));
           }

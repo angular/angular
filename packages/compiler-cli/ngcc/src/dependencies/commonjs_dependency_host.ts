@@ -8,10 +8,11 @@
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {isReexportStatement, isRequireCall, RequireCall} from '../host/commonjs_umd_utils';
+import {RequireCall, isReexportStatement, isRequireCall} from '../host/commonjs_umd_utils';
 
 import {DependencyHostBase} from './dependency_host';
 import {ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
+
 
 /**
  * Helper functions for computing dependencies.
@@ -122,7 +123,5 @@ export class CommonJsDependencyHost extends DependencyHostBase {
    * @returns false if there are definitely no require calls
    * in this file, true otherwise.
    */
-  private hasRequireCalls(source: string): boolean {
-    return /require\(['"]/.test(source);
-  }
+  private hasRequireCalls(source: string): boolean { return /require\(['"]/.test(source); }
 }

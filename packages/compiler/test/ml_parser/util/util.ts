@@ -23,13 +23,9 @@ class _SerializerVisitor implements html.Visitor {
     return `${attribute.name}="${attribute.value}"`;
   }
 
-  visitText(text: html.Text, context: any): any {
-    return text.value;
-  }
+  visitText(text: html.Text, context: any): any { return text.value; }
 
-  visitComment(comment: html.Comment, context: any): any {
-    return `<!--${comment.value}-->`;
-  }
+  visitComment(comment: html.Comment, context: any): any { return `<!--${comment.value}-->`; }
 
   visitExpansion(expansion: html.Expansion, context: any): any {
     return `{${expansion.switchValue}, ${expansion.type},${this._visitAll(expansion.cases)}}`;

@@ -80,9 +80,7 @@ export class Reference<T extends ts.Node = ts.Node> {
    *
    * See `bestGuessOwningModule`.
    */
-  get hasOwningModuleGuess(): boolean {
-    return this.bestGuessOwningModule !== null;
-  }
+  get hasOwningModuleGuess(): boolean { return this.bestGuessOwningModule !== null; }
 
   /**
    * A name for the node, if one is available.
@@ -95,18 +93,14 @@ export class Reference<T extends ts.Node = ts.Node> {
     return id !== null ? id.text : null;
   }
 
-  get alias(): Expression|null {
-    return this._alias;
-  }
+  get alias(): Expression|null { return this._alias; }
 
 
   /**
    * Record a `ts.Identifier` by which it's valid to refer to this node, within the context of this
    * `Reference`.
    */
-  addIdentifier(identifier: ts.Identifier): void {
-    this.identifiers.push(identifier);
-  }
+  addIdentifier(identifier: ts.Identifier): void { this.identifiers.push(identifier); }
 
   /**
    * Get a `ts.Identifier` within this `Reference` that can be used to refer within the context of a

@@ -14,13 +14,13 @@ import {MockLogger} from '../helpers/mock_logger';
 runInEachFileSystem(() => {
   describe('AsyncLocker', () => {
     describe('lock()', () => {
-      it('should guard the `fn()` with calls to `write()` and `remove()`', async () => {
+      it('should guard the `fn()` with calls to `write()` and `remove()`', async() => {
         const fs = getFileSystem();
         const log: string[] = [];
         const lockFile = new MockLockFile(fs, log);
         const locker = new AsyncLocker(lockFile, new MockLogger(), 100, 10);
 
-        await locker.lock(async () => {
+        await locker.lock(async() => {
           log.push('fn() - before');
           // This promise forces node to do a tick in this function, ensuring that we are truly
           // testing an async scenario.
@@ -31,7 +31,7 @@ runInEachFileSystem(() => {
       });
 
       it('should guard the `fn()` with calls to `write()` and `remove()`, even if it throws',
-         async () => {
+         async() => {
            let error: string = '';
            const fs = getFileSystem();
            const log: string[] = [];
@@ -39,7 +39,7 @@ runInEachFileSystem(() => {
            const locker = new AsyncLocker(lockFile, new MockLogger(), 100, 10);
 
            try {
-             await locker.lock(async () => {
+             await locker.lock(async() => {
                log.push('fn()');
                throw new Error('ERROR');
              });
@@ -50,7 +50,7 @@ runInEachFileSystem(() => {
            expect(log).toEqual(['write()', 'fn()', 'remove()']);
          });
 
-      it('should retry if another process is locking', async () => {
+      it('should retry if another process is locking', async() => {
         const fs = getFileSystem();
         const log: string[] = [];
         const lockFile = new MockLockFile(fs, log);
@@ -72,7 +72,7 @@ runInEachFileSystem(() => {
           return lockFileContents;
         });
 
-        const promise = locker.lock(async () => log.push('fn()'));
+        const promise = locker.lock(async() => log.push('fn()'));
         // The lock is now waiting on the lock-file becoming free, so no `fn()` in the log.
         expect(log).toEqual(['write()', 'read() => 188']);
         expect(logger.logs.info).toEqual([[
@@ -86,7 +86,7 @@ runInEachFileSystem(() => {
         expect(log).toEqual(['write()', 'read() => 188', 'write()', 'fn()', 'remove()']);
       });
 
-      it('should extend the retry timeout if the other process locking the file changes', async () => {
+      it('should extend the retry timeout if the other process locking the file changes', async() => {
         const fs = getFileSystem();
         const log: string[] = [];
         const lockFile = new MockLockFile(fs, log);
@@ -108,7 +108,7 @@ runInEachFileSystem(() => {
           return lockFileContents;
         });
 
-        const promise = locker.lock(async () => log.push('fn()'));
+        const promise = locker.lock(async() => log.push('fn()'));
         // The lock is now waiting on the lock-file becoming free, so no `fn()` in the log.
         expect(log).toEqual(['write()', 'read() => 188']);
         expect(logger.logs.info).toEqual([[
@@ -138,7 +138,7 @@ runInEachFileSystem(() => {
       });
 
       it('should error if another process does not release the lock-file before this times out',
-         async () => {
+         async() => {
            const fs = getFileSystem();
            const log: string[] = [];
            const lockFile = new MockLockFile(fs, log);
@@ -160,7 +160,7 @@ runInEachFileSystem(() => {
              return lockFileContents;
            });
 
-           const promise = locker.lock(async () => log.push('fn()'));
+           const promise = locker.lock(async() => log.push('fn()'));
 
            // The lock is now waiting on the lock-file becoming free, so no `fn()` in the log.
            expect(log).toEqual(['write()', 'read() => 188']);
@@ -168,7 +168,7 @@ runInEachFileSystem(() => {
            let error: Error;
            await promise.catch(e => error = e);
            expect(log).toEqual(['write()', 'read() => 188', 'write()', 'read() => 188']);
-           expect(error!.message)
+           expect(error !.message)
                .toEqual(
                    `Timed out waiting 0.2s for another ngcc process, with id 188, to complete.\n` +
                    `(If you are sure no ngcc process is running then you should delete the lock-file at ${

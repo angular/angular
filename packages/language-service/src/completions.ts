@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, EmptyExpr, ExpressionBinding, getHtmlTagDefinition, HtmlAstPath, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, ReferenceAst, TagContentType, TemplateBinding, Text, VariableBinding} from '@angular/compiler';
+import {AST, AbsoluteSourceSpan, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, Element, ElementAst, EmptyExpr, ExpressionBinding, HtmlAstPath, NAMED_ENTITIES, Node as HtmlAst, NullTemplateVisitor, ParseSpan, ReferenceAst, TagContentType, TemplateBinding, Text, VariableBinding, getHtmlTagDefinition} from '@angular/compiler';
 import {$$, $_, isAsciiLetter, isDigit} from '@angular/compiler/src/chars';
 
 import {ATTR, getBindingDescriptor} from './binding_utils';
@@ -56,7 +56,7 @@ function isIdentifierPart(code: number) {
  * `position`, nothing is returned.
  */
 function getBoundedWordSpan(
-    templateInfo: AstResult, position: number, ast: HtmlAst|undefined): ts.TextSpan|undefined {
+    templateInfo: AstResult, position: number, ast: HtmlAst | undefined): ts.TextSpan|undefined {
   const {template} = templateInfo;
   const templateSrc = template.source;
 
@@ -66,7 +66,7 @@ function getBoundedWordSpan(
     // The HTML tag may include `-` (e.g. `app-root`),
     // so use the HtmlAst to get the span before ayazhafiz refactor the code.
     return {
-      start: templateInfo.template.span.start + ast.startSourceSpan!.start.offset + 1,
+      start: templateInfo.template.span.start + ast.startSourceSpan !.start.offset + 1,
       length: ast.name.length
     };
   }
@@ -198,8 +198,7 @@ export function getTemplateCompletions(
   const replacementSpan = getBoundedWordSpan(templateInfo, position, mostSpecific);
   return result.map(entry => {
     return {
-      ...entry,
-      replacementSpan,
+        ...entry, replacementSpan,
     };
   });
 }
@@ -319,7 +318,7 @@ function attributeValueCompletions(info: AstResult, htmlPath: HtmlAstPath): ng.C
         elemAst = parent;
       }
     } else if (templatePath.tail instanceof ElementAst) {
-      refAst = new ReferenceAst(htmlAttr.name, null!, htmlAttr.value, htmlAttr.valueSpan!);
+      refAst = new ReferenceAst(htmlAttr.name, null !, htmlAttr.value, htmlAttr.valueSpan !);
       elemAst = templatePath.tail;
     }
     if (refAst && elemAst) {
@@ -328,7 +327,7 @@ function attributeValueCompletions(info: AstResult, htmlPath: HtmlAstPath): ng.C
   } else {
     // HtmlAst contains the `Attribute` node, however the corresponding `AttrAst`
     // node is missing from the TemplateAst.
-    const attrAst = new AttrAst(htmlAttr.name, htmlAttr.value, htmlAttr.valueSpan!);
+    const attrAst = new AttrAst(htmlAttr.name, htmlAttr.value, htmlAttr.valueSpan !);
     attrAst.visit(visitor, null);
   }
   return visitor.results;
@@ -422,9 +421,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
     super();
   }
 
-  get results(): ng.CompletionEntry[] {
-    return Array.from(this.completions.values());
-  }
+  get results(): ng.CompletionEntry[] { return Array.from(this.completions.values()); }
 
   visitDirectiveProperty(ast: BoundDirectivePropertyAst): void {
     this.processExpressionCompletions(ast.value);
@@ -434,9 +431,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
     this.processExpressionCompletions(ast.value);
   }
 
-  visitEvent(ast: BoundEventAst): void {
-    this.processExpressionCompletions(ast.handler);
-  }
+  visitEvent(ast: BoundEventAst): void { this.processExpressionCompletions(ast.handler); }
 
   visitElement(): void {
     // no-op for now
@@ -570,7 +565,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
       }
     } else if (binding instanceof ExpressionBinding) {
       if (inSpan(this.position, binding.value?.ast.sourceSpan)) {
-        this.processExpressionCompletions(binding.value!.ast);
+        this.processExpressionCompletions(binding.value !.ast);
         return;
       } else if (!binding.value && this.position > binding.key.span.end) {
         // No expression is defined for the value of the key expression binding, but the cursor is
@@ -630,7 +625,7 @@ function angularAttributes(info: AstResult, elementName: string): AngularAttribu
     if (selector.element && selector.element !== elementName) {
       continue;
     }
-    const summary = selectorMap.get(selector)!;
+    const summary = selectorMap.get(selector) !;
     const hasTemplateRef = isStructuralDirective(summary.type);
     // attributes are listed in (attribute, value) pairs
     for (let i = 0; i < selector.attrs.length; i += 2) {

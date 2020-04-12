@@ -7,7 +7,7 @@
  */
 import {createHash} from 'crypto';
 
-import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
+import {FileSystem, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {DEFAULT_NGCC_CONFIG, NgccConfiguration} from '../../src/packages/configuration';
@@ -283,7 +283,7 @@ runInEachFileSystem(() => {
           ]);
 
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
-          const getConfig = (packageName: string, version: string|null) =>
+          const getConfig = (packageName: string, version: string | null) =>
               configuration.getConfig(_Abs(`/project-1/node_modules/${packageName}`), version);
 
           // Default version range: *
@@ -451,7 +451,8 @@ runInEachFileSystem(() => {
               configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
           expect(config).toEqual({
             versionRange: '*',
-            entryPoints: {[_Abs('/project-1/node_modules/package-1/default-level-entry-point')]: {}}
+            entryPoints:
+                {[_Abs('/project-1/node_modules/package-1/default-level-entry-point')]: {}}
           });
         });
 
@@ -465,7 +466,8 @@ runInEachFileSystem(() => {
           // merge entry-points.
           expect(config).toEqual({
             versionRange: '1.0.0',
-            entryPoints: {[_Abs('/project-1/node_modules/package-1/package-level-entry-point')]: {}}
+            entryPoints:
+                {[_Abs('/project-1/node_modules/package-1/package-level-entry-point')]: {}}
           });
         });
 
@@ -502,7 +504,8 @@ runInEachFileSystem(() => {
           // merge entry-points.
           expect(config).toEqual({
             versionRange: '*',
-            entryPoints: {[_Abs('/project-1/node_modules/package-1/project-level-entry-point')]: {}}
+            entryPoints:
+                {[_Abs('/project-1/node_modules/package-1/project-level-entry-point')]: {}}
           });
         });
 
@@ -526,7 +529,7 @@ runInEachFileSystem(() => {
           });
 
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
-          const getConfig = (packageName: string, version: string|null) =>
+          const getConfig = (packageName: string, version: string | null) =>
               configuration.getConfig(_Abs(`/project-1/node_modules/${packageName}`), version);
 
           // Default version range: *

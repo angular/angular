@@ -69,9 +69,7 @@ Zone.__load_patch('jest', (context: any, Zone: ZoneType) => {
     if (typeof testBody !== 'function') {
       return testBody;
     }
-    const wrappedFunc = function() {
-      return proxyZone.run(testBody, null, arguments as any);
-    };
+    const wrappedFunc = function() { return proxyZone.run(testBody, null, arguments as any); };
     // Update the length of wrappedFunc to be the same as the length of the testBody
     // So jest core can handle whether the test function has `done()` or not correctly
     Object.defineProperty(

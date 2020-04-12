@@ -110,11 +110,7 @@ export function stripUnnecessaryQuotes(value: string): string {
 }
 
 export function hyphenate(value: string): string {
-  return value
-      .replace(
-          /[a-z][A-Z]/g,
-          v => {
-            return v.charAt(0) + '-' + v.charAt(1);
-          })
-      .toLowerCase();
+  return value.replace(/[a-z][A-Z]/g, v => {
+                return v.charAt(0) + '-' + v.charAt(1);
+              }).toLowerCase();
 }

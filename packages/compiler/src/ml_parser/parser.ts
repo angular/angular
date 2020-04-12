@@ -10,7 +10,7 @@ import {ParseError, ParseSourceSpan} from '../parse_util';
 
 import * as html from './ast';
 import * as lex from './lexer';
-import {getNsPrefix, isNgContainer, mergeNsAndName, TagDefinition} from './tags';
+import {TagDefinition, getNsPrefix, isNgContainer, mergeNsAndName} from './tags';
 
 export class TreeError extends ParseError {
   static create(elementName: string|null, span: ParseSourceSpan, msg: string): TreeError {
@@ -43,7 +43,7 @@ export class Parser {
 class _TreeBuilder {
   private _index: number = -1;
   // TODO(issue/24571): remove '!'.
-  private _peek!: lex.Token;
+  private _peek !: lex.Token;
 
   private _rootNodes: html.Node[] = [];
   private _errors: TreeError[] = [];
@@ -283,7 +283,7 @@ class _TreeBuilder {
         endTagToken.parts[0], endTagToken.parts[1], this._getParentElement());
 
     if (this._getParentElement()) {
-      this._getParentElement()!.endSourceSpan = endTagToken.sourceSpan;
+      this._getParentElement() !.endSourceSpan = endTagToken.sourceSpan;
     }
 
     if (this.getTagDefinition(fullName).isVoid) {
@@ -316,7 +316,7 @@ class _TreeBuilder {
     const fullName = mergeNsAndName(attrName.parts[0], attrName.parts[1]);
     let end = attrName.sourceSpan.end;
     let value = '';
-    let valueSpan: ParseSourceSpan = undefined!;
+    let valueSpan: ParseSourceSpan = undefined !;
     if (this._peek.type === lex.TokenType.ATTR_QUOTE) {
       this._advance();
     }
@@ -344,7 +344,7 @@ class _TreeBuilder {
    * `<ng-container>` elements are skipped as they are not rendered as DOM element.
    */
   private _getParentElementSkippingContainers():
-      {parent: html.Element|null, container: html.Element|null} {
+      {parent: html.Element | null, container: html.Element|null} {
     let container: html.Element|null = null;
 
     for (let i = this._elementStack.length - 1; i >= 0; i--) {

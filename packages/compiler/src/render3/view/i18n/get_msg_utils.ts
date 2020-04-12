@@ -47,21 +47,15 @@ export function createGoogleGetMsgStatements(
  * placeholders in `{$placeholder}` (for plain messages) or `{PLACEHOLDER}` (inside ICUs) format.
  */
 class GetMsgSerializerVisitor implements i18n.Visitor {
-  private formatPh(value: string): string {
-    return `{$${formatI18nPlaceholderName(value)}}`;
-  }
+  private formatPh(value: string): string { return `{$${formatI18nPlaceholderName(value)}}`; }
 
-  visitText(text: i18n.Text): any {
-    return text.value;
-  }
+  visitText(text: i18n.Text): any { return text.value; }
 
   visitContainer(container: i18n.Container): any {
     return container.children.map(child => child.visit(this)).join('');
   }
 
-  visitIcu(icu: i18n.Icu): any {
-    return serializeIcuNode(icu);
-  }
+  visitIcu(icu: i18n.Icu): any { return serializeIcuNode(icu); }
 
   visitTagPlaceholder(ph: i18n.TagPlaceholder): any {
     return ph.isVoid ?
@@ -70,9 +64,7 @@ class GetMsgSerializerVisitor implements i18n.Visitor {
             this.formatPh(ph.closeName)}`;
   }
 
-  visitPlaceholder(ph: i18n.Placeholder): any {
-    return this.formatPh(ph.name);
-  }
+  visitPlaceholder(ph: i18n.Placeholder): any { return this.formatPh(ph.name); }
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
     return this.formatPh(ph.name);

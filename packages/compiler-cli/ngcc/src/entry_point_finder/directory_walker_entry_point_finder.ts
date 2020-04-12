@@ -10,13 +10,14 @@ import {EntryPointWithDependencies} from '../dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {Logger} from '../logging/logger';
 import {NgccConfiguration} from '../packages/configuration';
-import {getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT} from '../packages/entry_point';
+import {INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT, getEntryPointInfo} from '../packages/entry_point';
 import {EntryPointManifest} from '../packages/entry_point_manifest';
 import {PathMappings} from '../utils';
 import {NGCC_DIRECTORY} from '../writing/new_entry_point_file_writer';
 
 import {EntryPointFinder} from './interface';
 import {getBasePaths, trackDuration} from './utils';
+
 
 /**
  * An EntryPointFinder that searches for all entry-points that can be found given a `basePath` and

@@ -11,9 +11,7 @@ import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitor
 import * as o from './output_ast';
 
 export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
-  constructor() {
-    super(false);
-  }
+  constructor() { super(false); }
   visitDeclareClassStmt(stmt: o.ClassStmt, ctx: EmitterVisitorContext): any {
     ctx.pushClass(stmt);
     this._visitClassConstructor(stmt, ctx);
@@ -103,7 +101,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
   visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): string|null {
     const fnExpr = expr.fn;
     if (fnExpr instanceof o.ReadVarExpr && fnExpr.builtin === o.BuiltinVar.Super) {
-      ctx.currentClass!.parent!.visitExpression(this, ctx);
+      ctx.currentClass !.parent !.visitExpression(this, ctx);
       ctx.print(expr, `.call(this`);
       if (expr.args.length > 0) {
         ctx.print(expr, `, `);

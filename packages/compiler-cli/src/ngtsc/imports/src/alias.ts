@@ -10,7 +10,7 @@ import {Expression, ExternalExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {UnifiedModulesHost} from '../../core/api';
-import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
+import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration} from '../../reflection';
 
 import {ImportFlags, ReferenceEmitStrategy} from './emitter';
 import {Reference} from './references';
@@ -203,9 +203,7 @@ export class PrivateExportAliasingHost implements AliasingHost {
    *
    * Thus, `getAliasIn` always returns `null`.
    */
-  getAliasIn(): null {
-    return null;
-  }
+  getAliasIn(): null { return null; }
 }
 
 /**
