@@ -5,7 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ChildProcess, fork} from 'child_process';
+import {ChildProcess, ChildProcessByStdio, fork} from 'child_process';
+import {Readable, Writable} from 'stream';
 
 import {AbsoluteFsPath, CachedFileSystem, FileSystem} from '../../../../src/ngtsc/file_system';
 import {Logger, LogLevel} from '../../logging/logger';
@@ -81,6 +82,14 @@ export class LockFileWithChildProcess implements LockFile {
     this.logger.debug('Forking unlocker child-process');
     const logLevel =
         this.logger.level !== undefined ? this.logger.level.toString() : LogLevel.info.toString();
-    return fork(this.fs.resolve(__dirname, './unlocker.js'), [path, logLevel], {detached: true});
+
+    const unlocker = fork(this.fs.resolve(__dirname, './unlocker.js'), [path, logLevel], {
+                       detached: true,
+                       stdio: 'pipe',
+                     }) as ChildProcessByStdio<Writable, Readable, Readable>;
+    unlocker.stdout.on('data', data => process.stdout.write(data));
+    unlocker.stderr.on('data', data => process.stderr.write(data));
+
+    return unlocker;
   }
 }
