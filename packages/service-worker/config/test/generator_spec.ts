@@ -13,7 +13,7 @@ import {MockFilesystem} from '../testing/mock';
 describe('Generator', () => {
   beforeEach(() => spyOn(Date, 'now').and.returnValue(1234567890123));
 
-  it('generates a correct config', async() => {
+  it('generates a correct config', async () => {
     const fs = new MockFilesystem({
       '/index.html': 'This is a test',
       '/main.css': 'This is a CSS file',
@@ -125,7 +125,7 @@ describe('Generator', () => {
     });
   });
 
-  it('uses default `navigationUrls` if not provided', async() => {
+  it('uses default `navigationUrls` if not provided', async () => {
     const fs = new MockFilesystem({
       '/index.html': 'This is a test',
     });
@@ -151,7 +151,7 @@ describe('Generator', () => {
     });
   });
 
-  it('throws if the obsolete `versionedFiles` is used', async() => {
+  it('throws if the obsolete `versionedFiles` is used', async () => {
     const fs = new MockFilesystem({
       '/index.html': 'This is a test',
       '/main.js': 'This is a JS file',

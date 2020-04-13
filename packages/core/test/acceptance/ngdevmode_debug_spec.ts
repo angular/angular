@@ -40,10 +40,9 @@ onlyInIvy('Debug information exist in ivy only').describe('ngDevMode debug', () 
 
       const element: HTMLElement = fixture.nativeElement;
       fixture.detectChanges();
-      const li = element.querySelector('li') !;
+      const li = element.querySelector('li')!;
       const embeddedLView = loadLContext(li).lView;
       expect(embeddedLView.constructor.name).toEqual('LEmbeddedView_MyApp_li_1');
-
     });
   });
 });

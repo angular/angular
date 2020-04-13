@@ -131,7 +131,8 @@ export function parseMessage(
     messageString,
     meaning: metadata.meaning || '',
     description: metadata.description || '',
-    messageParts: cleanedMessageParts, placeholderNames,
+    messageParts: cleanedMessageParts,
+    placeholderNames,
   };
 }
 
@@ -176,7 +177,7 @@ export function parseMetadata(cooked: string, raw: string): MessageMetadata {
   } else {
     const [meaningDescAndId, ...legacyIds] = block.split(LEGACY_ID_INDICATOR);
     const [meaningAndDesc, id] = meaningDescAndId.split(ID_SEPARATOR, 2);
-    let [meaning, description]: (string | undefined)[] = meaningAndDesc.split(MEANING_SEPARATOR, 2);
+    let [meaning, description]: (string|undefined)[] = meaningAndDesc.split(MEANING_SEPARATOR, 2);
     if (description === undefined) {
       description = meaning;
       meaning = undefined;
@@ -236,9 +237,9 @@ function computePlaceholderName(index: number) {
  */
 export function findEndOfBlock(cooked: string, raw: string): number {
   /************************************************************************************************
-  * This function is repeated in `src/localize/src/localize.ts` and the two should be kept in sync.
-  * (See that file for more explanation of why.)
-  ************************************************************************************************/
+   * This function is repeated in `src/localize/src/localize.ts` and the two should be kept in sync.
+   * (See that file for more explanation of why.)
+   ************************************************************************************************/
   for (let cookedIndex = 1, rawIndex = 1; cookedIndex < cooked.length; cookedIndex++, rawIndex++) {
     if (raw[rawIndex] === '\\') {
       rawIndex++;

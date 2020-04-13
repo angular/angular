@@ -14,9 +14,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
 
 describe('Debug Representation', () => {
-
   onlyInIvy('Ivy specific').it('should generate a human readable version', () => {
-
     @Component({selector: 'my-comp', template: '<div id="123">Hello World</div>'})
     class MyComponent {
     }
@@ -25,11 +23,11 @@ describe('Debug Representation', () => {
     const fixture = TestBed.createComponent(MyComponent);
     fixture.detectChanges();
 
-    const hostView = toDebug(getLContext(fixture.componentInstance) !.lView);
+    const hostView = toDebug(getLContext(fixture.componentInstance)!.lView);
     expect(hostView.host).toEqual(null);
     const myCompView = hostView.childViews[0] as LViewDebug;
     expect(myCompView.host).toContain('<div id="123">Hello World</div>');
-    expect(myCompView.nodes ![0].html).toEqual('<div id="123">');
-    expect(myCompView.nodes ![0].nodes ![0].html).toEqual('Hello World');
+    expect(myCompView.nodes![0].html).toEqual('<div id="123">');
+    expect(myCompView.nodes![0].nodes![0].html).toEqual('Hello World');
   });
 });

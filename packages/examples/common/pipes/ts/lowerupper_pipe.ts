@@ -19,7 +19,9 @@ import {Component} from '@angular/core';
 })
 export class LowerUpperPipeComponent {
   // TODO(issue/24571): remove '!'.
-  value !: string;
-  change(value: string) { this.value = value; }
+  value!: string;
+  change(value: string) {
+    this.value = value;
+  }
 }
 // #enddocregion

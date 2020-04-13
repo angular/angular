@@ -8,7 +8,7 @@
 
 import {ResourceLoader, UrlResolver} from '@angular/compiler';
 import {Component} from '@angular/core';
-import {TestBed, async, fakeAsync, tick} from '@angular/core/testing';
+import {async, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {CachedResourceLoader} from '@angular/platform-browser-dynamic/src/resource_loader/resource_loader_cache';
 import {setTemplateCache} from '@angular/platform-browser-dynamic/test/resource_loader/resource_loader_cache_setter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -31,7 +31,9 @@ if (isBrowser) {
 
     it('should resolve the Promise with the cached file content on success', async(() => {
          resourceLoader = createCachedResourceLoader();
-         resourceLoader.get('test.html').then((text) => { expect(text).toBe('<div>Hello</div>'); });
+         resourceLoader.get('test.html').then((text) => {
+           expect(text).toBe('<div>Hello</div>');
+         });
        }));
 
     it('should reject the Promise on failure', async(() => {

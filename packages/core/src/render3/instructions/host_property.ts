@@ -28,7 +28,7 @@ import {elementPropertyInternal, loadComponentRenderer, storePropertyBindingMeta
  * @codeGenApi
  */
 export function ɵɵhostProperty<T>(
-    propName: string, value: T, sanitizer?: SanitizerFn | null): typeof ɵɵhostProperty {
+    propName: string, value: T, sanitizer?: SanitizerFn|null): typeof ɵɵhostProperty {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
@@ -63,8 +63,8 @@ export function ɵɵhostProperty<T>(
  * @codeGenApi
  */
 export function ɵɵupdateSyntheticHostBinding<T>(
-    propName: string, value: T | NO_CHANGE,
-    sanitizer?: SanitizerFn | null): typeof ɵɵupdateSyntheticHostBinding {
+    propName: string, value: T|NO_CHANGE,
+    sanitizer?: SanitizerFn|null): typeof ɵɵupdateSyntheticHostBinding {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {

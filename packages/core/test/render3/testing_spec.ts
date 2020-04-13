@@ -24,7 +24,7 @@ describe('testing', () => {
          return Promise.resolve(true).then(() => passed = true);
        }));
 
-    it('should support async and await', withBody('<span>works!</span>', async() => {
+    it('should support async and await', withBody('<span>works!</span>', async () => {
          await Promise.resolve(true);
          passed = true;
        }));

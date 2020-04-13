@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ApplicationRef, Compiler, Component, Directive, DoCheck, ElementRef, Inject, Injectable, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, StaticProvider, Type, ViewRef, destroyPlatform, getPlatform} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ApplicationRef, Compiler, Component, destroyPlatform, Directive, DoCheck, ElementRef, getPlatform, Inject, Injectable, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, StaticProvider, Type, ViewRef} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
-import {UpgradeComponent, downgradeComponent, downgradeModule} from '@angular/upgrade/static';
+import {downgradeComponent, downgradeModule, UpgradeComponent} from '@angular/upgrade/static';
 
 import * as angular from '../../../src/common/src/angular1';
 import {$EXCEPTION_HANDLER, $ROOT_SCOPE, INJECTOR_KEY, LAZY_MODULE_REF} from '../../../src/common/src/constants';
@@ -23,7 +23,6 @@ import {setTempInjectorRef} from '../../src/angular1_providers';
 withEachNg1Version(() => {
   [true, false].forEach(propagateDigest => {
     describe(`lazy-load ng2 module (propagateDigest: ${propagateDigest})`, () => {
-
       beforeEach(() => destroyPlatform());
       afterEach(() => destroyPlatform());
 
@@ -65,11 +64,13 @@ withEachNg1Version(() => {
            const ng1Module = angular.module_('ng1', [downModA, downModB])
                                  .directive('ng2A', downgradeComponent({
                                               component: Ng2ComponentA,
-                                              downgradedModule: downModA, propagateDigest,
+                                              downgradedModule: downModA,
+                                              propagateDigest,
                                             }))
                                  .directive('ng2B', downgradeComponent({
                                               component: Ng2ComponentB,
-                                              downgradedModule: downModB, propagateDigest,
+                                              downgradedModule: downModB,
+                                              propagateDigest,
                                             }));
 
            const element = html('<ng2-a></ng2-a> | <ng2-b></ng2-b>');
@@ -134,11 +135,13 @@ withEachNg1Version(() => {
                    .directive('ng1A', () => ({template: 'ng1A(<ng2-b ng-if="showB"></ng2-b>)'}))
                    .directive('ng2A', downgradeComponent({
                                 component: Ng2ComponentA,
-                                downgradedModule: downModA, propagateDigest,
+                                downgradedModule: downModA,
+                                propagateDigest,
                               }))
                    .directive('ng2B', downgradeComponent({
                                 component: Ng2ComponentB,
-                                downgradedModule: downModB, propagateDigest,
+                                downgradedModule: downModB,
+                                propagateDigest,
                               }));
 
            const element = html('<ng2-a></ng2-a>');
@@ -206,11 +209,13 @@ withEachNg1Version(() => {
            const ng1Module = angular.module_('ng1', [downModA, downModB])
                                  .directive('ng2A', downgradeComponent({
                                               component: Ng2ComponentA,
-                                              downgradedModule: downModA, propagateDigest,
+                                              downgradedModule: downModA,
+                                              propagateDigest,
                                             }))
                                  .directive('ng2B', downgradeComponent({
                                               component: Ng2ComponentB,
-                                              downgradedModule: downModB, propagateDigest,
+                                              downgradedModule: downModB,
+                                              propagateDigest,
                                             }));
 
            const element = html('<ng2-a><ng2-b ng-if="showB"></ng2-b></ng2-a>');
@@ -299,11 +304,13 @@ withEachNg1Version(() => {
            const ng1Module = angular.module_('ng1', [downModA, downModB])
                                  .directive('ng2A', downgradeComponent({
                                               component: Ng2ComponentA,
-                                              downgradedModule: downModA, propagateDigest,
+                                              downgradedModule: downModA,
+                                              propagateDigest,
                                             }))
                                  .directive('ng2B', downgradeComponent({
                                               component: Ng2ComponentB,
-                                              downgradedModule: downModB, propagateDigest,
+                                              downgradedModule: downModB,
+                                              propagateDigest,
                                             }));
 
            const element = html(`
@@ -497,11 +504,13 @@ withEachNg1Version(() => {
            const ng1Module = angular.module_('ng1', [downModA, downModB])
                                  .directive('ng2A', downgradeComponent({
                                               component: Ng2ComponentA,
-                                              downgradedModule: downModA, propagateDigest,
+                                              downgradedModule: downModA,
+                                              propagateDigest,
                                             }))
                                  .directive('ng2B', downgradeComponent({
                                               component: Ng2ComponentB,
-                                              downgradedModule: downModB, propagateDigest,
+                                              downgradedModule: downModB,
+                                              propagateDigest,
                                             }));
 
            const element = html(`
@@ -599,7 +608,9 @@ withEachNg1Version(() => {
            @Component({selector: 'ng2', template: '{{ value }}'})
            class Ng2Component {
              value: string;
-             constructor(ng2Service: Ng2Service) { this.value = ng2Service.getValue(); }
+             constructor(ng2Service: Ng2Service) {
+               this.value = ng2Service.getValue();
+             }
            }
 
            @NgModule({
@@ -651,7 +662,9 @@ withEachNg1Version(() => {
            @Component({selector: 'ng2', template: 'In the zone: {{ inTheZone }}'})
            class Ng2Component {
              private inTheZone = false;
-             constructor() { this.inTheZone = NgZone.isInAngularZone(); }
+             constructor() {
+               this.inTheZone = NgZone.isInAngularZone();
+             }
            }
 
            @NgModule({
@@ -686,7 +699,9 @@ withEachNg1Version(() => {
 
            @Component({selector: 'ng2', template: ''})
            class Ng2Component implements OnDestroy {
-             ngOnDestroy() { destroyedInTheZone = NgZone.isInAngularZone(); }
+             ngOnDestroy() {
+               destroyedInTheZone = NgZone.isInAngularZone();
+             }
            }
 
            @NgModule({
@@ -725,7 +740,9 @@ withEachNg1Version(() => {
              @Input() attrInput = 'foo';
              @Input() propInput = 'foo';
 
-             constructor() { ng2Component = this; }
+             constructor() {
+               ng2Component = this;
+             }
              ngOnChanges() {}
            }
 
@@ -785,8 +802,12 @@ withEachNg1Version(() => {
              template: '',
            })
            class TestComponent implements OnDestroy {
-             constructor() { createdInTheZone = NgZone.isInAngularZone(); }
-             ngOnDestroy() { destroyedInTheZone = NgZone.isInAngularZone(); }
+             constructor() {
+               createdInTheZone = NgZone.isInAngularZone();
+             }
+             ngOnDestroy() {
+               destroyedInTheZone = NgZone.isInAngularZone();
+             }
            }
 
            @Component({
@@ -842,7 +863,9 @@ withEachNg1Version(() => {
                {selector: 'ng2', template: '{{ count }}<button (click)="increment()"></button>'})
            class Ng2Component {
              private count = 0;
-             increment() { ++this.count; }
+             increment() {
+               ++this.count;
+             }
            }
 
            @NgModule({
@@ -867,7 +890,7 @@ withEachNg1Version(() => {
 
            setTimeout(() => {    // Wait for the module to be bootstrapped.
              setTimeout(() => {  // Wait for `$evalAsync()` to propagate inputs.
-               const button = element.querySelector('button') !;
+               const button = element.querySelector('button')!;
                expect(element.textContent).toBe('0');
 
                button.click();
@@ -885,7 +908,9 @@ withEachNg1Version(() => {
                {selector: 'test', template: '{{ count }}<button (click)="increment()"></button>'})
            class TestComponent {
              count = 0;
-             increment() { ++this.count; }
+             increment() {
+               ++this.count;
+             }
            }
 
            @Component({
@@ -924,7 +949,7 @@ withEachNg1Version(() => {
            setTimeout(() => {
              // Create nested component asynchronously.
              $rootScope.$apply('showNg2 = true');
-             const button = element.querySelector('button') !;
+             const button = element.querySelector('button')!;
 
              expect(element.textContent).toBe('0');
 
@@ -948,21 +973,38 @@ withEachNg1Version(() => {
                <ng-content></ng-content>
              `
            })
-           class Ng2Component implements AfterContentChecked,
-               AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy,
-               OnInit {
+           class Ng2Component implements AfterContentChecked, AfterContentInit, AfterViewChecked,
+                                         AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit {
              @Input() value = 'foo';
 
-             ngAfterContentChecked() { this.log('AfterContentChecked'); }
-             ngAfterContentInit() { this.log('AfterContentInit'); }
-             ngAfterViewChecked() { this.log('AfterViewChecked'); }
-             ngAfterViewInit() { this.log('AfterViewInit'); }
-             ngDoCheck() { this.log('DoCheck'); }
-             ngOnChanges() { this.log('OnChanges'); }
-             ngOnDestroy() { this.log('OnDestroy'); }
-             ngOnInit() { this.log('OnInit'); }
+             ngAfterContentChecked() {
+               this.log('AfterContentChecked');
+             }
+             ngAfterContentInit() {
+               this.log('AfterContentInit');
+             }
+             ngAfterViewChecked() {
+               this.log('AfterViewChecked');
+             }
+             ngAfterViewInit() {
+               this.log('AfterViewInit');
+             }
+             ngDoCheck() {
+               this.log('DoCheck');
+             }
+             ngOnChanges() {
+               this.log('OnChanges');
+             }
+             ngOnDestroy() {
+               this.log('OnDestroy');
+             }
+             ngOnInit() {
+               this.log('OnInit');
+             }
 
-             private log(hook: string) { logs.push(`${hook}(${this.value})`); }
+             private log(hook: string) {
+               logs.push(`${hook}(${this.value})`);
+             }
            }
 
            @NgModule({
@@ -991,7 +1033,7 @@ withEachNg1Version(() => {
 
            setTimeout(() => {    // Wait for the module to be bootstrapped.
              setTimeout(() => {  // Wait for `$evalAsync()` to propagate inputs.
-               const button = element.querySelector('button') !;
+               const button = element.querySelector('button')!;
 
                // Once initialized.
                expect(multiTrim(element.textContent)).toBe('bar Content');
@@ -1154,7 +1196,9 @@ withEachNg1Version(() => {
            class Ng2Component {
              private count = ++count;
              private inTheZone = false;
-             constructor() { this.inTheZone = NgZone.isInAngularZone(); }
+             constructor() {
+               this.inTheZone = NgZone.isInAngularZone();
+             }
            }
 
            @NgModule({
@@ -1190,7 +1234,7 @@ withEachNg1Version(() => {
            tick(tickDelay);  // Wait for the module to be bootstrapped and `$evalAsync()` to
                              // propagate inputs.
 
-           const injector = ($injector.get(LAZY_MODULE_REF) as LazyModuleRef).injector !;
+           const injector = ($injector.get(LAZY_MODULE_REF) as LazyModuleRef).injector!;
            const injectorGet = injector.get;
            spyOn(injector, 'get').and.callFake((...args: [any, any?]) => {
           expect(args[0]).not.toBe(NgZone);
@@ -1295,14 +1339,15 @@ withEachNg1Version(() => {
         // If the bootstrap process for other components/modules is not completed in time, there is
         // a chance that some global state is retained, possibly messing subsequent tests.
         // Explicitly clean up after each test to prevent that.
-        afterEach(() => setTempInjectorRef(null !));
+        afterEach(() => setTempInjectorRef(null!));
 
         it('should throw if no downgraded module is included', async(() => {
              const ng1Module = angular.module_('ng1', [])
                                    .value($EXCEPTION_HANDLER, errorSpy)
                                    .directive('ng2A', downgradeComponent({
                                                 component: Ng2CompA,
-                                                downgradedModule: downModA, propagateDigest,
+                                                downgradedModule: downModA,
+                                                propagateDigest,
                                               }))
                                    .directive('ng2B', downgradeComponent({
                                                 component: Ng2CompB,
@@ -1334,11 +1379,13 @@ withEachNg1Version(() => {
                                    .value($EXCEPTION_HANDLER, errorSpy)
                                    .directive('ng2A', downgradeComponent({
                                                 component: Ng2CompA,
-                                                downgradedModule: downModA, propagateDigest,
+                                                downgradedModule: downModA,
+                                                propagateDigest,
                                               }))
                                    .directive('ng2B', downgradeComponent({
                                                 component: Ng2CompB,
-                                                downgradedModule: downModB, propagateDigest,
+                                                downgradedModule: downModB,
+                                                propagateDigest,
                                               }));
 
              const element = html('<ng2-a></ng2-a> | <ng2-b></ng2-b>');
@@ -1360,7 +1407,8 @@ withEachNg1Version(() => {
                                    .value($EXCEPTION_HANDLER, errorSpy)
                                    .directive('ng2A', downgradeComponent({
                                                 component: Ng2CompA,
-                                                downgradedModule: downModA, propagateDigest,
+                                                downgradedModule: downModA,
+                                                propagateDigest,
                                               }))
                                    .directive('ng2B', downgradeComponent({
                                                 component: Ng2CompB,

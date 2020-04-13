@@ -16,13 +16,13 @@ import {checkAndUpdatePureExpressionDynamic, checkAndUpdatePureExpressionInline,
 import {checkAndUpdateQuery, createQuery} from './query';
 import {createTemplateData, createViewContainerData} from './refs';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
-import {ArgumentType, CheckType, ElementData, NodeData, NodeDef, NodeFlags, ProviderData, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asQueryList, asTextData, shiftInitState} from './types';
-import {NOOP, checkBindingNoChanges, isComponentView, markParentViewsForCheckProjectedViews, resolveDefinition, tokenKey} from './util';
+import {ArgumentType, asElementData, asQueryList, asTextData, CheckType, ElementData, NodeData, NodeDef, NodeFlags, ProviderData, RootData, Services, shiftInitState, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn} from './types';
+import {checkBindingNoChanges, isComponentView, markParentViewsForCheckProjectedViews, NOOP, resolveDefinition, tokenKey} from './util';
 import {detachProjectedView} from './view_attach';
 
 export function viewDef(
-    flags: ViewFlags, nodes: NodeDef[], updateDirectives?: null | ViewUpdateFn,
-    updateRenderer?: null | ViewUpdateFn): ViewDefinition {
+    flags: ViewFlags, nodes: NodeDef[], updateDirectives?: null|ViewUpdateFn,
+    updateRenderer?: null|ViewUpdateFn): ViewDefinition {
   // clone nodes and set auto calculated values
   let viewBindingCount = 0;
   let viewDisposableCount = 0;
@@ -48,7 +48,7 @@ export function viewDef(
     if (node.element) {
       const elDef = node.element;
       elDef.publicProviders =
-          currentParent ? currentParent.element !.publicProviders : Object.create(null);
+          currentParent ? currentParent.element!.publicProviders : Object.create(null);
       elDef.allProviders = elDef.publicProviders;
       // Note: We assume that all providers of an element are before any child element!
       currentElementHasPublicProviders = false;
@@ -72,25 +72,25 @@ export function viewDef(
       if (!currentElementHasPublicProviders) {
         currentElementHasPublicProviders = true;
         // Use prototypical inheritance to not get O(n^2) complexity...
-        currentParent !.element !.publicProviders =
-            Object.create(currentParent !.element !.publicProviders);
-        currentParent !.element !.allProviders = currentParent !.element !.publicProviders;
+        currentParent!.element!.publicProviders =
+            Object.create(currentParent!.element!.publicProviders);
+        currentParent!.element!.allProviders = currentParent!.element!.publicProviders;
       }
       const isPrivateService = (node.flags & NodeFlags.PrivateProvider) !== 0;
       const isComponent = (node.flags & NodeFlags.Component) !== 0;
       if (!isPrivateService || isComponent) {
-        currentParent !.element !.publicProviders ![tokenKey(node.provider !.token)] = node;
+        currentParent!.element!.publicProviders![tokenKey(node.provider!.token)] = node;
       } else {
         if (!currentElementHasPrivateProviders) {
           currentElementHasPrivateProviders = true;
           // Use prototypical inheritance to not get O(n^2) complexity...
-          currentParent !.element !.allProviders =
-              Object.create(currentParent !.element !.publicProviders);
+          currentParent!.element!.allProviders =
+              Object.create(currentParent!.element!.publicProviders);
         }
-        currentParent !.element !.allProviders ![tokenKey(node.provider !.token)] = node;
+        currentParent!.element!.allProviders![tokenKey(node.provider!.token)] = node;
       }
       if (isComponent) {
-        currentParent !.element !.componentProvider = node;
+        currentParent!.element!.componentProvider = node;
       }
     }
 
@@ -135,27 +135,30 @@ export function viewDef(
   }
 
   const handleEvent: ViewHandleEventFn = (view, nodeIndex, eventName, event) =>
-      nodes[nodeIndex].element !.handleEvent !(view, eventName, event);
+      nodes[nodeIndex].element!.handleEvent!(view, eventName, event);
 
   return {
     // Will be filled later...
     factory: null,
     nodeFlags: viewNodeFlags,
     rootNodeFlags: viewRootNodeFlags,
-    nodeMatchedQueries: viewMatchedQueries, flags,
+    nodeMatchedQueries: viewMatchedQueries,
+    flags,
     nodes: nodes,
     updateDirectives: updateDirectives || NOOP,
-    updateRenderer: updateRenderer || NOOP, handleEvent,
+    updateRenderer: updateRenderer || NOOP,
+    handleEvent,
     bindingCount: viewBindingCount,
-    outputCount: viewDisposableCount, lastRenderRootNode
+    outputCount: viewDisposableCount,
+    lastRenderRootNode
   };
 }
 
 function isNgContainer(node: NodeDef): boolean {
-  return (node.flags & NodeFlags.TypeElement) !== 0 && node.element !.name === null;
+  return (node.flags & NodeFlags.TypeElement) !== 0 && node.element!.name === null;
 }
 
-function validateNode(parent: NodeDef | null, node: NodeDef, nodeCount: number) {
+function validateNode(parent: NodeDef|null, node: NodeDef, nodeCount: number) {
   const template = node.element && node.element.template;
   if (template) {
     if (!template.lastRenderRootNode) {
@@ -164,25 +167,28 @@ function validateNode(parent: NodeDef | null, node: NodeDef, nodeCount: number) 
     if (template.lastRenderRootNode &&
         template.lastRenderRootNode.flags & NodeFlags.EmbeddedViews) {
       throw new Error(
-          `Illegal State: Last root node of a template can't have embedded views, at index ${node.nodeIndex}!`);
+          `Illegal State: Last root node of a template can't have embedded views, at index ${
+              node.nodeIndex}!`);
     }
   }
   if (node.flags & NodeFlags.CatProvider) {
     const parentFlags = parent ? parent.flags : 0;
     if ((parentFlags & NodeFlags.TypeElement) === 0) {
       throw new Error(
-          `Illegal State: StaticProvider/Directive nodes need to be children of elements or anchors, at index ${node.nodeIndex}!`);
+          `Illegal State: StaticProvider/Directive nodes need to be children of elements or anchors, at index ${
+              node.nodeIndex}!`);
     }
   }
   if (node.query) {
     if (node.flags & NodeFlags.TypeContentQuery &&
         (!parent || (parent.flags & NodeFlags.TypeDirective) === 0)) {
       throw new Error(
-          `Illegal State: Content Query nodes need to be children of directives, at index ${node.nodeIndex}!`);
+          `Illegal State: Content Query nodes need to be children of directives, at index ${
+              node.nodeIndex}!`);
     }
     if (node.flags & NodeFlags.TypeViewQuery && parent) {
-      throw new Error(
-          `Illegal State: View Query nodes have to be top level nodes, at index ${node.nodeIndex}!`);
+      throw new Error(`Illegal State: View Query nodes have to be top level nodes, at index ${
+          node.nodeIndex}!`);
     }
   }
   if (node.childCount) {
@@ -213,7 +219,7 @@ export function createRootView(root: RootData, def: ViewDefinition, context?: an
 
 export function createComponentView(
     parentView: ViewData, nodeDef: NodeDef, viewDef: ViewDefinition, hostElement: any): ViewData {
-  const rendererType = nodeDef.element !.componentRendererType;
+  const rendererType = nodeDef.element!.componentRendererType;
   let compRenderer: Renderer2;
   if (!rendererType) {
     compRenderer = parentView.root.renderer;
@@ -221,22 +227,27 @@ export function createComponentView(
     compRenderer = parentView.root.rendererFactory.createRenderer(hostElement, rendererType);
   }
   return createView(
-      parentView.root, compRenderer, parentView, nodeDef.element !.componentProvider, viewDef);
+      parentView.root, compRenderer, parentView, nodeDef.element!.componentProvider, viewDef);
 }
 
 function createView(
-    root: RootData, renderer: Renderer2, parent: ViewData | null, parentNodeDef: NodeDef | null,
+    root: RootData, renderer: Renderer2, parent: ViewData|null, parentNodeDef: NodeDef|null,
     def: ViewDefinition): ViewData {
   const nodes: NodeData[] = new Array(def.nodes.length);
   const disposables = def.outputCount ? new Array(def.outputCount) : null;
   const view: ViewData = {
     def,
     parent,
-    viewContainerParent: null, parentNodeDef,
+    viewContainerParent: null,
+    parentNodeDef,
     context: null,
-    component: null, nodes,
-    state: ViewState.CatInit, root, renderer,
-    oldValues: new Array(def.bindingCount), disposables,
+    component: null,
+    nodes,
+    state: ViewState.CatInit,
+    root,
+    renderer,
+    oldValues: new Array(def.bindingCount),
+    disposables,
     initIndex: -1
   };
   return view;
@@ -251,7 +262,7 @@ function createViewNodes(view: ViewData) {
   let renderHost: any;
   if (isComponentView(view)) {
     const hostDef = view.parentNodeDef;
-    renderHost = asElementData(view.parent !, hostDef !.parent !.nodeIndex).renderElement;
+    renderHost = asElementData(view.parent!, hostDef!.parent!.nodeIndex).renderElement;
   }
   const def = view.def;
   const nodes = view.nodes;
@@ -262,9 +273,9 @@ function createViewNodes(view: ViewData) {
     switch (nodeDef.flags & NodeFlags.Types) {
       case NodeFlags.TypeElement:
         const el = createElement(view, renderHost, nodeDef) as any;
-        let componentView: ViewData = undefined !;
+        let componentView: ViewData = undefined!;
         if (nodeDef.flags & NodeFlags.ComponentView) {
-          const compViewDef = resolveDefinition(nodeDef.element !.componentView !);
+          const compViewDef = resolveDefinition(nodeDef.element!.componentView!);
           componentView = Services.createComponentView(view, nodeDef, compViewDef, el);
         }
         listenToElementOutputs(view, componentView, nodeDef, el);
@@ -272,7 +283,7 @@ function createViewNodes(view: ViewData) {
           renderElement: el,
           componentView,
           viewContainer: null,
-          template: nodeDef.element !.template ? createTemplateData(view, nodeDef) : undefined
+          template: nodeDef.element!.template ? createTemplateData(view, nodeDef) : undefined
         };
         if (nodeDef.flags & NodeFlags.EmbeddedViews) {
           nodeData.viewContainer = createViewContainerData(view, nodeDef, nodeData);
@@ -304,7 +315,7 @@ function createViewNodes(view: ViewData) {
           nodeData = <ProviderData>{instance};
         }
         if (nodeDef.flags & NodeFlags.Component) {
-          const compView = asElementData(view, nodeDef.parent !.nodeIndex).componentView;
+          const compView = asElementData(view, nodeDef.parent!.nodeIndex).componentView;
           initView(compView, nodeData.instance, nodeData.instance);
         }
         break;
@@ -529,9 +540,9 @@ function destroyViewNodes(view: ViewData) {
   for (let i = 0; i < len; i++) {
     const def = view.def.nodes[i];
     if (def.flags & NodeFlags.TypeElement) {
-      view.renderer.destroyNode !(asElementData(view, i).renderElement);
+      view.renderer.destroyNode!(asElementData(view, i).renderElement);
     } else if (def.flags & NodeFlags.TypeText) {
-      view.renderer.destroyNode !(asTextData(view, i).renderText);
+      view.renderer.destroyNode!(asTextData(view, i).renderText);
     } else if (def.flags & NodeFlags.TypeContentQuery || def.flags & NodeFlags.TypeViewQuery) {
       asQueryList(view, i).destroy();
     }
@@ -575,7 +586,7 @@ function execEmbeddedViewsAction(view: ViewData, action: ViewAction) {
     const nodeDef = def.nodes[i];
     if (nodeDef.flags & NodeFlags.EmbeddedViews) {
       // a leaf
-      const embeddedViews = asElementData(view, i).viewContainer !._embeddedViews;
+      const embeddedViews = asElementData(view, i).viewContainer!._embeddedViews;
       for (let k = 0; k < embeddedViews.length; k++) {
         callViewAction(embeddedViews[k], action);
       }

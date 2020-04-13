@@ -11,10 +11,9 @@ import {$, By, element} from 'protractor';
 import {openBrowser, verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
 describe('largeform benchmark', () => {
-
   afterEach(verifyNoBrowserErrors);
 
-  it('should work for ng2', async() => {
+  it('should work for ng2', async () => {
     openBrowser({
       url: '/',
       params: [{name: 'copies', value: 1}],

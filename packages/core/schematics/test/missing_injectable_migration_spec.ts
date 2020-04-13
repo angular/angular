@@ -76,7 +76,7 @@ describe('Missing injectable migration', () => {
 
     it('should migrate all providers defined in "viewProviders" and "providers" in the ' +
            'same component',
-       async() => {
+       async () => {
          writeFile('/index.ts', `
           import {Component} from '@angular/core';
 
@@ -102,8 +102,8 @@ describe('Missing injectable migration', () => {
   });
 
   function createTests(
-      type: 'NgModule' | 'Directive' | 'Component', propName: 'providers' | 'viewProviders') {
-    it(`should migrate type provider in ${type}`, async() => {
+      type: 'NgModule'|'Directive'|'Component', propName: 'providers'|'viewProviders') {
+    it(`should migrate type provider in ${type}`, async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
 
@@ -121,7 +121,7 @@ describe('Missing injectable migration', () => {
           .toContain(`{ ${type}, Injectable } from '@angular/core`);
     });
 
-    it(`should migrate object literal provider in ${type} to explicit value provider`, async() => {
+    it(`should migrate object literal provider in ${type} to explicit value provider`, async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
 
@@ -140,7 +140,7 @@ describe('Missing injectable migration', () => {
       expect(tree.readContent('/index.ts')).toContain(`{${type}} from '@angular/core`);
     });
 
-    it(`should migrate object literal provider with forwardRef in ${type}`, async() => {
+    it(`should migrate object literal provider with forwardRef in ${type}`, async () => {
       writeFile('/index.ts', `
         import {${type}, forwardRef} from '@angular/core';
 
@@ -158,7 +158,7 @@ describe('Missing injectable migration', () => {
           .toContain(`{ ${type}, forwardRef, Injectable } from '@angular/core`);
     });
 
-    it(`should not migrate object literal provider with "useValue" in ${type}`, async() => {
+    it(`should not migrate object literal provider with "useValue" in ${type}`, async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
 
@@ -174,7 +174,7 @@ describe('Missing injectable migration', () => {
       expect(tree.readContent('/index.ts')).not.toContain('@Injectable');
     });
 
-    it(`should not migrate provider with "useClass" and "deps" in ${type}`, async() => {
+    it(`should not migrate provider with "useClass" and "deps" in ${type}`, async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
 
@@ -190,7 +190,7 @@ describe('Missing injectable migration', () => {
       expect(tree.readContent('/index.ts')).not.toContain('@Injectable');
     });
 
-    it(`should not migrate object literal provider with "useFactory" in ${type}`, async() => {
+    it(`should not migrate object literal provider with "useFactory" in ${type}`, async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
 
@@ -206,7 +206,7 @@ describe('Missing injectable migration', () => {
       expect(tree.readContent('/index.ts')).not.toContain('@Injectable');
     });
 
-    it(`should not migrate object literal provider with "useExisting" in ${type}`, async() => {
+    it(`should not migrate object literal provider with "useExisting" in ${type}`, async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
 
@@ -226,7 +226,7 @@ describe('Missing injectable migration', () => {
       expect(tree.readContent('/index.ts')).not.toContain('@Injectable');
     });
 
-    it(`should migrate object literal provider with "useClass" in ${type}`, async() => {
+    it(`should migrate object literal provider with "useClass" in ${type}`, async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
 
@@ -248,7 +248,7 @@ describe('Missing injectable migration', () => {
 
     it(`should not migrate references for providers with "useExisting" in ${type}, but migrate ` +
            `existing token if declared in other ${type}`,
-       async() => {
+       async () => {
          writeFile('/index.ts', `
         import {${type}} from '@angular/core';
 
@@ -281,7 +281,7 @@ describe('Missing injectable migration', () => {
          expect(tree.readContent('/index.ts')).toMatch(/MyService {}\s+export class MyToken/);
        });
 
-    it('should not migrate provider which is already decorated with @Injectable', async() => {
+    it('should not migrate provider which is already decorated with @Injectable', async () => {
       writeFile('/index.ts', `
         import {Injectable, ${type}} from '@angular/core';
 
@@ -299,7 +299,7 @@ describe('Missing injectable migration', () => {
           .toMatch(/@angular\/core';\s+@Injectable\(\)\s+export class MyService/);
     });
 
-    it('should not migrate provider which is already decorated with @Directive', async() => {
+    it('should not migrate provider which is already decorated with @Directive', async () => {
       writeFile('/index.ts', `
         import {Directive, ${type}} from '@angular/core';
 
@@ -316,7 +316,7 @@ describe('Missing injectable migration', () => {
       expect(tree.readContent('/index.ts')).not.toContain('@Injectable');
     });
 
-    it('should not migrate provider which is already decorated with @Component', async() => {
+    it('should not migrate provider which is already decorated with @Component', async () => {
       writeFile('/index.ts', `
         import {Component, ${type}} from '@angular/core';
 
@@ -333,7 +333,7 @@ describe('Missing injectable migration', () => {
       expect(tree.readContent('/index.ts')).not.toContain('@Injectable');
     });
 
-    it('should not migrate provider which is already decorated with @Pipe', async() => {
+    it('should not migrate provider which is already decorated with @Pipe', async () => {
       writeFile('/index.ts', `
         import {Pipe, ${type}} from '@angular/core';
 
@@ -350,7 +350,7 @@ describe('Missing injectable migration', () => {
       expect(tree.readContent('/index.ts')).not.toContain('@Injectable');
     });
 
-    it(`should migrate multiple providers in same ${type}`, async() => {
+    it(`should migrate multiple providers in same ${type}`, async () => {
       writeFile('/index.ts', `
       import {${type}} from '@angular/core';
 
@@ -370,7 +370,7 @@ describe('Missing injectable migration', () => {
           .toContain(`{ ${type}, Injectable } from '@angular/core`);
     });
 
-    it(`should migrate multiple mixed providers in same ${type}`, async() => {
+    it(`should migrate multiple mixed providers in same ${type}`, async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
 
@@ -399,7 +399,7 @@ describe('Missing injectable migration', () => {
           .toContain(`{ provide: ServiceB, useValue: undefined },`);
     });
 
-    it(`should migrate multiple nested providers in same ${type}`, async() => {
+    it(`should migrate multiple nested providers in same ${type}`, async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
 
@@ -433,7 +433,7 @@ describe('Missing injectable migration', () => {
           .toContain(`{ provide: ServiceD, useValue: undefined },`);
     });
 
-    it('should migrate providers referenced through identifier', async() => {
+    it('should migrate providers referenced through identifier', async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
 
@@ -467,7 +467,7 @@ describe('Missing injectable migration', () => {
           .toContain(`{ provide: ServiceC, useValue: undefined },`);
     });
 
-    it('should migrate providers created through static analyzable function call', async() => {
+    it('should migrate providers created through static analyzable function call', async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
 
@@ -497,7 +497,7 @@ describe('Missing injectable migration', () => {
           .toContain(`ServiceB, { provide: ServiceC, useValue: undefined }),`);
     });
 
-    it('should migrate providers which are computed through spread operator', async() => {
+    it('should migrate providers which are computed through spread operator', async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
 
@@ -525,7 +525,7 @@ describe('Missing injectable migration', () => {
           .toContain(`ServiceB, { provide: ServiceC, useValue: undefined }];`);
     });
 
-    it(`should migrate provider once if referenced in multiple ${type} definitions`, async() => {
+    it(`should migrate provider once if referenced in multiple ${type} definitions`, async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
 
@@ -559,7 +559,7 @@ describe('Missing injectable migration', () => {
 
     it(`should only migrate empty object provider literal once if referenced multiple times ` +
            `in ${type} definitions`,
-       async() => {
+       async () => {
          writeFile('/provider.ts', `
         export class MyService {}
 
@@ -592,7 +592,7 @@ describe('Missing injectable migration', () => {
              .toContain(`const PROVIDER = { provide: MyService, useValue: undefined };`);
        });
 
-    it('should create new import for @Injectable when migrating provider', async() => {
+    it('should create new import for @Injectable when migrating provider', async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
         import {MyService, MySecondService} from './service';
@@ -617,7 +617,7 @@ describe('Missing injectable migration', () => {
     });
 
     it('should re-use existing namespace import for importing @Injectable when migrating provider',
-       async() => {
+       async () => {
          writeFile('/index.ts', `
           import * as core from '@angular/core';
 
@@ -643,7 +643,7 @@ describe('Missing injectable migration', () => {
              .toMatch(/@core.Injectable\(\)\s+export class MyService/);
        });
 
-    it('should warn if a referenced individual provider could not be resolved', async() => {
+    it('should warn if a referenced individual provider could not be resolved', async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
 
@@ -659,7 +659,7 @@ describe('Missing injectable migration', () => {
       expect(warnOutput[0]).toContain(`4:${providerSourceTextColumn}:`);
     });
 
-    it(`should warn if ${propName} value could not be resolved`, async() => {
+    it(`should warn if ${propName} value could not be resolved`, async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
 
@@ -675,7 +675,7 @@ describe('Missing injectable migration', () => {
       expect(warnOutput[0]).toContain(`4:${propValueSourceTextColumn}:`);
     });
 
-    it(`should not throw if an empty @${type} is analyzed`, async() => {
+    it(`should not throw if an empty @${type} is analyzed`, async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
 
@@ -693,7 +693,7 @@ describe('Missing injectable migration', () => {
     });
 
     it('should create new import for injectable after full end of last import statement',
-       async() => {
+       async () => {
          writeFile('/index.ts', `
           import {${type}} from '@angular/core';
           import {MyService} from './service';
@@ -718,7 +718,7 @@ describe('Missing injectable migration', () => {
              .toMatch(/'b'; \/\/ some comment\s+import { Injectable } from "@angular\/core";/);
        });
 
-    it('should create new import at source file start with trailing new-line', async() => {
+    it('should create new import at source file start with trailing new-line', async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
         import {MyService} from './service';
@@ -739,7 +739,7 @@ describe('Missing injectable migration', () => {
               /^import { Injectable } from "@angular\/core";\s+\/\* @license \*\/\s+@Injectable\(\)\s+export class MyService/);
     });
 
-    it('should remove @Inject decorator for providers which are migrated', async() => {
+    it('should remove @Inject decorator for providers which are migrated', async () => {
       writeFile('/index.ts', `
         import {${type}} from '@angular/core';
         import {MyService} from './service';
@@ -766,7 +766,7 @@ describe('Missing injectable migration', () => {
           .toMatch(/import { Inject, Injectable } from '@angular\/core';/);
     });
 
-    it('should not migrate provider classes in library type definitions', async() => {
+    it('should not migrate provider classes in library type definitions', async () => {
       writeFile('/node_modules/my-lib/index.d.ts', `
         export declare class MyService {}
       `);

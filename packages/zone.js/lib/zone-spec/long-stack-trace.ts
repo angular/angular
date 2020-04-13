@@ -88,7 +88,7 @@ function stackTracesEnabled(): boolean {
   return (Error as any).stackTraceLimit > 0;
 }
 
-type LongStackTraceZoneSpec = ZoneSpec & {longStackTraceLimit: number};
+type LongStackTraceZoneSpec = ZoneSpec&{longStackTraceLimit: number};
 
 (Zone as any)['longStackTraceZoneSpec'] = <LongStackTraceZoneSpec>{
   name: 'long-stack-trace',

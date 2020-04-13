@@ -33,7 +33,9 @@ class AppComponent {
 // #docregion detach
 class DataListProvider {
   // in a real application the returned data will be different every time
-  get data() { return [1, 2, 3, 4, 5]; }
+  get data() {
+    return [1, 2, 3, 4, 5];
+  }
 }
 
 @Component({
@@ -45,7 +47,9 @@ class DataListProvider {
 class GiantList {
   constructor(private ref: ChangeDetectorRef, public dataProvider: DataListProvider) {
     ref.detach();
-    setInterval(() => { this.ref.detectChanges(); }, 5000);
+    setInterval(() => {
+      this.ref.detectChanges();
+    }, 5000);
   }
 }
 
@@ -64,7 +68,9 @@ class App {
 class DataProvider {
   data = 1;
   constructor() {
-    setInterval(() => { this.data = 2; }, 500);
+    setInterval(() => {
+      this.data = 2;
+    }, 500);
   }
 }
 

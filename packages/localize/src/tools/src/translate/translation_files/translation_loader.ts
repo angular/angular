@@ -51,14 +51,15 @@ export class TranslationLoader {
         const providedLocale = translationFileLocales[index];
         const locale = providedLocale || parsedLocale;
         if (locale === undefined) {
-          throw new Error(
-              `The translation file "${filePath}" does not contain a target locale and no explicit locale was provided for this file.`);
+          throw new Error(`The translation file "${
+              filePath}" does not contain a target locale and no explicit locale was provided for this file.`);
         }
 
         if (parsedLocale !== undefined && providedLocale !== undefined &&
             parsedLocale !== providedLocale) {
           diagnostics.warn(
-              `The provided locale "${providedLocale}" does not match the target locale "${parsedLocale}" found in the translation file "${filePath}".`);
+              `The provided locale "${providedLocale}" does not match the target locale "${
+                  parsedLocale}" found in the translation file "${filePath}".`);
         }
 
         // If we were passed a diagnostics object then copy the messages over to it.

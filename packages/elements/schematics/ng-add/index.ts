@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Rule, SchematicContext, SchematicsException, Tree, chain, noop} from '@angular-devkit/schematics';
+import {chain, noop, Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
-import {NodeDependencyType, addPackageJsonDependency} from '@schematics/angular/utility/dependencies';
+import {addPackageJsonDependency, NodeDependencyType} from '@schematics/angular/utility/dependencies';
 import {getWorkspace} from '@schematics/angular/utility/workspace';
 
 import {Schema} from './schema';
@@ -36,7 +36,7 @@ function addPolyfillDependency(): Rule {
 
 /** Adds the document-register-element.js to the polyfills file. */
 function addPolyfill(options: Schema): Rule {
-  return async(host: Tree, context: SchematicContext) => {
+  return async (host: Tree, context: SchematicContext) => {
     const projectName = options.project;
 
     if (!projectName) {

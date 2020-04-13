@@ -41,7 +41,6 @@ export function addTreeToModule(mod: any): any {
                   }
                   let childElement: any, childScope: any;
                   $scope.$watch($attr.data, function ngIfWatchAction(value: any) {
-
                     if (value) {
                       if (!childScope) {
                         childScope = $scope.$new();
@@ -67,6 +66,8 @@ export function addTreeToModule(mod: any): any {
           ])
       .config([
         '$compileProvider',
-        function($compileProvider: any) { $compileProvider.debugInfoEnabled(false); }
+        function($compileProvider: any) {
+          $compileProvider.debugInfoEnabled(false);
+        }
       ]);
 }

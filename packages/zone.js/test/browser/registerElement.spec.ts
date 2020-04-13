@@ -30,7 +30,9 @@ describe(
         callbackNames.forEach(function(callbackName) {
           const fullCallbackName = callbackName + 'Callback';
           const proto = Object.create(HTMLElement.prototype);
-          (proto as any)[fullCallbackName] = function(arg: any) { callbacks[callbackName](arg); };
+          (proto as any)[fullCallbackName] = function(arg: any) {
+            callbacks[callbackName](arg);
+          };
           (<any>document).registerElement('x-' + callbackName.toLowerCase(), {prototype: proto});
         });
       });
@@ -106,9 +108,11 @@ describe(
            testZone.run(function() {
              const proto = Object.create(HTMLElement.prototype);
 
-             Object.defineProperties(
-                 proto,
-                 {createdCallback: <any>{writable: false, configurable: false, value: checkZone}});
+             Object.defineProperties(proto, {
+               createdCallback: <any> {
+                 writable: false, configurable: false, value: checkZone
+               }
+             });
 
              (<any>document).registerElement('x-props-desc', {prototype: proto});
 
@@ -124,8 +128,9 @@ describe(
       it('should not throw with frozen prototypes ', function() {
         testZone.run(function() {
           const proto = Object.create(HTMLElement.prototype, Object.freeze(<PropertyDescriptorMap>{
-            createdCallback:
-                <PropertyDescriptor>{value: () => {}, writable: true, configurable: true}
+            createdCallback: <PropertyDescriptor> {
+              value: () => {}, writable: true, configurable: true
+            }
           }));
 
           Object.defineProperty(
@@ -159,6 +164,8 @@ describe(
 
 
       it('should not throw if no options passed to registerElement', function() {
-        expect(function() { (<any>document).registerElement('x-no-opts'); }).not.toThrow();
+        expect(function() {
+          (<any>document).registerElement('x-no-opts');
+        }).not.toThrow();
       });
     }));

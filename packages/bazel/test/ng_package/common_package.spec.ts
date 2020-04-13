@@ -30,8 +30,9 @@ describe('@angular/common ng_package', () => {
     });
     // regression test for https://github.com/angular/angular/issues/23217
     // Note, we don't have an e2e test that covers this
-    it('doesn\'t pass require in a way that breaks webpack static analysis',
-       () => { expect(shx.cat('locales/fr.js')).not.toContain('factory(require, exports)'); });
+    it('doesn\'t pass require in a way that breaks webpack static analysis', () => {
+      expect(shx.cat('locales/fr.js')).not.toContain('factory(require, exports)');
+    });
   });
 
   it('should have right bundle files', () => {
@@ -59,8 +60,9 @@ describe('@angular/common ng_package', () => {
     ]);
   });
 
-  it('should reference core using global symbol in umd',
-     () => { expect(shx.cat('bundles/common.umd.js')).toContain('global.ng.core'); });
+  it('should reference core using global symbol in umd', () => {
+    expect(shx.cat('bundles/common.umd.js')).toContain('global.ng.core');
+  });
 
   it('should have right fesm files', () => {
     const expected = [

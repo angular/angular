@@ -154,8 +154,9 @@ export function ɵɵpureFunction5(
   const different = bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4);
   return bindingUpdated(lView, bindingIndex + 4, exp5) || different ?
       updateBinding(
-          lView, bindingIndex + 5, thisArg ? pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5) :
-                                             pureFn(exp1, exp2, exp3, exp4, exp5)) :
+          lView, bindingIndex + 5,
+          thisArg ? pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5) :
+                    pureFn(exp1, exp2, exp3, exp4, exp5)) :
       getBinding(lView, bindingIndex + 5);
 }
 
@@ -184,9 +185,9 @@ export function ɵɵpureFunction6(
   const different = bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4);
   return bindingUpdated2(lView, bindingIndex + 4, exp5, exp6) || different ?
       updateBinding(
-          lView, bindingIndex + 6, thisArg ?
-              pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5, exp6) :
-              pureFn(exp1, exp2, exp3, exp4, exp5, exp6)) :
+          lView, bindingIndex + 6,
+          thisArg ? pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5, exp6) :
+                    pureFn(exp1, exp2, exp3, exp4, exp5, exp6)) :
       getBinding(lView, bindingIndex + 6);
 }
 
@@ -217,9 +218,9 @@ export function ɵɵpureFunction7(
   let different = bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4);
   return bindingUpdated3(lView, bindingIndex + 4, exp5, exp6, exp7) || different ?
       updateBinding(
-          lView, bindingIndex + 7, thisArg ?
-              pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5, exp6, exp7) :
-              pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7)) :
+          lView, bindingIndex + 7,
+          thisArg ? pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5, exp6, exp7) :
+                    pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7)) :
       getBinding(lView, bindingIndex + 7);
 }
 
@@ -252,9 +253,9 @@ export function ɵɵpureFunction8(
   const different = bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4);
   return bindingUpdated4(lView, bindingIndex + 4, exp5, exp6, exp7, exp8) || different ?
       updateBinding(
-          lView, bindingIndex + 8, thisArg ?
-              pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8) :
-              pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8)) :
+          lView, bindingIndex + 8,
+          thisArg ? pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8) :
+                    pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8)) :
       getBinding(lView, bindingIndex + 8);
 }
 

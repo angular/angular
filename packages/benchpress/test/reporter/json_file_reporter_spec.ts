@@ -62,16 +62,12 @@ import {Injector, JsonFileReporter, MeasureValues, Options, SampleDescription} f
              {'timeStamp': '1970-01-01T00:00:00.000Z', 'runIndex': 0, 'values': {'a': 3, 'b': 6}}
            ],
            'validSample': [
-             {'timeStamp': '1970-01-01T00:00:00.000Z', 'runIndex': 0, 'values': {'a': 3, 'b': 6}}, {
-               'timeStamp': '1970-01-01T00:00:00.001Z',
-               'runIndex': 1,
-               'values': {'a': 5, 'b': 9}
-             }
+             {'timeStamp': '1970-01-01T00:00:00.000Z', 'runIndex': 0, 'values': {'a': 3, 'b': 6}},
+             {'timeStamp': '1970-01-01T00:00:00.001Z', 'runIndex': 1, 'values': {'a': 5, 'b': 9}}
            ]
          });
          async.done();
        }));
-
   });
 }
 

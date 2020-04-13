@@ -22,7 +22,7 @@ export type ComponentTemplate<T> = {
   // Note: the ctx parameter is typed as T|U, as using only U would prevent a template with
   // e.g. ctx: {} from being assigned to ComponentTemplate<any> as TypeScript won't infer U = any
   // in that scenario. By including T this incompatibility is resolved.
-  <U extends T>(rf: RenderFlags, ctx: T | U): void;
+  <U extends T>(rf: RenderFlags, ctx: T|U): void;
 };
 
 /**
@@ -72,7 +72,9 @@ export const enum RenderFlags {
  * A subclass of `Type` which has a static `ɵcmp`:`ComponentDef` field making it
  * consumable for rendering.
  */
-export interface ComponentType<T> extends Type<T> { ɵcmp: never; }
+export interface ComponentType<T> extends Type<T> {
+  ɵcmp: never;
+}
 
 /**
  * A subclass of `Type` which has a static `ɵdir`:`DirectiveDef` field making it
@@ -87,7 +89,9 @@ export interface DirectiveType<T> extends Type<T> {
  * A subclass of `Type` which has a static `ɵpipe`:`PipeDef` field making it
  * consumable for rendering.
  */
-export interface PipeType<T> extends Type<T> { ɵpipe: never; }
+export interface PipeType<T> extends Type<T> {
+  ɵpipe: never;
+}
 
 /**
  * An object literal of this type is used to represent the metadata of a constructor dependency.
@@ -99,7 +103,7 @@ export type CtorDependency = {
    * attribute name is a dynamic expression instead of a string literal, this will be the unknown
    * type.
    */
-  attribute?: string | unknown;
+  attribute?: string|unknown;
 
   /**
    * If `@Optional()` is used, this key is set to true.
@@ -120,14 +124,17 @@ export type CtorDependency = {
    * If `@SkipSelf` is used, this key is set to true.
    */
   skipSelf?: true;
-} | null;
+}|null;
 
 /**
  * @codeGenApi
  */
 export type ɵɵDirectiveDefWithMeta<
-    T, Selector extends string, ExportAs extends string[], InputMap extends{[key: string]: string},
-    OutputMap extends{[key: string]: string}, QueryFields extends string[]> = DirectiveDef<T>;
+    T, Selector extends string, ExportAs extends
+        string[], InputMap extends {[key: string]: string},
+                                   OutputMap extends {[key: string]: string},
+                                                     QueryFields extends string[]> =
+    DirectiveDef<T>;
 
 /**
  * Runtime link information for Directives.
@@ -268,9 +275,10 @@ export interface DirectiveDef<T> {
  * @codeGenApi
  */
 export type ɵɵComponentDefWithMeta<
-    T, Selector extends String, ExportAs extends string[], InputMap extends{[key: string]: string},
-    OutputMap extends{[key: string]: string}, QueryFields extends string[],
-    NgContentSelectors extends string[]> = ComponentDef<T>;
+    T, Selector extends String, ExportAs extends
+        string[], InputMap extends {[key: string]: string},
+                                   OutputMap extends {[key: string]: string}, QueryFields extends
+            string[], NgContentSelectors extends string[]> = ComponentDef<T>;
 
 /**
  * @codeGenApi
@@ -467,14 +475,14 @@ export interface ComponentDefFeature {
  *
  * The function is necessary to be able to support forward declarations.
  */
-export type DirectiveDefListOrFactory = (() => DirectiveDefList) | DirectiveDefList;
+export type DirectiveDefListOrFactory = (() => DirectiveDefList)|DirectiveDefList;
 
-export type DirectiveDefList = (DirectiveDef<any>| ComponentDef<any>)[];
+export type DirectiveDefList = (DirectiveDef<any>|ComponentDef<any>)[];
 
-export type DirectiveTypesOrFactory = (() => DirectiveTypeList) | DirectiveTypeList;
+export type DirectiveTypesOrFactory = (() => DirectiveTypeList)|DirectiveTypeList;
 
 export type DirectiveTypeList =
-    (DirectiveType<any>| ComponentType<any>|
+    (DirectiveType<any>|ComponentType<any>|
      Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
 export type HostBindingsFunction<T> = <U extends T>(rf: RenderFlags, ctx: U) => void;
@@ -484,14 +492,14 @@ export type HostBindingsFunction<T> = <U extends T>(rf: RenderFlags, ctx: U) => 
  *
  * The function is necessary to be able to support forward declarations.
  */
-export type PipeDefListOrFactory = (() => PipeDefList) | PipeDefList;
+export type PipeDefListOrFactory = (() => PipeDefList)|PipeDefList;
 
 export type PipeDefList = PipeDef<any>[];
 
-export type PipeTypesOrFactory = (() => PipeTypeList) | PipeTypeList;
+export type PipeTypesOrFactory = (() => PipeTypeList)|PipeTypeList;
 
 export type PipeTypeList =
-    (PipeType<any>| Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
+    (PipeType<any>|Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

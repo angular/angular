@@ -8,13 +8,14 @@
 
 import {CommonModule} from '@angular/common';
 import {NgComponentOutlet} from '@angular/common/src/directives/ng_component_outlet';
-import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleFactory, Optional, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
-import {TestBed, async} from '@angular/core/testing';
+import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NgModule, NgModuleFactory, NO_ERRORS_SCHEMA, Optional, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {async, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('insert/remove', () => {
-
-  beforeEach(() => { TestBed.configureTestingModule({imports: [TestModule]}); });
+  beforeEach(() => {
+    TestBed.configureTestingModule({imports: [TestModule]});
+  });
 
   it('should do nothing if component is null', async(() => {
        const template = `<ng-template *ngComponentOutlet="currentComponent"></ng-template>`;
@@ -51,7 +52,7 @@ describe('insert/remove', () => {
        fixture.detectChanges();
        expect(fixture.nativeElement).toHaveText('foo');
        expect(fixture.componentInstance.cmpRef).toBeAnInstanceOf(ComponentRef);
-       expect(fixture.componentInstance.cmpRef !.instance).toBeAnInstanceOf(InjectedComponent);
+       expect(fixture.componentInstance.cmpRef!.instance).toBeAnInstanceOf(InjectedComponent);
      }));
 
 
@@ -99,11 +100,10 @@ describe('insert/remove', () => {
            [{provide: TEST_TOKEN, useValue: uniqueValue}], fixture.componentRef.injector);
 
        fixture.detectChanges();
-       let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef !;
+       let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef!;
        expect(cmpRef).toBeAnInstanceOf(ComponentRef);
        expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
        expect(cmpRef.instance.testToken).toBe(uniqueValue);
-
      }));
 
 
@@ -114,7 +114,7 @@ describe('insert/remove', () => {
        fixture.componentInstance.cmpRef = null;
        fixture.componentInstance.currentComponent = InjectedComponent;
        fixture.detectChanges();
-       let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef !;
+       let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef!;
        expect(cmpRef).toBeAnInstanceOf(ComponentRef);
        expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
        expect(cmpRef.instance.testToken).toBeNull();
@@ -166,7 +166,7 @@ describe('insert/remove', () => {
        fixture.componentInstance.currentComponent = Module2InjectedComponent;
        fixture.detectChanges();
 
-       const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'] !;
+       const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef']!;
        spyOn(moduleRef, 'destroy').and.callThrough();
 
        expect(moduleRef.destroy).not.toHaveBeenCalled();
@@ -224,21 +224,25 @@ const TEST_CMP_TEMPLATE =
 @Component({selector: 'test-cmp', template: TEST_CMP_TEMPLATE})
 class TestComponent {
   // TODO(issue/24571): remove '!'.
-  currentComponent !: Type<any>| null;
+  currentComponent!: Type<any>|null;
   // TODO(issue/24571): remove '!'.
-  injector !: Injector;
+  injector!: Injector;
   // TODO(issue/24571): remove '!'.
-  projectables !: any[][];
+  projectables!: any[][];
   // TODO(issue/24571): remove '!'.
-  module !: NgModuleFactory<any>;
+  module!: NgModuleFactory<any>;
 
-  get cmpRef(): ComponentRef<any>|null { return this.ngComponentOutlet['_componentRef']; }
-  set cmpRef(value: ComponentRef<any>|null) { this.ngComponentOutlet['_componentRef'] = value; }
+  get cmpRef(): ComponentRef<any>|null {
+    return this.ngComponentOutlet['_componentRef'];
+  }
+  set cmpRef(value: ComponentRef<any>|null) {
+    this.ngComponentOutlet['_componentRef'] = value;
+  }
 
   // TODO(issue/24571): remove '!'.
-  @ViewChildren(TemplateRef) tplRefs !: QueryList<TemplateRef<any>>;
+  @ViewChildren(TemplateRef) tplRefs!: QueryList<TemplateRef<any>>;
   // TODO(issue/24571): remove '!'.
-  @ViewChild(NgComponentOutlet, {static: true}) ngComponentOutlet !: NgComponentOutlet;
+  @ViewChild(NgComponentOutlet, {static: true}) ngComponentOutlet!: NgComponentOutlet;
 
   constructor(public vcRef: ViewContainerRef) {}
 }

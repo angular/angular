@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {isObservable, isPromise} from '@angular/core/src/util/lang';
-import {of } from 'rxjs';
+import {of} from 'rxjs';
 
 {
   describe('isPromise', () => {
@@ -28,7 +28,7 @@ import {of } from 'rxjs';
   });
 
   describe('isObservable', () => {
-    it('should be true for an Observable', () => expect(isObservable(of (true))).toEqual(true));
+    it('should be true for an Observable', () => expect(isObservable(of(true))).toEqual(true));
 
     it('should be true if the argument is the object with subscribe function',
        () => expect(isObservable({subscribe: () => {}})).toEqual(true));

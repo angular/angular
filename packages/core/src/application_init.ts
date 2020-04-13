@@ -34,9 +34,9 @@ export const APP_INITIALIZER = new InjectionToken<Array<() => void>>('Applicatio
 @Injectable()
 export class ApplicationInitStatus {
   // TODO(issue/24571): remove '!'.
-  private resolve !: Function;
+  private resolve!: Function;
   // TODO(issue/24571): remove '!'.
-  private reject !: Function;
+  private reject!: Function;
   private initialized = false;
   public readonly donePromise: Promise<any>;
   public readonly done = false;
@@ -57,7 +57,7 @@ export class ApplicationInitStatus {
     const asyncInitPromises: Promise<any>[] = [];
 
     const complete = () => {
-      (this as{done: boolean}).done = true;
+      (this as {done: boolean}).done = true;
       this.resolve();
     };
 
@@ -70,7 +70,13 @@ export class ApplicationInitStatus {
       }
     }
 
-    Promise.all(asyncInitPromises).then(() => { complete(); }).catch(e => { this.reject(e); });
+    Promise.all(asyncInitPromises)
+        .then(() => {
+          complete();
+        })
+        .catch(e => {
+          this.reject(e);
+        });
 
     if (asyncInitPromises.length === 0) {
       complete();

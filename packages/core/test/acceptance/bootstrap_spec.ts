@@ -6,18 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, Component, NgModule, ViewEncapsulation, destroyPlatform} from '@angular/core';
+import {COMPILER_OPTIONS, Component, destroyPlatform, NgModule, ViewEncapsulation} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {onlyInIvy, withBody} from '@angular/private/testing';
 
 describe('bootstrap', () => {
-
   beforeEach(destroyPlatform);
   afterEach(destroyPlatform);
 
   it('should bootstrap using #id selector',
-     withBody('<div>before|</div><button id="my-app"></button>', async() => {
+     withBody('<div>before|</div><button id="my-app"></button>', async () => {
        try {
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(IdSelectorAppModule);
          expect(document.body.textContent).toEqual('before|works!');
@@ -28,7 +27,7 @@ describe('bootstrap', () => {
      }));
 
   it('should bootstrap using one of selectors from the list',
-     withBody('<div>before|</div><div class="bar"></div>', async() => {
+     withBody('<div>before|</div><div class="bar"></div>', async () => {
        try {
          const ngModuleRef =
              await platformBrowserDynamic().bootstrapModule(MultipleSelectorsAppModule);
@@ -66,7 +65,7 @@ describe('bootstrap', () => {
     }
 
     it('should use ViewEncapsulation.Emulated as default',
-       withBody('<my-app></my-app>', async() => {
+       withBody('<my-app></my-app>', async () => {
          const TestModule = createComponentAndModule();
 
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
@@ -75,7 +74,7 @@ describe('bootstrap', () => {
        }));
 
     it('should allow setting defaultEncapsulation using bootstrap option',
-       withBody('<my-app></my-app>', async() => {
+       withBody('<my-app></my-app>', async () => {
          const TestModule = createComponentAndModule();
 
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(
@@ -86,7 +85,7 @@ describe('bootstrap', () => {
        }));
 
     it('should allow setting defaultEncapsulation using compiler option',
-       withBody('<my-app></my-app>', async() => {
+       withBody('<my-app></my-app>', async () => {
          const TestModule = createComponentAndModule();
 
          const ngModuleRef = await platformBrowserDynamic([{
@@ -100,7 +99,7 @@ describe('bootstrap', () => {
        }));
 
     it('should prefer encapsulation on component over bootstrap option',
-       withBody('<my-app></my-app>', async() => {
+       withBody('<my-app></my-app>', async () => {
          const TestModule = createComponentAndModule({encapsulation: ViewEncapsulation.Emulated});
 
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(
@@ -110,7 +109,7 @@ describe('bootstrap', () => {
        }));
 
     it('should use preserveWhitespaces: false as default',
-       withBody('<my-app></my-app>', async() => {
+       withBody('<my-app></my-app>', async () => {
          const TestModule = createComponentAndModule();
 
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
@@ -119,7 +118,7 @@ describe('bootstrap', () => {
        }));
 
     it('should allow setting preserveWhitespaces using bootstrap option',
-       withBody('<my-app></my-app>', async() => {
+       withBody('<my-app></my-app>', async () => {
          const TestModule = createComponentAndModule();
 
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(
@@ -129,7 +128,7 @@ describe('bootstrap', () => {
        }));
 
     it('should allow setting preserveWhitespaces using compiler option',
-       withBody('<my-app></my-app>', async() => {
+       withBody('<my-app></my-app>', async () => {
          const TestModule = createComponentAndModule();
 
          const ngModuleRef =
@@ -141,7 +140,7 @@ describe('bootstrap', () => {
        }));
 
     it('should prefer preserveWhitespaces on component over bootstrap option',
-       withBody('<my-app></my-app>', async() => {
+       withBody('<my-app></my-app>', async () => {
          const TestModule = createComponentAndModule({preserveWhitespaces: false});
 
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(
@@ -151,10 +150,12 @@ describe('bootstrap', () => {
        }));
 
     onlyInIvy('options cannot be changed in Ivy').describe('changing bootstrap options', () => {
-      beforeEach(() => { spyOn(console, 'error'); });
+      beforeEach(() => {
+        spyOn(console, 'error');
+      });
 
       it('should log an error when changing defaultEncapsulation bootstrap options',
-         withBody('<my-app></my-app>', async() => {
+         withBody('<my-app></my-app>', async () => {
            const TestModule = createComponentAndModule();
            const platformRef = platformBrowserDynamic();
 
@@ -175,7 +176,7 @@ describe('bootstrap', () => {
          }));
 
       it('should log an error when changing preserveWhitespaces bootstrap options',
-         withBody('<my-app></my-app>', async() => {
+         withBody('<my-app></my-app>', async () => {
            const TestModule = createComponentAndModule();
            const platformRef = platformBrowserDynamic();
 
@@ -196,7 +197,7 @@ describe('bootstrap', () => {
          }));
 
       it('should log an error when changing defaultEncapsulation to its default',
-         withBody('<my-app></my-app>', async() => {
+         withBody('<my-app></my-app>', async () => {
            const TestModule = createComponentAndModule();
            const platformRef = platformBrowserDynamic();
 
@@ -215,7 +216,7 @@ describe('bootstrap', () => {
          }));
 
       it('should log an error when changing preserveWhitespaces to its default',
-         withBody('<my-app></my-app>', async() => {
+         withBody('<my-app></my-app>', async () => {
            const TestModule = createComponentAndModule();
            const platformRef = platformBrowserDynamic();
 
@@ -234,7 +235,7 @@ describe('bootstrap', () => {
          }));
 
       it('should not log an error when passing identical bootstrap options',
-         withBody('<my-app></my-app>', async() => {
+         withBody('<my-app></my-app>', async () => {
            const TestModule = createComponentAndModule();
            const platformRef = platformBrowserDynamic();
 

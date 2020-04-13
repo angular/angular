@@ -21,7 +21,9 @@ export function $injectorFactory() {
 
 @NgModule({providers: [{provide: $INJECTOR, useFactory: $injectorFactory}]})
 export class AngularTestingModule {
-  constructor(i: Injector) { injector = i; }
+  constructor(i: Injector) {
+    injector = i;
+  }
 }
 
 /**

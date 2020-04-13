@@ -11,11 +11,11 @@ import {SANITIZER} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
 import {renderStringify} from '../render3/util/misc_utils';
 
-import {BypassType, allowSanitizationBypassAndThrow, unwrapSafeValue} from './bypass';
+import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
 import {Sanitizer} from './sanitizer';
 import {SecurityContext} from './security';
-import {StyleSanitizeFn, StyleSanitizeMode, _sanitizeStyle} from './style_sanitizer';
+import {_sanitizeStyle, StyleSanitizeFn, StyleSanitizeMode} from './style_sanitizer';
 import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
 
 
@@ -152,8 +152,9 @@ export function ɵɵsanitizeScript(unsafeScript: any): string {
  * If tag and prop names don't match Resource URL schema, use URL sanitizer.
  */
 export function getUrlSanitizer(tag: string, prop: string) {
-  if ((prop === 'src' && (tag === 'embed' || tag === 'frame' || tag === 'iframe' ||
-                          tag === 'media' || tag === 'script')) ||
+  if ((prop === 'src' &&
+       (tag === 'embed' || tag === 'frame' || tag === 'iframe' || tag === 'media' ||
+        tag === 'script')) ||
       (prop === 'href' && (tag === 'base' || tag === 'link'))) {
     return ɵɵsanitizeResourceUrl;
   }
@@ -186,7 +187,7 @@ export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: 
  * @publicApi
  */
 export const ɵɵdefaultStyleSanitizer =
-    (function(prop: string, value: string|null, mode?: StyleSanitizeMode): string | boolean | null {
+    (function(prop: string, value: string|null, mode?: StyleSanitizeMode): string|boolean|null {
       if (value === undefined && mode === undefined) {
         // This is a workaround for the fact that `StyleSanitizeFn` should not exist once PR#34480
         // lands. For now the `StyleSanitizeFn` and should act like `(value: any) => string` as a

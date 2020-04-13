@@ -8,7 +8,7 @@
 
 import {CommonModule, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 
 const baseUrl = '/base';
 
@@ -46,14 +46,18 @@ describe('Location Class', () => {
         imports: [CommonModule],
         providers: [
           {provide: LocationStrategy, useClass: PathLocationStrategy},
-          {provide: PlatformLocation, useFactory: () => { return new MockPlatformLocation(); }},
+          {
+            provide: PlatformLocation,
+            useFactory: () => {
+              return new MockPlatformLocation();
+            }
+          },
           {provide: Location, useClass: Location, deps: [LocationStrategy, PlatformLocation]},
         ]
       });
     });
 
     it('should get the state object', inject([Location], (location: Location) => {
-
          expect(location.getState()).toBe(null);
 
          location.go('/test', '', {foo: 'bar'});
@@ -62,7 +66,6 @@ describe('Location Class', () => {
        }));
 
     it('should work after using back button', inject([Location], (location: Location) => {
-
          expect(location.getState()).toBe(null);
 
          location.go('/test1', '', {url: 'test1'});
@@ -74,7 +77,6 @@ describe('Location Class', () => {
 
          expect(location.getState()).toEqual({url: 'test1'});
        }));
-
   });
 
   describe('location.onUrlChange()', () => {
@@ -83,7 +85,12 @@ describe('Location Class', () => {
         imports: [CommonModule],
         providers: [
           {provide: LocationStrategy, useClass: PathLocationStrategy},
-          {provide: PlatformLocation, useFactory: () => { return new MockPlatformLocation(); }},
+          {
+            provide: PlatformLocation,
+            useFactory: () => {
+              return new MockPlatformLocation();
+            }
+          },
           {provide: Location, useClass: Location, deps: [LocationStrategy, PlatformLocation]},
         ]
       });
@@ -95,8 +102,9 @@ describe('Location Class', () => {
 
     it('should add registered functions to urlChangeListeners',
        inject([Location], (location: Location) => {
-
-         function changeListener(url: string, state: unknown) { return undefined; }
+         function changeListener(url: string, state: unknown) {
+           return undefined;
+         }
 
          expect((location as any)._urlChangeListeners.length).toBe(0);
 
@@ -104,8 +112,6 @@ describe('Location Class', () => {
 
          expect((location as any)._urlChangeListeners.length).toBe(1);
          expect((location as any)._urlChangeListeners[0]).toEqual(changeListener);
-
        }));
-
   });
 });

@@ -13,7 +13,9 @@ import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animat
   let innerPlayer: MockDomAnimation|null = null;
   beforeEach(() => {
     element = {};
-    element['animate'] = () => { return innerPlayer = new MockDomAnimation(); };
+    element['animate'] = () => {
+      return innerPlayer = new MockDomAnimation();
+    };
   });
 
   describe('WebAnimationsPlayer tests', () => {
@@ -26,7 +28,7 @@ import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animat
       const player = new WebAnimationsPlayer(element, keyframes, {duration: 1000});
 
       player.init();
-      const p = innerPlayer !;
+      const p = innerPlayer!;
       expect(p.log).toEqual(['pause']);
 
       player.play();
@@ -42,7 +44,7 @@ import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animat
       const player = new WebAnimationsPlayer(element, keyframes, {duration: 1000});
 
       player.play();
-      const p = innerPlayer !;
+      const p = innerPlayer!;
       expect(p.log).toEqual(['play']);
     });
 
@@ -70,10 +72,18 @@ import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animat
 
 class MockDomAnimation implements DOMAnimation {
   log: string[] = [];
-  cancel(): void { this.log.push('cancel'); }
-  play(): void { this.log.push('play'); }
-  pause(): void { this.log.push('pause'); }
-  finish(): void { this.log.push('finish'); }
+  cancel(): void {
+    this.log.push('cancel');
+  }
+  play(): void {
+    this.log.push('play');
+  }
+  pause(): void {
+    this.log.push('pause');
+  }
+  finish(): void {
+    this.log.push('finish');
+  }
   onfinish: Function = () => {};
   position: number = 0;
   currentTime: number = 0;

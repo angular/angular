@@ -21,7 +21,8 @@ describe('stringify', () => {
       expect(concatStringsWithSpace('', 'b')).toEqual('b');
     });
 
-    it('should concat when not empty',
-       () => { expect(concatStringsWithSpace('before', 'after')).toEqual('before after'); });
+    it('should concat when not empty', () => {
+      expect(concatStringsWithSpace('before', 'after')).toEqual('before after');
+    });
   });
 });

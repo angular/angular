@@ -17,7 +17,9 @@ const {patch, elementOpen, elementClose, elementOpenStart, elementOpenEnd, text,
 export class TreeComponent {
   constructor(private _rootEl: any) {}
 
-  set data(data: TreeNode) { patch(this._rootEl, () => this._render(data)); }
+  set data(data: TreeNode) {
+    patch(this._rootEl, () => this._render(data));
+  }
 
   private _render(data: TreeNode) {
     elementOpenStart('span', '', null);

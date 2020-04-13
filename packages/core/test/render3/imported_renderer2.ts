@@ -17,9 +17,13 @@ import {EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event
 import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
 
 export class SimpleDomEventsPlugin extends EventManagerPlugin {
-  constructor(doc: any) { super(doc); }
+  constructor(doc: any) {
+    super(doc);
+  }
 
-  supports(eventName: string): boolean { return true; }
+  supports(eventName: string): boolean {
+    return true;
+  }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     let callback: EventListener = handler as EventListener;

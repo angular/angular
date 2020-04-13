@@ -24,19 +24,29 @@ describe('renderer factory lifecycle', () => {
 
   @Component({selector: 'some-component', template: `foo`})
   class SomeComponent implements DoCheck {
-    ngOnInit() { logs.push('some_component create'); }
-    ngDoCheck() { logs.push('some_component update'); }
+    ngOnInit() {
+      logs.push('some_component create');
+    }
+    ngDoCheck() {
+      logs.push('some_component update');
+    }
   }
 
   @Component({selector: 'some-component-with-error', template: `With error`})
   class SomeComponentWhichThrows {
-    ngOnInit() { throw new Error('SomeComponentWhichThrows threw'); }
+    ngOnInit() {
+      throw new Error('SomeComponentWhichThrows threw');
+    }
   }
 
   @Component({selector: 'lol', template: `<some-component></some-component>`})
   class TestComponent implements DoCheck {
-    ngOnInit() { logs.push('test_component create'); }
-    ngDoCheck() { logs.push('test_component update'); }
+    ngOnInit() {
+      logs.push('test_component create');
+    }
+    ngDoCheck() {
+      logs.push('test_component update');
+    }
   }
 
   /** Creates a patched renderer factory that pushes entries to the test log */
@@ -44,7 +54,7 @@ describe('renderer factory lifecycle', () => {
     let rendererFactory = getRendererFactory2(document);
     const createRender = rendererFactory.createRenderer;
 
-    rendererFactory.createRenderer = (hostElement: any, type: RendererType2 | null) => {
+    rendererFactory.createRenderer = (hostElement: any, type: RendererType2|null) => {
       logs.push('create');
       return createRender.apply(rendererFactory, [hostElement, type]);
     };
@@ -168,7 +178,7 @@ describe('animation renderer factory', () => {
     ]);
     player.finish();
 
-    rendererFactory !.whenRenderingDone !().then(() => {
+    rendererFactory!.whenRenderingDone!().then(() => {
       expect(eventLogs).toEqual(['void - start', 'void - done', 'on - start', 'on - done']);
       done();
     });

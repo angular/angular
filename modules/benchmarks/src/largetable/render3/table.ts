@@ -9,7 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {Component, Input, NgModule, ɵdetectChanges} from '@angular/core';
 
-import {TableCell, buildTable, emptyTable} from '../util';
+import {buildTable, emptyTable, TableCell} from '../util';
 
 @Component({
   selector: 'largetable',
@@ -26,12 +26,15 @@ import {TableCell, buildTable, emptyTable} from '../util';
   `,
 })
 export class LargeTableComponent {
-  @Input()
-  data: TableCell[][] = emptyTable;
+  @Input() data: TableCell[][] = emptyTable;
 
-  trackByIndex(index: number, item: any) { return index; }
+  trackByIndex(index: number, item: any) {
+    return index;
+  }
 
-  getColor(row: number) { return row % 2 ? '' : 'grey'; }
+  getColor(row: number) {
+    return row % 2 ? '' : 'grey';
+  }
 }
 
 @NgModule({declarations: [LargeTableComponent], imports: [CommonModule]})

@@ -97,9 +97,9 @@ export function validateInjectionKey(
 export class Deferred<R> {
   promise: Promise<R>;
   // TODO(issue/24571): remove '!'.
-  resolve !: (value?: R | PromiseLike<R>) => void;
+  resolve!: (value?: R|PromiseLike<R>) => void;
   // TODO(issue/24571): remove '!'.
-  reject !: (error?: any) => void;
+  reject!: (error?: any) => void;
 
   constructor() {
     this.promise = new Promise((res, rej) => {
@@ -144,7 +144,9 @@ function supportsNgModel(component: any) {
  */
 export function hookupNgModel(ngModel: INgModelController, component: any) {
   if (ngModel && supportsNgModel(component)) {
-    ngModel.$render = () => { component.writeValue(ngModel.$viewValue); };
+    ngModel.$render = () => {
+      component.writeValue(ngModel.$viewValue);
+    };
     component.registerOnChange(ngModel.$setViewValue.bind(ngModel));
     if (typeof component.registerOnTouched === 'function') {
       component.registerOnTouched(ngModel.$setTouched.bind(ngModel));

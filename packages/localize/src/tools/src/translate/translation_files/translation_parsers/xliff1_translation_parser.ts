@@ -14,7 +14,7 @@ import {MessageSerializer} from '../message_serialization/message_serializer';
 import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
 
 import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
-import {XmlTranslationParserHint, addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedElement, parseInnerRange} from './translation_utils';
+import {addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedElement, parseInnerRange, XmlTranslationParserHint} from './translation_utils';
 
 /**
  * A translation parser that can load XLIFF 1.2 files.
@@ -74,7 +74,8 @@ export class Xliff1TranslationParser implements TranslationParser<XmlTranslation
     if (localesFound.size > 1) {
       addParseDiagnostic(
           diagnostics, element.sourceSpan,
-          `More than one locale found in translation file: ${JSON.stringify(Array.from(localesFound))}. Using "${bundle.locale}"`,
+          `More than one locale found in translation file: ${
+              JSON.stringify(Array.from(localesFound))}. Using "${bundle.locale}"`,
           ParseErrorLevel.WARNING);
     }
 

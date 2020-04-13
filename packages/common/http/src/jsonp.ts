@@ -36,7 +36,9 @@ export const JSONP_ERR_WRONG_RESPONSE_TYPE = 'JSONP requests must use Json respo
  *
  *
  */
-export abstract class JsonpCallbackContext { [key: string]: (data: any) => void; }
+export abstract class JsonpCallbackContext {
+  [key: string]: (data: any) => void;
+}
 
 /**
  * Processes an `HttpRequest` with the JSONP method,
@@ -53,7 +55,9 @@ export class JsonpClientBackend implements HttpBackend {
   /**
    * Get the name of the next callback method, by incrementing the global `nextRequestId`.
    */
-  private nextCallback(): string { return `ng_jsonp_callback_${nextRequestId++}`; }
+  private nextCallback(): string {
+    return `ng_jsonp_callback_${nextRequestId++}`;
+  }
 
   /**
    * Processes a JSONP request and returns an event stream of the results.
@@ -157,7 +161,8 @@ export class JsonpClientBackend implements HttpBackend {
         observer.next(new HttpResponse({
           body,
           status: 200,
-          statusText: 'OK', url,
+          statusText: 'OK',
+          url,
         }));
 
         // Complete the stream, the response is over.
@@ -178,7 +183,8 @@ export class JsonpClientBackend implements HttpBackend {
         observer.error(new HttpErrorResponse({
           error,
           status: 0,
-          statusText: 'JSONP Error', url,
+          statusText: 'JSONP Error',
+          url,
         }));
       };
 

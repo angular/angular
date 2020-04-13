@@ -35,7 +35,9 @@ export class StylingComponent {
   tplRefIdx: number = 0;
   staticStyle = {width: '10px'};
 
-  getTplRef(...tplRefs): TemplateRef<any> { return tplRefs[this.tplRefIdx]; }
+  getTplRef(...tplRefs): TemplateRef<any> {
+    return tplRefs[this.tplRefIdx];
+  }
 }
 
 @NgModule({

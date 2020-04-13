@@ -10,7 +10,7 @@ import {Injector} from '../di';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
 import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, LView, PARENT, TData, TVIEW, T_HOST} from '../render3/interfaces/view';
+import {DECLARATION_COMPONENT_VIEW, LView, PARENT, T_HOST, TData, TVIEW} from '../render3/interfaces/view';
 import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, loadLContext} from '../render3/util/discovery_utils';
 import {INTERPOLATION_DELIMITER, renderStringify} from '../render3/util/misc_utils';
 import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
@@ -53,15 +53,25 @@ export class DebugNode__PRE_R3__ {
     }
   }
 
-  get injector(): Injector { return this._debugContext.injector; }
+  get injector(): Injector {
+    return this._debugContext.injector;
+  }
 
-  get componentInstance(): any { return this._debugContext.component; }
+  get componentInstance(): any {
+    return this._debugContext.component;
+  }
 
-  get context(): any { return this._debugContext.context; }
+  get context(): any {
+    return this._debugContext.context;
+  }
 
-  get references(): {[key: string]: any} { return this._debugContext.references; }
+  get references(): {[key: string]: any} {
+    return this._debugContext.references;
+  }
 
-  get providerTokens(): any[] { return this._debugContext.providerTokens; }
+  get providerTokens(): any[] {
+    return this._debugContext.providerTokens;
+  }
 }
 
 /**
@@ -70,9 +80,9 @@ export class DebugNode__PRE_R3__ {
 export interface DebugElement extends DebugNode {
   readonly name: string;
   readonly properties: {[key: string]: any};
-  readonly attributes: {[key: string]: string | null};
+  readonly attributes: {[key: string]: string|null};
   readonly classes: {[key: string]: boolean};
-  readonly styles: {[key: string]: string | null};
+  readonly styles: {[key: string]: string|null};
   readonly childNodes: DebugNode[];
   readonly nativeElement: any;
   readonly children: DebugElement[];
@@ -83,11 +93,11 @@ export interface DebugElement extends DebugNode {
   triggerEventHandler(eventName: string, eventObj: any): void;
 }
 export class DebugElement__PRE_R3__ extends DebugNode__PRE_R3__ implements DebugElement {
-  readonly name !: string;
+  readonly name!: string;
   readonly properties: {[key: string]: any} = {};
-  readonly attributes: {[key: string]: string | null} = {};
+  readonly attributes: {[key: string]: string|null} = {};
   readonly classes: {[key: string]: boolean} = {};
-  readonly styles: {[key: string]: string | null} = {};
+  readonly styles: {[key: string]: string|null} = {};
   readonly childNodes: DebugNode[] = [];
   readonly nativeElement: any;
 
@@ -99,14 +109,14 @@ export class DebugElement__PRE_R3__ extends DebugNode__PRE_R3__ implements Debug
   addChild(child: DebugNode) {
     if (child) {
       this.childNodes.push(child);
-      (child as{parent: DebugNode}).parent = this;
+      (child as {parent: DebugNode}).parent = this;
     }
   }
 
   removeChild(child: DebugNode) {
     const childIndex = this.childNodes.indexOf(child);
     if (childIndex !== -1) {
-      (child as{parent: DebugNode | null}).parent = null;
+      (child as {parent: DebugNode | null}).parent = null;
       this.childNodes.splice(childIndex, 1);
     }
   }
@@ -119,7 +129,7 @@ export class DebugElement__PRE_R3__ extends DebugNode__PRE_R3__ implements Debug
         if (c.parent) {
           (c.parent as DebugElement__PRE_R3__).removeChild(c);
         }
-        (child as{parent: DebugNode}).parent = this;
+        (child as {parent: DebugNode}).parent = this;
       });
     }
   }
@@ -132,7 +142,7 @@ export class DebugElement__PRE_R3__ extends DebugNode__PRE_R3__ implements Debug
       if (newChild.parent) {
         (newChild.parent as DebugElement__PRE_R3__).removeChild(newChild);
       }
-      (newChild as{parent: DebugNode}).parent = this;
+      (newChild as {parent: DebugNode}).parent = this;
       this.childNodes.splice(refIndex, 0, newChild);
     }
   }
@@ -155,9 +165,8 @@ export class DebugElement__PRE_R3__ extends DebugNode__PRE_R3__ implements Debug
   }
 
   get children(): DebugElement[] {
-    return this
-        .childNodes  //
-        .filter((node) => node instanceof DebugElement__PRE_R3__) as DebugElement[];
+    return this.childNodes  //
+               .filter((node) => node instanceof DebugElement__PRE_R3__) as DebugElement[];
   }
 
   triggerEventHandler(eventName: string, eventObj: any) {
@@ -205,14 +214,18 @@ function _queryNodeChildren(
 class DebugNode__POST_R3__ implements DebugNode {
   readonly nativeNode: Node;
 
-  constructor(nativeNode: Node) { this.nativeNode = nativeNode; }
+  constructor(nativeNode: Node) {
+    this.nativeNode = nativeNode;
+  }
 
   get parent(): DebugElement|null {
     const parent = this.nativeNode.parentNode as Element;
     return parent ? new DebugElement__POST_R3__(parent) : null;
   }
 
-  get injector(): Injector { return getInjector(this.nativeNode); }
+  get injector(): Injector {
+    return getInjector(this.nativeNode);
+  }
 
   get componentInstance(): any {
     const nativeElement = this.nativeNode;
@@ -227,9 +240,13 @@ class DebugNode__POST_R3__ implements DebugNode {
     return getListeners(this.nativeNode as Element).filter(listener => listener.type === 'dom');
   }
 
-  get references(): {[key: string]: any;} { return getLocalRefs(this.nativeNode); }
+  get references(): {[key: string]: any;} {
+    return getLocalRefs(this.nativeNode);
+  }
 
-  get providerTokens(): any[] { return getInjectionTokens(this.nativeNode as Element); }
+  get providerTokens(): any[] {
+    return getInjectionTokens(this.nativeNode as Element);
+  }
 }
 
 class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugElement {
@@ -244,11 +261,11 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
 
   get name(): string {
     try {
-      const context = loadLContext(this.nativeNode) !;
+      const context = loadLContext(this.nativeNode)!;
       const lView = context.lView;
       const tData = lView[TVIEW].data;
       const tNode = tData[context.nodeIndex] as TNode;
-      return tNode.tagName !;
+      return tNode.tagName!;
     } catch (e) {
       return this.nativeNode.nodeName;
     }
@@ -285,8 +302,8 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     return properties;
   }
 
-  get attributes(): {[key: string]: string | null;} {
-    const attributes: {[key: string]: string | null;} = {};
+  get attributes(): {[key: string]: string|null;} {
+    const attributes: {[key: string]: string|null;} = {};
     const element = this.nativeElement;
 
     if (!element) {
@@ -343,9 +360,9 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     return attributes;
   }
 
-  get styles(): {[key: string]: string | null} {
+  get styles(): {[key: string]: string|null} {
     if (this.nativeElement && (this.nativeElement as HTMLElement).style) {
-      return (this.nativeElement as HTMLElement).style as{[key: string]: any};
+      return (this.nativeElement as HTMLElement).style as {[key: string]: any};
     }
     return {};
   }
@@ -438,7 +455,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
   }
 }
 
-function copyDomProperties(element: Element | null, properties: {[name: string]: string}): void {
+function copyDomProperties(element: Element|null, properties: {[name: string]: string}): void {
   if (element) {
     // Skip own properties (as those are patched)
     let obj = Object.getPrototypeOf(element);
@@ -481,8 +498,8 @@ function _queryAllR3(
     parentElement: DebugElement, predicate: Predicate<DebugNode>, matches: DebugNode[],
     elementsOnly: false): void;
 function _queryAllR3(
-    parentElement: DebugElement, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
-    matches: DebugElement[] | DebugNode[], elementsOnly: boolean) {
+    parentElement: DebugElement, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
+    matches: DebugElement[]|DebugNode[], elementsOnly: boolean) {
   const context = loadLContext(parentElement.nativeNode, false);
   if (context !== null) {
     const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
@@ -506,8 +523,8 @@ function _queryAllR3(
  * @param rootNativeNode the root native node on which predicate should not be matched
  */
 function _queryNodeChildrenR3(
-    tNode: TNode, lView: LView, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
-    matches: DebugElement[] | DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
+    tNode: TNode, lView: LView, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
+    matches: DebugElement[]|DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
   const nativeNode = getNativeByTNodeOrNull(tNode, lView);
   // For each type of TNode, specific logic is executed.
   if (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) {
@@ -520,7 +537,7 @@ function _queryNodeChildrenR3(
       const componentView = getComponentLViewByIndex(tNode.index, lView);
       if (componentView && componentView[TVIEW].firstChild) {
         _queryNodeChildrenR3(
-            componentView[TVIEW].firstChild !, componentView, predicate, matches, elementsOnly,
+            componentView[TVIEW].firstChild!, componentView, predicate, matches, elementsOnly,
             rootNativeNode);
       }
     } else {
@@ -556,17 +573,17 @@ function _queryNodeChildrenR3(
   } else if (tNode.type === TNodeType.Projection) {
     // Case 3: the TNode is a projection insertion point (i.e. a <ng-content>).
     // The nodes projected at this location all need to be processed.
-    const componentView = lView ![DECLARATION_COMPONENT_VIEW];
+    const componentView = lView![DECLARATION_COMPONENT_VIEW];
     const componentHost = componentView[T_HOST] as TElementNode;
     const head: TNode|null =
-        (componentHost.projection as(TNode | null)[])[tNode.projection as number];
+        (componentHost.projection as (TNode | null)[])[tNode.projection as number];
 
     if (Array.isArray(head)) {
       for (let nativeNode of head) {
         _addQueryMatchR3(nativeNode, predicate, matches, elementsOnly, rootNativeNode);
       }
     } else if (head) {
-      const nextLView = componentView[PARENT] !as LView;
+      const nextLView = componentView[PARENT]! as LView;
       const nextTNode = nextLView[TVIEW].data[head.index] as TNode;
       _queryNodeChildrenR3(nextTNode, nextLView, predicate, matches, elementsOnly, rootNativeNode);
     }
@@ -596,12 +613,12 @@ function _queryNodeChildrenR3(
  * @param rootNativeNode the root native node on which predicate should not be matched
  */
 function _queryNodeChildrenInContainerR3(
-    lContainer: LContainer, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
-    matches: DebugElement[] | DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
+    lContainer: LContainer, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
+    matches: DebugElement[]|DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
     const childView = lContainer[i];
     _queryNodeChildrenR3(
-        childView[TVIEW].node !, childView, predicate, matches, elementsOnly, rootNativeNode);
+        childView[TVIEW].node!, childView, predicate, matches, elementsOnly, rootNativeNode);
   }
 }
 
@@ -615,8 +632,8 @@ function _queryNodeChildrenInContainerR3(
  * @param rootNativeNode the root native node on which predicate should not be matched
  */
 function _addQueryMatchR3(
-    nativeNode: any, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
-    matches: DebugElement[] | DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
+    nativeNode: any, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
+    matches: DebugElement[]|DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
   if (rootNativeNode !== nativeNode) {
     const debugNode = getDebugNode(nativeNode);
     if (!debugNode) {
@@ -645,8 +662,8 @@ function _addQueryMatchR3(
  * @param elementsOnly whether only elements should be searched
  */
 function _queryNativeNodeDescendants(
-    parentNode: any, predicate: Predicate<DebugElement>| Predicate<DebugNode>,
-    matches: DebugElement[] | DebugNode[], elementsOnly: boolean) {
+    parentNode: any, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
+    matches: DebugElement[]|DebugNode[], elementsOnly: boolean) {
   const nodes = parentNode.childNodes;
   const length = nodes.length;
 
@@ -757,7 +774,9 @@ export function removeDebugNodeFromIndex(node: DebugNode) {
  *
  * @publicApi
  */
-export interface Predicate<T> { (value: T): boolean; }
+export interface Predicate<T> {
+  (value: T): boolean;
+}
 
 /**
  * @publicApi

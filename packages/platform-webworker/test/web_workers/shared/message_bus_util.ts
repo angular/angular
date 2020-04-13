@@ -24,7 +24,7 @@ export function createConnectedMessageBus(): MessageBus {
 
 class MockPostMessage {
   // TODO(issue/24571): remove '!'.
-  private _listener !: EventListener;
+  private _listener!: EventListener;
 
   addEventListener(type: string, listener: EventListener, useCapture?: boolean): void {
     if (type === 'message') {
@@ -32,5 +32,7 @@ class MockPostMessage {
     }
   }
 
-  postMessage(data: any, transfer?: [Transferable]): void { this._listener(<any>{data: data}); }
+  postMessage(data: any, transfer?: [Transferable]): void {
+    this._listener(<any>{data: data});
+  }
 }

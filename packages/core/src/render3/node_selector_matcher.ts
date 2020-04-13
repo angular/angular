@@ -46,7 +46,7 @@ function isCssClassMatching(
       }
     } else if (item === AttributeMarker.Classes) {
       // We found the classes section. Start searching for the class.
-      while (i < attrs.length && typeof(item = attrs[i++]) == 'string') {
+      while (i < attrs.length && typeof (item = attrs[i++]) == 'string') {
         // while we have strings
         if (item.toLowerCase() === cssClassToMatch) return true;
       }
@@ -151,9 +151,10 @@ export function isNodeMatchingSelector(
         if (attrIndexInNode > nameOnlyMarkerIdx) {
           nodeAttrValue = '';
         } else {
-          ngDevMode && assertNotEqual(
-                           nodeAttrs[attrIndexInNode], AttributeMarker.NamespaceURI,
-                           'We do not match directives on namespaced attributes');
+          ngDevMode &&
+              assertNotEqual(
+                  nodeAttrs[attrIndexInNode], AttributeMarker.NamespaceURI,
+                  'We do not match directives on namespaced attributes');
           // we lowercase the attribute value to be able to match
           // selectors without case-sensitivity
           // (selectors are already in lowercase when generated)
@@ -208,7 +209,7 @@ function isPositive(mode: SelectorFlags): boolean {
  * matching against directives.
  */
 function findAttrIndexInNode(
-    name: string, attrs: TAttributes | null, isInlineTemplate: boolean,
+    name: string, attrs: TAttributes|null, isInlineTemplate: boolean,
     isProjectionMode: boolean): number {
   if (attrs === null) return -1;
 

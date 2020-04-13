@@ -10,7 +10,7 @@ import {ResourceLoader} from '@angular/compiler';
 import {CompileMetadataResolver} from '@angular/compiler/src/metadata_resolver';
 import {MockResourceLoader} from '@angular/compiler/testing/src/resource_loader_mock';
 import {Component, Directive, Injectable, NgModule, OnDestroy, Pipe} from '@angular/core';
-import {TestBed, async, getTestBed} from '@angular/core/testing';
+import {async, getTestBed, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {obsoleteInIvy} from '@angular/private/testing';
 
@@ -32,7 +32,7 @@ import {obsoleteInIvy} from '@angular/private/testing';
         }
 
         function expectInstanceCreated(type: any) {
-          const instance = instances.get(type) !;
+          const instance = instances.get(type)!;
           expect(instance).toBeDefined();
           expect(instance.dep instanceof SomeDep).toBe(true);
         }
@@ -46,7 +46,9 @@ import {obsoleteInIvy} from '@angular/private/testing';
         class SomeDirective extends Base {}
 
         class SomePipe extends Base {
-          transform(value: any) { return value; }
+          transform(value: any) {
+            return value;
+          }
         }
 
         class SomeService extends Base {}
@@ -138,7 +140,9 @@ import {obsoleteInIvy} from '@angular/private/testing';
           createSummaries().then(s => summaries = s);
         }));
 
-        afterEach(() => { resetTestEnvironmentWithSummaries(); });
+        afterEach(() => {
+          resetTestEnvironmentWithSummaries();
+        });
 
         it('should use directive metadata from summaries', () => {
           resetTestEnvironmentWithSummaries(summaries);

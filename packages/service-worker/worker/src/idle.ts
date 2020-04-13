@@ -60,7 +60,7 @@ export class IdleScheduler {
       const queue = this.queue;
       this.queue = [];
 
-      await queue.reduce(async(previous, task) => {
+      await queue.reduce(async (previous, task) => {
         await previous;
         try {
           await task.run();
@@ -80,11 +80,17 @@ export class IdleScheduler {
   schedule(desc: string, run: () => Promise<void>): void {
     this.queue.push({desc, run});
     if (this.emptyResolve === null) {
-      this.empty = new Promise(resolve => { this.emptyResolve = resolve; });
+      this.empty = new Promise(resolve => {
+        this.emptyResolve = resolve;
+      });
     }
   }
 
-  get size(): number { return this.queue.length; }
+  get size(): number {
+    return this.queue.length;
+  }
 
-  get taskDescriptions(): string[] { return this.queue.map(task => task.desc); }
+  get taskDescriptions(): string[] {
+    return this.queue.map(task => task.desc);
+  }
 }

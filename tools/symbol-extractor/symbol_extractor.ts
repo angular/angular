@@ -9,7 +9,9 @@
 import * as ts from 'typescript';
 
 
-export interface Symbol { name: string; }
+export interface Symbol {
+  name: string;
+}
 
 export class SymbolExtractor {
   public actual: Symbol[];
@@ -75,7 +77,7 @@ export class SymbolExtractor {
     // All symbols in the golden file start out with a count corresponding to the number of symbols
     // with that name. Once they are matched with symbols in the actual output, the count should
     // even out to 0.
-    (expected as(Symbol | string)[]).forEach((nameOrSymbol) => {
+    (expected as (Symbol | string)[]).forEach((nameOrSymbol) => {
       const symbolName = typeof nameOrSymbol == 'string' ? nameOrSymbol : nameOrSymbol.name;
       diff[symbolName] = (diff[symbolName] || 0) + 1;
     });

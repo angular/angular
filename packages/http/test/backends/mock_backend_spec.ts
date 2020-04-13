@@ -18,7 +18,6 @@ import {ReplaySubject} from 'rxjs';
 
 {
   describe('MockBackend', () => {
-
     let backend: MockBackend;
     let sampleRequest1: Request;
     let sampleResponse1: Response;
@@ -40,7 +39,9 @@ import {ReplaySubject} from 'rxjs';
       sampleResponse2 = new Response(new ResponseOptions({body: 'response2'}));
     });
 
-    it('should create a new MockBackend', () => { expect(backend).toBeAnInstanceOf(MockBackend); });
+    it('should create a new MockBackend', () => {
+      expect(backend).toBeAnInstanceOf(MockBackend);
+    });
 
     it('should create a new MockConnection', () => {
       expect(backend.createConnection(sampleRequest1)).toBeAnInstanceOf(MockConnection);
@@ -54,7 +55,9 @@ import {ReplaySubject} from 'rxjs';
     it('should allow responding after subscription',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const connection: MockConnection = backend.createConnection(sampleRequest1);
-         connection.response.subscribe(() => { async.done(); });
+         connection.response.subscribe(() => {
+           async.done();
+         });
          connection.mockRespond(sampleResponse1);
        }));
 
@@ -62,20 +65,26 @@ import {ReplaySubject} from 'rxjs';
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const connection: MockConnection = backend.createConnection(sampleRequest1);
          connection.mockRespond(sampleResponse1);
-         connection.response.subscribe(() => { async.done(); });
+         connection.response.subscribe(() => {
+           async.done();
+         });
        }));
 
     it('should allow responding after subscription with an error',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const connection: MockConnection = backend.createConnection(sampleRequest1);
-         connection.response.subscribe(null !, () => { async.done(); });
+         connection.response.subscribe(null!, () => {
+           async.done();
+         });
          connection.mockError(new Error('nope'));
        }));
 
     it('should not throw when there are no unresolved requests',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const connection: MockConnection = backend.createConnection(sampleRequest1);
-         connection.response.subscribe(() => { async.done(); });
+         connection.response.subscribe(() => {
+           async.done();
+         });
          connection.mockRespond(sampleResponse1);
          backend.verifyNoPendingRequests();
        }));
@@ -83,7 +92,9 @@ import {ReplaySubject} from 'rxjs';
     xit('should throw when there are unresolved requests',
         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
           const connection: MockConnection = backend.createConnection(sampleRequest1);
-          connection.response.subscribe(() => { async.done(); });
+          connection.response.subscribe(() => {
+            async.done();
+          });
           backend.verifyNoPendingRequests();
         }));
 
@@ -91,7 +102,9 @@ import {ReplaySubject} from 'rxjs';
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const connection1: MockConnection = backend.createConnection(sampleRequest1);
          const connection2: MockConnection = backend.createConnection(sampleRequest1);
-         connection1.response.subscribe(() => { async.done(); });
+         connection1.response.subscribe(() => {
+           async.done();
+         });
          connection2.response.subscribe(() => {});
          connection2.mockRespond(sampleResponse1);
          connection1.mockRespond(sampleResponse1);
@@ -101,12 +114,12 @@ import {ReplaySubject} from 'rxjs';
     xit('should allow double subscribing',
         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
           const responses: Response[] = [sampleResponse1, sampleResponse2];
-          backend.connections.subscribe((c: MockConnection) => c.mockRespond(responses.shift() !));
+          backend.connections.subscribe((c: MockConnection) => c.mockRespond(responses.shift()!));
           const responseObservable: ReplaySubject<Response> =
               backend.createConnection(sampleRequest1).response;
           responseObservable.subscribe(res => expect(res.text()).toBe('response1'));
           responseObservable.subscribe(
-              res => expect(res.text()).toBe('response2'), null !, async.done);
+              res => expect(res.text()).toBe('response2'), null!, async.done);
         }));
 
     // TODO(robwormald): readyStates are leaving?

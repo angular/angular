@@ -26,14 +26,17 @@ describe('integration test: public api', () => {
     _warn = null;
   });
 
-  it('should handle empty files',
-     () => { check('test/fixtures/empty.d.ts', 'test/fixtures/empty_expected.d.ts'); });
+  it('should handle empty files', () => {
+    check('test/fixtures/empty.d.ts', 'test/fixtures/empty_expected.d.ts');
+  });
 
-  it('should include symbols',
-     () => { check('test/fixtures/simple.d.ts', 'test/fixtures/simple_expected.d.ts'); });
+  it('should include symbols', () => {
+    check('test/fixtures/simple.d.ts', 'test/fixtures/simple_expected.d.ts');
+  });
 
-  it('should include symbols reexported explicitly',
-     () => { check('test/fixtures/reexported.d.ts', 'test/fixtures/reexported_expected.d.ts'); });
+  it('should include symbols reexported explicitly', () => {
+    check('test/fixtures/reexported.d.ts', 'test/fixtures/reexported_expected.d.ts');
+  });
 
   it('should include symbols reexported with *', () => {
     check('test/fixtures/reexported_star.d.ts', 'test/fixtures/reexported_star_expected.d.ts');
@@ -95,7 +98,9 @@ describe('integration test: generateGoldenFile', () => {
     }
   });
 
-  afterEach(() => { unlinkRecursively(outDir); });
+  afterEach(() => {
+    unlinkRecursively(outDir);
+  });
 
 
   it('should generate a golden file', () => {

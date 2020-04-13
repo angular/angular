@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParamMap, convertToParamMap} from '../src/shared';
+import {convertToParamMap, ParamMap} from '../src/shared';
 
 describe('ParamsMap', () => {
   it('should returns whether a parameter is present', () => {

@@ -50,7 +50,9 @@ export class ReflectiveKey {
   /**
    * @returns the number of keys registered in the system.
    */
-  static get numberOfKeys(): number { return _globalKeyRegistry.numberOfKeys; }
+  static get numberOfKeys(): number {
+    return _globalKeyRegistry.numberOfKeys;
+  }
 }
 
 export class KeyRegistry {
@@ -60,7 +62,7 @@ export class KeyRegistry {
     if (token instanceof ReflectiveKey) return token;
 
     if (this._allKeys.has(token)) {
-      return this._allKeys.get(token) !;
+      return this._allKeys.get(token)!;
     }
 
     const newKey = new ReflectiveKey(token, ReflectiveKey.numberOfKeys);
@@ -68,7 +70,9 @@ export class KeyRegistry {
     return newKey;
   }
 
-  get numberOfKeys(): number { return this._allKeys.size; }
+  get numberOfKeys(): number {
+    return this._allKeys.size;
+  }
 }
 
 const _globalKeyRegistry = new KeyRegistry();

@@ -62,7 +62,7 @@ export class NgStyle implements DoCheck {
 
   ngDoCheck() {
     if (this._differ) {
-      const changes = this._differ.diff(this._ngStyle !);
+      const changes = this._differ.diff(this._ngStyle!);
       if (changes) {
         this._applyChanges(changes);
       }

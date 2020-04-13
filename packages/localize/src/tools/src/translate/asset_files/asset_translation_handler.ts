@@ -14,7 +14,9 @@ import {TranslationBundle, TranslationHandler} from '../translator';
  * Translate an asset file by simply copying it to the appropriate translation output paths.
  */
 export class AssetTranslationHandler implements TranslationHandler {
-  canTranslate(_relativeFilePath: string, _contents: Buffer): boolean { return true; }
+  canTranslate(_relativeFilePath: string, _contents: Buffer): boolean {
+    return true;
+  }
   translate(
       diagnostics: Diagnostics, _sourceRoot: string, relativeFilePath: string, contents: Buffer,
       outputPathFn: OutputPathFn, translations: TranslationBundle[], sourceLocale?: string): void {

@@ -10,6 +10,10 @@
   function A() {
     function ignoreA() {}
   }
-  function B() { let ignoreB = {}; }
-  !function() { let ignoreC = {}; };
+  function B() {
+    let ignoreB = {};
+  }
+  !function() {
+    let ignoreC = {};
+  };
 }();

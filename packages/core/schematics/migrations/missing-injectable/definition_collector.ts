@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {NgDecorator, getAngularDecorators} from '../../utils/ng_decorators';
+import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
 import {getPropertyNameText} from '../../utils/typescript/property_name';
 
 export interface ResolvedNgModule {

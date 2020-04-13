@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Notification, Observable, of } from 'rxjs';
+import {Notification, Observable, of} from 'rxjs';
 import {dematerialize} from 'rxjs/operators';
 
 import {asyncTest, ifEnvSupports} from '../test-util';
@@ -20,7 +20,9 @@ describe('Observable.notification', ifEnvSupports(supportNotification, () => {
            let log: any[];
            let observable1: Observable<any>;
 
-           beforeEach(() => { log = []; });
+           beforeEach(() => {
+             log = [];
+           });
 
            it('notification func callback should run in the correct zone', () => {
              const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
@@ -30,7 +32,7 @@ describe('Observable.notification', ifEnvSupports(supportNotification, () => {
                const notifA = new Notification('N' as any, 'A');
                const notifB = new Notification('N' as any, 'B');
                const notifE = new Notification('E' as any, void 0, error);
-               const materialized = of (notifA, notifB, notifE as any);
+               const materialized = of(notifA, notifB, notifE as any);
                return materialized.pipe(dematerialize());
              });
 

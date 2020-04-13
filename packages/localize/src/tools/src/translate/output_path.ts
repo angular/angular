@@ -7,7 +7,9 @@
  */
 import {join} from 'path';
 
-export interface OutputPathFn { (locale: string, relativePath: string): string; }
+export interface OutputPathFn {
+  (locale: string, relativePath: string): string;
+}
 
 /**
  * Create a function that will compute the absolute path to where a translated file should be

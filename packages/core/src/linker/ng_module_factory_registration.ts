@@ -32,7 +32,7 @@ export function registerModuleFactory(id: string, factory: NgModuleFactory<any>)
   modules.set(id, factory);
 }
 
-function assertSameOrNotExisting(id: string, type: Type<any>| null, incoming: Type<any>): void {
+function assertSameOrNotExisting(id: string, type: Type<any>|null, incoming: Type<any>): void {
   if (type && type !== incoming) {
     throw new Error(
         `Duplicate module registered for ${id} - ${stringify(type)} vs ${stringify(type.name)}`);

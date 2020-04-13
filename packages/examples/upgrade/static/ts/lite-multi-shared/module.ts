@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, Component, Injectable, Injector, NgModule, StaticProvider, getPlatform} from '@angular/core';
+import {Compiler, Component, getPlatform, Injectable, Injector, NgModule, StaticProvider} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {downgradeComponent, downgradeModule} from '@angular/upgrade/static';
@@ -100,12 +100,12 @@ const getRootInjector = (extraProviders: StaticProvider[]) => {
   return rootInjectorPromise;
 };
 
-const downgradedNg2AModule = downgradeModule(async(extraProviders: StaticProvider[]) => {
+const downgradedNg2AModule = downgradeModule(async (extraProviders: StaticProvider[]) => {
   const rootInjector = await getRootInjector(extraProviders);
   const moduleAFactory = await rootInjector.get(Compiler).compileModuleAsync(Ng2AModule);
   return moduleAFactory.create(rootInjector);
 });
-const downgradedNg2BModule = downgradeModule(async(extraProviders: StaticProvider[]) => {
+const downgradedNg2BModule = downgradeModule(async (extraProviders: StaticProvider[]) => {
   const rootInjector = await getRootInjector(extraProviders);
   const moduleBFactory = await rootInjector.get(Compiler).compileModuleAsync(Ng2BModule);
   return moduleBFactory.create(rootInjector);

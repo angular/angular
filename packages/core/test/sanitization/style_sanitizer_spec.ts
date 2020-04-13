@@ -19,9 +19,13 @@ describe('Style sanitizer', () => {
     console.warn = (msg: any) => logMsgs.push(msg);
   });
 
-  afterEach(() => { console.warn = originalLog; });
+  afterEach(() => {
+    console.warn = originalLog;
+  });
 
-  function expectSanitize(v: string) { return expect(_sanitizeStyle(v)); }
+  function expectSanitize(v: string) {
+    return expect(_sanitizeStyle(v));
+  }
 
   it('sanitizes values', () => {
     expectSanitize('').toEqual('');
@@ -31,7 +35,9 @@ describe('Style sanitizer', () => {
     expectSanitize('expression(haha)').toEqual('unsafe');
   });
 
-  it('rejects unblanaced quotes', () => { expectSanitize('"value" "').toEqual('unsafe'); });
+  it('rejects unblanaced quotes', () => {
+    expectSanitize('"value" "').toEqual('unsafe');
+  });
 
   it('accepts transform functions', () => {
     expectSanitize('rotate(90deg)').toEqual('rotate(90deg)');
@@ -47,12 +53,17 @@ describe('Style sanitizer', () => {
         .toEqual('repeating-radial-gradient(ellipse cover, black, red, black, red)');
   });
 
-  it('accepts attr', () => { expectSanitize('attr(value string)').toEqual('attr(value string)'); });
+  it('accepts attr', () => {
+    expectSanitize('attr(value string)').toEqual('attr(value string)');
+  });
 
-  it('accepts calc', () => { expectSanitize('calc(90%-123px)').toEqual('calc(90%-123px)'); });
+  it('accepts calc', () => {
+    expectSanitize('calc(90%-123px)').toEqual('calc(90%-123px)');
+  });
 
-  it('accepts var',
-     () => { expectSanitize('var(--my-custom-var)').toEqual('var(--my-custom-var)'); });
+  it('accepts var', () => {
+    expectSanitize('var(--my-custom-var)').toEqual('var(--my-custom-var)');
+  });
 
   it('sanitizes URLs', () => {
     expectSanitize('url(foo/bar.png)').toEqual('url(foo/bar.png)');

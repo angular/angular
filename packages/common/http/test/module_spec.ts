@@ -38,11 +38,15 @@ class TestInterceptor implements HttpInterceptor {
 }
 
 class InterceptorA extends TestInterceptor {
-  constructor() { super('A'); }
+  constructor() {
+    super('A');
+  }
 }
 
 class InterceptorB extends TestInterceptor {
-  constructor() { super('B'); }
+  constructor() {
+    super('B');
+  }
 }
 
 @Injectable()
@@ -98,7 +102,9 @@ class ReentrantInterceptor implements HttpInterceptor {
           {provide: HTTP_INTERCEPTORS, useClass: ReentrantInterceptor, multi: true},
         ],
       });
-      injector.get(HttpClient).get('/test').subscribe(() => { done(); });
+      injector.get(HttpClient).get('/test').subscribe(() => {
+        done();
+      });
       injector.get(HttpTestingController).expectOne('/test').flush('ok!');
     });
   });

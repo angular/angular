@@ -14,7 +14,9 @@ export class ServerEventManagerPlugin /* extends EventManagerPlugin which is pri
   constructor(@Inject(DOCUMENT) private doc: any) {}
 
   // Handle all events on the server.
-  supports(eventName: string) { return true; }
+  supports(eventName: string) {
+    return true;
+  }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     return getDOM().onAndCancel(element, eventName, handler);

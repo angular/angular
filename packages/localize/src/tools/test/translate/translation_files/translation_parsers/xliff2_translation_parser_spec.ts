@@ -421,7 +421,6 @@ describe('Xliff2TranslationParser', () => {
           .toEqual(ɵmakeParsedTranslation(
               ['', ' tnemele elbatalsnart ', 'sredlohecalp htiw', ''],
               ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']));
-
     });
 
     describe('[structure errors]', () => {
@@ -969,7 +968,6 @@ describe('Xliff2TranslationParser', () => {
           .toEqual(ɵmakeParsedTranslation(
               ['', ' tnemele elbatalsnart ', 'sredlohecalp htiw', ''],
               ['INTERPOLATION', 'START_BOLD_TEXT', 'CLOSE_BOLD_TEXT']));
-
     });
 
     describe('[structure errors]', () => {

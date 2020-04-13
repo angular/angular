@@ -75,7 +75,7 @@ export interface AttributeDecorator {
    * @publicApi
    */
   (name: string): any;
-  new (name: string): Attribute;
+  new(name: string): Attribute;
 }
 
 
@@ -158,7 +158,7 @@ export interface ContentChildrenDecorator {
    * @Annotation
    */
   (selector: Type<any>|Function|string, opts?: {descendants?: boolean, read?: any}): any;
-  new (selector: Type<any>|Function|string, opts?: {descendants?: boolean, read?: any}): Query;
+  new(selector: Type<any>|Function|string, opts?: {descendants?: boolean, read?: any}): Query;
 }
 
 /**
@@ -219,7 +219,7 @@ export interface ContentChildDecorator {
    * @Annotation
    */
   (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): any;
-  new (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): ContentChild;
+  new(selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): ContentChild;
 }
 
 /**
@@ -238,8 +238,9 @@ export type ContentChild = Query;
  * @publicApi
  */
 export const ContentChild: ContentChildDecorator = makePropDecorator(
-    'ContentChild', (selector?: any, data: any = {}) =>
-                        ({selector, first: true, isViewQuery: false, descendants: true, ...data}),
+    'ContentChild',
+    (selector?: any, data: any = {}) =>
+        ({selector, first: true, isViewQuery: false, descendants: true, ...data}),
     Query);
 
 /**
@@ -275,7 +276,7 @@ export interface ViewChildrenDecorator {
    * @Annotation
    */
   (selector: Type<any>|Function|string, opts?: {read?: any}): any;
-  new (selector: Type<any>|Function|string, opts?: {read?: any}): ViewChildren;
+  new(selector: Type<any>|Function|string, opts?: {read?: any}): ViewChildren;
 }
 
 /**
@@ -292,8 +293,9 @@ export type ViewChildren = Query;
  * @publicApi
  */
 export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
-    'ViewChildren', (selector?: any, data: any = {}) =>
-                        ({selector, first: false, isViewQuery: true, descendants: true, ...data}),
+    'ViewChildren',
+    (selector?: any, data: any = {}) =>
+        ({selector, first: false, isViewQuery: true, descendants: true, ...data}),
     Query);
 
 /**
@@ -342,7 +344,7 @@ export interface ViewChildDecorator {
    * @Annotation
    */
   (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): any;
-  new (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): ViewChild;
+  new(selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): ViewChild;
 }
 
 /**
@@ -359,6 +361,7 @@ export type ViewChild = Query;
  * @publicApi
  */
 export const ViewChild: ViewChildDecorator = makePropDecorator(
-    'ViewChild', (selector: any, data: any) =>
-                     ({selector, first: true, isViewQuery: true, descendants: true, ...data}),
+    'ViewChild',
+    (selector: any, data: any) =>
+        ({selector, first: true, isViewQuery: true, descendants: true, ...data}),
     Query);

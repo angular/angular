@@ -66,7 +66,9 @@ export const enum I18nMutateOpCode {
 export const ELEMENT_MARKER: ELEMENT_MARKER = {
   marker: 'element'
 };
-export interface ELEMENT_MARKER { marker: 'element'; }
+export interface ELEMENT_MARKER {
+  marker: 'element';
+}
 
 /**
  * Marks that the next string is for comment.
@@ -77,7 +79,9 @@ export const COMMENT_MARKER: COMMENT_MARKER = {
   marker: 'comment'
 };
 
-export interface COMMENT_MARKER { marker: 'comment'; }
+export interface COMMENT_MARKER {
+  marker: 'comment';
+}
 
 /**
  * Array storing OpCode for dynamically creating `i18n` blocks.

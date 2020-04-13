@@ -60,7 +60,7 @@ export const Compiler_compileModuleAndAllComponentsSync__POST_R3__: <T>(moduleTy
     ModuleWithComponentFactories<T> = function<T>(moduleType: Type<T>):
         ModuleWithComponentFactories<T> {
   const ngModuleFactory = Compiler_compileModuleSync__POST_R3__(moduleType);
-  const moduleDef = getNgModuleDef(moduleType) !;
+  const moduleDef = getNgModuleDef(moduleType)!;
   const componentFactories =
       maybeUnwrapFn(moduleDef.declarations)
           .reduce((factories: ComponentFactory<any>[], declaration: Type<any>) => {
@@ -133,7 +133,9 @@ export class Compiler {
   /**
    * Returns the id for a given NgModule, if one is defined and known to the compiler.
    */
-  getModuleId(moduleType: Type<any>): string|undefined { return undefined; }
+  getModuleId(moduleType: Type<any>): string|undefined {
+    return undefined;
+  }
 }
 
 /**

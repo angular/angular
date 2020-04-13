@@ -114,8 +114,8 @@ export class ImportManager {
     }
 
     if (existingImport) {
-      const propertyIdentifier = ts.createIdentifier(symbolName !);
-      const generatedUniqueIdentifier = this._getUniqueIdentifier(sourceFile, symbolName !);
+      const propertyIdentifier = ts.createIdentifier(symbolName!);
+      const generatedUniqueIdentifier = this._getUniqueIdentifier(sourceFile, symbolName!);
       const needsGeneratedUniqueName = generatedUniqueIdentifier.text !== symbolName;
       const importName = needsGeneratedUniqueName ? generatedUniqueIdentifier : propertyIdentifier;
 
@@ -186,7 +186,7 @@ export class ImportManager {
     this.updatedImports.forEach((expressions, importDecl) => {
       const sourceFile = importDecl.getSourceFile();
       const recorder = this.getUpdateRecorder(sourceFile);
-      const namedBindings = importDecl.importClause !.namedBindings as ts.NamedImports;
+      const namedBindings = importDecl.importClause!.namedBindings as ts.NamedImports;
       const newNamedBindings = ts.updateNamedImports(
           namedBindings,
           namedBindings.elements.concat(expressions.map(
@@ -211,8 +211,8 @@ export class ImportManager {
       name = `${baseName}_${counter++}`;
     } while (!this.isUniqueIdentifierName(sourceFile, name));
 
-    this._recordUsedIdentifier(sourceFile, name !);
-    return ts.createIdentifier(name !);
+    this._recordUsedIdentifier(sourceFile, name!);
+    return ts.createIdentifier(name!);
   }
 
   /**
@@ -221,7 +221,7 @@ export class ImportManager {
    */
   private isUniqueIdentifierName(sourceFile: ts.SourceFile, name: string) {
     if (this.usedIdentifierNames.has(sourceFile) &&
-        this.usedIdentifierNames.get(sourceFile) !.indexOf(name) !== -1) {
+        this.usedIdentifierNames.get(sourceFile)!.indexOf(name) !== -1) {
       return false;
     }
 
@@ -230,7 +230,7 @@ export class ImportManager {
     // is unique in the given declaration scope and we just return false.
     const nodeQueue: ts.Node[] = [sourceFile];
     while (nodeQueue.length) {
-      const node = nodeQueue.shift() !;
+      const node = nodeQueue.shift()!;
       if (ts.isIdentifier(node) && node.text === name) {
         return false;
       }
@@ -254,6 +254,6 @@ export class ImportManager {
     if (!commentRanges || !commentRanges.length) {
       return nodeEndPos;
     }
-    return commentRanges[commentRanges.length - 1] !.end;
+    return commentRanges[commentRanges.length - 1]!.end;
   }
 }

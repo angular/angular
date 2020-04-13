@@ -23,7 +23,9 @@ export const INJECTOR_BLOOM_PARENT_SIZE = 9;
  * The interfaces encodes number of parents `LView`s to traverse and index in the `LView`
  * pointing to the parent injector.
  */
-export interface RelativeInjectorLocation { __brand__: 'RelativeInjectorLocationFlags'; }
+export interface RelativeInjectorLocation {
+  __brand__: 'RelativeInjectorLocationFlags';
+}
 
 export const enum RelativeInjectorLocationFlags {
   InjectorIndexMask = 0b111111111111111,
@@ -114,20 +116,20 @@ export const NO_PARENT_INJECTOR: RelativeInjectorLocation = -1 as any;
  */
 
 /**
-* Factory for creating instances of injectors in the NodeInjector.
-*
-* This factory is complicated by the fact that it can resolve `multi` factories as well.
-*
-* NOTE: Some of the fields are optional which means that this class has two hidden classes.
-* - One without `multi` support (most common)
-* - One with `multi` values, (rare).
-*
-* Since VMs can cache up to 4 inline hidden classes this is OK.
-*
-* - Single factory: Only `resolving` and `factory` is defined.
-* - `providers` factory: `componentProviders` is a number and `index = -1`.
-* - `viewProviders` factory: `componentProviders` is a number and `index` points to `providers`.
-*/
+ * Factory for creating instances of injectors in the NodeInjector.
+ *
+ * This factory is complicated by the fact that it can resolve `multi` factories as well.
+ *
+ * NOTE: Some of the fields are optional which means that this class has two hidden classes.
+ * - One without `multi` support (most common)
+ * - One with `multi` values, (rare).
+ *
+ * Since VMs can cache up to 4 inline hidden classes this is OK.
+ *
+ * - Single factory: Only `resolving` and `factory` is defined.
+ * - `providers` factory: `componentProviders` is a number and `index = -1`.
+ * - `viewProviders` factory: `componentProviders` is a number and `index` points to `providers`.
+ */
 export class NodeInjectorFactory {
   /**
    * The inject implementation to be activated when using the factory.
@@ -234,7 +236,8 @@ export class NodeInjectorFactory {
       /**
        * Set to `true` if the token is declared in `viewProviders` (or if it is component).
        */
-      isViewProvider: boolean, injectImplementation: null|
+      isViewProvider: boolean,
+      injectImplementation: null|
       (<T>(token: Type<T>|InjectionToken<T>, flags?: InjectFlags) => T)) {
     this.canSeeViewProviders = isViewProvider;
     this.injectImpl = injectImplementation;

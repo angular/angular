@@ -37,7 +37,7 @@ import {UpgradeModule} from '@angular/upgrade/static';
 export const RouterUpgradeInitializer = {
   provide: APP_BOOTSTRAP_LISTENER,
   multi: true,
-  useFactory: locationSyncBootstrapListener as(ngUpgrade: UpgradeModule) => () => void,
+  useFactory: locationSyncBootstrapListener as (ngUpgrade: UpgradeModule) => () => void,
   deps: [UpgradeModule]
 };
 
@@ -45,7 +45,9 @@ export const RouterUpgradeInitializer = {
  * @internal
  */
 export function locationSyncBootstrapListener(ngUpgrade: UpgradeModule) {
-  return () => { setUpLocationSync(ngUpgrade); };
+  return () => {
+    setUpLocationSync(ngUpgrade);
+  };
 }
 
 /**
@@ -60,7 +62,7 @@ export function locationSyncBootstrapListener(ngUpgrade: UpgradeModule) {
  *
  * @publicApi
  */
-export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path' | 'hash' = 'path') {
+export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path'|'hash' = 'path') {
   if (!ngUpgrade.$injector) {
     throw new Error(`
         RouterUpgradeInitializer can be used only after UpgradeModule.bootstrap has been called.

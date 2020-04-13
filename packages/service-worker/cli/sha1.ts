@@ -133,7 +133,7 @@ function arrayBufferToWords32(buffer: ArrayBuffer, endian: Endian): number[] {
   return words32;
 }
 
-function byteAt(str: string | Uint8Array, index: number): number {
+function byteAt(str: string|Uint8Array, index: number): number {
   if (typeof str === 'string') {
     return index >= str.length ? 0 : str.charCodeAt(index) & 0xff;
   } else {
@@ -141,7 +141,7 @@ function byteAt(str: string | Uint8Array, index: number): number {
   }
 }
 
-function wordAt(str: string | Uint8Array, index: number, endian: Endian): number {
+function wordAt(str: string|Uint8Array, index: number, endian: Endian): number {
   let word = 0;
   if (endian === Endian.Big) {
     for (let i = 0; i < 4; i++) {

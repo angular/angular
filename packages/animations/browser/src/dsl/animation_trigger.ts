@@ -22,8 +22,8 @@ export function buildTrigger(name: string, ast: TriggerAst): AnimationTrigger {
 }
 
 /**
-* @publicApi
-*/
+ * @publicApi
+ */
 export class AnimationTrigger {
   public transitionFactories: AnimationTransitionFactory[] = [];
   public fallbackTransition: AnimationTransitionFactory;
@@ -45,7 +45,9 @@ export class AnimationTrigger {
     this.fallbackTransition = createFallbackTransition(name, this.states);
   }
 
-  get containsQueries() { return this.ast.queryCount > 0; }
+  get containsQueries() {
+    return this.ast.queryCount > 0;
+  }
 
   matchTransition(currentState: any, nextState: any, element: any, params: {[key: string]: any}):
       AnimationTransitionFactory|null {

@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, NgModule, NgZone, Testability, isDevMode} from '@angular/core';
+import {Injector, isDevMode, NgModule, NgZone, Testability} from '@angular/core';
 
-import {IInjectorService, IIntervalService, IProvideService, ITestabilityService, bootstrap, element as angularElement, module_ as angularModule} from '../../src/common/src/angular1';
+import {bootstrap, element as angularElement, IInjectorService, IIntervalService, IProvideService, ITestabilityService, module_ as angularModule} from '../../src/common/src/angular1';
 import {$$TESTABILITY, $DELEGATE, $INJECTOR, $INTERVAL, $PROVIDE, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../../src/common/src/constants';
-import {LazyModuleRef, UpgradeAppType, controllerKey} from '../../src/common/src/util';
+import {controllerKey, LazyModuleRef, UpgradeAppType} from '../../src/common/src/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 import {NgAdapterInjector} from './util';
@@ -179,7 +179,7 @@ export class UpgradeModule {
 
             .factory(
                 LAZY_MODULE_REF,
-                [INJECTOR_KEY, (injector: Injector) => ({ injector } as LazyModuleRef)])
+                [INJECTOR_KEY, (injector: Injector) => ({injector} as LazyModuleRef)])
 
             .config([
               $PROVIDE, $INJECTOR,
@@ -225,7 +225,9 @@ export class UpgradeModule {
                                 // $rootScope.$apply, and running the callback in NgZone will
                                 // cause a '$digest already in progress' error if it's in the
                                 // same vm turn.
-                                setTimeout(() => { this.ngZone.run(() => fn(...args)); });
+                                setTimeout(() => {
+                                  this.ngZone.run(() => fn(...args));
+                                });
                               }, delay, count, invokeApply, ...pass);
                             });
                           };
@@ -248,7 +250,7 @@ export class UpgradeModule {
                 this.injector.get($INJECTOR);
 
                 // Put the injector on the DOM, so that it can be "required"
-                angularElement(element).data !(controllerKey(INJECTOR_KEY), this.injector);
+                angularElement(element).data!(controllerKey(INJECTOR_KEY), this.injector);
 
                 // Wire up the ng1 rootScope to run a digest cycle whenever the zone settles
                 // We need to do this in the next tick so that we don't prevent the bootup
@@ -267,7 +269,9 @@ export class UpgradeModule {
 
                     return $rootScope.$digest();
                   });
-                  $rootScope.$on('$destroy', () => { subscription.unsubscribe(); });
+                  $rootScope.$on('$destroy', () => {
+                    subscription.unsubscribe();
+                  });
                 }, 0);
               }
             ]);
@@ -279,7 +283,9 @@ export class UpgradeModule {
     windowAngular.resumeBootstrap = undefined;
 
     // Bootstrap the AngularJS application inside our zone
-    this.ngZone.run(() => { bootstrap(element, [upgradeModule.name], config); });
+    this.ngZone.run(() => {
+      bootstrap(element, [upgradeModule.name], config);
+    });
 
     // Patch resumeBootstrap() to run inside the ngZone
     if (windowAngular.resumeBootstrap) {

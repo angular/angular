@@ -17,7 +17,7 @@ import {hasExplicitConstructor} from '../../utils/typescript/class_declaration';
 import {findBaseClassDeclarations} from '../../utils/typescript/find_base_classes';
 import {getImportOfIdentifier} from '../../utils/typescript/imports';
 
-import {UnexpectedMetadataValueError, convertDirectiveMetadataToExpression} from './decorator_rewrite/convert_directive_metadata';
+import {convertDirectiveMetadataToExpression, UnexpectedMetadataValueError} from './decorator_rewrite/convert_directive_metadata';
 import {DecoratorRewriter} from './decorator_rewrite/decorator_rewriter';
 import {hasDirectiveDecorator, hasInjectableDecorator} from './ng_declaration_collector';
 import {UpdateRecorder} from './update_recorder';
@@ -316,7 +316,9 @@ export class UndecoratedClassesTransform {
   }
 
   /** Records all changes that were made in the import manager. */
-  recordChanges() { this.importManager.recordChanges(); }
+  recordChanges() {
+    this.importManager.recordChanges();
+  }
 
   /**
    * Constructs a TypeScript decorator node from the specified declaration metadata. Returns

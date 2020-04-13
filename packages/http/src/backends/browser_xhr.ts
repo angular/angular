@@ -19,5 +19,7 @@ import {Injectable} from '@angular/core';
 @Injectable()
 export class BrowserXhr {
   constructor() {}
-  build(): any { return <any>(new XMLHttpRequest()); }
+  build(): any {
+    return <any>(new XMLHttpRequest());
+  }
 }

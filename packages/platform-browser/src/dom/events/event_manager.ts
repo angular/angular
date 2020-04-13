@@ -67,7 +67,9 @@ export class EventManager {
   /**
    * Retrieves the compilation zone in which event listeners are registered.
    */
-  getZone(): NgZone { return this._zone; }
+  getZone(): NgZone {
+    return this._zone;
+  }
 
   /** @internal */
   _findPluginFor(eventName: string): EventManagerPlugin {
@@ -92,7 +94,7 @@ export abstract class EventManagerPlugin {
   constructor(private _doc: any) {}
 
   // TODO(issue/24571): remove '!'.
-  manager !: EventManager;
+  manager!: EventManager;
 
   abstract supports(eventName: string): boolean;
 

@@ -36,7 +36,9 @@ export class KeyEventsApp {
     event.preventDefault();
   }
 
-  resetShiftEnter(): void { this.shiftEnter = false; }
+  resetShiftEnter(): void {
+    this.shiftEnter = false;
+  }
 
   /**
    * Get a more readable version of current pressed keys.

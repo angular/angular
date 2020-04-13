@@ -12,16 +12,14 @@ import {setClassMetadata} from '@angular/core/src/render3/metadata';
 import {convertToR3QueryMetadata, directiveMetadata, extendsDirectlyFromObject} from '../../../src/render3/jit/directive';
 
 describe('jit directive helper functions', () => {
-
   describe('extendsDirectlyFromObject', () => {
-
     // Inheritance Example using Classes
     class Parent {}
     class Child extends Parent {}
 
     // Inheritance Example using Function
-    const Parent5 = function Parent5() {} as any as{new (): {}};
-    const Child5 = function Child5() {} as any as{new (): {}};
+    const Parent5 = function Parent5() {} as any as {new (): {}};
+    const Child5 = function Child5() {} as any as {new (): {}};
     Child5.prototype = new Parent5;
     Child5.prototype.constructor = Child5;
 
@@ -45,7 +43,6 @@ describe('jit directive helper functions', () => {
   });
 
   describe('convertToR3QueryMetadata', () => {
-
     it('should convert decorator with a single string selector', () => {
       expect(convertToR3QueryMetadata('propName', {
         selector: 'localRef',
@@ -83,7 +80,6 @@ describe('jit directive helper functions', () => {
     });
 
     it('should convert decorator with type selector and read option', () => {
-
       class Directive {}
 
       const converted = convertToR3QueryMetadata('propName', {
@@ -98,7 +94,6 @@ describe('jit directive helper functions', () => {
       expect(converted.predicate).toEqual(Directive);
       expect(converted.read).toEqual(Directive);
     });
-
   });
 
   describe('directiveMetadata', () => {
@@ -155,6 +150,5 @@ describe('jit directive helper functions', () => {
          expect(subPropMetadata.someInput).toBeFalsy();
          expect(subPropMetadata.someOtherInput).toBeTruthy();
        });
-
   });
 });

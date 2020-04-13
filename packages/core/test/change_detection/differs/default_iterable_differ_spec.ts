@@ -14,13 +14,17 @@ import {iterableChangesAsString, iterableDifferToString} from '../../change_dete
 class ItemWithId {
   constructor(private id: string) {}
 
-  toString() { return `{id: ${this.id}}`; }
+  toString() {
+    return `{id: ${this.id}}`;
+  }
 }
 
 class ComplexItem {
   constructor(private id: string, private color: string) {}
 
-  toString() { return `{id: ${this.id}, color: ${this.color}}`; }
+  toString() {
+    return `{id: ${this.id}, color: ${this.color}}`;
+  }
 }
 
 // TODO(vicb): UnmodifiableListView / frozen object when implemented
@@ -29,7 +33,9 @@ class ComplexItem {
     describe('DefaultIterableDiffer', function() {
       let differ: DefaultIterableDiffer<any>;
 
-      beforeEach(() => { differ = new DefaultIterableDiffer(); });
+      beforeEach(() => {
+        differ = new DefaultIterableDiffer();
+      });
 
       it('should support list and iterables', () => {
         const f = new DefaultIterableDifferFactory();
@@ -47,10 +53,9 @@ class ComplexItem {
 
         l.list = [1];
         differ.check(l);
-        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
-          collection: ['1[null->0]'],
-          additions: ['1[null->0]']
-        }));
+        expect(iterableDifferToString(differ))
+            .toEqual(
+                iterableChangesAsString({collection: ['1[null->0]'], additions: ['1[null->0]']}));
 
         l.list = [2, 1];
         differ.check(l);
@@ -69,10 +74,9 @@ class ComplexItem {
 
         l.push('a');
         differ.check(l);
-        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
-          collection: ['a[null->0]'],
-          additions: ['a[null->0]']
-        }));
+        expect(iterableDifferToString(differ))
+            .toEqual(
+                iterableChangesAsString({collection: ['a[null->0]'], additions: ['a[null->0]']}));
 
         l.push('b');
         differ.check(l);
@@ -148,10 +152,9 @@ class ComplexItem {
 
         l.push('a');
         differ.check(l);
-        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
-          collection: ['a[null->0]'],
-          additions: ['a[null->0]']
-        }));
+        expect(iterableDifferToString(differ))
+            .toEqual(
+                iterableChangesAsString({collection: ['a[null->0]'], additions: ['a[null->0]']}));
 
         l.push('b');
         differ.check(l);
@@ -299,7 +302,7 @@ class ComplexItem {
 
       describe('forEachOperation', () => {
         function stringifyItemChange(
-            record: any, p: number | null, c: number | null, originalIndex: number) {
+            record: any, p: number|null, c: number|null, originalIndex: number) {
           const suffix = originalIndex == null ? '' : ' [o=' + originalIndex + ']';
           const value = record.item;
           if (record.currentIndex == null) {
@@ -312,13 +315,13 @@ class ComplexItem {
         }
 
         function modifyArrayUsingOperation(
-            arr: number[], endData: any[], prev: number | null, next: number | null) {
-          let value: number = null !;
+            arr: number[], endData: any[], prev: number|null, next: number|null) {
+          let value: number = null!;
           if (prev == null) {
             // "next" index is guaranteed to be set since the previous index is
             // not defined and therefore a new entry is added.
-            value = endData[next !];
-            arr.splice(next !, 0, value);
+            value = endData[next!];
+            arr.splice(next!, 0, value);
           } else if (next == null) {
             value = arr[prev];
             arr.splice(prev, 1);
@@ -335,11 +338,11 @@ class ComplexItem {
              const startData = [0, 1, 2, 3, 4, 5];
              const endData = [6, 2, 7, 0, 4, 8];
 
-             differ = differ.diff(startData) !;
-             differ = differ.diff(endData) !;
+             differ = differ.diff(startData)!;
+             differ = differ.diff(endData)!;
 
              const operations: string[] = [];
-             differ.forEachOperation((item: any, prev: number | null, next: number | null) => {
+             differ.forEachOperation((item: any, prev: number|null, next: number|null) => {
                const value = modifyArrayUsingOperation(startData, endData, prev, next);
                operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
              });
@@ -358,11 +361,11 @@ class ComplexItem {
              const startData = [0, 1, 2, 3];
              const endData = [2, 1];
 
-             differ = differ.diff(startData) !;
-             differ = differ.diff(endData) !;
+             differ = differ.diff(startData)!;
+             differ = differ.diff(endData)!;
 
              const operations: string[] = [];
-             differ.forEachOperation((item: any, prev: number | null, next: number | null) => {
+             differ.forEachOperation((item: any, prev: number|null, next: number|null) => {
                modifyArrayUsingOperation(startData, endData, prev, next);
                operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
              });
@@ -378,11 +381,11 @@ class ComplexItem {
           const startData = [1, 2, 3, 4, 5, 6];
           const endData = [3, 6, 4, 9, 1, 2];
 
-          differ = differ.diff(startData) !;
-          differ = differ.diff(endData) !;
+          differ = differ.diff(startData)!;
+          differ = differ.diff(endData)!;
 
           const operations: string[] = [];
-          differ.forEachOperation((item: any, prev: number | null, next: number | null) => {
+          differ.forEachOperation((item: any, prev: number|null, next: number|null) => {
             modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
@@ -399,11 +402,11 @@ class ComplexItem {
           const startData = [0, 1, 2, 3, 4];
           const endData = [4, 1, 2, 3, 0, 5];
 
-          differ = differ.diff(startData) !;
-          differ = differ.diff(endData) !;
+          differ = differ.diff(startData)!;
+          differ = differ.diff(endData)!;
 
           const operations: string[] = [];
-          differ.forEachOperation((item: any, prev: number | null, next: number | null) => {
+          differ.forEachOperation((item: any, prev: number|null, next: number|null) => {
             modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
@@ -420,11 +423,11 @@ class ComplexItem {
           const startData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
           const endData = [10, 11, 1, 5, 7, 8, 0, 5, 3, 6];
 
-          differ = differ.diff(startData) !;
-          differ = differ.diff(endData) !;
+          differ = differ.diff(startData)!;
+          differ = differ.diff(endData)!;
 
           const operations: string[] = [];
-          differ.forEachOperation((item: any, prev: number | null, next: number | null) => {
+          differ.forEachOperation((item: any, prev: number|null, next: number|null) => {
             modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
@@ -446,11 +449,11 @@ class ComplexItem {
              const startData = [1, 2, 3, 4];
              const endData = [5, 6, 7, 8];
 
-             differ = differ.diff(startData) !;
-             differ = differ.diff(endData) !;
+             differ = differ.diff(startData)!;
+             differ = differ.diff(endData)!;
 
              const operations: string[] = [];
-             differ.forEachOperation((item: any, prev: number | null, next: number | null) => {
+             differ.forEachOperation((item: any, prev: number|null, next: number|null) => {
                const value = modifyArrayUsingOperation(startData, endData, prev, next);
                operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
              });
@@ -471,7 +474,7 @@ class ComplexItem {
 
         it('should treat null as an empty list', () => {
           differ.diff(['a', 'b']);
-          expect(iterableDifferToString(differ.diff(null !) !)).toEqual(iterableChangesAsString({
+          expect(iterableDifferToString(differ.diff(null!)!)).toEqual(iterableChangesAsString({
             previous: ['a[0->null]', 'b[1->null]'],
             removals: ['a[0->null]', 'b[1->null]']
           }));
@@ -490,7 +493,9 @@ class ComplexItem {
 
       const buildItemList = (list: string[]) => list.map((val) => new ItemWithId(val));
 
-      beforeEach(() => { differ = new DefaultIterableDiffer(trackByItemId); });
+      beforeEach(() => {
+        differ = new DefaultIterableDiffer(trackByItemId);
+      });
 
       it('should treat the collection as dirty if identity changes', () => {
         differ.diff(buildItemList(['a']));
@@ -539,7 +544,6 @@ class ComplexItem {
           previous: ['{id: a}[0->1]', '{id: b}[1->0]', '{id: c}'],
           moves: ['{id: b}[1->0]', '{id: a}[0->1]']
         }));
-
       });
 
       it('should track duplicate reinsertion normally', () => {
@@ -555,7 +559,6 @@ class ComplexItem {
           moves: ['{id: a}[0->1]', '{id: a}[1->2]'],
           additions: ['{id: b}[null->0]']
         }));
-
       });
 
       it('should track removals normally', () => {
@@ -577,7 +580,9 @@ class ComplexItem {
 
       const trackByIndex = (index: number, item: any): number => index;
 
-      beforeEach(() => { differ = new DefaultIterableDiffer(trackByIndex); });
+      beforeEach(() => {
+        differ = new DefaultIterableDiffer(trackByIndex);
+      });
 
       it('should track removals normally', () => {
         differ.check(['a', 'b', 'c', 'd']);

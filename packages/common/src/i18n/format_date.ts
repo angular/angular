@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FormStyle, FormatWidth, NumberSymbol, Time, TranslationWidth, getLocaleDateFormat, getLocaleDateTimeFormat, getLocaleDayNames, getLocaleDayPeriods, getLocaleEraNames, getLocaleExtraDayPeriodRules, getLocaleExtraDayPeriods, getLocaleId, getLocaleMonthNames, getLocaleNumberSymbol, getLocaleTimeFormat} from './locale_data_api';
+import {FormatWidth, FormStyle, getLocaleDateFormat, getLocaleDateTimeFormat, getLocaleDayNames, getLocaleDayPeriods, getLocaleEraNames, getLocaleExtraDayPeriodRules, getLocaleExtraDayPeriods, getLocaleId, getLocaleMonthNames, getLocaleNumberSymbol, getLocaleTimeFormat, NumberSymbol, Time, TranslationWidth} from './locale_data_api';
 
 export const ISO8601_DATE_REGEX =
     /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$/;
@@ -62,7 +62,7 @@ enum TranslationType {
  * @publicApi
  */
 export function formatDate(
-    value: string | number | Date, format: string, locale: string, timezone?: string): string {
+    value: string|number|Date, format: string, locale: string, timezone?: string): string {
   let date = toDate(value);
   const namedFormat = getNamedFormat(locale, format);
   format = namedFormat || format;
@@ -278,7 +278,7 @@ function getDateTranslation(
         const rules = getLocaleExtraDayPeriodRules(locale);
         const dayPeriods = getLocaleExtraDayPeriods(locale, form, width);
         let result;
-        rules.forEach((rule: Time | [Time, Time], index: number) => {
+        rules.forEach((rule: Time|[Time, Time], index: number) => {
           if (Array.isArray(rule)) {
             // morning, afternoon, evening, night
             const {hours: hoursFrom, minutes: minutesFrom} = rule[0];
@@ -652,7 +652,7 @@ function convertTimezoneToLocal(date: Date, timezone: string, reverse: boolean):
  *
  * Throws if unable to convert to a date.
  */
-export function toDate(value: string | number | Date): Date {
+export function toDate(value: string|number|Date): Date {
   if (isDate(value)) {
     return value;
   }

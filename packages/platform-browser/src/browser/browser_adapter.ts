@@ -29,8 +29,12 @@ const nodeContains: (this: Node, other: Node) => boolean = (() => {
  */
 /* tslint:disable:requireParameterType no-console */
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {
-  static makeCurrent() { setRootDomAdapter(new BrowserDomAdapter()); }
-  getProperty(el: Node, name: string): any { return (<any>el)[name]; }
+  static makeCurrent() {
+    setRootDomAdapter(new BrowserDomAdapter());
+  }
+  getProperty(el: Node, name: string): any {
+    return (<any>el)[name];
+  }
 
   log(error: string): void {
     if (window.console) {
@@ -54,16 +58,22 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     el.addEventListener(evt, listener, false);
     // Needed to follow Dart's subscription semantic, until fix of
     // https://code.google.com/p/dart/issues/detail?id=17406
-    return () => { el.removeEventListener(evt, listener, false); };
+    return () => {
+      el.removeEventListener(evt, listener, false);
+    };
   }
-  dispatchEvent(el: Node, evt: any) { el.dispatchEvent(evt); }
+  dispatchEvent(el: Node, evt: any) {
+    el.dispatchEvent(evt);
+  }
   remove(node: Node): Node {
     if (node.parentNode) {
       node.parentNode.removeChild(node);
     }
     return node;
   }
-  getValue(el: any): string { return el.value; }
+  getValue(el: any): string {
+    return el.value;
+  }
   createElement(tagName: string, doc?: Document): HTMLElement {
     doc = doc || this.getDefaultDocument();
     return doc.createElement(tagName);
@@ -71,11 +81,17 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   createHtmlDocument(): HTMLDocument {
     return document.implementation.createHTMLDocument('fakeTitle');
   }
-  getDefaultDocument(): Document { return document; }
+  getDefaultDocument(): Document {
+    return document;
+  }
 
-  isElementNode(node: Node): boolean { return node.nodeType === Node.ELEMENT_NODE; }
+  isElementNode(node: Node): boolean {
+    return node.nodeType === Node.ELEMENT_NODE;
+  }
 
-  isShadowRoot(node: any): boolean { return node instanceof DocumentFragment; }
+  isShadowRoot(node: any): boolean {
+    return node instanceof DocumentFragment;
+  }
 
   getGlobalEventTarget(doc: Document, target: string): EventTarget|null {
     if (target === 'window') {
@@ -89,14 +105,22 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     }
     return null;
   }
-  getHistory(): History { return window.history; }
-  getLocation(): Location { return window.location; }
+  getHistory(): History {
+    return window.history;
+  }
+  getLocation(): Location {
+    return window.location;
+  }
   getBaseHref(doc: Document): string|null {
     const href = getBaseElementHref();
     return href == null ? null : relativePath(href);
   }
-  resetBaseElement(): void { baseElement = null; }
-  getUserAgent(): string { return window.navigator.userAgent; }
+  resetBaseElement(): void {
+    baseElement = null;
+  }
+  getUserAgent(): string {
+    return window.navigator.userAgent;
+  }
   performanceNow(): number {
     // performance.now() is not available in all browsers, see
     // http://caniuse.com/#search=performance.now
@@ -104,15 +128,19 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
                                                           new Date().getTime();
   }
 
-  supportsCookies(): boolean { return true; }
+  supportsCookies(): boolean {
+    return true;
+  }
 
-  getCookie(name: string): string|null { return parseCookieValue(document.cookie, name); }
+  getCookie(name: string): string|null {
+    return parseCookieValue(document.cookie, name);
+  }
 }
 
 let baseElement: HTMLElement|null = null;
 function getBaseElementHref(): string|null {
   if (!baseElement) {
-    baseElement = document.querySelector('base') !;
+    baseElement = document.querySelector('base')!;
     if (!baseElement) {
       return null;
     }

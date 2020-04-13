@@ -33,7 +33,7 @@ import {elementPropertyInternal, setInputsForProperty, storePropertyBindingMetad
  * @codeGenApi
  */
 export function ɵɵproperty<T>(
-    propName: string, value: T, sanitizer?: SanitizerFn | null): typeof ɵɵproperty {
+    propName: string, value: T, sanitizer?: SanitizerFn|null): typeof ɵɵproperty {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
@@ -52,7 +52,7 @@ export function ɵɵproperty<T>(
  */
 export function setDirectiveInputsWhichShadowsStyling(
     tView: TView, tNode: TNode, lView: LView, value: any, isClassBased: boolean) {
-  const inputs = tNode.inputs !;
+  const inputs = tNode.inputs!;
   const property = isClassBased ? 'class' : 'style';
   // We support both 'class' and `className` hence the fallback.
   setInputsForProperty(tView, lView, inputs[property], property, value);

@@ -9,7 +9,7 @@
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 
-import {HelperFunction, getHelper} from '../renderer-to-renderer2/helpers';
+import {getHelper, HelperFunction} from '../renderer-to-renderer2/helpers';
 import {migrateExpression, replaceImport} from '../renderer-to-renderer2/migration';
 import {findCoreImport, findRendererReferences} from '../renderer-to-renderer2/util';
 
@@ -75,7 +75,7 @@ export class Rule extends Rules.TypedRule {
   private _getTypedNodeFailure(
       node: ts.ParameterDeclaration|ts.PropertyDeclaration|ts.AsExpression,
       sourceFile: ts.SourceFile): RuleFailure {
-    const type = node.type !;
+    const type = node.type!;
 
     return new RuleFailure(
         sourceFile, type.getStart(), type.getEnd(),

@@ -32,14 +32,14 @@ export class Rule extends Rules.TypedRule {
     transform.recordChanges();
 
     if (updateRecorders.has(sourceFile)) {
-      return updateRecorders.get(sourceFile) !.failures;
+      return updateRecorders.get(sourceFile)!.failures;
     }
     return [];
 
     /** Gets the update recorder for the specified source file. */
     function getUpdateRecorder(sourceFile: ts.SourceFile): TslintUpdateRecorder {
       if (updateRecorders.has(sourceFile)) {
-        return updateRecorders.get(sourceFile) !;
+        return updateRecorders.get(sourceFile)!;
       }
       const recorder = new TslintUpdateRecorder(ruleName, sourceFile);
       updateRecorders.set(sourceFile, recorder);

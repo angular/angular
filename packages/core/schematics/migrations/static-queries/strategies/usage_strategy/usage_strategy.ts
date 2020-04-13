@@ -70,7 +70,7 @@ export class QueryUsageStrategy implements TimingStrategy {
       classDecl: ts.ClassDeclaration, query: NgQueryDefinition, knownInputNames: string[],
       functionCtx: FunctionContext = new Map(), visitInheritedClasses = true): ResolvedUsage {
     const usageVisitor =
-        new DeclarationUsageVisitor(query.property !, this.typeChecker, functionCtx);
+        new DeclarationUsageVisitor(query.property!, this.typeChecker, functionCtx);
     const classMetadata = this.classMetadata.get(classDecl);
     let usage: ResolvedUsage = ResolvedUsage.ASYNCHRONOUS;
 
@@ -99,10 +99,10 @@ export class QueryUsageStrategy implements TimingStrategy {
     // In case there is a component template for the current class, we check if the
     // template statically accesses the current query. In case that's true, the query
     // can be marked as static.
-    if (classMetadata.template && hasPropertyNameText(query.property !.name)) {
+    if (classMetadata.template && hasPropertyNameText(query.property!.name)) {
       const template = classMetadata.template;
       const parsedHtml = parseHtmlGracefully(template.content, template.filePath);
-      const htmlVisitor = new TemplateUsageVisitor(query.property !.name.text);
+      const htmlVisitor = new TemplateUsageVisitor(query.property!.name.text);
 
       if (parsedHtml && htmlVisitor.isQueryUsedStatically(parsedHtml)) {
         return ResolvedUsage.SYNCHRONOUS;
@@ -179,5 +179,5 @@ function filterQueryClassMemberNodes(
                 }
                 return false;
               })
-      .map(member => member.body !);
+      .map(member => member.body!);
 }

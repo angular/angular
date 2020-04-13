@@ -26,22 +26,34 @@ describe('customElements', function() {
   };
 
   class TestCustomElement extends HTMLElement {
-    constructor() { super(); }
+    constructor() {
+      super();
+    }
 
-    static get observedAttributes() { return ['attr1', 'attr2']; }
+    static get observedAttributes() {
+      return ['attr1', 'attr2'];
+    }
 
-    connectedCallback() { return bridge.connectedCallback(); }
+    connectedCallback() {
+      return bridge.connectedCallback();
+    }
 
-    disconnectedCallback() { return bridge.disconnectedCallback(); }
+    disconnectedCallback() {
+      return bridge.disconnectedCallback();
+    }
 
     attributeChangedCallback(attrName, oldVal, newVal) {
       return bridge.attributeChangedCallback(attrName, oldVal, newVal);
     }
 
-    adoptedCallback() { return bridge.adoptedCallback(); }
+    adoptedCallback() {
+      return bridge.adoptedCallback();
+    }
   }
 
-  testZone.run(() => { customElements.define('x-test', TestCustomElement); });
+  testZone.run(() => {
+    customElements.define('x-test', TestCustomElement);
+  });
 
   let elt;
 

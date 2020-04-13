@@ -10,13 +10,17 @@ import {Type} from '@angular/core';
 
 import {Data, ResolveData, Route} from '../src/config';
 import {ActivatedRouteSnapshot} from '../src/router_state';
-import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from '../src/shared';
-import {UrlSegment, UrlSegmentGroup, UrlTree, equalSegments} from '../src/url_tree';
+import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from '../src/shared';
+import {equalSegments, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 
 export class Logger {
   logs: string[] = [];
-  add(thing: string) { this.logs.push(thing); }
-  empty() { this.logs.length = 0; }
+  add(thing: string) {
+    this.logs.push(thing);
+  }
+  empty() {
+    this.logs.length = 0;
+  }
 }
 
 export function provideTokenLogger(token: string, returnValue = true as boolean | UrlTree) {
@@ -33,8 +37,7 @@ export declare type ARSArgs = {
   queryParams?: Params,
   fragment?: string,
   data?: Data,
-  outlet?: string,
-  component: Type<any>| string | null,
+  outlet?: string, component: Type<any>| string | null,
   routeConfig?: Route | null,
   urlSegment?: UrlSegmentGroup,
   lastPathIndex?: number,

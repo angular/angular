@@ -9,7 +9,7 @@
 import {Component, Directive, ElementRef, EventEmitter, Injectable, Injector, Input, NgModule, Output} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {UpgradeComponent, UpgradeModule, downgradeComponent, downgradeInjectable} from '@angular/upgrade/static';
+import {downgradeComponent, downgradeInjectable, UpgradeComponent, UpgradeModule} from '@angular/upgrade/static';
 
 declare var angular: ng.IAngularStatic;
 
@@ -20,7 +20,9 @@ export interface Hero {
 
 // #docregion ng1-text-formatter-service
 export class TextFormatter {
-  titleCase(value: string) { return value.replace(/((^|\s)[a-z])/g, (_, c) => c.toUpperCase()); }
+  titleCase(value: string) {
+    return value.replace(/((^|\s)[a-z])/g, (_, c) => c.toUpperCase());
+  }
 }
 
 // #enddocregion
@@ -39,7 +41,7 @@ export class TextFormatter {
              <button (click)="addHero.emit()">Add Hero</button>`,
 })
 export class Ng2HeroesComponent {
-  @Input() heroes !: Hero[];
+  @Input() heroes!: Hero[];
   @Output() addHero = new EventEmitter();
   @Output() removeHero = new EventEmitter();
 }
@@ -67,7 +69,9 @@ export class HeroesService {
         this.heroes.concat([{name: 'Kamala Khan', description: 'Epic shape-shifting healer'}]);
   }
 
-  removeHero(hero: Hero) { this.heroes = this.heroes.filter((item: Hero) => item !== hero); }
+  removeHero(hero: Hero) {
+    this.heroes = this.heroes.filter((item: Hero) => item !== hero);
+  }
 }
 // #enddocregion
 
@@ -77,8 +81,8 @@ export class HeroesService {
 export class Ng1HeroComponentWrapper extends UpgradeComponent {
   // The names of the input and output properties here must match the names of the
   // `<` and `&` bindings in the AngularJS component that is being wrapped
-  @Input() hero !: Hero;
-  @Output() onRemove !: EventEmitter<void>;
+  @Input() hero!: Hero;
+  @Output() onRemove!: EventEmitter<void>;
 
   constructor(elementRef: ElementRef, injector: Injector) {
     // We must pass the name of the directive as used by AngularJS to the super
@@ -159,7 +163,10 @@ ng1AppModule.component('exampleApp', {
   // (We don't need the `HeroesService` type for AngularJS DI - it just helps with TypeScript
   // compilation)
   controller: [
-    'heroesService', function(heroesService: HeroesService) { this.heroesService = heroesService; }
+    'heroesService',
+    function(heroesService: HeroesService) {
+      this.heroesService = heroesService;
+    }
   ],
   // This template makes use of the downgraded `ng2-heroes` component
   // Note that because its element is compiled by AngularJS we must use kebab-case attributes

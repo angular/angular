@@ -60,7 +60,7 @@ export interface SerializationOptions {
   paramTags?: JsDocTagOptions;
 }
 
-export type DiagnosticSeverity = 'warn' | 'error' | 'none';
+export type DiagnosticSeverity = 'warn'|'error'|'none';
 
 export function publicApi(fileName: string, options: SerializationOptions = {}): string {
   return publicApiInternal(ts.createCompilerHost(baseTsOptions), fileName, baseTsOptions, options);
@@ -324,7 +324,8 @@ class ResolvedDeclarationEmitter {
       this.diagnostics.push({
         type: 'error',
         message: createErrorMessage(
-            node, 'Required jsdoc tags - One of the tags: ' +
+            node,
+            'Required jsdoc tags - One of the tags: ' +
                 requireAtLeastOne.map(tag => `"@${tag}"`).join(', ') +
                 ` - must exist on ${getName(node)}.`)
       });
@@ -335,7 +336,8 @@ class ResolvedDeclarationEmitter {
       this.diagnostics.push({
         type: 'error',
         message: createErrorMessage(
-            node, 'Banned jsdoc tags - ' + bannedTagsFound.map(tag => `"@${tag}"`).join(', ') +
+            node,
+            'Banned jsdoc tags - ' + bannedTagsFound.map(tag => `"@${tag}"`).join(', ') +
                 ` - were found on ${getName(node)}.`)
       });
     }
@@ -437,7 +439,7 @@ function hasModifier(node: ts.Node, modifierKind: ts.SyntaxKind): boolean {
   return !!node.modifiers && node.modifiers.some(x => x.kind === modifierKind);
 }
 
-function applyDefaultTagOptions(tagOptions: JsDocTagOptions | undefined): JsDocTagOptions {
+function applyDefaultTagOptions(tagOptions: JsDocTagOptions|undefined): JsDocTagOptions {
   return {requireAtLeastOne: [], banned: [], toCopy: [], ...tagOptions};
 }
 

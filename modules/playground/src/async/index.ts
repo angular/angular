@@ -43,7 +43,9 @@ class AsyncApplication {
   multiTimeoutId: any = null;
   intervalId: any = null;
 
-  increment(): void { this.val1++; }
+  increment(): void {
+    this.val1++;
+  }
 
   delayedIncrement(): void {
     this.cancelDelayedIncrement();

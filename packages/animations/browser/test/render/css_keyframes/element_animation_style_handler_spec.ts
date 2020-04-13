@@ -13,7 +13,7 @@ import {assertStyle, createElement, makeAnimationEvent, supportsAnimationEventCr
 const EMPTY_FN = () => {};
 {
   describe('ElementAnimationStyleHandler', () => {
-    if (isNode || typeof(window as any)['AnimationEvent'] == 'undefined') return;
+    if (isNode || typeof (window as any)['AnimationEvent'] == 'undefined') return;
 
     it('should add and remove an animation on to an element\'s styling', () => {
       const element = createElement();

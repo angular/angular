@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileMetadataResolver, CompileReflector, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, ElementSchemaRegistry, HtmlParser, I18NHtmlParser, JitCompiler, JitEvaluator, JitSummaryResolver, Lexer, NgModuleCompiler, NgModuleResolver, Parser, PipeResolver, ProviderMeta, ResourceLoader, StaticSymbolCache, StyleCompiler, SummaryResolver, TemplateParser, UrlResolver, ViewCompiler} from '@angular/compiler';
-import {Compiler, CompilerFactory, CompilerOptions, ComponentFactory, Inject, InjectionToken, Injector, MissingTranslationStrategy, ModuleWithComponentFactories, NgModuleFactory, Optional, PACKAGE_ROOT_URL, StaticProvider, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, isDevMode, ɵConsole as Console} from '@angular/core';
+import {CompileMetadataResolver, CompilerConfig, CompileReflector, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, ElementSchemaRegistry, HtmlParser, I18NHtmlParser, JitCompiler, JitEvaluator, JitSummaryResolver, Lexer, NgModuleCompiler, NgModuleResolver, Parser, PipeResolver, ProviderMeta, ResourceLoader, StaticSymbolCache, StyleCompiler, SummaryResolver, TemplateParser, UrlResolver, ViewCompiler} from '@angular/compiler';
+import {Compiler, CompilerFactory, CompilerOptions, ComponentFactory, Inject, InjectionToken, Injector, isDevMode, MissingTranslationStrategy, ModuleWithComponentFactories, NgModuleFactory, Optional, PACKAGE_ROOT_URL, StaticProvider, TRANSLATIONS, TRANSLATIONS_FORMAT, Type, ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 
 import {JitReflector} from './compiler_reflector';
 
@@ -22,9 +22,10 @@ export const DEFAULT_PACKAGE_URL_PROVIDER = {
 };
 
 const _NO_RESOURCE_LOADER: ResourceLoader = {
-  get(url: string): Promise<string>{
-      throw new Error(
-          `No ResourceLoader implementation has been provided. Can't read the url "${url}"`);}
+  get(url: string): Promise<string> {
+    throw new Error(
+        `No ResourceLoader implementation has been provided. Can't read the url "${url}"`);
+  }
 };
 
 const baseHtmlParser = new InjectionToken('HtmlParser');
@@ -71,13 +72,21 @@ export class CompilerImpl implements Compiler {
                 componentFactories: result.componentFactories as ComponentFactory<any>[],
               }));
   }
-  loadAotSummaries(summaries: () => any[]) { this._delegate.loadAotSummaries(summaries); }
-  hasAotSummary(ref: Type<any>): boolean { return this._delegate.hasAotSummary(ref); }
+  loadAotSummaries(summaries: () => any[]) {
+    this._delegate.loadAotSummaries(summaries);
+  }
+  hasAotSummary(ref: Type<any>): boolean {
+    return this._delegate.hasAotSummary(ref);
+  }
   getComponentFactory<T>(component: Type<T>): ComponentFactory<T> {
     return this._delegate.getComponentFactory(component) as ComponentFactory<T>;
   }
-  clearCache(): void { this._delegate.clearCache(); }
-  clearCacheFor(type: Type<any>) { this._delegate.clearCacheFor(type); }
+  clearCache(): void {
+    this._delegate.clearCache();
+  }
+  clearCacheFor(type: Type<any>) {
+    this._delegate.clearCacheFor(type);
+  }
   getModuleId(moduleType: Type<any>): string|undefined {
     const meta = this._metadataResolver.getNgModuleMetadata(moduleType);
     return meta && meta.id || undefined;
@@ -102,13 +111,14 @@ const COMPILER_PROVIDERS__PRE_R3__ = <StaticProvider[]>[
   },
   {
     provide: I18NHtmlParser,
-    useFactory: (parser: HtmlParser, translations: string | null, format: string,
-                 config: CompilerConfig, console: Console) => {
-      translations = translations || '';
-      const missingTranslation =
-          translations ? config.missingTranslation ! : MissingTranslationStrategy.Ignore;
-      return new I18NHtmlParser(parser, translations, format, missingTranslation, console);
-    },
+    useFactory:
+        (parser: HtmlParser, translations: string|null, format: string, config: CompilerConfig,
+         console: Console) => {
+          translations = translations || '';
+          const missingTranslation =
+              translations ? config.missingTranslation! : MissingTranslationStrategy.Ignore;
+          return new I18NHtmlParser(parser, translations, format, missingTranslation, console);
+        },
     deps: [
       baseHtmlParser,
       [new Optional(), new Inject(TRANSLATIONS)],
@@ -122,36 +132,38 @@ const COMPILER_PROVIDERS__PRE_R3__ = <StaticProvider[]>[
     useExisting: I18NHtmlParser,
   },
   {
-    provide: TemplateParser, deps: [CompilerConfig, CompileReflector,
-    Parser, ElementSchemaRegistry,
-    I18NHtmlParser, Console]
+    provide: TemplateParser,
+    deps: [CompilerConfig, CompileReflector, Parser, ElementSchemaRegistry, I18NHtmlParser, Console]
   },
-  { provide: JitEvaluator, useClass: JitEvaluator, deps: [] },
-  { provide: DirectiveNormalizer, deps: [ResourceLoader, UrlResolver, HtmlParser, CompilerConfig]},
-  { provide: CompileMetadataResolver, deps: [CompilerConfig, HtmlParser, NgModuleResolver,
-                      DirectiveResolver, PipeResolver,
-                      SummaryResolver,
-                      ElementSchemaRegistry,
-                      DirectiveNormalizer, Console,
-                      [Optional, StaticSymbolCache],
-                      CompileReflector,
-                      [Optional, ERROR_COLLECTOR_TOKEN]]},
+  {provide: JitEvaluator, useClass: JitEvaluator, deps: []},
+  {provide: DirectiveNormalizer, deps: [ResourceLoader, UrlResolver, HtmlParser, CompilerConfig]},
+  {
+    provide: CompileMetadataResolver,
+    deps: [
+      CompilerConfig, HtmlParser, NgModuleResolver, DirectiveResolver, PipeResolver,
+      SummaryResolver, ElementSchemaRegistry, DirectiveNormalizer, Console,
+      [Optional, StaticSymbolCache], CompileReflector, [Optional, ERROR_COLLECTOR_TOKEN]
+    ]
+  },
   DEFAULT_PACKAGE_URL_PROVIDER,
-  { provide: StyleCompiler, deps: [UrlResolver]},
-  { provide: ViewCompiler, deps: [CompileReflector]},
-  { provide: NgModuleCompiler, deps: [CompileReflector] },
-  { provide: CompilerConfig, useValue: new CompilerConfig()},
-  { provide: Compiler, useClass: CompilerImpl, deps: [Injector, CompileMetadataResolver,
-                                TemplateParser, StyleCompiler,
-                                ViewCompiler, NgModuleCompiler,
-                                SummaryResolver, CompileReflector, JitEvaluator, CompilerConfig,
-                                Console]},
-  { provide: DomElementSchemaRegistry, deps: []},
-  { provide: ElementSchemaRegistry, useExisting: DomElementSchemaRegistry},
-  { provide: UrlResolver, deps: [PACKAGE_ROOT_URL]},
-  { provide: DirectiveResolver, deps: [CompileReflector]},
-  { provide: PipeResolver, deps: [CompileReflector]},
-  { provide: NgModuleResolver, deps: [CompileReflector]},
+  {provide: StyleCompiler, deps: [UrlResolver]},
+  {provide: ViewCompiler, deps: [CompileReflector]},
+  {provide: NgModuleCompiler, deps: [CompileReflector]},
+  {provide: CompilerConfig, useValue: new CompilerConfig()},
+  {
+    provide: Compiler,
+    useClass: CompilerImpl,
+    deps: [
+      Injector, CompileMetadataResolver, TemplateParser, StyleCompiler, ViewCompiler,
+      NgModuleCompiler, SummaryResolver, CompileReflector, JitEvaluator, CompilerConfig, Console
+    ]
+  },
+  {provide: DomElementSchemaRegistry, deps: []},
+  {provide: ElementSchemaRegistry, useExisting: DomElementSchemaRegistry},
+  {provide: UrlResolver, deps: [PACKAGE_ROOT_URL]},
+  {provide: DirectiveResolver, deps: [CompileReflector]},
+  {provide: PipeResolver, deps: [CompileReflector]},
+  {provide: NgModuleResolver, deps: [CompileReflector]},
 ];
 
 export const COMPILER_PROVIDERS__POST_R3__ =
@@ -193,7 +205,7 @@ export class JitCompilerFactory implements CompilerFactory {
         },
         deps: []
       },
-      opts.providers !
+      opts.providers!
     ]);
     return injector.get(Compiler);
   }
@@ -203,7 +215,7 @@ function _mergeOptions(optionsArr: CompilerOptions[]): CompilerOptions {
   return {
     useJit: _lastDefined(optionsArr.map(options => options.useJit)),
     defaultEncapsulation: _lastDefined(optionsArr.map(options => options.defaultEncapsulation)),
-    providers: _mergeArrays(optionsArr.map(options => options.providers !)),
+    providers: _mergeArrays(optionsArr.map(options => options.providers!)),
     missingTranslation: _lastDefined(optionsArr.map(options => options.missingTranslation)),
     preserveWhitespaces: _lastDefined(optionsArr.map(options => options.preserveWhitespaces)),
   };

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, AnimationOptions, animate, animation, group, keyframes, query, sequence, state, style, transition, trigger, useAnimation, ɵStyleData} from '@angular/animations';
+import {animate, animation, AnimationMetadata, AnimationMetadataType, AnimationOptions, AUTO_STYLE, group, keyframes, query, sequence, state, style, transition, trigger, useAnimation, ɵStyleData} from '@angular/animations';
 
 import {Animation} from '../../src/dsl/animation';
 import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
@@ -35,7 +35,9 @@ function createDiv() {
       rootElement.appendChild(subElement2);
     });
 
-    afterEach(() => { document.body.removeChild(rootElement); });
+    afterEach(() => {
+      document.body.removeChild(rootElement);
+    });
 
     describe('validation', () => {
       it('should throw an error if one or more but not all keyframes() styles contain offsets',
@@ -45,7 +47,9 @@ function createDiv() {
                                    style({opacity: 1, offset: 1}),
                                  ]));
 
-           expect(() => { validateAndThrowAnimationSequence(steps); })
+           expect(() => {
+             validateAndThrowAnimationSequence(steps);
+           })
                .toThrowError(
                    /Not all style\(\) steps within the declared keyframes\(\) contain offsets/);
          });
@@ -96,7 +100,9 @@ function createDiv() {
                   ]))
         ]);
 
-        expect(() => { validateAndThrowAnimationSequence(steps); })
+        expect(() => {
+          validateAndThrowAnimationSequence(steps);
+        })
             .toThrowError(
                 /The CSS property "opacity" that exists between the times of "0ms" and "2000ms" is also being animated in a parallel animation between the times of "0ms" and "1500ms"/);
       });
@@ -191,7 +197,9 @@ function createDiv() {
                    })),
            ];
 
-           expect(() => { validateAndThrowAnimationSequence(steps); })
+           expect(() => {
+             validateAndThrowAnimationSequence(steps);
+           })
                .toThrowError(
                    /state\("final", ...\) must define default values for all the following style substitutions: one, two, three/);
 
@@ -203,7 +211,9 @@ function createDiv() {
                }),
                {params: {redColor: 'maroon'}})];
 
-           expect(() => { validateAndThrowAnimationSequence(steps2); })
+           expect(() => {
+             validateAndThrowAnimationSequence(steps2);
+           })
                .toThrowError(
                    /state\("panfinal", ...\) must define default values for all the following style substitutions: greyColor/);
          });
@@ -211,7 +221,9 @@ function createDiv() {
       it('should throw an error if an invalid CSS property is used in the animation', () => {
         const steps = [animate(1000, style({abc: '500px'}))];
 
-        expect(() => { validateAndThrowAnimationSequence(steps); })
+        expect(() => {
+          validateAndThrowAnimationSequence(steps);
+        })
             .toThrowError(
                 /The provided animation property "abc" is not a supported CSS property for animations/);
       });
@@ -388,7 +400,7 @@ function createDiv() {
           let players = invokeAnimationSequence(rootElement, steps);
           expect(players.length).toEqual(1);
 
-          let p1 = players.pop() !;
+          let p1 = players.pop()!;
           expect(p1.duration).toEqual(1500);
           expect(p1.keyframes).toEqual([
             {width: '*', offset: 0},
@@ -405,7 +417,7 @@ function createDiv() {
           players = invokeAnimationSequence(rootElement, steps);
           expect(players.length).toEqual(1);
 
-          p1 = players.pop() !;
+          p1 = players.pop()!;
           expect(p1.duration).toEqual(1000);
           expect(p1.keyframes).toEqual([
             {width: '100px', offset: 0},
@@ -876,7 +888,9 @@ function createDiv() {
           const steps =
               [query('somethingFake', [style({opacity: 0}), animate(1000, style({opacity: 1}))])];
 
-          expect(() => { invokeAnimationSequence(rootElement, steps); })
+          expect(() => {
+            invokeAnimationSequence(rootElement, steps);
+          })
               .toThrowError(
                   /`query\("somethingFake"\)` returned zero elements\. \(Use `query\("somethingFake", \{ optional: true \}\)` if you wish to allow this\.\)/);
         });
@@ -887,13 +901,17 @@ function createDiv() {
                  'somethingFake', [style({opacity: 0}), animate(1000, style({opacity: 1}))],
                  {optional: true})];
 
-             expect(() => { invokeAnimationSequence(rootElement, steps); }).not.toThrow();
+             expect(() => {
+               invokeAnimationSequence(rootElement, steps);
+             }).not.toThrow();
 
              const steps2 = [query(
                  'fakeSomethings', [style({opacity: 0}), animate(1000, style({opacity: 1}))],
                  {optional: true})];
 
-             expect(() => { invokeAnimationSequence(rootElement, steps2); }).not.toThrow();
+             expect(() => {
+               invokeAnimationSequence(rootElement, steps2);
+             }).not.toThrow();
            });
 
         it('should delay the query operation if a delay option is provided', () => {
@@ -1025,8 +1043,7 @@ function createDiv() {
 
              const players = invokeAnimationSequence(rootElement, steps, {}, fromStyles, toStyles);
              expect(players[0].keyframes).toEqual([
-               {background: 'blue', offset: 0, easing: 'ease-out'},
-               {background: 'red', offset: 1}
+               {background: 'blue', offset: 0, easing: 'ease-out'}, {background: 'red', offset: 1}
              ]);
            });
       });
@@ -1042,7 +1059,7 @@ function humanizeOffsets(keyframes: ɵStyleData[], digits: number = 3): ɵStyleD
 }
 
 function invokeAnimationSequence(
-    element: any, steps: AnimationMetadata | AnimationMetadata[], locals: {[key: string]: any} = {},
+    element: any, steps: AnimationMetadata|AnimationMetadata[], locals: {[key: string]: any} = {},
     startingStyles: ɵStyleData[] = [], destinationStyles: ɵStyleData[] = [],
     subInstructions?: ElementInstructionMap): AnimationTimelineInstruction[] {
   const driver = new MockAnimationDriver();
@@ -1050,7 +1067,7 @@ function invokeAnimationSequence(
       .buildTimelines(element, startingStyles, destinationStyles, locals, subInstructions);
 }
 
-function validateAndThrowAnimationSequence(steps: AnimationMetadata | AnimationMetadata[]) {
+function validateAndThrowAnimationSequence(steps: AnimationMetadata|AnimationMetadata[]) {
   const driver = new MockAnimationDriver();
   const errors: any[] = [];
   const ast = buildAnimationAst(driver, steps, errors);

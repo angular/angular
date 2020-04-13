@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ExpectedConditions, browser, by, element, protractor} from 'protractor';
+import {browser, by, element, ExpectedConditions, protractor} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../../e2e_util/e2e_util';
 
@@ -27,7 +27,6 @@ describe('WebWorkers Kitchen Sink', function() {
     const elem = element(by.css(selector));
     browser.wait(ExpectedConditions.textToBePresentInElement(elem, 'hello world!'), 5000);
     expect(elem.getText()).toEqual('hello world!');
-
   });
 
   it('should change greeting', () => {

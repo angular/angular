@@ -60,8 +60,12 @@ export class IntervalDirComponent {
   `
 })
 export class MyOutputComponent {
-  onEverySecond() { console.log('second'); }
-  onEveryFiveSeconds() { console.log('five seconds'); }
+  onEverySecond() {
+    console.log('second');
+  }
+  onEveryFiveSeconds() {
+    console.log('five seconds');
+  }
 }
 // #enddocregion component-output-interval
 

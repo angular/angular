@@ -25,8 +25,11 @@ describe('shadydom', () => {
       const target = t.target;
       const zone = Zone.current.fork({name: 'zone'});
       const logs: string[] = [];
-      zone.run(
-          () => { target.addEventListener('click', () => { logs.push(Zone.current.name); }); });
+      zone.run(() => {
+        target.addEventListener('click', () => {
+          logs.push(Zone.current.name);
+        });
+      });
       const event = document.createEvent('MouseEvent');
       event.initEvent('click', true, true);
       target.dispatchEvent(event);

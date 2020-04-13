@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, InjectFlags, InjectionToken, Injector, Optional, Self, SkipSelf, forwardRef} from '@angular/core';
+import {forwardRef, Inject, InjectFlags, InjectionToken, Injector, Optional, Self, SkipSelf} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, modifiedInIvy} from '@angular/private/testing';
 
@@ -18,7 +18,9 @@ class Engine {
 
 class BrokenEngine {
   static PROVIDER = {provide: Engine, useClass: BrokenEngine, deps: []};
-  constructor() { throw new Error('Broken Engine'); }
+  constructor() {
+    throw new Error('Broken Engine');
+  }
 }
 
 class DashboardSoftware {
@@ -75,7 +77,7 @@ class NoAnnotations {
   constructor(secretDependency: any) {}
 }
 
-function factoryFn(a: any){}
+function factoryFn(a: any) {}
 
 {
   const dynamicProviders = [
@@ -88,7 +90,6 @@ function factoryFn(a: any){}
   ];
 
   modifiedInIvy('Ivy uses R3Injector').describe(`StaticInjector`, () => {
-
     it('should instantiate a class without dependencies', () => {
       const injector = Injector.create([Engine.PROVIDER]);
       const engine = injector.get(Engine);
@@ -133,7 +134,9 @@ function factoryFn(a: any){}
     });
 
     it('should provide to a factory', () => {
-      function sportsCarFactory(e: any) { return new SportsCar(e); }
+      function sportsCarFactory(e: any) {
+        return new SportsCar(e);
+      }
 
       const injector = Injector.create(
           [Engine.PROVIDER, {provide: Car, useFactory: sportsCarFactory, deps: [Engine]}]);
@@ -187,26 +190,22 @@ function factoryFn(a: any){}
 
     it('should throw when the aliased provider does not exist', () => {
       const injector = Injector.create([{provide: 'car', useExisting: SportsCar}]);
-      const e =
-          `StaticInjectorError[car -> ${stringify(SportsCar)}]: \n  NullInjectorError: No provider for ${stringify(SportsCar)}!`;
+      const e = `StaticInjectorError[car -> ${
+          stringify(SportsCar)}]: \n  NullInjectorError: No provider for ${stringify(SportsCar)}!`;
       expect(() => injector.get('car')).toThrowError(e);
     });
 
     it('should handle forwardRef in useExisting', () => {
       const injector = Injector.create([
-        {provide: 'originalEngine', useClass: forwardRef(() => Engine), deps: []}, {
-          provide: 'aliasedEngine',
-          useExisting: <any>forwardRef(() => 'originalEngine'),
-          deps: []
-        }
+        {provide: 'originalEngine', useClass: forwardRef(() => Engine), deps: []},
+        {provide: 'aliasedEngine', useExisting: <any>forwardRef(() => 'originalEngine'), deps: []}
       ]);
       expect(injector.get('aliasedEngine')).toBeAnInstanceOf(Engine);
     });
 
     it('should support overriding factory dependencies', () => {
       const injector = Injector.create([
-        Engine.PROVIDER,
-        {provide: Car, useFactory: (e: Engine) => new SportsCar(e), deps: [Engine]}
+        Engine.PROVIDER, {provide: Car, useFactory: (e: Engine) => new SportsCar(e), deps: [Engine]}
       ]);
 
       const car = injector.get<Car>(Car);
@@ -249,9 +248,9 @@ function factoryFn(a: any){}
     });
 
     it('should throw when missing deps', () => {
-      expect(() => Injector.create(<any>[{provide: Engine, useClass: Engine}]))
-          .toThrowError(
-              'StaticInjectorError[{provide:Engine, useClass:Engine}]: \'deps\' required');
+      expect(() => Injector.create(<any>[
+        {provide: Engine, useClass: Engine}
+      ])).toThrowError('StaticInjectorError[{provide:Engine, useClass:Engine}]: \'deps\' required');
     });
 
     it('should throw when using reflective API', () => {
@@ -289,7 +288,8 @@ function factoryFn(a: any){}
           Injector.create([CarWithDashboard.PROVIDER, Engine.PROVIDER, Dashboard.PROVIDER]);
       expect(() => injector.get(CarWithDashboard))
           .toThrowError(
-              `StaticInjectorError[${stringify(CarWithDashboard)} -> ${stringify(Dashboard)} -> DashboardSoftware]: \n` +
+              `StaticInjectorError[${stringify(CarWithDashboard)} -> ${
+                  stringify(Dashboard)} -> DashboardSoftware]: \n` +
               '  NullInjectorError: No provider for DashboardSoftware!');
     });
 
@@ -297,14 +297,21 @@ function factoryFn(a: any){}
       const injector = Injector.create([Car.PROVIDER, CyclicEngine.PROVIDER]);
 
       expect(() => injector.get(Car))
-          .toThrowError(
-              `StaticInjectorError[${stringify(Car)} -> ${stringify(Engine)} -> ${stringify(Car)}]: Circular dependency`);
+          .toThrowError(`StaticInjectorError[${stringify(Car)} -> ${stringify(Engine)} -> ${
+              stringify(Car)}]: Circular dependency`);
     });
 
     it('should show the full path when error happens in a constructor', () => {
       const error = new Error('MyError');
-      const injector = Injector.create(
-          [Car.PROVIDER, {provide: Engine, useFactory: () => { throw error; }, deps: []}]);
+      const injector = Injector.create([
+        Car.PROVIDER, {
+          provide: Engine,
+          useFactory: () => {
+            throw error;
+          },
+          deps: []
+        }
+      ]);
 
       try {
         injector.get(Car);
@@ -345,7 +352,6 @@ function factoryFn(a: any){}
       expect(injector.get('null')).toBe(null);
       expect(injector.get('undefined')).toBe(undefined);
     });
-
   });
 
 
@@ -495,8 +501,7 @@ function factoryFn(a: any){}
 
     it('should support overriding factory dependencies with dependency annotations', () => {
       const injector = Injector.create([
-        Engine.PROVIDER,
-        {provide: 'token', useFactory: (e: any) => e, deps: [[new Inject(Engine)]]}
+        Engine.PROVIDER, {provide: 'token', useFactory: (e: any) => e, deps: [[new Inject(Engine)]]}
       ]);
 
       expect(injector.get('token')).toBeAnInstanceOf(Engine);

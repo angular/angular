@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export interface MsgAny { action: string; }
+export interface MsgAny {
+  action: string;
+}
 
 export interface MsgCheckForUpdates {
   action: 'CHECK_FOR_UPDATES';

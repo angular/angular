@@ -47,7 +47,8 @@ export function throwErrorIfNoChangesMode(
     creationMode: boolean, oldValue: any, currValue: any, propName?: string): never|void {
   const field = propName ? ` for '${propName}'` : '';
   let msg =
-      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value${field}: '${oldValue}'. Current value: '${currValue}'.`;
+      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value${
+          field}: '${oldValue}'. Current value: '${currValue}'.`;
   if (creationMode) {
     msg +=
         ` It seems like the view has been created after its parent and its children have been dirty checked.` +

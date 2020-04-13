@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactoryResolver, EventEmitter, Input, NgModule, Output, ViewEncapsulation, destroyPlatform} from '@angular/core';
+import {Component, ComponentFactoryResolver, destroyPlatform, EventEmitter, Input, NgModule, Output, ViewEncapsulation} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
-import {NgElement, createCustomElement} from '../src/create-custom-element';
+import {createCustomElement, NgElement} from '../src/create-custom-element';
 
 
 // we only run these tests in browsers that support Shadom DOM slots natively
@@ -46,9 +46,9 @@ if (browserDetection.supportsCustomElements && browserDetection.supportsShadowDo
     it('should use slots to project content', () => {
       const tpl = `<default-slot-el><span class="projected"></span></default-slot-el>`;
       testContainer.innerHTML = tpl;
-      const testEl = testContainer.querySelector('default-slot-el') !;
-      const content = testContainer.querySelector('span.projected') !;
-      const slot = testEl.shadowRoot !.querySelector('slot') !;
+      const testEl = testContainer.querySelector('default-slot-el')!;
+      const content = testContainer.querySelector('span.projected')!;
+      const slot = testEl.shadowRoot!.querySelector('slot')!;
       const assignedNodes = slot.assignedNodes();
       expect(assignedNodes[0]).toBe(content);
     });
@@ -56,9 +56,9 @@ if (browserDetection.supportsCustomElements && browserDetection.supportsShadowDo
     it('should use a named slot to project content', () => {
       const tpl = `<named-slot-el><span class="projected" slot="header"></span></named-slot-el>`;
       testContainer.innerHTML = tpl;
-      const testEl = testContainer.querySelector('named-slot-el') !;
-      const content = testContainer.querySelector('span.projected') !;
-      const slot = testEl.shadowRoot !.querySelector('slot[name=header]') as HTMLSlotElement;
+      const testEl = testContainer.querySelector('named-slot-el')!;
+      const content = testContainer.querySelector('span.projected')!;
+      const slot = testEl.shadowRoot!.querySelector('slot[name=header]') as HTMLSlotElement;
       const assignedNodes = slot.assignedNodes();
       expect(assignedNodes[0]).toBe(content);
     });
@@ -70,11 +70,11 @@ if (browserDetection.supportsCustomElements && browserDetection.supportsShadowDo
         <span class="projected-body" slot="body"></span>
       </named-slots-el>`;
       testContainer.innerHTML = tpl;
-      const testEl = testContainer.querySelector('named-slots-el') !;
-      const headerContent = testContainer.querySelector('span.projected-header') !;
-      const bodyContent = testContainer.querySelector('span.projected-body') !;
-      const headerSlot = testEl.shadowRoot !.querySelector('slot[name=header]') as HTMLSlotElement;
-      const bodySlot = testEl.shadowRoot !.querySelector('slot[name=body]') as HTMLSlotElement;
+      const testEl = testContainer.querySelector('named-slots-el')!;
+      const headerContent = testContainer.querySelector('span.projected-header')!;
+      const bodyContent = testContainer.querySelector('span.projected-body')!;
+      const headerSlot = testEl.shadowRoot!.querySelector('slot[name=header]') as HTMLSlotElement;
+      const bodySlot = testEl.shadowRoot!.querySelector('slot[name=body]') as HTMLSlotElement;
 
       expect(headerContent.assignedSlot).toBe(headerSlot);
       expect(bodyContent.assignedSlot).toBe(bodySlot);
@@ -88,7 +88,7 @@ if (browserDetection.supportsCustomElements && browserDetection.supportsShadowDo
       </slot-events-el>`;
       templateEl.innerHTML = tpl;
       const template = templateEl.content.cloneNode(true) as DocumentFragment;
-      const testEl = template.querySelector('slot-events-el') !as NgElement & SlotEventsComponent;
+      const testEl = template.querySelector('slot-events-el')! as NgElement & SlotEventsComponent;
       testEl.addEventListener('slotEventsChange', e => {
         expect(testEl.slotEvents.length).toEqual(1);
         done();

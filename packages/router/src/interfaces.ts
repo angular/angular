@@ -88,7 +88,7 @@ export interface CanActivate {
 }
 
 export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
-    Observable<boolean|UrlTree>| Promise<boolean|UrlTree>| boolean | UrlTree;
+    Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
 
 /**
  * @description
@@ -175,7 +175,7 @@ export interface CanActivateChild {
 }
 
 export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
-    Observable<boolean|UrlTree>| Promise<boolean|UrlTree>| boolean | UrlTree;
+    Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
 
 /**
  * @description
@@ -259,7 +259,7 @@ export interface CanDeactivate<T> {
 export type CanDeactivateFn<T> =
     (component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot,
      nextState?: RouterStateSnapshot) =>
-        Observable<boolean|UrlTree>| Promise<boolean|UrlTree>| boolean | UrlTree;
+        Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
 
 /**
  * @description
@@ -404,4 +404,4 @@ export interface CanLoad {
 }
 
 export type CanLoadFn = (route: Route, segments: UrlSegment[]) =>
-    Observable<boolean>| Promise<boolean>| boolean;
+    Observable<boolean>|Promise<boolean>|boolean;

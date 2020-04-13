@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {$, ExpectedConditions, browser, by, element} from 'protractor';
+import {$, browser, by, element, ExpectedConditions} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 function waitForElement(selector: string) {

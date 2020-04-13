@@ -5,8 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import localeEn from './locale_en';
 import {global} from '../util/global';
+
+import localeEn from './locale_en';
 
 /**
  * This const is used to store the locale data registered with `registerLocaleData`
@@ -19,7 +20,7 @@ let LOCALE_DATA: {[localeId: string]: any} = {};
  *
  * The signature `registerLocaleData(data: any, extraData?: any)` is deprecated since v5.1
  */
-export function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void {
+export function registerLocaleData(data: any, localeId?: string|any, extraData?: any): void {
   if (typeof localeId !== 'string') {
     extraData = localeId;
     localeId = data[LocaleDataIndex.LocaleId];
@@ -151,7 +152,11 @@ export const enum ExtraLocaleDataIndex {
 /**
  * Index of each value in currency data (used to describe CURRENCIES_EN in currencies.ts)
  */
-export const enum CurrencyIndex {Symbol = 0, SymbolNarrow, NbOfDigits}
+export const enum CurrencyIndex {
+  Symbol = 0,
+  SymbolNarrow,
+  NbOfDigits
+}
 
 /**
  * Returns the canonical form of a locale name - lowercase with `_` replaced with `-`.

@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
+import localeAr from '@angular/common/locales/ar';
+import localeDa from '@angular/common/locales/da';
+import localeDeAt from '@angular/common/locales/de-AT';
 import localeEn from '@angular/common/locales/en';
 import localeEsUS from '@angular/common/locales/es-US';
 import localeFr from '@angular/common/locales/fr';
-import localeAr from '@angular/common/locales/ar';
-import localeDeAt from '@angular/common/locales/de-AT';
-import localeDa from '@angular/common/locales/da';
-import {ɵunregisterLocaleData, ɵregisterLocaleData} from '@angular/core';
-import {CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
+import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 {
@@ -32,7 +32,9 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
     describe('DecimalPipe', () => {
       describe('transform', () => {
         let pipe: DecimalPipe;
-        beforeEach(() => { pipe = new DecimalPipe('en-US'); });
+        beforeEach(() => {
+          pipe = new DecimalPipe('en-US');
+        });
 
         it('should return correct value for numbers', () => {
           expect(pipe.transform(12345)).toEqual('12,345');
@@ -68,7 +70,9 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
     describe('PercentPipe', () => {
       let pipe: PercentPipe;
 
-      beforeEach(() => { pipe = new PercentPipe('en-US'); });
+      beforeEach(() => {
+        pipe = new PercentPipe('en-US');
+      });
 
       describe('transform', () => {
         it('should return correct value for numbers', () => {
@@ -89,7 +93,9 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
     describe('CurrencyPipe', () => {
       let pipe: CurrencyPipe;
 
-      beforeEach(() => { pipe = new CurrencyPipe('en-US', 'USD'); });
+      beforeEach(() => {
+        pipe = new CurrencyPipe('en-US', 'USD');
+      });
 
       describe('transform', () => {
         it('should return correct value for numbers', () => {

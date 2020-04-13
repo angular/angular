@@ -44,4 +44,6 @@ export function getAngularDevConfig<K, T>(): DevInfraConfig<K, T> {
  * Interface exressing the expected structure of the DevInfraConfig.
  * Allows for providing a typing for a part of the config to read.
  */
-export interface DevInfraConfig<K, T> { [K: string]: T; }
+export interface DevInfraConfig<K, T> {
+  [K: string]: T;
+}

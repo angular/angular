@@ -10,7 +10,7 @@
  * @suppress {globalThis}
  */
 
-import {ObjectGetPrototypeOf, isBrowser, isIE, isMix, isNode, patchOnProperties} from '../common/utils';
+import {isBrowser, isIE, isMix, isNode, ObjectGetPrototypeOf, patchOnProperties} from '../common/utils';
 
 const globalEventHandlersEventNames = [
   'abort',

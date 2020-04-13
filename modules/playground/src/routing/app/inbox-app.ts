@@ -29,7 +29,8 @@ export class InboxRecord {
     email: string,
     firstName: string,
     lastName: string,
-    date: string, draft?: boolean
+    date: string,
+    draft?: boolean
   } = null) {
     if (data) {
       this.setData(data);
@@ -43,7 +44,8 @@ export class InboxRecord {
     email: string,
     firstName: string,
     lastName: string,
-    date: string, draft?: boolean
+    date: string,
+    draft?: boolean
   }) {
     this.id = record.id;
     this.subject = record.subject;

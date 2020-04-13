@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementArrayFinder, ElementFinder, browser, by, element} from 'protractor';
+import {browser, by, element, ElementArrayFinder, ElementFinder} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../../test-utils';
 
@@ -42,5 +42,4 @@ describe('simpleNgModel example', () => {
     button.click();
     expect(input.getAttribute('value')).toEqual('Nancy');
   });
-
 });

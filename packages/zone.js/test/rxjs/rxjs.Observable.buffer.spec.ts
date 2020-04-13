@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Observable, empty, interval, of } from 'rxjs';
+import {empty, interval, Observable, of} from 'rxjs';
 import {buffer, bufferCount, bufferTime, bufferToggle, bufferWhen} from 'rxjs/operators';
 
 import {asyncTest} from '../test-util';
@@ -15,7 +15,9 @@ xdescribe('Observable.buffer', () => {
   let log: any[];
   let observable1: Observable<any>;
 
-  beforeEach(() => { log = []; });
+  beforeEach(() => {
+    log = [];
+  });
 
   it('buffer func callback should run in the correct zone', asyncTest((done: any) => {
        const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
@@ -35,7 +37,9 @@ xdescribe('Observable.buffer', () => {
                  subscriber.unsubscribe();
                }
              },
-             () => { fail('should not call error'); },
+             () => {
+               fail('should not call error');
+             },
              () => {
                log.push('completed');
                expect(Zone.current.name).toEqual(subscriptionZone.name);
@@ -64,7 +68,9 @@ xdescribe('Observable.buffer', () => {
                  subscriber.unsubscribe();
                }
              },
-             () => { fail('should not call error'); },
+             () => {
+               fail('should not call error');
+             },
              () => {
                log.push('completed');
                expect(Zone.current.name).toEqual(subscriptionZone.name);
@@ -93,7 +99,9 @@ xdescribe('Observable.buffer', () => {
                  subscriber.unsubscribe();
                }
              },
-             () => { fail('should not call error'); },
+             () => {
+               fail('should not call error');
+             },
              () => {
                log.push('completed');
                expect(Zone.current.name).toEqual(subscriptionZone.name);
@@ -113,7 +121,7 @@ xdescribe('Observable.buffer', () => {
          const opening = interval(25);
          const closingSelector = (v: any) => {
            expect(Zone.current.name).toEqual(constructorZone1.name);
-           return v % 2 === 0 ? of (v) : empty();
+           return v % 2 === 0 ? of(v) : empty();
          };
          return source.pipe(bufferToggle(opening, closingSelector));
        });
@@ -126,7 +134,9 @@ xdescribe('Observable.buffer', () => {
                log.push(result);
                subscriber.unsubscribe();
              },
-             () => { fail('should not call error'); },
+             () => {
+               fail('should not call error');
+             },
              () => {
                log.push('completed');
                expect(Zone.current.name).toEqual(subscriptionZone.name);
@@ -159,7 +169,9 @@ xdescribe('Observable.buffer', () => {
                  subscriber.unsubscribe();
                }
              },
-             () => { fail('should not call error'); },
+             () => {
+               fail('should not call error');
+             },
              () => {
                log.push('completed');
                expect(Zone.current.name).toEqual(subscriptionZone.name);

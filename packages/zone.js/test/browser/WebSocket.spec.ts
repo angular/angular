@@ -22,7 +22,9 @@ if (!window['saucelabs']) {
 
               beforeEach(function(done) {
                 socket = new WebSocket(TEST_SERVER_URL);
-                socket.addEventListener('open', function() { done(); });
+                socket.addEventListener('open', function() {
+                  done();
+                });
                 socket.addEventListener('error', function() {
                   fail(
                       'Can\'t establish socket to ' + TEST_SERVER_URL +
@@ -32,7 +34,9 @@ if (!window['saucelabs']) {
               }, TIMEOUT);
 
               afterEach(function(done) {
-                socket.addEventListener('close', function() { done(); });
+                socket.addEventListener('close', function() {
+                  done();
+                });
                 socket.close();
               }, TIMEOUT);
 
@@ -116,7 +120,9 @@ if (!window['saucelabs']) {
               it('should handler removing onmessage', function(done) {
                 let log = '';
 
-                socket.onmessage = function() { log += 'a'; };
+                socket.onmessage = function() {
+                  log += 'a';
+                };
 
                 socket.onmessage = null as any;
 

@@ -16,24 +16,21 @@ describe('makeEs2015Plugin', () => {
     it('should transform `$localize` tags with binary expression', () => {
       const diagnostics = new Diagnostics();
       const input = 'const b = 10;\n$localize`try\\n${40 + b}\\n  me`;';
-      const output =
-          transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, {})]}) !;
+      const output = transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, {})]})!;
       expect(output.code).toEqual('const b = 10;\n"try\\n" + (40 + b) + "\\n  me";');
     });
 
     it('should strip meta blocks', () => {
       const diagnostics = new Diagnostics();
       const input = 'const b = 10;\n$localize `:description:try\\n${40 + b}\\n  me`;';
-      const output =
-          transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, {})]}) !;
+      const output = transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, {})]})!;
       expect(output.code).toEqual('const b = 10;\n"try\\n" + (40 + b) + "\\n  me";');
     });
 
     it('should not strip escaped meta blocks', () => {
       const diagnostics = new Diagnostics();
       const input = 'const b = 10;\n$localize `\\:description:try\\n${40 + b}\\n  me`;';
-      const output =
-          transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, {})]}) !;
+      const output = transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, {})]})!;
       expect(output.code).toEqual('const b = 10;\n":description:try\\n" + (40 + b) + "\\n  me";');
     });
 
@@ -41,24 +38,21 @@ describe('makeEs2015Plugin', () => {
     it('should transform nested `$localize` tags', () => {
       const diagnostics = new Diagnostics();
       const input = '$localize`a${1}b${$localize`x${5}y${6}z`}c`;';
-      const output =
-          transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, {})]}) !;
+      const output = transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, {})]})!;
       expect(output.code).toEqual('"a" + 1 + "b" + ("x" + 5 + "y" + 6 + "z") + "c";');
     });
 
     it('should transform tags inside functions', () => {
       const diagnostics = new Diagnostics();
       const input = 'function foo() { $localize`a${1}b${2}c`; }';
-      const output =
-          transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, {})]}) !;
+      const output = transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, {})]})!;
       expect(output.code).toEqual('function foo() {\n  "a" + 1 + "b" + 2 + "c";\n}');
     });
 
     it('should ignore tags with the wrong name', () => {
       const diagnostics = new Diagnostics();
       const input = 'other`a${1}b${2}c`;';
-      const output =
-          transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, {})]}) !;
+      const output = transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, {})]})!;
       expect(output.code).toEqual('other`a${1}b${2}c`;');
     });
 
@@ -66,16 +60,14 @@ describe('makeEs2015Plugin', () => {
       const diagnostics = new Diagnostics();
       const input = 'other`a${1}b${2}c`;';
       const output = transformSync(
-          input,
-          {plugins: [makeEs2015TranslatePlugin(diagnostics, {}, {localizeName: 'other'})]}) !;
+          input, {plugins: [makeEs2015TranslatePlugin(diagnostics, {}, {localizeName: 'other'})]})!;
       expect(output.code).toEqual('"a" + 1 + "b" + 2 + "c";');
     });
 
     it('should ignore tags if the identifier is not global', () => {
       const diagnostics = new Diagnostics();
       const input = 'function foo($localize) { $localize`a${1}b${2}c`; }';
-      const output =
-          transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, {})]}) !;
+      const output = transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, {})]})!;
       expect(output.code).toEqual('function foo($localize) {\n  $localize`a${1}b${2}c`;\n}');
     });
 
@@ -85,12 +77,12 @@ describe('makeEs2015Plugin', () => {
          const input = 'const b = 10;\n$localize `try\\n${40 + b}\\n  me`;';
          transformSync(input, {
            plugins: [makeEs2015TranslatePlugin(diagnostics, {}, {missingTranslation: 'error'})]
-         }) !;
+         })!;
          expect(diagnostics.hasErrors).toBe(true);
          expect(diagnostics.messages[0]).toEqual({
            type: 'error',
-           message:
-               `No translation found for "${ɵcomputeMsgId('try\n{$PH}\n  me')}" ("try\n{$PH}\n  me").`
+           message: `No translation found for "${
+               ɵcomputeMsgId('try\n{$PH}\n  me')}" ("try\n{$PH}\n  me").`
          });
        });
 
@@ -99,14 +91,13 @@ describe('makeEs2015Plugin', () => {
          const diagnostics = new Diagnostics();
          const input = 'const b = 10;\n$localize `try\\n${40 + b}\\n  me`;';
          transformSync(input, {
-           plugins:
-               [makeEs2015TranslatePlugin(diagnostics, {}, {missingTranslation: 'warning'})]
-         }) !;
+           plugins: [makeEs2015TranslatePlugin(diagnostics, {}, {missingTranslation: 'warning'})]
+         })!;
          expect(diagnostics.hasErrors).toBe(false);
          expect(diagnostics.messages[0]).toEqual({
            type: 'warning',
-           message:
-               `No translation found for "${ɵcomputeMsgId('try\n{$PH}\n  me')}" ("try\n{$PH}\n  me").`
+           message: `No translation found for "${
+               ɵcomputeMsgId('try\n{$PH}\n  me')}" ("try\n{$PH}\n  me").`
          });
        });
 
@@ -115,9 +106,8 @@ describe('makeEs2015Plugin', () => {
          const diagnostics = new Diagnostics();
          const input = 'const b = 10;\n$localize `try\\n${40 + b}\\n  me`;';
          transformSync(input, {
-           plugins:
-               [makeEs2015TranslatePlugin(diagnostics, {}, {missingTranslation: 'ignore'})]
-         }) !;
+           plugins: [makeEs2015TranslatePlugin(diagnostics, {}, {missingTranslation: 'ignore'})]
+         })!;
          expect(diagnostics.hasErrors).toBe(false);
          expect(diagnostics.messages).toEqual([]);
        });
@@ -139,7 +129,7 @@ describe('makeEs2015Plugin', () => {
           '$localize `abc${1 + 2 + 3}def${4 + 5 + 6}`;\n' +
           '$localize `Hello, ${getName()}!`;';
       const output =
-          transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, translations)]}) !;
+          transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, translations)]})!;
       expect(output.code)
           .toEqual(
               '"abc";\n' +
@@ -164,7 +154,7 @@ describe('makeEs2015Plugin', () => {
           '$localize `abc${1 + 2 + 3}def${4 + 5 + 6}`;\n' +
           '$localize `Hello, ${getName()}!`;';
       const output =
-          transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, translations)]}) !;
+          transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, translations)]})!;
       expect(output.code)
           .toEqual(
               '"ABC";\n' +
@@ -182,7 +172,7 @@ describe('makeEs2015Plugin', () => {
       };
       const input = '$localize `abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`;';
       const output =
-          transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, translations)]}) !;
+          transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, translations)]})!;
       expect(output.code)
           .toEqual('"abc" + getName() + "def" + (4 + 5 + 6) + " - Hello, " + (1 + 2 + 3) + "!";');
     });
@@ -195,7 +185,7 @@ describe('makeEs2015Plugin', () => {
       };
       const input = '$localize `abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`;';
       const output =
-          transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, translations)]}) !;
+          transformSync(input, {plugins: [makeEs2015TranslatePlugin(diagnostics, translations)]})!;
       expect(output.code).toEqual('"abc" + (1 + 2 + 3) + " - Hello, " + getName() + "!";');
     });
   });

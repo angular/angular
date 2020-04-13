@@ -21,7 +21,7 @@ export function createDom(component: TreeComponent) {
   ɵdetectChanges(component);
 }
 
-const numberOfChecksEl = document.getElementById('numberOfChecks') !;
+const numberOfChecksEl = document.getElementById('numberOfChecks')!;
 let detectChangesRuns = 0;
 export function detectChanges(component: TreeComponent) {
   for (let i = 0; i < 10; i++) {
@@ -42,7 +42,9 @@ export function detectChanges(component: TreeComponent) {
 })
 export class TreeComponent {
   data: any = emptyTree;
-  get bgColor() { return this.data.depth % 2 ? '' : 'grey'; }
+  get bgColor() {
+    return this.data.depth % 2 ? '' : 'grey';
+  }
 }
 
 @NgModule({declarations: [TreeComponent], imports: [CommonModule]})

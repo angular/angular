@@ -247,7 +247,13 @@ class DirWithCompInput {
 class DirToReferenceWithPreOrderHooks implements OnInit, OnChanges, DoCheck {
   @Input() in : any = null;
   name = 'Drew';
-  ngOnChanges(changes: SimpleChanges) { this.name += '!'; }
-  ngOnInit() { this.name += '?'; }
-  ngDoCheck() { this.name += '@'; }
+  ngOnChanges(changes: SimpleChanges) {
+    this.name += '!';
+  }
+  ngOnInit() {
+    this.name += '?';
+  }
+  ngDoCheck() {
+    this.name += '@';
+  }
 }

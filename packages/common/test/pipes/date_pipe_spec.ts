@@ -10,8 +10,8 @@ import {DatePipe} from '@angular/common';
 import localeEn from '@angular/common/locales/en';
 import localeEnExtra from '@angular/common/locales/extra/en';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
+import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
-import {ɵunregisterLocaleData, ɵregisterLocaleData} from '@angular/core';
 
 {
   let date: Date;
@@ -28,33 +28,44 @@ import {ɵunregisterLocaleData, ɵregisterLocaleData} from '@angular/core';
     });
 
     it('should be marked as pure', () => {
-      expect(new PipeResolver(new JitReflector()).resolve(DatePipe) !.pure).toEqual(true);
+      expect(new PipeResolver(new JitReflector()).resolve(DatePipe)!.pure).toEqual(true);
     });
 
     describe('supports', () => {
-      it('should support date', () => { expect(() => pipe.transform(date)).not.toThrow(); });
+      it('should support date', () => {
+        expect(() => pipe.transform(date)).not.toThrow();
+      });
 
-      it('should support int', () => { expect(() => pipe.transform(123456789)).not.toThrow(); });
+      it('should support int', () => {
+        expect(() => pipe.transform(123456789)).not.toThrow();
+      });
 
-      it('should support numeric strings',
-         () => { expect(() => pipe.transform('123456789')).not.toThrow(); });
+      it('should support numeric strings', () => {
+        expect(() => pipe.transform('123456789')).not.toThrow();
+      });
 
-      it('should support decimal strings',
-         () => { expect(() => pipe.transform('123456789.11')).not.toThrow(); });
+      it('should support decimal strings', () => {
+        expect(() => pipe.transform('123456789.11')).not.toThrow();
+      });
 
       it('should support ISO string',
          () => expect(() => pipe.transform('2015-06-15T21:43:11Z')).not.toThrow());
 
-      it('should return null for empty string',
-         () => { expect(pipe.transform('')).toEqual(null); });
+      it('should return null for empty string', () => {
+        expect(pipe.transform('')).toEqual(null);
+      });
 
-      it('should return null for NaN', () => { expect(pipe.transform(Number.NaN)).toEqual(null); });
+      it('should return null for NaN', () => {
+        expect(pipe.transform(Number.NaN)).toEqual(null);
+      });
 
-      it('should support ISO string without time',
-         () => { expect(() => pipe.transform(isoStringWithoutTime)).not.toThrow(); });
+      it('should support ISO string without time', () => {
+        expect(() => pipe.transform(isoStringWithoutTime)).not.toThrow();
+      });
 
-      it('should not support other objects',
-         () => { expect(() => pipe.transform({})).toThrowError(/InvalidPipeArgument/); });
+      it('should not support other objects', () => {
+        expect(() => pipe.transform({})).toThrowError(/InvalidPipeArgument/);
+      });
     });
 
     describe('transform', () => {

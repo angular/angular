@@ -76,7 +76,7 @@ export class Request extends Body {
     super();
     // TODO: assert that url is present
     const url = requestOptions.url;
-    this.url = requestOptions.url !;
+    this.url = requestOptions.url!;
     const paramsArg = requestOptions.params || requestOptions.search;
     if (paramsArg) {
       let params: string;
@@ -95,13 +95,13 @@ export class Request extends Body {
       }
     }
     this._body = requestOptions.body;
-    this.method = normalizeMethodName(requestOptions.method !);
+    this.method = normalizeMethodName(requestOptions.method!);
     // TODO(jeffbcross): implement behavior
     // Defaults to 'omit', consistent with browser
     this.headers = new Headers(requestOptions.headers);
     this.contentType = this.detectContentType();
-    this.withCredentials = requestOptions.withCredentials !;
-    this.responseType = requestOptions.responseType !;
+    this.withCredentials = requestOptions.withCredentials!;
+    this.responseType = requestOptions.responseType!;
   }
 
   /**

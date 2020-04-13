@@ -80,7 +80,7 @@ export class InertBodyHelper {
     xhr.open('GET', 'data:text/html;charset=utf-8,' + html, false);
     xhr.send(undefined);
     const body: HTMLBodyElement = xhr.response.body;
-    body.removeChild(body.firstChild !);
+    body.removeChild(body.firstChild!);
     return body;
   }
 
@@ -95,11 +95,9 @@ export class InertBodyHelper {
     // `<head>` tag.
     html = '<body><remove></remove>' + html + '</body>';
     try {
-      const body = new (window as any)
-                       .DOMParser()
-                       .parseFromString(html, 'text/html')
-                       .body as HTMLBodyElement;
-      body.removeChild(body.firstChild !);
+      const body = new (window as any).DOMParser().parseFromString(html, 'text/html').body as
+          HTMLBodyElement;
+      body.removeChild(body.firstChild!);
       return body;
     } catch {
       return null;
@@ -152,7 +150,7 @@ export class InertBodyHelper {
     // loop backwards so that we can support removals.
     for (let i = elAttrs.length - 1; 0 < i; i--) {
       const attrib = elAttrs.item(i);
-      const attrName = attrib !.name;
+      const attrName = attrib!.name;
       if (attrName === 'xmlns:ns1' || attrName.indexOf('ns1:') === 0) {
         el.removeAttribute(attrName);
       }

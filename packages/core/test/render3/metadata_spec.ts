@@ -31,33 +31,33 @@ function metadataOf(value: Type<any>): HasMetadata {
 
 describe('render3 setClassMetadata()', () => {
   it('should set decorator metadata on a type', () => {
-    const Foo = metadataOf(class Foo{});
+    const Foo = metadataOf(class Foo {});
     setClassMetadata(Foo, [{type: 'test', args: ['arg']}], null, null);
     expect(Foo.decorators).toEqual([{type: 'test', args: ['arg']}]);
   });
 
   it('should merge decorator metadata on a type', () => {
-    const Foo = metadataOf(class Foo{});
+    const Foo = metadataOf(class Foo {});
     Foo.decorators = [{type: 'first'}];
     setClassMetadata(Foo, [{type: 'test', args: ['arg']}], null, null);
     expect(Foo.decorators).toEqual([{type: 'first'}, {type: 'test', args: ['arg']}]);
   });
 
   it('should set ctor parameter metadata on a type', () => {
-    const Foo = metadataOf(class Foo{});
+    const Foo = metadataOf(class Foo {});
     Foo.ctorParameters = () => [{type: 'initial'}];
     setClassMetadata(Foo, null, () => [{type: 'test'}], null);
     expect(Foo.ctorParameters()).toEqual([{type: 'test'}]);
   });
 
   it('should set parameter decorator metadata on a type', () => {
-    const Foo = metadataOf(class Foo{});
+    const Foo = metadataOf(class Foo {});
     setClassMetadata(Foo, null, null, {field: [{type: 'test', args: ['arg']}]});
     expect(Foo.propDecorators).toEqual({field: [{type: 'test', args: ['arg']}]});
   });
 
   it('should merge parameter decorator metadata on a type', () => {
-    const Foo = metadataOf(class Foo{});
+    const Foo = metadataOf(class Foo {});
     Foo.propDecorators = {initial: [{type: 'first'}]};
     setClassMetadata(Foo, null, null, {field: [{type: 'test', args: ['arg']}]});
     expect(Foo.propDecorators)

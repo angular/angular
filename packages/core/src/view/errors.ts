@@ -14,7 +14,8 @@ import {DebugContext} from './types';
 export function expressionChangedAfterItHasBeenCheckedError(
     context: DebugContext, oldValue: any, currValue: any, isFirstCheck: boolean): Error {
   let msg =
-      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: '${oldValue}'. Current value: '${currValue}'.`;
+      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: '${
+          oldValue}'. Current value: '${currValue}'.`;
   if (isFirstCheck) {
     msg +=
         ` It seems like the view has been created after its parent and its children have been dirty checked.` +

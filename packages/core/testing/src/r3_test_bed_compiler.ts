@@ -7,7 +7,7 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {ApplicationInitStatus, COMPILER_OPTIONS, Compiler, Component, Directive, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, Type, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDef as InjectableDef} from '@angular/core';
+import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, Type, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵgetInjectableDef as getInjectableDef, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDef as InjectableDef} from '@angular/core';
 
 import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution, resolveComponentResources, restoreComponentResolutionQueue} from '../../src/metadata/resource_loading';
 
@@ -194,7 +194,7 @@ export class R3TestBedCompiler {
   overrideTemplateUsingTestingModule(type: Type<any>, template: string): void {
     const def = (type as any)[NG_COMP_DEF];
     const hasStyleUrls = (): boolean => {
-      const metadata = this.resolvers.component.resolve(type) !as Component;
+      const metadata = this.resolvers.component.resolve(type)! as Component;
       return !!metadata.styleUrls && metadata.styleUrls.length > 0;
     };
     const overrideStyleUrls = !!def && !isComponentDefPendingResolution(type) && hasStyleUrls();
@@ -295,7 +295,9 @@ export class R3TestBedCompiler {
   /**
    * @internal
    */
-  _getModuleResolver(): Resolver<NgModule> { return this.resolvers.module; }
+  _getModuleResolver(): Resolver<NgModule> {
+    return this.resolvers.module;
+  }
 
   /**
    * @internal
@@ -303,7 +305,7 @@ export class R3TestBedCompiler {
   _getComponentFactories(moduleType: NgModuleType): ComponentFactory<any>[] {
     return maybeUnwrapFn(moduleType.ɵmod.declarations).reduce((factories, declaration) => {
       const componentDef = (declaration as any).ɵcmp;
-      componentDef && factories.push(new ComponentFactory(componentDef, this.testModuleRef !));
+      componentDef && factories.push(new ComponentFactory(componentDef, this.testModuleRef!));
       return factories;
     }, [] as ComponentFactory<any>[]);
   }
@@ -348,7 +350,7 @@ export class R3TestBedCompiler {
   private applyTransitiveScopes(): void {
     const moduleToScope = new Map<Type<any>|TestingModuleOverride, NgModuleTransitiveScopes>();
     const getScopeOfModule =
-        (moduleType: Type<any>| TestingModuleOverride): NgModuleTransitiveScopes => {
+        (moduleType: Type<any>|TestingModuleOverride): NgModuleTransitiveScopes => {
           if (!moduleToScope.has(moduleType)) {
             const isTestingModule = isTestingModuleOverride(moduleType);
             const realType = isTestingModule ? this.testModuleType : moduleType as Type<any>;
@@ -363,7 +365,7 @@ export class R3TestBedCompiler {
             }
             moduleToScope.set(moduleType, transitiveScopesFor(realType));
           }
-          return moduleToScope.get(moduleType) !;
+          return moduleToScope.get(moduleType)!;
         };
 
     this.componentToModuleScope.forEach((moduleType, componentType) => {
@@ -379,7 +381,7 @@ export class R3TestBedCompiler {
   private applyProviderOverrides(): void {
     const maybeApplyOverrides = (field: string) => (type: Type<any>) => {
       const resolver = field === NG_COMP_DEF ? this.resolvers.component : this.resolvers.directive;
-      const metadata = resolver.resolve(type) !;
+      const metadata = resolver.resolve(type)!;
       if (this.hasProviderOverrides(metadata.providers)) {
         this.patchDefWithProviderOverrides(type, field);
       }
@@ -553,7 +555,7 @@ export class R3TestBedCompiler {
       this.originalComponentResolutionQueue = new Map();
     }
     clearResolutionOfComponentResourcesQueue().forEach(
-        (value, key) => this.originalComponentResolutionQueue !.set(key, value));
+        (value, key) => this.originalComponentResolutionQueue!.set(key, value));
   }
 
   /*
@@ -575,21 +577,20 @@ export class R3TestBedCompiler {
       op.object[op.fieldName] = op.originalValue;
     });
     // Restore initial component/directive/pipe defs
-    this.initialNgDefs.forEach(
-        (value: [string, PropertyDescriptor | undefined], type: Type<any>) => {
-          const [prop, descriptor] = value;
-          if (!descriptor) {
-            // Delete operations are generally undesirable since they have performance implications
-            // on objects they were applied to. In this particular case, situations where this code
-            // is invoked should be quite rare to cause any noticeable impact, since it's applied
-            // only to some test cases (for example when class with no annotations extends some
-            // @Component) when we need to clear 'ɵcmp' field on a given class to restore
-            // its original state (before applying overrides and running tests).
-            delete (type as any)[prop];
-          } else {
-            Object.defineProperty(type, prop, descriptor);
-          }
-        });
+    this.initialNgDefs.forEach((value: [string, PropertyDescriptor|undefined], type: Type<any>) => {
+      const [prop, descriptor] = value;
+      if (!descriptor) {
+        // Delete operations are generally undesirable since they have performance implications
+        // on objects they were applied to. In this particular case, situations where this code
+        // is invoked should be quite rare to cause any noticeable impact, since it's applied
+        // only to some test cases (for example when class with no annotations extends some
+        // @Component) when we need to clear 'ɵcmp' field on a given class to restore
+        // its original state (before applying overrides and running tests).
+        delete (type as any)[prop];
+      } else {
+        Object.defineProperty(type, prop, descriptor);
+      }
+    });
     this.initialNgDefs.clear();
     this.moduleProvidersOverridden.clear();
     this.restoreComponentResolutionQueue();
@@ -726,7 +727,7 @@ function hasNgModuleDef<T>(value: Type<T>): value is NgModuleType<T> {
   return value.hasOwnProperty('ɵmod');
 }
 
-function maybeUnwrapFn<T>(maybeFn: (() => T) | T): T {
+function maybeUnwrapFn<T>(maybeFn: (() => T)|T): T {
   return maybeFn instanceof Function ? maybeFn() : maybeFn;
 }
 

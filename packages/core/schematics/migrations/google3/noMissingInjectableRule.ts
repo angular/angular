@@ -50,7 +50,7 @@ export class Rule extends Rules.TypedRule {
     transformer.recordChanges();
 
     if (updateRecorders.has(sourceFile)) {
-      failures.push(...updateRecorders.get(sourceFile) !.failures);
+      failures.push(...updateRecorders.get(sourceFile)!.failures);
     }
 
     return failures;
@@ -58,7 +58,7 @@ export class Rule extends Rules.TypedRule {
     /** Gets the update recorder for the specified source file. */
     function getUpdateRecorder(sourceFile: ts.SourceFile): TslintUpdateRecorder {
       if (updateRecorders.has(sourceFile)) {
-        return updateRecorders.get(sourceFile) !;
+        return updateRecorders.get(sourceFile)!;
       }
       const recorder = new TslintUpdateRecorder(ruleName, sourceFile);
       updateRecorders.set(sourceFile, recorder);

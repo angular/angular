@@ -29,7 +29,7 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
     });
 
     it('should be marked as pure', () => {
-      expect(new PipeResolver(new JitReflector()).resolve(I18nPluralPipe) !.pure).toEqual(true);
+      expect(new PipeResolver(new JitReflector()).resolve(I18nPluralPipe)!.pure).toEqual(true);
     });
 
     describe('transform', () => {
@@ -54,17 +54,19 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
       });
 
       it('should use "" if value is undefined', () => {
-        const val = pipe.transform(void(0) as any, mapping);
+        const val = pipe.transform(void (0) as any, mapping);
         expect(val).toEqual('');
       });
 
-      it('should not support bad arguments',
-         () => { expect(() => pipe.transform(0, <any>'hey')).toThrowError(); });
+      it('should not support bad arguments', () => {
+        expect(() => pipe.transform(0, <any>'hey')).toThrowError();
+      });
     });
-
   });
 }
 
 class TestLocalization extends NgLocalization {
-  getPluralCategory(value: number): string { return value > 1 && value < 6 ? 'many' : 'other'; }
+  getPluralCategory(value: number): string {
+    return value > 1 && value < 6 ? 'many' : 'other';
+  }
 }

@@ -23,13 +23,17 @@ export class CssKeyframesDriver implements AnimationDriver {
   private readonly _head: any = document.querySelector('head');
   private _warningIssued = false;
 
-  validateStyleProperty(prop: string): boolean { return validateStyleProperty(prop); }
+  validateStyleProperty(prop: string): boolean {
+    return validateStyleProperty(prop);
+  }
 
   matchesElement(element: any, selector: string): boolean {
     return matchesElement(element, selector);
   }
 
-  containsElement(elm1: any, elm2: any): boolean { return containsElement(elm1, elm2); }
+  containsElement(elm1: any, elm2: any): boolean {
+    return containsElement(elm1, elm2);
+  }
 
   query(element: any, selector: string, multi: boolean): any[] {
     return invokeQuery(element, selector, multi);
@@ -104,7 +108,7 @@ export class CssKeyframesDriver implements AnimationDriver {
 
     const animationName = `${KEYFRAMES_NAME_PREFIX}${this._count++}`;
     const kfElm = this.buildKeyframeElement(element, animationName, keyframes);
-    document.querySelector('head') !.appendChild(kfElm);
+    document.querySelector('head')!.appendChild(kfElm);
 
     const specialStyles = packageNonAnimatableStyles(element, keyframes);
     const player = new CssKeyframesPlayer(
@@ -124,8 +128,8 @@ export class CssKeyframesDriver implements AnimationDriver {
   }
 }
 
-function flattenKeyframesIntoStyles(
-    keyframes: null | {[key: string]: any} | {[key: string]: any}[]): {[key: string]: any} {
+function flattenKeyframesIntoStyles(keyframes: null|{[key: string]: any}|
+                                    {[key: string]: any}[]): {[key: string]: any} {
   let flatKeyframes: {[key: string]: any} = {};
   if (keyframes) {
     const kfs = Array.isArray(keyframes) ? keyframes : [keyframes];

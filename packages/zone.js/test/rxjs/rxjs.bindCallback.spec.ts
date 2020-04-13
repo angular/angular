@@ -18,7 +18,9 @@ describe('Observable.bindCallback', () => {
   let boundFunc: any;
   let observable: any;
 
-  beforeEach(() => { log = []; });
+  beforeEach(() => {
+    log = [];
+  });
 
   it('bindCallback func callback should run in the correct zone', () => {
     constructorZone.run(() => {

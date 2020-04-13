@@ -21,7 +21,9 @@ declare class SubComponent extends SuperComponent {
   static ɵcmp: ɵɵComponentDefWithMeta<SubComponent, '[sub]', never, {}, {}, never, never>;
 }
 
-declare class SuperPipe { static ɵpipe: PipeDefWithMeta<SuperPipe, 'super'>; }
+declare class SuperPipe {
+  static ɵpipe: PipeDefWithMeta<SuperPipe, 'super'>;
+}
 
 declare class SubPipe extends SuperPipe {
   onlyInSubtype: string;

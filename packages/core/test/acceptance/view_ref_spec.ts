@@ -13,7 +13,6 @@ import {TestBed} from '@angular/core/testing';
 
 describe('ViewRef', () => {
   it('should remove nodes from DOM when the view is detached from app ref', () => {
-
     @Component({selector: 'dynamic-cpt', template: '<div></div>'})
     class DynamicComponent {
       constructor(public elRef: ElementRef) {}
@@ -21,7 +20,7 @@ describe('ViewRef', () => {
 
     @Component({template: `<span></span>`})
     class App {
-      componentRef !: ComponentRef<DynamicComponent>;
+      componentRef!: ComponentRef<DynamicComponent>;
       constructor(
           public appRef: ApplicationRef, private cfr: ComponentFactoryResolver,
           private injector: Injector) {}
@@ -33,7 +32,9 @@ describe('ViewRef', () => {
         document.body.appendChild(this.componentRef.instance.elRef.nativeElement);
       }
 
-      destroy() { (this.componentRef.hostView as InternalViewRef).detachFromAppRef(); }
+      destroy() {
+        (this.componentRef.hostView as InternalViewRef).detachFromAppRef();
+      }
     }
 
     @NgModule({declarations: [App, DynamicComponent], entryComponents: [DynamicComponent]})

@@ -26,7 +26,9 @@ import {Component, ErrorHandler, Injectable, NgModule} from '@angular/core';
 export class BenchmarkArea {
 }
 
-declare interface ExtendedWindow extends Window { benchmarkErrors?: string[]; }
+declare interface ExtendedWindow extends Window {
+  benchmarkErrors?: string[];
+}
 const extendedWindow = window as ExtendedWindow;
 
 @Injectable({providedIn: 'root'})

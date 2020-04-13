@@ -57,10 +57,12 @@ Zone.__load_patch('mocha', (global: any, Zone: ZoneType) => {
         // Note we have to make a function with correct number of arguments,
         // otherwise mocha will
         // think that all functions are sync or async.
-        args[i] = (arg.length === 0) ? syncTest(arg) : asyncTest !(arg);
+        args[i] = (arg.length === 0) ? syncTest(arg) : asyncTest!(arg);
         // Mocha uses toString to view the test body in the result list, make sure we return the
         // correct function body
-        args[i].toString = function() { return arg.toString(); };
+        args[i].toString = function() {
+          return arg.toString();
+        };
       }
     }
 
@@ -69,7 +71,9 @@ Zone.__load_patch('mocha', (global: any, Zone: ZoneType) => {
 
   function wrapDescribeInZone(args: IArguments): any[] {
     const syncTest: any = function(fn: Function) {
-      return function(this: unknown) { return syncZone.run(fn, this, arguments as any as any[]); };
+      return function(this: unknown) {
+        return syncZone.run(fn, this, arguments as any as any[]);
+      };
     };
 
     return modifyArguments(args, syncTest);
@@ -77,11 +81,15 @@ Zone.__load_patch('mocha', (global: any, Zone: ZoneType) => {
 
   function wrapTestInZone(args: IArguments): any[] {
     const asyncTest = function(fn: Function) {
-      return function(this: unknown, done: Function) { return testZone !.run(fn, this, [done]); };
+      return function(this: unknown, done: Function) {
+        return testZone!.run(fn, this, [done]);
+      };
     };
 
     const syncTest: any = function(fn: Function) {
-      return function(this: unknown) { return testZone !.run(fn, this); };
+      return function(this: unknown) {
+        return testZone!.run(fn, this);
+      };
     };
 
     return modifyArguments(args, syncTest, asyncTest);
@@ -89,11 +97,15 @@ Zone.__load_patch('mocha', (global: any, Zone: ZoneType) => {
 
   function wrapSuiteInZone(args: IArguments): any[] {
     const asyncTest = function(fn: Function) {
-      return function(this: unknown, done: Function) { return suiteZone.run(fn, this, [done]); };
+      return function(this: unknown, done: Function) {
+        return suiteZone.run(fn, this, [done]);
+      };
     };
 
     const syncTest: any = function(fn: Function) {
-      return function(this: unknown) { return suiteZone.run(fn, this); };
+      return function(this: unknown) {
+        return suiteZone.run(fn, this);
+      };
     };
 
     return modifyArguments(args, syncTest, asyncTest);
@@ -111,8 +123,9 @@ Zone.__load_patch('mocha', (global: any, Zone: ZoneType) => {
     return mochaOriginal.describe.only.apply(this, wrapDescribeInZone(arguments));
   };
 
-  global.it = global.specify = global.test =
-      Mocha.it = function() { return mochaOriginal.it.apply(this, wrapTestInZone(arguments)); };
+  global.it = global.specify = global.test = Mocha.it = function() {
+    return mochaOriginal.it.apply(this, wrapTestInZone(arguments));
+  };
 
   global.xit = global.xspecify = Mocha.it.skip = function() {
     return mochaOriginal.it.skip.apply(this, wrapTestInZone(arguments));
@@ -140,11 +153,15 @@ Zone.__load_patch('mocha', (global: any, Zone: ZoneType) => {
 
   ((originalRunTest, originalRun) => {
     Mocha.Runner.prototype.runTest = function(fn: Function) {
-      Zone.current.scheduleMicroTask('mocha.forceTask', () => { originalRunTest.call(this, fn); });
+      Zone.current.scheduleMicroTask('mocha.forceTask', () => {
+        originalRunTest.call(this, fn);
+      });
     };
 
     Mocha.Runner.prototype.run = function(fn: Function) {
-      this.on('test', (e: any) => { testZone = rootZone.fork(new ProxyZoneSpec()); });
+      this.on('test', (e: any) => {
+        testZone = rootZone.fork(new ProxyZoneSpec());
+      });
 
       this.on('fail', (test: any, err: any) => {
         const proxyZoneSpec = testZone && testZone.get('ProxyZoneSpec');

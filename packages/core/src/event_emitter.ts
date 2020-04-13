@@ -83,7 +83,9 @@ export class EventEmitter<T extends any> extends Subject<T> {
    * Emits an event containing a given value.
    * @param value The value to emit.
    */
-  emit(value?: T) { super.next(value); }
+  emit(value?: T) {
+    super.next(value);
+  }
 
   /**
    * Registers handlers for events emitted by this instance.
@@ -101,29 +103,46 @@ export class EventEmitter<T extends any> extends Subject<T> {
     if (generatorOrNext && typeof generatorOrNext === 'object') {
       schedulerFn = this.__isAsync ? (value: any) => {
         setTimeout(() => generatorOrNext.next(value));
-      } : (value: any) => { generatorOrNext.next(value); };
+      } : (value: any) => {
+        generatorOrNext.next(value);
+      };
 
       if (generatorOrNext.error) {
-        errorFn = this.__isAsync ? (err) => { setTimeout(() => generatorOrNext.error(err)); } :
-                                   (err) => { generatorOrNext.error(err); };
+        errorFn = this.__isAsync ? (err) => {
+          setTimeout(() => generatorOrNext.error(err));
+        } : (err) => {
+          generatorOrNext.error(err);
+        };
       }
 
       if (generatorOrNext.complete) {
-        completeFn = this.__isAsync ? () => { setTimeout(() => generatorOrNext.complete()); } :
-                                      () => { generatorOrNext.complete(); };
+        completeFn = this.__isAsync ? () => {
+          setTimeout(() => generatorOrNext.complete());
+        } : () => {
+          generatorOrNext.complete();
+        };
       }
     } else {
-      schedulerFn = this.__isAsync ? (value: any) => { setTimeout(() => generatorOrNext(value)); } :
-                                     (value: any) => { generatorOrNext(value); };
+      schedulerFn = this.__isAsync ? (value: any) => {
+        setTimeout(() => generatorOrNext(value));
+      } : (value: any) => {
+        generatorOrNext(value);
+      };
 
       if (error) {
-        errorFn =
-            this.__isAsync ? (err) => { setTimeout(() => error(err)); } : (err) => { error(err); };
+        errorFn = this.__isAsync ? (err) => {
+          setTimeout(() => error(err));
+        } : (err) => {
+          error(err);
+        };
       }
 
       if (complete) {
-        completeFn =
-            this.__isAsync ? () => { setTimeout(() => complete()); } : () => { complete(); };
+        completeFn = this.__isAsync ? () => {
+          setTimeout(() => complete());
+        } : () => {
+          complete();
+        };
       }
     }
 

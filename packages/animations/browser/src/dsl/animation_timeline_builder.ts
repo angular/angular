@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimateChildOptions, AnimateTimings, AnimationMetadataType, AnimationOptions, AnimationQueryOptions, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
+import {AnimateChildOptions, AnimateTimings, AnimationMetadataType, AnimationOptions, AnimationQueryOptions, AUTO_STYLE, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
 import {copyObj, copyStyles, interpolateParams, iteratorToArray, resolveTiming, resolveTimingValue, visitDslNode} from '../util';
@@ -301,7 +301,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
 
   visitStyle(ast: StyleAst, context: AnimationTimelineContext) {
     const timeline = context.currentTimeline;
-    const timings = context.currentAnimateTimings !;
+    const timings = context.currentAnimateTimings!;
 
     // this is a special case for when a style() call
     // directly follows  an animate() call (but not inside of an animate() call)
@@ -320,8 +320,8 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
   }
 
   visitKeyframes(ast: KeyframesAst, context: AnimationTimelineContext) {
-    const currentAnimateTimings = context.currentAnimateTimings !;
-    const startTime = (context.currentTimeline !).duration;
+    const currentAnimateTimings = context.currentAnimateTimings!;
+    const startTime = (context.currentTimeline!).duration;
     const duration = currentAnimateTimings.duration;
     const innerContext = context.createSubContext();
     const innerTimeline = innerContext.currentTimeline;
@@ -351,8 +351,9 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
     const options = (ast.options || {}) as AnimationQueryOptions;
     const delay = options.delay ? resolveTimingValue(options.delay) : 0;
 
-    if (delay && (context.previousNode.type === AnimationMetadataType.Style ||
-                  (startTime == 0 && context.currentTimeline.getCurrentStyleProperties().length))) {
+    if (delay &&
+        (context.previousNode.type === AnimationMetadataType.Style ||
+         (startTime == 0 && context.currentTimeline.getCurrentStyleProperties().length))) {
       context.currentTimeline.snapshotCurrentStyles();
       context.previousNode = DEFAULT_NOOP_PREVIOUS_NODE;
     }
@@ -365,7 +366,6 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
     context.currentQueryTotal = elms.length;
     let sameElementTimeline: TimelineBuilder|null = null;
     elms.forEach((element, i) => {
-
       context.currentQueryIndex = i;
       const innerContext = context.createSubContext(ast.options, element);
       if (delay) {
@@ -400,7 +400,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
   }
 
   visitStagger(ast: StaggerAst, context: AnimationTimelineContext) {
-    const parentContext = context.parentContext !;
+    const parentContext = context.parentContext!;
     const tl = context.currentTimeline;
     const timings = ast.timings;
     const duration = Math.abs(timings.duration);
@@ -460,7 +460,9 @@ export class AnimationTimelineContext {
     timelines.push(this.currentTimeline);
   }
 
-  get params() { return this.options.params; }
+  get params() {
+    return this.options.params;
+  }
 
   updateOptions(options: AnimationOptions|null, skipIfExists?: boolean) {
     if (!options) return;
@@ -479,7 +481,7 @@ export class AnimationTimelineContext {
 
     const newParams = newOptions.params;
     if (newParams) {
-      let paramsToUpdate: {[name: string]: any} = optionsToUpdate.params !;
+      let paramsToUpdate: {[name: string]: any} = optionsToUpdate.params!;
       if (!paramsToUpdate) {
         paramsToUpdate = this.options.params = {};
       }
@@ -498,7 +500,9 @@ export class AnimationTimelineContext {
       const oldParams = this.options.params;
       if (oldParams) {
         const params: {[name: string]: any} = options['params'] = {};
-        Object.keys(oldParams).forEach(name => { params[name] = oldParams[name]; });
+        Object.keys(oldParams).forEach(name => {
+          params[name] = oldParams[name];
+        });
       }
     }
     return options;
@@ -576,8 +580,8 @@ export class AnimationTimelineContext {
     }
 
     if (!optional && results.length == 0) {
-      errors.push(
-          `\`query("${originalSelector}")\` returned zero elements. (Use \`query("${originalSelector}", { optional: true })\` if you wish to allow this.)`);
+      errors.push(`\`query("${originalSelector}")\` returned zero elements. (Use \`query("${
+          originalSelector}", { optional: true })\` if you wish to allow this.)`);
     }
     return results;
   }
@@ -587,7 +591,7 @@ export class AnimationTimelineContext {
 export class TimelineBuilder {
   public duration: number = 0;
   // TODO(issue/24571): remove '!'.
-  public easing !: string | null;
+  public easing!: string|null;
   private _previousKeyframe: ɵStyleData = {};
   private _currentKeyframe: ɵStyleData = {};
   private _keyframes = new Map<number, ɵStyleData>();
@@ -606,7 +610,7 @@ export class TimelineBuilder {
     }
 
     this._localTimelineStyles = Object.create(this._backFill, {});
-    this._globalTimelineStyles = this._elementTimelineStylesLookup.get(element) !;
+    this._globalTimelineStyles = this._elementTimelineStylesLookup.get(element)!;
     if (!this._globalTimelineStyles) {
       this._globalTimelineStyles = this._localTimelineStyles;
       this._elementTimelineStylesLookup.set(element, this._localTimelineStyles);
@@ -625,9 +629,13 @@ export class TimelineBuilder {
     }
   }
 
-  getCurrentStyleProperties(): string[] { return Object.keys(this._currentKeyframe); }
+  getCurrentStyleProperties(): string[] {
+    return Object.keys(this._currentKeyframe);
+  }
 
-  get currentTime() { return this.startTime + this.duration; }
+  get currentTime() {
+    return this.startTime + this.duration;
+  }
 
   delayNextStep(delay: number) {
     // in the event that a style() step is placed right before a stagger()
@@ -656,7 +664,7 @@ export class TimelineBuilder {
     if (this._currentKeyframe) {
       this._previousKeyframe = this._currentKeyframe;
     }
-    this._currentKeyframe = this._keyframes.get(this.duration) !;
+    this._currentKeyframe = this._keyframes.get(this.duration)!;
     if (!this._currentKeyframe) {
       this._currentKeyframe = Object.create(this._backFill, {});
       this._keyframes.set(this.duration, this._currentKeyframe);
@@ -680,7 +688,9 @@ export class TimelineBuilder {
     this._styleSummary[prop] = {time: this.currentTime, value};
   }
 
-  allowOnlyTimelineStyles() { return this._currentEmptyStepKeyframe !== this._currentKeyframe; }
+  allowOnlyTimelineStyles() {
+    return this._currentEmptyStepKeyframe !== this._currentKeyframe;
+  }
 
   applyEmptyStep(easing: string|null) {
     if (easing) {
@@ -748,7 +758,9 @@ export class TimelineBuilder {
     });
   }
 
-  getFinalKeyframe() { return this._keyframes.get(this.duration); }
+  getFinalKeyframe() {
+    return this._keyframes.get(this.duration);
+  }
 
   get properties() {
     const properties: string[] = [];
@@ -820,7 +832,9 @@ class SubTimelineBuilder extends TimelineBuilder {
     this.timings = {duration: timings.duration, delay: timings.delay, easing: timings.easing};
   }
 
-  containsAnimation(): boolean { return this.keyframes.length > 1; }
+  containsAnimation(): boolean {
+    return this.keyframes.length > 1;
+  }
 
   buildKeyframes(): AnimationTimelineInstruction {
     let keyframes = this.keyframes;
@@ -883,13 +897,15 @@ function roundOffset(offset: number, decimalPoints = 3): number {
   return Math.round(offset * mult) / mult;
 }
 
-function flattenStyles(input: (ɵStyleData | string)[], allStyles: ɵStyleData) {
+function flattenStyles(input: (ɵStyleData|string)[], allStyles: ɵStyleData) {
   const styles: ɵStyleData = {};
   let allProperties: string[];
   input.forEach(token => {
     if (token === '*') {
       allProperties = allProperties || Object.keys(allStyles);
-      allProperties.forEach(prop => { styles[prop] = AUTO_STYLE; });
+      allProperties.forEach(prop => {
+        styles[prop] = AUTO_STYLE;
+      });
     } else {
       copyStyles(token as ɵStyleData, false, styles);
     }

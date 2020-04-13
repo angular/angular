@@ -20,7 +20,9 @@ describe('SourceFileTranslationHandler', () => {
   });
 
   describe('translate()', () => {
-    beforeEach(() => { spyOn(FileUtils, 'writeFile'); });
+    beforeEach(() => {
+      spyOn(FileUtils, 'writeFile');
+    });
 
     it('should copy files for each translation locale if they contain no reference to `$localize`',
        () => {

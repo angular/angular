@@ -15,7 +15,6 @@ import {SpyChangeDetectorRef} from '../spies';
 
 {
   describe('AsyncPipe', () => {
-
     describe('Observable', () => {
       let emitter: EventEmitter<any>;
       let pipe: AsyncPipe;
@@ -29,8 +28,9 @@ import {SpyChangeDetectorRef} from '../spies';
       });
 
       describe('transform', () => {
-        it('should return null when subscribing to an observable',
-           () => { expect(pipe.transform(emitter)).toBe(null); });
+        it('should return null when subscribing to an observable', () => {
+          expect(pipe.transform(emitter)).toBe(null);
+        });
 
         it('should return the latest available value wrapped',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -96,8 +96,9 @@ import {SpyChangeDetectorRef} from '../spies';
       });
 
       describe('ngOnDestroy', () => {
-        it('should do nothing when no subscription',
-           () => { expect(() => pipe.ngOnDestroy()).not.toThrow(); });
+        it('should do nothing when no subscription', () => {
+          expect(() => pipe.ngOnDestroy()).not.toThrow();
+        });
 
         it('should dispose of the existing subscription',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -133,8 +134,9 @@ import {SpyChangeDetectorRef} from '../spies';
       });
 
       describe('transform', () => {
-        it('should return null when subscribing to a promise',
-           () => { expect(pipe.transform(promise)).toBe(null); });
+        it('should return null when subscribing to a promise', () => {
+          expect(pipe.transform(promise)).toBe(null);
+        });
 
         it('should return the latest available value',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -189,8 +191,9 @@ import {SpyChangeDetectorRef} from '../spies';
            }));
 
         describe('ngOnDestroy', () => {
-          it('should do nothing when no source',
-             () => { expect(() => pipe.ngOnDestroy()).not.toThrow(); });
+          it('should do nothing when no source', () => {
+            expect(() => pipe.ngOnDestroy()).not.toThrow();
+          });
 
           it('should dispose of the existing source',
              inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
