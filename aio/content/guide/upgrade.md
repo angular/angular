@@ -821,8 +821,13 @@ AngularJS는 독립적인 최상위 템플릿을 구성합니다.
 이제 AngularJS 코드로 작성한 애플리케이션에 Angular 코드를 추가할 준비는 끝났습니다.
 
 
+{@a using-angular-components-from-angularjs-code}
+<!--
 ### Using Angular Components from AngularJS Code
+-->
+### AngularJS 영역에 Angular 컴포넌트 사용하기
 
+<!--
 <img src="generated/images/guide/upgrade/ajs-to-a.png" alt="Using an Angular component from AngularJS code" class="left">
 
 Once you're running a hybrid app, you can start the gradual process of upgrading
@@ -922,11 +927,106 @@ For example, you can easily make multiple copies of the component using `ng-repe
 
 <code-example path="upgrade-module/src/index-downgrade-io.html" region="userepeatedcomponent">
 </code-example>
+-->
+<img src="generated/images/guide/upgrade/ajs-to-a.png" alt="Using an Angular component from AngularJS code" class="left">
 
+하이브리드 앱을 실행했다면 이제 코드를 업그레이드 할 시간입니다.
+그 중 가장 먼저 할 수 있는 것은 AngularJS 컨텍스트에 Angular 컴포넌트를 사용하는 것입니다.
+AngularJS로 작성된 컴포넌트를 Angular로 재작성하면 됩니다.
+
+히어로의 정보를 표시하는 Angular 컴포넌트 코드가 다음과 같다고 합시다:
+
+<code-example path="upgrade-module/src/app/downgrade-static/hero-detail.component.ts" header="hero-detail.component.ts">
+</code-example>
+
+이 컴포넌트를 AngularJS 템플릿에 사용하려면 `downgradeComponent()` 메소드를 사용해서 컴포넌트를 *다운그레이드*해야 하는데, 이 메소드는 AngularJS *디렉티브*를 반환하기 때문에 AngularJS 모듈에 등록할 수 있습니다:
+
+<code-example path="upgrade-module/src/app/downgrade-static/app.module.ts" region="downgradecomponent" header="app.module.ts">
+</code-example>
+
+`HeroDetailComponent`는 Angulara 컴포넌트이기 때문에 `AppModule`의 `declarations` 배열에도 등록해야 합니다.
+
+그리고 이 컴포넌트는 AngularJS 모듈에 사용될 것이기 때문에 Angular 애플리케이션의 진입 포인트로 지정되어야 합니다.
+NgModule의 `entryComponents`에 다음과 같이 등록합니다.
+
+<code-example path="upgrade-module/src/app/downgrade-static/app.module.ts" region="ngmodule" header="app.module.ts">
+</code-example>
+
+<div class="alert is-helpful">
+
+Angular 컴포넌트와 디렉티브, 파이프는 반드시 NgModule에 등록해야 합니다.
+
+</div>
+
+이렇게 구현하고 나면 AngularJS에서 사용할 수 있는 `heroDetail` 디렉티브가 만들어지기 때문에 이제 AngularJS 템플릿에 보통 디렉티브처럼 사용할 수 있습니다.
+
+<code-example path="upgrade-module/src/index-downgrade-static.html" region="usecomponent">
+</code-example>
+
+<div class="alert is-helpful">
+
+이 컴포넌트는 이제 Angular 엘리먼트 디렉티브(`restrict: 'E'`)이며 셀렉터는 `heroDetail`입니다.
+이제 AngularJS 디렉티브는 HTML 페이지에 사용된 엘리먼트의 _이름_ 과 매칭되며, *Angular 컴포넌트에서 지정한 `selector` 메타데이터는 무시됩니다.*
+
+</div>
+
+당연히 모든 컴포넌트가 이렇게 간단하지만은 않습니다.
+컴포넌트에 *입출력* 프로퍼티가 있어서 외부와 연결되었을 수도 있습니다.
+이런 컴포넌트 코드를 생각해 봅시다:
+
+<code-example path="upgrade-module/src/app/downgrade-io/hero-detail.component.ts" header="hero-detail.component.ts">
+</code-example>
+
+입출력 프로퍼티는 AngularJS 템플릿에서도 사용할 수 있습니다.
+AngularJS에서 다음과 같이 작성하면 `downgradeComponent()` 메소드가 Angular 컴포넌트의 입출력 프로퍼티를 연결할 수 있습니다::
+
+<code-example path="upgrade-module/src/index-downgrade-io.html" region="usecomponent">
+</code-example>
+
+이 때 작업하는 것은 분명히 AngularJS 템플릿이지만 **입출력 프로퍼티를 바인딩할 때는 Angular 어트리뷰트 바인딩 문법을 사용합니다**.
+Angular 컴포넌트를 다운그레이드할 때 이 규칙은 꼭 지켜야 합니다.
+다만 어트리뷰트에 바인딩되는 표현식은 AngularJS 문법입니다.
+
+<div class="callout is-important">
+
+<header>
+  다운그레이드한 컴포넌트 어트리뷰트에는 케밥 케이스(kebab-case)를 사용합니다.
+</header>
+
+Angular 컴포넌트를 다운그레이드해서 사용할 때 어트리뷰트 문법에 주의해야 할 점이 있습니다.
+입출력 프로퍼티의 이름이 여러 단어로 구성되었다면 Angular에서는 캐멀 케이스(camelCase)로 지정했습니다:
+
+<code-example format="">
+  [myHero]="hero"
+</code-example>
+
+하지만 AngularJS 템플릿에서는 케밥 케이스를 사용해야 합니다:
+
+<code-example format="">
+  [my-hero]="hero"
+</code-example>
+
+</div>
+
+컴포넌트 안에서 외부로 보내는 객체는 `$event` 변수에 담겨 전달됩니다.
+위에서 살펴본 코드로 보면 `this.deleted.emit()`을 실행했을 때 전달되는 객체는 `Hero` 객체입니다.
+
+그런데 지금 작업하고 있는 것은 AngularJS 템플릿이기 때문에 다른 AngularJS 디렉티브처럼 Angular 어트리뷰트도 바인딩할 수 있습니다.
+그래서 `ng-repeat`로 배열을 순회할 때도 다음과 같이 사용할 수 있습니다:
+
+<code-example path="upgrade-module/src/index-downgrade-io.html" region="userepeatedcomponent">
+</code-example>
+
+
+{@a using-angularjs-component-directives-from-angular-code}
+<!--
 ### Using AngularJS Component Directives from Angular Code
+-->
+### Angular 영역에 AngularJS 컴포넌트 사용하기
 
 <img src="generated/images/guide/upgrade/a-to-ajs.png" alt="Using an AngularJS component from Angular code" class="left">
 
+<!--
 So, you can write an Angular component and then use it from AngularJS
 code. This is useful when you start to migrate from lower-level
 components and work your way up. But in some cases it is more convenient
@@ -944,14 +1044,30 @@ introduced in AngularJS 1.5.
 
 A simple example of an upgradable component is one that just has a template
 and a controller:
+-->
+이제는 Angular 컴포넌트를 정의할 수 있고 이 컴포넌트를 AngularJS 영역에 사용할 수 있습니다.
+AngularJS 애플리케이션을 가장 안쪽 컴포넌트부터 작업할 때에도 이 방식을 활용할 수 있습니다.
+하지만 반대 방향으로 작업하는 것이 편할 때도 있습니다.
+가장 바깥쪽에 있는 컴포넌트부터 시작해서 안쪽 컴포넌트로 나아가는 방향인데, 이 경우에도 `upgrade/static` 패키지를 사용합니다.
+AngularJS 컴포넌트 디렉티브는 Angular 컴포넌트로 *업그레이드*할 수 있습니다.
+
+AngularJS에 있는 모든 디렉티브를 업그레이드할 수 있는 것은 아닙니다.
+업그레이드할 수 있는 것은 *컴포넌트 디렉티브* 이며, [위에서 설명한 조건](guide/upgrade#using-component-directives)을 갖추고 있어야 합니다.
+좀 더 자세하게 이야기하면 AngularJS 1.5에 도입된 [컴포넌트 API](https://docs.angularjs.org/api/ng/type/angular.Module)를 사용한 컴포넌트가 업그레이드하기 쉽습니다.
+
+다음과 같이 `template`과 `controller`로 구성된 AngularJS 컴포넌트가 있다고 합시다:
 
 <code-example path="upgrade-module/src/app/upgrade-static/hero-detail.component.ts" region="hero-detail" header="hero-detail.component.ts">
 </code-example>
 
+<!--
 You can *upgrade* this component to Angular using the `UpgradeComponent` class.
 By creating a new Angular **directive** that extends `UpgradeComponent` and doing a `super` call
 inside its constructor, you have a fully upgraded AngularJS component to be used inside Angular.
 All that is left is to add it to `AppModule`'s `declarations` array.
+-->
+이 컴포넌트는 `UpgradeComponent`를 상속받은 클래스의 생성자에서 `super` 함수를 실행하면 **업그레이드 된** Angular **디렉티브** 를 정의할 수 있으며, Angular 영역에서도 AngularJS의 모든 기능을 활용할 수 있습니다.
+이제는 업그레이드한 AngularJS 컴포넌트를 `AppModule`의 `declarations`에 등록하면 됩니다.
 
 <code-example path="upgrade-module/src/app/upgrade-static/hero-detail.component.ts" region="hero-detail-upgrade" header="hero-detail.component.ts">
 </code-example>
@@ -961,33 +1077,50 @@ All that is left is to add it to `AppModule`'s `declarations` array.
 
 <div class="alert is-helpful">
 
+<!--
 Upgraded components are Angular **directives**, instead of **components**, because Angular
 is unaware that AngularJS will create elements under it. As far as Angular knows, the upgraded
 component is just a directive - a tag - and Angular doesn't have to concern itself with
 its children.
+-->
+이렇게 업그레이드한 AngularJS 컴포넌트는 Angular **컴포넌트**가 아니라 **디렉티브**입니다.
+Angular와는 다르게 AngularJS는 호스트 엘리먼트 안쪽으로 컴포넌트를 구성하기 때문이며, 이런 방식 때문에 Angular는 컴포넌트 안쪽을 신경쓸 필요가 없습니다.
 
 </div>
 
+<!--
 An upgraded component may also have inputs and outputs, as defined by
 the scope/controller bindings of the original AngularJS component
 directive. When you use the component from an Angular template,
 provide the inputs and outputs using **Angular template syntax**,
 observing the following rules:
+-->
+AngularJS 컴포넌트에는 `scope`나 `controller`에 정의된 입출력 프로퍼티가 있을 수 있습니다.
+이 프로퍼티들은 Angular 템플릿에서도 **Angular 템플릿 문법**을 사용해서 연결할 수 있습니다:
 
 <table>
   <tr>
     <th>
     </th>
     <th>
+      <!--
       Binding definition
+      -->
+      바인딩 방법
     </th>
     <th>
+      <!--
       Template syntax
+      -->
+      템플릿 문법
     </th>
   </tr>
   <tr>
     <th>
+      <!--
       Attribute binding
+      -->
+      어트리뷰트 바인딩
     </th>
     <td>
 
@@ -1003,7 +1136,10 @@ observing the following rules:
   </tr>
   <tr>
     <th>
+      <!--
       Expression binding
+      -->
+      표현식 바인딩
     </th>
     <td>
 
@@ -1018,7 +1154,10 @@ observing the following rules:
   </tr>
   <tr>
     <th>
+      <!--
       One-way binding
+      -->
+      단방향 바인딩
     </th>
     <td>
 
@@ -1033,7 +1172,10 @@ observing the following rules:
   </tr>
   <tr>
     <th>
+      <!--
       Two-way binding
+      -->
+      양방향 바인딩
     </th>
     <td>
 
@@ -1042,22 +1184,32 @@ observing the following rules:
     </td>
     <td>
 
+      <!--
       As a two-way binding: `<my-component [(myValue)]="anExpression">`.
       Since most AngularJS two-way bindings actually only need a one-way binding
       in practice, `<my-component [myValue]="anExpression">` is often enough.
+      -->
+      양방향 바인딩 문법은 `<my-component [(myValue)]="anExpression">`와 같은 형식입니다.
+      그런데 AngularJS에서 사용하는 양방향 바인딩은 일반적으로 단방향 바인딩만으로도 처리할 수 있기 때문에 `<my-component [myValue]="anExpression">`라고만 사용해도 충분합니다.
 
     </td>
   </tr>
 </table>
 
+<!--
 For example, imagine a hero detail AngularJS component directive
 with one input and one output:
+-->
+히어로의 정보를 표시하는 AngularJS 컴포넌트 디렉티브에 다음과 같은 입출력 프로퍼티가 있다고 합시다:
 
 <code-example path="upgrade-module/src/app/upgrade-io/hero-detail.component.ts" region="hero-detail-io" header="hero-detail.component.ts">
 </code-example>
 
+<!--
 You can upgrade this component to Angular, annotate inputs and outputs in the upgrade directive,
 and then provide the input and output using Angular template syntax:
+-->
+이 컴포넌트는 Angular가 제공하는 `Input`/`Output` 데코레이터와 템플릿 문법을 사용해서 다음과 같이 연결할 수 있습니다:
 
 <code-example path="upgrade-module/src/app/upgrade-io/hero-detail.component.ts" region="hero-detail-io-upgrade" header="hero-detail.component.ts">
 </code-example>
@@ -1065,8 +1217,14 @@ and then provide the input and output using Angular template syntax:
 <code-example path="upgrade-module/src/app/upgrade-io/container.component.ts" header="container.component.ts">
 </code-example>
 
-### Projecting AngularJS Content into Angular Components
 
+{@a projecting-angularjs-content-into-angular-components}
+<!--
+### Projecting AngularJS Content into Angular Components
+-->
+### AngularJS의 내용을 Angular 컴포넌트로 프로젝션하기
+
+<!--
 <img src="generated/images/guide/upgrade/ajs-to-a-with-projection.png" alt="Projecting AngularJS content into Angular" class="left">
 
 When you are using a downgraded Angular component from an AngularJS
@@ -1094,6 +1252,29 @@ When AngularJS content gets projected inside an Angular component, it still
 remains in "AngularJS land" and is managed by the AngularJS framework.
 
 </div>
+-->
+<img src="generated/images/guide/upgrade/ajs-to-a-with-projection.png" alt="Projecting AngularJS content into Angular" class="left">
+
+Angular 컴포넌트를 AngularJS 템플릿에 사용하기 위해 다운그레이드하면서 HTML 조각 일부를 전달해야 하는 경우가 있습니다.
+AngularJS에서는 이 동작을 트랜스클루전(transclusion)이라고 하며 Angular에서는 컨텐츠 프로젝션(content projection)이라고 하는데, `upgrade/static`을 사용하면 두 방식의 호환성을 맞출 수 있습니다.
+
+Angular에서 프로젝션을 사용하려면 `<ng-content>` 태그를 사용합니다.
+이런 컴포넌트가 있다고 합시다:
+
+<code-example path="upgrade-module/src/app/ajs-to-a-projection/hero-detail.component.ts" header="hero-detail.component.ts">
+</code-example>
+
+이 컴포넌트는 이대로 AngularJS 영역에 사용해도 그대로 동작합니다.
+
+<code-example path="upgrade-module/src/index-ajs-to-a-projection.html" region="usecomponent">
+</code-example>
+
+<div class="alert is-helpful">
+
+Angular 컴포넌트에 프로젝션 된 AngularJS의 내용물은 여전히 "AngularJS 세계"에 존재하며 AngularJS 프레임워크가 관리합니다.
+
+</div>
+
 
 ### Transcluding Angular Content into AngularJS Component Directives
 

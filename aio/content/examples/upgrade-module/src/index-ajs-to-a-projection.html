@@ -27,7 +27,7 @@
       <!-- #docregion usecomponent -->
       <div ng-controller="MainController as mainCtrl">
         <hero-detail [hero]="mainCtrl.hero">
-          <!-- Everything here will get projected -->
+          <!-- 이 부분에 들어간 엘리먼트들이 프로젝션 됩니다. -->
           <p>{{mainCtrl.hero.description}}</p>
         </hero-detail>
       </div>
