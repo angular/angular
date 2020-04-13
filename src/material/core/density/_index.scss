@@ -1,11 +1,11 @@
-// Taken from mat-density with small modifications to not rely on the new Sass module system.
+// Taken from mat-density with small modifications to not rely on the new Sass module
+// system, and to support arbitrary properties in a density configuration.
 // https://github.com/material-components/material-components-web/blob/master/packages/mdc-density
 
 $_mat-density-interval: 4px !default;
 $_mat-density-minimum-scale: minimum !default;
 $_mat-density-maximum-scale: maximum !default;
 $_mat-density-supported-scales: (default, minimum, maximum) !default;
-$_mat-density-supported-properties: (height, size) !default;
 $_mat-density-default-scale: 0 !default;
 
 @function _mat-density-prop-value($density-config, $density-scale, $property-name) {
@@ -13,11 +13,6 @@ $_mat-density-default-scale: 0 !default;
       index($list: $_mat-density-supported-scales, $value: $density-scale) == null) {
     @error 'mat-density: Supported density scales #{$_mat-density-supported-scales}, '  +
       'but received #{$density-scale}.';
-  }
-
-  @if (index($list: $_mat-density-supported-properties, $value: $property-name) == null) {
-    @error 'mat-density: Supported density properties #{$_mat-density-supported-properties},' +
-      'but received #{$property-name}.';
   }
 
   $value: null;

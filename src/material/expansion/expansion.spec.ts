@@ -351,6 +351,11 @@ describe('MatExpansionPanel', () => {
     expect(panel.componentInstance.hideToggle).toBe(true);
     expect(header.componentInstance.expandedHeight).toBe('10px');
     expect(header.componentInstance.collapsedHeight).toBe('16px');
+    expect(header.nativeElement.style.height).toBe('16px');
+
+    fixture.componentInstance.expanded = true;
+    fixture.detectChanges();
+    expect(header.nativeElement.style.height).toBe('10px');
   });
 
   describe('disabled state', () => {

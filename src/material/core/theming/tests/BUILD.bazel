@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "sass_binary", "sass_library")
+
+package(default_visibility = ["//visibility:public"])
 
 # Test theme used to ensure that our themes will compile using CSS variables in
 # the palettes.

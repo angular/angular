@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "sass_library")
+
+package(default_visibility = ["//visibility:public"])
 
 sass_library(
     name = "all_density",

@@ -45,7 +45,6 @@ import {MatAccordionTogglePosition} from './accordion-base';
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     matExpansionAnimations.indicatorRotate,
-    matExpansionAnimations.expansionHeaderHeight
   ],
   host: {
     'class': 'mat-expansion-panel-header mat-focus-indicator',
@@ -58,24 +57,13 @@ import {MatAccordionTogglePosition} from './accordion-base';
     '[class.mat-expanded]': '_isExpanded()',
     '[class.mat-expansion-toggle-indicator-after]': `_getTogglePosition() === 'after'`,
     '[class.mat-expansion-toggle-indicator-before]': `_getTogglePosition() === 'before'`,
+    '[style.height]': '_getHeaderHeight()',
     '(click)': '_toggle()',
     '(keydown)': '_keydown($event)',
-    '[@.disabled]': '_animationsDisabled',
-    '(@expansionHeight.start)': '_animationStarted()',
-    '[@expansionHeight]': `{
-        value: _getExpandedState(),
-        params: {
-          collapsedHeight: collapsedHeight,
-          expandedHeight: expandedHeight
-        }
-    }`,
   },
 })
 export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
   private _parentChangeSubscription = Subscription.EMPTY;
-
-  /** Whether Angular animations in the panel header should be disabled. */
-  _animationsDisabled = true;
 
   constructor(
       @Host() public panel: MatExpansionPanel,
@@ -118,18 +106,6 @@ export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
       this.expandedHeight = defaultOptions.expandedHeight;
       this.collapsedHeight = defaultOptions.collapsedHeight;
     }
-  }
-
-  _animationStarted() {
-    // Currently the `expansionHeight` animation has a `void => collapsed` transition which is
-    // there to work around a bug in Angular (see #13088), however this introduces a different
-    // issue. The new transition will cause the header to animate in on init (see #16067), if the
-    // consumer has set a header height that is different from the default one. We work around it
-    // by disabling animations on the header and re-enabling them after the first animation has run.
-    // Note that Angular dispatches animation events even if animations are disabled. Ideally this
-    // wouldn't be necessary if we remove the `void => collapsed` transition, but we have to wait
-    // for https://github.com/angular/angular/issues/18847 to be resolved.
-    this._animationsDisabled = false;
   }
 
   /** Height of the header while the panel is expanded. */
@@ -176,6 +152,20 @@ export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
   /** Gets whether the expand indicator should be shown. */
   _showToggle(): boolean {
     return !this.panel.hideToggle && !this.panel.disabled;
+  }
+
+  /**
+   * Gets the current height of the header. Null if no custom height has been
+   * specified, and if the default height from the stylesheet should be used.
+   */
+  _getHeaderHeight(): string|null {
+    const isExpanded = this._isExpanded();
+    if (isExpanded && this.expandedHeight) {
+      return this.expandedHeight;
+    } else if (!isExpanded && this.collapsedHeight) {
+      return this.collapsedHeight;
+    }
+    return null;
   }
 
   /** Handle keydown event calling to toggle() if appropriate. */

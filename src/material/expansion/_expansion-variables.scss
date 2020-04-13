@@ -1,0 +1,30 @@
+// Default minimum and maximum height for collapsed panel headers.
+$mat-expansion-panel-header-collapsed-height: 48px !default;
+$mat-expansion-panel-header-collapsed-minimum-height: 36px !default;
+$mat-expansion-panel-header-collapsed-maximum-height:
+    $mat-expansion-panel-header-collapsed-height !default;
+
+// Default minimum and maximum height for expanded panel headers.
+$mat-expansion-panel-header-expanded-height: 64px !default;
+$mat-expansion-panel-header-expanded-minimum-height: 48px !default;
+$mat-expansion-panel-header-expanded-maximum-height:
+    $mat-expansion-panel-header-expanded-height !default;
+
+// Density configuration for the expansion panel. Captures the
+// height for both expanded and collapsed panel headers.
+$mat-expansion-panel-header-density-config: (
+  collapsed-height: (
+    default: $mat-expansion-panel-header-collapsed-height,
+    maximum: $mat-expansion-panel-header-collapsed-maximum-height,
+    minimum: $mat-expansion-panel-header-collapsed-minimum-height,
+  ),
+  expanded-height: (
+    default: $mat-expansion-panel-header-expanded-height,
+    maximum: $mat-expansion-panel-header-expanded-maximum-height,
+    minimum: $mat-expansion-panel-header-expanded-minimum-height,
+  )
+) !default;
+
+// Note: Keep this in sync with the animation timing for the toggle indicator
+// and body expansion. These are animated using Angular animations.
+$mat-expansion-panel-header-transition: 225ms cubic-bezier(0.4, 0, 0.2, 1);

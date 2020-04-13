@@ -1,7 +1,9 @@
+@import '../core/density/index';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
 @import '../core/style/elevation';
 @import '../core/typography/typography-utils';
+@import './expansion-variables';
 
 @mixin mat-expansion-panel-color($config) {
   $background: map-get($config, background);
@@ -69,7 +71,20 @@
   }
 }
 
-@mixin _mat-expansion-panel-density($density-scale) {}
+@mixin _mat-expansion-panel-density($density-scale) {
+  $expanded-height: _mat-density-prop-value(
+        $mat-expansion-panel-header-density-config, $density-scale, expanded-height);
+  $collapsed-height: _mat-density-prop-value(
+      $mat-expansion-panel-header-density-config, $density-scale, collapsed-height);
+
+  .mat-expansion-panel-header {
+    height: $collapsed-height;
+
+    &.mat-expanded {
+      height: $expanded-height;
+    }
+  }
+}
 
 @mixin mat-expansion-panel-theme($theme) {
   $color: mat-get-color-config($theme);
