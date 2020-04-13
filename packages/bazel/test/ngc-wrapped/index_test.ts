@@ -11,7 +11,6 @@ import * as path from 'path';
 import {setup} from './test_support';
 
 describe('ngc_wrapped', () => {
-
   it('should work', () => {
     const {read, write, runOneBuild, writeConfig, shouldExist, basePath, typesRoots} = setup();
 

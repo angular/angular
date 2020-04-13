@@ -25,7 +25,9 @@ export const enum BindingType {
   Style = 2,
 }
 
-export interface BindingStore { setValue(prop: string, value: any): void; }
+export interface BindingStore {
+  setValue(prop: string, value: any): void;
+}
 
 /**
  * Defines the shape which produces the Player.
@@ -50,7 +52,9 @@ export interface PlayerFactoryBuildFn {
  * `[style]`, `[style.prop]`, `[class]` and `[class.name]` template bindings
  * all accept a `PlayerFactory` as input and this player factories.
  */
-export interface PlayerFactory { '__brand__': 'Brand for PlayerFactory that nothing will match'; }
+export interface PlayerFactory {
+  '__brand__': 'Brand for PlayerFactory that nothing will match';
+}
 
 export interface PlayerBuilder extends BindingStore {
   buildPlayer(currentPlayer: Player|null, isFirstRender: boolean): Player|undefined|null;
@@ -63,7 +67,13 @@ export interface PlayerBuilder extends BindingStore {
  * code may compare state by checking if a number is higher or lower than
  * a certain numeric value.
  */
-export const enum PlayState {Pending = 0, Running = 1, Paused = 2, Finished = 100, Destroyed = 200}
+export const enum PlayState {
+  Pending = 0,
+  Running = 1,
+  Paused = 2,
+  Finished = 100,
+  Destroyed = 200
+}
 
 /**
  * The context that stores all the active players and queued player factories present on an element.

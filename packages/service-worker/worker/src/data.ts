@@ -59,7 +59,7 @@ interface LruState {
   /**
    * Map of URLs to data for each URL (including next/prev pointers).
    */
-  map: {[url: string]: LruNode | undefined};
+  map: {[url: string]: LruNode|undefined};
 
   /**
    * Count of the number of nodes in the chain.
@@ -88,7 +88,9 @@ class LruList {
   /**
    * The current count of URLs in the list.
    */
-  get size(): number { return this.state.count; }
+  get size(): number {
+    return this.state.count;
+  }
 
   /**
    * Remove the tail.
@@ -125,7 +127,7 @@ class LruList {
       }
 
       // There is at least one other node. Make the next node the new head.
-      const next = this.state.map[node.next !] !;
+      const next = this.state.map[node.next!]!;
       next.previous = null;
       this.state.head = next.url;
       node.next = null;
@@ -136,7 +138,7 @@ class LruList {
 
     // The node is not the head, so it has a previous. It may or may not be the tail.
     // If it is not, then it has a next. First, grab the previous node.
-    const previous = this.state.map[node.previous !] !;
+    const previous = this.state.map[node.previous!]!;
 
     // Fix the forward pointer to skip over node and go directly to node.next.
     previous.next = node.next;
@@ -146,10 +148,10 @@ class LruList {
     // updated to point to the previous node (removing the tail).
     if (node.next !== null) {
       // There is a next node, fix its back pointer to skip this node.
-      this.state.map[node.next] !.previous = node.previous !;
+      this.state.map[node.next]!.previous = node.previous!;
     } else {
       // There is no next node - the accessed node must be the tail. Move the tail pointer.
-      this.state.tail = node.previous !;
+      this.state.tail = node.previous!;
     }
 
     node.next = null;
@@ -189,7 +191,7 @@ class LruList {
     // First, check if there's an existing head node. If there is, it has previous: null.
     // Its previous pointer should be set to the node we're inserting.
     if (this.state.head !== null) {
-      this.state.map[this.state.head] !.previous = url;
+      this.state.map[this.state.head]!.previous = url;
     }
 
     // The next pointer of the node being inserted gets set to the old head, before the head
@@ -276,7 +278,7 @@ export class DataGroup {
     }
     const table = await this.lruTable;
     try {
-      return table.write('lru', this._lru !.state);
+      return table.write('lru', this._lru!.state);
     } catch (err) {
       // Writing lru cache table failed. This could be a result of a full storage.
       // Continue serving clients as usual.
@@ -413,7 +415,7 @@ export class DataGroup {
     // Otherwise, just fetch from the network directly.
     if (this.config.timeoutMs !== undefined) {
       const networkFetch = this.scope.fetch(req);
-      const safeNetworkFetch = (async() => {
+      const safeNetworkFetch = (async () => {
         try {
           return await networkFetch;
         } catch {
@@ -423,7 +425,7 @@ export class DataGroup {
           });
         }
       })();
-      const networkFetchUndefinedError = (async() => {
+      const networkFetchUndefinedError = (async () => {
         try {
           return await networkFetch;
         } catch {
@@ -454,7 +456,8 @@ export class DataGroup {
         // Since this data is cached lazily and temporarily, continue serving clients as usual.
         this.debugHandler.log(
             err,
-            `DataGroup(${this.config.name}@${this.config.version}).safeCacheResponse(${req.url}, status: ${res.status})`);
+            `DataGroup(${this.config.name}@${this.config.version}).safeCacheResponse(${
+                req.url}, status: ${res.status})`);
 
         // TODO: Better detect/handle full storage; e.g. using
         // [navigator.storage](https://developer.mozilla.org/en-US/docs/Web/API/NavigatorStorage/storage).
@@ -529,7 +532,7 @@ export class DataGroup {
 
     // Store the response in the cache (cloning because the browser will consume
     // the body during the caching operation).
-    await(await this.cache).put(req, res.clone());
+    await (await this.cache).put(req, res.clone());
 
     // Store the age of the cache.
     const ageTable = await this.ageTable;

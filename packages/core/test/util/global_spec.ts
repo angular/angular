@@ -19,7 +19,9 @@ declare var globalThis: any /** TODO #9100 */;
     });
 
     if (typeof globalThis !== 'undefined') {
-      it('should use globalThis as global reference', () => { expect(global).toBe(globalThis); });
+      it('should use globalThis as global reference', () => {
+        expect(global).toBe(globalThis);
+      });
     }
   });
 }

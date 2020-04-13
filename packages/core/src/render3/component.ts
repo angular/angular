@@ -12,15 +12,16 @@ import {Type} from '../core';
 import {Injector} from '../di/injector';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {assertDataInRange} from '../util/assert';
+
 import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {registerPostOrderHooks} from './hooks';
-import {CLEAN_PROMISE, addHostBindingsToExpandoInstructions, addToViewTree, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, growHostVarsSpace, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, renderView} from './instructions/shared';
+import {addHostBindingsToExpandoInstructions, addToViewTree, CLEAN_PROMISE, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, growHostVarsSpace, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, renderView} from './instructions/shared';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
-import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
+import {domRendererFactory3, RElement, Renderer3, RendererFactory3} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
 import {writeDirectClass, writeDirectStyle} from './node_manipulation';
 import {enterView, getPreviousOrParentTNode, leaveView, setSelectedIndex} from './state';
@@ -107,7 +108,7 @@ export const NULL_INJECTOR: Injector = {
  */
 export function renderComponent<T>(
     componentType: ComponentType<T>|
-        Type<T>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */
+    Type<T>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */
     ,
     opts: CreateComponentOptions = {}): T {
   ngDevMode && publishDefaultGlobalUtils();
@@ -115,11 +116,11 @@ export function renderComponent<T>(
 
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const sanitizer = opts.sanitizer || null;
-  const componentDef = getComponentDef<T>(componentType) !;
-  if (componentDef.type != componentType) (componentDef as{type: Type<any>}).type = componentType;
+  const componentDef = getComponentDef<T>(componentType)!;
+  if (componentDef.type != componentType) (componentDef as {type: Type<any>}).type = componentType;
 
   // The first index of the first selector is the tag name.
-  const componentTag = componentDef.selectors ![0] ![0] as string;
+  const componentTag = componentDef.selectors![0]![0] as string;
   const hostRenderer = rendererFactory.createRenderer(null, null);
   const hostRNode =
       locateHostElement(hostRenderer, opts.host || componentTag, componentDef.encapsulation);
@@ -168,9 +169,8 @@ export function renderComponent<T>(
  * @returns Component view created
  */
 export function createRootComponentView(
-    rNode: RElement | null, def: ComponentDef<any>, rootView: LView,
-    rendererFactory: RendererFactory3, hostRenderer: Renderer3,
-    sanitizer?: Sanitizer | null): LView {
+    rNode: RElement|null, def: ComponentDef<any>, rootView: LView,
+    rendererFactory: RendererFactory3, hostRenderer: Renderer3, sanitizer?: Sanitizer|null): LView {
   const tView = rootView[TVIEW];
   ngDevMode && assertDataInRange(rootView, 0 + HEADER_OFFSET);
   rootView[0 + HEADER_OFFSET] = rNode;
@@ -213,7 +213,7 @@ export function createRootComponentView(
  */
 export function createRootComponent<T>(
     componentView: LView, componentDef: ComponentDef<T>, rootLView: LView, rootContext: RootContext,
-    hostFeatures: HostFeature[] | null): any {
+    hostFeatures: HostFeature[]|null): any {
   const tView = rootLView[TVIEW];
   // Create directive instance with factory() and store at next index in viewData
   const component = instantiateRootComponent(tView, rootLView, componentDef);
@@ -270,13 +270,13 @@ export function createRootContext(
  * ```
  */
 export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): void {
-  const rootTView = readPatchedLView(component) ![TVIEW];
+  const rootTView = readPatchedLView(component)![TVIEW];
   const dirIndex = rootTView.data.length - 1;
 
   // TODO(misko): replace `as TNode` with createTNode call. (needs refactoring to lose dep on
   // LNode).
   registerPostOrderHooks(
-      rootTView, { directiveStart: dirIndex, directiveEnd: dirIndex + 1 } as TNode);
+      rootTView, {directiveStart: dirIndex, directiveEnd: dirIndex + 1} as TNode);
 }
 
 /**

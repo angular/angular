@@ -18,11 +18,11 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
   private _broker: ClientMessageBroker;
   private _popStateListeners: Array<Function> = [];
   private _hashChangeListeners: Array<Function> = [];
-  private _location: LocationType = null !;
+  private _location: LocationType = null!;
   private _channelSource: EventEmitter<Object>;
   public initialized: Promise<any>;
   // TODO(issue/24571): remove '!'.
-  private initializedResolve !: () => void;
+  private initializedResolve!: () => void;
 
   constructor(
       brokerFactory: ClientMessageBrokerFactory, bus: MessageBus, private _serializer: Serializer) {
@@ -56,13 +56,15 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
   init(): Promise<boolean> {
     const args: UiArguments = new UiArguments('getLocation');
 
-    return this._broker.runOnService(args, LocationType) !.then(
+    return this._broker.runOnService(args, LocationType)!.then(
         (val: LocationType) => {
           this._location = val;
           this.initializedResolve();
           return true;
         },
-        err => { throw new Error(err); });
+        err => {
+          throw new Error(err);
+        });
   }
 
   getBaseHrefFromDOM(): string {
@@ -70,21 +72,37 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
         'Attempt to get base href from DOM from WebWorker. You must either provide a value for the APP_BASE_HREF token through DI or use the hash location strategy.');
   }
 
-  onPopState(fn: LocationChangeListener): void { this._popStateListeners.push(fn); }
+  onPopState(fn: LocationChangeListener): void {
+    this._popStateListeners.push(fn);
+  }
 
-  onHashChange(fn: LocationChangeListener): void { this._hashChangeListeners.push(fn); }
+  onHashChange(fn: LocationChangeListener): void {
+    this._hashChangeListeners.push(fn);
+  }
 
-  get href(): string { return this._location ? this._location.href ! : '<unknown>'; }
+  get href(): string {
+    return this._location ? this._location.href! : '<unknown>';
+  }
 
-  get hostname(): string { return this._location ? this._location.host ! : '<unknown>'; }
+  get hostname(): string {
+    return this._location ? this._location.host! : '<unknown>';
+  }
 
-  get port(): string { return this._location ? this._location.port ! : '<unknown>'; }
+  get port(): string {
+    return this._location ? this._location.port! : '<unknown>';
+  }
 
-  get protocol(): string { return this._location ? this._location.protocol ! : '<unknown>'; }
+  get protocol(): string {
+    return this._location ? this._location.protocol! : '<unknown>';
+  }
 
-  get search(): string { return this._location ? this._location.search : '<unknown>'; }
+  get search(): string {
+    return this._location ? this._location.search : '<unknown>';
+  }
 
-  get hash(): string { return this._location ? this._location.hash : '<unknown>'; }
+  get hash(): string {
+    return this._location ? this._location.hash : '<unknown>';
+  }
 
   set pathname(newPath: string) {
     if (this._location === null) {
@@ -129,5 +147,7 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
   }
 
   // History API isn't available on WebWorkers, therefore return undefined
-  getState(): unknown { return undefined; }
+  getState(): unknown {
+    return undefined;
+  }
 }

@@ -16,6 +16,6 @@ import {ɵregisterLocaleData} from '@angular/core';
  *
  * @publicApi
  */
-export function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void {
+export function registerLocaleData(data: any, localeId?: string|any, extraData?: any): void {
   return ɵregisterLocaleData(data, localeId, extraData);
 }

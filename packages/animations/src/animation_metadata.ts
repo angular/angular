@@ -9,7 +9,9 @@
 /**
  * Represents a set of CSS styles for use in an animation style.
  */
-export interface ɵStyleData { [key: string]: string|number; }
+export interface ɵStyleData {
+  [key: string]: string|number;
+}
 
 /**
  * Represents animation-step timing parameters for an animation step.
@@ -67,10 +69,10 @@ export declare interface AnimationOptions {
    */
   delay?: number|string;
   /**
-  * A set of developer-defined parameters that modify styling and timing
-  * when an animation action starts. An array of key-value pairs, where the provided value
-  * is used as a default.
-  */
+   * A set of developer-defined parameters that modify styling and timing
+   * when an animation action starts. An array of key-value pairs, where the provided value
+   * is used as a default.
+   */
   params?: {[name: string]: any};
 }
 
@@ -81,7 +83,9 @@ export declare interface AnimationOptions {
  *
  * @publicApi
  */
-export declare interface AnimateChildOptions extends AnimationOptions { duration?: number|string; }
+export declare interface AnimateChildOptions extends AnimationOptions {
+  duration?: number|string;
+}
 
 /**
  * @description Constants for the categories of parameters that can be defined for animations.
@@ -171,7 +175,9 @@ export const AUTO_STYLE = '*';
  *
  * @publicApi
  */
-export interface AnimationMetadata { type: AnimationMetadataType; }
+export interface AnimationMetadata {
+  type: AnimationMetadataType;
+}
 
 /**
  * Contains an animation trigger. Instantiated and returned by the
@@ -181,8 +187,8 @@ export interface AnimationMetadata { type: AnimationMetadataType; }
  */
 export interface AnimationTriggerMetadata extends AnimationMetadata {
   /**
-    * The trigger name, used to associate it with an element. Unique within the component.
-    */
+   * The trigger name, used to associate it with an element. Unique within the component.
+   */
   name: string;
   /**
    * An animation definition object, containing an array of state and transition declarations.
@@ -654,8 +660,9 @@ export function trigger(name: string, definitions: AnimationMetadata[]): Animati
  * @publicApi
  */
 export function animate(
-    timings: string | number, styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata |
-        null = null): AnimationAnimateMetadata {
+    timings: string|number,
+    styles: AnimationStyleMetadata|AnimationKeyframesSequenceMetadata|null =
+        null): AnimationAnimateMetadata {
   return {type: AnimationMetadataType.Animate, styles, timings};
 }
 
@@ -693,7 +700,7 @@ export function animate(
  * @publicApi
  */
 export function group(
-    steps: AnimationMetadata[], options: AnimationOptions | null = null): AnimationGroupMetadata {
+    steps: AnimationMetadata[], options: AnimationOptions|null = null): AnimationGroupMetadata {
   return {type: AnimationMetadataType.Group, steps, options};
 }
 
@@ -721,7 +728,8 @@ export function group(
  * @usageNotes
  * When you pass an array of steps to a
  * `transition()` call, the steps run sequentially by default.
- * Compare this to the `{@link animations/group group()}` call, which runs animation steps in parallel.
+ * Compare this to the `{@link animations/group group()}` call, which runs animation steps in
+ *parallel.
  *
  * When a sequence is used within a `{@link animations/group group()}` or a `transition()` call,
  * execution continues to the next instruction only after each of the inner animation
@@ -729,8 +737,8 @@ export function group(
  *
  * @publicApi
  **/
-export function sequence(steps: AnimationMetadata[], options: AnimationOptions | null = null):
-    AnimationSequenceMetadata {
+export function sequence(
+    steps: AnimationMetadata[], options: AnimationOptions|null = null): AnimationSequenceMetadata {
   return {type: AnimationMetadataType.Sequence, steps, options};
 }
 
@@ -773,9 +781,8 @@ export function sequence(steps: AnimationMetadata[], options: AnimationOptions |
  *
  * @publicApi
  **/
-export function style(
-    tokens: '*' | {[key: string]: string | number} |
-    Array<'*'|{[key: string]: string | number}>): AnimationStyleMetadata {
+export function style(tokens: '*'|{[key: string]: string | number}|
+                      Array<'*'|{[key: string]: string | number}>): AnimationStyleMetadata {
   return {type: AnimationMetadataType.Style, styles: tokens, offset: null};
 }
 
@@ -1032,10 +1039,10 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  * @publicApi
  **/
 export function transition(
-    stateChangeExpr: string | ((fromState: string, toState: string, element?: any,
-                                params?: {[key: string]: any}) => boolean),
-    steps: AnimationMetadata | AnimationMetadata[],
-    options: AnimationOptions | null = null): AnimationTransitionMetadata {
+    stateChangeExpr: string|
+    ((fromState: string, toState: string, element?: any, params?: {[key: string]: any}) => boolean),
+    steps: AnimationMetadata|AnimationMetadata[],
+    options: AnimationOptions|null = null): AnimationTransitionMetadata {
   return {type: AnimationMetadataType.Transition, expr: stateChangeExpr, animation: steps, options};
 }
 
@@ -1085,8 +1092,8 @@ export function transition(
  * @publicApi
  */
 export function animation(
-    steps: AnimationMetadata | AnimationMetadata[],
-    options: AnimationOptions | null = null): AnimationReferenceMetadata {
+    steps: AnimationMetadata|AnimationMetadata[],
+    options: AnimationOptions|null = null): AnimationReferenceMetadata {
   return {type: AnimationMetadataType.Reference, animation: steps, options};
 }
 
@@ -1109,7 +1116,7 @@ export function animation(
  *
  * @publicApi
  */
-export function animateChild(options: AnimateChildOptions | null = null):
+export function animateChild(options: AnimateChildOptions|null = null):
     AnimationAnimateChildMetadata {
   return {type: AnimationMetadataType.AnimateChild, options};
 }
@@ -1126,7 +1133,7 @@ export function animateChild(options: AnimateChildOptions | null = null):
  */
 export function useAnimation(
     animation: AnimationReferenceMetadata,
-    options: AnimationOptions | null = null): AnimationAnimateRefMetadata {
+    options: AnimationOptions|null = null): AnimationAnimateRefMetadata {
   return {type: AnimationMetadataType.AnimateRef, animation, options};
 }
 
@@ -1179,7 +1186,7 @@ export function useAnimation(
  * ### Usage Example
  *
  * The following example queries for inner elements and animates them
- * individually using `animate()`. 
+ * individually using `animate()`.
  *
  * ```typescript
  * @Component({
@@ -1218,8 +1225,8 @@ export function useAnimation(
  * @publicApi
  */
 export function query(
-    selector: string, animation: AnimationMetadata | AnimationMetadata[],
-    options: AnimationQueryOptions | null = null): AnimationQueryMetadata {
+    selector: string, animation: AnimationMetadata|AnimationMetadata[],
+    options: AnimationQueryOptions|null = null): AnimationQueryMetadata {
   return {type: AnimationMetadataType.Query, selector, animation, options};
 }
 
@@ -1303,8 +1310,7 @@ export function query(
  *
  * @publicApi
  */
-export function stagger(
-    timings: string | number,
-    animation: AnimationMetadata | AnimationMetadata[]): AnimationStaggerMetadata {
+export function stagger(timings: string|number, animation: AnimationMetadata|AnimationMetadata[]):
+    AnimationStaggerMetadata {
   return {type: AnimationMetadataType.Stagger, timings, animation};
 }

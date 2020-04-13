@@ -15,7 +15,7 @@ const DISABLE_ANIMATIONS_FLAG = '@.disabled';
 // Define a recursive type to allow for nested arrays of `AnimationTriggerMetadata`. Note that an
 // interface declaration is used as TypeScript prior to 3.7 does not support recursive type
 // references, see https://github.com/microsoft/TypeScript/pull/33050 for details.
-type NestedAnimationTriggerMetadata = AnimationTriggerMetadata | RecursiveAnimationTriggerMetadata;
+type NestedAnimationTriggerMetadata = AnimationTriggerMetadata|RecursiveAnimationTriggerMetadata;
 interface RecursiveAnimationTriggerMetadata extends Array<NestedAnimationTriggerMetadata> {}
 
 @Injectable()
@@ -84,7 +84,9 @@ export class AnimationRendererFactory implements RendererFactory2 {
 
   private _scheduleCountTask() {
     // always use promise to schedule microtask instead of use Zone
-    this.promise.then(() => { this._microtaskId++; });
+    this.promise.then(() => {
+      this._microtaskId++;
+    });
   }
 
   /** @internal */
@@ -125,16 +127,20 @@ export class AnimationRendererFactory implements RendererFactory2 {
     }
   }
 
-  whenRenderingDone(): Promise<any> { return this.engine.whenRenderingDone(); }
+  whenRenderingDone(): Promise<any> {
+    return this.engine.whenRenderingDone();
+  }
 }
 
 export class BaseAnimationRenderer implements Renderer2 {
   constructor(
       protected namespaceId: string, public delegate: Renderer2, public engine: AnimationEngine) {
-    this.destroyNode = this.delegate.destroyNode ? (n) => delegate.destroyNode !(n) : null;
+    this.destroyNode = this.delegate.destroyNode ? (n) => delegate.destroyNode!(n) : null;
   }
 
-  get data() { return this.delegate.data; }
+  get data() {
+    return this.delegate.data;
+  }
 
   destroyNode: ((n: any) => void)|null;
 
@@ -147,9 +153,13 @@ export class BaseAnimationRenderer implements Renderer2 {
     return this.delegate.createElement(name, namespace);
   }
 
-  createComment(value: string) { return this.delegate.createComment(value); }
+  createComment(value: string) {
+    return this.delegate.createComment(value);
+  }
 
-  createText(value: string) { return this.delegate.createText(value); }
+  createText(value: string) {
+    return this.delegate.createText(value);
+  }
 
   appendChild(parent: any, newChild: any): void {
     this.delegate.appendChild(parent, newChild);
@@ -169,9 +179,13 @@ export class BaseAnimationRenderer implements Renderer2 {
     return this.delegate.selectRootElement(selectorOrNode, preserveContent);
   }
 
-  parentNode(node: any) { return this.delegate.parentNode(node); }
+  parentNode(node: any) {
+    return this.delegate.parentNode(node);
+  }
 
-  nextSibling(node: any) { return this.delegate.nextSibling(node); }
+  nextSibling(node: any) {
+    return this.delegate.nextSibling(node);
+  }
 
   setAttribute(el: any, name: string, value: string, namespace?: string|null|undefined): void {
     this.delegate.setAttribute(el, name, value, namespace);
@@ -181,9 +195,13 @@ export class BaseAnimationRenderer implements Renderer2 {
     this.delegate.removeAttribute(el, name, namespace);
   }
 
-  addClass(el: any, name: string): void { this.delegate.addClass(el, name); }
+  addClass(el: any, name: string): void {
+    this.delegate.addClass(el, name);
+  }
 
-  removeClass(el: any, name: string): void { this.delegate.removeClass(el, name); }
+  removeClass(el: any, name: string): void {
+    this.delegate.removeClass(el, name);
+  }
 
   setStyle(el: any, style: string, value: any, flags?: RendererStyleFlags2|undefined): void {
     this.delegate.setStyle(el, style, value, flags);
@@ -201,7 +219,9 @@ export class BaseAnimationRenderer implements Renderer2 {
     }
   }
 
-  setValue(node: any, value: string): void { this.delegate.setValue(node, value); }
+  setValue(node: any, value: string): void {
+    this.delegate.setValue(node, value);
+  }
 
   listen(target: any, eventName: string, callback: (event: any) => boolean | void): () => void {
     return this.delegate.listen(target, eventName, callback);
@@ -253,7 +273,7 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
   }
 }
 
-function resolveElementFromTarget(target: 'window' | 'document' | 'body' | any): any {
+function resolveElementFromTarget(target: 'window'|'document'|'body'|any): any {
   switch (target) {
     case 'body':
       return document.body;

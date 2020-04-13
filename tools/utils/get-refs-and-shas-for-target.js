@@ -43,7 +43,9 @@ async function requestDataFromGithub(url) {
               const contentType = res.headers['content-type'];
               let rawData = '';
 
-              res.on('data', (chunk) => { rawData += chunk; });
+              res.on('data', (chunk) => {
+                rawData += chunk;
+              });
               res.on('end', () => {
                 let error;
                 if (statusCode !== 200) {
@@ -67,7 +69,9 @@ async function requestDataFromGithub(url) {
                 }
               });
             })
-        .on('error', (e) => { reject(e); });
+        .on('error', (e) => {
+          reject(e);
+        });
   });
 }
 // clang-format off
@@ -116,7 +120,7 @@ async function getRefsAndShasForTarget(prNumber, suppressLog) {
 // If the script is called directly, log the output of the refs and sha for the
 // requested PR.
 if (require.main === module) {
-  const run = async() => {
+  const run = async () => {
     const prNumber = Number.parseInt(process.argv[2], 10);
     if (!!prNumber) {
       console.info(JSON.stringify(await getRefsAndShasForTarget(prNumber, true)));

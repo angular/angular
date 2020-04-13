@@ -17,13 +17,15 @@ import {Observable, Observer, Subscription} from 'rxjs';
 
 @Injectable()
 export class ServerXhr implements XhrFactory {
-  build(): XMLHttpRequest { return new xhr2.XMLHttpRequest(); }
+  build(): XMLHttpRequest {
+    return new xhr2.XMLHttpRequest();
+  }
 }
 
 export abstract class ZoneMacroTaskWrapper<S, R> {
   wrap(request: S): Observable<R> {
     return new Observable((observer: Observer<R>) => {
-      let task: Task = null !;
+      let task: Task = null!;
       let scheduled: boolean = false;
       let sub: Subscription|null = null;
       let savedResult: any = null;
@@ -100,9 +102,13 @@ export abstract class ZoneMacroTaskWrapper<S, R> {
 
 export class ZoneClientBackend extends
     ZoneMacroTaskWrapper<HttpRequest<any>, HttpEvent<any>> implements HttpBackend {
-  constructor(private backend: HttpBackend) { super(); }
+  constructor(private backend: HttpBackend) {
+    super();
+  }
 
-  handle(request: HttpRequest<any>): Observable<HttpEvent<any>> { return this.wrap(request); }
+  handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
+    return this.wrap(request);
+  }
 
   protected delegate(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return this.backend.handle(request);
@@ -115,9 +121,6 @@ export function zoneWrappedInterceptingHandler(backend: HttpBackend, injector: I
 }
 
 export const SERVER_HTTP_PROVIDERS: Provider[] = [
-  {provide: XhrFactory, useClass: ServerXhr}, {
-    provide: HttpHandler,
-    useFactory: zoneWrappedInterceptingHandler,
-    deps: [HttpBackend, Injector]
-  }
+  {provide: XhrFactory, useClass: ServerXhr},
+  {provide: HttpHandler, useFactory: zoneWrappedInterceptingHandler, deps: [HttpBackend, Injector]}
 ];

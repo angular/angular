@@ -15,7 +15,7 @@ import {MessageSerializer} from '../message_serialization/message_serializer';
 import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
 
 import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
-import {XmlTranslationParserHint, addParseDiagnostic, addParseError, canParseXml, getAttribute, parseInnerRange} from './translation_utils';
+import {addParseDiagnostic, addParseError, canParseXml, getAttribute, parseInnerRange, XmlTranslationParserHint} from './translation_utils';
 
 
 /**
@@ -94,7 +94,8 @@ class XtbVisitor extends BaseVisitor {
         } catch (error) {
           if (typeof error === 'string') {
             bundle.diagnostics.warn(
-                `Could not parse message with id "${id}" - perhaps it has an unrecognised ICU format?\n` +
+                `Could not parse message with id "${
+                    id}" - perhaps it has an unrecognised ICU format?\n` +
                 error);
           } else if (error.span && error.msg && error.level) {
             addParseDiagnostic(bundle.diagnostics, error.span, error.msg, error.level);

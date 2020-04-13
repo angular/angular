@@ -19,21 +19,21 @@ import {getCheckNoChangesMode, getLView, getSelectedIndex, getTView, setSelected
  *
  * ```ts
  * (rf: RenderFlags, ctx: any) => {
-  *   if (rf & 1) {
-  *     text(0, 'Hello');
-  *     text(1, 'Goodbye')
-  *     element(2, 'div');
-  *   }
-  *   if (rf & 2) {
-  *     advance(2); // Advance twice to the <div>.
-  *     property('title', 'test');
-  *   }
-  *  }
-  * ```
-  * @param delta Number of elements to advance forwards by.
-  *
-  * @codeGenApi
-  */
+ *   if (rf & 1) {
+ *     text(0, 'Hello');
+ *     text(1, 'Goodbye')
+ *     element(2, 'div');
+ *   }
+ *   if (rf & 2) {
+ *     advance(2); // Advance twice to the <div>.
+ *     property('title', 'test');
+ *   }
+ *  }
+ * ```
+ * @param delta Number of elements to advance forwards by.
+ *
+ * @codeGenApi
+ */
 export function ɵɵadvance(delta: number): void {
   ngDevMode && assertGreaterThan(delta, 0, 'Can only advance forward');
   selectIndexInternal(getTView(), getLView(), getSelectedIndex() + delta, getCheckNoChangesMode());

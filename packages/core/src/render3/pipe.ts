@@ -61,7 +61,7 @@ export function ɵɵpipe(index: number, pipeName: string): any {
  * @param registry Full list of available pipes
  * @returns Matching PipeDef
  */
-function getPipeDef(name: string, registry: PipeDefList | null): PipeDef<any> {
+function getPipeDef(name: string, registry: PipeDefList|null): PipeDef<any> {
   if (registry) {
     for (let i = registry.length - 1; i >= 0; i--) {
       const pipeDef = registry[i];
@@ -89,7 +89,8 @@ export function ɵɵpipeBind1(index: number, slotOffset: number, v1: any): any {
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, index);
   return unwrapValue(
-      lView, isPure(lView, index) ?
+      lView,
+      isPure(lView, index) ?
           pureFunction1Internal(
               lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1, pipeInstance) :
           pipeInstance.transform(v1));
@@ -112,7 +113,8 @@ export function ɵɵpipeBind2(index: number, slotOffset: number, v1: any, v2: an
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, index);
   return unwrapValue(
-      lView, isPure(lView, index) ?
+      lView,
+      isPure(lView, index) ?
           pureFunction2Internal(
               lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1, v2, pipeInstance) :
           pipeInstance.transform(v1, v2));
@@ -136,10 +138,11 @@ export function ɵɵpipeBind3(index: number, slotOffset: number, v1: any, v2: an
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, index);
   return unwrapValue(
-      lView, isPure(lView, index) ? pureFunction3Internal(
-                                        lView, getBindingRoot(), slotOffset, pipeInstance.transform,
-                                        v1, v2, v3, pipeInstance) :
-                                    pipeInstance.transform(v1, v2, v3));
+      lView,
+      isPure(lView, index) ? pureFunction3Internal(
+                                 lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1,
+                                 v2, v3, pipeInstance) :
+                             pipeInstance.transform(v1, v2, v3));
 }
 
 /**
@@ -162,10 +165,11 @@ export function ɵɵpipeBind4(
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, index);
   return unwrapValue(
-      lView, isPure(lView, index) ? pureFunction4Internal(
-                                        lView, getBindingRoot(), slotOffset, pipeInstance.transform,
-                                        v1, v2, v3, v4, pipeInstance) :
-                                    pipeInstance.transform(v1, v2, v3, v4));
+      lView,
+      isPure(lView, index) ? pureFunction4Internal(
+                                 lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1,
+                                 v2, v3, v4, pipeInstance) :
+                             pipeInstance.transform(v1, v2, v3, v4));
 }
 
 /**
@@ -184,7 +188,8 @@ export function ɵɵpipeBindV(index: number, slotOffset: number, values: [any, .
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, index);
   return unwrapValue(
-      lView, isPure(lView, index) ?
+      lView,
+      isPure(lView, index) ?
           pureFunctionVInternal(
               lView, getBindingRoot(), slotOffset, pipeInstance.transform, values, pipeInstance) :
           pipeInstance.transform.apply(pipeInstance, values));

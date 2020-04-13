@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 import {getFileStatus} from './file_system';
 import {getModuleReferences} from './parser';
 
-export type ModuleResolver = (specifier: string) => string | null;
+export type ModuleResolver = (specifier: string) => string|null;
 
 /**
  * Reference chains describe a sequence of source files which are connected through imports.
@@ -69,7 +69,7 @@ export class Analyzer {
   getSourceFile(filePath: string): ts.SourceFile {
     const resolvedPath = resolve(filePath);
     if (this._sourceFileCache.has(resolvedPath)) {
-      return this._sourceFileCache.get(resolvedPath) !;
+      return this._sourceFileCache.get(resolvedPath)!;
     }
     const fileContent = readFileSync(resolvedPath, 'utf8');
     const sourceFile =
@@ -105,7 +105,7 @@ export class Analyzer {
     if (!this.unresolvedFiles.has(originFilePath)) {
       this.unresolvedFiles.set(originFilePath, [specifier]);
     }
-    this.unresolvedFiles.get(originFilePath) !.push(specifier);
+    this.unresolvedFiles.get(originFilePath)!.push(specifier);
   }
 
   /** Resolves the given import specifier to the corresponding source file. */

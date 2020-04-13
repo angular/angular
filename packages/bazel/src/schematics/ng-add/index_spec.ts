@@ -10,7 +10,6 @@ import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
 
 describe('ng-add schematic', () => {
-
   const defaultOptions = {name: 'demo'};
   let host: UnitTestTree;
   let schematicRunner: SchematicTestRunner;
@@ -61,7 +60,7 @@ describe('ng-add schematic', () => {
         new SchematicTestRunner('@angular/bazel', require.resolve('../collection.json'));
   });
 
-  it('throws if package.json is not found', async() => {
+  it('throws if package.json is not found', async () => {
     expect(host.files).toContain('/package.json');
     host.delete('/package.json');
 
@@ -76,7 +75,7 @@ describe('ng-add schematic', () => {
     expect(message).toBe('Could not read package.json.');
   });
 
-  it('throws if angular.json is not found', async() => {
+  it('throws if angular.json is not found', async () => {
     expect(host.files).toContain('/angular.json');
     host.delete('/angular.json');
 
@@ -91,7 +90,7 @@ describe('ng-add schematic', () => {
     expect(message).toBe('Could not find angular.json');
   });
 
-  it('should add @angular/bazel to package.json dependencies', async() => {
+  it('should add @angular/bazel to package.json dependencies', async () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     const {files} = host;
     expect(files).toContain('/package.json');
@@ -106,7 +105,7 @@ describe('ng-add schematic', () => {
     expect(Object.keys(json.devDependencies)).toContain(bazel);
   });
 
-  it('should add @bazel/* dev dependencies', async() => {
+  it('should add @bazel/* dev dependencies', async () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     const content = host.readContent('/package.json');
     const json = JSON.parse(content);
@@ -118,7 +117,7 @@ describe('ng-add schematic', () => {
     expect(devDeps).toContain('@bazel/typescript');
   });
 
-  it('should replace an existing dev dependency', async() => {
+  it('should replace an existing dev dependency', async () => {
     expect(host.files).toContain('/package.json');
     const packageJson = JSON.parse(host.readContent('/package.json'));
     packageJson.devDependencies['@angular/bazel'] = '4.2.42';
@@ -126,12 +125,12 @@ describe('ng-add schematic', () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     const content = host.readContent('/package.json');
     // It is possible that a dep gets added twice if the package already exists.
-    expect(content.match(/@angular\/bazel/g) !.length).toEqual(1);
+    expect(content.match(/@angular\/bazel/g)!.length).toEqual(1);
     const json = JSON.parse(content);
     expect(json.devDependencies['@angular/bazel']).toBe('1.2.3');
   });
 
-  it('should remove an existing dependency', async() => {
+  it('should remove an existing dependency', async () => {
     expect(host.files).toContain('/package.json');
     const packageJson = JSON.parse(host.readContent('/package.json'));
     packageJson.dependencies['@angular/bazel'] = '4.2.42';
@@ -144,7 +143,7 @@ describe('ng-add schematic', () => {
     expect(json.devDependencies['@angular/bazel']).toBe('1.2.3');
   });
 
-  it('should remove unneeded dependencies', async() => {
+  it('should remove unneeded dependencies', async () => {
     const packageJson = JSON.parse(host.readContent('/package.json'));
     packageJson.devDependencies['@angular-devkit/build-angular'] = '1.2.3';
     host.overwrite('/package.json', JSON.stringify(packageJson));
@@ -154,7 +153,7 @@ describe('ng-add schematic', () => {
     expect(json.devDependencies['angular-devkit/build-angular']).toBeUndefined();
   });
 
-  it('should append to scripts.postinstall if it already exists', async() => {
+  it('should append to scripts.postinstall if it already exists', async () => {
     const packageJson = JSON.parse(host.readContent('/package.json'));
     packageJson['scripts'] = {
       postinstall: 'angular rocks',
@@ -167,7 +166,7 @@ describe('ng-add schematic', () => {
         .toBe('angular rocks; ngcc --properties es2015 browser module main');
   });
 
-  it('should update ngcc in scripts.postinstall if it already exists', async() => {
+  it('should update ngcc in scripts.postinstall if it already exists', async () => {
     const packageJson = JSON.parse(host.readContent('/package.json'));
     packageJson['scripts'] = {
       postinstall:
@@ -180,14 +179,14 @@ describe('ng-add schematic', () => {
     expect(json.scripts['postinstall']).toBe('ngcc --properties es2015 browser module main');
   });
 
-  it('should not create Bazel workspace file', async() => {
+  it('should not create Bazel workspace file', async () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     const {files} = host;
     expect(files).not.toContain('/WORKSPACE');
     expect(files).not.toContain('/BUILD.bazel');
   });
 
-  it('should produce main.dev.ts and main.prod.ts for AOT', async() => {
+  it('should produce main.dev.ts and main.prod.ts for AOT', async () => {
     host.create('/src/main.ts', 'generated by CLI');
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     const {files} = host;
@@ -199,7 +198,7 @@ describe('ng-add schematic', () => {
     expect(files).toContain('/src/main.ts');
   });
 
-  it('should not overwrite index.html with script tags', async() => {
+  it('should not overwrite index.html with script tags', async () => {
     host.create('/src/index.html', '<html>Hello World</html>');
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     const {files} = host;
@@ -209,14 +208,14 @@ describe('ng-add schematic', () => {
     expect(content).not.toMatch('<script src="/bundle.min.js"></script>');
   });
 
-  it('should generate main.dev.ts and main.prod.ts', async() => {
+  it('should generate main.dev.ts and main.prod.ts', async () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     const {files} = host;
     expect(files).toContain('/src/main.dev.ts');
     expect(files).toContain('/src/main.prod.ts');
   });
 
-  it('should overwrite .gitignore for bazel-out directory', async() => {
+  it('should overwrite .gitignore for bazel-out directory', async () => {
     host.create('.gitignore', '\n# compiled output\n');
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     const {files} = host;
@@ -225,7 +224,7 @@ describe('ng-add schematic', () => {
     expect(content).toMatch('\n# compiled output\n/bazel-out\n');
   });
 
-  it('should create a backup for original angular.json', async() => {
+  it('should create a backup for original angular.json', async () => {
     expect(host.files).toContain('/angular.json');
     const original = host.readContent('/angular.json');
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
@@ -235,7 +234,7 @@ describe('ng-add schematic', () => {
     expect(content).toMatch(original);
   });
 
-  it('should update angular.json to use Bazel builder', async() => {
+  it('should update angular.json to use Bazel builder', async () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     const {files} = host;
     expect(files).toContain('/angular.json');
@@ -256,7 +255,7 @@ describe('ng-add schematic', () => {
     expect(lint.builder).toBe('@angular-devkit/build-angular:tslint');
   });
 
-  it('should get defaultProject if name is not provided', async() => {
+  it('should get defaultProject if name is not provided', async () => {
     const options = {};
     host = await schematicRunner.runSchematicAsync('ng-add', options, host).toPromise();
     const content = host.readContent('/angular.json');
@@ -281,7 +280,7 @@ describe('ng-add schematic', () => {
       ['~7.0.1', false],
     ];
     for (const [version, upgrade] of cases) {
-      it(`should ${upgrade ? '' : 'not '}upgrade v${version}')`, async() => {
+      it(`should ${upgrade ? '' : 'not '}upgrade v${version}')`, async () => {
         host.overwrite('package.json', JSON.stringify({
           name: 'demo',
           dependencies: {
@@ -305,7 +304,7 @@ describe('ng-add schematic', () => {
     }
   });
 
-  it('should add a postinstall step to package.json', async() => {
+  it('should add a postinstall step to package.json', async () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     expect(host.files).toContain('/package.json');
     const content = host.readContent('/package.json');
@@ -313,7 +312,7 @@ describe('ng-add schematic', () => {
     expect(json.scripts.postinstall).toBe('ngcc --properties es2015 browser module main');
   });
 
-  it('should work when run on a minimal project (without test and e2e targets)', async() => {
+  it('should work when run on a minimal project (without test and e2e targets)', async () => {
     host.overwrite('angular.json', JSON.stringify({
       projects: {
         'demo': {
@@ -338,5 +337,4 @@ describe('ng-add schematic', () => {
 
     expect(error).toBeNull();
   });
-
 });

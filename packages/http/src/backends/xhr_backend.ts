@@ -39,7 +39,7 @@ export class XHRConnection implements Connection {
    */
   response: Observable<Response>;
   // TODO(issue/24571): remove '!'.
-  readyState !: ReadyState;
+  readyState!: ReadyState;
   constructor(req: Request, browserXHR: BrowserXhr, baseResponseOptions?: ResponseOptions) {
     this.request = req;
     this.response = new Observable<Response>((responseObserver: Observer<Response>) => {
@@ -116,7 +116,7 @@ export class XHRConnection implements Connection {
       if (!req.headers.has('Accept')) {
         req.headers.append('Accept', 'application/json, text/plain, */*');
       }
-      req.headers.forEach((values, name) => _xhr.setRequestHeader(name !, values.join(',')));
+      req.headers.forEach((values, name) => _xhr.setRequestHeader(name!, values.join(',')));
 
       // Select the correct buffer type to store the response
       if (req.responseType != null && _xhr.responseType != null) {

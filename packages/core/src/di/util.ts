@@ -19,8 +19,9 @@ const USE_VALUE =
 const EMPTY_ARRAY: any[] = [];
 
 export function convertInjectableProviderToFactory(
-    type: Type<any>, provider?: ValueSansProvider | ExistingSansProvider | StaticClassSansProvider |
-        ConstructorSansProvider | FactorySansProvider | ClassSansProvider): () => any {
+    type: Type<any>,
+    provider?: ValueSansProvider|ExistingSansProvider|StaticClassSansProvider|
+    ConstructorSansProvider|FactorySansProvider|ClassSansProvider): () => any {
   if (!provider) {
     const reflectionCapabilities = new ReflectionCapabilities();
     const deps = reflectionCapabilities.parameters(type);
@@ -51,6 +52,6 @@ export function convertInjectableProviderToFactory(
       const reflectionCapabilities = new ReflectionCapabilities();
       deps = reflectionCapabilities.parameters(type);
     }
-    return () => new type(...injectArgs(deps !));
+    return () => new type(...injectArgs(deps!));
   }
 }

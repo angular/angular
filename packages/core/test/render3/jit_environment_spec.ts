@@ -29,7 +29,7 @@ describe('r3 jit environment', () => {
     Object
         // Map over the static properties of Identifiers.
         .keys(Identifiers)
-        .map(key => (Identifiers as any as{[key: string]: string | ExternalReference})[key])
+        .map(key => (Identifiers as any as {[key: string]: string | ExternalReference})[key])
         // A few such properties are string constants. Ignore them, and focus on ExternalReferences.
         .filter(isExternalReference)
         // Some references are to interface types. Only take properties which have runtime values.
@@ -42,7 +42,7 @@ describe('r3 jit environment', () => {
   });
 });
 
-function isExternalReference(sym: ExternalReference | string): sym is ExternalReference&
+function isExternalReference(sym: ExternalReference|string): sym is ExternalReference&
     {name: string} {
   return typeof sym === 'object' && sym.name !== null && sym.moduleName !== null;
 }

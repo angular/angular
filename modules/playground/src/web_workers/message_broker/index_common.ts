@@ -19,5 +19,7 @@ export class App {
         'echo', [SerializerTypes.PRIMITIVE], this._echo, SerializerTypes.PRIMITIVE);
   }
 
-  private _echo(val: string) { return new Promise((res) => res(val)); }
+  private _echo(val: string) {
+    return new Promise((res) => res(val));
+  }
 }

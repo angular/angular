@@ -18,12 +18,9 @@ export class BrowserAnimationBuilder extends AnimationBuilder {
 
   constructor(rootRenderer: RendererFactory2, @Inject(DOCUMENT) doc: any) {
     super();
-    const typeData = {
-      id: '0',
-      encapsulation: ViewEncapsulation.None,
-      styles: [],
-      data: {animation: []}
-    } as RendererType2;
+    const typeData =
+        {id: '0', encapsulation: ViewEncapsulation.None, styles: [], data: {animation: []}} as
+        RendererType2;
     this._renderer = rootRenderer.createRenderer(doc.body, typeData) as AnimationRenderer;
   }
 
@@ -37,7 +34,9 @@ export class BrowserAnimationBuilder extends AnimationBuilder {
 }
 
 export class BrowserAnimationFactory extends AnimationFactory {
-  constructor(private _id: string, private _renderer: AnimationRenderer) { super(); }
+  constructor(private _id: string, private _renderer: AnimationRenderer) {
+    super();
+  }
 
   create(element: any, options?: AnimationOptions): AnimationPlayer {
     return new RendererAnimationPlayer(this._id, element, options || {}, this._renderer);
@@ -62,34 +61,58 @@ export class RendererAnimationPlayer implements AnimationPlayer {
     return issueAnimationCommand(this._renderer, this.element, this.id, command, args);
   }
 
-  onDone(fn: () => void): void { this._listen('done', fn); }
+  onDone(fn: () => void): void {
+    this._listen('done', fn);
+  }
 
-  onStart(fn: () => void): void { this._listen('start', fn); }
+  onStart(fn: () => void): void {
+    this._listen('start', fn);
+  }
 
-  onDestroy(fn: () => void): void { this._listen('destroy', fn); }
+  onDestroy(fn: () => void): void {
+    this._listen('destroy', fn);
+  }
 
-  init(): void { this._command('init'); }
+  init(): void {
+    this._command('init');
+  }
 
-  hasStarted(): boolean { return this._started; }
+  hasStarted(): boolean {
+    return this._started;
+  }
 
   play(): void {
     this._command('play');
     this._started = true;
   }
 
-  pause(): void { this._command('pause'); }
+  pause(): void {
+    this._command('pause');
+  }
 
-  restart(): void { this._command('restart'); }
+  restart(): void {
+    this._command('restart');
+  }
 
-  finish(): void { this._command('finish'); }
+  finish(): void {
+    this._command('finish');
+  }
 
-  destroy(): void { this._command('destroy'); }
+  destroy(): void {
+    this._command('destroy');
+  }
 
-  reset(): void { this._command('reset'); }
+  reset(): void {
+    this._command('reset');
+  }
 
-  setPosition(p: number): void { this._command('setPosition', p); }
+  setPosition(p: number): void {
+    this._command('setPosition', p);
+  }
 
-  getPosition(): number { return 0; }
+  getPosition(): number {
+    return 0;
+  }
 
   public totalTime = 0;
 }

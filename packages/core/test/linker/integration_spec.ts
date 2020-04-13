@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {Compiler, ComponentFactory, ComponentRef, ErrorHandler, EventEmitter, Host, Inject, Injectable, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleRef, OnDestroy, SkipSelf, ViewRef, ɵivyEnabled as ivyEnabled} from '@angular/core';
+import {Compiler, ComponentFactory, ComponentRef, ErrorHandler, EventEmitter, Host, Inject, Injectable, InjectionToken, Injector, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, SkipSelf, ViewRef, ɵivyEnabled as ivyEnabled} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
 import {getDebugContext} from '@angular/core/src/errors';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
@@ -17,7 +17,7 @@ import {TemplateRef} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {EmbeddedViewRef} from '@angular/core/src/linker/view_ref';
 import {Attribute, Component, ContentChildren, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata';
-import {TestBed, async, fakeAsync, getTestBed, tick} from '@angular/core/testing';
+import {async, fakeAsync, getTestBed, TestBed, tick} from '@angular/core/testing';
 import {createMouseEvent, dispatchEvent, el, isCommentNode} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
@@ -27,16 +27,23 @@ import {stringify} from '../../src/util/stringify';
 const ANCHOR_ELEMENT = new InjectionToken('AnchorElement');
 
 if (ivyEnabled) {
-  describe('ivy', () => { declareTests(); });
+  describe('ivy', () => {
+    declareTests();
+  });
 } else {
-  describe('jit', () => { declareTests({useJit: true}); });
-  describe('no jit', () => { declareTests({useJit: false}); });
+  describe('jit', () => {
+    declareTests({useJit: true});
+  });
+  describe('no jit', () => {
+    declareTests({useJit: false});
+  });
 }
 
 function declareTests(config?: {useJit: boolean}) {
   describe('integration tests', function() {
-
-    beforeEach(() => { TestBed.configureCompiler({...config}); });
+    beforeEach(() => {
+      TestBed.configureCompiler({...config});
+    });
 
     describe('react to record changes', function() {
       it('should consume text node changes', () => {
@@ -55,7 +62,7 @@ function declareTests(config?: {useJit: boolean}) {
         const template = '<div>{{null}}{{ctxProp}}</div>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
-        fixture.componentInstance.ctxProp = null !;
+        fixture.componentInstance.ctxProp = null!;
 
         fixture.detectChanges();
         expect(fixture.nativeElement).toHaveText('');
@@ -133,7 +140,7 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.detectChanges();
         expect(fixture.debugElement.children[0].nativeElement.getAttribute('foo')).toEqual('bar');
 
-        fixture.componentInstance.ctxProp = null !;
+        fixture.componentInstance.ctxProp = null!;
         fixture.detectChanges();
         expect(fixture.debugElement.children[0].nativeElement.hasAttribute('foo')).toBeFalsy();
       });
@@ -148,7 +155,7 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.detectChanges();
         expect(fixture.debugElement.children[0].nativeElement.style['height']).toEqual('10px');
 
-        fixture.componentInstance.ctxProp = null !;
+        fixture.componentInstance.ctxProp = null!;
         fixture.detectChanges();
         expect(fixture.debugElement.children[0].nativeElement.style['height']).toEqual('');
       });
@@ -265,7 +272,7 @@ function declareTests(config?: {useJit: boolean}) {
           fixture.componentInstance.ctxProp = 'a';
           fixture.detectChanges();
 
-          const dir = fixture.debugElement.children[0].references !['dir'];
+          const dir = fixture.debugElement.children[0].references!['dir'];
           expect(dir.dirProp).toEqual('aa');
         });
       });
@@ -344,7 +351,7 @@ function declareTests(config?: {useJit: boolean}) {
       it('should display correct error message for uninitialized @Output', () => {
         @Component({selector: 'my-uninitialized-output', template: '<p>It works!</p>'})
         class UninitializedOutputComp {
-          @Output() customEvent !: EventEmitter<any>;
+          @Output() customEvent!: EventEmitter<any>;
         }
 
         const template =
@@ -406,7 +413,7 @@ function declareTests(config?: {useJit: boolean}) {
             ngIfEl.childNodes
                 .find(
                     debugElement => debugElement.nativeNode.nodeType ===
-                        Node.COMMENT_NODE) !.injector.get(SomeViewport);
+                        Node.COMMENT_NODE)!.injector.get(SomeViewport);
         expect(someViewport.container.length).toBe(2);
         expect(ngIfEl.children.length).toBe(2);
 
@@ -455,7 +462,7 @@ function declareTests(config?: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          expect(fixture.debugElement.children[0].children[0].references !['alice'])
+          expect(fixture.debugElement.children[0].children[0].references!['alice'])
               .toBeAnInstanceOf(ChildComp);
         });
 
@@ -465,7 +472,7 @@ function declareTests(config?: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          expect(fixture.debugElement.children[0].children[0].references !['localdir'])
+          expect(fixture.debugElement.children[0].children[0].references!['localdir'])
               .toBeAnInstanceOf(ExportDir);
         });
 
@@ -477,9 +484,9 @@ function declareTests(config?: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
 
           const fixture = TestBed.createComponent(MyComp);
-          expect(fixture.debugElement.children[0].references !['x'])
+          expect(fixture.debugElement.children[0].references!['x'])
               .toBeAnInstanceOf(DirectiveWithMultipleExportAsNames);
-          expect(fixture.debugElement.children[0].references !['y'])
+          expect(fixture.debugElement.children[0].references!['y'])
               .toBeAnInstanceOf(DirectiveWithMultipleExportAsNames);
         });
 
@@ -505,8 +512,8 @@ function declareTests(config?: {useJit: boolean}) {
 
           const pEl = fixture.debugElement.children[0];
 
-          const alice = pEl.children[0].references !['alice'];
-          const bob = pEl.children[1].references !['bob'];
+          const alice = pEl.children[0].references!['alice'];
+          const bob = pEl.children[1].references!['bob'];
           expect(alice).toBeAnInstanceOf(ChildComp);
           expect(bob).toBeAnInstanceOf(ChildComp);
           expect(alice).not.toBe(bob);
@@ -518,8 +525,7 @@ function declareTests(config?: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          expect(fixture.debugElement.children[0].references !['alice'])
-              .toBeAnInstanceOf(ChildComp);
+          expect(fixture.debugElement.children[0].references!['alice']).toBeAnInstanceOf(ChildComp);
         });
 
         it('should assign the element instance to a user-defined variable', () => {
@@ -528,7 +534,7 @@ function declareTests(config?: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          const value = fixture.debugElement.children[0].children[0].references !['alice'];
+          const value = fixture.debugElement.children[0].children[0].references!['alice'];
           expect(value).not.toBe(null);
           expect(value.tagName.toLowerCase()).toEqual('div');
         });
@@ -540,7 +546,7 @@ function declareTests(config?: {useJit: boolean}) {
                       MyComp, {set: {template: '<ng-template ref-alice></ng-template>'}})
                   .createComponent(MyComp);
 
-          const value = fixture.debugElement.childNodes[0].references !['alice'];
+          const value = fixture.debugElement.childNodes[0].references!['alice'];
           expect(value.createEmbeddedView).toBeTruthy();
         });
 
@@ -550,7 +556,7 @@ function declareTests(config?: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          expect(fixture.debugElement.children[0].children[0].references !['superAlice'])
+          expect(fixture.debugElement.children[0].children[0].references!['superAlice'])
               .toBeAnInstanceOf(ChildComp);
         });
       });
@@ -573,14 +579,13 @@ function declareTests(config?: {useJit: boolean}) {
       });
 
       describe('OnPush components', () => {
-
         it('should use ChangeDetectorRef to manually request a check', () => {
           TestBed.configureTestingModule({declarations: [MyComp, [[PushCmpWithRef]]]});
           const template = '<push-cmp-with-ref #cmp></push-cmp-with-ref>';
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          const cmp = fixture.debugElement.children[0].references !['cmp'];
+          const cmp = fixture.debugElement.children[0].references!['cmp'];
 
           fixture.detectChanges();
           expect(cmp.numberOfChecks).toEqual(1);
@@ -601,7 +606,7 @@ function declareTests(config?: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          const cmp = fixture.debugElement.children[0].references !['cmp'];
+          const cmp = fixture.debugElement.children[0].references!['cmp'];
 
           fixture.componentInstance.ctxProp = 'one';
           fixture.detectChanges();
@@ -675,7 +680,7 @@ function declareTests(config?: {useJit: boolean}) {
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          const cmp = fixture.debugElement.children[0].references !['cmp'];
+          const cmp = fixture.debugElement.children[0].references!['cmp'];
 
           fixture.componentInstance.ctxProp = 'one';
           fixture.detectChanges();
@@ -695,7 +700,7 @@ function declareTests(config?: {useJit: boolean}) {
 
              tick();
 
-             const cmp: PushCmpWithAsyncPipe = fixture.debugElement.children[0].references !['cmp'];
+             const cmp: PushCmpWithAsyncPipe = fixture.debugElement.children[0].references!['cmp'];
              fixture.detectChanges();
              expect(cmp.numberOfChecks).toEqual(1);
 
@@ -726,7 +731,7 @@ function declareTests(config?: {useJit: boolean}) {
         const fixture = TestBed.createComponent(MyComp);
 
         const childComponent =
-            fixture.debugElement.children[0].children[0].children[0].references !['child'];
+            fixture.debugElement.children[0].children[0].children[0].references!['child'];
         expect(childComponent.myHost).toBeAnInstanceOf(SomeDirective);
       });
 
@@ -748,7 +753,7 @@ function declareTests(config?: {useJit: boolean}) {
 
         const tc = fixture.debugElement.children[0].children[0].children[0];
 
-        const childComponent = tc.references !['child'];
+        const childComponent = tc.references!['child'];
         expect(childComponent.myHost).toBeAnInstanceOf(SomeDirective);
       });
 
@@ -795,7 +800,7 @@ function declareTests(config?: {useJit: boolean}) {
                    })
                    .createComponent(MyComp);
            const tc = fixture.debugElement.childNodes.find(
-               debugElement => debugElement.nativeNode.nodeType === Node.COMMENT_NODE) !;
+               debugElement => debugElement.nativeNode.nodeType === Node.COMMENT_NODE)!;
 
            const emitter = tc.injector.get(DirectiveEmittingEvent);
            const myComp = fixture.debugElement.injector.get(MyComp);
@@ -827,8 +832,11 @@ function declareTests(config?: {useJit: boolean}) {
 
            expect(dir.control).toEqual('one');
 
-           dir.controlChange.subscribe(
-               {next: () => { expect(fixture.componentInstance.ctxProp).toEqual('two'); }});
+           dir.controlChange.subscribe({
+             next: () => {
+               expect(fixture.componentInstance.ctxProp).toEqual('two');
+             }
+           });
 
            dir.triggerChange('two');
          }));
@@ -954,9 +962,11 @@ function declareTests(config?: {useJit: boolean}) {
         class DirectiveWithHostListener {
           id = 'one';
           // TODO(issue/24571): remove '!'.
-          receivedArgs !: any[];
+          receivedArgs!: any[];
 
-          doIt(...args: any[]) { this.receivedArgs = args; }
+          doIt(...args: any[]) {
+            this.receivedArgs = args;
+          }
         }
 
         const fixture =
@@ -1239,7 +1249,6 @@ function declareTests(config?: {useJit: boolean}) {
                }).toThrowError('Cannot move a destroyed View in a ViewContainer!');
              }));
         });
-
       });
 
       it('should support static attributes', () => {
@@ -1292,7 +1301,7 @@ function declareTests(config?: {useJit: boolean}) {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        const comp = fixture.debugElement.children[0].children[0].references !['consuming'];
+        const comp = fixture.debugElement.children[0].children[0].references!['consuming'];
         expect(comp.injectable).toBeAnInstanceOf(InjectableService);
       });
 
@@ -1308,7 +1317,7 @@ function declareTests(config?: {useJit: boolean}) {
         TestBed.overrideComponent(DirectiveProvidingInjectableInView, {set: {template}});
         const fixture = TestBed.createComponent(DirectiveProvidingInjectableInView);
 
-        const comp = fixture.debugElement.children[0].references !['consuming'];
+        const comp = fixture.debugElement.children[0].references!['consuming'];
         expect(comp.injectable).toBeAnInstanceOf(InjectableService);
       });
 
@@ -1336,7 +1345,7 @@ function declareTests(config?: {useJit: boolean}) {
         });
         const fixture = TestBed.createComponent(MyComp);
 
-        const comp = fixture.debugElement.children[0].children[0].references !['dir'];
+        const comp = fixture.debugElement.children[0].children[0].references!['dir'];
         expect(comp.directive.injectable).toBeAnInstanceOf(InjectableService);
       });
 
@@ -1386,7 +1395,7 @@ function declareTests(config?: {useJit: boolean}) {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        const providing = fixture.debugElement.children[0].references !['providing'];
+        const providing = fixture.debugElement.children[0].references!['providing'];
         expect(providing.created).toBe(false);
 
         fixture.componentInstance.ctxBoolProp = true;
@@ -1469,7 +1478,7 @@ function declareTests(config?: {useJit: boolean}) {
       });
 
       it('should use a default element name for components without selectors', () => {
-        let noSelectorComponentFactory: ComponentFactory<SomeComponent> = undefined !;
+        let noSelectorComponentFactory: ComponentFactory<SomeComponent> = undefined!;
 
         @Component({template: '----'})
         class NoSelectorComponent {
@@ -1480,7 +1489,7 @@ function declareTests(config?: {useJit: boolean}) {
           constructor(componentFactoryResolver: ComponentFactoryResolver) {
             // grab its own component factory
             noSelectorComponentFactory =
-                componentFactoryResolver.resolveComponentFactory(NoSelectorComponent) !;
+                componentFactoryResolver.resolveComponentFactory(NoSelectorComponent)!;
           }
         }
 
@@ -1502,8 +1511,9 @@ function declareTests(config?: {useJit: boolean}) {
         TestBed.configureTestingModule({declarations: [MyComp, SomeDirectiveMissingAnnotation]});
 
         expect(() => TestBed.createComponent(MyComp))
-            .toThrowError(
-                `Unexpected value '${stringify(SomeDirectiveMissingAnnotation)}' declared by the module 'DynamicTestModule'. Please add a @Pipe/@Directive/@Component annotation.`);
+            .toThrowError(`Unexpected value '${
+                stringify(
+                    SomeDirectiveMissingAnnotation)}' declared by the module 'DynamicTestModule'. Please add a @Pipe/@Directive/@Component annotation.`);
       });
 
       it('should report a meaningful error when a component is missing view annotation', () => {
@@ -1822,7 +1832,7 @@ function declareTests(config?: {useJit: boolean}) {
 
         expect(fixture.nativeElement.innerHTML).toContain('ng-reflect-dir-prop="hello"');
 
-        fixture.componentInstance.ctxProp = undefined !;
+        fixture.componentInstance.ctxProp = undefined!;
         fixture.detectChanges();
 
         expect(fixture.nativeElement.innerHTML).not.toContain('ng-reflect-');
@@ -1839,7 +1849,7 @@ function declareTests(config?: {useJit: boolean}) {
 
         expect(fixture.nativeElement.innerHTML).toContain('ng-reflect-dir-prop="hello"');
 
-        fixture.componentInstance.ctxProp = null !;
+        fixture.componentInstance.ctxProp = null!;
         fixture.detectChanges();
 
         expect(fixture.nativeElement.innerHTML).not.toContain('ng-reflect-');
@@ -1871,7 +1881,7 @@ function declareTests(config?: {useJit: boolean}) {
         expect(html).toContain('bindings={');
         expect(html).toContain('"ng-reflect-ng-if": "true"');
 
-        fixture.componentInstance.ctxBoolProp = undefined !;
+        fixture.componentInstance.ctxBoolProp = undefined!;
         fixture.detectChanges();
 
         html = fixture.nativeElement.innerHTML;
@@ -1893,14 +1903,13 @@ function declareTests(config?: {useJit: boolean}) {
         expect(html).toContain('bindings={');
         expect(html).toContain('"ng-reflect-ng-if": "true"');
 
-        fixture.componentInstance.ctxBoolProp = null !;
+        fixture.componentInstance.ctxBoolProp = null!;
         fixture.detectChanges();
 
         html = fixture.nativeElement.innerHTML;
         expect(html).toContain('bindings={');
         expect(html).toContain('"ng-reflect-ng-if": null');
       });
-
     });
 
     describe('property decorators', () => {
@@ -2079,7 +2088,6 @@ function declareTests(config?: {useJit: boolean}) {
       });
 
       describe('attributes', () => {
-
         it('should support attributes with namespace', () => {
           TestBed.configureTestingModule({declarations: [MyComp, SomeCmp]});
           const template = '<svg:use xlink:href="#id" />';
@@ -2142,7 +2150,9 @@ class ComponentWithCustomInterpolationB {
 @Injectable()
 class MyService {
   greeting: string;
-  constructor() { this.greeting = 'hello'; }
+  constructor() {
+    this.greeting = 'hello';
+  }
 }
 
 @Component({selector: 'simple-imp-cmp', template: ''})
@@ -2165,14 +2175,16 @@ class DynamicViewport {
 
     this.injector = Injector.create([{provide: MyService, useValue: myService}], vc.injector);
     this.componentFactory =
-        componentFactoryResolver.resolveComponentFactory(ChildCompUsingService) !;
+        componentFactoryResolver.resolveComponentFactory(ChildCompUsingService)!;
   }
 
   create(): ComponentRef<ChildCompUsingService> {
     return this.vc.createComponent(this.componentFactory, this.vc.length, this.injector);
   }
 
-  insert(viewRef: ViewRef, index?: number): ViewRef { return this.vc.insert(viewRef, index); }
+  insert(viewRef: ViewRef, index?: number): ViewRef {
+    return this.vc.insert(viewRef, index);
+  }
 
   move(viewRef: ViewRef, currentIndex: number): ViewRef {
     return this.vc.move(viewRef, currentIndex);
@@ -2182,25 +2194,29 @@ class DynamicViewport {
 @Directive({selector: '[my-dir]', inputs: ['dirProp: elprop'], exportAs: 'mydir'})
 class MyDir {
   dirProp: string;
-  constructor() { this.dirProp = ''; }
+  constructor() {
+    this.dirProp = '';
+  }
 }
 
 @Directive({selector: '[my-dir2]', inputs: ['dirProp2: elprop'], exportAs: 'mydir2'})
 class MyDir2 {
   dirProp2: string;
-  constructor() { this.dirProp2 = ''; }
+  constructor() {
+    this.dirProp2 = '';
+  }
 }
 
 @Directive({selector: '[title]', inputs: ['title']})
 class DirectiveWithTitle {
   // TODO(issue/24571): remove '!'.
-  title !: string;
+  title!: string;
 }
 
 @Directive({selector: '[title]', inputs: ['title'], host: {'[title]': 'title'}})
 class DirectiveWithTitleAndHostProperty {
   // TODO(issue/24571): remove '!'.
-  title !: string;
+  title!: string;
 }
 
 @Component({selector: 'event-cmp', template: '<div (click)="noop()"></div>'})
@@ -2220,7 +2236,9 @@ class PushCmp {
   numberOfChecks: number;
   prop: any;
 
-  constructor() { this.numberOfChecks = 0; }
+  constructor() {
+    this.numberOfChecks = 0;
+  }
 
   noop() {}
 
@@ -2251,7 +2269,9 @@ class PushCmpWithRef {
     return 'fixed';
   }
 
-  propagate() { this.ref.markForCheck(); }
+  propagate() {
+    this.ref.markForCheck();
+  }
 }
 
 @Component({
@@ -2272,11 +2292,13 @@ class PushCmpWithHostEvent {
 class PushCmpWithAsyncPipe {
   numberOfChecks: number = 0;
   // TODO(issue/24571): remove '!'.
-  resolve !: (result: any) => void;
+  resolve!: (result: any) => void;
   promise: Promise<any>;
 
   constructor() {
-    this.promise = new Promise((resolve) => { this.resolve = resolve; });
+    this.promise = new Promise((resolve) => {
+      this.resolve = resolve;
+    });
   }
 
   get field() {
@@ -2291,7 +2313,11 @@ class MyComp {
   ctxNumProp: number;
   ctxBoolProp: boolean;
   ctxArrProp: number[];
-  toStringThrow = {toString: function() { throw 'boom'; }};
+  toStringThrow = {
+    toString: function() {
+      throw 'boom';
+    }
+  };
 
   constructor() {
     this.ctxProp = 'initial value';
@@ -2300,7 +2326,9 @@ class MyComp {
     this.ctxArrProp = [0, 1, 2];
   }
 
-  throwError() { throw 'boom'; }
+  throwError() {
+    throw 'boom';
+  }
 }
 
 @Component({
@@ -2326,7 +2354,9 @@ class ChildCompNoTemplate {
 @Component({selector: 'child-cmp-svc', template: '{{ctxProp}}'})
 class ChildCompUsingService {
   ctxProp: string;
-  constructor(service: MyService) { this.ctxProp = service.greeting; }
+  constructor(service: MyService) {
+    this.ctxProp = service.greeting;
+  }
 }
 
 @Directive({selector: 'some-directive'})
@@ -2341,7 +2371,9 @@ class SomeDirectiveMissingAnnotation {}
 })
 class CompWithHost {
   myHost: SomeDirective;
-  constructor(@Host() someComp: SomeDirective) { this.myHost = someComp; }
+  constructor(@Host() someComp: SomeDirective) {
+    this.myHost = someComp;
+  }
 }
 
 @Component({selector: '[child-cmp2]', viewProviders: [MyService]})
@@ -2384,7 +2416,9 @@ class NoContext {
 @Pipe({name: 'double'})
 class DoublePipe implements PipeTransform, OnDestroy {
   ngOnDestroy() {}
-  transform(value: any) { return `${value}${value}`; }
+  transform(value: any) {
+    return `${value}${value}`;
+  }
 }
 
 @Directive({selector: '[emitter]', outputs: ['event']})
@@ -2397,7 +2431,9 @@ class DirectiveEmittingEvent {
     this.event = new EventEmitter();
   }
 
-  fireEvent(msg: string) { this.event.emit(msg); }
+  fireEvent(msg: string) {
+    this.event.emit(msg);
+  }
 }
 
 @Directive({selector: '[update-host-attributes]', host: {'role': 'button'}})
@@ -2408,16 +2444,22 @@ class DirectiveUpdatingHostAttributes {
 class DirectiveUpdatingHostProperties {
   id: string;
 
-  constructor() { this.id = 'one'; }
+  constructor() {
+    this.id = 'one';
+  }
 }
 
 @Directive({selector: '[listener]', host: {'(event)': 'onEvent($event)'}})
 class DirectiveListeningEvent {
   msg: string;
 
-  constructor() { this.msg = ''; }
+  constructor() {
+    this.msg = '';
+  }
 
-  onEvent(msg: string) { this.msg = msg; }
+  onEvent(msg: string) {
+    this.msg = msg;
+  }
 }
 
 @Directive({
@@ -2431,17 +2473,27 @@ class DirectiveListeningEvent {
 })
 class DirectiveListeningDomEvent {
   eventTypes: string[] = [];
-  onEvent(eventType: string) { this.eventTypes.push(eventType); }
-  onWindowEvent(eventType: string) { this.eventTypes.push('window_' + eventType); }
-  onDocumentEvent(eventType: string) { this.eventTypes.push('document_' + eventType); }
-  onBodyEvent(eventType: string) { this.eventTypes.push('body_' + eventType); }
+  onEvent(eventType: string) {
+    this.eventTypes.push(eventType);
+  }
+  onWindowEvent(eventType: string) {
+    this.eventTypes.push('window_' + eventType);
+  }
+  onDocumentEvent(eventType: string) {
+    this.eventTypes.push('document_' + eventType);
+  }
+  onBodyEvent(eventType: string) {
+    this.eventTypes.push('body_' + eventType);
+  }
 }
 
 let globalCounter = 0;
 @Directive({selector: '[listenerother]', host: {'(window:domEvent)': 'onEvent($event.type)'}})
 class DirectiveListeningDomEventOther {
   eventType: string;
-  constructor() { this.eventType = ''; }
+  constructor() {
+    this.eventType = '';
+  }
   onEvent(eventType: string) {
     globalCounter++;
     this.eventType = 'other_' + eventType;
@@ -2450,18 +2502,22 @@ class DirectiveListeningDomEventOther {
 
 @Directive({selector: '[listenerprevent]', host: {'(click)': 'onEvent($event)'}})
 class DirectiveListeningDomEventPrevent {
-  onEvent(event: any) { return false; }
+  onEvent(event: any) {
+    return false;
+  }
 }
 
 @Directive({selector: '[listenernoprevent]', host: {'(click)': 'onEvent($event)'}})
 class DirectiveListeningDomEventNoPrevent {
-  onEvent(event: any) { return true; }
+  onEvent(event: any) {
+    return true;
+  }
 }
 
 @Directive({selector: '[id]', inputs: ['id']})
 class IdDir {
   // TODO(issue/24571): remove '!'.
-  id !: string;
+  id!: string;
 }
 
 @Directive({selector: '[customEvent]'})
@@ -2497,7 +2553,9 @@ class PrivateImpl extends PublicApi {
 
 @Directive({selector: '[needs-public-api]'})
 class NeedsPublicApi {
-  constructor(@Host() api: PublicApi) { expect(api instanceof PrivateImpl).toBe(true); }
+  constructor(@Host() api: PublicApi) {
+    expect(api instanceof PrivateImpl).toBe(true);
+  }
 }
 
 class ToolbarContext {
@@ -2507,7 +2565,9 @@ class ToolbarContext {
 @Directive({selector: '[toolbarpart]'})
 class ToolbarPart {
   templateRef: TemplateRef<ToolbarContext>;
-  constructor(templateRef: TemplateRef<ToolbarContext>) { this.templateRef = templateRef; }
+  constructor(templateRef: TemplateRef<ToolbarContext>) {
+    this.templateRef = templateRef;
+  }
 }
 
 @Directive({selector: '[toolbarVc]', inputs: ['toolbarVc']})
@@ -2525,7 +2585,7 @@ class ToolbarViewContainer {
 })
 class ToolbarComponent {
   // TODO(issue/24571): remove '!'.
-  @ContentChildren(ToolbarPart) query !: QueryList<ToolbarPart>;
+  @ContentChildren(ToolbarPart) query!: QueryList<ToolbarPart>;
   ctxProp: string = 'hello world';
 
   constructor() {}
@@ -2536,7 +2596,9 @@ class DirectiveWithTwoWayBinding {
   controlChange = new EventEmitter();
   control: any = null;
 
-  triggerChange(value: any) { this.controlChange.emit(value); }
+  triggerChange(value: any) {
+    this.controlChange.emit(value);
+  }
 }
 
 @Injectable()
@@ -2585,7 +2647,9 @@ class DirectiveProvidingInjectableInHostAndView {
 class DirectiveConsumingInjectable {
   injectable: any;
 
-  constructor(@Host() @Inject(InjectableService) injectable: any) { this.injectable = injectable; }
+  constructor(@Host() @Inject(InjectableService) injectable: any) {
+    this.injectable = injectable;
+  }
 }
 
 
@@ -2620,12 +2684,14 @@ class EventBus {
 
 @Directive({
   selector: 'grand-parent-providing-event-bus',
-  providers: [{provide: EventBus, useValue: new EventBus(null !, 'grandparent')}]
+  providers: [{provide: EventBus, useValue: new EventBus(null!, 'grandparent')}]
 })
 class GrandParentProvidingEventBus {
   bus: EventBus;
 
-  constructor(bus: EventBus) { this.bus = bus; }
+  constructor(bus: EventBus) {
+    this.bus = bus;
+  }
 }
 
 function createParentBus(peb: EventBus) {
@@ -2651,7 +2717,9 @@ class ParentProvidingEventBus {
 class ChildConsumingEventBus {
   bus: EventBus;
 
-  constructor(@SkipSelf() bus: EventBus) { this.bus = bus; }
+  constructor(@SkipSelf() bus: EventBus) {
+    this.bus = bus;
+  }
 }
 
 @Directive({selector: '[someImpvp]', inputs: ['someImpvp']})
@@ -2695,17 +2763,23 @@ class ComponentWithoutView {
 
 @Directive({selector: '[no-duplicate]'})
 class DuplicateDir {
-  constructor(elRef: ElementRef) { elRef.nativeElement.textContent += 'noduplicate'; }
+  constructor(elRef: ElementRef) {
+    elRef.nativeElement.textContent += 'noduplicate';
+  }
 }
 
 @Directive({selector: '[no-duplicate]'})
 class OtherDuplicateDir {
-  constructor(elRef: ElementRef) { elRef.nativeElement.textContent += 'othernoduplicate'; }
+  constructor(elRef: ElementRef) {
+    elRef.nativeElement.textContent += 'othernoduplicate';
+  }
 }
 
 @Directive({selector: 'directive-throwing-error'})
 class DirectiveThrowingAnError {
-  constructor() { throw new Error('BOOM'); }
+  constructor() {
+    throw new Error('BOOM');
+  }
 }
 
 @Component({
@@ -2721,15 +2795,19 @@ class DirectiveWithPropDecorators {
   target: any;
 
   // TODO(issue/24571): remove '!'.
-  @Input('elProp') dirProp !: string;
+  @Input('elProp') dirProp!: string;
   @Output('elEvent') event = new EventEmitter();
 
   // TODO(issue/24571): remove '!'.
-  @HostBinding('attr.my-attr') myAttr !: string;
+  @HostBinding('attr.my-attr') myAttr!: string;
   @HostListener('click', ['$event.target'])
-  onClick(target: any) { this.target = target; }
+  onClick(target: any) {
+    this.target = target;
+  }
 
-  fireEvent(msg: any) { this.event.emit(msg); }
+  fireEvent(msg: any) {
+    this.event.emit(msg);
+  }
 }
 
 @Component({selector: 'some-cmp'})

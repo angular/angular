@@ -37,7 +37,7 @@
  *
  * See more examples in node_selector_matcher_spec.ts
  */
-export type CssSelector = (string | SelectorFlags)[];
+export type CssSelector = (string|SelectorFlags)[];
 
 /**
  * A list of CssSelectors.
@@ -58,7 +58,7 @@ export type CssSelectorList = CssSelector[];
  * using {@link ViewContainerRef#createComponent}. The last slot that specifies the
  * wildcard selector will retrieve all projectable nodes which do not match any selector.
  */
-export type ProjectionSlots = (CssSelectorList | '*')[];
+export type ProjectionSlots = (CssSelectorList|'*')[];
 
 /** Flags used to build up CssSelectors */
 export const enum SelectorFlags {

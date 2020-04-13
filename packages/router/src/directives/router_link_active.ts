@@ -76,14 +76,12 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
   selector: '[routerLinkActive]',
   exportAs: 'routerLinkActive',
 })
-export class RouterLinkActive implements OnChanges,
-    OnDestroy, AfterContentInit {
+export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
   // TODO(issue/24571): remove '!'.
-  @ContentChildren(RouterLink, {descendants: true})
-  links !: QueryList<RouterLink>;
+  @ContentChildren(RouterLink, {descendants: true}) links!: QueryList<RouterLink>;
   // TODO(issue/24571): remove '!'.
   @ContentChildren(RouterLinkWithHref, {descendants: true})
-  linksWithHrefs !: QueryList<RouterLinkWithHref>;
+  linksWithHrefs!: QueryList<RouterLinkWithHref>;
 
   private classes: string[] = [];
   private subscription: Subscription;
@@ -115,8 +113,12 @@ export class RouterLinkActive implements OnChanges,
     this.classes = classes.filter(c => !!c);
   }
 
-  ngOnChanges(changes: SimpleChanges): void { this.update(); }
-  ngOnDestroy(): void { this.subscription.unsubscribe(); }
+  ngOnChanges(changes: SimpleChanges): void {
+    this.update();
+  }
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
 
   private update(): void {
     if (!this.links || !this.linksWithHrefs || !this.router.navigated) return;
@@ -136,7 +138,7 @@ export class RouterLinkActive implements OnChanges,
   }
 
   private isLinkActive(router: Router): (link: (RouterLink|RouterLinkWithHref)) => boolean {
-    return (link: RouterLink | RouterLinkWithHref) =>
+    return (link: RouterLink|RouterLinkWithHref) =>
                router.isActive(link.urlTree, this.routerLinkActiveOptions.exact);
   }
 

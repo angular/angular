@@ -47,7 +47,7 @@ describe('dynamic queries migration', () => {
   });
 
   it('should remove the options object from a dynamic ViewChild query that only has one property',
-     async() => {
+     async () => {
        writeFile('/index.ts', `
         import { Directive, ViewChild } from '@angular/core';
 
@@ -62,7 +62,7 @@ describe('dynamic queries migration', () => {
      });
 
   it('should remove the options object from a dynamic ContentChild query that only has one property',
-     async() => {
+     async () => {
        writeFile('/index.ts', `
         import { Directive, ContentChild } from '@angular/core';
 
@@ -77,7 +77,7 @@ describe('dynamic queries migration', () => {
      });
 
   it('should only remove the `static` flag from a ViewChild query if it has more than one property',
-     async() => {
+     async () => {
        writeFile('/index.ts', `
         import { Directive, ViewChild, ElementRef } from '@angular/core';
 
@@ -93,7 +93,7 @@ describe('dynamic queries migration', () => {
      });
 
   it('should only remove the `static` flag from a ContentChild query if it has more than one property',
-     async() => {
+     async () => {
        writeFile('/index.ts', `
         import { Directive, ContentChild, ElementRef } from '@angular/core';
 
@@ -108,7 +108,7 @@ describe('dynamic queries migration', () => {
            .toContain(`@ContentChild('child', { read: ElementRef }) child: ElementRef;`);
      });
 
-  it('should not change static ViewChild queries', async() => {
+  it('should not change static ViewChild queries', async () => {
     writeFile('/index.ts', `
       import { Directive, ViewChild, ElementRef } from '@angular/core';
 
@@ -123,7 +123,7 @@ describe('dynamic queries migration', () => {
         .toContain(`@ViewChild('child', { read: ElementRef, static: true }) child: ElementRef;`);
   });
 
-  it('should not change static ContentChild queries', async() => {
+  it('should not change static ContentChild queries', async () => {
     writeFile('/index.ts', `
       import { Directive, ContentChild, ElementRef } from '@angular/core';
 
@@ -138,7 +138,7 @@ describe('dynamic queries migration', () => {
         .toContain(`@ContentChild('child', { static: true, read: ElementRef }) child: ElementRef;`);
   });
 
-  it('should migrate dynamic queries on a setter', async() => {
+  it('should migrate dynamic queries on a setter', async () => {
     writeFile('/index.ts', `
      import { Directive, ContentChild, ViewChild } from '@angular/core';
 

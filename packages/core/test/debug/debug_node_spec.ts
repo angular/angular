@@ -10,7 +10,7 @@
 import {CommonModule, NgIfContext, ɵgetDOM as getDOM} from '@angular/common';
 import {Component, DebugElement, DebugNode, Directive, ElementRef, EmbeddedViewRef, EventEmitter, HostBinding, Injectable, Input, NO_ERRORS_SCHEMA, OnInit, Output, Renderer2, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {NgZone} from '@angular/core/src/zone';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {createMouseEvent, hasClass} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -20,18 +20,26 @@ import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 class Logger {
   logs: string[];
 
-  constructor() { this.logs = []; }
+  constructor() {
+    this.logs = [];
+  }
 
-  add(thing: string) { this.logs.push(thing); }
+  add(thing: string) {
+    this.logs.push(thing);
+  }
 }
 
 @Directive({selector: '[message]', inputs: ['message']})
 class MessageDir {
   logger: Logger;
 
-  constructor(logger: Logger) { this.logger = logger; }
+  constructor(logger: Logger) {
+    this.logger = logger;
+  }
 
-  set message(newMessage: string) { this.logger.add(newMessage); }
+  set message(newMessage: string) {
+    this.logger.add(newMessage);
+  }
 }
 
 @Directive({selector: '[with-title]', inputs: ['title']})
@@ -49,7 +57,9 @@ class WithTitleDir {
 class ChildComp {
   childBinding: string;
 
-  constructor() { this.childBinding = 'Original'; }
+  constructor() {
+    this.childBinding = 'Original';
+  }
 }
 
 @Component({
@@ -63,14 +73,18 @@ class ChildComp {
 })
 class ParentComp {
   parentBinding: string;
-  constructor() { this.parentBinding = 'OriginalParent'; }
+  constructor() {
+    this.parentBinding = 'OriginalParent';
+  }
 }
 
 @Directive({selector: 'custom-emitter', outputs: ['myevent']})
 class CustomEmitter {
   myevent: EventEmitter<any>;
 
-  constructor() { this.myevent = new EventEmitter(); }
+  constructor() {
+    this.myevent = new EventEmitter();
+  }
 }
 
 @Component({
@@ -87,9 +101,13 @@ class EventsComp {
     this.customed = false;
   }
 
-  handleClick() { this.clicked = true; }
+  handleClick() {
+    this.clicked = true;
+  }
 
-  handleCustom() { this.customed = true; }
+  handleCustom() {
+    this.customed = true;
+  }
 }
 
 @Component({
@@ -111,7 +129,9 @@ class ConditionalContentComp {
 })
 class ConditionalParentComp {
   parentBinding: string;
-  constructor() { this.parentBinding = 'OriginalParent'; }
+  constructor() {
+    this.parentBinding = 'OriginalParent';
+  }
 }
 
 @Component({
@@ -124,7 +144,9 @@ class ConditionalParentComp {
 })
 class UsingFor {
   stuff: string[];
-  constructor() { this.stuff = ['one', 'two', 'three']; }
+  constructor() {
+    this.stuff = ['one', 'two', 'three'];
+  }
 }
 
 @Directive({selector: '[mydir]', exportAs: 'mydir'})
@@ -154,12 +176,12 @@ class LocalsComp {
 })
 class BankAccount {
   // TODO(issue/24571): remove '!'.
-  @Input() bank !: string;
+  @Input() bank!: string;
   // TODO(issue/24571): remove '!'.
-  @Input('account') id !: string;
+  @Input('account') id!: string;
 
   // TODO(issue/24571): remove '!'.
-  normalizedBankName !: string;
+  normalizedBankName!: string;
 }
 
 @Component({
@@ -168,7 +190,7 @@ class BankAccount {
  `
 })
 class SimpleContentComp {
-  @ViewChild('content') content !: ElementRef;
+  @ViewChild('content') content!: ElementRef;
 }
 
 @Component({
@@ -199,8 +221,7 @@ class TestCmptWithRenderer {
 
 @Component({selector: 'host-class-binding', template: ''})
 class HostClassBindingCmp {
-  @HostBinding('class')
-  hostClasses = 'class-one class-two';
+  @HostBinding('class') hostClasses = 'class-one class-two';
 }
 
 @Component({selector: 'test-cmpt-vcref', template: `<div></div>`})
@@ -525,11 +546,15 @@ class TestCmptWithPropInterpolation {
       class ViewManipulatingDirective {
         constructor(private _vcRef: ViewContainerRef, private _tplRef: TemplateRef<any>) {}
 
-        insert() { this._vcRef.createEmbeddedView(this._tplRef); }
+        insert() {
+          this._vcRef.createEmbeddedView(this._tplRef);
+        }
 
         removeFromTheDom() {
           const viewRef = this._vcRef.get(0) as EmbeddedViewRef<any>;
-          viewRef.rootNodes.forEach(rootNode => { getDOM().remove(rootNode); });
+          viewRef.rootNodes.forEach(rootNode => {
+            getDOM().remove(rootNode);
+          });
         }
       }
 
@@ -596,7 +621,6 @@ class TestCmptWithPropInterpolation {
     describe('DebugElement.query with dynamically created descendant elements', () => {
       let fixture: ComponentFixture<{}>;
       beforeEach(() => {
-
         @Directive({
           selector: '[dir]',
         })
@@ -627,11 +651,11 @@ class TestCmptWithPropInterpolation {
         TestBed.configureTestingModule({declarations: [MyComponent, MyDir]});
         fixture = TestBed.createComponent(MyComponent);
         fixture.detectChanges();
-
       });
 
-      it('should find the dynamic elements from fixture root',
-         () => { expect(fixture.debugElement.query(By.css('.myclass'))).toBeTruthy(); });
+      it('should find the dynamic elements from fixture root', () => {
+        expect(fixture.debugElement.query(By.css('.myclass'))).toBeTruthy();
+      });
 
       it('can use a dynamic element as root for another query', () => {
         const inner = fixture.debugElement.query(By.css('.inner'));
@@ -660,15 +684,17 @@ class TestCmptWithPropInterpolation {
         el = fixture.debugElement;
       });
 
-      it('when searching for elements by name',
-         () => { expect(() => el.query(e => e.name === 'any search text')).not.toThrow(); });
-
-      it('when searching for elements by their attributes', () => {
-        expect(() => el.query(e => e.attributes !['name'] === 'any attribute')).not.toThrow();
+      it('when searching for elements by name', () => {
+        expect(() => el.query(e => e.name === 'any search text')).not.toThrow();
       });
 
-      it('when searching for elements by their classes',
-         () => { expect(() => el.query(e => e.classes['any class'] === true)).not.toThrow(); });
+      it('when searching for elements by their attributes', () => {
+        expect(() => el.query(e => e.attributes!['name'] === 'any attribute')).not.toThrow();
+      });
+
+      it('when searching for elements by their classes', () => {
+        expect(() => el.query(e => e.classes['any class'] === true)).not.toThrow();
+      });
 
       it('when searching for elements by their styles', () => {
         expect(() => el.query(e => e.styles['any style'] === 'any value')).not.toThrow();
@@ -678,23 +704,29 @@ class TestCmptWithPropInterpolation {
         expect(() => el.query(e => e.properties['any prop'] === 'any value')).not.toThrow();
       });
 
-      it('when searching by componentInstance',
-         () => { expect(() => el.query(e => e.componentInstance === null)).not.toThrow(); });
+      it('when searching by componentInstance', () => {
+        expect(() => el.query(e => e.componentInstance === null)).not.toThrow();
+      });
 
-      it('when searching by context',
-         () => { expect(() => el.query(e => e.context === null)).not.toThrow(); });
+      it('when searching by context', () => {
+        expect(() => el.query(e => e.context === null)).not.toThrow();
+      });
 
-      it('when searching by listeners',
-         () => { expect(() => el.query(e => e.listeners.length === 0)).not.toThrow(); });
+      it('when searching by listeners', () => {
+        expect(() => el.query(e => e.listeners.length === 0)).not.toThrow();
+      });
 
-      it('when searching by references',
-         () => { expect(() => el.query(e => e.references === null)).not.toThrow(); });
+      it('when searching by references', () => {
+        expect(() => el.query(e => e.references === null)).not.toThrow();
+      });
 
-      it('when searching by providerTokens',
-         () => { expect(() => el.query(e => e.providerTokens.length === 0)).not.toThrow(); });
+      it('when searching by providerTokens', () => {
+        expect(() => el.query(e => e.providerTokens.length === 0)).not.toThrow();
+      });
 
-      it('when searching by injector',
-         () => { expect(() => el.query(e => e.injector === null)).not.toThrow(); });
+      it('when searching by injector', () => {
+        expect(() => el.query(e => e.injector === null)).not.toThrow();
+      });
 
       onlyInIvy('VE does not match elements created outside Angular context')
           .it('when using the out-of-context element as the DebugElement query root', () => {
@@ -746,7 +778,7 @@ class TestCmptWithPropInterpolation {
       fixture = TestBed.createComponent(LocalsComp);
       fixture.detectChanges();
 
-      expect(fixture.debugElement.children[0].references !['alice']).toBeAnInstanceOf(MyDir);
+      expect(fixture.debugElement.children[0].references!['alice']).toBeAnInstanceOf(MyDir);
     });
 
     it('should allow injecting from the element injector', () => {
@@ -941,7 +973,6 @@ class TestCmptWithPropInterpolation {
     });
 
     describe('componentInstance on DebugNode', () => {
-
       it('should return component associated with a node if a node is a component host', () => {
         TestBed.overrideTemplate(TestCmpt, `<parent-comp></parent-comp>`);
         fixture = TestBed.createComponent(TestCmpt);
@@ -1199,7 +1230,9 @@ class TestCmptWithPropInterpolation {
       })
       class App {
         visible = true;
-        cancel() { calls++; }
+        cancel() {
+          calls++;
+        }
       }
 
       TestBed.configureTestingModule({declarations: [App, CancelButton]});
@@ -1218,7 +1251,6 @@ class TestCmptWithPropInterpolation {
 
       expect(calls).toBe(1, 'Expected calls to stay 1 after destroying the node.');
     });
-
   });
 
   it('should not error when accessing node name', () => {
@@ -1234,7 +1266,7 @@ class TestCmptWithPropInterpolation {
     // Node.ELEMENT_NODE
     while (node) {
       superParentName = node.name;
-      node = node.parent !;
+      node = node.parent!;
     }
     expect(superParentName).not.toEqual('');
   });
@@ -1257,13 +1289,16 @@ class TestCmptWithPropInterpolation {
   it('does not call event listeners added outside angular context', () => {
     let listenerCalled = false;
     const eventToTrigger = createMouseEvent('mouseenter');
-    function listener() { listenerCalled = true; }
+    function listener() {
+      listenerCalled = true;
+    }
     @Component({template: ''})
     class MyComp {
       constructor(private readonly zone: NgZone, private readonly element: ElementRef) {}
       ngOnInit() {
-        this.zone.runOutsideAngular(
-            () => { this.element.nativeElement.addEventListener('mouseenter', listener); });
+        this.zone.runOutsideAngular(() => {
+          this.element.nativeElement.addEventListener('mouseenter', listener);
+        });
       }
     }
     const fixture =

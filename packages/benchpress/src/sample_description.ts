@@ -29,10 +29,11 @@ export class SampleDescription {
                   userDesc
                 ],
                 metric.describe()),
-    deps: [
-      Metric, Options.SAMPLE_ID, Options.FORCE_GC, Options.USER_AGENT, Validator,
-      Options.DEFAULT_DESCRIPTION, Options.SAMPLE_DESCRIPTION
-    ]
+    deps:
+        [
+          Metric, Options.SAMPLE_ID, Options.FORCE_GC, Options.USER_AGENT, Validator,
+          Options.DEFAULT_DESCRIPTION, Options.SAMPLE_DESCRIPTION
+        ]
   }];
   description: {[key: string]: any};
 
@@ -41,9 +42,13 @@ export class SampleDescription {
       public metrics: {[key: string]: any}) {
     this.description = {};
     descriptions.forEach(description => {
-      Object.keys(description).forEach(prop => { this.description[prop] = description[prop]; });
+      Object.keys(description).forEach(prop => {
+        this.description[prop] = description[prop];
+      });
     });
   }
 
-  toJson() { return {'id': this.id, 'description': this.description, 'metrics': this.metrics}; }
+  toJson() {
+    return {'id': this.id, 'description': this.description, 'metrics': this.metrics};
+  }
 }

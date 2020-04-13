@@ -21,10 +21,15 @@ describe('cordova test', () => {
             expect(Zone.current.name).toEqual('cordova');
             done();
           },
-          () => { fail('should not fail'); }, 'service', 'successAction', ['arg0', 'arg1']);
+          () => {
+            fail('should not fail');
+          },
+          'service', 'successAction', ['arg0', 'arg1']);
 
       cordova.exec(
-          () => { fail('should not success'); },
+          () => {
+            fail('should not success');
+          },
           () => {
             expect(Zone.current.name).toEqual('cordova');
             done();

@@ -8,13 +8,12 @@
 
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {getDebugNode} from '@angular/core';
-import {NodeFlags, anchorDef, asElementData, elementDef} from '@angular/core/src/view/index';
+import {anchorDef, asElementData, elementDef, NodeFlags} from '@angular/core/src/view/index';
 
 import {compViewDef, createAndGetRootNodes} from './helper';
 
 {
   describe(`View Anchor`, () => {
-
     describe('create', () => {
       it('should create anchor nodes without parents', () => {
         const rootNodes = createAndGetRootNodes(compViewDef([
@@ -43,7 +42,7 @@ import {compViewDef, createAndGetRootNodes} from './helper';
         const someContext = {};
         const {view, rootNodes} = createAndGetRootNodes(
             compViewDef([anchorDef(NodeFlags.None, null, null, 0)]), someContext);
-        expect(getDebugNode(rootNodes[0]) !.nativeNode).toBe(asElementData(view, 0).renderElement);
+        expect(getDebugNode(rootNodes[0])!.nativeNode).toBe(asElementData(view, 0).renderElement);
       });
     });
   });

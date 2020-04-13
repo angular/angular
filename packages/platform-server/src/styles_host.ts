@@ -31,5 +31,7 @@ export class ServerStylesHost extends SharedStylesHost {
     this.head.appendChild(el);
   }
 
-  onStylesAdded(additions: Set<string>) { additions.forEach(style => this._addStyle(style)); }
+  onStylesAdded(additions: Set<string>) {
+    additions.forEach(style => this._addStyle(style));
+  }
 }

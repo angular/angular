@@ -11,7 +11,7 @@ import {Component, Directive, Input, ViewChild} from '@angular/core';
 
 @Directive({selector: 'pane'})
 export class Pane {
-  @Input() id !: string;
+  @Input() id!: string;
 }
 
 @Component({
@@ -28,10 +28,14 @@ export class Pane {
 export class ViewChildComp {
   @ViewChild(Pane)
   set pane(v: Pane) {
-    setTimeout(() => { this.selectedPane = v.id; }, 0);
+    setTimeout(() => {
+      this.selectedPane = v.id;
+    }, 0);
   }
   selectedPane: string = '';
   shouldShow = true;
-  toggle() { this.shouldShow = !this.shouldShow; }
+  toggle() {
+    this.shouldShow = !this.shouldShow;
+  }
 }
 // #enddocregion

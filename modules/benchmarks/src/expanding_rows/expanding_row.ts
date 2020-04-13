@@ -112,15 +112,14 @@ export class ExpandingRow {
    * The identifier for this node provided by the user code. We need this
    * while we are emitting onToggle event.
    */
-  @Input() rowId !: string;
+  @Input() rowId!: string;
 
   /**
    * An ElementRef to the main element in this component. We need a reference
    * to this element to compute the height. The height of cfc-expanding-row
    * is used in [cfcExpandingRowHost] directive for scroll adjustments.
    */
-  @ViewChild('expandingRowMainElement', {static: true})
-  expandingRowMainElement !: ElementRef;
+  @ViewChild('expandingRowMainElement', {static: true}) expandingRowMainElement!: ElementRef;
 
   /**
    * This @Output event emitter will be triggered when the user expands or
@@ -145,7 +144,9 @@ export class ExpandingRow {
   }
 
   /** TS getter for isExpanded property. */
-  get isExpanded(): boolean { return this.isExpandedInternal; }
+  get isExpanded(): boolean {
+    return this.isExpandedInternal;
+  }
 
   /** Triggered when isExpanded property changes. */
   isExpandedChange = new EventEmitter<void>();
@@ -164,7 +165,9 @@ export class ExpandingRow {
   }
 
   /** TS getter for isFocused property. */
-  get isFocused(): boolean { return this.isFocusedInternal; }
+  get isFocused(): boolean {
+    return this.isFocusedInternal;
+  }
 
   /** The index of the row in the context of the entire collection. */
   set index(value: number) {
@@ -178,7 +181,9 @@ export class ExpandingRow {
   }
 
   /** TS getter for index property. */
-  get index(): number { return this.indexInternal; }
+  get index(): number {
+    return this.indexInternal;
+  }
 
   /**
    * We should probably rename this to summaryContentChild. Because technically
@@ -188,7 +193,7 @@ export class ExpandingRow {
    * component is not in the same file as ExpandingRow.
    */
   // TODO(b/109816955): remove '!', see go/strict-prop-init-fix.
-  summaryViewChild !: ExpandingRowSummary;
+  summaryViewChild!: ExpandingRowSummary;
 
   /**
    * We compute the collapsed height (which is just height of
@@ -205,7 +210,7 @@ export class ExpandingRow {
 
   /** Internal storage for index public property. */
   // TODO(b/109816955): remove '!', see go/strict-prop-init-fix.
-  private indexInternal !: number;
+  private indexInternal!: number;
 
   /**
    * This holds a reference to [cfcExpandingRowHost] directive. We need
@@ -233,7 +238,9 @@ export class ExpandingRow {
    * When user tabs into child cfc-expanding-row-summary component. This method
    * will make sure we focuse on this row, and blur on previously focused row.
    */
-  handleSummaryFocus(): void { this.focus(); }
+  handleSummaryFocus(): void {
+    this.focus();
+  }
 
   /**
    * cfc-expanding-row-details-caption component will call this function to
@@ -256,7 +263,9 @@ export class ExpandingRow {
    * Gets the height of this component. This height is used in parent
    * [cfcExpandingRowHost] directive to compute scroll adjustment.
    */
-  getHeight(): number { return this.expandingRowMainElement.nativeElement.offsetHeight; }
+  getHeight(): number {
+    return this.expandingRowMainElement.nativeElement.offsetHeight;
+  }
 
   /**
    * Expands this row. This will notify the host so that it can collapse
@@ -268,7 +277,9 @@ export class ExpandingRow {
     this.expandingRowHost.handleRowExpand(this);
 
     // setTimeout here makes sure we scroll this row into view after animation.
-    setTimeout(() => { this.expandingRowMainElement.nativeElement.focus(); });
+    setTimeout(() => {
+      this.expandingRowMainElement.nativeElement.focus();
+    });
 
     this.onToggle.emit({rowId: this.rowId, isExpand: true});
   }
@@ -305,7 +316,9 @@ export class ExpandingRow {
 
     // Summary child is not present currently. We need to NG2 to update the
     // template.
-    setTimeout(() => { this.summaryViewChild.focus(); });
+    setTimeout(() => {
+      this.summaryViewChild.focus();
+    });
   }
 
   /**

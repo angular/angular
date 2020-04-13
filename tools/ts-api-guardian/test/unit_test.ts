@@ -9,7 +9,7 @@
 import * as chai from 'chai';
 import * as ts from 'typescript';
 
-import {SerializationOptions, publicApiInternal} from '../lib/serializer';
+import {publicApiInternal, SerializationOptions} from '../lib/serializer';
 
 const classesAndInterfaces = `
   export declare class A {
@@ -639,8 +639,9 @@ function check(
 
 function checkThrows(
     files: {[name: string]: string}, error: string, options: SerializationOptions = {}) {
-  chai.assert.throws(
-      () => { publicApiInternal(getMockHost(files), 'file.d.ts', {}, options); }, error);
+  chai.assert.throws(() => {
+    publicApiInternal(getMockHost(files), 'file.d.ts', {}, options);
+  }, error);
 }
 
 function stripExtraIndentation(text: string) {
@@ -648,7 +649,7 @@ function stripExtraIndentation(text: string) {
   // Ignore first and last new line
   lines = lines.slice(1, lines.length - 1);
   const commonIndent = lines.reduce((min, line) => {
-    const indent = /^( *)/.exec(line) ![1].length;
+    const indent = /^( *)/.exec(line)![1].length;
     // Ignore empty line
     return line.length ? Math.min(min, indent) : min;
   }, text.length);

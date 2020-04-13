@@ -137,11 +137,17 @@ class DefaultDomRenderer2 implements Renderer2 {
     return document.createElement(name);
   }
 
-  createComment(value: string): any { return document.createComment(value); }
+  createComment(value: string): any {
+    return document.createComment(value);
+  }
 
-  createText(value: string): any { return document.createTextNode(value); }
+  createText(value: string): any {
+    return document.createTextNode(value);
+  }
 
-  appendChild(parent: any, newChild: any): void { parent.appendChild(newChild); }
+  appendChild(parent: any, newChild: any): void {
+    parent.appendChild(newChild);
+  }
 
   insertBefore(parent: any, newChild: any, refChild: any): void {
     if (parent) {
@@ -167,9 +173,13 @@ class DefaultDomRenderer2 implements Renderer2 {
     return el;
   }
 
-  parentNode(node: any): any { return node.parentNode; }
+  parentNode(node: any): any {
+    return node.parentNode;
+  }
 
-  nextSibling(node: any): any { return node.nextSibling; }
+  nextSibling(node: any): any {
+    return node.nextSibling;
+  }
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     if (namespace) {
@@ -205,9 +215,13 @@ class DefaultDomRenderer2 implements Renderer2 {
     }
   }
 
-  addClass(el: any, name: string): void { el.classList.add(name); }
+  addClass(el: any, name: string): void {
+    el.classList.add(name);
+  }
 
-  removeClass(el: any, name: string): void { el.classList.remove(name); }
+  removeClass(el: any, name: string): void {
+    el.classList.remove(name);
+  }
 
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
     if (flags & RendererStyleFlags2.DashCase) {
@@ -233,7 +247,9 @@ class DefaultDomRenderer2 implements Renderer2 {
     el[name] = value;
   }
 
-  setValue(node: any, value: string): void { node.nodeValue = value; }
+  setValue(node: any, value: string): void {
+    node.nodeValue = value;
+  }
 
   listen(target: 'window'|'document'|'body'|any, event: string, callback: (event: any) => boolean):
       () => void {
@@ -243,15 +259,15 @@ class DefaultDomRenderer2 implements Renderer2 {
           target, event, decoratePreventDefault(callback));
     }
     return <() => void>this.eventManager.addEventListener(
-               target, event, decoratePreventDefault(callback)) as() => void;
+               target, event, decoratePreventDefault(callback)) as () => void;
   }
 }
 
 const AT_CHARCODE = (() => '@'.charCodeAt(0))();
 function checkNoSyntheticProp(name: string, nameKind: string) {
   if (name.charCodeAt(0) === AT_CHARCODE) {
-    throw new Error(
-        `Found the synthetic ${nameKind} ${name}. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.`);
+    throw new Error(`Found the synthetic ${nameKind} ${
+        name}. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.`);
   }
 }
 
@@ -270,7 +286,9 @@ class EmulatedEncapsulationDomRenderer2 extends DefaultDomRenderer2 {
     this.hostAttr = shimHostAttribute(appId + '-' + component.id);
   }
 
-  applyToHost(element: any) { super.setAttribute(element, this.hostAttr, ''); }
+  applyToHost(element: any) {
+    super.setAttribute(element, this.hostAttr, '');
+  }
 
   createElement(parent: any, name: string): Element {
     const el = super.createElement(parent, name);
@@ -300,9 +318,13 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     }
   }
 
-  private nodeOrShadowRoot(node: any): any { return node === this.hostEl ? this.shadowRoot : node; }
+  private nodeOrShadowRoot(node: any): any {
+    return node === this.hostEl ? this.shadowRoot : node;
+  }
 
-  destroy() { this.sharedStylesHost.removeHost(this.shadowRoot); }
+  destroy() {
+    this.sharedStylesHost.removeHost(this.shadowRoot);
+  }
 
   appendChild(parent: any, newChild: any): void {
     return super.appendChild(this.nodeOrShadowRoot(parent), newChild);

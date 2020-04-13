@@ -8,7 +8,7 @@
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {of } from 'rxjs';
+import {of} from 'rxjs';
 
 describe('property interpolation', () => {
   it('should handle all flavors of interpolated properties', () => {
@@ -67,7 +67,7 @@ describe('property interpolation', () => {
       `
     })
     class App {
-      details = of ({
+      details = of({
         title: 'cool image',
         url: 'http://somecooldomain:1234/cool_image.png',
       });
@@ -93,7 +93,11 @@ describe('property interpolation', () => {
       /** Clearly this is a doctor of heavy metals. */
       leadSurgeon = {
         getCommonInfo() {
-          return {getPhotoUrl() { return 'http://somecooldomain:1234/cool_image.png'; }};
+          return {
+            getPhotoUrl() {
+              return 'http://somecooldomain:1234/cool_image.png';
+            }
+          };
         }
       };
     }

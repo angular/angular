@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵCurrencyIndex, ɵExtraLocaleDataIndex, ɵLocaleDataIndex, ɵfindLocaleData, ɵgetLocaleCurrencyCode, ɵgetLocalePluralCase} from '@angular/core';
+import {ɵCurrencyIndex, ɵExtraLocaleDataIndex, ɵfindLocaleData, ɵgetLocaleCurrencyCode, ɵgetLocalePluralCase, ɵLocaleDataIndex} from '@angular/core';
 
 import {CURRENCIES_EN, CurrenciesSymbols} from './currencies';
 
@@ -235,9 +235,9 @@ export function getLocaleId(locale: string): string {
 export function getLocaleDayPeriods(
     locale: string, formStyle: FormStyle, width: TranslationWidth): [string, string] {
   const data = ɵfindLocaleData(locale);
-  const amPmData = <[
-    string, string
-  ][][]>[data[ɵLocaleDataIndex.DayPeriodsFormat], data[ɵLocaleDataIndex.DayPeriodsStandalone]];
+  const amPmData = <[string, string][][]>[
+    data[ɵLocaleDataIndex.DayPeriodsFormat], data[ɵLocaleDataIndex.DayPeriodsStandalone]
+  ];
   const amPm = getLastDefinedValue(amPmData, formStyle);
   return getLastDefinedValue(amPm, width);
 }
@@ -509,8 +509,9 @@ export const getLocalePluralCase: (locale: string) => ((value: number) => Plural
 
 function checkFullData(data: any) {
   if (!data[ɵLocaleDataIndex.ExtraData]) {
-    throw new Error(
-        `Missing extra locale data for the locale "${data[ɵLocaleDataIndex.LocaleId]}". Use "registerLocaleData" to load new data. See the "I18n guide" on angular.io to know more.`);
+    throw new Error(`Missing extra locale data for the locale "${
+        data[ɵLocaleDataIndex
+                 .LocaleId]}". Use "registerLocaleData" to load new data. See the "I18n guide" on angular.io to know more.`);
   }
 }
 
@@ -536,11 +537,11 @@ function checkFullData(data: any) {
  *
  * @publicApi
  */
-export function getLocaleExtraDayPeriodRules(locale: string): (Time | [Time, Time])[] {
+export function getLocaleExtraDayPeriodRules(locale: string): (Time|[Time, Time])[] {
   const data = ɵfindLocaleData(locale);
   checkFullData(data);
   const rules = data[ɵLocaleDataIndex.ExtraData][ɵExtraLocaleDataIndex.ExtraDayPeriodsRules] || [];
-  return rules.map((rule: string | [string, string]) => {
+  return rules.map((rule: string|[string, string]) => {
     if (typeof rule === 'string') {
       return extractTime(rule);
     }
@@ -570,8 +571,8 @@ export function getLocaleExtraDayPeriods(
   const data = ɵfindLocaleData(locale);
   checkFullData(data);
   const dayPeriodsData = <string[][][]>[
-      data[ɵLocaleDataIndex.ExtraData][ɵExtraLocaleDataIndex.ExtraDayPeriodFormats],
-      data[ɵLocaleDataIndex.ExtraData][ɵExtraLocaleDataIndex.ExtraDayPeriodStandalone]
+    data[ɵLocaleDataIndex.ExtraData][ɵExtraLocaleDataIndex.ExtraDayPeriodFormats],
+    data[ɵLocaleDataIndex.ExtraData][ɵExtraLocaleDataIndex.ExtraDayPeriodStandalone]
   ];
   const dayPeriods = getLastDefinedValue(dayPeriodsData, formStyle) || [];
   return getLastDefinedValue(dayPeriods, width) || [];
@@ -646,7 +647,7 @@ function extractTime(time: string): Time {
  *
  * @publicApi
  */
-export function getCurrencySymbol(code: string, format: 'wide' | 'narrow', locale = 'en'): string {
+export function getCurrencySymbol(code: string, format: 'wide'|'narrow', locale = 'en'): string {
   const currency = getLocaleCurrencies(locale)[code] || CURRENCIES_EN[code] || [];
   const symbolNarrow = currency[ɵCurrencyIndex.SymbolNarrow];
 

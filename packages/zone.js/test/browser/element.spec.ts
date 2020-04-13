@@ -16,7 +16,9 @@ describe('element', function() {
     document.body.appendChild(button);
   });
 
-  afterEach(function() { document.body.removeChild(button); });
+  afterEach(function() {
+    document.body.removeChild(button);
+  });
 
   // https://github.com/angular/zone.js/issues/190
   it('should work when addEventListener / removeEventListener are called in the global context',
@@ -49,7 +51,9 @@ describe('element', function() {
     const clickEvent = document.createEvent('Event');
     clickEvent.initEvent('click', true, true);
 
-    button.addEventListener('click', function(event) { expect(event).toBe(clickEvent as any); });
+    button.addEventListener('click', function(event) {
+      expect(event).toBe(clickEvent as any);
+    });
 
     button.dispatchEvent(clickEvent);
   });
@@ -122,7 +126,9 @@ describe('element', function() {
 
   it('should respect removeEventListener when called with a function listener', function() {
     let log = '';
-    const logFunction = function logFunction() { log += 'a'; };
+    const logFunction = function logFunction() {
+      log += 'a';
+    };
 
     button.addEventListener('click', logFunction);
     button.addEventListener('focus', logFunction);
@@ -180,7 +186,9 @@ describe('element', function() {
     const log: string[] = [];
     const clickEvent = document.createEvent('Event');
 
-    function listener() { log.push('listener'); }
+    function listener() {
+      log.push('listener');
+    }
 
     clickEvent.initEvent('click', true, true);
 
@@ -201,9 +209,13 @@ describe('element', function() {
     const log: string[] = [];
     const clickEvent = document.createEvent('Event');
 
-    function capturingListener() { log.push('capturingListener'); }
+    function capturingListener() {
+      log.push('capturingListener');
+    }
 
-    function bubblingListener() { log.push('bubblingListener'); }
+    function bubblingListener() {
+      log.push('bubblingListener');
+    }
 
     clickEvent.initEvent('click', true, true);
 
@@ -219,7 +231,9 @@ describe('element', function() {
     const log: string[] = [];
     const clickEvent = document.createEvent('Event');
 
-    function listener() { log.push('listener'); }
+    function listener() {
+      log.push('listener');
+    }
 
     clickEvent.initEvent('click', true, true);
 
@@ -250,7 +264,9 @@ describe('element', function() {
     ifEnvSupports(supportsOnClick, function() {
       it('should spawn new child zones', function() {
         let run = false;
-        button.onclick = function() { run = true; };
+        button.onclick = function() {
+          run = true;
+        };
 
         button.click();
         expect(run).toBeTruthy();
@@ -260,8 +276,12 @@ describe('element', function() {
 
     it('should only allow one onclick handler', function() {
       let log = '';
-      button.onclick = function() { log += 'a'; };
-      button.onclick = function() { log += 'b'; };
+      button.onclick = function() {
+        log += 'a';
+      };
+      button.onclick = function() {
+        log += 'b';
+      };
 
       button.click();
       expect(log).toEqual('b');
@@ -270,7 +290,9 @@ describe('element', function() {
 
     it('should handler removing onclick', function() {
       let log = '';
-      button.onclick = function() { log += 'a'; };
+      button.onclick = function() {
+        log += 'a';
+      };
       button.onclick = null as any;
 
       button.click();
@@ -293,10 +315,14 @@ describe('element', function() {
       document.body.appendChild(checkbox);
     });
 
-    afterEach(function() { document.body.removeChild(checkbox); });
+    afterEach(function() {
+      document.body.removeChild(checkbox);
+    });
 
     it('should be possible to prevent default behavior by returning false', function() {
-      checkbox.onclick = function() { return false; };
+      checkbox.onclick = function() {
+        return false;
+      };
 
       checkbox.click();
       expect(checkbox.checked).toBe(false);

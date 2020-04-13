@@ -10,7 +10,7 @@ import {getAngularJSGlobal} from '../../../src/common/src/angular1';
 import {withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
 import {createAngularJSTestingModule} from '../src/create_angularjs_testing_module';
 
-import {AppModule, Inventory, defineAppModule} from './mocks';
+import {AppModule, defineAppModule, Inventory} from './mocks';
 
 
 withEachNg1Version(() => {
@@ -26,7 +26,9 @@ withEachNg1Version(() => {
       // Configure an AngularJS module that has the AngularJS and Angular injector wired up
       module(createAngularJSTestingModule([AppModule]));
       let inventory: any = undefined;
-      inject(function(shoppingCart: any) { inventory = shoppingCart.inventory; });
+      inject(function(shoppingCart: any) {
+        inventory = shoppingCart.inventory;
+      });
       expect(inventory).toEqual(jasmine.any(Inventory));
     });
   });

@@ -13,13 +13,14 @@ import {getProjectTsConfigPaths} from '../utils/project_tsconfig_paths';
 describe('project tsconfig paths', () => {
   let testTree: UnitTestTree;
 
-  beforeEach(() => { testTree = new UnitTestTree(new HostTree()); });
+  beforeEach(() => {
+    testTree = new UnitTestTree(new HostTree());
+  });
 
   it('should detect build tsconfig path inside of angular.json file', () => {
     testTree.create('/my-custom-config.json', '');
     testTree.create('/angular.json', JSON.stringify({
-      projects:
-          {my_name: {architect: {build: {options: {tsConfig: './my-custom-config.json'}}}}}
+      projects: {my_name: {architect: {build: {options: {tsConfig: './my-custom-config.json'}}}}}
     }));
 
     expect(getProjectTsConfigPaths(testTree).buildPaths).toEqual(['my-custom-config.json']);
@@ -57,8 +58,7 @@ describe('project tsconfig paths', () => {
   it('should detect test tsconfig path inside of .angular.json file', () => {
     testTree.create('/my-test-config.json', '');
     testTree.create('/.angular.json', JSON.stringify({
-      projects:
-          {with_tests: {architect: {test: {options: {tsConfig: './my-test-config.json'}}}}}
+      projects: {with_tests: {architect: {test: {options: {tsConfig: './my-test-config.json'}}}}}
     }));
 
     expect(getProjectTsConfigPaths(testTree).testPaths).toEqual(['my-test-config.json']);

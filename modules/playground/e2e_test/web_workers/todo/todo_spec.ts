@@ -26,7 +26,6 @@ describe('WebWorkers Todo', function() {
     waitForBootstrap();
     expect(element(by.css('#todoapp header')).getText()).toEqual('todos');
   });
-
 });
 
 function waitForBootstrap(): void {

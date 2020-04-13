@@ -23,7 +23,7 @@ const configParsed = JSON.parse(fs.readFileSync(config).toString());
 const filesystem = new NodeFilesystem(distDir);
 const gen = new Generator(filesystem, baseHref);
 
-(async() => {
+(async () => {
   const control = await gen.process(configParsed);
   await filesystem.write('/ngsw.json', JSON.stringify(control, null, 2));
 })();

@@ -7,7 +7,7 @@
  */
 
 const noop = function() {};
-let log: {zone: string, taskZone: undefined | string, toState: TaskState, fromState: TaskState}[] =
+let log: {zone: string, taskZone: undefined|string, toState: TaskState, fromState: TaskState}[] =
     [];
 const detectTask = Zone.current.scheduleMacroTask('detectTask', noop, undefined, noop, noop);
 const originalTransitionTo = detectTask.constructor.prototype._transitionTo;
@@ -34,14 +34,18 @@ function testFnWithLoggedTransitionTo(testFn: Function) {
 
 describe('task lifecycle', () => {
   describe('event task lifecycle', () => {
-    beforeEach(() => { log = []; });
+    beforeEach(() => {
+      log = [];
+    });
 
     it('task should transit from notScheduled to scheduling then to scheduled state when scheduleTask',
        testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testEventTaskZone'}).run(() => {
            Zone.current.scheduleEventTask('testEventTask', noop, undefined, noop, noop);
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'}
@@ -63,7 +67,9 @@ describe('task lifecycle', () => {
                } catch (err) {
                }
              });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'unknown', fromState: 'scheduling'}
@@ -77,7 +83,9 @@ describe('task lifecycle', () => {
                Zone.current.scheduleEventTask('testEventTask', noop, undefined, noop, noop);
            task.invoke();
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -93,7 +101,9 @@ describe('task lifecycle', () => {
                Zone.current.scheduleEventTask('testEventTask', noop, undefined, noop, noop);
            Zone.current.cancelTask(task);
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -105,11 +115,14 @@ describe('task lifecycle', () => {
     it('task should transit from running to canceling then from canceling to notScheduled when task is canceled in running state',
        testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testEventTaskZone'}).run(() => {
-           const task = Zone.current.scheduleEventTask(
-               'testEventTask', () => { Zone.current.cancelTask(task); }, undefined, noop, noop);
+           const task = Zone.current.scheduleEventTask('testEventTask', () => {
+             Zone.current.cancelTask(task);
+           }, undefined, noop, noop);
            task.invoke();
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -122,14 +135,17 @@ describe('task lifecycle', () => {
     it('task should transit from running to scheduled when task.callback throw error',
        testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testEventTaskZone'}).run(() => {
-           const task = Zone.current.scheduleEventTask(
-               'testEventTask', () => { throw Error('invoke error'); }, undefined, noop, noop);
+           const task = Zone.current.scheduleEventTask('testEventTask', () => {
+             throw Error('invoke error');
+           }, undefined, noop, noop);
            try {
              task.invoke();
            } catch (err) {
            }
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -141,14 +157,18 @@ describe('task lifecycle', () => {
     it('task should transit from canceling to unknown when zoneSpec.onCancelTask throw error before task running',
        testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testEventTaskZone'}).run(() => {
-           const task = Zone.current.scheduleEventTask(
-               'testEventTask', noop, undefined, noop, () => { throw Error('cancel task'); });
+           const task =
+               Zone.current.scheduleEventTask('testEventTask', noop, undefined, noop, () => {
+                 throw Error('cancel task');
+               });
            try {
              Zone.current.cancelTask(task);
            } catch (err) {
            }
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -160,14 +180,18 @@ describe('task lifecycle', () => {
     it('task should transit from canceling to unknown when zoneSpec.onCancelTask throw error in running state',
        testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testEventTaskZone'}).run(() => {
-           const task = Zone.current.scheduleEventTask(
-               'testEventTask', noop, undefined, noop, () => { throw Error('cancel task'); });
+           const task =
+               Zone.current.scheduleEventTask('testEventTask', noop, undefined, noop, () => {
+                 throw Error('cancel task');
+               });
            try {
              Zone.current.cancelTask(task);
            } catch (err) {
            }
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -191,7 +215,9 @@ describe('task lifecycle', () => {
                } catch (err) {
                }
              });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'}
@@ -218,7 +244,9 @@ describe('task lifecycle', () => {
                } catch (err) {
                }
              });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -229,14 +257,18 @@ describe('task lifecycle', () => {
   });
 
   describe('non periodical macroTask lifecycle', () => {
-    beforeEach(() => { log = []; });
+    beforeEach(() => {
+      log = [];
+    });
 
     it('task should transit from notScheduled to scheduling then to scheduled state when scheduleTask',
        testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testMacroTaskZone'}).run(() => {
            Zone.current.scheduleMacroTask('testMacroTask', noop, undefined, noop, noop);
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'}
@@ -258,7 +290,9 @@ describe('task lifecycle', () => {
                } catch (err) {
                }
              });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'unknown', fromState: 'scheduling'}
@@ -272,7 +306,9 @@ describe('task lifecycle', () => {
                Zone.current.scheduleMacroTask('testMacroTask', noop, undefined, noop, noop);
            task.invoke();
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -288,7 +324,9 @@ describe('task lifecycle', () => {
                Zone.current.scheduleMacroTask('testMacrotask', noop, undefined, noop, noop);
            Zone.current.cancelTask(task);
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -300,11 +338,14 @@ describe('task lifecycle', () => {
     it('task should transit from running to canceling then from canceling to notScheduled when task is canceled in running state',
        testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testMacroTaskZone'}).run(() => {
-           const task = Zone.current.scheduleMacroTask(
-               'testMacroTask', () => { Zone.current.cancelTask(task); }, undefined, noop, noop);
+           const task = Zone.current.scheduleMacroTask('testMacroTask', () => {
+             Zone.current.cancelTask(task);
+           }, undefined, noop, noop);
            task.invoke();
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -317,14 +358,17 @@ describe('task lifecycle', () => {
     it('task should transit from running to noScheduled when task.callback throw error',
        testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testMacroTaskZone'}).run(() => {
-           const task = Zone.current.scheduleMacroTask(
-               'testMacroTask', () => { throw Error('invoke error'); }, undefined, noop, noop);
+           const task = Zone.current.scheduleMacroTask('testMacroTask', () => {
+             throw Error('invoke error');
+           }, undefined, noop, noop);
            try {
              task.invoke();
            } catch (err) {
            }
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -336,14 +380,18 @@ describe('task lifecycle', () => {
     it('task should transit from canceling to unknown when zoneSpec.onCancelTask throw error before task running',
        testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testMacroTaskZone'}).run(() => {
-           const task = Zone.current.scheduleMacroTask(
-               'testMacroTask', noop, undefined, noop, () => { throw Error('cancel task'); });
+           const task =
+               Zone.current.scheduleMacroTask('testMacroTask', noop, undefined, noop, () => {
+                 throw Error('cancel task');
+               });
            try {
              Zone.current.cancelTask(task);
            } catch (err) {
            }
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -355,14 +403,18 @@ describe('task lifecycle', () => {
     it('task should transit from canceling to unknown when zoneSpec.onCancelTask throw error in running state',
        testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testMacroTaskZone'}).run(() => {
-           const task = Zone.current.scheduleMacroTask(
-               'testMacroTask', noop, undefined, noop, () => { throw Error('cancel task'); });
+           const task =
+               Zone.current.scheduleMacroTask('testMacroTask', noop, undefined, noop, () => {
+                 throw Error('cancel task');
+               });
            try {
              Zone.current.cancelTask(task);
            } catch (err) {
            }
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -386,7 +438,9 @@ describe('task lifecycle', () => {
                } catch (err) {
                }
              });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'}
@@ -413,7 +467,9 @@ describe('task lifecycle', () => {
                } catch (err) {
                }
              });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -442,7 +498,9 @@ describe('task lifecycle', () => {
                } catch (err) {
                }
              });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -469,7 +527,9 @@ describe('task lifecycle', () => {
            task = Zone.current.scheduleMacroTask(
                'testPeriodicalTask', noop, {isPeriodic: true}, noop, noop);
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'}
@@ -492,7 +552,9 @@ describe('task lifecycle', () => {
                } catch (err) {
                }
              });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'unknown', fromState: 'scheduling'}
@@ -506,7 +568,9 @@ describe('task lifecycle', () => {
                'testPeriodicalTask', noop, {isPeriodic: true}, noop, noop);
            task.invoke();
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -522,7 +586,9 @@ describe('task lifecycle', () => {
                'testPeriodicalTask', noop, {isPeriodic: true}, noop, noop);
            Zone.current.cancelTask(task);
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -535,11 +601,13 @@ describe('task lifecycle', () => {
        testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testPeriodicalTaskZone'}).run(() => {
            task = Zone.current.scheduleMacroTask('testPeriodicalTask', () => {
-             Zone.current.cancelTask(task !);
+             Zone.current.cancelTask(task!);
            }, {isPeriodic: true}, noop, noop);
            task.invoke();
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -560,7 +628,9 @@ describe('task lifecycle', () => {
            } catch (err) {
            }
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -573,14 +643,17 @@ describe('task lifecycle', () => {
        testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testPeriodicalTaskZone'}).run(() => {
            task = Zone.current.scheduleMacroTask(
-               'testPeriodicalTask', noop, {isPeriodic: true}, noop,
-               () => { throw Error('cancel task'); });
+               'testPeriodicalTask', noop, {isPeriodic: true}, noop, () => {
+                 throw Error('cancel task');
+               });
            try {
              Zone.current.cancelTask(task);
            } catch (err) {
            }
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -593,14 +666,17 @@ describe('task lifecycle', () => {
        testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testPeriodicalTaskZone'}).run(() => {
            task = Zone.current.scheduleMacroTask(
-               'testPeriodicalTask', noop, {isPeriodic: true}, noop,
-               () => { throw Error('cancel task'); });
+               'testPeriodicalTask', noop, {isPeriodic: true}, noop, () => {
+                 throw Error('cancel task');
+               });
            try {
              Zone.current.cancelTask(task);
            } catch (err) {
            }
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -625,7 +701,9 @@ describe('task lifecycle', () => {
                } catch (err) {
                }
              });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'}
@@ -651,7 +729,9 @@ describe('task lifecycle', () => {
                } catch (err) {
                }
              });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -662,14 +742,18 @@ describe('task lifecycle', () => {
   });
 
   describe('microTask lifecycle', () => {
-    beforeEach(() => { log = []; });
+    beforeEach(() => {
+      log = [];
+    });
 
     it('task should transit from notScheduled to scheduling then to scheduled state when scheduleTask',
        testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testMicroTaskZone'}).run(() => {
            Zone.current.scheduleMicroTask('testMicroTask', noop, undefined, noop);
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'}
@@ -691,7 +775,9 @@ describe('task lifecycle', () => {
                } catch (err) {
                }
              });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'unknown', fromState: 'scheduling'}
@@ -704,7 +790,9 @@ describe('task lifecycle', () => {
            const task = Zone.current.scheduleMicroTask('testMicroTask', noop, undefined, noop);
            task.invoke();
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -716,21 +804,26 @@ describe('task lifecycle', () => {
     it('should throw error when try to cancel a microTask', testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testMicroTaskZone'}).run(() => {
            const task = Zone.current.scheduleMicroTask('testMicroTask', () => {}, undefined, noop);
-           expect(() => { Zone.current.cancelTask(task); }).toThrowError('Task is not cancelable');
+           expect(() => {
+             Zone.current.cancelTask(task);
+           }).toThrowError('Task is not cancelable');
          });
        }));
 
     it('task should transit from running to notScheduled when task.callback throw error',
        testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testMicroTaskZone'}).run(() => {
-           const task = Zone.current.scheduleMicroTask(
-               'testMicroTask', () => { throw Error('invoke error'); }, undefined, noop);
+           const task = Zone.current.scheduleMicroTask('testMicroTask', () => {
+             throw Error('invoke error');
+           }, undefined, noop);
            try {
              task.invoke();
            } catch (err) {
            }
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -754,7 +847,9 @@ describe('task lifecycle', () => {
                } catch (err) {
                }
              });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'}
@@ -780,7 +875,9 @@ describe('task lifecycle', () => {
                } catch (err) {
                }
              });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -798,7 +895,9 @@ describe('task lifecycle', () => {
            Zone.current.cancelTask(task);
            task.invoke();
          });
-         expect(log.map(item => { return {toState: item.toState, fromState: item.fromState}; }))
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
              .toEqual([
                {toState: 'scheduling', fromState: 'notScheduled'},
                {toState: 'scheduled', fromState: 'scheduling'},
@@ -809,7 +908,7 @@ describe('task lifecycle', () => {
   });
 
   describe('reschedule zone', () => {
-    let callbackLogs: ({pos: string, method: string, zone: string, task: string} | HasTaskState)[];
+    let callbackLogs: ({pos: string, method: string, zone: string, task: string}|HasTaskState)[];
     const newZone = Zone.root.fork({
       name: 'new',
       onScheduleTask: (delegate, currZone, targetZone, task) => {
@@ -861,7 +960,9 @@ describe('task lifecycle', () => {
       }
     });
 
-    beforeEach(() => { callbackLogs = []; });
+    beforeEach(() => {
+      callbackLogs = [];
+    });
 
     it('should be able to reschedule zone when in scheduling state, after that, task will completely go to new zone, has nothing to do with original one',
        testFnWithLoggedTransitionTo(() => {
@@ -876,13 +977,8 @@ describe('task lifecycle', () => {
            {pos: 'before', method: 'onScheduleTask', zone: 'new', task: 'new'},
            {microTask: false, macroTask: true, eventTask: false, change: 'macroTask', zone: 'new'},
            {pos: 'after', method: 'onScheduleTask', zone: 'original', task: 'new'},
-           {pos: 'before', method: 'onInvokeTask', zone: 'new', task: 'new'}, {
-             microTask: false,
-             macroTask: false,
-             eventTask: false,
-             change: 'macroTask',
-             zone: 'new'
-           }
+           {pos: 'before', method: 'onInvokeTask', zone: 'new', task: 'new'},
+           {microTask: false, macroTask: false, eventTask: false, change: 'macroTask', zone: 'new'}
          ]);
        }));
 
@@ -892,7 +988,9 @@ describe('task lifecycle', () => {
            const t = Zone.current.scheduleMacroTask(
                'testRescheduleZoneTask', noop, undefined, noop, noop);
            Zone.current.cancelTask(t);
-           expect(() => { t.cancelScheduleRequest(); })
+           expect(() => {
+             t.cancelScheduleRequest();
+           })
                .toThrow(Error(
                    `macroTask 'testRescheduleZoneTask': can not transition to ` +
                    `'notScheduled', expecting state 'scheduling', was 'notScheduled'.`));
@@ -902,7 +1000,9 @@ describe('task lifecycle', () => {
              .fork({
                name: 'rescheduleRunning',
                onInvokeTask: (delegate, currZone, targetZone, task, applyThis, applyArgs) => {
-                 expect(() => { task.cancelScheduleRequest(); })
+                 expect(() => {
+                   task.cancelScheduleRequest();
+                 })
                      .toThrow(Error(
                          `macroTask 'testRescheduleZoneTask': can not transition to ` +
                          `'notScheduled', expecting state 'scheduling', was 'running'.`));
@@ -918,7 +1018,9 @@ describe('task lifecycle', () => {
              .fork({
                name: 'rescheduleCanceling',
                onCancelTask: (delegate, currZone, targetZone, task) => {
-                 expect(() => { task.cancelScheduleRequest(); })
+                 expect(() => {
+                   task.cancelScheduleRequest();
+                 })
                      .toThrow(Error(
                          `macroTask 'testRescheduleZoneTask': can not transition to ` +
                          `'notScheduled', expecting state 'scheduling', was 'canceling'.`));

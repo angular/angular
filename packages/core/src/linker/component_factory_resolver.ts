@@ -14,8 +14,8 @@ import {ComponentFactory, ComponentRef} from './component_factory';
 import {NgModuleRef} from './ng_module_factory';
 
 export function noComponentFactoryError(component: Function) {
-  const error = Error(
-      `No component factory found for ${stringify(component)}. Did you add it to @NgModule.entryComponents?`);
+  const error = Error(`No component factory found for ${
+      stringify(component)}. Did you add it to @NgModule.entryComponents?`);
   (error as any)[ERROR_COMPONENT] = component;
   return error;
 }
@@ -28,7 +28,7 @@ export function getComponent(error: Error): Type<any> {
 
 
 class _NullComponentFactoryResolver implements ComponentFactoryResolver {
-  resolveComponentFactory<T>(component: {new (...args: any[]): T}): ComponentFactory<T> {
+  resolveComponentFactory<T>(component: {new(...args: any[]): T}): ComponentFactory<T> {
     throw noComponentFactoryError(component);
   }
 }
@@ -63,7 +63,7 @@ export class CodegenComponentFactoryResolver implements ComponentFactoryResolver
     }
   }
 
-  resolveComponentFactory<T>(component: {new (...args: any[]): T}): ComponentFactory<T> {
+  resolveComponentFactory<T>(component: {new(...args: any[]): T}): ComponentFactory<T> {
     let factory = this._factories.get(component);
     if (!factory && this._parent) {
       factory = this._parent.resolveComponentFactory(component);

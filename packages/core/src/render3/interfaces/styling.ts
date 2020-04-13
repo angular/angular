@@ -1,10 +1,10 @@
 /**
-* @license
-* Copyright Google Inc. All Rights Reserved.
-*
-* Use of this source code is governed by an MIT-style license that can be
-* found in the LICENSE file at https://angular.io/license
-*/
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 import {KeyValueArray} from '../../util/array_utils';
 import {assertNumber, assertNumberInRange} from '../../util/assert';
@@ -14,7 +14,7 @@ import {assertNumber, assertNumberInRange} from '../../util/assert';
  *
  * See: `TStylingKeyPrimitive` and `TStylingStatic`
  */
-export type TStylingKey = TStylingKeyPrimitive | TStylingStatic;
+export type TStylingKey = TStylingKeyPrimitive|TStylingStatic;
 
 
 /**
@@ -27,7 +27,7 @@ export type TStylingKey = TStylingKeyPrimitive | TStylingStatic;
  *   is combined with directive which shadows its input `@Input('class')`. That way the binding
  *   should not participate in the styling resolution.
  */
-export type TStylingKeyPrimitive = string | null | false;
+export type TStylingKeyPrimitive = string|null|false;
 
 /**
  * Store the static values for the styling binding.
@@ -119,7 +119,9 @@ export interface TStylingStatic extends KeyValueArray<any> {}
  *
  * NOTE: `0` has special significance and represents `null` as in no additional pointer.
  */
-export interface TStylingRange { __brand__: 'TStylingRange'; }
+export interface TStylingRange {
+  __brand__: 'TStylingRange';
+}
 
 /**
  * Shift and masks constants for encoding two numbers into and duplicate info into a single number.
@@ -177,9 +179,8 @@ export function setTStylingRangePrev(
     tStylingRange: TStylingRange, previous: number): TStylingRange {
   ngDevMode && assertNumber(tStylingRange, 'expected number');
   ngDevMode && assertNumberInRange(previous, 0, StylingRange.UNSIGNED_MASK);
-  return (
-      ((tStylingRange as any as number) & ~StylingRange.PREV_MASK) |
-      (previous << StylingRange.PREV_SHIFT)) as any;
+  return (((tStylingRange as any as number) & ~StylingRange.PREV_MASK) |
+          (previous << StylingRange.PREV_SHIFT)) as any;
 }
 
 export function setTStylingRangePrevDuplicate(tStylingRange: TStylingRange): TStylingRange {
@@ -195,9 +196,8 @@ export function getTStylingRangeNext(tStylingRange: TStylingRange): number {
 export function setTStylingRangeNext(tStylingRange: TStylingRange, next: number): TStylingRange {
   ngDevMode && assertNumber(tStylingRange, 'expected number');
   ngDevMode && assertNumberInRange(next, 0, StylingRange.UNSIGNED_MASK);
-  return (
-      ((tStylingRange as any as number) & ~StylingRange.NEXT_MASK) |  //
-      next << StylingRange.NEXT_SHIFT) as any;
+  return (((tStylingRange as any as number) & ~StylingRange.NEXT_MASK) |  //
+          next << StylingRange.NEXT_SHIFT) as any;
 }
 
 export function getTStylingRangeNextDuplicate(tStylingRange: TStylingRange): boolean {

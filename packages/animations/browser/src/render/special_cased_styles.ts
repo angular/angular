@@ -19,7 +19,7 @@ import {eraseStyles, setStyles} from '../util';
  * @returns an instance of `SpecialCasedStyles` if any special styles are detected otherwise `null`
  */
 export function packageNonAnimatableStyles(
-    element: any, styles: {[key: string]: any} | {[key: string]: any}[]): SpecialCasedStyles|null {
+    element: any, styles: {[key: string]: any}|{[key: string]: any}[]): SpecialCasedStyles|null {
   let startStyles: {[key: string]: any}|null = null;
   let endStyles: {[key: string]: any}|null = null;
   if (Array.isArray(styles) && styles.length) {
@@ -47,7 +47,7 @@ export class SpecialCasedStyles {
   static initialStylesByElement = new WeakMap<any, {[key: string]: any}>();
 
   private _state = SpecialCasedStylesState.Pending;
-  private _initialStyles !: {[key: string]: any};
+  private _initialStyles!: {[key: string]: any};
 
   constructor(
       private _element: any, private _startStyles: {[key: string]: any}|null,

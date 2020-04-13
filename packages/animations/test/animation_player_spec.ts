@@ -69,7 +69,9 @@ import {scheduleMicroTask} from '../src/util';
          const log: string[] = [];
 
          const player = new NoopAnimationPlayer();
-         player.onStart(() => { scheduleMicroTask(() => log.push('started')); });
+         player.onStart(() => {
+           scheduleMicroTask(() => log.push('started'));
+         });
          player.onDone(() => log.push('done'));
          expect(log).toEqual([]);
 

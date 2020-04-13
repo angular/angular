@@ -8,7 +8,7 @@
 
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnInit} from '@angular/core';
 import {Component, Directive} from '@angular/core/src/metadata';
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 
 describe('directive lifecycle integration spec', () => {
@@ -27,7 +27,9 @@ describe('directive lifecycle integration spec', () => {
         .overrideComponent(MyComp5, {set: {template: '<div [field]="123" lifecycle></div>'}});
   });
 
-  beforeEach(inject([Log], (_log: any) => { log = _log; }));
+  beforeEach(inject([Log], (_log: any) => {
+    log = _log;
+  }));
 
   it('should invoke lifecycle methods ngOnChanges > ngOnInit > ngDoCheck > ngAfterContentChecked',
      () => {
@@ -51,7 +53,9 @@ describe('directive lifecycle integration spec', () => {
 @Directive({selector: '[lifecycle-dir]'})
 class LifecycleDir implements DoCheck {
   constructor(private _log: Log) {}
-  ngDoCheck() { this._log.add('child_ngDoCheck'); }
+  ngDoCheck() {
+    this._log.add('child_ngDoCheck');
+  }
 }
 
 @Component({
@@ -59,24 +63,38 @@ class LifecycleDir implements DoCheck {
   inputs: ['field'],
   template: `<div lifecycle-dir></div>`,
 })
-class LifecycleCmp implements OnChanges,
-    OnInit, DoCheck, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked {
+class LifecycleCmp implements OnChanges, OnInit, DoCheck, AfterContentInit, AfterContentChecked,
+                              AfterViewInit, AfterViewChecked {
   field: any /** TODO #9100 */;
   constructor(private _log: Log) {}
 
-  ngOnChanges(_: any /** TODO #9100 */) { this._log.add('ngOnChanges'); }
+  ngOnChanges(_: any /** TODO #9100 */) {
+    this._log.add('ngOnChanges');
+  }
 
-  ngOnInit() { this._log.add('ngOnInit'); }
+  ngOnInit() {
+    this._log.add('ngOnInit');
+  }
 
-  ngDoCheck() { this._log.add('ngDoCheck'); }
+  ngDoCheck() {
+    this._log.add('ngDoCheck');
+  }
 
-  ngAfterContentInit() { this._log.add('ngAfterContentInit'); }
+  ngAfterContentInit() {
+    this._log.add('ngAfterContentInit');
+  }
 
-  ngAfterContentChecked() { this._log.add('ngAfterContentChecked'); }
+  ngAfterContentChecked() {
+    this._log.add('ngAfterContentChecked');
+  }
 
-  ngAfterViewInit() { this._log.add('ngAfterViewInit'); }
+  ngAfterViewInit() {
+    this._log.add('ngAfterViewInit');
+  }
 
-  ngAfterViewChecked() { this._log.add('ngAfterViewChecked'); }
+  ngAfterViewChecked() {
+    this._log.add('ngAfterViewChecked');
+  }
 }
 
 @Component({selector: 'my-comp'})

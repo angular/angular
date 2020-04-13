@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {NEVER, Observable, Subject, merge} from 'rxjs';
+import {merge, NEVER, Observable, Subject} from 'rxjs';
 import {map, switchMap, take} from 'rxjs/operators';
 
 import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
@@ -15,22 +15,25 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
 
 /**
  * Subscribe and listen to
- * [Web Push Notifications](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
- * through Angular Service Worker.
+ * [Web Push
+ * Notifications](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices) through
+ * Angular Service Worker.
  *
  * @usageNotes
  *
  * You can inject a `SwPush` instance into any component or service
  * as a dependency.
  *
- * <code-example path="service-worker/push/module.ts" region="inject-sw-push" header="app.component.ts"></code-example>
+ * <code-example path="service-worker/push/module.ts" region="inject-sw-push"
+ * header="app.component.ts"></code-example>
  *
  * To subscribe, call `SwPush.requestSubscription()`, which asks the user for permission.
  * The call returns a `Promise` with a new
  * [`PushSubscription`](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
  * instance.
  *
- * <code-example path="service-worker/push/module.ts" region="subscribe-to-push" header="app.component.ts"></code-example>
+ * <code-example path="service-worker/push/module.ts" region="subscribe-to-push"
+ * header="app.component.ts"></code-example>
  *
  * A request is rejected if the user denies permission, or if the browser
  * blocks or does not support the Push API or ServiceWorkers.
@@ -61,7 +64,8 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
  * ```
  *
  * Only `title` is required. See `Notification`
- * [instance properties](https://developer.mozilla.org/en-US/docs/Web/API/Notification#Instance_properties).
+ * [instance
+ * properties](https://developer.mozilla.org/en-US/docs/Web/API/Notification#Instance_properties).
  *
  * While the subscription is active, Service Worker listens for
  * [PushEvent](https://developer.mozilla.org/en-US/docs/Web/API/PushEvent)
@@ -74,7 +78,8 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
  * An application can subscribe to `SwPush.notificationClicks` observable to be notified when a user
  * clicks on a notification. For example:
  *
- * <code-example path="service-worker/push/module.ts" region="subscribe-to-notification-clicks" header="app.component.ts"></code-example>
+ * <code-example path="service-worker/push/module.ts" region="subscribe-to-notification-clicks"
+ * header="app.component.ts"></code-example>
  *
  * @see [Push Notifications](https://developers.google.com/web/fundamentals/codelabs/push-notifications/)
  * @see [Angular Push Notifications](https://blog.angular-university.io/angular-push-notifications/)
@@ -102,11 +107,12 @@ export class SwPush {
    *
    * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
    */
-  readonly notificationClicks: Observable < {
-    action: string;
-    notification: NotificationOptions&{ title: string }
-  }
-  > ;
+  readonly notificationClicks: Observable<{
+    action: string; notification: NotificationOptions &
+        {
+          title: string
+        }
+  }>;
 
   /**
    * Emits the currently active
@@ -119,10 +125,12 @@ export class SwPush {
    * True if the Service Worker is enabled (supported by the browser and enabled via
    * `ServiceWorkerModule`).
    */
-  get isEnabled(): boolean { return this.sw.isEnabled; }
+  get isEnabled(): boolean {
+    return this.sw.isEnabled;
+  }
 
   // TODO(issue/24571): remove '!'.
-  private pushManager !: Observable<PushManager>;
+  private pushManager!: Observable<PushManager>;
   private subscriptionChanges = new Subject<PushSubscription|null>();
 
   constructor(private sw: NgswCommChannel) {
@@ -182,7 +190,7 @@ export class SwPush {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
     }
 
-    const doUnsubscribe = (sub: PushSubscription | null) => {
+    const doUnsubscribe = (sub: PushSubscription|null) => {
       if (sub === null) {
         throw new Error('Not subscribed to push notifications.');
       }
@@ -199,5 +207,7 @@ export class SwPush {
     return this.subscription.pipe(take(1), switchMap(doUnsubscribe)).toPromise();
   }
 
-  private decodeBase64(input: string): string { return atob(input); }
+  private decodeBase64(input: string): string {
+    return atob(input);
+  }
 }

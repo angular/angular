@@ -35,15 +35,21 @@ export class NestedFormArray {
     ]),
   });
 
-  get cities(): FormArray { return this.form.get('cities') as FormArray; }
+  get cities(): FormArray {
+    return this.form.get('cities') as FormArray;
+  }
 
-  addCity() { this.cities.push(new FormControl()); }
+  addCity() {
+    this.cities.push(new FormControl());
+  }
 
   onSubmit() {
     console.log(this.cities.value);  // ['SF', 'NY']
     console.log(this.form.value);    // { cities: ['SF', 'NY'] }
   }
 
-  setPreset() { this.cities.patchValue(['LA', 'MTV']); }
+  setPreset() {
+    this.cities.patchValue(['LA', 'MTV']);
+  }
 }
 // #enddocregion

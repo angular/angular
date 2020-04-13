@@ -17,10 +17,11 @@ const UTF8 = {
 const PACKAGE = 'angular/packages/core/test/bundling/cyclic_import';
 
 describe('treeshaking with uglify', () => {
-
   let content: string;
   const contentPath = require.resolve(path.join(PACKAGE, 'bundle.min_debug.js'));
-  beforeAll(() => { content = fs.readFileSync(contentPath, UTF8); });
+  beforeAll(() => {
+    content = fs.readFileSync(contentPath, UTF8);
+  });
 
   describe('functional test in domino', () => {
     it('should render hello world when not minified', withBody('<trigger></trigger>', () => {

@@ -12,7 +12,7 @@ import {HelperFunction} from './helpers';
 import {findImportSpecifier} from './util';
 
 /** A call expression that is based on a property access. */
-type PropertyAccessCallExpression = ts.CallExpression & {expression: ts.PropertyAccessExpression};
+type PropertyAccessCallExpression = ts.CallExpression&{expression: ts.PropertyAccessExpression};
 
 /** Replaces an import inside an import statement with a different one. */
 export function replaceImport(node: ts.NamedImports, oldImport: string, newImport: string) {
@@ -42,7 +42,7 @@ export function replaceImport(node: ts.NamedImports, oldImport: string, newImpor
  * Returns null if the expression should be dropped.
  */
 export function migrateExpression(node: ts.CallExpression, typeChecker: ts.TypeChecker):
-    {node: ts.Node | null, requiredHelpers?: HelperFunction[]} {
+    {node: ts.Node|null, requiredHelpers?: HelperFunction[]} {
   if (isPropertyAccessCallExpression(node)) {
     switch (node.expression.name.getText()) {
       case 'setElementProperty':
@@ -152,7 +152,7 @@ function migrateSetElementClass(node: PropertyAccessCallExpression): ts.Node {
   // Clone so we don't mutate by accident. Note that we assume that
   // the user's code is providing all three required arguments.
   const outputMethodArgs = node.arguments.slice();
-  const isAddArgument = outputMethodArgs.pop() !;
+  const isAddArgument = outputMethodArgs.pop()!;
   const createRendererCall = (isAdd: boolean) => {
     const innerExpression = node.expression.expression;
     const topExpression =
@@ -263,6 +263,6 @@ function migrateAnimateCall() {
  */
 function switchToHelperCall(
     node: PropertyAccessCallExpression, helper: HelperFunction,
-    args: ts.Expression[] | ts.NodeArray<ts.Expression>): ts.Node {
+    args: ts.Expression[]|ts.NodeArray<ts.Expression>): ts.Node {
   return ts.createCall(ts.createIdentifier(helper), [], [node.expression.expression, ...args]);
 }

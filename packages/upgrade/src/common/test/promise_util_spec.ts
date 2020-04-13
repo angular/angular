@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SyncPromise, isThenable} from '../src/promise_util';
+import {isThenable, SyncPromise} from '../src/promise_util';
 
 describe('isThenable()', () => {
   it('should return false for primitive values', () => {
@@ -27,7 +27,6 @@ describe('isThenable()', () => {
     expect(isThenable({})).toBe(false);
     expect(isThenable({then: true})).toBe(false);
     expect(isThenable({then: 'not a function'})).toBe(false);
-
   });
 
   it('should return true if `.then` is a function', () => {
@@ -87,8 +86,9 @@ describe('SyncPromise', () => {
   });
 
   describe('.all()', () => {
-    it('should return a `SyncPromise` instance',
-       () => { expect(SyncPromise.all([])).toEqual(jasmine.any(SyncPromise)); });
+    it('should return a `SyncPromise` instance', () => {
+      expect(SyncPromise.all([])).toEqual(jasmine.any(SyncPromise));
+    });
 
     it('should resolve immediately if the provided values are not thenable', () => {
       const spy = jasmine.createSpy('spy');
@@ -99,7 +99,7 @@ describe('SyncPromise', () => {
       expect(spy).toHaveBeenCalledWith(['foo', 1, {then: false}, []]);
     });
 
-    it('should wait for any thenables to resolve', async() => {
+    it('should wait for any thenables to resolve', async () => {
       const spy = jasmine.createSpy('spy');
 
       const v1 = 'foo';

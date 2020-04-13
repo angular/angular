@@ -35,7 +35,7 @@ export function detectChanges(component: {}): void {
  */
 export function markDirty(component: {}): void {
   ngDevMode && assertDefined(component, 'component');
-  const rootView = markViewDirty(getComponentViewByInstance(component)) !;
+  const rootView = markViewDirty(getComponentViewByInstance(component))!;
 
   ngDevMode && assertDefined(rootView[CONTEXT], 'rootContext should be defined');
   scheduleTick(rootView[CONTEXT] as RootContext, RootContextFlags.DetectChanges);

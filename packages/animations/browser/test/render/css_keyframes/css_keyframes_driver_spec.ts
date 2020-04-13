@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 
 import {CssKeyframesDriver} from '../../../src/render/css_keyframes/css_keyframes_driver';
 import {CssKeyframesPlayer} from '../../../src/render/css_keyframes/css_keyframes_player';
@@ -16,7 +16,7 @@ import {assertElementExistsInDom, createElement, findKeyframeDefinition, forceRe
 const CSS_KEYFRAME_RULE_TYPE = 7;
 
 describe('CssKeyframesDriver tests', () => {
-  if (isNode || typeof(window as any)['AnimationEvent'] == 'undefined') return;
+  if (isNode || typeof (window as any)['AnimationEvent'] == 'undefined') return;
 
   describe('building keyframes', () => {
     it('should build CSS keyframe style object containing the keyframe styles', () => {
@@ -28,7 +28,7 @@ describe('CssKeyframesDriver tests', () => {
         {opacity: 1, width: '200px', offset: 1},
       ]);
 
-      const head = document.querySelector('head') !;
+      const head = document.querySelector('head')!;
       head.appendChild(kfElm);
       forceReflow();
 
@@ -67,7 +67,7 @@ describe('CssKeyframesDriver tests', () => {
         {width: '200px', offset: 1},
       ]);
 
-      const head = document.querySelector('head') !;
+      const head = document.querySelector('head')!;
       head.appendChild(kfElm);
       forceReflow();
 
@@ -261,7 +261,7 @@ describe('CssKeyframesDriver tests', () => {
 
       player.play();
       player.finish();
-      player.beforeDestroy !();
+      player.beforeDestroy!();
       expect(player.currentSnapshot).toEqual({
         width: '999px',
         height: '999px',

@@ -17,13 +17,16 @@ ivyEnabled && describe('ApplicationRef bootstrap', () => {
     selector: 'hello-world',
     template: '<div>Hello {{ name }}</div>',
   })
-  class HelloWorldComponent implements OnInit,
-      DoCheck {
+  class HelloWorldComponent implements OnInit, DoCheck {
     log: string[] = [];
     name = 'World';
 
-    ngOnInit(): void { this.log.push('OnInit'); }
-    ngDoCheck(): void { this.log.push('DoCheck'); }
+    ngOnInit(): void {
+      this.log.push('OnInit');
+    }
+    ngDoCheck(): void {
+      this.log.push('DoCheck');
+    }
   }
 
   @NgModule({
@@ -34,7 +37,7 @@ ivyEnabled && describe('ApplicationRef bootstrap', () => {
   class MyAppModule {
   }
 
-  it('should bootstrap hello world', withBody('<hello-world></hello-world>', async() => {
+  it('should bootstrap hello world', withBody('<hello-world></hello-world>', async () => {
        const MyAppModuleFactory = new NgModuleFactory(MyAppModule);
        const moduleRef =
            await getTestBed().platform.bootstrapModuleFactory(MyAppModuleFactory, {ngZone: 'noop'});
@@ -58,7 +61,7 @@ ivyEnabled && describe('ApplicationRef bootstrap', () => {
      }));
 
   it('should expose the `window.ng` global utilities',
-     withBody('<hello-world></hello-world>', async() => {
+     withBody('<hello-world></hello-world>', async () => {
        const MyAppModuleFactory = new NgModuleFactory(MyAppModule);
        const moduleRef =
            await getTestBed().platform.bootstrapModuleFactory(MyAppModuleFactory, {ngZone: 'noop'});

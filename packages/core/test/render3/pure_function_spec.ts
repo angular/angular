@@ -17,9 +17,11 @@ describe('object literals', () => {
 
   class ObjectComp {
     // TODO(issue/24571): remove '!'.
-    config !: {[key: string]: any};
+    config!: {[key: string]: any};
 
-    static ɵfac = function ObjectComp_Factory() { return objectComp = new ObjectComp(); };
+    static ɵfac = function ObjectComp_Factory() {
+      return objectComp = new ObjectComp();
+    };
     static ɵcmp = ɵɵdefineComponent({
       type: ObjectComp,
       selectors: [['object-comp']],
@@ -70,7 +72,9 @@ describe('object literals', () => {
       }
     }
 
-    const e0_ff = (v1: any, v2: any) => { return {opacity: v1, duration: v2}; };
+    const e0_ff = (v1: any, v2: any) => {
+      return {opacity: v1, duration: v2};
+    };
 
     const configs = [{opacity: 0, duration: 500}, {opacity: 1, duration: 600}];
     renderToHtml(Template, {configs}, 1, 0, defs);
@@ -82,5 +86,4 @@ describe('object literals', () => {
     expect(objectComps[0].config).toEqual({opacity: 0, duration: 1000});
     expect(objectComps[1].config).toEqual({opacity: 1, duration: 600});
   });
-
 });

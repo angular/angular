@@ -28,9 +28,9 @@ const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
  */
 export class JSONPConnection implements Connection {
   // TODO(issue/24571): remove '!'.
-  private _id !: string;
+  private _id!: string;
   // TODO(issue/24571): remove '!'.
-  private _script !: Element;
+  private _script!: Element;
   private _responseData: any;
   private _finished: boolean = false;
 
@@ -38,7 +38,7 @@ export class JSONPConnection implements Connection {
    * The {@link ReadyState} of this request.
    */
   // TODO(issue/24571): remove '!'.
-  readyState !: ReadyState;
+  readyState!: ReadyState;
 
   /**
    * The outgoing HTTP request.
@@ -58,7 +58,6 @@ export class JSONPConnection implements Connection {
     }
     this.request = req;
     this.response = new Observable<Response>((responseObserver: Observer<Response>) => {
-
       this.readyState = ReadyState.Loading;
       const id = this._id = _dom.nextRequestID();
 

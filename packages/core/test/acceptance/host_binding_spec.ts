@@ -121,10 +121,9 @@ describe('host bindings', () => {
       class ParentCmp {
         private _prop = '';
 
-        @ViewChild('template', {read: ViewContainerRef})
-        vcr: ViewContainerRef = null !;
+        @ViewChild('template', {read: ViewContainerRef}) vcr: ViewContainerRef = null!;
 
-        private child: ComponentRef<ChildCmp> = null !;
+        private child: ComponentRef<ChildCmp> = null!;
 
         @Input()
         set prop(value: string) {
@@ -137,10 +136,11 @@ describe('host bindings', () => {
           }
         }
 
-        get prop() { return this._prop; }
+        get prop() {
+          return this._prop;
+        }
 
-        @Input()
-        prop2 = 0;
+        @Input() prop2 = 0;
 
         ngAfterViewInit() {
           const factory = this.componentFactoryResolver.resolveComponentFactory(ChildCmp);
@@ -212,7 +212,6 @@ describe('host bindings', () => {
     onlyInIvy('[style.prop] and [class.name] prioritization is a new feature')
         .it('should prioritize styling present in the order of directive hostBinding evaluation, but consider sub-classed directive styling to be the most important',
             () => {
-
               @Component({template: '<div child-dir sibling-dir></div>'})
               class MyApp {
               }
@@ -220,37 +219,55 @@ describe('host bindings', () => {
               @Directive({selector: '[parent-dir]'})
               class ParentDir {
                 @HostBinding('style.width')
-                get width1() { return '100px'; }
+                get width1() {
+                  return '100px';
+                }
 
                 @HostBinding('style.height')
-                get height1() { return '100px'; }
+                get height1() {
+                  return '100px';
+                }
 
                 @HostBinding('style.color')
-                get color1() { return 'red'; }
+                get color1() {
+                  return 'red';
+                }
               }
 
               @Directive({selector: '[child-dir]'})
               class ChildDir extends ParentDir {
                 @HostBinding('style.width')
-                get width2() { return '200px'; }
+                get width2() {
+                  return '200px';
+                }
 
                 @HostBinding('style.height')
-                get height2() { return '200px'; }
+                get height2() {
+                  return '200px';
+                }
               }
 
               @Directive({selector: '[sibling-dir]'})
               class SiblingDir {
                 @HostBinding('style.width')
-                get width3() { return '300px'; }
+                get width3() {
+                  return '300px';
+                }
 
                 @HostBinding('style.height')
-                get height3() { return '300px'; }
+                get height3() {
+                  return '300px';
+                }
 
                 @HostBinding('style.opacity')
-                get opacity3() { return '0.5'; }
+                get opacity3() {
+                  return '0.5';
+                }
 
                 @HostBinding('style.color')
-                get color1() { return 'blue'; }
+                get color1() {
+                  return 'blue';
+                }
               }
 
               TestBed.configureTestingModule(
@@ -295,25 +312,22 @@ describe('host bindings', () => {
         fixture.detectChanges();
       }).not.toThrow();
     });
-
   });
 
   @Directive({selector: '[hostBindingDir]'})
   class HostBindingDir {
-    @HostBinding()
-    id = 'foo';
+    @HostBinding() id = 'foo';
   }
 
   it('should support host bindings in directives', () => {
     @Directive({selector: '[dir]'})
     class Dir {
-      @HostBinding('className')
-      klass = 'foo';
+      @HostBinding('className') klass = 'foo';
     }
 
     @Component({template: '<span dir></span>'})
     class App {
-      @ViewChild(Dir) directiveInstance !: Dir;
+      @ViewChild(Dir) directiveInstance!: Dir;
     }
 
     TestBed.configureTestingModule({declarations: [App, Dir]});
@@ -333,8 +347,7 @@ describe('host bindings', () => {
   it('should support host bindings on root component', () => {
     @Component({template: ''})
     class HostBindingComp {
-      @HostBinding()
-      title = 'my-title';
+      @HostBinding() title = 'my-title';
     }
 
     TestBed.configureTestingModule({declarations: [HostBindingComp]});
@@ -365,8 +378,7 @@ describe('host bindings', () => {
     class App {
       constructor(public serviceOne: ServiceOne, public serviceTwo: ServiceTwo) {}
 
-      @HostBinding()
-      title = 'my-title';
+      @HostBinding() title = 'my-title';
     }
 
     TestBed.configureTestingModule({declarations: [App]});
@@ -390,8 +402,7 @@ describe('host bindings', () => {
 
     @Component({selector: 'host-title-comp', template: ''})
     class HostTitleComp {
-      @HostBinding()
-      title = 'my-title';
+      @HostBinding() title = 'my-title';
     }
 
     @Component({
@@ -402,7 +413,7 @@ describe('host bindings', () => {
         `
     })
     class App {
-      @ViewChild(HostBindingDir) hostBindingDir !: HostBindingDir;
+      @ViewChild(HostBindingDir) hostBindingDir!: HostBindingDir;
     }
 
     TestBed.configureTestingModule({declarations: [App, SomeDir, HostTitleComp, HostBindingDir]});
@@ -415,7 +426,7 @@ describe('host bindings', () => {
     expect(hostBindingDiv.id).toEqual('foo');
     expect(hostTitleComp.title).toEqual('my-title');
 
-    fixture.componentInstance.hostBindingDir !.id = 'bar';
+    fixture.componentInstance.hostBindingDir!.id = 'bar';
     fixture.detectChanges();
     expect(hostBindingDiv.id).toEqual('bar');
   });
@@ -423,8 +434,7 @@ describe('host bindings', () => {
   it('should support consecutive components with host bindings', () => {
     @Component({selector: 'host-binding-comp', template: ''})
     class HostBindingComp {
-      @HostBinding()
-      id = 'blue';
+      @HostBinding() id = 'blue';
     }
 
     @Component({
@@ -434,7 +444,7 @@ describe('host bindings', () => {
         `
     })
     class App {
-      @ViewChildren(HostBindingComp) hostBindingComp !: QueryList<HostBindingComp>;
+      @ViewChildren(HostBindingComp) hostBindingComp!: QueryList<HostBindingComp>;
     }
 
     TestBed.configureTestingModule({declarations: [App, HostBindingComp]});
@@ -470,7 +480,7 @@ describe('host bindings', () => {
 
        @Component({template: '<div someDir hostBindingDir></div>'})
        class App {
-         @ViewChild(HostBindingDir) hostBindingDir !: HostBindingDir;
+         @ViewChild(HostBindingDir) hostBindingDir!: HostBindingDir;
        }
 
        TestBed.configureTestingModule({declarations: [App, SomeDir, HostBindingDir]});
@@ -480,7 +490,7 @@ describe('host bindings', () => {
        const hostBindingDiv = fixture.nativeElement.querySelector('div') as HTMLElement;
        expect(hostBindingDiv.id).toEqual('foo');
 
-       fixture.componentInstance.hostBindingDir !.id = 'bar';
+       fixture.componentInstance.hostBindingDir!.id = 'bar';
        fixture.detectChanges();
        expect(hostBindingDiv.id).toEqual('bar');
      });
@@ -490,18 +500,23 @@ describe('host bindings', () => {
   it('should support host bindings that rely on values from init hooks', () => {
     @Component({template: '', selector: 'init-hook-comp'})
     class InitHookComp implements OnInit, OnChanges, DoCheck {
-      @Input()
-      inputValue = '';
+      @Input() inputValue = '';
 
       changesValue = '';
       initValue = '';
       checkValue = '';
 
-      ngOnChanges() { this.changesValue = 'changes'; }
+      ngOnChanges() {
+        this.changesValue = 'changes';
+      }
 
-      ngOnInit() { this.initValue = 'init'; }
+      ngOnInit() {
+        this.initValue = 'init';
+      }
 
-      ngDoCheck() { this.checkValue = 'check'; }
+      ngDoCheck() {
+        this.checkValue = 'check';
+      }
 
       @HostBinding('title')
       get value() {
@@ -529,16 +544,14 @@ describe('host bindings', () => {
   it('should support host bindings with the same name as inputs', () => {
     @Directive({selector: '[hostBindingDir]'})
     class HostBindingInputDir {
-      @Input()
-      disabled = false;
+      @Input() disabled = false;
 
-      @HostBinding('disabled')
-      hostDisabled = false;
+      @HostBinding('disabled') hostDisabled = false;
     }
 
     @Component({template: '<input hostBindingDir [disabled]="isDisabled">'})
     class App {
-      @ViewChild(HostBindingInputDir) hostBindingInputDir !: HostBindingInputDir;
+      @ViewChild(HostBindingInputDir) hostBindingInputDir!: HostBindingInputDir;
       isDisabled = true;
     }
 
@@ -611,14 +624,12 @@ describe('host bindings', () => {
   it('should support component with host bindings and array literals', () => {
     @Component({selector: 'host-binding-comp', template: ''})
     class HostBindingComp {
-      @HostBinding()
-      id = 'my-id';
+      @HostBinding() id = 'my-id';
     }
 
     @Component({selector: 'name-comp', template: ''})
     class NameComp {
-      @Input()
-      names !: string[];
+      @Input() names!: string[];
     }
 
     @Component({
@@ -628,7 +639,7 @@ describe('host bindings', () => {
         `
     })
     class App {
-      @ViewChild(NameComp) nameComp !: NameComp;
+      @ViewChild(NameComp) nameComp!: NameComp;
       name = '';
     }
 
@@ -661,8 +672,7 @@ describe('host bindings', () => {
   it('should support host bindings that contain array literals', () => {
     @Component({selector: 'name-comp', template: ''})
     class NameComp {
-      @Input()
-      names !: string[];
+      @Input() names!: string[];
     }
 
     @Component({
@@ -684,8 +694,8 @@ describe('host bindings', () => {
         `
     })
     class App {
-      @ViewChild(HostBindingComp) hostBindingComp !: HostBindingComp;
-      @ViewChild(NameComp) nameComp !: NameComp;
+      @ViewChild(HostBindingComp) hostBindingComp!: HostBindingComp;
+      @ViewChild(NameComp) nameComp!: NameComp;
       name = '';
       otherName = '';
     }
@@ -703,11 +713,11 @@ describe('host bindings', () => {
     expect(hostBindingEl.id).toBe('red,blue');
     expect(hostBindingEl.dir).toBe('ltr');
     expect(hostBindingEl.title).toBe('my title,other title');
-    expect(nameComp !.names).toEqual(['Frank', 'Nancy', 'Joe']);
+    expect(nameComp!.names).toEqual(['Frank', 'Nancy', 'Joe']);
 
-    const firstArray = nameComp !.names;
+    const firstArray = nameComp!.names;
     fixture.detectChanges();
-    expect(firstArray).toBe(nameComp !.names);
+    expect(firstArray).toBe(nameComp!.names);
 
     hostBindingComp.id = 'green';
     hostBindingComp.dir = 'rtl';
@@ -729,7 +739,9 @@ describe('host bindings', () => {
     @Directive({selector: '[hostListenerDir]'})
     class HostListenerDir {
       @HostListener('click')
-      onClick() { events.push('click!'); }
+      onClick() {
+        events.push('click!');
+      }
     }
 
     @Component({template: '<button hostListenerDir hostDir>Click</button>'})
@@ -740,7 +752,7 @@ describe('host bindings', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    const button = fixture.nativeElement.querySelector('button') !;
+    const button = fixture.nativeElement.querySelector('button')!;
     button.click();
     expect(events).toEqual(['click!']);
     expect(button.title).toEqual('my title,other title');
@@ -759,8 +771,8 @@ describe('host bindings', () => {
 
     @Component({template: '<host-binding-comp hostDir></host-binding-comp>'})
     class App {
-      @ViewChild(HostBindingComp) hostBindingComp !: HostBindingComp;
-      @ViewChild(HostBindingDir) hostBindingDir !: HostBindingDir;
+      @ViewChild(HostBindingComp) hostBindingComp!: HostBindingComp;
+      @ViewChild(HostBindingDir) hostBindingDir!: HostBindingDir;
     }
 
     TestBed.configureTestingModule({declarations: [App, HostBindingComp, HostBindingDir]});
@@ -798,7 +810,7 @@ describe('host bindings', () => {
 
     @Component({template: `<host-binding-comp></host-binding-comp>{{ name }}`})
     class App {
-      @ViewChild(HostBindingComp) hostBindingComp !: HostBindingComp;
+      @ViewChild(HostBindingComp) hostBindingComp!: HostBindingComp;
       name = '';
     }
 
@@ -872,8 +884,8 @@ describe('host bindings', () => {
       `
         })
         class App {
-          @ViewChild(SubDirective) subDir !: SubDirective;
-          @ViewChild(SuperDirective) superDir !: SuperDirective;
+          @ViewChild(SubDirective) subDir!: SubDirective;
+          @ViewChild(SuperDirective) superDir!: SuperDirective;
         }
 
         TestBed.configureTestingModule({declarations: [App, SuperDirective, SubDirective]});
@@ -927,8 +939,7 @@ describe('host bindings', () => {
       host: {'[id]': 'foos.length'}
     })
     class HostBindingWithContentChildren {
-      @ContentChildren('foo')
-      foos !: QueryList<any>;
+      @ContentChildren('foo') foos!: QueryList<any>;
     }
 
     @Component({
@@ -955,7 +966,9 @@ describe('host bindings', () => {
     class HostBindingWithContentHooks implements AfterContentInit {
       myValue = 'initial';
 
-      ngAfterContentInit() { this.myValue = 'after-content'; }
+      ngAfterContentInit() {
+        this.myValue = 'after-content';
+      }
     }
 
     @Component({template: '<host-binding-comp></host-binding-comp>'})
@@ -971,7 +984,6 @@ describe('host bindings', () => {
   });
 
   describe('styles', () => {
-
     it('should bind to host styles', () => {
       @Component(
           {selector: 'host-binding-to-styles', host: {'[style.width.px]': 'width'}, template: ''})
@@ -981,7 +993,7 @@ describe('host bindings', () => {
 
       @Component({template: '<host-binding-to-styles></host-binding-to-styles>'})
       class App {
-        @ViewChild(HostBindingToStyles) hostBindingDir !: HostBindingToStyles;
+        @ViewChild(HostBindingToStyles) hostBindingDir!: HostBindingToStyles;
       }
 
       TestBed.configureTestingModule({declarations: [App, HostBindingToStyles]});
@@ -1010,7 +1022,7 @@ describe('host bindings', () => {
 
       @Component({template: '<div hostStyles containerDir></div>'})
       class App {
-        @ViewChild(HostBindingToStyles) hostBindingDir !: HostBindingToStyles;
+        @ViewChild(HostBindingToStyles) hostBindingDir!: HostBindingToStyles;
       }
 
       TestBed.configureTestingModule({declarations: [App, HostBindingToStyles, ContainerDir]});
@@ -1044,10 +1056,12 @@ describe('host bindings', () => {
   });
 
   describe('sanitization', () => {
-    function identity(value: any) { return value; }
-    function verify(
-        tag: string, prop: string, value: any, expectedSanitizedValue: any, bypassFn: Function,
-        isAttribute: boolean = true, throws: boolean = false) {
+    function identity(value: any) {
+      return value;
+    }
+    function verify(tag: string, prop: string, value: any, expectedSanitizedValue: any,
+                    bypassFn: Function, isAttribute: boolean = true,
+                    throws: boolean = false) {
       it(`should sanitize <${tag} ${prop}> ${isAttribute ? 'properties' : 'attributes'}`, () => {
         @Directive({
           selector: '[unsafeUrlHostBindingDir]',
@@ -1061,13 +1075,13 @@ describe('host bindings', () => {
 
         @Component({template: `<${tag} unsafeUrlHostBindingDir></${tag}>`})
         class App {
-          @ViewChild(UnsafeDir) unsafeDir !: UnsafeDir;
+          @ViewChild(UnsafeDir) unsafeDir!: UnsafeDir;
         }
 
         TestBed.configureTestingModule({declarations: [App, UnsafeDir]});
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
-        const el = fixture.nativeElement.querySelector(tag) !;
+        const el = fixture.nativeElement.querySelector(tag)!;
         const current = () => isAttribute ? el.getAttribute(prop) : (el as any)[prop];
 
         fixture.componentInstance.unsafeDir.value = value;
@@ -1103,5 +1117,4 @@ describe('host bindings', () => {
         '<img src="unsafe:javascript:alert(3)">', bypassSanitizationTrustHtml,
         /* isAttribute */ false);
   });
-
 });

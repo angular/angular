@@ -126,23 +126,41 @@ export class MockPlatformLocation implements PlatformLocation {
     }
   }
 
-  get hostname() { return this.urlChanges[0].hostname; }
-  get protocol() { return this.urlChanges[0].protocol; }
-  get port() { return this.urlChanges[0].port; }
-  get pathname() { return this.urlChanges[0].pathname; }
-  get search() { return this.urlChanges[0].search; }
-  get hash() { return this.urlChanges[0].hash; }
-  get state() { return this.urlChanges[0].state; }
+  get hostname() {
+    return this.urlChanges[0].hostname;
+  }
+  get protocol() {
+    return this.urlChanges[0].protocol;
+  }
+  get port() {
+    return this.urlChanges[0].port;
+  }
+  get pathname() {
+    return this.urlChanges[0].pathname;
+  }
+  get search() {
+    return this.urlChanges[0].search;
+  }
+  get hash() {
+    return this.urlChanges[0].hash;
+  }
+  get state() {
+    return this.urlChanges[0].state;
+  }
 
 
-  getBaseHrefFromDOM(): string { return this.baseHref; }
+  getBaseHrefFromDOM(): string {
+    return this.baseHref;
+  }
 
   onPopState(fn: LocationChangeListener): void {
     // No-op: a state stack is not implemented, so
     // no events will ever come.
   }
 
-  onHashChange(fn: LocationChangeListener): void { this.hashUpdate.subscribe(fn); }
+  onHashChange(fn: LocationChangeListener): void {
+    this.hashUpdate.subscribe(fn);
+  }
 
   get href(): string {
     let url = `${this.protocol}//${this.hostname}${this.port ? ':' + this.port : ''}`;
@@ -150,7 +168,9 @@ export class MockPlatformLocation implements PlatformLocation {
     return url;
   }
 
-  get url(): string { return `${this.pathname}${this.search}${this.hash}`; }
+  get url(): string {
+    return `${this.pathname}${this.search}${this.hash}`;
+  }
 
   private parseChanges(state: unknown, url: string, baseHref: string = '') {
     // When the `history.state` value is stored, it is always copied.
@@ -169,7 +189,9 @@ export class MockPlatformLocation implements PlatformLocation {
     this.urlChanges.unshift({...this.urlChanges[0], pathname, search, hash, state: parsedState});
   }
 
-  forward(): void { throw new Error('Not implemented'); }
+  forward(): void {
+    throw new Error('Not implemented');
+  }
 
   back(): void {
     const oldUrl = this.url;
@@ -178,13 +200,15 @@ export class MockPlatformLocation implements PlatformLocation {
     const newHash = this.hash;
 
     if (oldHash !== newHash) {
-      scheduleMicroTask(() => this.hashUpdate.next({
-        type: 'hashchange', state: null, oldUrl, newUrl: this.url
-      } as LocationChangeEvent));
+      scheduleMicroTask(
+          () => this.hashUpdate.next(
+              {type: 'hashchange', state: null, oldUrl, newUrl: this.url} as LocationChangeEvent));
     }
   }
 
-  getState(): unknown { return this.state; }
+  getState(): unknown {
+    return this.state;
+  }
 }
 
 export function scheduleMicroTask(cb: () => any) {

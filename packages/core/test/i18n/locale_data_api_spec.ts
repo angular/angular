@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {LocaleDataIndex, findLocaleData, getLocaleCurrencyCode, registerLocaleData, unregisterAllLocaleData} from '../../src/i18n/locale_data_api';
+import {findLocaleData, getLocaleCurrencyCode, LocaleDataIndex, registerLocaleData, unregisterAllLocaleData} from '../../src/i18n/locale_data_api';
 import {global} from '../../src/util/global';
 
 {
@@ -53,14 +53,18 @@ import {global} from '../../src/util/global';
                .toThrowError(/Missing locale data for the locale "pt-AO"/);
          });
 
-      it('should return english data if the locale is en-US',
-         () => { expect(findLocaleData('en-US')).toEqual(localeEn); });
+      it('should return english data if the locale is en-US', () => {
+        expect(findLocaleData('en-US')).toEqual(localeEn);
+      });
 
-      it('should return the exact LOCALE_DATA if it is available',
-         () => { expect(findLocaleData('fr-CA')).toEqual(localeFrCA); });
+      it('should return the exact LOCALE_DATA if it is available', () => {
+        expect(findLocaleData('fr-CA')).toEqual(localeFrCA);
+      });
 
       it('should return the parent LOCALE_DATA if it exists and exact locale is not available',
-         () => { expect(findLocaleData('fr-BE')).toEqual(localeFr); });
+         () => {
+           expect(findLocaleData('fr-BE')).toEqual(localeFr);
+         });
 
       it(`should find the LOCALE_DATA even if the locale id is badly formatted`, () => {
         expect(findLocaleData('ca-ES-VALENCIA')).toEqual(localeCaESVALENCIA);
@@ -73,22 +77,30 @@ import {global} from '../../src/util/global';
         expect(findLocaleData('fake-id2')).toEqual(localeFrCA);
       });
 
-      it('should find the exact LOCALE_DATA if the locale is on the global object',
-         () => { expect(findLocaleData('de-CH')).toEqual(localeDeCH); });
+      it('should find the exact LOCALE_DATA if the locale is on the global object', () => {
+        expect(findLocaleData('de-CH')).toEqual(localeDeCH);
+      });
 
       it('should find the parent LOCALE_DATA if the exact locale is not available and the parent locale is on the global object',
-         () => { expect(findLocaleData('de-BE')).toEqual(localeDe); });
+         () => {
+           expect(findLocaleData('de-BE')).toEqual(localeDe);
+         });
 
       it('should find the registered LOCALE_DATA even if the same locale is on the global object',
-         () => { expect(findLocaleData('fr')).not.toBe(fakeGlobalFr); });
+         () => {
+           expect(findLocaleData('fr')).not.toBe(fakeGlobalFr);
+         });
     });
 
     describe('getLocaleCurrencyCode()', () => {
-      it('should return `null` if the given locale does not provide a currency code',
-         () => { expect(getLocaleCurrencyCode('de')).toBe(null); });
+      it('should return `null` if the given locale does not provide a currency code', () => {
+        expect(getLocaleCurrencyCode('de')).toBe(null);
+      });
 
       it('should return the code at the `LocaleDataIndex.CurrencyCode` of the given locale`s data',
-         () => { expect(getLocaleCurrencyCode('fr')).toEqual('EUR'); });
+         () => {
+           expect(getLocaleCurrencyCode('fr')).toEqual('EUR');
+         });
     });
   });
 }

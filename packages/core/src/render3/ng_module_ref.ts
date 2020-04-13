@@ -9,7 +9,7 @@
 import {Injector} from '../di/injector';
 import {INJECTOR} from '../di/injector_compatibility';
 import {InjectFlags} from '../di/interface/injector';
-import {R3Injector, createInjectorWithoutInjectorInstances} from '../di/r3_injector';
+import {createInjectorWithoutInjectorInstances, R3Injector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory as viewEngine_NgModuleFactory, NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
@@ -23,7 +23,9 @@ import {getNgLocaleIdDef, getNgModuleDef} from './definition';
 import {setLocaleId} from './i18n';
 import {maybeUnwrapFn} from './util/misc_utils';
 
-export interface NgModuleType<T = any> extends Type<T> { ɵmod: NgModuleDef<T>; }
+export interface NgModuleType<T = any> extends Type<T> {
+  ɵmod: NgModuleDef<T>;
+}
 
 export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements InternalNgModuleRef<T> {
   // tslint:disable-next-line:require-internal-with-underscore
@@ -45,20 +47,23 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   constructor(ngModuleType: Type<T>, public _parent: Injector|null) {
     super();
     const ngModuleDef = getNgModuleDef(ngModuleType);
-    ngDevMode && assertDefined(
-                     ngModuleDef,
-                     `NgModule '${stringify(ngModuleType)}' is not a subtype of 'NgModuleType'.`);
+    ngDevMode &&
+        assertDefined(
+            ngModuleDef,
+            `NgModule '${stringify(ngModuleType)}' is not a subtype of 'NgModuleType'.`);
 
     const ngLocaleIdDef = getNgLocaleIdDef(ngModuleType);
     ngLocaleIdDef && setLocaleId(ngLocaleIdDef);
-    this._bootstrapComponents = maybeUnwrapFn(ngModuleDef !.bootstrap);
+    this._bootstrapComponents = maybeUnwrapFn(ngModuleDef!.bootstrap);
     this._r3Injector = createInjectorWithoutInjectorInstances(
-        ngModuleType, _parent,
-        [
-          {provide: viewEngine_NgModuleRef, useValue: this},
-          {provide: viewEngine_ComponentFactoryResolver, useValue: this.componentFactoryResolver}
-        ],
-        stringify(ngModuleType)) as R3Injector;
+                           ngModuleType, _parent,
+                           [
+                             {provide: viewEngine_NgModuleRef, useValue: this}, {
+                               provide: viewEngine_ComponentFactoryResolver,
+                               useValue: this.componentFactoryResolver
+                             }
+                           ],
+                           stringify(ngModuleType)) as R3Injector;
 
     // We need to resolve the injector types separately from the injector creation, because
     // the module might be trying to use this ref in its contructor for DI which will cause a
@@ -79,12 +84,12 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
     ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
     const injector = this._r3Injector;
     !injector.destroyed && injector.destroy();
-    this.destroyCbs !.forEach(fn => fn());
+    this.destroyCbs!.forEach(fn => fn());
     this.destroyCbs = null;
   }
   onDestroy(callback: () => void): void {
     ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
-    this.destroyCbs !.push(callback);
+    this.destroyCbs!.push(callback);
   }
 }
 

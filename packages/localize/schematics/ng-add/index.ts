@@ -9,7 +9,7 @@
  */
 
 import {virtualFs} from '@angular-devkit/core';
-import {Rule, Tree, chain} from '@angular-devkit/schematics';
+import {chain, Rule, Tree} from '@angular-devkit/schematics';
 import {getWorkspace} from '@schematics/angular/utility/config';
 import {getProjectTargets} from '@schematics/angular/utility/project-targets';
 import {validateProjectName} from '@schematics/angular/utility/validation';
@@ -25,13 +25,12 @@ function getAllOptionValues<T>(
   const targets = getProjectTargets(host, projectName);
 
   // Find all targets of a specific build in a project.
-  const builderTargets: (BrowserBuilderTarget | ServeBuilderTarget)[] =
-      Object.values(targets).filter(
-          (target: BrowserBuilderTarget | ServeBuilderTarget) => target.builder === builderName);
+  const builderTargets: (BrowserBuilderTarget|ServeBuilderTarget)[] = Object.values(targets).filter(
+      (target: BrowserBuilderTarget|ServeBuilderTarget) => target.builder === builderName);
 
   // Get all options contained in target configuration partials.
   const configurationOptions = builderTargets.filter(t => t.configurations)
-                                   .map(t => Object.values(t.configurations !))
+                                   .map(t => Object.values(t.configurations!))
                                    .reduce((acc, cur) => acc.concat(...cur), []);
 
   // Now we have all option sets. We can use it to find all references to a given property.

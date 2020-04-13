@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, Injector, NgModule, destroyPlatform} from '@angular/core';
+import {destroyPlatform, InjectionToken, Injector, NgModule} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -14,13 +14,12 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '../../../src/common/src/angular1';
 import {$INJECTOR, INJECTOR_KEY} from '../../../src/common/src/constants';
 import {html, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
-import {UpgradeModule, downgradeInjectable, getAngularJSGlobal, setAngularJSGlobal} from '../../index';
+import {downgradeInjectable, getAngularJSGlobal, setAngularJSGlobal, UpgradeModule} from '../../index';
 
 import {bootstrap} from './static_test_helpers';
 
 withEachNg1Version(() => {
   describe('injection', () => {
-
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 

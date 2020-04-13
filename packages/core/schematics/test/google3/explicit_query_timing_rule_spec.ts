@@ -12,7 +12,6 @@ import * as shx from 'shelljs';
 import {Configuration, Linter} from 'tslint';
 
 describe('Google3 explicitQueryTiming TSLint rule', () => {
-
   /**
    * Path to the static-query schematic rules directory. The path needs to be resolved through
    * the Bazel runfiles, because on Windows runfiles are not symlinked into the working directory.
@@ -23,7 +22,7 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = join(process.env['TEST_TMPDIR'] !, 'google3-test');
+    tmpDir = join(process.env['TEST_TMPDIR']!, 'google3-test');
     shx.mkdir('-p', tmpDir);
 
     writeFile('tsconfig.json', JSON.stringify({compilerOptions: {module: 'es2015'}}));
@@ -41,7 +40,7 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
     const config = Configuration.parseConfigFile({rules: {'explicit-query-timing': true}});
 
     program.getRootFileNames().forEach(fileName => {
-      linter.lint(fileName, program.getSourceFile(fileName) !.getFullText(), config);
+      linter.lint(fileName, program.getSourceFile(fileName)!.getFullText(), config);
     });
 
     return linter;

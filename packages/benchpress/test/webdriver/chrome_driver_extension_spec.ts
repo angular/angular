@@ -32,7 +32,7 @@ import {TraceEventFactory} from '../trace_event_factory';
     const normEvents = new TraceEventFactory('timeline', 'pid0');
 
     function createExtension(
-        perfRecords: any[] | null = null, userAgent: string | null = null,
+        perfRecords: any[]|null = null, userAgent: string|null = null,
         messageMethod = 'Tracing.dataCollected'): WebDriverExtension {
       if (!perfRecords) {
         perfRecords = [];
@@ -97,9 +97,9 @@ import {TraceEventFactory} from '../trace_event_factory';
     it('should mark the timeline via performance.mark() with start and end of a test',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          createExtension().timeEnd('name1', 'name2').then((_) => {
-           expect(log).toEqual([[
-             'executeScript', `performance.mark('name1-bpend');performance.mark('name2-bpstart');`
-           ]]);
+           expect(log).toEqual([
+             ['executeScript', `performance.mark('name1-bpend');performance.mark('name2-bpstart');`]
+           ]);
            async.done();
          });
        }));
@@ -173,7 +173,8 @@ import {TraceEventFactory} from '../trace_event_factory';
              [
                chromeTimelineV8Events.start('MajorGC', 1000, {'usedHeapSizeBefore': 1000}),
                chromeTimelineV8Events.end('MajorGC', 2000, {'usedHeapSizeAfter': 0}),
-             ], )
+             ],
+             )
              .readPerfLog()
              .then((events) => {
                expect(events.length).toEqual(2);
@@ -192,7 +193,8 @@ import {TraceEventFactory} from '../trace_event_factory';
                [
                  chrome45TimelineEvents.start(recordType, 1234),
                  chrome45TimelineEvents.end(recordType, 2345)
-               ], )
+               ],
+               )
                .readPerfLog()
                .then((events) => {
                  expect(events).toEqual([
@@ -210,7 +212,8 @@ import {TraceEventFactory} from '../trace_event_factory';
              [
                chromeBlinkTimelineEvents.start('UpdateLayoutTree', 1234),
                chromeBlinkTimelineEvents.end('UpdateLayoutTree', 2345)
-             ], )
+             ],
+             )
              .readPerfLog()
              .then((events) => {
                expect(events).toEqual([
@@ -254,8 +257,10 @@ import {TraceEventFactory} from '../trace_event_factory';
        }));
 
     it('should report receivedData', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         createExtension([chrome45TimelineEvents.instant(
-                             'ResourceReceivedData', 1234, {'data': {'encodedDataLength': 987}})], )
+         createExtension(
+             [chrome45TimelineEvents.instant(
+                 'ResourceReceivedData', 1234, {'data': {'encodedDataLength': 987}})],
+             )
              .readPerfLog()
              .then((events) => {
                expect(events).toEqual(
@@ -265,9 +270,11 @@ import {TraceEventFactory} from '../trace_event_factory';
        }));
 
     it('should report sendRequest', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         createExtension([chrome45TimelineEvents.instant(
-                             'ResourceSendRequest', 1234,
-                             {'data': {'url': 'http://here', 'requestMethod': 'GET'}})], )
+         createExtension(
+             [chrome45TimelineEvents.instant(
+                 'ResourceSendRequest', 1234,
+                 {'data': {'url': 'http://here', 'requestMethod': 'GET'}})],
+             )
              .readPerfLog()
              .then((events) => {
                expect(events).toEqual([normEvents.instant(
@@ -277,7 +284,6 @@ import {TraceEventFactory} from '../trace_event_factory';
        }));
 
     describe('readPerfLog (common)', () => {
-
       it('should execute a dummy script before reading them',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            // TODO(tbosch): This seems to be a bug in ChromeDriver:
@@ -296,7 +302,8 @@ import {TraceEventFactory} from '../trace_event_factory';
                  [
                    chromeTimelineEvents.start(recordType, 1234),
                    chromeTimelineEvents.end(recordType, 2345)
-                 ], )
+                 ],
+                 )
                  .readPerfLog()
                  .then((events) => {
                    expect(events).toEqual([
@@ -337,7 +344,6 @@ import {TraceEventFactory} from '../trace_event_factory';
 
         it('should throw when ImplThreadRenderingStats contains more than one frame',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-
              createExtension([benchmarkEvents.instant(
                                  'BenchmarkInstrumentation::ImplThreadRenderingStats', 1100,
                                  {'data': {'frame_count': 2}})])
@@ -349,7 +355,6 @@ import {TraceEventFactory} from '../trace_event_factory';
                    async.done();
                  });
            }));
-
       });
 
       it('should report begin timestamps',
@@ -374,7 +379,6 @@ import {TraceEventFactory} from '../trace_event_factory';
 
       it('should throw an error on buffer overflow',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-
            createExtension(
                [
                  chromeTimelineEvents.start('FunctionCall', 1234),
@@ -394,9 +398,7 @@ import {TraceEventFactory} from '../trace_event_factory';
 
         expect(createExtension().supports({'browserName': 'Chrome'})).toBe(true);
       });
-
     });
-
   });
 }
 
@@ -419,7 +421,7 @@ class MockDriverAdapter extends WebDriverAdapter {
                 {'message': {'method': this._messageMethod, 'params': event}}, null, 2)
           })));
     } else {
-      return null !;
+      return null!;
     }
   }
 }

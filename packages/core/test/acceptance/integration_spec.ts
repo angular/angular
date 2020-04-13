@@ -16,10 +16,11 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 describe('acceptance integration tests', () => {
-  function stripHtmlComments(str: string) { return str.replace(/<!--[\s\S]*?-->/g, ''); }
+  function stripHtmlComments(str: string) {
+    return str.replace(/<!--[\s\S]*?-->/g, '');
+  }
 
   describe('render', () => {
-
     it('should render basic template', () => {
       @Component({template: '<span title="Hello">Greetings</span>'})
       class App {
@@ -64,12 +65,10 @@ describe('acceptance integration tests', () => {
         tView: 2,
         tNode: 4,
       });
-
     });
   });
 
   describe('ng-container', () => {
-
     it('should insert as a child of a regular element', () => {
       @Component(
           {template: '<div>before|<ng-container>Greetings<span></span></ng-container>|after</div>'})
@@ -108,7 +107,6 @@ describe('acceptance integration tests', () => {
     });
 
     it('should add and remove DOM nodes when ng-container is a child of an embedded view', () => {
-
       @Component({template: '<ng-container *ngIf="render">content</ng-container>'})
       class App {
         render = false;
@@ -131,21 +129,24 @@ describe('acceptance integration tests', () => {
     // https://stackblitz.com/edit/angular-tfhcz1?file=src%2Fapp%2Fapp.component.ts
     it('should add and remove DOM nodes when ng-container is a child of a delayed embedded view',
        () => {
-
          @Directive({selector: '[testDirective]'})
          class TestDirective {
            constructor(private _tplRef: TemplateRef<any>, private _vcRef: ViewContainerRef) {}
 
-           createAndInsert() { this._vcRef.insert(this._tplRef.createEmbeddedView({})); }
+           createAndInsert() {
+             this._vcRef.insert(this._tplRef.createEmbeddedView({}));
+           }
 
-           clear() { this._vcRef.clear(); }
+           clear() {
+             this._vcRef.clear();
+           }
          }
 
          @Component({
            template: '<ng-template testDirective><ng-container>content</ng-container></ng-template>'
          })
          class App {
-           @ViewChild(TestDirective, {static: true}) testDirective !: TestDirective;
+           @ViewChild(TestDirective, {static: true}) testDirective!: TestDirective;
          }
 
          TestBed.configureTestingModule({declarations: [App, TestDirective]});
@@ -205,9 +206,13 @@ describe('acceptance integration tests', () => {
       class TestDirective {
         constructor(private _tplRef: TemplateRef<any>, private _vcRef: ViewContainerRef) {}
 
-        createAndInsert() { this._vcRef.insert(this._tplRef.createEmbeddedView({})); }
+        createAndInsert() {
+          this._vcRef.insert(this._tplRef.createEmbeddedView({}));
+        }
 
-        clear() { this._vcRef.clear(); }
+        clear() {
+          this._vcRef.clear();
+        }
       }
 
       @Component({
@@ -215,7 +220,7 @@ describe('acceptance integration tests', () => {
             '<ng-template testDirective><ng-container><ng-container><ng-container>content</ng-container></ng-container></ng-container></ng-template>'
       })
       class App {
-        @ViewChild(TestDirective, {static: true}) testDirective !: TestDirective;
+        @ViewChild(TestDirective, {static: true}) testDirective!: TestDirective;
       }
 
       TestBed.configureTestingModule({declarations: [App, TestDirective]});
@@ -245,7 +250,7 @@ describe('acceptance integration tests', () => {
 
       @Component({template: '<div><ng-container dir></ng-container></div>'})
       class App {
-        @ViewChild(TestDirective) testDirective !: TestDirective;
+        @ViewChild(TestDirective) testDirective!: TestDirective;
       }
 
       TestBed.configureTestingModule({declarations: [App, TestDirective]});
@@ -260,14 +265,17 @@ describe('acceptance integration tests', () => {
     it('should support ViewContainerRef when ng-container is at the root of a view', () => {
       @Directive({selector: '[dir]'})
       class TestDirective {
-        @Input()
-        contentTpl: TemplateRef<{}>|null = null;
+        @Input() contentTpl: TemplateRef<{}>|null = null;
 
         constructor(private _vcRef: ViewContainerRef) {}
 
-        insertView() { this._vcRef.createEmbeddedView(this.contentTpl as TemplateRef<{}>); }
+        insertView() {
+          this._vcRef.createEmbeddedView(this.contentTpl as TemplateRef<{}>);
+        }
 
-        clear() { this._vcRef.clear(); }
+        clear() {
+          this._vcRef.clear();
+        }
       }
 
       @Component({
@@ -275,7 +283,7 @@ describe('acceptance integration tests', () => {
             '<ng-container dir [contentTpl]="content"><ng-template #content>Content</ng-template></ng-container>'
       })
       class App {
-        @ViewChild(TestDirective) testDirective !: TestDirective;
+        @ViewChild(TestDirective) testDirective!: TestDirective;
       }
 
       TestBed.configureTestingModule({declarations: [App, TestDirective]});
@@ -298,14 +306,18 @@ describe('acceptance integration tests', () => {
       class TestDirective {
         constructor(private _tplRef: TemplateRef<{}>, private _vcRef: ViewContainerRef) {}
 
-        insertView() { this._vcRef.createEmbeddedView(this._tplRef); }
+        insertView() {
+          this._vcRef.createEmbeddedView(this._tplRef);
+        }
 
-        clear() { this._vcRef.clear(); }
+        clear() {
+          this._vcRef.clear();
+        }
       }
 
       @Component({template: '<ng-container><ng-template dir>Content</ng-template></ng-container>'})
       class App {
-        @ViewChild(TestDirective) testDirective !: TestDirective;
+        @ViewChild(TestDirective) testDirective!: TestDirective;
       }
 
       TestBed.configureTestingModule({declarations: [App, TestDirective]});
@@ -334,7 +346,6 @@ describe('acceptance integration tests', () => {
 
       expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('<div></div>');
     });
-
   });
 
   describe('text bindings', () => {
@@ -373,11 +384,12 @@ describe('acceptance integration tests', () => {
 
       expect(fixture.nativeElement.innerHTML).toEqual('');
     });
-
   });
 
   describe('ngNonBindable handling', () => {
-    function stripNgNonBindable(str: string) { return str.replace(/ ngnonbindable=""/i, ''); }
+    function stripNgNonBindable(str: string) {
+      return str.replace(/ ngnonbindable=""/i, '');
+    }
 
     it('should keep local ref for host element', () => {
       @Component({
@@ -404,7 +416,9 @@ describe('acceptance integration tests', () => {
 
       @Directive({selector: '[directive]'})
       class TestDirective implements OnInit {
-        ngOnInit() { directiveInvoked = true; }
+        ngOnInit() {
+          directiveInvoked = true;
+        }
       }
 
       @Component({
@@ -432,7 +446,9 @@ describe('acceptance integration tests', () => {
 
       @Directive({selector: '[directive]'})
       class TestDirective implements OnInit {
-        ngOnInit() { directiveInvoked = true; }
+        ngOnInit() {
+          directiveInvoked = true;
+        }
       }
 
       @Component({
@@ -604,14 +620,12 @@ describe('acceptance integration tests', () => {
     it('should support a component with binding on host element', () => {
       @Component({selector: 'todo', template: '{{title}}'})
       class TodoComponentHostBinding {
-        @HostBinding()
-        title = 'one';
+        @HostBinding() title = 'one';
       }
 
       @Component({template: '<todo></todo>'})
       class App {
-        @ViewChild(TodoComponentHostBinding)
-        todoComponentHostBinding !: TodoComponentHostBinding;
+        @ViewChild(TodoComponentHostBinding) todoComponentHostBinding!: TodoComponentHostBinding;
       }
 
       TestBed.configureTestingModule({declarations: [App, TodoComponentHostBinding]});
@@ -658,8 +672,7 @@ describe('acceptance integration tests', () => {
     it('should support a component with sub-views', () => {
       @Component({selector: 'comp', template: '<div *ngIf="condition">text</div>'})
       class MyComp {
-        @Input()
-        condition !: boolean;
+        @Input() condition!: boolean;
       }
 
       @Component({template: '<comp [condition]="condition"></comp>'})
@@ -680,7 +693,6 @@ describe('acceptance integration tests', () => {
       fixture.detectChanges();
       expect(stripHtmlComments(compElement.innerHTML)).toEqual('');
     });
-
   });
 
   describe('element bindings', () => {
@@ -814,7 +826,7 @@ describe('acceptance integration tests', () => {
         fixture.detectChanges();
 
         const span: HTMLSpanElement = fixture.nativeElement.querySelector('span');
-        const bold: HTMLElement = span.querySelector('b') !;
+        const bold: HTMLElement = span.querySelector('b')!;
 
         fixture.componentInstance.title = 'Hello';
         fixture.detectChanges();
@@ -840,13 +852,12 @@ describe('acceptance integration tests', () => {
       it('should support host attribute bindings', () => {
         @Directive({selector: '[hostBindingDir]'})
         class HostBindingDir {
-          @HostBinding('attr.aria-label')
-          label = 'some label';
+          @HostBinding('attr.aria-label') label = 'some label';
         }
 
         @Component({template: '<div hostBindingDir></div>'})
         class App {
-          @ViewChild(HostBindingDir) hostBindingDir !: HostBindingDir;
+          @ViewChild(HostBindingDir) hostBindingDir!: HostBindingDir;
         }
 
         TestBed.configureTestingModule({declarations: [App, HostBindingDir]});
@@ -999,12 +1010,13 @@ describe('acceptance integration tests', () => {
       it('should apply classes properly when nodes have containers', () => {
         @Component({selector: 'structural-comp', template: 'Comp Content'})
         class StructuralComp {
-          @Input()
-          tmp !: TemplateRef<any>;
+          @Input() tmp!: TemplateRef<any>;
 
           constructor(public vcr: ViewContainerRef) {}
 
-          create() { this.vcr.createEmbeddedView(this.tmp); }
+          create() {
+            this.vcr.createEmbeddedView(this.tmp);
+          }
         }
 
         @Component({
@@ -1014,7 +1026,7 @@ describe('acceptance integration tests', () => {
           `
         })
         class App {
-          @ViewChild(StructuralComp) structuralComp !: StructuralComp;
+          @ViewChild(StructuralComp) structuralComp!: StructuralComp;
           value: any;
         }
 
@@ -1040,7 +1052,9 @@ describe('acceptance integration tests', () => {
         public classesVal: string = '';
 
         @Input('class')
-        set klass(value: string) { this.classesVal = value; }
+        set klass(value: string) {
+          this.classesVal = value;
+        }
       }
 
       @Directive({selector: '[DirWithStyle]'})
@@ -1048,15 +1062,16 @@ describe('acceptance integration tests', () => {
         public stylesVal: any = '';
 
         @Input()
-        set style(value: any) { this.stylesVal = value; }
+        set style(value: any) {
+          this.stylesVal = value;
+        }
       }
 
       it('should delegate initial classes to a [class] input binding if present on a directive on the same element',
          () => {
            @Component({template: '<div class="apple orange banana" DirWithClass></div>'})
            class App {
-             @ViewChild(DirWithClassDirective)
-             mockClassDirective !: DirWithClassDirective;
+             @ViewChild(DirWithClassDirective) mockClassDirective!: DirWithClassDirective;
            }
 
            TestBed.configureTestingModule({declarations: [App, DirWithClassDirective]});
@@ -1073,8 +1088,7 @@ describe('acceptance integration tests', () => {
          () => {
            @Component({template: '<div style="width: 100px; height: 200px" DirWithStyle></div>'})
            class App {
-             @ViewChild(DirWithStyleDirective)
-             mockStyleDirective !: DirWithStyleDirective;
+             @ViewChild(DirWithStyleDirective) mockStyleDirective!: DirWithStyleDirective;
            }
 
            TestBed.configureTestingModule({declarations: [App, DirWithStyleDirective]});
@@ -1092,8 +1106,7 @@ describe('acceptance integration tests', () => {
          () => {
            @Component({template: '<div DirWithClass [class]="value"></div>'})
            class App {
-             @ViewChild(DirWithClassDirective)
-             mockClassDirective !: DirWithClassDirective;
+             @ViewChild(DirWithClassDirective) mockClassDirective!: DirWithClassDirective;
              value = '';
            }
 
@@ -1111,9 +1124,8 @@ describe('acceptance integration tests', () => {
               () => {
                 @Component({template: '<div DirWithStyle [style]="value"></div>'})
                 class App {
-                  @ViewChild(DirWithStyleDirective)
-                  mockStyleDirective !: DirWithStyleDirective;
-                  value !: {[key: string]: string};
+                  @ViewChild(DirWithStyleDirective) mockStyleDirective!: DirWithStyleDirective;
+                  value!: {[key: string]: string};
                 }
 
                 TestBed.configureTestingModule({declarations: [App, DirWithStyleDirective]});
@@ -1155,7 +1167,7 @@ describe('acceptance integration tests', () => {
                 fixture.detectChanges();
 
                 const target: HTMLDivElement = fixture.nativeElement.querySelector('div');
-                const classes = target.getAttribute('class') !.split(/\s+/).sort();
+                const classes = target.getAttribute('class')!.split(/\s+/).sort();
                 expect(classes).toEqual(['big', 'golden', 'heavy']);
 
                 expect(target.getAttribute('title')).toEqual('foo');
@@ -1189,7 +1201,7 @@ describe('acceptance integration tests', () => {
                 })
                 class App {
                   @ViewChild(DirWithSingleStylingBindings)
-                  dirInstance !: DirWithSingleStylingBindings;
+                  dirInstance!: DirWithSingleStylingBindings;
                 }
 
                 TestBed.configureTestingModule({declarations: [App, DirWithSingleStylingBindings]});
@@ -1244,8 +1256,8 @@ describe('acceptance integration tests', () => {
                 @Component(
                     {template: '<div Dir1WithStyle Dir2WithStyle [style.width]="width"></div>'})
                 class App {
-                  @ViewChild(Dir1WithStyle) dir1Instance !: Dir1WithStyle;
-                  @ViewChild(Dir2WithStyle) dir2Instance !: Dir2WithStyle;
+                  @ViewChild(Dir1WithStyle) dir1Instance!: Dir1WithStyle;
+                  @ViewChild(Dir2WithStyle) dir2Instance!: Dir2WithStyle;
                   width: string|null|undefined = undefined;
                 }
 
@@ -1309,8 +1321,8 @@ describe('acceptance integration tests', () => {
                       '<div Dir1WithStyling Dir2WithStyling [style]="stylesExp" [class]="classesExp"></div>'
                 })
                 class App {
-                  @ViewChild(Dir1WithStyling) dir1Instance !: Dir1WithStyling;
-                  @ViewChild(Dir2WithStyling) dir2Instance !: Dir2WithStyling;
+                  @ViewChild(Dir1WithStyling) dir1Instance!: Dir1WithStyling;
+                  @ViewChild(Dir2WithStyling) dir2Instance!: Dir2WithStyling;
                   stylesExp: any = {};
                   classesExp: any = {};
                 }
@@ -1321,7 +1333,7 @@ describe('acceptance integration tests', () => {
                 fixture.detectChanges();
                 const {dir1Instance, dir2Instance} = fixture.componentInstance;
 
-                const target = fixture.nativeElement.querySelector('div') !;
+                const target = fixture.nativeElement.querySelector('div')!;
                 expect(target.style.getPropertyValue('width')).toEqual('111px');
 
                 const compInstance = fixture.componentInstance;
@@ -1393,7 +1405,7 @@ describe('acceptance integration tests', () => {
 
       TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
-      const target = fixture.nativeElement.querySelector('div') !;
+      const target = fixture.nativeElement.querySelector('div')!;
 
       expect(target.classList.contains('-fred-36-')).toBeFalsy();
 
@@ -1510,7 +1522,6 @@ describe('acceptance integration tests', () => {
                  // The ViewEngine error has a typo, whereas the Ivy one fixes it.
                  /^Unexpected value 'SomeModule' imported by the module 'ModuleWithImportedModule'\. Please add (a|an) @NgModule annotation\.$/);
        });
-
   });
 
   it('should only call inherited host listeners once', () => {
@@ -1519,7 +1530,9 @@ describe('acceptance integration tests', () => {
     @Component({template: ''})
     class ButtonSuperClass {
       @HostListener('click')
-      clicked() { clicks++; }
+      clicked() {
+        clicks++;
+      }
     }
 
     @Component({selector: 'button[custom-button]', template: ''})
@@ -1548,7 +1561,7 @@ describe('acceptance integration tests', () => {
 
     @Component({template: '<div someDir></div>'})
     class SuperComp {
-      @ViewChildren(SomeDir) dirs !: QueryList<SomeDir>;
+      @ViewChildren(SomeDir) dirs!: QueryList<SomeDir>;
     }
 
     @Component({selector: 'button[custom-button]', template: '<div someDir></div>'})
@@ -1576,7 +1589,9 @@ describe('acceptance integration tests', () => {
       private _isDestroyed = false;
 
       @Input()
-      get value() { return this._value; }
+      get value() {
+        return this._value;
+      }
       set value(newValue: any) {
         if (this._isDestroyed) {
           throw Error('Cannot assign to value after destroy.');
@@ -1586,7 +1601,9 @@ describe('acceptance integration tests', () => {
       }
       private _value: any;
 
-      ngOnDestroy() { this._isDestroyed = true; }
+      ngOnDestroy() {
+        this._isDestroyed = true;
+      }
     }
 
     @Component({template: '<div no-assign-after-destroy [value]="directiveValue"></div>'})
@@ -1608,7 +1625,7 @@ describe('acceptance integration tests', () => {
     @Component(
         {selector: 'test-component', template: `foo`, host: {'[attr.aria-disabled]': 'true'}})
     class TestComponent {
-      @ContentChild(TemplateRef, {static: true}) tpl !: TemplateRef<any>;
+      @ContentChild(TemplateRef, {static: true}) tpl!: TemplateRef<any>;
     }
 
     TestBed.configureTestingModule({declarations: [TestComponent]});
@@ -1621,7 +1638,7 @@ describe('acceptance integration tests', () => {
 
   it('should inherit inputs from undecorated superclasses', () => {
     class ButtonSuperClass {
-      @Input() isDisabled !: boolean;
+      @Input() isDisabled!: boolean;
     }
 
     @Component({selector: 'button[custom-button]', template: ''})
@@ -1651,7 +1668,9 @@ describe('acceptance integration tests', () => {
 
     class ButtonSuperClass {
       @Output() clicked = new EventEmitter<void>();
-      emitClick() { this.clicked.emit(); }
+      emitClick() {
+        this.clicked.emit();
+      }
     }
 
     @Component({selector: 'button[custom-button]', template: ''})
@@ -1660,7 +1679,9 @@ describe('acceptance integration tests', () => {
 
     @Component({template: '<button custom-button (clicked)="handleClick()"></button>'})
     class MyApp {
-      handleClick() { clicks++; }
+      handleClick() {
+        clicks++;
+      }
     }
 
     TestBed.configureTestingModule({declarations: [MyApp, ButtonSubClass]});
@@ -1675,8 +1696,7 @@ describe('acceptance integration tests', () => {
 
   it('should inherit host bindings from undecorated superclasses', () => {
     class BaseButton {
-      @HostBinding('attr.tabindex')
-      tabindex = -1;
+      @HostBinding('attr.tabindex') tabindex = -1;
     }
 
     @Component({selector: '[sub-button]', template: '<ng-content></ng-content>'})
@@ -1702,8 +1722,7 @@ describe('acceptance integration tests', () => {
 
   it('should inherit host bindings from undecorated grand superclasses', () => {
     class SuperBaseButton {
-      @HostBinding('attr.tabindex')
-      tabindex = -1;
+      @HostBinding('attr.tabindex') tabindex = -1;
     }
 
     class BaseButton extends SuperBaseButton {}
@@ -1734,7 +1753,9 @@ describe('acceptance integration tests', () => {
 
     class BaseButton {
       @HostListener('click')
-      handleClick() { clicks++; }
+      handleClick() {
+        clicks++;
+      }
     }
 
     @Component({selector: '[sub-button]', template: '<ng-content></ng-content>'})
@@ -1761,7 +1782,9 @@ describe('acceptance integration tests', () => {
     @Directive({selector: '[baseButton]'})
     class BaseButton {
       @HostListener('click')
-      handleClick() { clicks++; }
+      handleClick() {
+        clicks++;
+      }
     }
 
     @Component({selector: '[subButton]', template: '<ng-content></ng-content>'})
@@ -1788,7 +1811,9 @@ describe('acceptance integration tests', () => {
     @Directive({selector: '[superBaseButton]'})
     class SuperBaseButton {
       @HostListener('click')
-      handleClick() { clicks++; }
+      handleClick() {
+        clicks++;
+      }
     }
 
     @Directive({selector: '[baseButton]'})
@@ -1819,7 +1844,9 @@ describe('acceptance integration tests', () => {
     @Directive({selector: '[superSuperBaseButton]'})
     class SuperSuperBaseButton {
       @HostListener('click')
-      handleClick() { clicks++; }
+      handleClick() {
+        clicks++;
+      }
     }
 
     @Directive({selector: '[superBaseButton]'})
@@ -1855,9 +1882,13 @@ describe('acceptance integration tests', () => {
       inputs: ['dir'],
     })
     class Dir {
-      get dir(): any { return null; }
+      get dir(): any {
+        return null;
+      }
 
-      set dir(value: any) { throw new Error('this error is expected'); }
+      set dir(value: any) {
+        throw new Error('this error is expected');
+      }
     }
 
     @Component({
@@ -1919,7 +1950,7 @@ describe('acceptance integration tests', () => {
               });
               const fixture = TestBed.createComponent(Cmp);
               fixture.detectChanges(false);
-              const element = fixture.nativeElement.querySelector('div') !;
+              const element = fixture.nativeElement.querySelector('div')!;
 
               assertAttrValues(element, 'first-update-pass');
 

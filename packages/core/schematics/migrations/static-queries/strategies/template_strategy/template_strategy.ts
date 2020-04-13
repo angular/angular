@@ -7,7 +7,7 @@
  */
 
 import {AotCompiler, CompileDirectiveMetadata, CompileMetadataResolver, CompileNgModuleMetadata, CompileStylesheetMetadata, ElementAst, EmbeddedTemplateAst, NgAnalyzedModules, QueryMatch, StaticSymbol, TemplateAst} from '@angular/compiler';
-import {Diagnostic, createProgram, readConfiguration} from '@angular/compiler-cli';
+import {createProgram, Diagnostic, readConfiguration} from '@angular/compiler-cli';
 import {resolve} from 'path';
 import * as ts from 'typescript';
 
@@ -46,17 +46,17 @@ export class QueryTemplateStrategy implements TimingStrategy {
     // expose the logic that is necessary to analyze the determined modules. We work around
     // this by just accessing the necessary private properties using the bracket notation.
     this.compiler = (aotProgram as any)['compiler'];
-    this.metadataResolver = this.compiler !['_metadataResolver'];
+    this.metadataResolver = this.compiler!['_metadataResolver'];
 
     // Modify the "DirectiveNormalizer" to not normalize any referenced external stylesheets.
     // This is necessary because in CLI projects preprocessor files are commonly referenced
     // and we don't want to parse them in order to extract relative style references. This
     // breaks the analysis of the project because we instantiate a standalone AOT compiler
     // program which does not contain the custom logic by the Angular CLI Webpack compiler plugin.
-    const directiveNormalizer = this.metadataResolver !['_directiveNormalizer'];
+    const directiveNormalizer = this.metadataResolver!['_directiveNormalizer'];
     directiveNormalizer['_normalizeStylesheet'] = function(metadata: CompileStylesheetMetadata) {
       return new CompileStylesheetMetadata(
-          {styles: metadata.styles, styleUrls: [], moduleUrl: metadata.moduleUrl !});
+          {styles: metadata.styles, styleUrls: [], moduleUrl: metadata.moduleUrl!});
     };
 
     // Retrieves the analyzed modules of the current program. This data can be
@@ -75,7 +75,7 @@ export class QueryTemplateStrategy implements TimingStrategy {
 
   /** Analyzes a given directive by determining the timing of all matched view queries. */
   private _analyzeDirective(symbol: StaticSymbol, analyzedModules: NgAnalyzedModules) {
-    const metadata = this.metadataResolver !.getDirectiveMetadata(symbol);
+    const metadata = this.metadataResolver!.getDirectiveMetadata(symbol);
     const ngModule = analyzedModules.ngModuleByPipeOrDirective.get(symbol);
 
     if (!metadata.isComponent || !ngModule) {
@@ -168,7 +168,7 @@ export class QueryTemplateStrategy implements TimingStrategy {
     const queryKey = this._getViewQueryUniqueKey(filePath, classDecl.name.text, queryName);
 
     if (this.analyzedQueries.has(queryKey)) {
-      return this.analyzedQueries.get(queryKey) !;
+      return this.analyzedQueries.get(queryKey)!;
     }
     return null;
   }
@@ -176,7 +176,7 @@ export class QueryTemplateStrategy implements TimingStrategy {
   private _parseTemplate(component: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata):
       TemplateAst[] {
     return this
-        .compiler !['_parseTemplate'](component, ngModule, ngModule.transitiveModule.directives)
+        .compiler!['_parseTemplate'](component, ngModule, ngModule.transitiveModule.directives)
         .template;
   }
 
@@ -201,11 +201,11 @@ function findStaticQueryIds(
   nodes.forEach((node) => {
     const staticQueryIds = new Set<number>();
     const dynamicQueryIds = new Set<number>();
-    let queryMatches: QueryMatch[] = undefined !;
+    let queryMatches: QueryMatch[] = undefined!;
     if (node instanceof ElementAst) {
       findStaticQueryIds(node.children, result);
       node.children.forEach((child) => {
-        const childData = result.get(child) !;
+        const childData = result.get(child)!;
         childData.staticQueryIds.forEach(queryId => staticQueryIds.add(queryId));
         childData.dynamicQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
       });
@@ -213,7 +213,7 @@ function findStaticQueryIds(
     } else if (node instanceof EmbeddedTemplateAst) {
       findStaticQueryIds(node.children, result);
       node.children.forEach((child) => {
-        const childData = result.get(child) !;
+        const childData = result.get(child)!;
         childData.staticQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
         childData.dynamicQueryIds.forEach(queryId => dynamicQueryIds.add(queryId));
       });

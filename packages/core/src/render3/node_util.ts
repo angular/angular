@@ -43,7 +43,7 @@ export function getParentInjectorTNode(
   let parentTNode = startView[T_HOST] as TElementNode;
   // view offset is superior to 1
   while (viewOffset > 1) {
-    parentView = parentView[DECLARATION_VIEW] !;
+    parentView = parentView[DECLARATION_VIEW]!;
     parentTNode = parentView[T_HOST] as TElementNode;
     viewOffset--;
   }

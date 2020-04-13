@@ -52,7 +52,7 @@ export class HttpInterceptingHandler implements HttpHandler {
  *
  */
 export function interceptingHandler(
-    backend: HttpBackend, interceptors: HttpInterceptor[] | null = []): HttpHandler {
+    backend: HttpBackend, interceptors: HttpInterceptor[]|null = []): HttpHandler {
   if (!interceptors) {
     return backend;
   }

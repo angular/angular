@@ -29,7 +29,9 @@ describe('testability example', () => {
       let waitWithResultScript = function(done: any) {
         let rootEl = document.querySelector('example-app');
         let testability = window.getAngularTestability(rootEl);
-        testability.whenStable((didWork: boolean, tasks: any) => { done(tasks); }, 1000);
+        testability.whenStable((didWork: boolean, tasks: any) => {
+          done(tasks);
+        }, 1000);
       };
 
       element(by.css('.start-button')).click();
@@ -43,6 +45,8 @@ describe('testability example', () => {
       });
     });
 
-    afterAll(() => { browser.ignoreSynchronization = false; });
+    afterAll(() => {
+      browser.ignoreSynchronization = false;
+    });
   });
 });

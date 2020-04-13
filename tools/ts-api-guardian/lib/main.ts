@@ -9,9 +9,10 @@
 import {createPatch} from 'diff';
 import * as fs from 'fs';
 import * as path from 'path';
-import {SerializationOptions, publicApi} from './serializer';
 
-export {SerializationOptions, publicApi} from './serializer';
+import {publicApi, SerializationOptions} from './serializer';
+
+export {publicApi, SerializationOptions} from './serializer';
 
 export function generateGoldenFile(
     entrypoint: string, outFile: string, options: SerializationOptions = {}): void {

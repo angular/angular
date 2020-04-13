@@ -14,7 +14,9 @@ export class RenderStore {
   private _lookupById = new Map<number, any>();
   private _lookupByObject = new Map<any, number>();
 
-  allocateId(): number { return this._nextIndex++; }
+  allocateId(): number {
+    return this._nextIndex++;
+  }
 
   store(obj: any, id: number): void {
     if (id == null) return;

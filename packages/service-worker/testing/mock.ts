@@ -16,7 +16,9 @@ export const patchDecodeBase64 = (proto: {decodeBase64: typeof atob}) => {
     const newDecodeBase64 = (input: string) => Buffer.from(input, 'base64').toString('binary');
 
     proto.decodeBase64 = newDecodeBase64;
-    unpatch = () => { proto.decodeBase64 = oldDecodeBase64; };
+    unpatch = () => {
+      proto.decodeBase64 = oldDecodeBase64;
+    };
   }
 
   return unpatch;
@@ -46,7 +48,9 @@ export class MockServiceWorkerContainer {
     }
   }
 
-  async register(url: string): Promise<void> { return; }
+  async register(url: string): Promise<void> {
+    return;
+  }
 
   async getRegistration(): Promise<ServiceWorkerRegistration> {
     return this.mockRegistration as any;
@@ -68,7 +72,9 @@ export class MockServiceWorkerContainer {
 export class MockServiceWorker {
   constructor(private mock: MockServiceWorkerContainer, readonly scriptURL: string) {}
 
-  postMessage(value: Object) { this.mock.messages.next(value); }
+  postMessage(value: Object) {
+    this.mock.messages.next(value);
+  }
 }
 
 export class MockServiceWorkerRegistration {
@@ -78,14 +84,18 @@ export class MockServiceWorkerRegistration {
 export class MockPushManager {
   private subscription: PushSubscription|null = null;
 
-  getSubscription(): Promise<PushSubscription|null> { return Promise.resolve(this.subscription); }
+  getSubscription(): Promise<PushSubscription|null> {
+    return Promise.resolve(this.subscription);
+  }
 
   subscribe(options?: PushSubscriptionOptionsInit): Promise<PushSubscription> {
     this.subscription = new MockPushSubscription() as any;
-    return Promise.resolve(this.subscription !);
+    return Promise.resolve(this.subscription!);
   }
 }
 
 export class MockPushSubscription {
-  unsubscribe(): Promise<boolean> { return Promise.resolve(true); }
+  unsubscribe(): Promise<boolean> {
+    return Promise.resolve(true);
+  }
 }

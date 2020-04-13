@@ -13,7 +13,6 @@ import {localizePolyfill} from './index';
 
 
 describe('ng-add schematic', () => {
-
   const countInstances = (str: string, substr: string) => str.split(substr).length - 1;
   const defaultOptions = {name: 'demo'};
   let host: UnitTestTree;
@@ -112,25 +111,25 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
         new SchematicTestRunner('@angular/localize', require.resolve('../collection.json'));
   });
 
-  it('should add localize polyfill to polyfill files', async() => {
+  it('should add localize polyfill to polyfill files', async () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     expect(host.readContent('/src/polyfills.ts')).toContain(localizePolyfill);
     expect(host.readContent('/src/another-polyfills.ts')).toContain(localizePolyfill);
   });
 
-  it('should add localize polyfill to server main files', async() => {
+  it('should add localize polyfill to server main files', async () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     expect(host.readContent('/src/main.server.ts')).toContain(localizePolyfill);
     expect(host.readContent('/src/another-main.server.ts')).toContain(localizePolyfill);
   });
 
-  it('should add localize polyfill at the start of file', async() => {
+  it('should add localize polyfill at the start of file', async () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     const content = host.readContent('/src/polyfills.ts');
     expect(content.indexOf(localizePolyfill)).toBeLessThan(content.indexOf(polyfillsContent));
   });
 
-  it('should not add localize polyfill to files referenced in other targets files', async() => {
+  it('should not add localize polyfill to files referenced in other targets files', async () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     expect(host.readContent('/src/unrelated-polyfills.ts')).not.toContain(localizePolyfill);
     expect(host.readContent('/src/another-unrelated-polyfills.ts')).not.toContain(localizePolyfill);
@@ -139,13 +138,13 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
         .not.toContain(localizePolyfill);
   });
 
-  it('should only add localize polyfill once if multiple builds reference it', async() => {
+  it('should only add localize polyfill once if multiple builds reference it', async () => {
     host = await schematicRunner.runSchematicAsync('ng-add', defaultOptions, host).toPromise();
     const content = host.readContent('/src/polyfills.ts');
     expect(countInstances(content, localizePolyfill)).toBe(1);
   });
 
-  it('should not add localize polyfill if it\'s already there', async() => {
+  it('should not add localize polyfill if it\'s already there', async () => {
     const polyfillVariation = localizePolyfill.replace(/'/g, '"');
     host.overwrite('/src/polyfills.ts', `${localizePolyfill}\n${polyfillsContent}`);
     host.overwrite('/src/another-polyfills.ts', `${polyfillVariation}\n${polyfillsContent}`);
@@ -154,7 +153,7 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
     expect(countInstances(host.readContent('/src/another-polyfills.ts'), localizePolyfill)).toBe(0);
   });
 
-  it('should not break when there are no polyfills', async() => {
+  it('should not break when there are no polyfills', async () => {
     host.overwrite('angular.json', JSON.stringify({
       projects: {
         'demo': {

@@ -79,14 +79,18 @@ export class KeyEventsPlugin extends EventManagerPlugin {
    * Initializes an instance of the browser plug-in.
    * @param doc The document in which key events will be detected.
    */
-  constructor(@Inject(DOCUMENT) doc: any) { super(doc); }
+  constructor(@Inject(DOCUMENT) doc: any) {
+    super(doc);
+  }
 
   /**
-    * Reports whether a named key event is supported.
-    * @param eventName The event name to query.
-    * @return True if the named key event is supported.
+   * Reports whether a named key event is supported.
+   * @param eventName The event name to query.
+   * @return True if the named key event is supported.
    */
-  supports(eventName: string): boolean { return KeyEventsPlugin.parseEventName(eventName) != null; }
+  supports(eventName: string): boolean {
+    return KeyEventsPlugin.parseEventName(eventName) != null;
+  }
 
   /**
    * Registers a handler for a specific element and key event.
@@ -95,9 +99,9 @@ export class KeyEventsPlugin extends EventManagerPlugin {
    * @param handler A function to call when the notification occurs. Receives the
    * event object as an argument.
    * @returns The key event that was registered.
-  */
+   */
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    const parsedEvent = KeyEventsPlugin.parseEventName(eventName) !;
+    const parsedEvent = KeyEventsPlugin.parseEventName(eventName)!;
 
     const outsideHandler =
         KeyEventsPlugin.eventCallback(parsedEvent['fullKey'], handler, this.manager.getZone());
@@ -115,7 +119,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
       return null;
     }
 
-    const key = KeyEventsPlugin._normalizeKey(parts.pop() !);
+    const key = KeyEventsPlugin._normalizeKey(parts.pop()!);
 
     let fullKey = '';
     MODIFIER_KEYS.forEach(modifierName => {

@@ -45,7 +45,7 @@ export function stringify(token: any): string {
  * @param after after string.
  * @returns concatenated string.
  */
-export function concatStringsWithSpace(before: string | null, after: string | null): string {
+export function concatStringsWithSpace(before: string|null, after: string|null): string {
   return (before == null || before === '') ?
       (after === null ? '' : after) :
       ((after == null || after === '') ? before : before + ' ' + after);

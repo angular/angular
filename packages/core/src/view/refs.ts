@@ -22,7 +22,7 @@ import {stringify} from '../util/stringify';
 import {VERSION} from '../version';
 
 import {callNgModuleLifecycle, initNgModule, resolveNgModuleDep} from './ng_module';
-import {DepFlags, ElementData, NgModuleData, NgModuleDefinition, NodeDef, NodeFlags, Services, TemplateData, ViewContainerData, ViewData, ViewDefinitionFactory, ViewState, asElementData, asProviderData, asTextData} from './types';
+import {asElementData, asProviderData, asTextData, DepFlags, ElementData, NgModuleData, NgModuleDefinition, NodeDef, NodeFlags, Services, TemplateData, ViewContainerData, ViewData, ViewDefinitionFactory, ViewState} from './types';
 import {markParentViewsForCheck, resolveDefinition, rootRenderNodes, splitNamespace, tokenKey, viewParentEl} from './util';
 import {attachEmbeddedView, detachEmbeddedView, moveEmbeddedView, renderDetachView} from './view_attach';
 
@@ -32,7 +32,7 @@ const EMPTY_CONTEXT = {};
 // Putting any logic in here will destroy closure tree shaking!
 export function createComponentFactory(
     selector: string, componentType: Type<any>, viewDefFactory: ViewDefinitionFactory,
-    inputs: {[propName: string]: string} | null, outputs: {[propName: string]: string},
+    inputs: {[propName: string]: string}|null, outputs: {[propName: string]: string},
     ngContentSelectors: string[]): ComponentFactory<any> {
   return new ComponentFactory_(
       selector, componentType, viewDefFactory, inputs, outputs, ngContentSelectors);
@@ -61,7 +61,7 @@ class ComponentFactory_ extends ComponentFactory<any> {
 
   get inputs() {
     const inputsArr: {propName: string, templateName: string}[] = [];
-    const inputs = this._inputs !;
+    const inputs = this._inputs!;
     for (let propName in inputs) {
       const templateName = inputs[propName];
       inputsArr.push({propName, templateName});
@@ -88,7 +88,7 @@ class ComponentFactory_ extends ComponentFactory<any> {
       throw new Error('ngModule should be provided');
     }
     const viewDef = resolveDefinition(this.viewDefFactory);
-    const componentNodeIndex = viewDef.nodes[0].element !.componentProvider !.nodeIndex;
+    const componentNodeIndex = viewDef.nodes[0].element!.componentProvider!.nodeIndex;
     const view = Services.createRootView(
         injector, projectableNodes || [], rootSelectorOrNode, viewDef, ngModule, EMPTY_CONTEXT);
     const component = asProviderData(view, componentNodeIndex).instance;
@@ -115,11 +115,19 @@ class ComponentRef_ extends ComponentRef<any> {
   get location(): ElementRef {
     return new ElementRef(asElementData(this._view, this._elDef.nodeIndex).renderElement);
   }
-  get injector(): Injector { return new Injector_(this._view, this._elDef); }
-  get componentType(): Type<any> { return <any>this._component.constructor; }
+  get injector(): Injector {
+    return new Injector_(this._view, this._elDef);
+  }
+  get componentType(): Type<any> {
+    return <any>this._component.constructor;
+  }
 
-  destroy(): void { this._viewRef.destroy(); }
-  onDestroy(callback: Function): void { this._viewRef.onDestroy(callback); }
+  destroy(): void {
+    this._viewRef.destroy();
+  }
+  onDestroy(callback: Function): void {
+    this._viewRef.onDestroy(callback);
+  }
 }
 
 export function createViewContainerData(
@@ -134,9 +142,13 @@ class ViewContainerRef_ implements ViewContainerData {
   _embeddedViews: ViewData[] = [];
   constructor(private _view: ViewData, private _elDef: NodeDef, private _data: ElementData) {}
 
-  get element(): ElementRef { return new ElementRef(this._data.renderElement); }
+  get element(): ElementRef {
+    return new ElementRef(this._data.renderElement);
+  }
 
-  get injector(): Injector { return new Injector_(this._view, this._elDef); }
+  get injector(): Injector {
+    return new Injector_(this._view, this._elDef);
+  }
 
   /** @deprecated No replacement */
   get parentInjector(): Injector {
@@ -144,7 +156,7 @@ class ViewContainerRef_ implements ViewContainerData {
     let elDef = this._elDef.parent;
     while (!elDef && view) {
       elDef = viewParentEl(view);
-      view = view.parent !;
+      view = view.parent!;
     }
 
     return view ? new Injector_(view, elDef) : new Injector_(this._view, null);
@@ -153,7 +165,7 @@ class ViewContainerRef_ implements ViewContainerData {
   clear(): void {
     const len = this._embeddedViews.length;
     for (let i = len - 1; i >= 0; i--) {
-      const view = detachEmbeddedView(this._data, i) !;
+      const view = detachEmbeddedView(this._data, i)!;
       Services.destroyView(view);
     }
   }
@@ -168,7 +180,9 @@ class ViewContainerRef_ implements ViewContainerData {
     return null;
   }
 
-  get length(): number { return this._embeddedViews.length; }
+  get length(): number {
+    return this._embeddedViews.length;
+  }
 
   createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number):
       EmbeddedViewRef<C> {
@@ -243,14 +257,24 @@ export class ViewRef_ implements EmbeddedViewRef<any>, InternalViewRef {
     this._appRef = null;
   }
 
-  get rootNodes(): any[] { return rootRenderNodes(this._view); }
+  get rootNodes(): any[] {
+    return rootRenderNodes(this._view);
+  }
 
-  get context() { return this._view.context; }
+  get context() {
+    return this._view.context;
+  }
 
-  get destroyed(): boolean { return (this._view.state & ViewState.Destroyed) !== 0; }
+  get destroyed(): boolean {
+    return (this._view.state & ViewState.Destroyed) !== 0;
+  }
 
-  markForCheck(): void { markParentViewsForCheck(this._view); }
-  detach(): void { this._view.state &= ~ViewState.Attached; }
+  markForCheck(): void {
+    markParentViewsForCheck(this._view);
+  }
+  detach(): void {
+    this._view.state &= ~ViewState.Attached;
+  }
   detectChanges(): void {
     const fs = this._view.root.rendererFactory;
     if (fs.begin) {
@@ -264,9 +288,13 @@ export class ViewRef_ implements EmbeddedViewRef<any>, InternalViewRef {
       }
     }
   }
-  checkNoChanges(): void { Services.checkNoChangesView(this._view); }
+  checkNoChanges(): void {
+    Services.checkNoChangesView(this._view);
+  }
 
-  reattach(): void { this._view.state |= ViewState.Attached; }
+  reattach(): void {
+    this._view.state |= ViewState.Attached;
+  }
   onDestroy(callback: Function) {
     if (!this._view.disposables) {
       this._view.disposables = [];
@@ -313,13 +341,15 @@ class TemplateRef_ extends TemplateRef<any> implements TemplateData {
    * @internal
    */
   // TODO(issue/24571): remove '!'.
-  _projectedViews !: ViewData[];
+  _projectedViews!: ViewData[];
 
-  constructor(private _parentView: ViewData, private _def: NodeDef) { super(); }
+  constructor(private _parentView: ViewData, private _def: NodeDef) {
+    super();
+  }
 
   createEmbeddedView(context: any): EmbeddedViewRef<any> {
     return new ViewRef_(Services.createEmbeddedView(
-        this._parentView, this._def, this._def.element !.template !, context));
+        this._parentView, this._def, this._def.element!.template !, context));
   }
 
   get elementRef(): ElementRef {
@@ -346,7 +376,7 @@ export function nodeValue(view: ViewData, index: number): any {
   const def = view.def.nodes[index];
   if (def.flags & NodeFlags.TypeElement) {
     const elData = asElementData(view, def.nodeIndex);
-    return def.element !.template ? elData.template : elData.renderElement;
+    return def.element!.template ? elData.template : elData.renderElement;
   } else if (def.flags & NodeFlags.TypeText) {
     return asTextData(view, def.nodeIndex).renderText;
   } else if (def.flags & (NodeFlags.CatProvider | NodeFlags.TypePipe)) {
@@ -366,10 +396,10 @@ class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
   private _destroyed: boolean = false;
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _providers !: any[];
+  _providers!: any[];
   /** @internal */
   // TODO(issue/24571): remove '!'.
-  _modules !: any[];
+  _modules!: any[];
 
   readonly injector: Injector = this;
 
@@ -391,9 +421,13 @@ class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
         this, {token: token, tokenKey: tokenKey(token), flags: flags}, notFoundValue);
   }
 
-  get instance() { return this.get(this._moduleType); }
+  get instance() {
+    return this.get(this._moduleType);
+  }
 
-  get componentFactoryResolver() { return this.get(ComponentFactoryResolver); }
+  get componentFactoryResolver() {
+    return this.get(ComponentFactoryResolver);
+  }
 
   destroy(): void {
     if (this._destroyed) {
@@ -405,5 +439,7 @@ class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
     this._destroyListeners.forEach((listener) => listener());
   }
 
-  onDestroy(callback: () => void): void { this._destroyListeners.push(callback); }
+  onDestroy(callback: () => void): void {
+    this._destroyListeners.push(callback);
+  }
 }

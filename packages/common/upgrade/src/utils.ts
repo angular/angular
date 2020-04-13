@@ -27,7 +27,7 @@ export function deepEqual(a: any, b: any): boolean {
   }
 }
 
-export function isAnchor(el: (Node & ParentNode) | Element | null): el is HTMLAnchorElement {
+export function isAnchor(el: (Node&ParentNode)|Element|null): el is HTMLAnchorElement {
   return (<HTMLAnchorElement>el).href !== undefined;
 }
 

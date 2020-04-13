@@ -8,7 +8,7 @@
 
 import {BehaviorSubject} from 'rxjs';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, equalParamsAndUrlSegments} from '../src/router_state';
+import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute, equalParamsAndUrlSegments, RouterState, RouterStateSnapshot} from '../src/router_state';
 import {Params} from '../src/shared';
 import {UrlSegment} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
@@ -30,7 +30,9 @@ describe('RouterState & Snapshot', () => {
       state = new (RouterStateSnapshot as any)('url', root);
     });
 
-    it('should return first child', () => { expect(state.root.firstChild).toBe(b); });
+    it('should return first child', () => {
+      expect(state.root.firstChild).toBe(b);
+    });
 
     it('should return children', () => {
       const cc = state.root.children;
@@ -39,17 +41,17 @@ describe('RouterState & Snapshot', () => {
     });
 
     it('should return root', () => {
-      const b = state.root.firstChild !;
+      const b = state.root.firstChild!;
       expect(b.root).toBe(state.root);
     });
 
     it('should return parent', () => {
-      const b = state.root.firstChild !;
+      const b = state.root.firstChild!;
       expect(b.parent).toBe(state.root);
     });
 
     it('should return path from root', () => {
-      const b = state.root.firstChild !;
+      const b = state.root.firstChild!;
       const p = b.pathFromRoot;
       expect(p[0]).toBe(state.root);
       expect(p[1]).toBe(b);
@@ -72,7 +74,9 @@ describe('RouterState & Snapshot', () => {
       state = new (RouterState as any)(root, <any>null);
     });
 
-    it('should return first child', () => { expect(state.root.firstChild).toBe(b); });
+    it('should return first child', () => {
+      expect(state.root.firstChild).toBe(b);
+    });
 
     it('should return children', () => {
       const cc = state.root.children;
@@ -81,17 +85,17 @@ describe('RouterState & Snapshot', () => {
     });
 
     it('should return root', () => {
-      const b = state.root.firstChild !;
+      const b = state.root.firstChild!;
       expect(b.root).toBe(state.root);
     });
 
     it('should return parent', () => {
-      const b = state.root.firstChild !;
+      const b = state.root.firstChild!;
       expect(b.parent).toBe(state.root);
     });
 
     it('should return path from root', () => {
-      const b = state.root.firstChild !;
+      const b = state.root.firstChild!;
       const p = b.pathFromRoot;
       expect(p[0]).toBe(state.root);
       expect(p[1]).toBe(b);
@@ -102,7 +106,7 @@ describe('RouterState & Snapshot', () => {
     function createSnapshot(params: Params, url: UrlSegment[]): ActivatedRouteSnapshot {
       const snapshot = new (ActivatedRouteSnapshot as any)(
           url, params, <any>null, <any>null, <any>null, <any>null, <any>null, <any>null, <any>null,
-          -1, null !);
+          -1, null!);
       snapshot._routerState = new (RouterStateSnapshot as any)('', new TreeNode(snapshot, []));
       return snapshot;
     }
@@ -166,10 +170,11 @@ describe('RouterState & Snapshot', () => {
   });
 
   describe('advanceActivatedRoute', () => {
-
     let route: ActivatedRoute;
 
-    beforeEach(() => { route = createActivatedRoute('a'); });
+    beforeEach(() => {
+      route = createActivatedRoute('a');
+    });
 
     function createSnapshot(params: Params, url: UrlSegment[]): ActivatedRouteSnapshot {
       const queryParams = {};
@@ -177,7 +182,7 @@ describe('RouterState & Snapshot', () => {
       const data = {};
       const snapshot = new (ActivatedRouteSnapshot as any)(
           url, params, queryParams, fragment, data, <any>null, <any>null, <any>null, <any>null, -1,
-          null !);
+          null!);
       const state = new (RouterStateSnapshot as any)('', new TreeNode(snapshot, []));
       snapshot._routerState = state;
       return snapshot;
@@ -190,7 +195,9 @@ describe('RouterState & Snapshot', () => {
       (route as any)._futureSnapshot = secondPlace;
 
       let hasSeenDataChange = false;
-      route.data.forEach((data) => { hasSeenDataChange = true; });
+      route.data.forEach((data) => {
+        hasSeenDataChange = true;
+      });
       advanceActivatedRoute(route);
       expect(hasSeenDataChange).toEqual(true);
     });
@@ -200,7 +207,7 @@ describe('RouterState & Snapshot', () => {
 function createActivatedRouteSnapshot(cmp: string) {
   return new (ActivatedRouteSnapshot as any)(
       <any>[], <any>null, <any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null,
-      <any>null, -1, null !);
+      <any>null, -1, null!);
 }
 
 function createActivatedRoute(cmp: string) {

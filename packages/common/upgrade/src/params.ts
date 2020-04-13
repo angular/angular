@@ -152,7 +152,9 @@ export class AngularJSUrlCodec implements UrlCodec {
   }
 
   // https://github.com/angular/angular.js/blob/864c7f0/src/ng/location.js#L72
-  decodeSearch(search: string) { return parseKeyValue(search); }
+  decodeSearch(search: string) {
+    return parseKeyValue(search);
+  }
 
   // https://github.com/angular/angular.js/blob/864c7f0/src/ng/location.js#L73
   decodeHash(hash: string) {
@@ -193,7 +195,9 @@ export class AngularJSUrlCodec implements UrlCodec {
     }
   }
 
-  areEqual(valA: string, valB: string) { return this.normalize(valA) === this.normalize(valB); }
+  areEqual(valA: string, valB: string) {
+    return this.normalize(valA) === this.normalize(valB);
+  }
 
   // https://github.com/angular/angular.js/blob/864c7f0/src/ng/urlUtils.js#L60
   parse(url: string, base?: string) {

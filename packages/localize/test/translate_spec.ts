@@ -9,7 +9,7 @@
 import '@angular/localize/init';
 
 import {clearTranslations, loadTranslations} from '../localize';
-import {MessageId, TargetMessage, computeMsgId} from '../src/utils';
+import {computeMsgId, MessageId, TargetMessage} from '../src/utils';
 
 describe('$localize tag with translations', () => {
   describe('identities', () => {
@@ -22,15 +22,17 @@ describe('$localize tag with translations', () => {
         'Hello, {$PH}!': 'Hello, {$PH}!',
       }));
     });
-    afterEach(() => { clearTranslations(); });
+    afterEach(() => {
+      clearTranslations();
+    });
 
     it('should render template literals as-is', () => {
-      expect($localize `abc`).toEqual('abc');
-      expect($localize `abc${1 + 2 + 3}`).toEqual('abc6');
-      expect($localize `abc${1 + 2 + 3}def`).toEqual('abc6def');
-      expect($localize `abc${1 + 2 + 3}def${4 + 5 + 6}`).toEqual('abc6def15');
+      expect($localize`abc`).toEqual('abc');
+      expect($localize`abc${1 + 2 + 3}`).toEqual('abc6');
+      expect($localize`abc${1 + 2 + 3}def`).toEqual('abc6def');
+      expect($localize`abc${1 + 2 + 3}def${4 + 5 + 6}`).toEqual('abc6def15');
       const getName = () => 'World';
-      expect($localize `Hello, ${getName()}!`).toEqual('Hello, World!');
+      expect($localize`Hello, ${getName()}!`).toEqual('Hello, World!');
     });
   });
 
@@ -44,15 +46,17 @@ describe('$localize tag with translations', () => {
         'Hello, {$PH}!': 'HELLO, {$PH}!',
       }));
     });
-    afterEach(() => { clearTranslations(); });
+    afterEach(() => {
+      clearTranslations();
+    });
 
     it('should render template literals with messages upper-cased', () => {
-      expect($localize `abc`).toEqual('ABC');
-      expect($localize `abc${1 + 2 + 3}`).toEqual('ABC6');
-      expect($localize `abc${1 + 2 + 3}def`).toEqual('ABC6DEF');
-      expect($localize `abc${1 + 2 + 3}def${4 + 5 + 6}`).toEqual('ABC6DEF15');
+      expect($localize`abc`).toEqual('ABC');
+      expect($localize`abc${1 + 2 + 3}`).toEqual('ABC6');
+      expect($localize`abc${1 + 2 + 3}def`).toEqual('ABC6DEF');
+      expect($localize`abc${1 + 2 + 3}def${4 + 5 + 6}`).toEqual('ABC6DEF15');
       const getName = () => 'World';
-      expect($localize `Hello, ${getName()}!`).toEqual('HELLO, World!');
+      expect($localize`Hello, ${getName()}!`).toEqual('HELLO, World!');
     });
   });
 
@@ -62,11 +66,13 @@ describe('$localize tag with translations', () => {
         'abc{$PH}def{$PH_1} - Hello, {$PH_2}!': 'abc{$PH_2}def{$PH_1} - Hello, {$PH}!',
       }));
     });
-    afterEach(() => { clearTranslations(); });
+    afterEach(() => {
+      clearTranslations();
+    });
 
     it('should render template literals with expressions reversed', () => {
       const getName = () => 'World';
-      expect($localize `abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`)
+      expect($localize`abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`)
           .toEqual('abcWorlddef15 - Hello, 6!');
     });
   });
@@ -77,11 +83,13 @@ describe('$localize tag with translations', () => {
         'abc{$PH}def{$PH_1} - Hello, {$PH_2}!': 'abc{$PH} - Hello, {$PH_2}!',
       }));
     });
-    afterEach(() => { clearTranslations(); });
+    afterEach(() => {
+      clearTranslations();
+    });
 
     it('should render template literals with expressions removed', () => {
       const getName = () => 'World';
-      expect($localize `abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`)
+      expect($localize`abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`)
           .toEqual('abc6 - Hello, World!');
     });
   });

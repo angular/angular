@@ -79,18 +79,18 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   private bindings: Bindings;
 
   // TODO(issue/24571): remove '!'.
-  private controllerInstance !: IControllerInstance;
+  private controllerInstance!: IControllerInstance;
   // TODO(issue/24571): remove '!'.
-  private bindingDestination !: IBindingDestination;
+  private bindingDestination!: IBindingDestination;
 
   // We will be instantiating the controller in the `ngOnInit` hook, when the
   // first `ngOnChanges` will have been already triggered. We store the
   // `SimpleChanges` and "play them back" later.
   // TODO(issue/24571): remove '!'.
-  private pendingChanges !: SimpleChanges | null;
+  private pendingChanges!: SimpleChanges|null;
 
   // TODO(issue/24571): remove '!'.
-  private unregisterDoCheckWatcher !: Function;
+  private unregisterDoCheckWatcher!: Function;
 
   /**
    * Create a new `UpgradeComponent` instance. You should not normally need to do this.
@@ -135,8 +135,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     if (controllerType) {
       this.controllerInstance = this.helper.buildController(controllerType, this.$componentScope);
     } else if (bindToController) {
-      throw new Error(
-          `Upgraded directive '${this.directive.name}' specifies 'bindToController' but no controller.`);
+      throw new Error(`Upgraded directive '${
+          this.directive.name}' specifies 'bindToController' but no controller.`);
     }
 
     // Set up outputs
@@ -160,7 +160,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
     // Hook: $doCheck
     if (this.controllerInstance && isFunction(this.controllerInstance.$doCheck)) {
-      const callDoCheck = () => this.controllerInstance.$doCheck !();
+      const callDoCheck = () => this.controllerInstance.$doCheck!();
 
       this.unregisterDoCheckWatcher = this.$componentScope.$parent.$watch(callDoCheck);
       callDoCheck();
@@ -176,7 +176,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
       preLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
     }
 
-    linkFn(this.$componentScope, null !, {parentBoundTranscludeFn: attachChildNodes});
+    linkFn(this.$componentScope, null!, {parentBoundTranscludeFn: attachChildNodes});
 
     if (postLink) {
       postLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
@@ -224,7 +224,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
   private initializeBindings(directive: IDirective) {
     const btcIsObject = typeof directive.bindToController === 'object';
-    if (btcIsObject && Object.keys(directive.scope !).length) {
+    if (btcIsObject && Object.keys(directive.scope!).length) {
       throw new Error(
           `Binding definitions on scope and controller at the same time is not supported.`);
     }

@@ -11,13 +11,14 @@ import {browser, by, element} from 'protractor';
 import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
 describe('Zippy Component', function() {
-
   afterEach(verifyNoBrowserErrors);
 
   describe('zippy', function() {
     const URL = '/';
 
-    beforeEach(function() { browser.get(URL); });
+    beforeEach(function() {
+      browser.get(URL);
+    });
 
     it('should change the zippy title depending on it\'s state', function() {
       const zippyTitle = element(by.css('.zippy__title'));

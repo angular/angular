@@ -41,7 +41,9 @@ describe('SyncTestZoneSpec', () => {
                  document.body.appendChild(button);
                  let x = 1;
                  try {
-                   button.addEventListener('click', () => { x++; });
+                   button.addEventListener('click', () => {
+                     x++;
+                   });
 
                    button.click();
                    expect(x).toEqual(2);

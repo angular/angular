@@ -9,7 +9,7 @@
 import {DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 
-let debugElement: DebugElement = undefined !;
+let debugElement: DebugElement = undefined!;
 class MyDirective {}
 
 // #docregion by_all

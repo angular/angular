@@ -11,14 +11,18 @@ import {EventEmitter} from '@angular/core';
 export class MockEventEmitter<T> extends EventEmitter<T> {
   private _nextFns: Function[] = [];
 
-  constructor() { super(); }
+  constructor() {
+    super();
+  }
 
   subscribe(generator: any): any {
     this._nextFns.push(generator.next);
     return new MockDisposable();
   }
 
-  emit(value: any) { this._nextFns.forEach(fn => fn(value)); }
+  emit(value: any) {
+    this._nextFns.forEach(fn => fn(value));
+  }
 }
 
 class MockDisposable {

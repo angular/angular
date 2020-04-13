@@ -9,9 +9,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export class FileUtils {
-  static readFile(absolutePath: string): string { return fs.readFileSync(absolutePath, 'utf8'); }
+  static readFile(absolutePath: string): string {
+    return fs.readFileSync(absolutePath, 'utf8');
+  }
 
-  static readFileBuffer(absolutePath: string): Buffer { return fs.readFileSync(absolutePath); }
+  static readFileBuffer(absolutePath: string): Buffer {
+    return fs.readFileSync(absolutePath);
+  }
 
   static writeFile(absolutePath: string, contents: string|Buffer) {
     FileUtils.ensureDir(path.dirname(absolutePath));
@@ -25,7 +29,7 @@ export class FileUtils {
       absolutePath = path.dirname(absolutePath);
     }
     while (parents.length) {
-      fs.mkdirSync(parents.pop() !);
+      fs.mkdirSync(parents.pop()!);
     }
   }
 

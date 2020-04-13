@@ -28,7 +28,9 @@ describe('component', () => {
         providers: [{provide: testToken, useExisting: ParentWithOnDestroy}]
       })
       class ParentWithOnDestroy {
-        ngOnDestroy() { destroyCalls++; }
+        ngOnDestroy() {
+          destroyCalls++;
+        }
       }
 
       @Component({selector: 'child', template: ''})
@@ -75,7 +77,7 @@ describe('component', () => {
       entryComponents: [OtherComponent]
     })
     class TestComponent {
-      @ViewChild('vc', {read: ViewContainerRef, static: true}) vcref !: ViewContainerRef;
+      @ViewChild('vc', {read: ViewContainerRef, static: true}) vcref!: ViewContainerRef;
 
       constructor(private _cfr: ComponentFactoryResolver) {}
 
@@ -152,7 +154,8 @@ describe('component', () => {
       expect(match).toBeDefined();
       expect(match.length).toEqual(2);
       expect(html).toMatch(
-          `<leaf ${match[0].replace('_nghost', '_ngcontent')}="" ${match[1]}=""><span ${match[1].replace('_nghost', '_ngcontent')}="">bar</span></leaf></div>`);
+          `<leaf ${match[0].replace('_nghost', '_ngcontent')}="" ${match[1]}=""><span ${
+              match[1].replace('_nghost', '_ngcontent')}="">bar</span></leaf></div>`);
     });
   });
 
@@ -162,7 +165,9 @@ describe('component', () => {
 
       @Component({selector: 'comp-with-destroy', template: ``})
       class ComponentWithOnDestroy implements OnDestroy {
-        ngOnDestroy() { wasOnDestroyCalled = true; }
+        ngOnDestroy() {
+          wasOnDestroyCalled = true;
+        }
       }
 
       // This test asserts that the view tree is set up correctly based on the knowledge that this
@@ -244,7 +249,7 @@ describe('component', () => {
       encapsulation: ViewEncapsulation.Emulated,
     })
     class Parent {
-      @ViewChild(Child) childInstance !: Child;
+      @ViewChild(Child) childInstance!: Child;
       constructor(public renderer: Renderer2) {}
     }
 
@@ -266,7 +271,9 @@ describe('component', () => {
     })
     class CompA {
       @Input() a: string = '';
-      ngDoCheck() { log.push('CompA:ngDoCheck'); }
+      ngDoCheck() {
+        log.push('CompA:ngDoCheck');
+      }
     }
 
     @Component({
@@ -275,7 +282,9 @@ describe('component', () => {
     })
     class CompB {
       @Input() b: string = '';
-      ngDoCheck() { log.push('CompB:ngDoCheck'); }
+      ngDoCheck() {
+        log.push('CompB:ngDoCheck');
+      }
     }
 
     @Component({template: `<span></span>`})
@@ -435,14 +444,14 @@ describe('component', () => {
       fixture.detectChanges();
 
       // Create an instance of DynamicComponent and provide host element *reference*
-      let targetEl = document.getElementById('dynamic-comp-root-a') !;
+      let targetEl = document.getElementById('dynamic-comp-root-a')!;
       fixture.componentInstance.createDynamicComponent(targetEl);
       fixture.detectChanges();
       expect(targetEl.innerHTML).not.toContain('Existing content in slot A');
       expect(targetEl.innerHTML).toContain('DynamicComponent Content');
 
       // Create an instance of DynamicComponent and provide host element *selector*
-      targetEl = document.getElementById('dynamic-comp-root-b') !;
+      targetEl = document.getElementById('dynamic-comp-root-b')!;
       fixture.componentInstance.createDynamicComponent('#dynamic-comp-root-b');
       fixture.detectChanges();
       expect(targetEl.innerHTML).not.toContain('Existing content in slot B');
@@ -453,7 +462,8 @@ describe('component', () => {
        () => runTestWithRenderer([{provide: RendererFactory2, useClass: DomRendererFactory2}]));
 
     onlyInIvy('Renderer3 is supported only in Ivy')
-        .it('with Renderer3', () => runTestWithRenderer(
-                                  [{provide: RendererFactory2, useValue: domRendererFactory3}]));
+        .it('with Renderer3',
+            () =>
+                runTestWithRenderer([{provide: RendererFactory2, useValue: domRendererFactory3}]));
   });
 });

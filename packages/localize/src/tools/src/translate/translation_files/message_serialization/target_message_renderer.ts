@@ -5,7 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵParsedTranslation, ɵmakeParsedTranslation} from '@angular/localize';
+import {ɵmakeParsedTranslation, ɵParsedTranslation} from '@angular/localize';
+
 import {MessageRenderer} from './message_renderer';
 
 /**
@@ -20,11 +21,21 @@ export class TargetMessageRenderer implements MessageRenderer<ɵParsedTranslatio
     return ɵmakeParsedTranslation(messageParts, placeholderNames);
   }
   startRender(): void {}
-  endRender(): void { this.storeMessagePart(); }
-  text(text: string): void { this.current.text += text; }
-  placeholder(name: string, body: string|undefined): void { this.renderPlaceholder(name); }
-  startPlaceholder(name: string): void { this.renderPlaceholder(name); }
-  closePlaceholder(name: string): void { this.renderPlaceholder(name); }
+  endRender(): void {
+    this.storeMessagePart();
+  }
+  text(text: string): void {
+    this.current.text += text;
+  }
+  placeholder(name: string, body: string|undefined): void {
+    this.renderPlaceholder(name);
+  }
+  startPlaceholder(name: string): void {
+    this.renderPlaceholder(name);
+  }
+  closePlaceholder(name: string): void {
+    this.renderPlaceholder(name);
+  }
   startContainer(): void {}
   closeContainer(): void {}
   startIcu(): void {
@@ -35,7 +46,9 @@ export class TargetMessageRenderer implements MessageRenderer<ɵParsedTranslatio
     this.icuDepth--;
     this.text('}');
   }
-  private normalizePlaceholderName(name: string) { return name.replace(/-/g, '_'); }
+  private normalizePlaceholderName(name: string) {
+    return name.replace(/-/g, '_');
+  }
   private renderPlaceholder(name: string) {
     name = this.normalizePlaceholderName(name);
     if (this.icuDepth > 0) {

@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {CUSTOM_ELEMENTS_SCHEMA, Component, Injectable, InjectionToken, NO_ERRORS_SCHEMA, NgModule, NgModuleRef, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element} from '@angular/core';
+import {Component, CUSTOM_ELEMENTS_SCHEMA, Injectable, InjectionToken, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
@@ -84,12 +84,16 @@ describe('NgModule', () => {
     }
     @NgModule({providers: [Service]})
     class RoutesModule {
-      constructor(service: Service) { service.initializations.push('RoutesModule'); }
+      constructor(service: Service) {
+        service.initializations.push('RoutesModule');
+      }
     }
 
     @NgModule({imports: [RoutesModule]})
     class AppModule {
-      constructor(service: Service) { service.initializations.push('AppModule'); }
+      constructor(service: Service) {
+        service.initializations.push('AppModule');
+      }
     }
 
     TestBed.configureTestingModule({imports: [AppModule]});
@@ -188,7 +192,6 @@ describe('NgModule', () => {
     onlyInIvy('unknown element check logs a warning rather than throwing')
         .it('should warn about unknown element without CUSTOM_ELEMENTS_SCHEMA for element with dash in tag name',
             () => {
-
               @Component({template: `<custom-el></custom-el>`})
               class MyComp {
               }
@@ -262,11 +265,12 @@ describe('NgModule', () => {
               selectors: [['comp']],
               decls: 1,
               vars: 0,
-              template: function MyComp_Template(rf, ctx) {
-                if (rf & 1) {
-                  element(0, 'custom-el');
-                }
-              },
+              template:
+                  function MyComp_Template(rf, ctx) {
+                    if (rf & 1) {
+                      element(0, 'custom-el');
+                    }
+                  },
               encapsulation: 2
             });
           }
@@ -472,7 +476,6 @@ describe('NgModule', () => {
             fixture.detectChanges();
           }).not.toThrow();
         });
-
   });
 
   it('should be able to use DI through the NgModuleRef inside the module constructor', () => {
@@ -484,7 +487,9 @@ describe('NgModule', () => {
       providers: [{provide: token, useValue: 'foo'}],
     })
     class TestModule {
-      constructor(ngRef: NgModuleRef<TestModule>) { value = ngRef.injector.get(token); }
+      constructor(ngRef: NgModuleRef<TestModule>) {
+        value = ngRef.injector.get(token);
+      }
     }
 
     TestBed.configureTestingModule({imports: [TestModule], declarations: [TestCmp]});
@@ -514,5 +519,4 @@ describe('NgModule', () => {
        TestBed.createComponent(TestCmp);
        expect(componentInstance).toBeAnInstanceOf(TestCmp);
      });
-
 });

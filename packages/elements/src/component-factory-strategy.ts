@@ -7,7 +7,7 @@
  */
 
 import {ApplicationRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, Type} from '@angular/core';
-import {Observable, merge} from 'rxjs';
+import {merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from './element-strategy';
@@ -45,11 +45,11 @@ export class ComponentNgElementStrategyFactory implements NgElementStrategyFacto
 export class ComponentNgElementStrategy implements NgElementStrategy {
   /** Merged stream of the component's output events. */
   // TODO(issue/24571): remove '!'.
-  events !: Observable<NgElementStrategyEvent>;
+  events!: Observable<NgElementStrategyEvent>;
 
   /** Reference to the component that was created on connect. */
   // TODO(issue/24571): remove '!'.
-  private componentRef !: ComponentRef<any>| null;
+  private componentRef!: ComponentRef<any>|null;
 
   /** Changes that have been made to the component ref since the last time onChanges was called. */
   private inputChanges: SimpleChanges|null = null;
@@ -105,7 +105,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     // moved elsewhere in the DOM
     this.scheduledDestroyFn = scheduler.schedule(() => {
       if (this.componentRef) {
-        this.componentRef !.destroy();
+        this.componentRef!.destroy();
         this.componentRef = null;
       }
     }, DESTROY_DELAY);
@@ -190,7 +190,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   /** Sets up listeners for the component's outputs so that the events stream emits the events. */
   protected initializeOutputs(): void {
     const eventEmitters = this.componentFactory.outputs.map(({propName, templateName}) => {
-      const emitter = (this.componentRef !.instance as any)[propName] as EventEmitter<any>;
+      const emitter = (this.componentRef!.instance as any)[propName] as EventEmitter<any>;
       return emitter.pipe(map((value: any) => ({name: templateName, value})));
     });
 
@@ -207,7 +207,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     // during ngOnChanges.
     const inputChanges = this.inputChanges;
     this.inputChanges = null;
-    (this.componentRef !.instance as any as OnChanges).ngOnChanges(inputChanges);
+    (this.componentRef!.instance as any as OnChanges).ngOnChanges(inputChanges);
   }
 
   /**
@@ -260,6 +260,6 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     }
 
     this.callNgOnChanges();
-    this.componentRef !.changeDetectorRef.detectChanges();
+    this.componentRef!.changeDetectorRef.detectChanges();
   }
 }

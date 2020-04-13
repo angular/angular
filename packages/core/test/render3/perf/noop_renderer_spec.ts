@@ -8,7 +8,7 @@
 
 import {ProceduralRenderer3} from '@angular/core/src/render3/interfaces/renderer';
 
-import {MicroBenchmarkRenderNode, MicroBenchmarkRendererFactory} from './noop_renderer';
+import {MicroBenchmarkRendererFactory, MicroBenchmarkRenderNode} from './noop_renderer';
 
 describe('MicroBenchmarkRenderNode', () => {
   const renderer =

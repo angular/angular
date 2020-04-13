@@ -24,7 +24,7 @@ export function getInputNamesOfClass(
     }
 
     const inputDecorator =
-        getAngularDecorators(typeChecker, m.decorators !).find(d => d.name === 'Input');
+        getAngularDecorators(typeChecker, m.decorators!).find(d => d.name === 'Input');
 
     if (inputDecorator && hasPropertyNameText(m.name)) {
       resolvedInputSetters.push(m.name.text);

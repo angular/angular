@@ -245,7 +245,9 @@ export class MockBackend implements ConnectionBackend {
    *
    * This method only exists in the mock implementation, not in real Backends.
    */
-  resolveAllConnections() { this.connections.subscribe((c: MockConnection) => c.readyState = 4); }
+  resolveAllConnections() {
+    this.connections.subscribe((c: MockConnection) => c.readyState = 4);
+  }
 
   /**
    * Creates a new {@link MockConnection}. This is equivalent to calling `new

@@ -5,9 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵParsedTranslation, ɵisMissingTranslationError, ɵmakeTemplateObject, ɵtranslate} from '@angular/localize';
+import {ɵisMissingTranslationError, ɵmakeTemplateObject, ɵParsedTranslation, ɵtranslate} from '@angular/localize';
 import {NodePath} from '@babel/traverse';
 import * as t from '@babel/types';
+
 import {Diagnostics} from '../../diagnostics';
 
 /**
@@ -33,18 +34,18 @@ export function isNamedIdentifier(
 }
 
 /**
-* Is the given `identifier` declared globally.
-* @param identifier The identifier to check.
-*/
+ * Is the given `identifier` declared globally.
+ * @param identifier The identifier to check.
+ */
 export function isGlobalIdentifier(identifier: NodePath<t.Identifier>) {
   return !identifier.scope || !identifier.scope.hasBinding(identifier.node.name);
 }
 
 /**
-* Build a translated expression to replace the call to `$localize`.
-* @param messageParts The static parts of the message.
-* @param substitutions The expressions to substitute into the message.
-*/
+ * Build a translated expression to replace the call to `$localize`.
+ * @param messageParts The static parts of the message.
+ * @param substitutions The expressions to substitute into the message.
+ */
 export function buildLocalizeReplacement(
     messageParts: TemplateStringsArray, substitutions: readonly t.Expression[]): t.Expression {
   let mappedString: t.Expression = t.stringLiteral(messageParts[0]);
@@ -57,13 +58,13 @@ export function buildLocalizeReplacement(
 }
 
 /**
-* Extract the message parts from the given `call` (to `$localize`).
-*
-* The message parts will either by the first argument to the `call` or it will be wrapped in call
-* to a helper function like `__makeTemplateObject`.
-*
-* @param call The AST node of the call to process.
-*/
+ * Extract the message parts from the given `call` (to `$localize`).
+ *
+ * The message parts will either by the first argument to the `call` or it will be wrapped in call
+ * to a helper function like `__makeTemplateObject`.
+ *
+ * @param call The AST node of the call to process.
+ */
 export function unwrapMessagePartsFromLocalizeCall(call: NodePath<t.CallExpression>):
     TemplateStringsArray {
   let cooked = call.get('arguments')[0];
@@ -144,7 +145,7 @@ export function unwrapMessagePartsFromLocalizeCall(call: NodePath<t.CallExpressi
 export function unwrapSubstitutionsFromLocalizeCall(call: t.CallExpression): t.Expression[] {
   const expressions = call.arguments.splice(1);
   if (!isArrayOfExpressions(expressions)) {
-    const badExpression = expressions.find(expression => !t.isExpression(expression)) !;
+    const badExpression = expressions.find(expression => !t.isExpression(expression))!;
     throw new BabelParseError(
         badExpression,
         'Invalid substitutions for `$localize` (expected all substitution arguments to be expressions).');
@@ -166,12 +167,12 @@ export function unwrapMessagePartsFromTemplateLiteral(elements: t.TemplateElemen
 }
 
 /**
-* Wrap the given `expression` in parentheses if it is a binary expression.
-*
-* This ensures that this expression is evaluated correctly if it is embedded in another expression.
-*
-* @param expression The expression to potentially wrap.
-*/
+ * Wrap the given `expression` in parentheses if it is a binary expression.
+ *
+ * This ensures that this expression is evaluated correctly if it is embedded in another expression.
+ *
+ * @param expression The expression to potentially wrap.
+ */
 export function wrapInParensIfNecessary(expression: t.Expression): t.Expression {
   if (t.isBinaryExpression(expression)) {
     return t.parenthesizedExpression(expression);
@@ -181,9 +182,9 @@ export function wrapInParensIfNecessary(expression: t.Expression): t.Expression 
 }
 
 /**
-* Extract the string values from an `array` of string literals.
-* @param array The array to unwrap.
-*/
+ * Extract the string values from an `array` of string literals.
+ * @param array The array to unwrap.
+ */
 export function unwrapStringLiteralArray(array: t.Expression): string[] {
   if (!isStringLiteralArray(array)) {
     throw new BabelParseError(
@@ -280,19 +281,19 @@ function getReturnedExpression(fn: NodePath<t.FunctionDeclaration>): NodePath<t.
 }
 
 /**
-* Is the given `node` an array of literal strings?
-*
-* @param node The node to test.
-*/
+ * Is the given `node` an array of literal strings?
+ *
+ * @param node The node to test.
+ */
 export function isStringLiteralArray(node: t.Node): node is t.Expression&
     {elements: t.StringLiteral[]} {
   return t.isArrayExpression(node) && node.elements.every(element => t.isStringLiteral(element));
 }
 
 /**
-* Are all the given `nodes` expressions?
-* @param nodes The nodes to test.
-*/
+ * Are all the given `nodes` expressions?
+ * @param nodes The nodes to test.
+ */
 export function isArrayOfExpressions(nodes: t.Node[]): nodes is t.Expression[] {
   return nodes.every(element => t.isExpression(element));
 }
@@ -306,7 +307,7 @@ export interface TranslatePluginOptions {
 /**
  * How to handle missing translations.
  */
-export type MissingTranslationStrategy = 'error' | 'warning' | 'ignore';
+export type MissingTranslationStrategy = 'error'|'warning'|'ignore';
 
 /**
  * Translate the text of the given message, using the given translations.
@@ -340,7 +341,9 @@ export function translate(
 
 export class BabelParseError extends Error {
   private readonly type = 'BabelParseError';
-  constructor(public node: t.Node, message: string) { super(message); }
+  constructor(public node: t.Node, message: string) {
+    super(message);
+  }
 }
 
 export function isBabelParseError(e: any): e is BabelParseError {

@@ -31,19 +31,24 @@ function generateHostBindingDirDef() {
   }
 `;
   class HostBindingDir {
-    static ɵfac() { return new HostBindingDir(); }
+    static ɵfac() {
+      return new HostBindingDir();
+    }
     static ɵdir = ɵɵdefineDirective({
       type: HostBindingDir,
       selectors: [['', 'hostBindingDir', '']],
       hostVars: 2,
-      hostBindings: function(rf: RenderFlags, ctx: any) {
-        if (rf & 1) {
-          ɵɵlistener('click', function() { return ctx.onClick(); });
-        }
-        if (rf & 2) {
-          ɵɵhostProperty('data-a', ctx.exp);
-        }
-      }
+      hostBindings:
+          function(rf: RenderFlags, ctx: any) {
+            if (rf & 1) {
+              ɵɵlistener('click', function() {
+                return ctx.onClick();
+              });
+            }
+            if (rf & 2) {
+              ɵɵhostProperty('data-a', ctx.exp);
+            }
+          }
     });
 
     exp = 'string-exp';

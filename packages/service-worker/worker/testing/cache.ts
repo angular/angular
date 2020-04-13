@@ -28,14 +28,19 @@ export class MockCacheStorage implements CacheStorage {
   constructor(private origin: string, hydrateFrom?: string) {
     if (hydrateFrom !== undefined) {
       const hydrated = JSON.parse(hydrateFrom) as DehydratedCacheStorage;
-      Object.keys(hydrated).forEach(
-          name => { this.caches.set(name, new MockCache(this.origin, hydrated[name])); });
+      Object.keys(hydrated).forEach(name => {
+        this.caches.set(name, new MockCache(this.origin, hydrated[name]));
+      });
     }
   }
 
-  async has(name: string): Promise<boolean> { return this.caches.has(name); }
+  async has(name: string): Promise<boolean> {
+    return this.caches.has(name);
+  }
 
-  async keys(): Promise<string[]> { return Array.from(this.caches.keys()); }
+  async keys(): Promise<string[]> {
+    return Array.from(this.caches.keys());
+  }
 
   async open(name: string): Promise<Cache> {
     if (!this.caches.has(name)) {
@@ -67,7 +72,7 @@ export class MockCacheStorage implements CacheStorage {
   dehydrate(): string {
     const dehydrated: DehydratedCacheStorage = {};
     Array.from(this.caches.keys()).forEach(name => {
-      const cache = this.caches.get(name) !;
+      const cache = this.caches.get(name)!;
       dehydrated[name] = cache.dehydrate();
     });
     return JSON.stringify(dehydrated);
@@ -82,16 +87,21 @@ export class MockCache {
       Object.keys(hydrated).forEach(url => {
         const resp = hydrated[url];
         this.cache.set(
-            url, new MockResponse(
-                     resp.body,
-                     {status: resp.status, statusText: resp.statusText, headers: resp.headers}));
+            url,
+            new MockResponse(
+                resp.body,
+                {status: resp.status, statusText: resp.statusText, headers: resp.headers}));
       });
     }
   }
 
-  async add(request: RequestInfo): Promise<void> { throw 'Not implemented'; }
+  async add(request: RequestInfo): Promise<void> {
+    throw 'Not implemented';
+  }
 
-  async addAll(requests: RequestInfo[]): Promise<void> { throw 'Not implemented'; }
+  async addAll(requests: RequestInfo[]): Promise<void> {
+    throw 'Not implemented';
+  }
 
   async 'delete'(request: RequestInfo): Promise<boolean> {
     const url = (typeof request === 'string' ? request : request.url);
@@ -119,7 +129,7 @@ export class MockCache {
     if (res !== undefined) {
       res = res.clone();
     }
-    return res !;
+    return res!;
   }
 
   async matchAll(request?: Request|string, options?: CacheQueryOptions): Promise<Response[]> {
@@ -128,7 +138,7 @@ export class MockCache {
     }
     const url = (typeof request === 'string' ? request : request.url);
     if (this.cache.has(url)) {
-      return [this.cache.get(url) !];
+      return [this.cache.get(url)!];
     } else {
       return [];
     }
@@ -156,8 +166,9 @@ export class MockCache {
         headers: {},
       } as DehydratedResponse;
 
-      resp.headers.forEach(
-          (value: string, name: string) => { dehydratedResp.headers[name] = value; });
+      resp.headers.forEach((value: string, name: string) => {
+        dehydratedResp.headers[name] = value;
+      });
 
       dehydrated[url] = dehydratedResp;
     });

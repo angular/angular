@@ -29,7 +29,7 @@ export function globToRegex(glob: string, literalQuestionMark = false): string {
   const segments = glob.split('/').reverse();
   let regex: string = '';
   while (segments.length > 0) {
-    const segment = segments.pop() !;
+    const segment = segments.pop()!;
     if (segment === '**') {
       if (segments.length > 0) {
         regex += WILD_OPEN;

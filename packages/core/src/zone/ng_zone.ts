@@ -148,7 +148,9 @@ export class NgZone {
     forkInnerZoneWithAngularBehavior(self);
   }
 
-  static isInAngularZone(): boolean { return Zone.current.get('isAngularZone') === true; }
+  static isInAngularZone(): boolean {
+    return Zone.current.get('isAngularZone') === true;
+  }
 
   static assertInAngularZone(): void {
     if (!NgZone.isInAngularZone()) {
@@ -274,36 +276,40 @@ function delayChangeDetectionForEvents(zone: NgZonePrivate) {
 }
 
 function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
-  const delayChangeDetectionForEventsDelegate = () => { delayChangeDetectionForEvents(zone); };
+  const delayChangeDetectionForEventsDelegate = () => {
+    delayChangeDetectionForEvents(zone);
+  };
   const maybeDelayChangeDetection = !!zone.shouldCoalesceEventChangeDetection &&
       zone.nativeRequestAnimationFrame && delayChangeDetectionForEventsDelegate;
   zone._inner = zone._inner.fork({
     name: 'angular',
     properties:
         <any>{'isAngularZone': true, 'maybeDelayChangeDetection': maybeDelayChangeDetection},
-    onInvokeTask: (delegate: ZoneDelegate, current: Zone, target: Zone, task: Task, applyThis: any,
-                   applyArgs: any): any => {
-      try {
-        onEnter(zone);
-        return delegate.invokeTask(target, task, applyThis, applyArgs);
-      } finally {
-        if (maybeDelayChangeDetection && task.type === 'eventTask') {
-          maybeDelayChangeDetection();
-        }
-        onLeave(zone);
-      }
-    },
+    onInvokeTask:
+        (delegate: ZoneDelegate, current: Zone, target: Zone, task: Task, applyThis: any,
+         applyArgs: any): any => {
+          try {
+            onEnter(zone);
+            return delegate.invokeTask(target, task, applyThis, applyArgs);
+          } finally {
+            if (maybeDelayChangeDetection && task.type === 'eventTask') {
+              maybeDelayChangeDetection();
+            }
+            onLeave(zone);
+          }
+        },
 
 
-    onInvoke: (delegate: ZoneDelegate, current: Zone, target: Zone, callback: Function,
-               applyThis: any, applyArgs?: any[], source?: string): any => {
-      try {
-        onEnter(zone);
-        return delegate.invoke(target, callback, applyThis, applyArgs, source);
-      } finally {
-        onLeave(zone);
-      }
-    },
+    onInvoke:
+        (delegate: ZoneDelegate, current: Zone, target: Zone, callback: Function, applyThis: any,
+         applyArgs?: any[], source?: string): any => {
+          try {
+            onEnter(zone);
+            return delegate.invoke(target, callback, applyThis, applyArgs, source);
+          } finally {
+            onLeave(zone);
+          }
+        },
 
     onHasTask:
         (delegate: ZoneDelegate, current: Zone, target: Zone, hasTaskState: HasTaskState) => {
@@ -372,7 +378,9 @@ export class NoopNgZone implements NgZone {
     return fn.apply(applyThis, applyArgs);
   }
 
-  runOutsideAngular(fn: (...args: any[]) => any): any { return fn(); }
+  runOutsideAngular(fn: (...args: any[]) => any): any {
+    return fn();
+  }
 
   runTask(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any, name?: string): any {
     return fn.apply(applyThis, applyArgs);

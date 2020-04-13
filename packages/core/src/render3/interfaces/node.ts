@@ -90,8 +90,10 @@ export const enum TNodeProviderIndexes {
   /** The index of the first provider on this node is encoded on the least significant bits */
   ProvidersStartIndexMask = 0b00000000000000001111111111111111,
 
-  /** The count of view providers from the component on this node is encoded on the 16 most
-     significant bits */
+  /**
+     The count of view providers from the component on this node is encoded on the 16 most
+     significant bits
+   */
   CptViewProvidersCountShift = 16,
   CptViewProvidersCountShifter = 0b00000000000000010000000000000000,
 }
@@ -117,21 +119,21 @@ export const enum AttributeMarker {
   NamespaceURI = 0,
 
   /**
-    * Signals class declaration.
-    *
-    * Each value following `Classes` designates a class name to include on the element.
-    * ## Example:
-    *
-    * Given:
-    * ```
-    * <div class="foo bar baz">...<d/vi>
-    * ```
-    *
-    * the generated code is:
-    * ```
-    * var _c1 = [AttributeMarker.Classes, 'foo', 'bar', 'baz'];
-    * ```
-    */
+   * Signals class declaration.
+   *
+   * Each value following `Classes` designates a class name to include on the element.
+   * ## Example:
+   *
+   * Given:
+   * ```
+   * <div class="foo bar baz">...<d/vi>
+   * ```
+   *
+   * the generated code is:
+   * ```
+   * var _c1 = [AttributeMarker.Classes, 'foo', 'bar', 'baz'];
+   * ```
+   */
   Classes = 1,
 
   /**
@@ -235,14 +237,14 @@ export const enum AttributeMarker {
  * - Special markers acting as flags to alter attributes processing.
  * - Parsed ngProjectAs selectors.
  */
-export type TAttributes = (string | AttributeMarker | CssSelector)[];
+export type TAttributes = (string|AttributeMarker|CssSelector)[];
 
 /**
  * Constants that are associated with a view. Includes:
  * - Attribute arrays.
  * - Local definition arrays.
  */
-export type TConstants = (TAttributes | string)[];
+export type TConstants = (TAttributes|string)[];
 
 /**
  * Binding data (flyweight) for a particular node that is shared between all templates
@@ -700,7 +702,7 @@ export interface TProjectionNode extends TNode {
 /**
  * A union type representing all TNode types that can host a directive.
  */
-export type TDirectiveHostNode = TElementNode | TContainerNode | TElementContainerNode;
+export type TDirectiveHostNode = TElementNode|TContainerNode|TElementContainerNode;
 
 /**
  * This mapping is necessary so we can set input properties and output listeners
@@ -725,7 +727,7 @@ export type PropertyAliases = {
  *
  * e.g. [0, 'change-minified']
  */
-export type PropertyAliasValue = (number | string)[];
+export type PropertyAliasValue = (number|string)[];
 
 /**
  * This array contains information about input properties that
@@ -745,7 +747,7 @@ export type PropertyAliasValue = (number | string)[];
  *
  * e.g. [null, ['role-min', 'minified-input', 'button']]
  */
-export type InitialInputData = (InitialInputs | null)[];
+export type InitialInputData = (InitialInputs|null)[];
 
 /**
  * Used by InitialInputData to store input properties
@@ -766,7 +768,7 @@ export const unusedValueExportToPlacateAjd = 1;
 /**
  * Type representing a set of TNodes that can have local refs (`#foo`) placed on them.
  */
-export type TNodeWithLocalRefs = TContainerNode | TElementNode | TElementContainerNode;
+export type TNodeWithLocalRefs = TContainerNode|TElementNode|TElementContainerNode;
 
 /**
  * Type for a function that extracts a value for a local refs.

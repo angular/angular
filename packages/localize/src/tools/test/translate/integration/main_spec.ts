@@ -19,7 +19,9 @@ describe('translateFiles()', () => {
   const testDir = resolve(tmpDir, 'translatedFiles_tests');
 
   beforeEach(() => FileUtils.ensureDir(testDir));
-  afterEach(() => { FileUtils.remove(testDir); });
+  afterEach(() => {
+    FileUtils.remove(testDir);
+  });
 
   it('should copy non-code files to the destination folders', () => {
     const diagnostics = new Diagnostics();
@@ -31,7 +33,8 @@ describe('translateFiles()', () => {
       translationFilePaths: resolveAll(
           __dirname + '/locales',
           ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf', 'messages.it.xtb']),
-      translationFileLocales: [], diagnostics,
+      translationFileLocales: [],
+      diagnostics,
       missingTranslation: 'error'
     });
 
@@ -60,11 +63,13 @@ describe('translateFiles()', () => {
     const outputPathFn = getOutputPathFn(resolve(testDir, '{{LOCALE}}'));
     translateFiles({
       sourceRootPath: resolve(__dirname, 'test_files'),
-      sourceFilePaths: resolveAll(__dirname + '/test_files', ['test.js']), outputPathFn,
+      sourceFilePaths: resolveAll(__dirname + '/test_files', ['test.js']),
+      outputPathFn,
       translationFilePaths: resolveAll(
           __dirname + '/locales',
           ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf', 'messages.it.xtb']),
-      translationFileLocales: [], diagnostics,
+      translationFileLocales: [],
+      diagnostics,
       missingTranslation: 'error',
     });
 
@@ -85,11 +90,13 @@ describe('translateFiles()', () => {
     const outputPathFn = getOutputPathFn(resolve(testDir, '{{LOCALE}}'));
     translateFiles({
       sourceRootPath: resolve(__dirname, 'test_files'),
-      sourceFilePaths: resolveAll(__dirname + '/test_files', ['test.js']), outputPathFn,
+      sourceFilePaths: resolveAll(__dirname + '/test_files', ['test.js']),
+      outputPathFn,
       translationFilePaths: resolveAll(
           __dirname + '/locales',
           ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf', 'messages.it.xtb']),
-      translationFileLocales: ['xde', undefined, 'fr'], diagnostics,
+      translationFileLocales: ['xde', undefined, 'fr'],
+      diagnostics,
       missingTranslation: 'error',
     });
 
@@ -97,7 +104,8 @@ describe('translateFiles()', () => {
     expect(diagnostics.messages).toContain({
       type: 'warning',
       message:
-          `The provided locale "xde" does not match the target locale "de" found in the translation file "${resolve(__dirname, 'locales', 'messages.de.json')}".`
+          `The provided locale "xde" does not match the target locale "de" found in the translation file "${
+              resolve(__dirname, 'locales', 'messages.de.json')}".`
     });
 
     expect(FileUtils.readFile(resolve(testDir, 'xde', 'test.js')))
@@ -121,7 +129,8 @@ describe('translateFiles()', () => {
       translationFilePaths: resolveAll(
           __dirname + '/locales',
           ['messages.de.json', 'messages.es.xlf', 'messages.fr.xlf', 'messages.it.xtb']),
-      translationFileLocales: [], diagnostics,
+      translationFileLocales: [],
+      diagnostics,
       missingTranslation: 'error',
     });
 

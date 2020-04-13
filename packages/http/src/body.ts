@@ -92,8 +92,8 @@ export abstract class Body {
   }
 
   /**
-    * Returns the request's body as a Blob, assuming that body exists.
-    */
+   * Returns the request's body as a Blob, assuming that body exists.
+   */
   blob(): Blob {
     if (this._body instanceof Blob) {
       return this._body;

@@ -19,7 +19,9 @@ class TaskTrackingZoneSpec implements ZoneSpec {
   eventTasks: Task[] = [];
   properties: {[key: string]: any} = {'TaskTrackingZone': this};
 
-  static get() { return Zone.current.get('TaskTrackingZone'); }
+  static get() {
+    return Zone.current.get('TaskTrackingZone');
+  }
 
   private getTasksFor(type: string): Task[] {
     switch (type) {

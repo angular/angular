@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TreeNode, newArray} from '../util';
+import {newArray, TreeNode} from '../util';
 
 export class TreeComponent {
   private _renderNodes: any[];
