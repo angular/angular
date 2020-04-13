@@ -3404,6 +3404,13 @@ describe('Integration', () => {
           providers: [
             {provide: 'alwaysFalse', useValue: (a: any) => false},
             {
+              provide: 'returnUrlTree',
+              useFactory: (router: Router) => () => {
+                return router.createUrlTree(['blank']);
+              },
+              deps: [Router],
+            },
+            {
               provide: 'returnFalseAndNavigate',
               useFactory: (router: any) => (a: any) => {
                 router.navigate(['blank']);
@@ -3513,6 +3520,37 @@ describe('Integration', () => {
              [NavigationStart, '/lazyFalse/loaded'],
              // No GuardCheck events as `canLoad` is a special guard that's not actually part of the
              // guard lifecycle.
+             [NavigationCancel, '/lazyFalse/loaded'],
+
+             [NavigationStart, '/blank'], [RoutesRecognized, '/blank'],
+             [GuardsCheckStart, '/blank'], [ChildActivationStart], [ActivationStart],
+             [GuardsCheckEnd, '/blank'], [ResolveStart, '/blank'], [ResolveEnd, '/blank'],
+             [ActivationEnd], [ChildActivationEnd], [NavigationEnd, '/blank']
+           ]);
+         })));
+
+      it('should support returning UrlTree from within the guard',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([
+             {path: 'lazyFalse', canLoad: ['returnUrlTree'], loadChildren: 'lazyFalse'},
+             {path: 'blank', component: BlankCmp}
+           ]);
+
+           const recordedEvents: any[] = [];
+           router.events.forEach(e => recordedEvents.push(e));
+
+
+           router.navigateByUrl('/lazyFalse/loaded');
+           advance(fixture);
+
+           expect(location.path()).toEqual('/blank');
+
+           expectEvents(recordedEvents, [
+             [NavigationStart, '/lazyFalse/loaded'],
+             // No GuardCheck events as `canLoad` is a special guard that's not actually part of
+             // the guard lifecycle.
              [NavigationCancel, '/lazyFalse/loaded'],
 
              [NavigationStart, '/blank'], [RoutesRecognized, '/blank'],
@@ -4498,57 +4536,87 @@ describe('Integration', () => {
            })));
 
     describe('preloading', () => {
+      let log: string[] = [];
+      @Component({selector: 'lazy', template: 'should not show'})
+      class LazyLoadedComponent {
+      }
+
+      @NgModule({
+        declarations: [LazyLoadedComponent],
+        imports: [RouterModule.forChild([{path: 'LoadedModule2', component: LazyLoadedComponent}])]
+      })
+      class LoadedModule2 {
+      }
+
+      @NgModule(
+          {imports: [RouterModule.forChild([{path: 'LoadedModule1', loadChildren: 'expected2'}])]})
+      class LoadedModule1 {
+      }
+
       beforeEach(() => {
-        TestBed.configureTestingModule(
-            {providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}]});
+        log.length = 0;
+        TestBed.configureTestingModule({
+          providers: [
+            {provide: PreloadingStrategy, useExisting: PreloadAllModules}, {
+              provide: 'loggingReturnsTrue',
+              useValue: () => {
+                log.push('loggingReturnsTrue');
+                return true;
+              }
+            }
+          ]
+        });
         const preloader = TestBed.inject(RouterPreloader);
         preloader.setUpPreloading();
       });
 
-      it('should work',
-         fakeAsync(inject(
-             [Router, Location, NgModuleFactoryLoader],
-             (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
-               @Component({selector: 'lazy', template: 'should not show'})
-               class LazyLoadedComponent {
-               }
+      it('should work', fakeAsync(() => {
+           (TestBed.inject(NgModuleFactoryLoader) as SpyNgModuleFactoryLoader).stubbedModules = {
+             expected: LoadedModule1,
+             expected2: LoadedModule2
+           };
+           const router = TestBed.inject(Router);
+           const fixture = createRoot(router, RootCmp);
 
-               @NgModule({
-                 declarations: [LazyLoadedComponent],
-                 imports: [RouterModule.forChild(
-                     [{path: 'LoadedModule2', component: LazyLoadedComponent}])]
-               })
-               class LoadedModule2 {
-               }
+           router.resetConfig(
+               [{path: 'blank', component: BlankCmp}, {path: 'lazy', loadChildren: 'expected'}]);
 
-               @NgModule({
-                 imports:
-                     [RouterModule.forChild([{path: 'LoadedModule1', loadChildren: 'expected2'}])]
-               })
-               class LoadedModule1 {
-               }
+           router.navigateByUrl('/blank');
+           advance(fixture);
 
-               loader.stubbedModules = {expected: LoadedModule1, expected2: LoadedModule2};
+           const config = router.config as any;
+           const firstConfig = config[1]._loadedConfig!;
 
-               const fixture = createRoot(router, RootCmp);
+           expect(firstConfig).toBeDefined();
+           expect(firstConfig.routes[0].path).toEqual('LoadedModule1');
 
-               router.resetConfig([
-                 {path: 'blank', component: BlankCmp}, {path: 'lazy', loadChildren: 'expected'}
-               ]);
+           const secondConfig = firstConfig.routes[0]._loadedConfig!;
+           expect(secondConfig).toBeDefined();
+           expect(secondConfig.routes[0].path).toEqual('LoadedModule2');
+         }));
 
-               router.navigateByUrl('/blank');
-               advance(fixture);
+      it('should not preload when canLoad is present and does not execute guard', fakeAsync(() => {
+           (TestBed.inject(NgModuleFactoryLoader) as SpyNgModuleFactoryLoader).stubbedModules = {
+             expected: LoadedModule1,
+             expected2: LoadedModule2
+           };
+           const router = TestBed.inject(Router);
+           const fixture = createRoot(router, RootCmp);
 
-               const config = router.config as any;
-               const firstConfig = config[1]._loadedConfig!;
+           router.resetConfig([
+             {path: 'blank', component: BlankCmp},
+             {path: 'lazy', loadChildren: 'expected', canLoad: ['loggingReturnsTrue']}
+           ]);
 
-               expect(firstConfig).toBeDefined();
-               expect(firstConfig.routes[0].path).toEqual('LoadedModule1');
+           router.navigateByUrl('/blank');
+           advance(fixture);
 
-               const secondConfig = firstConfig.routes[0]._loadedConfig!;
-               expect(secondConfig).toBeDefined();
-               expect(secondConfig.routes[0].path).toEqual('LoadedModule2');
-             })));
+           const config = router.config as any;
+           const firstConfig = config[1]._loadedConfig!;
+
+           expect(firstConfig).toBeUndefined();
+           expect(log.length).toBe(0);
+         }));
     });
 
     describe('custom url handling strategies', () => {

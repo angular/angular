@@ -8,7 +8,7 @@
 
 import {Injector, NgModuleRef} from '@angular/core';
 import {EmptyError, from, Observable, Observer, of} from 'rxjs';
-import {catchError, concatAll, every, first, map, mergeMap} from 'rxjs/operators';
+import {catchError, concatAll, every, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {LoadedRouterConfig, Route, Routes} from './config';
 import {CanLoadFn} from './interfaces';
@@ -16,7 +16,7 @@ import {RouterConfigLoader} from './router_config_loader';
 import {defaultUrlMatcher, navigationCancelingError, Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {forEach, waitForMap, wrapIntoObservable} from './utils/collection';
-import {isCanLoad, isFunction} from './utils/type_guards';
+import {isCanLoad, isFunction, isUrlTree} from './utils/type_guards';
 
 class NoMatch {
   public segmentGroup: UrlSegmentGroup|null;
@@ -300,9 +300,9 @@ class ApplyRedirects {
         return of(route._loadedConfig);
       }
 
-      return runCanLoadGuard(ngModule.injector, route, segments)
-          .pipe(mergeMap((shouldLoad: boolean) => {
-            if (shouldLoad) {
+      return this.runCanLoadGuards(ngModule.injector, route, segments)
+          .pipe(mergeMap((shouldLoadResult: boolean) => {
+            if (shouldLoadResult) {
               return this.configLoader.load(ngModule.injector, route)
                   .pipe(map((cfg: LoadedRouterConfig) => {
                     route._loadedConfig = cfg;
@@ -314,6 +314,38 @@ class ApplyRedirects {
     }
 
     return of(new LoadedRouterConfig([], ngModule));
+  }
+
+  private runCanLoadGuards(moduleInjector: Injector, route: Route, segments: UrlSegment[]):
+      Observable<boolean> {
+    const canLoad = route.canLoad;
+    if (!canLoad || canLoad.length === 0) return of(true);
+
+    const obs = from(canLoad).pipe(map((injectionToken: any) => {
+      const guard = moduleInjector.get(injectionToken);
+      let guardVal;
+      if (isCanLoad(guard)) {
+        guardVal = guard.canLoad(route, segments);
+      } else if (isFunction<CanLoadFn>(guard)) {
+        guardVal = guard(route, segments);
+      } else {
+        throw new Error('Invalid CanLoad guard');
+      }
+      return wrapIntoObservable(guardVal);
+    }));
+
+    return obs.pipe(
+        concatAll(),
+        tap((result: UrlTree|boolean) => {
+          if (!isUrlTree(result)) return;
+
+          const error: Error&{url?: UrlTree} =
+              navigationCancelingError(`Redirecting to "${this.urlSerializer.serialize(result)}"`);
+          error.url = result;
+          throw error;
+        }),
+        every(result => result === true),
+    );
   }
 
   private lineralizeSegments(route: Route, urlTree: UrlTree): Observable<UrlSegment[]> {
@@ -404,27 +436,6 @@ class ApplyRedirects {
     }
     return redirectToUrlSegment;
   }
-}
-
-function runCanLoadGuard(
-    moduleInjector: Injector, route: Route, segments: UrlSegment[]): Observable<boolean> {
-  const canLoad = route.canLoad;
-  if (!canLoad || canLoad.length === 0) return of(true);
-
-  const obs = from(canLoad).pipe(map((injectionToken: any) => {
-    const guard = moduleInjector.get(injectionToken);
-    let guardVal;
-    if (isCanLoad(guard)) {
-      guardVal = guard.canLoad(route, segments);
-    } else if (isFunction<CanLoadFn>(guard)) {
-      guardVal = guard(route, segments);
-    } else {
-      throw new Error('Invalid CanLoad guard');
-    }
-    return wrapIntoObservable(guardVal);
-  }));
-
-  return obs.pipe(concatAll(), every(result => result === true));
 }
 
 function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[]): {
