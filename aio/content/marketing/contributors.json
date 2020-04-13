@@ -833,5 +833,12 @@
     "bio": "Manu heads technical program management for Angular at Google. Manu keeps the big picture in focus and works with cross-functional teams to plan, execute and usher programs through the entire lifecycle.",
     "groups": ["Angular"],
     "lead": "juleskremer"
+  },
+  "anneiyw": {
+    "name": "Annie Wang",
+    "picture": "annieyw.jpg",
+    "bio": "Annie is an engineering resident on the Angular Components team at Google. She is passionate about the intersection between design and technology and enjoys drawing in her free time.",
+    "groups": ["Angular"],
+    "lead": "jelbourn"
   }
 }
