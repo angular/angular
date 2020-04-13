@@ -277,26 +277,40 @@ function getDateTranslation(
       if (extended) {
         const rules = getLocaleExtraDayPeriodRules(locale);
         const dayPeriods = getLocaleExtraDayPeriods(locale, form, width);
-        let result;
-        rules.forEach((rule: Time|[Time, Time], index: number) => {
+        const index = rules.findIndex(rule => {
           if (Array.isArray(rule)) {
             // morning, afternoon, evening, night
-            const {hours: hoursFrom, minutes: minutesFrom} = rule[0];
-            const {hours: hoursTo, minutes: minutesTo} = rule[1];
-            if (currentHours >= hoursFrom && currentMinutes >= minutesFrom &&
-                (currentHours < hoursTo ||
-                 (currentHours === hoursTo && currentMinutes < minutesTo))) {
-              result = dayPeriods[index];
+            const [from, to] = rule;
+            const afterFrom = currentHours >= from.hours && currentMinutes >= from.minutes;
+            const beforeTo =
+                (currentHours < to.hours ||
+                 (currentHours === to.hours && currentMinutes < to.minutes));
+            // We must account for normal rules that span a period during the day (e.g. 6am-9am)
+            // where `from` is less (earlier) than `to`. But also rules that span midnight (e.g.
+            // 10pm - 5am) where `from` is greater (later!) than `to`.
+            //
+            // In the first case the current time must be BOTH after `from` AND before `to`
+            // (e.g. 8am is after 6am AND before 10am).
+            //
+            // In the second case the current time must be EITHER after `from` OR before `to`
+            // (e.g. 4am is before 5am but not after 10pm; and 11pm is not before 5am but it is
+            // after 10pm).
+            if (from.hours < to.hours) {
+              if (afterFrom && beforeTo) {
+                return true;
+              }
+            } else if (afterFrom || beforeTo) {
+              return true;
             }
           } else {  // noon or midnight
-            const {hours, minutes} = rule;
-            if (hours === currentHours && minutes === currentMinutes) {
-              result = dayPeriods[index];
+            if (rule.hours === currentHours && rule.minutes === currentMinutes) {
+              return true;
             }
           }
+          return false;
         });
-        if (result) {
-          return result;
+        if (index !== -1) {
+          return dayPeriods[index];
         }
       }
       // if no rules for the day periods, we use am/pm by default
