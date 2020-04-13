@@ -3363,6 +3363,13 @@ describe('Integration', () => {
           providers: [
             {provide: 'alwaysFalse', useValue: (a: any) => false},
             {
+              provide: 'returnUrlTree',
+              useFactory: (router: Router) => () => {
+                return router.createUrlTree(['blank']);
+              },
+              deps: [Router],
+            },
+            {
               provide: 'returnFalseAndNavigate',
               useFactory: (router: any) => (a: any) => {
                 router.navigate(['blank']);
@@ -3472,6 +3479,37 @@ describe('Integration', () => {
              [NavigationStart, '/lazyFalse/loaded'],
              // No GuardCheck events as `canLoad` is a special guard that's not actually part of the
              // guard lifecycle.
+             [NavigationCancel, '/lazyFalse/loaded'],
+
+             [NavigationStart, '/blank'], [RoutesRecognized, '/blank'],
+             [GuardsCheckStart, '/blank'], [ChildActivationStart], [ActivationStart],
+             [GuardsCheckEnd, '/blank'], [ResolveStart, '/blank'], [ResolveEnd, '/blank'],
+             [ActivationEnd], [ChildActivationEnd], [NavigationEnd, '/blank']
+           ]);
+         })));
+
+      it('should support returning UrlTree from within the guard',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           const fixture = createRoot(router, RootCmp);
+
+           router.resetConfig([
+             {path: 'lazyFalse', canLoad: ['returnUrlTree'], loadChildren: 'lazyFalse'},
+             {path: 'blank', component: BlankCmp}
+           ]);
+
+           const recordedEvents: any[] = [];
+           router.events.forEach(e => recordedEvents.push(e));
+
+
+           router.navigateByUrl('/lazyFalse/loaded');
+           advance(fixture);
+
+           expect(location.path()).toEqual('/blank');
+
+           expectEvents(recordedEvents, [
+             [NavigationStart, '/lazyFalse/loaded'],
+             // No GuardCheck events as `canLoad` is a special guard that's not actually part of
+             // the guard lifecycle.
              [NavigationCancel, '/lazyFalse/loaded'],
 
              [NavigationStart, '/blank'], [RoutesRecognized, '/blank'],

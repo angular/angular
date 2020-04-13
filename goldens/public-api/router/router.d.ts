@@ -64,7 +64,7 @@ export declare interface CanDeactivate<T> {
 }
 
 export declare interface CanLoad {
-    canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> | Promise<boolean> | boolean;
+    canLoad(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 }
 
 export declare class ChildActivationEnd {
