@@ -202,12 +202,30 @@ describe('Format date', () => {
         BBBBB: 'mi',
       };
 
+      const midnightCrossingPeriods: any = {
+        b: 'night',
+        bb: 'night',
+        bbb: 'night',
+        bbbb: 'night',
+        bbbbb: 'night',
+        B: 'at night',
+        BB: 'at night',
+        BBB: 'at night',
+        BBBB: 'at night',
+        BBBBB: 'at night',
+      };
+
       Object.keys(dateFixtures).forEach((pattern: string) => {
         expectDateFormatAs(date, pattern, dateFixtures[pattern]);
       });
 
       Object.keys(isoStringWithoutTimeFixtures).forEach((pattern: string) => {
         expectDateFormatAs(isoStringWithoutTime, pattern, isoStringWithoutTimeFixtures[pattern]);
+      });
+
+      const nightTime = new Date(2015, 5, 15, 2, 3, 1, 550);
+      Object.keys(midnightCrossingPeriods).forEach(pattern => {
+        expectDateFormatAs(nightTime, pattern, midnightCrossingPeriods[pattern]);
       });
     });
 
