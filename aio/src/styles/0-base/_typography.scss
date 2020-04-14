@@ -192,3 +192,21 @@ code {
     color: $mediumgray;
   }
 }
+
+aio-doc-viewer .content, aio-footer {
+  a[href^="http:"]::after, 
+  a[href^="https:"]::after {
+    font-family: "Material Icons";
+    content: "open_in_new";
+    position: relative;
+    @include line-height(24);
+    vertical-align: bottom; 
+  }
+}
+
+aio-doc-viewer .content *[ng-version] {
+  a[href^="http:"]::after, 
+  a[href^="https:"]::after {
+    display:none;
+  }
+}
