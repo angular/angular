@@ -10,26 +10,20 @@ describe('ComponentInspector', () => {
     const eventsSpy = spyOn(window, 'addEventListener');
     const inspector = new ComponentInspector();
     inspector.startInspecting();
-    expect(eventsSpy).toHaveBeenCalledTimes(6);
+    expect(eventsSpy).toHaveBeenCalledTimes(3);
     expect(eventsSpy).toHaveBeenCalledWith('mouseover', jasmine.any(Function), true);
+    expect(eventsSpy).toHaveBeenCalledWith('click', jasmine.any(Function), true);
     expect(eventsSpy).toHaveBeenCalledWith('mouseout', jasmine.any(Function), true);
-    expect(eventsSpy).toHaveBeenCalledWith('mouseenter', jasmine.any(Function), true);
-    expect(eventsSpy).toHaveBeenCalledWith('mouseleave', jasmine.any(Function), true);
-    expect(eventsSpy).toHaveBeenCalledWith('mousedown', jasmine.any(Function), true);
-    expect(eventsSpy).toHaveBeenCalledWith('mouseup', jasmine.any(Function), true);
   });
 
   it('should remove event listeners from window on stop inspecting', () => {
     const eventsSpy = spyOn(window, 'removeEventListener');
     const inspector = new ComponentInspector();
     inspector.stopInspecting();
-    expect(eventsSpy).toHaveBeenCalledTimes(6);
+    expect(eventsSpy).toHaveBeenCalledTimes(3);
     expect(eventsSpy).toHaveBeenCalledWith('mouseover', jasmine.any(Function), true);
+    expect(eventsSpy).toHaveBeenCalledWith('click', jasmine.any(Function), true);
     expect(eventsSpy).toHaveBeenCalledWith('mouseout', jasmine.any(Function), true);
-    expect(eventsSpy).toHaveBeenCalledWith('mouseenter', jasmine.any(Function), true);
-    expect(eventsSpy).toHaveBeenCalledWith('mouseleave', jasmine.any(Function), true);
-    expect(eventsSpy).toHaveBeenCalledWith('mousedown', jasmine.any(Function), true);
-    expect(eventsSpy).toHaveBeenCalledWith('mouseup', jasmine.any(Function), true);
   });
 
   it('should cancel events from mouse after start inspecting', () => {

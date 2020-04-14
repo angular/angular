@@ -32,8 +32,9 @@ describe('DevtoolsTabsComponent', () => {
     expect(messageBusMock.emit).toHaveBeenCalledTimes(1);
     expect(messageBusMock.emit).toHaveBeenCalledWith('inspectorStart');
     comp.toggleInspector();
-    expect(messageBusMock.emit).toHaveBeenCalledTimes(2);
+    expect(messageBusMock.emit).toHaveBeenCalledTimes(3);
     expect(messageBusMock.emit).toHaveBeenCalledWith('inspectorEnd');
+    expect(messageBusMock.emit).toHaveBeenCalledWith('removeHighlightOverlay');
   });
 
   it('calls child refresh method', () => {

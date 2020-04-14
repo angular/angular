@@ -33,6 +33,7 @@ export class DevToolsTabsComponent {
       this.tabGroup.selectedIndex = 0;
     } else {
       this._messageBus.emit('inspectorEnd');
+      this._messageBus.emit('removeHighlightOverlay');
     }
   }
 

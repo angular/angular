@@ -28,10 +28,8 @@ describe('DirectiveExplorerComponent', () => {
 
   it('subscribe to backend events', () => {
     comp.subscribeToBackendEvents();
-    expect(messageBusMock.on).toHaveBeenCalledTimes(4);
+    expect(messageBusMock.on).toHaveBeenCalledTimes(2);
     expect(messageBusMock.on).toHaveBeenCalledWith('latestComponentExplorerView', jasmine.any(Function));
-    expect(messageBusMock.on).toHaveBeenCalledWith('highlightComponentInTreeFromElement', jasmine.any(Function));
-    expect(messageBusMock.on).toHaveBeenCalledWith('removeHighlightFromComponentTree', jasmine.any(Function));
     expect(messageBusMock.on).toHaveBeenCalledWith('componentTreeDirty', jasmine.any(Function));
   });
 

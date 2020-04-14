@@ -9,9 +9,7 @@ import {
   PropertyQueryTypes,
   UpdatedStateData,
 } from 'protocol';
-import { IndexedNode } from './observer/identity-tracker';
 import { buildDirectiveTree, getLViewFromDirectiveOrElementInstance } from './lview-transform';
-import { ViewEncapsulation } from '@angular/core';
 
 const ngDebug = () => (window as any).ng;
 
@@ -141,32 +139,6 @@ export const queryDirectiveForest = (
 export const findNodeInForest = (position: ElementPosition, forest: ComponentTreeNode[]): HTMLElement | null => {
   const foundComponent: ComponentTreeNode | null = queryDirectiveForest(position, forest);
   return foundComponent ? (foundComponent.nativeElement as HTMLElement) : null;
-};
-
-export const getIndexForNativeElementInForest = (
-  nativeElement: HTMLElement,
-  forest: IndexedNode[]
-): ElementPosition | null => {
-  const foundElementPosition: ElementPosition | null = findElementIDFromNativeElementInForest(forest, nativeElement);
-  return foundElementPosition || null;
-};
-
-const findElementIDFromNativeElementInForest = (
-  forest: IndexedNode[],
-  nativeElement: HTMLElement
-): ElementPosition | null => {
-  for (const el of forest) {
-    if (el.nativeElement === nativeElement) {
-      return el.position;
-    }
-  }
-
-  for (const el of forest) {
-    if (el.children.length) {
-      return findElementIDFromNativeElementInForest(el.children, nativeElement);
-    }
-  }
-  return null;
 };
 
 export const findNodeFromSerializedPosition = (serializedPosition: string): ComponentTreeNode | null => {

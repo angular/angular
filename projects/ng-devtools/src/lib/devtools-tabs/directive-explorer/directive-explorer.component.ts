@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, HostListener, OnInit, Output, ViewChild } from '@angular/core';
 import {
   MessageBus,
   Events,
@@ -48,9 +48,10 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   ],
 })
 export class DirectiveExplorerComponent implements OnInit {
+  @Output() toggleInspector = new EventEmitter<void>();
+
   currentSelectedElement: IndexedNode | null = null;
   forest: DevToolsNode[];
-  highlightIDinTreeFromElement: ElementPosition | null = null;
   splitDirection = 'horizontal';
 
   private _changeSize = new Subject<Event>();
@@ -75,6 +76,7 @@ export class DirectiveExplorerComponent implements OnInit {
 
   ngOnInit(): void {
     this.subscribeToBackendEvents();
+    this.refresh();
   }
 
   handleNodeSelection(node: IndexedNode | null): void {
@@ -103,15 +105,7 @@ export class DirectiveExplorerComponent implements OnInit {
       }
     });
 
-    this._messageBus.on('highlightComponentInTreeFromElement', (position: ElementPosition) => {
-      this.highlightIDinTreeFromElement = position;
-    });
-    this._messageBus.on('removeHighlightFromComponentTree', () => {
-      this.highlightIDinTreeFromElement = null;
-    });
-
     this._messageBus.on('componentTreeDirty', () => this.refresh());
-    this.refresh();
   }
 
   refresh(): void {
@@ -169,12 +163,12 @@ export class DirectiveExplorerComponent implements OnInit {
     };
   }
 
-  handleHighlightFromComponent(position: ElementPosition): void {
-    this._messageBus.emit('highlightElementFromComponentTree', [position]);
+  highlightComponent(position: ElementPosition): void {
+    this._messageBus.emit('createHighlightOverlay', [position]);
   }
 
-  handleUnhighlightFromComponent(_: ElementPosition | null): void {
-    this._messageBus.emit('removeHighlightFromElement');
+  removeComponentHighlight(): void {
+    this._messageBus.emit('removeHighlightOverlay');
   }
 
   @HostListener('window:resize', ['$event'])
