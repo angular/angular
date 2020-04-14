@@ -23,7 +23,9 @@ import {kvChangesAsString, testChangesAsString} from '../../change_detection/uti
         m = new Map();
       });
 
-      afterEach(() => { differ = null !; });
+      afterEach(() => {
+        differ = null!;
+      });
 
       it('should detect additions', () => {
         differ.check(m);
@@ -66,7 +68,6 @@ import {kvChangesAsString, testChangesAsString} from '../../change_detection/uti
           expect(record.previousValue).toEqual(10);
           expect(record.currentValue).toEqual(20);
         });
-
       });
 
       it('should do basic map watching', () => {
@@ -183,7 +184,6 @@ import {kvChangesAsString, testChangesAsString} from '../../change_detection/uti
             previous: ['a[A->null]', 'd[D->null]'],
             removals: ['a[A->null]', 'd[D->null]']
           }));
-
         });
 
         it('should work regardless key order', () => {
@@ -221,7 +221,6 @@ import {kvChangesAsString, testChangesAsString} from '../../change_detection/uti
             removals: ['b[b->null]']
           }));
         });
-
       });
 
       describe('diff', () => {

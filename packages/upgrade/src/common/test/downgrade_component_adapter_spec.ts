@@ -78,7 +78,6 @@ withEachNg1Version(() => {
     });
 
     describe('testability', () => {
-
       let adapter: DowngradeComponentAdapter;
       let content: string;
       let compiler: Compiler;
@@ -88,7 +87,9 @@ withEachNg1Version(() => {
       class mockScope implements angular.IScope {
         private destroyListeners: (() => void)[] = [];
 
-        $new() { return this; }
+        $new() {
+          return this;
+        }
         $watch(exp: angular.Ng1Expression, fn?: (a1?: any, a2?: any) => void) {
           return () => {};
         }
@@ -112,17 +113,17 @@ withEachNg1Version(() => {
           return () => {};
         }
         // TODO(issue/24571): remove '!'.
-        $$childTail !: angular.IScope;
+        $$childTail!: angular.IScope;
         // TODO(issue/24571): remove '!'.
-        $$childHead !: angular.IScope;
+        $$childHead!: angular.IScope;
         // TODO(issue/24571): remove '!'.
-        $$nextSibling !: angular.IScope;
+        $$nextSibling!: angular.IScope;
         [key: string]: any;
         $id = 'mockScope';
         // TODO(issue/24571): remove '!'.
-        $parent !: angular.IScope;
+        $parent!: angular.IScope;
         // TODO(issue/24571): remove '!'.
-        $root !: angular.IScope;
+        $root!: angular.IScope;
       }
 
       function getAdaptor(): DowngradeComponentAdapter {
@@ -161,7 +162,7 @@ withEachNg1Version(() => {
 
         const modFactory = compiler.compileModuleSync(NewModule);
         const module = modFactory.create(TestBed);
-        componentFactory = module.componentFactoryResolver.resolveComponentFactory(NewComponent) !;
+        componentFactory = module.componentFactoryResolver.resolveComponentFactory(NewComponent)!;
         parentInjector = TestBed;
 
         return new DowngradeComponentAdapter(
@@ -178,7 +179,6 @@ withEachNg1Version(() => {
       afterEach(() => registry.unregisterAllApplications());
 
       it('should add testabilities hook when creating components', () => {
-
         let registry = TestBed.inject(TestabilityRegistry);
         adapter.createComponent([]);
         expect(registry.getAllTestabilities().length).toEqual(1);
@@ -194,10 +194,9 @@ withEachNg1Version(() => {
         adapter.createComponent([]);
         expect(registry.getAllTestabilities().length).toEqual(1);
         adapter.registerCleanup();
-        element.remove !();
+        element.remove!();
         expect(registry.getAllTestabilities().length).toEqual(0);
       });
     });
-
   });
 });

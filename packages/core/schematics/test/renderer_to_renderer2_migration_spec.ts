@@ -52,7 +52,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('import renaming', () => {
-    it('should change Renderer imports to Renderer2', async() => {
+    it('should change Renderer imports to Renderer2', async () => {
       writeFile('/index.ts', `
           import { Renderer, Component } from '@angular/core';
 
@@ -67,7 +67,7 @@ describe('Renderer to Renderer2 migration', () => {
           .toContain(`import { Component, Renderer2 } from '@angular/core';`);
     });
 
-    it('should change aliased Renderer imports to Renderer2', async() => {
+    it('should change aliased Renderer imports to Renderer2', async () => {
       writeFile('/index.ts', `
           import { Renderer as RenamedRenderer, Component } from '@angular/core';
 
@@ -82,7 +82,7 @@ describe('Renderer to Renderer2 migration', () => {
           .toContain(`import { Component, Renderer2 as RenamedRenderer } from '@angular/core';`);
     });
 
-    it('should not change Renderer imports if they are not from @angular/core', async() => {
+    it('should not change Renderer imports if they are not from @angular/core', async () => {
       writeFile('/index.ts', `
           import { Component } from '@angular/core';
           import { Renderer } from './my-renderer';
@@ -102,7 +102,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('type renaming', () => {
-    it('should change type of constructor parameter from Renderer to Renderer2', async() => {
+    it('should change type of constructor parameter from Renderer to Renderer2', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -117,7 +117,7 @@ describe('Renderer to Renderer2 migration', () => {
           .toContain('constructor(element: ElementRef, renderer: Renderer2)');
     });
 
-    it('should change type of method parameter from Renderer to Renderer2', async() => {
+    it('should change type of method parameter from Renderer to Renderer2', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -134,7 +134,7 @@ describe('Renderer to Renderer2 migration', () => {
           .toContain('disable(renderer: Renderer2, element: HTMLElement, isDisabled: boolean)');
     });
 
-    it('should change type of property declarations', async() => {
+    it('should change type of property declarations', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component } from '@angular/core';
 
@@ -148,7 +148,7 @@ describe('Renderer to Renderer2 migration', () => {
       expect(tree.readContent('/index.ts')).toContain('public renderer: Renderer2;');
     });
 
-    it('should change type of properties initialized via the constructor', async() => {
+    it('should change type of properties initialized via the constructor', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -163,7 +163,7 @@ describe('Renderer to Renderer2 migration', () => {
           .toContain('constructor(element: ElementRef, private _renderer: Renderer2)');
     });
 
-    it('should change the type of something that was cast to Renderer', async() => {
+    it('should change the type of something that was cast to Renderer', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -184,7 +184,7 @@ describe('Renderer to Renderer2 migration', () => {
       expect(content).toContain(`renderer.setStyle(element.nativeElement, 'color', 'red');`);
     });
 
-    it('should not rename types called Renderer that do not come from Angular', async() => {
+    it('should not rename types called Renderer that do not come from Angular', async () => {
       // Write a dummy renderer file so type checking picks it up.
       writeFile('/my-renderer.ts', `export abstract class Renderer {}`);
 
@@ -203,7 +203,7 @@ describe('Renderer to Renderer2 migration', () => {
           .toContain('constructor(element: ElementRef, renderer: Renderer)');
     });
 
-    it('should rename inside single-line forwardRef', async() => {
+    it('should rename inside single-line forwardRef', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef, forwardRef, Inject } from '@angular/core';
 
@@ -221,7 +221,7 @@ describe('Renderer to Renderer2 migration', () => {
           `constructor(@Inject(forwardRef(() => Renderer2)) private _renderer: Renderer2)`);
     });
 
-    it('should rename inside multi-line forwardRef', async() => {
+    it('should rename inside multi-line forwardRef', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef, forwardRef, Inject } from '@angular/core';
 
@@ -238,11 +238,10 @@ describe('Renderer to Renderer2 migration', () => {
       expect(content).toContain(
           `constructor(@Inject(forwardRef(() => { return Renderer2; })) private _renderer: Renderer2) {}`);
     });
-
   });
 
   describe('helper insertion', () => {
-    it('should only declare each helper once per file', async() => {
+    it('should only declare each helper once per file', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -260,11 +259,11 @@ describe('Renderer to Renderer2 migration', () => {
 
       const content = tree.readContent('/index.ts');
 
-      expect(content.match(/function __ngRendererCreateElementHelper\(/g) !.length)
+      expect(content.match(/function __ngRendererCreateElementHelper\(/g)!.length)
           .toBe(1, 'Expected exactly one helper for createElement.');
     });
 
-    it('should insert helpers after the user\'s code', async() => {
+    it('should insert helpers after the user\'s code', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -287,7 +286,7 @@ describe('Renderer to Renderer2 migration', () => {
       expect(contentAfterSeparator).toContain('function __ngRendererCreateElementHelper(');
     });
 
-    it('should be able to handle multiple helpers per file', async() => {
+    it('should be able to handle multiple helpers per file', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -314,15 +313,15 @@ describe('Renderer to Renderer2 migration', () => {
 
       const content = tree.readContent('/index.ts');
 
-      expect(content.match(/function __ngRendererCreateTextHelper\(/g) !.length)
+      expect(content.match(/function __ngRendererCreateTextHelper\(/g)!.length)
           .toBe(1, 'Expected exactly one helper for createElement.');
-      expect(content.match(/function __ngRendererCreateElementHelper\(/g) !.length)
+      expect(content.match(/function __ngRendererCreateElementHelper\(/g)!.length)
           .toBe(1, 'Expected exactly one helper for createText.');
-      expect(content.match(/function __ngRendererCreateTemplateAnchorHelper\(/g) !.length)
+      expect(content.match(/function __ngRendererCreateTemplateAnchorHelper\(/g)!.length)
           .toBe(1, 'Expected exactly one helper for createTemplateAnchor.');
     });
 
-    it('should create the __ngRendererSplitNamespaceHelper', async() => {
+    it('should create the __ngRendererSplitNamespaceHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -347,7 +346,7 @@ describe('Renderer to Renderer2 migration', () => {
       `));
     });
 
-    it('should declare our custom any type', async() => {
+    it('should declare our custom any type', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -365,11 +364,10 @@ describe('Renderer to Renderer2 migration', () => {
         type AnyDuringRendererMigration = any;
       `));
     });
-
   });
 
   describe('setElementProperty migration', () => {
-    it('should migrate setElementProperty calls', async() => {
+    it('should migrate setElementProperty calls', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -390,7 +388,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('setText migration', () => {
-    it('should migrate setText calls', async() => {
+    it('should migrate setText calls', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -412,7 +410,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('listenGlobal migration', () => {
-    it('should migrate listenGlobal calls', async() => {
+    it('should migrate listenGlobal calls', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component } from '@angular/core';
 
@@ -433,7 +431,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('selectRootElement migration', () => {
-    it('should migrate selectRootElement calls', async() => {
+    it('should migrate selectRootElement calls', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -454,7 +452,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('setElementClass migration', () => {
-    it('should migrate calls with inline isAdd value', async() => {
+    it('should migrate calls with inline isAdd value', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -479,7 +477,7 @@ describe('Renderer to Renderer2 migration', () => {
           .toContain(`this._renderer.removeClass(this._element.nativeElement, className);`);
     });
 
-    it('should migrate calls with variable isAdd value', async() => {
+    it('should migrate calls with variable isAdd value', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -503,7 +501,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('setElementStyle migration', () => {
-    it('should migrate calls with two arguments to a removeStyle call', async() => {
+    it('should migrate calls with two arguments to a removeStyle call', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -522,7 +520,7 @@ describe('Renderer to Renderer2 migration', () => {
           .toContain(`this._renderer.removeStyle(this._element.nativeElement, 'color');`);
     });
 
-    it('should migrate calls with static third arguments to a setStyle call', async() => {
+    it('should migrate calls with static third arguments to a setStyle call', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -552,7 +550,7 @@ describe('Renderer to Renderer2 migration', () => {
     });
 
     it('should migrate calls with null or undefined value for last argument to a removeStyle call',
-       async() => {
+       async () => {
          writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -575,7 +573,7 @@ describe('Renderer to Renderer2 migration', () => {
                  `this._renderer.removeStyle(this._element.nativeElement, 'background-color');`);
        });
 
-    it('should migrate calls with a variable third argument', async() => {
+    it('should migrate calls with a variable third argument', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -597,7 +595,7 @@ describe('Renderer to Renderer2 migration', () => {
     });
 
     it('should migrate calls with a variable third argument whose value can be inferred',
-       async() => {
+       async () => {
          writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -625,7 +623,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('setElementAttribute migration', () => {
-    it('should migrate to calls to the __ngRendererSetElementAttributeHelper', async() => {
+    it('should migrate to calls to the __ngRendererSetElementAttributeHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -651,7 +649,7 @@ describe('Renderer to Renderer2 migration', () => {
           '__ngRendererSetElementAttributeHelper(this._renderer, this._element.nativeElement, name);');
     });
 
-    it('should declare the __ngRendererSetElementAttributeHelper', async() => {
+    it('should declare the __ngRendererSetElementAttributeHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -680,12 +678,11 @@ describe('Renderer to Renderer2 migration', () => {
 
       expect(content).toContain(stripWhitespace('function __ngRendererSplitNamespaceHelper('));
     });
-
   });
 
   describe('invokeElementMethod migration', () => {
     it('should migrate calls to a direct method call if the method name and arguments are static',
-       async() => {
+       async () => {
          writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -710,7 +707,7 @@ describe('Renderer to Renderer2 migration', () => {
        });
 
     it('should migrate calls to a property access if the method name or arguments are dynamic',
-       async() => {
+       async () => {
          writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -738,7 +735,7 @@ describe('Renderer to Renderer2 migration', () => {
              `(this._element.nativeElement as any)['otherMethod'].apply(this._element.nativeElement, args);`);
        });
 
-    it('should handle calls without an `args` array', async() => {
+    it('should handle calls without an `args` array', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -761,7 +758,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('setBindingDebugInfo migration', () => {
-    it('should drop calls to setBindingDebugInfo', async() => {
+    it('should drop calls to setBindingDebugInfo', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -783,7 +780,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('createViewRoot migration', () => {
-    it('should replace createViewRoot calls with a reference to the first argument', async() => {
+    it('should replace createViewRoot calls with a reference to the first argument', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -806,7 +803,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('createElement migration', () => {
-    it('should migrate to calls to the __ngRendererCreateElementHelper', async() => {
+    it('should migrate to calls to the __ngRendererCreateElementHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -833,7 +830,7 @@ describe('Renderer to Renderer2 migration', () => {
           'return __ngRendererCreateElementHelper(this._renderer, this._element.nativeElement, nodeName);');
     });
 
-    it('should declare the __ngRendererCreateElementHelper', async() => {
+    it('should declare the __ngRendererCreateElementHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -862,11 +859,10 @@ describe('Renderer to Renderer2 migration', () => {
 
       expect(content).toContain(stripWhitespace('function __ngRendererSplitNamespaceHelper('));
     });
-
   });
 
   describe('createText migration', () => {
-    it('should migrate to calls to the __ngRendererCreateTextHelper', async() => {
+    it('should migrate to calls to the __ngRendererCreateTextHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -893,7 +889,7 @@ describe('Renderer to Renderer2 migration', () => {
           'return __ngRendererCreateTextHelper(this._renderer, this._element.nativeElement, value);');
     });
 
-    it('should declare the __ngRendererCreateTextHelper', async() => {
+    it('should declare the __ngRendererCreateTextHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -917,11 +913,10 @@ describe('Renderer to Renderer2 migration', () => {
         }
       `));
     });
-
   });
 
   describe('createTemplateAnchor migration', () => {
-    it('should migrate to calls to the __ngRendererCreateTemplateAnchorHelper', async() => {
+    it('should migrate to calls to the __ngRendererCreateTemplateAnchorHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -947,7 +942,7 @@ describe('Renderer to Renderer2 migration', () => {
           'return __ngRendererCreateTemplateAnchorHelper(this._renderer, this._element.nativeElement);');
     });
 
-    it('should declare the __ngRendererCreateTemplateAnchorHelper', async() => {
+    it('should declare the __ngRendererCreateTemplateAnchorHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -971,11 +966,10 @@ describe('Renderer to Renderer2 migration', () => {
         }
       `));
     });
-
   });
 
   describe('projectNodes migration', () => {
-    it('should migrate to calls to the __ngRendererProjectNodesHelper', async() => {
+    it('should migrate to calls to the __ngRendererProjectNodesHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -997,7 +991,7 @@ describe('Renderer to Renderer2 migration', () => {
               '__ngRendererProjectNodesHelper(this._renderer, this._element.nativeElement, nodesToProject);');
     });
 
-    it('should declare the __ngRendererProjectNodesHelper', async() => {
+    it('should declare the __ngRendererProjectNodesHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -1019,11 +1013,10 @@ describe('Renderer to Renderer2 migration', () => {
         }
       `));
     });
-
   });
 
   describe('animate migration', () => {
-    it('should migrate to calls to the __ngRendererAnimateHelper', async() => {
+    it('should migrate to calls to the __ngRendererAnimateHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -1043,7 +1036,7 @@ describe('Renderer to Renderer2 migration', () => {
       expect(tree.readContent('/index.ts')).toContain('__ngRendererAnimateHelper();');
     });
 
-    it('should declare the __ngRendererAnimateHelper', async() => {
+    it('should declare the __ngRendererAnimateHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -1063,11 +1056,10 @@ describe('Renderer to Renderer2 migration', () => {
         }
       `));
     });
-
   });
 
   describe('destroyView migration', () => {
-    it('should migrate to calls to the __ngRendererDestroyViewHelper', async() => {
+    it('should migrate to calls to the __ngRendererDestroyViewHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -1088,7 +1080,7 @@ describe('Renderer to Renderer2 migration', () => {
           .toContain('__ngRendererDestroyViewHelper(this._renderer, allNodes);');
     });
 
-    it('should declare the __ngRendererDestroyViewHelper', async() => {
+    it('should declare the __ngRendererDestroyViewHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -1116,7 +1108,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('detachView migration', () => {
-    it('should migrate to calls to the __ngRendererDetachViewHelper', async() => {
+    it('should migrate to calls to the __ngRendererDetachViewHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component } from '@angular/core';
 
@@ -1137,7 +1129,7 @@ describe('Renderer to Renderer2 migration', () => {
           .toContain('__ngRendererDetachViewHelper(this._renderer, rootNodes);');
     });
 
-    it('should declare the __ngRendererDetachViewHelper', async() => {
+    it('should declare the __ngRendererDetachViewHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component } from '@angular/core';
 
@@ -1166,7 +1158,7 @@ describe('Renderer to Renderer2 migration', () => {
   });
 
   describe('attachViewAfter migration', () => {
-    it('should migrate to calls to the __ngRendererAttachViewAfterHelper', async() => {
+    it('should migrate to calls to the __ngRendererAttachViewAfterHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component, ElementRef } from '@angular/core';
 
@@ -1188,7 +1180,7 @@ describe('Renderer to Renderer2 migration', () => {
               '__ngRendererAttachViewAfterHelper(this._renderer, this._element.nativeElement, rootNodes);');
     });
 
-    it('should declare the __ngRendererAttachViewAfterHelper', async() => {
+    it('should declare the __ngRendererAttachViewAfterHelper', async () => {
       writeFile('/index.ts', `
         import { Renderer, Component } from '@angular/core';
 
@@ -1225,5 +1217,7 @@ describe('Renderer to Renderer2 migration', () => {
     return runner.runSchematicAsync('migration-v9-renderer-to-renderer2', {}, tree).toPromise();
   }
 
-  function stripWhitespace(contents: string) { return contents.replace(/\s/g, ''); }
+  function stripWhitespace(contents: string) {
+    return contents.replace(/\s/g, '');
+  }
 });

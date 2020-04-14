@@ -39,7 +39,7 @@ export function enterViewWithOneDiv() {
       TViewType.Component, -1, emptyTemplate, consts, vars, null, null, null, null, null);
   // Just assume that the expando starts after 10 initial bindings.
   tView.expandoStartIndex = HEADER_OFFSET + 10;
-  const tNode = tView.firstChild = createTNode(tView, null !, TNodeType.Element, 0, 'div', null);
+  const tNode = tView.firstChild = createTNode(tView, null!, TNodeType.Element, 0, 'div', null);
   const lView = createLView(
       null, tView, null, LViewFlags.CheckAlways, null, null, domRendererFactory3, renderer, null,
       null);

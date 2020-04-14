@@ -13,7 +13,6 @@ import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {document, renderComponent} from './render_util';
 
 describe('iv perf test', () => {
-
   const count = 100000;
   const noOfIterations = 10;
 
@@ -39,28 +38,29 @@ describe('iv perf test', () => {
             selectors: [['div']],
             decls: 1,
             vars: 0,
-            template: function Template(rf: RenderFlags, ctx: any) {
-              if (rf & RenderFlags.Create) {
-                ɵɵcontainer(0);
-              }
-              if (rf & RenderFlags.Update) {
-                ɵɵcontainerRefreshStart(0);
-                {
-                  for (let i = 0; i < count; i++) {
-                    let rf0 = ɵɵembeddedViewStart(0, 2, 0);
+            template:
+                function Template(rf: RenderFlags, ctx: any) {
+                  if (rf & RenderFlags.Create) {
+                    ɵɵcontainer(0);
+                  }
+                  if (rf & RenderFlags.Update) {
+                    ɵɵcontainerRefreshStart(0);
                     {
-                      if (rf0 & RenderFlags.Create) {
-                        ɵɵelementStart(0, 'div');
-                        ɵɵtext(1, '-');
-                        ɵɵelementEnd();
+                      for (let i = 0; i < count; i++) {
+                        let rf0 = ɵɵembeddedViewStart(0, 2, 0);
+                        {
+                          if (rf0 & RenderFlags.Create) {
+                            ɵɵelementStart(0, 'div');
+                            ɵɵtext(1, '-');
+                            ɵɵelementEnd();
+                          }
+                        }
+                        ɵɵembeddedViewEnd();
                       }
                     }
-                    ɵɵembeddedViewEnd();
+                    ɵɵcontainerRefreshEnd();
                   }
                 }
-                ɵɵcontainerRefreshEnd();
-              }
-            }
           });
         }
 

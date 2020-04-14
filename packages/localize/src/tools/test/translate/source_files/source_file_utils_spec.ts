@@ -114,7 +114,7 @@ describe('utils', () => {
 
   describe('unwrapSubstitutionsFromLocalizeCall', () => {
     it('should return the substitutions from a direct call to a tag function', () => {
-      const ast = template.ast `$localize(['a', 'b\t', 'c'], 1, 2)` as ExpressionStatement;
+      const ast = template.ast`$localize(['a', 'b\t', 'c'], 1, 2)` as ExpressionStatement;
       const call = ast.expression as CallExpression;
       const substitutions = unwrapSubstitutionsFromLocalizeCall(call);
       expect(substitutions.map(s => (s as NumericLiteral).value)).toEqual([1, 2]);
@@ -140,13 +140,13 @@ describe('utils', () => {
 
   describe('wrapInParensIfNecessary', () => {
     it('should wrap the expression in parentheses if it is binary', () => {
-      const ast = template.ast `a + b` as ExpressionStatement;
+      const ast = template.ast`a + b` as ExpressionStatement;
       const wrapped = wrapInParensIfNecessary(ast.expression);
       expect(isParenthesizedExpression(wrapped)).toBe(true);
     });
 
     it('should return the expression untouched if it is not binary', () => {
-      const ast = template.ast `a` as ExpressionStatement;
+      const ast = template.ast`a` as ExpressionStatement;
       const wrapped = wrapInParensIfNecessary(ast.expression);
       expect(isParenthesizedExpression(wrapped)).toBe(false);
     });
@@ -154,12 +154,12 @@ describe('utils', () => {
 
   describe('unwrapStringLiteralArray', () => {
     it('should return an array of string from an array expression', () => {
-      const ast = template.ast `['a', 'b', 'c']` as ExpressionStatement;
+      const ast = template.ast`['a', 'b', 'c']` as ExpressionStatement;
       expect(unwrapStringLiteralArray(ast.expression)).toEqual(['a', 'b', 'c']);
     });
 
     it('should throw an error if any elements of the array are not literal strings', () => {
-      const ast = template.ast `['a', 2, 'c']` as ExpressionStatement;
+      const ast = template.ast`['a', 2, 'c']` as ExpressionStatement;
       expect(() => unwrapStringLiteralArray(ast.expression))
           .toThrowError('Unexpected messageParts for `$localize` (expected an array of strings).');
     });
@@ -167,29 +167,29 @@ describe('utils', () => {
 
   describe('isStringLiteralArray()', () => {
     it('should return true if the ast is an array of strings', () => {
-      const ast = template.ast `['a', 'b', 'c']` as ExpressionStatement;
+      const ast = template.ast`['a', 'b', 'c']` as ExpressionStatement;
       expect(isStringLiteralArray(ast.expression)).toBe(true);
     });
 
     it('should return false if the ast is not an array', () => {
-      const ast = template.ast `'a'` as ExpressionStatement;
+      const ast = template.ast`'a'` as ExpressionStatement;
       expect(isStringLiteralArray(ast.expression)).toBe(false);
     });
 
     it('should return false if at least on of the array elements is not a string', () => {
-      const ast = template.ast `['a', 1, 'b']` as ExpressionStatement;
+      const ast = template.ast`['a', 1, 'b']` as ExpressionStatement;
       expect(isStringLiteralArray(ast.expression)).toBe(false);
     });
   });
 
   describe('isArrayOfExpressions()', () => {
     it('should return true if all the nodes are expressions', () => {
-      const ast = template.ast `function foo(a, b, c) {}` as FunctionDeclaration;
+      const ast = template.ast`function foo(a, b, c) {}` as FunctionDeclaration;
       expect(isArrayOfExpressions(ast.params)).toBe(true);
     });
 
     it('should return false if any of the nodes is not an expression', () => {
-      const ast = template.ast `function foo(a, b, ...c) {}` as FunctionDeclaration;
+      const ast = template.ast`function foo(a, b, ...c) {}` as FunctionDeclaration;
       expect(isArrayOfExpressions(ast.params)).toBe(false);
     });
   });
@@ -203,13 +203,25 @@ function getTaggedTemplate(code: string): NodePath<TaggedTemplateExpression> {
 
 function collectExpressionsPlugin() {
   const expressions: NodePath<Expression>[] = [];
-  const visitor = {Expression: (path: NodePath<Expression>) => { expressions.push(path); }};
+  const visitor = {
+    Expression: (path: NodePath<Expression>) => {
+      expressions.push(path);
+    }
+  };
   return {expressions, plugin: {visitor}};
 }
 
 function getLocalizeCall(code: string): NodePath<CallExpression> {
   let callPaths: NodePath<CallExpression>[] = [];
-  transformSync(code, {plugins: [{visitor: {CallExpression(path) { callPaths.push(path); }}}]});
+  transformSync(code, {
+    plugins: [{
+      visitor: {
+        CallExpression(path) {
+          callPaths.push(path);
+        }
+      }
+    }]
+  });
   const localizeCall = callPaths.find(p => {
     const callee = p.get('callee');
     return (callee.isIdentifier() && callee.node.name === '$localize');

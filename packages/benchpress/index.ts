@@ -24,7 +24,7 @@ export {JsonFileReporter} from './src/reporter/json_file_reporter';
 export {MultiReporter} from './src/reporter/multi_reporter';
 export {Runner} from './src/runner';
 export {SampleDescription} from './src/sample_description';
-export {SampleState, Sampler} from './src/sampler';
+export {Sampler, SampleState} from './src/sampler';
 export {Validator} from './src/validator';
 export {RegressionSlopeValidator} from './src/validator/regression_slope_validator';
 export {SizeValidator} from './src/validator/size_validator';

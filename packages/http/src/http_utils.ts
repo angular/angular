@@ -8,7 +8,7 @@
 
 import {RequestMethod} from './enums';
 
-export function normalizeMethodName(method: string | RequestMethod): RequestMethod {
+export function normalizeMethodName(method: string|RequestMethod): RequestMethod {
   if (typeof method !== 'string') return method;
 
   switch (method.toUpperCase()) {

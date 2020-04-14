@@ -15,7 +15,7 @@ describe('view_utils', () => {
     const div = document.createElement('div');
     const tView = createTView(TViewType.Root, 0, null, 0, 0, null, null, null, null, null);
     const lView = createLView(null, tView, {}, 0, div, null, {} as any, {} as any, null, null);
-    const tNode = createTNode(null !, null, 3, 0, 'div', []);
+    const tNode = createTNode(null!, null, 3, 0, 'div', []);
     const lContainer = createLContainer(lView, lView, div, tNode);
 
     expect(isLView(lView)).toBe(true);

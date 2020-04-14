@@ -10,13 +10,12 @@
 import {TestBed} from '@angular/core/testing';
 import {createAngularJSTestingModule, createAngularTestingModule} from '@angular/upgrade/static/testing';
 
-import {HeroesService, Ng2AppModule, ng1AppModule} from './module';
+import {HeroesService, ng1AppModule, Ng2AppModule} from './module';
 
 const {module, inject} = (window as any).angular.mock;
 
 // #enddocregion angular-setup
 describe('HeroesService (from Angular)', () => {
-
   // #docregion angular-setup
   beforeEach(() => {
     TestBed.configureTestingModule(
@@ -40,7 +39,8 @@ describe('HeroesService (from AngularJS)', () => {
   // #enddocregion angularjs-setup
 
   // #docregion angularjs-spec
-  it('should have access to the HeroesService',
-     inject((heroesService: HeroesService) => { expect(heroesService).toBeDefined(); }));
+  it('should have access to the HeroesService', inject((heroesService: HeroesService) => {
+       expect(heroesService).toBeDefined();
+     }));
   // #enddocregion angularjs-spec
 });

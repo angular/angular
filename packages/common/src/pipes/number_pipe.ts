@@ -253,7 +253,7 @@ function isEmpty(value: any): boolean {
 /**
  * Transforms a string into a number (if needed).
  */
-function strToNumber(value: number | string): number {
+function strToNumber(value: number|string): number {
   // Convert strings to numbers
   if (typeof value === 'string' && !isNaN(Number(value) - parseFloat(value))) {
     return Number(value);

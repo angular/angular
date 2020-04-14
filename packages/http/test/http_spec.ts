@@ -7,14 +7,14 @@
  */
 
 import {Injector} from '@angular/core';
-import {TestBed, getTestBed} from '@angular/core/testing';
-import {AsyncTestCompleter, afterEach, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
+import {getTestBed, TestBed} from '@angular/core/testing';
+import {afterEach, AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {stringToArrayBuffer} from '@angular/http/src/http_utils';
 import {MockBackend, MockConnection} from '@angular/http/testing/src/mock_backend';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {Observable, zip} from 'rxjs';
 
-import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, Jsonp, JsonpModule, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../index';
+import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, Jsonp, JSONPBackend, JsonpModule, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../index';
 
 {
   describe('injectables', () => {
@@ -38,7 +38,6 @@ import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, J
 
     it('should allow using jsonpInjectables and httpInjectables in same injector',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-
          http = injector.get(Http);
          jsonp = injector.get(Jsonp);
          jsonpBackend = injector.get(JSONPBackend) as any as MockBackend;
@@ -105,8 +104,9 @@ import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, J
 
     describe('Http', () => {
       describe('.request()', () => {
-        it('should return an Observable',
-           () => { expect(http.request(url)).toBeAnInstanceOf(Observable); });
+        it('should return an Observable', () => {
+          expect(http.request(url)).toBeAnInstanceOf(Observable);
+        });
 
 
         it('should accept a fully-qualified request as its only parameter',
@@ -174,8 +174,13 @@ import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, J
              backend.connections.subscribe((c: MockConnection) => c.mockRespond(baseResponse));
              http.request('http://basic.connection')
                  .subscribe(
-                     (res: Response) => { expect(res.text()).toBe('base response'); }, null !,
-                     () => { async.done(); });
+                     (res: Response) => {
+                       expect(res.text()).toBe('base response');
+                     },
+                     null!,
+                     () => {
+                       async.done();
+                     });
            }));
 
         it('should perform multiple get requests and complete the responses',
@@ -187,8 +192,13 @@ import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, J
              });
              http.request('http://basic.connection')
                  .subscribe(
-                     (res: Response) => { expect(res.text()).toBe('base response'); }, null !,
-                     () => { async.done(); });
+                     (res: Response) => {
+                       expect(res.text()).toBe('base response');
+                     },
+                     null!,
+                     () => {
+                       async.done();
+                     });
            }));
 
         it('should throw if url is not a string or Request', () => {
@@ -422,7 +432,6 @@ import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, J
     });
 
     describe('response buffer', () => {
-
       it('should attach the provided buffer to the response',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            backend.connections.subscribe((c: MockConnection) => {

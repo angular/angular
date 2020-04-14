@@ -19,11 +19,17 @@ export class BrowserDetection {
     return getDOM() ? getDOM().getUserAgent() : '';
   }
 
-  static setup() { return new BrowserDetection(null); }
+  static setup() {
+    return new BrowserDetection(null);
+  }
 
-  constructor(ua: string|null) { this._overrideUa = ua; }
+  constructor(ua: string|null) {
+    this._overrideUa = ua;
+  }
 
-  get isFirefox(): boolean { return this._ua.indexOf('Firefox') > -1; }
+  get isFirefox(): boolean {
+    return this._ua.indexOf('Firefox') > -1;
+  }
 
   get isAndroid(): boolean {
     return this._ua.indexOf('Mozilla/5.0') > -1 && this._ua.indexOf('Android') > -1 &&
@@ -31,9 +37,13 @@ export class BrowserDetection {
         this._ua.indexOf('IEMobile') == -1;
   }
 
-  get isEdge(): boolean { return this._ua.indexOf('Edge') > -1; }
+  get isEdge(): boolean {
+    return this._ua.indexOf('Edge') > -1;
+  }
 
-  get isIE(): boolean { return this._ua.indexOf('Trident') > -1; }
+  get isIE(): boolean {
+    return this._ua.indexOf('Trident') > -1;
+  }
 
   get isWebkit(): boolean {
     return this._ua.indexOf('AppleWebKit') > -1 && this._ua.indexOf('Edge') == -1 &&
@@ -45,7 +55,9 @@ export class BrowserDetection {
         this._ua.indexOf('IEMobile') == -1;
   }
 
-  get isSlow(): boolean { return this.isAndroid || this.isIE || this.isIOS7; }
+  get isSlow(): boolean {
+    return this.isAndroid || this.isIE || this.isIOS7;
+  }
 
   // The Intl API is only natively supported in Chrome, Firefox, IE11 and Edge.
   // This detector is needed in tests to make the difference between:
@@ -67,13 +79,17 @@ export class BrowserDetection {
         this._ua.indexOf('Edge') == -1;
   }
 
-  get supportsCustomElements() { return (typeof(<any>global).customElements !== 'undefined'); }
-
-  get supportsDeprecatedCustomCustomElementsV0() {
-    return (typeof(document as any).registerElement !== 'undefined');
+  get supportsCustomElements() {
+    return (typeof (<any>global).customElements !== 'undefined');
   }
 
-  get supportsRegExUnicodeFlag(): boolean { return RegExp.prototype.hasOwnProperty('unicode'); }
+  get supportsDeprecatedCustomCustomElementsV0() {
+    return (typeof (document as any).registerElement !== 'undefined');
+  }
+
+  get supportsRegExUnicodeFlag(): boolean {
+    return RegExp.prototype.hasOwnProperty('unicode');
+  }
 
   get supportsShadowDom() {
     const testEl = document.createElement('div');
@@ -203,10 +219,10 @@ export function setCookie(name: string, value: string) {
 }
 
 export function supportsWebAnimation(): boolean {
-  return typeof(<any>Element).prototype['animate'] === 'function';
+  return typeof (<any>Element).prototype['animate'] === 'function';
 }
 
-export function hasStyle(element: any, styleName: string, styleValue?: string | null): boolean {
+export function hasStyle(element: any, styleName: string, styleValue?: string|null): boolean {
   const value = element.style[styleName] || '';
   return styleValue ? value == styleValue : value.length > 0;
 }

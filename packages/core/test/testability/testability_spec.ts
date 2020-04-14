@@ -11,7 +11,7 @@ import {Injectable} from '@angular/core/src/di';
 import {PendingMacrotask, Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {async, fakeAsync, flush, tick} from '@angular/core/testing';
-import {SpyObject, beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
+import {beforeEach, describe, expect, it, SpyObject} from '@angular/core/testing/src/testing_internal';
 
 import {scheduleMicroTask} from '../../src/util/microtask';
 
@@ -38,9 +38,13 @@ class MockNgZone extends NgZone {
     this.onStable = new EventEmitter(false);
   }
 
-  unstable(): void { this.onUnstable.emit(null); }
+  unstable(): void {
+    this.onUnstable.emit(null);
+  }
 
-  stable(): void { this.onStable.emit(null); }
+  stable(): void {
+    this.onStable.emit(null);
+  }
 }
 
 {
@@ -60,13 +64,16 @@ class MockNgZone extends NgZone {
     }));
 
     describe('Pending count logic', () => {
-      it('should start with a pending count of 0',
-         () => { expect(testability.getPendingRequestCount()).toEqual(0); });
+      it('should start with a pending count of 0', () => {
+        expect(testability.getPendingRequestCount()).toEqual(0);
+      });
 
       it('should fire whenstable callbacks if pending count is 0', async(() => {
            testability.whenStable(execute);
 
-           microTask(() => { expect(execute).toHaveBeenCalled(); });
+           microTask(() => {
+             expect(execute).toHaveBeenCalled();
+           });
          }));
 
       it('should not fire whenstable callbacks synchronously if pending count is 0', () => {
@@ -83,7 +90,9 @@ class MockNgZone extends NgZone {
              expect(execute).not.toHaveBeenCalled();
              testability.decreasePendingRequestCount();
 
-             microTask(() => { expect(execute).not.toHaveBeenCalled(); });
+             microTask(() => {
+               expect(execute).not.toHaveBeenCalled();
+             });
            });
          }));
 
@@ -95,7 +104,9 @@ class MockNgZone extends NgZone {
              expect(execute).not.toHaveBeenCalled();
              testability.decreasePendingRequestCount();
 
-             microTask(() => { expect(execute).toHaveBeenCalled(); });
+             microTask(() => {
+               expect(execute).toHaveBeenCalled();
+             });
            });
          }));
 
@@ -111,7 +122,9 @@ class MockNgZone extends NgZone {
            microTask(() => {
              testability.whenStable(execute);
 
-             microTask(() => { expect(execute).toHaveBeenCalledWith(false); });
+             microTask(() => {
+               expect(execute).toHaveBeenCalledWith(false);
+             });
            });
          }));
 
@@ -125,10 +138,11 @@ class MockNgZone extends NgZone {
              expect(execute).toHaveBeenCalledWith(true);
              testability.whenStable(execute2);
 
-             microTask(() => { expect(execute2).toHaveBeenCalledWith(false); });
+             microTask(() => {
+               expect(execute2).toHaveBeenCalledWith(false);
+             });
            });
          }));
-
     });
 
     describe('NgZone callback logic', () => {
@@ -144,9 +158,9 @@ class MockNgZone extends NgZone {
 
              expect(tasks.length).toEqual(1);
              expect(tasks[0].data).toBeTruthy();
-             expect(tasks[0].data !.delay).toEqual(1000);
+             expect(tasks[0].data!.delay).toEqual(1000);
              expect(tasks[0].source).toEqual('setTimeout');
-             expect(tasks[0].data !.isPeriodic).toEqual(false);
+             expect(tasks[0].data!.isPeriodic).toEqual(false);
 
              clearTimeout(id);
            }));
@@ -154,7 +168,9 @@ class MockNgZone extends NgZone {
         it('should fire if Angular is already stable', async(() => {
              testability.whenStable(execute, 200);
 
-             microTask(() => { expect(execute).toHaveBeenCalled(); });
+             microTask(() => {
+               expect(execute).toHaveBeenCalled();
+             });
            }));
 
         it('should fire when macroTasks are cancelled', fakeAsync(() => {
@@ -208,11 +224,11 @@ class MockNgZone extends NgZone {
              expect(execute).toHaveBeenCalled();
 
              const update1 = updateCallback.calls.all()[0].args[0] as PendingMacrotask[];
-             expect(update1[0].data !.delay).toEqual(500);
+             expect(update1[0].data!.delay).toEqual(500);
 
              const update2 = updateCallback.calls.all()[1].args[0] as PendingMacrotask[];
-             expect(update2[0].data !.delay).toEqual(500);
-             expect(update2[1].data !.delay).toEqual(300);
+             expect(update2[0].data!.delay).toEqual(500);
+             expect(update2[1].data!.delay).toEqual(300);
            }));
 
         it('cancels the done callback if the update callback returns true', fakeAsync(() => {

@@ -7,7 +7,8 @@
  */
 
 
-import {ElementFinder, browser, by, element} from 'protractor';
+import {browser, by, element, ElementFinder} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../../test-utils';
 
 describe('viewChildren example', () => {

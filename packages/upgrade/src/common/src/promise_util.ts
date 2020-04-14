@@ -8,7 +8,9 @@
 
 import {isFunction} from './util';
 
-export interface Thenable<T> { then(callback: (value: T) => any): any; }
+export interface Thenable<T> {
+  then(callback: (value: T) => any): any;
+}
 
 export function isThenable<T>(obj: unknown): obj is Thenable<T> {
   return !!obj && isFunction((obj as any).then);
@@ -57,7 +59,7 @@ export class SyncPromise<T> {
 
   then(callback: (value: T) => unknown): void {
     if (this.resolved) {
-      callback(this.value !);
+      callback(this.value!);
     } else {
       this.callbacks.push(callback);
     }

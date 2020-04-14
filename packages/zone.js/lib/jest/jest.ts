@@ -73,7 +73,9 @@ Zone.__load_patch('jest', (context: any, Zone: ZoneType) => {
     // The `done` callback is only passed through if the function expects at least one argument.
     // Note we have to make a function with correct number of arguments, otherwise jest will
     // think that all functions are sync or async.
-    return function(this: unknown, ...args: any[]) { return proxyZone.run(testBody, this, args); };
+    return function(this: unknown, ...args: any[]) {
+      return proxyZone.run(testBody, this, args);
+    };
   }
 
   ['describe', 'xdescribe', 'fdescribe'].forEach(methodName => {

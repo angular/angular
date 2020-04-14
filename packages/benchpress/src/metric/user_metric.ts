@@ -26,7 +26,9 @@ export class UserMetric extends Metric {
   /**
    * Starts measuring
    */
-  beginMeasure(): Promise<any> { return Promise.resolve(true); }
+  beginMeasure(): Promise<any> {
+    return Promise.resolve(true);
+  }
 
   /**
    * Ends measuring.
@@ -34,8 +36,7 @@ export class UserMetric extends Metric {
   endMeasure(restart: boolean): Promise<{[key: string]: any}> {
     let resolve: (result: any) => void;
     let reject: (error: any) => void;
-    const promise = new Promise < { [key: string]: any; }
-    > ((res, rej) => {
+    const promise = new Promise<{[key: string]: any;}>((res, rej) => {
       resolve = res;
       reject = rej;
     });
@@ -67,5 +68,7 @@ export class UserMetric extends Metric {
    * Describes the metrics provided by this metric implementation.
    * (e.g. units, ...)
    */
-  describe(): {[key: string]: any} { return this._userMetrics; }
+  describe(): {[key: string]: any} {
+    return this._userMetrics;
+  }
 }

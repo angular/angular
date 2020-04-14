@@ -15,14 +15,18 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
   describe('NgSwitch', () => {
     let fixture: ComponentFixture<any>;
 
-    function getComponent(): TestComponent { return fixture.componentInstance; }
+    function getComponent(): TestComponent {
+      return fixture.componentInstance;
+    }
 
     function detectChangesAndExpectText(text: string): void {
       fixture.detectChanges();
       expect(fixture.nativeElement).toHaveText(text);
     }
 
-    afterEach(() => { fixture = null !; });
+    afterEach(() => {
+      fixture = null!;
+    });
 
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -118,13 +122,14 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     });
 
     describe('corner cases', () => {
-
       it('should not create the default case if another case matches', () => {
         const log: string[] = [];
 
         @Directive({selector: '[test]'})
         class TestDirective {
-          constructor(@Attribute('test') test: string) { log.push(test); }
+          constructor(@Attribute('test') test: string) {
+            log.push(test);
+          }
         }
 
         const template = '<div [ngSwitch]="switchValue">' +
@@ -149,7 +154,6 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
         fixture = createTestComponent(template);
         detectChangesAndExpectText('when default1;when default2;');
-
       });
 
       it('should allow defaults before cases', () => {
@@ -223,8 +227,8 @@ class TestComponent {
 `
 })
 class ComplexComponent {
-  @ViewChild('foo', {static: true}) foo !: TemplateRef<any>;
-  @ViewChild('bar', {static: true}) bar !: TemplateRef<any>;
+  @ViewChild('foo', {static: true}) foo!: TemplateRef<any>;
+  @ViewChild('bar', {static: true}) bar!: TemplateRef<any>;
   state: string = 'case1';
 }
 

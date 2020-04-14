@@ -69,9 +69,13 @@ export interface ParamMap {
 class ParamsAsMap implements ParamMap {
   private params: Params;
 
-  constructor(params: Params) { this.params = params || {}; }
+  constructor(params: Params) {
+    this.params = params || {};
+  }
 
-  has(name: string): boolean { return this.params.hasOwnProperty(name); }
+  has(name: string): boolean {
+    return this.params.hasOwnProperty(name);
+  }
 
   get(name: string): string|null {
     if (this.has(name)) {
@@ -91,7 +95,9 @@ class ParamsAsMap implements ParamMap {
     return [];
   }
 
-  get keys(): string[] { return Object.keys(this.params); }
+  get keys(): string[] {
+    return Object.keys(this.params);
+  }
 }
 
 /**
@@ -120,7 +126,7 @@ export function isNavigationCancelingError(error: Error) {
 // Matches the route configuration (`route`) against the actual URL (`segments`).
 export function defaultUrlMatcher(
     segments: UrlSegment[], segmentGroup: UrlSegmentGroup, route: Route): UrlMatchResult|null {
-  const parts = route.path !.split('/');
+  const parts = route.path!.split('/');
 
   if (parts.length > segments.length) {
     // The actual URL is shorter than the config, no match

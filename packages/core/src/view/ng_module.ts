@@ -25,8 +25,7 @@ const INJECTORRefTokenKey = tokenKey(INJECTOR);
 const NgModuleRefTokenKey = tokenKey(NgModuleRef);
 
 export function moduleProvideDef(
-    flags: NodeFlags, token: any, value: any,
-    deps: ([DepFlags, any] | any)[]): NgModuleProviderDef {
+    flags: NodeFlags, token: any, value: any, deps: ([DepFlags, any]|any)[]): NgModuleProviderDef {
   // Need to resolve forwardRefs as e.g. for `useValue` we
   // lowered the expression and then stopped evaluating it,
   // i.e. also didn't unwrap it.
@@ -35,7 +34,10 @@ export function moduleProvideDef(
   return {
     // will bet set by the module definition
     index: -1,
-    deps: depDefs, flags, token, value
+    deps: depDefs,
+    flags,
+    token,
+    value
   };
 }
 
@@ -113,7 +115,8 @@ export function resolveNgModuleDep(
       data._def.providers[index] = data._def.providersByKey[depDef.tokenKey] = {
         flags: NodeFlags.TypeFactoryProvider | NodeFlags.LazyProvider,
         value: injectableDef.factory,
-        deps: [], index,
+        deps: [],
+        index,
         token: depDef.token,
       };
       data._providers[index] = UNDEFINED_VALUE;
@@ -135,8 +138,9 @@ function moduleTransitivelyPresent(ngModule: NgModuleData, scope: any): boolean 
 
 function targetsModule(ngModule: NgModuleData, def: ɵɵInjectableDef<any>): boolean {
   const providedIn = def.providedIn;
-  return providedIn != null && (providedIn === 'any' || providedIn === ngModule._def.scope ||
-                                moduleTransitivelyPresent(ngModule, providedIn));
+  return providedIn != null &&
+      (providedIn === 'any' || providedIn === ngModule._def.scope ||
+       moduleTransitivelyPresent(ngModule, providedIn));
 }
 
 function _createProviderInstance(ngModule: NgModuleData, providerDef: NgModuleProviderDef): any {

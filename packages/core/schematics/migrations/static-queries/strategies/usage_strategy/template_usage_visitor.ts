@@ -17,7 +17,9 @@ export class TemplateUsageVisitor extends NullVisitor {
   private hasQueryTemplateReference = false;
   private expressionAstVisitor = new ExpressionAstVisitor(this.queryPropertyName);
 
-  constructor(public queryPropertyName: string) { super(); }
+  constructor(public queryPropertyName: string) {
+    super();
+  }
 
   /** Checks whether the given query is statically accessed within the specified HTML nodes. */
   isQueryUsedStatically(htmlNodes: Node[]): boolean {
@@ -59,7 +61,9 @@ export class TemplateUsageVisitor extends NullVisitor {
     attribute.value.visit(this.expressionAstVisitor, attribute.sourceSpan);
   }
 
-  visitBoundText(text: BoundText) { text.value.visit(this.expressionAstVisitor, text.sourceSpan); }
+  visitBoundText(text: BoundText) {
+    text.value.visit(this.expressionAstVisitor, text.sourceSpan);
+  }
 
   visitBoundEvent(node: BoundEvent) {
     node.handler.visit(this.expressionAstVisitor, node.handlerSpan);
@@ -73,7 +77,9 @@ export class TemplateUsageVisitor extends NullVisitor {
 class ExpressionAstVisitor extends RecursiveAstVisitor {
   hasQueryPropertyRead = false;
 
-  constructor(private queryPropertyName: string) { super(); }
+  constructor(private queryPropertyName: string) {
+    super();
+  }
 
   visitPropertyRead(node: PropertyRead, span: ParseSourceSpan): any {
     // The receiver of the property read needs to be "implicit" as queries are accessed

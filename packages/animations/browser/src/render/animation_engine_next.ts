@@ -45,8 +45,8 @@ export class AnimationEngine {
       const ast =
           buildAnimationAst(this._driver, metadata as AnimationMetadata, errors) as TriggerAst;
       if (errors.length) {
-        throw new Error(
-            `The animation trigger "${name}" has failed to build due to the following errors:\n - ${errors.join("\n - ")}`);
+        throw new Error(`The animation trigger "${
+            name}" has failed to build due to the following errors:\n - ${errors.join('\n - ')}`);
       }
       trigger = buildTrigger(name, ast);
       this._triggerCache[cacheKey] = trigger;
@@ -95,12 +95,16 @@ export class AnimationEngine {
     return this._transitionEngine.listen(namespaceId, element, eventName, eventPhase, callback);
   }
 
-  flush(microtaskId: number = -1): void { this._transitionEngine.flush(microtaskId); }
+  flush(microtaskId: number = -1): void {
+    this._transitionEngine.flush(microtaskId);
+  }
 
   get players(): AnimationPlayer[] {
     return (this._transitionEngine.players as AnimationPlayer[])
         .concat(this._timelineEngine.players as AnimationPlayer[]);
   }
 
-  whenRenderingDone(): Promise<any> { return this._transitionEngine.whenRenderingDone(); }
+  whenRenderingDone(): Promise<any> {
+    return this._transitionEngine.whenRenderingDone();
+  }
 }

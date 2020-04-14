@@ -31,7 +31,9 @@ export interface ResolvedTemplate {
    * If the template is declared inline within a TypeScript source file, the line and
    * character are based on the full source file content.
    */
-  getCharacterAndLineOfPosition: (pos: number) => { character: number, line: number };
+  getCharacterAndLineOfPosition: (pos: number) => {
+    character: number, line: number
+  };
 }
 
 /**
@@ -103,8 +105,8 @@ export class NgComponentTemplateVisitor {
           content: property.initializer.text,
           inline: true,
           start: templateStartIdx,
-          getCharacterAndLineOfPosition:
-              pos => ts.getLineAndCharacterOfPosition(sourceFile, pos + templateStartIdx)
+          getCharacterAndLineOfPosition: pos =>
+              ts.getLineAndCharacterOfPosition(sourceFile, pos + templateStartIdx)
         });
       }
       if (propertyName === 'templateUrl' && ts.isStringLiteralLike(property.initializer)) {

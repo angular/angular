@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF, DOCUMENT, Location, ɵgetDOM as getDOM} from '@angular/common';
-import {ApplicationRef, CUSTOM_ELEMENTS_SCHEMA, Component, NgModule, destroyPlatform} from '@angular/core';
+import {ApplicationRef, Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, NgModule} from '@angular/core';
 import {inject} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -17,11 +17,13 @@ import {filter, first} from 'rxjs/operators';
 describe('bootstrap', () => {
   if (isNode) return;
   let log: any[] = [];
-  let testProviders: any[] = null !;
+  let testProviders: any[] = null!;
 
   @Component({selector: 'test-app', template: 'root <router-outlet></router-outlet>'})
   class RootCmp {
-    constructor() { log.push('RootCmp'); }
+    constructor() {
+      log.push('RootCmp');
+    }
   }
 
   @Component({selector: 'test-app2', template: 'root <router-outlet></router-outlet>'})
@@ -63,9 +65,10 @@ describe('bootstrap', () => {
 
     @NgModule({
       imports: [
-        BrowserModule, RouterModule.forRoot(
-                           [{path: '**', component: TestCmpEnabled, resolve: {test: TestResolver}}],
-                           {useHash: true, initialNavigation: 'enabled'})
+        BrowserModule,
+        RouterModule.forRoot(
+            [{path: '**', component: TestCmpEnabled, resolve: {test: TestResolver}}],
+            {useHash: true, initialNavigation: 'enabled'})
       ],
       declarations: [RootCmp, TestCmpEnabled],
       bootstrap: [RootCmp],
@@ -81,7 +84,7 @@ describe('bootstrap', () => {
 
     platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
       const router = res.injector.get(Router);
-      const data = router.routerState.snapshot.root.firstChild !.data;
+      const data = router.routerState.snapshot.root.firstChild!.data;
       expect(data['test']).toEqual('test-data');
       expect(log).toEqual([
         'TestModule', 'NavigationStart', 'RoutesRecognized', 'GuardsCheckStart',
@@ -141,9 +144,10 @@ describe('bootstrap', () => {
 
     @NgModule({
       imports: [
-        BrowserModule, RouterModule.forRoot(
-                           [{path: '**', component: TestCmpDiabled, resolve: {test: TestResolver}}],
-                           {useHash: true, initialNavigation: 'disabled'})
+        BrowserModule,
+        RouterModule.forRoot(
+            [{path: '**', component: TestCmpDiabled, resolve: {test: TestResolver}}],
+            {useHash: true, initialNavigation: 'disabled'})
       ],
       declarations: [RootCmp, TestCmpDiabled],
       bootstrap: [RootCmp],
@@ -250,7 +254,7 @@ describe('bootstrap', () => {
      });
 
 
-  it('should restore the scrolling position', async(done) => {
+  it('should restore the scrolling position', async (done) => {
     @Component({
       selector: 'component-a',
       template: `

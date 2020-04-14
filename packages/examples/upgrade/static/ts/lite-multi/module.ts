@@ -7,10 +7,10 @@
  */
 
 // #docplaster
-import {Component, Directive, ElementRef, Injectable, Injector, NgModule, StaticProvider, getPlatform} from '@angular/core';
+import {Component, Directive, ElementRef, getPlatform, Injectable, Injector, NgModule, StaticProvider} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {UpgradeComponent, downgradeComponent, downgradeInjectable, downgradeModule} from '@angular/upgrade/static';
+import {downgradeComponent, downgradeInjectable, downgradeModule, UpgradeComponent} from '@angular/upgrade/static';
 
 
 declare var angular: ng.IAngularStatic;
@@ -28,12 +28,16 @@ export class Ng2AComponent {
   selector: 'ng1A',
 })
 export class Ng1AComponentFacade extends UpgradeComponent {
-  constructor(elementRef: ElementRef, injector: Injector) { super('ng1A', elementRef, injector); }
+  constructor(elementRef: ElementRef, injector: Injector) {
+    super('ng1A', elementRef, injector);
+  }
 }
 
 @Injectable()
 export class Ng2AService {
-  getValue() { return 'ng2'; }
+  getValue() {
+    return 'ng2';
+  }
 }
 
 @NgModule({
@@ -91,13 +95,17 @@ const appModule =
           <ng2-b ng-switch-when="B"></ng2-b>
         </main>
       `,
-          controller: class ExampleAppController{page = 'A';},
+          controller: class ExampleAppController {
+            page = 'A';
+          },
         })
         .component('ng1A', {
           template: 'ng1({{ $ctrl.value }})',
           controller: [
-            'ng2AService', class Ng1AController{
-              value = this.ng2AService.getValue(); constructor(private ng2AService: Ng2AService) {}
+            'ng2AService',
+            class Ng1AController {
+              value = this.ng2AService.getValue();
+              constructor(private ng2AService: Ng2AService) {}
             }
           ],
         })

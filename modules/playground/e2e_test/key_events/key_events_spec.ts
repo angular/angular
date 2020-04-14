@@ -13,11 +13,12 @@ import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 const Key = protractor.Key;
 
 describe('key_events', function() {
-
   const URL = '/';
 
   afterEach(verifyNoBrowserErrors);
-  beforeEach(() => { browser.get(URL); });
+  beforeEach(() => {
+    browser.get(URL);
+  });
 
   it('should display correct key names', function() {
     const firstArea = element.all(by.css('.sample-area')).get(0);
@@ -78,5 +79,4 @@ describe('key_events', function() {
     secondArea.sendKeys(Key.CONTROL, Key.SHIFT, Key.ENTER);
     expect(secondArea.getText()).toEqual('');
   });
-
 });

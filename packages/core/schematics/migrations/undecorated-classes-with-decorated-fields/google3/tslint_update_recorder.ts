@@ -22,7 +22,8 @@ export class TslintUpdateRecorder implements UpdateRecorder {
     // are handled in reverse and in case a decorator and import are inserted at
     // the start of the file, the class decorator should come after the import.
     this.failures.unshift(new RuleFailure(
-        this.sourceFile, node.getStart(), 0, `Class needs to be decorated with ` +
+        this.sourceFile, node.getStart(), 0,
+        `Class needs to be decorated with ` +
             `"${decoratorText}" because it uses Angular features.`,
         this.ruleName, Replacement.appendText(node.getStart(), `${decoratorText}\n`)));
   }

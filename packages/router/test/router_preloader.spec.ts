@@ -7,7 +7,7 @@
  */
 
 import {Compiler, Component, NgModule, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
-import {TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
+import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {PreloadAllModules, PreloadingStrategy, RouterPreloader} from '@angular/router';
 
 import {Route, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouterModule} from '../index';
@@ -67,8 +67,7 @@ describe('RouterPreloader', () => {
              const events: Array<RouteConfigLoadStart|RouteConfigLoadEnd> = [];
              @NgModule({
                declarations: [LazyLoadedCmp],
-               imports:
-                   [RouterModule.forChild([{path: 'LoadedModule2', component: LazyLoadedCmp}])]
+               imports: [RouterModule.forChild([{path: 'LoadedModule2', component: LazyLoadedCmp}])]
              })
              class LoadedModule2 {
              }
@@ -98,13 +97,13 @@ describe('RouterPreloader', () => {
              const c = router.config;
              expect(c[0].loadChildren).toEqual('expected');
 
-             const loadedConfig: LoadedRouterConfig = (c[0] as any)._loadedConfig !;
+             const loadedConfig: LoadedRouterConfig = (c[0] as any)._loadedConfig!;
              const module: any = loadedConfig.module;
              expect(loadedConfig.routes[0].path).toEqual('LoadedModule1');
              expect(module._parent).toBe(testModule);
 
              const loadedConfig2: LoadedRouterConfig =
-                 (loadedConfig.routes[0] as any)._loadedConfig !;
+                 (loadedConfig.routes[0] as any)._loadedConfig!;
              const module2: any = loadedConfig2.module;
              expect(loadedConfig2.routes[0].path).toEqual('LoadedModule2');
              expect(module2._parent).toBe(module);
@@ -126,57 +125,58 @@ describe('RouterPreloader', () => {
       });
     });
 
-    it('should work', fakeAsync(inject(
-                          [NgModuleFactoryLoader, RouterPreloader, Router, NgModuleRef, Compiler],
-                          (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader,
-                           router: Router, testModule: NgModuleRef<any>, compiler: Compiler) => {
-                            @NgModule()
-                            class LoadedModule2 {
-                            }
+    it('should work',
+       fakeAsync(inject(
+           [NgModuleFactoryLoader, RouterPreloader, Router, NgModuleRef, Compiler],
+           (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router,
+            testModule: NgModuleRef<any>, compiler: Compiler) => {
+             @NgModule()
+             class LoadedModule2 {
+             }
 
-                            const module2 = compiler.compileModuleSync(LoadedModule2).create(null);
+             const module2 = compiler.compileModuleSync(LoadedModule2).create(null);
 
-                            @NgModule({
-                              imports: [RouterModule.forChild([
-                                <Route>{
-                                  path: 'LoadedModule2',
-                                  loadChildren: 'no',
-                                  _loadedConfig: {
-                                    routes: [{path: 'LoadedModule3', loadChildren: 'expected3'}],
-                                    module: module2,
-                                  }
-                                },
-                              ])]
-                            })
-                            class LoadedModule1 {
-                            }
+             @NgModule({
+               imports: [RouterModule.forChild([
+                 <Route>{
+                   path: 'LoadedModule2',
+                   loadChildren: 'no',
+                   _loadedConfig: {
+                     routes: [{path: 'LoadedModule3', loadChildren: 'expected3'}],
+                     module: module2,
+                   }
+                 },
+               ])]
+             })
+             class LoadedModule1 {
+             }
 
-                            @NgModule({imports: [RouterModule.forChild([])]})
-                            class LoadedModule3 {
-                            }
+             @NgModule({imports: [RouterModule.forChild([])]})
+             class LoadedModule3 {
+             }
 
-                            loader.stubbedModules = {
-                              expected: LoadedModule1,
-                              expected3: LoadedModule3,
-                            };
+             loader.stubbedModules = {
+               expected: LoadedModule1,
+               expected3: LoadedModule3,
+             };
 
-                            preloader.preload().subscribe(() => {});
+             preloader.preload().subscribe(() => {});
 
-                            tick();
+             tick();
 
-                            const c = router.config;
+             const c = router.config;
 
-                            const loadedConfig: LoadedRouterConfig = (c[0] as any)._loadedConfig !;
-                            const module: any = loadedConfig.module;
-                            expect(module._parent).toBe(testModule);
+             const loadedConfig: LoadedRouterConfig = (c[0] as any)._loadedConfig!;
+             const module: any = loadedConfig.module;
+             expect(module._parent).toBe(testModule);
 
-                            const loadedConfig2: LoadedRouterConfig =
-                                (loadedConfig.routes[0] as any)._loadedConfig !;
-                            const loadedConfig3: LoadedRouterConfig =
-                                (loadedConfig2.routes[0] as any)._loadedConfig !;
-                            const module3: any = loadedConfig3.module;
-                            expect(module3._parent).toBe(module2);
-                          })));
+             const loadedConfig2: LoadedRouterConfig =
+                 (loadedConfig.routes[0] as any)._loadedConfig!;
+             const loadedConfig3: LoadedRouterConfig =
+                 (loadedConfig2.routes[0] as any)._loadedConfig!;
+             const module3: any = loadedConfig3.module;
+             expect(module3._parent).toBe(module2);
+           })));
   });
 
   describe('should ignore errors', () => {
@@ -237,11 +237,11 @@ describe('RouterPreloader', () => {
 
              tick();
 
-             const c = router.config as{_loadedConfig: LoadedRouterConfig}[];
+             const c = router.config as {_loadedConfig: LoadedRouterConfig}[];
              expect(c[0]._loadedConfig).toBeDefined();
-             expect(c[0]._loadedConfig !.routes).not.toBe(configs);
-             expect(c[0]._loadedConfig !.routes[0]).not.toBe(configs[0]);
-             expect(c[0]._loadedConfig !.routes[0].component).toBe(configs[0].component);
+             expect(c[0]._loadedConfig!.routes).not.toBe(configs);
+             expect(c[0]._loadedConfig!.routes[0]).not.toBe(configs[0]);
+             expect(c[0]._loadedConfig!.routes[0].component).toBe(configs[0].component);
            })));
   });
 });

@@ -14,19 +14,21 @@
  */
 export class PropertyBinding {
   // TODO(issue/24571): remove '!'.
-  bracketAttr !: string;
+  bracketAttr!: string;
   // TODO(issue/24571): remove '!'.
-  bracketParenAttr !: string;
+  bracketParenAttr!: string;
   // TODO(issue/24571): remove '!'.
-  parenAttr !: string;
+  parenAttr!: string;
   // TODO(issue/24571): remove '!'.
-  onAttr !: string;
+  onAttr!: string;
   // TODO(issue/24571): remove '!'.
-  bindAttr !: string;
+  bindAttr!: string;
   // TODO(issue/24571): remove '!'.
-  bindonAttr !: string;
+  bindonAttr!: string;
 
-  constructor(public prop: string, public attr: string) { this.parseBinding(); }
+  constructor(public prop: string, public attr: string) {
+    this.parseBinding();
+  }
 
   private parseBinding() {
     this.bracketAttr = `[${this.attr}]`;

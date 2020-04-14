@@ -19,5 +19,7 @@ export function defineBenchmarkTestDirective(
 }
 
 class FakeDirectiveType {
-  static ɵfac = () => { return {}; };
+  static ɵfac = () => {
+    return {};
+  }
 }

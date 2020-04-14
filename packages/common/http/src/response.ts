@@ -100,7 +100,9 @@ export interface HttpUploadProgressEvent extends HttpProgressEvent {
  *
  * @publicApi
  */
-export interface HttpSentEvent { type: HttpEventType.Sent; }
+export interface HttpSentEvent {
+  type: HttpEventType.Sent;
+}
 
 /**
  * A user-defined event.
@@ -110,7 +112,9 @@ export interface HttpSentEvent { type: HttpEventType.Sent; }
  *
  * @publicApi
  */
-export interface HttpUserEvent<T> { type: HttpEventType.User; }
+export interface HttpUserEvent<T> {
+  type: HttpEventType.User;
+}
 
 /**
  * An error that represents a failed attempt to JSON.parse text coming back
@@ -133,7 +137,7 @@ export interface HttpJsonParseError {
  * @publicApi
  */
 export type HttpEvent<T> =
-    HttpSentEvent | HttpHeaderResponse | HttpResponse<T>| HttpProgressEvent | HttpUserEvent<T>;
+    HttpSentEvent|HttpHeaderResponse|HttpResponse<T>|HttpProgressEvent|HttpUserEvent<T>;
 
 /**
  * Base class for both `HttpResponse` and `HttpHeaderResponse`.
@@ -172,7 +176,7 @@ export abstract class HttpResponseBase {
    * Type of the response, narrowed to either the full response or the header.
    */
   // TODO(issue/24571): remove '!'.
-  readonly type !: HttpEventType.Response | HttpEventType.ResponseHeader;
+  readonly type!: HttpEventType.Response|HttpEventType.ResponseHeader;
 
   /**
    * Super-constructor for all responses.
@@ -260,7 +264,11 @@ export class HttpResponse<T> extends HttpResponseBase {
    * Construct a new `HttpResponse`.
    */
   constructor(init: {
-    body?: T | null, headers?: HttpHeaders; status?: number; statusText?: string; url?: string;
+    body?: T|null,
+    headers?: HttpHeaders;
+    status?: number;
+    statusText?: string;
+    url?: string;
   } = {}) {
     super(init);
     this.body = init.body !== undefined ? init.body : null;
@@ -272,10 +280,18 @@ export class HttpResponse<T> extends HttpResponseBase {
   clone(update: {headers?: HttpHeaders; status?: number; statusText?: string; url?: string;}):
       HttpResponse<T>;
   clone<V>(update: {
-    body?: V | null, headers?: HttpHeaders; status?: number; statusText?: string; url?: string;
+    body?: V|null,
+    headers?: HttpHeaders;
+    status?: number;
+    statusText?: string;
+    url?: string;
   }): HttpResponse<V>;
   clone(update: {
-    body?: any | null; headers?: HttpHeaders; status?: number; statusText?: string; url?: string;
+    body?: any|null;
+    headers?: HttpHeaders;
+    status?: number;
+    statusText?: string;
+    url?: string;
   } = {}): HttpResponse<any> {
     return new HttpResponse<any>({
       body: (update.body !== undefined) ? update.body : this.body,
@@ -311,7 +327,11 @@ export class HttpErrorResponse extends HttpResponseBase implements Error {
   readonly ok = false;
 
   constructor(init: {
-    error?: any; headers?: HttpHeaders; status?: number; statusText?: string; url?: string;
+    error?: any;
+    headers?: HttpHeaders;
+    status?: number;
+    statusText?: string;
+    url?: string;
   }) {
     // Initialize with a default status of 0 / Unknown Error.
     super(init, 0, 'Unknown Error');
@@ -322,8 +342,8 @@ export class HttpErrorResponse extends HttpResponseBase implements Error {
     if (this.status >= 200 && this.status < 300) {
       this.message = `Http failure during parsing for ${init.url || '(unknown url)'}`;
     } else {
-      this.message =
-          `Http failure response for ${init.url || '(unknown url)'}: ${init.status} ${init.statusText}`;
+      this.message = `Http failure response for ${init.url || '(unknown url)'}: ${init.status} ${
+          init.statusText}`;
     }
     this.error = init.error || null;
   }

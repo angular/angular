@@ -11,7 +11,7 @@ import {Component, ContentChildren, Directive, Input, QueryList} from '@angular/
 
 @Directive({selector: 'pane'})
 export class Pane {
-  @Input() id !: string;
+  @Input() id!: string;
 }
 
 @Component({
@@ -22,8 +22,8 @@ export class Pane {
   `
 })
 export class Tab {
-  @ContentChildren(Pane) topLevelPanes !: QueryList<Pane>;
-  @ContentChildren(Pane, {descendants: true}) arbitraryNestedPanes !: QueryList<Pane>;
+  @ContentChildren(Pane) topLevelPanes!: QueryList<Pane>;
+  @ContentChildren(Pane, {descendants: true}) arbitraryNestedPanes!: QueryList<Pane>;
 
   get serializedPanes(): string {
     return this.topLevelPanes ? this.topLevelPanes.map(p => p.id).join(', ') : '';
@@ -53,6 +53,8 @@ export class Tab {
 export class ContentChildrenComp {
   shouldShow = false;
 
-  show() { this.shouldShow = true; }
+  show() {
+    this.shouldShow = true;
+  }
 }
 // #enddocregion

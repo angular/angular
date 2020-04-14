@@ -17,7 +17,9 @@ const {patch, elementOpen, elementClose, elementOpenStart, elementOpenEnd, attr,
 export class TableComponent {
   constructor(private _rootEl: any) {}
 
-  set data(data: TableCell[][]) { patch(this._rootEl, () => this._render(data)); }
+  set data(data: TableCell[][]) {
+    patch(this._rootEl, () => this._render(data));
+  }
 
   private _render(data: TableCell[][]) {
     elementOpen('table');

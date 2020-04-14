@@ -45,7 +45,7 @@ export function unescapeHtml(text: string): string {
  *
  * @publicApi
  */
-export type StateKey<T> = string & {__not_a_string: never};
+export type StateKey<T> = string&{__not_a_string: never};
 
 /**
  * Create a `StateKey<T>` that can be used to store value of type T with `TransferState`.
@@ -80,7 +80,7 @@ export function makeStateKey<T = void>(key: string): StateKey<T> {
  */
 @Injectable()
 export class TransferState {
-  private store: {[k: string]: {} | undefined} = {};
+  private store: {[k: string]: {}|undefined} = {};
   private onSerializeCallbacks: {[k: string]: () => {} | undefined} = {};
 
   /** @internal */
@@ -100,17 +100,23 @@ export class TransferState {
   /**
    * Set the value corresponding to a key.
    */
-  set<T>(key: StateKey<T>, value: T): void { this.store[key] = value; }
+  set<T>(key: StateKey<T>, value: T): void {
+    this.store[key] = value;
+  }
 
   /**
    * Remove a key from the store.
    */
-  remove<T>(key: StateKey<T>): void { delete this.store[key]; }
+  remove<T>(key: StateKey<T>): void {
+    delete this.store[key];
+  }
 
   /**
    * Test whether a key exists in the store.
    */
-  hasKey<T>(key: StateKey<T>) { return this.store.hasOwnProperty(key); }
+  hasKey<T>(key: StateKey<T>) {
+    return this.store.hasOwnProperty(key);
+  }
 
   /**
    * Register a callback to provide the value for a key when `toJson` is called.

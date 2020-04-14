@@ -77,8 +77,9 @@ the server-rendered app can be properly bootstrapped into a client app.`);
 
           return Promise
               .all(asyncPromises.map(asyncPromise => {
-                return asyncPromise.catch(
-                    e => { console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', e); });
+                return asyncPromise.catch(e => {
+                  console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', e);
+                });
               }))
               .then(complete);
         });

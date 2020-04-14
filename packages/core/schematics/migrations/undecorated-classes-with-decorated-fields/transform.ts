@@ -7,11 +7,11 @@
  */
 
 import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
-import {TypeScriptReflectionHost, reflectObjectLiteral} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {reflectObjectLiteral, TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import * as ts from 'typescript';
 
 import {ImportManager} from '../../utils/import_manager';
-import {NgDecorator, getAngularDecorators} from '../../utils/ng_decorators';
+import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
 import {findBaseClassDeclarations} from '../../utils/typescript/find_base_classes';
 import {unwrapExpression} from '../../utils/typescript/functions';
 
@@ -56,7 +56,9 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
   }
 
   /** Records all changes that were made in the import manager. */
-  recordChanges() { this.importManager.recordChanges(); }
+  recordChanges() {
+    this.importManager.recordChanges();
+  }
 
   /** Finds undecorated abstract directives in the specified source files. */
   private _findUndecoratedAbstractDirectives(sourceFiles: ts.SourceFile[]) {
@@ -130,9 +132,9 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
   }
 
   /**
-  * Checks whether the given decorator resolves to an abstract directive. An directive is
-  * considered "abstract" if there is no selector specified.
-  */
+   * Checks whether the given decorator resolves to an abstract directive. An directive is
+   * considered "abstract" if there is no selector specified.
+   */
   private _isAbstractDirective({node}: NgDecorator): boolean {
     const metadataArgs = node.expression.arguments;
     if (metadataArgs.length === 0) {
@@ -146,7 +148,7 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
     if (!metadata.has('selector')) {
       return false;
     }
-    const selector = this.partialEvaluator.evaluate(metadata.get('selector') !);
+    const selector = this.partialEvaluator.evaluate(metadata.get('selector')!);
     return selector == null;
   }
 

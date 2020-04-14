@@ -60,7 +60,9 @@ Object.keys(desiredCapabilities).forEach(key => {
   const p = client.init()
                 .timeouts('script', 60000)
                 .url('http://localhost:8080/test/webdriver/test.html')
-                .executeAsync(function(done) { window.setTimeout(done, 1000) })
+                .executeAsync(function(done) {
+                  window.setTimeout(done, 1000)
+                })
                 .execute(function() {
                   const elem = document.getElementById('thetext');
                   const zone = window['Zone'] ? Zone.current.fork({name: 'webdriver'}) : null;
@@ -71,7 +73,9 @@ Object.keys(desiredCapabilities).forEach(key => {
                       });
                     });
                   } else {
-                    elem.addEventListener('click', function(e) { e.target.innerText = 'clicked'; });
+                    elem.addEventListener('click', function(e) {
+                      e.target.innerText = 'clicked';
+                    });
                   }
                 })
                 .click('#thetext')
@@ -82,14 +86,18 @@ Object.keys(desiredCapabilities).forEach(key => {
                         errors.push(`Env: ${key}, expected clickedwebdriver, get ${text}`);
                       }
                     }),
-                    (error) => { errors.push(`Env: ${key}, error occurs: ${error}`); })
+                    (error) => {
+                      errors.push(`Env: ${key}, error occurs: ${error}`);
+                    })
                 .end();
   tasks.push(p);
 });
 
 function exit(exitCode) {
   const http = require('http');
-  http.get('http://localhost:8080/close', () => { process.exit(exitCode); });
+  http.get('http://localhost:8080/close', () => {
+    process.exit(exitCode);
+  });
 }
 
 Promise.all(tasks).then(() => {

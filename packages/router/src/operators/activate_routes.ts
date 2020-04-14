@@ -14,16 +14,16 @@ import {ActivationEnd, ChildActivationEnd, Event} from '../events';
 import {DetachedRouteHandleInternal, RouteReuseStrategy} from '../route_reuse_strategy';
 import {NavigationTransition} from '../router';
 import {ChildrenOutletContexts} from '../router_outlet_context';
-import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, advanceActivatedRoute} from '../router_state';
+import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute, RouterState} from '../router_state';
 import {forEach} from '../utils/collection';
-import {TreeNode, nodeChildrenAsMap} from '../utils/tree';
+import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
 
 export const activateRoutes =
     (rootContexts: ChildrenOutletContexts, routeReuseStrategy: RouteReuseStrategy,
      forwardEvent: (evt: Event) => void): MonoTypeOperatorFunction<NavigationTransition> =>
         map(t => {
           new ActivateRoutes(
-              routeReuseStrategy, t.targetRouterState !, t.currentRouterState, forwardEvent)
+              routeReuseStrategy, t.targetRouterState!, t.currentRouterState, forwardEvent)
               .activate(rootContexts);
           return t;
         });

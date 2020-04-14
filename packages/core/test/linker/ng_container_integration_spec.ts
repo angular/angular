@@ -15,15 +15,20 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {modifiedInIvy} from '@angular/private/testing';
 
 if (ivyEnabled) {
-  describe('ivy', () => { declareTests(); });
+  describe('ivy', () => {
+    declareTests();
+  });
 } else {
-  describe('jit', () => { declareTests({useJit: true}); });
-  describe('no jit', () => { declareTests({useJit: false}); });
+  describe('jit', () => {
+    declareTests({useJit: true});
+  });
+  describe('no jit', () => {
+    declareTests({useJit: false});
+  });
 }
 
 function declareTests(config?: {useJit: boolean}) {
   describe('<ng-container>', function() {
-
     beforeEach(() => {
       TestBed.configureCompiler({...config});
       TestBed.configureTestingModule({
@@ -140,7 +145,7 @@ function declareTests(config?: {useJit: boolean}) {
           const fixture = TestBed.createComponent(MyComp);
 
           fixture.detectChanges();
-          const q = fixture.debugElement.children[0].references !['q'];
+          const q = fixture.debugElement.children[0].references!['q'];
           fixture.detectChanges();
 
           expect(q.textDirChildren.length).toEqual(1);
@@ -153,7 +158,7 @@ function declareTests(config?: {useJit: boolean}) {
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.detectChanges();
-      const q = fixture.debugElement.children[0].references !['q'];
+      const q = fixture.debugElement.children[0].references!['q'];
       fixture.detectChanges();
 
       expect(q.textDirChildren.length).toEqual(1);
@@ -170,21 +175,25 @@ class TextDirective {
 @Component({selector: 'needs-content-children', template: ''})
 class NeedsContentChildren implements AfterContentInit {
   // TODO(issue/24571): remove '!'.
-  @ContentChildren(TextDirective) textDirChildren !: QueryList<TextDirective>;
+  @ContentChildren(TextDirective) textDirChildren!: QueryList<TextDirective>;
   // TODO(issue/24571): remove '!'.
-  numberOfChildrenAfterContentInit !: number;
+  numberOfChildrenAfterContentInit!: number;
 
-  ngAfterContentInit() { this.numberOfChildrenAfterContentInit = this.textDirChildren.length; }
+  ngAfterContentInit() {
+    this.numberOfChildrenAfterContentInit = this.textDirChildren.length;
+  }
 }
 
 @Component({selector: 'needs-view-children', template: '<div text></div>'})
 class NeedsViewChildren implements AfterViewInit {
   // TODO(issue/24571): remove '!'.
-  @ViewChildren(TextDirective) textDirChildren !: QueryList<TextDirective>;
+  @ViewChildren(TextDirective) textDirChildren!: QueryList<TextDirective>;
   // TODO(issue/24571): remove '!'.
-  numberOfChildrenAfterViewInit !: number;
+  numberOfChildrenAfterViewInit!: number;
 
-  ngAfterViewInit() { this.numberOfChildrenAfterViewInit = this.textDirChildren.length; }
+  ngAfterViewInit() {
+    this.numberOfChildrenAfterViewInit = this.textDirChildren.length;
+  }
 }
 
 @Component({selector: 'simple', template: 'SIMPLE(<ng-content></ng-content>)'})

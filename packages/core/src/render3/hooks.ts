@@ -79,8 +79,8 @@ export function registerPostOrderHooks(tView: TView, tNode: TNode): void {
 
     if (directiveDef.afterContentChecked) {
       (tView.contentHooks || (tView.contentHooks = [])).push(i, directiveDef.afterContentChecked);
-      (tView.contentCheckHooks || (tView.contentCheckHooks = [
-       ])).push(i, directiveDef.afterContentChecked);
+      (tView.contentCheckHooks || (tView.contentCheckHooks = []))
+          .push(i, directiveDef.afterContentChecked);
     }
 
     if (directiveDef.afterViewInit) {
@@ -132,7 +132,7 @@ export function registerPostOrderHooks(tView: TView, tNode: TNode): void {
  * - number: execute hooks only from the saved index until that node index exclusive (pre-order
  * case, when executing select(number))
  */
-export function executeCheckHooks(lView: LView, hooks: HookData, nodeIndex?: number | null) {
+export function executeCheckHooks(lView: LView, hooks: HookData, nodeIndex?: number|null) {
   callHooks(lView, hooks, InitPhaseState.InitPhaseCompleted, nodeIndex);
 }
 
@@ -150,10 +150,11 @@ export function executeCheckHooks(lView: LView, hooks: HookData, nodeIndex?: num
  * case, when executing select(number))
  */
 export function executeInitAndCheckHooks(
-    lView: LView, hooks: HookData, initPhase: InitPhaseState, nodeIndex?: number | null) {
-  ngDevMode && assertNotEqual(
-                   initPhase, InitPhaseState.InitPhaseCompleted,
-                   'Init pre-order hooks should not be called more than once');
+    lView: LView, hooks: HookData, initPhase: InitPhaseState, nodeIndex?: number|null) {
+  ngDevMode &&
+      assertNotEqual(
+          initPhase, InitPhaseState.InitPhaseCompleted,
+          'Init pre-order hooks should not be called more than once');
   if ((lView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhase) {
     callHooks(lView, hooks, initPhase, nodeIndex);
   }
@@ -188,17 +189,18 @@ export function incrementInitPhaseFlags(lView: LView, initPhase: InitPhaseState)
  */
 function callHooks(
     currentView: LView, arr: HookData, initPhase: InitPhaseState,
-    currentNodeIndex: number | null | undefined): void {
-  ngDevMode && assertEqual(
-                   getCheckNoChangesMode(), false,
-                   'Hooks should never be run in the check no changes mode.');
+    currentNodeIndex: number|null|undefined): void {
+  ngDevMode &&
+      assertEqual(
+          getCheckNoChangesMode(), false,
+          'Hooks should never be run in the check no changes mode.');
   const startIndex = currentNodeIndex !== undefined ?
       (currentView[PREORDER_HOOK_FLAGS] & PreOrderHookFlags.IndexOfTheNextPreOrderHookMaskMask) :
       0;
   const nodeIndexLimit = currentNodeIndex != null ? currentNodeIndex : -1;
   let lastNodeIndexFound = 0;
   for (let i = startIndex; i < arr.length; i++) {
-    const hook = arr[i + 1] as() => void;
+    const hook = arr[i + 1] as () => void;
     if (typeof hook === 'number') {
       lastNodeIndexFound = arr[i] as number;
       if (currentNodeIndex != null && lastNodeIndexFound >= currentNodeIndex) {
@@ -229,7 +231,7 @@ function callHooks(
  */
 function callHook(currentView: LView, initPhase: InitPhaseState, arr: HookData, i: number) {
   const isInitHook = arr[i] < 0;
-  const hook = arr[i + 1] as() => void;
+  const hook = arr[i + 1] as () => void;
   const directiveIndex = isInitHook ? -arr[i] : arr[i] as number;
   const directive = currentView[directiveIndex];
   if (isInitHook) {

@@ -138,7 +138,9 @@ function generateAllLocalesFile(LOCALES, ALIASES) {
     return str;
   }
 
-  function formatLocale(locale) { return locale.replace(/-/g, '_'); }
+  function formatLocale(locale) {
+    return locale.replace(/-/g, '_');
+  }
   // clang-format off
   return `${HEADER}
 import {registerLocaleData} from '../src/i18n/locale_data';

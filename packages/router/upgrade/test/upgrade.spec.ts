@@ -119,8 +119,7 @@ describe('setUpLocationSync', () => {
 
       expect(LocationMock.normalize).toHaveBeenCalledWith('/foo/bar');
     } finally {
-      Object.defineProperty(anchorProto, 'pathname', originalDescriptor !);
+      Object.defineProperty(anchorProto, 'pathname', originalDescriptor!);
     }
   });
-
 });

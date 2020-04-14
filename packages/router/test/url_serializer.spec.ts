@@ -7,7 +7,7 @@
  */
 
 import {PRIMARY_OUTLET} from '../src/shared';
-import {DefaultUrlSerializer, UrlSegmentGroup, encodeUriFragment, encodeUriQuery, encodeUriSegment, serializePath} from '../src/url_tree';
+import {DefaultUrlSerializer, encodeUriFragment, encodeUriQuery, encodeUriSegment, serializePath, UrlSegmentGroup} from '../src/url_tree';
 
 describe('url serializer', () => {
   const url = new DefaultUrlSerializer();
@@ -188,8 +188,8 @@ describe('url serializer', () => {
 
   describe('encoding/decoding', () => {
     it('should encode/decode path segments and parameters', () => {
-      const u =
-          `/${encodeUriSegment("one two")};${encodeUriSegment("p 1")}=${encodeUriSegment("v 1")};${encodeUriSegment("p 2")}=${encodeUriSegment("v 2")}`;
+      const u = `/${encodeUriSegment('one two')};${encodeUriSegment('p 1')}=${
+          encodeUriSegment('v 1')};${encodeUriSegment('p 2')}=${encodeUriSegment('v 2')}`;
       const tree = url.parse(u);
 
       expect(tree.root.children[PRIMARY_OUTLET].segments[0].path).toEqual('one two');
@@ -199,8 +199,8 @@ describe('url serializer', () => {
     });
 
     it('should encode/decode "slash" in path segments and parameters', () => {
-      const u =
-          `/${encodeUriSegment("one/two")};${encodeUriSegment("p/1")}=${encodeUriSegment("v/1")}/three`;
+      const u = `/${encodeUriSegment('one/two')};${encodeUriSegment('p/1')}=${
+          encodeUriSegment('v/1')}/three`;
       const tree = url.parse(u);
       const segment = tree.root.children[PRIMARY_OUTLET].segments[0];
       expect(segment.path).toEqual('one/two');
@@ -211,8 +211,8 @@ describe('url serializer', () => {
     });
 
     it('should encode/decode query params', () => {
-      const u =
-          `/one?${encodeUriQuery("p 1")}=${encodeUriQuery("v 1")}&${encodeUriQuery("p 2")}=${encodeUriQuery("v 2")}`;
+      const u = `/one?${encodeUriQuery('p 1')}=${encodeUriQuery('v 1')}&${encodeUriQuery('p 2')}=${
+          encodeUriQuery('v 2')}`;
       const tree = url.parse(u);
 
       expect(tree.queryParams).toEqual({'p 1': 'v 1', 'p 2': 'v 2'});
@@ -263,7 +263,6 @@ describe('url serializer', () => {
   });
 
   describe('special character encoding/decoding', () => {
-
     // Tests specific to https://github.com/angular/angular/issues/10280
     it('should parse encoded parens in matrix params', () => {
       const auxRoutesUrl = '/abc;foo=(other:val)';

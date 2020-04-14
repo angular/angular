@@ -11,7 +11,7 @@ import {assertLContainerOrUndefined} from '../assert';
 import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {RenderFlags} from '../interfaces/definition';
 import {TContainerNode, TNodeType} from '../interfaces/node';
-import {CONTEXT, LView, LViewFlags, PARENT, TVIEW, TView, TViewType, T_HOST} from '../interfaces/view';
+import {CONTEXT, LView, LViewFlags, PARENT, T_HOST, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertNodeType} from '../node_assert';
 import {insertView, removeView} from '../node_manipulation';
 import {enterView, getIsParent, getLView, getPreviousOrParentTNode, getTView, leaveView, setIsParent, setPreviousOrParentTNode} from '../state';
@@ -34,7 +34,7 @@ export function ɵɵembeddedViewStart(viewBlockId: number, decls: number, vars: 
   const previousOrParentTNode = getPreviousOrParentTNode();
   // The previous node can be a view node if we are processing an inline for loop
   const containerTNode = previousOrParentTNode.type === TNodeType.View ?
-      previousOrParentTNode.parent ! :
+      previousOrParentTNode.parent! :
       previousOrParentTNode;
   const lContainer = lView[containerTNode.index] as LContainer;
 
@@ -141,5 +141,5 @@ export function ɵɵembeddedViewEnd(): void {
   const lContainer = lView[PARENT] as LContainer;
   ngDevMode && assertLContainerOrUndefined(lContainer);
   leaveView();
-  setPreviousOrParentTNode(viewHost !, false);
+  setPreviousOrParentTNode(viewHost!, false);
 }

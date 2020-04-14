@@ -39,8 +39,10 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
     return new Observable((observer: Observer<any>) => {
       const testReq = new TestRequest(req, observer);
       this.open.push(testReq);
-      observer.next({ type: HttpEventType.Sent } as HttpEvent<any>);
-      return () => { testReq._cancelled = true; };
+      observer.next({type: HttpEventType.Sent} as HttpEvent<any>);
+      return () => {
+        testReq._cancelled = true;
+      };
     });
   }
 
@@ -86,8 +88,8 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
     description = description || this.descriptionFromMatcher(match);
     const matches = this.match(match);
     if (matches.length > 1) {
-      throw new Error(
-          `Expected one matching request for criteria "${description}", found ${matches.length} requests.`);
+      throw new Error(`Expected one matching request for criteria "${description}", found ${
+          matches.length} requests.`);
     }
     if (matches.length === 0) {
       let message = `Expected one matching request for criteria "${description}", found none.`;
@@ -116,8 +118,8 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
     description = description || this.descriptionFromMatcher(match);
     const matches = this.match(match);
     if (matches.length > 0) {
-      throw new Error(
-          `Expected zero matching requests for criteria "${description}", found ${matches.length}.`);
+      throw new Error(`Expected zero matching requests for criteria "${description}", found ${
+          matches.length}.`);
     }
   }
 

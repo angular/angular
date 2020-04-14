@@ -51,7 +51,7 @@ if ((window as any)[(Zone as any).__symbol__('setTimeout')]) {
   // build mode and need to load the browser patch.
   browserPatchedPromise =
       System.import('/base/angular/packages/zone.js/test/browser-zone-setup').then(() => {
-        let testFrameworkPatch = typeof(window as any).Mocha !== 'undefined' ?
+        let testFrameworkPatch = typeof (window as any).Mocha !== 'undefined' ?
             '/base/angular/packages/zone.js/lib/mocha/mocha' :
             '/base/angular/packages/zone.js/lib/jasmine/jasmine';
         return System.import(testFrameworkPatch);
@@ -59,7 +59,7 @@ if ((window as any)[(Zone as any).__symbol__('setTimeout')]) {
 }
 
 browserPatchedPromise.then(() => {
-  let testFrameworkPatch = typeof(window as any).Mocha !== 'undefined' ?
+  let testFrameworkPatch = typeof (window as any).Mocha !== 'undefined' ?
       '/base/angular/packages/zone.js/test/test-env-setup-mocha' :
       '/base/angular/packages/zone.js/test/test-env-setup-jasmine';
   // Setup test environment
@@ -67,8 +67,12 @@ browserPatchedPromise.then(() => {
     System.import('/base/angular/packages/zone.js/lib/common/error-rewrite').then(() => {
       System.import(`/base/angular/packages/zone.js/test/${entryPoint}`)
           .then(
-              () => { __karma__.start(); },
-              (error: any) => { console.error(error.stack || error); });
+              () => {
+                __karma__.start();
+              },
+              (error: any) => {
+                console.error(error.stack || error);
+              });
     });
   });
 });

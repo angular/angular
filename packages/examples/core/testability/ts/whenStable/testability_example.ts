@@ -20,7 +20,9 @@ export class StableTestCmp {
   status = 'none';
   start() {
     this.status = 'running';
-    setTimeout(() => { this.status = 'done'; }, 5000);
+    setTimeout(() => {
+      this.status = 'done';
+    }, 5000);
   }
 }
 

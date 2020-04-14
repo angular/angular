@@ -13,7 +13,9 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 {
   describe('NoopAnimationsModule', () => {
-    beforeEach(() => { TestBed.configureTestingModule({imports: [NoopAnimationsModule]}); });
+    beforeEach(() => {
+      TestBed.configureTestingModule({imports: [NoopAnimationsModule]});
+    });
 
     it('should flush and fire callbacks when the zone becomes stable', (async) => {
       @Component({
@@ -29,8 +31,12 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
         exp: any;
         startEvent: any;
         doneEvent: any;
-        onStart(event: any) { this.startEvent = event; }
-        onDone(event: any) { this.doneEvent = event; }
+        onStart(event: any) {
+          this.startEvent = event;
+        }
+        onDone(event: any) {
+          this.doneEvent = event;
+        }
       }
 
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -63,8 +69,12 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
            exp: any;
            startEvent: any;
            doneEvent: any;
-           onStart(event: any) { this.startEvent = event; }
-           onDone(event: any) { this.doneEvent = event; }
+           onStart(event: any) {
+             this.startEvent = event;
+           }
+           onDone(event: any) {
+             this.doneEvent = event;
+           }
          }
 
          TestBed.configureTestingModule({declarations: [Cmp]});

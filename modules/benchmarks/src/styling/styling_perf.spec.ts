@@ -28,7 +28,7 @@ const SCENARIOS = [
 describe('styling benchmark spec', () => {
   afterEach(verifyNoBrowserErrors);
 
-  it('should render and interact to update and detect changes', async() => {
+  it('should render and interact to update and detect changes', async () => {
     openBrowser({url: '/', ignoreBrowserSynchronization: true});
     create();
     const items = element.all(by.css('styling-bindings button'));
@@ -38,7 +38,7 @@ describe('styling benchmark spec', () => {
     expect(await items.first().getAttribute('title')).toBe('baz');
   });
 
-  it('should render and run noop change detection', async() => {
+  it('should render and run noop change detection', async () => {
     openBrowser({url: '/', ignoreBrowserSynchronization: true});
     create();
     const items = element.all(by.css('styling-bindings button'));
@@ -51,7 +51,7 @@ describe('styling benchmark spec', () => {
   // Create benchmarks for each possible test scenario.
   SCENARIOS.forEach(({optionIndex, id}) => {
     describe(id, () => {
-      it('should run create benchmark', async() => {
+      it('should run create benchmark', async () => {
         await runStylingBenchmark(`styling.${id}.create`, {
           work: () => create(),
           prepare: () => {
@@ -61,7 +61,7 @@ describe('styling benchmark spec', () => {
         });
       });
 
-      it('should run update benchmark', async() => {
+      it('should run update benchmark', async () => {
         await runStylingBenchmark(`styling.${id}.update`, {
           work: () => update(),
           prepare: () => {
@@ -71,7 +71,7 @@ describe('styling benchmark spec', () => {
         });
       });
 
-      it('should run detect changes benchmark', async() => {
+      it('should run detect changes benchmark', async () => {
         await runStylingBenchmark(`styling.${id}.noop_cd`, {
           work: () => detectChanges(),
           prepare: () => {

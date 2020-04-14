@@ -10,7 +10,7 @@ import {Observable, Subscriber, Subscription} from 'rxjs';
 
 type ZoneSubscriberContext = {
   _zone: Zone
-} & Subscriber<any>;
+}&Subscriber<any>;
 
 (Zone as any).__load_patch('rxjs', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const symbol: (symbolString: string) => string = (Zone as any).__symbol__;
@@ -31,7 +31,9 @@ type ZoneSubscriberContext = {
       _zoneSubscribe: {value: null, writable: true, configurable: true},
       source: {
         configurable: true,
-        get: function(this: Observable<any>) { return (this as any)._zoneSource; },
+        get: function(this: Observable<any>) {
+          return (this as any)._zoneSource;
+        },
         set: function(this: Observable<any>, source: any) {
           (this as any)._zone = Zone.current;
           (this as any)._zoneSource = source;
@@ -75,7 +77,9 @@ type ZoneSubscriberContext = {
         }
       },
       subjectFactory: {
-        get: function() { return (this as any)._zoneSubjectFactory; },
+        get: function() {
+          return (this as any)._zoneSubjectFactory;
+        },
         set: function(factory: any) {
           const zone = this._zone;
           this._zoneSubjectFactory = function() {
@@ -142,7 +146,9 @@ type ZoneSubscriberContext = {
 
     Object.defineProperty(Subscriber.prototype, 'destination', {
       configurable: true,
-      get: function(this: Subscriber<any>) { return (this as any)._zoneDestination; },
+      get: function(this: Subscriber<any>) {
+        return (this as any)._zoneDestination;
+      },
       set: function(this: Subscriber<any>, destination: any) {
         (this as any)._zone = Zone.current;
         (this as any)._zoneDestination = destination;

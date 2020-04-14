@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementFinder, browser, by, element} from 'protractor';
+import {browser, by, element, ElementFinder} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 describe('nestedFormGroup example', () => {
@@ -40,5 +41,4 @@ describe('nestedFormGroup example', () => {
     expect(firstInput.getAttribute('value')).toEqual('Bess');
     expect(lastInput.getAttribute('value')).toEqual('Marvin');
   });
-
 });

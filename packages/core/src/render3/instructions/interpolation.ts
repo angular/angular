@@ -102,10 +102,9 @@ export function interpolation4(
   const different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
   incrementBindingIndex(4);
 
-  return different ?
-      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
-          renderStringify(v3) + suffix :
-      NO_CHANGE;
+  return different ? prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 +
+          renderStringify(v2) + i2 + renderStringify(v3) + suffix :
+                     NO_CHANGE;
 }
 
 /**
@@ -119,10 +118,9 @@ export function interpolation5(
   different = bindingUpdated(lView, bindingIndex + 4, v4) || different;
   incrementBindingIndex(5);
 
-  return different ?
-      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
-          renderStringify(v3) + i3 + renderStringify(v4) + suffix :
-      NO_CHANGE;
+  return different ? prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 +
+          renderStringify(v2) + i2 + renderStringify(v3) + i3 + renderStringify(v4) + suffix :
+                     NO_CHANGE;
 }
 
 /**
@@ -154,11 +152,10 @@ export function interpolation7(
   different = bindingUpdated3(lView, bindingIndex + 4, v4, v5, v6) || different;
   incrementBindingIndex(7);
 
-  return different ?
-      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
-          renderStringify(v3) + i3 + renderStringify(v4) + i4 + renderStringify(v5) + i5 +
-          renderStringify(v6) + suffix :
-      NO_CHANGE;
+  return different ? prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 +
+          renderStringify(v2) + i2 + renderStringify(v3) + i3 + renderStringify(v4) + i4 +
+          renderStringify(v5) + i5 + renderStringify(v6) + suffix :
+                     NO_CHANGE;
 }
 
 /**
@@ -173,9 +170,8 @@ export function interpolation8(
   different = bindingUpdated4(lView, bindingIndex + 4, v4, v5, v6, v7) || different;
   incrementBindingIndex(8);
 
-  return different ?
-      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
-          renderStringify(v3) + i3 + renderStringify(v4) + i4 + renderStringify(v5) + i5 +
-          renderStringify(v6) + i6 + renderStringify(v7) + suffix :
-      NO_CHANGE;
+  return different ? prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 +
+          renderStringify(v2) + i2 + renderStringify(v3) + i3 + renderStringify(v4) + i4 +
+          renderStringify(v5) + i5 + renderStringify(v6) + i6 + renderStringify(v7) + suffix :
+                     NO_CHANGE;
 }

@@ -88,8 +88,16 @@ if (require.main === module) {
   const sourceLocale: string|undefined = options['l'];
   const translationFileLocales: string[] = options['target-locales'] || [];
 
-  translateFiles({sourceRootPath, sourceFilePaths, translationFilePaths, translationFileLocales,
-                  outputPathFn, diagnostics, missingTranslation, sourceLocale});
+  translateFiles({
+    sourceRootPath,
+    sourceFilePaths,
+    translationFilePaths,
+    translationFileLocales,
+    outputPathFn,
+    diagnostics,
+    missingTranslation,
+    sourceLocale
+  });
 
   diagnostics.messages.forEach(m => console.warn(`${m.type}: ${m.message}`));
   process.exit(diagnostics.hasErrors ? 1 : 0);
@@ -135,9 +143,16 @@ export interface TranslateFilesOptions {
   sourceLocale?: string;
 }
 
-export function translateFiles({sourceRootPath, sourceFilePaths, translationFilePaths,
-                                translationFileLocales, outputPathFn, diagnostics,
-                                missingTranslation, sourceLocale}: TranslateFilesOptions) {
+export function translateFiles({
+  sourceRootPath,
+  sourceFilePaths,
+  translationFilePaths,
+  translationFileLocales,
+  outputPathFn,
+  diagnostics,
+  missingTranslation,
+  sourceLocale
+}: TranslateFilesOptions) {
   const translationLoader = new TranslationLoader(
       [
         new Xliff2TranslationParser(),

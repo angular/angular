@@ -1,13 +1,13 @@
 /**
-*@license
-*Copyright Google Inc. All Rights Reserved.
-*
-*Use of this source code is governed by an MIT-style license that can be
-*found in the LICENSE file at https://angular.io/license
-*/
+ *@license
+ *Copyright Google Inc. All Rights Reserved.
+ *
+ *Use of this source code is governed by an MIT-style license that can be
+ *found in the LICENSE file at https://angular.io/license
+ */
 
 import {Compiler, Injectable, Injector, NgModuleFactoryLoader, NgModuleRef, OnDestroy} from '@angular/core';
-import {Observable, Subscription, from, of } from 'rxjs';
+import {from, Observable, of, Subscription} from 'rxjs';
 import {catchError, concatMap, filter, map, mergeAll, mergeMap} from 'rxjs/operators';
 
 import {LoadedRouterConfig, Route, Routes} from './config';
@@ -40,7 +40,7 @@ export abstract class PreloadingStrategy {
  */
 export class PreloadAllModules implements PreloadingStrategy {
   preload(route: Route, fn: () => Observable<any>): Observable<any> {
-    return fn().pipe(catchError(() => of (null)));
+    return fn().pipe(catchError(() => of(null)));
   }
 }
 
@@ -54,7 +54,9 @@ export class PreloadAllModules implements PreloadingStrategy {
  * @publicApi
  */
 export class NoPreloading implements PreloadingStrategy {
-  preload(route: Route, fn: () => Observable<any>): Observable<any> { return of (null); }
+  preload(route: Route, fn: () => Observable<any>): Observable<any> {
+    return of(null);
+  }
 }
 
 /**
@@ -73,7 +75,7 @@ export class NoPreloading implements PreloadingStrategy {
 export class RouterPreloader implements OnDestroy {
   private loader: RouterConfigLoader;
   // TODO(issue/24571): remove '!'.
-  private subscription !: Subscription;
+  private subscription!: Subscription;
 
   constructor(
       private router: Router, moduleLoader: NgModuleFactoryLoader, compiler: Compiler,
@@ -99,7 +101,9 @@ export class RouterPreloader implements OnDestroy {
   // TODO(jasonaden): This class relies on code external to the class to call setUpPreloading. If
   // this hasn't been done, ngOnDestroy will fail as this.subscription will be undefined. This
   // should be refactored.
-  ngOnDestroy(): void { this.subscription.unsubscribe(); }
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
 
   private processRoutes(ngModule: NgModuleRef<any>, routes: Routes): Observable<void> {
     const res: Observable<any>[] = [];

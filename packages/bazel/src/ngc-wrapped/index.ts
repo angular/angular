@@ -7,7 +7,7 @@
  */
 
 import * as ng from '@angular/compiler-cli';
-import {BazelOptions, CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop} from '@bazel/typescript';
+import {BazelOptions, CachedFileLoader, CompilerHost, constructManifest, debug, FileCache, FileLoader, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop, UncachedFileLoader} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
@@ -123,7 +123,12 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
   const {diagnostics} = compile({
     allDepsCompiledWithBazel: ALL_DEPS_COMPILED_WITH_BAZEL,
     useManifestPathsAsModuleName: _useManifestPathsAsModuleName,
-    expectedOuts: expectedOut, compilerOpts, tsHost, bazelOpts, files, inputs,
+    expectedOuts: expectedOut,
+    compilerOpts,
+    tsHost,
+    bazelOpts,
+    files,
+    inputs,
   });
   if (diagnostics.length) {
     console.error(ng.formatDiagnostics(diagnostics));
@@ -142,16 +147,24 @@ export function relativeToRootDirs(filePath: string, rootDirs: string[]): string
   return filePath;
 }
 
-export function compile({allDepsCompiledWithBazel = true, useManifestPathsAsModuleName,
-                         compilerOpts, tsHost, bazelOpts, files, inputs, expectedOuts,
-                         gatherDiagnostics, bazelHost}: {
+export function compile({
+  allDepsCompiledWithBazel = true,
+  useManifestPathsAsModuleName,
+  compilerOpts,
+  tsHost,
+  bazelOpts,
+  files,
+  inputs,
+  expectedOuts,
+  gatherDiagnostics,
+  bazelHost
+}: {
   allDepsCompiledWithBazel?: boolean,
-  useManifestPathsAsModuleName?: boolean,
-  compilerOpts: ng.CompilerOptions,
-  tsHost: ts.CompilerHost, inputs?: {[path: string]: string},
-  bazelOpts: BazelOptions,
-  files: string[],
-  expectedOuts: string[],
+  useManifestPathsAsModuleName?: boolean, compilerOpts: ng.CompilerOptions, tsHost: ts.CompilerHost,
+  inputs?: {[path: string]: string},
+        bazelOpts: BazelOptions,
+        files: string[],
+        expectedOuts: string[],
   gatherDiagnostics?: (program: ng.Program) => ng.Diagnostics,
   bazelHost?: CompilerHost,
 }): {diagnostics: ng.Diagnostics, program: ng.Program} {
@@ -362,7 +375,7 @@ export function compile({allDepsCompiledWithBazel = true, useManifestPathsAsModu
 
     if ((compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
         ngHost.amdModuleName) {
-      return ngHost.amdModuleName({ fileName: importedFilePath } as ts.SourceFile);
+      return ngHost.amdModuleName({fileName: importedFilePath} as ts.SourceFile);
     }
 
     // If no AMD module name has been set for the source file by the `@bazel/typescript` compiler
@@ -434,8 +447,10 @@ export function compile({allDepsCompiledWithBazel = true, useManifestPathsAsModu
   const {diagnostics, emitResult, program} = ng.performCompilation({
     rootNames: files,
     options: compilerOpts,
-    host: ngHost, emitCallback,
-    mergeEmitResultsCallback: tsickle.mergeEmitResults, gatherDiagnostics
+    host: ngHost,
+    emitCallback,
+    mergeEmitResultsCallback: tsickle.mergeEmitResults,
+    gatherDiagnostics
   });
   const tsickleEmitResult = emitResult as tsickle.EmitResult;
   let externs = '/** @externs */\n';
@@ -512,9 +527,9 @@ function convertToForwardSlashPath(filePath: string): string {
 
 function gatherDiagnosticsForInputsOnly(
     options: ng.CompilerOptions, bazelOpts: BazelOptions,
-    ngProgram: ng.Program): (ng.Diagnostic | ts.Diagnostic)[] {
+    ngProgram: ng.Program): (ng.Diagnostic|ts.Diagnostic)[] {
   const tsProgram = ngProgram.getTsProgram();
-  const diagnostics: (ng.Diagnostic | ts.Diagnostic)[] = [];
+  const diagnostics: (ng.Diagnostic|ts.Diagnostic)[] = [];
   // These checks mirror ts.getPreEmitDiagnostics, with the important
   // exception of avoiding b/30708240, which is that if you call
   // program.getDeclarationDiagnostics() it somehow corrupts the emit.

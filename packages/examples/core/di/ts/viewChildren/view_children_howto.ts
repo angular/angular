@@ -15,7 +15,7 @@ class ChildDirective {
 
 @Component({selector: 'someCmp', templateUrl: 'someCmp.html'})
 class SomeCmp implements AfterViewInit {
-  @ViewChildren(ChildDirective) viewChildren !: QueryList<ChildDirective>;
+  @ViewChildren(ChildDirective) viewChildren!: QueryList<ChildDirective>;
 
   ngAfterViewInit() {
     // viewChildren is set

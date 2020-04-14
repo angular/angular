@@ -11,12 +11,13 @@ import {assertDataInRange} from '../../util/assert';
 import {isObservable} from '../../util/lang';
 import {EMPTY_OBJ} from '../empty';
 import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
-import {GlobalTargetResolver, RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
+import {GlobalTargetResolver, isProceduralRenderer, RElement, Renderer3} from '../interfaces/renderer';
 import {isDirectiveHost} from '../interfaces/type_checks';
 import {CLEANUP, FLAGS, LView, LViewFlags, RENDERER, TView} from '../interfaces/view';
 import {assertNodeOfPossibleTypes} from '../node_assert';
 import {getLView, getPreviousOrParentTNode, getTView} from '../state';
 import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
+
 import {getLCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
 
 
@@ -47,26 +48,26 @@ export function ɵɵlistener(
 }
 
 /**
-* Registers a synthetic host listener (e.g. `(@foo.start)`) on a component.
-*
-* This instruction is for compatibility purposes and is designed to ensure that a
-* synthetic host listener (e.g. `@HostListener('@foo.start')`) properly gets rendered
-* in the component's renderer. Normally all host listeners are evaluated with the
-* parent component's renderer, but, in the case of animation @triggers, they need
-* to be evaluated with the sub component's renderer (because that's where the
-* animation triggers are defined).
-*
-* Do not use this instruction as a replacement for `listener`. This instruction
-* only exists to ensure compatibility with the ViewEngine's host binding behavior.
-*
-* @param eventName Name of the event
-* @param listenerFn The function to be called when event emits
-* @param useCapture Whether or not to use capture in event listener
-* @param eventTargetResolver Function that returns global target information in case this listener
-* should be attached to a global object like window, document or body
+ * Registers a synthetic host listener (e.g. `(@foo.start)`) on a component.
+ *
+ * This instruction is for compatibility purposes and is designed to ensure that a
+ * synthetic host listener (e.g. `@HostListener('@foo.start')`) properly gets rendered
+ * in the component's renderer. Normally all host listeners are evaluated with the
+ * parent component's renderer, but, in the case of animation @triggers, they need
+ * to be evaluated with the sub component's renderer (because that's where the
+ * animation triggers are defined).
+ *
+ * Do not use this instruction as a replacement for `listener`. This instruction
+ * only exists to ensure compatibility with the ViewEngine's host binding behavior.
+ *
+ * @param eventName Name of the event
+ * @param listenerFn The function to be called when event emits
+ * @param useCapture Whether or not to use capture in event listener
+ * @param eventTargetResolver Function that returns global target information in case this listener
+ * should be attached to a global object like window, document or body
  *
  * @codeGenApi
-*/
+ */
 export function ɵɵcomponentHostSyntheticListener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): typeof ɵɵcomponentHostSyntheticListener {
@@ -94,7 +95,7 @@ function findExistingListener(
         // We have found a matching event name on the same node but it might not have been
         // registered yet, so we must explicitly verify entries in the LView cleanup data
         // structures.
-        const lCleanup = lView[CLEANUP] !;
+        const lCleanup = lView[CLEANUP]!;
         const listenerIdxInLCleanup = tCleanup[i + 2];
         return lCleanup.length > listenerIdxInLCleanup ? lCleanup[listenerIdxInLCleanup] : null;
       }
@@ -124,8 +125,9 @@ function listenerInternal(
   // register a listener and store its cleanup function on LView.
   const lCleanup = getLCleanup(lView);
 
-  ngDevMode && assertNodeOfPossibleTypes(
-                   tNode, TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer);
+  ngDevMode &&
+      assertNodeOfPossibleTypes(
+          tNode, TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer);
 
   let processOutputs = true;
 
@@ -207,8 +209,8 @@ function listenerInternal(
         const output = directiveInstance[minifiedName];
 
         if (ngDevMode && !isObservable(output)) {
-          throw new Error(
-              `@Output ${minifiedName} not initialized in '${directiveInstance.constructor.name}'.`);
+          throw new Error(`@Output ${minifiedName} not initialized in '${
+              directiveInstance.constructor.name}'.`);
         }
 
         const subscription = output.subscribe(listenerFn);

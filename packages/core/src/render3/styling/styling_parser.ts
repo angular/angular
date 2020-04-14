@@ -244,7 +244,7 @@ export function consumeSeparator(
  * @param startIndex Starting index of character where the scan should start.
  * @param endIndex Ending index of character where the scan should end.
  * @returns Index after last style value character.
-*/
+ */
 export function consumeStyleValue(text: string, startIndex: number, endIndex: number): number {
   let ch1 = -1;  // 1st previous character
   let ch2 = -1;  // 2nd previous character

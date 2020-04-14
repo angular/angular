@@ -9,7 +9,7 @@
 import {APP_INITIALIZER, ApplicationInitStatus} from './application_init';
 import {ApplicationRef} from './application_ref';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
-import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValueDiffers} from './change_detection/change_detection';
+import {defaultIterableDiffers, defaultKeyValueDiffers, IterableDiffers, KeyValueDiffers} from './change_detection/change_detection';
 import {Console} from './console';
 import {Injector, StaticProvider} from './di';
 import {Inject, Optional, SkipSelf} from './di/metadata';
@@ -78,8 +78,7 @@ export const APPLICATION_MODULE_PROVIDERS: StaticProvider[] = [
   {
     provide: ApplicationRef,
     useClass: ApplicationRef,
-    deps:
-        [NgZone, Console, Injector, ErrorHandler, ComponentFactoryResolver, ApplicationInitStatus]
+    deps: [NgZone, Console, Injector, ErrorHandler, ComponentFactoryResolver, ApplicationInitStatus]
   },
   {provide: SCHEDULER, deps: [NgZone], useFactory: zoneSchedulerFactory},
   {
@@ -112,10 +111,12 @@ export function zoneSchedulerFactory(ngZone: NgZone): (fn: () => void) => void {
   let queue: (() => void)[] = [];
   ngZone.onStable.subscribe(() => {
     while (queue.length) {
-      queue.pop() !();
+      queue.pop()!();
     }
   });
-  return function(fn: () => void) { queue.push(fn); };
+  return function(fn: () => void) {
+    queue.push(fn);
+  };
 }
 
 /**

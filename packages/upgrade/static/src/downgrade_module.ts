@@ -11,7 +11,7 @@ import {platformBrowser} from '@angular/platform-browser';
 
 import {IInjectorService, IProvideService, module_ as angularModule} from '../../src/common/src/angular1';
 import {$INJECTOR, $PROVIDE, DOWNGRADED_MODULE_COUNT_KEY, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../../src/common/src/constants';
-import {LazyModuleRef, UpgradeAppType, getDowngradedModuleCount, isFunction} from '../../src/common/src/util';
+import {getDowngradedModuleCount, isFunction, LazyModuleRef, UpgradeAppType} from '../../src/common/src/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 import {NgAdapterInjector} from './util';
@@ -128,9 +128,8 @@ let moduleUid = 0;
  *
  * @publicApi
  */
-export function downgradeModule<T>(
-    moduleFactoryOrBootstrapFn: NgModuleFactory<T>|
-    ((extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string {
+export function downgradeModule<T>(moduleFactoryOrBootstrapFn: NgModuleFactory<T>|(
+    (extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string {
   const lazyModuleName = `${UPGRADE_MODULE_NAME}.lazy${++moduleUid}`;
   const lazyModuleRefKey = `${LAZY_MODULE_REF}${lazyModuleName}`;
   const lazyInjectorKey = `${INJECTOR_KEY}${lazyModuleName}`;

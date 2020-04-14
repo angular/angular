@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '@angular/core';
-import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
+import {afterEach, AsyncTestCompleter, beforeEach, describe, inject, it, SpyObject} from '@angular/core/testing/src/testing_internal';
 import {BrowserJsonp} from '@angular/http/src/backends/browser_jsonp';
 import {JSONPBackend, JSONPConnection} from '@angular/http/src/backends/jsonp_backend';
 import {BaseRequestOptions, RequestOptions} from '@angular/http/src/base_request_options';
@@ -21,12 +21,16 @@ let existingScripts: MockBrowserJsonp[] = [];
 
 class MockBrowserJsonp extends BrowserJsonp {
   // TODO(issue/24571): remove '!'.
-  src !: string;
+  src!: string;
   callbacks = new Map<string, (data: any) => any>();
 
-  addEventListener(type: string, cb: (data: any) => any) { this.callbacks.set(type, cb); }
+  addEventListener(type: string, cb: (data: any) => any) {
+    this.callbacks.set(type, cb);
+  }
 
-  removeEventListener(type: string, cb: Function) { this.callbacks.delete(type); }
+  removeEventListener(type: string, cb: Function) {
+    this.callbacks.delete(type);
+  }
 
   dispatchEvent(type: string, argument: any = {}) {
     const cb = this.callbacks.get(type);
@@ -65,10 +69,12 @@ class MockBrowserJsonp extends BrowserJsonp {
           new Request(base.merge(new RequestOptions({url: 'https://google.com'})) as any);
     });
 
-    afterEach(() => { existingScripts = []; });
+    afterEach(() => {
+      existingScripts = [];
+    });
 
     it('should create a connection', () => {
-      let instance: JSONPConnection = undefined !;
+      let instance: JSONPConnection = undefined!;
       expect(() => instance = backend.createConnection(sampleRequest)).not.toThrow();
       expect(instance).toBeAnInstanceOf(JSONPConnection);
     });
@@ -141,8 +147,9 @@ class MockBrowserJsonp extends BrowserJsonp {
          RequestMethod.Head, RequestMethod.Patch]
             .forEach(method => {
               const base = new BaseRequestOptions();
-              const req = new Request(base.merge(
-                  new RequestOptions({url: 'https://google.com', method: method})) as any);
+              const req = new Request(
+                  base.merge(new RequestOptions({url: 'https://google.com', method: method})) as
+                  any);
               expect(
                   () => new (JSONPConnection as any)(req, new MockBrowserJsonp())
                             .response.subscribe())

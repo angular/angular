@@ -10,7 +10,7 @@ import {Routes} from '../src/config';
 import {createRouterState} from '../src/create_router_state';
 import {recognize} from '../src/recognize';
 import {DefaultRouteReuseStrategy} from '../src/route_reuse_strategy';
-import {ActivatedRoute, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from '../src/router_state';
+import {ActivatedRoute, advanceActivatedRoute, createEmptyState, RouterState, RouterStateSnapshot} from '../src/router_state';
 import {PRIMARY_OUTLET} from '../src/shared';
 import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
@@ -18,18 +18,19 @@ import {TreeNode} from '../src/utils/tree';
 describe('create router state', () => {
   const reuseStrategy = new DefaultRouteReuseStrategy();
 
-  const emptyState = () => createEmptyState(
-      new (UrlTree as any)(new UrlSegmentGroup([], {}), {}, null !), RootComponent);
+  const emptyState = () =>
+      createEmptyState(new (UrlTree as any)(new UrlSegmentGroup([], {}), {}, null!), RootComponent);
 
   it('should create new state', () => {
     const state = createRouterState(
-        reuseStrategy, createState(
-                           [
-                             {path: 'a', component: ComponentA},
-                             {path: 'b', component: ComponentB, outlet: 'left'},
-                             {path: 'c', component: ComponentC, outlet: 'right'}
-                           ],
-                           'a(left:b//right:c)'),
+        reuseStrategy,
+        createState(
+            [
+              {path: 'a', component: ComponentA},
+              {path: 'b', component: ComponentB, outlet: 'left'},
+              {path: 'c', component: ComponentC, outlet: 'right'}
+            ],
+            'a(left:b//right:c)'),
         emptyState());
 
     checkActivatedRoute(state.root, RootComponent);
@@ -63,9 +64,8 @@ describe('create router state', () => {
   it('should handle componentless routes', () => {
     const config = [{
       path: 'a/:id',
-      children: [
-        {path: 'b', component: ComponentA}, {path: 'c', component: ComponentB, outlet: 'right'}
-      ]
+      children:
+          [{path: 'b', component: ComponentA}, {path: 'c', component: ComponentB, outlet: 'right'}]
     }];
 
 
@@ -76,8 +76,8 @@ describe('create router state', () => {
         createRouterState(reuseStrategy, createState(config, 'a/2;p=22/(b//right:c)'), prevState);
 
     expect(prevState.root).toBe(state.root);
-    const prevP = (prevState as any).firstChild(prevState.root) !;
-    const currP = (state as any).firstChild(state.root) !;
+    const prevP = (prevState as any).firstChild(prevState.root)!;
+    const currP = (state as any).firstChild(state.root)!;
     expect(prevP).toBe(currP);
 
     const currC = (state as any).children(currP);
@@ -121,7 +121,7 @@ function advanceNode(node: TreeNode<ActivatedRoute>): void {
 }
 
 function createState(config: Routes, url: string): RouterStateSnapshot {
-  let res: RouterStateSnapshot = undefined !;
+  let res: RouterStateSnapshot = undefined!;
   recognize(RootComponent, config, tree(url), url).forEach(s => res = s);
   return res;
 }

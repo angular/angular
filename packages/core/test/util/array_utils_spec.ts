@@ -6,15 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {KeyValueArray, arrayIndexOfSorted, arrayInsert, arrayInsert2, arrayInsertSorted, arrayRemoveSorted, arraySplice, flatten, keyValueArrayDelete, keyValueArrayGet, keyValueArrayIndexOf, keyValueArraySet} from '../../src/util/array_utils';
+import {arrayIndexOfSorted, arrayInsert, arrayInsert2, arrayInsertSorted, arrayRemoveSorted, arraySplice, flatten, KeyValueArray, keyValueArrayDelete, keyValueArrayGet, keyValueArrayIndexOf, keyValueArraySet} from '../../src/util/array_utils';
 
 describe('array_utils', () => {
-
   describe('flatten', () => {
+    it('should flatten an empty array', () => {
+      expect(flatten([])).toEqual([]);
+    });
 
-    it('should flatten an empty array', () => { expect(flatten([])).toEqual([]); });
-
-    it('should flatten a flat array', () => { expect(flatten([1, 2, 3])).toEqual([1, 2, 3]); });
+    it('should flatten a flat array', () => {
+      expect(flatten([1, 2, 3])).toEqual([1, 2, 3]);
+    });
 
     it('should flatten a nested array depth-first', () => {
       expect(flatten([1, [2], 3])).toEqual([1, 2, 3]);
@@ -75,7 +77,6 @@ describe('array_utils', () => {
   });
 
   describe('arrayInsertSorted', () => {
-
     it('should insert items don\'t allow duplicates', () => {
       let a;
       a = ['a', 'c', 'e', 'g', 'i'];
@@ -103,7 +104,6 @@ describe('array_utils', () => {
 
 
   describe('arrayRemoveSorted', () => {
-
     it('should remove items', () => {
       let a;
       a = ['a', 'b', 'c', 'd', 'e'];

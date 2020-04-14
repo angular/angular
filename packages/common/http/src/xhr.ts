@@ -35,7 +35,9 @@ function getResponseUrl(xhr: any): string|null {
  *
  * @publicApi
  */
-export abstract class XhrFactory { abstract build(): XMLHttpRequest; }
+export abstract class XhrFactory {
+  abstract build(): XMLHttpRequest;
+}
 
 /**
  * A factory for `HttpXhrBackend` that uses the `XMLHttpRequest` browser API.
@@ -44,7 +46,9 @@ export abstract class XhrFactory { abstract build(): XMLHttpRequest; }
 @Injectable()
 export class BrowserXhr implements XhrFactory {
   constructor() {}
-  build(): any { return <any>(new XMLHttpRequest()); }
+  build(): any {
+    return <any>(new XMLHttpRequest());
+  }
 }
 
 /**
@@ -200,7 +204,7 @@ export class HttpXhrBackend implements HttpBackend {
               // Even though the response status was 2xx, this is still an error.
               ok = false;
               // The parse error contains the text of the body that failed to parse.
-              body = { error, text: body } as HttpJsonParseError;
+              body = {error, text: body} as HttpJsonParseError;
             }
           }
         }
@@ -318,7 +322,7 @@ export class HttpXhrBackend implements HttpBackend {
       }
 
       // Fire the request, and notify the event stream that it was fired.
-      xhr.send(reqBody !);
+      xhr.send(reqBody!);
       observer.next({type: HttpEventType.Sent});
 
       // This is the return from the Observable function, which is the

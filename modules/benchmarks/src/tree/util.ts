@@ -16,12 +16,14 @@ export class TreeNode {
       public value: string, public depth: number, public maxDepth: number,
       public left: TreeNode|null, public right: TreeNode|null) {
     this.transitiveChildCount = Math.pow(2, (this.maxDepth - this.depth + 1)) - 1;
-    this.children = this.left ? [this.left, this.right !] : [];
+    this.children = this.left ? [this.left, this.right!] : [];
   }
 
   // Needed for Polymer as it does not support ternary nor modulo operator
   // in expressions
-  get style(): string { return this.depth % 2 === 0 ? 'background-color: grey' : ''; }
+  get style(): string {
+    return this.depth % 2 === 0 ? 'background-color: grey' : '';
+  }
 }
 
 let treeCreateCount: number;
@@ -78,7 +80,7 @@ export function newArray<T>(size: number, value: T): T[];
 export function newArray<T>(size: number, value?: T): T[] {
   const list: T[] = [];
   for (let i = 0; i < size; i++) {
-    list.push(value !);
+    list.push(value!);
   }
   return list;
 }

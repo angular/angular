@@ -23,10 +23,14 @@ export class PlatformState {
   /**
    * Renders the current state of the platform to string.
    */
-  renderToString(): string { return serializeDocument(this._doc); }
+  renderToString(): string {
+    return serializeDocument(this._doc);
+  }
 
   /**
    * Returns the current DOM state.
    */
-  getDocument(): any { return this._doc; }
+  getDocument(): any {
+    return this._doc;
+  }
 }

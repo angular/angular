@@ -30,17 +30,20 @@ class MakeColorGreyDirective {
     this._textColor = null;
   }
 
-  toggle() { this._backgroundColor ? this.off() : this.on(); }
+  toggle() {
+    this._backgroundColor ? this.off() : this.on();
+  }
 }
 
 @Component({selector: 'box-with-overridden-styles', template: '...'})
 class BoxWithOverriddenStylesComponent {
   public active = false;
 
-  @HostBinding('style')
-  styles = {};
+  @HostBinding('style') styles = {};
 
-  constructor() { this.onInActive(); }
+  constructor() {
+    this.onInActive();
+  }
 
   @HostListener('click', ['$event'])
   toggle() {
@@ -102,9 +105,13 @@ class AnimationWorldComponent {
   private _hostElement: HTMLElement;
   public styles: {[key: string]: any}|null = null;
 
-  constructor(element: ElementRef) { this._hostElement = element.nativeElement; }
+  constructor(element: ElementRef) {
+    this._hostElement = element.nativeElement;
+  }
 
-  makeClass(item: any) { return `record-${item.value}`; }
+  makeClass(item: any) {
+    return `record-${item.value}`;
+  }
 
   toggleActive(item: any, makeColorGrey: MakeColorGreyDirective) {
     item.active = !item.active;

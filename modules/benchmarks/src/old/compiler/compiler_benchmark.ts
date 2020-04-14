@@ -6,28 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CompilerConfig, DirectiveResolver} from '@angular/compiler';
+import {Component, ComponentResolver, Directive, ViewContainerRef,} from '@angular/core';
+import {ViewMetadata} from '@angular/core/src/metadata/view';
 import {PromiseWrapper} from '@angular/facade/src/async';
-import {Type, print} from '@angular/facade/src/lang';
+import {print, Type} from '@angular/facade/src/lang';
 import {bootstrap} from '@angular/platform-browser';
 import {BrowserDomAdapter} from '@angular/platform-browser/src/browser/browser_adapter';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
-
-import {ComponentResolver, Component, Directive, ViewContainerRef,} from '@angular/core';
-
-import {ViewMetadata} from '@angular/core/src/metadata/view';
-
-import {CompilerConfig, DirectiveResolver} from '@angular/compiler';
-
-import {getIntParameter, bindAction} from '@angular/testing/src/benchmark_util';
+import {bindAction, getIntParameter} from '@angular/testing/src/benchmark_util';
 
 function _createBindings(): any[] {
   const multiplyTemplatesBy = getIntParameter('elements');
   return [
     {
       provide: DirectiveResolver,
-      useFactory:
-          () => new MultiplyDirectiveResolver(
-              multiplyTemplatesBy, [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]),
+      useFactory: () => new MultiplyDirectiveResolver(
+          multiplyTemplatesBy, [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]),
       deps: []
     },
     // Use interpretative mode as Dart does not support JIT and
@@ -57,7 +52,9 @@ function measureWrapper(func, desc) {
       const elapsedMs = new Date().getTime() - begin.getTime();
       print(`[${desc}] ...done, took ${elapsedMs} ms`);
     };
-    const onError = function(e) { DOM.logError(e); };
+    const onError = function(e) {
+      DOM.logError(e);
+    };
     PromiseWrapper.then(func(), onSuccess, onError);
   };
 }

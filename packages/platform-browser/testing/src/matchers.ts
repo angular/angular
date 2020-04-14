@@ -123,7 +123,9 @@ export const expect: <T = any>(actual: T) => NgMatchers<T> = _global.expect;
     return '' + m;
   }
   const res: any[] = [];
-  m.forEach((v: any, k: any) => { res.push(`${String(k)}:${String(v)}`); });
+  m.forEach((v: any, k: any) => {
+    res.push(`${String(k)}:${String(v)}`);
+  });
   return `{ ${res.join(',')} }`;
 };
 
@@ -141,7 +143,7 @@ _global.beforeEach(function() {
       return pass;
     } else {
       // TODO(misko): we should change the return, but jasmine.d.ts is not null safe
-      return undefined !;
+      return undefined!;
     }
   });
   jasmine.addMatchers({
@@ -149,7 +151,12 @@ _global.beforeEach(function() {
       return {
         compare: function(actual: any) {
           const pass = typeof actual === 'object' && typeof actual.then === 'function';
-          return {pass: pass, get message() { return 'Expected ' + actual + ' to be a promise'; }};
+          return {
+            pass: pass,
+            get message() {
+              return 'Expected ' + actual + ' to be a promise';
+            }
+          };
         }
       };
     },
@@ -174,7 +181,9 @@ _global.beforeEach(function() {
           const actualText = elementText(actual);
           return {
             pass: actualText == expectedText,
-            get message() { return 'Expected ' + actualText + ' to be equal to ' + expectedText; }
+            get message() {
+              return 'Expected ' + actualText + ' to be equal to ' + expectedText;
+            }
           };
         }
       };
@@ -188,7 +197,8 @@ _global.beforeEach(function() {
           return {
             pass: hasClass(actual, className) == !isNot,
             get message() {
-              return `Expected ${actual.outerHTML} ${isNot ? 'not ' : ''}to contain the CSS class "${className}"`;
+              return `Expected ${actual.outerHTML} ${
+                  isNot ? 'not ' : ''}to contain the CSS class "${className}"`;
             }
           };
         };
@@ -203,8 +213,9 @@ _global.beforeEach(function() {
             allPassed = hasStyle(actual, styles);
           } else {
             allPassed = Object.keys(styles).length !== 0;
-            Object.keys(styles).forEach(
-                prop => { allPassed = allPassed && hasStyle(actual, prop, styles[prop]); });
+            Object.keys(styles).forEach(prop => {
+              allPassed = allPassed && hasStyle(actual, prop, styles[prop]);
+            });
           }
 
           return {
@@ -212,7 +223,8 @@ _global.beforeEach(function() {
             get message() {
               const expectedValueStr = typeof styles === 'string' ? styles : JSON.stringify(styles);
               return `Expected ${actual.outerHTML} ${!allPassed ? ' ' : 'not '}to contain the
-                      CSS ${typeof styles === 'string' ? 'property' : 'styles'} "${expectedValueStr}"`;
+                      CSS ${typeof styles === 'string' ? 'property' : 'styles'} "${
+                  expectedValueStr}"`;
             }
           };
         }
@@ -225,7 +237,9 @@ _global.beforeEach(function() {
           const errorMessage = actual.toString();
           return {
             pass: errorMessage.indexOf(expectedText) > -1,
-            get message() { return 'Expected ' + errorMessage + ' to contain ' + expectedText; }
+            get message() {
+              return 'Expected ' + errorMessage + ' to contain ' + expectedText;
+            }
           };
         }
       };
@@ -244,8 +258,8 @@ _global.beforeEach(function() {
           return {
             pass: missedMethods.length == 0,
             get message() {
-              return 'Expected ' + actualObject + ' to have the following methods: ' +
-                  missedMethods.join(', ');
+              return 'Expected ' + actualObject +
+                  ' to have the following methods: ' + missedMethods.join(', ');
             }
           };
         }
@@ -262,8 +276,8 @@ _global.beforeEach(function() {
           if (!(actualFixture instanceof ComponentFixture)) {
             return {
               pass: false,
-              message: msgFn(
-                  `Expected actual to be of type \'ComponentFixture\' [actual=${actualFixture.constructor.name}]`)
+              message: msgFn(`Expected actual to be of type \'ComponentFixture\' [actual=${
+                  actualFixture.constructor.name}]`)
             };
           }
 

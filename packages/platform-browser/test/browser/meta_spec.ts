@@ -30,14 +30,14 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     afterEach(() => getDOM().remove(defaultMeta));
 
     it('should return meta tag matching selector', () => {
-      const actual: HTMLMetaElement = metaService.getTag('property="fb:app_id"') !;
+      const actual: HTMLMetaElement = metaService.getTag('property="fb:app_id"')!;
       expect(actual).not.toBeNull();
       expect(actual.getAttribute('content')).toEqual('123456789');
     });
 
     it('should return all meta tags matching selector', () => {
-      const tag1 = metaService.addTag({name: 'author', content: 'page author'}) !;
-      const tag2 = metaService.addTag({name: 'author', content: 'another page author'}) !;
+      const tag1 = metaService.addTag({name: 'author', content: 'page author'})!;
+      const tag2 = metaService.addTag({name: 'author', content: 'another page author'})!;
 
       const actual: HTMLMetaElement[] = metaService.getTags('name=author');
       expect(actual.length).toEqual(2);
@@ -50,7 +50,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     });
 
     it('should return null if meta tag does not exist', () => {
-      const actual: HTMLMetaElement = metaService.getTag('fake=fake') !;
+      const actual: HTMLMetaElement = metaService.getTag('fake=fake')!;
       expect(actual).toBeNull();
     });
 
@@ -73,7 +73,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
       metaService.addTags([{name: 'keywords', content: 'meta test'}]);
 
-      const meta = metaService.getTag(selector) !;
+      const meta = metaService.getTag(selector)!;
       expect(meta).not.toBeNull();
 
       metaService.removeTagElement(meta);
@@ -87,7 +87,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
       const actual = metaService.getTag(selector);
       expect(actual).not.toBeNull();
-      expect(actual !.getAttribute('content')).toEqual('4321');
+      expect(actual!.getAttribute('content')).toEqual('4321');
     });
 
     it('should extract selector from the tag definition', () => {
@@ -96,7 +96,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
       const actual = metaService.getTag(selector);
       expect(actual).not.toBeNull();
-      expect(actual !.getAttribute('content')).toEqual('666');
+      expect(actual!.getAttribute('content')).toEqual('666');
     });
 
     it('should create meta tag if it does not exist', () => {
@@ -104,7 +104,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
       metaService.updateTag({name: 'twitter:title', content: 'Content Title'}, selector);
 
-      const actual = metaService.getTag(selector) !;
+      const actual = metaService.getTag(selector)!;
       expect(actual).not.toBeNull();
       expect(actual.getAttribute('content')).toEqual('Content Title');
 
@@ -118,7 +118,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
       metaService.addTag({name: 'og:title', content: 'Content Title'});
 
-      const actual = metaService.getTag(selector) !;
+      const actual = metaService.getTag(selector)!;
       expect(actual).not.toBeNull();
       expect(actual.getAttribute('content')).toEqual('Content Title');
 
@@ -136,8 +136,8 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         {name: 'twitter:title', content: 'Content Title'},
         {property: 'og:title', content: 'Content Title'}
       ]);
-      const twitterMeta = metaService.getTag(nameSelector) !;
-      const fbMeta = metaService.getTag(propertySelector) !;
+      const twitterMeta = metaService.getTag(nameSelector)!;
+      const fbMeta = metaService.getTag(propertySelector)!;
       expect(twitterMeta).not.toBeNull();
       expect(fbMeta).not.toBeNull();
 
@@ -160,7 +160,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          const selector = 'property="fb:app_id"';
          expect(metaService.getTags(selector).length).toEqual(1);
 
-         const meta = metaService.addTag({property: 'fb:app_id', content: '666'}) !;
+         const meta = metaService.addTag({property: 'fb:app_id', content: '666'})!;
 
          expect(metaService.getTags(selector).length).toEqual(2);
 
@@ -172,18 +172,16 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       const selector = 'property="fb:app_id"';
       expect(metaService.getTags(selector).length).toEqual(1);
 
-      const meta = metaService.addTag({property: 'fb:app_id', content: '123456789'}, true) !;
+      const meta = metaService.addTag({property: 'fb:app_id', content: '123456789'}, true)!;
 
       expect(metaService.getTags(selector).length).toEqual(2);
 
       // clean up
       metaService.removeTagElement(meta);
     });
-
   });
 
   describe('integration test', () => {
-
     @Injectable()
     class DependsOnMeta {
       constructor(public meta: Meta) {}

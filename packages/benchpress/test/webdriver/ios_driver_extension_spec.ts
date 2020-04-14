@@ -8,7 +8,7 @@
 
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
-import {IOsDriverExtension, Injector, WebDriverAdapter, WebDriverExtension} from '../../index';
+import {Injector, IOsDriverExtension, WebDriverAdapter, WebDriverExtension} from '../../index';
 import {TraceEventFactory} from '../trace_event_factory';
 
 {
@@ -18,7 +18,7 @@ import {TraceEventFactory} from '../trace_event_factory';
 
     const normEvents = new TraceEventFactory('timeline', 'pid0');
 
-    function createExtension(perfRecords: any[] | null = null): WebDriverExtension {
+    function createExtension(perfRecords: any[]|null = null): WebDriverExtension {
       if (!perfRecords) {
         perfRecords = [];
       }
@@ -63,7 +63,6 @@ import {TraceEventFactory} from '../trace_event_factory';
        }));
 
     describe('readPerfLog', () => {
-
       it('should execute a dummy script before reading them',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            // TODO(tbosch): This seems to be a bug in ChromeDriver:
@@ -140,9 +139,7 @@ import {TraceEventFactory} from '../trace_event_factory';
 
         expect(createExtension().supports({'browserName': 'Safari'})).toBe(true);
       });
-
     });
-
   });
 }
 
@@ -155,7 +152,7 @@ function timeEndRecord(name: string, time: number) {
 }
 
 function durationRecord(
-    type: string, startTime: number, endTime: number, children: any[] | null = null) {
+    type: string, startTime: number, endTime: number, children: any[]|null = null) {
   if (!children) {
     children = [];
   }
@@ -172,7 +169,9 @@ function internalScriptRecord(startTime: number, endTime: number) {
 }
 
 class MockDriverAdapter extends WebDriverAdapter {
-  constructor(private _log: any[], private _perfRecords: any[]) { super(); }
+  constructor(private _log: any[], private _perfRecords: any[]) {
+    super();
+  }
 
   executeScript(script: string) {
     this._log.push(['executeScript', script]);
@@ -190,7 +189,7 @@ class MockDriverAdapter extends WebDriverAdapter {
         };
       }));
     } else {
-      return null !;
+      return null!;
     }
   }
 }

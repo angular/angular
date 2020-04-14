@@ -35,7 +35,7 @@ export function getStringParameter(name: string) {
 }
 
 export function bindAction(selector: string, callback: () => void) {
-  document.querySelector(selector) !.addEventListener('click', callback);
+  document.querySelector(selector)!.addEventListener('click', callback);
 }
 
 
@@ -66,7 +66,8 @@ function reportProfileResults(durations: number[], count: number) {
                               Number.MAX_SAFE_INTEGER)
                           .toFixed(2);
   window.console.log(
-      `Iterations: ${count}; cold time: ${durations[0].toFixed(2)} ms; average time: ${avgDuration} ms / iteration; best time: ${minDuration} ms`);
+      `Iterations: ${count}; cold time: ${durations[0].toFixed(2)} ms; average time: ${
+          avgDuration} ms / iteration; best time: ${minDuration} ms`);
 }
 
 // helper script that will read out the url parameters

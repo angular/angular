@@ -27,7 +27,9 @@ export class MultiReporter extends Reporter {
     ];
   }
 
-  constructor(private _reporters: Reporter[]) { super(); }
+  constructor(private _reporters: Reporter[]) {
+    super();
+  }
 
   reportMeasureValues(values: MeasureValues): Promise<any[]> {
     return Promise.all(this._reporters.map(reporter => reporter.reportMeasureValues(values)));

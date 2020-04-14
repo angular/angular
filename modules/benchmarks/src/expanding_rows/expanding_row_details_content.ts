@@ -35,10 +35,13 @@ export class ExpandingRowDetailsContent implements OnDestroy {
    * hide this component if the row is collapsed.
    */
   constructor(@Host() public expandingRow: ExpandingRow, changeDetectorRef: ChangeDetectorRef) {
-    this.isExpandedChangeSubscription =
-        this.expandingRow.isExpandedChange.subscribe(() => { changeDetectorRef.markForCheck(); });
+    this.isExpandedChangeSubscription = this.expandingRow.isExpandedChange.subscribe(() => {
+      changeDetectorRef.markForCheck();
+    });
   }
 
   /** Unsubscribe from changes in parent isExpanded property. */
-  ngOnDestroy(): void { this.isExpandedChangeSubscription.unsubscribe(); }
+  ngOnDestroy(): void {
+    this.isExpandedChangeSubscription.unsubscribe();
+  }
 }

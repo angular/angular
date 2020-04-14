@@ -62,7 +62,7 @@ describe('template variable assignment migration', () => {
     return runner.runSchematicAsync('migration-v8-template-local-variables', {}, tree).toPromise();
   }
 
-  it('should warn for two-way data binding variable assignment', async() => {
+  it('should warn for two-way data binding variable assignment', async () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -78,7 +78,7 @@ describe('template variable assignment migration', () => {
     expect(warnOutput[0]).toMatch(/^⮑ {3}index.ts@5:69: Found assignment/);
   });
 
-  it('should warn for two-way data binding assigning to "as" variable', async() => {
+  it('should warn for two-way data binding assigning to "as" variable', async () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -100,7 +100,7 @@ describe('template variable assignment migration', () => {
     expect(warnOutput).toMatch(/^⮑ {3}tmpl.html@3:31: Found assignment/);
   });
 
-  it('should warn for bound event assignments to "as" variable', async() => {
+  it('should warn for bound event assignments to "as" variable', async () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -124,7 +124,7 @@ describe('template variable assignment migration', () => {
     expect(warnOutput[1]).toMatch(/^⮑ {3}sub_dir\/tmpl.html@4:25: Found assignment/);
   });
 
-  it('should warn for bound event assignments to template "let" variables', async() => {
+  it('should warn for bound event assignments to template "let" variables', async () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -148,7 +148,7 @@ describe('template variable assignment migration', () => {
     expect(warnOutput[1]).toMatch(/^⮑ {3}sub_dir\/tmpl.html@4:25: Found assignment/);
   });
 
-  it('should not warn for bound event assignments to component property', async() => {
+  it('should not warn for bound event assignments to component property', async () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -166,7 +166,7 @@ describe('template variable assignment migration', () => {
   });
 
   it('should not warn for bound event assignments to template variable object property',
-     async() => {
+     async () => {
        writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -186,7 +186,7 @@ describe('template variable assignment migration', () => {
      });
 
   it('should not warn for property writes with template variable name but different receiver',
-     async() => {
+     async () => {
        writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -211,7 +211,7 @@ describe('template variable assignment migration', () => {
        expect(warnOutput.length).toBe(0);
      });
 
-  it('should warn for template variable assignments in expression conditional', async() => {
+  it('should warn for template variable assignments in expression conditional', async () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -236,7 +236,7 @@ describe('template variable assignment migration', () => {
   });
 
   it('should not warn for property writes with template variable name but different scope',
-     async() => {
+     async () => {
        writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -259,7 +259,7 @@ describe('template variable assignment migration', () => {
      });
 
 
-  it('should not throw an error if a detected template fails parsing', async() => {
+  it('should not throw an error if a detected template fails parsing', async () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
 
@@ -276,7 +276,7 @@ describe('template variable assignment migration', () => {
     expect(warnOutput.length).toBe(0);
   });
 
-  it('should be able to report multiple templates within the same source file', async() => {
+  it('should be able to report multiple templates within the same source file', async () => {
     writeFile('/index.ts', `
       import {Component} from '@angular/core';
 

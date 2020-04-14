@@ -19,7 +19,7 @@ export interface PostMessageTarget {
 
 export class PostMessageBusSink implements MessageBusSink {
   // TODO(issue/24571): remove '!'.
-  private _zone !: NgZone;
+  private _zone!: NgZone;
   private _channels: {[key: string]: _Channel} = {};
   private _messageBuffer: Array<Object> = [];
 
@@ -27,8 +27,13 @@ export class PostMessageBusSink implements MessageBusSink {
 
   attachToZone(zone: NgZone): void {
     this._zone = zone;
-    this._zone.runOutsideAngular(
-        () => { this._zone.onStable.subscribe({next: () => { this._handleOnEventDone(); }}); });
+    this._zone.runOutsideAngular(() => {
+      this._zone.onStable.subscribe({
+        next: () => {
+          this._handleOnEventDone();
+        }
+      });
+    });
   }
 
   initChannel(channel: string, runInZone: boolean = true): void {
@@ -64,12 +69,14 @@ export class PostMessageBusSink implements MessageBusSink {
     }
   }
 
-  private _sendMessages(messages: Array<Object>) { this._postMessageTarget.postMessage(messages); }
+  private _sendMessages(messages: Array<Object>) {
+    this._postMessageTarget.postMessage(messages);
+  }
 }
 
 export class PostMessageBusSource implements MessageBusSource {
   // TODO(issue/24571): remove '!'.
-  private _zone !: NgZone;
+  private _zone!: NgZone;
   private _channels: {[key: string]: _Channel} = {};
 
   constructor(eventTarget?: EventTarget) {
@@ -82,7 +89,9 @@ export class PostMessageBusSource implements MessageBusSource {
     }
   }
 
-  attachToZone(zone: NgZone) { this._zone = zone; }
+  attachToZone(zone: NgZone) {
+    this._zone = zone;
+  }
 
   initChannel(channel: string, runInZone: boolean = true) {
     if (this._channels.hasOwnProperty(channel)) {
@@ -114,7 +123,9 @@ export class PostMessageBusSource implements MessageBusSource {
     if (this._channels.hasOwnProperty(channel)) {
       const channelInfo = this._channels[channel];
       if (channelInfo.runInZone) {
-        this._zone.run(() => { channelInfo.emitter.emit(data.message); });
+        this._zone.run(() => {
+          channelInfo.emitter.emit(data.message);
+        });
       } else {
         channelInfo.emitter.emit(data.message);
       }
@@ -140,9 +151,13 @@ export class PostMessageBus implements MessageBus {
     this.sink.initChannel(channel, runInZone);
   }
 
-  from(channel: string): EventEmitter<any> { return this.source.from(channel); }
+  from(channel: string): EventEmitter<any> {
+    return this.source.from(channel);
+  }
 
-  to(channel: string): EventEmitter<any> { return this.sink.to(channel); }
+  to(channel: string): EventEmitter<any> {
+    return this.sink.to(channel);
+  }
 }
 
 /**

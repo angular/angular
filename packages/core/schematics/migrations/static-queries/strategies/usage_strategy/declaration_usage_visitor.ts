@@ -167,7 +167,7 @@ export class DeclarationUsageVisitor {
                 d.body && !this.visitedJumpExprNodes.has(d))
         .forEach(d => {
           this.visitedJumpExprNodes.add(d);
-          this.nodeQueue.push(d.body !);
+          this.nodeQueue.push(d.body!);
         });
   }
 
@@ -212,7 +212,7 @@ export class DeclarationUsageVisitor {
     this.ambiguousNodeQueue = [];
 
     while (this.nodeQueue.length) {
-      const node = this.nodeQueue.shift() !;
+      const node = this.nodeQueue.shift()!;
 
       if (ts.isIdentifier(node) && this.isReferringToSymbol(node)) {
         return ResolvedUsage.SYNCHRONOUS;
@@ -306,7 +306,7 @@ export class DeclarationUsageVisitor {
       }
     }
 
-    jumpExp.arguments !.forEach((node: ts.Node) => {
+    jumpExp.arguments!.forEach((node: ts.Node) => {
       node = this._resolveDeclarationOfNode(node);
 
       if (ts.isVariableDeclaration(node) && node.initializer) {
@@ -325,7 +325,7 @@ export class DeclarationUsageVisitor {
    */
   private _resolveNodeFromContext(node: ts.Node): ts.Node {
     if (this.context.has(node)) {
-      return this.context.get(node) !;
+      return this.context.get(node)!;
     }
     return node;
   }

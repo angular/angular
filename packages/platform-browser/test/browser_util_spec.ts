@@ -11,7 +11,6 @@ import {BrowserDetection} from '../testing/src/browser_util';
 
 {
   describe('BrowserDetection', () => {
-
     const browsers = [
       {
         name: 'Chrome',
@@ -224,7 +223,7 @@ import {BrowserDetection} from '../testing/src/browser_util';
     ];
 
     browsers.forEach((browser: {[key: string]: any}) => {
-      it(`should detect ${browser[ 'name']}`, () => {
+      it(`should detect ${browser['name']}`, () => {
         const bd = new BrowserDetection(<string>browser['ua']);
         expect(bd.isFirefox).toBe(browser['isFirefox']);
         expect(bd.isAndroid).toBe(browser['isAndroid']);

@@ -25,19 +25,27 @@ export class SpyLocation implements Location {
   /** @internal */
   _baseHref: string = '';
   /** @internal */
-  _platformStrategy: LocationStrategy = null !;
+  _platformStrategy: LocationStrategy = null!;
   /** @internal */
-  _platformLocation: PlatformLocation = null !;
+  _platformLocation: PlatformLocation = null!;
   /** @internal */
   _urlChangeListeners: ((url: string, state: unknown) => void)[] = [];
 
-  setInitialPath(url: string) { this._history[this._historyIndex].path = url; }
+  setInitialPath(url: string) {
+    this._history[this._historyIndex].path = url;
+  }
 
-  setBaseHref(url: string) { this._baseHref = url; }
+  setBaseHref(url: string) {
+    this._baseHref = url;
+  }
 
-  path(): string { return this._history[this._historyIndex].path; }
+  path(): string {
+    return this._history[this._historyIndex].path;
+  }
 
-  getState(): unknown { return this._history[this._historyIndex].state; }
+  getState(): unknown {
+    return this._history[this._historyIndex].state;
+  }
 
   isCurrentPathEqualTo(path: string, query: string = ''): boolean {
     const givenPath = path.endsWith('/') ? path.substring(0, path.length - 1) : path;
@@ -115,7 +123,9 @@ export class SpyLocation implements Location {
   }
   onUrlChange(fn: (url: string, state: unknown) => void) {
     this._urlChangeListeners.push(fn);
-    this.subscribe(v => { this._notifyUrlChangeListeners(v.url, v.state); });
+    this.subscribe(v => {
+      this._notifyUrlChangeListeners(v.url, v.state);
+    });
   }
 
   /** @internal */
@@ -129,7 +139,9 @@ export class SpyLocation implements Location {
     return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
   }
 
-  normalize(url: string): string { return null !; }
+  normalize(url: string): string {
+    return null!;
+  }
 }
 
 class LocationState {

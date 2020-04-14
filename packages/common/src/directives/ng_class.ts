@@ -7,7 +7,7 @@
  */
 import {Directive, DoCheck, ElementRef, Input, IterableChanges, IterableDiffer, IterableDiffers, KeyValueChanges, KeyValueDiffer, KeyValueDiffers, Renderer2, ɵisListLikeIterable as isListLikeIterable, ɵstringify as stringify} from '@angular/core';
 
-type NgClassSupportedTypes = string[] | Set<string>| {[klass: string]: any} | null | undefined;
+type NgClassSupportedTypes = string[]|Set<string>|{[klass: string]: any}|null|undefined;
 
 /**
  * @ngModule CommonModule
@@ -83,7 +83,7 @@ export class NgClass implements DoCheck {
         this._applyIterableChanges(iterableChanges);
       }
     } else if (this._keyValueDiffer) {
-      const keyValueChanges = this._keyValueDiffer.diff(this._rawClass as{[k: string]: any});
+      const keyValueChanges = this._keyValueDiffer.diff(this._rawClass as {[k: string]: any});
       if (keyValueChanges) {
         this._applyKeyValueChanges(keyValueChanges);
       }
@@ -105,8 +105,8 @@ export class NgClass implements DoCheck {
       if (typeof record.item === 'string') {
         this._toggleClass(record.item, true);
       } else {
-        throw new Error(
-            `NgClass can only toggle CSS classes expressed as strings, got ${stringify(record.item)}`);
+        throw new Error(`NgClass can only toggle CSS classes expressed as strings, got ${
+            stringify(record.item)}`);
       }
     });
 

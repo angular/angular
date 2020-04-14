@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {formatCurrency, formatNumber, formatPercent} from '@angular/common';
+import localeAr from '@angular/common/locales/ar';
 import localeEn from '@angular/common/locales/en';
 import localeEsUS from '@angular/common/locales/es-US';
 import localeFr from '@angular/common/locales/fr';
-import localeAr from '@angular/common/locales/ar';
-import {formatCurrency, formatNumber, formatPercent} from '@angular/common';
+import {ɵDEFAULT_LOCALE_ID, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
-import {ɵDEFAULT_LOCALE_ID, ɵunregisterLocaleData, ɵregisterLocaleData} from '@angular/core';
 
 describe('Format number', () => {
   beforeAll(() => {
@@ -44,8 +44,9 @@ describe('Format number', () => {
     });
 
     describe('transform with custom locales', () => {
-      it('should return the correct format for es-US',
-         () => { expect(formatNumber(9999999.99, 'es-US', '1.2-2')).toEqual('9,999,999.99'); });
+      it('should return the correct format for es-US', () => {
+        expect(formatNumber(9999999.99, 'es-US', '1.2-2')).toEqual('9,999,999.99');
+      });
     });
   });
 

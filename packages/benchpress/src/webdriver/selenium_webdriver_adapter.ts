@@ -21,11 +21,17 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
     deps: []
   }];
 
-  constructor(private _driver: any) { super(); }
+  constructor(private _driver: any) {
+    super();
+  }
 
-  waitFor(callback: () => any): Promise<any> { return this._driver.call(callback); }
+  waitFor(callback: () => any): Promise<any> {
+    return this._driver.call(callback);
+  }
 
-  executeScript(script: string): Promise<any> { return this._driver.executeScript(script); }
+  executeScript(script: string): Promise<any> {
+    return this._driver.executeScript(script);
+  }
 
   executeAsyncScript(script: string): Promise<any> {
     return this._driver.executeAsyncScript(script);
@@ -58,7 +64,9 @@ class Command {
   private parameters_: {[key: string]: any} = {};
   constructor(private name_: string) {}
 
-  getName() { return this.name_; }
+  getName() {
+    return this.name_;
+  }
 
   setParameter(name: string, value: any) {
     this.parameters_[name] = value;
@@ -70,7 +78,11 @@ class Command {
     return this;
   }
 
-  getParameter(key: string) { return this.parameters_[key]; }
+  getParameter(key: string) {
+    return this.parameters_[key];
+  }
 
-  getParameters() { return this.parameters_; }
+  getParameters() {
+    return this.parameters_;
+  }
 }

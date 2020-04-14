@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, PathLocationStrategy} from '@angular/common';
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 import {UpgradeModule} from '@angular/upgrade/static';
 
 import {$locationShim} from '../src/location_shim';
@@ -43,15 +43,26 @@ export function injectorFactory() {
 export class $rootScopeMock {
   private watchers: any[] = [];
   private events: {[k: string]: any[]} = {};
-  runWatchers() { this.watchers.forEach(fn => fn()); }
+  runWatchers() {
+    this.watchers.forEach(fn => fn());
+  }
 
-  $watch(fn: any) { this.watchers.push(fn); }
+  $watch(fn: any) {
+    this.watchers.push(fn);
+  }
 
   $broadcast(evt: string, ...args: any[]) {
     if (this.events[evt]) {
-      this.events[evt].forEach(fn => { fn.apply(fn, args); });
+      this.events[evt].forEach(fn => {
+        fn.apply(fn, args);
+      });
     }
-    return {defaultPrevented: false, preventDefault() { this.defaultPrevented = true; }};
+    return {
+      defaultPrevented: false,
+      preventDefault() {
+        this.defaultPrevented = true;
+      }
+    };
   }
 
   $on(evt: string, fn: any) {
@@ -61,7 +72,9 @@ export class $rootScopeMock {
     this.events[evt].push(fn);
   }
 
-  $evalAsync(fn: any) { fn(); }
+  $evalAsync(fn: any) {
+    fn();
+  }
 }
 
 describe('LocationProvider', () => {
@@ -83,7 +96,6 @@ describe('LocationProvider', () => {
        expect($location).toBeDefined();
        expect($location instanceof $locationShim).toBe(true);
      }));
-
 });
 
 
@@ -105,7 +117,9 @@ describe('LocationHtml5Url', function() {
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => {
+    $location = loc;
+  }));
 
 
   it('should set the URL', () => {
@@ -158,8 +172,9 @@ describe('LocationHtml5Url', function() {
     }).toThrow();
   });
 
-  it('should support state',
-     function() { expect($location.state({a: 2}).state()).toEqual({a: 2}); });
+  it('should support state', function() {
+    expect($location.state({a: 2}).state()).toEqual({a: 2});
+  });
 });
 
 
@@ -180,10 +195,14 @@ describe('NewUrl', function() {
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => {
+    $location = loc;
+  }));
 
   // Sets the default most of these tests rely on
-  function setupUrl(url = '/path/b?search=a&b=c&d#hash') { $location.url(url); }
+  function setupUrl(url = '/path/b?search=a&b=c&d#hash') {
+    $location.url(url);
+  }
 
   it('should provide common getters', function() {
     setupUrl();
@@ -409,7 +428,6 @@ describe('NewUrl', function() {
   });
 
   describe('encoding', function() {
-
     it('should encode special characters', function() {
       $location.path('/a <>#');
       $location.search({'i j': '<>#'});
@@ -455,7 +473,6 @@ describe('NewUrl', function() {
       $location.search({'a+b': 'c+d'});
       expect($location.search()).toEqual({'a+b': 'c+d'});
     });
-
   });
 
   it('should not preserve old properties when parsing new url', function() {
@@ -486,7 +503,9 @@ describe('New URL Parsing', () => {
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => {
+    $location = loc;
+  }));
 
   it('should prepend path with basePath', function() {
     $location.$$parse('http://server/base/abc?a');
@@ -496,7 +515,6 @@ describe('New URL Parsing', () => {
     $location.path('/new/path');
     expect($location.absUrl()).toBe('http://server/base/new/path?a');
   });
-
 });
 
 describe('New URL Parsing', () => {
@@ -516,7 +534,9 @@ describe('New URL Parsing', () => {
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => {
+    $location = loc;
+  }));
 
   it('should parse new url', function() {
     $location.$$parse('http://host.com/base');
@@ -549,8 +569,9 @@ describe('New URL Parsing', () => {
   });
 
   it('should throw error when invalid server url given', function() {
-
-    expect(function() { $location.$$parse('http://other.server.org/path#/path'); })
+    expect(function() {
+      $location.$$parse('http://other.server.org/path#/path');
+    })
         .toThrowError(
             'Invalid url "http://other.server.org/path#/path", missing path prefix "http://host.com/".');
   });
@@ -620,12 +641,10 @@ describe('New URL Parsing', () => {
       // After watchers have been run, location should be updated and `state` should change
       expect($location.state()).toBe(null);
     });
-
   });
 });
 
 describe('$location.onChange()', () => {
-
   let $location: $locationShim;
   let upgradeModule: UpgradeModule;
   let mock$rootScope: $rootScopeMock;
@@ -644,13 +663,18 @@ describe('$location.onChange()', () => {
     mock$rootScope = upgradeModule.$injector.get('$rootScope');
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => { $location = loc; }));
+  beforeEach(inject([$locationShim], (loc: $locationShim) => {
+    $location = loc;
+  }));
 
-  it('should have onChange method', () => { expect(typeof $location.onChange).toBe('function'); });
+  it('should have onChange method', () => {
+    expect(typeof $location.onChange).toBe('function');
+  });
 
   it('should add registered functions to changeListeners', () => {
-
-    function changeListener(url: string, state: unknown) { return undefined; }
+    function changeListener(url: string, state: unknown) {
+      return undefined;
+    }
     function errorHandler(e: Error) {}
 
     expect(($location as any).$$changeListeners.length).toBe(0);
@@ -663,7 +687,6 @@ describe('$location.onChange()', () => {
   });
 
   it('should call changeListeners when URL is updated', () => {
-
     const onChangeVals =
         {url: 'url', state: 'state' as unknown, oldUrl: 'oldUrl', oldState: 'oldState' as unknown};
 
@@ -688,7 +711,6 @@ describe('$location.onChange()', () => {
   });
 
   it('should call changeListeners after $locationChangeSuccess', () => {
-
     let changeListenerCalled = false;
     let locationChangeSuccessEmitted = false;
 
@@ -715,13 +737,14 @@ describe('$location.onChange()', () => {
   });
 
   it('should call forward errors to error handler', () => {
-
-    let error !: Error;
+    let error!: Error;
 
     function changeListener(url: string, state: unknown, oldUrl: string, oldState: unknown) {
       throw new Error('Handle error');
     }
-    function errorHandler(e: Error) { error = e; }
+    function errorHandler(e: Error) {
+      error = e;
+    }
 
     $location.onChange(changeListener, errorHandler);
 
@@ -729,7 +752,6 @@ describe('$location.onChange()', () => {
     mock$rootScope.runWatchers();
     expect(error.message).toBe('Handle error');
   });
-
 });
 
 function parseLinkAndReturn(location: $locationShim, toUrl: string, relHref?: string) {

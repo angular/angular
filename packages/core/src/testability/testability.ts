@@ -133,7 +133,7 @@ export class Testability implements PublicTestability {
       // Schedules the call backs in a new frame so that it is always async.
       scheduleMicroTask(() => {
         while (this._callbacks.length !== 0) {
-          let cb = this._callbacks.pop() !;
+          let cb = this._callbacks.pop()!;
           clearTimeout(cb.timeoutId);
           cb.doneCb(this._didWork);
         }
@@ -210,7 +210,9 @@ export class Testability implements PublicTestability {
    * Get the number of pending requests
    * @deprecated pending requests are now tracked with zones
    */
-  getPendingRequestCount(): number { return this._pendingCount; }
+  getPendingRequestCount(): number {
+    return this._pendingCount;
+  }
 
   /**
    * Find providers by name
@@ -233,7 +235,9 @@ export class TestabilityRegistry {
   /** @internal */
   _applications = new Map<any, Testability>();
 
-  constructor() { _testabilityGetter.addToWindow(this); }
+  constructor() {
+    _testabilityGetter.addToWindow(this);
+  }
 
   /**
    * Registers an application with a testability hook so that it can be tracked
@@ -248,28 +252,38 @@ export class TestabilityRegistry {
    * Unregisters an application.
    * @param token token of application, root element
    */
-  unregisterApplication(token: any) { this._applications.delete(token); }
+  unregisterApplication(token: any) {
+    this._applications.delete(token);
+  }
 
   /**
    * Unregisters all applications
    */
-  unregisterAllApplications() { this._applications.clear(); }
+  unregisterAllApplications() {
+    this._applications.clear();
+  }
 
   /**
    * Get a testability hook associated with the application
    * @param elem root element
    */
-  getTestability(elem: any): Testability|null { return this._applications.get(elem) || null; }
+  getTestability(elem: any): Testability|null {
+    return this._applications.get(elem) || null;
+  }
 
   /**
    * Get all registered testabilities
    */
-  getAllTestabilities(): Testability[] { return Array.from(this._applications.values()); }
+  getAllTestabilities(): Testability[] {
+    return Array.from(this._applications.values());
+  }
 
   /**
    * Get all registered applications(root elements)
    */
-  getAllRootElements(): any[] { return Array.from(this._applications.keys()); }
+  getAllRootElements(): any[] {
+    return Array.from(this._applications.keys());
+  }
 
   /**
    * Find testability of a node in the Tree

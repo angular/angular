@@ -44,12 +44,12 @@ export interface MlbTeam {
 })
 export class BenchmarkableExpandingRow {
   // TODO(b/109816955): remove '!', see go/strict-prop-init-fix.
-  showExpandingRow !: boolean;
+  showExpandingRow!: boolean;
 
   // TODO(b/109816955): remove '!', see go/strict-prop-init-fix.
-  teams !: MlbTeam[];
+  teams!: MlbTeam[];
   // TODO(b/109816955): remove '!', see go/strict-prop-init-fix.
-  private fakeTeams !: MlbTeam[];
+  private fakeTeams!: MlbTeam[];
 
   init(): void {
     this.teams = this.fakeTeams;

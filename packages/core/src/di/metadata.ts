@@ -33,7 +33,7 @@ export interface InjectDecorator {
    * </code-example>
    */
   (token: any): any;
-  new (token: any): Inject;
+  new(token: any): Inject;
 }
 
 /**
@@ -82,7 +82,7 @@ export interface OptionalDecorator {
    *
    */
   (): any;
-  new (): Optional;
+  new(): Optional;
 }
 
 /**
@@ -128,7 +128,7 @@ export interface SelfDecorator {
    *
    */
   (): any;
-  new (): Self;
+  new(): Self;
 }
 
 /**
@@ -175,7 +175,7 @@ export interface SkipSelfDecorator {
    *
    */
   (): any;
-  new (): SkipSelf;
+  new(): SkipSelf;
 }
 
 /**
@@ -215,7 +215,7 @@ export interface HostDecorator {
    * </code-example>
    */
   (): any;
-  new (): Host;
+  new(): Host;
 }
 
 /**
@@ -262,7 +262,7 @@ export interface AttributeDecorator {
    *
    */
   (name: string): any;
-  new (name: string): Attribute;
+  new(name: string): Attribute;
 }
 
 /**

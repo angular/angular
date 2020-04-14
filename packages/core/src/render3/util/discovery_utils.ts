@@ -10,12 +10,13 @@ import {Injector} from '../../di/injector';
 import {assertLView} from '../assert';
 import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from '../context_discovery';
 import {NodeInjector} from '../di';
-import {DebugNode, buildDebugNode} from '../instructions/lview_debug';
+import {buildDebugNode, DebugNode} from '../instructions/lview_debug';
 import {LContext} from '../interfaces/context';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
 import {isLView} from '../interfaces/type_checks';
-import {CLEANUP, CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, TVIEW, T_HOST} from '../interfaces/view';
+import {CLEANUP, CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, T_HOST, TVIEW} from '../interfaces/view';
+
 import {stringifyForError} from './misc_utils';
 import {getLViewParent, getRootContext} from './view_traversal_utils';
 import {getTNode, unwrapRNode} from './view_utils';
@@ -93,14 +94,14 @@ export function getContext<T>(element: Element): T|null {
  * @publicApi
  * @globalApi ng
  */
-export function getOwningComponent<T>(elementOrDir: Element | {}): T|null {
+export function getOwningComponent<T>(elementOrDir: Element|{}): T|null {
   const context = loadLContext(elementOrDir, false);
   if (context === null) return null;
 
   let lView = context.lView;
   let parent: LView|null;
   ngDevMode && assertLView(lView);
-  while (lView[HOST] === null && (parent = getLViewParent(lView) !)) {
+  while (lView[HOST] === null && (parent = getLViewParent(lView)!)) {
     // As long as lView[HOST] is null we know we are part of sub-template such as `*ngIf`
     lView = parent;
   }
@@ -118,7 +119,7 @@ export function getOwningComponent<T>(elementOrDir: Element | {}): T|null {
  * @publicApi
  * @globalApi ng
  */
-export function getRootComponents(elementOrDir: Element | {}): {}[] {
+export function getRootComponents(elementOrDir: Element|{}): {}[] {
   return [...getRootContext(elementOrDir).components];
 }
 
@@ -132,7 +133,7 @@ export function getRootComponents(elementOrDir: Element | {}): {}[] {
  * @publicApi
  * @globalApi ng
  */
-export function getInjector(elementOrDir: Element | {}): Injector {
+export function getInjector(elementOrDir: Element|{}): Injector {
   const context = loadLContext(elementOrDir, false);
   if (context === null) return Injector.NULL;
 
@@ -192,7 +193,7 @@ export function getInjectionTokens(element: Element): any[] {
  * @globalApi ng
  */
 export function getDirectives(element: Element): {}[] {
-  const context = loadLContext(element) !;
+  const context = loadLContext(element)!;
 
   if (context.directives === undefined) {
     context.directives = getDirectivesAtNodeIndex(context.nodeIndex, context.lView, false);
@@ -250,7 +251,7 @@ export function getLocalRefs(target: {}): {[key: string]: any} {
  * @globalApi ng
  */
 export function getHostElement(componentOrDirective: {}): Element {
-  return getLContext(componentOrDirective) !.native as never as Element;
+  return getLContext(componentOrDirective)!.native as never as Element;
 }
 
 /**
@@ -270,7 +271,7 @@ export function getRenderedText(component: any): string {
 
 export function loadLContextFromNode(node: Node): LContext {
   if (!(node instanceof Node)) throw new Error('Expecting instance of DOM Element');
-  return loadLContext(node) !;
+  return loadLContext(node)!;
 }
 
 /**

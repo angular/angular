@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, Input, NgModule, Output, forwardRef} from '@angular/core';
+import {Component, EventEmitter, forwardRef, Input, NgModule, Output} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {UpgradeAdapter} from '@angular/upgrade';
 
@@ -30,7 +30,9 @@ const styles = [`
 const adapter = new UpgradeAdapter(forwardRef(() => Ng2AppModule));
 const ng1module = angular.module('myExample', []);
 
-ng1module.controller('Index', function($scope: any) { $scope.name = 'World'; });
+ng1module.controller('Index', function($scope: any) {
+  $scope.name = 'World';
+});
 
 ng1module.directive('ng1User', function() {
   return {

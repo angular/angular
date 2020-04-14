@@ -59,9 +59,8 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
         }
 
         const injector = Injector.create({
-          providers: [
-            {provide: NeedsService, deps: [UsefulService]}, {provide: UsefulService, deps: []}
-          ]
+          providers:
+              [{provide: NeedsService, deps: [UsefulService]}, {provide: UsefulService, deps: []}]
         });
         expect(injector.get(NeedsService).service instanceof UsefulService).toBe(true);
         // #enddocregion
@@ -104,7 +103,9 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
         @Injectable()
         class NeedsDependency {
-          constructor(@SkipSelf() public dependency: Dependency) { this.dependency = dependency; }
+          constructor(@SkipSelf() public dependency: Dependency) {
+            this.dependency = dependency;
+          }
         }
 
         const parent = Injector.create({providers: [{provide: Dependency, deps: []}]});
@@ -158,7 +159,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
           declarations: [App, ParentCmp, ChildDirective],
         });
 
-        let cmp: ComponentFixture<App> = undefined !;
+        let cmp: ComponentFixture<App> = undefined!;
         expect(() => cmp = TestBed.createComponent(App)).not.toThrow();
 
         expect(cmp.debugElement.children[0].children[0].injector.get(ChildDirective).logs).toEqual([
@@ -167,6 +168,5 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
         ]);
       });
     });
-
   });
 }

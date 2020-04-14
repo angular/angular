@@ -24,6 +24,7 @@ describe('upgrade/static (lite with multiple downgraded modules and shared root 
     expect(compB.getText()).toBe('Component B (Service ID: 2)');
   });
 
-  it('should use a different injectable instance on downgraded module C',
-     () => { expect(compC.getText()).toBe('Component C (Service ID: 1)'); });
+  it('should use a different injectable instance on downgraded module C', () => {
+    expect(compC.getText()).toBe('Component C (Service ID: 1)');
+  });
 });

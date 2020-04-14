@@ -40,10 +40,14 @@ export class InsertionComponent {
   @Input() template !: TemplateRef<{}>;
   views: any[] = [];
   @Input()
-  set viewCount(n: number) { this.views = n > 0 ? newArray<any>(n) : []; }
+  set viewCount(n: number) {
+    this.views = n > 0 ? newArray<any>(n) : [];
+  }
 
   // use trackBy to ensure profile isn't affected by the cost to refresh ngFor.
-  trackByIndex(index: number, item: any) { return index; }
+  trackByIndex(index: number, item: any) {
+    return index;
+  }
 }
 
 @NgModule({

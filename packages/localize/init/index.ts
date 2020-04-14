@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {$localize, LocalizeFn, _global} from '../src/localize';
+import {$localize, _global, LocalizeFn} from '../src/localize';
 
 export {LocalizeFn, TranslateFn} from '../src/localize';
 

@@ -63,10 +63,16 @@ export abstract class RouteReuseStrategy {
  * Does not detach any subtrees. Reuses routes as long as their route config is the same.
  */
 export class DefaultRouteReuseStrategy implements RouteReuseStrategy {
-  shouldDetach(route: ActivatedRouteSnapshot): boolean { return false; }
+  shouldDetach(route: ActivatedRouteSnapshot): boolean {
+    return false;
+  }
   store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void {}
-  shouldAttach(route: ActivatedRouteSnapshot): boolean { return false; }
-  retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle|null { return null; }
+  shouldAttach(route: ActivatedRouteSnapshot): boolean {
+    return false;
+  }
+  retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle|null {
+    return null;
+  }
   shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
     return future.routeConfig === curr.routeConfig;
   }

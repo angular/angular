@@ -11,7 +11,6 @@ import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
 describe('@angular/common integration', () => {
-
   describe('NgForOf', () => {
     @Directive({selector: '[dir]'})
     class MyDirective {
@@ -244,7 +243,9 @@ describe('@angular/common integration', () => {
         name = 'app';
         events: string[] = [];
 
-        onClick(value: string, name: string) { this.events.push(value, name); }
+        onClick(value: string, name: string) {
+          this.events.push(value, name);
+        }
       }
 
       TestBed.configureTestingModule({declarations: [MultiLevelWithListenerComponent]});
@@ -485,7 +486,6 @@ describe('@angular/common integration', () => {
   });
 
   describe('NgTemplateOutlet', () => {
-
     it('should create and remove embedded views', () => {
       @Component({
         selector: 'app-multi',

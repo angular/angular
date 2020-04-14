@@ -10,7 +10,7 @@ import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
 import {PartialEvaluator, ResolvedValue} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import * as ts from 'typescript';
 
-import {NgDecorator, getAngularDecorators} from '../../utils/ng_decorators';
+import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
 import {getPropertyNameText} from '../../utils/typescript/property_name';
 
 

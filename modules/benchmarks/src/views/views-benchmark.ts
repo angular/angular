@@ -20,7 +20,9 @@ export class ViewManipulationDirective {
     }
   }
 
-  clear() { this._vcRef.clear(); }
+  clear() {
+    this._vcRef.clear();
+  }
 }
 
 @Component({
@@ -44,9 +46,13 @@ export class ViewsBenchmark {
 
   constructor(private _cdRef: ChangeDetectorRef) {}
 
-  create(vm: ViewManipulationDirective) { vm.create(1000); }
+  create(vm: ViewManipulationDirective) {
+    vm.create(1000);
+  }
 
-  destroy(vm: ViewManipulationDirective) { vm.clear(); }
+  destroy(vm: ViewManipulationDirective) {
+    vm.clear();
+  }
 
   check() {
     for (let i = 0; i < 10000; i++) {

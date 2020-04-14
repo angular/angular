@@ -48,9 +48,13 @@ export class RedDec {
 export class HelloCmp {
   greeting: string;
 
-  constructor(service: GreetingService) { this.greeting = service.greeting; }
+  constructor(service: GreetingService) {
+    this.greeting = service.greeting;
+  }
 
-  changeGreeting(): void { this.greeting = 'howdy'; }
+  changeGreeting(): void {
+    this.greeting = 'howdy';
+  }
 }
 
 @NgModule({declarations: [HelloCmp, RedDec], bootstrap: [HelloCmp], imports: [BrowserModule]})

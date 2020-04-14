@@ -18,9 +18,13 @@ class ProxyZoneSpec implements ZoneSpec {
 
   private tasks: Task[] = [];
 
-  static get(): ProxyZoneSpec { return Zone.current.get('ProxyZoneSpec'); }
+  static get(): ProxyZoneSpec {
+    return Zone.current.get('ProxyZoneSpec');
+  }
 
-  static isLoaded(): boolean { return ProxyZoneSpec.get() instanceof ProxyZoneSpec; }
+  static isLoaded(): boolean {
+    return ProxyZoneSpec.get() instanceof ProxyZoneSpec;
+  }
 
   static assertPresent(): ProxyZoneSpec {
     if (!ProxyZoneSpec.isLoaded()) {
@@ -40,7 +44,7 @@ class ProxyZoneSpec implements ZoneSpec {
     this.propertyKeys = null;
     if (delegateSpec && delegateSpec.properties) {
       this.propertyKeys = Object.keys(delegateSpec.properties);
-      this.propertyKeys.forEach((k) => this.properties[k] = delegateSpec.properties ![k]);
+      this.propertyKeys.forEach((k) => this.properties[k] = delegateSpec.properties![k]);
     }
     // if a new delegateSpec was set, check if we need to trigger hasTask
     if (isNewDelegate && this.lastTaskState &&
@@ -49,7 +53,9 @@ class ProxyZoneSpec implements ZoneSpec {
     }
   }
 
-  getDelegate() { return this._delegateSpec; }
+  getDelegate() {
+    return this._delegateSpec;
+  }
 
 
   resetDelegate() {
@@ -85,7 +91,9 @@ class ProxyZoneSpec implements ZoneSpec {
     const taskInfo = this.tasks.map((task: Task) => {
       const dataInfo = task.data &&
           Object.keys(task.data)
-              .map((key: string) => { return key + ':' + (task.data as any)[key]; })
+              .map((key: string) => {
+                return key + ':' + (task.data as any)[key];
+              })
               .join(',');
       return `type: ${task.type}, source: ${task.source}, args: {${dataInfo}}`;
     });

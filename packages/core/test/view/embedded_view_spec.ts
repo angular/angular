@@ -8,13 +8,12 @@
 
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {SecurityContext} from '@angular/core';
-import {ArgumentType, BindingFlags, NodeCheckFn, NodeFlags, Services, ViewData, anchorDef, asElementData, attachEmbeddedView, detachEmbeddedView, directiveDef, elementDef, moveEmbeddedView, rootRenderNodes} from '@angular/core/src/view/index';
+import {anchorDef, ArgumentType, asElementData, attachEmbeddedView, BindingFlags, detachEmbeddedView, directiveDef, elementDef, moveEmbeddedView, NodeCheckFn, NodeFlags, rootRenderNodes, Services, ViewData} from '@angular/core/src/view/index';
 
 import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedView} from './helper';
 
 {
   describe(`Embedded Views`, () => {
-
     it('should create embedded views with the right context', () => {
       const parentContext = {};
       const childContext = {};
@@ -39,9 +38,9 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
         anchorDef(NodeFlags.EmbeddedViews, null, null, 0, null, compViewDefFactory([
                     elementDef(0, NodeFlags.None, null, null, 0, 'span', [['name', 'child0']])
                   ])),
-        anchorDef(NodeFlags.None, null, null, 0, null, compViewDefFactory([elementDef(
-                                                           0, NodeFlags.None, null, null, 0, 'span',
-                                                           [['name', 'child1']])]))
+        anchorDef(NodeFlags.None, null, null, 0, null, compViewDefFactory([
+                    elementDef(0, NodeFlags.None, null, null, 0, 'span', [['name', 'child1']])
+                  ]))
       ]));
       const viewContainerData = asElementData(parentView, 1);
       const rf = parentView.root.rendererFactory;
@@ -58,10 +57,10 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
       expect(rootChildren[1].getAttribute('name')).toBe('child0');
       expect(rootChildren[2].getAttribute('name')).toBe('child1');
 
-      rf.begin !();
+      rf.begin!();
       detachEmbeddedView(viewContainerData, 1);
       detachEmbeddedView(viewContainerData, 0);
-      rf.end !();
+      rf.end!();
 
       expect(rootNodes[0].childNodes.length).toBe(2);
     });
@@ -72,9 +71,9 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
         anchorDef(NodeFlags.EmbeddedViews, null, null, 0, null, compViewDefFactory([
                     elementDef(0, NodeFlags.None, null, null, 0, 'span', [['name', 'child0']])
                   ])),
-        anchorDef(NodeFlags.None, null, null, 0, null, compViewDefFactory([elementDef(
-                                                           0, NodeFlags.None, null, null, 0, 'span',
-                                                           [['name', 'child1']])]))
+        anchorDef(NodeFlags.None, null, null, 0, null, compViewDefFactory([
+                    elementDef(0, NodeFlags.None, null, null, 0, 'span', [['name', 'child1']])
+                  ]))
       ]));
       const viewContainerData = asElementData(parentView, 1);
 
@@ -86,7 +85,7 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
 
       moveEmbeddedView(viewContainerData, 0, 1);
 
-      expect(viewContainerData.viewContainer !._embeddedViews).toEqual([childView1, childView0]);
+      expect(viewContainerData.viewContainer!._embeddedViews).toEqual([childView1, childView0]);
       // 2 anchors + 2 elements
       const rootChildren = rootNodes[0].childNodes;
       expect(rootChildren.length).toBe(4);
@@ -152,7 +151,9 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
       const log: string[] = [];
 
       class ChildProvider {
-        ngOnDestroy() { log.push('ngOnDestroy'); }
+        ngOnDestroy() {
+          log.push('ngOnDestroy');
+        }
       }
 
       const {view: parentView} = createAndGetRootNodes(compViewDef([

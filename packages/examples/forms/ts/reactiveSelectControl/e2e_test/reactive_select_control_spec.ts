@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementArrayFinder, ElementFinder, browser, by, element} from 'protractor';
+import {browser, by, element, ElementArrayFinder, ElementFinder} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 describe('reactiveSelectControl example', () => {
@@ -33,5 +34,4 @@ describe('reactiveSelectControl example', () => {
 
     expect(p.getText()).toEqual('Form value: { "state": { "name": "Arizona", "abbrev": "AZ" } }');
   });
-
 });

@@ -13,7 +13,7 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
 {
   describe('HTML sanitizer', () => {
     let defaultDoc: any;
-    let originalLog: (msg: any) => any = null !;
+    let originalLog: (msg: any) => any = null!;
     let logMsgs: string[];
 
     beforeEach(() => {
@@ -23,7 +23,9 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
       console.warn = (msg: any) => logMsgs.push(msg);
     });
 
-    afterEach(() => { console.warn = originalLog; });
+    afterEach(() => {
+      console.warn = originalLog;
+    });
 
     it('serializes nested structures', () => {
       expect(_sanitizeHtml(defaultDoc, '<div alt="x"><p>a</p>b<b>c<a alt="more">d</a></b>e</div>'))
@@ -36,8 +38,9 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
           .toEqual('<p>Hello <br> World</p>');
     });
 
-    it('supports namespaced elements',
-       () => { expect(_sanitizeHtml(defaultDoc, 'a<my:hr/><my:div>b</my:div>c')).toEqual('abc'); });
+    it('supports namespaced elements', () => {
+      expect(_sanitizeHtml(defaultDoc, 'a<my:hr/><my:div>b</my:div>c')).toEqual('abc');
+    });
 
     it('supports namespaced attributes', () => {
       expect(_sanitizeHtml(defaultDoc, '<a xlink:href="something">t</a>'))
@@ -66,8 +69,9 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
           .toEqual('<img srcset="/foo.png 400px, unsafe:javascript:evil() 23px">');
     });
 
-    it('supports sanitizing plain text',
-       () => { expect(_sanitizeHtml(defaultDoc, 'Hello, World')).toEqual('Hello, World'); });
+    it('supports sanitizing plain text', () => {
+      expect(_sanitizeHtml(defaultDoc, 'Hello, World')).toEqual('Hello, World');
+    });
 
     it('ignores non-element, non-attribute nodes', () => {
       expect(_sanitizeHtml(defaultDoc, '<!-- comments? -->no.')).toEqual('no.');
@@ -104,8 +108,9 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
         'select',
       ];
       for (const tag of dangerousTags) {
-        it(tag,
-           () => { expect(_sanitizeHtml(defaultDoc, `<${tag}>evil!</${tag}>`)).toEqual('evil!'); });
+        it(tag, () => {
+          expect(_sanitizeHtml(defaultDoc, `<${tag}>evil!</${tag}>`)).toEqual('evil!');
+        });
       }
 
       const dangerousSelfClosingTags = [
@@ -129,7 +134,9 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
         'template',
       ];
       for (const tag of dangerousSkipContentTags) {
-        it(tag, () => { expect(_sanitizeHtml(defaultDoc, `<${tag}>evil!</${tag}>`)).toEqual(''); });
+        it(tag, () => {
+          expect(_sanitizeHtml(defaultDoc, `<${tag}>evil!</${tag}>`)).toEqual('');
+        });
       }
 
       it(`frame`, () => {

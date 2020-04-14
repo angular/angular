@@ -16,9 +16,11 @@ import {Serializer, SerializerTypes} from '../shared/serializer';
 
 export class NamedEventEmitter {
   // TODO(issue/24571): remove '!'.
-  private _listeners !: Map<string, Function[]>;
+  private _listeners!: Map<string, Function[]>;
 
-  listen(eventName: string, callback: Function) { this._getListeners(eventName).push(callback); }
+  listen(eventName: string, callback: Function) {
+    this._getListeners(eventName).push(callback);
+  }
 
   unlisten(eventName: string, listener: Function) {
     const listeners = this._getListeners(eventName);
@@ -97,9 +99,13 @@ export class WebWorkerRendererFactory2 implements RendererFactory2 {
     return result;
   }
 
-  freeNode(node: any) { this.renderStore.remove(node); }
+  freeNode(node: any) {
+    this.renderStore.remove(node);
+  }
 
-  allocateId(): number { return this.renderStore.allocateId(); }
+  allocateId(): number {
+    return this.renderStore.allocateId();
+  }
 
   private _dispatchEvent(message: {[key: string]: any}): void {
     const element: WebWorkerRenderNode =
@@ -125,7 +131,9 @@ export class WebWorkerRenderer2 implements Renderer2 {
 
   private asFnArg = new FnArg(this, SerializerTypes.RENDER_STORE_OBJECT);
 
-  destroy(): void { this.callUIWithRenderer('destroy'); }
+  destroy(): void {
+    this.callUIWithRenderer('destroy');
+  }
 
   destroyNode(node: any) {
     this.callUIWithRenderer('destroyNode', [new FnArg(node, SerializerTypes.RENDER_STORE_OBJECT)]);
@@ -281,7 +289,7 @@ export class WebWorkerRenderer2 implements Renderer2 {
       listener: (event: any) => boolean): () => void {
     const unlistenId = this._rendererFactory.allocateId();
 
-    const [targetEl, targetName, fullName]: [any, string | null, string | null] =
+    const [targetEl, targetName, fullName]: [any, string|null, string|null] =
         typeof target === 'string' ? [null, target, `${target}:${eventName}`] :
                                      [target, null, null];
 
@@ -314,4 +322,6 @@ export class WebWorkerRenderer2 implements Renderer2 {
   }
 }
 
-export class WebWorkerRenderNode { events = new NamedEventEmitter(); }
+export class WebWorkerRenderNode {
+  events = new NamedEventEmitter();
+}

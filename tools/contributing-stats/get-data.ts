@@ -140,8 +140,8 @@ function buildQueryAndParams(username: string, date: string) {
         label: `${ORG}/${repo} Issue Authored`,
       },
       [`${repo.replace(/[\/\-]/g, '_')}_issues_involved`]: {
-        query:
-            `repo:${ORG}/${repo} is:issue -author:${username} involves:${username} ${updatedOrCreated}:>${date}`,
+        query: `repo:${ORG}/${repo} is:issue -author:${username} involves:${username} ${
+            updatedOrCreated}:>${date}`,
         label: `${ORG}/${repo} Issue Involved`,
       },
       [`${repo.replace(/[\/\-]/g, '_')}_pr_author`]: {
@@ -153,13 +153,13 @@ function buildQueryAndParams(username: string, date: string) {
         label: `${ORG}/${repo} PR Involved`,
       },
       [`${repo.replace(/[\/\-]/g, '_')}_pr_reviewed`]: {
-        query:
-            `repo:${ORG}/${repo} is:pr -author:${username} reviewed-by:${username} ${updatedOrCreated}:>${date}`,
+        query: `repo:${ORG}/${repo} is:pr -author:${username} reviewed-by:${username} ${
+            updatedOrCreated}:>${date}`,
         label: `${ORG}/${repo} PR Reviewed`,
       },
       [`${repo.replace(/[\/\-]/g, '_')}_pr_commented`]: {
-        query:
-            `repo:${ORG}/${repo} is:pr -author:${username} commenter:${username} ${updatedOrCreated}:>${date}`,
+        query: `repo:${ORG}/${repo} is:pr -author:${username} commenter:${username} ${
+            updatedOrCreated}:>${date}`,
         label: `${ORG}/${repo} PR Commented`,
       },
     };
@@ -172,8 +172,8 @@ function buildQueryAndParams(username: string, date: string) {
       label: `${ORG} org Issue Authored`,
     },
     [`${ORG}_org_issues_involved`]: {
-      query:
-          `org:${ORG} is:issue -author:${username} involves:${username} ${updatedOrCreated}:>${date}`,
+      query: `org:${ORG} is:issue -author:${username} involves:${username} ${updatedOrCreated}:>${
+          date}`,
       label: `${ORG} org Issue Involved`,
     },
     [`${ORG}_org_pr_author`]: {
@@ -185,8 +185,8 @@ function buildQueryAndParams(username: string, date: string) {
       label: `${ORG} org PR Involved`,
     },
     [`${ORG}_org_pr_reviewed`]: {
-      query:
-          `org:${ORG} is:pr -author:${username} reviewed-by:${username} ${updatedOrCreated}:>${date}`,
+      query: `org:${ORG} is:pr -author:${username} reviewed-by:${username} ${updatedOrCreated}:>${
+          date}`,
       label: `${ORG} org PR Reviewed`,
     },
     [`${ORG}_org_pr_commented`]: {

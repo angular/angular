@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WrappedValue, devModeEqual} from '../change_detection/change_detection';
+import {devModeEqual, WrappedValue} from '../change_detection/change_detection';
 import {SOURCE} from '../di/injector_compatibility';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererType2} from '../render/api';
 import {looseIdentical} from '../util/comparison';
 import {stringify} from '../util/stringify';
+
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
-import {BindingDef, BindingFlags, Definition, DefinitionFactory, DepDef, DepFlags, ElementData, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asTextData} from './types';
+import {asElementData, asTextData, BindingDef, BindingFlags, Definition, DefinitionFactory, DepDef, DepFlags, ElementData, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState} from './types';
 
 export const NOOP: any = () => {};
 
@@ -44,7 +45,7 @@ const EMPTY_RENDERER_TYPE_ID = '$$empty';
 // Attention: this function is called as top level function.
 // Putting any logic in here will destroy closure tree shaking!
 export function createRendererType2(values: {
-  styles: (string | any[])[],
+  styles: (string|any[])[],
   encapsulation: ViewEncapsulation,
   data: {[kind: string]: any[]}
 }): RendererType2 {
@@ -58,7 +59,7 @@ export function createRendererType2(values: {
 
 let _renderCompCount = 0;
 
-export function resolveRendererType2(type?: RendererType2 | null): RendererType2|null {
+export function resolveRendererType2(type?: RendererType2|null): RendererType2|null {
   if (type && type.id === UNDEFINED_RENDERER_TYPE_ID) {
     // first time we see this RendererType2. Initialize it...
     const isFilled =
@@ -142,7 +143,7 @@ export function dispatchEvent(
 export function declaredViewContainer(view: ViewData): ElementData|null {
   if (view.parent) {
     const parentView = view.parent;
-    return asElementData(parentView, view.parentNodeDef !.nodeIndex);
+    return asElementData(parentView, view.parentNodeDef!.nodeIndex);
   }
   return null;
 }
@@ -155,7 +156,7 @@ export function declaredViewContainer(view: ViewData): ElementData|null {
 export function viewParentEl(view: ViewData): NodeDef|null {
   const parentView = view.parent;
   if (parentView) {
-    return view.parentNodeDef !.parent;
+    return view.parentNodeDef!.parent;
   } else {
     return null;
   }
@@ -170,24 +171,23 @@ export function renderNode(view: ViewData, def: NodeDef): any {
   }
 }
 
-export function elementEventFullName(target: string | null, name: string): string {
+export function elementEventFullName(target: string|null, name: string): string {
   return target ? `${target}:${name}` : name;
 }
 
 export function isComponentView(view: ViewData): boolean {
-  return !!view.parent && !!(view.parentNodeDef !.flags & NodeFlags.Component);
+  return !!view.parent && !!(view.parentNodeDef!.flags & NodeFlags.Component);
 }
 
 export function isEmbeddedView(view: ViewData): boolean {
-  return !!view.parent && !(view.parentNodeDef !.flags & NodeFlags.Component);
+  return !!view.parent && !(view.parentNodeDef!.flags & NodeFlags.Component);
 }
 
 export function filterQueryId(queryId: number): number {
   return 1 << (queryId % 32);
 }
 
-export function splitMatchedQueriesDsl(
-    matchedQueriesDsl: [string | number, QueryValueType][] | null): {
+export function splitMatchedQueriesDsl(matchedQueriesDsl: [string|number, QueryValueType][]|null): {
   matchedQueries: {[queryId: string]: QueryValueType},
   references: {[refId: string]: QueryValueType},
   matchedQueryIds: number
@@ -208,7 +208,7 @@ export function splitMatchedQueriesDsl(
   return {matchedQueries, references, matchedQueryIds};
 }
 
-export function splitDepsDsl(deps: ([DepFlags, any] | any)[], sourceName?: string): DepDef[] {
+export function splitDepsDsl(deps: ([DepFlags, any]|any)[], sourceName?: string): DepDef[] {
   return deps.map(value => {
     let token: any;
     let flags: DepFlags;
@@ -230,12 +230,11 @@ export function getParentRenderElement(view: ViewData, renderHost: any, def: Nod
   if (renderParent) {
     if ((renderParent.flags & NodeFlags.TypeElement) === 0 ||
         (renderParent.flags & NodeFlags.ComponentView) === 0 ||
-        (renderParent.element !.componentRendererType &&
-         renderParent.element !.componentRendererType !.encapsulation ===
-             ViewEncapsulation.Native)) {
+        (renderParent.element!.componentRendererType &&
+         renderParent.element!.componentRendererType!.encapsulation === ViewEncapsulation.Native)) {
       // only children of non components, or children of components with native encapsulation should
       // be attached.
-      return asElementData(view, def.renderParent !.nodeIndex).renderElement;
+      return asElementData(view, def.renderParent!.nodeIndex).renderElement;
     }
   } else {
     return renderHost;
@@ -245,7 +244,7 @@ export function getParentRenderElement(view: ViewData, renderHost: any, def: Nod
 const DEFINITION_CACHE = new WeakMap<any, Definition<any>>();
 
 export function resolveDefinition<D extends Definition<any>>(factory: DefinitionFactory<D>): D {
-  let value = DEFINITION_CACHE.get(factory) !as D;
+  let value = DEFINITION_CACHE.get(factory)! as D;
   if (!value) {
     value = factory(() => NOOP);
     value.factory = factory;
@@ -260,13 +259,18 @@ export function rootRenderNodes(view: ViewData): any[] {
   return renderNodes;
 }
 
-export const enum RenderNodeAction {Collect, AppendChild, InsertBefore, RemoveChild}
+export const enum RenderNodeAction {
+  Collect,
+  AppendChild,
+  InsertBefore,
+  RemoveChild
+}
 
 export function visitRootRenderNodes(
     view: ViewData, action: RenderNodeAction, parentNode: any, nextSibling: any, target?: any[]) {
   // We need to re-compute the parent node in case the nodes have been moved around manually
   if (action === RenderNodeAction.RemoveChild) {
-    parentNode = view.renderer.parentNode(renderNode(view, view.def.lastRenderRootNode !));
+    parentNode = view.renderer.parentNode(renderNode(view, view.def.lastRenderRootNode!));
   }
   visitSiblingRenderNodes(
       view, action, 0, view.def.nodes.length - 1, parentNode, nextSibling, target);
@@ -292,19 +296,19 @@ export function visitProjectedRenderNodes(
   while (compView && !isComponentView(compView)) {
     compView = compView.parent;
   }
-  const hostView = compView !.parent;
-  const hostElDef = viewParentEl(compView !);
-  const startIndex = hostElDef !.nodeIndex + 1;
-  const endIndex = hostElDef !.nodeIndex + hostElDef !.childCount;
+  const hostView = compView!.parent;
+  const hostElDef = viewParentEl(compView!);
+  const startIndex = hostElDef!.nodeIndex + 1;
+  const endIndex = hostElDef!.nodeIndex + hostElDef!.childCount;
   for (let i = startIndex; i <= endIndex; i++) {
-    const nodeDef = hostView !.def.nodes[i];
+    const nodeDef = hostView!.def.nodes[i];
     if (nodeDef.ngContentIndex === ngContentIndex) {
-      visitRenderNode(hostView !, nodeDef, action, parentNode, nextSibling, target);
+      visitRenderNode(hostView!, nodeDef, action, parentNode, nextSibling, target);
     }
     // jump to next sibling
     i += nodeDef.childCount;
   }
-  if (!hostView !.parent) {
+  if (!hostView!.parent) {
     // a root view
     const projectedNodes = view.root.projectableNodes[ngContentIndex];
     if (projectedNodes) {
@@ -320,7 +324,7 @@ function visitRenderNode(
     target?: any[]) {
   if (nodeDef.flags & NodeFlags.TypeNgContent) {
     visitProjectedRenderNodes(
-        view, nodeDef.ngContent !.index, action, parentNode, nextSibling, target);
+        view, nodeDef.ngContent!.index, action, parentNode, nextSibling, target);
   } else {
     const rn = renderNode(view, nodeDef);
     if (action === RenderNodeAction.RemoveChild && (nodeDef.flags & NodeFlags.ComponentView) &&
@@ -337,12 +341,12 @@ function visitRenderNode(
       execRenderNodeAction(view, rn, action, parentNode, nextSibling, target);
     }
     if (nodeDef.flags & NodeFlags.EmbeddedViews) {
-      const embeddedViews = asElementData(view, nodeDef.nodeIndex).viewContainer !._embeddedViews;
+      const embeddedViews = asElementData(view, nodeDef.nodeIndex).viewContainer!._embeddedViews;
       for (let k = 0; k < embeddedViews.length; k++) {
         visitRootRenderNodes(embeddedViews[k], action, parentNode, nextSibling, target);
       }
     }
-    if (nodeDef.flags & NodeFlags.TypeElement && !nodeDef.element !.name) {
+    if (nodeDef.flags & NodeFlags.TypeElement && !nodeDef.element!.name) {
       visitSiblingRenderNodes(
           view, action, nodeDef.nodeIndex + 1, nodeDef.nodeIndex + nodeDef.childCount, parentNode,
           nextSibling, target);
@@ -365,7 +369,7 @@ function execRenderNodeAction(
       renderer.removeChild(parentNode, renderNode);
       break;
     case RenderNodeAction.Collect:
-      target !.push(renderNode);
+      target!.push(renderNode);
       break;
   }
 }
@@ -374,7 +378,7 @@ const NS_PREFIX_RE = /^:([^:]+):(.+)$/;
 
 export function splitNamespace(name: string): string[] {
   if (name[0] === ':') {
-    const match = name.match(NS_PREFIX_RE) !;
+    const match = name.match(NS_PREFIX_RE)!;
     return [match[1], match[2]];
   }
   return ['', name];

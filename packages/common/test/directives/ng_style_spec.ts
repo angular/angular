@@ -8,19 +8,23 @@
 
 import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 {
   describe('NgStyle', () => {
     let fixture: ComponentFixture<TestComponent>;
 
-    function getComponent(): TestComponent { return fixture.componentInstance; }
+    function getComponent(): TestComponent {
+      return fixture.componentInstance;
+    }
 
     function expectNativeEl(fixture: ComponentFixture<any>): any {
       return expect(fixture.debugElement.children[0].nativeElement);
     }
 
-    afterEach(() => { fixture = null !; });
+    afterEach(() => {
+      fixture = null!;
+    });
 
     beforeEach(() => {
       TestBed.configureTestingModule({declarations: [TestComponent], imports: [CommonModule]});
@@ -159,7 +163,6 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
        }));
 
     it('should not write to the native node unless the bound expression has changed', () => {
-
       const template = `<div [ngStyle]="{'color': expr}"></div>`;
 
       fixture = createTestComponent(template);
@@ -189,7 +192,6 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
       fixture.detectChanges();
       expectNativeEl(fixture).toHaveCssStyle({'width': '400px'});
     });
-
   });
 }
 

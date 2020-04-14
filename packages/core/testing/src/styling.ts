@@ -7,11 +7,11 @@
  */
 
 /**
-  * Returns element classes in form of a stable (sorted) string.
-  *
-  * @param element HTML Element.
-  * @returns Returns element classes in form of a stable (sorted) string.
-  */
+ * Returns element classes in form of a stable (sorted) string.
+ *
+ * @param element HTML Element.
+ * @returns Returns element classes in form of a stable (sorted) string.
+ */
 export function getSortedClassName(element: Element): string {
   const names: string[] = Object.keys(getElementClasses(element));
   names.sort();

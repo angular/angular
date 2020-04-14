@@ -26,7 +26,7 @@ import {elementAttributeInternal, storePropertyBindingMetadata} from './shared';
  * @codeGenApi
  */
 export function ɵɵattribute(
-    name: string, value: any, sanitizer?: SanitizerFn | null,
+    name: string, value: any, sanitizer?: SanitizerFn|null,
     namespace?: string): typeof ɵɵattribute {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();

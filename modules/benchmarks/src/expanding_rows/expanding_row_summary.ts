@@ -48,8 +48,7 @@ export class ExpandingRowSummary implements OnDestroy {
    * reference to compute collapsed height of the row. We also use this
    * reference for focus and blur methods below.
    */
-  @ViewChild('expandingRowSummaryMainElement')
-  mainElementRef !: ElementRef;
+  @ViewChild('expandingRowSummaryMainElement') mainElementRef!: ElementRef;
 
   /** Subscription for changes in parent isExpanded property. */
   private isExpandedSubscription: Subscription;
@@ -65,11 +64,13 @@ export class ExpandingRowSummary implements OnDestroy {
    */
   constructor(@Host() public expandingRow: ExpandingRow, changeDetectorRef: ChangeDetectorRef) {
     this.expandingRow.summaryViewChild = this;
-    this.isExpandedSubscription =
-        this.expandingRow.isExpandedChange.subscribe(() => { changeDetectorRef.markForCheck(); });
+    this.isExpandedSubscription = this.expandingRow.isExpandedChange.subscribe(() => {
+      changeDetectorRef.markForCheck();
+    });
 
-    this.indexSubscription =
-        this.expandingRow.indexChange.subscribe(() => { changeDetectorRef.markForCheck(); });
+    this.indexSubscription = this.expandingRow.indexChange.subscribe(() => {
+      changeDetectorRef.markForCheck();
+    });
   }
 
 
@@ -203,5 +204,7 @@ export class ExpandingRowSummary implements OnDestroy {
   }
 
   /** Returns array of focusable elements within this component. */
-  private getFocusableChildren(): HTMLElement[] { return []; }
+  private getFocusableChildren(): HTMLElement[] {
+    return [];
+  }
 }

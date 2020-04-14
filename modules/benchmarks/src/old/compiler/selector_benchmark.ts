@@ -47,7 +47,9 @@ export function main() {
   function match() {
     let matchCount = 0;
     for (let i = 0; i < count; i++) {
-      fixedMatcher.match(fixedSelectors[i][0], (selector, selected) => { matchCount += selected; });
+      fixedMatcher.match(fixedSelectors[i][0], (selector, selected) => {
+        matchCount += selected;
+      });
     }
     return matchCount;
   }

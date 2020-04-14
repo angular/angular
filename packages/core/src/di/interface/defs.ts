@@ -140,13 +140,14 @@ export interface InjectorTypeWithProviders<T> {
  */
 export function ɵɵdefineInjectable<T>(opts: {
   token: unknown,
-  providedIn?: Type<any>| 'root' | 'platform' | 'any' | null,
-  factory: () => T,
+  providedIn?: Type<any>|'root'|'platform'|'any'|null, factory: () => T,
 }): never {
   return ({
-    token: opts.token, providedIn: opts.providedIn as any || null, factory: opts.factory,
-        value: undefined,
-  } as ɵɵInjectableDef<T>) as never;
+           token: opts.token,
+           providedIn: opts.providedIn as any || null,
+           factory: opts.factory,
+           value: undefined,
+         } as ɵɵInjectableDef<T>) as never;
 }
 
 /**
@@ -179,8 +180,10 @@ export const defineInjectable = ɵɵdefineInjectable;
 export function ɵɵdefineInjector(options: {factory: () => any, providers?: any[], imports?: any[]}):
     never {
   return ({
-    factory: options.factory, providers: options.providers || [], imports: options.imports || [],
-  } as ɵɵInjectorDef<any>) as never;
+           factory: options.factory,
+           providers: options.providers || [],
+           imports: options.imports || [],
+         } as ɵɵInjectorDef<any>) as never;
 }
 
 /**
@@ -219,15 +222,17 @@ function getOwnDefinition<T>(type: any, def: ɵɵInjectableDef<T>): ɵɵInjectab
  */
 export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDef<T>|null {
   // See `jit/injectable.ts#compileInjectable` for context on NG_PROV_DEF_FALLBACK.
-  const def = type && (type[NG_PROV_DEF] || type[NG_INJECTABLE_DEF] ||
-                       (type[NG_PROV_DEF_FALLBACK] && type[NG_PROV_DEF_FALLBACK]()));
+  const def = type &&
+      (type[NG_PROV_DEF] || type[NG_INJECTABLE_DEF] ||
+       (type[NG_PROV_DEF_FALLBACK] && type[NG_PROV_DEF_FALLBACK]()));
 
   if (def) {
     const typeName = getTypeName(type);
     // TODO(FW-1307): Re-add ngDevMode when closure can handle it
     // ngDevMode &&
     console.warn(
-        `DEPRECATED: DI is instantiating a token "${typeName}" that inherits its @Injectable decorator but does not provide one itself.\n` +
+        `DEPRECATED: DI is instantiating a token "${
+            typeName}" that inherits its @Injectable decorator but does not provide one itself.\n` +
         `This will become an error in v10. Please add @Injectable() to the "${typeName}" class.`);
     return def;
   } else {

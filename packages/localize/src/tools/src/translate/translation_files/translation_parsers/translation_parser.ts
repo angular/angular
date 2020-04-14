@@ -9,8 +9,8 @@ import {ɵMessageId, ɵParsedTranslation} from '@angular/localize/private';
 import {Diagnostics} from '../../../diagnostics';
 
 /**
-* An object that holds translations that have been parsed from a translation file.
-*/
+ * An object that holds translations that have been parsed from a translation file.
+ */
 export interface ParsedTranslationBundle {
   locale: string|undefined;
   translations: Record<ɵMessageId, ɵParsedTranslation>;

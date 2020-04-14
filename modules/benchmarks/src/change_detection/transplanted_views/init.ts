@@ -35,7 +35,9 @@ export function init(moduleRef: NgModuleRef<TransplantedViewsModule>) {
     appRef.tick();
   }
 
-  function detectChanges() { appRef.tick(); }
+  function detectChanges() {
+    appRef.tick();
+  }
 
   function noop() {}
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 /* tslint:disable:no-console  */
-import {WebDriver, logging} from 'selenium-webdriver';
+import {logging, WebDriver} from 'selenium-webdriver';
 
 declare var browser: WebDriver;
 declare var expect: any;

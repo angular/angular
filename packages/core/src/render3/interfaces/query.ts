@@ -145,7 +145,7 @@ export interface TQueries {
   template(tView: TView, tNode: TNode): void;
 
   /**
-  * A proxy method that iterates over all the TQueries in a given TView and calls the corresponding
+   * A proxy method that iterates over all the TQueries in a given TView and calls the corresponding
    * `embeddedTView` on each and every TQuery.
    * @param tNode
    */

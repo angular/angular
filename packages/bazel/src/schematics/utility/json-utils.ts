@@ -42,7 +42,7 @@ export function removeKeyValueInAstObject(
       let length = end - start;
       const match = content.slice(end).match(/^[,\s]+/);
       if (match) {
-        length += match.pop() !.length;
+        length += match.pop()!.length;
       }
       recorder.remove(start, length);
       if (i === node.properties.length - 1) {  // last property
@@ -60,6 +60,6 @@ export function removeKeyValueInAstObject(
 /**
  * Returns true if the specified 'node' is a JsonAstObject, false otherwise.
  */
-export function isJsonAstObject(node: JsonAstNode | null): node is JsonAstObject {
+export function isJsonAstObject(node: JsonAstNode|null): node is JsonAstObject {
   return !!node && node.kind === 'object';
 }

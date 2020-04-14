@@ -8,20 +8,19 @@
 
 import {ElementRef, QueryList, TemplateRef, ViewContainerRef} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
-import {NodeDef, NodeFlags, QueryBindingType, QueryValueType, Services, anchorDef, asElementData, asProviderData, attachEmbeddedView, detachEmbeddedView, directiveDef, elementDef, queryDef} from '@angular/core/src/view/index';
+import {anchorDef, asElementData, asProviderData, attachEmbeddedView, detachEmbeddedView, directiveDef, elementDef, NodeDef, NodeFlags, QueryBindingType, queryDef, QueryValueType, Services} from '@angular/core/src/view/index';
 
 import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedView} from './helper';
 
 {
   describe(`Query Views`, () => {
-
     const someQueryId = 1;
 
     class AService {}
 
     class QueryService {
       // TODO(issue/24571): remove '!'.
-      a !: QueryList<AService>;
+      a!: QueryList<AService>;
     }
 
     function contentQueryProviders(checkIndex: number) {
@@ -47,7 +46,15 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
                     ...nodes
                   ])),
         directiveDef(
-            checkIndex + 1, NodeFlags.Component, null !, 0, QueryService, [], null !, null !, ),
+            checkIndex + 1,
+            NodeFlags.Component,
+            null!,
+            0,
+            QueryService,
+            [],
+            null!,
+            null!,
+            ),
       ];
     }
 
@@ -60,7 +67,6 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
     }
 
     describe('content queries', () => {
-
       it('should query providers on the same element and child elements', () => {
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(0, NodeFlags.None, null, null, 5, 'div'),
@@ -77,12 +83,11 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
 
         const as = qs.a.toArray();
         expect(as.length).toBe(2);
-        expect(as[0]).toBe(asProviderData(view, 3).instance);
-        expect(as[1]).toBe(asProviderData(view, 5).instance);
+        expect(as [0]).toBe(asProviderData(view, 3).instance);
+        expect(as [1]).toBe(asProviderData(view, 5).instance);
       });
 
       it('should not query providers on sibling or parent elements', () => {
-
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(0, NodeFlags.None, null, null, 6, 'div'),
           aServiceProvider(1),
@@ -249,7 +254,7 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
       it('should query all matches', () => {
         class QueryService {
           // TODO(issue/24571): remove '!'.
-          a !: QueryList<AService>;
+          a!: QueryList<AService>;
         }
 
         const {view} = createAndGetRootNodes(compViewDef([
@@ -275,7 +280,7 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
       it('should query the first match', () => {
         class QueryService {
           // TODO(issue/24571): remove '!'.
-          a !: AService;
+          a!: AService;
         }
 
         const {view} = createAndGetRootNodes(compViewDef([
@@ -299,7 +304,7 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
       it('should query ElementRef', () => {
         class QueryService {
           // TODO(issue/24571): remove '!'.
-          a !: ElementRef;
+          a!: ElementRef;
         }
 
         const {view} = createAndGetRootNodes(compViewDef([
@@ -319,7 +324,7 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
       it('should query TemplateRef', () => {
         class QueryService {
           // TODO(issue/24571): remove '!'.
-          a !: TemplateRef<any>;
+          a!: TemplateRef<any>;
         }
 
         const {view} = createAndGetRootNodes(compViewDef([
@@ -341,7 +346,7 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
       it('should query ViewContainerRef', () => {
         class QueryService {
           // TODO(issue/24571): remove '!'.
-          a !: ViewContainerRef;
+          a!: ViewContainerRef;
         }
 
         const {view} = createAndGetRootNodes(compViewDef([
@@ -363,7 +368,9 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
     describe('general binding behavior', () => {
       it('should report debug info on binding errors', () => {
         class QueryService {
-          set a(value: any) { throw new Error('Test'); }
+          set a(value: any) {
+            throw new Error('Test');
+          }
         }
 
         const {view} = createAndGetRootNodes(compViewDef([
