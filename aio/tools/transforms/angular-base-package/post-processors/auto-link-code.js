@@ -90,6 +90,12 @@ module.exports = function autoLinkCode(getDocFromAlias) {
     }
 
     var doc = docs[0];
+
+    const isInvalidDoc = doc.docType === 'member' && !keyword.includes('.');
+    if (isInvalidDoc) {
+      return false;
+    }
+
     if (doc.path === '') {
       var message = `
       autoLinkCode: Doc path is empty for "${doc.id}" - link will not be generated for "${keyword}".
