@@ -1044,7 +1044,7 @@ groups:
       - *can-be-global-approved
       - >
         contains_any_globs(files, [
-          'goldens/packages-circular-deps.json'
+          'goldens/circular-deps/packages.json'
         ])
     reviewers:
       users:
