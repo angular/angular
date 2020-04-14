@@ -192,3 +192,32 @@ code {
     color: $mediumgray;
   }
 }
+
+.folder-api,
+.folder-cli,
+.folder-docs,
+.folder-guide,
+.folder-start,
+.folder-tutorial {
+  
+  aio-doc-viewer{
+    a {
+      &[href^="http:"]::after,
+      &[href^="https:"]::after {
+        font-family: "Material Icons";
+        content: "open_in_new";
+        margin-left: 2px;
+        position: relative;
+        @include line-height(24);
+        vertical-align: bottom; 
+      }
+    }
+
+    .github-links a {
+      &[href^="http:"]::after,
+      &[href^="https:"]::after {
+        display: none;
+      }
+    }
+  }
+}
