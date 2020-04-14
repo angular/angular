@@ -31,15 +31,14 @@ const UpdateWorker: Worker = {
 // name. We determine the name of the Bazel package where this test runs from the current test
 // target. The Bazel target
 // looks like: "//modules/benchmarks/src/change_detection/{pkg_name}:{target_name}".
-const testPackageName = process.env['BAZEL_TARGET'] !.split(':')[0].split('/').pop();
+const testPackageName = process.env['BAZEL_TARGET']!.split(':')[0].split('/').pop();
 
 describe('change detection benchmark perf', () => {
-
   afterEach(verifyNoBrowserErrors);
 
   [UpdateWorker].forEach((worker) => {
     describe(worker.id, () => {
-      it(`should run benchmark for ${testPackageName}`, async() => {
+      it(`should run benchmark for ${testPackageName}`, async () => {
         await runChangeDetectionBenchmark({
           id: `change_detection.${testPackageName}.${worker.id}`,
           url: '/',

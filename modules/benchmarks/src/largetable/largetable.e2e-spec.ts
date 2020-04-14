@@ -13,7 +13,7 @@ import {openBrowser, verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 describe('largetable benchmark', () => {
   afterEach(verifyNoBrowserErrors);
 
-  it(`should render the table`, async() => {
+  it(`should render the table`, async () => {
     openBrowser({
       url: '',
       ignoreBrowserSynchronization: true,

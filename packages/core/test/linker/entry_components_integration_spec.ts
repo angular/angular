@@ -14,17 +14,25 @@ import {obsoleteInIvy} from '@angular/private/testing';
 
 
 if (ivyEnabled) {
-  describe('ivy', () => { declareTests(); });
+  describe('ivy', () => {
+    declareTests();
+  });
 } else {
-  describe('jit', () => { declareTests({useJit: true}); });
-  describe('no jit', () => { declareTests({useJit: false}); });
+  describe('jit', () => {
+    declareTests({useJit: true});
+  });
+  describe('no jit', () => {
+    declareTests({useJit: false});
+  });
 }
 
 class DummyConsole implements Console {
   public warnings: string[] = [];
 
   log(message: string) {}
-  warn(message: string) { this.warnings.push(message); }
+  warn(message: string) {
+    this.warnings.push(message);
+  }
 }
 
 function declareTests(config?: {useJit: boolean}) {
@@ -40,7 +48,7 @@ function declareTests(config?: {useJit: boolean}) {
       const compFixture = TestBed.createComponent(MainComp);
       const mainComp: MainComp = compFixture.componentInstance;
       expect(compFixture.componentRef.injector.get(ComponentFactoryResolver)).toBe(mainComp.cfr);
-      const cf = mainComp.cfr.resolveComponentFactory(ChildComp) !;
+      const cf = mainComp.cfr.resolveComponentFactory(ChildComp)!;
       expect(cf.componentType).toBe(ChildComp);
     });
 
@@ -52,8 +60,8 @@ function declareTests(config?: {useJit: boolean}) {
       const mainComp: CompWithAnalyzeEntryComponentsProvider = compFixture.componentInstance;
       const cfr: ComponentFactoryResolver =
           compFixture.componentRef.injector.get(ComponentFactoryResolver);
-      expect(cfr.resolveComponentFactory(ChildComp) !.componentType).toBe(ChildComp);
-      expect(cfr.resolveComponentFactory(NestedChildComp) !.componentType).toBe(NestedChildComp);
+      expect(cfr.resolveComponentFactory(ChildComp)!.componentType).toBe(ChildComp);
+      expect(cfr.resolveComponentFactory(NestedChildComp)!.componentType).toBe(NestedChildComp);
     });
 
     it('should be able to get a component form a parent component (view hierarchy)', () => {
@@ -63,10 +71,10 @@ function declareTests(config?: {useJit: boolean}) {
       const childCompEl = compFixture.debugElement.children[0];
       const childComp: ChildComp = childCompEl.componentInstance;
       // declared on ChildComp directly
-      expect(childComp.cfr.resolveComponentFactory(NestedChildComp) !.componentType)
+      expect(childComp.cfr.resolveComponentFactory(NestedChildComp)!.componentType)
           .toBe(NestedChildComp);
       // inherited from MainComp
-      expect(childComp.cfr.resolveComponentFactory(ChildComp) !.componentType).toBe(ChildComp);
+      expect(childComp.cfr.resolveComponentFactory(ChildComp)!.componentType).toBe(ChildComp);
     });
 
     obsoleteInIvy('In Ivy, the ComponentFactoryResolver can resolve any component factory')
@@ -79,12 +87,11 @@ function declareTests(config?: {useJit: boolean}) {
               const compFixture = TestBed.createComponent(MainComp);
               const nestedChildCompEl = compFixture.debugElement.children[0].children[0];
               const nestedChildComp: NestedChildComp = nestedChildCompEl.componentInstance;
-              expect(nestedChildComp.cfr.resolveComponentFactory(ChildComp) !.componentType)
+              expect(nestedChildComp.cfr.resolveComponentFactory(ChildComp)!.componentType)
                   .toBe(ChildComp);
               expect(() => nestedChildComp.cfr.resolveComponentFactory(NestedChildComp))
                   .toThrow(noComponentFactoryError(NestedChildComp));
             });
-
   });
 }
 

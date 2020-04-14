@@ -49,8 +49,9 @@ import {devModeEqual} from '@angular/core/src/change_detection/change_detection_
         expect(devModeEqual(null, {})).toBe(false);
       });
 
-      it('should return true for other objects',
-         () => { expect(devModeEqual({}, {})).toBe(true); });
+      it('should return true for other objects', () => {
+        expect(devModeEqual({}, {})).toBe(true);
+      });
     });
   });
 }

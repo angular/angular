@@ -52,7 +52,7 @@ export function makeDecorator<T>(
     const metaCtor = makeMetadataCtor(props);
 
     function DecoratorFactory(
-        this: unknown | typeof DecoratorFactory, ...args: any[]): (cls: Type<T>) => any {
+        this: unknown|typeof DecoratorFactory, ...args: any[]): (cls: Type<T>) => any {
       if (this instanceof DecoratorFactory) {
         metaCtor.call(this, ...args);
         return this as typeof DecoratorFactory;
@@ -101,7 +101,7 @@ export function makeParamDecorator(
   return noSideEffects(() => {
     const metaCtor = makeMetadataCtor(props);
     function ParamDecoratorFactory(
-        this: unknown | typeof ParamDecoratorFactory, ...args: any[]): any {
+        this: unknown|typeof ParamDecoratorFactory, ...args: any[]): any {
       if (this instanceof ParamDecoratorFactory) {
         metaCtor.apply(this, args);
         return this;
@@ -143,8 +143,7 @@ export function makePropDecorator(
   return noSideEffects(() => {
     const metaCtor = makeMetadataCtor(props);
 
-    function PropDecoratorFactory(
-        this: unknown | typeof PropDecoratorFactory, ...args: any[]): any {
+    function PropDecoratorFactory(this: unknown|typeof PropDecoratorFactory, ...args: any[]): any {
       if (this instanceof PropDecoratorFactory) {
         metaCtor.apply(this, args);
         return this;

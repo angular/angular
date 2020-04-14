@@ -123,7 +123,7 @@ function runUndecoratedClassesMigration(
   /** Gets the update recorder for the specified source file. */
   function getUpdateRecorder(sourceFile: ts.SourceFile): UpdateRecorder {
     if (updateRecorders.has(sourceFile)) {
-      return updateRecorders.get(sourceFile) !;
+      return updateRecorders.get(sourceFile)!;
     }
     const treeRecorder = tree.beginUpdate(relative(basePath, sourceFile.fileName));
     const recorder: UpdateRecorder = {
@@ -146,7 +146,9 @@ function runUndecoratedClassesMigration(
         treeRecorder.remove(namedBindings.getStart(), namedBindings.getWidth());
         treeRecorder.insertRight(namedBindings.getStart(), newNamedBindings);
       },
-      commitUpdate() { tree.commitUpdate(treeRecorder); }
+      commitUpdate() {
+        tree.commitUpdate(treeRecorder);
+      }
     };
     updateRecorders.set(sourceFile, recorder);
     return recorder;

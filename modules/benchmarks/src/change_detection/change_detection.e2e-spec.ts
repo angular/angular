@@ -13,7 +13,7 @@ import {openBrowser, verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 describe('change detection benchmark', () => {
   afterEach(verifyNoBrowserErrors);
 
-  it(`should render and update`, async() => {
+  it(`should render and update`, async () => {
     openBrowser({
       url: '',
       ignoreBrowserSynchronization: true,

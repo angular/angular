@@ -41,7 +41,9 @@ export function asyncFallback(fn: Function): (done: any) => any {
         // if we run beforeEach in @angular/core/testing/testing_internal then we get no done
         // fake it here and assume sync.
         done = function() {};
-        done.fail = function(e: any) { throw e; };
+        done.fail = function(e: any) {
+          throw e;
+        };
       }
       runInTestZone(fn, this, done, (err: any) => {
         if (typeof err === 'string') {
@@ -87,7 +89,7 @@ function runInTestZone(
   // If we do it in ProxyZone then we will get to infinite recursion.
   const proxyZone = Zone.current.getZoneWith('ProxyZoneSpec');
   const previousDelegate = proxyZoneSpec.getDelegate();
-  proxyZone !.parent !.run(() => {
+  proxyZone!.parent!.run(() => {
     const testZoneSpec: ZoneSpec = new AsyncTestZoneSpec(
         () => {
           // Need to restore the original zone.

@@ -15,7 +15,9 @@ describe('HttpClient TestRequest', () => {
     const client = new HttpClient(mock);
 
     let resp: any;
-    client.post('/some-url', {test: 'test'}).subscribe(body => { resp = body; });
+    client.post('/some-url', {test: 'test'}).subscribe(body => {
+      resp = body;
+    });
 
     const req = mock.expectOne('/some-url');
     req.flush(null);
@@ -28,7 +30,9 @@ describe('HttpClient TestRequest', () => {
     const client = new HttpClient(mock);
 
     let resp: any;
-    client.get('/some-other-url').subscribe(body => { resp = body; });
+    client.get('/some-other-url').subscribe(body => {
+      resp = body;
+    });
 
     try {
       // expect different URL
@@ -48,7 +52,9 @@ describe('HttpClient TestRequest', () => {
 
     let resp: any;
     const params = {query: 'hello'};
-    client.get('/some-url', {params}).subscribe(body => { resp = body; });
+    client.get('/some-url', {params}).subscribe(body => {
+      resp = body;
+    });
 
     try {
       // expect different query parameters
@@ -67,8 +73,12 @@ describe('HttpClient TestRequest', () => {
     const client = new HttpClient(mock);
 
     let resp: any;
-    client.get('/some-other-url?query=world').subscribe(body => { resp = body; });
-    client.post('/and-another-url', {}).subscribe(body => { resp = body; });
+    client.get('/some-other-url?query=world').subscribe(body => {
+      resp = body;
+    });
+    client.post('/and-another-url', {}).subscribe(body => {
+      resp = body;
+    });
 
     try {
       // expect different URL

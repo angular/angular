@@ -60,16 +60,16 @@ export class NgIfThenElse implements OnInit {
   thenBlock: TemplateRef<any>|null = null;
   show: boolean = true;
 
-  @ViewChild('primaryBlock', {static: true})
-  primaryBlock: TemplateRef<any>|null = null;
-  @ViewChild('secondaryBlock', {static: true})
-  secondaryBlock: TemplateRef<any>|null = null;
+  @ViewChild('primaryBlock', {static: true}) primaryBlock: TemplateRef<any>|null = null;
+  @ViewChild('secondaryBlock', {static: true}) secondaryBlock: TemplateRef<any>|null = null;
 
   switchPrimary() {
     this.thenBlock = this.thenBlock === this.primaryBlock ? this.secondaryBlock : this.primaryBlock;
   }
 
-  ngOnInit() { this.thenBlock = this.primaryBlock; }
+  ngOnInit() {
+    this.thenBlock = this.primaryBlock;
+  }
 }
 // #enddocregion
 

@@ -63,7 +63,7 @@ export class ServiceMessageBroker {
       const deserializedArgs = [];
       for (let i = 0; i < numArgs; i++) {
         const serializedArg = serializedArgs[i];
-        deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature ![i]);
+        deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature![i]);
       }
 
       const promise = method(...deserializedArgs);
@@ -75,7 +75,7 @@ export class ServiceMessageBroker {
 
   private _handleMessage(message: ReceivedMessage): void {
     if (this._methods.has(message.method)) {
-      this._methods.get(message.method) !(message);
+      this._methods.get(message.method)!(message);
     }
   }
 

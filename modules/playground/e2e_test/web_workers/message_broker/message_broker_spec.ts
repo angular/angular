@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ExpectedConditions, browser, by, element, protractor} from 'protractor';
+import {browser, by, element, ExpectedConditions, protractor} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../../e2e_util/e2e_util';
 
 const URL = '/';
 
 describe('MessageBroker', function() {
-
   afterEach(() => {
     verifyNoBrowserErrors();
     browser.ignoreSynchronization = false;

@@ -8,7 +8,7 @@
 
 import {isPlatformBrowser} from '@angular/common';
 import {APP_INITIALIZER, ApplicationRef, InjectionToken, Injector, ModuleWithProviders, NgModule, PLATFORM_ID} from '@angular/core';
-import {Observable, of } from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {delay, filter, take} from 'rxjs/operators';
 
 import {NgswCommChannel} from './low_level';
@@ -99,10 +99,10 @@ export function ngswAppInitializer(
       const [strategy, ...args] = (options.registrationStrategy || 'registerWhenStable').split(':');
       switch (strategy) {
         case 'registerImmediately':
-          readyToRegister$ = of (null);
+          readyToRegister$ = of(null);
           break;
         case 'registerWithDelay':
-          readyToRegister$ = of (null).pipe(delay(+args[0] || 0));
+          readyToRegister$ = of(null).pipe(delay(+args[0] || 0));
           break;
         case 'registerWhenStable':
           const appRef = injector.get<ApplicationRef>(ApplicationRef);

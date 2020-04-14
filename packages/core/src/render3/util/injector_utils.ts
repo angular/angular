@@ -37,7 +37,7 @@ export function getParentInjectorView(location: RelativeInjectorLocation, startV
   // <ng-template> tags or inline views, where the parent injector might live many views
   // above the child injector.
   while (viewOffset > 0) {
-    parentView = parentView[DECLARATION_VIEW] !;
+    parentView = parentView[DECLARATION_VIEW]!;
     viewOffset--;
   }
   return parentView;

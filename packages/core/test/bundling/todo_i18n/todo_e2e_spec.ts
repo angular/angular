@@ -20,17 +20,17 @@ const BUNDLES = ['bundle.js', 'bundle.min_debug.js', 'bundle.min.js'];
 describe('functional test for todo i18n', () => {
   BUNDLES.forEach(bundle => {
     describe(bundle, () => {
-      it('should render todo i18n', withBody('<todo-app></todo-app>', async() => {
+      it('should render todo i18n', withBody('<todo-app></todo-app>', async () => {
            clearTranslations();
            require(path.join(PACKAGE, bundle));
-           const toDoAppComponent = getComponent(document.querySelector('todo-app') !);
+           const toDoAppComponent = getComponent(document.querySelector('todo-app')!);
            expect(document.body.textContent).toContain('liste de tâches');
            expect(document.body.textContent).toContain('Démontrer les components');
            expect(document.body.textContent).toContain('Démontrer NgModules');
            expect(document.body.textContent).toContain('4 tâches restantes');
-           expect(document.querySelector('.new-todo') !.getAttribute('placeholder'))
+           expect(document.querySelector('.new-todo')!.getAttribute('placeholder'))
                .toEqual(`Qu'y a-t-il à faire ?`);
-           document.querySelector('button') !.click();
+           document.querySelector('button')!.click();
            await whenRendered(toDoAppComponent);
            expect(document.body.textContent).toContain('3 tâches restantes');
          }));

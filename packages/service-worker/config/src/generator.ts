@@ -34,17 +34,18 @@ export class Generator {
       configVersion: 1,
       timestamp: Date.now(),
       appData: config.appData,
-      index: joinUrls(this.baseHref, config.index), assetGroups,
+      index: joinUrls(this.baseHref, config.index),
+      assetGroups,
       dataGroups: this.processDataGroups(config),
       hashTable: withOrderedKeys(unorderedHashTable),
       navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
     };
   }
 
-  private async processAssetGroups(config: Config, hashTable: {[file: string]: string | undefined}):
+  private async processAssetGroups(config: Config, hashTable: {[file: string]: string|undefined}):
       Promise<Object[]> {
     const seenMap = new Set<string>();
-    return Promise.all((config.assetGroups || []).map(async(group) => {
+    return Promise.all((config.assetGroups || []).map(async (group) => {
       if ((group.resources as any).versionedFiles) {
         throw new Error(
             `Asset-group '${group.name}' in 'ngsw-config.json' uses the 'versionedFiles' option, ` +
@@ -58,7 +59,7 @@ export class Generator {
       matchedFiles.forEach(file => seenMap.add(file));
 
       // Add the hashes.
-      await matchedFiles.reduce(async(previous, file) => {
+      await matchedFiles.reduce(async (previous, file) => {
         await previous;
         const hash = await this.fs.hash(file);
         hashTable[joinUrls(this.baseHref, file)] = hash;
@@ -143,8 +144,8 @@ function joinUrls(a: string, b: string): string {
   return a + b;
 }
 
-function withOrderedKeys<T extends{[key: string]: any}>(unorderedObj: T): T {
-  const orderedObj = {} as{[key: string]: any};
+function withOrderedKeys<T extends {[key: string]: any}>(unorderedObj: T): T {
+  const orderedObj = {} as {[key: string]: any};
   Object.keys(unorderedObj).sort().forEach(key => orderedObj[key] = unorderedObj[key]);
   return orderedObj as T;
 }

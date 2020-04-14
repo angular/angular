@@ -84,11 +84,14 @@ describe('TranslationLoader', () => {
       loader.loadBundles(
           ['/src/locale/messages.en.xlf', '/src/locale/messages.fr.xlf'], [undefined, 'FR']);
       expect(diagnostics.messages.length).toEqual(1);
-      expect(diagnostics.messages).toContain({
-        type: 'warning',
-        message:
-            `The provided locale "FR" does not match the target locale "pl" found in the translation file "/src/locale/messages.fr.xlf".`,
-      }, );
+      expect(diagnostics.messages)
+          .toContain(
+              {
+                type: 'warning',
+                message:
+                    `The provided locale "FR" does not match the target locale "pl" found in the translation file "/src/locale/messages.fr.xlf".`,
+              },
+          );
     });
 
     it('should throw an error if there is no provided nor parsed target locale', () => {

@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementFinder, browser, by, element} from 'protractor';
+import {browser, by, element, ElementFinder} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 describe('simpleFormControl example', () => {
@@ -49,6 +50,5 @@ describe('simpleFormControl example', () => {
       element(by.css('button')).click();
       expect(input.getAttribute('value')).toEqual('new value');
     });
-
   });
 });

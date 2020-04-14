@@ -8,7 +8,7 @@
 
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {Injector, NgModuleRef} from '@angular/core';
-import {ArgumentType, NodeCheckFn, NodeDef, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewUpdateFn, initServicesIfNeeded, rootRenderNodes, viewDef} from '@angular/core/src/view/index';
+import {ArgumentType, initServicesIfNeeded, NodeCheckFn, NodeDef, rootRenderNodes, Services, ViewData, viewDef, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewUpdateFn} from '@angular/core/src/view/index';
 import {TestBed} from '@angular/core/testing';
 
 export function isBrowser() {
@@ -38,11 +38,11 @@ export function createRootView(
 }
 
 export function createEmbeddedView(parent: ViewData, anchorDef: NodeDef, context?: any): ViewData {
-  return Services.createEmbeddedView(parent, anchorDef, anchorDef.element !.template !, context);
+  return Services.createEmbeddedView(parent, anchorDef, anchorDef.element!.template !, context);
 }
 
 export function compViewDef(
-    nodes: NodeDef[], updateDirectives?: null | ViewUpdateFn, updateRenderer?: null | ViewUpdateFn,
+    nodes: NodeDef[], updateDirectives?: null|ViewUpdateFn, updateRenderer?: null|ViewUpdateFn,
     viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
   const def = viewDef(viewFlags, nodes, updateDirectives, updateRenderer);
 
@@ -53,8 +53,8 @@ export function compViewDef(
 
     // This check should be removed when we start reordering nodes at runtime
     if (node.checkIndex > -1 && node.checkIndex !== node.nodeIndex) {
-      throw new Error(
-          `nodeIndex and checkIndex should be the same, got ${node.nodeIndex} !== ${node.checkIndex}`);
+      throw new Error(`nodeIndex and checkIndex should be the same, got ${node.nodeIndex} !== ${
+          node.checkIndex}`);
     }
   });
 
@@ -62,7 +62,7 @@ export function compViewDef(
 }
 
 export function compViewDefFactory(
-    nodes: NodeDef[], updateDirectives?: null | ViewUpdateFn, updateRenderer?: null | ViewUpdateFn,
+    nodes: NodeDef[], updateDirectives?: null|ViewUpdateFn, updateRenderer?: null|ViewUpdateFn,
     viewFlags: ViewFlags = ViewFlags.None): ViewDefinitionFactory {
   return () => compViewDef(nodes, updateDirectives, updateRenderer, viewFlags);
 }
@@ -76,8 +76,12 @@ export function createAndGetRootNodes(
 
 let removeNodes: Node[];
 
-beforeEach(() => { removeNodes = []; });
-afterEach(() => { removeNodes.forEach((node) => getDOM().remove(node)); });
+beforeEach(() => {
+  removeNodes = [];
+});
+afterEach(() => {
+  removeNodes.forEach((node) => getDOM().remove(node));
+});
 
 export function recordNodeToRemove(node: Node) {
   removeNodes.push(node);

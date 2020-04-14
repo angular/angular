@@ -101,7 +101,7 @@ export class NgTemplateOutlet implements OnChanges {
 
   private _updateExistingContext(ctx: Object): void {
     for (let propName of Object.keys(ctx)) {
-      (<any>this._viewRef !.context)[propName] = (<any>this.ngTemplateOutletContext)[propName];
+      (<any>this._viewRef!.context)[propName] = (<any>this.ngTemplateOutletContext)[propName];
     }
   }
 }

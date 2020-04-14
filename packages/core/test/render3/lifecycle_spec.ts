@@ -13,7 +13,6 @@ import {NgIf} from './common_with_def';
 import {ComponentFixture, createComponent} from './render_util';
 
 describe('lifecycles', () => {
-
   function getParentTemplate(name: string) {
     return (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
@@ -28,7 +27,9 @@ describe('lifecycles', () => {
   describe('onInit', () => {
     let events: string[];
 
-    beforeEach(() => { events = []; });
+    beforeEach(() => {
+      events = [];
+    });
 
     let Comp = createOnInitComponent('comp', (rf: RenderFlags) => {
       if (rf & RenderFlags.Create) {
@@ -61,14 +62,17 @@ describe('lifecycles', () => {
           selectors: [[name]],
           decls: decls,
           vars: vars,
-          inputs: {val: 'val'}, template,
+          inputs: {val: 'val'},
+          template,
           directives: directives
         });
       };
     }
 
     class Directive {
-      ngOnInit() { events.push('dir'); }
+      ngOnInit() {
+        events.push('dir');
+      }
 
       static ɵfac = () => new Directive();
       static ɵdir = ɵɵdefineDirective({type: Directive, selectors: [['', 'dir', '']]});

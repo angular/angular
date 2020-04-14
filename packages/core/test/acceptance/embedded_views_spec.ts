@@ -10,7 +10,6 @@ import {Component, Input} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('embedded views', () => {
-
   it('should correctly resolve the implicit receiver in expressions', () => {
     const items: string[] = [];
 
@@ -27,7 +26,9 @@ describe('embedded views', () => {
     })
     class TestCmp {
       item: string = 'CmpItem';
-      addItem() { items.push(this.item); }
+      addItem() {
+        items.push(this.item);
+      }
     }
 
     TestBed.configureTestingModule({declarations: [ChildCmp, TestCmp]});
@@ -36,8 +37,8 @@ describe('embedded views', () => {
 
     const childCmp: ChildCmp = fixture.debugElement.children[0].componentInstance;
 
-    childCmp.addItemFn !();
-    childCmp.addItemFn !();
+    childCmp.addItemFn!();
+    childCmp.addItemFn!();
 
     expect(items).toEqual(['CmpItem', 'CmpItem']);
   });
@@ -71,5 +72,4 @@ describe('embedded views', () => {
 
     expect(fixture.nativeElement.textContent).toBe('HelloHello');
   });
-
 });

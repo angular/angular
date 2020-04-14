@@ -11,7 +11,6 @@ import {browser} from 'protractor';
 import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
 describe('http', function() {
-
   afterEach(verifyNoBrowserErrors);
 
   describe('fetching', function() {
@@ -25,6 +24,6 @@ describe('http', function() {
 });
 
 function getComponentText(selector: string, innerSelector: string) {
-  return browser.executeScript(
-      `return document.querySelector("${selector}").querySelector("${innerSelector}").textContent.trim()`);
+  return browser.executeScript(`return document.querySelector("${selector}").querySelector("${
+      innerSelector}").textContent.trim()`);
 }

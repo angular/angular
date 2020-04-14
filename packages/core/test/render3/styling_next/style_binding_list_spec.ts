@@ -8,7 +8,7 @@
 
 import {createTNode} from '@angular/core/src/render3/instructions/shared';
 import {TNode, TNodeType} from '@angular/core/src/render3/interfaces/node';
-import {TStylingKey, TStylingRange, getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate} from '@angular/core/src/render3/interfaces/styling';
+import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '@angular/core/src/render3/interfaces/styling';
 import {LView, TData} from '@angular/core/src/render3/interfaces/view';
 import {enterView, leaveView} from '@angular/core/src/render3/state';
 import {insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
@@ -20,7 +20,7 @@ describe('TNode styling linked list', () => {
   afterEach(() => leaveView());
   describe('insertTStylingBinding', () => {
     it('should append template only', () => {
-      const tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
+      const tNode = createTNode(null!, null!, TNodeType.Element, 0, '', null);
       const tData: TData = [null, null];
 
       insertTStylingBinding(tData, tNode, 'tmpl1', 2, false, true);
@@ -60,7 +60,7 @@ describe('TNode styling linked list', () => {
 
     it('should append host only', () => {
       const tData: TData = [null, null];
-      const tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
+      const tNode = createTNode(null!, null!, TNodeType.Element, 0, '', null);
 
       insertTStylingBinding(tData, tNode, 'host1', 2, true, true);
       expectRange(tNode.classBindings).toEqual([2, 0 /* no template binding */]);
@@ -79,7 +79,7 @@ describe('TNode styling linked list', () => {
     });
 
     it('should append template and host', () => {
-      const tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
+      const tNode = createTNode(null!, null!, TNodeType.Element, 0, '', null);
       const tData: TData = [null, null];
 
       insertTStylingBinding(tData, tNode, 'tmpl1', 2, false, true);
@@ -113,7 +113,7 @@ describe('TNode styling linked list', () => {
       //   ɵɵstyleMap({color: '#007'});   // Binding index: 28
       //   ɵɵstyleProp('color', '#008');  // Binding index: 30
 
-      const tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
+      const tNode = createTNode(null!, null!, TNodeType.Element, 0, '', null);
       tNode.styles = '';
       const tData: TData = newArray(32, null);
 
@@ -291,12 +291,11 @@ describe('TNode styling linked list', () => {
         [12, 'color', true, false],  // 12 - Template:  ɵɵstyleProp('color', '#002'});
       ]);
     });
-
   });
 
   describe('markDuplicates', () => {
     it('should not mark items as duplicate if names don\'t match', () => {
-      const tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
+      const tNode = createTNode(null!, null!, TNodeType.Element, 0, '', null);
       const tData: TData = [null, null];
       insertTStylingBinding(tData, tNode, 'color', 2, false, false);
       expectPriorityOrder(tData, tNode, false).toEqual([
@@ -321,7 +320,7 @@ describe('TNode styling linked list', () => {
     });
 
     it('should mark items as duplicate if names match', () => {
-      const tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
+      const tNode = createTNode(null!, null!, TNodeType.Element, 0, '', null);
       const tData: TData = [null, null];
       insertTStylingBinding(tData, tNode, 'color', 2, false, false);
       expectPriorityOrder(tData, tNode, false).toEqual([
@@ -345,7 +344,7 @@ describe('TNode styling linked list', () => {
     });
 
     it('should treat maps as matching all', () => {
-      const tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
+      const tNode = createTNode(null!, null!, TNodeType.Element, 0, '', null);
       const tData: TData = [null, null];
       insertTStylingBinding(tData, tNode, 'color', 2, false, false);
       insertTStylingBinding(tData, tNode, 'height', 4, true, false);
@@ -365,7 +364,7 @@ describe('TNode styling linked list', () => {
     });
 
     it('should mark all things after map as duplicate', () => {
-      const tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
+      const tNode = createTNode(null!, null!, TNodeType.Element, 0, '', null);
       const tData: TData = [null, null];
       insertTStylingBinding(tData, tNode, null, 2, false, false);
       insertTStylingBinding(tData, tNode, 'height', 4, false, false);
@@ -379,7 +378,7 @@ describe('TNode styling linked list', () => {
     });
 
     it('should mark duplicate on complex objects like width.px', () => {
-      const tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
+      const tNode = createTNode(null!, null!, TNodeType.Element, 0, '', null);
       const tData: TData = [null, null];
       insertTStylingBinding(tData, tNode, 'width', 2, false, false);
       insertTStylingBinding(tData, tNode, 'height', 4, false, false);
@@ -406,7 +405,7 @@ describe('TNode styling linked list', () => {
     });
 
     it('should mark duplicate on static fields', () => {
-      const tNode = createTNode(null !, null !, TNodeType.Element, 0, '', null);
+      const tNode = createTNode(null!, null!, TNodeType.Element, 0, '', null);
       tNode.residualStyles = ['color', 'blue'] as any;
       const tData: TData = [null, null];
       insertTStylingBinding(tData, tNode, 'width', 2, false, false);
@@ -431,7 +430,6 @@ describe('TNode styling linked list', () => {
       ]);
     });
   });
-
 });
 
 const empty_0_through_9 = [null, null, null, null, null, null, null, null, null, null];
@@ -460,7 +458,7 @@ function expectTData(tData: TData) {
 function expectPriorityOrder(tData: TData, tNode: TNode, isClassBinding: boolean) {
   // first find head.
   let index = getStylingBindingHead(tData, tNode, isClassBinding);
-  const indexes: [number, string | null, boolean, boolean][] = [];
+  const indexes: [number, string|null, boolean, boolean][] = [];
   while (index !== 0) {
     let key = tData[index] as TStylingKey | null;
     const tStylingRange = tData[index + 1] as TStylingRange;

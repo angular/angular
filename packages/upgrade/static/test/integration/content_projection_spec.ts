@@ -6,24 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ElementRef, Injector, Input, NgModule, destroyPlatform} from '@angular/core';
+import {Component, destroyPlatform, Directive, ElementRef, Injector, Input, NgModule} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
-import * as angular from '../../../src/common/src/angular1';
+import {downgradeComponent, UpgradeComponent, UpgradeModule} from '@angular/upgrade/static';
 
+import * as angular from '../../../src/common/src/angular1';
 import {html, multiTrim, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
+
 import {bootstrap} from './static_test_helpers';
 
 withEachNg1Version(() => {
   describe('content projection', () => {
-
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
     it('should instantiate ng2 in ng1 template and project content', async(() => {
-
          // the ng2 component that will be used in ng1 (downgraded)
          @Component({selector: 'ng2', template: `{{ prop }}(<ng-content></ng-content>)`})
          class Ng2Component {
@@ -62,7 +61,7 @@ withEachNg1Version(() => {
          @Component({selector: 'ng2', template: 'ng2-{{ itemId }}(<ng-content></ng-content>)'})
          class Ng2Component {
            // TODO(issue/24571): remove '!'.
-           @Input() itemId !: string;
+           @Input() itemId!: string;
          }
 
          @NgModule({
@@ -96,7 +95,6 @@ withEachNg1Version(() => {
        }));
 
     it('should instantiate ng1 in ng2 template and project content', async(() => {
-
          @Component({
            selector: 'ng2',
            template: `{{ 'ng2(' }}<ng1>{{ transclude }}</ng1>{{ ')' }}`,
@@ -142,7 +140,6 @@ withEachNg1Version(() => {
        }));
 
     it('should support multi-slot projection', async(() => {
-
          @Component({
            selector: 'ng2',
            template: '2a(<ng-content select=".ng1a"></ng-content>)' +

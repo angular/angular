@@ -86,8 +86,8 @@ export interface Schema {
   viewEncapsulation?: ViewEncapsulation;
 }
 /**
-* Initial git repository commit information.
-*/
+ * Initial git repository commit information.
+ */
 export declare type CommitUnion = boolean | CommitObject;
 export interface CommitObject {
   email: string;
@@ -95,16 +95,16 @@ export interface CommitObject {
   name: string;
 }
 /**
-* The file extension or preprocessor to use for style files.
-*/
+ * The file extension or preprocessor to use for style files.
+ */
 export declare enum Style {
   Css = 'css',
   Sass = 'sass',
   Scss = 'scss',
 }
 /**
-* The view encapsulation strategy to use in the initial project.
-*/
+ * The view encapsulation strategy to use in the initial project.
+ */
 export declare enum ViewEncapsulation {
   Emulated = 'Emulated',
   Native = 'Native',

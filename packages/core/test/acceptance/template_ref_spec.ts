@@ -13,11 +13,9 @@ import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 describe('TemplateRef', () => {
   describe('rootNodes', () => {
-
     @Component({template: `<ng-template #templateRef></ng-template>`})
     class App {
-      @ViewChild('templateRef', {static: true})
-      templateRef !: TemplateRef<any>;
+      @ViewChild('templateRef', {static: true}) templateRef!: TemplateRef<any>;
       minutes = 0;
     }
 
@@ -80,7 +78,7 @@ describe('TemplateRef', () => {
             `
       })
       class App {
-        @ViewChild(MenuContent) content !: MenuContent;
+        @ViewChild(MenuContent) content!: MenuContent;
 
         constructor(public viewContainerRef: ViewContainerRef) {}
       }

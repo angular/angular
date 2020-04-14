@@ -9,11 +9,11 @@
 import {assertEqual, assertLessThanOrEqual} from './assert';
 
 /**
-* Equivalent to ES6 spread, add each item to an array.
-*
-* @param items The items to add
-* @param arr The array to which you want to add the items
-*/
+ * Equivalent to ES6 spread, add each item to an array.
+ *
+ * @param items The items to add
+ * @param arr The array to which you want to add the items
+ */
 export function addAllToArray(items: any[], arr: any[]) {
   for (let i = 0; i < items.length; i++) {
     arr.push(items[i]);
@@ -42,7 +42,7 @@ export function flatten(list: any[], dst?: any[]): any[] {
   return dst;
 }
 
-export function deepForEach<T>(input: (T | any[])[], fn: (value: T) => void): void {
+export function deepForEach<T>(input: (T|any[])[], fn: (value: T) => void): void {
   input.forEach(value => Array.isArray(value) ? deepForEach(value, fn) : fn(value));
 }
 
@@ -69,7 +69,7 @@ export function newArray<T>(size: number, value: T): T[];
 export function newArray<T>(size: number, value?: T): T[] {
   const list: T[] = [];
   for (let i = 0; i < size; i++) {
-    list.push(value !);
+    list.push(value!);
   }
   return list;
 }
@@ -228,7 +228,9 @@ export function arrayIndexOfSorted(array: string[], value: string): number {
  *
  * See: `keyValueArraySet`, `keyValueArrayGet`, `keyValueArrayIndexOf`, `keyValueArrayDelete`.
  */
-export interface KeyValueArray<VALUE> extends Array<VALUE|string> { __brand__: 'array-map'; }
+export interface KeyValueArray<VALUE> extends Array<VALUE|string> {
+  __brand__: 'array-map';
+}
 
 /**
  * Set a `value` for a `key`.
@@ -253,7 +255,7 @@ export function keyValueArraySet<V>(
 
 /**
  * Retrieve a `value` for a `key` (on `undefined` if not found.)
- * 
+ *
  * @param keyValueArray to search.
  * @param key The key to locate.
  * @return The `value` stored at the `key` location or `undefined if not found.

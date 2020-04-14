@@ -9,7 +9,7 @@
 import {Component, Input, NgModule} from '@angular/core';
 import {BrowserModule, DomSanitizer, SafeStyle} from '@angular/platform-browser';
 
-import {TableCell, emptyTable} from '../util';
+import {emptyTable, TableCell} from '../util';
 
 let trustedEmptyColor: SafeStyle;
 let trustedGreyColor: SafeStyle;
@@ -25,12 +25,15 @@ let trustedGreyColor: SafeStyle;
   </tbody></table>`,
 })
 export class TableComponent {
-  @Input()
-  data: TableCell[][] = emptyTable;
+  @Input() data: TableCell[][] = emptyTable;
 
-  trackByIndex(index: number, item: any) { return index; }
+  trackByIndex(index: number, item: any) {
+    return index;
+  }
 
-  getColor(row: number) { return row % 2 ? trustedEmptyColor : trustedGreyColor; }
+  getColor(row: number) {
+    return row % 2 ? trustedEmptyColor : trustedGreyColor;
+  }
 }
 
 @NgModule({imports: [BrowserModule], bootstrap: [TableComponent], declarations: [TableComponent]})

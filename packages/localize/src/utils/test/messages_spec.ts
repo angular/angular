@@ -119,12 +119,12 @@ describe('messages utils', () => {
       const message = parseMessage(makeTemplateObject(['a', 'b', 'c'], ['a', 'b', 'c']), [1, 2]);
       expect(message.substitutions).toEqual({PH: 1, PH_1: 2});
     });
-
   });
 
   describe('splitBlock()', () => {
-    it('should return just the text if there is no block',
-       () => { expect(splitBlock('abc def', 'abc def')).toEqual({text: 'abc def'}); });
+    it('should return just the text if there is no block', () => {
+      expect(splitBlock('abc def', 'abc def')).toEqual({text: 'abc def'});
+    });
 
     it('should return just the text and block if there is one', () => {
       expect(splitBlock(':block info:abc def', ':block info:abc def'))

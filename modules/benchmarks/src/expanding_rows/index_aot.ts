@@ -18,5 +18,5 @@ enableProdMode();
 platformBrowser().bootstrapModuleFactory(ExpandingRowBenchmarkModuleNgFactory);
 
 function setMode(name: string): void {
-  document.querySelector('#rendererMode') !.textContent = `Render Mode: ${name}`;
+  document.querySelector('#rendererMode')!.textContent = `Render Mode: ${name}`;
 }

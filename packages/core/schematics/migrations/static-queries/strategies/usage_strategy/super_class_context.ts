@@ -35,7 +35,7 @@ export function updateSuperClassAbstractMembersContext(
       const baseClassImpl = baseClass.members.find(
           baseClassMethod => !!baseClassMethod.name &&
               getPropertyNameText(baseClassMethod.name) ===
-                  getPropertyNameText(superClassMember.name !));
+                  getPropertyNameText(superClassMember.name!));
 
       if (!baseClassImpl || !isFunctionLikeDeclaration(baseClassImpl) || !baseClassImpl.body) {
         return;

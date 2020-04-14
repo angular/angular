@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {BLOCK_MARKER} from './constants';
-import {MessageId, ParsedMessage, TargetMessage, parseMessage} from './messages';
+import {MessageId, ParsedMessage, parseMessage, TargetMessage} from './messages';
 
 
 /**
@@ -68,8 +68,10 @@ export function translate(
         return message.substitutions[placeholder];
       } else {
         throw new Error(
-            `There is a placeholder name mismatch with the translation provided for the message ${describeMessage(message)}.\n` +
-            `The translation contains a placeholder with name ${placeholder}, which does not exist in the message.`);
+            `There is a placeholder name mismatch with the translation provided for the message ${
+                describeMessage(message)}.\n` +
+            `The translation contains a placeholder with name ${
+                placeholder}, which does not exist in the message.`);
       }
     })
   ];

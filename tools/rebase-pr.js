@@ -59,7 +59,6 @@ _main(...process.argv.slice(2)).catch(err => {
 
 // Helpers
 async function _main(repository, prNumber) {
-
   const target = await getRefsAndShasForTarget(prNumber);
 
   // Log known refs and shas
@@ -80,12 +79,13 @@ async function _main(repository, prNumber) {
 
   // Check if the files changed between the latest commit from origin and the common ancestor SHA
   // includes the CircleCI config.
-  const {stdout: circleCIConfigChanged} = await exec(
-      `git diff --name-only origin/${target.base.ref} ${target.commonAncestorSha} -- .circleci/config.yml`);
+  const {stdout: circleCIConfigChanged} = await exec(`git diff --name-only origin/${
+      target.base.ref} ${target.commonAncestorSha} -- .circleci/config.yml`);
 
   if (!!circleCIConfigChanged) {
     throw Error(`
-        CircleCI config on ${target.base.ref} has been modified since commit ${target.commonAncestorSha.slice(0, 7)},
+        CircleCI config on ${target.base.ref} has been modified since commit ${
+        target.commonAncestorSha.slice(0, 7)},
         which this PR is based on.
 
         Please rebase the PR on ${target.base.ref} after fetching from upstream.

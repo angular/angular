@@ -33,11 +33,15 @@ export class Title {
   /**
    * Get the title of the current HTML document.
    */
-  getTitle(): string { return this._doc.title; }
+  getTitle(): string {
+    return this._doc.title;
+  }
 
   /**
    * Set the title of the current HTML document.
    * @param newTitle
    */
-  setTitle(newTitle: string) { this._doc.title = newTitle || ''; }
+  setTitle(newTitle: string) {
+    this._doc.title = newTitle || '';
+  }
 }

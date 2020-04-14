@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, DoBootstrap, EventEmitter, Injector, Input, NgModule, Output, destroyPlatform} from '@angular/core';
+import {Component, destroyPlatform, DoBootstrap, EventEmitter, Injector, Input, NgModule, Output} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {Subject} from 'rxjs';
 
-import {NgElementConstructor, createCustomElement} from '../src/create-custom-element';
+import {createCustomElement, NgElementConstructor} from '../src/create-custom-element';
 import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from '../src/element-strategy';
 
 type WithFooBar = {
@@ -105,7 +105,7 @@ if (browserDetection.supportsCustomElements) {
 class TestComponent {
   @Input() fooFoo: string = 'foo';
   // TODO(issue/24571): remove '!'.
-  @Input('barbar') barBar !: string;
+  @Input('barbar') barBar!: string;
 
   @Output() bazBaz = new EventEmitter<boolean>();
   @Output('quxqux') quxQux = new EventEmitter<Object>();
@@ -126,17 +126,27 @@ export class TestStrategy implements NgElementStrategy {
 
   events = new Subject<NgElementStrategyEvent>();
 
-  connect(element: HTMLElement): void { this.connectedElement = element; }
+  connect(element: HTMLElement): void {
+    this.connectedElement = element;
+  }
 
-  disconnect(): void { this.disconnectCalled = true; }
+  disconnect(): void {
+    this.disconnectCalled = true;
+  }
 
-  getInputValue(propName: string): any { return this.inputs.get(propName); }
+  getInputValue(propName: string): any {
+    return this.inputs.get(propName);
+  }
 
-  setInputValue(propName: string, value: string): void { this.inputs.set(propName, value); }
+  setInputValue(propName: string, value: string): void {
+    this.inputs.set(propName, value);
+  }
 }
 
 export class TestStrategyFactory implements NgElementStrategyFactory {
   testStrategy = new TestStrategy();
 
-  create(): NgElementStrategy { return this.testStrategy; }
+  create(): NgElementStrategy {
+    return this.testStrategy;
+  }
 }

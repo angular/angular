@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, Injector, Input, NgModule, Output, Renderer2, ViewEncapsulation, destroyPlatform} from '@angular/core';
+import {Component, destroyPlatform, EventEmitter, Injector, Input, NgModule, Output, Renderer2, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
@@ -15,14 +15,15 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 if (browserDetection.supportsShadowDom) {
   describe('ShadowDOM Support', () => {
-
     let testContainer: HTMLDivElement;
 
-    beforeEach(() => { TestBed.configureTestingModule({imports: [TestModule]}); });
+    beforeEach(() => {
+      TestBed.configureTestingModule({imports: [TestModule]});
+    });
 
     it('should attach and use a shadowRoot when ViewEncapsulation.Native is set', () => {
       const compEl = TestBed.createComponent(ShadowComponent).nativeElement;
-      expect(compEl.shadowRoot !.textContent).toEqual('Hello World');
+      expect(compEl.shadowRoot!.textContent).toEqual('Hello World');
     });
 
     it('should use the shadow root to encapsulate styles', () => {
@@ -40,10 +41,10 @@ if (browserDetection.supportsShadowDom) {
       const el = TestBed.createComponent(ShadowSlotComponent).nativeElement;
       const projectedContent = document.createTextNode('Hello Slot!');
       el.appendChild(projectedContent);
-      const slot = el.shadowRoot !.querySelector('slot');
+      const slot = el.shadowRoot!.querySelector('slot');
 
-      expect(slot !.assignedNodes().length).toBe(1);
-      expect(slot !.assignedNodes()[0].textContent).toBe('Hello Slot!');
+      expect(slot!.assignedNodes().length).toBe(1);
+      expect(slot!.assignedNodes()[0].textContent).toBe('Hello Slot!');
     });
 
     it('should allow the usage of named <slot> elements', () => {
@@ -65,16 +66,16 @@ if (browserDetection.supportsShadowDom) {
       el.appendChild(articleContent);
       el.appendChild(articleSubcontent);
 
-      const headerSlot = el.shadowRoot !.querySelector('slot[name=header]') as HTMLSlotElement;
-      const articleSlot = el.shadowRoot !.querySelector('slot[name=article]') as HTMLSlotElement;
+      const headerSlot = el.shadowRoot!.querySelector('slot[name=header]') as HTMLSlotElement;
+      const articleSlot = el.shadowRoot!.querySelector('slot[name=article]') as HTMLSlotElement;
 
-      expect(headerSlot !.assignedNodes().length).toBe(1);
-      expect(headerSlot !.assignedNodes()[0].textContent).toBe('Header Text!');
+      expect(headerSlot!.assignedNodes().length).toBe(1);
+      expect(headerSlot!.assignedNodes()[0].textContent).toBe('Header Text!');
       expect(headerContent.assignedSlot).toBe(headerSlot);
 
-      expect(articleSlot !.assignedNodes().length).toBe(2);
-      expect(articleSlot !.assignedNodes()[0].textContent).toBe('Article Text!');
-      expect(articleSlot !.assignedNodes()[1].textContent).toBe('Article Subtext!');
+      expect(articleSlot!.assignedNodes().length).toBe(2);
+      expect(articleSlot!.assignedNodes()[0].textContent).toBe('Article Text!');
+      expect(articleSlot!.assignedNodes()[1].textContent).toBe('Article Subtext!');
       expect(articleContent.assignedSlot).toBe(articleSlot);
       expect(articleSubcontent.assignedSlot).toBe(articleSlot);
     });

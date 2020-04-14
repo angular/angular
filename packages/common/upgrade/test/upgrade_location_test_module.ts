@@ -72,7 +72,7 @@ export class LocationUpgradeTestModule {
               appBaseHref: config && config.appBaseHref,
               useHash: config && config.useHash || false
             })
-            .providers !
+            .providers!
       ],
     };
   }

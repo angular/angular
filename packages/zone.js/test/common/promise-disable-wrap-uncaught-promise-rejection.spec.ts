@@ -21,11 +21,11 @@ describe('disable wrap uncaught promise rejection', () => {
         .fork({
           name: 'promise-error',
           onHandleError: (delegate: ZoneDelegate, current: Zone, target: Zone, error: any):
-                             boolean => {
-                               promiseError = error;
-                               delegate.handleError(target, error);
-                               return false;
-                             }
+              boolean => {
+                promiseError = error;
+                delegate.handleError(target, error);
+                return false;
+              }
         })
         .run(() => {
           zone = Zone.current;
@@ -56,11 +56,11 @@ describe('disable wrap uncaught promise rejection', () => {
         .fork({
           name: 'promise-error',
           onHandleError: (delegate: ZoneDelegate, current: Zone, target: Zone, error: any):
-                             boolean => {
-                               promiseError = error;
-                               delegate.handleError(target, error);
-                               return false;
-                             }
+              boolean => {
+                promiseError = error;
+                delegate.handleError(target, error);
+                return false;
+              }
         })
         .run(() => {
           rejectObj = new TestRejection();

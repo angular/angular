@@ -11,7 +11,7 @@ import {assertTNodeForLView} from '../assert';
 import {ACTIVE_INDEX, ActiveIndexFlag, LContainer, TYPE} from '../interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from '../interfaces/context';
 import {TConstants, TNode} from '../interfaces/node';
-import {RNode, isProceduralRenderer} from '../interfaces/renderer';
+import {isProceduralRenderer, RNode} from '../interfaces/renderer';
 import {isLContainer, isLView} from '../interfaces/type_checks';
 import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, RENDERER, TData, TView} from '../interfaces/view';
 
@@ -38,7 +38,7 @@ import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLA
  * Returns `RNode`.
  * @param value wrapped value of `RNode`, `LView`, `LContainer`
  */
-export function unwrapRNode(value: RNode | LView | LContainer): RNode {
+export function unwrapRNode(value: RNode|LView|LContainer): RNode {
   while (Array.isArray(value)) {
     value = value[HOST] as any;
   }
@@ -49,7 +49,7 @@ export function unwrapRNode(value: RNode | LView | LContainer): RNode {
  * Returns `LView` or `null` if not found.
  * @param value wrapped value of `RNode`, `LView`, `LContainer`
  */
-export function unwrapLView(value: RNode | LView | LContainer): LView|null {
+export function unwrapLView(value: RNode|LView|LContainer): LView|null {
   while (Array.isArray(value)) {
     // This check is same as `isLView()` but we don't call at as we don't want to call
     // `Array.isArray()` twice and give JITer more work for inlining.
@@ -63,7 +63,7 @@ export function unwrapLView(value: RNode | LView | LContainer): LView|null {
  * Returns `LContainer` or `null` if not found.
  * @param value wrapped value of `RNode`, `LView`, `LContainer`
  */
-export function unwrapLContainer(value: RNode | LView | LContainer): LContainer|null {
+export function unwrapLContainer(value: RNode|LView|LContainer): LContainer|null {
   while (Array.isArray(value)) {
     // This check is same as `isLContainer()` but we don't call at as we don't want to call
     // `Array.isArray()` twice and give JITer more work for inlining.
@@ -124,7 +124,7 @@ export function getTNode(tView: TView, index: number): TNode {
 }
 
 /** Retrieves a value from any `LView` or `TData`. */
-export function load<T>(view: LView | TData, index: number): T {
+export function load<T>(view: LView|TData, index: number): T {
   ngDevMode && assertDataInRange(view, index + HEADER_OFFSET);
   return view[index + HEADER_OFFSET];
 }
@@ -176,8 +176,7 @@ export function viewAttachedToContainer(view: LView): boolean {
 }
 
 /** Returns a constant from `TConstants` instance. */
-export function getConstant<T>(consts: TConstants | null, index: number | null | undefined): T|
-    null {
+export function getConstant<T>(consts: TConstants|null, index: number|null|undefined): T|null {
   return consts === null || index == null ? null : consts[index] as unknown as T;
 }
 

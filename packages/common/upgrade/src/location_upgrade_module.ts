@@ -55,7 +55,7 @@ const APP_BASE_HREF_RESOLVED = new InjectionToken<string>('APP_BASE_HREF_RESOLVE
 
 /**
  * `NgModule` used for providing and configuring Angular's Unified Location Service for upgrading.
- * 
+ *
  * @see [Using the Unified Angular Location Service](guide/upgrade#using-the-unified-angular-location-service)
  *
  * @publicApi

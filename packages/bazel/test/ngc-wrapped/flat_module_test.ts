@@ -11,7 +11,6 @@ import {existsSync, readFileSync} from 'fs';
 import {dirname, join} from 'path';
 
 describe('flat_module ng_module', () => {
-
   let packageOutput: string;
   let flatModuleOutFile: string;
 
@@ -21,11 +20,11 @@ describe('flat_module ng_module', () => {
     flatModuleOutFile = join(packageOutput, 'flat_module.js');
   });
 
-  it('should have a flat module out file',
-     () => { expect(existsSync(flatModuleOutFile)).toBe(true); });
+  it('should have a flat module out file', () => {
+    expect(existsSync(flatModuleOutFile)).toBe(true);
+  });
 
   describe('flat module out file', () => {
-
     obsoleteInIvy('Ngtsc computes the AMD module name differently than NGC')
         .it('should have a proper AMD module name', () => {
           expect(readFileSync(flatModuleOutFile, 'utf8'))

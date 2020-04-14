@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MonoTypeOperatorFunction, ObservableInput, from} from 'rxjs';
+import {from, MonoTypeOperatorFunction, ObservableInput} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 
 /**

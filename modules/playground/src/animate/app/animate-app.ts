@@ -87,7 +87,9 @@ export class AnimateApp {
     alert(`backgroundAnimation has ${phase} from ${data['fromState']} to ${data['toState']}`);
   }
 
-  get state() { return this._state; }
+  get state() {
+    return this._state;
+  }
   set state(s) {
     this._state = s;
     if (s == 'void') {

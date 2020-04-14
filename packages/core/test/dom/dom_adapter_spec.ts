@@ -40,8 +40,9 @@ import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
       describe('getBaseHref', () => {
         beforeEach(() => getDOM().resetBaseElement());
 
-        it('should return null if base element is absent',
-           () => { expect(getDOM().getBaseHref(defaultDoc)).toBeNull(); });
+        it('should return null if base element is absent', () => {
+          expect(getDOM().getBaseHref(defaultDoc)).toBeNull();
+        });
 
         it('should return the value of the base element', () => {
           const baseEl = getDOM().createElement('base');
@@ -62,7 +63,7 @@ import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
           const headEl = defaultDoc.head;
           headEl.appendChild(baseEl);
 
-          const baseHref = getDOM().getBaseHref(defaultDoc) !;
+          const baseHref = getDOM().getBaseHref(defaultDoc)!;
           headEl.removeChild(baseEl);
           getDOM().resetBaseElement();
 
@@ -70,7 +71,5 @@ import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
         });
       });
     }
-
-
   });
 }

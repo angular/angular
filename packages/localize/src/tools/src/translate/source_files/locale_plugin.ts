@@ -8,7 +8,7 @@
 import {NodePath, PluginObj} from '@babel/core';
 import {MemberExpression, stringLiteral} from '@babel/types';
 
-import {TranslatePluginOptions, isLocalize} from './source_file_utils';
+import {isLocalize, TranslatePluginOptions} from './source_file_utils';
 
 /**
  * This Babel plugin will replace the following code forms with a string literal containing the

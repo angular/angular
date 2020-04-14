@@ -65,11 +65,15 @@ export class RequestOptions {
   /**
    * @deprecated from 4.0.0. Use params instead.
    */
-  get search(): URLSearchParams { return this.params; }
+  get search(): URLSearchParams {
+    return this.params;
+  }
   /**
    * @deprecated from 4.0.0. Use params instead.
    */
-  set search(params: URLSearchParams) { this.params = params; }
+  set search(params: URLSearchParams) {
+    this.params = params;
+  }
   /**
    * Enable use credentials for a {@link Request}.
    */
@@ -143,7 +147,7 @@ export class RequestOptions {
     return this._parseParams(params);
   }
 
-  private _parseParams(objParams: {[key: string]: any | any[]} = {}): URLSearchParams {
+  private _parseParams(objParams: {[key: string]: any|any[]} = {}): URLSearchParams {
     const params = new URLSearchParams();
     Object.keys(objParams).forEach((key: string) => {
       const value: any|any[] = objParams[key];
@@ -206,5 +210,7 @@ export class RequestOptions {
  */
 @Injectable()
 export class BaseRequestOptions extends RequestOptions {
-  constructor() { super({method: RequestMethod.Get, headers: new Headers()}); }
+  constructor() {
+    super({method: RequestMethod.Get, headers: new Headers()});
+  }
 }

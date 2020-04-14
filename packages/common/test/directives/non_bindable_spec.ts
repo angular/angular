@@ -9,13 +9,12 @@
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {Component, Directive} from '@angular/core';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {hasClass} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 {
   describe('non-bindable', () => {
-
     beforeEach(() => {
       TestBed.configureTestingModule({
         declarations: [TestComponent, TestDirective],
@@ -53,13 +52,17 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 @Directive({selector: '[test-dec]'})
 class TestDirective {
-  constructor(el: ElementRef) { el.nativeElement.classList.add('compiled'); }
+  constructor(el: ElementRef) {
+    el.nativeElement.classList.add('compiled');
+  }
 }
 
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
   text: string;
-  constructor() { this.text = 'foo'; }
+  constructor() {
+    this.text = 'foo';
+  }
 }
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {

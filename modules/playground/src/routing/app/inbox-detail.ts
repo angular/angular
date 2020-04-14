@@ -17,8 +17,11 @@ export class InboxDetailCmp {
   private ready: boolean = false;
 
   constructor(db: DbService, route: ActivatedRoute) {
-    route.paramMap.forEach(
-        p => { db.email(p.get('id')).then((data) => { this.record.setData(data); }); });
+    route.paramMap.forEach(p => {
+      db.email(p.get('id')).then((data) => {
+        this.record.setData(data);
+      });
+    });
   }
 }
 

@@ -9,12 +9,12 @@
 /// <reference types='node'/>
 
 import {spawn} from 'child_process';
-import {copyFileSync, existsSync, readFileSync, readdirSync, statSync, unlinkSync, writeFileSync} from 'fs';
+import {copyFileSync, existsSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync} from 'fs';
 import {platform} from 'os';
 import {dirname, join, normalize} from 'path';
 
-export type Executable = 'bazel' | 'ibazel';
-export type Command = 'build' | 'test' | 'run' | 'coverage' | 'query';
+export type Executable = 'bazel'|'ibazel';
+export type Command = 'build'|'test'|'run'|'coverage'|'query';
 
 /**
  * Spawn the Bazel process. Trap SINGINT to make sure Bazel process is killed.

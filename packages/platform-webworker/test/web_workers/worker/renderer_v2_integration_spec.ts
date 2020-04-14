@@ -7,7 +7,7 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {Component, ComponentRef, Renderer2, RendererFactory2, RendererType2, destroyPlatform} from '@angular/core';
+import {Component, ComponentRef, destroyPlatform, Renderer2, RendererFactory2, RendererType2} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
@@ -22,7 +22,7 @@ import {MessageBasedRenderer2} from '@angular/platform-webworker/src/web_workers
 import {WebWorkerRendererFactory2} from '@angular/platform-webworker/src/web_workers/worker/renderer';
 import {modifiedInIvy} from '@angular/private/testing';
 
-import {PairedMessageBuses, createPairedMessageBuses} from '../shared/web_worker_test_util';
+import {createPairedMessageBuses, PairedMessageBuses} from '../shared/web_worker_test_util';
 
 let lastCreatedRenderer: Renderer2;
 
@@ -58,7 +58,7 @@ let lastCreatedRenderer: Renderer2;
       const domRendererFactory = uiInjector.get(RendererFactory2);
 
       // Worker side
-      lastCreatedRenderer = null !;
+      lastCreatedRenderer = null!;
 
       wwRenderStore = new RenderStore();
 
@@ -69,9 +69,8 @@ let lastCreatedRenderer: Renderer2;
           {provide: RenderStore, useValue: wwRenderStore},
           {
             provide: RendererFactory2,
-            useFactory:
-                (wwSerializer: Serializer) => createWebWorkerRendererFactory2(
-                    wwSerializer, uiSerializer, domRendererFactory, uiRenderStore, wwRenderStore),
+            useFactory: (wwSerializer: Serializer) => createWebWorkerRendererFactory2(
+                wwSerializer, uiSerializer, domRendererFactory, uiRenderStore, wwRenderStore),
             deps: [Serializer],
           },
         ],
@@ -79,7 +78,7 @@ let lastCreatedRenderer: Renderer2;
     });
 
     function getRenderElement(workerEl: any): any {
-      const id = wwRenderStore.serialize(workerEl) !;
+      const id = wwRenderStore.serialize(workerEl)!;
       return uiRenderStore.deserialize(id);
     }
 

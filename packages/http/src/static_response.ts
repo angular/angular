@@ -73,14 +73,14 @@ export class Response extends Body {
    * the result of a progress event.
    */
   // TODO(issue/24571): remove '!'.
-  bytesLoaded !: number;
+  bytesLoaded!: number;
   /**
    * Non-standard property
    *
    * Denotes how many bytes are expected in the final response body.
    */
   // TODO(issue/24571): remove '!'.
-  totalBytes !: number;
+  totalBytes!: number;
   /**
    * Headers object based on the `Headers` class in the [Fetch
    * Spec](https://fetch.spec.whatwg.org/#headers-class).
@@ -90,12 +90,12 @@ export class Response extends Body {
   constructor(responseOptions: ResponseOptions) {
     super();
     this._body = responseOptions.body;
-    this.status = responseOptions.status !;
+    this.status = responseOptions.status!;
     this.ok = (this.status >= 200 && this.status <= 299);
     this.statusText = responseOptions.statusText;
     this.headers = responseOptions.headers;
-    this.type = responseOptions.type !;
-    this.url = responseOptions.url !;
+    this.type = responseOptions.type!;
+    this.url = responseOptions.url!;
   }
 
   toString(): string {

@@ -32,22 +32,30 @@ export class Adapter {
   /**
    * Wrapper around the `Response` constructor.
    */
-  newResponse(body: any, init?: ResponseInit) { return new Response(body, init); }
+  newResponse(body: any, init?: ResponseInit) {
+    return new Response(body, init);
+  }
 
   /**
    * Wrapper around the `Headers` constructor.
    */
-  newHeaders(headers: {[name: string]: string}): Headers { return new Headers(headers); }
+  newHeaders(headers: {[name: string]: string}): Headers {
+    return new Headers(headers);
+  }
 
   /**
    * Test if a given object is an instance of `Client`.
    */
-  isClient(source: any): source is Client { return (source instanceof Client); }
+  isClient(source: any): source is Client {
+    return (source instanceof Client);
+  }
 
   /**
    * Read the current UNIX time in milliseconds.
    */
-  get time(): number { return Date.now(); }
+  get time(): number {
+    return Date.now();
+  }
 
   /**
    * Extract the pathname of a URL.
@@ -63,7 +71,9 @@ export class Adapter {
    * Wait for a given amount of time before completing a Promise.
    */
   timeout(ms: number): Promise<void> {
-    return new Promise<void>(resolve => { setTimeout(() => resolve(), ms); });
+    return new Promise<void>(resolve => {
+      setTimeout(() => resolve(), ms);
+    });
   }
 }
 

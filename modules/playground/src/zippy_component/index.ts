@@ -26,7 +26,9 @@ import {Zippy} from './app/zippy';
 export class ZippyApp {
   logs: string[] = [];
 
-  pushLog(log: string) { this.logs.push(log); }
+  pushLog(log: string) {
+    this.logs.push(log);
+  }
 }
 
 @NgModule({declarations: [ZippyApp, Zippy], bootstrap: [ZippyApp], imports: [BrowserModule]})

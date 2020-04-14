@@ -31,23 +31,32 @@ import {BenchmarkableExpandingRowModule} from './benchmarkable_expanding_row_mod
     </benchmark-area>`,
 })
 export class InitializationRoot implements AfterViewInit {
-  @ViewChild(BenchmarkableExpandingRow, {static: true})
-  expandingRow !: BenchmarkableExpandingRow;
+  @ViewChild(BenchmarkableExpandingRow, {static: true}) expandingRow!: BenchmarkableExpandingRow;
 
   ngAfterViewInit() {}
 
-  reset() { this.expandingRow.reset(); }
-
-  init() { this.expandingRow.init(); }
-
-  async runAll() {
-    await execTimed('initialization_benchmark', async() => { await this.doInit(); });
+  reset() {
+    this.expandingRow.reset();
   }
 
-  async handleInitClick() { await this.doInit(); }
+  init() {
+    this.expandingRow.init();
+  }
+
+  async runAll() {
+    await execTimed('initialization_benchmark', async () => {
+      await this.doInit();
+    });
+  }
+
+  async handleInitClick() {
+    await this.doInit();
+  }
 
   private async doInit() {
-    await execTimed('initial_load', async() => { this.expandingRow.init(); });
+    await execTimed('initial_load', async () => {
+      this.expandingRow.init();
+    });
   }
 }
 
@@ -74,5 +83,9 @@ export async function execTimed(description: string, func: () => Promise<void>) 
 }
 
 export async function nextTick(delay = 1) {
-  return new Promise((res, rej) => { setTimeout(() => { res(); }, delay); });
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res();
+    }, delay);
+  });
 }

@@ -22,7 +22,7 @@ export class MetadataOverrider {
    * based on an old instance and overrides.
    */
   overrideMetadata<C extends T, T>(
-      metadataClass: {new (options: T): C;}, oldMetadata: C, override: MetadataOverride<T>): C {
+      metadataClass: {new(options: T): C;}, oldMetadata: C, override: MetadataOverride<T>): C {
     const props: StringMap = {};
     if (oldMetadata) {
       _valueProps(oldMetadata).forEach((prop) => props[prop] = (<any>oldMetadata)[prop]);
@@ -49,8 +49,9 @@ function removeMetadata(metadata: StringMap, remove: any, references: Map<any, s
   for (const prop in remove) {
     const removeValue = remove[prop];
     if (Array.isArray(removeValue)) {
-      removeValue.forEach(
-          (value: any) => { removeObjects.add(_propHashKey(prop, value, references)); });
+      removeValue.forEach((value: any) => {
+        removeObjects.add(_propHashKey(prop, value, references));
+      });
     } else {
       removeObjects.add(_propHashKey(prop, removeValue, references));
     }

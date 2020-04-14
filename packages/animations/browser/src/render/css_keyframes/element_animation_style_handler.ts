@@ -28,14 +28,19 @@ export class ElementAnimationStyleHandler {
   apply() {
     applyKeyframeAnimation(
         this._element,
-        `${this._duration}ms ${this._easing} ${this._delay}ms 1 normal ${this._fillMode} ${this._name}`);
+        `${this._duration}ms ${this._easing} ${this._delay}ms 1 normal ${this._fillMode} ${
+            this._name}`);
     addRemoveAnimationEvent(this._element, this._eventFn, false);
     this._startTime = Date.now();
   }
 
-  pause() { playPauseAnimation(this._element, this._name, 'paused'); }
+  pause() {
+    playPauseAnimation(this._element, this._name, 'paused');
+  }
 
-  resume() { playPauseAnimation(this._element, this._name, 'running'); }
+  resume() {
+    playPauseAnimation(this._element, this._name, 'running');
+  }
 
   setPosition(position: number) {
     const index = findIndexForAnimation(this._element, this._name);
@@ -43,7 +48,9 @@ export class ElementAnimationStyleHandler {
     setAnimationStyle(this._element, 'Delay', `-${this._position}ms`, index);
   }
 
-  getPosition() { return this._position; }
+  getPosition() {
+    return this._position;
+  }
 
   private _handleCallback(event: any) {
     const timestamp = event._ngTestManualTimestamp || Date.now();
@@ -70,7 +77,7 @@ export class ElementAnimationStyleHandler {
   }
 }
 
-function playPauseAnimation(element: any, name: string, status: 'running' | 'paused') {
+function playPauseAnimation(element: any, name: string, status: 'running'|'paused') {
   const index = findIndexForAnimation(element, name);
   setAnimationStyle(element, 'PlayState', status, index);
 }

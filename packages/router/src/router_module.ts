@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, HashLocationStrategy, LOCATION_INITIALIZED, Location, LocationStrategy, PathLocationStrategy, PlatformLocation, ViewportScroller, ɵgetDOM as getDOM} from '@angular/common';
+import {APP_BASE_HREF, HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, PlatformLocation, ViewportScroller, ɵgetDOM as getDOM} from '@angular/common';
 import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
-import {Subject, of } from 'rxjs';
+import {of, Subject} from 'rxjs';
+
 import {EmptyOutletComponent} from './components/empty_outlet';
 import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
@@ -136,7 +137,7 @@ export class RouterModule {
    * @param routes An array of `Route` objects that define the navigation paths for the application.
    * @param config An `ExtraOptions` configuration object that controls how navigation is performed.
    * @return The new router module.
-  */
+   */
   static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterModule> {
     return {
       ngModule: RouterModule,
@@ -152,9 +153,8 @@ export class RouterModule {
         {
           provide: LocationStrategy,
           useFactory: provideLocationStrategy,
-          deps: [
-            PlatformLocation, [new Inject(APP_BASE_HREF), new Optional()], ROUTER_CONFIGURATION
-          ]
+          deps:
+              [PlatformLocation, [new Inject(APP_BASE_HREF), new Optional()], ROUTER_CONFIGURATION]
         },
         {
           provide: RouterScroller,
@@ -236,8 +236,9 @@ export function provideRoutes(routes: Routes): any {
  * the root component gets created. Use if there is a reason to have
  * more control over when the router starts its initial navigation due to some complex
  * initialization logic.
- * * 'legacy_enabled'- (Default, for compatibility.) The initial navigation starts after the root component has been created.
- * The bootstrap is not blocked until the initial navigation is complete. @deprecated
+ * * 'legacy_enabled'- (Default, for compatibility.) The initial navigation starts after the root
+ * component has been created. The bootstrap is not blocked until the initial navigation is
+ * complete. @deprecated
  * * 'legacy_disabled'- The initial navigation is not performed. The location listener is set up
  * after the root component gets created. @deprecated since v4
  * * `true` - same as 'legacy_enabled'. @deprecated since v4
@@ -249,8 +250,7 @@ export function provideRoutes(routes: Routes): any {
  *
  * @publicApi
  */
-export type InitialNavigation =
-    true | false | 'enabled' | 'disabled' | 'legacy_enabled' | 'legacy_disabled';
+export type InitialNavigation = true|false|'enabled'|'disabled'|'legacy_enabled'|'legacy_disabled';
 
 /**
  * A set of configuration options for a router module, provided in the
@@ -506,7 +506,7 @@ export class RouterInitializer {
   appInitializer(): Promise<any> {
     const p: Promise<any> = this.injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
     return p.then(() => {
-      let resolve: Function = null !;
+      let resolve: Function = null!;
       const res = new Promise(r => resolve = r);
       const router = this.injector.get(Router);
       const opts = this.injector.get(ROUTER_CONFIGURATION);
@@ -528,7 +528,7 @@ export class RouterInitializer {
 
             // subsequent navigations should not be delayed
           } else {
-            return of (null) as any;
+            return of(null) as any;
           }
         };
         router.initialNavigation();
@@ -561,7 +561,7 @@ export class RouterInitializer {
     preloader.setUpPreloading();
     routerScroller.init();
     router.resetRootComponentType(ref.componentTypes[0]);
-    this.resultOfPreactivationDone.next(null !);
+    this.resultOfPreactivationDone.next(null!);
     this.resultOfPreactivationDone.complete();
   }
 

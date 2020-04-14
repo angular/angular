@@ -8,7 +8,7 @@
 
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
-import {Injector, Metric, Options, Runner, SampleDescription, SampleState, Sampler, Validator, WebDriverAdapter} from '../index';
+import {Injector, Metric, Options, Runner, SampleDescription, Sampler, SampleState, Validator, WebDriverAdapter} from '../index';
 
 {
   describe('runner', () => {
@@ -68,7 +68,6 @@ import {Injector, Metric, Options, Runner, SampleDescription, SampleState, Sampl
              .sample({id: 'someId'})
              .then((_) => injector.get(SampleDescription))
              .then((desc) => {
-
                expect(desc.metrics).toEqual({'m1': 'some metric'});
                async.done();
              });
@@ -109,32 +108,45 @@ import {Injector, Metric, Options, Runner, SampleDescription, SampleState, Sampl
              })
              .then((_) => injector.get(SampleDescription))
              .then((desc) => {
-
                expect(desc.description['a']).toBe(2);
                async.done();
              });
-
        }));
-
   });
 }
 
 class MockWebDriverAdapter extends WebDriverAdapter {
-  executeScript(script: string): Promise<string> { return Promise.resolve('someUserAgent'); }
-  capabilities(): Promise<Map<string, any>> { return null !; }
+  executeScript(script: string): Promise<string> {
+    return Promise.resolve('someUserAgent');
+  }
+  capabilities(): Promise<Map<string, any>> {
+    return null!;
+  }
 }
 
 class MockValidator extends Validator {
-  constructor() { super(); }
-  describe() { return {'v': 11}; }
+  constructor() {
+    super();
+  }
+  describe() {
+    return {'v': 11};
+  }
 }
 
 class MockMetric extends Metric {
-  constructor() { super(); }
-  describe() { return {'m1': 'some metric'}; }
+  constructor() {
+    super();
+  }
+  describe() {
+    return {'m1': 'some metric'};
+  }
 }
 
 class MockSampler extends Sampler {
-  constructor() { super(null !, null !, null !, null !, null !, null !, null !); }
-  sample(): Promise<SampleState> { return Promise.resolve(new SampleState([], [])); }
+  constructor() {
+    super(null!, null!, null!, null!, null!, null!, null!);
+  }
+  sample(): Promise<SampleState> {
+    return Promise.resolve(new SampleState([], []));
+  }
 }

@@ -128,7 +128,9 @@ describe('RouterScroller', () => {
                      }, 1000);
                      return r;
                    }))
-             .subscribe((e: Scroll) => { viewportScroller.scrollToPosition(e.position); });
+             .subscribe((e: Scroll) => {
+               viewportScroller.scrollToPosition(e.position);
+             });
 
          events.next(new NavigationStart(1, '/a'));
          events.next(new NavigationEnd(1, '/a', '/a'));
@@ -158,8 +160,8 @@ describe('RouterScroller', () => {
 
 
   function createRouterScroller({scrollPositionRestoration, anchorScrolling}: {
-    scrollPositionRestoration: 'disabled' | 'enabled' | 'top',
-    anchorScrolling: 'disabled' | 'enabled'
+    scrollPositionRestoration: 'disabled'|'enabled'|'top',
+    anchorScrolling: 'disabled'|'enabled'
   }) {
     const events = new Subject<RouterEvent>();
     const router = <any>{

@@ -23,7 +23,7 @@ export function init(moduleRef: NgModuleRef<StylingModule>) {
   const componentRef = appRef.components[0];
   const component = componentRef.instance;
   const componentHostEl = componentRef.location.nativeElement;
-  const select = document.querySelector('#scenario-select') !as HTMLSelectElement;
+  const select = document.querySelector('#scenario-select')! as HTMLSelectElement;
 
   function create(tplRefIdx: number) {
     component.tplRefIdx = tplRefIdx;
@@ -41,7 +41,9 @@ export function init(moduleRef: NgModuleRef<StylingModule>) {
     appRef.tick();
   }
 
-  function detectChanges() { appRef.tick(); }
+  function detectChanges() {
+    appRef.tick();
+  }
 
   function modifyExternally() {
     const buttonEls = componentHostEl.querySelectorAll('button') as HTMLButtonElement[];

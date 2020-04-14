@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export class SwCriticalError extends Error { readonly isCritical: boolean = true; }
+export class SwCriticalError extends Error {
+  readonly isCritical: boolean = true;
+}
 
 export function errorToString(error: any): string {
   if (error instanceof Error) {

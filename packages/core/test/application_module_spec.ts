@@ -16,8 +16,9 @@ import {describe, expect, inject, it} from '../testing/src/testing_internal';
 
 {
   describe('Application module', () => {
-    it('should set the default locale to "en-US"',
-       inject([LOCALE_ID], (defaultLocale: string) => { expect(defaultLocale).toEqual('en-US'); }));
+    it('should set the default locale to "en-US"', inject([LOCALE_ID], (defaultLocale: string) => {
+         expect(defaultLocale).toEqual('en-US');
+       }));
 
     it('should set the default currency code to "USD"',
        inject([DEFAULT_CURRENCY_CODE], (defaultCurrencyCode: string) => {

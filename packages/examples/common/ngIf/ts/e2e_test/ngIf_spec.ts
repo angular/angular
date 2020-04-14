@@ -7,7 +7,8 @@
  */
 
 import {modifiedInIvy} from '@angular/private/testing';
-import {$, ExpectedConditions, browser, by, element} from 'protractor';
+import {$, browser, by, element, ExpectedConditions} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 function waitForElement(selector: string) {

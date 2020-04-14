@@ -15,7 +15,9 @@ import {EventEmitter} from '../src/event_emitter';
   describe('EventEmitter', () => {
     let emitter: EventEmitter<any>;
 
-    beforeEach(() => { emitter = new EventEmitter(); });
+    beforeEach(() => {
+      emitter = new EventEmitter();
+    });
 
     it('should call the next callback',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -42,20 +44,34 @@ import {EventEmitter} from '../src/event_emitter';
 
     it('should work when no throw callback is provided',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         emitter.subscribe({next: () => {}, error: (_: any) => { async.done(); }});
+         emitter.subscribe({
+           next: () => {},
+           error: (_: any) => {
+             async.done();
+           }
+         });
          emitter.error('Boom');
        }));
 
     it('should call the return callback',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         emitter.subscribe(
-             {next: () => {}, error: (_: any) => {}, complete: () => { async.done(); }});
+         emitter.subscribe({
+           next: () => {},
+           error: (_: any) => {},
+           complete: () => {
+             async.done();
+           }
+         });
          emitter.complete();
        }));
 
     it('should subscribe to the wrapper synchronously', () => {
       let called = false;
-      emitter.subscribe({next: (value: any) => { called = true; }});
+      emitter.subscribe({
+        next: (value: any) => {
+          called = true;
+        }
+      });
       emitter.emit(99);
 
       expect(called).toBe(true);
@@ -117,7 +133,6 @@ import {EventEmitter} from '../src/event_emitter';
          log.push(1);
          e.emit(2);
          log.push(3);
-
        }));
 
     it('reports whether it has subscribers', () => {
@@ -161,8 +176,16 @@ import {EventEmitter} from '../src/event_emitter';
     it('error thrown inside an Rx chain propagates to the error handler and disposes the chain',
        () => {
          let errorPropagated = false;
-         emitter.pipe(filter(() => { throw new Error(); }), )
-             .subscribe(() => {}, err => errorPropagated = true, );
+         emitter
+             .pipe(
+                 filter(() => {
+                   throw new Error();
+                 }),
+                 )
+             .subscribe(
+                 () => {},
+                 err => errorPropagated = true,
+             );
 
          emitter.next(1);
 
@@ -172,7 +195,11 @@ import {EventEmitter} from '../src/event_emitter';
 
     it('error sent by EventEmitter should dispose the Rx chain and remove subscribers', () => {
       let errorPropagated = false;
-      emitter.pipe(filter(() => true)).subscribe(() => {}, err => errorPropagated = true, );
+      emitter.pipe(filter(() => true))
+          .subscribe(
+              () => {},
+              err => errorPropagated = true,
+          );
 
       emitter.error(1);
 

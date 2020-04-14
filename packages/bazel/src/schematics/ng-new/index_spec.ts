@@ -9,14 +9,16 @@
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 
 describe('ng-new schematic', () => {
-  const schematicRunner =
-      new SchematicTestRunner('@angular/bazel', require.resolve('../collection.json'), );
+  const schematicRunner = new SchematicTestRunner(
+      '@angular/bazel',
+      require.resolve('../collection.json'),
+  );
   const defaultOptions = {
     name: 'demo',
     version: '7.0.0',
   };
 
-  it('should call external @schematics/angular', async() => {
+  it('should call external @schematics/angular', async () => {
     const options = {...defaultOptions};
     const host = await schematicRunner.runSchematicAsync('ng-new', options).toPromise();
     const {files} = host;
@@ -25,7 +27,7 @@ describe('ng-new schematic', () => {
     expect(files).toContain('/demo/package.json');
   });
 
-  it('should call ng-add to generate additional files needed by Bazel', async() => {
+  it('should call ng-add to generate additional files needed by Bazel', async () => {
     const options = {...defaultOptions};
     const host = await schematicRunner.runSchematicAsync('ng-new', options).toPromise();
     const {files} = host;

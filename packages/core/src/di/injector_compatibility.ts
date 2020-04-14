@@ -33,7 +33,7 @@ import {Inject, Optional, Self, SkipSelf} from './metadata';
 export const INJECTOR = new InjectionToken<Injector>(
     'INJECTOR',
     -1 as any  // `-1` is used by Ivy DI system as special value to recognize it as `Injector`.
-    );
+);
 
 const _THROW_IF_NOT_FOUND = {};
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
@@ -55,7 +55,7 @@ export const USE_VALUE =
  */
 let _currentInjector: Injector|undefined|null = undefined;
 
-export function setCurrentInjector(injector: Injector | null | undefined): Injector|undefined|null {
+export function setCurrentInjector(injector: Injector|null|undefined): Injector|undefined|null {
   const former = _currentInjector;
   _currentInjector = injector;
   return former;
@@ -70,25 +70,25 @@ export function setCurrentInjector(injector: Injector | null | undefined): Injec
  *  1. `Injector` should not depend on ivy logic.
  *  2. To maintain tree shake-ability we don't want to bring in unnecessary code.
  */
-let _injectImplementation:
-    (<T>(token: Type<T>| InjectionToken<T>, flags?: InjectFlags) => T | null)|undefined;
+let _injectImplementation: (<T>(token: Type<T>|InjectionToken<T>, flags?: InjectFlags) => T | null)|
+    undefined;
 
 /**
  * Sets the current inject implementation.
  */
 export function setInjectImplementation(
-    impl: (<T>(token: Type<T>| InjectionToken<T>, flags?: InjectFlags) => T | null) | undefined):
-    (<T>(token: Type<T>| InjectionToken<T>, flags?: InjectFlags) => T | null)|undefined {
+    impl: (<T>(token: Type<T>|InjectionToken<T>, flags?: InjectFlags) => T | null)|
+    undefined): (<T>(token: Type<T>|InjectionToken<T>, flags?: InjectFlags) => T | null)|undefined {
   const previous = _injectImplementation;
   _injectImplementation = impl;
   return previous;
 }
 
-export function injectInjectorOnly<T>(token: Type<T>| InjectionToken<T>): T;
-export function injectInjectorOnly<T>(token: Type<T>| InjectionToken<T>, flags?: InjectFlags): T|
+export function injectInjectorOnly<T>(token: Type<T>|InjectionToken<T>): T;
+export function injectInjectorOnly<T>(token: Type<T>|InjectionToken<T>, flags?: InjectFlags): T|
     null;
 export function injectInjectorOnly<T>(
-    token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|null {
+    token: Type<T>|InjectionToken<T>, flags = InjectFlags.Default): T|null {
   if (_currentInjector === undefined) {
     throw new Error(`inject() must be called from an injection context`);
   } else if (_currentInjector === null) {
@@ -104,15 +104,15 @@ export function injectInjectorOnly<T>(
  * Must be used in the context of a factory function such as one defined for an
  * `InjectionToken`. Throws an error if not called from such a context.
  *
- * (Additional documentation moved to `inject`, as it is the public API, and an alias for this instruction)
+ * (Additional documentation moved to `inject`, as it is the public API, and an alias for this
+ * instruction)
  *
  * @see inject
  * @codeGenApi
  */
-export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>): T;
-export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>, flags?: InjectFlags): T|null;
-export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|
-    null {
+export function ɵɵinject<T>(token: Type<T>|InjectionToken<T>): T;
+export function ɵɵinject<T>(token: Type<T>|InjectionToken<T>, flags?: InjectFlags): T|null;
+export function ɵɵinject<T>(token: Type<T>|InjectionToken<T>, flags = InjectFlags.Default): T|null {
   return (_injectImplementation || injectInjectorOnly)(resolveForwardRef(token), flags);
 }
 
@@ -130,10 +130,12 @@ export function ɵɵinject<T>(token: Type<T>| InjectionToken<T>, flags = InjectF
  */
 export function ɵɵinvalidFactoryDep(index: number): never {
   const msg = ngDevMode ?
-      `This constructor is not compatible with Angular Dependency Injection because its dependency at index ${index} of the parameter list is invalid.
+      `This constructor is not compatible with Angular Dependency Injection because its dependency at index ${
+          index} of the parameter list is invalid.
 This can happen if the dependency type is a primitive like a string or if an ancestor of this class is missing an Angular decorator.
 
-Please check that 1) the type for the parameter at index ${index} is correct and 2) the correct Angular decorators are defined for this class and its ancestors.` :
+Please check that 1) the type for the parameter at index ${
+          index} is correct and 2) the correct Angular decorators are defined for this class and its ancestors.` :
       'invalid';
   throw new Error(msg);
 }
@@ -172,7 +174,7 @@ export const inject = ɵɵinject;
  * `InjectableDef`.
  */
 export function injectRootLimpMode<T>(
-    token: Type<T>| InjectionToken<T>, notFoundValue: T | undefined, flags: InjectFlags): T|null {
+    token: Type<T>|InjectionToken<T>, notFoundValue: T|undefined, flags: InjectFlags): T|null {
   const injectableDef: ɵɵInjectableDef<T>|null = getInjectableDef(token);
   if (injectableDef && injectableDef.providedIn == 'root') {
     return injectableDef.value === undefined ? injectableDef.value = injectableDef.factory() :
@@ -183,7 +185,7 @@ export function injectRootLimpMode<T>(
   throw new Error(`Injector: NOT_FOUND [${stringify(token)}]`);
 }
 
-export function injectArgs(types: (Type<any>| InjectionToken<any>| any[])[]): any[] {
+export function injectArgs(types: (Type<any>|InjectionToken<any>|any[])[]): any[] {
   const args: any[] = [];
   for (let i = 0; i < types.length; i++) {
     const arg = resolveForwardRef(types[i]);
@@ -210,7 +212,7 @@ export function injectArgs(types: (Type<any>| InjectionToken<any>| any[])[]): an
         }
       }
 
-      args.push(ɵɵinject(type !, flags));
+      args.push(ɵɵinject(type!, flags));
     } else {
       args.push(ɵɵinject(arg));
     }
@@ -236,7 +238,7 @@ export class NullInjector implements Injector {
 
 
 export function catchInjectorError(
-    e: any, token: any, injectorErrorName: string, source: string | null): never {
+    e: any, token: any, injectorErrorName: string, source: string|null): never {
   const tokenPath: any[] = e[NG_TEMP_TOKEN_PATH];
   if (token[SOURCE]) {
     tokenPath.unshift(token[SOURCE]);
@@ -248,7 +250,7 @@ export function catchInjectorError(
 }
 
 export function formatError(
-    text: string, obj: any, injectorErrorName: string, source: string | null = null): string {
+    text: string, obj: any, injectorErrorName: string, source: string|null = null): string {
   text = text && text.charAt(0) === '\n' && text.charAt(1) == NO_NEW_LINE ? text.substr(2) : text;
   let context = stringify(obj);
   if (Array.isArray(obj)) {
@@ -264,5 +266,6 @@ export function formatError(
     }
     context = `{${parts.join(', ')}}`;
   }
-  return `${injectorErrorName}${source ? '(' + source + ')' : ''}[${context}]: ${text.replace(NEW_LINE, '\n  ')}`;
+  return `${injectorErrorName}${source ? '(' + source + ')' : ''}[${context}]: ${
+      text.replace(NEW_LINE, '\n  ')}`;
 }

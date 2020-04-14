@@ -19,7 +19,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
 
 import {NoopNgZone} from '../src/zone/ng_zone';
-import {ComponentFixtureNoNgZone, TestBed, async, inject, withModule} from '../testing';
+import {async, ComponentFixtureNoNgZone, inject, TestBed, withModule} from '../testing';
 
 @Component({selector: 'bootstrap-app', template: 'hello'})
 class SomeComponent {
@@ -29,7 +29,9 @@ class SomeComponent {
   describe('bootstrap', () => {
     let mockConsole: MockConsole;
 
-    beforeEach(() => { mockConsole = new MockConsole(); });
+    beforeEach(() => {
+      mockConsole = new MockConsole();
+    });
 
     function createRootEl(selector = 'bootstrap-app') {
       const doc = TestBed.inject(DOCUMENT);
@@ -47,7 +49,7 @@ class SomeComponent {
 
     function createModule(providers?: any[]): Type<any>;
     function createModule(options: CreateModuleOptions): Type<any>;
-    function createModule(providersOrOptions: any[] | CreateModuleOptions | undefined): Type<any> {
+    function createModule(providersOrOptions: any[]|CreateModuleOptions|undefined): Type<any> {
       let options: CreateModuleOptions = {};
       if (Array.isArray(providersOrOptions)) {
         options = {providers: providersOrOptions};
@@ -98,8 +100,7 @@ class SomeComponent {
          createRootEl();
          const modFactory = compiler.compileModuleSync(SomeModule);
          const module = modFactory.create(TestBed);
-         const cmpFactory =
-             module.componentFactoryResolver.resolveComponentFactory(SomeComponent) !;
+         const cmpFactory = module.componentFactoryResolver.resolveComponentFactory(SomeComponent)!;
          const component = app.bootstrap(cmpFactory);
 
          // The component should see the child module providers
@@ -128,8 +129,7 @@ class SomeComponent {
          createRootEl('custom-selector');
          const modFactory = compiler.compileModuleSync(SomeModule);
          const module = modFactory.create(TestBed);
-         const cmpFactory =
-             module.componentFactoryResolver.resolveComponentFactory(SomeComponent) !;
+         const cmpFactory = module.componentFactoryResolver.resolveComponentFactory(SomeComponent)!;
          const component = app.bootstrap(cmpFactory, 'custom-selector');
 
          // The component should see the child module providers
@@ -137,7 +137,9 @@ class SomeComponent {
        })));
 
     describe('ApplicationRef', () => {
-      beforeEach(() => { TestBed.configureTestingModule({imports: [createModule()]}); });
+      beforeEach(() => {
+        TestBed.configureTestingModule({imports: [createModule()]});
+      });
 
       it('should throw when reentering tick', () => {
         @Component({template: '{{reenter()}}'})
@@ -175,7 +177,9 @@ class SomeComponent {
             providers: [{
               provide: APP_BOOTSTRAP_LISTENER,
               multi: true,
-              useValue: (compRef: any) => { capturedCompRefs.push(compRef); }
+              useValue: (compRef: any) => {
+                capturedCompRefs.push(compRef);
+              }
             }]
           });
         });
@@ -214,7 +218,9 @@ class SomeComponent {
 
       it('should wait for asynchronous app initializers', async(() => {
            let resolve: (result: any) => void;
-           const promise: Promise<any> = new Promise((res) => { resolve = res; });
+           const promise: Promise<any> = new Promise((res) => {
+             resolve = res;
+           });
            let initializerDone = false;
            setTimeout(() => {
              resolve(true);
@@ -224,13 +230,20 @@ class SomeComponent {
            defaultPlatform
                .bootstrapModule(
                    createModule([{provide: APP_INITIALIZER, useValue: () => promise, multi: true}]))
-               .then(_ => { expect(initializerDone).toBe(true); });
+               .then(_ => {
+                 expect(initializerDone).toBe(true);
+               });
          }));
 
       it('should rethrow sync errors even if the exceptionHandler is not rethrowing', async(() => {
            defaultPlatform
-               .bootstrapModule(createModule(
-                   [{provide: APP_INITIALIZER, useValue: () => { throw 'Test'; }, multi: true}]))
+               .bootstrapModule(createModule([{
+                 provide: APP_INITIALIZER,
+                 useValue: () => {
+                   throw 'Test';
+                 },
+                 multi: true
+               }]))
                .then(() => expect(false).toBe(true), (e) => {
                  expect(e).toBe('Test');
                  // Error rethrown will be seen by the exception handler since it's after
@@ -306,7 +319,7 @@ class SomeComponent {
                });
          }));
 
-      it('should resolve component resources when creating module factory', async() => {
+      it('should resolve component resources when creating module factory', async () => {
         @Component({
           selector: 'with-templates-app',
           templateUrl: '/test-template.html',
@@ -328,7 +341,7 @@ class SomeComponent {
       });
 
       onlyInIvy('We only need to define `LOCALE_ID` for runtime i18n')
-          .it('should define `LOCALE_ID`', async() => {
+          .it('should define `LOCALE_ID`', async () => {
             @Component({
               selector: 'i18n-app',
               templateUrl: '',
@@ -343,7 +356,7 @@ class SomeComponent {
             expect(getLocaleId()).toEqual('ro');
           });
 
-      it('should wait for APP_INITIALIZER to set providers for `LOCALE_ID`', async() => {
+      it('should wait for APP_INITIALIZER to set providers for `LOCALE_ID`', async () => {
         let locale: string = '';
 
         const testModule = createModule({
@@ -365,7 +378,9 @@ class SomeComponent {
       }));
       it('should wait for asynchronous app initializers', async(() => {
            let resolve: (result: any) => void;
-           const promise: Promise<any> = new Promise((res) => { resolve = res; });
+           const promise: Promise<any> = new Promise((res) => {
+             resolve = res;
+           });
            let initializerDone = false;
            setTimeout(() => {
              resolve(true);
@@ -373,7 +388,7 @@ class SomeComponent {
            }, 1);
 
            const compilerFactory: CompilerFactory =
-               defaultPlatform.injector.get(CompilerFactory, null) !;
+               defaultPlatform.injector.get(CompilerFactory, null)!;
            const moduleFactory = compilerFactory.createCompiler().compileModuleSync(
                createModule([{provide: APP_INITIALIZER, useValue: () => promise, multi: true}]));
            defaultPlatform.bootstrapModuleFactory(moduleFactory).then(_ => {
@@ -383,9 +398,14 @@ class SomeComponent {
 
       it('should rethrow sync errors even if the exceptionHandler is not rethrowing', async(() => {
            const compilerFactory: CompilerFactory =
-               defaultPlatform.injector.get(CompilerFactory, null) !;
-           const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule(
-               [{provide: APP_INITIALIZER, useValue: () => { throw 'Test'; }, multi: true}]));
+               defaultPlatform.injector.get(CompilerFactory, null)!;
+           const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule([{
+             provide: APP_INITIALIZER,
+             useValue: () => {
+               throw 'Test';
+             },
+             multi: true
+           }]));
            expect(() => defaultPlatform.bootstrapModuleFactory(moduleFactory)).toThrow('Test');
            // Error rethrown will be seen by the exception handler since it's after
            // construction.
@@ -395,7 +415,7 @@ class SomeComponent {
       it('should rethrow promise errors even if the exceptionHandler is not rethrowing',
          async(() => {
            const compilerFactory: CompilerFactory =
-               defaultPlatform.injector.get(CompilerFactory, null) !;
+               defaultPlatform.injector.get(CompilerFactory, null)!;
            const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule(
                [{provide: APP_INITIALIZER, useValue: () => Promise.reject('Test'), multi: true}]));
            defaultPlatform.bootstrapModuleFactory(moduleFactory)
@@ -415,15 +435,13 @@ class SomeComponent {
       @Component({template: '<ng-container #vc></ng-container>'})
       class ContainerComp {
         // TODO(issue/24571): remove '!'.
-        @ViewChild('vc', {read: ViewContainerRef})
-        vc !: ViewContainerRef;
+        @ViewChild('vc', {read: ViewContainerRef}) vc!: ViewContainerRef;
       }
 
       @Component({template: '<ng-template #t>Dynamic content</ng-template>'})
       class EmbeddedViewComp {
         // TODO(issue/24571): remove '!'.
-        @ViewChild(TemplateRef, {static: true})
-        tplRef !: TemplateRef<Object>;
+        @ViewChild(TemplateRef, {static: true}) tplRef!: TemplateRef<Object>;
       }
 
       beforeEach(() => {
@@ -497,7 +515,7 @@ class SomeComponent {
            vc.insert(hostView);
            expect(() => appRef.attachView(hostView))
                .toThrowError('This view is already attached to a ViewContainer!');
-           hostView = vc.detach(0) !;
+           hostView = vc.detach(0)!;
 
            appRef.attachView(hostView);
            expect(() => vc.insert(hostView))
@@ -516,7 +534,9 @@ class SomeComponent {
     class ClickComp {
       text: string = '1';
 
-      onClick() { this.text += '1'; }
+      onClick() {
+        this.text += '1';
+      }
     }
 
     @Component({selector: 'micro-task-comp', template: `<span>{{text}}</span>`})
@@ -524,7 +544,9 @@ class SomeComponent {
       text: string = '1';
 
       ngOnInit() {
-        Promise.resolve(null).then((_) => { this.text += '1'; });
+        Promise.resolve(null).then((_) => {
+          this.text += '1';
+        });
       }
     }
 
@@ -533,7 +555,9 @@ class SomeComponent {
       text: string = '1';
 
       ngOnInit() {
-        setTimeout(() => { this.text += '1'; }, 10);
+        setTimeout(() => {
+          this.text += '1';
+        }, 10);
       }
     }
 
@@ -544,7 +568,9 @@ class SomeComponent {
       ngOnInit() {
         Promise.resolve(null).then((_) => {
           this.text += '1';
-          setTimeout(() => { this.text += '1'; }, 10);
+          setTimeout(() => {
+            this.text += '1';
+          }, 10);
         });
       }
     }
@@ -556,7 +582,9 @@ class SomeComponent {
       ngOnInit() {
         setTimeout(() => {
           this.text += '1';
-          Promise.resolve(null).then((_: any) => { this.text += '1'; });
+          Promise.resolve(null).then((_: any) => {
+            this.text += '1';
+          });
         }, 10);
       }
     }
@@ -572,7 +600,9 @@ class SomeComponent {
       });
     });
 
-    afterEach(() => { expect(stableCalled).toBe(true, 'isStable did not emit true on stable'); });
+    afterEach(() => {
+      expect(stableCalled).toBe(true, 'isStable did not emit true on stable');
+    });
 
     function expectStableTexts(component: Type<any>, expected: string[]) {
       const fixture = TestBed.createComponent(component);
@@ -593,26 +623,34 @@ class SomeComponent {
       });
     }
 
-    it('isStable should fire on synchronous component loading',
-       async(() => { expectStableTexts(SyncComp, ['1']); }));
+    it('isStable should fire on synchronous component loading', async(() => {
+         expectStableTexts(SyncComp, ['1']);
+       }));
 
-    it('isStable should fire after a microtask on init is completed',
-       async(() => { expectStableTexts(MicroTaskComp, ['11']); }));
+    it('isStable should fire after a microtask on init is completed', async(() => {
+         expectStableTexts(MicroTaskComp, ['11']);
+       }));
 
-    it('isStable should fire after a macrotask on init is completed',
-       async(() => { expectStableTexts(MacroTaskComp, ['11']); }));
+    it('isStable should fire after a macrotask on init is completed', async(() => {
+         expectStableTexts(MacroTaskComp, ['11']);
+       }));
 
     it('isStable should fire only after chain of micro and macrotasks on init are completed',
-       async(() => { expectStableTexts(MicroMacroTaskComp, ['111']); }));
+       async(() => {
+         expectStableTexts(MicroMacroTaskComp, ['111']);
+       }));
 
     it('isStable should fire only after chain of macro and microtasks on init are completed',
-       async(() => { expectStableTexts(MacroMicroTaskComp, ['111']); }));
+       async(() => {
+         expectStableTexts(MacroMicroTaskComp, ['111']);
+       }));
 
     describe('unstable', () => {
       let unstableCalled = false;
 
-      afterEach(
-          () => { expect(unstableCalled).toBe(true, 'isStable did not emit false on unstable'); });
+      afterEach(() => {
+        expect(unstableCalled).toBe(true, 'isStable did not emit false on unstable');
+      });
 
       function expectUnstable(appRef: ApplicationRef) {
         appRef.isStable.subscribe({

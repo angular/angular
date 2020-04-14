@@ -38,7 +38,7 @@ export function runMain(
   // API extractor doesn't always support the version of TypeScript used in the repo
   // example: at the moment it is not compatable with 3.2
   // to use the internal TypeScript we shall not create a program but rather pass a parsed tsConfig.
-  const parsedTsConfig = parsedConfig !.config as any;
+  const parsedTsConfig = parsedConfig!.config as any;
   const compilerOptions = parsedTsConfig.compilerOptions;
   for (const [key, values] of Object.entries<string[]>(compilerOptions.paths)) {
     if (key === '*') {
@@ -113,8 +113,8 @@ api-extractor: running with
   const dtsBundleOuts = dtsBundleOut.split(',');
 
   if (entryPoints.length !== entryPoints.length) {
-    throw new Error(
-        `Entry points count (${entryPoints.length}) does not match Bundle out count (${dtsBundleOuts.length})`);
+    throw new Error(`Entry points count (${entryPoints.length}) does not match Bundle out count (${
+        dtsBundleOuts.length})`);
   }
 
   for (let i = 0; i < entryPoints.length; i++) {

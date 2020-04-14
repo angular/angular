@@ -8,18 +8,20 @@
 
 import {ViewEncapsulation, ɵɵdefineInjectable, ɵɵdefineInjector} from '../../src/core';
 import {createInjector} from '../../src/di/r3_injector';
-import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, getRenderedText, markDirty, ɵɵadvance, ɵɵdefineComponent, ɵɵdirectiveInject, ɵɵproperty, ɵɵselect, ɵɵtemplate} from '../../src/render3/index';
+import {AttributeMarker, ComponentFactory, getRenderedText, LifecycleHooksFeature, markDirty, ɵɵadvance, ɵɵdefineComponent, ɵɵdirectiveInject, ɵɵproperty, ɵɵselect, ɵɵtemplate} from '../../src/render3/index';
 import {tick, ɵɵcontainer, ɵɵcontainerRefreshEnd, ɵɵcontainerRefreshStart, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵembeddedViewEnd, ɵɵembeddedViewStart, ɵɵnextContext, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
 import {ComponentDef, RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
-import {ComponentFixture, MockRendererFactory, containerEl, createComponent, renderComponent, renderToHtml, requestAnimationFrame, toHtml} from './render_util';
+import {ComponentFixture, containerEl, createComponent, MockRendererFactory, renderComponent, renderToHtml, requestAnimationFrame, toHtml} from './render_util';
 
 describe('component', () => {
   class CounterComponent {
     count = 0;
 
-    increment() { this.count++; }
+    increment() {
+      this.count++;
+    }
 
     static ɵfac = () => new CounterComponent;
     static ɵcmp = ɵɵdefineComponent({
@@ -28,14 +30,15 @@ describe('component', () => {
       selectors: [['counter']],
       decls: 1,
       vars: 1,
-      template: function(rf: RenderFlags, ctx: CounterComponent) {
-        if (rf & RenderFlags.Create) {
-          ɵɵtext(0);
-        }
-        if (rf & RenderFlags.Update) {
-          ɵɵtextInterpolate(ctx.count);
-        }
-      },
+      template:
+          function(rf: RenderFlags, ctx: CounterComponent) {
+            if (rf & RenderFlags.Create) {
+              ɵɵtext(0);
+            }
+            if (rf & RenderFlags.Update) {
+              ɵɵtextInterpolate(ctx.count);
+            }
+          },
       inputs: {count: 'count'},
     });
   }
@@ -78,14 +81,15 @@ describe('component', () => {
         selectors: [['my-component']],
         decls: 1,
         vars: 1,
-        template: function(fs: RenderFlags, ctx: MyComponent) {
-          if (fs & RenderFlags.Create) {
-            ɵɵtext(0);
-          }
-          if (fs & RenderFlags.Update) {
-            ɵɵtextInterpolate(ctx.myService.value);
-          }
-        }
+        template:
+            function(fs: RenderFlags, ctx: MyComponent) {
+              if (fs & RenderFlags.Create) {
+                ɵɵtext(0);
+              }
+              if (fs & RenderFlags.Update) {
+                ɵɵtextInterpolate(ctx.myService.value);
+              }
+            }
       });
     }
 
@@ -105,11 +109,9 @@ describe('component', () => {
       const fixture = new ComponentFixture(MyComponent, {injector: createInjector(MyModule)});
       expect(fixture.html).toEqual('injector');
     });
-
   });
 
   it('should instantiate components at high indices', () => {
-
     // {{ name }}
     class Comp {
       // @Input
@@ -121,14 +123,15 @@ describe('component', () => {
         selectors: [['comp']],
         decls: 1,
         vars: 1,
-        template: (rf: RenderFlags, ctx: Comp) => {
-          if (rf & RenderFlags.Create) {
-            ɵɵtext(0);
-          }
-          if (rf & RenderFlags.Update) {
-            ɵɵtextInterpolate(ctx.name);
-          }
-        },
+        template:
+            (rf: RenderFlags, ctx: Comp) => {
+              if (rf & RenderFlags.Create) {
+                ɵɵtext(0);
+              }
+              if (rf & RenderFlags.Update) {
+                ɵɵtextInterpolate(ctx.name);
+              }
+            },
         inputs: {name: 'name'}
       });
     }
@@ -152,7 +155,6 @@ describe('component', () => {
     fixture.update();
     expect(fixture.html).toEqual('<comp>some name</comp>');
   });
-
 });
 
 it('should not invoke renderer destroy method for embedded views', () => {
@@ -186,31 +188,32 @@ it('should not invoke renderer destroy method for embedded views', () => {
        *  <div>Root view</div>
        *  <div *ngIf="visible">Child view</div>
        */
-      template: function(rf: RenderFlags, ctx: Comp) {
-        if (rf & RenderFlags.Create) {
-          ɵɵelementStart(0, 'div');
-          ɵɵtext(1, 'Root view');
-          ɵɵelementEnd();
-          ɵɵtemplate(2, MyComponent_div_Template_2, 2, 0, 'div', 0);
-        }
-        if (rf & RenderFlags.Update) {
-          ɵɵadvance(2);
-          ɵɵproperty('ngIf', ctx.visible);
-        }
-      }
+      template:
+          function(rf: RenderFlags, ctx: Comp) {
+            if (rf & RenderFlags.Create) {
+              ɵɵelementStart(0, 'div');
+              ɵɵtext(1, 'Root view');
+              ɵɵelementEnd();
+              ɵɵtemplate(2, MyComponent_div_Template_2, 2, 0, 'div', 0);
+            }
+            if (rf & RenderFlags.Update) {
+              ɵɵadvance(2);
+              ɵɵproperty('ngIf', ctx.visible);
+            }
+          }
     });
   }
 
   const rendererFactory = new MockRendererFactory(['destroy']);
   const fixture = new ComponentFixture(Comp, {rendererFactory});
 
-  comp !.visible = false;
+  comp!.visible = false;
   fixture.update();
 
-  comp !.visible = true;
+  comp!.visible = true;
   fixture.update();
 
-  const renderer = rendererFactory.lastRenderer !;
+  const renderer = rendererFactory.lastRenderer!;
   const destroySpy = renderer.spies['destroy'];
 
   // we should never see `destroy` method being called
@@ -246,7 +249,7 @@ describe('component with a container', () => {
 
   class WrapperComponent {
     // TODO(issue/24571): remove '!'.
-    items !: string[];
+    items!: string[];
     static ɵfac = () => new WrapperComponent;
     static ɵcmp = ɵɵdefineComponent({
       type: WrapperComponent,
@@ -254,20 +257,21 @@ describe('component with a container', () => {
       selectors: [['wrapper']],
       decls: 1,
       vars: 0,
-      template: function ChildComponentTemplate(rf: RenderFlags, ctx: {items: string[]}) {
-        if (rf & RenderFlags.Create) {
-          ɵɵcontainer(0);
-        }
-        if (rf & RenderFlags.Update) {
-          ɵɵcontainerRefreshStart(0);
-          {
-            const rf0 = ɵɵembeddedViewStart(0, 1, 0);
-            { showItems(rf0, {items: ctx.items}); }
-            ɵɵembeddedViewEnd();
-          }
-          ɵɵcontainerRefreshEnd();
-        }
-      },
+      template:
+          function ChildComponentTemplate(rf: RenderFlags, ctx: {items: string[]}) {
+            if (rf & RenderFlags.Create) {
+              ɵɵcontainer(0);
+            }
+            if (rf & RenderFlags.Update) {
+              ɵɵcontainerRefreshStart(0);
+              {
+                const rf0 = ɵɵembeddedViewStart(0, 1, 0);
+                { showItems(rf0, {items: ctx.items}); }
+                ɵɵembeddedViewEnd();
+              }
+              ɵɵcontainerRefreshEnd();
+            }
+          },
       inputs: {items: 'items'}
     });
   }
@@ -320,9 +324,13 @@ describe('recursive components', () => {
   class TreeComponent {
     data: TreeNode = _buildTree(0);
 
-    ngDoCheck() { events.push('check' + this.data.value); }
+    ngDoCheck() {
+      events.push('check' + this.data.value);
+    }
 
-    ngOnDestroy() { events.push('destroy' + this.data.value); }
+    ngOnDestroy() {
+      events.push('destroy' + this.data.value);
+    }
 
     static ɵfac = () => new TreeComponent();
     static ɵcmp = ɵɵdefineComponent({
@@ -331,46 +339,47 @@ describe('recursive components', () => {
       selectors: [['tree-comp']],
       decls: 3,
       vars: 1,
-      template: (rf: RenderFlags, ctx: TreeComponent) => {
-        if (rf & RenderFlags.Create) {
-          ɵɵtext(0);
-          ɵɵcontainer(1);
-          ɵɵcontainer(2);
-        }
-        if (rf & RenderFlags.Update) {
-          ɵɵtextInterpolate(ctx.data.value);
-          ɵɵcontainerRefreshStart(1);
-          {
-            if (ctx.data.left != null) {
-              let rf0 = ɵɵembeddedViewStart(0, 1, 1);
-              if (rf0 & RenderFlags.Create) {
-                ɵɵelement(0, 'tree-comp');
-              }
-              if (rf0 & RenderFlags.Update) {
-                ɵɵselect(0);
-                ɵɵproperty('data', ctx.data.left);
-              }
-              ɵɵembeddedViewEnd();
+      template:
+          (rf: RenderFlags, ctx: TreeComponent) => {
+            if (rf & RenderFlags.Create) {
+              ɵɵtext(0);
+              ɵɵcontainer(1);
+              ɵɵcontainer(2);
             }
-          }
-          ɵɵcontainerRefreshEnd();
-          ɵɵcontainerRefreshStart(2);
-          {
-            if (ctx.data.right != null) {
-              let rf0 = ɵɵembeddedViewStart(0, 1, 1);
-              if (rf0 & RenderFlags.Create) {
-                ɵɵelement(0, 'tree-comp');
+            if (rf & RenderFlags.Update) {
+              ɵɵtextInterpolate(ctx.data.value);
+              ɵɵcontainerRefreshStart(1);
+              {
+                if (ctx.data.left != null) {
+                  let rf0 = ɵɵembeddedViewStart(0, 1, 1);
+                  if (rf0 & RenderFlags.Create) {
+                    ɵɵelement(0, 'tree-comp');
+                  }
+                  if (rf0 & RenderFlags.Update) {
+                    ɵɵselect(0);
+                    ɵɵproperty('data', ctx.data.left);
+                  }
+                  ɵɵembeddedViewEnd();
+                }
               }
-              if (rf0 & RenderFlags.Update) {
-                ɵɵselect(0);
-                ɵɵproperty('data', ctx.data.right);
+              ɵɵcontainerRefreshEnd();
+              ɵɵcontainerRefreshStart(2);
+              {
+                if (ctx.data.right != null) {
+                  let rf0 = ɵɵembeddedViewStart(0, 1, 1);
+                  if (rf0 & RenderFlags.Create) {
+                    ɵɵelement(0, 'tree-comp');
+                  }
+                  if (rf0 & RenderFlags.Update) {
+                    ɵɵselect(0);
+                    ɵɵproperty('data', ctx.data.right);
+                  }
+                  ɵɵembeddedViewEnd();
+                }
               }
-              ɵɵembeddedViewEnd();
+              ɵɵcontainerRefreshEnd();
             }
-          }
-          ɵɵcontainerRefreshEnd();
-        }
-      },
+          },
       inputs: {data: 'data'}
     });
   }
@@ -385,9 +394,13 @@ describe('recursive components', () => {
   class NgIfTree {
     data: TreeNode = _buildTree(0);
 
-    ngDoCheck() { events.push('check' + this.data.value); }
+    ngDoCheck() {
+      events.push('check' + this.data.value);
+    }
 
-    ngOnDestroy() { events.push('destroy' + this.data.value); }
+    ngOnDestroy() {
+      events.push('destroy' + this.data.value);
+    }
 
     static ɵfac = () => new NgIfTree();
     static ɵcmp = ɵɵdefineComponent({
@@ -397,20 +410,21 @@ describe('recursive components', () => {
       decls: 3,
       vars: 3,
       consts: [[AttributeMarker.Bindings, 'data', AttributeMarker.Template, 'ngIf']],
-      template: (rf: RenderFlags, ctx: NgIfTree) => {
-        if (rf & RenderFlags.Create) {
-          ɵɵtext(0);
-          ɵɵtemplate(1, IfTemplate, 1, 1, 'ng-if-tree', 0);
-          ɵɵtemplate(2, IfTemplate2, 1, 1, 'ng-if-tree', 0);
-        }
-        if (rf & RenderFlags.Update) {
-          ɵɵtextInterpolate(ctx.data.value);
-          ɵɵadvance(1);
-          ɵɵproperty('ngIf', ctx.data.left);
-          ɵɵadvance(1);
-          ɵɵproperty('ngIf', ctx.data.right);
-        }
-      },
+      template:
+          (rf: RenderFlags, ctx: NgIfTree) => {
+            if (rf & RenderFlags.Create) {
+              ɵɵtext(0);
+              ɵɵtemplate(1, IfTemplate, 1, 1, 'ng-if-tree', 0);
+              ɵɵtemplate(2, IfTemplate2, 1, 1, 'ng-if-tree', 0);
+            }
+            if (rf & RenderFlags.Update) {
+              ɵɵtextInterpolate(ctx.data.value);
+              ɵɵadvance(1);
+              ɵɵproperty('ngIf', ctx.data.left);
+              ɵɵadvance(1);
+              ɵɵproperty('ngIf', ctx.data.right);
+            }
+          },
       inputs: {data: 'data'},
     });
   }
@@ -457,7 +471,6 @@ describe('recursive components', () => {
 
   // This tests that the view tree is set up properly for recursive components
   it('should call onDestroys properly', () => {
-
     /**
      * % if (!skipContent) {
      *   <tree-comp></tree-comp>
@@ -526,10 +539,10 @@ describe('recursive components', () => {
         ['destroy0', 'destroy1', 'destroy2', 'destroy3', 'destroy4', 'destroy5', 'destroy6']);
   });
 
-  it('should map inputs minified & unminified names', async() => {
+  it('should map inputs minified & unminified names', async () => {
     class TestInputsComponent {
       // TODO(issue/24571): remove '!'.
-      minifiedName !: string;
+      minifiedName!: string;
       static ɵfac = () => new TestInputsComponent();
       static ɵcmp = ɵɵdefineComponent({
         type: TestInputsComponent,
@@ -538,9 +551,10 @@ describe('recursive components', () => {
         inputs: {minifiedName: 'unminifiedName'},
         decls: 0,
         vars: 0,
-        template: function(rf: RenderFlags, ctx: TestInputsComponent): void {
-          // Template not needed for this test
-        }
+        template: function(rf: RenderFlags, ctx: TestInputsComponent):
+            void {
+              // Template not needed for this test
+            }
       });
     }
 
@@ -549,7 +563,5 @@ describe('recursive components', () => {
     expect([
       {propName: 'minifiedName', templateName: 'unminifiedName'}
     ]).toEqual(testInputsComponentFactory.inputs);
-
   });
-
 });

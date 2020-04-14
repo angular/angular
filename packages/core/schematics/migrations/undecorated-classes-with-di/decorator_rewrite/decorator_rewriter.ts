@@ -122,7 +122,7 @@ export class DecoratorRewriter {
       |null {
     try {
       return ts
-          .transform(prop, [ctx => this.importRewriterFactory.create(ctx, this.newSourceFile !)])
+          .transform(prop, [ctx => this.importRewriterFactory.create(ctx, this.newSourceFile!)])
           .transformed[0];
     } catch (e) {
       // If the error is for an unresolved identifier, we want to return "null" because

@@ -23,12 +23,12 @@ export class DowngradeComponentAdapter {
   private inputChanges: SimpleChanges = {};
   private componentScope: IScope;
   // TODO(issue/24571): remove '!'.
-  private componentRef !: ComponentRef<any>;
+  private componentRef!: ComponentRef<any>;
   private component: any;
   // TODO(issue/24571): remove '!'.
-  private changeDetector !: ChangeDetectorRef;
+  private changeDetector!: ChangeDetectorRef;
   // TODO(issue/24571): remove '!'.
-  private viewChangeDetector !: ChangeDetectorRef;
+  private viewChangeDetector!: ChangeDetectorRef;
 
   constructor(
       private element: IAugmentedJQuery, private attrs: IAttributes, private scope: IScope,
@@ -44,12 +44,12 @@ export class DowngradeComponentAdapter {
     const projectableNodes: Node[][] = this.groupProjectableNodes();
     const linkFns = projectableNodes.map(nodes => this.$compile(nodes));
 
-    this.element.empty !();
+    this.element.empty!();
 
     linkFns.forEach(linkFn => {
       linkFn(this.scope, (clone: Node[]) => {
         compiledProjectableNodes.push(clone);
-        this.element.append !(clone);
+        this.element.append!(clone);
       });
     });
 
@@ -108,7 +108,7 @@ export class DowngradeComponentAdapter {
         // for `ngOnChanges()`. This is necessary if we are already in a `$digest`, which means that
         // `ngOnChanges()` (which is called by a watcher) will run before the `$observe()` callback.
         let unwatch: Function|null = this.componentScope.$watch(() => {
-          unwatch !();
+          unwatch!();
           unwatch = null;
           observeFn(attrs[input.attr]);
         });
@@ -140,7 +140,7 @@ export class DowngradeComponentAdapter {
       if (this.implementsOnChanges) {
         const inputChanges = this.inputChanges;
         this.inputChanges = {};
-        (<OnChanges>this.component).ngOnChanges(inputChanges !);
+        (<OnChanges>this.component).ngOnChanges(inputChanges!);
       }
 
       this.viewChangeDetector.markForCheck();
@@ -160,7 +160,7 @@ export class DowngradeComponentAdapter {
     // (Allow time for the initial input values to be set and `ngOnChanges()` to be called.)
     if (manuallyAttachView || !propagateDigest) {
       let unwatch: Function|null = this.componentScope.$watch(() => {
-        unwatch !();
+        unwatch!();
         unwatch = null;
 
         const appRef = this.parentInjector.get<ApplicationRef>(ApplicationRef);
@@ -202,12 +202,12 @@ export class DowngradeComponentAdapter {
     const emitter = this.component[output.prop] as EventEmitter<any>;
     if (emitter) {
       emitter.subscribe({
-        next: isAssignment ? (v: any) => setter !(this.scope, v) :
+        next: isAssignment ? (v: any) => setter!(this.scope, v) :
                              (v: any) => getter(this.scope, {'$event': v})
       });
     } else {
-      throw new Error(
-          `Missing emitter '${output.prop}' on component '${getTypeName(this.componentFactory.componentType)}'!`);
+      throw new Error(`Missing emitter '${output.prop}' on component '${
+          getTypeName(this.componentFactory.componentType)}'!`);
     }
   }
 
@@ -216,7 +216,7 @@ export class DowngradeComponentAdapter {
     const destroyComponentRef = this.wrapCallback(() => this.componentRef.destroy());
     let destroyed = false;
 
-    this.element.on !('$destroy', () => this.componentScope.$destroy());
+    this.element.on!('$destroy', () => this.componentScope.$destroy());
     this.componentScope.$on('$destroy', () => {
       if (!destroyed) {
         destroyed = true;
@@ -226,7 +226,9 @@ export class DowngradeComponentAdapter {
     });
   }
 
-  getInjector(): Injector { return this.componentRef.injector; }
+  getInjector(): Injector {
+    return this.componentRef.injector;
+  }
 
   private updateInput(prop: string, prevValue: any, currValue: any) {
     if (this.implementsOnChanges) {
@@ -239,7 +241,7 @@ export class DowngradeComponentAdapter {
 
   groupProjectableNodes() {
     let ngContentSelectors = this.componentFactory.ngContentSelectors;
-    return groupNodesBySelector(ngContentSelectors, this.element.contents !());
+    return groupNodesBySelector(ngContentSelectors, this.element.contents!());
   }
 }
 

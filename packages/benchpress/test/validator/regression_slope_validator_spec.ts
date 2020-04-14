@@ -53,7 +53,6 @@ import {Injector, MeasureValues, RegressionSlopeValidator} from '../../index';
       expect(validator.validate(sample.slice(0, 2))).toEqual(sample.slice(0, 2));
       expect(validator.validate(sample)).toEqual(sample.slice(1, 3));
     });
-
   });
 }
 

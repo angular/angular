@@ -67,7 +67,7 @@ const rootLView = createLView(
     null, createTView(TViewType.Root, -1, null, 0, 0, null, null, null, null, null), {},
     LViewFlags.IsRoot, null, null);
 
-const viewTNode = createTNode(null !, null, TNodeType.View, -1, null, null) as TViewNode;
+const viewTNode = createTNode(null!, null, TNodeType.View, -1, null, null) as TViewNode;
 const embeddedTView = createTView(
     TViewType.Embedded, -1, testTemplate, 21, 0, null, null, null, null, [[
       'name1', 'value1', 'name2', 'value2', 'name3', 'value3', 'name4', 'value4', 'name5', 'value5'

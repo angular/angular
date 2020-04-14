@@ -71,7 +71,7 @@ function getTargetTsconfigPath(project: WorkspaceProject, targetName: string): s
  */
 function getWorkspaceConfigGracefully(tree: Tree): any {
   const path = defaultWorkspaceConfigPaths.find(filePath => tree.exists(filePath));
-  const configBuffer = tree.read(path !);
+  const configBuffer = tree.read(path!);
 
   if (!path || !configBuffer) {
     return null;

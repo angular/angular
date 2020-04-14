@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {readFileSync, writeFileSync} from 'fs';
-import {SizeTracker} from './size_tracker';
 import chalk from 'chalk';
+import {readFileSync, writeFileSync} from 'fs';
+
 import {compareFileSizeData} from './file_size_compare';
 import {FileSizeData} from './file_size_data';
+import {SizeTracker} from './size_tracker';
 
 if (require.main === module) {
-  const
-      [filePath, sourceMapPath, goldenPath, maxPercentageDiffArg, maxSizeDiffArg, writeGoldenArg,
-       requiredCompileMode] = process.argv.slice(2);
+  const [filePath, sourceMapPath, goldenPath, maxPercentageDiffArg, maxSizeDiffArg, writeGoldenArg, requiredCompileMode] =
+      process.argv.slice(2);
   const status = main(
       require.resolve(filePath), require.resolve(sourceMapPath), require.resolve(goldenPath),
       writeGoldenArg === 'true', parseInt(maxPercentageDiffArg), parseInt(maxSizeDiffArg),
@@ -62,7 +62,7 @@ export function main(
   const bazelTargetName = process.env['TEST_TARGET'];
 
   console.error(`\nThe golden file can be updated with the following command:`);
-  console.error(
-      `    yarn bazel run --config=${ivyEnabled ? 'ivy' : 'view-engine'} ${bazelTargetName}.accept`);
+  console.error(`    yarn bazel run --config=${ivyEnabled ? 'ivy' : 'view-engine'} ${
+      bazelTargetName}.accept`);
   return false;
 }

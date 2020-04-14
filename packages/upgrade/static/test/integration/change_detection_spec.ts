@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ElementRef, Injector, Input, NgModule, NgZone, SimpleChanges, destroyPlatform} from '@angular/core';
+import {Component, destroyPlatform, Directive, ElementRef, Injector, Input, NgModule, NgZone, SimpleChanges} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
+import {downgradeComponent, UpgradeComponent, UpgradeModule} from '@angular/upgrade/static';
 
 import * as angular from '../../../src/common/src/angular1';
 import {html, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
@@ -139,7 +139,9 @@ withEachNg1Version(() => {
          @Component({selector: 'my-app', template: '<my-child [value]="value"></my-child>'})
          class AppComponent {
            value?: number;
-           constructor() { appComponent = this; }
+           constructor() {
+             appComponent = this;
+           }
          }
 
          @Component({
@@ -149,15 +151,18 @@ withEachNg1Version(() => {
          class ChildComponent {
            valueFromPromise?: number;
            @Input()
-           set value(v: number) { expect(NgZone.isInAngularZone()).toBe(true); }
+           set value(v: number) {
+             expect(NgZone.isInAngularZone()).toBe(true);
+           }
 
            constructor(private zone: NgZone) {}
 
            ngOnChanges(changes: SimpleChanges) {
              if (changes['value'].isFirstChange()) return;
 
-             this.zone.onMicrotaskEmpty.subscribe(
-                 () => { expect(element.textContent).toEqual('5'); });
+             this.zone.onMicrotaskEmpty.subscribe(() => {
+               expect(element.textContent).toEqual('5');
+             });
 
              // Create a micro-task to update the value to be rendered asynchronously.
              Promise.resolve().then(() => this.valueFromPromise = changes['value'].currentValue);

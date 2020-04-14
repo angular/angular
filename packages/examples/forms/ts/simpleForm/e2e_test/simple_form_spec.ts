@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementArrayFinder, browser, by, element} from 'protractor';
+import {browser, by, element, ElementArrayFinder} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 describe('simpleForm example', () => {
@@ -40,5 +41,4 @@ describe('simpleForm example', () => {
     expect(paragraphs.get(1).getText()).toEqual('First name valid: true');
     expect(paragraphs.get(3).getText()).toEqual('Form valid: true');
   });
-
 });

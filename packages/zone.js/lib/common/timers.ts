@@ -50,11 +50,13 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
       }
     }
     data.args[0] = timer;
-    data.handleId = setNative !.apply(window, data.args);
+    data.handleId = setNative!.apply(window, data.args);
     return task;
   }
 
-  function clearTask(task: Task) { return clearNative !((<TimerOptions>task.data).handleId); }
+  function clearTask(task: Task) {
+    return clearNative!((<TimerOptions>task.data).handleId);
+  }
 
   setNative =
       patchMethod(window, setName, (delegate: Function) => function(self: any, args: any[]) {
@@ -116,7 +118,7 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
         }
         if (task && typeof task.type === 'string') {
           if (task.state !== 'notScheduled' &&
-              (task.cancelFn && task.data !.isPeriodic || task.runCount === 0)) {
+              (task.cancelFn && task.data!.isPeriodic || task.runCount === 0)) {
             if (typeof id === 'number') {
               delete tasksByHandleId[id];
             } else if (id) {

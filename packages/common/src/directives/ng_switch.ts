@@ -104,7 +104,7 @@ export class SwitchView {
 @Directive({selector: '[ngSwitch]'})
 export class NgSwitch {
   // TODO(issue/24571): remove '!'.
-  private _defaultViews !: SwitchView[];
+  private _defaultViews!: SwitchView[];
   private _defaultUsed = false;
   private _caseCount = 0;
   private _lastCaseCheckIndex = 0;
@@ -120,7 +120,9 @@ export class NgSwitch {
   }
 
   /** @internal */
-  _addCase(): number { return this._caseCount++; }
+  _addCase(): number {
+    return this._caseCount++;
+  }
 
   /** @internal */
   _addDefault(view: SwitchView) {
@@ -193,8 +195,7 @@ export class NgSwitchCase implements DoCheck {
   /**
    * Stores the HTML template to be selected on match.
    */
-  @Input()
-  ngSwitchCase: any;
+  @Input() ngSwitchCase: any;
 
   constructor(
       viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
@@ -206,7 +207,9 @@ export class NgSwitchCase implements DoCheck {
   /**
    * Performs case matching. For internal use only.
    */
-  ngDoCheck() { this._view.enforceState(this.ngSwitch._matchCase(this.ngSwitchCase)); }
+  ngDoCheck() {
+    this._view.enforceState(this.ngSwitch._matchCase(this.ngSwitchCase));
+  }
 }
 
 /**

@@ -26,9 +26,13 @@ function paramParser(rawParams: string = ''): Map<string, string[]> {
  * @publicApi
  **/
 export class QueryEncoder {
-  encodeKey(key: string): string { return standardEncoding(key); }
+  encodeKey(key: string): string {
+    return standardEncoding(key);
+  }
 
-  encodeValue(value: string): string { return standardEncoding(value); }
+  encodeValue(value: string): string {
+    return standardEncoding(value);
+  }
 }
 
 function standardEncoding(v: string): string {
@@ -93,7 +97,9 @@ export class URLSearchParams {
     return clone;
   }
 
-  has(param: string): boolean { return this.paramsMap.has(param); }
+  has(param: string): boolean {
+    return this.paramsMap.has(param);
+  }
 
   get(param: string): string|null {
     const storedParam = this.paramsMap.get(param);
@@ -101,7 +107,9 @@ export class URLSearchParams {
     return Array.isArray(storedParam) ? storedParam[0] : null;
   }
 
-  getAll(param: string): string[] { return this.paramsMap.get(param) || []; }
+  getAll(param: string): string[] {
+    return this.paramsMap.get(param) || [];
+  }
 
   set(param: string, val: string) {
     if (val === void 0 || val === null) {
@@ -182,5 +190,7 @@ export class URLSearchParams {
     return paramsList.join('&');
   }
 
-  delete (param: string): void { this.paramsMap.delete(param); }
+  delete(param: string): void {
+    this.paramsMap.delete(param);
+  }
 }

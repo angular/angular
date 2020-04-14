@@ -19,7 +19,9 @@ export interface TestSupport {
   angularCorePath: string;
   typesRoots: string;
   writeConfig({
-      srcTargetPath, depPaths, pathMapping,
+    srcTargetPath,
+    depPaths,
+    pathMapping,
   }: {
     srcTargetPath: string,
     depPaths?: string[],
@@ -33,13 +35,13 @@ export interface TestSupport {
   runOneBuild(): boolean;
 }
 
-export function setup(
-    {
-        bazelBin = 'bazel-bin', tsconfig = 'tsconfig.json',
-    }: {
-      bazelBin?: string,
-      tsconfig?: string,
-    } = {}): TestSupport {
+export function setup({
+  bazelBin = 'bazel-bin',
+  tsconfig = 'tsconfig.json',
+}: {
+  bazelBin?: string,
+  tsconfig?: string,
+} = {}): TestSupport {
   const runfilesPath = process.env['TEST_SRCDIR'];
 
   const basePath = makeTempDir(runfilesPath);
@@ -93,12 +95,17 @@ export function setup(
   }
 
   function writeFiles(...mockDirs: {[fileName: string]: string}[]) {
-    mockDirs.forEach(
-        (dir) => { Object.keys(dir).forEach((fileName) => { write(fileName, dir[fileName]); }); });
+    mockDirs.forEach((dir) => {
+      Object.keys(dir).forEach((fileName) => {
+        write(fileName, dir[fileName]);
+      });
+    });
   }
 
   function writeConfig({
-      srcTargetPath, depPaths = [], pathMapping = [],
+    srcTargetPath,
+    depPaths = [],
+    pathMapping = [],
   }: {
     srcTargetPath: string,
     depPaths?: string[],
@@ -133,7 +140,8 @@ export function setup(
       defaultTsConfig: emptyTsConfig.config,
       rootDir: basePath,
       target: target,
-      outDir: bazelBinPath, compilationTargetSrc,
+      outDir: bazelBinPath,
+      compilationTargetSrc,
       files: files,
       pathMapping: pathMappingObj,
     });
@@ -153,7 +161,9 @@ export function setup(
     }
   }
 
-  function runOneBuildImpl(): boolean { return runOneBuild(['@' + tsConfigJsonPath]); }
+  function runOneBuildImpl(): boolean {
+    return runOneBuild(['@' + tsConfigJsonPath]);
+  }
 }
 
 function makeTempDir(baseDir: string): string {

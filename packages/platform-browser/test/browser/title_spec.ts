@@ -24,10 +24,13 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       titleService = new Title(doc);
     });
 
-    afterEach(() => { doc.title = initialTitle; });
+    afterEach(() => {
+      doc.title = initialTitle;
+    });
 
-    it('should allow reading initial title',
-       () => { expect(titleService.getTitle()).toEqual(initialTitle); });
+    it('should allow reading initial title', () => {
+      expect(titleService.getTitle()).toEqual(initialTitle);
+    });
 
     it('should set a title on the injected document', () => {
       titleService.setTitle('test title');
@@ -36,13 +39,12 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     });
 
     it('should reset title to empty string if title not provided', () => {
-      titleService.setTitle(null !);
+      titleService.setTitle(null!);
       expect(doc.title).toEqual('');
     });
   });
 
   describe('integration test', () => {
-
     @Injectable()
     class DependsOnTitle {
       constructor(public title: Title) {}
@@ -55,7 +57,8 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       });
     });
 
-    it('should inject Title service when using BrowserModule',
-       () => { expect(TestBed.inject(DependsOnTitle).title).toBeAnInstanceOf(Title); });
+    it('should inject Title service when using BrowserModule', () => {
+      expect(TestBed.inject(DependsOnTitle).title).toBeAnInstanceOf(Title);
+    });
   });
 }

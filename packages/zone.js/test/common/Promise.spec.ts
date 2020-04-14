@@ -19,7 +19,7 @@ class MicroTaskQueueZoneSpec implements ZoneSpec {
   flush() {
     while (this.queue.length) {
       const task = this.queue.shift();
-      task !.invoke();
+      task!.invoke();
     }
   }
 
@@ -50,11 +50,12 @@ describe(
 
         pZone = Zone.current.fork({
           name: 'promise-zone',
-          onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                           task: Task): any => {
-            log.push('scheduleTask');
-            parentZoneDelegate.scheduleTask(targetZone, task);
-          }
+          onScheduleTask:
+              (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                  any => {
+                    log.push('scheduleTask');
+                    parentZoneDelegate.scheduleTask(targetZone, task);
+                  }
         });
 
         queueZone = Zone.current.fork(new MicroTaskQueueZoneSpec());
@@ -77,7 +78,9 @@ describe(
                 expect(value).toBe(0);
                 done();
               })
-              .catch(error => { fail(error); });
+              .catch(error => {
+                fail(error);
+              });
         } finally {
           global['Promise'] = NativePromise;
           Zone.assertZonePatched();
@@ -85,8 +88,9 @@ describe(
         }
       });
 
-      it('should pretend to be a native code',
-         () => { expect(String(Promise).indexOf('[native code]') >= 0).toBe(true); });
+      it('should pretend to be a native code', () => {
+        expect(String(Promise).indexOf('[native code]') >= 0).toBe(true);
+      });
 
       it('should use native toString for promise instance', () => {
         expect(Object.prototype.toString.call(Promise.resolve())).toEqual('[object Promise]');
@@ -105,16 +109,22 @@ describe(
 
       it('should allow subclassing without Symbol.species', () => {
         class MyPromise extends Promise<any> {
-          constructor(fn: any) { super(fn); }
+          constructor(fn: any) {
+            super(fn);
+          }
         }
         expect(new MyPromise(() => {}).then(() => null) instanceof MyPromise).toBe(true);
       });
 
       it('should allow subclassing with Symbol.species', () => {
         class MyPromise extends Promise<any> {
-          constructor(fn: any) { super(fn); }
+          constructor(fn: any) {
+            super(fn);
+          }
 
-          static get[Symbol.species]() { return MyPromise; }
+          static get[Symbol.species]() {
+            return MyPromise;
+          }
         }
         expect(new MyPromise(() => {}).then(() => null) instanceof MyPromise).toBe(true);
       });
@@ -122,15 +132,18 @@ describe(
       it('Symbol.species should return ZoneAwarePromise', () => {
         const empty = function() {};
         const promise = Promise.resolve(1);
-        const FakePromise = ((promise.constructor = {} as any) as any)[Symbol.species] = function(
-            exec: any) { exec(empty, empty); };
+        const FakePromise =
+            ((promise.constructor = {} as any) as any)[Symbol.species] = function(exec: any) {
+              exec(empty, empty);
+            };
         expect(promise.then(empty) instanceof FakePromise).toBe(true);
       });
 
       it('should intercept scheduling of resolution and then', (done) => {
         pZone.run(() => {
-          let p: Promise<any> =
-              new Promise(function(resolve, reject) { expect(resolve('RValue')).toBe(undefined); });
+          let p: Promise<any> = new Promise(function(resolve, reject) {
+            expect(resolve('RValue')).toBe(undefined);
+          });
           expect(log).toEqual([]);
           expect(p instanceof Promise).toBe(true);
           p = p.then((v) => {
@@ -155,12 +168,16 @@ describe(
         queueZone.run(() => {
           const flush = Zone.current.get('flush');
           const queue = Zone.current.get('queue');
-          const p = new Promise<string>(function(resolve, reject) { resolve('RValue'); })
+          const p = new Promise<string>(function(resolve, reject) {
+                      resolve('RValue');
+                    })
                         .then((v: string) => {
                           log.push(v);
                           return 'second value';
                         })
-                        .then((v: string) => { log.push(v); });
+                        .then((v: string) => {
+                          log.push(v);
+                        });
           expect(queue.length).toEqual(1);
           expect(log).toEqual([]);
           flush();
@@ -172,13 +189,16 @@ describe(
         queueZone.run(() => {
           const flush = Zone.current.get('flush');
           const queue = Zone.current.get('queue');
-          const p =
-              new Promise<string>(function(resolve, reject) { resolve(Promise.resolve('RValue')); })
-                  .then((v: string) => {
-                    log.push(v);
-                    return Promise.resolve('second value');
-                  })
-                  .then((v: string) => { log.push(v); });
+          const p = new Promise<string>(function(resolve, reject) {
+                      resolve(Promise.resolve('RValue'));
+                    })
+                        .then((v: string) => {
+                          log.push(v);
+                          return Promise.resolve('second value');
+                        })
+                        .then((v: string) => {
+                          log.push(v);
+                        });
           expect(queue.length).toEqual(1);
           expect(log).toEqual([]);
           flush();
@@ -191,55 +211,65 @@ describe(
           let resolve: Function|null = null;
 
           testZone.run(function() {
-            new Promise(function(resolveFn) { resolve = resolveFn; }).then(function() {
+            new Promise(function(resolveFn) {
+              resolve = resolveFn;
+            }).then(function() {
               expect(Zone.current).toBe(testZone);
               done();
             });
           });
 
-          resolve !();
+          resolve!();
         });
 
         it('should work with .catch', function(done) {
           let reject: (() => void)|null = null;
 
           testZone.run(function() {
-            new Promise(function(resolveFn, rejectFn) { reject = rejectFn; })['catch'](function() {
+            new Promise(function(resolveFn, rejectFn) {
+              reject = rejectFn;
+            })['catch'](function() {
               expect(Zone.current).toBe(testZone);
               done();
             });
           });
 
 
-          expect(reject !()).toBe(undefined);
+          expect(reject!()).toBe(undefined);
         });
 
         it('should work with .finally with resolved promise', function(done) {
           let resolve: Function|null = null;
 
           testZone.run(function() {
-            (new Promise(function(resolveFn) { resolve = resolveFn; }) as any).finally(function() {
-              expect(arguments.length).toBe(0);
-              expect(Zone.current).toBe(testZone);
-              done();
-            });
+            (new Promise(function(resolveFn) {
+               resolve = resolveFn;
+             }) as any)
+                .finally(function() {
+                  expect(arguments.length).toBe(0);
+                  expect(Zone.current).toBe(testZone);
+                  done();
+                });
           });
 
-          resolve !('value');
+          resolve!('value');
         });
 
         it('should work with .finally with rejected promise', function(done) {
           let reject: Function|null = null;
 
           testZone.run(function() {
-            (new Promise(function(_, rejectFn) { reject = rejectFn; }) as any).finally(function() {
-              expect(arguments.length).toBe(0);
-              expect(Zone.current).toBe(testZone);
-              done();
-            });
+            (new Promise(function(_, rejectFn) {
+               reject = rejectFn;
+             }) as any)
+                .finally(function() {
+                  expect(arguments.length).toBe(0);
+                  expect(Zone.current).toBe(testZone);
+                  done();
+                });
           });
 
-          reject !('error');
+          reject!('error');
         });
 
         it('should work with Promise.resolve', () => {
@@ -275,8 +305,9 @@ describe(
           it('should re-reject promise', () => {
             queueZone.run(() => {
               let value: any = null;
-              Promise.reject('rejectReason')['catch']((v) => { throw v; })['catch'](
-                  (v) => value = v);
+              Promise.reject('rejectReason')['catch']((v) => {
+                throw v;
+              })['catch']((v) => value = v);
               flushMicrotasks();
               expect(value).toEqual('rejectReason');
             });
@@ -308,7 +339,9 @@ describe(
                  (Zone as any)[Zone.__symbol__('ignoreConsoleErrorUncaughtError')] = false;
                  const originalConsoleError = console.error;
                  console.error = jasmine.createSpy('consoleErr');
-                 const p = new Promise((resolve, reject) => { throw new Error('promise error'); });
+                 const p = new Promise((resolve, reject) => {
+                   throw new Error('promise error');
+                 });
                  setTimeout(() => {
                    expect(console.error).toHaveBeenCalled();
                    console.error = originalConsoleError;
@@ -323,7 +356,9 @@ describe(
                  (Zone as any)[Zone.__symbol__('ignoreConsoleErrorUncaughtError')] = true;
                  const originalConsoleError = console.error;
                  console.error = jasmine.createSpy('consoleErr');
-                 const p = new Promise((resolve, reject) => { throw new Error('promise error'); });
+                 const p = new Promise((resolve, reject) => {
+                   throw new Error('promise error');
+                 });
                  setTimeout(() => {
                    expect(console.error).not.toHaveBeenCalled();
                    console.error = originalConsoleError;
@@ -342,11 +377,11 @@ describe(
                 .fork({
                   name: 'promise-error',
                   onHandleError: (delegate: ZoneDelegate, current: Zone, target: Zone, error: any):
-                                     boolean => {
-                                       promiseError = error;
-                                       delegate.handleError(target, error);
-                                       return false;
-                                     }
+                      boolean => {
+                        promiseError = error;
+                        delegate.handleError(target, error);
+                        return false;
+                      }
                 })
                 .run(() => {
                   zone = Zone.current;
@@ -362,10 +397,10 @@ describe(
                 });
             setTimeout((): any => null);
             setTimeout(() => {
-              expect(promiseError !.message)
+              expect(promiseError!.message)
                   .toBe(
                       'Uncaught (in promise): ' + error +
-                      (error !.stack ? '\n' + error !.stack : ''));
+                      (error!.stack ? '\n' + error!.stack : ''));
               expect((promiseError as any)['rejection']).toBe(error);
               expect((promiseError as any)['zone']).toBe(zone);
               expect((promiseError as any)['task']).toBe(task);
@@ -382,11 +417,11 @@ describe(
                 .fork({
                   name: 'promise-error',
                   onHandleError: (delegate: ZoneDelegate, current: Zone, target: Zone, error: any):
-                                     boolean => {
-                                       promiseError = error;
-                                       delegate.handleError(target, error);
-                                       return false;
-                                     }
+                      boolean => {
+                        promiseError = error;
+                        delegate.handleError(target, error);
+                        return false;
+                      }
                 })
                 .run(() => {
                   zone = Zone.current;
@@ -399,7 +434,7 @@ describe(
                 });
             setTimeout((): any => null);
             setTimeout(() => {
-              expect(promiseError !.message)
+              expect(promiseError!.message)
                   .toMatch(/Uncaught \(in promise\):.*: {"prop1":"value1","prop2":"value2"}/);
               done();
             });
@@ -456,8 +491,16 @@ describe(
           it('should resolve with the sync then operation', () => {
             queueZone.run(() => {
               let value: any = null;
-              const p1 = {then: function(thenCallback: Function) { return thenCallback('p1'); }};
-              const p2 = {then: function(thenCallback: Function) { return thenCallback('p2'); }};
+              const p1 = {
+                then: function(thenCallback: Function) {
+                  return thenCallback('p1');
+                }
+              };
+              const p2 = {
+                then: function(thenCallback: Function) {
+                  return thenCallback('p2');
+                }
+              };
               Promise.all([p1, 'v1', p2]).then((v: any) => value = v);
               // expect(Zone.current.get('queue').length).toEqual(2);
               flushMicrotasks();
@@ -467,16 +510,20 @@ describe(
 
           it('should resolve generators',
              ifEnvSupports(
-                 () => { return isNode; },
                  () => {
-                   const generators: any = function* () {
+                   return isNode;
+                 },
+                 () => {
+                   const generators: any = function*() {
                      yield Promise.resolve(1);
                      yield Promise.resolve(2);
                      return;
                    };
                    queueZone.run(() => {
                      let value: any = null;
-                     Promise.all(generators()).then(val => { value = val; });
+                     Promise.all(generators()).then(val => {
+                       value = val;
+                     });
                      // expect(Zone.current.get('queue').length).toEqual(2);
                      flushMicrotasks();
                      expect(value).toEqual([1, 2]);
@@ -488,7 +535,9 @@ describe(
       describe('Promise subclasses', function() {
         class MyPromise<T> {
           private _promise: Promise<any>;
-          constructor(init: any) { this._promise = new Promise(init); }
+          constructor(init: any) {
+            this._promise = new Promise(init);
+          }
 
           catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>)|
                                  undefined|null): Promise<T|TResult> {
@@ -511,29 +560,43 @@ describe(
         setPrototypeOf(MyPromise.prototype, Promise.prototype);
 
         it('should reject if the Promise subclass rejects', function() {
-          const myPromise =
-              new MyPromise(function(resolve: any, reject: any): void { reject('foo'); });
+          const myPromise = new MyPromise(function(resolve: any, reject: any): void {
+            reject('foo');
+          });
 
           return Promise.resolve()
-              .then(function() { return myPromise; })
+              .then(function() {
+                return myPromise;
+              })
               .then(
-                  function() { throw new Error('Unexpected resolution'); },
-                  function(result) { expect(result).toBe('foo'); });
+                  function() {
+                    throw new Error('Unexpected resolution');
+                  },
+                  function(result) {
+                    expect(result).toBe('foo');
+                  });
         });
 
         function testPromiseSubClass(done?: Function) {
-          const myPromise =
-              new MyPromise(function(resolve: any, reject: Function) { resolve('foo'); });
-
-          return Promise.resolve().then(function() { return myPromise; }).then(function(result) {
-            expect(result).toBe('foo');
-            done && done();
+          const myPromise = new MyPromise(function(resolve: any, reject: Function) {
+            resolve('foo');
           });
+
+          return Promise.resolve()
+              .then(function() {
+                return myPromise;
+              })
+              .then(function(result) {
+                expect(result).toBe('foo');
+                done && done();
+              });
         }
 
         it('should resolve if the Promise subclass resolves', jasmine ? function(done) {
           testPromiseSubClass(done);
-        } : function() { testPromiseSubClass(); });
+        } : function() {
+          testPromiseSubClass();
+        });
       });
 
       describe('Promise.allSettled', () => {
@@ -589,9 +652,13 @@ describe(
         });
         it('poisoned .then', (done: DoneFn) => {
           const promise = new Promise(function() {});
-          promise.then = function() { throw new EvalError(); };
+          promise.then = function() {
+            throw new EvalError();
+          };
           allSettled([promise]).then(
-              () => { fail('should not reach here'); },
+              () => {
+                fail('should not reach here');
+              },
               (reason: any) => {
                 expect(reason instanceof EvalError).toBe(true);
                 done();

@@ -7,8 +7,10 @@
  */
 
 import {ɵrenderComponent as renderComponent} from '@angular/core';
+
 import {bindAction, profile} from '../../util';
-import {TreeComponent, createDom, destroyDom, detectChanges} from './tree';
+
+import {createDom, destroyDom, detectChanges, TreeComponent} from './tree';
 
 function noop() {}
 

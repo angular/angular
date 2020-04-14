@@ -20,7 +20,9 @@ import {URLSearchParams} from './url_search_params';
  * @deprecated see https://angular.io/guide/http
  * @publicApi
  */
-export abstract class ConnectionBackend { abstract createConnection(request: any): Connection; }
+export abstract class ConnectionBackend {
+  abstract createConnection(request: any): Connection;
+}
 
 /**
  * Abstract class from which real connections are derived.
@@ -30,9 +32,9 @@ export abstract class ConnectionBackend { abstract createConnection(request: any
  */
 export abstract class Connection {
   // TODO(issue/24571): remove '!'.
-  readyState !: ReadyState;
+  readyState!: ReadyState;
   // TODO(issue/24571): remove '!'.
-  request !: Request;
+  request!: Request;
   response: any;  // TODO: generic of <Response>;
 }
 
@@ -42,7 +44,9 @@ export abstract class Connection {
  * @deprecated see https://angular.io/guide/http
  * @publicApi
  */
-export abstract class XSRFStrategy { abstract configureRequest(req: Request): void; }
+export abstract class XSRFStrategy {
+  abstract configureRequest(req: Request): void;
+}
 
 /**
  * Interface for options to construct a RequestOptions, based on
@@ -66,7 +70,9 @@ export interface RequestOptionsArgs {
 /**
  * Required structure when constructing new Request();
  */
-export interface RequestArgs extends RequestOptionsArgs { url: string|null; }
+export interface RequestArgs extends RequestOptionsArgs {
+  url: string|null;
+}
 
 /**
  * Interface for options to construct a Response, based on

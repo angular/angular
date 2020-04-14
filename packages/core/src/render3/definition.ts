@@ -303,7 +303,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       decls: componentDefinition.decls,
       vars: componentDefinition.vars,
       factory: null,
-      template: componentDefinition.template || null !,
+      template: componentDefinition.template || null!,
       consts: componentDefinition.consts || null,
       ngContentSelectors: componentDefinition.ngContentSelectors,
       hostBindings: componentDefinition.hostBindings || null,
@@ -311,8 +311,8 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       hostAttrs: componentDefinition.hostAttrs || null,
       contentQueries: componentDefinition.contentQueries || null,
       declaredInputs: declaredInputs,
-      inputs: null !,   // assigned in noSideEffects
-      outputs: null !,  // assigned in noSideEffects
+      inputs: null!,   // assigned in noSideEffects
+      outputs: null!,  // assigned in noSideEffects
       exportAs: componentDefinition.exportAs || null,
       onChanges: null,
       onInit: typePrototype.ngOnInit || null,
@@ -323,8 +323,8 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       afterViewChecked: typePrototype.ngAfterViewChecked || null,
       onDestroy: typePrototype.ngOnDestroy || null,
       onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
-      directiveDefs: null !,  // assigned in noSideEffects
-      pipeDefs: null !,       // assigned in noSideEffects
+      directiveDefs: null!,  // assigned in noSideEffects
+      pipeDefs: null!,       // assigned in noSideEffects
       selectors: componentDefinition.selectors || EMPTY_ARRAY,
       viewQuery: componentDefinition.viewQuery || null,
       features: componentDefinition.features as DirectiveDefFeature[] || null,
@@ -339,9 +339,9 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       schemas: componentDefinition.schemas || null,
       tView: null,
     };
-    const directiveTypes = componentDefinition.directives !;
+    const directiveTypes = componentDefinition.directives!;
     const feature = componentDefinition.features;
-    const pipeTypes = componentDefinition.pipes !;
+    const pipeTypes = componentDefinition.pipes!;
     def.id += _renderCompCount++;
     def.inputs = invertObject(componentDefinition.inputs, declaredInputs),
     def.outputs = invertObject(componentDefinition.outputs),
@@ -373,7 +373,7 @@ export function extractDirectiveDef(type: Type<any>): DirectiveDef<any>|Componen
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is neither 'ComponentType' or 'DirectiveType'.`);
   }
-  return def !;
+  return def!;
 }
 
 export function extractPipeDef(type: Type<any>): PipeDef<any> {
@@ -381,7 +381,7 @@ export function extractPipeDef(type: Type<any>): PipeDef<any> {
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is not a 'PipeType'.`);
   }
-  return def !;
+  return def!;
 }
 
 export const autoRegisterModuleById: {[id: string]: NgModuleType} = {};
@@ -425,8 +425,9 @@ export function ɵɵdefineNgModule<T>(def: {
     id: def.id || null,
   };
   if (def.id != null) {
-    noSideEffects(
-        () => { autoRegisterModuleById[def.id !] = def.type as unknown as NgModuleType; });
+    noSideEffects(() => {
+      autoRegisterModuleById[def.id!] = def.type as unknown as NgModuleType;
+    });
   }
   return res as never;
 }
@@ -443,7 +444,7 @@ export function ɵɵdefineNgModule<T>(def: {
  */
 export function ɵɵsetNgModuleScope(type: any, scope: {
   /** List of components, directives, and pipes declared by this module. */
-  declarations?: Type<any>[] | (() => Type<any>[]);
+  declarations?: Type<any>[]|(() => Type<any>[]);
 
   /** List of modules or `ModuleWithProviders` imported by this module. */
   imports?: Type<any>[] | (() => Type<any>[]);
@@ -455,11 +456,11 @@ export function ɵɵsetNgModuleScope(type: any, scope: {
   exports?: Type<any>[] | (() => Type<any>[]);
 }): void {
   return noSideEffects(() => {
-    const ngModuleDef = getNgModuleDef(type, true);
-    ngModuleDef.declarations = scope.declarations || EMPTY_ARRAY;
-    ngModuleDef.imports = scope.imports || EMPTY_ARRAY;
-    ngModuleDef.exports = scope.exports || EMPTY_ARRAY;
-  }) as never;
+           const ngModuleDef = getNgModuleDef(type, true);
+           ngModuleDef.declarations = scope.declarations || EMPTY_ARRAY;
+           ngModuleDef.imports = scope.imports || EMPTY_ARRAY;
+           ngModuleDef.exports = scope.exports || EMPTY_ARRAY;
+         }) as never;
 }
 
 /**
@@ -518,13 +519,13 @@ export function ɵɵsetNgModuleScope(type: any, scope: {
 
  */
 function invertObject<T>(
-    obj?: {[P in keyof T]?: string | [string, string]},
+    obj?: {[P in keyof T]?: string|[string, string]},
     secondary?: {[key: string]: string}): {[P in keyof T]: string} {
   if (obj == null) return EMPTY_OBJ as any;
   const newLookup: any = {};
   for (const minifiedKey in obj) {
     if (obj.hasOwnProperty(minifiedKey)) {
-      let publicName: string|[string, string] = obj[minifiedKey] !;
+      let publicName: string|[string, string] = obj[minifiedKey]!;
       let declaredName = publicName;
       if (Array.isArray(publicName)) {
         declaredName = publicName[1];
@@ -555,142 +556,143 @@ function invertObject<T>(
  *
  * @codeGenApi
  */
-export const ɵɵdefineDirective = ɵɵdefineComponent as any as<T>(directiveDefinition: {
-  /**
-   * Directive type, needed to configure the injector.
-   */
-  type: Type<T>;
+export const ɵɵdefineDirective =
+    ɵɵdefineComponent as any as<T>(directiveDefinition: {
+      /**
+       * Directive type, needed to configure the injector.
+       */
+      type: Type<T>;
 
-  /** The selectors that will be used to match nodes to this directive. */
-  selectors?: CssSelectorList;
+      /** The selectors that will be used to match nodes to this directive. */
+      selectors?: CssSelectorList;
 
-  /**
-   * A map of input names.
-   *
-   * The format is in: `{[actualPropertyName: string]:(string|[string, string])}`.
-   *
-   * Given:
-   * ```
-   * class MyComponent {
-   *   @Input()
-   *   publicInput1: string;
-   *
-   *   @Input('publicInput2')
-   *   declaredInput2: string;
-   * }
-   * ```
-   *
-   * is described as:
-   * ```
-   * {
-   *   publicInput1: 'publicInput1',
-   *   declaredInput2: ['declaredInput2', 'publicInput2'],
-   * }
-   * ```
-   *
-   * Which the minifier may translate to:
-   * ```
-   * {
-   *   minifiedPublicInput1: 'publicInput1',
-   *   minifiedDeclaredInput2: [ 'publicInput2', 'declaredInput2'],
-   * }
-   * ```
-   *
-   * This allows the render to re-construct the minified, public, and declared names
-   * of properties.
-   *
-   * NOTE:
-   *  - Because declared and public name are usually same we only generate the array
-   *    `['declared', 'public']` format when they differ.
-   *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
-   *    inconsistent behavior in that it uses declared names rather than minified or public. For
-   *    this reason `NgOnChanges` will be deprecated and removed in future version and this
-   *    API will be simplified to be consistent with `output`.
-   */
-  inputs?: {[P in keyof T]?: string | [string, string]};
+      /**
+       * A map of input names.
+       *
+       * The format is in: `{[actualPropertyName: string]:(string|[string, string])}`.
+       *
+       * Given:
+       * ```
+       * class MyComponent {
+       *   @Input()
+       *   publicInput1: string;
+       *
+       *   @Input('publicInput2')
+       *   declaredInput2: string;
+       * }
+       * ```
+       *
+       * is described as:
+       * ```
+       * {
+       *   publicInput1: 'publicInput1',
+       *   declaredInput2: ['declaredInput2', 'publicInput2'],
+       * }
+       * ```
+       *
+       * Which the minifier may translate to:
+       * ```
+       * {
+       *   minifiedPublicInput1: 'publicInput1',
+       *   minifiedDeclaredInput2: [ 'publicInput2', 'declaredInput2'],
+       * }
+       * ```
+       *
+       * This allows the render to re-construct the minified, public, and declared names
+       * of properties.
+       *
+       * NOTE:
+       *  - Because declared and public name are usually same we only generate the array
+       *    `['declared', 'public']` format when they differ.
+       *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
+       *    inconsistent behavior in that it uses declared names rather than minified or public. For
+       *    this reason `NgOnChanges` will be deprecated and removed in future version and this
+       *    API will be simplified to be consistent with `output`.
+       */
+      inputs?: {[P in keyof T]?: string | [string, string]};
 
-  /**
-   * A map of output names.
-   *
-   * The format is in: `{[actualPropertyName: string]:string}`.
-   *
-   * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
-   *
-   * This allows the render to re-construct the minified and non-minified names
-   * of properties.
-   */
-  outputs?: {[P in keyof T]?: string};
+      /**
+       * A map of output names.
+       *
+       * The format is in: `{[actualPropertyName: string]:string}`.
+       *
+       * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
+       *
+       * This allows the render to re-construct the minified and non-minified names
+       * of properties.
+       */
+      outputs?: {[P in keyof T]?: string};
 
-  /**
-   * A list of optional features to apply.
-   *
-   * See: {@link NgOnChangesFeature}, {@link ProvidersFeature}, {@link InheritDefinitionFeature}
-   */
-  features?: DirectiveDefFeature[];
+      /**
+       * A list of optional features to apply.
+       *
+       * See: {@link NgOnChangesFeature}, {@link ProvidersFeature}, {@link InheritDefinitionFeature}
+       */
+      features?: DirectiveDefFeature[];
 
-  /**
-   * Function executed by the parent template to allow child directive to apply host bindings.
-   */
-  hostBindings?: HostBindingsFunction<T>;
+      /**
+       * Function executed by the parent template to allow child directive to apply host bindings.
+       */
+      hostBindings?: HostBindingsFunction<T>;
 
-  /**
-   * The number of bindings in this directive `hostBindings` (including pure fn bindings).
-   *
-   * Used to calculate the length of the component's LView array, so we
-   * can pre-fill the array and set the host binding start index.
-   */
-  hostVars?: number;
+      /**
+       * The number of bindings in this directive `hostBindings` (including pure fn bindings).
+       *
+       * Used to calculate the length of the component's LView array, so we
+       * can pre-fill the array and set the host binding start index.
+       */
+      hostVars?: number;
 
-  /**
-   * Assign static attribute values to a host element.
-   *
-   * This property will assign static attribute values as well as class and style
-   * values to a host element. Since attribute values can consist of different types of values, the
-   * `hostAttrs` array must include the values in the following format:
-   *
-   * attrs = [
-   *   // static attributes (like `title`, `name`, `id`...)
-   *   attr1, value1, attr2, value,
-   *
-   *   // a single namespace value (like `x:id`)
-   *   NAMESPACE_MARKER, namespaceUri1, name1, value1,
-   *
-   *   // another single namespace value (like `x:name`)
-   *   NAMESPACE_MARKER, namespaceUri2, name2, value2,
-   *
-   *   // a series of CSS classes that will be applied to the element (no spaces)
-   *   CLASSES_MARKER, class1, class2, class3,
-   *
-   *   // a series of CSS styles (property + value) that will be applied to the element
-   *   STYLES_MARKER, prop1, value1, prop2, value2
-   * ]
-   *
-   * All non-class and non-style attributes must be defined at the start of the list
-   * first before all class and style values are set. When there is a change in value
-   * type (like when classes and styles are introduced) a marker must be used to separate
-   * the entries. The marker values themselves are set via entries found in the
-   * [AttributeMarker] enum.
-   */
-  hostAttrs?: TAttributes;
+      /**
+       * Assign static attribute values to a host element.
+       *
+       * This property will assign static attribute values as well as class and style
+       * values to a host element. Since attribute values can consist of different types of values,
+       * the `hostAttrs` array must include the values in the following format:
+       *
+       * attrs = [
+       *   // static attributes (like `title`, `name`, `id`...)
+       *   attr1, value1, attr2, value,
+       *
+       *   // a single namespace value (like `x:id`)
+       *   NAMESPACE_MARKER, namespaceUri1, name1, value1,
+       *
+       *   // another single namespace value (like `x:name`)
+       *   NAMESPACE_MARKER, namespaceUri2, name2, value2,
+       *
+       *   // a series of CSS classes that will be applied to the element (no spaces)
+       *   CLASSES_MARKER, class1, class2, class3,
+       *
+       *   // a series of CSS styles (property + value) that will be applied to the element
+       *   STYLES_MARKER, prop1, value1, prop2, value2
+       * ]
+       *
+       * All non-class and non-style attributes must be defined at the start of the list
+       * first before all class and style values are set. When there is a change in value
+       * type (like when classes and styles are introduced) a marker must be used to separate
+       * the entries. The marker values themselves are set via entries found in the
+       * [AttributeMarker] enum.
+       */
+      hostAttrs?: TAttributes;
 
-  /**
-   * Function to create instances of content queries associated with a given directive.
-   */
-  contentQueries?: ContentQueriesFunction<T>;
+      /**
+       * Function to create instances of content queries associated with a given directive.
+       */
+      contentQueries?: ContentQueriesFunction<T>;
 
-  /**
-   * Additional set of instructions specific to view query processing. This could be seen as a
-   * set of instructions to be inserted into the template function.
-   */
-  viewQuery?: ViewQueriesFunction<T>| null;
+      /**
+       * Additional set of instructions specific to view query processing. This could be seen as a
+       * set of instructions to be inserted into the template function.
+       */
+      viewQuery?: ViewQueriesFunction<T>| null;
 
-  /**
-   * Defines the name that can be used in the template to assign this directive to a variable.
-   *
-   * See: {@link Directive.exportAs}
-   */
-  exportAs?: string[];
-}) => never;
+      /**
+       * Defines the name that can be used in the template to assign this directive to a variable.
+       *
+       * See: {@link Directive.exportAs}
+       */
+      exportAs?: string[];
+    }) => never;
 
 /**
  * Create a pipe definition object.
@@ -719,12 +721,12 @@ export function ɵɵdefinePipe<T>(pipeDef: {
   pure?: boolean
 }): never {
   return (<PipeDef<T>>{
-    type: pipeDef.type,
-    name: pipeDef.name,
-    factory: null,
-    pure: pipeDef.pure !== false,
-    onDestroy: pipeDef.type.prototype.ngOnDestroy || null
-  }) as never;
+           type: pipeDef.type,
+           name: pipeDef.name,
+           factory: null,
+           pure: pipeDef.pure !== false,
+           onDestroy: pipeDef.type.prototype.ngOnDestroy || null
+         }) as never;
 }
 
 /**

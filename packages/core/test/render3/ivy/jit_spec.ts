@@ -10,7 +10,7 @@ import 'reflect-metadata';
 import {ElementRef, QueryList, ɵɵsetComponentScope as setComponentScope} from '@angular/core';
 import {Injectable} from '@angular/core/src/di/injectable';
 import {setCurrentInjector, ɵɵinject} from '@angular/core/src/di/injector_compatibility';
-import {ɵɵInjectorDef, ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';
+import {ɵɵdefineInjectable, ɵɵInjectorDef} from '@angular/core/src/di/interface/defs';
 import {ivyEnabled} from '@angular/core/src/ivy_switch';
 import {ContentChild, ContentChildren, ViewChild, ViewChildren} from '@angular/core/src/metadata/di';
 import {Component, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata/directives';
@@ -20,9 +20,13 @@ import {ComponentDef, FactoryFn, PipeDef} from '@angular/core/src/render3/interf
 
 ivyEnabled && describe('render3 jit', () => {
   let injector: any;
-  beforeAll(() => { injector = setCurrentInjector(null); });
+  beforeAll(() => {
+    injector = setCurrentInjector(null);
+  });
 
-  afterAll(() => { setCurrentInjector(injector); });
+  afterAll(() => {
+    setCurrentInjector(injector);
+  });
 
   it('compiles a component', () => {
     @Component({
@@ -69,7 +73,6 @@ ivyEnabled && describe('render3 jit', () => {
   });
 
   it('compiles an injectable with a useFactory provider, without deps', () => {
-
     @Injectable({providedIn: 'root', useFactory: () => 'test'})
     class Service {
     }
@@ -100,7 +103,9 @@ ivyEnabled && describe('render3 jit', () => {
 
     @Injectable({providedIn: 'root', useClass: Other, deps: [Existing]})
     class Service {
-      get value(): any { return null; }
+      get value(): any {
+        return null;
+      }
     }
     const ServiceAny = Service as any;
 
@@ -116,7 +121,9 @@ ivyEnabled && describe('render3 jit', () => {
 
     @Injectable({providedIn: 'root', useClass: Existing})
     class Service {
-      get value(): number { return 0; }
+      get value(): number {
+        return 0;
+      }
     }
 
     expect(ɵɵinject(Existing).value).toBe(1);
@@ -223,17 +230,17 @@ ivyEnabled && describe('render3 jit', () => {
       },
     })
     class Cmp {
-      @HostBinding('class.green')
-      green: boolean = false;
+      @HostBinding('class.green') green: boolean = false;
 
       @HostListener('change', ['$event'])
-      onChange(event: any): void {}
+      onChange(event: any): void {
+      }
     }
 
     const cmpDef = (Cmp as any).ɵcmp as ComponentDef<Cmp>;
 
     expect(cmpDef.hostBindings).toBeDefined();
-    expect(cmpDef.hostBindings !.length).toBe(2);
+    expect(cmpDef.hostBindings!.length).toBe(2);
   });
 
   it('should compile @Pipes without errors', () => {

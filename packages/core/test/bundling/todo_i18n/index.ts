@@ -13,42 +13,64 @@ import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markD
 class Todo {
   editing: boolean;
 
-  get title() { return this._title; }
-  set title(value: string) { this._title = value.trim(); }
+  get title() {
+    return this._title;
+  }
+  set title(value: string) {
+    this._title = value.trim();
+  }
 
-  constructor(private _title: string, public completed: boolean = false) { this.editing = false; }
+  constructor(private _title: string, public completed: boolean = false) {
+    this.editing = false;
+  }
 }
 
 @Injectable({providedIn: 'root'})
 class TodoStore {
   todos: Array<Todo> = [
-    new Todo($localize `Demonstrate Components`),
-    new Todo($localize `Demonstrate Structural Directives`, true),
+    new Todo($localize`Demonstrate Components`),
+    new Todo($localize`Demonstrate Structural Directives`, true),
     // Using a placeholder
-    new Todo($localize `Demonstrate ${'NgModules'}:value:`),
-    new Todo($localize `Demonstrate zoneless change detection`),
-    new Todo($localize `Demonstrate internationalization`),
+    new Todo($localize`Demonstrate ${'NgModules'}:value:`),
+    new Todo($localize`Demonstrate zoneless change detection`),
+    new Todo($localize`Demonstrate internationalization`),
   ];
 
   private getWithCompleted(completed: boolean) {
     return this.todos.filter((todo: Todo) => todo.completed === completed);
   }
 
-  allCompleted() { return this.todos.length === this.getCompleted().length; }
+  allCompleted() {
+    return this.todos.length === this.getCompleted().length;
+  }
 
-  setAllTo(completed: boolean) { this.todos.forEach((t: Todo) => t.completed = completed); }
+  setAllTo(completed: boolean) {
+    this.todos.forEach((t: Todo) => t.completed = completed);
+  }
 
-  removeCompleted() { this.todos = this.getWithCompleted(false); }
+  removeCompleted() {
+    this.todos = this.getWithCompleted(false);
+  }
 
-  getRemaining() { return this.getWithCompleted(false); }
+  getRemaining() {
+    return this.getWithCompleted(false);
+  }
 
-  getCompleted() { return this.getWithCompleted(true); }
+  getCompleted() {
+    return this.getWithCompleted(true);
+  }
 
-  toggleCompletion(todo: Todo) { todo.completed = !todo.completed; }
+  toggleCompletion(todo: Todo) {
+    todo.completed = !todo.completed;
+  }
 
-  remove(todo: Todo) { this.todos.splice(this.todos.indexOf(todo), 1); }
+  remove(todo: Todo) {
+    this.todos.splice(this.todos.indexOf(todo), 1);
+  }
 
-  add(title: string) { this.todos.push(new Todo(title)); }
+  add(title: string) {
+    this.todos.push(new Todo(title));
+  }
 }
 
 @Component({

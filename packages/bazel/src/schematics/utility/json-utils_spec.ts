@@ -12,9 +12,10 @@ import {UnitTestTree} from '@angular-devkit/schematics/testing';
 import {isJsonAstObject, removeKeyValueInAstObject, replacePropertyInAstObject} from './json-utils';
 
 describe('JsonUtils', () => {
-
   let tree: UnitTestTree;
-  beforeEach(() => { tree = new UnitTestTree(new HostTree()); });
+  beforeEach(() => {
+    tree = new UnitTestTree(new HostTree());
+  });
 
   describe('replacePropertyInAstObject', () => {
     it('should replace property', () => {

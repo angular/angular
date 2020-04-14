@@ -20,7 +20,9 @@ export abstract class AnimationStyleNormalizer {
  * @publicApi
  */
 export class NoopAnimationStyleNormalizer {
-  normalizePropertyName(propertyName: string, errors: string[]): string { return propertyName; }
+  normalizePropertyName(propertyName: string, errors: string[]): string {
+    return propertyName;
+  }
 
   normalizeStyleValue(
       userProvidedProperty: string, normalizedProperty: string, value: string|number,

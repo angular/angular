@@ -20,7 +20,7 @@ function httpRequest(backend: ConnectionBackend, request: Request): Observable<R
 }
 
 function mergeOptions(
-    defaultOpts: BaseRequestOptions, providedOpts: RequestOptionsArgs | undefined,
+    defaultOpts: BaseRequestOptions, providedOpts: RequestOptionsArgs|undefined,
     method: RequestMethod, url: string): RequestArgs {
   const newOptions = defaultOpts;
   if (providedOpts) {
@@ -156,7 +156,7 @@ export class Http {
   /**
    * Performs a request with `delete` http method.
    */
-  delete (url: string, options?: RequestOptionsArgs): Observable<Response> {
+  delete(url: string, options?: RequestOptionsArgs): Observable<Response> {
     return this.request(
         new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Delete, url)));
   }

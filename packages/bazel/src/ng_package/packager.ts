@@ -22,7 +22,9 @@ function main(args: string[]): number {
   const paramFilePath = args[0];
 
   // Bazel params may be surrounded with quotes
-  function unquoteParameter(s: string) { return s.replace(/^'(.*)'$/, '$1'); }
+  function unquoteParameter(s: string) {
+    return s.replace(/^'(.*)'$/, '$1');
+  }
 
   // Parameters are specified in the file one per line.
   const params = fs.readFileSync(paramFilePath, 'utf-8').split('\n').map(unquoteParameter);
@@ -109,7 +111,7 @@ function main(args: string[]): number {
    * @param inputPath Path to the file in the input tree.
    * @param fileContent Content of the file.
    */
-  function writeFileFromInputPath(inputPath: string, fileContent: string | Buffer) {
+  function writeFileFromInputPath(inputPath: string, fileContent: string|Buffer) {
     // We want the relative path from the given file to its ancestor "root" directory.
     // This root depends on whether the file lives in the source tree (srcDir) as a basic file
     // input to ng_package, the bin output tree (binDir) as the output of another rule, or
@@ -164,9 +166,15 @@ function main(args: string[]): number {
   esm2015.forEach(file => writeEsmFile(file, '', 'esm2015'));
   esm5.forEach(file => writeEsmFile(file, '.esm5', 'esm5'));
 
-  bundles.forEach(bundle => { copyFile(bundle, out, 'bundles'); });
-  fesm2015.forEach(file => { copyFile(file, out, 'fesm2015'); });
-  fesm5.forEach(file => { copyFile(file, out, 'fesm5'); });
+  bundles.forEach(bundle => {
+    copyFile(bundle, out, 'bundles');
+  });
+  fesm2015.forEach(file => {
+    copyFile(file, out, 'fesm2015');
+  });
+  fesm5.forEach(file => {
+    copyFile(file, out, 'fesm5');
+  });
 
   // Copy all type definitions into the package. This is necessary so that developers can use
   // the package with type definitions.
@@ -419,14 +427,16 @@ export * from '${srcDirRelative(inputPath, typingsFile.replace(/\.d\.tsx?$/, '')
    * Normalizes the specified path by replacing backslash separators with Posix
    * forward slash separators.
    */
-  function normalizeSeparators(path: string): string { return path.replace(/\\/g, '/'); }
+  function normalizeSeparators(path: string): string {
+    return path.replace(/\\/g, '/');
+  }
 
   /**
-  * Rewires metadata to point to the flattened dts file.
-  *
-  * @param metadataPath the metadata file path
-  * @param typingsPath the typings bundle entrypoint
-  */
+   * Rewires metadata to point to the flattened dts file.
+   *
+   * @param metadataPath the metadata file path
+   * @param typingsPath the typings bundle entrypoint
+   */
   function rewireMetadata(metadataPath: string, typingsPath: string): string {
     const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
 
@@ -470,7 +480,7 @@ export function newArray<T>(size: number, value: T): T[];
 export function newArray<T>(size: number, value?: T): T[] {
   const list: T[] = [];
   for (let i = 0; i < size; i++) {
-    list.push(value !);
+    list.push(value!);
   }
   return list;
 }

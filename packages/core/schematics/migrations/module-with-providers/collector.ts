@@ -8,7 +8,8 @@
 
 import * as ts from 'typescript';
 
-import {NgDecorator, getAngularDecorators} from '../../utils/ng_decorators';
+import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
+
 import {isModuleWithProvidersNotGeneric} from './util';
 
 export interface ResolvedNgModule {

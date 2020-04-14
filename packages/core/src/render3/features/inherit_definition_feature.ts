@@ -27,7 +27,7 @@ type WritableDef = Writable<DirectiveDef<any>|ComponentDef<any>>;
  *
  * @codeGenApi
  */
-export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>| ComponentDef<any>): void {
+export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>|ComponentDef<any>): void {
   let superType = getSuperType(definition.type);
   let shouldInheritFields = true;
   const inheritanceChain: WritableDef[] = [definition];

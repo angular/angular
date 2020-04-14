@@ -11,7 +11,6 @@ import {browser} from 'protractor';
 import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
 describe('hello world', function() {
-
   afterEach(verifyNoBrowserErrors);
 
   describe('hello world app', function() {
@@ -30,7 +29,6 @@ describe('hello world', function() {
       expect(getComponentText('hello-app', '.greeting')).toEqual('howdy world!');
     });
   });
-
 });
 
 function getComponentText(selector: string, innerSelector: string) {

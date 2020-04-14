@@ -53,11 +53,13 @@ describe('ComponentFactoryNgElementStrategy', () => {
       strategy.connect(document.createElement('div'));
     });
 
-    it('should attach the component to the view',
-       () => { expect(applicationRef.attachView).toHaveBeenCalledWith(componentRef.hostView); });
+    it('should attach the component to the view', () => {
+      expect(applicationRef.attachView).toHaveBeenCalledWith(componentRef.hostView);
+    });
 
-    it('should detect changes',
-       () => { expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalled(); });
+    it('should detect changes', () => {
+      expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalled();
+    });
 
     it('should listen to output events', () => {
       const events: NgElementStrategyEvent[] = [];
@@ -140,7 +142,9 @@ describe('ComponentFactoryNgElementStrategy', () => {
   });
 
   describe('when inputs change and is connected', () => {
-    beforeEach(() => { strategy.connect(document.createElement('div')); });
+    beforeEach(() => {
+      strategy.connect(document.createElement('div'));
+    });
 
     it('should be set on the component instance', () => {
       strategy.setInputValue('fooFoo', 'fooFoo-1');
@@ -249,7 +253,9 @@ export class FakeComponent {
   // Keep track of the simple changes passed to ngOnChanges
   simpleChanges: SimpleChanges[] = [];
 
-  ngOnChanges(simpleChanges: SimpleChanges) { this.simpleChanges.push(simpleChanges); }
+  ngOnChanges(simpleChanges: SimpleChanges) {
+    this.simpleChanges.push(simpleChanges);
+  }
 }
 
 export class FakeComponentFactory extends ComponentFactory<any> {
@@ -263,9 +269,15 @@ export class FakeComponentFactory extends ComponentFactory<any> {
         jasmine.createSpyObj('changeDetectorRef', ['detectChanges']);
   }
 
-  get selector(): string { return 'fake-component'; }
-  get componentType(): Type<any> { return FakeComponent; }
-  get ngContentSelectors(): string[] { return ['content-1', 'content-2']; }
+  get selector(): string {
+    return 'fake-component';
+  }
+  get componentType(): Type<any> {
+    return FakeComponent;
+  }
+  get ngContentSelectors(): string[] {
+    return ['content-1', 'content-2'];
+  }
   get inputs(): {propName: string; templateName: string}[] {
     return [
       {propName: 'fooFoo', templateName: 'fooFoo'},
@@ -293,8 +305,9 @@ export class FakeComponentFactory extends ComponentFactory<any> {
 }
 
 function expectSimpleChanges(actual: SimpleChanges, expected: SimpleChanges) {
-  Object.keys(actual).forEach(
-      key => { expect(expected[key]).toBeTruthy(`Change included additional key ${key}`); });
+  Object.keys(actual).forEach(key => {
+    expect(expected[key]).toBeTruthy(`Change included additional key ${key}`);
+  });
 
   Object.keys(expected).forEach(key => {
     expect(actual[key]).toBeTruthy(`Change should have included key ${key}`);

@@ -10,7 +10,7 @@ export declare type TransitionMatcherFn =
     (fromState: any, toState: any, element: any, params: {[key: string]: any}) => boolean;
 
 export function parseTransitionExpr(
-    transitionValue: string | TransitionMatcherFn, errors: string[]): TransitionMatcherFn[] {
+    transitionValue: string|TransitionMatcherFn, errors: string[]): TransitionMatcherFn[] {
   const expressions: TransitionMatcherFn[] = [];
   if (typeof transitionValue == 'string') {
     transitionValue.split(/\s*,\s*/).forEach(

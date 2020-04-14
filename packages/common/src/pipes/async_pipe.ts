@@ -19,17 +19,28 @@ interface SubscriptionStrategy {
 
 class ObservableStrategy implements SubscriptionStrategy {
   createSubscription(async: Observable<any>, updateLatestValue: any): SubscriptionLike {
-    return async.subscribe({next: updateLatestValue, error: (e: any) => { throw e; }});
+    return async.subscribe({
+      next: updateLatestValue,
+      error: (e: any) => {
+        throw e;
+      }
+    });
   }
 
-  dispose(subscription: SubscriptionLike): void { subscription.unsubscribe(); }
+  dispose(subscription: SubscriptionLike): void {
+    subscription.unsubscribe();
+  }
 
-  onDestroy(subscription: SubscriptionLike): void { subscription.unsubscribe(); }
+  onDestroy(subscription: SubscriptionLike): void {
+    subscription.unsubscribe();
+  }
 }
 
 class PromiseStrategy implements SubscriptionStrategy {
   createSubscription(async: Promise<any>, updateLatestValue: (v: any) => any): Promise<any> {
-    return async.then(updateLatestValue, e => { throw e; });
+    return async.then(updateLatestValue, e => {
+      throw e;
+    });
   }
 
   dispose(subscription: Promise<any>): void {}
@@ -74,7 +85,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
 
   private _subscription: SubscriptionLike|Promise<any>|null = null;
   private _obj: Observable<any>|Promise<any>|EventEmitter<any>|null = null;
-  private _strategy: SubscriptionStrategy = null !;
+  private _strategy: SubscriptionStrategy = null!;
 
   constructor(private _ref: ChangeDetectorRef) {}
 
@@ -130,7 +141,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   }
 
   private _dispose(): void {
-    this._strategy.dispose(this._subscription !);
+    this._strategy.dispose(this._subscription!);
     this._latestValue = null;
     this._latestReturnedValue = null;
     this._subscription = null;

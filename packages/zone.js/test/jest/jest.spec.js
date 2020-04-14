@@ -6,10 +6,18 @@ function assertInsideSyncDescribeZone() {
 }
 describe('describe', () => {
   assertInsideSyncDescribeZone();
-  beforeEach(() => { assertInsideProxyZone(); });
-  beforeAll(() => { assertInsideProxyZone(); });
-  afterEach(() => { assertInsideProxyZone(); });
-  afterAll(() => { assertInsideProxyZone(); });
+  beforeEach(() => {
+    assertInsideProxyZone();
+  });
+  beforeAll(() => {
+    assertInsideProxyZone();
+  });
+  afterEach(() => {
+    assertInsideProxyZone();
+  });
+  afterAll(() => {
+    assertInsideProxyZone();
+  });
 });
 describe.each([[1, 2]])('describe.each', (arg1, arg2) => {
   assertInsideSyncDescribeZone();
@@ -17,23 +25,35 @@ describe.each([[1, 2]])('describe.each', (arg1, arg2) => {
   expect(arg2).toBe(2);
 });
 describe('test', () => {
-  it('it', () => { assertInsideProxyZone(); });
+  it('it', () => {
+    assertInsideProxyZone();
+  });
   it.each([[1, 2]])('it.each', (arg1, arg2) => {
     assertInsideProxyZone();
     expect(arg1).toBe(1);
     expect(arg2).toBe(2);
   });
-  test('test', () => { assertInsideProxyZone(); });
-  test.each([[]])('test.each', () => { assertInsideProxyZone(); });
+  test('test', () => {
+    assertInsideProxyZone();
+  });
+  test.each([[]])('test.each', () => {
+    assertInsideProxyZone();
+  });
 });
 
-it('it', () => { assertInsideProxyZone(); });
+it('it', () => {
+  assertInsideProxyZone();
+});
 it.each([[1, 2]])('it.each', (arg1, arg2) => {
   assertInsideProxyZone();
   expect(arg1).toBe(1);
   expect(arg2).toBe(2);
 });
-test('test', () => { assertInsideProxyZone(); });
-test.each([[]])('test.each', () => { assertInsideProxyZone(); });
+test('test', () => {
+  assertInsideProxyZone();
+});
+test.each([[]])('test.each', () => {
+  assertInsideProxyZone();
+});
 
 test.todo('todo');

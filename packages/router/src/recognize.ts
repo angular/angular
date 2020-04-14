@@ -7,21 +7,21 @@
  */
 
 import {Type} from '@angular/core';
-import {Observable, Observer, of } from 'rxjs';
+import {Observable, Observer, of} from 'rxjs';
 
 import {Data, ResolveData, Route, Routes} from './config';
-import {ActivatedRouteSnapshot, ParamsInheritanceStrategy, RouterStateSnapshot, inheritedParamsDataResolve} from './router_state';
-import {PRIMARY_OUTLET, defaultUrlMatcher} from './shared';
-import {UrlSegment, UrlSegmentGroup, UrlTree, mapChildrenIntoArray} from './url_tree';
+import {ActivatedRouteSnapshot, inheritedParamsDataResolve, ParamsInheritanceStrategy, RouterStateSnapshot} from './router_state';
+import {defaultUrlMatcher, PRIMARY_OUTLET} from './shared';
+import {mapChildrenIntoArray, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {forEach, last} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
 class NoMatch {}
 
 export function recognize(
-    rootComponentType: Type<any>| null, config: Routes, urlTree: UrlTree, url: string,
+    rootComponentType: Type<any>|null, config: Routes, urlTree: UrlTree, url: string,
     paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly',
-    relativeLinkResolution: 'legacy' | 'corrected' = 'legacy'): Observable<RouterStateSnapshot> {
+    relativeLinkResolution: 'legacy'|'corrected' = 'legacy'): Observable<RouterStateSnapshot> {
   return new Recognizer(
              rootComponentType, config, urlTree, url, paramsInheritanceStrategy,
              relativeLinkResolution)
@@ -43,13 +43,13 @@ class Recognizer {
 
       const root = new ActivatedRouteSnapshot(
           [], Object.freeze({}), Object.freeze({...this.urlTree.queryParams}),
-          this.urlTree.fragment !, {}, PRIMARY_OUTLET, this.rootComponentType, null,
+          this.urlTree.fragment!, {}, PRIMARY_OUTLET, this.rootComponentType, null,
           this.urlTree.root, -1, {});
 
       const rootNode = new TreeNode<ActivatedRouteSnapshot>(root, children);
       const routeState = new RouterStateSnapshot(this.url, rootNode);
       this.inheritParamsAndData(routeState._root);
-      return of (routeState);
+      return of(routeState);
 
     } catch (e) {
       return new Observable<RouterStateSnapshot>(
@@ -119,10 +119,10 @@ class Recognizer {
     let rawSlicedSegments: UrlSegment[] = [];
 
     if (route.path === '**') {
-      const params = segments.length > 0 ? last(segments) !.parameters : {};
+      const params = segments.length > 0 ? last(segments)!.parameters : {};
       snapshot = new ActivatedRouteSnapshot(
-          segments, params, Object.freeze({...this.urlTree.queryParams}), this.urlTree.fragment !,
-          getData(route), outlet, route.component !, route, getSourceSegmentGroup(rawSegment),
+          segments, params, Object.freeze({...this.urlTree.queryParams}), this.urlTree.fragment!,
+          getData(route), outlet, route.component!, route, getSourceSegmentGroup(rawSegment),
           getPathIndexShift(rawSegment) + segments.length, getResolve(route));
     } else {
       const result: MatchResult = match(rawSegment, route, segments);
@@ -131,7 +131,7 @@ class Recognizer {
 
       snapshot = new ActivatedRouteSnapshot(
           consumedSegments, result.parameters, Object.freeze({...this.urlTree.queryParams}),
-          this.urlTree.fragment !, getData(route), outlet, route.component !, route,
+          this.urlTree.fragment!, getData(route), outlet, route.component!, route,
           getSourceSegmentGroup(rawSegment),
           getPathIndexShift(rawSegment) + consumedSegments.length, getResolve(route));
     }
@@ -169,7 +169,7 @@ function getChildConfig(route: Route): Route[] {
   }
 
   if (route.loadChildren) {
-    return route._loadedConfig !.routes;
+    return route._loadedConfig!.routes;
   }
 
   return [];
@@ -195,7 +195,9 @@ function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment
   if (!res) throw new NoMatch();
 
   const posParams: {[n: string]: string} = {};
-  forEach(res.posParams !, (v: UrlSegment, k: string) => { posParams[k] = v.path; });
+  forEach(res.posParams!, (v: UrlSegment, k: string) => {
+    posParams[k] = v.path;
+  });
   const parameters = res.consumed.length > 0 ?
       {...posParams, ...res.consumed[res.consumed.length - 1].parameters} :
       posParams;
@@ -236,13 +238,14 @@ function getPathIndexShift(segmentGroup: UrlSegmentGroup): number {
 
 function split(
     segmentGroup: UrlSegmentGroup, consumedSegments: UrlSegment[], slicedSegments: UrlSegment[],
-    config: Route[], relativeLinkResolution: 'legacy' | 'corrected') {
+    config: Route[], relativeLinkResolution: 'legacy'|'corrected') {
   if (slicedSegments.length > 0 &&
       containsEmptyPathMatchesWithNamedOutlets(segmentGroup, slicedSegments, config)) {
     const s = new UrlSegmentGroup(
-        consumedSegments, createChildrenForEmptyPaths(
-                              segmentGroup, consumedSegments, config,
-                              new UrlSegmentGroup(slicedSegments, segmentGroup.children)));
+        consumedSegments,
+        createChildrenForEmptyPaths(
+            segmentGroup, consumedSegments, config,
+            new UrlSegmentGroup(slicedSegments, segmentGroup.children)));
     s._sourceSegment = segmentGroup;
     s._segmentIndexShift = consumedSegments.length;
     return {segmentGroup: s, slicedSegments: []};
@@ -251,9 +254,10 @@ function split(
   if (slicedSegments.length === 0 &&
       containsEmptyPathMatches(segmentGroup, slicedSegments, config)) {
     const s = new UrlSegmentGroup(
-        segmentGroup.segments, addEmptyPathsToChildrenIfNeeded(
-                                   segmentGroup, consumedSegments, slicedSegments, config,
-                                   segmentGroup.children, relativeLinkResolution));
+        segmentGroup.segments,
+        addEmptyPathsToChildrenIfNeeded(
+            segmentGroup, consumedSegments, slicedSegments, config, segmentGroup.children,
+            relativeLinkResolution));
     s._sourceSegment = segmentGroup;
     s._segmentIndexShift = consumedSegments.length;
     return {segmentGroup: s, slicedSegments};
@@ -268,7 +272,7 @@ function split(
 function addEmptyPathsToChildrenIfNeeded(
     segmentGroup: UrlSegmentGroup, consumedSegments: UrlSegment[], slicedSegments: UrlSegment[],
     routes: Route[], children: {[name: string]: UrlSegmentGroup},
-    relativeLinkResolution: 'legacy' | 'corrected'): {[name: string]: UrlSegmentGroup} {
+    relativeLinkResolution: 'legacy'|'corrected'): {[name: string]: UrlSegmentGroup} {
   const res: {[name: string]: UrlSegmentGroup} = {};
   for (const r of routes) {
     if (emptyPathMatch(segmentGroup, slicedSegments, r) && !children[getOutlet(r)]) {

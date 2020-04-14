@@ -21,8 +21,8 @@ describe('tree', () => {
   });
 
   it('should return the parent of a node (second child)', () => {
-    const t = new Tree<any>(
-        new TreeNode<number>(1, [new TreeNode<number>(2, []), new TreeNode<number>(3, [])])) as any;
+    const t = new Tree<any>(new TreeNode<number>(
+                  1, [new TreeNode<number>(2, []), new TreeNode<number>(3, [])])) as any;
     expect(t.parent(1)).toEqual(null);
     expect(t.parent(3)).toEqual(1);
   });
@@ -40,8 +40,8 @@ describe('tree', () => {
   });
 
   it('should return the siblings of a node', () => {
-    const t = new Tree<any>(
-        new TreeNode<number>(1, [new TreeNode<number>(2, []), new TreeNode<number>(3, [])])) as any;
+    const t = new Tree<any>(new TreeNode<number>(
+                  1, [new TreeNode<number>(2, []), new TreeNode<number>(3, [])])) as any;
     expect(t.siblings(2)).toEqual([3]);
     expect(t.siblings(1)).toEqual([]);
   });

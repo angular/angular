@@ -9,7 +9,7 @@
 import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
 import {Compiler, Injectable, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader, Optional} from '@angular/core';
-import {ChildrenOutletContexts, ExtraOptions, NoPreloading, PreloadingStrategy, ROUTER_CONFIGURATION, ROUTES, Route, Router, RouterModule, Routes, UrlHandlingStrategy, UrlSerializer, provideRoutes, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵflatten as flatten} from '@angular/router';
+import {ChildrenOutletContexts, ExtraOptions, NoPreloading, PreloadingStrategy, provideRoutes, Route, Router, ROUTER_CONFIGURATION, RouterModule, ROUTES, Routes, UrlHandlingStrategy, UrlSerializer, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS} from '@angular/router';
 
 
 
@@ -63,7 +63,9 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
   /**
    * @docsNotRequired
    */
-  get stubbedModules(): {[path: string]: any} { return this._stubbedModules; }
+  get stubbedModules(): {[path: string]: any} {
+    return this._stubbedModules;
+  }
 
   constructor(private compiler: Compiler) {}
 
@@ -76,8 +78,8 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
   }
 }
 
-function isUrlHandlingStrategy(opts: ExtraOptions | UrlHandlingStrategy):
-    opts is UrlHandlingStrategy {
+function isUrlHandlingStrategy(opts: ExtraOptions|
+                               UrlHandlingStrategy): opts is UrlHandlingStrategy {
   // This property check is needed because UrlHandlingStrategy is an interface and doesn't exist at
   // runtime.
   return 'shouldProcessUrl' in opts;
@@ -113,9 +115,9 @@ export function setupTestingRouter(
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
     loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][],
-    opts?: ExtraOptions | UrlHandlingStrategy, urlHandlingStrategy?: UrlHandlingStrategy) {
+    opts?: ExtraOptions|UrlHandlingStrategy, urlHandlingStrategy?: UrlHandlingStrategy) {
   const router = new Router(
-      null !, urlSerializer, contexts, location, injector, loader, compiler, flatten(routes));
+      null!, urlSerializer, contexts, location, injector, loader, compiler, flatten(routes));
   if (opts) {
     // Handle deprecated argument ordering.
     if (isUrlHandlingStrategy(opts)) {

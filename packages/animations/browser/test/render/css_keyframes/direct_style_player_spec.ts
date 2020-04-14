@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 
 import {DirectStylePlayer} from '../../../src/render/css_keyframes/direct_style_player';
 

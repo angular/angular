@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, ɵgetDOM as getDOM} from '@angular/common';
-import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, Injector, Input, NO_ERRORS_SCHEMA, NgModule, OnInit, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, Injector, Input, NgModule, NO_ERRORS_SCHEMA, OnInit, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -50,9 +50,7 @@ describe('projection', () => {
   it('should support projecting text interpolation to a non bound element with other bound elements after it',
      () => {
        TestBed.overrideComponent(Simple, {
-         set: {
-           template: 'SIMPLE(<div><ng-content></ng-content></div><div [tabIndex]="0">EL</div>)'
-         }
+         set: {template: 'SIMPLE(<div><ng-content></ng-content></div><div [tabIndex]="0">EL</div>)'}
        });
        TestBed.overrideComponent(MainComp, {set: {template: '<simple>{{text}}</simple>'}});
        const main = TestBed.createComponent(MainComp);
@@ -244,8 +242,7 @@ describe('projection', () => {
 
   it('should support nesting with content being direct child of a nested component', () => {
     TestBed.configureTestingModule({
-      declarations:
-          [InnerComponent, InnerInnerComponent, OuterComponent, ManualViewportDirective]
+      declarations: [InnerComponent, InnerInnerComponent, OuterComponent, ManualViewportDirective]
     });
     TestBed.overrideComponent(MainComp, {
       set: {
@@ -304,7 +301,7 @@ describe('projection', () => {
           `<ng-content></ng-content>(<ng-template [ngIf]="showing"><ng-content select="div"></ng-content></ng-template>)`
     })
     class Child {
-      @Input() showing !: boolean;
+      @Input() showing!: boolean;
     }
 
     @Component({
@@ -361,11 +358,13 @@ describe('projection', () => {
   });
 
   it('should support moving non projected light dom around', () => {
-    let sourceDirective: ManualViewportDirective = undefined !;
+    let sourceDirective: ManualViewportDirective = undefined!;
 
     @Directive({selector: '[manual]'})
     class ManualViewportDirective {
-      constructor(public templateRef: TemplateRef<Object>) { sourceDirective = this; }
+      constructor(public templateRef: TemplateRef<Object>) {
+        sourceDirective = this;
+      }
     }
 
     TestBed.configureTestingModule(
@@ -594,7 +593,6 @@ describe('projection', () => {
 
   it('should project nodes into nested templates when the main template doesn\'t have <ng-content>',
      () => {
-
        @Component({
          selector: 'content-in-template',
          template:
@@ -622,7 +620,6 @@ describe('projection', () => {
      });
 
   it('should project nodes into nested templates and the main template', () => {
-
     @Component({
       selector: 'content-in-main-and-template',
       template:
@@ -720,7 +717,6 @@ describe('projection', () => {
   });
 
   describe('projectable nodes', () => {
-
     @Component({selector: 'test', template: ''})
     class TestComponent {
       constructor(public cfr: ComponentFactoryResolver) {}
@@ -739,14 +735,20 @@ describe('projection', () => {
     class InsertTplRef implements OnInit {
       constructor(private _vcRef: ViewContainerRef, private _tplRef: TemplateRef<{}>) {}
 
-      ngOnInit() { this._vcRef.createEmbeddedView(this._tplRef); }
+      ngOnInit() {
+        this._vcRef.createEmbeddedView(this._tplRef);
+      }
     }
 
     @Directive({selector: '[delayedInsert]', exportAs: 'delayedInsert'})
     class DelayedInsertTplRef {
       constructor(public vc: ViewContainerRef, public templateRef: TemplateRef<Object>) {}
-      show() { this.vc.createEmbeddedView(this.templateRef); }
-      hide() { this.vc.clear(); }
+      show() {
+        this.vc.createEmbeddedView(this.templateRef);
+      }
+      hide() {
+        this.vc.clear();
+      }
     }
 
     @NgModule({
@@ -893,15 +895,23 @@ class SingleContentTagComponent {
 @Directive({selector: '[manual]'})
 class ManualViewportDirective {
   constructor(public vc: ViewContainerRef, public templateRef: TemplateRef<Object>) {}
-  show() { this.vc.createEmbeddedView(this.templateRef); }
-  hide() { this.vc.clear(); }
+  show() {
+    this.vc.createEmbeddedView(this.templateRef);
+  }
+  hide() {
+    this.vc.clear();
+  }
 }
 
 @Directive({selector: '[project]'})
 class ProjectDirective {
   constructor(public vc: ViewContainerRef) {}
-  show(templateRef: TemplateRef<Object>) { this.vc.createEmbeddedView(templateRef); }
-  hide() { this.vc.clear(); }
+  show(templateRef: TemplateRef<Object>) {
+    this.vc.createEmbeddedView(templateRef);
+  }
+  hide() {
+    this.vc.clear();
+  }
 }
 
 @Component({
@@ -1034,5 +1044,5 @@ class CmpA2 {
 }
 
 function supportsNativeShadowDOM(): boolean {
-  return typeof(<any>document.body).createShadowRoot === 'function';
+  return typeof (<any>document.body).createShadowRoot === 'function';
 }

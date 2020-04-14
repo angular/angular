@@ -55,13 +55,16 @@ export class AnimationTransitionFactory {
 
     const animationOptions = {params: {...transitionAnimationParams, ...nextAnimationParams}};
 
-    const timelines = skipAstBuild ? [] : buildAnimationTimelines(
-                                              driver, element, this.ast.animation, enterClassName,
-                                              leaveClassName, currentStateStyles, nextStateStyles,
-                                              animationOptions, subInstructions, errors);
+    const timelines = skipAstBuild ?
+        [] :
+        buildAnimationTimelines(
+            driver, element, this.ast.animation, enterClassName, leaveClassName, currentStateStyles,
+            nextStateStyles, animationOptions, subInstructions, errors);
 
     let totalTime = 0;
-    timelines.forEach(tl => { totalTime = Math.max(tl.duration + tl.delay, totalTime); });
+    timelines.forEach(tl => {
+      totalTime = Math.max(tl.duration + tl.delay, totalTime);
+    });
 
     if (errors.length) {
       return createTransitionInstruction(

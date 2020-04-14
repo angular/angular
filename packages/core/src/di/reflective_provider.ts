@@ -18,7 +18,7 @@ import {ReflectiveKey} from './reflective_key';
 
 
 interface NormalizedProvider extends TypeProvider, ValueProvider, ClassProvider, ExistingProvider,
-    FactoryProvider {}
+                                     FactoryProvider {}
 
 /**
  * `Dependency` is used by the framework to extend DI.
@@ -184,7 +184,7 @@ function _normalizeProviders(
     providers: Provider[], res: NormalizedProvider[]): NormalizedProvider[] {
   providers.forEach(b => {
     if (b instanceof Type) {
-      res.push({ provide: b, useClass: b } as NormalizedProvider);
+      res.push({provide: b, useClass: b} as NormalizedProvider);
 
     } else if (b && typeof b == 'object' && (b as any).provide !== undefined) {
       res.push(b as NormalizedProvider);
@@ -221,7 +221,7 @@ function _dependenciesFor(typeOrFunc: any): ReflectiveDependency[] {
 }
 
 function _extractToken(
-    typeOrFunc: any, metadata: any[] | any, params: any[][]): ReflectiveDependency {
+    typeOrFunc: any, metadata: any[]|any, params: any[][]): ReflectiveDependency {
   let token: any = null;
   let optional = false;
 
@@ -264,6 +264,6 @@ function _extractToken(
 }
 
 function _createDependency(
-    token: any, optional: boolean, visibility: Self | SkipSelf | null): ReflectiveDependency {
+    token: any, optional: boolean, visibility: Self|SkipSelf|null): ReflectiveDependency {
   return new ReflectiveDependency(ReflectiveKey.get(token), optional, visibility);
 }

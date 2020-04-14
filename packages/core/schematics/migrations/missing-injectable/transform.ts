@@ -46,7 +46,9 @@ export class MissingInjectableTransform {
         new TypeScriptReflectionHost(typeChecker), typeChecker, /* dependencyTracker */ null);
   }
 
-  recordChanges() { this.importManager.recordChanges(); }
+  recordChanges() {
+    this.importManager.recordChanges();
+  }
 
   /**
    * Migrates all specified NgModule's by walking through referenced providers
@@ -76,10 +78,9 @@ export class MissingInjectableTransform {
     this._migrateLiteralProviders(literals);
 
     if (!Array.isArray(resolvedValue)) {
-      return [{
-        node: module.providersExpr,
-        message: 'Providers of module are not statically analyzable.'
-      }];
+      return [
+        {node: module.providersExpr, message: 'Providers of module are not statically analyzable.'}
+      ];
     }
 
     return this._visitProviderResolvedValue(resolvedValue, module);
@@ -194,8 +195,9 @@ export class MissingInjectableTransform {
 
       const sourceFile = node.getSourceFile();
       const newObjectLiteral = ts.updateObjectLiteral(
-          node, node.properties.concat(
-                    ts.createPropertyAssignment('useValue', ts.createIdentifier('undefined'))));
+          node,
+          node.properties.concat(
+              ts.createPropertyAssignment('useValue', ts.createIdentifier('undefined'))));
 
       this.getUpdateRecorder(sourceFile)
           .updateObjectLiteral(
@@ -217,11 +219,12 @@ export class MissingInjectableTransform {
       // decorate the class. This is because the class is instantiated through the
       // specified "deps" and the class does not need a factory definition.
       if (value.has('provide') && value.has('useClass') && value.get('deps') == null) {
-        return this._visitProviderResolvedValue(value.get('useClass') !, module);
+        return this._visitProviderResolvedValue(value.get('useClass')!, module);
       }
     } else if (Array.isArray(value)) {
-      return value.reduce((res, v) => res.concat(this._visitProviderResolvedValue(v, module)), [
-      ] as AnalysisFailure[]);
+      return value.reduce(
+          (res, v) => res.concat(this._visitProviderResolvedValue(v, module)),
+          [] as AnalysisFailure[]);
     } else if (value instanceof DynamicValue) {
       return [{node: value.node, message: `Provider is not statically analyzable.`}];
     }

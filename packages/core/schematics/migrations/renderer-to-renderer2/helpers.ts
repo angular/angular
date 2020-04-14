@@ -69,7 +69,7 @@ function createAnyTypeHelper(): ts.TypeAliasDeclaration {
 
 /** Creates a function parameter that is typed as `any`. */
 function getAnyTypedParameter(
-    parameterName: string | ts.Identifier, isRequired = true): ts.ParameterDeclaration {
+    parameterName: string|ts.Identifier, isRequired = true): ts.ParameterDeclaration {
   // Declare the parameter as `any` so we don't have to add extra logic to ensure that the
   // generated code will pass type checking. Use our custom `any` type so people have an incentive
   // to clean it up afterwards and to avoid potentially introducing lint warnings in G3.
@@ -153,10 +153,11 @@ function getCreationHelper(
 
   // `if (parent) { renderer.appendChild(parent, node) }`.
   const guardedAppendChildCall = ts.createIf(
-      parent, ts.createBlock(
-                  [ts.createExpressionStatement(ts.createCall(
-                      ts.createPropertyAccess(renderer, 'appendChild'), [], [parent, node]))],
-                  true));
+      parent,
+      ts.createBlock(
+          [ts.createExpressionStatement(
+              ts.createCall(ts.createPropertyAccess(renderer, 'appendChild'), [], [parent, node]))],
+          true));
 
   return ts.createFunctionDeclaration(
       [], [], undefined, functionName, [],
@@ -258,10 +259,11 @@ function getDetachViewHelper(): ts.FunctionDeclaration {
 
   // const node = rootNodes[i];
   const nodeVariableStatement = ts.createVariableStatement(
-      undefined, ts.createVariableDeclarationList(
-                     [ts.createVariableDeclaration(
-                         node, undefined, ts.createElementAccess(rootNodes, incrementor))],
-                     ts.NodeFlags.Const));
+      undefined,
+      ts.createVariableDeclarationList(
+          [ts.createVariableDeclaration(
+              node, undefined, ts.createElementAccess(rootNodes, incrementor))],
+          ts.NodeFlags.Const));
   // renderer.removeChild(renderer.parentNode(node), node);
   const removeCall = ts.createCall(
       ts.createPropertyAccess(renderer, 'removeChild'), [],

@@ -51,7 +51,9 @@ class HeroesService {
     return newHero;
   }
 
-  removeHero(hero: Hero) { this.heroes = this.heroes.filter((item: Hero) => item !== hero); }
+  removeHero(hero: Hero) {
+    this.heroes = this.heroes.filter((item: Hero) => item !== hero);
+  }
 }
 
 
@@ -103,8 +105,8 @@ class Ng2HeroesComponent {
 class Ng1HeroComponentWrapper extends UpgradeComponent {
   // The names of the input and output properties here must match the names of the
   // `<` and `&` bindings in the AngularJS component that is being wrapped.
-  @Input() hero !: Hero;
-  @Output() onRemove !: EventEmitter<void>;
+  @Input() hero!: Hero;
+  @Output() onRemove!: EventEmitter<void>;
 
   constructor(elementRef: ElementRef, injector: Injector) {
     // We must pass the name of the directive as used by AngularJS to the super.

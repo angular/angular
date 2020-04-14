@@ -49,5 +49,7 @@ export class ExpandingRowDetailsCaption implements OnDestroy {
   }
 
   /** When component is destroyed, unlisten to isExpanded. */
-  ngOnDestroy(): void { this.onDestroy.next(); }
+  ngOnDestroy(): void {
+    this.onDestroy.next();
+  }
 }

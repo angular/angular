@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 {
   describe('binding to CSS class list', () => {
@@ -18,14 +18,18 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
     }
 
     function detectChangesAndExpectClassName(classes: string): void {
-      fixture !.detectChanges();
-      let nonNormalizedClassName = fixture !.debugElement.children[0].nativeElement.className;
+      fixture!.detectChanges();
+      let nonNormalizedClassName = fixture!.debugElement.children[0].nativeElement.className;
       expect(normalizeClassNames(nonNormalizedClassName)).toEqual(normalizeClassNames(classes));
     }
 
-    function getComponent(): TestComponent { return fixture !.debugElement.componentInstance; }
+    function getComponent(): TestComponent {
+      return fixture!.debugElement.componentInstance;
+    }
 
-    afterEach(() => { fixture = null; });
+    afterEach(() => {
+      fixture = null;
+    });
 
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -43,7 +47,6 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
        }));
 
     describe('expressions evaluating to objects', () => {
-
       it('should add classes specified in an object literal', async(() => {
            fixture = createTestComponent('<div [ngClass]="{foo: true, bar: false}"></div>');
 
@@ -74,13 +77,13 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 
            detectChangesAndExpectClassName('foo');
 
-           objExpr !['bar'] = true;
+           objExpr!['bar'] = true;
            detectChangesAndExpectClassName('foo bar');
 
-           objExpr !['baz'] = true;
+           objExpr!['baz'] = true;
            detectChangesAndExpectClassName('foo bar baz');
 
-           delete (objExpr !['bar']);
+           delete (objExpr!['bar']);
            detectChangesAndExpectClassName('foo baz');
          }));
 
@@ -129,7 +132,6 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
     });
 
     describe('expressions evaluating to lists', () => {
-
       it('should add classes specified in a list literal', async(() => {
            fixture =
                createTestComponent(`<div [ngClass]="['foo', 'bar', 'foo-bar', 'fooBar']"></div>`);
@@ -194,14 +196,13 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 
       it('should throw with descriptive error message when CSS class is not a string', () => {
         fixture = createTestComponent(`<div [ngClass]="['foo', {}]"></div>`);
-        expect(() => fixture !.detectChanges())
+        expect(() => fixture!.detectChanges())
             .toThrowError(
                 /NgClass can only toggle CSS classes expressed as strings, got \[object Object\]/);
       });
     });
 
     describe('expressions evaluating to sets', () => {
-
       it('should add and remove classes if the set instance changed', async(() => {
            fixture = createTestComponent('<div [ngClass]="setExpr"></div>');
            let setExpr = new Set<string>();
@@ -217,7 +218,6 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
     });
 
     describe('expressions evaluating to string', () => {
-
       it('should add classes specified in a string literal', async(() => {
            fixture = createTestComponent(`<div [ngClass]="'foo bar foo-bar fooBar'"></div>`);
            detectChangesAndExpectClassName('foo bar foo-bar fooBar');
@@ -257,19 +257,17 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
            getComponent().strExpr = '';
            detectChangesAndExpectClassName('foo');
          }));
-
     });
 
     describe('cooperation with other class-changing constructs', () => {
-
       it('should co-operate with the class attribute', async(() => {
            fixture = createTestComponent('<div [ngClass]="objExpr" class="init foo"></div>');
            const objExpr = getComponent().objExpr;
 
-           objExpr !['bar'] = true;
+           objExpr!['bar'] = true;
            detectChangesAndExpectClassName('init foo bar');
 
-           objExpr !['foo'] = false;
+           objExpr!['foo'] = false;
            detectChangesAndExpectClassName('init bar');
 
            getComponent().objExpr = null;
@@ -280,10 +278,10 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
            fixture = createTestComponent(`<div [ngClass]="objExpr" class="{{'init foo'}}"></div>`);
            const objExpr = getComponent().objExpr;
 
-           objExpr !['bar'] = true;
+           objExpr!['bar'] = true;
            detectChangesAndExpectClassName(`init foo bar`);
 
-           objExpr !['foo'] = false;
+           objExpr!['foo'] = false;
            detectChangesAndExpectClassName(`init bar`);
 
            getComponent().objExpr = null;
@@ -306,10 +304,10 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
                createTestComponent(`<div [ngClass]="objExpr" class="init" [class]="'foo'"></div>`);
            const objExpr = getComponent().objExpr;
 
-           objExpr !['bar'] = true;
+           objExpr!['bar'] = true;
            detectChangesAndExpectClassName(`init foo bar`);
 
-           objExpr !['foo'] = false;
+           objExpr!['foo'] = false;
            detectChangesAndExpectClassName(`init bar`);
 
            getComponent().objExpr = null;
@@ -324,10 +322,10 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 
            detectChangesAndExpectClassName('init foo baz');
 
-           objExpr !['bar'] = true;
+           objExpr!['bar'] = true;
            detectChangesAndExpectClassName('init foo baz bar');
 
-           objExpr !['foo'] = false;
+           objExpr!['foo'] = false;
            detectChangesAndExpectClassName('init baz bar');
 
            getComponent().condition = false;
@@ -342,7 +340,7 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 
            detectChangesAndExpectClassName('init foo');
 
-           cmp.objExpr !['bar'] = true;
+           cmp.objExpr!['bar'] = true;
            detectChangesAndExpectClassName('init foo bar');
 
            cmp.strExpr = 'baz';
@@ -354,7 +352,6 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
     });
 
     describe('prevent regressions', () => {
-
       // https://github.com/angular/angular/issues/34336
       it('should not write to the native node unless the bound expression has changed', () => {
         fixture = createTestComponent(`<div [ngClass]="{'color-red': condition}"></div>`);
@@ -392,7 +389,6 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
         expect(leading.className).toBe('foo');
         expect(trailing.className).toBe('foo');
       });
-
     });
   });
 }
@@ -406,7 +402,9 @@ class TestComponent {
   objExpr: {[klass: string]: any}|null = {'foo': true, 'bar': false};
   strExpr: string|null = 'foo';
 
-  constructor() { this.setExpr.add('foo'); }
+  constructor() {
+    this.setExpr.add('foo');
+  }
 }
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {

@@ -31,7 +31,7 @@ export interface NgElementConstructor<P> {
    * Initializes a constructor instance.
    * @param injector If provided, overrides the configured injector.
    */
-  new (injector?: Injector): NgElement&WithProperties<P>;
+  new(injector?: Injector): NgElement&WithProperties<P>;
 }
 
 /**
@@ -44,20 +44,20 @@ export abstract class NgElement extends HTMLElement {
    * The strategy that controls how a component is transformed in a custom element.
    */
   // TODO(issue/24571): remove '!'.
-  protected ngElementStrategy !: NgElementStrategy;
+  protected ngElementStrategy!: NgElementStrategy;
   /**
    * A subscription to change, connect, and disconnect events in the custom element.
    */
   protected ngElementEventsSubscription: Subscription|null = null;
 
   /**
-    * Prototype for a handler that responds to a change in an observed attribute.
-    * @param attrName The name of the attribute that has changed.
-    * @param oldValue The previous value of the attribute.
-    * @param newValue The new value of the attribute.
-    * @param namespace The namespace in which the attribute is defined.
-    * @returns Nothing.
-    */
+   * Prototype for a handler that responds to a change in an observed attribute.
+   * @param attrName The name of the attribute that has changed.
+   * @param oldValue The previous value of the attribute.
+   * @param newValue The new value of the attribute.
+   * @param namespace The namespace in which the attribute is defined.
+   * @returns Nothing.
+   */
   abstract attributeChangedCallback(
       attrName: string, oldValue: string|null, newValue: string, namespace?: string): void;
   /**
@@ -152,7 +152,7 @@ export function createCustomElement<P>(
         this.ngElementStrategy = strategyFactory.create(config.injector);
       }
 
-      const propName = attributeToPropertyInputs[attrName] !;
+      const propName = attributeToPropertyInputs[attrName]!;
       this.ngElementStrategy.setInputValue(propName, newValue);
     }
 
@@ -165,7 +165,7 @@ export function createCustomElement<P>(
 
       // Listen for events from the strategy and dispatch them as custom events
       this.ngElementEventsSubscription = this.ngElementStrategy.events.subscribe(e => {
-        const customEvent = createCustomEvent(this.ownerDocument !, e.name, e.value);
+        const customEvent = createCustomEvent(this.ownerDocument!, e.name, e.value);
         this.dispatchEvent(customEvent);
       });
     }
@@ -186,8 +186,12 @@ export function createCustomElement<P>(
   // contain property inputs, use all inputs by default.
   inputs.map(({propName}) => propName).forEach(property => {
     Object.defineProperty(NgElementImpl.prototype, property, {
-      get: function() { return this.ngElementStrategy.getInputValue(property); },
-      set: function(newValue: any) { this.ngElementStrategy.setInputValue(property, newValue); },
+      get: function() {
+        return this.ngElementStrategy.getInputValue(property);
+      },
+      set: function(newValue: any) {
+        this.ngElementStrategy.setInputValue(property, newValue);
+      },
       configurable: true,
       enumerable: true,
     });

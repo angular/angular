@@ -8,7 +8,7 @@
 import {CharCode} from '../../util/char_code';
 import {AttributeMarker, TAttributes} from '../interfaces/node';
 import {CssSelector} from '../interfaces/projection';
-import {ProceduralRenderer3, RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
+import {isProceduralRenderer, ProceduralRenderer3, RElement, Renderer3} from '../interfaces/renderer';
 
 
 
@@ -96,7 +96,7 @@ export function setUpAttributes(renderer: Renderer3, native: RElement, attrs: TA
  * @param marker The attribute marker to test.
  * @returns true if the marker is a "name-only" marker (e.g. `Bindings`, `Template` or `I18n`).
  */
-export function isNameOnlyAttributeMarker(marker: string | AttributeMarker | CssSelector) {
+export function isNameOnlyAttributeMarker(marker: string|AttributeMarker|CssSelector) {
   return marker === AttributeMarker.Bindings || marker === AttributeMarker.Template ||
       marker === AttributeMarker.I18n;
 }
@@ -116,7 +116,7 @@ export function isAnimationProp(name: string): boolean {
  * @param dst Location of where the merged `TAttributes` should end up.
  * @param src `TAttributes` which should be appended to `dst`
  */
-export function mergeHostAttrs(dst: TAttributes | null, src: TAttributes | null): TAttributes|null {
+export function mergeHostAttrs(dst: TAttributes|null, src: TAttributes|null): TAttributes|null {
   if (src === null || src.length === 0) {
     // do nothing
   } else if (dst === null || dst.length === 0) {
@@ -156,8 +156,8 @@ export function mergeHostAttrs(dst: TAttributes | null, src: TAttributes | null)
  * @param value Value to add or to overwrite to `TAttributes` Only used if `marker` is not Class.
  */
 export function mergeHostAttribute(
-    dst: TAttributes, marker: AttributeMarker, key1: string, key2: string | null,
-    value: string | null): void {
+    dst: TAttributes, marker: AttributeMarker, key1: string, key2: string|null,
+    value: string|null): void {
   let i = 0;
   // Assume that new markers will be inserted at the end.
   let markerInsertPosition = dst.length;
@@ -195,7 +195,7 @@ export function mergeHostAttribute(
         }
         return;
       } else if (key2 === dst[i + 1]) {
-        dst[i + 2] = value !;
+        dst[i + 2] = value!;
         return;
       }
     }

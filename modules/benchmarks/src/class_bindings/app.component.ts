@@ -27,12 +27,16 @@ export class AppComponent {
     }
   }
 
-  create() { this.show = true; }
+  create() {
+    this.show = true;
+  }
 
   update() {
     this.msg = this.msg === 'hello' ? 'bye' : 'hello';
     this.list[0].text = this.msg;
   }
 
-  destroy() { this.show = false; }
+  destroy() {
+    this.show = false;
+  }
 }

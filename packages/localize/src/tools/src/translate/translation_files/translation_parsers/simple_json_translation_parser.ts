@@ -24,7 +24,9 @@ import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
  * ```
  */
 export class SimpleJsonTranslationParser implements TranslationParser {
-  canParse(filePath: string, _contents: string): boolean { return (extname(filePath) === '.json'); }
+  canParse(filePath: string, _contents: string): boolean {
+    return (extname(filePath) === '.json');
+  }
 
   parse(_filePath: string, contents: string): ParsedTranslationBundle {
     const {locale: parsedLocale, translations} = JSON.parse(contents);

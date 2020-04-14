@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, TemplateRef, TrackByFunction, ViewContainerRef, isDevMode} from '@angular/core';
+import {Directive, DoCheck, EmbeddedViewRef, Input, isDevMode, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, TemplateRef, TrackByFunction, ViewContainerRef} from '@angular/core';
 
 /**
  * @publicApi
@@ -14,13 +14,21 @@ import {Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, Iterab
 export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
   constructor(public $implicit: T, public ngForOf: U, public index: number, public count: number) {}
 
-  get first(): boolean { return this.index === 0; }
+  get first(): boolean {
+    return this.index === 0;
+  }
 
-  get last(): boolean { return this.index === this.count - 1; }
+  get last(): boolean {
+    return this.index === this.count - 1;
+  }
 
-  get even(): boolean { return this.index % 2 === 0; }
+  get even(): boolean {
+    return this.index % 2 === 0;
+  }
 
-  get odd(): boolean { return !this.even; }
+  get odd(): boolean {
+    return !this.even;
+  }
 }
 
 /**
@@ -162,13 +170,15 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
     this._trackByFn = fn;
   }
 
-  get ngForTrackBy(): TrackByFunction<T> { return this._trackByFn; }
+  get ngForTrackBy(): TrackByFunction<T> {
+    return this._trackByFn;
+  }
 
   private _ngForOf: U|undefined|null = null;
   private _ngForOfDirty: boolean = true;
   private _differ: IterableDiffer<T>|null = null;
   // TODO(issue/24571): remove '!'.
-  private _trackByFn !: TrackByFunction<T>;
+  private _trackByFn!: TrackByFunction<T>;
 
   constructor(
       private _viewContainer: ViewContainerRef,
@@ -200,8 +210,8 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
         try {
           this._differ = this._differs.find(value).create(this.ngForTrackBy);
         } catch {
-          throw new Error(
-              `Cannot find a differ supporting object '${value}' of type '${getTypeName(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
+          throw new Error(`Cannot find a differ supporting object '${value}' of type '${
+              getTypeName(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
         }
       }
     }
@@ -214,14 +224,14 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
   private _applyChanges(changes: IterableChanges<T>) {
     const insertTuples: RecordViewTuple<T, U>[] = [];
     changes.forEachOperation(
-        (item: IterableChangeRecord<any>, adjustedPreviousIndex: number | null,
-         currentIndex: number | null) => {
+        (item: IterableChangeRecord<any>, adjustedPreviousIndex: number|null,
+         currentIndex: number|null) => {
           if (item.previousIndex == null) {
             // NgForOf is never "null" or "undefined" here because the differ detected
             // that a new item needs to be inserted from the iterable. This implies that
             // there is an iterable value for "_ngForOf".
             const view = this._viewContainer.createEmbeddedView(
-                this._template, new NgForOfContext<T, U>(null !, this._ngForOf !, -1, -1),
+                this._template, new NgForOfContext<T, U>(null!, this._ngForOf!, -1, -1),
                 currentIndex === null ? undefined : currentIndex);
             const tuple = new RecordViewTuple<T, U>(item, view);
             insertTuples.push(tuple);
@@ -229,7 +239,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
             this._viewContainer.remove(
                 adjustedPreviousIndex === null ? undefined : adjustedPreviousIndex);
           } else if (adjustedPreviousIndex !== null) {
-            const view = this._viewContainer.get(adjustedPreviousIndex) !;
+            const view = this._viewContainer.get(adjustedPreviousIndex)!;
             this._viewContainer.move(view, currentIndex);
             const tuple = new RecordViewTuple(item, <EmbeddedViewRef<NgForOfContext<T, U>>>view);
             insertTuples.push(tuple);
@@ -244,7 +254,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
       const viewRef = <EmbeddedViewRef<NgForOfContext<T, U>>>this._viewContainer.get(i);
       viewRef.context.index = i;
       viewRef.context.count = ilen;
-      viewRef.context.ngForOf = this._ngForOf !;
+      viewRef.context.ngForOf = this._ngForOf!;
     }
 
     changes.forEachIdentityChange((record: any) => {

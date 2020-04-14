@@ -10,7 +10,6 @@ import {HttpHeaders} from '@angular/common/http/src/headers';
 
 {
   describe('HttpHeaders', () => {
-
     describe('initialization', () => {
       it('should conform to spec', () => {
         const httpHeaders = {

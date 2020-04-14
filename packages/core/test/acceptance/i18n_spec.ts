@@ -8,16 +8,17 @@
 // Make the `$localize()` global function available to the compiled templates, and the direct calls
 // below. This would normally be done inside the application `polyfills.ts` file.
 import '@angular/localize/init';
+
 import {CommonModule, registerLocaleData} from '@angular/common';
 import localeRo from '@angular/common/locales/ro';
-import {Component, ContentChild, ElementRef, ContentChildren, Directive, HostBinding, Input, LOCALE_ID, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, Pipe, PipeTransform, NO_ERRORS_SCHEMA} from '@angular/core';
+import {computeMsgId} from '@angular/compiler';
+import {Component, ContentChild, ContentChildren, Directive, ElementRef, HostBinding, Input, LOCALE_ID, NO_ERRORS_SCHEMA, Pipe, PipeTransform, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {setDelayProjection} from '@angular/core/src/render3/instructions/projection';
 import {TestBed} from '@angular/core/testing';
-import {loadTranslations, clearTranslations} from '@angular/localize';
+import {clearTranslations, loadTranslations} from '@angular/localize';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
-import {computeMsgId} from '@angular/compiler';
 import {BehaviorSubject} from 'rxjs';
 
 
@@ -72,7 +73,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
   it('should support interpolations with custom interpolation config', () => {
     loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
-    const interpolation = ['{%', '%}'] as[string, string];
+    const interpolation = ['{%', '%}'] as [string, string];
     TestBed.overrideComponent(AppComp, {set: {interpolation}});
     const fixture = initWithTemplate(AppComp, `<div i18n>Hello {% name %}</div>`);
 
@@ -277,7 +278,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       name = `Angular`;
       clicks = 0;
 
-      onClick() { this.clicks++; }
+      onClick() {
+        this.clicks++;
+      }
     }
 
     TestBed.configureTestingModule({declarations: [ListenerComp]});
@@ -619,7 +622,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         [computeMsgId('{VAR_SELECT, select, 10 {ten} other {{INTERPOLATION}}}')]:
             '{VAR_SELECT, select, 10 {dix} other {{INTERPOLATION}}}'
       });
-      const interpolation = ['{%', '%}'] as[string, string];
+      const interpolation = ['{%', '%}'] as [string, string];
       TestBed.overrideComponent(AppComp, {set: {interpolation}});
       const fixture =
           initWithTemplate(AppComp, `<div i18n>{count, select, 10 {ten} other {{% name %}}}</div>`);
@@ -704,7 +707,8 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
             '{VAR_SELECT, select, 10 {dix} 20 {vingt} other {autre}}'
       });
       const fixture = initWithTemplate(
-          AppComp, `
+          AppComp,
+          `
         <ng-template i18n tplRef>` +
               `{count, select, 10 {ten} 20 {twenty} other {other}}` +
               `</ng-template>
@@ -864,7 +868,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
             private readonly viewContainerRef: ViewContainerRef,
             private readonly templateRef: TemplateRef<any>) {}
 
-        ngOnInit() { this.viewContainerRef.createEmbeddedView(this.templateRef); }
+        ngOnInit() {
+          this.viewContainerRef.createEmbeddedView(this.templateRef);
+        }
       }
 
       @Component({
@@ -941,7 +947,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
              dir = this;
            }
 
-           attachEmbeddedView() { this.viewContainerRef.createEmbeddedView(this.templateRef); }
+           attachEmbeddedView() {
+             this.viewContainerRef.createEmbeddedView(this.templateRef);
+           }
          }
 
          @Component({
@@ -983,7 +991,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
          expect(fixture.debugElement.nativeElement.innerHTML)
              .toBe('<my-cmp><!--container--></my-cmp>');
 
-         dir !.attachEmbeddedView();
+         dir!.attachEmbeddedView();
          fixture.detectChanges();
          expect(fixture.debugElement.nativeElement.innerHTML)
              .toBe(
@@ -1019,7 +1027,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       class Comp {
         type = 'A';
         visible = true;
-        isVisible() { return true; }
+        isVisible() {
+          return true;
+        }
       }
 
       TestBed.configureTestingModule({declarations: [Comp]});
@@ -1042,7 +1052,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
             '{VAR_SELECT, select, A {A - {PH_A}} ' +
             'B {B - {PH_B}} other {other - {PH_WITH_SPACES}}}')]:
             '{VAR_SELECT, select, A {A (translated) - {PH_A}} ' +
-                'B {B (translated) - {PH_B}} other {other (translated) - {PH_WITH_SPACES}}}',
+            'B {B (translated) - {PH_B}} other {other (translated) - {PH_WITH_SPACES}}}',
       });
       @Component({
         selector: 'comp',
@@ -1326,7 +1336,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     it('with custom interpolation config', () => {
       loadTranslations({[computeMsgId('Hello {$INTERPOLATION}', 'm')]: 'Bonjour {$INTERPOLATION}'});
-      const interpolation = ['{%', '%}'] as[string, string];
+      const interpolation = ['{%', '%}'] as [string, string];
       TestBed.overrideComponent(AppComp, {set: {interpolation}});
       const fixture =
           initWithTemplate(AppComp, `<div i18n-title="m|d" title="Hello {% name %}"></div>`);
@@ -1367,7 +1377,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       })
       class TitleDir {
         @Input() title = '';
-        constructor() { titleDirInstances.push(this); }
+        constructor() {
+          titleDirInstances.push(this);
+        }
       }
 
       @Component({
@@ -1397,7 +1409,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       @Directive({selector: '[title]'})
       class TitleDir {
         @Input() title: string = '';
-        constructor(public elRef: ElementRef) { titleDirInstances.push(this); }
+        constructor(public elRef: ElementRef) {
+          titleDirInstances.push(this);
+        }
       }
 
       @Component({
@@ -1429,7 +1443,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       let dirInstance: WithInput;
       @Directive({selector: '[dir]'})
       class WithInput {
-        constructor() { dirInstance = this; }
+        constructor() {
+          dirInstance = this;
+        }
         @Input() dir: string = '';
       }
 
@@ -1445,7 +1461,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       const fixture = TestBed.createComponent(TestComp);
       fixture.detectChanges();
 
-      expect(dirInstance !.dir).toBe('Bonjour Angular');
+      expect(dirInstance!.dir).toBe('Bonjour Angular');
     });
 
     it('should allow directive inputs (as interpolated props)' +
@@ -1456,7 +1472,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
          let dirInstance: WithInput;
          @Directive({selector: '[dir]'})
          class WithInput {
-           constructor() { dirInstance = this; }
+           constructor() {
+             dirInstance = this;
+           }
            @Input() dir: string = '';
          }
 
@@ -1472,7 +1490,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
          const fixture = TestBed.createComponent(TestComp);
          fixture.detectChanges();
 
-         expect(dirInstance !.dir).toBe('Bonjour Angular');
+         expect(dirInstance!.dir).toBe('Bonjour Angular');
        });
 
     it('should apply i18n attributes during second template pass', () => {
@@ -1537,7 +1555,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         template: '{{ messageText }}',
       })
       class WelcomeComp {
-        @Input() messageText !: string;
+        @Input() messageText!: string;
       }
 
       @Component({
@@ -1598,10 +1616,11 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     @Directive({selector: '[test]'})
     class ClsDir {
-      @HostBinding('className')
-      klass = 'foo';
+      @HostBinding('className') klass = 'foo';
 
-      constructor() { directiveInstances.push(this); }
+      constructor() {
+        directiveInstances.push(this);
+      }
     }
 
     @Component({
@@ -1641,7 +1660,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     // but IE does not.
     expect(outerDiv.getAttribute('title')).toBe('début 2 milieu 1 fin');
     expect(outerDiv.getAttribute('class')).toBe('foo');
-    expect(outerDiv.textContent !.trim()).toBe('traduction: un email');
+    expect(outerDiv.textContent!.trim()).toBe('traduction: un email');
     expect(innerDiv.getAttribute('class')).toBe('foo');
 
     directiveInstances.forEach(instance => instance.klass = 'bar');
@@ -1651,7 +1670,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
 
     expect(outerDiv.getAttribute('title')).toBe('début 3 milieu 2 fin');
     expect(outerDiv.getAttribute('class')).toBe('bar');
-    expect(outerDiv.textContent !.trim()).toBe('traduction: 2 emails');
+    expect(outerDiv.textContent!.trim()).toBe('traduction: 2 emails');
     expect(innerDiv.getAttribute('class')).toBe('bar');
   });
 
@@ -1660,21 +1679,25 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     let calledValue = false;
     @Component({selector: 'my-comp', template: ''})
     class MyComp {
-      t !: string;
+      t!: string;
       @Input()
-      get title() { return this.t; }
+      get title() {
+        return this.t;
+      }
       set title(title) {
         calledTitle = true;
         this.t = title;
       }
 
       @Input()
-      get value() { return this.val; }
+      get value() {
+        return this.val;
+      }
       set value(value: string) {
         calledValue = true;
         this.val = value;
       }
-      val !: string;
+      val!: string;
     }
 
     TestBed.configureTestingModule({declarations: [AppComp, MyComp]});
@@ -2050,7 +2073,6 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('should display/destroy projected i18n content', () => {
-
       loadTranslations({
         [computeMsgId('{VAR_SELECT, select, A {A} B {B} other {other}}')]:
             '{VAR_SELECT, select, A {A} B {B} other {other}}'
@@ -2109,7 +2131,7 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       @Directive({selector: '[text]', inputs: ['text'], exportAs: 'textDir'})
       class TextDirective {
         // TODO(issue/24571): remove '!'.
-        text !: string;
+        text!: string;
         constructor() {}
       }
 
@@ -2119,16 +2141,18 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
         @ContentChild(TemplateRef, {static: true}) template !: TemplateRef<any>;
 
         // TODO(issue/24571): remove '!'.
-        @ViewChild('vc', {read: ViewContainerRef, static: true})
-        vc !: ViewContainerRef;
+        @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
 
         // TODO(issue/24571): remove '!'.
-        @ContentChildren(TextDirective, {descendants: true})
-        query !: QueryList<TextDirective>;
+        @ContentChildren(TextDirective, {descendants: true}) query!: QueryList<TextDirective>;
 
-        create() { this.vc.createEmbeddedView(this.template); }
+        create() {
+          this.vc.createEmbeddedView(this.template);
+        }
 
-        destroy() { this.vc.clear(); }
+        destroy() {
+          this.vc.clear();
+        }
       }
 
       TestBed.configureTestingModule({declarations: [TextDirective, DivQuery]});
@@ -2224,7 +2248,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     @Directive({selector: 'input'})
     class InputsDir {
       constructor(private elementRef: ElementRef) {}
-      ngOnInit() { this.elementRef.nativeElement.value = 'value set in Directive.ngOnInit'; }
+      ngOnInit() {
+        this.elementRef.nativeElement.value = 'value set in Directive.ngOnInit';
+      }
     }
 
     @Component({
@@ -2248,7 +2274,9 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     @Directive({selector: 'input'})
     class InputsDir {
       constructor(private elementRef: ElementRef) {}
-      ngOnInit() { this.elementRef.nativeElement.value = 'value set in Directive.ngOnInit'; }
+      ngOnInit() {
+        this.elementRef.nativeElement.value = 'value set in Directive.ngOnInit';
+      }
     }
 
     @Component({
@@ -2401,12 +2429,16 @@ class AppCompWithWhitespaces {
 })
 class DirectiveWithTplRef {
   constructor(public vcRef: ViewContainerRef, public tplRef: TemplateRef<{}>) {}
-  ngOnInit() { this.vcRef.createEmbeddedView(this.tplRef, {}); }
+  ngOnInit() {
+    this.vcRef.createEmbeddedView(this.tplRef, {});
+  }
 }
 
 @Pipe({name: 'uppercase'})
 class UppercasePipe implements PipeTransform {
-  transform(value: string) { return value.toUpperCase(); }
+  transform(value: string) {
+    return value.toUpperCase();
+  }
 }
 
 @Directive({selector: `[dialog]`})

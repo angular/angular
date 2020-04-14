@@ -10,7 +10,6 @@ import {Headers} from '@angular/http/src/headers';
 
 {
   describe('Headers', () => {
-
     describe('initialization', () => {
       it('should conform to spec', () => {
         const httpHeaders = {
@@ -165,8 +164,9 @@ import {Headers} from '@angular/http/src/headers';
         ref = {'Accept': values};
       });
 
-      it('should be serializable with toJSON',
-         () => { expect(JSON.stringify(headers)).toEqual(JSON.stringify(ref)); });
+      it('should be serializable with toJSON', () => {
+        expect(JSON.stringify(headers)).toEqual(JSON.stringify(ref));
+      });
 
       it('should be able to recreate serializedHeaders', () => {
         const parsedHeaders = JSON.parse(JSON.stringify(headers));

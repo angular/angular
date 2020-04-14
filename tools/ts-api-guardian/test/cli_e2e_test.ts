@@ -23,7 +23,9 @@ describe('cli: e2e test', () => {
     }
   });
 
-  afterEach(() => { unlinkRecursively(outDir); });
+  afterEach(() => {
+    unlinkRecursively(outDir);
+  });
 
   it('should print usage without any argument', () => {
     const {stderr} = execute([]);

@@ -9,7 +9,6 @@
 import {compareFileSizeData} from './file_size_compare';
 
 describe('file size compare', () => {
-
   it('should report if size entry differ by more than the specified max percentage diff', () => {
     const diffs = compareFileSizeData(
         {

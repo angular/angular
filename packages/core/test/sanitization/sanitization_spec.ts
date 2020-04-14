@@ -24,7 +24,9 @@ describe('sanitization', () => {
   afterEach(() => leaveView());
   class Wrap {
     constructor(private value: string) {}
-    toString() { return this.value; }
+    toString() {
+      return this.value;
+    }
   }
   it('should sanitize html', () => {
     expect(ɵɵsanitizeHtml('<div></div>')).toEqual('<div></div>');
@@ -96,7 +98,7 @@ describe('sanitization', () => {
         contextsByProp.set(prop, contexts);
         // check only in case a prop can be a part of both URL contexts
         if (contexts.size === 2) {
-          expect(getUrlSanitizer(tag, prop)).toEqual(sanitizerNameByContext.get(context) !);
+          expect(getUrlSanitizer(tag, prop)).toEqual(sanitizerNameByContext.get(context)!);
         }
       }
     });

@@ -47,7 +47,9 @@ export class SwTestHarnessBuilder {
     return this;
   }
 
-  build(): SwTestHarness { return new SwTestHarness(this.server, this.caches, this.origin); }
+  build(): SwTestHarness {
+    return new SwTestHarness(this.server, this.caches, this.origin);
+  }
 }
 
 export class MockClients implements Clients {
@@ -60,11 +62,17 @@ export class MockClients implements Clients {
     this.clients.set(clientId, new MockClient(clientId));
   }
 
-  remove(clientId: string): void { this.clients.delete(clientId); }
+  remove(clientId: string): void {
+    this.clients.delete(clientId);
+  }
 
-  async get(id: string): Promise<Client> { return this.clients.get(id) !as any as Client; }
+  async get(id: string): Promise<Client> {
+    return this.clients.get(id)! as any as Client;
+  }
 
-  getMock(id: string): MockClient|undefined { return this.clients.get(id); }
+  getMock(id: string): MockClient|undefined {
+    return this.clients.get(id);
+  }
 
   async matchAll(): Promise<Client[]> {
     return Array.from(this.clients.values()) as any[] as Client[];
@@ -82,17 +90,23 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
   private selfMessageQueue: any[] = [];
   autoAdvanceTime = false;
   // TODO(issue/24571): remove '!'.
-  unregistered !: boolean;
+  unregistered!: boolean;
   readonly notifications: {title: string, options: Object}[] = [];
   readonly registration: ServiceWorkerRegistration = {
     active: {
-      postMessage: (msg: any) => { this.selfMessageQueue.push(msg); },
+      postMessage: (msg: any) => {
+        this.selfMessageQueue.push(msg);
+      },
     },
     scope: this.origin,
-    showNotification: (title: string, options: Object) => {
-      this.notifications.push({title, options});
-    },
-    unregister: () => { this.unregistered = true; },
+    showNotification:
+        (title: string, options: Object) => {
+          this.notifications.push({title, options});
+        },
+    unregister:
+        () => {
+          this.unregistered = true;
+        },
   } as any;
 
   static envIsSupported(): boolean {
@@ -131,7 +145,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     while (this.selfMessageQueue.length > 0) {
       const queue = this.selfMessageQueue;
       this.selfMessageQueue = [];
-      await queue.reduce(async(previous, msg) => {
+      await queue.reduce(async (previous, msg) => {
         await previous;
         await this.handleMessage(msg, null);
       }, Promise.resolve());
@@ -145,18 +159,20 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     let skippedWaiting: boolean = false;
     if (this.eventHandlers.has('install')) {
       const installEvent = new MockInstallEvent();
-      this.eventHandlers.get('install') !(installEvent);
+      this.eventHandlers.get('install')!(installEvent);
       await installEvent.ready;
       skippedWaiting = this.skippedWaiting;
     }
     if (this.eventHandlers.has('activate')) {
       const activateEvent = new MockActivateEvent();
-      this.eventHandlers.get('activate') !(activateEvent);
+      this.eventHandlers.get('activate')!(activateEvent);
       await activateEvent.ready;
     }
     return skippedWaiting;
   }
-  updateServerState(server?: MockServerState): void { this.server = server || EMPTY_SERVER_STATE; }
+  updateServerState(server?: MockServerState): void {
+    this.server = server || EMPTY_SERVER_STATE;
+  }
 
   fetch(req: string|Request): Promise<Response> {
     if (typeof req === 'string') {
@@ -177,11 +193,17 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     this.eventHandlers.set(event, handler);
   }
 
-  removeEventListener(event: string, handler?: Function): void { this.eventHandlers.delete(event); }
+  removeEventListener(event: string, handler?: Function): void {
+    this.eventHandlers.delete(event);
+  }
 
-  newRequest(url: string, init: Object = {}): Request { return new MockRequest(url, init); }
+  newRequest(url: string, init: Object = {}): Request {
+    return new MockRequest(url, init);
+  }
 
-  newResponse(body: string, init: Object = {}): Response { return new MockResponse(body, init); }
+  newResponse(body: string, init: Object = {}): Response {
+    return new MockResponse(body, init);
+  }
 
   newHeaders(headers: {[name: string]: string}): Headers {
     return Object.keys(headers).reduce((mock, name) => {
@@ -202,7 +224,9 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     };
   }
 
-  async skipWaiting(): Promise<void> { this.skippedWaiting = true; }
+  async skipWaiting(): Promise<void> {
+    this.skippedWaiting = true;
+  }
 
   waitUntil(promise: Promise<void>): void {}
 
@@ -212,7 +236,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
       throw new Error('No fetch handler registered');
     }
     const event = new MockFetchEvent(req, clientId);
-    this.eventHandlers.get('fetch') !.call(this, event);
+    this.eventHandlers.get('fetch')!.call(this, event);
 
     if (clientId) {
       this.clients.add(clientId);
@@ -232,7 +256,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
       this.clients.add(clientId);
       event = new MockMessageEvent(data, this.clients.getMock(clientId) || null);
     }
-    this.eventHandlers.get('message') !.call(this, event);
+    this.eventHandlers.get('message')!.call(this, event);
     return event.ready;
   }
 
@@ -241,7 +265,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
       throw new Error('No push handler registered');
     }
     const event = new MockPushEvent(data);
-    this.eventHandlers.get('push') !.call(this, event);
+    this.eventHandlers.get('push')!.call(this, event);
     return event.ready;
   }
 
@@ -250,7 +274,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
       throw new Error('No notificationclick handler registered');
     }
     const event = new MockNotificationEvent(notification, action);
-    this.eventHandlers.get('notificationclick') !.call(this, event);
+    this.eventHandlers.get('notificationclick')!.call(this, event);
     return event.ready;
   }
 
@@ -281,7 +305,9 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
         });
   }
 
-  isClient(obj: any): obj is Client { return obj instanceof MockClient; }
+  isClient(obj: any): obj is Client {
+    return obj instanceof MockClient;
+  }
 }
 
 interface StaticFile {
@@ -304,9 +330,13 @@ export class AssetGroupBuilder {
     return this;
   }
 
-  finish(): ConfigBuilder { return this.up; }
+  finish(): ConfigBuilder {
+    return this.up;
+  }
 
-  toManifestGroup(): AssetGroupConfig { return null !; }
+  toManifestGroup(): AssetGroupConfig {
+    return null!;
+  }
 }
 
 export class ConfigBuilder {
@@ -324,8 +354,10 @@ export class ConfigBuilder {
     return {
       configVersion: 1,
       timestamp: 1234567890123,
-      index: '/index.html', assetGroups,
-      navigationUrls: [], hashTable,
+      index: '/index.html',
+      assetGroups,
+      navigationUrls: [],
+      hashTable,
     };
   }
 }
@@ -333,10 +365,12 @@ export class ConfigBuilder {
 class OneTimeContext implements Context {
   private queue: Promise<void>[] = [];
 
-  waitUntil(promise: Promise<void>): void { this.queue.push(promise); }
+  waitUntil(promise: Promise<void>): void {
+    this.queue.push(promise);
+  }
 
   get ready(): Promise<void> {
-    return (async() => {
+    return (async () => {
       while (this.queue.length > 0) {
         await this.queue.shift();
       }
@@ -349,7 +383,9 @@ class MockExtendableEvent extends OneTimeContext {}
 class MockFetchEvent extends MockExtendableEvent {
   response: Promise<Response|undefined> = Promise.resolve(undefined);
 
-  constructor(readonly request: Request, readonly clientId: string|null) { super(); }
+  constructor(readonly request: Request, readonly clientId: string|null) {
+    super();
+  }
 
   respondWith(promise: Promise<Response>): Promise<Response> {
     this.response = promise;
@@ -358,17 +394,23 @@ class MockFetchEvent extends MockExtendableEvent {
 }
 
 class MockMessageEvent extends MockExtendableEvent {
-  constructor(readonly data: Object, readonly source: MockClient|null) { super(); }
+  constructor(readonly data: Object, readonly source: MockClient|null) {
+    super();
+  }
 }
 
 class MockPushEvent extends MockExtendableEvent {
-  constructor(private _data: Object) { super(); }
+  constructor(private _data: Object) {
+    super();
+  }
   data = {
     json: () => this._data,
   };
 }
 class MockNotificationEvent extends MockExtendableEvent {
-  constructor(private _notification: any, readonly action?: string) { super(); }
+  constructor(private _notification: any, readonly action?: string) {
+    super();
+  }
   readonly notification = {...this._notification, close: () => undefined};
 }
 

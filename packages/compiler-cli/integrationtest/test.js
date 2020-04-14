@@ -34,8 +34,8 @@ function nodejs_repository() {
 const nodejsBinaryExt = os.platform() === 'win32' ? '.bat' : '.sh';
 const ngcBin = require.resolve(`./ngc_bin${nodejsBinaryExt}`);
 const xi18nBin = require.resolve(`./ng_xi18n${nodejsBinaryExt}`);
-const nodeBin = require.resolve(
-    `${nodejs_repository()}/${(os.platform() === 'win32' ? 'bin/nodejs/node.exe' : 'bin/nodejs/bin/node')}`);
+const nodeBin = require.resolve(`${nodejs_repository()}/${
+    (os.platform() === 'win32' ? 'bin/nodejs/node.exe' : 'bin/nodejs/bin/node')}`);
 const jasmineBin = require.resolve('npm/node_modules/jasmine/bin/jasmine.js');
 
 // Prepare the test directory before building the integration test output. This ensures that

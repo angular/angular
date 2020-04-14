@@ -12,7 +12,6 @@ import {TranslationBundle, TranslationHandler, Translator} from '../../src/trans
 
 describe('Translator', () => {
   describe('translateFiles()', () => {
-
     beforeEach(() => {
       spyOn(FileUtils, 'readFileBuffer')
           .and.returnValues(Buffer.from('resource file 1'), Buffer.from('resource file 2'));

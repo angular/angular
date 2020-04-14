@@ -13,7 +13,9 @@ declare const Zone: any;
 export function scheduleMicroTask(fn: Function) {
   if (typeof Zone === 'undefined') {
     // use promise to schedule microTask instead of use Zone
-    promise.then(() => { fn && fn.apply(null, null); });
+    promise.then(() => {
+      fn && fn.apply(null, null);
+    });
   } else {
     Zone.current.scheduleMicroTask('scheduleMicrotask', fn);
   }

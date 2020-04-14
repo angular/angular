@@ -13,7 +13,9 @@ import {Schema as ElementsOptions} from './schema';
 // tslint:disable:max-line-length
 describe('Elements Schematics', () => {
   const schematicRunner = new SchematicTestRunner(
-      '@angular/elements', path.join(__dirname, '../test-collection.json'), );
+      '@angular/elements',
+      path.join(__dirname, '../test-collection.json'),
+  );
   const defaultOptions: ElementsOptions = {project: 'elements', skipPackageJson: false};
 
   let appTree: UnitTestTree;
@@ -35,7 +37,7 @@ describe('Elements Schematics', () => {
     skipTests: false,
   };
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     appTree = await schematicRunner
                   .runExternalSchematicAsync('@schematics/angular', 'workspace', workspaceOptions)
                   .toPromise();
@@ -45,14 +47,14 @@ describe('Elements Schematics', () => {
             .toPromise();
   });
 
-  it('should run the ng-add schematic', async() => {
+  it('should run the ng-add schematic', async () => {
     const tree =
         await schematicRunner.runSchematicAsync('ng-add', defaultOptions, appTree).toPromise();
     expect(tree.readContent('/projects/elements/src/polyfills.ts'))
         .toContain(`import 'document-register-element';`);
   });
 
-  it('should add polyfill as a dependency in package.json', async() => {
+  it('should add polyfill as a dependency in package.json', async () => {
     const tree =
         await schematicRunner.runSchematicAsync('ng-add', defaultOptions, appTree).toPromise();
     const pkgJsonText = tree.readContent('/package.json');

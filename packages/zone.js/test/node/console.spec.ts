@@ -16,7 +16,9 @@ describe('node console', () => {
     }
   });
 
-  beforeEach(() => { log.length = 0; });
+  beforeEach(() => {
+    log.length = 0;
+  });
 
   it('console methods should run in root zone', () => {
     zone.run(() => {

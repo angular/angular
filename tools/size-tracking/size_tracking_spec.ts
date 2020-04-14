@@ -12,12 +12,14 @@ import {SourceMapGenerator} from 'source-map';
 
 import {SizeTracker} from './size_tracker';
 
-const testTempDir = process.env['TEST_TMPDIR'] !;
+const testTempDir = process.env['TEST_TMPDIR']!;
 
 describe('size tracking', () => {
   let generator: SourceMapGenerator;
 
-  beforeEach(() => { generator = new SourceMapGenerator(); });
+  beforeEach(() => {
+    generator = new SourceMapGenerator();
+  });
 
   function writeFile(filePath: string, content: string): string {
     const tmpFilePath = join(testTempDir, filePath);

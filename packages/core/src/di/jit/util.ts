@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef} from '../../change_detection/change_detector_ref';
-import {CompilerFacade, R3DependencyMetadataFacade, R3ResolvedDependencyType, getCompilerFacade} from '../../compiler/compiler_facade';
+import {CompilerFacade, getCompilerFacade, R3DependencyMetadataFacade, R3ResolvedDependencyType} from '../../compiler/compiler_facade';
 import {Type} from '../../interface/type';
 import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
 import {Attribute, Host, Inject, Optional, Self, SkipSelf} from '../metadata';
@@ -27,7 +27,7 @@ export function convertDependencies(deps: any[]): R3DependencyMetadataFacade[] {
   return deps.map(dep => reflectDependency(compiler, dep));
 }
 
-function reflectDependency(compiler: CompilerFacade, dep: any | any[]): R3DependencyMetadataFacade {
+function reflectDependency(compiler: CompilerFacade, dep: any|any[]): R3DependencyMetadataFacade {
   const meta: R3DependencyMetadataFacade = {
     token: null,
     host: false,

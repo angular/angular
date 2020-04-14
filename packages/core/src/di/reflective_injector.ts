@@ -308,7 +308,7 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
 
   createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector {
     const inj = new ReflectiveInjector_(providers);
-    (inj as{parent: Injector | null}).parent = this;
+    (inj as {parent: Injector | null}).parent = this;
     return inj;
   }
 
@@ -335,7 +335,9 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     return this._instantiateProvider(provider);
   }
 
-  private _getMaxNumberOfObjects(): number { return this.objs.length; }
+  private _getMaxNumberOfObjects(): number {
+    return this.objs.length;
+  }
 
   private _instantiateProvider(provider: ResolvedReflectiveProvider): any {
     if (provider.multiProvider) {
@@ -451,7 +453,9 @@ export class ReflectiveInjector_ implements ReflectiveInjector {
     return `ReflectiveInjector(providers: [${providers}])`;
   }
 
-  toString(): string { return this.displayName; }
+  toString(): string {
+    return this.displayName;
+  }
 }
 
 function _mapProviders(injector: ReflectiveInjector_, fn: Function): any[] {
