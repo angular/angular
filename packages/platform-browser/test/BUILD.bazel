@@ -53,6 +53,17 @@ karma_web_test_suite(
     static_files = [
         ":static_assets/test.html",
     ],
+    tags = [
+        # disabled on 2020-04-14 due to failure on saucelabs monitor job
+        # https://app.circleci.com/pipelines/github/angular/angular/13320/workflows/9ca3527a-d448-4a64-880a-fb4de9d1fece/jobs/680645
+        # ```
+        # Chrome 73.0.3683 (Windows 7.0.0) public testing API using the test injector with modules components with template url should allow to createSync components with templateUrl after explicit async compilation FAILED
+        #   Error: Component 'CompWithUrlTemplate' is not resolved:
+        # IE 10.0.0 (Windows 8.0.0) ERROR: 'Unhandled Promise rejection:', 'Failed to load ./sometemplate.html', '; Zone:', 'ProxyZone', '; Task:', 'Promise.then', '; Value:', 'Failed to load ./sometemplate.html', undefined
+        # Chrome Mobile 74.0.3729 (Android 0.0.0) ERROR: 'Unhandled Promise rejection:', 'Failed to load ./sometemplate.html', '; Zone:', 'ProxyZone', '; Task:', 'Promise.then', '; Value:', 'Failed to load ./sometemplate.html', undefined
+        # ```
+        "fixme-saucelabs-ivy",
+    ],
     deps = [
         ":test_lib",
     ],

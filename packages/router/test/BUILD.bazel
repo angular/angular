@@ -44,6 +44,21 @@ jasmine_node_test(
 
 karma_web_test_suite(
     name = "test_web",
+    tags = [
+        # disabled on 2020-04-14 due to failure on saucelabs monitor job
+        # https://app.circleci.com/pipelines/github/angular/angular/13320/workflows/9ca3527a-d448-4a64-880a-fb4de9d1fece/jobs/680645
+        # ```
+        # Chrome 73.0.3683 (Windows 7.0.0) ERROR: 'ERROR', Error: Uncaught (in promise): Error: Cannot match any routes. URL Segment: 'aa'
+        # Error: Cannot match any routes. URL Segment: 'aa'
+        # IE 11.0.0 (Windows 8.1.0.0) ERROR: 'ERROR', Error: Uncaught (in promise): Error: Cannot match any routes. URL Segment: 'aa'
+        # Error: Cannot match any routes. URL Segment: 'aa'
+        # Firefox 65.0.0 (Windows 7.0.0) ERROR: 'ERROR', Error: Uncaught (in promise): Error: Cannot match any routes. URL Segment: 'aa'
+        # IE 10.0.0 (Windows 8.0.0) ERROR: 'ERROR', Error: Uncaught (in promise): Error: Cannot match any routes. URL Segment: 'aa'
+        # Error: Cannot match any routes. URL Segment: 'aa'
+        # ```
+        "fixme-saucelabs-ve",
+        "fixme-saucelabs-ivy",
+    ],
     deps = [
         ":test_lib",
     ],
