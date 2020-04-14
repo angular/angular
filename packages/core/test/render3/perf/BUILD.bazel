@@ -8,6 +8,7 @@ ts_library(
         ["**/*.ts"],
     ),
     deps = [
+        "//packages/common",
         "//packages/core",
         "//packages/core/src/util",
         "@npm//@types/jasmine",
@@ -241,4 +242,18 @@ ng_rollup_bundle(
 ng_benchmark(
     name = "view_destroy_hook",
     bundle = ":view_destroy_hook_lib",
+)
+
+ng_rollup_bundle(
+    name = "ng_for_lib",
+    entry_point = ":ng_for/index.ts",
+    deps = [
+        ":perf_lib",
+        "//packages/common",
+    ],
+)
+
+ng_benchmark(
+    name = "ng_for",
+    bundle = ":ng_for_lib",
 )
