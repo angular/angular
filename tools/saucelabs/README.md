@@ -2,10 +2,12 @@
 
 ## Local testing
 
-1. Set up your `SAUCE_USERNAME`, `SAUCE_ACCESS_KEY` & `SAUCE_TUNNEL_IDENTIFIER` environment variables. 
-These are required.  
+1. Set up your `SAUCE_USERNAME`, `SAUCE_ACCESS_KEY` & `SAUCE_TUNNEL_IDENTIFIER` environment variables.
+These are required. You can find the values for `SAUCE_USERNAME` and `SAUCE_ACCESS_KEY` in `/.circleci/env.sh`. `SAUCE_TUNNEL_IDENTIFIER` can be set to any unique value.
 
-2. On OSX and Windows, you will also need to set `SAUCE_CONNECT` to the path of your `sc` binary (Sauce Connect Proxy).
+If you are having trouble running Saucelabs tests locally you can contact [Joey Perrott](https://github.com/josephperrott) or [Greg Magolan](https://github.com/gregmagolan) for support.
+
+1. On OSX and Windows, you will also need to set `SAUCE_CONNECT` to the path of your `sc` binary (Sauce Connect Proxy).
 You will have to download Sauce Connect Proxy if you don't already have it downloaded. 
 It's available on the SauceLabs website [here](https://wiki.saucelabs.com/display/DOCS/Downloading+Sauce+Connect+Proxy).
 Unzip it and point the SAUCE_CONNECT env variable to the `sc` binary.
