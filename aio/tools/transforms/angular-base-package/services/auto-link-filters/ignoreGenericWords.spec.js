@@ -16,12 +16,6 @@ describe('ignoreGenericWords', () => {
     expect(ignoreGenericWords(docs, words, 1)).toEqual([]);
     expect(ignoreGenericWords(docs, words, 2)).toEqual(docs);
   });
-
-  it('should ignore `_` in all docs', () => {
-    const docs = [{docType: 'package', name: 'create'}, {docType: 'class', name: 'Foo'}];
-    const words = ['_'];
-    expect(ignoreGenericWords(docs, words, 0)).toEqual([]);
-  });
 });
 
 
