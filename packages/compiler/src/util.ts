@@ -280,7 +280,7 @@ export function newArray<T>(size: number, value?: T): T[] {
  * @param conditionFn Condition function that is called for each item in a given array and returns a
  * boolean value.
  */
-export function partitionArray<T = any>(
+export function partitionArray<T>(
     arr: T[], conditionFn: <K extends T>(value: K) => boolean): [T[], T[]] {
   const truthy: T[] = [];
   const falsy: T[] = [];

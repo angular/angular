@@ -848,8 +848,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this.matchDirectives(NG_TEMPLATE_TAG_NAME, template);
 
     // prepare attributes parameter (including attributes used for directive matching)
-    const [i18nStaticAttrs, staticAttrs] =
-        partitionArray<t.TextAttribute>(template.attributes, hasI18nMeta);
+    const [i18nStaticAttrs, staticAttrs] = partitionArray(template.attributes, hasI18nMeta);
     const attrsExprs: o.Expression[] = this.getAttributeExpressions(
         staticAttrs, template.inputs, template.outputs, undefined /* styles */,
         template.templateAttrs, i18nStaticAttrs);
@@ -896,7 +895,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // Only add normal input/output binding instructions on explicit <ng-template> elements.
     if (template.tagName === NG_TEMPLATE_TAG_NAME) {
-      const [i18nInputs, inputs] = partitionArray<t.BoundAttribute>(template.inputs, hasI18nMeta);
+      const [i18nInputs, inputs] = partitionArray(template.inputs, hasI18nMeta);
       const i18nAttrs = [...i18nStaticAttrs, ...i18nInputs];
 
       // Add i18n attributes that may act as inputs to directives. If such attributes are present,
