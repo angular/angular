@@ -1,3 +1,58 @@
+## 9.2.1 "xenon-xenodochy" (2020-04-14)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** avoid errors when trying to add high contrast class ([#18323](https://github.com/angular/components/issues/18323)) ([142c55e](https://github.com/angular/components/commit/142c55e)) |
+| bug fix |  **a11y:** focus monitor incorrectly detecting fake mousedown… ([#15214](https://github.com/angular/components/issues/15214)) ([ac565a2](https://github.com/angular/components/commit/ac565a2)) |
+| bug fix |  **autocomplete:** provide horizontal fallback positions ([#18906](https://github.com/angular/components/issues/18906)) ([3488dda](https://github.com/angular/components/commit/3488dda)), closes [#18854](https://github.com/angular/components/issues/18854) |
+| bug fix |  **bottom-sheet:** allow result to be passed when dismissing through service ([#18831](https://github.com/angular/components/issues/18831)) ([48e26b1](https://github.com/angular/components/commit/48e26b1)) |
+| bug fix |  **core:** ripple mutating global options when animations are… ([#18983](https://github.com/angular/components/issues/18983)) ([09f2872](https://github.com/angular/components/commit/09f2872)) |
+| bug fix |  **datepicker:** add hover indication to navigation buttons ([#18995](https://github.com/angular/components/issues/18995)) ([94ab707](https://github.com/angular/components/commit/94ab707)), closes [/github.com/angular/components/blob/master/src/material/button/button.scss#L13](https://github.com//github.com/angular/components/blob/master/src/material/button/button.scss/issues/L13) [#18958](https://github.com/angular/components/issues/18958) |
+| bug fix |  **datepicker:** disable calendar hover styles on touch devices ([#18876](https://github.com/angular/components/issues/18876)) ([d752cdf](https://github.com/angular/components/commit/d752cdf)) |
+| bug fix |  **datepicker:** error in IE/Edge for static disabled binding ([#18202](https://github.com/angular/components/issues/18202)) ([80977f6](https://github.com/angular/components/commit/80977f6)) |
+| bug fix |  **dialog:** recapture focus when clicking on backdrop when cl… ([#18826](https://github.com/angular/components/issues/18826)) ([c5ddfe8](https://github.com/angular/components/commit/c5ddfe8)), closes [#18799](https://github.com/angular/components/issues/18799) |
+| bug fix |  **drag-drop:** allow preview z-index to be changed ([#18914](https://github.com/angular/components/issues/18914)) ([5c88e67](https://github.com/angular/components/commit/5c88e67)), closes [#18902](https://github.com/angular/components/issues/18902) |
+| bug fix |  **drag-drop:** boundary not accounting for scrolling ([#18612](https://github.com/angular/components/issues/18612)) ([0401024](https://github.com/angular/components/commit/0401024)), closes [#18597](https://github.com/angular/components/issues/18597) |
+| bug fix |  **drag-drop:** defer resolving scrollable parents until first drag ([#18918](https://github.com/angular/components/issues/18918)) ([ca263c3](https://github.com/angular/components/commit/ca263c3)), closes [#18737](https://github.com/angular/components/issues/18737) |
+| bug fix |  **drag-drop:** handle custom preview/placeholder with multiple root nodes ([#18829](https://github.com/angular/components/issues/18829)) ([92aed70](https://github.com/angular/components/commit/92aed70)) |
+| bug fix |  **expansion:** add strong focus indication ([#18552](https://github.com/angular/components/issues/18552)) ([6feff45](https://github.com/angular/components/commit/6feff45)) |
+| bug fix |  **mat-button-toggle:** mat-button-toggle element should not h… ([#18746](https://github.com/angular/components/issues/18746)) ([709ac63](https://github.com/angular/components/commit/709ac63)) |
+| bug fix |  **popover-edit:** hover content not showing up if content changes after init ([#18937](https://github.com/angular/components/issues/18937)) ([d7ff7cb](https://github.com/angular/components/commit/d7ff7cb)), closes [#18934](https://github.com/angular/components/issues/18934) |
+| bug fix |  **popover-edit:** unable to close focus content using the keyboard ([#18945](https://github.com/angular/components/issues/18945)) ([e7a197a](https://github.com/angular/components/commit/e7a197a)) |
+| bug fix |  **slider:** not stopping drag when released outside of viewport ([#18905](https://github.com/angular/components/issues/18905)) ([ca3c68f](https://github.com/angular/components/commit/ca3c68f)), closes [#18888](https://github.com/angular/components/issues/18888) |
+| bug fix |  **tabs:** tab nav bar not disabling pagination animation ([#18886](https://github.com/angular/components/issues/18886)) ([a6e5423](https://github.com/angular/components/commit/a6e5423)) |
+| performance |  **drag-drop:** avoid unnecessary change detection on pointer down events ([#18821](https://github.com/angular/components/issues/18821)) ([2f6e941](https://github.com/angular/components/commit/2f6e941)), closes [#18726](https://github.com/angular/components/issues/18726) |
+| performance |  **focus-monitor:** optimize event registration ([#18667](https://github.com/angular/components/issues/18667)) ([174e4cd](https://github.com/angular/components/commit/174e4cd)) |
+| performance |  **ripple:** optimize event registration ([#18633](https://github.com/angular/components/issues/18633)) ([fca0c28](https://github.com/angular/components/commit/fca0c28)) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  map circle error during server-side rendering ([#18822](https://github.com/angular/components/issues/18822)) ([7c6be0e](https://github.com/angular/components/commit/7c6be0e)) |
+| bug fix |  not rendering until mapTypeId is set ([#18967](https://github.com/angular/components/issues/18967)) ([977c605](https://github.com/angular/components/commit/977c605)), closes [#18965](https://github.com/angular/components/issues/18965) |
+
+### cdk-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **dialog:** disableClose not working for tem… ([#18968](https://github.com/angular/components/issues/18968)) ([c0d19cb](https://github.com/angular/components/commit/c0d19cb)), closes [#18964](https://github.com/angular/components/issues/18964) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-card:** not handling dark themes ([#18938](https://github.com/angular/components/issues/18938)) ([f1c0c09](https://github.com/angular/components/commit/f1c0c09)) |
+| bug fix |  **mdc-chips:** align theming setup with… ([#19000](https://github.com/angular/components/issues/19000)) ([7957423](https://github.com/angular/components/commit/7957423)) |
+| bug fix |  **mdc-chips:** enter animation not disabled when using noop animations ([#18653](https://github.com/angular/components/issues/18653)) ([ea32d14](https://github.com/angular/components/commit/ea32d14)), closes [#18642](https://github.com/angular/components/issues/18642) |
+| bug fix |  **mdc-chips:** support custom errorStat… ([#18974](https://github.com/angular/components/issues/18974)) ([58abf23](https://github.com/angular/components/commit/58abf23)) |
+| bug fix |  **mdc-radio:** add strong focus indication ([#18946](https://github.com/angular/components/issues/18946)) ([897dee4](https://github.com/angular/components/commit/897dee4)) |
+| bug fix |  **mdc-radio:** no focus indication in h… ([#18969](https://github.com/angular/components/issues/18969)) ([4d22936](https://github.com/angular/components/commit/4d22936)), closes [#13280](https://github.com/angular/components/issues/13280) |
+| performance |  **mdc-chips:** avoid checking the DOM on each change detection ([#18929](https://github.com/angular/components/issues/18929)) ([29dda54](https://github.com/angular/components/commit/29dda54)) |
+
+
 # 9.2.0 "metal-man" (2020-03-25)
 
 This release introduces support for TypeScript 3.8.
