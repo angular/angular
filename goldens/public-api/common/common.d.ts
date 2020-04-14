@@ -416,6 +416,12 @@ export declare abstract class ViewportScroller {
     static ɵprov: never;
 }
 
+export declare class WatchCollectionPipe implements PipeTransform {
+    transform(value: {
+        [key: string]: any;
+    } | any[] | null | undefined): unknown;
+}
+
 export declare enum WeekDay {
     Sunday = 0,
     Monday = 1,
