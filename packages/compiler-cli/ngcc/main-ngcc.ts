@@ -153,7 +153,7 @@ if (require.main === module) {
       process.exitCode = 0;
     } catch (e) {
       console.error(e.stack || e.message);
-      process.exitCode = 1;
+      process.exit(1);
     }
   })();
 }
