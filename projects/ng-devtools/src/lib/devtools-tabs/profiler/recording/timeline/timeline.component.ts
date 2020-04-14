@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ElementRef, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { ProfilerFrame } from 'protocol';
 import { GraphNode } from './record-formatter/record-formatter';
 
@@ -17,16 +17,13 @@ const MAX_HEIGHT = 50;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimelineComponent {
-  @ViewChild('barContainer') barContainer: ElementRef;
-
   @Input() set records(data: ProfilerFrame[]) {
     this.profilerFrames = data.filter((frame) => frame.duration > 0);
     this.renderBarChart(this.profilerFrames);
   }
-  @Output() exportProfile = new EventEmitter<void>();
   @Input() profilerFrames: ProfilerFrame[] = [];
+  @Output() exportProfile = new EventEmitter<void>();
 
-  cmpVisualizationModes = VisualizationMode;
   visualizationMode = VisualizationMode.BarGraph;
   graphData: GraphNode[] = [];
   currentFrameIndex = 0;
@@ -44,11 +41,6 @@ export class TimelineComponent {
     const newVal = this.currentFrameIndex + value;
     if (newVal > -1 && newVal < this.profilerFrames.length) {
       this.currentFrameIndex = newVal;
-      this.barContainer.nativeElement.children[newVal].scrollIntoView({
-        behavior: 'auto',
-        block: 'end',
-        inline: 'nearest',
-      });
     }
   }
 

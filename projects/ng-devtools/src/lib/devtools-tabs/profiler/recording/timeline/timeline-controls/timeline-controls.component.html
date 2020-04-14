@@ -1,0 +1,25 @@
+<div class="controls">
+  <button mat-stroked-button (click)="exportProfile.emit()">Export to JSON</button>
+  <mat-form-field>
+    <mat-select [value]="visualizationMode" (selectionChange)="this.changeVisualizationMode.emit($event.value)">
+      <mat-option [value]="flameGraphMode">
+        Flame graph
+      </mat-option>
+      <mat-option [value]="treeMapMode">
+        Tree map
+      </mat-option>
+      <mat-option [value]="barGraphMode">
+        Bar chart
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <label *ngIf="estimatedFrameRate >= 60"> Time spent: {{ record.duration | number }} ms </label>
+
+  <label [style.color]="frameColor" *ngIf="estimatedFrameRate < 60">
+    Time spent: {{ record.duration | number }} ms
+  </label>
+
+  <label [style.color]="frameColor" *ngIf="estimatedFrameRate < 60"> Frame rate: {{ estimatedFrameRate }} fps </label>
+  <label *ngIf="record.source">Source: {{ record.source }}</label>
+</div>
