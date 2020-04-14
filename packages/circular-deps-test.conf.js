@@ -10,7 +10,7 @@ const path = require('path');
 
 module.exports = {
   baseDir: '../',
-  goldenFile: '../goldens/packages-circular-deps.json',
+  goldenFile: '../goldens/circular-deps/packages.json',
   // The test should not capture deprecated packages such as `http`, or the `webworker` platform.
   glob: `./!(http|platform-webworker|platform-webworker-dynamic)/**/*.ts`,
   // Command that will be displayed if the golden needs to be updated.
