@@ -41,8 +41,8 @@ jobs:
 
       - run:
           name: 'Run Cypress tests'
-          command: yarn cy:run
-          no_output_timeout: '1m'
+          command: yarn cy:ci
+          no_output_timeout: '5m'
 
     artifacts:
       when: always
