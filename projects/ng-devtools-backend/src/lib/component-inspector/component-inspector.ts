@@ -1,53 +1,53 @@
 import { unHighlight, highlight, findComponentAndHost } from '../highlighter';
 import { Type } from '@angular/core';
-import {
-  buildDirectiveForest,
-  ComponentTreeNode,
-  findNodeInForest,
-  getIndexForNativeElementInForest,
-} from '../component-tree';
+import { buildDirectiveForest, ComponentTreeNode, findNodeInForest } from '../component-tree';
 import { ElementPosition } from 'protocol';
-import { IndexedNode, indexForest } from '../observer/identity-tracker';
+import { getDirectiveId } from '../component-tree-identifiers';
 
 export interface ComponentInspectorOptions {
-  onComponentEnter: (position: ElementPosition) => void;
+  onComponentEnter: (id: number) => void;
+  onComponentSelect: (id: number) => void;
   onComponentLeave: () => void;
 }
 
 export class ComponentInspector {
   private _selectedComponent: { component: Type<unknown>; host: HTMLElement | null };
   private readonly _onComponentEnter;
+  private readonly _onComponentSelect;
   private readonly _onComponentLeave;
 
   constructor(
-    componentOptions: ComponentInspectorOptions = { onComponentEnter: () => {}, onComponentLeave: () => {} }
+    componentOptions: ComponentInspectorOptions = {
+      onComponentEnter: () => {},
+      onComponentLeave: () => {},
+      onComponentSelect: () => {},
+    }
   ) {
     this.bindMethods();
     this._onComponentEnter = componentOptions.onComponentEnter;
+    this._onComponentSelect = componentOptions.onComponentSelect;
     this._onComponentLeave = componentOptions.onComponentLeave;
   }
 
   startInspecting(): void {
     window.addEventListener('mouseover', this.elementMouseOver, true);
+    window.addEventListener('click', this.elementClick, true);
     window.addEventListener('mouseout', this.cancelEvent, true);
-    window.addEventListener('mouseenter', this.cancelEvent, true);
-    window.addEventListener('mouseleave', this.cancelEvent, true);
-    window.addEventListener('mousedown', this.cancelEvent, true);
-    window.addEventListener('mouseup', this.cancelEvent, true);
   }
 
-  /**
-   * Removes event listeners
-   */
   stopInspecting(): void {
     window.removeEventListener('mouseover', this.elementMouseOver, true);
+    window.removeEventListener('click', this.elementClick, true);
     window.removeEventListener('mouseout', this.cancelEvent, true);
-    window.removeEventListener('mouseenter', this.cancelEvent, true);
-    window.removeEventListener('mouseleave', this.cancelEvent, true);
-    window.removeEventListener('mousedown', this.cancelEvent, true);
-    window.removeEventListener('mouseup', this.cancelEvent, true);
+  }
 
-    unHighlight();
+  elementClick(e: MouseEvent): void {
+    e.stopImmediatePropagation();
+    e.preventDefault();
+
+    if (this._selectedComponent.component && this._selectedComponent.host) {
+      this._onComponentSelect(getDirectiveId(this._selectedComponent.component));
+    }
   }
 
   elementMouseOver(e: MouseEvent): void {
@@ -61,12 +61,7 @@ export class ComponentInspector {
     unHighlight();
     if (this._selectedComponent.component && this._selectedComponent.host) {
       highlight(this._selectedComponent.host);
-      const forest: IndexedNode[] = indexForest(buildDirectiveForest());
-      const elementPosition: ElementPosition | null = getIndexForNativeElementInForest(
-        this._selectedComponent.host,
-        forest
-      );
-      this._onComponentEnter(elementPosition);
+      this._onComponentEnter(getDirectiveId(this._selectedComponent.component));
     }
   }
 
@@ -80,6 +75,7 @@ export class ComponentInspector {
     this.startInspecting = this.startInspecting.bind(this);
     this.stopInspecting = this.stopInspecting.bind(this);
     this.elementMouseOver = this.elementMouseOver.bind(this);
+    this.elementClick = this.elementClick.bind(this);
     this.cancelEvent = this.cancelEvent.bind(this);
   }
 

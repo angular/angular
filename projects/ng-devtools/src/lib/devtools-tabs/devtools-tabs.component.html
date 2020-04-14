@@ -1,6 +1,6 @@
 <mat-tab-group animationDuration="0ms">
   <mat-tab label="Components">
-    <ng-directive-explorer></ng-directive-explorer>
+    <ng-directive-explorer (toggleInspector)="toggleInspector()"></ng-directive-explorer>
   </mat-tab>
   <mat-tab label="Profiler">
     <ng-profiler></ng-profiler>

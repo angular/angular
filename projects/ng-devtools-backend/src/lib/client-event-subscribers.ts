@@ -134,23 +134,26 @@ const checkForAngular = (messageBus: MessageBus<Events>, attempt = 0): void => {
 };
 
 const setupInspector = (messageBus: MessageBus<Events>) => {
-  const onComponentEnter = (position: ElementPosition) => {
-    messageBus.emit('highlightComponentInTreeFromElement', [position]);
+  const onComponentEnter = (id: number) => {
+    messageBus.emit('highlightComponent', [id]);
   };
   const onComponentLeave = () => {
-    messageBus.emit('removeHighlightFromComponentTree');
+    messageBus.emit('removeComponentHighlight');
+  };
+  const onComponentSelect = (id: number) => {
+    messageBus.emit('selectComponent', [id]);
   };
 
-  const inspectorOptions: ComponentInspectorOptions = { onComponentEnter, onComponentLeave };
+  const inspectorOptions: ComponentInspectorOptions = { onComponentEnter, onComponentLeave, onComponentSelect };
   const inspector = new ComponentInspector(inspectorOptions);
 
   messageBus.on('inspectorStart', inspector.startInspecting);
   messageBus.on('inspectorEnd', inspector.stopInspecting);
 
-  messageBus.on('highlightElementFromComponentTree', (position: ElementPosition) => {
+  messageBus.on('createHighlightOverlay', (position: ElementPosition) => {
     inspector.highlightByPosition(position);
   });
-  messageBus.on('removeHighlightFromElement', unHighlight);
+  messageBus.on('removeHighlightOverlay', unHighlight);
 };
 
 export interface SerializableDirectiveInstanceType extends DirectiveType {
