@@ -1,61 +1,26 @@
 <ng-container *ngIf="profilerFrames.length > 0; else noRecords">
   <ng-container *ngTemplateOutlet="recordView; context: { record: frame }"></ng-container>
 </ng-container>
+
 <ng-template #noRecords>
   Nothing was profiled
 </ng-template>
 
 <ng-template let-record="record" #recordView>
-  <div class="controls">
-    <button mat-stroked-button (click)="exportProfile.emit()">Export to JSON</button>
-    <mat-form-field>
-      <mat-select [(ngModel)]="visualizationMode">
-        <mat-option [value]="cmpVisualizationModes.FlameGraph">
-          Flame graph
-        </mat-option>
-        <mat-option [value]="cmpVisualizationModes.TreeMap">
-          Tree map
-        </mat-option>
-        <mat-option [value]="cmpVisualizationModes.BarGraph">
-          Bar chart
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <label *ngIf="estimateFrameRate(record.duration) >= 60"> Time spent: {{ record.duration | number }} ms </label>
-
-    <label
-      [style.color]="getColorByFrameRate(estimateFrameRate(record.duration))"
-      *ngIf="estimateFrameRate(record.duration) < 60"
-    >
-      Time spent: {{ record.duration | number }} ms
-    </label>
-
-    <label
-      [style.color]="getColorByFrameRate(estimateFrameRate(record.duration))"
-      *ngIf="estimateFrameRate(record.duration) < 60"
-    >
-      Frame rate: {{ estimateFrameRate(record.duration) }} fps
-    </label>
-    <label *ngIf="record.source">Source: {{ record.source }}</label>
-  </div>
-  <div class="bar-graph-container">
-    <p class="txt-frames">{{ currentFrameIndex + 1 }}/{{ graphData.length }}</p>
-    <button mat-icon-button (click)="move(-1)" [disabled]="currentFrameIndex == 0">
-      <mat-icon>chevron_left</mat-icon>
-    </button>
-    <div #barContainer class="bar-container">
-      <div
-        *ngFor="let d of graphData; let i = index"
-        [matTooltip]="d.toolTip"
-        [ngStyle]="d.style"
-        [class.selected]="i == currentFrameIndex"
-        (click)="selectFrame(i)"
-      ></div>
-    </div>
-    <button mat-icon-button (click)="move(1)" [disabled]="currentFrameIndex == graphData.length - 1">
-      <mat-icon>chevron_right</mat-icon>
-    </button>
-  </div>
+  <ng-timeline-controls
+    [frameColor]="getColorByFrameRate(estimateFrameRate(record.duration))"
+    [record]="record"
+    [estimatedFrameRate]="estimateFrameRate(record.duration)"
+    [visualizationMode]="visualizationMode"
+    (changeVisualizationMode)="visualizationMode = $event"
+    (exportProfile)="exportProfile.emit($event)"
+  ></ng-timeline-controls>
+  <ng-frame-selector
+    (move)="move($event)"
+    (selectFrame)="selectFrame($event)"
+    [profilerFramesLength]="profilerFrames.length"
+    [graphData]="graphData"
+    [currentFrame]="currentFrameIndex"
+  ></ng-frame-selector>
   <ng-timeline-visualizer [visualizationMode]="visualizationMode" [frame]="record"></ng-timeline-visualizer>
 </ng-template>

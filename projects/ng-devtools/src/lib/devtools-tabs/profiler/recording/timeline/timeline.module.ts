@@ -8,9 +8,11 @@ import { NgxFlamegraphModule } from 'ngx-flamegraph';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
+import { FrameSelectorComponent } from './frame-selector/frame-selector.component';
+import { TimelineControlsComponent } from './timeline-controls/timeline-controls.component';
 
 @NgModule({
-  declarations: [TimelineComponent],
+  declarations: [TimelineComponent, FrameSelectorComponent, TimelineControlsComponent],
   imports: [
     CommonModule,
     FormsModule,

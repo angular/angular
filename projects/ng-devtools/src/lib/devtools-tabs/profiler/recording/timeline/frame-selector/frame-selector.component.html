@@ -1,0 +1,18 @@
+<div class="bar-graph-container">
+  <p class="txt-frames">{{ currentFrameIndex + 1 }}/{{ graphData.length }}</p>
+  <button mat-icon-button (click)="move.emit(-1)" [disabled]="currentFrameIndex == 0">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+  <div #barContainer class="bar-container">
+    <div
+      *ngFor="let d of graphData; let i = index"
+      [matTooltip]="d.toolTip"
+      [ngStyle]="d.style"
+      [class.selected]="i === currentFrameIndex"
+      (click)="selectFrame.emit(i)"
+    ></div>
+  </div>
+  <button mat-icon-button (click)="move.emit(1)" [disabled]="currentFrameIndex == graphData.length - 1">
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+</div>
