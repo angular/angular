@@ -20,7 +20,7 @@ const SQUASH_PREFIX_RE = /^squash! /i;
 const REVERT_PREFIX_RE = /^revert:? /i;
 const TYPE_SCOPE_RE = /^(\w+)(?:\(([^)]+)\))?\:\s(.+)$/;
 const COMMIT_HEADER_RE = /^(.*)/i;
-const COMMIT_BODY_RE = /^.*\n\n(.*)/i;
+const COMMIT_BODY_RE = /^.*\n\n([\s\S]*)$/;
 
 /** Parse a full commit message into its composite parts. */
 export function parseCommitMessage(commitMsg: string) {
@@ -79,6 +79,9 @@ export function validateCommitMessage(
   const config = getAngularDevConfig<'commitMessage', CommitMessageConfig>().commitMessage;
   const commit = parseCommitMessage(commitMsg);
 
+  ////////////////////////////////////
+  // Checking revert, squash, fixup //
+  ////////////////////////////////////
   if (commit.isRevert) {
     return true;
   }
@@ -102,6 +105,9 @@ export function validateCommitMessage(
     return true;
   }
 
+  ////////////////////////////
+  // Checking commit header //
+  ////////////////////////////
   if (commit.header.length > config.maxLineLength) {
     error(`The commit message header is longer than ${config.maxLineLength} characters`);
     return false;
@@ -120,6 +126,16 @@ export function validateCommitMessage(
   if (commit.scope && !config.scopes.includes(commit.scope)) {
     error(`'${commit.scope}' is not an allowed scope.\n => SCOPES: ${config.scopes.join(', ')}`);
     return false;
+  }
+
+  //////////////////////////
+  // Checking commit body //
+  //////////////////////////
+
+  // Commit bodies are not checked for fixups and squashes as they will be squashed into
+  // another commit in the history anyway.
+  if (commit.isFixup || commit.isSquash) {
+    return true;
   }
 
   if (commit.bodyWithoutLinking.trim().length < config.minBodyLength) {
