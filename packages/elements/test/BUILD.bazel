@@ -43,6 +43,17 @@ karma_web_test_suite(
     bootstrap = [
         ":elements_test_bootstrap_scripts",
     ],
+    tags = [
+        # disabled on 2020-04-14 due to failure on saucelabs monitor job
+        # https://app.circleci.com/pipelines/github/angular/angular/13320/workflows/9ca3527a-d448-4a64-880a-fb4de9d1fece/jobs/680645
+        # ```
+        # IE 10.0.0 (Windows 8.0.0) ERROR
+        #   An error was thrown in afterAll
+        #   Syntax error
+        # ```
+        "fixme-saucelabs-ve",
+        "fixme-saucelabs-ivy",
+    ],
     deps = [
         ":test_lib",
     ],
