@@ -1,71 +1,50 @@
-# Pipes
+# Transforming Data Using Pipes
 
-Every application starts out with what seems like a simple task: get data, transform them, and show them to users.
-Getting data could be as simple as creating a local variable or as complex as streaming data over a WebSocket.
+Use [pipes](guide/glossary#pipe "Definition of a pipe") to transform and format strings, currency amounts, dates, and other display data using template expressions.
 
-<div class="alert is-helpful">
+<div class="alert is-important">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+You should already know how to use [templates](guide/glossary#template "Definition of a template") and [components](guide/glossary#component "Definition of a component").
 
 </div>
 
-Once data arrives, you could push their raw `toString` values directly to the view,
-but that rarely makes for a good user experience.
-For example, in most use cases, users prefer to see a date in a simple format like
-<samp>April 15, 1988</samp> rather than the raw string format
-<samp>Fri Apr 15 1988 00:00:00 GMT-0700 (Pacific Daylight Time)</samp>.
+Pipes are simple functions that accept an input value and return a transformed value. For example, you would use a pipe to show a date as `April 15, 1988` rather than the raw string format.
 
-Clearly, some values benefit from a bit of editing. You may notice that you
-desire many of the same transformations repeatedly, both within and across many applications.
-You can almost think of them as styles.
-In fact, you might like to apply them in your HTML templates as you do styles.
+Angular provides several built-in pipes for typical data transformations:
 
-Introducing Angular pipes, a way to write display-value transformations that you can declare in your HTML.
+* [`DatePipe`](api/common/DatePipe): Formats a date value according to locale rules.
+* [`UpperCasePipe`](api/common/UpperCasePipe): Transforms text to all upper case.
+* [`LowerCasePipe`](api/common/LowerCasePipe): Transforms text to all lower case.
+* [`CurrencyPipe`](api/common/CurrencyPipe): Transforms a number to a currency string, formatted according to locale rules.
+* [`PercentPipe`](api/common/PercentPipe): Transforms a number to a percentage string, formatted according to locale rules.
 
+You can create your own pipes to encapsulate custom transformations and use them in template expressions.
 
-## Using pipes
+## Using a pipe in a template
 
-A pipe takes in data as input and transforms it to a desired output.
-In this page, you'll use pipes to transform a component's birthday property into
-a human-friendly date.
+To apply a pipe, use the pipe operator (`|`) within a template expression, as shown in the following template (`app.component.html`) that displays a birthday, and component that sets the birthday value (`app.component.ts`):
 
+<code-tabs>
+  <code-pane
+    header="src/app/app.component.html"
+    region="hero-birthday-template"
+    path="pipes/src/app/app.component.html">
+  </code-pane>
+  <code-pane
+    header="src/app/app.component.ts"
+    path="pipes/src/app/app.component.ts">
+  </code-pane>
+</code-tabs>
 
-<code-example path="pipes/src/app/hero-birthday1.component.ts" header="src/app/hero-birthday1.component.ts"></code-example>
-
-
-
-Focus on the component's template.
-
-
-<code-example path="pipes/src/app/app.component.html" region="hero-birthday-template" header="src/app/app.component.html"></code-example>
-
-
-
-Inside the interpolation expression, you flow the component's `birthday` value through the
+The component's `birthday` value flows through the
 [pipe operator](guide/template-syntax#pipe) ( | ) to the [Date pipe](api/common/DatePipe)
-function on the right. All pipes work this way.
-
-
-
-
-## Built-in pipes
-Angular comes with a stock of pipes such as
-`DatePipe`, `UpperCasePipe`, `LowerCasePipe`, `CurrencyPipe`, and `PercentPipe`.
-They are all available for use in any template.
-
+function.
 
 <div class="alert is-helpful">
 
-
-
-Read more about these and many other built-in pipes in the [pipes topics](api?type=pipe) of the
-[API Reference](api); filter for entries that include the word "pipe".
-
-Angular doesn't have a `FilterPipe` or an `OrderByPipe` for reasons explained in the [Appendix](guide/pipes#no-filter-pipe) of this page.
-
+  For the sample app described in this topic, see the <live-example></live-example>.
 
 </div>
-
 
 
 
