@@ -144,15 +144,6 @@ describe('autoLinkCode post-processor', () => {
        expect(doc.renderedContent).toEqual('<code>MyEnum</code>');
      });
 
-  it('should insert anchors when the `docType` is set to `member` and the keyword includes `.`',
-     () => {
-       aliasMap.addDoc(
-           {docType: 'member', id: 'MyEnum', aliases: ['MyEnum.Value'], path: 'a/b/c'});
-       const doc = {docType: 'test-doc', renderedContent: '<code>MyEnum.Value</code>'};
-       processor.$process([doc]);
-       expect(doc.renderedContent).toEqual('<code><a href="a/b/c" class="code-anchor">MyEnum.Value</a></code>');
-     });
-
   it('should insert anchors for individual text nodes within a code block', () => {
     aliasMap.addDoc({docType: 'class', id: 'MyClass', aliases: ['MyClass'], path: 'a/b/myclass'});
     const doc = {
