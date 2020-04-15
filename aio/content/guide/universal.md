@@ -275,13 +275,13 @@ In a server-side rendered app, HTTP URLs must be _absolute_ (for example, `https
 This means that the URLs must be somehow converted to absolute when running on the server and be left relative when running in the browser.
 
 If you are using one of the `@nguniversal/*-engine` packages (such as `@nguniversal/express-engine`), this is taken care for you automatically.
-So, you don't need to do anything to make relative URLs work on the server.
+You don't need to do anything to make relative URLs work on the server.
 
 If, for some reason, you are not using an `@nguniversal/*-engine` package, you may need to handle it yourself.
 
-There are several ways to achieve that.
-The recommended solution, which is also the least intrusive as it does not require any changes to the app, is to pass the full request URL to the `options` argument of [renderModule()](api/platform-server/renderModule) or [renderModuleFactory()](api/platform-server/renderModuleFactory) (depending on what you use to render `AppServerModule` on the server).
+The recommended solution is to pass the full request URL to the `options` argument of [renderModule()](api/platform-server/renderModule) or [renderModuleFactory()](api/platform-server/renderModuleFactory) (depending on what you use to render `AppServerModule` on the server).
+This option is the least intrusive as it does not require any changes to the app.
 Here, "request URL" refers to the URL of the request as a response to which the app is being rendered on the server.
 For example, if the client requested `https://my-server.com/dashboard` and you are rendering the app on the server to respond to that request, `options.url` should be set to `https://my-server.com/dashboard`.
 
-Now, on every HTTP request made as part of rendering the app on the server, Angular will be able to correctly resolve the request URL to an absolute URL, using the provided `options.url`.
+Now, on every HTTP request made as part of rendering the app on the server, Angular can correctly resolve the request URL to an absolute URL, using the provided `options.url`.
