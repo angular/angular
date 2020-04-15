@@ -110,7 +110,11 @@ export interface TokenizeOptions {
 export function tokenize(
     source: string, url: string, getTagDefinition: (tagName: string) => TagDefinition,
     options: TokenizeOptions = {}): TokenizeResult {
-  return new _Tokenizer(new ParseSourceFile(source, url), getTagDefinition, options).tokenize();
+  var parsedFile = new ParseSourceFile(source, url);
+    if (parsedFile.content === undefined) {
+      console.log("ERROR File not found: ", url);
+    }
+  return new _Tokenizer(parsedFile, getTagDefinition, options).tokenize();
 }
 
 const _CR_OR_CRLF_REGEXP = /\r\n?/g;
