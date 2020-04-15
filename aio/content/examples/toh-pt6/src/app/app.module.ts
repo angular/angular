@@ -1,5 +1,5 @@
 // #docplaster
-// #docregion, v1
+// #docregion , v1
 import { NgModule }       from '@angular/core';
 import { BrowserModule }  from '@angular/platform-browser';
 import { FormsModule }    from '@angular/forms';
@@ -59,6 +59,5 @@ import { MessagesComponent }    from './messages/messages.component';
 // #docregion import-httpclientmodule
 })
 // #enddocregion import-httpclientmodule
-
 export class AppModule { }
 // #enddocregion , v1
