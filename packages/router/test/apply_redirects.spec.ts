@@ -193,6 +193,7 @@ describe('applyRedirects', () => {
       const loader = {
         load: (injector: any, p: any) => {
           if (injector !== testModule.injector) throw 'Invalid Injector';
+          (p as any)._loadedConfig = loadedConfig;
           return of(loadedConfig);
         }
       };
@@ -383,7 +384,12 @@ describe('applyRedirects', () => {
     it('should work with absolute redirects', () => {
       const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
 
-      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+      const loader = {
+        load: (injector: any, p: any) => {
+          (p as any)._loadedConfig = loadedConfig;
+          return of(loadedConfig);
+        }
+      };
 
       const config: Routes =
           [{path: '', pathMatch: 'full', redirectTo: '/a'}, {path: 'a', loadChildren: 'children'}];
@@ -402,6 +408,7 @@ describe('applyRedirects', () => {
         load: (injector: any, p: any) => {
           if (called) throw new Error('Should not be called twice');
           called = true;
+          (p as any)._loadedConfig = loadedConfig;
           return of(loadedConfig);
         }
       };
@@ -416,6 +423,7 @@ describe('applyRedirects', () => {
               r => {
                 expectTreeToBe(r, 'a?k2');
                 expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
+                expect(called).toBeTruthy();
               },
               (e) => {
                 throw 'Should not reach';
@@ -425,7 +433,12 @@ describe('applyRedirects', () => {
     it('should load the configuration of a wildcard route', () => {
       const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
 
-      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+      const loader = {
+        load: (injector: any, p: any) => {
+          (p as any)._loadedConfig = loadedConfig;
+          return of(loadedConfig);
+        }
+      };
 
       const config: Routes = [{path: '**', loadChildren: 'children'}];
 
@@ -438,7 +451,12 @@ describe('applyRedirects', () => {
     it('should load the configuration after a local redirect from a wildcard route', () => {
       const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
 
-      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+      const loader = {
+        load: (injector: any, p: Route) => {
+          (p as any)._loadedConfig = loadedConfig;
+          return of(loadedConfig);
+        }
+      };
 
       const config: Routes =
           [{path: 'not-found', loadChildren: 'children'}, {path: '**', redirectTo: 'not-found'}];
@@ -452,7 +470,12 @@ describe('applyRedirects', () => {
     it('should load the configuration after an absolute redirect from a wildcard route', () => {
       const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentB}], testModule);
 
-      const loader = {load: (injector: any, p: any) => of(loadedConfig)};
+      const loader = {
+        load: (injector: any, p: any) => {
+          (p as any)._loadedConfig = loadedConfig;
+          return of(loadedConfig);
+        }
+      };
 
       const config: Routes =
           [{path: 'not-found', loadChildren: 'children'}, {path: '**', redirectTo: '/not-found'}];

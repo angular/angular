@@ -12,7 +12,7 @@ import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactor
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteConfigReady, Router, RouteReuseStrategy, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {Observable, Observer, of, Subscription} from 'rxjs';
 import {filter, first, map, tap} from 'rxjs/operators';
 
@@ -3433,6 +3433,7 @@ describe('Integration', () => {
                  [NavigationStart, '/lazyTrue/loaded'],
                  [RouteConfigLoadStart],
                  [RouteConfigLoadEnd],
+                 [RouteConfigReady],
                  [RoutesRecognized, '/lazyTrue/loaded'],
                  [GuardsCheckStart, '/lazyTrue/loaded'],
                  [ChildActivationStart],
@@ -4085,7 +4086,7 @@ describe('Integration', () => {
            })));
 
 
-    it('should emit RouteConfigLoadStart and RouteConfigLoadEnd event when route is lazy loaded',
+    it('should emit RouteConfig[LoadStart|LoadEnd|Ready] event when route is lazy loaded',
        fakeAsync(inject(
            [Router, Location, NgModuleFactoryLoader],
            (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
@@ -4111,10 +4112,11 @@ describe('Integration', () => {
              class LoadedModule {
              }
 
-             const events: Array<RouteConfigLoadStart|RouteConfigLoadEnd> = [];
+             const events: Array<RouteConfigLoadStart|RouteConfigLoadEnd|RouteConfigReady> = [];
 
              router.events.subscribe(e => {
-               if (e instanceof RouteConfigLoadStart || e instanceof RouteConfigLoadEnd) {
+               if (e instanceof RouteConfigLoadStart || e instanceof RouteConfigLoadEnd ||
+                   e instanceof RouteConfigReady) {
                  events.push(e);
                }
              });
@@ -4126,9 +4128,10 @@ describe('Integration', () => {
              router.navigateByUrl('/lazy/loaded/child');
              advance(fixture);
 
-             expect(events.length).toEqual(2);
+             expect(events.length).toEqual(3);
              expect(events[0].toString()).toEqual('RouteConfigLoadStart(path: lazy)');
              expect(events[1].toString()).toEqual('RouteConfigLoadEnd(path: lazy)');
+             expect(events[2].toString()).toEqual('RouteConfigReady(path: lazy)');
            })));
 
     it('throws an error when forRoot() is used in a lazy context',

@@ -248,7 +248,6 @@ class ApplyRedirects {
       if (route.loadChildren) {
         return this.configLoader.load(ngModule.injector, route)
             .pipe(map((cfg: LoadedRouterConfig) => {
-              route._loadedConfig = cfg;
               return new UrlSegmentGroup(segments, {});
             }));
       }
@@ -303,11 +302,7 @@ class ApplyRedirects {
       return runCanLoadGuard(ngModule.injector, route, segments)
           .pipe(mergeMap((shouldLoad: boolean) => {
             if (shouldLoad) {
-              return this.configLoader.load(ngModule.injector, route)
-                  .pipe(map((cfg: LoadedRouterConfig) => {
-                    route._loadedConfig = cfg;
-                    return cfg;
-                  }));
+              return this.configLoader.load(ngModule.injector, route);
             }
             return canLoadFails(route);
           }));

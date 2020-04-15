@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Route} from './config';
+import {Route, Routes} from './config';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
 
 /**
@@ -323,6 +323,22 @@ export class RouteConfigLoadEnd {
       public route: Route) {}
   toString(): string {
     return `RouteConfigLoadEnd(path: ${this.route.path})`;
+  }
+}
+
+/**
+ * An event triggered when a route has been loaded and ready.
+ *
+ * @publicApi
+ */
+export class RouteConfigReady {
+  constructor(
+      /** @docsNotRequired */
+      public route: Route,
+      /** @docsNotRequired */
+      public routes: Routes) {}
+  toString(): string {
+    return `RouteConfigReady(path: ${this.route.path})`;
   }
 }
 

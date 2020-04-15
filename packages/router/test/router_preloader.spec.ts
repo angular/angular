@@ -10,7 +10,7 @@ import {Compiler, Component, NgModule, NgModuleFactoryLoader, NgModuleRef} from 
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {PreloadAllModules, PreloadingStrategy, RouterPreloader} from '@angular/router';
 
-import {Route, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouterModule} from '../index';
+import {Route, RouteConfigLoadEnd, RouteConfigLoadStart, RouteConfigReady, Router, RouterModule} from '../index';
 import {LoadedRouterConfig} from '../src/config';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
@@ -64,7 +64,7 @@ describe('RouterPreloader', () => {
            [NgModuleFactoryLoader, RouterPreloader, Router, NgModuleRef],
            (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router,
             testModule: NgModuleRef<any>) => {
-             const events: Array<RouteConfigLoadStart|RouteConfigLoadEnd> = [];
+             const events: Array<RouteConfigLoadStart|RouteConfigLoadEnd|RouteConfigReady> = [];
              @NgModule({
                declarations: [LazyLoadedCmp],
                imports: [RouterModule.forChild([{path: 'LoadedModule2', component: LazyLoadedCmp}])]
@@ -80,7 +80,8 @@ describe('RouterPreloader', () => {
              }
 
              router.events.subscribe(e => {
-               if (e instanceof RouteConfigLoadEnd || e instanceof RouteConfigLoadStart) {
+               if (e instanceof RouteConfigLoadEnd || e instanceof RouteConfigLoadStart ||
+                   e instanceof RouteConfigReady) {
                  events.push(e);
                }
              });
@@ -109,10 +110,9 @@ describe('RouterPreloader', () => {
              expect(module2._parent).toBe(module);
 
              expect(events.map(e => e.toString())).toEqual([
-               'RouteConfigLoadStart(path: lazy)',
-               'RouteConfigLoadEnd(path: lazy)',
-               'RouteConfigLoadStart(path: LoadedModule1)',
-               'RouteConfigLoadEnd(path: LoadedModule1)',
+               'RouteConfigLoadStart(path: lazy)', 'RouteConfigLoadEnd(path: lazy)',
+               'RouteConfigReady(path: lazy)', 'RouteConfigLoadStart(path: LoadedModule1)',
+               'RouteConfigLoadEnd(path: LoadedModule1)', 'RouteConfigReady(path: LoadedModule1)'
              ]);
            })));
   });
