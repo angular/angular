@@ -6,10 +6,12 @@
   h4 .syntax { font-size: 100%; }
 </style>
 
-<code-example path="template-syntax/src/app/app.component.ts" header="src/app/app.component.html with docplaster"></code-example>
+<code-example path="template-syntax/src/app/app.component.ts" header="src/app/app.component.html normal and long"></code-example>
 
 
-<code-example path="template-syntax/src/app/app.component.2.ts" region="no-docplaster" header="src/app/app.component.2.html without docplaster"></code-example>
+<code-example path="template-syntax/src/app/app.component.2.ts" region="no-docplaster" header="src/app/app.component.2.ts without docplaster"></code-example>
+
+<code-example path="template-syntax/src/app/app.component.3.ts" region="no-docplaster" header="src/app/app.component.2.ts with docplaster"></code-example>
 
 
 The Angular application manages what the user sees and can do, achieving this through the interaction of a component class instance (the *component*) and its user-facing template.
