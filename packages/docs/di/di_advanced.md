@@ -33,7 +33,7 @@ Often there is a need to create multiple instances of essentially the same injec
 Doing the following would be very inefficient.
 
 ```
-function createComponetInjector(parent, providers: Binding[]) {
+function createComponentInjector(parent, providers: Binding[]) {
   return parent.resolveAndCreateChild(providers);
 }
 ```
