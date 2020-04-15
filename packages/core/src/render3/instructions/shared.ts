@@ -1276,7 +1276,7 @@ function invokeDirectivesHostBindings(tView: TView, lView: LView, tNode: TNode) 
   try {
     setSelectedIndex(elementIndex);
     for (let dirIndex = start; dirIndex < end; dirIndex++) {
-      const def = tView.data[dirIndex] as DirectiveDef<any>;
+      const def = tView.data[dirIndex] as DirectiveDef<unknown>;
       const directive = lView[dirIndex];
       setCurrentDirectiveIndex(dirIndex);
       if (def.hostBindings !== null || def.hostVars !== 0 || def.hostAttrs !== null) {

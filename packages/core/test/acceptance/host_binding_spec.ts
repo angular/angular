@@ -184,8 +184,7 @@ describe('host bindings', () => {
         selector: '[animationPropDir]',
       })
       class AnimationPropDir {
-        @HostBinding('@myAnimation')
-        myAnimation: string = 'color';
+        @HostBinding('@myAnimation') myAnimation: string = 'color';
       }
 
       @Component({
@@ -217,8 +216,7 @@ describe('host bindings', () => {
         ],
       })
       class Comp {
-        @HostBinding('@myAnimation')
-        myAnimation: string = 'color';
+        @HostBinding('@myAnimation') myAnimation: string = 'color';
       }
 
       TestBed.configureTestingModule({
@@ -239,8 +237,7 @@ describe('host bindings', () => {
         ],
       })
       class Comp {
-        @HostBinding('@myAnimation')
-        myAnimation: string = 'color';
+        @HostBinding('@myAnimation') myAnimation: string = 'color';
       }
 
       @Component({
@@ -264,8 +261,7 @@ describe('host bindings', () => {
         selector: 'animation-dir',
       })
       class AnimationDir {
-        @HostBinding('@myAnimation')
-        myAnimation: string = 'color';
+        @HostBinding('@myAnimation') myAnimation: string = 'color';
       }
 
       @Component({
@@ -287,21 +283,24 @@ describe('host bindings', () => {
       expect(fixture.nativeElement.style.color).toBe('red');
     });
 
-    it('should work when directive contains synthetic listeners', async() => {
+    it('should work when directive contains synthetic listeners', async () => {
       const events: string[] = [];
 
       @Directive({
         selector: '[animationPropDir]',
       })
       class AnimationPropDir {
-        @HostBinding('@myAnimation')
-        myAnimation: string = 'a';
+        @HostBinding('@myAnimation') myAnimation: string = 'a';
 
         @HostListener('@myAnimation.start')
-        onAnimationStart() { events.push('@myAnimation.start'); }
+        onAnimationStart() {
+          events.push('@myAnimation.start');
+        }
 
         @HostListener('@myAnimation.done')
-        onAnimationDone() { events.push('@myAnimation.done'); }
+        onAnimationDone() {
+          events.push('@myAnimation.done');
+        }
       }
 
       @Component({
@@ -326,7 +325,7 @@ describe('host bindings', () => {
       expect(events).toEqual(['@myAnimation.start', '@myAnimation.done']);
     });
 
-    it('should work when component contains synthetic listeners', async() => {
+    it('should work when component contains synthetic listeners', async () => {
       const events: string[] = [];
 
       @Component({
@@ -337,14 +336,17 @@ describe('host bindings', () => {
         ],
       })
       class Comp {
-        @HostBinding('@myAnimation')
-        myAnimation: string = 'a';
+        @HostBinding('@myAnimation') myAnimation: string = 'a';
 
         @HostListener('@myAnimation.start')
-        onAnimationStart() { events.push('@myAnimation.start'); }
+        onAnimationStart() {
+          events.push('@myAnimation.start');
+        }
 
         @HostListener('@myAnimation.done')
-        onAnimationDone() { events.push('@myAnimation.done'); }
+        onAnimationDone() {
+          events.push('@myAnimation.done');
+        }
       }
 
       TestBed.configureTestingModule({
@@ -358,7 +360,7 @@ describe('host bindings', () => {
       expect(events).toEqual(['@myAnimation.start', '@myAnimation.done']);
     });
 
-    it('should work when child component contains synthetic listeners', async() => {
+    it('should work when child component contains synthetic listeners', async () => {
       const events: string[] = [];
 
       @Component({
@@ -369,14 +371,17 @@ describe('host bindings', () => {
         ],
       })
       class Comp {
-        @HostBinding('@myAnimation')
-        myAnimation: string = 'a';
+        @HostBinding('@myAnimation') myAnimation: string = 'a';
 
         @HostListener('@myAnimation.start')
-        onAnimationStart() { events.push('@myAnimation.start'); }
+        onAnimationStart() {
+          events.push('@myAnimation.start');
+        }
 
         @HostListener('@myAnimation.done')
-        onAnimationDone() { events.push('@myAnimation.done'); }
+        onAnimationDone() {
+          events.push('@myAnimation.done');
+        }
       }
 
       @Component({
@@ -398,21 +403,24 @@ describe('host bindings', () => {
     });
 
     it('should work when component extends a directive that contains synthetic listeners',
-       async() => {
+       async () => {
          const events: string[] = [];
 
          @Directive({
            selector: 'animation-dir',
          })
          class AnimationDir {
-           @HostBinding('@myAnimation')
-           myAnimation: string = 'a';
+           @HostBinding('@myAnimation') myAnimation: string = 'a';
 
            @HostListener('@myAnimation.start')
-           onAnimationStart() { events.push('@myAnimation.start'); }
+           onAnimationStart() {
+             events.push('@myAnimation.start');
+           }
 
            @HostListener('@myAnimation.done')
-           onAnimationDone() { events.push('@myAnimation.done'); }
+           onAnimationDone() {
+             events.push('@myAnimation.done');
+           }
          }
 
          @Component({

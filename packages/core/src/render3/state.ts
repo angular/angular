@@ -357,6 +357,11 @@ export function getCurrentDirectiveIndex(): number {
   return instructionState.lFrame.currentDirectiveIndex;
 }
 
+/**
+ * Sets an index of a directive whose `hostBindings` are being processed.
+ *
+ * @param currentDirectiveIndex `TData` index where current directive instance can be found.
+ */
 export function setCurrentDirectiveIndex(currentDirectiveIndex: number): void {
   instructionState.lFrame.currentDirectiveIndex = currentDirectiveIndex;
 }
