@@ -1815,9 +1815,27 @@ The scope of a reference variable is the entire template. So, don't define the s
 You can use the `ref-` prefix alternative to `#`.
 This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 
-
 <code-example path="template-reference-variables/src/app/app.component.html" region="ref-fax" header="src/app/app.component.html"></code-example>
 
+#### Breaking Change (Ivy)
+
+In the View Engine compiler when a template reference variable is declared it can be used any where in the template ie scope of these variables was the entire template.
+
+In Ivy the binding evaluation order is changed to have a simpler / more predictable evaluation order. In this new implementation template reference variables cannot be used before its declaration. For example
+
+```html
+  <h1>Greetings, {{hello.name}}</h1>
+  <hello-comp #hello [name]="'John'"></hello-comp>
+```
+
+In Ivy this does not work.
+
+The correct sequence for using template reference variable in Ivy is
+
+```html
+  <hello-comp #hello [name]="'John'"></hello-comp>
+  <h1>Greetings, {{hello.name}}</h1>
+```
 
 <hr/>
 
