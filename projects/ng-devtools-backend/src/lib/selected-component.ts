@@ -7,8 +7,6 @@ interface ConsoleReferenceNode {
   position: ElementPosition;
 }
 
-declare const ng: any;
-
 const CONSOLE_REFERENCE_PREFIX = '$ng';
 const CAPACITY = 5;
 

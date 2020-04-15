@@ -2,14 +2,11 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  ElementRef,
   EventEmitter,
   HostListener,
   Input,
-  OnChanges,
   OnInit,
   Output,
-  SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import { DevToolsNode, ElementPosition, Events, MessageBus } from 'protocol';
@@ -18,7 +15,6 @@ import { ComponentDataSource, FlatNode } from './component-data-source';
 import { isChildOf, parentCollapsed } from './directive-forest-utils';
 import { IndexedNode } from './index-forest';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { arrayEquals } from 'shared-utils';
 
 @Component({
   selector: 'ng-directive-forest',
