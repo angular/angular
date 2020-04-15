@@ -1,3 +1,29 @@
+<a name="10.0.0-next.2"></a>
+# [10.0.0-next.2](https://github.com/angular/angular/compare/10.0.0-next.1...10.0.0-next.2) (2020-04-15)
+
+
+### Bug Fixes
+
+* **common:** `locales/global/*.js` are not ES5 compliant ([#36342](https://github.com/angular/angular/issues/36342)) ([078b0be](https://github.com/angular/angular/commit/078b0be)), closes [angular/angular-cli#16394](https://github.com/angular/angular-cli/issues/16394)
+* **compiler:** handle type references to namespaced symbols correctly ([#36106](https://github.com/angular/angular/issues/36106)) ([4aa4e6f](https://github.com/angular/angular/commit/4aa4e6f)), closes [#36006](https://github.com/angular/angular/issues/36006)
+* **core:** undecorated-classes-with-decorated-fields migration should avoid error if base class has no value declaration ([#36543](https://github.com/angular/angular/issues/36543)) ([ca67748](https://github.com/angular/angular/commit/ca67748)), closes [#36522](https://github.com/angular/angular/issues/36522)
+* **ngcc:** correctly detect external files from nested `node_modules/` ([#36559](https://github.com/angular/angular/issues/36559)) ([6ab43d7](https://github.com/angular/angular/commit/6ab43d7)), closes [#36526](https://github.com/angular/angular/issues/36526)
+* **ngcc:** display output from the unlocker process on Windows ([#36569](https://github.com/angular/angular/issues/36569)) ([e041ac6](https://github.com/angular/angular/commit/e041ac6))
+* **ngcc:** do not spawn unlocker processes on cluster workers ([#36569](https://github.com/angular/angular/issues/36569)) ([66effde](https://github.com/angular/angular/commit/66effde)), closes [#35861](https://github.com/angular/angular/issues/35861)
+* **ngcc:** do not warn if `paths` mapping does not exist ([#36525](https://github.com/angular/angular/issues/36525)) ([717df13](https://github.com/angular/angular/commit/717df13)), closes [#36518](https://github.com/angular/angular/issues/36518)
+* **ngcc:** force ngcc to exit on error ([#36622](https://github.com/angular/angular/issues/36622)) ([663b768](https://github.com/angular/angular/commit/663b768)), closes [#36616](https://github.com/angular/angular/issues/36616)
+* **router:** pass correct component to canDeactivate checks when using two or more sibling router-outlets ([#36302](https://github.com/angular/angular/issues/36302)) ([80e6c07](https://github.com/angular/angular/commit/80e6c07)), closes [#34614](https://github.com/angular/angular/issues/34614)
+* **upgrade:** update $locationShim to handle Location changes before initialization ([#36498](https://github.com/angular/angular/issues/36498)) ([0cc53fb](https://github.com/angular/angular/commit/0cc53fb)), closes [#36492](https://github.com/angular/angular/issues/36492)
+
+
+### Performance Improvements
+
+* **ngcc:** only load  if it is needed ([#36486](https://github.com/angular/angular/issues/36486)) ([3bedfda](https://github.com/angular/angular/commit/3bedfda))
+* **ngcc:** read dependencies from entry-point manifest ([#36486](https://github.com/angular/angular/issues/36486)) ([a185efb](https://github.com/angular/angular/commit/a185efb)), closes [#issuecomment-608401834](https://github.com/angular/angular/issues/issuecomment-608401834)
+* **ngcc:** reduce the size of the entry-point manifest file ([#36486](https://github.com/angular/angular/issues/36486)) ([ec0ce60](https://github.com/angular/angular/commit/ec0ce60))
+
+
+
 <a name="9.1.2"></a>
 ## [9.1.2](https://github.com/angular/angular/compare/9.1.1...9.1.2) (2020-04-15)
 
