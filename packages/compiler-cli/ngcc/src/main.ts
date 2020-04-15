@@ -178,7 +178,7 @@ function getExecutor(
       // Execute in parallel. Use up to 8 CPU cores for workers, always reserving one for master.
       const workerCount = Math.min(8, os.cpus().length - 1);
       return new ClusterExecutor(
-          workerCount, logger, pkgJsonUpdater, locker, createTaskCompletedCallback);
+          workerCount, fileSystem, logger, pkgJsonUpdater, locker, createTaskCompletedCallback);
     } else {
       // Execute serially, on a single thread (async).
       return new SingleProcessExecutorAsync(logger, locker, createTaskCompletedCallback);
