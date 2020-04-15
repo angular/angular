@@ -13,9 +13,9 @@
   global.ng = global.ng || {};
   global.ng.common = global.ng.common || {};
   global.ng.common.locales = global.ng.common.locales || {};
-  var u = undefined;
+  const u = undefined;
   function plural(n) {
-    var i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+    let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
     if (i === 1 && v === 0) return 1;
     if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
         !(i % 100 >= 12 && i % 100 <= 14))
