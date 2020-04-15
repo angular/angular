@@ -1,24 +1,39 @@
 # Transforming Data Using Pipes
 
-Use [pipes](guide/glossary#pipe "Definition of a pipe") to transform and format strings, currency amounts, dates, and other display data using template expressions.
+<div class="alert is-helpful">
 
-<div class="alert is-important">
-
-You should already know how to use [templates](guide/glossary#template "Definition of a template") and [components](guide/glossary#component "Definition of a component").
+  For the sample app used in this topic, see the <live-example></live-example>.
 
 </div>
 
-Pipes are simple functions that accept an input value and return a transformed value. For example, you would use a pipe to show a date as `April 15, 1988` rather than the raw string format.
+Use [pipes](guide/glossary#pipe "Definition of a pipe") to transform and format strings, currency amounts, dates, and other display data.
 
-Angular provides several built-in pipes for typical data transformations:
+<div class="alert is-important">
+
+To use pipes, you should already know how to use [templates](guide/glossary#template "Definition of a template") and [components](guide/glossary#component "Definition of a component").
+
+</div>
+
+Pipes are simple functions you can use in [template expressions](/guide/glossary#template-expression "Definition of template expression") to accept an input value and return a transformed value.
+For example, you would use a pipe to show a date as **April 15, 1988** rather than the raw string format.
+
+Angular provides built-in pipes for typical data transformations, including the following:
 
 * [`DatePipe`](api/common/DatePipe): Formats a date value according to locale rules.
 * [`UpperCasePipe`](api/common/UpperCasePipe): Transforms text to all upper case.
 * [`LowerCasePipe`](api/common/LowerCasePipe): Transforms text to all lower case.
 * [`CurrencyPipe`](api/common/CurrencyPipe): Transforms a number to a currency string, formatted according to locale rules.
+* [`DecimalPipe`](/api/common/DecimalPipe): Transforms a number into a string with a decimal point, formatted according to locale rules.
 * [`PercentPipe`](api/common/PercentPipe): Transforms a number to a percentage string, formatted according to locale rules.
 
-You can create your own pipes to encapsulate custom transformations and use them in template expressions.
+<div class="alert is-helpful">
+
+  Pipes can help you with internationalization (i18n): the `DatePipe`, `CurrencyPipe`, `DecimalPipe` and `PercentPipe` use locale data to format data.
+  For details and examples, see [i18n pipes](/guide/i18n#i18n-pipes "Internationalization (i18n)").
+
+</div>
+
+You can also create pipes to encapsulate custom transformations, and use your custom pipes in template expressions.
 
 ## Using a pipe in a template
 
@@ -31,8 +46,8 @@ To apply a pipe, use the pipe operator (`|`) within a template expression, as sh
     path="pipes/src/app/app.component.html">
   </code-pane>
   <code-pane
-    header="src/app/app.component.ts"
-    path="pipes/src/app/app.component.ts">
+    header="src/app/hero-birthday1.component.ts"
+    path="pipes/src/app/hero-birthday1.component.ts">
   </code-pane>
 </code-tabs>
 
@@ -40,547 +55,378 @@ The component's `birthday` value flows through the
 [pipe operator](guide/template-syntax#pipe) ( | ) to the [Date pipe](api/common/DatePipe)
 function.
 
-<div class="alert is-helpful">
+{@a parameterizing-a-pipe}
 
-  For the sample app described in this topic, see the <live-example></live-example>.
+## Formatting data with parameters and chained pipes
 
-</div>
+Use optional parameters to fine-tune a pipe's output.
+For example, `{{ amount | currency:'EUR' }}` transforms the `amount` to currency in euros.
+Follow the pipe name (`currency`) with a colon (`:`) and the parameter value (`'EUR'`).
 
+If the pipe accepts multiple parameters, separate the values with colons.
+For example, `{{ slice:1:5 }}` uses the built-in [`SlicePipe`](/api/common/SlicePipe "API reference for SlicePipe") to create a new array or string containing a subset (slice) of the elements starting with element `1` and ending with element `5`.
 
+You can use as a parameter any valid template expression such as a string literal or a component property.
 
-## Parameterizing a pipe
+### Example: Formatting a date
 
-A pipe can accept any number of optional parameters to fine-tune its output.
-To add parameters to a pipe, follow the pipe name with a colon ( : ) and then the parameter value
-(such as `currency:'EUR'`). If the pipe accepts multiple parameters, separate the values with colons (such as `slice:1:5`)
+The tabs in the following example demonstrates toggling between two different formats (`'shortDate'` and `'fullDate'`):
 
-Modify the birthday template to give the date pipe a format parameter.
-After formatting the hero's April 15th birthday, it renders as **<samp>04/15/88</samp>**:
-
-
-<code-example path="pipes/src/app/app.component.html" region="format-birthday" header="src/app/app.component.html"></code-example>
-
-
-
-The parameter value can be any valid template expression,
-(see the [Template expressions](guide/template-syntax#template-expressions) section of the
-[Template Syntax](guide/template-syntax) page)
-such as a string literal or a component property.
-In other words, you can control the format through a binding the same way you control the birthday value through a binding.
-
-Write a second component that *binds* the pipe's format parameter
-to the component's `format` property. Here's the template for that component:
-
-
-<code-example path="pipes/src/app/hero-birthday2.component.ts" region="template" header="src/app/hero-birthday2.component.ts (template)"></code-example>
-
-
-
-You also added a button to the template and bound its click event to the component's `toggleFormat()` method.
-That method toggles the component's `format` property between a short form
+1. The `app.component.html` template uses a format parameter for the `date` pipe to show the date as **04/15/88**.
+2. The `hero-birthday2.component.ts` component binds the pipe's format parameter to the component's `format` property in the `template` section, and adds a button for a click event bound to the component's `toggleFormat()` method.
+3. The `hero-birthday2.component.ts` component's `toggleFormat()` method toggles the component's `format` property between a short form
 (`'shortDate'`) and a longer form (`'fullDate'`).
 
+<code-tabs>
+  <code-pane
+    header="src/app/app.component.html"
+    region="format-birthday"
+    path="pipes/src/app/app.component.html">
+  </code-pane>
+  <code-pane
+    header="src/app/hero-birthday2.component.ts (template)"
+    region="template"
+    path="pipes/src/app/hero-birthday2.component.ts">
+  </code-pane>
+  <code-pane
+    header="src/app/hero-birthday2.component.ts (class)"
+    region="class"
+    path="pipes/src/app/hero-birthday2.component.ts">
+  </code-pane>
+</code-tabs>
 
-<code-example path="pipes/src/app/hero-birthday2.component.ts" region="class" header="src/app/hero-birthday2.component.ts (class)"></code-example>
-
-
-
-As you click the button, the displayed date alternates between
-"**<samp>04/15/1988</samp>**" and
-"**<samp>Friday, April 15, 1988</samp>**".
+Clicking the **Toggle Format** button alternates the date format between **04/15/1988** and **Friday, April 15, 1988** as shown in Figure 1.
 
 <div class="lightbox">
   <img src='generated/images/guide/pipes/date-format-toggle-anim.gif' alt="Date Format Toggle">
 </div>
 
+**Figure 1.** Clicking the button toggles the date format
 
 <div class="alert is-helpful">
 
-
-
-Read more about the `DatePipe` format options in the [Date Pipe](api/common/DatePipe)
-API Reference page.
-
+For `date` pipe format options, see [DatePipe](api/common/DatePipe "DatePipe API Reference page").
 
 </div>
 
+### Example: Applying two formats by chaining pipes
 
+You can chain pipes together to apply multiple formats, such as formatting a date and converting it to uppercase characters.
 
-## Chaining pipes
+In the following example, the first tab for the `src/app/app.component.html` template chains `DatePipe` and `UpperCasePipe` to display the birthday as **APR 15, 1988**.
+The second tab for the `src/app/app.component.html` template passes the `fullDate` parameter to `date` before chaining to `uppercase`, which produces **FRIDAY, APRIL 15, 1988**.
 
-You can chain pipes together in potentially useful combinations.
-In the following example, to display the birthday in uppercase,
-the birthday is chained to the `DatePipe` and on to the `UpperCasePipe`.
-The birthday displays as **<samp>APR 15, 1988</samp>**.
+<code-tabs>
+  <code-pane
+    header="src/app/app.component.html (1)"
+    region="chained-birthday"
+    path="pipes/src/app/app.component.html">
+  </code-pane>
+  <code-pane
+    header="src/app/app.component.html (2)"
+    region="chained-parameter-birthday"
+    path="pipes/src/app/app.component.html">
+  </code-pane>
+</code-tabs>
 
+{@a Custom-pipes}
 
-<code-example path="pipes/src/app/app.component.html" region="chained-birthday" header="src/app/app.component.html"></code-example>
+## Creating pipes for custom data transformations
 
+Create custom pipes to encapsulate transformations that are not provided with the built-in pipes.
+You can then use your custom pipe in template expressions—the same way you use built-in pipes—to transform input values to output values for display.
 
+### Marking a class as a pipe
 
-This example&mdash;which displays **<samp>FRIDAY, APRIL 15, 1988</samp>**&mdash;chains
-the same pipes as above, but passes in a parameter to `date` as well.
+To mark a class as a pipe and supply configuration metadata, apply the [`@Pipe`](/api/core/Pipe "API reference for Pipe") [decorator](/guide/glossary#decorator--decoration "Definition for decorator") to the class.
+The class name must be a valid JavaScript identifier.
+Use the class name in template expressions as you would for a built-in pipe.
 
+<div class="alert is-important">
 
-<code-example path="pipes/src/app/app.component.html" region="chained-parameter-birthday" header="src/app/app.component.html"></code-example>
-
-
-
-
-## Custom pipes
-
-You can write your own custom pipes.
-Here's a custom pipe named `ExponentialStrengthPipe` that can boost a hero's powers:
-
-
-<code-example path="pipes/src/app/exponential-strength.pipe.ts" header="src/app/exponential-strength.pipe.ts"></code-example>
-
-
-
-This pipe definition reveals the following key points:
-
-* A pipe is a class decorated with pipe metadata.
-* The pipe class implements the `PipeTransform` interface's `transform` method that
-accepts an input value followed by optional parameters and returns the transformed value.
-* There will be one additional argument to the `transform` method for each parameter passed to the pipe.
-Your pipe has one such parameter: the `exponent`.
-* To tell Angular that this is a pipe, you apply the
-`@Pipe` decorator, which you import from the core Angular library.
-* The `@Pipe` decorator allows you to define the
-   pipe name that you'll use within template expressions. It must be a valid JavaScript identifier.
-   Your pipe's name is `exponentialStrength`.
-
-
-<div class="alert is-helpful">
-
-
-
-## The *PipeTransform* interface
-
-The `transform` method is essential to a pipe.
-The `PipeTransform` *interface* defines that method and guides both tooling and the compiler.
-Technically, it's optional; Angular looks for and executes the `transform` method regardless.
+You must include your pipe in the `declarations` field of the `NgModule` metadata in order for it to be available to a template.
+You must also register custom pipes.
+The [Angular CLI's](cli "CLI Overview and Command Reference") generator registers the pipe automatically.
 
 </div>
 
-Now you need a component to demonstrate the pipe.
+### Using the PipeTransform interface
 
-<code-example path="pipes/src/app/power-booster.component.ts" header="src/app/power-booster.component.ts"></code-example>
+Implement the [`PipeTransform`](/api/core/PipeTransform "API reference for PipeTransform") interface in your custom pipe class to perform the transformation.
+
+Angular invokes the `transform` method with the value of a binding as the first argument, and any parameters as the second argument in list form, and returns the transformed value.
+
+### Example: Transforming a value exponentially
+
+In a game, you may want to implement a transformation that raises a value exponentially to increase a hero's power.
+For example, if the hero's score is 2, boosting the hero's power exponentially by 10 produces a score of 1024.
+You can use a custom pipe for this transformation.
+
+The following code example shows two tabs:
+
+1. The `exponential-strength.pipe.ts` component defines a custom pipe named `exponentialStrength` with the `transform` method that performs the transformation.
+It defines an argument to the `transform` method (`exponent`) for a parameter passed to the pipe.
+
+2. The `power-booster.component.ts` component demonstrates how to use the pipe, specifying a value (`2`) and the exponent parameter (`10`).
+Figure 2 shows the output.
+
+<code-tabs>
+  <code-pane
+    header="src/app/exponential-strength.pipe.ts"
+    path="pipes/src/app/exponential-strength.pipe.ts">
+  </code-pane>
+  <code-pane
+    header="src/app/power-booster.component.ts"
+    path="pipes/src/app/power-booster.component.ts">
+  </code-pane>
+</code-tabs>
 
 <div class="lightbox">
   <img src='generated/images/guide/pipes/power-booster.png' alt="Power Booster">
 </div>
 
+**Figure 2.** Output from the `exponentialStrength` pipe
 
+<div class="alert is-helpful">
 
-Note the following:
-
-* You use your custom pipe the same way you use built-in pipes.
-* You must include your pipe in the `declarations` array of the `AppModule`
-* If you choose to inject your pipe into a class, you must provide it in the `providers` array of your `NgModule`.
-
-<div class="callout is-helpful">
-
-<header>
-  Remember the declarations array
-</header>
-
-
-You must register custom pipes.
-If you don't, Angular reports an error.
-The [Angular CLI's](cli) generator registers the pipe automatically.
-
+To probe the behavior the `exponentialStrength` pipe in the <live-example></live-example>, change the value and optional exponent in the template.
 
 </div>
 
+{@a change-detection}
 
+## Detecting changes with data binding in pipes
 
-To probe the behavior in the <live-example></live-example>,
-change the value and optional exponent in the template.
+You use [data binding](/guide/glossary#data-binding "Definition of data binding") with a  pipe to display values and respond to user actions.
+If the data is a primitive input value, such as `String` or `Number`, or an object reference as input, such as `Date` or `Array`, Angular executes the pipe whenever it detects a change for the input value or reference.
 
-## Power Boost Calculator
-
-It's not much fun updating the template to test the custom pipe.
-Upgrade the example to a "Power Boost Calculator" that combines
-your pipe and two-way data binding with `ngModel`.
-
+For example, you could change the previous custom pipe example to use two-way data binding with `ngModel` to input the amount and boost factor, as shown in the following code example.
 
 <code-example path="pipes/src/app/power-boost-calculator.component.ts" header="src/app/power-boost-calculator.component.ts">
 
 </code-example>
 
-
+The `exponentialStrength` pipe executes every time the user changes the "normal power" value and/or the "boost factor", as shown in Figure 3.
 
 <div class="lightbox">
   <img src='generated/images/guide/pipes/power-boost-calculator-anim.gif' alt="Power Boost Calculator">
 </div>
 
+**Figure 3.** Changing the amount and boost factor for the `exponentialStrength` pipe
 
+Angular detects each change and immediately runs the pipe.
+This is fine for primitive input values.
+However, if you change something *inside* a composite object—such as changing just the month of a date, adding an element to an array, or updating an object property—you need to understand how change detection works, and how to use an `impure` pipe.
 
+## How change detection works
 
-{@a change-detection}
+Angular looks for changes to data-bound values in a change detection process that runs after every DOM event: every keystroke, mouse move, timer tick, and server response.
+The following example, which doesn't use a pipe, demonstrates how Angular uses its default change detection strategy to monitor and update its display of every hero in the `heroes` array.
+The example tabs show the following:
 
+1. In the `flying-heroes.component.html (v1)` template, the `*ngFor` repeater displays the hero names.
+2. Its companion component class `flying-heroes.component.ts (v1)` provides heroes, adds heroes into the array, and resets the array.
 
-## Pipes and change detection
+<code-tabs>
+  <code-pane
+    header="src/app/flying-heroes.component.html (v1)"
+    region="template-1"
+    path="pipes/src/app/flying-heroes.component.html">
+  </code-pane>
+  <code-pane
+    header="src/app/flying-heroes.component.ts (v1)"
+    region="v1"
+    path="pipes/src/app/flying-heroes.component.ts">
+  </code-pane>
+</code-tabs>
 
-Angular looks for changes to data-bound values through a *change detection* process that runs after every DOM event:
-every keystroke, mouse move, timer tick, and server response. This could be expensive.
-Angular strives to lower the cost whenever possible and appropriate.
+Angular updates the display every time the user adds a hero.
+If the user clicks the **Reset** button, Angular replaces `heroes` with a new array of the original heroes and updates the display.
+If you add the ability to remove or change a hero, Angular would detect those changes and update the display as well.
 
-Angular picks a simpler, faster change detection algorithm when you use a pipe.
+However, executing a pipe to update the display with every change would slow down your app's performance.
+So Angular uses a faster change-detection algorithm for executing a "pure" pipe as described in the next section.
 
-<h3 class="no-toc">No pipe</h3>
+{@a pure-and-impure-pipes}
 
-In the next example, the component uses the default, aggressive change detection strategy to monitor and update
-its display of every hero in the `heroes` array. Here's the template:
+### Detecting pure changes to primitives and object references
 
+By default, pipes are defined as *pure* so that Angular executes the pipe only when it detects a *pure change* to the input value.
+A pure change is either a change to a primitive input value (such as `String`, `Number`, `Boolean`, or `Symbol`), or a changed object reference (such as `Date`, `Array`, `Function`, or `Object`).
 
-<code-example path="pipes/src/app/flying-heroes.component.html" region="template-1" header="src/app/flying-heroes.component.html (v1)"></code-example>
+{@a pure-pipe-pure-fn}
 
+A pure pipe must use a pure function, which is one that processes inputs and returns values without side effects—given the same input, a pure function should always return the same output.
 
+With a pure pipe, Angular ignores changes within composite objects, such a newly added element of an existing array.
+This may seem restrictive, but a primitive value or object reference check is much faster than a deep check for differences within objects.
+Angular can quickly determine if it can skip executing the pipe and updating the view.
 
-The companion component class provides heroes, adds heroes into the array, and can reset the array.
+However, a pure pipe with an array as input may not work the way you want.
+To demonstrate this issue, change the previous example to filter the list of heroes to just those heroes who can fly.
+Use the `FlyingHeroesPipe` in the `*ngFor` repeater as shown in the following code example.
+The tabs show the following:
 
-<code-example path="pipes/src/app/flying-heroes.component.ts" region="v1" header="src/app/flying-heroes.component.ts (v1)"></code-example>
+1. The template (`flying-heroes.component.html (flyers)`) with the new pipe.
+2. The `FlyingHeroesPipe` custom pipe implementation (`flying-heroes.pipe.ts`).
 
+<code-tabs>
+  <code-pane
+    header="src/app/flying-heroes.component.html (flyers)"
+    region="template-flying-heroes"
+    path="pipes/src/app/flying-heroes.component.html">
+  </code-pane>
+  <code-pane
+    header="src/app/flying-heroes.pipe.ts"
+    region="pure"
+    path="pipes/src/app/flying-heroes.pipe.ts">
+  </code-pane>
+</code-tabs>
 
-
-You can add heroes and Angular updates the display when you do.
-If you click the `reset` button, Angular replaces `heroes` with a new array of the original heroes and updates the display.
-If you added the ability to remove or change a hero, Angular would detect those changes and update the display as well.
-
-<h3 class="no-toc"><i>FlyingHeroesPipe</i></h3>
-
-Add a `FlyingHeroesPipe` to the `*ngFor` repeater that filters the list of heroes to just those heroes who can fly.
-
-<code-example path="pipes/src/app/flying-heroes.component.html" region="template-flying-heroes" header="src/app/flying-heroes.component.html (flyers)"></code-example>
-
-
-
-Here's the `FlyingHeroesPipe` implementation, which follows the pattern for custom pipes described earlier.
-
-<code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pure" header="src/app/flying-heroes.pipe.ts"></code-example>
-
-
-
-Notice the odd behavior in the <live-example></live-example>:
-when you add flying heroes, none of them are displayed under "Heroes who fly."
-
-Although you're not getting the behavior you want, Angular isn't broken.
-It's just using a different change-detection algorithm that ignores changes to the list or any of its items.
-
-Notice how a hero is added:
+The app now shows odd behavior—when the user adds flying heroes, none of them appear under "Heroes who fly."
+Angular's change-detection algorithm ignores changes to elements of the array.
+Since the code for adding a hero is to add it to the `heroes` array, as shown in the example below, the pipe doesn't run.
 
 <code-example path="pipes/src/app/flying-heroes.component.ts" region="push" header="src/app/flying-heroes.component.ts"></code-example>
 
+The problem is that the *reference* to the array hasn't changed.
+From Angular's perspective, it's the same array—no change, therefore no display update.
 
+One alternative is to change the object reference itself.
+You can replace the array with a new array containing the newly changed elements, and then input the new array to the pipe.
+In the above example, you can create an array with the new hero appended, and assign that to `heroes`. Angular detects the change in the array reference and executes the pipe.
 
-You add the hero into the `heroes` array. The reference to the array hasn't changed.
-It's the same array. That's all Angular cares about. From its perspective, *same array, no change, no display update*.
-
-To fix that, create an array with the new hero appended and assign that to `heroes`.
-This time Angular detects that the array reference has changed.
-It executes the pipe and updates the display with the new array, which includes the new flying hero.
-
-If you *mutate* the array, no pipe is invoked and the display isn't updated;
-if you *replace* the array, the pipe executes and the display is updated.
-The Flying Heroes application extends the
-code with checkbox switches and additional displays to help you experience these effects.
-
+In other words, if you mutate the input array, the pure pipe doesn't execute.
+If you *replace* the input array, the pipe executes and the display is updated, as shown in Figure 4.
 
 <div class="lightbox">
   <img src='generated/images/guide/pipes/flying-heroes-anim.gif' alt="Flying Heroes">
 </div>
 
+**Figure 4.** The `flyingHeroes` pipe filtering the display to flying heroes
 
-
-Replacing the array is an efficient way to signal Angular to update the display.
-When do you replace the array? When the data changes.
-That's an easy rule to follow in *this* example
-where the only way to change the data is by adding a hero.
-
-More often, you don't know when the data has changed,
-especially in applications that mutate data in many ways,
-perhaps in application locations far away.
-A component in such an application usually can't know about those changes.
-Moreover, it's unwise to distort the component design to accommodate a pipe.
-Strive to keep the component class independent of the HTML.
-The component should be unaware of pipes.
-
-For filtering flying heroes, consider an *impure pipe*.
-
-
-
-## Pure and impure pipes
-
-There are two categories of pipes: *pure* and *impure*.
-Pipes are pure by default. Every pipe you've seen so far has been pure.
-You make a pipe impure by setting its pure flag to false. You could make the `FlyingHeroesPipe`
-impure like this:
-
-
-<code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pipe-decorator" header="src/app/flying-heroes.pipe.ts"></code-example>
-
-
-
-Before doing that, understand the difference between pure and impure, starting with a pure pipe.
-
-<h3 class="no-toc">Pure pipes</h3>
-
-Angular executes a *pure pipe* only when it detects a *pure change* to the input value.
-A pure change is either a change to a primitive input value (`String`, `Number`, `Boolean`, `Symbol`)
-or a changed object reference (`Date`, `Array`, `Function`, `Object`).
-
-Angular ignores changes within (composite) objects.
-It won't call a pure pipe if you change an input month, add to an input array, or update an input object property.
-
-This may seem restrictive but it's also fast.
-An object reference check is fast&mdash;much faster than a deep check for
-differences&mdash;so Angular can quickly determine if it can skip both the
-pipe execution and a view update.
-
-For this reason, a pure pipe is preferable when you can live with the change detection strategy.
-When you can't, you *can* use the impure pipe.
-
-
-<div class="alert is-helpful">
-
-
-
-Or you might not use a pipe at all.
-It may be better to pursue the pipe's purpose with a property of the component,
-a point that's discussed later in this page.
-
-
-</div>
-
-
-
-<h3 class="no-toc">Impure pipes</h3>
-
-Angular executes an *impure pipe*  during every component change detection cycle.
-An impure pipe is called often, as often as every keystroke or mouse-move.
-
-With that concern in mind, implement an impure pipe with great care.
-An expensive, long-running pipe could destroy the user experience.
-
+Although you can change a component's code to accommodate a pipe (as shown in the above example of replacing an array), the best practice is to keep components as simple as possible and independent of HTML templates that use pipes.
+To detect changes within composite objects such as arrays, use an *impure* pipe as described in the next section.
 
 {@a impure-flying-heroes}
 
+## Detecting impure changes within composite objects
 
-<h3 class="no-toc">An impure <i>FlyingHeroesPipe</i></h3>
+To execute a custom pipe after a change *within* a composite object, such as a change to an element of an array, you need to define your pipe as `impure` to detect impure changes.
+Angular executes an impure pipe every time it detects a change with every keystroke or mouse movement. 
 
-A flip of the switch turns the `FlyingHeroesPipe` into a `FlyingHeroesImpurePipe`.
-The complete implementation is as follows:
+<div class="alert is-important">
+
+While an impure pipe can be useful, a long-running impure pipe could dramatically slow down your app.
+
+</div>
+
+Make a pipe impure by setting its `pure` flag to `false`:
+
+<code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pipe-decorator" header="src/app/flying-heroes.pipe.ts"></code-example>
+
+The following code example shows the complete implementation of `FlyingHeroesImpurePipe`:
 
 <code-tabs>
-
-  <code-pane header="FlyingHeroesImpurePipe" path="pipes/src/app/flying-heroes.pipe.ts" region="impure">
-
+  <code-pane
+    header="src/app/flying-heroes.pipe.ts (FlyingHeroesImpurePipe)"
+    region="impure"
+    path="pipes/src/app/flying-heroes.pipe.ts">
   </code-pane>
-
-  <code-pane header="FlyingHeroesPipe" path="pipes/src/app/flying-heroes.pipe.ts" region="pure">
-
+  <code-pane
+    header="src/app/flying-heroes.pipe.ts (FlyingHeroesPipe)"
+    region="pure"
+    path="pipes/src/app/flying-heroes.pipe.ts">
   </code-pane>
-
 </code-tabs>
 
-
-
-You inherit from `FlyingHeroesPipe` to prove the point that nothing changed internally.
-The only difference is the `pure` flag in the pipe metadata.
-
-This is a good candidate for an impure pipe because the `transform` function is trivial and fast.
-
+`FlyingHeroesImpurePipe` extends `FlyingHeroesPipe` to inherit its characteristics.
+This example shows that you don't have to change anything else—the only difference is setting the `pure` flag as `false` in the pipe metadata.
+This example is a good candidate for an impure pipe because the `transform` function is trivial and fast.
 
 <code-example path="pipes/src/app/flying-heroes.pipe.ts" header="src/app/flying-heroes.pipe.ts (filter)" region="filter"></code-example>
 
-
-
 You can derive a `FlyingHeroesImpureComponent` from `FlyingHeroesComponent`.
-
+As shown in the code below, only the pipe in the template changes.
 
 <code-example path="pipes/src/app/flying-heroes-impure.component.html" header="src/app/flying-heroes-impure.component.html (excerpt)" region="template-flying-heroes"></code-example>
 
+<div class="alert is-helpful">
 
+  To confirm that the display updates as the user adds heroes, see the <live-example></live-example>.
 
-The only substantive change is the pipe in the template.
-You can confirm in the <live-example></live-example> that the _flying heroes_
-display updates as you add heroes, even when you mutate the `heroes` array.
-
+</div>
 
 {@a async-pipe}
-<h3 class="no-toc">The impure <i>AsyncPipe</i></h3>
 
+## Unwrapping data from an observable
 
-The Angular `AsyncPipe` is an interesting example of an impure pipe.
-The `AsyncPipe` accepts a `Promise` or `Observable` as input
-and subscribes to the input automatically, eventually returning the emitted values.
+[Observables](/guide/glossary#observable "Definition of observable") let you pass messages between parts of your application.
+Observables are recommended for event handling, asynchronous programming, and handling multiple values.
+Observables can deliver single or multiple values of any type, either synchronously (as a function delivers a value to its caller) or asynchronously on a schedule.
 
-The `AsyncPipe` is also stateful.
-The pipe maintains a subscription to the input `Observable` and
-keeps delivering values from that `Observable` as they arrive.
+<div class="alert is-helpful">
 
-This next example binds an `Observable` of message strings
+For details and examples of observables, see the [Observables Overview](/guide/observables#using-observables-to-pass-values "Using observables to pass values"").
+
+</div>
+
+Your component code needs to subscribe to the observable to consume its values, and when done, unsubscribe.
+It also has to extract the resolved values, expose them for binding, and unsubscribe when the observable is destroyed in order to prevent memory leaks.
+
+However, you can use the built-in [`AsyncPipe`](/api/common/AsyncPipe "API description of AsyncPipe") to accept an observable as input and subscribe to the input automatically.
+`AsyncPipe` is an impure pipe that saves boilerplate code in your component to maintain a subscription to the input observable and keep delivering values from that observable as they arrive.
+
+The following code example binds an observable of message strings
 (`message$`) to a view with the `async` pipe.
-
 
 <code-example path="pipes/src/app/hero-async-message.component.ts" header="src/app/hero-async-message.component.ts">
 
 </code-example>
 
+{@a no-filter-pipe}
 
+## Caching HTTP requests
 
-The Async pipe saves boilerplate in the component code.
-The component doesn't have to subscribe to the async data source,
-extract the resolved values and expose them for binding,
-and have to unsubscribe when it's destroyed
-(a potent source of memory leaks).
+To [communicate with backend services using HTTP](/guide/http "Communicating with backend services using HTTP"), the `HttpClient` service uses observables and offers the `HTTPClient.get()` method to fetch data from a server.
+The aynchronous method sends an HTTP request, and returns an observable that emits the requested data for the response.
 
-<h3 class="no-toc">An impure caching pipe</h3>
+As shown in the previous section, you can use the `AsyncPipe`, which is an impure pipe, to accept an observable as input and subscribe to the input automatically.
+You can also create an impure pipe to make and cache an HTTP request.
 
-Write one more impure pipe, a pipe that makes an HTTP request.
+Impure pipes are called every few milliseconds, which can punish a server with requests.
+To avoid performance problems, call the server only when the requested URL changes, as shown in the following example, and use the pipe to cache the server response.
+The tabs show the following:
 
-Remember that impure pipes are called every few milliseconds.
-If you're not careful, this pipe will punish the server with requests.
+1. The `fetch` pipe (`fetch-json.pipe.ts`).
+2. A harness component (`hero-list.component.ts`) for demonstrating the request, using a template that defines two bindings to the pipe requesting the heroes from the `heroes.json` file. The second binding chains the `fetch` pipe with the built-in `JsonPipe` to display the same hero data in JSON format.
 
-In the following code, the pipe only calls the server when the requested URL changes and it caches the server response.
-The code uses the [Angular http](guide/http) client to retrieve data:
+<code-tabs>
+  <code-pane
+    header="src/app/fetch-json.pipe.ts"
+    path="pipes/src/app/fetch-json.pipe.ts">
+  </code-pane>
+  <code-pane
+    header="src/app/hero-list.component.ts"
+    path="pipes/src/app/hero-list.component.ts">
+  </code-pane>
+</code-tabs>
 
+In the above example, a breakpoint on the pipe's request for data shows the following:
 
-<code-example path="pipes/src/app/fetch-json.pipe.ts" header="src/app/fetch-json.pipe.ts">
+* Each binding gets its own pipe instance.
+* Each pipe instance caches its own URL and data and calls the server only once.
 
-</code-example>
-
-
-
-Now demonstrate it in a harness component whose template defines two bindings to this pipe,
-both requesting the heroes from the `heroes.json` file.
-
-
-<code-example path="pipes/src/app/hero-list.component.ts" header="src/app/hero-list.component.ts">
-
-</code-example>
-
-
-
-The component renders as the following:
-
+The `fetch` and `fetch-json` pipes display the heroes as shown in Figure 5.
 
 <div class="lightbox">
   <img src='generated/images/guide/pipes/hero-list.png' alt="Hero List">
 </div>
 
+**Figure 5.** The `fetch` and `fetch-json` pipes displaying the heroes
 
+<div class="alert is-helpful">
 
-A breakpoint on the pipe's request for data shows the following:
-
-* Each binding gets its own pipe instance.
-* Each pipe instance caches its own URL and data.
-* Each pipe instance only calls the server once.
-
-<h3 class="no-toc"><i>JsonPipe</i></h3>
-
-In the previous code sample, the second `fetch` pipe binding demonstrates more pipe chaining.
-It displays the same hero data in JSON format by chaining through to the built-in `JsonPipe`.
-
-
-<div class="callout is-helpful">
-
-
-
-<header>
-  Debugging with the json pipe
-</header>
-
-
-
-The [JsonPipe](api/common/JsonPipe)
-provides an easy way to diagnose a mysteriously failing data binding or
-inspect an object for future binding.
-
+The built-in [JsonPipe](api/common/JsonPipe "API description for JsonPipe") provides a way to diagnose a mysteriously failing data binding or to inspect an object for future binding.
 
 </div>
-
-
-
-{@a pure-pipe-pure-fn}
-
-
-<h3 class="no-toc">Pure pipes and pure functions</h3>
-
-A pure pipe uses pure functions.
-Pure functions process inputs and return values without detectable side effects.
-Given the same input, they should always return the same output.
-
-The pipes discussed earlier in this page are implemented with pure functions.
-The built-in `DatePipe` is a pure pipe with a pure function implementation.
-So are the `ExponentialStrengthPipe` and `FlyingHeroesPipe`.
-A few steps back, you reviewed the `FlyingHeroesImpurePipe`&mdash;an impure pipe with a pure function.
-
-But always implement a *pure pipe* with a *pure function*.
-Otherwise, you'll see many console errors regarding expressions that changed after they were checked.
-
-
-
-## Next steps
-
-Pipes are a great way to encapsulate and share common display-value
-transformations. Use them like styles, dropping them
-into your template's expressions to enrich the appeal and usability
-of your views.
-
-Explore Angular's inventory of built-in pipes in the [API Reference](api?type=pipe).
-Try writing a custom pipe and perhaps contributing it to the community.
-
-
-{@a no-filter-pipe}
-
-
-
-## Appendix: No *FilterPipe* or *OrderByPipe*
-
-Angular doesn't provide pipes for filtering or sorting lists.
-Developers familiar with AngularJS know these as `filter` and `orderBy`.
-There are no equivalents in Angular.
-
-This isn't an oversight. Angular doesn't offer such pipes because
-they perform poorly and prevent aggressive minification.
-Both `filter` and `orderBy` require parameters that reference object properties.
-Earlier in this page, you learned that such pipes must be [impure](guide/pipes#pure-and-impure-pipes) and that
-Angular calls impure pipes in almost every change-detection cycle.
-
-Filtering and especially sorting are expensive operations.
-The user experience can degrade severely for even moderate-sized lists when Angular calls these pipe methods many times per second.
-`filter` and `orderBy` have often been abused in AngularJS apps, leading to complaints that Angular itself is slow.
-That charge is fair in the indirect sense that AngularJS prepared this performance trap
-by offering `filter` and `orderBy` in the first place.
-
-The minification hazard is also compelling, if less obvious. Imagine a sorting pipe applied to a list of heroes.
-The list might be sorted by hero `name` and `planet` of origin properties in the following way:
-
-<code-example language="html">
-  &lt;!-- NOT REAL CODE! -->
-  &lt;div *ngFor="let hero of heroes | orderBy:'name,planet'">&lt;/div>
-</code-example>
-
-
-
-You identify the sort fields by text strings, expecting the pipe to reference a property value by indexing
-(such as `hero['name']`).
-Unfortunately, aggressive minification manipulates the `Hero` property names so that `Hero.name` and `Hero.planet`
-become something like `Hero.a` and `Hero.b`. Clearly `hero['name']` doesn't work.
-
-While some may not care to minify this aggressively,
-the Angular product shouldn't prevent anyone from minifying aggressively.
-Therefore, the Angular team decided that everything Angular provides will minify safely.
-
-The Angular team and many experienced Angular developers strongly recommend moving
-filtering and sorting logic into the component itself.
-The component can expose a `filteredHeroes` or `sortedHeroes` property and take control
-over when and how often to execute the supporting logic.
-Any capabilities that you would have put in a pipe and shared across the app can be
-written in a filtering/sorting service and injected into the component.
-
-If these performance and minification considerations don't apply to you, you can always create your own such pipes
-(similar to the [FlyingHeroesPipe](guide/pipes#impure-flying-heroes)) or find them in the community.
