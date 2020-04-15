@@ -63,7 +63,7 @@ Please note that these constants are not meant to be used by 3rd party library o
 
 * Foreign functions or foreign constants in decorator metadata aren't statically resolvable (previously, you could import a constant or function from another compilation unit, like a library, and use that constant/function in your `@NgModule` definition).
 
-* Forward references to directive inputs accessed through local refs are no longer supported by default.
+* Forward references to directive inputs accessed through local refs are no longer supported by default. [details](guide/ivy-compatibility-examples#forward-refs-directive-inputs)
 
 * If there is both an unbound class attribute and a `[class]` binding, the classes in the unbound attribute will also be added (previously, the class binding would overwrite classes in the unbound attribute).
 
