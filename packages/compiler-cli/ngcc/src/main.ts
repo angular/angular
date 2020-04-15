@@ -29,7 +29,7 @@ import {ClusterExecutor} from './execution/cluster/executor';
 import {ClusterPackageJsonUpdater} from './execution/cluster/package_json_updater';
 import {getCreateCompileFn} from './execution/create_compile_function';
 import {SingleProcessExecutorAsync, SingleProcessExecutorSync} from './execution/single_process_executor';
-import {CreateTaskCompletedCallback, Task, TaskProcessingOutcome} from './execution/tasks/api';
+import {CreateTaskCompletedCallback, TaskProcessingOutcome} from './execution/tasks/api';
 import {composeTaskCompletedCallbacks, createLogErrorHandler, createMarkAsProcessedHandler, createThrowErrorHandler} from './execution/tasks/completion';
 import {AsyncLocker} from './locking/async_locker';
 import {LockFileWithChildProcess} from './locking/lock_file_with_child_process';
@@ -39,7 +39,7 @@ import {Logger, LogLevel} from './logging/logger';
 import {NgccConfiguration} from './packages/configuration';
 import {EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point';
 import {EntryPointManifest, InvalidatingEntryPointManifest} from './packages/entry_point_manifest';
-import {PathMappings} from './utils';
+import {getPathMappingsFromTsConfig, PathMappings} from './utils';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from './writing/package_json_updater';
 
 /**
@@ -83,13 +83,8 @@ export function mainNgcc({
   const config = new NgccConfiguration(fileSystem, projectPath);
   const tsConfig = tsConfigPath !== null ? readConfiguration(tsConfigPath || projectPath) : null;
 
-  // If `pathMappings` is not provided directly, then try getting it from `tsConfig`, if available.
-  if (tsConfig !== null && pathMappings === undefined && tsConfig.options.baseUrl !== undefined &&
-      tsConfig.options.paths) {
-    pathMappings = {
-      baseUrl: resolve(projectPath, tsConfig.options.baseUrl),
-      paths: tsConfig.options.paths,
-    };
+  if (pathMappings === undefined) {
+    pathMappings = getPathMappingsFromTsConfig(tsConfig, projectPath);
   }
 
   const dependencyResolver = getDependencyResolver(fileSystem, logger, config, pathMappings);
