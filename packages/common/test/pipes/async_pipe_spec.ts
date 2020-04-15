@@ -7,7 +7,7 @@
  */
 
 import {AsyncPipe, ɵgetDOM as getDOM} from '@angular/common';
-import {EventEmitter, WrappedValue} from '@angular/core';
+import {EventEmitter} from '@angular/core';
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
@@ -32,13 +32,13 @@ import {SpyChangeDetectorRef} from '../spies';
           expect(pipe.transform(emitter)).toBe(null);
         });
 
-        it('should return the latest available value wrapped',
+        it('should return the latest available value',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              pipe.transform(emitter);
              emitter.emit(message);
 
              setTimeout(() => {
-               expect(pipe.transform(emitter)).toEqual(new WrappedValue(message));
+               expect(pipe.transform(emitter)).toEqual(message);
                async.done();
              }, 0);
            }));
@@ -82,15 +82,14 @@ import {SpyChangeDetectorRef} from '../spies';
              }, 10);
            }));
 
-        it('should return unwrapped value for unchanged NaN', () => {
+        it('should return value for unchanged NaN', () => {
           const emitter = new EventEmitter<any>();
           emitter.emit(null);
           pipe.transform(emitter);
           emitter.next(NaN);
           const firstResult = pipe.transform(emitter);
           const secondResult = pipe.transform(emitter);
-          expect(firstResult instanceof WrappedValue).toBe(true);
-          expect((firstResult as WrappedValue).wrapped).toBeNaN();
+          expect(firstResult).toBeNaN();
           expect(secondResult).toBeNaN();
         });
       });
@@ -145,12 +144,12 @@ import {SpyChangeDetectorRef} from '../spies';
              resolve(message);
 
              setTimeout(() => {
-               expect(pipe.transform(promise)).toEqual(new WrappedValue(message));
+               expect(pipe.transform(promise)).toEqual(message);
                async.done();
              }, timer);
            }));
 
-        it('should return unwrapped value when nothing has changed since the last call',
+        it('should return value when nothing has changed since the last call',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              pipe.transform(promise);
              resolve(message);
@@ -169,7 +168,6 @@ import {SpyChangeDetectorRef} from '../spies';
              promise = new Promise<any>(() => {});
              expect(pipe.transform(promise)).toBe(null);
 
-             // this should not affect the pipe, so it should return WrappedValue
              resolve(message);
 
              setTimeout(() => {
@@ -203,7 +201,7 @@ import {SpyChangeDetectorRef} from '../spies';
 
 
                setTimeout(() => {
-                 expect(pipe.transform(promise)).toEqual(new WrappedValue(message));
+                 expect(pipe.transform(promise)).toEqual(message);
                  pipe.ngOnDestroy();
                  expect(pipe.transform(promise)).toBe(null);
                  async.done();
