@@ -14,6 +14,9 @@
  * This script compares commits in master and patch branches to find the delta between them. This is
  * useful for release reviews, to make sure all the necessary commits were included into the patch
  * branch and there is no discrepancy.
+ *
+ * Additionally, lists all 'feat' commits that were merged to the patch branch to aid in ensuring
+ * features are only released to master.
  */
 
 const {exec} = require('shelljs');
@@ -57,6 +60,10 @@ function maybeExtractReleaseVersion(commit) {
   return matches ? matches[1] || matches[2] : null;
 }
 
+/**
+ * @param rawGitCommits
+ * @returns {Map<string, [string, string]>} - Map of commit message to [commit info, version]
+ */
 function collectCommitsAsMap(rawGitCommits) {
   const commits = toArray(rawGitCommits);
   const commitsMap = new Map();
@@ -81,6 +88,10 @@ function collectCommitsAsMap(rawGitCommits) {
   return commitsMap;
 }
 
+function getCommitInfoAsString(commitInfo, version) {
+  return `[${version}+] ${commitInfo}`;
+}
+
 /**
  * Returns a list of items present in `mapA`, but *not* present in `mapB`.
  * This function is needed to compare 2 sets of commits and return the list of unique commits in the
@@ -90,10 +101,24 @@ function diff(mapA, mapB) {
   const result = [];
   mapA.forEach((value, key) => {
     if (!mapB.has(key)) {
-      result.push(`[${value[1]}+] ${value[0]}`);
+      result.push(getCommitInfoAsString(value[1], value[0]));
     }
   });
   return result;
+}
+
+/**
+ * @param {Map<string, [string, string]>} commitsMap - commit map from collectCommitsAsMap
+ * @returns {string[]} List of commits with commit messages that start with 'feat'
+ */
+function listFeatures(commitsMap) {
+  return Array.from(commitsMap.keys()).reduce((result, key) => {
+    if (key.startsWith('feat')) {
+      const value = commitsMap.get(key);
+      result.push(getCommitInfoAsString(value[1], value[0]));
+    }
+    return result;
+  }, []);
 }
 
 function getBranchByTag(tag) {
@@ -141,6 +166,9 @@ ${diff(masterCommitsMap, patchCommitsMap).join('\n') || 'No extra commits'}
 
 ***** Only in PATCH (${branch}) *****
 ${diff(patchCommitsMap, masterCommitsMap).join('\n') || 'No extra commits'}
+
+***** Features in PATCH (${branch}) - should always be empty *****
+${listFeatures(patchCommitsMap).join('\n') || 'No extra commits'}
 `);
 }
 
