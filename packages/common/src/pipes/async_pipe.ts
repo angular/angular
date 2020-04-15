@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, EventEmitter, OnDestroy, Pipe, PipeTransform, WrappedValue, ɵisObservable, ɵisPromise, ɵlooseIdentical} from '@angular/core';
+import {ChangeDetectorRef, EventEmitter, OnDestroy, Pipe, PipeTransform, ɵisObservable, ɵisPromise} from '@angular/core';
 import {Observable, SubscriptionLike} from 'rxjs';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
@@ -81,7 +81,6 @@ const _observableStrategy = new ObservableStrategy();
 @Pipe({name: 'async', pure: false})
 export class AsyncPipe implements OnDestroy, PipeTransform {
   private _latestValue: any = null;
-  private _latestReturnedValue: any = null;
 
   private _subscription: SubscriptionLike|Promise<any>|null = null;
   private _obj: Observable<any>|Promise<any>|EventEmitter<any>|null = null;
@@ -104,7 +103,6 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
       if (obj) {
         this._subscribe(obj);
       }
-      this._latestReturnedValue = this._latestValue;
       return this._latestValue;
     }
 
@@ -113,12 +111,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
       return this.transform(obj as any);
     }
 
-    if (ɵlooseIdentical(this._latestValue, this._latestReturnedValue)) {
-      return this._latestReturnedValue;
-    }
-
-    this._latestReturnedValue = this._latestValue;
-    return WrappedValue.wrap(this._latestValue);
+    return this._latestValue;
   }
 
   private _subscribe(obj: Observable<any>|Promise<any>|EventEmitter<any>): void {
@@ -143,7 +136,6 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   private _dispose(): void {
     this._strategy.dispose(this._subscription!);
     this._latestValue = null;
-    this._latestReturnedValue = null;
     this._subscription = null;
     this._obj = null;
   }
