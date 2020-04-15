@@ -1,5 +1,5 @@
 import { ElementProfile, ProfilerFrame } from 'protocol';
-import { AppEntry, RecordFormatter } from './record-formatter';
+import { RecordFormatter } from './record-formatter';
 
 class MockFormatter extends RecordFormatter<any> {
   addFrame(nodes: any[], elements: ElementProfile[]): void {
