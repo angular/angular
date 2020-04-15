@@ -359,6 +359,126 @@ describe('TestBed', () => {
     });
   });
 
+  describe('nested module overrides using TestBed.overrideModule', () => {
+    // Set up an NgModule hierarchy with two modules, A and B, each with their own component.
+    // Module B additionally re-exports module A. Also declare two mock components which can be
+    // used in tests to verify that overrides within this hierarchy are working correctly.
+
+    // ModuleA content:
+
+    @Component({
+      selector: 'comp-a',
+      template: 'comp-a content',
+    })
+    class CompA {
+    }
+
+    @Component({
+      selector: 'comp-a',
+      template: 'comp-a mock content',
+    })
+    class MockCompA {
+    }
+
+    @NgModule({
+      declarations: [CompA],
+      exports: [CompA],
+    })
+    class ModuleA {
+    }
+
+    // ModuleB content:
+
+    @Component({
+      selector: 'comp-b',
+      template: 'comp-b content',
+    })
+    class CompB {
+    }
+
+    @Component({
+      selector: 'comp-b',
+      template: 'comp-b mock content',
+    })
+    class MockCompB {
+    }
+
+    @NgModule({
+      imports: [ModuleA],
+      declarations: [CompB],
+      exports: [CompB, ModuleA],
+    })
+    class ModuleB {
+    }
+
+    // AppModule content:
+
+    @Component({
+      selector: 'app',
+      template: `
+        <comp-a></comp-a>
+        <comp-b></comp-b>
+      `,
+    })
+    class App {
+    }
+
+    @NgModule({
+      imports: [ModuleB],
+      exports: [ModuleB],
+    })
+    class AppModule {
+    }
+
+    it('should detect nested module override', () => {
+      TestBed
+          .configureTestingModule({
+            declarations: [App],
+            // AppModule -> ModuleB -> ModuleA (to be overridden)
+            imports: [AppModule],
+          })
+          .overrideModule(ModuleA, {
+            remove: {declarations: [CompA], exports: [CompA]},
+            add: {declarations: [MockCompA], exports: [MockCompA]}
+          })
+          .compileComponents();
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      // CompA is overridden, expect mock content.
+      expect(fixture.nativeElement.textContent).toContain('comp-a mock content');
+
+      // CompB is not overridden, expect original content.
+      expect(fixture.nativeElement.textContent).toContain('comp-b content');
+    });
+
+    it('should detect chained modules override', () => {
+      TestBed
+          .configureTestingModule({
+            declarations: [App],
+            // AppModule -> ModuleB (to be overridden) -> ModuleA (to be overridden)
+            imports: [AppModule],
+          })
+          .overrideModule(ModuleA, {
+            remove: {declarations: [CompA], exports: [CompA]},
+            add: {declarations: [MockCompA], exports: [MockCompA]}
+          })
+          .overrideModule(ModuleB, {
+            remove: {declarations: [CompB], exports: [CompB]},
+            add: {declarations: [MockCompB], exports: [MockCompB]}
+          })
+          .compileComponents();
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      // Both CompA and CompB are overridden, expect mock content for both.
+      expect(fixture.nativeElement.textContent).toContain('comp-a mock content');
+      expect(fixture.nativeElement.textContent).toContain('comp-b mock content');
+    });
+  });
+
   describe('multi providers', () => {
     const multiToken = new InjectionToken<string[]>('multiToken');
     const singleToken = new InjectionToken<string>('singleToken');

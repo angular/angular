@@ -57,6 +57,9 @@ export class R3TestBedCompiler {
   private seenComponents = new Set<Type<any>>();
   private seenDirectives = new Set<Type<any>>();
 
+  // Keep track of overridden modules, so that we can collect all affected ones in the module tree.
+  private overriddenModules = new Set<NgModuleType<any>>();
+
   // Store resolved styles for Components that have template overrides present and `styleUrls`
   // defined at the same time.
   private existingComponentStyles = new Map<Type<any>, string[]>();
@@ -88,7 +91,6 @@ export class R3TestBedCompiler {
 
   private testModuleType: NgModuleType<any>;
   private testModuleRef: NgModuleRef<any>|null = null;
-  private hasModuleOverrides: boolean = false;
 
   constructor(private platform: PlatformRef, private additionalModuleTypes: Type<any>|Type<any>[]) {
     class DynamicTestModule {}
@@ -123,7 +125,7 @@ export class R3TestBedCompiler {
   }
 
   overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {
-    this.hasModuleOverrides = true;
+    this.overriddenModules.add(ngModule as NgModuleType<any>);
 
     // Compile the module right away.
     this.resolvers.module.addOverride(ngModule, override);
@@ -348,21 +350,26 @@ export class R3TestBedCompiler {
   }
 
   private applyTransitiveScopes(): void {
+    if (this.overriddenModules.size > 0) {
+      // Module overrides (via `TestBed.overrideModule`) might affect scopes that were previously
+      // calculated and stored in `transitiveCompileScopes`. If module overrides are present,
+      // collect all affected modules and reset scopes to force their re-calculatation.
+      const testingModuleDef = (this.testModuleType as any)[NG_MOD_DEF];
+      const affectedModules = this.collectModulesAffectedByOverrides(testingModuleDef.imports);
+      if (affectedModules.size > 0) {
+        affectedModules.forEach(moduleType => {
+          this.storeFieldOfDefOnType(moduleType as any, NG_MOD_DEF, 'transitiveCompileScopes');
+          (moduleType as any)[NG_MOD_DEF].transitiveCompileScopes = null;
+        });
+      }
+    }
+
     const moduleToScope = new Map<Type<any>|TestingModuleOverride, NgModuleTransitiveScopes>();
     const getScopeOfModule =
         (moduleType: Type<any>|TestingModuleOverride): NgModuleTransitiveScopes => {
           if (!moduleToScope.has(moduleType)) {
             const isTestingModule = isTestingModuleOverride(moduleType);
             const realType = isTestingModule ? this.testModuleType : moduleType as Type<any>;
-            // Module overrides (via TestBed.overrideModule) might affect scopes that were
-            // previously calculated and stored in `transitiveCompileScopes`. If module overrides
-            // are present, always re-calculate transitive scopes to have the most up-to-date
-            // information available. The `moduleToScope` map avoids repeated re-calculation of
-            // scopes for the same module.
-            if (!isTestingModule && this.hasModuleOverrides) {
-              this.storeFieldOfDefOnType(moduleType as any, NG_MOD_DEF, 'transitiveCompileScopes');
-              (moduleType as any)[NG_MOD_DEF].transitiveCompileScopes = null;
-            }
             moduleToScope.set(moduleType, transitiveScopesFor(realType));
           }
           return moduleToScope.get(moduleType)!;
@@ -530,6 +537,46 @@ export class R3TestBedCompiler {
       }
     };
     queueTypesFromModulesArrayRecur(arr);
+  }
+
+  // When module overrides (via `TestBed.overrideModule`) are present, it might affect all modules
+  // that import (even transitively) an overridden one. For all affected modules we need to
+  // recalculate their scopes for a given test run and restore original scopes at the end. The goal
+  // of this function is to collect all affected modules in a set for further processing. Example:
+  // if we have the following module hierarchy: A -> B -> C (where `->` means `imports`) and module
+  // `C` is overridden, we consider `A` and `B` as affected, since their scopes might become
+  // invalidated with the override.
+  private collectModulesAffectedByOverrides(arr: any[]): Set<NgModuleType<any>> {
+    const seenModules = new Set<NgModuleType<any>>();
+    const affectedModules = new Set<NgModuleType<any>>();
+    const calcAffectedModulesRecur = (arr: any[], path: NgModuleType<any>[]): void => {
+      for (const value of arr) {
+        if (Array.isArray(value)) {
+          // If the value is an array, just flatten it (by invoking this function recursively),
+          // keeping "path" the same.
+          calcAffectedModulesRecur(value, path);
+        } else if (hasNgModuleDef(value)) {
+          if (seenModules.has(value)) {
+            // If we've seen this module before and it's included into "affected modules" list, mark
+            // the whole path that leads to that module as affected, but do not descend into its
+            // imports, since we already examined them before.
+            if (affectedModules.has(value)) {
+              path.forEach(item => affectedModules.add(item));
+            }
+            continue;
+          }
+          seenModules.add(value);
+          if (this.overriddenModules.has(value)) {
+            path.forEach(item => affectedModules.add(item));
+          }
+          // Examine module imports recursively to look for overridden modules.
+          const moduleDef = (value as any)[NG_MOD_DEF];
+          calcAffectedModulesRecur(maybeUnwrapFn(moduleDef.imports), path.concat(value));
+        }
+      }
+    };
+    calcAffectedModulesRecur(arr, []);
+    return affectedModules;
   }
 
   private maybeStoreNgDef(prop: string, type: Type<any>) {
