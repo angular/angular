@@ -10,7 +10,7 @@
 
 import * as cluster from 'cluster';
 
-import {resolve} from '../../../../src/ngtsc/file_system';
+import {FileSystem} from '../../../../src/ngtsc/file_system';
 import {Logger} from '../../logging/logger';
 import {PackageJsonUpdater} from '../../writing/package_json_updater';
 import {AnalyzeEntryPointsFn} from '../api';
@@ -33,12 +33,15 @@ export class ClusterMaster {
   private onTaskCompleted: TaskCompletedCallback;
 
   constructor(
-      private maxWorkerCount: number, private logger: Logger,
+      private maxWorkerCount: number, private fileSystem: FileSystem, private logger: Logger,
       private pkgJsonUpdater: PackageJsonUpdater, analyzeEntryPoints: AnalyzeEntryPointsFn,
       createTaskCompletedCallback: CreateTaskCompletedCallback) {
     if (!cluster.isMaster) {
       throw new Error('Tried to instantiate `ClusterMaster` on a worker process.');
     }
+
+    // Set the worker entry-point
+    cluster.setupMaster({exec: this.fileSystem.resolve(__dirname, 'worker.js')});
 
     this.taskQueue = analyzeEntryPoints();
     this.onTaskCompleted = createTaskCompletedCallback(this.taskQueue);
@@ -227,7 +230,7 @@ export class ClusterMaster {
           JSON.stringify(msg));
     }
 
-    const expectedPackageJsonPath = resolve(task.entryPoint.path, 'package.json');
+    const expectedPackageJsonPath = this.fileSystem.resolve(task.entryPoint.path, 'package.json');
     const parsedPackageJson = task.entryPoint.packageJson;
 
     if (expectedPackageJsonPath !== msg.packageJsonPath) {
