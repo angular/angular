@@ -27,7 +27,6 @@ import {EntryPointFinder} from './entry_point_finder/interface';
 import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder';
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from './execution/api';
 import {ClusterExecutor} from './execution/cluster/executor';
-import {ClusterLockFileWithChildProcess} from './execution/cluster/lock_file_with_child_process';
 import {ClusterPackageJsonUpdater} from './execution/cluster/package_json_updater';
 import {SingleProcessExecutorAsync, SingleProcessExecutorSync} from './execution/single_process_executor';
 import {CreateTaskCompletedCallback, PartiallyOrderedTasks, Task, TaskProcessingOutcome, TaskQueue} from './execution/tasks/api';
@@ -429,8 +428,7 @@ function getCreateTaskCompletedCallback(
 function getExecutor(
     async: boolean, inParallel: boolean, logger: Logger, pkgJsonUpdater: PackageJsonUpdater,
     fileSystem: FileSystem, createTaskCompletedCallback: CreateTaskCompletedCallback): Executor {
-  const lockFile = inParallel ? new ClusterLockFileWithChildProcess(fileSystem, logger) :
-                                new LockFileWithChildProcess(fileSystem, logger);
+  const lockFile = new LockFileWithChildProcess(fileSystem, logger);
   if (async) {
     // Execute asynchronously (either serially or in parallel)
     const locker = new AsyncLocker(lockFile, logger, 500, 50);
