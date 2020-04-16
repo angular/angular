@@ -22,16 +22,12 @@ export class DevToolsComponent implements OnInit, OnDestroy {
 
   constructor(private _messageBus: MessageBus<Events>) {}
 
-  private _interval$ = interval(500)
-    .pipe(take(10))
-    .subscribe({
-      next: () => this._messageBus.emit('queryNgAvailability'),
-      complete: () => {
-        if (this.angularExists === null) {
-          this.angularExists = false;
-        }
-      },
-    });
+  private _interval$ = interval(500).subscribe((attempt) => {
+    if (attempt === 10) {
+      this.angularExists = false;
+    }
+    this._messageBus.emit('queryNgAvailability');
+  });
 
   ngOnInit(): void {
     console.log('Initialized the devtools UI');

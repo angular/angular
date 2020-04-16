@@ -20,7 +20,12 @@
 <ng-template #errorOrLoad>
   <ng-container *ngIf="angularExists === false; else load">
     <p class="text-message">
-      Not an Angular app running in development mode
+      Angular application not detected.
+      <span
+        class="info-icon"
+        matTooltip="You see this message because the app is still loading, or this is not an Angular application"
+        >i</span
+      >
     </p>
   </ng-container>
   <ng-template #load>
