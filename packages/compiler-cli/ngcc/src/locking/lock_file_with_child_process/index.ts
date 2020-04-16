@@ -82,14 +82,14 @@ export class LockFileWithChildProcess implements LockFile {
     this.logger.debug('Forking unlocker child-process');
     const logLevel =
         this.logger.level !== undefined ? this.logger.level.toString() : LogLevel.info.toString();
-
-    const unlocker = fork(this.fs.resolve(__dirname, './unlocker.js'), [path, logLevel], {
-                       detached: true,
-                       stdio: 'pipe',
-                     }) as ChildProcessByStdio<Writable, Readable, Readable>;
-    unlocker.stdout.on('data', data => process.stdout.write(data));
-    unlocker.stderr.on('data', data => process.stderr.write(data));
-
+    const isWindows = process.platform === 'win32';
+    const unlocker = fork(
+        this.fs.resolve(__dirname, './unlocker.js'), [path, logLevel],
+        {detached: true, stdio: isWindows ? 'pipe' : 'inherit'});
+    if (isWindows) {
+      unlocker.stdout?.on('data', process.stdout.write.bind(process.stdout));
+      unlocker.stderr?.on('data', process.stderr.write.bind(process.stderr));
+    }
     return unlocker;
   }
 }
