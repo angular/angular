@@ -94,7 +94,7 @@
     "todomvc-common": "^1.0.5",
     "ts-node": "~8.8.0",
     "tsickle": "^0.35.0",
-    "tslint": "~5.18.0",
+    "tslint": "~5.20.0",
     "typescript": "~3.7.0",
     "wait-on": "^4.0.1",
     "webpack": "^4.42.1"
