@@ -26,7 +26,6 @@ import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_poin
 import {getAnalyzeEntryPointsFn} from './execution/analyze_entry_points';
 import {Executor} from './execution/api';
 import {ClusterExecutor} from './execution/cluster/executor';
-import {ClusterPackageJsonUpdater} from './execution/cluster/package_json_updater';
 import {getCreateCompileFn} from './execution/create_compile_function';
 import {SingleProcessExecutorAsync, SingleProcessExecutorSync} from './execution/single_process_executor';
 import {CreateTaskCompletedCallback, TaskProcessingOutcome} from './execution/tasks/api';
@@ -105,11 +104,7 @@ export function mainNgcc({
     return;
   }
 
-  // NOTE: To avoid file corruption, ensure that each `ngcc` invocation only creates _one_ instance
-  //       of `PackageJsonUpdater` that actually writes to disk (across all processes).
-  //       This is hard to enforce automatically, when running on multiple processes, so needs to be
-  //       enforced manually.
-  const pkgJsonUpdater = getPackageJsonUpdater(inParallel, fileSystem);
+  const pkgJsonUpdater = new DirectPackageJsonUpdater(fileSystem);
 
   const analyzeEntryPoints = getAnalyzeEntryPointsFn(
       logger, finder, fileSystem, supportedPropertiesToConsider, compileAllFormats,
@@ -149,11 +144,6 @@ function ensureSupportedProperties(properties: string[]): EntryPointJsonProperty
   }
 
   return supportedProperties;
-}
-
-function getPackageJsonUpdater(inParallel: boolean, fs: FileSystem): PackageJsonUpdater {
-  const directPkgJsonUpdater = new DirectPackageJsonUpdater(fs);
-  return inParallel ? new ClusterPackageJsonUpdater(directPkgJsonUpdater) : directPkgJsonUpdater;
 }
 
 function getCreateTaskCompletedCallback(
