@@ -849,7 +849,7 @@ groups:
           'aio/content/images/guide/deployment/**',
           'aio/content/guide/file-structure.md',
           'aio/content/guide/ivy.md',
-          'aio/content/guide/web-worker.md'
+          'aio/content/guide/web-worker.md',
           'aio/content/guide/workspace-config.md',
           ])
     reviewers:

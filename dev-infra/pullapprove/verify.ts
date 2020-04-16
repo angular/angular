@@ -15,11 +15,9 @@ import {PullApproveGroup} from './group';
 import {logGroup, logHeader} from './logging';
 import {parsePullApproveYaml} from './parse-yaml';
 
-export function verify() {
+export function verify(verbose = false) {
   // Exit early on shelljs errors
   set('-e');
-  // Whether to log verbosely
-  const VERBOSE_MODE = process.argv.includes('-v');
   // Full path of the angular project directory
   const PROJECT_DIR = getRepoBaseDir();
   // Change to the Angular project directory
@@ -39,24 +37,11 @@ export function verify() {
   const groups = Object.entries(pullApprove.groups).map(([groupName, group]) => {
     return new PullApproveGroup(groupName, group);
   });
-  // PullApprove groups without matchers.
-  const groupsWithoutMatchers = groups.filter(group => !group.hasMatchers);
-  // PullApprove groups with matchers.
-  const groupsWithMatchers = groups.filter(group => group.hasMatchers);
-  // All lines from group conditions which are not parsable.
-  const groupsWithBadLines = groups.filter(g => !!g.getBadLines().length);
-  // If any groups contains bad lines, log bad lines and exit failing.
-  if (groupsWithBadLines.length) {
-    logHeader('PullApprove config file parsing failure');
-    console.info(`Discovered errors in ${groupsWithBadLines.length} groups`);
-    groupsWithBadLines.forEach(group => {
-      console.info(` - [${group.groupName}]`);
-      group.getBadLines().forEach(line => console.info(`    ${line}`));
-    });
-    console.info(
-        `Correct the invalid conditions, before PullApprove verification can be completed`);
-    process.exit(1);
-  }
+  // PullApprove groups without conditions. These are skipped in the verification
+  // as those would always be active and cause zero unmatched files.
+  const groupsSkipped = groups.filter(group => !group.conditions.length);
+  // PullApprove groups with conditions.
+  const groupsWithConditions = groups.filter(group => !!group.conditions.length);
   // Files which are matched by at least one group.
   const matchedFiles: string[] = [];
   // Files which are not matched by at least one group.
@@ -64,14 +49,14 @@ export function verify() {
 
   // Test each file in the repo against each group for being matched.
   REPO_FILES.forEach((file: string) => {
-    if (groupsWithMatchers.filter(group => group.testFile(file)).length) {
+    if (groupsWithConditions.filter(group => group.testFile(file)).length) {
       matchedFiles.push(file);
     } else {
       unmatchedFiles.push(file);
     }
   });
   // Results for each group
-  const resultsByGroup = groupsWithMatchers.map(group => group.getResults());
+  const resultsByGroup = groupsWithConditions.map(group => group.getResults());
   // Whether all group condition lines match at least one file and all files
   // are matched by at least one group.
   const verificationSucceeded =
@@ -94,7 +79,7 @@ export function verify() {
    */
   logHeader('PullApprove results by file');
   console.groupCollapsed(`Matched Files (${matchedFiles.length} files)`);
-  VERBOSE_MODE && matchedFiles.forEach(file => console.info(file));
+  verbose && matchedFiles.forEach(file => console.info(file));
   console.groupEnd();
   console.groupCollapsed(`Unmatched Files (${unmatchedFiles.length} files)`);
   unmatchedFiles.forEach(file => console.info(file));
@@ -103,12 +88,12 @@ export function verify() {
    * Group by group Summary
    */
   logHeader('PullApprove results by group');
-  console.groupCollapsed(`Groups without matchers (${groupsWithoutMatchers.length} groups)`);
-  VERBOSE_MODE && groupsWithoutMatchers.forEach(group => console.info(`${group.groupName}`));
+  console.groupCollapsed(`Groups skipped (${groupsSkipped.length} groups)`);
+  verbose && groupsSkipped.forEach(group => console.info(`${group.groupName}`));
   console.groupEnd();
   const matchedGroups = resultsByGroup.filter(group => !group.unmatchedCount);
   console.groupCollapsed(`Matched conditions by Group (${matchedGroups.length} groups)`);
-  VERBOSE_MODE && matchedGroups.forEach(group => logGroup(group));
+  verbose && matchedGroups.forEach(group => logGroup(group));
   console.groupEnd();
   const unmatchedGroups = resultsByGroup.filter(group => group.unmatchedCount);
   console.groupCollapsed(`Unmatched conditions by Group (${unmatchedGroups.length} groups)`);
