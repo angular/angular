@@ -63,7 +63,7 @@ if (require.main === module) {
           fileSystem, logger, pkgJsonUpdater, createNewEntryPointFormats, errorOnFailedEntryPoint,
           enableI18nLegacyMessageIdFormat, tsConfig, pathMappings);
 
-      await runWorker(logger, createCompileFn);
+      await startWorker(logger, createCompileFn);
       process.exitCode = 0;
     } catch (e) {
       console.error(e.stack || e.message);
@@ -72,7 +72,7 @@ if (require.main === module) {
   })();
 }
 
-export async function runWorker(logger: Logger, createCompileFn: CreateCompileFn): Promise<void> {
+export async function startWorker(logger: Logger, createCompileFn: CreateCompileFn): Promise<void> {
   if (cluster.isMaster) {
     throw new Error('Tried to run cluster worker on the master process.');
   }

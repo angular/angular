@@ -11,13 +11,13 @@
 import * as cluster from 'cluster';
 import {EventEmitter} from 'events';
 
-import {runWorker} from '../../../src/execution/cluster/worker';
+import {startWorker} from '../../../src/execution/cluster/worker';
 import {Task, TaskCompletedCallback, TaskProcessingOutcome} from '../../../src/execution/tasks/api';
 import {MockLogger} from '../../helpers/mock_logger';
 import {mockProperty} from '../../helpers/spy_utils';
 
 
-describe('runWorker()', () => {
+describe('startWorker()', () => {
   const runAsClusterMaster = mockProperty(cluster, 'isMaster');
   const mockProcessSend = mockProperty(process, 'send');
   let processSendSpy: jasmine.Spy;
@@ -39,7 +39,7 @@ describe('runWorker()', () => {
     beforeEach(() => runAsClusterMaster(true));
 
     it('should throw an error', async () => {
-      await expectAsync(runWorker(mockLogger, createCompileFnSpy))
+      await expectAsync(startWorker(mockLogger, createCompileFnSpy))
           .toBeRejectedWithError('Tried to run cluster worker on the master process.');
       expect(createCompileFnSpy).not.toHaveBeenCalled();
     });
@@ -56,12 +56,12 @@ describe('runWorker()', () => {
     });
 
     it('should create the `compileFn()`', () => {
-      runWorker(mockLogger, createCompileFnSpy);
+      startWorker(mockLogger, createCompileFnSpy);
       expect(createCompileFnSpy).toHaveBeenCalledWith(jasmine.any(Function));
     });
 
     it('should set up `compileFn()` to send `task-completed` messages to master', () => {
-      runWorker(mockLogger, createCompileFnSpy);
+      startWorker(mockLogger, createCompileFnSpy);
       const onTaskCompleted: TaskCompletedCallback = createCompileFnSpy.calls.argsFor(0)[0];
 
       onTaskCompleted(null as any, TaskProcessingOutcome.Processed, null);
@@ -82,7 +82,7 @@ describe('runWorker()', () => {
     });
 
     it('should return a promise (that is never resolved)', done => {
-      const promise = runWorker(mockLogger, createCompileFnSpy);
+      const promise = startWorker(mockLogger, createCompileFnSpy);
 
       expect(promise).toEqual(jasmine.any(Promise));
 
@@ -102,7 +102,7 @@ describe('runWorker()', () => {
         processDts: true,
       } as unknown as Task;
 
-      runWorker(mockLogger, createCompileFnSpy);
+      startWorker(mockLogger, createCompileFnSpy);
       cluster.worker.emit('message', {type: 'process-task', task: mockTask});
 
       expect(compileFnSpy).toHaveBeenCalledWith(mockTask);
@@ -125,7 +125,7 @@ describe('runWorker()', () => {
         throw err;
       });
 
-      runWorker(mockLogger, createCompileFnSpy);
+      startWorker(mockLogger, createCompileFnSpy);
 
       err = 'Error string.';
       cluster.worker.emit('message', {type: 'process-task', task: mockTask});
@@ -137,7 +137,7 @@ describe('runWorker()', () => {
     });
 
     it('should throw, when an unknown message type is received', () => {
-      runWorker(mockLogger, createCompileFnSpy);
+      startWorker(mockLogger, createCompileFnSpy);
       cluster.worker.emit('message', {type: 'unknown', foo: 'bar'});
 
       expect(compileFnSpy).not.toHaveBeenCalled();
