@@ -230,6 +230,22 @@ groups:
 
 
   # =========================================================
+  #  Framework: Migrations
+  # =========================================================
+  fw-migrations:
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - files.include("packages/core/schematics/**")
+    reviewers:
+      users:
+        - alxhub
+        - crisbeto
+        - devversion
+        - kara
+
+
+  # =========================================================
   #  Framework: Core
   # =========================================================
   fw-core:
@@ -237,7 +253,7 @@ groups:
       - *can-be-global-approved
       - *can-be-global-docs-approved
       - >
-        contains_any_globs(files, [
+        contains_any_globs(files.exclude("packages/core/schematics/**"), [
           'packages/core/**',
           'packages/examples/core/**',
           'packages/common/**',
