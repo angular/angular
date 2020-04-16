@@ -126,10 +126,6 @@ const checkForAngular = (messageBus: MessageBus<Events>, attempt = 0): void => {
     messageBus.emit('ngAvailability', [{ version: ngVersion.toString(), prodMode: false }]);
     return;
   }
-  if (attempt > 10) {
-    messageBus.emit('ngAvailability', [{ version: undefined, prodMode: false }]);
-    return;
-  }
   setTimeout(() => checkForAngular(messageBus, attempt + 1), 500);
 };
 

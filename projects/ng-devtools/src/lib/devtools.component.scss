@@ -45,4 +45,17 @@
   font-size: 14px;
   padding: 5px;
   text-align: center;
+
+  .info-icon {
+    display: inline-block;
+    font-size: 14px;
+    border-radius: 50%;
+    border: solid 3px rgb(17, 17, 17);
+    cursor: pointer;
+    width: 16px;
+    transform: scale(0.9);
+    height: 16px;
+    font-weight: bold;
+    text-align: center;
+  }
 }
