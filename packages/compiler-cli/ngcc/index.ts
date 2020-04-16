@@ -7,13 +7,12 @@
  */
 import {CachedFileSystem, NodeJSFileSystem, setFileSystem} from '../src/ngtsc/file_system';
 
-import {AsyncNgccOptions, NgccOptions, SyncNgccOptions} from './src/command_line_options';
 import {mainNgcc} from './src/main';
+import {AsyncNgccOptions, NgccOptions, SyncNgccOptions} from './src/ngcc_options';
 
-export {AsyncNgccOptions, NgccOptions, SyncNgccOptions} from './src/command_line_options';
 export {ConsoleLogger} from './src/logging/console_logger';
 export {Logger, LogLevel} from './src/logging/logger';
-export {PathMappings} from './src/utils';
+export {AsyncNgccOptions, NgccOptions, PathMappings, SyncNgccOptions} from './src/ngcc_options';
 
 export function process(options: AsyncNgccOptions): Promise<void>;
 export function process(options: SyncNgccOptions): void;
