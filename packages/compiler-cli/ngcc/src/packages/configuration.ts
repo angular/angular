@@ -125,6 +125,18 @@ export const DEFAULT_NGCC_CONFIG: NgccProjectConfig = {
         './dist': {ignore: true},
       },
     },
+
+    // Enables the `@angular/cdk/coercion` and `@angular/cdk/testing` entry-points as Angular
+    // packages, such that they participate in the dependency graph and ordering computation.
+    // As these entry-points do not have Angular metadata they would otherwise not be considered,
+    // causing the dependency on `@angular/core` not to be included as transitive dependency
+    // of entry-points that depend on these CDK entry-points.
+    '@angular/cdk': {
+      entryPoints: {
+        'coercion': {},
+        'testing': {},
+      },
+    },
   },
 };
 
