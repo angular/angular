@@ -8,6 +8,28 @@ This section walks you through adding a form-based checkout feature to collect u
 
 Forms in Angular build upon the standard HTML forms to help you create custom form controls and easy validation experiences. There are two parts to an Angular Reactive form: the objects that live in the component to store and manage the form, and the visualization of the form that lives in the template.
 
+First, in app.module.ts 
+import FormsModule and ReactiveForms Module. Next register them under @NgModule. Code snippet.
+
+import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    ProductListComponent,
+    TopBarComponent,
+    ProductAlertsComponent,
+    ProductDetailsComponent,
+    CartComponent,
+    ShippingComponent
+  ],
+  imports: [
+    BrowserModule,
+    HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule,
+
 ## Define the checkout form model
 
 First, set up the checkout form model. Defined in the component class, the form model is the source of truth for the status of the form.
