@@ -43,6 +43,7 @@ export class MockXMLHttpRequest {
   // Directly settable interface.
   withCredentials: boolean = false;
   responseType: string = 'text';
+  timeout: number = 0;
 
   // Mocked response interface.
   response: any|undefined = undefined;
@@ -56,6 +57,7 @@ export class MockXMLHttpRequest {
     error?: (event: ErrorEvent) => void,
     load?: () => void,
     progress?: (event: ProgressEvent) => void,
+    timeout?: (event: ProgressEvent) => void,
     uploadProgress?: (event: ProgressEvent) => void,
   } = {};
 
@@ -70,11 +72,12 @@ export class MockXMLHttpRequest {
     this.body = body;
   }
 
-  addEventListener(event: 'error'|'load'|'progress'|'uploadProgress', handler: Function): void {
+  addEventListener(event: 'error'|'load'|'timeout'|'progress'|'uploadProgress', handler: Function):
+      void {
     this.listeners[event] = handler as any;
   }
 
-  removeEventListener(event: 'error'|'load'|'progress'|'uploadProgress'): void {
+  removeEventListener(event: 'error'|'load'|'timeout'|'progress'|'uploadProgress'): void {
     delete this.listeners[event];
   }
 
@@ -114,6 +117,14 @@ export class MockXMLHttpRequest {
         loaded,
         total,
       } as any);
+    }
+  }
+
+  mockTimeoutEvent(): void {
+    const mockProgressEvent =
+        {isTrusted: true, lengthComputable: false, loaded: 0, total: 0, type: 'timeout'};
+    if (this.listeners.timeout) {
+      this.listeners.timeout(mockProgressEvent as ProgressEvent);
     }
   }
 

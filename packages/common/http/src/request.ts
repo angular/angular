@@ -20,6 +20,7 @@ interface HttpRequestInit {
   params?: HttpParams;
   responseType?: 'arraybuffer'|'blob'|'json'|'text';
   withCredentials?: boolean;
+  timeout?: number;
 }
 
 /**
@@ -104,6 +105,8 @@ export class HttpRequest<T> {
    */
   readonly withCredentials: boolean = false;
 
+  readonly timeout: number = 0;
+
   /**
    * The expected response type of the server.
    *
@@ -134,6 +137,7 @@ export class HttpRequest<T> {
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    timeout?: number,
   });
   constructor(method: 'POST'|'PUT'|'PATCH', url: string, body: T|null, init?: {
     headers?: HttpHeaders,
@@ -141,6 +145,7 @@ export class HttpRequest<T> {
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    timeout?: number,
   });
   constructor(method: string, url: string, body: T|null, init?: {
     headers?: HttpHeaders,
@@ -148,6 +153,7 @@ export class HttpRequest<T> {
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    timeout?: number,
   });
   constructor(
       method: string, readonly url: string, third?: T|{
@@ -156,6 +162,7 @@ export class HttpRequest<T> {
         params?: HttpParams,
         responseType?: 'arraybuffer'|'blob'|'json'|'text',
         withCredentials?: boolean,
+        timeout?: number,
       }|null,
       fourth?: {
         headers?: HttpHeaders,
@@ -163,6 +170,7 @@ export class HttpRequest<T> {
         params?: HttpParams,
         responseType?: 'arraybuffer'|'blob'|'json'|'text',
         withCredentials?: boolean,
+        timeout?: number,
       }) {
     this.method = method.toUpperCase();
     // Next, need to figure out which argument holds the HttpRequestInit
@@ -194,6 +202,10 @@ export class HttpRequest<T> {
       // Override headers if they're provided.
       if (!!options.headers) {
         this.headers = options.headers;
+      }
+
+      if (!!options.timeout) {
+        this.timeout = options.timeout;
       }
 
       if (!!options.params) {
@@ -309,6 +321,7 @@ export class HttpRequest<T> {
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    timeout?: number,
     body?: T|null,
     method?: string,
     url?: string,
@@ -321,6 +334,7 @@ export class HttpRequest<T> {
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    timeout?: number,
     body?: V|null,
     method?: string,
     url?: string,
@@ -333,6 +347,7 @@ export class HttpRequest<T> {
     params?: HttpParams,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    timeout?: number,
     body?: any|null,
     method?: string,
     url?: string,
@@ -362,6 +377,7 @@ export class HttpRequest<T> {
     // `setParams` are used.
     let headers = update.headers || this.headers;
     let params = update.params || this.params;
+    let timeout = update.timeout || this.timeout;
 
     // Check whether the caller has asked to add headers.
     if (update.setHeaders !== undefined) {
@@ -385,6 +401,7 @@ export class HttpRequest<T> {
       reportProgress,
       responseType,
       withCredentials,
+      timeout,
     });
   }
 }
