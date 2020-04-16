@@ -311,11 +311,11 @@ To use CSS grid with IE10/11, you must explicitly enable it using the `autoplace
 To do this, add the following to the top of the global styles file (or within a specific css selector scope):
 
 ```
-/* autoprefixer grid: autoplace /
+/* autoprefixer grid: autoplace */
 ```
 or
 ```
-/ autoprefixer grid: no-autoplace */
+/* autoprefixer grid: no-autoplace */
 ```
 
 For more information, see [Autoprefixer documentation](https://autoprefixer.github.io/).
