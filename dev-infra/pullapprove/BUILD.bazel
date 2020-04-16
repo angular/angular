@@ -4,6 +4,7 @@ ts_library(
     name = "pullapprove",
     srcs = [
         "cli.ts",
+        "condition_evaluator.ts",
         "group.ts",
         "logging.ts",
         "parse-yaml.ts",
