@@ -10,10 +10,8 @@
 
 import * as os from 'os';
 
-import {readConfiguration} from '../..';
-import {absoluteFrom, AbsoluteFsPath, dirname, FileSystem, getFileSystem, resolve} from '../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, resolve} from '../../src/ngtsc/file_system';
 
-import {AsyncNgccOptions, NgccOptions, SyncNgccOptions} from './command_line_options';
 import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
 import {DependencyResolver} from './dependencies/dependency_resolver';
 import {DtsDependencyHost} from './dependencies/dts_dependency_host';
@@ -33,12 +31,11 @@ import {composeTaskCompletedCallbacks, createLogErrorHandler, createMarkAsProces
 import {AsyncLocker} from './locking/async_locker';
 import {LockFileWithChildProcess} from './locking/lock_file_with_child_process';
 import {SyncLocker} from './locking/sync_locker';
-import {ConsoleLogger} from './logging/console_logger';
-import {Logger, LogLevel} from './logging/logger';
+import {Logger} from './logging/logger';
+import {AsyncNgccOptions, getSharedSetup, NgccOptions, PathMappings, SyncNgccOptions} from './ngcc_options';
 import {NgccConfiguration} from './packages/configuration';
 import {EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point';
 import {EntryPointManifest, InvalidatingEntryPointManifest} from './packages/entry_point_manifest';
-import {getPathMappingsFromTsConfig, PathMappings} from './utils';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from './writing/package_json_updater';
 
 /**
@@ -51,41 +48,26 @@ import {DirectPackageJsonUpdater, PackageJsonUpdater} from './writing/package_js
  */
 export function mainNgcc(options: AsyncNgccOptions): Promise<void>;
 export function mainNgcc(options: SyncNgccOptions): void;
-export function mainNgcc({
-  basePath,
-  targetEntryPointPath,
-  propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
-  compileAllFormats = true,
-  createNewEntryPointFormats = false,
-  logger = new ConsoleLogger(LogLevel.info),
-  pathMappings,
-  async = false,
-  errorOnFailedEntryPoint = false,
-  enableI18nLegacyMessageIdFormat = true,
-  invalidateEntryPointManifest = false,
-  tsConfigPath
-}: NgccOptions): void|Promise<void> {
-  if (!!targetEntryPointPath) {
-    // targetEntryPointPath forces us to error if an entry-point fails.
-    errorOnFailedEntryPoint = true;
-  }
+export function mainNgcc(options: NgccOptions): void|Promise<void> {
+  const {
+    basePath,
+    targetEntryPointPath,
+    propertiesToConsider,
+    compileAllFormats,
+    createNewEntryPointFormats,
+    logger,
+    pathMappings,
+    async,
+    errorOnFailedEntryPoint,
+    enableI18nLegacyMessageIdFormat,
+    invalidateEntryPointManifest,
+    fileSystem,
+    absBasePath,
+    projectPath,
+    tsConfig
+  } = getSharedSetup(options);
 
-  // Execute in parallel, if async execution is acceptable and there are more than 1 CPU cores.
-  const inParallel = async && (os.cpus().length > 1);
-
-  // Instantiate common utilities that are always used.
-  // NOTE: Avoid eagerly instantiating anything that might not be used when running sync/async or in
-  //       master/worker process.
-  const fileSystem = getFileSystem();
-  const absBasePath = absoluteFrom(basePath);
-  const projectPath = dirname(absBasePath);
   const config = new NgccConfiguration(fileSystem, projectPath);
-  const tsConfig = tsConfigPath !== null ? readConfiguration(tsConfigPath || projectPath) : null;
-
-  if (pathMappings === undefined) {
-    pathMappings = getPathMappingsFromTsConfig(tsConfig, projectPath);
-  }
-
   const dependencyResolver = getDependencyResolver(fileSystem, logger, config, pathMappings);
   const entryPointManifest = invalidateEntryPointManifest ?
       new InvalidatingEntryPointManifest(fileSystem, config, logger) :
@@ -104,11 +86,15 @@ export function mainNgcc({
     return;
   }
 
-  const pkgJsonUpdater = new DirectPackageJsonUpdater(fileSystem);
+  // Execute in parallel, if async execution is acceptable and there are more than 1 CPU cores.
+  const inParallel = async && (os.cpus().length > 1);
 
   const analyzeEntryPoints = getAnalyzeEntryPointsFn(
       logger, finder, fileSystem, supportedPropertiesToConsider, compileAllFormats,
       propertiesToConsider, inParallel);
+
+  // Create an updater that will actually write to disk. In
+  const pkgJsonUpdater = new DirectPackageJsonUpdater(fileSystem);
 
   // The function for creating the `compile()` function.
   const createCompileFn = getCreateCompileFn(

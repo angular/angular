@@ -9,12 +9,11 @@
 
 import * as cluster from 'cluster';
 
-import {absoluteFrom, CachedFileSystem, getFileSystem, NodeJSFileSystem, setFileSystem} from '../../../../src/ngtsc/file_system';
-import {readConfiguration} from '../../../../src/perform_compile';
+import {CachedFileSystem, NodeJSFileSystem, setFileSystem} from '../../../../src/ngtsc/file_system';
 import {parseCommandLineOptions} from '../../command_line_options';
 import {ConsoleLogger} from '../../logging/console_logger';
 import {Logger, LogLevel} from '../../logging/logger';
-import {getPathMappingsFromTsConfig} from '../../utils';
+import {getSharedSetup} from '../../ngcc_options';
 import {CreateCompileFn} from '../api';
 import {getCreateCompileFn} from '../create_compile_function';
 import {stringifyTask} from '../tasks/utils';
@@ -25,34 +24,21 @@ import {sendMessageToMaster} from './utils';
 
 // Cluster worker entry point
 if (require.main === module) {
-  process.title = 'ngcc (worker)';
-  setFileSystem(new CachedFileSystem(new NodeJSFileSystem()));
-  let {
-    basePath,
-    targetEntryPointPath,
-    createNewEntryPointFormats = false,
-    logger = new ConsoleLogger(LogLevel.info),
-    pathMappings,
-    errorOnFailedEntryPoint = false,
-    enableI18nLegacyMessageIdFormat = true,
-    tsConfigPath
-  } = parseCommandLineOptions(process.argv.slice(2));
   (async () => {
+    process.title = 'ngcc (worker)';
+
     try {
-      if (!!targetEntryPointPath) {
-        // targetEntryPointPath forces us to error if an entry-point fails.
-        errorOnFailedEntryPoint = true;
-      }
+      setFileSystem(new CachedFileSystem(new NodeJSFileSystem()));
 
-      const fileSystem = getFileSystem();
-      const absBasePath = absoluteFrom(basePath);
-      const projectPath = fileSystem.dirname(absBasePath);
-      const tsConfig =
-          tsConfigPath !== null ? readConfiguration(tsConfigPath || projectPath) : null;
-
-      if (pathMappings === undefined) {
-        pathMappings = getPathMappingsFromTsConfig(tsConfig, projectPath);
-      }
+      const {
+        createNewEntryPointFormats = false,
+        logger = new ConsoleLogger(LogLevel.info),
+        pathMappings,
+        errorOnFailedEntryPoint = false,
+        enableI18nLegacyMessageIdFormat = true,
+        fileSystem,
+        tsConfig
+      } = getSharedSetup(parseCommandLineOptions(process.argv.slice(2)));
 
       // NOTE: To avoid file corruption, `ngcc` invocation only creates _one_ instance of
       // `PackageJsonUpdater` that actually writes to disk (across all processes).
@@ -68,7 +54,7 @@ if (require.main === module) {
       process.exitCode = 0;
     } catch (e) {
       console.error(e.stack || e.message);
-      process.exitCode = 1;
+      process.exit(1);
     }
   })();
 }

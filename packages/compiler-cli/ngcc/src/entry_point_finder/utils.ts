@@ -7,7 +7,7 @@
  */
 import {AbsoluteFsPath, getFileSystem, relative, resolve} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
-import {PathMappings} from '../utils';
+import {PathMappings} from '../ngcc_options';
 
 /**
  * Extract all the base-paths that we need to search for entry-points.

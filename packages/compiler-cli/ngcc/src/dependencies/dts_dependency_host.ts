@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
-import {PathMappings} from '../utils';
+import {PathMappings} from '../ngcc_options';
 import {EsmDependencyHost} from './esm_dependency_host';
 import {ModuleResolver} from './module_resolver';
 
