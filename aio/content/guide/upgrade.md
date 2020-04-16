@@ -1652,8 +1652,13 @@ AngularJS 라우팅 규칙에 사용할 커스텀 매처는 다음과 같이 정
 결국 Angular와 Angular 프레임워크는 동시에 동작하는 모양이 됩니다.
 
 
+{@a using-the-unified-angular-location-service}
+<!--
 ## Using the Unified Angular Location Service
+-->
+## Angular Location 서비스 통합하기
 
+<!--
 In AngularJS, the [$location service](https://docs.angularjs.org/api/ng/service/$location) handles all routing configuration and navigation, encoding and decoding of URLS, redirects, and interactions with browser APIs. Angular uses its own underlying `Location` service for all of these tasks.
 
 When you migrate from AngularJS to Angular you will want to move as much responsibility as possible to Angular, so that you can take advantage of new APIs. To help with the transition, Angular provides the `LocationUpgradeModule`. This module enables a _unified_ location service that shifts responsibilities from the AngularJS `$location` service to the Angular `Location` service.
@@ -1704,9 +1709,72 @@ angular.module('myHybridApp', [...])
 ```
 
 Once you introduce the Angular Router, using the Angular Router triggers navigations through the unified location service, still providing a single source for navigating with AngularJS and Angular.
+-->
+AngularJS에서 사용했던 [$location 서비스](https://docs.angularjs.org/api/ng/service/$location)는 모든 라우팅 규칙과 네비게이션 동작을 관리하며, URL을 인코딩/디코딩하고 리다이렉션을 수행하면서 브라우저 API와 상호작용합니다.
+그리고 이 작업들은 Angular에서 `Location` 서비스가 그대로 담당하고 있습니다.
 
+AngularJS 애플리케이션을 Angular로 옮기다보면 이 서비스와 관련된 기능도 함께 수정해야 할 수 있습니다.
+그리고 이 과정에서 새로운 API를 도입하면서 더 나은 코드를 작성할 수도 있습니다.
+AngularJS `$location`를 Angular `Location`로 변환하는 작업을 돕기 위해 Angular는 `LocationUpgradeModule`을 제공합니다.
+이 모듈은 두 서비스를 _통합하는_ Location 서비스를 제공합니다.
+
+`LocationUpgradeModule`을 사용하려면 `@angular/common/upgrade` 패키지에서 이 모듈을 로드하고 `AppModule` 메타데이터에 `LocationUpgradeModule.config()` 메소드를 실행한 결과를 로드하면 됩니다.
+
+```ts
+// 로드 구문들 ...
+import { LocationUpgradeModule } from '@angular/common/upgrade';
+
+@NgModule({
+  imports: [
+    // NgModule 로드 ...
+    LocationUpgradeModule.config()
+  ]
+})
+export class AppModule {}
+```
+
+`LocationUpgradeModule.config()` 메소드에 옵션을 전달하면서 실행하면 `LocationStrategy`나 URL 접두사에 대한 정책을 지정할 수 있습니다.
+
+`LocationStrategy`에 사용하는 `useHash` 프로퍼티 기본값은 `false`이며 URL 접두사를 지정하는 `hashPrefix` 프로퍼티 기본값은 빈 문자열인데, 이 정책을 변경하려면 다음과 같이 구현하면 됩니다.
+
+```ts
+LocationUpgradeModule.config({
+  useHash: true,
+  hashPrefix: '!'
+})
+```
+
+<div class="alert is-important">
+
+**참고:** `LocationUpgradeModule.config()` 메소드에 사용할 수 있는 옵션 목록은 `LocationUpgradeConfig` 문서를 참고하세요.
+
+</div>
+
+이렇게 구현하면 AngularJS에서 등록한 `$location` 프로바이더를 교체합니다.
+그래서 이전에 AngularJS가 관여했던 네비게이션 동작, 라우팅 브로드캐스팅 메시지, 그리고 네비게이션 과정 중에 발생하는 모든 이벤트는 이제 Angular가 처리하게 됩니다.
+이제는 하이브리드 애플리케이션의 모든 라우팅 과정을 Angular가 처리하기 때문에 애플리케이션을 관리하기 편해집니다.
+
+그리고 AngularJS 쪽에서 Location 서비스를 다운그레이드해서 사용하려면 `$locationShim` 팩토리 프로바이더를 사용해서 다음과 같이 등록하면 됩니다.
+
+```ts
+// 로드 구문들 ...
+import { $locationShim } from '@angular/common/upgrade';
+import { downgradeInjectable } from '@angular/upgrade/static';
+
+angular.module('myHybridApp', [...])
+  .factory('$location', downgradeInjectable($locationShim));
+```
+
+이렇게 구현하고 나면 AngularJS와 Angular의 Location 서비스를 Angular 라우터가 통합해서 처리합니다.
+그러면서 Angular와 AngularJS 각 영역에서 이 서비스를 단일 소스로 활용할 수 있습니다.
+
+
+<!--
 ## Using Ahead-of-time compilation with hybrid apps
+-->
+## 하이브리드 앱에 AOT 컴파일 적용하기
 
+<!---
 You can take advantage of Ahead-of-time (AOT) compilation on hybrid apps just like on any other
 Angular application.
 The setup for a hybrid app is mostly the same as described in
@@ -1724,9 +1792,27 @@ bootstrap the hybrid app:
 </code-example>
 
 And that's all you need do to get the full benefit of AOT for Angular apps!
+-->
+보통 Angular 애플리케이션과 마찬가지로 하이브리드 앱에도 AOT(Ahead-of-time) 컴파일을 적용할 수 있습니다.
+설정 방법은 [AOT 컴파일러](guide/aot-compiler) 문서에서 설명하는 내용과 거의 비슷하며 `index.html` 파일과 `main-aot.ts` 파일만 조금 다릅니다.
 
+지금 만드는 `index.html` 파일에는 AngularJS 파일들을 로드하는 스크립트 태그가 들어가야 하기 때문에 AOT용 `index.html` 파일에도 이 내용이 있어야 합니다.
+`copy-dist-files.js`와 같은 파일을 만들어서 실행하는 것이 가장 간단합니다.
+
+그리고 하이브리드 앱을 부트스트랩 하려면 `AppModule` 대신 `AppModuleFactory`를 사용해야 합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/main-aot.ts" header="app/main-aot.ts">
+</code-example>
+
+여기까지 구현하면 이제 AOT 컴파일러를 자유롭게 사용할 수 있습니다!
+
+
+<!--
 ## PhoneCat Upgrade Tutorial
+-->
+## PhoneCat 업그레이드 튜토리얼
 
+<!--
 In this section, you'll learn to prepare and upgrade an application with `ngUpgrade`.
 The example app is [Angular PhoneCat](https://github.com/angular/angular-phonecat)
 from [the original AngularJS tutorial](https://docs.angularjs.org/tutorial),
@@ -1742,6 +1828,18 @@ To follow along with the tutorial, clone the
 and apply the steps as you go.
 
 In terms of project structure, this is where the work begins:
+-->
+이번 섹션에서는 `ngUpgrade`로 AngularJS 애플리케이션을 업그레이드하는 방법에 대해 알아봅시다.
+예제로 다뤄볼 앱은 [AngularJS 튜토리얼](https://docs.angularjs.org/tutorial) 앱이며 완성본은 [Angular PhoneCat 저장소](https://github.com/angular/angular-phonecat)에 있습니다.
+이제 이 앱을 Angular 세계로 어떻게 옮겨갈 수 있는지 알아봅시다.
+
+이 과정은 [사전 준비 가이드 섹션](guide/upgrade#preparation)에서 다룬 내용을 그대로 따라갑니다.
+그래서 애플리케이션에 Angular와 TypeScript를 도입하는 것부터 시작해 봅시다.
+
+앱을 직접 수정해 보려면 [angular-phonecat](https://github.com/angular/angular-phonecat) 저장소를 복제해서 그대로 따라해보는 것도 좋습니다.
+
+작업을 시작하기 전에는 프로젝트가 이런 구조일 것입니다:
+
 
 <div class='filetree'>
   <div class='file'>
@@ -1874,6 +1972,7 @@ In terms of project structure, this is where the work begins:
   </div>
 </div>
 
+<!--
 This is actually a pretty good starting point. The code uses the AngularJS 1.5
 component API and the organization follows the
 [AngularJS Style Guide](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md),
@@ -1893,6 +1992,16 @@ a successful upgrade.
 * Unit tests are located side-by-side with application code where they are easily
   found, as described in the rules for
   [Organizing Tests](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#organizing-tests).
+-->
+시작점으로는 아주 좋은 구조입니다.
+이 예제 코드는 AngularJS 1.5 컴포넌트 API를 사용하고 있으며 [AngularJS 스타일 가이드](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md)를 준수하며 작성되었기 때문에 [기본적인 준비](guide/upgrade#follow-the-angular-styleguide)는 이미 마쳤다고 봐도 됩니다.
+
+* 컴포넌트, 서비스, 필터는 개별 파일에 구현되어 있습니다. [하나만 구현하는 규칙](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#single-responsibility)을 준수하고 있습니다.
+
+* `core`, `phone-detail`, `phone-list` 모듈은 각각 폴더로 구분되어 있습니다. 그리고 각 폴더에는 해당 모듈에만 필요한 코드가 모여 있습니다. [폴더를 기능별로 구분하는 구조](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#folders-by-feature-structure)와 [모듈화](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#modularity) 규칙도 지키고 있습니다.
+
+* 유닛 테스트 파일은 애플리케이션 코드와 같은 위치에 있기 때문에 찾기 쉽습니다. [테스트를 최적화](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#organizing-tests)하는 규칙도 잘 적용되었습니다.
+
 
 ### Switching to TypeScript
 
