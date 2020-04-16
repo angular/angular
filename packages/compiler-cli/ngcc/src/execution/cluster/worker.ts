@@ -7,10 +7,10 @@
  */
 /// <reference types="node" />
 
-import {readConfiguration} from '@angular/compiler-cli/src/perform_compile';
 import * as cluster from 'cluster';
 
 import {absoluteFrom, CachedFileSystem, getFileSystem, NodeJSFileSystem, setFileSystem} from '../../../../src/ngtsc/file_system';
+import {readConfiguration} from '../../../../src/perform_compile';
 import {parseCommandLineOptions} from '../../command_line_options';
 import {ConsoleLogger} from '../../logging/console_logger';
 import {Logger, LogLevel} from '../../logging/logger';
