@@ -5,26 +5,20 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {PullApproveGroupResult} from './group';
 
 /** Create logs for each pullapprove group result. */
 export function logGroup(group: PullApproveGroupResult, matched = true) {
-  const includeConditions = matched ? group.matchedIncludes : group.unmatchedIncludes;
-  const excludeConditions = matched ? group.matchedExcludes : group.unmatchedExcludes;
+  const conditions = matched ? group.matchedConditions : group.unmatchedConditions;
   console.groupCollapsed(`[${group.groupName}]`);
-  if (includeConditions.length) {
-    console.group('includes');
-    includeConditions.forEach(
-        matcher => console.info(`${matcher.glob} - ${matcher.matchedFiles.size}`));
+  if (conditions.length) {
+    conditions.forEach(matcher => {
+      const count = matcher.matchedFiles.size;
+      console.info(`${count} ${count === 1 ? 'match' : 'matches'} - ${matcher.expression}`)
+    });
     console.groupEnd();
   }
-  if (excludeConditions.length) {
-    console.group('excludes');
-    excludeConditions.forEach(
-        matcher => console.info(`${matcher.glob} - ${matcher.matchedFiles.size}`));
-    console.groupEnd();
-  }
-  console.groupEnd();
 }
 
 /** Logs a header within a text drawn box. */
