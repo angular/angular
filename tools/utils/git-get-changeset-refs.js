@@ -11,17 +11,18 @@ const {execSync} = require('child_process');
 const semverRegex = /^(\d+)\.(\d+)\.x$/;
 
 /**
- * Synchronously executes the command
+ * Synchronously executes the command.
  *
  * Return the trimmed stdout as a string, with an added attribute of the exit code.
  */
-function exec(command) {
+function exec(command, allowStderr = true) {
   let output = new String();
+  output.code = 0;
   try {
-    output += execSync(command, {stdio: ['pipe', 'pipe', 'ignore']}).toString().trim();
-    output.code = 0;
+    output += execSync(command, {stdio: ['pipe', 'pipe', 'pipe']}).toString().trim();
   } catch (err) {
-    output.code = err.status || 1;
+    allowStderr && console.error(err.stderr.toString());
+    output.code = err.status;
   }
   return output;
 }
@@ -45,8 +46,8 @@ function getRefFromBranchList(gitOutput, remote) {
     if (b === 'master') {
       return 1;
     }
-    const aIsSemver = a.test(semverRegex);
-    const bIsSemver = b.test(semverRegex);
+    const aIsSemver = semverRegex.test(a);
+    const bIsSemver = semverRegex.test(b);
     if (aIsSemver && bIsSemver) {
       const [, aMajor, aMinor] = a.match(semverRegex);
       const [, bMajor, bMinor] = b.match(semverRegex);
@@ -86,11 +87,6 @@ function getBranchListForSha(sha, remote) {
   return exec(`git branch -r '${remote}/*' --sort=-committerdate --contains ${sha}`);
 }
 
-/** Whether a remote is defined in git. */
-function remoteExists(remote) {
-  return !exec(`git remote get-url ${remote}`).code;
-}
-
 /** Get the common ancestor sha of the two provided shas. */
 function getCommonAncestorSha(sha1, sha2) {
   return exec(`git merge-base ${sha1} ${sha2}`);
@@ -106,7 +102,7 @@ function removeRemote(remote) {
  * whether the remote was added by the command.
  */
 function addRemote(remote) {
-  return !exec(`git remote add ${remote} https://github.com/${remote}/angular.git`).code;
+  return !exec(`git remote add ${remote} https://github.com/${remote}/angular.git`, false).code;
 }
 
 /** Fetch latest from the remote. */
@@ -163,7 +159,7 @@ function getRefAndShas(sha, remote) {
 
 
 /** Gets the refs and shas for the base and target of the current environment. */
-function getRefs() {
+function getRefsAndShasForChange() {
   let base, target;
   if (process.env['CI']) {
     base = getRefAndShas(process.env['CI_GIT_BASE_REVISION'], process.env['CI_REPO_OWNER']);
@@ -181,4 +177,4 @@ function getRefs() {
   };
 }
 
-module.exports = getRefs;
+module.exports = getRefsAndShasForChange;
