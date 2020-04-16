@@ -78,7 +78,7 @@ export class LockFileWithChildProcess implements LockFile {
     }
   }
 
-  protected createUnlocker(path: AbsoluteFsPath): ChildProcess|null {
+  protected createUnlocker(path: AbsoluteFsPath): ChildProcess {
     this.logger.debug('Forking unlocker child-process');
     const logLevel =
         this.logger.level !== undefined ? this.logger.level.toString() : LogLevel.info.toString();
