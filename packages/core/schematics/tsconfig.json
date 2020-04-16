@@ -2,7 +2,7 @@
   "compilerOptions": {
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "strict": true,
+    "strict": false,
     "lib": ["es2015"],
     "types": [],
     "baseUrl": ".",
