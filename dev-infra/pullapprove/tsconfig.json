@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "outDir": "../../dist/pullapprove",
+    "sourceMap": true,
+    "types": []
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
