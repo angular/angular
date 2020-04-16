@@ -189,7 +189,7 @@ groups:
       - *can-be-global-approved
       - *can-be-global-docs-approved
       - >
-        contains_any_globs(files, [
+        contains_any_globs(files.exclude('packages/compiler-cli/ngcc/**'), [
           'packages/compiler/**',
           'packages/examples/compiler/**',
           'packages/compiler-cli/**',
@@ -197,10 +197,6 @@ groups:
           'aio/content/guide/aot-compiler.md',
           'aio/content/guide/aot-metadata-errors.md',
           'aio/content/guide/template-typecheck.md '
-          ])
-      - >
-        not contains_any_globs(files, [
-          'packages/compiler-cli/ngcc/**'
           ])
     reviewers:
       users:
@@ -217,10 +213,7 @@ groups:
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
-      - >
-        contains_any_globs(files, [
-          'packages/compiler-cli/ngcc/**'
-          ])
+      - files.include('packages/compiler-cli/ngcc/**')
     reviewers:
       users:
         - alxhub
