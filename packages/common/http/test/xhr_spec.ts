@@ -23,6 +23,7 @@ function trackEvents(obs: Observable<HttpEvent<any>>): HttpEvent<any>[] {
 
 const TEST_POST = new HttpRequest('POST', '/test', 'some body', {
   responseType: 'text',
+  timeout: 10,
 });
 
 const XSSI_PREFIX = ')]}\'\n';
@@ -45,6 +46,10 @@ const XSSI_PREFIX = ')]}\'\n';
       expect(factory.mock.method).toBe('POST');
       expect(factory.mock.responseType).toBe('text');
       expect(factory.mock.url).toBe('/test');
+    });
+    it('sets request timeout correctly', () => {
+      backend.handle(TEST_POST).subscribe();
+      expect(factory.mock.timeout).toBe(TEST_POST.timeout);
     });
     it('sets outgoing body correctly', () => {
       backend.handle(TEST_POST).subscribe();
@@ -146,6 +151,15 @@ const XSSI_PREFIX = ')]}\'\n';
         done();
       });
       factory.mock.mockErrorEvent(new Error('blah'));
+    });
+    it('emits request timeouts via the error path', done => {
+      backend.handle(TEST_POST).subscribe(undefined, (err: HttpErrorResponse) => {
+        expect(err instanceof HttpErrorResponse).toBe(true);
+        expect(err.url).toBe('/test');
+        expect(err.statusText).toBe('Request timeout');
+        done();
+      });
+      factory.mock.mockTimeoutEvent();
     });
     describe('progress events', () => {
       it('are emitted for download progress', done => {
