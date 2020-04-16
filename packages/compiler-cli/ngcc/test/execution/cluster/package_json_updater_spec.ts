@@ -12,7 +12,7 @@ import * as cluster from 'cluster';
 
 import {absoluteFrom as _} from '../../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';
-import {ClusterPackageJsonUpdater} from '../../../src/execution/cluster/package_json_updater';
+import {ClusterWorkerPackageJsonUpdater} from '../../../src/execution/cluster/package_json_updater';
 import {JsonObject} from '../../../src/packages/entry_point';
 import {PackageJsonPropertyPositioning, PackageJsonUpdate, PackageJsonUpdater} from '../../../src/writing/package_json_updater';
 import {mockProperty} from '../../helpers/spy_utils';
@@ -23,204 +23,177 @@ runInEachFileSystem(() => {
     const runAsClusterMaster = mockProperty(cluster, 'isMaster');
     const mockProcessSend = mockProperty(process, 'send');
     let processSendSpy: jasmine.Spy;
-    let delegate: PackageJsonUpdater;
-    let updater: ClusterPackageJsonUpdater;
 
     beforeEach(() => {
       processSendSpy = jasmine.createSpy('process.send');
       mockProcessSend(processSendSpy);
+    });
 
-      delegate = new MockPackageJsonUpdater();
-      updater = new ClusterPackageJsonUpdater(delegate);
+    describe('constructor()', () => {
+      it('should throw an error if used on a cluster master', () => {
+        runAsClusterMaster(true);
+        expect(() => new ClusterWorkerPackageJsonUpdater())
+            .toThrowError(
+                'Tried to create cluster worker PackageJsonUpdater on the master process.');
+      });
     });
 
     describe('createUpdate()', () => {
-      [true, false].forEach(
-          isMaster => describe(`(on cluster ${isMaster ? 'master' : 'worker'})`, () => {
-            beforeEach(() => runAsClusterMaster(isMaster));
+      let updater: ClusterWorkerPackageJsonUpdater;
+      beforeEach(() => {
+        runAsClusterMaster(false);
+        updater = new ClusterWorkerPackageJsonUpdater();
+      });
 
-            it('should return a `PackageJsonUpdate` instance', () => {
-              expect(updater.createUpdate()).toEqual(jasmine.any(PackageJsonUpdate));
-            });
+      it('should return a `PackageJsonUpdate` instance', () => {
+        expect(updater.createUpdate()).toEqual(jasmine.any(PackageJsonUpdate));
+      });
 
-            it('should wire up the `PackageJsonUpdate` with its `writeChanges()` method', () => {
-              const writeChangesSpy = spyOn(updater, 'writeChanges');
-              const jsonPath = _('/foo/package.json');
-              const update = updater.createUpdate();
+      it('should wire up the `PackageJsonUpdate` with its `writeChanges()` method', () => {
+        const writeChangesSpy = spyOn(updater, 'writeChanges');
+        const jsonPath = _('/foo/package.json');
+        const update = updater.createUpdate();
 
-              update.addChange(['foo'], 'updated');
-              update.addChange(['baz'], 'updated 2', 'alphabetic');
-              update.addChange(['bar'], 'updated 3', {before: 'bar'});
-              update.writeChanges(jsonPath);
+        update.addChange(['foo'], 'updated');
+        update.addChange(['baz'], 'updated 2', 'alphabetic');
+        update.addChange(['bar'], 'updated 3', {before: 'bar'});
+        update.writeChanges(jsonPath);
 
-              expect(writeChangesSpy)
-                  .toHaveBeenCalledWith(
-                      [
-                        [['foo'], 'updated', 'unimportant'],
-                        [['baz'], 'updated 2', 'alphabetic'],
-                        [['bar'], 'updated 3', {before: 'bar'}],
-                      ],
-                      jsonPath, undefined);
-            });
-          }));
+        expect(writeChangesSpy)
+            .toHaveBeenCalledWith(
+                [
+                  [['foo'], 'updated', 'unimportant'],
+                  [['baz'], 'updated 2', 'alphabetic'],
+                  [['bar'], 'updated 3', {before: 'bar'}],
+                ],
+                jsonPath, undefined);
+      });
     });
 
     describe('writeChanges()', () => {
-      describe('(on cluster master)', () => {
-        beforeEach(() => runAsClusterMaster(true));
-        afterEach(() => expect(processSendSpy).not.toHaveBeenCalled());
+      let updater: ClusterWorkerPackageJsonUpdater;
+      beforeEach(() => {
+        runAsClusterMaster(false);
+        updater = new ClusterWorkerPackageJsonUpdater();
+      });
 
-        it('should forward the call to the delegate `PackageJsonUpdater`', () => {
-          const jsonPath = _('/foo/package.json');
-          const parsedJson = {foo: 'bar'};
+      it('should send an `update-package-json` message to the master process', () => {
+        const jsonPath = _('/foo/package.json');
 
-          updater.createUpdate()
-              .addChange(['foo'], 'updated')
-              .addChange(['bar'], 'updated too', 'alphabetic')
-              .writeChanges(jsonPath, parsedJson);
+        const writeToProp =
+            (propPath: string[], positioning?: PackageJsonPropertyPositioning,
+             parsed?: JsonObject) => updater.createUpdate()
+                                         .addChange(propPath, 'updated', positioning)
+                                         .writeChanges(jsonPath, parsed);
 
-          expect(delegate.writeChanges)
-              .toHaveBeenCalledWith(
-                  [
-                    [['foo'], 'updated', 'unimportant'],
-                    [['bar'], 'updated too', 'alphabetic'],
-                  ],
-                  jsonPath, parsedJson);
+        writeToProp(['foo']);
+        expect(processSendSpy).toHaveBeenCalledWith({
+          type: 'update-package-json',
+          packageJsonPath: jsonPath,
+          changes: [[['foo'], 'updated', 'unimportant']],
         });
 
-        it('should throw, if trying to re-apply an already applied update', () => {
-          const update = updater.createUpdate().addChange(['foo'], 'updated');
+        writeToProp(['bar'], {before: 'foo'});
+        expect(processSendSpy).toHaveBeenCalledWith({
+          type: 'update-package-json',
+          packageJsonPath: jsonPath,
+          changes: [[['bar'], 'updated', {before: 'foo'}]],
+        });
 
-          expect(() => update.writeChanges(_('/foo/package.json'))).not.toThrow();
-          expect(() => update.writeChanges(_('/foo/package.json')))
-              .toThrowError('Trying to apply a `PackageJsonUpdate` that has already been applied.');
-          expect(() => update.writeChanges(_('/bar/package.json')))
-              .toThrowError('Trying to apply a `PackageJsonUpdate` that has already been applied.');
+        writeToProp(['bar', 'baz', 'qux'], 'alphabetic', {});
+        expect(processSendSpy).toHaveBeenCalledWith({
+          type: 'update-package-json',
+          packageJsonPath: jsonPath,
+          changes: [[['bar', 'baz', 'qux'], 'updated', 'alphabetic']],
         });
       });
 
-      describe('(on cluster worker)', () => {
-        beforeEach(() => runAsClusterMaster(false));
-        afterEach(() => expect(delegate.writeChanges).not.toHaveBeenCalled());
+      it('should update an in-memory representation (if provided)', () => {
+        const jsonPath = _('/foo/package.json');
+        const parsedJson: JsonObject = {
+          foo: true,
+          bar: {baz: 'OK'},
+        };
 
-        it('should send an `update-package-json` message to the master process', () => {
-          const jsonPath = _('/foo/package.json');
+        const update =
+            updater.createUpdate().addChange(['foo'], false).addChange(['bar', 'baz'], 42);
 
-          const writeToProp =
-              (propPath: string[], positioning?: PackageJsonPropertyPositioning,
-               parsed?: JsonObject) => updater.createUpdate()
-                                           .addChange(propPath, 'updated', positioning)
-                                           .writeChanges(jsonPath, parsed);
-
-          writeToProp(['foo']);
-          expect(processSendSpy).toHaveBeenCalledWith({
-            type: 'update-package-json',
-            packageJsonPath: jsonPath,
-            changes: [[['foo'], 'updated', 'unimportant']],
-          });
-
-          writeToProp(['bar'], {before: 'foo'});
-          expect(processSendSpy).toHaveBeenCalledWith({
-            type: 'update-package-json',
-            packageJsonPath: jsonPath,
-            changes: [[['bar'], 'updated', {before: 'foo'}]],
-          });
-
-          writeToProp(['bar', 'baz', 'qux'], 'alphabetic', {});
-          expect(processSendSpy).toHaveBeenCalledWith({
-            type: 'update-package-json',
-            packageJsonPath: jsonPath,
-            changes: [[['bar', 'baz', 'qux'], 'updated', 'alphabetic']],
-          });
+        // Not updated yet.
+        expect(parsedJson).toEqual({
+          foo: true,
+          bar: {baz: 'OK'},
         });
 
-        it('should update an in-memory representation (if provided)', () => {
-          const jsonPath = _('/foo/package.json');
-          const parsedJson: JsonObject = {
-            foo: true,
-            bar: {baz: 'OK'},
-          };
+        update.writeChanges(jsonPath, parsedJson);
 
-          const update =
-              updater.createUpdate().addChange(['foo'], false).addChange(['bar', 'baz'], 42);
-
-          // Not updated yet.
-          expect(parsedJson).toEqual({
-            foo: true,
-            bar: {baz: 'OK'},
-          });
-
-          update.writeChanges(jsonPath, parsedJson);
-
-          // Updated now.
-          expect(parsedJson).toEqual({
-            foo: false,
-            bar: {baz: 42},
-          });
+        // Updated now.
+        expect(parsedJson).toEqual({
+          foo: false,
+          bar: {baz: 42},
         });
+      });
 
-        it('should create any missing ancestor objects', () => {
-          const jsonPath = _('/foo/package.json');
-          const parsedJson: JsonObject = {foo: {}};
+      it('should create any missing ancestor objects', () => {
+        const jsonPath = _('/foo/package.json');
+        const parsedJson: JsonObject = {foo: {}};
 
-          updater.createUpdate()
-              .addChange(['foo', 'bar', 'baz', 'qux'], 'updated')
-              .writeChanges(jsonPath, parsedJson);
+        updater.createUpdate()
+            .addChange(['foo', 'bar', 'baz', 'qux'], 'updated')
+            .writeChanges(jsonPath, parsedJson);
 
-          expect(parsedJson).toEqual({
-            foo: {
-              bar: {
-                baz: {
-                  qux: 'updated',
-                },
+        expect(parsedJson).toEqual({
+          foo: {
+            bar: {
+              baz: {
+                qux: 'updated',
               },
             },
-          });
-        });
-
-        it('should throw, if a property-path is empty', () => {
-          const jsonPath = _('/foo/package.json');
-
-          expect(() => updater.createUpdate().addChange([], 'missing').writeChanges(jsonPath, {}))
-              .toThrowError(`Missing property path for writing value to '${jsonPath}'.`);
-        });
-
-        it('should throw, if a property-path points to a non-object intermediate value', () => {
-          const jsonPath = _('/foo/package.json');
-          const parsedJson = {foo: null, bar: 42, baz: {qux: []}};
-
-          const writeToProp = (propPath: string[], parsed?: JsonObject) =>
-              updater.createUpdate().addChange(propPath, 'updated').writeChanges(jsonPath, parsed);
-
-          expect(() => writeToProp(['foo', 'child'], parsedJson))
-              .toThrowError('Property path \'foo.child\' does not point to an object.');
-          expect(() => writeToProp(['bar', 'child'], parsedJson))
-              .toThrowError('Property path \'bar.child\' does not point to an object.');
-          expect(() => writeToProp(['baz', 'qux', 'child'], parsedJson))
-              .toThrowError('Property path \'baz.qux.child\' does not point to an object.');
-
-          // It should not throw, if no parsed representation is provided.
-          // (The error will still be thrown on the master process, but that is out of scope for
-          // this test.)
-          expect(() => writeToProp(['foo', 'child'])).not.toThrow();
-        });
-
-        it('should throw, if trying to re-apply an already applied update', () => {
-          const update = updater.createUpdate().addChange(['foo'], 'updated');
-
-          expect(() => update.writeChanges(_('/foo/package.json'))).not.toThrow();
-          expect(() => update.writeChanges(_('/foo/package.json')))
-              .toThrowError('Trying to apply a `PackageJsonUpdate` that has already been applied.');
-          expect(() => update.writeChanges(_('/bar/package.json')))
-              .toThrowError('Trying to apply a `PackageJsonUpdate` that has already been applied.');
+          },
         });
       });
-    });
 
-    // Helpers
-    class MockPackageJsonUpdater implements PackageJsonUpdater {
-      createUpdate = jasmine.createSpy('MockPackageJsonUpdater#createUpdate');
-      writeChanges = jasmine.createSpy('MockPackageJsonUpdater#writeChanges');
-    }
+      it('should throw, if a property-path is empty', () => {
+        const jsonPath = _('/foo/package.json');
+
+        expect(() => updater.createUpdate().addChange([], 'missing').writeChanges(jsonPath, {}))
+            .toThrowError(`Missing property path for writing value to '${jsonPath}'.`);
+      });
+
+      it('should throw, if a property-path points to a non-object intermediate value', () => {
+        const jsonPath = _('/foo/package.json');
+        const parsedJson = {foo: null, bar: 42, baz: {qux: []}};
+
+        const writeToProp = (propPath: string[], parsed?: JsonObject) =>
+            updater.createUpdate().addChange(propPath, 'updated').writeChanges(jsonPath, parsed);
+
+        expect(() => writeToProp(['foo', 'child'], parsedJson))
+            .toThrowError('Property path \'foo.child\' does not point to an object.');
+        expect(() => writeToProp(['bar', 'child'], parsedJson))
+            .toThrowError('Property path \'bar.child\' does not point to an object.');
+        expect(() => writeToProp(['baz', 'qux', 'child'], parsedJson))
+            .toThrowError('Property path \'baz.qux.child\' does not point to an object.');
+
+        // It should not throw, if no parsed representation is provided.
+        // (The error will still be thrown on the master process, but that is out of scope for
+        // this test.)
+        expect(() => writeToProp(['foo', 'child'])).not.toThrow();
+      });
+
+      it('should throw, if trying to re-apply an already applied update', () => {
+        const update = updater.createUpdate().addChange(['foo'], 'updated');
+
+        expect(() => update.writeChanges(_('/foo/package.json'))).not.toThrow();
+        expect(() => update.writeChanges(_('/foo/package.json')))
+            .toThrowError('Trying to apply a `PackageJsonUpdate` that has already been applied.');
+        expect(() => update.writeChanges(_('/bar/package.json')))
+            .toThrowError('Trying to apply a `PackageJsonUpdate` that has already been applied.');
+      });
+    });
   });
+
+  // Helpers
+  class MockPackageJsonUpdater implements PackageJsonUpdater {
+    createUpdate = jasmine.createSpy('MockPackageJsonUpdater#createUpdate');
+    writeChanges = jasmine.createSpy('MockPackageJsonUpdater#writeChanges');
+  }
 });
