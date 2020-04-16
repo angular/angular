@@ -141,7 +141,11 @@ export class AstType implements AstVisitor {
       case '!=':
       case '===':
       case '!==':
-        if (leftKind ^ rightKind) {
+        if (!(leftKind & rightKind) &&
+            !((leftKind | rightKind) & (BuiltinType.Null | BuiltinType.Undefined))) {
+          // Two values are comparable only if
+          //   - they have some type overlap, or
+          //   - at least one is not defined
           this.diagnostics.push(
               createDiagnostic(ast.span, Diagnostic.expected_operands_of_comparable_types_or_any));
         }

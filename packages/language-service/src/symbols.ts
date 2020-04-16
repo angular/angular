@@ -232,9 +232,7 @@ export enum BuiltinType {
    */
   Other = 1 << 6,
 
-  Never = 1 << 7,
-  Object = 1 << 8,
-  Object = 1 << 8,
+  Object = 1 << 7,
 }
 
 /**

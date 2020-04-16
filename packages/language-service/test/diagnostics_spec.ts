@@ -120,24 +120,36 @@ describe('diagnostics', () => {
   });
 
   describe('diagnostics for expression comparisons', () => {
-    it('should report errors for mistmatched types in a comparison operation', () => {
-      mockHost.override(TEST_TEMPLATE, `{{ strOrNumber != null }}`);
-      const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
-      expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Expected operands to be of comparable types or any`);
-    });
+    for (let [left, right, leftTy, rightTy] of [
+             ['\'abc\'', 1, 'string', 'number'],
+             ['hero', 2, 'object', 'number'],
+             ['strOrNumber', 'hero', 'string|number', 'object'],
+    ]) {
+      it(`it should report errors for mismtched types in a comparison: ${leftTy} and ${rightTy}`,
+         () => {
+           mockHost.override(TEST_TEMPLATE, `{{ ${left} != ${right} }}`);
+           const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText).toBe(`Expected operands to be of comparable types or any`);
+         });
+    }
 
-    it('should not report errors for union types in a comparison operation', () => {
-      mockHost.override(TEST_TEMPLATE, `{{ strOrNumber != 1 }}`);
-      const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
-      expect(diags.length).toBe(0);
-    });
-
-    it('should not report errors for any types in a comparison operation', () => {
-      mockHost.override(TEST_TEMPLATE, `{{ strOrNumber != anyValue }}`);
-      const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
-      expect(diags.length).toBe(0);
-    });
+    for (let [left, right, leftTy, rightTy] of [
+             ['\'abc\'', 'anyValue', 'string', 'any'],
+             ['\'abc\'', null, 'string', 'null'],
+             ['\'abc\'', undefined, 'string', 'undefined'],
+             [null, null, 'null', 'null'],
+             ['{a: 1}', '{b: 2}', 'object', 'object'],
+             ['strOrNumber', '1', 'string|number', 'number'],
+    ]) {
+      it(`it should not report errors for compatible types in a comparison: ${leftTy} and ${
+             rightTy}`,
+         () => {
+           mockHost.override(TEST_TEMPLATE, `{{ ${left} != ${right} }}`);
+           const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+           expect(diags.length).toBe(0);
+         });
+    }
   });
 
   describe('diagnostics for ngFor exported values', () => {

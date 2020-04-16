@@ -897,6 +897,8 @@ function typeKindOf(type: ts.Type|undefined): BuiltinType {
       return BuiltinType.String;
     } else if (type.flags & (ts.TypeFlags.Number | ts.TypeFlags.NumberLike)) {
       return BuiltinType.Number;
+    } else if (type.flags & ts.TypeFlags.Object) {
+      return BuiltinType.Object;
     } else if (type.flags & (ts.TypeFlags.Undefined)) {
       return BuiltinType.Undefined;
     } else if (type.flags & (ts.TypeFlags.Null)) {
