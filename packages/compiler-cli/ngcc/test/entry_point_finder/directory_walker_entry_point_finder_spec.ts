@@ -13,10 +13,10 @@ import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
 import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {DirectoryWalkerEntryPointFinder} from '../../src/entry_point_finder/directory_walker_entry_point_finder';
+import {PathMappings} from '../../src/ngcc_options';
 import {NgccConfiguration} from '../../src/packages/configuration';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {EntryPointManifest, EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
-import {PathMappings} from '../../src/utils';
 import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {

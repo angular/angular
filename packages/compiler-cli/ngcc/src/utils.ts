@@ -5,10 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ParsedConfiguration} from '@angular/compiler-cli/src/perform_compile';
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, isRooted, resolve} from '../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, isRooted} from '../../src/ngtsc/file_system';
 import {KnownDeclaration} from '../../src/ngtsc/reflection';
 
 /**
@@ -77,11 +76,6 @@ export function hasNameIdentifier(declaration: ts.Declaration): declaration is t
   const namedDeclaration: ts.Declaration&{name?: ts.Node} = declaration;
   return namedDeclaration.name !== undefined && ts.isIdentifier(namedDeclaration.name);
 }
-
-export type PathMappings = {
-  baseUrl: string,
-  paths: {[key: string]: string[]}
-};
 
 /**
  * Test whether a path is "relative".
@@ -185,18 +179,4 @@ export function stripDollarSuffix(value: string): string {
 
 export function stripExtension(fileName: string): string {
   return fileName.replace(/\..+$/, '');
-}
-
-/**
- * If `pathMappings` is not provided directly, then try getting it from `tsConfig`, if available.
- */
-export function getPathMappingsFromTsConfig(
-    tsConfig: ParsedConfiguration|null, projectPath: AbsoluteFsPath): PathMappings|undefined {
-  if (tsConfig !== null && tsConfig.options.baseUrl !== undefined &&
-      tsConfig.options.paths !== undefined) {
-    return {
-      baseUrl: resolve(projectPath, tsConfig.options.baseUrl),
-      paths: tsConfig.options.paths,
-    };
-  }
 }
