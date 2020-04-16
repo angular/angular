@@ -32,7 +32,9 @@ runInEachFileSystem(() => {
     describe('constructor()', () => {
       it('should throw an error if used on a cluster master', () => {
         runAsClusterMaster(true);
-        expect(() => new ClusterWorkerPackageJsonUpdater()).toThrowError('');
+        expect(() => new ClusterWorkerPackageJsonUpdater())
+            .toThrowError(
+                'Tried to create cluster worker PackageJsonUpdater on the master process.');
       });
     });
 

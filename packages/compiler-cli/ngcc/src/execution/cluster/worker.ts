@@ -15,7 +15,6 @@ import {parseCommandLineOptions} from '../../command_line_options';
 import {ConsoleLogger} from '../../logging/console_logger';
 import {Logger, LogLevel} from '../../logging/logger';
 import {getPathMappingsFromTsConfig} from '../../utils';
-import {DirectPackageJsonUpdater} from '../../writing/package_json_updater';
 import {CreateCompileFn} from '../api';
 import {getCreateCompileFn} from '../create_compile_function';
 import {stringifyTask} from '../tasks/utils';
@@ -55,6 +54,9 @@ if (require.main === module) {
         pathMappings = getPathMappingsFromTsConfig(tsConfig, projectPath);
       }
 
+      // NOTE: To avoid file corruption, `ngcc` invocation only creates _one_ instance of
+      // `PackageJsonUpdater` that actually writes to disk (across all processes).
+      // In cluster workers we use a `PackageJsonUpdater` that delegates to the cluster master.
       const pkgJsonUpdater = new ClusterWorkerPackageJsonUpdater();
 
       // The function for creating the `compile()` function.
