@@ -21,7 +21,7 @@ import {getCreateCompileFn} from '../create_compile_function';
 import {stringifyTask} from '../tasks/utils';
 
 import {MessageToWorker} from './api';
-import {ClusterPackageJsonUpdater} from './package_json_updater';
+import {ClusterWorkerPackageJsonUpdater} from './package_json_updater';
 import {sendMessageToMaster} from './utils';
 
 // Cluster worker entry point
@@ -55,8 +55,7 @@ if (require.main === module) {
         pathMappings = getPathMappingsFromTsConfig(tsConfig, projectPath);
       }
 
-      const pkgJsonUpdater =
-          new ClusterPackageJsonUpdater(new DirectPackageJsonUpdater(fileSystem));
+      const pkgJsonUpdater = new ClusterWorkerPackageJsonUpdater();
 
       // The function for creating the `compile()` function.
       const createCompileFn = getCreateCompileFn(
