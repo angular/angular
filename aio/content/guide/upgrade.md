@@ -1222,7 +1222,7 @@ and then provide the input and output using Angular template syntax:
 <!--
 ### Projecting AngularJS Content into Angular Components
 -->
-### AngularJS의 내용을 Angular 컴포넌트로 프로젝션하기
+### Angular 컴포넌트에 AngularJS 내용 프로젝션하기
 
 <!--
 <img src="generated/images/guide/upgrade/ajs-to-a-with-projection.png" alt="Projecting AngularJS content into Angular" class="left">
@@ -1276,8 +1276,13 @@ Angular 컴포넌트에 프로젝션 된 AngularJS의 내용물은 여전히 "An
 </div>
 
 
+{@a transcluding-angular-content-into-angularjs-component-directives}
+<!--
 ### Transcluding Angular Content into AngularJS Component Directives
+-->
+### AngularJS 컴포넌트 디렉티브에 Angular 내용 트랜스클루전하기
 
+<!--
 <img src="generated/images/guide/upgrade/a-to-ajs-with-transclusion.png" alt="Projecting Angular content into AngularJS" class="left">
 
 Just as you can project AngularJS content into Angular components,
@@ -1296,9 +1301,30 @@ the component tag with contents that will then get transcluded:
 
 <code-example path="upgrade-module/src/app/a-to-ajs-transclusion/container.component.ts" header="container.component.ts">
 </code-example>
+-->
+<img src="generated/images/guide/upgrade/a-to-ajs-with-transclusion.png" alt="Projecting Angular content into AngularJS" class="left">
 
+AngularJS의 내용을 Angular 컴포넌트에 프로젝션하듯이 Angular 내용도 AngularJS 컴포넌트 디렉티브로 *트랜스클루전(transclude)* 할 수 있습니다.
+이 때 AngularJS 컴포넌트 디렉티브는 업그레이드된 것이어야 합니다.
+
+AngularJS 컴포넌트 디렉티브에 트랜스클루전하려면 컨텐츠가 표시될 위치를 지정하기 위해 다음과 같이 `ng-transclude` 디렉티브를 사용해야 합니다:
+
+<code-example path="upgrade-module/src/app/a-to-ajs-transclusion/hero-detail.component.ts" header="hero-detail.component.ts">
+</code-example>
+
+그러면 이 컴포넌트를 업그레이드한 후에 Angular 영역에서 다음과 같이 사용할 수 있습니다:
+
+<code-example path="upgrade-module/src/app/a-to-ajs-transclusion/container.component.ts" header="container.component.ts">
+</code-example>
+
+
+{@a making-angularjs-dependencies-injectable-to-angular}
+<!--
 ### Making AngularJS Dependencies Injectable to Angular
+-->
+### AngularJS 의존성 객체를 Angular에 등록하기
 
+<!--
 When running a hybrid app, you may encounter situations where you need to inject
 some AngularJS dependencies into your Angular code.
 Maybe you have some business logic still in AngularJS services.
@@ -1351,9 +1377,59 @@ checking. This is not required though, and any AngularJS service, factory, or
 provider can be upgraded.
 
 </div>
+-->
+하이브리드 앱을 실행하다보면 AngularJS의 의존성 객체를 Angular에 의존성으로 주입해야 하는 경우가 있습니다.
+AngularJS에 비즈니스 로직을 작성했거나 AngularJS의 내장 서비스인 `$location`이나 `$timeout`을 사용하는 경우가 그렇습니다.
 
+이런 경우에는 AngularJS 프로바이더를 Angular용으로 *업그레이드* 하면 Angular 코드에 의존성으로 주입할 수 있습니다.
+AngularJS로 작성한 `HeroesService`가 있다고 합시다:
+
+<code-example path="upgrade-module/src/app/ajs-to-a-providers/heroes.service.ts" header="heroes.service.ts">
+</code-example>
+
+이 서비스를 업그레이드 하려면 AngularJS `$injector`로 서비스 인스턴스를 가져와서 Angular [팩토리 프로바이더](guide/dependency-injection-providers#factory-providers)로 등록하면 됩니다.
+
+일반적으로 AngularJS 서비스 프로바이더는 `ajs-upgraded-providers.ts` 파일에 모두 모아서 선언하는 것이 좋습니다.
+이렇게 구현하면 서비스를 참조하기 더 편하며 업그레이드가 진행될 때마다 하나씩 제거하기도 수월합니다.
+
+그리고 이렇게 작성한 팩토리 프로바이더는 AOT 컴파일러가 접근할 수 있도록 `heroesServiceFactory` 함수도 파일 외부로 공개하는 것을 권장합니다.
+
+<div class="alert is-helpful">
+
+**참고:** 팩토리 함수 안에서 사용한 `heroes` 문자열은 AngularJS `HeroesService`를 가리키기 위한 것입니다.
+일반적으로 AngularJS 앱에서는 서비스 토큰을 문자열로 사용하며, 클래스 이름에 "Service" 접미사를 붙입니다.
+
+</div>
+
+<code-example path="upgrade-module/src/app/ajs-to-a-providers/ajs-upgraded-providers.ts" header="ajs-upgraded-providers.ts">
+</code-example>
+
+이렇게 업그레이드한 서비스는 Angular `@NgModule`에 다음과 같이 등록합니다:
+
+<code-example path="upgrade-module/src/app/ajs-to-a-providers/app.module.ts" region="register" header="app.module.ts">
+</code-example>
+
+이제 컴포넌트 생성자에 원하는 서비스의 타입을 지정하면 해당 서비스의 인스턴스를 주입받을 수 있습니다:
+
+<code-example path="upgrade-module/src/app/ajs-to-a-providers/hero-detail.component.ts" header="hero-detail.component.ts">
+</code-example>
+
+<div class="alert is-helpful">
+
+이 섹션에서는 AngularJS 서비스 클래스를 업그레이드하는 방법에 대해 알아봤습니다.
+이 때 TypeScript 타입 어노테이션을 사용할 수도 있는데 이 방식은 의존성 객체를 직접 조작하지 않지만 정적 타입을 체크할 수 있기 때문에 도움이 될 수 있습니다.
+타입 어노테이션은 옵션 사항이며 AngularJS 서비스, 팩토리는 어떤 것이든 업그레이드할 수 있습니다.
+
+</div>
+
+
+{@a making-angular-dependencies-injectable-to-angularjs}
+<!--
 ### Making Angular Dependencies Injectable to AngularJS
+-->
+### Angular 의존성 객체를 AngularJS에 등록하기
 
+<!--
 In addition to upgrading AngularJS dependencies, you can also *downgrade*
 Angular dependencies, so that you can use them from AngularJS. This can be
 useful when you start migrating services to Angular or creating new services
@@ -1380,9 +1456,38 @@ After this, the service is injectable anywhere in AngularJS code:
 
 <code-example path="upgrade-module/src/app/a-to-ajs-providers/hero-detail.component.ts" header="hero-detail.component.ts">
 </code-example>
+-->
+AngularJS 의존성 객체를 업그레이드하는 것과 비슷하게 Angular 의존성 객체도 *다운그레이드해서* AngularJS에 주입할 수 있습니다.
+이 과정은 AngularJS 서비스를 Angular로 전환할 때나 Angular 쪽에 새로 만든 서비스를 AngularJS 컴포넌트에 적용할 때 활용할 수 있습니다.
 
+다음과 같은 `Heroes` Angular 서비스가 있다고 합시다:
+
+<code-example path="upgrade-module/src/app/a-to-ajs-providers/heroes.ts" header="heroes.ts">
+</code-example>
+
+이 서비스는 Angular 컴포넌트에 주입하기 위해 `NgModule`의 `providers` 배열에 등록할 수 있습니다.
+
+<code-example path="upgrade-module/src/app/a-to-ajs-providers/app.module.ts" region="ngmodule" header="app.module.ts">
+</code-example>
+
+Angular `Heroes` 서비스는 `downgradeInjectable()` 함수를 사용해서 *AngularJS 팩토리 함수*로 전환해서 AngularJS 모듈에 등록할 수 있습니다.
+이 때 AngularJS에서 어떤 이름을 사용할지는 개발자가 결정하면 됩니다:
+
+<code-example path="upgrade-module/src/app/a-to-ajs-providers/app.module.ts" region="register" header="app.module.ts">
+</code-example>
+
+이렇게 작성하고 나면 이 서비스는 AngularJS 코드에 다음과 같이 의존성으로 주입할 수 있습니다:
+
+<code-example path="upgrade-module/src/app/a-to-ajs-providers/hero-detail.component.ts" header="hero-detail.component.ts">
+</code-example>
+
+
+<!--
 ## Lazy Loading AngularJS
+-->
+## AngularJS의 지연 로딩
 
+<!--
 When building applications, you want to ensure that only the required resources are loaded when necessary. Whether that be loading of assets or code, making sure everything that can be deferred until needed keeps your application running efficiently. This is especially true when running different frameworks in the same application.
 
 [Lazy loading](guide/glossary#lazy-loading) is a technique that defers the loading of required assets and code resources until they are actually used. This reduces startup time and increases efficiency, especially when running different frameworks in the same application.
@@ -1401,9 +1506,40 @@ The steps below show you how to do the following:
 * Create a service that lazy loads and bootstraps your AngularJS app.
 * Create a routable component for AngularJS content
 * Create a custom `matcher` function for AngularJS-specific URLs and configure the Angular `Router` with the custom matcher for AngularJS routes.
+-->
+애플리케이션을 개발하다보면 애플리케이션 리소스를 필요한 경우에만 불러오고 싶은 경우가 있습니다.
+이 리소스가 정적 파일일 수도 있고 코드일 수도 있지만, 이와 관계없이 애플리케이션 리소스는 꼭 필요한 경우가 되기 전까지는 내려받지 않는 것이 애플리케이션에도 효율적입니다.
+한 애플리케이션 안에 실행되는 프레임워크가 여러개라면 더욱 그렇습니다.
 
+[지연 로딩(lazy loading)](guide/glossary#lazy-loading)은 애플리케이션 리소스가 실제로 필요할 때까지 로딩 시점을 지연시키는 테크닉입니다.
+이 테크닉을 활용하면 애플리케이션의 초기 실행시간을 줄일 수 있으며 애플리케이션을 효율적으로 관리할 수 있습니다.
+
+대규모 AngularJS 애플리케이션을 하이브리드로 실행하면서 Angular 버전으로 업그레이드할 때는, 가장 많이 사용되는 공통기능을 먼저 작업하고 일부에만 사용되는 로직은 가장 나중에 작업하는 것이 일반적입니다.
+이 작업을 진행되는 동안에도 애플리케이션 사용자는 앱이 이전과 동일하게 동작한다고 느낄 것입니다.
+
+Angular와 AngularJS가 함께 실행되는 환경은 애플리케이션을 렌더링하기 위해 두 프레임워크가 모두 번들 결과물에 포함되어 클라이언트로 전달되어야 합니다.
+따라서 번들 결과물의 크기도 커지고 애플리케이션 실행 성능도 저하될 수 있습니다.
+
+하이브리드 앱에서는 Angular로 렌더링한 페이지에 사용자가 머물러 있더라도 AngularJS 프레임워크와 애플리케이션이 여전히 로드되고 실행되기 때문에 앱 전체 성능에 영향을 줍니다.
+
+번들 결과물의 크기나 성능 저하를 줄일 수 있는 방법이 있습니다.
+AngularJS 애플리케이션을 따로 빌드하고 필요할 때 [지연 로딩](guide/glossary#lazy-loading)하면 되는데, 이 방식을 활요하면 초기 실행에 필요한 빌드 결과물의 크기가 작아지며 두 프레임워크가 함께 실행되기 때문에 발생할 수 있는 충돌 가능성도 줄일 수 있습니다.
+애플리케이션을 좀 더 효율적으로 관리할 수 있다고도 볼 수 있습니다.
+
+이렇게 구현하려면 다음 과정대로 진행하면 됩니다:
+
+* AngularJS 번들용 콜백 함수를 추가합니다.
+* 지연로딩용 서비스를 정의합니다.
+* 라우팅 컴포넌트를 정의합니다.
+* AngularJS용 URL에 사용할 커스텀 `matcher` 함수를 정의하고 이 매처를 Angular `Router`에서 AngularJS 라우팅 규칙과 연결합니다.
+
+
+<!--
 ### Create a service to lazy load AngularJS
+-->
+### AngularJS 애플리케이션을 지연 로딩하는 서비스 정의하기
 
+<!--
 As of Angular version 8, lazy loading code can be accomplished simply by using the dynamic import syntax `import('...')`. In your application, you create a new service that uses dynamic imports to lazy load AngularJS.
 
 <code-example path="upgrade-lazy-load-ajs/src/app/lazy-loader.service.ts" header="src/app/lazy-loader.service.ts">
@@ -1423,18 +1559,64 @@ Your AngularJS application is configured with only the routes it needs to render
 **Note:** After AngularJS is loaded and bootstrapped, listeners such as those wired up in your route configuration will continue to listen for route changes. To ensure listeners are shut down when AngularJS isn't being displayed, configure an `otherwise` option with the [$routeProvider](https://docs.angularjs.org/api/ngRoute/provider/$routeProvider) that renders an empty template. This assumes all other routes will be handled by Angular.
 
 </div>
+-->
+Angular 8 버전부터는 지연 로딩을 지원하는 코드가 동적 로딩을 사용하도록 `import('...')`와 같은 형태로 단순해졌습니다.
+AngularJS 애플리케이션을 지연 로딩하는 Angular 서비스는 다음과 같이 정의합니다.
 
+<code-example path="upgrade-lazy-load-ajs/src/app/lazy-loader.service.ts" header="src/app/lazy-loader.service.ts">
+</code-example>
+
+이 서비스는 `import()` 메소드를 활용해서 AngularJS 애플리케이션을 지연로딩합니다.
+따라서 AngularJS 앱은 이제 초기 실행에 필요한 빌드 결과물에 포함되지 않으며, 그만큼 첫 실행할 때 받아야 할 빌드 결과물의 크기도 작아집니다.
+AngularJS 앱을 지연 로딩한 후에는 이 앱을 수동으로 _부트스트랩_ 해야 하는데, 이 과정은 [angular.bootstrap()](https://docs.angularjs.org/api/ng/function/angular.bootstrap) 메소드로 처리할 수 있습니다.
+
+그리고 이 서비스에는 AngularJS 앱이 종료될 때 필요한 로직을 실행하기 위해 `$rootScope.destroy()` 메소드를 실행하는 `destroy()` 함수를 정의했습니다.
+
+<code-example path="upgrade-lazy-load-ajs/src/app/angularjs-app/index.ts" header="angularjs-app">
+</code-example>
+
+아직 AngularJS 앱에 정의된 라우팅 규칙들은 화면을 표시하기 위한 용도로만 구성되었습니다.
+그리고 애플리케이션의 전체 라우팅은 Angular 라우터가 처리합니다.
+Angular 앱이 AngularJS 애플리케이션을 로딩한 후에 실행할 수 있도록 `bootstrap` 메소드를 다음과 같이 정의했습니다.
+
+<div class="alert is-important">
+
+**참고:** AngularJS 앱을 로드하고 부트스트랩한 후에는 AngularJS 라우팅 설정에서도 라우팅 규칙이 변경되는 것을 감지합니다.
+그러면 AngularJS 쪽의 리스너를 제거하기 위해 AngularJS 라우팅 규칙에 `otherwise` 옵션을 추가하고 [$routeProvider](https://docs.angularjs.org/api/ngRoute/provider/$routeProvider)을 연결해야 합니다.
+이 라우팅 규칙은 Angular가 관리합니다.
+
+</div>
+
+
+<!--
 ### Create a component to render AngularJS content
+-->
+### AngularJS 앱을 렌더링하는 컴포넌트 생성하기
 
+<!--
 In your Angular application, you need a component as a placeholder for your AngularJS content. This component uses the service you create to load and bootstrap your AngularJS app after the component is initialized.
 
 <code-example path="upgrade-lazy-load-ajs/src/app/angular-js/angular-js.component.ts" header="src/app/angular-js/angular-js.component.ts">
 </code-example>
 
 When the Angular Router matches a route that uses AngularJS, the `AngularJSComponent` is rendered, and the content is rendered within the AngularJS [`ng-view`](https://docs.angularjs.org/api/ngRoute/directive/ngView) directive. When the user navigates away from the route, the `$rootScope` is destroyed on the AngularJS application.
+-->
+Angular 애플리케이션에는 AngularJS 앱을 렌더링하는 컴포넌트가 필요할 수도 있습니다.
+이 컴포넌트는 초기화된 직후에 지연로딩 서비스를 사용해서 AngularJS 앱을 로드하는 역할을 합니다.
 
+<code-example path="upgrade-lazy-load-ajs/src/app/angular-js/angular-js.component.ts" header="src/app/angular-js/angular-js.component.ts">
+</code-example>
+
+이제 Angular 라우터가 AngularJS와 연관된 라우팅 규칙을 찾으면 `AngularJSComponent`가 렌더링 되면서 AngularJS [`ng-view`](https://docs.angularjs.org/api/ngRoute/directive/ngView) 디렉티브에 AngularJS 앱이 렌더링됩니다.
+그리고 사용자가 이 화면에서 벗어나면 `$rooteScope.destroy()`를 실행하는 AngularJS 애플리케이션 정리 로직이 실행됩니다.
+
+
+<!--
 ### Configure a custom route matcher for AngularJS routes
+-->
+### AngularJS용 커스텀 라우팅 규칙 매처 구성하기
 
+<!--
 To configure the Angular Router, you must define a route for AngularJS URLs. To match those URLs, you add a route configuration that uses the `matcher` property. The `matcher` allows you to use custom pattern matching for URL paths. The Angular Router tries to match on more specific routes such as static and variable routes first. When it doesn't find a match, it then looks at custom matchers defined in your route configuration. If the custom matchers don't match a route, it then goes to catch-all routes, such as a 404 page.
 
 The following example defines a custom matcher function for AngularJS routes.
@@ -1448,6 +1630,27 @@ The following code adds a route object to your routing configuration using the `
 </code-example>
 
 When your application matches a route that needs AngularJS, the AngularJS app is loaded and bootstrapped, the AngularJS routes match the necessary URL to render their content, and your application continues to run with both AngularJS and Angular frameworks.
+-->
+하이브리드 앱에서 Angular 라우터를 구성하려면 AngularJS URL과 연결된 라우팅 규칙을 정의해야 합니다.
+그리고 이 라우팅 규칙은 `matcher` 프로퍼티로 연결해야 하는데, `matcher`를 사용하면 URL 경로를 커스텀 패턴으로 매칭할 때 사용하는 프로퍼티입니다.
+Angular 라우터는 URL이 변경되었을 때 정적 라우팅 규칙을 먼저 탐색합니다.
+그리고 이 안에서 적절한 라우팅 규칙을 찾지 못하면 커스텀 매처를 탐색합니다.
+커스텀 매처에서도 적절한 라웉이 규칙을 찾지 못하면 catch-all(`**`) 라우팅 규칙으로 떨어지며, 404 화면이 표시될 것입니다.
+
+AngularJS 라우팅 규칙에 사용할 커스텀 매처는 다음과 같이 정의합니다.
+
+<code-example path="upgrade-lazy-load-ajs/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts" region="matcher">
+</code-example>
+
+그리고 이 커스텀 매처는 `matcher` 프로퍼티를 사용해서 다음과 같이 라우팅 규칙으로 등록합니다.
+이 때 `component` 프로퍼티에는 `AngularJSComponent`를 연결했습니다.
+
+<code-example path="upgrade-lazy-load-ajs/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts">
+</code-example>
+
+이제 AngularJS와 연결된 라우팅 규칙을 만나면 AngularJS 앱이 로드되고 부트스트랩된 이후에 AngularJS 라우팅 규칙이 다시 선택되어 앱을 화면에 표시합니다.
+결국 Angular와 Angular 프레임워크는 동시에 동작하는 모양이 됩니다.
+
 
 ## Using the Unified Angular Location Service
 

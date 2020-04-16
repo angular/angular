@@ -14,13 +14,13 @@ export function isAngularJSUrl(url: UrlSegment[]) {
 // #enddocregion matcher
 
 export const routes: Routes = [
-  // Routes rendered by Angular
+  // Angular가 처리하는 라우팅 규칙
   { path: '', component: HomeComponent },
 
-  // AngularJS routes
+  // AngularJS가 처리하는 라우팅 규칙
   { matcher: isAngularJSUrl, component: AngularJSComponent },
 
-  // Catch-all route
+  // Catch-all 라우팅 규칙
   { path: '**', component: App404Component }
 ];
 

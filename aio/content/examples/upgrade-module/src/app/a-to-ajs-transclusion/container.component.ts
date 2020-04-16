@@ -6,7 +6,7 @@ import { Hero } from '../hero';
   selector: 'my-container',
   template: `
     <hero-detail [hero]="hero">
-      <!-- Everything here will get transcluded -->
+      <!-- 이 부분에 있는 엘리먼트들이 트랜스클루전 됩니다. -->
       <p>{{hero.description}}</p>
     </hero-detail>
   `
