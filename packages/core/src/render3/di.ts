@@ -71,7 +71,7 @@ import {stringifyForError} from './util/misc_utils';
  */
 let includeViewProviders = true;
 
-function setIncludeViewProviders(v: boolean): boolean {
+export function setIncludeViewProviders(v: boolean): boolean {
   const oldValue = includeViewProviders;
   includeViewProviders = v;
   return oldValue;
