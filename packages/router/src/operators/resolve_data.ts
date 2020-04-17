@@ -7,8 +7,8 @@
  */
 
 import {Injector} from '@angular/core';
-import {from, MonoTypeOperatorFunction, Observable, of} from 'rxjs';
-import {concatMap, last, map, mergeMap, reduce} from 'rxjs/operators';
+import {EMPTY, from, MonoTypeOperatorFunction, Observable, of} from 'rxjs';
+import {concatMap, map, mergeMap, takeLast, tap} from 'rxjs/operators';
 
 import {ResolveData} from '../config';
 import {NavigationTransition} from '../router';
@@ -26,13 +26,16 @@ export function resolveData(
       if (!canActivateChecks.length) {
         return of(t);
       }
-
+      let canActivateChecksResolved = 0;
       return from(canActivateChecks)
           .pipe(
               concatMap(
                   check => runResolve(
                       check.route, targetSnapshot!, paramsInheritanceStrategy, moduleInjector)),
-              reduce((_: any, __: any) => _), map(_ => t));
+              tap(() => canActivateChecksResolved++),
+              takeLast(1),
+              mergeMap(_ => canActivateChecksResolved === canActivateChecks.length ? of(t) : EMPTY),
+          );
     }));
   };
 }
@@ -59,22 +62,23 @@ function resolveNode(
   if (keys.length === 0) {
     return of({});
   }
-  if (keys.length === 1) {
-    const key = keys[0];
-    return getResolver(resolve[key], futureARS, futureRSS, moduleInjector)
-        .pipe(map((value: any) => {
-          return {[key]: value};
-        }));
-  }
   const data: {[k: string]: any} = {};
-  const runningResolvers$ = from(keys).pipe(mergeMap((key: string) => {
-    return getResolver(resolve[key], futureARS, futureRSS, moduleInjector)
-        .pipe(map((value: any) => {
-          data[key] = value;
-          return value;
-        }));
-  }));
-  return runningResolvers$.pipe(last(), map(() => data));
+  return from(keys).pipe(
+      mergeMap(
+          (key: string) => getResolver(resolve[key], futureARS, futureRSS, moduleInjector)
+                               .pipe(tap((value: any) => {
+                                 data[key] = value;
+                               }))),
+      takeLast(1),
+      mergeMap(() => {
+        // Ensure all resolvers returned values, otherwise don't emit any "next" and just complete
+        // the chain which will cancel navigation
+        if (Object.keys(data).length === keys.length) {
+          return of(data);
+        }
+        return EMPTY;
+      }),
+  );
 }
 
 function getResolver(

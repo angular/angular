@@ -639,9 +639,25 @@ export class Router {
                                    this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!);
                                this.triggerEvent(resolveStart);
                              }),
-                             resolveData(
-                                 this.paramsInheritanceStrategy,
-                                 this.ngModule.injector),  //
+                             switchMap(t => {
+                               let dataResolved = false;
+                               return of(t).pipe(
+                                   resolveData(
+                                       this.paramsInheritanceStrategy, this.ngModule.injector),
+                                   tap({
+                                     next: () => dataResolved = true,
+                                     complete: () => {
+                                       if (!dataResolved) {
+                                         const navCancel = new NavigationCancel(
+                                             t.id, this.serializeUrl(t.extractedUrl),
+                                             `At least one route resolver didn't emit any value.`);
+                                         eventsSubject.next(navCancel);
+                                         t.resolve(false);
+                                       }
+                                     }
+                                   }),
+                               );
+                             }),
                              tap(t => {
                                const resolveEnd = new ResolveEnd(
                                    t.id, this.serializeUrl(t.extractedUrl),

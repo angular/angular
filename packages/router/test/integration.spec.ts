@@ -13,7 +13,7 @@ import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
-import {Observable, Observer, of, Subscription} from 'rxjs';
+import {EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
 import {filter, first, map, tap} from 'rxjs/operators';
 
 import {forEach} from '../src/utils/collection';
@@ -1564,6 +1564,7 @@ describe('Integration', () => {
           {provide: 'resolveSix', useClass: ResolveSix},
           {provide: 'resolveError', useValue: (a: any, b: any) => Promise.reject('error')},
           {provide: 'resolveNullError', useValue: (a: any, b: any) => Promise.reject(null)},
+          {provide: 'resolveEmpty', useValue: (a: any, b: any) => EMPTY},
           {provide: 'numberOfUrlSegments', useValue: (a: any, b: any) => a.url.length},
         ]
       });
@@ -1646,6 +1647,152 @@ describe('Integration', () => {
 
          expect(e).toEqual(null);
        })));
+
+    it('should not navigate when all resolvers return empty result',
+       fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([
+           {path: 'simple', component: SimpleCmp, resolve: {e1: 'resolveEmpty', e2: 'resolveEmpty'}}
+         ]);
+
+         const recordedEvents: any[] = [];
+         router.events.subscribe(e => e instanceof RouterEvent && recordedEvents.push(e));
+
+         let e: any = null;
+         router.navigateByUrl('/simple').catch(error => e = error);
+         advance(fixture);
+
+         expectEvents(recordedEvents, [
+           [NavigationStart, '/simple'],
+           [RoutesRecognized, '/simple'],
+           [GuardsCheckStart, '/simple'],
+           [GuardsCheckEnd, '/simple'],
+           [ResolveStart, '/simple'],
+           [NavigationCancel, '/simple'],
+         ]);
+
+         expect(e).toEqual(null);
+       })));
+
+    it('should not navigate when at least one resolver returns empty result',
+       fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([
+           {path: 'simple', component: SimpleCmp, resolve: {e1: 'resolveTwo', e2: 'resolveEmpty'}}
+         ]);
+
+         const recordedEvents: any[] = [];
+         router.events.subscribe(e => e instanceof RouterEvent && recordedEvents.push(e));
+
+         let e: any = null;
+         router.navigateByUrl('/simple').catch(error => e = error);
+         advance(fixture);
+
+         expectEvents(recordedEvents, [
+           [NavigationStart, '/simple'],
+           [RoutesRecognized, '/simple'],
+           [GuardsCheckStart, '/simple'],
+           [GuardsCheckEnd, '/simple'],
+           [ResolveStart, '/simple'],
+           [NavigationCancel, '/simple'],
+         ]);
+
+         expect(e).toEqual(null);
+       })));
+
+    it('should not navigate when all resolvers for a child route from forChild() returns empty result',
+       fakeAsync(inject(
+           [Router, Location, NgModuleFactoryLoader],
+           (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+             const fixture = createRoot(router, RootCmp);
+
+             @Component({selector: 'lazy-cmp', template: 'lazy-loaded-1'})
+             class LazyComponent1 {
+             }
+
+             router.resetConfig([{path: 'lazy', loadChildren: 'expected1'}]);
+
+             @NgModule({
+               declarations: [LazyComponent1],
+               imports: [
+                 RouterModule.forChild([{
+                   path: 'loaded',
+                   component: LazyComponent1,
+                   resolve: {e1: 'resolveEmpty', e2: 'resolveEmpty'}
+                 }]),
+               ],
+             })
+             class LoadedModule {
+             }
+
+             loader.stubbedModules = {expected1: LoadedModule};
+
+             const recordedEvents: any[] = [];
+             router.events.subscribe(e => e instanceof RouterEvent && recordedEvents.push(e));
+
+             let e: any = null;
+             router.navigateByUrl('lazy/loaded').catch(error => e = error);
+             advance(fixture);
+
+             expectEvents(recordedEvents, [
+               [NavigationStart, '/lazy/loaded'],
+               [RoutesRecognized, '/lazy/loaded'],
+               [GuardsCheckStart, '/lazy/loaded'],
+               [GuardsCheckEnd, '/lazy/loaded'],
+               [ResolveStart, '/lazy/loaded'],
+               [NavigationCancel, '/lazy/loaded'],
+             ]);
+
+             expect(e).toEqual(null);
+           })));
+
+    it('should not navigate when at least one resolver for a child route from forChild() returns empty result',
+       fakeAsync(inject(
+           [Router, Location, NgModuleFactoryLoader],
+           (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+             const fixture = createRoot(router, RootCmp);
+
+             @Component({selector: 'lazy-cmp', template: 'lazy-loaded-1'})
+             class LazyComponent1 {
+             }
+
+             router.resetConfig([{path: 'lazy', loadChildren: 'expected1'}]);
+
+             @NgModule({
+               declarations: [LazyComponent1],
+               imports: [
+                 RouterModule.forChild([{
+                   path: 'loaded',
+                   component: LazyComponent1,
+                   resolve: {e1: 'resolveTwo', e2: 'resolveEmpty'}
+                 }]),
+               ],
+             })
+             class LoadedModule {
+             }
+
+             loader.stubbedModules = {expected1: LoadedModule};
+
+             const recordedEvents: any[] = [];
+             router.events.subscribe(e => e instanceof RouterEvent && recordedEvents.push(e));
+
+             let e: any = null;
+             router.navigateByUrl('lazy/loaded').catch(error => e = error);
+             advance(fixture);
+
+             expectEvents(recordedEvents, [
+               [NavigationStart, '/lazy/loaded'],
+               [RoutesRecognized, '/lazy/loaded'],
+               [GuardsCheckStart, '/lazy/loaded'],
+               [GuardsCheckEnd, '/lazy/loaded'],
+               [ResolveStart, '/lazy/loaded'],
+               [NavigationCancel, '/lazy/loaded'],
+             ]);
+
+             expect(e).toEqual(null);
+           })));
 
     it('should preserve resolved data', fakeAsync(inject([Router], (router: Router) => {
          const fixture = createRoot(router, RootCmp);
