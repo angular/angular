@@ -30,49 +30,65 @@ module.exports = function autoLinkCode(getDocFromAlias) {
   function autoLinkCodeImpl() {
     return (ast, file) => {
       visit(ast, 'element', (node, ancestors) => {
-        // Only interested in code elements that:
-        // * do not have `no-auto-link` class
-        // * do not have an ignored language
-        // * are not inside links
-        if (autoLinkCodeImpl.codeElements.some(elementType => is(node, elementType)) &&
-            (!node.properties.className || !node.properties.className.includes('no-auto-link')) &&
-            !autoLinkCodeImpl.ignoredLanguages.includes(node.properties.language) &&
-            ancestors.every(ancestor => !is(ancestor, 'a'))) {
-          visit(node, 'text', (node, ancestors) => {
-            // Only interested in text nodes that are not inside links
-            if (ancestors.every(ancestor => !is(ancestor, 'a'))) {
-              const parent = ancestors[ancestors.length - 1];
-              const index = parent.children.indexOf(node);
-
-              // Can we convert the whole text node into a doc link?
-              const docs = getDocFromAlias(node.value);
-              if (foundValidDoc(docs, node.value, file)) {
-                parent.children.splice(index, 1, createLinkNode(docs[0], node.value));
-              } else {
-                // Parse the text for words that we can convert to links
-                const nodes =
-                    textContent(node)
-                        .split(/([A-Za-z0-9_.-]+)/)
-                        .filter(word => word.length)
-                        .map((word, index, words) => {
-                          // remove docs that fail the custom filter tests
-                          const filteredDocs = autoLinkCodeImpl.customFilters.reduce(
-                              (docs, filter) => filter(docs, words, index), getDocFromAlias(word));
-                          return foundValidDoc(filteredDocs, word, file) ?
-                              // Create a link wrapping the text node.
-                              createLinkNode(filteredDocs[0], word) :
-                              // this is just text so push a new text node
-                              {type: 'text', value: word};
-                        });
-
-                // Replace the text node with the links and leftover text nodes
-                Array.prototype.splice.apply(parent.children, [index, 1].concat(nodes));
-              }
-            }
-          });
+        if (!isValidCodeElement(node, ancestors)) {
+          return;
         }
+
+        visit(node, 'text', (node, ancestors) => {
+          const isInLink = isInsideLink(ancestors);
+          if (isInLink) {
+            return;
+          }
+
+          const parent = ancestors[ancestors.length - 1];
+          const index = parent.children.indexOf(node);
+
+          // Can we convert the whole text node into a doc link?
+          const docs = getDocFromAlias(node.value);
+          if (foundValidDoc(docs, node.value, file)) {
+            parent.children.splice(index, 1, createLinkNode(docs[0], node.value));
+          } else {
+            // Parse the text for words that we can convert to links
+            const nodes = getNodes(node, file);
+            // Replace the text node with the links and leftover text nodes
+            Array.prototype.splice.apply(parent.children, [index, 1].concat(nodes));
+          }
+        });
       });
     };
+  }
+
+  function isValidCodeElement(node, ancestors) {
+    // Only interested in code elements that:
+    // * do not have `no-auto-link` class
+    // * do not have an ignored language
+    // * are not inside links
+    const isCodeElement = autoLinkCodeImpl.codeElements.some(elementType => is(node, elementType));
+    const hasNoAutoLink = node.properties.className && node.properties.className.includes('no-auto-link');
+    const isLanguageSupported = !autoLinkCodeImpl.ignoredLanguages.includes(node.properties.language);
+    const isInLink = isInsideLink(ancestors);
+    return isCodeElement && !hasNoAutoLink && isLanguageSupported && !isInLink;
+  }
+
+  function isInsideLink(ancestors) {
+    return ancestors.some(ancestor => is(ancestor, 'a'));
+  }
+
+  function getNodes(node, file) {
+    return textContent(node)
+      .split(/([A-Za-z0-9_.-]+)/)
+      .filter(word => word.length)
+      .map((word, index, words) => {
+        // remove docs that fail the custom filter tests
+        const filteredDocs = autoLinkCodeImpl.customFilters.reduce(
+            (docs, filter) => filter(docs, words, index), getDocFromAlias(word));
+
+        return foundValidDoc(filteredDocs, word, file) ?
+            // Create a link wrapping the text node.
+            createLinkNode(filteredDocs[0], word) :
+            // this is just text so push a new text node
+            {type: 'text', value: word};
+      });
   }
 
   /**
