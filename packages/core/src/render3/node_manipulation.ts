@@ -19,11 +19,11 @@ import {NodeInjectorFactory} from './interfaces/injector';
 import {TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {isProceduralRenderer, ProceduralRenderer3, RElement, Renderer3, RNode, RText, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
-import {isLContainer, isLView} from './interfaces/type_checks';
+import {isLContainer, isLView, isRootView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, DestroyHookData, FLAGS, HookData, HookFn, HOST, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {getLViewParent} from './util/view_traversal_utils';
-import {getNativeByTNode, unwrapRNode} from './util/view_utils';
+import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from './util/view_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -158,7 +158,25 @@ export function addRemoveViewFromContainer(
  * @param lView the `LView` to be detached.
  */
 export function renderDetachView(tView: TView, lView: LView) {
-  applyView(tView, lView, lView[RENDERER], WalkTNodeTreeAction.Detach, null, null);
+  if (isRootView(lView) && !tView.node?.child) {
+    // This special case covers a situation when root view is created for a component that should be
+    // bootstrapped to an existing host element (see `ComponentFactory.create` function). In this
+    // case the `child` is not set, so we cleanup DOM by removing component host nodes.
+    // TODO(FW-2043): the process of creating root component should be unified with the process of
+    // creating inner components. After that the logic below can be cleaned up (and potentially
+    // removed).
+    if (tView.components) {
+      for (let i = 0; i < tView.components.length; i++) {
+        const componentLView = getComponentLViewByIndex(tView.components[i], lView);
+        const hostRNode = componentLView[HOST];
+        if (hostRNode !== null) {
+          nativeRemoveNode(componentLView[RENDERER], hostRNode, true);
+        }
+      }
+    }
+  } else {
+    applyView(tView, lView, lView[RENDERER], WalkTNodeTreeAction.Detach, null, null);
+  }
 }
 
 /**
