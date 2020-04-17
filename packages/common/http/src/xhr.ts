@@ -65,6 +65,11 @@ export class HttpXhrBackend implements HttpBackend {
         xhr.withCredentials = true;
       }
 
+      // Set the timeout if set in request object
+      if (req.timeout) {
+        xhr.timeout = req.timeout;
+      }
+
       // Add all the requested headers.
       req.headers.forEach((name, values) => xhr.setRequestHeader(name, values.join(',')));
 
@@ -206,6 +211,19 @@ export class HttpXhrBackend implements HttpBackend {
         }
       };
 
+      // The onTimeout callback is called when the request has timed out. This timeout is optional
+      // and can be set by the user.
+      const onTimeout = (error: ProgressEvent) => {
+        const {url} = partialFromXhr();
+        const res = new HttpErrorResponse({
+          error,
+          status: xhr.status || 0,
+          statusText: 'Request timeout',
+          url: url || undefined,
+        });
+        observer.error(res);
+      };
+
       // The onError callback is called when something goes wrong at the network level.
       // Connection timeout, DNS error, offline, etc. These are actual errors, and are
       // transmitted on the error channel.
@@ -283,6 +301,11 @@ export class HttpXhrBackend implements HttpBackend {
       xhr.addEventListener('error', onError);
       xhr.addEventListener('timeout', onError);
       xhr.addEventListener('abort', onError);
+
+      // Register onTimeout handler if a timeout is set
+      if (req.timeout) {
+        xhr.addEventListener('timeout', onTimeout);
+      }
 
       // Progress events are only enabled if requested.
       if (req.reportProgress) {

@@ -38,6 +38,7 @@ function addBody<T>(
       reportProgress?: boolean,
       responseType?: 'arraybuffer'|'blob'|'json'|'text',
       withCredentials?: boolean,
+      timeout?: number,
     },
     body: T|null): any {
   return {
@@ -49,6 +50,7 @@ function addBody<T>(
     reportProgress: options.reportProgress,
     responseType: options.responseType,
     withCredentials: options.withCredentials,
+    timeout: options.timeout,
   };
 }
 
@@ -138,6 +140,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<ArrayBuffer>;
 
   /**
@@ -159,6 +162,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<Blob>;
 
   /**
@@ -180,6 +184,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<string>;
 
   /**
@@ -202,6 +207,7 @@ export class HttpClient {
           observe: 'events',
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<ArrayBuffer>>;
 
   /**
@@ -223,6 +229,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<Blob>>;
 
   /**
@@ -244,6 +251,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<string>>;
 
   /**
@@ -266,6 +274,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<any>>;
 
   /**
@@ -288,6 +297,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<R>>;
 
   /**
@@ -308,6 +318,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<ArrayBuffer>>;
 
   /**
@@ -327,6 +338,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<Blob>>;
 
   /**
@@ -347,6 +359,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<string>>;
 
   /**
@@ -369,6 +382,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<Object>>;
 
   /**
@@ -390,6 +404,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<R>>;
 
   /**
@@ -412,6 +427,7 @@ export class HttpClient {
     responseType?: 'json',
     reportProgress?: boolean,
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<Object>;
 
   /**
@@ -434,6 +450,7 @@ export class HttpClient {
     responseType?: 'json',
     reportProgress?: boolean,
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<R>;
 
   /**
@@ -455,6 +472,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<any>;
 
   /**
@@ -493,6 +511,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    timeout?: number,
   } = {}): Observable<any> {
     let req: HttpRequest<any>;
     // First, check whether the primary argument is an instance of `HttpRequest`.
@@ -532,6 +551,7 @@ export class HttpClient {
         // By default, JSON is assumed to be returned for all calls.
         responseType: options.responseType || 'json',
         withCredentials: options.withCredentials,
+        timeout: options.timeout,
       });
     }
 
@@ -620,6 +640,7 @@ export class HttpClient {
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
     body?: any|null,
+    timeout?: number,
   }): Observable<ArrayBuffer>;
 
 
@@ -641,6 +662,7 @@ export class HttpClient {
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
     body?: any|null,
+    timeout?: number,
   }): Observable<Blob>;
 
   /**
@@ -661,6 +683,7 @@ export class HttpClient {
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
     body?: any|null,
+    timeout?: number,
   }): Observable<string>;
 
   /**
@@ -680,7 +703,8 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
-    body?: any|null
+    body?: any|null,
+    timeout?: number,
   }): Observable<HttpEvent<ArrayBuffer>>;
 
   /**
@@ -701,6 +725,7 @@ export class HttpClient {
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
     body?: any|null,
+    timeout?: number,
   }): Observable<HttpEvent<Blob>>;
 
   /**
@@ -721,6 +746,7 @@ export class HttpClient {
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
     body?: any|null,
+    timeout?: number,
   }): Observable<HttpEvent<string>>;
 
   /**
@@ -742,6 +768,7 @@ export class HttpClient {
     responseType?: 'json',
     withCredentials?: boolean,
     body?: any|null,
+    timeout?: number,
   }): Observable<HttpEvent<Object>>;
 
   /**
@@ -763,6 +790,7 @@ export class HttpClient {
     responseType?: 'json',
     withCredentials?: boolean,
     body?: any|null,
+    timeout?: number,
   }): Observable<HttpEvent<T>>;
 
   /**
@@ -782,6 +810,7 @@ export class HttpClient {
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
     body?: any|null,
+    timeout?: number,
   }): Observable<HttpResponse<ArrayBuffer>>;
 
   /**
@@ -801,6 +830,7 @@ export class HttpClient {
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
     body?: any|null,
+    timeout?: number,
   }): Observable<HttpResponse<Blob>>;
 
   /**
@@ -820,6 +850,7 @@ export class HttpClient {
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
     body?: any|null,
+    timeout?: number,
   }): Observable<HttpResponse<string>>;
 
   /**
@@ -841,6 +872,7 @@ export class HttpClient {
     responseType?: 'json',
     withCredentials?: boolean,
     body?: any|null,
+    timeout?: number,
   }): Observable<HttpResponse<Object>>;
 
   /**
@@ -861,6 +893,7 @@ export class HttpClient {
     responseType?: 'json',
     withCredentials?: boolean,
     body?: any|null,
+    timeout?: number,
   }): Observable<HttpResponse<T>>;
 
   /**
@@ -882,6 +915,7 @@ export class HttpClient {
     responseType?: 'json',
     withCredentials?: boolean,
     body?: any|null,
+    timeout?: number,
   }): Observable<Object>;
 
   /**
@@ -903,6 +937,7 @@ export class HttpClient {
     responseType?: 'json',
     withCredentials?: boolean,
     body?: any|null,
+    timeout?: number,
   }): Observable<T>;
 
   /**
@@ -924,6 +959,7 @@ export class HttpClient {
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
     body?: any|null,
+    timeout?: number,
   } = {}): Observable<any> {
     return this.request<any>('DELETE', url, options as any);
   }
@@ -946,6 +982,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<ArrayBuffer>;
 
   /**
@@ -965,6 +1002,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<Blob>;
 
   /**
@@ -984,6 +1022,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<string>;
 
   /**
@@ -1003,6 +1042,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<ArrayBuffer>>;
 
   /**
@@ -1021,6 +1061,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<Blob>>;
 
   /**
@@ -1039,6 +1080,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<string>>;
 
   /**
@@ -1058,6 +1100,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<Object>>;
 
   /**
@@ -1077,6 +1120,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<T>>;
 
   /**
@@ -1096,6 +1140,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<ArrayBuffer>>;
 
   /**
@@ -1115,6 +1160,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<Blob>>;
 
   /**
@@ -1134,6 +1180,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<string>>;
 
   /**
@@ -1154,6 +1201,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<Object>>;
 
   /**
@@ -1174,6 +1222,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<T>>;
 
   /**
@@ -1195,6 +1244,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<Object>;
 
   /**
@@ -1215,6 +1265,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<T>;
 
   /**
@@ -1231,6 +1282,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    timeout?: number,
   } = {}): Observable<any> {
     return this.request<any>('GET', url, options as any);
   }
@@ -1253,6 +1305,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<ArrayBuffer>;
 
   /**
@@ -1273,6 +1326,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<Blob>;
 
   /**
@@ -1292,6 +1346,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<string>;
 
   /**
@@ -1311,6 +1366,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<ArrayBuffer>>;
 
   /**
@@ -1330,6 +1386,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<Blob>>;
 
   /**
@@ -1349,6 +1406,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<string>>;
 
   /**
@@ -1369,6 +1427,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<Object>>;
 
   /**
@@ -1389,6 +1448,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<T>>;
 
   /**
@@ -1408,6 +1468,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<ArrayBuffer>>;
 
   /**
@@ -1427,6 +1488,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<Blob>>;
 
   /**
@@ -1446,6 +1508,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<string>>;
 
   /**
@@ -1466,6 +1529,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<Object>>;
 
   /**
@@ -1486,6 +1550,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<T>>;
 
   /**
@@ -1506,6 +1571,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<Object>;
 
   /**
@@ -1527,6 +1593,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<T>;
 
   /**
@@ -1545,6 +1612,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    timeout?: number,
   } = {}): Observable<any> {
     return this.request<any>('HEAD', url, options as any);
   }
@@ -1616,6 +1684,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<ArrayBuffer>;
 
   /**
@@ -1635,6 +1704,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<Blob>;
 
   /**
@@ -1654,6 +1724,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<string>;
 
   /**
@@ -1673,6 +1744,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<ArrayBuffer>>;
 
   /**
@@ -1692,6 +1764,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<Blob>>;
 
   /**
@@ -1711,6 +1784,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<string>>;
 
   /**
@@ -1731,6 +1805,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<Object>>;
 
   /**
@@ -1751,6 +1826,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<T>>;
 
   /**
@@ -1770,6 +1846,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<ArrayBuffer>>;
 
   /**
@@ -1789,6 +1866,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<Blob>>;
 
   /**
@@ -1808,6 +1886,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<string>>;
 
   /**
@@ -1828,6 +1907,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<Object>>;
 
   /**
@@ -1848,6 +1928,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<T>>;
 
   /**
@@ -1868,6 +1949,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<Object>;
 
   /**
@@ -1888,6 +1970,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<T>;
 
   /**
@@ -1906,6 +1989,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    timeout?: number,
   } = {}): Observable<any> {
     return this.request<any>('OPTIONS', url, options as any);
   }
@@ -1928,6 +2012,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<ArrayBuffer>;
 
   /**
@@ -1948,6 +2033,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<Blob>;
 
   /**
@@ -1968,6 +2054,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<string>;
 
   /**
@@ -1989,6 +2076,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<ArrayBuffer>>;
 
   /**
@@ -2009,6 +2097,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<Blob>>;
 
   /**
@@ -2029,6 +2118,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<string>>;
 
   /**
@@ -2050,6 +2140,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<Object>>;
 
   /**
@@ -2071,6 +2162,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<T>>;
 
   /**
@@ -2091,6 +2183,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<ArrayBuffer>>;
 
   /**
@@ -2111,6 +2204,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<Blob>>;
 
   /**
@@ -2131,6 +2225,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<string>>;
 
   /**
@@ -2152,6 +2247,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<Object>>;
 
   /**
@@ -2173,6 +2269,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<T>>;
 
   /**
@@ -2194,6 +2291,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<Object>;
 
   /**
@@ -2216,6 +2314,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<T>;
 
   /**
@@ -2232,6 +2331,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    timeout?: number,
   } = {}): Observable<any> {
     return this.request<any>('PATCH', url, addBody(options, body));
   }
@@ -2254,6 +2354,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<ArrayBuffer>;
 
   /**
@@ -2274,6 +2375,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<Blob>;
 
   /**
@@ -2294,6 +2396,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<string>;
 
   /**
@@ -2314,6 +2417,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<ArrayBuffer>>;
 
   /**
@@ -2333,6 +2437,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<Blob>>;
 
   /**
@@ -2353,6 +2458,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<string>>;
 
   /**
@@ -2374,6 +2480,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<Object>>;
 
   /**
@@ -2395,6 +2502,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<T>>;
 
   /**
@@ -2415,6 +2523,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<ArrayBuffer>>;
 
   /**
@@ -2435,6 +2544,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<Blob>>;
 
   /**
@@ -2455,6 +2565,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<string>>;
 
   /**
@@ -2476,6 +2587,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<Object>>;
 
   /**
@@ -2498,6 +2610,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<T>>;
 
   /**
@@ -2519,6 +2632,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<Object>;
 
   /**
@@ -2541,6 +2655,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<T>;
 
   /**
@@ -2558,6 +2673,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    timeout?: number,
   } = {}): Observable<any> {
     return this.request<any>('POST', url, addBody(options, body));
   }
@@ -2580,6 +2696,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<ArrayBuffer>;
 
   /**
@@ -2600,6 +2717,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<Blob>;
 
   /**
@@ -2620,6 +2738,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<string>;
 
   /**
@@ -2640,6 +2759,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<ArrayBuffer>>;
 
   /**
@@ -2660,6 +2780,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<Blob>>;
 
   /**
@@ -2680,6 +2801,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<string>>;
 
   /**
@@ -2701,6 +2823,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<Object>>;
 
   /**
@@ -2722,6 +2845,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpEvent<T>>;
 
   /**
@@ -2742,6 +2866,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<ArrayBuffer>>;
 
   /**
@@ -2762,6 +2887,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<Blob>>;
 
   /**
@@ -2782,6 +2908,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<string>>;
 
   /**
@@ -2803,6 +2930,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<Object>>;
 
   /**
@@ -2824,6 +2952,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<HttpResponse<T>>;
 
   /**
@@ -2845,6 +2974,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<Object>;
 
   /**
@@ -2866,6 +2996,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
+    timeout?: number,
   }): Observable<T>;
 
   /**
@@ -2883,6 +3014,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    timeout?: number,
   } = {}): Observable<any> {
     return this.request<any>('PUT', url, addBody(options, body));
   }
