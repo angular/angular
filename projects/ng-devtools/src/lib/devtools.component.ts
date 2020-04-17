@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MessageBus, Events } from 'protocol';
 import { interval } from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'ng-devtools',
@@ -17,9 +18,8 @@ import { animate, style, transition, trigger } from '@angular/animations';
 export class DevToolsComponent implements OnInit, OnDestroy {
   angularExists: boolean | null = null;
   angularVersion: string | boolean | undefined = undefined;
-  prodMode: boolean;
 
-  constructor(private _messageBus: MessageBus<Events>) {}
+  constructor(private _messageBus: MessageBus<Events>, private _snackBar: MatSnackBar) {}
 
   private _interval$ = interval(500).subscribe((attempt) => {
     if (attempt === 10) {
@@ -34,12 +34,18 @@ export class DevToolsComponent implements OnInit, OnDestroy {
     this._messageBus.once('ngAvailability', ({ version, prodMode }) => {
       this.angularExists = !!version;
       this.angularVersion = version;
-      this.prodMode = prodMode;
+      if (prodMode) {
+        this._snackBar.open(
+          'Production mode detected. Angular DevTools has limited functionality in production mode.',
+          '',
+          { duration: 5000 }
+        );
+      }
       this._interval$.unsubscribe();
     });
   }
 
-  majorAngularVersion(): number {
+  get majorAngularVersion(): number {
     if (!this.angularVersion) {
       return -1;
     }
@@ -47,7 +53,7 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   }
 
   get supportedVersion(): boolean {
-    return (this.majorAngularVersion() >= 9 || this.majorAngularVersion() === 0) && !this.prodMode;
+    return this.majorAngularVersion >= 9 || this.majorAngularVersion === 0;
   }
 
   ngOnDestroy(): void {

@@ -5,16 +5,9 @@
     </div>
   </ng-container>
   <ng-template #notSupported>
-    <ng-container *ngIf="prodMode; else versionTooLow">
-      <p class="text-message">
-        Angular Devtools only supports dev mode.
-      </p>
-    </ng-container>
-    <ng-template #versionTooLow>
-      <p class="text-message">
-        Angular Devtools only supports Angular versions 9 and above.
-      </p>
-    </ng-template>
+    <p class="text-message">
+      Angular Devtools only supports Angular versions 9 and above.
+    </p>
   </ng-template>
 </ng-container>
 <ng-template #errorOrLoad>
