@@ -5,10 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ChildProcess, ChildProcessByStdio, fork} from 'child_process';
-import {Readable, Writable} from 'stream';
+import {ChildProcess, fork} from 'child_process';
 
-import {AbsoluteFsPath, CachedFileSystem, FileSystem} from '../../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system';
 import {Logger, LogLevel} from '../../logging/logger';
 import {getLockFilePath, LockFile} from '../lock_file';
 
@@ -58,11 +57,6 @@ export class LockFileWithChildProcess implements LockFile {
 
   read(): string {
     try {
-      if (this.fs instanceof CachedFileSystem) {
-        // The lock-file file is "volatile", it might be changed by an external process,
-        // so we must not rely upon the cached value when reading it.
-        this.fs.invalidateCaches(this.path);
-      }
       return this.fs.readFile(this.path);
     } catch {
       return '{unknown}';

@@ -9,7 +9,6 @@
 
 import * as cluster from 'cluster';
 
-import {CachedFileSystem, NodeJSFileSystem, setFileSystem} from '../../../../src/ngtsc/file_system';
 import {parseCommandLineOptions} from '../../command_line_options';
 import {ConsoleLogger} from '../../logging/console_logger';
 import {Logger, LogLevel} from '../../logging/logger';
@@ -28,8 +27,6 @@ if (require.main === module) {
     process.title = 'ngcc (worker)';
 
     try {
-      setFileSystem(new CachedFileSystem(new NodeJSFileSystem()));
-
       const {
         createNewEntryPointFormats = false,
         logger = new ConsoleLogger(LogLevel.info),
