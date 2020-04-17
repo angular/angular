@@ -1,8 +1,6 @@
-// This is the root config file where the schematics are defined.
 {
   "$schema": "./node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
-    // Adds Angular Material to an application without changing any templates
     "ng-add": {
       "description": "Adds Angular Material to the application without affecting any templates",
       "factory": "./ng-add/index",
@@ -15,35 +13,30 @@
       "factory": "./ng-add/setup-project",
       "schema": "./ng-add/schema.json"
     },
-    // Create a dashboard component
     "dashboard": {
       "description": "Create a card-based dashboard component",
       "factory": "./ng-generate/dashboard/index",
       "schema": "./ng-generate/dashboard/schema.json",
       "aliases": ["material-dashboard"]
     },
-    // Creates a table component
     "table": {
       "description": "Create a component that displays data with a data-table",
       "factory": "./ng-generate/table/index",
       "schema": "./ng-generate/table/schema.json",
       "aliases": ["material-table"]
     },
-    // Creates toolbar and navigation components
     "navigation": {
       "description": "Create a component with a responsive sidenav for navigation",
       "factory": "./ng-generate/navigation/index",
       "schema": "./ng-generate/navigation/schema.json",
       "aliases": ["material-nav", "materialNav", "nav"]
     },
-    // Create a file tree component
     "tree": {
       "description": "Create a file tree component.",
       "factory": "./ng-generate/tree/index",
       "schema": "./ng-generate/tree/schema.json",
       "aliases": ["material-tree"]
     },
-    // Creates a address form component
     "addressForm": {
       "description": "Create a component with a address form",
       "factory": "./ng-generate/address-form/index",
