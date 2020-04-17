@@ -20,5 +20,5 @@ let nextUniqueId = 0;
   }
 })
 export class MatError {
-  @Input() id: string = `mat-error-${nextUniqueId++}`;
+  @Input() id: string = `mat-mdc-error-${nextUniqueId++}`;
 }

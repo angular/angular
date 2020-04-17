@@ -26,5 +26,5 @@ export class MatHint {
   @Input() align: 'start' | 'end' = 'start';
 
   /** Unique ID for the hint. Used for the aria-describedby on the form field control. */
-  @Input() id: string = `mat-hint-${nextUniqueId++}`;
+  @Input() id: string = `mat-mdc-hint-${nextUniqueId++}`;
 }

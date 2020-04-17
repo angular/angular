@@ -191,13 +191,13 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
   private _hintLabel = '';
 
   // Unique id for the hint label.
-  _hintLabelId: string = `mat-hint-${nextUniqueId++}`;
+  _hintLabelId = `mat-mdc-hint-${nextUniqueId++}`;
 
   // Unique id for the internal form field label.
-  _labelId = `mat-form-field-label-${nextUniqueId++}`;
+  _labelId = `mat-mdc-form-field-label-${nextUniqueId++}`;
 
   /** State of the mat-hint and mat-error animations. */
-  _subscriptAnimationState: string = '';
+  _subscriptAnimationState = '';
 
   /** Width of the outline notch. */
   _outlineNotchWidth: number;

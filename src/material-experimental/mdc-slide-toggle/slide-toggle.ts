@@ -92,7 +92,7 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   private _onChange = (_: any) => {};
   private _onTouched = () => {};
 
-  private _uniqueId: string = `mat-slide-toggle-${++nextUniqueId}`;
+  private _uniqueId: string = `mat-mdc-slide-toggle-${++nextUniqueId}`;
   private _required: boolean = false;
   private _checked: boolean = false;
   private _foundation: MDCSwitchFoundation;
