@@ -7,6 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
+import {CheckboxExamplesModule} from '@angular/components-examples/material/checkbox';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatCheckboxModule} from '@angular/material/checkbox';
@@ -25,6 +26,7 @@ import {
 
 @NgModule({
   imports: [
+    CheckboxExamplesModule,
     CommonModule,
     FormsModule,
     MatCheckboxModule,

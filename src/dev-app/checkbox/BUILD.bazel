@@ -11,6 +11,7 @@ ng_module(
         ":checkbox_demo_scss",
     ],
     deps = [
+        "//src/components-examples/material/checkbox",
         "//src/material/checkbox",
         "//src/material/core",
         "//src/material/form-field",
