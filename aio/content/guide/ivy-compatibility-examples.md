@@ -323,7 +323,7 @@ In Ivy, the `myDir.name` binding will throw an `ExpressionChangedAfterItHasBeenC
 
 In the ViewEngine runtime, directive input bindings and element bindings were executed in different stages. Angular would process the template one full time to check directive inputs only (e.g. `[name]`), then process the whole template again to check element and text bindings only (e.g.`{{ myDir.name }}`). This meant that the `name` directive input would be checked before the `myDir.name` text binding despite their relative order in the template, which some users felt to be counterintuitive.
 
-In contrast, Ivy processes the template in just one pass, so that bindings are checked in the same order that they are written in the template.   In this case, it means that the `myDir.name` binding will have be checked before the `name` input sets the property on the directive (and thus it will be `undefined`). Since the `myDir.name` property will be set by the time the next change detection pass runs, a change detection error is thrown.
+In contrast, Ivy processes the template in just one pass, so that bindings are checked in the same order that they are written in the template. In this case, it means that the `myDir.name` binding will be checked before the `name` input sets the property on the directive (and thus it will be `undefined`). Since the `myDir.name` property will be set by the time the next change detection pass runs, a change detection error is thrown.
 
 ### Example of error
 
