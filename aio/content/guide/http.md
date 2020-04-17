@@ -87,7 +87,7 @@ Important options include the *observe* and *responseType* properties.
 <div class="alert is-helpful">
 
 You can use the `options` object to configure various other aspects of an outgoing request.
-In [Adding headers](#adding-headers), for example, the service set the default headers using the `headers` option property.
+In [Adding headers](#adding-headers), for example, the service sets the default headers using the `headers` option property.
 
 Use the `params` property to configure a request with [HTTP URL parameters](#url-params), and the `reportProgress` option to [listen for progress events](#report-progress) when transferring large amounts of data.
 
