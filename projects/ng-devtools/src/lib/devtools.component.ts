@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MessageBus, Events } from 'protocol';
 import { interval } from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'ng-devtools',
