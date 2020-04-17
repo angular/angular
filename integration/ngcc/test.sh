@@ -173,7 +173,6 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
   assertEquals 1 `cat node_modules/@angular/material/button/button.d.ts | grep 'import \* as ɵngcc0' | wc -l`
 
   # Re-compile packages (which requires cleaning up those compiled by a different ngcc version).
-  # (Use sync mode to ensure all tasks share the same `CachedFileSystem` instance.)
   ngcc --no-async --properties main
   assertSucceeded "Expected 'ngcc' to successfully re-compile the packages."
 
