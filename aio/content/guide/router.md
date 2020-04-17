@@ -2956,13 +2956,15 @@ Update the `CrisisDetailComponent` to get the crisis from the  `ActivatedRoute.d
 
 <code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (ngOnInit v2)" region="ngOnInit"></code-example>
 
-Note the following two important points:
+Note the following three important points:
 
 1. The router's `Resolve` interface is optional.
 The `CrisisDetailResolverService` doesn't inherit from a base class.
 The router looks for that method and calls it if found.
 
 1. The router calls the resolver in any case where the the user could navigate away so you don't have to code for each use case.
+
+1. Returning an empty `Observable` in at least one resolver will cancel navigation.
 
 The relevant Crisis Center code for this milestone follows.
 
