@@ -83,7 +83,7 @@ function getChildRouteGuards(
   forEach(
       prevChildren,
       (v: TreeNode<ActivatedRouteSnapshot>, k: string) =>
-          deactivateRouteAndItsChildren(v, contexts!.getContext(k), contexts, checks));
+          deactivateRouteAndItsChildren(v, contexts!.getContext(k), checks));
 
   return checks;
 }
@@ -127,7 +127,7 @@ function getRouteGuards(
     }
   } else {
     if (curr) {
-      deactivateRouteAndItsChildren(currNode, context, parentContexts, checks);
+      deactivateRouteAndItsChildren(currNode, context, checks);
     }
 
     checks.canActivateChecks.push(new CanActivate(futurePath));
@@ -172,21 +172,17 @@ function shouldRunGuardsAndResolvers(
 }
 
 function deactivateRouteAndItsChildren(
-    route: TreeNode<ActivatedRouteSnapshot>, context: OutletContext|null,
-    parentContexts: ChildrenOutletContexts|null, checks: Checks): void {
+    route: TreeNode<ActivatedRouteSnapshot>, context: OutletContext|null, checks: Checks): void {
   const children = nodeChildrenAsMap(route);
   const r = route.value;
 
   forEach(children, (node: TreeNode<ActivatedRouteSnapshot>, childName: string) => {
     if (!r.component) {
-      deactivateRouteAndItsChildren(
-          node, parentContexts ? parentContexts.getContext(childName) : context, parentContexts,
-          checks);
+      deactivateRouteAndItsChildren(node, context, checks);
     } else if (context) {
-      deactivateRouteAndItsChildren(
-          node, context.children.getContext(childName), parentContexts, checks);
+      deactivateRouteAndItsChildren(node, context.children.getContext(childName), checks);
     } else {
-      deactivateRouteAndItsChildren(node, null, parentContexts, checks);
+      deactivateRouteAndItsChildren(node, null, checks);
     }
   });
 
