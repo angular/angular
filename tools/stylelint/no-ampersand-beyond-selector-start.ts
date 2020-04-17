@@ -1,12 +1,19 @@
-const stylelint = require('stylelint');
-const path = require('path');
+import {createPlugin, utils} from 'stylelint';
+import {basename} from 'path';
+import {Node} from 'postcss';
+
 const isStandardSyntaxRule = require('stylelint/lib/utils/isStandardSyntaxRule');
 const isStandardSyntaxSelector = require('stylelint/lib/utils/isStandardSyntaxSelector');
 
 const ruleName = 'material/no-ampersand-beyond-selector-start';
-const messages = stylelint.utils.ruleMessages(ruleName, {
+const messages = utils.ruleMessages(ruleName, {
   expected: () => 'Ampersand is only allowed at the beginning of a selector',
 });
+
+/** Config options for the rule. */
+interface RuleOptions {
+  filePattern: string;
+}
 
 /**
  * Stylelint rule that doesn't allow for an ampersand to be used anywhere
@@ -15,14 +22,19 @@ const messages = stylelint.utils.ruleMessages(ruleName, {
  * Based off the `selector-nested-pattern` Stylelint rule.
  * Source: https://github.com/stylelint/stylelint/blob/master/lib/rules/selector-nested-pattern/
  */
-const plugin = stylelint.createPlugin(ruleName, (isEnabled, options) => {
+const plugin = createPlugin(ruleName, (isEnabled: boolean, _options?) => {
   return (root, result) => {
-    if (!isEnabled) return;
+    if (!isEnabled) {
+      return;
+    }
 
+    const options = _options as RuleOptions;
     const filePattern = new RegExp(options.filePattern);
-    const fileName = path.basename(root.source.input.file);
+    const fileName = basename(root.source!.input.file!);
 
-    if (!filePattern.test(fileName)) return;
+    if (!filePattern.test(fileName)) {
+      return;
+    }
 
     root.walkRules(rule => {
       if (
@@ -36,7 +48,7 @@ const plugin = stylelint.createPlugin(ruleName, (isEnabled, options) => {
 
         // Skip rules inside private mixins.
         if (!mixinName || !mixinName.startsWith('_')) {
-          stylelint.utils.report({
+          utils.report({
             result,
             ruleName,
             message: messages.expected(),
@@ -48,7 +60,7 @@ const plugin = stylelint.createPlugin(ruleName, (isEnabled, options) => {
   };
 
   /** Walks up the AST and finds the name of the closest mixin. */
-  function getClosestMixinName(node) {
+  function getClosestMixinName(node: Node): string | undefined {
     let parent = node.parent;
 
     while (parent) {
@@ -58,9 +70,11 @@ const plugin = stylelint.createPlugin(ruleName, (isEnabled, options) => {
 
       parent = parent.parent;
     }
+
+    return undefined;
   }
 });
 
 plugin.ruleName = ruleName;
 plugin.messages = messages;
-module.exports = plugin;
+export default plugin;

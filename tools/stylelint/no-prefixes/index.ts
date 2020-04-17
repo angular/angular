@@ -1,10 +1,10 @@
-const stylelint = require('stylelint');
-const NeedsPrefix = require('./needs-prefix');
-const parseSelector = require('stylelint/lib/utils/parseSelector');
-const minimatch = require('minimatch');
+import {createPlugin, utils} from 'stylelint';
+import * as minimatch from 'minimatch';
+import {NeedsPrefix} from './needs-prefix';
 
+const parseSelector = require('stylelint/lib/utils/parseSelector');
 const ruleName = 'material/no-prefixes';
-const messages =  stylelint.utils.ruleMessages(ruleName, {
+const messages =  utils.ruleMessages(ruleName, {
   property: property => `Unprefixed property "${property}".`,
   value: (property, value) => `Unprefixed value in "${property}: ${value}".`,
   atRule: name => `Unprefixed @rule "${name}".`,
@@ -12,18 +12,25 @@ const messages =  stylelint.utils.ruleMessages(ruleName, {
   selector: selector => `Unprefixed selector "${selector}".`
 });
 
+/** Config options for the rule. */
+interface RuleOptions {
+  browsers: string[];
+  filePattern: string;
+}
+
 /**
  * Stylelint plugin that warns for unprefixed CSS.
  */
-const plugin = stylelint.createPlugin(ruleName, (isEnabled, options) => {
+const plugin = createPlugin(ruleName, (isEnabled: boolean, _options?) => {
   return (root, result) => {
-    if (!isEnabled || !stylelint.utils.validateOptions(result, ruleName, {})) {
+    if (!isEnabled) {
       return;
     }
 
+    const options = _options as RuleOptions;
     const {browsers, filePattern} = options;
 
-    if (filePattern && !minimatch(root.source.input.file, filePattern)) {
+    if (filePattern && !minimatch(root.source!.input.file!, filePattern)) {
       return;
     }
 
@@ -32,7 +39,7 @@ const plugin = stylelint.createPlugin(ruleName, (isEnabled, options) => {
     // Check all of the `property: value` pairs.
     root.walkDecls(decl => {
       if (needsPrefix.property(decl.prop)) {
-        stylelint.utils.report({
+        utils.report({
           result,
           ruleName,
           message: messages.property(decl.prop),
@@ -40,7 +47,7 @@ const plugin = stylelint.createPlugin(ruleName, (isEnabled, options) => {
           index: (decl.raws.before || '').length
         });
       } else if (needsPrefix.value(decl.prop, decl.value)) {
-        stylelint.utils.report({
+        utils.report({
           result,
           ruleName,
           message: messages.value(decl.prop, decl.value),
@@ -53,14 +60,14 @@ const plugin = stylelint.createPlugin(ruleName, (isEnabled, options) => {
     // Check all of the @-rules and their values.
     root.walkAtRules(rule => {
       if (needsPrefix.atRule(rule.name)) {
-        stylelint.utils.report({
+        utils.report({
           result,
           ruleName,
           message: messages.atRule(rule.name),
           node: rule
         });
       } else if (needsPrefix.mediaFeature(rule.params)) {
-        stylelint.utils.report({
+        utils.report({
           result,
           ruleName,
           message: messages.mediaFeature(rule.name),
@@ -73,10 +80,10 @@ const plugin = stylelint.createPlugin(ruleName, (isEnabled, options) => {
     root.walkRules(rule => {
       // Silence warnings for Sass selectors. Stylelint does this in their own rules as well:
       // https://github.com/stylelint/stylelint/blob/master/lib/utils/isStandardSyntaxSelector.js
-      parseSelector(rule.selector, { warn: () => {} }, rule, selectorTree => {
-        selectorTree.walkPseudos(pseudoNode => {
+      parseSelector(rule.selector, { warn: () => {} }, rule, (selectorTree: any) => {
+        selectorTree.walkPseudos((pseudoNode: any) => {
           if (needsPrefix.selector(pseudoNode.value)) {
-            stylelint.utils.report({
+            utils.report({
               result,
               ruleName,
               message: messages.selector(pseudoNode.value),
@@ -94,4 +101,4 @@ const plugin = stylelint.createPlugin(ruleName, (isEnabled, options) => {
 
 plugin.ruleName = ruleName;
 plugin.messages = messages;
-module.exports = plugin;
+export default plugin;

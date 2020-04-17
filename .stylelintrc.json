@@ -1,11 +1,12 @@
 {
   "plugins": [
-    "./tools/stylelint/no-prefixes/index.js",
-    "./tools/stylelint/no-ampersand-beyond-selector-start.js",
-    "./tools/stylelint/selector-no-deep.js",
-    "./tools/stylelint/no-nested-mixin.js",
-    "./tools/stylelint/no-concrete-rules.js",
-    "./tools/stylelint/no-top-level-ampersand-in-mixin.js"
+    "./tools/stylelint/loader-rule.js",
+    "./tools/stylelint/no-prefixes/index.ts",
+    "./tools/stylelint/no-ampersand-beyond-selector-start.ts",
+    "./tools/stylelint/selector-no-deep.ts",
+    "./tools/stylelint/no-nested-mixin.ts",
+    "./tools/stylelint/no-concrete-rules.ts",
+    "./tools/stylelint/no-top-level-ampersand-in-mixin.ts"
   ],
   "rules": {
     "material/no-prefixes": [true, {
