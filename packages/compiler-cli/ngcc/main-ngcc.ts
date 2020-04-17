@@ -6,7 +6,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {setFileSystem, CachedFileSystem, NodeJSFileSystem} from '../src/ngtsc/file_system';
 import {mainNgcc} from './src/main';
 import {parseCommandLineOptions} from './src/command_line_options';
 
@@ -14,7 +13,6 @@ import {parseCommandLineOptions} from './src/command_line_options';
 if (require.main === module) {
   process.title = 'ngcc';
   const startTime = Date.now();
-  setFileSystem(new CachedFileSystem(new NodeJSFileSystem()));
   const options = parseCommandLineOptions(process.argv.slice(2));
   (async () => {
     try {
