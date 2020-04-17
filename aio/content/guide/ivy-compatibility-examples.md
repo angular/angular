@@ -321,18 +321,21 @@ In Ivy, the `myDir.name` binding will throw an `ExpressionChangedAfterItHasBeenC
 
 ### Background
 
-In the ViewEngine runtime, input property bindings and regular data bindings were executed in different stages. This means that Angular would go through the template once and assign the `name` binding, as well as any other directive inputs. Afterwards it would go through the template again and execute the `myDir.name` binding and any other data bindings.
+In the ViewEngine runtime, directive input bindings and element bindings were executed in different stages. Angular would process the template one full time to check directive inputs only (e.g. `[name]`), then process the whole template again to check element and text bindings only (e.g.`{{ myDir.name }}`). This meant that the `name` directive input would be checked before the `myDir.name` text binding despite their relative order in the template, which some users felt to be counterintuitive.
 
-On the other hand, Ivy will go through the template once and process both the `myDir.name` and `name` bindings during the same pass. In practice, this means that the `myDir.name` binding will have `undefined` as its initial value and then get the value from `myDir` once change detection runs again.
+In contrast, Ivy processes the template in just one pass, so that bindings are checked in the same order that they are written in the template.   In this case, it means that the `myDir.name` binding will have be checked before the `name` input sets the property on the directive (and thus it will be `undefined`). Since the `myDir.name` property will be set by the time the next change detection pass runs, a change detection error is thrown.
 
 ### Example of error
 
-Assuming that the value for `myName` is `Angular`, you should see an error that looks like `Error: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'undefined'. Current value: 'Angular'`.
+Assuming that the value for `myName` is `Angular`, you should see an error that looks like
 
+```
+Error: ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'undefined'. Current value: 'Angular'.
+```
 
 ### Recommended fix
 
-To fix this problem, we recommend either getting the information for the binding from a different place (e.g. the `myName` property from our example) or to put the data binding after the directive has been declared so that the initial value is available on the first pass.
+To fix this problem, we recommend either getting the information for the binding directly from the host component (e.g. the `myName` property from our example) or to move the data binding after the directive has been declared so that the initial value is available on the first pass.
 
 *Before*
 ```html
