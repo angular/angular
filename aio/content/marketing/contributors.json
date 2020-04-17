@@ -821,5 +821,13 @@
     "twitter": "samvloeberghs",
     "website": "https://samvloeberghs.be",
     "bio": "Sam is a freelance software architect and Internet entrepreneur, currently focusing on frontend technologies. Co-organiser of the Belgian Angular conference NG-BE and Angular Belgium Meetup group."
+  },
+  "thekiba": {
+    "name": "Andrew Grekov",
+    "picture": "thekiba.jpg",
+    "twitter": "thekiba_io",
+    "website": "https://thekiba.io",
+    "bio": "Andrew is a software engineer using Angular and .NET. He spends most of his spare time staying up-to-date, helping other people, and experimenting with web tech.",
+    "groups": ["GDE"]
   }
 }
