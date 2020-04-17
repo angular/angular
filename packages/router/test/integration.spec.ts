@@ -3077,6 +3077,47 @@ describe('Integration', () => {
            })));
       });
 
+      it('should use correct component to deactivate forChild route',
+         fakeAsync(inject(
+             [Router, Location, NgModuleFactoryLoader],
+             (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+               @Component({selector: 'admin', template: ''})
+               class AdminComponent {
+               }
+
+               @NgModule({
+                 declarations: [AdminComponent],
+                 imports: [RouterModule.forChild([{
+                   path: '',
+                   component: AdminComponent,
+                   canDeactivate: ['RecordingDeactivate'],
+                 }])],
+               })
+               class LazyLoadedModule {
+               }
+
+               loader.stubbedModules = {lazy: LazyLoadedModule};
+               const fixture = createRoot(router, RootCmp);
+
+               router.resetConfig([
+                 {
+                   path: 'a',
+                   component: WrapperCmp,
+                   children: [
+                     {path: '', pathMatch: 'full', loadChildren: 'lazy'},
+                   ]
+                 },
+                 {path: 'b', component: SimpleCmp},
+               ]);
+
+               router.navigateByUrl('/a');
+               advance(fixture);
+               router.navigateByUrl('/b');
+               advance(fixture);
+
+               expect(log[0].component).toBeAnInstanceOf(AdminComponent);
+             })));
+
       it('should not create a route state if navigation is canceled',
          fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
            const fixture = createRoot(router, RootCmp);
