@@ -11,6 +11,7 @@ import {PipeTransform} from '../change_detection/pipe_transform';
 import {setInjectImplementation} from '../di/injector_compatibility';
 
 import {getFactoryDef} from './definition';
+import {setIncludeViewProviders} from './di';
 import {store, ɵɵdirectiveInject} from './instructions/all';
 import {PipeDef, PipeDefList} from './interfaces/definition';
 import {HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
@@ -47,7 +48,12 @@ export function ɵɵpipe(index: number, pipeName: string): any {
 
   const pipeFactory = pipeDef.factory || (pipeDef.factory = getFactoryDef(pipeDef.type, true));
   const previousInjectImplementation = setInjectImplementation(ɵɵdirectiveInject);
+
+  // DI for pipes is supposed to behave like directives when placed on a component
+  // host node, which means that we have to disable access to `viewProviders`.
+  const previousIncludeViewProviders = setIncludeViewProviders(false);
   const pipeInstance = pipeFactory();
+  setIncludeViewProviders(previousIncludeViewProviders);
   setInjectImplementation(previousInjectImplementation);
   store(tView, getLView(), index, pipeInstance);
   return pipeInstance;

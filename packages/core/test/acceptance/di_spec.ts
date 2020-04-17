@@ -2170,4 +2170,134 @@ describe('di', () => {
             fixture.componentInstance.child.base,
             'should not get dirA from parent, but create new dirB from the useFactory provider');
   });
+
+
+  describe('provider access on the same node', () => {
+    const token = new InjectionToken<number>('token');
+
+    onlyInIvy('accessing providers on the same node through a pipe was not supported in ViewEngine')
+        .it('pipes should access providers from the component they are on', () => {
+          @Pipe({name: 'token'})
+          class TokenPipe {
+            constructor(@Inject(token) private _token: string) {}
+
+            transform(value: string): string {
+              return value + this._token;
+            }
+          }
+
+          @Component({
+            selector: 'child-comp',
+            template: '{{value}}',
+            providers: [{provide: token, useValue: 'child'}]
+          })
+          class ChildComp {
+            @Input() value: any;
+          }
+
+          @Component({
+            template: `<child-comp [value]="'' | token"></child-comp>`,
+            providers: [{provide: token, useValue: 'parent'}]
+          })
+          class App {
+          }
+
+          TestBed.configureTestingModule({declarations: [App, ChildComp, TokenPipe]});
+          const fixture = TestBed.createComponent(App);
+          fixture.detectChanges();
+
+          expect(fixture.nativeElement.textContent.trim()).toBe('child');
+        });
+
+    it('pipes should not access viewProviders from the component they are on', () => {
+      @Pipe({name: 'token'})
+      class TokenPipe {
+        constructor(@Inject(token) private _token: string) {}
+
+        transform(value: string): string {
+          return value + this._token;
+        }
+      }
+
+      @Component({
+        selector: 'child-comp',
+        template: '{{value}}',
+        viewProviders: [{provide: token, useValue: 'child'}]
+      })
+      class ChildComp {
+        @Input() value: any;
+      }
+
+      @Component({
+        template: `<child-comp [value]="'' | token"></child-comp>`,
+        viewProviders: [{provide: token, useValue: 'parent'}]
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, ChildComp, TokenPipe]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent.trim()).toBe('parent');
+    });
+
+    it('directives should access providers from the component they are on', () => {
+      @Directive({selector: '[dir]'})
+      class Dir {
+        constructor(@Inject(token) public token: string) {}
+      }
+
+      @Component({
+        selector: 'child-comp',
+        template: '',
+        providers: [{provide: token, useValue: 'child'}],
+      })
+      class ChildComp {
+      }
+
+      @Component({
+        template: '<child-comp dir></child-comp>',
+        providers: [{provide: token, useValue: 'parent'}]
+      })
+      class App {
+        @ViewChild(Dir) dir!: Dir;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, ChildComp, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.dir.token).toBe('child');
+    });
+
+    it('directives should not access viewProviders from the component they are on', () => {
+      @Directive({selector: '[dir]'})
+      class Dir {
+        constructor(@Inject(token) public token: string) {}
+      }
+
+      @Component({
+        selector: 'child-comp',
+        template: '',
+        viewProviders: [{provide: token, useValue: 'child'}]
+      })
+      class ChildComp {
+      }
+
+      @Component({
+        template: '<child-comp dir></child-comp>',
+        viewProviders: [{provide: token, useValue: 'parent'}]
+      })
+      class App {
+        @ViewChild(Dir) dir!: Dir;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, ChildComp, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.dir.token).toBe('parent');
+    });
+  });
 });
