@@ -7,7 +7,6 @@
  */
 
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
-import {Platform} from '@angular/cdk/platform';
 import {
   AfterViewInit,
   Attribute,
@@ -211,7 +210,7 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
   private _checkboxAdapter: MDCCheckboxAdapter = {
     addClass: (className) => this._setClass(className, true),
     removeClass: (className) => this._setClass(className, false),
-    forceLayout: () => this._platform.isBrowser && this._checkbox.nativeElement.offsetWidth,
+    forceLayout: () => this._checkbox.nativeElement.offsetWidth,
     hasNativeControl: () => !!this._nativeCheckbox,
     isAttachedToDOM: () => !!this._checkbox.nativeElement.parentNode,
     isChecked: () => this.checked,
@@ -233,7 +232,6 @@ export class MatCheckbox implements AfterViewInit, OnDestroy, ControlValueAccess
 
   constructor(
       private _changeDetectorRef: ChangeDetectorRef,
-      private _platform: Platform,
       @Attribute('tabindex') tabIndex: string,
       /**
        * @deprecated `_clickAction` parameter to be removed, use

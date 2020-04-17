@@ -23,7 +23,6 @@ ng_module(
     module_name = "@angular/material-experimental/mdc-checkbox",
     deps = [
         "//src/cdk/coercion",
-        "//src/cdk/platform",
         "//src/material/checkbox",
         "//src/material/core",
         "@npm//@angular/animations",
