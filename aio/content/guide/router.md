@@ -150,7 +150,7 @@ To get information from a route:
 
   1. Import `ActivatedRoute` and `ParamMap` to your component.
 
-    <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.ts" region="imports-route-info" header="In the component class (excerpt)">
+    <code-example path="router/src/app/items/item-detail/item-detail.component.ts" region="imports-route-info" header="In the component class (excerpt)">
     </code-example>
 
     These `import` statements add several important elements that your component needs.
@@ -162,7 +162,7 @@ To get information from a route:
 
   1. Inject an instance of `ActivatedRoute` by adding it to your application's constructor:
 
-    <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.ts" region="activated-route" header="In the component class (excerpt)">
+    <code-example path="router/src/app/items/item-detail/item-detail.component.ts" region="activated-route" header="In the component class (excerpt)">
     </code-example>
 
   1. Update the `ngOnInit()` method to access the `ActivatedRoute` and track the `id` parameter:
@@ -1140,20 +1140,20 @@ A typical application has multiple feature areas, each dedicated to a particular
 This section shows you how refactor the app into different feature modules, import them into the main module and navigate among them.
 
 
-{@a heroes-functionality}
+{@a items-functionality}
 
-### Add heroes functionality
+### Add items functionality
 
 Follow these steps:
 
-* To manage the heroes, create a `HeroesModule` with routing in the heroes folder and register it with the root `AppModule`.
+* To manage the items, create a `ItemsModule` with routing in the items folder and register it with the root `AppModule`.
 
 <code-example language="none" class="code-shell">
-  ng generate module heroes/heroes --module app --flat --routing
+  ng generate module items/items --module app --flat --routing
 </code-example>
 
-* Move the placeholder `hero-list` folder that's in the `app` folder into the `heroes` folder.
-* Copy the contents of the `heroes/heroes.component.html` from
+* Move the placeholder `hero-list` folder that's in the `app` folder into the `items` folder.
+* Copy the contents of the `items/items.component.html` from
   the <live-example name="toh-pt4" title="Tour of Heroes: Services example code">"Services" tutorial</live-example> into the `hero-list.component.html` template.
 
   * Re-label the `<h2>` to `<h2>HEROES</h2>`.
@@ -1368,7 +1368,7 @@ If you tell the router to navigate to the detail component and display "Magneta"
 
 
 <code-example format="nocode">
-  localhost:4200/hero/15
+  localhost:4200/item/15
 
 </code-example>
 
@@ -1400,7 +1400,7 @@ Accordingly, the _link parameters array_ has two items: the routing _path_ and a
 
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" header="src/app/heroes/hero-list/hero-list.component.html (link-parameters-array)" region="link-parameters-array"></code-example>
 
-The router composes the destination URL from the array like this: `localhost:4200/hero/15`.
+The router composes the destination URL from the array like this: `localhost:4200/item/15`.
 
 The router extracts the route parameter (`id:15`) from the URL and supplies it to
 the `HeroDetailComponent` via the `ActivatedRoute` service.
@@ -1412,31 +1412,31 @@ the `HeroDetailComponent` via the `ActivatedRoute` service.
 
 Import the `Router`, `ActivatedRoute`, and `ParamMap` tokens from the router package.
 
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.1.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (activated route)" region="imports"></code-example>
+<code-example path="router/src/app/items/item-detail/item-detail.component.1.ts" header="src/app/items/item-detail/item-detail.component.ts (activated route)" region="imports"></code-example>
 
 Import the `switchMap` operator because you need it later to process the `Observable` route parameters.
 
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (switchMap operator import)" region="rxjs-operator-import"></code-example>
+<code-example path="router/src/app/items/item-detail/item-detail.component.3.ts" header="src/app/items/item-detail/item-detail.component.ts (switchMap operator import)" region="rxjs-operator-import"></code-example>
 
 {@a hero-detail-ctor}
 
 Add the services as private variables to the constructor so that Angular injects them (makes them visible to the component).
 
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (constructor)" region="ctor"></code-example>
+<code-example path="router/src/app/items/item-detail/item-detail.component.3.ts" header="src/app/items/item-detail/item-detail.component.ts (constructor)" region="ctor"></code-example>
 
-In the `ngOnInit()` method, use the `ActivatedRoute` service to retrieve the parameters for the route, pull the hero `id` from the parameters, and retrieve the hero to display.
+In the `ngOnInit()` method, use the `ActivatedRoute` service to retrieve the parameters for the route, pull the item `id` from the parameters, and retrieve the item to display.
 
 
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (ngOnInit)" region="ngOnInit"></code-example>
+<code-example path="router/src/app/items/item-detail/item-detail.component.3.ts" header="src/app/items/item-detail/item-detail.component.ts (ngOnInit)" region="ngOnInit"></code-example>
 
 When the map changes, `paramMap` gets the `id` parameter from the changed parameters.
 
-Then you tell the `HeroService` to fetch the hero with that `id` and return the result of the `HeroService` request.
+Then you tell the `ItemService` to fetch the item with that `id` and return the result of the `ItemService` request.
 
-The `switchMap` operator does two things. It flattens the `Observable<Hero>` that `HeroService` returns and cancels previous pending requests.
-If the user re-navigates to this route with a new `id` while the `HeroService` is still retrieving the old `id`, `switchMap` discards that old request and returns the hero for the new `id`.
+The `switchMap` operator does two things. It flattens the `Observable<Item>` that `ItemService` returns and cancels previous pending requests.
+If the user re-navigates to this route with a new `id` while the `ItemService` is still retrieving the old `id`, `switchMap` discards that old request and returns the item for the new `id`.
 
-`AsyncPipe` handles the observable subscription and the component's `hero` property will be (re)set with the retrieved hero.
+`AsyncPipe` handles the observable subscription and the component's `item` property will be (re)set with the retrieved item.
 
 #### _ParamMap_ API
 
@@ -1533,8 +1533,8 @@ The `Router` destroys a routed component when it is no longer needed along with 
 #### `snapshot`: the no-observable alternative
 
 This application won't re-use the `HeroDetailComponent`.
-The user always returns to the hero list to select another hero to view.
-There's no way to navigate from one hero detail to another hero detail without visiting the list component in between.
+The user always returns to the item list to select another item to view.
+There's no way to navigate from one item detail to another item detail without visiting the list component in between.
 Therefore, the router creates a new `HeroDetailComponent` instance every time.
 
 When you know for certain that a `HeroDetailComponent` instance will never be re-used, you can use `snapshot`.
@@ -1542,7 +1542,7 @@ When you know for certain that a `HeroDetailComponent` instance will never be re
 `route.snapshot` provides the initial value of the route parameter map.
 You can access the parameters directly without subscribing or adding observable operators as in the following:
 
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.2.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (ngOnInit snapshot)" region="snapshot"></code-example>
+<code-example path="router/src/app/items/item-detail/item-detail.component.2.ts" header="src/app/items/item-detail/item-detail.component.ts (ngOnInit snapshot)" region="snapshot"></code-example>
 
 <div class="alert is-helpful">
 
@@ -1556,13 +1556,13 @@ This tutorial sample app uses with the observable `paramMap`.
 
 ### Navigating back to the list component
 
-The `HeroDetailComponent` "Back" button uses the `gotoHeroes()` method that navigates imperatively back to the `HeroListComponent`.
+The `ItemDetailComponent` "Back" button uses the `gotoItems()` method that navigates imperatively back to the `ItemListComponent`.
 
 The router `navigate()` method takes the same one-item _link parameters array_ that you can bind to a `[routerLink]` directive.
-It holds the path to the `HeroListComponent`:
+It holds the path to the `ItemListComponent`:
 
 
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.1.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (excerpt)" region="gotoHeroes"></code-example>
+<code-example path="router/src/app/items/item-detail/item-detail.component.1.ts" header="src/app/items/item-detail/item-detail.component.ts (excerpt)" region="gotoHeroes"></code-example>
 
 
 {@a optional-route-parameters}
@@ -1570,11 +1570,11 @@ It holds the path to the `HeroListComponent`:
 #### Route Parameters: Required or optional?
 
 Use [route parameters](#route-parameters) to specify a required parameter value within the route URL
-as you do when navigating to the `HeroDetailComponent` in order to view the hero with `id` 15:
+as you do when navigating to the `ItemDetailComponent` in order to view the item with `id` 15:
 
 
 <code-example format="nocode">
-  localhost:4200/hero/15
+  localhost:4200/item/15
 
 </code-example>
 
@@ -1611,41 +1611,41 @@ In general, use a required route parameter when the value is mandatory (for exam
 When navigating to the `HeroDetailComponent` you specified the required `id` of the hero-to-edit in the
 route parameter and made it the second item of the [_link parameters array_](#link-parameters-array).
 
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" header="src/app/heroes/hero-list/hero-list.component.html (link-parameters-array)" region="link-parameters-array"></code-example>
+<code-example path="router/src/app/items/item-list/item-list.component.1.html" header="src/app/items/item-list/item-list.component.html (link-parameters-array)" region="link-parameters-array"></code-example>
 
 The router embedded the `id` value in the navigation URL because you had defined it as a route parameter with an `:id` placeholder token in the route `path`:
 
-<code-example path="router/src/app/heroes/heroes-routing.module.1.ts" header="src/app/heroes/heroes-routing.module.ts (hero-detail-route)" region="hero-detail-route"></code-example>
+<code-example path="router/src/app/items/items-routing.module.1.ts" header="src/app/items/items-routing.module.ts (item-detail-route)" region="item-detail-route"></code-example>
 
-When the user clicks the back button, the `HeroDetailComponent` constructs another _link parameters array_
-which it uses to navigate back to the `HeroListComponent`.
+When the user clicks the back button, the `ItemDetailComponent` constructs another _link parameters array_
+which it uses to navigate back to the `ItemListComponent`.
 
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.1.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (gotoHeroes)" region="gotoHeroes"></code-example>
+<code-example path="router/src/app/items/item-detail/item-detail.component.1.ts" header="src/app/items/item-detail/item-detail.component.ts (gotoItems)" region="gotoItems"></code-example>
 
-This array lacks a route parameter because previously you didn't need to send information to the `HeroListComponent`.
+This array lacks a route parameter because previously you didn't need to send information to the `ItemListComponent`.
 
-Now, send the `id` of the current hero with the navigation request so that the
-`HeroListComponent` can highlight that hero in its list.
+Now, send the `id` of the current item with the navigation request so that the
+`ItemListComponent` can highlight that item in its list.
 
 Send the `id` with an object that contains an optional `id` parameter.
-For demonstration purposes, there's an extra junk parameter (`foo`) in the object that the `HeroListComponent` should ignore.
+For demonstration purposes, there's an extra junk parameter (`foo`) in the object that the `ItemListComponent` should ignore.
 Here's the revised navigation statement:
 
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (go to heroes)" region="gotoHeroes"></code-example>
+<code-example path="router/src/app/items/item-detail/item-detail.component.3.ts" header="src/app/items/item-detail/item-detail.component.ts (go to items)" region="gotoItems"></code-example>
 
-The application still works. Clicking "back" returns to the hero list view.
+The application still works. Clicking "back" returns to the item list view.
 
 Look at the browser address bar.
 
 It should look something like this, depending on where you run it:
 
 <code-example language="bash">
-  localhost:4200/heroes;id=15;foo=foo
+  localhost:4200/items;id=15;foo=foo
 
 </code-example>
 
 The `id` value appears in the URL as (`;id=15;foo=foo`), not in the URL path.
-The path for the "Heroes" route doesn't have an `:id` token.
+The path for the "Items" route doesn't have an `:id` token.
 
 The optional route parameters are not separated by "?" and "&" as they would be in the URL query string.
 They are separated by semicolons ";".
@@ -1990,35 +1990,35 @@ Here are the relevant files for this version of the sample application.
 
   </code-pane>
 
-  <code-pane header="hero-list.component.css" path="router/src/app/heroes/hero-list/hero-list.component.css">
+  <code-pane header="item-list.component.css" path="router/src/app/items/item-list/item-list.component.css">
 
   </code-pane>
 
-  <code-pane header="hero-list.component.html" path="router/src/app/heroes/hero-list/hero-list.component.html">
+  <code-pane header="item-list.component.html" path="router/src/app/items/item-list/item-list.component.html">
 
   </code-pane>
 
-  <code-pane header="hero-list.component.ts" path="router/src/app/heroes/hero-list/hero-list.component.ts">
+  <code-pane header="item-list.component.ts" path="router/src/app/items/item-list/item-list.component.ts">
 
   </code-pane>
 
-  <code-pane header="hero-detail.component.html" path="router/src/app/heroes/hero-detail/hero-detail.component.html">
+  <code-pane header="item-detail.component.html" path="router/src/app/items/item-detail/item-detail.component.html">
 
   </code-pane>
 
-  <code-pane header="hero-detail.component.ts" path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts">
+  <code-pane header="item-detail.component.ts" path="router/src/app/items/item-detail/item-detail.component.3.ts">
 
   </code-pane>
 
-  <code-pane header="hero.service.ts" path="router/src/app/heroes/hero.service.ts">
+  <code-pane header="item.service.ts" path="router/src/app/items/item.service.ts">
 
   </code-pane>
 
-  <code-pane header="heroes.module.ts" path="router/src/app/heroes/heroes.module.ts">
+  <code-pane header="items.module.ts" path="router/src/app/items/items.module.ts">
 
   </code-pane>
 
-  <code-pane header="heroes-routing.module.ts" path="router/src/app/heroes/heroes-routing.module.2.ts">
+  <code-pane header="items-routing.module.ts" path="router/src/app/items/items-routing.module.2.ts">
 
   </code-pane>
 
@@ -3345,24 +3345,24 @@ It also logs to the browser's console.
 
 You've setup the routes for navigating around your application and used navigation imperatively and declaratively.
 But like any application, requirements change over time.
-You've setup links and navigation to `/heroes` and `/hero/:id` from the `HeroListComponent` and `HeroDetailComponent` components.
-If there were a requirement that links to `heroes` become `superheroes`, you would still want the previous URLs to navigate correctly.
+You've setup links and navigation to `/items` and `/item/:id` from the `HeroListComponent` and `HeroDetailComponent` components.
+If there were a requirement that links to `items` become `exclusive-items`, you would still want the previous URLs to navigate correctly.
 You also don't want to update every link in your application, so redirects makes refactoring routes trivial.
 
 {@a url-refactor}
 
-#### Changing `/heroes` to `/superheroes`
+#### Changing `/items` to `/exclusive-items`
 
 This section guides you through migrating the `Hero` routes to new URLs.
-The `Router` checks for redirects in your configuration before navigating, so each redirect is triggered when needed. To support this change, add redirects from the old routes to the new routes in the `heroes-routing.module`.
+The `Router` checks for redirects in your configuration before navigating, so each redirect is triggered when needed. To support this change, add redirects from the old routes to the new routes in the `items-routing.module`.
 
-<code-example path="router/src/app/heroes/heroes-routing.module.ts" header="src/app/heroes/heroes-routing.module.ts (heroes redirects)"></code-example>
+<code-example path="router/src/app/items/items-routing.module.ts" header="src/app/items/items-routing.module.ts (items redirects)"></code-example>
 
 Notice two different types of redirects.
-The first change is from  `/heroes` to `/superheroes` without any parameters.
-The second change is from `/hero/:id` to `/superhero/:id`, which includes the `:id` route parameter.
+The first change is from  `/items` to `/exclusive-items` without any parameters.
+The second change is from `/item/:id` to `/exclusive-items/:id`, which includes the `:id` route parameter.
 Router redirects also use powerful pattern-matching, so the `Router` inspects the URL and replaces route parameters in the `path` with their appropriate destination.
-Previously, you navigated to a URL such as `/hero/15` with a route parameter `id` of `15`.
+Previously, you navigated to a URL such as `/item/15` with a route parameter `id` of `15`.
 
 <div class="alert is-helpful">
 
@@ -3373,22 +3373,22 @@ The `Router` also supports [query parameters](#query-parameters) and the [fragme
 
 </div>
 
-Currently, the empty path route redirects to `/heroes`, which redirects to `/superheroes`.
+Currently, the empty path route redirects to `/heroes`, which redirects to `/exclusive-items`.
 This won't work because the `Router` handles redirects once at each level of routing configuration.
 This prevents chaining of redirects, which can lead to endless redirect loops.
 
-Instead, update the empty path route in `app-routing.module.ts` to redirect to `/superheroes`.
+Instead, update the empty path route in `app-routing.module.ts` to redirect to `/exclusive-items`.
 
-<code-example path="router/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts (superheroes redirect)"></code-example>
+<code-example path="router/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts (exclusive-items redirect)"></code-example>
 
 A `routerLink` isn't tied to route configuration, so update the associated router links to remain active when the new route is active.
 Update the `app.component.ts` template for the `/heroes` `routerLink`.
 
-<code-example path="router/src/app/app.component.html" header="src/app/app.component.html (superheroes active routerLink)"></code-example>
+<code-example path="router/src/app/app.component.html" header="src/app/app.component.html (exclusive-items active routerLink)"></code-example>
 
-Update the `goToHeroes()` method in the `hero-detail.component.ts` to navigate back to `/superheroes` with the optional route parameters.
+Update the `goToHeroes()` method in the `hero-detail.component.ts` to navigate back to `/exclusive-items` with the optional route parameters.
 
-<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.ts" region="redirect" header="src/app/heroes/hero-detail/hero-detail.component.ts (goToHeroes)"></code-example>
+<code-example path="router/src/app/items/item-detail/item-detail.component.ts" region="redirect" header="src/app/items/item-detail/item-detail.component.ts (goToItems)"></code-example>
 
 With the redirects setup, all previous routes now point to their new destinations and both URLs still function as intended.
 
@@ -3425,7 +3425,7 @@ You can bind the `RouterLink` directive to such an array like this:
 
 The following is a two-element array when specifying a route parameter:
 
-<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" header="src/app/heroes/hero-list/hero-list.component.html (nav-to-detail)" region="nav-to-detail"></code-example>
+<code-example path="router/src/app/items/item-list/item-list.component.1.html" header="src/app/items/item-list/item-list.component.html (nav-to-detail)" region="nav-to-detail"></code-example>
 
 You can provide optional route parameters in an object, as in `{ foo: 'foo' }`:
 
@@ -3611,8 +3611,8 @@ There are no leading slashes in the path.
 The router parses and builds the final URL for you, which allows you to use both relative and absolute paths when navigating between application views.
 
 The `:id` in the second route is a token for a route parameter.
-In a URL such as `/hero/42`, "42" is the value of the `id` parameter.
-The corresponding `HeroDetailComponent` uses that value to find and present the hero whose `id` is 42.
+In a URL such as `/item/42`, "42" is the value of the `id` parameter.
+The corresponding `HeroDetailComponent` uses that value to find and present the item whose `id` is 42.
 
 The `data` property in the third route is a place to store arbitrary data associated with
 this specific route.
