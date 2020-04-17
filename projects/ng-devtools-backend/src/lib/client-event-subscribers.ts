@@ -16,7 +16,12 @@ import { serializeDirectiveState } from './state-serializer/state-serializer';
 import { ComponentInspector, ComponentInspectorOptions } from './component-inspector/component-inspector';
 import { setConsoleReference } from './selected-component';
 import { unHighlight } from './highlighter';
-import { getAngularVersion, appIsAngularInDevMode, appIsSupportedAngularVersion } from './angular-check';
+import {
+  getAngularVersion,
+  appIsAngularInDevMode,
+  appIsSupportedAngularVersion,
+  appIsAngularInProdMode,
+} from './angular-check';
 import { observeDOM, getDirectiveId, getDirectiveForest, indexDirectiveForest } from './component-tree-identifiers';
 import { debounceTime } from 'rxjs/operators';
 
@@ -123,7 +128,7 @@ const checkForAngular = (messageBus: MessageBus<Events>, attempt = 0): void => {
   const ngVersion = getAngularVersion();
   if (!!ngVersion) {
     observeDOM();
-    messageBus.emit('ngAvailability', [{ version: ngVersion.toString(), prodMode: false }]);
+    messageBus.emit('ngAvailability', [{ version: ngVersion.toString(), prodMode: appIsAngularInProdMode() }]);
     return;
   }
   setTimeout(() => checkForAngular(messageBus, attempt + 1), 500);
