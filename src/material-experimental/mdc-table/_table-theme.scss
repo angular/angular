@@ -1,10 +1,44 @@
 @import '../mdc-helpers/mdc-helpers';
+@import '@material/theme/functions.import';
+@import '@material/data-table/variables.import';
 @import '@material/data-table/mixins.import';
 
 @mixin mat-mdc-table-theme($theme) {
+  // Save original values of MDC global variables. We need to save these so we can restore the
+  // variables to their original values and prevent unintended side effects from using this mixin.
+  $orig-mdc-data-table-selected-row-fill-color: $mdc-data-table-selected-row-fill-color;
+  $orig-mdc-data-table-divider-color: $mdc-data-table-divider-color;
+  $orig-mdc-data-table-table-divider-color: $mdc-data-table-table-divider-color;
+  $orig-mdc-data-table-row-hover-fill-color: $mdc-data-table-row-hover-fill-color;
+  $orig-mdc-data-table-header-row-text-color: $mdc-data-table-header-row-text-color;
+  $orig-mdc-data-table-row-text-color: $mdc-data-table-row-text-color;
+  $orig-mdc-data-table-sort-icon-color: $mdc-data-table-sort-icon-color;
+  $orig-mdc-data-table-sort-icon-active-color: $mdc-data-table-sort-icon-active-color;
+  $orig-mdc-data-table-stroke-color: $mdc-data-table-stroke-color;
+
   @include mat-using-mdc-theme($theme) {
+    $mdc-data-table-selected-row-fill-color: rgba(mdc-theme-prop-value(primary), 0.04) !global;
+    $mdc-data-table-divider-color: rgba(mdc-theme-prop-value(on-surface), 0.12) !global;
+    $mdc-data-table-row-hover-fill-color: rgba(mdc-theme-prop-value(on-surface), 0.04) !global;
+    $mdc-data-table-header-row-text-color: rgba(mdc-theme-prop-value(on-surface), 0.87) !global;
+    $mdc-data-table-row-text-color: rgba(mdc-theme-prop-value(on-surface), 0.87) !global;
+    $mdc-data-table-sort-icon-color: rgba(mdc-theme-prop-value(on-surface), 0.6) !global;
+    $mdc-data-table-sort-icon-active-color: rgba(mdc-theme-prop-value(on-surface), 0.87) !global;
+    $mdc-data-table-stroke-color: rgba(mdc-theme-prop-value(on-surface), 0.12) !global;
+
     @include mdc-data-table-core-styles($query: $mat-theme-styles-query);
   }
+
+  // Restore original values of MDC global variables.
+  $mdc-data-table-selected-row-fill-color: $orig-mdc-data-table-selected-row-fill-color !global;
+  $mdc-data-table-divider-color: $orig-mdc-data-table-divider-color !global;
+  $mdc-data-table-table-divider-color: $orig-mdc-data-table-table-divider-color !global;
+  $mdc-data-table-row-hover-fill-color: $orig-mdc-data-table-row-hover-fill-color !global;
+  $mdc-data-table-header-row-text-color: $orig-mdc-data-table-header-row-text-color !global;
+  $mdc-data-table-row-text-color: $orig-mdc-data-table-row-text-color !global;
+  $mdc-data-table-sort-icon-color: $orig-mdc-data-table-sort-icon-color !global;
+  $mdc-data-table-sort-icon-active-color: $orig-mdc-data-table-sort-icon-active-color !global;
+  $mdc-data-table-stroke-color: $orig-mdc-data-table-stroke-color !global;
 }
 
 @mixin mat-mdc-table-typography($config) {
