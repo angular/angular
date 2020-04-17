@@ -76,6 +76,7 @@ options: {
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
+    timeout?: number,
   }
 ```
 
@@ -323,13 +324,15 @@ An app should give the user useful feedback when data access fails.
 A raw error object is not particularly useful as feedback.
 In addition to detecting that an error has occurred, you need to get error details and use those details to compose a user-friendly response.
 
-Two types of errors can occur.
+Three types of errors can occur.
 
 * The server backend might reject the request, returning an HTTP response with a status code such as 404 or 500. These are error _responses_.
 
 * Something could go wrong on the client-side such as a network error that prevents the request from completing successfully or an exception thrown in an RxJS operator. These errors produce JavaScript `ErrorEvent` objects.
 
-`HttpClient` captures both kinds of errors in its `HttpErrorResponse`. You can inspect that response to identify the error's cause.
+* The server took too long to respond. The timeout can be passed in as an optional parameter with the request object or the `HttpClient`'s request methods.
+
+`HttpClient` captures all three kinds of errors in its `HttpErrorResponse`. You can inspect that response to identify the error's cause.
 
 The following example defines an error handler in the previously defined [ConfigService](#config-service "ConfigService defined").
 

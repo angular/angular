@@ -105,6 +105,9 @@ export class HttpRequest<T> {
    */
   readonly withCredentials: boolean = false;
 
+  /**
+   * Time after which a request times out in ms.
+   */
   readonly timeout: number = 0;
 
   /**
