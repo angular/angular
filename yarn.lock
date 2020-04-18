@@ -1263,10 +1263,10 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
   integrity sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==
 
-"@swimlane/ngx-charts@^13.0.2":
-  version "13.0.2"
-  resolved "https://registry.yarnpkg.com/@swimlane/ngx-charts/-/ngx-charts-13.0.2.tgz#2ef02c7e8e37f782a7a962352bd27ce2bc2094dd"
-  integrity sha512-pKHw3DLsO2eso3SqMlHt9vumaU8gaDYZbrC8PNWteU49AFkX8kLVJIvsgjMSKwW/n3VpgHBpTMGnLkSlzHJORg==
+"@swimlane/ngx-charts@^14.0.0":
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/@swimlane/ngx-charts/-/ngx-charts-14.0.0.tgz#396b600cd2e9eedbc17cfba0b36f7b77e68615df"
+  integrity sha512-UiAleBA4Hs7IEB+5mSmn1ojntD32lpfR7BokuVUNkhWiX4CsljKsXgm1EwIw2A14JBu4g8EDjKrdbED79eShEA==
   dependencies:
     d3-array "^2.4.0"
     d3-brush "^1.1.5"
