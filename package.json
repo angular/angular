@@ -45,7 +45,7 @@
     "@angular/platform-browser": "github:angular/platform-browser-builds#3552b1ff8b38172ce402f49c2869146e459a1f9a",
     "@angular/platform-browser-dynamic": "github:angular/platform-browser-dynamic-builds#2fd19039790d6144d73fc32a8219847139900ad1",
     "@bahmutov/add-typescript-to-cypress": "^2.1.2",
-    "@swimlane/ngx-charts": "^13.0.2",
+    "@swimlane/ngx-charts": "^14.0.0",
     "angular-split": "^3.0.3",
     "clone-deep": "^4.0.1",
     "document-register-element": "^1.7.2",
