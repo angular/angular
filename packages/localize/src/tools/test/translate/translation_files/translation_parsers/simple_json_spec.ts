@@ -10,11 +10,16 @@ import {SimpleJsonTranslationParser} from '../../../../src/translate/translation
 
 describe('SimpleJsonTranslationParser', () => {
   describe('canParse()', () => {
-    it('should return true if the file extension  is `.json`', () => {
-      const parser = new SimpleJsonTranslationParser();
-      expect(parser.canParse('/some/file.xlf', '')).toBe(false);
-      expect(parser.canParse('/some/file.json', '')).toBe(true);
-    });
+    it('should return true if the file extension  is `.json` and contains top level `locale` and `translations` properties',
+       () => {
+         const parser = new SimpleJsonTranslationParser();
+         expect(parser.canParse('/some/file.xlf', '')).toBe(false);
+         expect(parser.canParse('/some/file.json', '{}')).toBe(false);
+         expect(parser.canParse('/some/file.json', '{ "translations" : {} }')).toBe(false);
+         expect(parser.canParse('/some/file.json', '{ "locale" : "fr" }')).toBe(false);
+         expect(parser.canParse('/some/file.json', '{ "locale" : "fr", "translations" : {}}'))
+             .toBeTruthy();
+       });
   });
 
   describe('parse()', () => {
