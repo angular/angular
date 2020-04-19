@@ -2003,8 +2003,12 @@ a successful upgrade.
 * 유닛 테스트 파일은 애플리케이션 코드와 같은 위치에 있기 때문에 찾기 쉽습니다. [테스트를 최적화](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#organizing-tests)하는 규칙도 잘 적용되었습니다.
 
 
+<!--
 ### Switching to TypeScript
+-->
+### TypeScript로 전환하기
 
+<!--
 Since you're going to be writing Angular code in TypeScript, it makes sense to
 bring in the TypeScript compiler even before you begin upgrading.
 
@@ -2091,9 +2095,83 @@ can verify you're calling their APIs with the correct kinds of arguments.
 
 <code-example path="upgrade-phonecat-1-typescript/app/app.config.ts" header="app/app.config.ts">
 </code-example>
+-->
+Angular는 TypeScript로 구현하기 때문에 AngularJS 앱을 업그레이드하기 전에 TypeScript 컴파일러를 먼저 도입하는 방법도 고려할 수 있습니다.
+
+그리고 의존성 패키지를 설치할 때 Bower 패키지 매니저를 사용했다면 이제는 모든 의존성 패키지를 npm으로 설치하기 때문에 최종적으로 Bower는 프로젝트에서 제거될 것입니다.
+
+프로젝트에 TypeScript를 설치하는 것부터 시작해 봅시다.
+
+<code-example format="">
+  npm i typescript --save-dev
+</code-example>
+
+설치하는 의존성 패키지에 타입 정의 파일이 있다면 그대로 사용할 수 없지만 패키지가 제공하지 않는 경우에는 추가로 타입 정의 패키지를 설치해야 합니다.
+다음 명령을 실행해서 AngularJS 프레임워크와 Jasmine 유닛 테스트 프레임워크의 타입 정의 패키지를 설치합니다.
+
+<code-example format="">
+  npm install @types/jasmine @types/angular @types/angular-animate @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize --save-dev
+</code-example>
+
+필요한 패키지를 설치하고 나면 [TypeScript 환경 설정](guide/typescript-configuration) 가이드 문서에 따라 `tsconfig.json` TypeScript 컴파일러 환경 설정 파일을 프로젝트에 생성해야 합니다.
+`tsconfig.json` 파일을 정의하면 TypeScript 문법으로 작성한 파일을 CommonJS 모듈 형식로 구성되는 ES5 코드로 변환할 수 있습니다.
+
+그리고 `package.json` 파일에 TypeScript 파일들을 JavaScript로 변환하는 npm 스크립트를 추가합니다. 설정 파일을 지정하지 않으면 `tsconfig.json` 파일이 기본값으로 사용됩니다.:
+
+<code-example format="">
+  "scripts": {
+    "tsc": "tsc",
+    "tsc:w": "tsc -w",
+    ...
+</code-example>
+
+그리고 커맨드창에서 다음 명령을 실행하면 TypeScript 컴파일러를 워치 모드로 실행할 수 있습니다:
+
+<code-example format="">
+  npm run tsc:w
+</code-example>
+
+이제 이 프로세스를 백그라운드에서 실행되도록 두면 소스 코드가 저장될 때마다 감지하고 다시 컴파일합니다.
+
+다음으로 해야할 것은 JavaScript 파일을 TypeScript 문법으로 바꾸는 것입니다.
+그런데 TypeScript는 ECMAScript 2015의 상위 집합(super-set)이기 때문에 파일의 확장자를 `.js`에서 `.ts`로 바꾸기만 해도 모든 코드는 이전과 동일하게 동작합니다.
+그리고 위에서 실행한 TypeScript 컴파일러가 백그라운드에서 돌고 있기 때문에 `.js` 파일을 `.ts` 확장자로 바꾸는대로 다시 실행용 `.js` 파일로 컴파일됩니다.
+`npm start` 명령으로 HTTP 서버를 실행하고 있다면 브라우저로 빌드 결과를 확인할 수도 있습니다.
+
+이제 프로젝트에 TypeScript를 적용했기 때문에 이제 TypeScript 기능을 자유롭게 활용할 수 있습니다.
+AngularJS 애플리케이션의 활용도는 크게 넓어질 것입니다.
+
+다시 한 번 언급하지만 TypeScript는 ES2015의 상위집합입니다.
+그래서 ES5로 작성된 앱(PhoneCat 예제 포함)을 TypeScript로 전환하면 ES2015에 새로 도입된 기능을 포함해서 JavaScript 기능을 모두 통합할 수 있습니다.
+`let`이나 `const`는 물론이고 화살표 함수, 함수 인자 기본값, 비구조화 할당과 같은 문법이 이런 내용에 포함됩니다.
+
+다른 장점은 *안전한 타입으로* 코드를 작성할 수 있다는 것입니다.
+사실 이 기능은 AngularJS 타입 정의 패키지를 설치했을 때부터 이미 동작하고 있습니다.
+TypeScript는 Angular 모듈에 컴포넌트가 등록될 때와 같이 AngularJS API를 사용할 때마다 이 API가 올바르게 사용되었는지 계속 검사합니다.
+
+*타입 어노테이션(type annotation)*을 추가하면 TypeScript 타입 시스템에서 지원하는 기능 외에도 더 많은 기능을 추가할 수 있습니다.
+예를 들면 체크표시 필터의 인자는 반드시 불리언 타입이라는 것을 명시하는 식입니다.
+이런 정보를 추가하면 필터가 어떤 역할을 하는지 좀 더 명확하게 지정할 수 있습니다.
+
+<code-example path="upgrade-phonecat-1-typescript/app/core/checkmark/checkmark.filter.ts" header="app/core/checkmark/checkmark.filter.ts">
+</code-example>
+
+`Phone` 서비스에서 `$resource` 의존성 패키지는 `angular.resource.IResourceService`라는 타입으로 지정되어 있습니다.
+AngularJS를 위한 타입을 정의한 것입니다.
+
+<code-example path="upgrade-phonecat-1-typescript/app/core/phone/phone.service.ts" header="app/core/phone/phone.service.ts">
+</code-example>
+
+이 방식은 애플리케이션의 라우팅 규칙을 설정하는 `app.config.ts` 파일에도 적용할 수 있습니다.
+이 파일에 타입을 지정하면 API에 사용된 인자가 올바른지 검사할 수 있습니다.
+
+<code-example path="upgrade-phonecat-1-typescript/app/app.config.ts" header="app/app.config.ts">
+</code-example>
+
 
 <div class="alert is-helpful">
 
+<!--
 The [AngularJS 1.x type definitions](https://www.npmjs.com/package/@types/angular)
 you installed are not officially maintained by the Angular team,
 but are quite comprehensive. It is possible to make an AngularJS 1.x application
@@ -2104,9 +2182,17 @@ the `noImplicitAny` configuration option in `tsconfig.json`. This would
 cause the TypeScript compiler to display a warning when there's any code that
 does not yet have type annotations. You could use it as a guide to inform
 us about how close you are to having a fully annotated project.
+-->
+[AngularJS 1.x 타입 정의 파일](https://www.npmjs.com/package/@types/angular)은 Angular 팀이 관리하는 공식 패키지가 아닙니다.
+하지만 이 패키지를 활용하면 AngularJS 1.x 애플리케이션에 모든 타입을 지정할 수 있습니다.
+
+`tsconfig.json` 옵션에 `noImplicitAny`를 사용하는 것도 좋습니다.
+이 옵션을 설정하면 타입이 지정되지 않은 코드를 TypeScript 컴파일러가 발견했을 때 경고 메시지를 표시합니다.
+그래서 이렇게 설정해두면 프로젝트 전체에 타입을 지정하는 작업에 가이드로 활용할 수 있습니다.
 
 </div>
 
+<!--
 Another TypeScript feature you can make use of is *classes*. In particular, you
 can turn component controllers into classes. That way they'll be a step
 closer to becoming Angular component classes, which will make life
@@ -2148,6 +2234,38 @@ they're also constructor functions. But you only have the `Phone` factory
 in this project, and that's a bit special since it's an `ngResource`
 factory. So you won't be doing anything to it in the preparation stage.
 You'll instead turn it directly into an Angular service.
+-->
+TypeScript 기능 중에서는 *클래스*도 활용해볼만 합니다.
+컴포넌트 컨트롤러를 클래스로 전환하면 좀 더 Angular 컴포넌트 클래스에 가깝게 구현할 수 있으며, 이후에 Angular로 업그레이드하는 데에도 도움이 됩니다.
+
+AngularJS는 컨트롤러를 생성자 함수처럼 간주하는데 이것은 ES2015/TypeScript에서 클래스가 맡는 역할과 정확히 동일하기 때문에 AngularJS에서도 클래스를 사용하는 것은 문제되지 않습니다.
+
+이 방식으로 컴포넌트 컨트롤러를 클래스로 구현하면 다음과 같은 코드가 됩니다:
+
+<code-example path="upgrade-phonecat-1-typescript/app/phone-list/phone-list.component.ts" header="app/phone-list/phone-list.component.ts">
+</code-example>
+
+이전에 컨트롤러 함수에 작성했던 로직을 클래스 생성자 함수에 작성해도 이전과 동일하게 동작합니다.
+의존성을 주입하기 위해 `$inject`는 정적 프로퍼티로 선언했기 때문에 실행시점에는 `PhoneListController.$inject`로 접근할 수 있습니다.
+
+그리고 이 클래스는 전화번호 목록, 정렬키 이름, 검색 쿼리 이렇게 3개의 멤버가 더 정의되어 있습니다.
+이 멤버들도 이전에는 컨트롤러에 정의했던 것이지만 어디에 정의했는지는 확실하지 않을 수 있습니다.
+이 때 마지막 멤버는 TypeScript 코드 중에는 아무곳에서도 사용되지 않고 템플릿에서만 사용하기 때문에 그대로 옮겨주었습니다.
+
+Phone 상세정보 컨트롤러에는 2개의 멤버가 있습니다.
+하나는 사용자가 찾으려고 하는 핸드폰 객체이며, 다른 하나는 화면에 표시될 이미지 파일의 URL입니다:
+
+<code-example path="upgrade-phonecat-1-typescript/app/phone-detail/phone-detail.component.ts" header="app/phone-detail/phone-detail.component.ts">
+</code-example>
+
+이렇게만 작성해도 컨트롤러 코드는 좀 더 Angular처럼 보입니다.
+그리고 프로젝트에 Angular를 도입하기 위한 준비도 모두 끝났습니다.
+
+AngularJS 프로젝트에 서비스가 있다면 이 서비스도 컨트롤러와 마찬가지로 클래스로 전환할만 합니다.
+서비스도 생성자 함수이기 때문입니다.
+다만 지금 다루는 예제 앱에서는 `Phone` 팩토리만 존재하기 때문에 준비단계에서 해야할 것은 끝났습니다.
+이제부터 추가되는 서비스는 Angular로 직접 구현하면 됩니다.
+
 
 ### Installing Angular
 
