@@ -11,6 +11,7 @@ ts_library(
         "//dev-infra/commit-message",
         "//dev-infra/format",
         "//dev-infra/pullapprove",
+        "//dev-infra/release",
         "//dev-infra/ts-circular-dependencies",
         "//dev-infra/utils",
         "@npm//@types/node",
