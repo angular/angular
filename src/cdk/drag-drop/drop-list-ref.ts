@@ -367,11 +367,20 @@ export class DropListRef<T = any> {
    * @param items Items that are a part of this list.
    */
   withItems(items: DragRef[]): this {
+    const previousItems = this._draggables;
     this._draggables = items;
     items.forEach(item => item._withDropContainer(this));
 
     if (this.isDragging()) {
-      this._cacheItems();
+      const draggedItems = previousItems.filter(item => item.isDragging());
+
+      // If all of the items being dragged were removed
+      // from the list, abort the current drag sequence.
+      if (draggedItems.every(item => items.indexOf(item) === -1)) {
+        this._reset();
+      } else {
+        this._cacheItems();
+      }
     }
 
     return this;
@@ -631,7 +640,13 @@ export class DropListRef<T = any> {
     (styles as any).scrollSnapType = styles.msScrollSnapType = this._initialScrollSnap;
 
     // TODO(crisbeto): may have to wait for the animations to finish.
-    this._activeDraggables.forEach(item => item.getRootElement().style.transform = '');
+    this._activeDraggables.forEach(item => {
+      const rootElement = item.getRootElement();
+
+      if (rootElement) {
+        rootElement.style.transform = '';
+      }
+    });
     this._siblings.forEach(sibling => sibling._stopReceiving(this));
     this._activeDraggables = [];
     this._itemPositions = [];
