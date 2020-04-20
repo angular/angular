@@ -19,7 +19,3 @@ export interface MessageRenderer<T> {
   startIcu(): void;
   endIcu(): void;
 }
-
-export function stripInterpolationMarkers(interpolation: string): string {
-  return interpolation.replace(/^\{\{/, '').replace(/}}$/, '');
-}
