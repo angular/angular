@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵisMissingTranslationError, ɵmakeTemplateObject, ɵParsedTranslation, ɵtranslate} from '@angular/localize';
+import {ɵisMissingTranslationError, ɵmakeTemplateObject, ɵParsedTranslation, ɵSourceLocation, ɵtranslate} from '@angular/localize';
 import {NodePath} from '@babel/traverse';
 import * as t from '@babel/types';
 import {Diagnostics} from './diagnostics';
@@ -353,4 +353,13 @@ export function buildCodeFrameError(path: NodePath, e: BabelParseError): string 
   const filename = path.hub.file.opts.filename || '(unknown file)';
   const message = path.hub.file.buildCodeFrameError(e.node, e.message).message;
   return `${filename}: ${message}`;
+}
+
+export function getLocation(path: NodePath): ɵSourceLocation|undefined {
+  return path.node.loc && path.hub.file.opts.filename ? {
+    start: {...path.node.loc.start},
+    end: {...path.node.loc.end},
+    file: path.hub.file.opts.filename
+  } :
+                                                        undefined;
 }
