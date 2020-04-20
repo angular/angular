@@ -24,7 +24,7 @@ import {
 import {MDCRadioAdapter, MDCRadioFoundation} from '@material/radio';
 import {
   MAT_RADIO_DEFAULT_OPTIONS,
-  MatRadioButton as BaseMatRadioButton,
+  _MatRadioButtonBase,
   MatRadioDefaultOptions,
   MatRadioGroup as BaseMatRadioGroup,
 } from '@angular/material/radio';
@@ -71,8 +71,8 @@ const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
 })
 export class MatRadioGroup extends BaseMatRadioGroup {
   /** Child radio buttons. */
-  @ContentChildren(forwardRef(() => MatRadioButton), { descendants: true })
-      _radios: QueryList<BaseMatRadioButton>;
+  @ContentChildren(forwardRef(() => MatRadioButton), {descendants: true})
+      _radios: QueryList<_MatRadioButtonBase>;
 }
 
 @Component({
@@ -81,9 +81,6 @@ export class MatRadioGroup extends BaseMatRadioGroup {
   styleUrls: ['radio.css'],
   host: {
     'class': 'mat-mdc-radio-button',
-    // Ivy will inherit the mat-radio-button class from the parent class, but we do not want
-    // this to be applied in the MDC component. Set this explicitly to false so it is not applied.
-    '[class.mat-radio-button]': 'false',
     '[attr.id]': 'id',
     '[class.mat-primary]': 'color === "primary"',
     '[class.mat-accent]': 'color === "accent"',
@@ -102,7 +99,7 @@ export class MatRadioGroup extends BaseMatRadioGroup {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatRadioButton extends BaseMatRadioButton implements AfterViewInit, OnDestroy {
+export class MatRadioButton extends _MatRadioButtonBase implements AfterViewInit, OnDestroy {
 
   private _radioAdapter: MDCRadioAdapter = {
     addClass: (className: string) => this._setClass(className, true),

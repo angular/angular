@@ -328,38 +328,13 @@ const _MatRadioButtonMixinBase:
         mixinDisableRipple(mixinTabIndex(MatRadioButtonBase));
 
 /**
- * A Material design radio-button. Typically placed inside of `<mat-radio-group>` elements.
+ * Base class with all of the `MatRadioButton` functionality.
+ * @docs-private
  */
-@Component({
-  selector: 'mat-radio-button',
-  templateUrl: 'radio.html',
-  styleUrls: ['radio.css'],
-  inputs: ['disableRipple', 'tabIndex'],
-  encapsulation: ViewEncapsulation.None,
-  exportAs: 'matRadioButton',
-  host: {
-    'class': 'mat-radio-button',
-    '[class.mat-radio-checked]': 'checked',
-    '[class.mat-radio-disabled]': 'disabled',
-    '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
-    '[class.mat-primary]': 'color === "primary"',
-    '[class.mat-accent]': 'color === "accent"',
-    '[class.mat-warn]': 'color === "warn"',
-    // Needs to be -1 so the `focus` event still fires.
-    '[attr.tabindex]': '-1',
-    '[attr.id]': 'id',
-    '[attr.aria-label]': 'null',
-    '[attr.aria-labelledby]': 'null',
-    '[attr.aria-describedby]': 'null',
-    // Note: under normal conditions focus shouldn't land on this element, however it may be
-    // programmatically set, for example inside of a focus trap, in this case we want to forward
-    // the focus to the native element.
-    '(focus)': '_inputElement.nativeElement.focus()',
-  },
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class MatRadioButton extends _MatRadioButtonMixinBase
-    implements OnInit, AfterViewInit, OnDestroy, CanDisableRipple, HasTabIndex {
+@Directive()
+// tslint:disable-next-line:class-name
+export abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBase implements OnInit,
+  AfterViewInit, OnDestroy, CanDisableRipple, HasTabIndex {
 
   private _uniqueId: string = `mat-radio-${++nextUniqueId}`;
 
@@ -605,4 +580,39 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
   static ngAcceptInputType_disabled: BooleanInput;
   static ngAcceptInputType_required: BooleanInput;
   static ngAcceptInputType_disableRipple: BooleanInput;
+}
+
+
+/**
+ * A Material design radio-button. Typically placed inside of `<mat-radio-group>` elements.
+ */
+@Component({
+  selector: 'mat-radio-button',
+  templateUrl: 'radio.html',
+  styleUrls: ['radio.css'],
+  inputs: ['disableRipple', 'tabIndex'],
+  encapsulation: ViewEncapsulation.None,
+  exportAs: 'matRadioButton',
+  host: {
+    'class': 'mat-radio-button',
+    '[class.mat-radio-checked]': 'checked',
+    '[class.mat-radio-disabled]': 'disabled',
+    '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
+    '[class.mat-primary]': 'color === "primary"',
+    '[class.mat-accent]': 'color === "accent"',
+    '[class.mat-warn]': 'color === "warn"',
+    // Needs to be -1 so the `focus` event still fires.
+    '[attr.tabindex]': '-1',
+    '[attr.id]': 'id',
+    '[attr.aria-label]': 'null',
+    '[attr.aria-labelledby]': 'null',
+    '[attr.aria-describedby]': 'null',
+    // Note: under normal conditions focus shouldn't land on this element, however it may be
+    // programmatically set, for example inside of a focus trap, in this case we want to forward
+    // the focus to the native element.
+    '(focus)': '_inputElement.nativeElement.focus()',
+  },
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class MatRadioButton extends _MatRadioButtonBase {
 }
