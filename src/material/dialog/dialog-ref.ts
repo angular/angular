@@ -74,7 +74,7 @@ export class MatDialogRef<T, R = any> {
       take(1)
     ).subscribe(() => {
       clearTimeout(this._closeFallbackTimeout);
-      this._overlayRef.dispose();
+      this._finishDialogClose();
     });
 
     _overlayRef.detachments().subscribe(() => {
@@ -119,7 +119,6 @@ export class MatDialogRef<T, R = any> {
     .subscribe(event => {
       this._beforeClosed.next(dialogResult);
       this._beforeClosed.complete();
-      this._state = MatDialogState.CLOSED;
       this._overlayRef.detachBackdrop();
 
       // The logic that disposes of the overlay depends on the exit animation completing, however
@@ -127,9 +126,8 @@ export class MatDialogRef<T, R = any> {
       // timeout which will clean everything up if the animation hasn't fired within the specified
       // amount of time plus 100ms. We don't need to run this outside the NgZone, because for the
       // vast majority of cases the timeout will have been cleared before it has the chance to fire.
-      this._closeFallbackTimeout = setTimeout(() => {
-        this._overlayRef.dispose();
-      }, event.totalTime + 100);
+      this._closeFallbackTimeout = setTimeout(() => this._finishDialogClose(),
+          event.totalTime + 100);
     });
 
     this._containerInstance._startExitAnimation();
@@ -221,6 +219,15 @@ export class MatDialogRef<T, R = any> {
   /** Gets the current state of the dialog's lifecycle. */
   getState(): MatDialogState {
     return this._state;
+  }
+
+  /**
+   * Finishes the dialog close by updating the state of the dialog
+   * and disposing the overlay.
+   */
+  private _finishDialogClose() {
+    this._state = MatDialogState.CLOSED;
+    this._overlayRef.dispose();
   }
 
   /** Fetches the position strategy object from the overlay ref. */
