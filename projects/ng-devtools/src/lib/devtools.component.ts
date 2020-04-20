@@ -18,6 +18,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class DevToolsComponent implements OnInit, OnDestroy {
   angularExists: boolean | null = null;
   angularVersion: string | boolean | undefined = undefined;
+  ivy: boolean;
 
   constructor(private _messageBus: MessageBus<Events>, private _snackBar: MatSnackBar) {}
 
@@ -31,9 +32,10 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     console.log('Initialized the devtools UI');
 
-    this._messageBus.once('ngAvailability', ({ version, prodMode }) => {
+    this._messageBus.once('ngAvailability', ({ version, prodMode, ivy }) => {
       this.angularExists = !!version;
       this.angularVersion = version;
+      this.ivy = ivy;
       if (prodMode) {
         this._snackBar.open(
           'Production mode detected. Angular DevTools has limited functionality in production mode.',
@@ -49,11 +51,11 @@ export class DevToolsComponent implements OnInit, OnDestroy {
     if (!this.angularVersion) {
       return -1;
     }
-    return +this.angularVersion.toString().split('.')[0];
+    return parseInt(this.angularVersion.toString().split('.')[0], 10);
   }
 
   get supportedVersion(): boolean {
-    return this.majorAngularVersion >= 9 || this.majorAngularVersion === 0;
+    return (this.majorAngularVersion >= 9 || this.majorAngularVersion === 0) && this.ivy;
   }
 
   ngOnDestroy(): void {

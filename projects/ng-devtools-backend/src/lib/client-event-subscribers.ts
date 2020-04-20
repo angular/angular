@@ -21,6 +21,7 @@ import {
   appIsAngularInDevMode,
   appIsSupportedAngularVersion,
   appIsAngularInProdMode,
+  appIsAngularIvy,
 } from './angular-check';
 import { observeDOM, getDirectiveId, getDirectiveForest, indexDirectiveForest } from './component-tree-identifiers';
 import { debounceTime } from 'rxjs/operators';
@@ -128,7 +129,9 @@ const checkForAngular = (messageBus: MessageBus<Events>, attempt = 0): void => {
   const ngVersion = getAngularVersion();
   if (!!ngVersion) {
     observeDOM();
-    messageBus.emit('ngAvailability', [{ version: ngVersion.toString(), prodMode: appIsAngularInProdMode() }]);
+    messageBus.emit('ngAvailability', [
+      { version: ngVersion.toString(), prodMode: appIsAngularInProdMode(), ivy: appIsAngularIvy() },
+    ]);
     return;
   }
   setTimeout(() => checkForAngular(messageBus, attempt + 1), 500);
