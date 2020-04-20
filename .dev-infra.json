@@ -43,5 +43,28 @@
       "ve",
       "zone.js"
     ]
+  },
+  "format": {
+    "matchers": [
+      "dev-infra/**/*.{js,ts}",
+      "packages/**/*.{js,ts}",
+      "!packages/zone.js",
+      "!packages/common/locales/**/*.{js,ts}",
+      "!packages/common/src/i18n/available_locales.ts",
+      "!packages/common/src/i18n/currencies.ts",
+      "!packages/common/src/i18n/locale_en.ts",
+      "modules/benchmarks/**/*.{js,ts}",
+      "modules/e2e_util/**/*.{js,ts}",
+      "modules/playground/**/*.{js,ts}",
+      "tools/**/*.{js,ts}",
+      "!tools/gulp-tasks/cldr/extract.js",
+      "!tools/public_api_guard/**/*.d.ts",
+      "!tools/ts-api-guardian/test/fixtures/**",
+      "./*.{js,ts}",
+      "!**/node_modules/**",
+      "!**/dist/**",
+      "!**/built/**",
+      "!shims_for_IE.js"
+    ]
   }
 }
