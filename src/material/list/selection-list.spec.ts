@@ -494,6 +494,7 @@ describe('MatSelectionList without forms', () => {
     });
 
     it('should select all items using ctrl + a', () => {
+      listOptions.forEach(option => option.componentInstance.disabled = false);
       const event = createKeyboardEvent('keydown', A, selectionList.nativeElement);
       Object.defineProperty(event, 'ctrlKey', {get: () => true});
 
@@ -503,6 +504,23 @@ describe('MatSelectionList without forms', () => {
       fixture.detectChanges();
 
       expect(listOptions.every(option => option.componentInstance.selected)).toBe(true);
+    });
+
+    it('should not select disabled items when pressing ctrl + a', () => {
+      const event = createKeyboardEvent('keydown', A, selectionList.nativeElement);
+      Object.defineProperty(event, 'ctrlKey', {get: () => true});
+
+      listOptions.slice(0, 2).forEach(option => option.componentInstance.disabled = true);
+      fixture.detectChanges();
+
+      expect(listOptions.map(option => option.componentInstance.selected))
+          .toEqual([false, false, false, false, false]);
+
+      dispatchEvent(selectionList.nativeElement, event);
+      fixture.detectChanges();
+
+      expect(listOptions.map(option => option.componentInstance.selected))
+          .toEqual([false, false, true, true, true]);
     });
 
     it('should select all items using ctrl + a if some items are selected', () => {
@@ -617,11 +635,40 @@ describe('MatSelectionList without forms', () => {
       expect(list.options.toArray().every(option => option.selected)).toBe(true);
     });
 
+    it('should be able to select all options, even if they are disabled', () => {
+      const list: MatSelectionList = selectionList.componentInstance;
+
+      list.options.forEach(option => option.disabled = true);
+      fixture.detectChanges();
+
+      expect(list.options.toArray().every(option => option.selected)).toBe(false);
+
+      list.selectAll();
+      fixture.detectChanges();
+
+      expect(list.options.toArray().every(option => option.selected)).toBe(true);
+    });
+
     it('should be able to deselect all options', () => {
       const list: MatSelectionList = selectionList.componentInstance;
 
       list.options.forEach(option => option.toggle());
       expect(list.options.toArray().every(option => option.selected)).toBe(true);
+
+      list.deselectAll();
+      fixture.detectChanges();
+
+      expect(list.options.toArray().every(option => option.selected)).toBe(false);
+    });
+
+    it('should be able to deselect all options, even if they are disabled', () => {
+      const list: MatSelectionList = selectionList.componentInstance;
+
+      list.options.forEach(option => option.toggle());
+      expect(list.options.toArray().every(option => option.selected)).toBe(true);
+
+      list.options.forEach(option => option.disabled = true);
+      fixture.detectChanges();
 
       list.deselectAll();
       fixture.detectChanges();
