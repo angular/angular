@@ -32,7 +32,15 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {FormControl, FormsModule, NgForm, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  FormControl,
+  FormsModule,
+  NgForm,
+  ReactiveFormsModule,
+  Validators,
+  FormGroup,
+  FormBuilder,
+} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -935,6 +943,23 @@ describe('MatChipList', () => {
           .toBeFalsy(`Expected chip with the old value not to be selected.`);
       });
     });
+
+    it('should keep the disabled state in sync if the form group is swapped and ' +
+      'disabled at the same time', fakeAsync(() => {
+        fixture = createComponent(ChipListInsideDynamicFormGroup);
+        fixture.detectChanges();
+        const instance = fixture.componentInstance;
+        const list: MatChipList = instance.chipList;
+
+        expect(list.disabled).toBe(false);
+        expect(list.chips.toArray().every(chip => chip.disabled)).toBe(false);
+
+        instance.assignGroup(true);
+        fixture.detectChanges();
+
+        expect(list.disabled).toBe(true);
+        expect(list.chips.toArray().every(chip => chip.disabled)).toBe(true);
+      }));
   });
 
   describe('chip list with chip input', () => {
@@ -1641,4 +1666,32 @@ class ChipListWithRemove {
 })
 class PreselectedChipInsideOnPush {
   control = new FormControl('Pizza');
+}
+
+
+@Component({
+  template: `
+    <form [formGroup]="form">
+      <mat-form-field>
+        <mat-chip-list formControlName="control">
+          <mat-chip>Pizza</mat-chip>
+          <mat-chip>Pasta</mat-chip>
+        </mat-chip-list>
+      </mat-form-field>
+    </form>
+  `
+})
+class ChipListInsideDynamicFormGroup {
+  @ViewChild(MatChipList) chipList: MatChipList;
+  form: FormGroup;
+
+  constructor(private _formBuilder: FormBuilder) {
+    this.assignGroup(false);
+  }
+
+  assignGroup(isDisabled: boolean) {
+    this.form = this._formBuilder.group({
+      control: {value: [], disabled: isDisabled}
+    });
+  }
 }

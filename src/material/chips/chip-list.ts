@@ -399,6 +399,10 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
       // error triggers that we can't subscribe to (e.g. parent form submissions). This means
       // that whatever logic is in here has to be super lean or we risk destroying the performance.
       this.updateErrorState();
+
+      if (this.ngControl.disabled !== this._disabled) {
+        this.disabled = !!this.ngControl.disabled;
+      }
     }
   }
 
