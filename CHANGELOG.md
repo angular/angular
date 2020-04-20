@@ -41,7 +41,8 @@
 * **upgrade:** update $locationShim to handle Location changes before initialization ([#36498](https://github.com/angular/angular/issues/36498)) ([a67afcc](https://github.com/angular/angular/commit/a67afcc)), closes [#36492](https://github.com/angular/angular/issues/36492)
 
 ### Performance Improvements
-* **ngcc:** only load  if it is needed ([#36486](https://github.com/angular/angular/issues/36486)) ([e06512b](https://github.com/angular/angular/commit/e06512b))                                                                             * **ngcc:** read dependencies from entry-point manifest ([#36486](https://github.com/angular/angular/issues/36486)) ([918e628](https://github.com/angular/angular/commit/918e628)), closes [#issuecomment-608401834](https://github.com/angular/angular/issues/issuecomment-608401834)
+* **ngcc:** only load  if it is needed ([#36486](https://github.com/angular/angular/issues/36486)) ([e06512b](https://github.com/angular/angular/commit/e06512b))                                                                             
+* **ngcc:** read dependencies from entry-point manifest ([#36486](https://github.com/angular/angular/issues/36486)) ([918e628](https://github.com/angular/angular/commit/918e628)), closes [#issuecomment-608401834](https://github.com/angular/angular/issues/issuecomment-608401834)
 * **ngcc:** reduce the size of the entry-point manifest file ([#36486](https://github.com/angular/angular/issues/36486)) ([603b094](https://github.com/angular/angular/commit/603b094))
 
 
