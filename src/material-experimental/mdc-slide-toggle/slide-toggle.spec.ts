@@ -299,11 +299,8 @@ describe('MDC-based MatSlideToggle without forms', () => {
     });
 
     it('should have a focus indicator', () => {
-      const slideToggleRippleNativeElement =
-          slideToggleElement.querySelector('.mat-mdc-slide-toggle-ripple')!;
-
-      expect(slideToggleRippleNativeElement.classList.contains('mat-mdc-focus-indicator'))
-          .toBe(true);
+      const underlayElement = slideToggleElement.querySelector('.mdc-switch__thumb-underlay')!;
+      expect(underlayElement.classList.contains('mat-mdc-focus-indicator')).toBe(true);
     });
   });
 

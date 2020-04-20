@@ -14,7 +14,7 @@
   display: inline-block;
 
   // The ripple needs extra specificity so the base ripple styling doesn't override its `position`.
-  .mat-mdc-slide-toggle-ripple, .mdc-switch__thumb-underlay::before {
+  .mat-mdc-slide-toggle-ripple, .mdc-switch__thumb-underlay::after {
     @include mat-fill;
 
     // Disable pointer events for the ripple container so that it doesn't eat the mouse events meant
@@ -26,19 +26,21 @@
   // The MDC switch styles related to the hover state are intertwined with the MDC ripple styles.
   // We currently don't use the MDC ripple due to size concerns, therefore we need to add some
   // additional styles to restore the hover state.
-  .mdc-switch__thumb-underlay::before {
+  // We use `::after`, rather than `::before`, because `::before` is used by the
+  // generic strong focus indication styles.
+  .mdc-switch__thumb-underlay::after {
     border-radius: 50%;
     content: '';
     opacity: 0;
   }
 
-  .mdc-switch:hover .mdc-switch__thumb-underlay::before {
+  .mdc-switch:hover .mdc-switch__thumb-underlay::after {
     opacity: map-get($mdc-ripple-dark-ink-opacities, hover);
     transition: mdc-switch-transition-enter(opacity, 0, 75ms);
   }
 
   // Needs a little more specificity so the :hover styles don't override it.
-  &.mat-mdc-slide-toggle-focused .mdc-switch .mdc-switch__thumb-underlay::before {
+  &.mat-mdc-slide-toggle-focused .mdc-switch .mdc-switch__thumb-underlay::after {
     opacity: map-get($mdc-ripple-dark-ink-opacities, focus);
   }
 
@@ -57,7 +59,7 @@
   //  conditionally add them. Consider the size cost when deciding whether to switch.
   &._mat-animation-noopable {
     .mdc-switch__thumb-underlay,
-    .mdc-switch__thumb-underlay::before {
+    .mdc-switch__thumb-underlay::after {
       transition: none;
     }
   }
