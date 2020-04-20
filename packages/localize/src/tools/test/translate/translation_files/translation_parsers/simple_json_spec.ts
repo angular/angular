@@ -53,6 +53,7 @@ describe('SimpleJsonTranslationParser', () => {
       }`);
         expect(result.translations).toEqual({
           'Hello, {$ph_1}!': {
+            text: 'Bonjour, {$ph_1}!',
             messageParts: ɵmakeTemplateObject(['Bonjour, ', '!'], ['Bonjour, ', '!']),
             placeholderNames: ['ph_1']
           },

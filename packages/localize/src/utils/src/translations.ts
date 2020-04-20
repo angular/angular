@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {BLOCK_MARKER} from './constants';
-import {MessageId, ParsedMessage, parseMessage, TargetMessage} from './messages';
+import {MessageId, MessageMetadata, ParsedMessage, parseMessage, TargetMessage} from './messages';
 
 
 /**
  * A translation message that has been processed to extract the message parts and placeholders.
  */
-export interface ParsedTranslation {
+export interface ParsedTranslation extends MessageMetadata {
   messageParts: TemplateStringsArray;
   placeholderNames: string[];
 }
@@ -54,10 +54,12 @@ export function translate(
     substitutions: readonly any[]): [TemplateStringsArray, readonly any[]] {
   const message = parseMessage(messageParts, substitutions);
   // Look up the translation using the messageId, and then the legacyId if available.
-  let translation = translations[message.messageId];
+  let translation = translations[message.id];
   // If the messageId did not match a translation, try matching the legacy ids instead
-  for (let i = 0; i < message.legacyIds.length && translation === undefined; i++) {
-    translation = translations[message.legacyIds[i]];
+  if (message.legacyIds !== undefined) {
+    for (let i = 0; i < message.legacyIds.length && translation === undefined; i++) {
+      translation = translations[message.legacyIds[i]];
+    }
   }
   if (translation === undefined) {
     throw new MissingTranslationError(message);
@@ -85,8 +87,8 @@ export function translate(
  *
  * @param message the message to be parsed.
  */
-export function parseTranslation(message: TargetMessage): ParsedTranslation {
-  const parts = message.split(/{\$([^}]*)}/);
+export function parseTranslation(messageString: TargetMessage): ParsedTranslation {
+  const parts = messageString.split(/{\$([^}]*)}/);
   const messageParts = [parts[0]];
   const placeholderNames: string[] = [];
   for (let i = 1; i < parts.length - 1; i += 2) {
@@ -95,7 +97,11 @@ export function parseTranslation(message: TargetMessage): ParsedTranslation {
   }
   const rawMessageParts =
       messageParts.map(part => part.charAt(0) === BLOCK_MARKER ? '\\' + part : part);
-  return {messageParts: makeTemplateObject(messageParts, rawMessageParts), placeholderNames};
+  return {
+    text: messageString,
+    messageParts: makeTemplateObject(messageParts, rawMessageParts),
+    placeholderNames,
+  };
 }
 
 /**
@@ -106,7 +112,15 @@ export function parseTranslation(message: TargetMessage): ParsedTranslation {
  */
 export function makeParsedTranslation(
     messageParts: string[], placeholderNames: string[] = []): ParsedTranslation {
-  return {messageParts: makeTemplateObject(messageParts, messageParts), placeholderNames};
+  let messageString = messageParts[0];
+  for (let i = 0; i < placeholderNames.length - 1; i++) {
+    messageString += `{$${placeholderNames[i]}}${messageParts[i + 1]}`;
+  }
+  return {
+    text: messageString,
+    messageParts: makeTemplateObject(messageParts, messageParts),
+    placeholderNames
+  };
 }
 
 /**
@@ -123,7 +137,8 @@ export function makeTemplateObject(cooked: string[], raw: string[]): TemplateStr
 
 function describeMessage(message: ParsedMessage): string {
   const meaningString = message.meaning && ` - "${message.meaning}"`;
-  const legacy =
-      message.legacyIds.length > 0 ? ` [${message.legacyIds.map(l => `"${l}"`).join(', ')}]` : '';
-  return `"${message.messageId}"${legacy} ("${message.messageString}"${meaningString})`;
+  const legacy = message.legacyIds && message.legacyIds.length > 0 ?
+      ` [${message.legacyIds.map(l => `"${l}"`).join(', ')}]` :
+      '';
+  return `"${message.id}"${legacy} ("${message.text}"${meaningString})`;
 }
