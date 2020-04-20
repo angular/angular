@@ -26,7 +26,6 @@
     "test-non-ivy": "bazelisk test --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only",
     "test-fixme-ivy-aot": "bazelisk test --config=ivy --build_tag_filters=-no-ivy-aot --test_tag_filters=-no-ivy-aot",
     "list-fixme-ivy-targets": "bazelisk query --output=label 'attr(\"tags\", \"\\[.*fixme-ivy.*\\]\", //...) except kind(\"sh_binary\", //...) except kind(\"devmode_js_sources\", //...)' | sort",
-    "bazel": "bazelisk",
     "//circleci-win-comment": "See the test-win circleci job for why these are needed. If they are not needed anymore, remove them.",
     "circleci-win-ve": "bazelisk test --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only,-browser:chromium-local //packages/compiler-cli/... //tools/ts-api-guardian/...",
     "circleci-win-ivy": "bazelisk test --config=ivy --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot,-browser:chromium-local //packages/compiler-cli/... //tools/ts-api-guardian/...",
@@ -147,7 +146,7 @@
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
     "@angular/cli": "9.0.3",
-    "@bazel/bazelisk": "^1.3.0",
+    "@bazel/bazelisk": "^1.4.0",
     "@bazel/buildifier": "^0.29.0",
     "@bazel/ibazel": "^0.12.3",
     "@octokit/graphql": "^4.3.1",
