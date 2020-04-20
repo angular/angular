@@ -3013,6 +3013,23 @@ describe('CdkDrag', () => {
         expect(preview.style.transform).toBe('translate3d(8px, 33px, 0px)');
       }));
 
+    it('should not have the size of the inserted preview affect the size applied via matchSize',
+      fakeAsync(() => {
+        const fixture = createComponent(DraggableInHorizontalFlexDropZoneWithMatchSizePreview);
+        fixture.detectChanges();
+        const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+        const itemRect = item.getBoundingClientRect();
+
+        startDraggingViaMouse(fixture, item);
+        fixture.detectChanges();
+
+        const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+        const previewRect = preview.getBoundingClientRect();
+
+        expect(Math.floor(previewRect.width)).toBe(Math.floor(itemRect.width));
+        expect(Math.floor(previewRect.height)).toBe(Math.floor(itemRect.height));
+      }));
+
     it('should not throw when custom preview only has text', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZoneWithCustomTextOnlyPreview);
       fixture.detectChanges();
@@ -5791,6 +5808,40 @@ class PlainStandaloneDraggable {
 class PlainStandaloneDropList {
   @ViewChild(CdkDropList) dropList: CdkDropList;
 }
+
+
+@Component({
+  styles: [`
+    .list {
+      display: flex;
+      width: 100px;
+      flex-direction: row;
+    }
+
+    .item {
+      display: flex;
+      flex-grow: 1;
+      flex-basis: 0;
+      min-height: 50px;
+    }
+  `],
+  template: `
+    <div class="list" cdkDropList cdkDropListOrientation="horizontal">
+      <div *ngFor="let item of items" class="item" cdkDrag>
+        {{item}}
+
+        <ng-template cdkDragPreview [matchSize]="true">
+          <div class="item">{{item}}</div>
+        </ng-template>
+      </div>
+    </div>
+  `
+})
+class DraggableInHorizontalFlexDropZoneWithMatchSizePreview {
+  @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
+  items = ['Zero', 'One', 'Two'];
+}
+
 
 /**
  * Drags an element to a position on the page using the mouse.

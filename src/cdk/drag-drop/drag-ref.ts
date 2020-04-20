@@ -887,15 +887,17 @@ export class DragRef<T = any> {
     const previewTemplate = previewConfig ? previewConfig.template : null;
     let preview: HTMLElement;
 
-    if (previewTemplate) {
-      const viewRef = previewConfig!.viewContainer.createEmbeddedView(previewTemplate,
-                                                                      previewConfig!.context);
+    if (previewTemplate && previewConfig) {
+      // Measure the element before we've inserted the preview
+      // since the insertion could throw off the measurement.
+      const rootRect = previewConfig.matchSize ? this._rootElement.getBoundingClientRect() : null;
+      const viewRef = previewConfig.viewContainer.createEmbeddedView(previewTemplate,
+                                                                     previewConfig.context);
       viewRef.detectChanges();
       preview = getRootNode(viewRef, this._document);
       this._previewRef = viewRef;
-
-      if (previewConfig!.matchSize) {
-        matchElementSize(preview, this._rootElement);
+      if (previewConfig.matchSize) {
+        matchElementSize(preview, rootRect!);
       } else {
         preview.style.transform =
             getTransform(this._pickupPositionOnPage.x, this._pickupPositionOnPage.y);
@@ -903,7 +905,7 @@ export class DragRef<T = any> {
     } else {
       const element = this._rootElement;
       preview = deepCloneNode(element);
-      matchElementSize(preview, element);
+      matchElementSize(preview, element.getBoundingClientRect());
     }
 
     extendStyles(preview.style, {
@@ -1332,11 +1334,9 @@ function getRootNode(viewRef: EmbeddedViewRef<any>, _document: Document): HTMLEl
 /**
  * Matches the target element's size to the source's size.
  * @param target Element that needs to be resized.
- * @param source Element whose size needs to be matched.
+ * @param sourceRect Dimensions of the source element.
  */
-function matchElementSize(target: HTMLElement, source: HTMLElement): void {
-  const sourceRect = source.getBoundingClientRect();
-
+function matchElementSize(target: HTMLElement, sourceRect: ClientRect): void {
   target.style.width = `${sourceRect.width}px`;
   target.style.height = `${sourceRect.height}px`;
   target.style.transform = getTransform(sourceRect.left, sourceRect.top);
