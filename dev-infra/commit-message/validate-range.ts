@@ -11,6 +11,9 @@ import {parseCommitMessage, validateCommitMessage, ValidateCommitMessageOptions}
 // Whether the provided commit is a fixup commit.
 const isNonFixup = (m: string) => !parseCommitMessage(m).isFixup;
 
+// Extracts commit header (first line of commit message).
+const extractCommitHeader = (m: string) => parseCommitMessage(m).header;
+
 /** Validate all commits in a provided git commit range. */
 export function validateCommitRange(range: string) {
   // A random value is used as a string to allow for a definite split point in the git log result.
@@ -35,7 +38,9 @@ export function validateCommitRange(range: string) {
   const allCommitsInRangeValid = commits.every((m, i) => {
     const options: ValidateCommitMessageOptions = {
       disallowSquash: true,
-      nonFixupCommitHeaders: isNonFixup(m) ? undefined : commits.slice(0, i).filter(isNonFixup)
+      nonFixupCommitHeaders: isNonFixup(m) ?
+          undefined :
+          commits.slice(0, i).filter(isNonFixup).map(extractCommitHeader)
     };
     return validateCommitMessage(m, options);
   });
