@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ChangeDetectorRef, Component, ComponentFactoryResolver, Directive, EmbeddedViewRef, Injector, NgModule, TemplateRef, ViewChild, ViewContainerRef, ViewRef} from '@angular/core';
+import {ChangeDetectorRef, Component, ComponentFactoryResolver, Directive, EmbeddedViewRef, Injector, Input, NgModule, TemplateRef, ViewChild, ViewContainerRef, ViewRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {onlyInIvy} from '@angular/private/testing';
@@ -281,9 +281,9 @@ describe('view insertion', () => {
 
       function createAndInsertViews(beforeTpl: string): any {
         TestBed.overrideTemplate(TestCmpt, `
-          <ng-template #insert>insert</ng-template>  
+          <ng-template #insert>insert</ng-template>
           <ng-template #before>${beforeTpl}</ng-template>
-          
+
           <div><ng-template #vi="vi" viewInserting></ng-template></div>
         `);
         const fixture = TestBed.createComponent(TestCmpt);
@@ -377,12 +377,12 @@ describe('view insertion', () => {
       it('should insert before a ng-container with a ViewContainerRef on it', () => {
         @Component({
           selector: 'app-root',
-          template: `            
+          template: `
             <div>start|</div>
             <ng-container [ngTemplateOutlet]="insertTpl ? tpl : null"></ng-container>
             <ng-container [ngTemplateOutlet]="tpl"></ng-container>
             <div>|end</div>
-            
+
             <ng-template #tpl>test</ng-template>
           `
         })
@@ -398,11 +398,11 @@ describe('view insertion', () => {
         const fixture = TestBed.createComponent(AppComponent);
         fixture.detectChanges();
 
-        expect(fixture.debugElement.nativeElement.textContent).toBe('start|test|end');
+        expect(fixture.nativeElement.textContent).toBe('start|test|end');
 
         fixture.componentInstance.insertTpl = true;
         fixture.detectChanges();
-        expect(fixture.debugElement.nativeElement.textContent).toBe('start|testtest|end');
+        expect(fixture.nativeElement.textContent).toBe('start|testtest|end');
       });
     });
 
@@ -485,7 +485,7 @@ describe('view insertion', () => {
         @Component({
           selector: 'test-cmpt',
           template: `
-                <ng-template #insert>insert</ng-template>  
+                <ng-template #insert>insert</ng-template>
                 <div><ng-template #vi="vi" viewInserting></ng-template></div>
               `
         })
@@ -614,7 +614,7 @@ describe('view insertion', () => {
     it('should properly insert before views in a ViewContainerRef injected on ng-container', () => {
       @Component({
         selector: 'app-root',
-        template: `            
+        template: `
           <ng-template #parameterListItem let-parameter="parameter">
             {{parameter}}
           </ng-template>
@@ -641,6 +641,250 @@ describe('view insertion', () => {
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent.trim()).toContain('2  1');
+    });
+  });
+
+  describe('create mode error handling', () => {
+    it('should consistently report errors raised a directive constructor', () => {
+      @Directive({
+        selector: '[failInConstructorAlways]',
+      })
+      class FailInConstructorAlways {
+        constructor() {
+          throw new Error('Error in a constructor');
+        }
+      }
+
+      @Component({
+        template: `<div failInConstructorAlways></div>`,
+      })
+      class TestCmpt {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [TestCmpt, FailInConstructorAlways],
+      });
+
+      expect(() => {
+        TestBed.createComponent(TestCmpt);
+      }).toThrowError('Error in a constructor');
+
+      expect(() => {
+        TestBed.createComponent(TestCmpt);
+      }).toThrowError('Error in a constructor');
+    });
+
+    it('should render even if a directive constructor throws in the first create pass', () => {
+      let firstRun = true;
+
+      @Directive({
+        selector: '[failInConstructorOnce]',
+      })
+      class FailInConstructorOnce {
+        constructor() {
+          if (firstRun) {
+            firstRun = false;
+            throw new Error('Error in a constructor');
+          }
+        }
+      }
+
+      @Component({
+        template: `<div failInConstructorOnce>OK</div>`,
+      })
+      class TestCmpt {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [TestCmpt, FailInConstructorOnce],
+      });
+
+      expect(() => {
+        TestBed.createComponent(TestCmpt);
+      }).toThrowError('Error in a constructor');
+
+      const fixture = TestBed.createComponent(TestCmpt);
+      expect(fixture.nativeElement.textContent).toContain('OK');
+    });
+
+    onlyInIvy('Test depends on static inputs being set during creation')
+        .it('should consistently report errors raised a directive input setter', () => {
+          @Directive({
+            selector: '[failInInputAlways]',
+          })
+          class FailInInputAlways {
+            @Input()
+            set failInInputAlways(_: string) {
+              throw new Error('Error in an input');
+            }
+          }
+
+          @Component({
+            template: `<div failInInputAlways="static"></div>`,
+          })
+          class TestCmpt {
+          }
+
+          TestBed.configureTestingModule({
+            declarations: [TestCmpt, FailInInputAlways],
+          });
+
+          expect(() => {
+            TestBed.createComponent(TestCmpt);
+          }).toThrowError('Error in an input');
+
+          expect(() => {
+            TestBed.createComponent(TestCmpt);
+          }).toThrowError('Error in an input');
+        });
+
+    it('should consistently report errors raised a static query setter', () => {
+      @Directive({
+        selector: '[someDir]',
+      })
+      class SomeDirective {
+      }
+
+      @Component({
+        template: `<div someDir></div>`,
+      })
+      class TestCmpt {
+        @ViewChild(SomeDirective, {static: true})
+        set directive(_: SomeDirective) {
+          throw new Error('Error in static query setter');
+        }
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [TestCmpt, SomeDirective],
+      });
+
+      expect(() => {
+        TestBed.createComponent(TestCmpt);
+      }).toThrowError('Error in static query setter');
+
+      expect(() => {
+        TestBed.createComponent(TestCmpt);
+      }).toThrowError('Error in static query setter');
+    });
+
+    it('should match a static query, even if its setter throws in the first create pass', () => {
+      let hasThrown = false;
+
+      @Directive({
+        selector: '[someDir]',
+      })
+      class SomeDirective {
+      }
+
+      @Component({
+        template: `<div someDir></div>`,
+      })
+      class TestCmpt {
+        @ViewChild(SomeDirective, {static: true})
+        get directive() {
+          return this._directive;
+        }
+        set directive(directiveInstance: SomeDirective) {
+          if (!hasThrown) {
+            hasThrown = true;
+            throw new Error('Error in static query setter');
+          }
+
+          this._directive = directiveInstance;
+        }
+
+        private _directive!: SomeDirective;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [TestCmpt, SomeDirective],
+      });
+
+      expect(() => {
+        TestBed.createComponent(TestCmpt);
+      }).toThrowError('Error in static query setter');
+
+      const fixture = TestBed.createComponent(TestCmpt);
+
+      expect(fixture.componentInstance.directive).toBeInstanceOf(SomeDirective);
+    });
+
+    it('should render a recursive component if it throws during the first creation pass', () => {
+      let hasThrown = false;
+
+      @Component({
+        selector: 'test',
+        template: `<ng-content></ng-content>OK`,
+      })
+      class TestCmpt {
+        constructor() {
+          if (!hasThrown) {
+            hasThrown = true;
+            throw new Error('Error in a constructor');
+          }
+        }
+      }
+
+      @Component({
+        template: `<test><test><test></test></test></test>`,
+      })
+      class App {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, TestCmpt],
+      });
+
+      expect(() => {
+        TestBed.createComponent(App);
+      }).toThrowError('Error in a constructor');
+
+      const fixture = TestBed.createComponent(App);
+      expect(fixture.nativeElement.textContent).toContain('OKOKOK');
+    });
+
+    it('should continue detecting changes if a directive throws in its constructor', () => {
+      let firstRun = true;
+
+      @Directive({
+        selector: '[failInConstructorOnce]',
+      })
+      class FailInConstructorOnce {
+        constructor() {
+          if (firstRun) {
+            firstRun = false;
+            throw new Error('Error in a constructor');
+          }
+        }
+      }
+
+      @Component({
+        template: `<div failInConstructorOnce>{{value}}</div>`,
+      })
+      class TestCmpt {
+        value = 0;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [TestCmpt, FailInConstructorOnce],
+      });
+
+      expect(() => {
+        TestBed.createComponent(TestCmpt);
+      }).toThrowError('Error in a constructor');
+
+      const fixture = TestBed.createComponent(TestCmpt);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('0');
+
+      fixture.componentInstance.value = 1;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('1');
+
+      fixture.componentInstance.value = 2;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('2');
     });
   });
 });
