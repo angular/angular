@@ -10,6 +10,7 @@ import {
   TAB,
   UP_ARROW,
   A,
+  ESCAPE,
 } from '@angular/cdk/keycodes';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {Platform} from '@angular/cdk/platform';
@@ -3102,7 +3103,7 @@ describe('MatSelect', () => {
       expect(spy).toHaveBeenCalledWith('steak-0');
     }));
 
-    it('should set the value when options are clicked', fakeAsync(() => {
+    it('should select the active option when tabbing away while open', fakeAsync(() => {
       const fixture = TestBed.createComponent(BasicSelectWithoutForms);
       fixture.detectChanges();
       const select = fixture.nativeElement.querySelector('.mat-select');
@@ -3127,6 +3128,33 @@ describe('MatSelect', () => {
       expect(fixture.componentInstance.selectedFood).toBe('sandwich-2');
       expect(fixture.componentInstance.select.value).toBe('sandwich-2');
       expect(trigger.textContent).toContain('Sandwich');
+    }));
+
+    it('should not select the active option when tabbing away while close', fakeAsync(() => {
+      const fixture = TestBed.createComponent(BasicSelectWithoutForms);
+      fixture.detectChanges();
+      const select = fixture.nativeElement.querySelector('.mat-select');
+
+      expect(fixture.componentInstance.selectedFood).toBeFalsy();
+
+      const trigger = fixture.nativeElement.querySelector('.mat-select-trigger');
+
+      trigger.click();
+      fixture.detectChanges();
+      flush();
+
+      dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+      fixture.detectChanges();
+      dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+      fixture.detectChanges();
+      dispatchKeyboardEvent(select, 'keydown', ESCAPE);
+      fixture.detectChanges();
+
+      dispatchKeyboardEvent(select, 'keydown', TAB);
+      fixture.detectChanges();
+      flush();
+
+      expect(fixture.componentInstance.selectedFood).toBeFalsy();
     }));
 
     it('should not change the multiple value selection when tabbing away', fakeAsync(() => {
