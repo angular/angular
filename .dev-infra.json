@@ -54,7 +54,6 @@
       "!packages/common/src/i18n/currencies.ts",
       "!packages/common/src/i18n/locale_en.ts",
       "modules/benchmarks/**/*.{js,ts}",
-      "modules/e2e_util/**/*.{js,ts}",
       "modules/playground/**/*.{js,ts}",
       "tools/**/*.{js,ts}",
       "!tools/gulp-tasks/cldr/extract.js",
