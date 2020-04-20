@@ -26,33 +26,36 @@ function loadTask(fileName, taskName) {
   return task(gulp);
 }
 
-//#######################################################
-// A format and enforce task for different sets of files.
-//#######################################################
 
-// All source files.
-gulp.task('format:all', loadTask('format', 'format'));
-gulp.task('format:all:enforce', loadTask('format', 'enforce'));
-
-// Untracked source code files.
-gulp.task('format:untracked', loadTask('format', 'format-untracked'));
-gulp.task('format:untracked:enforce', loadTask('format', 'enforce-untracked'));
-
-// Changed, tracked source code files.
-gulp.task('format:diff', loadTask('format', 'format-diff'));
-gulp.task('format:diff:enforce', loadTask('format', 'enforce-diff'));
-
-// Changed, both tracked and untracked, source code files.
-gulp.task('format:changed', ['format:untracked', 'format:diff']);
-gulp.task('format:changed:enforce', ['format:untracked:enforce', 'format:diff:enforce']);
-
-// Alias for `format:changed` that formerly formatted all files.
-gulp.task('format', ['format:changed']);
-
-gulp.task('lint', ['format:changed:enforce']);
 gulp.task('source-map-test', loadTask('source-map-test'));
 gulp.task('changelog', loadTask('changelog'));
 gulp.task('changelog:zonejs', loadTask('changelog-zonejs'));
 gulp.task('check-env', () => {/* this is a noop because the env test ran already above */});
 gulp.task('cldr:extract', loadTask('cldr', 'extract'));
 gulp.task('cldr:gen-closure-locale', loadTask('cldr', 'closure'));
+
+
+// TODO(josephperrott): Remove old task entries and deprecation notice after deprecation period.
+/** Notify regarding `gulp format:*` deprecation. */
+function gulpFormatDeprecationNotice() {
+  console.info(`######################################################################`)
+  console.info(`gulp format is deprecated in favor of running the formatter via ng-dev`);
+  console.info();
+  console.info(`You can find more usage information by running:`);
+  console.info(`  yarn ng-dev format --help`);
+  console.info();
+  console.info(`For more on the rationale and effects of this deprecation visit:`);
+  console.info(`  https://github.com/angular/angular/pull/36726#issue-406278018`);
+  console.info(`######################################################################`)
+  process.exit(1);
+}
+gulp.task('format:all', gulpFormatDeprecationNotice);
+gulp.task('format:all:enforce', gulpFormatDeprecationNotice);
+gulp.task('format:untracked', gulpFormatDeprecationNotice);
+gulp.task('format:untracked:enforce', gulpFormatDeprecationNotice);
+gulp.task('format:diff', gulpFormatDeprecationNotice);
+gulp.task('format:diff:enforce', gulpFormatDeprecationNotice);
+gulp.task('format:changed', gulpFormatDeprecationNotice);
+gulp.task('format:changed:enforce', gulpFormatDeprecationNotice);
+gulp.task('format', gulpFormatDeprecationNotice);
+gulp.task('lint', gulpFormatDeprecationNotice);
