@@ -35,13 +35,19 @@ export function convertConditionToFunction(expr: string): (files: string[]) => b
   // in PullApprove condition expressions. The followed parameters correspond to other
   // context variables provided by PullApprove for conditions.
   const evaluateFn = new Function('files', ...Object.keys(conditionContext), `
-    return !!(${transformExpressionToJs(expr)});
+    return (${transformExpressionToJs(expr)});
   `);
 
   // Create a function that calls the dynamically constructed function which mimics
   // the condition expression that is usually evaluated with Python in PullApprove.
   return files => {
-    return evaluateFn(new PullApproveArray(...files), ...Object.values(conditionContext));
+    const result = evaluateFn(new PullApproveArray(...files), ...Object.values(conditionContext));
+    // If an array is returned, we consider the condition as active if the array is not
+    // empty. This matches PullApprove's condition evaluation that is based on Python.
+    if (Array.isArray(result)) {
+      return result.length !== 0;
+    }
+    return !!result;
   };
 }
 

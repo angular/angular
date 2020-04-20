@@ -11,7 +11,8 @@ import {PullApproveGroupConfig} from './parse-yaml';
 /** A condition for a group. */
 interface GroupCondition {
   expression: string;
-  checkFn: (files: string[]) => boolean, matchedFiles: Set<string>;
+  checkFn: (files: string[]) => boolean;
+  matchedFiles: Set<string>;
 }
 
 /** Result of testing files against the group. */
