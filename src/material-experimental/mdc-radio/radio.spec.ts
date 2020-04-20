@@ -399,7 +399,7 @@ describe('MDC-based MatRadio', () => {
           radioNativeElements.map(element => element.querySelector('.mat-radio-ripple')!);
 
       expect(radioRippleNativeElements
-          .every(element => element.classList.contains('mat-focus-indicator'))).toBe(true);
+          .every(element => element.classList.contains('mat-mdc-focus-indicator'))).toBe(true);
     });
 
   });

@@ -259,7 +259,7 @@ $mat-typography-level-mappings: (
   // the hidden input is focused (slightly different for each control).
   .mdc-checkbox__native-control:focus ~ .mat-mdc-focus-indicator::before,
   .mat-mdc-slide-toggle-focused .mat-mdc-focus-indicator::before,
-  .mat-mdc-radio-button.cdk-focused .mat-focus-indicator::before,
+  .mat-mdc-radio-button.cdk-focused .mat-mdc-focus-indicator::before,
 
   // For all other components, render the focus indicator on focus.
   .mat-mdc-focus-indicator:focus::before {
