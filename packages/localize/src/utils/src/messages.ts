@@ -39,6 +39,52 @@ export type TargetMessage = string;
 export type MessageId = string;
 
 /**
+ * The location of the message
+ */
+export interface SourceLocation {
+  start: {line: number, column: number};
+  end: {line: number, column: number};
+  file: string;
+}
+
+/**
+ * Additional information that can be associated with a message.
+ */
+export interface MessageMetadata {
+  /**
+   * A human readable rendering of the message
+   */
+  text: string;
+  /**
+   * A unique identifier for this message.
+   */
+  id?: MessageId;
+  /**
+   * Legacy message ids, if provided.
+   *
+   * In legacy message formats the message id can only be computed directly from the original
+   * template source.
+   *
+   * Since this information is not available in `$localize` calls, the legacy message ids may be
+   * attached by the compiler to the `$localize` metablock so it can be used if needed at the point
+   * of translation if the translations are encoded using the legacy message id.
+   */
+  legacyIds?: string[];
+  /**
+   * The meaning of the `message`, used to distinguish identical `messageString`s.
+   */
+  meaning?: string;
+  /**
+   * The description of the `message`, used to aid translation.
+   */
+  description?: string;
+  /**
+   * The location of the message in the source.
+   */
+  location?: SourceLocation;
+}
+
+/**
  * Information parsed from a `$localize` tagged string that is used to translate it.
  *
  * For example:
@@ -52,44 +98,23 @@ export type MessageId = string;
  *
  * ```
  * {
- *   messageId: '6998194507597730591',
+ *   id: '6998194507597730591',
  *   substitutions: { title: 'Jo Bloggs' },
  *   messageString: 'Hello {$title}!',
  * }
  * ```
  */
-export interface ParsedMessage {
+export interface ParsedMessage extends MessageMetadata {
   /**
    * The key used to look up the appropriate translation target.
-   */
-  messageId: MessageId;
-  /**
-   * Legacy message ids, if provided.
    *
-   * In legacy message formats the message id can only be computed directly from the original
-   * template source.
-   *
-   * Since this information is not available in `$localize` calls, the legacy message ids may be
-   * attached by the compiler to the `$localize` metablock so it can be used if needed at the point
-   * of translation if the translations are encoded using the legacy message id.
+   * In `ParsedMessage` this is a required field, whereas it is optional in `MessageMetadata`.
    */
-  legacyIds: MessageId[];
+  id: MessageId;
   /**
    * A mapping of placeholder names to substitution values.
    */
   substitutions: Record<string, any>;
-  /**
-   * A human readable rendering of the message
-   */
-  messageString: string;
-  /**
-   * The meaning of the `message`, used to distinguish identical `messageString`s.
-   */
-  meaning: string;
-  /**
-   * The description of the `message`, used to aid translation.
-   */
-  description: string;
   /**
    * The static parts of the message.
    */
@@ -106,7 +131,8 @@ export interface ParsedMessage {
  * See `ParsedMessage` for an example.
  */
 export function parseMessage(
-    messageParts: TemplateStringsArray, expressions?: readonly any[]): ParsedMessage {
+    messageParts: TemplateStringsArray, expressions?: readonly any[],
+    location?: SourceLocation): ParsedMessage {
   const substitutions: {[placeholderName: string]: any} = {};
   const metadata = parseMetadata(messageParts[0], messageParts.raw[0]);
   const cleanedMessageParts: string[] = [metadata.text];
@@ -123,25 +149,18 @@ export function parseMessage(
     cleanedMessageParts.push(messagePart);
   }
   const messageId = metadata.id || computeMsgId(messageString, metadata.meaning || '');
-  const legacyIds = metadata.legacyIds.filter(id => id !== messageId);
+  const legacyIds = metadata.legacyIds && metadata.legacyIds.filter(id => id !== messageId);
   return {
-    messageId,
+    id: messageId,
     legacyIds,
     substitutions,
-    messageString,
+    text: messageString,
     meaning: metadata.meaning || '',
     description: metadata.description || '',
     messageParts: cleanedMessageParts,
     placeholderNames,
+    location,
   };
-}
-
-export interface MessageMetadata {
-  text: string;
-  meaning: string|undefined;
-  description: string|undefined;
-  id: string|undefined;
-  legacyIds: string[];
 }
 
 /**
@@ -171,9 +190,9 @@ export interface MessageMetadata {
  * @returns A object containing any metadata that was parsed from the message part.
  */
 export function parseMetadata(cooked: string, raw: string): MessageMetadata {
-  const {text, block} = splitBlock(cooked, raw);
+  const {text: messageString, block} = splitBlock(cooked, raw);
   if (block === undefined) {
-    return {text, meaning: undefined, description: undefined, id: undefined, legacyIds: []};
+    return {text: messageString};
   } else {
     const [meaningDescAndId, ...legacyIds] = block.split(LEGACY_ID_INDICATOR);
     const [meaningAndDesc, id] = meaningDescAndId.split(ID_SEPARATOR, 2);
@@ -185,7 +204,7 @@ export function parseMetadata(cooked: string, raw: string): MessageMetadata {
     if (description === '') {
       description = undefined;
     }
-    return {text, meaning, description, id, legacyIds};
+    return {text: messageString, meaning, description, id, legacyIds};
   }
 }
 
