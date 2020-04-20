@@ -15,7 +15,6 @@
   "scripts": {
     "postinstall": "node tools/postinstall/apply-patches.js && ngcc --properties main --create-ivy-entry-points && node tools/postinstall/update-ngcc-main-fields.js",
     "build": "node ./scripts/build-packages-dist.js",
-    "bazel": "bazelisk",
     "bazel:buildifier": "find . -type f \\( -name \"*.bzl\" -or -name WORKSPACE -or -name BUILD -or -name BUILD.bazel \\) ! -path \"*/node_modules/*\" | xargs buildifier -v --warnings=attr-cfg,attr-license,attr-non-empty,attr-output-default,attr-single-file,constant-glob,ctx-args,depset-iteration,depset-union,dict-concatenation,duplicated-name,filetype,git-repository,http-archive,integer-division,load,load-on-top,native-build,native-package,output-group,package-name,package-on-top,redefined-variable,repository-name,same-origin-load,string-iteration,unused-variable,unsorted-dict-items,out-of-order-load",
     "bazel:format-lint": "yarn -s bazel:buildifier --lint=warn --mode=check",
     "dev-app": "ibazel run //src/dev-app:devserver",
@@ -73,7 +72,7 @@
     "@angular/platform-browser-dynamic": "^9.1.0",
     "@angular/platform-server": "^9.1.0",
     "@angular/router": "^9.1.0",
-    "@bazel/bazelisk": "^1.3.0",
+    "@bazel/bazelisk": "^1.4.0",
     "@bazel/buildifier": "^2.2.1",
     "@bazel/ibazel": "^0.12.3",
     "@bazel/jasmine": "^1.5.0",
