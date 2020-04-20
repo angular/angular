@@ -8,6 +8,10 @@ export const appIsAngularInProdMode = (): boolean => {
   return appIsAngular() && !appHasGlobalNgDebugObject();
 };
 
+export const appIsAngularIvy = (): boolean => {
+  return !!(window as any).getAllAngularRootElements?.()?.[0]?.__ngContext__;
+};
+
 export const appIsAngular = (): boolean => {
   return !!getAngularVersion();
 };
@@ -25,10 +29,10 @@ const appHasGlobalNgDebugObject = (): boolean => {
   return typeof ng !== 'undefined';
 };
 
-export const getAngularVersion = (): string | null | boolean => {
+export const getAngularVersion = (): string | null => {
   const el = document.querySelector('[ng-version]');
   if (!el) {
-    return false;
+    return null;
   }
   return el.getAttribute('ng-version');
 };
