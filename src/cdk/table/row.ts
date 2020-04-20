@@ -306,3 +306,11 @@ export class CdkFooterRow {
 })
 export class CdkRow {
 }
+
+/** Row that can be used to display a message when no data is shown in the table. */
+@Directive({
+  selector: 'ng-template[cdkNoDataRow]'
+})
+export class CdkNoDataRow {
+  constructor(public templateRef: TemplateRef<any>) {}
+}

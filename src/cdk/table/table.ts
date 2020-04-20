@@ -35,7 +35,8 @@ import {
   TrackByFunction,
   ViewChild,
   ViewContainerRef,
-  ViewEncapsulation
+  ViewEncapsulation,
+  ContentChild
 } from '@angular/core';
 import {
   BehaviorSubject,
@@ -54,7 +55,8 @@ import {
   CdkCellOutletRowContext,
   CdkFooterRowDef,
   CdkHeaderRowDef,
-  CdkRowDef
+  CdkRowDef,
+  CdkNoDataRow
 } from './row';
 import {StickyStyler} from './sticky-styler';
 import {
@@ -107,6 +109,16 @@ export class FooterRowOutlet implements RowOutlet {
 }
 
 /**
+ * Provides a handle for the table to grab the view
+ * container's ng-container to insert the no data row.
+ * @docs-private
+ */
+@Directive({selector: '[noDataRowOutlet]'})
+export class NoDataRowOutlet implements RowOutlet {
+  constructor(public viewContainer: ViewContainerRef, public elementRef: ElementRef) {}
+}
+
+/**
  * The table template that can be used by the mat-table. Should not be used outside of the
  * material library.
  * @docs-private
@@ -119,6 +131,7 @@ export const CDK_TABLE_TEMPLATE =
   <ng-content select="colgroup, col"></ng-content>
   <ng-container headerRowOutlet></ng-container>
   <ng-container rowOutlet></ng-container>
+  <ng-container noDataRowOutlet></ng-container>
   <ng-container footerRowOutlet></ng-container>
 `;
 
@@ -293,6 +306,9 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
    */
   protected stickyCssClass: string = 'cdk-table-sticky';
 
+  /** Whether the no data row is currently showing anything. */
+  private _isShowingNoDataRow = false;
+
   /**
    * Tracking function that will be used to check the differences in data changes. Used similarly
    * to `ngFor` `trackBy` function. Optimize row operations by identifying a row based on its data
@@ -379,6 +395,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   @ViewChild(DataRowOutlet, {static: true}) _rowOutlet: DataRowOutlet;
   @ViewChild(HeaderRowOutlet, {static: true}) _headerRowOutlet: HeaderRowOutlet;
   @ViewChild(FooterRowOutlet, {static: true}) _footerRowOutlet: FooterRowOutlet;
+  @ViewChild(NoDataRowOutlet, {static: true}) _noDataRowOutlet: NoDataRowOutlet;
 
   /**
    * The column definitions provided by the user that contain what the header, data, and footer
@@ -398,6 +415,9 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   @ContentChildren(CdkFooterRowDef, {
     descendants: true
   }) _contentFooterRowDefs: QueryList<CdkFooterRowDef>;
+
+  /** Row definition that will only be rendered if there's no data in the table. */
+  @ContentChild(CdkNoDataRow) _noDataRow: CdkNoDataRow;
 
   constructor(
       protected readonly _differs: IterableDiffers,
@@ -464,6 +484,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
 
   ngOnDestroy() {
     this._rowOutlet.viewContainer.clear();
+    this._noDataRowOutlet.viewContainer.clear();
     this._headerRowOutlet.viewContainer.clear();
     this._footerRowOutlet.viewContainer.clear();
 
@@ -519,6 +540,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
       rowView.context.$implicit = record.item.data;
     });
 
+    this._updateNoDataRow();
     this.updateStickyColumnStyles();
   }
 
@@ -1017,15 +1039,19 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   private _applyNativeTableSections() {
     const documentFragment = this._document.createDocumentFragment();
     const sections = [
-      {tag: 'thead', outlet: this._headerRowOutlet},
-      {tag: 'tbody', outlet: this._rowOutlet},
-      {tag: 'tfoot', outlet: this._footerRowOutlet},
+      {tag: 'thead', outlets: [this._headerRowOutlet]},
+      {tag: 'tbody', outlets: [this._rowOutlet, this._noDataRowOutlet]},
+      {tag: 'tfoot', outlets: [this._footerRowOutlet]},
     ];
 
     for (const section of sections) {
       const element = this._document.createElement(section.tag);
       element.setAttribute('role', 'rowgroup');
-      element.appendChild(section.outlet.elementRef.nativeElement);
+
+      for (const outlet of section.outlets) {
+        element.appendChild(outlet.elementRef.nativeElement);
+      }
+
       documentFragment.appendChild(element);
     }
 
@@ -1092,6 +1118,19 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   /** Filters definitions that belong to this table from a QueryList. */
   private _getOwnDefs<I extends {_table?: any}>(items: QueryList<I>): I[] {
     return items.filter(item => !item._table || item._table === this);
+  }
+
+  /** Creates or removes the no data row, depending on whether any data is being shown. */
+  private _updateNoDataRow() {
+    if (this._noDataRow) {
+      const shouldShow = this._rowOutlet.viewContainer.length === 0;
+
+      if (shouldShow !== this._isShowingNoDataRow) {
+        const container = this._noDataRowOutlet.viewContainer;
+        shouldShow ? container.createEmbeddedView(this._noDataRow.templateRef) : container.clear();
+        this._isShowingNoDataRow = shouldShow;
+      }
+    }
   }
 
   static ngAcceptInputType_multiTemplateDataRows: BooleanInput;

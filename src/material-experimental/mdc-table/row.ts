@@ -14,7 +14,8 @@ import {
   CdkHeaderRow,
   CdkHeaderRowDef,
   CdkRow,
-  CdkRowDef
+  CdkRowDef,
+  CdkNoDataRow
 } from '@angular/cdk/table';
 import {ChangeDetectionStrategy, Component, Directive, ViewEncapsulation} from '@angular/core';
 
@@ -109,4 +110,12 @@ export class MatFooterRow extends CdkFooterRow {
   providers: [{provide: CdkRow, useExisting: MatRow}],
 })
 export class MatRow extends CdkRow {
+}
+
+/** Row that can be used to display a message when no data is shown in the table. */
+@Directive({
+  selector: 'ng-template[matNoDataRow]',
+  providers: [{provide: CdkNoDataRow, useExisting: MatNoDataRow}],
+})
+export class MatNoDataRow extends CdkNoDataRow {
 }

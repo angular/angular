@@ -27,7 +27,7 @@ export declare const CDK_ROW_TEMPLATE = "<ng-container cdkCellOutlet></ng-contai
 
 export declare const CDK_TABLE: InjectionToken<any>;
 
-export declare const CDK_TABLE_TEMPLATE = "\n  <ng-content select=\"caption\"></ng-content>\n  <ng-content select=\"colgroup, col\"></ng-content>\n  <ng-container headerRowOutlet></ng-container>\n  <ng-container rowOutlet></ng-container>\n  <ng-container footerRowOutlet></ng-container>\n";
+export declare const CDK_TABLE_TEMPLATE = "\n  <ng-content select=\"caption\"></ng-content>\n  <ng-content select=\"colgroup, col\"></ng-content>\n  <ng-container headerRowOutlet></ng-container>\n  <ng-container rowOutlet></ng-container>\n  <ng-container noDataRowOutlet></ng-container>\n  <ng-container footerRowOutlet></ng-container>\n";
 
 export declare class CdkCell extends BaseCdkCell {
     constructor(columnDef: CdkColumnDef, elementRef: ElementRef);
@@ -147,6 +147,13 @@ export declare class CdkHeaderRowDef extends _CdkHeaderRowDefBase implements Can
     static ɵfac: i0.ɵɵFactoryDef<CdkHeaderRowDef, [null, null, { optional: true; }]>;
 }
 
+export declare class CdkNoDataRow {
+    templateRef: TemplateRef<any>;
+    constructor(templateRef: TemplateRef<any>);
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkNoDataRow, "ng-template[cdkNoDataRow]", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<CdkNoDataRow, never>;
+}
+
 export declare class CdkRow {
     static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkRow, "cdk-row, tr[cdk-row]", never, {}, {}, never, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkRow, never>;
@@ -173,6 +180,8 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
     _footerRowOutlet: FooterRowOutlet;
     _headerRowOutlet: HeaderRowOutlet;
     _multiTemplateDataRows: boolean;
+    _noDataRow: CdkNoDataRow;
+    _noDataRowOutlet: NoDataRowOutlet;
     _rowOutlet: DataRowOutlet;
     get dataSource(): CdkTableDataSourceInput<T>;
     set dataSource(dataSource: CdkTableDataSourceInput<T>);
@@ -206,13 +215,13 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
     updateStickyFooterRowStyles(): void;
     updateStickyHeaderRowStyles(): void;
     static ngAcceptInputType_multiTemplateDataRows: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkTable<any>, "cdk-table, table[cdk-table]", ["cdkTable"], { "trackBy": "trackBy"; "dataSource": "dataSource"; "multiTemplateDataRows": "multiTemplateDataRows"; }, {}, ["_contentColumnDefs", "_contentRowDefs", "_contentHeaderRowDefs", "_contentFooterRowDefs"], ["caption", "colgroup, col"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkTable<any>, "cdk-table, table[cdk-table]", ["cdkTable"], { "trackBy": "trackBy"; "dataSource": "dataSource"; "multiTemplateDataRows": "multiTemplateDataRows"; }, {}, ["_noDataRow", "_contentColumnDefs", "_contentRowDefs", "_contentHeaderRowDefs", "_contentFooterRowDefs"], ["caption", "colgroup, col"]>;
     static ɵfac: i0.ɵɵFactoryDef<CdkTable<any>, [null, null, null, { attribute: "role"; }, { optional: true; }, null, null]>;
 }
 
 export declare class CdkTableModule {
     static ɵinj: i0.ɵɵInjectorDef<CdkTableModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<CdkTableModule, [typeof i1.CdkTable, typeof i2.CdkRowDef, typeof i3.CdkCellDef, typeof i2.CdkCellOutlet, typeof i3.CdkHeaderCellDef, typeof i3.CdkFooterCellDef, typeof i3.CdkColumnDef, typeof i3.CdkCell, typeof i2.CdkRow, typeof i3.CdkHeaderCell, typeof i3.CdkFooterCell, typeof i2.CdkHeaderRow, typeof i2.CdkHeaderRowDef, typeof i2.CdkFooterRow, typeof i2.CdkFooterRowDef, typeof i1.DataRowOutlet, typeof i1.HeaderRowOutlet, typeof i1.FooterRowOutlet, typeof i4.CdkTextColumn], never, [typeof i1.CdkTable, typeof i2.CdkRowDef, typeof i3.CdkCellDef, typeof i2.CdkCellOutlet, typeof i3.CdkHeaderCellDef, typeof i3.CdkFooterCellDef, typeof i3.CdkColumnDef, typeof i3.CdkCell, typeof i2.CdkRow, typeof i3.CdkHeaderCell, typeof i3.CdkFooterCell, typeof i2.CdkHeaderRow, typeof i2.CdkHeaderRowDef, typeof i2.CdkFooterRow, typeof i2.CdkFooterRowDef, typeof i1.DataRowOutlet, typeof i1.HeaderRowOutlet, typeof i1.FooterRowOutlet, typeof i4.CdkTextColumn]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<CdkTableModule, [typeof i1.CdkTable, typeof i2.CdkRowDef, typeof i3.CdkCellDef, typeof i2.CdkCellOutlet, typeof i3.CdkHeaderCellDef, typeof i3.CdkFooterCellDef, typeof i3.CdkColumnDef, typeof i3.CdkCell, typeof i2.CdkRow, typeof i3.CdkHeaderCell, typeof i3.CdkFooterCell, typeof i2.CdkHeaderRow, typeof i2.CdkHeaderRowDef, typeof i2.CdkFooterRow, typeof i2.CdkFooterRowDef, typeof i1.DataRowOutlet, typeof i1.HeaderRowOutlet, typeof i1.FooterRowOutlet, typeof i4.CdkTextColumn, typeof i2.CdkNoDataRow, typeof i1.NoDataRowOutlet], never, [typeof i1.CdkTable, typeof i2.CdkRowDef, typeof i3.CdkCellDef, typeof i2.CdkCellOutlet, typeof i3.CdkHeaderCellDef, typeof i3.CdkFooterCellDef, typeof i3.CdkColumnDef, typeof i3.CdkCell, typeof i2.CdkRow, typeof i3.CdkHeaderCell, typeof i3.CdkFooterCell, typeof i2.CdkHeaderRow, typeof i2.CdkHeaderRowDef, typeof i2.CdkFooterRow, typeof i2.CdkFooterRowDef, typeof i1.DataRowOutlet, typeof i1.HeaderRowOutlet, typeof i1.FooterRowOutlet, typeof i4.CdkTextColumn, typeof i2.CdkNoDataRow, typeof i1.NoDataRowOutlet]>;
 }
 
 export declare class CdkTextColumn<T> implements OnDestroy, OnInit {
@@ -264,6 +273,14 @@ export declare class HeaderRowOutlet implements RowOutlet {
 }
 
 export declare function mixinHasStickyInput<T extends Constructor<{}>>(base: T): CanStickCtor & T;
+
+export declare class NoDataRowOutlet implements RowOutlet {
+    elementRef: ElementRef;
+    viewContainer: ViewContainerRef;
+    constructor(viewContainer: ViewContainerRef, elementRef: ElementRef);
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<NoDataRowOutlet, "[noDataRowOutlet]", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<NoDataRowOutlet, never>;
+}
 
 export interface RenderRow<T> {
     data: T;

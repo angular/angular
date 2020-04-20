@@ -25,7 +25,8 @@ import {
   MatHeaderRow,
   MatHeaderRowDef,
   MatRow,
-  MatRowDef
+  MatRowDef,
+  MatNoDataRow
 } from './row';
 
 const EXPORTED_DECLARATIONS = [
@@ -50,6 +51,7 @@ const EXPORTED_DECLARATIONS = [
   MatHeaderRow,
   MatRow,
   MatFooterRow,
+  MatNoDataRow,
 ];
 
 @NgModule({

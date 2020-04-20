@@ -96,6 +96,27 @@ describe('MDC-based MatTable', () => {
       expect(innerRows.map(row => row.cells.length)).toEqual([3, 3, 3, 3]);
     });
 
+    it('should be able to show a message when no data is being displayed', () => {
+      const fixture = TestBed.createComponent(MatTableApp);
+      fixture.detectChanges();
+
+      // Assert that the data is inside the tbody specifically.
+      const tbody = fixture.nativeElement.querySelector('tbody')!;
+      const initialData = fixture.componentInstance.dataSource!.data;
+
+      expect(tbody.textContent.trim()).not.toContain('No data');
+
+      fixture.componentInstance.dataSource!.data = [];
+      fixture.detectChanges();
+
+      expect(tbody.textContent.trim()).toContain('No data');
+
+      fixture.componentInstance.dataSource!.data = initialData;
+      fixture.detectChanges();
+
+      expect(tbody.textContent.trim()).not.toContain('No data');
+    });
+
   });
 
   it('should render with MatTableDataSource and sort', () => {
@@ -555,6 +576,9 @@ class FakeDataSource extends DataSource<TestData> {
       <tr mat-header-row *matHeaderRowDef="columnsToRender"></tr>
       <tr mat-row *matRowDef="let row; columns: columnsToRender"></tr>
       <tr mat-row *matRowDef="let row; columns: ['special_column']; when: isFourthRow"></tr>
+      <tr *matNoDataRow>
+        <td>No data</td>
+      </tr>
       <tr mat-footer-row *matFooterRowDef="columnsToRender"></tr>
     </table>
   `

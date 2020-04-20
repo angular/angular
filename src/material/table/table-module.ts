@@ -24,7 +24,8 @@ import {
   MatHeaderRow,
   MatHeaderRowDef,
   MatRow,
-  MatRowDef
+  MatRowDef,
+  MatNoDataRow
 } from './row';
 import {MatTextColumn} from './text-column';
 import {MatCommonModule} from '@angular/material/core';
@@ -51,6 +52,7 @@ const EXPORTED_DECLARATIONS = [
   MatHeaderRow,
   MatRow,
   MatFooterRow,
+  MatNoDataRow,
 
   MatTextColumn,
 ];
