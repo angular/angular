@@ -9,6 +9,6 @@
 import {exec as _exec, ShellString} from 'shelljs';
 
 /* Run an exec command as silent. */
-export function exec(cmd: string): ShellString {
-  return _exec(cmd, {silent: true});
+export function exec(cmd: string, params = {}): ShellString {
+  return _exec(cmd, {...params, silent: true});
 }

@@ -1,4 +1,7 @@
+import {join} from 'path';
+
 import {MergeConfig} from '../dev-infra/pr/merge/config';
+import {exec} from '../dev-infra/utils/shelljs';
 
 // The configuration for `ng-dev commit-message` commands.
 const commitMessage = {
@@ -114,10 +117,60 @@ const merge = () => {
   return config;
 };
 
+// The configuration for `ng-dev release` commands.
+const release = {
+  angular: () => ({
+    changelog: {
+      changelogPath: join(__dirname, './CHANGELOG.md'),
+      gitCommitOptions: {
+        extendedRegexp: true,
+        grep: (() => {
+          const ignoredScopes = [
+            'aio',
+            'dev-infra',
+            'docs-infra',
+            'zone.js',
+          ];
+          return `^[^(]+\\((${ignoredScopes.join('|')})\\)`;
+        })(),
+        invertGrep: true,
+      }
+    }
+  }),
+  'zone.js': () => {
+    /** The working directory for getting the version of zone.js */
+    const cwd = join(__dirname, './packages/zone.js');
+    /** The new version of zone.js. */
+    const version = exec(`npm version patch --no-git-tag-version`, {cwd}).trim().slice(1);
+    /** The previous version of zone.js */
+    const previousTag = exec(`git tag -l 'zone.js-0.10.*' | tail -n1`, {silent: true}).trim();
+    /** The new git tag for changelog processing */
+    const tag = `zone.js-${version}`;
+    return {
+      changelog: {
+        changelogPath: join(__dirname, './packages/zone.js/CHANGELOG.md'),
+        context: {
+          linkCompare: true,
+          previousTag: previousTag,
+          currentTag: tag,
+          version,
+        },
+        gitCommitOptions: {
+          extendedRegexp: true,
+          grep: '^[^(]+\\(zone\\.js\\)',
+          from: previousTag,
+          to: 'HEAD',
+        }
+      }
+    };
+  },
+};
+
 // Export function to build ng-dev configuration object.
 module.exports = {
   commitMessage,
   format,
   github,
   merge,
+  release,
 };

@@ -12,6 +12,7 @@ ts_library(
         "@npm//@types/node",
         "@npm//@types/shelljs",
         "@npm//@types/yargs",
+        "@npm//conventional-changelog",
         "@npm//shelljs",
         "@npm//yargs",
     ],
