@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/angular/components/tree/master/src/google-maps#readme",
   "dependencies": {
-    "@types/googlemaps": "^3.37.0",
+    "@types/googlemaps": "^3.39.3",
     "tslib": "0.0.0-TSLIB"
   },
   "peerDependencies": {
@@ -33,7 +33,7 @@
     "@angular/common": "0.0.0-NG"
   },
   "sideEffects": false,
-  "publishConfig":{
-    "registry":"https://wombat-dressing-room.appspot.com"
+  "publishConfig": {
+    "registry": "https://wombat-dressing-room.appspot.com"
   }
 }

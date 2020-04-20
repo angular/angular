@@ -2,7 +2,7 @@ import {Component, ViewChild} from '@angular/core';
 import {async, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
-import {DEFAULT_OPTIONS, UpdatedGoogleMap} from '../google-map/google-map';
+import {DEFAULT_OPTIONS} from '../google-map/google-map';
 import {
   createMapConstructorSpy,
   createMapSpy,
@@ -15,7 +15,7 @@ import {GoogleMapsModule} from '../google-maps-module';
 import {DEFAULT_MARKER_OPTIONS, MapMarker} from './map-marker';
 
 describe('MapMarker', () => {
-  let mapSpy: jasmine.SpyObj<UpdatedGoogleMap>;
+  let mapSpy: jasmine.SpyObj<google.maps.Map>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({

@@ -37,7 +37,7 @@ export class MapCircle implements OnInit, OnDestroy {
    *
    * @see developers.google.com/maps/documentation/javascript/reference/polygon#Circle
    */
-  circle: google.maps.Circle;  // initialized in ngOnInit
+  circle?: google.maps.Circle;  // initialized in ngOnInit
 
   @Input()
   set options(options: google.maps.CircleOptions) {
@@ -167,7 +167,8 @@ export class MapCircle implements OnInit, OnDestroy {
         this._ngZone.runOutsideAngular(() => {
           this.circle = new google.maps.Circle(options);
         });
-        this.circle.setMap(this._map._googleMap);
+        this._assertInitialized();
+        this.circle!.setMap(this._map.googleMap!);
         this._eventManager.setTarget(this.circle);
       });
 
@@ -181,7 +182,6 @@ export class MapCircle implements OnInit, OnDestroy {
     this._eventManager.destroy();
     this._destroyed.next();
     this._destroyed.complete();
-
     if (this.circle) {
       this.circle.setMap(null);
     }
@@ -192,7 +192,8 @@ export class MapCircle implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.getBounds
    */
   getBounds(): google.maps.LatLngBounds {
-    return this.circle.getBounds();
+    this._assertInitialized();
+    return this.circle!.getBounds();
   }
 
   /**
@@ -200,7 +201,8 @@ export class MapCircle implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.getCenter
    */
   getCenter(): google.maps.LatLng {
-    return this.circle.getCenter();
+    this._assertInitialized();
+    return this.circle!.getCenter();
   }
 
   /**
@@ -208,7 +210,8 @@ export class MapCircle implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.getDraggable
    */
   getDraggable(): boolean {
-    return this.circle.getDraggable();
+    this._assertInitialized();
+    return this.circle!.getDraggable();
   }
 
   /**
@@ -216,7 +219,8 @@ export class MapCircle implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.getEditable
    */
   getEditable(): boolean {
-    return this.circle.getEditable();
+    this._assertInitialized();
+    return this.circle!.getEditable();
   }
 
   /**
@@ -224,7 +228,8 @@ export class MapCircle implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.getCenter
    */
   getRadius(): number {
-    return this.circle.getRadius();
+    this._assertInitialized();
+    return this.circle!.getRadius();
   }
 
   /**
@@ -232,7 +237,8 @@ export class MapCircle implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.getVisible
    */
   getVisible(): boolean {
-    return this.circle.getVisible();
+    this._assertInitialized();
+    return this.circle!.getVisible();
   }
 
   private _combineOptions(): Observable<google.maps.CircleOptions> {
@@ -249,14 +255,16 @@ export class MapCircle implements OnInit, OnDestroy {
 
   private _watchForOptionsChanges() {
     this._options.pipe(takeUntil(this._destroyed)).subscribe(options => {
-      this.circle.setOptions(options);
+      this._assertInitialized();
+      this.circle!.setOptions(options);
     });
   }
 
   private _watchForCenterChanges() {
     this._center.pipe(takeUntil(this._destroyed)).subscribe(center => {
       if (center) {
-        this.circle.setCenter(center);
+        this._assertInitialized();
+        this.circle!.setCenter(center);
       }
     });
   }
@@ -264,8 +272,22 @@ export class MapCircle implements OnInit, OnDestroy {
   private _watchForRadiusChanges() {
     this._radius.pipe(takeUntil(this._destroyed)).subscribe(radius => {
       if (radius !== undefined) {
-        this.circle.setRadius(radius);
+        this._assertInitialized();
+        this.circle!.setRadius(radius);
       }
     });
+  }
+
+  private _assertInitialized() {
+    if (!this._map.googleMap) {
+      throw Error(
+        'Cannot access Google Map information before the API has been initialized. ' +
+        'Please wait for the API to load before trying to interact with it.');
+    }
+    if (!this.circle) {
+      throw Error(
+        'Cannot interact with a Google Map Circle before it has been ' +
+        'initialized. Please wait for the Circle to load before trying to interact with it.');
+    }
   }
 }

@@ -25,7 +25,8 @@ import {MapEventManager} from '../map-event-manager';
 
 /**
  * Angular component that renders a Google Maps Polyline via the Google Maps JavaScript API.
- * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline
+ *
+ * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline
  */
 @Directive({
   selector: 'map-polyline',
@@ -39,7 +40,12 @@ export class MapPolyline implements OnInit, OnDestroy {
 
   private readonly _destroyed = new Subject<void>();
 
-  _polyline?: google.maps.Polyline; // initialized in ngOnInit
+  /**
+   * The underlying google.maps.Polyline object.
+   *
+   * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline
+   */
+  polyline?: google.maps.Polyline;
 
   @Input()
   set options(options: google.maps.PolylineOptions) {
@@ -53,77 +59,77 @@ export class MapPolyline implements OnInit, OnDestroy {
   }
 
   /**
-   * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.click
+   * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.click
    */
   @Output()
   polylineClick: Observable<google.maps.PolyMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('click');
 
   /**
-   * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.dblclick
+   * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.dblclick
    */
   @Output()
   polylineDblclick: Observable<google.maps.PolyMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('dblclick');
 
   /**
-   * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.drag
+   * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.drag
    */
   @Output()
   polylineDrag: Observable<google.maps.MouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MouseEvent>('drag');
 
   /**
-   * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.dragend
+   * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.dragend
    */
   @Output()
   polylineDragend: Observable<google.maps.MouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MouseEvent>('dragend');
 
   /**
-   * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.dragstart
+   * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.dragstart
    */
   @Output()
   polylineDragstart: Observable<google.maps.MouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MouseEvent>('dragstart');
 
   /**
-   * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mousedown
+   * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mousedown
    */
   @Output()
   polylineMousedown: Observable<google.maps.PolyMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('mousedown');
 
   /**
-   * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mousemove
+   * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mousemove
    */
   @Output()
   polylineMousemove: Observable<google.maps.PolyMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('mousemove');
 
   /**
-   * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mouseout
+   * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mouseout
    */
   @Output()
   polylineMouseout: Observable<google.maps.PolyMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('mouseout');
 
   /**
-   * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mouseover
+   * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mouseover
    */
   @Output()
   polylineMouseover: Observable<google.maps.PolyMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('mouseover');
 
   /**
-   * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mouseup
+   * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mouseup
    */
   @Output()
   polylineMouseup: Observable<google.maps.PolyMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('mouseup');
 
   /**
-   * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.rightclick
+   * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.rightclick
    */
   @Output()
   polylineRightclick: Observable<google.maps.PolyMouseEvent> =
@@ -139,9 +145,10 @@ export class MapPolyline implements OnInit, OnDestroy {
         // Create the object outside the zone so its events don't trigger change detection.
         // We'll bring it back in inside the `MapEventManager` only for the events that the
         // user has subscribed to.
-        this._ngZone.runOutsideAngular(() => this._polyline = new google.maps.Polyline(options));
-        this._polyline!.setMap(this._map._googleMap);
-        this._eventManager.setTarget(this._polyline);
+        this._ngZone.runOutsideAngular(() => this.polyline = new google.maps.Polyline(options));
+        this._assertInitialized();
+        this.polyline!.setMap(this._map.googleMap!);
+        this._eventManager.setTarget(this.polyline);
       });
 
       this._watchForOptionsChanges();
@@ -153,39 +160,43 @@ export class MapPolyline implements OnInit, OnDestroy {
     this._eventManager.destroy();
     this._destroyed.next();
     this._destroyed.complete();
-    if (this._polyline) {
-      this._polyline.setMap(null);
+    if (this.polyline) {
+      this.polyline.setMap(null);
     }
   }
 
   /**
-   * @see
+   * See
    * developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.getDraggable
    */
   getDraggable(): boolean {
-    return this._polyline ? this._polyline.getDraggable() : false;
+    this._assertInitialized();
+    return this.polyline!.getDraggable();
   }
 
   /**
-   * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.getEditable
+   * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.getEditable
    */
   getEditable(): boolean {
-    return this._polyline ? this._polyline.getEditable() : false;
+    this._assertInitialized();
+    return this.polyline!.getEditable();
   }
 
   /**
-   * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.getPath
+   * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.getPath
    */
   getPath(): google.maps.MVCArray<google.maps.LatLng> {
+    this._assertInitialized();
     // @breaking-change 11.0.0 Make the return value nullable.
-    return this._polyline ? this._polyline.getPath() : null!;
+    return this.polyline!.getPath();
   }
 
   /**
-   * @see developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.getVisible
+   * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.getVisible
    */
   getVisible(): boolean {
-    return this._polyline ? this._polyline.getVisible() : false;
+    this._assertInitialized();
+    return this.polyline!.getVisible();
   }
 
   private _combineOptions(): Observable<google.maps.PolylineOptions> {
@@ -200,17 +211,32 @@ export class MapPolyline implements OnInit, OnDestroy {
 
   private _watchForOptionsChanges() {
     this._options.pipe(takeUntil(this._destroyed)).subscribe(options => {
-      if (this._polyline) {
-        this._polyline.setOptions(options);
+      if (this.polyline) {
+        this._assertInitialized();
+        this.polyline.setOptions(options);
       }
     });
   }
 
   private _watchForPathChanges() {
     this._path.pipe(takeUntil(this._destroyed)).subscribe(path => {
-      if (path && this._polyline) {
-        this._polyline.setPath(path);
+      if (path && this.polyline) {
+        this._assertInitialized();
+        this.polyline.setPath(path);
       }
     });
+  }
+
+  private _assertInitialized() {
+    if (!this._map.googleMap) {
+      throw Error(
+          'Cannot access Google Map information before the API has been initialized. ' +
+          'Please wait for the API to load before trying to interact with it.');
+    }
+    if (!this.polyline) {
+      throw Error(
+          'Cannot interact with a Google Map Polyline before it has been ' +
+          'initialized. Please wait for the Polyline to load before trying to interact with it.');
+    }
   }
 }

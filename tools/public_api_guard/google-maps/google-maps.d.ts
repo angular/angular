@@ -1,11 +1,11 @@
 export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
-    _googleMap: UpdatedGoogleMap;
     _isBrowser: boolean;
     boundsChanged: Observable<void>;
     set center(center: google.maps.LatLngLiteral | google.maps.LatLng);
     centerChanged: Observable<void>;
     get controls(): Array<google.maps.MVCArray<Node>>;
     get data(): google.maps.Data;
+    googleMap?: google.maps.Map;
     headingChanged: Observable<void>;
     height: string | number;
     idle: Observable<void>;
@@ -59,7 +59,7 @@ export declare class GoogleMapsModule {
 export declare class MapCircle implements OnInit, OnDestroy {
     set center(center: google.maps.LatLng | google.maps.LatLngLiteral);
     centerChanged: Observable<void>;
-    circle: google.maps.Circle;
+    circle?: google.maps.Circle;
     circleClick: Observable<google.maps.MouseEvent>;
     circleDblclick: Observable<google.maps.MouseEvent>;
     circleDrag: Observable<google.maps.MouseEvent>;
@@ -91,6 +91,7 @@ export declare class MapInfoWindow implements OnInit, OnDestroy {
     closeclick: Observable<void>;
     contentChanged: Observable<void>;
     domready: Observable<void>;
+    infoWindow?: google.maps.InfoWindow;
     set options(options: google.maps.InfoWindowOptions);
     set position(position: google.maps.LatLngLiteral | google.maps.LatLng);
     positionChanged: Observable<void>;
@@ -108,7 +109,6 @@ export declare class MapInfoWindow implements OnInit, OnDestroy {
 }
 
 export declare class MapMarker implements OnInit, OnDestroy {
-    _marker?: google.maps.Marker;
     animationChanged: Observable<void>;
     set clickable(clickable: boolean);
     clickableChanged: Observable<void>;
@@ -127,6 +127,7 @@ export declare class MapMarker implements OnInit, OnDestroy {
     mapMouseover: Observable<google.maps.MouseEvent>;
     mapMouseup: Observable<google.maps.MouseEvent>;
     mapRightclick: Observable<google.maps.MouseEvent>;
+    marker?: google.maps.Marker;
     set options(options: google.maps.MarkerOptions);
     set position(position: google.maps.LatLngLiteral | google.maps.LatLng);
     positionChanged: Observable<void>;
@@ -155,9 +156,9 @@ export declare class MapMarker implements OnInit, OnDestroy {
 }
 
 export declare class MapPolygon implements OnInit, OnDestroy {
-    _polygon: google.maps.Polygon;
     set options(options: google.maps.PolygonOptions);
     set paths(paths: google.maps.MVCArray<google.maps.MVCArray<google.maps.LatLng>> | google.maps.MVCArray<google.maps.LatLng> | google.maps.LatLng[] | google.maps.LatLngLiteral[]);
+    polygon?: google.maps.Polygon;
     polygonClick: Observable<google.maps.PolyMouseEvent>;
     polygonDblclick: Observable<google.maps.PolyMouseEvent>;
     polygonDrag: Observable<google.maps.MouseEvent>;
@@ -182,9 +183,9 @@ export declare class MapPolygon implements OnInit, OnDestroy {
 }
 
 export declare class MapPolyline implements OnInit, OnDestroy {
-    _polyline?: google.maps.Polyline;
     set options(options: google.maps.PolylineOptions);
     set path(path: google.maps.MVCArray<google.maps.LatLng> | google.maps.LatLng[] | google.maps.LatLngLiteral[]);
+    polyline?: google.maps.Polyline;
     polylineClick: Observable<google.maps.PolyMouseEvent>;
     polylineDblclick: Observable<google.maps.PolyMouseEvent>;
     polylineDrag: Observable<google.maps.MouseEvent>;
@@ -208,10 +209,10 @@ export declare class MapPolyline implements OnInit, OnDestroy {
 }
 
 export declare class MapRectangle implements OnInit, OnDestroy {
-    _rectangle: google.maps.Rectangle;
     set bounds(bounds: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral);
     boundsChanged: Observable<void>;
     set options(options: google.maps.RectangleOptions);
+    rectangle?: google.maps.Rectangle;
     rectangleClick: Observable<google.maps.MouseEvent>;
     rectangleDblclick: Observable<google.maps.MouseEvent>;
     rectangleDrag: Observable<google.maps.MouseEvent>;

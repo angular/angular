@@ -13,7 +13,6 @@ import {
   DEFAULT_OPTIONS,
   DEFAULT_WIDTH,
   GoogleMap,
-  UpdatedGoogleMap
 } from './google-map';
 
 /** Represents boundaries of a map to be used in tests. */
@@ -32,7 +31,7 @@ const testPosition: google.maps.LatLngLiteral = {
 
 describe('GoogleMap', () => {
   let mapConstructorSpy: jasmine.Spy;
-  let mapSpy: jasmine.SpyObj<UpdatedGoogleMap>;
+  let mapSpy: jasmine.SpyObj<google.maps.Map>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
