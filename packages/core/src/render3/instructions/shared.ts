@@ -374,6 +374,14 @@ export function renderView<T>(tView: TView, lView: LView, context: T): void {
       renderChildComponents(lView, components);
     }
 
+  } catch (error) {
+    // If we didn't manage to get past the first template pass due to
+    // an error, mark the view as corrupted so we can try to recover.
+    if (tView.firstCreatePass) {
+      tView.incompleteFirstPass = true;
+    }
+
+    throw error;
   } finally {
     lView[FLAGS] &= ~LViewFlags.CreationMode;
     leaveView();
@@ -598,10 +606,17 @@ export function saveResolvedLocalsInData(
  * @returns TView
  */
 export function getOrCreateTComponentView(def: ComponentDef<any>): TView {
-  return def.tView ||
-      (def.tView = createTView(
-           TViewType.Component, -1, def.template, def.decls, def.vars, def.directiveDefs,
-           def.pipeDefs, def.viewQuery, def.schemas, def.consts));
+  const tView = def.tView;
+
+  // Create a TView if there isn't one, or recreate it if the first create pass didn't
+  // complete successfuly since we can't know for sure whether it's in a usable shape.
+  if (tView === null || tView.incompleteFirstPass) {
+    return def.tView = createTView(
+               TViewType.Component, -1, def.template, def.decls, def.vars, def.directiveDefs,
+               def.pipeDefs, def.viewQuery, def.schemas, def.consts);
+  }
+
+  return tView;
 }
 
 
@@ -662,7 +677,9 @@ export function createTView(
              typeof pipes === 'function' ? pipes() : pipes,  // pipeRegistry: PipeDefList|null,
              null,                                           // firstChild: TNode|null,
              schemas,                                        // schemas: SchemaMetadata[]|null,
-             consts) :                                       // consts: TConstants|null
+             consts,                                         // consts: TConstants|null
+             false                                           // incompleteFirstPass: boolean
+             ) :
       {
         type: type,
         id: viewIndex,
@@ -694,6 +711,7 @@ export function createTView(
         firstChild: null,
         schemas: schemas,
         consts: consts,
+        incompleteFirstPass: false
       };
 }
 
