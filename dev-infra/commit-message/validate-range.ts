@@ -39,7 +39,12 @@ export function validateCommitRange(range: string) {
     };
     return validateCommitMessage(m, options);
   });
+
   if (allCommitsInRangeValid) {
     console.info('√  All commit messages in range valid.');
+  } else {
+    // Exit with a non-zero exit code if invalid commit messages have
+    // been discovered.
+    process.exit(1);
   }
 }
