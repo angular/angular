@@ -355,7 +355,7 @@ export class R3TestBedCompiler {
       // calculated and stored in `transitiveCompileScopes`. If module overrides are present,
       // collect all affected modules and reset scopes to force their re-calculatation.
       const testingModuleDef = (this.testModuleType as any)[NG_MOD_DEF];
-      const affectedModules = this.collectModulesAffectedByOverride(testingModuleDef.imports);
+      const affectedModules = this.collectModulesAffectedByOverrides(testingModuleDef.imports);
       if (affectedModules.size > 0) {
         affectedModules.forEach(moduleType => {
           this.storeFieldOfDefOnType(moduleType as any, NG_MOD_DEF, 'transitiveCompileScopes');
@@ -546,7 +546,7 @@ export class R3TestBedCompiler {
   // if we have the following module hierarchy: A -> B -> C (where `->` means `imports`) and module
   // `C` is overridden, we consider `A` and `B` as affected, since their scopes might become
   // invalidated with the override.
-  private collectModulesAffectedByOverride(arr: any[]): Set<NgModuleType<any>> {
+  private collectModulesAffectedByOverrides(arr: any[]): Set<NgModuleType<any>> {
     const seenModules = new Set<NgModuleType<any>>();
     const affectedModules = new Set<NgModuleType<any>>();
     const calcAffectedModulesRecur = (arr: any[], path: NgModuleType<any>[]): void => {

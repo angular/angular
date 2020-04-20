@@ -360,6 +360,10 @@ describe('TestBed', () => {
   });
 
   describe('nested module overrides using TestBed.overrideModule', () => {
+    // Set up an NgModule hierarchy with two modules, A and B, each with their own component.
+    // Module B additionally re-exports module A. Also declare two mock components which can be
+    // used in tests to verify that overrides within this hierarchy are working correctly.
+
     // ModuleA content:
 
     @Component({
