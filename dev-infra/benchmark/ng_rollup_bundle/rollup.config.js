@@ -143,11 +143,6 @@ function resolveBazel(
   return resolved;
 }
 
-// We make mainFields match what was the default for plugin-node-resolve <4.2.0
-// when mainFields was introduced. Resolving to 'browser' or 'es2015' first breaks
-// some of the benchmarks such as `//modules/benchmarks/src/expanding_rows:perf_chromium-local`.
-// See https://app.circleci.com/jobs/github/angular/angular/507444 &&
-// https://app.circleci.com/jobs/github/angular/angular/507442 for affected tests.
 const mainFields = ['module', 'main'];
 const ngccMainFields = mainFields.map(f => `${f}_ivy_ngcc`);
 
@@ -157,12 +152,11 @@ let plugins = [
     resolveId: resolveBazel,
   },
   nodeResolve({
-    // If Ivy is enabled, we need to make sure that the module resolution prioritizes ngcc
-    // processed entry-point fields. Ngcc adds special fields to `package.json` files of
-    // modules that have been processed. Prioritizing these fields matches the Angular CLIs
-    // behavior for supporting Ivy. We need to support ngcc because `ng_rollup_bundle` rule is
-    // shared with other repositories that consume Angular from NPM (w/ ngcc).
-    // https://github.com/angular/angular-cli/blob/1a1ceb609b9a87c4021cce3a6f0fc6d167cd09d2/packages/ngtools/webpack/src/angular_compiler_plugin.ts#L918-L920
+    // We make mainFields match what was the default for plugin-node-resolve <4.2.0
+    // when mainFields was introduced. Resolving to 'browser' or 'es2015' first breaks
+    // some of the benchmarks such as `//modules/benchmarks/src/expanding_rows:perf_chromium-local`.
+    // See https://app.circleci.com/jobs/github/angular/angular/507444 &&
+    // https://app.circleci.com/jobs/github/angular/angular/507442 for affected tests.
     mainFields: ivyEnabled ? [...ngccMainFields, ...mainFields] : mainFields,
     jail: process.cwd(),
     customResolveOptions: {moduleDirectory: nodeModulesRoot}
