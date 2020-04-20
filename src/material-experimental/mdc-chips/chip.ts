@@ -405,7 +405,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
 
   /** Whether or not the ripple should be disabled. */
   _isRippleDisabled(): boolean {
-    return this.disabled || this.disableRipple || this._isBasicChip;
+    return this.disabled || this.disableRipple || this._animationsDisabled || this._isBasicChip;
   }
 
   static ngAcceptInputType_disabled: BooleanInput;
