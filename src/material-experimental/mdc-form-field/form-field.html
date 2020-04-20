@@ -33,6 +33,7 @@
 </ng-template>
 
 <div class="mat-mdc-text-field-wrapper mdc-text-field" #textField
+     [class.mdc-text-field--filled]="!_hasOutline()"
      [class.mdc-text-field--outlined]="_hasOutline()"
      [class.mdc-text-field--no-label]="!_hasFloatingLabel()"
      [class.mdc-text-field--disabled]="_control.disabled"
