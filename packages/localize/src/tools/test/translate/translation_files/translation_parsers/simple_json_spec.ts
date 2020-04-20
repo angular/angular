@@ -7,6 +7,7 @@
  */
 import {ɵmakeTemplateObject} from '@angular/localize';
 import {SimpleJsonTranslationParser} from '../../../../src/translate/translation_files/translation_parsers/simple_json_translation_parser';
+import {ParsedTranslationBundle} from '../../../../src/translate/translation_files/translation_parsers/translation_parser';
 
 describe('SimpleJsonTranslationParser', () => {
   describe('canParse()', () => {
@@ -22,27 +23,41 @@ describe('SimpleJsonTranslationParser', () => {
        });
   });
 
-  describe('parse()', () => {
-    it('should extract the locale from the JSON contents', () => {
-      const parser = new SimpleJsonTranslationParser();
-      const result = parser.parse('/some/file.json', '{"locale": "en", "translations": {}}');
-      expect(result.locale).toEqual('en');
-    });
+  for (const withHint of [true, false]) {
+    describe(`parse() [${withHint ? 'with' : 'without'} hint]`, () => {
+      const doParse: (fileName: string, contents: string) => ParsedTranslationBundle =
+          withHint ? (fileName, contents) => {
+            const parser = new SimpleJsonTranslationParser();
+            const hint = parser.canParse(fileName, contents);
+            if (!hint) {
+              throw new Error('expected contents to be valid');
+            }
+            return parser.parse(fileName, contents, hint);
+          } : (fileName, contents) => {
+            const parser = new SimpleJsonTranslationParser();
+            return parser.parse(fileName, contents);
+          };
 
-    it('should extract and process the translations from the JSON contents', () => {
-      const parser = new SimpleJsonTranslationParser();
-      const result = parser.parse('/some/file.json', `{
+
+      it('should extract the locale from the JSON contents', () => {
+        const result = doParse('/some/file.json', '{"locale": "en", "translations": {}}');
+        expect(result.locale).toEqual('en');
+      });
+
+      it('should extract and process the translations from the JSON contents', () => {
+        const result = doParse('/some/file.json', `{
         "locale": "fr",
         "translations": {
           "Hello, {$ph_1}!": "Bonjour, {$ph_1}!"
         }
       }`);
-      expect(result.translations).toEqual({
-        'Hello, {$ph_1}!': {
-          messageParts: ɵmakeTemplateObject(['Bonjour, ', '!'], ['Bonjour, ', '!']),
-          placeholderNames: ['ph_1']
-        },
+        expect(result.translations).toEqual({
+          'Hello, {$ph_1}!': {
+            messageParts: ɵmakeTemplateObject(['Bonjour, ', '!'], ['Bonjour, ', '!']),
+            placeholderNames: ['ph_1']
+          },
+        });
       });
     });
-  });
+  }
 });
