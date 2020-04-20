@@ -144,16 +144,18 @@ $mat-tab-animation-duration: 500ms !default;
 }
 
 // Structural styles for the element that wraps the paginated header items.
-@mixin mat-mdc-paginated-tab-header-item-wrapper {
+@mixin mat-mdc-paginated-tab-header-item-wrapper($parent) {
   display: flex;
   flex: 1 0 auto;
 
+  // We need to set the parent here explicitly, in order to prevent the alignment
+  // from any parent tab groups from propagating down to the children when nesting.
   // Note that these are used as inputs so they shouldn't be changed to `mat-mdc-`.
-  [mat-align-tabs='center'] & {
+  [mat-align-tabs='center'] > #{$parent} & {
     justify-content: center;
   }
 
-  [mat-align-tabs='end'] & {
+  [mat-align-tabs='end'] > #{$parent} & {
     justify-content: flex-end;
   }
 }

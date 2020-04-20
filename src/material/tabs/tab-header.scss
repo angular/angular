@@ -8,7 +8,7 @@
 }
 
 .mat-tab-labels {
-  @include paginated-tab-header-item-wrapper;
+  @include paginated-tab-header-item-wrapper('.mat-tab-header');
 }
 
 .mat-tab-label-container {
