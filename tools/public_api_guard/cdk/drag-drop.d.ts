@@ -390,4 +390,9 @@ export declare class DropListRef<T = any> {
 
 export declare function moveItemInArray<T = any>(array: T[], fromIndex: number, toIndex: number): void;
 
+export interface Point {
+    x: number;
+    y: number;
+}
+
 export declare function transferArrayItem<T = any>(currentArray: T[], targetArray: T[], currentIndex: number, targetIndex: number): void;
