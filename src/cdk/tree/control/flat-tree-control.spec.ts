@@ -1,15 +1,16 @@
 import {FlatTreeControl} from './flat-tree-control';
 
 describe('CdkFlatTreeControl', () => {
-  let treeControl: FlatTreeControl<TestData>;
   let getLevel = (node: TestData) => node.level;
   let isExpandable = (node: TestData) => node.children && node.children.length > 0;
 
-  beforeEach(() => {
-    treeControl = new FlatTreeControl<TestData>(getLevel, isExpandable);
-  });
-
   describe('base tree control actions', () => {
+    let treeControl: FlatTreeControl<TestData>;
+
+    beforeEach(() => {
+      treeControl = new FlatTreeControl<TestData>(getLevel, isExpandable);
+    });
+
     it('should be able to expand and collapse dataNodes', () => {
       const nodes = generateData(10, 4);
       const secondNode = nodes[1];
@@ -138,6 +139,23 @@ describe('CdkFlatTreeControl', () => {
       expect(treeControl.expansionModel.selected.length)
         .toBe(totalNumber, `Expect ${totalNumber} expanded nodes`);
     });
+  });
+
+  it('maintains node expansion state based on trackBy function, if provided', () => {
+    const treeControl = new FlatTreeControl<TestData, string>(getLevel, isExpandable);
+
+    const nodes = generateData(2, 2);
+    const secondNode = nodes[1];
+    treeControl.dataNodes = nodes;
+    treeControl.trackBy = (node: TestData) => `${node.a} ${node.b} ${node.c}`;
+
+    treeControl.expand(secondNode);
+    expect(treeControl.isExpanded(secondNode)).toBeTruthy('Expect second node to be expanded');
+
+    // Replace the second node with a brand new instance with same hash
+    nodes[1] = new TestData(
+        secondNode.a, secondNode.b, secondNode.c, secondNode.level, secondNode.children);
+    expect(treeControl.isExpanded(nodes[1])).toBeTruthy('Expect second node to still be expanded');
   });
 });
 

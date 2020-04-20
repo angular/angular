@@ -8,13 +8,23 @@
 
 import {BaseTreeControl} from './base-tree-control';
 
+/** Optional set of configuration that can be provided to the FlatTreeControl. */
+export interface FlatTreeControlOptions<T, K> {
+  trackBy?: (dataNode: T) => K;
+}
+
 /** Flat tree control. Able to expand/collapse a subtree recursively for flattened tree. */
-export class FlatTreeControl<T> extends BaseTreeControl<T> {
+export class FlatTreeControl<T, K = T> extends BaseTreeControl<T, K> {
 
   /** Construct with flat tree data node functions getLevel and isExpandable. */
-  constructor(public getLevel: (dataNode: T) => number,
-              public isExpandable: (dataNode: T) => boolean) {
+  constructor(
+      public getLevel: (dataNode: T) => number, public isExpandable: (dataNode: T) => boolean,
+      public options?: FlatTreeControlOptions<T, K>) {
     super();
+
+    if (this.options) {
+      this.trackBy = this.options.trackBy;
+    }
   }
 
   /**
@@ -48,6 +58,6 @@ export class FlatTreeControl<T> extends BaseTreeControl<T> {
    * data nodes of the tree.
    */
   expandAll(): void {
-    this.expansionModel.select(...this.dataNodes);
+    this.expansionModel.select(...this.dataNodes.map(node => this._trackByValue(node)));
   }
 }

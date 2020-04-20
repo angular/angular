@@ -13,12 +13,12 @@ import {Observable} from 'rxjs';
  * The CDKTree will use this TreeControl to expand/collapse a node.
  * User can also use it outside the `<cdk-tree>` to control the expansion status of the tree.
  */
-export interface TreeControl<T> {
+export interface TreeControl<T, K = T> {
   /** The saved tree nodes data for `expandAll` action. */
   dataNodes: T[];
 
   /** The expansion model */
-  expansionModel: SelectionModel<T>;
+  expansionModel: SelectionModel<K>;
 
   /** Whether the data node is expanded or collapsed. Return true if it's expanded. */
   isExpanded(dataNode: T): boolean;

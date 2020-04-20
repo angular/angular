@@ -1,9 +1,11 @@
-export declare abstract class BaseTreeControl<T> implements TreeControl<T> {
+export declare abstract class BaseTreeControl<T, K = T> implements TreeControl<T, K> {
     dataNodes: T[];
-    expansionModel: SelectionModel<T>;
+    expansionModel: SelectionModel<K>;
     getChildren: (dataNode: T) => (Observable<T[]> | T[] | undefined | null);
     getLevel: (dataNode: T) => number;
     isExpandable: (dataNode: T) => boolean;
+    trackBy?: (dataNode: T) => K;
+    protected _trackByValue(value: T | K): K;
     collapse(dataNode: T): void;
     collapseAll(): void;
     collapseDescendants(dataNode: T): void;
@@ -136,12 +138,17 @@ export declare class CdkTreeNodeToggle<T> {
     static ɵfac: i0.ɵɵFactoryDef<CdkTreeNodeToggle<any>, never>;
 }
 
-export declare class FlatTreeControl<T> extends BaseTreeControl<T> {
+export declare class FlatTreeControl<T, K = T> extends BaseTreeControl<T, K> {
     getLevel: (dataNode: T) => number;
     isExpandable: (dataNode: T) => boolean;
-    constructor(getLevel: (dataNode: T) => number, isExpandable: (dataNode: T) => boolean);
+    options?: FlatTreeControlOptions<T, K> | undefined;
+    constructor(getLevel: (dataNode: T) => number, isExpandable: (dataNode: T) => boolean, options?: FlatTreeControlOptions<T, K> | undefined);
     expandAll(): void;
     getDescendants(dataNode: T): T[];
+}
+
+export interface FlatTreeControlOptions<T, K> {
+    trackBy?: (dataNode: T) => K;
 }
 
 export declare function getTreeControlFunctionsMissingError(): Error;
@@ -162,9 +169,9 @@ export declare class NestedTreeControl<T> extends BaseTreeControl<T> {
     getDescendants(dataNode: T): T[];
 }
 
-export interface TreeControl<T> {
+export interface TreeControl<T, K = T> {
     dataNodes: T[];
-    expansionModel: SelectionModel<T>;
+    expansionModel: SelectionModel<K>;
     readonly getChildren: (dataNode: T) => Observable<T[]> | T[] | undefined | null;
     readonly getLevel: (dataNode: T) => number;
     readonly isExpandable: (dataNode: T) => boolean;
