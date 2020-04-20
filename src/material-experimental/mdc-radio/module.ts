@@ -13,7 +13,7 @@ import {MatRadioButton, MatRadioGroup} from './radio';
 
 @NgModule({
   imports: [MatCommonModule, CommonModule, MatRippleModule],
-  exports: [MatRadioGroup, MatRadioButton],
+  exports: [MatCommonModule, MatRadioGroup, MatRadioButton],
   declarations: [MatRadioGroup, MatRadioButton],
 })
 export class MatRadioModule {

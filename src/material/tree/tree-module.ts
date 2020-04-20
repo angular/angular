@@ -28,7 +28,7 @@ const MAT_TREE_DIRECTIVES = [
 
 @NgModule({
   imports: [CdkTreeModule, MatCommonModule],
-  exports: MAT_TREE_DIRECTIVES,
+  exports: [MatCommonModule, MAT_TREE_DIRECTIVES],
   declarations: MAT_TREE_DIRECTIVES,
 })
 export class MatTreeModule {}

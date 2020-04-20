@@ -37,7 +37,7 @@ const CHIP_DECLARATIONS = [
 
 @NgModule({
   imports: [MatCommonModule, CommonModule, MatRippleModule],
-  exports: CHIP_DECLARATIONS,
+  exports: [MatCommonModule, CHIP_DECLARATIONS],
   declarations: CHIP_DECLARATIONS,
   providers: [
     ErrorStateMatcher,

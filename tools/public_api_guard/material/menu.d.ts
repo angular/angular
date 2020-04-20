@@ -121,7 +121,7 @@ export declare class MatMenuItem extends _MatMenuItemMixinBase implements Focusa
 
 export declare class MatMenuModule {
     static ɵinj: i0.ɵɵInjectorDef<MatMenuModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatMenuModule, [typeof i4._MatMenu, typeof i5.MatMenuItem], [typeof i6.CommonModule, typeof i3.MatCommonModule, typeof i3.MatRippleModule, typeof i7.OverlayModule, typeof _MatMenuDirectivesModule], [typeof i4._MatMenu, typeof i5.MatMenuItem, typeof _MatMenuDirectivesModule]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatMenuModule, [typeof i4._MatMenu, typeof i5.MatMenuItem], [typeof i6.CommonModule, typeof i3.MatCommonModule, typeof i3.MatRippleModule, typeof i7.OverlayModule, typeof _MatMenuDirectivesModule], [typeof i3.MatCommonModule, typeof i4._MatMenu, typeof i5.MatMenuItem, typeof _MatMenuDirectivesModule]>;
 }
 
 export interface MatMenuPanel<T = any> {

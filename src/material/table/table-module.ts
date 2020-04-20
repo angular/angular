@@ -60,7 +60,7 @@ const EXPORTED_DECLARATIONS = [
     CdkTableModule,
     MatCommonModule,
   ],
-  exports: EXPORTED_DECLARATIONS,
+  exports: [MatCommonModule, EXPORTED_DECLARATIONS],
   declarations: EXPORTED_DECLARATIONS,
 })
 export class MatTableModule {}

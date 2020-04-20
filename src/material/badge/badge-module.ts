@@ -17,7 +17,7 @@ import {MatBadge} from './badge';
     A11yModule,
     MatCommonModule
   ],
-  exports: [MatBadge],
+  exports: [MatBadge, MatCommonModule],
   declarations: [MatBadge],
 })
 export class MatBadgeModule {}
