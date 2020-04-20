@@ -19,6 +19,7 @@ export function init(moduleRef: NgModuleRef<TransplantedViewsModule>) {
 
   bindAction('#destroyDom', destroyDom);
   bindAction('#createDom', createDom);
+  bindAction('#markInsertionComponentForCheck', markInsertionComponentForCheck);
   bindAction('#detectChanges', detectChanges);
   bindAction('#detectChangesProfile', profile(detectChanges, noop, 'detectChanges'));
 
@@ -33,6 +34,10 @@ export function init(moduleRef: NgModuleRef<TransplantedViewsModule>) {
   function createDom() {
     declaration.viewCount = numViews;
     appRef.tick();
+  }
+
+  function markInsertionComponentForCheck() {
+    declaration.insertionComponent.changeDetector.markForCheck();
   }
 
   function detectChanges() {

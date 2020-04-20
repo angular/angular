@@ -15,11 +15,23 @@ interface Worker {
   work(): void;
 }
 
-const UpdateWorker: Worker = {
-  id: 'createOnly',
+// Used to benchmark performance when insertion tree is not dirty.
+const InsertionNotDirtyWorker: Worker = {
+  id: 'insertionNotDirty',
   prepare: () => {
     $('#destroyDom').click();
     $('#createDom').click();
+  },
+  work: () => $('#detectChanges').click()
+};
+
+// Used to benchmark performance when both declaration and insertion trees are dirty.
+const AllComponentsDirtyWorker: Worker = {
+  id: 'allComponentsDirty',
+  prepare: () => {
+    $('#destroyDom').click();
+    $('#createDom').click();
+    $('#markInsertionComponentForCheck').click();
   },
   work: () => $('#detectChanges').click()
 };
@@ -36,7 +48,7 @@ const testPackageName = process.env['BAZEL_TARGET']!.split(':')[0].split('/').po
 describe('change detection benchmark perf', () => {
   afterEach(verifyNoBrowserErrors);
 
-  [UpdateWorker].forEach((worker) => {
+  [InsertionNotDirtyWorker, AllComponentsDirtyWorker].forEach((worker) => {
     describe(worker.id, () => {
       it(`should run benchmark for ${testPackageName}`, async () => {
         await runChangeDetectionBenchmark({
