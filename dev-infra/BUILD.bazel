@@ -9,9 +9,10 @@ ts_library(
     module_name = "@angular/dev-infra-private",
     deps = [
         "//dev-infra/commit-message",
+        "//dev-infra/format",
         "//dev-infra/pullapprove",
         "//dev-infra/ts-circular-dependencies",
-        "//dev-infra/utils:config",
+        "//dev-infra/utils",
         "@npm//@types/node",
         "@npm//@types/yargs",
         "@npm//yargs",
