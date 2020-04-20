@@ -143,6 +143,7 @@ export const TViewConstructor = class TView implements ITView {
       public firstChild: ITNode|null,                        //
       public schemas: SchemaMetadata[]|null,                 //
       public consts: TConstants|null,                        //
+      public incompleteFirstPass: boolean                    //
   ) {}
 
   get template_(): string {
