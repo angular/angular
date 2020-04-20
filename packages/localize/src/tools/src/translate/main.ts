@@ -15,6 +15,7 @@ import {AssetTranslationHandler} from './asset_files/asset_translation_handler';
 import {getOutputPathFn, OutputPathFn} from './output_path';
 import {SourceFileTranslationHandler} from './source_files/source_file_translation_handler';
 import {TranslationLoader} from './translation_files/translation_loader';
+import {ArbTranslationParser} from './translation_files/translation_parsers/arb_translation_parser';
 import {SimpleJsonTranslationParser} from './translation_files/translation_parsers/simple_json_translation_parser';
 import {Xliff1TranslationParser} from './translation_files/translation_parsers/xliff1_translation_parser';
 import {Xliff2TranslationParser} from './translation_files/translation_parsers/xliff2_translation_parser';
@@ -209,6 +210,7 @@ export function translateFiles({
         new Xliff1TranslationParser(),
         new XtbTranslationParser(),
         new SimpleJsonTranslationParser(),
+        new ArbTranslationParser(),
       ],
       duplicateTranslation, diagnostics);
 
