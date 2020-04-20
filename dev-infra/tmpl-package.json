@@ -10,8 +10,12 @@
   },
   "peerDependencies": {
     "chalk": "<from-root>",
+    "clang-format": "<from-root>",
+    "cli-progress": "<from-root>",
     "glob": "<from-root>",
+    "inquirer": "<from-root>",
     "minimatch": "<from-root>",
+    "multimatch": "<from-root>",
     "shelljs": "<from-root>",
     "typescript": "<from-root>",
     "yaml": "<from-root>",

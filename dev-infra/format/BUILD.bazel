@@ -1,28 +1,27 @@
 load("@npm_bazel_typescript//:index.bzl", "ts_library")
 
 ts_library(
-    name = "pullapprove",
+    name = "format",
     srcs = [
         "cli.ts",
-        "condition_evaluator.ts",
-        "group.ts",
-        "logging.ts",
-        "parse-yaml.ts",
-        "verify.ts",
+        "config.ts",
+        "format.ts",
+        "run-commands-parallel.ts",
     ],
-    module_name = "@angular/dev-infra-private/pullapprove",
+    module_name = "@angular/dev-infra-private/format",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "//dev-infra/utils",
-        "@npm//@types/minimatch",
+        "@npm//@types/cli-progress",
+        "@npm//@types/inquirer",
         "@npm//@types/node",
         "@npm//@types/shelljs",
-        "@npm//@types/yaml",
         "@npm//@types/yargs",
-        "@npm//minimatch",
+        "@npm//cli-progress",
+        "@npm//inquirer",
+        "@npm//multimatch",
         "@npm//shelljs",
         "@npm//tslib",
-        "@npm//yaml",
         "@npm//yargs",
     ],
 )
