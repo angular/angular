@@ -21,6 +21,7 @@ import {
   OnInit,
   Optional,
   Self,
+  HostListener,
 } from '@angular/core';
 import {FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {
@@ -83,9 +84,6 @@ const _MatInputMixinBase: CanUpdateErrorStateCtor & typeof MatInputBase =
     '[attr.aria-describedby]': '_ariaDescribedby || null',
     '[attr.aria-invalid]': 'errorState',
     '[attr.aria-required]': 'required.toString()',
-    '(blur)': '_focusChanged(false)',
-    '(focus)': '_focusChanged(true)',
-    '(input)': '_onInput()',
   },
   providers: [{provide: MatFormFieldControl, useExisting: MatInput}],
 })
@@ -314,7 +312,15 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
     this._elementRef.nativeElement.focus(options);
   }
 
+  // We have to use a `HostListener` here in order to support both Ivy and ViewEngine.
+  // In Ivy the `host` bindings will be merged when this class is extended, whereas in
+  // ViewEngine they're overwritten.
+  // TODO(crisbeto): we move this back into `host` once Ivy is turned on by default.
   /** Callback for the cases where the focused state of the input changes. */
+  // tslint:disable:no-host-decorator-in-concrete
+  @HostListener('focus', ['true'])
+  @HostListener('blur', ['false'])
+  // tslint:enable:no-host-decorator-in-concrete
   _focusChanged(isFocused: boolean) {
     if (isFocused !== this.focused && (!this.readonly || !isFocused)) {
       this.focused = isFocused;
@@ -322,6 +328,12 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
     }
   }
 
+  // We have to use a `HostListener` here in order to support both Ivy and ViewEngine.
+  // In Ivy the `host` bindings will be merged when this class is extended, whereas in
+  // ViewEngine they're overwritten.
+  // TODO(crisbeto): we move this back into `host` once Ivy is turned on by default.
+  // tslint:disable-next-line:no-host-decorator-in-concrete
+  @HostListener('input')
   _onInput() {
     // This is a noop function and is used to let Angular know whenever the value changes.
     // Angular will run a new change detection each time the `input` event has been dispatched.
