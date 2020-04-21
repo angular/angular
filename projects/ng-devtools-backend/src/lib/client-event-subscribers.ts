@@ -14,7 +14,7 @@ import { ComponentTreeNode, getLatestComponentState, queryDirectiveForest, updat
 import { start as startProfiling, stop as stopProfiling } from './observer';
 import { serializeDirectiveState } from './state-serializer/state-serializer';
 import { ComponentInspector, ComponentInspectorOptions } from './component-inspector/component-inspector';
-import { setConsoleReference } from './selected-component';
+import { setConsoleReference } from './set-console-reference';
 import { unHighlight } from './highlighter';
 import {
   getAngularVersion,
