@@ -297,7 +297,6 @@ describe('bootstrap', () => {
 
     const res = await platformBrowserDynamic([]).bootstrapModule(TestModule);
     const router = res.injector.get(Router);
-    const location: Location = res.injector.get(Location);
 
     await router.navigateByUrl('/aa');
     window.scrollTo(0, 5000);
@@ -317,12 +316,12 @@ describe('bootstrap', () => {
     expect(getScrollY()).toEqual(0);
 
     await router.navigateByUrl('/aa#marker2');
-    expect(getScrollY() >= 5900).toBe(true);
-    expect(window.scrollY < 6000).toBe(true);  // offset
+    expect(getScrollY()).toBeGreaterThanOrEqual(5900);
+    expect(getScrollY()).toBeLessThan(6000);  // offset
 
     await router.navigateByUrl('/aa#marker3');
-    expect(getScrollY() >= 8900).toBe(true);
-    expect(getScrollY() < 9000).toBe(true);
+    expect(getScrollY()).toBeGreaterThanOrEqual(8900);
+    expect(getScrollY()).toBeLessThan(9000);
     done();
   });
 
