@@ -1,5 +1,3 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
 load(
     "//tools:defaults.bzl",
@@ -11,6 +9,8 @@ load(
     "sass_library",
 )
 
+package(default_visibility = ["//visibility:public"])
+
 ng_module(
     name = "mdc-dialog",
     srcs = glob(
@@ -20,7 +20,10 @@ ng_module(
     assets = [":dialog_scss"] + glob(["**/*.html"]),
     module_name = "@angular/material-experimental/mdc-dialog",
     deps = [
+        "//src/cdk/overlay",
+        "//src/cdk/portal",
         "//src/material/core",
+        "//src/material/dialog",
         "@npm//@material/dialog",
     ],
 )
@@ -40,6 +43,7 @@ sass_binary(
         "external/npm/node_modules",
     ],
     deps = [
+        ":mdc_dialog_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
     ],
@@ -57,7 +61,16 @@ ng_test_library(
     ),
     deps = [
         ":mdc-dialog",
+        "//src/cdk/a11y",
+        "//src/cdk/bidi",
+        "//src/cdk/keycodes",
+        "//src/cdk/overlay",
+        "//src/cdk/scrolling",
+        "//src/cdk/testing/private",
+        "@npm//@angular/common",
         "@npm//@angular/platform-browser",
+        "@npm//@material/dialog",
+        "@npm//rxjs",
     ],
 )
 

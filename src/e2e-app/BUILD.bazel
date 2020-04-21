@@ -37,6 +37,7 @@ ng_module(
         "//src/material-experimental/mdc-card",
         "//src/material-experimental/mdc-checkbox",
         "//src/material-experimental/mdc-chips",
+        "//src/material-experimental/mdc-dialog",
         "//src/material-experimental/mdc-input",
         "//src/material-experimental/mdc-menu",
         "//src/material-experimental/mdc-progress-bar",

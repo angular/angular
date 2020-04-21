@@ -9,6 +9,8 @@ entryPoints = [
     "mdc-chips",
     "mdc-chips/testing",
     "mdc-core",
+    "mdc-dialog",
+    "mdc-dialog/testing",
     "mdc-form-field",
     "mdc-form-field/testing",
     "mdc-input",

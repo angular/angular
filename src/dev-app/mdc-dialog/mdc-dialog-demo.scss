@@ -1,0 +1,19 @@
+@import '../../material-experimental/mdc-dialog/dialog-legacy-padding';
+
+.demo-dialog-card {
+  max-width: 405px;
+  margin: 20px 0;
+}
+
+.demo-dialog-button {
+  margin-right: 8px;
+
+  [dir='rtl'] & {
+    margin-left: 8px;
+    margin-right: 0;
+  }
+}
+
+.demo-dialog-legacy-padding {
+  @include mat-mdc-dialog-legacy-padding();
+}

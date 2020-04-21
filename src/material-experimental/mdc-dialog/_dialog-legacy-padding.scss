@@ -1,0 +1,33 @@
+@import '@material/dialog/mixins.import';
+
+// Legacy padding for the dialog. Copied from the non-MDC dialog styles.
+$mat-mdc-dialog-legacy-padding: 24px !default;
+
+/// Mixin that applies creates styles for MDC-based dialog's to have legacy outer
+/// padding. By default, the dialog does not have any padding. The individual directives
+/// such as `matDialogContent`, `matDialogActions` or `matDialogTitle` set the padding.
+@mixin mat-mdc-dialog-legacy-padding() {
+  // Sets the outer padding for the projected dialog user-content.
+  .mat-mdc-dialog-surface {
+    padding: $mat-mdc-dialog-legacy-padding;
+  }
+
+  // Updates the MDC title, content and action elements to account for the legacy outer
+  // padding. The elements will be shifted so that they behave as if there is no margin.
+  // This allows us to still rely on MDC's dialog spacing while maintaining a default outer
+  // padding for backwards compatibility.
+  .mat-mdc-dialog-container {
+    .mat-mdc-dialog-title {
+      margin-top: -$mat-mdc-dialog-legacy-padding;
+    }
+
+    .mat-mdc-dialog-actions {
+      margin-bottom: -$mat-mdc-dialog-legacy-padding;
+    }
+
+    .mat-mdc-dialog-title, .mat-mdc-dialog-content, .mat-mdc-dialog-actions {
+      margin-left: -$mat-mdc-dialog-legacy-padding;
+      margin-right: -$mat-mdc-dialog-legacy-padding;
+    }
+  }
+}

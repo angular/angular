@@ -7,4 +7,16 @@
  */
 
 export * from './dialog';
+export * from './dialog-ref';
+export * from './dialog-content-directives';
+export * from './dialog-container';
 export * from './module';
+
+export {
+  MatDialogState,
+  MatDialogConfig,
+  matDialogAnimations,
+  throwMatDialogContentAlreadyAttachedError,
+  DialogRole,
+  DialogPosition,
+} from '@angular/material/dialog';

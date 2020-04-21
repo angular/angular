@@ -1,0 +1,137 @@
+<h1>Dialog demo</h1>
+
+<button mat-raised-button color="primary" (click)="openJazz()" class="demo-dialog-button">
+  Open dialog
+</button>
+<button mat-raised-button color="accent" (click)="openContentElement()" class="demo-dialog-button">
+  Open dialog with content elements
+</button>
+<button mat-raised-button color="accent" (click)="openTemplate()" class="demo-dialog-button">
+  Open dialog with template content
+</button>
+
+<p>
+  <mat-checkbox [(ngModel)]="enableLegacyPadding">Enable legacy padding</mat-checkbox>
+</p>
+
+<mat-card class="demo-dialog-card">
+  <mat-card-content>
+    <h2>Dialog dimensions</h2>
+
+    <p>
+      <mat-form-field>
+        <mat-label>Width</mat-label>
+        <input matInput [(ngModel)]="config.width">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Height</mat-label>
+        <input matInput [(ngModel)]="config.height">
+      </mat-form-field>
+    </p>
+
+    <p>
+      <mat-form-field>
+        <mat-label>Min width</mat-label>
+        <input matInput [(ngModel)]="config.minWidth">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Min height</mat-label>
+        <input matInput [(ngModel)]="config.minHeight">
+      </mat-form-field>
+    </p>
+
+    <p>
+      <mat-form-field>
+        <mat-label>Max width</mat-label>
+        <input matInput [(ngModel)]="config.maxWidth">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Max height</mat-label>
+        <input matInput [(ngModel)]="config.maxHeight">
+      </mat-form-field>
+    </p>
+
+    <h2>Dialog position</h2>
+
+    <p>
+      <mat-form-field>
+        <mat-label>Top</mat-label>
+        <input matInput [(ngModel)]="config.position.top" (change)="config.position.bottom = ''">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Bottom</mat-label>
+        <input matInput [(ngModel)]="config.position.bottom" (change)="config.position.top = ''">
+      </mat-form-field>
+    </p>
+
+    <p>
+      <mat-form-field>
+        <mat-label>Left</mat-label>
+        <input matInput [(ngModel)]="config.position.left" (change)="config.position.right = ''">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Right</mat-label>
+        <input matInput [(ngModel)]="config.position.right" (change)="config.position.left = ''">
+      </mat-form-field>
+    </p>
+
+    <h2>Dialog backdrop</h2>
+
+    <p>
+      <mat-form-field>
+        <mat-label>Backdrop class</mat-label>
+        <input matInput [(ngModel)]="config.backdropClass">
+      </mat-form-field>
+    </p>
+
+    <mat-checkbox [(ngModel)]="config.hasBackdrop">Has backdrop</mat-checkbox>
+
+    <h2>Other options</h2>
+
+    <p>
+      <mat-form-field>
+        <mat-label>Button alignment</mat-label>
+        <mat-select [(ngModel)]="actionsAlignment">
+          <mat-option>Start</mat-option>
+          <mat-option value="end">End</mat-option>
+          <mat-option value="center">Center</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </p>
+
+    <p>
+      <mat-form-field>
+        <mat-label>Dialog message</mat-label>
+        <input matInput [(ngModel)]="config.data.message">
+      </mat-form-field>
+    </p>
+
+    <p>
+      <mat-checkbox [(ngModel)]="config.disableClose">Disable close</mat-checkbox>
+    </p>
+  </mat-card-content>
+</mat-card>
+
+<p>Last afterClosed result: {{lastAfterClosedResult}}</p>
+<p>Last beforeClose result: {{lastBeforeCloseResult}}</p>
+
+<ng-template let-data let-dialogRef="dialogRef">
+  I'm a template dialog. I've been opened {{numTemplateOpens}} times!
+
+  <p>It's Jazz!</p>
+
+  <mat-form-field>
+    <mat-label>How much?</mat-label>
+    <input matInput #howMuch>
+  </mat-form-field>
+
+  <p> {{ data.message }} </p>
+  <button type="button" (click)="dialogRef.close(howMuch.value)" class="demo-dialog-button"
+          cdkFocusInitial>
+    Close dialog
+  </button>
+  <button (click)="dialogRef.updateSize('500px', '500px').updatePosition({top: '25px', left: '25px'});"
+          class="demo-dialog-button">
+    Change dimensions
+  </button>
+</ng-template>

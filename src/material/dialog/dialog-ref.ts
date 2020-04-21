@@ -12,7 +12,7 @@ import {GlobalPositionStrategy, OverlayRef} from '@angular/cdk/overlay';
 import {Observable, Subject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 import {DialogPosition} from './dialog-config';
-import {MatDialogContainer} from './dialog-container';
+import {_MatDialogContainerBase} from './dialog-container';
 
 
 // TODO(jelbourn): resizing
@@ -53,7 +53,7 @@ export class MatDialogRef<T, R = any> {
 
   constructor(
     private _overlayRef: OverlayRef,
-    public _containerInstance: MatDialogContainer,
+    public _containerInstance: _MatDialogContainerBase,
     readonly id: string = `mat-dialog-${uniqueId++}`) {
 
     // Pass the id along to the container.
@@ -61,7 +61,7 @@ export class MatDialogRef<T, R = any> {
 
     // Emit when opening animation completes
     _containerInstance._animationStateChanged.pipe(
-      filter(event => event.phaseName === 'done' && event.toState === 'enter'),
+      filter(event => event.state === 'opened'),
       take(1)
     )
     .subscribe(() => {
@@ -71,7 +71,7 @@ export class MatDialogRef<T, R = any> {
 
     // Dispose overlay when closing animation is complete
     _containerInstance._animationStateChanged.pipe(
-      filter(event => event.phaseName === 'done' && event.toState === 'exit'),
+      filter(event => event.state === 'closed'),
       take(1)
     ).subscribe(() => {
       clearTimeout(this._closeFallbackTimeout);
@@ -114,7 +114,7 @@ export class MatDialogRef<T, R = any> {
 
     // Transition the backdrop in parallel to the dialog.
     this._containerInstance._animationStateChanged.pipe(
-      filter(event => event.phaseName === 'start'),
+      filter(event => event.state === 'closing'),
       take(1)
     )
     .subscribe(event => {
@@ -131,8 +131,8 @@ export class MatDialogRef<T, R = any> {
           event.totalTime + 100);
     });
 
-    this._containerInstance._startExitAnimation();
     this._state = MatDialogState.CLOSING;
+    this._containerInstance._startExitAnimation();
   }
 
   /**

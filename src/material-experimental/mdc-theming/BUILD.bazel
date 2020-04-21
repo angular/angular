@@ -21,6 +21,7 @@ sass_library(
         "//src/material-experimental/mdc-checkbox:mdc_checkbox_scss_lib",
         "//src/material-experimental/mdc-chips:mdc_chips_scss_lib",
         "//src/material-experimental/mdc-core:mdc_core_scss_lib",
+        "//src/material-experimental/mdc-dialog:mdc_dialog_scss_lib",
         "//src/material-experimental/mdc-form-field:mdc_form_field_scss_lib",
         "//src/material-experimental/mdc-input:mdc_input_scss_lib",
         "//src/material-experimental/mdc-list:mdc_list_scss_lib",

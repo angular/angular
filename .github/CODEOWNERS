@@ -174,6 +174,7 @@
 /src/dev-app/mdc-card/**                           @mmalerba
 /src/dev-app/mdc-checkbox/**                       @mmalerba
 /src/dev-app/mdc-chips/**                          @mmalerba
+/src/dev-app/mdc-dialog/**                         @devversion
 /src/dev-app/mdc-input/**                          @devversion @mmalerba
 /src/dev-app/mdc-list/**                           @mmalerba
 /src/dev-app/mdc-menu/**                           @crisbeto
@@ -235,6 +236,7 @@
 /src/e2e-app/mdc-card/**                           @mmalerba
 /src/e2e-app/mdc-checkbox/**                       @mmalerba
 /src/e2e-app/mdc-chips/**                          @mmalerba
+/src/e2e-app/mdc-dialog/**                         @devversion
 /src/e2e-app/mdc-input/**                          @devversion
 /src/e2e-app/mdc-menu/**                           @crisbeto
 /src/e2e-app/mdc-progress-bar/**                   @crisbeto

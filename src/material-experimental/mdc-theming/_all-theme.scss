@@ -3,6 +3,7 @@
 @import '../mdc-card/card-theme';
 @import '../mdc-checkbox/checkbox-theme';
 @import '../mdc-chips/chips-theme';
+@import '../mdc-dialog/dialog-theme';
 @import '../mdc-list/list-theme';
 @import '../mdc-menu/menu-theme';
 @import '../mdc-radio/radio-theme';
@@ -19,6 +20,7 @@
   @include _mat-check-duplicate-theme-styles($theme-or-color-config, 'angular-material-mdc-theme') {
     @include mat-mdc-core-theme($theme-or-color-config);
     @include mat-mdc-button-theme($theme-or-color-config);
+    @include mat-mdc-dialog-theme($theme-or-color-config);
     @include mat-mdc-fab-theme($theme-or-color-config);
     @include mat-mdc-icon-button-theme($theme-or-color-config);
     @include mat-mdc-card-theme($theme-or-color-config);

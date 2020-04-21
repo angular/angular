@@ -1,0 +1,29 @@
+load("//tools:defaults.bzl", "ng_module", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "mdc-dialog",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "mdc-dialog-demo.html",
+        ":mdc_dialog_demo_scss",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-dialog",
+        "//src/material/button",
+        "//src/material/card",
+        "//src/material/checkbox",
+        "//src/material/form-field",
+        "//src/material/input",
+        "//src/material/select",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "mdc_dialog_demo_scss",
+    src = "mdc-dialog-demo.scss",
+    include_paths = ["external/npm/node_modules"],
+    deps = ["//src/material-experimental/mdc-dialog:mdc_dialog_scss_lib"],
+)

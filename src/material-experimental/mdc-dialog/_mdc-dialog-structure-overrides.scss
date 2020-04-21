@@ -1,0 +1,56 @@
+// Mixin that can be included to override the default MDC dialog styles to fit
+// our needs. See individual comments for context on why certain styles need to be modified.
+@mixin _mdc-dialog-structure-overrides() {
+  // MDC dialog sets max-height and max-width on the `mdc-dialog__surface` element. This
+  // element is the parent of the portal outlet. This means that the actual user-content
+  // is scrollable, but as per Material Design specification, only the dialog content
+  // (indicated by `matDialogContent`) should be scrollable while title and actions are fixed.
+  // This is not an issue for MDC because they make the assumption that the content, title and
+  // action elements are direct children of the surface element. We work around this by setting
+  // an explicit max-height for the content element, so that the content is scrollable. This
+  // matches the behavior from the non-MDC dialog and is backwards compatible.
+  .mat-mdc-dialog-content {
+    max-height: $mat-dialog-content-max-height;
+  }
+
+  .mat-mdc-dialog-container {
+    // MDC by default expands the dialog using a fixed position to the viewport dimensions.
+    // MDC does this because the dialog element contains the backdrop/scrim too. This is not
+    // the case for our implementation of the dialog that uses the CDK overlay backdrop. We
+    // update the dialog to a `static` position and reset the height/width so that the dialog
+    // scales based on the content, respecting the boundaries of the CDK overlay container.
+    // This is necessary to support for custom position strategies in the overlay.
+    position: static;
+    // The MDC dialog is designed to always stay in the DOM. Hence MDC sets `display: none`
+    // when the dialog is closed. Since we only attach the dialog to the DOM when the dialog
+    // should open, and we want to be able to focus the dialog immediately when we attach it,
+    // we override the default `display` so that the dialog is focusable.
+    display: block;
+
+    // MDC sets `min-height`, `max-height`, `min-width` and `max-height` We can't rely on
+    // this for the dialog content scrolling (as explained above), and since we allow for
+    // custom positioning through overlay configuration, we remove the rectangle
+    // restrictions and scale based on the CDK overlay container.
+    &, .mdc-dialog__container, .mdc-dialog__surface {
+      max-height: inherit;
+      min-height: inherit;
+      min-width: inherit;
+      max-width: inherit;
+    }
+
+    // MDC by default sets the `surface` to `display: flex`. MDC does this in order to
+    // be able to make the content scrollable while locking the title and actions. This
+    // does not work in our dialog anyway because due to the content projection, arbitrary
+    // components can be immediate children of the surface and make this a noop. If only
+    // templates or DOM elements are projected, the flex display could cause unexpected
+    // alignment issues as explained in our coding standards (see `CODING_STANDARDS.md`).
+    // Additionally, the surface by default should expand based on the parent overlay
+    // boundaries (so that boundaries for the overlay config are respected). The surface
+    // by default would only expand based on its content.
+    .mdc-dialog__surface {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}

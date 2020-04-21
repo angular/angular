@@ -17,6 +17,7 @@ import {
 } from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -72,7 +73,7 @@ export function throwDialogContentAlreadyAttachedError() {
     '(@dialog.done)': '_animationDone.next($event)',
   },
 })
-export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
+export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy, AfterViewInit {
   private readonly _document: Document;
 
   /** State of the dialog animation. */
@@ -150,6 +151,16 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
     });
   }
 
+  /** If the dialog view completes initialization, the open animation starts. */
+  ngAfterViewInit() {
+    // Save the previously focused element. This element will be re-focused
+    // when the dialog closes.
+    this._savePreviouslyFocusedElement();
+    // Move focus onto the dialog immediately in order to prevent the user
+    // from accidentally opening multiple dialogs at the same time.
+    this._focusDialogContainer();
+  }
+
   /** Destroy focus trap to place focus back to the element focused before the dialog opened. */
   ngOnDestroy() {
     this._focusTrap.destroy();
@@ -165,7 +176,6 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
       throwDialogContentAlreadyAttachedError();
     }
 
-    this._savePreviouslyFocusedElement();
     return this._portalHost.attachComponentPortal(portal);
   }
 
@@ -178,7 +188,6 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
       throwDialogContentAlreadyAttachedError();
     }
 
-    this._savePreviouslyFocusedElement();
     return this._portalHost.attachTemplatePortal(portal);
   }
 
@@ -193,7 +202,6 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
       throwDialogContentAlreadyAttachedError();
     }
 
-    this._savePreviouslyFocusedElement();
     return this._portalHost.attachDomPortal(portal);
   }
 
@@ -222,11 +230,14 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
   private _savePreviouslyFocusedElement() {
     if (this._document) {
       this._elementFocusedBeforeDialogWasOpened = this._document.activeElement as HTMLElement;
+    }
+  }
 
-      // Move focus onto the dialog immediately in order to prevent the user from accidentally
-      // opening multiple dialogs at the same time. Needs to be async, because the element
-      // may not be focusable immediately.
-      Promise.resolve().then(() => this._elementRef.nativeElement.focus());
+  /** Focuses the dialog container. */
+  private _focusDialogContainer() {
+    // Note that there is no focus method when rendering on the server.
+    if (this._elementRef.nativeElement.focus) {
+      this._elementRef.nativeElement.focus();
     }
   }
 

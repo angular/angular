@@ -1,11 +1,39 @@
 @import '../mdc-helpers/mdc-helpers';
 @import '@material/dialog/mixins.import';
 
-@mixin mat-mdc-dialog-theme($theme) {
-  @include mat-using-mdc-theme($theme) {
+@mixin mat-mdc-dialog-color($config-or-theme) {
+  $config: mat-get-color-config($config-or-theme);
+  @include mat-using-mdc-theme($config) {
+    @include mdc-dialog-core-styles($query: $mat-theme-styles-query);
+  }
 }
 
-@mixin mat-mdc-dialog-typography($config) {
+@mixin mat-mdc-dialog-typography($config-or-theme) {
+  $config: mat-get-typography-config($config-or-theme);
   @include mat-using-mdc-typography($config) {
+    @include mdc-dialog-core-styles($query: $mat-typography-styles-query);
+  }
+}
+
+@mixin mat-mdc-dialog-density($config-or-theme) {
+  $density-scale: mat-get-density-config($config-or-theme);
+}
+
+@mixin mat-mdc-dialog-theme($theme-or-color-config) {
+  $theme: _mat-legacy-get-theme($theme-or-color-config);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-dialog') {
+    $color: mat-get-color-config($theme);
+    $density: mat-get-density-config($theme);
+    $typography: mat-get-typography-config($theme);
+
+    @if $color != null {
+      @include mat-mdc-dialog-color($color);
+    }
+    @if $density != null {
+      @include mat-mdc-dialog-density($density);
+    }
+    @if $typography != null {
+      @include mat-mdc-dialog-typography($typography);
+    }
   }
 }

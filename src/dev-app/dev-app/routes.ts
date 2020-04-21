@@ -80,6 +80,7 @@ export const DEV_APP_ROUTES: Routes = [
     loadChildren: 'mdc-progress-bar/mdc-progress-bar-demo-module#MdcProgressBarDemoModule'
   },
   {path: 'mdc-chips', loadChildren: 'mdc-chips/mdc-chips-demo-module#MdcChipsDemoModule'},
+  {path: 'mdc-dialog', loadChildren: 'mdc-dialog/mdc-dialog-demo-module#MdcDialogDemoModule'},
   {path: 'mdc-input', loadChildren: 'mdc-input/mdc-input-demo-module#MdcInputDemoModule'},
   {path: 'mdc-list', loadChildren: 'mdc-list/mdc-list-demo-module#MdcListDemoModule'},
   {path: 'mdc-menu', loadChildren: 'mdc-menu/mdc-menu-demo-module#MdcMenuDemoModule'},

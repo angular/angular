@@ -78,6 +78,7 @@ export class DevAppLayout {
     {name: 'MDC Card', route: '/mdc-card'},
     {name: 'MDC Checkbox', route: '/mdc-checkbox'},
     {name: 'MDC Chips', route: '/mdc-chips'},
+    {name: 'MDC Dialog', route: '/mdc-dialog'},
     {name: 'MDC Input', route: '/mdc-input'},
     {name: 'MDC List', route: '/mdc-list'},
     {name: 'MDC Menu', route: '/mdc-menu'},

@@ -1,5 +1,44 @@
 export declare function _closeDialogVia<R>(ref: MatDialogRef<R>, interactionType: FocusOrigin, result?: R): void;
 
+export declare abstract class _MatDialogBase<C extends _MatDialogContainerBase> implements OnDestroy {
+    readonly afterAllClosed: Observable<void>;
+    get afterOpened(): Subject<MatDialogRef<any>>;
+    get openDialogs(): MatDialogRef<any>[];
+    constructor(_overlay: Overlay, _injector: Injector, _defaultOptions: MatDialogConfig | undefined, _parentDialog: _MatDialogBase<C> | undefined, _overlayContainer: OverlayContainer, scrollStrategy: any, _dialogRefConstructor: Type<MatDialogRef<any>>, _dialogContainerType: Type<C>, _dialogDataToken: InjectionToken<any>);
+    _getAfterAllClosed(): Subject<void>;
+    closeAll(): void;
+    getDialogById(id: string): MatDialogRef<any> | undefined;
+    ngOnDestroy(): void;
+    open<T, D = any, R = any>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>, config?: MatDialogConfig<D>): MatDialogRef<T, R>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatDialogBase<any>, never, never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<_MatDialogBase<any>, never>;
+}
+
+export declare abstract class _MatDialogContainerBase extends BasePortalOutlet {
+    _animationStateChanged: EventEmitter<DialogAnimationEvent>;
+    _ariaLabelledBy: string | null;
+    protected _changeDetectorRef: ChangeDetectorRef;
+    _closeInteractionType: FocusOrigin | null;
+    _config: MatDialogConfig;
+    protected _document: Document;
+    protected _elementRef: ElementRef;
+    protected _focusTrapFactory: FocusTrapFactory;
+    _id: string;
+    _portalOutlet: CdkPortalOutlet;
+    attachDomPortal: (portal: DomPortal) => void;
+    constructor(_elementRef: ElementRef, _focusTrapFactory: FocusTrapFactory, _changeDetectorRef: ChangeDetectorRef, _document: any,
+    _config: MatDialogConfig, _focusMonitor?: FocusMonitor | undefined);
+    _initializeWithAttachedContent(): void;
+    _recaptureFocus(): void;
+    protected _restoreFocus(): void;
+    abstract _startExitAnimation(): void;
+    protected _trapFocus(): void;
+    attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T>;
+    attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatDialogContainerBase, never, never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<_MatDialogContainerBase, [null, null, null, { optional: true; }, null, null]>;
+}
+
 export interface DialogPosition {
     bottom?: string;
     left?: string;
@@ -25,17 +64,9 @@ export declare const MAT_DIALOG_SCROLL_STRATEGY_PROVIDER: {
 
 export declare function MAT_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay): () => ScrollStrategy;
 
-export declare class MatDialog implements OnDestroy {
-    readonly afterAllClosed: Observable<void>;
-    get afterOpened(): Subject<MatDialogRef<any>>;
-    get openDialogs(): MatDialogRef<any>[];
-    constructor(_overlay: Overlay, _injector: Injector,
-    _location: Location, _defaultOptions: MatDialogConfig, scrollStrategy: any, _parentDialog: MatDialog, _overlayContainer: OverlayContainer);
-    _getAfterAllClosed(): Subject<void>;
-    closeAll(): void;
-    getDialogById(id: string): MatDialogRef<any> | undefined;
-    ngOnDestroy(): void;
-    open<T, D = any, R = any>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>, config?: MatDialogConfig<D>): MatDialogRef<T, R>;
+export declare class MatDialog extends _MatDialogBase<MatDialogContainer> {
+    constructor(overlay: Overlay, injector: Injector,
+    location: Location, defaultOptions: MatDialogConfig, scrollStrategy: any, parentDialog: MatDialog, overlayContainer: OverlayContainer);
     static ɵfac: i0.ɵɵFactoryDef<MatDialog, [null, null, { optional: true; }, { optional: true; }, null, { optional: true; skipSelf: true; }, null]>;
     static ɵprov: i0.ɵɵInjectableDef<MatDialog>;
 }
@@ -90,25 +121,13 @@ export declare class MatDialogConfig<D = any> {
     width?: string;
 }
 
-export declare class MatDialogContainer extends BasePortalOutlet {
-    _animationStateChanged: EventEmitter<AnimationEvent>;
-    _ariaLabelledBy: string | null;
-    _closeInteractionType: FocusOrigin | null;
-    _config: MatDialogConfig;
-    _id: string;
-    _portalOutlet: CdkPortalOutlet;
+export declare class MatDialogContainer extends _MatDialogContainerBase {
     _state: 'void' | 'enter' | 'exit';
-    attachDomPortal: (portal: DomPortal) => void;
-    constructor(_elementRef: ElementRef, _focusTrapFactory: FocusTrapFactory, _changeDetectorRef: ChangeDetectorRef, _document: any,
-    _config: MatDialogConfig, _focusMonitor?: FocusMonitor | undefined);
-    _onAnimationDone(event: AnimationEvent): void;
-    _onAnimationStart(event: AnimationEvent): void;
-    _recaptureFocus(): void;
+    _onAnimationDone({ toState, totalTime }: AnimationEvent): void;
+    _onAnimationStart({ toState, totalTime }: AnimationEvent): void;
     _startExitAnimation(): void;
-    attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T>;
-    attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C>;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDialogContainer, "mat-dialog-container", never, {}, {}, never, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatDialogContainer, [null, null, null, { optional: true; }, null, null]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDialogContainer, never>;
 }
 
 export declare class MatDialogContent {
@@ -122,11 +141,11 @@ export declare class MatDialogModule {
 }
 
 export declare class MatDialogRef<T, R = any> {
-    _containerInstance: MatDialogContainer;
+    _containerInstance: _MatDialogContainerBase;
     componentInstance: T;
     disableClose: boolean | undefined;
     readonly id: string;
-    constructor(_overlayRef: OverlayRef, _containerInstance: MatDialogContainer, id?: string);
+    constructor(_overlayRef: OverlayRef, _containerInstance: _MatDialogContainerBase, id?: string);
     addPanelClass(classes: string | string[]): this;
     afterClosed(): Observable<R | undefined>;
     afterOpened(): Observable<void>;
