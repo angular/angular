@@ -131,8 +131,8 @@ CHERRY_PICK_PR="git cherry-pick merge_pr_base..merge_pr"
 #
 # This check is used to enforce that we don't merge PRs that have not been rebased recently and could result in merging
 # of non-approved or otherwise bad changes.
-REQUIRED_BASE_SHA_MASTER="c5c57f673745e9b66a771c49e778a7d2e8d8c56a" # clang 1.4.0 update
-REQUIRED_BASE_SHA_PATCH="f4681b6e407c0f518bc4a27ca04ca60d8eff8a69"  # clang 1.4.0 update
+REQUIRED_BASE_SHA_MASTER="4341743b4a6d7e23c6f944aa9e34166b701369a1" # `commit-message` script update
+REQUIRED_BASE_SHA_PATCH="2a53f471592f424538802907aca1f60f1177a86d"  # `commit-message` script update
 if [[ $MERGE_MASTER == 1 ]]; then
   REQUIRED_BASE_SHA="$REQUIRED_BASE_SHA_MASTER"
 # check patch only if patch-only PR
