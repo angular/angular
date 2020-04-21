@@ -218,7 +218,7 @@ export class HttpXhrBackend implements HttpBackend {
         const res = new HttpErrorResponse({
           error,
           status: xhr.status || 0,
-          statusText: 'Request timeout',
+          statusText: xhr.statusText || 'Request timeout',
           url: url || undefined,
         });
         observer.error(res);

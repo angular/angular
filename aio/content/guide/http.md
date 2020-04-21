@@ -330,7 +330,7 @@ Three types of errors can occur.
 
 * Something could go wrong on the client-side such as a network error that prevents the request from completing successfully or an exception thrown in an RxJS operator. These errors have `status` set to `0` and the `error` property contains a `ProgressEvent` object, whose `type` might provide further information.
 
-* The server took too long to respond. The timeout can be passed in as an optional parameter with the request object or the `HttpClient`'s request methods.
+* The server took too long to respond, but only when a timeout value has been passed in as an optional parameter with the request object or the `HttpClient`'s request methods.
 
 `HttpClient` captures all three kinds of errors in its `HttpErrorResponse`. You can inspect that response to identify the error's cause.
 
@@ -349,6 +349,14 @@ The following code updates the `getConfig()` method, using a [pipe](guide/pipes 
   path="http/src/app/config/config.service.ts"
   region="getConfig_3"
   header="app/config/config.service.ts (getConfig v.3 with error handler)">
+</code-example>
+
+
+
+<code-example
+  path="http/src/app/config/config.service.ts"
+  region="getConfig_4"
+  header="app/config/config.service.ts (getConfig v.4 with timeout handler)">
 </code-example>
 
 {@a retry}

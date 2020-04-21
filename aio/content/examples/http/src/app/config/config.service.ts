@@ -56,15 +56,22 @@ export class ConfigService {
 
   getConfig_3() {
     // #docregion getConfig_3
-    const httpOptions = {
-      timeout: 2000,  // timeout the request if no response is received within 2000 ms
-    };
-    return this.http.get<Config>(this.configUrl, httpOptions)
+    return this.http.get<Config>(this.configUrl)
       .pipe(
         catchError(this.handleError)
       );
   }
   // #enddocregion getConfig_3
+
+  getConfig_4() {
+    // #docregion getConfig_4
+    // set a timeout of 2000 milliseconds
+    return this.http.get<Config>(this.configUrl, {timeout: 2000})
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+  // #enddocregion getConfig_4
 
   // #docregion getConfigResponse
   getConfigResponse(): Observable<HttpResponse<Config>> {
