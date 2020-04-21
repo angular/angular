@@ -336,7 +336,7 @@ class ApplyRedirects {
 
     return obs.pipe(
         concatAll(),
-        tap((result: UrlTree|Boolean) => {
+        tap((result: UrlTree|boolean) => {
           if (!isUrlTree(result)) return;
 
           const error: Error&{url?: UrlTree} =
