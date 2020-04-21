@@ -35,8 +35,8 @@ module.exports = function autoLinkCode(getDocFromAlias) {
         }
 
         visit(node, 'text', (node, ancestors) => {
-          const isInsideOtherLinks = isInsideLink(ancestors);
-          if (isInsideOtherLinks) {
+          const isInLink = isInsideLink(ancestors);
+          if (isInLink) {
             return;
           }
 
