@@ -71,13 +71,11 @@ export class DirectiveForestComponent implements OnInit {
 
   subscribeToInspectorEvents(): void {
     this._messageBus.on('selectComponent', (id: number) => {
-      console.log(id);
       this.selectNodeByComponentId(id);
       this.toggleInspector.emit();
     });
 
     this._messageBus.on('highlightComponent', (id: number) => {
-      console.log(id);
       this.highlightIDinTreeFromElement = id;
     });
 
@@ -323,6 +321,7 @@ export class DirectiveForestComponent implements OnInit {
   }
 
   highlightNode(position: ElementPosition): void {
+    this._highlightIDinTreeFromElement = null;
     this.highlightComponent.emit(position);
   }
 
