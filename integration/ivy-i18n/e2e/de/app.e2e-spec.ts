@@ -15,7 +15,13 @@ describe('cli-hello-world-ivy App', () => {
     expect(page.getParagraph('message')).toEqual('Willkommen in der i18n App. (inline)');
   });
 
-  it('should display the locale', () => { expect(page.getParagraph('locale')).toEqual('de'); });
+  it('should display extra message', () => {
+    expect(page.getParagraph('extra')).toEqual('Zusätzliche Nachricht');
+  });
+
+  it('should display the locale', () => {
+    expect(page.getParagraph('locale')).toEqual('de');
+  });
 
   // TODO : Re-enable when CLI translation inlining supports locale inlining (and so we can use it
   // to load the correct locale data)
