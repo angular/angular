@@ -88,7 +88,7 @@ function collectCommitsAsMap(rawGitCommits) {
   return commitsMap;
 }
 
-function getCommitInfoAsString(commitInfo, version) {
+function getCommitInfoAsString(version, commitInfo) {
   return `[${version}+] ${commitInfo}`;
 }
 
