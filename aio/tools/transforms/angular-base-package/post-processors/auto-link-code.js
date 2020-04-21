@@ -35,9 +35,8 @@ module.exports = function autoLinkCode(getDocFromAlias) {
         }
 
         visit(node, 'text', (node, ancestors) => {
-          // Only interested in text nodes that are not inside links
-          const isInsideLink = ancestors.every(ancestor => !is(ancestor, 'a'));
-          if (!isInsideLink) {
+          const isInsideOtherLinks = isInsideLink(ancestors);
+          if (isInsideOtherLinks) {
             return;
           }
 
@@ -64,11 +63,15 @@ module.exports = function autoLinkCode(getDocFromAlias) {
     // * do not have `no-auto-link` class
     // * do not have an ignored language
     // * are not inside links
-    const containsElement = autoLinkCodeImpl.codeElements.some(elementType => is(node, elementType));
-    const hasNoAutoLink = !node.properties.className || !node.properties.className.includes('no-auto-link');
+    const isCodeElement = autoLinkCodeImpl.codeElements.some(elementType => is(node, elementType));
+    const hasNoAutoLink = node.properties.className && node.properties.className.includes('no-auto-link');
     const isLanguageSupported = !autoLinkCodeImpl.ignoredLanguages.includes(node.properties.language);
-    const isInsideLink = ancestors.every(ancestor => !is(ancestor, 'a'));
-    return containsElement && hasNoAutoLink && isLanguageSupported && isInsideLink;
+    const isInLink = isInsideLink(ancestors);
+    return isCodeElement && !hasNoAutoLink && isLanguageSupported && !isInLink;
+  }
+
+  function isInsideLink(ancestors) {
+    return ancestors.some(ancestor => is(ancestor, 'a'));
   }
 
   function getNodes(node, file) {
