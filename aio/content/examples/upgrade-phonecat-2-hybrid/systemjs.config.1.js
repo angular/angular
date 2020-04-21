@@ -6,7 +6,7 @@
   // #docregion paths
   System.config({
     paths: {
-      // paths serve as alias
+      // alias 설정
       'npm:': '/node_modules/'
     },
     map: {

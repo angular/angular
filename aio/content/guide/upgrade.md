@@ -2267,8 +2267,12 @@ AngularJS 프로젝트에 서비스가 있다면 이 서비스도 컨트롤러�
 이제부터 추가되는 서비스는 Angular로 직접 구현하면 됩니다.
 
 
+<!--
 ### Installing Angular
+-->
+### Angular 설치하기
 
+<!--
 Having completed the preparation work, get going with the Angular
 upgrade of PhoneCat. You'll do this incrementally with the help of
 [ngUpgrade](#upgrading-with-ngupgrade) that comes with Angular.
@@ -2335,9 +2339,70 @@ and add a mapping for the `@angular/upgrade/static` package.
 
 <code-example path="upgrade-phonecat-2-hybrid/systemjs.config.1.js" region="paths" header="systemjs.config.js">
 </code-example>
+-->
+사전작업을 마치고 나면 이제 PhoneCat 프로젝트를 Angular 버전으로 업그레이드 해봅시다.
+이 과정은 [ngUpgrade](#upgrading-with-ngupgrade)를 활용해서 단계별로 작업하며, 이 과정을 끝내고 나면 프로젝트에서 AngularJS를 완전히 제거해도 됩니다.
+과정을 진행하는 동안 애플리케이션이 계속 동작하도록 하나씩 전환하는 것이 가장 중요합니다.
 
+<div class="alert is-important">
+
+프로젝트에 애니메이션을 활용했다면 지금 당장 이 코드를 Angular 버전으로 전환하지 않아도 됩니다.
+자세한 내용은 [Angular 애니메이션](guide/animations) 문서를 참고하세요.
+
+</div>
+
+프로젝트에 Angular를 설치하고 SystemJS 모듈 로더로 프로젝트에 로드해 봅시다.
+작업을 끝낸 결과는 [업그레이드 환경 설정](guide/upgrade-setup) 문서에서 확인할 수 있으며, 이 문서에서는 이렇게 작업합니다:
+
+* `package.json` 파일의 의존성 패키지 목록에 Angular를 추가합니다.
+* 프로젝트 최상위 폴더에 SystemJS 환경설정 파일 `systemjs.config.js`를 생성합니다.
+
+그리고 다음 명령을 실행해 봅시다:
+
+<code-example format="">
+  npm install
+</code-example>
+
+이제 Angular 패키지가 설치되었으니 `index.html` 파일로 앱을 로드할 수 있지만, 일부 폴더의 위치를 먼저 변경해두는 것이 좋습니다.
+지금까지는 애플리케이션에 필요한 패키지와 파일들을 `/app` 폴더에서 로드했습니다.
+이제는 `node_modules`와 프로젝트 최상위 폴더에서 로드해야 합니다.
+
+`app/index.html` 파일을 프로젝트 루트 폴더로 옮깁니다.
+그리고 `package.json`의 `start` 스크립트를 다음과 같이 수정합니다:
+
+<code-example format="">
+  "start": "http-server ./ -a localhost -p 8000 -c-1",
+</code-example>
+
+이제 프로젝트 최상위 폴더에 있는 모든 파일은 웹 브라우저로 보낼 수 있습니다.
+하지만 이 작업때문에 애플리케이션 코드에 사용한 이미지 파일이나 데이터를 가리키는 경로가 변경되는 것은 아무도 원하지 *않습니다*.
+그래서 `index.html` 파일에 `<base>` 태그를 추가해서 이전에 참조했던 `/app` 폴더를 그대로 가리키도록 다음 내용을 추가합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/index.html" region="base" header="index.html">
+</code-example>
+
+이번에는 SystemJS로 Angular를 로드해 봅시다.
+`<head>` 마지막에 Angular 폴리필과 SystemJS 환경설정 파일을 로드하고 `System.import`를 사용해서 애플리케이션을 로드합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/index.html" region="angular" header="index.html">
+</code-example>
+
+필요하다면 [환경 설정](guide/upgrade-setup) 문서에서 설명하는 대로 `systemjs.config.js` 파일을 수정해서 원하는 환경을 지정할 수도 있습니다.
+
+예를 들면 `<base>`를 사용하지 않고 SystemJS 설정으로 프로젝트 루트를 지정할 수 있습니다.
+
+여기까지 작업하고 나면 `npm install @angular/upgrade --save` 명령을 실행해서 `upgrade` 새키지를 설치하고 이 패키지를 `@angular/upgrade/static`으로 맵핑합니다.
+
+<code-example path="upgrade-phonecat-2-hybrid/systemjs.config.1.js" region="paths" header="systemjs.config.js">
+</code-example>
+
+
+<!--
 ### Creating the _AppModule_
+-->
+### _AppModule_ 생성하기
 
+<!--
 Now create the root `NgModule` class called `AppModule`.
 There is already a file named `app.module.ts` that holds the AngularJS module.
 Rename it to `app.module.ajs.ts` and update the corresponding script name in the `index.html` as well.
@@ -2350,9 +2415,27 @@ Now create a new `app.module.ts` with the minimum `NgModule` class:
 
 <code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="bare" header="app.module.ts">
 </code-example>
+-->
+이제 최상위 `NgModule`인 `AppModule` 클래스를 생성해 봅시다.
+지금 작업하고 있는 앱에는 `app.module.ts` 파일에 모듈이 정의되어 있습니다.
+이 파일의 이름을 `app.module.ajs.ts`로 변경하고 이 파일을 로드하는 `index.html` 파일도 수정합니다.
+이 파일은 이렇게 작성되어 있습니다:
 
+<code-example path="upgrade-phonecat-2-hybrid/app/app.module.ajs.ts" header="app.module.ajs.ts">
+</code-example>
+
+이제 새로운 `app.module.ts` 파일을 만들고 최소한의 코드로 다음과 같은 `NgModule` 클래스를 정의합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="bare" header="app.module.ts">
+</code-example>
+
+
+<!--
 ### Bootstrapping a hybrid PhoneCat
+-->
+### 하이브리드 프로젝트 부트스트랩하기
 
+<!--
 Next, you'll bootstrap the application as a *hybrid application*
 that supports both AngularJS and Angular components. After that,
 you can start converting the individual pieces to Angular.
@@ -2382,11 +2465,41 @@ so it is already being loaded by the browser.
 
 Now you're running both AngularJS and Angular at the same time. That's pretty
 exciting! You're not running any actual Angular components yet. That's next.
+-->
+이번에는 AngularJS 컴포넌트와 Angular 컴포넌트가 모두 동작하는 *하이브리드 애플리케이션* 을 부트스트랩 해 봅시다.
+이 과정을 끝내고 나면 AngularJS 컴포넌트를 하나씩 Angular로 전환할 준비는 모두 끝납니다.
+
+지금까지는 AngularJS `ng-app` 디렉티브를 `<html>` 엘리먼트에 붙이는 방식으로 앱을 부트스트랩했지만 하이브리드 앱은 이제 이 방식을 사용하지 않습니다.
+[ngUpgrade bootstrap](#bootstrapping-hybrid-applications) 메소드를 사용하는 방식으로 바꿔봅시다.
+
+먼저 `index.html` 파일에서 `ng-app` 어트리뷰트를 제거합니다.
+그리고 `AppModule`에 `UpgradeModule`을 로드하고 `ngDoBootstrap` 메소드를 다음과 같이 오버라이드합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="upgrademodule" header="app/app.module.ts">
+</code-example>
+
+`ngDoBootstrap` 메소드 안에서 부트스트랩 하는 것은 AngularJS 모듈이라는 것을 명심하세요.
+그리고 `upgrade.bootstrap` 메소드에 전달하는 인자는 AngularJS 앱을 수동으로 부트스트랩할 때 사용했던 `angular.bootstrap` 메소드의 인자와 같습니다.
+첫번째 인자는 애플리케이션이 들어갈 엘리먼트이며, 두번째 인자는 로드하려는 AngularJS 1.x 모듈을 배열로 전달합니다.
+
+그리고 이제 `app/main.ts` 파일에서 `AppModule`을 부트스트랩합니다.
+이 파일은 `systemjs.config.js`에서 애플리케이션의 진입점으로 브라우저가 로드하는 파일입니다.
+
+<code-example path="upgrade-phonecat-2-hybrid/app/main.ts" region="bootstrap" header="app/main.ts">
+</code-example>
+
+이제 AngularJS와 Angular가 동시에 실행됩니다.
+대단하네요!
+이제 Angular 컴포넌트를 만들어 봅시다.
 
 <div class="alert is-helpful">
 
+<!--
 #### Why declare _angular_ as _angular.IAngularStatic_?
+-->
+#### 왜 _angular_ 를 _angular.IAngularStatic_ 으로 선언할까요?
 
+<!--
 `@types/angular` is declared as a UMD module, and due to the way
 <a href="https://github.com/Microsoft/TypeScript/wiki/What's-new-in-TypeScript#support-for-umd-module-definitions">UMD typings</a>
 work, once you have an ES6 `import` statement in a file all UMD typed modules must also be
@@ -2402,6 +2515,15 @@ This is a considerable effort and it often isn't worth it, especially since you 
 process of moving your code to Angular.
 Instead, declare `angular` as `angular.IAngularStatic` to indicate it is a global variable
 and still have full typing support.
+-->
+`@types/angular`는 UMD 모듈 포맷으로 선언되어 있으며 <a href="https://github.com/Microsoft/TypeScript/wiki/What's-new-in-TypeScript#support-for-umd-module-definitions">UMD 모듈 스펙</a>에 따라 ES6 `import` 구문을 쓰는 파일이 있으면 모든 UMD 타입의 모듈은 `import` 구문으로 로드됩니다.
+
+그리고 지금까지 작업한 앱에서 AngularJS는 `index.html` 파일에서 스크립트 태그로 로드되고 있기 때문에 앱 전역에서 `angular`라는 변수로 AngularJS에 접근할 수 있습니다.
+그래서 `import * as angular from 'angular'`라고 구현하면 AngularJS 앱에 있는 모든 파일을 ES2015 모듈 방식으로 순서대로 로드해야 합니다.
+
+이 작업은 수고가 많이 들지만 그에 비해 얻는 것이 없습니다.
+중요한 것은 AngularJS로 작성한 코드를 Angular로 옮기는 것이지 모듈을 로드하는 올바른 순서를 따지는 것이 아닙니다.
+`angular`를 `angular.IAngularStatic`으로 선언하면 이 과정을 간단하게 처리할 수 있습니다.
 
 </div>
 
