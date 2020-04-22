@@ -356,10 +356,14 @@ export function buildCodeFrameError(path: NodePath, e: BabelParseError): string 
 }
 
 export function getLocation(path: NodePath): ɵSourceLocation|undefined {
-  return path.node.loc && path.hub.file.opts.filename ? {
-    start: {...path.node.loc.start},
-    end: {...path.node.loc.end},
-    file: path.hub.file.opts.filename
-  } :
-                                                        undefined;
+  const location = path.node.loc;
+  const file = path.hub.file.ops.fileName;
+
+  if (!location || !file) {
+    return undefined;
+  }
+
+  // Note we clone the `start` and `end` objects so that their prototype chains,
+  // from Babel, do not leak into our code.
+  return {start: {...location.start}, end: {...location.end}, file};
 }

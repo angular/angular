@@ -77,7 +77,7 @@ export interface MessageMetadata {
   /**
    * The description of the `message`, used to aid translation.
    */
-  description?: string|undefined;
+  description?: string;
   /**
    * The location of the message in the source.
    */
