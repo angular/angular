@@ -123,5 +123,7 @@ export function makeTemplateObject(cooked: string[], raw: string[]): TemplateStr
 
 function describeMessage(message: ParsedMessage): string {
   const meaningString = message.meaning && ` - "${message.meaning}"`;
-  return `"${message.messageId}" ("${message.messageString}"${meaningString})`;
+  const legacy =
+      message.legacyIds.length > 0 ? ` [${message.legacyIds.map(l => `"${l}"`).join(', ')}]` : '';
+  return `"${message.messageId}"${legacy} ("${message.messageString}"${meaningString})`;
 }
