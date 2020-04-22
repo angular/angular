@@ -31,13 +31,18 @@ import {ChildrenOutletContexts, ExtraOptions, NoPreloading, PreloadingStrategy, 
  * class LoadedModule {}
  *
  * // sets up stubbedModules
- * loader.stubbedModules = {lazyModule: LoadedModule};
+ * loader.stubbedModules = {
+ *    lazyModule: LoadedModule,
+ *    'slowModule#delay:5000' LoadedModule,
+ * };
  *
  * router.resetConfig([
  *   {path: 'lazy', loadChildren: 'lazyModule'},
+ *   {path: 'slow-load', loadChildren: 'slowModule'},
  * ]);
  *
  * router.navigateByUrl('/lazy/loaded');
+ * router.navigateByUrl('/slow-load/loaded'); // This routes module would take 5s to load
  * ```
  *
  * @publicApi
@@ -69,9 +74,32 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
 
   constructor(private compiler: Compiler) {}
 
+  private stripDelay(path: string): string {
+    return path.split('#').reduce((p, c) => c.startsWith('delay:') ? p : p + '#' + c);
+  }
+
+  private pathDelay(path: string): number {
+    return path.split('#')
+        .filter((c) => c.startsWith('delay:'))
+        .map(_ => parseInt(_.split(':')[1]))[0];
+  }
+
+  private delayPromise(ms: number): Promise<any> {
+    return new Promise((_) => setTimeout(_, ms));
+  }
+
   load(path: string): Promise<NgModuleFactory<any>> {
-    if (this._stubbedModules[path]) {
-      return this._stubbedModules[path];
+    const keyPath = Object.keys(this._stubbedModules)
+                        .map(pathKey => this.stripDelay(pathKey) === path ? pathKey : undefined)
+                        .filter(_ => _ !== undefined)[0] ||
+        path;
+
+    if (this._stubbedModules[keyPath]) {
+      const delay = this.pathDelay(keyPath);
+      if (delay) {
+        return this.delayPromise(delay).then(() => this._stubbedModules[keyPath]);
+      }
+      return this._stubbedModules[keyPath];
     } else {
       return <any>Promise.reject(new Error(`Cannot find module ${path}`));
     }
