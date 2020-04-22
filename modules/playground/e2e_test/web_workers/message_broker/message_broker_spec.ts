@@ -8,7 +8,7 @@
 
 import {browser, by, element, ExpectedConditions, protractor} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../../e2e_util/e2e_util';
+import {verifyNoBrowserErrors} from '../../../../../dev-infra/benchmark/driver-utilities';
 
 const URL = '/';
 

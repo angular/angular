@@ -1,4 +1,4 @@
-load("//tools/ng_rollup_bundle:ng_rollup_bundle.bzl", "ls_rollup_bundle")
+load("//dev-infra/benchmark/ng_rollup_bundle:ng_rollup_bundle.bzl", "ls_rollup_bundle")
 
 ls_rollup_bundle(
     name = "language-service",
