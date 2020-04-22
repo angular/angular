@@ -42,7 +42,8 @@
     "stylelint": "stylelint \"src/**/*.+(css|scss)\" --config .stylelintrc.json --syntax scss",
     "resync-caretaker-app": "ts-node --project scripts scripts/caretaking/resync-caretaker-app-prs.ts",
     "ts-circular-deps:check": "yarn -s ts-circular-deps check --config ./src/circular-deps-test.conf.js",
-    "ts-circular-deps:approve": "yarn -s ts-circular-deps approve --config ./src/circular-deps-test.conf.js"
+    "ts-circular-deps:approve": "yarn -s ts-circular-deps approve --config ./src/circular-deps-test.conf.js",
+    "merge": "ts-node --project scripts scripts/merge-script/cli.ts --config ./merge-config.js"
   },
   "version": "9.2.1",
   "dependencies": {
