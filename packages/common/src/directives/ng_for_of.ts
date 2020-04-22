@@ -138,7 +138,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
   @Input()
   set ngForOf(ngForOf: U&NgIterable<T>|undefined|null) {
     this._ngForOf = ngForOf;
-    this._ngForOfDirty = true;
+    this._diffValues();
   }
   /**
    * A function that defines how to track changes for items in the iterable.
@@ -201,20 +201,21 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
   /**
    * Applies the changes when needed.
    */
-  ngDoCheck(): void {
-    if (this._ngForOfDirty) {
-      this._ngForOfDirty = false;
-      // React on ngForOf changes only once all inputs have been initialized
-      const value = this._ngForOf;
-      if (!this._differ && value) {
-        try {
-          this._differ = this._differs.find(value).create(this.ngForTrackBy);
-        } catch {
-          throw new Error(`Cannot find a differ supporting object '${value}' of type '${
-              getTypeName(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
-        }
+  ngDoCheck(): void {}
+
+  private _diffValues(): void {
+    this._ngForOfDirty = false;
+    // React on ngForOf changes only once all inputs have been initialized
+    const value = this._ngForOf;
+    if (!this._differ && value) {
+      try {
+        this._differ = this._differs.find(value).create(this.ngForTrackBy);
+      } catch {
+        throw new Error(`Cannot find a differ supporting object '${value}' of type '${
+            getTypeName(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
       }
     }
+
     if (this._differ) {
       const changes = this._differ.diff(this._ngForOf);
       if (changes) this._applyChanges(changes);

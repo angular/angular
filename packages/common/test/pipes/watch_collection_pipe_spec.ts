@@ -330,7 +330,7 @@ fdescribe('WatchCollectionPipe', () => {
   });
 
   describe('using ngFor', () => {
-    it('should signal to ngFor when a collection changes', () => {
+    fit('should signal to ngFor when a collection changes', () => {
       @Component({
         template: `
         <div *ngFor="let item of items | watchCollection"> {{ item }} </div>
