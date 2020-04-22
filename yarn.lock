@@ -7155,10 +7155,10 @@ ngx-build-plus@^9.0.4:
     webpack-dev-server "^3.1.14"
     webpack-merge "^4.2.1"
 
-ngx-flamegraph@0.0.6:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/ngx-flamegraph/-/ngx-flamegraph-0.0.6.tgz#a57675a66724b17103a2604661def330a0d3d9d4"
-  integrity sha512-7bWnUlPwZv3I8+h5JrD6UcYR2W0giOSnJT6y6QBjEFjiWd1LuLzF+gU+nJTpQAmf8p6+c5dBb5LblUe6lcmngg==
+ngx-flamegraph@0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/ngx-flamegraph/-/ngx-flamegraph-0.0.7.tgz#44287fcd7f1747ba1d9fb80469cd82eaca80359f"
+  integrity sha512-cYTyz56g1R9GZLxh8sxWZGEvb/+3Pr6Iv2Gaif88Z7jF7HOY3Ngvbly7Oqf/SdNrOgyWbE2Kz7MJNxxy4WvIKw==
 
 nice-try@^1.0.4:
   version "1.0.5"

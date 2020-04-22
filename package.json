@@ -51,7 +51,7 @@
     "document-register-element": "^1.7.2",
     "file-saver": "^2.0.2",
     "memo-decorator": "^2.0.1",
-    "ngx-flamegraph": "0.0.6",
+    "ngx-flamegraph": "0.0.7",
     "rxjs": "~6.5.3",
     "tslib": "^1.10.0",
     "uuid": "^7.0.0",
