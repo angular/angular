@@ -207,6 +207,45 @@ describe('host bindings', () => {
       expect(queryResult.nativeElement.style.color).toBe('red');
     });
 
+    it('should work when directive contains synthetic props and directive is applied to a component',
+       () => {
+         @Directive({
+           selector: '[animationPropDir]',
+         })
+         class AnimationPropDir {
+           @HostBinding('@myAnimation') myAnimation: string = 'color';
+         }
+
+         @Component({
+           selector: 'my-comp',
+           template: 'Some content',
+           animations: [
+             trigger('myAnimation', [state('color', style({color: 'red'}))]),
+           ],
+         })
+         class Comp {
+         }
+
+         @Component({
+           selector: 'app',
+           template: '<my-comp animationPropDir></my-comp>',
+           animations: [
+             trigger('myAnimation', [state('color', style({color: 'green'}))]),
+           ],
+         })
+         class App {
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [App, Comp, AnimationPropDir],
+           imports: [NoopAnimationsModule],
+         });
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         const queryResult = fixture.debugElement.query(By.directive(AnimationPropDir));
+         expect(queryResult.nativeElement.style.color).toBe('green');
+       });
+
     it('should work when component contains synthetic props', () => {
       @Component({
         selector: 'my-comp',
