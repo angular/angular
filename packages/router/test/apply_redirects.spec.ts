@@ -514,6 +514,45 @@ describe('applyRedirects', () => {
          expect(loaded).toEqual(['root', 'aux']);
        }));
 
+    it('should not try to load any matching configuration if previous load completed',
+       fakeAsync(() => {
+         const loadedConfig =
+             new LoadedRouterConfig([{path: 'a', component: ComponentA}], testModule);
+         let loadCalls = 0;
+         let loaded: string[] = [];
+         const loader = {
+           load: (injector: any, p: Route) => {
+             loadCalls++;
+             return of(loadedConfig)
+                 .pipe(
+                     delay(100 * loadCalls),
+                     tap(() => loaded.push(p.loadChildren! as string)),
+                 );
+           }
+         };
+
+         const config: Routes = [
+           {path: '**', loadChildren: 'children'},
+         ];
+
+         applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz/a'), config)
+             .subscribe();
+         expect(loadCalls).toBe(1);
+         tick(50);
+         expect(loaded).toEqual([]);
+         applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz/b'), config)
+             .subscribe();
+         tick(50);
+         expect(loaded).toEqual(['children']);
+         expect(loadCalls).toBe(2);
+         tick(200);
+         applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz/c'), config)
+             .subscribe();
+         tick(50);
+         expect(loadCalls).toBe(2);
+         tick(300);
+       }));
+
     it('loads only the first match when two Routes with the same outlet have the same path', () => {
       const loadedConfig = new LoadedRouterConfig([{path: '', component: ComponentA}], testModule);
       let loadCalls = 0;

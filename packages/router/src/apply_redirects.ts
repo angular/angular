@@ -280,11 +280,12 @@ class ApplyRedirects {
       segments: UrlSegment[], outlet: string): Observable<UrlSegmentGroup> {
     if (route.path === '**') {
       if (route.loadChildren) {
-        return this.configLoader.load(ngModule.injector, route)
-            .pipe(map((cfg: LoadedRouterConfig) => {
-              route._loadedConfig = cfg;
-              return new UrlSegmentGroup(segments, {});
-            }));
+        const loaded$ = route._loadedConfig ? of(route._loadedConfig) :
+                                              this.configLoader.load(ngModule.injector, route);
+        return loaded$.pipe(map((cfg: LoadedRouterConfig) => {
+          route._loadedConfig = cfg;
+          return new UrlSegmentGroup(segments, {});
+        }));
       }
 
       return of(new UrlSegmentGroup(segments, {}));
