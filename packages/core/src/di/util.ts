@@ -8,6 +8,7 @@
 
 import {Type} from '../interface/type';
 import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
+import {ɵɵinjectAttribute} from '../render3/instructions/di';
 import {getClosureSafeProperty} from '../util/property';
 
 import {resolveForwardRef} from './forward_ref';
@@ -15,7 +16,7 @@ import {InjectionToken} from './injection_token';
 import {ɵɵinject} from './injector_compatibility';
 import {InjectFlags} from './interface/injector';
 import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './interface/provider';
-import {Inject, Optional, Self, SkipSelf} from './metadata';
+import {Attribute, Inject, Optional, Self, SkipSelf} from './metadata';
 
 const USE_VALUE =
     getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
@@ -69,27 +70,36 @@ export function injectArgs(types: (Type<any>|InjectionToken<any>|any[])[]): any[
       }
       let type: Type<any>|undefined = undefined;
       let flags: InjectFlags = InjectFlags.Default;
+      let injectFn: Function = ɵɵinject;
 
       for (let j = 0; j < arg.length; j++) {
         const meta = arg[j];
-        if (meta instanceof Optional || meta.ngMetadataName === 'Optional' || meta === Optional) {
+        if (isValidDecorator(meta, Optional, 'Optional')) {
           flags |= InjectFlags.Optional;
-        } else if (
-            meta instanceof SkipSelf || meta.ngMetadataName === 'SkipSelf' || meta === SkipSelf) {
+        } else if (isValidDecorator(meta, SkipSelf, 'SkipSelf')) {
           flags |= InjectFlags.SkipSelf;
-        } else if (meta instanceof Self || meta.ngMetadataName === 'Self' || meta === Self) {
+        } else if (isValidDecorator(meta, Self, 'Self')) {
           flags |= InjectFlags.Self;
-        } else if (meta instanceof Inject || meta === Inject) {
+        } else if (isValidDecorator(meta, Attribute, 'Attribute')) {
+          type = meta.attributeName;
+          injectFn = ɵɵinjectAttribute;
+        } else if (isValidDecorator(meta, Inject)) {
           type = meta.token;
         } else {
           type = meta;
         }
       }
 
-      args.push(ɵɵinject(type!, flags));
+      args.push(injectFn(type!, flags));
     } else {
       args.push(ɵɵinject(arg));
     }
   }
   return args;
+}
+
+function isValidDecorator(
+    meta: any, decorator: Optional|SkipSelf|Self|Attribute|any, metadataName: string = '') {
+  return meta instanceof decorator || meta.ngMetadataName === metadataName ||
+      (meta !== '' && meta === decorator);
 }

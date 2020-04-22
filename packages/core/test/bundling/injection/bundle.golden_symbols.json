@@ -1,5 +1,8 @@
 [
   {
+    "name": "Attribute"
+  },
+  {
     "name": "CIRCULAR"
   },
   {
@@ -111,6 +114,9 @@
     "name": "createInjectorWithoutInjectorInstances"
   },
   {
+    "name": "createLFrame"
+  },
+  {
     "name": "deepForEach"
   },
   {
@@ -141,6 +147,9 @@
     "name": "getOwnDefinition"
   },
   {
+    "name": "getPreviousOrParentTNode"
+  },
+  {
     "name": "getTypeName"
   },
   {
@@ -156,6 +165,9 @@
     "name": "injectArgs"
   },
   {
+    "name": "injectAttributeImpl"
+  },
+  {
     "name": "injectInjectorOnly"
   },
   {
@@ -163,6 +175,9 @@
   },
   {
     "name": "injectableDefOrInjectorDefFactory"
+  },
+  {
+    "name": "instructionState"
   },
   {
     "name": "isExistingProvider"
@@ -174,7 +189,13 @@
     "name": "isForwardRef"
   },
   {
+    "name": "isNameOnlyAttributeMarker"
+  },
+  {
     "name": "isTypeProvider"
+  },
+  {
+    "name": "isValidInstance"
   },
   {
     "name": "isValueProvider"
@@ -226,5 +247,8 @@
   },
   {
     "name": "ɵɵinject"
+  },
+  {
+    "name": "ɵɵinjectAttribute"
   }
 ]

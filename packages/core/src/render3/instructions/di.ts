@@ -5,12 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {InjectFlags, InjectionToken, resolveForwardRef} from '../../di';
+import {resolveForwardRef} from '../../di/forward_ref';
+import {InjectionToken} from '../../di/injection_token';
 import {ɵɵinject} from '../../di/injector_compatibility';
+import {InjectFlags} from '../../di/interface/injector';
 import {Type} from '../../interface/type';
 import {getOrCreateInjectable, injectAttributeImpl} from '../di';
-import {TDirectiveHostNode, TNodeType} from '../interfaces/node';
-import {assertNodeOfPossibleTypes} from '../node_assert';
+import {TDirectiveHostNode} from '../interfaces/node';
 import {getLView, getPreviousOrParentTNode} from '../state';
 
 /**
