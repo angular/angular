@@ -8,7 +8,7 @@
 
 import {Compiler, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
 import {from, Observable, of} from 'rxjs';
-import {map, mergeMap} from 'rxjs/operators';
+import {map, mergeMap, share, tap} from 'rxjs/operators';
 
 import {LoadChildren, LoadedRouterConfig, Route, standardizeConfig} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
@@ -27,22 +27,27 @@ export class RouterConfigLoader {
       private onLoadEndListener?: (r: Route) => void) {}
 
   load(parentInjector: Injector, route: Route): Observable<LoadedRouterConfig> {
-    if (this.onLoadStartListener) {
-      this.onLoadStartListener(route);
-    }
-
-    const moduleFactory$ = this.loadModuleFactory(route.loadChildren!);
-
-    return moduleFactory$.pipe(map((factory: NgModuleFactory<any>) => {
-      if (this.onLoadEndListener) {
-        this.onLoadEndListener(route);
+    if (!route._loader$) {
+      if (this.onLoadStartListener) {
+        this.onLoadStartListener(route);
       }
 
-      const module = factory.create(parentInjector);
+      const moduleFactory$ = this.loadModuleFactory(route.loadChildren!);
 
-      return new LoadedRouterConfig(
-          flatten(module.injector.get(ROUTES)).map(standardizeConfig), module);
-    }));
+      route._loader$ = moduleFactory$.pipe(
+          map((factory: NgModuleFactory<any>) => {
+            if (this.onLoadEndListener) {
+              this.onLoadEndListener(route);
+            }
+
+            const module = factory.create(parentInjector);
+
+            return new LoadedRouterConfig(
+                flatten(module.injector.get(ROUTES)).map(standardizeConfig), module);
+          }),
+          share());
+    }
+    return route._loader$;
   }
 
   private loadModuleFactory(loadChildren: LoadChildren): Observable<NgModuleFactory<any>> {
