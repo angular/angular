@@ -73,6 +73,8 @@ sass_library(
         "@npm//:node_modules/@material/dialog/_mixins.scss",
         "@npm//:node_modules/@material/dialog/_variables.import.scss",
         "@npm//:node_modules/@material/dialog/_variables.scss",
+        "@npm//:node_modules/@material/dom/_index.scss",
+        "@npm//:node_modules/@material/dom/_mixins.scss",
         "@npm//:node_modules/@material/drawer/_index.scss",
         "@npm//:node_modules/@material/drawer/_mixins.import.scss",
         "@npm//:node_modules/@material/drawer/_mixins.scss",
