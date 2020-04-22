@@ -441,7 +441,7 @@
           ]
         },
         {
-	        "url": "guide/zone",
+	        "url": "guide/ngzone",
           "title": "NgZone",
           "tooltip": "How NgZone works"
         }
