@@ -8,21 +8,21 @@
     "src/cdk-experimental/popover-edit/edit-ref.ts"
   ],
   [
+    "src/cdk/drag-drop/directives/drag.ts",
+    "src/cdk/drag-drop/directives/drop-list.ts"
+  ],
+  [
+    "src/cdk/drag-drop/directives/drag.ts",
+    "src/cdk/drag-drop/drag-events.ts"
+  ],
+  [
+    "src/cdk/drag-drop/directives/drag.ts",
+    "src/cdk/drag-drop/drag-events.ts",
+    "src/cdk/drag-drop/directives/drop-list.ts"
+  ],
+  [
     "src/cdk/drag-drop/drag-ref.ts",
     "src/cdk/drag-drop/drop-list-ref.ts"
-  ],
-  [
-    "src/cdk/drag-drop/directives/drag.ts",
-    "src/cdk/drag-drop/drag-events.ts"
-  ],
-  [
-    "src/cdk/drag-drop/directives/drop-list.ts",
-    "src/cdk/drag-drop/directives/drag.ts",
-    "src/cdk/drag-drop/drag-events.ts"
-  ],
-  [
-    "src/cdk/drag-drop/directives/drop-list.ts",
-    "src/cdk/drag-drop/directives/drag.ts"
   ],
   [
     "src/cdk/overlay/keyboard/overlay-keyboard-dispatcher.ts",
@@ -37,8 +37,8 @@
     "src/cdk/scrolling/scrollable.ts"
   ],
   [
-    "src/cdk/scrolling/virtual-scroll-viewport.ts",
-    "src/cdk/scrolling/virtual-for-of.ts"
+    "src/cdk/scrolling/virtual-for-of.ts",
+    "src/cdk/scrolling/virtual-scroll-viewport.ts"
   ],
   [
     "src/cdk/scrolling/virtual-scroll-strategy.ts",
@@ -53,8 +53,8 @@
     "src/material/core/ripple/ripple-renderer.ts"
   ],
   [
-    "src/material/datepicker/datepicker.ts",
-    "src/material/datepicker/datepicker-input.ts"
+    "src/material/datepicker/datepicker-input.ts",
+    "src/material/datepicker/datepicker.ts"
   ],
   [
     "src/material/grid-list/grid-list.ts",

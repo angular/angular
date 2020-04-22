@@ -69,7 +69,7 @@
     "@angular-devkit/schematics": "^9.0.7",
     "@angular/bazel": "^9.1.0",
     "@angular/compiler-cli": "^9.1.0",
-    "@angular/dev-infra-private": "angular/dev-infra-private-builds#cdf6637",
+    "@angular/dev-infra-private": "angular/dev-infra-private-builds#27a2022",
     "@angular/platform-browser-dynamic": "^9.1.0",
     "@angular/platform-server": "^9.1.0",
     "@angular/router": "^9.1.0",
@@ -86,7 +86,7 @@
     "@types/autoprefixer": "^9.7.2",
     "@types/browser-sync": "^2.26.1",
     "@types/fs-extra": "^4.0.3",
-    "@types/glob": "^5.0.33",
+    "@types/glob": "^5.0.36",
     "@types/gulp": "3.8.32",
     "@types/inquirer": "^0.0.43",
     "@types/jasmine": "^3.5.4",
@@ -163,7 +163,9 @@
     "typescript": "~3.8.3",
     "typescript-3.6": "npm:typescript@~3.6.4",
     "typescript-3.7": "npm:typescript@~3.7.0",
-    "vrsource-tslint-rules": "5.1.1"
+    "vrsource-tslint-rules": "5.1.1",
+    "yaml": "^1.7.2",
+    "yargs": "15.3.0"
   },
   "resolutions": {
     "dgeni-packages/typescript": "3.8.3",
