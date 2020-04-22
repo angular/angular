@@ -109,7 +109,9 @@ To learn more, see [Schematics Overview](guide/schematics) and [Schematics for
 
 ## Publishing your library
 
-Use the Angular CLI and the npm package manager to build and publish your library as an npm package. It is not recommended to publish Ivy libraries to NPM repositories. Before publishing a library to NPM, build it using the `--prod` flag which will use the older compiler and runtime known as View Engine instead of Ivy.
+Use the Angular CLI and the npm package manager to build and publish your library as an npm package. 
+
+Before publishing a library to NPM, build it using the `--prod` flag which will use the older compiler and runtime known as View Engine instead of Ivy.
 
 <code-example language="bash">
 ng build my-lib --prod
@@ -118,6 +120,14 @@ npm publish
 </code-example>
 
 If you've never published a package in npm before, you must create a user account. Read more in [Publishing npm Packages](https://docs.npmjs.com/getting-started/publishing-npm-packages).
+
+<div class="alert is-important">
+
+For now, it is not recommended to publish Ivy libraries to NPM because Ivy generated code is not backward compatible with View Engine, so apps using View Engine will not be able to consume them. Furthermore, the internal Ivy instructions are not yet stable, which can potentially break consumers using a different Angular version from the one used to build the library.
+
+When a published library is used in an Ivy app, the Angular CLI will automatically convert it to Ivy using a tool known as the Angular compatibility compiler (`ngcc`). Thus, by publishing your libraries using the View Engine compiler ensures that they can be transparently consumed by both View Engine and Ivy apps.
+
+</div>
 
 {@a lib-assets}
 
