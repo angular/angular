@@ -454,7 +454,7 @@ coverageIstanbulReporter: {
 <!--
 The `thresholds` property causes the tool to enforce a minimum of 80% code coverage when the unit tests are run in the project.
 -->
-이제 `thresholds` 프로퍼티를 추가했기 때문에 이 프로젝트에서 유닛테스트를 실행할 때 코드 커버리지는8 0% 이상이 되어야 합니다.
+이제 `thresholds` 프로퍼티를 추가했기 때문에 이 프로젝트에서 유닛테스트를 실행할 때 코드 커버리지는 80% 이상이 되어야 합니다.
 
 <!--
 ## Service Tests
