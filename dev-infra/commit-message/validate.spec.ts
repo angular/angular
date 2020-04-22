@@ -160,21 +160,12 @@ describe('validate-commit-message.js', () => {
     });
 
     describe('(squash)', () => {
-      it('should strip the `squash! ` prefix and validate the rest', () => {
-        const errorMessage = `The commit message header does not match the expected format.`;
-
-        // Valid messages.
-        expect(validateCommitMessage('squash! feat(core): add feature')).toBe(VALID);
-        expect(validateCommitMessage('squash! fix: a bug', {disallowSquash: false})).toBe(VALID);
-
-        // Invalid messages.
-        expect(validateCommitMessage('squash! fix a typo', {disallowSquash: false})).toBe(INVALID);
-        expect(lastError).toContain('squash! fix a typo');
-        expect(lastError).toContain(errorMessage);
-
-        expect(validateCommitMessage('squash! squash! fix: a bug')).toBe(INVALID);
-        expect(lastError).toContain('squash! squash! fix: a bug');
-        expect(lastError).toContain(errorMessage);
+      describe('without `disallowSquash`', () => {
+        it('should return commits as valid', () => {
+          expect(validateCommitMessage('squash! feat(core): add feature')).toBe(VALID);
+          expect(validateCommitMessage('squash! fix: a bug')).toBe(VALID);
+          expect(validateCommitMessage('squash! fix a typo')).toBe(VALID);
+        });
       });
 
       describe('with `disallowSquash`', () => {
@@ -191,21 +182,10 @@ describe('validate-commit-message.js', () => {
 
     describe('(fixup)', () => {
       describe('without `nonFixupCommitHeaders`', () => {
-        it('should strip the `fixup! ` prefix and validate the rest', () => {
-          const errorMessage = `The commit message header does not match the expected format.`;
-
-          // Valid messages.
+        it('should return commits as valid', () => {
           expect(validateCommitMessage('fixup! feat(core): add feature')).toBe(VALID);
           expect(validateCommitMessage('fixup! fix: a bug')).toBe(VALID);
-
-          // Invalid messages.
-          expect(validateCommitMessage('fixup! fix a typo')).toBe(INVALID);
-          expect(lastError).toContain('fixup! fix a typo');
-          expect(lastError).toContain(errorMessage);
-
-          expect(validateCommitMessage('fixup! fixup! fix: a bug')).toBe(INVALID);
-          expect(lastError).toContain('fixup! fixup! fix: a bug');
-          expect(lastError).toContain(errorMessage);
+          expect(validateCommitMessage('fixup! fixup! fix: a bug')).toBe(VALID);
         });
       });
 
