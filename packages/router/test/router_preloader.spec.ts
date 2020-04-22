@@ -9,6 +9,8 @@
 import {Compiler, Component, NgModule, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {PreloadAllModules, PreloadingStrategy, RouterPreloader} from '@angular/router';
+import {BehaviorSubject, Observable, of} from 'rxjs';
+import {catchError, filter, finalize, switchMap, take, tap} from 'rxjs/operators';
 
 import {Route, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouterModule} from '../index';
 import {LoadedRouterConfig} from '../src/config';
@@ -176,6 +178,237 @@ describe('RouterPreloader', () => {
                  (loadedConfig2.routes[0] as any)._loadedConfig!;
              const module3: any = loadedConfig3.module;
              expect(module3._parent).toBe(module2);
+           })));
+  });
+
+  describe('should support preloading stratages', () => {
+    let delayLoadUnPasued: BehaviorSubject<string[]>;
+    let delayLoadObserver$: Observable<string[]>;
+    let logMessages: string[];
+    let events: Array<RouteConfigLoadStart|RouteConfigLoadEnd>;
+
+    const buildPreloader =
+        (delayObserver$: Observable<string[]>, messages: string[]): typeof PreloadingStrategy => {
+          class DelayedPreLoad implements PreloadingStrategy {
+            preload(route: Route, fn: () => Observable<any>): Observable<any> {
+              messages.push(`Add route loader for ${route.loadChildren}`);
+              return delayObserver$.pipe(
+                  tap(unpauseList => messages.push(`list changed: ${unpauseList}`)),
+                  filter(unpauseList => unpauseList.indexOf(route.loadChildren as string) !== -1),
+                  tap(_ => {
+                    // We can look at _loadedConfig but other PreloadingStrategy cannot as this is
+                    // private
+                    if ((route as any)._loadedConfig) {
+                      messages.push(`Route ${route.loadChildren} already loaded`);
+                    }
+                  }),
+                  take(1), tap(_ => messages.push(`Unpausing route ${route.loadChildren}`)),
+                  switchMap(() => {
+                    return fn().pipe(
+                        tap(() => {
+                          messages.push(`PreLoad returned value for ${route.loadChildren}`);
+                        }),
+                        finalize(() => {
+                          messages.push(`Delayed preLoad for ${route.loadChildren} finalised`);
+                        }),
+                        catchError(() => of(null)),
+                    );
+                  }));
+            }
+          }
+          return DelayedPreLoad;
+        };
+
+    @NgModule({
+      declarations: [LazyLoadedCmp],
+    })
+    class SharedModule {
+    }
+
+    @NgModule({
+      imports: [
+        SharedModule, RouterModule.forChild([
+          {path: 'LoadedModule1', component: LazyLoadedCmp},
+          {path: 'sub', loadChildren: 'submodule'}
+        ])
+      ]
+    })
+    class LoadedModule1 {
+    }
+
+    @NgModule({
+      imports:
+          [SharedModule, RouterModule.forChild([{path: 'LoadedModule2', component: LazyLoadedCmp}])]
+    })
+    class LoadedModule2 {
+    }
+
+    beforeEach(() => {
+      delayLoadUnPasued = new BehaviorSubject<string[]>([]);
+      delayLoadObserver$ = delayLoadUnPasued.asObservable();
+      logMessages = new Array<string>();
+      const OurDelayedPreLoad = buildPreloader(delayLoadObserver$, logMessages);
+
+      TestBed.configureTestingModule({
+        imports: [RouterTestingModule.withRoutes([
+          {path: 'lazy', loadChildren: 'expectedreload'},
+        ])],
+        providers: [{provide: PreloadingStrategy, useClass: OurDelayedPreLoad}]
+      });
+
+      events = [];
+    });
+
+    const corePreLoadingTest = (preloader: RouterPreloader, router: Router) => {
+      let loadedConfig: LoadedRouterConfig;
+      const c = router.config;
+      expect(c[0].loadChildren).toEqual('expectedreload');
+      loadedConfig = (c[0] as any)._loadedConfig!;
+      expect(loadedConfig).toBeUndefined();
+
+      const preloadSubscription = preloader.preload().subscribe((x) => {});
+
+      tick();
+      loadedConfig = (c[0] as any)._loadedConfig!;
+      expect(loadedConfig).toBeUndefined();
+      expect(logMessages).toEqual([
+        'Add route loader for expectedreload',
+        'list changed: ',
+      ]);
+
+      router.navigateByUrl('/lazy/LoadedModule1');
+      tick();
+      loadedConfig = (c[0] as any)._loadedConfig!;
+      expect(loadedConfig).toBeDefined();
+      expect(logMessages).toEqual([
+        'Add route loader for expectedreload',
+        'list changed: ',
+      ]);
+
+      delayLoadUnPasued.next(['expectedreload']);
+      tick();
+      expect(logMessages).toEqual([
+        'Add route loader for expectedreload', 'list changed: ', 'list changed: expectedreload',
+        'Route expectedreload already loaded', 'Unpausing route expectedreload',
+        'Add route loader for submodule', 'list changed: expectedreload'
+      ]);
+
+      return preloadSubscription;
+    };
+
+    it('without reloading loaded modules',
+       fakeAsync(inject(
+           [NgModuleFactoryLoader, RouterPreloader, Router, NgModuleRef, Compiler],
+           (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router,
+            testModule: NgModuleRef<any>, compiler: Compiler) => {
+             router.events.subscribe(e => {
+               if (e instanceof RouteConfigLoadEnd || e instanceof RouteConfigLoadStart) {
+                 events.push(e);
+               }
+             });
+
+             loader.stubbedModules = {expectedreload: LoadedModule1, submodule: LoadedModule2};
+
+             corePreLoadingTest(preloader, router);
+
+             expect(events.map(e => e.toString())).toEqual([
+               'RouteConfigLoadStart(path: lazy)', 'RouteConfigLoadEnd(path: lazy)'
+             ]);
+           })));
+
+    it('without autoloading loading submodules',
+       fakeAsync(inject(
+           [NgModuleFactoryLoader, RouterPreloader, Router, NgModuleRef, Compiler],
+           (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router,
+            testModule: NgModuleRef<any>, compiler: Compiler) => {
+             router.events.subscribe(e => {
+               if (e instanceof RouteConfigLoadEnd || e instanceof RouteConfigLoadStart) {
+                 events.push(e);
+               }
+             });
+
+             loader.stubbedModules = {expectedreload: LoadedModule1, submodule: LoadedModule2};
+
+             corePreLoadingTest(preloader, router);
+
+             delayLoadUnPasued.next(['expectedreload', 'submodule']);
+             tick();
+
+             expect(logMessages).toEqual([
+               'Add route loader for expectedreload',
+               'list changed: ', 'list changed: expectedreload',
+               'Route expectedreload already loaded', 'Unpausing route expectedreload',
+               'Add route loader for submodule', 'list changed: expectedreload',
+               'list changed: expectedreload,submodule', 'Unpausing route submodule',
+               // 'PreLoad returned value for submodule',
+               // 'PreLoad returned value for expectedreload',
+               'Delayed preLoad for expectedreload finalised',
+               'Delayed preLoad for submodule finalised'
+             ]);
+
+             expect(events.map(e => e.toString())).toEqual([
+               'RouteConfigLoadStart(path: lazy)', 'RouteConfigLoadEnd(path: lazy)',
+               'RouteConfigLoadStart(path: sub)', 'RouteConfigLoadEnd(path: sub)'
+             ]);
+           })));
+
+    // This test is to check for the described fault in pr#265574
+    it('and close the preload obsservable ',
+       fakeAsync(inject(
+           [NgModuleFactoryLoader, RouterPreloader, Router, NgModuleRef, Compiler],
+           (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router,
+            testModule: NgModuleRef<any>, compiler: Compiler) => {
+             router.events.subscribe(e => {
+               if (e instanceof RouteConfigLoadEnd || e instanceof RouteConfigLoadStart) {
+                 events.push(e);
+               }
+             });
+
+             loader.stubbedModules = {expectedreload: LoadedModule1, submodule: LoadedModule2};
+
+             const preloadSubscription = corePreLoadingTest(preloader, router);
+             delayLoadUnPasued.next(['expectedreload', 'submodule']);
+             tick();
+
+             expect(preloadSubscription.closed).toBeTruthy();
+           })));
+
+    it('with overlapping loads from navigation and the preloader',
+       fakeAsync(inject(
+           [NgModuleFactoryLoader, RouterPreloader, Router, NgModuleRef, Compiler],
+           (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router,
+            testModule: NgModuleRef<any>, compiler: Compiler) => {
+             router.events.subscribe(e => {
+               if (e instanceof RouteConfigLoadEnd || e instanceof RouteConfigLoadStart) {
+                 events.push(e);
+               }
+             });
+
+             loader.stubbedModules = {
+               expectedreload: LoadedModule1,
+               'submodule#delay:5': LoadedModule2
+             };
+
+             corePreLoadingTest(preloader, router);
+
+             delayLoadUnPasued.next(['expectedreload', 'submodule']);
+             tick();
+             router.navigateByUrl('/lazy/sub/LoadedModule2');
+             tick(5);
+
+             expect(logMessages).toEqual([
+               'Add route loader for expectedreload', 'list changed: ',
+               'list changed: expectedreload', 'Route expectedreload already loaded',
+               'Unpausing route expectedreload', 'Add route loader for submodule',
+               'list changed: expectedreload', 'list changed: expectedreload,submodule',
+               'Unpausing route submodule', 'Delayed preLoad for expectedreload finalised',
+               'Delayed preLoad for submodule finalised'
+             ]);
+
+             expect(events.map(e => e.toString())).toEqual([
+               'RouteConfigLoadStart(path: lazy)', 'RouteConfigLoadEnd(path: lazy)',
+               'RouteConfigLoadStart(path: sub)', 'RouteConfigLoadEnd(path: sub)'
+             ]);
            })));
   });
 
