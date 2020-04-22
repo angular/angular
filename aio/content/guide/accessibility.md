@@ -23,7 +23,7 @@ to provide semantic meaning where it might otherwise be missing.
 Use [attribute binding](guide/template-syntax#attribute-binding) template syntax to control the values of accessibility-related attributes.
 
 When binding to ARIA attributes in Angular, you must use the `attr.` prefix, as the ARIA
-specification depends specifically on HTML attributes rather than properties on DOM elements.
+specification depends specifically on HTML attributes rather than properties of DOM elements.
 
 ```html
 <!-- Use attr. when binding to an ARIA attribute -->
