@@ -82,6 +82,13 @@ describe('utils', () => {
     it('should throw an error if there is no matching translation', () => {
       expect(() => doTranslate({}, parts`abc`))
           .toThrowError('No translation found for "2674653928643152084" ("abc").');
+      expect(() => doTranslate({}, parts`:@@customId:abc`))
+          .toThrowError('No translation found for "customId" ("abc").');
+      expect(
+          () => doTranslate(
+              {}, parts`:␟d42e3c2d3aa340581d42f53c46eb49ecb3d3beb4␟3896949568605777881:abc`))
+          .toThrowError(
+              'No translation found for "2674653928643152084" ["d42e3c2d3aa340581d42f53c46eb49ecb3d3beb4", "3896949568605777881"] ("abc").');
       expect(() => doTranslate({}, parts`:meaning|:abc`))
           .toThrowError('No translation found for "1071947593002928768" ("abc" - "meaning").');
     });
