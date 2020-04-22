@@ -11,8 +11,11 @@ import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
 import {getClosureSafeProperty} from '../util/property';
 
 import {resolveForwardRef} from './forward_ref';
-import {injectArgs, ɵɵinject} from './injector_compatibility';
+import {InjectionToken} from './injection_token';
+import {ɵɵinject} from './injector_compatibility';
+import {InjectFlags} from './interface/injector';
 import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './interface/provider';
+import {Inject, Optional, Self, SkipSelf} from './metadata';
 
 const USE_VALUE =
     getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
@@ -54,4 +57,39 @@ export function convertInjectableProviderToFactory(
     }
     return () => new type(...injectArgs(deps!));
   }
+}
+
+export function injectArgs(types: (Type<any>|InjectionToken<any>|any[])[]): any[] {
+  const args: any[] = [];
+  for (let i = 0; i < types.length; i++) {
+    const arg = resolveForwardRef(types[i]);
+    if (Array.isArray(arg)) {
+      if (arg.length === 0) {
+        throw new Error('Arguments array must have arguments.');
+      }
+      let type: Type<any>|undefined = undefined;
+      let flags: InjectFlags = InjectFlags.Default;
+
+      for (let j = 0; j < arg.length; j++) {
+        const meta = arg[j];
+        if (meta instanceof Optional || meta.ngMetadataName === 'Optional' || meta === Optional) {
+          flags |= InjectFlags.Optional;
+        } else if (
+            meta instanceof SkipSelf || meta.ngMetadataName === 'SkipSelf' || meta === SkipSelf) {
+          flags |= InjectFlags.SkipSelf;
+        } else if (meta instanceof Self || meta.ngMetadataName === 'Self' || meta === Self) {
+          flags |= InjectFlags.Self;
+        } else if (meta instanceof Inject || meta === Inject) {
+          type = meta.token;
+        } else {
+          type = meta;
+        }
+      }
+
+      args.push(ɵɵinject(type!, flags));
+    } else {
+      args.push(ɵɵinject(arg));
+    }
+  }
+  return args;
 }

@@ -18,7 +18,6 @@ import {Injector} from './injector';
 import {getInjectableDef, ɵɵInjectableDef} from './interface/defs';
 import {InjectFlags} from './interface/injector';
 import {ValueProvider} from './interface/provider';
-import {Inject, Optional, Self, SkipSelf} from './metadata';
 
 
 
@@ -184,42 +183,6 @@ export function injectRootLimpMode<T>(
   if (notFoundValue !== undefined) return notFoundValue;
   throw new Error(`Injector: NOT_FOUND [${stringify(token)}]`);
 }
-
-export function injectArgs(types: (Type<any>|InjectionToken<any>|any[])[]): any[] {
-  const args: any[] = [];
-  for (let i = 0; i < types.length; i++) {
-    const arg = resolveForwardRef(types[i]);
-    if (Array.isArray(arg)) {
-      if (arg.length === 0) {
-        throw new Error('Arguments array must have arguments.');
-      }
-      let type: Type<any>|undefined = undefined;
-      let flags: InjectFlags = InjectFlags.Default;
-
-      for (let j = 0; j < arg.length; j++) {
-        const meta = arg[j];
-        if (meta instanceof Optional || meta.ngMetadataName === 'Optional' || meta === Optional) {
-          flags |= InjectFlags.Optional;
-        } else if (
-            meta instanceof SkipSelf || meta.ngMetadataName === 'SkipSelf' || meta === SkipSelf) {
-          flags |= InjectFlags.SkipSelf;
-        } else if (meta instanceof Self || meta.ngMetadataName === 'Self' || meta === Self) {
-          flags |= InjectFlags.Self;
-        } else if (meta instanceof Inject || meta === Inject) {
-          type = meta.token;
-        } else {
-          type = meta;
-        }
-      }
-
-      args.push(ɵɵinject(type!, flags));
-    } else {
-      args.push(ɵɵinject(arg));
-    }
-  }
-  return args;
-}
-
 
 export class NullInjector implements Injector {
   get(token: any, notFoundValue: any = THROW_IF_NOT_FOUND): any {
