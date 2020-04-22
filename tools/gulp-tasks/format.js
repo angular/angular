@@ -18,7 +18,6 @@ const srcsToFmt = [
   `!${I18N_FOLDER}/currencies.ts`,
   `!${I18N_FOLDER}/locale_en.ts`,
   'modules/benchmarks/**/*.{js,ts}',
-  'modules/e2e_util/**/*.{js,ts}',
   'modules/playground/**/*.{js,ts}',
   'tools/**/*.{js,ts}',
   '!tools/gulp-tasks/cldr/extract.js',

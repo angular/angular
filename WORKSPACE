@@ -64,7 +64,7 @@ load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories"
 
 web_test_repositories()
 
-load("//tools/browsers:browser_repositories.bzl", "browser_repositories")
+load("//dev-infra/benchmark/browsers:browser_repositories.bzl", "browser_repositories")
 
 browser_repositories()
 

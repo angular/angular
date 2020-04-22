@@ -8,7 +8,7 @@
 
 import {$, By, element} from 'protractor';
 
-import {openBrowser, verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
+import {openBrowser, verifyNoBrowserErrors} from '../../../../dev-infra/benchmark/driver-utilities';
 
 describe('largeform benchmark', () => {
   afterEach(verifyNoBrowserErrors);

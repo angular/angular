@@ -7,7 +7,7 @@ def example_test(name, srcs, server, data = [], **kwargs):
         srcs = srcs,
         tsconfig = "//modules/playground:tsconfig-e2e.json",
         deps = [
-            "//modules/e2e_util",
+            "//dev-infra/benchmark/driver-utilities",
             "//packages/private/testing",
             "@npm//@types/jasminewd2",
             "@npm//@types/selenium-webdriver",
