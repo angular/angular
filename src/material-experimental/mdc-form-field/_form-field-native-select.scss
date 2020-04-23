@@ -1,0 +1,90 @@
+@import '../../cdk/a11y/a11y';
+
+// Width of the Material Design form-field select arrow.
+$mat-form-field-select-arrow-width: 10px;
+// Height of the Material Design form-field select arrow.
+$mat-form-field-select-arrow-height: 5px;
+// Horizontal padding that needs to be applied to the native select in an form-field so
+// that the absolute positioned arrow does not overlap the select content.
+$mat-form-field-select-horizontal-end-padding: $mat-form-field-select-arrow-width + 5px;
+
+// Mixin that creates styles for native select controls in a form-field.
+@mixin _mat-form-field-native-select() {
+  // Remove the native select down arrow and ensure that the native appearance
+  // does not conflict with the form-field. e.g. Focus indication of the native
+  // select is undesired since we handle focus as part of the form-field.
+  select.mat-mdc-input-element {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background-color: transparent;
+    display: inline-flex;
+    box-sizing: border-box;
+
+    // Hides the default arrow native selects.
+    &::-ms-expand {
+      display: none;
+    }
+
+    // By default the cursor does not change when hovering over a select. We want to
+    // change this for non-disabled select elements so that it's more obvious that the
+    // control can be clicked.
+    &:not(:disabled) {
+      cursor: pointer;
+    }
+
+    // As a part of its user agent styling, IE11 has a blue box inside each focused `select`
+    // element which we have to reset. Note that this needs to be in its own selector, because
+    // having it together with another one will cause other browsers to ignore it.
+    &::-ms-value {
+      // We need to reset the `color` as well, because IE sets it to white.
+      color: inherit;
+      background: none;
+
+      // IE and Edge in high contrast mode reset the color for a focused select to the same color
+      // as the background, however this causes it blend in because we've reset the `background`
+      // above. We have to add a more specific selector in order to ensure that it gets the
+      // `color` from our theme instead.
+      @include cdk-high-contrast(active, off) {
+        .mat-focused & {
+          color: inherit;
+        }
+      }
+    }
+  }
+
+  // Native select elements with the `matInput` directive should have Material Design
+  // styling. This means that we add an arrow to the form-field that is based on the
+  // Material Design specification. We achieve this by adding a pseudo element to the
+  // form-field infix.
+  .mat-mdc-form-field-type-mat-native-select {
+    .mat-mdc-form-field-infix::after {
+      content: '';
+      width: 0;
+      height: 0;
+      border-left: ($mat-form-field-select-arrow-width / 2) solid transparent;
+      border-right: ($mat-form-field-select-arrow-width / 2) solid transparent;
+      border-top: $mat-form-field-select-arrow-height solid;
+      position: absolute;
+      top: 50%;
+      right: 0;
+
+      // Make the arrow non-clickable so the user can click on the form control under it.
+      pointer-events: none;
+
+      [dir='rtl'] & {
+        right: auto;
+        left: 0;
+      }
+    }
+
+    // Add padding on the end of the native select so that the content does not
+    // overlap with the Material Design arrow.
+    .mat-mdc-input-element {
+      padding-right: $mat-form-field-select-horizontal-end-padding;
+      [dir='rtl'] & {
+        padding-right: 0;
+        padding-left: $mat-form-field-select-horizontal-end-padding;
+      }
+    }
+  }
+}

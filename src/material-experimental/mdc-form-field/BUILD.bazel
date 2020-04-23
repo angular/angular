@@ -82,6 +82,7 @@ sass_library(
     name = "form_field_partials",
     srcs = [
         "_form-field-focus-overlay.scss",
+        "_form-field-native-select.scss",
         "_form-field-sizing.scss",
         "_form-field-subscript.scss",
         "_mdc-text-field-structure-overrides.scss",

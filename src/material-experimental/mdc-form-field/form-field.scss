@@ -1,10 +1,11 @@
 @import '@material/textfield/mixins.import';
 
-@import 'form-field-sizing';
-@import 'form-field-subscript';
-@import 'form-field-focus-overlay';
-@import 'mdc-text-field-textarea-overrides';
-@import 'mdc-text-field-structure-overrides';
+@import './form-field-sizing';
+@import './form-field-subscript';
+@import './form-field-focus-overlay';
+@import './form-field-native-select';
+@import './mdc-text-field-textarea-overrides';
+@import './mdc-text-field-structure-overrides';
 
 // Base styles for MDC text-field, notched-outline, floating label and line-ripple.
 @include mdc-text-field-without-ripple($query: $mat-base-styles-without-animation-query);
@@ -16,9 +17,10 @@
 @include _mat-mdc-text-field-textarea-overrides();
 @include _mat-mdc-text-field-structure-overrides();
 
-// Include the subscript and focus-overlay styles.
+// Include the subscript, focus-overlay and native select styles.
 @include _mat-form-field-subscript();
 @include _mat-form-field-focus-overlay();
+@include _mat-form-field-native-select();
 
 // Host element of the form-field. It contains the mdc-text-field wrapper
 // and the subscript wrapper.
