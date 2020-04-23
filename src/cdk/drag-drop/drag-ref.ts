@@ -12,12 +12,12 @@ import {Direction} from '@angular/cdk/bidi';
 import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {coerceBooleanProperty, coerceElement} from '@angular/cdk/coercion';
 import {Subscription, Subject, Observable} from 'rxjs';
-import {startWith} from 'rxjs/operators';
 import {DropListRefInternal as DropListRef} from './drop-list-ref';
 import {DragDropRegistry} from './drag-drop-registry';
 import {extendStyles, toggleNativeDragInteractions} from './drag-styling';
 import {getTransformTransitionDurationInMs} from './transition-duration';
 import {getMutableClientRect, adjustClientRect} from './client-rect';
+import {ParentPositionTracker} from './parent-position-tracker';
 
 /** Object that can be used to configure the behavior of DragRef. */
 export interface DragRefConfig {
@@ -136,8 +136,8 @@ export class DragRef<T = any> {
   /** Index at which the item started in its initial container. */
   private _initialIndex: number;
 
-  /** Cached scroll position on the page when the element was picked up. */
-  private _scrollPosition: {top: number, left: number};
+  /** Cached positions of scrollable parent elements. */
+  private _parentPositions: ParentPositionTracker;
 
   /** Emits when the item is being moved. */
   private _moveEvents = new Subject<{
@@ -305,6 +305,7 @@ export class DragRef<T = any> {
     private _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>) {
 
     this.withRootElement(element);
+    this._parentPositions = new ParentPositionTracker(_document, _viewportRuler);
     _dragDropRegistry.registerDragItem(this);
   }
 
@@ -422,6 +423,7 @@ export class DragRef<T = any> {
     this._disabledHandles.clear();
     this._dropContainer = undefined;
     this._resizeSubscription.unsubscribe();
+    this._parentPositions.clear();
     this._boundaryElement = this._rootElement = this._placeholderTemplate =
         this._previewTemplate = this._anchor = null!;
   }
@@ -702,7 +704,9 @@ export class DragRef<T = any> {
 
     this._toggleNativeDragInteractions();
 
-    if (this._dropContainer) {
+    const dropContainer = this._dropContainer;
+
+    if (dropContainer) {
       const element = this._rootElement;
       const parent = element.parentNode!;
       const preview = this._preview = this._createPreviewElement();
@@ -718,12 +722,16 @@ export class DragRef<T = any> {
       element.style.display = 'none';
       this._document.body.appendChild(parent.replaceChild(placeholder, element));
       getPreviewInsertionPoint(this._document).appendChild(preview);
-      this._dropContainer.start();
-      this._initialContainer = this._dropContainer;
-      this._initialIndex = this._dropContainer.getItemIndex(this);
+      dropContainer.start();
+      this._initialContainer = dropContainer;
+      this._initialIndex = dropContainer.getItemIndex(this);
     } else {
       this._initialContainer = this._initialIndex = undefined!;
     }
+
+    // Important to run after we've called `start` on the parent container
+    // so that it has had time to resolve its scrollable parents.
+    this._parentPositions.cache(dropContainer ? dropContainer.getScrollableParents() : []);
   }
 
   /**
@@ -775,8 +783,8 @@ export class DragRef<T = any> {
     this._removeSubscriptions();
     this._pointerMoveSubscription = this._dragDropRegistry.pointerMove.subscribe(this._pointerMove);
     this._pointerUpSubscription = this._dragDropRegistry.pointerUp.subscribe(this._pointerUp);
-    this._scrollSubscription = this._dragDropRegistry.scroll.pipe(startWith(null)).subscribe(() => {
-      this._updateOnScroll();
+    this._scrollSubscription = this._dragDropRegistry.scroll.subscribe(scrollEvent => {
+      this._updateOnScroll(scrollEvent);
     });
 
     if (this._boundaryElement) {
@@ -1014,8 +1022,9 @@ export class DragRef<T = any> {
     const handleElement = referenceElement === this._rootElement ? null : referenceElement;
     const referenceRect = handleElement ? handleElement.getBoundingClientRect() : elementRect;
     const point = isTouchEvent(event) ? event.targetTouches[0] : event;
-    const x = point.pageX - referenceRect.left - this._scrollPosition.left;
-    const y = point.pageY - referenceRect.top - this._scrollPosition.top;
+    const scrollPosition = this._getViewportScrollPosition();
+    const x = point.pageX - referenceRect.left - scrollPosition.left;
+    const y = point.pageY - referenceRect.top - scrollPosition.top;
 
     return {
       x: referenceRect.left - elementRect.left + x,
@@ -1027,10 +1036,11 @@ export class DragRef<T = any> {
   private _getPointerPositionOnPage(event: MouseEvent | TouchEvent): Point {
     // `touches` will be empty for start/end events so we have to fall back to `changedTouches`.
     const point = isTouchEvent(event) ? (event.touches[0] || event.changedTouches[0]) : event;
+    const scrollPosition = this._getViewportScrollPosition();
 
     return {
-      x: point.pageX - this._scrollPosition.left,
-      y: point.pageY - this._scrollPosition.top
+      x: point.pageX - scrollPosition.left,
+      y: point.pageY - scrollPosition.top
     };
   }
 
@@ -1148,6 +1158,7 @@ export class DragRef<T = any> {
   /** Cleans up any cached element dimensions that we don't need after dragging has stopped. */
   private _cleanupCachedDimensions() {
     this._boundaryRect = this._previewRect = undefined;
+    this._parentPositions.clear();
   }
 
   /**
@@ -1223,19 +1234,21 @@ export class DragRef<T = any> {
   }
 
   /** Updates the internal state of the draggable element when scrolling has occurred. */
-  private _updateOnScroll() {
-    const oldScrollPosition = this._scrollPosition;
-    const currentScrollPosition = this._viewportRuler.getViewportScrollPosition();
+  private _updateOnScroll(event: Event) {
+    const scrollDifference = this._parentPositions.handleScroll(event);
 
     // ClientRect dimensions are based on the page's scroll position so
     // we have to update the cached boundary ClientRect if the user has scrolled.
-    if (oldScrollPosition && this._boundaryRect) {
-      const topDifference = oldScrollPosition.top - currentScrollPosition.top;
-      const leftDifference = oldScrollPosition.left - currentScrollPosition.left;
-      adjustClientRect(this._boundaryRect, topDifference, leftDifference);
+    if (this._boundaryRect && scrollDifference) {
+      adjustClientRect(this._boundaryRect, scrollDifference.top, scrollDifference.left);
     }
+  }
 
-    this._scrollPosition = currentScrollPosition;
+  /** Gets the scroll position of the viewport. */
+  private _getViewportScrollPosition() {
+    const cachedPosition = this._parentPositions.positions.get(this._document);
+    return cachedPosition ? cachedPosition.scrollPosition :
+        this._viewportRuler.getViewportScrollPosition();
   }
 }
 

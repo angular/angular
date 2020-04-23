@@ -96,7 +96,7 @@ describe('CdkDrag', () => {
           const fixture = createComponent(StandaloneDraggable);
           fixture.detectChanges();
 
-          const cleanup = makePageScrollable();
+          const cleanup = makeScrollable();
           const dragElement = fixture.componentInstance.dragElement.nativeElement;
 
           scrollTo(0, 500);
@@ -126,7 +126,7 @@ describe('CdkDrag', () => {
           fixture.detectChanges();
 
           const dragElement = fixture.componentInstance.dragElement.nativeElement;
-          const cleanup = makePageScrollable();
+          const cleanup = makeScrollable();
 
           scrollTo(0, 500);
           expect(dragElement.style.transform).toBeFalsy();
@@ -256,7 +256,7 @@ describe('CdkDrag', () => {
           fixture.detectChanges();
 
           const dragElement = fixture.componentInstance.dragElement.nativeElement;
-          const cleanup = makePageScrollable();
+          const cleanup = makeScrollable();
 
           scrollTo(0, 500);
           expect(dragElement.style.transform).toBeFalsy();
@@ -285,7 +285,7 @@ describe('CdkDrag', () => {
           fixture.detectChanges();
 
           const dragElement = fixture.componentInstance.dragElement.nativeElement;
-          const cleanup = makePageScrollable();
+          const cleanup = makeScrollable();
 
           scrollTo(0, 500);
           expect(dragElement.style.transform).toBeFalsy();
@@ -2034,7 +2034,7 @@ describe('CdkDrag', () => {
 
       const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
       const list = fixture.componentInstance.dropInstance.element.nativeElement;
-      const cleanup = makePageScrollable();
+      const cleanup = makeScrollable();
       scrollTo(0, 10);
       let listRect = list.getBoundingClientRect(); // Note that we need to measure after scrolling.
 
@@ -2057,6 +2057,43 @@ describe('CdkDrag', () => {
       previewRect = preview.getBoundingClientRect();
 
       expect(Math.floor(previewRect.bottom)).toBe(Math.floor(listRect.bottom));
+      cleanup();
+    }));
+
+    it('should update the boundary if a parent is scrolled while dragging', fakeAsync(() => {
+      const fixture = createComponent(DraggableInScrollableParentContainer);
+      fixture.componentInstance.boundarySelector = '.cdk-drop-list';
+      fixture.detectChanges();
+
+      const container: HTMLElement = fixture.nativeElement.querySelector('.container');
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+      const list = fixture.componentInstance.dropInstance.element.nativeElement;
+      const cleanup = makeScrollable('vertical', container);
+      container.scrollTop = 10;
+      let listRect = list.getBoundingClientRect(); // Note that we need to measure after scrolling.
+
+      startDraggingViaMouse(fixture, item);
+      startDraggingViaMouse(fixture, item, listRect.right, listRect.bottom);
+      flush();
+      dispatchMouseEvent(document, 'mousemove', listRect.right, listRect.bottom);
+      fixture.detectChanges();
+
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+      let previewRect = preview.getBoundingClientRect();
+
+      // Different browsers round the scroll position differently so
+      // assert that the offsets are within a pixel of each other.
+      expect(Math.abs(previewRect.bottom - listRect.bottom)).toBeLessThan(2);
+
+      container.scrollTop = 0;
+      dispatchFakeEvent(container, 'scroll');
+      fixture.detectChanges();
+      listRect = list.getBoundingClientRect(); // We need to update these since we've scrolled.
+      dispatchMouseEvent(document, 'mousemove', listRect.right, listRect.bottom);
+      fixture.detectChanges();
+      previewRect = preview.getBoundingClientRect();
+
+      expect(Math.abs(previewRect.bottom - listRect.bottom)).toBeLessThan(2);
       cleanup();
     }));
 
@@ -2375,7 +2412,7 @@ describe('CdkDrag', () => {
       fakeAsync(() => {
         const fixture = createComponent(DraggableInDropZone);
         fixture.detectChanges();
-        const cleanup = makePageScrollable();
+        const cleanup = makeScrollable();
 
         scrollTo(0, 500);
         assertDownwardSorting(fixture, fixture.componentInstance.dragItems.map(item => {
@@ -2396,7 +2433,7 @@ describe('CdkDrag', () => {
       fakeAsync(() => {
         const fixture = createComponent(DraggableInDropZone);
         fixture.detectChanges();
-        const cleanup = makePageScrollable();
+        const cleanup = makeScrollable();
 
         scrollTo(0, 500);
         assertUpwardSorting(fixture, fixture.componentInstance.dragItems.map(item => {
@@ -2893,7 +2930,7 @@ describe('CdkDrag', () => {
     it('should keep the preview next to the trigger if the page was scrolled', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZoneWithCustomPreview);
       fixture.detectChanges();
-      const cleanup = makePageScrollable();
+      const cleanup = makeScrollable();
       const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
 
       startDraggingViaMouse(fixture, item, 50, 50);
@@ -3485,7 +3522,7 @@ describe('CdkDrag', () => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
 
-      const cleanup = makePageScrollable();
+      const cleanup = makeScrollable();
       const item = fixture.componentInstance.dragItems.first.element.nativeElement;
       const viewportRuler = TestBed.inject(ViewportRuler);
       const viewportSize = viewportRuler.getViewportSize();
@@ -3506,7 +3543,7 @@ describe('CdkDrag', () => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
 
-      const cleanup = makePageScrollable();
+      const cleanup = makeScrollable();
       const item = fixture.componentInstance.dragItems.first.element.nativeElement;
       const viewportRuler = TestBed.inject(ViewportRuler);
       const viewportSize = viewportRuler.getViewportSize();
@@ -3529,7 +3566,7 @@ describe('CdkDrag', () => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
 
-      const cleanup = makePageScrollable('horizontal');
+      const cleanup = makeScrollable('horizontal');
       const item = fixture.componentInstance.dragItems.first.element.nativeElement;
       const viewportRuler = TestBed.inject(ViewportRuler);
       const viewportSize = viewportRuler.getViewportSize();
@@ -3550,7 +3587,7 @@ describe('CdkDrag', () => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
 
-      const cleanup = makePageScrollable('horizontal');
+      const cleanup = makeScrollable('horizontal');
       const item = fixture.componentInstance.dragItems.first.element.nativeElement;
       const viewportRuler = TestBed.inject(ViewportRuler);
       const viewportSize = viewportRuler.getViewportSize();
@@ -3587,7 +3624,7 @@ describe('CdkDrag', () => {
         list.style.margin = '0';
 
         const listRect = list.getBoundingClientRect();
-        const cleanup = makePageScrollable();
+        const cleanup = makeScrollable();
 
         scrollTo(0, viewportRuler.getViewportSize().height * 5);
         list.scrollTop = 50;
@@ -3625,7 +3662,7 @@ describe('CdkDrag', () => {
         list.style.margin = '0';
 
         const listRect = list.getBoundingClientRect();
-        const cleanup = makePageScrollable();
+        const cleanup = makeScrollable();
 
         scrollTo(0, viewportRuler.getViewportSize().height * 5);
         list.scrollTop = 0;
@@ -4744,7 +4781,7 @@ describe('CdkDrag', () => {
       fixture.detectChanges();
 
       // Make the page scrollable and scroll the items out of view.
-      const cleanup = makePageScrollable();
+      const cleanup = makeScrollable();
       scrollTo(0, 4000);
       dispatchFakeEvent(document, 'scroll');
       fixture.detectChanges();
@@ -5984,11 +6021,13 @@ function getElementSibligsByPosition(element: Element, direction: 'top' | 'left'
  * Adds a large element to the page in order to make it scrollable.
  * @returns Function that should be used to clean up after the test is done.
  */
-function makePageScrollable(direction: 'vertical' | 'horizontal' = 'vertical') {
+function makeScrollable(
+  direction: 'vertical' | 'horizontal' = 'vertical',
+  element = document.body) {
   const veryTallElement = document.createElement('div');
   veryTallElement.style.width = direction === 'vertical' ? '100%' : '4000px';
   veryTallElement.style.height = direction === 'vertical' ? '2000px' : '5px';
-  document.body.appendChild(veryTallElement);
+  element.appendChild(veryTallElement);
 
   return () => {
     scrollTo(0, 0);
