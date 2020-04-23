@@ -53,6 +53,28 @@ export function createMouseEvent(type: string, clientX = 0, clientY = 0, button 
 }
 
 /**
+ * Creates a browser `PointerEvent` with the specified options. Pointer events
+ * by default will appear as if they are the primary pointer of their type.
+ * https://www.w3.org/TR/pointerevents2/#dom-pointerevent-isprimary.
+ *
+ * For example, if pointer events for a multi-touch interaction are created, the non-primary
+ * pointer touches would need to be represented by non-primary pointer events.
+ *
+ * @docs-private
+ */
+export function createPointerEvent(type: string, clientX = 0, clientY = 0,
+                                   options: PointerEventInit = {isPrimary: true}) {
+  return new PointerEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    view: window,
+    clientX,
+    clientY,
+    ...options,
+  });
+}
+
+/**
  * Creates a browser TouchEvent with the specified pointer coordinates.
  * @docs-private
  */

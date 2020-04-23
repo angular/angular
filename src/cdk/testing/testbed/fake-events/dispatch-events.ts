@@ -11,6 +11,7 @@ import {
   createFakeEvent,
   createKeyboardEvent,
   createMouseEvent,
+  createPointerEvent,
   createTouchEvent,
 } from './event-objects';
 
@@ -47,6 +48,15 @@ export function dispatchKeyboardEvent(node: Node, type: string, keyCode?: number
  */
 export function dispatchMouseEvent(node: Node, type: string, clientX = 0, clientY = 0): MouseEvent {
   return dispatchEvent(node, createMouseEvent(type, clientX, clientY));
+}
+
+/**
+ * Shorthand to dispatch a pointer event on the specified coordinates.
+ * @docs-private
+ */
+export function dispatchPointerEvent(node: Node, type: string, clientX = 0, clientY = 0,
+                                     options?: PointerEventInit): PointerEvent {
+  return dispatchEvent(node, createPointerEvent(type, clientX, clientY, options)) as PointerEvent;
 }
 
 /**
