@@ -23,7 +23,9 @@ export function _getShadowRoot(element: HTMLElement): Node | null {
   if (_supportsShadowDom()) {
     const rootNode = element.getRootNode ? element.getRootNode() : null;
 
-    if (rootNode instanceof ShadowRoot) {
+    // Note that this should be caught by `_supportsShadowDom`, but some
+    // teams have been able to hit this code path on unsupported browsers.
+    if (typeof ShadowRoot !== 'undefined' && ShadowRoot && rootNode instanceof ShadowRoot) {
       return rootNode;
     }
   }
