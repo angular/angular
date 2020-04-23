@@ -61,7 +61,7 @@ If the current tab needs to be updated to the latest app version immediately, it
 
 <code-example path="service-worker-getting-started/src/app/prompt-update.service.ts" header="prompt-update.service.ts" region="sw-activate"></code-example>
 
-Doing this could break lazy-loading into currently running apps, especially if the lazy-loaded chunks use filenames with hashes, which change every version.
+Doing this could break lazy-loading in currently running apps, especially if the lazy-loaded chunks use filenames with hashes, which change every version.
 
 ## More on Angular service workers
 
