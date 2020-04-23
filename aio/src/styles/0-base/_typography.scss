@@ -199,9 +199,8 @@ code {
 .folder-guide,
 .folder-start,
 .folder-tutorial {
-
+  
   aio-doc-viewer{
-
     a {
       &[href^="http:"]::after,
       &[href^="https:"]::after {
