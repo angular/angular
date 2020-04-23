@@ -16,13 +16,11 @@ import {
 } from '@angular/material/core/testing';
 import {SelectHarnessFilters} from './select-harness-filters';
 
-const PANEL_SELECTOR = '.mat-select-panel';
 
 /** Harness for interacting with a standard mat-select in tests. */
 export class MatSelectHarness extends MatFormFieldControlHarness {
   private _documentRootLocator = this.documentRootLocatorFactory();
   private _backdrop = this._documentRootLocator.locatorFor('.cdk-overlay-backdrop');
-  private _optionalPanel = this._documentRootLocator.locatorForOptional(PANEL_SELECTOR);
   private _trigger = this.locatorFor('.mat-select-trigger');
   private _value = this.locatorFor('.mat-select-value');
 
@@ -84,7 +82,7 @@ export class MatSelectHarness extends MatFormFieldControlHarness {
     Promise<MatOptionHarness[]> {
     return this._documentRootLocator.locatorForAll(MatOptionHarness.with({
       ...filter,
-      ancestor: PANEL_SELECTOR
+      ancestor: await this._getPanelSelector()
     }))();
   }
 
@@ -93,13 +91,13 @@ export class MatSelectHarness extends MatFormFieldControlHarness {
     Promise<MatOptgroupHarness[]> {
     return this._documentRootLocator.locatorForAll(MatOptgroupHarness.with({
       ...filter,
-      ancestor: PANEL_SELECTOR
+      ancestor: await this._getPanelSelector()
     }))();
   }
 
   /** Gets whether the select is open. */
   async isOpen(): Promise<boolean> {
-    return !!(await this._optionalPanel());
+    return !!await this._documentRootLocator.locatorForOptional(await this._getPanelSelector())();
   }
 
   /** Opens the select's panel. */
@@ -137,5 +135,11 @@ export class MatSelectHarness extends MatFormFieldControlHarness {
       // a bit more precise after #16645 where we can dispatch an ESCAPE press to the host instead.
       return (await this._backdrop()).click();
     }
+  }
+
+  /** Gets the selector that should be used to find this select's panel. */
+  private async _getPanelSelector(): Promise<string> {
+    const id = await (await this.host()).getAttribute('id');
+    return `#${id}-panel`;
   }
 }

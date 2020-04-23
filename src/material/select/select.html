@@ -32,6 +32,7 @@
   <div class="mat-select-panel-wrap" [@transformPanelWrap]>
     <div
       #panel
+      [attr.id]="id + '-panel'"
       class="mat-select-panel {{ _getPanelTheme() }}"
       [ngClass]="panelClass"
       [@transformPanel]="multiple ? 'showing-multiple' : 'showing'"

@@ -152,7 +152,28 @@ export function runHarnessTests(
     const options = await select.getOptions();
 
     expect(groups.length).toBe(3);
-    expect(options.length).toBe(11);
+    expect(options.length).toBe(14);
+  });
+
+  it('should be able to get the select options when there are multiple open selects', async () => {
+    const singleSelect = await loader.getHarness(selectHarness.with({
+      selector: '#single-selection'
+    }));
+    await singleSelect.open();
+
+    const groupedSelect = await loader.getHarness(selectHarness.with({selector: '#grouped'}));
+    await groupedSelect.open();
+
+    const [singleOptions, groupedOptions] = await Promise.all([
+      singleSelect.getOptions(),
+      groupedSelect.getOptions()
+    ]);
+
+    expect(await singleOptions[0].getText()).toBe('Alabama');
+    expect(singleOptions.length).toBe(11);
+
+    expect(await groupedOptions[0].getText()).toBe('Iowa');
+    expect(groupedOptions.length).toBe(14);
   });
 
   it('should be able to get the value text from a single-selection select', async () => {
@@ -268,15 +289,32 @@ class SelectHarnessTest {
   stateGroups = [
     {
       name: 'One',
-      states: this.states.slice(0, 3)
+      states: [
+        {code: 'IA', name: 'Iowa'},
+        {code: 'KS', name: 'Kansas'},
+        {code: 'KY', name: 'Kentucky'},
+        {code: 'LA', name: 'Louisiana'},
+        {code: 'ME', name: 'Maine'}
+      ]
     },
     {
       name: 'Two',
-      states: this.states.slice(3, 7)
+      states: [
+        {code: 'RI', name: 'Rhode Island'},
+        {code: 'SC', name: 'South Carolina'},
+        {code: 'SD', name: 'South Dakota'},
+        {code: 'TN', name: 'Tennessee'},
+        {code: 'TX', name: 'Texas'},
+      ]
     },
     {
       name: 'Three',
-      states: this.states.slice(7)
+      states: [
+        {code: 'UT', name: 'Utah'},
+        {code: 'WA', name: 'Washington'},
+        {code: 'WV', name: 'West Virginia'},
+        {code: 'WI', name: 'Wisconsin'}
+      ]
     }
   ];
 }
