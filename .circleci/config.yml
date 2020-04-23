@@ -405,8 +405,15 @@ jobs:
       - *attach_release_output
       - *yarn_install
 
+      # Copy the release packages into the node modules so that ngcc can process them.
       - run: cp -R dist/releases/* node_modules/@angular/
-      - run: yarn ngcc
+      # Delete existing ngcc manifests that would prevent the copied packages
+      # from being discovered.
+      - run: rm -f node_modules/__ngcc_entry_points__.json
+      # Ensure that the job fails if an entry-point cannot be compiled. Also disable
+      # tsconfig parsing as that causes the release packages to be incorrectly resolved
+      # to the sources due to path mapping.
+      - run: yarn ngcc --error-on-failed-entry-point --no-tsconfig
 
   # -----------------------------------------------------------------
   # Job that ensures that the release output is compatible with the
@@ -422,8 +429,15 @@ jobs:
       - *setup_snapshot_builds
       - *yarn_install_loose_lockfile
 
+      # Copy the release packages into the node modules so that ngcc can process them.
       - run: cp -R dist/releases/* node_modules/@angular/
-      - run: yarn ngcc
+      # Delete existing ngcc manifests that would prevent the copied packages
+      # from being discovered.
+      - run: rm -f node_modules/__ngcc_entry_points__.json
+      # Ensure that the job fails if an entry-point cannot be compiled. Also disable
+      # tsconfig parsing as that causes the release packages to be incorrectly resolved
+      # to the sources due to path mapping.
+      - run: yarn ngcc --error-on-failed-entry-point --no-tsconfig
 
   # ----------------------------------------------------------------------------
   # Job that runs the local browser tests against the Angular Github snapshots
