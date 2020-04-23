@@ -93,7 +93,7 @@ that should trigger the sub-menu:
 </button>
 ```
 
-<!-- example(nested-menu) -->
+<!-- example(menu-nested) -->
 
 ### Lazy rendering
 By default, the menu content will be initialized even when the panel is closed. To defer
