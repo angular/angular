@@ -7,6 +7,7 @@
  */
 
 import {Compiler, Component, NgModule, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
+import {resolveComponentResources} from '@angular/core/src/metadata/resource_loading';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {PreloadAllModules, PreloadingStrategy, RouterPreloader} from '@angular/router';
 import {BehaviorSubject, Observable, of} from 'rxjs';
@@ -315,6 +316,58 @@ describe('RouterPreloader', () => {
                'RouteConfigLoadStart(path: lazy)', 'RouteConfigLoadEnd(path: lazy)'
              ]);
            })));
+
+    it('and cope with the loader throwing exceptions',
+       fakeAsync(inject(
+           [NgModuleFactoryLoader, RouterPreloader, Router, NgModuleRef, Compiler],
+           (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router,
+            testModule: NgModuleRef<any>, compiler: Compiler) => {
+             router.events.subscribe(e => {
+               if (e instanceof RouteConfigLoadEnd || e instanceof RouteConfigLoadStart) {
+                 events.push(e);
+               }
+             });
+
+             loader.stubbedModules = {
+               'expectedreload#error:1:Fake module load error (expectedreload)': LoadedModule1,
+               submodule: LoadedModule2
+             };
+
+             let loadedConfig: LoadedRouterConfig;
+             const c = router.config;
+             expect(c[0].loadChildren).toEqual('expectedreload');
+             loadedConfig = (c[0] as any)._loadedConfig;
+             expect(loadedConfig).toBeUndefined();
+
+             preloader.preload().subscribe((x) => {});
+
+             tick();
+             loadedConfig = (c[0] as any)._loadedConfig;
+             expect(loadedConfig).toBeUndefined();
+             expect(logMessages).toEqual([
+               'Add route loader for expectedreload',
+               'list changed: ',
+             ]);
+
+             router.navigateByUrl('/lazy/LoadedModule1').catch((reason) => {
+               expect(reason).toEqual(Error('Fake module load error (expectedreload)'));
+             });
+             tick();
+             loadedConfig = (c[0] as any)._loadedConfig;
+             expect(loadedConfig).toBeUndefined();
+             expect((c[0] as any)._loader$).toBeUndefined();
+
+             router.navigateByUrl('/lazy/LoadedModule1').catch(() => {
+               expect('Not to get here').toBeUndefined('Not to throw');
+             });
+             tick();
+
+             expect(events.map(e => e.toString())).toEqual([
+               'RouteConfigLoadStart(path: lazy)', 'RouteConfigLoadStart(path: lazy)',
+               'RouteConfigLoadEnd(path: lazy)'
+             ]);
+           })));
+
 
     it('without autoloading loading submodules',
        fakeAsync(inject(

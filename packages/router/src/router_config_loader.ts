@@ -8,7 +8,7 @@
 
 import {Compiler, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
 import {from, Observable, of} from 'rxjs';
-import {map, mergeMap, share, tap} from 'rxjs/operators';
+import {catchError, map, mergeMap, share} from 'rxjs/operators';
 
 import {LoadChildren, LoadedRouterConfig, Route, standardizeConfig} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
@@ -35,6 +35,10 @@ export class RouterConfigLoader {
       const moduleFactory$ = this.loadModuleFactory(route.loadChildren!);
 
       route._loader$ = moduleFactory$.pipe(
+          catchError((err) => {
+            route._loader$ = undefined;
+            throw err;
+          }),
           map((factory: NgModuleFactory<any>) => {
             if (this.onLoadEndListener) {
               this.onLoadEndListener(route);
