@@ -2527,8 +2527,12 @@ and still have full typing support.
 
 </div>
 
+<!--
 ### Upgrading the Phone service
+-->
+### Phone 서비스 업그레이드하기
 
+<!--
 The first piece you'll port over to Angular is the `Phone` service, which
 resides in `app/core/phone/phone.service.ts` and makes it possible for components
 to load phone information from the server. Right now it's implemented with
@@ -2618,9 +2622,89 @@ observables into promises in the service. In many cases that reduce
 the number of changes to the component controllers.
 
 </div>
+-->
+AngularJS 구성요소 중에 가장 먼저 Angular로 전환할 것은 `Phone` 서비스입니다.
+이 서비스는 `app/core/phone/phone.service.ts` 파일에 정의되어 있으며 컴포넌트가 서버에서 스마트폰 정보를 가져올 때 사용합니다.
+그리고 AngularJS 버전에서 이 서비스는 ngResource를 사용하는 방식으로 구현되어 있으며 다음 두가지 기능을 제공합니다:
 
+* 스마트폰 목록을 제공합니다. 이 데이터는 스마트폰 목록을 표시하는 컴포넌트에서 사용합니다.
+* 스마트폰의 상세정보를 제공합니다. 이 데이터는 스마트폰 상세정보를 표시하는 컴포넌트에서 사용합니다.
+
+이 기능을 Angular 서비스로 대체해 봅시다.
+일단 AngularJS에는 컨트롤러를 그대로 남겨둔 채로 Angular 서비스 클래스를 정의합니다.
+
+새로 만드는 Angular 서비스에서는 `ngResource` 대신 Angular HTTP 모듈이 제공하는 `HttpClient` 서비스를 사용합니다.
+
+`app.module.ts` 파일을 열고 `AppModule`의 `imports` 배열에 `HttpClientModule`을 추가합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="httpclientmodule" header="app.module.ts">
+</code-example>
+
+이제는 Phone 서비스를 업그레이드할 준비가 끝났습니다.
+`phone.service.ts` 파일에 ngResource를 사용하도록 구현된 서비스를 TypeScript 클래스로 다시 정의하는데, 이 때 `@Injectable` 데코레이터를 함께 사용합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/core/phone/phone.service.ts" region="classdef" header="app/core/phone/phone.service.ts (기본 코드)"></code-example>
+
+클래스에 `@Injectable` 데코레이터를 붙이면 이 클래스가 의존성으로 주입되는 서비스라는 것을 Angular가 인식할 수 있습니다.
+[의존성 주입](guide/dependency-injection) 문서에서 설명한 것처럼 `@Injectable` 데코레이터는 이 클래스에 의존성 객체를 주입하려는 용도가 아니라 이 클래스가 다른 곳에 의존성으로 주입된다는 것을 표시하는 데코레이터입니다.
+
+클래스에 `HttpClient` 서비스가 필요하다면 클래스 생성자에서 이 서비스를 요청하면 됩니다.
+그러면 Angular가 적절한 의존성 객체의 인스턴스를 찾아서 주입라며 클래스의 `private` 멤버로 할당할 수 있습니다.
+스마트폰의 목록을 불러오거나 특정 스마트폰의 상세정보를 요청하는 기능은 이전과 비슷하게 구현합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/core/phone/phone.service.ts" region="fullclass" header="app/core/phone/phone.service.ts">
+</code-example>
+
+이제는 메소드가 반환하는 `PhoneData`와 `PhoneData[]`가 옵저버블 타입입니다.
+그리고 `PhoneData`는 아직 정의되지 않았기 때문에 다음과 같이 간단하게 인터페이스로 정의합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/core/phone/phone.service.ts" region="phonedata-interface" header="app/core/phone/phone.service.ts (인터페이스)"></code-example>
+
+`@angular/upgrade/static` 패키지가 제공하는 `downgradeInjectable` 메소드를 사용하면 Angular 서비스를 AngularJS 용으로 다운그레이드 할 수 있습니다.
+이 메소드를 사용해서 `Phone` 서비스를 연결합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/core/phone/phone.service.ts" region="downgrade-injectable" header="app/core/phone/phone.service.ts (다운그레이드)"></code-example>
+
+이제 `Phone` 서비스를 Angular 버전으로 새로 작성한 코드는 이렇습니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/core/phone/phone.service.ts" header="app/core/phone/phone.service.ts">
+</code-example>
+
+새롭게 만든 `Phone` 서비스는 이전에 `ngResource`를 활용하던 서비스와 동일하게 동작합니다.
+이렇게 만든 서비스를 `NgModule` 프로바이더에 등록합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="phone" header="app.module.ts">
+</code-example>
+
+이제는 SystemJS로 `phone.service.ts` 파일을 불러오기 때문에 `index.html`에서 서비스를 **&lt;script&gt;로 로드하던 코드를 제거해도**, Angular 버전으로 구현한 서비스를 사용할 수 있습니다.
+
+AngularJS 컴포넌트가 Angular로 구현한 서비스를 활용할 수 있도록 관련 컴포넌트 2개를 수정해 봅시다.
+컴포넌트 안쪽에서는 `$inject`를 사용해서 다운그레이드한 `phone` 팩토리를 사용하지만, 이렇게 주입되는 서비스는 새로 만든 `Phone` 클래스의 인스턴스가 될 것입니다. 생성자에 이 클래스의 타입을 명확하게 명시해 줍니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.component.ajs.ts" header="app/phone-list/phone-list.component.ts">
+</code-example>
+
+<code-example path="upgrade-phonecat-2-hybrid/app/phone-detail/phone-detail.component.ajs.ts" header="app/phone-detail/phone-detail.component.ts">
+</code-example>
+
+이제 AngularJS 컴포넌트 2개는 Angular 서비스를 사용합니다!
+그리고 컴포넌트는 이 서비스의 구현방식을 신경쓸 필요가 없으며 이 서비스가 반환하는 데이터의 타입이 이제는 프로미스가 아니라 옵저버블이라는 것만 신경쓰면 됩니다.
+AngularJS 앱을 업그레이드 할 때는 컴포넌트를 마이그레이션하기 전에 서비스부터 먼저 작업하는 것이 좋습니다.
+
+
+<div class="alert is-helpful">
+
+서비스가 반환하는 옵저버블 타입을 프로미스 타입으로 변환하려면 `toPromise` 메소드를 사용하는 방법도 있습니다.
+컴포넌트 코드를 아직 수정하지 않으려면 이 메소드를 사용하는 것도 고려해볼만 합니다.
+
+</div>
+
+<!--
 ### Upgrading Components
+-->
+### 컴포넌트 업그레이드하기
 
+<!--
 Upgrade the AngularJS components to Angular components next.
 Do it one component at a time while still keeping the application in hybrid mode.
 As you make these conversions, you'll also define your first Angular *pipes*.
@@ -2645,19 +2729,45 @@ with Angular's two-way `[(ngModel)]` binding syntax:
 
 <code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.template.html" region="controls" header="app/phone-list/phone-list.template.html (search controls)"></code-example>
 
-<!--
-Replace the list's `ng-repeat` with an `*ngFor` as
-[described in the Template Syntax page](guide/template-syntax#directives).
-Replace the image tag's `ng-src` with a binding to the native `src` property.
--->
 Replace the list's `ng-repeat` with an `*ngFor` as
 [described in the Template Syntax page](guide/template-syntax#directives).
 Replace the image tag's `ng-src` with a binding to the native `src` property.
 
 <code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.template.html" region="list" header="app/phone-list/phone-list.template.html (phones)"></code-example>
+-->
+이번에는 AngularJS 컴포넌트를 Angular 컴포넌트로 업그레이드 해봅시다.
+이 작업은 애플리케이션이 하이브리드 모드로 계속 실행되는 것을 유지하기 위해 한 번에 컴포넌트 하나씩 진행합니다.
+가장 먼저 업그레이드할 부분을 찾아봅시다.
 
+스마트폰 목록 컴포넌트를 봅시다.
+이 컴포넌트는 TypeScript 컨트롤러 클래스와 컴포넌트를 정의하는 객체로 구성되어 있는데, 이 코드에서 컨트롤러 클래스의 이름을 바꾸고 컴포넌트 정의 객체를 Angular `@Component` 데코레이터로 바꾸기만 하면 이 컴포넌트는 Angular 컴포넌트가 됩니다.
+그리고 나서 클래스에 정적으로 선언된 `$inject` 프로퍼티를 제거하면 됩니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.component.ts" region="initialclass" header="app/phone-list/phone-list.component.ts">
+</code-example>
+
+`selector` 어트리뷰트는 컴포넌트가 화면에서 어느 부분에 위치할지 지정하는 CSS 셀렉터입니다.
+이 셀렉터는 AngularJS에서 컴포넌트 이름과 매칭되는 것을 그대로 사용했지만 Angular에서는 명시적으로 지정해 줘야 합니다.
+AngularJS 버전과 동일하게 `phone-list`라는 이름을 지정해 줍시다.
+
+그리고 컴포넌트 템플릿을 Angular 문법으로 변경합니다.
+AngularJS의 `$ctrl`를 사용하는 표현식을 Angular의 양방향 바인딩 문법 `[(ngModel)]`로 변경합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.template.html" region="controls" header="app/phone-list/phone-list.template.html (검색 컨트롤)"></code-example>
+
+`ng-repeat`을 사용한 부분은 `*ngFor`로 변경합니다.
+`*ngFor`를 사용하는 방법은 [템플릿 문법](guide/template-syntax#directives) 가이드 문서를 참고하세요.
+그리고 이미지 태그의 `ng-src`도 `src` 프로퍼티로 변경합니다.
+
+<code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.template.html" region="list" header="app/phone-list/phone-list.template.html (스마트폰 목록 템플릿)"></code-example>
+
+
+<!--
 #### No Angular _filter_ or _orderBy_ filters
+-->
+#### Angular에는 _filter_, _orderBy_ 필터가 없습니다.
 
+<!--
 The built-in AngularJS `filter` and `orderBy` filters do not exist in Angular,
 so you need to do the filtering and sorting yourself.
 
@@ -2720,17 +2830,10 @@ There are several notable changes here:
 * You've replaced `ng-src` with property
   bindings for the standard `src` property.
 
-<!--
 * You're using the property binding syntax around `ng-class`. Though Angular
   does have [a very similar `ngClass`](guide/template-syntax#directives)
   as AngularJS does, its value is not magically evaluated as an expression.
   In Angular, you always specify in the template when an attribute's value is
-  a property expression, as opposed to a literal string.
--->
-* You're using the property binding syntax around `ng-class`. Though Angular
-  does have [a very similar `ngClass`](guide/template-syntax#directives)
-  as AngularJS does, its value is not magically evaluated as an expression.
-  In Angular, you always specify  in the template when an attribute's value is
   a property expression, as opposed to a literal string.
 
 * You've replaced `ng-repeat`s with `*ngFor`s.
@@ -2750,6 +2853,82 @@ Add `PhoneDetailComponent` component to the `NgModule` _declarations_ and _entry
 </code-example>
 
 You should now also remove the phone detail component &lt;script&gt; tag from `index.html`.
+-->
+AngularJS가 제공하는 `filter`나 `orderBy` 필터는 Angular에 존재하지 않습니다.
+이 기능은 개발자가 직접 구현해야 합니다.
+
+이 예제에서는 두 필터의 기능을 컨트롤러 메소드 중 `getPhones()`에 구현해 봅시다.
+데이터를 필터링하고 정렬하는 로직을 컴포넌트 안에 두기 위한 의도입니다.
+
+<code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.component.ts" region="getphones" header="app/phone-list/phone-list.component.ts">
+</code-example>
+
+그러면 이제 Angular 컴포넌트를 다운그레이드 하면 AngularJS에도 사용할 수 잇습니다.
+이 문서에서는 AngularJS의 컴포넌트로 등록하지 않고 `phoneList` *디렉티브*로 등록해 봅시다.
+
+`as angular.IDirectiveFactory`라는 코드는 `downgradeComponent` 메소드가 반환한 결과물이 디렉티브 팩토리라는 것을 TypeScript 컴파일러에게 알려주기 위한 코드입니다.
+
+<code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.component.ts" region="downgrade-component" header="app/phone-list/phone-list.component.ts">
+</code-example>
+
+새로 만든 `PhoneListComponent`는 Angular `FormsModule`이 제공하는 `ngModel` 디렉티브를 활용합니다.
+그래서 `FormsModule`을 `NgModule`의 `imports` 배열에 추가하고 `entryComponents`에 `PhoneListComponent`를 추가하면 컴포넌트 다운그레이드가 끝납니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="phonelist" header="app.module.ts">
+</code-example>
+
+`index.html`에서 스마트폰 목록 컴포넌트를 로드하는 &lt;script&gt; 태그를 제거하세요.
+
+그리고 `phone-detail.component.ts` 파일도 같은 방식으로 처리합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/phone-detail/phone-detail.component.ts" header="app/phone-detail/phone-detail.component.ts">
+</code-example>
+
+이 컴포넌트는 스마트폰 목록을 표시하는 컴포넌트와 비슷합니다.
+`RouteParams` 타입으로 받은 의존성 객체를 `routeParams` 프로퍼티로 받는다는 점이 가장 큰 차이입니다.
+
+AngularJS에는 `routeParams`이라는 의존성 객체가 있는데 이 객체는 AngularJS 버전의 `PhoneDetails` 컴포넌트 컨트롤러에서 라우터와 관련된 기능을 활용하기 위해 주입받는 객체입니다.
+새로 만든 `PhoneDetailsComponent`에도 이 의존성 객체를 주입해 봅시다.
+
+하지만 AngularJS에서 활용하는 의존성 객체들을 Angular 컴포넌트에 그대로 사용할 수 있는 것은 아닙니다.
+`$routeParams`를 Angular에 의존성으로 주입하려면 [팩토리 프로바이더](guide/upgrade#making-angularjs-dependencies-injectable-to-angular)를 사용해서 이 서비스를 업그레이드해야 합니다.
+이 동작은 `ajs-upgraded-providers.ts`라는 파일을 새로 만들어서 구현하고, `app.module.ts`이 불러오도록 구현해 봅시다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/ajs-upgraded-providers.ts" header="app/ajs-upgraded-providers.ts">
+</code-example>
+
+<code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="routeparams" header="app/app.module.ts ($routeParams)"></code-example>
+
+그리고 스마트폰 상세정보 컴포넌트의 템플릿을 Angular 문법으로 변환합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/phone-detail/phone-detail.template.html" header="app/phone-detail/phone-detail.template.html">
+</code-example>
+
+변경사항 중에서 이런 내용을 주의깊게 봅시다:
+
+* 모든 표현식에서 `$ctrl.` 접두사를 제거했습니다.
+
+* 프로퍼티 바인딩에 사용된 `ng-src`는 표준 프로퍼티 `src`를 바인딩하는 방식으로 변경했습니다.
+
+* AngularJS에서는 클래스를 바인딩하기 위해 `ng-class`를 사용했습니다.
+이 코드는 Angular에서 [거의 비슷한 동작을 하는 `ngClass`](guide/template-syntax#directives)로 변경되었으며 사용법도 비슷합니다.
+그리고 표현식이 실행된 결과는 객체이기 때문에 프로퍼티 바인딩으로 연결했습니다.
+
+* `ng-repeat`은 `*ngFor`로 변경했습니다.
+
+* `ng-click`은 표준 이벤트 `click`으로 변경되었습니다.
+
+* 스마트폰 객체가 유효할 때만 화면을 렌더링하기 위해 템플릿 전체는 `ngIf`로 감쌌습니다.
+컴포넌트가 처음 로드된 시점에는 `phone`이 존재하지 않기 때문에 빈값을 참조하는 표현식이 모두 제대로 실행되지 않습니다.
+AngularJS와는 다르게 Angular 표현식은 빈 객체를 참조할 때 에러를 출력하기 때문에, 실제로 객체가 존재할 때만 표현식을 실행하기 위해 작성했습니다.
+
+그리고 `PhoneDetailComponent`를 `NgModule`의 _declarations_ 와 _entryComponents_ 에 추가합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="phonedetail" header="app.module.ts">
+</code-example>
+
+이제는 이전과 마찬가지로 `index.html`에서 컴포넌트 파일을 불러오던 &lt;script&gt; 태그를 제거해도 됩니다.
+
 
 #### Add the _CheckmarkPipe_
 
