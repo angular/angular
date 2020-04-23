@@ -12,7 +12,11 @@ import {isAbsolute, resolve} from 'path';
 
 import {Config, readAndValidateConfig} from './config';
 import {promptConfirm} from './console';
+import {GithubApiRequestError} from './git';
 import {MergeResult, MergeStatus, PullRequestMergeTask} from './index';
+
+/** URL to the Github page where personal access tokens can be generated. */
+const GITHUB_TOKEN_GENERATE_URL = `https://github.com/settings/tokens`;
 
 // Run the CLI.
 main();
@@ -30,12 +34,26 @@ async function main() {
   // Perform the merge. Force mode can be activated through a command line flag.
   // Alternatively, if the merge fails with non-fatal failures, the script
   // will prompt whether it should rerun in force mode.
-  const mergeResult = await api.merge(prNumber, force);
-
-  // Handle the result of the merge. If failures have been reported, exit
-  // the process with a non-zero exit code.
-  if (!await handleMergeResult(mergeResult, force)) {
+  if (!await performMerge(force)) {
     process.exit(1);
+  }
+
+  /** Performs the merge and returns whether it was successful or not. */
+  async function performMerge(ignoreFatalErrors: boolean): Promise<boolean> {
+    try {
+      const result = await api.merge(prNumber, ignoreFatalErrors);
+      return await handleMergeResult(result, ignoreFatalErrors);
+    } catch (e) {
+      // Catch errors to the Github API for invalid requests. We want to
+      // exit the script with a better explanation of the error.
+      if (e instanceof GithubApiRequestError && e.status === 401) {
+        console.error(chalk.red('Github API request failed. ' + e.message));
+        console.error(chalk.yellow('Please ensure that your provided token is valid.'));
+        console.error(chalk.yellow(`You can generate a token here: ${GITHUB_TOKEN_GENERATE_URL}`));
+        process.exit(1);
+      }
+      throw e;
+    }
   }
 
   /**
@@ -47,10 +65,7 @@ async function main() {
     if (await promptConfirm('Do you want to forcibly proceed with merging?')) {
       // Perform the merge in force mode. This means that non-fatal failures
       // are ignored and the merge continues.
-      const forceMergeResult = await api.merge(prNumber, true);
-      // Handle the merge result. Note that we disable the force merge prompt since
-      // a failed force merge will never succeed with a second force merge.
-      return await handleMergeResult(forceMergeResult, true);
+      return performMerge(true);
     }
     return false;
   }
@@ -130,6 +145,7 @@ function parseCommandLine():
     console.error(
         chalk.red('No Github token is set. Please set the `GITHUB_TOKEN` environment variable.'));
     console.error(chalk.red('Alternatively, pass the `--github-token` command line flag.'));
+    console.error(chalk.yellow(`You can generate a token here: ${GITHUB_TOKEN_GENERATE_URL}`));
     process.exit(1);
   }
 

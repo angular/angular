@@ -91,15 +91,32 @@ export class GithubApiMergeStrategy extends MergeStrategy {
       await this._promptCommitMessageEdit(pullRequest, mergeOptions);
     }
 
-    // Merge the pull request using the Github API into the selected base branch.
-    const {status, data: {sha}} = await this.git.api.pulls.merge(mergeOptions);
+    let mergeStatusCode: number;
+    let targetSha: string;
+
+    try {
+      // Merge the pull request using the Github API into the selected base branch.
+      const result = await this.git.api.pulls.merge(mergeOptions);
+
+      mergeStatusCode = result.status;
+      targetSha = result.data.sha;
+    } catch (e) {
+      // Note: Github usually returns `404` as status code if the API request uses a
+      // token with insufficient permissions. Github does this because it doesn't want
+      // to leak whether a repository exists or not. In our case we expect a certain
+      // repository to exist, so we always treat this as a permission failure.
+      if (e.status === 403 || e.status === 404) {
+        return PullRequestFailure.insufficientPermissionsToMerge();
+      }
+      throw e;
+    }
 
     // https://developer.github.com/v3/pulls/#response-if-merge-cannot-be-performed
     // Pull request cannot be merged due to merge conflicts.
-    if (status === 405) {
+    if (mergeStatusCode === 405) {
       return PullRequestFailure.mergeConflicts([githubTargetBranch]);
     }
-    if (status !== 200) {
+    if (mergeStatusCode !== 200) {
       return PullRequestFailure.unknownMergeError();
     }
 
@@ -120,7 +137,7 @@ export class GithubApiMergeStrategy extends MergeStrategy {
 
     // Cherry pick the merged commits into the remaining target branches.
     const failedBranches = await this.cherryPickIntoTargetBranches(
-        `${sha}~${targetCommitsCount}..${sha}`, cherryPickTargetBranches);
+        `${targetSha}~${targetCommitsCount}..${targetSha}`, cherryPickTargetBranches);
 
     // We already checked whether the PR can be cherry-picked into the target branches,
     // but in case the cherry-pick somehow fails, we still handle the conflicts here. The

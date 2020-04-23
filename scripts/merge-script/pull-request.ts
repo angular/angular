@@ -94,8 +94,13 @@ async function fetchPullRequestFromGithub(
   try {
     const result = await git.api.pulls.get({...git.repoParams, pull_number: prNumber});
     return result.data;
-  } catch {
-    return null;
+  } catch (e) {
+    // If the pull request could not be found, we want to return `null` so
+    // that the error can be handled gracefully.
+    if (e.status === 404) {
+      return null;
+    }
+    throw e;
   }
 }
 
