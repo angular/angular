@@ -19,7 +19,17 @@ describe('SpyNgModuleFactoryLoader', () => {
     r.stubbedModules = {'one': 'someModule'};
 
     expect(compiler.compileModuleAsync).toHaveBeenCalledWith('someModule');
-    expect(r.stubbedModules['one']).toBe(expected);
+    expect(r.stubbedModules['one'].module).toBe(expected);
+  });
+
+
+  it('should the default load postFn function in return identity', () => {
+    const compiler: any = {compileModuleAsync: (_: any) => _};
+    const r = new SpyNgModuleFactoryLoader(<any>compiler);
+    r.stubbedModules = {'one': 'someModule'};
+    const expected = 'this';
+    const postFn = r.stubbedModules['one'].postFn;
+    expect(postFn(expected)).toBe(expected);
   });
 
   it('should return the created promise', () => {
@@ -31,6 +41,60 @@ describe('SpyNgModuleFactoryLoader', () => {
 
     expect(r.load('one')).toBe(expected);
   });
+
+  it('should return the created delayed promise', fakeAsync(() => {
+       const expected: any = 'returned';
+       const compiler: any = {compileModuleAsync: () => Promise.resolve(expected)};
+
+       const r = new SpyNgModuleFactoryLoader(<any>compiler);
+       r.stubbedModules = {'one#delay:3': 'someModule'};
+
+       let result = false;
+       const waitingPromise = r.load('one').then((_) => {
+         expect(_).toBe(expected);
+         result = true;
+       });
+       tick(2);
+       expect(result).toBeFalsy();
+       tick(2);
+       expect(result).toBeTruthy();
+     }));
+
+  it('should return rejected promise when given an stubbedModules error', fakeAsync(() => {
+       const expected: any = 'returned';
+       const compiler: any = {compileModuleAsync: () => Promise.resolve(expected)};
+
+       const r = new SpyNgModuleFactoryLoader(<any>compiler);
+       r.stubbedModules = {'one#error:-1:load error': 'someModule'};
+
+
+       let error: any = null;
+       r.load('one').catch((e: any) => error = e);
+
+       tick();
+
+       expect(error).toEqual(new Error('load error'));
+     }));
+
+  it('should return rejected promise when given an stubbedModules error', fakeAsync(() => {
+       const expected: any = 'returned';
+       const compiler: any = {compileModuleAsync: () => Promise.resolve(expected)};
+
+       const r = new SpyNgModuleFactoryLoader(<any>compiler);
+       r.stubbedModules = {'one#error:1:load error': 'someModule'};
+
+
+       let error: any = null;
+       r.load('one').catch((e: any) => error = e);
+       tick();
+       expect(error).toEqual(new Error('load error'));
+
+       error = null;
+       r.load('one').then((r: any) => error = r).catch((e: any) => error = e);
+       tick();
+       expect(error).toEqual(expected);
+
+    }));
 
   it('should return a rejected promise when given an invalid path', fakeAsync(() => {
        const r = new SpyNgModuleFactoryLoader(<any>null);

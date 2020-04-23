@@ -34,15 +34,20 @@ import {ChildrenOutletContexts, ExtraOptions, NoPreloading, PreloadingStrategy, 
  * loader.stubbedModules = {
  *    lazyModule: LoadedModule,
  *    'slowModule#delay:5000' LoadedModule,
+ *    'brokenModule#error:1:broken load message' null,
  * };
  *
  * router.resetConfig([
  *   {path: 'lazy', loadChildren: 'lazyModule'},
  *   {path: 'slow-load', loadChildren: 'slowModule'},
+ *   {path: 'fail-first-load', loadChildren: 'brokenModule'},
  * ]);
  *
- * router.navigateByUrl('/lazy/loaded');
+ * //One of the following
+ * router.navigateByUrl('/lazy/loaded'); //
  * router.navigateByUrl('/slow-load/loaded'); // This routes module would take 5s to load
+ * router.navigateByUrl('/fail-first-load/loaded'); // This routes will faill the first time called
+ *                                                  // with message 'broken load message';
  * ```
  *
  * @publicApi
@@ -52,7 +57,8 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
   /**
    * @docsNotRequired
    */
-  private _stubbedModules: {[path: string]: Promise<NgModuleFactory<any>>} = {};
+  private _stubbedModules:
+      {[path: string]: {module: any, postFn: (m: any) => Promise<NgModuleFactory<any>>}} = {};
 
   /**
    * @docsNotRequired
@@ -60,7 +66,10 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
   set stubbedModules(modules: {[path: string]: any}) {
     const res: {[path: string]: any} = {};
     for (const t of Object.keys(modules)) {
-      res[t] = this.compiler.compileModuleAsync(modules[t]);
+      const [fn, strippedPath] = this.buildPathFunctions((_) => {
+        return _;
+      }, t);
+      res[strippedPath] = {module: this.compiler.compileModuleAsync(modules[t]), postFn: fn};
     }
     this._stubbedModules = res;
   }
@@ -74,32 +83,53 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
 
   constructor(private compiler: Compiler) {}
 
-  private stripDelay(path: string): string {
-    return path.split('#').reduce((p, c) => c.startsWith('delay:') ? p : p + '#' + c);
+
+  private buildPathFunctions(fn: (m: any) => Promise<NgModuleFactory<any>>, path: string):
+      [(m: any) => Promise<NgModuleFactory<any>>, string] {
+    const pathParts = path.split('#');
+    return pathParts.slice(1).reduce((last, pathPart, partIndex) => {
+      let internediateFn = last[0];
+      let internediatePath = last[1];
+
+      if (pathPart.startsWith('error:')) {
+        const fnParts = pathPart.slice(6).split(':');
+
+        internediateFn = this.ErrorPromiseFn(
+            internediateFn, parseInt(fnParts[0] || '0'), fnParts.slice(1).join(':'));
+
+      } else if (pathPart.startsWith('delay:')) {
+        internediateFn = this.delayPromiseFn(internediateFn, parseInt(pathPart.split(':')[1]));
+
+      } else {
+        internediatePath += `#${pathPart}`;
+      }
+
+      return [internediateFn, internediatePath];
+    }, [fn, pathParts.splice(0, 1)[0]]);
   }
 
-  private pathDelay(path: string): number {
-    return path.split('#')
-        .filter((c) => c.startsWith('delay:'))
-        .map(_ => parseInt(_.split(':')[1]))[0];
+  private ErrorPromiseFn(postFn: (x: any) => any, count: number, message: string):
+      (m: any) => Promise<any> {
+    let delay = count || -1;
+
+    return (m: any) => {
+      const error = delay > 0 || delay < 0;
+      delay > 0 ? --delay : 0;
+      return error ?
+          <any>Promise.reject(new Error(message || `Fake module load error : ${delay}`)) :
+          postFn(m);
+    };
   }
 
-  private delayPromise(ms: number): Promise<any> {
-    return new Promise((_) => setTimeout(_, ms));
+  private delayPromiseFn(postFn: (x: any) => any, ms: number): (m: any) => Promise<any> {
+    return (m: any) => {
+      return new Promise((_) => setTimeout(_, ms, m)).then((_) => postFn(_));
+    };
   }
 
   load(path: string): Promise<NgModuleFactory<any>> {
-    const keyPath = Object.keys(this._stubbedModules)
-                        .map(pathKey => this.stripDelay(pathKey) === path ? pathKey : undefined)
-                        .filter(_ => _ !== undefined)[0] ||
-        path;
-
-    if (this._stubbedModules[keyPath]) {
-      const delay = this.pathDelay(keyPath);
-      if (delay) {
-        return this.delayPromise(delay).then(() => this._stubbedModules[keyPath]);
-      }
-      return this._stubbedModules[keyPath];
+    if (this._stubbedModules[path]) {
+      return this._stubbedModules[path].postFn(this._stubbedModules[path].module);
     } else {
       return <any>Promise.reject(new Error(`Cannot find module ${path}`));
     }
