@@ -207,6 +207,7 @@ code {
       &[href^="https:"]::after {
         font-family: "Material Icons";
         content: "open_in_new";
+        margin-left: 2px;
         position: relative;
         @include line-height(24);
         vertical-align: bottom; 
