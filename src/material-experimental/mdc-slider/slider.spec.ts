@@ -14,6 +14,7 @@ import {Platform} from '@angular/cdk/platform';
 import {
   createKeyboardEvent,
   createMouseEvent,
+  createPointerEvent,
   dispatchEvent,
   dispatchFakeEvent,
   dispatchKeyboardEvent,
@@ -718,10 +719,10 @@ describe('MDC-based MatSlider', () => {
     it('should emit an input event while sliding', () => {
       expect(testComponent.onChange).not.toHaveBeenCalled();
 
-      dispatchSliderMouseEvent(sliderNativeElement, 'mousedown', 0);
-      dispatchSliderMouseEvent(sliderNativeElement, 'mousemove', 0.5);
-      dispatchSliderMouseEvent(sliderNativeElement, 'mousemove', 1);
-      dispatchSliderMouseEvent(sliderNativeElement, 'mouseup', 1);
+      dispatchSliderMouseEvent(sliderNativeElement, 'down', 0);
+      dispatchSliderMouseEvent(sliderNativeElement, 'move', 0.5);
+      dispatchSliderMouseEvent(sliderNativeElement, 'move', 1);
+      dispatchSliderMouseEvent(sliderNativeElement, 'up', 1);
 
       fixture.detectChanges();
 
@@ -1409,8 +1410,8 @@ class SliderWithTwoWayBinding {
  */
 function dispatchMousedownEventSequence(sliderElement: HTMLElement, percentage: number,
                                         button = 0): void {
-  dispatchSliderMouseEvent(sliderElement, 'mousedown', percentage, button);
-  dispatchSliderMouseEvent(sliderElement, 'mouseup', percentage, button);
+  dispatchSliderMouseEvent(sliderElement, 'down', percentage, button);
+  dispatchSliderMouseEvent(sliderElement, 'up', percentage, button);
 }
 
 /**
@@ -1421,25 +1422,32 @@ function dispatchMousedownEventSequence(sliderElement: HTMLElement, percentage: 
  */
 function dispatchSlideEventSequence(sliderElement: HTMLElement, startPercent: number,
                                     endPercent: number): void {
-  dispatchSliderMouseEvent(sliderElement, 'mousedown', startPercent);
-  dispatchSliderMouseEvent(sliderElement, 'mousemove', startPercent);
-  dispatchSliderMouseEvent(sliderElement, 'mousemove', endPercent);
-  dispatchSliderMouseEvent(sliderElement, 'mouseup', endPercent);
+  dispatchSliderMouseEvent(sliderElement, 'down', startPercent);
+  dispatchSliderMouseEvent(sliderElement, 'move', startPercent);
+  dispatchSliderMouseEvent(sliderElement, 'move', endPercent);
+  dispatchSliderMouseEvent(sliderElement, 'up', endPercent);
 }
 
 /**
  * Dispatches a mouse event from an element at a given position based on the percentage.
  * @param sliderElement The mat-slider element from which the event will be dispatched.
- * @param type Type of the mouse event that should be dispatched.
+ * @param type Type of mouse interaction.
  * @param percent The percentage of the slider where the event will happen.
  * @param button Button that should be held for this event.
  */
-function dispatchSliderMouseEvent(sliderElement: HTMLElement, type: string, percent: number,
-                                  button = 0): void {
-  let trackElement = sliderElement.querySelector('.mdc-slider__track-container')!;
-  let dimensions = trackElement.getBoundingClientRect();
-  let x = dimensions.left + (dimensions.width * percent);
-  let y = dimensions.top + (dimensions.height * percent);
+function dispatchSliderMouseEvent(sliderElement: HTMLElement, type: 'up' | 'down' | 'move',
+                                  percent: number, button = 0): void {
+  const trackElement = sliderElement.querySelector('.mdc-slider__track-container')!;
+  const dimensions = trackElement.getBoundingClientRect();
+  const clientX = dimensions.left + (dimensions.width * percent);
+  const clientY = dimensions.top + (dimensions.height * percent);
 
-  dispatchEvent(sliderElement, createMouseEvent(type, x, y, 0));
+  // The latest versions of all browsers we support have the new `PointerEvent` API.
+  // Though since we capture the two most recent versions of these browsers, we also
+  // need to support Safari 12 at time of writing. Safari 12 does not have support for this,
+  // so we need to conditionally create and dispatch these events based on feature detection.
+  if (window.PointerEvent !== undefined) {
+    dispatchEvent(sliderElement, createPointerEvent(`pointer${type}`, clientX, clientY));
+  }
+  dispatchEvent(sliderElement, createMouseEvent(`mouse${type}`, clientX, clientY, 0));
 }
