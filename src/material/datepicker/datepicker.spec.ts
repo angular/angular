@@ -1015,6 +1015,45 @@ describe('MatDatepicker', () => {
         expect(document.activeElement).toBe(toggle, 'Expected focus to be restored to toggle.');
       });
 
+      it('should not override focus if it was moved inside the closed event in touchUI mode',
+        fakeAsync(() => {
+          const focusTarget = document.createElement('button');
+          const datepicker = fixture.componentInstance.datepicker;
+          const subscription = datepicker.closedStream.subscribe(() => focusTarget.focus());
+          const input = fixture.nativeElement.querySelector('input');
+
+          focusTarget.setAttribute('tabindex', '0');
+          document.body.appendChild(focusTarget);
+
+          // Important: we're testing the touchUI behavior on particular.
+          fixture.componentInstance.touchUI = true;
+          fixture.detectChanges();
+
+          // Focus the input before opening so that the datepicker restores focus to it on close.
+          input.focus();
+
+          expect(document.activeElement).toBe(input, 'Expected input to be focused on init.');
+
+          datepicker.open();
+          fixture.detectChanges();
+          tick(500);
+          fixture.detectChanges();
+
+          expect(document.activeElement)
+              .not.toBe(input, 'Expected input not to be focused while dialog is open.');
+
+          datepicker.close();
+          fixture.detectChanges();
+          tick(500);
+          fixture.detectChanges();
+
+          expect(document.activeElement)
+              .toBe(focusTarget, 'Expected alternate focus target to be focused after closing.');
+
+          focusTarget.parentNode!.removeChild(focusTarget);
+          subscription.unsubscribe();
+        }));
+
       it('should re-render when the i18n labels change',
         inject([MatDatepickerIntl], (intl: MatDatepickerIntl) => {
           const toggle = fixture.debugElement.query(By.css('button'))!.nativeElement;
