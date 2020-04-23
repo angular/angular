@@ -270,6 +270,7 @@ describe('MatButtonToggle without forms', () => {
         RepeatedButtonTogglesWithPreselectedValue,
         ButtonToggleWithTabindex,
         ButtonToggleWithStaticName,
+        ButtonToggleWithStaticChecked,
       ],
     });
 
@@ -888,6 +889,14 @@ describe('MatButtonToggle without forms', () => {
         .toBe(true);
   });
 
+  it('should be able to pre-check a button toggle using a static checked binding', () => {
+    const fixture = TestBed.createComponent(ButtonToggleWithStaticChecked);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.toggles.map(t => t.checked)).toEqual([false, true]);
+    expect(fixture.componentInstance.group.value).toBe('2');
+  });
+
 });
 
 @Component({
@@ -1050,3 +1059,17 @@ class ButtonToggleWithTabindex {}
   template: `<mat-button-toggle name="custom-name"></mat-button-toggle>`
 })
 class ButtonToggleWithStaticName {}
+
+
+@Component({
+  template: `
+    <mat-button-toggle-group>
+      <mat-button-toggle value="1">One</mat-button-toggle>
+      <mat-button-toggle value="2" checked>Two</mat-button-toggle>
+    </mat-button-toggle-group>
+  `
+})
+class ButtonToggleWithStaticChecked {
+  @ViewChild(MatButtonToggleGroup) group: MatButtonToggleGroup;
+  @ViewChildren(MatButtonToggle) toggles: QueryList<MatButtonToggle>;
+}
