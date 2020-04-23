@@ -24,7 +24,6 @@ const localMessageBus = new SamePageMessageBus('angular-devtools-content-script'
 const chromeMessageBus = new ChromeMessageBus(port);
 
 const handshakeWithBackend = (): void => {
-  console.log('Sending init to backend');
   localMessageBus.emit('handshake');
 };
 
