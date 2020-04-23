@@ -30,8 +30,6 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    console.log('Initialized the devtools UI');
-
     this._messageBus.once('ngAvailability', ({ version, prodMode, ivy }) => {
       this.angularExists = !!version;
       this.angularVersion = version;
