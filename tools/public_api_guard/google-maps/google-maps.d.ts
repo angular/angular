@@ -53,7 +53,7 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
 export declare class GoogleMapsModule {
     static ɵinj: i0.ɵɵInjectorDef<GoogleMapsModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<GoogleMapsModule, [typeof i1.GoogleMap, typeof i2.MapCircle, typeof i3.MapInfoWindow, typeof i4.MapMarker, typeof i5.MapPolygon, typeof i6.MapPolyline, typeof i7.MapRectangle], never, [typeof i1.GoogleMap, typeof i2.MapCircle, typeof i3.MapInfoWindow, typeof i4.MapMarker, typeof i5.MapPolygon, typeof i6.MapPolyline, typeof i7.MapRectangle]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<GoogleMapsModule, [typeof i1.GoogleMap, typeof i2.MapCircle, typeof i3.MapGroundOverlay, typeof i4.MapInfoWindow, typeof i5.MapMarker, typeof i6.MapPolygon, typeof i7.MapPolyline, typeof i8.MapRectangle], never, [typeof i1.GoogleMap, typeof i2.MapCircle, typeof i3.MapGroundOverlay, typeof i4.MapInfoWindow, typeof i5.MapMarker, typeof i6.MapPolygon, typeof i7.MapPolyline, typeof i8.MapRectangle]>;
 }
 
 export declare class MapCircle implements OnInit, OnDestroy {
@@ -85,6 +85,24 @@ export declare class MapCircle implements OnInit, OnDestroy {
     ngOnInit(): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapCircle, "map-circle", never, { "options": "options"; "center": "center"; "radius": "radius"; }, { "centerChanged": "centerChanged"; "circleClick": "circleClick"; "circleDblclick": "circleDblclick"; "circleDrag": "circleDrag"; "circleDragend": "circleDragend"; "circleDragstart": "circleDragstart"; "circleMousedown": "circleMousedown"; "circleMousemove": "circleMousemove"; "circleMouseout": "circleMouseout"; "circleMouseover": "circleMouseover"; "circleMouseup": "circleMouseup"; "radiusChanged": "radiusChanged"; "circleRightclick": "circleRightclick"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MapCircle, never>;
+}
+
+export declare class MapGroundOverlay implements OnInit, OnDestroy {
+    bounds: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral;
+    clickable: boolean;
+    groundOverlay?: google.maps.GroundOverlay;
+    mapClick: Observable<google.maps.MouseEvent>;
+    mapDblclick: Observable<google.maps.MouseEvent>;
+    set opacity(opacity: number);
+    url: string;
+    constructor(_map: GoogleMap, _ngZone: NgZone);
+    getBounds(): google.maps.LatLngBounds;
+    getOpacity(): number;
+    getUrl(): string;
+    ngOnDestroy(): void;
+    ngOnInit(): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapGroundOverlay, "map-ground-overlay", never, { "url": "url"; "bounds": "bounds"; "clickable": "clickable"; "opacity": "opacity"; }, { "mapClick": "mapClick"; "mapDblclick": "mapDblclick"; }, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MapGroundOverlay, never>;
 }
 
 export declare class MapInfoWindow implements OnInit, OnDestroy {

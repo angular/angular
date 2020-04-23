@@ -18,6 +18,9 @@
     <map-polygon *ngIf="isPolygonDisplayed" [options]="polygonOptions"></map-polygon>
     <map-rectangle *ngIf="isRectangleDisplayed" [options]="rectangleOptions"></map-rectangle>
     <map-circle *ngIf="isCircleDisplayed" [options]="circleOptions"></map-circle>
+    <map-ground-overlay *ngIf="isGroundOverlayDisplayed"
+                        [url]="groundOverlayUrl"
+                        [bounds]="groundOverlayBounds"></map-ground-overlay>
   </google-map>
 
   <p><label>Latitude:</label> {{display?.lat}}</p>
@@ -88,6 +91,13 @@
     <label for="editable-circle-checkbox">
       Toggle Editable Circle
       <input type="checkbox" [disabled]="!isCircleDisplayed" (click)="toggleEditableCircle()">
+    </label>
+  </div>
+
+  <div>
+    <label for="ground-overlay-checkbox">
+      Toggle Ground Overlay
+      <input type="checkbox" (click)="toggleGroundOverlayDisplay()">
     </label>
   </div>
 

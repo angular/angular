@@ -65,6 +65,9 @@ export class GoogleMapDemo {
   isCircleDisplayed = false;
   circleOptions: google.maps.CircleOptions =
       {center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, strokeColor: 'grey', strokeOpacity: 0.8};
+  isGroundOverlayDisplayed = false;
+  groundOverlayUrl = 'https://angular.io/assets/images/logos/angular/angular.svg';
+  groundOverlayBounds = RECTANGLE_BOUNDS;
 
   mapTypeId: google.maps.MapTypeId;
   mapTypeIds = [
@@ -141,5 +144,9 @@ export class GoogleMapDemo {
 
   mapTypeChanged(event: Event) {
     this.mapTypeId = (event.target as HTMLSelectElement).value as unknown as google.maps.MapTypeId;
+  }
+
+  toggleGroundOverlayDisplay() {
+    this.isGroundOverlayDisplayed = !this.isGroundOverlayDisplayed;
   }
 }
