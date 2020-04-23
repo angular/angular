@@ -93,8 +93,7 @@ describe('SpyNgModuleFactoryLoader', () => {
        r.load('one').then((r: any) => error = r).catch((e: any) => error = e);
        tick();
        expect(error).toEqual(expected);
-
-    }));
+     }));
 
   it('should return a rejected promise when given an invalid path', fakeAsync(() => {
        const r = new SpyNgModuleFactoryLoader(<any>null);
