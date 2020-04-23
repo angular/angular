@@ -16,13 +16,9 @@ import {
 } from '@angular/material/core/testing';
 import {AutocompleteHarnessFilters} from './autocomplete-harness-filters';
 
-/** Selector for the autocomplete panel. */
-const PANEL_SELECTOR = '.mat-autocomplete-panel';
-
 /** Harness for interacting with a standard mat-autocomplete in tests. */
 export class MatAutocompleteHarness extends ComponentHarness {
   private _documentRootLocator = this.documentRootLocatorFactory();
-  private _optionalPanel = this._documentRootLocator.locatorForOptional(PANEL_SELECTOR);
 
   /** The selector for the host element of a `MatAutocomplete` instance. */
   static hostSelector = '.mat-autocomplete-trigger';
@@ -70,7 +66,7 @@ export class MatAutocompleteHarness extends ComponentHarness {
     Promise<MatOptionHarness[]> {
     return this._documentRootLocator.locatorForAll(MatOptionHarness.with({
       ...filters,
-      ancestor: PANEL_SELECTOR
+      ancestor: await this._getPanelSelector()
     }))();
   }
 
@@ -79,7 +75,7 @@ export class MatAutocompleteHarness extends ComponentHarness {
     Promise<MatOptgroupHarness[]> {
     return this._documentRootLocator.locatorForAll(MatOptgroupHarness.with({
       ...filters,
-      ancestor: PANEL_SELECTOR
+      ancestor: await this._getPanelSelector()
     }))();
   }
 
@@ -95,7 +91,19 @@ export class MatAutocompleteHarness extends ComponentHarness {
 
   /** Whether the autocomplete is open. */
   async isOpen(): Promise<boolean> {
-    const panel = await this._optionalPanel();
+    const panel = await this._getPanel();
     return !!panel && await panel.hasClass('mat-autocomplete-visible');
+  }
+
+  /** Gets the panel associated with this autocomplete trigger. */
+  private async _getPanel() {
+    // Technically this is static, but it needs to be in a
+    // function, because the autocomplete's panel ID can changed.
+    return this._documentRootLocator.locatorForOptional(await this._getPanelSelector())();
+  }
+
+  /** Gets the selector that can be used to find the autocomplete trigger's panel. */
+  private async _getPanelSelector(): Promise<string> {
+    return `#${(await (await this.host()).getAttribute('aria-owns'))}`;
   }
 }

@@ -101,7 +101,21 @@ export function runHarnessTests(
     const options = await input.getOptions();
 
     expect(groups.length).toBe(3);
+    expect(options.length).toBe(14);
+  });
+
+  it('should be able to get the autocomplete panel groups', async () => {
+    const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
+    await input.focus();
+
+    const input2 = await loader.getHarness(autocompleteHarness.with({selector: '#grouped'}));
+    await input2.focus();
+
+    const options = await input.getOptions();
+    const options2 = await input2.getOptions();
+
     expect(options.length).toBe(11);
+    expect(options2.length).toBe(14);
   });
 
   it('should be able to get filtered panel groups', async () => {
@@ -178,15 +192,32 @@ class AutocompleteHarnessTest {
   stateGroups = [
     {
       name: 'One',
-      states: this.states.slice(0, 3)
+      states: [
+        {code: 'IA', name: 'Iowa'},
+        {code: 'KS', name: 'Kansas'},
+        {code: 'KY', name: 'Kentucky'},
+        {code: 'LA', name: 'Louisiana'},
+        {code: 'ME', name: 'Maine'}
+      ]
     },
     {
       name: 'Two',
-      states: this.states.slice(3, 7)
+      states: [
+        {code: 'RI', name: 'Rhode Island'},
+        {code: 'SC', name: 'South Carolina'},
+        {code: 'SD', name: 'South Dakota'},
+        {code: 'TN', name: 'Tennessee'},
+        {code: 'TX', name: 'Texas'},
+      ]
     },
     {
       name: 'Three',
-      states: this.states.slice(7)
+      states: [
+        {code: 'UT', name: 'Utah'},
+        {code: 'WA', name: 'Washington'},
+        {code: 'WV', name: 'West Virginia'},
+        {code: 'WI', name: 'Wisconsin'}
+      ]
     }
   ];
 }
