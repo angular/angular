@@ -13,6 +13,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
+import {CdkScrollableModule} from '@angular/cdk/scrolling';
 import {MatCalendar, MatCalendarHeader} from './calendar';
 import {MatCalendarBody} from './calendar-body';
 import {
@@ -38,6 +39,7 @@ import {MatYearView} from './year-view';
     PortalModule,
   ],
   exports: [
+    CdkScrollableModule,
     MatCalendar,
     MatCalendarBody,
     MatDatepicker,

@@ -66,7 +66,7 @@ export interface MatAutocompleteDefaultOptions {
 
 export declare class MatAutocompleteModule {
     static ɵinj: i0.ɵɵInjectorDef<MatAutocompleteModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatAutocompleteModule, [typeof i1.MatAutocomplete, typeof i2.MatAutocompleteTrigger, typeof i3.MatAutocompleteOrigin], [typeof i4.MatOptionModule, typeof i5.OverlayModule, typeof i4.MatCommonModule, typeof i6.CommonModule], [typeof i1.MatAutocomplete, typeof i4.MatOptionModule, typeof i2.MatAutocompleteTrigger, typeof i3.MatAutocompleteOrigin, typeof i4.MatCommonModule]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatAutocompleteModule, [typeof i1.MatAutocomplete, typeof i2.MatAutocompleteTrigger, typeof i3.MatAutocompleteOrigin], [typeof i4.MatOptionModule, typeof i5.OverlayModule, typeof i4.MatCommonModule, typeof i6.CommonModule], [typeof i7.CdkScrollableModule, typeof i1.MatAutocomplete, typeof i4.MatOptionModule, typeof i2.MatAutocompleteTrigger, typeof i3.MatAutocompleteOrigin, typeof i4.MatCommonModule]>;
 }
 
 export declare class MatAutocompleteOrigin {

@@ -11,6 +11,7 @@ import {A11yModule} from '@angular/cdk/a11y';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
+import {CdkScrollableModule} from '@angular/cdk/scrolling';
 import {
   MatTooltip,
   TooltipComponent,
@@ -24,7 +25,7 @@ import {
     OverlayModule,
     MatCommonModule,
   ],
-  exports: [MatTooltip, TooltipComponent, MatCommonModule],
+  exports: [MatTooltip, TooltipComponent, MatCommonModule, CdkScrollableModule],
   declarations: [MatTooltip, TooltipComponent],
   entryComponents: [TooltipComponent],
   providers: [MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER]

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {PlatformModule} from '@angular/cdk/platform';
-import {ScrollingModule} from '@angular/cdk/scrolling';
+import {CdkScrollableModule} from '@angular/cdk/scrolling';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
@@ -18,10 +18,11 @@ import {MatSidenav, MatSidenavContainer, MatSidenavContent} from './sidenav';
   imports: [
     CommonModule,
     MatCommonModule,
-    ScrollingModule,
     PlatformModule,
+    CdkScrollableModule,
   ],
   exports: [
+    CdkScrollableModule,
     MatCommonModule,
     MatDrawer,
     MatDrawerContainer,

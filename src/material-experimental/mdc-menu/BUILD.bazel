@@ -23,6 +23,7 @@ ng_module(
     module_name = "@angular/material-experimental/mdc-menu",
     deps = [
         "//src/cdk/overlay",
+        "//src/cdk/scrolling",
         "//src/material/core",
         "//src/material/menu",
         "@npm//@angular/animations",

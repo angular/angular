@@ -7,6 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
+import {CdkScrollableModule} from '@angular/cdk/scrolling';
 import {CdkDropList} from './directives/drop-list';
 import {CdkDropListGroup} from './directives/drop-list-group';
 import {CdkDrag} from './directives/drag';
@@ -25,6 +26,7 @@ import {DragDrop} from './drag-drop';
     CdkDragPlaceholder,
   ],
   exports: [
+    CdkScrollableModule,
     CdkDropList,
     CdkDropListGroup,
     CdkDrag,

@@ -126,7 +126,7 @@ export declare class MatSidenavContent extends MatDrawerContent {
 
 export declare class MatSidenavModule {
     static ɵinj: i0.ɵɵInjectorDef<MatSidenavModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatSidenavModule, [typeof i1.MatDrawer, typeof i1.MatDrawerContainer, typeof i1.MatDrawerContent, typeof i2.MatSidenav, typeof i2.MatSidenavContainer, typeof i2.MatSidenavContent], [typeof i3.CommonModule, typeof i4.MatCommonModule, typeof i5.ScrollingModule, typeof i6.PlatformModule], [typeof i4.MatCommonModule, typeof i1.MatDrawer, typeof i1.MatDrawerContainer, typeof i1.MatDrawerContent, typeof i2.MatSidenav, typeof i2.MatSidenavContainer, typeof i2.MatSidenavContent]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatSidenavModule, [typeof i1.MatDrawer, typeof i1.MatDrawerContainer, typeof i1.MatDrawerContent, typeof i2.MatSidenav, typeof i2.MatSidenavContainer, typeof i2.MatSidenavContent], [typeof i3.CommonModule, typeof i4.MatCommonModule, typeof i5.PlatformModule, typeof i6.CdkScrollableModule], [typeof i6.CdkScrollableModule, typeof i4.MatCommonModule, typeof i1.MatDrawer, typeof i1.MatDrawerContainer, typeof i1.MatDrawerContent, typeof i2.MatSidenav, typeof i2.MatSidenavContainer, typeof i2.MatSidenavContent]>;
 }
 
 export declare function throwMatDuplicatedDrawerError(position: string): void;

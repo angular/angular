@@ -69,6 +69,11 @@ export declare class CdkScrollable implements OnInit, OnDestroy {
     static ɵfac: i0.ɵɵFactoryDef<CdkScrollable, [null, null, null, { optional: true; }]>;
 }
 
+export declare class CdkScrollableModule {
+    static ɵinj: i0.ɵɵInjectorDef<CdkScrollableModule>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<CdkScrollableModule, [typeof i1.CdkScrollable], never, [typeof i1.CdkScrollable]>;
+}
+
 export declare class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy {
     _cdkVirtualForOf: DataSource<T> | Observable<T[]> | NgIterable<T> | null | undefined;
     get cdkVirtualForOf(): DataSource<T> | Observable<T[]> | NgIterable<T> | null | undefined;
@@ -171,7 +176,7 @@ export declare class ScrollDispatcher implements OnDestroy {
 
 export declare class ScrollingModule {
     static ɵinj: i0.ɵɵInjectorDef<ScrollingModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<ScrollingModule, [typeof i1.CdkFixedSizeVirtualScroll, typeof i2.CdkScrollable, typeof i3.CdkVirtualForOf, typeof i4.CdkVirtualScrollViewport], [typeof i5.BidiModule, typeof i6.PlatformModule], [typeof i5.BidiModule, typeof i1.CdkFixedSizeVirtualScroll, typeof i2.CdkScrollable, typeof i3.CdkVirtualForOf, typeof i4.CdkVirtualScrollViewport]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<ScrollingModule, [typeof i2.CdkFixedSizeVirtualScroll, typeof i3.CdkVirtualForOf, typeof i4.CdkVirtualScrollViewport], [typeof i5.BidiModule, typeof i6.PlatformModule, typeof CdkScrollableModule], [typeof i5.BidiModule, typeof CdkScrollableModule, typeof i2.CdkFixedSizeVirtualScroll, typeof i3.CdkVirtualForOf, typeof i4.CdkVirtualScrollViewport]>;
 }
 
 export declare class ViewportRuler implements OnDestroy {

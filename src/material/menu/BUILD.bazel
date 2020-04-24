@@ -28,6 +28,7 @@ ng_module(
         "//src/cdk/overlay",
         "//src/cdk/platform",
         "//src/cdk/portal",
+        "//src/cdk/scrolling",
         "//src/material/core",
         "@npm//@angular/animations",
         "@npm//@angular/common",

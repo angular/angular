@@ -69,7 +69,7 @@ export interface MatTooltipDefaultOptions {
 
 export declare class MatTooltipModule {
     static ɵinj: i0.ɵɵInjectorDef<MatTooltipModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatTooltipModule, [typeof i1.MatTooltip, typeof i1.TooltipComponent], [typeof i2.A11yModule, typeof i3.CommonModule, typeof i4.OverlayModule, typeof i5.MatCommonModule], [typeof i1.MatTooltip, typeof i1.TooltipComponent, typeof i5.MatCommonModule]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatTooltipModule, [typeof i1.MatTooltip, typeof i1.TooltipComponent], [typeof i2.A11yModule, typeof i3.CommonModule, typeof i4.OverlayModule, typeof i5.MatCommonModule], [typeof i1.MatTooltip, typeof i1.TooltipComponent, typeof i5.MatCommonModule, typeof i6.CdkScrollableModule]>;
 }
 
 export declare const SCROLL_THROTTLE_MS = 20;

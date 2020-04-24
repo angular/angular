@@ -23,7 +23,7 @@ import {
 } from '@angular/core';
 import {TestBed, ComponentFixture, fakeAsync, flush, tick} from '@angular/core/testing';
 import {DOCUMENT} from '@angular/common';
-import {ViewportRuler, ScrollingModule} from '@angular/cdk/scrolling';
+import {ViewportRuler, CdkScrollableModule} from '@angular/cdk/scrolling';
 import {_supportsShadowDom} from '@angular/cdk/platform';
 import {of as observableOf} from 'rxjs';
 
@@ -48,7 +48,7 @@ describe('CdkDrag', () => {
       extraDeclarations: Type<any>[] = []): ComponentFixture<T> {
     TestBed
         .configureTestingModule({
-          imports: [DragDropModule, ScrollingModule],
+          imports: [DragDropModule, CdkScrollableModule],
           declarations: [componentType, PassthroughComponent, ...extraDeclarations],
           providers: [
             {
