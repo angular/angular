@@ -1,14 +1,12 @@
-import { buildDirectiveForest, ComponentTreeNode } from './component-tree';
+import { ComponentTreeNode } from './component-tree';
 import { runOutsideAngular, patchTemplate } from './utils';
 import { Subject } from 'rxjs';
 
 export const onChangeDetection$ = new Subject();
 
-const forest = buildDirectiveForest();
-
 // We patch the component tView template function reference
 // to detect when the change detection has completed and notify the client.
-const listenAndNotifyOnUpdates = (roots: ComponentTreeNode[]): void => {
+export const listenAndNotifyOnUpdates = (roots: ComponentTreeNode[]): void => {
   roots.forEach((root) => {
     const { component } = root;
     if (!component) {
@@ -22,5 +20,3 @@ const listenAndNotifyOnUpdates = (roots: ComponentTreeNode[]): void => {
     });
   });
 };
-
-listenAndNotifyOnUpdates(forest);

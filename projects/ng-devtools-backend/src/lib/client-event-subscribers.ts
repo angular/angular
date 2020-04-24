@@ -9,8 +9,14 @@ import {
   ProfilerFrame,
   ComponentExplorerViewQuery,
 } from 'protocol';
-import { onChangeDetection$ } from './change-detection-tracker';
-import { ComponentTreeNode, getLatestComponentState, queryDirectiveForest, updateState } from './component-tree';
+import { listenAndNotifyOnUpdates, onChangeDetection$ } from './change-detection-tracker';
+import {
+  buildDirectiveForest,
+  ComponentTreeNode,
+  getLatestComponentState,
+  queryDirectiveForest,
+  updateState,
+} from './component-tree';
 import { start as startProfiling, stop as stopProfiling } from './observer';
 import { serializeDirectiveState } from './state-serializer/state-serializer';
 import { ComponentInspector, ComponentInspectorOptions } from './component-inspector/component-inspector';
@@ -23,7 +29,7 @@ import {
   appIsAngularInProdMode,
   appIsAngularIvy,
 } from './angular-check';
-import { observeDOM, getDirectiveId, getDirectiveForest, indexDirectiveForest } from './component-tree-identifiers';
+import { getDirectiveId, getDirectiveForest, indexDirectiveForest, observeDOM } from './component-tree-identifiers';
 import { debounceTime } from 'rxjs/operators';
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
@@ -124,13 +130,16 @@ const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
 //
 // Subscribe Helpers
 //
-
 const checkForAngular = (messageBus: MessageBus<Events>, attempt = 0): void => {
   const ngVersion = getAngularVersion();
+  const appIsIvy = appIsAngularIvy();
   if (!!ngVersion) {
-    observeDOM();
+    if (appIsIvy) {
+      listenAndNotifyOnUpdates(buildDirectiveForest());
+      observeDOM();
+    }
     messageBus.emit('ngAvailability', [
-      { version: ngVersion.toString(), prodMode: appIsAngularInProdMode(), ivy: appIsAngularIvy() },
+      { version: ngVersion.toString(), prodMode: appIsAngularInProdMode(), ivy: appIsIvy },
     ]);
     return;
   }
