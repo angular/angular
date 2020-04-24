@@ -18,7 +18,7 @@ import {
  * Utility to dispatch any event on a Node.
  * @docs-private
  */
-export function dispatchEvent(node: Node | Window, event: Event): Event {
+export function dispatchEvent<T extends Event>(node: Node | Window, event: T): T {
   node.dispatchEvent(event);
   return event;
 }
@@ -38,16 +38,15 @@ export function dispatchFakeEvent(node: Node | Window, type: string, canBubble?:
 export function dispatchKeyboardEvent(node: Node, type: string, keyCode?: number, key?: string,
                                       target?: Element, modifiers?: ModifierKeys): KeyboardEvent {
   return dispatchEvent(node,
-      createKeyboardEvent(type, keyCode, key, target, modifiers)) as KeyboardEvent;
+      createKeyboardEvent(type, keyCode, key, target, modifiers));
 }
 
 /**
  * Shorthand to dispatch a mouse event on the specified coordinates.
  * @docs-private
  */
-export function dispatchMouseEvent(node: Node, type: string, x = 0, y = 0,
-  event = createMouseEvent(type, x, y)): MouseEvent {
-  return dispatchEvent(node, event) as MouseEvent;
+export function dispatchMouseEvent(node: Node, type: string, clientX = 0, clientY = 0): MouseEvent {
+  return dispatchEvent(node, createMouseEvent(type, clientX, clientY));
 }
 
 /**

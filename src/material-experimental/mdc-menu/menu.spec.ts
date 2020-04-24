@@ -2035,7 +2035,7 @@ describe('MDC-based MatMenu', () => {
       Object.defineProperty(event, 'buttons', {get: () => 1});
       event.preventDefault = jasmine.createSpy('preventDefault spy');
 
-      dispatchMouseEvent(overlay.querySelector('[mat-menu-item]')!, 'mousedown', 0, 0, event);
+      dispatchEvent(overlay.querySelector('[mat-menu-item]')!, event);
       expect(event.preventDefault).toHaveBeenCalled();
     });
 

@@ -12,25 +12,32 @@ import {ModifierKeys} from '@angular/cdk/testing';
  * Creates a browser MouseEvent with the specified options.
  * @docs-private
  */
-export function createMouseEvent(type: string, x = 0, y = 0, button = 0) {
+export function createMouseEvent(type: string, clientX = 0, clientY = 0, button = 0) {
   const event = document.createEvent('MouseEvent');
   const originalPreventDefault = event.preventDefault.bind(event);
 
+  // Note: We cannot determine the position of the mouse event based on the screen
+  // because the dimensions and position of the browser window are not available
+  // To provide reasonable `screenX` and `screenY` coordinates, we simply use the
+  // client coordinates as if the browser is opened in fullscreen.
+  const screenX = clientX;
+  const screenY = clientY;
+
   event.initMouseEvent(type,
-    true, /* canBubble */
-    true, /* cancelable */
-    window, /* view */
-    0, /* detail */
-    x, /* screenX */
-    y, /* screenY */
-    x, /* clientX */
-    y, /* clientY */
-    false, /* ctrlKey */
-    false, /* altKey */
-    false, /* shiftKey */
-    false, /* metaKey */
-    button, /* button */
-    null /* relatedTarget */);
+    /* canBubble */ true,
+    /* cancelable */ true,
+    /* view */ window,
+    /* detail */ 0,
+    /* screenX */ screenX,
+    /* screenY */ screenY,
+    /* clientX */ clientX,
+    /* clientY */ clientY,
+    /* ctrlKey */ false,
+    /* altKey */ false,
+    /* shiftKey */ false,
+    /* metaKey */ false,
+    /* button */ button,
+    /* relatedTarget */ null);
 
   // `initMouseEvent` doesn't allow us to pass the `buttons` and
   // defaults it to 0 which looks like a fake event.
