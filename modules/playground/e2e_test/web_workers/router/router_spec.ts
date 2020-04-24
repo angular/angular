@@ -8,7 +8,7 @@
 
 import {browser, by, element, protractor} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../../../dev-infra/benchmark/driver-utilities';
+import {verifyNoBrowserErrors} from '../../../../e2e_util/e2e_util';
 
 describe('WebWorker Router', () => {
   beforeEach(() => {

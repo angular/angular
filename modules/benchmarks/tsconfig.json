@@ -14,7 +14,7 @@
       "rxjs/*": ["../../node_modules/rxjs/*"],
       "@angular/*": ["../../packages/*"],
       "zone.js/*": ["../../packages/zone.js/*"],
-      "dev_infra/*": ["../../dev-infra/*"]
+      "e2e_util/*": ["../e2e_util/*"]
     },
     "rootDir": ".",
     "inlineSourceMap": true,
@@ -31,6 +31,5 @@
     "no-floating-promises": true,
     "no-unused-expression": true,
     "no-unused-variable": true
-  },
-  "include": ["../../dev-infra/benchmark/driver-utilities/"]
+  }
 }

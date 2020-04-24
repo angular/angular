@@ -8,7 +8,7 @@
 
 import {browser} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../../dev-infra/benchmark/driver-utilities';
+import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
 describe('Person Management CRUD', function() {
   const URL = '/';

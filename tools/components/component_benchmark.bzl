@@ -1,11 +1,9 @@
-load("//dev-infra/benchmark/ng_rollup_bundle:ng_rollup_bundle.bzl", "ng_rollup_bundle")
-load("//tools:defaults.bzl", "ng_module")
-load("@npm_bazel_typescript//:index.bzl", "ts_devserver", "ts_library")
-load(":benchmark_test.bzl", "benchmark_test")
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_devserver", "ts_library")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
 
 def copy_default_file(origin, destination):
     """
-    Copies a file from /defaults to the destination.
+    Copies a file from tools/components/defaults to the destination.
 
     Args:
         origin: The name of a file in benchpress/defaults to be copied.
@@ -13,7 +11,7 @@ def copy_default_file(origin, destination):
     """
     native.genrule(
         name = "copy_default_" + origin + "_file_genrule",
-        srcs = ["//dev-infra/benchmark/component_benchmark/defaults:" + origin],
+        srcs = ["//tools/components/defaults:" + origin],
         outs = [destination],
         cmd = "cat $(SRCS) >> $@",
     )
@@ -107,7 +105,6 @@ def component_benchmark(
         # Creates ngFactory and ngSummary to be imported by the app's entry point.
         generate_ve_shims = True,
         deps = ng_deps,
-        tsconfig = "//dev-infra/benchmark/component_benchmark:tsconfig-e2e.json",
     )
 
     # Bundle the application (needed by ts_devserver).
@@ -120,7 +117,7 @@ def component_benchmark(
     # The ts_library for the driver that runs tests against the benchmark app.
     ts_library(
         name = benchmark_driver,
-        tsconfig = "//dev-infra/benchmark/component_benchmark:tsconfig-e2e.json",
+        tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
         testonly = True,
         srcs = [driver],
         deps = driver_deps,
@@ -133,8 +130,7 @@ def component_benchmark(
         port = 4200,
         static_files = assets + styles,
         deps = [":" + app_main + ".min_debug.es2015.js"],
-        additional_root_paths = ["//dev-infra/benchmark/component_benchmark/defaults"],
-        serving_path = "/app_bundle.js",
+        additional_root_paths = ["tools/components/defaults"],
     )
 
     # Runs a protractor test that's set up to use @angular/benchpress.

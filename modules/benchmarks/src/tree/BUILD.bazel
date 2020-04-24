@@ -15,7 +15,7 @@ ts_library(
     srcs = ["test_utils.ts"],
     tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = [
-        "//dev-infra/benchmark/driver-utilities",
+        "//modules/e2e_util",
         "@npm//protractor",
     ],
 )

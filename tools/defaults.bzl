@@ -10,7 +10,7 @@ load("@npm_bazel_typescript//:index.bzl", _ts_devserver = "ts_devserver", _ts_li
 load("@npm_bazel_protractor//:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm//typescript:index.bzl", "tsc")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
-load("//dev-infra/benchmark/ng_rollup_bundle:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
+load("//tools/ng_rollup_bundle:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
 load("//tools:ng_benchmark.bzl", _ng_benchmark = "ng_benchmark")
 load("//tools/ts-api-guardian:index.bzl", _ts_api_guardian_test = "ts_api_guardian_test", _ts_api_guardian_test_npm_package = "ts_api_guardian_test_npm_package")
 
@@ -245,7 +245,7 @@ def karma_web_test_suite(name, **kwargs):
         runtime_deps = runtime_deps,
         bootstrap = bootstrap,
         deps = deps,
-        browsers = ["//dev-infra/benchmark/browsers:chromium"],
+        browsers = ["//tools/browsers:chromium"],
         data = data,
         tags = tags,
         **kwargs
@@ -282,7 +282,7 @@ def protractor_web_test_suite(**kwargs):
     """Default values for protractor_web_test_suite"""
 
     _protractor_web_test_suite(
-        browsers = ["//dev-infra/benchmark/browsers:chromium"],
+        browsers = ["//tools/browsers:chromium"],
         **kwargs
     )
 
