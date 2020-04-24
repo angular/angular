@@ -35,29 +35,38 @@ export function createFakeYtNamespace(): FakeYtNamespace {
   ]);
 
   let playerConfig: YT.PlayerOptions | undefined;
+  const boundListeners = new Map<keyof YT.Events, Set<(event: any) => void>>();
   const playerCtorSpy = jasmine.createSpy('Player Constructor');
+
   playerCtorSpy.and.callFake((_el: Element, config: YT.PlayerOptions) => {
     playerConfig = config;
     return playerSpy;
   });
 
-  const eventHandlerFactory = (name: keyof YT.Events) => {
+  playerSpy.addEventListener.and.callFake((name: keyof YT.Events, listener: (e: any) => any) => {
+    if (!boundListeners.has(name)) {
+      boundListeners.set(name, new Set());
+    }
+    boundListeners.get(name)!.add(listener);
+  });
+
+  playerSpy.removeEventListener.and.callFake((name: keyof YT.Events, listener: (e: any) => any) => {
+    if (boundListeners.has(name)) {
+      boundListeners.get(name)!.delete(listener);
+    }
+  });
+
+  function eventHandlerFactory(name: keyof YT.Events) {
     return (arg: Object = {}) => {
       if (!playerConfig) {
         throw new Error(`Player not initialized before ${name} called`);
       }
 
-      if (playerConfig && playerConfig.events && playerConfig.events[name]) {
-        playerConfig.events[name]!(arg as any);
-      }
-
-      for (const [event, callback] of playerSpy.addEventListener.calls.allArgs()) {
-        if (event === name) {
-          callback(arg as YT.PlayerEvent);
-        }
+      if (boundListeners.has(name)) {
+        boundListeners.get(name)!.forEach(callback => callback(arg));
       }
     };
-  };
+  }
 
   const events: Required<YT.Events> = {
     onReady: eventHandlerFactory('onReady'),

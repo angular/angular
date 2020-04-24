@@ -44,6 +44,7 @@ ng_test_library(
     deps = [
         ":youtube-player",
         "@npm//@angular/platform-browser",
+        "@npm//rxjs",
     ],
 )
 

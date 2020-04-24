@@ -14,7 +14,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  EventEmitter,
   Input,
   NgZone,
   OnDestroy,
@@ -40,6 +39,7 @@ import {
   Subject,
   of,
   BehaviorSubject,
+  fromEventPattern,
 } from 'rxjs';
 
 import {
@@ -55,6 +55,7 @@ import {
   take,
   takeUntil,
   withLatestFrom,
+  switchMap,
 } from 'rxjs/operators';
 
 declare global {
@@ -102,6 +103,15 @@ interface PendingPlayerState {
   template: '<div #youtubeContainer></div>',
 })
 export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
+  /** Whether we're currently rendering inside a browser. */
+  private _isBrowser: boolean;
+  private _youtubeContainer = new Subject<HTMLElement>();
+  private _destroyed = new Subject<void>();
+  private _player: Player | undefined;
+  private _existingApiReadyCallback: (() => void) | undefined;
+  private _pendingPlayerState: PendingPlayerState | undefined;
+  private _playerChanges = new BehaviorSubject<Player | undefined>(undefined);
+
   /** YouTube Video ID to view */
   @Input()
   get videoId(): string | undefined { return this._videoId.value; }
@@ -155,24 +165,27 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   @Input() showBeforeIframeApiLoads: boolean | undefined;
 
   /** Outputs are direct proxies from the player itself. */
-  @Output() ready = new EventEmitter<YT.PlayerEvent>();
-  @Output() stateChange = new EventEmitter<YT.OnStateChangeEvent>();
-  @Output() error = new EventEmitter<YT.OnErrorEvent>();
-  @Output() apiChange = new EventEmitter<YT.PlayerEvent>();
-  @Output() playbackQualityChange = new EventEmitter<YT.OnPlaybackQualityChangeEvent>();
-  @Output() playbackRateChange = new EventEmitter<YT.OnPlaybackRateChangeEvent>();
+  @Output() ready: Observable<YT.PlayerEvent> =
+      this._getLazyEmitter<YT.PlayerEvent>('onReady');
+
+  @Output() stateChange: Observable<YT.OnStateChangeEvent> =
+      this._getLazyEmitter<YT.OnStateChangeEvent>('onStateChange');
+
+  @Output() error: Observable<YT.OnErrorEvent> =
+      this._getLazyEmitter<YT.OnErrorEvent>('onError');
+
+  @Output() apiChange: Observable<YT.PlayerEvent> =
+      this._getLazyEmitter<YT.PlayerEvent>('onApiChange');
+
+  @Output() playbackQualityChange: Observable<YT.OnPlaybackQualityChangeEvent> =
+      this._getLazyEmitter<YT.OnPlaybackQualityChangeEvent>('onPlaybackQualityChange');
+
+  @Output() playbackRateChange: Observable<YT.OnPlaybackRateChangeEvent> =
+      this._getLazyEmitter<YT.OnPlaybackRateChangeEvent>('onPlaybackRateChange');
 
   /** The element that will be replaced by the iframe. */
   @ViewChild('youtubeContainer')
   youtubeContainer: ElementRef<HTMLElement>;
-
-  /** Whether we're currently rendering inside a browser. */
-  private _isBrowser: boolean;
-  private _youtubeContainer = new Subject<HTMLElement>();
-  private _destroyed = new Subject<void>();
-  private _player: Player | undefined;
-  private _existingApiReadyCallback: (() => void) | undefined;
-  private _pendingPlayerState: PendingPlayerState | undefined;
 
   constructor(
     private _ngZone: NgZone,
@@ -221,7 +234,6 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
         iframeApiAvailableObs,
         this._width,
         this._height,
-        this.createEventsBoundInZone(),
         this._ngZone
       ).pipe(waitUntilReady(player => {
         // Destroy the player if loading was aborted so that we don't end up leaking memory.
@@ -233,6 +245,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     // Set up side effects to bind inputs to the player.
     playerObs.subscribe(player => {
       this._player = player;
+      this._playerChanges.next(player);
 
       if (player && this._pendingPlayerState) {
         this._initializePlayer(player, this._pendingPlayerState);
@@ -257,25 +270,12 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     (playerObs as ConnectableObservable<Player>).connect();
   }
 
+  /**
+   * @deprecated No longer being used. To be removed.
+   * @breaking-change 11.0.0
+   */
   createEventsBoundInZone(): YT.Events {
-    const output: YT.Events = {};
-    const events = new Map<keyof YT.Events, EventEmitter<any>>([
-      ['onReady', this.ready],
-      ['onStateChange', this.stateChange],
-      ['onPlaybackQualityChange', this.playbackQualityChange],
-      ['onPlaybackRateChange', this.playbackRateChange],
-      ['onError', this.error],
-      ['onApiChange', this.apiChange]
-    ]);
-
-    events.forEach((emitter, name) => {
-      // Since these events all trigger change detection, only bind them if something is subscribed.
-      if (emitter.observers.length) {
-        output[name] = this._runInZone(event => emitter.emit(event));
-      }
-    });
-
-    return output;
+    return {};
   }
 
   ngAfterViewInit() {
@@ -288,6 +288,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
       window.onYouTubeIframeAPIReady = this._existingApiReadyCallback;
     }
 
+    this._playerChanges.complete();
     this._videoId.complete();
     this._height.complete();
     this._width.complete();
@@ -298,13 +299,6 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     this._destroyed.next();
     this._destroyed.complete();
   }
-
-  private _runInZone<T extends (...args: any[]) => void>(callback: T):
-      (...args: Parameters<T>) => void {
-    return (...args: Parameters<T>) => this._ngZone.run(() => callback(...args));
-  }
-
-  /** Proxied methods. */
 
   /** See https://developers.google.com/youtube/iframe_api_reference#playVideo */
   playVideo() {
@@ -518,6 +512,37 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
       player.seekTo(seek.seconds, seek.allowSeekAhead);
     }
   }
+
+  /** Gets an observable that adds an event listener to the player when a user subscribes to it. */
+  private _getLazyEmitter<T extends YT.PlayerEvent>(name: keyof YT.Events): Observable<T> {
+    // Start with the stream of players. This way the events will be transferred
+    // over to the new player if it gets swapped out under-the-hood.
+    return this._playerChanges.pipe(
+      // Switch to the bound event. `switchMap` ensures that the old event is removed when the
+      // player is changed. If there's no player, return an observable that never emits.
+      switchMap(player => {
+        return player ? fromEventPattern<T>((listener: (event: T) => void) => {
+          player.addEventListener(name, listener);
+        }, (listener: (event: T) => void) => {
+          // The API seems to throw when we try to unbind from a destroyed player and it doesn't
+          // expose whether the player has been destroyed so we have to wrap it in a try/catch to
+          // prevent the entire stream from erroring out.
+          try {
+            player.removeEventListener(name, listener);
+          } catch {}
+        }) : observableOf<T>();
+      }),
+      // By default we run all the API interactions outside the zone
+      // so we have to bring the events back in manually when they emit.
+      (source: Observable<T>) => new Observable<T>(observer => source.subscribe({
+        next: value => this._ngZone.run(() => observer.next(value)),
+        error: error => observer.error(error),
+        complete: () => observer.complete()
+      })),
+      // Ensures that everything is cleared out on destroy.
+      takeUntil(this._destroyed)
+    );
+  }
 }
 
 /** Listens to changes to the given width and height and sets it on the player. */
@@ -593,7 +618,6 @@ function createPlayerObservable(
   iframeApiAvailableObs: Observable<boolean>,
   widthObs: Observable<number>,
   heightObs: Observable<number>,
-  events: YT.Events,
   ngZone: NgZone
 ): Observable<UninitializedPlayer | undefined> {
 
@@ -601,7 +625,7 @@ function createPlayerObservable(
     videoIdObs
     .pipe(
       withLatestFrom(combineLatest([widthObs, heightObs])),
-      map(([videoId, [width, height]]) => videoId ? ({videoId, width, height, events}) : undefined),
+      map(([videoId, [width, height]]) => videoId ? ({videoId, width, height}) : undefined),
     );
 
   return combineLatest([youtubeContainer, playerOptions, of(ngZone)])
