@@ -204,7 +204,8 @@ export abstract class MatPaginatedTabHeader implements AfterContentChecked, Afte
     // On dir change or window resize, realign the ink bar and update the orientation of
     // the key manager if the direction has changed.
     merge(dirChange, resize, this._items.changes).pipe(takeUntil(this._destroyed)).subscribe(() => {
-      realign();
+      // We need to defer this to give the browser some time to recalculate the element dimensions.
+      Promise.resolve().then(realign);
       this._keyManager.withHorizontalOrientation(this._getLayoutDirection());
     });
 

@@ -142,27 +142,29 @@ describe('MatTabNavBar', () => {
       expect(tabLinkElement.classList).toContain('mat-tab-disabled');
     });
 
-    it('should re-align the ink bar when the direction changes', () => {
+    it('should re-align the ink bar when the direction changes', fakeAsync(() => {
       const inkBar = fixture.componentInstance.tabNavBar._inkBar;
 
       spyOn(inkBar, 'alignToElement');
 
       dirChange.next();
+      tick();
       fixture.detectChanges();
 
       expect(inkBar.alignToElement).toHaveBeenCalled();
-    });
+    }));
 
-    it('should re-align the ink bar when the tabs list change', () => {
+    it('should re-align the ink bar when the tabs list change', fakeAsync(() => {
       const inkBar = fixture.componentInstance.tabNavBar._inkBar;
 
       spyOn(inkBar, 'alignToElement');
 
       fixture.componentInstance.tabs = [1, 2, 3, 4];
       fixture.detectChanges();
+      tick();
 
       expect(inkBar.alignToElement).toHaveBeenCalled();
-    });
+    }));
 
     it('should re-align the ink bar when the tab labels change the width', done => {
       const inkBar = fixture.componentInstance.tabNavBar._inkBar;
