@@ -217,7 +217,14 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
     // Check if any source files have been added / changed since last computation.
     const seen = new Set<string>();
+    const ANGULAR_CORE = '@angular/core';
+    const corePath = this.reflectorHost.moduleNameToFileName(ANGULAR_CORE);
     for (const {fileName} of program.getSourceFiles()) {
+      // If the `@angular/core` has been edited, the language service should be restart,
+      // so ignore the change of `@angular/core`.
+      if (fileName === corePath) {
+        continue;
+      }
       seen.add(fileName);
       const version = this.tsLsHost.getScriptVersion(fileName);
       const lastVersion = this.fileVersions.get(fileName);
