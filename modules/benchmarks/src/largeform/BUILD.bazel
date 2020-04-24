@@ -8,7 +8,7 @@ ts_library(
     srcs = ["largeform.perf-spec.ts"],
     tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = [
-        "//dev-infra/benchmark/driver-utilities",
+        "//modules/e2e_util",
         "@npm//protractor",
     ],
 )
@@ -19,7 +19,7 @@ ts_library(
     srcs = ["largeform.e2e-spec.ts"],
     tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = [
-        "//dev-infra/benchmark/driver-utilities",
+        "//modules/e2e_util",
         "@npm//protractor",
     ],
 )
