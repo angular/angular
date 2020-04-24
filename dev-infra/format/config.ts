@@ -7,5 +7,8 @@
  */
 
 export interface FormatConfig {
-  matchers: string[];
+  matchers: {
+    jsTs?: string[],
+    bazel?: string[],
+  };
 }

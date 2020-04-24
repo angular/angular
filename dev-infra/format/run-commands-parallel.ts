@@ -7,28 +7,47 @@
  */
 
 import {Bar} from 'cli-progress';
+import * as multimatch from 'multimatch';
 import {cpus} from 'os';
 import {exec} from 'shelljs';
 
+import {FormatterMetadata} from './formatters';
+
 const AVAILABLE_THREADS = Math.max(cpus().length - 1, 1);
 
-type CallbackFunction = (file: string, code?: number, stdout?: string, stderr?: string) => void;
+type CallbackFunction = (file: string, code: number, stdout: string, stderr: string) => void;
 
 /**
  * Run the provided commands in parallel for each provided file.
  *
  * A promise is returned, completed when the command has completed running for each file.
+ * The promises expresses whether the formatter ran against any files.
  */
-export function runInParallel(providedFiles: string[], cmd: string, callback: CallbackFunction) {
-  return new Promise<void>((resolve) => {
-    if (providedFiles.length === 0) {
-      return resolve();
+export function runFormatterInParallel(
+    allFiles: string[], formatter: FormatterMetadata, action: 'format'|'check',
+    callback: CallbackFunction) {
+  return new Promise<boolean>((resolve) => {
+    const files = multimatch(allFiles, formatter.matcher, {dot: true});
+
+    if (files.length === 0) {
+      return resolve(false);
     }
+
+    switch (action) {
+      case 'format':
+        console.info(`Formatting ${files.length} file(s) with ${formatter.name}`);
+        break;
+      case 'check':
+        console.info(`Checking format of ${files.length} file(s) with ${formatter.name}`);
+        break;
+      default:
+        throw Error(`Invalid format action "${action}": allowed actions are "format" and "check"`);
+    }
+
     // The progress bar instance to use for progress tracking.
     const progressBar =
         new Bar({format: `[{bar}] ETA: {eta}s | {value}/{total} files`, clearOnComplete: true});
     // A local copy of the files to run the command on.
-    const files = providedFiles.slice();
     // An array to represent the current usage state of each of the threads for parallelization.
     const threads = new Array<boolean>(AVAILABLE_THREADS).fill(false);
 
@@ -43,7 +62,7 @@ export function runInParallel(providedFiles: string[], cmd: string, callback: Ca
       }
 
       exec(
-          `${cmd} ${file}`,
+          `${formatter.commands[action]} ${file}`,
           {async: true, silent: true},
           (code, stdout, stderr) => {
             // Run the provided callback function.
@@ -61,7 +80,7 @@ export function runInParallel(providedFiles: string[], cmd: string, callback: Ca
             // completed and resolve the promise.
             if (threads.every(active => !active)) {
               progressBar.stop();
-              resolve();
+              resolve(true);
             }
           },
       );
