@@ -8,42 +8,14 @@
     "ng-dev": "./cli.js",
     "ts-circular-deps": "./ts-circular-dependencies/index.js"
   },
-  "dependencies": {
-    "fs-extra": "<from-root>",
-    "node-uuid": "<from-root>"
-  },
   "peerDependencies": {
-    "@angular/bazel": "^9.0.0",
-    "@angular/core": "^9.0.0",
-    "@angular/platform-browser": "^9.0.0",
-    "@angular/benchpress": "^0.1.0",
-    "@angular-devkit/build-optimizer": "<from-root>",
-    "@bazel/protractor": "<from-root>",
-    "@bazel/terser": "<from-root>",
-    "@bazel/typescript": "<from-root>",
-    "brotli": "<from-root>",
     "chalk": "<from-root>",
     "glob": "<from-root>",
-    "json5": "<from-root>",
     "minimatch": "<from-root>",
-    "node-uuid": "<from-root>",
-    "protractor": "<from-root>",
-    "rollup": "<from-root>",
-    "rollup-plugin-commonjs": "<from-root>",
-    "rollup-plugin-node-resolve": "<from-root>",
-    "rollup-plugin-sourcemaps": "<from-root>",
-    "selenium-webdriver": "<from-root>",
     "shelljs": "<from-root>",
     "typescript": "<from-root>",
     "yaml": "<from-root>",
     "yargs": "<from-root>",
-    "tslib": "<from-root>",
-    "zone.js": "^0.10.3"
-  },
-  "bazelWorkspaces": {
-    "npm_dev_infra": {
-      "version": "0.0.0-PLACEHOLDER",
-      "rootPath": "."
-    }
+    "tslib": "<from-root>"
   }
 }
