@@ -19,8 +19,7 @@
       "selenium-webdriver": ["./node_modules/@types/selenium-webdriver/index.d.ts"],
       "rxjs/*": ["./node_modules/rxjs/*"],
       "@angular/*": ["./packages/*"],
-      "zone.js/*": ["./packages/zone.js/*"],
-      "e2e_util/*": ["./modules/e2e_util/*"]
+      "zone.js/*": ["./packages/zone.js/*"]
     },
     "rootDir": ".",
     "inlineSourceMap": true,

@@ -18,3 +18,9 @@ nodejs_binary(
     ],
     entry_point = "@npm//:node_modules/rollup/dist/bin/rollup",
 )
+
+# Make source files available for distribution via pkg_npm
+filegroup(
+    name = "files",
+    srcs = glob(["*"]),
+)

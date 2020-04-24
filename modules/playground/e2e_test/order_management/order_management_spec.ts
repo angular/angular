@@ -8,7 +8,7 @@
 
 import {browser} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
+import {verifyNoBrowserErrors} from '../../../../dev-infra/benchmark/driver-utilities';
 
 describe('Order Management CRUD', function() {
   const URL = '/';
