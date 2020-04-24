@@ -17,7 +17,6 @@ function runOnlyCallback(home: any, data: Object) {
   const keys = Object.keys(home);
   expect(keys.length).toBe(1);
   const callback = home[keys[0]];
-  delete home[keys[0]];
   callback(data);
 }
 
@@ -62,6 +61,11 @@ const SAMPLE_REQ = new HttpRequest<never>('JSONP', '/test');
         done();
       });
       document.mockError(error);
+    });
+    it('allows the callback to be invoked when the request is cancelled', () => {
+      backend.handle(SAMPLE_REQ).subscribe().unsubscribe();
+      runOnlyCallback(home, {data: 'This is a test'});
+      expect(Object.keys(home).length).toBe(0);
     });
     describe('throws an error', () => {
       it('when request method is not JSONP',
