@@ -9,6 +9,7 @@
     "ts-circular-deps": "./ts-circular-dependencies/index.js"
   },
   "peerDependencies": {
+    "@bazel/buildifier": "<from-root>",
     "chalk": "<from-root>",
     "clang-format": "<from-root>",
     "cli-progress": "<from-root>",

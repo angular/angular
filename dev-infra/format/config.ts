@@ -7,5 +7,7 @@
  */
 
 export interface FormatConfig {
-  matchers: string[];
+  [keyof: string]: boolean|{
+    matchers: string[];
+  };
 }
