@@ -14,6 +14,8 @@
 #
 ################################################################################
 #
+package(default_visibility = ["//visibility:public"])
+
 load("@io_bazel_rules_webtesting//web:web.bzl", "browser", "web_test_archive")
 
 # Override of chromium web_test_archive so that the archive is selected based on platform
@@ -31,7 +33,7 @@ web_test_archive(
         "@io_bazel_rules_webtesting//common/conditions:mac": {"CHROMIUM": "chrome-mac/Chromium.app/Contents/MacOS/chromium"},
         "@io_bazel_rules_webtesting//common/conditions:windows": {"CHROMIUM": "chrome-win/chrome.exe"},
     }),
-    visibility = ["//tools/browsers:__subpackages__"],
+    visibility = ["//dev-infra/benchmark/browsers:__subpackages__"],
 )
 
 # Override of chromedriver web_test_archive so that the archive is selected based on platform
@@ -55,7 +57,7 @@ web_test_archive(
             "CHROMEDRIVER": "chromedriver_win32/chromedriver.exe",
         },
     }),
-    visibility = ["//tools/browsers:__subpackages__"],
+    visibility = ["//dev-infra/benchmark/browsers:__subpackages__"],
 )
 
 browser(
@@ -67,4 +69,10 @@ browser(
         ":chromium_archive",
         "@io_bazel_rules_webtesting//go/wsl",
     ],
+)
+
+# Make source files available for distribution via pkg_npm
+filegroup(
+    name = "files",
+    srcs = glob(["*"]),
 )

@@ -8,7 +8,7 @@
 
 import {browser, by, element} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
+import {verifyNoBrowserErrors} from '../../../../dev-infra/benchmark/driver-utilities';
 
 describe('Template-Driven Forms', function() {
   afterEach(verifyNoBrowserErrors);

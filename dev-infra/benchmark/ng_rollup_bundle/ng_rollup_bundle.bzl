@@ -175,10 +175,10 @@ _NG_ROLLUP_BUNDLE_ATTRS = {
     "_rollup": attr.label(
         executable = True,
         cfg = "host",
-        default = Label("//tools/ng_rollup_bundle:rollup_with_build_optimizer"),
+        default = Label("//dev-infra/benchmark/ng_rollup_bundle:rollup_with_build_optimizer"),
     ),
     "_rollup_config_tmpl": attr.label(
-        default = Label("//tools/ng_rollup_bundle:rollup.config.js"),
+        default = Label("//dev-infra/benchmark/ng_rollup_bundle:rollup.config.js"),
         allow_single_file = True,
     ),
 }
@@ -392,7 +392,7 @@ def ng_rollup_bundle(name, **kwargs):
         # maintain the comments off behavior. We pass the --comments flag with
         # a regex that always evaluates to false to do this.
         "args": ["--comments", "/bogus_string_to_suppress_all_comments^/"],
-        "config_file": "//tools/ng_rollup_bundle:terser_config.json",
+        "config_file": "//dev-infra/benchmark/ng_rollup_bundle:terser_config.json",
         "sourcemap": False,
     }
 
@@ -413,7 +413,7 @@ def ng_rollup_bundle(name, **kwargs):
     native.filegroup(name = name + ".min_debug.js", srcs = [name + ".min_debug"], visibility = visibility)
     npm_package_bin(
         name = "_%s_brotli" % name,
-        tool = "//tools/brotli-cli",
+        tool = "//dev-infra/benchmark/brotli-cli",
         data = [name + ".min.js"],
         outs = [name + ".min.js.br"],
         args = [
@@ -436,7 +436,7 @@ def ng_rollup_bundle(name, **kwargs):
     native.filegroup(name = name + ".min_debug.es2015.js", srcs = [name + ".min_debug.es2015"], visibility = visibility)
     npm_package_bin(
         name = "_%s_es2015_brotli" % name,
-        tool = "//tools/brotli-cli",
+        tool = "//dev-infra/benchmark/brotli-cli",
         data = [name + ".min.es2015.js"],
         outs = [name + ".min.es2015.js.br"],
         args = [

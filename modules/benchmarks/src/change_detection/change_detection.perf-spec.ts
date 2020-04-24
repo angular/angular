@@ -7,7 +7,7 @@
  */
 
 import {$} from 'protractor';
-import {runBenchmark, verifyNoBrowserErrors} from '../../../e2e_util/perf_util';
+import {runBenchmark, verifyNoBrowserErrors} from '../../../../dev-infra/benchmark/driver-utilities';
 
 interface Worker {
   id: string;
