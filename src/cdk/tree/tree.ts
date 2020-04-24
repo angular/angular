@@ -140,6 +140,7 @@ export class CdkTree<T> implements AfterContentChecked, CollectionViewer, OnDest
   ngOnDestroy() {
     this._nodeOutlet.viewContainer.clear();
 
+    this.viewChange.complete();
     this._onDestroy.next();
     this._onDestroy.complete();
 

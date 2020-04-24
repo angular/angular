@@ -71,6 +71,18 @@ describe('CdkTree', () => {
     expect(!!CdkTreeNode.mostRecentTreeNode).toBe(false);
   });
 
+  it('should complete the viewChange stream on destroy', () => {
+    configureCdkTreeTestingModule([SimpleCdkTreeApp]);
+    const fixture = TestBed.createComponent(SimpleCdkTreeApp);
+    fixture.detectChanges();
+    const spy = jasmine.createSpy('completeSpy');
+    const subscription = fixture.componentInstance.tree.viewChange.subscribe({complete: spy});
+
+    fixture.destroy();
+    expect(spy).toHaveBeenCalled();
+    subscription.unsubscribe();
+  });
+
   describe('flat tree', () => {
     describe('should initialize', () => {
       let fixture: ComponentFixture<SimpleCdkTreeApp>;
