@@ -1105,7 +1105,7 @@ The application continues to work just the same, and you can use `AppRoutingModu
 
 The routing module, often called the `AppRoutingModule`, replaces the routing configuration in the root or feature module.
 
-The routing module is helpful as your app growns and when the configuration includes specialized guard and resolver services.
+The routing module is helpful as your app grows and when the configuration includes specialized guard and resolver services.
 
 Some developers skip the routing module when the configuration is minimal and merge the routing configuration directly into the companion module (for example, `AppModule`).
 
