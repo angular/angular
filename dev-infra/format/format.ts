@@ -7,46 +7,22 @@
  */
 
 import {prompt} from 'inquirer';
-import * as multimatch from 'multimatch';
-import {join} from 'path';
-
-import {getAngularDevConfig, getRepoBaseDir} from '../utils/config';
-
-import {FormatConfig} from './config';
-import {runInParallel} from './run-commands-parallel';
-
-/** By default, run the formatter on all javascript and typescript files. */
-const DEFAULT_MATCHERS = ['**/*.{t,j}s'];
+import {runFormatterInParallel} from './run-commands-parallel';
 
 /**
  * Format provided files in place.
  */
-export async function formatFiles(unfilteredFiles: string[]) {
+export async function formatFiles(files: string[]) {
   // Whether any files failed to format.
-  let formatFailed = false;
-  // All files which formatting should be applied to.
-  const files = filterFilesByMatchers(unfilteredFiles);
+  let failures = await runFormatterInParallel(files, 'format');
 
-  console.info(`Formatting ${files.length} file(s)`);
-
-
-  // Run the formatter to format the files in place, split across (number of available
-  // cpu threads - 1) processess. The task is done in multiple processess to speed up
-  // the overall time of the task, as running across entire repositories takes a large
-  // amount of time.
-  // As a data point for illustration, using 8 process rather than 1 cut the execution
-  // time from 276 seconds to 39 seconds for the same 2700 files
-  await runInParallel(files, `${getFormatterBinary()} -i -style=file`, (file, code, _, stderr) => {
-    if (code !== 0) {
-      formatFailed = true;
-      console.error(`Error running clang-format on: ${file}`);
-      console.error(stderr);
-      console.error();
-    }
-  });
+  if (failures === false) {
+    console.info('No files matched for formatting.');
+    process.exit(0);
+  }
 
   // The process should exit as a failure if any of the files failed to format.
-  if (formatFailed) {
+  if (failures.length !== 0) {
     console.error(`Formatting failed, see errors above for more information.`);
     process.exit(1);
   }
@@ -57,26 +33,14 @@ export async function formatFiles(unfilteredFiles: string[]) {
 /**
  * Check provided files for formatting correctness.
  */
-export async function checkFiles(unfilteredFiles: string[]) {
-  // All files which formatting should be applied to.
-  const files = filterFilesByMatchers(unfilteredFiles);
+export async function checkFiles(files: string[]) {
   // Files which are currently not formatted correctly.
-  const failures: string[] = [];
+  const failures = await runFormatterInParallel(files, 'check');
 
-  console.info(`Checking format of ${files.length} file(s)`);
-
-  // Run the formatter to check the format of files, split across (number of available
-  // cpu threads - 1) processess. The task is done in multiple processess to speed up
-  // the overall time of the task, as running across entire repositories takes a large
-  // amount of time.
-  // As a data point for illustration, using 8 process rather than 1 cut the execution
-  // time from 276 seconds to 39 seconds for the same 2700 files.
-  await runInParallel(files, `${getFormatterBinary()} --Werror -n -style=file`, (file, code) => {
-    // Add any files failing format checks to the list.
-    if (code !== 0) {
-      failures.push(file);
-    }
-  });
+  if (failures === false) {
+    console.info('No files matched for formatting check.');
+    process.exit(0);
+  }
 
   if (failures.length) {
     // Provide output expressing which files are failing formatting.
@@ -112,19 +76,4 @@ export async function checkFiles(unfilteredFiles: string[]) {
     console.info('√  All files correctly formatted.');
     process.exit(0);
   }
-}
-
-/** Get the full path of the formatter binary to execute. */
-function getFormatterBinary() {
-  return join(getRepoBaseDir(), 'node_modules/.bin/clang-format');
-}
-
-/** Filter a list of files to only contain files which are expected to be formatted. */
-function filterFilesByMatchers(allFiles: string[]) {
-  const matchers =
-      getAngularDevConfig<'format', FormatConfig>().format.matchers || DEFAULT_MATCHERS;
-  const files = multimatch(allFiles, matchers, {dot: true});
-
-  console.info(`Formatting enforced on ${files.length} of ${allFiles.length} file(s)`);
-  return files;
 }
