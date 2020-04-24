@@ -879,6 +879,13 @@ workflows:
           requires:
             - test_ivy_aot
 
+      ##################################
+      # Temporary
+      ##################################
+      - saucelabs_ivy:
+          requires:
+            - setup
+
   monitoring:
     jobs:
       - setup
