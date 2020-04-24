@@ -1,3 +1,7 @@
+export declare type DatepickerDropdownPositionX = 'start' | 'end';
+
+export declare type DatepickerDropdownPositionY = 'above' | 'below';
+
 export declare const MAT_DATEPICKER_SCROLL_STRATEGY: InjectionToken<() => ScrollStrategy>;
 
 export declare function MAT_DATEPICKER_SCROLL_STRATEGY_FACTORY(overlay: Overlay): () => ScrollStrategy;
@@ -107,7 +111,7 @@ export declare class MatCalendarHeader<D> {
 
 export declare type MatCalendarView = 'month' | 'year' | 'multi-year';
 
-export declare class MatDatepicker<D> implements OnDestroy, CanColor {
+export declare class MatDatepicker<D> implements OnDestroy, CanColor, OnChanges {
     _color: ThemePalette;
     get _dateFilter(): (date: D | null) => boolean;
     _datepickerInput: MatDatepickerInput<D>;
@@ -135,18 +139,21 @@ export declare class MatDatepicker<D> implements OnDestroy, CanColor {
     startView: 'month' | 'year' | 'multi-year';
     get touchUi(): boolean;
     set touchUi(value: boolean);
+    xPosition: DatepickerDropdownPositionX;
+    yPosition: DatepickerDropdownPositionY;
     readonly yearSelected: EventEmitter<D>;
     constructor(_dialog: MatDialog, _overlay: Overlay, _ngZone: NgZone, _viewContainerRef: ViewContainerRef, scrollStrategy: any, _dateAdapter: DateAdapter<D>, _dir: Directionality, _document: any);
     _registerInput(input: MatDatepickerInput<D>): void;
     _selectMonth(normalizedMonth: D): void;
     _selectYear(normalizedYear: D): void;
     close(): void;
+    ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     open(): void;
     select(date: D): void;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_touchUi: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDatepicker<any>, "mat-datepicker", ["matDatepicker"], { "calendarHeaderComponent": "calendarHeaderComponent"; "startAt": "startAt"; "startView": "startView"; "color": "color"; "touchUi": "touchUi"; "disabled": "disabled"; "panelClass": "panelClass"; "dateClass": "dateClass"; "opened": "opened"; }, { "yearSelected": "yearSelected"; "monthSelected": "monthSelected"; "openedStream": "opened"; "closedStream": "closed"; }, never, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDatepicker<any>, "mat-datepicker", ["matDatepicker"], { "calendarHeaderComponent": "calendarHeaderComponent"; "startAt": "startAt"; "startView": "startView"; "color": "color"; "touchUi": "touchUi"; "disabled": "disabled"; "xPosition": "xPosition"; "yPosition": "yPosition"; "panelClass": "panelClass"; "dateClass": "dateClass"; "opened": "opened"; }, { "yearSelected": "yearSelected"; "monthSelected": "monthSelected"; "openedStream": "opened"; "closedStream": "closed"; }, never, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatDatepicker<any>, [null, null, null, null, null, { optional: true; }, { optional: true; }, { optional: true; }]>;
 }
 

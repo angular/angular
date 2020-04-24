@@ -13,8 +13,8 @@ import {
   Overlay,
   OverlayConfig,
   OverlayRef,
-  PositionStrategy,
   ScrollStrategy,
+  FlexibleConnectedPositionStrategy,
 } from '@angular/cdk/overlay';
 import {ComponentPortal, ComponentType} from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
@@ -36,6 +36,8 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
   ChangeDetectorRef,
+  OnChanges,
+  SimpleChanges,
 } from '@angular/core';
 import {
   CanColor,
@@ -71,6 +73,12 @@ export const MAT_DATEPICKER_SCROLL_STRATEGY_FACTORY_PROVIDER = {
   deps: [Overlay],
   useFactory: MAT_DATEPICKER_SCROLL_STRATEGY_FACTORY,
 };
+
+/** Possible positions for the datepicker dropdown along the X axis. */
+export type DatepickerDropdownPositionX = 'start' | 'end';
+
+/** Possible positions for the datepicker dropdown along the Y axis. */
+export type DatepickerDropdownPositionY = 'above' | 'below';
 
 // Boilerplate for applying mixins to MatDatepickerContent.
 /** @docs-private */
@@ -164,7 +172,7 @@ export class MatDatepickerContent<D> extends _MatDatepickerContentMixinBase
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MatDatepicker<D> implements OnDestroy, CanColor {
+export class MatDatepicker<D> implements OnDestroy, CanColor, OnChanges {
   private _scrollStrategy: () => ScrollStrategy;
 
   /** An input indicating the type of the custom header component for the calendar, if set. */
@@ -222,6 +230,14 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
     }
   }
   private _disabled: boolean;
+
+  /** Preferred position of the datepicker in the X axis. */
+  @Input()
+  xPosition: DatepickerDropdownPositionX = 'start';
+
+  /** Preferred position of the datepicker in the Y axis. */
+  @Input()
+  yPosition: DatepickerDropdownPositionY = 'below';
 
   /**
    * Emits selected year in multiyear view.
@@ -313,6 +329,19 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
     }
 
     this._scrollStrategy = scrollStrategy;
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    const positionChange = changes['xPosition'] || changes['yPosition'];
+
+    if (positionChange && !positionChange.firstChange && this._popupRef) {
+      this._setConnectedPositions(
+          this._popupRef.getConfig().positionStrategy as FlexibleConnectedPositionStrategy);
+
+      if (this.opened) {
+        this._popupRef.updatePosition();
+      }
+    }
   }
 
   ngOnDestroy() {
@@ -471,8 +500,15 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
 
   /** Create the popup. */
   private _createPopup(): void {
+    const positionStrategy = this._overlay.position()
+      .flexibleConnectedTo(this._datepickerInput.getConnectedOverlayOrigin())
+      .withTransformOriginOn('.mat-datepicker-content')
+      .withFlexibleDimensions(false)
+      .withViewportMargin(8)
+      .withLockedPosition();
+
     const overlayConfig = new OverlayConfig({
-      positionStrategy: this._createPopupPositionStrategy(),
+      positionStrategy: this._setConnectedPositions(positionStrategy),
       hasBackdrop: true,
       backdropClass: 'mat-overlay-transparent-backdrop',
       direction: this._dir,
@@ -508,40 +544,39 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
     }
   }
 
-  /** Create the popup PositionStrategy. */
-  private _createPopupPositionStrategy(): PositionStrategy {
-    return this._overlay.position()
-      .flexibleConnectedTo(this._datepickerInput.getConnectedOverlayOrigin())
-      .withTransformOriginOn('.mat-datepicker-content')
-      .withFlexibleDimensions(false)
-      .withViewportMargin(8)
-      .withLockedPosition()
-      .withPositions([
-        {
-          originX: 'start',
-          originY: 'bottom',
-          overlayX: 'start',
-          overlayY: 'top'
-        },
-        {
-          originX: 'start',
-          originY: 'top',
-          overlayX: 'start',
-          overlayY: 'bottom'
-        },
-        {
-          originX: 'end',
-          originY: 'bottom',
-          overlayX: 'end',
-          overlayY: 'top'
-        },
-        {
-          originX: 'end',
-          originY: 'top',
-          overlayX: 'end',
-          overlayY: 'bottom'
-        }
-      ]);
+  /** Sets the positions of the datepicker in dropdown mode based on the current configuration. */
+  private _setConnectedPositions(strategy: FlexibleConnectedPositionStrategy) {
+    const primaryX = this.xPosition === 'end' ? 'end' : 'start';
+    const secondaryX = primaryX === 'start' ? 'end' : 'start';
+    const primaryY = this.yPosition === 'above' ? 'bottom' : 'top';
+    const secondaryY = primaryY === 'top' ? 'bottom' : 'top';
+
+    return strategy.withPositions([
+      {
+        originX: primaryX,
+        originY: secondaryY,
+        overlayX: primaryX,
+        overlayY: primaryY
+      },
+      {
+        originX: primaryX,
+        originY: primaryY,
+        overlayX: primaryX,
+        overlayY: secondaryY
+      },
+      {
+        originX: secondaryX,
+        originY: secondaryY,
+        overlayX: secondaryX,
+        overlayY: primaryY
+      },
+      {
+        originX: secondaryX,
+        originY: primaryY,
+        overlayX: secondaryX,
+        overlayY: secondaryY
+      }
+    ]);
   }
 
   /**
