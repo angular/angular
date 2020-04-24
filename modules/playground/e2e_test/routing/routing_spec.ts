@@ -8,7 +8,7 @@
 
 import {$, browser, by, element, ExpectedConditions} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../../dev-infra/benchmark/driver-utilities';
+import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
 function waitForElement(selector: string) {
   // Waits for the element with id 'abc' to be present on the dom.

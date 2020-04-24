@@ -2,6 +2,7 @@ package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "LICENSE",
+    "protractor-perf.conf.js",
     "karma-js.conf.js",
     "browser-providers.conf.js",
     "scripts/ci/track-payload-size.sh",
