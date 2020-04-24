@@ -195,7 +195,7 @@
     "name": "isTypeProvider"
   },
   {
-    "name": "isValidInstance"
+    "name": "isValidDecorator"
   },
   {
     "name": "isValueProvider"
