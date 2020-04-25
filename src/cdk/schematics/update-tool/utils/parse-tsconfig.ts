@@ -17,5 +17,7 @@ export function parseTsconfigFile(tsconfigPath: string, basePath: string): ts.Pa
     readFile: ts.sys.readFile,
   };
 
+
+
   return ts.parseJsonConfigFileContent(config, parseConfigHost, basePath, {});
 }

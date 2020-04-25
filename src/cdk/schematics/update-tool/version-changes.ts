@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SchematicsException} from '@angular-devkit/schematics';
 import {TargetVersion} from './target-version';
 
 export type VersionChanges<T> = {
@@ -30,7 +29,7 @@ export type ValueOfChanges<T> = T extends VersionChanges<infer X>? X : null;
  */
 export function getChangesForTarget<T>(target: TargetVersion, data: VersionChanges<T>): T[] {
   if (!data) {
-    throw new SchematicsException(
+    throw new Error(
         `No data could be found for target version: ${TargetVersion[target]}`);
   }
 

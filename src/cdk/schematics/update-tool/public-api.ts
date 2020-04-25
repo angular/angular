@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './index';
-export * from './target-version';
-export * from './version-changes';
-export * from './migration-rule';
 export * from './component-resource-collector';
-export * from './utils/imports';
+export * from './file-system';
+export * from './index';
+export * from './migration';
+export * from './target-version';
 export * from './utils/decorators';
+export * from './utils/imports';
+export * from './version-changes';

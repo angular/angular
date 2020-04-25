@@ -6,152 +6,167 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {logging, normalize} from '@angular-devkit/core';
-import {Tree, UpdateRecorder} from '@angular-devkit/schematics';
-import {WorkspaceProject} from '@schematics/angular/utility/workspace-models';
-import {sync as globSync} from 'glob';
-import {dirname, join, relative} from 'path';
+import {dirname} from 'path';
 import * as ts from 'typescript';
 
 import {ComponentResourceCollector} from './component-resource-collector';
-import {MigrationFailure, MigrationRule} from './migration-rule';
+import {FileSystem} from './file-system';
+import {defaultLogger, UpdateLogger} from './logger';
+import {Migration, MigrationCtor, MigrationFailure} from './migration';
 import {TargetVersion} from './target-version';
 import {parseTsconfigFile} from './utils/parse-tsconfig';
 
-export type Constructor<T> = (new (...args: any[]) => T);
-export type MigrationRuleType<T> =
-    Constructor<MigrationRule<T>>&{[m in keyof typeof MigrationRule]: (typeof MigrationRule)[m]};
+/**
+ * An update project that can be run against individual migrations. An update project
+ * accepts a TypeScript program and a context that is provided to all migrations. The
+ * context is usually not used by migrations, but in some cases migrations rely on
+ * specifics from the tool that performs the update (e.g. the Angular CLI). In those cases,
+ * the context can provide the necessary specifics to the migrations in a type-safe way.
+ */
+export class UpdateProject<Context> {
+  private readonly _typeChecker: ts.TypeChecker = this._program.getTypeChecker();
 
+  constructor(private _context: Context,
+              private _program: ts.Program,
+              private _fileSystem: FileSystem,
+              private _analyzedFiles: Set<string> = new Set(),
+              private _logger: UpdateLogger = defaultLogger) {}
 
-export function runMigrationRules<T>(
-    project: WorkspaceProject, tree: Tree, logger: logging.LoggerApi, tsconfigPath: string,
-    isTestTarget: boolean, targetVersion: TargetVersion, ruleTypes: MigrationRuleType<T>[],
-    upgradeData: T, analyzedFiles: Set<string>): {hasFailures: boolean} {
-  // The CLI uses the working directory as the base directory for the
-  // virtual file system tree.
-  const basePath = process.cwd();
-  const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
-  const host = ts.createCompilerHost(parsed.options, true);
-  const projectFsPath = join(basePath, project.root);
+  /**
+   * Migrates the project to the specified target version.
+   * @param migrationTypes Migrations that should be run.
+   * @param target Version the project should be updated to.
+   * @param data Upgrade data that is passed to all migration rules.
+   * @param additionalStylesheetPaths Additional stylesheets that should be migrated, if not
+   *   referenced in an Angular component. This is helpful for global stylesheets in a project.
+   */
+  migrate<Data>(migrationTypes: MigrationCtor<Data, Context>[], target: TargetVersion, data: Data,
+      additionalStylesheetPaths?: string[]): {hasFailures: boolean} {
+    // Create instances of the specified migrations.
+    const migrations = this._createMigrations(migrationTypes, target, data);
+    // Creates the component resource collector. The collector can visit arbitrary
+    // TypeScript nodes and will find Angular component resources. Resources include
+    // templates and stylesheets. It also captures inline stylesheets and templates.
+    const resourceCollector = new ComponentResourceCollector(this._typeChecker, this._fileSystem);
+    // Collect all of the TypeScript source files we want to migrate. We don't
+    // migrate type definition files, or source files from external libraries.
+    const sourceFiles = this._program.getSourceFiles().filter(
+      f => !f.isDeclarationFile && !this._program.isSourceFileFromExternalLibrary(f));
 
-  // We need to overwrite the host "readFile" method, as we want the TypeScript
-  // program to be based on the file contents in the virtual file tree.
-  host.readFile = fileName => {
-    const buffer = tree.read(getProjectRelativePath(fileName));
-    // Strip BOM as otherwise TSC methods (e.g. "getWidth") will return an offset which
-    // which breaks the CLI UpdateRecorder. https://github.com/angular/angular/pull/30719
-    return buffer ? buffer.toString().replace(/^\uFEFF/, '') : undefined;
-  };
+    // Helper function that visits a given TypeScript node and collects all referenced
+    // component resources (i.e. stylesheets or templates). Additionally, the helper
+    // visits the node in each instantiated migration.
+    const visitNodeAndCollectResources = (node: ts.Node) => {
+      migrations.forEach(r => r.visitNode(node));
+      ts.forEachChild(node, visitNodeAndCollectResources);
+      resourceCollector.visitNode(node);
+    };
 
-  const program = ts.createProgram(parsed.fileNames, parsed.options, host);
-  const typeChecker = program.getTypeChecker();
-  const rules: MigrationRule<T>[] = [];
-
-  // Create instances of all specified migration rules.
-  for (const ruleCtor of ruleTypes) {
-    const rule = new ruleCtor(
-        project, program, typeChecker, targetVersion, upgradeData, tree, getUpdateRecorder,
-        basePath, logger, isTestTarget, tsconfigPath);
-    rule.init();
-    if (rule.ruleEnabled) {
-      rules.push(rule);
-    }
-  }
-
-  const sourceFiles = program.getSourceFiles().filter(
-      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
-  const resourceCollector = new ComponentResourceCollector(typeChecker);
-  const updateRecorderCache = new Map<string, UpdateRecorder>();
-
-  sourceFiles.forEach(sourceFile => {
-    const relativePath = getProjectRelativePath(sourceFile.fileName);
-    // Do not visit source files which have been checked as part of a
-    // previously migrated TypeScript project.
-    if (!analyzedFiles.has(relativePath)) {
-      _visitTypeScriptNode(sourceFile);
-      analyzedFiles.add(relativePath);
-    }
-  });
-
-  resourceCollector.resolvedTemplates.forEach(template => {
-    const relativePath = getProjectRelativePath(template.filePath);
-    // Do not visit the template if it has been checked before. Inline
-    // templates cannot be referenced multiple times.
-    if (template.inline || !analyzedFiles.has(relativePath)) {
-      rules.forEach(r => r.visitTemplate(template));
-      analyzedFiles.add(relativePath);
-    }
-  });
-
-  resourceCollector.resolvedStylesheets.forEach(stylesheet => {
-    const relativePath = getProjectRelativePath(stylesheet.filePath);
-    // Do not visit the stylesheet if it has been checked before. Inline
-    // stylesheets cannot be referenced multiple times.
-    if (stylesheet.inline || !analyzedFiles.has(relativePath)) {
-      rules.forEach(r => r.visitStylesheet(stylesheet));
-      analyzedFiles.add(relativePath);
-    }
-  });
-
-  // In some applications, developers will have global stylesheets which are not specified in any
-  // Angular component. Therefore we glob up all CSS and SCSS files outside of node_modules and
-  // dist. The files will be read by the individual stylesheet rules and checked.
-  // TODO: rework this to collect external/global stylesheets from the workspace config. COMP-280.
-  globSync(
-      '!(node_modules|dist)/**/*.+(css|scss)', {absolute: true, cwd: projectFsPath, nodir: true})
-      .filter(filePath => !resourceCollector.resolvedStylesheets.some(s => s.filePath === filePath))
-      .forEach(filePath => {
-        const stylesheet = resourceCollector.resolveExternalStylesheet(filePath, null);
-        const relativePath = getProjectRelativePath(filePath);
-        // do not visit stylesheets which have been referenced from a component.
-        if (!analyzedFiles.has(relativePath)) {
-          rules.forEach(r => r.visitStylesheet(stylesheet));
-        }
-      });
-
-  // Call the "postAnalysis" method for each migration rule.
-  rules.forEach(r => r.postAnalysis());
-
-  // Commit all recorded updates in the update recorder. We need to perform the
-  // replacements per source file in order to ensure that offsets in the TypeScript
-  // program are not incorrectly shifted.
-  updateRecorderCache.forEach(recorder => tree.commitUpdate(recorder));
-
-  // Collect all failures reported by individual migration rules.
-  const ruleFailures =
-      rules.reduce((res, rule) => res.concat(rule.failures), [] as MigrationFailure[]);
-
-  // In case there are rule failures, print these to the CLI logger as warnings.
-  if (ruleFailures.length) {
-    ruleFailures.forEach(({filePath, message, position}) => {
-      const normalizedFilePath = normalize(getProjectRelativePath(filePath));
-      const lineAndCharacter = position ? `@${position.line + 1}:${position.character + 1}` : '';
-      logger.warn(`${normalizedFilePath}${lineAndCharacter} - ${message}`);
+    // Walk through all source file, if it has not been visited before, and
+    // visit found nodes while collecting potential resources.
+    sourceFiles.forEach(sourceFile => {
+      const resolvedPath = this._fileSystem.resolve(sourceFile.fileName);
+      // Do not visit source files which have been checked as part of a
+      // previously migrated TypeScript project.
+      if (!this._analyzedFiles.has(resolvedPath)) {
+        visitNodeAndCollectResources(sourceFile);
+        this._analyzedFiles.add(resolvedPath);
+      }
     });
-  }
 
-  return {
-    hasFailures: !!ruleFailures.length,
-  };
+    // Walk through all resolved templates and visit them in each instantiated
+    // migration. Note that this can only happen after source files have been
+    // visited because we find templates through the TypeScript source files.
+    resourceCollector.resolvedTemplates.forEach(template => {
+      const resolvedPath = this._fileSystem.resolve(template.filePath);
+      // Do not visit the template if it has been checked before. Inline
+      // templates cannot be referenced multiple times.
+      if (template.inline || !this._analyzedFiles.has(resolvedPath)) {
+        migrations.forEach(m => m.visitTemplate(template));
+        this._analyzedFiles.add(resolvedPath);
+      }
+    });
 
-  function getUpdateRecorder(filePath: string): UpdateRecorder {
-    const treeFilePath = getProjectRelativePath(filePath);
-    if (updateRecorderCache.has(treeFilePath)) {
-      return updateRecorderCache.get(treeFilePath)!;
+    // Walk through all resolved stylesheets and visit them in each instantiated
+    // migration. Note that this can only happen after source files have been
+    // visited because we find stylesheets through the TypeScript source files.
+    resourceCollector.resolvedStylesheets.forEach(stylesheet => {
+      const resolvedPath = this._fileSystem.resolve(stylesheet.filePath);
+      // Do not visit the stylesheet if it has been checked before. Inline
+      // stylesheets cannot be referenced multiple times.
+      if (stylesheet.inline || !this._analyzedFiles.has(resolvedPath)) {
+        migrations.forEach(r => r.visitStylesheet(stylesheet));
+        this._analyzedFiles.add(resolvedPath);
+      }
+    });
+
+    // In some applications, developers will have global stylesheets which are not
+    // specified in any Angular component. Therefore we allow for additional stylesheets
+    // being specified. We visit them in each migration unless they have been already
+    // discovered before as actual component resource.
+    additionalStylesheetPaths.forEach(filePath => {
+      const stylesheet = resourceCollector.resolveExternalStylesheet(filePath, null);
+      const resolvedPath = this._fileSystem.resolve(filePath);
+      // Do not visit stylesheets which have been referenced from a component.
+      if (!this._analyzedFiles.has(resolvedPath)) {
+        migrations.forEach(r => r.visitStylesheet(stylesheet));
+        this._analyzedFiles.add(resolvedPath);
+      }
+    });
+
+    // Call the "postAnalysis" method for each migration.
+    migrations.forEach(r => r.postAnalysis());
+
+    // Collect all failures reported by individual migrations.
+    const failures = migrations.reduce((res, m) =>
+        res.concat(m.failures), [] as MigrationFailure[]);
+
+    // In case there are failures, print these to the CLI logger as warnings.
+    if (failures.length) {
+      failures.forEach(({filePath, message, position}) => {
+        const posixFilePath = this._fileSystem.resolve(filePath).replace(/\\/g, '/');
+        const lineAndCharacter = position ? `@${position.line + 1}:${position.character + 1}` : '';
+        this._logger.warn(`${posixFilePath}${lineAndCharacter} - ${message}`);
+      });
     }
-    const treeRecorder = tree.beginUpdate(treeFilePath);
-    updateRecorderCache.set(treeFilePath, treeRecorder);
-    return treeRecorder;
+
+    return {
+      hasFailures: !!failures.length,
+    };
   }
 
-  function _visitTypeScriptNode(node: ts.Node) {
-    rules.forEach(r => r.visitNode(node));
-    ts.forEachChild(node, _visitTypeScriptNode);
-    resourceCollector.visitNode(node);
+  /**
+   * Creates instances of the given migrations with the specified target
+   * version and data.
+   */
+  private _createMigrations<Data>(types: MigrationCtor<Data, Context>[], target: TargetVersion,
+                                  data: Data): Migration<Data, Context>[] {
+    const result: Migration<Data, Context>[] = [];
+    for (const ctor of types) {
+      const instance = new ctor(this._program, this._typeChecker, target, this._context,
+        data, this._fileSystem, this._logger);
+      instance.init();
+      if (instance.enabled) {
+        result.push(instance);
+      }
+    }
+    return result;
   }
 
-  /** Gets the specified path relative to the project root in POSIX format. */
-  function getProjectRelativePath(filePath: string) {
-    return relative(basePath, filePath).replace(/\\/g, '/');
+  /**
+   * Creates a program form the specified tsconfig and patches the host
+   * to read files through the given file system.
+   */
+  static createProgramFromTsconfig(tsconfigFsPath: string, fs: FileSystem): ts.Program {
+    const parsed = parseTsconfigFile(tsconfigFsPath, dirname(tsconfigFsPath));
+    const host = ts.createCompilerHost(parsed.options, true);
+    // Patch the host to read files through the specified file system.
+    host.readFile = fileName => {
+      const fileContent = fs.read(fileName);
+      // Strip BOM as otherwise TSC methods (e.g. "getWidth") will return an offset which
+      // which breaks the CLI UpdateRecorder. https://github.com/angular/angular/pull/30719
+      return fileContent !== null ? fileContent.replace(/^\uFEFF/, '') : undefined;
+    };
+    return ts.createProgram(parsed.fileNames, parsed.options, host);
   }
 }

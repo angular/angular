@@ -8,10 +8,6 @@ ts_library(
     module_name = "@angular/cdk/schematics/update-tool",
     tsconfig = ":tsconfig.json",
     deps = [
-        "@npm//@angular-devkit/core",
-        "@npm//@angular-devkit/schematics",
-        "@npm//@schematics/angular",
-        "@npm//@types/glob",
         "@npm//@types/node",
         "@npm//typescript",
     ],

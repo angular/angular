@@ -1,8 +1,6 @@
 import {defineJasmineTestCases, findBazelVersionTestCases} from '@angular/cdk/schematics/testing';
+import {MIGRATION_PATH} from '../../index.spec';
 import {getAllVersionNames} from '../../update-tool/target-version';
-
-/** Path to the schematic collection that includes the migrations. */
-export const migrationCollection = require.resolve('../../migration.json');
 
 describe('CDK upgrade test cases', () => {
   const versionNames = getAllVersionNames().map(versionName => versionName.toLowerCase());
@@ -13,6 +11,6 @@ describe('CDK upgrade test cases', () => {
   // detected through Bazel's runfiles manifest.
   versionNames.forEach(version => describe(`${version} update`, () => {
                          defineJasmineTestCases(
-                             version, migrationCollection, testCasesMap.get(version));
+                             version, MIGRATION_PATH, testCasesMap.get(version));
                        }));
 });

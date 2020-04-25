@@ -1,5 +1,6 @@
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 import {createTestApp, getFileContent} from '@angular/cdk/schematics/testing';
+import {COLLECTION_PATH} from '../../index.spec';
 import {Schema} from './schema';
 
 describe('material-table-schematic', () => {
@@ -11,7 +12,7 @@ describe('material-table-schematic', () => {
   };
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('schematics', require.resolve('../../collection.json'));
+    runner = new SchematicTestRunner('schematics', COLLECTION_PATH);
   });
 
   it('should create table files and add them to module', async () => {

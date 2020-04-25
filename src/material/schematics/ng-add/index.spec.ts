@@ -10,6 +10,7 @@ import {
 } from '@angular/cdk/schematics';
 import {createTestApp, getFileContent} from '@angular/cdk/schematics/testing';
 import {getWorkspace} from '@schematics/angular/utility/config';
+import {COLLECTION_PATH} from '../index.spec';
 import {addPackageToPackageJson} from './package-config';
 
 describe('ng-add schematic', () => {
@@ -19,7 +20,7 @@ describe('ng-add schematic', () => {
   let warnOutput: string[];
 
   beforeEach(async () => {
-    runner = new SchematicTestRunner('schematics', require.resolve('../collection.json'));
+    runner = new SchematicTestRunner('schematics', COLLECTION_PATH);
     appTree = await createTestApp(runner);
 
     errorOutput = [];

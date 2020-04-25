@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {existsSync, readFileSync} from 'fs';
 import {dirname, resolve} from 'path';
 import * as ts from 'typescript';
+import {FileSystem} from './file-system';
 import {getAngularDecorators} from './utils/decorators';
 import {unwrapExpression} from './utils/functions';
 import {
@@ -45,7 +45,7 @@ export class ComponentResourceCollector {
   resolvedTemplates: ResolvedResource[] = [];
   resolvedStylesheets: ResolvedResource[] = [];
 
-  constructor(public typeChecker: ts.TypeChecker) {}
+  constructor(public typeChecker: ts.TypeChecker, private _fileSystem: FileSystem) {}
 
   visitNode(node: ts.Node) {
     if (node.kind === ts.SyntaxKind.ClassDeclaration) {
@@ -135,7 +135,7 @@ export class ComponentResourceCollector {
             const stylesheetPath = resolve(dirname(sourceFileName), el.text);
 
             // In case the stylesheet does not exist in the file system, skip it gracefully.
-            if (!existsSync(stylesheetPath)) {
+            if (!this._fileSystem.exists(stylesheetPath)) {
               return;
             }
 
@@ -149,11 +149,11 @@ export class ComponentResourceCollector {
 
         // In case the template does not exist in the file system, skip this
         // external template.
-        if (!existsSync(templatePath)) {
+        if (!this._fileSystem.exists(templatePath)) {
           return;
         }
 
-        const fileContent = readFileSync(templatePath, 'utf8');
+        const fileContent = this._fileSystem.read(templatePath);
         const lineStartsMap = computeLineStartsMap(fileContent);
 
         this.resolvedTemplates.push({
@@ -171,7 +171,7 @@ export class ComponentResourceCollector {
   /** Resolves an external stylesheet by reading its content and computing line mappings. */
   resolveExternalStylesheet(filePath: string, container: ts.ClassDeclaration|null):
       ResolvedResource {
-    const fileContent = readFileSync(filePath, 'utf8');
+    const fileContent = this._fileSystem.read(filePath);
     const lineStartsMap = computeLineStartsMap(fileContent);
 
     return {

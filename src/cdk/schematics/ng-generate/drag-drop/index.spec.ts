@@ -1,6 +1,7 @@
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 import {getProjectFromWorkspace} from '@angular/cdk/schematics';
 import {getWorkspace} from '@schematics/angular/utility/config';
+import {COLLECTION_PATH} from '../../index.spec';
 import {createTestApp, getFileContent} from '../../testing';
 import {Schema} from './schema';
 
@@ -16,7 +17,7 @@ describe('CDK drag-drop schematic', () => {
   };
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('schematics', require.resolve('../../collection.json'));
+    runner = new SchematicTestRunner('schematics', COLLECTION_PATH);
   });
 
   it('should create drag-drop files and add them to module', async () => {

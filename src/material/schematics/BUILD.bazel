@@ -6,7 +6,7 @@ package(default_visibility = ["//visibility:public"])
 
 filegroup(
     name = "schematics_assets",
-    srcs = ["ng-update/upgrade-rules/hammer-gestures-v9/gesture-config.template"] + glob([
+    srcs = ["ng-update/migrations/hammer-gestures-v9/gesture-config.template"] + glob([
         "ng-generate/*/files/**/*",
         "**/*.json",
     ]),

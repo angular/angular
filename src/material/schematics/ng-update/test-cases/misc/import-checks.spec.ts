@@ -1,10 +1,10 @@
-import {createTestCaseSetup} from '@angular/cdk/schematics/testing';
-import {migrationCollection} from '../index.spec';
+import {createTestCaseSetup, resolveBazelPath} from '@angular/cdk/schematics/testing';
+import {MIGRATION_PATH} from '../../../index.spec';
 
 describe('v6 import misc checks', () => {
   it('should report imports for deleted animation constants', async () => {
     const {removeTempDir, runFixers} = await createTestCaseSetup(
-        'migration-v6', migrationCollection, [require.resolve('./import-checks_input.ts')]);
+        'migration-v6', MIGRATION_PATH, [resolveBazelPath(__dirname, './import-checks_input.ts')]);
 
     const {logOutput} = await runFixers();
 

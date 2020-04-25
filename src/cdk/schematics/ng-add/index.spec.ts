@@ -1,5 +1,6 @@
 import {Tree} from '@angular-devkit/schematics';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
+import {COLLECTION_PATH} from '../index.spec';
 import {createTestApp, getFileContent} from '../testing';
 import {addPackageToPackageJson} from './package-config';
 
@@ -8,7 +9,7 @@ describe('CDK ng-add', () => {
   let appTree: Tree;
 
   beforeEach(async () => {
-    runner = new SchematicTestRunner('schematics', require.resolve('../collection.json'));
+    runner = new SchematicTestRunner('schematics', COLLECTION_PATH);
     appTree = await createTestApp(runner);
   });
 

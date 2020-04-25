@@ -1,14 +1,13 @@
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
 import {dedent} from '@angular/cdk/testing/private';
 import {addPackageToPackageJson} from '@angular/cdk/schematics/ng-add/package-config';
-import {createTestCaseSetup} from '@angular/cdk/schematics/testing';
+import {createTestCaseSetup, resolveBazelPath} from '@angular/cdk/schematics/testing';
 import {readFileSync} from 'fs';
-
-import {migrationCollection} from '../../index.spec';
+import {MIGRATION_PATH} from '../../../../index.spec';
 
 describe('v9 HammerJS removal', () => {
-  const GESTURE_CONFIG_TEMPLATE_PATH =
-      require.resolve('../../../upgrade-rules/hammer-gestures-v9/gesture-config.template');
+  const GESTURE_CONFIG_TEMPLATE_PATH = resolveBazelPath(__dirname,
+      '../../../migrations/hammer-gestures-v9/gesture-config.template');
 
   let runner: SchematicTestRunner;
   let tree: UnitTestTree;
@@ -17,7 +16,7 @@ describe('v9 HammerJS removal', () => {
   let cleanupTest: () => void;
 
   beforeEach(async () => {
-    const testSetup = await createTestCaseSetup('migration-v9', migrationCollection, []);
+    const testSetup = await createTestCaseSetup('migration-v9', MIGRATION_PATH, []);
 
     runner = testSetup.runner;
     tree = testSetup.appTree;

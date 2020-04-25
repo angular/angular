@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MigrationRule} from '../update-tool/migration-rule';
+import {Migration} from '../update-tool/migration';
 import {getChangesForTarget, ValueOfChanges, VersionChanges} from '../update-tool/version-changes';
 import {
   attributeSelectors,
@@ -31,7 +31,7 @@ import {
 
 
 /** Upgrade data for the Angular CDK. */
-export const cdkUpgradeData: RuleUpgradeData = {
+export const cdkUpgradeData: UpgradeData = {
   attributeSelectors,
   classNames,
   constructorChecks,
@@ -47,7 +47,7 @@ export const cdkUpgradeData: RuleUpgradeData = {
  * Interface that describes the upgrade data that needs to be defined when using the CDK
  * upgrade rules.
  */
-export interface RuleUpgradeData {
+export interface UpgradeData {
   attributeSelectors: VersionChanges<AttributeSelectorUpgradeData>;
   classNames: VersionChanges<ClassNameUpgradeData>;
   constructorChecks: VersionChanges<ConstructorChecksUpgradeData>;
@@ -60,15 +60,14 @@ export interface RuleUpgradeData {
 }
 
 /**
- * Gets the reduced upgrade data for the specified data key from the rule walker options.
- *
- * The function reads out the target version and upgrade data object from the rule options and
- * resolves the specified data portion that is specifically tied to the target version.
+ * Gets the reduced upgrade data for the specified data key. The function reads out the
+ * target version and upgrade data object from the migration and resolves the specified
+ * data portion that is specifically tied to the target version.
  */
 export function
-getVersionUpgradeData<T extends keyof RuleUpgradeData, U = ValueOfChanges<RuleUpgradeData[T]>>(
-    r: MigrationRule<RuleUpgradeData>, dataName: T): U[] {
+getVersionUpgradeData<T extends keyof UpgradeData, U = ValueOfChanges<UpgradeData[T]>>(
+    migration: Migration<UpgradeData>, dataName: T): U[] {
   // Note that below we need to cast to `unknown` first TS doesn't infer the type of T correctly.
-  return getChangesForTarget<U>(r.targetVersion,
-                                r.upgradeData[dataName] as unknown as VersionChanges<U>);
+  return getChangesForTarget<U>(
+      migration.targetVersion, migration.upgradeData[dataName] as unknown as VersionChanges<U>);
 }

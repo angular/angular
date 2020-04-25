@@ -1,8 +1,9 @@
 # ng-update schematic
 
-**Note** The CDK ng-update schematic is the foundation for the Angular Material update schematic. This is achieved by making the ng-update code for the CDK as reusable as possible.
+**Note** The CDK ng-update schematic is the foundation for the Angular Material update schematic.
+This is achieved by making the ng-update code for the CDK as reusable as possible.
 
-This means that this document also applies for the Angular Material `ng-update`.
+This document also applies for the Angular Material `ng-update`.
 
 ---
 
@@ -45,7 +46,7 @@ a small framework for analyzing and updating project source files that is called
 
 The `update-tool` has been specifically built with the goal of being extremely fast and
 flexible. This tool had to be built because our initial `ng update` implementation which
-leveraged `tslint` caused various problems:
+used `tslint` had various issues:
 
 * No support for HTML templates and stylesheets (workaround was needed)
 * Reruns all upgrade lint rules after file has been updated (significant performance issue for projects with a lot of files)
@@ -62,8 +63,11 @@ leveraged `tslint` caused various problems:
 All of these problems that `tslint` had, have been solved when we built the
 `update-tool`. The tool currently has the following differences compared to `tslint`:
 
+* Abstraction of file system and ability to run migrations programmatically.
+  * Migrations can run in the CLI and in google3.
+  * Migrations can run standalone outside of `ng update`
 * Integrated support for the HTML templates and stylesheets
-* Only runs migration rules once per source file.
+* Only runs migrations once per source file.
   * Even if a source file is part of multiple TypeScript projects.
 * Program is only created once per TypeScript project. Also the type checker is only retrieved once.
 * Migration failures are guaranteed to not retain `ts.Node` instances (avoiding a common tslint memory leak)
@@ -106,8 +110,8 @@ into `upstream`.  For simple and common breaking changes, there should be alread
 data file that just needs the new change inserted.
 
 In case there is no upgrade data for a breaking change, we need to evaluate if there should be
-a single `misc` migration rule that is tied to that specific breaking change, or if we should
-create a new migration rule in a more generic way.
+a single `misc` migration that is tied to that specific breaking change, or if we should
+create a new migration that accepts upgrade data (as other configurable migrations).
 
 ---
 

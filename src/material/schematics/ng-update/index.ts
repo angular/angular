@@ -7,53 +7,59 @@
  */
 
 import {Rule, SchematicContext} from '@angular-devkit/schematics';
-import {createUpgradeRule, TargetVersion} from '@angular/cdk/schematics';
+import {
+  createMigrationSchematicRule,
+  NullableDevkitMigration,
+  TargetVersion
+} from '@angular/cdk/schematics';
+import {HammerGesturesMigration} from './migrations/hammer-gestures-v9/hammer-gestures-migration';
+import {MiscClassInheritanceMigration} from './migrations/misc-checks/misc-class-inheritance';
+import {MiscClassNamesMigration} from './migrations/misc-checks/misc-class-names';
+import {MiscImportsMigration} from './migrations/misc-checks/misc-imports';
+import {MiscPropertyNamesMigration} from './migrations/misc-checks/misc-property-names';
+import {MiscTemplateMigration} from './migrations/misc-checks/misc-template';
+import {
+  RippleSpeedFactorMigration
+} from './migrations/misc-ripples-v7/ripple-speed-factor-migration';
+import {
+  SecondaryEntryPointsMigration
+} from './migrations/package-imports-v8/secondary-entry-points-migration';
 
 import {materialUpgradeData} from './upgrade-data';
-import {HammerGesturesRule} from './upgrade-rules/hammer-gestures-v9/hammer-gestures-rule';
-import {MiscClassInheritanceRule} from './upgrade-rules/misc-checks/misc-class-inheritance-rule';
-import {MiscClassNamesRule} from './upgrade-rules/misc-checks/misc-class-names-rule';
-import {MiscImportsRule} from './upgrade-rules/misc-checks/misc-imports-rule';
-import {MiscPropertyNamesRule} from './upgrade-rules/misc-checks/misc-property-names-rule';
-import {MiscTemplateRule} from './upgrade-rules/misc-checks/misc-template-rule';
-import {RippleSpeedFactorRule} from './upgrade-rules/misc-ripples-v7/ripple-speed-factor-rule';
-import {
-  SecondaryEntryPointsRule
-} from './upgrade-rules/package-imports-v8/secondary-entry-points-rule';
 
-const materialMigrationRules = [
-  MiscClassInheritanceRule,
-  MiscClassNamesRule,
-  MiscImportsRule,
-  MiscPropertyNamesRule,
-  MiscTemplateRule,
-  RippleSpeedFactorRule,
-  SecondaryEntryPointsRule,
-  HammerGesturesRule,
+const materialMigrations: NullableDevkitMigration[] = [
+  MiscClassInheritanceMigration,
+  MiscClassNamesMigration,
+  MiscImportsMigration,
+  MiscPropertyNamesMigration,
+  MiscTemplateMigration,
+  RippleSpeedFactorMigration,
+  SecondaryEntryPointsMigration,
+  HammerGesturesMigration,
 ];
 
 /** Entry point for the migration schematics with target of Angular Material v6 */
 export function updateToV6(): Rule {
-  return createUpgradeRule(
-      TargetVersion.V6, materialMigrationRules, materialUpgradeData, onMigrationComplete);
+  return createMigrationSchematicRule(
+      TargetVersion.V6, materialMigrations, materialUpgradeData, onMigrationComplete);
 }
 
 /** Entry point for the migration schematics with target of Angular Material v7 */
 export function updateToV7(): Rule {
-  return createUpgradeRule(
-      TargetVersion.V7, materialMigrationRules, materialUpgradeData, onMigrationComplete);
+  return createMigrationSchematicRule(
+      TargetVersion.V7, materialMigrations, materialUpgradeData, onMigrationComplete);
 }
 
 /** Entry point for the migration schematics with target of Angular Material v8 */
 export function updateToV8(): Rule {
-  return createUpgradeRule(
-      TargetVersion.V8, materialMigrationRules, materialUpgradeData, onMigrationComplete);
+  return createMigrationSchematicRule(
+      TargetVersion.V8, materialMigrations, materialUpgradeData, onMigrationComplete);
 }
 
 /** Entry point for the migration schematics with target of Angular Material v9 */
 export function updateToV9(): Rule {
-  return createUpgradeRule(
-      TargetVersion.V9, materialMigrationRules, materialUpgradeData, onMigrationComplete);
+  return createMigrationSchematicRule(
+      TargetVersion.V9, materialMigrations, materialUpgradeData, onMigrationComplete);
 }
 
 /** Function that will be called when the migration completed. */

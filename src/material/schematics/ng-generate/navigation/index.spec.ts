@@ -1,5 +1,6 @@
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
 import {createTestApp, getFileContent} from '@angular/cdk/schematics/testing';
+import {COLLECTION_PATH} from '../../index.spec';
 
 import {Schema} from './schema';
 
@@ -12,7 +13,7 @@ describe('material-navigation-schematic', () => {
   };
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('schematics', require.resolve('../../collection.json'));
+    runner = new SchematicTestRunner('schematics', COLLECTION_PATH);
   });
 
   function expectNavigationSchematicModuleImports(tree: UnitTestTree) {

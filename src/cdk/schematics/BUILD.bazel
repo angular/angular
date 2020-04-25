@@ -32,6 +32,7 @@ ts_library(
         "@npm//@angular-devkit/schematics",
         # TODO(devversion): Only include jasmine for test sources (See: tsconfig types).
         "@npm//@types/jasmine",
+        "@npm//@types/glob",
         "@npm//@types/node",
         "@npm//glob",
         "@npm//parse5",
@@ -73,6 +74,7 @@ ts_library(
         ":schematics",
         "//src/cdk/schematics/testing",
         "//src/cdk/schematics/update-tool",
+        "//src/cdk/testing/private",
         "@npm//@angular-devkit/schematics",
         "@npm//@schematics/angular",
         "@npm//@types/jasmine",
