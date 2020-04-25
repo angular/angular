@@ -9,7 +9,7 @@ import '../util/ng_i18n_closure_mode';
 
 import {DEFAULT_LOCALE_ID, getPluralCase} from '../i18n/localization';
 import {getTemplateContent, SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS} from '../sanitization/html_sanitizer';
-import {InertBodyHelper} from '../sanitization/inert_body';
+import {getInertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {addAllToArray} from '../util/array_utils';
 import {assertDataInRange, assertDefined, assertEqual} from '../util/assert';
@@ -1233,7 +1233,7 @@ function icuStart(
 function parseIcuCase(
     unsafeHtml: string, parentIndex: number, nestedIcus: IcuExpression[], tIcus: TIcu[],
     expandoStartIndex: number): IcuCase {
-  const inertBodyHelper = new InertBodyHelper(getDocument());
+  const inertBodyHelper = getInertBodyHelper(getDocument());
   const inertBodyElement = inertBodyHelper.getInertBodyElement(unsafeHtml);
   if (!inertBodyElement) {
     throw new Error('Unable to generate inert body element');
