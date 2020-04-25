@@ -7,40 +7,29 @@
  */
 
 /**
- * This helper class is used to get hold of an inert tree of DOM elements containing dirty HTML
+ * This helper is used to get hold of an inert tree of DOM elements containing dirty HTML
  * that needs sanitizing.
  * Depending upon browser support we use one of two strategies for doing this.
- * Default: DomParser strategy
+ * Default: DOMParser strategy
  * Fallback: InertDocument strategy
  */
-export class InertBodyHelper {
-  private inertDocument: Document;
+export function getInertBodyHelper(defaultDoc: Document): InertBodyHelper {
+  return isDOMParserAvailable() ? new DOMParserHelper() : new InertDocumentHelper(defaultDoc);
+}
 
-  constructor(private defaultDoc: Document) {
-    this.inertDocument = this.defaultDoc.implementation.createHTMLDocument('sanitization-inert');
-    if (this.inertDocument.body == null) {
-      // usually there should be only one body element in the document, but IE doesn't have any, so
-      // we need to create one.
-      const inertHtml = this.inertDocument.createElement('html');
-      this.inertDocument.appendChild(inertHtml);
-      const inertBodyElement = this.inertDocument.createElement('body');
-      inertHtml.appendChild(inertBodyElement);
-    }
-
-    this.getInertBodyElement = isDOMParserAvailable() ? this.getInertBodyElement_DOMParser :
-                                                        this.getInertBodyElement_InertDocument;
-  }
-
+export interface InertBodyHelper {
   /**
    * Get an inert DOM element containing DOM created from the dirty HTML string provided.
-   * The implementation of this is determined in the constructor, when the class is instantiated.
    */
   getInertBodyElement: (html: string) => HTMLElement | null;
+}
 
-  /**
-   * Use DOMParser to create and fill an inert body element in browsers that support it.
-   */
-  private getInertBodyElement_DOMParser(html: string) {
+/**
+ * Uses DOMParser to create and fill an inert body element.
+ * This is the default strategy used in browsers that support it.
+ */
+class DOMParserHelper implements InertBodyHelper {
+  getInertBodyElement(html: string): HTMLElement|null {
     // We add these extra elements to ensure that the rest of the content is parsed as expected
     // e.g. leading whitespace is maintained and tags like `<meta>` do not get hoisted to the
     // `<head>` tag.
@@ -54,13 +43,30 @@ export class InertBodyHelper {
       return null;
     }
   }
+}
 
-  /**
-   * Use an HTML5 `template` element, if supported, or an inert body element created via
-   * `createHtmlDocument` to create and fill an inert DOM element.
-   * This is the fallback strategy if the browser does not support DOMParser.
-   */
-  private getInertBodyElement_InertDocument(html: string) {
+/**
+ * Use an HTML5 `template` element, if supported, or an inert body element created via
+ * `createHtmlDocument` to create and fill an inert DOM element.
+ * This is the fallback strategy if the browser does not support DOMParser.
+ */
+class InertDocumentHelper implements InertBodyHelper {
+  private inertDocument: Document;
+
+  constructor(private defaultDoc: Document) {
+    this.inertDocument = this.defaultDoc.implementation.createHTMLDocument('sanitization-inert');
+
+    if (this.inertDocument.body == null) {
+      // usually there should be only one body element in the document, but IE doesn't have any, so
+      // we need to create one.
+      const inertHtml = this.inertDocument.createElement('html');
+      this.inertDocument.appendChild(inertHtml);
+      const inertBodyElement = this.inertDocument.createElement('body');
+      inertHtml.appendChild(inertBodyElement);
+    }
+  }
+
+  getInertBodyElement(html: string): HTMLElement|null {
     // Prefer using <template> element if supported.
     const templateEl = this.inertDocument.createElement('template');
     if ('content' in templateEl) {

@@ -7,7 +7,7 @@
  */
 
 import {isDevMode} from '../util/is_dev_mode';
-import {InertBodyHelper} from './inert_body';
+import {getInertBodyHelper, InertBodyHelper} from './inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from './url_sanitizer';
 
 function tagSet(tags: string): {[k: string]: boolean} {
@@ -245,7 +245,7 @@ let inertBodyHelper: InertBodyHelper;
 export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
   let inertBodyElement: HTMLElement|null = null;
   try {
-    inertBodyHelper = inertBodyHelper || new InertBodyHelper(defaultDoc);
+    inertBodyHelper = inertBodyHelper || getInertBodyHelper(defaultDoc);
     // Make sure unsafeHtml is actually a string (TypeScript types are not enforced at runtime).
     let unsafeHtml = unsafeHtmlInput ? String(unsafeHtmlInput) : '';
     inertBodyElement = inertBodyHelper.getInertBodyElement(unsafeHtml);
