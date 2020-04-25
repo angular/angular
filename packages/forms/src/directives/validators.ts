@@ -158,10 +158,8 @@ export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
   host: {'[attr.required]': 'required ? "" : null'}
 })
 export class RequiredValidator implements Validator {
-  // TODO(issue/24571): remove '!'.
-  private _required!: boolean;
-  // TODO(issue/24571): remove '!'.
-  private _onChange!: () => void;
+  private _required = false;
+  private _onChange?: () => void;
 
   /**
    * @description
@@ -274,10 +272,8 @@ export const EMAIL_VALIDATOR: any = {
   providers: [EMAIL_VALIDATOR]
 })
 export class EmailValidator implements Validator {
-  // TODO(issue/24571): remove '!'.
-  private _enabled!: boolean;
-  // TODO(issue/24571): remove '!'.
-  private _onChange!: () => void;
+  private _enabled = false;
+  private _onChange?: () => void;
 
   /**
    * @description
@@ -368,17 +364,15 @@ export const MIN_LENGTH_VALIDATOR: any = {
   host: {'[attr.minlength]': 'minlength ? minlength : null'}
 })
 export class MinLengthValidator implements Validator, OnChanges {
-  // TODO(issue/24571): remove '!'.
-  private _validator!: ValidatorFn;
-  // TODO(issue/24571): remove '!'.
-  private _onChange!: () => void;
+  private _validator: ValidatorFn = Validators.nullValidator;
+  private _onChange?: () => void;
 
   /**
    * @description
    * Tracks changes to the the minimum length bound to this directive.
    */
-  // TODO(issue/24571): remove '!'.
-  @Input() minlength!: string|number;
+  @Input()
+  minlength!: string|number;  // This input is always defined, since the name matches selector.
 
   /**
    * @description
@@ -456,17 +450,15 @@ export const MAX_LENGTH_VALIDATOR: any = {
   host: {'[attr.maxlength]': 'maxlength ? maxlength : null'}
 })
 export class MaxLengthValidator implements Validator, OnChanges {
-  // TODO(issue/24571): remove '!'.
-  private _validator!: ValidatorFn;
-  // TODO(issue/24571): remove '!'.
-  private _onChange!: () => void;
+  private _validator: ValidatorFn = Validators.nullValidator;
+  private _onChange?: () => void;
 
   /**
    * @description
    * Tracks changes to the the maximum length bound to this directive.
    */
-  // TODO(issue/24571): remove '!'.
-  @Input() maxlength!: string|number;
+  @Input()
+  maxlength!: string|number;  // This input is always defined, since the name matches selector.
 
   /**
    * @description
@@ -547,17 +539,15 @@ export const PATTERN_VALIDATOR: any = {
   host: {'[attr.pattern]': 'pattern ? pattern : null'}
 })
 export class PatternValidator implements Validator, OnChanges {
-  // TODO(issue/24571): remove '!'.
-  private _validator!: ValidatorFn;
-  // TODO(issue/24571): remove '!'.
-  private _onChange!: () => void;
+  private _validator: ValidatorFn = Validators.nullValidator;
+  private _onChange?: () => void;
 
   /**
    * @description
    * Tracks changes to the pattern bound to this directive.
    */
-  // TODO(issue/24571): remove '!'.
-  @Input() pattern!: string|RegExp;
+  @Input()
+  pattern!: string|RegExp;  // This input is always defined, since the name matches selector.
 
   /**
    * @description
