@@ -9,6 +9,7 @@
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
+import {isDOMParserAvailable} from '../../src/sanitization/inert_body';
 
 {
   describe('HTML sanitizer', () => {
@@ -228,19 +229,4 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
       });
     }
   });
-}
-
-/**
- * We need to determine whether the DOMParser exists in the global context.
- * The try-catch is because, on some browsers, trying to access this property
- * on window can actually throw an error.
- *
- * @suppress {uselessCode}
- */
-function isDOMParserAvailable() {
-  try {
-    return !!(window as any).DOMParser;
-  } catch (e) {
-    return false;
-  }
 }
