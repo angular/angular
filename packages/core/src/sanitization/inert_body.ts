@@ -120,15 +120,15 @@ class InertDocumentHelper implements InertBodyHelper {
 }
 
 /**
- * We need to determine whether the DOMParser exists in the global context.
- * The try-catch is because, on some browsers, trying to access this property
- * on window can actually throw an error.
+ * We need to determine whether the DOMParser exists in the global context and
+ * supports parsing HTML; HTML parsing support is not as wide as other formats, see
+ * https://developer.mozilla.org/en-US/docs/Web/API/DOMParser#Browser_compatibility.
  *
  * @suppress {uselessCode}
  */
-function isDOMParserAvailable() {
+export function isDOMParserAvailable() {
   try {
-    return !!(window as any).DOMParser;
+    return !!new (window as any).DOMParser().parseFromString('', 'text/html');
   } catch {
     return false;
   }
