@@ -961,7 +961,7 @@ Then exercise the component class, remembering to call the [lifecycle hook metho
 <code-example
   path="testing/src/app/welcome/welcome.component.spec.ts"
   region="class-only-tests"
-  header="app/welcome/welcome.component.spec.ts (컴포넌트 클래스 테슷트하기)"></code-example>
+  header="app/welcome/welcome.component.spec.ts (컴포넌트 클래스 테스트하기)"></code-example>
 
 <!--
 ### Component DOM testing
