@@ -71,7 +71,8 @@ runInEachFileSystem(() => {
           reflectionHost, evaluator, metaRegistry, metaReader, scopeRegistry, scopeRegistry,
           /* isCore */ false, new NoopResourceLoader(), /* rootDirs */[''],
           /* defaultPreserveWhitespaces */ false, /* i18nUseExternalIds */ true,
-          /* enableI18nLegacyMessageIdFormat */ false, moduleResolver, cycleAnalyzer, refEmitter,
+          /* enableI18nLegacyMessageIdFormat */ false,
+          /* i18nNormalizeLineEndingsInICUs */ undefined, moduleResolver, cycleAnalyzer, refEmitter,
           NOOP_DEFAULT_IMPORT_RECORDER, /* depTracker */ null, injectableRegistry,
           /* annotateForClosureCompiler */ false);
       const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);

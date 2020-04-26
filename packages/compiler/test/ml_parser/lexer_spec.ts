@@ -878,7 +878,194 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
               [lex.TokenType.EOF],
             ]);
       });
+
+      describe('[line ending normalization', () => {
+        describe('{escapedString: true}', () => {
+          it('should normalize line-endings in expansion forms', () => {
+            const result = tokenizeWithoutErrors(
+                `{\r\n` +
+                    `    messages.length,\r\n` +
+                    `    plural,\r\n` +
+                    `    =0 {You have \r\nno\r\n messages}\r\n` +
+                    `    =1 {One {{message}}}}\r\n`,
+                {
+                  tokenizeExpansionForms: true,
+                  escapedString: true,
+                });
+
+            expect(humanizeParts(result.tokens)).toEqual([
+              [lex.TokenType.EXPANSION_FORM_START],
+              [lex.TokenType.RAW_TEXT, '\n    messages.length'],
+              [lex.TokenType.RAW_TEXT, 'plural'],
+              [lex.TokenType.EXPANSION_CASE_VALUE, '=0'],
+              [lex.TokenType.EXPANSION_CASE_EXP_START],
+              [lex.TokenType.TEXT, 'You have \nno\n messages'],
+              [lex.TokenType.EXPANSION_CASE_EXP_END],
+              [lex.TokenType.EXPANSION_CASE_VALUE, '=1'],
+              [lex.TokenType.EXPANSION_CASE_EXP_START],
+              [lex.TokenType.TEXT, 'One {{message}}'],
+              [lex.TokenType.EXPANSION_CASE_EXP_END],
+              [lex.TokenType.EXPANSION_FORM_END],
+              [lex.TokenType.TEXT, '\n'],
+              [lex.TokenType.EOF],
+            ]);
+
+            expect(result.nonNormalizedIcuExpressions).toEqual([]);
+          });
+
+          it('should normalize line endings in nested expansion forms for inline templates', () => {
+            const result = tokenizeWithoutErrors(
+                `{\r\n` +
+                    `  messages.length, plural,\r\n` +
+                    `  =0 { zero \r\n` +
+                    `       {\r\n` +
+                    `         p.gender, select,\r\n` +
+                    `         male {m}\r\n` +
+                    `       }\r\n` +
+                    `     }\r\n` +
+                    `}`,
+                {tokenizeExpansionForms: true, escapedString: true});
+            expect(humanizeParts(result.tokens)).toEqual([
+              [lex.TokenType.EXPANSION_FORM_START],
+              [lex.TokenType.RAW_TEXT, '\n  messages.length'],
+              [lex.TokenType.RAW_TEXT, 'plural'],
+              [lex.TokenType.EXPANSION_CASE_VALUE, '=0'],
+              [lex.TokenType.EXPANSION_CASE_EXP_START],
+              [lex.TokenType.TEXT, 'zero \n       '],
+
+              [lex.TokenType.EXPANSION_FORM_START],
+              [lex.TokenType.RAW_TEXT, '\n         p.gender'],
+              [lex.TokenType.RAW_TEXT, 'select'],
+              [lex.TokenType.EXPANSION_CASE_VALUE, 'male'],
+              [lex.TokenType.EXPANSION_CASE_EXP_START],
+              [lex.TokenType.TEXT, 'm'],
+              [lex.TokenType.EXPANSION_CASE_EXP_END],
+              [lex.TokenType.EXPANSION_FORM_END],
+
+              [lex.TokenType.TEXT, '\n     '],
+              [lex.TokenType.EXPANSION_CASE_EXP_END],
+              [lex.TokenType.EXPANSION_FORM_END],
+              [lex.TokenType.EOF],
+            ]);
+
+            expect(result.nonNormalizedIcuExpressions).toEqual([]);
+          });
+        });
+
+        describe('{escapedString: false}', () => {
+          it('should normalize line-endings in expansion forms if `i18nNormalizeLineEndingsInICUs` is true',
+             () => {
+               const result = tokenizeWithoutErrors(
+                   `{\r\n` +
+                       `    messages.length,\r\n` +
+                       `    plural,\r\n` +
+                       `    =0 {You have \r\nno\r\n messages}\r\n` +
+                       `    =1 {One {{message}}}}\r\n`,
+                   {
+                     tokenizeExpansionForms: true,
+                     escapedString: false,
+                     i18nNormalizeLineEndingsInICUs: true
+                   });
+
+               expect(humanizeParts(result.tokens)).toEqual([
+                 [lex.TokenType.EXPANSION_FORM_START],
+                 [lex.TokenType.RAW_TEXT, '\n    messages.length'],
+                 [lex.TokenType.RAW_TEXT, 'plural'],
+                 [lex.TokenType.EXPANSION_CASE_VALUE, '=0'],
+                 [lex.TokenType.EXPANSION_CASE_EXP_START],
+                 [lex.TokenType.TEXT, 'You have \nno\n messages'],
+                 [lex.TokenType.EXPANSION_CASE_EXP_END],
+                 [lex.TokenType.EXPANSION_CASE_VALUE, '=1'],
+                 [lex.TokenType.EXPANSION_CASE_EXP_START],
+                 [lex.TokenType.TEXT, 'One {{message}}'],
+                 [lex.TokenType.EXPANSION_CASE_EXP_END],
+                 [lex.TokenType.EXPANSION_FORM_END],
+                 [lex.TokenType.TEXT, '\n'],
+                 [lex.TokenType.EOF],
+               ]);
+
+               expect(result.nonNormalizedIcuExpressions).toEqual([]);
+             });
+
+          it('should not normalize line-endings in ICU expressions when `i18nNormalizeLineEndingsInICUs` is not defined',
+             () => {
+               const result = tokenizeWithoutErrors(
+                   `{\r\n` +
+                       `    messages.length,\r\n` +
+                       `    plural,\r\n` +
+                       `    =0 {You have \r\nno\r\n messages}\r\n` +
+                       `    =1 {One {{message}}}}\r\n`,
+                   {tokenizeExpansionForms: true, escapedString: false});
+
+               expect(humanizeParts(result.tokens)).toEqual([
+                 [lex.TokenType.EXPANSION_FORM_START],
+                 [lex.TokenType.RAW_TEXT, '\r\n    messages.length'],
+                 [lex.TokenType.RAW_TEXT, 'plural'],
+                 [lex.TokenType.EXPANSION_CASE_VALUE, '=0'],
+                 [lex.TokenType.EXPANSION_CASE_EXP_START],
+                 [lex.TokenType.TEXT, 'You have \nno\n messages'],
+                 [lex.TokenType.EXPANSION_CASE_EXP_END],
+                 [lex.TokenType.EXPANSION_CASE_VALUE, '=1'],
+                 [lex.TokenType.EXPANSION_CASE_EXP_START],
+                 [lex.TokenType.TEXT, 'One {{message}}'],
+                 [lex.TokenType.EXPANSION_CASE_EXP_END],
+                 [lex.TokenType.EXPANSION_FORM_END],
+                 [lex.TokenType.TEXT, '\n'],
+                 [lex.TokenType.EOF],
+               ]);
+
+               expect(result.nonNormalizedIcuExpressions!.length).toBe(1);
+               expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString())
+                   .toEqual('\r\n    messages.length');
+             });
+
+          it('should not normalize line endings in nested expansion forms when `i18nNormalizeLineEndingsInICUs` is not defined',
+             () => {
+               const result = tokenizeWithoutErrors(
+                   `{\r\n` +
+                       `  messages.length, plural,\r\n` +
+                       `  =0 { zero \r\n` +
+                       `       {\r\n` +
+                       `         p.gender, select,\r\n` +
+                       `         male {m}\r\n` +
+                       `       }\r\n` +
+                       `     }\r\n` +
+                       `}`,
+                   {tokenizeExpansionForms: true});
+
+               expect(humanizeParts(result.tokens)).toEqual([
+                 [lex.TokenType.EXPANSION_FORM_START],
+                 [lex.TokenType.RAW_TEXT, '\r\n  messages.length'],
+                 [lex.TokenType.RAW_TEXT, 'plural'],
+                 [lex.TokenType.EXPANSION_CASE_VALUE, '=0'],
+                 [lex.TokenType.EXPANSION_CASE_EXP_START],
+                 [lex.TokenType.TEXT, 'zero \n       '],
+
+                 [lex.TokenType.EXPANSION_FORM_START],
+                 [lex.TokenType.RAW_TEXT, '\r\n         p.gender'],
+                 [lex.TokenType.RAW_TEXT, 'select'],
+                 [lex.TokenType.EXPANSION_CASE_VALUE, 'male'],
+                 [lex.TokenType.EXPANSION_CASE_EXP_START],
+                 [lex.TokenType.TEXT, 'm'],
+                 [lex.TokenType.EXPANSION_CASE_EXP_END],
+                 [lex.TokenType.EXPANSION_FORM_END],
+
+                 [lex.TokenType.TEXT, '\n     '],
+                 [lex.TokenType.EXPANSION_CASE_EXP_END],
+                 [lex.TokenType.EXPANSION_FORM_END],
+                 [lex.TokenType.EOF],
+               ]);
+
+               expect(result.nonNormalizedIcuExpressions!.length).toBe(2);
+               expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString())
+                   .toEqual('\r\n  messages.length');
+               expect(result.nonNormalizedIcuExpressions![1].sourceSpan.toString())
+                   .toEqual('\r\n         p.gender');
+             });
+        });
+      });
     });
+
 
     describe('errors', () => {
       it('should report unescaped "{" on error', () => {
@@ -1241,7 +1428,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
   });
 }
 
-function tokenizeWithoutErrors(input: string, options?: lex.TokenizeOptions): lex.Token[] {
+function tokenizeWithoutErrors(input: string, options?: lex.TokenizeOptions): lex.TokenizeResult {
   const tokenizeResult = lex.tokenize(input, 'someUrl', getHtmlTagDefinition, options);
 
   if (tokenizeResult.errors.length > 0) {
@@ -1249,16 +1436,20 @@ function tokenizeWithoutErrors(input: string, options?: lex.TokenizeOptions): le
     throw new Error(`Unexpected parse errors:\n${errorString}`);
   }
 
-  return tokenizeResult.tokens;
+  return tokenizeResult;
+}
+
+function humanizeParts(tokens: lex.Token[]) {
+  return tokens.map(token => [token.type, ...token.parts] as [lex.TokenType, ...string[]]);
 }
 
 function tokenizeAndHumanizeParts(input: string, options?: lex.TokenizeOptions): any[] {
-  return tokenizeWithoutErrors(input, options).map(token => [<any>token.type].concat(token.parts));
+  return humanizeParts(tokenizeWithoutErrors(input, options).tokens);
 }
 
 function tokenizeAndHumanizeSourceSpans(input: string, options?: lex.TokenizeOptions): any[] {
   return tokenizeWithoutErrors(input, options)
-      .map(token => [<any>token.type, token.sourceSpan.toString()]);
+      .tokens.map(token => [<any>token.type, token.sourceSpan.toString()]);
 }
 
 function humanizeLineColumn(location: ParseLocation): string {
@@ -1267,7 +1458,7 @@ function humanizeLineColumn(location: ParseLocation): string {
 
 function tokenizeAndHumanizeLineColumn(input: string, options?: lex.TokenizeOptions): any[] {
   return tokenizeWithoutErrors(input, options)
-      .map(token => [<any>token.type, humanizeLineColumn(token.sourceSpan.start)]);
+      .tokens.map(token => [<any>token.type, humanizeLineColumn(token.sourceSpan.start)]);
 }
 
 function tokenizeAndHumanizeErrors(input: string, options?: lex.TokenizeOptions): any[] {

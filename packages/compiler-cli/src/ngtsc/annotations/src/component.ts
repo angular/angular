@@ -82,6 +82,7 @@ export class ComponentDecoratorHandler implements
       private isCore: boolean, private resourceLoader: ResourceLoader,
       private rootDirs: ReadonlyArray<string>, private defaultPreserveWhitespaces: boolean,
       private i18nUseExternalIds: boolean, private enableI18nLegacyMessageIdFormat: boolean,
+      private i18nNormalizeLineEndingsInICUs: boolean|undefined,
       private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
       private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder,
       private depTracker: DependencyTracker|null,
@@ -780,6 +781,7 @@ export class ComponentDecoratorHandler implements
           range: templateRange,
           escapedString,
           enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
+          i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
         });
 
     // Unfortunately, the primary parse of the template above may not contain accurate source map
@@ -801,6 +803,7 @@ export class ComponentDecoratorHandler implements
       range: templateRange,
       escapedString,
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
+      i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
       leadingTriviaChars: [],
     });
 

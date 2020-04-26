@@ -96,8 +96,9 @@ export class DecorationAnalyzer {
         this.scopeRegistry, this.scopeRegistry, this.isCore, this.resourceManager, this.rootDirs,
         !!this.compilerOptions.preserveWhitespaces,
         /* i18nUseExternalIds */ true, this.bundle.enableI18nLegacyMessageIdFormat,
-        this.moduleResolver, this.cycleAnalyzer, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER,
-        NOOP_DEPENDENCY_TRACKER, this.injectableRegistry, /* annotateForClosureCompiler */ false),
+        /* i18nNormalizeLineEndingsInICUs */ false, this.moduleResolver, this.cycleAnalyzer,
+        this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER, NOOP_DEPENDENCY_TRACKER,
+        this.injectableRegistry, /* annotateForClosureCompiler */ false),
     // See the note in ngtsc about why this cast is needed.
     // clang-format off
     new DirectiveDecoratorHandler(

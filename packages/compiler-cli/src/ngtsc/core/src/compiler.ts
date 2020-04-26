@@ -659,9 +659,10 @@ export class NgCompiler {
           reflector, evaluator, metaRegistry, metaReader, scopeReader, scopeRegistry, isCore,
           this.resourceManager, this.host.rootDirs, this.options.preserveWhitespaces || false,
           this.options.i18nUseExternalIds !== false,
-          this.options.enableI18nLegacyMessageIdFormat !== false, this.moduleResolver,
-          this.cycleAnalyzer, refEmitter, defaultImportTracker, this.incrementalDriver.depGraph,
-          injectableRegistry, this.closureCompilerEnabled),
+          this.options.enableI18nLegacyMessageIdFormat !== false,
+          this.options.i18nNormalizeLineEndingsInICUs, this.moduleResolver, this.cycleAnalyzer,
+          refEmitter, defaultImportTracker, this.incrementalDriver.depGraph, injectableRegistry,
+          this.closureCompilerEnabled),
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
       // clang-format off

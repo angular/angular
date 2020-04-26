@@ -1986,6 +1986,15 @@ export interface ParseTemplateOptions {
    * `$localize` message id format and you are not using compile time translation merging.
    */
   enableI18nLegacyMessageIdFormat?: boolean;
+  /**
+   * If this text is stored in an external template (e.g. via `templateUrl`) then we need to decide
+   * whether or not to normalize the line-endings (from `\r\n` to `\n`) when processing ICU
+   * expressions.
+   *
+   * If `true` then we will normalize ICU expression line endings.
+   * The default is `false`, but this will be switched in a future major release.
+   */
+  i18nNormalizeLineEndingsInICUs?: boolean;
 }
 
 /**
