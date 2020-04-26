@@ -66,7 +66,7 @@
     "@angular/elements": "github:angular/elements-builds#b0f17fe6f0954363d624fabb89e160bfd47503a5",
     "@angular/language-service": "github:angular/language-service-builds#b9c4a3c1ba50f46708c0ae74fdd6c37aaeb966b8",
     "@angular/router": "github:angular/router-builds#aef6a6e195f36ab442d3114b34d23bdd7ae09cb2",
-    "@types/chrome": "^0.0.104",
+    "@types/chrome": "^0.0.106",
     "@types/clone-deep": "^4.0.1",
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
