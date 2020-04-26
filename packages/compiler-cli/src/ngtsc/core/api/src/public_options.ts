@@ -313,6 +313,19 @@ export interface I18nOptions {
    * (used by Closure Compiler's output of `goog.getMsg` for transition period)
    */
   i18nUseExternalIds?: boolean;
+
+  /**
+   * If templates are stored in external files (e.g. via `templateUrl`) then we need to decide
+   * whether or not to normalize the line-endings (from `\r\n` to `\n`) when processing ICU
+   * expressions.
+   *
+   * Ideally we would always normalize, but for backward compatibility this flag allows the template
+   * parser to avoid normalizing line endings in ICU expressions.
+   *
+   * If `true` then we will normalize ICU expression line endings.
+   * The default is `false`, but this will be switched in a future major release.
+   */
+  i18nNormalizeLineEndingsInICUs?: boolean;
 }
 
 /**

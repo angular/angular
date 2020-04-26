@@ -34,7 +34,9 @@ export class Parser {
     const parser = new _TreeBuilder(tokenizeResult.tokens, this.getTagDefinition);
     parser.build();
     return new ParseTreeResult(
-        parser.rootNodes, (tokenizeResult.errors as ParseError[]).concat(parser.errors));
+        parser.rootNodes,
+        (tokenizeResult.errors as ParseError[]).concat(parser.errors),
+    );
   }
 }
 
