@@ -516,8 +516,8 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     const parser = new TemplateParser(
         new CompilerConfig(), this.reflector, expressionParser, new DomElementSchemaRegistry(),
         htmlParser,
-        null!,  // console
-        []      // tranforms
+        null,  // console
+        []     // tranforms
     );
     const htmlResult = htmlParser.parse(template.source, fileName, {
       tokenizeExpansionForms: true,

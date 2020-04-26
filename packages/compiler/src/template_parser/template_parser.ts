@@ -81,7 +81,7 @@ export class TemplateParser {
   constructor(
       private _config: CompilerConfig, private _reflector: CompileReflector,
       private _exprParser: Parser, private _schemaRegistry: ElementSchemaRegistry,
-      private _htmlParser: HtmlParser, private _console: Console,
+      private _htmlParser: HtmlParser, private _console: Console|null,
       public transforms: t.TemplateAstVisitor[]) {}
 
   public get expressionParser() {
@@ -100,7 +100,7 @@ export class TemplateParser {
     const errors = result.errors!.filter(error => error.level === ParseErrorLevel.ERROR);
 
     if (warnings.length > 0) {
-      this._console.warn(`Template parse warnings:\n${warnings.join('\n')}`);
+      this._console?.warn(`Template parse warnings:\n${warnings.join('\n')}`);
     }
 
     if (errors.length > 0) {
