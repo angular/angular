@@ -110,7 +110,9 @@ export interface TokenizeOptions {
 export function tokenize(
     source: string, url: string, getTagDefinition: (tagName: string) => TagDefinition,
     options: TokenizeOptions = {}): TokenizeResult {
-  return new _Tokenizer(new ParseSourceFile(source, url), getTagDefinition, options).tokenize();
+  const tokenizer = new _Tokenizer(new ParseSourceFile(source, url), getTagDefinition, options);
+  tokenizer.tokenize();
+  return new TokenizeResult(mergeTextTokens(tokenizer.tokens), tokenizer.errors);
 }
 
 const _CR_OR_CRLF_REGEXP = /\r\n?/g;
@@ -177,7 +179,7 @@ class _Tokenizer {
     return content.replace(_CR_OR_CRLF_REGEXP, '\n');
   }
 
-  tokenize(): TokenizeResult {
+  tokenize(): void {
     while (this._cursor.peek() !== chars.$EOF) {
       const start = this._cursor.clone();
       try {
@@ -204,7 +206,6 @@ class _Tokenizer {
     }
     this._beginToken(TokenType.EOF);
     this._endToken([]);
-    return new TokenizeResult(mergeTextTokens(this.tokens), this.errors);
   }
 
   /**
