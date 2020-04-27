@@ -8,9 +8,9 @@
 
 import {Compiler, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
 import {from, Observable, of} from 'rxjs';
-import {map, mergeMap} from 'rxjs/operators';
+import {map, mergeMap, tap} from 'rxjs/operators';
 
-import {LoadChildren, LoadedRouterConfig, Route, standardizeConfig} from './config';
+import {LoadChildren, LoadedRouterConfig, Route, Routes, standardizeConfig} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
 
 /**
@@ -24,7 +24,8 @@ export class RouterConfigLoader {
   constructor(
       private loader: NgModuleFactoryLoader, private compiler: Compiler,
       private onLoadStartListener?: (r: Route) => void,
-      private onLoadEndListener?: (r: Route) => void) {}
+      private onLoadEndListener?: (r: Route) => void,
+      private onReadyListener?: (r: Route, routes: Routes) => void) {}
 
   load(parentInjector: Injector, route: Route): Observable<LoadedRouterConfig> {
     if (this.onLoadStartListener) {
@@ -33,16 +34,25 @@ export class RouterConfigLoader {
 
     const moduleFactory$ = this.loadModuleFactory(route.loadChildren!);
 
-    return moduleFactory$.pipe(map((factory: NgModuleFactory<any>) => {
-      if (this.onLoadEndListener) {
-        this.onLoadEndListener(route);
-      }
+    return moduleFactory$.pipe(
+        map((factory: NgModuleFactory<any>) => {
+          if (this.onLoadEndListener) {
+            this.onLoadEndListener(route);
+          }
 
-      const module = factory.create(parentInjector);
+          const module = factory.create(parentInjector);
 
-      return new LoadedRouterConfig(
-          flatten(module.injector.get(ROUTES)).map(standardizeConfig), module);
-    }));
+          return new LoadedRouterConfig(
+              flatten(module.injector.get(ROUTES)).map(standardizeConfig), module);
+        }),
+        tap((cfg) => this.postLoadRouteUpdate(route, cfg)));
+  }
+
+  private postLoadRouteUpdate(route: Route, cfg: LoadedRouterConfig): void {
+    route._loadedConfig = cfg;
+    if (this.onReadyListener) {
+      this.onReadyListener(route, cfg.routes);
+    }
   }
 
   private loadModuleFactory(loadChildren: LoadChildren): Observable<NgModuleFactory<any>> {

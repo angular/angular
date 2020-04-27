@@ -11,7 +11,7 @@ import {from, Observable, of, Subscription} from 'rxjs';
 import {catchError, concatMap, filter, map, mergeAll, mergeMap} from 'rxjs/operators';
 
 import {LoadedRouterConfig, Route, Routes} from './config';
-import {Event, NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart} from './events';
+import {Event, NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart, RouteConfigReady} from './events';
 import {Router} from './router';
 import {RouterConfigLoader} from './router_config_loader';
 
@@ -82,8 +82,9 @@ export class RouterPreloader implements OnDestroy {
       private injector: Injector, private preloadingStrategy: PreloadingStrategy) {
     const onStartLoad = (r: Route) => router.triggerEvent(new RouteConfigLoadStart(r));
     const onEndLoad = (r: Route) => router.triggerEvent(new RouteConfigLoadEnd(r));
-
-    this.loader = new RouterConfigLoader(moduleLoader, compiler, onStartLoad, onEndLoad);
+    const onReady = (r: Route, routes: Routes) =>
+        router.triggerEvent(new RouteConfigReady(r, routes));
+    this.loader = new RouterConfigLoader(moduleLoader, compiler, onStartLoad, onEndLoad, onReady);
   }
 
   setUpPreloading(): void {
@@ -129,7 +130,6 @@ export class RouterPreloader implements OnDestroy {
     return this.preloadingStrategy.preload(route, () => {
       const loaded$ = this.loader.load(ngModule.injector, route);
       return loaded$.pipe(mergeMap((config: LoadedRouterConfig) => {
-        route._loadedConfig = config;
         return this.processRoutes(config.module, config.routes);
       }));
     });

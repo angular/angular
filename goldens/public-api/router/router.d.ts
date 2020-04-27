@@ -322,6 +322,15 @@ export declare class RouteConfigLoadStart {
     toString(): string;
 }
 
+export declare class RouteConfigReady {
+    route: Route;
+    routes: Routes;
+    constructor(
+    route: Route,
+    routes: Routes);
+    toString(): string;
+}
+
 export declare class Router {
     config: Routes;
     errorHandler: ErrorHandler;
