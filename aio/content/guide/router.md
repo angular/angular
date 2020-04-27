@@ -213,7 +213,6 @@ To display a 404 page, set up a [wildcard route](guide/router#wildcard-route-how
 
 The last route with the `path` of `**` is a wildcard route.
 The router selects this route if the requested URL doesn't match any of the paths earlier in the list and sends the user to the `PageNotFoundComponent`.
-In this example the second to last route with the `path` of `**` is a wildcard route too! In this case you would never reach the 404 page, be careful not to copy this example as is into your projects.
 
 ## Setting up redirects
 
