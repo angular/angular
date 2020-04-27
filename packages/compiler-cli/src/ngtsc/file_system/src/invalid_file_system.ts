@@ -22,7 +22,10 @@ export class InvalidFileSystem implements FileSystem {
   readFile(path: AbsoluteFsPath): string {
     throw makeError();
   }
-  writeFile(path: AbsoluteFsPath, data: string, exclusive?: boolean): void {
+  readFileBuffer(path: AbsoluteFsPath): Buffer {
+    throw makeError();
+  }
+  writeFile(path: AbsoluteFsPath, data: string|Buffer, exclusive?: boolean): void {
     throw makeError();
   }
   removeFile(path: AbsoluteFsPath): void {
