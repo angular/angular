@@ -37,7 +37,8 @@ export type PathSegment = BrandedPath<'PathSegment'>;
 export interface FileSystem {
   exists(path: AbsoluteFsPath): boolean;
   readFile(path: AbsoluteFsPath): string;
-  writeFile(path: AbsoluteFsPath, data: string, exclusive?: boolean): void;
+  readFileBuffer(path: AbsoluteFsPath): Buffer;
+  writeFile(path: AbsoluteFsPath, data: string|Buffer, exclusive?: boolean): void;
   removeFile(path: AbsoluteFsPath): void;
   symlink(target: AbsoluteFsPath, path: AbsoluteFsPath): void;
   readdir(path: AbsoluteFsPath): PathSegment[];

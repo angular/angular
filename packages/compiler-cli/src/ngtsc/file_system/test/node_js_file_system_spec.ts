@@ -44,6 +44,16 @@ describe('NodeJSFileSystem', () => {
     });
   });
 
+  describe('readFileBuffer()', () => {
+    it('should delegate to fs.readFileSync()', () => {
+      const buffer = new Buffer('Some contents');
+      const spy = spyOn(realFs, 'readFileSync').and.returnValue(buffer);
+      const result = fs.readFileBuffer(abcPath);
+      expect(result).toBe(buffer);
+      expect(spy).toHaveBeenCalledWith(abcPath);
+    });
+  });
+
   describe('writeFile()', () => {
     it('should delegate to fs.writeFileSync()', () => {
       const spy = spyOn(realFs, 'writeFileSync');
