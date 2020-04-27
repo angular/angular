@@ -32,13 +32,22 @@ export abstract class MockFileSystem implements FileSystem {
   readFile(path: AbsoluteFsPath): string {
     const {entity} = this.findFromPath(path);
     if (isFile(entity)) {
-      return entity;
+      return entity.toString();
     } else {
       throw new MockFileSystemError('ENOENT', path, `File "${path}" does not exist.`);
     }
   }
 
-  writeFile(path: AbsoluteFsPath, data: string, exclusive: boolean = false): void {
+  readFileBuffer(path: AbsoluteFsPath): Buffer {
+    const {entity} = this.findFromPath(path);
+    if (isFile(entity)) {
+      return Buffer.isBuffer(entity) ? entity : new Buffer(entity);
+    } else {
+      throw new MockFileSystemError('ENOENT', path, `File "${path}" does not exist.`);
+    }
+  }
+
+  writeFile(path: AbsoluteFsPath, data: string|Buffer, exclusive: boolean = false): void {
     const [folderPath, basename] = this.splitIntoFolderAndFile(path);
     const {entity} = this.findFromPath(folderPath);
     if (entity === null || !isFolder(entity)) {
@@ -286,7 +295,7 @@ export type Entity = Folder|File|SymLink;
 export interface Folder {
   [pathSegments: string]: Entity;
 }
-export type File = string;
+export type File = string|Buffer;
 export class SymLink {
   constructor(public path: AbsoluteFsPath) {}
 }
@@ -311,7 +320,7 @@ class MockFileSystemError extends Error {
 }
 
 export function isFile(item: Entity|null): item is File {
-  return typeof item === 'string';
+  return Buffer.isBuffer(item) || typeof item === 'string';
 }
 
 export function isSymLink(item: Entity|null): item is SymLink {
