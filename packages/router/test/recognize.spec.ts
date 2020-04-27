@@ -118,6 +118,9 @@ describe('recognize', () => {
           {path: 'a/:id', component: ComponentC}
         ],
         'a/paramA', (s: RouterStateSnapshot) => {
+          // to support cascading routes (when route guard=>false) recognize( ) observable sends
+          // back all matches but obeys the depth-first-order which is still verified for the
+          // first result in this test.
           checkActivatedRoute(s.root, '', {}, RootComponent);
           checkActivatedRoute((s as any).firstChild(s.root)!, 'a', {}, ComponentA);
           checkActivatedRoute(

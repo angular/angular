@@ -132,12 +132,17 @@ export function setupTestingRouter(
       if (opts.paramsInheritanceStrategy) {
         router.paramsInheritanceStrategy = opts.paramsInheritanceStrategy;
       }
+
+      if (opts.cascade) {
+        router.cascade = opts.cascade === 'cascade' || opts.cascade === true;
+      }
     }
   }
 
   if (urlHandlingStrategy) {
     router.urlHandlingStrategy = urlHandlingStrategy;
   }
+
   return router;
 }
 

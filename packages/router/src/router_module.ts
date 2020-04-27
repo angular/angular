@@ -426,6 +426,58 @@ export interface ExtraOptions {
    * behavior. Setting this option to `corrected` enables the fix.
    */
   relativeLinkResolution?: 'legacy'|'corrected';
+
+  /**
+   * When set to 'cascade' the router will continue looking for other viable routes
+   * until an accessible route is found. The legacy behavior canceled the navigation request
+   * when the first matching route signature did not pass its associated guard checks.
+   *
+   * Returning a `UrlTree` within a guarded route will interrupt and override the
+   * `cascade` effect. Use of navigate() within route guards is discouraged
+   * in this routing mode as the pre-existing navigate() call will not be interrupted
+   * and the subsequent navigate() request will begin after the existing one fully completes.
+   *
+   * This feature allows routes to be limited by user permissions for example or to handle
+   * scenarios in which the same pattern is used for different types of functionality such
+   * as `/:user` and `/:organization` served by separate modules. This behavior is possible
+   * by utilizing guards that check for existence/match such as with the following example.
+   *
+   * Example:
+   *
+   * ```
+   * const routes = [
+   *   { path: 'login', component: LoginComponent },
+   *   {
+   *     path: ':org',
+   *     component: OrgComponent,
+   *     canActivate: [AuthGuard, OrgExistsGuard],
+   *   },
+   *   {
+   *     path: ':user',
+   *     component: UserComponent,
+   *     canActivate: [AuthGuard, UserExistsGuard],
+   *   },
+   *   { path: '**', component: NotFoundComponent, canActivate: [AuthGuard] },
+   *   { path: '**', component: LoginComponent }
+   * ];
+   * ```
+   * <ol>
+   *   <li>URL navigates to /@handle</li>
+   *   <li>If user is not authenticated the router will fall-through all routes guarded by AuthGuard
+   *   until successfully reaching the unguarded '**' route that displays LoginComponent<li>
+   *   <li>If user is authenticated:
+   *      <ol>
+   *        <li>Router will first invoke OrgExistsGuard. If the OrgExistsGuard returns `true`
+   *        then OrgComponent will be displayed and routing will be complete.</li>
+   *        <li>If the OrgExistsGuard returns `false` then UserExistsGuard will be invoked. If
+   *        the UserExistsGuard returns `true` then UserComponent will be displayed and routing
+   *        will be complete.</li>
+   *        <li>If the UserExistsGuard also returns `false` then the '**' NotFoundComponent
+   *          will be displayed and routing will be complete.</li>
+   *      <ol>
+   * </ol>
+   */
+  cascade?: true|false|'legacy'|'cascade';
 }
 
 export function setupRouter(
@@ -478,6 +530,10 @@ export function setupRouter(
     router.relativeLinkResolution = opts.relativeLinkResolution;
   }
 
+  if (opts.cascade) {
+    router.cascade = opts.cascade === 'cascade' || opts.cascade === true;
+  }
+
   return router;
 }
 
@@ -510,7 +566,6 @@ export class RouterInitializer {
       const res = new Promise(r => resolve = r);
       const router = this.injector.get(Router);
       const opts = this.injector.get(ROUTER_CONFIGURATION);
-
       if (this.isLegacyDisabled(opts) || this.isLegacyEnabled(opts)) {
         resolve(true);
 
