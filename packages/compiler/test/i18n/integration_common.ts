@@ -7,12 +7,17 @@
  */
 
 import {NgLocalization} from '@angular/common';
-import {Component, DebugElement} from '@angular/core';
-import {ComponentFixture} from '@angular/core/testing';
-
+import {Serializer} from '@angular/compiler/src/i18n';
+import {MessageBundle} from '@angular/compiler/src/i18n/message_bundle';
+import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
+import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
+import {Component, DebugElement, TRANSLATIONS, TRANSLATIONS_FORMAT} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+
+import {SpyResourceLoader} from '../spies';
 
 @Component({
   selector: 'i18n-cmp',
@@ -97,6 +102,15 @@ export function validateHtml(
   expectHtml(el, '#i18n-13').toBe('<div id="i18n-13" title="dans une section traductible"></div>');
   expectHtml(el, '#i18n-15').toMatch(/ca <b>devrait<\/b> marcher/);
   expectHtml(el, '#i18n-16').toMatch(/avec un ID explicite/);
+
+  expectHtml(el, '#i18n-17-5').toContain('Pas de réponse');
+  cmp.response.getItemsList = () => ['a'];
+  tb.detectChanges();
+  expectHtml(el, '#i18n-17-5').toContain('Une réponse');
+  cmp.response.getItemsList = () => ['a', 'b'];
+  tb.detectChanges();
+  expectHtml(el, '#i18n-17-5').toContain('2 réponses');
+
   expectHtml(el, '#i18n-18')
       .toEqual('<div id="i18n-18">FOO<a title="dans une section traductible">BAR</a></div>');
 }
@@ -150,7 +164,7 @@ export const HTML = `
 <div id="i18n-17" i18n="@@i18n17">{count, plural, =0 {zero} =1 {one} =2 {two} other {<b>many</b>}}</div>
 
 <!-- make sure that ICU messages are not treated as text nodes -->
-<div i18n="desc">{
+<div id="i18n-17-5" i18n="desc">{
     response.getItemsList().length,
     plural,
     =0 {Found no results}
@@ -160,5 +174,29 @@ export const HTML = `
 
 <div i18n id="i18n-18">foo<a i18n-title title="in a translatable section">bar</a></div>
 
-<div i18n>{{ 'test' //i18n(ph="map name") }}</div>
+<div id="i18n-19" i18n>{{ 'test' //i18n(ph="map name") }}</div>
 `;
+
+export async function configureCompiler(translationsToMerge: string, format: string) {
+  TestBed.configureCompiler({
+    providers: [
+      SpyResourceLoader.PROVIDE,
+      FrLocalization.PROVIDE,
+      {provide: TRANSLATIONS, useValue: translationsToMerge},
+      {provide: TRANSLATIONS_FORMAT, useValue: format},
+    ]
+  });
+  TestBed.configureTestingModule({declarations: [I18nComponent]});
+}
+
+export function createComponent(html: string) {
+  const tb: ComponentFixture<I18nComponent> =
+      TestBed.overrideTemplate(I18nComponent, html).createComponent(I18nComponent);
+  return {tb, cmp: tb.componentInstance, el: tb.debugElement};
+}
+
+export function serializeTranslations(html: string, serializer: Serializer) {
+  const catalog = new MessageBundle(new HtmlParser, [], {});
+  catalog.updateFromTemplate(html, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
+  return catalog.write(serializer);
+}
