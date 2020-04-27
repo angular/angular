@@ -86,7 +86,7 @@ async function _main() {
         Rebase instructions for PR Author, please run the following commands:
 
           git fetch upstream ${refs.base.ref};
-          git checkout ${refs.head.ref};
+          git checkout ${refs.target.ref};
           git rebase upstream/${refs.base.ref};
           git push --force-with-lease;
         `);
