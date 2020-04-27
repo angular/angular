@@ -42,6 +42,7 @@ v9 - v12
 | `@angular/core`               | [`ReflectiveKey`](#core)                                                      | <!--v8--> v11 |
 | `@angular/core`               | [`RenderComponentType`](#core)                                                | <!--v7--> v11 |
 | `@angular/core`               | [`ViewEncapsulation.Native`](#core)                                           | <!--v6--> v11 |
+| `@angular/core`               | [`WrappedValue`](#core)                                                       | <!--v10--> v12 |
 | `@angular/forms`              | [`ngModel` with reactive forms](#ngmodel-reactive)                            | <!--v6--> v11 |
 | `@angular/router`             | [`preserveQueryParams`](#router)                                              | <!--v7--> v11 |
 | `@angular/upgrade`            | [`@angular/upgrade`](#upgrade)                                                | <!--v8--> v11 |
@@ -95,7 +96,7 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | [`defineInjectable`](api/core/defineInjectable) | `ɵɵdefineInjectable` | v8 | Used only in generated code. No source code should depend on this API. |
 | [`entryComponents`](api/core/NgModule#entryComponents) | none | v9 | See [`entryComponents`](#entryComponents) |
 | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS) | none | v9 | See [`ANALYZE_FOR_ENTRY_COMPONENTS`](#entryComponents) |
-
+| [`WrappedValue`](api/core/WrappedValue) | none | v10 | See [removing `WrappedValue`](#wrapped-value) |
 
 
 
@@ -516,6 +517,20 @@ The final decision was made on three key points:
 * __Vendor support__: Microsoft dropped support of IE 9 and 10 on 1/12/16, meaning they no longer provide security updates or technical support.
 * __Usage statistics__: We looked at usage trends for IE 9 and 10 from various sources and all indicated that usage percentages were extremely small (fractions of 1%).
 * __Feedback from partners__: We also reached out to some of our Angular customers and none expressed concern about dropping IE 9 and 10 support.
+
+
+{@a wrapped-value}
+###  `WrappedValue` 
+
+The purpose of `WrappedValue` is to allow the same object instance to be treated as different for the purposes of change detection.
+It is commonly used with the `async` pipe in the case where the `Observable` produces the same instance of the value.
+
+Given that this use case is relatively rare and special handling impacts application performance, we have deprecated it in v10.
+No replacement is planned for this deprecation.
+
+If you rely on the behavior that the same object instance should cause change detection, you have two options:
+- Clone the resulting value so that it has a new identity.
+- Explicitly call [`ChangeDetectorRef.detectChanges()`](api/core/ChangeDetectorRef#detectchanges) to force the update. 
 
 {@a removed}
 ## Removed APIs
