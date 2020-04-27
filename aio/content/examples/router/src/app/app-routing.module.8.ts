@@ -8,7 +8,6 @@ const routes: Routes = [
   { path: 'second-component', component: SecondComponent },
   // #enddocregion routes
   { path: '',   redirectTo: '/first-component', pathMatch: 'full' }, // redirect to `first-component`
-  { path: '**', component: FirstComponent },
   // #enddocregion redirect
   { path: '**', component: PageNotFoundComponent },  // Wildcard route for a 404 page
   // #docregion routes
