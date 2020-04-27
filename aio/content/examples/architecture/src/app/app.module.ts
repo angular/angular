@@ -11,6 +11,7 @@ import { HeroService }         from './hero.service';
 import { BackendService }      from './backend.service';
 import { Logger }              from './logger.service';
 
+// #docregion ngmodule
 @NgModule({
   imports: [
     BrowserModule,
@@ -29,6 +30,7 @@ import { Logger }              from './logger.service';
     Logger
   ],
 // #enddocregion providers
+// #enddocregion ngmodule
   bootstrap: [ AppComponent ]
 })
 // #docregion export
