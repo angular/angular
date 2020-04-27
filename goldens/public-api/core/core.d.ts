@@ -1443,6 +1443,7 @@ export declare abstract class ViewRef extends ChangeDetectorRef {
     abstract onDestroy(callback: Function): any /** TODO #9100 */;
 }
 
+/** @deprecated */
 export declare class WrappedValue {
     /** @deprecated */ wrapped: any;
     constructor(value: any);
