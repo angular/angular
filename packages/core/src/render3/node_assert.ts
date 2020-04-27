@@ -26,7 +26,7 @@ export function assertNodeType(tNode: TNode, type: TNodeType): asserts tNode is 
   assertEqual(tNode.type, type, `should be a ${typeName(type)}`);
 }
 
-export function assertNodeOfPossibleTypes(tNode: TNode, ...types: TNodeType[]): void {
+export function assertNodeOfPossibleTypes(tNode: TNode|null, ...types: TNodeType[]): void {
   assertDefined(tNode, 'should be called with a TNode');
   const found = types.some(type => tNode.type === type);
   assertEqual(

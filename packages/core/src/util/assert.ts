@@ -86,7 +86,7 @@ export function assertNotDefined<T>(actual: T, msg: string) {
   }
 }
 
-export function assertDefined<T>(actual: T, msg: string) {
+export function assertDefined<T>(actual: T|null|undefined, msg: string): asserts actual is T {
   if (actual == null) {
     throwError(msg, actual, null, '!=');
   }
