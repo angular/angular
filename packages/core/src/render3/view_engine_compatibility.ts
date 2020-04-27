@@ -119,9 +119,7 @@ export function createTemplateRef<T>(
 
         renderView(embeddedTView, embeddedLView, context);
 
-        const viewRef = new ViewRef<T>(embeddedLView);
-        viewRef._tViewNode = embeddedLView[T_HOST] as TViewNode;
-        return viewRef;
+        return new ViewRef<T>(embeddedLView);
       }
     };
   }

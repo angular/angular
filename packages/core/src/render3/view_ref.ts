@@ -33,11 +33,6 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   private _appRef: ApplicationRef|null = null;
   private _viewContainerRef: viewEngine_ViewContainerRef|null = null;
 
-  /**
-   * @internal
-   */
-  public _tViewNode: TViewNode|null = null;
-
   get rootNodes(): any[] {
     const lView = this._lView;
     if (lView[HOST] == null) {
