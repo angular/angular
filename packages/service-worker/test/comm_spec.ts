@@ -435,6 +435,14 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           },
         });
       });
+      it('processes unrecoverable notifications when sent', done => {
+        update.unrecoverable.subscribe(event => {
+          expect(event.reason).toEqual('Invalid Resource');
+          expect(event.type).toEqual('UNRECOVERABLE_STATE');
+          done();
+        });
+        mock.sendMessage({type: 'UNRECOVERABLE_STATE', reason: 'Invalid Resource'});
+      });
       it('processes update activation notifications when sent', done => {
         update.activated.subscribe(event => {
           expect(event.previous).toEqual({hash: 'A'});
@@ -500,6 +508,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           update = new SwUpdate(comm);
           update.available.toPromise().catch(err => fail(err));
           update.activated.toPromise().catch(err => fail(err));
+          update.unrecoverable.toPromise().catch(err => fail(err));
         });
         it('gives an error when checking for updates', done => {
           update = new SwUpdate(comm);

@@ -9,7 +9,7 @@
 import {Adapter, Context} from './adapter';
 import {CacheState, NormalizedUrl, UpdateCacheStatus, UpdateSource, UrlMetadata} from './api';
 import {Database, Table} from './database';
-import {errorToString, SwCriticalError} from './error';
+import {errorToString, SwCriticalError, SwUnrecoverableStateError} from './error';
 import {IdleScheduler} from './idle';
 import {AssetGroupConfig} from './manifest';
 import {sha1Binary} from './sha1';
@@ -145,6 +145,7 @@ export abstract class AssetGroup {
           return cachedResponse;
         }
       }
+
       // No already-cached response exists, so attempt a fetch/cache operation. The original request
       // may specify things like credential inclusion, but for assets these are not honored in order
       // to avoid issues with opaque responses. The SW requests the data itself.
@@ -414,10 +415,16 @@ export abstract class AssetGroup {
 
         // If the response was unsuccessful, there's nothing more that can be done.
         if (!cacheBustedResult.ok) {
-          throw new SwCriticalError(
-              `Response not Ok (cacheBustedFetchFromNetwork): cache busted request for ${
-                  req.url} returned response ${cacheBustedResult.status} ${
-                  cacheBustedResult.statusText}`);
+          if (cacheBustedResult.status === 404) {
+            throw new SwUnrecoverableStateError(
+                `Failed to retrieve hashed resource from the server. (AssetGroup: ${
+                    this.config.name} | URL: ${url})`);
+          } else {
+            throw new SwCriticalError(
+                `Response not Ok (cacheBustedFetchFromNetwork): cache busted request for ${
+                    req.url} returned response ${cacheBustedResult.status} ${
+                    cacheBustedResult.statusText}`);
+          }
         }
 
         // Hash the contents.
