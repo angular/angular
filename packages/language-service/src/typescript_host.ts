@@ -220,8 +220,12 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     const ANGULAR_CORE = '@angular/core';
     const corePath = this.reflectorHost.moduleNameToFileName(ANGULAR_CORE);
     for (const {fileName} of program.getSourceFiles()) {
-      // If the `@angular/core` has been edited, the language service should be restart,
-      // so ignore the change of `@angular/core`.
+      // If `@angular/core` is edited, the language service would have to be
+      // restarted, so ignore changes to `@angular/core`.
+      // When the StaticReflector is initialized at startup, it loads core
+      // symbols from @angular/core by calling initializeConversionMap(). This
+      // is only done once. If the file is invalidated, some of the core symbols
+      // will be lost permanently.
       if (fileName === corePath) {
         continue;
       }
