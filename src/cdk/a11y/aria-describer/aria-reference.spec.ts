@@ -50,14 +50,14 @@ describe('AriaReference', () => {
         .toEqual(['reference_1']);
   });
 
-  it('should retrieve ids that are deliminated by extra whitespace', () => {
+  it('should retrieve ids that are delimited by extra whitespace', () => {
     testElement!.setAttribute('aria-describedby', 'reference_1      reference_2');
     expect(getAriaReferenceIds(testElement!, 'aria-describedby'))
         .toEqual(['reference_1', 'reference_2']);
   });
 
   /**
-   * Expects the equal array from getAriaReferenceIds and a space-deliminated list from
+   * Expects the equal array from getAriaReferenceIds and a space-delimited list from
    * the actual element attribute. If ids is empty, assumes the element should not have any
    * value
    */

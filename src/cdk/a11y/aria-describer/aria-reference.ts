@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/** IDs are deliminated by an empty space, as per the spec. */
-const ID_DELIMINATOR = ' ';
+/** IDs are delimited by an empty space, as per the spec. */
+const ID_DELIMITER = ' ';
 
 /**
  * Adds the given ID to the specified ARIA attribute on an element.
@@ -18,7 +18,7 @@ export function addAriaReferencedId(el: Element, attr: string, id: string) {
   if (ids.some(existingId => existingId.trim() == id.trim())) { return; }
   ids.push(id.trim());
 
-  el.setAttribute(attr, ids.join(ID_DELIMINATOR));
+  el.setAttribute(attr, ids.join(ID_DELIMITER));
 }
 
 /**
@@ -30,7 +30,7 @@ export function removeAriaReferencedId(el: Element, attr: string, id: string) {
   const filteredIds = ids.filter(val => val != id.trim());
 
   if (filteredIds.length) {
-    el.setAttribute(attr, filteredIds.join(ID_DELIMINATOR));
+    el.setAttribute(attr, filteredIds.join(ID_DELIMITER));
   } else {
     el.removeAttribute(attr);
   }
@@ -41,6 +41,6 @@ export function removeAriaReferencedId(el: Element, attr: string, id: string) {
  * Used for attributes such as aria-labelledby, aria-owns, etc.
  */
 export function getAriaReferenceIds(el: Element, attr: string): string[] {
-  // Get string array of all individual ids (whitespace deliminated) in the attribute value
+  // Get string array of all individual ids (whitespace delimited) in the attribute value
   return (el.getAttribute(attr) || '').match(/\S+/g) || [];
 }
