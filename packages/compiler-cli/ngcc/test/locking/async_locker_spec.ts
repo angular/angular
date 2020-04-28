@@ -76,7 +76,9 @@ runInEachFileSystem(() => {
         // The lock is now waiting on the lock-file becoming free, so no `fn()` in the log.
         expect(log).toEqual(['write()', 'read() => 188']);
         expect(logger.logs.info).toEqual([[
-          'Another process, with id 188, is currently running ngcc.\nWaiting up to 1s for it to finish.'
+          'Another process, with id 188, is currently running ngcc.\nWaiting up to 1s for it to finish.\n' +
+          `(If you are sure no ngcc process is running then you should delete the lock-file at ${
+              lockFile.path}.)`
         ]]);
 
         lockFileContents = null;
@@ -112,7 +114,9 @@ runInEachFileSystem(() => {
         // The lock is now waiting on the lock-file becoming free, so no `fn()` in the log.
         expect(log).toEqual(['write()', 'read() => 188']);
         expect(logger.logs.info).toEqual([[
-          'Another process, with id 188, is currently running ngcc.\nWaiting up to 1s for it to finish.'
+          'Another process, with id 188, is currently running ngcc.\nWaiting up to 1s for it to finish.\n' +
+          `(If you are sure no ngcc process is running then you should delete the lock-file at ${
+              lockFile.path}.)`
         ]]);
 
         lockFileContents = '444';
@@ -120,12 +124,12 @@ runInEachFileSystem(() => {
         await new Promise(resolve => setTimeout(resolve, 250));
         expect(log).toEqual(['write()', 'read() => 188', 'write()', 'read() => 444']);
         expect(logger.logs.info).toEqual([
-          [
-            'Another process, with id 188, is currently running ngcc.\nWaiting up to 1s for it to finish.'
-          ],
-          [
-            'Another process, with id 444, is currently running ngcc.\nWaiting up to 1s for it to finish.'
-          ]
+          ['Another process, with id 188, is currently running ngcc.\nWaiting up to 1s for it to finish.\n' +
+           `(If you are sure no ngcc process is running then you should delete the lock-file at ${
+               lockFile.path}.)`],
+          ['Another process, with id 444, is currently running ngcc.\nWaiting up to 1s for it to finish.\n' +
+           `(If you are sure no ngcc process is running then you should delete the lock-file at ${
+               lockFile.path}.)`]
         ]);
 
         lockFileContents = null;

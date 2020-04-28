@@ -52,7 +52,9 @@ export class AsyncLocker {
         if (attempts === 0) {
           this.logger.info(
               `Another process, with id ${pid}, is currently running ngcc.\n` +
-              `Waiting up to ${this.retryDelay * this.retryAttempts / 1000}s for it to finish.`);
+              `Waiting up to ${this.retryDelay * this.retryAttempts / 1000}s for it to finish.\n` +
+              `(If you are sure no ngcc process is running then you should delete the lock-file at ${
+                  this.lockFile.path}.)`);
         }
         // The file is still locked by another process so wait for a bit and retry
         await new Promise(resolve => setTimeout(resolve, this.retryDelay));
