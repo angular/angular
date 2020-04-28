@@ -68,7 +68,7 @@ runInEachFileSystem(() => {
         },
       ]);
       const config = new NgccConfiguration(fs, _('/project'));
-      spyOn(config, 'getConfig').and.returnValue({
+      spyOn(config, 'getPackageConfig').and.returnValue({
         entryPoints: {[_('/project/node_modules/some_package/valid_entry_point')]: {ignore: true}}
       } as any);
       const entryPoint = getEntryPointInfo(
@@ -94,7 +94,7 @@ runInEachFileSystem(() => {
         typings: './some_other.d.ts',
         esm2015: './some_other.js',
       };
-      spyOn(config, 'getConfig').and.returnValue({
+      spyOn(config, 'getPackageConfig').and.returnValue({
         entryPoints: {[_('/project/node_modules/some_package/valid_entry_point')]: {override}},
         versionRange: '*'
       });
@@ -145,7 +145,7 @@ runInEachFileSystem(() => {
          const config = new NgccConfiguration(fs, _('/project'));
          const override =
              JSON.parse(createPackageJson('missing_package_json', {excludes: ['name']}));
-         spyOn(config, 'getConfig').and.returnValue({
+         spyOn(config, 'getPackageConfig').and.returnValue({
            entryPoints:
                {[_('/project/node_modules/some_package/missing_package_json')]: {override}},
            versionRange: '*'
@@ -281,7 +281,7 @@ runInEachFileSystem(() => {
            // no metadata.json!
          ]);
          const config = new NgccConfiguration(fs, _('/project'));
-         spyOn(config, 'getConfig').and.returnValue({
+         spyOn(config, 'getPackageConfig').and.returnValue({
            entryPoints: {[_('/project/node_modules/some_package/missing_metadata')]: {}},
            versionRange: '*'
          });

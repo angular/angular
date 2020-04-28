@@ -121,7 +121,7 @@ export function getEntryPointInfo(
   const packageJsonPath = resolve(entryPointPath, 'package.json');
   const packageVersion = getPackageVersion(fs, packageJsonPath);
   const entryPointConfig =
-      config.getConfig(packagePath, packageVersion).entryPoints[entryPointPath];
+      config.getPackageConfig(packagePath, packageVersion).entryPoints[entryPointPath];
   const hasConfig = entryPointConfig !== undefined;
 
   if (!hasConfig && !fs.exists(packageJsonPath)) {
