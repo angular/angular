@@ -62,7 +62,6 @@ export function buildFormatParser(localYargs: yargs.Argv) {
         console.warn(`  yarn ng-dev format --help`);
         console.warn();
         console.warn(`For more on the rationale and effects of this deprecation visit:`);
-        // TODO(josephperrott): Update this PR to the correct URL.
         console.warn(`  https://github.com/angular/angular/pull/36842#issue-410321447`);
       });
 }
