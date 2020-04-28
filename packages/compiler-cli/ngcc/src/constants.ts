@@ -7,3 +7,4 @@
  */
 
 export const IMPORT_PREFIX = 'ɵngcc';
+export const NGCC_TIMED_OUT_EXIT_CODE = 177;

@@ -5,8 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {NGCC_TIMED_OUT_EXIT_CODE} from '../constants';
 import {Logger} from '../logging/logger';
+
 import {LockFile} from './lock_file';
+
+class TimeoutError extends Error {
+  code = NGCC_TIMED_OUT_EXIT_CODE;
+}
 
 /**
  * AsyncLocker is used to prevent more than one instance of ngcc executing at the same time,
@@ -61,7 +67,7 @@ export class AsyncLocker {
       }
     }
     // If we fall out of the loop then we ran out of rety attempts
-    throw new Error(
+    throw new TimeoutError(
         `Timed out waiting ${
             this.retryAttempts * this.retryDelay /
             1000}s for another ngcc process, with id ${pid}, to complete.\n` +

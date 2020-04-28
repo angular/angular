@@ -24,7 +24,7 @@ if (require.main === module) {
       process.exitCode = 0;
     } catch (e) {
       console.error(e.stack || e.message);
-      process.exit(1);
+      process.exit(typeof e.code === 'number' ? e.code : 1);
     }
   })();
 }
