@@ -7,6 +7,11 @@
  */
 
 /**
+ * How to handle potential diagnostics.
+ */
+export type DiagnosticHandlingStrategy = 'error'|'warning'|'ignore';
+
+/**
  * This class is used to collect and then report warnings and errors that occur during the execution
  * of the tools.
  */
@@ -14,6 +19,11 @@ export class Diagnostics {
   readonly messages: {type: 'warning'|'error', message: string}[] = [];
   get hasErrors() {
     return this.messages.some(m => m.type === 'error');
+  }
+  add(type: DiagnosticHandlingStrategy, message: string) {
+    if (type !== 'ignore') {
+      this.messages.push({type, message});
+    }
   }
   warn(message: string) {
     this.messages.push({type: 'warning', message});
