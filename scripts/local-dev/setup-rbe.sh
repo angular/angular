@@ -52,10 +52,22 @@ function confirm_gcloud_login() {
   access_token=$(gcloud auth application-default print-access-token)
   current_account=$(curl -s https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=$access_token | node $full_script_path/get-email)
   if [[ ! $current_account =~ (angular\.io$)|(google\.com$) ]]; then
+    echo
     echo "Logged in as $current_account";
-    echo "An angular.io or google.com account must be used for remote Bazel usage."
-    echo "Please login instead using an account from one of these domains."
-    read -p "Rerun login command now? [Y/y]"
+    echo "The account used for remote build execution must be a member of everyone@angular.io"
+    echo "or everyone@google.com."
+    echo
+    echo "As $current_account is not from either domain, membership cannot be automatically"
+    echo "determined. If you know $current_account to be a member of one of the required groups"
+    echo "you can proceed, using it for authentication."
+    echo
+    read -p "Continue RBE setup using $current_account? [Y/y]"
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+      return
+    fi
+    echo
+    echo "Please login instead using an account that is a member of the one of the above groups."
+    read -p "Rerun login now? [Y/y]"
     if [[ $REPLY =~ ^[Yy]$ ]]; then
       gcloud_login
       confirm_gcloud_login
