@@ -109,7 +109,7 @@ export function mainNgcc(options: NgccOptions): void|Promise<void> {
   const createTaskCompletedCallback =
       getCreateTaskCompletedCallback(pkgJsonUpdater, errorOnFailedEntryPoint, logger, fileSystem);
   const executor = getExecutor(
-      async, inParallel, logger, fileWriter, pkgJsonUpdater, fileSystem,
+      async, inParallel, logger, fileWriter, pkgJsonUpdater, fileSystem, config,
       createTaskCompletedCallback);
 
   return executor.execute(analyzeEntryPoints, createCompileFn);
@@ -150,12 +150,13 @@ function getCreateTaskCompletedCallback(
 
 function getExecutor(
     async: boolean, inParallel: boolean, logger: Logger, fileWriter: FileWriter,
-    pkgJsonUpdater: PackageJsonUpdater, fileSystem: FileSystem,
+    pkgJsonUpdater: PackageJsonUpdater, fileSystem: FileSystem, config: NgccConfiguration,
     createTaskCompletedCallback: CreateTaskCompletedCallback): Executor {
   const lockFile = new LockFileWithChildProcess(fileSystem, logger);
   if (async) {
     // Execute asynchronously (either serially or in parallel)
-    const locker = new AsyncLocker(lockFile, logger, 500, 50);
+    const {retryAttempts, retryDelay} = config.getLockingConfig();
+    const locker = new AsyncLocker(lockFile, logger, retryDelay, retryAttempts);
     if (inParallel) {
       // Execute in parallel. Use up to 8 CPU cores for workers, always reserving one for master.
       const workerCount = Math.min(8, os.cpus().length - 1);

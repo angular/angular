@@ -214,6 +214,15 @@ assertFailed "Expected 'ngcc -l error' to not output anything."
 ngcc --formats fesm2015
 assertFailed "Expected 'ngcc --formats fesm2015' to fail (since '--formats' is deprecated)."
 
+# Does it timeout if there is another ngcc process running
+LOCKFILE=node_modules/@angular/compiler-cli/ngcc/__ngcc_lock_file__
+touch $LOCKFILE
+trap "[[ -f $LOCKFILE ]] && rm $LOCKFILE" EXIT
+ngcc
+exitCode=$?
+assertEquals $exitCode 177
+rm $LOCKFILE
+
 # Now try compiling the app using the ngcc compiled libraries
 ngc -p tsconfig-app.json
 assertSucceeded "Expected the app to successfully compile with the ngcc-processed libraries."

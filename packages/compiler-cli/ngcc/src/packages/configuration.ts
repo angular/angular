@@ -20,7 +20,27 @@ export interface NgccProjectConfig<T = NgccPackageConfig> {
   /**
    * The packages that are configured by this project config.
    */
-  packages: {[packagePath: string]: T};
+  packages?: {[packagePath: string]: T};
+  /**
+   * Options that control how locking the process is handled.
+   */
+  locking?: ProcessLockingConfiguration;
+}
+
+/**
+ * Options that control how locking the process is handled.
+ */
+export interface ProcessLockingConfiguration {
+  /**
+   * The number of times the AsyncLocker will attempt to lock the process before failing.
+   * Defaults to 50.
+   */
+  retryAttempts?: number;
+  /**
+   * The number of milliseconds between attempts to lock the process.
+   * Defaults to 500ms.
+   * */
+  retryDelay?: number;
 }
 
 /**
@@ -126,11 +146,17 @@ export const DEFAULT_NGCC_CONFIG: NgccProjectConfig = {
       },
     },
   },
+  locking: {
+    retryDelay: 500,
+    retryAttempts: 50,
+  }
 };
 
 interface VersionedPackageConfig extends NgccPackageConfig {
   versionRange: string;
 }
+
+type ProcessedConfig = Required<NgccProjectConfig<VersionedPackageConfig[]>>;
 
 const NGCC_CONFIG_FILENAME = 'ngcc.config.js';
 
@@ -159,8 +185,8 @@ const NGCC_CONFIG_FILENAME = 'ngcc.config.js';
  * configuration for a package is returned.
  */
 export class NgccConfiguration {
-  private defaultConfig: NgccProjectConfig<VersionedPackageConfig[]>;
-  private projectConfig: NgccProjectConfig<VersionedPackageConfig[]>;
+  private defaultConfig: ProcessedConfig;
+  private projectConfig: ProcessedConfig;
   private cache = new Map<string, VersionedPackageConfig>();
   readonly hash: string;
 
@@ -168,6 +194,20 @@ export class NgccConfiguration {
     this.defaultConfig = this.processProjectConfig(baseDir, DEFAULT_NGCC_CONFIG);
     this.projectConfig = this.processProjectConfig(baseDir, this.loadProjectConfig(baseDir));
     this.hash = this.computeHash();
+  }
+
+  /**
+   * Get the configuration options for locking the ngcc process.
+   */
+  getLockingConfig(): Required<ProcessLockingConfiguration> {
+    let {retryAttempts, retryDelay} = this.projectConfig.locking;
+    if (retryAttempts === undefined) {
+      retryAttempts = this.defaultConfig.locking.retryAttempts!;
+    }
+    if (retryDelay === undefined) {
+      retryDelay = this.defaultConfig.locking.retryDelay!;
+    }
+    return {retryAttempts, retryDelay};
   }
 
   /**
@@ -183,8 +223,9 @@ export class NgccConfiguration {
       return this.cache.get(cacheKey)!;
     }
 
-    const projectLevelConfig =
-        findSatisfactoryVersion(this.projectConfig.packages[packagePath], version);
+    const projectLevelConfig = this.projectConfig.packages ?
+        findSatisfactoryVersion(this.projectConfig.packages[packagePath], version) :
+        null;
     if (projectLevelConfig !== null) {
       this.cache.set(cacheKey, projectLevelConfig);
       return projectLevelConfig;
@@ -196,8 +237,9 @@ export class NgccConfiguration {
       return packageLevelConfig;
     }
 
-    const defaultLevelConfig =
-        findSatisfactoryVersion(this.defaultConfig.packages[packagePath], version);
+    const defaultLevelConfig = this.defaultConfig.packages ?
+        findSatisfactoryVersion(this.defaultConfig.packages[packagePath], version) :
+        null;
     if (defaultLevelConfig !== null) {
       this.cache.set(cacheKey, defaultLevelConfig);
       return defaultLevelConfig;
@@ -207,8 +249,15 @@ export class NgccConfiguration {
   }
 
   private processProjectConfig(baseDir: AbsoluteFsPath, projectConfig: NgccProjectConfig):
-      NgccProjectConfig<VersionedPackageConfig[]> {
-    const processedConfig: NgccProjectConfig<VersionedPackageConfig[]> = {packages: {}};
+      ProcessedConfig {
+    const processedConfig: ProcessedConfig = {packages: {}, locking: {}};
+
+    // locking configuration
+    if (projectConfig.locking !== undefined) {
+      processedConfig.locking = projectConfig.locking;
+    }
+
+    // packages configuration
     for (const packagePathAndVersion in projectConfig.packages) {
       const packageConfig = projectConfig.packages[packagePathAndVersion];
       if (packageConfig) {
@@ -220,6 +269,7 @@ export class NgccConfiguration {
             {...packageConfig, versionRange, entryPoints});
       }
     }
+
     return processedConfig;
   }
 
