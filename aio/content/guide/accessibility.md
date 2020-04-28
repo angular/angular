@@ -20,7 +20,7 @@ work well for all users, including those who rely on assistive technologies.
 
 Building accessible web experience often involves setting [ARIA attributes](https://developers.google.com/web/fundamentals/accessibility/semantics-aria)
 to provide semantic meaning where it might otherwise be missing.
-Use [attribute binding](guide/template-syntax#attribute-binding) template syntax to control the values of accessibility-related attributes.
+Use [attribute binding](guide/attribute-binding) template syntax to control the values of accessibility-related attributes.
 
 When binding to ARIA attributes in Angular, you must use the `attr.` prefix, as the ARIA
 specification depends specifically on HTML attributes rather than properties of DOM elements.
@@ -44,7 +44,7 @@ NOTE:
 
    By convention, HTML attributes use lowercase names (`tabindex`), while properties use camelCase names (`tabIndex`).
 
-   See the [Template Syntax](guide/template-syntax#html-attribute-vs-dom-property) guide for more background on the difference between attributes and properties.
+   See the [Binding syntax](guide/binding-syntax#html-attribute-vs-dom-property) guide for more background on the difference between attributes and properties.
 
 </div>
 

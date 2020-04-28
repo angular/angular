@@ -1567,7 +1567,7 @@ with Angular's two-way `[(ngModel)]` binding syntax:
 <code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.template.html" region="controls" header="app/phone-list/phone-list.template.html (search controls)"></code-example>
 
 Replace the list's `ng-repeat` with an `*ngFor` as
-[described in the Template Syntax page](guide/template-syntax#directives).
+[described in the Template Syntax page](guide/built-in-directives).
 Replace the image tag's `ng-src` with a binding to the native `src` property.
 
 <code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.template.html" region="list" header="app/phone-list/phone-list.template.html (phones)"></code-example>
@@ -1637,7 +1637,7 @@ There are several notable changes here:
   bindings for the standard `src` property.
 
 * You're using the property binding syntax around `ng-class`. Though Angular
-  does have [a very similar `ngClass`](guide/template-syntax#directives)
+  does have [a very similar `ngClass`](guide/built-in-directives)
   as AngularJS does, its value is not magically evaluated as an expression.
   In Angular, you always specify in the template when an attribute's value is
   a property expression, as opposed to a literal string.
