@@ -181,7 +181,7 @@ class AstTranslator implements AstVisitor {
     const method = ts.createPropertyAccess(receiver, ast.name);
     const args = ast.args.map(expr => this.translate(expr));
     const node = ts.createCall(method, undefined, args);
-    addParseSpanInfo(node, ast.sourceSpan);
+    addParseSpanInfo(node, ast.nameSpan);
     return node;
   }
 
@@ -208,7 +208,7 @@ class AstTranslator implements AstVisitor {
     // TypeScript expression to read the property.
     const receiver = wrapForDiagnostics(this.translate(ast.receiver));
     const node = ts.createPropertyAccess(receiver, ast.name);
-    addParseSpanInfo(node, ast.sourceSpan);
+    addParseSpanInfo(node, ast.nameSpan);
     return node;
   }
 
@@ -219,7 +219,7 @@ class AstTranslator implements AstVisitor {
     //  available on `ast`.
     const right = this.translate(ast.value);
     const node = wrapForDiagnostics(ts.createBinary(left, ts.SyntaxKind.EqualsToken, right));
-    addParseSpanInfo(node, ast.sourceSpan);
+    addParseSpanInfo(node, ast.nameSpan);
     return node;
   }
 
@@ -246,7 +246,7 @@ class AstTranslator implements AstVisitor {
       const method = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
       node = tsCastToAny(ts.createCall(method, undefined, args));
     }
-    addParseSpanInfo(node, ast.sourceSpan);
+    addParseSpanInfo(node, ast.nameSpan);
     return node;
   }
 
@@ -275,7 +275,7 @@ class AstTranslator implements AstVisitor {
       const expr = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
       node = tsCastToAny(expr);
     }
-    addParseSpanInfo(node, ast.sourceSpan);
+    addParseSpanInfo(node, ast.nameSpan);
     return node;
   }
 }

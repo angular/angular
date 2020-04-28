@@ -103,7 +103,8 @@ export class Conditional extends AST {
 
 export class PropertyRead extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public name: string) {
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public nameSpan: AbsoluteSourceSpan,
+      public receiver: AST, public name: string) {
     super(span, sourceSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
@@ -113,8 +114,8 @@ export class PropertyRead extends AST {
 
 export class PropertyWrite extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public name: string,
-      public value: AST) {
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public nameSpan: AbsoluteSourceSpan,
+      public receiver: AST, public name: string, public value: AST) {
     super(span, sourceSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
@@ -124,7 +125,8 @@ export class PropertyWrite extends AST {
 
 export class SafePropertyRead extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public name: string) {
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public nameSpan: AbsoluteSourceSpan,
+      public receiver: AST, public name: string) {
     super(span, sourceSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
@@ -238,8 +240,8 @@ export class NonNullAssert extends AST {
 
 export class MethodCall extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public name: string,
-      public args: any[]) {
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public nameSpan: AbsoluteSourceSpan,
+      public receiver: AST, public name: string, public args: any[]) {
     super(span, sourceSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
@@ -249,8 +251,8 @@ export class MethodCall extends AST {
 
 export class SafeMethodCall extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public name: string,
-      public args: any[]) {
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public nameSpan: AbsoluteSourceSpan,
+      public receiver: AST, public name: string, public args: any[]) {
     super(span, sourceSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
@@ -478,26 +480,31 @@ export class AstTransformer implements AstVisitor {
   }
 
   visitPropertyRead(ast: PropertyRead, context: any): AST {
-    return new PropertyRead(ast.span, ast.sourceSpan, ast.receiver.visit(this), ast.name);
+    return new PropertyRead(
+        ast.span, ast.sourceSpan, ast.nameSpan, ast.receiver.visit(this), ast.name);
   }
 
   visitPropertyWrite(ast: PropertyWrite, context: any): AST {
     return new PropertyWrite(
-        ast.span, ast.sourceSpan, ast.receiver.visit(this), ast.name, ast.value.visit(this));
+        ast.span, ast.sourceSpan, ast.nameSpan, ast.receiver.visit(this), ast.name,
+        ast.value.visit(this));
   }
 
   visitSafePropertyRead(ast: SafePropertyRead, context: any): AST {
-    return new SafePropertyRead(ast.span, ast.sourceSpan, ast.receiver.visit(this), ast.name);
+    return new SafePropertyRead(
+        ast.span, ast.sourceSpan, ast.nameSpan, ast.receiver.visit(this), ast.name);
   }
 
   visitMethodCall(ast: MethodCall, context: any): AST {
     return new MethodCall(
-        ast.span, ast.sourceSpan, ast.receiver.visit(this), ast.name, this.visitAll(ast.args));
+        ast.span, ast.sourceSpan, ast.nameSpan, ast.receiver.visit(this), ast.name,
+        this.visitAll(ast.args));
   }
 
   visitSafeMethodCall(ast: SafeMethodCall, context: any): AST {
     return new SafeMethodCall(
-        ast.span, ast.sourceSpan, ast.receiver.visit(this), ast.name, this.visitAll(ast.args));
+        ast.span, ast.sourceSpan, ast.nameSpan, ast.receiver.visit(this), ast.name,
+        this.visitAll(ast.args));
   }
 
   visitFunctionCall(ast: FunctionCall, context: any): AST {
@@ -586,7 +593,7 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
   visitPropertyRead(ast: PropertyRead, context: any): AST {
     const receiver = ast.receiver.visit(this);
     if (receiver !== ast.receiver) {
-      return new PropertyRead(ast.span, ast.sourceSpan, receiver, ast.name);
+      return new PropertyRead(ast.span, ast.sourceSpan, ast.nameSpan, receiver, ast.name);
     }
     return ast;
   }
@@ -595,7 +602,7 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     const receiver = ast.receiver.visit(this);
     const value = ast.value.visit(this);
     if (receiver !== ast.receiver || value !== ast.value) {
-      return new PropertyWrite(ast.span, ast.sourceSpan, receiver, ast.name, value);
+      return new PropertyWrite(ast.span, ast.sourceSpan, ast.nameSpan, receiver, ast.name, value);
     }
     return ast;
   }
@@ -603,7 +610,7 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
   visitSafePropertyRead(ast: SafePropertyRead, context: any): AST {
     const receiver = ast.receiver.visit(this);
     if (receiver !== ast.receiver) {
-      return new SafePropertyRead(ast.span, ast.sourceSpan, receiver, ast.name);
+      return new SafePropertyRead(ast.span, ast.sourceSpan, ast.nameSpan, receiver, ast.name);
     }
     return ast;
   }
@@ -612,7 +619,7 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     const receiver = ast.receiver.visit(this);
     const args = this.visitAll(ast.args);
     if (receiver !== ast.receiver || args !== ast.args) {
-      return new MethodCall(ast.span, ast.sourceSpan, receiver, ast.name, args);
+      return new MethodCall(ast.span, ast.sourceSpan, ast.nameSpan, receiver, ast.name, args);
     }
     return ast;
   }
@@ -621,7 +628,7 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     const receiver = ast.receiver.visit(this);
     const args = this.visitAll(ast.args);
     if (receiver !== ast.receiver || args !== ast.args) {
-      return new SafeMethodCall(ast.span, ast.sourceSpan, receiver, ast.name, args);
+      return new SafeMethodCall(ast.span, ast.sourceSpan, ast.nameSpan, receiver, ast.name, args);
     }
     return ast;
   }

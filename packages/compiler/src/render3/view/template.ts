@@ -1428,7 +1428,7 @@ export class ValueConverter extends AstMemoryEfficientTransformer {
     // Allocate one slot for the result plus one slot per pipe argument
     const pureFunctionSlot = this.allocatePureFunctionSlots(2 + pipe.args.length);
     const target = new PropertyRead(
-        pipe.span, pipe.sourceSpan, new ImplicitReceiver(pipe.span, pipe.sourceSpan),
+        pipe.span, pipe.sourceSpan, pipe.nameSpan, new ImplicitReceiver(pipe.span, pipe.sourceSpan),
         slotPseudoLocal);
     const {identifier, isVarLength} = pipeBindingCallInfo(pipe.args);
     this.definePipe(pipe.name, slotPseudoLocal, slot, o.importExpr(identifier));

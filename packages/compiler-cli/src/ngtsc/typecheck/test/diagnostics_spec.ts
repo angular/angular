@@ -130,7 +130,7 @@ runInEachFileSystem(() => {
           [ngForDeclaration()], [ngForDts()]);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 40): Property 'namme' does not exist on type '{ name: string; }'. Did you mean 'name'?`,
+        `synthetic.html(1, 47): Property 'namme' does not exist on type '{ name: string; }'. Did you mean 'name'?`,
       ]);
     });
 
@@ -190,7 +190,7 @@ runInEachFileSystem(() => {
           [{type: 'pipe', name: 'Pipe', pipeName: 'pipe'}]);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 28): Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        `synthetic.html(1, 35): Argument of type 'number' is not assignable to parameter of type 'string'.`,
       ]);
     });
 
@@ -329,7 +329,7 @@ runInEachFileSystem(() => {
           };
         }`);
 
-        expect(messages).toEqual([`synthetic.html(1, 26): Object is possibly 'undefined'.`]);
+        expect(messages).toEqual([`synthetic.html(1, 41): Object is possibly 'undefined'.`]);
       });
 
       it('does not produce diagnostic for checked property access', () => {

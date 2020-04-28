@@ -457,8 +457,13 @@ class ExpressionVisitor extends NullTemplateVisitor {
       const absValueOffset = ast.sourceSpan.start.offset;
       const {templateBindings} = this.info.expressionParser.parseTemplateBindings(
           templateKey, templateValue, templateUrl, absKeyOffset, absValueOffset);
-      // Find the template binding that contains the position.
-      const templateBinding = templateBindings.find(b => inSpan(this.position, b.sourceSpan));
+      // Find the nearest template binding to the position.
+      const lastBindingEnd = templateBindings.length > 0 &&
+          templateBindings[templateBindings.length - 1].sourceSpan.end;
+      const normalizedPositionToBinding =
+          lastBindingEnd && this.position > lastBindingEnd ? lastBindingEnd : this.position;
+      const templateBinding =
+          templateBindings.find(b => inSpan(normalizedPositionToBinding, b.sourceSpan));
 
       if (!templateBinding) {
         return;
