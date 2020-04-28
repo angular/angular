@@ -272,12 +272,6 @@ jobs:
       - custom_attach_workspace
       - init_environment
 
-      - run: 'yarn bazel:format -mode=check ||
-              (echo "BUILD files not formatted. Please run ''yarn bazel:format''" ; exit 1)'
-      # Run the skylark linter to check our Bazel rules
-      - run: 'yarn bazel:lint ||
-              (echo -e "\n.bzl files have lint errors. Please run ''yarn bazel:lint-fix''"; exit 1)'
-
       - run: yarn -s tslint
       - run: yarn -s ng-dev format changed $CI_GIT_BASE_REVISION --check
       - run: yarn -s ts-circular-deps:check
