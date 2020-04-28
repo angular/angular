@@ -66,7 +66,8 @@ export function loadFakeCore(fs: FileSystem, basePath: string = '/') {
  * @param directoryPath the path to the directory we want to load.
  * @param mockPath the path within the mock file-system where the directory is to be loaded.
  */
-function loadTestDirectory(fs: FileSystem, directoryPath: string, mockPath: AbsoluteFsPath): void {
+export function loadTestDirectory(
+    fs: FileSystem, directoryPath: string, mockPath: AbsoluteFsPath): void {
   readdirSync(directoryPath).forEach(item => {
     const srcPath = resolve(directoryPath, item);
     const targetPath = fs.resolve(mockPath, item);
