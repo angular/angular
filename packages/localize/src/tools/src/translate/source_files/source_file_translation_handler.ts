@@ -5,14 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {absoluteFrom, AbsoluteFsPath, FileSystem, PathSegment, relativeFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {parseSync, transformFromAstSync} from '@babel/core';
 import {File, Program} from '@babel/types';
-import {extname, join} from 'path';
+
 import {Diagnostics} from '../../diagnostics';
-import {FileUtils} from '../../file_utils';
 import {TranslatePluginOptions} from '../../source_file_utils';
 import {OutputPathFn} from '../output_path';
 import {TranslationBundle, TranslationHandler} from '../translator';
+
 import {makeEs2015TranslatePlugin} from './es2015_translate_plugin';
 import {makeEs5TranslatePlugin} from './es5_translate_plugin';
 import {makeLocalePlugin} from './locale_plugin';
@@ -24,29 +25,32 @@ import {makeLocalePlugin} from './locale_plugin';
 export class SourceFileTranslationHandler implements TranslationHandler {
   private sourceLocaleOptions:
       TranslatePluginOptions = {...this.translationOptions, missingTranslation: 'ignore'};
-  constructor(private translationOptions: TranslatePluginOptions = {}) {}
+  constructor(private fs: FileSystem, private translationOptions: TranslatePluginOptions = {}) {}
 
-  canTranslate(relativeFilePath: string, _contents: Buffer): boolean {
-    return extname(relativeFilePath) === '.js';
+  canTranslate(relativeFilePath: PathSegment, _contents: Buffer): boolean {
+    return this.fs.extname(relativeFrom(relativeFilePath)) === '.js';
   }
 
   translate(
-      diagnostics: Diagnostics, sourceRoot: string, relativeFilePath: string, contents: Buffer,
-      outputPathFn: OutputPathFn, translations: TranslationBundle[], sourceLocale?: string): void {
+      diagnostics: Diagnostics, sourceRoot: AbsoluteFsPath, relativeFilePath: PathSegment,
+      contents: Buffer, outputPathFn: OutputPathFn, translations: TranslationBundle[],
+      sourceLocale?: string): void {
     const sourceCode = contents.toString('utf8');
     // A short-circuit check to avoid parsing the file into an AST if it does not contain any
     // `$localize` identifiers.
     if (!sourceCode.includes('$localize')) {
       for (const translation of translations) {
-        FileUtils.writeFile(outputPathFn(translation.locale, relativeFilePath), contents);
+        this.writeSourceFile(
+            diagnostics, outputPathFn, translation.locale, relativeFilePath, contents);
       }
       if (sourceLocale !== undefined) {
-        FileUtils.writeFile(outputPathFn(sourceLocale, relativeFilePath), contents);
+        this.writeSourceFile(diagnostics, outputPathFn, sourceLocale, relativeFilePath, contents);
       }
     } else {
       const ast = parseSync(sourceCode, {sourceRoot, filename: relativeFilePath});
       if (!ast) {
-        diagnostics.error(`Unable to parse source file: ${join(sourceRoot, relativeFilePath)}`);
+        diagnostics.error(
+            `Unable to parse source file: ${this.fs.join(sourceRoot, relativeFilePath)}`);
         return;
       }
       // Output a translated copy of the file for each locale.
@@ -67,7 +71,7 @@ export class SourceFileTranslationHandler implements TranslationHandler {
 
   private translateFile(
       diagnostics: Diagnostics, ast: File|Program, translationBundle: TranslationBundle,
-      sourceRoot: string, filename: string, outputPathFn: OutputPathFn,
+      sourceRoot: AbsoluteFsPath, filename: PathSegment, outputPathFn: OutputPathFn,
       options: TranslatePluginOptions) {
     const translated = transformFromAstSync(ast, undefined, {
       compact: true,
@@ -80,10 +84,26 @@ export class SourceFileTranslationHandler implements TranslationHandler {
       filename,
     });
     if (translated && translated.code) {
-      FileUtils.writeFile(outputPathFn(translationBundle.locale, filename), translated.code);
+      this.writeSourceFile(
+          diagnostics, outputPathFn, translationBundle.locale, filename, translated.code);
+      const outputPath = absoluteFrom(outputPathFn(translationBundle.locale, filename));
+      this.fs.ensureDir(this.fs.dirname(outputPath));
+      this.fs.writeFile(outputPath, translated.code);
     } else {
-      diagnostics.error(`Unable to translate source file: ${join(sourceRoot, filename)}`);
+      diagnostics.error(`Unable to translate source file: ${this.fs.join(sourceRoot, filename)}`);
       return;
+    }
+  }
+
+  private writeSourceFile(
+      diagnostics: Diagnostics, outputPathFn: OutputPathFn, locale: string,
+      relativeFilePath: PathSegment, contents: string|Buffer): void {
+    try {
+      const outputPath = absoluteFrom(outputPathFn(locale, relativeFilePath));
+      this.fs.ensureDir(this.fs.dirname(outputPath));
+      this.fs.writeFile(outputPath, contents);
+    } catch (e) {
+      diagnostics.error(e.message);
     }
   }
 }
