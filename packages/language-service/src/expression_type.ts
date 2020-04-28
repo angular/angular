@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
+import {AST, AstVisitor, ASTWithName, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
 
 import {createDiagnostic, Diagnostic} from './diagnostic_messages';
 import {BuiltinType, Signature, Symbol, SymbolQuery, SymbolTable} from './symbols';
 import * as ng from './types';
+import {offsetSpan} from './utils';
 
 interface ExpressionDiagnosticsContext {
   inEvent?: boolean;
@@ -32,7 +33,7 @@ export class AstType implements AstVisitor {
     const type: Symbol = ast.visit(this);
     if (this.context.inEvent && type.callable) {
       this.diagnostics.push(
-          createDiagnostic(ast.span, Diagnostic.callable_expression_expected_method_call));
+          createDiagnostic(refinedSpan(ast), Diagnostic.callable_expression_expected_method_call));
     }
     return this.diagnostics;
   }
@@ -51,7 +52,8 @@ export class AstType implements AstVisitor {
             // Nullable allowed.
             break;
           default:
-            this.diagnostics.push(createDiagnostic(ast.span, Diagnostic.expression_might_be_null));
+            this.diagnostics.push(
+                createDiagnostic(refinedSpan(ast), Diagnostic.expression_might_be_null));
             break;
         }
       }
@@ -130,7 +132,7 @@ export class AstType implements AstVisitor {
             return this.anyType;
           default:
             this.diagnostics.push(
-                createDiagnostic(ast.span, Diagnostic.expected_a_string_or_number_type));
+                createDiagnostic(refinedSpan(ast), Diagnostic.expected_a_string_or_number_type));
             return this.anyType;
         }
       case '>':
@@ -146,8 +148,8 @@ export class AstType implements AstVisitor {
           // Two values are comparable only if
           //   - they have some type overlap, or
           //   - at least one is not defined
-          this.diagnostics.push(
-              createDiagnostic(ast.span, Diagnostic.expected_operands_of_comparable_types_or_any));
+          this.diagnostics.push(createDiagnostic(
+              refinedSpan(ast), Diagnostic.expected_operands_of_comparable_types_or_any));
         }
         return this.query.getBuiltinType(BuiltinType.Boolean);
       case '&&':
@@ -157,7 +159,7 @@ export class AstType implements AstVisitor {
     }
 
     this.diagnostics.push(
-        createDiagnostic(ast.span, Diagnostic.unrecognized_operator, ast.operation));
+        createDiagnostic(refinedSpan(ast), Diagnostic.unrecognized_operator, ast.operation));
     return this.anyType;
   }
 
@@ -187,7 +189,8 @@ export class AstType implements AstVisitor {
     const target = this.getType(ast.target!);
     if (!target || !target.callable) {
       this.diagnostics.push(createDiagnostic(
-          ast.span, Diagnostic.call_target_not_callable, this.sourceOf(ast.target!), target.name));
+          refinedSpan(ast), Diagnostic.call_target_not_callable, this.sourceOf(ast.target!),
+          target.name));
       return this.anyType;
     }
     const signature = target.selectSignature(args);
@@ -197,7 +200,7 @@ export class AstType implements AstVisitor {
     // TODO: Consider a better error message here. See `typescript_symbols#selectSignature` for more
     // details.
     this.diagnostics.push(
-        createDiagnostic(ast.span, Diagnostic.unable_to_resolve_compatible_call_signature));
+        createDiagnostic(refinedSpan(ast), Diagnostic.unable_to_resolve_compatible_call_signature));
     return this.anyType;
   }
 
@@ -291,8 +294,8 @@ export class AstType implements AstVisitor {
           case 'number':
             return this.query.getBuiltinType(BuiltinType.Number);
           default:
-            this.diagnostics.push(
-                createDiagnostic(ast.span, Diagnostic.unrecognized_primitive, typeof ast.value));
+            this.diagnostics.push(createDiagnostic(
+                refinedSpan(ast), Diagnostic.unrecognized_primitive, typeof ast.value));
             return this.anyType;
         }
     }
@@ -307,7 +310,7 @@ export class AstType implements AstVisitor {
     // by getPipes() is expected to contain symbols with the corresponding transform method type.
     const pipe = this.query.getPipes().get(ast.name);
     if (!pipe) {
-      this.diagnostics.push(createDiagnostic(ast.span, Diagnostic.no_pipe_found, ast.name));
+      this.diagnostics.push(createDiagnostic(refinedSpan(ast), Diagnostic.no_pipe_found, ast.name));
       return this.anyType;
     }
     const expType = this.getType(ast.exp);
@@ -315,7 +318,7 @@ export class AstType implements AstVisitor {
         pipe.selectSignature([expType].concat(ast.args.map(arg => this.getType(arg))));
     if (!signature) {
       this.diagnostics.push(
-          createDiagnostic(ast.span, Diagnostic.unable_to_resolve_signature, ast.name));
+          createDiagnostic(refinedSpan(ast), Diagnostic.unable_to_resolve_signature, ast.name));
       return this.anyType;
     }
     return signature.result;
@@ -389,7 +392,7 @@ export class AstType implements AstVisitor {
     const methodType = this.resolvePropertyRead(receiverType, ast);
     if (!methodType) {
       this.diagnostics.push(
-          createDiagnostic(ast.span, Diagnostic.could_not_resolve_type, ast.name));
+          createDiagnostic(refinedSpan(ast), Diagnostic.could_not_resolve_type, ast.name));
       return this.anyType;
     }
     if (this.isAny(methodType)) {
@@ -397,13 +400,13 @@ export class AstType implements AstVisitor {
     }
     if (!methodType.callable) {
       this.diagnostics.push(
-          createDiagnostic(ast.span, Diagnostic.identifier_not_callable, ast.name));
+          createDiagnostic(refinedSpan(ast), Diagnostic.identifier_not_callable, ast.name));
       return this.anyType;
     }
     const signature = methodType.selectSignature(ast.args.map(arg => this.getType(arg)));
     if (!signature) {
       this.diagnostics.push(
-          createDiagnostic(ast.span, Diagnostic.unable_to_resolve_signature, ast.name));
+          createDiagnostic(refinedSpan(ast), Diagnostic.unable_to_resolve_signature, ast.name));
       return this.anyType;
     }
     return signature.result;
@@ -417,24 +420,25 @@ export class AstType implements AstVisitor {
     const member = receiverType.members().get(ast.name);
     if (!member) {
       if (receiverType.name === '$implicit') {
-        this.diagnostics.push(
-            createDiagnostic(ast.span, Diagnostic.identifier_not_defined_in_app_context, ast.name));
+        this.diagnostics.push(createDiagnostic(
+            refinedSpan(ast), Diagnostic.identifier_not_defined_in_app_context, ast.name));
       } else if (receiverType.nullable && ast.receiver instanceof PropertyRead) {
         const receiver = ast.receiver.name;
         this.diagnostics.push(createDiagnostic(
-            ast.span, Diagnostic.identifier_possibly_undefined, receiver,
+            refinedSpan(ast), Diagnostic.identifier_possibly_undefined, receiver,
             `${receiver}?.${ast.name}`, `${receiver}!.${ast.name}`));
       } else {
         this.diagnostics.push(createDiagnostic(
-            ast.span, Diagnostic.identifier_not_defined_on_receiver, ast.name, receiverType.name));
+            refinedSpan(ast), Diagnostic.identifier_not_defined_on_receiver, ast.name,
+            receiverType.name));
       }
       return this.anyType;
     }
     if (!member.public) {
       const container =
           receiverType.name === '$implicit' ? 'the component' : `'${receiverType.name}'`;
-      this.diagnostics.push(
-          createDiagnostic(ast.span, Diagnostic.identifier_is_private, ast.name, container));
+      this.diagnostics.push(createDiagnostic(
+          refinedSpan(ast), Diagnostic.identifier_is_private, ast.name, container));
     }
     return member.type;
   }
@@ -443,4 +447,15 @@ export class AstType implements AstVisitor {
     return !symbol || this.query.getTypeKind(symbol) === BuiltinType.Any ||
         (!!symbol.type && this.isAny(symbol.type));
   }
+}
+
+function refinedSpan(ast: AST): ng.Span {
+  // nameSpan is an absolute span, but the spans returned by the expression visitor are expected to
+  // be relative to the start of the expression.
+  // TODO: migrate to only using absolute spans
+  const absoluteOffset = ast.sourceSpan.start - ast.span.start;
+  if (ast instanceof ASTWithName) {
+    return offsetSpan(ast.nameSpan, -absoluteOffset);
+  }
+  return offsetSpan(ast.sourceSpan, -absoluteOffset);
 }

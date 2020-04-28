@@ -12,7 +12,7 @@ import {Parser, SplitInterpolation} from '@angular/compiler/src/expression_parse
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 
-import {unparse} from './utils/unparser';
+import {unparse, unparseWithSpan} from './utils/unparser';
 import {validate} from './utils/validator';
 
 describe('parser', () => {
@@ -195,6 +195,56 @@ describe('parser', () => {
 
     it('should report when encountering interpolation', () => {
       expectActionError('{{a()}}', 'Got interpolation ({{}}) where expression was expected');
+    });
+  });
+
+  describe('parse spans', () => {
+    it('should record property read span', () => {
+      const ast = parseAction('foo');
+      expect(unparseWithSpan(ast)).toContain(['foo', 'foo']);
+      expect(unparseWithSpan(ast)).toContain(['foo', '[nameSpan] foo']);
+    });
+
+    it('should record accessed property read span', () => {
+      const ast = parseAction('foo.bar');
+      expect(unparseWithSpan(ast)).toContain(['foo.bar', 'foo.bar']);
+      expect(unparseWithSpan(ast)).toContain(['foo.bar', '[nameSpan] bar']);
+    });
+
+    it('should record safe property read span', () => {
+      const ast = parseAction('foo?.bar');
+      expect(unparseWithSpan(ast)).toContain(['foo?.bar', 'foo?.bar']);
+      expect(unparseWithSpan(ast)).toContain(['foo?.bar', '[nameSpan] bar']);
+    });
+
+    it('should record method call span', () => {
+      const ast = parseAction('foo()');
+      expect(unparseWithSpan(ast)).toContain(['foo()', 'foo()']);
+      expect(unparseWithSpan(ast)).toContain(['foo()', '[nameSpan] foo']);
+    });
+
+    it('should record accessed method call span', () => {
+      const ast = parseAction('foo.bar()');
+      expect(unparseWithSpan(ast)).toContain(['foo.bar()', 'foo.bar()']);
+      expect(unparseWithSpan(ast)).toContain(['foo.bar()', '[nameSpan] bar']);
+    });
+
+    it('should record safe method call span', () => {
+      const ast = parseAction('foo?.bar()');
+      expect(unparseWithSpan(ast)).toContain(['foo?.bar()', 'foo?.bar()']);
+      expect(unparseWithSpan(ast)).toContain(['foo?.bar()', '[nameSpan] bar']);
+    });
+
+    it('should record property write span', () => {
+      const ast = parseAction('a = b');
+      expect(unparseWithSpan(ast)).toContain(['a = b', 'a = b']);
+      expect(unparseWithSpan(ast)).toContain(['a = b', '[nameSpan] a']);
+    });
+
+    it('should record accessed property write span', () => {
+      const ast = parseAction('a.b = c');
+      expect(unparseWithSpan(ast)).toContain(['a.b = c', 'a.b = c']);
+      expect(unparseWithSpan(ast)).toContain(['a.b = c', '[nameSpan] b']);
     });
   });
 
@@ -589,7 +639,7 @@ describe('parser', () => {
           ['of: [1,2,3] | pipe ', 'of', '[1,2,3] | pipe'],
           ['of: [1,2,3] | pipe as items; ', 'items', 'of'],
           ['let i=index, ', 'i', 'index'],
-          ['count as len, ', 'len', 'count'],
+          ['count as len,', 'len', 'count'],
         ]);
       });
     });

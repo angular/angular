@@ -109,6 +109,36 @@ describe('hover', () => {
         expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
       });
 
+      it('should work for accessed property reads', () => {
+        mockHost.override(TEST_TEMPLATE, `<div>{{title.«length»}}</div>`);
+        const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'length');
+        const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+        expect(quickInfo).toBeTruthy();
+        const {textSpan, displayParts} = quickInfo!;
+        expect(textSpan).toEqual(marker);
+        expect(toText(displayParts)).toBe('(property) String.length: number');
+      });
+
+      it('should work for properties in writes', () => {
+        mockHost.override(TEST_TEMPLATE, `<div (click)="«title» = 't'"></div>`);
+        const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'title');
+        const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+        expect(quickInfo).toBeTruthy();
+        const {textSpan, displayParts} = quickInfo!;
+        expect(textSpan).toEqual(marker);
+        expect(toText(displayParts)).toBe('(property) TemplateReference.title: string');
+      });
+
+      it('should work for accessed properties in writes', () => {
+        mockHost.override(TEST_TEMPLATE, `<div (click)="hero.«id» = 2"></div>`);
+        const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'id');
+        const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
+        expect(quickInfo).toBeTruthy();
+        const {textSpan, displayParts} = quickInfo!;
+        expect(textSpan).toEqual(marker);
+        expect(toText(displayParts)).toBe('(property) Hero.id: number');
+      });
+
       it('should work for array members', () => {
         mockHost.override(TEST_TEMPLATE, `<div *ngFor="let hero of heroes">{{«hero»}}</div>`);
         const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'hero');
@@ -142,8 +172,8 @@ describe('hover', () => {
     });
 
     it('should work for method calls', () => {
-      mockHost.override(TEST_TEMPLATE, `<div (click)="«ᐱmyClickᐱ($event)»"></div>`);
-      const marker = mockHost.getDefinitionMarkerFor(TEST_TEMPLATE, 'myClick');
+      mockHost.override(TEST_TEMPLATE, `<div (click)="«myClick»($event)"></div>`);
+      const marker = mockHost.getReferenceMarkerFor(TEST_TEMPLATE, 'myClick');
       const quickInfo = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, marker.start);
       expect(quickInfo).toBeTruthy();
       const {textSpan, displayParts} = quickInfo!;
@@ -192,7 +222,7 @@ describe('hover', () => {
       const {textSpan, displayParts} = quickInfo!;
       expect(textSpan).toEqual({
         start: position,
-        length: '$any(title)'.length,
+        length: '$any'.length,
       });
       expect(toText(displayParts)).toBe('(method) $any: $any');
     });

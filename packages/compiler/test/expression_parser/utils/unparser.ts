@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '../../../src/expression_parser/ast';
+import {AbsoluteSourceSpan, AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeMethodCall, SafePropertyRead} from '../../../src/expression_parser/ast';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/interpolation_config';
 
 class Unparser implements AstVisitor {
@@ -196,4 +196,35 @@ const sharedUnparser = new Unparser();
 export function unparse(
     ast: AST, interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): string {
   return sharedUnparser.unparse(ast, interpolationConfig);
+}
+
+// [unparsed AST, original source code of AST]
+type UnparsedWithSpan = [string, string];
+
+export function unparseWithSpan(
+    ast: ASTWithSource,
+    interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): UnparsedWithSpan[] {
+  const unparsed: UnparsedWithSpan[] = [];
+  const source = ast.source!;
+  const recursiveSpanUnparser = new class extends RecursiveAstVisitor {
+    private recordUnparsed(ast: any, spanKey: string, unparsedList: UnparsedWithSpan[]) {
+      const span = ast[spanKey];
+      const prefix = spanKey === 'span' ? '' : `[${spanKey}] `;
+      const src = source.substring(span.start, span.end);
+      unparsedList.push([
+        unparse(ast, interpolationConfig),
+        prefix + src,
+      ]);
+    }
+
+    visit(ast: AST, unparsedList: UnparsedWithSpan[]) {
+      this.recordUnparsed(ast, 'span', unparsedList);
+      if (ast.hasOwnProperty('nameSpan')) {
+        this.recordUnparsed(ast, 'nameSpan', unparsedList);
+      }
+      ast.visit(this, unparsedList);
+    }
+  };
+  recursiveSpanUnparser.visitAll([ast.ast], unparsed);
+  return unparsed;
 }

@@ -283,16 +283,30 @@ describe('expression AST absolute source spans', () => {
     });
   });
 
-  it('should provide absolute offsets of a property read', () => {
-    expect(humanizeExpressionSource(parse('<div>{{prop}}</div>'))).toContain([
-      'prop', new AbsoluteSourceSpan(7, 11)
-    ]);
+  describe('property read', () => {
+    it('should provide absolute offsets of a property read', () => {
+      expect(humanizeExpressionSource(parse('<div>{{prop.obj}}<div>'))).toContain([
+        'prop.obj', new AbsoluteSourceSpan(7, 15)
+      ]);
+    });
+
+    it('should provide absolute offsets of expressions in a property read', () => {
+      expect(humanizeExpressionSource(parse('<div>{{prop.obj}}<div>'))).toContain([
+        'prop', new AbsoluteSourceSpan(7, 11)
+      ]);
+    });
   });
 
   describe('property write', () => {
     it('should provide absolute offsets of a property write', () => {
       expect(humanizeExpressionSource(parse('<div (click)="prop = 0"></div>'))).toContain([
         'prop = 0', new AbsoluteSourceSpan(14, 22)
+      ]);
+    });
+
+    it('should provide absolute offsets of an accessed property write', () => {
+      expect(humanizeExpressionSource(parse('<div (click)="prop.inner = 0"></div>'))).toContain([
+        'prop.inner = 0', new AbsoluteSourceSpan(14, 28)
       ]);
     });
 

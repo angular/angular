@@ -902,8 +902,7 @@ export declare class AnimationEvent {
       expect(diags.length).toBe(1);
       expect(diags[0].messageText)
           .toEqual(`Property 'does_not_exist' does not exist on type '{ name: string; }'.`);
-      expect(diags[0].start).toBe(199);
-      expect(diags[0].length).toBe(19);
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
     });
 
     it('should accept an NgFor iteration over an any-typed value', () => {
@@ -1126,8 +1125,7 @@ export declare class AnimationEvent {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toEqual(`Property 'does_not_exist' does not exist on type 'T'.`);
-      expect(diags[0].start).toBe(206);
-      expect(diags[0].length).toBe(19);
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
     });
 
     describe('microsyntax variables', () => {
@@ -1752,7 +1750,7 @@ export declare class AnimationEvent {
           const diags = await driveDiagnostics();
           expect(diags.length).toBe(1);
           expect(diags[0].file!.fileName).toBe(_('/test.ts'));
-          expect(getSourceCodeForDiagnostic(diags[0])).toBe('user.does_not_exist');
+          expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
         });
 
         it('should be correct for indirect templates', async () => {
@@ -1774,7 +1772,7 @@ export declare class AnimationEvent {
           const diags = await driveDiagnostics();
           expect(diags.length).toBe(1);
           expect(diags[0].file!.fileName).toBe(_('/test.ts') + ' (TestCmp template)');
-          expect(getSourceCodeForDiagnostic(diags[0])).toBe('user.does_not_exist');
+          expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
           expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe('TEMPLATE');
         });
 
@@ -1797,7 +1795,7 @@ export declare class AnimationEvent {
           const diags = await driveDiagnostics();
           expect(diags.length).toBe(1);
           expect(diags[0].file!.fileName).toBe(_('/template.html'));
-          expect(getSourceCodeForDiagnostic(diags[0])).toBe('user.does_not_exist');
+          expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
           expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0]))
               .toBe(`'./template.html'`);
         });
