@@ -252,15 +252,15 @@ Data binding is an alternative to manually pushing application data values into 
 event listeners, pulling changed values from the screen, and
 updating application data values.
 
-Read about the following forms of binding in [Template Syntax](guide/template-syntax):
+Read about the following forms of binding in Angular's [Template Syntax](guide/template-syntax):
 
- * [Interpolation](guide/template-syntax#interpolation)
- * [Property binding](guide/template-syntax#property-binding)
- * [Event binding](guide/template-syntax#event-binding)
- * [Attribute binding](guide/template-syntax#attribute-binding)
- * [Class binding](guide/template-syntax#class-binding)
- * [Style binding](guide/template-syntax#style-binding)
- * [Two-way data binding with ngModel](guide/template-syntax#ngModel)
+ * [Interpolation](guide/interpolation)
+ * [Property binding](guide/property-binding)
+ * [Event binding](guide/event-binding)
+ * [Attribute binding](guide/attribute-binding)
+ * [Class binding](guide/attribute-binding#class-binding)
+ * [Style binding](guide/attribute-binding#style-binding)
+ * [Two-way data binding with ngModel](guide/built-in-directives#ngModel)
 
 {@a declarable}
 
@@ -472,11 +472,11 @@ Learn more about the injector hierarchy in [Hierarchical Dependency Injectors](g
 ## input
 
 When defining a [directive](#directive), the `@Input()` decorator on a directive property
-makes that property available as a *target* of a [property binding](guide/template-syntax#property-binding).
+makes that property available as a *target* of a [property binding](guide/property-binding).
 Data values flow into an input property from the data source identified
 in the [template expression](#template-expression) to the right of the equal sign.
 
-To learn more, see [input and output properties](guide/template-syntax#inputs-outputs).
+To learn more, see [input and output properties](guide/inputs-outputs).
 
 {@a interpolation}
 
@@ -491,7 +491,7 @@ or displayed between element tags, as in this example.
 ```
 
 
-Read more about [interpolation](guide/template-syntax#interpolation) in [Template Syntax](guide/template-syntax).
+Read more in the [Interpolation](guide/interpolation) guide.
 
 {@a ivy}
 
@@ -653,11 +653,11 @@ An object passed to the `subscribe()` method for an [observable](#observable). T
 ## output
 
 When defining a [directive](#directive), the `@Output{}` decorator on a directive property
-makes that property available as a *target* of [event binding](guide/template-syntax#event-binding).
+makes that property available as a *target* of [event binding](guide/event-binding).
 Events stream *out* of this property to the receiver identified
 in the [template expression](#template-expression) to the right of the equal sign.
 
-To learn more, see [Input and Output Properties](guide/template-syntax#inputs-outputs).
+To learn more, see [Input and Output Properties](guide/inputs-outputs).
 
 
 {@a P}
@@ -917,7 +917,7 @@ The alternative is a reactive form. For an introduction and comparison of both f
 
 A TypeScript-like syntax that Angular evaluates within a [data binding](#data-binding).
 
-Read about how to write template expressions in  [Template expressions](guide/template-syntax#template-expressions).
+Read about how to write template expressions in the [template expressions](guide/interpolation#template-expressions) section of the [Interpolation](guide/interpolation) guide.
 
 {@a token}
 

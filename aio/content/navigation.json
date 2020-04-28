@@ -189,9 +189,75 @@
               "tooltip": "Property binding helps show app data in the UI."
             },
             {
-              "url": "guide/template-syntax",
               "title": "Template Syntax",
-              "tooltip": "Learn how to write templates that display data and consume user events with the help of data binding."
+              "tooltip": "Syntax to use in templates for binding, expressions, and directives.",
+              "children": [
+                {
+                  "url": "guide/template-syntax",
+                  "title": "Introduction",
+                  "tooltip": "Introduction to writing templates that display data and consume user events with the help of data binding."
+                },
+                {
+                  "url": "guide/interpolation",
+                  "title": "Interpolation",
+                  "tooltip": "An introduction to interpolation and expressions in HTML."
+                },
+                {
+                  "url": "guide/template-statements",
+                  "title": "Template statements",
+                  "tooltip": "Introductory guide to statements in templates that respond to events that components, directives, or elements raise."
+                },
+                {
+                  "url": "guide/binding-syntax",
+                  "title": "Binding syntax",
+                  "tooltip": "Introductory guide to coordinating app values."
+                },
+                {
+                  "url": "guide/property-binding",
+                  "title": "Property binding",
+                  "tooltip": "Introductory guide to setting element or input properties."
+                },
+                {
+                  "url": "guide/attribute-binding",
+                  "title": "Attribute, class, and style bindings",
+                  "tooltip": "Introductory guide to setting the value of HTML attributes."
+                },
+                {
+                  "url": "guide/event-binding",
+                  "title": "Event binding",
+                  "tooltip": "Introductory guide to listening for user interaction."
+                },
+                {
+                  "url": "guide/two-way-binding",
+                  "title": "Two-way binding",
+                  "tooltip": "Introductory guide to sharing data between a class and a template."
+                },
+                {
+                  "url": "guide/built-in-directives",
+                  "title": "Built-in directives",
+                  "tooltip": "Introductory guide to some of the most popular built-in directives."
+                },
+                {
+                  "url": "guide/template-reference-variables",
+                  "title": "Template reference variables",
+                  "tooltip": "Introductory guide to referring to DOM elements within a template."
+                },
+                {
+                  "url": "guide/inputs-outputs",
+                  "title": "Inputs and Outputs",
+                  "tooltip": "Introductory guide to sharing data between parent and child directives or components."
+                },
+                {
+                  "url": "guide/template-expression-operators",
+                  "title": "Template expression operators",
+                  "tooltip": "Introductory guide to transforming data, ensuring safe navigation, and guarding against null variables in templates."
+                },
+                {
+                  "url": "guide/svg-in-templates",
+                  "title": "SVG in templates",
+                  "tooltip": "Guide to using SVGs as templates to create interactive graphics."
+                }
+              ]
             },
             {
               "url": "guide/user-input",

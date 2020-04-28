@@ -62,7 +62,7 @@ region="import-hero" header="src/app/hero-detail/hero-detail.component.ts (impor
 </code-example>
 
 The `hero` property
-[must be an _Input_ property](guide/template-syntax#inputs-outputs "Input and Output properties"),
+[must be an _Input_ property](guide/inputs-outputs "Input and Output properties"),
 annotated with the `@Input()` decorator,
 because the _external_ `HeroesComponent` [will bind to it](#heroes-component-template) like this.
 
@@ -107,7 +107,7 @@ Bind the `HeroesComponent.selectedHero` to the element's `hero` property like th
 
 </code-example>
 
-`[hero]="selectedHero"` is an Angular [property binding](guide/template-syntax#property-binding).
+`[hero]="selectedHero"` is an Angular [property binding](guide/property-binding).
 
 It's a _one way_ data binding from
 the `selectedHero` property of the `HeroesComponent` to the `hero` property of the target element, which maps to the `hero` property of the `HeroDetailComponent`.
@@ -165,9 +165,9 @@ Here are the code files discussed on this page.
 * You created a separate, reusable `HeroDetailComponent`.
 
 
-* You used a [property binding](guide/template-syntax#property-binding) to give the parent `HeroesComponent` control over the child `HeroDetailComponent`.
+* You used a [property binding](guide/property-binding) to give the parent `HeroesComponent` control over the child `HeroDetailComponent`.
 
 
-* You used the [`@Input` decorator](guide/template-syntax#inputs-outputs)
+* You used the [`@Input` decorator](guide/inputs-outputs)
 to make the `hero` property available for binding
 by the external `HeroesComponent`.

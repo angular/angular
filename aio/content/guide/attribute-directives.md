@@ -18,12 +18,12 @@ There are three kinds of directives in Angular:
 You saw a component for the first time in the [Getting Started](start "Getting Started with Angular") tutorial.
 
 *Structural Directives* change the structure of the view.
-Two examples are [NgFor](guide/template-syntax#ngFor) and [NgIf](guide/template-syntax#ngIf).
+Two examples are [NgFor](guide/built-in-directives#ngFor) and [NgIf](guide/built-in-directives#ngIf).
 Learn about them in the [Structural Directives](guide/structural-directives) guide.
 
 *Attribute directives* are used as attributes of elements.
-The built-in [NgStyle](guide/template-syntax#ngStyle) directive in the
-[Template Syntax](guide/template-syntax) guide, for example,
+The built-in [NgStyle](guide/built-in-directives#ngStyle) directive in the
+[Built-in directives](guide/built-in-directives) guide, for example,
 can change several element styles at the same time.
 
 ## Build a simple attribute directive
