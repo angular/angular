@@ -665,7 +665,7 @@ The router resolves that array into a complete URL.
 
 The `RouterLinkActive` directive toggles CSS classes for active `RouterLink` bindings based on the current `RouterState`.
 
-On each anchor tag, you see a [property binding](guide/template-syntax#property-binding) to the `RouterLinkActive` directive that looks like `routerLinkActive="..."`.
+On each anchor tag, you see a [property binding](guide/property-binding) to the `RouterLinkActive` directive that looks like `routerLinkActive="..."`.
 
 The template expression to the right of the equal sign, `=`, contains a space-delimited string of CSS classes that the Router adds when this link is active (and removes when the link is inactive).
 You set the `RouterLinkActive` directive to a string of classes such as `[routerLinkActive]="'active fluffy'"` or bind it to a component property that returns such a string.
