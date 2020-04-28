@@ -495,9 +495,15 @@ export function refreshView<T>(
     // Marking an OnPush component as dirty from within the `ngAfterViewInit` hook in order to
     // refresh a `NgClass` binding should work. If we would reset the dirty state in the check
     // no changes cycle, the component would be not be dirty for the next update pass. This would
-    // be different in production mode where the component dirty state is not reset.
+    // be different in production mode where the component dirty state is not reset. This is also
+    // why we use a separate flag for CheckNoChanges.
     if (!checkNoChangesMode) {
       lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
+      // If this refresh is not a checkNoChanges pass, add the flag to indicate the view needs to be
+      // checked when CD runs in checkNoChanges mode (even if not Dirty anymore).
+      lView[FLAGS] |= LViewFlags.CheckNoChanges;
+    } else {
+      lView[FLAGS] &= ~LViewFlags.CheckNoChanges;
     }
   } finally {
     leaveView();
@@ -1678,7 +1684,9 @@ function refreshComponent(hostLView: LView, componentHostIdx: number): void {
   const componentView = getComponentLViewByIndex(componentHostIdx, hostLView);
   // Only attached components that are CheckAlways or OnPush and dirty should be refreshed
   if (viewAttachedToChangeDetector(componentView) &&
-      componentView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
+      (componentView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty) ||
+       // Refresh needed as part of checkNoChanges pass
+       (getCheckNoChangesMode() && componentView[FLAGS] & LViewFlags.CheckNoChanges))) {
     const componentTView = componentView[TVIEW];
     refreshView(componentTView, componentView, componentTView.template, componentView[CONTEXT]);
   }

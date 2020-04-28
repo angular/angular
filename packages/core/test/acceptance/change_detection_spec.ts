@@ -91,24 +91,24 @@ describe('change detection', () => {
       const vm: ViewManipulation = fixture.debugElement.childNodes[2].references['vm'];
       const button = fixture.nativeElement.querySelector('button');
       const viewRef = vm.insertIntoVcRef();
-      fixture.detectChanges();
+      fixture.detectChanges(false);
 
       expect(counters).toEqual({componentView: 1, embeddedView: 1});
 
       button.click();
-      fixture.detectChanges();
+      fixture.detectChanges(false);
       expect(counters).toEqual({componentView: 2, embeddedView: 2});
 
       viewRef.detach();
       button.click();
-      fixture.detectChanges();
+      fixture.detectChanges(false);
 
       expect(counters).toEqual({componentView: 3, embeddedView: 2});
 
       // Re-attach the view to ensure that the process can be reversed.
       viewRef.reattach();
       button.click();
-      fixture.detectChanges();
+      fixture.detectChanges(false);
 
       expect(counters).toEqual({componentView: 4, embeddedView: 3});
     });
@@ -153,24 +153,24 @@ describe('change detection', () => {
       const factory = TestBed.get(ComponentFactoryResolver).resolveComponentFactory(DynamicComp);
       const componentRef = vm.vcRef.createComponent(factory);
       const button = fixture.nativeElement.querySelector('button');
-      fixture.detectChanges();
+      fixture.detectChanges(false);
 
       expect(counter).toBe(1);
 
       button.click();
-      fixture.detectChanges();
+      fixture.detectChanges(false);
       expect(counter).toBe(2);
 
       componentRef.changeDetectorRef.detach();
       button.click();
-      fixture.detectChanges();
+      fixture.detectChanges(false);
 
       expect(counter).toBe(2);
 
       // Re-attach the change detector to ensure that the process can be reversed.
       componentRef.changeDetectorRef.reattach();
       button.click();
-      fixture.detectChanges();
+      fixture.detectChanges(false);
 
       expect(counter).toBe(3);
     });
@@ -1650,6 +1650,19 @@ describe('change detection', () => {
     //   expect(() => initWithHostBindings({'[class]': 'unstableClassMapExpression'}))
     //       .not.toThrowError();
     // });
+
+    it('throws ExpressionChangedAfterItWasCheckedError for OnPush components', () => {
+      @Component({template: '{{binding}}', changeDetection: ChangeDetectionStrategy.OnPush})
+      class MyComp {
+        binding = 'initial';
+
+        ngAfterViewInit() { this.binding = 'updated'; }
+      }
+
+      const fixture =
+          TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+      expect(() => fixture.detectChanges()).toThrow();
+    });
   });
 });
 
