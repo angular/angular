@@ -177,7 +177,7 @@ export class NgccConfiguration {
    * @param version The version of the package whose config we want, or `null` if the package's
    * package.json did not exist or was invalid.
    */
-  getConfig(packagePath: AbsoluteFsPath, version: string|null): VersionedPackageConfig {
+  getPackageConfig(packagePath: AbsoluteFsPath, version: string|null): VersionedPackageConfig {
     const cacheKey = packagePath + (version !== null ? `@${version}` : '');
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey)!;

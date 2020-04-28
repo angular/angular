@@ -84,7 +84,7 @@ runInEachFileSystem(() => {
       });
     });
 
-    describe('getConfig()', () => {
+    describe('getPackageConfig()', () => {
       describe('at the package level', () => {
         it('should return configuration for a package found in a package level file, with a matching version',
            () => {
@@ -92,7 +92,7 @@ runInEachFileSystem(() => {
              const readFileSpy = spyOn(fs, 'readFile').and.callThrough();
              const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
              const config =
-                 configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+                 configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
 
              expect(config).toEqual({
                versionRange: '1.0.0',
@@ -107,7 +107,7 @@ runInEachFileSystem(() => {
               'package-1', 'entry-point-1', '1.0.0', 'ignorableDeepImportMatchers: [ /xxx/ ]'));
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
           const config =
-              configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+              configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
 
           expect(config).toEqual({
             versionRange: '1.0.0',
@@ -121,11 +121,11 @@ runInEachFileSystem(() => {
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
 
           // Populate the cache
-          configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+          configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
 
           const readFileSpy = spyOn(fs, 'readFile').and.callThrough();
           const config =
-              configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+              configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
 
           expect(config).toEqual({
             versionRange: '1.0.0',
@@ -139,7 +139,7 @@ runInEachFileSystem(() => {
              loadTestFiles(packageWithConfigFiles('package-2', 'entry-point-1', '1.0.0'));
              const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
              const config =
-                 configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+                 configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
              expect(config).toEqual({versionRange: '*', entryPoints: {}});
            });
 
@@ -149,7 +149,9 @@ runInEachFileSystem(() => {
             contents: `bad js code`
           }]);
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
-          expect(() => configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0'))
+          expect(
+              () => configuration.getPackageConfig(
+                  _Abs('/project-1/node_modules/package-1'), '1.0.0'))
               .toThrowError(`Invalid package configuration file at "${
                   _Abs(
                       '/project-1/node_modules/package-1/ngcc.config.js')}": Unexpected identifier`);
@@ -174,7 +176,7 @@ runInEachFileSystem(() => {
           }]);
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
           const config =
-              configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+              configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
           expect(config).toEqual({
             versionRange: '*',
             entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}},
@@ -209,22 +211,26 @@ runInEachFileSystem(() => {
              }]);
              const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
 
-             expect(configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0'))
+             expect(
+                 configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0'))
                  .toEqual({
                    versionRange: '1.0.0',
                    entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}}
                  });
-             expect(configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '2.5.0'))
+             expect(
+                 configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '2.5.0'))
                  .toEqual({
                    versionRange: '2.*',
                    entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-2')]: {}}
                  });
-             expect(configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '3.2.5'))
+             expect(
+                 configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '3.2.5'))
                  .toEqual({
                    versionRange: '^3.2.0',
                    entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-3')]: {}}
                  });
-             expect(configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '4.0.0'))
+             expect(
+                 configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '4.0.0'))
                  .toEqual({versionRange: '*', entryPoints: {}});
            });
 
@@ -258,7 +264,8 @@ runInEachFileSystem(() => {
 
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
           const getConfig = (packageName: string, version: string|null) =>
-              configuration.getConfig(_Abs(`/project-1/node_modules/${packageName}`), version);
+              configuration.getPackageConfig(
+                  _Abs(`/project-1/node_modules/${packageName}`), version);
 
           // Default version range: *
           expect(getConfig('package-1', '1.0.0-beta.2'))
@@ -352,7 +359,8 @@ runInEachFileSystem(() => {
           }]);
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
 
-          expect(configuration.getConfig(_Abs('/project-1/node_modules/@angular/common'), '1.0.0'))
+          expect(configuration.getPackageConfig(
+                     _Abs('/project-1/node_modules/@angular/common'), '1.0.0'))
               .toEqual({
                 versionRange: '*',
                 entryPoints: {[_Abs('/project-1/node_modules/@angular/common')]: {}}
@@ -383,7 +391,7 @@ runInEachFileSystem(() => {
           expect(readFileSpy).toHaveBeenCalledWith(_Abs('/project-1/ngcc.config.js'));
 
           const package1Config =
-              configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+              configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
           expect(package1Config).toEqual({
             versionRange: '1.0.0',
             entryPoints:
@@ -396,7 +404,7 @@ runInEachFileSystem(() => {
           // This is because overriding happens for packages as a whole and there is no attempt to
           // merge entry-points.
           const package2Config =
-              configuration.getConfig(_Abs('/project-1/node_modules/package-2'), '1.0.0');
+              configuration.getPackageConfig(_Abs('/project-1/node_modules/package-2'), '1.0.0');
           expect(package2Config).toEqual({
             versionRange: '*',
             entryPoints:
@@ -410,7 +418,7 @@ runInEachFileSystem(() => {
       describe('at the default level', () => {
         const originalDefaultConfig = JSON.stringify(DEFAULT_NGCC_CONFIG.packages);
         beforeEach(() => {
-          DEFAULT_NGCC_CONFIG.packages['package-1'] = {
+          DEFAULT_NGCC_CONFIG.packages!['package-1'] = {
             entryPoints: {'./default-level-entry-point': {}},
           };
         });
@@ -422,7 +430,7 @@ runInEachFileSystem(() => {
           expect(readFileSpy).not.toHaveBeenCalled();
 
           const config =
-              configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+              configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
           expect(config).toEqual({
             versionRange: '*',
             entryPoints: {[_Abs('/project-1/node_modules/package-1/default-level-entry-point')]: {}}
@@ -433,7 +441,7 @@ runInEachFileSystem(() => {
           loadTestFiles(packageWithConfigFiles('package-1', 'package-level-entry-point', '1.0.0'));
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
           const config =
-              configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+              configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
           // Note that only the package-level-entry-point is left.
           // This is because overriding happens for packages as a whole and there is no attempt to
           // merge entry-points.
@@ -470,7 +478,7 @@ runInEachFileSystem(() => {
 
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
           const config =
-              configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
+              configuration.getPackageConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
           // Note that only the project-level-entry-point is left.
           // This is because overriding happens for packages as a whole and there is no attempt to
           // merge entry-points.
@@ -501,7 +509,8 @@ runInEachFileSystem(() => {
 
           const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
           const getConfig = (packageName: string, version: string|null) =>
-              configuration.getConfig(_Abs(`/project-1/node_modules/${packageName}`), version);
+              configuration.getPackageConfig(
+                  _Abs(`/project-1/node_modules/${packageName}`), version);
 
           // Default version range: *
           expect(getConfig('package-1', '1.0.0-beta.2'))
