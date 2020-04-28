@@ -36,7 +36,7 @@ This tutorial teaches you how to do the following:
 * Use `ngModel` to create two-way data bindings for reading and writing input-control values.
 * Provide visual feedback using special CSS classes that track the state of the controls.
 * Display validation errors to users and enable or disable form controls based on the form status.
-* Share information across HTML elements using [template reference variables](guide/template-syntax#template-reference-variables-var).
+* Share information across HTML elements using [template reference variables](guide/template-reference-variables).
 
 ## Prerequisites
 
@@ -184,7 +184,7 @@ The note reminds you to remove the diagnostic lines when you have finished obser
 
 When you imported the `FormsModule` in your component, Angular automatically created and attached an [NgForm](api/forms/NgForm "API reference for NgForm") directive to the `<form>` tag in the template (because `NgForm` has the selector `form` that matches `<form>` elements).
 
-To get access to the `NgForm` and the overall form status, declare a [template reference variable](guide/template-syntax#template-reference-variables-var).
+To get access to the `NgForm` and the overall form status, declare a [template reference variable](guide/template-reference-variables).
 
 1. Edit the template file `hero-form.component.html`.
 

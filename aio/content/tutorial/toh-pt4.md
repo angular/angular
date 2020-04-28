@@ -369,7 +369,7 @@ This template binds directly to the component's `messageService`.
 * An `*ngFor` presents the list of messages in repeated `<div>` elements.
 
 
-* An Angular [event binding](guide/template-syntax#event-binding) binds the button's click event
+* An Angular [event binding](guide/event-binding) binds the button's click event
 to `MessageService.clear()`.
 
 The messages will look better when you add the private CSS styles to `messages.component.css`

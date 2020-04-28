@@ -684,7 +684,7 @@ export interface InputDecorator {
    * class App {}
    * ```
    *
-   * @see [Input and Output properties](guide/template-syntax#input-and-output-properties)
+   * @see [Input and Output properties](guide/inputs-outputs)
    */
   (bindingPropertyName?: string): any;
   new(bindingPropertyName?: string): any;
@@ -728,7 +728,7 @@ export interface OutputDecorator {
    *
    * See `Input` decorator for an example of providing a binding name.
    *
-   * @see [Input and Output properties](guide/template-syntax#input-and-output-properties)
+   * @see [Input and Output properties](guide/inputs-outputs)
    *
    */
   (bindingPropertyName?: string): any;
