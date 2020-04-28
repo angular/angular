@@ -10,7 +10,7 @@ import {createHash} from 'crypto';
 import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
-import {DEFAULT_NGCC_CONFIG, NgccConfiguration} from '../../src/packages/configuration';
+import {DEFAULT_NGCC_CONFIG, NgccConfiguration, ProcessLockingConfiguration} from '../../src/packages/configuration';
 
 
 runInEachFileSystem(() => {
@@ -51,7 +51,7 @@ runInEachFileSystem(() => {
         }]);
         const project1Conf = new NgccConfiguration(fs, project1);
         const expectedProject1Config = `{"packages":{"${project1Package1}":[{"entryPoints":{"${
-            project1Package1EntryPoint1}":{}},"versionRange":"*"}]}}`;
+            project1Package1EntryPoint1}":{}},"versionRange":"*"}]},"locking":{}}`;
         expect(project1Conf.hash)
             .toEqual(createHash('md5').update(expectedProject1Config).digest('hex'));
 
@@ -72,7 +72,7 @@ runInEachFileSystem(() => {
         }]);
         const project2Conf = new NgccConfiguration(fs, project2);
         const expectedProject2Config = `{"packages":{"${project2Package1}":[{"entryPoints":{"${
-            project2Package1EntryPoint1}":{"ignore":true}},"versionRange":"*"}]}}`;
+            project2Package1EntryPoint1}":{"ignore":true}},"versionRange":"*"}]},"locking":{}}`;
         expect(project2Conf.hash)
             .toEqual(createHash('md5').update(expectedProject2Config).digest('hex'));
       });
@@ -80,7 +80,10 @@ runInEachFileSystem(() => {
       it('should compute a hash even if there is no project configuration', () => {
         loadTestFiles([{name: _Abs('/project-1/empty.js'), contents: ``}]);
         const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
-        expect(configuration.hash).toEqual('87c535c3ce0eac2a54c246892e0e21a1');
+        expect(configuration.hash)
+            .toEqual(createHash('md5')
+                         .update(JSON.stringify({packages: {}, locking: {}}))
+                         .digest('hex'));
       });
     });
 
@@ -586,6 +589,61 @@ runInEachFileSystem(() => {
                     entryPoints: {},
                   },
                   'Config for package-3@0.9.99');
+        });
+      });
+    });
+
+    describe('getLockingConfig()', () => {
+      let originalDefaultConfig: ProcessLockingConfiguration|undefined;
+      beforeEach(() => {
+        originalDefaultConfig = DEFAULT_NGCC_CONFIG.locking;
+        DEFAULT_NGCC_CONFIG.locking = {retryAttempts: 17, retryDelay: 400};
+      });
+      afterEach(() => DEFAULT_NGCC_CONFIG.locking = originalDefaultConfig);
+
+      it('should return configuration for locking found in a project level file', () => {
+        loadTestFiles([{
+          name: _Abs('/project-1/ngcc.config.js'),
+          contents: `
+                module.exports = {
+                  locking: {
+                    retryAttempts: 4,
+                    retryDelay: 56,
+                  },
+                };`
+        }]);
+        const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+        const config = configuration.getLockingConfig();
+        expect(config).toEqual({
+          retryAttempts: 4,
+          retryDelay: 56,
+        });
+      });
+
+      it('should return configuration for locking partially found in a project level file', () => {
+        loadTestFiles([{
+          name: _Abs('/project-1/ngcc.config.js'),
+          contents: `
+              module.exports = {
+                locking: {
+                  retryAttempts: 4,
+                },
+              };`
+        }]);
+        const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+        const config = configuration.getLockingConfig();
+        expect(config).toEqual({
+          retryAttempts: 4,
+          retryDelay: 400,
+        });
+      });
+
+      it('should return default configuration for locking if no project level file', () => {
+        const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
+        const config = configuration.getLockingConfig();
+        expect(config).toEqual({
+          retryAttempts: 17,
+          retryDelay: 400,
         });
       });
     });
