@@ -33,7 +33,7 @@ export interface NgccProjectConfig<T = NgccPackageConfig> {
 export interface ProcessLockingConfiguration {
   /**
    * The number of times the AsyncLocker will attempt to lock the process before failing.
-   * Defaults to 50.
+   * Defaults to 500.
    */
   retryAttempts?: number;
   /**
@@ -148,7 +148,7 @@ export const DEFAULT_NGCC_CONFIG: NgccProjectConfig = {
   },
   locking: {
     retryDelay: 500,
-    retryAttempts: 50,
+    retryAttempts: 500,
   }
 };
 
