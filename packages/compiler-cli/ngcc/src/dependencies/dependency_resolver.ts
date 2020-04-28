@@ -225,7 +225,7 @@ export class DependencyResolver {
   private filterIgnorableDeepImports(entryPoint: EntryPoint, deepImports: Set<AbsoluteFsPath>):
       AbsoluteFsPath[] {
     const version = (entryPoint.packageJson.version || null) as string | null;
-    const packageConfig = this.config.getConfig(entryPoint.package, version);
+    const packageConfig = this.config.getPackageConfig(entryPoint.package, version);
     const matchers = packageConfig.ignorableDeepImportMatchers || [];
     return Array.from(deepImports)
         .filter(deepImport => !matchers.some(matcher => matcher.test(deepImport)));
