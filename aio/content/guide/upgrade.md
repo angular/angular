@@ -2930,8 +2930,12 @@ AngularJS와는 다르게 Angular 표현식은 빈 객체를 참조할 때 에�
 이제는 이전과 마찬가지로 `index.html`에서 컴포넌트 파일을 불러오던 &lt;script&gt; 태그를 제거해도 됩니다.
 
 
+<!--
 #### Add the _CheckmarkPipe_
+-->
+#### _CheckmarkPipe_ 변환하기
 
+<!--
 The AngularJS directive had a `checkmark` _filter_.
 Turn that into an Angular **pipe**.
 
@@ -2948,9 +2952,29 @@ remove the filter &lt;script&gt; tag from `index.html`:
 
 <code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="checkmarkpipe" header="app.module.ts">
 </code-example>
+-->
+AngularJS 프로젝트에 정의된 디렉티브 중에는 `checkmark`라는 _필터_ 가 있습니다.
+이 필터를 Angular **파이프**로 변환해 봅시다.
 
+AngularJS 필터를 Angular 파이프로 변환하는 메소드는 따로 지원되지 않지만 이 과정은 간단합니다.
+필터 함수를 파이프 클래스로 새로 구현하면 됩니다.
+그리고 이 때 Angular 파이프 클래스에 `PipeTransform` 클래스를 확장해서 `transform` 메소드를 정의하면 됩니다.
+Angular 스타일에 맞게 파이프 파일의 이름을 `checkmark.pipe.ts`로 바꾸고 다음과 같이 수정해 봅시다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/core/checkmark/checkmark.pipe.ts" header="app/core/checkmark/checkmark.pipe.ts"></code-example>
+
+그리고 이렇게 만든 파이프는 `AppModule`에 등록해서 로드하기 때문에 `index.html` 파일에서 필터를 로드하는 &lt;script&gt; 부분은 제거해도 됩니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="checkmarkpipe" header="app.module.ts">
+</code-example>
+
+
+<!--
 ### AOT compile the hybrid app
+-->
+### 하이브리드 앱을 AOT 컴파일하기
 
+<!--
 To use AOT with a hybrid app, you have to first set it up like any other Angular application,
 as shown in [the Ahead-of-time Compilation chapter](guide/aot-compiler).
 
@@ -2976,14 +3000,49 @@ Install `fs-extra` via `npm install fs-extra --save-dev` for better file copying
 </code-example>
 
 And that's all you need to use AOT while upgrading your app!
+-->
+하이브리드 앱을 AOT 컴파일하려면 [AOT 컴파일러 챕터](guide/aot-compiler)에서 설명한 것처럼 Angular 애플리케이션 빌드 환경을 설정해야 합니다.
 
+그리고 AOT 컴파일러가 만든 `ApPComponentFactory`를 부트스트랩하도록 `main-aot.ts` 파일을 수정합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/main-aot.ts" header="app/main-aot.ts">
+</code-example>
+
+그 다음에는 `index.html`에서 로드하던 AngularJS 파일을 모두 `aot/index.html` 파일에 추가합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/aot/index.html" header="aot/index.html">
+</code-example>
+
+AngularJS 코드가 담긴 파일들과 폴리필을 `aot` 프로젝트 폴더에 복사합니다.
+그리고 애플리케이션이 실행되면서 필요한 스마트폰 목록이 담긴 `.json` 파일이나 이미지 파일도 함께 복사해야 합니다.
+
+`npm install fs-extra --save-dev` 명령을 실행해서 `fs-extra` 패키지를 설치하면 파일 복사 과정을 쉽게 처리할 수 있습니다.
+`copy-dist-files.js` 파일을 이렇게 작성하면 됩니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/copy-dist-files.js" header="copy-dist-files.js">
+</code-example>
+
+이제 애플리케이션에 AOT 컴파일러를 적용할 수 있습니다!
+
+
+<!--
 ### Adding The Angular Router And Bootstrap
+-->
+### Angular 라우터 추가하고 부트스트랩하기
 
+<!--
 At this point, you've replaced all AngularJS application components with
 their Angular counterparts, even though you're still serving them from the AngularJS router.
+-->
+여기까지 AngularJS 애플리케이션의 모든 컴포넌트를 Angular로 변환했지만 아직 애플리케이션은 AngularJS 라우터를 사용하고 있습니다.
 
+
+<!--
 #### Add the Angular router
+-->
+#### Angular 라우터 추가하기
 
+<!--
 Angular has an [all-new router](guide/router).
 
 Like all routers, it needs a place in the UI to display routed views.
@@ -3006,8 +3065,34 @@ Add this `<phonecat-app>` element to the `index.html`.
 It replaces the old AngularJS `ng-view` directive:
 
 <code-example path="upgrade-phonecat-3-final/index.html" region="appcomponent" header="index.html (body)"></code-example>
+-->
+Angular가 제공하는 라우터는 [이전과 완전히 다른 라우터](guide/router) 입니다.
 
+그리고 다른 라우터들과 마찬가지로 Angular 라우터를 사용할 때도 화면에 라우팅된 화면을 표시할 부분을 지정해야 합니다.
+Angular에서는 이 영역을 `<router-outlet>`으로 지정하는데, 최상위 라우팅 영역은 애플리케이션 컴포넌트 트리의 *최상위 컴포넌트*에 추가하는 것이 일반적입니다.
+
+하지만 아직까지는 AngularJS 애플리케이션이 화면을 전환하기 때문에 최상위 컴포넌트가 없다고 볼 수 있습니다.
+`app.component.ts` 파일을 생성하고 이 파일에 `AppComponent` 클래스를 다음과 같이 정의합니다:
+
+<code-example path="upgrade-phonecat-3-final/app/app.component.ts" header="app/app.component.ts">
+</code-example>
+
+이 컴포넌트 템플릿에는 `<router-outlet>`만 간단하게 존재합니다.
+왜냐하면 이 컴포넌트는 활성화되는 라우팅 규칙과 연결되는 컴포넌트를 표시하는 것 외에 다른 역할을 하지 않기 때문입니다.
+
+그리고 셀렉터에 `phonecat-app`을 지정했기 때문에 이 최상위 컴포넌트는 애플리케이션이 실행되는 호스트 웹 페이지의 `<phonecat-app>`에 렌더링됩니다.
+
+`index.html` 파일에 `<phonecat-app>` 엘리먼트를 추가하고 이전에 있던 AngularJS `ng-view` 디렉티브를 제거합니다:
+
+<code-example path="upgrade-phonecat-3-final/index.html" region="appcomponent" header="index.html (body)"></code-example>
+
+
+<!--
 #### Create the _Routing Module_
+-->
+#### _라우팅 모듈_ 생성하기
+
+<!--
 A router needs configuration whether it's the AngularJS or Angular or any other router.
 
 The details of Angular router configuration are best left to the [Routing documentation](guide/router)
@@ -3038,9 +3123,37 @@ and the `UpgradeModule` import.
 And since you are routing to `PhoneListComponent` and `PhoneDetailComponent` directly rather than
 using a route template with a `<phone-list>` or `<phone-detail>` tag, you can do away with their
 Angular selectors as well.
+-->
+AngularJS, Angular에 관계없이 라우터는 환경설정이 필요합니다.
 
+그리고 Angular 라우터 설정은 [라우팅 문서](guide/router)에서 설명하는 것처럼 라우터와 관련된 설정을 따로 모아 _라우팅 모듈_ 을 선언하는 방식을 권장합니다.
+
+<code-example path="upgrade-phonecat-3-final/app/app-routing.module.ts" header="app/app-routing.module.ts">
+</code-example>
+
+이 모듈에는 URL과 컴포넌트를 연결하는 라우팅 규칙 2개와 빈 주소로 접근했을 때 기본 주소로 이동하는 라우팅 규칙이 `routes` 객체에 할당되어 있습니다.
+이 객체는 `RouterModule.forRoot` 메소드에 전달되어 애플리케이션 전체 라우팅 규칙을 정의할 것입니다.
+
+이 코드에 사용된 프로바이더는 기본 로케이션 정책 대신 `#!/phones`와 같은 해시 URL을 사용하기 위해 등록한 것입니다.
+
+이제 `AppModule`에 `AppRoutingModule`을 로드하고 _최상위_ 컴포넌트인 `AppComponent`를 부트스트랩하는 컴포넌트로 지정합니다.
+그러면 애플리케이션이 시작되면서 `AppComponent`가 함께 부트스트랩되고, 접근하는 주소와 연결된 컴포넌트가 호스트 웹 페이지에 표시됩니다.
+
+그 다음에는 `app.module.ts` 파일에서 AngularJS 모듈을 부트스트랩하는 `ngDoBootstrap()`과 `UpgradeModule` 부분을 제거하면 됩니다.
+
+<code-example path="upgrade-phonecat-3-final/app/app.module.ts" header="app/app.module.ts">
+</code-example>
+
+이제는 `<phone-list>`나 `<phone-detail>` 태그를 사용하지 않아도 `PhoneListComponent`나 `PhoneDetailComponent`로 전환할 수 있습니다.
+이 컴포넌트들의 셀렉터는 이제 신경쓰지 않아도 됩니다.
+
+
+<!--
 #### Generate links for each phone
+-->
+#### 링크 연결하기
 
+<!--
 You no longer have to hardcode the links to phone details in the phone list.
 You can generate data bindings for each phone's `id` to the `routerLink` directive
 and let that directive construct the appropriate URL to the `PhoneDetailComponent`:
@@ -3052,9 +3165,25 @@ and let that directive construct the appropriate URL to the `PhoneDetailComponen
 See the [Routing](guide/router) page for details.
 
 </div><br>
+-->
+이제는 스마트폰 목록화면에서 상세정보 화면으로 이동하는 링크를 하드코딩 할 필요가 없습니다.
+스마트폰의 `id`를 `routerLink` 디렉티브와 바인딩해서 URL을 구성하도록 다음과 같이 구현하면 됩니다:
 
+<code-example path="upgrade-phonecat-3-final/app/phone-list/phone-list.template.html" region="list" header="app/phone-list/phone-list.template.html (링크가 수정된 목록)"></code-example>
+
+<div class="alert is-helpful">
+
+자세한 내용은 [라우팅](guide/router) 문서를 참고하세요.
+
+</div><br>
+
+
+<!--
 #### Use route parameters
+-->
+#### 라우팅 인자 사용하기
 
+<!--
 The Angular router passes route parameters differently.
 Correct the `PhoneDetail` component constructor to expect an injected `ActivatedRoute` object.
 Extract the `phoneId` from the `ActivatedRoute.snapshot.params` and fetch the phone data as before:
@@ -3063,9 +3192,23 @@ Extract the `phoneId` from the `ActivatedRoute.snapshot.params` and fetch the ph
 </code-example>
 
 You are now running a pure Angular application!
+-->
+Angular 라우터는 라우팅하면서 라우팅 인자를 함께 전달합니다.
+`PhoneDetail` 컴포넌트의 생성자에 `ActivatedRoute` 객체를 의존성으로 주입하도록 수정합니다.
+그러고나면 `ActivatedRoute.snapshot.params`에서 참조하는 `phoneId`로 특정 스마트폰의 데이터를 가져올 수 있습니다:
 
+<code-example path="upgrade-phonecat-3-final/app/phone-detail/phone-detail.component.ts" header="app/phone-detail/phone-detail.component.ts">
+</code-example>
+
+이제 애플리케이션 기본 틀은 모두 Angular로 동작합니다!
+
+
+<!--
 ### Say Goodbye to AngularJS
+-->
+### AngularJS 탈출하기
 
+<!--
 It is time to take off the training wheels and let the application begin
 its new life as a pure, shiny Angular app. The remaining tasks all have to
 do with removing code - which of course is every programmer's favorite task!
@@ -3117,6 +3260,55 @@ When you're done, this is what it should look like:
 
 That is the last you'll see of AngularJS! It has served us well but now
 it's time to say goodbye.
+-->
+이제 준비과정은 모두 끝났고 이제부터는 순수한 Angular 앱으로 변환하는 작업을 시작하면 됩니다.
+필요없는 코드는 모두 제거해 버리세요!
+
+아직 애플리케이션은 하이브리드 앱으로 부트스트랩 됩니다.
+하지만 이제 이렇게 실행할 필요가 없습니다.
+
+`UpgradeModule`을 사용해서 애플리케이션을 부트스트랩하던 것을 Angular 방식으로 바꿔봅시다.
+
+<code-example path="upgrade-phonecat-3-final/app/main.ts" header="main.ts">
+</code-example>
+
+그리고 `app.module.ts` 파일에서 `UpgradeModule`과 관련된 코드, AngularJS 서비스를 사용하기 위해 등록한 [팩토리 프로바이더](guide/upgrade#making-angularjs-dependencies-injectable-to-angular), `app/ajs-upgraded-providers.ts` 파일을 제거합니다.
+
+`downgradeInjectable()`이나 `downgradeComponent()`는 보이는 대로 제거하면 됩니다.
+이 메소드와 관련된 팩토리와 디렉티브도 물론 제거해도 됩니다.
+컴포넌트를 Angular 용으로 모두 변환하고 나면 컴포넌트를 다운그레이드할 필요도 없고 이 컴포넌트들을 `entryComponents`에 등록할 필요도 없습니다.
+
+<code-example path="upgrade-phonecat-3-final/app/app.module.ts" header="app.module.ts">
+</code-example>
+
+아래 파일들도 제거해도 됩니다.
+이 파일들은 AngularJS 모듈을 구성하는 파일이며 Angular에서는 더이상 사용되지 않습니다:
+
+* `app/app.module.ajs.ts`
+* `app/app.config.ts`
+* `app/core/core.module.ts`
+* `app/core/phone/phone.module.ts`
+* `app/phone-detail/phone-detail.module.ts`
+* `app/phone-list/phone-list.module.ts`
+
+AngularJS의 타입 정보를 제공하는 패키지도 삭제합니다.
+이 때 Jasmine과 Angular 폴리필은 남겨둬야 합니다.
+`@angular/upgrade` 패키지를 제거하면 `systemjs.config.js` 파일에서 관련된 코드도 제거하면 됩니다.
+
+<code-example format="">
+  npm uninstall @angular/upgrade --save
+  npm uninstall @types/angular @types/angular-animate @types/angular-cookies @types/angular-mocks @types/angular-resource @types/angular-route @types/angular-sanitize --save-dev
+</code-example>
+
+마지막으로 `index.html` 파일에서 AngularJS 스크립트 파일과 jQuery를 로드하는 코드를 모두 제거합니다.
+이 코드를 제거하고 나면 `index.html` 파일의 내용은 다음과 같이 남을 것입니다:
+
+<code-example path="upgrade-phonecat-3-final/index.html" region="full" header="index.html">
+</code-example>
+
+AngularJS를 보는 일은 이것이 마지막입니다!
+지금까지는 고마웠지만 이제 AngularJS를 놓아줍시다.
+
 
 ## Appendix: Upgrading PhoneCat Tests
 
