@@ -167,32 +167,6 @@ runInEachFileSystem(() => {
                     entryPoints: {
                       './entry-point-1': {}
                     },
-                  },
-                },
-              };`
-          }]);
-          const readFileSpy = spyOn(fs, 'readFile').and.callThrough();
-          const configuration = new NgccConfiguration(fs, _Abs('/project-1'));
-          expect(readFileSpy).toHaveBeenCalledWith(_Abs('/project-1/ngcc.config.js'));
-
-          const config =
-              configuration.getConfig(_Abs('/project-1/node_modules/package-1'), '1.0.0');
-          expect(config).toEqual({
-            versionRange: '*',
-            entryPoints: {[_Abs('/project-1/node_modules/package-1/entry-point-1')]: {}}
-          });
-        });
-
-        it('should return configuration for a package found in a project level file', () => {
-          loadTestFiles([{
-            name: _Abs('/project-1/ngcc.config.js'),
-            contents: `
-              module.exports = {
-                packages: {
-                  'package-1': {
-                    entryPoints: {
-                      './entry-point-1': {}
-                    },
                     ignorableDeepImportMatchers: [ /xxx/ ],
                   },
                 },
