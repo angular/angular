@@ -665,14 +665,14 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       this._nodeMap.set(
           leftMostSafe,
           new cdAst.MethodCall(
-              leftMostSafe.span, leftMostSafe.sourceSpan, leftMostSafe.receiver, leftMostSafe.name,
-              leftMostSafe.args));
+              leftMostSafe.span, leftMostSafe.sourceSpan, leftMostSafe.nameSpan,
+              leftMostSafe.receiver, leftMostSafe.name, leftMostSafe.args));
     } else {
       this._nodeMap.set(
           leftMostSafe,
           new cdAst.PropertyRead(
-              leftMostSafe.span, leftMostSafe.sourceSpan, leftMostSafe.receiver,
-              leftMostSafe.name));
+              leftMostSafe.span, leftMostSafe.sourceSpan, leftMostSafe.nameSpan,
+              leftMostSafe.receiver, leftMostSafe.name));
     }
 
     // Recursively convert the node now without the guarded member access.

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath as AstPathBase, ASTWithSource, RecursiveAstVisitor} from '@angular/compiler';
+import {AST, AstPath as AstPathBase, ASTWithName, ASTWithSource, RecursiveAstVisitor} from '@angular/compiler';
 
 import {AstType} from './expression_type';
 import {BuiltinType, Span, Symbol, SymbolTable, TemplateSource} from './types';
@@ -120,6 +120,17 @@ export function getExpressionSymbol(
     return new AstType(scope, templateInfo.query, {}, templateInfo.source).getType(ast);
   }
 
+  function spanFromName(ast: ASTWithName): Span {
+    // `nameSpan` is an absolute span, but the span expected by the result of this method is
+    // relative to the start of the expression.
+    // TODO(ayazhafiz): migrate to only using absolute spans
+    const offset = ast.sourceSpan.start - ast.span.start;
+    return {
+      start: ast.nameSpan.start - offset,
+      end: ast.nameSpan.end - offset,
+    };
+  }
+
   let symbol: Symbol|undefined = undefined;
   let span: Span|undefined = undefined;
 
@@ -141,22 +152,14 @@ export function getExpressionSymbol(
     visitMethodCall(ast) {
       const receiverType = getType(ast.receiver);
       symbol = receiverType && receiverType.members().get(ast.name);
-      span = ast.span;
+      span = spanFromName(ast);
     },
     visitPipe(ast) {
       if (inSpan(position, ast.nameSpan, /* exclusive */ true)) {
         // We are in a position a pipe name is expected.
         const pipes = templateInfo.query.getPipes();
         symbol = pipes.get(ast.name);
-
-        // `nameSpan` is an absolute span, but the span expected by the result of this method is
-        // relative to the start of the expression.
-        // TODO(ayazhafiz): migrate to only using absolute spans
-        const offset = ast.sourceSpan.start - ast.span.start;
-        span = {
-          start: ast.nameSpan.start - offset,
-          end: ast.nameSpan.end - offset,
-        };
+        span = spanFromName(ast);
       }
     },
     visitPrefixNot(_ast) {},
@@ -164,29 +167,23 @@ export function getExpressionSymbol(
     visitPropertyRead(ast) {
       const receiverType = getType(ast.receiver);
       symbol = receiverType && receiverType.members().get(ast.name);
-      span = ast.span;
+      span = spanFromName(ast);
     },
     visitPropertyWrite(ast) {
       const receiverType = getType(ast.receiver);
-      const {start} = ast.span;
       symbol = receiverType && receiverType.members().get(ast.name);
-      // A PropertyWrite span includes both the LHS (name) and the RHS (value) of the write. In this
-      // visit, only the name is relevant.
-      //   prop=$event
-      //   ^^^^        name
-      //        ^^^^^^ value; visited separately as a nested AST
-      span = {start, end: start + ast.name.length};
+      span = spanFromName(ast);
     },
     visitQuote(_ast) {},
     visitSafeMethodCall(ast) {
       const receiverType = getType(ast.receiver);
       symbol = receiverType && receiverType.members().get(ast.name);
-      span = ast.span;
+      span = spanFromName(ast);
     },
     visitSafePropertyRead(ast) {
       const receiverType = getType(ast.receiver);
       symbol = receiverType && receiverType.members().get(ast.name);
-      span = ast.span;
+      span = spanFromName(ast);
     },
   });
 

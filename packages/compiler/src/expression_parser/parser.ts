@@ -305,9 +305,34 @@ export class _ParseAST {
     return this.peek(0);
   }
 
+  /** Whether all the parser input has been processed. */
+  get atEOF(): boolean {
+    return this.index >= this.tokens.length;
+  }
+
+  /**
+   * Index of the next token to be processed, or the end of the last token if all have been
+   * processed.
+   */
   get inputIndex(): number {
-    return (this.index < this.tokens.length) ? this.next.index + this.offset :
-                                               this.inputLength + this.offset;
+    return this.atEOF ? this.currentEndIndex : this.next.index + this.offset;
+  }
+
+  /**
+   * End index of the last processed token, or the start of the first token if none have been
+   * processed.
+   */
+  get currentEndIndex(): number {
+    if (this.index > 0) {
+      const curToken = this.peek(-1);
+      return curToken.end + this.offset;
+    }
+    // No tokens have been processed yet; return the next token's start or the length of the input
+    // if there is no token.
+    if (this.tokens.length === 0) {
+      return this.inputLength + this.offset;
+    }
+    return this.next.index + this.offset;
   }
 
   /**
@@ -318,12 +343,7 @@ export class _ParseAST {
   }
 
   span(start: number) {
-    // `end` is either the
-    //   - end index of the current token
-    //   - start of the first token (this can happen e.g. when creating an implicit receiver)
-    const curToken = this.peek(-1);
-    const end = this.index > 0 ? curToken.end + this.offset : this.inputIndex;
-    return new ParseSpan(start, end);
+    return new ParseSpan(start, this.currentEndIndex);
   }
 
   sourceSpan(start: number): AbsoluteSourceSpan {
@@ -730,7 +750,9 @@ export class _ParseAST {
 
   parseAccessMemberOrMethodCall(receiver: AST, isSafe: boolean = false): AST {
     const start = receiver.span.start;
+    const nameStart = this.inputIndex;
     const id = this.expectIdentifierOrKeyword();
+    const nameSpan = this.sourceSpan(nameStart);
 
     if (this.consumeOptionalCharacter(chars.$LPAREN)) {
       this.rparensExpected++;
@@ -739,8 +761,8 @@ export class _ParseAST {
       this.rparensExpected--;
       const span = this.span(start);
       const sourceSpan = this.sourceSpan(start);
-      return isSafe ? new SafeMethodCall(span, sourceSpan, receiver, id, args) :
-                      new MethodCall(span, sourceSpan, receiver, id, args);
+      return isSafe ? new SafeMethodCall(span, sourceSpan, nameSpan, receiver, id, args) :
+                      new MethodCall(span, sourceSpan, nameSpan, receiver, id, args);
 
     } else {
       if (isSafe) {
@@ -748,7 +770,8 @@ export class _ParseAST {
           this.error('The \'?.\' operator cannot be used in the assignment');
           return new EmptyExpr(this.span(start), this.sourceSpan(start));
         } else {
-          return new SafePropertyRead(this.span(start), this.sourceSpan(start), receiver, id);
+          return new SafePropertyRead(
+              this.span(start), this.sourceSpan(start), nameSpan, receiver, id);
         }
       } else {
         if (this.consumeOptionalOperator('=')) {
@@ -758,9 +781,10 @@ export class _ParseAST {
           }
 
           const value = this.parseConditional();
-          return new PropertyWrite(this.span(start), this.sourceSpan(start), receiver, id, value);
+          return new PropertyWrite(
+              this.span(start), this.sourceSpan(start), nameSpan, receiver, id, value);
         } else {
-          return new PropertyRead(this.span(start), this.sourceSpan(start), receiver, id);
+          return new PropertyRead(this.span(start), this.sourceSpan(start), nameSpan, receiver, id);
         }
       }
     }

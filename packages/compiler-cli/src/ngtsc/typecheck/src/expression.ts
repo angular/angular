@@ -10,7 +10,7 @@ import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional,
 import * as ts from 'typescript';
 
 import {TypeCheckingConfig} from './api';
-import {addParseSpanInfo, ignoreDiagnostics, wrapForDiagnostics} from './diagnostics';
+import {addParseSpanInfo, wrapForDiagnostics} from './diagnostics';
 import {tsCastToAny} from './ts_util';
 
 export const NULL_AS_ANY =
@@ -179,6 +179,7 @@ class AstTranslator implements AstVisitor {
   visitMethodCall(ast: MethodCall): ts.Expression {
     const receiver = wrapForDiagnostics(this.translate(ast.receiver));
     const method = ts.createPropertyAccess(receiver, ast.name);
+    addParseSpanInfo(method, ast.nameSpan);
     const args = ast.args.map(expr => this.translate(expr));
     const node = ts.createCall(method, undefined, args);
     addParseSpanInfo(node, ast.sourceSpan);
@@ -207,7 +208,9 @@ class AstTranslator implements AstVisitor {
     // This is a normal property read - convert the receiver to an expression and emit the correct
     // TypeScript expression to read the property.
     const receiver = wrapForDiagnostics(this.translate(ast.receiver));
-    const node = ts.createPropertyAccess(receiver, ast.name);
+    const name = ts.createPropertyAccess(receiver, ast.name);
+    addParseSpanInfo(name, ast.nameSpan);
+    const node = wrapForDiagnostics(name);
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
@@ -215,10 +218,18 @@ class AstTranslator implements AstVisitor {
   visitPropertyWrite(ast: PropertyWrite): ts.Expression {
     const receiver = wrapForDiagnostics(this.translate(ast.receiver));
     const left = ts.createPropertyAccess(receiver, ast.name);
-    // TODO(joost): annotate `left` with the span of the property access, which is not currently
-    //  available on `ast`.
+    addParseSpanInfo(left, ast.nameSpan);
+    // TypeScript reports assignment errors on the entire lvalue expression. Annotate the lvalue of
+    // the assignment with the sourceSpan, which includes receivers, rather than nameSpan for
+    // consistency of the diagnostic location.
+    // a.b.c = 1
+    // ^^^^^^^^^ sourceSpan
+    //     ^     nameSpan
+    const leftWithPath = wrapForDiagnostics(left);
+    addParseSpanInfo(leftWithPath, ast.sourceSpan);
     const right = this.translate(ast.value);
-    const node = wrapForDiagnostics(ts.createBinary(left, ts.SyntaxKind.EqualsToken, right));
+    const node =
+        wrapForDiagnostics(ts.createBinary(leftWithPath, ts.SyntaxKind.EqualsToken, right));
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
@@ -235,15 +246,18 @@ class AstTranslator implements AstVisitor {
     if (this.config.strictSafeNavigationTypes) {
       // "a?.method(...)" becomes (null as any ? a!.method(...) : undefined)
       const method = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
+      addParseSpanInfo(method, ast.nameSpan);
       const call = ts.createCall(method, undefined, args);
       node = ts.createParen(ts.createConditional(NULL_AS_ANY, call, UNDEFINED));
     } else if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
       // "a?.method(...)" becomes (a as any).method(...)
       const method = ts.createPropertyAccess(tsCastToAny(receiver), ast.name);
+      addParseSpanInfo(method, ast.nameSpan);
       node = ts.createCall(method, undefined, args);
     } else {
       // "a?.method(...)" becomes (a!.method(...) as any)
       const method = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
+      addParseSpanInfo(method, ast.nameSpan);
       node = tsCastToAny(ts.createCall(method, undefined, args));
     }
     addParseSpanInfo(node, ast.sourceSpan);

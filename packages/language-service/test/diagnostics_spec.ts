@@ -182,7 +182,7 @@ describe('diagnostics', () => {
       mockHost.override(TEST_TEMPLATE, `
         <div *ngIf="title; let titleProxy;">
             'titleProxy' is a string
-          {{~{start-err}titleProxy.notAProperty~{end-err}}}
+          {{titleProxy.~{start-err}notAProperty~{end-err}}}
         </div>
       `);
       const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
@@ -200,7 +200,7 @@ describe('diagnostics', () => {
       mockHost.override(TEST_TEMPLATE, `
         <div *ngIf="title as titleProxy">
             'titleProxy' is a string
-          {{~{start-err}titleProxy.notAProperty~{end-err}}}
+          {{titleProxy.~{start-err}notAProperty~{end-err}}}
         </div>
       `);
       const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
@@ -364,7 +364,7 @@ describe('diagnostics', () => {
     it('report an unknown field in $implicit context', () => {
       mockHost.override(TEST_TEMPLATE, `
         <div *withContext="let myVar">
-          {{ ~{start-emb}myVar.missingField~{end-emb} }}
+          {{ myVar.~{start-emb}missingField~{end-emb} }}
         </div>
       `);
       const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
@@ -383,7 +383,7 @@ describe('diagnostics', () => {
     it('report an unknown field in non implicit context', () => {
       mockHost.override(TEST_TEMPLATE, `
         <div *withContext="let myVar = nonImplicitPerson">
-          {{ ~{start-emb}myVar.missingField~{end-emb} }}
+          {{ myVar.~{start-emb}missingField~{end-emb} }}
         </div>
       `);
       const diags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
@@ -421,8 +421,7 @@ describe('diagnostics', () => {
     const {messageText, start, length} = diagnostics[0];
     expect(messageText)
         .toBe(`Identifier 'xyz' is not defined. 'Hero' does not contain such a member`);
-    expect(start).toBe(content.indexOf('member.xyz'));
-    expect(length).toBe('member.xyz'.length);
+    expect(content.substring(start!, start! + length!)).toBe('xyz');
   });
 
   describe('with $event', () => {
@@ -454,8 +453,7 @@ describe('diagnostics', () => {
       expect(messageText)
           .toBe(
               `Identifier 'notSubstring' is not defined. 'string' does not contain such a member`);
-      expect(start).toBe(content.indexOf('$event'));
-      expect(length).toBe('$event.notSubstring()'.length);
+      expect(content.substring(start!, start! + length!)).toBe('notSubstring');
     });
   });
 
@@ -990,7 +988,7 @@ describe('diagnostics', () => {
             `Consider using the safe navigation operator (optional?.toLowerCase) ` +
             `or non-null assertion operator (optional!.toLowerCase).`);
     expect(category).toBe(ts.DiagnosticCategory.Suggestion);
-    expect(content.substring(start!, start! + length!)).toBe('optional.toLowerCase()');
+    expect(content.substring(start!, start! + length!)).toBe('toLowerCase');
   });
 
   it('should suggest ? or ! operator if property receiver is nullable', () => {
@@ -1004,40 +1002,40 @@ describe('diagnostics', () => {
             `Consider using the safe navigation operator (optional?.length) ` +
             `or non-null assertion operator (optional!.length).`);
     expect(category).toBe(ts.DiagnosticCategory.Suggestion);
-    expect(content.substring(start!, start! + length!)).toBe('optional.length');
+    expect(content.substring(start!, start! + length!)).toBe('length');
   });
 
-  it('should report error if method is not found on non-nullable receiver', () => {
+  it('should report error if method is not found on non-nullable receivers', () => {
     const expressions = [
-      'optional?.someMethod()',
-      'optional!.someMethod()',
+      'optional?',
+      'optional!',
     ];
     for (const expression of expressions) {
-      const content = mockHost.override(TEST_TEMPLATE, `{{${expression}}}`);
+      const content = mockHost.override(TEST_TEMPLATE, `{{ ${expression}.someMethod() }}`);
       const ngDiags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
       expect(ngDiags.length).toBe(1);
       const {start, length, messageText, category} = ngDiags[0];
       expect(messageText)
           .toBe(`Identifier 'someMethod' is not defined. 'string' does not contain such a member`);
       expect(category).toBe(ts.DiagnosticCategory.Error);
-      expect(content.substring(start!, start! + length!)).toBe(expression);
+      expect(content.substring(start!, start! + length!)).toBe('someMethod');
     }
   });
 
-  it('should report error if property is not found on non-nullable receiver', () => {
+  it('should report error if property is not found on non-nullable receivers', () => {
     const expressions = [
-      'optional?.someProp',
-      'optional!.someProp',
+      'optional?',
+      'optional!',
     ];
     for (const expression of expressions) {
-      const content = mockHost.override(TEST_TEMPLATE, `{{${expression}}}`);
+      const content = mockHost.override(TEST_TEMPLATE, `{{ ${expression}.someProp }}`);
       const ngDiags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
       expect(ngDiags.length).toBe(1);
       const {start, length, messageText, category} = ngDiags[0];
       expect(messageText)
           .toBe(`Identifier 'someProp' is not defined. 'string' does not contain such a member`);
       expect(category).toBe(ts.DiagnosticCategory.Error);
-      expect(content.substring(start!, start! + length!)).toBe(expression);
+      expect(content.substring(start!, start! + length!)).toBe('someProp');
     }
   });
 

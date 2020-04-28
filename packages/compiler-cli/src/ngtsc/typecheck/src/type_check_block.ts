@@ -1125,6 +1125,7 @@ class TcbExpressionTranslator {
       return result;
     } else if (ast instanceof MethodCall && ast.receiver instanceof ImplicitReceiver) {
       // Resolve the special `$any(expr)` syntax to insert a cast of the argument to type `any`.
+      // `$any(expr)` -> `expr as any`
       if (ast.name === '$any' && ast.args.length === 1) {
         const expr = this.translate(ast.args[0]);
         const exprAsAny =
@@ -1144,6 +1145,7 @@ class TcbExpressionTranslator {
       }
 
       const method = ts.createPropertyAccess(wrapForDiagnostics(receiver), ast.name);
+      addParseSpanInfo(method, ast.nameSpan);
       const args = ast.args.map(arg => this.translate(arg));
       const node = ts.createCall(method, undefined, args);
       addParseSpanInfo(node, ast.sourceSpan);
@@ -1435,7 +1437,7 @@ class TcbEventHandlerTranslator extends TcbExpressionTranslator {
     if (ast instanceof PropertyRead && ast.receiver instanceof ImplicitReceiver &&
         ast.name === EVENT_PARAMETER) {
       const event = ts.createIdentifier(EVENT_PARAMETER);
-      addParseSpanInfo(event, ast.sourceSpan);
+      addParseSpanInfo(event, ast.nameSpan);
       return event;
     }
 

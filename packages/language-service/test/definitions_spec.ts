@@ -77,7 +77,7 @@ describe('definitions', () => {
   it('should be able to find a method from a call', () => {
     const fileName = mockHost.addCode(`
       @Component({
-        template: '<div (click)="~{start-my}«myClick»()~{end-my};"></div>'
+        template: '<div (click)="«myClick»();"></div>'
       })
       export class MyComponent {
         «ᐱmyClickᐱ() { }»
@@ -88,7 +88,7 @@ describe('definitions', () => {
     expect(result).toBeDefined();
     const {textSpan, definitions} = result!;
 
-    expect(textSpan).toEqual(mockHost.getLocationMarkerFor(fileName, 'my'));
+    expect(textSpan).toEqual(marker);
     expect(definitions).toBeDefined();
     expect(definitions!.length).toBe(1);
     const def = definitions![0];

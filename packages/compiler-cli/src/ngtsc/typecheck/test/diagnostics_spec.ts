@@ -130,7 +130,7 @@ runInEachFileSystem(() => {
           [ngForDeclaration()], [ngForDts()]);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 40): Property 'namme' does not exist on type '{ name: string; }'. Did you mean 'name'?`,
+        `synthetic.html(1, 47): Property 'namme' does not exist on type '{ name: string; }'. Did you mean 'name'?`,
       ]);
     });
 
@@ -329,7 +329,7 @@ runInEachFileSystem(() => {
           };
         }`);
 
-        expect(messages).toEqual([`synthetic.html(1, 26): Object is possibly 'undefined'.`]);
+        expect(messages).toEqual([`synthetic.html(1, 41): Object is possibly 'undefined'.`]);
       });
 
       it('does not produce diagnostic for checked property access', () => {
@@ -365,6 +365,85 @@ class TestComponent {
         `synthetic.html(3, 15): Property 'srcc' does not exist on type 'TestComponent'. Did you mean 'src'?`,
         `synthetic.html(4, 18): Property 'heihgt' does not exist on type 'TestComponent'. Did you mean 'height'?`,
       ]);
+    });
+  });
+
+  describe('method call spans', () => {
+    it('reports invalid method name on method name span', () => {
+      const messages = diagnose(`{{ person.getNName() }}`, `
+        export class TestComponent {
+          person: {
+            getName(): string;
+          };
+        }`);
+
+      expect(messages).toEqual([
+        `synthetic.html(1, 11): Property 'getNName' does not exist on type '{ getName(): string; }'. Did you mean 'getName'?`
+      ]);
+    });
+
+    it('reports invalid method call signature on parameter span', () => {
+      const messages = diagnose(`{{ person.getName('abcd') }}`, `
+        export class TestComponent {
+          person: {
+            getName(): string;
+          };
+        }`);
+
+      expect(messages).toEqual([`synthetic.html(1, 19): Expected 0 arguments, but got 1.`]);
+    });
+  });
+
+  describe('safe method call spans', () => {
+    it('reports invalid method name on method name span', () => {
+      const messages = diagnose(`{{ person?.getNName() }}`, `
+        export class TestComponent {
+          person?: {
+            getName(): string;
+          };
+        }`);
+
+      expect(messages).toEqual([
+        `synthetic.html(1, 12): Property 'getNName' does not exist on type '{ getName(): string; }'. Did you mean 'getName'?`
+      ]);
+    });
+
+    it('reports invalid method call signature on parameter span', () => {
+      const messages = diagnose(`{{ person?.getName('abcd') }}`, `
+        export class TestComponent {
+          person?: {
+            getName(): string;
+          };
+        }`);
+
+      expect(messages).toEqual([`synthetic.html(1, 20): Expected 0 arguments, but got 1.`]);
+    });
+  });
+
+  describe('property write spans', () => {
+    it('reports invalid receiver property access on property access name span', () => {
+      const messages = diagnose(`<div (click)="person.nname = 'jacky'"></div>`, `
+        export class TestComponent {
+          person: {
+            name: string;
+          };
+        }`);
+
+      expect(messages).toEqual([
+        `synthetic.html(1, 22): Property 'nname' does not exist on type '{ name: string; }'. Did you mean 'name'?`
+      ]);
+    });
+
+    it('reports unassignable value on property write span', () => {
+      const messages = diagnose(`<div (click)="person.name = 2"></div>`, `
+        export class TestComponent {
+          person: {
+            name: string;
+          };
+        }`);
+
+      expect(messages).toEqual(
+          [`synthetic.html(1, 15): Type '2' is not assignable to type 'string'.`]);
     });
   });
 });
