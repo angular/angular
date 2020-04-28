@@ -16,7 +16,7 @@ import {InjectionToken} from './injection_token';
 import {ɵɵinject} from './injector_compatibility';
 import {InjectFlags} from './interface/injector';
 import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './interface/provider';
-import {Attribute, Inject, Optional, Self, SkipSelf} from './metadata';
+import {Attribute, AttributeDecorator, Inject, InjectDecorator, Optional, OptionalDecorator, Self, SelfDecorator, SkipSelf, SkipSelfDecorator} from './metadata';
 
 const USE_VALUE =
     getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
@@ -99,7 +99,9 @@ export function injectArgs(types: (Type<any>|InjectionToken<any>|any[])[]): any[
 }
 
 function isValidDecorator(
-    meta: any, decorator: Optional|SkipSelf|Self|Attribute|any, metadataName: string = '') {
-  return meta instanceof decorator || meta.ngMetadataName === metadataName ||
-      (meta !== '' && meta === decorator);
+    meta: any,
+    decorator: OptionalDecorator|SkipSelfDecorator|SelfDecorator|AttributeDecorator|InjectDecorator,
+    metadataName: string = '') {
+  return meta instanceof decorator ||
+      (metadataName !== '' && meta.ngMetadataName === metadataName) || meta === decorator;
 }
