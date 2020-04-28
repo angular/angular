@@ -6,8 +6,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {getFileSystem, NodeJSFileSystem, setFileSystem, relativeFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import * as glob from 'glob';
-import {resolve} from 'path';
 import * as yargs from 'yargs';
 
 import {DiagnosticHandlingStrategy, Diagnostics} from '../diagnostics';
@@ -66,8 +66,9 @@ if (require.main === module) {
           .option('o', {
             alias: 'outputPath',
             required: true,
-            describe:
-                'A output path pattern to where the translated files will be written. The marker `{{LOCALE}}` will be replaced with the target locale. E.g. `dist/{{LOCALE}}`.'
+            describe: 'A output path pattern to where the translated files will be written.\n' +
+                'The path must be either absolute or relative to the current working directory.\n' +
+                'The marker `{{LOCALE}}` will be replaced with the target locale. E.g. `dist/{{LOCALE}}`.'
           })
 
           .option('m', {
@@ -88,11 +89,13 @@ if (require.main === module) {
           .help()
           .parse(args);
 
+  const fs = new NodeJSFileSystem();
+  setFileSystem(fs);
+
   const sourceRootPath = options['r'];
-  const sourceFilePaths =
-      glob.sync(options['s'], {absolute: true, cwd: sourceRootPath, nodir: true});
+  const sourceFilePaths = glob.sync(options['s'], {cwd: sourceRootPath, nodir: true});
   const translationFilePaths: (string|string[])[] = convertArraysFromArgs(options['t']);
-  const outputPathFn = getOutputPathFn(options['o']);
+  const outputPathFn = getOutputPathFn(fs.resolve(options['o']));
   const diagnostics = new Diagnostics();
   const missingTranslation: DiagnosticHandlingStrategy = options['m'];
   const duplicateTranslation: DiagnosticHandlingStrategy = options['d'];
@@ -154,8 +157,9 @@ export interface TranslateFilesOptions {
    */
   translationFileLocales: (string|undefined)[];
   /**
-   * A function that computes the output path of where the translated files will be written.
-   * The marker `{{LOCALE}}` will be replaced with the target locale. E.g. `dist/{{LOCALE}}`.
+   * A function that computes the output path of where the translated files will be
+   * written. The marker `{{LOCALE}}` will be replaced with the target locale. E.g.
+   * `dist/{{LOCALE}}`.
    */
   outputPathFn: OutputPathFn;
   /**
@@ -189,7 +193,9 @@ export function translateFiles({
   duplicateTranslation,
   sourceLocale
 }: TranslateFilesOptions) {
+  const fs = getFileSystem();
   const translationLoader = new TranslationLoader(
+      fs,
       [
         new Xliff2TranslationParser(),
         new Xliff1TranslationParser(),
@@ -199,21 +205,24 @@ export function translateFiles({
       duplicateTranslation, diagnostics);
 
   const resourceProcessor = new Translator(
+      fs,
       [
-        new SourceFileTranslationHandler({missingTranslation}),
-        new AssetTranslationHandler(),
+        new SourceFileTranslationHandler(fs, {missingTranslation}),
+        new AssetTranslationHandler(fs),
       ],
       diagnostics);
 
   // Convert all the `translationFilePaths` elements to arrays.
-  const translationFilePathsArrays =
-      translationFilePaths.map(filePaths => Array.isArray(filePaths) ? filePaths : [filePaths]);
+  const translationFilePathsArrays = translationFilePaths.map(
+      filePaths =>
+          Array.isArray(filePaths) ? filePaths.map(p => fs.resolve(p)) : [fs.resolve(filePaths)]);
 
   const translations =
       translationLoader.loadBundles(translationFilePathsArrays, translationFileLocales);
-  sourceRootPath = resolve(sourceRootPath);
+  sourceRootPath = fs.resolve(sourceRootPath);
   resourceProcessor.translateFiles(
-      sourceFilePaths, sourceRootPath, outputPathFn, translations, sourceLocale);
+      sourceFilePaths.map(relativeFrom), fs.resolve(sourceRootPath), outputPathFn, translations,
+      sourceLocale);
 }
 
 /**
