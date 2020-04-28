@@ -84,7 +84,7 @@ if (require.main === module) {
   const translationFilePaths: string[] = options['t'];
   const outputPathFn = getOutputPathFn(options['o']);
   const diagnostics = new Diagnostics();
-  const missingTranslation: MissingTranslationStrategy = options['m'];
+  const missingTranslation: DiagnosticHandlingStrategy = options['m'];
   const sourceLocale: string|undefined = options['l'];
   const translationFileLocales: string[] = options['target-locales'] || [];
 
@@ -134,7 +134,7 @@ export interface TranslateFilesOptions {
   /**
    * How to handle missing translations.
    */
-  missingTranslation: MissingTranslationStrategy;
+  missingTranslation: DiagnosticHandlingStrategy;
   /**
    * The locale of the source files.
    * If this is provided then a copy of the application will be created with no translation but just

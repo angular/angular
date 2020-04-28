@@ -8,7 +8,8 @@
 import {ɵisMissingTranslationError, ɵmakeTemplateObject, ɵParsedTranslation, ɵSourceLocation, ɵtranslate} from '@angular/localize';
 import {NodePath} from '@babel/traverse';
 import * as t from '@babel/types';
-import {Diagnostics} from './diagnostics';
+
+import {DiagnosticHandlingStrategy, Diagnostics} from './diagnostics';
 
 /**
  * Is the given `expression` the global `$localize` identifier?
@@ -299,14 +300,9 @@ export function isArrayOfExpressions(nodes: t.Node[]): nodes is t.Expression[] {
 
 /** Options that affect how the `makeEsXXXTranslatePlugin()` functions work. */
 export interface TranslatePluginOptions {
-  missingTranslation?: MissingTranslationStrategy;
+  missingTranslation?: DiagnosticHandlingStrategy;
   localizeName?: string;
 }
-
-/**
- * How to handle missing translations.
- */
-export type MissingTranslationStrategy = 'error'|'warning'|'ignore';
 
 /**
  * Translate the text of the given message, using the given translations.
@@ -316,16 +312,12 @@ export type MissingTranslationStrategy = 'error'|'warning'|'ignore';
 export function translate(
     diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation>,
     messageParts: TemplateStringsArray, substitutions: readonly any[],
-    missingTranslation: MissingTranslationStrategy): [TemplateStringsArray, readonly any[]] {
+    missingTranslation: DiagnosticHandlingStrategy): [TemplateStringsArray, readonly any[]] {
   try {
     return ɵtranslate(translations, messageParts, substitutions);
   } catch (e) {
     if (ɵisMissingTranslationError(e)) {
-      if (missingTranslation === 'error') {
-        diagnostics.error(e.message);
-      } else if (missingTranslation === 'warning') {
-        diagnostics.warn(e.message);
-      }
+      diagnostics.add(missingTranslation, e.message);
       // Return the parsed message because this will have the meta blocks stripped
       return [
         ɵmakeTemplateObject(e.parsedMessage.messageParts, e.parsedMessage.messageParts),
