@@ -69,9 +69,9 @@
   resolved "https://registry.yarnpkg.com/@angular/core/-/core-9.1.0.tgz#9dfc386bd1461e0fd4786031fd245da04371421c"
   integrity sha512-RVlyegdIAij0P1wLY5ObIdsBAzvmHkHfElnmfiNKhaDftP6U/3zRtaKDu0bq0jvn1WCQ8zXxFQ8AWyKZwyFS+w==
 
-"@angular/dev-infra-private@angular/dev-infra-private-builds#27a2022":
+"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#414d7dd979092cb52d60b58596927abbc26d40b9":
   version "0.0.0"
-  resolved "https://codeload.github.com/angular/dev-infra-private-builds/tar.gz/27a202208c56365ac0b5beeabedcd5b7ff5cf246"
+  resolved "https://github.com/angular/dev-infra-private-builds.git#414d7dd979092cb52d60b58596927abbc26d40b9"
 
 "@angular/elements@^9.1.0":
   version "9.1.0"

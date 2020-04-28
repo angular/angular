@@ -69,7 +69,7 @@
     "@angular-devkit/schematics": "^9.0.7",
     "@angular/bazel": "^9.1.0",
     "@angular/compiler-cli": "^9.1.0",
-    "@angular/dev-infra-private": "angular/dev-infra-private-builds#27a2022",
+    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#414d7dd979092cb52d60b58596927abbc26d40b9",
     "@angular/platform-browser-dynamic": "^9.1.0",
     "@angular/platform-server": "^9.1.0",
     "@angular/router": "^9.1.0",
