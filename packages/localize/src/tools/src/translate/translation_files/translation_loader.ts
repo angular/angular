@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {AbsoluteFsPath, FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {DiagnosticHandlingStrategy, Diagnostics} from '../../diagnostics';
-import {FileUtils} from '../../file_utils';
 import {TranslationBundle} from '../translator';
 
 import {TranslationParser} from './translation_parsers/translation_parser';
@@ -16,7 +16,7 @@ import {TranslationParser} from './translation_parsers/translation_parser';
  */
 export class TranslationLoader {
   constructor(
-      private translationParsers: TranslationParser<any>[],
+      private fs: FileSystem, private translationParsers: TranslationParser<any>[],
       private duplicateTranslation: DiagnosticHandlingStrategy,
       /** @deprecated */ private diagnostics?: Diagnostics) {}
 
@@ -42,8 +42,9 @@ export class TranslationLoader {
    * If there are both a provided locale and a locale parsed from the file, and they are not the
    * same, then a warning is reported.
    */
-  loadBundles(translationFilePaths: string[][], translationFileLocales: (string|undefined)[]):
-      TranslationBundle[] {
+  loadBundles(
+      translationFilePaths: AbsoluteFsPath[][],
+      translationFileLocales: (string|undefined)[]): TranslationBundle[] {
     return translationFilePaths.map((filePaths, index) => {
       const providedLocale = translationFileLocales[index];
       return this.mergeBundles(filePaths, providedLocale);
@@ -53,8 +54,9 @@ export class TranslationLoader {
   /**
    * Load all the translations from the file at the given `filePath`.
    */
-  private loadBundle(filePath: string, providedLocale: string|undefined): TranslationBundle {
-    const fileContents = FileUtils.readFile(filePath);
+  private loadBundle(filePath: AbsoluteFsPath, providedLocale: string|undefined):
+      TranslationBundle {
+    const fileContents = this.fs.readFile(filePath);
     for (const translationParser of this.translationParsers) {
       const result = translationParser.canParse(filePath, fileContents);
       if (!result) {
@@ -96,7 +98,8 @@ export class TranslationLoader {
    * There is more than one `filePath` for this locale, so load each as a bundle and then merge them
    * all together.
    */
-  private mergeBundles(filePaths: string[], providedLocale: string|undefined): TranslationBundle {
+  private mergeBundles(filePaths: AbsoluteFsPath[], providedLocale: string|undefined):
+      TranslationBundle {
     const bundles = filePaths.map(filePath => this.loadBundle(filePath, providedLocale));
     const bundle = bundles[0];
     for (let i = 1; i < bundles.length; i++) {
