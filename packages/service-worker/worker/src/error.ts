@@ -17,3 +17,7 @@ export function errorToString(error: any): string {
     return `${error}`;
   }
 }
+
+export class SwUnrecoverableStateError extends SwCriticalError {
+  readonly isUnrecoverableState: boolean = true;
+}
