@@ -163,18 +163,19 @@ export class ClusterMaster {
       this.logger.debug(`Spawning another worker process to replace #${worker.id}...`);
       cluster.fork();
     } else {
-      if (assignment.files != null) {
+      const {task, files} = assignment;
+
+      if (files != null) {
         // The crashed worker process was in the middle of writing transformed files:
         // Revert any changes before re-processing the task.
-        this.logger.debug(`Reverting ${assignment.files.length} transformed files...`);
-        for (const file of assignment.files) {
-          this.fileWriter.revertFile(file, assignment.task.entryPoint.package);
-        }
+        this.logger.debug(`Reverting ${files.length} transformed files...`);
+        this.fileWriter.revertBundle(
+            task.entryPoint, files, task.formatPropertiesToMarkAsProcessed);
       }
 
       // The crashed worker process was in the middle of a task:
       // Re-add the task back to the queue.
-      this.taskQueue.markAsUnprocessed(assignment.task);
+      this.taskQueue.markAsUnprocessed(task);
 
       // The crashing might be a result of increased memory consumption by ngcc.
       // Do not spawn another process, unless this was the last worker process.
