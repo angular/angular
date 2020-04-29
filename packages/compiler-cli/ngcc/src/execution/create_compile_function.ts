@@ -12,9 +12,9 @@ import {replaceTsWithNgInErrors} from '../../../src/ngtsc/diagnostics';
 import {FileSystem} from '../../../src/ngtsc/file_system';
 import {ParsedConfiguration} from '../../../src/perform_compile';
 import {Logger} from '../logging/logger';
-import {PathMappings} from '../ngcc_options';
 import {getEntryPointFormat} from '../packages/entry_point';
 import {makeEntryPointBundle} from '../packages/entry_point_bundle';
+import {PathMappings} from '../path_mappings';
 import {FileWriter} from '../writing/file_writer';
 
 import {CreateCompileFn} from './api';
