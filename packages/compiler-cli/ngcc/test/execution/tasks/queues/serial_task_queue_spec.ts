@@ -157,6 +157,36 @@ describe('SerialTaskQueue', () => {
     });
   });
 
+  describe('markAsUnprocessed()', () => {
+    it('should mark an in-progress task as unprocessed, so that it can be picked again', () => {
+      const {queue} = createQueue(3);
+      const task = queue.getNextTask()!;
+
+      expect(() => queue.getNextTask()).toThrow();
+
+      queue.markAsUnprocessed(task);
+      expect(queue.getNextTask()).toBe(task);
+    });
+
+    it('should throw, if the specified task is not in progress', () => {
+      const {tasks, queue} = createQueue(3);
+      queue.getNextTask();
+      queue.markAsCompleted(tasks[0]);
+
+      // Try with a task that is already completed.
+      expect(() => queue.markAsUnprocessed(tasks[0]))
+          .toThrowError(
+              `Trying to mark task that was not in progress as unprocessed: ` +
+              `{entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}`);
+
+      // Try with a task that is not yet started.
+      expect(() => queue.markAsUnprocessed(tasks[2]))
+          .toThrowError(
+              `Trying to mark task that was not in progress as unprocessed: ` +
+              `{entryPoint: entry-point-2, formatProperty: prop-2, processDts: true}`);
+    });
+  });
+
   describe('toString()', () => {
     it('should include the `TaskQueue` constructor\'s name', () => {
       const {queue} = createQueue(0);
