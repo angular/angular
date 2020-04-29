@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 import {AbsoluteFsPath, FileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
-import {PathMappings} from '../ngcc_options';
+import {PathMappings} from '../path_mappings';
 import {BundleProgram, makeBundleProgram} from './bundle_program';
 import {EntryPoint, EntryPointFormat} from './entry_point';
 import {NgccSourcesCompilerHost} from './ngcc_compiler_host';

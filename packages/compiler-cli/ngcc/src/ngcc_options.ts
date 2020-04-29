@@ -5,12 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, resolve} from '../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../src/ngtsc/file_system';
 import {ParsedConfiguration, readConfiguration} from '../../src/perform_compile';
 
 import {ConsoleLogger} from './logging/console_logger';
 import {Logger, LogLevel} from './logging/logger';
 import {SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point';
+import {getPathMappingsFromTsConfig, PathMappings} from './path_mappings';
 import {FileWriter} from './writing/file_writer';
 import {InPlaceFileWriter} from './writing/in_place_file_writer';
 import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer';
@@ -135,25 +136,6 @@ export type AsyncNgccOptions = Omit<SyncNgccOptions, 'async'>&{async: true};
  */
 export type NgccOptions = AsyncNgccOptions|SyncNgccOptions;
 
-export type PathMappings = {
-  baseUrl: string,
-  paths: {[key: string]: string[]}
-};
-
-/**
- * If `pathMappings` is not provided directly, then try getting it from `tsConfig`, if available.
- */
-export function getPathMappingsFromTsConfig(
-    tsConfig: ParsedConfiguration|null, projectPath: AbsoluteFsPath): PathMappings|undefined {
-  if (tsConfig !== null && tsConfig.options.baseUrl !== undefined &&
-      tsConfig.options.paths !== undefined) {
-    return {
-      baseUrl: resolve(projectPath, tsConfig.options.baseUrl),
-      paths: tsConfig.options.paths,
-    };
-  }
-}
-
 export type OptionalNgccOptionKeys = 'targetEntryPointPath'|'tsConfigPath'|'pathMappings';
 export type RequiredNgccOptions = Required<Omit<NgccOptions, OptionalNgccOptionKeys>>;
 export type OptionalNgccOptions = Pick<NgccOptions, OptionalNgccOptionKeys>;
@@ -183,7 +165,7 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
     compileAllFormats = true,
     createNewEntryPointFormats = false,
     logger = new ConsoleLogger(LogLevel.info),
-    pathMappings,
+    pathMappings = getPathMappingsFromTsConfig(tsConfig, projectPath),
     async = false,
     errorOnFailedEntryPoint = false,
     enableI18nLegacyMessageIdFormat = true,
@@ -191,9 +173,7 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
     tsConfigPath,
   } = options;
 
-  pathMappings = options.pathMappings || getPathMappingsFromTsConfig(tsConfig, projectPath);
-
-  if (!!options.targetEntryPointPath) {
+  if (!!targetEntryPointPath) {
     // targetEntryPointPath forces us to error if an entry-point fails.
     errorOnFailedEntryPoint = true;
   }

@@ -32,10 +32,11 @@ import {AsyncLocker} from './locking/async_locker';
 import {LockFileWithChildProcess} from './locking/lock_file_with_child_process';
 import {SyncLocker} from './locking/sync_locker';
 import {Logger} from './logging/logger';
-import {AsyncNgccOptions, getSharedSetup, NgccOptions, PathMappings, SyncNgccOptions} from './ngcc_options';
+import {AsyncNgccOptions, getSharedSetup, NgccOptions, SyncNgccOptions} from './ngcc_options';
 import {NgccConfiguration} from './packages/configuration';
 import {EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point';
 import {EntryPointManifest, InvalidatingEntryPointManifest} from './packages/entry_point_manifest';
+import {PathMappings} from './path_mappings';
 import {FileWriter} from './writing/file_writer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from './writing/package_json_updater';
 
