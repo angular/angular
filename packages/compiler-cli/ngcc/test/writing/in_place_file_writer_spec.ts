@@ -127,7 +127,7 @@ runInEachFileSystem(() => {
         expect(fs.exists(fileBackupPath)).toBeFalse();
       });
 
-      it('should only revert the written file if there is no backup', () => {
+      it('should just remove the written file if there is no backup', () => {
         const fs = getFileSystem();
         const logger = new MockLogger();
         const fileWriter = new InPlaceFileWriter(fs, logger, /* errorOnFailedEntryPoint */ true);

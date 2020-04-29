@@ -508,7 +508,7 @@ runInEachFileSystem(() => {
         esm5bundle = makeTestBundle(fs, entryPoint, 'module', 'esm5');
       });
 
-      it('should revert a written JS file', () => {
+      it('should remove non-typings files', () => {
         const packagePath = _('/node_modules/test');
         fileWriter.writeBundle(
             esm5bundle,
