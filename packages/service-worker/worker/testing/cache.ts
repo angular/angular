@@ -103,11 +103,18 @@ export class MockCache {
     throw 'Not implemented';
   }
 
-  async 'delete'(request: RequestInfo): Promise<boolean> {
-    const url = (typeof request === 'string' ? request : request.url);
+  async 'delete'(request: RequestInfo, options?: CacheQueryOptions): Promise<boolean> {
+    let url = (typeof request === 'string' ? request : request.url);
     if (this.cache.has(url)) {
       this.cache.delete(url);
       return true;
+    } else if (options?.ignoreSearch) {
+      url = this.stripQueryAndHash(url);
+      const cachedUrl = [...this.cache.keys()].find(key => url === this.stripQueryAndHash(key));
+      if (cachedUrl) {
+        this.cache.delete(cachedUrl);
+        return true;
+      }
     }
     return false;
   }
@@ -126,6 +133,13 @@ export class MockCache {
     }
     // TODO: cleanup typings. Typescript doesn't know this can resolve to undefined.
     let res = this.cache.get(url);
+    if (!res && options?.ignoreSearch) {
+      // check if cache has url by ignoring search
+      url = this.stripQueryAndHash(url);
+      const matchingReq = [...this.cache.keys()].find(key => url === this.stripQueryAndHash(key));
+      if (matchingReq !== undefined) res = this.cache.get(matchingReq);
+    }
+
     if (res !== undefined) {
       res = res.clone();
     }
@@ -137,8 +151,9 @@ export class MockCache {
       return Array.from(this.cache.values());
     }
     const url = (typeof request === 'string' ? request : request.url);
-    if (this.cache.has(url)) {
-      return [this.cache.get(url)!];
+    const res = await this.match(url, options);
+    if (res) {
+      return [res];
     } else {
       return [];
     }
@@ -173,6 +188,11 @@ export class MockCache {
       dehydrated[url] = dehydratedResp;
     });
     return dehydrated;
+  }
+
+  /** remove the query/hash part from a url*/
+  private stripQueryAndHash(url: string): string {
+    return url.replace(/[?#].*/, '');
   }
 }
 

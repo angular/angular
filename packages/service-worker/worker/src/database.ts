@@ -49,7 +49,7 @@ export interface Database {
   /**
    * Open a `Table`.
    */
-  open(table: string): Promise<Table>;
+  open(table: string, cacheQueryOptions?: CacheQueryOptions): Promise<Table>;
 }
 
 /**

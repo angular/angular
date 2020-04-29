@@ -60,6 +60,17 @@
               }
             },
             "additionalProperties": false
+          },
+          "cacheQueryOptions" : {
+            "type": "object",
+            "description": "Provide options that are passed to Cache#match.",
+            "properties" : {
+              "ignoreSearch": {
+                "type": "boolean",
+                "description": "Whether to ignore the query string in the URL."
+              }
+            },
+            "additionalProperties": false
           }
         },
         "required": [
@@ -121,6 +132,17 @@
               "maxSize",
               "maxAge"
             ],
+            "additionalProperties": false
+          },
+          "cacheQueryOptions" : {
+            "type": "object",
+            "description": "Provide options that are passed to Cache#match.",
+            "properties" : {
+              "ignoreSearch": {
+                "type": "boolean",
+                "description": "Whether to ignore the query string in the URL."
+              }
+            },
             "additionalProperties": false
           }
         },

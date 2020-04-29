@@ -250,8 +250,10 @@ export class DataGroup {
       private prefix: string) {
     this.patterns = this.config.patterns.map(pattern => new RegExp(pattern));
     this.cache = this.scope.caches.open(`${this.prefix}:dynamic:${this.config.name}:cache`);
-    this.lruTable = this.db.open(`${this.prefix}:dynamic:${this.config.name}:lru`);
-    this.ageTable = this.db.open(`${this.prefix}:dynamic:${this.config.name}:age`);
+    this.lruTable = this.db.open(
+        `${this.prefix}:dynamic:${this.config.name}:lru`, this.config.cacheQueryOptions);
+    this.ageTable = this.db.open(
+        `${this.prefix}:dynamic:${this.config.name}:age`, this.config.cacheQueryOptions);
   }
 
   /**
@@ -472,7 +474,7 @@ export class DataGroup {
       Promise<{res: Response, age: number}|null> {
     // Look for a response in the cache. If one exists, return it.
     const cache = await this.cache;
-    let res = await cache.match(req);
+    let res = await cache.match(req, this.config.cacheQueryOptions);
     if (res !== undefined) {
       // A response was found in the cache, but its age is not yet known. Look it up.
       try {
@@ -564,8 +566,8 @@ export class DataGroup {
   private async clearCacheForUrl(url: string): Promise<void> {
     const [cache, ageTable] = await Promise.all([this.cache, this.ageTable]);
     await Promise.all([
-      cache.delete(this.adapter.newRequest(url, {method: 'GET'})),
-      cache.delete(this.adapter.newRequest(url, {method: 'HEAD'})),
+      cache.delete(this.adapter.newRequest(url, {method: 'GET'}), this.config.cacheQueryOptions),
+      cache.delete(this.adapter.newRequest(url, {method: 'HEAD'}), this.config.cacheQueryOptions),
       ageTable.delete(url),
     ]);
   }

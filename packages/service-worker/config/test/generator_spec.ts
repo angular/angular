@@ -92,6 +92,7 @@ describe('Generator', () => {
           '\\/some\\/url\\?with\\+escaped\\+chars',
           '\\/test\\/relative\\/[^/]*\\.txt',
         ],
+        cacheQueryOptions: undefined,
       }],
       dataGroups: [{
         name: 'other',
@@ -105,6 +106,7 @@ describe('Generator', () => {
         maxAge: 259200000,
         timeoutMs: 60000,
         version: 1,
+        cacheQueryOptions: undefined,
       }],
       navigationUrls: [
         {positive: true, regex: '^\\/included\\/absolute\\/.*$'},
@@ -180,5 +182,77 @@ describe('Generator', () => {
           'Asset-group \'test\' in \'ngsw-config.json\' uses the \'versionedFiles\' option, ' +
           'which is no longer supported. Use \'files\' instead.'));
     }
+  });
+
+  it('generates a correct config with cacheQueryOptions', async () => {
+    const fs = new MockFilesystem({
+      '/index.html': 'This is a test',
+      '/main.js': 'This is a JS file',
+    });
+    const gen = new Generator(fs, '/');
+    const config = await gen.process({
+      index: '/index.html',
+      assetGroups: [{
+        name: 'test',
+        resources: {
+          files: [
+            '/**/*.html',
+            '/**/*.?s',
+          ]
+        },
+        cacheQueryOptions: {ignoreSearch: true},
+      }],
+      dataGroups: [{
+        name: 'other',
+        urls: ['/api/**'],
+        cacheConfig: {
+          maxAge: '3d',
+          maxSize: 100,
+          strategy: 'performance',
+          timeout: '1m',
+        },
+        cacheQueryOptions: {ignoreSearch: false},
+      }]
+    });
+
+    expect(config).toEqual({
+      configVersion: 1,
+      appData: undefined,
+      timestamp: 1234567890123,
+      index: '/index.html',
+      assetGroups: [{
+        name: 'test',
+        installMode: 'prefetch',
+        updateMode: 'prefetch',
+        urls: [
+          '/index.html',
+          '/main.js',
+        ],
+        patterns: [],
+        cacheQueryOptions: {ignoreSearch: true}
+      }],
+      dataGroups: [{
+        name: 'other',
+        patterns: [
+          '\\/api\\/.*',
+        ],
+        strategy: 'performance',
+        maxSize: 100,
+        maxAge: 259200000,
+        timeoutMs: 60000,
+        version: 1,
+        cacheQueryOptions: {ignoreSearch: false}
+      }],
+      navigationUrls: [
+        {positive: true, regex: '^\\/.*$'},
+        {positive: false, regex: '^\\/(?:.+\\/)?[^/]*\\.[^/]*$'},
+        {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*$'},
+        {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$'},
+      ],
+      hashTable: {
+        '/index.html': 'a54d88e06612d820bc3be72877c74f257b561b19',
+        '/main.js': '41347a66676cdc0516934c76d9d13010df420f2c',
+      },
+    });
   });
 });
