@@ -10,10 +10,10 @@ import * as ts from 'typescript/lib/tsserverlibrary';
 import {LanguageService} from './language_service';
 
 export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
-  const {languageService: tsLS, config} = info;
+  const {project, languageService: tsLS, config} = info;
   const angularOnly = config?.angularOnly === true;
 
-  const ngLS = new LanguageService(tsLS);
+  const ngLS = new LanguageService(project, tsLS);
 
   function getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
     const diagnostics: ts.Diagnostic[] = [];
