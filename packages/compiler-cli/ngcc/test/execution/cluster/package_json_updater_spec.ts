@@ -87,25 +87,34 @@ runInEachFileSystem(() => {
                                          .writeChanges(jsonPath, parsed);
 
         writeToProp(['foo']);
-        expect(processSendSpy).toHaveBeenCalledWith({
-          type: 'update-package-json',
-          packageJsonPath: jsonPath,
-          changes: [[['foo'], 'updated', 'unimportant']],
-        });
+        expect(processSendSpy)
+            .toHaveBeenCalledWith(
+                {
+                  type: 'update-package-json',
+                  packageJsonPath: jsonPath,
+                  changes: [[['foo'], 'updated', 'unimportant']],
+                },
+                jasmine.any(Function));
 
         writeToProp(['bar'], {before: 'foo'});
-        expect(processSendSpy).toHaveBeenCalledWith({
-          type: 'update-package-json',
-          packageJsonPath: jsonPath,
-          changes: [[['bar'], 'updated', {before: 'foo'}]],
-        });
+        expect(processSendSpy)
+            .toHaveBeenCalledWith(
+                {
+                  type: 'update-package-json',
+                  packageJsonPath: jsonPath,
+                  changes: [[['bar'], 'updated', {before: 'foo'}]],
+                },
+                jasmine.any(Function));
 
         writeToProp(['bar', 'baz', 'qux'], 'alphabetic', {});
-        expect(processSendSpy).toHaveBeenCalledWith({
-          type: 'update-package-json',
-          packageJsonPath: jsonPath,
-          changes: [[['bar', 'baz', 'qux'], 'updated', 'alphabetic']],
-        });
+        expect(processSendSpy)
+            .toHaveBeenCalledWith(
+                {
+                  type: 'update-package-json',
+                  packageJsonPath: jsonPath,
+                  changes: [[['bar', 'baz', 'qux'], 'updated', 'alphabetic']],
+                },
+                jasmine.any(Function));
       });
 
       it('should update an in-memory representation (if provided)', () => {

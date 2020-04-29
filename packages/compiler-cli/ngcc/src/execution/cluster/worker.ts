@@ -62,7 +62,10 @@ export async function startWorker(logger: Logger, createCompileFn: CreateCompile
   }
 
   const compile = createCompileFn(
-      () => {},
+      transformedFiles => sendMessageToMaster({
+        type: 'transformed-files',
+        files: transformedFiles.map(f => f.path),
+      }),
       (_task, outcome, message) => sendMessageToMaster({type: 'task-completed', outcome, message}));
 
 
@@ -79,7 +82,7 @@ export async function startWorker(logger: Logger, createCompileFn: CreateCompile
               `[Worker #${cluster.worker.id}] Invalid message received: ${JSON.stringify(msg)}`);
       }
     } catch (err) {
-      sendMessageToMaster({
+      await sendMessageToMaster({
         type: 'error',
         error: (err instanceof Error) ? (err.stack || err.message) : err,
       });

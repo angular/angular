@@ -17,7 +17,7 @@ import {AnalyzeEntryPointsFn} from '../api';
 import {CreateTaskCompletedCallback, Task, TaskCompletedCallback, TaskQueue} from '../tasks/api';
 import {stringifyTask} from '../tasks/utils';
 
-import {MessageFromWorker, TaskCompletedMessage, UpdatePackageJsonMessage} from './api';
+import {MessageFromWorker, TaskCompletedMessage, TransformedFilesMessage, UpdatePackageJsonMessage} from './api';
 import {Deferred, sendMessageToWorker} from './utils';
 
 
@@ -180,6 +180,8 @@ export class ClusterMaster {
         throw new Error(`Error on worker #${workerId}: ${msg.error}`);
       case 'task-completed':
         return this.onWorkerTaskCompleted(workerId, msg);
+      case 'transformed-files':
+        return this.onWorkerTransformedFiles(workerId, msg);
       case 'update-package-json':
         return this.onWorkerUpdatePackageJson(workerId, msg);
       default:
@@ -218,6 +220,11 @@ export class ClusterMaster {
     this.taskQueue.markAsCompleted(task);
     this.taskAssignments.set(workerId, null);
     this.maybeDistributeWork();
+  }
+
+  /** Handle a worker's message regarding the files transformed while processing its task. */
+  private onWorkerTransformedFiles(workerId: number, msg: TransformedFilesMessage): void {
+    // TODO: Do something useful with this info.
   }
 
   /** Handle a worker's request to update a `package.json` file. */
