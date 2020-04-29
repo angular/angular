@@ -118,6 +118,16 @@ export interface TaskQueue {
   markAsFailed(task: Task): void;
 
   /**
+   * Mark a task as not processed (i.e. add an in-progress task back to the queue).
+   *
+   * This removes the task from the internal list of in-progress tasks and adds it back to the list
+   * of pending tasks.
+   *
+   * @param task The task to mark as not processed.
+   */
+  markAsUnprocessed(task: Task): void;
+
+  /**
    * Return a string representation of the task queue (for debugging purposes).
    *
    * @return A string representation of the task queue.

@@ -312,6 +312,65 @@ describe('ParallelTaskQueue', () => {
        });
   });
 
+  describe('markAsUnprocessed()', () => {
+    it('should mark an in-progress task as unprocessed, so that it can be picked again', () => {
+      const {queue} = createQueue(2);
+
+      const task1 = queue.getNextTask()!;
+      const task2 = queue.getNextTask()!;
+      expect(queue.allTasksCompleted).toBe(false);
+
+      queue.markAsUnprocessed(task1);
+      queue.markTaskCompleted(task2);
+      expect(queue.allTasksCompleted).toBe(false);
+
+      expect(queue.getNextTask()).toBe(task1);
+      expect(queue.allTasksCompleted).toBe(false);
+
+      queue.markTaskCompleted(task1);
+      expect(queue.allTasksCompleted).toBe(true);
+    });
+
+    it('should throw, if the specified task is not in progress', () => {
+      const {tasks, queue} = createQueue(3);
+      queue.getNextTask();
+      queue.markAsCompleted(tasks[0]);
+
+      // Try with a task that is already completed.
+      expect(() => queue.markAsUnprocessed(tasks[0]))
+          .toThrowError(
+              `Trying to mark task that was not in progress as unprocessed: ` +
+              `{entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}`);
+
+      // Try with a task that is not yet started.
+      expect(() => queue.markAsUnprocessed(tasks[2]))
+          .toThrowError(
+              `Trying to mark task that was not in progress as unprocessed: ` +
+              `{entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}`);
+    });
+
+    it('should not remove the unprocessed task from the lists of blocking tasks', () => {
+      const {tasks, queue} = createQueue(3, 1, {
+        0: [],      // Entry-point #0 does not depend on anything.
+        1: [0],     // Entry-point #1 depends on #0.
+        2: [0, 1],  // Entry-point #2 depends on #0 and #1.
+      });
+
+      // Pick task #0 first, since it is the only one that is not blocked by other tasks.
+      expect(queue.getNextTask()).toBe(tasks[0]);
+
+      // No task available, until task #0 is completed.
+      expect(queue.getNextTask()).toBe(null);
+
+      // Put task #0 back to the unprocessed tasks.
+      queue.markAsUnprocessed(tasks[0]);
+      expect(queue.getNextTask()).toBe(tasks[0]);
+
+      // Other tasks are still blocked on task #0.
+      expect(queue.getNextTask()).toBe(null);
+    });
+  });
+
   describe('toString()', () => {
     it('should include the `TaskQueue` constructor\'s name', () => {
       const {queue} = createQueue(0);
