@@ -340,7 +340,6 @@ interface _ZonePrivate {
   patchEventTarget: (global: any, apis: any[], options?: any) => boolean[];
   patchOnProperties: (obj: any, properties: string[]|null, prototype?: any) => void;
   patchThen: (ctro: Function) => void;
-  setNativePromise: (nativePromise: any) => void;
   patchMethod:
       (target: any, name: string,
        patchFn: (delegate: Function, delegateName: string, name: string) =>
@@ -1419,14 +1418,6 @@ const Zone: ZoneType = (function(global: any) {
     bindArguments: () => [],
     patchThen: () => noop,
     patchMacroTask: () => noop,
-    setNativePromise: (NativePromise: any) => {
-      // sometimes NativePromise.resolve static function
-      // is not ready yet, (such as core-js/es6.promise)
-      // so we need to check here.
-      if (NativePromise && typeof NativePromise.resolve === 'function') {
-        nativeMicroTaskQueuePromise = NativePromise.resolve(0);
-      }
-    },
     patchEventPrototype: () => noop,
     isIEOrEdge: () => false,
     getGlobalObjects: () => undefined,
