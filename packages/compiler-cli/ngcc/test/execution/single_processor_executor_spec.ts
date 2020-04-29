@@ -44,7 +44,7 @@ describe('SingleProcessExecutor', () => {
         tasksCount--;
         return {};
       },
-      markTaskCompleted(_task: Task) {},
+      markAsCompleted(_task: Task) {},
     };
   };
 

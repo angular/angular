@@ -51,7 +51,7 @@ describe('SerialTaskQueue', () => {
    */
   const processNextTask = (queue: TaskQueue): ReturnType<TaskQueue['getNextTask']> => {
     const task = queue.getNextTask();
-    if (task !== null) queue.markTaskCompleted(task);
+    if (task !== null) queue.markAsCompleted(task);
     return task;
   };
 
@@ -135,14 +135,14 @@ describe('SerialTaskQueue', () => {
     });
   });
 
-  describe('markTaskCompleted()', () => {
+  describe('markAsCompleted()', () => {
     it('should mark a task as completed, so that the next task can be picked', () => {
       const {queue} = createQueue(3);
       const task = queue.getNextTask()!;
 
       expect(() => queue.getNextTask()).toThrow();
 
-      queue.markTaskCompleted(task);
+      queue.markAsCompleted(task);
       expect(() => queue.getNextTask()).not.toThrow();
     });
 
@@ -150,7 +150,7 @@ describe('SerialTaskQueue', () => {
       const {tasks, queue} = createQueue(3);
       queue.getNextTask();
 
-      expect(() => queue.markTaskCompleted(tasks[2]))
+      expect(() => queue.markAsCompleted(tasks[2]))
           .toThrowError(
               `Trying to mark task that was not in progress as completed: ` +
               `{entryPoint: entry-point-2, formatProperty: prop-2, processDts: true}`);
@@ -206,7 +206,7 @@ describe('SerialTaskQueue', () => {
 
       expect(queue2.toString()).toContain('  All tasks completed: false\n');
 
-      queue2.markTaskCompleted(task);
+      queue2.markAsCompleted(task);
       expect(queue2.toString()).toContain('  All tasks completed: true\n');
     });
 
@@ -226,14 +226,14 @@ describe('SerialTaskQueue', () => {
               '    - {entryPoint: entry-point-1, formatProperty: prop-1, processDts: false}\n' +
               '    - {entryPoint: entry-point-2, formatProperty: prop-2, processDts: true}\n');
 
-      queue.markTaskCompleted(task1);
+      queue.markAsCompleted(task1);
       const task2 = queue.getNextTask()!;
       expect(queue.toString())
           .toContain(
               '  Unprocessed tasks (1): \n' +
               '    - {entryPoint: entry-point-2, formatProperty: prop-2, processDts: true}\n');
 
-      queue.markTaskCompleted(task2);
+      queue.markAsCompleted(task2);
       processNextTask(queue);
       expect(queue.toString()).toContain('  Unprocessed tasks (0): \n');
     });
@@ -248,14 +248,14 @@ describe('SerialTaskQueue', () => {
               '  In-progress tasks (1): \n' +
               '    - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}');
 
-      queue.markTaskCompleted(task1);
+      queue.markAsCompleted(task1);
       const task2 = queue.getNextTask()!;
       expect(queue.toString())
           .toContain(
               '  In-progress tasks (1): \n' +
               '    - {entryPoint: entry-point-1, formatProperty: prop-1, processDts: false}');
 
-      queue.markTaskCompleted(task2);
+      queue.markAsCompleted(task2);
       processNextTask(queue);
       expect(queue.toString()).toContain('  In-progress tasks (0): ');
     });
@@ -291,7 +291,7 @@ describe('SerialTaskQueue', () => {
               '  In-progress tasks (1): \n' +
               '    - {entryPoint: entry-point-1, formatProperty: prop-1, processDts: false}');
 
-      queue2.markTaskCompleted(task);
+      queue2.markAsCompleted(task);
       processNextTask(queue2);
       expect(queue2.toString())
           .toBe(

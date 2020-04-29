@@ -108,7 +108,7 @@ export interface TaskQueue {
    *
    * @param task The task to mark as completed.
    */
-  markTaskCompleted(task: Task): void;
+  markAsCompleted(task: Task): void;
 
   /**
    * Mark a task as failed.

@@ -215,7 +215,7 @@ export class ClusterMaster {
 
     this.onTaskCompleted(task, msg.outcome, msg.message);
 
-    this.taskQueue.markTaskCompleted(task);
+    this.taskQueue.markAsCompleted(task);
     this.taskAssignments.set(workerId, null);
     this.maybeDistributeWork();
   }
