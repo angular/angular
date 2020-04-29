@@ -31,6 +31,9 @@ export class Diagnostics {
   error(message: string) {
     this.messages.push({type: 'error', message});
   }
+  merge(other: Diagnostics) {
+    this.messages.push(...other.messages);
+  }
   formatDiagnostics(message: string): string {
     const errors = this.messages!.filter(d => d.type === 'error').map(d => ' - ' + d.message);
     const warnings = this.messages!.filter(d => d.type === 'warning').map(d => ' - ' + d.message);

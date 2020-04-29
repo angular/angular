@@ -64,7 +64,7 @@ export class TranslationLoader {
 
         // If we were passed a diagnostics object then copy the messages over to it.
         if (this.diagnostics) {
-          this.diagnostics.messages.push(...diagnostics.messages);
+          this.diagnostics.merge(diagnostics);
         }
 
         return {locale, translations, diagnostics};
