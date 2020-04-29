@@ -16,9 +16,6 @@ import {PathMappings} from '../ngcc_options';
 import {getEntryPointFormat} from '../packages/entry_point';
 import {makeEntryPointBundle} from '../packages/entry_point_bundle';
 import {FileWriter} from '../writing/file_writer';
-import {InPlaceFileWriter} from '../writing/in_place_file_writer';
-import {NewEntryPointFileWriter} from '../writing/new_entry_point_file_writer';
-import {PackageJsonUpdater} from '../writing/package_json_updater';
 
 import {CreateCompileFn} from './api';
 import {Task, TaskProcessingOutcome} from './tasks/api';
@@ -27,13 +24,10 @@ import {Task, TaskProcessingOutcome} from './tasks/api';
  * The function for creating the `compile()` function.
  */
 export function getCreateCompileFn(
-    fileSystem: FileSystem, logger: Logger, pkgJsonUpdater: PackageJsonUpdater,
-    createNewEntryPointFormats: boolean, errorOnFailedEntryPoint: boolean,
+    fileSystem: FileSystem, logger: Logger, fileWriter: FileWriter,
     enableI18nLegacyMessageIdFormat: boolean, tsConfig: ParsedConfiguration|null,
     pathMappings: PathMappings|undefined): CreateCompileFn {
   return (beforeWritingFiles, onTaskCompleted) => {
-    const fileWriter = getFileWriter(
-        fileSystem, logger, pkgJsonUpdater, createNewEntryPointFormats, errorOnFailedEntryPoint);
     const {Transformer} = require('../packages/transformer');
     const transformer = new Transformer(fileSystem, logger, tsConfig);
 
@@ -90,12 +84,4 @@ export function getCreateCompileFn(
       }
     };
   };
-}
-
-function getFileWriter(
-    fs: FileSystem, logger: Logger, pkgJsonUpdater: PackageJsonUpdater,
-    createNewEntryPointFormats: boolean, errorOnFailedEntryPoint: boolean): FileWriter {
-  return createNewEntryPointFormats ?
-      new NewEntryPointFileWriter(fs, logger, errorOnFailedEntryPoint, pkgJsonUpdater) :
-      new InPlaceFileWriter(fs, logger, errorOnFailedEntryPoint);
 }

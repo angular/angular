@@ -11,6 +11,10 @@ import {ParsedConfiguration, readConfiguration} from '../../src/perform_compile'
 import {ConsoleLogger} from './logging/console_logger';
 import {Logger, LogLevel} from './logging/logger';
 import {SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point';
+import {FileWriter} from './writing/file_writer';
+import {InPlaceFileWriter} from './writing/in_place_file_writer';
+import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer';
+import {PackageJsonUpdater} from './writing/package_json_updater';
 
 /**
  * The options to configure the ngcc compiler for synchronous execution.
@@ -156,6 +160,7 @@ export type OptionalNgccOptions = Pick<NgccOptions, OptionalNgccOptionKeys>;
 export type SharedSetup = {
   fileSystem: FileSystem; absBasePath: AbsoluteFsPath; projectPath: AbsoluteFsPath;
   tsConfig: ParsedConfiguration | null;
+  getFileWriter(pkgJsonUpdater: PackageJsonUpdater): FileWriter;
 };
 
 /**
@@ -210,5 +215,8 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
     absBasePath,
     projectPath,
     tsConfig,
+    getFileWriter: (pkgJsonUpdater: PackageJsonUpdater) => createNewEntryPointFormats ?
+        new NewEntryPointFileWriter(fileSystem, logger, errorOnFailedEntryPoint, pkgJsonUpdater) :
+        new InPlaceFileWriter(fileSystem, logger, errorOnFailedEntryPoint),
   };
 }

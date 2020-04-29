@@ -15,6 +15,7 @@ import {MockFileSystemNative, runInEachFileSystem} from '../../../../src/ngtsc/f
 import {ClusterExecutor} from '../../../src/execution/cluster/executor';
 import {ClusterMaster} from '../../../src/execution/cluster/master';
 import {AsyncLocker} from '../../../src/locking/async_locker';
+import {FileWriter} from '../../../src/writing/file_writer';
 import {PackageJsonUpdater} from '../../../src/writing/package_json_updater';
 import {MockLockFile} from '../../helpers/mock_lock_file';
 import {MockLogger} from '../../helpers/mock_logger';
@@ -41,8 +42,8 @@ runInEachFileSystem(() => {
       mockLockFile = new MockLockFile(new MockFileSystemNative(), lockFileLog);
       locker = new AsyncLocker(mockLockFile, mockLogger, 200, 2);
       executor = new ClusterExecutor(
-          42, getFileSystem(), mockLogger, null as unknown as PackageJsonUpdater, locker,
-          createTaskCompletedCallback);
+          42, getFileSystem(), mockLogger, null as unknown as FileWriter,
+          null as unknown as PackageJsonUpdater, locker, createTaskCompletedCallback);
     });
 
     describe('execute()', () => {
@@ -98,8 +99,8 @@ runInEachFileSystem(() => {
         });
 
         executor = new ClusterExecutor(
-            42, getFileSystem(), mockLogger, null as unknown as PackageJsonUpdater, locker,
-            createTaskCompletedCallback);
+            42, getFileSystem(), mockLogger, null as unknown as FileWriter,
+            null as unknown as PackageJsonUpdater, locker, createTaskCompletedCallback);
         let error = '';
         try {
           await executor.execute(anyFn, anyFn);
@@ -118,8 +119,8 @@ runInEachFileSystem(() => {
         });
 
         executor = new ClusterExecutor(
-            42, getFileSystem(), mockLogger, null as unknown as PackageJsonUpdater, locker,
-            createTaskCompletedCallback);
+            42, getFileSystem(), mockLogger, null as unknown as FileWriter,
+            null as unknown as PackageJsonUpdater, locker, createTaskCompletedCallback);
         let error = '';
         try {
           await executor.execute(anyFn, anyFn);
