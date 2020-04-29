@@ -32,6 +32,7 @@ export class ClusterMaster {
   private taskAssignments = new Map<number, {task: Task, files?: AbsoluteFsPath[]}|null>();
   private taskQueue: TaskQueue;
   private onTaskCompleted: TaskCompletedCallback;
+  private remainingRespawnAttempts = 3;
 
   constructor(
       private maxWorkerCount: number, private fileSystem: FileSystem, private logger: Logger,
@@ -184,10 +185,14 @@ export class ClusterMaster {
         this.logger.debug(`Not spawning another worker process to replace #${
             worker.id}. Continuing with ${spawnedWorkerCount} workers...`);
         this.maybeDistributeWork();
-      } else {
+      } else if (this.remainingRespawnAttempts > 0) {
         this.logger.debug(`Spawning another worker process to replace #${worker.id}...`);
         this.remainingRespawnAttempts--;
         cluster.fork();
+      } else {
+        throw new Error(
+            'All worker processes crashed and attempts to re-spawn them failed. ' +
+            'Please check your system and ensure there is enough memory available.');
       }
     }
   }
