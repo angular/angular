@@ -146,7 +146,7 @@ export declare class FlexibleConnectedPositionStrategy implements PositionStrate
     withViewportMargin(margin: number): this;
 }
 
-export declare type FlexibleConnectedPositionStrategyOrigin = ElementRef | HTMLElement | Point & {
+export declare type FlexibleConnectedPositionStrategyOrigin = ElementRef | Element | Point & {
     width?: number;
     height?: number;
 };
