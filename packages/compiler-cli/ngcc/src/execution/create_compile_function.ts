@@ -57,11 +57,11 @@ export function getCreateCompileFn(
             `${formatProperty} (formatPath: ${formatPath} | format: ${format})`);
       }
 
+      logger.info(`Compiling ${entryPoint.name} : ${formatProperty} as ${format}`);
+
       const bundle = makeEntryPointBundle(
           fileSystem, entryPoint, formatPath, isCore, format, processDts, pathMappings, true,
           enableI18nLegacyMessageIdFormat);
-
-      logger.info(`Compiling ${entryPoint.name} : ${formatProperty} as ${format}`);
 
       const result = transformer.transform(bundle);
       if (result.success) {
