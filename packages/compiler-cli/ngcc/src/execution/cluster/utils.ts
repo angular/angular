@@ -44,8 +44,9 @@ export class Deferred<T> {
  * (This function should be invoked from cluster workers only.)
  *
  * @param msg The message to send to the cluster master.
+ * @return A promise that is resolved once the message has been sent.
  */
-export const sendMessageToMaster = (msg: MessageFromWorker): void => {
+export const sendMessageToMaster = (msg: MessageFromWorker): Promise<void> => {
   if (cluster.isMaster) {
     throw new Error('Unable to send message to the master process: Already on the master process.');
   }
@@ -55,7 +56,7 @@ export const sendMessageToMaster = (msg: MessageFromWorker): void => {
     throw new Error('Unable to send message to the master process: Missing `process.send()`.');
   }
 
-  process.send(msg);
+  return new Promise(resolve => process.send!(msg, resolve));
 };
 
 /**
@@ -64,8 +65,9 @@ export const sendMessageToMaster = (msg: MessageFromWorker): void => {
  *
  * @param workerId The ID of the recipient worker.
  * @param msg The message to send to the worker.
+ * @return A promise that is resolved once the message has been sent.
  */
-export const sendMessageToWorker = (workerId: number, msg: MessageToWorker): void => {
+export const sendMessageToWorker = (workerId: number, msg: MessageToWorker): Promise<void> => {
   if (!cluster.isMaster) {
     throw new Error('Unable to send message to worker process: Sender is not the master process.');
   }
@@ -77,5 +79,5 @@ export const sendMessageToWorker = (workerId: number, msg: MessageToWorker): voi
         'Unable to send message to worker process: Recipient does not exist or has disconnected.');
   }
 
-  worker.send(msg);
+  return new Promise(resolve => worker.send(msg, resolve));
 };
