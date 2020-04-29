@@ -486,7 +486,8 @@ export class NgCompiler {
     // Execute the typeCheck phase of each decorator in the program.
     const prepSpan = this.perfRecorder.start('typeCheckPrep');
     const ctx = new TypeCheckContext(
-        typeCheckingConfig, compilation.refEmitter!, compilation.reflector, host.typeCheckFile);
+        typeCheckingConfig, compilation.refEmitter!, compilation.reflector, host.typeCheckFile,
+        host);
     compilation.traitCompiler.typeCheck(ctx);
     this.perfRecorder.stop(prepSpan);
 
@@ -576,8 +577,8 @@ export class NgCompiler {
           (this.options.rootDirs !== undefined && this.options.rootDirs.length > 0)) {
         // rootDirs logic is in effect - use the `LogicalProjectStrategy` for in-project relative
         // imports.
-        localImportStrategy =
-            new LogicalProjectStrategy(reflector, new LogicalFileSystem([...this.host.rootDirs]));
+        localImportStrategy = new LogicalProjectStrategy(
+            reflector, new LogicalFileSystem([...this.host.rootDirs], this.host));
       } else {
         // Plain relative imports are all that's needed.
         localImportStrategy = new RelativePathStrategy(reflector);

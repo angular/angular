@@ -68,7 +68,7 @@ export class NodeJSFileSystem implements FileSystem {
   }
   isCaseSensitive(): boolean {
     if (this._caseSensitive === undefined) {
-      this._caseSensitive = this.exists(togglePathCase(__filename));
+      this._caseSensitive = !fs.existsSync(togglePathCase(__filename));
     }
     return this._caseSensitive;
   }
