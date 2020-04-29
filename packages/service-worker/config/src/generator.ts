@@ -69,6 +69,7 @@ export class Generator {
         name: group.name,
         installMode: group.installMode || 'prefetch',
         updateMode: group.updateMode || group.installMode || 'prefetch',
+        cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
         urls: matchedFiles.map(url => joinUrls(this.baseHref, url)),
         patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref, true)),
       };
@@ -84,6 +85,7 @@ export class Generator {
         maxSize: group.cacheConfig.maxSize,
         maxAge: parseDurationToMs(group.cacheConfig.maxAge),
         timeoutMs: group.cacheConfig.timeout && parseDurationToMs(group.cacheConfig.timeout),
+        cacheQueryOptions: buildCacheQueryOptions(group.cacheQueryOptions),
         version: group.version !== undefined ? group.version : 1,
       };
     });
@@ -148,4 +150,9 @@ function withOrderedKeys<T extends {[key: string]: any}>(unorderedObj: T): T {
   const orderedObj = {} as {[key: string]: any};
   Object.keys(unorderedObj).sort().forEach(key => orderedObj[key] = unorderedObj[key]);
   return orderedObj as T;
+}
+
+function buildCacheQueryOptions(inOptions?: Pick<CacheQueryOptions, 'ignoreSearch'>):
+    CacheQueryOptions|undefined {
+  return inOptions;
 }

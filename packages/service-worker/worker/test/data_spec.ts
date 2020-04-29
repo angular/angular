@@ -9,6 +9,7 @@
 import {CacheDatabase} from '../src/db-cache';
 import {Driver} from '../src/driver';
 import {Manifest} from '../src/manifest';
+import {MockCache} from '../testing/cache';
 import {MockRequest} from '../testing/fetch';
 import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
@@ -66,6 +67,7 @@ const manifest: Manifest = {
       timeoutMs: 1000,
       maxAge: 5000,
       version: 1,
+      cacheQueryOptions: {ignoreSearch: true},
     },
     {
       name: 'testRefresh',
@@ -190,6 +192,27 @@ describe('data cache', () => {
       expect(await driver.checkForUpdate()).toEqual(true);
       await driver.updateClient(await scope.clients.get('default'));
       expect(await makeRequest(scope, '/api/test')).toEqual('version 2');
+    });
+
+    it('CacheQueryOptions are passed through', async () => {
+      await driver.initialized;
+      const matchSpy = spyOn(MockCache.prototype, 'match').and.callThrough();
+      // the first request fetches the resource from the server
+      await makeRequest(scope, '/api/a');
+      // the second one will be loaded from the cache
+      await makeRequest(scope, '/api/a');
+      expect(matchSpy).toHaveBeenCalledWith(new MockRequest('/api/a'), {ignoreSearch: true});
+    });
+
+    it('still matches if search differs but ignoreSearch is enabled', async () => {
+      await driver.initialized;
+      const matchSpy = spyOn(MockCache.prototype, 'match').and.callThrough();
+      // the first request fetches the resource from the server
+      await makeRequest(scope, '/api/a?v=1');
+      // the second one will be loaded from the cache
+      server.clearRequests();
+      await makeRequest(scope, '/api/a?v=2');
+      server.assertNoOtherRequests();
     });
   });
 

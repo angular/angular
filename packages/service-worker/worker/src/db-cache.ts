@@ -31,10 +31,11 @@ export class CacheDatabase implements Database {
         keys => keys.filter(key => key.startsWith(`${this.adapter.cacheNamePrefix}:db:`)));
   }
 
-  open(name: string): Promise<Table> {
+  open(name: string, cacheQueryOptions?: CacheQueryOptions): Promise<Table> {
     if (!this.tables.has(name)) {
-      const table = this.scope.caches.open(`${this.adapter.cacheNamePrefix}:db:${name}`)
-                        .then(cache => new CacheTable(name, cache, this.adapter));
+      const table =
+          this.scope.caches.open(`${this.adapter.cacheNamePrefix}:db:${name}`)
+              .then(cache => new CacheTable(name, cache, this.adapter, cacheQueryOptions));
       this.tables.set(name, table);
     }
     return this.tables.get(name)!;
@@ -45,14 +46,16 @@ export class CacheDatabase implements Database {
  * A `Table` backed by a `Cache`.
  */
 export class CacheTable implements Table {
-  constructor(readonly table: string, private cache: Cache, private adapter: Adapter) {}
+  constructor(
+      readonly table: string, private cache: Cache, private adapter: Adapter,
+      private cacheQueryOptions?: CacheQueryOptions) {}
 
   private request(key: string): Request {
     return this.adapter.newRequest('/' + key);
   }
 
   'delete'(key: string): Promise<boolean> {
-    return this.cache.delete(this.request(key));
+    return this.cache.delete(this.request(key), this.cacheQueryOptions);
   }
 
   keys(): Promise<string[]> {
@@ -60,7 +63,7 @@ export class CacheTable implements Table {
   }
 
   read(key: string): Promise<any> {
-    return this.cache.match(this.request(key)).then(res => {
+    return this.cache.match(this.request(key), this.cacheQueryOptions).then(res => {
       if (res === undefined) {
         return Promise.reject(new NotFound(this.table, key));
       }

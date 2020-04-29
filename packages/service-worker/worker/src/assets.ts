@@ -65,7 +65,8 @@ export abstract class AssetGroup {
 
     // This is the metadata table, which holds specific information for each cached URL, such as
     // the timestamp of when it was added to the cache.
-    this.metadata = this.db.open(`${this.prefix}:${this.config.name}:meta`);
+    this.metadata =
+        this.db.open(`${this.prefix}:${this.config.name}:meta`, this.config.cacheQueryOptions);
 
     // Determine the origin from the registration scope. This is used to differentiate between
     // relative and absolute URLs.
@@ -75,7 +76,7 @@ export abstract class AssetGroup {
   async cacheStatus(url: string): Promise<UpdateCacheStatus> {
     const cache = await this.cache;
     const meta = await this.metadata;
-    const res = await cache.match(this.adapter.newRequest(url));
+    const res = await cache.match(this.adapter.newRequest(url), this.config.cacheQueryOptions);
     if (res === undefined) {
       return UpdateCacheStatus.NOT_CACHED;
     }
@@ -120,7 +121,7 @@ export abstract class AssetGroup {
 
       // Look for a cached response. If one exists, it can be used to resolve the fetch
       // operation.
-      const cachedResponse = await cache.match(req);
+      const cachedResponse = await cache.match(req, this.config.cacheQueryOptions);
       if (cachedResponse !== undefined) {
         // A response has already been cached (which presumably matches the hash for this
         // resource). Check whether it's safe to serve this resource from cache.
@@ -253,7 +254,7 @@ export abstract class AssetGroup {
     const metaTable = await this.metadata;
 
     // Lookup the response in the cache.
-    const response = await cache.match(this.adapter.newRequest(url));
+    const response = await cache.match(this.adapter.newRequest(url), this.config.cacheQueryOptions);
     if (response === undefined) {
       // It's not found, return null.
       return null;
@@ -518,7 +519,7 @@ export class PrefetchAssetGroup extends AssetGroup {
       const req = this.adapter.newRequest(url);
 
       // First, check the cache to see if there is already a copy of this resource.
-      const alreadyCached = (await cache.match(req)) !== undefined;
+      const alreadyCached = (await cache.match(req, this.config.cacheQueryOptions)) !== undefined;
 
       // If the resource is in the cache already, it can be skipped.
       if (alreadyCached) {
@@ -554,7 +555,8 @@ export class PrefetchAssetGroup extends AssetGroup {
 
             // It's possible that the resource in question is already cached. If so,
             // continue to the next one.
-            const alreadyCached = (await cache.match(req) !== undefined);
+            const alreadyCached =
+                (await cache.match(req, this.config.cacheQueryOptions) !== undefined);
             if (alreadyCached) {
               return;
             }
@@ -595,7 +597,7 @@ export class LazyAssetGroup extends AssetGroup {
       const req = this.adapter.newRequest(url);
 
       // First, check the cache to see if there is already a copy of this resource.
-      const alreadyCached = (await cache.match(req)) !== undefined;
+      const alreadyCached = (await cache.match(req, this.config.cacheQueryOptions)) !== undefined;
 
       // If the resource is in the cache already, it can be skipped.
       if (alreadyCached) {

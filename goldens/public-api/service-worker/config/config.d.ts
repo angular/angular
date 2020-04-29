@@ -1,4 +1,5 @@
 export declare interface AssetGroup {
+    cacheQueryOptions?: Pick<CacheQueryOptions, 'ignoreSearch'>;
     installMode?: 'prefetch' | 'lazy';
     name: string;
     resources: {
@@ -23,6 +24,7 @@ export declare interface DataGroup {
         timeout?: Duration;
         strategy?: 'freshness' | 'performance';
     };
+    cacheQueryOptions?: Pick<CacheQueryOptions, 'ignoreSearch'>;
     name: string;
     urls: Glob[];
     version?: number;
