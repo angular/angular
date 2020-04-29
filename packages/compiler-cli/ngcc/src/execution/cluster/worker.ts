@@ -28,24 +28,23 @@ if (require.main === module) {
 
     try {
       const {
-        createNewEntryPointFormats = false,
-        logger = new ConsoleLogger(LogLevel.info),
+        logger,
         pathMappings,
-        errorOnFailedEntryPoint = false,
-        enableI18nLegacyMessageIdFormat = true,
+        enableI18nLegacyMessageIdFormat,
         fileSystem,
-        tsConfig
+        tsConfig,
+        getFileWriter,
       } = getSharedSetup(parseCommandLineOptions(process.argv.slice(2)));
 
       // NOTE: To avoid file corruption, `ngcc` invocation only creates _one_ instance of
       // `PackageJsonUpdater` that actually writes to disk (across all processes).
       // In cluster workers we use a `PackageJsonUpdater` that delegates to the cluster master.
       const pkgJsonUpdater = new ClusterWorkerPackageJsonUpdater();
+      const fileWriter = getFileWriter(pkgJsonUpdater);
 
       // The function for creating the `compile()` function.
       const createCompileFn = getCreateCompileFn(
-          fileSystem, logger, pkgJsonUpdater, createNewEntryPointFormats, errorOnFailedEntryPoint,
-          enableI18nLegacyMessageIdFormat, tsConfig, pathMappings);
+          fileSystem, logger, fileWriter, enableI18nLegacyMessageIdFormat, tsConfig, pathMappings);
 
       await startWorker(logger, createCompileFn);
       process.exitCode = 0;
