@@ -86,8 +86,10 @@ export function mainNgcc(options: NgccOptions): void|Promise<void> {
     return;
   }
 
-  // Execute in parallel, if async execution is acceptable and there are more than 1 CPU cores.
-  const inParallel = async && (os.cpus().length > 1);
+  // Execute in parallel, if async execution is acceptable and there are more than 2 CPU cores.
+  // (One CPU core is always reserved for the master process and we need at least 2 worker processes
+  // in order to run tasks in parallel.)
+  const inParallel = async && (os.cpus().length > 2);
 
   const analyzeEntryPoints = getAnalyzeEntryPointsFn(
       logger, finder, fileSystem, supportedPropertiesToConsider, compileAllFormats,
