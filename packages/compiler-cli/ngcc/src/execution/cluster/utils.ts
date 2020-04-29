@@ -51,12 +51,14 @@ export const sendMessageToMaster = (msg: MessageFromWorker): Promise<void> => {
     throw new Error('Unable to send message to the master process: Already on the master process.');
   }
 
-  if (process.send === undefined) {
-    // Theoretically, this should never happen on a worker process.
-    throw new Error('Unable to send message to the master process: Missing `process.send()`.');
-  }
+  return new Promise((resolve, reject) => {
+    if (process.send === undefined) {
+      // Theoretically, this should never happen on a worker process.
+      throw new Error('Unable to send message to the master process: Missing `process.send()`.');
+    }
 
-  return new Promise(resolve => process.send!(msg, resolve));
+    process.send(msg, (err: Error|null) => (err === null) ? resolve() : reject(err));
+  });
 };
 
 /**
@@ -79,5 +81,7 @@ export const sendMessageToWorker = (workerId: number, msg: MessageToWorker): Pro
         'Unable to send message to worker process: Recipient does not exist or has disconnected.');
   }
 
-  return new Promise(resolve => worker.send(msg, resolve));
+  return new Promise((resolve, reject) => {
+    worker.send(msg, (err: Error|null) => (err === null) ? resolve() : reject(err));
+  });
 };
