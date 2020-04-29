@@ -9,6 +9,8 @@
 import {PrefetchAssetGroup} from '../src/assets';
 import {CacheDatabase} from '../src/db-cache';
 import {IdleScheduler} from '../src/idle';
+import {MockCache} from '../testing/cache';
+import {MockRequest} from '../testing/fetch';
 import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTable, tmpManifestSingleAssetGroup} from '../testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 
@@ -19,7 +21,7 @@ if (!SwTestHarness.envIsSupported()) {
 }
 
 const dist = new MockFileSystemBuilder()
-                 .addFile('/foo.txt', 'this is foo')
+                 .addFile('/foo.txt', 'this is foo', {Vary: 'Accept'})
                  .addFile('/bar.txt', 'this is bar')
                  .build();
 
@@ -83,6 +85,12 @@ describe('prefetch assets', () => {
         new CacheDatabase(badScope, badScope), 'test');
     const err = await errorFrom(group.initializeFully());
     expect(err.message).toContain('Hash mismatch');
+  });
+  it('CacheQueryOptions are passed through', async () => {
+    await group.initializeFully();
+    const matchSpy = spyOn(MockCache.prototype, 'match').and.callThrough();
+    await group.handleFetch(scope.newRequest('/foo.txt'), scope);
+    expect(matchSpy).toHaveBeenCalledWith(new MockRequest('/foo.txt'), {ignoreVary: true});
   });
 });
 })();

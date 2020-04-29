@@ -56,6 +56,7 @@ const manifest: Manifest = {
         '/bar.txt',
       ],
       patterns: [],
+      cacheQueryOptions: {ignoreVary: true},
     },
   ],
   dataGroups: [
@@ -67,7 +68,7 @@ const manifest: Manifest = {
       timeoutMs: 1000,
       maxAge: 5000,
       version: 1,
-      cacheQueryOptions: {ignoreSearch: true},
+      cacheQueryOptions: {ignoreVary: true, ignoreSearch: true},
     },
     {
       name: 'testRefresh',
@@ -78,6 +79,7 @@ const manifest: Manifest = {
       refreshAheadMs: 1000,
       maxAge: 5000,
       version: 1,
+      cacheQueryOptions: {ignoreVary: true},
     },
     {
       name: 'testFresh',
@@ -87,6 +89,7 @@ const manifest: Manifest = {
       timeoutMs: 1000,
       maxAge: 5000,
       version: 1,
+      cacheQueryOptions: {ignoreVary: true},
     },
   ],
   navigationUrls: [],
@@ -201,7 +204,8 @@ describe('data cache', () => {
       await makeRequest(scope, '/api/a');
       // the second one will be loaded from the cache
       await makeRequest(scope, '/api/a');
-      expect(matchSpy).toHaveBeenCalledWith(new MockRequest('/api/a'), {ignoreSearch: true});
+      expect(matchSpy).toHaveBeenCalledWith(
+          new MockRequest('/api/a'), {ignoreVary: true, ignoreSearch: true});
     });
 
     it('still matches if search differs but ignoreSearch is enabled', async () => {
@@ -311,6 +315,27 @@ describe('data cache', () => {
       scope.advance(2000);
 
       expect(await res2).toBe('');
+    });
+
+    it('CacheQueryOptions are passed through when falling back to cache', async () => {
+      const matchSpy = spyOn(MockCache.prototype, 'match').and.callThrough();
+      await makeRequest(scope, '/fresh/data');
+      server.clearRequests();
+      scope.updateServerState(serverUpdate);
+      serverUpdate.pause();
+      const [res, done] = makePendingRequest(scope, '/fresh/data');
+
+      await serverUpdate.nextRequest;
+
+      // Since the network request doesn't return within the timeout of 1,000ms,
+      // this should return cached data.
+      scope.advance(2000);
+      await res;
+      expect(matchSpy).toHaveBeenCalledWith(new MockRequest('/fresh/data'), {ignoreVary: true});
+
+      // Unpausing allows the worker to continue with caching.
+      serverUpdate.unpause();
+      await done;
     });
   });
 });

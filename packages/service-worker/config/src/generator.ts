@@ -153,6 +153,9 @@ function withOrderedKeys<T extends {[key: string]: any}>(unorderedObj: T): T {
 }
 
 function buildCacheQueryOptions(inOptions?: Pick<CacheQueryOptions, 'ignoreSearch'>):
-    CacheQueryOptions|undefined {
-  return inOptions;
+    CacheQueryOptions {
+  return {
+    ignoreVary: true,
+    ...inOptions,
+  };
 }
