@@ -9,10 +9,10 @@ import {AbsoluteFsPath, FileSystem, join, PathSegment, relative, relativeFrom} f
 import {EntryPointWithDependencies} from '../dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {Logger} from '../logging/logger';
-import {PathMappings} from '../ngcc_options';
 import {hasBeenProcessed} from '../packages/build_marker';
 import {NgccConfiguration} from '../packages/configuration';
 import {EntryPoint, EntryPointJsonProperty, getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT} from '../packages/entry_point';
+import {PathMappings} from '../path_mappings';
 
 import {EntryPointFinder} from './interface';
 import {getBasePaths} from './utils';

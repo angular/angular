@@ -9,10 +9,10 @@ import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_s
 import {EntryPointWithDependencies} from '../dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {Logger} from '../logging/logger';
-import {PathMappings} from '../ngcc_options';
 import {NgccConfiguration} from '../packages/configuration';
 import {getEntryPointInfo, INCOMPATIBLE_ENTRY_POINT, NO_ENTRY_POINT} from '../packages/entry_point';
 import {EntryPointManifest} from '../packages/entry_point_manifest';
+import {PathMappings} from '../path_mappings';
 import {NGCC_DIRECTORY} from '../writing/new_entry_point_file_writer';
 
 import {EntryPointFinder} from './interface';
