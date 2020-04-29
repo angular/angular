@@ -62,17 +62,18 @@ export async function startWorker(logger: Logger, createCompileFn: CreateCompile
   }
 
   const compile = createCompileFn(
+      () => {},
       (_task, outcome, message) => sendMessageToMaster({type: 'task-completed', outcome, message}));
 
 
   // Listen for `ProcessTaskMessage`s and process tasks.
-  cluster.worker.on('message', (msg: MessageToWorker) => {
+  cluster.worker.on('message', async (msg: MessageToWorker) => {
     try {
       switch (msg.type) {
         case 'process-task':
           logger.debug(
               `[Worker #${cluster.worker.id}] Processing task: ${stringifyTask(msg.task)}`);
-          return compile(msg.task);
+          return await compile(msg.task);
         default:
           throw new Error(
               `[Worker #${cluster.worker.id}] Invalid message received: ${JSON.stringify(msg)}`);
