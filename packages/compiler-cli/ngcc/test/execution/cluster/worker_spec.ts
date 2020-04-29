@@ -11,8 +11,11 @@
 import * as cluster from 'cluster';
 import {EventEmitter} from 'events';
 
+import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
+import {CreateCompileFn} from '../../../src/execution/api';
 import {startWorker} from '../../../src/execution/cluster/worker';
 import {Task, TaskCompletedCallback, TaskProcessingOutcome} from '../../../src/execution/tasks/api';
+import {FileToWrite} from '../../../src/rendering/utils';
 import {MockLogger} from '../../helpers/mock_logger';
 import {mockProperty} from '../../helpers/spy_utils';
 
@@ -60,6 +63,24 @@ describe('startWorker()', () => {
       expect(createCompileFnSpy).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
     });
 
+    it('should set up `compileFn()` to send `transformed-files` messages to master', () => {
+      startWorker(mockLogger, createCompileFnSpy);
+
+      const mockTransformedFiles: FileToWrite[] = [
+        {path: '/foo' as AbsoluteFsPath, contents: 'FOO'},
+        {path: '/bar' as AbsoluteFsPath, contents: 'BAR'},
+      ];
+      const beforeWritingFiles: Parameters<CreateCompileFn>[0] =
+          createCompileFnSpy.calls.argsFor(0)[0];
+
+      beforeWritingFiles(mockTransformedFiles);
+
+      expect(processSendSpy).toHaveBeenCalledTimes(1);
+      expect(processSendSpy)
+          .toHaveBeenCalledWith(
+              {type: 'transformed-files', files: ['/foo', '/bar']}, jasmine.any(Function));
+    });
+
     it('should set up `compileFn()` to send `task-completed` messages to master', () => {
       startWorker(mockLogger, createCompileFnSpy);
       const onTaskCompleted: TaskCompletedCallback = createCompileFnSpy.calls.argsFor(0)[1];
@@ -68,17 +89,21 @@ describe('startWorker()', () => {
       expect(processSendSpy).toHaveBeenCalledTimes(1);
       expect(processSendSpy)
           .toHaveBeenCalledWith(
-              {type: 'task-completed', outcome: TaskProcessingOutcome.Processed, message: null});
+              {type: 'task-completed', outcome: TaskProcessingOutcome.Processed, message: null},
+              jasmine.any(Function));
 
       processSendSpy.calls.reset();
 
       onTaskCompleted(null as any, TaskProcessingOutcome.Failed, 'error message');
       expect(processSendSpy).toHaveBeenCalledTimes(1);
-      expect(processSendSpy).toHaveBeenCalledWith({
-        type: 'task-completed',
-        outcome: TaskProcessingOutcome.Failed,
-        message: 'error message',
-      });
+      expect(processSendSpy)
+          .toHaveBeenCalledWith(
+              {
+                type: 'task-completed',
+                outcome: TaskProcessingOutcome.Failed,
+                message: 'error message',
+              },
+              jasmine.any(Function));
     });
 
     it('should return a promise (that is never resolved)', done => {
@@ -129,11 +154,13 @@ describe('startWorker()', () => {
 
       err = 'Error string.';
       cluster.worker.emit('message', {type: 'process-task', task: mockTask});
-      expect(processSendSpy).toHaveBeenCalledWith({type: 'error', error: err});
+      expect(processSendSpy)
+          .toHaveBeenCalledWith({type: 'error', error: err}, jasmine.any(Function));
 
       err = new Error('Error object.');
       cluster.worker.emit('message', {type: 'process-task', task: mockTask});
-      expect(processSendSpy).toHaveBeenCalledWith({type: 'error', error: err.stack});
+      expect(processSendSpy)
+          .toHaveBeenCalledWith({type: 'error', error: err.stack}, jasmine.any(Function));
     });
 
     it('should throw, when an unknown message type is received', () => {
@@ -141,11 +168,14 @@ describe('startWorker()', () => {
       cluster.worker.emit('message', {type: 'unknown', foo: 'bar'});
 
       expect(compileFnSpy).not.toHaveBeenCalled();
-      expect(processSendSpy).toHaveBeenCalledWith({
-        type: 'error',
-        error: jasmine.stringMatching(
-            'Error: \\[Worker #42\\] Invalid message received: {"type":"unknown","foo":"bar"}'),
-      });
+      expect(processSendSpy)
+          .toHaveBeenCalledWith(
+              {
+                type: 'error',
+                error: jasmine.stringMatching(
+                    'Error: \\[Worker #42\\] Invalid message received: {"type":"unknown","foo":"bar"}'),
+              },
+              jasmine.any(Function));
     });
   });
 });
