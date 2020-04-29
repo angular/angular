@@ -38,7 +38,6 @@ export const MAT_BUTTON_HOST = {
   // Add a class that applies to all buttons. This makes it easier to target if somebody
   // wants to target all Material buttons.
   '[class.mat-mdc-button-base]': 'true',
-  'class': 'mat-mdc-focus-indicator',
 };
 
 /** Configuration for the ripple animation. */
@@ -154,7 +153,6 @@ export const MAT_ANCHOR_HOST = {
   // an unthemed version. If color is undefined, apply a CSS class that makes it easy to
   // select and style this "theme".
   '[class.mat-unthemed]': '!color',
-  'class': 'mat-mdc-focus-indicator',
   // Add a class that applies to all buttons. This makes it easier to target if somebody
   // wants to target all Material buttons.
   '[class.mat-mdc-button-base]': 'true',

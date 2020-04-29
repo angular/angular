@@ -235,10 +235,8 @@ $mat-typography-level-mappings: (
   // values are necessary to ensure that the focus indicator is sufficiently
   // contrastive and renders appropriately.
 
-  .mat-mdc-focus-indicator.mdc-button::before,
-  .mat-mdc-focus-indicator.mdc-chip::before,
-  .mat-mdc-focus-indicator.mdc-fab::before,
-  .mat-mdc-focus-indicator.mdc-icon-button::before {
+  .mat-mdc-button-base .mat-mdc-focus-indicator::before,
+  .mat-mdc-focus-indicator.mdc-chip::before {
     margin: $mat-focus-indicator-border-width * -2;
   }
 
@@ -260,6 +258,7 @@ $mat-typography-level-mappings: (
   .mdc-checkbox__native-control:focus ~ .mat-mdc-focus-indicator::before,
   .mat-mdc-slide-toggle-focused .mat-mdc-focus-indicator::before,
   .mat-mdc-radio-button.cdk-focused .mat-mdc-focus-indicator::before,
+  .mat-mdc-button-base:focus .mat-mdc-focus-indicator::before,
 
   // For all other components, render the focus indicator on focus.
   .mat-mdc-focus-indicator:focus::before {

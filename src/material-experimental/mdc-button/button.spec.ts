@@ -264,7 +264,7 @@ describe('MDC-based MatButton', () => {
         [...fixture.debugElement.nativeElement.querySelectorAll('a, button')];
 
     expect(buttonNativeElements
-        .every(element => element.classList.contains('mat-mdc-focus-indicator'))).toBe(true);
+        .every(element => !!element.querySelector('.mat-mdc-focus-indicator'))).toBe(true);
   });
 });
 
