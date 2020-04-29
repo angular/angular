@@ -18,6 +18,21 @@ ls_rollup_bundle(
     ],
 )
 
+ls_rollup_bundle(
+    name = "ivy",
+    entry_point = "//packages/language-service/ivy:ts_plugin.ts",
+    globals = {
+        "fs": "fs",
+        "path": "path",
+        "typescript/lib/tsserverlibrary": "ts",
+    },
+    license_banner = ":banner",
+    visibility = ["//packages/language-service:__pkg__"],
+    deps = [
+        "//packages/language-service/ivy",
+    ],
+)
+
 genrule(
     name = "banner",
     srcs = ["banner.js"],
