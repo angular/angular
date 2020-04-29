@@ -41,8 +41,8 @@ export class ParallelTaskQueue extends BaseTaskQueue {
     return nextTask;
   }
 
-  markTaskCompleted(task: Task): void {
-    super.markTaskCompleted(task);
+  markAsCompleted(task: Task): void {
+    super.markAsCompleted(task);
 
     if (!this.dependencies.has(task)) {
       return;
