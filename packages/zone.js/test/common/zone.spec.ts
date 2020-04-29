@@ -334,7 +334,7 @@ describe('Zone', function() {
         Zone.assertZonePatched();
       });
 
-      it('should keep ZoneAwarePromise has been patched', () => {
+      xit('should throw error if ZoneAwarePromise has been overwritten', () => {
         class WrongPromise {
           static resolve(value: any) {}
 
@@ -342,15 +342,12 @@ describe('Zone', function() {
         }
 
         const ZoneAwarePromise = global.Promise;
-        const NativePromise = (global as any)[zoneSymbol('Promise')];
-        global.Promise = WrongPromise;
         try {
-          expect(ZoneAwarePromise).toBeTruthy();
-          Zone.assertZonePatched();
-          expect(global.Promise).toBe(ZoneAwarePromise);
+          global.Promise = WrongPromise;
+          expect(Zone.assertZonePatched()).toThrow();
         } finally {
           // restore it.
-          global.Promise = NativePromise;
+          global.Promise = ZoneAwarePromise;
         }
         Zone.assertZonePatched();
       });
