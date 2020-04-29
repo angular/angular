@@ -12,6 +12,7 @@ import * as cluster from 'cluster';
 
 import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system';
 import {Logger} from '../../logging/logger';
+import {FileWriter} from '../../writing/file_writer';
 import {PackageJsonUpdater} from '../../writing/package_json_updater';
 import {AnalyzeEntryPointsFn} from '../api';
 import {CreateTaskCompletedCallback, Task, TaskCompletedCallback, TaskQueue} from '../tasks/api';
@@ -34,7 +35,8 @@ export class ClusterMaster {
 
   constructor(
       private maxWorkerCount: number, private fileSystem: FileSystem, private logger: Logger,
-      private pkgJsonUpdater: PackageJsonUpdater, analyzeEntryPoints: AnalyzeEntryPointsFn,
+      private fileWriter: FileWriter, private pkgJsonUpdater: PackageJsonUpdater,
+      analyzeEntryPoints: AnalyzeEntryPointsFn,
       createTaskCompletedCallback: CreateTaskCompletedCallback) {
     if (!cluster.isMaster) {
       throw new Error('Tried to instantiate `ClusterMaster` on a worker process.');
@@ -146,6 +148,7 @@ export class ClusterMaster {
 
     // The worker exited unexpectedly: Determine it's status and take an appropriate action.
     const assignment = this.taskAssignments.get(worker.id);
+    this.taskAssignments.delete(worker.id);
 
     this.logger.warn(
         `Worker #${worker.id} exited unexpectedly (code: ${code} | signal: ${signal}).\n` +
@@ -158,16 +161,34 @@ export class ClusterMaster {
       // The crashed worker process was not in the middle of a task:
       // Just spawn another process.
       this.logger.debug(`Spawning another worker process to replace #${worker.id}...`);
-      this.taskAssignments.delete(worker.id);
       cluster.fork();
     } else {
+      const {task, files} = assignment;
+
+      if (files != null) {
+        // The crashed worker process was in the middle of writing transformed files:
+        // Revert any changes before re-processing the task.
+        this.logger.debug(`Reverting ${files.length} transformed files...`);
+        this.fileWriter.revertBundle(
+            task.entryPoint, files, task.formatPropertiesToMarkAsProcessed);
+      }
+
       // The crashed worker process was in the middle of a task:
-      // Impossible to know whether we can recover (without ending up with a corrupted entry-point).
-      // TODO: Use `assignment.files` to revert any changes and rerun the task worker.
-      const currentTask = assignment.task;
-      throw new Error(
-          'Process unexpectedly crashed, while processing format property ' +
-          `${currentTask.formatProperty} for entry-point '${currentTask.entryPoint.path}'.`);
+      // Re-add the task back to the queue.
+      this.taskQueue.markAsUnprocessed(task);
+
+      // The crashing might be a result of increased memory consumption by ngcc.
+      // Do not spawn another process, unless this was the last worker process.
+      const spawnedWorkerCount = Object.keys(cluster.workers).length;
+      if (spawnedWorkerCount > 0) {
+        this.logger.debug(`Not spawning another worker process to replace #${
+            worker.id}. Continuing with ${spawnedWorkerCount} workers...`);
+        this.maybeDistributeWork();
+      } else {
+        this.logger.debug(`Spawning another worker process to replace #${worker.id}...`);
+        this.remainingRespawnAttempts--;
+        cluster.fork();
+      }
     }
   }
 

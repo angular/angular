@@ -36,6 +36,7 @@ import {AsyncNgccOptions, getSharedSetup, NgccOptions, PathMappings, SyncNgccOpt
 import {NgccConfiguration} from './packages/configuration';
 import {EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point';
 import {EntryPointManifest, InvalidatingEntryPointManifest} from './packages/entry_point_manifest';
+import {FileWriter} from './writing/file_writer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from './writing/package_json_updater';
 
 /**
@@ -54,7 +55,6 @@ export function mainNgcc(options: NgccOptions): void|Promise<void> {
     targetEntryPointPath,
     propertiesToConsider,
     compileAllFormats,
-    createNewEntryPointFormats,
     logger,
     pathMappings,
     async,
@@ -64,7 +64,8 @@ export function mainNgcc(options: NgccOptions): void|Promise<void> {
     fileSystem,
     absBasePath,
     projectPath,
-    tsConfig
+    tsConfig,
+    getFileWriter,
   } = getSharedSetup(options);
 
   const config = new NgccConfiguration(fileSystem, projectPath);
@@ -95,19 +96,20 @@ export function mainNgcc(options: NgccOptions): void|Promise<void> {
       logger, finder, fileSystem, supportedPropertiesToConsider, compileAllFormats,
       propertiesToConsider, inParallel);
 
-  // Create an updater that will actually write to disk. In
+  // Create an updater that will actually write to disk.
   const pkgJsonUpdater = new DirectPackageJsonUpdater(fileSystem);
+  const fileWriter = getFileWriter(pkgJsonUpdater);
 
   // The function for creating the `compile()` function.
   const createCompileFn = getCreateCompileFn(
-      fileSystem, logger, pkgJsonUpdater, createNewEntryPointFormats, errorOnFailedEntryPoint,
-      enableI18nLegacyMessageIdFormat, tsConfig, pathMappings);
+      fileSystem, logger, fileWriter, enableI18nLegacyMessageIdFormat, tsConfig, pathMappings);
 
   // The executor for actually planning and getting the work done.
   const createTaskCompletedCallback =
       getCreateTaskCompletedCallback(pkgJsonUpdater, errorOnFailedEntryPoint, logger, fileSystem);
   const executor = getExecutor(
-      async, inParallel, logger, pkgJsonUpdater, fileSystem, createTaskCompletedCallback);
+      async, inParallel, logger, fileWriter, pkgJsonUpdater, fileSystem,
+      createTaskCompletedCallback);
 
   return executor.execute(analyzeEntryPoints, createCompileFn);
 }
@@ -146,8 +148,9 @@ function getCreateTaskCompletedCallback(
 }
 
 function getExecutor(
-    async: boolean, inParallel: boolean, logger: Logger, pkgJsonUpdater: PackageJsonUpdater,
-    fileSystem: FileSystem, createTaskCompletedCallback: CreateTaskCompletedCallback): Executor {
+    async: boolean, inParallel: boolean, logger: Logger, fileWriter: FileWriter,
+    pkgJsonUpdater: PackageJsonUpdater, fileSystem: FileSystem,
+    createTaskCompletedCallback: CreateTaskCompletedCallback): Executor {
   const lockFile = new LockFileWithChildProcess(fileSystem, logger);
   if (async) {
     // Execute asynchronously (either serially or in parallel)
@@ -156,7 +159,8 @@ function getExecutor(
       // Execute in parallel. Use up to 8 CPU cores for workers, always reserving one for master.
       const workerCount = Math.min(8, os.cpus().length - 1);
       return new ClusterExecutor(
-          workerCount, fileSystem, logger, pkgJsonUpdater, locker, createTaskCompletedCallback);
+          workerCount, fileSystem, logger, fileWriter, pkgJsonUpdater, locker,
+          createTaskCompletedCallback);
     } else {
       // Execute serially, on a single thread (async).
       return new SingleProcessExecutorAsync(logger, locker, createTaskCompletedCallback);
