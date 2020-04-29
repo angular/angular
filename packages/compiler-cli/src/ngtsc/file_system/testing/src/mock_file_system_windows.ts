@@ -34,7 +34,7 @@ export class MockFileSystemWindows extends MockFileSystem {
   }
 
   isRooted(path: string): boolean {
-    return /^([A-Z]:)?([\\\/]|$)/i.test(path);
+    return /^([A-Za-z]:)?([\\\/]|$)/i.test(path);
   }
 
   protected splitPath<T extends PathString>(path: T): string[] {
@@ -42,6 +42,6 @@ export class MockFileSystemWindows extends MockFileSystem {
   }
 
   normalize<T extends PathString>(path: T): T {
-    return path.replace(/^[\/\\]/i, 'C:/').replace(/\\/g, '/') as T;
+    return path.replace(/^[\/\\]/i, 'c:/').replace(/\\/g, '/') as T;
   }
 }
