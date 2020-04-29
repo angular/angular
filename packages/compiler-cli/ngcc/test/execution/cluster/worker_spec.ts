@@ -57,12 +57,12 @@ describe('startWorker()', () => {
 
     it('should create the `compileFn()`', () => {
       startWorker(mockLogger, createCompileFnSpy);
-      expect(createCompileFnSpy).toHaveBeenCalledWith(jasmine.any(Function));
+      expect(createCompileFnSpy).toHaveBeenCalledWith(jasmine.any(Function), jasmine.any(Function));
     });
 
     it('should set up `compileFn()` to send `task-completed` messages to master', () => {
       startWorker(mockLogger, createCompileFnSpy);
-      const onTaskCompleted: TaskCompletedCallback = createCompileFnSpy.calls.argsFor(0)[0];
+      const onTaskCompleted: TaskCompletedCallback = createCompileFnSpy.calls.argsFor(0)[1];
 
       onTaskCompleted(null as any, TaskProcessingOutcome.Processed, null);
       expect(processSendSpy).toHaveBeenCalledTimes(1);

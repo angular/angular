@@ -132,14 +132,15 @@ describe('SingleProcessExecutor', () => {
           {allTasksCompleted: true, getNextTask: jasmine.any(Function)})]);
     });
 
-    it('should pass the created TaskCompletedCallback to the createCompileFn', () => {
+    it('should pass the necessary callbacks to createCompileFn', () => {
+      const beforeWritingFiles = jasmine.any(Function);
+      const onTaskCompleted = () => {};
       const createCompileFn =
           jasmine.createSpy('createCompileFn').and.returnValue(function compileFn() {});
-      function onTaskCompleted() {}
       createTaskCompletedCallback.and.returnValue(onTaskCompleted);
       executor.execute(noTasks, createCompileFn);
       expect(createCompileFn).toHaveBeenCalledTimes(1);
-      expect(createCompileFn).toHaveBeenCalledWith(onTaskCompleted);
+      expect(createCompileFn).toHaveBeenCalledWith(beforeWritingFiles, onTaskCompleted);
     });
   });
 });
