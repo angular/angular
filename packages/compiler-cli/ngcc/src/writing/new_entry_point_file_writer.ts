@@ -45,6 +45,17 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
     this.updatePackageJson(entryPoint, formatProperties, ngccFolder);
   }
 
+  revertFile(filePath: AbsoluteFsPath, packagePath: AbsoluteFsPath): void {
+    if (isDtsPath(filePath.replace(/\.map$/, ''))) {
+      // This is either `.d.ts` or `.d.ts.map` file
+      super.revertFile(filePath, packagePath);
+    } else if (this.fs.exists(filePath)) {
+      const relativePath = relative(packagePath, filePath);
+      const newFilePath = join(packagePath, NGCC_DIRECTORY, relativePath);
+      this.fs.removeFile(newFilePath);
+    }
+  }
+
   protected copyBundle(
       bundle: EntryPointBundle, packagePath: AbsoluteFsPath, ngccFolder: AbsoluteFsPath) {
     bundle.src.program.getSourceFiles().forEach(sourceFile => {

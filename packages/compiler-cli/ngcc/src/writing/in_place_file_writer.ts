@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, dirname, FileSystem} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, dirname, FileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
 import {EntryPointJsonProperty} from '../packages/entry_point';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
@@ -27,6 +27,17 @@ export class InPlaceFileWriter implements FileWriter {
       _bundle: EntryPointBundle, transformedFiles: FileToWrite[],
       _formatProperties?: EntryPointJsonProperty[]) {
     transformedFiles.forEach(file => this.writeFileAndBackup(file));
+  }
+
+  revertFile(filePath: AbsoluteFsPath, _packagePath: AbsoluteFsPath): void {
+    if (this.fs.exists(filePath)) {
+      this.fs.removeFile(filePath);
+
+      const backPath = absoluteFrom(`${filePath}${NGCC_BACKUP_EXTENSION}`);
+      if (this.fs.exists(backPath)) {
+        this.fs.moveFile(backPath, filePath);
+      }
+    }
   }
 
   protected writeFileAndBackup(file: FileToWrite): void {

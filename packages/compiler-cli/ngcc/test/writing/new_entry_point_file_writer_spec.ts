@@ -32,7 +32,6 @@ runInEachFileSystem(() => {
       fs = getFileSystem();
       logger = new MockLogger();
       loadTestFiles([
-
         {
           name: _('/node_modules/test/package.json'),
           contents: `
@@ -492,6 +491,82 @@ runInEachFileSystem(() => {
         expect(fs.readFile(_('/node_modules/test/typings/index.d.ts.__ivy_ngcc_bak')))
             .toEqual('export declare class FooB {}');
         expect(fs.exists(_('/node_modules/test/__ivy_ngcc__/typings/index.d.ts'))).toBe(false);
+      });
+    });
+
+    describe('revertFile()', () => {
+      beforeEach(() => {
+        fileWriter = new NewEntryPointFileWriter(
+            fs, logger, /* errorOnFailedEntryPoint */ true, new DirectPackageJsonUpdater(fs));
+        const config = new NgccConfiguration(fs, _('/'));
+        const result = getEntryPointInfo(
+            fs, config, logger, _('/node_modules/test'), _('/node_modules/test'))!;
+        if (result === NO_ENTRY_POINT || result === INCOMPATIBLE_ENTRY_POINT) {
+          return fail(`Expected an entry point but got ${result}`);
+        }
+        entryPoint = result;
+        esm5bundle = makeTestBundle(fs, entryPoint, 'module', 'esm5');
+      });
+
+      it('should revert a written JS file', () => {
+        const packagePath = _('/node_modules/test');
+        fileWriter.writeBundle(
+            esm5bundle,
+            [
+              {
+                path: _('/node_modules/test/esm5.js'),
+                contents: 'export function FooTop() {} // MODIFIED',
+              },
+              {
+                path: _('/node_modules/test/esm5.js.map'),
+                contents: 'MODIFIED MAPPING DATA',
+              },
+              // Normally there will be no backup file. Write one here to ensure it is not removed.
+              {
+                path: _('/node_modules/test/esm5.js.__ivy_ngcc_bak'),
+                contents: 'NOT AN ACTUAL BACKUP',
+              },
+            ],
+            ['module']);
+
+        expect(fs.exists(_('/node_modules/test/__ivy_ngcc__/esm5.js'))).toBeTrue();
+        expect(fs.exists(_('/node_modules/test/__ivy_ngcc__/esm5.js.map'))).toBeTrue();
+        expect(fs.exists(_('/node_modules/test/__ivy_ngcc__/esm5.js.__ivy_ngcc_bak'))).toBeTrue();
+
+        fileWriter.revertFile(_('/node_modules/test/esm5.js'), packagePath);
+        fileWriter.revertFile(_('/node_modules/test/esm5.js.map'), packagePath);
+
+        expect(fs.exists(_('/node_modules/test/__ivy_ngcc__/esm5.js'))).toBeFalse();
+        expect(fs.exists(_('/node_modules/test/__ivy_ngcc__/esm5.js.map'))).toBeFalse();
+        expect(fs.exists(_('/node_modules/test/__ivy_ngcc__/esm5.js.__ivy_ngcc_bak'))).toBeTrue();
+      });
+
+      it('should revert a written typings file (and its backup)', () => {
+        const packagePath = _('/node_modules/test');
+        fileWriter.writeBundle(
+            esm5bundle,
+            [
+              {
+                path: _('/node_modules/test/index.d.ts'),
+                contents: 'export declare class FooTop {} // MODIFIED'
+              },
+              {
+                path: _('/node_modules/test/index.d.ts.map'),
+                contents: 'MODIFIED MAPPING DATA',
+              },
+            ],
+            ['module']);
+
+        expect(fs.readFile(_('/node_modules/test/index.d.ts')))
+            .toBe('export declare class FooTop {} // MODIFIED');
+        expect(fs.readFile(_('/node_modules/test/index.d.ts.__ivy_ngcc_bak')))
+            .toBe('export declare class FooTop {}');
+
+        fileWriter.revertFile(_('/node_modules/test/index.d.ts'), packagePath);
+
+        expect(fs.readFile(_('/node_modules/test/index.d.ts')))
+            .toBe('export declare class FooTop {}');
+        expect(fs.exists(_('/node_modules/test/index.d.ts.__ivy_ngcc_bak'))).toBeFalse();
       });
     });
   });
