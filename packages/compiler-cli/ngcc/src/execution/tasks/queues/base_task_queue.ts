@@ -63,7 +63,7 @@ export abstract class BaseTaskQueue implements TaskQueue {
     this.inProgressTasks.delete(task);
   }
 
-  markTaskUnprocessed(task: Task): void {
+  markAsUnprocessed(task: Task): void {
     if (!this.inProgressTasks.has(task)) {
       throw new Error(
           `Trying to mark task that was not in progress as unprocessed: ${stringifyTask(task)}`);

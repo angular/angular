@@ -312,7 +312,7 @@ describe('ParallelTaskQueue', () => {
        });
   });
 
-  describe('markTaskUnprocessed()', () => {
+  describe('markAsUnprocessed()', () => {
     it('should mark an in-progress task as unprocessed, so that it can be picked again', () => {
       const {queue} = createQueue(2);
 
@@ -320,7 +320,7 @@ describe('ParallelTaskQueue', () => {
       const task2 = queue.getNextTask()!;
       expect(queue.allTasksCompleted).toBe(false);
 
-      queue.markTaskUnprocessed(task1);
+      queue.markAsUnprocessed(task1);
       queue.markTaskCompleted(task2);
       expect(queue.allTasksCompleted).toBe(false);
 
@@ -334,8 +334,16 @@ describe('ParallelTaskQueue', () => {
     it('should throw, if the specified task is not in progress', () => {
       const {tasks, queue} = createQueue(3);
       queue.getNextTask();
+      queue.markAsCompleted(tasks[0]);
 
-      expect(() => queue.markTaskUnprocessed(tasks[2]))
+      // Try with a task that is already completed.
+      expect(() => queue.markAsUnprocessed(tasks[0]))
+          .toThrowError(
+              `Trying to mark task that was not in progress as unprocessed: ` +
+              `{entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}`);
+
+      // Try with a task that is not yet started.
+      expect(() => queue.markAsUnprocessed(tasks[2]))
           .toThrowError(
               `Trying to mark task that was not in progress as unprocessed: ` +
               `{entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}`);
@@ -355,7 +363,7 @@ describe('ParallelTaskQueue', () => {
       expect(queue.getNextTask()).toBe(null);
 
       // Put task #0 back to the unprocessed tasks.
-      queue.markTaskUnprocessed(tasks[0]);
+      queue.markAsUnprocessed(tasks[0]);
       expect(queue.getNextTask()).toBe(tasks[0]);
 
       // Other tasks are still blocked on task #0.

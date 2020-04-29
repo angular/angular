@@ -125,7 +125,7 @@ export interface TaskQueue {
    *
    * @param task The task to mark as not processed.
    */
-  markTaskUnprocessed(task: Task): void;
+  markAsUnprocessed(task: Task): void;
 
   /**
    * Return a string representation of the task queue (for debugging purposes).
