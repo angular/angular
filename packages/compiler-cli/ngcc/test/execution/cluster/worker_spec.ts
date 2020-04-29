@@ -17,7 +17,7 @@ import {startWorker} from '../../../src/execution/cluster/worker';
 import {Task, TaskCompletedCallback, TaskProcessingOutcome} from '../../../src/execution/tasks/api';
 import {FileToWrite} from '../../../src/rendering/utils';
 import {MockLogger} from '../../helpers/mock_logger';
-import {mockProperty} from '../../helpers/spy_utils';
+import {mockProperty, spyProperty} from '../../helpers/spy_utils';
 
 
 describe('startWorker()', () => {
@@ -161,6 +161,38 @@ describe('startWorker()', () => {
       cluster.worker.emit('message', {type: 'process-task', task: mockTask});
       expect(processSendSpy)
           .toHaveBeenCalledWith({type: 'error', error: err.stack}, jasmine.any(Function));
+    });
+
+    it('should exit on `ENOMEM` errors during task processing', () => {
+      const processExitSpy = jasmine.createSpy('process.exit');
+      const {
+        setMockValue: mockProcessExit,
+        installSpies: installProcessExitSpies,
+        uninstallSpies: uninstallProcessExitSpies,
+      } = spyProperty(process, 'exit');
+
+      try {
+        installProcessExitSpies();
+        mockProcessExit(processExitSpy as unknown as typeof process.exit);
+
+        const mockTask = {
+          entryPoint: {name: 'foo'},
+          formatProperty: 'es2015',
+          processDts: true,
+        } as unknown as Task;
+
+        const noMemError = Object.assign(new Error('ENOMEM: not enough memory'), {code: 'ENOMEM'});
+        compileFnSpy.and.throwError(noMemError);
+
+        startWorker(mockLogger, createCompileFnSpy);
+        cluster.worker.emit('message', {type: 'process-task', task: mockTask});
+
+        expect(mockLogger.logs.warn).toEqual([[`[Worker #42] ${noMemError.stack}`]]);
+        expect(processExitSpy).toHaveBeenCalledWith(1);
+        expect(processSendSpy).not.toHaveBeenCalled();
+      } finally {
+        uninstallProcessExitSpies();
+      }
     });
 
     it('should throw, when an unknown message type is received', () => {
