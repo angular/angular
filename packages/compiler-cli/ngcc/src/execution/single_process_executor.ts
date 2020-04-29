@@ -23,7 +23,7 @@ export abstract class SingleProcessorExecutorBase {
 
     const taskQueue = analyzeEntryPoints();
     const onTaskCompleted = this.createTaskCompletedCallback(taskQueue);
-    const compile = createCompileFn(onTaskCompleted);
+    const compile = createCompileFn(() => {}, onTaskCompleted);
 
     // Process all tasks.
     this.logger.debug('Processing tasks...');

@@ -31,7 +31,7 @@ export function getCreateCompileFn(
     createNewEntryPointFormats: boolean, errorOnFailedEntryPoint: boolean,
     enableI18nLegacyMessageIdFormat: boolean, tsConfig: ParsedConfiguration|null,
     pathMappings: PathMappings|undefined): CreateCompileFn {
-  return onTaskCompleted => {
+  return (beforeWritingFiles, onTaskCompleted) => {
     const fileWriter = getFileWriter(
         fileSystem, logger, pkgJsonUpdater, createNewEntryPointFormats, errorOnFailedEntryPoint);
     const {Transformer} = require('../packages/transformer');
@@ -69,11 +69,20 @@ export function getCreateCompileFn(
           logger.warn(replaceTsWithNgInErrors(
               ts.formatDiagnosticsWithColorAndContext(result.diagnostics, bundle.src.host)));
         }
-        fileWriter.writeBundle(bundle, result.transformedFiles, formatPropertiesToMarkAsProcessed);
 
-        logger.debug(`  Successfully compiled ${entryPoint.name} : ${formatProperty}`);
+        const writeBundle = () => {
+          fileWriter.writeBundle(
+              bundle, result.transformedFiles, formatPropertiesToMarkAsProcessed);
 
-        onTaskCompleted(task, TaskProcessingOutcome.Processed, null);
+          logger.debug(`  Successfully compiled ${entryPoint.name} : ${formatProperty}`);
+          onTaskCompleted(task, TaskProcessingOutcome.Processed, null);
+        };
+
+        const beforeWritingResult = beforeWritingFiles(result.transformedFiles);
+
+        return (beforeWritingResult instanceof Promise) ?
+            beforeWritingResult.then(writeBundle) as ReturnType<typeof beforeWritingFiles>:
+            writeBundle();
       } else {
         const errors = replaceTsWithNgInErrors(
             ts.formatDiagnosticsWithColorAndContext(result.diagnostics, bundle.src.host));
