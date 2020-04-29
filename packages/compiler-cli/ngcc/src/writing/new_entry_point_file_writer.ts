@@ -54,7 +54,7 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
     // are identical to the original ones and they will be overwritten when re-processing the
     // entry-point anyway.
     //
-    // This way, we avoid the overhed of having to inform the master process about all source files
+    // This way, we avoid the overhead of having to inform the master process about all source files
     // being copied in `copyBundle()`.
 
     // Revert the transformed files.
