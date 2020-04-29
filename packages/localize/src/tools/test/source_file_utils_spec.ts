@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵmakeTemplateObject} from '@angular/localize';
-import {NodePath, transformSync} from '@babel/core';
+import {NodePath, TransformOptions, transformSync} from '@babel/core';
 import generate from '@babel/generator';
+
 import template from '@babel/template';
 import {Expression, Identifier, TaggedTemplateExpression, ExpressionStatement, FunctionDeclaration, CallExpression, isParenthesizedExpression, numericLiteral, binaryExpression, NumericLiteral} from '@babel/types';
-import {isGlobalIdentifier, isNamedIdentifier, isStringLiteralArray, isArrayOfExpressions, unwrapStringLiteralArray, unwrapMessagePartsFromLocalizeCall, wrapInParensIfNecessary, buildLocalizeReplacement, unwrapSubstitutionsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral} from '../src/source_file_utils';
+import {isGlobalIdentifier, isNamedIdentifier, isStringLiteralArray, isArrayOfExpressions, unwrapStringLiteralArray, unwrapMessagePartsFromLocalizeCall, wrapInParensIfNecessary, buildLocalizeReplacement, unwrapSubstitutionsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral, getLocation} from '../src/source_file_utils';
 
 describe('utils', () => {
   describe('isNamedIdentifier()', () => {
@@ -193,11 +194,32 @@ describe('utils', () => {
       expect(isArrayOfExpressions(ast.params)).toBe(false);
     });
   });
+
+  describe('getLocation()', () => {
+    it('should return a plain object containing the start, end and file of a NodePath', () => {
+      const taggedTemplate =
+          getTaggedTemplate('const x = $localize ``;', {filename: 'src/test.js'});
+      const location = getLocation(taggedTemplate)!;
+      expect(location).toBeDefined();
+      expect(location.start).toEqual({line: 1, column: 10});
+      expect(location.start.constructor.name).toEqual('Object');
+      expect(location.end).toEqual({line: 1, column: 22});
+      expect(location.end.constructor.name).toEqual('Object');
+      expect(location.file).toContain('src/test.js');
+    });
+
+    it('should return undefined if the NodePath has no filename', () => {
+      const taggedTemplate = getTaggedTemplate('const x = $localize ``;');
+      const location = getLocation(taggedTemplate)!;
+      expect(location).toBeUndefined();
+    });
+  });
 });
 
-function getTaggedTemplate(code: string): NodePath<TaggedTemplateExpression> {
+function getTaggedTemplate(
+    code: string, options?: TransformOptions): NodePath<TaggedTemplateExpression> {
   const {expressions, plugin} = collectExpressionsPlugin();
-  transformSync(code, {plugins: [plugin]});
+  transformSync(code, {...options, plugins: [plugin]});
   return expressions.find(e => e.isTaggedTemplateExpression()) as any;
 }
 

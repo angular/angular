@@ -349,7 +349,7 @@ export function buildCodeFrameError(path: NodePath, e: BabelParseError): string 
 
 export function getLocation(path: NodePath): ɵSourceLocation|undefined {
   const location = path.node.loc;
-  const file = path.hub.file.ops.fileName;
+  const file = path.hub.file.opts.filename;
 
   if (!location || !file) {
     return undefined;
