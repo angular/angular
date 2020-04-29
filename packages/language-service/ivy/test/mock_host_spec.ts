@@ -11,9 +11,17 @@ import * as ts from 'typescript/lib/tsserverlibrary';
 import {APP_MAIN, setup, TEST_SRCDIR} from './mock_host';
 
 describe('mock host', () => {
+  const {project, service, tsLS} = setup();
+
+  beforeEach(() => {
+    service.reset();
+  });
+
   it('can load test project from Bazel runfiles', () => {
-    const {project, tsLS} = setup();
     expect(project).toBeInstanceOf(ts.server.ConfiguredProject);
+    const configPath = (project as ts.server.ConfiguredProject).getConfigFilePath();
+    expect(configPath.substring(TEST_SRCDIR.length))
+        .toBe('/angular/packages/language-service/test/project/tsconfig.json');
     const program = tsLS.getProgram();
     expect(program).toBeDefined();
     const sourceFiles = program!.getSourceFiles().map(sf => {
@@ -36,7 +44,6 @@ describe('mock host', () => {
   });
 
   it('produces no TS error for test project', () => {
-    const {project, tsLS} = setup();
     const errors = project.getAllProjectErrors();
     expect(errors).toEqual([]);
     const globalErrors = project.getGlobalProjectErrors();
@@ -44,4 +51,24 @@ describe('mock host', () => {
     const diags = tsLS.getSemanticDiagnostics(APP_MAIN);
     expect(diags).toEqual([]);
   });
+
+  it('can overwrite test file', () => {
+    service.overwrite(APP_MAIN, `const x: string = 0`);
+    const scriptInfo = service.getScriptInfo(APP_MAIN);
+    expect(getText(scriptInfo)).toBe('const x: string = 0');
+  });
+
+  it('can find the cursor', () => {
+    const content = service.overwrite(APP_MAIN, `const fo¦o = 'hello world';`);
+    // content returned by overwrite() is the original content with cursor
+    expect(content).toBe(`const fo¦o = 'hello world';`);
+    const scriptInfo = service.getScriptInfo(APP_MAIN);
+    // script info content should not contain cursor
+    expect(getText(scriptInfo)).toBe(`const foo = 'hello world';`);
+  });
 });
+
+function getText(scriptInfo: ts.server.ScriptInfo): string {
+  const snapshot = scriptInfo.getSnapshot();
+  return snapshot.getText(0, snapshot.getLength());
+}
