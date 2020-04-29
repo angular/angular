@@ -45,6 +45,27 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
     this.updatePackageJson(entryPoint, formatProperties, ngccFolder);
   }
 
+  revertBundle(
+      entryPoint: EntryPoint, transformedFilePaths: AbsoluteFsPath[],
+      formatProperties: EntryPointJsonProperty[]): void {
+    // IMPLEMENTATION NOTE:
+    //
+    // The changes made by `copyBundle()` are not reverted here. The non-transformed copied files
+    // are identical to the original ones and they will be overwritten when re-processing the
+    // entry-point anyway.
+    //
+    // This way, we avoid the overhead of having to inform the master process about all source files
+    // being copied in `copyBundle()`.
+
+    // Revert the transformed files.
+    for (const filePath of transformedFilePaths) {
+      this.revertFile(filePath, entryPoint.package);
+    }
+
+    // Revert any changes to `package.json`.
+    this.revertPackageJson(entryPoint, formatProperties);
+  }
+
   protected copyBundle(
       bundle: EntryPointBundle, packagePath: AbsoluteFsPath, ngccFolder: AbsoluteFsPath) {
     bundle.src.program.getSourceFiles().forEach(sourceFile => {
@@ -68,6 +89,17 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
       const newFilePath = join(ngccFolder, relativePath);
       this.fs.ensureDir(dirname(newFilePath));
       this.fs.writeFile(newFilePath, file.contents);
+    }
+  }
+
+  protected revertFile(filePath: AbsoluteFsPath, packagePath: AbsoluteFsPath): void {
+    if (isDtsPath(filePath.replace(/\.map$/, ''))) {
+      // This is either `.d.ts` or `.d.ts.map` file
+      super.revertFileAndBackup(filePath);
+    } else if (this.fs.exists(filePath)) {
+      const relativePath = relative(packagePath, filePath);
+      const newFilePath = join(packagePath, NGCC_DIRECTORY, relativePath);
+      this.fs.removeFile(newFilePath);
     }
   }
 
@@ -101,6 +133,27 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
 
       update.addChange(
           [`${formatProperty}${NGCC_PROPERTY_EXTENSION}`], newFormatPath, {before: formatProperty});
+    }
+
+    update.writeChanges(packageJsonPath, packageJson);
+  }
+
+  protected revertPackageJson(entryPoint: EntryPoint, formatProperties: EntryPointJsonProperty[]) {
+    if (formatProperties.length === 0) {
+      // No format properties need reverting.
+      return;
+    }
+
+    const packageJson = entryPoint.packageJson;
+    const packageJsonPath = join(entryPoint.path, 'package.json');
+
+    // Revert all properties in `package.json` (both in memory and on disk).
+    // Since `updatePackageJson()` only adds properties, it is safe to just remove them (if they
+    // exist).
+    const update = this.pkgJsonUpdater.createUpdate();
+
+    for (const formatProperty of formatProperties) {
+      update.addChange([`${formatProperty}${NGCC_PROPERTY_EXTENSION}`], undefined);
     }
 
     update.writeChanges(packageJsonPath, packageJson);
