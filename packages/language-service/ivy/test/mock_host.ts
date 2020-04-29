@@ -36,6 +36,10 @@ export const APP_COMPONENT = join(PROJECT_DIR, 'app', 'app.component.ts');
 export const APP_MAIN = join(PROJECT_DIR, 'app', 'main.ts');
 export const PARSING_CASES = join(PROJECT_DIR, 'app', 'parsing-cases.ts');
 
+const NOOP_FILE_WATCHER: ts.FileWatcher = {
+  close() {}
+};
+
 export const host: ts.server.ServerHost = {
   ...ts.sys,
   readFile(absPath: string, encoding?: string): string |
@@ -44,10 +48,25 @@ export const host: ts.server.ServerHost = {
         // MockTypescriptHost
         return ts.sys.readFile(absPath, encoding);
       },
-  // TODO: Need to cast as never because this is not a proper ServerHost interface.
-  // ts.sys lacks methods like watchFile() and watchDirectory(), but these are not
-  // needed for now.
-} as never;
+  watchFile(path: string, callback: ts.FileWatcherCallback): ts.FileWatcher {
+    return NOOP_FILE_WATCHER;
+  },
+  watchDirectory(path: string, callback: ts.DirectoryWatcherCallback): ts.FileWatcher {
+    return NOOP_FILE_WATCHER;
+  },
+  setTimeout() {
+    throw new Error('setTimeout is not implemented');
+  },
+  clearTimeout() {
+    throw new Error('clearTimeout is not implemented');
+  },
+  setImmediate() {
+    throw new Error('setImmediate is not implemented');
+  },
+  clearImmediate() {
+    throw new Error('clearImmediate is not implemented');
+  },
+};
 
 /**
  * Create a ConfiguredProject and an actual program for the test project located
@@ -73,5 +92,61 @@ export function setup() {
   }
   // The following operation forces a ts.Program to be created.
   const tsLS = project.getLanguageService();
-  return {projectService, project, tsLS};
+  return {
+    service: new MockService(project, projectService),
+    project,
+    tsLS,
+  };
+}
+
+class MockService {
+  private readonly overwritten = new Set<ts.server.NormalizedPath>();
+
+  constructor(
+      private readonly project: ts.server.Project,
+      private readonly ps: ts.server.ProjectService,
+  ) {}
+
+  overwrite(fileName: string, newText: string): string {
+    const scriptInfo = this.getScriptInfo(fileName);
+    this.overwritten.add(scriptInfo.fileName);
+    const snapshot = scriptInfo.getSnapshot();
+    scriptInfo.editContent(0, snapshot.getLength(), preprocess(newText));
+    const sameProgram = this.project.updateGraph();  // clear the dirty flag
+    if (sameProgram) {
+      throw new Error('Project should have updated program after overwrite');
+    }
+    return newText;
+  }
+
+  reset() {
+    if (this.overwritten.size === 0) {
+      return;
+    }
+    for (const fileName of this.overwritten) {
+      const scriptInfo = this.getScriptInfo(fileName);
+      const reloaded = scriptInfo.reloadFromFile();
+      if (!reloaded) {
+        throw new Error(`Failed to reload ${scriptInfo.fileName}`);
+      }
+    }
+    const sameProgram = this.project.updateGraph();
+    if (sameProgram) {
+      throw new Error('Project should have updated program after reset');
+    }
+    this.overwritten.clear();
+  }
+
+  getScriptInfo(fileName: string): ts.server.ScriptInfo {
+    const scriptInfo = this.ps.getScriptInfo(fileName);
+    if (!scriptInfo) {
+      throw new Error(`No existing script info for ${fileName}`);
+    }
+    return scriptInfo;
+  }
+}
+
+const REGEX_CURSOR = /¦/g;
+function preprocess(text: string): string {
+  return text.replace(REGEX_CURSOR, '');
 }
