@@ -81,10 +81,21 @@ export async function startWorker(logger: Logger, createCompileFn: CreateCompile
               `[Worker #${cluster.worker.id}] Invalid message received: ${JSON.stringify(msg)}`);
       }
     } catch (err) {
-      await sendMessageToMaster({
-        type: 'error',
-        error: (err instanceof Error) ? (err.stack || err.message) : err,
-      });
+      switch (err && err.code) {
+        case 'ENOMEM':
+          // Not being able to allocate enough memory is not necessarily a problem with processing
+          // the current task. It could just mean that there are too many tasks being processed
+          // simultaneously.
+          //
+          // Exit with an error and let the cluster master decide how to handle this.
+          logger.warn(`[Worker #${cluster.worker.id}] ${err.stack || err.message}`);
+          return process.exit(1);
+        default:
+          await sendMessageToMaster({
+            type: 'error',
+            error: (err instanceof Error) ? (err.stack || err.message) : err,
+          });
+      }
     }
   });
 
