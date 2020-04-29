@@ -9,7 +9,9 @@ ts_library(
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "@npm//@types/node",
+        "@npm//@types/shelljs",
         "@npm//@types/yargs",
+        "@npm//shelljs",
         "@npm//yargs",
     ],
 )

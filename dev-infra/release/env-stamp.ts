@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {execSync as _execSync} from 'child_process';
+import {exec as _exec} from 'shelljs';
 
 /**
  * Log the environment variables expected by bazel for stamping.
@@ -28,37 +28,37 @@ export function buildEnvStamp() {
   process.exit(0);
 }
 
-/** Run the execSync command and return the stdout as a trimmed string. */
-function execSync(cmd: string) {
-  return _execSync(cmd).toString().trim();
+/** Run the exec command and return the stdout as a trimmed string. */
+function exec(cmd: string) {
+  return _exec(cmd, {silent: true}).toString().trim();
 }
 
 /** Whether the repo has local changes. */
 function hasLocalChanges() {
-  return !execSync(`git status --untracked-files=no --porcelain`);
+  return !!exec(`git status --untracked-files=no --porcelain`);
 }
 
 /** Get the version based on the most recent semver tag. */
 function getSCMVersion() {
-  const version = execSync(`git describe --match [0-9]*.[0-9]*.[0-9]* --abbrev=7 --tags HEAD`);
+  const version = exec(`git describe --match [0-9]*.[0-9]*.[0-9]* --abbrev=7 --tags HEAD`);
   return `${version.replace(/-([0-9]+)-g/, '+$1.sha-')}${
       (hasLocalChanges() ? '.with-local-changes' : '')}`;
 }
 
 /** Get the current SHA of HEAD. */
 function getCurrentSha() {
-  return execSync(`git rev-parse HEAD`);
+  return exec(`git rev-parse HEAD`);
 }
 
 /** Get the currently checked out branch. */
 function getCurrentBranch() {
-  return execSync(`git symbolic-ref --short HEAD`);
+  return exec(`git symbolic-ref --short HEAD`);
 }
 
 /** Get the current git user based on the git config. */
 function getCurrentGitUser() {
-  const userName = execSync(`git config user.name`);
-  const userEmail = execSync(`git config user.email`);
+  const userName = exec(`git config user.name`);
+  const userEmail = exec(`git config user.email`);
 
   return `${userName} <${userEmail}>`;
 }
