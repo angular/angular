@@ -24,7 +24,8 @@
   display: block;
 
   .demo-list-horizontal & {
-    display: flex;
+    padding: 0 24px;
+    display: inline-flex;
     flex-direction: row;
   }
 }
@@ -49,8 +50,9 @@
   .demo-list-horizontal & {
     border: none;
     border-right: solid 1px #ccc;
-    flex-grow: 1;
-    flex-basis: 0;
+    flex: 1 1;
+    white-space: nowrap;
+    background-color: #fff;
 
     [dir='rtl'] & {
       border-right: none;

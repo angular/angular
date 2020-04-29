@@ -35,12 +35,15 @@ export class DragAndDropDemo {
     'Check reddit'
   ];
 
-  horizontalData = [
+  ages = [
+    'Stone age',
     'Bronze age',
     'Iron age',
     'Middle ages',
-    'Early modern period',
-    'Long nineteenth century'
+  ];
+  preferredAges = [
+    'Modern period',
+    'Renaissance'
   ];
 
   constructor(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {

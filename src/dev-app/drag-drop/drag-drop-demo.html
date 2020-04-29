@@ -29,16 +29,31 @@
   </div>
 </div>
 
-<div>
+<div cdkDropListGroup>
   <div class="demo-list demo-list-horizontal">
-    <h2>Horizontal list</h2>
+    <h2>Ages</h2>
     <div
       cdkDropList
       cdkDropListOrientation="horizontal"
       (cdkDropListDropped)="drop($event)"
       [cdkDropListLockAxis]="axisLock"
-      [cdkDropListData]="horizontalData">
-      <div *ngFor="let item of horizontalData" cdkDrag>
+      [cdkDropListData]="ages">
+      <div *ngFor="let item of ages" cdkDrag>
+        {{item}}
+        <mat-icon cdkDragHandle svgIcon="dnd-move"></mat-icon>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-list demo-list-horizontal" style="text-align: right">
+    <h2>Preferred Ages</h2>
+    <div
+      cdkDropList
+      cdkDropListOrientation="horizontal"
+      (cdkDropListDropped)="drop($event)"
+      [cdkDropListLockAxis]="axisLock"
+      [cdkDropListData]="preferredAges">
+      <div *ngFor="let item of preferredAges" cdkDrag>
         {{item}}
         <mat-icon cdkDragHandle svgIcon="dnd-move"></mat-icon>
       </div>
@@ -55,7 +70,8 @@
   <h2>Data</h2>
   <pre>{{todo.join(', ')}}</pre>
   <pre>{{done.join(', ')}}</pre>
-  <pre>{{horizontalData.join(', ')}}</pre>
+  <pre>{{ages.join(', ')}}</pre>
+  <pre>{{preferredAges.join(', ')}}</pre>
 </div>
 
 <div>

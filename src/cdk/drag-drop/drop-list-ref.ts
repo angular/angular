@@ -302,16 +302,24 @@ export class DropListRef<T = any> {
       element.parentElement!.insertBefore(placeholder, element);
       activeDraggables.splice(newIndex, 0, item);
     } else {
-      coerceElement(this.element).appendChild(placeholder);
-      activeDraggables.push(item);
+      const element = coerceElement(this.element);
+      if (this._shouldEnterAsFirstChild(pointerX, pointerY)) {
+        element.insertBefore(placeholder, activeDraggables[0].getRootElement());
+        activeDraggables.unshift(item);
+      } else {
+        element.appendChild(placeholder);
+        activeDraggables.push(item);
+      }
     }
 
     // The transform needs to be cleared so it doesn't throw off the measurements.
     placeholder.style.transform = '';
 
     // Note that the positions were already cached when we called `start` above,
-    // but we need to refresh them since the amount of items has changed.
+    // but we need to refresh them since the amount of items has changed and also parent rects.
     this._cacheItemPositions();
+    this._cacheParentPositions();
+
     this.entered.next({item, container: this, currentIndex: this.getItemIndex(item)});
   }
 
@@ -696,6 +704,31 @@ export class DropListRef<T = any> {
   }
 
   /**
+   * Checks if pointer is entering in the first position
+   * @param pointerX Position of the user's pointer along the X axis.
+   * @param pointerY Position of the user's pointer along the Y axis.
+   */
+  private _shouldEnterAsFirstChild(pointerX: number, pointerY: number) {
+    if (!this._activeDraggables.length) {
+      return false;
+    }
+
+    const itemPositions = this._itemPositions;
+    const isHorizontal = this._orientation === 'horizontal';
+
+    // `itemPositions` are sorted by position while `activeDraggables` are sorted by child index
+    // check if container is using some sort of "reverse" ordering (eg: flex-direction: row-reverse)
+    const reversed = itemPositions[0].drag !== this._activeDraggables[0];
+    if (reversed) {
+      const lastItemRect = itemPositions[itemPositions.length - 1].clientRect;
+      return isHorizontal ? pointerX >= lastItemRect.right : pointerY >= lastItemRect.bottom;
+    } else {
+      const firstItemRect = itemPositions[0].clientRect;
+      return isHorizontal ? pointerX <= firstItemRect.left : pointerY <= firstItemRect.top;
+    }
+  }
+
+  /**
    * Gets the index of an item in the drop container, based on the position of the user's pointer.
    * @param item Item that is being sorted.
    * @param pointerX Position of the user's pointer along the X axis.
@@ -726,8 +759,8 @@ export class DropListRef<T = any> {
       return isHorizontal ?
           // Round these down since most browsers report client rects with
           // sub-pixel precision, whereas the pointer coordinates are rounded to pixels.
-          pointerX >= Math.floor(clientRect.left) && pointerX <= Math.floor(clientRect.right) :
-          pointerY >= Math.floor(clientRect.top) && pointerY <= Math.floor(clientRect.bottom);
+          pointerX >= Math.floor(clientRect.left) && pointerX < Math.floor(clientRect.right) :
+          pointerY >= Math.floor(clientRect.top) && pointerY < Math.floor(clientRect.bottom);
     });
   }
 
