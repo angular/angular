@@ -35,5 +35,6 @@ pkg_npm(
         ":language-service",
         # min bundle is not used at the moment; omit from package to speed up build
         "//packages/language-service/bundles:language-service.umd.js",
+        "//packages/language-service/bundles:ivy.umd.js",
     ],
 )
