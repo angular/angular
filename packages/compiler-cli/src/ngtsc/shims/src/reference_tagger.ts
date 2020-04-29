@@ -11,8 +11,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, absoluteFromSourceFile} from '../../file_system';
 
 import {isExtended as isExtendedSf, isShim, NgExtension, sfExtensionData} from './expando';
-
-const TS_EXTENSIONS = /\.tsx?$/i;
+import {makeShimFileName} from './util';
 
 /**
  * Manipulates the `referencedFiles` property of `ts.SourceFile`s to add references to shim files
@@ -53,7 +52,7 @@ export class ShimReferenceTagger {
     const sfPath = absoluteFromSourceFile(sf);
     for (const suffix of this.suffixes) {
       referencedFiles.push({
-        fileName: absoluteFrom(sfPath.replace(TS_EXTENSIONS, suffix)),
+        fileName: makeShimFileName(sfPath, suffix),
         pos: 0,
         end: 0,
       });

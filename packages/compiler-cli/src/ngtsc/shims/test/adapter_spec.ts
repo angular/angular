@@ -22,7 +22,8 @@ runInEachFileSystem(() => {
         contents: `export class A {}`,
       }]);
 
-      const adapter = new ShimAdapter(host, [], [new TestShimGenerator()], /* oldProgram */ null);
+      const adapter =
+          new ShimAdapter(host, [], [], [new TestShimGenerator()], /* oldProgram */ null);
       const shimSf = adapter.maybeGenerate(_('/test.testshim.ts'));
       expect(shimSf).not.toBeNull();
       expect(shimSf!.fileName).toBe(_('/test.testshim.ts'));
@@ -35,7 +36,8 @@ runInEachFileSystem(() => {
         contents: `export class A {}`,
       }]);
 
-      const adapter = new ShimAdapter(host, [], [new TestShimGenerator()], /* oldProgram */ null);
+      const adapter =
+          new ShimAdapter(host, [], [], [new TestShimGenerator()], /* oldProgram */ null);
       const shimSf = adapter.maybeGenerate(_('/test.ts'));
       expect(shimSf).toBeNull();
     });
@@ -46,7 +48,8 @@ runInEachFileSystem(() => {
         contents: `export class A {}`,
       }]);
 
-      const adapter = new ShimAdapter(host, [], [new TestShimGenerator()], /* oldProgram */ null);
+      const adapter =
+          new ShimAdapter(host, [], [], [new TestShimGenerator()], /* oldProgram */ null);
       const shimSf = adapter.maybeGenerate(_('/other.testshim.ts'));
 
       // Expect undefined, not null, since that indicates a valid shim path but an invalid source
@@ -65,13 +68,14 @@ runInEachFileSystem(() => {
           contents: `export class A {}`,
         },
       ]);
-      const adapter = new ShimAdapter(host, [], [new TestShimGenerator()], /* oldProgram */ null);
+      const adapter =
+          new ShimAdapter(host, [], [], [new TestShimGenerator()], /* oldProgram */ null);
       const originalShim = adapter.maybeGenerate(_('/test.testshim.ts'))!;
       const oldProgramStub = {
         getSourceFiles: () => [...program.getSourceFiles(), originalShim],
       } as unknown as ts.Program;
 
-      const adapter2 = new ShimAdapter(host, [], [new TestShimGenerator()], oldProgramStub);
+      const adapter2 = new ShimAdapter(host, [], [], [new TestShimGenerator()], oldProgramStub);
       const newShim = adapter.maybeGenerate(_('/test.testshim.ts'));
       expect(newShim).toBe(originalShim);
     });

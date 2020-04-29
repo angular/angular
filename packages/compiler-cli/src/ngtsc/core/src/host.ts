@@ -15,7 +15,7 @@ import {FactoryGenerator, FactoryTracker, isShim, ShimAdapter, ShimReferenceTagg
 import {PerFileShimGenerator, TopLevelShimGenerator} from '../../shims/api';
 import {typeCheckFilePath, TypeCheckShimGenerator} from '../../typecheck';
 import {normalizeSeparators} from '../../util/src/path';
-import {getRootDirs} from '../../util/src/typescript';
+import {getRootDirs, isDtsPath, isNonDeclarationTsPath} from '../../util/src/typescript';
 import {ExtendedTsCompilerHost, NgCompilerOptions, UnifiedModulesHost} from '../api';
 
 // A persistent source of bugs in CompilerHost delegation has been the addition by TS of new,
@@ -174,10 +174,17 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
 
     let diagnostics: ts.Diagnostic[] = [];
 
+    const normalizedTsInputFiles: AbsoluteFsPath[] = [];
+    for (const inputFile of inputFiles) {
+      if (!isNonDeclarationTsPath(inputFile)) {
+        continue;
+      }
+      normalizedTsInputFiles.push(resolve(inputFile));
+    }
+
     let entryPoint: AbsoluteFsPath|null = null;
     if (options.flatModuleOutFile != null && options.flatModuleOutFile !== '') {
-      let normalizedInputFiles = inputFiles.map(n => resolve(n));
-      entryPoint = findFlatIndexEntryPoint(normalizedInputFiles);
+      entryPoint = findFlatIndexEntryPoint(normalizedTsInputFiles);
       if (entryPoint === null) {
         // This error message talks specifically about having a single .ts file in "files". However
         // the actual logic is a bit more permissive. If a single file exists, that will be taken,
@@ -205,8 +212,9 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
       }
     }
 
-    const shimAdapter =
-        new ShimAdapter(delegate, topLevelShimGenerators, perFileShimGenerators, oldProgram);
+    const shimAdapter = new ShimAdapter(
+        delegate, normalizedTsInputFiles, topLevelShimGenerators, perFileShimGenerators,
+        oldProgram);
     const shimTagger =
         new ShimReferenceTagger(perFileShimGenerators.map(gen => gen.extensionPrefix));
     return new NgCompilerHost(

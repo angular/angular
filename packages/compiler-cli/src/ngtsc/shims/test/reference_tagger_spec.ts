@@ -47,7 +47,7 @@ runInEachFileSystem(() => {
         {name: fileName, contents: 'export declare const UNIMPORTANT = true;'},
       ]);
       const shimAdapter =
-          new ShimAdapter(host, [], [new TestShimGenerator()], /* oldProgram */ null);
+          new ShimAdapter(host, [], [], [new TestShimGenerator()], /* oldProgram */ null);
 
       const shimSf = shimAdapter.maybeGenerate(_('/file.testshim.ts'))!;
       expect(shimSf.referencedFiles).toEqual([]);

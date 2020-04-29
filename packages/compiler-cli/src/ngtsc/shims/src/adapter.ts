@@ -13,10 +13,12 @@ import {isDtsPath} from '../../util/src/typescript';
 import {PerFileShimGenerator, TopLevelShimGenerator} from '../api';
 
 import {isFileShimSourceFile, isShim, NgExtension, sfExtensionData} from './expando';
+import {makeShimFileName} from './util';
 
 interface ShimGeneratorData {
   generator: PerFileShimGenerator;
   test: RegExp;
+  suffix: string;
 }
 
 /**
@@ -63,14 +65,15 @@ export class ShimAdapter {
   /**
    * A list of extra filenames which should be considered inputs to program creation.
    *
-   * This includes any top-level shims generated for the program.
+   * This includes any top-level shims generated for the program, as well as per-file shim names for
+   * those files which are included in the root files of the program.
    */
   readonly extraInputFiles: ReadonlyArray<AbsoluteFsPath>;
 
   constructor(
       private delegate: Pick<ts.CompilerHost, 'getSourceFile'|'fileExists'>,
-      topLevelGenerators: TopLevelShimGenerator[], perFileGenerators: PerFileShimGenerator[],
-      oldProgram: ts.Program|null) {
+      tsRootFiles: AbsoluteFsPath[], topLevelGenerators: TopLevelShimGenerator[],
+      perFileGenerators: PerFileShimGenerator[], oldProgram: ts.Program|null) {
     // Initialize `this.generators` with a regex that matches each generator's paths.
     for (const gen of perFileGenerators) {
       // This regex matches paths for shims from this generator. The first (and only) capture group
@@ -81,12 +84,13 @@ export class ShimAdapter {
       this.generators.push({
         generator: gen,
         test: regexp,
+        suffix: `.${gen.extensionPrefix}.ts`,
       });
     }
-
     // Process top-level generators and pre-generate their shims. Accumulate the list of filenames
     // as extra input files.
     const extraInputFiles: AbsoluteFsPath[] = [];
+
     for (const gen of topLevelGenerators) {
       const sf = gen.makeTopLevelShim();
       sfExtensionData(sf).isTopLevelShim = true;
@@ -99,6 +103,16 @@ export class ShimAdapter {
       this.shims.set(fileName, sf);
       extraInputFiles.push(fileName);
     }
+
+    // Add to that list the per-file shims associated with each root file. This is needed because
+    // reference tagging alone may not work in TS compilations that have `noResolve` set. Such
+    // compilations rely on the list of input files completely describing the program.
+    for (const rootFile of tsRootFiles) {
+      for (const gen of this.generators) {
+        extraInputFiles.push(makeShimFileName(rootFile, gen.suffix));
+      }
+    }
+
     this.extraInputFiles = extraInputFiles;
 
     // If an old program is present, extract all per-file shims into a map, which will be used to
