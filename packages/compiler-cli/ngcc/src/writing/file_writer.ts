@@ -7,7 +7,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {EntryPointJsonProperty} from '../packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {FileToWrite} from '../rendering/utils';
 
@@ -20,11 +20,16 @@ export interface FileWriter {
       formatProperties: EntryPointJsonProperty[]): void;
 
   /**
-   * Revert the change to a file written by the same `FileWriter` implementation.
+   * Revert the changes to an entry-point processed for the specified format-properties by the same
+   * `FileWriter` implementation.
    *
-   * @param filePath The original path of a transformed file. (The transformed file maybe written
-   *     at the same or a different location, depending on the `FileWriter` implementation.)
-   * @param packagePath The path to the package that contains the entry-point including the file.
+   * @param entryPoint The entry-point to revert.
+   * @param transformedFilePaths The original paths of the transformed files. (The transformed files
+   *     may be written at the same or a different location, depending on the `FileWriter`
+   *     implementation.)
+   * @param formatProperties The format-properties pointing to the entry-point.
    */
-  revertFile(filePath: AbsoluteFsPath, packagePath: AbsoluteFsPath): void;
+  revertBundle(
+      entryPoint: EntryPoint, transformedFilePaths: AbsoluteFsPath[],
+      formatProperties: EntryPointJsonProperty[]): void;
 }

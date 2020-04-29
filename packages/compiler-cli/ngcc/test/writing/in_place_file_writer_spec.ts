@@ -8,6 +8,7 @@
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
+import {EntryPoint} from '../../src/packages/entry_point';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {InPlaceFileWriter, NGCC_BACKUP_EXTENSION} from '../../src/writing/in_place_file_writer';
 import {MockLogger} from '../helpers/mock_logger';
@@ -106,44 +107,49 @@ runInEachFileSystem(() => {
          });
     });
 
-    describe('revertFile()', () => {
-      it('should revert a written file (and its backup)', () => {
+    describe('revertBundle()', () => {
+      it('should revert the written files (and their backups)', () => {
         const fs = getFileSystem();
         const logger = new MockLogger();
         const fileWriter = new InPlaceFileWriter(fs, logger, /* errorOnFailedEntryPoint */ true);
 
-        const packagePath = _('/package/path');
-        const filePath = _('/package/path/top-level.js');
-        const fileBackupPath = _(`/package/path/top-level.js${NGCC_BACKUP_EXTENSION}`);
+        const filePath1 = _('/package/path/folder-1/file-1.js');
+        const filePath2 = _('/package/path/folder-1/file-2.js');
+        const fileBackupPath1 = _(`/package/path/folder-1/file-1.js${NGCC_BACKUP_EXTENSION}`);
+        const fileBackupPath2 = _(`/package/path/folder-1/file-2.js${NGCC_BACKUP_EXTENSION}`);
 
         fileWriter.writeBundle({} as EntryPointBundle, [
-          {path: filePath, contents: 'MODIFIED TOP LEVEL'},
+          {path: filePath1, contents: 'MODIFIED FILE 1'},
+          {path: filePath2, contents: 'MODIFIED FILE 2'},
         ]);
-        expect(fs.readFile(filePath)).toBe('MODIFIED TOP LEVEL');
-        expect(fs.readFile(fileBackupPath)).toBe('ORIGINAL TOP LEVEL');
+        expect(fs.readFile(filePath1)).toBe('MODIFIED FILE 1');
+        expect(fs.readFile(filePath2)).toBe('MODIFIED FILE 2');
+        expect(fs.readFile(fileBackupPath1)).toBe('ORIGINAL FILE 1');
+        expect(fs.readFile(fileBackupPath2)).toBe('ORIGINAL FILE 2');
 
-        fileWriter.revertFile(filePath, packagePath);
-        expect(fs.readFile(filePath)).toBe('ORIGINAL TOP LEVEL');
-        expect(fs.exists(fileBackupPath)).toBeFalse();
+        fileWriter.revertBundle({} as EntryPoint, [filePath1, filePath2], []);
+        expect(fs.readFile(filePath1)).toBe('ORIGINAL FILE 1');
+        expect(fs.readFile(filePath2)).toBe('ORIGINAL FILE 2');
+        expect(fs.exists(fileBackupPath1)).toBeFalse();
+        expect(fs.exists(fileBackupPath2)).toBeFalse();
       });
 
-      it('should just remove the written file if there is no backup', () => {
+      it('should just remove the written files if there is no backup', () => {
         const fs = getFileSystem();
         const logger = new MockLogger();
         const fileWriter = new InPlaceFileWriter(fs, logger, /* errorOnFailedEntryPoint */ true);
 
-        const packagePath = _('/package/path');
-        const filePath = _('/package/path/top-level.js');
-        const fileBackupPath = _(`/package/path/top-level.js${NGCC_BACKUP_EXTENSION}`);
+        const filePath = _('/package/path/folder-1/file-1.js');
+        const fileBackupPath = _(`/package/path/folder-1/file-1.js${NGCC_BACKUP_EXTENSION}`);
 
         fileWriter.writeBundle({} as EntryPointBundle, [
-          {path: filePath, contents: 'MODIFIED TOP LEVEL'},
+          {path: filePath, contents: 'MODIFIED FILE 1'},
         ]);
         fs.removeFile(fileBackupPath);
-        expect(fs.readFile(filePath)).toBe('MODIFIED TOP LEVEL');
+        expect(fs.readFile(filePath)).toBe('MODIFIED FILE 1');
         expect(fs.exists(fileBackupPath)).toBeFalse();
 
-        fileWriter.revertFile(filePath, packagePath);
+        fileWriter.revertBundle({} as EntryPoint, [filePath], []);
         expect(fs.exists(filePath)).toBeFalse();
         expect(fs.exists(fileBackupPath)).toBeFalse();
       });
@@ -153,12 +159,11 @@ runInEachFileSystem(() => {
         const logger = new MockLogger();
         const fileWriter = new InPlaceFileWriter(fs, logger, /* errorOnFailedEntryPoint */ true);
 
-        const packagePath = _('/package/path');
         const filePath = _('/package/path/non-existent.js');
         const fileBackupPath = _(`/package/path/non-existent.js${NGCC_BACKUP_EXTENSION}`);
 
         fs.writeFile(fileBackupPath, 'BACKUP WITHOUT FILE');
-        fileWriter.revertFile(filePath, packagePath);
+        fileWriter.revertBundle({} as EntryPoint, [filePath], []);
 
         expect(fs.exists(filePath)).toBeFalse();
         expect(fs.readFile(fileBackupPath)).toBe('BACKUP WITHOUT FILE');

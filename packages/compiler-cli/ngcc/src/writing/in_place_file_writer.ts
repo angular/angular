@@ -7,7 +7,7 @@
  */
 import {absoluteFrom, AbsoluteFsPath, dirname, FileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
-import {EntryPointJsonProperty} from '../packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {FileToWrite} from '../rendering/utils';
 
@@ -29,14 +29,11 @@ export class InPlaceFileWriter implements FileWriter {
     transformedFiles.forEach(file => this.writeFileAndBackup(file));
   }
 
-  revertFile(filePath: AbsoluteFsPath, _packagePath: AbsoluteFsPath): void {
-    if (this.fs.exists(filePath)) {
-      this.fs.removeFile(filePath);
-
-      const backPath = absoluteFrom(`${filePath}${NGCC_BACKUP_EXTENSION}`);
-      if (this.fs.exists(backPath)) {
-        this.fs.moveFile(backPath, filePath);
-      }
+  revertBundle(
+      _entryPoint: EntryPoint, transformedFilePaths: AbsoluteFsPath[],
+      _formatProperties: EntryPointJsonProperty[]): void {
+    for (const filePath of transformedFilePaths) {
+      this.revertFileAndBackup(filePath);
     }
   }
 
@@ -60,6 +57,17 @@ export class InPlaceFileWriter implements FileWriter {
         this.fs.moveFile(file.path, backPath);
       }
       this.fs.writeFile(file.path, file.contents);
+    }
+  }
+
+  protected revertFileAndBackup(filePath: AbsoluteFsPath): void {
+    if (this.fs.exists(filePath)) {
+      this.fs.removeFile(filePath);
+
+      const backPath = absoluteFrom(`${filePath}${NGCC_BACKUP_EXTENSION}`);
+      if (this.fs.exists(backPath)) {
+        this.fs.moveFile(backPath, filePath);
+      }
     }
   }
 }

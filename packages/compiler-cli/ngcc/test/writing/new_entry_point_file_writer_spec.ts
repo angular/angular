@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, FileSystem, getFileSystem, join} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NgccConfiguration} from '../../src/packages/configuration';
@@ -509,7 +509,6 @@ runInEachFileSystem(() => {
       });
 
       it('should remove non-typings files', () => {
-        const packagePath = _('/node_modules/test');
         fileWriter.writeBundle(
             esm5bundle,
             [
@@ -533,16 +532,16 @@ runInEachFileSystem(() => {
         expect(fs.exists(_('/node_modules/test/__ivy_ngcc__/esm5.js.map'))).toBeTrue();
         expect(fs.exists(_('/node_modules/test/__ivy_ngcc__/esm5.js.__ivy_ngcc_bak'))).toBeTrue();
 
-        fileWriter.revertFile(_('/node_modules/test/esm5.js'), packagePath);
-        fileWriter.revertFile(_('/node_modules/test/esm5.js.map'), packagePath);
+        fileWriter.revertBundle(
+            esm5bundle.entryPoint,
+            [_('/node_modules/test/esm5.js'), _('/node_modules/test/esm5.js.map')], []);
 
         expect(fs.exists(_('/node_modules/test/__ivy_ngcc__/esm5.js'))).toBeFalse();
         expect(fs.exists(_('/node_modules/test/__ivy_ngcc__/esm5.js.map'))).toBeFalse();
         expect(fs.exists(_('/node_modules/test/__ivy_ngcc__/esm5.js.__ivy_ngcc_bak'))).toBeTrue();
       });
 
-      it('should revert a written typings file (and its backup)', () => {
-        const packagePath = _('/node_modules/test');
+      it('should revert written typings files (and their backups)', () => {
         fileWriter.writeBundle(
             esm5bundle,
             [
@@ -561,12 +560,73 @@ runInEachFileSystem(() => {
             .toBe('export declare class FooTop {} // MODIFIED');
         expect(fs.readFile(_('/node_modules/test/index.d.ts.__ivy_ngcc_bak')))
             .toBe('export declare class FooTop {}');
+        expect(fs.readFile(_('/node_modules/test/index.d.ts.map'))).toBe('MODIFIED MAPPING DATA');
+        expect(fs.readFile(_('/node_modules/test/index.d.ts.map.__ivy_ngcc_bak')))
+            .toBe('ORIGINAL MAPPING DATA');
 
-        fileWriter.revertFile(_('/node_modules/test/index.d.ts'), packagePath);
+        fileWriter.revertBundle(
+            esm5bundle.entryPoint,
+            [_('/node_modules/test/index.d.ts'), _('/node_modules/test/index.d.ts.map')], []);
 
         expect(fs.readFile(_('/node_modules/test/index.d.ts')))
             .toBe('export declare class FooTop {}');
         expect(fs.exists(_('/node_modules/test/index.d.ts.__ivy_ngcc_bak'))).toBeFalse();
+        expect(fs.readFile(_('/node_modules/test/index.d.ts.map'))).toBe('ORIGINAL MAPPING DATA');
+        expect(fs.exists(_('/node_modules/test/index.d.ts.map.__ivy_ngcc_bak'))).toBeFalse();
+      });
+
+      it('should revert changes to `package.json`', () => {
+        const entryPoint = esm5bundle.entryPoint;
+        const packageJsonPath = join(entryPoint.package, 'package.json');
+
+        fileWriter.writeBundle(
+            esm5bundle,
+            [
+              {
+                path: _('/node_modules/test/index.d.ts'),
+                contents: 'export declare class FooTop {} // MODIFIED'
+              },
+              {
+                path: _('/node_modules/test/index.d.ts.map'),
+                contents: 'MODIFIED MAPPING DATA',
+              },
+            ],
+            ['fesm5', 'module']);
+        const packageJsonFromFile1 = JSON.parse(fs.readFile(packageJsonPath));
+
+        expect(entryPoint.packageJson).toEqual(jasmine.objectContaining({
+          fesm5_ivy_ngcc: '__ivy_ngcc__/esm5.js',
+          fesm5: './esm5.js',
+          module_ivy_ngcc: '__ivy_ngcc__/esm5.js',
+          module: './esm5.js',
+        }));
+
+        expect(packageJsonFromFile1).toEqual(jasmine.objectContaining({
+          fesm5_ivy_ngcc: '__ivy_ngcc__/esm5.js',
+          fesm5: './esm5.js',
+          module_ivy_ngcc: '__ivy_ngcc__/esm5.js',
+          module: './esm5.js',
+        }));
+
+        fileWriter.revertBundle(
+            esm5bundle.entryPoint,
+            [_('/node_modules/test/index.d.ts'), _('/node_modules/test/index.d.ts.map')],
+            ['fesm5', 'module']);
+        const packageJsonFromFile2 = JSON.parse(fs.readFile(packageJsonPath));
+
+        expect(entryPoint.packageJson).toEqual(jasmine.objectContaining({
+          fesm5: './esm5.js',
+          module: './esm5.js',
+        }));
+        expect(entryPoint.packageJson.fesm5_ivy_ngcc).toBeUndefined();
+        expect(entryPoint.packageJson.module_ivy_ngcc).toBeUndefined();
+
+        expect(packageJsonFromFile2).toEqual(jasmine.objectContaining({
+          fesm5: './esm5.js',
+          module: './esm5.js',
+        }));
+        expect(packageJsonFromFile2.fesm5_ivy_ngcc).toBeUndefined();
+        expect(packageJsonFromFile2.module_ivy_ngcc).toBeUndefined();
       });
     });
   });
