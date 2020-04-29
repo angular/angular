@@ -70,6 +70,7 @@ const brokenManifest: Manifest = {
       '/foo.txt',
     ],
     patterns: [],
+    cacheQueryOptions: {ignoreVary: true},
   }],
   dataGroups: [],
   navigationUrls: processNavigationUrls(''),
@@ -89,6 +90,7 @@ const brokenLazyManifest: Manifest = {
         '/foo.txt',
       ],
       patterns: [],
+      cacheQueryOptions: {ignoreVary: true},
     },
     {
       name: 'lazy-assets',
@@ -98,6 +100,7 @@ const brokenLazyManifest: Manifest = {
         '/bar.txt',
       ],
       patterns: [],
+      cacheQueryOptions: {ignoreVary: true},
     },
   ],
   dataGroups: [],
@@ -143,6 +146,7 @@ const manifest: Manifest = {
       patterns: [
         '/unhashed/.*',
       ],
+      cacheQueryOptions: {ignoreVary: true},
     },
     {
       name: 'other',
@@ -153,6 +157,7 @@ const manifest: Manifest = {
         '/qux.txt',
       ],
       patterns: [],
+      cacheQueryOptions: {ignoreVary: true},
     },
     {
       name: 'lazy_prefetch',
@@ -165,6 +170,7 @@ const manifest: Manifest = {
         '/lazy/unchanged2.txt',
       ],
       patterns: [],
+      cacheQueryOptions: {ignoreVary: true},
     }
   ],
   dataGroups: [
@@ -177,6 +183,7 @@ const manifest: Manifest = {
       patterns: [
         '/api/.*',
       ],
+      cacheQueryOptions: {ignoreVary: true},
     },
     {
       name: 'api-static',
@@ -187,6 +194,7 @@ const manifest: Manifest = {
       patterns: [
         '/api-static/.*',
       ],
+      cacheQueryOptions: {ignoreVary: true},
     },
   ],
   navigationUrls: processNavigationUrls(''),
@@ -213,6 +221,7 @@ const manifestUpdate: Manifest = {
       patterns: [
         '/unhashed/.*',
       ],
+      cacheQueryOptions: {ignoreVary: true},
     },
     {
       name: 'other',
@@ -223,6 +232,7 @@ const manifestUpdate: Manifest = {
         '/qux.txt',
       ],
       patterns: [],
+      cacheQueryOptions: {ignoreVary: true},
     },
     {
       name: 'lazy_prefetch',
@@ -235,6 +245,7 @@ const manifestUpdate: Manifest = {
         '/lazy/unchanged2.txt',
       ],
       patterns: [],
+      cacheQueryOptions: {ignoreVary: true},
     }
   ],
   navigationUrls: processNavigationUrls(

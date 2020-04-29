@@ -225,6 +225,7 @@ export function tmpManifestSingleAssetGroup(fs: MockFileSystem): Manifest {
         updateMode: 'prefetch',
         urls: files,
         patterns: [],
+        cacheQueryOptions: {ignoreVary: true}
       },
     ],
     navigationUrls: [],

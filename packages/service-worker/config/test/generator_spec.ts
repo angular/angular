@@ -92,7 +92,7 @@ describe('Generator', () => {
           '\\/some\\/url\\?with\\+escaped\\+chars',
           '\\/test\\/relative\\/[^/]*\\.txt',
         ],
-        cacheQueryOptions: undefined,
+        cacheQueryOptions: {ignoreVary: true}
       }],
       dataGroups: [{
         name: 'other',
@@ -106,7 +106,7 @@ describe('Generator', () => {
         maxAge: 259200000,
         timeoutMs: 60000,
         version: 1,
-        cacheQueryOptions: undefined,
+        cacheQueryOptions: {ignoreVary: true}
       }],
       navigationUrls: [
         {positive: true, regex: '^\\/included\\/absolute\\/.*$'},
@@ -229,7 +229,7 @@ describe('Generator', () => {
           '/main.js',
         ],
         patterns: [],
-        cacheQueryOptions: {ignoreSearch: true}
+        cacheQueryOptions: {ignoreSearch: true, ignoreVary: true}
       }],
       dataGroups: [{
         name: 'other',
@@ -241,7 +241,7 @@ describe('Generator', () => {
         maxAge: 259200000,
         timeoutMs: 60000,
         version: 1,
-        cacheQueryOptions: {ignoreSearch: false}
+        cacheQueryOptions: {ignoreSearch: false, ignoreVary: true}
       }],
       navigationUrls: [
         {positive: true, regex: '^\\/.*$'},
