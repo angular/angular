@@ -459,44 +459,6 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
   ZoneAwarePromise['all'] = ZoneAwarePromise.all;
 
   const NativePromise = global[symbolPromise] = global['Promise'];
-  const ZONE_AWARE_PROMISE = Zone.__symbol__('ZoneAwarePromise');
-
-  let desc = ObjectGetOwnPropertyDescriptor(global, 'Promise');
-  if (!desc || desc.configurable) {
-    desc && delete desc.writable;
-    desc && delete desc.value;
-    if (!desc) {
-      desc = {configurable: true, enumerable: true};
-    }
-    desc.get = function() {
-      // if we already set ZoneAwarePromise, use patched one
-      // otherwise return native one.
-      return global[ZONE_AWARE_PROMISE] ? global[ZONE_AWARE_PROMISE] : global[symbolPromise];
-    };
-    desc.set = function(NewNativePromise) {
-      if (NewNativePromise === ZoneAwarePromise) {
-        // if the NewNativePromise is ZoneAwarePromise
-        // save to global
-        global[ZONE_AWARE_PROMISE] = NewNativePromise;
-      } else {
-        // if the NewNativePromise is not ZoneAwarePromise
-        // for example: after load zone.js, some library just
-        // set es6-promise to global, if we set it to global
-        // directly, assertZonePatched will fail and angular
-        // will not loaded, so we just set the NewNativePromise
-        // to global[symbolPromise], so the result is just like
-        // we load ES6 Promise before zone.js
-        global[symbolPromise] = NewNativePromise;
-        if (!NewNativePromise.prototype[symbolThen]) {
-          patchThen(NewNativePromise);
-        }
-        api.setNativePromise(NewNativePromise);
-      }
-    };
-
-    ObjectDefineProperty(global, 'Promise', desc);
-  }
-
   global['Promise'] = ZoneAwarePromise;
 
   const symbolThenPatched = __symbol__('thenPatched');
