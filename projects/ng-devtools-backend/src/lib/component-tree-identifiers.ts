@@ -34,12 +34,12 @@ export const observeDOM = () => {
     return;
   }
   observer = new DirectiveForestObserver({
-    // onChangeDetectionStart(component: any): void {
-    //   // recordMark(`${getDirectiveName(component)}_start`);
-    // },
-    // onChangeDetectionEnd(component: any): void {
-    //   // endMark(getDirectiveName(component));
-    // },
+    onChangeDetectionStart(component: any): void {
+      recordMark(`${getDirectiveName(component)}_start`);
+    },
+    onChangeDetectionEnd(component: any): void {
+      endMark(getDirectiveName(component));
+    },
   });
   observer.initialize();
 };
