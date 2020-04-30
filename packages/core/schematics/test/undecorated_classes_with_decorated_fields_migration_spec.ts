@@ -18,6 +18,7 @@ describe('Undecorated classes with decorated fields migration', () => {
   let tree: UnitTestTree;
   let tmpDirPath: string;
   let previousWorkingDir: string;
+  let warnings: string[];
 
   beforeEach(() => {
     runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
@@ -28,6 +29,13 @@ describe('Undecorated classes with decorated fields migration', () => {
     writeFile('/angular.json', JSON.stringify({
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
     }));
+
+    warnings = [];
+    runner.logger.subscribe(entry => {
+      if (entry.level === 'warn') {
+        warnings.push(entry.message);
+      }
+    });
 
     previousWorkingDir = shx.pwd();
     tmpDirPath = getSystemPath(host.root);
@@ -228,6 +236,45 @@ describe('Undecorated classes with decorated fields migration', () => {
     expect(tree.readContent('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
+  it('should migrate undecorated class that uses "ngOnChanges" lifecycle hook',
+     () => assertLifecycleHookMigrated('ngOnChanges'));
+  it('should migrate undecorated class that uses "ngOnInit" lifecycle hook',
+     () => assertLifecycleHookMigrated('ngOnInit'));
+  it('should migrate undecorated class that uses "ngDoCheck" lifecycle hook',
+     () => assertLifecycleHookMigrated('ngDoCheck'));
+  it('should migrate undecorated class that uses "ngAfterViewInit" lifecycle hook',
+     () => assertLifecycleHookMigrated('ngAfterViewInit'));
+  it('should migrate undecorated class that uses "ngAfterViewChecked" lifecycle hook',
+     () => assertLifecycleHookMigrated('ngAfterViewChecked'));
+  it('should migrate undecorated class that uses "ngAfterContentInit" lifecycle hook',
+     () => assertLifecycleHookMigrated('ngAfterContentInit'));
+  it('should migrate undecorated class that uses "ngAfterContentChecked" lifecycle hook',
+     () => assertLifecycleHookMigrated('ngAfterContentChecked'));
+
+  it(`should report an error and add a TODO for undecorated classes that only define ` +
+         `the "ngOnDestroy" lifecycle hook`,
+     async () => {
+       writeFile('/index.ts', `
+      import { Input } from '@angular/core';
+
+      export class SomeClassWithAngularFeatures {
+        ngOnDestroy() {
+          // noop for testing
+        }
+      }
+    `);
+
+       await runMigration();
+
+       expect(warnings.length).toBe(1);
+       expect(warnings[0])
+           .toMatch(
+               'index.ts@4:7: Class uses Angular features but cannot be migrated automatically. ' +
+               'Please add an appropriate Angular decorator.');
+       expect(tree.readContent('/index.ts'))
+           .toMatch(/TODO: Add Angular decorator\.\nexport class SomeClassWithAngularFeatures {/);
+     });
+
   it('should add @Directive to undecorated derived classes of a migrated class', async () => {
     writeFile('/index.ts', `
       import { Input, Directive, NgModule } from '@angular/core';
@@ -313,6 +360,22 @@ describe('Undecorated classes with decorated fields migration', () => {
 
     expect(error).toBe(null);
   });
+
+  async function assertLifecycleHookMigrated(lifecycleHookName: string) {
+    writeFile('/index.ts', `
+      import { Input } from '@angular/core';
+
+      export class SomeClassWithAngularFeatures {
+        ${lifecycleHookName}() {
+          // noop for testing
+        }
+      }
+    `);
+
+    await runMigration();
+    expect(tree.readContent('/index.ts'))
+        .toContain(`@Directive()\nexport class SomeClassWithAngularFeatures {`);
+  }
 
   function writeFile(filePath: string, contents: string) {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
