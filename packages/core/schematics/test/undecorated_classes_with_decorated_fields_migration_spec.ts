@@ -11,6 +11,7 @@ import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
 import * as shx from 'shelljs';
+import {AMBIGUOUS_LIFECYCLE_HOOKS, DIRECTIVE_LIFECYCLE_HOOKS} from '../migrations/undecorated-classes-with-decorated-fields/transform';
 
 describe('Undecorated classes with decorated fields migration', () => {
   let runner: SchematicTestRunner;
@@ -18,6 +19,7 @@ describe('Undecorated classes with decorated fields migration', () => {
   let tree: UnitTestTree;
   let tmpDirPath: string;
   let previousWorkingDir: string;
+  let warnings: string[];
 
   beforeEach(() => {
     runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
@@ -28,6 +30,13 @@ describe('Undecorated classes with decorated fields migration', () => {
     writeFile('/angular.json', JSON.stringify({
       projects: {t: {architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
     }));
+
+    warnings = [];
+    runner.logger.subscribe(entry => {
+      if (entry.level === 'warn') {
+        warnings.push(entry.message);
+      }
+    });
 
     previousWorkingDir = shx.pwd();
     tmpDirPath = getSystemPath(host.root);
@@ -226,6 +235,50 @@ describe('Undecorated classes with decorated fields migration', () => {
 
     await runMigration();
     expect(tree.readContent('/index.ts')).toContain(`@Directive()\nexport class Base {`);
+  });
+
+  DIRECTIVE_LIFECYCLE_HOOKS.forEach(hookName => {
+    it(`should migrate undecorated class that uses lifecycle hook: ${hookName}`, async () => {
+      writeFile('/index.ts', `
+      import { Input } from '@angular/core';
+
+      export class SomeClassWithAngularFeatures {
+        ${hookName}() {
+          // noop for testing
+        }
+      }
+    `);
+
+      await runMigration();
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@Directive()\nexport class SomeClassWithAngularFeatures {`);
+    });
+  });
+
+  AMBIGUOUS_LIFECYCLE_HOOKS.forEach(hookName => {
+    it(`should report an error and add a TODO for classes that only use the lifecycle ` +
+           `hook: ${hookName}`,
+       async () => {
+         writeFile('/index.ts', `
+        import { Input } from '@angular/core';
+  
+        export class SomeClassWithAngularFeatures {
+          ${hookName}() {
+            // noop for testing
+          }
+        }
+      `);
+
+         await runMigration();
+
+         expect(warnings.length).toBe(1);
+         expect(warnings[0])
+             .toMatch(
+                 'index.ts@4:9: Class uses Angular features but cannot be migrated automatically. ' +
+                 'Please add an appropriate Angular decorator.');
+         expect(tree.readContent('/index.ts'))
+             .toMatch(/TODO: Add Angular decorator\.\nexport class SomeClassWithAngularFeatures {/);
+       });
   });
 
   it('should add @Directive to undecorated derived classes of a migrated class', async () => {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Rule, SchematicsException, Tree,} from '@angular-devkit/schematics';
+import {Rule, SchematicContext, SchematicsException, Tree,} from '@angular-devkit/schematics';
 import {relative} from 'path';
 import * as ts from 'typescript';
 
@@ -21,10 +21,11 @@ import {UpdateRecorder} from './update_recorder';
  * https://hackmd.io/vuQfavzfRG6KUCtU7oK_EA
  */
 export default function(): Rule {
-  return (tree: Tree) => {
+  return (tree: Tree, ctx: SchematicContext) => {
     const {buildPaths, testPaths} = getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const allPaths = [...buildPaths, ...testPaths];
+    const failures: string[] = [];
 
     if (!allPaths.length) {
       throw new SchematicsException(
@@ -32,12 +33,20 @@ export default function(): Rule {
     }
 
     for (const tsconfigPath of allPaths) {
-      runUndecoratedClassesMigration(tree, tsconfigPath, basePath);
+      failures.push(...runUndecoratedClassesMigration(tree, tsconfigPath, basePath));
+    }
+
+    if (failures.length) {
+      ctx.logger.info('Could not migrate all undecorated classes that use Angular features.');
+      ctx.logger.info('Please manually fix the following failures:');
+      failures.forEach(message => ctx.logger.warn(`⮑   ${message}`));
     }
   };
 }
 
-function runUndecoratedClassesMigration(tree: Tree, tsconfigPath: string, basePath: string) {
+function runUndecoratedClassesMigration(
+    tree: Tree, tsconfigPath: string, basePath: string): string[] {
+  const failures: string[] = [];
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();
   const sourceFiles = program.getSourceFiles().filter(
@@ -47,7 +56,13 @@ function runUndecoratedClassesMigration(tree: Tree, tsconfigPath: string, basePa
       new UndecoratedClassesWithDecoratedFieldsTransform(typeChecker, getUpdateRecorder);
 
   // Migrate all source files in the project.
-  transform.migrate(sourceFiles);
+  transform.migrate(sourceFiles).forEach(({node, message}) => {
+    const nodeSourceFile = node.getSourceFile();
+    const relativeFilePath = relative(basePath, nodeSourceFile.fileName);
+    const {line, character} =
+        ts.getLineAndCharacterOfPosition(node.getSourceFile(), node.getStart());
+    failures.push(`${relativeFilePath}@${line + 1}:${character + 1}: ${message}`);
+  });
 
   // Record the changes collected in the import manager.
   transform.recordChanges();
@@ -57,6 +72,8 @@ function runUndecoratedClassesMigration(tree: Tree, tsconfigPath: string, basePa
   // file in order to avoid shifted character offsets.
   updateRecorders.forEach(recorder => recorder.commitUpdate());
 
+  return failures;
+
   /** Gets the update recorder for the specified source file. */
   function getUpdateRecorder(sourceFile: ts.SourceFile): UpdateRecorder {
     if (updateRecorders.has(sourceFile)) {
@@ -64,6 +81,9 @@ function runUndecoratedClassesMigration(tree: Tree, tsconfigPath: string, basePa
     }
     const treeRecorder = tree.beginUpdate(relative(basePath, sourceFile.fileName));
     const recorder: UpdateRecorder = {
+      addClassTodo(node: ts.ClassDeclaration, message: string) {
+        treeRecorder.insertRight(node.getStart(), `// TODO: ${message}\n`);
+      },
       addClassDecorator(node: ts.ClassDeclaration, text: string) {
         // New imports should be inserted at the left while decorators should be inserted
         // at the right in order to ensure that imports are inserted before the decorator
