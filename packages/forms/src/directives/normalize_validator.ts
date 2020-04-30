@@ -10,7 +10,7 @@ import {AbstractControl} from '../model';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 export function normalizeValidator(validator: ValidatorFn|Validator): ValidatorFn {
-  if ((<Validator>validator).validate) {
+  if (!!(<Validator>validator).validate) {
     return (c: AbstractControl) => (<Validator>validator).validate(c);
   } else {
     return <ValidatorFn>validator;
@@ -19,7 +19,7 @@ export function normalizeValidator(validator: ValidatorFn|Validator): ValidatorF
 
 export function normalizeAsyncValidator(validator: AsyncValidatorFn|
                                         AsyncValidator): AsyncValidatorFn {
-  if ((<AsyncValidator>validator).validate) {
+  if (!!(<AsyncValidator>validator).validate) {
     return (c: AbstractControl) => (<AsyncValidator>validator).validate(c);
   } else {
     return <AsyncValidatorFn>validator;

@@ -1008,32 +1008,10 @@
     source-map "~0.6.1"
     typescript "~3.7.2"
 
-"@microsoft/node-core-library@3.18.0":
-  version "3.18.0"
-  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-3.18.0.tgz#9a9123354b3e067bb8a975ba791959ffee1322ed"
-  integrity sha512-VzzSHtcwgHVW1xbHqpngfn+OS1trAZ1Tw3XXBlMsEKe7Wz7FF2gLr0hZa6x9Pemk5pkd4tu4+GTSOJjCKGjrgg==
-  dependencies:
-    "@types/node" "8.10.54"
-    colors "~1.2.1"
-    fs-extra "~7.0.1"
-    jju "~1.4.0"
-    semver "~5.3.0"
-    timsort "~0.3.0"
-    z-schema "~3.18.3"
-
-"@microsoft/ts-command-line@4.3.5":
-  version "4.3.5"
-  resolved "https://registry.yarnpkg.com/@microsoft/ts-command-line/-/ts-command-line-4.3.5.tgz#78026d20244f39978d3397849ac8c40c0c2d4079"
-  integrity sha512-CN3j86apNOmllUmeJ0AyRfTYA2BP2xlnfgmnyp1HWLqcJmR/zLe/fk/+gohGnNt7o5/qHta3681LQhO2Yy3GFw==
-  dependencies:
-    "@types/argparse" "1.0.33"
-    argparse "~1.0.9"
-    colors "~1.2.1"
-
-"@microsoft/tsdoc@0.12.14":
-  version "0.12.14"
-  resolved "https://registry.yarnpkg.com/@microsoft/tsdoc/-/tsdoc-0.12.14.tgz#0e0810a0a174e50e22dfe8edb30599840712f22d"
-  integrity sha512-518yewjSga1jLdiLrcmpMFlaba5P+50b0TWNFUpC+SL9Yzf0kMi57qw+bMl+rQ08cGqH1vLx4eg9YFUbZXgZ0Q==
+"@microsoft/tsdoc@0.12.19":
+  version "0.12.19"
+  resolved "https://registry.yarnpkg.com/@microsoft/tsdoc/-/tsdoc-0.12.19.tgz#2173ccb92469aaf62031fa9499d21b16d07f9b57"
+  integrity sha512-IpgPxHrNxZiMNUSXqR1l/gePKPkfAmIKoDRP9hp7OwjU29ZR8WCJsOJ8iBKgw0Qk+pFwR+8Y1cy8ImLY6e9m4A==
 
 "@ngtools/webpack@9.0.3":
   version "9.0.3"
@@ -1302,7 +1280,7 @@
 
 "@types/fs-extra@^8.0.1":
   version "8.1.0"
-  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-8.1.0.tgz#1114834b53c3914806cd03b3304b37b3bd221a4d"
+  resolved "https://registry.yarnpkg.com/ƒypes/fs-extra/-/fs-extra-8.1.0.tgz#1114834b53c3914806cd03b3304b37b3bd221a4d"
   integrity sha512-UoOfVEzAUpeSPmjm7h1uk5MH6KZma2z2O7a75onTGjnNvAvMVrPzPL/vBbT65iIGHWj6rokwfmYcmxmlSf2uwg==
   dependencies:
     "@types/node" "*"
@@ -1371,10 +1349,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-13.11.0.tgz#390ea202539c61c8fa6ba4428b57e05bc36dc47b"
   integrity sha512-uM4mnmsIIPK/yeO+42F2RQhGUIs39K2RFmugcJANppXe6J1nvH87PvzPZYpza7Xhhs8Yn9yIAVdLZ84z61+0xQ==
 
-"@types/node@8.10.54":
-  version "8.10.54"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.54.tgz#1c88eb253ac1210f1a5876953fb70f7cc4928402"
-  integrity sha512-kaYyLYf6ICn6/isAyD4K1MyWWd5Q3JgH6bnMN089LUx88+s4W8GvK9Q6JMBVu5vsFFp7pMdSxdKmlBXwH/VFRg==
+"@types/node@10.17.13":
+  version "10.17.13"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.17.13.tgz#ccebcdb990bd6139cd16e84c39dc2fb1023ca90c"
+  integrity sha512-pMCcqU2zT4TjqYFrWtYHKal7Sl30Ims6ulZ4UFXxI4xbtQqK/qqKwkDoBFCfooRqqmRu9vY3xaJRwxSh673aYg==
 
 "@types/node@^10.1.0":
   version "10.17.18"
@@ -13855,7 +13833,12 @@ typescript@3.6.4:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.4.tgz#b18752bb3792bc1a0281335f7f6ebf1bbfc5b91d"
   integrity sha512-unoCll1+l+YK4i4F8f22TaNVPRHcD9PA3yCuZ8g5e0qGqlVlJ/8FSateOLLSagn+Yg5+ZwuPkL8LFUc0Jcvksg==
 
-typescript@^3.0.3, typescript@^3.6.4, typescript@^3.7.5, typescript@~3.8.3:
+typescript@3.9.1-rc:
+  version "3.9.1-rc"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.1-rc.tgz#81d5a5a0a597e224b6e2af8dffb46524b2eaf5f3"
+  integrity sha512-+cPv8L2Vd4KidCotqi2wjegBZ5n47CDRUu/QiLVu2YbeXAz78hIfcai9ziBiNI6JTGTVwUqXRug2UZxDcxhvFw==
+
+typescript@^3.0.3, typescript@^3.6.4, typescript@^3.7.5:
   version "3.8.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
   integrity sha512-MYlEfn5VrLNsgudQTVJeNaQFUAI7DkhnOjdpAp4T+ku1TfQClewlbSuTVHiA+8skNBgaf02TL/kLOvig4y3G8w==
