@@ -3468,6 +3468,22 @@ runInEachFileSystem(os => {
         env.tsconfig({'generateNgFactoryShims': true});
       });
 
+      it('should be able to depend on an existing factory shim', () => {
+        // This test verifies that ngfactory files from the compilations of dependencies are
+        // available to import in a fresh compilation. It is derived from a bug observed in g3 where
+        // the shim system accidentally caused TypeScript to think that *.ngfactory.ts files always
+        // exist.
+        env.write('other.ngfactory.d.ts', `
+          export class OtherNgFactory {}
+        `);
+        env.write('test.ts', `
+          import {OtherNgFactory} from './other.ngfactory';
+
+          class DoSomethingWith extends OtherNgFactory {}
+        `);
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+
       it('should generate factory shims for files not listed in root files', () => {
         // This test verifies that shims are generated for all files in the user's program, even if
         // only a subset of those files are listed in the tsconfig as root files.

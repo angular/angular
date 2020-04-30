@@ -259,8 +259,10 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
     //  2) at least one of the shim generators recognizes it
     // Note that we can pass the file name as branded absolute fs path because TypeScript
     // internally only passes POSIX-like paths.
+    //
+    // Also note that the `maybeGenerate` check below checks for both `null` and `undefined`.
     return this.delegate.fileExists(fileName) ||
-        this.shimAdapter.maybeGenerate(resolve(fileName)) !== null;
+        this.shimAdapter.maybeGenerate(resolve(fileName)) != null;
   }
 
   get unifiedModulesHost(): UnifiedModulesHost|null {

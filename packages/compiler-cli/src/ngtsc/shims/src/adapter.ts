@@ -167,11 +167,17 @@ export class ShimAdapter {
         baseFileName = absoluteFrom(prefix + '.tsx');
         if (!this.delegate.fileExists(baseFileName)) {
           // This isn't a shim after all since there is no original file which would have triggered
-          // its generation, even though the path is right. It's probably a bad import in the user's
-          // program.
+          // its generation, even though the path is right. There are a few reasons why this could
+          // occur:
+          //
+          // * when resolving an import to an .ngfactory.d.ts file, the module resolution algorithm
+          //   will first look for an .ngfactory.ts file in its place, which will be requested here.
+          // * when the user writes a bad import.
+          // * when a file is present in one compilation and removed in the next incremental step.
           //
           // Note that this does not add the filename to `notShims`, so this path is not cached.
-          // That's okay as this is an edge case.
+          // That's okay as these cases above are edge cases and do not occur regularly in normal
+          // operations.
           return undefined;
         }
       }
