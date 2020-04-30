@@ -12,21 +12,26 @@ import {getRepoBaseDir} from '../../utils/config';
 
 import {Formatter} from './base-formatter';
 
+/**
+ * Formatter for running clang-format against Typescript and Javascript files
+ */
 export class ClangFormat extends Formatter {
   name = 'clang-format';
+
   binaryFilePath = join(getRepoBaseDir(), 'node_modules/.bin/clang-format');
+
   defaultFileMatcher = ['**/*.{t,j}s'];
 
   actions = {
     check: {
-      commandFlags: ` --Werror -n -style=file`,
+      commandFlags: `--Werror -n -style=file`,
       callback:
-          (_: string, code: number, stdout: string) => {
+          (_: string, code: number) => {
             return code !== 0;
           },
     },
     format: {
-      commandFlags: ` -i -style=file`,
+      commandFlags: `-i -style=file`,
       callback:
           (file: string, code: number, _: string, stderr: string) => {
             if (code !== 0) {

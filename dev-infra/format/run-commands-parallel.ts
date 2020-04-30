@@ -11,7 +11,7 @@ import * as multimatch from 'multimatch';
 import {cpus} from 'os';
 import {exec} from 'shelljs';
 
-import {Formatter, getActiveFormatters} from './formatters';
+import {Formatter, FormatterAction, getActiveFormatters} from './formatters';
 
 const AVAILABLE_THREADS = Math.max(cpus().length - 1, 1);
 
@@ -27,17 +27,16 @@ const AVAILABLE_THREADS = Math.max(cpus().length - 1, 1);
  * A promise is returned, completed when the command has completed running for each file.
  * The promises expresses whether the formatter ran against any files.
  */
-export function runFormatterInParallel(allFiles: string[], action: 'format'|'check') {
+export function runFormatterInParallel(allFiles: string[], action: FormatterAction) {
   return new Promise<false|string[]>((resolve) => {
     const formatters = getActiveFormatters();
     const failures: string[] = [];
     const pendingCommands: {formatter: Formatter, file: string}[] = [];
 
     for (const formatter of formatters) {
-      const pendingCommandsForFormatter = multimatch(allFiles, formatter.getFileMatcher(), {
-                                            dot: true
-                                          }).map(file => ({formatter, file}));
-      pendingCommands.push(...pendingCommandsForFormatter);
+      pendingCommands.push(...multimatch(allFiles, formatter.getFileMatcher(), {
+                             dot: true
+                           }).map(file => ({formatter, file})));
     }
 
     if (pendingCommands.length === 0) {

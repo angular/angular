@@ -12,9 +12,14 @@ import {getRepoBaseDir} from '../../utils/config';
 
 import {Formatter} from './base-formatter';
 
+/**
+ * Formatter for running buildifier against bazel related files.
+ */
 export class Buildifier extends Formatter {
   name = 'buildifier';
+
   binaryFilePath = join(getRepoBaseDir(), 'node_modules/.bin/buildifier');
+
   defaultFileMatcher = ['**/*.bzl', '**/BUILD.bazel', '**/WORKSPACE', '**/BUILD'];
 
   actions = {
