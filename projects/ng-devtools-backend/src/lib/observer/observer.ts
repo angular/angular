@@ -2,7 +2,7 @@ import { ElementPosition, LifecycleProfile } from 'protocol';
 import { componentMetadata } from '../utils';
 import { IdentityTracker, IndexedNode } from './identity-tracker';
 import { getLViewFromDirectiveOrElementInstance, getDirectiveHostElement } from '../lview-transform';
-import { DEV_TOOLS_HIGHLIGHT_NODE_ID, getDirectiveName } from '../highlighter';
+import { DEV_TOOLS_HIGHLIGHT_NODE_ID } from '../highlighter';
 
 export type CreationCallback = (
   componentOrDirective: any,
@@ -14,18 +14,18 @@ export type CreationCallback = (
 
 export type LifecycleStartCallback = (
   componentOrDirective: any,
+  hook: keyof LifecycleProfile | 'unknown',
   node: Node,
   id: number,
-  isComponent: boolean,
-  hook: keyof LifecycleProfile | 'unknown'
+  isComponent: boolean
 ) => void;
 
 export type LifecycleEndCallback = (
   componentOrDirective: any,
+  hook: keyof LifecycleProfile | 'unknown',
   node: Node,
   id: number,
-  isComponent: boolean,
-  hook: keyof LifecycleProfile | 'unknown'
+  isComponent: boolean
 ) => void;
 
 export type ChangeDetectionStartCallback = (component: any, node: Node, id: number, position: ElementPosition) => void;
@@ -40,7 +40,7 @@ export type DestroyCallback = (
   position: ElementPosition
 ) => void;
 
-export interface Config {
+export interface Callbacks {
   onCreate: CreationCallback;
   onDestroy: DestroyCallback;
   onChangeDetectionStart: ChangeDetectionStartCallback;
@@ -103,7 +103,11 @@ export class DirectiveForestObserver {
   private _tracker = new IdentityTracker();
   private _forest: IndexedNode[] = [];
 
-  constructor(private _config: Partial<Config>) {}
+  private _callbacks: Partial<Callbacks>[] = [];
+
+  constructor(config: Partial<Callbacks>) {
+    this._callbacks.push(config);
+  }
 
   getDirectivePosition(dir: any): ElementPosition | undefined {
     const result = this._tracker.getDirectivePosition(dir);
@@ -153,18 +157,22 @@ export class DirectiveForestObserver {
     const { newNodes, removedNodes, indexedForest } = this._tracker.index();
     this._forest = indexedForest;
     newNodes.forEach((node) => {
-      if (this._config.onLifecycleHookStart || this._config.onLifecycleHookEnd) {
-        this._observeLifecycle(node.directive, node.isComponent);
-      }
-      if (node.isComponent && (this._config.onChangeDetectionStart || this._config.onChangeDetectionEnd)) {
-        this._observeComponent(node.directive);
-      }
+      this._observeLifecycle(node.directive, node.isComponent);
+      this._observeComponent(node.directive);
       this._fireCreationCallback(node.directive, node.isComponent);
     });
     removedNodes.forEach((node) => {
       this._patched.delete(node.directive);
       this._fireDestroyCallback(node.directive, node.isComponent);
     });
+  }
+
+  subscribe(config: Partial<Callbacks>): void {
+    this._callbacks.push(config);
+  }
+
+  unsubscribe(config: Partial<Callbacks>): void {
+    this._callbacks.splice(this._callbacks.indexOf(config), 1);
   }
 
   private _onMutation(records: MutationRecord[]): void {
@@ -175,37 +183,22 @@ export class DirectiveForestObserver {
   }
 
   private _fireCreationCallback(component: any, isComponent: boolean): void {
-    if (!this._config.onCreate) {
-      return;
-    }
     const position = this._tracker.getDirectivePosition(component);
-    if (position === undefined) {
-      return;
-    }
     const id = this._tracker.getDirectiveId(component);
-    if (id === undefined) {
-      return;
-    }
-    this._config.onCreate(component, getDirectiveHostElement(component), id, isComponent, position);
+    this._onCreate(component, getDirectiveHostElement(component), id, isComponent, position);
   }
 
   private _fireDestroyCallback(component: any, isComponent: boolean): void {
-    if (!this._config.onDestroy) {
-      return;
-    }
     const position = this._tracker.getDirectivePosition(component);
-    if (position === undefined) {
-      return;
-    }
     const id = this._tracker.getDirectiveId(component);
-    if (id === undefined) {
-      return;
-    }
-    this._config.onDestroy(component, getDirectiveHostElement(component), id, isComponent, position);
+    this._onDestroy(component, getDirectiveHostElement(component), id, isComponent, position);
   }
 
   private _observeComponent(cmp: any): void {
     const declarations = componentMetadata(cmp);
+    if (!declarations) {
+      return;
+    }
     const original = declarations.template;
     const self = this;
     if (original.patched) {
@@ -216,14 +209,10 @@ export class DirectiveForestObserver {
       const start = performance.now();
       const id = self._tracker.getDirectiveId(component);
 
-      if (self._config.onChangeDetectionStart && id !== undefined && position !== undefined) {
-        self._config.onChangeDetectionStart(component, getDirectiveHostElement(component), id, position);
-      }
+      self._onChangeDetectionStart(component, getDirectiveHostElement(component), id, position);
       original.apply(this, arguments);
       if (self._tracker.hasDirective(component) && id !== undefined && position !== undefined) {
-        if (self._config.onChangeDetectionEnd) {
-          self._config.onChangeDetectionEnd(component, getDirectiveHostElement(component), id, position);
-        }
+        self._onChangeDetectionEnd(component, getDirectiveHostElement(component), id, position);
       } else {
         self._lastChangeDetection.set(component, performance.now() - start);
       }
@@ -253,13 +242,9 @@ export class DirectiveForestObserver {
             const id = self._tracker.getDirectiveId(this);
             const lifecycleHookName = getLifeCycleName(this, el);
             const element = getDirectiveHostElement(this);
-            if (self._config.onLifecycleHookStart && id !== undefined) {
-              self._config.onLifecycleHookStart(this, element, id, isComponent, lifecycleHookName);
-            }
+            self._onLifecycleHookStart(this, lifecycleHookName, element, id, isComponent);
             const result = el.apply(this, arguments);
-            if (self._config.onLifecycleHookEnd && id !== undefined) {
-              self._config.onLifecycleHookEnd(this, element, id, isComponent, lifecycleHookName);
-            }
+            self._onLifecycleHookEnd(this, lifecycleHookName, element, id, isComponent);
             return result;
           };
           current[idx].patched = true;
@@ -281,6 +266,86 @@ export class DirectiveForestObserver {
       }
     }
     return false;
+  }
+
+  private _onCreate(
+    _: any,
+    __: Node,
+    id: number | undefined,
+    ___: boolean,
+    position: ElementPosition | undefined
+  ): void {
+    if (id === undefined || position === undefined) {
+      return;
+    }
+    this._invokeCallback('onCreate', arguments);
+  }
+
+  private _onDestroy(
+    _: any,
+    __: Node,
+    id: number | undefined,
+    ___: boolean,
+    position: ElementPosition | undefined
+  ): void {
+    if (id === undefined || position === undefined) {
+      return;
+    }
+    this._invokeCallback('onDestroy', arguments);
+  }
+
+  private _onChangeDetectionStart(
+    _: any,
+    __: Node,
+    id: number | undefined,
+    position: ElementPosition | undefined
+  ): void {
+    if (id === undefined || position === undefined) {
+      return;
+    }
+    this._invokeCallback('onChangeDetectionStart', arguments);
+  }
+
+  private _onChangeDetectionEnd(_: any, __: Node, id: number | undefined, position: ElementPosition | undefined): void {
+    if (id === undefined || position === undefined) {
+      return;
+    }
+    this._invokeCallback('onChangeDetectionEnd', arguments);
+  }
+
+  private _onLifecycleHookStart(
+    _: any,
+    __: keyof LifecycleProfile | 'unknown',
+    ___: Node,
+    id: number | undefined,
+    ____: boolean
+  ): void {
+    if (id === undefined) {
+      return;
+    }
+    this._invokeCallback('onLifecycleHookStart', arguments);
+  }
+
+  private _onLifecycleHookEnd(
+    _: any,
+    __: keyof LifecycleProfile | 'unknown',
+    ___: Node,
+    id: number | undefined,
+    ____: boolean
+  ): void {
+    if (id === undefined) {
+      return;
+    }
+    this._invokeCallback('onLifecycleHookEnd', arguments);
+  }
+
+  private _invokeCallback(name: keyof Callbacks, args: IArguments): void {
+    this._callbacks.forEach((config) => {
+      const cb = config[name];
+      if (cb) {
+        cb.apply(null, args);
+      }
+    });
   }
 }
 

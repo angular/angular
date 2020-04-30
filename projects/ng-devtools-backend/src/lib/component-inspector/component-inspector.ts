@@ -2,7 +2,7 @@ import { unHighlight, highlight, findComponentAndHost } from '../highlighter';
 import { Type } from '@angular/core';
 import { buildDirectiveForest, ComponentTreeNode, findNodeInForest } from '../component-tree';
 import { ElementPosition } from 'protocol';
-import { getDirectiveId } from '../component-tree-identifiers';
+import { getDirectiveForestObserver } from '../observer';
 
 export interface ComponentInspectorOptions {
   onComponentEnter: (id: number) => void;
@@ -46,7 +46,7 @@ export class ComponentInspector {
     e.preventDefault();
 
     if (this._selectedComponent.component && this._selectedComponent.host) {
-      this._onComponentSelect(getDirectiveId(this._selectedComponent.component));
+      this._onComponentSelect(getDirectiveForestObserver().getDirectiveId(this._selectedComponent.component));
     }
   }
 
@@ -61,7 +61,7 @@ export class ComponentInspector {
     unHighlight();
     if (this._selectedComponent.component && this._selectedComponent.host) {
       highlight(this._selectedComponent.host);
-      this._onComponentEnter(getDirectiveId(this._selectedComponent.component));
+      this._onComponentEnter(getDirectiveForestObserver().getDirectiveId(this._selectedComponent.component));
     }
   }
 
