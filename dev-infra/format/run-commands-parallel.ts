@@ -18,6 +18,12 @@ const AVAILABLE_THREADS = Math.max(cpus().length - 1, 1);
 /**
  * Run the provided commands in parallel for each provided file.
  *
+ * Running the formatter is split across (number of available cpu threads - 1) processess.
+ * The task is done in multiple processess to speed up the overall time of the task, as running
+ * across entire repositories takes a large amount of time.
+ * As a data point for illustration, using 8 process rather than 1 cut the execution
+ * time from 276 seconds to 39 seconds for the same 2700 files.
+ *
  * A promise is returned, completed when the command has completed running for each file.
  * The promises expresses whether the formatter ran against any files.
  */

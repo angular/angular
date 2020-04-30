@@ -10,7 +10,7 @@ import {join} from 'path';
 import {getAngularDevConfig, getRepoBaseDir} from '../utils/config';
 import {FormatConfig} from './config';
 
-
+// A callback function to determine if the result of the formatter shows the file as failing.
 export type CallbackFunc = (file: string, code: number, stdout: string, stderr: string) => boolean;
 
 // The metadata of a formatter needed for execution of the formatter on files.
@@ -65,7 +65,7 @@ export const BAZEL_FORMATTER: FormatterMetadata = {
     },
     format: (file, code, _, stderr) => {
       if (code !== 0) {
-        console.error(`Error running ${BAZEL_FORMATTER.name} on: ${file}`);
+        console.error(`Error running buildifier on: ${file}`);
         console.error(stderr);
         console.error();
         return true;
@@ -104,7 +104,7 @@ export const JS_TS_FORMATTER: FormatterMetadata = {
     },
     format: (file, code, _, stderr) => {
       if (code !== 0) {
-        console.error(`Error running ${BAZEL_FORMATTER.name} on: ${file}`);
+        console.error(`Error running clang-format on: ${file}`);
         console.error(stderr);
         console.error();
         return true;
