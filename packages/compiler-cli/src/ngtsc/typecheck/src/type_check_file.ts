@@ -34,10 +34,11 @@ export class TypeCheckFile extends Environment {
 
   constructor(
       fileName: string, config: TypeCheckingConfig, refEmitter: ReferenceEmitter,
-      reflector: ReflectionHost) {
+      reflector: ReflectionHost, compilerHost: ts.CompilerHost) {
     super(
         config, new ImportManager(new NoopImportRewriter(), 'i'), refEmitter, reflector,
-        ts.createSourceFile(fileName, '', ts.ScriptTarget.Latest, true));
+        ts.createSourceFile(
+            compilerHost.getCanonicalFileName(fileName), '', ts.ScriptTarget.Latest, true));
   }
 
   addTypeCheckBlock(
