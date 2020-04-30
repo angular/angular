@@ -60,6 +60,7 @@ v9 - v12
 | `@angular/core/testing`       | [`TestBed.get`](#testing)                                                     | <!--v9--> v12 |
 | `@angular/router`             | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
 | template syntax               | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)            | <!--v7--> unspecified |
+| browser support               | [`IE 9 and 10`](#ie-9-10)                                                     | <!--v10--> v11 |
 
 
 
@@ -562,7 +563,17 @@ In practical terms, the `package.json` of all `@angular` packages will change in
 
 For more information about the npm package format, see the [Angular Package Format spec](https://goo.gl/jB3GVv).
 
+{@a ie-9-10}
+### IE 9 and 10 support
 
+Support for IE 9 and 10 has been deprecated and will be removed in a future version.
+Supporting outdated browsers like these increases bundle size, code complexity, and test load, and also requires time and effort that could be spent on improvements to the framework.
+For example, fixing issues can be more difficult, as a straightforward fix for modern browsers could break old ones that have quirks due to not receiving updates from vendors. 
+
+The final decision was made on three key points:
+* __Vendor support__: Microsoft dropped support of IE 9 and 10 on 1/12/16, meaning they no longer provide security updates or technical support.
+* __Usage statistics__: We looked at usage trends for IE 9 and 10 from various sources and all indicated that usage percentages were extremely small (fractions of 1%).
+* __Feedback from partners__: We also reached out to some of our Angular customers and none expressed concern about dropping IE 9 and 10 support.
 
 {@a removed}
 ## Removed APIs
