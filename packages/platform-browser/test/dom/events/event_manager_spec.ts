@@ -370,6 +370,52 @@ describe('EventManager', () => {
       done();
     });
   });
+
+  it('should not drain micro tasks queue too early with shouldCoalesceEventChangeDetection=true',
+     (done: DoneFn) => {
+       doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+       zone = new NgZone({shouldCoalesceEventChangeDetection: true});
+       domEventPlugin = new DomEventsPlugin(doc);
+       const element = el('<div></div>');
+       const child = el('<div></div>');
+       doc.body.appendChild(element);
+       const dispatchedClickEvent = createMouseEvent('click');
+       const dispatchedBlurEvent: FocusEvent =
+           getDOM().getDefaultDocument().createEvent('FocusEvent');
+       dispatchedBlurEvent.initEvent('blur', true, true);
+       let logs: any = [];
+       const handler = () => {};
+
+       const blurHandler = (e: any) => {
+         logs.push('blur');
+       };
+       const manager = new EventManager([domEventPlugin], zone);
+       let removerParent: any;
+       let removerChildFocus: any;
+
+       zone.run(() => {
+         removerParent = manager.addEventListener(element, 'click', handler);
+         removerChildFocus = manager.addEventListener(child, 'blur', blurHandler);
+       });
+       const sub = zone.onStable.subscribe(() => {
+         logs.push('begin');
+         Promise.resolve().then(() => {
+           logs.push('promise resolved');
+         });
+         element.appendChild(child);
+         getDOM().dispatchEvent(child, dispatchedBlurEvent);
+         sub.unsubscribe();
+         logs.push('end');
+       });
+       getDOM().dispatchEvent(element, dispatchedClickEvent);
+       requestAnimationFrame(() => {
+         expect(logs).toEqual(['begin', 'blur', 'end', 'promise resolved']);
+
+         removerParent && removerParent();
+         removerChildFocus && removerChildFocus();
+         done();
+       });
+     });
 });
 })();
 
