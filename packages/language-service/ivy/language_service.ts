@@ -8,17 +8,28 @@
 
 import {CompilerOptions, createNgCompilerOptions} from '@angular/compiler-cli';
 import * as ts from 'typescript/lib/tsserverlibrary';
+import {Compiler} from './compiler/compiler';
 
 export class LanguageService {
   private options: CompilerOptions;
+  private readonly compiler: Compiler;
 
   constructor(project: ts.server.Project, private readonly tsLS: ts.LanguageService) {
     this.options = parseNgCompilerOptions(project);
     this.watchConfigFile(project);
+    this.compiler = new Compiler(project, this.options);
   }
 
   getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
-    return [];
+    const program = this.compiler.analyze();
+    if (!program) {
+      return [];
+    }
+    const sourceFile = program.getSourceFile(fileName);
+    if (!sourceFile) {
+      return [];
+    }
+    return this.compiler.getDiagnostics(sourceFile);
   }
 
   private watchConfigFile(project: ts.server.Project) {
@@ -35,6 +46,7 @@ export class LanguageService {
           project.log(`Config file changed: ${fileName}`);
           if (eventKind === ts.FileWatcherEventKind.Changed) {
             this.options = parseNgCompilerOptions(project);
+            this.compiler.setCompilerOptions(this.options);
           }
         });
   }
