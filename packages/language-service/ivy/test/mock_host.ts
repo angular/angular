@@ -35,6 +35,7 @@ export const TSCONFIG = join(PROJECT_DIR, 'tsconfig.json');
 export const APP_COMPONENT = join(PROJECT_DIR, 'app', 'app.component.ts');
 export const APP_MAIN = join(PROJECT_DIR, 'app', 'main.ts');
 export const PARSING_CASES = join(PROJECT_DIR, 'app', 'parsing-cases.ts');
+export const TEST_TEMPLATE = join(PROJECT_DIR, 'app', 'test.ng');
 
 const NOOP_FILE_WATCHER: ts.FileWatcher = {
   close() {}
@@ -44,9 +45,14 @@ export const host: ts.server.ServerHost = {
   ...ts.sys,
   readFile(absPath: string, encoding?: string): string |
       undefined {
-        // TODO: Need to remove all annotations in templates like we do in
-        // MockTypescriptHost
-        return ts.sys.readFile(absPath, encoding);
+        const content = ts.sys.readFile(absPath, encoding);
+        if (content === undefined) {
+          return undefined;
+        }
+        if (absPath === APP_COMPONENT || absPath === PARSING_CASES || absPath === TEST_TEMPLATE) {
+          return removeReferenceMarkers(removeLocationMarkers(content));
+        }
+        return content;
       },
   watchFile(path: string, callback: ts.FileWatcherCallback): ts.FileWatcher {
     return NOOP_FILE_WATCHER;
@@ -109,14 +115,18 @@ class MockService {
 
   overwrite(fileName: string, newText: string): string {
     const scriptInfo = this.getScriptInfo(fileName);
-    this.overwritten.add(scriptInfo.fileName);
-    const snapshot = scriptInfo.getSnapshot();
-    scriptInfo.editContent(0, snapshot.getLength(), preprocess(newText));
-    const sameProgram = this.project.updateGraph();  // clear the dirty flag
-    if (sameProgram) {
-      throw new Error('Project should have updated program after overwrite');
-    }
+    this.overwriteScriptInfo(scriptInfo, preprocess(newText));
     return newText;
+  }
+
+  overwriteInlineTemplate(fileName: string, newTemplate: string): string {
+    const scriptInfo = this.getScriptInfo(fileName);
+    const snapshot = scriptInfo.getSnapshot();
+    const originalContent = snapshot.getText(0, snapshot.getLength());
+    const newContent =
+        originalContent.replace(/template: `([\s\S]+)`/, `template: \`${newTemplate}\``);
+    this.overwriteScriptInfo(scriptInfo, preprocess(newContent));
+    return newContent;
   }
 
   reset() {
@@ -130,10 +140,6 @@ class MockService {
         throw new Error(`Failed to reload ${scriptInfo.fileName}`);
       }
     }
-    const sameProgram = this.project.updateGraph();
-    if (sameProgram) {
-      throw new Error('Project should have updated program after reset');
-    }
     this.overwritten.clear();
   }
 
@@ -144,9 +150,26 @@ class MockService {
     }
     return scriptInfo;
   }
+
+  private overwriteScriptInfo(scriptInfo: ts.server.ScriptInfo, newText: string) {
+    const snapshot = scriptInfo.getSnapshot();
+    scriptInfo.editContent(0, snapshot.getLength(), newText);
+    this.overwritten.add(scriptInfo.fileName);
+  }
 }
 
 const REGEX_CURSOR = /¦/g;
 function preprocess(text: string): string {
   return text.replace(REGEX_CURSOR, '');
+}
+
+const REF_MARKER = /«(((\w|\-)+)|([^ᐱ]*ᐱ(\w+)ᐱ.[^»]*))»/g;
+const LOC_MARKER = /\~\{(\w+(-\w+)*)\}/g;
+
+function removeReferenceMarkers(value: string): string {
+  return value.replace(REF_MARKER, '');
+}
+
+function removeLocationMarkers(value: string): string {
+  return value.replace(LOC_MARKER, '');
 }
