@@ -79,7 +79,7 @@ export class LogicalFileSystem {
     if (!this.cache.has(physicalFile)) {
       let logicalFile: LogicalProjectPath|null = null;
       for (const rootDir of this.rootDirs) {
-        if (physicalFile.startsWith(rootDir)) {
+        if (!relative(rootDir, physicalFile).startsWith('..')) {
           logicalFile = this.createLogicalProjectPath(physicalFile, rootDir);
           // The logical project does not include any special "node_modules" nested directories.
           if (logicalFile.indexOf('/node_modules/') !== -1) {
