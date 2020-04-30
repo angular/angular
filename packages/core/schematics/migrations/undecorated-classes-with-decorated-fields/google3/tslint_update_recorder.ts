@@ -16,6 +16,12 @@ export class TslintUpdateRecorder implements UpdateRecorder {
 
   constructor(private ruleName: string, private sourceFile: ts.SourceFile) {}
 
+  addClassTodo(node: ts.ClassDeclaration, message: string) {
+    this.failures.push(new RuleFailure(
+        this.sourceFile, node.getStart(), 0, message, this.ruleName,
+        Replacement.appendText(node.getStart(), `// TODO: ${message}`)));
+  }
+
   /** Adds the specified decorator to the given class declaration. */
   addClassDecorator(node: ts.ClassDeclaration, decoratorText: string) {
     // Adding a decorator should be the last replacement. Replacements/rule failures

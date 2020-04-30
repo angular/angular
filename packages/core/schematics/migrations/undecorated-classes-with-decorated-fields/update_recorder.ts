@@ -15,5 +15,6 @@ import {ImportManagerUpdateRecorder} from '../../utils/import_manager';
  */
 export interface UpdateRecorder extends ImportManagerUpdateRecorder {
   addClassDecorator(node: ts.ClassDeclaration, text: string): void;
+  addClassTodo(node: ts.ClassDeclaration, message: string): void;
   commitUpdate(): void;
 }
