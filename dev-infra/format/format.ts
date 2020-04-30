@@ -7,8 +7,6 @@
  */
 
 import {prompt} from 'inquirer';
-
-import {BAZEL_FORMATTER, JS_TS_FORMATTER} from './formatters';
 import {runFormatterInParallel} from './run-commands-parallel';
 
 /**
@@ -16,7 +14,7 @@ import {runFormatterInParallel} from './run-commands-parallel';
  */
 export async function formatFiles(files: string[]) {
   // Whether any files failed to format.
-  let failures = await runFormatterInParallel(files, [BAZEL_FORMATTER, JS_TS_FORMATTER], 'format');
+  let failures = await runFormatterInParallel(files, 'format');
 
   if (failures === false) {
     process.exit(0);
@@ -36,7 +34,7 @@ export async function formatFiles(files: string[]) {
  */
 export async function checkFiles(files: string[]) {
   // Files which are currently not formatted correctly.
-  const failures = await runFormatterInParallel(files, [BAZEL_FORMATTER, JS_TS_FORMATTER], 'check');
+  const failures = await runFormatterInParallel(files, 'check');
 
   if (failures === false) {
     process.exit(0);

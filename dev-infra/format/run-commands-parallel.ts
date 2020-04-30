@@ -11,7 +11,7 @@ import * as multimatch from 'multimatch';
 import {cpus} from 'os';
 import {exec} from 'shelljs';
 
-import {FormatterMetadata} from './formatters';
+import {Formatter, getActiveFormatters} from './formatters';
 
 const AVAILABLE_THREADS = Math.max(cpus().length - 1, 1);
 
@@ -27,15 +27,16 @@ const AVAILABLE_THREADS = Math.max(cpus().length - 1, 1);
  * A promise is returned, completed when the command has completed running for each file.
  * The promises expresses whether the formatter ran against any files.
  */
-export function runFormatterInParallel(
-    allFiles: string[], formatters: FormatterMetadata[], action: 'format'|'check') {
+export function runFormatterInParallel(allFiles: string[], action: 'format'|'check') {
   return new Promise<false|string[]>((resolve) => {
+    const formatters = getActiveFormatters();
     const failures: string[] = [];
-    const pendingCommands: {formatter: FormatterMetadata, file: string}[] = [];
+    const pendingCommands: {formatter: Formatter, file: string}[] = [];
 
     for (const formatter of formatters) {
-      const pendingCommandsForFormatter =
-          multimatch(allFiles, formatter.matcher(), {dot: true}).map(file => ({formatter, file}));
+      const pendingCommandsForFormatter = multimatch(allFiles, formatter.getFileMatcher(), {
+                                            dot: true
+                                          }).map(file => ({formatter, file}));
       pendingCommands.push(...pendingCommandsForFormatter);
     }
 
@@ -75,11 +76,11 @@ export function runFormatterInParallel(
       const {file, formatter} = nextCommand;
 
       exec(
-          `${formatter.commands[action]} ${file}`,
+          `${formatter.commandFor(action)} ${file}`,
           {async: true, silent: true},
           (code, stdout, stderr) => {
             // Run the provided callback function.
-            const failed = formatter.callbacks[action](file, code, stdout, stderr);
+            const failed = formatter.callbackFor(action)(file, code, stdout, stderr);
             if (failed) {
               failures.push(file);
             }

@@ -7,8 +7,7 @@
  */
 
 export interface FormatConfig {
-  matchers: {
-    jsTs?: string[],
-    bazel?: string[],
+  [keyof: string]: boolean|{
+    matchers: string[];
   };
 }
