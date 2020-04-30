@@ -255,7 +255,7 @@ export function getLocaleDayPeriods(
  * @publicApi
  */
 export function getLocaleDayNames(
-    locale: string, formStyle: FormStyle, width: TranslationWidth): string[] {
+    locale: string, formStyle: FormStyle, width: TranslationWidth): ReadonlyArray<string> {
   const data = ɵfindLocaleData(locale);
   const daysData =
       <string[][][]>[data[ɵLocaleDataIndex.DaysFormat], data[ɵLocaleDataIndex.DaysStandalone]];
@@ -276,7 +276,7 @@ export function getLocaleDayNames(
  * @publicApi
  */
 export function getLocaleMonthNames(
-    locale: string, formStyle: FormStyle, width: TranslationWidth): string[] {
+    locale: string, formStyle: FormStyle, width: TranslationWidth): ReadonlyArray<string> {
   const data = ɵfindLocaleData(locale);
   const monthsData =
       <string[][][]>[data[ɵLocaleDataIndex.MonthsFormat], data[ɵLocaleDataIndex.MonthsStandalone]];
