@@ -15,8 +15,6 @@ import {FormatterMetadata} from './formatters';
 
 const AVAILABLE_THREADS = Math.max(cpus().length - 1, 1);
 
-type CallbackFunction = (file: string, code: number, stdout: string, stderr: string) => void;
-
 /**
  * Run the provided commands in parallel for each provided file.
  *
@@ -24,21 +22,28 @@ type CallbackFunction = (file: string, code: number, stdout: string, stderr: str
  * The promises expresses whether the formatter ran against any files.
  */
 export function runFormatterInParallel(
-    allFiles: string[], formatter: FormatterMetadata, action: 'format'|'check',
-    callback: CallbackFunction) {
-  return new Promise<boolean>((resolve) => {
-    const files = multimatch(allFiles, formatter.matcher, {dot: true});
+    allFiles: string[], formatters: FormatterMetadata[], action: 'format'|'check') {
+  return new Promise<false|string[]>((resolve) => {
+    const failures: string[] = [];
+    const pendingCommands: {formatter: FormatterMetadata, file: string}[] = [];
 
-    if (files.length === 0) {
+    for (const formatter of formatters) {
+      const pendingCommandsForFormatter =
+          multimatch(allFiles, formatter.matcher(), {dot: true}).map(file => ({formatter, file}));
+      pendingCommands.push(...pendingCommandsForFormatter);
+    }
+
+    if (pendingCommands.length === 0) {
+      console.info('No files matched for formatting.');
       return resolve(false);
     }
 
     switch (action) {
       case 'format':
-        console.info(`Formatting ${files.length} file(s) with ${formatter.name}`);
+        console.info(`Formatting ${pendingCommands.length} file(s)`);
         break;
       case 'check':
-        console.info(`Checking format of ${files.length} file(s) with ${formatter.name}`);
+        console.info(`Checking format of ${pendingCommands.length} file(s)`);
         break;
       default:
         throw Error(`Invalid format action "${action}": allowed actions are "format" and "check"`);
@@ -54,24 +59,29 @@ export function runFormatterInParallel(
     // Recursively run the command on the next available file from the list using the provided
     // thread.
     function runCommandInThread(thread: number) {
-      // Get the next file.
-      const file = files.pop();
+      const nextCommand = pendingCommands.pop();
       // If no file was pulled from the array, return as there are no more files to run against.
-      if (!file) {
+      if (nextCommand === undefined) {
         return;
       }
+
+      // Get the file and formatter for the next command.
+      const {file, formatter} = nextCommand;
 
       exec(
           `${formatter.commands[action]} ${file}`,
           {async: true, silent: true},
           (code, stdout, stderr) => {
             // Run the provided callback function.
-            callback(file, code, stdout, stderr);
+            const failed = formatter.callbacks[action](file, code, stdout, stderr);
+            if (failed) {
+              failures.push(file);
+            }
             // Note in the progress bar another file being completed.
             progressBar.increment(1);
             // If more files exist in the list, run again to work on the next file,
             // using the same slot.
-            if (files.length) {
+            if (pendingCommands.length) {
               return runCommandInThread(thread);
             }
             // If not more files are available, mark the thread as unused.
@@ -80,7 +90,7 @@ export function runFormatterInParallel(
             // completed and resolve the promise.
             if (threads.every(active => !active)) {
               progressBar.stop();
-              resolve(true);
+              resolve(failures);
             }
           },
       );
@@ -89,7 +99,7 @@ export function runFormatterInParallel(
     }
 
     // Start the progress bar
-    progressBar.start(files.length, 0);
+    progressBar.start(pendingCommands.length, 0);
     // Start running the command on files from the least in each available thread.
     threads.forEach((_, idx) => runCommandInThread(idx));
   });

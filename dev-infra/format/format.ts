@@ -7,7 +7,6 @@
  */
 
 import {prompt} from 'inquirer';
-import * as multimatch from 'multimatch';
 
 import {BAZEL_FORMATTER, JS_TS_FORMATTER} from './formatters';
 import {runFormatterInParallel} from './run-commands-parallel';
@@ -17,40 +16,14 @@ import {runFormatterInParallel} from './run-commands-parallel';
  */
 export async function formatFiles(files: string[]) {
   // Whether any files failed to format.
-  let formatFailed = false;
+  let failures = await runFormatterInParallel(files, [BAZEL_FORMATTER, JS_TS_FORMATTER], 'format');
 
-  const formatterResults = await Promise.allSettled([
-    await runFormatterInParallel(
-        files, BAZEL_FORMATTER, 'format',
-        (file, code, _, stderr) => {
-          if (code !== 0) {
-            formatFailed = true;
-            console.error(`Error running ${BAZEL_FORMATTER.name} on: ${file}`);
-            console.error(stderr);
-            console.error();
-          }
-        }),
-    await runFormatterInParallel(
-        files, JS_TS_FORMATTER, 'format',
-        (file, code, _, stderr) => {
-          // Add any files failing format checks to the list.
-          if (code !== 0) {
-            formatFailed = true;
-            console.error(`Error running ${JS_TS_FORMATTER.name} on: ${file}`);
-            console.error(stderr);
-            console.error();
-          }
-        })
-  ]);
-
-
-  if (!formatterResults.every(result => result)) {
-    console.info('No files matched by Format selection matchers.');
+  if (failures === false) {
     process.exit(0);
   }
 
   // The process should exit as a failure if any of the files failed to format.
-  if (formatFailed) {
+  if (failures.length !== 0) {
     console.error(`Formatting failed, see errors above for more information.`);
     process.exit(1);
   }
@@ -63,29 +36,9 @@ export async function formatFiles(files: string[]) {
  */
 export async function checkFiles(files: string[]) {
   // Files which are currently not formatted correctly.
-  const failures: string[] = [];
+  const failures = await runFormatterInParallel(files, [BAZEL_FORMATTER, JS_TS_FORMATTER], 'check');
 
-  const formatterResults = await Promise.allSettled([
-    await runFormatterInParallel(
-        files, BAZEL_FORMATTER, 'check',
-        (file, code, stdout) => {
-          // Add any files failing format checks to the list.
-          if (code !== 0 || !JSON.parse(stdout)['success']) {
-            failures.push(file);
-          }
-        }),
-    await runFormatterInParallel(
-        files, JS_TS_FORMATTER, 'check',
-        (file, code) => {
-          // Add any files failing format checks to the list.
-          if (code !== 0) {
-            failures.push(file);
-          }
-        })
-  ]);
-
-  if (!formatterResults.every(result => result)) {
-    console.info('No files matched by Format selection matchers.');
+  if (failures === false) {
     process.exit(0);
   }
 

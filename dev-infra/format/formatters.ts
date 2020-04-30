@@ -10,28 +10,20 @@ import {join} from 'path';
 import {getAngularDevConfig, getRepoBaseDir} from '../utils/config';
 import {FormatConfig} from './config';
 
-// Default configuration for any fields not provided.
-const DEFAULT_CONFIG: FormatConfig = {
-  matchers: {
-    bazel: ['**/*.bzl', '**/BUILD.bazel', '**/WORKSPACE', '**/BUILD'],
-    jsTs: ['**/*.{t,j}s'],
-  },
-};
 
-// Active config used for execution, created from a merge of the default
-// config with the loaded config.
-const config: FormatConfig = {
-  matchers: {},
-  ...getAngularDevConfig<'format', FormatConfig>().format
-};
+export type CallbackFunc = (file: string, code: number, stdout: string, stderr: string) => boolean;
 
 // The metadata of a formatter needed for execution of the formatter on files.
 export interface FormatterMetadata {
   name: string;
-  matcher: string[];
+  matcher: () => string[];
   commands: {
     format: string,
     check: string,
+  };
+  callbacks: {
+    format: CallbackFunc,
+    check: CallbackFunc,
   };
 }
 
@@ -55,10 +47,31 @@ const BAZEL_BINARY = join(getRepoBaseDir(), 'node_modules/.bin/buildifier');
 // Formatter metadata for formatting bazel related files.
 export const BAZEL_FORMATTER: FormatterMetadata = {
   name: 'buildifier',
-  matcher: config.matchers.bazel || DEFAULT_CONFIG.matchers.bazel || [],
+  matcher: () => {
+    let matcher = ['**/*.bzl', '**/BUILD.bazel', '**/WORKSPACE', '**/BUILD'];
+    try {
+      matcher = getAngularDevConfig<'format', FormatConfig>().format.matchers.bazel || matcher;
+    } catch {
+    }
+    return matcher;
+  },
   commands: {
     check: `${BAZEL_BINARY} ${BAZEL_WARNING_FLAG} --lint=warn --mode=check --format=json`,
     format: `${BAZEL_BINARY} ${BAZEL_WARNING_FLAG} --lint=fix --mode=fix`,
+  },
+  callbacks: {
+    check: (_, code, stdout) => {
+      return code !== 0 || !JSON.parse(stdout)['success'];
+    },
+    format: (file, code, _, stderr) => {
+      if (code !== 0) {
+        console.error(`Error running ${BAZEL_FORMATTER.name} on: ${file}`);
+        console.error(stderr);
+        console.error();
+        return true;
+      }
+      return false;
+    }
   },
 };
 
@@ -73,9 +86,30 @@ const JS_TS_BINARY = join(getRepoBaseDir(), 'node_modules/.bin/clang-format');
 // Formatter metadata for formatting Javascript and Typescript files.
 export const JS_TS_FORMATTER: FormatterMetadata = {
   name: 'clang-format',
-  matcher: config.matchers.jsTs || DEFAULT_CONFIG.matchers.jsTs || [],
+  matcher: () => {
+    let matcher = ['**/*.{t,j}s'];
+    try {
+      matcher = getAngularDevConfig<'format', FormatConfig>().format.matchers.jsTs || matcher;
+    } catch {
+    }
+    return matcher;
+  },
   commands: {
     check: `${JS_TS_BINARY} --Werror -n -style=file`,
     format: `${JS_TS_BINARY} -i -style=file`,
+  },
+  callbacks: {
+    check: (_, code) => {
+      return code !== 0;
+    },
+    format: (file, code, _, stderr) => {
+      if (code !== 0) {
+        console.error(`Error running ${BAZEL_FORMATTER.name} on: ${file}`);
+        console.error(stderr);
+        console.error();
+        return true;
+      }
+      return false;
+    }
   },
 };
