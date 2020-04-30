@@ -66,7 +66,7 @@ TestClass.ngTypeCtor({value: 'test'});
         const {program, host, options} = makeProgram(files, undefined, undefined, false);
         const checker = program.getTypeChecker();
         const reflectionHost = new TypeScriptReflectionHost(checker);
-        const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
+        const logicalFs = new LogicalFileSystem(getRootDirs(host, options), host);
         const moduleResolver =
             new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
         const emitter = new ReferenceEmitter([
@@ -102,7 +102,7 @@ TestClass.ngTypeCtor({value: 'test'});
         const {program, host, options} = makeProgram(files, undefined, undefined, false);
         const checker = program.getTypeChecker();
         const reflectionHost = new TypeScriptReflectionHost(checker);
-        const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
+        const logicalFs = new LogicalFileSystem(getRootDirs(host, options), host);
         const moduleResolver =
             new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
         const emitter = new ReferenceEmitter([
@@ -144,7 +144,7 @@ TestClass.ngTypeCtor({value: 'test'});
         const {program, host, options} = makeProgram(files, undefined, undefined, false);
         const checker = program.getTypeChecker();
         const reflectionHost = new TypeScriptReflectionHost(checker);
-        const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
+        const logicalFs = new LogicalFileSystem(getRootDirs(host, options), host);
         const moduleResolver =
             new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
         const emitter = new ReferenceEmitter([
