@@ -29,6 +29,10 @@ export type ChangeDetectionCallback = (
   duration: number
 ) => void;
 
+export type ChangeDetectionStartCallback = (component: any, node: Node, id: number, position: ElementPosition) => void;
+
+export type ChangeDetectionEndCallback = (component: any, node: Node, id: number, position: ElementPosition) => void;
+
 export type DestroyCallback = (
   componentOrDirective: any,
   node: Node,
@@ -41,6 +45,8 @@ export interface Config {
   onCreate: CreationCallback;
   onDestroy: DestroyCallback;
   onChangeDetection: ChangeDetectionCallback;
+  onChangeDetectionStart: ChangeDetectionStartCallback;
+  onChangeDetectionEnd: ChangeDetectionEndCallback;
   onLifecycleHook: LifecycleCallback;
 }
 
@@ -151,7 +157,10 @@ export class DirectiveForestObserver {
       if (this._config.onLifecycleHook) {
         this._observeLifecycle(node.directive, node.isComponent);
       }
-      if (node.isComponent && this._config.onChangeDetection) {
+      if (
+        node.isComponent &&
+        (this._config.onChangeDetection || this._config.onChangeDetectionStart || this._config.onChangeDetectionEnd)
+      ) {
         this._observeComponent(node.directive);
       }
       this._fireCreationCallback(node.directive, node.isComponent);
@@ -207,25 +216,27 @@ export class DirectiveForestObserver {
       return;
     }
     declarations.tView.template = function (_: any, component: any): void {
+      const position = self._tracker.getDirectivePosition(component);
       const start = performance.now();
-      original.apply(this, arguments);
-      if (self._tracker.hasDirective(component) && self._config.onChangeDetection) {
-        const id = self._tracker.getDirectiveId(component);
-        if (id === undefined) {
-          return;
-        }
+      const id = self._tracker.getDirectiveId(component);
 
-        const position = self._tracker.getDirectivePosition(component);
-        if (position === undefined) {
-          return;
+      if (self._config.onChangeDetectionStart && id !== undefined && position !== undefined) {
+        self._config.onChangeDetectionStart(component, getDirectiveHostElement(component), id, position);
+      }
+      original.apply(this, arguments);
+      if (self._tracker.hasDirective(component) && id !== undefined && position !== undefined) {
+        if (self._config.onChangeDetection) {
+          self._config.onChangeDetection(
+            component,
+            getDirectiveHostElement(component),
+            id,
+            position,
+            performance.now() - start
+          );
         }
-        self._config.onChangeDetection(
-          component,
-          getDirectiveHostElement(component),
-          id,
-          position,
-          performance.now() - start
-        );
+        if (self._config.onChangeDetectionEnd) {
+          self._config.onChangeDetectionEnd(component, getDirectiveHostElement(component), id, position);
+        }
       } else {
         self._lastChangeDetection.set(component, performance.now() - start);
       }
