@@ -16,6 +16,8 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   }
   eventMap = new Map<any, DirectiveProfile>();
   inProgress = true;
+  let changeDetectionStart = 0;
+  let lifecycleHookStart = 0;
   observer = new DirectiveForestObserver({
     // We flush here because it's possible the current node to overwrite
     // an existing removed node.
@@ -27,7 +29,8 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
         lifecycle: {},
       });
     },
-    onChangeDetection(component: any, node: Node, _: number, __: ElementPosition, duration: number): void {
+    onChangeDetectionStart(component: any, node: Node): void {
+      changeDetectionStart = performance.now();
       if (!inChangeDetection) {
         inChangeDetection = true;
         const source = getChangeDetectionSource();
@@ -47,12 +50,15 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
           lifecycle: {},
         });
       }
+    },
+    onChangeDetectionEnd(component: any, node: Node): void {
       const profile = eventMap.get(component);
       if (profile) {
         let current = profile.changeDetection;
         if (current === undefined) {
           current = 0;
         }
+        const duration = performance.now() - changeDetectionStart;
         profile.changeDetection = current + duration;
         frameDuration += duration;
       } else {
@@ -70,14 +76,7 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
         });
       }
     },
-    onLifecycleHook(
-      directive: any,
-      node: Node,
-      _: number,
-      isComponent: boolean,
-      hook: keyof LifecycleProfile,
-      duration: number
-    ): void {
+    onLifecycleHookStart(directive: any, node: Node, _: number, isComponent: boolean): void {
       if (!eventMap.has(directive)) {
         eventMap.set(directive, {
           isElement: isCustomElement(node),
@@ -86,11 +85,15 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
           lifecycle: {},
         });
       }
+      lifecycleHookStart = performance.now();
+    },
+    onLifecycleHookEnd(directive: any, _: Node, __: number, ___: boolean, hook: keyof LifecycleProfile): void {
       const dir = eventMap.get(directive);
       if (!dir) {
         console.warn('Could not find directive in onLifecycleHook callback', directive, hook);
         return;
       }
+      const duration = performance.now() - lifecycleHookStart;
       dir.lifecycle[hook] = (dir.lifecycle[hook] || 0) + duration;
       frameDuration += duration;
     },
