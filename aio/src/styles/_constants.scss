@@ -123,6 +123,22 @@ $api-symbols: (
 );
 
 // OTHER
+
+// |0px                             |320px           |480px       |600px   |650px          |800px              |993px
+// |--------------------------------|----------------|------------|--------|---------------|-------------------|------- -  -   -
+// |             xxsmall            |     xsmall     |    teeny   |  tiny  |     small     |       medium      |   big
+// |________________________________|________________|____________|________|_______________|___________________|_______ _  _   _
+//
+// pattern:
+// $breakpoint-<size>: <minimum value that is inside that size>;
+$breakpoint-xxsmall: 0;
+$breakpoint-xsmall: 320px;
+$breakpoint-teeny: 480px;
+$breakpoint-tiny: 600px;
+$breakpoint-small: 650px;
+$breakpoint-medium: 800px;
+$breakpoint-big: 993px;
+
 $small-breakpoint-width: 840px;
-$phone-breakpoint: 480px;
-$tablet-breakpoint: 800px;
+$phone-breakpoint: $breakpoint-teeny;
+$tablet-breakpoint: $breakpoint-medium;
