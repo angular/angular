@@ -108,7 +108,7 @@ export function dedupePaths(paths: AbsoluteFsPath[]): AbsoluteFsPath[] {
   for (const path of paths) {
     addPath(root, path);
   }
-  return flattenTree(root).sort().reverse();
+  return flattenTree(root);
 }
 
 /**

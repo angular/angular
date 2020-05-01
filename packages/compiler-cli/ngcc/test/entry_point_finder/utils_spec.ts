@@ -27,7 +27,7 @@ runInEachFileSystem(() => {
       expect(basePaths).toEqual([sourceDirectory]);
     });
 
-    it('should use each path mapping prefix and sort in descending order', () => {
+    it('should use each path mapping prefix', () => {
       const projectDirectory = _('/path/to/project');
       const fs = getFileSystem();
       fs.ensureDir(fs.resolve(projectDirectory, 'dist-1'));
@@ -41,10 +41,10 @@ runInEachFileSystem(() => {
       };
       const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
       expect(basePaths).toEqual([
-        fs.resolve(projectDirectory, 'sub-folder/dist-2'),
         sourceDirectory,
-        fs.resolve(projectDirectory, 'libs'),
         fs.resolve(projectDirectory, 'dist-1'),
+        fs.resolve(projectDirectory, 'libs'),
+        fs.resolve(projectDirectory, 'sub-folder/dist-2'),
       ]);
     });
 
@@ -60,8 +60,8 @@ runInEachFileSystem(() => {
       const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
       expect(basePaths).toEqual([
         sourceDirectory,
-        fs.resolve(projectDirectory, 'a/b-2'),
         fs.resolve(projectDirectory, 'a/b'),
+        fs.resolve(projectDirectory, 'a/b-2'),
       ]);
     });
 
@@ -122,8 +122,8 @@ runInEachFileSystem(() => {
       const pathMappings = {baseUrl: _('/'), paths: {'@dist': ['dist']}};
       const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
       expect(basePaths).toEqual([
-        sourceDirectory,
         fs.resolve('/dist'),
+        sourceDirectory,
       ]);
       expect(logger.logs.warn).toEqual([
         [`The provided pathMappings baseUrl is the root path ${_('/')}.\n` +
