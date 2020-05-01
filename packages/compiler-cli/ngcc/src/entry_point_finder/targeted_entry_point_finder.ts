@@ -27,7 +27,13 @@ import {getBasePaths} from './utils';
 export class TargetedEntryPointFinder implements EntryPointFinder {
   private unprocessedPaths: AbsoluteFsPath[] = [];
   private unsortedEntryPoints = new Map<AbsoluteFsPath, EntryPointWithDependencies>();
-  private basePaths = getBasePaths(this.logger, this.basePath, this.pathMappings);
+  private basePaths: AbsoluteFsPath[]|null = null;
+  private getBasePaths() {
+    if (this.basePaths === null) {
+      this.basePaths = getBasePaths(this.logger, this.basePath, this.pathMappings);
+    }
+    return this.basePaths;
+  }
 
   constructor(
       private fs: FileSystem, private config: NgccConfiguration, private logger: Logger,
@@ -102,50 +108,24 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
     return entryPoint;
   }
 
-  /**
-   * Search down to the `entryPointPath` from each `basePath` for the first `package.json` that we
-   * come to. This is the path to the entry-point's containing package. For example if `basePath` is
-   * `/a/b/c` and `entryPointPath` is `/a/b/c/d/e` and there exists `/a/b/c/d/package.json` and
-   * `/a/b/c/d/e/package.json`, then we will return `/a/b/c/d`.
-   *
-   * To account for nested `node_modules` we actually start the search at the last `node_modules` in
-   * the `entryPointPath` that is below the `basePath`. E.g. if `basePath` is `/a/b/c` and
-   * `entryPointPath` is `/a/b/c/d/node_modules/x/y/z`, we start the search at
-   * `/a/b/c/d/node_modules`.
-   */
   private computePackagePath(entryPointPath: AbsoluteFsPath): AbsoluteFsPath {
-    for (const basePath of this.basePaths) {
+    // First try the main basePath, to avoid having to compute the other basePaths from the paths
+    // mappings, which can be computationally intensive.
+    if (entryPointPath.startsWith(this.basePath)) {
+      const packagePath = this.computePackagePathFromContainingPath(entryPointPath, this.basePath);
+      if (packagePath !== null) {
+        return packagePath;
+      }
+    }
+
+    // The main `basePath` didn't work out so now we try the `basePaths` computed from the paths
+    // mappings in `tsconfig.json`.
+    for (const basePath of this.getBasePaths()) {
       if (entryPointPath.startsWith(basePath)) {
-        let packagePath = basePath;
-        const segments = this.splitPath(relative(basePath, entryPointPath));
-        let nodeModulesIndex = segments.lastIndexOf(relativeFrom('node_modules'));
-
-        // If there are no `node_modules` in the relative path between the `basePath` and the
-        // `entryPointPath` then just try the `basePath` as the `packagePath`.
-        // (This can be the case with path-mapped entry-points.)
-        if (nodeModulesIndex === -1) {
-          if (this.fs.exists(join(packagePath, 'package.json'))) {
-            return packagePath;
-          }
+        const packagePath = this.computePackagePathFromContainingPath(entryPointPath, basePath);
+        if (packagePath !== null) {
+          return packagePath;
         }
-
-        // Start the search at the deepest nested `node_modules` folder that is below the `basePath`
-        // but above the `entryPointPath`, if there are any.
-        while (nodeModulesIndex >= 0) {
-          packagePath = join(packagePath, segments.shift()!);
-          nodeModulesIndex--;
-        }
-
-        // Note that we start at the folder below the current candidate `packagePath` because the
-        // initial candidate `packagePath` is either a `node_modules` folder or the `basePath` with
-        // no `package.json`.
-        for (const segment of segments) {
-          packagePath = join(packagePath, segment);
-          if (this.fs.exists(join(packagePath, 'package.json'))) {
-            return packagePath;
-          }
-        }
-
         // If we got here then we couldn't find a `packagePath` for the current `basePath`.
         // Since `basePath`s are guaranteed not to be a sub-directory of each other then no other
         // `basePath` will match either.
@@ -153,8 +133,62 @@ export class TargetedEntryPointFinder implements EntryPointFinder {
       }
     }
 
-    // We couldn't find a `packagePath` using `basePaths` so try to find the nearest `node_modules`
-    // that contains the `entryPointPath`, if there is one, and use it as a `basePath`.
+    // Finally, if we couldn't find a `packagePath` using `basePaths` then try to find the nearest
+    // `node_modules` that contains the `entryPointPath`, if there is one, and use it as a
+    // `basePath`.
+    return this.computePackagePathFromNearestNodeModules(entryPointPath);
+  }
+
+  /**
+   * Search down to the `entryPointPath` from the `containingPath` for the first `package.json` that
+   * we come to. This is the path to the entry-point's containing package. For example if
+   * `containingPath` is `/a/b/c` and `entryPointPath` is `/a/b/c/d/e` and there exists
+   * `/a/b/c/d/package.json` and `/a/b/c/d/e/package.json`, then we will return `/a/b/c/d`.
+   *
+   * To account for nested `node_modules` we actually start the search at the last `node_modules` in
+   * the `entryPointPath` that is below the `containingPath`. E.g. if `containingPath` is `/a/b/c`
+   * and `entryPointPath` is `/a/b/c/d/node_modules/x/y/z`, we start the search at
+   * `/a/b/c/d/node_modules`.
+   */
+  private computePackagePathFromContainingPath(
+      entryPointPath: AbsoluteFsPath, containingPath: AbsoluteFsPath): AbsoluteFsPath|null {
+    let packagePath = containingPath;
+    const segments = this.splitPath(relative(containingPath, entryPointPath));
+    let nodeModulesIndex = segments.lastIndexOf(relativeFrom('node_modules'));
+
+    // If there are no `node_modules` in the relative path between the `basePath` and the
+    // `entryPointPath` then just try the `basePath` as the `packagePath`.
+    // (This can be the case with path-mapped entry-points.)
+    if (nodeModulesIndex === -1) {
+      if (this.fs.exists(join(packagePath, 'package.json'))) {
+        return packagePath;
+      }
+    }
+
+    // Start the search at the deepest nested `node_modules` folder that is below the `basePath`
+    // but above the `entryPointPath`, if there are any.
+    while (nodeModulesIndex >= 0) {
+      packagePath = join(packagePath, segments.shift()!);
+      nodeModulesIndex--;
+    }
+
+    // Note that we start at the folder below the current candidate `packagePath` because the
+    // initial candidate `packagePath` is either a `node_modules` folder or the `basePath` with
+    // no `package.json`.
+    for (const segment of segments) {
+      packagePath = join(packagePath, segment);
+      if (this.fs.exists(join(packagePath, 'package.json'))) {
+        return packagePath;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Search up the directory tree from the `entryPointPath` looking for a `node_modules` directory
+   * that we can use as a potential starting point for computing the package path.
+   */
+  private computePackagePathFromNearestNodeModules(entryPointPath: AbsoluteFsPath): AbsoluteFsPath {
     let packagePath = entryPointPath;
     let scopedPackagePath = packagePath;
     let containerPath = this.fs.dirname(packagePath);
