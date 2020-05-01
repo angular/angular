@@ -136,34 +136,43 @@ describe('completions', () => {
   });
 
   it('should be able to return attribute names with an incomplete attribute', () => {
-    const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'no-value-attribute');
-    const completions = ngLS.getCompletionsAtPosition(PARSING_CASES, marker.start);
+    mockHost.overrideInlineTemplate(APP_COMPONENT, '<h1 h~{no-value-attribute}></h1>');
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'no-value-attribute');
+    const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
     expectContain(completions, CompletionKind.HTML_ATTRIBUTE, ['id', 'class', 'dir', 'lang']);
   });
 
   it('should be able to return attributes of an incomplete element', () => {
-    const m1 = mockHost.getLocationMarkerFor(PARSING_CASES, 'incomplete-open-lt');
-    const c1 = ngLS.getCompletionsAtPosition(PARSING_CASES, m1.start);
+    mockHost.overrideInlineTemplate(APP_COMPONENT, `
+      <h1>
+        Some <~{incomplete-open-lt}a~{incomplete-open-a} ~{incomplete-open-attr} text
+      </h1>`);
+
+    const m1 = mockHost.getLocationMarkerFor(APP_COMPONENT, 'incomplete-open-lt');
+    const c1 = ngLS.getCompletionsAtPosition(APP_COMPONENT, m1.start);
     expectContain(c1, CompletionKind.HTML_ELEMENT, ['a', 'div', 'p', 'span']);
 
-    const m2 = mockHost.getLocationMarkerFor(PARSING_CASES, 'incomplete-open-a');
-    const c2 = ngLS.getCompletionsAtPosition(PARSING_CASES, m2.start);
+    const m2 = mockHost.getLocationMarkerFor(APP_COMPONENT, 'incomplete-open-a');
+    const c2 = ngLS.getCompletionsAtPosition(APP_COMPONENT, m2.start);
     expectContain(c2, CompletionKind.HTML_ELEMENT, ['a', 'div', 'p', 'span']);
 
-    const m3 = mockHost.getLocationMarkerFor(PARSING_CASES, 'incomplete-open-attr');
-    const c3 = ngLS.getCompletionsAtPosition(PARSING_CASES, m3.start);
+    const m3 = mockHost.getLocationMarkerFor(APP_COMPONENT, 'incomplete-open-attr');
+    const c3 = ngLS.getCompletionsAtPosition(APP_COMPONENT, m3.start);
     expectContain(c3, CompletionKind.HTML_ATTRIBUTE, ['id', 'class', 'href', 'name']);
   });
 
   it('should be able to return completions with a missing closing tag', () => {
-    const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'missing-closing');
-    const completions = ngLS.getCompletionsAtPosition(PARSING_CASES, marker.start);
+    mockHost.overrideInlineTemplate(APP_COMPONENT, '<h1>Some <a> ~{missing-closing} text</h1>');
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'missing-closing');
+    const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
     expectContain(completions, CompletionKind.HTML_ELEMENT, ['a', 'div', 'p', 'span', 'h1', 'h2']);
   });
 
   it('should be able to return common attributes of an unknown tag', () => {
-    const marker = mockHost.getLocationMarkerFor(PARSING_CASES, 'unknown-element');
-    const completions = ngLS.getCompletionsAtPosition(PARSING_CASES, marker.start);
+    mockHost.overrideInlineTemplate(
+        APP_COMPONENT, '<h1>Some <unknown ~{unknown-element}> text</h1>');
+    const marker = mockHost.getLocationMarkerFor(APP_COMPONENT, 'unknown-element');
+    const completions = ngLS.getCompletionsAtPosition(APP_COMPONENT, marker.start);
     expectContain(completions, CompletionKind.HTML_ATTRIBUTE, ['id', 'dir', 'lang']);
   });
 

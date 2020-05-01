@@ -10,33 +10,6 @@ import {Component, Directive, EventEmitter, Input, OnChanges, Output, SimpleChan
 
 import {Hero} from './app.component';
 
-@Component({
-  template: `
-    <h1>
-      Some <~{incomplete-open-lt}a~{incomplete-open-a} ~{incomplete-open-attr} text
-    </h1>`,
-})
-export class CaseIncompleteOpen {
-}
-
-@Component({
-  template: '<h1>Some <a> ~{missing-closing} text</h1>',
-})
-export class CaseMissingClosing {
-}
-
-@Component({
-  template: '<h1>Some <unknown ~{unknown-element}> text</h1>',
-})
-export class CaseUnknown {
-}
-
-@Component({
-  template: '<h1 h~{no-value-attribute}></h1>',
-})
-export class NoValueAttribute {
-}
-
 @Directive({
   selector: '[string-model]',
 })
