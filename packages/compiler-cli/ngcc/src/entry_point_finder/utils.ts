@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, getFileSystem, relative, resolve} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, getFileSystem, isRoot, resolve} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
 import {PathMappings} from '../path_mappings';
 
@@ -102,68 +102,65 @@ export function trackDuration<T = void>(task: () => T extends Promise<unknown>? 
  * Given `['a/b/c', 'a/b/x', 'a/b', 'd/e', 'd/f']` we will end up with `['a/b', 'd/e', 'd/f]`.
  * (Note that we do not get `d` even though `d/e` and `d/f` share a base directory, since `d` is not
  * one of the base paths.)
- *
  */
-function dedupePaths(paths: AbsoluteFsPath[]) {
-  const root: Node = {children: new Map(), path: undefined};
+export function dedupePaths(paths: AbsoluteFsPath[]): AbsoluteFsPath[] {
+  const root: Node = {children: {}};
   for (const path of paths) {
-    const segments = path.split('/');
-    addPath(root, path, segments);
+    addPath(root, path);
   }
-  const dedupedPaths: AbsoluteFsPath[] = [];
-  flattenTree(root, dedupedPaths);
-  return dedupedPaths.sort().reverse();
+  return flattenTree(root).sort().reverse();
 }
 
 /**
- * Add a partial path (defined by the `segments`) to the current `node` in the tree.
+ * Add a path (defined by the `segments`) to the current `node` in the tree.
  */
-function addPath(node: Node, path: AbsoluteFsPath, segments: string[]) {
-  if (node.children === undefined) {
-    // We hit a leaf so don't bother processing any more of the path
-    return;
-  }
-  const next = segments.shift()!;
-  if (next !== undefined) {
-    // This is not the end of the path
-    if (!node.children.has(next)) {
-      node.children.set(next, {children: new Map(), path: undefined});
+function addPath(root: Node, path: AbsoluteFsPath): void {
+  let node = root;
+  if (!isRoot(path)) {
+    const segments = path.split('/');
+    for (let index = 0; index < segments.length; index++) {
+      if (isLeaf(node)) {
+        // We hit a leaf so don't bother processing any more of the path
+        return;
+      }
+      // This is not the end of the path continue to process the rest of this path.
+      const next = segments[index];
+      node = node.children[next] = node.children[next] || {children: {}};
     }
-    // continue to process the rest of this path.
-    addPath(node.children.get(next)!, path, segments);
-  } else {
-    // This path has finished so convert this branch to a leaf
-    convertToLeaf(node, path);
   }
+  // This path has finished so convert this node to a leaf
+  convertToLeaf(node, path);
 }
 
 /**
  * Flatten the tree of nodes back into an array of absolute paths
  */
-function flattenTree(node: Node, paths: AbsoluteFsPath[]) {
-  if (node.children === undefined) {
-    // We found a leaf so store the currentPath
-    paths.push(absoluteFrom(node.path));
-  } else {
-    for (const child of node.children.values()) {
-      flattenTree(child, paths);
+function flattenTree(root: Node): AbsoluteFsPath[] {
+  const paths: AbsoluteFsPath[] = [];
+  const nodes: Node[] = [root];
+  for (let index = 0; index < nodes.length; index++) {
+    const node = nodes[index];
+    if (isLeaf(node)) {
+      // We found a leaf so store the currentPath
+      paths.push(node.path);
+    } else {
+      nodes.push.apply(nodes, Object.values(node.children));
     }
   }
+  return paths;
+}
+
+function isLeaf(node: Node): node is Leaf {
+  return node.path !== undefined;
 }
 
 function convertToLeaf(node: Node, path: AbsoluteFsPath) {
-  node.children = undefined;
   node.path = path;
 }
 
-type Node = Branch|Leaf;
-
-interface Leaf {
-  path: AbsoluteFsPath;
-  children: undefined;
+interface Node {
+  children: Record<string, Node>;
+  path?: AbsoluteFsPath;
 }
 
-interface Branch {
-  path: undefined;
-  children: Map<string, Node>;
-}
+type Leaf = Required<Node>;
