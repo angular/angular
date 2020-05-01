@@ -124,6 +124,19 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     return content;
   }
 
+  /**
+   * Override the inline template in `fileName`.
+   * @param fileName path to component that has inline template
+   * @param content new template
+   *
+   * @return the new content of the file
+   */
+  overrideInlineTemplate(fileName: string, content: string): string {
+    const originalContent = this.getRawFileContent(fileName)!;
+    const newContent = originalContent.replace(/template: `([\s\S]+)`/, `template: \`${content}\``);
+    return this.override(fileName, newContent);
+  }
+
   addScript(fileName: string, content: string) {
     if (this.scriptVersion.has(fileName)) {
       throw new Error(`${fileName} is already in the root files.`);
