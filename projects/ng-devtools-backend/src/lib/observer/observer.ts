@@ -1,8 +1,9 @@
 import { ElementPosition, LifecycleProfile } from 'protocol';
-import { componentMetadata } from '../utils';
+import { componentMetadata, runOutsideAngular } from '../utils';
 import { IdentityTracker, IndexedNode } from './identity-tracker';
 import { getLViewFromDirectiveOrElementInstance, getDirectiveHostElement } from '../lview-transform';
 import { DEV_TOOLS_HIGHLIGHT_NODE_ID } from '../highlighter';
+import { Subject } from 'rxjs';
 
 export type CreationCallback = (
   componentOrDirective: any,
@@ -102,11 +103,17 @@ export class DirectiveForestObserver {
   private _lastChangeDetection = new Map<any, number>();
   private _tracker = new IdentityTracker();
   private _forest: IndexedNode[] = [];
+  private _inChangeDetection = false;
+  private _changeDetection$ = new Subject<void>();
 
   private _callbacks: Partial<Callbacks>[] = [];
 
   constructor(config: Partial<Callbacks>) {
     this._callbacks.push(config);
+  }
+
+  get changeDetection$(): Subject<void> {
+    return this._changeDetection$;
   }
 
   getDirectivePosition(dir: any): ElementPosition | undefined {
@@ -205,6 +212,13 @@ export class DirectiveForestObserver {
       return;
     }
     declarations.tView.template = function (_: any, component: any): void {
+      if (!self._inChangeDetection) {
+        self._inChangeDetection = true;
+        // self._changeDetection$.next();
+        // runOutsideAngular(() => {
+        //   setTimeout(() => self._inChangeDetection = false);
+        // });
+      }
       const position = self._tracker.getDirectivePosition(component);
       const start = performance.now();
       const id = self._tracker.getDirectiveId(component);
