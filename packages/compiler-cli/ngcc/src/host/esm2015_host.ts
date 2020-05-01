@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, ConcreteDeclaration, CtorParameter, Declaration, Decorator, EnumMember, isDecoratorIdentifier, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, ConcreteDeclaration, CtorParameter, Declaration, Decorator, EnumMember, isDecoratorIdentifier, isNamedClassDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
@@ -108,10 +108,16 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * Classes should have a `name` identifier, because they may need to be referenced in other parts
    * of the program.
    *
-   * In ES2015, a class may be declared using a variable declaration of the following structure:
+   * In ES2015, a class may be declared using a variable declaration of the following structures:
    *
    * ```
    * var MyClass = MyClass_1 = class MyClass {};
+   * ```
+   *
+   * or
+   *
+   * ```
+   * var MyClass = MyClass_1 = (() => { class MyClass {} ... return MyClass; })()
    * ```
    *
    * Here, the intermediate `MyClass_1` assignment is optional. In the above example, the
@@ -130,10 +136,16 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   }
 
   /**
-   * In ES2015, a class may be declared using a variable declaration of the following structure:
+   * In ES2015, a class may be declared using a variable declaration of the following structures:
    *
    * ```
    * var MyClass = MyClass_1 = class MyClass {};
+   * ```
+   *
+   * or
+   *
+   * ```
+   * var MyClass = MyClass_1 = (() => { class MyClass {} ... return MyClass; })()
    * ```
    *
    * This method extracts the `NgccClassSymbol` for `MyClass` when provided with the `var MyClass`
@@ -145,8 +157,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * of a class.
    */
   protected getClassSymbolFromOuterDeclaration(declaration: ts.Node): NgccClassSymbol|undefined {
-    // Create a symbol without inner declaration if the declaration is a regular class declaration.
-    if (ts.isClassDeclaration(declaration) && hasNameIdentifier(declaration)) {
+    // Create a symbol without inner declaration if it is a regular "top level" class declaration.
+    if (isNamedClassDeclaration(declaration) && isTopLevel(declaration)) {
       return this.createClassSymbol(declaration, null);
     }
 
@@ -163,10 +175,16 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   }
 
   /**
-   * In ES2015, a class may be declared using a variable declaration of the following structure:
+   * In ES2015, a class may be declared using a variable declaration of the following structures:
    *
    * ```
    * var MyClass = MyClass_1 = class MyClass {};
+   * ```
+   *
+   * or
+   *
+   * ```
+   * var MyClass = MyClass_1 = (() => { class MyClass {} ... return MyClass; })()
    * ```
    *
    * This method extracts the `NgccClassSymbol` for `MyClass` when provided with the
@@ -178,11 +196,20 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * of a class.
    */
   protected getClassSymbolFromInnerDeclaration(declaration: ts.Node): NgccClassSymbol|undefined {
-    if (!ts.isClassExpression(declaration) || !hasNameIdentifier(declaration)) {
+    let outerDeclaration: ts.VariableDeclaration|undefined = undefined;
+
+    if (isNamedClassDeclaration(declaration) && !isTopLevel(declaration)) {
+      let node = declaration.parent;
+      while (node !== undefined && !ts.isVariableDeclaration(node)) {
+        node = node.parent;
+      }
+      outerDeclaration = node;
+    } else if (ts.isClassExpression(declaration) && hasNameIdentifier(declaration)) {
+      outerDeclaration = getVariableDeclarationOfDeclaration(declaration);
+    } else {
       return undefined;
     }
 
-    const outerDeclaration = getVariableDeclarationOfDeclaration(declaration);
     if (outerDeclaration === undefined || !hasNameIdentifier(outerDeclaration)) {
       return undefined;
     }
@@ -745,13 +772,20 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
   /**
    * Try to retrieve the symbol of a static property on a class.
+   *
+   * In some cases, a static property can either be set on the inner declaration inside the class'
+   * IIFE, or it can be set on the outer variable declaration. Therefore, the host checks both
+   * places, first looking up the property on the inner symbol, and if the property is not found it
+   * will fall back to looking up the property on the outer symbol.
+   *
    * @param symbol the class whose property we are interested in.
    * @param propertyName the name of static property.
    * @returns the symbol if it is found or `undefined` if not.
    */
   protected getStaticProperty(symbol: NgccClassSymbol, propertyName: ts.__String): ts.Symbol
       |undefined {
-    return symbol.declaration.exports && symbol.declaration.exports.get(propertyName);
+    return symbol.implementation.exports && symbol.implementation.exports.get(propertyName) ||
+        symbol.declaration.exports && symbol.declaration.exports.get(propertyName);
   }
 
   /**
@@ -1560,7 +1594,14 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @returns an array of statements that may contain helper calls.
    */
   protected getStatementsForClass(classSymbol: NgccClassSymbol): ts.Statement[] {
-    return Array.from(classSymbol.declaration.valueDeclaration.getSourceFile().statements);
+    const classNode = classSymbol.implementation.valueDeclaration;
+    if (isTopLevel(classNode)) {
+      return this.getModuleStatements(classNode.getSourceFile());
+    } else if (ts.isBlock(classNode.parent)) {
+      return Array.from(classNode.parent.statements);
+    }
+    // We should never arrive here
+    throw new Error(`Unable to find adjacent statements for ${classSymbol.name}`);
   }
 
   /**
@@ -2048,6 +2089,38 @@ export function isAssignmentStatement(statement: ts.Statement): statement is Ass
       ts.isIdentifier(statement.expression.left);
 }
 
+/**
+ * Parse the `expression` that is believed to be an IIFE and return the AST node that corresponds to
+ * the body of the IIFE.
+ *
+ * The expression may be wrapped in parentheses, which are stripped off.
+ *
+ * If the IIFE is an arrow function then its body could be a `ts.Expression` rather than a
+ * `ts.FunctionBody`.
+ *
+ * @param expression the expression to parse.
+ * @returns the `ts.Expression` or `ts.FunctionBody` that holds the body of the IIFE or `undefined`
+ *     if the `expression` did not have the correct shape.
+ */
+export function getIifeConciseBody(expression: ts.Expression): ts.ConciseBody|undefined {
+  const call = stripParentheses(expression);
+  if (!ts.isCallExpression(call)) {
+    return undefined;
+  }
+
+  const fn = stripParentheses(call.expression);
+  if (!ts.isFunctionExpression(fn) && !ts.isArrowFunction(fn)) {
+    return undefined;
+  }
+
+  return fn.body;
+}
+
+/**
+ * Returns true if the `node` is an assignment of the form `a = b`.
+ *
+ * @param node The AST node to check.
+ */
 export function isAssignment(node: ts.Node): node is ts.AssignmentExpression<ts.EqualsToken> {
   return ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsToken;
 }
@@ -2132,10 +2205,16 @@ function getCalleeName(call: ts.CallExpression): string|null {
 ///////////// Internal Helpers /////////////
 
 /**
- * In ES2015, a class may be declared using a variable declaration of the following structure:
+ * In ES2015, a class may be declared using a variable declaration of the following structures:
  *
  * ```
  * var MyClass = MyClass_1 = class MyClass {};
+ * ```
+ *
+ * or
+ *
+ * ```
+ * var MyClass = MyClass_1 = (() => { class MyClass {} ... return MyClass; })()
  * ```
  *
  * Here, the intermediate `MyClass_1` assignment is optional. In the above example, the
@@ -2145,23 +2224,40 @@ function getCalleeName(call: ts.CallExpression): string|null {
  * @param node the node that represents the class whose declaration we are finding.
  * @returns the declaration of the class or `null` if it is not a "class".
  */
-function getInnerClassDeclaration(node: ts.Node): ClassDeclaration<ts.ClassExpression>|null {
+function getInnerClassDeclaration(node: ts.Node):
+    ClassDeclaration<ts.ClassExpression|ts.ClassDeclaration>|null {
   if (!ts.isVariableDeclaration(node) || node.initializer === undefined) {
     return null;
   }
-
   // Recognize a variable declaration of the form `var MyClass = class MyClass {}` or
   // `var MyClass = MyClass_1 = class MyClass {};`
   let expression = node.initializer;
   while (isAssignment(expression)) {
     expression = expression.right;
   }
-
-  if (!ts.isClassExpression(expression) || !hasNameIdentifier(expression)) {
-    return null;
+  if (ts.isClassExpression(expression) && hasNameIdentifier(expression)) {
+    return expression;
   }
 
-  return expression;
+  // Try to parse out a class declaration wrapped in an IIFE (as generated by TS 3.9)
+  // e.g.
+  // /* @class */ = (() => {
+  //   class MyClass {}
+  //   ...
+  //   return MyClass;
+  // })();
+  const iifeBody = getIifeConciseBody(expression);
+  if (iifeBody === undefined) {
+    return null;
+  }
+  // Extract the class declaration from inside the IIFE.
+  const innerDeclaration = ts.isBlock(iifeBody) ?
+      iifeBody.statements.find(ts.isClassDeclaration) :
+      ts.isClassExpression(iifeBody) ? iifeBody : undefined;
+  if (innerDeclaration === undefined || !hasNameIdentifier(innerDeclaration)) {
+    return null;
+  }
+  return innerDeclaration;
 }
 
 function getDecoratorArgs(node: ts.ObjectLiteralExpression): ts.Expression[] {
@@ -2207,6 +2303,16 @@ function isClassMemberType(node: ts.Declaration): node is ts.ClassElement|
  * ```
  * var MyClass = MyClass_1 = class MyClass {};
  * ```
+ *
+ * or
+ *
+ * ```
+ * var MyClass = MyClass_1 = (() => {
+ *   class MyClass {}
+ *   ...
+ *   return MyClass;
+ * })()
+  ```
  *
  * and the provided declaration being `class MyClass {}`, this will return the `var MyClass`
  * declaration.
@@ -2300,4 +2406,13 @@ function getNonRootPackageFiles(bundle: BundleProgram): ts.SourceFile[] {
   const rootFile = bundle.program.getSourceFile(bundle.path);
   return bundle.program.getSourceFiles().filter(
       f => (f !== rootFile) && isWithinPackage(bundle.package, f));
+}
+
+function isTopLevel(node: ts.Node): boolean {
+  while (node = node.parent) {
+    if (ts.isBlock(node)) {
+      return false;
+    }
+  }
+  return true;
 }
