@@ -71,9 +71,11 @@ export class UnitTestElement implements TestElement {
     await this._stabilize();
   }
 
-  async click(relativeX = 0, relativeY = 0): Promise<void> {
-    await this._stabilize();
-    const {left, top} = this.element.getBoundingClientRect();
+  async click(...args: number[]): Promise<void> {
+    const {left, top, width, height} = await this.getDimensions();
+    const relativeX = args.length ? args[0] : width / 2;
+    const relativeY = args.length ? args[1] : height / 2;
+
     // Round the computed click position as decimal pixels are not
     // supported by mouse events and could lead to unexpected results.
     const clientX = Math.round(left + relativeX);

@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "ng_test_library", "ng_web_test_suite", "ts_library")
+load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
+load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_test_library", "ng_web_test_suite", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -38,7 +39,10 @@ ng_test_library(
     name = "unit_tests_lib",
     srcs = glob(
         ["**/*.spec.ts"],
-        exclude = ["shared.spec.ts"],
+        exclude = [
+            "**/*.e2e.spec.ts",
+            "shared.spec.ts",
+        ],
     ),
     deps = [
         ":harness_tests_lib",
@@ -50,4 +54,22 @@ ng_test_library(
 ng_web_test_suite(
     name = "unit_tests",
     deps = [":unit_tests_lib"],
+)
+
+ng_e2e_test_library(
+    name = "e2e_test_sources",
+    srcs = glob(["**/*.e2e.spec.ts"]),
+    deps = [
+        "//src/cdk/testing/private/e2e",
+        "//src/cdk/testing/protractor",
+        "//src/material/button/testing",
+    ],
+)
+
+e2e_test_suite(
+    name = "e2e_tests",
+    deps = [
+        ":e2e_test_sources",
+        "//src/cdk/testing/private/e2e",
+    ],
 )

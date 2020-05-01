@@ -107,7 +107,8 @@ export interface ModifierKeys {
 export interface TestElement {
     blur(): Promise<void>;
     clear(): Promise<void>;
-    click(relativeX?: number, relativeY?: number): Promise<void>;
+    click(): Promise<void>;
+    click(relativeX: number, relativeY: number): Promise<void>;
     focus(): Promise<void>;
     getAttribute(name: string): Promise<string | null>;
     getCssValue(property: string): Promise<string>;
