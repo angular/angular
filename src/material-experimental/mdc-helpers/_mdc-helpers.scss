@@ -217,17 +217,29 @@ $mat-typography-level-mappings: (
 ///
 /// @example
 ///   .my-app {
-///     @include mat-mdc-strong-focus-indicators();
+///     @include mat-mdc-strong-focus-indicators($config);
 ///   }
-@mixin mat-mdc-strong-focus-indicators() {
-  // Base styles for the focus indicators.
+@mixin mat-mdc-strong-focus-indicators($config: ()) {
+  // Default focus indicator config.
+  $default-config: (
+    border-style: solid,
+    border-width: 3px,
+    border-radius: 4px,
+  );
+
+  // Merge default config with user config.
+  $config: map-merge($default-config, $config);
+  $border-style: map-get($config, border-style);
+  $border-width: map-get($config, border-width);
+  $border-radius: map-get($config, border-radius);
+
+  // Base styles for focus indicators.
   .mat-mdc-focus-indicator::before {
     @include mat-fill();
-
-    border-radius: $mat-focus-indicator-border-radius;
-    border: $mat-focus-indicator-border-width $mat-focus-indicator-border-style transparent;
     box-sizing: border-box;
     pointer-events: none;
+    border: $border-width $border-style transparent;
+    border-radius: $border-radius;
   }
 
   // By default, all focus indicators are flush with the bounding box of their
@@ -235,19 +247,25 @@ $mat-typography-level-mappings: (
   // values are necessary to ensure that the focus indicator is sufficiently
   // contrastive and renders appropriately.
 
-  .mat-mdc-button-base .mat-mdc-focus-indicator::before,
+  .mat-mdc-unelevated-button .mat-mdc-focus-indicator::before,
+  .mat-mdc-raised-button .mat-mdc-focus-indicator::before,
+  .mdc-fab .mat-mdc-focus-indicator::before,
   .mat-mdc-focus-indicator.mdc-chip::before {
-    margin: $mat-focus-indicator-border-width * -2;
+    margin: -($border-width + 2px);
+  }
+
+  .mat-mdc-outlined-button .mat-mdc-focus-indicator::before {
+    margin: -($border-width + 3px);
   }
 
   .mat-mdc-focus-indicator.mat-mdc-chip-remove::before,
   .mat-mdc-focus-indicator.mat-chip-row-focusable-text-content::before {
-    margin: $mat-focus-indicator-border-width * -1;
+    margin: -$border-width;
   }
 
   .mat-mdc-focus-indicator.mat-mdc-tab::before,
   .mat-mdc-focus-indicator.mat-mdc-tab-link::before {
-    margin: $mat-focus-indicator-border-width * 2;
+    margin: 5px;
   }
 
   // Render the focus indicator on focus. Defining a pseudo element's
@@ -258,6 +276,8 @@ $mat-typography-level-mappings: (
   .mdc-checkbox__native-control:focus ~ .mat-mdc-focus-indicator::before,
   .mat-mdc-slide-toggle-focused .mat-mdc-focus-indicator::before,
   .mat-mdc-radio-button.cdk-focused .mat-mdc-focus-indicator::before,
+
+  // For buttons, render the focus indicator when the parent button is focused.
   .mat-mdc-button-base:focus .mat-mdc-focus-indicator::before,
 
   // For all other components, render the focus indicator on focus.
@@ -268,24 +288,24 @@ $mat-typography-level-mappings: (
 
 /// Mixin that sets the color of the focus indicators.
 ///
-/// @param {color|map} $themeOrMap
+/// @param {color|map} $theme-or-color
 ///   If theme, focus indicators are set to the primary color of the theme. If
 ///   color, focus indicators are set to that color.
 ///
 /// @example
 ///   .demo-dark-theme {
-///     @include mat-mdc-strong-focus-indicators-theme($darkThemeMap);
+///     @include mat-mdc-strong-focus-indicators-theme($dark-theme-map);
 ///   }
 ///
 /// @example
 ///   .demo-red-theme {
-///     @include mat-mdc-strong-focus-indicators-theme(#F00);
+///     @include mat-mdc-strong-focus-indicators-theme(#f00);
 ///   }
-@mixin mat-mdc-strong-focus-indicators-theme($themeOrColor) {
+@mixin mat-mdc-strong-focus-indicators-theme($theme-or-color) {
   .mat-mdc-focus-indicator::before {
     border-color: if(
-      type-of($themeOrColor) == 'map',
-      mat-color(map_get($themeOrColor, primary)),
-      $themeOrColor);
+      type-of($theme-or-color) == 'map',
+      mat-color(map_get($theme-or-color, primary)),
+      $theme-or-color);
   }
 }

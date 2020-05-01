@@ -45,7 +45,7 @@
 /src/material/core/common-behaviors/**             @jelbourn @devversion
 /src/material/core/datetime/**                     @mmalerba
 /src/material/core/error/**                        @crisbeto @mmalerba
-/src/material/core/focus-indicator/**              @jelbourn @zelliott
+/src/material/core/focus-indicators/**             @jelbourn @zelliott
 /src/material/core/gestures/**                     @jelbourn
 /src/material/core/label/**                        @mmalerba
 /src/material/core/line/**                         @jelbourn
