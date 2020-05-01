@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, getFileSystem, relative, resolve} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem, relative, resolve} from '../../../src/ngtsc/file_system';
 import {Logger} from '../logging/logger';
 import {PathMappings} from '../path_mappings';
 
@@ -57,8 +57,8 @@ export function getBasePaths(
       }
     }));
   }
-  basePaths.sort().reverse();  // Get the paths in order with the longer ones first.
-  const dedupedBasePaths = basePaths.filter(removeContainedPaths);
+
+  const dedupedBasePaths = dedupePaths(basePaths);
 
   // We want to ensure that the `sourceDirectory` is included when it is a node_modules folder.
   // Otherwise our entry-point finding algorithm would fail to walk that folder.
@@ -80,30 +80,6 @@ function extractPathPrefix(path: string) {
 }
 
 /**
- * A filter function that removes paths that are contained by other paths.
- *
- * For example:
- * Given `['a/b/c', 'a/b/x', 'a/b', 'd/e', 'd/f']` we will end up with `['a/b', 'd/e', 'd/f]`.
- * (Note that we do not get `d` even though `d/e` and `d/f` share a base directory, since `d` is not
- * one of the base paths.)
- *
- * @param value The current path.
- * @param index The index of the current path.
- * @param array The array of paths (sorted in reverse alphabetical order).
- * @returns true if this path is not contained by another path.
- */
-function removeContainedPaths(value: AbsoluteFsPath, index: number, array: AbsoluteFsPath[]) {
-  // We only need to check the following paths since the `array` is sorted in reverse alphabetic
-  // order.
-  for (let i = index + 1; i < array.length; i++) {
-    // We need to use `relative().startsWith()` rather than a simple `startsWith()` to ensure we
-    // don't assume that `a/b` contains `a/b-2`.
-    if (!relative(array[i], value).startsWith('..')) return false;
-  }
-  return true;
-}
-
-/**
  * Run a task and track how long it takes.
  *
  * @param task The task whose duration we are tracking
@@ -117,4 +93,77 @@ export function trackDuration<T = void>(task: () => T extends Promise<unknown>? 
   const duration = Math.round((Date.now() - startTime) / 100) / 10;
   log(duration);
   return result;
+}
+
+/**
+ * Remove paths that are contained by other paths.
+ *
+ * For example:
+ * Given `['a/b/c', 'a/b/x', 'a/b', 'd/e', 'd/f']` we will end up with `['a/b', 'd/e', 'd/f]`.
+ * (Note that we do not get `d` even though `d/e` and `d/f` share a base directory, since `d` is not
+ * one of the base paths.)
+ *
+ */
+function dedupePaths(paths: AbsoluteFsPath[]) {
+  const root: Node = {children: new Map(), path: undefined};
+  for (const path of paths) {
+    const segments = path.split('/');
+    addPath(root, path, segments);
+  }
+  const dedupedPaths: AbsoluteFsPath[] = [];
+  flattenTree(root, dedupedPaths);
+  return dedupedPaths.sort().reverse();
+}
+
+/**
+ * Add a partial path (defined by the `segments`) to the current `node` in the tree.
+ */
+function addPath(node: Node, path: AbsoluteFsPath, segments: string[]) {
+  if (node.children === undefined) {
+    // We hit a leaf so don't bother processing any more of the path
+    return;
+  }
+  const next = segments.shift()!;
+  if (next !== undefined) {
+    // This is not the end of the path
+    if (!node.children.has(next)) {
+      node.children.set(next, {children: new Map(), path: undefined});
+    }
+    // continue to process the rest of this path.
+    addPath(node.children.get(next)!, path, segments);
+  } else {
+    // This path has finished so convert this branch to a leaf
+    convertToLeaf(node, path);
+  }
+}
+
+/**
+ * Flatten the tree of nodes back into an array of absolute paths
+ */
+function flattenTree(node: Node, paths: AbsoluteFsPath[]) {
+  if (node.children === undefined) {
+    // We found a leaf so store the currentPath
+    paths.push(absoluteFrom(node.path));
+  } else {
+    for (const child of node.children.values()) {
+      flattenTree(child, paths);
+    }
+  }
+}
+
+function convertToLeaf(node: Node, path: AbsoluteFsPath) {
+  node.children = undefined;
+  node.path = path;
+}
+
+type Node = Branch|Leaf;
+
+interface Leaf {
+  path: AbsoluteFsPath;
+  children: undefined;
+}
+
+interface Branch {
+  path: undefined;
+  children: Map<string, Node>;
 }

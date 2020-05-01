@@ -48,6 +48,23 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('should not be confused by folders that have the same starting string', () => {
+      const projectDirectory = _('/path/to/project');
+      const fs = getFileSystem();
+      fs.ensureDir(fs.resolve(projectDirectory, 'a/b'));
+      fs.ensureDir(fs.resolve(projectDirectory, 'a/b-2'));
+      fs.ensureDir(fs.resolve(projectDirectory, 'a/b/c'));
+
+      const sourceDirectory = _('/path/to/project/node_modules');
+      const pathMappings = {baseUrl: projectDirectory, paths: {'@dist': ['a/b', 'a/b-2', 'a/b/c']}};
+      const basePaths = getBasePaths(logger, sourceDirectory, pathMappings);
+      expect(basePaths).toEqual([
+        sourceDirectory,
+        fs.resolve(projectDirectory, 'a/b-2'),
+        fs.resolve(projectDirectory, 'a/b'),
+      ]);
+    });
+
     it('should discard paths that are already contained by another path', () => {
       const projectDirectory = _('/path/to/project');
       const fs = getFileSystem();
