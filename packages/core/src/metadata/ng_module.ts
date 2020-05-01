@@ -82,16 +82,14 @@ export interface NgModuleDef<T> {
 /**
  * A wrapper around an NgModule that associates it with the providers.
  *
- * @param T the module type. In Ivy applications, this must be explicitly
- * provided.
+ * @param T the module type.
  *
  * Note that using ModuleWithProviders without a generic type is deprecated.
  * The generic will become required in a future version of Angular.
  *
  * @publicApi
  */
-export interface ModuleWithProviders<
-    T = any /** TODO(alxhub): remove default when callers pass explicit type param */> {
+export interface ModuleWithProviders<T> {
   ngModule: Type<T>;
   providers?: Provider[];
 }
