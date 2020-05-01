@@ -19,7 +19,8 @@ export function getActiveFormatters() {
   let config = {};
   try {
     config = getAngularDevConfig<'format', FormatConfig>().format || {};
-  } catch {}
+  } catch {
+  }
   return [new Buildifier(config), new ClangFormat(config)].filter(
       formatter => formatter.isEnabled());
 }

@@ -87,7 +87,7 @@ export abstract class Formatter {
   }
 
   /**
-   * Retrieves the file matcher from the config provided to the constructor if provided;
+   * Retrieves the file matcher from the config provided to the constructor if provided.
    */
   private getFileMatcherFromConfig(): string[]|undefined {
     const formatterConfig = this.config[this.name];

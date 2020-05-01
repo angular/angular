@@ -25,7 +25,7 @@ const AVAILABLE_THREADS = Math.max(cpus().length - 1, 1);
  * time from 276 seconds to 39 seconds for the same 2700 files.
  *
  * A promise is returned, completed when the command has completed running for each file.
- * The promises expresses whether the formatter ran against any files.
+ * The promise resolves with a list of failures, or `false` if no formatters have matched.
  */
 export function runFormatterInParallel(allFiles: string[], action: FormatterAction) {
   return new Promise<false|string[]>((resolve) => {
@@ -39,8 +39,9 @@ export function runFormatterInParallel(allFiles: string[], action: FormatterActi
                            }).map(file => ({formatter, file})));
     }
 
+    // If no commands are generated, resolve the promise as `false` as no files
+    // were run against the any formatters.
     if (pendingCommands.length === 0) {
-      console.info('No files matched for formatting.');
       return resolve(false);
     }
 
@@ -68,6 +69,7 @@ export function runFormatterInParallel(allFiles: string[], action: FormatterActi
       const nextCommand = pendingCommands.pop();
       // If no file was pulled from the array, return as there are no more files to run against.
       if (nextCommand === undefined) {
+        threads[thread] = false;
         return;
       }
 

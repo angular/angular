@@ -17,6 +17,7 @@ export async function formatFiles(files: string[]) {
   let failures = await runFormatterInParallel(files, 'format');
 
   if (failures === false) {
+    console.info('No files matched for formatting.');
     process.exit(0);
   }
 
@@ -37,6 +38,7 @@ export async function checkFiles(files: string[]) {
   const failures = await runFormatterInParallel(files, 'check');
 
   if (failures === false) {
+    console.info('No files matched for formatting check.');
     process.exit(0);
   }
 
