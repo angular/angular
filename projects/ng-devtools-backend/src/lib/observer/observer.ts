@@ -214,10 +214,12 @@ export class DirectiveForestObserver {
     declarations.tView.template = function (_: any, component: any): void {
       if (!self._inChangeDetection) {
         self._inChangeDetection = true;
-        // self._changeDetection$.next();
-        // runOutsideAngular(() => {
-        //   setTimeout(() => self._inChangeDetection = false);
-        // });
+        runOutsideAngular(() => {
+          Promise.resolve().then(() => {
+            self._changeDetection$.next();
+            self._inChangeDetection = false;
+          });
+        });
       }
       const position = self._tracker.getDirectivePosition(component);
       const start = performance.now();
