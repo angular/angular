@@ -35,24 +35,24 @@ v9 - v12
 
 | Area                          | API or Feature                                                                | May be removed in |
 | ----------------------------- | ---------------------------------------------------------------------------   | ----------------- |
-| `@angular/common`             | [`ReflectiveInjector`](#reflectiveinjector)                                   | <!--v8--> v10 |
+| `@angular/common`             | [`ReflectiveInjector`](#reflectiveinjector)                                   | <!--v8--> v11 |
 | `@angular/common`             | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | <!--v9--> v11 |
-| `@angular/core`               | [`CollectionChangeRecord`](#core)                                             | <!--v7--> v10 |
-| `@angular/core`               | [`DefaultIterableDiffer`](#core)                                              | <!--v7--> v10 |
-| `@angular/core`               | [`ReflectiveKey`](#core)                                                      | <!--v8--> v10 |
-| `@angular/core`               | [`RenderComponentType`](#core)                                                | <!--v7--> v10 |
-| `@angular/core`               | [`ViewEncapsulation.Native`](#core)                                           | <!--v6--> v10 |
+| `@angular/core`               | [`CollectionChangeRecord`](#core)                                             | <!--v7--> v11 |
+| `@angular/core`               | [`DefaultIterableDiffer`](#core)                                              | <!--v7--> v11 |
+| `@angular/core`               | [`ReflectiveKey`](#core)                                                      | <!--v8--> v11 |
+| `@angular/core`               | [`RenderComponentType`](#core)                                                | <!--v7--> v11 |
+| `@angular/core`               | [`ViewEncapsulation.Native`](#core)                                           | <!--v6--> v11 |
 | `@angular/core`               | [`ModuleWithProviders` without a generic](#moduleWithProviders)               | <!--v9--> v10 |
 | `@angular/core`               | [Undecorated base classes that use Angular features](#undecorated-base-classes) | <!--v9--> v10 |
-| `@angular/forms`              | [`ngModel` with reactive forms](#ngmodel-reactive)                            | <!--v6--> v10 |
-| `@angular/router`             | [`preserveQueryParams`](#router)                                              | <!--v7--> v10 |
-| `@angular/upgrade`            | [`@angular/upgrade`](#upgrade)                                                | <!--v8--> v10 |
-| `@angular/upgrade`            | [`getAngularLib`](#upgrade-static)                                            | <!--v8--> v10 |
-| `@angular/upgrade`            | [`setAngularLib`](#upgrade-static)                                            | <!--v8--> v10 |
-| `@angular/platform-webworker` | [All entry points](api/platform-webworker)                                    | <!--v8--> v10 |
-| template syntax               | [`<template`>](#template-tag)                                                 | <!--v7--> v10 |
-| polyfills                     | [reflect-metadata](#reflect-metadata)                                         | <!--v8--> v10 |
-| npm package format            | [`esm5` and `fesm5` entry-points in @angular/* npm packages](guide/deprecations#esm5-fesm5) | <!-- v9 --> v10 |
+| `@angular/forms`              | [`ngModel` with reactive forms](#ngmodel-reactive)                            | <!--v6--> v11 |
+| `@angular/router`             | [`preserveQueryParams`](#router)                                              | <!--v7--> v11 |
+| `@angular/upgrade`            | [`@angular/upgrade`](#upgrade)                                                | <!--v8--> v11 |
+| `@angular/upgrade`            | [`getAngularLib`](#upgrade-static)                                            | <!--v8--> v11 |
+| `@angular/upgrade`            | [`setAngularLib`](#upgrade-static)                                            | <!--v8--> v11 |
+| `@angular/platform-webworker` | [All entry points](api/platform-webworker)                                    | <!--v8--> v11 |
+| template syntax               | [`<template`>](#template-tag)                                                 | <!--v7--> v11 |
+| polyfills                     | [reflect-metadata](#reflect-metadata)                                         | <!--v8--> v11 |
+| npm package format            | [`esm5` and `fesm5` entry-points in @angular/* npm packages](guide/deprecations#esm5-fesm5) | <!-- v9 --> v11 |
 | `@angular/core`               | [`defineInjectable`](#core)                                                   | <!--v8--> v11 |
 | `@angular/core`               | [`entryComponents`](api/core/NgModule#entryComponents)                        | <!--v9--> v11 |
 | `@angular/core`               | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS)       | <!--v9--> v11 |
