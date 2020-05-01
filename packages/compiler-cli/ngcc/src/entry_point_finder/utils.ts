@@ -104,7 +104,7 @@ export function trackDuration<T = void>(task: () => T extends Promise<unknown>? 
  * one of the base paths.)
  */
 export function dedupePaths(paths: AbsoluteFsPath[]): AbsoluteFsPath[] {
-  const root: Node = {children: {}};
+  const root: Node = {children: new Map()};
   for (const path of paths) {
     addPath(root, path);
   }
@@ -125,7 +125,10 @@ function addPath(root: Node, path: AbsoluteFsPath): void {
       }
       // This is not the end of the path continue to process the rest of this path.
       const next = segments[index];
-      node = node.children[next] = node.children[next] || {children: {}};
+      if (!node.children.has(next)) {
+        node.children.set(next, {children: new Map()});
+      }
+      node = node.children.get(next)!;
     }
   }
   // This path has finished so convert this node to a leaf
@@ -144,7 +147,7 @@ function flattenTree(root: Node): AbsoluteFsPath[] {
       // We found a leaf so store the currentPath
       paths.push(node.path);
     } else {
-      nodes.push.apply(nodes, Object.values(node.children));
+      node.children.forEach(value => nodes.push(value));
     }
   }
   return paths;
@@ -159,7 +162,7 @@ function convertToLeaf(node: Node, path: AbsoluteFsPath) {
 }
 
 interface Node {
-  children: Record<string, Node>;
+  children: Map<string, Node>;
   path?: AbsoluteFsPath;
 }
 
