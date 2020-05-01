@@ -653,10 +653,10 @@ For more information about using `@angular/common/http`, see the [HttpClient gui
 | `MockBackend` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
 | `MockConnection` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
 
-{a browser-support}
+{@a browser-support}
 ## Browser support
 
-{a ie-9-10}
+{@a ie-9-10}
 ### IE 9 and 10
 
 We’ve been evaluating the cost of maintaining support for IE 9 and 10 and have determined that dropping them is the best way forward.
