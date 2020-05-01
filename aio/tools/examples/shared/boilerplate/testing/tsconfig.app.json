@@ -2,7 +2,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../out-tsc/app",
-    "types": []
+    "types": [],
+    // TODO(FW-2145): turn lib checks back on after fixing in-memory-api and investigating impact of ModuleWithProviders
+    "skipLibCheck": true
   },
   "files": [
     "src/main.ts",
