@@ -16,12 +16,8 @@ import * as ParsingCases from './parsing-cases';
   imports: [CommonModule, FormsModule],
   declarations: [
     AppComponent,
-    ParsingCases.CaseIncompleteOpen,
-    ParsingCases.CaseMissingClosing,
-    ParsingCases.CaseUnknown,
     ParsingCases.CounterDirective,
     ParsingCases.HintModel,
-    ParsingCases.NoValueAttribute,
     ParsingCases.NumberModel,
     ParsingCases.StringModel,
     ParsingCases.TemplateReference,
