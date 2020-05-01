@@ -9,7 +9,6 @@ import {
   ProfilerFrame,
   ComponentExplorerViewQuery,
 } from 'protocol';
-import { onChangeDetection$ } from './change-detection-tracker';
 import { ComponentTreeNode, getLatestComponentState, queryDirectiveForest, updateState } from './component-tree';
 import { start as startProfiling, stop as stopProfiling } from './observer/capture';
 import { serializeDirectiveState } from './state-serializer/state-serializer';
@@ -48,7 +47,9 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
     // Angular's change detection. We don't want to constantly send
     // update requests, instead we want to request an update at most
     // every 50ms
-    onChangeDetection$.pipe(debounceTime(50)).subscribe(() => messageBus.emit('componentTreeDirty'));
+    getDirectiveForestObserver()
+      .changeDetection$.pipe(debounceTime(50))
+      .subscribe(() => messageBus.emit('componentTreeDirty'));
   }
 };
 
