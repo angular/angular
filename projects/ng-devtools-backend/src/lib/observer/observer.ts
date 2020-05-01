@@ -5,7 +5,7 @@ import { getLViewFromDirectiveOrElementInstance, getDirectiveHostElement } from 
 import { DEV_TOOLS_HIGHLIGHT_NODE_ID } from '../highlighter';
 import { Subject } from 'rxjs';
 
-export type CreationCallback = (
+export type CreationHook = (
   componentOrDirective: any,
   node: Node,
   id: number,
@@ -13,7 +13,7 @@ export type CreationCallback = (
   position: ElementPosition
 ) => void;
 
-export type LifecycleStartCallback = (
+export type LifecycleStartHook = (
   componentOrDirective: any,
   hook: keyof LifecycleProfile | 'unknown',
   node: Node,
@@ -21,7 +21,7 @@ export type LifecycleStartCallback = (
   isComponent: boolean
 ) => void;
 
-export type LifecycleEndCallback = (
+export type LifecycleEndHook = (
   componentOrDirective: any,
   hook: keyof LifecycleProfile | 'unknown',
   node: Node,
@@ -29,11 +29,11 @@ export type LifecycleEndCallback = (
   isComponent: boolean
 ) => void;
 
-export type ChangeDetectionStartCallback = (component: any, node: Node, id: number, position: ElementPosition) => void;
+export type ChangeDetectionStartHook = (component: any, node: Node, id: number, position: ElementPosition) => void;
 
-export type ChangeDetectionEndCallback = (component: any, node: Node, id: number, position: ElementPosition) => void;
+export type ChangeDetectionEndHook = (component: any, node: Node, id: number, position: ElementPosition) => void;
 
-export type DestroyCallback = (
+export type DestroyHook = (
   componentOrDirective: any,
   node: Node,
   id: number,
@@ -41,13 +41,13 @@ export type DestroyCallback = (
   position: ElementPosition
 ) => void;
 
-export interface Callbacks {
-  onCreate: CreationCallback;
-  onDestroy: DestroyCallback;
-  onChangeDetectionStart: ChangeDetectionStartCallback;
-  onChangeDetectionEnd: ChangeDetectionEndCallback;
-  onLifecycleHookStart: LifecycleStartCallback;
-  onLifecycleHookEnd: LifecycleEndCallback;
+export interface Hooks {
+  onCreate: CreationHook;
+  onDestroy: DestroyHook;
+  onChangeDetectionStart: ChangeDetectionStartHook;
+  onChangeDetectionEnd: ChangeDetectionEndHook;
+  onLifecycleHookStart: LifecycleStartHook;
+  onLifecycleHookEnd: LifecycleEndHook;
 }
 
 const hookNames = [
@@ -85,6 +85,15 @@ const getLifeCycleName = (obj: {}, fn: any): keyof LifecycleProfile | 'unknown' 
       return propName as keyof LifecycleProfile;
     }
   }
+  const fnName = fn.name;
+  if (typeof fnName !== 'string') {
+    return 'unknown';
+  }
+  for (const hookName of hookNames) {
+    if (fnName.indexOf(hookName) >= 0) {
+      return `ng${hookName}` as keyof LifecycleProfile;
+    }
+  }
   return 'unknown';
 };
 
@@ -106,10 +115,10 @@ export class DirectiveForestObserver {
   private _inChangeDetection = false;
   private _changeDetection$ = new Subject<void>();
 
-  private _callbacks: Partial<Callbacks>[] = [];
+  private _hooks: Partial<Hooks>[] = [];
 
-  constructor(config: Partial<Callbacks>) {
-    this._callbacks.push(config);
+  constructor(config: Partial<Hooks>) {
+    this._hooks.push(config);
   }
 
   get changeDetection$(): Subject<void> {
@@ -174,12 +183,12 @@ export class DirectiveForestObserver {
     });
   }
 
-  subscribe(config: Partial<Callbacks>): void {
-    this._callbacks.push(config);
+  subscribe(config: Partial<Hooks>): void {
+    this._hooks.push(config);
   }
 
-  unsubscribe(config: Partial<Callbacks>): void {
-    this._callbacks.splice(this._callbacks.indexOf(config), 1);
+  unsubscribe(config: Partial<Hooks>): void {
+    this._hooks.splice(this._hooks.indexOf(config), 1);
   }
 
   private _onMutation(records: MutationRecord[]): void {
@@ -355,8 +364,8 @@ export class DirectiveForestObserver {
     this._invokeCallback('onLifecycleHookEnd', arguments);
   }
 
-  private _invokeCallback(name: keyof Callbacks, args: IArguments): void {
-    this._callbacks.forEach((config) => {
+  private _invokeCallback(name: keyof Hooks, args: IArguments): void {
+    this._hooks.forEach((config) => {
       const cb = config[name];
       if (cb) {
         cb.apply(null, args);

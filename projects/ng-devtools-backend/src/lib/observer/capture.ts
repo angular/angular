@@ -1,4 +1,4 @@
-import { DirectiveForestObserver } from './observer';
+import { DirectiveForestObserver, Hooks } from './observer';
 import { ElementPosition, ProfilerFrame, ElementProfile, DirectiveProfile, LifecycleProfile } from 'protocol';
 import { runOutsideAngular, isCustomElement } from '../utils';
 import { getDirectiveName } from '../highlighter';
@@ -9,7 +9,7 @@ let inProgress = false;
 let inChangeDetection = false;
 let eventMap: Map<any, DirectiveProfile>;
 let frameDuration = 0;
-let observerCallbacks: any = null;
+let observerHooks: Partial<Hooks> = {};
 
 export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   if (inProgress) {
@@ -17,15 +17,15 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   }
   eventMap = new Map<any, DirectiveProfile>();
   inProgress = true;
-  observerCallbacks = getObserverCallbacks(onFrame);
-  getDirectiveForestObserver().subscribe(observerCallbacks);
+  observerHooks = getObserverHooks(onFrame);
+  getDirectiveForestObserver().subscribe(observerHooks);
 };
 
 export const stop = (): ProfilerFrame => {
   const observer = getDirectiveForestObserver();
   const result = flushBuffer(observer);
-  // We want to garbage collect the records;
-  getDirectiveForestObserver().unsubscribe(observerCallbacks);
+  getDirectiveForestObserver().unsubscribe(observerHooks);
+  observerHooks = {};
   inProgress = false;
   return result;
 };
@@ -42,7 +42,7 @@ const getEventStart = (map: { [key: string]: number }, directive: any, label: st
   return map[key];
 };
 
-const getObserverCallbacks = (onFrame: (frame: ProfilerFrame) => void) => {
+const getObserverHooks = (onFrame: (frame: ProfilerFrame) => void) => {
   const timeStartMap: { [key: string]: number } = {};
   return {
     // We flush here because it's possible the current node to overwrite
