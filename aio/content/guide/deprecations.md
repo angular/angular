@@ -42,8 +42,6 @@ v9 - v12
 | `@angular/core`               | [`ReflectiveKey`](#core)                                                      | <!--v8--> v11 |
 | `@angular/core`               | [`RenderComponentType`](#core)                                                | <!--v7--> v11 |
 | `@angular/core`               | [`ViewEncapsulation.Native`](#core)                                           | <!--v6--> v11 |
-| `@angular/core`               | [`ModuleWithProviders` without a generic](#moduleWithProviders)               | <!--v9--> v10 |
-| `@angular/core`               | [Undecorated base classes that use Angular features](#undecorated-base-classes) | <!--v9--> v10 |
 | `@angular/forms`              | [`ngModel` with reactive forms](#ngmodel-reactive)                            | <!--v6--> v11 |
 | `@angular/router`             | [`preserveQueryParams`](#router)                                              | <!--v7--> v11 |
 | `@angular/upgrade`            | [`@angular/upgrade`](#upgrade)                                                | <!--v8--> v11 |
@@ -97,8 +95,6 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | [`defineInjectable`](api/core/defineInjectable) | `ɵɵdefineInjectable` | v8 | Used only in generated code. No source code should depend on this API. |
 | [`entryComponents`](api/core/NgModule#entryComponents) | none | v9 | See [`entryComponents`](#entryComponents) |
 | [`ANALYZE_FOR_ENTRY_COMPONENTS`](api/core/ANALYZE_FOR_ENTRY_COMPONENTS) | none | v9 | See [`ANALYZE_FOR_ENTRY_COMPONENTS`](#entryComponents) |
-| `ModuleWithProviders` without a generic |  `ModuleWithProviders` with a generic             | v9 | See [`ModuleWithProviders` section](#moduleWithProviders) |
-| Undecorated base classes that use Angular features | Base classes with `@Directive()` decorator that use Angular features | v9 | See [undecorated base classes section](#undecorated-base-classes) |
 
 
 
@@ -377,60 +373,6 @@ However, in practice, Angular simply ignores two-way bindings to template variab
 <option *ngFor="let optionName of options" [value]="optionName"></option>
 ```
 
-{@a undecorated-base-classes}
-### Undecorated base classes using Angular features
-
-As of version 9, it's deprecated to have an undecorated base class that:
-
-- uses Angular features
-- is extended by a directive or component
-
-Angular lifecycle hooks or any of the following Angular field decorators are considered Angular features:
-
-- `@Input()`
-- `@Output()`
-- `@HostBinding()`
-- `@HostListener()`
-- `@ViewChild()` / `@ViewChildren()`
-- `@ContentChild()` / `@ContentChildren()`
-
-For example, the following case is deprecated because the base class uses `@Input()` and does not have a class-level decorator:
-
-```ts
-class Base {
-  @Input()
-  foo: string;
-}
-
-@Directive(...)
-class Dir extends Base {
-  ngOnChanges(): void {
-    // notified when bindings to [foo] are updated
-  }
-}
-```
-
-In a future version of Angular, this code will start to throw an error.
-To fix this example, add a selectorless `@Directive()` decorator to the base class:
-
-```ts
-@Directive()
-class Base {
-  @Input()
-  foo: string;
-}
-
-@Directive(...)
-class Dir extends Base {
-  ngOnChanges(): void {
-    // notified when bindings to [foo] are updated
-  }
-}
-```
-
-In version 9, the CLI has an automated migration that will update your code for you when `ng update` is run.
-See [the dedicated migration guide](guide/migration-undecorated-classes) for more information about the change and more examples.
-
 
 
 {@a binding-to-innertext}
@@ -578,28 +520,14 @@ The final decision was made on three key points:
 {@a removed}
 ## Removed APIs
 
-The following APIs have been removed starting with version 9.0.0*:
+The following APIs have been removed starting with version 10.0.0*:
 
 | Package          | API            | Replacement | Notes |
 | ---------------- | -------------- | ----------- | ----- |
-| `@angular/core`  | [`Renderer`](https://v8.angular.io/api/core/Renderer) | [`Renderer2`](https://angular.io/api/core/Renderer2) | [Migration guide](guide/migration-renderer) |
-| `@angular/core`  | [`RootRenderer`](https://v8.angular.io/api/core/RootRenderer) | [`RendererFactory2`](https://angular.io/api/core/RendererFactory2) | none |
-| `@angular/core`  | [`RenderComponentType`](https://v8.angular.io/api/core/RenderComponentType) | [`RendererType2`](https://angular.io/api/core/RendererType2) | none |
-| `@angular/core`  | [`WtfScopeFn`](https://v8.angular.io/api/core/WtfScopeFn) | none | v8 | See [Web Tracing Framework](#wtf) |
-| `@angular/core`  | [`wtfCreateScope`](https://v8.angular.io/api/core/wtfCreateScope) | none | v8 | See [Web Tracing Framework](#wtf) |
-| `@angular/core`  | [`wtfStartTimeRange`](https://v8.angular.io/api/core/wtfStartTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
-| `@angular/core`  | [`wtfEndTimeRange`](https://v8.angular.io/api/core/wtfEndTimeRange) | none | v8 | See [Web Tracing Framework](#wtf) |
-| `@angular/core`  | [`wtfLeave`](https://v8.angular.io/api/core/wtfLeave) | none | v8 | See [Web Tracing Framework](#wtf) |
-| `@angular/common` | `DeprecatedI18NPipesModule` | [`CommonModule`](api/common/CommonModule#pipes) | none |
-| `@angular/common` | `DeprecatedCurrencyPipe` | [`CurrencyPipe`](api/common/CurrencyPipe) | none |
-| `@angular/common` | `DeprecatedDatePipe`     | [`DatePipe`](api/common/DatePipe) | none |
-| `@angular/common` | `DeprecatedDecimalPipe` | [`DecimalPipe`](api/common/DecimalPipe) | none |
-| `@angular/common` | `DeprecatedPercentPipe` | [`PercentPipe`](api/common/PercentPipe) | none |
-| `@angular/forms` | [`NgFormSelectorWarning`](https://v8.angular.io/api/forms/NgFormSelectorWarning) | none | none |
-| `@angular/forms` | `ngForm` element selector | `ng-form` element selector | none |
-| `@angular/service-worker` | `versionedFiles` | `files` | In the service worker configuration file `ngsw-config.json`, replace `versionedFiles` with `files`. See [Service Worker Configuration](guide/service-worker-config#assetgroups). |
+| `@angular/core`  | Undecorated base classes that use Angular features | Add Angular decorator | See [migration guide](guide/migration-undecorated-classes) for more info |
+| `@angular/core`  | `ModuleWithProviders` without a generic             | `ModuleWithProviders` with a generic | See [migration guide](guide/migration-module-with-providers) for more info |
 
-*To see APIs removed in version 8, check out this guide on the [version 8 docs site](https://v8.angular.io/guide/deprecations#removed).
+*To see APIs removed in version 9, check out this guide on the [version 9 docs site](https://v9.angular.io/guide/deprecations#removed).
 
 
 <!-- The following anchor is used by redirects from the removed API pages. Do not change or remove. -->
