@@ -11,9 +11,8 @@ import * as ts from 'typescript';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Declaration, Decorator, FunctionDefinition, isNamedVariableDeclaration, Parameter, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {getNameText, getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, hasNameIdentifier} from '../utils';
 
-import {Esm2015ReflectionHost, getPropertyValueFromSymbol, isAssignment, isAssignmentStatement, ParamInfo} from './esm2015_host';
+import {Esm2015ReflectionHost, getIifeConciseBody, getPropertyValueFromSymbol, isAssignment, isAssignmentStatement, ParamInfo} from './esm2015_host';
 import {NgccClassSymbol} from './ngcc_host';
-import {stripParentheses} from './utils';
 
 
 /**
@@ -631,17 +630,8 @@ export function getIifeBody(declaration: ts.Declaration): ts.Block|undefined {
     parenthesizedCall = parenthesizedCall.right;
   }
 
-  const call = stripParentheses(parenthesizedCall);
-  if (!ts.isCallExpression(call)) {
-    return undefined;
-  }
-
-  const fn = stripParentheses(call.expression);
-  if (!ts.isFunctionExpression(fn)) {
-    return undefined;
-  }
-
-  return fn.body;
+  const body = getIifeConciseBody(parenthesizedCall);
+  return body !== undefined && ts.isBlock(body) ? body : undefined;
 }
 
 function getReturnIdentifier(body: ts.Block): ts.Identifier|undefined {
