@@ -34,7 +34,7 @@ export class MockFileSystemWindows extends MockFileSystem {
   }
 
   isRooted(path: string): boolean {
-    return /^([A-Za-z]:)?([\\\/]|$)/i.test(path);
+    return /^([A-Z]:)?([\\\/]|$)/i.test(path);
   }
 
   protected splitPath<T extends PathString>(path: T): string[] {

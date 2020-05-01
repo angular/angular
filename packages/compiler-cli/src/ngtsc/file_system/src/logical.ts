@@ -84,7 +84,7 @@ export class LogicalFileSystem {
     if (!this.cache.has(canonicalFilePath)) {
       let logicalFile: LogicalProjectPath|null = null;
       for (const rootDir of this.rootDirs) {
-        if (!relative(rootDir, canonicalFilePath).startsWith('..')) {
+        if (isWithinBasePath(rootDir, canonicalFilePath)) {
           logicalFile = this.createLogicalProjectPath(canonicalFilePath, rootDir);
           // The logical project does not include any special "node_modules" nested directories.
           if (logicalFile.indexOf('/node_modules/') !== -1) {
@@ -104,4 +104,12 @@ export class LogicalFileSystem {
     const logicalPath = stripExtension(file.substr(rootDir.length));
     return (logicalPath.startsWith('/') ? logicalPath : '/' + logicalPath) as LogicalProjectPath;
   }
+}
+
+/**
+ * Is the `path` a descendant of the `base`?
+ * E.g. `foo/bar/zee` is within `foo/bar` but not within `foo/car`.
+ */
+function isWithinBasePath(base: AbsoluteFsPath, path: AbsoluteFsPath): boolean {
+  return !relative(base, path).startsWith('..');
 }
