@@ -1,6 +1,10 @@
 export const runOutsideAngular = (f: () => any): void => {
   const w = window as any;
-  if (!w.Zone || w.Zone.current._name !== 'angular') {
+  if (!w.Zone || !w.Zone.current) {
+    return;
+  }
+  if (w.Zone.current._name !== 'angular') {
+    w.Zone.current.run(f);
     return;
   }
   w.Zone.current._parent.run(f);

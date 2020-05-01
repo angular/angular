@@ -24,6 +24,7 @@ import {
 } from './angular-check';
 import { debounceTime } from 'rxjs/operators';
 import { getDirectiveForestObserver } from './observer';
+import { runOutsideAngular } from './utils';
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
   messageBus.on('shutdown', shutdownCallback(messageBus));
@@ -47,9 +48,11 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
     // Angular's change detection. We don't want to constantly send
     // update requests, instead we want to request an update at most
     // every 50ms
-    getDirectiveForestObserver()
-      .changeDetection$.pipe(debounceTime(50))
-      .subscribe(() => messageBus.emit('componentTreeDirty'));
+    runOutsideAngular(() => {
+      getDirectiveForestObserver()
+        .changeDetection$.pipe(debounceTime(50))
+        .subscribe(() => messageBus.emit('componentTreeDirty'));
+    });
   }
 };
 

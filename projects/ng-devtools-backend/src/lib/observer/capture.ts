@@ -30,8 +30,20 @@ export const stop = (): ProfilerFrame => {
   return result;
 };
 
+const startEvent = (map: { [key: string]: number }, directive: any, label: string) => {
+  const name = getDirectiveName(directive);
+  const key = `${name}#${label}`;
+  map[key] = performance.now();
+};
+
+const getEventStart = (map: { [key: string]: number }, directive: any, label: string) => {
+  const name = getDirectiveName(directive);
+  const key = `${name}#${label}`;
+  return map[key];
+};
+
 const getObserverCallbacks = (onFrame: (frame: ProfilerFrame) => void) => {
-  const map: { [key: string]: number } = {};
+  const timeStartMap: { [key: string]: number } = {};
   return {
     // We flush here because it's possible the current node to overwrite
     // an existing removed node.
@@ -44,12 +56,12 @@ const getObserverCallbacks = (onFrame: (frame: ProfilerFrame) => void) => {
       });
     },
     onChangeDetectionStart(component: any, node: Node): void {
-      map[getDirectiveName(component) + '#cd'] = performance.now();
+      startEvent(timeStartMap, component, 'changeDetection');
       if (!inChangeDetection) {
         inChangeDetection = true;
         const source = getChangeDetectionSource();
         runOutsideAngular(() => {
-          setTimeout(() => {
+          Promise.resolve().then(() => {
             inChangeDetection = false;
             onFrame(flushBuffer(getDirectiveForestObserver(), source));
           });
@@ -72,9 +84,8 @@ const getObserverCallbacks = (onFrame: (frame: ProfilerFrame) => void) => {
         if (current === undefined) {
           current = 0;
         }
-        const startTimestamp = map[getDirectiveName(component) + '#cd'];
+        const startTimestamp = getEventStart(timeStartMap, component, 'changeDetection');
         if (startTimestamp === undefined) {
-          debugger;
           return;
         }
         const duration = performance.now() - startTimestamp;
@@ -102,7 +113,7 @@ const getObserverCallbacks = (onFrame: (frame: ProfilerFrame) => void) => {
       __: number,
       isComponent: boolean
     ): void {
-      map[getDirectiveName(directive) + '#' + hookName] = performance.now();
+      startEvent(timeStartMap, directive, hookName);
       if (!eventMap.has(directive)) {
         eventMap.set(directive, {
           isElement: isCustomElement(node),
@@ -114,9 +125,8 @@ const getObserverCallbacks = (onFrame: (frame: ProfilerFrame) => void) => {
     },
     onLifecycleHookEnd(directive: any, hookName: keyof LifecycleProfile, _: Node, __: number, ___: boolean): void {
       const dir = eventMap.get(directive);
-      const startTimestamp = map[getDirectiveName(directive) + '#' + hookName];
+      const startTimestamp = getEventStart(timeStartMap, directive, hookName);
       if (startTimestamp === undefined) {
-        debugger;
         return;
       }
       if (!dir) {
