@@ -11,6 +11,7 @@ ng_module(
     ]),
     module_name = "@angular/components-examples/material/toolbar",
     deps = [
+        "//src/material/button",
         "//src/material/icon",
         "//src/material/toolbar",
     ],

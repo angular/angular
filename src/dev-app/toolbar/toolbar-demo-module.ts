@@ -15,6 +15,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {RouterModule} from '@angular/router';
 import {ToolbarDemo} from './toolbar-demo';
+import {ToolbarExamplesModule} from '@angular/components-examples/material/toolbar';
 
 @NgModule({
   imports: [
@@ -24,6 +25,7 @@ import {ToolbarDemo} from './toolbar-demo';
     MatInputModule,
     MatSelectModule,
     MatToolbarModule,
+    ToolbarExamplesModule,
     RouterModule.forChild([{path: '', component: ToolbarDemo}]),
   ],
   declarations: [ToolbarDemo],

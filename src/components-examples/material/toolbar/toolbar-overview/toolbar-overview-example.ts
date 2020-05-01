@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 /**
- * @title Basic toolbar
+ * @title Toolbar overview
  */
 @Component({
   selector: 'toolbar-overview-example',
