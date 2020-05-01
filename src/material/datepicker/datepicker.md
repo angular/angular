@@ -288,7 +288,7 @@ export class MyComponent {
 
 <!-- example(datepicker-moment) -->
 
-By default the `MomentDateAdapter` will creates dates in your time zone specific locale. You can change the default behaviour to parse dates as UTC by providing the `MAT_MOMENT_DATE_ADAPTER_OPTIONS` and setting it to `useUtc: true`.
+By default the `MomentDateAdapter` creates dates in your time zone specific locale. You can change the default behaviour to parse dates as UTC by providing the `MAT_MOMENT_DATE_ADAPTER_OPTIONS` and setting it to `useUtc: true`.
 
 ```ts
 @NgModule({
