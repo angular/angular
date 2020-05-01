@@ -1,8 +1,20 @@
 import { ComponentTreeNode, ComponentInstanceType, DirectiveInstanceType } from './component-tree';
 import { isCustomElement } from './utils';
 import { getDirectiveName } from './highlighter';
+import { SemVerDSL } from 'semver-dsl';
+import { VERSION } from './version';
 
-const HEADER_OFFSET = 19;
+let HEADER_OFFSET = 19;
+
+const latest = () => {
+  HEADER_OFFSET = 20;
+};
+
+SemVerDSL(VERSION).gte('10.0.0', latest);
+
+// In g3 everyone has version 0.0.0, using HEAD from master.
+SemVerDSL(VERSION).eq('0.0.0', latest);
+
 const TYPE = 1;
 const ELEMENT = 0;
 const LVIEW_TVIEW = 1;
@@ -76,7 +88,9 @@ const getNode = (lView: any, data: any, idx: number): ComponentTreeNode => {
 const extractNodes = (lViewOrLContainer: any, nodes: ComponentTreeNode[] = []): ComponentTreeNode[] => {
   if (isLContainer(lViewOrLContainer)) {
     for (let i = 9; i < lViewOrLContainer.length; i++) {
-      extractNodes(lViewOrLContainer[i], nodes);
+      if (lViewOrLContainer[i]) {
+        extractNodes(lViewOrLContainer[i], nodes);
+      }
     }
     return nodes;
   }
