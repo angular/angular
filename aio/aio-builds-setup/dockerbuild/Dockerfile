@@ -1,5 +1,5 @@
 # Image metadata and config
-FROM debian:stretch
+FROM debian:buster
 
 LABEL name="angular.io PR preview" \
       description="This image implements the PR preview functionality for angular.io." \
@@ -37,9 +37,9 @@ ARG TEST_AIO_NGINX_PORT_HTTPS=4433
 ARG      AIO_SIGNIFICANT_FILES_PATTERN='^(?:aio|packages)/(?!.*[._]spec\\.[jt]s$)'
 ARG TEST_AIO_SIGNIFICANT_FILES_PATTERN=$AIO_SIGNIFICANT_FILES_PATTERN
 ARG      AIO_TRUSTED_PR_LABEL="aio: preview"
-ARG TEST_AIO_TRUSTED_PR_LABEL="aio: preview"
+ARG TEST_AIO_TRUSTED_PR_LABEL=$AIO_TRUSTED_PR_LABEL
 ARG      AIO_PREVIEW_SERVER_HOSTNAME=preview.localhost
-ARG TEST_AIO_PREVIEW_SERVER_HOSTNAME=preview.localhost
+ARG TEST_AIO_PREVIEW_SERVER_HOSTNAME=$AIO_PREVIEW_SERVER_HOSTNAME
 ARG      AIO_ARTIFACT_MAX_SIZE=26214400
 ARG TEST_AIO_ARTIFACT_MAX_SIZE=200
 ARG      AIO_PREVIEW_SERVER_PORT=3000
@@ -72,24 +72,24 @@ RUN mkdir /var/log/aio
 
 
 # Add extra package sources
-RUN apt-get update -y && apt-get install -y curl
-RUN curl --silent --show-error --location https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get update -y && apt-get install -y curl=7.64.0-4+deb10u1
+RUN curl --silent --show-error --location https://deb.nodesource.com/setup_12.x | bash -
 RUN curl --silent --show-error https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN echo "deb http://ftp.debian.org/debian stretch-backports main" | tee /etc/apt/sources.list.d/backports.list
 
 
 # Install packages
 RUN apt-get update -y && apt-get install -y \
-    cron=3.0pl1-128+deb9u1 \
-    dnsmasq=2.76-5+deb9u2 \
-    nano=2.7.4-1 \
-    nginx=1.10.3-1+deb9u2 \
-    nodejs=10.15.3-1nodesource1 \
-    openssl=1.1.0j-1~deb9u1 \
-    rsyslog=8.24.0-1 \
-    yarn=1.15.2-1
-RUN yarn global add pm2@3.5.0
+    cron=3.0pl1-134+deb10u1 \
+    dnsmasq=2.80-1 \
+    nano=3.2-3 \
+    nginx=1.14.2-2+deb10u1 \
+    nodejs=12.16.2-1nodesource1 \
+    openssl=1.1.1d-0+deb10u3 \
+    rsyslog=8.1901.0-1 \
+    vim=2:8.1.0875-5 \
+    yarn=1.22.4-1
+RUN yarn global add pm2@4.4.0
 
 
 # Set up log rotation
@@ -162,8 +162,7 @@ RUN find $AIO_SCRIPTS_SH_DIR -maxdepth 1 -type f -printf "%P\n" \
 
 # Set up the Node.js scripts
 COPY scripts-js/ $AIO_SCRIPTS_JS_DIR/
-WORKDIR $AIO_SCRIPTS_JS_DIR/
-RUN yarn install --production --frozen-lockfile
+RUN yarn --cwd="$AIO_SCRIPTS_JS_DIR/" install --production --frozen-lockfile
 
 
 # Set up health check
