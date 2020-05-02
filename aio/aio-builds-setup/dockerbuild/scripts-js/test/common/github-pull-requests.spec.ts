@@ -47,7 +47,7 @@ describe('GithubPullRequests', () => {
 
 
     it('should make a POST request to Github with the correct pathname, params and data', () => {
-      githubApi.post.and.callFake(() => Promise.resolve() as Promise<any>);
+      githubApi.post.and.resolveTo();
       prs.addComment(42, 'body');
       expect(githubApi.post).toHaveBeenCalledWith('/repos/foo/bar/issues/42/comments', null, {body: 'body'});
     });
@@ -63,7 +63,7 @@ describe('GithubPullRequests', () => {
 
 
     it('should resolve with the data from the Github POST', done => {
-      githubApi.post.and.callFake(() => Promise.resolve('Test') as Promise<any>);
+      githubApi.post.and.resolveTo('Test');
       prs.addComment(42, 'body').then(data => {
         expect(data).toBe('Test');
         done();
@@ -131,7 +131,7 @@ describe('GithubPullRequests', () => {
         {number: 2, user: {login: 'bar'}, labels: []},
       ];
 
-      githubApi.getPaginated.and.returnValue(Promise.resolve(mockPrs));
+      githubApi.getPaginated.and.resolveTo(mockPrs);
       expect(await prs.fetchAll()).toBe(mockPrs);
     });
 

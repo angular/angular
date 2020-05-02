@@ -39,7 +39,7 @@ describe('GithubTeams', () => {
         {id: 2, slug: 'bar'},
       ];
 
-      githubApi.getPaginated.and.returnValue(Promise.resolve(mockTeams));
+      githubApi.getPaginated.and.resolveTo(mockTeams);
       expect(await teams.fetchAll()).toBe(mockTeams);
     });
 
@@ -55,7 +55,7 @@ describe('GithubTeams', () => {
 
 
     it('should return a promise', () => {
-      githubApi.get.and.callFake(() => Promise.resolve() as Promise<any>);
+      githubApi.get.and.resolveTo();
       const promise = teams.isMemberById('user', [1]);
       expect(promise).toEqual(jasmine.any(Promise));
     });
@@ -71,7 +71,7 @@ describe('GithubTeams', () => {
 
 
     it('should call \'get()\' with the correct pathname', done => {
-      githubApi.get.and.callFake(() => Promise.resolve() as Promise<any>);
+      githubApi.get.and.resolveTo();
       teams.isMemberById('user', [1]).then(() => {
         expect(githubApi.get).toHaveBeenCalledWith('/teams/1/memberships/user');
         done();
@@ -90,7 +90,7 @@ describe('GithubTeams', () => {
 
 
     it('should resolve with false if the membership is not active', done => {
-      githubApi.get.and.callFake(() => Promise.resolve<any>({state: 'pending'}));
+      githubApi.get.and.resolveTo({state: 'pending'});
       teams.isMemberById('user', [1]).then(isMember => {
         expect(isMember).toBe(false);
         expect(githubApi.get).toHaveBeenCalled();
@@ -100,7 +100,7 @@ describe('GithubTeams', () => {
 
 
     it('should resolve with true if the membership is active', done => {
-      githubApi.get.and.callFake(() => Promise.resolve<any>({state: 'active'}));
+      githubApi.get.and.resolveTo({state: 'active'});
       teams.isMemberById('user', [1]).then(isMember => {
         expect(isMember).toBe(true);
         done();
