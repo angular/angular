@@ -51,10 +51,10 @@ describe('BuildVerifier', () => {
   describe('getSignificantFilesChanged', () => {
     it('should return false if none of the fetched files match the given pattern', async () => {
       const fetchFilesSpy = spyOn(prs, 'fetchFiles');
-      fetchFilesSpy.and.callFake(() => Promise.resolve([
+      fetchFilesSpy.and.resolveTo([
         {filename: 'a/b/c', sha: 'a1'},
         {filename: 'd/e/f', sha: 'b2'},
-      ]));
+      ]);
       expect(await bv.getSignificantFilesChanged(777, /^x/)).toEqual(false);
       expect(fetchFilesSpy).toHaveBeenCalledWith(777);
 
@@ -81,37 +81,30 @@ describe('BuildVerifier', () => {
         user: {login: 'username'},
       };
 
-      prsFetchSpy = spyOn(GithubPullRequests.prototype, 'fetch').
-        and.callFake(() => Promise.resolve(mockPrInfo));
-
-      teamsIsMemberBySlugSpy = spyOn(GithubTeams.prototype, 'isMemberBySlug').
-        and.callFake(() => Promise.resolve(true));
+      prsFetchSpy = spyOn(GithubPullRequests.prototype, 'fetch').and.resolveTo(mockPrInfo);
+      teamsIsMemberBySlugSpy = spyOn(GithubTeams.prototype, 'isMemberBySlug').and.resolveTo(true);
     });
 
 
-    it('should return a promise', done => {
+    it('should return a promise', async () => {
       const promise = bv.getPrIsTrusted(pr);
-      promise.then(done);   // Do not complete the test (and release the spies) synchronously
-                            // to avoid running the actual `GithubTeams#isMemberBySlug()`.
+      expect(promise).toBeInstanceOf(Promise);
 
-      expect(promise).toEqual(jasmine.any(Promise));
+      // Do not complete the test (and release the spies) synchronously to avoid running the actual
+      // `GithubTeams#isMemberBySlug()`.
+      await promise;
     });
 
 
-    it('should fetch the corresponding PR', done => {
-      bv.getPrIsTrusted(pr).then(() => {
-        expect(prsFetchSpy).toHaveBeenCalledWith(pr);
-        done();
-      });
+    it('should fetch the corresponding PR', async () => {
+      await bv.getPrIsTrusted(pr);
+      expect(prsFetchSpy).toHaveBeenCalledWith(pr);
     });
 
 
-    it('should fail if fetching the PR errors', done => {
-      prsFetchSpy.and.callFake(() => Promise.reject('Test'));
-      bv.getPrIsTrusted(pr).catch(err => {
-        expect(err).toBe('Test');
-        done();
-      });
+    it('should fail if fetching the PR errors', async () => {
+      prsFetchSpy.and.rejectWith('Test');
+      await expectAsync(bv.getPrIsTrusted(pr)).toBeRejectedWith('Test');
     });
 
 
@@ -120,19 +113,14 @@ describe('BuildVerifier', () => {
       beforeEach(() => mockPrInfo.labels.push({name: 'trusted: pr-label'}));
 
 
-      it('should resolve to true', done => {
-        bv.getPrIsTrusted(pr).then(isTrusted => {
-          expect(isTrusted).toBe(true);
-          done();
-        });
+      it('should resolve to true', async () => {
+        await expectAsync(bv.getPrIsTrusted(pr)).toBeResolvedTo(true);
       });
 
 
-      it('should not try to verify the author\'s membership status', done => {
-        bv.getPrIsTrusted(pr).then(() => {
-          expect(teamsIsMemberBySlugSpy).not.toHaveBeenCalled();
-          done();
-        });
+      it('should not try to verify the author\'s membership status', async () => {
+        await expectAsync(bv.getPrIsTrusted(pr));
+        expect(teamsIsMemberBySlugSpy).not.toHaveBeenCalled();
       });
 
     });
@@ -140,40 +128,27 @@ describe('BuildVerifier', () => {
 
     describe('when the PR does not have the "trusted PR" label', () => {
 
-      it('should verify the PR author\'s membership in the specified teams', done => {
-        bv.getPrIsTrusted(pr).then(() => {
-          expect(teamsIsMemberBySlugSpy).toHaveBeenCalledWith('username', ['team1', 'team2']);
-          done();
-        });
+      it('should verify the PR author\'s membership in the specified teams', async () => {
+        await bv.getPrIsTrusted(pr);
+        expect(teamsIsMemberBySlugSpy).toHaveBeenCalledWith('username', ['team1', 'team2']);
       });
 
 
-      it('should fail if verifying membership errors', done => {
-        teamsIsMemberBySlugSpy.and.callFake(() => Promise.reject('Test'));
-        bv.getPrIsTrusted(pr).catch(err => {
-          expect(err).toBe('Test');
-          done();
-        });
+      it('should fail if verifying membership errors', async () => {
+        teamsIsMemberBySlugSpy.and.rejectWith('Test');
+        await expectAsync(bv.getPrIsTrusted(pr)).toBeRejectedWith('Test');
       });
 
 
-      it('should resolve to true if the PR\'s author is a member', done => {
-        teamsIsMemberBySlugSpy.and.callFake(() => Promise.resolve(true));
-
-        bv.getPrIsTrusted(pr).then(isTrusted => {
-          expect(isTrusted).toBe(true);
-          done();
-        });
+      it('should resolve to true if the PR\'s author is a member', async () => {
+        teamsIsMemberBySlugSpy.and.resolveTo(true);
+        await expectAsync(bv.getPrIsTrusted(pr)).toBeResolvedTo(true);
       });
 
 
-      it('should resolve to false if the PR\'s author is not a member', done => {
-        teamsIsMemberBySlugSpy.and.callFake(() => Promise.resolve(false));
-
-        bv.getPrIsTrusted(pr).then(isTrusted => {
-          expect(isTrusted).toBe(false);
-          done();
-        });
+      it('should resolve to false if the PR\'s author is not a member', async () => {
+        teamsIsMemberBySlugSpy.and.resolveTo(false);
+        await expectAsync(bv.getPrIsTrusted(pr)).toBeResolvedTo(false);
       });
 
     });
