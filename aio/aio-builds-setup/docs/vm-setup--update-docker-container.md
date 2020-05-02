@@ -31,7 +31,7 @@ used for.
 ## Run the script manually
 You may choose to manually run the script, when necessary. Example:
 
-```
+```sh
 update-preview-server.sh \
     /path/to/repo \
     /path/to/localcerts \
@@ -43,10 +43,10 @@ update-preview-server.sh \
 
 ## Run the script automatically
 You may choose to automatically trigger the script, e.g. using a cronjob. For example, the following
-cronjob entry would run the script every hour and update the preview server (assuming the user has
-the necessary permissions):
+cronjob entry would run the script every 30 minutes, update the preview server (if necessary) and
+log its output to `update-preview-server.log` (assuming the user has the necessary permissions):
 
 ```
 # Periodically check for changes and update the preview server (if necessary)
-*/30 *  * * *   /path/to/update-preview-server.sh /path/to/repo /path/to/localcerts /path/to/secrets /path/to/builds /path/to/logs
+*/30 *  * * *   /path/to/update-preview-server.sh /path/to/repo /path/to/localcerts /path/to/secrets /path/to/builds /path/to/logs >> /path/to/update-preview-server.log 2>&1
 ```
