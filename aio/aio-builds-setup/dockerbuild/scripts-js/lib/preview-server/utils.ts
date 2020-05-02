@@ -1,5 +1,4 @@
 import * as express from 'express';
-import {promisify} from 'util';
 import {PreviewServerError} from './preview-error';
 
 /**
@@ -13,7 +12,7 @@ export async function respondWithError(res: express.Response, err: any): Promise
   }
 
   res.status(err.status);
-  await promisify(res.end.bind(res))(err.message);
+  return new Promise(resolve => res.end(err.message, resolve));
 }
 
 /**

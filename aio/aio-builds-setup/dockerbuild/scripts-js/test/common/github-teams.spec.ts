@@ -1,5 +1,5 @@
 import {GithubApi} from '../../lib/common/github-api';
-import {GithubTeams} from '../../lib/common/github-teams';
+import {GithubTeams, Team} from '../../lib/common/github-teams';
 
 // Tests
 describe('GithubTeams', () => {
@@ -33,9 +33,14 @@ describe('GithubTeams', () => {
     });
 
 
-    it('should forward the value returned by \'getPaginated()\'', () => {
-      githubApi.getPaginated.and.returnValue('Test');
-      expect(teams.fetchAll() as any).toBe('Test');
+    it('should forward the value returned by \'getPaginated()\'', async () => {
+      const mockTeams: Team[] = [
+        {id: 1, slug: 'foo'},
+        {id: 2, slug: 'bar'},
+      ];
+
+      githubApi.getPaginated.and.resolveTo(mockTeams);
+      expect(await teams.fetchAll()).toBe(mockTeams);
     });
 
   });
@@ -50,7 +55,7 @@ describe('GithubTeams', () => {
 
 
     it('should return a promise', () => {
-      githubApi.get.and.callFake(() => Promise.resolve());
+      githubApi.get.and.resolveTo();
       const promise = teams.isMemberById('user', [1]);
       expect(promise).toEqual(jasmine.any(Promise));
     });
@@ -66,7 +71,7 @@ describe('GithubTeams', () => {
 
 
     it('should call \'get()\' with the correct pathname', done => {
-      githubApi.get.and.callFake(() => Promise.resolve());
+      githubApi.get.and.resolveTo();
       teams.isMemberById('user', [1]).then(() => {
         expect(githubApi.get).toHaveBeenCalledWith('/teams/1/memberships/user');
         done();
@@ -85,7 +90,7 @@ describe('GithubTeams', () => {
 
 
     it('should resolve with false if the membership is not active', done => {
-      githubApi.get.and.callFake(() => Promise.resolve({state: 'pending'}));
+      githubApi.get.and.resolveTo({state: 'pending'});
       teams.isMemberById('user', [1]).then(isMember => {
         expect(isMember).toBe(false);
         expect(githubApi.get).toHaveBeenCalled();
@@ -95,7 +100,7 @@ describe('GithubTeams', () => {
 
 
     it('should resolve with true if the membership is active', done => {
-      githubApi.get.and.callFake(() => Promise.resolve({state: 'active'}));
+      githubApi.get.and.resolveTo({state: 'active'});
       teams.isMemberById('user', [1]).then(isMember => {
         expect(isMember).toBe(true);
         done();
@@ -104,7 +109,7 @@ describe('GithubTeams', () => {
 
 
     it('should sequentially call \'get()\' until an active membership is found', done => {
-      const trainedResponses: {[pathname: string]: Promise<{state: string}>} = {
+      const trainedResponses: {[pathname: string]: Promise<any>} = {
         '/teams/1/memberships/user': Promise.resolve({state: 'pending'}),
         '/teams/2/memberships/user': Promise.reject(null),
         '/teams/3/memberships/user': Promise.resolve({state: 'active'}),
@@ -125,7 +130,7 @@ describe('GithubTeams', () => {
 
 
     it('should resolve with false if no active membership is found', done => {
-      const trainedResponses: {[pathname: string]: Promise<{state: string}>} = {
+      const trainedResponses: {[pathname: string]: Promise<any>} = {
         '/teams/1/memberships/user': Promise.resolve({state: 'pending'}),
         '/teams/2/memberships/user':  Promise.reject(null),
         '/teams/3/memberships/user': Promise.resolve({state: 'not active'}),

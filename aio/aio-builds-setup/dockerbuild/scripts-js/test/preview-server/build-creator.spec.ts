@@ -443,7 +443,9 @@ describe('BuildCreator', () => {
 
     beforeEach(() => {
       fsAccessCbs = [];
-      fsAccessSpy = spyOn(fs, 'access').and.callFake((_: string, cb: (v?: any) => void) => fsAccessCbs.push(cb));
+      fsAccessSpy = spyOn(fs, 'access').and.callFake(
+        ((_: string, cb: (v?: any) => void) => fsAccessCbs.push(cb)) as unknown as typeof fs.access,
+      );
     });
 
 
@@ -495,7 +497,10 @@ describe('BuildCreator', () => {
       consoleWarnSpy = spyOn(Logger.prototype, 'warn');
       shellChmodSpy = spyOn(shell, 'chmod');
       shellRmSpy = spyOn(shell, 'rm');
-      cpExecSpy = spyOn(cp, 'exec').and.callFake((_: string, cb: (...args: any[]) => void) => cpExecCbs.push(cb));
+      cpExecSpy = spyOn(cp, 'exec').and.callFake(
+        ((_: string, cb: (...args: any[]) => void) =>
+          cpExecCbs.push(cb)) as unknown as typeof cp.exec,
+      );
     });
 
 
@@ -600,7 +605,7 @@ describe('BuildCreator', () => {
     });
 
     beforeEach(() => {
-      shellLsSpy = spyOn(shell, 'ls').and.returnValue([]);
+      shellLsSpy = spyOn(shell, 'ls').and.returnValue([] as unknown as shell.ShellArray);
     });
 
 
