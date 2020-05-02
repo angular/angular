@@ -15,7 +15,7 @@ describe(`nginx`, () => {
   afterEach(() => h.cleanUp());
 
 
-  it('should redirect HTTP to HTTPS', done => {
+  it('should redirect HTTP to HTTPS', async () => {
     const httpHost = `${AIO_NGINX_HOSTNAME}:${AIO_NGINX_PORT_HTTP}`;
     const httpsHost = `${AIO_NGINX_HOSTNAME}:${AIO_NGINX_PORT_HTTPS}`;
     const urlMap = {
@@ -24,16 +24,15 @@ describe(`nginx`, () => {
       [`http://foo.${httpHost}/`]: `https://foo.${httpsHost}/`,
     };
 
-    const verifyRedirection = (httpUrl: string) => h.runCmd(`curl -i ${httpUrl}`).then(result => {
+    const verifyRedirection = async (fromUrl: string, toUrl: string) => {
+      const result = await h.runCmd(`curl -i ${fromUrl}`);
       h.verifyResponse(307)(result);
 
       const headers = result.stdout.split(/(?:\r?\n){2,}/)[0];
-      expect(headers).toContain(`Location: ${urlMap[httpUrl]}`);
-    });
+      expect(headers).toContain(`Location: ${toUrl}`);
+    };
 
-    Promise.
-      all(Object.keys(urlMap).map(verifyRedirection)).
-      then(done);
+    await Promise.all(Object.entries(urlMap).map(urls => verifyRedirection(...urls)));
   });
 
 
@@ -62,15 +61,15 @@ describe(`nginx`, () => {
         });
 
 
-        it('should return /index.html', done => {
+        it('should return /index.html', async () => {
           const origin = `${scheme}://pr${pr}-${shortSha9}.${host}`;
           const bodyRegex = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /index\\.html$`);
 
-          Promise.all([
+          await Promise.all([
             h.runCmd(`curl -iL ${origin}/index.html`).then(h.verifyResponse(200, bodyRegex)),
             h.runCmd(`curl -iL ${origin}/`).then(h.verifyResponse(200, bodyRegex)),
             h.runCmd(`curl -iL ${origin}`).then(h.verifyResponse(200, bodyRegex)),
-          ]).then(done);
+          ]);
         });
 
 
@@ -90,12 +89,11 @@ describe(`nginx`, () => {
         });
 
 
-        it('should return /foo/bar.js', done => {
+        it('should return /foo/bar.js', async () => {
           const bodyRegex = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /foo/bar\\.js$`);
 
-          h.runCmd(`curl -iL ${scheme}://pr${pr}-${shortSha9}.${host}/foo/bar.js`).
-            then(h.verifyResponse(200, bodyRegex)).
-            then(done);
+          await h.runCmd(`curl -iL ${scheme}://pr${pr}-${shortSha9}.${host}/foo/bar.js`).
+            then(h.verifyResponse(200, bodyRegex));
         });
 
 
@@ -111,47 +109,46 @@ describe(`nginx`, () => {
         });
 
 
-        it('should respond with 403 for directories', done => {
-          Promise.all([
+        it('should respond with 403 for directories', async () => {
+          await Promise.all([
             h.runCmd(`curl -iL ${scheme}://pr${pr}-${shortSha9}.${host}/foo/`).then(h.verifyResponse(403)),
             h.runCmd(`curl -iL ${scheme}://pr${pr}-${shortSha9}.${host}/foo`).then(h.verifyResponse(403)),
-          ]).then(done);
+          ]);
         });
 
 
-        it('should respond with 404 for unknown paths to files', done => {
-          h.runCmd(`curl -iL ${scheme}://pr${pr}-${shortSha9}.${host}/foo/baz.css`).
-            then(h.verifyResponse(404)).
-            then(done);
+        it('should respond with 404 for unknown paths to files', async () => {
+          await h.runCmd(`curl -iL ${scheme}://pr${pr}-${shortSha9}.${host}/foo/baz.css`).
+            then(h.verifyResponse(404));
         });
 
 
-        it('should rewrite to \'index.html\' for unknown paths that don\'t look like files', done => {
+        it('should rewrite to \'index.html\' for unknown paths that don\'t look like files', async () => {
           const origin = `${scheme}://pr${pr}-${shortSha9}.${host}`;
           const bodyRegex = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /index\\.html$`);
 
-          Promise.all([
+          await Promise.all([
             h.runCmd(`curl -iL ${origin}/foo/baz`).then(h.verifyResponse(200, bodyRegex)),
             h.runCmd(`curl -iL ${origin}/foo/baz/`).then(h.verifyResponse(200, bodyRegex)),
-          ]).then(done);
+          ]);
         });
 
 
-        it('should respond with 404 for unknown PRs/SHAs', done => {
+        it('should respond with 404 for unknown PRs/SHAs', async () => {
           const otherPr = 54321;
           const otherShortSha = computeShortSha('8'.repeat(40));
 
-          Promise.all([
+          await Promise.all([
             h.runCmd(`curl -iL ${scheme}://pr${pr}9-${shortSha9}.${host}`).then(h.verifyResponse(404)),
             h.runCmd(`curl -iL ${scheme}://pr${otherPr}-${shortSha9}.${host}`).then(h.verifyResponse(404)),
             h.runCmd(`curl -iL ${scheme}://pr${pr}-${shortSha9}9.${host}`).then(h.verifyResponse(404)),
             h.runCmd(`curl -iL ${scheme}://pr${pr}-${otherShortSha}.${host}`).then(h.verifyResponse(404)),
-          ]).then(done);
+          ]);
         });
 
 
-        it('should respond with 404 if the subdomain format is wrong', done => {
-          Promise.all([
+        it('should respond with 404 if the subdomain format is wrong', async () => {
+          await Promise.all([
             h.runCmd(`curl -iL ${scheme}://xpr${pr}-${shortSha9}.${host}`).then(h.verifyResponse(404)),
             h.runCmd(`curl -iL ${scheme}://prx${pr}-${shortSha9}.${host}`).then(h.verifyResponse(404)),
             h.runCmd(`curl -iL ${scheme}://xx${pr}-${shortSha9}.${host}`).then(h.verifyResponse(404)),
@@ -160,26 +157,25 @@ describe(`nginx`, () => {
             h.runCmd(`curl -iL ${scheme}://${pr}-${shortSha9}.${host}`).then(h.verifyResponse(404)),
             h.runCmd(`curl -iL ${scheme}://pr${pr}${shortSha9}.${host}`).then(h.verifyResponse(404)),
             h.runCmd(`curl -iL ${scheme}://pr${pr}_${shortSha9}.${host}`).then(h.verifyResponse(404)),
-          ]).then(done);
+          ]);
         });
 
 
-        it('should reject PRs with leading zeros', done => {
-          h.runCmd(`curl -iL ${scheme}://pr0${pr}-${shortSha9}.${host}`).
-            then(h.verifyResponse(404)).
-            then(done);
+        it('should reject PRs with leading zeros', async () => {
+          await h.runCmd(`curl -iL ${scheme}://pr0${pr}-${shortSha9}.${host}`).
+            then(h.verifyResponse(404));
         });
 
 
-        it('should accept SHAs with leading zeros (but not trim the zeros)', done => {
+        it('should accept SHAs with leading zeros (but not trim the zeros)', async () => {
           const bodyRegex9 = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /index\\.html$`);
           const bodyRegex0 = new RegExp(`^PR: ${pr} | SHA: ${sha0} | File: /index\\.html$`);
 
-          Promise.all([
+          await Promise.all([
             h.runCmd(`curl -iL ${scheme}://pr${pr}-0${shortSha9}.${host}`).then(h.verifyResponse(404)),
             h.runCmd(`curl -iL ${scheme}://pr${pr}-${shortSha9}.${host}`).then(h.verifyResponse(200, bodyRegex9)),
             h.runCmd(`curl -iL ${scheme}://pr${pr}-${shortSha0}.${host}`).then(h.verifyResponse(200, bodyRegex0)),
-          ]).then(done);
+          ]);
         });
 
       });
@@ -231,23 +227,23 @@ describe(`nginx`, () => {
 
     describe(`${host}/health-check`, () => {
 
-      it('should respond with 200', done => {
-        Promise.all([
+      it('should respond with 200', async () => {
+        await Promise.all([
           h.runCmd(`curl -iL ${scheme}://${host}/health-check`).then(h.verifyResponse(200)),
           h.runCmd(`curl -iL ${scheme}://${host}/health-check/`).then(h.verifyResponse(200)),
-        ]).then(done);
+        ]);
       });
 
 
-      it('should respond with 404 if the path does not match exactly', done => {
-        Promise.all([
+      it('should respond with 404 if the path does not match exactly', async () => {
+        await Promise.all([
           h.runCmd(`curl -iL ${scheme}://${host}/health-check/foo`).then(h.verifyResponse(404)),
           h.runCmd(`curl -iL ${scheme}://${host}/health-check-foo`).then(h.verifyResponse(404)),
           h.runCmd(`curl -iL ${scheme}://${host}/health-checknfoo`).then(h.verifyResponse(404)),
           h.runCmd(`curl -iL ${scheme}://${host}/foo/health-check`).then(h.verifyResponse(404)),
           h.runCmd(`curl -iL ${scheme}://${host}/foo-health-check`).then(h.verifyResponse(404)),
           h.runCmd(`curl -iL ${scheme}://${host}/foonhealth-check`).then(h.verifyResponse(404)),
-        ]).then(done);
+        ]);
       });
 
     });
@@ -291,29 +287,28 @@ describe(`nginx`, () => {
 
     describe(`${host}/circle-build`, () => {
 
-      it('should disallow non-POST requests', done => {
+      it('should disallow non-POST requests', async () => {
         const url = `${scheme}://${host}/circle-build`;
 
-        Promise.all([
+        await Promise.all([
           h.runCmd(`curl -iLX GET ${url}`).then(h.verifyResponse(405)),
           h.runCmd(`curl -iLX PUT ${url}`).then(h.verifyResponse(405)),
           h.runCmd(`curl -iLX PATCH ${url}`).then(h.verifyResponse(405)),
           h.runCmd(`curl -iLX DELETE ${url}`).then(h.verifyResponse(405)),
-        ]).then(done);
+        ]);
       });
 
 
-      it('should pass requests through to the preview server', done => {
-        h.runCmd(`curl -iLX POST ${scheme}://${host}/circle-build`).
-          then(h.verifyResponse(400, /Incorrect body content. Expected JSON/)).
-          then(done);
+      it('should pass requests through to the preview server', async () => {
+        await h.runCmd(`curl -iLX POST ${scheme}://${host}/circle-build`).
+          then(h.verifyResponse(400, /Incorrect body content. Expected JSON/));
       });
 
 
-      it('should respond with 404 for unknown paths', done => {
+      it('should respond with 404 for unknown paths', async () => {
         const cmdPrefix = `curl -iLX POST ${scheme}://${host}`;
 
-        Promise.all([
+        await Promise.all([
           h.runCmd(`${cmdPrefix}/foo/circle-build/`).then(h.verifyResponse(404)),
           h.runCmd(`${cmdPrefix}/foo-circle-build/`).then(h.verifyResponse(404)),
           h.runCmd(`${cmdPrefix}/fooncircle-build/`).then(h.verifyResponse(404)),
@@ -322,7 +317,7 @@ describe(`nginx`, () => {
           h.runCmd(`${cmdPrefix}/circle-buildnfoo/`).then(h.verifyResponse(404)),
           h.runCmd(`${cmdPrefix}/circle-build/pr`).then(h.verifyResponse(404)),
           h.runCmd(`${cmdPrefix}/circle-build/42`).then(h.verifyResponse(404)),
-        ]).then(done);
+        ]);
       });
 
     });
@@ -332,38 +327,33 @@ describe(`nginx`, () => {
       const url = `${scheme}://${host}/pr-updated`;
 
 
-      it('should disallow non-POST requests', done => {
-        Promise.all([
+      it('should disallow non-POST requests', async () => {
+        await Promise.all([
           h.runCmd(`curl -iLX GET ${url}`).then(h.verifyResponse(405)),
           h.runCmd(`curl -iLX PUT ${url}`).then(h.verifyResponse(405)),
           h.runCmd(`curl -iLX PATCH ${url}`).then(h.verifyResponse(405)),
           h.runCmd(`curl -iLX DELETE ${url}`).then(h.verifyResponse(405)),
-        ]).then(done);
+        ]);
       });
 
 
-      it('should pass requests through to the preview server', done => {
-        const cmdPrefix = `curl -iLX POST --header "Content-Type: application/json"`;
-
-        const cmd1 = `${cmdPrefix} ${url}`;
-
-        Promise.all([
-          h.runCmd(cmd1).then(h.verifyResponse(400, /Missing or empty 'number' field/)),
-        ]).then(done);
+      it('should pass requests through to the preview server', async () => {
+        await h.runCmd(`curl -iLX POST --header "Content-Type: application/json" ${url}`).
+          then(h.verifyResponse(400, /Missing or empty 'number' field/));
       });
 
 
-      it('should respond with 404 for unknown paths', done => {
+      it('should respond with 404 for unknown paths', async () => {
         const cmdPrefix = `curl -iLX POST ${scheme}://${host}`;
 
-        Promise.all([
+        await Promise.all([
           h.runCmd(`${cmdPrefix}/foo/pr-updated`).then(h.verifyResponse(404)),
           h.runCmd(`${cmdPrefix}/foo-pr-updated`).then(h.verifyResponse(404)),
           h.runCmd(`${cmdPrefix}/foonpr-updated`).then(h.verifyResponse(404)),
           h.runCmd(`${cmdPrefix}/pr-updated/foo`).then(h.verifyResponse(404)),
           h.runCmd(`${cmdPrefix}/pr-updated-foo`).then(h.verifyResponse(404)),
           h.runCmd(`${cmdPrefix}/pr-updatednfoo`).then(h.verifyResponse(404)),
-        ]).then(done);
+        ]);
       });
 
     });
@@ -374,7 +364,7 @@ describe(`nginx`, () => {
       beforeEach(() => {
         ['index.html', 'foo.js', 'foo/index.html'].forEach(relFilePath => {
           const absFilePath = path.join(AIO_BUILDS_DIR, relFilePath);
-          return h.writeFile(absFilePath, {content: `File: /${relFilePath}`});
+          h.writeFile(absFilePath, {content: `File: /${relFilePath}`});
         });
       });
 

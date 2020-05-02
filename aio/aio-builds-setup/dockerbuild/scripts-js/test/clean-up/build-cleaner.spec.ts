@@ -76,22 +76,18 @@ describe('BuildCleaner', () => {
     let cleanerRemoveUnnecessaryDownloadsSpy: jasmine.Spy;
 
     beforeEach(() => {
-      cleanerGetExistingBuildNumbersSpy = spyOn(cleaner, 'getExistingBuildNumbers')
-        .and.callFake(() => Promise.resolve(EXISTING_BUILDS));
-      cleanerGetOpenPrNumbersSpy = spyOn(cleaner, 'getOpenPrNumbers')
-        .and.callFake(() => Promise.resolve(OPEN_PRS));
-      cleanerGetExistingDownloadsSpy = spyOn(cleaner, 'getExistingDownloads')
-        .and.callFake(() => Promise.resolve(EXISTING_DOWNLOADS));
+      cleanerGetExistingBuildNumbersSpy = spyOn(cleaner, 'getExistingBuildNumbers').and.resolveTo(EXISTING_BUILDS);
+      cleanerGetOpenPrNumbersSpy = spyOn(cleaner, 'getOpenPrNumbers').and.resolveTo(OPEN_PRS);
+      cleanerGetExistingDownloadsSpy = spyOn(cleaner, 'getExistingDownloads').and.resolveTo(EXISTING_DOWNLOADS);
 
       cleanerRemoveUnnecessaryBuildsSpy = spyOn(cleaner, 'removeUnnecessaryBuilds');
       cleanerRemoveUnnecessaryDownloadsSpy = spyOn(cleaner, 'removeUnnecessaryDownloads');
-
     });
 
 
     it('should return a promise', async () => {
       const promise = cleaner.cleanUp();
-      expect(promise).toEqual(jasmine.any(Promise));
+      expect(promise).toBeInstanceOf(Promise);
 
       // Do not complete the test and release the spies synchronously, to avoid running the actual implementations.
       await promise;
@@ -174,7 +170,7 @@ describe('BuildCleaner', () => {
 
 
     it('should return a promise', () => {
-      expect(promise).toEqual(jasmine.any(Promise));
+      expect(promise).toBeInstanceOf(Promise);
     });
 
 
@@ -184,43 +180,27 @@ describe('BuildCleaner', () => {
     });
 
 
-    it('should reject if an error occurs while getting the files', done => {
-      promise.catch(err => {
-        expect(err).toBe('Test');
-        done();
-      });
-
+    it('should reject if an error occurs while getting the files', async () => {
       readdirCb('Test');
+      await expectAsync(promise).toBeRejectedWith('Test');
     });
 
 
-    it('should resolve with the returned files (as numbers)', done => {
-      promise.then(result => {
-        expect(result).toEqual([12, 34, 56]);
-        done();
-      });
-
+    it('should resolve with the returned files (as numbers)', async () => {
       readdirCb(null, ['12', '34', '56']);
+      await expectAsync(promise).toBeResolvedTo([12, 34, 56]);
     });
 
 
-    it('should remove `HIDDEN_DIR_PREFIX` from the filenames', done => {
-      promise.then(result => {
-        expect(result).toEqual([12, 34, 56]);
-        done();
-      });
-
+    it('should remove `HIDDEN_DIR_PREFIX` from the filenames', async () => {
       readdirCb(null, [`${HIDDEN_DIR_PREFIX}12`, '34', `${HIDDEN_DIR_PREFIX}56`]);
+      await expectAsync(promise).toBeResolvedTo([12, 34, 56]);
     });
 
 
-    it('should ignore files with non-numeric (or zero) names', done => {
-      promise.then(result => {
-        expect(result).toEqual([12, 34, 56]);
-        done();
-      });
-
+    it('should ignore files with non-numeric (or zero) names', async () => {
       readdirCb(null, ['12', 'foo', '34', 'bar', '56', '000']);
+      await expectAsync(promise).toBeResolvedTo([12, 34, 56]);
     });
 
   });
@@ -240,7 +220,7 @@ describe('BuildCleaner', () => {
 
 
     it('should return a promise', () => {
-      expect(promise).toEqual(jasmine.any(Promise));
+      expect(promise).toBeInstanceOf(Promise);
     });
 
 
@@ -249,23 +229,15 @@ describe('BuildCleaner', () => {
     });
 
 
-    it('should reject if an error occurs while fetching PRs', done => {
-      promise.catch(err => {
-        expect(err).toBe('Test');
-        done();
-      });
-
+    it('should reject if an error occurs while fetching PRs', async () => {
       prDeferred.reject('Test');
+      await expectAsync(promise).toBeRejectedWith('Test');
     });
 
 
-    it('should resolve with the numbers of the fetched PRs', done => {
-      promise.then(prNumbers => {
-        expect(prNumbers).toEqual([1, 2, 3]);
-        done();
-      });
-
+    it('should resolve with the numbers of the fetched PRs', async () => {
       prDeferred.resolve([{id: 0, number: 1}, {id: 1, number: 2}, {id: 2, number: 3}]);
+      await expectAsync(promise).toBeResolvedTo([1, 2, 3]);
     });
 
   });
@@ -285,7 +257,7 @@ describe('BuildCleaner', () => {
 
 
     it('should return a promise', () => {
-      expect(promise).toEqual(jasmine.any(Promise));
+      expect(promise).toBeInstanceOf(Promise);
     });
 
 
@@ -295,33 +267,21 @@ describe('BuildCleaner', () => {
     });
 
 
-    it('should reject if an error occurs while getting the files', done => {
-      promise.catch(err => {
-        expect(err).toBe('Test');
-        done();
-      });
-
+    it('should reject if an error occurs while getting the files', async () => {
       readdirCb('Test');
+      await expectAsync(promise).toBeRejectedWith('Test');
     });
 
 
-    it('should resolve with the returned file names', done => {
-      promise.then(result => {
-        expect(result).toEqual(EXISTING_DOWNLOADS);
-        done();
-      });
-
+    it('should resolve with the returned file names', async () => {
       readdirCb(null, EXISTING_DOWNLOADS);
+      await expectAsync(promise).toBeResolvedTo(EXISTING_DOWNLOADS);
     });
 
 
-    it('should ignore files that do not match the artifactPath', done => {
-      promise.then(result => {
-        expect(result).toEqual(['10-ABCDEF-build.zip', '30-FFFFFFF-build.zip']);
-        done();
-      });
-
+    it('should ignore files that do not match the artifactPath', async () => {
       readdirCb(null, ['10-ABCDEF-build.zip', '20-AAAAAAA-otherfile.zip', '30-FFFFFFF-build.zip']);
+      await expectAsync(promise).toBeResolvedTo(['10-ABCDEF-build.zip', '30-FFFFFFF-build.zip']);
     });
 
   });
@@ -339,7 +299,7 @@ describe('BuildCleaner', () => {
     });
 
 
-    it('should test if the directory exists (and return if is does not)', () => {
+    it('should test if the directory exists (and return if it does not)', () => {
       shellTestSpy.and.returnValue(false);
       cleaner.removeDir('/foo/bar');
 
@@ -356,22 +316,19 @@ describe('BuildCleaner', () => {
 
 
     it('should make the directory and its content writable before removing', () => {
-      shellRmSpy.and.callFake(() => expect(shellChmodSpy).toHaveBeenCalledWith('-R', 'a+w', '/foo/bar'));
       cleaner.removeDir('/foo/bar');
 
+      expect(shellChmodSpy).toHaveBeenCalledBefore(shellRmSpy);
+      expect(shellChmodSpy).toHaveBeenCalledWith('-R', 'a+w', '/foo/bar');
       expect(shellRmSpy).toHaveBeenCalled();
     });
 
 
     it('should catch errors and log them', () => {
-      shellRmSpy.and.callFake(() => {
-        // tslint:disable-next-line: no-string-throw
-        throw 'Test';
-      });
-
+      shellRmSpy.and.throwError('Test');
       cleaner.removeDir('/foo/bar');
 
-      expect(loggerErrorSpy).toHaveBeenCalledWith('ERROR: Unable to remove \'/foo/bar\' due to:', 'Test');
+      expect(loggerErrorSpy).toHaveBeenCalledWith('ERROR: Unable to remove \'/foo/bar\' due to:', new Error('Test'));
     });
 
   });
@@ -424,7 +381,7 @@ describe('BuildCleaner', () => {
       expect(cleanerRemoveDirSpy).toHaveBeenCalledTimes(0);
       cleanerRemoveDirSpy.calls.reset();
 
-      (cleaner as any).removeUnnecessaryBuilds([1, 2, 3, 4], []);
+      cleaner.removeUnnecessaryBuilds([1, 2, 3, 4], []);
       expect(cleanerRemoveDirSpy).toHaveBeenCalledTimes(8);
       expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize('/foo/bar/1'));
       expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize('/foo/bar/2'));

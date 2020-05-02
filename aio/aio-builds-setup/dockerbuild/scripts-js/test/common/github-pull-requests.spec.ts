@@ -53,21 +53,15 @@ describe('GithubPullRequests', () => {
     });
 
 
-    it('should reject if the request fails', done => {
-      githubApi.post.and.callFake(() => Promise.reject('Test'));
-      prs.addComment(42, 'body').catch(err => {
-        expect(err).toBe('Test');
-        done();
-      });
+    it('should reject if the request fails', async () => {
+      githubApi.post.and.rejectWith('Test');
+      await expectAsync(prs.addComment(42, 'body')).toBeRejectedWith('Test');
     });
 
 
-    it('should resolve with the data from the Github POST', done => {
+    it('should resolve with the data from the Github POST', async () => {
       githubApi.post.and.resolveTo('Test');
-      prs.addComment(42, 'body').then(data => {
-        expect(data).toBe('Test');
-        done();
-      });
+      await expectAsync(prs.addComment(42, 'body')).toBeResolvedTo('Test');
     });
 
   });
@@ -87,13 +81,11 @@ describe('GithubPullRequests', () => {
     });
 
 
-    it('should resolve with the data returned from GitHub', done => {
+    it('should resolve with the data returned from GitHub', async () => {
       const expected: any = {number: 42};
-      githubApi.get.and.callFake(() => Promise.resolve(expected));
-      prs.fetch(42).then(data => {
-        expect(data).toEqual(expected);
-        done();
-      });
+      githubApi.get.and.resolveTo(expected);
+
+      await expectAsync(prs.fetch(42)).toBeResolvedTo(expected);
     });
 
   });
@@ -152,13 +144,11 @@ describe('GithubPullRequests', () => {
     });
 
 
-    it('should resolve with the data returned from GitHub', done => {
+    it('should resolve with the data returned from GitHub', async () => {
       const expected: any = [{sha: 'ABCDE', filename: 'a/b/c'}, {sha: '12345', filename: 'x/y/z'}];
-      githubApi.getPaginated.and.callFake(() => Promise.resolve(expected));
-      prs.fetchFiles(42).then(data => {
-        expect(data).toEqual(expected);
-        done();
-      });
+      githubApi.getPaginated.and.resolveTo(expected);
+
+      await expectAsync(prs.fetchFiles(42)).toBeResolvedTo(expected);
     });
 
   });
