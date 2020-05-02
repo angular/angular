@@ -8,7 +8,7 @@ This guide explains how to specify metadata and apply available compiler options
 
 <div class="alert is-helpful">
 
-  <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">Watch compiler author Tobias Bosch explain the Angular compiler</a> at AngularConnect 2016.
+  <a href="https://www.youtube.com/watch?v=anphffaCZrQ">Watch Alex Rickabaugh explain the Angular compiler</a> at AngularConnect 2019.
 
 </div>
 
@@ -43,32 +43,12 @@ Here are some reasons you might want to use AOT.
 
 Angular offers two ways to compile your application:
 
-* **_Just-in-Time_ (JIT)**, which compiles your app in the browser at runtime.
-* **_Ahead-of-Time_ (AOT)**, which compiles your app at build time.
+* **_Just-in-Time_ (JIT)**, which compiles your app in the browser at runtime. This was the default until Angular 8.
+* **_Ahead-of-Time_ (AOT)**, which compiles your app and libraries at build time. This is the default since Angular 9.
 
-JIT compilation is the default when you run the [`ng build`](cli/build) (build only) or [`ng serve`](cli/serve)  (build and serve locally) CLI commands:
-
-<code-example language="sh" class="code-shell">
-  ng build
-  ng serve
-</code-example>
-
-{@a compile}
-
-For AOT compilation, include the `--aot` option with the `ng build` or `ng serve` command:
-
-<code-example language="sh" class="code-shell">
-  ng build --aot
-  ng serve --aot
-</code-example>
-
-<div class="alert is-helpful">
-
-The `ng build` command with the `--prod` meta-flag (`ng build --prod`) compiles with AOT by default.
+When you run the [`ng build`](cli/build) (build only) or [`ng serve`](cli/serve) (build and serve locally) CLI commands, the type of compilation (JIT or AOT) depends on the value of the `aot` property in your build configuration specified in `angular.json`. By default, `aot` is set to `true` for new CLI apps.
 
 See the [CLI command reference](cli) and [Building and serving Angular apps](guide/build) for more information.
-
-</div>
 
 ## How AOT works
 
