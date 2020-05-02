@@ -3310,14 +3310,26 @@ AngularJS를 보는 일은 이것이 마지막입니다!
 지금까지는 고마웠지만 이제 AngularJS를 놓아줍시다.
 
 
+<!--
 ## Appendix: Upgrading PhoneCat Tests
+-->
+## 부록: PhoneCat 테스트 업그레이드하기
 
+<!--
 Tests can not only be retained through an upgrade process, but they can also be
 used as a valuable safety measure when ensuring that the application does not
 break during the upgrade. E2E tests are especially useful for this purpose.
+-->
+AngularJS 앱을 Angular로 업그레이드할 때 테스트 코드는 업그레이드하지 않아도 앱 실행에 영향을 주지 않지만, 애플리케이션이 제대로 동작하는 것을 계속 유지하려면 테스트 코드도 함께 업그레이드 하는 것이 좋습니다.
+E2E 테스트인 경우는 특히 그렇습니다.
 
+
+<!--
 ### E2E Tests
+-->
+### E2E 테스트
 
+<!--
 The PhoneCat project has both E2E Protractor tests and some Karma unit tests in it.
 Of these two, E2E tests can be dealt with much more easily: By definition,
 E2E tests access the application from the *outside* by interacting with
@@ -3332,25 +3344,51 @@ working. But when you change the bootstrap to that of a Hybrid app,
 you must make a few changes.
 
 Update the `protractor-conf.js` to sync with hybrid apps:
+-->
+우리가 다루고 있는 PhoneCat 프로젝트에는 E2E Protractor 테스트와 Karma 유닛 테스트가 모두 구현되어 있습니다.
+그리고 둘 중에서는 E2E 테스트가 좀 더 다루기 쉽습니다.
+E2E 테스트는 애플리케이션 *밖에서* UI 엘리먼트를 조작하며 앱이 어떻게 표시되는지 검사하는 용도로 설계되었습니다.
+그래서 E2E 테스트는 애플리케이션 내부 구조와는 직접적인 관계가 없습니다.
+그렇기 때문에 오랜 시간을 들여서 프로젝트를 업그레이드 하더라도 이 변경사항에 맞게 E2E 테스트 스윗을 수정하는 것은 그리 복잡하지 않습니다.
+애플리케이션의 변경사항과 관계없이 사용자의 입장에서만 조작하면 되기 때문입니다.
+
+E2E 테스트 코드는 TypeScript를 도입한다고 해서 크게 달라지지 않지만 하이브리드 앱을 부트스트랩하는 구조가 변경되면 수정해야할 내용이 조금 있습니다.
+
+하디브리드 앱에 맞게 `protractor-conf.js` 파일을 다음과 같이 수정합니다:
+
 
 <code-example format="">
   ng12Hybrid: true
 </code-example>
 
+<!--
 When you start to upgrade components and their templates to Angular, you'll make more changes
 because the E2E tests have matchers that are specific to AngularJS.
 For PhoneCat you need to make the following changes in order to make things work with Angular:
+-->
+컴포넌트를 업그레이드하면서 템플릿을 변경하게 되면 E2E 테스트 코드에 수정해야 하는 내용은 좀 더 많아집니다.
+AngularJS에서 사용하던 매처를 사용하기 때문입니다.
+그래서 PhoneCat 프로젝트를 Angular 버전으로 E2E 테스트하려면 다음과 같이 수정해야 합니다:
 
 <table>
   <tr>
     <th>
+      <!--
       Previous code
+      -->
+      수정 전
     </th>
     <th>
+      <!--
       New code
+      -->
+      수정 후
     </th>
     <th>
+      <!--
       Notes
+      -->
+      설명
     </th>
   </tr>
   <tr>
@@ -3366,7 +3404,10 @@ For PhoneCat you need to make the following changes in order to make things work
     </td>
     <td>
 
+      <!--
       The repeater matcher relies on AngularJS `ng-repeat`
+      -->
+      이전에는 AngularJS `ng-repeat`에 해당하는 매처를 사용했습니다.
 
     </td>
   </tr>
@@ -3384,7 +3425,10 @@ For PhoneCat you need to make the following changes in order to make things work
 
     <td>
 
+      <!--
       The repeater matcher relies on AngularJS `ng-repeat`
+      -->
+      이전에는 AngularJS `ng-repeat`에 해당하는 매처를 사용했습니다.
 
     </td>
   </tr>
@@ -3401,7 +3445,10 @@ For PhoneCat you need to make the following changes in order to make things work
     </td>
     <td>
 
+      <!--
       The model matcher relies on AngularJS `ng-model`
+      -->
+      이전에는 AngularJS `ng-model`에 해당하는 매처를 사용했습니다.
 
     </td>
   </tr>
@@ -3418,7 +3465,10 @@ For PhoneCat you need to make the following changes in order to make things work
     </td>
     <td>
 
+      <!--
       The model matcher relies on AngularJS `ng-model`
+      -->
+      이전에는 AngularJS `ng-model`에 해당하는 매처를 사용했습니다.
 
     </td>
   </tr>
@@ -3435,12 +3485,16 @@ For PhoneCat you need to make the following changes in order to make things work
     </td>
     <td>
 
+      <!--
       The binding matcher relies on AngularJS data binding
+      -->
+      이전에는 AngularJS 데이터 바인딩에 해당하는 매처를 사용했습니다.
 
     </td>
   </tr>
 </table>
 
+<!--
 When the bootstrap method is switched from that of `UpgradeModule` to
 pure Angular, AngularJS ceases to exist on the page completely.
 At this point, you need to tell Protractor that it should not be looking for
@@ -3448,24 +3502,38 @@ an AngularJS app anymore, but instead it should find *Angular apps* from
 the page.
 
 Replace the `ng12Hybrid` previously added with the following in `protractor-conf.js`:
+-->
+`UpgradeModule`를 사용하던 부트스트랩 메소드를 Angular 버전으로 바꾸면 이제 화면에 AngularJS는 존재하지 않습니다.
+그래서 Protractor도 AngularJS 앱 대신 Angular 앱을 탐색해야 합니다.
+
+이전에 수정했던 `protractor-conf.js` 파일에 다음 내용을 추가합니다:
 
 <code-example format="">
   useAllAngular2AppRoots: true,
 </code-example>
 
+<!--
 Also, there are a couple of Protractor API calls in the PhoneCat test code that
 are using the AngularJS `$location` service under the hood. As that
 service is no longer present after the upgrade, replace those calls with ones
 that use WebDriver's generic URL APIs instead. The first of these is
 the redirection spec:
+-->
+그리고 아직까지는 PhoneCat 프로젝트 테스트 코드에 AngularJS `$location` 서비스를 사용하는 부분이 있습니다.
+애플리케이션을 업그레이드한 후에는 이 서비스도 사용하지 않으며, 이제 WebDriver가 제공하는 URL API를 사용해야 합니다.
+리다이렉션을 테스트하는 코드는 다음과 같이 수정합니다:
 
 <code-example path="upgrade-phonecat-3-final/e2e-spec.ts" region="redirect" header="e2e-tests/scenarios.ts">
 </code-example>
 
+<!--
 And the second is the phone links spec:
+-->
+그리고 스마트폰 링크를 테스트하는 코드는 다음과 같이 수정합니다:
 
 <code-example path="upgrade-phonecat-3-final/e2e-spec.ts" region="links" header="e2e-tests/scenarios.ts">
 </code-example>
+
 
 ### Unit Tests
 
