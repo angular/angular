@@ -3,24 +3,17 @@
 
 ## Install docker
 
-_Debian (jessie):_
-- `sudo apt-get update`
-- `sudo apt-get install -y apt-transport-https ca-certificates curl git software-properties-common`
-- `curl -fsSL https://apt.dockerproject.org/gpg | sudo apt-key add -`
-- `apt-key fingerprint 58118E89F3A912897C070ADBF76221572C52609D`
-- `sudo add-apt-repository "deb https://apt.dockerproject.org/repo/ debian-$(lsb_release -cs) main"`
-- `sudo apt-get update`
-- `sudo apt-get -y install docker-engine`
+Official installation instructions: https://docs.docker.com/engine/install
+Example:
 
-_Ubuntu (16.04):_
+_Debian (buster):_
 - `sudo apt-get update`
-- `sudo apt-get install -y curl git linux-image-extra-$(uname -r) linux-image-extra-virtual`
-- `sudo apt-get install -y apt-transport-https ca-certificates`
-- `curl -fsSL https://yum.dockerproject.org/gpg | sudo apt-key add -`
-- `apt-key fingerprint 58118E89F3A912897C070ADBF76221572C52609D`
-- `sudo add-apt-repository "deb https://apt.dockerproject.org/repo/ ubuntu-$(lsb_release -cs) main"`
+- `sudo apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common`
+- `curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -`
+- `sudo apt-key fingerprint 0EBFCD88`
+- `sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"`
 - `sudo apt-get update`
-- `sudo apt-get -y install docker-engine`
+- `sudo apt-get -y install docker-ce docker-ce-cli containerd.io`
 
 
 ## Start the docker
