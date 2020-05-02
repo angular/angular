@@ -199,7 +199,7 @@ describe('preview-server', () => {
       expect({ prNum: PrNums.TRUST_CHECK_UNTRUSTED, isPublic: false }).toExistAsABuild();
     });
 
-    [true].forEach(isPublic => {
+    [true, false].forEach(isPublic => {
       const build = isPublic ? BuildNums.TRUST_CHECK_ACTIVE_TRUSTED_USER : BuildNums.TRUST_CHECK_UNTRUSTED;
       const prNum = isPublic ? PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER : PrNums.TRUST_CHECK_UNTRUSTED;
       const label = isPublic ? 'public' : 'non-public';
