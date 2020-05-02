@@ -101,7 +101,7 @@ class Helper {
   }
 
   public runForAllSupportedSchemes(suiteFactory: TestSuiteFactory): void {
-    Object.keys(this.portPerScheme).forEach(scheme => suiteFactory(scheme, this.portPerScheme[scheme]));
+    Object.entries(this.portPerScheme).forEach(([scheme, port]) => suiteFactory(scheme, port));
   }
 
   public verifyResponse(status: number, regex: string | RegExp = /^/): VerifyCmdResultFn {
