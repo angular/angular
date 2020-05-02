@@ -130,52 +130,32 @@ describe('BuildCleaner', () => {
 
 
     it('should reject if \'getOpenPrNumbers()\' rejects', async () => {
-      try {
-        cleanerGetOpenPrNumbersSpy.and.callFake(() => Promise.reject('Test'));
-        await cleaner.cleanUp();
-      } catch (err) {
-        expect(err).toBe('Test');
-      }
+      cleanerGetOpenPrNumbersSpy.and.rejectWith('Test');
+      await expectAsync(cleaner.cleanUp()).toBeRejectedWith('Test');
     });
 
 
     it('should reject if \'getExistingBuildNumbers()\' rejects', async () => {
-      try {
-        cleanerGetExistingBuildNumbersSpy.and.callFake(() => Promise.reject('Test'));
-        await cleaner.cleanUp();
-      } catch (err) {
-        expect(err).toBe('Test');
-      }
+      cleanerGetExistingBuildNumbersSpy.and.rejectWith('Test');
+      await expectAsync(cleaner.cleanUp()).toBeRejectedWith('Test');
     });
 
 
     it('should reject if \'getExistingDownloads()\' rejects', async () => {
-      try {
-        cleanerGetExistingDownloadsSpy.and.callFake(() => Promise.reject('Test'));
-        await cleaner.cleanUp();
-      } catch (err) {
-        expect(err).toBe('Test');
-      }
+      cleanerGetExistingDownloadsSpy.and.rejectWith('Test');
+      await expectAsync(cleaner.cleanUp()).toBeRejectedWith('Test');
     });
 
 
     it('should reject if \'removeUnnecessaryBuilds()\' rejects', async () => {
-      try {
-        cleanerRemoveUnnecessaryBuildsSpy.and.callFake(() => Promise.reject('Test'));
-        await cleaner.cleanUp();
-      } catch (err) {
-        expect(err).toBe('Test');
-      }
+      cleanerRemoveUnnecessaryBuildsSpy.and.rejectWith('Test');
+      await expectAsync(cleaner.cleanUp()).toBeRejectedWith('Test');
     });
 
 
     it('should reject if \'removeUnnecessaryDownloads()\' rejects', async () => {
-      try {
-        cleanerRemoveUnnecessaryDownloadsSpy.and.callFake(() => Promise.reject('Test'));
-        await cleaner.cleanUp();
-      } catch (err) {
-        expect(err).toBe('Test');
-      }
+      cleanerRemoveUnnecessaryDownloadsSpy.and.rejectWith('Test');
+      await expectAsync(cleaner.cleanUp()).toBeRejectedWith('Test');
     });
 
   });
