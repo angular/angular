@@ -51,7 +51,10 @@ describe('BuildVerifier', () => {
   describe('getSignificantFilesChanged', () => {
     it('should return false if none of the fetched files match the given pattern', async () => {
       const fetchFilesSpy = spyOn(prs, 'fetchFiles');
-      fetchFilesSpy.and.callFake(() => Promise.resolve([{filename: 'a/b/c'}, {filename: 'd/e/f'}]));
+      fetchFilesSpy.and.callFake(() => Promise.resolve([
+        {filename: 'a/b/c', sha: 'a1'},
+        {filename: 'd/e/f', sha: 'b2'},
+      ]));
       expect(await bv.getSignificantFilesChanged(777, /^x/)).toEqual(false);
       expect(fetchFilesSpy).toHaveBeenCalledWith(777);
 

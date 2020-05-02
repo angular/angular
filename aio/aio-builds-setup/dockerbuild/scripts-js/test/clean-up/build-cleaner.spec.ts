@@ -187,7 +187,9 @@ describe('BuildCleaner', () => {
     let promise: Promise<number[]>;
 
     beforeEach(() => {
-      fsReaddirSpy = spyOn(fs, 'readdir').and.callFake((_: string, cb: typeof readdirCb) => readdirCb = cb);
+      fsReaddirSpy = spyOn(fs, 'readdir').and.callFake(
+        ((_: string, cb: typeof readdirCb) => readdirCb = cb) as unknown as typeof fs.readdir,
+      );
       promise = cleaner.getExistingBuildNumbers();
     });
 
@@ -304,7 +306,9 @@ describe('BuildCleaner', () => {
     let promise: Promise<string[]>;
 
     beforeEach(() => {
-      fsReaddirSpy = spyOn(fs, 'readdir').and.callFake((_: string, cb: typeof readdirCb) => readdirCb = cb);
+      fsReaddirSpy = spyOn(fs, 'readdir').and.callFake(
+        ((_: string, cb: typeof readdirCb) => readdirCb = cb) as unknown as typeof fs.readdir,
+      );
       promise = cleaner.getExistingDownloads();
     });
 

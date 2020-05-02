@@ -38,12 +38,13 @@ describe('BuildRetriever', () => {
 
     WRITEFILE_RESULT = undefined;
     writeFileSpy = spyOn(fs, 'writeFile').and.callFake(
-      (_path: string, _buffer: Buffer, callback: (err?: any) => {}) => callback(WRITEFILE_RESULT),
+      ((_path: string, _buffer: Buffer, callback: fs.NoParamCallback) =>
+        callback(WRITEFILE_RESULT)) as typeof fs.writeFile,
     );
 
     EXISTS_RESULT = false;
     existsSpy = spyOn(fs, 'exists').and.callFake(
-      (_path: string, callback: (exists: boolean) => {}) => callback(EXISTS_RESULT),
+      ((_path, callback) => callback(EXISTS_RESULT)) as typeof fs.exists,
     );
   });
 

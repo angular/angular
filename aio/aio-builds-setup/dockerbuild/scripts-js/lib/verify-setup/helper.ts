@@ -93,7 +93,7 @@ class Helper {
     return fs.readFileSync(absFilePath, 'utf8');
   }
 
-  public runCmd(cmd: string, opts: cp.ExecFileOptions = {}): Promise<CmdResult> {
+  public runCmd(cmd: string, opts: cp.ExecOptions = {}): Promise<CmdResult> {
     return new Promise(resolve => {
       const proc = cp.exec(cmd, opts, (err, stdout, stderr) => resolve({success: !err, err, stdout, stderr}));
       this.createCleanUpFn(() => proc.kill());

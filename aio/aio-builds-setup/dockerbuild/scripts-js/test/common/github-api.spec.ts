@@ -217,7 +217,7 @@ describe('GithubApi', () => {
 
   describe('request()', () => {
     it('should return a promise', () => {
-      nock('https://api.github.com').get('').reply(200);
+      nock('https://api.github.com').get('/').reply(200);
       expect((api as any).request()).toEqual(jasmine.any(Promise));
     });
 
