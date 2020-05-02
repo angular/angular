@@ -15,7 +15,6 @@ const EXISTING_DOWNLOADS = [
   '20-1234567-build.zip',
 ];
 const OPEN_PRS = [10, 40];
-const ANY_DATE = jasmine.any(String);
 
 // Tests
 describe('BuildCleaner', () => {
@@ -267,14 +266,6 @@ describe('BuildCleaner', () => {
       });
 
       prDeferred.resolve([{id: 0, number: 1}, {id: 1, number: 2}, {id: 2, number: 3}]);
-    });
-
-
-    it('should log the number of open PRs', () => {
-      promise.then(prNumbers => {
-        expect(loggerLogSpy).toHaveBeenCalledWith(
-          ANY_DATE, 'BuildCleaner:        ', `Open pull requests: ${prNumbers}`);
-      });
     });
 
   });
