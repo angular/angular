@@ -1,10 +1,12 @@
 # VM setup - Create docker image
 
 
-## Install node and yarn
-- Install [nvm](https://github.com/creationix/nvm#installation).
-- Install node.js: `nvm install 8`
-- Install yarn: `npm -g install yarn`
+## Install git, Node.js and yarn
+- `sudo apt-get update`
+- `sudo apt-get install -y git`
+- Install [nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+- Install Node.js: `nvm install 12`
+- Install yarn: `npm install --global yarn`
 
 
 ## Checkout repository
@@ -26,7 +28,7 @@ The following commands would create a docker image from GitHub repo `foo/bar` to
 
 - `git clone https://github.com/foo/bar.git foobar`
 - Run:
-  ```
+  ```sh
   ./foobar/aio-builds-setup/scripts/create-image.sh foobar-builds \
     --build-arg AIO_REPO_SLUG=foo/bar \
     --build-arg AIO_DOMAIN_NAME=foobar-builds.io \
