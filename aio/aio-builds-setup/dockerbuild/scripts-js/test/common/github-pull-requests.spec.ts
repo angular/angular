@@ -1,6 +1,6 @@
 // Imports
 import {GithubApi} from '../../lib/common/github-api';
-import {GithubPullRequests} from '../../lib/common/github-pull-requests';
+import {GithubPullRequests, PullRequest} from '../../lib/common/github-pull-requests';
 
 // Tests
 describe('GithubPullRequests', () => {
@@ -47,7 +47,7 @@ describe('GithubPullRequests', () => {
 
 
     it('should make a POST request to Github with the correct pathname, params and data', () => {
-      githubApi.post.and.callFake(() => Promise.resolve());
+      githubApi.post.and.resolveTo();
       prs.addComment(42, 'body');
       expect(githubApi.post).toHaveBeenCalledWith('/repos/foo/bar/issues/42/comments', null, {body: 'body'});
     });
@@ -63,7 +63,7 @@ describe('GithubPullRequests', () => {
 
 
     it('should resolve with the data from the Github POST', done => {
-      githubApi.post.and.callFake(() => Promise.resolve('Test'));
+      githubApi.post.and.resolveTo('Test');
       prs.addComment(42, 'body').then(data => {
         expect(data).toBe('Test');
         done();
@@ -125,9 +125,14 @@ describe('GithubPullRequests', () => {
     });
 
 
-    it('should forward the value returned by \'getPaginated()\'', () => {
-      githubApi.getPaginated.and.returnValue('Test');
-      expect(prs.fetchAll() as any).toBe('Test');
+    it('should forward the value returned by \'getPaginated()\'', async () => {
+      const mockPrs: PullRequest[] = [
+        {number: 1, user: {login: 'foo'}, labels: []},
+        {number: 2, user: {login: 'bar'}, labels: []},
+      ];
+
+      githubApi.getPaginated.and.resolveTo(mockPrs);
+      expect(await prs.fetchAll()).toBe(mockPrs);
     });
 
   });

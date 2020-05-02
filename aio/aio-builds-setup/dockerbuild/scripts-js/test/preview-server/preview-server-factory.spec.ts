@@ -1,5 +1,4 @@
 // Imports
-import * as express from 'express';
 import * as http from 'http';
 import * as supertest from 'supertest';
 import {CircleCiApi} from '../../lib/common/circle-ci-api';
@@ -134,7 +133,7 @@ describe('PreviewServerFactory', () => {
       const buildCreator = jasmine.any(BuildCreator);
       expect(usfCreateMiddlewareSpy).toHaveBeenCalledWith(buildRetriever, buildVerifier, buildCreator, defaultConfig);
 
-      const middleware: express.Express = usfCreateMiddlewareSpy.calls.mostRecent().returnValue;
+      const middleware = usfCreateMiddlewareSpy.calls.mostRecent().returnValue;
       expect(httpCreateServerSpy).toHaveBeenCalledWith(middleware);
     });
 
