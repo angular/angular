@@ -7,9 +7,9 @@ echo -e "\n\n[`date`] - Updating the preview server..."
 
 # Input
 readonly HOST_REPO_DIR=$1
-readonly HOST_LOCALCERTS_DIR=$2
-readonly HOST_SECRETS_DIR=$3
-readonly HOST_BUILDS_DIR=$4
+readonly HOST_SECRETS_DIR=$2
+readonly HOST_BUILDS_DIR=$3
+readonly HOST_LOCALCERTS_DIR=$4
 readonly HOST_LOGS_DIR=$5
 
 # Constants
@@ -60,9 +60,9 @@ readonly CONTAINER_NAME=aio
       --publish 80:80 \
       --publish 443:443 \
       --restart unless-stopped \
-      --volume $HOST_LOCALCERTS_DIR:/etc/ssl/localcerts:ro \
       --volume $HOST_SECRETS_DIR:/aio-secrets:ro \
       --volume $HOST_BUILDS_DIR:/var/www/aio-builds \
+      --volume $HOST_LOCALCERTS_DIR:/etc/ssl/localcerts:ro \
       --volume $HOST_LOGS_DIR:/var/log/aio \
       "$LATEST_IMAGE_NAME"
 
