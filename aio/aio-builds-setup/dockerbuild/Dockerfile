@@ -79,13 +79,18 @@ RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources
 
 
 # Install packages
+# NOTE: Some packages (such as `nginx`, `nodejs`, `openssl`) make older versions unavailable on the
+#       repositories, so we cannot pin to specific versions for these packages :(
+#       See for example:
+#       - https://github.com/nodesource/distributions/issues/33
+#       - https://askubuntu.com/questions/715104/how-can-i-downgrade-openssl-via-apt-get
 RUN apt-get update -y && apt-get install -y \
     cron=3.0pl1-134+deb10u1 \
     dnsmasq=2.80-1 \
     nano=3.2-3 \
-    nginx=1.14.2-2+deb10u1 \
-    nodejs=12.16.2-1nodesource1 \
-    openssl=1.1.1d-0+deb10u3 \
+    nginx \
+    nodejs \
+    openssl \
     rsyslog=8.1901.0-1 \
     vim=2:8.1.0875-5 \
     yarn=1.22.4-1
