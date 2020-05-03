@@ -51,6 +51,11 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
       expect(queryList.length).toEqual(2);
     });
 
+    it('should support get', () => {
+      queryList.reset(['one', 'two']);
+      expect(queryList.get(1)).toEqual('two');
+    });
+
     it('should support map', () => {
       queryList.reset(['one', 'two']);
       expect(queryList.map((x) => x)).toEqual(['one', 'two']);
