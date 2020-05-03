@@ -14,10 +14,10 @@ module.exports = function(config) {
       'https://code.angularjs.org/1.5.5/angular-mocks.js',
 
       // #docregion files
-      // System.js for module loading
+      // System.js는 모듈을 로딩할 때 사용합니다.
       'node_modules/systemjs/dist/system.src.js',
 
-      // Polyfills
+      // 폴리필 스크립트 파일
       'node_modules/core-js/client/shim.js',
 
       // zone.js
@@ -28,7 +28,7 @@ module.exports = function(config) {
       { pattern: 'node_modules/rxjs/**/*.js', included: false, watched: false },
       { pattern: 'node_modules/rxjs/**/*.js.map', included: false, watched: false },
 
-      // Angular itself and the testing library
+      // Angular와 Angular 테스트 라이브러리를 로드합니다.
       {pattern: 'node_modules/@angular/**/*.js', included: false, watched: false},
       {pattern: 'node_modules/@angular/**/*.js.map', included: false, watched: false},
 
@@ -45,9 +45,9 @@ module.exports = function(config) {
     ],
 
     // #docregion html
-    // proxied base paths for loading assets
+    // 애셋을 로드하기 위해 기본 경로를 변경합니다.
     proxies: {
-      // required for component assets fetched by Angular's compiler
+      // Angular가 컴포넌트를 컴파일하려면 애셋 파일이 필요합니다.
       "/phone-detail": '/base/app/phone-detail',
       "/phone-list": '/base/app/phone-list'
     },

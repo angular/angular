@@ -1,8 +1,8 @@
 // #docregion
 // /*global jasmine, __karma__, window*/
-Error.stackTraceLimit = 0; // "No stacktrace"" is usually best for app testing.
+Error.stackTraceLimit = 0; // 앱을 테스트할 때는 보통 콜스택을 표시하지 않습니다.
 
-// Uncomment to get full stacktrace output. Sometimes helpful, usually not.
+// 콜스택을 모두 표시하려면 주석을 제거합니다.
 // Error.stackTraceLimit = Infinity; //
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000;
@@ -29,11 +29,11 @@ var allSpecFiles = Object.keys(window.__karma__.files)
 
 System.config({
   baseURL: '/base',
-  // Extend usual application package list with test folder
+  // 테스트 폴더에 있는 파일을 불러오도록 설정합니다.
   packages: { 'testing': { main: 'index.js', defaultExtension: 'js' } },
 
-  // Assume npm: is set in `paths` in systemjs.config
-  // Map the angular testing umd bundles
+  // npm:이 systemjs.config의 `paths`에 미리 정의되었다고 간주합니다.
+  // Angular 테스트 프레임워크를 맵핑합니다.
   map: {
     '@angular/core/testing': 'npm:@angular/core/bundles/core-testing.umd.js',
     '@angular/common/testing': 'npm:@angular/common/bundles/common-testing.umd.js',
@@ -51,7 +51,7 @@ System.import('systemjs.config.js')
   .then(initTestBed)
   .then(initTesting);
 
-/** Optional SystemJS configuration extras. Keep going w/o it */
+/** SystemJS 추가 설정. 생략해도 됩니다. */
 function importSystemJsExtras(){
   return System.import('systemjs.config.extras.js')
   .catch(function(reason) {
@@ -78,7 +78,7 @@ function initTestBed(){
   })
 }
 
-// Import all spec files and start karma
+// 스펙 파일을 모두 로드하고 Karma를 시작합니다.
 function initTesting () {
   return Promise.all(
     allSpecFiles.map(function (moduleName) {

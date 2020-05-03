@@ -1,10 +1,10 @@
 // #docregion
 describe('phoneDetail', () => {
 
-  // Load the module that contains the `phoneDetail` component before each test
+  // 각 테스트 스윗 실행 전에 `phoneDetail` 컴포넌트가 있는 모듈을 로드합니다.
   beforeEach(angular.mock.module('phoneDetail'));
 
-  // Test the controller
+  // 컨트롤러를 테스트합니다.
   describe('PhoneDetailController', () => {
     let $httpBackend: angular.IHttpBackendService;
     let ctrl: any;

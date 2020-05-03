@@ -3535,8 +3535,12 @@ And the second is the phone links spec:
 </code-example>
 
 
+<!--
 ### Unit Tests
+-->
+### 유닛 테스트
 
+<!--
 For unit tests, on the other hand, more conversion work is needed. Effectively
 they need to be *upgraded* along with the production code.
 
@@ -3610,6 +3614,75 @@ instead of using the AngularJS `$routeParams`.
 
 And for the phone list component, a few adjustments to the router make
 the `RouteLink` directives work.
+
+<code-example path="upgrade-phonecat-3-final/app/phone-list/phone-list.component.spec.ts" region="routestuff" header="app/phone-list/phone-list.component.spec.ts">
+</code-example>
+-->
+유닛 테스트의 경우에는 작업할 내용이 좀 더 있습니다.
+유닛 테스트 코드는 애플리케이션이 *업그레이드*되는 것에 직접 영향을 받습니다.
+
+애플리케이션에 TypeScript를 적용하는 동안에는 유닛 테스트 코드를 수정하지 않아도 됩니다.
+하지만 되도록이면 테스트 코드도 TypeScript로 변환하는 것이 좋습니다.
+
+그래서 스마트폰 상세정보 컴포넌트를 테스트하는 스펙이라면 화살표 함수나 블록 안에서만 유효한 변수와 같은 ES2015 기능을 사용할 수도 있고 타입을 지정하는 기능을 활용하는 것도 좋습니다:
+
+<code-example path="upgrade-phonecat-1-typescript/app/phone-detail/phone-detail.component.spec.ts" header="app/phone-detail/phone-detail.component.spec.ts">
+</code-example>
+
+그리고 SysmsJS 환경에서 앱을 업그레이드하면 Karma를 실행하기 위한 환경 설정도 수정해야 합니다.
+다음과 같은 스크립트 파일을 사용해서 SystemJS가 새로 만든 Angular 코드를 로드하도록 합시다:
+
+<code-example path="upgrade-phonecat-2-hybrid/karma-test-shim.1.js" header="karma-test-shim.js">
+</code-example>
+
+이 스크립트 파일은 제일 먼저 SystemJS 환경 설정을 로드합니다.
+그 다음에 Angular 테스트 라이브러리를 로드하고 애플리케이션 스펙 파일을 로드합니다.
+
+Karma 설정은 `app` 대신 애플리케이션 루트 폴더를 기본 폴더로 사용하도록 변경해야 합니다.
+
+<code-example path="upgrade-phonecat-2-hybrid/karma.conf.ajs.js" region="basepath" header="karma.conf.js">
+</code-example>
+
+그리고 나면 이제 Karma가 스크립트 파일과 SystemJS를 로드하도록 다음과 같이 구성합니다.
+
+<code-example path="upgrade-phonecat-2-hybrid/karma.conf.ajs.js" region="files" header="karma.conf.js">
+</code-example>
+
+아직 Angular 컴포넌트의 HTML 템플릿은 `basePath`가 변경되지 않은 경로에서 리소스를 참조하고 있습니다.
+이 파일들이 제대로 로드될 수 있도록 다음과 같이 프록시를 설정합니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/karma.conf.ajs.js" region="html" header="karma.conf.js">
+</code-example>
+
+애플리케이션 코드가 Angular로 업그레이드 되면 유닛 테스트 파일도 Angular로 업그레이드하는 것이 좋습니다.
+테스트 코드 중 가장 간단한 체크마크 파이프를 Angular 버전으로 변환해 봅시다.
+이 파이프에는 의존성으로 주입되는 패키지가 아무 것도 없어서 변환하기도 쉽습니다:
+
+<code-example path="upgrade-phonecat-2-hybrid/app/core/checkmark/checkmark.pipe.spec.ts" header="app/core/checkmark/checkmark.pipe.spec.ts">
+</code-example>
+
+스마트폰 서비스와 관련된 유닛 테스트 코드는 조금 더 복잡합니다.
+AngularJS에서 사용하던 `$httpBackend`를 Angular HTTP 백엔드 모킹 함수로 대체합니다.
+
+<code-example path="upgrade-phonecat-2-hybrid/app/core/phone/phone.service.spec.ts" header="app/core/phone/phone.service.spec.ts">
+</code-example>
+
+컴포넌트를 테스트하는 코드에서는 `Phone` 서비스 자체를 모킹하는 것이 좋습니다.
+Angular가 제공하는 컴포넌트 유닛 테스트 API를 다음과 같이 활용하면 됩니다.
+
+<code-example path="upgrade-phonecat-2-hybrid/app/phone-detail/phone-detail.component.spec.ts" header="app/phone-detail/phone-detail.component.spec.ts">
+</code-example>
+
+<code-example path="upgrade-phonecat-2-hybrid/app/phone-list/phone-list.component.spec.ts" header="app/phone-list/phone-list.component.spec.ts">
+</code-example>
+
+마지막으로 Angular 라우터가 동작할 때 지금까지 만든 컴포넌트가 제대로 동작하도록 프로바이더를 등록합니다.
+스마트폰 상세정보 컴포넌트는 이제 AngularJS `$routeParams`에서 라우팅 인자를 받지 않고 Angular `ActivatedRoute` 객체에서 라우팅 인자를 받습니다.
+
+<code-example path="upgrade-phonecat-3-final/app/phone-detail/phone-detail.component.spec.ts" region="activatedroute" header="app/phone-detail/phone-detail.component.spec.ts">
+</code-example>
+
+그리고 스마트폰 목록 컴포넌트를 테스트하는 코드에서는 `RouterLink` 디렉티브가 제대로 동작하도록 다음과 같이 구성합니다.
 
 <code-example path="upgrade-phonecat-3-final/app/phone-list/phone-list.component.spec.ts" region="routestuff" header="app/phone-list/phone-list.component.spec.ts">
 </code-example>
