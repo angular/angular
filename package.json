@@ -93,7 +93,7 @@
     "start-server-and-test": "^1.10.11",
     "todomvc-app-css": "^2.3.0",
     "todomvc-common": "^1.0.5",
-    "ts-node": "~8.9.0",
+    "ts-node": "~8.10.0",
     "tsickle": "^0.35.0",
     "tslint": "~5.20.0",
     "typescript": "~3.7.0",
