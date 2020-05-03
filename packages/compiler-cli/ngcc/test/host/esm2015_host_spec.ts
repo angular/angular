@@ -1661,6 +1661,22 @@ runInEachFileSystem(() => {
             .toBe(classDeclaration);
       });
 
+      it('should return the original declaration of an aliased class', () => {
+        loadTestFiles([WRAPPED_CLASS_EXPRESSION_FILE]);
+        const bundle = makeTestBundleProgram(WRAPPED_CLASS_EXPRESSION_FILE.name);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+        const classDeclaration = getDeclaration(
+            bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'AliasedWrappedClass',
+            ts.isVariableDeclaration);
+        const usageOfWrappedClass = getDeclaration(
+            bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'usageOfWrappedClass',
+            ts.isVariableDeclaration);
+        const aliasedClassIdentifier = usageOfWrappedClass.initializer as ts.Identifier;
+        expect(aliasedClassIdentifier.text).toBe('AliasedWrappedClass_1');
+        expect(host.getDeclarationOfIdentifier(aliasedClassIdentifier)!.node)
+            .toBe(classDeclaration);
+      });
+
       it('should recognize enum declarations with string values', () => {
         const testFile: TestFile = {
           name: _('/node_modules/test-package/some/file.js'),

@@ -488,30 +488,6 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     const classDeclarationParent = classSymbol.implementation.valueDeclaration.parent;
     return ts.isBlock(classDeclarationParent) ? Array.from(classDeclarationParent.statements) : [];
   }
-
-  /**
-   * Try to retrieve the symbol of a static property on a class.
-   *
-   * In ES5, a static property can either be set on the inner function declaration inside the class'
-   * IIFE, or it can be set on the outer variable declaration. Therefore, the ES5 host checks both
-   * places, first looking up the property on the inner symbol, and if the property is not found it
-   * will fall back to looking up the property on the outer symbol.
-   *
-   * @param symbol the class whose property we are interested in.
-   * @param propertyName the name of static property.
-   * @returns the symbol if it is found or `undefined` if not.
-   */
-  protected getStaticProperty(symbol: NgccClassSymbol, propertyName: ts.__String): ts.Symbol
-      |undefined {
-    // First lets see if the static property can be resolved from the inner class symbol.
-    const prop = symbol.implementation.exports && symbol.implementation.exports.get(propertyName);
-    if (prop !== undefined) {
-      return prop;
-    }
-
-    // Otherwise, lookup the static properties on the outer class symbol.
-    return symbol.declaration.exports && symbol.declaration.exports.get(propertyName);
-  }
 }
 
 ///////////// Internal Helpers /////////////

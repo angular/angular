@@ -772,14 +772,20 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
   /**
    * Try to retrieve the symbol of a static property on a class.
+   *
+   * In some cases, a static property can either be set on the inner declaration inside the class'
+   * IIFE, or it can be set on the outer variable declaration. Therefore, the host checks both
+   * places, first looking up the property on the inner symbol, and if the property is not found it
+   * will fall back to looking up the property on the outer symbol.
+   *
    * @param symbol the class whose property we are interested in.
    * @param propertyName the name of static property.
    * @returns the symbol if it is found or `undefined` if not.
    */
   protected getStaticProperty(symbol: NgccClassSymbol, propertyName: ts.__String): ts.Symbol
       |undefined {
-    return symbol.declaration.exports && symbol.declaration.exports.get(propertyName) ||
-        symbol.implementation.exports && symbol.implementation.exports.get(propertyName);
+    return symbol.implementation.exports && symbol.implementation.exports.get(propertyName) ||
+        symbol.declaration.exports && symbol.declaration.exports.get(propertyName);
   }
 
   /**
@@ -2111,7 +2117,7 @@ export function getIifeConciseBody(expression: ts.Expression): ts.ConciseBody|un
 }
 
 /**
- * Returns true if the `node` is a assignment of the form `a = b`.
+ * Returns true if the `node` is an assignment of the form `a = b`.
  *
  * @param node The AST node to check.
  */
