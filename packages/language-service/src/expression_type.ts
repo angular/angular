@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
+import {AST, AstVisitor, ASTWithName, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead} from '@angular/compiler';
 
 import {createDiagnostic, Diagnostic} from './diagnostic_messages';
 import {BuiltinType, Signature, Symbol, SymbolQuery, SymbolTable} from './symbols';
@@ -454,8 +454,7 @@ function refinedSpan(ast: AST): ng.Span {
   // be relative to the start of the expression.
   // TODO: migrate to only using absolute spans
   const absoluteOffset = ast.sourceSpan.start - ast.span.start;
-  if (ast instanceof PropertyRead || ast instanceof SafePropertyRead || ast instanceof MethodCall ||
-      ast instanceof SafeMethodCall || ast instanceof PropertyWrite || ast instanceof BindingPipe) {
+  if (ast instanceof ASTWithName) {
     return offsetSpan(ast.nameSpan, -absoluteOffset);
   }
   return offsetSpan(ast.sourceSpan, -absoluteOffset);

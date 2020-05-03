@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, AST, AstPath as AstPathBase, ASTWithSource, RecursiveAstVisitor} from '@angular/compiler';
+import {AST, AstPath as AstPathBase, ASTWithName, ASTWithSource, RecursiveAstVisitor} from '@angular/compiler';
 
 import {AstType} from './expression_type';
 import {BuiltinType, Span, Symbol, SymbolTable, TemplateSource} from './types';
@@ -120,7 +120,7 @@ export function getExpressionSymbol(
     return new AstType(scope, templateInfo.query, {}, templateInfo.source).getType(ast);
   }
 
-  function spanFromName(ast: AST&{nameSpan: AbsoluteSourceSpan}): Span {
+  function spanFromName(ast: ASTWithName): Span {
     // `nameSpan` is an absolute span, but the span expected by the result of this method is
     // relative to the start of the expression.
     // TODO(ayazhafiz): migrate to only using absolute spans

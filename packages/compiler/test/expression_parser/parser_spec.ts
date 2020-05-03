@@ -220,19 +220,19 @@ describe('parser', () => {
     it('should record method call span', () => {
       const ast = parseAction('foo()');
       expect(unparseWithSpan(ast)).toContain(['foo()', 'foo()']);
-      expect(unparseWithSpan(ast)).toContain(['foo()', '[nameSpan] foo()']);
+      expect(unparseWithSpan(ast)).toContain(['foo()', '[nameSpan] foo']);
     });
 
     it('should record accessed method call span', () => {
       const ast = parseAction('foo.bar()');
       expect(unparseWithSpan(ast)).toContain(['foo.bar()', 'foo.bar()']);
-      expect(unparseWithSpan(ast)).toContain(['foo.bar()', '[nameSpan] bar()']);
+      expect(unparseWithSpan(ast)).toContain(['foo.bar()', '[nameSpan] bar']);
     });
 
     it('should record safe method call span', () => {
       const ast = parseAction('foo?.bar()');
       expect(unparseWithSpan(ast)).toContain(['foo?.bar()', 'foo?.bar()']);
-      expect(unparseWithSpan(ast)).toContain(['foo?.bar()', '[nameSpan] bar()']);
+      expect(unparseWithSpan(ast)).toContain(['foo?.bar()', '[nameSpan] bar']);
     });
 
     it('should record property write span', () => {

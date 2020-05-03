@@ -10,7 +10,7 @@ import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional,
 import * as ts from 'typescript';
 
 import {TypeCheckingConfig} from './api';
-import {addParseSpanInfo, annotateSpan, wrapForDiagnostics} from './diagnostics';
+import {addParseSpanInfo, wrapForDiagnostics} from './diagnostics';
 import {tsCastToAny} from './ts_util';
 
 export const NULL_AS_ANY =
@@ -179,7 +179,7 @@ class AstTranslator implements AstVisitor {
   visitMethodCall(ast: MethodCall): ts.Expression {
     const receiver = wrapForDiagnostics(this.translate(ast.receiver));
     const method = ts.createPropertyAccess(receiver, ast.name);
-    annotateSpan(method, ast.nameSpan);
+    addParseSpanInfo(method, ast.nameSpan);
     const args = ast.args.map(expr => this.translate(expr));
     const node = ts.createCall(method, undefined, args);
     addParseSpanInfo(node, ast.sourceSpan);
@@ -216,7 +216,7 @@ class AstTranslator implements AstVisitor {
   visitPropertyWrite(ast: PropertyWrite): ts.Expression {
     const receiver = wrapForDiagnostics(this.translate(ast.receiver));
     const left = ts.createPropertyAccess(receiver, ast.name);
-    annotateSpan(left, ast.nameSpan);
+    addParseSpanInfo(left, ast.nameSpan);
     const right = this.translate(ast.value);
     const node = wrapForDiagnostics(ts.createBinary(left, ts.SyntaxKind.EqualsToken, right));
     addParseSpanInfo(node, ast.sourceSpan);
@@ -235,18 +235,18 @@ class AstTranslator implements AstVisitor {
     if (this.config.strictSafeNavigationTypes) {
       // "a?.method(...)" becomes (null as any ? a!.method(...) : undefined)
       const method = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
-      annotateSpan(method, ast.nameSpan);
+      addParseSpanInfo(method, ast.nameSpan);
       const call = ts.createCall(method, undefined, args);
       node = ts.createParen(ts.createConditional(NULL_AS_ANY, call, UNDEFINED));
     } else if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
       // "a?.method(...)" becomes (a as any).method(...)
       const method = ts.createPropertyAccess(tsCastToAny(receiver), ast.name);
-      annotateSpan(method, ast.nameSpan);
+      addParseSpanInfo(method, ast.nameSpan);
       node = ts.createCall(method, undefined, args);
     } else {
       // "a?.method(...)" becomes (a!.method(...) as any)
       const method = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
-      annotateSpan(method, ast.nameSpan);
+      addParseSpanInfo(method, ast.nameSpan);
       node = tsCastToAny(ts.createCall(method, undefined, args));
     }
     addParseSpanInfo(node, ast.sourceSpan);

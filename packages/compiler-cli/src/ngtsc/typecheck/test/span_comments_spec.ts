@@ -30,7 +30,7 @@ describe('type check blocks diagnostics', () => {
       // statement, which would wrap it into parenthesis that clutter the expected output.
       const TEMPLATE = '{{ m({foo: a, bar: b}) }}';
       expect(tcbWithSpans(TEMPLATE))
-          .toContain('m({ "foo": (ctx).a /*11,12*/, "bar": (ctx).b /*19,20*/ } /*5,21*/)');
+          .toContain('m /*3,4*/({ "foo": (ctx).a /*11,12*/, "bar": (ctx).b /*19,20*/ } /*5,21*/)');
     });
 
     it('should annotate literal array expressions', () => {
@@ -56,20 +56,21 @@ describe('type check blocks diagnostics', () => {
     it('should annotate method calls', () => {
       const TEMPLATE = `{{ method(a, b) }}`;
       expect(tcbWithSpans(TEMPLATE))
-          .toContain('(ctx).method((ctx).a /*10,11*/, (ctx).b /*13,14*/) /*3,15*/;');
+          .toContain('(ctx).method /*3,9*/((ctx).a /*10,11*/, (ctx).b /*13,14*/) /*3,15*/;');
     });
 
     it('should annotate method calls of variables', () => {
       const TEMPLATE = `<ng-template let-method>{{ method(a, b) }}</ng-template>`;
       expect(tcbWithSpans(TEMPLATE))
-          .toContain('(_t2 /*27,39*/).method((ctx).a /*34,35*/, (ctx).b /*37,38*/) /*27,39*/;');
+          .toContain(
+              '(_t2 /*27,39*/).method /*27,33*/((ctx).a /*34,35*/, (ctx).b /*37,38*/) /*27,39*/;');
     });
 
     it('should annotate function calls', () => {
       const TEMPLATE = `{{ method(a)(b, c) }}`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '((ctx).method((ctx).a /*10,11*/) /*3,12*/)((ctx).b /*13,14*/, (ctx).c /*16,17*/) /*3,18*/;');
+              '((ctx).method /*3,9*/((ctx).a /*10,11*/) /*3,12*/)((ctx).b /*13,14*/, (ctx).c /*16,17*/) /*3,18*/;');
     });
 
     it('should annotate property access', () => {
@@ -80,7 +81,8 @@ describe('type check blocks diagnostics', () => {
     it('should annotate property writes', () => {
       const TEMPLATE = `<div (click)="a.b.c = d"></div>`;
       expect(tcbWithSpans(TEMPLATE))
-          .toContain('((((ctx).a /*14,15*/).b /*16,17*/).c = (ctx).d /*22,23*/) /*14,23*/');
+          .toContain(
+              '((((ctx).a /*14,15*/).b /*16,17*/).c /*18,19*/ = (ctx).d /*22,23*/) /*14,23*/');
     });
 
     it('should annotate keyed property access', () => {
@@ -104,7 +106,7 @@ describe('type check blocks diagnostics', () => {
       const TEMPLATE = `{{ a?.method(b) }}`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '((null as any) ? ((ctx).a /*3,4*/)!.method((ctx).b /*13,14*/) : undefined) /*3,15*/');
+              '((null as any) ? ((ctx).a /*3,4*/)!.method /*6,12*/((ctx).b /*13,14*/) : undefined) /*3,15*/');
     });
 
     it('should annotate $any casts', () => {

@@ -453,7 +453,7 @@ describe('diagnostics', () => {
       expect(messageText)
           .toBe(
               `Identifier 'notSubstring' is not defined. 'string' does not contain such a member`);
-      expect(content.substring(start!, start! + length!)).toBe('notSubstring()');
+      expect(content.substring(start!, start! + length!)).toBe('notSubstring');
     });
   });
 
@@ -988,7 +988,7 @@ describe('diagnostics', () => {
             `Consider using the safe navigation operator (optional?.toLowerCase) ` +
             `or non-null assertion operator (optional!.toLowerCase).`);
     expect(category).toBe(ts.DiagnosticCategory.Suggestion);
-    expect(content.substring(start!, start! + length!)).toBe('toLowerCase()');
+    expect(content.substring(start!, start! + length!)).toBe('toLowerCase');
   });
 
   it('should suggest ? or ! operator if property receiver is nullable', () => {
@@ -1018,7 +1018,7 @@ describe('diagnostics', () => {
       expect(messageText)
           .toBe(`Identifier 'someMethod' is not defined. 'string' does not contain such a member`);
       expect(category).toBe(ts.DiagnosticCategory.Error);
-      expect(content.substring(start!, start! + length!)).toBe('someMethod()');
+      expect(content.substring(start!, start! + length!)).toBe('someMethod');
     }
   });
 

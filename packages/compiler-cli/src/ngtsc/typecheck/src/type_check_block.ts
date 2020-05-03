@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, AST, BindingPipe, BindingType, BoundTarget, DYNAMIC_TYPE, ImplicitReceiver, MethodCall, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, SchemaMetadata, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, DYNAMIC_TYPE, ImplicitReceiver, MethodCall, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SchemaMetadata, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
 import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from './api';
-import {addParseSpanInfo, addTemplateId, annotateSpan, ignoreDiagnostics, wrapForDiagnostics} from './diagnostics';
+import {addParseSpanInfo, addTemplateId, ignoreDiagnostics, wrapForDiagnostics} from './diagnostics';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {astToTypescript, NULL_AS_ANY} from './expression';
@@ -1145,7 +1145,7 @@ class TcbExpressionTranslator {
       }
 
       const method = ts.createPropertyAccess(wrapForDiagnostics(receiver), ast.name);
-      annotateSpan(method, ast.nameSpan);
+      addParseSpanInfo(method, ast.nameSpan);
       const args = ast.args.map(arg => this.translate(arg));
       const node = ts.createCall(method, undefined, args);
       addParseSpanInfo(node, ast.sourceSpan);

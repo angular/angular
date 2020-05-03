@@ -752,6 +752,7 @@ export class _ParseAST {
     const start = receiver.span.start;
     const nameStart = this.inputIndex;
     const id = this.expectIdentifierOrKeyword();
+    const nameSpan = this.sourceSpan(nameStart);
 
     if (this.consumeOptionalCharacter(chars.$LPAREN)) {
       this.rparensExpected++;
@@ -760,7 +761,6 @@ export class _ParseAST {
       this.rparensExpected--;
       const span = this.span(start);
       const sourceSpan = this.sourceSpan(start);
-      const nameSpan = this.sourceSpan(nameStart);
       return isSafe ? new SafeMethodCall(span, sourceSpan, nameSpan, receiver, id, args) :
                       new MethodCall(span, sourceSpan, nameSpan, receiver, id, args);
 
@@ -771,10 +771,9 @@ export class _ParseAST {
           return new EmptyExpr(this.span(start), this.sourceSpan(start));
         } else {
           return new SafePropertyRead(
-              this.span(start), this.sourceSpan(start), this.sourceSpan(nameStart), receiver, id);
+              this.span(start), this.sourceSpan(start), nameSpan, receiver, id);
         }
       } else {
-        const idSpan = this.sourceSpan(nameStart);
         if (this.consumeOptionalOperator('=')) {
           if (!this.parseAction) {
             this.error('Bindings cannot contain assignments');
@@ -783,10 +782,9 @@ export class _ParseAST {
 
           const value = this.parseConditional();
           return new PropertyWrite(
-              this.span(start), this.sourceSpan(start), idSpan, receiver, id, value);
+              this.span(start), this.sourceSpan(start), nameSpan, receiver, id, value);
         } else {
-          return new PropertyRead(
-              this.span(start), this.sourceSpan(start), this.sourceSpan(nameStart), receiver, id);
+          return new PropertyRead(this.span(start), this.sourceSpan(start), nameSpan, receiver, id);
         }
       }
     }

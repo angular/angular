@@ -39,6 +39,13 @@ export class AST {
   }
 }
 
+export abstract class ASTWithName extends AST {
+  constructor(
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public nameSpan: AbsoluteSourceSpan) {
+    super(span, sourceSpan);
+  }
+}
+
 /**
  * Represents a quoted expression of the form:
  *
@@ -101,33 +108,33 @@ export class Conditional extends AST {
   }
 }
 
-export class PropertyRead extends AST {
+export class PropertyRead extends ASTWithName {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public nameSpan: AbsoluteSourceSpan,
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, nameSpan: AbsoluteSourceSpan,
       public receiver: AST, public name: string) {
-    super(span, sourceSpan);
+    super(span, sourceSpan, nameSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitPropertyRead(this, context);
   }
 }
 
-export class PropertyWrite extends AST {
+export class PropertyWrite extends ASTWithName {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public nameSpan: AbsoluteSourceSpan,
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, nameSpan: AbsoluteSourceSpan,
       public receiver: AST, public name: string, public value: AST) {
-    super(span, sourceSpan);
+    super(span, sourceSpan, nameSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitPropertyWrite(this, context);
   }
 }
 
-export class SafePropertyRead extends AST {
+export class SafePropertyRead extends ASTWithName {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public nameSpan: AbsoluteSourceSpan,
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, nameSpan: AbsoluteSourceSpan,
       public receiver: AST, public name: string) {
-    super(span, sourceSpan);
+    super(span, sourceSpan, nameSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitSafePropertyRead(this, context);
@@ -154,11 +161,11 @@ export class KeyedWrite extends AST {
   }
 }
 
-export class BindingPipe extends AST {
+export class BindingPipe extends ASTWithName {
   constructor(
       span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public exp: AST, public name: string,
-      public args: any[], public nameSpan: AbsoluteSourceSpan) {
-    super(span, sourceSpan);
+      public args: any[], nameSpan: AbsoluteSourceSpan) {
+    super(span, sourceSpan, nameSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitPipe(this, context);
@@ -238,22 +245,22 @@ export class NonNullAssert extends AST {
   }
 }
 
-export class MethodCall extends AST {
+export class MethodCall extends ASTWithName {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public nameSpan: AbsoluteSourceSpan,
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, nameSpan: AbsoluteSourceSpan,
       public receiver: AST, public name: string, public args: any[]) {
-    super(span, sourceSpan);
+    super(span, sourceSpan, nameSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitMethodCall(this, context);
   }
 }
 
-export class SafeMethodCall extends AST {
+export class SafeMethodCall extends ASTWithName {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public nameSpan: AbsoluteSourceSpan,
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, nameSpan: AbsoluteSourceSpan,
       public receiver: AST, public name: string, public args: any[]) {
-    super(span, sourceSpan);
+    super(span, sourceSpan, nameSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitSafeMethodCall(this, context);
