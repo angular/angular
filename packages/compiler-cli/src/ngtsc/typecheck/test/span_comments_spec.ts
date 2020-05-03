@@ -80,7 +80,7 @@ describe('type check blocks diagnostics', () => {
     it('should annotate property writes', () => {
       const TEMPLATE = `<div (click)="a.b.c = d"></div>`;
       expect(tcbWithSpans(TEMPLATE))
-          .toContain('((((ctx).a /*14,15*/).b /*16,17*/).c = (ctx).d /*22,23*/) /*18,19*/');
+          .toContain('((((ctx).a /*14,15*/).b /*16,17*/).c = (ctx).d /*22,23*/) /*14,23*/');
     });
 
     it('should annotate keyed property access', () => {
@@ -104,7 +104,7 @@ describe('type check blocks diagnostics', () => {
       const TEMPLATE = `{{ a?.method(b) }}`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '((null as any) ? ((ctx).a /*3,4*/)!.method((ctx).b /*13,14*/) : undefined) /*6,15*/');
+              '((null as any) ? ((ctx).a /*3,4*/)!.method((ctx).b /*13,14*/) : undefined) /*3,15*/');
     });
 
     it('should annotate $any casts', () => {
@@ -127,7 +127,7 @@ describe('type check blocks diagnostics', () => {
       }];
       const block = tcbWithSpans(TEMPLATE, PIPES);
       expect(block).toContain(
-          '(null as TestPipe).transform((ctx).a /*3,4*/, (ctx).b /*12,13*/) /*7,11*/;');
+          '(null as TestPipe).transform((ctx).a /*3,4*/, (ctx).b /*12,13*/) /*3,13*/;');
     });
 
     describe('attaching multiple comments for multiple references', () => {

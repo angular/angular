@@ -198,6 +198,7 @@ export function unparse(
   return sharedUnparser.unparse(ast, interpolationConfig);
 }
 
+// [unparsed AST, original source code of AST]
 type UnparsedWithSpan = [string, string];
 
 export function unparseWithSpan(

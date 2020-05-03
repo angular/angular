@@ -323,3 +323,9 @@ export function isTemplateDiagnostic(diagnostic: ts.Diagnostic): diagnostic is T
   return diagnostic.hasOwnProperty('componentFile') &&
       ts.isSourceFile((diagnostic as any).componentFile);
 }
+
+/** Annotates a TS node with a span in place. */
+export function annotateSpan<T extends ts.Node>(node: T, span: AbsoluteSourceSpan) {
+  node.pos = span.start;
+  node.end = span.end;
+}

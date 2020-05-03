@@ -13,7 +13,7 @@ import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
 import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from './api';
-import {addParseSpanInfo, addTemplateId, ignoreDiagnostics, wrapForDiagnostics} from './diagnostics';
+import {addParseSpanInfo, addTemplateId, annotateSpan, ignoreDiagnostics, wrapForDiagnostics} from './diagnostics';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {astToTypescript, NULL_AS_ANY} from './expression';
@@ -79,13 +79,6 @@ export function generateTypeCheckBlock(
       /* body */ body);
   addTemplateId(fnDecl, meta.id);
   return fnDecl;
-}
-
-function refinedSpan(ast: AST): AbsoluteSourceSpan {
-  if (ast instanceof PropertyRead || ast instanceof SafePropertyRead || ast instanceof MethodCall ||
-      ast instanceof SafeMethodCall || ast instanceof PropertyWrite || ast instanceof BindingPipe)
-    return ast.nameSpan;
-  return ast.sourceSpan;
 }
 
 /**
@@ -1094,7 +1087,7 @@ class TcbExpressionTranslator {
 
       const expr = this.translate(ast.value);
       const result = ts.createParen(ts.createBinary(target, ts.SyntaxKind.EqualsToken, expr));
-      addParseSpanInfo(result, ast.nameSpan);
+      addParseSpanInfo(result, ast.sourceSpan);
       return result;
     } else if (ast instanceof ImplicitReceiver) {
       // AST instances representing variables and references look very similar to property reads
@@ -1128,16 +1121,17 @@ class TcbExpressionTranslator {
       }
       const args = ast.args.map(arg => this.translate(arg));
       const result = tsCallMethod(pipe, 'transform', [expr, ...args]);
-      addParseSpanInfo(result, ast.nameSpan);
+      addParseSpanInfo(result, ast.sourceSpan);
       return result;
     } else if (ast instanceof MethodCall && ast.receiver instanceof ImplicitReceiver) {
       // Resolve the special `$any(expr)` syntax to insert a cast of the argument to type `any`.
+      // `$any(expr) -> expr as any`
       if (ast.name === '$any' && ast.args.length === 1) {
         const expr = this.translate(ast.args[0]);
         const exprAsAny =
             ts.createAsExpression(expr, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
         const result = ts.createParen(exprAsAny);
-        addParseSpanInfo(result, ast.nameSpan);
+        addParseSpanInfo(result, ast.sourceSpan);
         return result;
       }
 
@@ -1151,9 +1145,10 @@ class TcbExpressionTranslator {
       }
 
       const method = ts.createPropertyAccess(wrapForDiagnostics(receiver), ast.name);
+      annotateSpan(method, ast.nameSpan);
       const args = ast.args.map(arg => this.translate(arg));
       const node = ts.createCall(method, undefined, args);
-      addParseSpanInfo(node, ast.nameSpan);
+      addParseSpanInfo(node, ast.sourceSpan);
       return node;
     } else {
       // This AST isn't special after all.
@@ -1175,7 +1170,7 @@ class TcbExpressionTranslator {
     // This expression has a binding to some variable or reference in the template. Resolve it.
     if (binding instanceof TmplAstVariable) {
       const expr = ts.getMutableClone(this.scope.resolve(binding));
-      addParseSpanInfo(expr, refinedSpan(ast));
+      addParseSpanInfo(expr, ast.sourceSpan);
       return expr;
     } else if (binding instanceof TmplAstReference) {
       const target = this.tcb.boundTarget.getReferenceTarget(binding);
@@ -1196,7 +1191,7 @@ class TcbExpressionTranslator {
         }
 
         const expr = ts.getMutableClone(this.scope.resolve(target));
-        addParseSpanInfo(expr, refinedSpan(ast));
+        addParseSpanInfo(expr, ast.sourceSpan);
         return expr;
       } else if (target instanceof TmplAstTemplate) {
         if (!this.tcb.env.config.checkTypeOfNonDomReferences) {
@@ -1213,7 +1208,7 @@ class TcbExpressionTranslator {
             value,
             this.tcb.env.referenceExternalType('@angular/core', 'TemplateRef', [DYNAMIC_TYPE]));
         value = ts.createParen(value);
-        addParseSpanInfo(value, refinedSpan(ast));
+        addParseSpanInfo(value, ast.sourceSpan);
         return value;
       } else {
         if (!this.tcb.env.config.checkTypeOfNonDomReferences) {
@@ -1222,7 +1217,7 @@ class TcbExpressionTranslator {
         }
 
         const expr = ts.getMutableClone(this.scope.resolve(target.node, target.directive));
-        addParseSpanInfo(expr, refinedSpan(ast));
+        addParseSpanInfo(expr, ast.sourceSpan);
         return expr;
       }
     } else {
@@ -1442,7 +1437,7 @@ class TcbEventHandlerTranslator extends TcbExpressionTranslator {
     if (ast instanceof PropertyRead && ast.receiver instanceof ImplicitReceiver &&
         ast.name === EVENT_PARAMETER) {
       const event = ts.createIdentifier(EVENT_PARAMETER);
-      addParseSpanInfo(event, refinedSpan(ast));
+      addParseSpanInfo(event, ast.nameSpan);
       return event;
     }
 
