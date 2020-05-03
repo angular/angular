@@ -8,26 +8,15 @@
 
 import {getLocalePluralCase} from './locale_data_api';
 
+const pluralMapping = ['zero', 'one', 'two', 'few', 'many'];
+
 /**
  * Returns the plural case based on the locale
  */
-export function getPluralCase(value: any, locale: string): string {
-  const plural = getLocalePluralCase(locale)(value);
-
-  switch (plural) {
-    case 0:
-      return 'zero';
-    case 1:
-      return 'one';
-    case 2:
-      return 'two';
-    case 3:
-      return 'few';
-    case 4:
-      return 'many';
-    default:
-      return 'other';
-  }
+export function getPluralCase(value: string, locale: string): string {
+  const plural = getLocalePluralCase(locale)(parseInt(value, 10));
+  const result = pluralMapping[plural];
+  return (result !== undefined) ? result : 'other';
 }
 
 /**
