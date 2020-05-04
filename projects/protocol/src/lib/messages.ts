@@ -143,7 +143,7 @@ export interface Events {
   handshake: () => void;
   shutdown: () => void;
   queryNgAvailability: () => void;
-  ngAvailability: (config: { version: string | undefined | boolean; prodMode: boolean; ivy: boolean }) => void;
+  ngAvailability: (config: { version: string | undefined | boolean; devMode: boolean; ivy: boolean }) => void;
 
   inspectorStart: () => void;
   inspectorEnd: () => void;

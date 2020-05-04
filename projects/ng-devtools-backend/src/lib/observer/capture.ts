@@ -3,7 +3,7 @@ import { ElementPosition, ProfilerFrame, ElementProfile, DirectiveProfile, Lifec
 import { runOutsideAngular, isCustomElement } from '../utils';
 import { getDirectiveName } from '../highlighter';
 import { ComponentTreeNode } from '../component-tree';
-import { getDirectiveForestObserver } from '.';
+import { initializeOrGetDirectiveForestObserver } from '.';
 
 let inProgress = false;
 let inChangeDetection = false;
@@ -18,13 +18,13 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   eventMap = new Map<any, DirectiveProfile>();
   inProgress = true;
   observerHooks = getObserverHooks(onFrame);
-  getDirectiveForestObserver().subscribe(observerHooks);
+  initializeOrGetDirectiveForestObserver().subscribe(observerHooks);
 };
 
 export const stop = (): ProfilerFrame => {
-  const observer = getDirectiveForestObserver();
+  const observer = initializeOrGetDirectiveForestObserver();
   const result = flushBuffer(observer);
-  getDirectiveForestObserver().unsubscribe(observerHooks);
+  initializeOrGetDirectiveForestObserver().unsubscribe(observerHooks);
   observerHooks = {};
   inProgress = false;
   return result;
@@ -63,7 +63,7 @@ const getObserverHooks = (onFrame: (frame: ProfilerFrame) => void) => {
         runOutsideAngular(() => {
           Promise.resolve().then(() => {
             inChangeDetection = false;
-            onFrame(flushBuffer(getDirectiveForestObserver(), source));
+            onFrame(flushBuffer(initializeOrGetDirectiveForestObserver(), source));
           });
         });
       }
@@ -196,7 +196,7 @@ const prepareInitialFrame = (source: string, duration: number) => {
     duration,
     directives: [],
   };
-  const observer = getDirectiveForestObserver();
+  const observer = initializeOrGetDirectiveForestObserver();
   const directiveForest = observer.getDirectiveForest();
   const traverse = (node: ComponentTreeNode, children = frame.directives) => {
     let position: ElementPosition | undefined;

@@ -31,7 +31,7 @@ import { LifecycleProfile } from 'protocol';
 // };
 
 export let observer: DirectiveForestObserver;
-export const getDirectiveForestObserver = () => {
+export const initializeOrGetDirectiveForestObserver = () => {
   if (observer) {
     return observer;
   }

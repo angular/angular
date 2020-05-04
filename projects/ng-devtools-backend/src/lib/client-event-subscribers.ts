@@ -19,11 +19,10 @@ import {
   getAngularVersion,
   appIsAngularInDevMode,
   appIsSupportedAngularVersion,
-  appIsAngularInProdMode,
   appIsAngularIvy,
 } from './angular-check';
 import { debounceTime } from 'rxjs/operators';
-import { getDirectiveForestObserver } from './observer';
+import { initializeOrGetDirectiveForestObserver } from './observer';
 import { runOutsideAngular } from './utils';
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
@@ -49,7 +48,7 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
     // update requests, instead we want to request an update at most
     // every 50ms
     runOutsideAngular(() => {
-      getDirectiveForestObserver()
+      initializeOrGetDirectiveForestObserver()
         .changeDetection$.pipe(debounceTime(50))
         .subscribe(() => messageBus.emit('componentTreeDirty'));
     });
@@ -69,18 +68,18 @@ const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) 
 ) => {
   // We want to force re-indexing of the component tree.
   // Pressing the refresh button means the user saw stuck UI.
-  getDirectiveForestObserver().indexForest();
+  initializeOrGetDirectiveForestObserver().indexForest();
   if (!query) {
     messageBus.emit('latestComponentExplorerView', [
       {
-        forest: prepareForestForSerialization(getDirectiveForestObserver().getDirectiveForest()),
+        forest: prepareForestForSerialization(initializeOrGetDirectiveForestObserver().getDirectiveForest()),
       },
     ]);
     return;
   }
   messageBus.emit('latestComponentExplorerView', [
     {
-      forest: prepareForestForSerialization(getDirectiveForestObserver().getDirectiveForest()),
+      forest: prepareForestForSerialization(initializeOrGetDirectiveForestObserver().getDirectiveForest()),
       properties: getLatestComponentState(query),
     },
   ]);
@@ -98,7 +97,7 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
 };
 
 const selectedComponentCallback = (position: ElementPosition) => {
-  const node = queryDirectiveForest(position, getDirectiveForestObserver().getDirectiveForest());
+  const node = queryDirectiveForest(position, initializeOrGetDirectiveForestObserver().getDirectiveForest());
   setConsoleReference({ node, position });
 };
 
@@ -107,7 +106,7 @@ const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
   propPath: string[]
 ) => {
   const emitEmpty = () => messageBus.emit('nestedProperties', [position, { props: {} }, propPath]);
-  const node = queryDirectiveForest(position.element, getDirectiveForestObserver().getDirectiveForest());
+  const node = queryDirectiveForest(position.element, initializeOrGetDirectiveForestObserver().getDirectiveForest());
   if (!node) {
     return emitEmpty();
   }
@@ -131,14 +130,16 @@ const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
 const checkForAngular = (messageBus: MessageBus<Events>, attempt = 0): void => {
   const ngVersion = getAngularVersion();
   const appIsIvy = appIsAngularIvy();
-  if (!!ngVersion) {
-    getDirectiveForestObserver();
-    messageBus.emit('ngAvailability', [
-      { version: ngVersion.toString(), prodMode: appIsAngularInProdMode(), ivy: appIsIvy },
-    ]);
+  if (!ngVersion) {
+    setTimeout(() => checkForAngular(messageBus, attempt + 1), 500);
     return;
   }
-  setTimeout(() => checkForAngular(messageBus, attempt + 1), 500);
+  if (appIsIvy) {
+    initializeOrGetDirectiveForestObserver();
+  }
+  messageBus.emit('ngAvailability', [
+    { version: ngVersion.toString(), devMode: appIsAngularInDevMode(), ivy: appIsIvy },
+  ]);
 };
 
 const setupInspector = (messageBus: MessageBus<Events>) => {
@@ -188,12 +189,12 @@ export const prepareForestForSerialization = (roots: ComponentTreeNode[]): Seria
         ? {
             name: node.component.name,
             isElement: node.component.isElement,
-            id: getDirectiveForestObserver().getDirectiveId(node.component.instance),
+            id: initializeOrGetDirectiveForestObserver().getDirectiveId(node.component.instance),
           }
         : null,
       directives: node.directives.map((d) => ({
         name: d.name,
-        id: getDirectiveForestObserver().getDirectiveId(d.instance),
+        id: initializeOrGetDirectiveForestObserver().getDirectiveId(d.instance),
       })),
       children: prepareForestForSerialization(node.children),
     } as SerializableComponentTreeNode;

@@ -30,11 +30,11 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    this._messageBus.once('ngAvailability', ({ version, prodMode, ivy }) => {
+    this._messageBus.once('ngAvailability', ({ version, devMode, ivy }) => {
       this.angularExists = !!version;
       this.angularVersion = version;
       this.ivy = ivy;
-      if (prodMode) {
+      if (!devMode) {
         this._snackBar.open(
           'Production mode detected. Angular DevTools has limited functionality in production mode.',
           '',

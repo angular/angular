@@ -1,3 +1,5 @@
+import { AngularDetection } from './ng-validate';
+
 const ports: {
   [tab: string]:
     | {
@@ -7,7 +9,7 @@ const ports: {
     | undefined;
 } = {};
 
-chrome.runtime.onConnect.addListener(port => {
+chrome.runtime.onConnect.addListener((port) => {
   let tab: string | null = null;
   let name: string | null = null;
   console.log('Connection event in the background script');
@@ -84,8 +86,21 @@ const doublePipe = (devtoolsPort: chrome.runtime.Port | null, contentScriptPort:
   contentScriptPort.onDisconnect.addListener(shutdown.bind(null, 'content-script'));
 };
 
+const getPopUpName = (ng: AngularDetection) => {
+  if (!ng.isAngular) {
+    return 'not-angular.html';
+  }
+  if (!ng.isIvy || !ng.isSupportedAngularVersion) {
+    return 'unsupported.html';
+  }
+  if (!ng.isDebugMode) {
+    return 'production.html';
+  }
+  return 'supported.html';
+};
+
 chrome.runtime.onMessage.addListener((req, sender) => {
-  if (sender.tab && req.isSupportedAngularVersion) {
+  if (sender.tab && req.isAngular) {
     chrome.browserAction.setIcon({
       tabId: sender.tab.id,
       path: {
@@ -94,7 +109,7 @@ chrome.runtime.onMessage.addListener((req, sender) => {
     });
     chrome.browserAction.setPopup({
       tabId: sender.tab.id,
-      popup: req.isDebugMode ? `popups/enabled.html` : `popups/production.html`,
+      popup: `popups/${getPopUpName(req)}`,
     });
   }
 });
