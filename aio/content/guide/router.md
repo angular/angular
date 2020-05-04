@@ -169,7 +169,7 @@ To get information from a route:
 
       <code-example header="In the component (excerpt)">
         ngOnInit() {
-          this.activatedRoute.queryParams.subscribe(params => {
+          this.route.queryParams.subscribe(params => {
             this.name = params['name'];
           });
         }
