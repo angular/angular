@@ -1,3 +1,73 @@
+<a name="10.0.0-next.5"></a>
+# [10.0.0-next.5](https://github.com/angular/angular/compare/10.0.0-next.4...10.0.0-next.5) (2020-05-04)
+
+
+### Bug Fixes
+
+* **core:** log error instead of warning for unknown properties and elements ([#36399](https://github.com/angular/angular/issues/36399)) ([9d9d46f](https://github.com/angular/angular/commit/9d9d46f)), closes [#35699](https://github.com/angular/angular/issues/35699)
+* **core:** Refresh transplanted views at insertion point only ([#35968](https://github.com/angular/angular/issues/35968)) ([1786586](https://github.com/angular/angular/commit/1786586)), closes [#35400](https://github.com/angular/angular/issues/35400) [#21324](https://github.com/angular/angular/issues/21324)
+* **ngcc:** do not run in parallel mode if there are less than 3 CPU cores ([#36626](https://github.com/angular/angular/issues/36626)) ([4c63241](https://github.com/angular/angular/commit/4c63241))
+* **ngcc:** give up re-spawning crashed worker process after 3 attempts ([#36626](https://github.com/angular/angular/issues/36626)) ([793cb32](https://github.com/angular/angular/commit/793cb32))
+* **ngcc:** handle `ENOMEM` errors in worker processes ([#36626](https://github.com/angular/angular/issues/36626)) ([4779c4b](https://github.com/angular/angular/commit/4779c4b))
+* **ngcc:** provide a unique exit code for timeouts ([#36838](https://github.com/angular/angular/issues/36838)) ([d805526](https://github.com/angular/angular/commit/d805526))
+* **ngcc:** support recovering when a worker process crashes ([#36626](https://github.com/angular/angular/issues/36626)) ([966598c](https://github.com/angular/angular/commit/966598c)), closes [#36278](https://github.com/angular/angular/issues/36278)
+* **ngcc:** support TS 3.9 wrapped ES2015 classes ([#36884](https://github.com/angular/angular/issues/36884)) ([db4c59d](https://github.com/angular/angular/commit/db4c59d))
+* **router:** cancel navigation when at least one resolver completes with no "next" emission ([#24621](https://github.com/angular/angular/issues/24621)) ([d9c4840](https://github.com/angular/angular/commit/d9c4840)), closes [#24195](https://github.com/angular/angular/issues/24195)
+
+
+### Code Refactoring
+
+* **common:** remove WrappedValue from AsyncPipe ([#36633](https://github.com/angular/angular/issues/36633)) ([49be32c](https://github.com/angular/angular/commit/49be32c)), closes [#29927](https://github.com/angular/angular/issues/29927)
+
+
+### Features
+
+* **localize:** support merging multiple translation files ([#36792](https://github.com/angular/angular/issues/36792)) ([72f534f](https://github.com/angular/angular/commit/72f534f))
+* **ngcc:** allow async locking timeouts to be configured ([#36838](https://github.com/angular/angular/issues/36838)) ([38f805c](https://github.com/angular/angular/commit/38f805c))
+* **ngcc:** support marking an in-progress task as unprocessed ([#36626](https://github.com/angular/angular/issues/36626)) ([4665c35](https://github.com/angular/angular/commit/4665c35))
+* **ngcc:** support reverting a file written by `FileWriter` ([#36626](https://github.com/angular/angular/issues/36626)) ([772ccf0](https://github.com/angular/angular/commit/772ccf0))
+* **service-worker:** include `CacheQueryOptions` options in ngsw-config ([#34663](https://github.com/angular/angular/issues/34663)) ([dc9f4b9](https://github.com/angular/angular/commit/dc9f4b9)), closes [#28443](https://github.com/angular/angular/issues/28443)
+* **service-worker:** use `ignoreVary: true` when retrieving responses from cache ([#34663](https://github.com/angular/angular/issues/34663)) ([ee35e22](https://github.com/angular/angular/commit/ee35e22)), closes [#36638](https://github.com/angular/angular/issues/36638)
+
+
+### Performance Improvements
+
+* **ngcc:** only compute basePaths in TargetedEntryPointFinder when needed ([#36881](https://github.com/angular/angular/issues/36881)) ([ec6b9cc](https://github.com/angular/angular/commit/ec6b9cc)), closes [#36874](https://github.com/angular/angular/issues/36874)
+* **ngcc:** speed up the `getBasePaths()` computation ([#36881](https://github.com/angular/angular/issues/36881)) ([e037840](https://github.com/angular/angular/commit/e037840))
+
+
+### BREAKING CHANGES
+
+* **core:** Warnings about unknown elements are now logged as errors. This won't break your app, but it may trip up tools that expect nothing to be logged via `console.error`.
+* **router:** Any resolver which return EMPTY will cancel navigation.
+If you want to allow the navigation to continue, you will need to update the resolvers to emit
+some value, (i.e. defaultIfEmpty(...), of(...), etc).
+* **service-worker:** Previously, [Vary](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary)
+headers would be taken into account when retrieving resources from the
+cache, completely preventing the retrieval of cached assets (due to
+ServiceWorker implementation details) and leading to unpredictable
+behavior due to inconsistent/buggy implementations in different
+browsers.
+
+Now, `Vary` headers are ignored when retrieving resources from the
+ServiceWorker caches, which can result in resources being retrieved even
+when their headers are different. If your application needs to
+differentiate its responses based on request headers, please make sure
+the Angular ServiceWorker is [configured](https://angular.io/guide/service-worker-config)
+to avoid caching the affected resources.
+* **common:** This change could result in ExpressionChangedAfterItHasBeenChecked errors that
+were not detected before. The error could previously have gone undetected
+because two WrappedValues are considered "equal" in all cases for the purposes
+of the check, even if their respective unwrapped values are not.
+
+Additionally, `[val]=(observable | async).someProperty` will no longer
+trigger change detection if the value of `someProperty` is identical to
+the value in the previous emit. If you need to force change detection,
+either update the binding to use an object whose reference changes or
+subscribe to the observable and call markForCheck as needed.
+
+
+
 <a name="10.0.0-next.4"></a>
 # [10.0.0-next.4](https://github.com/angular/angular/compare/10.0.0-next.3...10.0.0-next.4) (2020-04-29)
 
