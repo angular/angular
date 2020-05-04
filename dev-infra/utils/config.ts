@@ -27,12 +27,12 @@ export function getRepoBaseDir() {
 }
 
 /**
- * Retrieve the configuration from the .dev-infra-config.js file.
+ * Retrieve the configuration from the .ng-dev-config.js file.
  */
 export function getAngularDevConfig<K, T>(supressError = false): DevInfraConfig<K, T> {
   const configPath = join(getRepoBaseDir(), CONFIG_FILE_NAME);
   try {
-    return require(configPath)() as DevInfraConfig<K, T>;
+    return require(configPath) as DevInfraConfig<K, T>;
   } catch (err) {
     if (!supressError) {
       throw Error(`Unable to load config file at:\n  ${configPath}`);
