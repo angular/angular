@@ -64,7 +64,7 @@ describe('Missing injectable migration', () => {
   }
 
   function runMigration() {
-    return runner.runSchematicAsync('migration-v9-missing-injectable', {}, tree).toPromise();
+    return runner.runSchematicAsync('migration-v10-missing-injectable', {}, tree).toPromise();
   }
 
   describe('NgModule', () => createTests('NgModule', 'providers'));

@@ -383,7 +383,7 @@ describe('Undecorated classes with decorated fields migration', () => {
 
   function runMigration() {
     return runner
-        .runSchematicAsync('migration-v9-undecorated-classes-with-decorated-fields', {}, tree)
+        .runSchematicAsync('migration-v10-undecorated-classes-with-decorated-fields', {}, tree)
         .toPromise();
   }
 });
