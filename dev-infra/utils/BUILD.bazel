@@ -9,10 +9,8 @@ ts_library(
     module_name = "@angular/dev-infra-private/utils",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
-        "@npm//@types/json5",
         "@npm//@types/node",
         "@npm//@types/shelljs",
-        "@npm//json5",
         "@npm//shelljs",
         "@npm//tslib",
     ],

@@ -5,10 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {readFileSync} from 'fs';
-import {parse} from 'json5';
+
 import {join} from 'path';
 import {exec} from 'shelljs';
+
+// The filename expected for creating the ng-dev config.
+const CONFIG_FILE_NAME = '.ng-dev-config.js';
 
 /**
  * Gets the path of the directory for the repository base.
@@ -25,19 +27,18 @@ export function getRepoBaseDir() {
 }
 
 /**
- * Retrieve the configuration from the .dev-infra.json file.
+ * Retrieve the configuration from the .ng-dev-config.js file.
  */
-export function getAngularDevConfig<K, T>(): DevInfraConfig<K, T> {
-  const configPath = join(getRepoBaseDir(), '.dev-infra.json');
-  let rawConfig = '';
+export function getAngularDevConfig<K, T>(supressError = false): DevInfraConfig<K, T> {
+  const configPath = join(getRepoBaseDir(), CONFIG_FILE_NAME);
   try {
-    rawConfig = readFileSync(configPath, 'utf8');
-  } catch {
-    throw Error(
-        `Unable to find config file at:\n` +
-        `  ${configPath}`);
+    return require(configPath) as DevInfraConfig<K, T>;
+  } catch (err) {
+    if (!supressError) {
+      throw Error(`Unable to load config file at:\n  ${configPath}`);
+    }
   }
-  return parse(rawConfig);
+  return {} as DevInfraConfig<K, T>;
 }
 
 /**
