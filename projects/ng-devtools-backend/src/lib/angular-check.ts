@@ -4,10 +4,6 @@ export const appIsAngularInDevMode = (): boolean => {
   return appIsAngular() && appHasGlobalNgDebugObject();
 };
 
-export const appIsAngularInProdMode = (): boolean => {
-  return appIsAngular() && !appHasGlobalNgDebugObject();
-};
-
 export const appIsAngularIvy = (): boolean => {
   return !!(window as any).getAllAngularRootElements?.()?.[0]?.__ngContext__;
 };
