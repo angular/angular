@@ -7,6 +7,21 @@
  */
 import {SafeValue} from './bypass';
 
+/*
+ * ========== WARNING ==========
+ *
+ * Style sanitization in Angular (for `[style.prop]` and `[style]` bindings)
+ * is currently deprecated. The reasoning why this feature has been deprecated
+ * is because style-based sanitization is no longer required with modern
+ * browsers.
+ *
+ * The contents of this file are still in flux. Various APIs and symbols will
+ * be removed before Angular v11 is out. Please hold off from modifying this
+ * file for the time being.
+ *
+ * =============================
+ */
+
 /**
  * A series of flags to instruct a style sanitizer to either validate
  * or sanitize a value.
