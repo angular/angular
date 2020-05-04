@@ -319,10 +319,10 @@
   resolved "https://registry.yarnpkg.com/@bazel/buildifier/-/buildifier-2.2.1.tgz#b5b21d0042ea48a9c43b54ec4824d4d6505988bc"
   integrity sha512-fDWMV2x03/K5dZnAEBeKS0gpn0LWCiv5kjhMB6q0f1Q5x6S7/+xoownxgWyNRo+qHxn+a2CtQSCRUpSC8QNg/w==
 
-"@bazel/ibazel@^0.12.3":
-  version "0.12.4"
-  resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.12.4.tgz#ddda7c8ead6e29dc8d637af446086a750f395218"
-  integrity sha512-FzOy+esB/fXVDbAmL6Ce2yCEy+PESZih8GypKhi0B8XzoZHAAn3QNnQcMNwo9PrIfp3G1989nM/JQ1b8jwEinQ==
+"@bazel/ibazel@^0.13.0":
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.13.0.tgz#2307bdf9ba0ad9835ee603b8fb521822bf3b8a11"
+  integrity sha512-SFyS6oiibp8KW9BgAU+Tk0DhrH/sJx9om/OlB/Mg4hDEn8F8dj2QRqJE6CVhBCtLDcZDeD7WIAZKQDxKRYIShw==
 
 "@bazel/jasmine@^1.6.0":
   version "1.6.0"
