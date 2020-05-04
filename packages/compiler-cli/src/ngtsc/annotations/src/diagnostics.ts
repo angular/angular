@@ -78,6 +78,14 @@ export function getDirectiveDiagnostics(
   return diagnostics;
 }
 
+export function getUndecoratedClassWithAngularFeaturesDiagnostic(node: ClassDeclaration):
+    ts.Diagnostic {
+  return makeDiagnostic(
+      ErrorCode.UNDECORATED_CLASS_USING_ANGULAR_FEATURES, node.name,
+      `Class is using Angular features but is not decorated. Please add an explicit ` +
+          `Angular decorator.`);
+}
+
 export function checkInheritanceOfDirective(
     node: ClassDeclaration, reader: MetadataReader, reflector: ReflectionHost,
     evaluator: PartialEvaluator): ts.Diagnostic|null {

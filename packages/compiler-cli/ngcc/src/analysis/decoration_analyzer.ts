@@ -104,7 +104,13 @@ export class DecorationAnalyzer {
     new DirectiveDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.scopeRegistry,
         this.fullMetaReader, NOOP_DEFAULT_IMPORT_RECORDER, this.injectableRegistry, this.isCore,
-        /* annotateForClosureCompiler */ false) as DecoratorHandler<unknown, unknown, unknown>,
+        /* annotateForClosureCompiler */ false,
+        // In ngcc we want to compile undecorated classes with Angular features. As of
+        // version 10, undecorated classes that use Angular features are no longer handled
+        // in ngtsc, but we want to ensure compatibility in ngcc for outdated libraries that
+        // have not migrated to explicit decorators. See: https://hackmd.io/@alx/ryfYYuvzH.
+        /* compileUndecoratedClassesWithAngularFeatures */ true
+    ) as DecoratorHandler<unknown, unknown, unknown>,
     // clang-format on
     // Pipe handler must be before injectable handler in list so pipe factories are printed
     // before injectable factories (so injectable factories can delegate to them)
