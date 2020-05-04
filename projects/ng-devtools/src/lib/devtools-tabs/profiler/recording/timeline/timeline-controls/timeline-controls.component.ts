@@ -8,10 +8,11 @@ import { ProfilerFrame } from 'protocol';
   styleUrls: ['./timeline-controls.component.scss'],
 })
 export class TimelineControlsComponent {
-  @Input() record: ProfilerFrame;
+  @Input() record: ProfilerFrame | undefined;
   @Input() estimatedFrameRate: number;
   @Input() frameColor: string;
   @Input() visualizationMode: VisualizationMode;
+  @Input() empty: boolean;
   @Output() changeVisualizationMode = new EventEmitter<VisualizationMode>();
   @Output() exportProfile = new EventEmitter<void>();
 

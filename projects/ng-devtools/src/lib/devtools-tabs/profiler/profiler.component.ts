@@ -1,9 +1,9 @@
-import { Component, ViewChildren, QueryList, OnInit, OnDestroy } from '@angular/core';
-import { RecordingModalComponent } from './recording/recording-modal/recording-modal.component';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MessageBus, Events, ProfilerFrame } from 'protocol';
 import { FileApiService } from '../../file-api-service';
 import { MatDialog } from '@angular/material/dialog';
 import { ProfilerImportDialogComponent } from './profiler-import-dialog/profiler-import-dialog.component';
+import { Subject } from 'rxjs';
 
 type State = 'idle' | 'recording' | 'visualizing';
 
@@ -17,10 +17,10 @@ const PROFILER_VERSION = 1;
 })
 export class ProfilerComponent implements OnInit, OnDestroy {
   state: State = 'idle';
-  stream: ProfilerFrame[] = [];
-  buffer: ProfilerFrame[] = [];
+  stream = new Subject<ProfilerFrame[]>();
 
-  @ViewChildren(RecordingModalComponent) recordingRef: QueryList<RecordingModalComponent>;
+  // We collect this buffer so we can have it available for export.
+  private _buffer: ProfilerFrame[] = [];
 
   constructor(
     private _fileApiService: FileApiService,
@@ -30,23 +30,26 @@ export class ProfilerComponent implements OnInit, OnDestroy {
 
   startRecording(): void {
     this.state = 'recording';
-    this.recordingRef.forEach((r) => r.start());
     this._messageBus.emit('startProfiling');
   }
 
   stopRecording(): void {
-    this.state = 'idle';
-    this.recordingRef.forEach((r) => r.stop());
+    this.state = 'visualizing';
     this._messageBus.emit('stopProfiling');
+    this.stream.complete();
   }
 
   ngOnInit(): void {
     this._messageBus.on('profilerResults', (remainingRecords) => {
-      this._profilerFinished(remainingRecords);
+      if (remainingRecords.duration > 0 && remainingRecords.source) {
+        this.stream.next([remainingRecords]);
+        this._buffer.push(remainingRecords);
+      }
     });
 
     this._messageBus.on('sendProfilerChunk', (chunkOfRecords: ProfilerFrame) => {
-      this.buffer.push(chunkOfRecords);
+      this.stream.next([chunkOfRecords]);
+      this._buffer.push(chunkOfRecords);
     });
 
     this._fileApiService.uploadedData.subscribe((importedFile) => {
@@ -69,34 +72,27 @@ export class ProfilerComponent implements OnInit, OnDestroy {
 
         processDataDialog.afterClosed().subscribe((result) => {
           if (result) {
-            this._viewProfilerData(importedFile.stream);
+            this.state = 'visualizing';
+            this._buffer = importedFile.buffer;
+            setTimeout(() => this.stream.next(importedFile.buffer));
           }
         });
       } else {
-        this._viewProfilerData(importedFile.stream);
+        this.state = 'visualizing';
+        this._buffer = importedFile.buffer;
+        setTimeout(() => this.stream.next(importedFile.buffer));
       }
     });
-  }
-
-  private _profilerFinished(remainingRecords: ProfilerFrame): void {
-    const flattenedBuffer = [].concat.apply([], this.buffer);
-    this._viewProfilerData([...flattenedBuffer, remainingRecords]);
-    this.buffer = [];
   }
 
   ngOnDestroy(): void {
     this._fileApiService.uploadedData.unsubscribe();
   }
 
-  private _viewProfilerData(stream: ProfilerFrame[]): void {
-    this.state = 'visualizing';
-    this.stream = stream;
-  }
-
   exportProfilerResults(): void {
     const fileToExport = {
       version: PROFILER_VERSION,
-      stream: this.stream,
+      buffer: this._buffer,
     };
     this._fileApiService.saveObjectAsJSON(fileToExport);
   }
@@ -106,7 +102,8 @@ export class ProfilerComponent implements OnInit, OnDestroy {
   }
 
   discardRecording(): void {
-    this.stream = [];
+    this.stream = new Subject<ProfilerFrame[]>();
     this.state = 'idle';
+    this._buffer = [];
   }
 }

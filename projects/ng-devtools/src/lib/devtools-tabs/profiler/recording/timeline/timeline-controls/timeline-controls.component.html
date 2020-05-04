@@ -1,6 +1,6 @@
 <div class="controls">
-  <button mat-stroked-button (click)="exportProfile.emit()">Export to JSON</button>
-  <mat-form-field>
+  <button *ngIf="!empty" mat-stroked-button (click)="exportProfile.emit()">Export to JSON</button>
+  <mat-form-field *ngIf="record">
     <mat-select [value]="visualizationMode" (selectionChange)="this.changeVisualizationMode.emit($event.value)">
       <mat-option [value]="flameGraphMode">
         Flame graph
@@ -14,12 +14,14 @@
     </mat-select>
   </mat-form-field>
 
-  <label *ngIf="estimatedFrameRate >= 60"> Time spent: {{ record.duration | number }} ms </label>
+  <label *ngIf="estimatedFrameRate >= 60 && record"> Time spent: {{ record?.duration | number }} ms </label>
 
-  <label [style.color]="frameColor" *ngIf="estimatedFrameRate < 60">
-    Time spent: {{ record.duration | number }} ms
+  <label [style.color]="frameColor" *ngIf="estimatedFrameRate < 60 && record">
+    Time spent: {{ record?.duration | number }} ms
   </label>
 
-  <label [style.color]="frameColor" *ngIf="estimatedFrameRate < 60"> Frame rate: {{ estimatedFrameRate }} fps </label>
-  <label *ngIf="record.source">Source: {{ record.source }}</label>
+  <label [style.color]="frameColor" *ngIf="estimatedFrameRate < 60 && record">
+    Frame rate: {{ estimatedFrameRate }} fps
+  </label>
+  <label *ngIf="record?.source && record">Source: {{ record?.source }}</label>
 </div>

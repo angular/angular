@@ -1,26 +1,34 @@
-<ng-container *ngIf="profilerFrames.length > 0; else noRecords">
-  <ng-container *ngTemplateOutlet="recordView; context: { record: frame }"></ng-container>
-</ng-container>
+<ng-recording-modal *ngIf="!hasFrames && !visualizing"></ng-recording-modal>
 
-<ng-template #noRecords>
-  Nothing was profiled
-</ng-template>
+<p class="info" *ngIf="!hasFrames && visualizing">
+  There's no information to show.
+</p>
 
-<ng-template let-record="record" #recordView>
-  <ng-timeline-controls
-    [frameColor]="getColorByFrameRate(estimateFrameRate(record.duration))"
-    [record]="record"
-    [estimatedFrameRate]="estimateFrameRate(record.duration)"
-    [visualizationMode]="visualizationMode"
-    (changeVisualizationMode)="visualizationMode = $event"
-    (exportProfile)="exportProfile.emit($event)"
-  ></ng-timeline-controls>
-  <ng-frame-selector
-    (move)="move($event)"
-    (selectFrame)="selectFrame($event)"
-    [profilerFramesLength]="profilerFrames.length"
-    [graphData]="graphData"
-    [currentFrame]="currentFrameIndex"
-  ></ng-frame-selector>
-  <ng-timeline-visualizer [visualizationMode]="visualizationMode" [frame]="record"></ng-timeline-visualizer>
-</ng-template>
+<ng-timeline-controls
+  [class.hidden]="!hasFrames"
+  [record]="frame"
+  [empty]="!hasFrames"
+  [frameColor]="getColorByFrameRate(estimateFrameRate(frame?.duration))"
+  [estimatedFrameRate]="estimateFrameRate(frame?.duration)"
+  [visualizationMode]="visualizationMode"
+  (changeVisualizationMode)="visualizationMode = $event"
+  (exportProfile)="exportProfile.emit($event)"
+></ng-timeline-controls>
+
+<ng-frame-selector
+  [class.hidden]="!hasFrames"
+  (move)="move($event)"
+  (selectFrame)="selectFrame($event)"
+  [graphData$]="graphData$"
+  [currentFrame]="currentFrameIndex"
+></ng-frame-selector>
+
+<p class="info" *ngIf="hasFrames && currentFrameIndex < 0">
+  Select a bar to preview a particular change detection cycle.
+</p>
+
+<ng-timeline-visualizer
+  *ngIf="hasFrames && currentFrameIndex >= 0"
+  [visualizationMode]="visualizationMode"
+  [frame]="frame"
+></ng-timeline-visualizer>
