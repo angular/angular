@@ -102,6 +102,9 @@ version: 3
 meta:
   1: &can-be-global-approved "\"global-approvers\" not in groups.approved"
   2: &can-be-global-docs-approved "\"global-docs-approvers\" not in groups.approved"
+  defaults: &defaults
+    reviews:
+      author_value: 1
 
 # turn on 'draft' support
 # https://docs.pullapprove.com/config/github-api-version/
@@ -121,6 +124,18 @@ pullapprove_conditions:
 
 
 groups:
+  # =========================================================
+  # Require review on all PRs
+  #
+  # All PRs require at least one review.  This rule will not
+  # request any reviewers, however will require that at least
+  # one review is provided before the group is satisfied.
+  # =========================================================
+  required-minimum-review:
+    reviews:
+      request: 0
+      required: 1
+
   # =========================================================
   #  Global Approvers
   #
@@ -161,6 +176,7 @@ groups:
   #  Framework: Animations
   # =========================================================
   fw-animations:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -185,6 +201,7 @@ groups:
   #  Framework: Compiler
   # =========================================================
   fw-compiler:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -209,6 +226,7 @@ groups:
   #  Framework: Compiler / ngcc
   # =========================================================
   fw-ngcc:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -225,6 +243,7 @@ groups:
   #  Framework: Migrations
   # =========================================================
   fw-migrations:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -240,6 +259,7 @@ groups:
   #  Framework: Core
   # =========================================================
   fw-core:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -359,6 +379,7 @@ groups:
   #  Framework: Http
   # =========================================================
   fw-http:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -380,6 +401,7 @@ groups:
   #  Framework: Elements
   # =========================================================
   fw-elements:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -400,6 +422,7 @@ groups:
   #  Framework: Forms
   # =========================================================
   fw-forms:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -432,6 +455,7 @@ groups:
   #  Framework: i18n
   # =========================================================
   fw-i18n:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -465,6 +489,7 @@ groups:
   #  Framework: Platform Server
   # =========================================================
   fw-platform-server:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -484,6 +509,7 @@ groups:
   #  Framework: Router
   # =========================================================
   fw-router:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -506,6 +532,7 @@ groups:
   #  Framework: Service Worker
   # =========================================================
   fw-service-worker:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -533,6 +560,7 @@ groups:
   #  Framework: Upgrade
   # =========================================================
   fw-upgrade:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -563,6 +591,7 @@ groups:
   #  Framework: Testing
   # =========================================================
   fw-testing:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -584,6 +613,7 @@ groups:
   #  Framework: Benchmarks
   # =========================================================
   fw-benchmarks:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - >
@@ -600,6 +630,7 @@ groups:
   #  Framework: Playground
   # =========================================================
   fw-playground:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - >
@@ -617,6 +648,7 @@ groups:
   #  Framework: Security
   # =========================================================
   fw-security:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -646,6 +678,7 @@ groups:
   #  Bazel
   # =========================================================
   bazel:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -664,6 +697,7 @@ groups:
   #  Language Service
   # =========================================================
   language-service:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -683,6 +717,7 @@ groups:
   #  zone.js
   # =========================================================
   zone-js:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -701,6 +736,7 @@ groups:
   #  Benchpress
   # =========================================================
   benchpress:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -718,6 +754,7 @@ groups:
   #  Integration Tests
   # =========================================================
   integration-tests:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - >
@@ -735,6 +772,7 @@ groups:
   #  Docs: Gettings Started & Tutorial
   # =========================================================
   docs-getting-started-and-tutorial:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -767,6 +805,7 @@ groups:
   #  Docs: Marketing
   # =========================================================
   docs-marketing:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -789,6 +828,7 @@ groups:
   #  Docs: Observables
   # =========================================================
   docs-observables:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -814,6 +854,7 @@ groups:
   #  Docs: Packaging, Tooling, Releasing
   # =========================================================
   docs-packaging-and-releasing:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -873,6 +914,7 @@ groups:
   #  Docs: CLI
   # =========================================================
   docs-cli:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -903,6 +945,7 @@ groups:
   #  Docs: CLI Libraries
   # =========================================================
   docs-libraries:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -923,6 +966,7 @@ groups:
   #  Docs: Schematics
   # =========================================================
   docs-schematics:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -945,6 +989,7 @@ groups:
   #  Docs-infra
   # =========================================================
   docs-infra:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - *can-be-global-docs-approved
@@ -974,6 +1019,7 @@ groups:
   #  Dev-infra
   # =========================================================
   dev-infra:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - >
@@ -1039,6 +1085,7 @@ groups:
   #  Public API
   # =========================================================
   public-api:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - >
@@ -1067,6 +1114,7 @@ groups:
   #  Size tracking
   # ================================================
   size-tracking:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - >
@@ -1089,6 +1137,7 @@ groups:
   #  Circular dependencies
   # ================================================
   circular-dependencies:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - >
@@ -1111,6 +1160,7 @@ groups:
   #  Code Ownership
   # =========================================================
   code-ownership:
+    <<: *defaults
     conditions:
       - *can-be-global-approved
       - >
@@ -1126,6 +1176,7 @@ groups:
   #  Catch all for if no groups match the code change
   # ====================================================
   fallback:
+    <<: *defaults
     # A group is considered to be `active` for a PR if at least one of group's
     # conditions matches the PR.
     #
