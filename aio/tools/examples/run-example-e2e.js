@@ -23,10 +23,7 @@ const DEFAULT_CLI_EXAMPLE_PORT = 4200;
 const DEFAULT_CLI_SPECS_CONCURRENCY = 1;
 const IGNORED_EXAMPLES = [];
 
-const fixmeIvyExamples = [
-  // fixmeIvy('unknown') app fails at runtime due to missing external service (goog is undefined)
-  'i18n',
-];
+const fixmeIvyExamples = [];
 
 if (!argv.viewengine) {
   IGNORED_EXAMPLES.push(...fixmeIvyExamples);
@@ -72,8 +69,10 @@ function runE2e() {
   const outputFile = path.join(AIO_PATH, './protractor-results.txt');
 
   return Promise.resolve()
-      .then(() => findAndRunE2eTests(argv.filter, outputFile, argv.shard,
-          argv.cliSpecsConcurrency || DEFAULT_CLI_SPECS_CONCURRENCY, argv.retry || 1))
+      .then(
+          () => findAndRunE2eTests(
+              argv.filter, outputFile, argv.shard,
+              argv.cliSpecsConcurrency || DEFAULT_CLI_SPECS_CONCURRENCY, argv.retry || 1))
       .then((status) => {
         reportStatus(status, outputFile);
         if (status.failed.length > 0) {
@@ -226,8 +225,12 @@ function runProtractorSystemJS(prepPromise, appDir, appRunSpawnInfo, outputFile)
         });
       })
       .then(
-          function() { return finish(appRunSpawnInfo.proc.pid, true); },
-          function() { return finish(appRunSpawnInfo.proc.pid, false); });
+          function() {
+            return finish(appRunSpawnInfo.proc.pid, true);
+          },
+          function() {
+            return finish(appRunSpawnInfo.proc.pid, false);
+          });
 }
 
 function finish(spawnProcId, ok) {
@@ -263,15 +266,15 @@ function runE2eTestsCLI(appDir, outputFile, bufferOutput, port) {
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
   const config = loadExampleConfig(appDir);
   const testCommands = config.tests || [{
-    cmd: 'yarn',
-    args: [
-      'e2e',
-      '--prod',
-      '--protractor-config=e2e/protractor-puppeteer.conf.js',
-      '--no-webdriver-update',
-      '--port={PORT}',
-    ],
-  }];
+                         cmd: 'yarn',
+                         args: [
+                           'e2e',
+                           '--prod',
+                           '--protractor-config=e2e/protractor-puppeteer.conf.js',
+                           '--no-webdriver-update',
+                           '--port={PORT}',
+                         ],
+                       }];
   let bufferedOutput = `\n\n============== AIO example output for: ${appDir}\n\n`;
 
   const e2eSpawnPromise = testCommands.reduce((prevSpawnPromise, {cmd, args}) => {
@@ -281,26 +284,30 @@ function runE2eTestsCLI(appDir, outputFile, bufferOutput, port) {
     args = args.map(a => a.replace('{PORT}', port || DEFAULT_CLI_EXAMPLE_PORT));
 
     return prevSpawnPromise.then(() => {
-      const currSpawn = spawnExt(cmd, args, {cwd: appDir}, false,
-          bufferOutput ? msg => bufferedOutput += msg : undefined);
+      const currSpawn = spawnExt(
+          cmd, args, {cwd: appDir}, false, bufferOutput ? msg => bufferedOutput += msg : undefined);
       return currSpawn.promise.then(
           () => Promise.resolve(finish(currSpawn.proc.pid, true)),
           () => Promise.reject(finish(currSpawn.proc.pid, false)));
     });
   }, Promise.resolve());
 
-  return e2eSpawnPromise.then(() => {
-    fs.appendFileSync(outputFile, `Passed: ${appDir}\n\n`);
-    return true;
-  }, () => {
-    fs.appendFileSync(outputFile, `Failed: ${appDir}\n\n`);
-    return false;
-  }).then(passed => {
-    if (bufferOutput) {
-      process.stdout.write(bufferedOutput);
-    }
-    return passed;
-  });
+  return e2eSpawnPromise
+      .then(
+          () => {
+            fs.appendFileSync(outputFile, `Passed: ${appDir}\n\n`);
+            return true;
+          },
+          () => {
+            fs.appendFileSync(outputFile, `Failed: ${appDir}\n\n`);
+            return false;
+          })
+      .then(passed => {
+        if (bufferOutput) {
+          process.stdout.write(bufferedOutput);
+        }
+        return passed;
+      });
 }
 
 // Report final status.
@@ -309,23 +316,31 @@ function reportStatus(status, outputFile) {
 
   log.push('Suites ignored due to legacy guides:');
   IGNORED_EXAMPLES.filter(example => !fixmeIvyExamples.find(ex => ex.startsWith(example)))
-      .forEach(function(val) { log.push('  ' + val); });
+      .forEach(function(val) {
+        log.push('  ' + val);
+      });
 
   if (!argv.viewengine) {
     log.push('');
     log.push('Suites ignored due to breakage with Ivy:');
-    fixmeIvyExamples.forEach(function(val) { log.push('  ' + val); });
+    fixmeIvyExamples.forEach(function(val) {
+      log.push('  ' + val);
+    });
   }
 
   log.push('');
   log.push('Suites passed:');
-  status.passed.forEach(function(val) { log.push('  ' + val); });
+  status.passed.forEach(function(val) {
+    log.push('  ' + val);
+  });
 
   if (status.failed.length == 0) {
     log.push('All tests passed');
   } else {
     log.push('Suites failed:');
-    status.failed.forEach(function(val) { log.push('  ' + val); });
+    status.failed.forEach(function(val) {
+      log.push('  ' + val);
+    });
   }
   log.push('\nElapsed time: ' + status.elapsedTime + ' seconds');
   log = log.join('\n');
@@ -334,8 +349,8 @@ function reportStatus(status, outputFile) {
 }
 
 // Returns both a promise and the spawned process so that it can be killed if needed.
-function spawnExt(command, args, options, ignoreClose = false,
-                  printMessage = msg => process.stdout.write(msg)) {
+function spawnExt(
+    command, args, options, ignoreClose = false, printMessage = msg => process.stdout.write(msg)) {
   let proc;
   const promise = new Promise((resolve, reject) => {
     let descr = command + ' ' + args.join(' ');
@@ -370,13 +385,19 @@ function getE2eSpecs(basePath, filter) {
   let specs = {};
 
   return getE2eSpecsFor(basePath, SJS_SPEC_FILENAME, filter)
-      .then(sjsPaths => { specs.systemjs = sjsPaths; })
+      .then(sjsPaths => {
+        specs.systemjs = sjsPaths;
+      })
       .then(() => {
         return getE2eSpecsFor(basePath, CLI_SPEC_FILENAME, filter).then(cliPaths => {
-          return cliPaths.map(p => { return p.replace(`${CLI_SPEC_FILENAME}`, ''); });
+          return cliPaths.map(p => {
+            return p.replace(`${CLI_SPEC_FILENAME}`, '');
+          });
         });
       })
-      .then(cliPaths => { specs.cli = cliPaths; })
+      .then(cliPaths => {
+        specs.cli = cliPaths;
+      })
       .then(() => specs);
 }
 
