@@ -60,7 +60,7 @@ v9 - v12
 | `@angular/core/testing`       | [`TestBed.get`](#testing)                                                     | <!--v9--> v12 |
 | `@angular/router`             | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
 | template syntax               | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)            | <!--v7--> unspecified |
-| browser support               | [`IE 9 and 10`](#ie-9-10)                                                     | <!--v10--> unspecified |
+| browser support               | [`IE 9 and 10`](#ie-9-10)                                                     | <!--v10--> v11 |
 
 
 
