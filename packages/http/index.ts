@@ -11,4 +11,6 @@
 // replaces this file with production index.ts when it rewrites private symbol
 // names.
 
+// THIS SHOULD NOT BE SYNCED INTO G3
+
 export * from './public_api';

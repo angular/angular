@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// THIS SHOULD NOT BE SYNCED INTO G3
+
 /**
  * Supported http methods.
  * @deprecated see https://angular.io/guide/http
