@@ -31,5 +31,5 @@ export interface PullApproveConfig {
 }
 
 export function parsePullApproveYaml(rawYaml: string): PullApproveConfig {
-  return parseYaml(rawYaml) as PullApproveConfig;
+  return parseYaml(rawYaml, {merge: true}) as PullApproveConfig;
 }
