@@ -33,6 +33,11 @@ build --incompatible_strict_action_env
 run --incompatible_strict_action_env
 test --incompatible_strict_action_env
 
+# Do not build runfile trees by default. If an execution strategy relies on runfile
+# symlink teee, the tree is created on-demand. See: https://github.com/bazelbuild/bazel/issues/6627
+# and https://github.com/bazelbuild/bazel/commit/03246077f948f2790a83520e7dccc2625650e6df
+build --nobuild_runfile_links
+
 ###############################
 # Release support             #
 # Turn on these settings with #
