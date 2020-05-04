@@ -704,7 +704,11 @@ export class NgCompiler {
       // clang-format off
         new DirectiveDecoratorHandler(
             reflector, evaluator, metaRegistry, scopeRegistry, metaReader,
-            defaultImportTracker, injectableRegistry, isCore, this.closureCompilerEnabled
+            defaultImportTracker, injectableRegistry, isCore, this.closureCompilerEnabled,
+            // In ngtsc we no longer want to compile undecorated classes with Angular features.
+            // Migrations for these patterns ran as part of `ng update` and we want to ensure
+            // that projects do not regress. See https://hackmd.io/@alx/ryfYYuvzH for more details.
+            /* compileUndecoratedClassesWithAngularFeatures */ false
         ) as Readonly<DecoratorHandler<unknown, unknown, unknown>>,
       // clang-format on
       // Pipe handler must be before injectable handler in list so pipe factories are printed
