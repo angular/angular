@@ -564,7 +564,7 @@ In practical terms, the `package.json` of all `@angular` packages will change in
 For more information about the npm package format, see the [Angular Package Format spec](https://goo.gl/jB3GVv).
 
 {@a ie-9-10}
-### IE 9 and 10
+### IE 9 and 10 support
 
 Support for IE 9 and 10 has been deprecated and will be removed in a future version.
 Supporting outdated browsers like these increases bundle size, code complexity, and test load, and also requires time and effort that could be spent on improvements to the framework.
