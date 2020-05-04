@@ -49,6 +49,10 @@ export class MyCompBase extends MyCompSuperBase {}
 })
 export class MyComp extends MyCompBase {}
 
+@Component({
+  selector: 'my-comp',
+  template: '',
+})
 export class WrappedMyComp extends MyComp {}
 
 @NgModule({declarations: [MyComp, WrappedMyComp]})
@@ -60,3 +64,15 @@ export class AbstractDir {}
 export class DerivedAbstractDir extends AbstractDir {}
 
 export class WrappedDerivedAbstractDir extends DerivedAbstractDir {}
+
+export class UndecoratedService {
+  ngOnDestroy() {}
+}
+
+export class UndecoratedPipeBase {
+  ngOnDestroy() {}
+}
+
+export class WithDirectiveLifecycleHook {
+  ngOnInit() {}
+}

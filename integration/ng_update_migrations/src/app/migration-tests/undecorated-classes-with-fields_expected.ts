@@ -56,8 +56,8 @@ export class MyCompBase extends MyCompSuperBase {}
 export class MyComp extends MyCompBase {}
 
 @Component({
-    selector: 'my-comp',
-    template: '',
+  selector: 'my-comp',
+  template: '',
 })
 export class WrappedMyComp extends MyComp {}
 
@@ -72,3 +72,18 @@ export class DerivedAbstractDir extends AbstractDir {}
 
 @Directive()
 export class WrappedDerivedAbstractDir extends DerivedAbstractDir {}
+
+// TODO: Add Angular decorator.
+export class UndecoratedService {
+  ngOnDestroy() {}
+}
+
+// TODO: Add Angular decorator.
+export class UndecoratedPipeBase {
+  ngOnDestroy() {}
+}
+
+@Directive()
+export class WithDirectiveLifecycleHook {
+  ngOnInit() {}
+}
