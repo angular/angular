@@ -1,84 +1,79 @@
 .presskit-container {
   padding: 0 32px 32px 32px;
 
-  h2 {
-    color: #37474F;
+  .presskit-group {
+    display: flex;
+    flex-wrap: wrap;
   }
 
-  .l-space-left-3 {
-    margin-left: 3 * 8px;
-  }
+  .presskit-item {
+    width: 50%;
+    min-width: 400px;
 
-  .cc-by-anchor {
-    text-decoration: underline;
-    color: grey !important;
-  }
+    &:first-child {
+      margin-top: 0;
 
-  .presskit-row {
-    margin: 48px 0;
-    width: 100%;
+      @media(max-width: 599px) {
+        margin-top: 24px;
+      }
+    }
+
+    @media screen and (max-width: 600px) {
+      display: flex;
+      margin-bottom: 2rem;
+    }
 
     .presskit-inner {
       display: flex;
       align-items: center;
+      margin-right: 1rem;
 
-      @media(max-width: 599px) {
+      @media(max-width: 600px) {
         flex-direction: column;
       }
 
-      h3 {
-        font-weight: 500;
-        margin-top: 0;
-        margin-bottom: 0;
-        color: #455A64;
+      a {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
 
-        @media(max-width: 599px) {
-          padding-bottom: 16px;
+        i {
+          margin-left: 0.5rem;
         }
       }
 
       .transparent-img-bg {
         margin-top: 10px;
-        border-radius: 4px;
-        width: 128px;
-        height: 128px;
-        background-color: #34474F;
+        border-radius: 100%;
+        width: 52px;
+        height: 52px;
+        background-color: $deepgray;
+        padding: 4px;
       }
 
       ul {
         padding: 0;
         list-style-type: none;
 
-        @media(max-width: 599px) {
+        @media(max-width: 600px) {
           padding: 0 !important;
           margin: 0 !important;
-        }
-
-        li {
-          margin: 0 0 8px 0;
         }
       }
     }
 
     .presskit-image-container {
+      margin-right: 2rem;
 
       @media(max-width: 599px) {
-        text-align: center;
+        width: 100%;
+        margin-right: 0;
       }
 
       img {
-        height: 128px;
+        height: 60px;
         width: auto;
-        margin-bottom: 8px * 2;
       }
-    }
-  }
-
-  .presskit-row:first-child {
-    margin-top: 0;
-
-    @media(max-width: 599px) {
-      margin-top: 48px;
     }
   }
 }

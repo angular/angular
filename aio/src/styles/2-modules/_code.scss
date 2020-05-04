@@ -42,7 +42,7 @@ code-example, code-tabs {
   }
 }
 
-p code {
+p code, ul code, ol code {
   background-color: rgba($lightgray, 0.5);
   color: $deepgray;
   padding: 4px;

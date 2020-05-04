@@ -83,14 +83,20 @@ a.button.mat-button {
   }
 }
 
-a.filter-button {
-  width: 140px;
-  @include font-size(14);
+.filter-button,
+a.button.mat-button.filter-button {
+  width: 168px;
+  @include font-size(16);
   padding: 0px 16px;
   margin: 8px;
   @include line-height(48);
-  border: 2px solid $blue;
   border-radius: 4px;
+  background-color: rgba($blue, 0.2);
+
+ &.selected {
+    background-color: $blue;
+    color: $white;
+  }
 
   &:hover {
     background-color: $blue;
@@ -100,4 +106,25 @@ a.filter-button {
 
 [mat-button], [mat-raised-button], [mat-button], [mat-raised-button] {
   text-transform: uppercase;
+}
+
+
+.group-buttons {
+  margin: 0 auto 32px;
+
+  @media (max-width: 480px) {
+    a.button.mat-button.filter-button,
+    .button {
+      font-size: 1.4rem;
+      margin: auto 0.25rem;
+      width: auto;
+    }
+  }
+
+  a {
+    &.selected {
+      background-color: $blue;
+      color: $white;
+    }
+  }
 }

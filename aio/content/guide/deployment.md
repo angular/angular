@@ -135,8 +135,6 @@ Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpa
 
 </div>
 
-<hr>
-
 {@a server-configuration}
 
 ## Server configuration

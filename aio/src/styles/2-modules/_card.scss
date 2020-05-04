@@ -5,17 +5,27 @@
     margin: 16px 0;
 
     .docs-card {
-      @include card(194px, 30%);
+      @include card(auto, 32%);
+      min-height: 200px;
       max-width: 340px;
-      min-width: 262px;
+      min-width: 200px;
       margin: 24px 8px;
-      padding-bottom: 48px;
+      padding-bottom: 56px;
       position: relative;
+      text-decoration: none;
 
       @media screen and (max-width: 600px) {
         width: 100%;
         margin: 8px auto;
         max-width: none;
+      }
+
+      &:first-child {
+        margin-left: 0;
+      }
+
+      &:last-child {
+        margin-right: 0;
       }
 
       &:hover {
@@ -43,7 +53,7 @@
         @include font-size(20);
         @include line-height(24);
         margin: 0;
-        padding: 32px 0 24px;
+        padding: 24px 0 16px;
         text-transform: none;
         text-align: center;
       }

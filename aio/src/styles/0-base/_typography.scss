@@ -32,7 +32,9 @@ h2 {
   @include font-size(32);
   margin-top: 20px;
   clear: both;
+}
 
+main:not(#features):not(#resources):not(#events):not(#home):not(#presskit):not(#contribute) h2 {
   &:before {
     content: "";
     display: block;
@@ -43,20 +45,20 @@ h2 {
 
 h3 {
   @include font-size(24);
-  margin-top: 24px;
+  margin-top: 3rem;
   clear: both;
 }
 
 h4 {
   @include font-size(20);
-  margin-top: 8px;
+  margin-top: 3rem;
   clear: both;
 }
 
 h5 {
   @include font-size(18);
   font-weight: 500;
-  margin-top: 8px;
+  margin-top: 2rem;
   clear: both;
 }
 
@@ -64,7 +66,7 @@ h6 {
   @include font-size(16);
   font-weight: 500;
   color: $mediumgray;
-  margin-top: 8px;
+  margin-top: 2rem;
   clear: both;
 }
 
@@ -185,15 +187,9 @@ code {
   color: $darkgray;
 }
 
-// .sidenav-content a {
-//   color: $blue;
+.content a:not(.button):not(.docs-card):not(.resource-row-link):not(.header-link) {
+  color: $blue;
 
-//   &:hover {
-//     background-color: rgba($backgroundgray, 0.2);
-//   }
-// }
-
-.content a {
   &:hover {
     text-decoration: underline;
   }
