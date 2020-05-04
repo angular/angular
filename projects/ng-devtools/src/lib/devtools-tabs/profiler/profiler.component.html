@@ -15,11 +15,8 @@
         <input type="file" (change)="importProfilerResults($event)" placeholder="Upload file" accept=".json" />
       </span>
     </p>
-    <p class="recording" [class.hidden]="state !== 'recording'">
-      <ng-recording-modal></ng-recording-modal>
-    </p>
-    <p class="visualization" *ngIf="state === 'visualizing'">
-      <ng-recording-timeline [records]="stream" (exportProfile)="exportProfilerResults()"> </ng-recording-timeline>
+    <p class="visualization" *ngIf="state !== 'idle'">
+      <ng-recording-timeline [stream]="stream" (exportProfile)="exportProfilerResults()"> </ng-recording-timeline>
     </p>
   </div>
 </div>

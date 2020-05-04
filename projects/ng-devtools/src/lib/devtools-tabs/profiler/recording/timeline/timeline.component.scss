@@ -4,3 +4,16 @@
   height: 100%;
   display: block;
 }
+
+.info {
+  font-size: 1.2em;
+  text-align: center;
+}
+
+.hidden {
+  /*
+    intentionally using visibility: hidden
+    display: none breaks the virtual scroll
+  */
+  visibility: hidden;
+}

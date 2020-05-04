@@ -19,9 +19,14 @@
 
   .bar-container {
     max-width: calc(100vw - 150px);
-    display: flex;
     align-items: baseline;
     overflow-x: auto;
+    width: 100%;
+    height: 100%;
+
+    ::ng-deep .cdk-virtual-scroll-content-wrapper {
+      display: flex;
+    }
 
     &::-webkit-scrollbar {
       display: none;

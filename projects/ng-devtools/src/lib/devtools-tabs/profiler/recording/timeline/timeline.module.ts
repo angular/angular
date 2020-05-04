@@ -10,13 +10,27 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { FrameSelectorComponent } from './frame-selector/frame-selector.component';
 import { TimelineControlsComponent } from './timeline-controls/timeline-controls.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { RecordingDialogComponent } from './recording-modal/recording-dialog/recording-dialog.component';
+import { RecordingModalComponent } from './recording-modal/recording-modal.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
-  declarations: [TimelineComponent, FrameSelectorComponent, TimelineControlsComponent],
+  declarations: [
+    TimelineComponent,
+    RecordingDialogComponent,
+    RecordingModalComponent,
+    FrameSelectorComponent,
+    TimelineControlsComponent,
+  ],
   imports: [
+    ScrollingModule,
     CommonModule,
     FormsModule,
     RecordingVisualizerModule,
+    MatDialogModule,
+    MatProgressBarModule,
     MatButtonModule,
     MatTooltipModule,
     MatIconModule,
