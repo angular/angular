@@ -28,8 +28,8 @@ http_archive(
 
 load("@build_bazel_rules_nodejs//:index.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
-# The minimum bazel version to use with this repo is v2.0.0.
-check_bazel_version("2.0.0")
+# The minimum bazel version to use with this repo is v3.1.0.
+check_bazel_version("3.1.0")
 
 node_repositories(
     node_repositories = {
@@ -105,9 +105,9 @@ sass_repositories()
 # Bring in bazel_toolchains for RBE setup configuration.
 http_archive(
     name = "bazel_toolchains",
-    sha256 = "239a1a673861eabf988e9804f45da3b94da28d1aff05c373b013193c315d9d9e",
-    strip_prefix = "bazel-toolchains-3.0.1",
-    url = "https://github.com/bazelbuild/bazel-toolchains/archive/3.0.1.tar.gz",
+    sha256 = "144290c4166bd67e76a54f96cd504ed86416ca3ca82030282760f0823c10be48",
+    strip_prefix = "bazel-toolchains-3.1.1",
+    url = "https://github.com/bazelbuild/bazel-toolchains/archive/3.1.1.tar.gz",
 )
 
 load("@bazel_toolchains//repositories:repositories.bzl", bazel_toolchains_repositories = "repositories")
@@ -122,7 +122,7 @@ rbe_autoconfig(
     # platform configurations for the "ubuntu16_04" image. Otherwise the autoconfig rule would
     # need to pull the image and run it in order determine the toolchain configuration.
     # See: https://github.com/bazelbuild/bazel-toolchains/blob/master/configs/ubuntu16_04_clang/versions.bzl#L9
-    base_container_digest = "sha256:5464e3e83dc656fc6e4eae6a01f5c2645f1f7e95854b3802b85e86484132d90e",
+    base_container_digest = "sha256:b516a2d69537cb40a7c6a7d92d0008abb29fba8725243772bdaf2c83f1be2272",
     digest = "sha256:0b8fa87db4b8e5366717a7164342a029d1348d2feea7ecc4b18c780bc2507059",
     registry = "marketplace.gcr.io",
     # We can't use the default "ubuntu16_04" RBE image provided by the autoconfig because we need
