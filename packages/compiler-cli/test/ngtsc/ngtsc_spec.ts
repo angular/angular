@@ -545,6 +545,7 @@ runInEachFileSystem(os => {
         Output as AngularOutput
       } from '@angular/core';
 
+      @AngularDirective()
       export class TestBase {
         @AngularInput() input: any;
         @AngularOutput() output: any;
@@ -884,10 +885,11 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('background-color: blue');
     });
 
-    it('should include generic type for undecorated class declarations', () => {
+    it('should include generic type in directive definition', () => {
       env.write('test.ts', `
-        import {Component, Input, NgModule} from '@angular/core';
+        import {Directive, Input, NgModule} from '@angular/core';
 
+        @Directive()
         export class TestBase {
           @Input() input: any;
         }
@@ -903,6 +905,23 @@ runInEachFileSystem(os => {
       expect(dtsContents)
           .toContain(
               `static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestBase, never, never, { "input": "input"; }, {}, never>;`);
+    });
+
+    it('should error if undecorated class with Angular features has been discovered', () => {
+      env.write('test.ts', `
+        import {Component, Input, NgModule} from '@angular/core';
+
+        export class SomeBaseClass {
+          @Input() input: any;
+        }
+    `);
+
+      const errors = env.driveDiagnostics();
+      expect(errors.length).toBe(1);
+      expect(trim(errors[0].messageText as string))
+          .toContain(
+              'Class is using Angular features but is not decorated. Please add an explicit ' +
+              'Angular decorator.');
     });
 
     it('should compile NgModules without errors', () => {

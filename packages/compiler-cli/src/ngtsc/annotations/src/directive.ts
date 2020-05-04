@@ -18,7 +18,7 @@ import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembe
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 
-import {getDirectiveDiagnostics, getProviderDiagnostics} from './diagnostics';
+import {getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic} from './diagnostics';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
 import {createSourceSpan, findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
@@ -48,28 +48,20 @@ export class DirectiveDecoratorHandler implements
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
       private metaReader: MetadataReader, private defaultImportRecorder: DefaultImportRecorder,
       private injectableRegistry: InjectableClassRegistry, private isCore: boolean,
-      private annotateForClosureCompiler: boolean) {}
+      private annotateForClosureCompiler: boolean,
+      private compileUndecoratedClassesWithAngularFeatures: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = DirectiveDecoratorHandler.name;
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null):
       DetectResult<Decorator|null>|undefined {
-    // If the class is undecorated, check if any of the fields have Angular decorators or lifecycle
-    // hooks, and if they do, label the class as an abstract directive.
+    // If a class is undecorated but uses Angular features, we detect it as an
+    // abstract directive. This is an unsupported pattern as of v10, but we want
+    // to still detect these patterns so that we can report diagnostics, or compile
+    // them for backwards compatibility in ngcc.
     if (!decorators) {
-      const angularField = this.reflector.getMembersOfClass(node).find(member => {
-        if (!member.isStatic && member.kind === ClassMemberKind.Method &&
-            LIFECYCLE_HOOKS.has(member.name)) {
-          return true;
-        }
-        if (member.decorators) {
-          return member.decorators.some(
-              decorator => FIELD_DECORATORS.some(
-                  decoratorName => isAngularDecorator(decorator, decoratorName, this.isCore)));
-        }
-        return false;
-      });
+      const angularField = this.findClassFieldWithAngularFeatures(node);
       return angularField ? {trigger: angularField.node, decorator: null, metadata: null} :
                             undefined;
     } else {
@@ -80,6 +72,14 @@ export class DirectiveDecoratorHandler implements
 
   analyze(node: ClassDeclaration, decorator: Readonly<Decorator|null>, flags = HandlerFlags.NONE):
       AnalysisOutput<DirectiveHandlerData> {
+    // Skip processing of the class declaration if compilation of undecorated classes
+    // with Angular features is disabled. Previously in ngtsc, such classes have always
+    // been processed, but we want to enforce a consistent decorator mental model.
+    // See: https://v9.angular.io/guide/migration-undecorated-classes.
+    if (this.compileUndecoratedClassesWithAngularFeatures === false && decorator === null) {
+      return {diagnostics: [getUndecoratedClassWithAngularFeaturesDiagnostic(node)]};
+    }
+
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.defaultImportRecorder, this.isCore,
         flags, this.annotateForClosureCompiler);
@@ -166,6 +166,27 @@ export class DirectiveDecoratorHandler implements
         type: res.type,
       }
     ];
+  }
+
+  /**
+   * Checks if a given class uses Angular features and returns the TypeScript node
+   * that indicated the usage. Classes are considered using Angular features if they
+   * contain class members that are either decorated with a known Angular decorator,
+   * or if they correspond to a known Angular lifecycle hook.
+   */
+  private findClassFieldWithAngularFeatures(node: ClassDeclaration): ClassMember|undefined {
+    return this.reflector.getMembersOfClass(node).find(member => {
+      if (!member.isStatic && member.kind === ClassMemberKind.Method &&
+          LIFECYCLE_HOOKS.has(member.name)) {
+        return true;
+      }
+      if (member.decorators) {
+        return member.decorators.some(
+            decorator => FIELD_DECORATORS.some(
+                decoratorName => isAngularDecorator(decorator, decoratorName, this.isCore)));
+      }
+      return false;
+    });
   }
 }
 
