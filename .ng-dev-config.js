@@ -73,6 +73,7 @@ const format = {
 };
 
 // Export function to build ng-dev configuration object.
-module.exports = () => {
-  return {commitMessage, format};
-}
+module.exports = {
+  commitMessage,
+  format,
+};
