@@ -772,6 +772,19 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('should return the correct plural form for ICU expressions when using "ro" locale', () => {
+      // The "ro" locale has a complex plural function that can handle muliple options
+      // (and string inputs)
+      //
+      // function plural(n: number): number {
+      //   let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+      //   if (i === 1 && v === 0) return 1;
+      //   if (!(v === 0) || n === 0 ||
+      //       !(n === 1) && n % 100 === Math.floor(n % 100) && n % 100 >= 1 && n % 100 <= 19)
+      //     return 3;
+      //   return 5;
+      // }
+      //
+      // Compare this to the "es" locale in the next test
       loadTranslations({
         [computeMsgId(
             '{VAR_PLURAL, plural, =0 {no email} =one {one email} =few {a few emails} =other {lots of emails}}')]:
@@ -816,6 +829,15 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it(`should return the correct plural form for ICU expressions when using "es" locale`, () => {
+      // The "es" locale has a simple plural function that can only handle a few options
+      // (and not string inputs)
+      //
+      // function plural(n: number): number {
+      //   if (n === 1) return 1;
+      //   return 5;
+      // }
+      //
+      // Compare this to the "ro" locale in the previous test
       const icuMessage = '{VAR_PLURAL, plural, =0 {no email} =one ' +
           '{one email} =few {a few emails} =other {lots of emails}}';
       loadTranslations({[computeMsgId(icuMessage)]: icuMessage});
