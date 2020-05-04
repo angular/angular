@@ -18,8 +18,8 @@ const cliBinPath = path.join(projectDir, 'node_modules/@angular/cli/bin/ng');
 
 const expectationFiles = glob.sync('**/*_expected.ts', {cwd: projectDir});
 
-const fromVersion = '8.0.0';
-const toVersion = '9.0.0';
+const fromVersion = '9.0.0';
+const toVersion = '10.0.0';
 // Note that we need to specify "--allow-dirty" as the repository will become dirty
 // if dependencies for the integration test are installed (i.e. modified lock files)
 const updateCommandArgs = ['@angular/core', '--migrate-only', '--from', fromVersion,

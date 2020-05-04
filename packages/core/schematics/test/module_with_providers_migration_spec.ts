@@ -230,6 +230,6 @@ describe('ModuleWithProviders migration', () => {
   }
 
   function runMigration() {
-    return runner.runSchematicAsync('migration-v9-module-with-providers', {}, tree).toPromise();
+    return runner.runSchematicAsync('migration-v10-module-with-providers', {}, tree).toPromise();
   }
 });
