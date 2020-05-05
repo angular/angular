@@ -47,7 +47,6 @@ runInEachFileSystem(() => {
     let UNWANTED_PROTOTYPE_EXPORT_FILE: TestFile;
     let TYPINGS_SRC_FILES: TestFile[];
     let TYPINGS_DTS_FILES: TestFile[];
-    let MODULE_WITH_PROVIDERS_PROGRAM: TestFile[];
     let NAMESPACED_IMPORT_FILE: TestFile;
 
     // Helpers
@@ -772,110 +771,6 @@ runInEachFileSystem(() => {
         },
         {name: _('/ep/typings/shadow-class.d.ts'), contents: `export declare class ShadowClass {}`},
         {name: _('/an_external_lib/index.d.ts'), contents: 'export declare class ShadowClass {}'},
-      ];
-
-      MODULE_WITH_PROVIDERS_PROGRAM = [
-        {
-          name: _('/src/index.js'),
-          contents: `
-          import * as functions from './functions';
-          import * as methods from './methods';
-          import * as outer_aliased_class from './outer_aliased_class';
-          import * as inner_aliased_class from './inner_aliased_class';
-          `
-        },
-        {
-          name: _('/src/functions.js'),
-          contents: `
-    import {ExternalModule} from './module';
-    import * as mod from './module';
-
-    var SomeService = (function() {
-      function SomeService() {}
-      return SomeService;
-    }());
-
-    var InternalModule = (function() {
-      function InternalModule() {}
-      return InternalModule;
-    }());
-    export function aNumber() { return 42; }
-    export function aString() { return 'foo'; }
-    export function emptyObject() { return {}; }
-    export function ngModuleIdentifier() { return { ngModule: InternalModule }; }
-    export function ngModuleWithEmptyProviders() { return { ngModule: InternalModule, providers: [] }; }
-    export function ngModuleWithProviders() { return { ngModule: InternalModule, providers: [SomeService] }; }
-    export function onlyProviders() { return { providers: [SomeService] }; }
-    export function ngModuleNumber() { return { ngModule: 42 }; }
-    export function ngModuleString() { return { ngModule: 'foo' }; }
-    export function ngModuleObject() { return { ngModule: { foo: 42 } }; }
-    export function externalNgModule() { return { ngModule: ExternalModule }; }
-    export function namespacedExternalNgModule() { return { ngModule: mod.ExternalModule }; }
-    export {SomeService, InternalModule};
-    `
-        },
-        {
-          name: _('/src/methods.js'),
-          contents: `
-    import {ExternalModule} from './module';
-    import * as mod from './module';
-    var SomeService = (function() {
-      function SomeService() {}
-      return SomeService;
-    }());
-
-    var InternalModule = (function() {
-      function InternalModule() {}
-      InternalModule.prototype = {
-        instanceNgModuleIdentifier: function() { return { ngModule: InternalModule }; },
-        instanceNgModuleWithEmptyProviders: function() { return { ngModule: InternalModule, providers: [] }; },
-        instanceNgModuleWithProviders: function() { return { ngModule: InternalModule, providers: [SomeService] }; },
-        instanceExternalNgModule: function() { return { ngModule: ExternalModule }; },
-        namespacedExternalNgModule = function() { return { ngModule: mod.ExternalModule }; },
-      };
-      InternalModule.aNumber = function() { return 42; };
-      InternalModule.aString = function() { return 'foo'; };
-      InternalModule.emptyObject = function() { return {}; };
-      InternalModule.ngModuleIdentifier = function() { return { ngModule: InternalModule }; };
-      InternalModule.ngModuleWithEmptyProviders = function() { return { ngModule: InternalModule, providers: [] }; };
-      InternalModule.ngModuleWithProviders = function() { return { ngModule: InternalModule, providers: [SomeService] }; };
-      InternalModule.onlyProviders = function() { return { providers: [SomeService] }; };
-      InternalModule.ngModuleNumber = function() { return { ngModule: 42 }; };
-      InternalModule.ngModuleString = function() { return { ngModule: 'foo' }; };
-      InternalModule.ngModuleObject = function() { return { ngModule: { foo: 42 } }; };
-      InternalModule.externalNgModule = function() { return { ngModule: ExternalModule }; };
-      InternalModule.namespacedExternalNgModule = function() { return { ngModule: mod.ExternalModule }; };
-      return InternalModule;
-    }());
-    export {SomeService, InternalModule};
-    `
-        },
-        {
-          name: _('/src/outer_aliased_class.js'),
-          contents: `
-    var AliasedModule = AliasedModule_1 = (function() {
-      function AliasedModule() {}
-      return AliasedModule;
-    }());
-    AliasedModule.forRoot = function() { return { ngModule: AliasedModule_1 }; };
-    export { AliasedModule };
-    var AliasedModule_1;
-    `
-        },
-        {
-          name: _('/src/inner_aliased_class.js'),
-          contents: `
-    var AliasedModule = (function() {
-      function AliasedModule() {}
-      AliasedModule_1 = AliasedModule;
-      AliasedModule.forRoot = function() { return { ngModule: AliasedModule_1 }; };
-      var AliasedModule_1;
-      return AliasedModule;
-    }());
-    export { AliasedModule };
-    `
-        },
-        {name: _('/src/module.js'), contents: 'export class ExternalModule {}'},
       ];
 
       NAMESPACED_IMPORT_FILE = {
@@ -2876,81 +2771,6 @@ runInEachFileSystem(() => {
             bundle.program, SIMPLE_CLASS_FILE.name, 'ChildClass', isNamedVariableDeclaration);
         expect(host.getAdjacentNameOfClass(childClass).text).toEqual('InnerChildClass');
       });
-    });
-
-    describe('getModuleWithProvidersFunctions', () => {
-      it('should find every exported function that returns an object that looks like a ModuleWithProviders object',
-         () => {
-           loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-           const bundle = makeTestBundleProgram(_('/src/index.js'));
-           const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
-           const file = getSourceFileOrError(bundle.program, _('/src/functions.js'));
-           const fns = host.getModuleWithProvidersFunctions(file);
-           expect(fns.map(fn => [fn.declaration.name!.getText(), fn.ngModule.node.name.text]))
-               .toEqual([
-                 ['ngModuleIdentifier', 'InternalModule'],
-                 ['ngModuleWithEmptyProviders', 'InternalModule'],
-                 ['ngModuleWithProviders', 'InternalModule'],
-                 ['externalNgModule', 'ExternalModule'],
-                 ['namespacedExternalNgModule', 'ExternalModule'],
-               ]);
-         });
-
-      it('should find every static method on exported classes that return an object that looks like a ModuleWithProviders object',
-         () => {
-           loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-           const bundle = makeTestBundleProgram(_('/src/index.js'));
-           const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
-           const file = getSourceFileOrError(bundle.program, _('/src/methods.js'));
-           const fn = host.getModuleWithProvidersFunctions(file);
-           expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
-             [
-               'function() { return { ngModule: InternalModule }; }',
-               'InternalModule',
-             ],
-             [
-               'function() { return { ngModule: InternalModule, providers: [] }; }',
-               'InternalModule',
-             ],
-             [
-               'function() { return { ngModule: InternalModule, providers: [SomeService] }; }',
-               'InternalModule',
-             ],
-             [
-               'function() { return { ngModule: ExternalModule }; }',
-               'ExternalModule',
-             ],
-             [
-               'function() { return { ngModule: mod.ExternalModule }; }',
-               'ExternalModule',
-             ],
-           ]);
-         });
-
-      it('should resolve aliased module references to their original declaration (outer alias)',
-         () => {
-           loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-           const bundle = makeTestBundleProgram(_('/src/index.js'));
-           const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
-           const file = getSourceFileOrError(bundle.program, _('/src/outer_aliased_class.js'));
-           const fn = host.getModuleWithProvidersFunctions(file);
-           expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
-             ['function() { return { ngModule: AliasedModule_1 }; }', 'AliasedModule'],
-           ]);
-         });
-
-      // https://github.com/angular/angular/issues/29078
-      it('should resolve aliased module references to their original declaration (inner alias)',
-         () => {
-           loadTestFiles(MODULE_WITH_PROVIDERS_PROGRAM);
-           const bundle = makeTestBundleProgram(_('/src/index.js'));
-           const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
-           const file = getSourceFileOrError(bundle.program, _('/src/inner_aliased_class.js'));
-           const fn = host.getModuleWithProvidersFunctions(file);
-           expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
-             ['function() { return { ngModule: AliasedModule_1 }; }', 'AliasedModule'],
-           ]);
-         });
     });
 
     describe('getEndOfClass()', () => {

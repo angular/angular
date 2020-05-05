@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ConcreteDeclaration, Declaration, Decorator, ReflectionHost} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, Declaration, Decorator, ReflectionHost} from '../../../src/ngtsc/reflection';
 
 export const PRE_R3_MARKER = '__PRE_R3__';
 export const POST_R3_MARKER = '__POST_R3__';
@@ -17,30 +17,6 @@ export function isSwitchableVariableDeclaration(node: ts.Node):
     node is SwitchableVariableDeclaration {
   return ts.isVariableDeclaration(node) && !!node.initializer &&
       ts.isIdentifier(node.initializer) && node.initializer.text.endsWith(PRE_R3_MARKER);
-}
-
-/**
- * A structure returned from `getModuleWithProviderInfo` that describes functions
- * that return ModuleWithProviders objects.
- */
-export interface ModuleWithProvidersFunction {
-  /**
-   * The name of the declared function.
-   */
-  name: string;
-  /**
-   * The declaration of the function that returns the `ModuleWithProviders` object.
-   */
-  declaration: ts.SignatureDeclaration;
-  /**
-   * Declaration of the containing class (if this is a method)
-   */
-  container: ts.Declaration|null;
-  /**
-   * The declaration of the class that the `ngModule` property on the `ModuleWithProviders` object
-   * refers to.
-   */
-  ngModule: ConcreteDeclaration<ClassDeclaration>;
 }
 
 /**
@@ -107,15 +83,6 @@ export interface NgccReflectionHost extends ReflectionHost {
    * @returns An array of found class symbols.
    */
   findClassSymbols(sourceFile: ts.SourceFile): NgccClassSymbol[];
-
-  /**
-   * Search the given source file for exported functions and static class methods that return
-   * ModuleWithProviders objects.
-   * @param f The source file to search for these functions
-   * @returns An array of info items about each of the functions that return ModuleWithProviders
-   * objects.
-   */
-  getModuleWithProvidersFunctions(f: ts.SourceFile): ModuleWithProvidersFunction[];
 
   /**
    * Find the last node that is relevant to the specified class.
