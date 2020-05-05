@@ -81,6 +81,8 @@ cd [PROJECT NAME]
 ng serve
 ```
 
+Angular is cross-platform, fast, scalable, has incredible tooling, and is loved by millions.
+
 ## Quickstart
 
 [Get started in 5 minutes][quickstart].
