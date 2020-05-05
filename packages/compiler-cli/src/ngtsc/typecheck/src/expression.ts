@@ -218,15 +218,18 @@ class AstTranslator implements AstVisitor {
   visitPropertyWrite(ast: PropertyWrite): ts.Expression {
     const receiver = wrapForDiagnostics(this.translate(ast.receiver));
     const left = ts.createPropertyAccess(receiver, ast.name);
+    addParseSpanInfo(left, ast.nameSpan);
     // TypeScript reports assignment errors on the entire lvalue expression. Annotate the lvalue of
     // the assignment with the sourceSpan, which includes receivers, rather than nameSpan for
     // consistency of the diagnostic location.
     // a.b.c = 1
     // ^^^^^^^^^ sourceSpan
     //     ^     nameSpan
-    addParseSpanInfo(left, ast.sourceSpan);
+    const leftWithPath = wrapForDiagnostics(left);
+    addParseSpanInfo(leftWithPath, ast.sourceSpan);
     const right = this.translate(ast.value);
-    const node = wrapForDiagnostics(ts.createBinary(left, ts.SyntaxKind.EqualsToken, right));
+    const node =
+        wrapForDiagnostics(ts.createBinary(leftWithPath, ts.SyntaxKind.EqualsToken, right));
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }

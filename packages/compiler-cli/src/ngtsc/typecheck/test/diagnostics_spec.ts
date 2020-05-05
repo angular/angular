@@ -430,7 +430,7 @@ class TestComponent {
         }`);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 15): Property 'nname' does not exist on type '{ name: string; }'. Did you mean 'name'?`
+        `synthetic.html(1, 22): Property 'nname' does not exist on type '{ name: string; }'. Did you mean 'name'?`
       ]);
     });
 

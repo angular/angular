@@ -87,7 +87,7 @@ describe('type check blocks diagnostics', () => {
       const TEMPLATE = `<div (click)='a.b.c = d'></div>`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '((((((ctx).a /*14,15*/) /*14,15*/).b /*16,17*/) /*14,17*/).c /*14,23*/ = ((ctx).d /*22,23*/) /*22,23*/) /*14,23*/');
+              '(((((((ctx).a /*14,15*/) /*14,15*/).b /*16,17*/) /*14,17*/).c /*18,19*/) /*14,23*/ = ((ctx).d /*22,23*/) /*22,23*/) /*14,23*/');
     });
 
     it('should annotate keyed property access', () => {
