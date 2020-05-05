@@ -1,4 +1,13 @@
+@import '../../material/datepicker/datepicker-theme';
+
 mat-calendar {
   width: 300px;
 }
 
+.demo-range-group {
+  margin-bottom: 30px;
+}
+
+.demo-custom-range {
+  @include mat-date-range-colors(hotpink, teal, yellow, purple);
+}

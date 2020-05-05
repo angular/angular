@@ -108,7 +108,7 @@ describe('MatYearView', () => {
       testComponent.date = new Date(2017, JUL, 31);
       fixture.detectChanges();
 
-      testComponent.yearView._monthSelected(JUN);
+      testComponent.yearView._monthSelected({value: JUN, event: null!});
       fixture.detectChanges();
 
       expect(testComponent.selected).toEqual(new Date(2017, JUN, 30));

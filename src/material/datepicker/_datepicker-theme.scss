@@ -6,11 +6,15 @@
 
 $mat-datepicker-selected-today-box-shadow-width: 1px;
 $mat-datepicker-selected-fade-amount: 0.6;
+$mat-datepicker-range-fade-amount: 0.2;
 $mat-datepicker-today-fade-amount: 0.2;
 $mat-calendar-body-font-size: 13px !default;
 $mat-calendar-weekday-table-font-size: 11px !default;
 
 @mixin _mat-datepicker-color($palette) {
+  @include mat-date-range-colors(
+    mat-color($palette, default, $mat-datepicker-range-fade-amount));
+
   .mat-calendar-body-selected {
     background-color: mat-color($palette);
     color: mat-color($palette, default-contrast);
@@ -80,6 +84,20 @@ $mat-calendar-weekday-table-font-size: 11px !default;
     }
   }
 
+  .mat-calendar-body-in-preview {
+    $divider-color: mat-color($foreground, divider);
+
+    @if type-of($divider-color) == color {
+      // The divider color is set under the assumption that it'll be used
+      // for a solid border, but because we're using a dashed border for the
+      // preview range, we need to bump its opacity to ensure that it's visible.
+      color: rgba($divider-color, min(opacity($divider-color) * 2, 1));
+    }
+    @else {
+      color: $divider-color;
+    }
+  }
+
   .mat-calendar-body-today:not(.mat-calendar-body-selected) {
     // Note: though it's not text, the border is a hint about the fact that this is today's date,
     // so we use the hint color.
@@ -132,6 +150,10 @@ $mat-calendar-weekday-table-font-size: 11px !default;
       color: mat-color(map-get($theme, warn), text);
     }
   }
+
+  .mat-date-range-input-inner:disabled {
+    color: mat-color($foreground, disabled-text);
+  }
 }
 
 @mixin mat-datepicker-typography($config) {
@@ -156,5 +178,38 @@ $mat-calendar-weekday-table-font-size: 11px !default;
       size: $mat-calendar-weekday-table-font-size;
       weight: mat-font-weight($config, body-1);
     }
+  }
+}
+
+@mixin mat-date-range-colors(
+  $range-color,
+  $comparison-color: rgba(#f9ab00, $mat-datepicker-range-fade-amount),
+  $overlap-color: #a8dab5,
+  $overlap-selected-color: darken($overlap-color, 30%)) {
+
+  .mat-calendar-body-in-range::before {
+    background: $range-color;
+  }
+
+  .mat-calendar-body-in-comparison-range::before {
+    background: $comparison-color;
+  }
+
+  .mat-calendar-body-comparison-bridge-start::before,
+  [dir='rtl'] .mat-calendar-body-comparison-bridge-end::before {
+    background: linear-gradient(to right, $range-color 50%, $comparison-color 50%);
+  }
+
+  .mat-calendar-body-comparison-bridge-end::before,
+  [dir='rtl'] .mat-calendar-body-comparison-bridge-start::before {
+    background: linear-gradient(to left, $range-color 50%, $comparison-color 50%);
+  }
+
+  .mat-calendar-body-in-comparison-range.mat-calendar-body-in-range::after {
+    background: $overlap-color;
+  }
+
+  .mat-calendar-body-in-comparison-range > .mat-calendar-body-selected {
+    background: $overlap-selected-color;
   }
 }

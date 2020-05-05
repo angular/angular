@@ -1,0 +1,122 @@
+@import '../core/style/variables';
+@import '../core/style/vendor-prefixes';
+
+$mat-date-range-input-separator-spacing: 4px;
+$mat-date-range-input-part-max-width: calc(50% - #{$mat-date-range-input-separator-spacing});
+$mat-date-range-input-placeholder-transition:
+  color $swift-ease-out-duration $swift-ease-out-duration / 3 $swift-ease-out-timing-function;
+
+// Host of the date range input.
+.mat-date-range-input {
+  display: block;
+  width: 100%;
+}
+
+// Inner container that wraps around all the content.
+.mat-date-range-input-container {
+  display: flex;
+  align-items: center;
+}
+
+// Text shown between the two inputs.
+.mat-date-range-input-separator {
+  margin: 0 $mat-date-range-input-separator-spacing;
+  transition: $mat-date-range-input-placeholder-transition;
+
+  .mat-form-field-hide-placeholder & {
+    // Disable text selection, because the user can click
+    // through the main label when the input is disabled.
+    @include user-select(none);
+    color: transparent;
+    transition: none;
+  }
+}
+
+// Underlying input inside the range input.
+.mat-date-range-input-inner {
+  // Reset the input so it's just a transparent rectangle.
+  font: inherit;
+  background: transparent;
+  color: currentColor;
+  border: none;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  vertical-align: bottom;
+  text-align: inherit;
+  -webkit-appearance: none;
+  width: 100%;
+
+  // Remove IE's default clear and reveal icons.
+  &::-ms-clear,
+  &::-ms-reveal {
+    display: none;
+  }
+
+  @include input-placeholder {
+    transition: $mat-date-range-input-placeholder-transition;
+  }
+
+  .mat-form-field-hide-placeholder &,
+  .mat-date-range-input-hide-placeholders & {
+    @include input-placeholder {
+      // Disable text selection, because the user can click
+      // through the main label when the input is disabled.
+      @include user-select(none);
+
+      // Needs to be !important, because the placeholder will end up inheriting the
+      // input color in IE, if the consumer overrides it with a higher specificity.
+      color: transparent !important;
+      -webkit-text-fill-color: transparent;
+      transition: none;
+    }
+  }
+}
+
+// We want the start input to be flush against the separator, no matter how much text it has, but
+// the problem is that inputs have a fixed width. We work around the issue by implementing an
+// auto-resizing input that stretches based on its text, up to a point. It works by having
+// a relatively-positioned wrapper (`.mat-date-range-input-start-wrapper` below) and an absolutely-
+// positioned `input`, as well as a `span` inside the wrapper which mirrors the input's value and
+// placeholder. As the user is typing, the value gets mirrored in the span which causes the wrapper
+// to stretch and the input with it.
+.mat-date-range-input-mirror {
+  // Disable user selection so users don't accidentally copy the text via ctrl + A.
+  @include user-select(none);
+
+  // Hide the element so it doesn't get read out by screen
+  // readers and it doesn't show up behind the input.
+  visibility: hidden;
+
+  // Text inside inputs never wraps so the one in the span shouldn't either.
+  white-space: nowrap;
+  display: inline-block;
+
+  // Prevent the container from collapsing. Make it more
+  // than 1px so the input caret doesn't get clipped.
+  min-width: 2px;
+}
+
+// Wrapper around the start input. Used to facilitate the auto-resizing input.
+.mat-date-range-input-start-wrapper {
+  position: relative;
+  overflow: hidden;
+  max-width: $mat-date-range-input-part-max-width;
+
+  .mat-date-range-input-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+
+// Wrapper around the end input that makes sure that it has the proper size.
+.mat-date-range-input-end-wrapper {
+  flex-grow: 1;
+  max-width: $mat-date-range-input-part-max-width;
+}
+
+.mat-form-field-type-mat-date-range-input .mat-form-field-infix {
+  // Bump the default width slightly since it's somewhat cramped with two inputs and a separator.
+  width: 200px;
+}

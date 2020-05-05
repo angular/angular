@@ -9,10 +9,14 @@ $mat-calendar-body-label-side-padding: 33% / 7 !default;
 $mat-calendar-body-cell-min-size: 32px !default;
 $mat-calendar-body-cell-content-margin: 5% !default;
 $mat-calendar-body-cell-content-border-width: 1px !default;
+$mat-calendar-body-cell-radius: 999px !default;
+$mat-calendar-body-preview-cell-border: dashed 1px;
 
 $mat-calendar-body-min-size: 7 * $mat-calendar-body-cell-min-size !default;
 $mat-calendar-body-cell-content-size: 100% - $mat-calendar-body-cell-content-margin * 2 !default;
 
+$mat-calendar-range-end-body-cell-size:
+    $mat-calendar-body-cell-content-size + $mat-calendar-body-cell-content-margin !default;
 
 .mat-calendar-body {
   min-width: $mat-calendar-body-min-size;
@@ -35,6 +39,115 @@ $mat-calendar-body-cell-content-size: 100% - $mat-calendar-body-cell-content-mar
   cursor: pointer;
 }
 
+// We use ::before to apply a background to the body cell, because we need to apply a border
+// radius to the start/end which means that part of the element will be cut off, making hovering
+// through all the cells look glitchy. We can't do it on the cell itself, because it's the one
+// that has the event listener and it can't be on the cell content, because it always has a
+// border radius. Note that this and the selectors below can be much simpler if we were to use
+// two separate elements for the main and comparison ranges, like we're doing for the preview
+// range. We don't follow the simpler approach, because the range colors usually have some
+// kind of opacity, which means that they'll start mixing when they're layered on top of each
+// other, making the calendar look messy.
+.mat-calendar-body-cell::before,
+.mat-calendar-body-cell::after,
+.mat-calendar-body-cell-preview {
+  content: '';
+  position: absolute;
+  top: $mat-calendar-body-cell-content-margin;
+  left: 0;
+  z-index: 0;
+  box-sizing: border-box;
+
+  // We want the range background to be slightly shorter than the cell so
+  // that there's a gap when the range goes across multiple rows.
+  height: $mat-calendar-body-cell-content-size;
+  width: 100%;
+}
+
+.mat-calendar-body-range-start:not(.mat-calendar-body-in-comparison-range)::before,
+.mat-calendar-body-range-start::after,
+.mat-calendar-body-comparison-start:not(.mat-calendar-body-comparison-bridge-start)::before,
+.mat-calendar-body-comparison-start::after,
+.mat-calendar-body-preview-start .mat-calendar-body-cell-preview {
+  // Since the range background isn't a perfect circle, we need to size
+  // and offset the start so that it aligns with the main circle.
+  left: $mat-calendar-body-cell-content-margin;
+  width: $mat-calendar-range-end-body-cell-size;
+  border-top-left-radius: $mat-calendar-body-cell-radius;
+  border-bottom-left-radius: $mat-calendar-body-cell-radius;
+
+  [dir='rtl'] & {
+    left: 0;
+    border-radius: 0;
+    border-top-right-radius: $mat-calendar-body-cell-radius;
+    border-bottom-right-radius: $mat-calendar-body-cell-radius;
+  }
+}
+
+@mixin _mat-calendar-body-range-right-radius {
+  // Since the range background isn't a perfect circle, we need to
+  // resize the end so that it aligns with the main circle.
+  width: $mat-calendar-range-end-body-cell-size;
+  border-top-right-radius: $mat-calendar-body-cell-radius;
+  border-bottom-right-radius: $mat-calendar-body-cell-radius;
+}
+
+.mat-calendar-body-range-end:not(.mat-calendar-body-in-comparison-range)::before,
+.mat-calendar-body-range-end::after,
+.mat-calendar-body-comparison-end:not(.mat-calendar-body-comparison-bridge-end)::before,
+.mat-calendar-body-comparison-end::after,
+.mat-calendar-body-preview-end .mat-calendar-body-cell-preview {
+  @include _mat-calendar-body-range-right-radius;
+
+  [dir='rtl'] & {
+    left: $mat-calendar-body-cell-content-margin;
+    border-radius: 0;
+    border-top-left-radius: $mat-calendar-body-cell-radius;
+    border-bottom-left-radius: $mat-calendar-body-cell-radius;
+  }
+}
+
+// Styles necessary to make RTL work.
+[dir='rtl'] {
+  .mat-calendar-body-comparison-bridge-start.mat-calendar-body-range-end::after,
+  .mat-calendar-body-comparison-bridge-end.mat-calendar-body-range-start::after {
+    @include _mat-calendar-body-range-right-radius;
+  }
+}
+
+// Prevents the extra overlap range indication from showing up when it's not supposed to.
+.mat-calendar-body-comparison-start.mat-calendar-body-range-end::after,
+.mat-calendar-body-comparison-end.mat-calendar-body-range-start::after {
+  // Note that the RTL selector here is redundant, but we need to keep it in order to
+  // raise the specificity since it can be overridden by some of the styles from above.
+  &, [dir='rtl'] & {
+    width: $mat-calendar-body-cell-content-size;
+  }
+}
+
+.mat-calendar-body-in-preview .mat-calendar-body-cell-preview {
+  border-top: $mat-calendar-body-preview-cell-border;
+  border-bottom: $mat-calendar-body-preview-cell-border;
+}
+
+.mat-calendar-body-preview-start .mat-calendar-body-cell-preview {
+  border-left: $mat-calendar-body-preview-cell-border;
+
+  [dir='rtl'] & {
+    border-left: 0;
+    border-right: $mat-calendar-body-preview-cell-border;
+  }
+}
+
+.mat-calendar-body-preview-end .mat-calendar-body-cell-preview {
+  border-right: $mat-calendar-body-preview-cell-border;
+
+  [dir='rtl'] & {
+    border-right: 0;
+    border-left: $mat-calendar-body-preview-cell-border;
+  }
+}
+
 .mat-calendar-body-disabled {
   cursor: default;
 }
@@ -43,6 +156,7 @@ $mat-calendar-body-cell-content-size: 100% - $mat-calendar-body-cell-content-mar
   position: absolute;
   top: $mat-calendar-body-cell-content-margin;
   left: $mat-calendar-body-cell-content-margin;
+  z-index: 1;
 
   display: flex;
   align-items: center;
@@ -59,13 +173,12 @@ $mat-calendar-body-cell-content-size: 100% - $mat-calendar-body-cell-content-mar
   border-style: solid;
 
   // Choosing a value clearly larger than the height ensures we get the correct capsule shape.
-  border-radius: 999px;
+  border-radius: $mat-calendar-body-cell-radius;
 
   @include cdk-high-contrast(active, off) {
     border: none;
   }
 }
-
 
 @include cdk-high-contrast(active, off) {
   .mat-datepicker-popup:not(:empty),

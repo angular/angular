@@ -27,6 +27,9 @@ ng_module(
 sass_binary(
     name = "datepicker_demo_scss",
     src = "datepicker-demo.scss",
+    deps = [
+        "//src/material/datepicker:datepicker_scss_lib",
+    ],
 )
 
 sass_binary(

@@ -53,6 +53,10 @@
     "src/material/core/ripple/ripple-renderer.ts"
   ],
   [
+    "src/material/datepicker/date-range-input.ts",
+    "src/material/datepicker/date-range-picker.ts"
+  ],
+  [
     "src/material/datepicker/datepicker-input.ts",
     "src/material/datepicker/datepicker.ts"
   ],

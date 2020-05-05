@@ -1,0 +1,18 @@
+<div
+  class="mat-date-range-input-container"
+  cdkMonitorSubtreeFocus
+  (cdkFocusChange)="focused = $event !== null">
+  <div class="mat-date-range-input-start-wrapper">
+    <ng-content select="input[matStartDate]"></ng-content>
+    <span
+      class="mat-date-range-input-mirror"
+      aria-hidden="true">{{_getInputMirrorValue()}}</span>
+  </div>
+
+  <span class="mat-date-range-input-separator">{{separator}}</span>
+
+  <div class="mat-date-range-input-end-wrapper">
+    <ng-content select="input[matEndDate]"></ng-content>
+  </div>
+</div>
+

@@ -1,6 +1,6 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {ReactiveFormsModule} from '@angular/forms';
+import {ReactiveFormsModule, FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatDatepickerModule} from '@angular/material/datepicker';
@@ -29,6 +29,18 @@ import {DatepickerValueExample} from './datepicker-value/datepicker-value-exampl
 import {
   DatepickerViewsSelectionExample
 } from './datepicker-views-selection/datepicker-views-selection-example';
+import {
+  DateRangePickerOverviewExample
+} from './date-range-picker-overview/date-range-picker-overview-example';
+import {
+  DateRangePickerFormsExample
+} from './date-range-picker-forms/date-range-picker-forms-example';
+import {
+  DateRangePickerComparisonExample
+} from './date-range-picker-comparison/date-range-picker-comparison-example';
+import {
+  DateRangePickerSelectionStrategyExample
+} from './date-range-picker-selection-strategy/date-range-picker-selection-strategy-example';
 
 export {
   DatepickerApiExample,
@@ -48,6 +60,10 @@ export {
   DatepickerTouchExample,
   DatepickerValueExample,
   DatepickerViewsSelectionExample,
+  DateRangePickerOverviewExample,
+  DateRangePickerFormsExample,
+  DateRangePickerComparisonExample,
+  DateRangePickerSelectionStrategyExample,
   ExampleHeader,
 };
 
@@ -69,6 +85,10 @@ const EXAMPLES = [
   DatepickerTouchExample,
   DatepickerValueExample,
   DatepickerViewsSelectionExample,
+  DateRangePickerOverviewExample,
+  DateRangePickerFormsExample,
+  DateRangePickerComparisonExample,
+  DateRangePickerSelectionStrategyExample,
   ExampleHeader,
 ];
 
@@ -81,6 +101,7 @@ const EXAMPLES = [
     MatIconModule,
     MatNativeDateModule,
     ReactiveFormsModule,
+    FormsModule,
   ],
   declarations: EXAMPLES,
   exports: EXAMPLES,

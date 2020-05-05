@@ -7,11 +7,12 @@
     [maxDate]="datepicker._maxDate"
     [dateFilter]="datepicker._dateFilter"
     [headerComponent]="datepicker.calendarHeaderComponent"
-    [selected]="datepicker._selected"
+    [selected]="_getSelected()"
     [dateClass]="datepicker.dateClass"
+    [comparisonStart]="comparisonStart"
+    [comparisonEnd]="comparisonEnd"
     [@fadeInCalendar]="'enter'"
-    (selectedChange)="datepicker.select($event)"
     (yearSelected)="datepicker._selectYear($event)"
     (monthSelected)="datepicker._selectMonth($event)"
-    (_userSelection)="datepicker.close()">
+    (_userSelection)="_handleUserSelection($event)">
 </mat-calendar>

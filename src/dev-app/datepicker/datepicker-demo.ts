@@ -13,14 +13,20 @@ import {
   Inject,
   OnDestroy,
   Optional,
-  ViewChild
+  ViewChild,
+  ViewEncapsulation,
+  Directive,
+  Injectable
 } from '@angular/core';
-import {FormControl} from '@angular/forms';
+import {FormControl, FormGroup} from '@angular/forms';
 import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats, ThemePalette} from '@angular/material/core';
 import {
   MatCalendar,
   MatCalendarHeader,
-  MatDatepickerInputEvent
+  MatDatepickerInputEvent,
+  MAT_DATE_RANGE_SELECTION_STRATEGY,
+  MatDateRangeSelectionStrategy,
+  DateRange
 } from '@angular/material/datepicker';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -30,6 +36,7 @@ import {takeUntil} from 'rxjs/operators';
   selector: 'datepicker-demo',
   templateUrl: 'datepicker-demo.html',
   styleUrls: ['datepicker-demo.css'],
+  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatepickerDemo {
@@ -47,6 +54,19 @@ export class DatepickerDemo {
   color: ThemePalette;
 
   dateCtrl = new FormControl();
+  range1 = new FormGroup({start: new FormControl(), end: new FormControl()});
+  range2 = new FormGroup({start: new FormControl(), end: new FormControl()});
+  range3 = new FormGroup({start: new FormControl(), end: new FormControl()});
+  comparisonStart: Date;
+  comparisonEnd: Date;
+
+  constructor() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    this.comparisonStart = new Date(year, month, 9);
+    this.comparisonEnd = new Date(year, month, 13);
+  }
 
   dateFilter: (date: Date | null) => boolean =
     (date: Date | null) => {
@@ -63,6 +83,62 @@ export class DatepickerDemo {
   customHeader = CustomHeader;
   customHeaderNgContent = CustomHeaderNgContent;
 }
+
+/** Range selection strategy that preserves the current range. */
+@Injectable()
+export class PreserveRangeStrategy<D> implements MatDateRangeSelectionStrategy<D> {
+  constructor(private _dateAdapter: DateAdapter<D>) {}
+
+  selectionFinished(date: D, currentRange: DateRange<D>) {
+    let {start, end} = currentRange;
+
+    if (start && end) {
+      return this._getRangeRelativeToDate(date, start, end);
+    }
+
+    if (start == null) {
+      start = date;
+    } else if (end == null) {
+      end = date;
+    }
+
+    return new DateRange<D>(start, end);
+  }
+
+  createPreview(activeDate: D | null, currentRange: DateRange<D>): DateRange<D> {
+    if (activeDate) {
+      if (currentRange.start && currentRange.end) {
+        return this._getRangeRelativeToDate(activeDate, currentRange.start, currentRange.end);
+      } else if (currentRange.start && !currentRange.end) {
+        return new DateRange(currentRange.start, activeDate);
+      }
+    }
+
+    return new DateRange<D>(null, null);
+  }
+
+  private _getRangeRelativeToDate(date: D | null, start: D, end: D): DateRange<D> {
+    let rangeStart: D | null = null;
+    let rangeEnd: D | null = null;
+
+    if (date) {
+      const delta = Math.round(Math.abs(this._dateAdapter.compareDate(start, end)) / 2);
+      rangeStart = this._dateAdapter.addCalendarDays(date, -delta);
+      rangeEnd = this._dateAdapter.addCalendarDays(date, delta);
+    }
+
+    return new DateRange(rangeStart, rangeEnd);
+  }
+}
+
+@Directive({
+  selector: '[customRangeStrategy]',
+  providers: [{
+    provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
+    useClass: PreserveRangeStrategy
+  }]
+})
+export class CustomRangeStrategy {}
 
 // Custom header component for datepicker
 @Component({
