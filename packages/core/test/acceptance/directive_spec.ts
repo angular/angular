@@ -592,7 +592,9 @@ describe('directives', () => {
       const dirInstances: StructuralDir[] = [];
       @Directive({selector: '[dir]'})
       class StructuralDir {
-        constructor() { dirInstances.push(this); }
+        constructor() {
+          dirInstances.push(this);
+        }
         @Input() dir: any;
       }
 
@@ -646,21 +648,27 @@ describe('directives', () => {
         /** @internal */
         _dirOf: any;
 
-        constructor() { dirInstances.push(this); }
+        constructor() {
+          dirInstances.push(this);
+        }
 
         @Input()
         set dir(value: any) {
           this._dir = value;
           callsCount.dir++;
         }
-        get dir() { return this._dir; }
+        get dir() {
+          return this._dir;
+        }
 
         @Input()
         set dirOf(value: any) {
           this._dirOf = value;
           callsCount.dirOf++;
         }
-        get dirOf() { return this._dirOf; }
+        get dirOf() {
+          return this._dirOf;
+        }
       }
 
       @Component({
@@ -714,7 +722,9 @@ describe('directives', () => {
         /** @internal */
         _dirUnboundInputA: any;
 
-        constructor() { dirInstance = this; }
+        constructor() {
+          dirInstance = this;
+        }
 
         @Input() dirOf: any;  // bound input
 
@@ -723,7 +733,9 @@ describe('directives', () => {
           this._dirUnboundInputA = value;
           staticAttrSetCallsCount++;
         }
-        get dirUnboundInputA() { return this._dirUnboundInputA; }
+        get dirUnboundInputA() {
+          return this._dirUnboundInputA;
+        }
       }
 
       @Component({
@@ -742,22 +754,22 @@ describe('directives', () => {
 
       // Verify that unbound input is set in creation mode in Ivy.
       // In View Engine such static attrs are set in update mode.
-      expect(dirInstance !.dirUnboundInputA).toBe(ivyEnabled ? '' : undefined);
+      expect(dirInstance!.dirUnboundInputA).toBe(ivyEnabled ? '' : undefined);
       expect(staticAttrSetCallsCount).toBe(ivyEnabled ? 1 : 0);
 
       // Verify that bound input is not *yet* set, since it's a creation mode
-      expect(dirInstance !.dirOf).toBe(undefined);
+      expect(dirInstance!.dirOf).toBe(undefined);
 
       fixture.detectChanges();
 
       // Verify that bound input value is preserved.
       // Check that static attribute setter was not called again in Ivy and in View Engine it's
       // called once at this point.
-      expect(dirInstance !.dirUnboundInputA).toBe(ivyEnabled ? '' : null);
+      expect(dirInstance!.dirUnboundInputA).toBe(ivyEnabled ? '' : null);
       expect(staticAttrSetCallsCount).toBe(1);
 
       // Verify that bound input value is now set
-      expect(dirInstance !.dirOf).toEqual([1, 2, 3]);
+      expect(dirInstance!.dirOf).toEqual([1, 2, 3]);
     });
 
     it('should set the directive input only, shadowing the title property of the div, for `[title]="value"`',

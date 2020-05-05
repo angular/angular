@@ -1299,7 +1299,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     function addTemplateAttrs(
-        marker: core.AttributeMarker, attrs: (t.TextAttribute | t.BoundAttribute)[]) {
+        marker: core.AttributeMarker, attrs: (t.TextAttribute|t.BoundAttribute)[]) {
       attrExprs.push(o.literal(marker));
       attrs.forEach(attr => addAttrExpr(attr.name));
     }

@@ -155,7 +155,8 @@ describe('compiler compliance: listen()', () => {
           }
         }
         // ...
-        consts: [[${AttributeMarker.TemplateBindings}, "ngIf"], [${AttributeMarker.Bindings}, "click"]],
+        consts: [[${AttributeMarker.TemplateBindings}, "ngIf"], [${
+        AttributeMarker.Bindings}, "click"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 3, 0, "div", 0);
