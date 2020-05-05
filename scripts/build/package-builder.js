@@ -47,7 +47,12 @@ const bazelBin = exec(`${bazelCmd} info bazel-bin`, true);
 const scriptPath = relative(baseDir, require.main.filename);
 
 module.exports = {
-  baseDir, bazelBin, bazelCmd, buildTargetPackages, exec, scriptPath,
+  baseDir,
+  bazelBin,
+  bazelCmd,
+  buildTargetPackages,
+  exec,
+  scriptPath,
 };
 
 /**
@@ -68,12 +73,13 @@ function buildTargetPackages(destPath, enableIvy, description) {
   // List of targets to build, e.g. core, common, compiler, etc. Note that we want to also remove
   // all carriage return (`\r`) characters form the query output, because otherwise the carriage
   // return is part of the bazel target name and bazel will complain.
-  const getTargetsCmd =
-      `${bazelCmd} query --output=label "attr('tags', '\\[.*release-with-framework.*\\]', //packages/...) intersect kind('ng_package|pkg_npm', //packages/...)"`;
+  const getTargetsCmd = `${
+      bazelCmd} query --output=label "attr('tags', '\\[.*release-with-framework.*\\]', //packages/...) intersect kind('ng_package|pkg_npm', //packages/...)"`;
   const targets = exec(getTargetsCmd, true).split(/\r?\n/);
 
   // Use `--config=release` so that snapshot builds get published with embedded version info.
-  exec(`${bazelCmd} build --config=release --config=${enableIvy ? 'ivy' : 'view-engine'} ${targets.join(' ')}`);
+  exec(`${bazelCmd} build --config=release --config=${enableIvy ? 'ivy' : 'view-engine'} ${
+      targets.join(' ')}`);
 
   // Create the output directory.
   const absDestPath = resolve(baseDir, destPath);
