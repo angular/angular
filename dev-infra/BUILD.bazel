@@ -10,6 +10,7 @@ ts_library(
     deps = [
         "//dev-infra/commit-message",
         "//dev-infra/format",
+        "//dev-infra/pr",
         "//dev-infra/pullapprove",
         "//dev-infra/release",
         "//dev-infra/ts-circular-dependencies",
