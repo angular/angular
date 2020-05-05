@@ -42,6 +42,7 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
     host.create('src/unrelated-main.server.ts', mainServerContent);
     host.create('src/another-unrelated-main.server.ts', mainServerContent);
     host.create('angular.json', JSON.stringify({
+      version: 1,
       projects: {
         'demo': {
           architect: {
@@ -155,6 +156,7 @@ export { renderModule, renderModuleFactory } from '@angular/platform-server';`;
 
   it('should not break when there are no polyfills', async () => {
     host.overwrite('angular.json', JSON.stringify({
+      version: 1,
       projects: {
         'demo': {
           architect: {},
