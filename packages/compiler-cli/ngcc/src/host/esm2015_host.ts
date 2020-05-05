@@ -8,13 +8,13 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, ConcreteDeclaration, CtorParameter, Declaration, Decorator, EnumMember, isDecoratorIdentifier, isNamedClassDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, EnumMember, isDecoratorIdentifier, isNamedClassDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
 
-import {ClassSymbol, isSwitchableVariableDeclaration, ModuleWithProvidersFunction, NgccClassSymbol, NgccReflectionHost, PRE_R3_MARKER, SwitchableVariableDeclaration} from './ngcc_host';
+import {ClassSymbol, isSwitchableVariableDeclaration, NgccClassSymbol, NgccReflectionHost, PRE_R3_MARKER, SwitchableVariableDeclaration} from './ngcc_host';
 import {stripParentheses} from './utils';
 
 export const DECORATORS = 'decorators' as ts.__String;
@@ -566,44 +566,6 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
     // No declaration found at all
     return null;
-  }
-
-  /**
-   * Search the given source file for exported functions and static class methods that return
-   * ModuleWithProviders objects.
-   * @param f The source file to search for these functions
-   * @returns An array of function declarations that look like they return ModuleWithProviders
-   * objects.
-   */
-  getModuleWithProvidersFunctions(f: ts.SourceFile): ModuleWithProvidersFunction[] {
-    const exports = this.getExportsOfModule(f);
-    if (!exports) return [];
-    const infos: ModuleWithProvidersFunction[] = [];
-    exports.forEach((declaration, name) => {
-      if (declaration.node === null) {
-        return;
-      }
-      if (this.isClass(declaration.node)) {
-        this.getMembersOfClass(declaration.node).forEach(member => {
-          if (member.isStatic) {
-            const info = this.parseForModuleWithProviders(
-                member.name, member.node, member.implementation, declaration.node);
-            if (info) {
-              infos.push(info);
-            }
-          }
-        });
-      } else {
-        if (isNamedDeclaration(declaration.node)) {
-          const info =
-              this.parseForModuleWithProviders(declaration.node.name.text, declaration.node);
-          if (info) {
-            infos.push(info);
-          }
-        }
-      }
-    });
-    return infos;
   }
 
   getEndOfClass(classSymbol: NgccClassSymbol): ts.Node {
@@ -1709,65 +1671,6 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
         }
       }
     }
-  }
-
-  /**
-   * Parse a function/method node (or its implementation), to see if it returns a
-   * `ModuleWithProviders` object.
-   * @param name The name of the function.
-   * @param node the node to check - this could be a function, a method or a variable declaration.
-   * @param implementation the actual function expression if `node` is a variable declaration.
-   * @param container the class that contains the function, if it is a method.
-   * @returns info about the function if it does return a `ModuleWithProviders` object; `null`
-   * otherwise.
-   */
-  protected parseForModuleWithProviders(
-      name: string, node: ts.Node|null, implementation: ts.Node|null = node,
-      container: ts.Declaration|null = null): ModuleWithProvidersFunction|null {
-    if (implementation === null ||
-        (!ts.isFunctionDeclaration(implementation) && !ts.isMethodDeclaration(implementation) &&
-         !ts.isFunctionExpression(implementation))) {
-      return null;
-    }
-    const declaration = implementation;
-    const definition = this.getDefinitionOfFunction(declaration);
-    if (definition === null) {
-      return null;
-    }
-    const body = definition.body;
-    const lastStatement = body && body[body.length - 1];
-    const returnExpression =
-        lastStatement && ts.isReturnStatement(lastStatement) && lastStatement.expression || null;
-    const ngModuleProperty = returnExpression && ts.isObjectLiteralExpression(returnExpression) &&
-            returnExpression.properties.find(
-                prop =>
-                    !!prop.name && ts.isIdentifier(prop.name) && prop.name.text === 'ngModule') ||
-        null;
-
-    if (!ngModuleProperty || !ts.isPropertyAssignment(ngModuleProperty)) {
-      return null;
-    }
-
-    // The ngModuleValue could be of the form `SomeModule` or `namespace_1.SomeModule`
-    const ngModuleValue = ngModuleProperty.initializer;
-    if (!ts.isIdentifier(ngModuleValue) && !ts.isPropertyAccessExpression(ngModuleValue)) {
-      return null;
-    }
-
-    const ngModuleDeclaration = this.getDeclarationOfExpression(ngModuleValue);
-    if (!ngModuleDeclaration || ngModuleDeclaration.node === null) {
-      throw new Error(`Cannot find a declaration for NgModule ${
-          ngModuleValue.getText()} referenced in "${declaration!.getText()}"`);
-    }
-    if (!hasNameIdentifier(ngModuleDeclaration.node)) {
-      return null;
-    }
-    return {
-      name,
-      ngModule: ngModuleDeclaration as ConcreteDeclaration<ClassDeclaration>,
-      declaration,
-      container
-    };
   }
 
   protected getDeclarationOfExpression(expression: ts.Expression): Declaration|null {
