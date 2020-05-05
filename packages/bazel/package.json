@@ -34,7 +34,7 @@
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
     "@bazel/typescript": ">=1.0.0",
     "terser": "^4.3.1",
-    "typescript": ">=3.6 <3.9",
+    "typescript": ">=3.8 <3.9",
     "rollup": ">=1.20.0",
     "rollup-plugin-commonjs": ">=9.0.0",
     "rollup-plugin-node-resolve": ">=4.2.0",
