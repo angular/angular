@@ -24,18 +24,11 @@ var hosts = [];
 
 PORTS.forEach(function(port) {
   fakeServers.push(http.createServer(function() {}).listen(port));
-  hosts.push({
-    name: HOSTNAME,
-    port: port,
-    sslFlag: 0
-  });
+  hosts.push({name: HOSTNAME, port: port, sslFlag: 0});
 });
 
-var tunnel = new BrowserStackTunnel({
-  key: ACCESS_KEY,
-  localIdentifier: TUNNEL_IDENTIFIER,
-  hosts: hosts
-});
+var tunnel =
+    new BrowserStackTunnel({key: ACCESS_KEY, localIdentifier: TUNNEL_IDENTIFIER, hosts: hosts});
 
 console.info('Starting tunnel on ports', PORTS.join(', '));
 tunnel.start(function(error) {
