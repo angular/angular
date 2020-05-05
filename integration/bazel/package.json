@@ -43,7 +43,7 @@
     "rollup-plugin-node-resolve": "5.2.0",
     "rollup-plugin-sourcemaps": "0.4.2",
     "terser": "4.4.0",
-    "typescript": "3.7.4"
+    "typescript": "3.8.3"
   },
   "scripts": {
     "test": "bazelisk build ... --noshow_progress && bazelisk test ...",
