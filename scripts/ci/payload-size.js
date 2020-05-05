@@ -50,11 +50,14 @@ for (const compressionType in limitSizes) {
           const operator = actualSize > expectedSize ? 'exceeded' : 'fell below';
 
           failureMessages.push(
-            `FAIL: Commit ${commit} ${compressionType} ${filename} ${operator} expected size by 500 bytes or >1% ` +
-            `(expected: ${expectedSize}, actual: ${actualSize}).`);
+              `FAIL: Commit ${commit} ${compressionType} ${filename} ${
+                  operator} expected size by 500 bytes or >1% ` +
+              `(expected: ${expectedSize}, actual: ${actualSize}).`);
         } else {
-          successMessages.push(`SUCCESS: Commit ${commit} ${compressionType} ${filename} did NOT cross size threshold of 500 bytes or >1% ` +
-            `(expected: ${expectedSize}, actual: ${actualSize}).`);
+          successMessages.push(
+              `SUCCESS: Commit ${commit} ${compressionType} ${
+                  filename} did NOT cross size threshold of 500 bytes or >1% ` +
+              `(expected: ${expectedSize}, actual: ${actualSize}).`);
         }
       }
     }
@@ -65,7 +68,8 @@ for (const compressionType in limitSizes) {
 successMessages.concat(failureMessages).forEach(message => console.error(message));
 
 if (failed) {
-  console.info(`If this is a desired change, please update the size limits in file '${limitFile}'.`);
+  console.info(
+      `If this is a desired change, please update the size limits in file '${limitFile}'.`);
   process.exit(1);
 } else {
   console.info(`Payload size check passed. All diffs are less than 1% or 500 bytes.`);
