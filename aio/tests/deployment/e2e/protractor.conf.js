@@ -38,7 +38,7 @@ exports.config = {
     register({project: join(__dirname, './tsconfig.json')});
   },
   onPrepare() {
-    const {SpecReporter} = require('jasmine-spec-reporter');
+    const {SpecReporter, StacktraceOption} = require('jasmine-spec-reporter');
     const {browser} = require('protractor');
     const {loadLegacyUrls, loadRemoteSitemapUrls} = require('../shared/helpers');
 
@@ -54,7 +54,11 @@ exports.config = {
       }
 
       Object.assign(config.params, {sitemapUrls, legacyUrls});
-      jasmine.getEnv().addReporter(new SpecReporter({spec: {displayStacktrace: true}}));
+      jasmine.getEnv().addReporter(new SpecReporter({
+        spec: {
+          displayStacktrace: StacktraceOption.PRETTY,
+        },
+      }));
     });
   }
 };

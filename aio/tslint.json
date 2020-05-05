@@ -4,8 +4,15 @@
     "codelyzer"
   ],
   "rules": {
+    "align": {
+      "options": [
+        "parameters",
+        "statements"
+      ]
+    },
     "array-type": false,
     "arrow-parens": false,
+    "arrow-return-shorthand": true,
     "ban": [
       true,
       {"name": "fdescribe", "message": "Don't keep jasmine focus methods."},
@@ -19,6 +26,7 @@
       "kebab-case"
     ],
     "contextual-lifecycle": true,
+    "curly": true,
     "deprecation": {
       "severity": "warn"
     },
@@ -29,10 +37,17 @@
       "aio",
       "camelCase"
     ],
+    "eofline": true,
     "import-blacklist": [
       true,
       "rxjs/Rx"
     ],
+    "import-spacing": true,
+    "indent": {
+      "options": [
+        "spaces"
+      ]
+    },
     "interface-name": false,
     "max-classes-per-file": false,
     "max-line-length": [
@@ -84,9 +99,41 @@
       true,
       "single"
     ],
+    "semicolon": {
+      "options": [
+        "always"
+      ]
+    },
+    "space-before-function-paren": {
+      "options": {
+        "anonymous": "never",
+        "asyncArrow": "always",
+        "constructor": "never",
+        "method": "never",
+        "named": "never"
+      }
+    },
     "template-banana-in-box": true,
     "template-no-negated-async": true,
     "trailing-comma": false,
+    "typedef-whitespace": {
+      "options": [
+        {
+          "call-signature": "nospace",
+          "index-signature": "nospace",
+          "parameter": "nospace",
+          "property-declaration": "nospace",
+          "variable-declaration": "nospace"
+        },
+        {
+          "call-signature": "onespace",
+          "index-signature": "onespace",
+          "parameter": "onespace",
+          "property-declaration": "onespace",
+          "variable-declaration": "onespace"
+        }
+      ]
+    },
     "use-lifecycle-interface": true,
     "use-pipe-transform-interface": true,
     "variable-name": [
@@ -106,6 +153,16 @@
     "template-click-events-have-key-events": true,
     "template-mouse-events-have-key-events": true,
     "template-no-autofocus": true,
-    "template-no-distracting-elements": true
+    "template-no-distracting-elements": true,
+    "whitespace": {
+      "options": [
+        "check-branch",
+        "check-decl",
+        "check-operator",
+        "check-separator",
+        "check-type",
+        "check-typecast"
+      ]
+    }
   }
 }
