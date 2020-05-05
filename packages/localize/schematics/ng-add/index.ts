@@ -8,55 +8,72 @@
  * @fileoverview Schematics for ng-new project that builds with Bazel.
  */
 
-import {virtualFs} from '@angular-devkit/core';
-import {chain, Rule, Tree} from '@angular-devkit/schematics';
-import {getWorkspace} from '@schematics/angular/utility/config';
-import {getProjectTargets} from '@schematics/angular/utility/project-targets';
-import {validateProjectName} from '@schematics/angular/utility/validation';
-import {BrowserBuilderTarget, Builders, ServeBuilderTarget} from '@schematics/angular/utility/workspace-models';
+import {virtualFs, workspaces} from '@angular-devkit/core';
+import {chain, Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
+import {getWorkspace} from '@schematics/angular/utility/workspace';
+import {Builders} from '@schematics/angular/utility/workspace-models';
 
 import {Schema} from './schema';
 
 
 export const localizePolyfill = `import '@angular/localize/init';`;
 
-function getAllOptionValues<T>(
-    host: Tree, projectName: string, builderName: string, optionName: string) {
-  const targets = getProjectTargets(host, projectName);
+function getRelevantTargetDefinitions(
+    project: workspaces.ProjectDefinition, builderName: Builders): workspaces.TargetDefinition[] {
+  const definitions: workspaces.TargetDefinition[] = [];
+  project.targets.forEach((target: workspaces.TargetDefinition): void => {
+    if (target.builder === builderName) {
+      definitions.push(target);
+    }
+  });
+  return definitions;
+}
 
-  // Find all targets of a specific build in a project.
-  const builderTargets: (BrowserBuilderTarget|ServeBuilderTarget)[] = Object.values(targets).filter(
-      (target: BrowserBuilderTarget|ServeBuilderTarget) => target.builder === builderName);
-
-  // Get all options contained in target configuration partials.
-  const configurationOptions = builderTargets.filter(t => t.configurations)
-                                   .map(t => Object.values(t.configurations!))
-                                   .reduce((acc, cur) => acc.concat(...cur), []);
-
-  // Now we have all option sets. We can use it to find all references to a given property.
-  const allOptions = [
-    ...builderTargets.map(t => t.options),
-    ...configurationOptions,
-  ];
-
-  // Get all values for the option name and dedupe them.
-  // Deduping will only work for primitives, but the keys we want here are strings so it's ok.
-  const optionValues: T[] =
-      allOptions.filter(o => o[optionName])
-          .map(o => o[optionName])
-          .reduce((acc, cur) => !acc.includes(cur) ? acc.concat(cur) : acc, []);
-
+function getOptionValuesForTargetDefinition(
+    definition: workspaces.TargetDefinition, optionName: string): string[] {
+  const optionValues: string[] = [];
+  if (definition.options && optionName in definition.options) {
+    let optionValue: unknown = definition.options[optionName];
+    if (typeof optionValue === 'string') {
+      optionValues.push(optionValue);
+    }
+  }
+  if (!definition.configurations) {
+    return optionValues;
+  }
+  Object.values(definition.configurations)
+      .forEach((configuration: Record<string, unknown>|undefined): void => {
+        if (configuration && optionName in configuration) {
+          const optionValue: unknown = configuration[optionName];
+          if (typeof optionValue === 'string') {
+            optionValues.push(optionValue);
+          }
+        }
+      });
   return optionValues;
 }
 
+function getFileListForRelevantTargetDefinitions(
+    project: workspaces.ProjectDefinition, builderName: Builders, optionName: string): string[] {
+  const fileList: string[] = [];
+  const definitions = getRelevantTargetDefinitions(project, builderName);
+  definitions.forEach((definition: workspaces.TargetDefinition): void => {
+    const optionValues = getOptionValuesForTargetDefinition(definition, optionName);
+    optionValues.forEach((filePath: string): void => {
+      if (fileList.indexOf(filePath) === -1) {
+        fileList.push(filePath);
+      }
+    });
+  });
+  return fileList;
+}
 
-function prendendToTargetOptionFile(
-    projectName: string, builderName: string, optionName: string, str: string) {
+function prependToTargetFiles(
+    project: workspaces.ProjectDefinition, builderName: Builders, optionName: string, str: string) {
   return (host: Tree) => {
-    // Get all known polyfills for browser builders on this project.
-    const optionValues = getAllOptionValues<string>(host, projectName, builderName, optionName);
+    const fileList = getFileListForRelevantTargetDefinitions(project, builderName, optionName);
 
-    optionValues.forEach(path => {
+    fileList.forEach((path: string): void => {
       const data = host.read(path);
       if (!data) {
         // If the file doesn't exist, just ignore it.
@@ -79,12 +96,16 @@ function prendendToTargetOptionFile(
 }
 
 export default function(options: Schema): Rule {
-  return (host: Tree) => {
-    options.name = options.name || getWorkspace(host).defaultProject;
+  return async (host: Tree) => {
     if (!options.name) {
-      throw new Error('Please specify a project using "--name project-name"');
+      throw new SchematicsException('Option "name" is required.');
     }
-    validateProjectName(options.name);
+
+    const workspace = await getWorkspace(host);
+    const project: workspaces.ProjectDefinition|undefined = workspace.projects.get(options.name);
+    if (!project) {
+      throw new SchematicsException(`Invalid project name (${options.name})`);
+    }
 
     const localizeStr =
         `/***************************************************************************************************
@@ -94,8 +115,8 @@ ${localizePolyfill}
 `;
 
     return chain([
-      prendendToTargetOptionFile(options.name, Builders.Browser, 'polyfills', localizeStr),
-      prendendToTargetOptionFile(options.name, Builders.Server, 'main', localizeStr),
+      prependToTargetFiles(project, Builders.Browser, 'polyfills', localizeStr),
+      prependToTargetFiles(project, Builders.Server, 'main', localizeStr),
     ]);
   };
 }
