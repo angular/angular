@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OnDestroy, OnInit} from '@angular/core';
+import {Directive, OnDestroy, OnInit} from '@angular/core';
 
 import {FormGroup} from '../model';
 
@@ -23,6 +23,7 @@ import {AsyncValidatorFn, ValidatorFn} from './validators';
  *
  * @publicApi
  */
+@Directive()
 export class AbstractFormGroupDirective extends ControlContainer implements OnInit, OnDestroy {
   /**
    * @description
