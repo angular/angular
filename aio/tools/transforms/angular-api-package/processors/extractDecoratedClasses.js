@@ -18,7 +18,10 @@ module.exports = function extractDecoratedClassesProcessor(EXPORT_DOC_TYPES) {
 
           if (decoratorTypes.indexOf(decorator.name) !== -1) {
             doc.docType = decorator.name.toLowerCase();
-            doc[doc.docType + 'Options'] = decorator.argumentInfo[0];
+            // Directives do not always have an argument (i.e. abstract directives).
+            // We still create options for those, as an empty object literal is equal
+            // to just having an empty object literal as decorator argument.
+            doc[doc.docType + 'Options'] = decorator.argumentInfo[0] || {};
           }
         });
       });
