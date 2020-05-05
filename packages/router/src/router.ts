@@ -7,8 +7,8 @@
  */
 
 import {Location} from '@angular/common';
-import {Compiler, Injector, isDevMode, NgModuleFactoryLoader, NgModuleRef, NgZone, Type, ɵConsole as Console} from '@angular/core';
-import {BehaviorSubject, defer, EMPTY, Observable, of, Subject, Subscription} from 'rxjs';
+import {Compiler, Injectable, Injector, isDevMode, NgModuleFactoryLoader, NgModuleRef, NgZone, Type, ɵConsole as Console} from '@angular/core';
+import {BehaviorSubject, EMPTY, Observable, of, Subject, Subscription} from 'rxjs';
 import {catchError, filter, finalize, map, switchMap, tap} from 'rxjs/operators';
 
 import {QueryParamsHandling, Route, Routes, standardizeConfig, validateConfig} from './config';
@@ -288,6 +288,7 @@ function defaultRouterHook(snapshot: RouterStateSnapshot, runExtras: {
  *
  * @publicApi
  */
+@Injectable()
 export class Router {
   private currentUrlTree: UrlTree;
   private rawUrlTree: UrlTree;

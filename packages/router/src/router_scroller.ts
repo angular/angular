@@ -7,12 +7,13 @@
  */
 
 import {ViewportScroller} from '@angular/common';
-import {OnDestroy} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import {Unsubscribable} from 'rxjs';
 
 import {NavigationEnd, NavigationStart, Scroll} from './events';
 import {Router} from './router';
 
+@Injectable()
 export class RouterScroller implements OnDestroy {
   // TODO(issue/24571): remove '!'.
   private routerEventsSubscription!: Unsubscribable;

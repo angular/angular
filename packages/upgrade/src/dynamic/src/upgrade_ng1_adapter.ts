@@ -135,6 +135,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
   }
 }
 
+@Directive()
 class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
   private controllerInstance: IControllerInstance|null = null;
   destinationObj: IBindingDestination|null = null;
