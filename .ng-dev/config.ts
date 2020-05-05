@@ -52,24 +52,18 @@ const commitMessage = {
 const format = {
   'clang-format': {
     'matchers': [
-      'dev-infra/**/*.{js,ts}',
-      'packages/**/*.{js,ts}',
-      '!packages/zone.js',
-      '!packages/common/locales/**/*.{js,ts}',
-      '!packages/common/src/i18n/available_locales.ts',
-      '!packages/common/src/i18n/currencies.ts',
-      '!packages/common/src/i18n/locale_en.ts',
-      'modules/benchmarks/**/*.{js,ts}',
-      'modules/playground/**/*.{js,ts}',
-      'tools/**/*.{js,ts}',
-      '!tools/gulp-tasks/cldr/extract.js',
-      '!tools/public_api_guard/**/*.d.ts',
-      '!tools/ts-api-guardian/test/fixtures/**',
-      '*.{js,ts}',
-      '!**/node_modules/**',
-      '!**/dist/**',
-      '!**/built/**',
+      '**/*.{js,ts}',
+      // TODO: burn down format failures and remove aio and integration exceptions.
+      '!aio/**',
+      '!integration/**',
+      // TODO: remove this exclusion as part of IE deprecation.
       '!shims_for_IE.js',
+      // Both third_party and .yarn are directories containing copied code which should
+      // not be modified.
+      '!third_party/**',
+      '!.yarn/**',
+      // Do not format d.ts files as they are generated
+      '!**/*.d.ts',
     ]
   },
   'buildifier': true
