@@ -165,7 +165,7 @@
     "tree-kill": "^1.1.0",
     "ts-node": "^8.4.1",
     "tslint": "~6.1.0",
-    "typescript": "~3.7.4",
+    "typescript": "~3.8.3",
     "uglify-js": "^3.0.15",
     "unist-util-filter": "^0.2.1",
     "unist-util-source": "^1.0.1",
