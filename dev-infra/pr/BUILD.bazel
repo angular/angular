@@ -1,16 +1,21 @@
 load("@npm_bazel_typescript//:index.bzl", "ts_library")
 
 ts_library(
-    name = "utils",
-    srcs = glob(["*.ts"]),
-    module_name = "@angular/dev-infra-private/utils",
+    name = "pr",
+    srcs = glob([
+        "*.ts",
+    ]),
+    module_name = "@angular/dev-infra-private/pr",
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
-        "@npm//@octokit/graphql",
+        "//dev-infra/utils",
+        "@npm//@types/cli-progress",
         "@npm//@types/node",
         "@npm//@types/shelljs",
+        "@npm//@types/yargs",
+        "@npm//cli-progress",
         "@npm//shelljs",
-        "@npm//tslib",
         "@npm//typed-graphqlify",
+        "@npm//yargs",
     ],
 )

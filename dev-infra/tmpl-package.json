@@ -9,6 +9,7 @@
     "ts-circular-deps": "./ts-circular-dependencies/index.js"
   },
   "dependencies": {
+    "@octokit/graphql": "<from-root>",
     "chalk": "<from-root>",
     "cli-progress": "<from-root>",
     "glob": "<from-root>",
@@ -16,6 +17,7 @@
     "minimatch": "<from-root>",
     "multimatch": "<from-root>",
     "shelljs": "<from-root>",
+    "typed-graphqlify": "<from-root>",
     "yaml": "<from-root>",
     "yargs": "<from-root>"
   },
