@@ -907,21 +907,42 @@ runInEachFileSystem(os => {
               `static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestBase, never, never, { "input": "input"; }, {}, never>;`);
     });
 
-    it('should error if undecorated class with Angular features has been discovered', () => {
-      env.write('test.ts', `
-        import {Component, Input, NgModule} from '@angular/core';
+    describe('undecorated classes using Angular features', () => {
+      it('should error if Angular field decorator has been discovered', () => {
+        env.write('test.ts', `
+          import {Component, Input, NgModule} from '@angular/core';
+  
+          export class SomeBaseClass {
+            @Input() input: any;
+          }
+        `);
 
-        export class SomeBaseClass {
-          @Input() input: any;
-        }
-    `);
+        const errors = env.driveDiagnostics();
+        expect(errors.length).toBe(1);
+        expect(trim(errors[0].messageText as string))
+            .toContain(
+                'Class is using Angular features but is not decorated. Please add an explicit ' +
+                'Angular decorator.');
+      });
 
-      const errors = env.driveDiagnostics();
-      expect(errors.length).toBe(1);
-      expect(trim(errors[0].messageText as string))
-          .toContain(
-              'Class is using Angular features but is not decorated. Please add an explicit ' +
-              'Angular decorator.');
+      it('should error if directive lifecye hook has been discovered', () => {
+        env.write('test.ts', `
+          import {Component, NgModule} from '@angular/core';
+  
+          export class SomeBaseClass {
+            ngAfterViewInit() {
+              // empty
+            }
+          }
+        `);
+
+        const errors = env.driveDiagnostics();
+        expect(errors.length).toBe(1);
+        expect(trim(errors[0].messageText as string))
+            .toContain(
+                'Class is using Angular features but is not decorated. Please add an explicit ' +
+                'Angular decorator.');
+      });
     });
 
     it('should compile NgModules without errors', () => {
