@@ -208,15 +208,23 @@ class AstTranslator implements AstVisitor {
     // This is a normal property read - convert the receiver to an expression and emit the correct
     // TypeScript expression to read the property.
     const receiver = wrapForDiagnostics(this.translate(ast.receiver));
-    const node = ts.createPropertyAccess(receiver, ast.name);
-    addParseSpanInfo(node, ast.nameSpan);
+    const name = ts.createPropertyAccess(receiver, ast.name);
+    addParseSpanInfo(name, ast.nameSpan);
+    const node = wrapForDiagnostics(name);
+    addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
 
   visitPropertyWrite(ast: PropertyWrite): ts.Expression {
     const receiver = wrapForDiagnostics(this.translate(ast.receiver));
     const left = ts.createPropertyAccess(receiver, ast.name);
-    addParseSpanInfo(left, ast.nameSpan);
+    // TypeScript reports assignment errors on the entire lvalue expression. Annotate the lvalue of
+    // the assignment with the sourceSpan, which includes receivers, rather than nameSpan for
+    // consistency of the diagnostic location.
+    // a.b.c = 1
+    // ^^^^^^^^^ sourceSpan
+    //     ^     nameSpan
+    addParseSpanInfo(left, ast.sourceSpan);
     const right = this.translate(ast.value);
     const node = wrapForDiagnostics(ts.createBinary(left, ts.SyntaxKind.EqualsToken, right));
     addParseSpanInfo(node, ast.sourceSpan);
@@ -278,7 +286,7 @@ class AstTranslator implements AstVisitor {
       const expr = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
       node = tsCastToAny(expr);
     }
-    addParseSpanInfo(node, ast.nameSpan);
+    addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
 }

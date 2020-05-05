@@ -1125,7 +1125,7 @@ class TcbExpressionTranslator {
       return result;
     } else if (ast instanceof MethodCall && ast.receiver instanceof ImplicitReceiver) {
       // Resolve the special `$any(expr)` syntax to insert a cast of the argument to type `any`.
-      // `$any(expr) -> expr as any`
+      // `$any(expr)` -> `expr as any`
       if (ast.name === '$any' && ast.args.length === 1) {
         const expr = this.translate(ast.args[0]);
         const exprAsAny =

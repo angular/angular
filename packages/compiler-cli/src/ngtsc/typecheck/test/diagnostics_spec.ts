@@ -190,7 +190,7 @@ runInEachFileSystem(() => {
           [{type: 'pipe', name: 'Pipe', pipeName: 'pipe'}]);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 35): Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        `synthetic.html(1, 28): Argument of type 'number' is not assignable to parameter of type 'string'.`,
       ]);
     });
 
@@ -430,7 +430,7 @@ class TestComponent {
         }`);
 
       expect(messages).toEqual([
-        `synthetic.html(1, 22): Property 'nname' does not exist on type '{ name: string; }'. Did you mean 'name'?`
+        `synthetic.html(1, 15): Property 'nname' does not exist on type '{ name: string; }'. Did you mean 'name'?`
       ]);
     });
 
@@ -443,7 +443,7 @@ class TestComponent {
         }`);
 
       expect(messages).toEqual(
-          [`synthetic.html(1, 22): Type '2' is not assignable to type 'string'.`]);
+          [`synthetic.html(1, 15): Type '2' is not assignable to type 'string'.`]);
     });
   });
 });
