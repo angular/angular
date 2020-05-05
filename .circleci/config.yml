@@ -384,10 +384,6 @@ jobs:
       - custom_attach_workspace
       - init_environment
       - install_chrome_libs
-        # Compile dependencies to ivy
-        # Running `ngcc` here (instead of implicitly via `ng build`) allows us to take advantage of
-        # the parallel, async mode speed-up (~20-25s on CI).
-      - run: yarn --cwd aio ngcc --properties es2015
         # Build aio
       - run: yarn --cwd aio build --progress=false
         # Lint the code
