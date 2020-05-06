@@ -146,7 +146,7 @@ runInEachFileSystem(() => {
         }
       }
 
-      const {program} = makeProgram([
+      const {program, host} = makeProgram([
         {
           name: _('/index.ts'),
           contents: `export class Foo {}`,
@@ -157,7 +157,7 @@ runInEachFileSystem(() => {
         }
       ]);
       const checker = program.getTypeChecker();
-      const logicalFs = new LogicalFileSystem([_('/')]);
+      const logicalFs = new LogicalFileSystem([_('/')], host);
       const strategy = new LogicalProjectStrategy(new TestHost(checker), logicalFs);
       const decl = getDeclaration(program, _('/index.ts'), 'Foo', ts.isClassDeclaration);
       const context = program.getSourceFile(_('/context.ts'))!;

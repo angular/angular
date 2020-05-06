@@ -95,7 +95,7 @@ export function angularCoreDts(): TestFile {
     export declare class EventEmitter<T> {
       subscribe(generatorOrNext?: any, error?: any, complete?: any): unknown;
     }
-    
+
     export declare type NgIterable<T> = Array<T> | Iterable<T>;
   `
   };
@@ -254,7 +254,7 @@ export function typecheck(
       makeProgram(files, {strictNullChecks: true, noImplicitAny: true, ...opts}, undefined, false);
   const sf = program.getSourceFile(absoluteFrom('/main.ts'))!;
   const checker = program.getTypeChecker();
-  const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
+  const logicalFs = new LogicalFileSystem(getRootDirs(host, options), host);
   const reflectionHost = new TypeScriptReflectionHost(checker);
   const moduleResolver =
       new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
