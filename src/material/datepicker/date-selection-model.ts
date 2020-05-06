@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FactoryProvider, Injectable, Optional, SkipSelf, OnDestroy} from '@angular/core';
+import {FactoryProvider, Injectable, Optional, SkipSelf, OnDestroy, Directive} from '@angular/core';
 import {DateAdapter} from '@angular/material/core';
 import {Observable, Subject} from 'rxjs';
 
@@ -42,6 +42,7 @@ export interface DateSelectionModelChange<S> {
 }
 
 /** A selection model containing a date selection. */
+@Directive()
 export abstract class MatDateSelectionModel<S, D = ExtractDateTypeFromSelection<S>>
     implements OnDestroy {
   private _selectionChanged = new Subject<DateSelectionModelChange<S>>();
