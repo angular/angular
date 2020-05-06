@@ -143,9 +143,8 @@ export class ModuleWithProvidersAnalyzer {
     }
 
     // Get hold of the return statement expression for the function
-    const lastStatement = body && body[body.length - 1];
-    if (lastStatement === null || !ts.isReturnStatement(lastStatement) ||
-        lastStatement.expression === undefined) {
+    const lastStatement = body[body.length - 1];
+    if (!ts.isReturnStatement(lastStatement) || lastStatement.expression === undefined) {
       return null;
     }
 
