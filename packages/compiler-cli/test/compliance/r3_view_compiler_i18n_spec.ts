@@ -3832,4 +3832,102 @@ $` + String.raw`{$I18N_4$}:ICU:\`;
       }
     });
   });
+
+  describe('namespaces', () => {
+    it('should handle namespaces inside i18n blocks', () => {
+      const input = `
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <foreignObject i18n>
+            <xhtml:div xmlns="http://www.w3.org/1999/xhtml">
+              Count: <span>5</span>
+            </xhtml:div>
+          </foreignObject>
+        </svg>
+      `;
+
+      const output = String.raw`
+        var $I18N_0$;
+        if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+          const $MSG_EXTERNAL_7128002169381370313$$APP_SPEC_TS_1$ = goog.getMsg("{$startTagXhtmlDiv} Count: {$startTagXhtmlSpan}5{$closeTagXhtmlSpan}{$closeTagXhtmlDiv}", {
+            "startTagXhtmlDiv": "\uFFFD#3\uFFFD",
+            "startTagXhtmlSpan": "\uFFFD#4\uFFFD",
+            "closeTagXhtmlSpan": "\uFFFD/#4\uFFFD",
+            "closeTagXhtmlDiv": "\uFFFD/#3\uFFFD"
+          });
+          $I18N_0$ = $MSG_EXTERNAL_7128002169381370313$$APP_SPEC_TS_1$;
+        }
+        else {
+          $I18N_0$ = $localize \`$` +
+          String.raw`{"\uFFFD#3\uFFFD"}:START_TAG__XHTML_DIV: Count: $` +
+          String.raw`{"\uFFFD#4\uFFFD"}:START_TAG__XHTML_SPAN:5$` +
+          String.raw`{"\uFFFD/#4\uFFFD"}:CLOSE_TAG__XHTML_SPAN:$` +
+          String.raw`{"\uFFFD/#3\uFFFD"}:CLOSE_TAG__XHTML_DIV:\`;
+        }
+        …
+        function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵnamespaceSVG();
+            $r3$.ɵɵelementStart(0, "svg", 0);
+            $r3$.ɵɵelementStart(1, "foreignObject");
+            $r3$.ɵɵi18nStart(2, $I18N_0$);
+            $r3$.ɵɵnamespaceHTML();
+            $r3$.ɵɵelementStart(3, "div", 1);
+            $r3$.ɵɵelement(4, "span");
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵi18nEnd();
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementEnd();
+          }
+        }
+      `;
+
+      verify(input, output);
+    });
+
+    it('should handle namespaces on i18n block containers', () => {
+      const input = `
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <foreignObject>
+            <xhtml:div xmlns="http://www.w3.org/1999/xhtml" i18n>
+              Count: <span>5</span>
+            </xhtml:div>
+          </foreignObject>
+        </svg>
+      `;
+
+      const output = String.raw`
+        var $I18N_0$;
+        if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+          const $MSG_EXTERNAL_7428861019045796010$$APP_SPEC_TS_1$ = goog.getMsg(" Count: {$startTagXhtmlSpan}5{$closeTagXhtmlSpan}", {
+            "startTagXhtmlSpan": "\uFFFD#4\uFFFD",
+            "closeTagXhtmlSpan": "\uFFFD/#4\uFFFD"
+          });
+          $I18N_0$ = $MSG_EXTERNAL_7428861019045796010$$APP_SPEC_TS_1$;
+        }
+        else {
+          $I18N_0$ = $localize \` Count: $` +
+          String.raw`{"\uFFFD#4\uFFFD"}:START_TAG__XHTML_SPAN:5$` +
+          String.raw`{"\uFFFD/#4\uFFFD"}:CLOSE_TAG__XHTML_SPAN:\`;
+        }
+        …
+        function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵɵnamespaceSVG();
+            $r3$.ɵɵelementStart(0, "svg", 0);
+            $r3$.ɵɵelementStart(1, "foreignObject");
+            $r3$.ɵɵnamespaceHTML();
+            $r3$.ɵɵelementStart(2, "div", 1);
+            $r3$.ɵɵi18nStart(3, $I18N_0$);
+            $r3$.ɵɵelement(4, "span");
+            $r3$.ɵɵi18nEnd();
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementEnd();
+            $r3$.ɵɵelementEnd();
+          }
+        }
+      `;
+
+      verify(input, output, {verbose: true});
+    });
+  });
 });

@@ -9,15 +9,15 @@
 // below. This would normally be done inside the application `polyfills.ts` file.
 import '@angular/localize/init';
 
-import {CommonModule, registerLocaleData} from '@angular/common';
+import {CommonModule, DOCUMENT, registerLocaleData} from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import localeRo from '@angular/common/locales/ro';
 import {computeMsgId} from '@angular/compiler';
-import {Component, ContentChild, ContentChildren, Directive, ElementRef, HostBinding, Input, LOCALE_ID, NO_ERRORS_SCHEMA, Pipe, PipeTransform, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, ContentChild, ContentChildren, Directive, ElementRef, HostBinding, Input, LOCALE_ID, NO_ERRORS_SCHEMA, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, Type, ViewChild, ViewContainerRef, ɵsetDocument} from '@angular/core';
 import {setDelayProjection} from '@angular/core/src/render3/instructions/projection';
 import {TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
-import {By} from '@angular/platform-browser';
+import {By, ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {onlyInIvy} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
@@ -527,6 +527,75 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
       const a = fixture.debugElement.query(By.css('a'));
       const dir = a.injector.get(Dir);
       expect(dir.condition).toEqual(true);
+    });
+  });
+
+  describe('should work correctly with namespaces', () => {
+    beforeEach(() => {
+      function _document(): any {
+        // Tell Ivy about the global document
+        ɵsetDocument(document);
+        return document;
+      }
+
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: DOCUMENT, useFactory: _document, deps: []},
+          // TODO(FW-811): switch back to default server renderer (i.e. remove the line below)
+          // once it starts to support Ivy namespace format (URIs) correctly. For now, use
+          // `DomRenderer` that supports Ivy namespace format.
+          {provide: RendererFactory2, useClass: DomRendererFactory2}
+        ],
+      });
+    });
+
+    it('should handle namespaces inside i18n blocks', () => {
+      loadTranslations({
+        [computeMsgId(
+            '{$START_TAG__XHTML_DIV} Hello ' +
+            '{$START_TAG__XHTML_SPAN}world{$CLOSE_TAG__XHTML_SPAN}{$CLOSE_TAG__XHTML_DIV}')]:
+            '{$START_TAG__XHTML_DIV} Bonjour ' +
+            '{$START_TAG__XHTML_SPAN}monde{$CLOSE_TAG__XHTML_SPAN}{$CLOSE_TAG__XHTML_DIV}'
+      });
+
+      const fixture = initWithTemplate(AppComp, `
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <foreignObject i18n>
+            <xhtml:div xmlns="http://www.w3.org/1999/xhtml">
+              Hello <span>world</span>
+            </xhtml:div>
+          </foreignObject>
+        </svg>
+      `);
+
+      const element = fixture.nativeElement;
+      expect(element.textContent.trim()).toBe('Bonjour monde');
+      expect(element.querySelector('svg').namespaceURI).toBe('http://www.w3.org/2000/svg');
+      expect(element.querySelector('div').namespaceURI).toBe('http://www.w3.org/1999/xhtml');
+      expect(element.querySelector('span').namespaceURI).toBe('http://www.w3.org/1999/xhtml');
+    });
+
+    it('should handle namespaces on i18n block containers', () => {
+      loadTranslations({
+        [computeMsgId(' Hello {$START_TAG__XHTML_SPAN}world{$CLOSE_TAG__XHTML_SPAN}')]:
+            ' Bonjour {$START_TAG__XHTML_SPAN}monde{$CLOSE_TAG__XHTML_SPAN}'
+      });
+
+      const fixture = initWithTemplate(AppComp, `
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <foreignObject>
+            <xhtml:div xmlns="http://www.w3.org/1999/xhtml" i18n>
+              Hello <span>world</span>
+            </xhtml:div>
+          </foreignObject>
+        </svg>
+      `);
+
+      const element = fixture.nativeElement;
+      expect(element.textContent.trim()).toBe('Bonjour monde');
+      expect(element.querySelector('svg').namespaceURI).toBe('http://www.w3.org/2000/svg');
+      expect(element.querySelector('div').namespaceURI).toBe('http://www.w3.org/1999/xhtml');
+      expect(element.querySelector('span').namespaceURI).toBe('http://www.w3.org/1999/xhtml');
     });
   });
 
