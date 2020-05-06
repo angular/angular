@@ -143,8 +143,8 @@ export function bypassSanitizationTrustHtml(trustedHtml: string): SafeHtml {
 /**
  * Mark `style` string as trusted.
  *
- * This function wraps the trusted string in `String` and brands it in a way which makes it
- * recognizable to {@link styleSanitizer} to be trusted implicitly.
+ * Note that this function is no longer necessary since Angular doesn't perform
+ * style sanitization anymore.
  *
  * @param trustedStyle `style` string which needs to be implicitly trusted.
  * @returns a `style` hich has been branded to be implicitly trusted.

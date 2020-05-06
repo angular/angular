@@ -7,8 +7,6 @@
  */
 
 import {SafeValue, unwrapSafeValue} from '../../sanitization/bypass';
-import {stylePropNeedsSanitization, ɵɵsanitizeStyle} from '../../sanitization/sanitization';
-import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {KeyValueArray, keyValueArrayGet, keyValueArraySet} from '../../util/array_utils';
 import {assertDefined, assertEqual, assertLessThan, assertNotEqual, throwError} from '../../util/assert';
 import {EMPTY_ARRAY} from '../../util/empty';
@@ -18,11 +16,10 @@ import {bindingUpdated} from '../bindings';
 import {DirectiveDef} from '../interfaces/definition';
 import {AttributeMarker, TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement, Renderer3} from '../interfaces/renderer';
-import {SanitizerFn} from '../interfaces/sanitization';
 import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling';
 import {HEADER_OFFSET, LView, RENDERER, TData, TView} from '../interfaces/view';
 import {applyStyling} from '../node_manipulation';
-import {getCurrentDirectiveDef, getCurrentStyleSanitizer, getLView, getSelectedIndex, getTView, incrementBindingIndex, setCurrentStyleSanitizer} from '../state';
+import {getCurrentDirectiveDef, getLView, getSelectedIndex, getTView, incrementBindingIndex} from '../state';
 import {insertTStylingBinding} from '../styling/style_binding_list';
 import {getLastParsedKey, getLastParsedValue, parseClassName, parseClassNameNext, parseStyle, parseStyleNext} from '../styling/styling_parser';
 import {NO_CHANGE} from '../tokens';
@@ -30,26 +27,6 @@ import {getNativeByIndex} from '../util/view_utils';
 
 import {setDirectiveInputsWhichShadowsStyling} from './property';
 
-
-/**
- * Sets the current style sanitizer function which will then be used
- * within all follow-up prop and map-based style binding instructions
- * for the given element.
- *
- * Note that once styling has been applied to the element (i.e. once
- * `advance(n)` is executed or the hostBindings/template function exits)
- * then the active `sanitizerFn` will be set to `null`. This means that
- * once styling is applied to another element then a another call to
- * `styleSanitizer` will need to be made.
- *
- * @param sanitizerFn The sanitization function that will be used to
- *       process style prop/value entries.
- *
- * @codeGenApi
- */
-export function ɵɵstyleSanitizer(sanitizer: StyleSanitizeFn|null): void {
-  setCurrentStyleSanitizer(sanitizer);
-}
 
 /**
  * Update a style binding on an element with the provided value.
@@ -187,7 +164,7 @@ export function classStringParser(keyValueArray: KeyValueArray<any>, text: strin
  * @param isClassBased `true` if `class` change (`false` if `style`)
  */
 export function checkStylingProperty(
-    prop: string, value: any|NO_CHANGE, suffixOrSanitizer: SanitizerFn|string|undefined|null,
+    prop: string, value: any|NO_CHANGE, suffix: string|undefined|null,
     isClassBased: boolean): void {
   const lView = getLView();
   const tView = getTView();
@@ -199,19 +176,10 @@ export function checkStylingProperty(
     stylingFirstUpdatePass(tView, prop, bindingIndex, isClassBased);
   }
   if (value !== NO_CHANGE && bindingUpdated(lView, bindingIndex, value)) {
-    // This is a work around. Once PR#34480 lands the sanitizer is passed explicitly and this line
-    // can be removed.
-    let styleSanitizer: StyleSanitizeFn|null;
-    if (suffixOrSanitizer == null) {
-      if (styleSanitizer = getCurrentStyleSanitizer()) {
-        suffixOrSanitizer = styleSanitizer as any;
-      }
-    }
     const tNode = tView.data[getSelectedIndex() + HEADER_OFFSET] as TNode;
     updateStyling(
         tView, tNode, lView, lView[RENDERER], prop,
-        lView[bindingIndex + 1] = normalizeAndApplySuffixOrSanitizer(value, suffixOrSanitizer),
-        isClassBased, bindingIndex);
+        lView[bindingIndex + 1] = normalizeSuffix(value, suffix), isClassBased, bindingIndex);
   }
 }
 
@@ -639,7 +607,7 @@ export function toStylingKeyValueArray(
 }
 
 /**
- * Set a `value` for a `key` taking style sanitization into account.
+ * Set a `value` for a `key`.
  *
  * See: `keyValueArraySet` for details
  *
@@ -648,10 +616,7 @@ export function toStylingKeyValueArray(
  * @param value The value to set (If key needs sanitization it will be sanitized)
  */
 export function styleKeyValueArraySet(keyValueArray: KeyValueArray<any>, key: string, value: any) {
-  if (stylePropNeedsSanitization(key)) {
-    value = ɵɵsanitizeStyle(value);
-  }
-  keyValueArraySet(keyValueArray, key, value);
+  keyValueArraySet(keyValueArray, key, unwrapSafeValue(value));
 }
 
 /**
@@ -873,14 +838,10 @@ function isStylingValuePresent(value: any): boolean {
  * @param value
  * @param suffixOrSanitizer
  */
-function normalizeAndApplySuffixOrSanitizer(
-    value: any, suffixOrSanitizer: SanitizerFn|string|undefined|null): string|null|undefined|
-    boolean {
+function normalizeSuffix(value: any, suffixOrSanitizer: string|undefined|null): string|null|
+    undefined|boolean {
   if (value == null /** || value === undefined */) {
     // do nothing
-  } else if (typeof suffixOrSanitizer === 'function') {
-    // sanitize the value.
-    value = suffixOrSanitizer(value);
   } else if (typeof suffixOrSanitizer === 'string') {
     value = value + suffixOrSanitizer;
   } else if (typeof value === 'object') {
