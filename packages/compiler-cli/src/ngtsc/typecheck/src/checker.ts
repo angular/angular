@@ -39,6 +39,7 @@ export class TemplateTypeChecker {
       private typeCheckingStrategy: TypeCheckingProgramStrategy,
       private typeCheckAdapter: ProgramTypeCheckAdapter, private config: TypeCheckingConfig,
       private refEmitter: ReferenceEmitter, private reflector: ReflectionHost,
+      private compilerHost: ts.CompilerHost,
       private priorBuild: IncrementalBuild<unknown, FileTypeCheckingData>) {}
 
   /**
@@ -49,7 +50,7 @@ export class TemplateTypeChecker {
     this.files.clear();
 
     const ctx =
-        new TypeCheckContext(this.config, this.originalProgram, this.refEmitter, this.reflector);
+        new TypeCheckContext(this.config, this.compilerHost, this.refEmitter, this.reflector);
 
     // Typecheck all the files.
     for (const sf of this.originalProgram.getSourceFiles()) {

@@ -113,7 +113,7 @@ export class TypeCheckContext {
   private fileMap = new Map<AbsoluteFsPath, PendingFileTypeCheckingData>();
 
   constructor(
-      private config: TypeCheckingConfig, private program: ts.Program,
+      private config: TypeCheckingConfig, private compilerHost: ts.CompilerHost,
       private refEmitter: ReferenceEmitter, private reflector: ReflectionHost) {}
 
   /**
@@ -320,7 +320,8 @@ export class TypeCheckContext {
         domSchemaChecker: new RegistryDomSchemaChecker(sourceManager),
         oobRecorder: new OutOfBandDiagnosticRecorderImpl(sourceManager),
         typeCheckFile: new TypeCheckFile(
-            TypeCheckShimGenerator.shimFor(sfPath), this.config, this.refEmitter, this.reflector),
+            TypeCheckShimGenerator.shimFor(sfPath), this.config, this.refEmitter, this.reflector,
+            this.compilerHost),
         hasInlines: false,
         sourceManager,
       };

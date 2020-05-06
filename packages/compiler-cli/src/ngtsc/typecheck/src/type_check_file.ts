@@ -34,10 +34,11 @@ export class TypeCheckFile extends Environment {
 
   constructor(
       readonly fileName: AbsoluteFsPath, config: TypeCheckingConfig, refEmitter: ReferenceEmitter,
-      reflector: ReflectionHost) {
+      reflector: ReflectionHost, compilerHost: ts.CompilerHost) {
     super(
         config, new ImportManager(new NoopImportRewriter(), 'i'), refEmitter, reflector,
-        ts.createSourceFile(fileName, '', ts.ScriptTarget.Latest, true));
+        ts.createSourceFile(
+            compilerHost.getCanonicalFileName(fileName), '', ts.ScriptTarget.Latest, true));
   }
 
   addTypeCheckBlock(
@@ -49,7 +50,7 @@ export class TypeCheckFile extends Environment {
   }
 
   render(): string {
-    let source: string = this.importManager.getAllImports(this.fileName)
+    let source: string = this.importManager.getAllImports(this.contextFile.fileName)
                              .map(i => `import * as ${i.qualifier} from '${i.specifier}';`)
                              .join('\n') +
         '\n\n';
