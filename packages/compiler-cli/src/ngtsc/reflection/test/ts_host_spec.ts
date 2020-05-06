@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {absoluteFrom} from '../../file_system';
+import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {getDeclaration, makeProgram} from '../../testing';
 import {CtorParameter} from '../src/host';
@@ -329,8 +329,8 @@ runInEachFileSystem(() => {
         } else if (directTargetDecl === null) {
           return fail('No declaration found for DirectTarget');
         }
-        expect(targetDecl.node!.getSourceFile().fileName)
-            .toBe(_('/node_modules/absolute/index.ts'));
+        expect(targetDecl.node!.getSourceFile())
+            .toBe(getSourceFileOrError(program, _('/node_modules/absolute/index.ts')));
         expect(ts.isClassDeclaration(targetDecl.node!)).toBe(true);
         expect(directTargetDecl.viaModule).toBe('absolute');
         expect(directTargetDecl.node).toBe(targetDecl.node);
