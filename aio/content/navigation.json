@@ -748,7 +748,7 @@
     },
     {
       "title": "Tutorials",
-      "tooltop": "End-to-end tutorials for learning Angular concepts and patterns.",
+      "tooltip": "End-to-end tutorials for learning Angular concepts and patterns.",
       "children": [
         {
           "url": "guide/router-tutorial",
