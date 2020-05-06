@@ -19,10 +19,10 @@ import {getPropertyNameText} from '../../utils/typescript/property_name';
 import {UpdateRecorder} from './update_recorder';
 
 /**
- * Set ot known decorators that indicate that the current class needs a directive
+ * Set of known decorators that indicate that the current class needs a directive
  * definition. These decorators are always specific to directives.
  */
-export const DIRECTIVE_FIELD_DECORATORS = new Set([
+const DIRECTIVE_FIELD_DECORATORS = new Set([
   'Input', 'Output', 'ViewChild', 'ViewChildren', 'ContentChild', 'ContentChildren', 'HostBinding',
   'HostListener'
 ]);
@@ -31,16 +31,16 @@ export const DIRECTIVE_FIELD_DECORATORS = new Set([
  * Set of known lifecycle hooks that indicate that the current class needs a directive
  * definition. These lifecycle hooks are always specific to directives.
  */
-export const DIRECTIVE_LIFECYCLE_HOOKS = new Set([
+const DIRECTIVE_LIFECYCLE_HOOKS = new Set([
   'ngOnChanges', 'ngOnInit', 'ngDoCheck', 'ngAfterViewInit', 'ngAfterViewChecked',
   'ngAfterContentInit', 'ngAfterContentChecked'
 ]);
 
 /**
  * Set of known lifecycle hooks that indicate that a given class uses Angular
- * features, but it's ambiguous whether it is an directive or service.
+ * features, but it's ambiguous whether it is a directive or service.
  */
-export const AMBIGUOUS_LIFECYCLE_HOOKS = new Set(['ngOnDestroy']);
+const AMBIGUOUS_LIFECYCLE_HOOKS = new Set(['ngOnDestroy']);
 
 /** Describes how a given class is used in the context of Angular. */
 enum ClassKind {
@@ -224,7 +224,7 @@ export class UndecoratedClassesWithDecoratedFieldsTransform {
 
   /**
    * Determines the kind of a given class in terms of Angular. The method checks
-   * whether the given class has members that indiciate the use of Angular features.
+   * whether the given class has members that indicate the use of Angular features.
    * e.g. lifecycle hooks or decorated members like `@Input` or `@Output` are
    * considered Angular features..
    */

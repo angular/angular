@@ -11,7 +11,6 @@ import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
 import * as shx from 'shelljs';
-import {AMBIGUOUS_LIFECYCLE_HOOKS, DIRECTIVE_LIFECYCLE_HOOKS} from '../migrations/undecorated-classes-with-decorated-fields/transform';
 
 describe('Undecorated classes with decorated fields migration', () => {
   let runner: SchematicTestRunner;
@@ -237,49 +236,44 @@ describe('Undecorated classes with decorated fields migration', () => {
     expect(tree.readContent('/index.ts')).toContain(`@Directive()\nexport class Base {`);
   });
 
-  DIRECTIVE_LIFECYCLE_HOOKS.forEach(hookName => {
-    it(`should migrate undecorated class that uses lifecycle hook: ${hookName}`, async () => {
-      writeFile('/index.ts', `
+  it('should migrate undecorated class that uses "ngOnChanges" lifecycle hook',
+     () => assertLifecycleHookMigrated('ngOnChanges'));
+  it('should migrate undecorated class that uses "ngOnInit" lifecycle hook',
+     () => assertLifecycleHookMigrated('ngOnInit'));
+  it('should migrate undecorated class that uses "ngDoCheck" lifecycle hook',
+     () => assertLifecycleHookMigrated('ngDoCheck'));
+  it('should migrate undecorated class that uses "ngAfterViewInit" lifecycle hook',
+     () => assertLifecycleHookMigrated('ngAfterViewInit'));
+  it('should migrate undecorated class that uses "ngAfterViewChecked" lifecycle hook',
+     () => assertLifecycleHookMigrated('ngAfterViewChecked'));
+  it('should migrate undecorated class that uses "ngAfterContentInit" lifecycle hook',
+     () => assertLifecycleHookMigrated('ngAfterContentInit'));
+  it('should migrate undecorated class that uses "ngAfterContentChecked" lifecycle hook',
+     () => assertLifecycleHookMigrated('ngAfterContentChecked'));
+
+  it(`should report an error and add a TODO for undecorated classes that only define ` +
+         `the "ngOnDestroy" lifecycle hook`,
+     async () => {
+       writeFile('/index.ts', `
       import { Input } from '@angular/core';
 
       export class SomeClassWithAngularFeatures {
-        ${hookName}() {
+        ngOnDestroy() {
           // noop for testing
         }
       }
     `);
 
-      await runMigration();
-      expect(tree.readContent('/index.ts'))
-          .toContain(`@Directive()\nexport class SomeClassWithAngularFeatures {`);
-    });
-  });
+       await runMigration();
 
-  AMBIGUOUS_LIFECYCLE_HOOKS.forEach(hookName => {
-    it(`should report an error and add a TODO for classes that only use the lifecycle ` +
-           `hook: ${hookName}`,
-       async () => {
-         writeFile('/index.ts', `
-        import { Input } from '@angular/core';
-  
-        export class SomeClassWithAngularFeatures {
-          ${hookName}() {
-            // noop for testing
-          }
-        }
-      `);
-
-         await runMigration();
-
-         expect(warnings.length).toBe(1);
-         expect(warnings[0])
-             .toMatch(
-                 'index.ts@4:9: Class uses Angular features but cannot be migrated automatically. ' +
-                 'Please add an appropriate Angular decorator.');
-         expect(tree.readContent('/index.ts'))
-             .toMatch(/TODO: Add Angular decorator\.\nexport class SomeClassWithAngularFeatures {/);
-       });
-  });
+       expect(warnings.length).toBe(1);
+       expect(warnings[0])
+           .toMatch(
+               'index.ts@4:7: Class uses Angular features but cannot be migrated automatically. ' +
+               'Please add an appropriate Angular decorator.');
+       expect(tree.readContent('/index.ts'))
+           .toMatch(/TODO: Add Angular decorator\.\nexport class SomeClassWithAngularFeatures {/);
+     });
 
   it('should add @Directive to undecorated derived classes of a migrated class', async () => {
     writeFile('/index.ts', `
@@ -366,6 +360,22 @@ describe('Undecorated classes with decorated fields migration', () => {
 
     expect(error).toBe(null);
   });
+
+  async function assertLifecycleHookMigrated(lifecycleHookName: string) {
+    writeFile('/index.ts', `
+      import { Input } from '@angular/core';
+
+      export class SomeClassWithAngularFeatures {
+        ${lifecycleHookName}() {
+          // noop for testing
+        }
+      }
+    `);
+
+    await runMigration();
+    expect(tree.readContent('/index.ts'))
+        .toContain(`@Directive()\nexport class SomeClassWithAngularFeatures {`);
+  }
 
   function writeFile(filePath: string, contents: string) {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
