@@ -7,7 +7,7 @@
  */
 import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {getLView, getSelectedIndex, getSelectedTNode, getTView, nextBindingIndex} from '../state';
+import {getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 import {elementAttributeInternal, storePropertyBindingMetadata} from './shared';
 
 

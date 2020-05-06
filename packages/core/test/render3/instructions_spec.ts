@@ -10,10 +10,10 @@ import {NgForOfContext} from '@angular/common';
 import {getSortedClassName} from '@angular/core/testing/src/styling';
 
 import {ɵɵdefineComponent} from '../../src/render3/definition';
-import {RenderFlags, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵstyleSanitizer, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
+import {RenderFlags, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵselect, ɵɵstyleMap, ɵɵstyleProp, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, getSanitizationBypassType, SafeValue, unwrapSafeValue} from '../../src/sanitization/bypass';
-import {ɵɵdefaultStyleSanitizer, ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
+import {ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 import {SecurityContext} from '../../src/sanitization/security';
 
@@ -170,7 +170,6 @@ describe('instructions', () => {
             return createDiv();
           },
           () => {
-            ɵɵstyleSanitizer(ɵɵdefaultStyleSanitizer);
             ɵɵstyleProp('background-image', backgroundImage);
           },
           2, 2);
@@ -198,35 +197,6 @@ describe('instructions', () => {
       }, 1, 2, null, null, null, undefined, attrs);
       fixture.update();
       expect(fixture.html).toEqual('<div style="background-color: red; height: 10px;"></div>');
-    });
-
-    it('should sanitize new styles that may contain `url` properties', () => {
-      const detectedValues: string[] = [];
-      const sanitizerInterceptor = new MockSanitizerInterceptor(value => {
-        detectedValues.push(value);
-      });
-      const fixture = new TemplateFixture(
-          () => {
-            return createDiv();
-          },  //
-          () => {
-            ɵɵstyleSanitizer(sanitizerInterceptor.getStyleSanitizer());
-            ɵɵstyleMap({
-              'background-image': 'background-image',
-              'background': 'background',
-              'border-image': 'border-image',
-              'list-style': 'list-style',
-              'list-style-image': 'list-style-image',
-              'filter': 'filter',
-              'width': 'width'
-            });
-          },
-          1, 2, null, null, sanitizerInterceptor);
-
-      const props = detectedValues.sort();
-      expect(props).toEqual([
-        'background', 'background-image', 'border-image', 'filter', 'list-style', 'list-style-image'
-      ]);
     });
   });
 
@@ -559,9 +529,6 @@ class LocalMockSanitizer implements Sanitizer {
 class MockSanitizerInterceptor {
   public lastValue: string|null = null;
   constructor(private _interceptorFn?: ((value: any) => any)|null) {}
-  getStyleSanitizer() {
-    return ɵɵdefaultStyleSanitizer;
-  }
   sanitize(context: SecurityContext, value: LocalSanitizedValue|string|null|any): string|null {
     if (this._interceptorFn) {
       this._interceptorFn(value);
