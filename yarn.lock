@@ -165,10 +165,10 @@
     ora "4.0.4"
     rxjs "6.5.5"
 
-"@angular/animations@github:angular/animations-builds#973f4fb19699c101674ba19a23fa9a56d6782f06":
-  version "10.0.0-next.5+22.sha-35d61c1"
-  uid "973f4fb19699c101674ba19a23fa9a56d6782f06"
-  resolved "https://codeload.github.com/angular/animations-builds/tar.gz/973f4fb19699c101674ba19a23fa9a56d6782f06"
+"@angular/animations@github:angular/animations-builds#0b6ac3f4491a849beb2ff9feaa570a7c9c287fbd":
+  version "10.0.0-next.5+42.sha-ecffc35"
+  uid "0b6ac3f4491a849beb2ff9feaa570a7c9c287fbd"
+  resolved "https://codeload.github.com/angular/animations-builds/tar.gz/0b6ac3f4491a849beb2ff9feaa570a7c9c287fbd"
 
 "@angular/cdk@~9.2.0":
   version "9.2.0"
@@ -203,15 +203,15 @@
     universal-analytics "0.4.20"
     uuid "8.0.0"
 
-"@angular/common@github:angular/common-builds#5f81e1d0a4ac65ff97e6ad3f2e95bed98007fe12":
-  version "10.0.0-next.5+22.sha-35d61c1"
-  uid "5f81e1d0a4ac65ff97e6ad3f2e95bed98007fe12"
-  resolved "https://codeload.github.com/angular/common-builds/tar.gz/5f81e1d0a4ac65ff97e6ad3f2e95bed98007fe12"
+"@angular/common@github:angular/common-builds#08e017c1a8e5bf8258c1bfb943fedc60b7d444da":
+  version "10.0.0-next.5+42.sha-ecffc35"
+  uid "08e017c1a8e5bf8258c1bfb943fedc60b7d444da"
+  resolved "https://codeload.github.com/angular/common-builds/tar.gz/08e017c1a8e5bf8258c1bfb943fedc60b7d444da"
 
-"@angular/compiler-cli@github:angular/compiler-cli-builds#e2ac3ec27f3edb38d9419342df117b7148d0aa34":
-  version "10.0.0-next.5+22.sha-35d61c1"
-  uid e2ac3ec27f3edb38d9419342df117b7148d0aa34
-  resolved "https://codeload.github.com/angular/compiler-cli-builds/tar.gz/e2ac3ec27f3edb38d9419342df117b7148d0aa34"
+"@angular/compiler-cli@github:angular/compiler-cli-builds#48b935870669874132324b77aa2edd2285e7ccda":
+  version "10.0.0-next.5+42.sha-ecffc35"
+  uid "48b935870669874132324b77aa2edd2285e7ccda"
+  resolved "https://codeload.github.com/angular/compiler-cli-builds/tar.gz/48b935870669874132324b77aa2edd2285e7ccda"
   dependencies:
     canonical-path "1.0.0"
     chokidar "^3.0.0"
@@ -226,50 +226,50 @@
     sourcemap-codec "^1.4.8"
     yargs "15.3.0"
 
-"@angular/compiler@github:angular/compiler-builds#ca5200329160b6924befa30e606d98a024022fd3":
-  version "10.0.0-next.5+22.sha-35d61c1"
-  uid ca5200329160b6924befa30e606d98a024022fd3
-  resolved "https://codeload.github.com/angular/compiler-builds/tar.gz/ca5200329160b6924befa30e606d98a024022fd3"
+"@angular/compiler@github:angular/compiler-builds#02815edcdb7963d5ae19ab86784a9cddf8a0e2c2":
+  version "10.0.0-next.5+42.sha-ecffc35"
+  uid "02815edcdb7963d5ae19ab86784a9cddf8a0e2c2"
+  resolved "https://codeload.github.com/angular/compiler-builds/tar.gz/02815edcdb7963d5ae19ab86784a9cddf8a0e2c2"
 
-"@angular/core@github:angular/core-builds#f982f7abcc319c7a14d39604e93b89f7dcfd0bc5":
-  version "10.0.0-next.5+22.sha-35d61c1"
-  uid f982f7abcc319c7a14d39604e93b89f7dcfd0bc5
-  resolved "https://codeload.github.com/angular/core-builds/tar.gz/f982f7abcc319c7a14d39604e93b89f7dcfd0bc5"
+"@angular/core@github:angular/core-builds#e523167bae05a01eb9b520ae97168c11d817a055":
+  version "10.0.0-next.5+42.sha-ecffc35"
+  uid e523167bae05a01eb9b520ae97168c11d817a055
+  resolved "https://codeload.github.com/angular/core-builds/tar.gz/e523167bae05a01eb9b520ae97168c11d817a055"
 
-"@angular/elements@github:angular/elements-builds#1c5585f37319b59805f45ce5f5aa8be219d7aa5b":
-  version "10.0.0-next.5+22.sha-35d61c1"
-  uid "1c5585f37319b59805f45ce5f5aa8be219d7aa5b"
-  resolved "https://codeload.github.com/angular/elements-builds/tar.gz/1c5585f37319b59805f45ce5f5aa8be219d7aa5b"
+"@angular/elements@github:angular/elements-builds#e9073df16285e57a170067933fb04da9bd950fae":
+  version "10.0.0-next.5+42.sha-ecffc35"
+  uid e9073df16285e57a170067933fb04da9bd950fae
+  resolved "https://codeload.github.com/angular/elements-builds/tar.gz/e9073df16285e57a170067933fb04da9bd950fae"
 
-"@angular/forms@github:angular/forms-builds#e5428df4ed5a12726bbcf1f5f18d3777da4533bf":
-  version "10.0.0-next.5+22.sha-35d61c1"
-  uid e5428df4ed5a12726bbcf1f5f18d3777da4533bf
-  resolved "https://codeload.github.com/angular/forms-builds/tar.gz/e5428df4ed5a12726bbcf1f5f18d3777da4533bf"
+"@angular/forms@github:angular/forms-builds#18fd84f68c9ca8ccfba59d46924b095e0b90d0e4":
+  version "10.0.0-next.5+42.sha-ecffc35"
+  uid "18fd84f68c9ca8ccfba59d46924b095e0b90d0e4"
+  resolved "https://codeload.github.com/angular/forms-builds/tar.gz/18fd84f68c9ca8ccfba59d46924b095e0b90d0e4"
 
-"@angular/language-service@github:angular/language-service-builds#c484e5ce0c179d5cc05f522c880bf6ea298397a4":
-  version "10.0.0-next.5+22.sha-35d61c1"
-  uid c484e5ce0c179d5cc05f522c880bf6ea298397a4
-  resolved "https://codeload.github.com/angular/language-service-builds/tar.gz/c484e5ce0c179d5cc05f522c880bf6ea298397a4"
+"@angular/language-service@github:angular/language-service-builds#5dae45b79fbdaa257f790181c05b6b046a5722f4":
+  version "10.0.0-next.5+42.sha-ecffc35"
+  uid "5dae45b79fbdaa257f790181c05b6b046a5722f4"
+  resolved "https://codeload.github.com/angular/language-service-builds/tar.gz/5dae45b79fbdaa257f790181c05b6b046a5722f4"
 
 "@angular/material@~9.2.0":
   version "9.2.0"
   resolved "https://registry.yarnpkg.com/@angular/material/-/material-9.2.0.tgz#1b6f0a2e115f93885d7fc2dc4b258d8c9cf6821f"
   integrity sha512-KKzEIVh6/m56m+Ao8p4PK0SyEr0574l3VP2swj1qPag3u+FYgemmXCGTaChrKdDsez+zeTCPXImBGXzE6NQ80Q==
 
-"@angular/platform-browser-dynamic@github:angular/platform-browser-dynamic-builds#f42b8a382de8ab72106503db20bdc89021b86a69":
-  version "10.0.0-next.5+22.sha-35d61c1"
-  uid f42b8a382de8ab72106503db20bdc89021b86a69
-  resolved "https://codeload.github.com/angular/platform-browser-dynamic-builds/tar.gz/f42b8a382de8ab72106503db20bdc89021b86a69"
+"@angular/platform-browser-dynamic@github:angular/platform-browser-dynamic-builds#f1afa2dcc32de1368a18a4db32835fddcfe17b16":
+  version "10.0.0-next.5+42.sha-ecffc35"
+  uid f1afa2dcc32de1368a18a4db32835fddcfe17b16
+  resolved "https://codeload.github.com/angular/platform-browser-dynamic-builds/tar.gz/f1afa2dcc32de1368a18a4db32835fddcfe17b16"
 
-"@angular/platform-browser@github:angular/platform-browser-builds#916676e1a9dd118ef7f3648bb91a92fce2d8a75f":
-  version "10.0.0-next.5+22.sha-35d61c1"
-  uid "916676e1a9dd118ef7f3648bb91a92fce2d8a75f"
-  resolved "https://codeload.github.com/angular/platform-browser-builds/tar.gz/916676e1a9dd118ef7f3648bb91a92fce2d8a75f"
+"@angular/platform-browser@github:angular/platform-browser-builds#ac22c7ac069efc3f82ad5bedce4849c3fb8a98cd":
+  version "10.0.0-next.5+42.sha-ecffc35"
+  uid ac22c7ac069efc3f82ad5bedce4849c3fb8a98cd
+  resolved "https://codeload.github.com/angular/platform-browser-builds/tar.gz/ac22c7ac069efc3f82ad5bedce4849c3fb8a98cd"
 
-"@angular/router@github:angular/router-builds#68144ea624f60660a8ffdb61ae5fc1ee849d70d6":
-  version "10.0.0-next.5+22.sha-35d61c1"
-  uid "68144ea624f60660a8ffdb61ae5fc1ee849d70d6"
-  resolved "https://codeload.github.com/angular/router-builds/tar.gz/68144ea624f60660a8ffdb61ae5fc1ee849d70d6"
+"@angular/router@github:angular/router-builds#f3f506667eb68f35b3284c07dbfa750ff08d4020":
+  version "10.0.0-next.5+42.sha-ecffc35"
+  uid f3f506667eb68f35b3284c07dbfa750ff08d4020
+  resolved "https://codeload.github.com/angular/router-builds/tar.gz/f3f506667eb68f35b3284c07dbfa750ff08d4020"
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.8.3":
   version "7.8.3"
@@ -10628,10 +10628,10 @@ typescript@3.6.5:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.5.tgz#dae20114a7b4ff4bd642db9c8c699f2953e8bbdb"
   integrity sha512-BEjlc0Z06ORZKbtcxGrIvvwYs5hAnuo6TKdNFL55frVDlB+na3z5bsLhFaIxmT+dPWgBIjMo6aNnTOgHHmHgiQ==
 
-typescript@~3.7.0:
-  version "3.7.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.5.tgz#0692e21f65fd4108b9330238aac11dd2e177a1ae"
-  integrity sha512-/P5lkRXkWHNAbcJIiHPfRoKqyd7bsyCma1hZNUGfn20qm64T6ZBlrzprymeu918H+mB/0rIg2gGK/BXkhhYgBw==
+typescript@~3.8.3:
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
+  integrity sha512-MYlEfn5VrLNsgudQTVJeNaQFUAI7DkhnOjdpAp4T+ku1TfQClewlbSuTVHiA+8skNBgaf02TL/kLOvig4y3G8w==
 
 ua-parser-js@0.7.21:
   version "0.7.21"
