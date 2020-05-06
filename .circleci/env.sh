@@ -74,7 +74,7 @@ setPublicVar COMPONENTS_REPO_TMP_DIR "/tmp/angular-components-repo"
 setPublicVar COMPONENTS_REPO_URL "https://github.com/angular/components.git"
 setPublicVar COMPONENTS_REPO_BRANCH "master"
 # **NOTE**: When updating the commit SHA, also update the cache key in the CircleCI `config.yml`.
-setPublicVar COMPONENTS_REPO_COMMIT "15efb677a751f41cc7ca109e734b58abdee8d8a3"
+setPublicVar COMPONENTS_REPO_COMMIT "448523bffffecd2b53a3d2854c3051b6b7a3934f"
 
 
 ####################################################################################################
