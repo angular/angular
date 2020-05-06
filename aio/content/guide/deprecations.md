@@ -494,7 +494,7 @@ The following APIs have been removed starting with version 10.0.0*:
 | ---------------- | -------------- | ----------- | ----- |
 | `@angular/core`  | Undecorated base classes that use Angular features | Add Angular decorator | See [migration guide](guide/migration-undecorated-classes) for more info |
 | `@angular/core`  | `ModuleWithProviders` without a generic             | `ModuleWithProviders` with a generic | See [migration guide](guide/migration-module-with-providers) for more info |
-| `@angular/core`  | Style Sanitization | no action needed | Sanitization for `[style]` and `[style.prop]` bindings |
+| `@angular/core`  | Style Sanitization | no action needed | See [style sanitization API removal](#style-sanitization) for more info
 
 *To see APIs removed in version 9, check out this guide on the [version 9 docs site](https://v9.angular.io/guide/deprecations#removed).
 
@@ -558,10 +558,6 @@ The final decision was made on three key points:
 * __Vendor support__: Microsoft dropped support of IE 9 and 10 on 1/12/16, meaning they no longer provide security updates or technical support.
 * __Usage statistics__: We looked at usage trends for IE 9 and 10 from various sources and all indicated that usage percentages were extremely small (fractions of 1%).
 * __Feedback from partners__: We also reached out to some of our Angular customers and none expressed concern about dropping IE 9 and 10 support.
-
-{@a style-sanitization}
-### Style Sanitization for `[style]` and `[style.prop]` bindings
-Angular used to sanitize `[style]` and `[style.prop]` bindings to prevent malicious code from being inserted through `javascript:` expressions in CSS `url()` entries. However, most modern browsers no longer support the usage of these expressions, so sanitization was only maintained for the sake of IE 6 and 7. Given that Angular does not support either IE 6 or 7 and sanitization has a performance cost, we will no longer sanitize style bindings as of version 10 of Angular.
 
 {@a removed}
 ## Removed APIs
@@ -636,3 +632,7 @@ For more information about using `@angular/common/http`, see the [HttpClient gui
 | --------------------- | ------------------------------------------- |
 | `MockBackend` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
 | `MockConnection` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
+
+{@a style-sanitization}
+### Style Sanitization for `[style]` and `[style.prop]` bindings
+Angular used to sanitize `[style]` and `[style.prop]` bindings to prevent malicious code from being inserted through `javascript:` expressions in CSS `url()` entries. However, most modern browsers no longer support the usage of these expressions, so sanitization was only maintained for the sake of IE 6 and 7. Given that Angular does not support either IE 6 or 7 and sanitization has a performance cost, we will no longer sanitize style bindings as of version 10 of Angular.
