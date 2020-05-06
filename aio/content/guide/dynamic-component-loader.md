@@ -131,22 +131,6 @@ The `createComponent()` method returns a reference to the loaded component.
 Use that reference to interact with the component by assigning to its properties or calling its methods.
 
 
-{@a selector-references}
-
-
-#### Selector references
-
-Generally, the Angular compiler generates a `ComponentFactory`
-for any component referenced in a template. However, there are
-no selector references in the templates for
-dynamically loaded components since they load at runtime.
-
-To ensure that the compiler still generates a factory,
-add dynamically loaded components to the `NgModule`'s `entryComponents` array:
-
-<code-example path="dynamic-component-loader/src/app/app.module.ts" region="entry-components" header="src/app/app.module.ts (entry components)"></code-example>
-
-
 
 {@a common-interface}
 
