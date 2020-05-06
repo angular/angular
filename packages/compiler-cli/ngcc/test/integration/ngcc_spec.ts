@@ -116,11 +116,11 @@ runInEachFileSystem(() => {
 
       expect(() => mainNgcc({
                basePath: '/dist',
-               propertiesToConsider: ['es2015', 'module'],
+               propertiesToConsider: ['es2015', 'fesm5', 'module'],
                logger: new MockLogger(),
              }))
           .toThrowError(
-              'Unable to process any formats for the following entry-points (tried es2015, module): \n' +
+              'Unable to process any formats for the following entry-points (tried es2015, fesm5, module): \n' +
               `  - ${_('/dist/unprocessable-2')}\n` +
               `  - ${_('/dist/unprocessable-3')}`);
     });
