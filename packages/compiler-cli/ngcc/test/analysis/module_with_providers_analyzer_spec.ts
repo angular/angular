@@ -9,6 +9,7 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {isNamedClassDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer';
@@ -39,6 +40,7 @@ runInEachFileSystem(() => {
             export * from './implicit';
             export * from './no-providers';
             export * from './module';
+            export * from './delegated';
           `
           },
           {
@@ -215,6 +217,89 @@ runInEachFileSystem(() => {
             `
           },
           {
+            name: _('/node_modules/test-package/src/delegated.js'),
+            contents: `
+            import * as implicit from './implicit';
+            import * as explicit from './explicit';
+            import * as anyModule from './any';
+
+            export function delegatedImplicitInternalFunction() {
+              return implicit.implicitInternalFunction();
+            }
+            export function delegatedImplicitExternalFunction() {
+              return implicit.implicitExternalFunction();
+            }
+            export function delegatedImplicitLibraryFunction() {
+              return implicit.implicitLibraryFunction();
+            }
+            export class DelegatedImplicitClass {
+              static implicitInternalMethod() {
+                return implicit.ImplicitClass.implicitInternalMethod();
+              }
+              static implicitExternalMethod() {
+                return implicit.ImplicitClass.implicitExternalMethod();
+              }
+              static implicitLibraryMethod() {
+                return implicit.ImplicitClass.implicitLibraryMethod();
+              }
+            }
+
+            export function delegatedExplicitInternalFunction() {
+              return explicit.explicitInternalFunction();
+            }
+            export function delegatedExplicitExternalFunction() {
+              return explicit.explicitExternalFunction();
+            }
+            export function delegatedExplicitLibraryFunction() {
+              return explicit.explicitLibraryFunction();
+            }
+            export class DelegatedExplicitClass {
+              static explicitInternalMethod() {
+                return explicit.ExplicitClass.explicitInternalMethod();
+              }
+              static explicitExternalMethod() {
+                return explicit.ExplicitClass.explicitExternalMethod();
+              }
+              static explicitLibraryMethod() {
+                return explicit.ExplicitClass.explicitLibraryMethod();
+              }
+            }
+
+            export function delegatedAnyInternalFunction() {
+              return anyModule.anyInternalFunction();
+            }
+            export function delegatedAnyExternalFunction() {
+              return anyModule.anyExternalFunction();
+            }
+            export function delegatedAnyLibraryFunction() {
+              return anyModule.anyLibraryFunction();
+            }
+            export class DelegatedAnyClass {
+              static anyInternalMethod() {
+                return anyModule.AnyClass.anyInternalMethod();
+              }
+              static anyExternalMethod() {
+                return anyModule.AnyClass.anyExternalMethod();
+              }
+              static anyLibraryMethod() {
+                return anyModule.AnyClass.anyLibraryMethod();
+              }
+            }
+
+            export function withParams(a: string) {
+              return explicit.explicitInternalFunction();
+            }
+
+            export function withOptionalParams(a: string = 'default') {
+              return explicit.explicitInternalFunction();
+            }
+
+            export function doubleDelegation(a: string = 'default') {
+              return withParams(a);
+            }
+            `
+          },
+          {
             name: _('/node_modules/test-package/src/module.js'),
             contents: `
             export class ExternalModule {}
@@ -234,6 +319,7 @@ runInEachFileSystem(() => {
             export * from './implicit';
             export * from './no-providers';
             export * from './module';
+            export * from './delegated';
           `
           },
           {
@@ -282,6 +368,47 @@ runInEachFileSystem(() => {
               static implicitExternalMethod(): { ngModule: typeof ExternalModule; providers: never[]; };
               static implicitLibraryMethod(): { ngModule: typeof LibraryModule; providers: never[]; };
             }
+            `
+          },
+          {
+            name: _('/node_modules/test-package/typings/delegated.d.ts'),
+            contents: `
+            // None of the ModuleWithProviders functions/methods in this file provide the
+            // necessary type parameters and so need to be processed by the analyzer.
+            // Each group of functions/methods here delegate their return values to other
+            // functions/methods that either explicitly provide a type parameter or need
+            // processing by the analyzer themselves.
+
+            export declare function delegatedImplicitInternalFunction(): ModuleWithProviders;
+            export declare function delegatedImplicitExternalFunction(): ModuleWithProviders;
+            export declare function delegatedImplicitLibraryFunction(): ModuleWithProviders;
+            export declare class DelegatedImplicitClass {
+              static implicitInternalMethod(): ModuleWithProviders;
+              static implicitExternalMethod(): ModuleWithProviders;
+              static implicitLibraryMethod(): ModuleWithProviders;
+            }
+
+            export declare function delegatedExplicitInternalFunction(): ModuleWithProviders;
+            export declare function delegatedExplicitExternalFunction(): ModuleWithProviders;
+            export declare function delegatedExplicitLibraryFunction(): ModuleWithProviders;
+            export declare class DelegatedExplicitClass {
+              static explicitInternalMethod(): ModuleWithProviders;
+              static explicitExternalMethod(): ModuleWithProviders;
+              static explicitLibraryMethod(): ModuleWithProviders;
+            }
+
+            export declare function delegatedAnyInternalFunction(): ModuleWithProviders;
+            export declare function delegatedAnyExternalFunction(): ModuleWithProviders;
+            export declare function delegatedAnyLibraryFunction(): ModuleWithProviders;
+            export declare class DelegatedAnyClass {
+              static anyInternalMethod(): ModuleWithProviders;
+              static anyExternalMethod(): ModuleWithProviders;
+              static anyLibraryMethod(): ModuleWithProviders;
+            }
+
+            export declare function withParams(a: string): ModuleWithProviders;
+            export declare function withOptionalParams(a: string = 'default'): ModuleWithProviders;
+            export declare function doubleDelegation(a: string = 'default'): ModuleWithProviders;
             `
           },
           {
@@ -338,7 +465,8 @@ runInEachFileSystem(() => {
         referencesRegistry = new NgccReferencesRegistry(host);
 
         const processDts = true;
-        const analyzer = new ModuleWithProvidersAnalyzer(host, referencesRegistry, processDts);
+        const analyzer = new ModuleWithProvidersAnalyzer(
+            host, bundle.src.program.getTypeChecker(), referencesRegistry, processDts);
         analyses = analyzer.analyzeProgram(program);
       });
 
@@ -354,9 +482,11 @@ runInEachFileSystem(() => {
         expect(anyAnalysis).toContain(['anyInternalFunction', 'AnyInternalModule', null]);
         expect(anyAnalysis).toContain(['anyExternalFunction', 'ExternalModule', null]);
         expect(anyAnalysis).toContain(['anyLibraryFunction', 'LibraryModule', 'some-library']);
-        expect(anyAnalysis).toContain(['anyInternalMethod', 'AnyInternalModule', null]);
-        expect(anyAnalysis).toContain(['anyExternalMethod', 'ExternalModule', null]);
-        expect(anyAnalysis).toContain(['anyLibraryMethod', 'LibraryModule', 'some-library']);
+        expect(anyAnalysis).toContain(['AnyClass.anyInternalMethod', 'AnyInternalModule', null]);
+        expect(anyAnalysis).toContain(['AnyClass.anyExternalMethod', 'ExternalModule', null]);
+        expect(anyAnalysis).toContain([
+          'AnyClass.anyLibraryMethod', 'LibraryModule', 'some-library'
+        ]);
       });
 
       it('should track internal module references in the references registry', () => {
@@ -377,9 +507,82 @@ runInEachFileSystem(() => {
         expect(anyAnalysis).toContain(['implicitInternalFunction', 'ImplicitInternalModule', null]);
         expect(anyAnalysis).toContain(['implicitExternalFunction', 'ExternalModule', null]);
         expect(anyAnalysis).toContain(['implicitLibraryFunction', 'LibraryModule', 'some-library']);
-        expect(anyAnalysis).toContain(['implicitInternalMethod', 'ImplicitInternalModule', null]);
-        expect(anyAnalysis).toContain(['implicitExternalMethod', 'ExternalModule', null]);
-        expect(anyAnalysis).toContain(['implicitLibraryMethod', 'LibraryModule', 'some-library']);
+        expect(anyAnalysis).toContain([
+          'ImplicitClass.implicitInternalMethod', 'ImplicitInternalModule', null
+        ]);
+        expect(anyAnalysis).toContain([
+          'ImplicitClass.implicitExternalMethod', 'ExternalModule', null
+        ]);
+        expect(anyAnalysis).toContain([
+          'ImplicitClass.implicitLibraryMethod', 'LibraryModule', 'some-library'
+        ]);
+      });
+
+
+      it('should find declarations that delegate by calling another function', () => {
+        const delegatedAnalysis = getAnalysisDescription(
+            analyses, _('/node_modules/test-package/typings/delegated.d.ts'));
+
+        expect(delegatedAnalysis).toContain([
+          'delegatedExplicitInternalFunction', 'ExplicitInternalModule', null
+        ]);
+        expect(delegatedAnalysis).toContain([
+          'delegatedExplicitExternalFunction', 'ExternalModule', null
+        ]);
+        expect(delegatedAnalysis).toContain([
+          'delegatedExplicitLibraryFunction', 'LibraryModule', 'some-library'
+        ]);
+        expect(delegatedAnalysis).toContain([
+          'DelegatedExplicitClass.explicitInternalMethod', 'ExplicitInternalModule', null
+        ]);
+        expect(delegatedAnalysis).toContain([
+          'DelegatedExplicitClass.explicitExternalMethod', 'ExternalModule', null
+        ]);
+        expect(delegatedAnalysis).toContain([
+          'DelegatedExplicitClass.explicitLibraryMethod', 'LibraryModule', 'some-library'
+        ]);
+
+        expect(delegatedAnalysis).toContain([
+          'delegatedImplicitInternalFunction', 'ImplicitInternalModule', null
+        ]);
+        expect(delegatedAnalysis).toContain([
+          'delegatedImplicitExternalFunction', 'ExternalModule', null
+        ]);
+        expect(delegatedAnalysis).toContain([
+          'delegatedImplicitLibraryFunction', 'LibraryModule', 'some-library'
+        ]);
+        expect(delegatedAnalysis).toContain([
+          'DelegatedImplicitClass.implicitInternalMethod', 'ImplicitInternalModule', null
+        ]);
+        expect(delegatedAnalysis).toContain([
+          'DelegatedImplicitClass.implicitExternalMethod', 'ExternalModule', null
+        ]);
+        expect(delegatedAnalysis).toContain([
+          'DelegatedImplicitClass.implicitLibraryMethod', 'LibraryModule', 'some-library'
+        ]);
+
+        expect(delegatedAnalysis).toContain([
+          'delegatedAnyInternalFunction', 'AnyInternalModule', null
+        ]);
+        expect(delegatedAnalysis).toContain([
+          'delegatedAnyExternalFunction', 'ExternalModule', null
+        ]);
+        expect(delegatedAnalysis).toContain([
+          'delegatedAnyLibraryFunction', 'LibraryModule', 'some-library'
+        ]);
+        expect(delegatedAnalysis).toContain([
+          'DelegatedAnyClass.anyInternalMethod', 'AnyInternalModule', null
+        ]);
+        expect(delegatedAnalysis).toContain([
+          'DelegatedAnyClass.anyExternalMethod', 'ExternalModule', null
+        ]);
+        expect(delegatedAnalysis).toContain([
+          'DelegatedAnyClass.anyLibraryMethod', 'LibraryModule', 'some-library'
+        ]);
+
+        expect(delegatedAnalysis).toContain(['withParams', 'ExplicitInternalModule', null]);
+        expect(delegatedAnalysis).toContain(['withOptionalParams', 'ExplicitInternalModule', null]);
+        expect(delegatedAnalysis).toContain(['doubleDelegation', 'ExplicitInternalModule', null]);
       });
 
       it('should find declarations that do not specify a `providers` property in the return type',
@@ -416,10 +619,14 @@ runInEachFileSystem(() => {
         const analysis = analyses.get(file);
         return analysis ? analysis.map(
                               info =>
-                                  [info.declaration.name!.getText(),
+                                  [getName(info.container) + info.declaration.name!.getText(),
                                    (info.ngModule.node as ts.ClassDeclaration).name!.getText(),
-                                   info.ngModule.viaModule]) :
+                                   info.ngModule.ownedByModuleGuess]) :
                           [];
+      }
+
+      function getName(node: ts.Declaration|null): string {
+        return node && isNamedClassDeclaration(node) ? `${node.name.text}.` : '';
       }
     });
   });
@@ -540,7 +747,8 @@ runInEachFileSystem(() => {
       const referencesRegistry = new NgccReferencesRegistry(host);
 
       const processDts = true;
-      const analyzer = new ModuleWithProvidersAnalyzer(host, referencesRegistry, processDts);
+      const analyzer = new ModuleWithProvidersAnalyzer(
+          host, bundle.src.program.getTypeChecker(), referencesRegistry, processDts);
       const analyses = analyzer.analyzeProgram(program);
 
       const file = getSourceFileOrError(
@@ -570,7 +778,8 @@ runInEachFileSystem(() => {
       const referencesRegistry = new NgccReferencesRegistry(host);
 
       const processDts = false;  // Emulate the scenario where typings have already been processed
-      const analyzer = new ModuleWithProvidersAnalyzer(host, referencesRegistry, processDts);
+      const analyzer = new ModuleWithProvidersAnalyzer(
+          host, bundle.src.program.getTypeChecker(), referencesRegistry, processDts);
       const analyses = analyzer.analyzeProgram(program);
 
       expect(analyses.size).toBe(0);
