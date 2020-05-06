@@ -1,18 +1,18 @@
-export class Category {
+export interface Category {
   id: string;    // "education"
   title: string; // "Education"
   order: number; // 2
   subCategories: SubCategory[];
 }
 
-export class SubCategory {
+export interface SubCategory {
   id: string;    // "books"
   title: string; // "Books"
   order: number; // 1
   resources: Resource[];
 }
 
-export class Resource {
+export interface Resource {
   category: string;    // "Education"
   subCategory: string; // "Books"
   id: string;          // "-KLI8vJ0ZkvWhqPembZ7"
