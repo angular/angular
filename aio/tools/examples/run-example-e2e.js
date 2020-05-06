@@ -23,7 +23,7 @@ const DEFAULT_CLI_EXAMPLE_PORT = 4200;
 const DEFAULT_CLI_SPECS_CONCURRENCY = 1;
 const IGNORED_EXAMPLES = [
   // temporary ignores
-
+  'upgrade-phonecat-2-hybrid' // https://github.com/angular/angular/issues/36957
 ];
 
 const fixmeIvyExamples = [
