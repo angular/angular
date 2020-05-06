@@ -60,7 +60,6 @@ v9 - v12
 | `@angular/router`             | [`ActivatedRoute` params and `queryParams` properties](#activatedroute-props) | unspecified |
 | template syntax               | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)            | <!--v7--> unspecified |
 | browser support               | [`IE 9 and 10`](#ie-9-10)                                                     | <!--v10--> v11 |
-| Style sanitization            | Sanitization for `[style]` and `[style.prop]` bindings                        | <!--v11--> v10 |
 
 
 
@@ -495,6 +494,7 @@ The following APIs have been removed starting with version 10.0.0*:
 | ---------------- | -------------- | ----------- | ----- |
 | `@angular/core`  | Undecorated base classes that use Angular features | Add Angular decorator | See [migration guide](guide/migration-undecorated-classes) for more info |
 | `@angular/core`  | `ModuleWithProviders` without a generic             | `ModuleWithProviders` with a generic | See [migration guide](guide/migration-module-with-providers) for more info |
+| `@angular/core`  | Style Sanitization | no action needed | Sanitization for `[style]` and `[style.prop]` bindings |
 
 *To see APIs removed in version 9, check out this guide on the [version 9 docs site](https://v9.angular.io/guide/deprecations#removed).
 
@@ -561,7 +561,7 @@ The final decision was made on three key points:
 
 {@a style-sanitization}
 ### Style Sanitization for `[style]` and `[style.prop]` bindings
-Modern browsers (anything beyond IE8 or higher) no longer support the usage of `javascript:` expressions with CSS `url()` entries. Because of this, Angular itself no longer sanitizes `[style]` and `[style.prop]` bindings anymore to prevent any malicious code from being fed into these bindings.
+Angular used to sanitize `[style]` and `[style.prop]` bindings to prevent malicious code from being inserted through `javascript:` expressions in CSS `url()` entries. However, most modern browsers no longer support the usage of these expressions, so sanitization was only maintained for the sake of IE 6 and 7. Given that Angular does not support either IE 6 or 7 and sanitization has a performance cost, we will no longer sanitize style bindings as of version 10 of Angular.
 
 {@a removed}
 ## Removed APIs

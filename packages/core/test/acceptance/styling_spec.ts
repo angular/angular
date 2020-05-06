@@ -1879,6 +1879,75 @@ describe('styling', () => {
             assertStyle(element, 'opacity', '');
           });
 
+  onlyInIvy('only ivy has [style.prop] support')
+      .it('should sanitize style values before writing them', () => {
+        @Component({
+          template: `
+                        <div [style.width]="widthExp"
+                             [style.background-image]="bgImageExp"></div>
+                      `
+        })
+        class Cmp {
+          widthExp = '';
+          bgImageExp = '';
+          styleMapExp: any = {};
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        const comp = fixture.componentInstance;
+        fixture.detectChanges();
+
+        const div = fixture.nativeElement.querySelector('div');
+
+        comp.bgImageExp = 'url("javascript:img")';
+        fixture.detectChanges();
+        expect(getSortedStyle(div)).toContain('javascript:img');
+
+        // Prove that bindings work.
+        comp.widthExp = '789px';
+        comp.bgImageExp = bypassSanitizationTrustStyle(comp.bgImageExp) as string;
+        fixture.detectChanges();
+
+        expect(div.style.getPropertyValue('background-image')).toEqual('url("javascript:img")');
+        expect(div.style.getPropertyValue('width')).toEqual('789px');
+      });
+
+  onlyInIvy('only ivy has [style] support')
+      .it('should sanitize style values before writing them', () => {
+        @Component({
+          template: `
+                    <div [style.width]="widthExp"
+                         [style]="styleMapExp"></div>
+                  `
+        })
+        class Cmp {
+          widthExp = '';
+          styleMapExp: {[key: string]: any} = {};
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        const comp = fixture.componentInstance;
+        fixture.detectChanges();
+
+        const div = fixture.nativeElement.querySelector('div');
+
+        comp.styleMapExp['background-image'] = 'url("javascript:img")';
+        fixture.detectChanges();
+        expect(getSortedStyle(div)).not.toContain('javascript');
+
+        // Prove that bindings work.
+        comp.widthExp = '789px';
+        comp.styleMapExp = {
+          'background-image': bypassSanitizationTrustStyle(comp.styleMapExp['background-image'])
+        };
+        fixture.detectChanges();
+
+        expect(div.style.getPropertyValue('background-image')).toEqual('url("javascript:img")');
+        expect(div.style.getPropertyValue('width')).toEqual('789px');
+      });
+
   it('should apply a unit to a style before writing it', () => {
     @Component({
       template: `
