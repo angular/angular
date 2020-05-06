@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentInit, ElementRef, NgZone, OnDestroy, QueryList} from '@angular/core';
+import {AfterContentInit, Directive, ElementRef, NgZone, OnDestroy, QueryList} from '@angular/core';
 import {setLines} from '@angular/material/core';
 import {Subscription} from 'rxjs';
 import {startWith} from 'rxjs/operators';
 
 export class MatListBase {}
 
-export class MatListItemBase implements AfterContentInit, OnDestroy {
+@Directive()
+export abstract class MatListItemBase implements AfterContentInit, OnDestroy {
   lines: QueryList<ElementRef<Element>>;
 
   private _subscriptions = new Subscription();

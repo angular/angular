@@ -37,6 +37,7 @@ export const CDK_ROW_TEMPLATE = `<ng-container cdkCellOutlet></ng-container>`;
  * Base class for the CdkHeaderRowDef and CdkRowDef that handles checking their columns inputs
  * for changes and notifying the table.
  */
+@Directive()
 export abstract class BaseRowDef implements OnChanges {
   /** The columns to be displayed on this row. */
   columns: Iterable<string>;

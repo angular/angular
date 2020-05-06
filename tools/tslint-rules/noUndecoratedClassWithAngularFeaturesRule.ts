@@ -1,13 +1,18 @@
 import * as Lint from 'tslint';
 import * as ts from 'typescript';
 
-const RULE_FAILURE = `Undecorated class defines fields with Angular decorators. Undecorated ` +
-  `classes with Angular fields cannot be extended in Ivy since no definition is generated. ` +
-  `Add a "@Directive" decorator to fix this.`;
+const RULE_FAILURE = `Undecorated class uses Angular features. Undecorated ` +
+    `classes using Angular features cannot be extended in Ivy since no definition is generated. ` +
+    `Add an Angular decorator to fix this.`;
+
+/** Set of lifecycle hooks that indicate that a given class declaration uses Angular features. */
+const LIFECYCLE_HOOKS = new Set([
+  'ngOnChanges', 'ngOnInit', 'ngOnDestroy', 'ngDoCheck', 'ngAfterViewInit', 'ngAfterViewChecked',
+  'ngAfterContentInit', 'ngAfterContentChecked'
+]);
 
 /**
- * Rule that doesn't allow undecorated class declarations with fields using Angular
- * decorators.
+ * Rule that doesn't allow undecorated class declarations using Angular features.
  */
 export class Rule extends Lint.Rules.TypedRule {
   applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): Lint.RuleFailure[] {
@@ -28,7 +33,12 @@ class Walker extends Lint.RuleWalker {
     }
 
     for (let member of node.members) {
-      if (member.decorators && this._hasAngularDecorator(member)) {
+      const hasLifecycleHook = member.name !== undefined &&
+          ts.isIdentifier(member.name) && LIFECYCLE_HOOKS.has(member.name.text);
+      // A class is considering using Angular features if it declares any of
+      // the known Angular lifecycle hooks, or if it has class members that are
+      // decorated with Angular decorators (e.g. `@Input`).
+      if (hasLifecycleHook || this._hasAngularDecorator(member)) {
         this.addFailureAtNode(node, RULE_FAILURE);
         return;
       }
@@ -38,8 +48,7 @@ class Walker extends Lint.RuleWalker {
   /** Checks if the specified node has an Angular decorator. */
   private _hasAngularDecorator(node: ts.Node): boolean {
     return !!node.decorators && node.decorators.some(d => {
-      if (!ts.isCallExpression(d.expression) ||
-          !ts.isIdentifier(d.expression.expression)) {
+      if (!ts.isCallExpression(d.expression) || !ts.isIdentifier(d.expression.expression)) {
         return false;
       }
 
