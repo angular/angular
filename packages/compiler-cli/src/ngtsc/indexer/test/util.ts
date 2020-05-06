@@ -16,7 +16,7 @@ import {getDeclaration, makeProgram} from '../../testing';
 import {ComponentMeta} from '../src/context';
 
 /** Dummy file URL */
-export function getTestFilePath(): AbsoluteFsPath {
+function getTestFilePath(): AbsoluteFsPath {
   return absoluteFrom('/TEST_FILE.ts');
 }
 
