@@ -78,29 +78,18 @@ describe('@angular/common ng_package', () => {
       'upgrade.js',
       'upgrade.js.map',
     ];
-    expect(shx.ls('-R', 'fesm5').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
     expect(shx.ls('-R', 'fesm2015').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
   });
 
   it('should have the correct source map paths', () => {
-    expect(shx.grep('sourceMappingURL', 'fesm5/common.js'))
-        .toMatch('//# sourceMappingURL=common.js.map');
     expect(shx.grep('sourceMappingURL', 'fesm2015/common.js'))
         .toMatch('//# sourceMappingURL=common.js.map');
-    expect(shx.grep('sourceMappingURL', 'fesm5/http.js'))
-        .toMatch('//# sourceMappingURL=http.js.map');
     expect(shx.grep('sourceMappingURL', 'fesm2015/http.js'))
         .toMatch('//# sourceMappingURL=http.js.map');
-    expect(shx.grep('sourceMappingURL', 'fesm5/http/testing.js'))
-        .toMatch('//# sourceMappingURL=testing.js.map');
     expect(shx.grep('sourceMappingURL', 'fesm2015/http/testing.js'))
-        .toMatch('//# sourceMappingURL=testing.js.map');
-    expect(shx.grep('sourceMappingURL', 'fesm5/testing.js'))
         .toMatch('//# sourceMappingURL=testing.js.map');
     expect(shx.grep('sourceMappingURL', 'fesm2015/testing.js'))
         .toMatch('//# sourceMappingURL=testing.js.map');
-    expect(shx.grep('sourceMappingURL', 'fesm5/upgrade.js'))
-        .toMatch('//# sourceMappingURL=upgrade.js.map');
     expect(shx.grep('sourceMappingURL', 'fesm2015/upgrade.js'))
         .toMatch('//# sourceMappingURL=upgrade.js.map');
   });
@@ -125,7 +114,7 @@ describe('@angular/common ng_package', () => {
       const actual = JSON.parse(fs.readFileSync('http/package.json', {encoding: 'utf-8'}));
       expect(actual['main']).toEqual('../bundles/common-http.umd.js');
       expect(actual['es2015']).toEqual('../fesm2015/http.js');
-      expect(actual['module']).toEqual('../fesm5/http.js');
+      expect(actual['module']).toEqual('../fesm2015/http.js');
       expect(actual['typings']).toEqual('./http.d.ts');
     });
     // https://github.com/angular/common-builds/blob/master/testing/package.json
@@ -138,7 +127,7 @@ describe('@angular/common ng_package', () => {
       const actual = JSON.parse(fs.readFileSync('http/testing/package.json', {encoding: 'utf-8'}));
       expect(actual['main']).toEqual('../../bundles/common-http-testing.umd.js');
       expect(actual['es2015']).toEqual('../../fesm2015/http/testing.js');
-      expect(actual['module']).toEqual('../../fesm5/http/testing.js');
+      expect(actual['module']).toEqual('../../fesm2015/http/testing.js');
       expect(actual['typings']).toEqual('./testing.d.ts');
     });
     // https://github.com/angular/common-builds/blob/master/upgrade/package.json
@@ -146,7 +135,7 @@ describe('@angular/common ng_package', () => {
       const actual = JSON.parse(fs.readFileSync('upgrade/package.json', {encoding: 'utf-8'}));
       expect(actual['main']).toEqual('../bundles/common-upgrade.umd.js');
       expect(actual['es2015']).toEqual('../fesm2015/upgrade.js');
-      expect(actual['module']).toEqual('../fesm5/upgrade.js');
+      expect(actual['module']).toEqual('../fesm2015/upgrade.js');
       expect(actual['typings']).toEqual('./upgrade.d.ts');
     });
   });

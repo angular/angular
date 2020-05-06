@@ -164,16 +164,12 @@ function main(args: string[]): number {
   }
 
   esm2015.forEach(file => writeEsmFile(file, '', 'esm2015'));
-  esm5.forEach(file => writeEsmFile(file, '.esm5', 'esm5'));
 
   bundles.forEach(bundle => {
     copyFile(bundle, out, 'bundles');
   });
   fesm2015.forEach(file => {
     copyFile(file, out, 'fesm2015');
-  });
-  fesm5.forEach(file => {
-    copyFile(file, out, 'fesm5');
   });
 
   // Copy all type definitions into the package. This is necessary so that developers can use
@@ -350,17 +346,14 @@ function main(args: string[]): number {
     // TODO(alexeagle): it would be better to transfer this information from the place
     // where we created the filenames, via the modulesManifestArg
     parsedPackage['main'] = getBundleName(packageName, 'bundles');
-    parsedPackage['fesm5'] = getBundleName(packageName, 'fesm5');
     parsedPackage['fesm2015'] = getBundleName(packageName, 'fesm2015');
 
-    parsedPackage['esm5'] = srcDirRelative(packageJson, moduleData['esm5_index']);
     parsedPackage['esm2015'] = srcDirRelative(packageJson, moduleData['esm2015_index']);
     parsedPackage['typings'] = srcDirRelative(packageJson, moduleData['typings']);
 
     // For now, we point the primary entry points at the fesm files, because of Webpack
     // performance issues with a large number of individual files.
-    // TODO(iminar): resolve performance issues with the toolchain and point these to esm
-    parsedPackage['module'] = parsedPackage['fesm5'];
+    parsedPackage['module'] = parsedPackage['fesm2015'];
     parsedPackage['es2015'] = parsedPackage['fesm2015'];
 
     return JSON.stringify(parsedPackage, null, 2);

@@ -458,60 +458,13 @@ export class MyModule {
 }
 ```
 
-{@a esm5-fesm5}
-### `esm5` and `fesm5` code formats in @angular/* npm packages
-
-As of Angular v8, the CLI primarily consumes the `fesm2015` variant of the code distributed via `@angular/*` npm packages.
-This renders the `esm5` and `fesm5` distributions obsolete and unnecessary, adding bloat to the package size and slowing down npm installations.
-
-The future removal of this distribution will have no impact on CLI users, unless they modified their build configuration to explicitly consume these code distributions.
-
-Any application still relying on the `esm5` and `fesm5` as the input to its build system will need to ensure that the build pipeline is capable of accepting JavaScript code conforming to ECMAScript 2015 (ES2015) language specification.
-
-Note that this change doesn't make existing libraries distributed in this format incompatible with the Angular CLI.
-The CLI will fall back and consume libraries in less desirable formats if others are not available.
-However, we do recommend that libraries ship their code in ES2015 format in order to make builds faster and build output smaller.
-
-In practical terms, the `package.json` of all `@angular` packages will change in the following way:
-
-**Before**:
-```
-{
-  "name": "@angular/core",
-  "version": "9.0.0",
-  "main": "./bundles/core.umd.js",
-  "module": "./fesm5/core.js",
-  "es2015": "./fesm2015/core.js",
-  "esm5": "./esm5/core.js",
-  "esm2015": "./esm2015/core.js",
-  "fesm5": "./fesm5/core.js",
-  "fesm2015": "./fesm2015/core.js",
-  ...
-}
-```
-
-**After**:
-```
-{
-  "name": "@angular/core",
-  "version": "10.0.0",
-  "main": "./bundles/core.umd.js",
-  "module": "./fesm2015/core.js",
-  "es2015": "./fesm2015/core.js",
-  "esm2015": "./esm2015/core.js",
-  "fesm2015": "./fesm2015/core.js",
-  ...
-}
-```
-
-For more information about the npm package format, see the [Angular Package Format spec](https://goo.gl/jB3GVv).
 
 {@a ie-9-10}
 ### IE 9 and 10 support
 
 Support for IE 9 and 10 has been deprecated and will be removed in a future version.
 Supporting outdated browsers like these increases bundle size, code complexity, and test load, and also requires time and effort that could be spent on improvements to the framework.
-For example, fixing issues can be more difficult, as a straightforward fix for modern browsers could break old ones that have quirks due to not receiving updates from vendors. 
+For example, fixing issues can be more difficult, as a straightforward fix for modern browsers could break old ones that have quirks due to not receiving updates from vendors.
 
 The final decision was made on three key points:
 * __Vendor support__: Microsoft dropped support of IE 9 and 10 on 1/12/16, meaning they no longer provide security updates or technical support.
@@ -605,3 +558,51 @@ For more information about using `@angular/common/http`, see the [HttpClient gui
 | --------------------- | ------------------------------------------- |
 | `MockBackend` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
 | `MockConnection` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
+
+{@a esm5-fesm5}
+### `esm5` and `fesm5` code formats in @angular/* npm packages
+
+As of Angular v8, the CLI primarily consumes the `fesm2015` variant of the code distributed via `@angular/*` npm packages.
+This renders the `esm5` and `fesm5` distributions obsolete and unnecessary, adding bloat to the package size and slowing down npm installations.
+
+This removal has no impact on CLI users, unless they modified their build configuration to explicitly consume these code distributions.
+
+Any application still relying on the `esm5` and `fesm5` as the input to its build system will need to ensure that the build pipeline is capable of accepting JavaScript code conforming to ECMAScript 2015 (ES2015) language specification.
+
+Note that this change doesn't make existing libraries distributed in this format incompatible with the Angular CLI.
+The CLI will fall back and consume libraries in less desirable formats if others are not available.
+However, we do recommend that libraries ship their code in ES2015 format in order to make builds faster and build output smaller.
+
+In practical terms, the `package.json` of all `@angular` packages has changed in the following way:
+
+**Before**:
+```
+{
+  "name": "@angular/core",
+  "version": "9.0.0",
+  "main": "./bundles/core.umd.js",
+  "module": "./fesm5/core.js",
+  "es2015": "./fesm2015/core.js",
+  "esm5": "./esm5/core.js",
+  "esm2015": "./esm2015/core.js",
+  "fesm5": "./fesm5/core.js",
+  "fesm2015": "./fesm2015/core.js",
+  ...
+}
+```
+
+**After**:
+```
+{
+  "name": "@angular/core",
+  "version": "10.0.0",
+  "main": "./bundles/core.umd.js",
+  "module": "./fesm2015/core.js",
+  "es2015": "./fesm2015/core.js",
+  "esm2015": "./esm2015/core.js",
+  "fesm2015": "./fesm2015/core.js",
+  ...
+}
+```
+
+For more information about the npm package format, see the [Angular Package Format spec](https://goo.gl/jB3GVv).
