@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import {ReferencesRegistry} from '../../../src/ngtsc/annotations';
 import {Reference} from '../../../src/ngtsc/imports';
 import {ClassDeclaration, ConcreteDeclaration} from '../../../src/ngtsc/reflection';
-import {ModuleWithProvidersFunction, NgccReflectionHost} from '../host/ngcc_host';
+import {NgccReflectionHost} from '../host/ngcc_host';
 import {hasNameIdentifier, isDefined} from '../utils';
 
 export interface ModuleWithProvidersInfo {
@@ -221,4 +221,28 @@ function isFunctionOrMethod(declaration: ts.Declaration): declaration is ts.Func
 
 function isAnyKeyword(typeParam: ts.TypeNode): typeParam is ts.KeywordTypeNode {
   return typeParam.kind === ts.SyntaxKind.AnyKeyword;
+}
+
+/**
+ * A structure returned from `getModuleWithProvidersFunction` that describes functions
+ * that return ModuleWithProviders objects.
+ */
+export interface ModuleWithProvidersFunction {
+  /**
+   * The name of the declared function.
+   */
+  name: string;
+  /**
+   * The declaration of the function that returns the `ModuleWithProviders` object.
+   */
+  declaration: ts.SignatureDeclaration;
+  /**
+   * Declaration of the containing class (if this is a method)
+   */
+  container: ts.Declaration|null;
+  /**
+   * The declaration of the class that the `ngModule` property on the `ModuleWithProviders` object
+   * refers to.
+   */
+  ngModule: ConcreteDeclaration<ClassDeclaration>;
 }
