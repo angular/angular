@@ -498,67 +498,6 @@ The following APIs have been removed starting with version 10.0.0*:
 *To see APIs removed in version 9, check out this guide on the [version 9 docs site](https://v9.angular.io/guide/deprecations#removed).
 
 
-<!-- The following anchor is used by redirects from the removed API pages. Do not change or remove. -->
-{@a http}
-### @angular/http
-
-<!--
-Deprecation announced in version 5
-https://blog.angular.io/version-5-0-0-of-angular-now-available-37e414935ced)
--->
-
-
-The entire [`@angular/http`](http://v7.angular.io/api/http) package has been removed. Use [`@angular/common/http`](api/common/http) instead.
-
-The new API is a smaller, easier, and more powerful way to make HTTP requests in Angular.
-The new API simplifies the default ergonomics: There is no need to map by invoking the `.json()` method.
-It also supports typed return values and interceptors.
-
-To update your apps:
-* Replace `HttpModule` with [`HttpClientModule`](api/common/http/HttpClientModule) (from [`@angular/common/http`](api/common/http)) in each of your modules.
-* Replace the `Http` service with the [`HttpClient`](api/common/http/HttpClient) service.
-* Remove any `map(res => res.json())` calls. They are no longer needed.
-
-For more information about using `@angular/common/http`, see the [HttpClient guide](guide/http "HTTP Client guide").
-
-
-| `@angular/http` | Closest replacement in `@angular/common/http` |
-| ------------- | ------------------------------------------- |
-| `BaseRequestOptions` |  [`HttpRequest`](/api/common/http/HttpRequest) |
-| `BaseResponseOptions` | [`HttpResponse`](/api/common/http/HttpResponse) |
-| `BrowserXhr` |  |
-| `Connection` | [`HttpBackend`](/api/common/http/HttpBackend) |
-| `ConnectionBackend` | [`HttpBackend`](/api/common/http/HttpBackend) |
-| `CookieXSRFStrategy` | [`HttpClientXsrfModule`](/api/common/http/HttpClientXsrfModule) |
-| `Headers` | [`HttpHeaders`](/api/common/http/HttpHeaders) |
-| `Http` | [`HttpClient`](/api/common/http/HttpClient) |
-| `HttpModule` | [`HttpClientModule`](/api/common/http/HttpClientModule) |
-| `Jsonp` | [`HttpClient`](/api/common/http/HttpClient) |
-| `JSONPBackend` | [`JsonpClientBackend`](/api/common/http/JsonpClientBackend) |
-| `JSONPConnection` | [`JsonpClientBackend`](/api/common/http/JsonpClientBackend) |
-| `JsonpModule` | [`HttpClientJsonpModule`](/api/common/http/HttpClientJsonpModule) |
-| `QueryEncoder` | [`HttpUrlEncodingCodec`](/api/common/http/HttpUrlEncodingCodec) |
-| `ReadyState` | [`HttpBackend`](/api/common/http/HttpBackend) |
-| `Request` | [`HttpRequest`](/api/common/http/HttpRequest) |
-| `RequestMethod` | [`HttpClient`](/api/common/http/HttpClient) |
-| `RequestOptions` | [`HttpRequest`](/api/common/http/HttpRequest) |
-| `RequestOptionsArgs` | [`HttpRequest`](/api/common/http/HttpRequest) |
-| `Response` | [`HttpResponse`](/api/common/http/HttpResponse) |
-| `ResponseContentType` | [`HttpClient`](/api/common/http/HttpClient) |
-| `ResponseOptions` | [`HttpResponse`](/api/common/http/HttpResponse) |
-| `ResponseOptionsArgs` | [`HttpResponse`](/api/common/http/HttpResponse) |
-| `ResponseType` | [`HttpClient`](/api/common/http/HttpClient) |
-| `URLSearchParams` | [`HttpParams`](/api/common/http/HttpParams) |
-| `XHRBackend` | [`HttpXhrBackend`](/api/common/http/HttpXhrBackend) |
-| `XHRConnection` | [`HttpXhrBackend`](/api/common/http/HttpXhrBackend) |
-| `XSRFStrategy` | [`HttpClientXsrfModule`](/api/common/http/HttpClientXsrfModule) |
-
-
-| `@angular/http/testing` | Closest replacement in `@angular/common/http/testing` |
-| --------------------- | ------------------------------------------- |
-| `MockBackend` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
-| `MockConnection` | [`HttpTestingController`](/api/common/http/testing/HttpTestingController) |
-
 {@a esm5-fesm5}
 ### `esm5` and `fesm5` code formats in @angular/* npm packages
 
