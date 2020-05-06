@@ -137,11 +137,15 @@ export class ModuleWithProvidersAnalyzer {
       return null;
     }
 
-    // Get hold of the return statement expression for the function
     const body = definition.body;
+    if (body === null || body.length === 0) {
+      return null;
+    }
+
+    // Get hold of the return statement expression for the function
     const lastStatement = body && body[body.length - 1];
     if (lastStatement === null || !ts.isReturnStatement(lastStatement) ||
-        lastStatement.expression == undefined) {
+        lastStatement.expression === undefined) {
       return null;
     }
 
@@ -213,7 +217,7 @@ export class ModuleWithProvidersAnalyzer {
               .getText()} is not a named class declaration in the typings program; instead we get ${
           dtsNgModule.getText()}`);
     }
-    return new Reference(dtsNgModule, ngModule.bestGuessOwningModule);
+    return new Reference(dtsNgModule, null);
   }
 }
 
