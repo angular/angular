@@ -9,53 +9,67 @@ import * as ts from 'typescript';
 
 import {ReferencesRegistry} from '../../../src/ngtsc/annotations';
 import {Reference} from '../../../src/ngtsc/imports';
-import {ClassDeclaration, ConcreteDeclaration} from '../../../src/ngtsc/reflection';
+import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
+import {ClassDeclaration, isNamedClassDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {hasNameIdentifier, isDefined} from '../utils';
 
+/**
+ * A structure returned from `getModuleWithProvidersFunctions()` that describes functions
+ * that return ModuleWithProviders objects.
+ */
 export interface ModuleWithProvidersInfo {
   /**
-   * The declaration (in the .d.ts file) of the function that returns
-   * a `ModuleWithProviders object, but has a signature that needs
-   * a type parameter adding.
+   * The name of the declared function.
    */
-  declaration: ts.MethodDeclaration|ts.FunctionDeclaration;
+  name: string;
   /**
-   * The NgModule class declaration (in the .d.ts file) to add as a type parameter.
+   * The declaration of the function that returns the `ModuleWithProviders` object.
    */
-  ngModule: ConcreteDeclaration<ClassDeclaration>;
+  declaration: ts.SignatureDeclaration;
+  /**
+   * Declaration of the containing class (if this is a method)
+   */
+  container: ts.Declaration|null;
+  /**
+   * The declaration of the class that the `ngModule` property on the `ModuleWithProviders` object
+   * refers to.
+   */
+  ngModule: Reference<ClassDeclaration>;
 }
 
 export type ModuleWithProvidersAnalyses = Map<ts.SourceFile, ModuleWithProvidersInfo[]>;
 export const ModuleWithProvidersAnalyses = Map;
 
 export class ModuleWithProvidersAnalyzer {
+  private evaluator = new PartialEvaluator(this.host, this.typeChecker, null);
+
   constructor(
-      private host: NgccReflectionHost, private referencesRegistry: ReferencesRegistry,
-      private processDts: boolean) {}
+      private host: NgccReflectionHost, private typeChecker: ts.TypeChecker,
+      private referencesRegistry: ReferencesRegistry, private processDts: boolean) {}
 
   analyzeProgram(program: ts.Program): ModuleWithProvidersAnalyses {
-    const analyses = new ModuleWithProvidersAnalyses();
+    const analyses: ModuleWithProvidersAnalyses = new ModuleWithProvidersAnalyses();
     const rootFiles = this.getRootFiles(program);
     rootFiles.forEach(f => {
       const fns = this.getModuleWithProvidersFunctions(f);
       fns && fns.forEach(fn => {
-        if (fn.ngModule.viaModule === null) {
+        if (fn.ngModule.bestGuessOwningModule === null) {
           // Record the usage of an internal module as it needs to become an exported symbol
           this.referencesRegistry.add(fn.ngModule.node, new Reference(fn.ngModule.node));
         }
 
         // Only when processing the dts files do we need to determine which declaration to update.
         if (this.processDts) {
-          const dtsFn = this.getDtsDeclarationForFunction(fn);
-          const typeParam = dtsFn.type && ts.isTypeReferenceNode(dtsFn.type) &&
-                  dtsFn.type.typeArguments && dtsFn.type.typeArguments[0] ||
+          const dtsFn = this.getDtsModuleWithProvidersFunction(fn);
+          const dtsFnType = dtsFn.declaration.type;
+          const typeParam = dtsFnType && ts.isTypeReferenceNode(dtsFnType) &&
+                  dtsFnType.typeArguments && dtsFnType.typeArguments[0] ||
               null;
           if (!typeParam || isAnyKeyword(typeParam)) {
-            const ngModule = this.resolveNgModuleReference(fn);
-            const dtsFile = dtsFn.getSourceFile();
-            const analysis = analyses.has(dtsFile) ? analyses.get(dtsFile) : [];
-            analysis.push({declaration: dtsFn, ngModule});
+            const dtsFile = dtsFn.declaration.getSourceFile();
+            const analysis = analyses.has(dtsFile) ? analyses.get(dtsFile)! : [];
+            analysis.push(dtsFn);
             analyses.set(dtsFile, analysis);
           }
         }
@@ -68,11 +82,11 @@ export class ModuleWithProvidersAnalyzer {
     return program.getRootFileNames().map(f => program.getSourceFile(f)).filter(isDefined);
   }
 
-  private getModuleWithProvidersFunctions(f: ts.SourceFile): ModuleWithProvidersFunction[] {
+  private getModuleWithProvidersFunctions(f: ts.SourceFile): ModuleWithProvidersInfo[] {
     const exports = this.host.getExportsOfModule(f);
     if (!exports) return [];
-    const infos: ModuleWithProvidersFunction[] = [];
-    exports.forEach((declaration, name) => {
+    const infos: ModuleWithProvidersInfo[] = [];
+    exports.forEach((declaration) => {
       if (declaration.node === null) {
         return;
       }
@@ -111,7 +125,7 @@ export class ModuleWithProvidersAnalyzer {
    */
   private parseForModuleWithProviders(
       name: string, node: ts.Node|null, implementation: ts.Node|null = node,
-      container: ts.Declaration|null = null): ModuleWithProvidersFunction|null {
+      container: ts.Declaration|null = null): ModuleWithProvidersInfo|null {
     if (implementation === null ||
         (!ts.isFunctionDeclaration(implementation) && !ts.isMethodDeclaration(implementation) &&
          !ts.isFunctionExpression(implementation))) {
@@ -122,47 +136,40 @@ export class ModuleWithProvidersAnalyzer {
     if (definition === null) {
       return null;
     }
+
     const body = definition.body;
-    const lastStatement = body && body[body.length - 1];
-    const returnExpression =
-        lastStatement && ts.isReturnStatement(lastStatement) && lastStatement.expression || null;
-    const ngModuleProperty = returnExpression && ts.isObjectLiteralExpression(returnExpression) &&
-            returnExpression.properties.find(
-                prop =>
-                    !!prop.name && ts.isIdentifier(prop.name) && prop.name.text === 'ngModule') ||
-        null;
-
-    if (!ngModuleProperty || !ts.isPropertyAssignment(ngModuleProperty)) {
+    if (body === null || body.length === 0) {
       return null;
     }
 
-    // The ngModuleValue could be of the form `SomeModule` or `namespace_1.SomeModule`
-    let ngModuleValue = ngModuleProperty.initializer;
-    if (ts.isPropertyAccessExpression(ngModuleValue)) {
-      ngModuleValue = ngModuleValue.expression;
-    }
-
-    if (!ts.isIdentifier(ngModuleValue)) {
+    // Get hold of the return statement expression for the function
+    const lastStatement = body[body.length - 1];
+    if (!ts.isReturnStatement(lastStatement) || lastStatement.expression === undefined) {
       return null;
     }
 
-    const ngModuleDeclaration = this.host.getDeclarationOfIdentifier(ngModuleValue);
-    if (!ngModuleDeclaration || ngModuleDeclaration.node === null) {
-      throw new Error(`Cannot find a declaration for NgModule ${
-          ngModuleValue.getText()} referenced in "${declaration!.getText()}"`);
-    }
-    if (!hasNameIdentifier(ngModuleDeclaration.node)) {
+    // Evaluate this expression and extract the `ngModule` reference
+    const result = this.evaluator.evaluate(lastStatement.expression);
+    if (!(result instanceof Map) || !result.has('ngModule')) {
       return null;
     }
-    return {
-      name,
-      ngModule: ngModuleDeclaration as ConcreteDeclaration<ClassDeclaration>,
-      declaration,
-      container
-    };
+
+    const ngModuleRef = result.get('ngModule')!;
+    if (!(ngModuleRef instanceof Reference)) {
+      return null;
+    }
+
+    if (!isNamedClassDeclaration(ngModuleRef.node) &&
+        !isNamedVariableDeclaration(ngModuleRef.node)) {
+      throw new Error(`The identity given by ${ngModuleRef.debugName} referenced in "${
+          declaration!.getText()}" doesn't appear to be a "class" declaration.`);
+    }
+
+    const ngModule = ngModuleRef as Reference<ClassDeclaration>;
+    return {name, ngModule, declaration, container};
   }
 
-  private getDtsDeclarationForFunction(fn: ModuleWithProvidersFunction) {
+  private getDtsModuleWithProvidersFunction(fn: ModuleWithProvidersInfo): ModuleWithProvidersInfo {
     let dtsFn: ts.Declaration|null = null;
     const containerClass = fn.container && this.host.getClassSymbol(fn.container);
     if (containerClass) {
@@ -183,15 +190,16 @@ export class ModuleWithProvidersAnalyzer {
       throw new Error(`Matching type declaration for ${
           fn.declaration.getText()} is not a function: ${dtsFn.getText()}`);
     }
-    return dtsFn;
+    const container = containerClass ? containerClass.declaration.valueDeclaration : null;
+    const ngModule = this.resolveNgModuleReference(fn);
+    return {name: fn.name, container, declaration: dtsFn, ngModule};
   }
 
-  private resolveNgModuleReference(fn: ModuleWithProvidersFunction):
-      ConcreteDeclaration<ClassDeclaration> {
+  private resolveNgModuleReference(fn: ModuleWithProvidersInfo): Reference<ClassDeclaration> {
     const ngModule = fn.ngModule;
 
     // For external module references, use the declaration as is.
-    if (ngModule.viaModule !== null) {
+    if (ngModule.bestGuessOwningModule !== null) {
       return ngModule;
     }
 
@@ -202,14 +210,13 @@ export class ModuleWithProvidersAnalyzer {
       throw new Error(`No typings declaration can be found for the referenced NgModule class in ${
           fn.declaration.getText()}.`);
     }
-    if (!ts.isClassDeclaration(dtsNgModule) || !hasNameIdentifier(dtsNgModule)) {
+    if (!isNamedClassDeclaration(dtsNgModule)) {
       throw new Error(`The referenced NgModule in ${
           fn.declaration
               .getText()} is not a named class declaration in the typings program; instead we get ${
           dtsNgModule.getText()}`);
     }
-
-    return {node: dtsNgModule, known: null, viaModule: null, identity: null};
+    return new Reference(dtsNgModule, null);
   }
 }
 
@@ -221,28 +228,4 @@ function isFunctionOrMethod(declaration: ts.Declaration): declaration is ts.Func
 
 function isAnyKeyword(typeParam: ts.TypeNode): typeParam is ts.KeywordTypeNode {
   return typeParam.kind === ts.SyntaxKind.AnyKeyword;
-}
-
-/**
- * A structure returned from `getModuleWithProvidersFunction` that describes functions
- * that return ModuleWithProviders objects.
- */
-export interface ModuleWithProvidersFunction {
-  /**
-   * The name of the declared function.
-   */
-  name: string;
-  /**
-   * The declaration of the function that returns the `ModuleWithProviders` object.
-   */
-  declaration: ts.SignatureDeclaration;
-  /**
-   * Declaration of the containing class (if this is a method)
-   */
-  container: ts.Declaration|null;
-  /**
-   * The declaration of the class that the `ngModule` property on the `ModuleWithProviders` object
-   * refers to.
-   */
-  ngModule: ConcreteDeclaration<ClassDeclaration>;
 }

@@ -156,8 +156,9 @@ export class Transformer {
         diagnostic => diagnostics.push(diagnostic), this.tsConfig);
     const decorationAnalyses = decorationAnalyzer.analyzeProgram();
 
-    const moduleWithProvidersAnalyzer =
-        new ModuleWithProvidersAnalyzer(reflectionHost, referencesRegistry, bundle.dts !== null);
+    const moduleWithProvidersAnalyzer = new ModuleWithProvidersAnalyzer(
+        reflectionHost, bundle.src.program.getTypeChecker(), referencesRegistry,
+        bundle.dts !== null);
     const moduleWithProvidersAnalyses = moduleWithProvidersAnalyzer &&
         moduleWithProvidersAnalyzer.analyzeProgram(bundle.src.program);
 

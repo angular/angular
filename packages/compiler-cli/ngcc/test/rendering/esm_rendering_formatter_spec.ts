@@ -574,7 +574,8 @@ export { D };
 
         const referencesRegistry = new NgccReferencesRegistry(host);
         const moduleWithProvidersAnalyses =
-            new ModuleWithProvidersAnalyzer(host, referencesRegistry, true)
+            new ModuleWithProvidersAnalyzer(
+                host, bundle.src.program.getTypeChecker(), referencesRegistry, true)
                 .analyzeProgram(bundle.src.program);
         const typingsFile = getSourceFileOrError(
             bundle.dts!.program, _('/node_modules/test-package/typings/index.d.ts'));
@@ -611,7 +612,8 @@ export { D };
 
            const referencesRegistry = new NgccReferencesRegistry(host);
            const moduleWithProvidersAnalyses =
-               new ModuleWithProvidersAnalyzer(host, referencesRegistry, true)
+               new ModuleWithProvidersAnalyzer(
+                   host, bundle.src.program.getTypeChecker(), referencesRegistry, true)
                    .analyzeProgram(bundle.src.program);
            const typingsFile = getSourceFileOrError(
                bundle.dts!.program, _('/node_modules/test-package/typings/module.d.ts'));
