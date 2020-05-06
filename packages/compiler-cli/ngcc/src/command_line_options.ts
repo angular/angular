@@ -27,7 +27,7 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
             alias: 'properties',
             array: true,
             describe:
-                'An array of names of properties in package.json to compile (e.g. `module` or `es2015`)\n' +
+                'An array of names of properties in package.json to compile (e.g. `module` or `main`)\n' +
                 'Each of these properties should hold the path to a bundle-format.\n' +
                 'If provided, only the specified properties are considered for processing.\n' +
                 'If not provided, all the supported format properties (e.g. fesm2015, fesm5, es2015, esm2015, esm5, main, module) in the package.json are considered.'

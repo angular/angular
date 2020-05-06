@@ -207,6 +207,15 @@ export function getEntryPointFormat(
       }
       return sniffModuleFormat(fs, join(entryPoint.path, mainFile));
     case 'module':
+      const moduleFilePath = entryPoint.packageJson['module'];
+      // As of version 10, the `module` property in `package.json` should point to
+      // the ESM2015 format output as per Angular Package format specification. This
+      // means that the `module` property captures multiple formats, as old libraries
+      // built with the old APF can still be processed. We detect the format by checking
+      // the paths that should be used as per APF specification.
+      if (typeof moduleFilePath === 'string' && moduleFilePath.includes('esm2015')) {
+        return `esm2015`;
+      }
       return 'esm5';
     default:
       return undefined;

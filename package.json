@@ -45,6 +45,7 @@
     "@angular-devkit/build-optimizer": "0.901.0",
     "@angular-devkit/core": "9.1.0",
     "@angular-devkit/schematics": "9.1.0",
+    "@babel/cli": "^7.8.4",
     "@babel/core": "^7.8.6",
     "@babel/generator": "^7.8.6",
     "@babel/template": "^7.8.6",
