@@ -15,7 +15,6 @@ import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './by
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
 import {Sanitizer} from './sanitizer';
 import {SecurityContext} from './security';
-import {StyleSanitizeFn, StyleSanitizeMode} from './style_sanitizer';
 import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
 
 
@@ -174,47 +173,6 @@ export function getUrlSanitizer(tag: string, prop: string) {
  */
 export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: string): any {
   return getUrlSanitizer(tag, prop)(unsafeUrl);
-}
-
-/**
- * The default style sanitizer will handle sanitization for style properties.
- *
- * Style sanitization is no longer apart of Angular because modern browsers no
- * longer support javascript expressions. Therefore, the reason why this API
- * exists is exclusively for unwrapping any style value expressions that were
- * marked as `SafeValue` values.
- *
- * This API will be removed in a future release of Angular.
- *
- * @publicApi
- */
-export const ɵɵdefaultStyleSanitizer =
-    (function(prop: string, value: string|null, mode?: StyleSanitizeMode): string|boolean|null {
-      if (value === undefined && mode === undefined) {
-        // This is a workaround for the fact that `StyleSanitizeFn` should not exist once PR#34480
-        // lands. For now the `StyleSanitizeFn` and should act like `(value: any) => string` as a
-        // work around.
-        return ɵɵsanitizeStyle(prop);
-      }
-      mode = mode || StyleSanitizeMode.ValidateAndSanitize;
-      let doSanitizeValue = true;
-      if (mode & StyleSanitizeMode.ValidateProperty) {
-        doSanitizeValue = stylePropNeedsSanitization(prop);
-      }
-
-      if (mode & StyleSanitizeMode.SanitizeOnly) {
-        return doSanitizeValue ? ɵɵsanitizeStyle(value) : unwrapSafeValue(value);
-      } else {
-        return doSanitizeValue;
-      }
-    } as StyleSanitizeFn);
-
-export function stylePropNeedsSanitization(prop: string): boolean {
-  return prop === 'background-image' || prop === 'backgroundImage' || prop === 'background' ||
-      prop === 'border-image' || prop === 'borderImage' || prop === 'border-image-source' ||
-      prop === 'borderImageSource' || prop === 'filter' || prop === 'list-style' ||
-      prop === 'listStyle' || prop === 'list-style-image' || prop === 'listStyleImage' ||
-      prop === 'clip-path' || prop === 'clipPath';
 }
 
 export function validateAgainstEventProperties(name: string) {

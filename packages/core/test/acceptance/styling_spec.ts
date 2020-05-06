@@ -1880,7 +1880,7 @@ describe('styling', () => {
           });
 
   onlyInIvy('only ivy has [style.prop] support')
-      .it('should sanitize style values before writing them', () => {
+      .it('should not sanitize style values before writing them', () => {
         @Component({
           template: `
                         <div [style.width]="widthExp"
@@ -1914,7 +1914,7 @@ describe('styling', () => {
       });
 
   onlyInIvy('only ivy has [style] support')
-      .it('should sanitize style values before writing them', () => {
+      .it('should not sanitize style values before writing them', () => {
         @Component({
           template: `
                     <div [style.width]="widthExp"

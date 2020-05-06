@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {assertDefined, assertEqual} from '../util/assert';
 import {assertLViewOrUndefined} from './assert';
 import {DirectiveDef} from './interfaces/definition';
@@ -96,11 +95,6 @@ interface LFrame {
    * Current namespace to be used when creating elements
    */
   currentNamespace: string|null;
-
-  /**
-   * Current sanitizer
-   */
-  currentSanitizer: StyleSanitizeFn|null;
 
 
   /**
@@ -421,7 +415,6 @@ export function enterView(newView: LView, tNode: TNode|null): void {
     assertEqual(newLFrame.elementDepthCount, 0, 'Expected clean LFrame');
     assertEqual(newLFrame.currentDirectiveIndex, -1, 'Expected clean LFrame');
     assertEqual(newLFrame.currentNamespace, null, 'Expected clean LFrame');
-    assertEqual(newLFrame.currentSanitizer, null, 'Expected clean LFrame');
     assertEqual(newLFrame.bindingRootIndex, -1, 'Expected clean LFrame');
     assertEqual(newLFrame.currentQueryIndex, 0, 'Expected clean LFrame');
   }
@@ -454,7 +447,6 @@ function createLFrame(parent: LFrame|null): LFrame {
     contextLView: null!,           //
     elementDepthCount: 0,          //
     currentNamespace: null,        //
-    currentSanitizer: null,        //
     currentDirectiveIndex: -1,     //
     bindingRootIndex: -1,          //
     bindingIndex: -1,              //
@@ -508,7 +500,6 @@ export function leaveView() {
   oldLFrame.elementDepthCount = 0;
   oldLFrame.currentDirectiveIndex = -1;
   oldLFrame.currentNamespace = null;
-  oldLFrame.currentSanitizer = null;
   oldLFrame.bindingRootIndex = -1;
   oldLFrame.bindingIndex = -1;
   oldLFrame.currentQueryIndex = 0;
@@ -601,19 +592,4 @@ export function namespaceHTMLInternal() {
 
 export function getNamespace(): string|null {
   return instructionState.lFrame.currentNamespace;
-}
-
-export function setCurrentStyleSanitizer(sanitizer: StyleSanitizeFn|null) {
-  instructionState.lFrame.currentSanitizer = sanitizer;
-}
-
-export function resetCurrentStyleSanitizer() {
-  setCurrentStyleSanitizer(null);
-}
-
-export function getCurrentStyleSanitizer() {
-  // TODO(misko): This should throw when there is no LView, but it turns out we can get here from
-  // `NodeStyleDebug` hence we return `null`. This should be fixed
-  const lFrame = instructionState.lFrame;
-  return lFrame === null ? null : lFrame.currentSanitizer;
 }

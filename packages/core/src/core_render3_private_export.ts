@@ -227,7 +227,6 @@ export {
   ɵɵstylePropInterpolate7,
   ɵɵstylePropInterpolate8,
   ɵɵstylePropInterpolateV,
-  ɵɵstyleSanitizer,
   ɵɵtemplate,
   ɵɵtemplateRefExtractor,
   ɵɵtext,
@@ -286,7 +285,6 @@ export {
   bypassSanitizationTrustUrl as ɵbypassSanitizationTrustUrl,
 } from './sanitization/bypass';
 export {
-  ɵɵdefaultStyleSanitizer,
   ɵɵsanitizeHtml,
   ɵɵsanitizeResourceUrl,
   ɵɵsanitizeScript,

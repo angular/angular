@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ConstantPool} from '../../constant_pool';
 import {AttributeMarker} from '../../core';
 import {AST, ASTWithSource, BindingPipe, BindingType, Interpolation} from '../../expression_parser/ast';
 import * as o from '../../output/output_ast';
@@ -92,9 +91,8 @@ export interface StylingInstructionCall {
 interface BoundStylingEntry {
   hasOverrideFlag: boolean;
   name: string|null;
-  unit: string|null;
+  suffix: string|null;
   sourceSpan: ParseSourceSpan;
-  sanitize: boolean;
   value: AST;
 }
 
@@ -217,20 +215,15 @@ export class StylingBuilder {
 
   registerStyleInput(
       name: string, isMapBased: boolean, value: AST, sourceSpan: ParseSourceSpan,
-      unit?: string|null): BoundStylingEntry|null {
+      suffix?: string|null): BoundStylingEntry|null {
     if (isEmptyExpression(value)) {
       return null;
     }
     name = normalizePropName(name);
-    const {property, hasOverrideFlag, unit: bindingUnit} = parseProperty(name);
-    const entry: BoundStylingEntry = {
-      name: property,
-      sanitize: property ? isStyleSanitizable(property) : true,
-      unit: unit || bindingUnit,
-      value,
-      sourceSpan,
-      hasOverrideFlag
-    };
+    const {property, hasOverrideFlag, suffix: bindingSuffix} = parseProperty(name);
+    suffix = typeof suffix === 'string' && suffix.length !== 0 ? suffix : bindingSuffix;
+    const entry:
+        BoundStylingEntry = {name: property, suffix: suffix, value, sourceSpan, hasOverrideFlag};
     if (isMapBased) {
       this._styleMapInput = entry;
     } else {
@@ -250,8 +243,8 @@ export class StylingBuilder {
       return null;
     }
     const {property, hasOverrideFlag} = parseProperty(name);
-    const entry: BoundStylingEntry =
-        {name: property, value, sourceSpan, sanitize: false, hasOverrideFlag, unit: null};
+    const entry:
+        BoundStylingEntry = {name: property, value, sourceSpan, hasOverrideFlag, suffix: null};
     if (isMapBased) {
       if (this._classMapInput) {
         throw new Error(
@@ -430,7 +423,7 @@ export class StylingBuilder {
         allocateBindingSlots: totalBindingSlotsRequired,
         supportsInterpolation: !!getInterpolationExpressionFn,
         params: (convertFn: (value: any) => o.Expression | o.Expression[]) => {
-          // params => stylingProp(propName, value, suffix|sanitizer)
+          // params => stylingProp(propName, value, suffix)
           const params: o.Expression[] = [];
           params.push(o.literal(input.name));
 
@@ -441,16 +434,10 @@ export class StylingBuilder {
             params.push(convertResult);
           }
 
-          // [style.prop] bindings may use suffix values (e.g. px, em, etc...) and they
-          // can also use a sanitizer. Sanitization occurs for url-based entries. Having
-          // the suffix value and a sanitizer together into the instruction doesn't make
-          // any sense (url-based entries cannot be sanitized).
-          if (!isClassBased) {
-            if (input.unit) {
-              params.push(o.literal(input.unit));
-            } else if (input.sanitize) {
-              params.push(o.importExpr(R3.defaultStyleSanitizer));
-            }
+          // [style.prop] bindings may use suffix values (e.g. px, em, etc...), therefore,
+          // if that is detected then we need to pass that in as an optional param.
+          if (!isClassBased && input.suffix !== null) {
+            params.push(o.literal(input.suffix));
           }
 
           return params;
@@ -517,27 +504,8 @@ function registerIntoMap(map: Map<string, number>, key: string) {
   }
 }
 
-function isStyleSanitizable(prop: string): boolean {
-  // Note that browsers support both the dash case and
-  // camel case property names when setting through JS.
-  return prop === 'background-image' || prop === 'backgroundImage' || prop === 'background' ||
-      prop === 'border-image' || prop === 'borderImage' || prop === 'border-image-source' ||
-      prop === 'borderImageSource' || prop === 'filter' || prop === 'list-style' ||
-      prop === 'listStyle' || prop === 'list-style-image' || prop === 'listStyleImage' ||
-      prop === 'clip-path' || prop === 'clipPath';
-}
-
-/**
- * Simple helper function to either provide the constant literal that will house the value
- * here or a null value if the provided values are empty.
- */
-function getConstantLiteralFromArray(
-    constantPool: ConstantPool, values: o.Expression[]): o.Expression {
-  return values.length ? constantPool.getConstLiteral(o.literalArr(values), true) : o.NULL_EXPR;
-}
-
 export function parseProperty(name: string):
-    {property: string, unit: string, hasOverrideFlag: boolean} {
+    {property: string, suffix: string|null, hasOverrideFlag: boolean} {
   let hasOverrideFlag = false;
   const overrideIndex = name.indexOf(IMPORTANT_FLAG);
   if (overrideIndex !== -1) {
@@ -545,15 +513,15 @@ export function parseProperty(name: string):
     hasOverrideFlag = true;
   }
 
-  let unit = '';
+  let suffix: string|null = null;
   let property = name;
   const unitIndex = name.lastIndexOf('.');
   if (unitIndex > 0) {
-    unit = name.substr(unitIndex + 1);
+    suffix = name.substr(unitIndex + 1);
     property = name.substring(0, unitIndex);
   }
 
-  return {property, unit, hasOverrideFlag};
+  return {property, suffix, hasOverrideFlag};
 }
 
 /**

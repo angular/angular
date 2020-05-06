@@ -723,8 +723,6 @@ export declare function ɵɵcontentQuery<T>(directiveIndex: number, predicate: T
 
 export declare function ɵɵCopyDefinitionFeature(definition: ɵDirectiveDef<any> | ɵComponentDef<any>): void;
 
-export declare const ɵɵdefaultStyleSanitizer: StyleSanitizeFn;
-
 export declare function ɵɵdefineComponent<T>(componentDefinition: {
     type: Type<T>;
     selectors?: ɵCssSelectorList;
@@ -1049,8 +1047,6 @@ export declare function ɵɵstylePropInterpolate7(prop: string, prefix: string, 
 export declare function ɵɵstylePropInterpolate8(prop: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any, suffix: string, valueSuffix?: string | null): typeof ɵɵstylePropInterpolate8;
 
 export declare function ɵɵstylePropInterpolateV(prop: string, values: any[], valueSuffix?: string | null): typeof ɵɵstylePropInterpolateV;
-
-export declare function ɵɵstyleSanitizer(sanitizer: StyleSanitizeFn | null): void;
 
 export declare function ɵɵtemplate(index: number, templateFn: ComponentTemplate<any> | null, decls: number, vars: number, tagName?: string | null, attrsIndex?: number | null, localRefsIndex?: number | null, localRefExtractor?: LocalRefExtractor): void;
 

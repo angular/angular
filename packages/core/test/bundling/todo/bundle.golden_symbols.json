@@ -597,9 +597,6 @@
     "name": "getCurrentDirectiveIndex"
   },
   {
-    "name": "getCurrentStyleSanitizer"
-  },
-  {
     "name": "getDebugContext"
   },
   {
@@ -1017,7 +1014,7 @@
     "name": "noSideEffects"
   },
   {
-    "name": "normalizeAndApplySuffixOrSanitizer"
+    "name": "normalizeSuffix"
   },
   {
     "name": "readPatchedData"

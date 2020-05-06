@@ -133,7 +133,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵstylePropInterpolate7': r3.ɵɵstylePropInterpolate7,
        'ɵɵstylePropInterpolate8': r3.ɵɵstylePropInterpolate8,
        'ɵɵstylePropInterpolateV': r3.ɵɵstylePropInterpolateV,
-       'ɵɵstyleSanitizer': r3.ɵɵstyleSanitizer,
        'ɵɵclassProp': r3.ɵɵclassProp,
        'ɵɵselect': r3.ɵɵselect,
        'ɵɵadvance': r3.ɵɵadvance,
@@ -164,7 +163,6 @@ export const angularCoreEnv: {[name: string]: Function} =
 
        'ɵɵsanitizeHtml': sanitization.ɵɵsanitizeHtml,
        'ɵɵsanitizeStyle': sanitization.ɵɵsanitizeStyle,
-       'ɵɵdefaultStyleSanitizer': sanitization.ɵɵdefaultStyleSanitizer,
        'ɵɵsanitizeResourceUrl': sanitization.ɵɵsanitizeResourceUrl,
        'ɵɵsanitizeScript': sanitization.ɵɵsanitizeScript,
        'ɵɵsanitizeUrl': sanitization.ɵɵsanitizeUrl,
