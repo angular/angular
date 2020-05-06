@@ -196,7 +196,7 @@ export class EsmRenderingFormatter implements RenderingFormatter {
       const ngModuleName = info.ngModule.node.name.text;
       const declarationFile = absoluteFromSourceFile(info.declaration.getSourceFile());
       const ngModuleFile = absoluteFromSourceFile(info.ngModule.node.getSourceFile());
-      const importPath = info.ngModule.viaModule ||
+      const importPath = info.ngModule.ownedByModuleGuess ||
           (declarationFile !== ngModuleFile ?
                stripExtension(`./${relative(dirname(declarationFile), ngModuleFile)}`) :
                null);
