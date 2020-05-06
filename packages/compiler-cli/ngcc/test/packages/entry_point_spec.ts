@@ -429,6 +429,12 @@ runInEachFileSystem(() => {
       expect(getEntryPointFormat(fs, entryPoint, 'module')).toBe('esm5');
     });
 
+    it('should return `esm2015` format for `module` property if it points to esm2015 output',
+       () => {
+         entryPoint.packageJson['module'] = '../fesm2015/valid-entry-point.js';
+         expect(getEntryPointFormat(fs, entryPoint, 'module')).toBe('esm2015');
+       });
+
     (['browser', 'main'] as EntryPointJsonProperty[]).forEach(browserOrMain => {
       it('should return `esm5` for `' + browserOrMain +
              '` if the file contains import or export statements',
