@@ -153,14 +153,6 @@ describe('NodeJSFileSystem', () => {
       expect(mkdirCalls).toEqual([xPath, xyPath, xyzPath]);
     });
 
-    describe('removeDeep()', () => {
-      it('should delegate to fsExtra.remove()', () => {
-        const spy = spyOn(fsExtra, 'removeSync');
-        fs.removeDeep(abcPath);
-        expect(spy).toHaveBeenCalledWith(abcPath);
-      });
-    });
-
     it('should not fail if a directory (that did not exist before) does exist when trying to create it',
        () => {
          let abcPathExists = false;
@@ -226,6 +218,21 @@ describe('NodeJSFileSystem', () => {
 
       expect(() => fs.ensureDir(abcPath)).toThrowError('It exists already. Supposedly.');
       expect(isDirectorySpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('removeDeep()', () => {
+    it('should delegate to fsExtra.remove()', () => {
+      const spy = spyOn(fsExtra, 'removeSync');
+      fs.removeDeep(abcPath);
+      expect(spy).toHaveBeenCalledWith(abcPath);
+    });
+  });
+
+  describe('isCaseSensitive()', () => {
+    it('should return true if the FS is case-sensitive', () => {
+      const isCaseSensitive = !realFs.existsSync(__filename.toUpperCase());
+      expect(fs.isCaseSensitive()).toEqual(isCaseSensitive);
     });
   });
 });
