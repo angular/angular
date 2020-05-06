@@ -302,7 +302,7 @@ export function typecheck(
 
   const programStrategy = new ReusedProgramStrategy(program, host, options, []);
   const templateTypeChecker = new TemplateTypeChecker(
-      program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost,
+      program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost, host,
       NOOP_INCREMENTAL_BUILD);
   templateTypeChecker.refresh();
   return templateTypeChecker.getDiagnosticsForFile(sf);
