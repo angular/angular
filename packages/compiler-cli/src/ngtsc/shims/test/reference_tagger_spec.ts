@@ -40,6 +40,17 @@ runInEachFileSystem(() => {
       expectReferencedFiles(sf, []);
     });
 
+    it('should not tag .js files', () => {
+      const tagger = new ShimReferenceTagger(['test1', 'test2']);
+
+      const fileName = _('/file.js');
+      const sf = makeArbitrarySf(fileName);
+
+      expectReferencedFiles(sf, []);
+      tagger.tag(sf);
+      expectReferencedFiles(sf, []);
+    });
+
     it('should not tag shim files', () => {
       const tagger = new ShimReferenceTagger(['test1', 'test2']);
       const fileName = _('/file.ts');

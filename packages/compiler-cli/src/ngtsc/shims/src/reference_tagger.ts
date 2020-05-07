@@ -9,6 +9,7 @@
 import * as ts from 'typescript';
 
 import {absoluteFrom, absoluteFromSourceFile} from '../../file_system';
+import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
 import {isExtended as isExtendedSf, isShim, NgExtension, sfExtensionData} from './expando';
 import {makeShimFileName} from './util';
@@ -42,7 +43,8 @@ export class ShimReferenceTagger {
    * Tag `sf` with any needed references if it's not a shim itself.
    */
   tag(sf: ts.SourceFile): void {
-    if (!this.enabled || sf.isDeclarationFile || isShim(sf) || this.tagged.has(sf)) {
+    if (!this.enabled || sf.isDeclarationFile || isShim(sf) || this.tagged.has(sf) ||
+        !isNonDeclarationTsPath(sf.fileName)) {
       return;
     }
 
