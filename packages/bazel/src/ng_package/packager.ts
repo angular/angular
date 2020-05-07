@@ -180,8 +180,8 @@ function main(args: string[]): number {
 
     moduleFiles['esm2015_index'] = path.join(binDir, 'esm2015', relative);
 
-    // Metadata file is optional as entry-points can be also built
-    // with the "ts_library" rule.
+    // Metadata file is optional as entry-points can be built with the `ts_library`
+    // rule or `ng_module` rule in Ivy mode.
     const metadataFile = moduleFiles['metadata'];
     if (!metadataFile) {
       return;
