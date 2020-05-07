@@ -5,6 +5,7 @@
 @import '../mdc-helpers/mdc-helpers';
 @import 'form-field-subscript';
 @import 'form-field-focus-overlay';
+@import 'form-field-native-select';
 @import 'mdc-text-field-theme-variable-refresh';
 
 // Mixin that overwrites the default MDC text-field color styles to be based on
@@ -40,6 +41,7 @@
       @include mdc-line-ripple-core-styles($query: $mat-theme-styles-query);
       @include _mat-form-field-subscript-theme();
       @include _mat-form-field-focus-overlay-theme();
+      @include _mat-form-field-native-select-theme($theme);
 
       .mat-mdc-form-field.mat-accent {
         @include _mdc-text-field-color-styles(secondary);
