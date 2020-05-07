@@ -75,7 +75,8 @@ export class DecorationAnalyzer {
     // TODO(alxhub): there's no reason why ngcc needs the "logical file system" logic here, as ngcc
     // projects only ever have one rootDir. Instead, ngcc should just switch its emitted import
     // based on whether a bestGuessOwningModule is present in the Reference.
-    new LogicalProjectStrategy(this.reflectionHost, new LogicalFileSystem(this.rootDirs)),
+    new LogicalProjectStrategy(
+        this.reflectionHost, new LogicalFileSystem(this.rootDirs, this.host)),
   ]);
   aliasingHost = this.bundle.entryPoint.generateDeepReexports ?
       new PrivateExportAliasingHost(this.reflectionHost) :
