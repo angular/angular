@@ -61,17 +61,16 @@ if (local && (components.length > 1 || all)) {
   process.exit(1);
 }
 
-const bazelBinary = `yarn -s ${watch ? 'ibazel' : 'bazel'}`;
-const testTargetName =
-    `unit_tests_${local ? 'local' : firefox ? 'firefox-local' : 'chromium-local'}`;
+const browserName = firefox ? 'firefox-local' : 'chromium-local';
+const bazelBinary = `${watch ? 'ibazel' : 'bazel'}`;
 const configFlag = viewEngine ? '--config=view-engine' : '';
 
 // If `all` has been specified as component, we run tests for all components
-// in the repository. The `--firefox` flag can be still specified.
+// in the repository. The `--firefox` and `--no-watch` flags can be still specified.
 if (all) {
   shelljs.exec(
-      `${bazelBinary} test //src/... --test_tag_filters=-e2e,-browser:${testTargetName} ` +
-      `--build_tag_filters=-browser:${testTargetName} --build_tests_only ${configFlag}`);
+      `${bazelBinary} test //src/... --test_tag_filters=-e2e,browser:${browserName} ` +
+      `--build_tag_filters=browser:${browserName} --build_tests_only ${configFlag}`);
   return;
 }
 
@@ -87,6 +86,7 @@ if (!components.length) {
   process.exit(1);
 }
 
+const testTargetName = `unit_tests_${local ? 'local' : browserName}`;
 const bazelAction = local ? 'run' : 'test';
 const testLabels = components
     .map(t => correctTypos(t))
