@@ -155,7 +155,7 @@ function getExecutor(
   const lockFile = new LockFileWithChildProcess(fileSystem, logger);
   if (async) {
     // Execute asynchronously (either serially or in parallel)
-    const locker = new AsyncLocker(lockFile, logger, 500, 50);
+    const locker = new AsyncLocker(lockFile, logger, 500, 500);
     if (inParallel) {
       // Execute in parallel. Use up to 8 CPU cores for workers, always reserving one for master.
       const workerCount = Math.min(8, os.cpus().length - 1);
