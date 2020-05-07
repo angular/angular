@@ -86,11 +86,10 @@ if (!components.length) {
   process.exit(1);
 }
 
-const testTargetName = `unit_tests_${local ? 'local' : browserName}`;
 const bazelAction = local ? 'run' : 'test';
 const testLabels = components
     .map(t => correctTypos(t))
-    .map(t => `${getBazelPackageOfComponentName(t)}:${testTargetName}`);
+    .map(t => `${getBazelPackageOfComponentName(t)}:${getTargetName(t)}`);
 
 // Runs Bazel for the determined test labels.
 shelljs.exec(`${bazelBinary} ${bazelAction} ${testLabels.join(' ')} ${configFlag}`);
@@ -142,4 +141,14 @@ function correctTypos(target) {
 /** Converts an arbitrary path to a Posix path. */
 function convertPathToPosix(pathName) {
   return pathName.replace(/\\/g, '/');
+}
+
+/** Gets the name of the target that should be run. */
+function getTargetName(packageName) {
+  // Schematics don't have _local and browser targets.
+  if (packageName && packageName.endsWith('schematics')) {
+    return 'unit_tests';
+  }
+
+  return `unit_tests_${local ? 'local' : browserName}`;
 }
