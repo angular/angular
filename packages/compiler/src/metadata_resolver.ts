@@ -1153,7 +1153,8 @@ export class CompileMetadataResolver {
       useFactory: compileFactoryMetadata,
       useExisting: provider.useExisting ? this._getTokenMetadata(provider.useExisting) : undefined,
       deps: compileDeps,
-      multi: provider.multi
+      multi: provider.multi,
+      priority: provider.priority
     };
   }
 

@@ -78,6 +78,7 @@ export declare abstract class ChangeDetectorRef {
 
 export declare interface ClassProvider extends ClassSansProvider {
     multi?: boolean;
+    priority?: number;
     provide: any;
 }
 
@@ -153,6 +154,7 @@ export declare abstract class ComponentRef<C> {
 
 export declare interface ConstructorProvider extends ConstructorSansProvider {
     multi?: boolean;
+    priority?: number;
     provide: Type<any>;
 }
 
@@ -321,6 +323,7 @@ export declare class EventEmitter<T extends any> extends Subject<T> {
 
 export declare interface ExistingProvider extends ExistingSansProvider {
     multi?: boolean;
+    priority?: number;
     provide: any;
 }
 
@@ -330,6 +333,7 @@ export declare interface ExistingSansProvider {
 
 export declare interface FactoryProvider extends FactorySansProvider {
     multi?: boolean;
+    priority?: number;
     provide: any;
 }
 
@@ -1305,6 +1309,7 @@ export declare interface SkipSelfDecorator {
 
 export declare interface StaticClassProvider extends StaticClassSansProvider {
     multi?: boolean;
+    priority?: number;
     provide: any;
 }
 
@@ -1373,6 +1378,7 @@ export declare interface TypeProvider extends Type<any> {
 
 export declare interface ValueProvider extends ValueSansProvider {
     multi?: boolean;
+    priority?: number;
     provide: any;
 }
 

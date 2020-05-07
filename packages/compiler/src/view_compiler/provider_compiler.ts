@@ -56,22 +56,27 @@ function multiProviderDef(
     {providerExpr: o.Expression, flags: NodeFlags, depsExpr: o.Expression} {
   const allDepDefs: o.Expression[] = [];
   const allParams: o.FnParam[] = [];
-  const exprs = providers.map((provider, providerIndex) => {
-    let expr: o.Expression;
-    if (provider.useClass) {
-      const depExprs = convertDeps(providerIndex, provider.deps || provider.useClass.diDeps);
-      expr = ctx.importExpr(provider.useClass.reference).instantiate(depExprs);
-    } else if (provider.useFactory) {
-      const depExprs = convertDeps(providerIndex, provider.deps || provider.useFactory.diDeps);
-      expr = ctx.importExpr(provider.useFactory.reference).callFn(depExprs);
-    } else if (provider.useExisting) {
-      const depExprs = convertDeps(providerIndex, [{token: provider.useExisting}]);
-      expr = depExprs[0];
-    } else {
-      expr = convertValueToOutputAst(ctx, provider.useValue);
-    }
-    return expr;
-  });
+  const exprs = providers.slice()
+                    .sort(((a, b) => (b.priority || 0) - (a.priority || 0)))
+                    .map((provider, providerIndex) => {
+                      let expr: o.Expression;
+                      if (provider.useClass) {
+                        const depExprs =
+                            convertDeps(providerIndex, provider.deps || provider.useClass.diDeps);
+                        expr = ctx.importExpr(provider.useClass.reference).instantiate(depExprs);
+                      } else if (provider.useFactory) {
+                        const depExprs =
+                            convertDeps(providerIndex, provider.deps || provider.useFactory.diDeps);
+                        expr = ctx.importExpr(provider.useFactory.reference).callFn(depExprs);
+                      } else if (provider.useExisting) {
+                        const depExprs =
+                            convertDeps(providerIndex, [{token: provider.useExisting}]);
+                        expr = depExprs[0];
+                      } else {
+                        expr = convertValueToOutputAst(ctx, provider.useValue);
+                      }
+                      return expr;
+                    });
   const providerExpr =
       o.fn(allParams, [new o.ReturnStatement(o.literalArr(exprs))], o.INFERRED_TYPE);
   return {

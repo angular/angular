@@ -116,6 +116,7 @@ export interface CompileProviderMetadata {
   useFactory?: CompileFactoryMetadata;
   deps?: CompileDiDependencyMetadata[];
   multi?: boolean;
+  priority?: number;
 }
 
 export interface CompileFactoryMetadata extends CompileIdentifierMetadata {
@@ -728,14 +729,16 @@ export class ProviderMeta {
   useFactory: Function|null;
   dependencies: Object[]|null;
   multi: boolean;
+  priority: number;
 
-  constructor(token: any, {useClass, useValue, useExisting, useFactory, deps, multi}: {
+  constructor(token: any, {useClass, useValue, useExisting, useFactory, deps, multi, priority}: {
     useClass?: Type,
     useValue?: any,
     useExisting?: any,
     useFactory?: Function|null,
     deps?: Object[]|null,
-    multi?: boolean
+    multi?: boolean,
+    priority?: number
   }) {
     this.token = token;
     this.useClass = useClass || null;
@@ -744,6 +747,7 @@ export class ProviderMeta {
     this.useFactory = useFactory || null;
     this.dependencies = deps || null;
     this.multi = !!multi;
+    this.priority = priority || 0;
   }
 }
 

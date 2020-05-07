@@ -436,7 +436,8 @@ function _transformProvider(
     useFactory: provider.useFactory,
     useValue: useValue,
     deps: deps,
-    multi: provider.multi
+    multi: provider.multi,
+    priority: provider.priority
   };
 }
 

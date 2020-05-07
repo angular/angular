@@ -177,6 +177,18 @@ function factoryFn(a: any) {}
       expect(cars[1]).toBeAnInstanceOf(CarWithOptionalEngine);
     });
 
+    it('should prioritize multiProviders', () => {
+      const injector = Injector.create([
+        Engine.PROVIDER, {provide: Car, useClass: SportsCar, deps: [Engine], multi: true},
+        {provide: Car, useClass: CarWithOptionalEngine, deps: [Engine], multi: true, priority: 1}
+      ]);
+
+      const cars = injector.get(Car) as any as Car[];
+      expect(cars.length).toEqual(2);
+      expect(cars[0]).toBeAnInstanceOf(CarWithOptionalEngine);
+      expect(cars[1]).toBeAnInstanceOf(SportsCar);
+    });
+
     it('should support multiProviders that are created using useExisting', () => {
       const injector = Injector.create([
         Engine.PROVIDER, {provide: SportsCar, useClass: SportsCar, deps: [Engine]},

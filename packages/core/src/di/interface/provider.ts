@@ -48,6 +48,12 @@ export interface ValueProvider extends ValueSansProvider {
    * providers spread across many files to provide configuration information to a common token.
    */
   multi?: boolean;
+
+  /**
+   * Is used to sort multiple providers before they are computed.
+   * Providers with greater numerical priority are computed first. The default priority is `0`.
+   */
+  priority?: number;
 }
 
 /**
@@ -99,6 +105,12 @@ export interface StaticClassProvider extends StaticClassSansProvider {
    * providers spread across many files to provide configuration information to a common token.
    */
   multi?: boolean;
+
+  /**
+   * Is used to sort multiple providers before they are computed.
+   * Providers with greater numerical priority are computed first. The default priority is `0`.
+   */
+  priority?: number;
 }
 
 /**
@@ -148,6 +160,12 @@ export interface ConstructorProvider extends ConstructorSansProvider {
    * providers spread across many files to provide configuration information to a common token.
    */
   multi?: boolean;
+
+  /**
+   * Is used to sort multiple providers before they are computed.
+   * Providers with greater numerical priority are computed first. The default priority is `0`.
+   */
+  priority?: number;
 }
 
 /**
@@ -191,6 +209,12 @@ export interface ExistingProvider extends ExistingSansProvider {
    * providers spread across many files to provide configuration information to a common token.
    */
   multi?: boolean;
+
+  /**
+   * Is used to sort multiple providers before they are computed.
+   * Providers with greater numerical priority are computed first. The default priority is `0`.
+   */
+  priority?: number;
 }
 
 /**
@@ -244,6 +268,12 @@ export interface FactoryProvider extends FactorySansProvider {
    * providers spread across many files to provide configuration information to a common token.
    */
   multi?: boolean;
+
+  /**
+   * Is used to sort multiple providers before they are computed.
+   * Providers with greater numerical priority are computed first. The default priority is `0`.
+   */
+  priority?: number;
 }
 
 /**
@@ -319,6 +349,12 @@ export interface ClassProvider extends ClassSansProvider {
    * providers spread across many files to provide configuration information to a common token.
    */
   multi?: boolean;
+
+  /**
+   * Is used to sort multiple providers before they are computed.
+   * Providers with greater numerical priority are computed first. The default priority is `0`.
+   */
+  priority?: number;
 }
 
 /**

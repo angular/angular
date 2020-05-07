@@ -328,7 +328,8 @@ function resolveToken(
       let obj = undefined;
       let useNew = record.useNew;
       let fn = record.fn;
-      let depRecords = record.deps;
+      let depRecords =
+          record.deps.slice().sort(((a, b) => (b.token.priority || 0) - (a.token.priority || 0)));
       let deps = EMPTY;
       if (depRecords.length) {
         deps = [];

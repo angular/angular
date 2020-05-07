@@ -1111,12 +1111,14 @@ Animation trigger is missing ("<div [ERROR ->]@></div>"): TestComp@0:5`);
       }
 
       function createProvider(
-          token: string, {multi = false, deps = []}: {multi?: boolean, deps?: string[]} = {}):
-          CompileProviderMetadata {
+          token: string,
+          {multi = false, deps = [], priority = 0}:
+              {multi?: boolean, deps?: string[], priority?: number} = {}): CompileProviderMetadata {
         const compileToken = createToken(token);
         return {
           token: compileToken,
           multi: multi,
+          priority: priority,
           useClass: createTypeMeta({reference: tokenReference(compileToken)}),
           deps: deps.map(createDep),
           useExisting: undefined,
