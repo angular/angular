@@ -336,6 +336,7 @@ describe('MatDateRangeInput', () => {
 
       formFieldContainer.click();
       fixture.detectChanges();
+      tick();
 
       expect(endInput.focus).toHaveBeenCalled();
     }));
