@@ -15,7 +15,7 @@
         'new-node': node.newItem
       }"
       class="tree-node"
-      (click)="selectAndEnsureVisible(idx)"
+      (click)="selectAndEnsureVisible(node)"
       (dblclick)="handleSelectDomElement(node)"
       (mouseenter)="highlightNode(node.position)"
       (mouseleave)="removeHighlight()"
