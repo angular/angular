@@ -32,10 +32,17 @@ var CIconfiguration = {
   'Android8': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Android9': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Android10': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'Safari12': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'Safari13': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'iOS12': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'iOS13': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  // Disable all Safari and iOS tests because of incorrect results
+  // ex:
+  // Mobile Safari 13.0.0 (iOS 13.0.0) styling static template only should capture static values in TStylingKey FAILED
+  // Expected $.content = 'dynamic' to equal '"dynamic"'.
+  // Mobile Safari 12.0.0 (iOS 12.0.0) styling should handle values wrapped into SafeValue FAILED
+  // Expected 'url("http://angular-ci.local:9876/1.png")' to contain 'url("/1.png")'.s
+  // Tracking in: https://github.com/angular/angular/issues/36975
+  'Safari12': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  'Safari13': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  'iOS12': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  'iOS13': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'WindowsPhone': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}}
 };
 
