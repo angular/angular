@@ -44,7 +44,7 @@ export class NgtscCompilerHost implements ts.CompilerHost {
   }
 
   getCanonicalFileName(fileName: string): string {
-    return this.useCaseSensitiveFileNames ? fileName : fileName.toLowerCase();
+    return this.useCaseSensitiveFileNames() ? fileName : fileName.toLowerCase();
   }
 
   useCaseSensitiveFileNames(): boolean {
