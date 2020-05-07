@@ -59,6 +59,7 @@ export class NgtscTestEnvironment {
         "outDir": "built",
         "rootDir": ".",
         "baseUrl": ".",
+        "allowJs": true,
         "declaration": true,
         "target": "es5",
         "newLine": "lf",

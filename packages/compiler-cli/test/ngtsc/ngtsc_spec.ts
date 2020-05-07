@@ -3540,6 +3540,33 @@ runInEachFileSystem(os => {
         env.tsconfig({'generateNgFactoryShims': true});
       });
 
+      it('should not be generated for .js files', () => {
+        // This test verifies that the compiler does not attempt to generate shim files for non-TS
+        // input files (in this case, other.js).
+        env.write('test.ts', `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: 'This is a template',
+          })
+          export class TestCmp {}
+
+          @NgModule({
+            declarations: [TestCmp],
+            exports: [TestCmp],
+          })
+          export class TestModule {}
+        `);
+        env.write('other.js', `
+          export class TestJs {}
+        `);
+
+        expect(env.driveDiagnostics()).toEqual([]);
+        env.assertExists('test.ngfactory.js');
+        env.assertDoesNotExist('other.ngfactory.js');
+      });
+
       it('should be able to depend on an existing factory shim', () => {
         // This test verifies that ngfactory files from the compilations of dependencies are
         // available to import in a fresh compilation. It is derived from a bug observed in g3 where
