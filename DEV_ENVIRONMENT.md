@@ -58,3 +58,9 @@ packages locally and test them by either of the following ways:
 1. Update the dependencies in `package.json` to point to the local uncompressed package directories.
 2. Directly copy the local uncompressed package directories into the `node_modules/` directory
    of a project.
+
+
+### Approving public API changes
+If you're making changes to a public API, they need to be propagated to our public API golden files.
+To save the changes you can run `yarn approve-api <target>` and to review the changes, you can look
+at the file under `tools/public_api_guard/<target>.d.ts`.
