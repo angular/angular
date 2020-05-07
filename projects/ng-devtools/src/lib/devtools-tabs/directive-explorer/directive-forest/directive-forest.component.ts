@@ -117,7 +117,7 @@ export class DirectiveForestComponent implements OnInit {
   }
 
   select(idx: number): void {
-    const node = this.dataSource.data[idx];
+    const node = this.dataSource.expandedDataValues[idx];
     this.populateParents(node.position);
     this.selectNode.emit(node.original);
     this.selectedNode = node;
@@ -181,7 +181,7 @@ export class DirectiveForestComponent implements OnInit {
     }
     event.preventDefault();
 
-    const data = this.dataSource.data;
+    const data = this.dataSource.expandedDataValues;
     let prevIdx = data.findIndex((e) => this.selectedNode && e.id === this.selectedNode.id) - 1;
     if (prevIdx < 0) {
       return;
@@ -205,7 +205,7 @@ export class DirectiveForestComponent implements OnInit {
     }
     event.preventDefault();
 
-    const data = this.dataSource.data;
+    const data = this.dataSource.expandedDataValues;
     let idx = data.findIndex((e) => this.selectedNode && e.id === this.selectedNode.id);
     const currentNode = data[idx];
     if (!this.treeControl.isExpanded(currentNode) && currentNode.expandable) {
