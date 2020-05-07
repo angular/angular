@@ -30,7 +30,7 @@ const getId = (node: IndexedNode) => {
     prefix = node.component.id.toString();
   }
   const dirIds = node.directives
-    .map(d => d.id)
+    .map((d) => d.id)
     .sort((a, b) => {
       return a - b;
     });
@@ -56,16 +56,16 @@ export class ComponentDataSource extends DataSource<FlatNode> {
         // and the reference is preserved after transformation.
         position: node.position,
         name: node.component ? node.component.name : node.element,
-        directives: node.directives.map(d => d.name).join(', '),
+        directives: node.directives.map((d) => d.name).join(', '),
         original: node,
         level,
       };
       this._nodeToFlat.set(node, flatNode);
       return flatNode;
     },
-    node => (node ? node.level : -1),
-    node => (node ? node.expandable : false),
-    node => (node ? node.children : [])
+    (node) => (node ? node.level : -1),
+    (node) => (node ? node.expandable : false),
+    (node) => (node ? node.children : [])
   );
 
   constructor(private _treeControl: FlatTreeControl<FlatNode>) {
@@ -92,15 +92,25 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     const indexedForest = indexForest(forest);
     const flattenedCollection = this._treeFlattener.flattenNodes(indexedForest) as FlatNode[];
 
-    this.data.forEach(i => (i.newItem = false));
+    this.data.forEach((i) => (i.newItem = false));
+
+    const expandedNodes = {};
+    this.data.forEach((item) => {
+      expandedNodes[item.id] = this._treeControl.isExpanded(item);
+    });
 
     const { newItems, movedItems, removedItems } = diff<FlatNode>(this._differ, this.data, flattenedCollection);
     this._treeControl.dataNodes = this.data;
     this._flattenedData.next(this.data);
 
-    movedItems.forEach(i => this._nodeToFlat.set(i.original, i));
-    newItems.forEach(i => (i.newItem = true));
-    removedItems.forEach(i => this._nodeToFlat.delete(i.original));
+    movedItems.forEach((i) => {
+      this._nodeToFlat.set(i.original, i);
+      if (expandedNodes[i.id]) {
+        this._treeControl.expand(i);
+      }
+    });
+    newItems.forEach((i) => (i.newItem = true));
+    removedItems.forEach((i) => this._nodeToFlat.delete(i.original));
 
     return { newItems, movedItems, removedItems };
   }

@@ -152,6 +152,7 @@ export class DirectiveForestComponent implements OnInit {
       this._initialized = true;
       result.newItems.forEach((item) => (item.newItem = false));
     }
+    // We want to expand them once they are rendered.
     result.newItems.forEach((item) => {
       this.treeControl.expand(item);
     });
