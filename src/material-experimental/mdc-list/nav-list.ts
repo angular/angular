@@ -25,11 +25,12 @@ import {MatListBase} from './list-base';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
+    {provide: MatListBase, useExisting: MatNavList},
     /**
      * @deprecated Provider for `MatList` will be removed, use `MatNavList` instead.
      * @breaking-change 11.0.0
      */
-    {provide: MatList, useExisting: MatNavList}
+    {provide: MatList, useExisting: MatNavList},
   ]
 })
 export class MatNavList extends MatListBase {}

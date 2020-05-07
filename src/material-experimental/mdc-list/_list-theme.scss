@@ -1,9 +1,30 @@
 @import '@material/list/mixins.import';
+@import '@material/ripple/variables.import';
 @import '../mdc-helpers/mdc-helpers';
 
 @mixin mat-mdc-list-theme($theme) {
+  $is-dark-theme: map-get($theme, is-dark);
+  $state-opacities:
+      if($is-dark-theme, $mdc-ripple-light-ink-opacities, $mdc-ripple-dark-ink-opacities);
+
   @include mat-using-mdc-theme($theme) {
     @include mdc-list-without-ripple($query: $mat-theme-styles-query);
+  }
+
+  // MDC's state styles are tied in with their ripple. Since we don't use the MDC ripple, we need to
+  // add the hover and focus states manually.
+  .mat-mdc-list-item-interactive {
+    &::before {
+      background: if($is-dark-theme, white, black);
+    }
+
+    &:hover::before {
+      opacity: map-get($state-opacities, hover);
+    }
+
+    &:focus::before {
+      opacity: map-get($state-opacities, focus);
+    }
   }
 }
 

@@ -19,5 +19,8 @@ import {MatListBase} from './list-base';
   styleUrls: ['list.css'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    {provide: MatListBase, useExisting: MatActionList},
+  ]
 })
 export class MatActionList extends MatListBase {}

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Platform} from '@angular/cdk/platform';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -44,8 +45,11 @@ export class MatSelectionListChange {
   templateUrl: 'selection-list.html',
   styleUrls: ['list.css'],
   encapsulation: ViewEncapsulation.None,
-  providers: [MAT_SELECTION_LIST_VALUE_ACCESSOR],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  providers: [
+    MAT_SELECTION_LIST_VALUE_ACCESSOR,
+    {provide: MatListBase, useExisting: MatSelectionList}
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatSelectionList extends MatListBase {}
 
@@ -63,7 +67,7 @@ export class MatListOption extends MatListItemBase {
   @ContentChildren(MatLine, {read: ElementRef, descendants: true}) lines:
       QueryList<ElementRef<Element>>;
 
-  constructor(element: ElementRef, ngZone: NgZone) {
-    super(element, ngZone);
+  constructor(element: ElementRef, ngZone: NgZone, listBase: MatListBase, platform: Platform) {
+    super(element, ngZone, listBase, platform);
   }
 }

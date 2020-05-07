@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatLineModule} from '@angular/material/core';
+import {MatLineModule, MatRippleModule} from '@angular/material/core';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatActionList} from './action-list';
 import {
@@ -21,7 +21,10 @@ import {MatNavList} from './nav-list';
 import {MatListOption, MatSelectionList} from './selection-list';
 
 @NgModule({
-  imports: [MatLineModule],
+  imports: [
+    MatLineModule,
+    MatRippleModule,
+  ],
   exports: [
     MatList,
     MatActionList,
