@@ -486,7 +486,8 @@ export class NgCompiler {
     // Execute the typeCheck phase of each decorator in the program.
     const prepSpan = this.perfRecorder.start('typeCheckPrep');
     const ctx = new TypeCheckContext(
-        typeCheckingConfig, compilation.refEmitter!, compilation.reflector, host.typeCheckFile);
+        typeCheckingConfig, host, compilation.refEmitter!, compilation.reflector,
+        host.typeCheckFile);
     compilation.traitCompiler.typeCheck(ctx);
     this.perfRecorder.stop(prepSpan);
 

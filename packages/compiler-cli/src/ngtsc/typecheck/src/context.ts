@@ -38,9 +38,11 @@ export class TypeCheckContext {
   private typeCheckFile: TypeCheckFile;
 
   constructor(
-      private config: TypeCheckingConfig, private refEmitter: ReferenceEmitter,
-      private reflector: ReflectionHost, typeCheckFilePath: AbsoluteFsPath) {
-    this.typeCheckFile = new TypeCheckFile(typeCheckFilePath, config, refEmitter, reflector);
+      private config: TypeCheckingConfig, compilerHost: ts.CompilerHost,
+      private refEmitter: ReferenceEmitter, private reflector: ReflectionHost,
+      typeCheckFilePath: AbsoluteFsPath) {
+    this.typeCheckFile =
+        new TypeCheckFile(typeCheckFilePath, config, refEmitter, reflector, compilerHost);
   }
 
   /**
