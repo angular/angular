@@ -81,6 +81,7 @@ export class DevAppLayout {
     {name: 'MDC Radio', route: '/mdc-radio'},
     {name: 'MDC Progress Bar', route: '/mdc-progress-bar'},
     {name: 'MDC Tabs', route: '/mdc-tabs'},
+    {name: 'MDC Sidenav', route: '/mdc-sidenav'},
     {name: 'MDC Slide Toggle', route: '/mdc-slide-toggle'},
     {name: 'MDC Slider', route: '/mdc-slider'},
     {name: 'MDC Snackbar', route: '/mdc-snackbar'},

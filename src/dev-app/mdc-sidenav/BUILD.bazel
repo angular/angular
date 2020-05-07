@@ -1,0 +1,22 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "mdc-sidenav",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "mdc-sidenav-demo.html",
+        ":mdc_sidenav_demo_scss",
+    ],
+    deps = [
+        "//src/material-experimental/mdc-sidenav",
+        "@npm//@angular/router",
+    ],
+)
+
+sass_binary(
+    name = "mdc_sidenav_demo_scss",
+    src = "mdc-sidenav-demo.scss",
+)

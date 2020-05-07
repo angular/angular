@@ -72,6 +72,7 @@ export const DEV_APP_ROUTES: Routes = [
   {path: 'mdc-list', loadChildren: 'mdc-list/mdc-list-demo-module#MdcListDemoModule'},
   {path: 'mdc-menu', loadChildren: 'mdc-menu/mdc-menu-demo-module#MdcMenuDemoModule'},
   {path: 'mdc-radio', loadChildren: 'mdc-radio/mdc-radio-demo-module#MdcRadioDemoModule'},
+  {path: 'mdc-sidenav', loadChildren: 'mdc-sidenav/mdc-sidenav-demo-module#MdcSidenavDemoModule'},
   {
     path: 'mdc-snackbar',
     loadChildren: 'mdc-snackbar/mdc-snackbar-demo-module#MdcSnackbarDemoModule'
