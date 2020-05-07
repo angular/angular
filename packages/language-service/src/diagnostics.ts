@@ -12,9 +12,10 @@ import * as ts from 'typescript';
 
 import {createDiagnostic, Diagnostic} from './diagnostic_messages';
 import {getTemplateExpressionDiagnostics} from './expression_diagnostics';
+import {findPropertyValueOfType, findTightestNode} from './ts_utils';
 import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
-import {findPropertyValueOfType, findTightestNode, offsetSpan, spanOf} from './utils';
+import {offsetSpan, spanOf} from './utils';
 
 /**
  * Return diagnostic information for the parsed AST of the template.

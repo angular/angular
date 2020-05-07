@@ -9,13 +9,25 @@ ts_library(
             "*.ts",
             "src/**/*.ts",
         ],
+        exclude = [
+            "src/ts_utils.ts",
+        ],
     ),
     deps = [
+        ":ts_utils",
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/core",
         "@npm//@types/node",
+        "@npm//typescript",
+    ],
+)
+
+ts_library(
+    name = "ts_utils",
+    srcs = ["src/ts_utils.ts"],
+    deps = [
         "@npm//typescript",
     ],
 )
