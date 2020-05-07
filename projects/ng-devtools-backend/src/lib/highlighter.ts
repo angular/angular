@@ -48,6 +48,7 @@ export const findComponentAndHost = (el: Node | undefined): { component: any; ho
   return { component: null, host: null };
 };
 
+// Todo(aleksanderbodurri): this should not be part of the highlighter, move this somewhere else
 export const getDirectiveName = (dir: Type<unknown> | undefined | null): string => {
   if (dir) {
     return dir.constructor.name;
@@ -119,7 +120,7 @@ function showOverlay(
   overlay.style.left = ~~left + 'px';
 
   overlayContent.innerHTML = '';
-  content.forEach(child => overlayContent.appendChild(child));
+  content.forEach((child) => overlayContent.appendChild(child));
 
   document.body.appendChild(overlay);
 }

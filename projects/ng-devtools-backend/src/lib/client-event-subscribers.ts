@@ -22,7 +22,7 @@ import {
   appIsAngularIvy,
 } from './angular-check';
 import { debounceTime } from 'rxjs/operators';
-import { initializeOrGetDirectiveForestObserver } from './observer';
+import { disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestObserver } from './observer';
 import { runOutsideAngular } from './utils';
 
 export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
@@ -40,6 +40,9 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
 
   messageBus.on('updateState', updateState);
+
+  messageBus.on('enableTimingAPI', enableTimingAPI);
+  messageBus.on('disableTimingAPI', disableTimingAPI);
 
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion()) {
     setupInspector(messageBus);

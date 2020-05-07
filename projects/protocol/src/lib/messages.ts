@@ -170,4 +170,7 @@ export interface Events {
   highlightComponent: (id: number) => void;
   selectComponent: (id: number) => void;
   removeComponentHighlight: () => void;
+
+  enableTimingAPI: () => void;
+  disableTimingAPI: () => void;
 }
