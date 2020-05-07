@@ -3,6 +3,7 @@ import { Events, MessageBus } from 'protocol';
 import { MatTabGroup } from '@angular/material/tabs';
 import { DirectiveExplorerComponent } from './directive-explorer/directive-explorer.component';
 import { ApplicationEnvironment } from '../application-environment';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'ng-devtools-tabs',
@@ -43,5 +44,9 @@ export class DevToolsTabsComponent {
 
   refresh(): void {
     this.directiveExplorer.refresh();
+  }
+
+  toggleTimingAPI(change: MatSlideToggleChange): void {
+    change.checked ? this._messageBus.emit('enableTimingAPI') : this._messageBus.emit('disableTimingAPI');
   }
 }

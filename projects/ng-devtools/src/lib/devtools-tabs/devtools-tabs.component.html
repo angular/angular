@@ -7,7 +7,7 @@
   </mat-tab>
 </mat-tab-group>
 
-<button mat-icon-button id="inspect-component" (click)="toggleInspector()">
+<button id="inspect-component" (click)="toggleInspector()">
   <mat-icon>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
       <path
@@ -19,7 +19,7 @@
   </mat-icon>
 </button>
 
-<button mat-icon-button id="refresh-component-tree" (click)="refresh()">
+<button id="refresh-component-tree" (click)="refresh()">
   <mat-icon>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 768">
       <g>
@@ -42,6 +42,30 @@
     </svg>
   </mat-icon>
 </button>
+
+<button class="menu" mat-button [matMenuTriggerFor]="menu">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    aria-hidden="true"
+    focusable="false"
+    width="0.9em"
+    height="1em"
+    style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);"
+    preserveAspectRatio="xMidYMid meet"
+    viewBox="0 0 740 830"
+  >
+    <path
+      d="M722 424q12 9 9 24q-11 46-33 86q-3 7-9 10t-15 1q-22-4-43 2t-39 24t-23 40t-2 46q3 16-10 24q-41 24-82 35q-16 5-26-10q-12-20-32-32t-46-12t-45 12t-34 32q-9 15-25 10q-44-12-82-35q-15-8-11-24q5-23-1-46t-23-40t-39-24t-44-2q-16 4-24-11q-22-42-32-86q-5-15 9-24q17-13 28-33t10.5-42t-9.5-40t-25-31q-12-11-8-24q15-48 40-89q7-12 20-10q20 2 40-5t34-22q29-29 27-69q-1-13 11-20q44-26 94-38q13-3 21 6q13 14 31 22t37 8t37-8t30-22q9-9 22-6q50 12 94 38q11 6 11 20q-2 40 27 69q15 15 34 22t39 5q13-2 21 10q25 41 40 89q3 14-8 24q-16 13-25 31t-9 40.5t11 41.5t27 33zm-351 76q29 0 55-11t44-30t29-44t11-54t-11-55t-29-44t-44-29t-55-11t-54 11t-44 29t-30 44t-11 55t11 54t30 44t44 30t54 11z"
+      fill="#626262"
+    />
+  </svg>
+</button>
+<mat-menu #menu="matMenu" [class]="'test'">
+  <mat-slide-toggle (change)="toggleTimingAPI($event)" class="menu-toggle-button" (click)="$event.stopPropagation()">
+    Enable timing API (Experimental)
+  </mat-slide-toggle>
+</mat-menu>
 
 <section *ngIf="angularVersion" id="app-angular-version">
   Angular version: {{ angularVersion }}

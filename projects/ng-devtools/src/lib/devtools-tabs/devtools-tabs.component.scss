@@ -75,7 +75,7 @@ mat-tab-group {
   }
 
   .mat-tab-label-container {
-    margin-left: 70px;
+    margin-left: 125px;
   }
 
   mat-tab-header {
@@ -87,4 +87,29 @@ mat-tab-group {
       padding: 0px 10px;
     }
   }
+}
+
+.menu {
+  position: absolute;
+  left: 60px;
+  top: -3px;
+  font-size: 17px;
+  outline: none;
+  width: 13px;
+  height: 33px;
+  padding: 0;
+}
+
+::ng-deep {
+  .cdk-overlay-pane {
+    width: 500px;
+  }
+
+  .mat-menu-panel {
+    width: 100%;
+  }
+}
+
+.menu-toggle-button {
+  font-size: 12px;
 }
