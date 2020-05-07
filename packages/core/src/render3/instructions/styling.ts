@@ -41,8 +41,6 @@ import {setDirectiveInputsWhichShadowsStyling} from './property';
  * @param prop A valid CSS property.
  * @param value New value to write (`null` or an empty string to remove).
  * @param suffix Optional suffix. Used with scalar values to add unit such as `px`.
- *        Note that when a suffix is provided then the underlying sanitizer will
- *        be ignored.
  *
  * Note that this will apply the provided style value to the host element if this function is called
  * within a host binding function.
@@ -160,7 +158,7 @@ export function classStringParser(keyValueArray: KeyValueArray<any>, text: strin
  *
  * @param prop property name.
  * @param value binding value.
- * @param suffixOrSanitizer suffix or sanitization function
+ * @param suffix suffix for the property (e.g. `em` or `px`)
  * @param isClassBased `true` if `class` change (`false` if `style`)
  */
 export function checkStylingProperty(
@@ -187,9 +185,7 @@ export function checkStylingProperty(
  * Common code between `ɵɵclassMap` and `ɵɵstyleMap`.
  *
  * @param keyValueArraySet (See `keyValueArraySet` in "util/array_utils") Gets passed in as a
- * function so that
- *        `style` can pass in version which does sanitization. This is done for tree shaking
- *        purposes.
+ *        function so that `style` can be processed. This is done for tree shaking purposes.
  * @param stringParser Parser used to parse `value` if `string`. (Passed in as `style` and `class`
  *        have different parsers.)
  * @param value bound value from application
@@ -573,9 +569,8 @@ function collectStylingFromTAttrs(
  * keep additional `Map` to keep track of duplicates or items which have not yet been visited.
  *
  * @param keyValueArraySet (See `keyValueArraySet` in "util/array_utils") Gets passed in as a
- * function so that
- *        `style` can pass in version which does sanitization. This is done for tree shaking
- *        purposes.
+ *        function so that `style` can be processed. This is done
+ *        for tree shaking purposes.
  * @param stringParser The parser is passed in so that it will be tree shakable. See
  *        `styleStringParser` and `classStringParser`
  * @param value The value to parse/convert to `KeyValueArray`
@@ -612,8 +607,8 @@ export function toStylingKeyValueArray(
  * See: `keyValueArraySet` for details
  *
  * @param keyValueArray KeyValueArray to add to.
- * @param key Style key to add. (This key will be checked if it needs sanitization)
- * @param value The value to set (If key needs sanitization it will be sanitized)
+ * @param key Style key to add.
+ * @param value The value to set.
  */
 export function styleKeyValueArraySet(keyValueArray: KeyValueArray<any>, key: string, value: any) {
   keyValueArraySet(keyValueArray, key, unwrapSafeValue(value));
@@ -749,10 +744,7 @@ function updateStyling(
  * NOTE: The styling stores two values.
  * 1. The raw value which came from the application is stored at `index + 0` location. (This value
  *    is used for dirty checking).
- * 2. The normalized value (converted to `KeyValueArray` if map and sanitized) is stored at `index +
- * 1`.
- *    The advantage of storing the sanitized value is that once the value is written we don't need
- *    to worry about sanitizing it later or keeping track of the sanitizer.
+ * 2. The normalized value is stored at `index + 1`.
  *
  * @param tData `TData` used for traversing the priority.
  * @param tNode `TNode` to use for resolving static styling. Also controls search direction.
@@ -832,18 +824,17 @@ function isStylingValuePresent(value: any): boolean {
 }
 
 /**
- * Sanitizes or adds suffix to the value.
+ * Normalizes and/or adds a suffix to the value.
  *
  * If value is `null`/`undefined` no suffix is added
  * @param value
- * @param suffixOrSanitizer
+ * @param suffix
  */
-function normalizeSuffix(value: any, suffixOrSanitizer: string|undefined|null): string|null|
-    undefined|boolean {
+function normalizeSuffix(value: any, suffix: string|undefined|null): string|null|undefined|boolean {
   if (value == null /** || value === undefined */) {
     // do nothing
-  } else if (typeof suffixOrSanitizer === 'string') {
-    value = value + suffixOrSanitizer;
+  } else if (typeof suffix === 'string') {
+    value = value + suffix;
   } else if (typeof value === 'object') {
     value = stringify(unwrapSafeValue(value));
   }
