@@ -46,10 +46,10 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
     // Often websites have `scroll` event listener which triggers
     // Angular's change detection. We don't want to constantly send
     // update requests, instead we want to request an update at most
-    // every 50ms
+    // every 250ms
     runOutsideAngular(() => {
       initializeOrGetDirectiveForestObserver()
-        .changeDetection$.pipe(debounceTime(50))
+        .changeDetection$.pipe(debounceTime(250))
         .subscribe(() => messageBus.emit('componentTreeDirty'));
     });
   }
