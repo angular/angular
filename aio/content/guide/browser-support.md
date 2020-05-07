@@ -34,7 +34,7 @@ Angular supports most recent browsers. This includes the following specific vers
     </td>
 
     <td>
-      latest
+      latest and extended support release (ESR)
     </td>
   </tr>
 
