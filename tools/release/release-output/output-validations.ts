@@ -19,7 +19,7 @@ const bazelManifestPath = /(angular_material|external)\//;
  * to files in the release output.
  */
 const packageJsonPathFields =
-    ['main', 'module', 'typings', 'es2015', 'fesm5', 'fesm2015', 'esm5', 'esm2015'];
+    ['main', 'module', 'typings', 'es2015', 'fesm2015', 'esm2015'];
 
 /**
  * Checks the specified JavaScript file and ensures that it does not
@@ -58,6 +58,7 @@ export function checkPackageJsonFile(filePath: string): string[] {
   packageJsonPathFields.forEach(fieldName => {
     if (!parsed[fieldName]) {
       failures.push(`Missing field: ${fieldName}`);
+      return;
     }
 
     const resolvedPath = join(packageJsonDir, parsed[fieldName]);

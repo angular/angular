@@ -2,14 +2,6 @@
   "name": "@angular/material",
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular Material",
-  "main": "./bundles/material.umd.js",
-  "fesm5": "./fesm5/material.js",
-  "fesm2015": "./fesm2015/material.js",
-  "esm5": "./esm5/index.js",
-  "esm2015": "./esm2015/index.js",
-  "typings": "./index.d.ts",
-  "module": "./fesm5/material.js",
-  "es2015": "./fesm2015/material.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/components.git"
