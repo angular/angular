@@ -9,8 +9,9 @@
 import {join} from 'path';
 import {exec} from 'shelljs';
 
-// The filename expected for creating the ng-dev config.
-const CONFIG_FILE_NAME = '.ng-dev-config.js';
+// The filename expected for creating the ng-dev config, without the file
+// extension to allow either a typescript or javascript file to be used.
+const CONFIG_FILE_NAME = '.ng-dev-config';
 
 /**
  * Gets the path of the directory for the repository base.
