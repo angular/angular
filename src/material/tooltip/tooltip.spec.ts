@@ -1018,12 +1018,12 @@ describe('MatTooltip', () => {
 
       expect(inputStyle.userSelect).toBeFalsy();
       expect(inputStyle.webkitUserSelect).toBeFalsy();
-      expect(inputStyle.msUserSelect).toBeFalsy();
+      expect((inputStyle as any).msUserSelect).toBeFalsy();
       expect((inputStyle as any).MozUserSelect).toBeFalsy();
 
       expect(textareaStyle.userSelect).toBeFalsy();
       expect(textareaStyle.webkitUserSelect).toBeFalsy();
-      expect(textareaStyle.msUserSelect).toBeFalsy();
+      expect((textareaStyle as any).msUserSelect).toBeFalsy();
       expect((textareaStyle as any).MozUserSelect).toBeFalsy();
     });
 
@@ -1034,10 +1034,11 @@ describe('MatTooltip', () => {
 
       const inputStyle = fixture.componentInstance.input.nativeElement.style;
       const inputUserSelect = inputStyle.userSelect || inputStyle.webkitUserSelect ||
-                              inputStyle.msUserSelect || (inputStyle as any).MozUserSelect;
+                              (inputStyle as any).msUserSelect || (inputStyle as any).MozUserSelect;
       const textareaStyle = fixture.componentInstance.textarea.nativeElement.style;
       const textareaUserSelect = textareaStyle.userSelect || textareaStyle.webkitUserSelect ||
-                                 textareaStyle.msUserSelect || (textareaStyle as any).MozUserSelect;
+                                 (textareaStyle as any).msUserSelect ||
+                                 (textareaStyle as any).MozUserSelect;
 
       expect(inputUserSelect).toBe('none');
       expect(textareaUserSelect).toBe('none');

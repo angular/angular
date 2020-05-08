@@ -589,7 +589,7 @@ export class MatTooltip implements OnDestroy, OnInit {
       // If gestures are set to `auto`, we don't disable text selection on inputs and
       // textareas, because it prevents the user from typing into them on iOS Safari.
       if (gestures === 'on' || (element.nodeName !== 'INPUT' && element.nodeName !== 'TEXTAREA')) {
-        style.userSelect = style.msUserSelect = style.webkitUserSelect =
+        style.userSelect = (style as any).msUserSelect = style.webkitUserSelect =
             (style as any).MozUserSelect = 'none';
       }
 

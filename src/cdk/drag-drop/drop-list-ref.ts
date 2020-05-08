@@ -23,6 +23,7 @@ import {
   isInsideClientRect,
 } from './client-rect';
 import {ParentPositionTracker} from './parent-position-tracker';
+import {DragCSSStyleDeclaration} from './drag-styling';
 
 /**
  * Proximity, as a ratio to width/height, at which a
@@ -235,15 +236,15 @@ export class DropListRef<T = any> {
 
   /** Starts dragging an item. */
   start(): void {
-    const styles = coerceElement(this.element).style;
+    const styles = coerceElement(this.element).style as DragCSSStyleDeclaration;
     this.beforeStarted.next();
     this._isDragging = true;
 
     // We need to disable scroll snapping while the user is dragging, because it breaks automatic
     // scrolling. The browser seems to round the value based on the snapping points which means
     // that we can't increment/decrement the scroll position.
-    this._initialScrollSnap = styles.msScrollSnapType || (styles as any).scrollSnapType || '';
-    (styles as any).scrollSnapType = styles.msScrollSnapType = 'none';
+    this._initialScrollSnap = styles.msScrollSnapType || styles.scrollSnapType || '';
+    styles.scrollSnapType = styles.msScrollSnapType = 'none';
     this._cacheItems();
     this._siblings.forEach(sibling => sibling._startReceiving(this));
     this._viewportScrollSubscription.unsubscribe();
@@ -629,8 +630,8 @@ export class DropListRef<T = any> {
   private _reset() {
     this._isDragging = false;
 
-    const styles = coerceElement(this.element).style;
-    (styles as any).scrollSnapType = styles.msScrollSnapType = this._initialScrollSnap;
+    const styles = coerceElement(this.element).style as DragCSSStyleDeclaration;
+    styles.scrollSnapType = styles.msScrollSnapType = this._initialScrollSnap;
 
     // TODO(crisbeto): may have to wait for the animations to finish.
     this._activeDraggables.forEach(item => {

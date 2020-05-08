@@ -164,7 +164,7 @@ export class DragRef<T = any> {
    * Inline style value of `-webkit-tap-highlight-color` at the time the
    * dragging was started. Used to restore the value once we're done dragging.
    */
-  private _rootElementTapHighlight: string | null;
+  private _rootElementTapHighlight: string;
 
   /** Subscription to pointer movement events. */
   private _pointerMoveSubscription = Subscription.EMPTY;
@@ -772,7 +772,7 @@ export class DragRef<T = any> {
     // otherwise iOS will still add it, even though all the drag interactions on the handle
     // are disabled.
     if (this._handles.length) {
-      this._rootElementTapHighlight = rootElement.style.webkitTapHighlightColor;
+      this._rootElementTapHighlight = rootElement.style.webkitTapHighlightColor || '';
       rootElement.style.webkitTapHighlightColor = 'transparent';
     }
 

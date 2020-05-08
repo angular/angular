@@ -15,6 +15,7 @@ write_file(
 typescript_version_packages = [
     "typescript-3.6",
     "typescript-3.7",
+    "typescript-3.8",
     "typescript",
 ]
 
