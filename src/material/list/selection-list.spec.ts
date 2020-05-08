@@ -1160,16 +1160,27 @@ describe('MatSelectionList with forms', () => {
         .toBe(1, 'Expected first list option to be selected');
     }));
 
-    it('should set the selection-list to touched on blur', fakeAsync(() => {
+    it('should not mark the model as touched when the list is blurred', fakeAsync(() => {
       expect(ngModel.touched)
         .toBe(false, 'Expected the selection-list to be untouched by default.');
 
       dispatchFakeEvent(selectionListDebug.nativeElement, 'blur');
       fixture.detectChanges();
-
       tick();
 
-      expect(ngModel.touched).toBe(true, 'Expected the selection-list to be touched after blur');
+      expect(ngModel.touched).toBe(false, 'Expected the selection-list to remain untouched.');
+    }));
+
+    it('should mark the model as touched when a list item is blurred', fakeAsync(() => {
+      expect(ngModel.touched)
+        .toBe(false, 'Expected the selection-list to be untouched by default.');
+
+      dispatchFakeEvent(fixture.nativeElement.querySelector('.mat-list-option'), 'blur');
+      fixture.detectChanges();
+      tick();
+
+      expect(ngModel.touched)
+        .toBe(true, 'Expected the selection-list to be touched after an item is blurred.');
     }));
 
     it('should be pristine by default', fakeAsync(() => {
