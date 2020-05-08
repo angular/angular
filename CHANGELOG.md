@@ -1,3 +1,12 @@
+<a name="9.1.6"></a>
+## [9.1.6](https://github.com/angular/angular/compare/9.1.5...9.1.6) (2020-05-08)
+
+### Bug Fixes
+
+* **compiler-cli**: Revert "fix(compiler-cli): fix case-sensitivity issues in NgtscCompilerHost (#36968)" (#37003)
+
+
+
 <a name="9.1.5"></a>
 ## [9.1.5](https://github.com/angular/angular/compare/9.1.4...9.1.5) (2020-05-07)
 
