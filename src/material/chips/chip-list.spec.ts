@@ -112,6 +112,28 @@ describe('MatChipList', () => {
         expect(chips.toArray().every(chip => chip.disabled)).toBe(true);
       }));
 
+      it('should preserve the disabled state of a chip if the list gets re-enabled', () => {
+        const chipArray = chips.toArray();
+
+        chipArray[2].disabled = true;
+        fixture.detectChanges();
+
+        expect(chips.toArray().map(chip => chip.disabled))
+            .toEqual([false, false, true, false, false]);
+
+        chipListInstance.disabled = true;
+        fixture.detectChanges();
+
+        expect(chips.toArray().map(chip => chip.disabled))
+            .toEqual([true, true, true, true, true]);
+
+        chipListInstance.disabled = false;
+        fixture.detectChanges();
+
+        expect(chips.toArray().map(chip => chip.disabled))
+            .toEqual([false, false, true, false, false]);
+      });
+
     });
 
     describe('with selected chips', () => {

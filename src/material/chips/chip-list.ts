@@ -808,7 +808,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   private _syncChipsState() {
     if (this.chips) {
       this.chips.forEach(chip => {
-        chip.disabled = this._disabled;
+        chip._chipListDisabled = this._disabled;
         chip._chipListMultiple = this.multiple;
       });
     }
