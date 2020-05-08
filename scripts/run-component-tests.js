@@ -62,15 +62,22 @@ if (local && (components.length > 1 || all)) {
 }
 
 const browserName = firefox ? 'firefox-local' : 'chromium-local';
-const bazelBinary = `${watch ? 'ibazel' : 'bazel'}`;
+const bazelBinary = `yarn -s ${watch ? 'ibazel' : 'bazel'}`;
 const configFlag = viewEngine ? '--config=view-engine' : '';
 
 // If `all` has been specified as component, we run tests for all components
-// in the repository. The `--firefox` and `--no-watch` flags can be still specified.
+// in the repository. The `--firefox` flag can be still specified.
 if (all) {
+  // `ibazel` doesn't allow us to filter tests and build targets as it only allows
+  // a subset of Bazel flags to be passed through. We temporarily always use `bazel`
+  // instead of ibazel until https://github.com/bazelbuild/bazel-watcher/pull/382 lands.
+  if (watch) {
+    console.warn(chalk.yellow('Unable to run all component tests in watch mode.'));
+    console.warn(chalk.yellow('Tests will be run in non-watch mode..'));
+  }
   shelljs.exec(
-      `${bazelBinary} test //src/... --test_tag_filters=-e2e,browser:${browserName} ` +
-      `--build_tag_filters=browser:${browserName} --build_tests_only ${configFlag}`);
+      `yarn -s bazel test --test_tag_filters=-e2e,browser:${browserName} ` +
+      `--build_tag_filters=browser:${browserName} --build_tests_only ${configFlag} //src/...`);
   return;
 }
 
