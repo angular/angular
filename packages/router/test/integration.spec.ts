@@ -1968,11 +1968,15 @@ describe('Integration', () => {
          expect(native.getAttribute('href')).toEqual('/home');
        }));
 
-    it('should not throw when commands is null', fakeAsync(() => {
+    it('should not throw when commands is null or undefined', fakeAsync(() => {
          @Component({
            selector: 'someCmp',
-           template:
-               `<router-outlet></router-outlet><a [routerLink]="null">Link</a><button [routerLink]="null">Button</button>`
+           template: `<router-outlet></router-outlet>
+               <a [routerLink]="null">Link</a>
+               <button [routerLink]="null">Button</button>
+               <a [routerLink]="undefined">Link</a>
+               <button [routerLink]="undefined">Button</button>
+               `
          })
          class CmpWithLink {
          }
@@ -1982,10 +1986,12 @@ describe('Integration', () => {
 
          let fixture: ComponentFixture<CmpWithLink> = createRoot(router, CmpWithLink);
          router.resetConfig([{path: 'home', component: SimpleCmp}]);
-         const anchor = fixture.nativeElement.querySelector('a');
-         const button = fixture.nativeElement.querySelector('button');
-         expect(() => anchor.click()).not.toThrow();
-         expect(() => button.click()).not.toThrow();
+         const anchors = fixture.nativeElement.querySelectorAll('a');
+         const buttons = fixture.nativeElement.querySelectorAll('button');
+         expect(() => anchors[0].click()).not.toThrow();
+         expect(() => anchors[1].click()).not.toThrow();
+         expect(() => buttons[0].click()).not.toThrow();
+         expect(() => buttons[1].click()).not.toThrow();
        }));
 
     it('should update hrefs when query params or fragment change', fakeAsync(() => {
