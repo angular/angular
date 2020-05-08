@@ -62,6 +62,12 @@ export function updateToV9(): Rule {
       TargetVersion.V9, materialMigrations, materialUpgradeData, onMigrationComplete);
 }
 
+/** Entry point for the migration schematics with target of Angular Material v10 */
+export function updateToV10(): Rule {
+  return createMigrationSchematicRule(
+      TargetVersion.V10, materialMigrations, materialUpgradeData, onMigrationComplete);
+}
+
 /** Function that will be called when the migration completed. */
 function onMigrationComplete(context: SchematicContext, targetVersion: TargetVersion,
                              hasFailures: boolean) {

@@ -31,6 +31,11 @@ export function updateToV9(): Rule {
   return createMigrationSchematicRule(TargetVersion.V9, [], cdkUpgradeData, onMigrationComplete);
 }
 
+/** Entry point for the migration schematics with target of Angular CDK 10.0.0 */
+export function updateToV10(): Rule {
+  return createMigrationSchematicRule(TargetVersion.V10, [], cdkUpgradeData, onMigrationComplete);
+}
+
 /** Function that will be called when the migration completed. */
 function onMigrationComplete(context: SchematicContext, targetVersion: TargetVersion,
                              hasFailures: boolean) {
