@@ -349,7 +349,7 @@ export declare const NG_ASYNC_VALIDATORS: InjectionToken<(Function | Validator)[
 
 export declare const NG_VALIDATORS: InjectionToken<(Function | Validator)[]>;
 
-export declare const NG_VALUE_ACCESSOR: InjectionToken<ControlValueAccessor>;
+export declare const NG_VALUE_ACCESSOR: InjectionToken<readonly ControlValueAccessor[]>;
 
 export declare abstract class NgControl extends AbstractControlDirective {
     get asyncValidator(): AsyncValidatorFn | null;

@@ -138,4 +138,5 @@ export interface ControlValueAccessor {
  *
  * @publicApi
  */
-export const NG_VALUE_ACCESSOR = new InjectionToken<ControlValueAccessor>('NgValueAccessor');
+export const NG_VALUE_ACCESSOR =
+    new InjectionToken<ReadonlyArray<ControlValueAccessor>>('NgValueAccessor');
