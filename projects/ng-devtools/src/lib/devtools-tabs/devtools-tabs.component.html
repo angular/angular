@@ -1,4 +1,4 @@
-<mat-tab-group animationDuration="0ms">
+<mat-tab-group (selectedIndexChange)="tabUpdate.notify()" animationDuration="0ms">
   <mat-tab label="Components">
     <ng-directive-explorer (toggleInspector)="toggleInspector()"></ng-directive-explorer>
   </mat-tab>

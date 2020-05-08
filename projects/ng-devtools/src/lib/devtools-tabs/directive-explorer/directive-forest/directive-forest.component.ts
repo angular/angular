@@ -8,6 +8,7 @@ import {
   OnInit,
   Output,
   ViewChild,
+  OnDestroy,
 } from '@angular/core';
 import { DevToolsNode, ElementPosition, Events, MessageBus } from 'protocol';
 import { FlatTreeControl } from '@angular/cdk/tree';
@@ -15,6 +16,8 @@ import { ComponentDataSource, FlatNode } from './component-data-source';
 import { isChildOf, parentCollapsed } from './directive-forest-utils';
 import { IndexedNode } from './index-forest';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { TabUpdate } from '../../tab-update';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'ng-directive-forest',
@@ -22,7 +25,7 @@ import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
   styleUrls: ['./directive-forest.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DirectiveForestComponent implements OnInit {
+export class DirectiveForestComponent implements OnInit, OnDestroy {
   @Input() set forest(forest: DevToolsNode[]) {
     const result = this._updateForest(forest);
     const changed = result.movedItems.length || result.newItems.length || result.removedItems.length;
@@ -39,7 +42,7 @@ export class DirectiveForestComponent implements OnInit {
   @Output() removeComponentHighlight = new EventEmitter<void>();
   @Output() toggleInspector = new EventEmitter<void>();
 
-  @ViewChild(CdkVirtualScrollViewport) scrollParentElement: CdkVirtualScrollViewport;
+  @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
 
   filterRegex = new RegExp('.^');
   currentlyMatchedIndex = -1;
@@ -48,6 +51,7 @@ export class DirectiveForestComponent implements OnInit {
   parents: FlatNode[];
 
   private _highlightIDinTreeFromElement: number | null = null;
+  private _tabUpdateSubscription: Subscription;
 
   set highlightIDinTreeFromElement(id: number | null) {
     this._highlightIDinTreeFromElement = id;
@@ -63,10 +67,28 @@ export class DirectiveForestComponent implements OnInit {
 
   private _initialized = false;
 
-  constructor(private _messageBus: MessageBus<Events>, private _cdr: ChangeDetectorRef) {}
+  constructor(
+    private _tabUpdate: TabUpdate,
+    private _messageBus: MessageBus<Events>,
+    private _cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.subscribeToInspectorEvents();
+    this._tabUpdateSubscription = this._tabUpdate.tabUpdate$.subscribe(() => {
+      if (this.viewport) {
+        setTimeout(() => {
+          this.viewport.scrollToIndex(0);
+          this.viewport.checkViewportSize();
+        });
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this._tabUpdateSubscription) {
+      this._tabUpdateSubscription.unsubscribe();
+    }
   }
 
   subscribeToInspectorEvents(): void {
@@ -103,7 +125,7 @@ export class DirectiveForestComponent implements OnInit {
   selectAndEnsureVisible(node: FlatNode): void {
     this.select(node);
 
-    const scrollParent = this.scrollParentElement.elementRef.nativeElement;
+    const scrollParent = this.viewport.elementRef.nativeElement;
     // The top most point we see an element
     const top = scrollParent.scrollTop;
     // That's the bottom most point we currently see an element.

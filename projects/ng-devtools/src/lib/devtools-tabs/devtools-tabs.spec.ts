@@ -1,6 +1,7 @@
 import { DevToolsTabsComponent } from './devtools-tabs.component';
 import { ApplicationEnvironment } from 'ng-devtools';
 import { Events, MessageBus } from 'protocol';
+import { TabUpdate } from './tab-update';
 
 describe('DevtoolsTabsComponent', () => {
   let messageBusMock: MessageBus<Events>;
@@ -11,7 +12,7 @@ describe('DevtoolsTabsComponent', () => {
     messageBusMock = jasmine.createSpyObj('messageBus', ['on', 'once', 'emit', 'destroy']);
     applicationEnvironmentMock = jasmine.createSpyObj('applicationEnvironment', ['environment']);
 
-    comp = new DevToolsTabsComponent(messageBusMock, applicationEnvironmentMock);
+    comp = new DevToolsTabsComponent(new TabUpdate(), messageBusMock, applicationEnvironmentMock);
   });
 
   it('should create instance from class', () => {

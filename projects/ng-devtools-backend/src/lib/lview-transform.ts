@@ -10,7 +10,7 @@ const latest = () => {
   HEADER_OFFSET = 20;
 };
 
-SemVerDSL(VERSION).gte('10.0.0', latest);
+SemVerDSL(VERSION).gte('10.0.0-next.4', latest);
 
 // In g3 everyone has version 0.0.0, using HEAD from master.
 SemVerDSL(VERSION).eq('0.0.0', latest);
