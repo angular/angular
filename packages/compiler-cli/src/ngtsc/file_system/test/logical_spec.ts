@@ -52,6 +52,24 @@ runInEachFileSystem(() => {
         expect(nonRootFs.logicalPathOfFile(_('/test/foo/foo.ts')))
             .toEqual('/foo/foo' as LogicalProjectPath);
       });
+
+      it('should maintain casing of logical paths', () => {
+        const fs = new LogicalFileSystem([_('/Test')], host);
+        expect(fs.logicalPathOfFile(_('/Test/foo/Foo.ts')))
+            .toEqual('/foo/Foo' as LogicalProjectPath);
+        expect(fs.logicalPathOfFile(_('/Test/bar/bAR.ts')))
+            .toEqual('/bar/bAR' as LogicalProjectPath);
+      });
+
+      it('should use case-sensitivity when matching rootDirs', () => {
+        const fs = new LogicalFileSystem([_('/Test')], host);
+        if (host.useCaseSensitiveFileNames()) {
+          expect(fs.logicalPathOfFile(_('/test/car/CAR.ts'))).toBe(null);
+        } else {
+          expect(fs.logicalPathOfFile(_('/test/car/CAR.ts')))
+              .toEqual('/car/CAR' as LogicalProjectPath);
+        }
+      });
     });
 
     describe('utilities', () => {
@@ -65,6 +83,12 @@ runInEachFileSystem(() => {
         const res = LogicalProjectPath.relativePathBetween(
             '/foo/index' as LogicalProjectPath, '/bar/index' as LogicalProjectPath);
         expect(res).toEqual('../bar/index');
+      });
+
+      it('should maintain casing in relative path between logical files', () => {
+        const res = LogicalProjectPath.relativePathBetween(
+            '/fOO' as LogicalProjectPath, '/bAR' as LogicalProjectPath);
+        expect(res).toEqual('./bAR');
       });
     });
   });
