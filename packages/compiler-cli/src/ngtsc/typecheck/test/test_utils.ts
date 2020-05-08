@@ -262,7 +262,7 @@ export function typecheck(
     new LogicalProjectStrategy(reflectionHost, logicalFs),
   ]);
   const ctx = new TypeCheckContext(
-      {...ALL_ENABLED_CONFIG, ...config}, host, emitter, reflectionHost, typeCheckFilePath);
+      {...ALL_ENABLED_CONFIG, ...config}, emitter, reflectionHost, typeCheckFilePath);
 
   const templateUrl = 'synthetic.html';
   const templateFile = new ParseSourceFile(template, templateUrl);
