@@ -9,22 +9,22 @@
 // Imports
 import * as utilConfig from '../utils/config';
 
+import {CommitMessageConfig} from './config';
 import {validateCommitMessage} from './validate';
 
-
 // Constants
-const config = {
-  'commitMessage': {
-    'maxLineLength': 120,
-    'minBodyLength': 0,
-    'types': [
+const config: {commitMessage: CommitMessageConfig} = {
+  commitMessage: {
+    maxLineLength: 120,
+    minBodyLength: 0,
+    types: [
       'feat',
       'fix',
       'refactor',
       'release',
       'style',
     ],
-    'scopes': [
+    scopes: [
       'common',
       'compiler',
       'core',
@@ -46,7 +46,7 @@ describe('validate-commit-message.js', () => {
     lastError = '';
 
     spyOn(console, 'error').and.callFake((msg: string) => lastError = msg);
-    spyOn(utilConfig, 'getAngularDevConfig').and.returnValue(config);
+    spyOn(utilConfig, 'getConfig').and.returnValue(config);
   });
 
   describe('validateMessage()', () => {
