@@ -42,6 +42,6 @@ export class MockFileSystemWindows extends MockFileSystem {
   }
 
   normalize<T extends PathString>(path: T): T {
-    return path.replace(/^[\/\\]/i, 'c:/').replace(/\\/g, '/') as T;
+    return path.replace(/^[\/\\]/i, 'C:/').replace(/\\/g, '/') as T;
   }
 }
