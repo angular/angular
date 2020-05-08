@@ -1,3 +1,86 @@
+## 9.2.3 "chalk-hawk" (2020-05-07)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **testing:** Make harnesses click on the center of the element by default ([#19212](https://github.com/angular/components/issues/19212)) ([26f3f57](https://github.com/angular/components/commit/26f3f57)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **datepicker:** double role definition on calendar cell ([#17297](https://github.com/angular/components/issues/17297)) ([d270bf6](https://github.com/angular/components/commit/d270bf6)), closes [#17280](https://github.com/angular/components/issues/17280) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-form-field:** native select option blending in with background on dark themes ([#19232](https://github.com/angular/components/issues/19232)) ([7e63f4a](https://github.com/angular/components/commit/7e63f4a)) |
+| feature |  **mdc-form-field:** expose `MAT_FORM_FIELD` injection token ([#19277](https://github.com/angular/components/issues/19277)) ([5e9ac1c](https://github.com/angular/components/commit/5e9ac1c)) |
+| feature |  **mdc-list:** add support for focus/hover states and ripples ([#19168](https://github.com/angular/components/issues/19168)) ([9f3bba3](https://github.com/angular/components/commit/9f3bba3)) |
+
+## 9.2.2 "graphite-graviton" (2020-04-30)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **testing/testbed:** emit pointer events for test element click ([d7b1bbe](https://github.com/angular/components/commit/d7b1bbe)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** focus monitor not working inside shadow dom ([#19135](https://github.com/angular/components/issues/19135)) ([e7bfb47](https://github.com/angular/components/commit/e7bfb47)), closes [#18667](https://github.com/angular/components/issues/18667) [#19133](https://github.com/angular/components/issues/19133) |
+| bug fix |  **button-toggle:** static checked value not being picked up ([#18442](https://github.com/angular/components/issues/18442)) ([1daada5](https://github.com/angular/components/commit/1daada5)), closes [#18427](https://github.com/angular/components/issues/18427) |
+| bug fix |  **autocomplete:** incorrect options from harness if multiple panels are on the page at the same time ([#19114](https://github.com/angular/components/issues/19114)) ([fd46ca3](https://github.com/angular/components/commit/fd46ca3)) |
+| bug fix |  **chips:** chip list disabled state out of sync when swapping out form group with a disabled one ([#17993](https://github.com/angular/components/issues/17993)) ([f4bec43](https://github.com/angular/components/commit/f4bec43)), closes [#17872](https://github.com/angular/components/issues/17872) |
+| bug fix |  **components-examples:** rename example component to follow naming convention for autoloading in docs ([#19142](https://github.com/angular/components/issues/19142)) ([9c8e87e](https://github.com/angular/components/commit/9c8e87e)) |
+| bug fix |  **datepicker:** inconsistent focus restoration timing in touchUi mode ([#17732](https://github.com/angular/components/issues/17732)) ([d199500](https://github.com/angular/components/commit/d199500)), closes [#17560](https://github.com/angular/components/issues/17560) |
+| bug fix |  **dialog:** incorrect dialog state for close animation ([#19034](https://github.com/angular/components/issues/19034)) ([fd0217d](https://github.com/angular/components/commit/fd0217d)) |
+| bug fix |  **drag-drop:** boundary not accounting for parent scrolling ([#19108](https://github.com/angular/components/issues/19108)) ([548a58a](https://github.com/angular/components/commit/548a58a)), closes [#19086](https://github.com/angular/components/issues/19086) |
+| bug fix |  **drag-drop:** drop-list wrong enter position ([#19116](https://github.com/angular/components/issues/19116)) ([12c705a](https://github.com/angular/components/commit/12c705a)) |
+| bug fix |  **drag-drop:** expose Point interface ([#19051](https://github.com/angular/components/issues/19051)) ([9383364](https://github.com/angular/components/commit/9383364)), closes [#19001](https://github.com/angular/components/issues/19001) |
+| bug fix |  **drag-drop:** preview matchSize sometimes incorrect inside flex container ([#19062](https://github.com/angular/components/issues/19062)) ([a65872d](https://github.com/angular/components/commit/a65872d)), closes [#19060](https://github.com/angular/components/issues/19060) |
+| bug fix |  **drag-drop:** unable to start dragging in list if dragged item is destroyed ([#19055](https://github.com/angular/components/issues/19055)) ([72fe1e4](https://github.com/angular/components/commit/72fe1e4)), closes [#18628](https://github.com/angular/components/issues/18628) |
+| bug fix |  **list:** don't select disabled options when pressing ctrl + a ([#18885](https://github.com/angular/components/issues/18885)) ([087ed4a](https://github.com/angular/components/commit/087ed4a)) |
+| bug fix |  **overlay:** expand flexible origin type to allow SVG elements ([#19199](https://github.com/angular/components/issues/19199)) ([bee88e1](https://github.com/angular/components/commit/bee88e1)), closes [#36381](https://github.com/angular/components/issues/36381) |
+| bug fix |  **platform:** avoid errors if ShadowRoot is not defined ([#19124](https://github.com/angular/components/issues/19124)) ([874c754](https://github.com/angular/components/commit/874c754)) |
+| bug fix |  **select:** don't select active item when tabbing away while closed ([#18797](https://github.com/angular/components/issues/18797)) ([4307837](https://github.com/angular/components/commit/4307837)), closes [#18784](https://github.com/angular/components/issues/18784) |
+| bug fix |  **select:** incorrect options from harness if multiple selects are on the page at the same time ([#19112](https://github.com/angular/components/issues/19112)) ([4fe5764](https://github.com/angular/components/commit/4fe5764)), closes [#19075](https://github.com/angular/components/issues/19075) |
+| bug fix |  **tabs:** group alignment propagating to nested groups ([#19037](https://github.com/angular/components/issues/19037)) ([59a5786](https://github.com/angular/components/commit/59a5786)), closes [#19035](https://github.com/angular/components/issues/19035) |
+| bug fix |  **tabs:** unnecessarily adding pagination when changing to new list of tabs with same labels ([#16869](https://github.com/angular/components/issues/16869)) ([d26ba73](https://github.com/angular/components/commit/d26ba73)), closes [#16789](https://github.com/angular/components/issues/16789) |
+| bug fix |  **tree:** complete viewChange stream on destroy ([#18991](https://github.com/angular/components/issues/18991)) ([d7d3be1](https://github.com/angular/components/commit/d7d3be1)) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  avoid runtime error on server ([8f36604](https://github.com/angular/components/commit/8f36604)) |
+| bug fix |  incorrect variable access for server-side rendering check ([#19166](https://github.com/angular/components/issues/19166)) ([b5864ca](https://github.com/angular/components/commit/b5864ca)) |
+
+### youtube-player
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  unable to bind to events after initialization ([#18996](https://github.com/angular/components/issues/18996)) ([0695e82](https://github.com/angular/components/commit/0695e82)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-form-field:** add  filled MDC text field class ([#19103](https://github.com/angular/components/issues/19103)) ([54c5633](https://github.com/angular/components/commit/54c5633)) |
+| bug fix |  **mdc-progress-bar:** better server-side rendering support ([#19036](https://github.com/angular/components/issues/19036)) ([7a99cfa](https://github.com/angular/components/commit/7a99cfa)) |
+| bug fix |  **mdc-button:** strong focus indication always visible on fab buttons ([#19169](https://github.com/angular/components/issues/19169)) ([11786b7](https://github.com/angular/components/commit/11786b7)) |
+| bug fix |  **mdc-chips:** not disabling all animations when animations are disabled ([#18440](https://github.com/angular/components/issues/18440)) ([d25fe8b](https://github.com/angular/components/commit/d25fe8b)) |
+| bug fix |  **mdc-form-field:** missing styles for native select controls ([#19140](https://github.com/angular/components/issues/19140)) ([90c1474](https://github.com/angular/components/commit/90c1474)) |
+| bug fix |  **mdc-input:** avoid double event listeners in ivy ([#19052](https://github.com/angular/components/issues/19052)) ([2a4da91](https://github.com/angular/components/commit/2a4da91)) |
+| bug fix |  **mdc-radio:** avoid bundling styles from base radio button ([#19032](https://github.com/angular/components/issues/19032)) ([4557d58](https://github.com/angular/components/commit/4557d58)) |
+| bug fix |  **mdc-radio:** strong focus indicator not working ([#19091](https://github.com/angular/components/issues/19091)) ([b713104](https://github.com/angular/components/commit/b713104)) |
+| bug fix |  **mdc-slide-toggle:** strong focus indication not visible ([#19048](https://github.com/angular/components/issues/19048)) ([a507873](https://github.com/angular/components/commit/a507873)), closes [#18895](https://github.com/angular/components/issues/18895) |
+| bug fix |  **mdc-table:** not supporting multiple themes ([#18931](https://github.com/angular/components/issues/18931)) ([d564f6e](https://github.com/angular/components/commit/d564f6e)) |
+
 ## 9.2.1 "xenon-xenodochy" (2020-04-14)
 
 ### material
