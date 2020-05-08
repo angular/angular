@@ -380,7 +380,7 @@ export declare class RouterLink {
     };
     queryParamsHandling: QueryParamsHandling;
     replaceUrl: boolean;
-    set routerLink(commands: any[] | string);
+    set routerLink(commands: any[] | string | null | undefined);
     skipLocationChange: boolean;
     state?: {
         [k: string]: any;
@@ -414,7 +414,7 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     };
     queryParamsHandling: QueryParamsHandling;
     replaceUrl: boolean;
-    set routerLink(commands: any[] | string);
+    set routerLink(commands: any[] | string | null | undefined);
     skipLocationChange: boolean;
     state?: {
         [k: string]: any;
