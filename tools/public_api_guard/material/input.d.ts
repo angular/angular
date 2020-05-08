@@ -9,8 +9,9 @@ export declare class MatInput extends _MatInputMixinBase implements MatFormField
     protected _disabled: boolean;
     protected _elementRef: ElementRef<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
     protected _id: string;
-    _isNativeSelect: boolean;
-    _isServer: boolean;
+    readonly _isNativeSelect: boolean;
+    readonly _isServer: boolean;
+    readonly _isTextarea: boolean;
     protected _neverEmptyInputTypes: string[];
     protected _platform: Platform;
     protected _previousNativeValue: any;
@@ -44,7 +45,6 @@ export declare class MatInput extends _MatInputMixinBase implements MatFormField
     _focusChanged(isFocused: boolean): void;
     protected _isBadInput(): boolean;
     protected _isNeverEmpty(): boolean;
-    _isTextarea(): boolean;
     _onInput(): void;
     protected _validateType(): void;
     focus(options?: FocusOptions): void;
