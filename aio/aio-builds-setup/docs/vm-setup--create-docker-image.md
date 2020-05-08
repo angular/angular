@@ -4,9 +4,8 @@
 ## Install git, Node.js and yarn
 - `sudo apt-get update`
 - `sudo apt-get install -y git`
-- Install [nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-- Install Node.js: `nvm install 12`
-- Install yarn: `npm install --global yarn`
+- Install the latest stable version of [Node.js](https://nodejs.org/en/download).
+- Install the latest stable version of [yarn](https://classic.yarnpkg.com/en/docs/install).
 
 
 ## Checkout repository
@@ -18,7 +17,11 @@
 - You can overwrite the default environment variables inside the image, by passing new values using
   `--build-arg`.
 
-**Note:** The script has to execute docker commands with `sudo`.
+**Note 1:** The script has to execute docker commands with `sudo`.
+
+**Note 2:**
+The script has to execute `yarn` commands, so make sure `yarn` is on the `PATH` when invoking the
+script.
 
 
 ## Example
