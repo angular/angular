@@ -148,6 +148,19 @@ describe('MDC-based MatTabHeader', () => {
       expect(spaceEvent.defaultPrevented).toBe(true);
     });
 
+    it('should not prevent the default space/enter action if the current is selected', () => {
+      appComponent.tabHeader.focusIndex = appComponent.tabHeader.selectedIndex = 0;
+      fixture.detectChanges();
+
+      const spaceEvent = dispatchKeyboardEvent(tabListContainer, 'keydown', SPACE);
+      fixture.detectChanges();
+      expect(spaceEvent.defaultPrevented).toBe(false);
+
+      const enterEvent = dispatchKeyboardEvent(tabListContainer, 'keydown', ENTER);
+      fixture.detectChanges();
+      expect(enterEvent.defaultPrevented).toBe(false);
+    });
+
     it('should move focus to the first tab when pressing HOME', () => {
       appComponent.tabHeader.focusIndex = 3;
       fixture.detectChanges();
