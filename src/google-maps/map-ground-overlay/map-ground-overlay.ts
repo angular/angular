@@ -84,7 +84,7 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
           this.groundOverlay = new google.maps.GroundOverlay(this.url, this.bounds, options);
         });
         this._assertInitialized();
-        this.groundOverlay!.setMap(this._map.googleMap!);
+        this.groundOverlay.setMap(this._map.googleMap!);
         this._eventManager.setTarget(this.groundOverlay);
       });
 
@@ -108,7 +108,7 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
    */
   getBounds(): google.maps.LatLngBounds {
     this._assertInitialized();
-    return this.groundOverlay!.getBounds();
+    return this.groundOverlay.getBounds();
   }
 
   /**
@@ -118,7 +118,7 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
    */
   getOpacity(): number {
     this._assertInitialized();
-    return this.groundOverlay!.getOpacity();
+    return this.groundOverlay.getOpacity();
   }
 
   /**
@@ -128,7 +128,7 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
    */
   getUrl(): string {
     this._assertInitialized();
-    return this.groundOverlay!.getUrl();
+    return this.groundOverlay.getUrl();
   }
 
   private _combineOptions(): Observable<google.maps.GroundOverlayOptions> {
@@ -145,12 +145,12 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
     this._opacity.pipe(takeUntil(this._destroyed)).subscribe(opacity => {
       if (opacity) {
         this._assertInitialized();
-        this.groundOverlay!.setOpacity(opacity);
+        this.groundOverlay.setOpacity(opacity);
       }
     });
   }
 
-  private _assertInitialized() {
+  private _assertInitialized(): asserts this is {groundOverlay: google.maps.GroundOverlay} {
     if (!this._map.googleMap) {
       throw Error(
           'Cannot access Google Map information before the API has been initialized. ' +

@@ -168,7 +168,7 @@ export class MapCircle implements OnInit, OnDestroy {
           this.circle = new google.maps.Circle(options);
         });
         this._assertInitialized();
-        this.circle!.setMap(this._map.googleMap!);
+        this.circle.setMap(this._map.googleMap!);
         this._eventManager.setTarget(this.circle);
       });
 
@@ -193,7 +193,7 @@ export class MapCircle implements OnInit, OnDestroy {
    */
   getBounds(): google.maps.LatLngBounds {
     this._assertInitialized();
-    return this.circle!.getBounds();
+    return this.circle.getBounds();
   }
 
   /**
@@ -202,7 +202,7 @@ export class MapCircle implements OnInit, OnDestroy {
    */
   getCenter(): google.maps.LatLng {
     this._assertInitialized();
-    return this.circle!.getCenter();
+    return this.circle.getCenter();
   }
 
   /**
@@ -211,7 +211,7 @@ export class MapCircle implements OnInit, OnDestroy {
    */
   getDraggable(): boolean {
     this._assertInitialized();
-    return this.circle!.getDraggable();
+    return this.circle.getDraggable();
   }
 
   /**
@@ -220,7 +220,7 @@ export class MapCircle implements OnInit, OnDestroy {
    */
   getEditable(): boolean {
     this._assertInitialized();
-    return this.circle!.getEditable();
+    return this.circle.getEditable();
   }
 
   /**
@@ -229,7 +229,7 @@ export class MapCircle implements OnInit, OnDestroy {
    */
   getRadius(): number {
     this._assertInitialized();
-    return this.circle!.getRadius();
+    return this.circle.getRadius();
   }
 
   /**
@@ -238,7 +238,7 @@ export class MapCircle implements OnInit, OnDestroy {
    */
   getVisible(): boolean {
     this._assertInitialized();
-    return this.circle!.getVisible();
+    return this.circle.getVisible();
   }
 
   private _combineOptions(): Observable<google.maps.CircleOptions> {
@@ -256,7 +256,7 @@ export class MapCircle implements OnInit, OnDestroy {
   private _watchForOptionsChanges() {
     this._options.pipe(takeUntil(this._destroyed)).subscribe(options => {
       this._assertInitialized();
-      this.circle!.setOptions(options);
+      this.circle.setOptions(options);
     });
   }
 
@@ -264,7 +264,7 @@ export class MapCircle implements OnInit, OnDestroy {
     this._center.pipe(takeUntil(this._destroyed)).subscribe(center => {
       if (center) {
         this._assertInitialized();
-        this.circle!.setCenter(center);
+        this.circle.setCenter(center);
       }
     });
   }
@@ -273,12 +273,12 @@ export class MapCircle implements OnInit, OnDestroy {
     this._radius.pipe(takeUntil(this._destroyed)).subscribe(radius => {
       if (radius !== undefined) {
         this._assertInitialized();
-        this.circle!.setRadius(radius);
+        this.circle.setRadius(radius);
       }
     });
   }
 
-  private _assertInitialized() {
+  private _assertInitialized(): asserts this is {circle: google.maps.Circle} {
     if (!this._map.googleMap) {
       throw Error(
         'Cannot access Google Map information before the API has been initialized. ' +

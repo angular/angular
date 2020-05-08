@@ -135,7 +135,7 @@ export class MapInfoWindow implements OnInit, OnDestroy {
    */
   close() {
     this._assertInitialized();
-    this.infoWindow!.close();
+    this.infoWindow.close();
   }
 
   /**
@@ -144,7 +144,7 @@ export class MapInfoWindow implements OnInit, OnDestroy {
    */
   getContent(): string|Node {
     this._assertInitialized();
-    return this.infoWindow!.getContent();
+    return this.infoWindow.getContent();
   }
 
   /**
@@ -154,7 +154,7 @@ export class MapInfoWindow implements OnInit, OnDestroy {
    */
   getPosition(): google.maps.LatLng|null {
     this._assertInitialized();
-    return this.infoWindow!.getPosition();
+    return this.infoWindow.getPosition();
   }
 
   /**
@@ -163,7 +163,7 @@ export class MapInfoWindow implements OnInit, OnDestroy {
    */
   getZIndex(): number {
     this._assertInitialized();
-    return this.infoWindow!.getZIndex();
+    return this.infoWindow.getZIndex();
   }
 
   /**
@@ -174,7 +174,7 @@ export class MapInfoWindow implements OnInit, OnDestroy {
     this._assertInitialized();
     const marker = anchor ? anchor.marker : undefined;
     this._elementRef.nativeElement.style.display = '';
-    this.infoWindow!.open(this._googleMap.googleMap, marker);
+    this.infoWindow.open(this._googleMap.googleMap, marker);
   }
 
   private _combineOptions(): Observable<google.maps.InfoWindowOptions> {
@@ -191,7 +191,7 @@ export class MapInfoWindow implements OnInit, OnDestroy {
   private _watchForOptionsChanges() {
     this._options.pipe(takeUntil(this._destroy)).subscribe(options => {
       this._assertInitialized();
-      this.infoWindow!.setOptions(options);
+      this.infoWindow.setOptions(options);
     });
   }
 
@@ -199,12 +199,12 @@ export class MapInfoWindow implements OnInit, OnDestroy {
     this._position.pipe(takeUntil(this._destroy)).subscribe(position => {
       if (position) {
         this._assertInitialized();
-        this.infoWindow!.setPosition(position);
+        this.infoWindow.setPosition(position);
       }
     });
   }
 
-  private _assertInitialized() {
+  private _assertInitialized(): asserts this is {infoWindow: google.maps.InfoWindow} {
     if (!this._googleMap.googleMap) {
       throw Error(
           'Cannot access Google Map information before the API has been initialized. ' +

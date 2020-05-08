@@ -255,7 +255,7 @@ export class MapMarker implements OnInit, OnDestroy {
         // user has subscribed to.
         this._ngZone.runOutsideAngular(() => this.marker = new google.maps.Marker(options));
         this._assertInitialized();
-        this.marker!.setMap(this._googleMap.googleMap!);
+        this.marker.setMap(this._googleMap.googleMap!);
         this._eventManager.setTarget(this.marker);
       });
 
@@ -282,7 +282,7 @@ export class MapMarker implements OnInit, OnDestroy {
    */
   getAnimation(): google.maps.Animation|null {
     this._assertInitialized();
-    return this.marker!.getAnimation() || null;
+    return this.marker.getAnimation() || null;
   }
 
   /**
@@ -291,7 +291,7 @@ export class MapMarker implements OnInit, OnDestroy {
    */
   getClickable(): boolean {
     this._assertInitialized();
-    return this.marker!.getClickable();
+    return this.marker.getClickable();
   }
 
   /**
@@ -300,7 +300,7 @@ export class MapMarker implements OnInit, OnDestroy {
    */
   getCursor(): string|null {
     this._assertInitialized();
-    return this.marker!.getCursor() || null;
+    return this.marker.getCursor() || null;
   }
 
   /**
@@ -309,7 +309,7 @@ export class MapMarker implements OnInit, OnDestroy {
    */
   getDraggable(): boolean {
     this._assertInitialized();
-    return !!this.marker!.getDraggable();
+    return !!this.marker.getDraggable();
   }
 
   /**
@@ -318,7 +318,7 @@ export class MapMarker implements OnInit, OnDestroy {
    */
   getIcon(): string|google.maps.Icon|google.maps.Symbol|null {
     this._assertInitialized();
-    return this.marker!.getIcon() || null;
+    return this.marker.getIcon() || null;
   }
 
   /**
@@ -327,7 +327,7 @@ export class MapMarker implements OnInit, OnDestroy {
    */
   getLabel(): google.maps.MarkerLabel|null {
     this._assertInitialized();
-    return this.marker!.getLabel() || null;
+    return this.marker.getLabel() || null;
   }
 
   /**
@@ -336,7 +336,7 @@ export class MapMarker implements OnInit, OnDestroy {
    */
   getOpacity(): number|null {
     this._assertInitialized();
-    return this.marker!.getOpacity() || null;
+    return this.marker.getOpacity() || null;
   }
 
   /**
@@ -345,7 +345,7 @@ export class MapMarker implements OnInit, OnDestroy {
    */
   getPosition(): google.maps.LatLng|null {
     this._assertInitialized();
-    return this.marker!.getPosition() || null;
+    return this.marker.getPosition() || null;
   }
 
   /**
@@ -354,7 +354,7 @@ export class MapMarker implements OnInit, OnDestroy {
    */
   getShape(): google.maps.MarkerShape|null {
     this._assertInitialized();
-    return this.marker!.getShape() || null;
+    return this.marker.getShape() || null;
   }
 
   /**
@@ -363,7 +363,7 @@ export class MapMarker implements OnInit, OnDestroy {
    */
   getTitle(): string|null {
     this._assertInitialized();
-    return this.marker!.getTitle() || null;
+    return this.marker.getTitle() || null;
   }
 
   /**
@@ -372,7 +372,7 @@ export class MapMarker implements OnInit, OnDestroy {
    */
   getVisible(): boolean {
     this._assertInitialized();
-    return this.marker!.getVisible();
+    return this.marker.getVisible();
   }
 
   /**
@@ -381,7 +381,7 @@ export class MapMarker implements OnInit, OnDestroy {
    */
   getZIndex(): number|null {
     this._assertInitialized();
-    return this.marker!.getZIndex() || null;
+    return this.marker.getZIndex() || null;
   }
 
   private _combineOptions(): Observable<google.maps.MarkerOptions> {
@@ -444,7 +444,7 @@ export class MapMarker implements OnInit, OnDestroy {
     });
   }
 
-  private _assertInitialized() {
+  private _assertInitialized(): asserts this is {marker: google.maps.Marker} {
     if (!this._googleMap.googleMap) {
       throw Error(
           'Cannot access Google Map information before the API has been initialized. ' +

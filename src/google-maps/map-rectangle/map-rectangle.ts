@@ -157,7 +157,7 @@ export class MapRectangle implements OnInit, OnDestroy {
           this.rectangle = new google.maps.Rectangle(options);
         });
         this._assertInitialized();
-        this.rectangle!.setMap(this._map.googleMap!);
+        this.rectangle.setMap(this._map.googleMap!);
         this._eventManager.setTarget(this.rectangle);
       });
 
@@ -181,7 +181,7 @@ export class MapRectangle implements OnInit, OnDestroy {
    */
   getBounds(): google.maps.LatLngBounds {
     this._assertInitialized();
-    return this.rectangle!.getBounds();
+    return this.rectangle.getBounds();
   }
 
   /**
@@ -190,7 +190,7 @@ export class MapRectangle implements OnInit, OnDestroy {
    */
   getDraggable(): boolean {
     this._assertInitialized();
-    return this.rectangle!.getDraggable();
+    return this.rectangle.getDraggable();
   }
 
   /**
@@ -199,7 +199,7 @@ export class MapRectangle implements OnInit, OnDestroy {
    */
   getEditable(): boolean {
     this._assertInitialized();
-    return this.rectangle!.getEditable();
+    return this.rectangle.getEditable();
   }
 
   /**
@@ -208,7 +208,7 @@ export class MapRectangle implements OnInit, OnDestroy {
    */
   getVisible(): boolean {
     this._assertInitialized();
-    return this.rectangle!.getVisible();
+    return this.rectangle.getVisible();
   }
 
   private _combineOptions(): Observable<google.maps.RectangleOptions> {
@@ -224,7 +224,7 @@ export class MapRectangle implements OnInit, OnDestroy {
   private _watchForOptionsChanges() {
     this._options.pipe(takeUntil(this._destroyed)).subscribe(options => {
       this._assertInitialized();
-      this.rectangle!.setOptions(options);
+      this.rectangle.setOptions(options);
     });
   }
 
@@ -232,12 +232,12 @@ export class MapRectangle implements OnInit, OnDestroy {
     this._bounds.pipe(takeUntil(this._destroyed)).subscribe(bounds => {
       if (bounds) {
         this._assertInitialized();
-        this.rectangle!.setBounds(bounds);
+        this.rectangle.setBounds(bounds);
       }
     });
   }
 
-  private _assertInitialized() {
+  private _assertInitialized(): asserts this is {rectangle: google.maps.Rectangle} {
     if (!this._map.googleMap) {
       throw Error(
           'Cannot access Google Map information before the API has been initialized. ' +
