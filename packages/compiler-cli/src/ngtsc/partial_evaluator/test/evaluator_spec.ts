@@ -790,28 +790,25 @@ runInEachFileSystem(() => {
       it('should track each time a source file is visited', () => {
         const addDependency =
             jasmine.createSpy<DependencyTracker['addDependency']>('DependencyTracker');
-        const {expression, checker, program} = makeExpression(
+        const {expression, checker} = makeExpression(
             `class A { static foo = 42; } function bar() { return A.foo; }`, 'bar()');
-        const entryPath = getSourceFileOrError(program, _('/entry.ts')).fileName;
         const evaluator = makeEvaluator(checker, {...fakeDepTracker, addDependency});
         evaluator.evaluate(expression);
         expect(addDependency).toHaveBeenCalledTimes(2);  // two declaration visited
         expect(
             addDependency.calls.allArgs().map(
                 (args: Parameters<typeof addDependency>) => [args[0].fileName, args[1].fileName]))
-            .toEqual([[entryPath, entryPath], [entryPath, entryPath]]);
+            .toEqual([[_('/entry.ts'), _('/entry.ts')], [_('/entry.ts'), _('/entry.ts')]]);
       });
 
       it('should track imported source files', () => {
         const addDependency =
             jasmine.createSpy<DependencyTracker['addDependency']>('DependencyTracker');
-        const {expression, checker, program} =
+        const {expression, checker} =
             makeExpression(`import {Y} from './other'; const A = Y;`, 'A', [
               {name: _('/other.ts'), contents: `export const Y = 'test';`},
               {name: _('/not-visited.ts'), contents: `export const Z = 'nope';`}
             ]);
-        const entryPath = getSourceFileOrError(program, _('/entry.ts')).fileName;
-        const otherPath = getSourceFileOrError(program, _('/other.ts')).fileName;
         const evaluator = makeEvaluator(checker, {...fakeDepTracker, addDependency});
         evaluator.evaluate(expression);
         expect(addDependency).toHaveBeenCalledTimes(2);
@@ -819,15 +816,15 @@ runInEachFileSystem(() => {
             addDependency.calls.allArgs().map(
                 (args: Parameters<typeof addDependency>) => [args[0].fileName, args[1].fileName]))
             .toEqual([
-              [entryPath, entryPath],
-              [entryPath, otherPath],
+              [_('/entry.ts'), _('/entry.ts')],
+              [_('/entry.ts'), _('/other.ts')],
             ]);
       });
 
       it('should track files passed through during re-exports', () => {
         const addDependency =
             jasmine.createSpy<DependencyTracker['addDependency']>('DependencyTracker');
-        const {expression, checker, program} =
+        const {expression, checker} =
             makeExpression(`import * as mod from './direct-reexport';`, 'mod.value.property', [
               {name: _('/const.ts'), contents: 'export const value = {property: "test"};'},
               {
@@ -844,19 +841,16 @@ runInEachFileSystem(() => {
               },
             ]);
         const evaluator = makeEvaluator(checker, {...fakeDepTracker, addDependency});
-        const entryPath = getSourceFileOrError(program, _('/entry.ts')).fileName;
-        const directReexportPath = getSourceFileOrError(program, _('/direct-reexport.ts')).fileName;
-        const constPath = getSourceFileOrError(program, _('/const.ts')).fileName;
         evaluator.evaluate(expression);
         expect(addDependency).toHaveBeenCalledTimes(2);
         expect(
             addDependency.calls.allArgs().map(
                 (args: Parameters<typeof addDependency>) => [args[0].fileName, args[1].fileName]))
             .toEqual([
-              [entryPath, directReexportPath],
+              [_('/entry.ts'), _('/direct-reexport.ts')],
               // Not '/indirect-reexport.ts' or '/def.ts'.
               // TS skips through them when finding the original symbol for `value`
-              [entryPath, constPath],
+              [_('/entry.ts'), _('/const.ts')],
             ]);
       });
     });
