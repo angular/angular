@@ -1075,6 +1075,19 @@ describe('MatDialog', () => {
       expect(document.activeElement!.tagName).not.toBe('INPUT');
     }));
 
+    it('should attach the focus trap even if automatic focus is disabled', fakeAsync(() => {
+      dialog.open(PizzaMsg, {
+        viewContainerRef: testViewContainerRef,
+        autoFocus: false
+      });
+
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      expect(overlayContainerElement.querySelectorAll('.cdk-focus-trap-anchor').length)
+          .toBeGreaterThan(0);
+    }));
+
     it('should re-focus trigger element when dialog closes', fakeAsync(() => {
       // Create a element that has focus before the dialog is opened.
       let button = document.createElement('button');
