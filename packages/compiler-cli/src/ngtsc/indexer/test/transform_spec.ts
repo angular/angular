@@ -25,7 +25,7 @@ function populateContext(
     boundTemplate,
     templateMeta: {
       isInline,
-      file: new ParseSourceFile(template, component.getSourceFile().fileName),
+      file: new ParseSourceFile(template, util.getTestFilePath()),
     },
   });
 }
@@ -45,12 +45,12 @@ runInEachFileSystem(() => {
       expect(info).toEqual({
         name: 'C',
         selector: 'c-selector',
-        file: new ParseSourceFile('class C {}', decl.getSourceFile().fileName),
+        file: new ParseSourceFile('class C {}', util.getTestFilePath()),
         template: {
           identifiers: getTemplateIdentifiers(util.getBoundTemplate('<div>{{foo}}</div>')),
           usedComponents: new Set(),
           isInline: false,
-          file: new ParseSourceFile('<div>{{foo}}</div>', decl.getSourceFile().fileName),
+          file: new ParseSourceFile('<div>{{foo}}</div>', util.getTestFilePath()),
         }
       });
     });
@@ -69,7 +69,7 @@ runInEachFileSystem(() => {
       const info = analysis.get(decl);
       expect(info).toBeDefined();
       expect(info!.template.file)
-          .toEqual(new ParseSourceFile('class C {}', decl.getSourceFile().fileName));
+          .toEqual(new ParseSourceFile('class C {}', util.getTestFilePath()));
     });
 
     it('should give external templates their own source file', () => {
@@ -84,7 +84,7 @@ runInEachFileSystem(() => {
       const info = analysis.get(decl);
       expect(info).toBeDefined();
       expect(info!.template.file)
-          .toEqual(new ParseSourceFile('<div>{{foo}}</div>', decl.getSourceFile().fileName));
+          .toEqual(new ParseSourceFile('<div>{{foo}}</div>', util.getTestFilePath()));
     });
 
     it('should emit used components', () => {
