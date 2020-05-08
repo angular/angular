@@ -43,10 +43,10 @@ pkg_npm(
     ],
     substitutions = {
         # angular/angular should not consume it's own packages, so we use
-        # substitutions to replace these in the deployed version of dev-infra.
-        "//dev-infra/": "@npm_dev_infra//",
+        # substitutions to replace these in the published version of dev-infra.
+        "//dev-infra/": "@npm_angular_dev_infra_private//",
         "//packages/benchpress": "@npm//@angular/benchpress",
-        "//packages/bazel/src:esm5.bzl": "@npm_angular_bazel//src:esm5.bzl",
+        "//packages/bazel/": "@npm_angular_bazel//",
         "//packages/zone.js/dist:zone.js": "@npm//:node_modules/zone.js/dist/zone.js",
         "//packages/core": "@npm//@angular/core",
         "//packages/platform-browser": "@npm//@angular/platform-browser",

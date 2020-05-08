@@ -5,10 +5,10 @@ load(":benchmark_test.bzl", "benchmark_test")
 
 def copy_default_file(origin, destination):
     """
-    Copies a file from /defaults to the destination.
+    Copies a file from ./defaults to the destination.
 
     Args:
-        origin: The name of a file in benchpress/defaults to be copied.
+        origin: The name of a file in ./defaults to be copied.
         destination: Where the original file will be clopied to.
     """
     native.genrule(
