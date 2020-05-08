@@ -45,8 +45,8 @@ export class LogicalFileSystem {
   /**
    * The root directories of the project, sorted with the longest path first.
    */
+  private canonicalRootDirs: AbsoluteFsPath[];
   private rootDirs: AbsoluteFsPath[];
-
   /**
    * A cache of file paths to project paths, because computation of these paths is slightly
    * expensive.
@@ -56,10 +56,9 @@ export class LogicalFileSystem {
   constructor(rootDirs: AbsoluteFsPath[], private compilerHost: ts.CompilerHost) {
     // Make a copy and sort it by length in reverse order (longest first). This speeds up lookups,
     // since there's no need to keep going through the array once a match is found.
-    this.rootDirs =
-        rootDirs.map(dir => this.compilerHost.getCanonicalFileName(dir) as AbsoluteFsPath)
-            .concat([])
-            .sort((a, b) => b.length - a.length);
+    this.rootDirs = rootDirs.concat([]).sort((a, b) => b.length - a.length);
+    this.canonicalRootDirs =
+        this.rootDirs.map(dir => this.compilerHost.getCanonicalFileName(dir) as AbsoluteFsPath);
   }
 
   /**
@@ -83,9 +82,11 @@ export class LogicalFileSystem {
         this.compilerHost.getCanonicalFileName(physicalFile) as AbsoluteFsPath;
     if (!this.cache.has(canonicalFilePath)) {
       let logicalFile: LogicalProjectPath|null = null;
-      for (const rootDir of this.rootDirs) {
-        if (isWithinBasePath(rootDir, canonicalFilePath)) {
-          logicalFile = this.createLogicalProjectPath(canonicalFilePath, rootDir);
+      for (let i = 0; i < this.rootDirs.length; i++) {
+        const rootDir = this.rootDirs[i];
+        const canonicalRootDir = this.canonicalRootDirs[i];
+        if (isWithinBasePath(canonicalRootDir, canonicalFilePath)) {
+          logicalFile = this.createLogicalProjectPath(physicalFile, rootDir);
           // The logical project does not include any special "node_modules" nested directories.
           if (logicalFile.indexOf('/node_modules/') !== -1) {
             logicalFile = null;
