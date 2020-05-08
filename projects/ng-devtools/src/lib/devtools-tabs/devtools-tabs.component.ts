@@ -4,6 +4,7 @@ import { MatTabGroup } from '@angular/material/tabs';
 import { DirectiveExplorerComponent } from './directive-explorer/directive-explorer.component';
 import { ApplicationEnvironment } from '../application-environment';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { TabUpdate } from './tab-update';
 
 @Component({
   selector: 'ng-devtools-tabs',
@@ -15,7 +16,11 @@ export class DevToolsTabsComponent {
   @ViewChild(MatTabGroup) tabGroup: MatTabGroup;
   @ViewChild(DirectiveExplorerComponent) directiveExplorer: DirectiveExplorerComponent;
 
-  constructor(private _messageBus: MessageBus<Events>, private _applicationEnvironment: ApplicationEnvironment) {}
+  constructor(
+    public tabUpdate: TabUpdate,
+    private _messageBus: MessageBus<Events>,
+    private _applicationEnvironment: ApplicationEnvironment
+  ) {}
 
   get latestSHA(): string {
     return this._applicationEnvironment.environment.process.env.LATEST_SHA;

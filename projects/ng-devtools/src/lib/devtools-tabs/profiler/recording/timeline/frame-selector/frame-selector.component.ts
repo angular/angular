@@ -1,7 +1,8 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, OnDestroy } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, OnDestroy, OnInit } from '@angular/core';
 import { GraphNode } from '../record-formatter/record-formatter';
 import { Observable, Subscription } from 'rxjs';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { TabUpdate } from '../../../../tab-update';
 
 const ITEM_WIDTH = 29;
 
@@ -10,7 +11,7 @@ const ITEM_WIDTH = 29;
   templateUrl: './frame-selector.component.html',
   styleUrls: ['./frame-selector.component.scss'],
 })
-export class FrameSelectorComponent implements OnDestroy {
+export class FrameSelectorComponent implements OnInit, OnDestroy {
   @ViewChild('barContainer') barContainer: ElementRef;
   @Input() set currentFrame(value: number) {
     this.currentFrameIndex = value;
@@ -20,7 +21,7 @@ export class FrameSelectorComponent implements OnDestroy {
     this._graphData$ = graphData;
     this._graphDataSubscription = this._graphData$.subscribe((items) =>
       setTimeout(() => {
-        this.viewPort.scrollToIndex(items.length);
+        this.viewport.scrollToIndex(items.length);
       })
     );
   }
@@ -31,7 +32,7 @@ export class FrameSelectorComponent implements OnDestroy {
 
   @Output() move = new EventEmitter<number>();
   @Output() selectFrame = new EventEmitter<number>();
-  @ViewChild(CdkVirtualScrollViewport) viewPort: CdkVirtualScrollViewport;
+  @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
 
   currentFrameIndex: number;
 
@@ -41,18 +42,35 @@ export class FrameSelectorComponent implements OnDestroy {
 
   private _graphData$: Observable<GraphNode[]>;
   private _graphDataSubscription: Subscription;
+  private _tabUpdateSubscription: Subscription;
+
+  constructor(private _tabUpdate: TabUpdate) {}
+
+  ngOnInit(): void {
+    this._tabUpdateSubscription = this._tabUpdate.tabUpdate$.subscribe(() => {
+      if (this.viewport) {
+        setTimeout(() => {
+          this.viewport.scrollToIndex(0);
+          this.viewport.checkViewportSize();
+        });
+      }
+    });
+  }
 
   ngOnDestroy(): void {
+    if (this._tabUpdateSubscription) {
+      this._tabUpdateSubscription.unsubscribe();
+    }
     if (this._graphDataSubscription) {
       this._graphDataSubscription.unsubscribe();
     }
   }
 
   private _ensureVisible(index: number): void {
-    if (!this.viewPort) {
+    if (!this.viewport) {
       return;
     }
-    const scrollParent = this.viewPort.elementRef.nativeElement;
+    const scrollParent = this.viewport.elementRef.nativeElement;
     // The left most point we see an element
     const left = scrollParent.scrollLeft;
     // That's the right most point we currently see an element.

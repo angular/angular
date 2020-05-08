@@ -1,5 +1,5 @@
 const versionElement = document.querySelector('[ng-version]');
-const versionRe = /(\d+\.\d+\.\d+)/;
+const versionRe = /(\d+\.\d+\.\d+(-(next|rc)\.\d+)?)/;
 
 const defaultVersion = '0.0.0';
 let version = defaultVersion;

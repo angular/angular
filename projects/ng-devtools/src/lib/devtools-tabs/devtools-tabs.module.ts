@@ -10,6 +10,7 @@ import { ProfilerModule } from './profiler/profiler.module';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { TabUpdate } from './tab-update';
 
 @NgModule({
   declarations: [DevToolsTabsComponent],
@@ -23,6 +24,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatButtonModule,
     MatSlideToggleModule,
   ],
+  providers: [TabUpdate],
   exports: [DevToolsTabsComponent],
 })
 export class DevToolsTabModule {}
