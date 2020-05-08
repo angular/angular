@@ -777,9 +777,9 @@ groups:
           ])
     reviewers:
       users:
+        - aikidave
         - IgorMinar
         - StephenFluin
-
 
   # =========================================================
   #  Docs: Observables
