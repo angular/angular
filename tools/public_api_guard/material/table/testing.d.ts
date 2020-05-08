@@ -1,4 +1,5 @@
 export interface CellHarnessFilters extends BaseHarnessFilters {
+    columnName?: string | RegExp;
     text?: string | RegExp;
 }
 

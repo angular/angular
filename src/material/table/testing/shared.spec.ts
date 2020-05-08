@@ -79,6 +79,14 @@ export function runHarnessTests(
     expect(cellTexts).toEqual(['1.0079']);
   });
 
+  it('should be able to filter cells by column name', async () => {
+    const table = await loader.getHarness(tableHarness);
+    const firstRow = (await table.getRows())[0];
+    const cells = await firstRow.getCells({columnName: 'symbol'});
+    const cellTexts = await Promise.all(cells.map(cell => cell.getText()));
+    expect(cellTexts).toEqual(['H']);
+  });
+
   it('should be able to filter cells by regex', async () => {
     const table = await loader.getHarness(tableHarness);
     const firstRow = (await table.getRows())[0];
