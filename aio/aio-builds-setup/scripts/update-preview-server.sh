@@ -13,7 +13,8 @@ readonly HOST_LOCALCERTS_DIR=$4
 readonly HOST_LOGS_DIR=$5
 
 # Constants
-readonly PROVISIONAL_IMAGE_NAME=aio-builds:provisional
+readonly PROVISIONAL_TAG=provisional
+readonly PROVISIONAL_IMAGE_NAME=aio-builds:$PROVISIONAL_TAG
 readonly LATEST_IMAGE_NAME=aio-builds:latest
 readonly CONTAINER_NAME=aio
 
@@ -30,7 +31,7 @@ readonly CONTAINER_NAME=aio
   # Do not update the server unless files inside `aio-builds-setup/` have changed
   # or the last attempt failed (identified by the provisional image still being around).
   readonly relevantChangedFilesCount=$(git diff --name-only $lastDeployedCommit...HEAD | grep -P "^aio/aio-builds-setup/" | wc -l)
-  readonly lastAttemptFailed=$(sudo docker rmi "$PROVISIONAL_IMAGE_NAME" >> /dev/fd/3 && echo "true" || echo "false")
+  readonly lastAttemptFailed=$(sudo docker image ls | grep "$PROVISIONAL_TAG" >> /dev/fd/3 && echo "true" || echo "false")
   if [[ $relevantChangedFilesCount -eq 0 ]] && [[ "$lastAttemptFailed" != "true" ]]; then
     echo "Skipping update because no relevant files have been touched."
     exit 0
