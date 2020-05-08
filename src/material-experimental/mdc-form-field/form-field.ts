@@ -243,6 +243,11 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
     // have the ability to control the floating label state (i.e. `shouldLabelFloat`), and we
     // want to update the notch whenever the `_shouldLabelFloat()` value changes.
     getLabelWidth: () => 0,
+
+    // TODO: MDC now supports setting the required asterisk marker directly on
+    // the label component. This adapter method may be implemented and
+    // mat-mdc-form-field-required-marker removed.
+    setLabelRequired: () => {},
     notchOutline: () => {},
     closeOutline: () => {},
 
