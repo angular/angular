@@ -1832,8 +1832,11 @@ describe('di', () => {
     });
 
     it('should be able to provide an attribute token through the ngModule decorator', () => {
-      @Injectable(
-          {providedIn: 'root', useFactory: (token: string) => new Service(token), deps: ['token']})
+      @Injectable({
+        providedIn: 'root',
+        useFactory: (token: string) => new Service(token),
+        deps: [new Attribute('token')]
+      })
       class Service {
         constructor(public token: string) {}
       }
