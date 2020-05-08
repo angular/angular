@@ -33,12 +33,11 @@ export class TypeCheckFile extends Environment {
   private tcbStatements: ts.Statement[] = [];
 
   constructor(
-      readonly fileName: AbsoluteFsPath, config: TypeCheckingConfig, refEmitter: ReferenceEmitter,
-      reflector: ReflectionHost, compilerHost: ts.CompilerHost) {
+      private fileName: string, config: TypeCheckingConfig, refEmitter: ReferenceEmitter,
+      reflector: ReflectionHost) {
     super(
         config, new ImportManager(new NoopImportRewriter(), 'i'), refEmitter, reflector,
-        ts.createSourceFile(
-            compilerHost.getCanonicalFileName(fileName), '', ts.ScriptTarget.Latest, true));
+        ts.createSourceFile(fileName, '', ts.ScriptTarget.Latest, true));
   }
 
   addTypeCheckBlock(
@@ -50,7 +49,7 @@ export class TypeCheckFile extends Environment {
   }
 
   render(): ts.SourceFile {
-    let source: string = this.importManager.getAllImports(this.contextFile.fileName)
+    let source: string = this.importManager.getAllImports(this.fileName)
                              .map(i => `import * as ${i.qualifier} from '${i.specifier}';`)
                              .join('\n') +
         '\n\n';
@@ -76,7 +75,7 @@ export class TypeCheckFile extends Environment {
     source += '\nexport const IS_A_MODULE = true;\n';
 
     return ts.createSourceFile(
-        this.contextFile.fileName, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+        this.fileName, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
   }
 
   getPreludeStatements(): ts.Statement[] {
