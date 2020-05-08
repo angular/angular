@@ -10,7 +10,7 @@ import {Direction, Directionality} from '@angular/cdk/bidi';
 import {ComponentPortal, Portal, PortalOutlet, TemplatePortal} from '@angular/cdk/portal';
 import {ComponentRef, EmbeddedViewRef, NgZone} from '@angular/core';
 import {Location} from '@angular/common';
-import {Observable, Subject, merge, SubscriptionLike, Subscription, Observer} from 'rxjs';
+import {Observable, Subject, merge, SubscriptionLike, Subscription} from 'rxjs';
 import {take, takeUntil} from 'rxjs/operators';
 import {OverlayKeyboardDispatcher} from './keyboard/overlay-keyboard-dispatcher';
 import {OverlayConfig} from './overlay-config';
@@ -45,22 +45,8 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
    */
   private _previousHostParent: HTMLElement;
 
-  private _keydownEventsObservable: Observable<KeyboardEvent> =
-      new Observable((observer: Observer<KeyboardEvent>) => {
-        const subscription = this._keydownEvents.subscribe(observer);
-        this._keydownEventSubscriptions++;
-
-        return () => {
-          subscription.unsubscribe();
-          this._keydownEventSubscriptions--;
-        };
-      });
-
   /** Stream of keydown events dispatched to this overlay. */
   _keydownEvents = new Subject<KeyboardEvent>();
-
-  /** Amount of subscriptions to the keydown events. */
-  _keydownEventSubscriptions = 0;
 
   constructor(
       private _portalOutlet: PortalOutlet,
@@ -265,7 +251,7 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
 
   /** Gets an observable of keydown events targeted to this overlay. */
   keydownEvents(): Observable<KeyboardEvent> {
-    return this._keydownEventsObservable;
+    return this._keydownEvents.asObservable();
   }
 
   /** Gets the current overlay configuration, which is immutable. */

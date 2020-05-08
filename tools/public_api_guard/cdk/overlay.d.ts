@@ -260,7 +260,6 @@ export declare class OverlayPositionBuilder {
 }
 
 export declare class OverlayRef implements PortalOutlet, OverlayReference {
-    _keydownEventSubscriptions: number;
     _keydownEvents: Subject<KeyboardEvent>;
     get backdropElement(): HTMLElement | null;
     get hostElement(): HTMLElement;

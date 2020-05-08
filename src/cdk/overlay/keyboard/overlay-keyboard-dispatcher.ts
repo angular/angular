@@ -87,7 +87,7 @@ export class OverlayKeyboardDispatcher implements OnDestroy {
       // (e.g. for select and autocomplete). We skip overlays without keydown event subscriptions,
       // because we don't want overlays that don't handle keyboard events to block the ones below
       // them that do.
-      if (overlays[i]._keydownEventSubscriptions > 0) {
+      if (overlays[i]._keydownEvents.observers.length > 0) {
         overlays[i]._keydownEvents.next(event);
         break;
       }
