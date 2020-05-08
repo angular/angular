@@ -128,7 +128,3 @@ test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test
 # Load any settings which are specific to the current user. Needs to be *last* statement
 # in this config, as the user configuration should be able to overwrite flags from this file.
 try-import .bazelrc.user
-
-# TODO: check if we can enable these deprecations.
-build --incompatible_new_actions_api=false
-build --incompatible_no_support_tools_in_action_inputs=false
