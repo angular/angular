@@ -1,7 +1,7 @@
 // #docregion
 import nodeResolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs';
-import uglify from 'rollup-plugin-uglify'
+import {terser} from 'rollup-plugin-terser'
 
 //paths are relative to the execution path
 export default {
@@ -17,6 +17,6 @@ export default {
     commonjs({
       include: ['node_modules/rxjs/**']
     }),
-    uglify()
+    terser()
   ]
 }
