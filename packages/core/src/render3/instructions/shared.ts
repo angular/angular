@@ -926,13 +926,12 @@ function initializeInputAndOutputAliases(tView: TView, tNode: TNode): void {
   for (let i = start; i < end; i++) {
     const directiveDef = defs[i] as DirectiveDef<any>;
     const directiveInputs = directiveDef.inputs;
-    // Do not use unbound attributes as inputs to structural directives, since structural
-    // directive inputs can only be set using microsyntax (e.g. `<div *dir="exp">`).
-    // TODO(FW-1930): microsyntax expressions may also contain unbound/static attributes, which
-    // should be set for inline templates.
-    const initialInputs = (tNodeAttrs !== null && !isInlineTemplate(tNode)) ?
-        generateInitialInputs(directiveInputs, tNodeAttrs) :
-        null;
+    let initialInputs = null;
+    if (tNodeAttrs !== null) {
+      initialInputs = isInlineTemplate(tNode) ?
+          generateInitialTemplateInputs(directiveInputs, tNodeAttrs) :
+          generateInitialInputs(directiveInputs, tNodeAttrs);
+    }
     inputsFromAttrs.push(initialInputs);
     inputsStore = generatePropertyAliases(directiveInputs, i, inputsStore);
     outputsStore = generatePropertyAliases(directiveDef.outputs, i, outputsStore);
@@ -1535,6 +1534,16 @@ function setInputsFromAttrs<T>(
   }
 }
 
+function collectInitialInput(
+    name: string, value: string, inputs: {[key: string]: string},
+    store: InitialInputs|null): InitialInputs|null {
+  if (inputs.hasOwnProperty(name as string)) {
+    if (store === null) store = [];
+    store.push(name as string, inputs[name as string], value);
+  }
+  return store;
+}
+
 /**
  * Generates initialInputData for a node and stores it in the template's static storage
  * so subsequent template invocations don't have to recalculate it.
@@ -1568,12 +1577,28 @@ function generateInitialInputs(inputs: {[key: string]: string}, attrs: TAttribut
     // If we hit any other attribute markers, we're done anyway. None of those are valid inputs.
     if (typeof attrName === 'number') break;
 
-    if (inputs.hasOwnProperty(attrName as string)) {
-      if (inputsToStore === null) inputsToStore = [];
-      inputsToStore.push(attrName as string, inputs[attrName as string], attrs[i + 1] as string);
-    }
+    inputsToStore =
+        collectInitialInput(attrName as string, attrs[i + 1] as string, inputs, inputsToStore);
 
     i += 2;
+  }
+  return inputsToStore;
+}
+
+function generateInitialTemplateInputs(
+    inputs: {[key: string]: string}, attrs: TAttributes): InitialInputs|null {
+  let inputsToStore: InitialInputs|null = null;
+  let i = attrs.indexOf(AttributeMarker.TemplateUnboundAttrs);
+  if (i > -1) {
+    i++;  // skip attribute marker itself
+    while (i < attrs.length) {
+      let attrName = attrs[i];
+      if (typeof attrName === 'number') break;
+      // TODO: document default value choice for unbound template attrs. For backwards compatibility
+      // use `null` instead of an empty string?
+      inputsToStore = collectInitialInput(attrName as string, '', inputs, inputsToStore);
+      i++;
+    }
   }
   return inputsToStore;
 }

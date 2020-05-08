@@ -1404,7 +1404,7 @@ describe('query', () => {
                 (ctx.query = tmp as QueryList<any>);
           }
         },
-        [], [], undefined, [[AttributeMarker.Template, 'someDir'], ['foo', '']]);
+        [], [], undefined, [[AttributeMarker.TemplateUnboundAttrs, 'someDir'], ['foo', '']]);
 
     const fixture = new ComponentFixture(AppComponent);
     expect(fixture.component.query.length).toBe(1);

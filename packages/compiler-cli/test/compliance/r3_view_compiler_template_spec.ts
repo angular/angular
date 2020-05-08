@@ -103,9 +103,11 @@ describe('compiler compliance: template', () => {
         }
       }
       // ...
-      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${
+      consts: [[${AttributeMarker.TemplateUnboundAttrs}, "ngFor", ${
+        AttributeMarker.TemplateBindings}, "ngForOf"], [${
         AttributeMarker.Bindings}, "title", "click", ${
-        AttributeMarker.Template}, "ngFor", "ngForOf"], [${
+        AttributeMarker.TemplateUnboundAttrs}, "ngFor", ${
+        AttributeMarker.TemplateBindings}, "ngForOf"], [${
         AttributeMarker.Bindings}, "title", "click"]],
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
@@ -161,7 +163,8 @@ describe('compiler compliance: template', () => {
         }
         // ...
         consts: [[${AttributeMarker.Bindings}, "click", ${
-        AttributeMarker.Template}, "ngFor", "ngForOf"], [${AttributeMarker.Bindings}, "click"]],
+        AttributeMarker.TemplateUnboundAttrs}, "ngFor", ${
+        AttributeMarker.TemplateBindings}, "ngForOf"], [${AttributeMarker.Bindings}, "click"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 1, 0, "div", 0);
@@ -265,7 +268,8 @@ describe('compiler compliance: template', () => {
         }
       }
       // ...
-      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"]],
+      consts: [[${AttributeMarker.TemplateUnboundAttrs}, "ngFor", ${
+        AttributeMarker.TemplateBindings}, "ngForOf"]],
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
           $i0$.ɵɵtemplate(0, MyComponent_span_0_Template, 2, 2, "span", 0);
@@ -333,8 +337,9 @@ describe('compiler compliance: template', () => {
       }
 
       // ...
-      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${
-        AttributeMarker.Template}, "ngIf"]],
+      consts: [[${AttributeMarker.TemplateUnboundAttrs}, "ngFor", ${
+        AttributeMarker.TemplateBindings}, "ngForOf"], [${
+        AttributeMarker.TemplateBindings}, "ngIf"]],
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
           $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 2, 1, "div", 0);
@@ -416,7 +421,8 @@ describe('compiler compliance: template', () => {
         }
       }
       // ...
-      consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"]],
+      consts: [[${AttributeMarker.TemplateUnboundAttrs}, "ngFor", ${
+        AttributeMarker.TemplateBindings}, "ngForOf"]],
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
           $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 2, 1, "div", 0);
@@ -626,7 +632,8 @@ describe('compiler compliance: template', () => {
 
        // Main template should just contain *ngIf property.
        const expectedMainTemplate = `
-          consts: [[4, "ngIf"], [3, "dir"]],
+          consts: [[${AttributeMarker.TemplateBindings}, "ngIf"], [${
+           AttributeMarker.Bindings}, "dir"]],
           template: function TestComp_Template(rf, ctx) {
             if (rf & 1) {
               $i0$.ɵɵtemplate(0, $TestComp_0_Template$, 1, 1, undefined, 0);
@@ -832,7 +839,7 @@ describe('compiler compliance: template', () => {
       }
 
       // ...
-      consts: [[${AttributeMarker.Template}, "ngIf"]],
+      consts: [[${AttributeMarker.TemplateBindings}, "ngIf"]],
       template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵɵtemplate(0, MyComponent_div_0_Template, 1, 0, "div", 0);

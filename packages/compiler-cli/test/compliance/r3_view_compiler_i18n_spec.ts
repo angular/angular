@@ -389,7 +389,8 @@ describe('i18n support in the template compiler', () => {
               }
             }
             …
-            consts: [[${AttributeMarker.Template}, "ngIf"], [${AttributeMarker.I18n}, "title"]],
+            consts: [[${AttributeMarker.TemplateBindings}, "ngIf"], [${
+             AttributeMarker.I18n}, "Hello"]],
             template: function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵtemplate(0, MyComponent_0_Template, 2, 0, undefined, 0);
@@ -469,7 +470,8 @@ describe('i18n support in the template compiler', () => {
               }
             }
             …
-            consts: [[${AttributeMarker.Template}, "ngIf"], [${AttributeMarker.Bindings}, "title"]],
+            consts: [[${AttributeMarker.TemplateBindings}, "ngIf"], [${
+                 AttributeMarker.Bindings}, "title"]],
             template: function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵɵtemplate(0, MyComponent_0_Template, 2, 1, undefined, 0);
@@ -760,8 +762,8 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 1,
         vars: 1,
-        consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${
-              AttributeMarker.I18n}, "title"]],
+        consts: [[${AttributeMarker.TemplateUnboundAttrs}, "ngFor", ${
+              AttributeMarker.TemplateBindings}, "ngForOf"], [${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", 0);
@@ -977,8 +979,8 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 1,
         vars: 1,
-        consts: [[${AttributeMarker.Template}, "ngFor", "ngForOf"], [${
-              AttributeMarker.I18n}, "title"]],
+        consts: [[${AttributeMarker.TemplateUnboundAttrs}, "ngFor", ${
+              AttributeMarker.TemplateBindings}, "ngForOf"], [${AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", 0);
@@ -1667,7 +1669,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 3,
         vars: 1,
-        consts: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: [[${AttributeMarker.TemplateBindings}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -1726,9 +1728,9 @@ describe('i18n support in the template compiler', () => {
         decls: 3,
         vars: 2,
         consts: [["src", "logo.png"], ["src", "logo.png", ${
-              AttributeMarker.Template}, "ngIf"], ["src", "logo.png", ${
+              AttributeMarker.TemplateBindings}, "ngIf"], ["src", "logo.png", ${
               AttributeMarker.Bindings}, "title", ${
-              AttributeMarker.Template}, "ngIf"], ["src", "logo.png", ${
+              AttributeMarker.TemplateBindings}, "ngIf"], ["src", "logo.png", ${
               AttributeMarker.I18n}, "title"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -1872,7 +1874,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 4,
         vars: 2,
-        consts: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: [[${AttributeMarker.TemplateBindings}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -1934,7 +1936,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 1,
         vars: 1,
-        consts: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: [[${AttributeMarker.TemplateBindings}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 3, 1, "div", 0);
@@ -2730,7 +2732,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 2,
         vars: 2,
-        consts: [[4, "ngIf"]],
+        consts: [[${AttributeMarker.TemplateBindings}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵtemplate(0, MyComponent_0_Template, 1, 0, undefined, 0);
@@ -2965,8 +2967,9 @@ describe('i18n support in the template compiler', () => {
         decls: 4,
         vars: 3,
         consts: [["title", "icu only", ${
-          AttributeMarker.Template}, "ngIf"], ["title", "icu and text", ${
-          AttributeMarker.Template}, "ngIf"], ["title", "icu only"], ["title", "icu and text"]],
+          AttributeMarker.TemplateBindings}, "ngIf"], ["title", "icu and text", ${
+          AttributeMarker
+              .TemplateBindings}, "ngIf"], ["title", "icu only"], ["title", "icu and text"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -3289,7 +3292,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 4,
         vars: 3,
-        consts: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: [[${AttributeMarker.TemplateBindings}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -3481,7 +3484,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 3,
         vars: 2,
-        consts: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: [[${AttributeMarker.TemplateBindings}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
@@ -3571,7 +3574,7 @@ describe('i18n support in the template compiler', () => {
         …
         decls: 3,
         vars: 4,
-        consts: [[${AttributeMarker.Template}, "ngIf"]],
+        consts: [[${AttributeMarker.TemplateBindings}, "ngIf"]],
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵɵelementStart(0, "div");
