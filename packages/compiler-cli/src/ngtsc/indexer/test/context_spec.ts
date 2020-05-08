@@ -23,7 +23,7 @@ runInEachFileSystem(() => {
         boundTemplate,
         templateMeta: {
           isInline: false,
-          file: new ParseSourceFile('<div></div>', declaration.getSourceFile().fileName),
+          file: new ParseSourceFile('<div></div>', util.getTestFilePath()),
         },
       });
 
@@ -34,7 +34,7 @@ runInEachFileSystem(() => {
           boundTemplate,
           templateMeta: {
             isInline: false,
-            file: new ParseSourceFile('<div></div>', declaration.getSourceFile().fileName),
+            file: new ParseSourceFile('<div></div>', util.getTestFilePath()),
           },
         },
       ]));
