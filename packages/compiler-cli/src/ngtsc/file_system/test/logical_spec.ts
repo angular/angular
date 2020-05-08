@@ -6,24 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgtscCompilerHost} from '../src/compiler_host';
-import {absoluteFrom, getFileSystem} from '../src/helpers';
+import {absoluteFrom} from '../src/helpers';
 import {LogicalFileSystem, LogicalProjectPath} from '../src/logical';
 import {runInEachFileSystem} from '../testing';
 
 runInEachFileSystem(() => {
   describe('logical paths', () => {
     let _: typeof absoluteFrom;
-    let host: NgtscCompilerHost;
-
-    beforeEach(() => {
-      _ = absoluteFrom;
-      host = new NgtscCompilerHost(getFileSystem());
-    });
+    beforeEach(() => _ = absoluteFrom);
 
     describe('LogicalFileSystem', () => {
       it('should determine logical paths in a single root file system', () => {
-        const fs = new LogicalFileSystem([_('/test')], host);
+        const fs = new LogicalFileSystem([_('/test')]);
         expect(fs.logicalPathOfFile(_('/test/foo/foo.ts')))
             .toEqual('/foo/foo' as LogicalProjectPath);
         expect(fs.logicalPathOfFile(_('/test/bar/bar.ts')))
@@ -32,23 +26,23 @@ runInEachFileSystem(() => {
       });
 
       it('should determine logical paths in a multi-root file system', () => {
-        const fs = new LogicalFileSystem([_('/test/foo'), _('/test/bar')], host);
+        const fs = new LogicalFileSystem([_('/test/foo'), _('/test/bar')]);
         expect(fs.logicalPathOfFile(_('/test/foo/foo.ts'))).toEqual('/foo' as LogicalProjectPath);
         expect(fs.logicalPathOfFile(_('/test/bar/bar.ts'))).toEqual('/bar' as LogicalProjectPath);
       });
 
       it('should continue to work when one root is a child of another', () => {
-        const fs = new LogicalFileSystem([_('/test'), _('/test/dist')], host);
+        const fs = new LogicalFileSystem([_('/test'), _('/test/dist')]);
         expect(fs.logicalPathOfFile(_('/test/foo.ts'))).toEqual('/foo' as LogicalProjectPath);
         expect(fs.logicalPathOfFile(_('/test/dist/foo.ts'))).toEqual('/foo' as LogicalProjectPath);
       });
 
       it('should always return `/` prefixed logical paths', () => {
-        const rootFs = new LogicalFileSystem([_('/')], host);
+        const rootFs = new LogicalFileSystem([_('/')]);
         expect(rootFs.logicalPathOfFile(_('/foo/foo.ts')))
             .toEqual('/foo/foo' as LogicalProjectPath);
 
-        const nonRootFs = new LogicalFileSystem([_('/test/')], host);
+        const nonRootFs = new LogicalFileSystem([_('/test/')]);
         expect(nonRootFs.logicalPathOfFile(_('/test/foo/foo.ts')))
             .toEqual('/foo/foo' as LogicalProjectPath);
       });

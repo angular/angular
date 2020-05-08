@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {absoluteFrom, getFileSystem, getSourceFileOrError, LogicalFileSystem, NgtscCompilerHost} from '../../file_system';
+import {absoluteFrom, getSourceFileOrError, LogicalFileSystem} from '../../file_system';
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
@@ -42,7 +42,6 @@ runInEachFileSystem(() => {
     });
 
     it('should not produce an empty SourceFile when there is nothing to typecheck', () => {
-      const host = new NgtscCompilerHost(getFileSystem());
       const file = new TypeCheckFile(
           _('/_typecheck_.ts'), ALL_ENABLED_CONFIG, new ReferenceEmitter([]),
           /* reflector */ null!);
@@ -67,7 +66,7 @@ TestClass.ngTypeCtor({value: 'test'});
         const {program, host, options} = makeProgram(files, undefined, undefined, false);
         const checker = program.getTypeChecker();
         const reflectionHost = new TypeScriptReflectionHost(checker);
-        const logicalFs = new LogicalFileSystem(getRootDirs(host, options), host);
+        const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
         const moduleResolver =
             new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
         const emitter = new ReferenceEmitter([
@@ -103,7 +102,7 @@ TestClass.ngTypeCtor({value: 'test'});
         const {program, host, options} = makeProgram(files, undefined, undefined, false);
         const checker = program.getTypeChecker();
         const reflectionHost = new TypeScriptReflectionHost(checker);
-        const logicalFs = new LogicalFileSystem(getRootDirs(host, options), host);
+        const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
         const moduleResolver =
             new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
         const emitter = new ReferenceEmitter([
@@ -145,7 +144,7 @@ TestClass.ngTypeCtor({value: 'test'});
         const {program, host, options} = makeProgram(files, undefined, undefined, false);
         const checker = program.getTypeChecker();
         const reflectionHost = new TypeScriptReflectionHost(checker);
-        const logicalFs = new LogicalFileSystem(getRootDirs(host, options), host);
+        const logicalFs = new LogicalFileSystem(getRootDirs(host, options));
         const moduleResolver =
             new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
         const emitter = new ReferenceEmitter([

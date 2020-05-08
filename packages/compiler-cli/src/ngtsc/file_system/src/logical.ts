@@ -53,13 +53,10 @@ export class LogicalFileSystem {
    */
   private cache: Map<AbsoluteFsPath, LogicalProjectPath|null> = new Map();
 
-  constructor(rootDirs: AbsoluteFsPath[], private compilerHost: ts.CompilerHost) {
+  constructor(rootDirs: AbsoluteFsPath[]) {
     // Make a copy and sort it by length in reverse order (longest first). This speeds up lookups,
     // since there's no need to keep going through the array once a match is found.
-    this.rootDirs =
-        rootDirs.map(dir => this.compilerHost.getCanonicalFileName(dir) as AbsoluteFsPath)
-            .concat([])
-            .sort((a, b) => b.length - a.length);
+    this.rootDirs = rootDirs.concat([]).sort((a, b) => b.length - a.length);
   }
 
   /**
@@ -79,13 +76,11 @@ export class LogicalFileSystem {
    * of the TS project's root directories.
    */
   logicalPathOfFile(physicalFile: AbsoluteFsPath): LogicalProjectPath|null {
-    const canonicalFilePath =
-        this.compilerHost.getCanonicalFileName(physicalFile) as AbsoluteFsPath;
-    if (!this.cache.has(canonicalFilePath)) {
+    if (!this.cache.has(physicalFile)) {
       let logicalFile: LogicalProjectPath|null = null;
       for (const rootDir of this.rootDirs) {
-        if (isWithinBasePath(rootDir, canonicalFilePath)) {
-          logicalFile = this.createLogicalProjectPath(canonicalFilePath, rootDir);
+        if (physicalFile.startsWith(rootDir)) {
+          logicalFile = this.createLogicalProjectPath(physicalFile, rootDir);
           // The logical project does not include any special "node_modules" nested directories.
           if (logicalFile.indexOf('/node_modules/') !== -1) {
             logicalFile = null;
@@ -94,9 +89,9 @@ export class LogicalFileSystem {
           }
         }
       }
-      this.cache.set(canonicalFilePath, logicalFile);
+      this.cache.set(physicalFile, logicalFile);
     }
-    return this.cache.get(canonicalFilePath)!;
+    return this.cache.get(physicalFile)!;
   }
 
   private createLogicalProjectPath(file: AbsoluteFsPath, rootDir: AbsoluteFsPath):
@@ -104,12 +99,4 @@ export class LogicalFileSystem {
     const logicalPath = stripExtension(file.substr(rootDir.length));
     return (logicalPath.startsWith('/') ? logicalPath : '/' + logicalPath) as LogicalProjectPath;
   }
-}
-
-/**
- * Is the `path` a descendant of the `base`?
- * E.g. `foo/bar/zee` is within `foo/bar` but not within `foo/car`.
- */
-function isWithinBasePath(base: AbsoluteFsPath, path: AbsoluteFsPath): boolean {
-  return !relative(base, path).startsWith('..');
 }
