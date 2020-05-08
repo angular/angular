@@ -139,7 +139,7 @@ export class RouterLink {
   }
 
   @Input()
-  set routerLink(commands: any[]|string) {
+  set routerLink(commands: any[]|string|null|undefined) {
     if (commands != null) {
       this.commands = Array.isArray(commands) ? commands : [commands];
     } else {
@@ -229,7 +229,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   @Input()
-  set routerLink(commands: any[]|string) {
+  set routerLink(commands: any[]|string|null|undefined) {
     if (commands != null) {
       this.commands = Array.isArray(commands) ? commands : [commands];
     } else {
