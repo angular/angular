@@ -8,7 +8,7 @@ VM host to update the preview server based on changes in the source code.
 
 The script will pull the latest changes from the origin's master branch and examine if there have
 been any changes in files inside the preview server source code directory (see below). If there are,
-it will create a new image and verify that is works as expected. Finally, it will stop and remove
+it will create a new image and verify that it works as expected. Finally, it will stop and remove
 the old docker container and image, create a new container based on the new image and start it.
 
 The script assumes that the preview server source code is in the repository's
@@ -25,7 +25,11 @@ used for.
 
 **Note 1:** The script has to execute docker commands with `sudo`.
 
-**Note 2:** Make sure the user that executes the script has access to update the repository
+**Note 2:**
+The script has to execute `yarn` commands, so make sure `yarn` is on the `PATH` when invoking the
+script.
+
+**Note 3:** Make sure the user that executes the script has access to update the repository.
 
 
 ## Run the script manually
@@ -50,3 +54,9 @@ log its output to `update-preview-server.log` (assuming the user has the necessa
 # Periodically check for changes and update the preview server (if necessary)
 */30 *  * * *   /path/to/update-preview-server.sh /path/to/repo /path/to/secrets /path/to/builds /path/to/localcerts /path/to/logs >> /path/to/update-preview-server.log 2>&1
 ```
+
+**Note:**
+Keep in mind that cron jobs run in non-interactive, non-login shells. This means that the execution
+context might be different compared to when running the same commands from an interactive, login
+shell. For example, `.bashrc` files are normally _not_ sourced automatically in cron jobs. See
+[here](http://www.gnu.org/software/bash/manual/html_node/Bash-Startup-Files.html) for more info.
