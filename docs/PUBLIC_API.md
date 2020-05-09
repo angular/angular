@@ -53,40 +53,45 @@ If you modify any part of a public API in one of the supported public packages, 
 The public API guard provides a Bazel target that updates the current status of a given package. If you add to or modify the public API in any way, you must use [yarn](https://yarnpkg.com/) to execute the Bazel target in your terminal shell of choice (a recent version of `bash` is recommended).
 
 ```shell
-yarn bazel run //tools/public_api_guard:<modified_package>_api.accept
+yarn bazel run //packages/<modified_package>:<modified_package>_api.accept
 ```
 
 Using yarn ensures that you are running the correct version of Bazel.
 (Read more about building Angular with Bazel [here](./BAZEL.md).)
 
-Here is an example of a Circle CI test failure that resulted from adding a new allowed type to a public property in `forms.d.ts`. Error messages from the API guard use [`git-diff` formatting](https://git-scm.com/docs/git-diff#_combined_diff_format).
+Here is an example of a Circle CI test failure that resulted from adding a new allowed type to a public property in `core.d.ts`. Error messages from the API guard use [`git-diff` formatting](https://git-scm.com/docs/git-diff#_combined_diff_format).
 
 ```
-FAIL: //tools/public_api_guard:forms_api (see /home/circleci/.cache/bazel/_bazel_circleci/9ce5c2144ecf75d11717c0aa41e45a8d/execroot/angular/bazel-out/k8-fastbuild/testlogs/tools/public_api_guard/forms_api/test_attempts/attempt_1.log)
-FAIL: //tools/public_api_guard:forms_api (see /home/circleci/.cache/bazel/_bazel_circleci/9ce5c2144ecf75d11717c0aa41e45a8d/execroot/angular/bazel-out/k8-fastbuild/testlogs/tools/public_api_guard/forms_api/test.log)
+FAIL: //packages/core:core_api (see /home/circleci/.cache/bazel/_bazel_circleci/9ce5c2144ecf75d11717c0aa41e45a8d/execroot/angular/bazel-out/k8-fastbuild/testlogs/packages/core/core_api/test_attempts/attempt_1.log)
+INFO: From Action packages/compiler-cli/ngcc/test/fesm5_angular_core.js:
+[BABEL] Note: The code generator has deoptimised the styling of /b/f/w/bazel-out/k8-fastbuild/bin/packages/core/npm_package/fesm2015/core.js as it exceeds the max of 500KB.
+FAIL: //packages/core:core_api (see /home/circleci/.cache/bazel/_bazel_circleci/9ce5c2144ecf75d11717c0aa41e45a8d/execroot/angular/bazel-out/k8-fastbuild/testlogs/packages/core/core_api/test.log)
 
-FAILED: //tools/public_api_guard:forms_api (Summary)
-      /home/circleci/.cache/bazel/_bazel_circleci/9ce5c2144ecf75d11717c0aa41e45a8d/execroot/angular/bazel-out/k8-fastbuild/testlogs/tools/public_api_guard/forms_api/test.log
-      /home/circleci/.cache/bazel/_bazel_circleci/9ce5c2144ecf75d11717c0aa41e45a8d/execroot/angular/bazel-out/k8-fastbuild/testlogs/tools/public_api_guard/forms_api/test_attempts/attempt_1.log
-INFO: From Testing //tools/public_api_guard:forms_api:
-==================== Test output for //tools/public_api_guard:forms_api:
---- tools/public_api_guard/forms/forms.d.ts	Golden file
-+++ tools/public_api_guard/forms/forms.d.ts	Generated API
-@@ -4,9 +4,9 @@
-     readonly disabled: boolean;
-     readonly enabled: boolean;
-     readonly errors: ValidationErrors | null;
-     readonly invalid: boolean;
--    readonly parent: FormGroup | FormArray;
-+    readonly parent: FormGroup | FormArray | undefined;
-     readonly pending: boolean;
-     readonly pristine: boolean;
-     readonly root: AbstractControl;
-     readonly status: string;
+FAILED: //packages/core:core_api (Summary)
+      /home/circleci/.cache/bazel/_bazel_circleci/9ce5c2144ecf75d11717c0aa41e45a8d/execroot/angular/bazel-out/k8-fastbuild/testlogs/packages/core/core_api/test.log
+      /home/circleci/.cache/bazel/_bazel_circleci/9ce5c2144ecf75d11717c0aa41e45a8d/execroot/angular/bazel-out/k8-fastbuild/testlogs/packages/core/core_api/test_attempts/attempt_1.log
+INFO: From Testing //packages/core:core_api:
+==================== Test output for //packages/core:core_api:
+/b/f/w/bazel-out/k8-fastbuild/bin/packages/core/core_api.sh.runfiles/angular/packages/core/npm_package/core.d.ts(7,1): error: No export declaration found for symbol "ComponentFactory"
+--- goldens/public-api/core/core.d.ts	Golden file
++++ goldens/public-api/core/core.d.ts	Generated API
+@@ -563,9 +563,9 @@
+     ngModule: Type<T>;
+     providers?: Provider[];
+ }
+ 
+-export declare type NgIterable<T> = Array<T> | Iterable<T>;
++export declare type NgIterable<T> = Iterable<T>;
+ 
+ export declare interface NgModule {
+     bootstrap?: Array<Type<any> | any[]>;
+     declarations?: Array<Type<any> | any[]>;
+
 
 If you modify a public API, you must accept the new golden file.
 
 
 To do so, execute the following Bazel target:
-  yarn bazel run //tools/public_api_guard:forms_api.accept
+  yarn bazel run //packages/core:core_api.accept
+
 ```
