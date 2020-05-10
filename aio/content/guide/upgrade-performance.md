@@ -334,8 +334,12 @@ const bootstrapFn = (extraProviders: StaticProvider[]) => {
 그리고 커스텀 함수를 사용하는 방식은 코드가 좀 더 필요하지만 모듈을 좀 더 유연하게 활용할 수 있습니다.
 
 
+<!--
 #### Instantiating the Angular module on-demand
+-->
+#### Angular 모듈 인스턴스 생성하기
 
+<!--
 Another key difference between `downgradeModule()` and `UpgradeModule` is that the latter requires
 you to instantiate both the AngularJS and Angular modules up-front. This means that you have to pay
 the cost of instantiating the Angular part of the app, even if you don't use any Angular assets
@@ -356,10 +360,28 @@ A few examples are:
   authenticated.
 - You use Angular for a feature that is not critical for the initial rendering of the app and you
   can afford a small delay in favor of better initial load performance.
+-->
+`UpgradeModule`을 사용하는 방식은 `downgradeModule()`을 사용하는 방식과 다르게 모든 AngularJS 모듈과 Angular 모듈의 인스턴스를 앱 실행 시점에 생성합니다.
+이 효과는 사용자가 실제로 사용하지 않는 모듈에도 유효하며, 결국 앱을 실행하기 위해 시간이 더 오래 걸릴 수 있다는 것을 의미합니다.
+하지만 `downgradeModule()`은 그렇지 않습니다.
+이 메소드를 사용하면 Angular 구성요소가 처음 필요할 때 인스턴스를 생성하며 이렇게 생성된 인스턴스를 다운그레이드해서 AngularJS 쪽으로 전달합니다.
+
+좀 더 대비한다면 브라우저에서 필요한 시기까지 코드 자체를 내려받지 않을수도 있습니다.
+이런 방식은 하이브리드 앱을 업그레이드하는 동안 사용자가 접근하지 않아도 되는 부분을 대비하지 않아도 된다는 점에서 특히 유용합니다.
+
+이런 경우에 활용할 수 있습니다:
+
+- 사용자가 접근하지 않는 주소와 관련된 라우팅 규칙은 신경쓸 필요가 없습니다.
+- 사용자가 실제로 화면에서 보는 항목만 신경쓰면 됩니다. 로그인 한 사용자만 보는 항목, 관리자만 보는 항목, VIP 멤버만 보는 항목은 로그인하지 않은 사용자의 화면을 작업할 때 신경쓸 필요가 없습니다.
+- 앱 초기 실행을 빠르게 끝내기 위해 당장 렌더링하지 않아도 되는 부분은 잠시 미뤄놓을 수 있습니다.
 
 
+<!--
 ### Bootstrapping with `downgradeModule()`
+-->
+### `downgradeModule()`로 부트스트랩하기
 
+<!--
 As you might have guessed, you don't need to change anything in the way you bootstrap your existing
 AngularJS app. Unlike `UpgradeModule`&mdash;which requires some extra steps&mdash;
 `downgradeModule()` is able to take care of bootstrapping the Angular module, as long as you provide
@@ -372,11 +394,21 @@ instructions in the [Upgrade Setup](guide/upgrade-setup "Setup for Upgrading fro
 
 You also need to install the `@angular/upgrade` package via `npm install @angular/upgrade --save`
 and add a mapping for the `@angular/upgrade/static` package:
+-->
+기존에 있던 AngularJS 앱을 부트스트랩하는 로직은 변경할 필요가 없습니다.
+`downgradeModule()`을 사용하는 방식은 `UpgradeModule`을 사용했던 것과는 다르게 레시피만 지정하면 Angular 모듈을 자동으로 부트스트랩할 수 있습니다.
+
+다만 `upgrade/static` API를 사용하려면 일반 Angular 앱처럼 Angular 프레임워크에서 이 패키지를 로드해야 합니다.
+SystemJS에서 이렇게 설정하는 방법은 [로컬 개발환경 설정하기](guide/upgrade-setup "Setup for Upgrading from AngularJS") 문서를 참고하거나 [QuickStart github 저장소](https://github.com/angular/quickstart)에서 필요한 코드를 가져와도 됩니다.
+
+그리고 `@angular/upgrade/static` 패키지를 맵핑하려면 `npm install @angular/upgrade --save` 명령을 실행해서 `@angular/upgrade` 패키지를 설치해야 할 수도 있습니다:
+
 
 <code-example header="system.config.js">
 '@angular/upgrade/static': 'npm:@angular/upgrade/bundles/upgrade-static.umd.js',
 </code-example>
 
+<!--
 Next, create an `app.module.ts` file and add the following `NgModule` class:
 
 <code-example header="app.module.ts">
@@ -393,20 +425,50 @@ export class MainAngularModule {
   ngDoBootstrap() {}
 }
 </code-example>
+-->
+그리고 `app.module.ts` 파일을 생성한 다음에 다음과 같은 `NgModule` 클래스를 추가합니다:
 
+<code-example header="app.module.ts">
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+
+@NgModule({
+  imports: [
+    BrowserModule
+  ]
+})
+export class MainAngularModule {
+  // `Compiler`에 필요한 메소드를 선언만 합니다.
+  ngDoBootstrap() {}
+}
+</code-example>
+
+
+<!--
 This bare minimum `NgModule` imports `BrowserModule`, the module every Angular browser-based app
 must have. It also defines an empty `ngDoBootstrap()` method, to prevent the {@link Compiler
 Compiler} from returning errors. This is necessary because the module will not have a `bootstrap`
 declaration on its `NgModule` decorator.
+-->
+이 `NgModule`은 최소한의 코드로만 작성되었습니다.
+브라우저에서 실행되는 모든 Angular 앱이 그렇듯이 `BrowserModule`을 로드하고 있으며, {@link Compiler Compiler}의 요구사항에 맞게 `ngDoBootstrap()` 메소드를 빈 내용으로 선언했습니다.
+이 메소드는 `NgModule` 데코레이터에서 `bootstrap`을 지정하지 않았기 때문에 꼭 필요합니다.
+
 
 <div class="alert is-important">
 
+  <!--
   You do not add a `bootstrap` declaration to the `NgModule` decorator since AngularJS owns the root
   template of the app and `ngUpgrade` bootstraps the necessary components.
+  -->
+  `NgModule` 데코레이터에는 `bootstrap`을 지정하지 않았습니다. AngularJS는 직접 앱의 최상위 템플릿을 관리하며 `ngUpgrade`를 사용해서 부트스트랩합니다.
 
 </div>
 
+<!--
 You can now link the AngularJS and Angular modules together using `downgradeModule()`.
+-->
+그리고 `downgradeModule()`를 다음과 같이 사용하면 AngularJS 모듈과 Angular 모듈을 연결할 수 있습니다.
 
 <code-example header="app.module.ts">
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
@@ -423,11 +485,18 @@ angular.module('mainAngularJsModule', [
 ]);
 </code-example>
 
+<!--
 The existing AngularJS code works as before _and_ you are ready to start adding Angular code.
+-->
+AngularJS 쪽에 원래 있던 코드는 이전과 마찬가지로 동작하며, 여기에 Angular 코드를 추가할 준비는 끝났습니다.
 
 
+<!--
 ### Using Components and Injectables
+-->
+### 컴포넌트와 의존성 객체 활용하기
 
+<!--
 The differences between `downgradeModule()` and `UpgradeModule` end here. The rest of the
 `upgrade/static` APIs and concepts work in the exact same way for both types of hybrid apps.
 See [Upgrading from AngularJS](guide/upgrade) to learn about:
@@ -442,9 +511,24 @@ See [Upgrading from AngularJS](guide/upgrade) to learn about:
 - [Making Angular Dependencies Injectable to AngularJS](guide/upgrade#making-angular-dependencies-injectable-to-angularjs).<br />
   _NOTE: If you are downgrading multiple modules, you need to specify the name of the downgraded
   module each injectable belongs to, when calling `downgradeInjectable()`._
+-->
+`downgradeModule()`을 사용하는 방식과 `UpgradeModule`을 사용하는 방식의 차이는 위에서 언급한 것까지 입니다.
+`upgrade/static` API를 사용하는 방법와 작업 진행 방향은 이전에 하이브리드 앱에서 했던 것과 같습니다.
+다음 내용에 대해 자세하게 알아보려면 [업그레이드 방법](guide/upgrade) 문서를 참고하세요:
+
+- [AngularJS 영역에서 Angular 컴포넌트 사용하기](guide/upgrade#using-angular-components-from-angularjs-code).<br />
+  _참고: 다운그레이드하는 모듈이 여러개라면 `downgradeComponent()`를 실행할 때 컴포넌트가 포함될 모듈의 이름을 정확하게 지정해야 합니다._
+- [Angular 영역에서 AngularJS 컴포넌트 디렉티브 사용하기](guide/upgrade#using-angularjs-component-directives-from-angular-code)
+- [AngularJS 컨텐츠를 Angular 컴포넌트로 프로젝션하기](guide/upgrade#projecting-angularjs-content-into-angular-components)
+- [Angular 컨텐츠를 AngularJS 컴포넌트 디렉티브에 트랜스클루전하기](guide/upgrade#transcluding-angular-content-into-angularjs-component-directives)
+- [AngularJS 의존성 객체를 Angular 영역에 주입하기](guide/upgrade#making-angularjs-dependencies-injectable-to-angular)
+- [Angular 의존성 객체를 AngularJS 영역에 주입하기](guide/upgrade#making-angular-dependencies-injectable-to-angularjs).<br />
+  _참고: 다운그레이드하는 모듈이 여러개라면 `downgradeInjectable()`을 실행할 때 의존성 객체가 포함될 모듈을 정확하게 지정해야 합니다._
+
 
 <div class="alert is-important">
 
+  <!--
   While it is possible to downgrade injectables, downgraded injectables will not be available until
   the Angular module that provides them is instantiated. In order to be safe, you need to ensure
   that the downgraded injectables are not used anywhere _outside_ the part of the app where it is
@@ -454,12 +538,24 @@ See [Upgrading from AngularJS](guide/upgrade) to learn about:
   from a downgraded Angular component provided by the same Angular module as the injectable, but it
   is _not OK_ to use it in an AngularJS component that may be used independently of Angular or use
   it in a downgraded Angular component from a different module.
+  -->
+  Angular 영역에 정의한 의존성 객체는 AngularJS용으로 다운그레이드할 수 있지만 이 객체의 인스턴스를 관리하는 Angular 모듈이 생성되기 전까지는 사용할 수 없습니다.
+  그래서 이 객체를 안전하게 다루려면 Angular 모듈의 인스턴스가 확실하게 생성되지 않은 영역에서는 다운그레이드한 의존성 객체를 사용하지 않아야 합니다.
+
+  예를 들면 이런식입니다.
+  어떤 Angular 모듈에 있는 컴포넌트(A) 안에 AngularJS 컴포넌트(B)를 업그레이드해서 사용하는데, 같은 모듈에 있는 서비스를 다운그레이드해서 컴포넌트 B에 의존성으로 주입하는 경우는 괜찮습니다.
+  컴포넌트 B는 컴포넌트 A가 있을 때만 존재하며 서비스도 같은 모듈에 있기 때문입니다.
+  하지만 Angular 영역과는 관련이 없는 컴포넌트이거나 Angular 서비스가 선언된 모듈과 다른 모듈의 Angular 컴포넌트 안에 사용된 AngularJS 컴포넌트라면 Angular 서비스를 의존성으로 주입하면 안됩니다.
 
 </div>
 
 
+<!--
 ## Using ahead-of-time compilation with hybrid apps
+-->
+## 하이브리드 앱에 AOT 컴파일러 활용하기
 
+<!--
 You can take advantage of ahead-of-time (AOT) compilation in hybrid apps just like in any other
 Angular app. The setup for a hybrid app is mostly the same as described in the
 [Ahead-of-Time Compilation](guide/aot-compiler) guide save for differences in `index.html` and
@@ -470,6 +566,14 @@ An easy way to copy them is to add each to the `copy-dist-files.js` file.
 
 You also need to pass the generated `MainAngularModuleFactory` to `downgradeModule()` instead of the
 custom bootstrap function:
+-->
+하이브리드 앱에서도 물론 AOT 컴파일러를 사용할 수 있습니다.
+그리고 설정방법은 [AOT 컴팜일러](guide/aot-compiler) 문서에서 설명한 것과 거의 비슷하며 `index.html` 파일과 `main-aot.ts` 파일에 작성하는 내용만 조금 다릅니다.
+
+AOT 컴파일러가 AngularJS 파일을 로드하려면 AngularJS용 `index.html` 파일에서 `<script>` 태그로 로드해야 합니다.
+그리고 이 과정은 `copy-dist-files.js` 스크립트 파일로 처리하는 것이 간단합니다.
+
+그리고 AngularJS 영역에 모듈을 등록하기 위해 `MainAngularModuleNgFactory`를 `downgradeModule()`로 변환하는 코드를 다음과 같이 작성하면 됩니다:
 
 <code-example header="app/main-aot.ts">
 import { downgradeModule } from '@angular/upgrade/static';
@@ -482,11 +586,18 @@ angular.module('mainAngularJsModule', [
 ]);
 </code-example>
 
+<!--
 And that is all you need to do to get the full benefit of AOT for hybrid Angular apps.
+-->
+이제 하이브리드 Angular 앱에서도 AOT 컴파일러의 효과를 체험할 준비는 끝났습니다.
 
 
+<!--
 ## Conclusion
+-->
+## 정리
 
+<!--
 This page covered how to use the {@link upgrade/static upgrade/static} package to incrementally
 upgrade existing AngularJS apps at your own pace and without impeding further development of the app
 for the duration of the upgrade process.
@@ -507,3 +618,17 @@ Using `downgradeModule()` is a good option for hybrid apps when you want to keep
 Angular parts less coupled. You can still mix and match components and services from both
 frameworks, but you might need to manually propagate change detection. In return,
 `downgradeModule()` offers more control and better performance.
+-->
+이 문서에서는 {@link upgrade/static upgrade/static} 패키지를 사용해서 AngularJS 앱을 업그레이드하는 방법에 대해 알아봤습니다.
+
+특히 이 문서에서는 {@link UpgradeModule UpgradeModule} 방식 대신 {@link downgradeModule downgradeModule()}를 사용해서 이전보다 더 빠르고 유연하게 동작하는 환경을 구성해 봤습니다.
+
+`downgradeModule()`을 사용하는 방식의 특징은 이렇습니다:
+
+1. 이 방식은 Angular 구성요소를 지연로딩하기 때문에 최초 실행 속도가 빠릅니다. 상황에 따라 AngularJS 프레임워크는 로드하지 않을수도 있습니다.
+2. 필요하지 않은 변화 감지는 생략하기 때문에 앱 실행 성능도 향상됩니다.
+3. AngularJS 앱을 부트스트랩하는 코드는 변경하지 않아도 됩니다.
+
+AngularJS 부분과 Angular 부분의 결합도를 높이지 않으면서 앱을 업그레이드하려면 `downgradeModule()`을 사용하는 방식이 더 유리할 수 있습니다.
+그리고 이전과 마찬가지로 양쪽 프레임워크의 컴포넌트와 서비스를 함께 활용할 수 있으며 필요하면 다른 프레임워크 쪽으로 변화 감지 트리거를 전달할 수도 있습니다.
+`downgradeModule()`을 활용하면 `UpgradeModule`을 사용하는 방식과 비교해서 좀 더 타이트하게 앱을 조작할 수 있으며 앱 실행 성능도 더 향상시킬 수 있습니다.
