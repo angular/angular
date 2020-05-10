@@ -700,9 +700,9 @@
             {
               "url": "guide/upgrade-performance",
               "!title": "Upgrading for Performance",
-              "title": "성능 향상",
+              "title": "성능 비교",
               "!tooltip": "Upgrade from AngularJS to Angular in a more flexible way.",
-              "tooltip": "AngularJS 프로젝트를 그대로 실행하면서 Angular 프로젝트로 점차적으로 도입할 수 있습니다."
+              "tooltip": "좀 더 유연한 방식으로 AngularJS 프로젝트를 Angular 프로젝트로 전환할 수 있습니다."
             },
             {
               "url": "guide/ajs-quick-reference",

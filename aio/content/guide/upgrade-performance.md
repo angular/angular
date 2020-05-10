@@ -1,12 +1,20 @@
+<!--
 # Upgrading for performance
+-->
+# 업그레이드 방식과 성능의 관계
 
 <div class="alert is-helpful">
 
+  <!--
   _Angular_ is the name for the Angular of today and tomorrow.<br />
   _AngularJS_ is the name for all 1.x versions of Angular.
+  -->
+  Angular 프레임워크의 정식 명칭은 _Angular_ 입니다.<br/>
+  _AngularJS_ 는 Angular 1.x 버전을 의미하는 이름입니다.
 
 </div>
 
+<!--
 This guide describes some of the built-in tools for efficiently migrating AngularJS projects over to
 the Angular platform, one piece at a time. It is very similar to
 [Upgrading from AngularJS](guide/upgrade) with the exception that this one uses the {@link
@@ -15,47 +23,81 @@ UpgradeModule} class. This affects how the app is bootstrapped and how change de
 propagated between the two frameworks. It allows you to upgrade incrementally while improving the
 speed of your hybrid apps and leveraging the latest of Angular in AngularJS apps early in the
 process of upgrading.
+-->
+이 문서에서는 AngularJS 프로젝트를 Angular 플랫폼으로 전환할 때 사용하는 툴에 대해 설명합니다.
+이전에 다뤘던 [업그레이드 방법](guide/upgrade) 문서와 거의 비슷하지만, 이 문서에서는 {@link UpgradeModule UpgradeModule} 대신 {@link downgradeModule downgradeModule()} 헬퍼 함수를 사용하는 방식에 대해 설명합니다.
+방식이 다르기 때문에 앱을 부트스트랩하거나 AngularJS와 Angular 사이에서 변화를 감지하는 방식이 조금 다릅니다.
+AngularJS 앱을 최신 Angular 플랫폼에 맞게 구성요소를 하나씩 업그레이드하는 방법에 대해 알아봅시다.
 
 
-
+<!--
 ## Preparation
+-->
+## 사전준비
 
+<!--
 Before discussing how you can use `downgradeModule()` to create hybrid apps, there are things that
 you can do to ease the upgrade process even before you begin upgrading. Because the steps are the
 same regardless of how you upgrade, refer to the [Preparation](guide/upgrade#preparation) section of
 [Upgrading from AngularJS](guide/upgrade).
+-->
+하이브리드 앱에 `downgradeModule()`을 어떻게 사용해야 하는지 설명하기 전에 업그레이드 작업을 편하게 진행하기 위해 알아두어야 할 것이 있습니다.
+이전에 다뤘던 [업그레이드 방법](guide/upgrade) 문서의 [사전준비](guide/upgrade#preparation) 섹션을 참고하세요.
 
 
+<!--
 ## Upgrading with `ngUpgrade`
+-->
+## `ngUpgrade` 사용하기
 
+<!--
 With the `ngUpgrade` library in Angular you can upgrade an existing AngularJS app incrementally by
 building a hybrid app where you can run both frameworks side-by-side. In these hybrid apps you can
 mix and match AngularJS and Angular components and services and have them interoperate seamlessly.
 That means you don't have to do the upgrade work all at once as there is a natural coexistence
 between the two frameworks during the transition period.
+-->
+Angular `ngUpgrade` 라이브러리를 사용하면 AngularJS와 Angular 두 프레임워크가 모두 실행되는 하이브리드 앱에서 AngularJS 앱의 컴포넌트와 서비스 같은 구성요소를 하나씩 Angular용으로 변환하는 방식으로 앱을 업그레이드 합니다.
+그래서 이 방식은 애플리케이션이 제공하는 기능이 끊기지 않기 때문에 자연스럽게 변환작업을 진행할 수 있습니다.
+한 번에 모든 것을 바꾸다가 문제가 생기는 것보다는 이 방식이 더 안전합니다.
 
 
+<!--
 ### How `ngUpgrade` Works
+-->
+### `ngUpgrade`가 동작하는 방식
 
+<!--
 Regardless of whether you choose `downgradeModule()` or `UpgradeModule`, the basic principles of
 upgrading, the mental model behind hybrid apps, and how you use the {@link upgrade/static
 upgrade/static} utilities remain the same. For more information, see the
 [How `ngUpgrade` Works](guide/upgrade#how-ngupgrade-works) section of
 [Upgrading from AngularJS](guide/upgrade).
+-->
+`downgradeModule()`을 사용하는지 `UpgradeModule`을 사용하는지에 관계없이 업그레이드는 하이브리드 앱에서 진행하는 것이 기본이기 때문에 {@link upgrade/static upgrade/static} 유틸리티를 사용하는 방식은 동일합니다.
+자세한 내용은 [업그레이드 방법](guide/upgrade) 문서의 [`ngUpgrade`가 동작하는 방식](guide/upgrade#how-ngupgrade-works) 섹션을 참고하세요.
 
 <div class="alert is-helpful">
 
+  <!--
   The [Change Detection](guide/upgrade#change-detection) section of
   [Upgrading from AngularJS](guide/upgrade) only applies to apps that use `UpgradeModule`. Though
   you handle change detection differently with `downgradeModule()`, which is the focus of this
   guide, reading the [Change Detection](guide/upgrade#change-detection) section provides helpful
   context for what follows.
+  -->
+  [업그레이드 방법](guide/upgrade) 문서의 [변화 감지](guide/upgrade#change-detection) 섹션에서 설명하는 내용은 `UpgradeModule`을 사용하는 앱에만 적용되는 내용입니다.
+  `downgradeModule()`을 사용하는 앱이라면 변화 감지 로직이 조금 다르게 동작하기 때문에 이 문서에서 설명하는 [변화 감지](guide/upgrade#change-detection) 섹션을 참고하세요.
 
 </div>
 
 
+<!--
 #### Change Detection with `downgradeModule()`
+-->
+#### `downgradeModule()`을 사용했을 때 동작하는 변화 감지
 
+<!--
 As mentioned before, one of the key differences between `downgradeModule()` and `UpgradeModule` has
 to do with change detection and how it is propagated between the two frameworks.
 
@@ -84,10 +126,36 @@ In many cases, a few extra change detection runs may not matter much. However, o
 change-detection-heavy apps they can have a noticeable impact. By giving you more fine-grained
 control over the change detection propagation, `downgradeModule()` allows you to achieve better
 performance for your hybrid apps.
+-->
+위에서 언급한 것처럼 `downgradeModule()`을 사용하는 방식과 `UpgradeModule`을 사용하는 방식은 변화가 감지되는 방식이 다르기 때문에 두 프레임워크간에 이 변화가 전달되는 방식도 다릅니다.
+
+`UpgradeModule`을 사용하면 AngularJS와 Angular의 변화 감지 시스템이 긴밀하게 엮여서 동작합니다.
+AngularJS 쪽에서 어떤 변화가 발생하면 이 변화는 자동으로 Angular 쪽으로 전달되며, 반대의 경우도 마찬가지입니다.
+보통은 이런 변화 감지 로직이 필요 없는 경우가 대부분이지만, `UpgradeModule`을 사용하면 어느 한쪽에서 발생한 변화가 누락되지 않고 전달된다는 것을 보장받을 수 있습니다.
+
+하지만 `downgradeModule()`를 사용하면 다른 프레임워크로 전달될 필요가 있는 경우에만 변화 감지 로직이 전달됩니다.
+예를 들면 다운그레이드한 컴포넌트에 `@Input()` 프로퍼티가 있다면 이 프로퍼티에 바인딩되는 값이 변경되는 경우가 이런 경우에 해당됩니다.
+이런 경우에는 `downgradeComponent()`가 컴포넌트의 변화 감지 로직을 자동으로 실행합니다.
+
+보통 변화가 발생하는 것은 작은 곳에서 시작되기 때문에 관련된 컴포넌트가 아니라면 이 변화 자체를 알 필요도 없습니다.
+사용자가 컴포넌트에 있는 버튼을 클릭해서 폼을 제출했다면 후속 처리도 그 컴포넌트가 하는 식입니다.
+그런데 이 말을 다시 생각해보면 보면 변화가 발생한 것을 컴포넌트밖 다른 곳으로 보내야 한다면 수동으로 무언가를 해야한다는 것을 의미합니다.
+변화가 발생한 컴포넌트 외에 다른 서비스나 컴포넌트가 이 변화에 반응해야 하는 경우가 그렇습니다.
+
+AngularJS 쪽에서 변화 감지 로직을 시작하려면 [scope.$apply()](https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$apply)를 실행하면 됩니다.
+그리고 Angular 쪽에서 변화 감지 로직을 시작하려면 {@link NgZone#run ngZone.run()}를 실행하면 됩니다.
+
+직접 변화 감지 싸이클을 직접 시작한다고 해도 문제가 되는 경우는 거의 없습니다.
+하지만 앱의 규모가 크거나 변화 감지 동작이 많이 발생하는 앱은 이 동작에 영향을 받을 수 있습니다.
+그래서 AngularJS 앱을 업그레이드하면서 변화 감지를 신경쓰지 않으려면 `downgradeModule()`을 사용하는 방식이 더 좋습니다.
 
 
+<!--
 ## Using `downgradeModule()`
+-->
+## `downgradeModule()` 사용하기
 
+<!--
 Both AngularJS and Angular have their own concept of modules to help organize an app into cohesive
 blocks of functionality.
 
@@ -103,18 +171,41 @@ module each from both AngularJS and Angular.
 For the most part, you specify the modules in the same way you would for a regular app. Then, you
 use the `upgrade/static` helpers to let the two frameworks know about assets they can use from each
 other. This is known as "upgrading" and "downgrading".
+-->
+AngularJS와 Angular는 모두 애플리케이션을 구조화해서 효율적으로 관리하기 위해 각각 모듈이라는 개념을 제공합니다.
+
+하지만 두 프레임워크의 모듈이 설계된 방향과 구현된 결과물은 많이 다릅니다.
+AngularJS에서는 [angular.module()](https://docs.angularjs.org/api/ng/function/angular.module)를 사용해서 모듈의 이름과 의존성 객체를 지정합니다.
+모듈의 애셋은 모듈 API가 제공하는 메소드로 등록합니다.
+Angular에서는 {@link NgModule NgModule} 데코레이터를 사용해서 클래스를 모듈로 선언할 수 있습니다.
+모듈에 사용하는 애셋은 메타데이터에 정의합니다.
+
+하이브리드 앱을 실행하면 AngularJS와 Angular가 동시에 실행됩니다.
+그렇기 때문에 각 프레임워크에는 최소한 1개 이상의 모듈을 정의해야 합니다.
+
+일반 Angular 앱과 마찬가지로 하이브리드 앱에서도 모듈을 선언하는 방법은 같습니다.
+다만 `upgrade/static` 헬퍼를 사용해서 프레임워크 양쪽에서도 모듈과 애셋을 사용할 수 있도록 등록해야 합니다.
+이 과정이 "업그레이드"와 "다운그레이드" 입니다.
+
 
 <div class="alert is-helpful">
 
+  <!--
   <b>Definitions:</b>
 
   - _Upgrading_: The act of making an AngularJS asset, such as a component or service, available to
     the Angular part of the app.
   - _Downgrading_: The act of making an Angular asset, such as a component or service, available to
     the AngularJS part of the app.
+  -->
+  <b>용어 정의:</b>
+
+  - _업그레이드(Upgrading)_: AngularJS용 애셋(컴포넌트, 서비스)을 Angular 환경에 사용할 수 있도록 변환하는 것.
+  - _다운그레이드(Downgrading)_: Angular용 애셋(컴포넌트, 서비스)을 AngularJS 환경에 사용할 수 있도록 변환하는 것.
 
 </div>
 
+<!--
 An important part of inter-linking dependencies is linking the two main modules together. This is
 where `downgradeModule()` comes in. Use it to create an AngularJS module&mdash;one that you can use
 as a dependency in your main AngularJS module&mdash;that will bootstrap your main Angular module and
@@ -142,10 +233,40 @@ angular.module('mainAngularJsModule', [
   downgradedModule
 ]);
 ```
+-->
+양쪽의 의존성을 연결하는 작업 중에서는 양쪽의 메인 모듈을 연결하는 것이 가장 중요합니다.
+`downgradeModule()`은 이 작업을 위해 도입되었습니다.
+이 메소드를 사용하면 AngularJS 쪽에서 메인 모듈로 사용할 수 있는 AngularJS 모듈을 만들 수 있기 때문에, 하이브리드 앱에서도 Angular 모듈을 부트스트랩하면서 바로 Angular로 변환하는 작업을 할 수 있습니다.
+이름을 봐도 용도를 짐작할 수 있듯이, 이 메소드는 Angular 모듈을 AngularJS 모듈로 "다운그레이드" 하는 메소드입니다.
+
+알아둬야 할 내용이 몇가지 있습니다:
+
+1. `downgradeModule()`에는 Angular 모듈의 인스턴스를 직접 전달하지 않습니다. `downgradeModule()`에 필요한 것은 클래스를 만드는 "레시피(recipe)" 입니다. 모듈의 인스턴스를 생성하는 팩토리 함수를 전달하는 방법은 사용할 수 있습니다.
+
+2. 이렇게 전달한 Angular 모듈이 실제로 필요하지 않으면 인스턴스가 생성되지 않습니다.
+
+실제 코드에서는 `downgradeModule()`을 다음과 같이 사용합니다.
+
+```ts
+// `downgradeModule()`을 로드합니다.
+import { downgradeModule } from '@angular/upgrade/static';
+
+// Angular 모듈을 AngularJS 용으로 다운그레이드합니다.
+const downgradedModule = downgradeModule(MainAngularModuleFactory);
+
+// AngularJS의 메인 모듈을 등록하면서 다운그레이드한 모듈을 의존성 객체로 전달합니다.
+angular.module('mainAngularJsModule', [
+  downgradedModule
+]);
+```
 
 
+<!--
 #### Specifying a factory for the Angular module
+-->
+#### Angular 모듈 팩토리 지정하기
 
+<!--
 As mentioned earlier, `downgradeModule()` needs to know how to instantiate the Angular module. It
 needs a recipe. You define that recipe by providing a factory function that can create an instance
 of the Angular module. `downgradeModule()` accepts two types of factory functions:
@@ -181,6 +302,36 @@ const bootstrapFn = (extraProviders: StaticProvider[]) => {
 Using an `NgModuleFactory` requires less boilerplate and is a good default option as it supports AOT
 out-of-the-box. Using a custom function requires slightly more code, but gives you greater
 flexibility.
+-->
+위에서 언급한 것처럼 `downgradeModule()` 메소드를 실행하려면 Angular 모듈의 인스턴스를 어떻게 만드는지 알려줘야 합니다.
+레시피가 필요한데, 이때 Angular 모듈의 인스턴스를 생성할 수 잇는 팩토리 함수를 사용할 수 있습니다.
+`downgradeModule()`에는 두 종류의 팩토리 함수를 사용할 수 있습니다:
+
+1. `NgModuleFactory`
+2. `(extraProviders: StaticProvider[]) => Promise<NgModuleRef>`
+
+`NgModuleFactory`를 사용하면 `downgradeModule()` 메소드가 {@link platformBrowser platformBrowser}의 {@link PlatformRef#bootstrapModuleFactory bootstrapModuleFactory()}를 사용해서 모듈의 인스턴스를 생성하기 때문에 AOT 컴파일러와도 호환이 됩니다.
+AOT 컴파일러를 사용하면 앱이 실행되는 시간을 줄일 수 있습니다.
+AOT 컴파일러로 `NgModuleFactory`를 사용하는 방법에 대해서 자세하게 알아보려면 [AOT 컴파일](guide/aot-compiler) 문서를 참고하세요.
+
+아니면 프로미스 타입으로 Angular 모듈의 {@link NgModuleRef NgModuleRef}를 반환하는 함수를 사용하는 방법도 있습니다.
+이 함수는 {@link StaticProvider Providers} 배열을 인자로 받아서 `NgModuleRef`에 {@link Injector Injector}가 구성하고 반환해야 합니다.
+{@link platformBrowser platformBrowser}나 {@link platformBrowserDynamic platformBrowserDynamic}를 다운그레이드한다면 다음과 같이 사용할 수 있습니다:
+
+```ts
+const bootstrapFn = (extraProviders: StaticProvider[]) => {
+  const platformRef = platformBrowserDynamic(extraProviders);
+  return platformRef.bootstrapModule(MainAngularModule);
+};
+// or
+const bootstrapFn = (extraProviders: StaticProvider[]) => {
+  const platformRef = platformBrowser(extraProviders);
+  return platformRef.bootstrapModuleFactory(MainAngularModuleFactory);
+};
+```
+
+두 방식 중에는 `NgModuleFactory`를 사용하는 방식이 더 간단하고 AOT도 지원하기 때문에 이 방식을 먼저 고려해보는 것이 좋습니다.
+그리고 커스텀 함수를 사용하는 방식은 코드가 좀 더 필요하지만 모듈을 좀 더 유연하게 활용할 수 있습니다.
 
 
 #### Instantiating the Angular module on-demand
