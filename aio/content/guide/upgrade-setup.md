@@ -363,6 +363,7 @@ The following are all in `src/`
 </table>
 
 
+<!--
 ## Appendix: Develop locally with IE
 -->
 ## 부록: 로컬 개발 환경에서 IE 활용하기
@@ -378,6 +379,7 @@ So when IE is refreshed (manually or automatically by `ng serve`), sometimes the
 그리고 Windows에서는 <a href="https://msdn.microsoft.com/library/ee330736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396#websocket_maxconn" title="MSDN WebSocket settings">MSDN WebSocket 설정에 따라</a> 애플리케이션에 6개의 웹소켓을 연결할 수 있습니다.
 그래서 IE에서 수동으로 페이지를 새로고침하거나 `ng serve`에 의해 자동으로 갱신되면 종종 웹소켓이 정상적으로 종료되지 않아서 새로운 웹소켓을 연결하지 못할 때가 있습니다. 이 때 `SecurityError` 가 발생하는데, 이 에러가 Angular 애플리케이션에는 영향을 주지 않지만 에러를 없애려면 IE를 재시작해야 합니다.
 Windows에서 이 제한을 해제하려면 레지스트리를 수정해야 합니다.
+
 
 <!--
 ## Appendix: Test using `fakeAsync()/async()`
