@@ -2,15 +2,15 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { ValidatorDirective, Validator2Directive } from './shared';
+import { HighlightDirective } from './shared';
 
 @NgModule({
   imports: [
-    RouterModule.forChild([{ path: '05-02', component: AppComponent }])
+    RouterModule.forChild([{ path: '05-01', component: AppComponent }])
   ],
   declarations: [
     AppComponent,
-    ValidatorDirective, Validator2Directive
+    HighlightDirective
   ],
   exports: [ AppComponent ]
 })

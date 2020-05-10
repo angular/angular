@@ -1,16 +1,16 @@
 import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { HighlightDirective } from './shared';
 
 @NgModule({
   imports: [
+    BrowserModule,
     RouterModule.forChild([{ path: '06-01', component: AppComponent }])
   ],
   declarations: [
-    AppComponent,
-    HighlightDirective
+    AppComponent
   ],
   exports: [ AppComponent ]
 })

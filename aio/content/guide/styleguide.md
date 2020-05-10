@@ -875,11 +875,11 @@ As always, strive for consistency.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-02}
+{@a 02-06}
 
 ### Component selectors
 
-#### Style 05-02
+#### Style 02-06
 
 <div class="s-rule do">
 
@@ -893,17 +893,17 @@ As always, strive for consistency.
 
 </div>
 
-<code-example path="styleguide/src/05-02/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" header="app/heroes/shared/hero-button/hero-button.component.ts">
+<code-example path="styleguide/src/02-06/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" header="app/heroes/shared/hero-button/hero-button.component.ts">
 
 </code-example>
 
 <code-tabs>
 
-  <code-pane header="app/heroes/shared/hero-button/hero-button.component.ts" path="styleguide/src/05-02/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
+  <code-pane header="app/heroes/shared/hero-button/hero-button.component.ts" path="styleguide/src/02-06/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
 
   </code-pane>
 
-  <code-pane header="app/app.component.html" path="styleguide/src/05-02/app/app.component.html">
+  <code-pane header="app/app.component.html" path="styleguide/src/02-06/app/app.component.html">
 
   </code-pane>
 
@@ -974,11 +974,11 @@ For example, the prefix `toh` represents **T**our **o**f **H**eroes and the pref
 <a href="#toc">Back to top</a>
 
 
-{@a 02-06}
+{@a 02-08}
 
 ### Directive selectors
 
-#### Style 02-06
+#### Style 02-08
 
 <div class="s-rule do">
 
@@ -1002,11 +1002,11 @@ For example, the prefix `toh` represents **T**our **o**f **H**eroes and the pref
 
 <a href="#toc">Back to top</a>
 
-{@a 02-08}
+{@a 02-09}
 
 ### Directive custom prefix
 
-#### Style 02-08
+#### Style 02-09
 
 <div class="s-rule do">
 
@@ -1052,7 +1052,7 @@ For example, the prefix `toh` represents **T**our **o**f **H**eroes and the pref
 
 
 
-<code-example path="styleguide/src/02-08/app/shared/validate.directive.avoid.ts" region="example" header="app/shared/validate.directive.ts">
+<code-example path="styleguide/src/02-09/app/shared/validate.directive.avoid.ts" region="example" header="app/shared/validate.directive.ts">
 
 </code-example>
 
@@ -1060,7 +1060,7 @@ For example, the prefix `toh` represents **T**our **o**f **H**eroes and the pref
 
 
 
-<code-example path="styleguide/src/02-08/app/shared/validate.directive.ts" region="example" header="app/shared/validate.directive.ts">
+<code-example path="styleguide/src/02-09/app/shared/validate.directive.ts" region="example" header="app/shared/validate.directive.ts">
 
 </code-example>
 
@@ -1069,11 +1069,11 @@ For example, the prefix `toh` represents **T**our **o**f **H**eroes and the pref
 <a href="#toc">Back to top</a>
 
 
-{@a 02-09}
+{@a 02-10}
 
 ### Pipe names
 
-#### Style 02-09
+#### Style 02-10
 
 <div class="s-rule do">
 
@@ -1168,11 +1168,11 @@ The `name` string cannot use hyphens ("dash-case" or "kebab-case").
 <a href="#toc">Back to top</a>
 
 
-{@a 02-10}
+{@a 02-11}
 
 ### Unit test file names
 
-#### Style 02-10
+#### Style 02-11
 
 <div class="s-rule do">
 
@@ -1307,11 +1307,11 @@ The `name` string cannot use hyphens ("dash-case" or "kebab-case").
 <a href="#toc">Back to top</a>
 
 
-{@a 02-11}
+{@a 02-12}
 
 ### _End-to-End_ (E2E) test file names
 
-#### Style 02-11
+#### Style 02-12
 
 <div class="s-rule do">
 
@@ -1396,11 +1396,11 @@ The `name` string cannot use hyphens ("dash-case" or "kebab-case").
 
 <a href="#toc">Back to top</a>
 
-{@a 02-12}
+{@a 02-13}
 
 ### Angular _NgModule_ names
 
-#### Style 02-12
+#### Style 02-13
 
 
 <div class="s-rule do">
@@ -1638,11 +1638,11 @@ You didn't write them and you don't want them cluttering `src`.
 Use the naming conventions for files in this guide.
 <a href="#toc">Back to top</a>
 
-{@a 04-01}
+{@a 03-01}
 
 ### _LIFT_
 
-#### Style 04-01
+#### Style 03-01
 
 
 <div class="s-rule do">
@@ -1683,11 +1683,11 @@ _can I quickly open and start work in all of the related files for this feature_
 
 <a href="#toc">Back to top</a>
 
-{@a 04-02}
+{@a 03-02}
 
 ### Locate
 
-#### Style 04-02
+#### Style 03-02
 
 
 <div class="s-rule do">
@@ -1715,11 +1715,11 @@ A descriptive folder structure makes a world of difference to you and the people
 
 <a href="#toc">Back to top</a>
 
-{@a 04-03}
+{@a 03-03}
 
 ### Identify
 
-#### Style 04-03
+#### Style 03-03
 
 
 <div class="s-rule do">
@@ -1781,11 +1781,11 @@ in a single file than as multiple files. Be wary of this loophole.
 <a href="#toc">Back to top</a>
 
 
-{@a 04-04}
+{@a 03-04}
 
 ### Flat
 
-#### Style 04-04
+#### Style 03-04
 
 <div class="s-rule do">
 
@@ -1841,11 +1841,11 @@ Use a flatter structure until there is an obvious value to creating a new folder
 <a href="#toc">Back to top</a>
 
 
-{@a 04-05}
+{@a 03-05}
 
 ### _T-DRY_ (Try to be _DRY_)
 
-#### Style 04-05
+#### Style 03-05
 
 <div class="s-rule do">
 
@@ -1885,11 +1885,11 @@ But if something is not obvious or departs from a convention, then spell it out.
 <a href="#toc">Back to top</a>
 
 
-{@a 04-06}
+{@a 03-06}
 
 ### Overall structural guidelines
 
-#### Style 04-06
+#### Style 03-06
 
 <div class="s-rule do">
 
@@ -2201,11 +2201,11 @@ Whatever you choose, be consistent.
 
 <a href="#toc">Back to top</a>
 
-{@a 04-07}
+{@a 03-07}
 
 ### _Folders-by-feature_ structure
 
-#### Style 04-07
+#### Style 03-07
 
 
 <div class="s-rule do">
@@ -2271,11 +2271,11 @@ and more difficult in a flat structure.
 </a>
 
 
-{@a 04-08}
+{@a 03-08}
 
 ### App _root module_
 
-#### Style 04-08
+#### Style 03-08
 
 <div class="s-rule do">
 
@@ -2322,7 +2322,7 @@ for example, in `/src/app`.
 
 
 
-<code-example path="styleguide/src/04-08/app/app.module.ts" region="example" header="app/app.module.ts">
+<code-example path="styleguide/src/03-08/app/app.module.ts" region="example" header="app/app.module.ts">
 
 </code-example>
 
@@ -2331,11 +2331,11 @@ for example, in `/src/app`.
 <a href="#toc">Back to top</a>
 
 
-{@a 04-09}
+{@a 03-09}
 
 ### Feature modules
 
-#### Style 04-09
+#### Style 03-09
 
 
 <div class="s-rule do">
@@ -2452,11 +2452,11 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 
 <a href="#toc">Back to top</a>
 
-{@a 04-10}
+{@a 03-10}
 
 ### Shared feature module
 
-#### Style 04-10
+#### Style 03-10
 
 
 <div class="s-rule do">
@@ -2674,27 +2674,27 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
 
 <code-tabs>
 
-  <code-pane header="app/shared/shared.module.ts" path="styleguide/src/04-10/app/shared/shared.module.ts">
+  <code-pane header="app/shared/shared.module.ts" path="styleguide/src/03-10/app/shared/shared.module.ts">
 
   </code-pane>
 
-  <code-pane header="app/shared/init-caps.pipe.ts" path="styleguide/src/04-10/app/shared/init-caps.pipe.ts">
+  <code-pane header="app/shared/init-caps.pipe.ts" path="styleguide/src/03-10/app/shared/init-caps.pipe.ts">
 
   </code-pane>
 
-  <code-pane header="app/shared/filter-text/filter-text.component.ts" path="styleguide/src/04-10/app/shared/filter-text/filter-text.component.ts">
+  <code-pane header="app/shared/filter-text/filter-text.component.ts" path="styleguide/src/03-10/app/shared/filter-text/filter-text.component.ts">
 
   </code-pane>
 
-  <code-pane header="app/shared/filter-text/filter-text.service.ts" path="styleguide/src/04-10/app/shared/filter-text/filter-text.service.ts">
+  <code-pane header="app/shared/filter-text/filter-text.service.ts" path="styleguide/src/03-10/app/shared/filter-text/filter-text.service.ts">
 
   </code-pane>
 
-  <code-pane header="app/heroes/heroes.component.ts" path="styleguide/src/04-10/app/heroes/heroes.component.ts">
+  <code-pane header="app/heroes/heroes.component.ts" path="styleguide/src/03-10/app/heroes/heroes.component.ts">
 
   </code-pane>
 
-  <code-pane header="app/heroes/heroes.component.html" path="styleguide/src/04-10/app/heroes/heroes.component.html">
+  <code-pane header="app/heroes/heroes.component.html" path="styleguide/src/03-10/app/heroes/heroes.component.html">
 
   </code-pane>
 
@@ -2705,11 +2705,11 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
 
 <a href="#toc">Back to top</a>
 
-{@a 04-11}
+{@a 03-11}
 
 ### Lazy Loaded folders
 
-#### Style 04-11
+#### Style 03-11
 
 A distinct application feature or workflow may be *lazy loaded* or *loaded on demand* rather than when the application starts.
 
@@ -2729,11 +2729,11 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 <a href="#toc">Back to top</a>
 
-{@a 04-12}
+{@a 03-12}
 
 ### Never directly import lazy loaded folders
 
-#### Style 04-12
+#### Style 03-12
 
 
 <div class="s-rule avoid">
@@ -2752,11 +2752,11 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 ## Components
 
-{@a 05-03}
+{@a 04-01}
 
 ### Components as elements
 
-#### Style 05-03
+#### Style 04-01
 
 <div class="s-rule do">
 
@@ -2784,21 +2784,21 @@ There are a few cases where you give a component an attribute, such as when you 
 
 </div>
 
-<code-example path="styleguide/src/05-03/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" header="app/heroes/hero-button/hero-button.component.ts">
+<code-example path="styleguide/src/04-01/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" header="app/heroes/hero-button/hero-button.component.ts">
 
 </code-example>
 
-<code-example path="styleguide/src/05-03/app/app.component.avoid.html" header="app/app.component.html">
+<code-example path="styleguide/src/04-01/app/app.component.avoid.html" header="app/app.component.html">
 
 </code-example>
 
 <code-tabs>
 
-  <code-pane header="app/heroes/shared/hero-button/hero-button.component.ts" path="styleguide/src/05-03/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
+  <code-pane header="app/heroes/shared/hero-button/hero-button.component.ts" path="styleguide/src/04-01/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
 
   </code-pane>
 
-  <code-pane header="app/app.component.html" path="styleguide/src/05-03/app/app.component.html">
+  <code-pane header="app/app.component.html" path="styleguide/src/04-01/app/app.component.html">
 
   </code-pane>
 
@@ -2808,11 +2808,11 @@ There are a few cases where you give a component an attribute, such as when you 
 
 <a href="#toc">Back to top</a>
 
-{@a 05-04}
+{@a 04-02}
 
 ### Extract templates and styles to their own files
 
-#### Style 05-04
+#### Style 04-02
 
 
 <div class="s-rule do">
@@ -2898,7 +2898,7 @@ in those editors that support it; it won't help with CSS styles.
 
 
 
-<code-example path="styleguide/src/05-04/app/heroes/heroes.component.avoid.ts" region="example" header="app/heroes/heroes.component.ts">
+<code-example path="styleguide/src/04-02/app/heroes/heroes.component.avoid.ts" region="example" header="app/heroes/heroes.component.ts">
 
 </code-example>
 
@@ -2908,15 +2908,15 @@ in those editors that support it; it won't help with CSS styles.
 
 <code-tabs>
 
-  <code-pane header="app/heroes/heroes.component.ts" path="styleguide/src/05-04/app/heroes/heroes.component.ts" region="example">
+  <code-pane header="app/heroes/heroes.component.ts" path="styleguide/src/04-02/app/heroes/heroes.component.ts" region="example">
 
   </code-pane>
 
-  <code-pane header="app/heroes/heroes.component.html" path="styleguide/src/05-04/app/heroes/heroes.component.html">
+  <code-pane header="app/heroes/heroes.component.html" path="styleguide/src/04-02/app/heroes/heroes.component.html">
 
   </code-pane>
 
-  <code-pane header="app/heroes/heroes.component.css" path="styleguide/src/05-04/app/heroes/heroes.component.css">
+  <code-pane header="app/heroes/heroes.component.css" path="styleguide/src/04-02/app/heroes/heroes.component.css">
 
   </code-pane>
 
@@ -2926,11 +2926,11 @@ in those editors that support it; it won't help with CSS styles.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-12}
+{@a 04-03}
 
 ### Decorate _input_ and _output_ properties
 
-#### Style 05-12
+#### Style 04-03
 
 
 <div class="s-rule do">
@@ -3002,7 +3002,7 @@ Put it on the line above when doing so is clearly more readable.
 
 
 
-<code-example path="styleguide/src/05-12/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" header="app/heroes/shared/hero-button/hero-button.component.ts">
+<code-example path="styleguide/src/04-03/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" header="app/heroes/shared/hero-button/hero-button.component.ts">
 
 </code-example>
 
@@ -3010,7 +3010,7 @@ Put it on the line above when doing so is clearly more readable.
 
 
 
-<code-example path="styleguide/src/05-12/app/heroes/shared/hero-button/hero-button.component.ts" region="example" header="app/heroes/shared/hero-button/hero-button.component.ts">
+<code-example path="styleguide/src/04-03/app/heroes/shared/hero-button/hero-button.component.ts" region="example" header="app/heroes/shared/hero-button/hero-button.component.ts">
 
 </code-example>
 
@@ -3019,11 +3019,11 @@ Put it on the line above when doing so is clearly more readable.
 <a href="#toc">Back to top</a>
 
 
-{@a 05-13}
+{@a 04-04}
 
 ### Avoid aliasing _inputs_ and _outputs_
 
-#### Style 05-13
+#### Style 04-04
 
 
 <div class="s-rule avoid">
@@ -3060,7 +3060,7 @@ and the directive name doesn't describe the property.
 
 
 
-<code-example path="styleguide/src/05-13/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" header="app/heroes/shared/hero-button/hero-button.component.ts">
+<code-example path="styleguide/src/04-04/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" header="app/heroes/shared/hero-button/hero-button.component.ts">
 
 </code-example>
 
@@ -3068,7 +3068,7 @@ and the directive name doesn't describe the property.
 
 
 
-<code-example path="styleguide/src/05-13/app/app.component.avoid.html" header="app/app.component.html">
+<code-example path="styleguide/src/04-04/app/app.component.avoid.html" header="app/app.component.html">
 
 </code-example>
 
@@ -3078,15 +3078,15 @@ and the directive name doesn't describe the property.
 
 <code-tabs>
 
-  <code-pane header="app/heroes/shared/hero-button/hero-button.component.ts" path="styleguide/src/05-13/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
+  <code-pane header="app/heroes/shared/hero-button/hero-button.component.ts" path="styleguide/src/04-04/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
 
   </code-pane>
 
-  <code-pane header="app/heroes/shared/hero-button/hero-highlight.directive.ts" path="styleguide/src/05-13/app/heroes/shared/hero-highlight.directive.ts">
+  <code-pane header="app/heroes/shared/hero-button/hero-highlight.directive.ts" path="styleguide/src/04-04/app/heroes/shared/hero-highlight.directive.ts">
 
   </code-pane>
 
-  <code-pane header="app/app.component.html" path="styleguide/src/05-13/app/app.component.html">
+  <code-pane header="app/app.component.html" path="styleguide/src/04-04/app/app.component.html">
 
   </code-pane>
 
@@ -3096,11 +3096,11 @@ and the directive name doesn't describe the property.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-14}
+{@a 04-05}
 
 ### Member sequence
 
-#### Style 05-14
+#### Style 04-05
 
 
 <div class="s-rule do">
@@ -3137,7 +3137,7 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
-<code-example path="styleguide/src/05-14/app/shared/toast/toast.component.avoid.ts" region="example" header="app/shared/toast/toast.component.ts">
+<code-example path="styleguide/src/04-05/app/shared/toast/toast.component.avoid.ts" region="example" header="app/shared/toast/toast.component.ts">
 
 </code-example>
 
@@ -3145,7 +3145,7 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
-<code-example path="styleguide/src/05-14/app/shared/toast/toast.component.ts" region="example" header="app/shared/toast/toast.component.ts">
+<code-example path="styleguide/src/04-05/app/shared/toast/toast.component.ts" region="example" header="app/shared/toast/toast.component.ts">
 
 </code-example>
 
