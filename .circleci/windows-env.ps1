@@ -53,4 +53,4 @@ choco install nodejs --version 12.14.1 --no-progress
 # choco install visualstudio2019buildtools --version 16.1.2.0 --no-progress --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.Component.VC.Runtime.UCRTSDK --add Microsoft.VisualStudio.Component.Windows10SDK.17763"
 # Add-Content $profile '$Env:BAZEL_VC = "${Env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\BuildTools\VC\"'
 # Python is needed for Bazel Python targets
-# choco install python --version 3.5.1 --no-progress
+choco install python --version 3.5.1 --no-progress

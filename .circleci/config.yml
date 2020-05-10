@@ -762,19 +762,10 @@ workflows:
           filters:
             branches:
               ignore: g3
-      - test_ivy_aot:
-          requires:
-            - setup
-      - build-npm-packages:
-          requires:
-            - setup
-      - build-ivy-npm-packages:
-          requires:
-            - setup
       # Windows Jobs
       - test_ivy_aot_win:
           requires:
-            - test_ivy_aot
+            - setup
 
   monitoring:
     jobs:
