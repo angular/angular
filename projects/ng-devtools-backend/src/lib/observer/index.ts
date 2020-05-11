@@ -9,14 +9,12 @@ const supportsPerformance = globalThis.performance && typeof globalThis.performa
 type Method = keyof LifecycleProfile | 'changeDetection';
 
 const recordMark = (s: string, method: Method) => {
-  console.count('recordMark');
   if (supportsPerformance) {
     performance.mark(`${markName(s, method)}_start`);
   }
 };
 
 const endMark = (nodeName: string, method: Method) => {
-  console.count('endMark');
   if (supportsPerformance) {
     const name = markName(nodeName, method);
     const start = `${name}_start`;
