@@ -12,22 +12,26 @@ import {Inject, Injectable, InjectionToken, Optional} from './di';
 
 
 /**
- * An injection token that allows you to provide one or more initialization functions.
- * These function are injected at application startup and executed during
+ * A [DI token](guide/glossary#di-token "DI token definition") that you can use to provide
+ * one or more initialization functions.
+ *
+ * The provided function are injected at application startup and executed during
  * app initialization. If any of these functions returns a Promise, initialization
  * does not complete until the Promise is resolved.
  *
  * You can, for example, create a factory function that loads language data
  * or an external configuration, and provide that function to the `APP_INITIALIZER` token.
- * That way, the function is executed during the application bootstrap process,
+ * The function is executed during the application bootstrap process,
  * and the needed data is available on startup.
+ *
+ * @see `ApplicationInitStatus`
  *
  * @publicApi
  */
 export const APP_INITIALIZER = new InjectionToken<Array<() => void>>('Application Initializer');
 
 /**
- * A class that reflects the state of running {@link APP_INITIALIZER}s.
+ * A class that reflects the state of running {@link APP_INITIALIZER} functions.
  *
  * @publicApi
  */

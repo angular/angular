@@ -282,10 +282,10 @@ export interface Directive {
   host?: {[key: string]: string};
 
   /**
-   * If true, this directive/component will be skipped by the AOT compiler and so will always be
-   * compiled using JIT.
-   *
-   * This exists to support future Ivy work and has no effect currently.
+   * When present, this directive/component is ignored by the AOT compiler.
+   * It remains in distributed code, and the JIT compiler attempts to compile it
+   * at run time, in the browser.
+   * To ensure the correct behavior, the app must import `@angular/compiler`.
    */
   jit?: true;
 }
@@ -314,7 +314,8 @@ export interface ComponentDecorator {
    * An Angular app contains a tree of Angular components.
    *
    * Angular components are a subset of directives, always associated with a template.
-   * Unlike other directives, only one component can be instantiated per an element in a template.
+   * Unlike other directives, only one component can be instantiated for a given element in a
+   * template.
    *
    * A component must belong to an NgModule in order for it to be available
    * to another component or application. To make it a member of an NgModule,
