@@ -108,18 +108,19 @@ $mat-form-field-fill-dedupe: 0;
 
 @mixin mat-form-field-fill-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-form-field-fill');
-  $color: mat-get-color-config($theme);
-  $density: mat-get-density-config($theme);
-  $typography: mat-get-typography-config($theme);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-form-field-fill') {
+    $color: mat-get-color-config($theme);
+    $density: mat-get-density-config($theme);
+    $typography: mat-get-typography-config($theme);
 
-  @if $color != null {
-    @include mat-form-field-fill-color($color);
-  }
-  @if $density != null {
-    @include _mat-form-field-fill-density($density);
-  }
-  @if $typography != null {
-    @include mat-form-field-fill-typography($typography);
+    @if $color != null {
+      @include mat-form-field-fill-color($color);
+    }
+    @if $density != null {
+      @include _mat-form-field-fill-density($density);
+    }
+    @if $typography != null {
+      @include mat-form-field-fill-typography($typography);
+    }
   }
 }

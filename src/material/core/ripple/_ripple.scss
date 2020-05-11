@@ -65,9 +65,10 @@ $mat-ripple-color-opacity: 0.1;
 
 @mixin mat-ripple-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-ripple');
-  $color: mat-get-color-config($theme);
-  @if $color != null {
-    @include mat-ripple-color($color);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-ripple') {
+    $color: mat-get-color-config($theme);
+    @if $color != null {
+      @include mat-ripple-color($color);
+    }
   }
 }

@@ -3,6 +3,10 @@
 // with the include paths being set to the `bazel-bin` directory.
 @import 'src/material/theming';
 
+// Disable theme style duplication warnings. This test intentionally generates
+// the same themes multiple times.
+$mat-theme-ignore-duplication-warnings: true;
+
 @include mat-core();
 
 $theme: mat-light-theme((

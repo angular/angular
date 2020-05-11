@@ -86,19 +86,20 @@
 
 @mixin mat-slide-toggle-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-slide-toggle');
-  $color: mat-get-color-config($theme);
-  $density: mat-get-density-config($theme);
-  $typography: mat-get-typography-config($theme);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-slide-toggle') {
+    $color: mat-get-color-config($theme);
+    $density: mat-get-density-config($theme);
+    $typography: mat-get-typography-config($theme);
 
-  @if $color != null {
-    @include mat-slide-toggle-color($color);
-  }
-  @if $density != null {
-    @include _mat-slide-toggle-density($density);
-  }
-  @if $typography != null {
-    @include mat-slide-toggle-typography($typography);
+    @if $color != null {
+      @include mat-slide-toggle-color($color);
+    }
+    @if $density != null {
+      @include _mat-slide-toggle-density($density);
+    }
+    @if $typography != null {
+      @include mat-slide-toggle-typography($typography);
+    }
   }
 }
 

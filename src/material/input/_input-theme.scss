@@ -81,18 +81,19 @@
 
 @mixin mat-input-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-input');
-  $color: mat-get-color-config($theme);
-  $density: mat-get-density-config($theme);
-  $typography: mat-get-typography-config($theme);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-input') {
+    $color: mat-get-color-config($theme);
+    $density: mat-get-density-config($theme);
+    $typography: mat-get-typography-config($theme);
 
-  @if $color != null {
-    @include mat-input-color($color);
-  }
-  @if $density != null {
-    @include _mat-input-density($density);
-  }
-  @if $typography != null {
-    @include mat-input-typography($typography);
+    @if $color != null {
+      @include mat-input-color($color);
+    }
+    @if $density != null {
+      @include _mat-input-density($density);
+    }
+    @if $typography != null {
+      @include mat-input-typography($typography);
+    }
   }
 }

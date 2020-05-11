@@ -181,18 +181,19 @@
 
 @mixin mat-slider-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-slider');
-  $color: mat-get-color-config($theme);
-  $density: mat-get-density-config($theme);
-  $typography: mat-get-typography-config($theme);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-slider') {
+    $color: mat-get-color-config($theme);
+    $density: mat-get-density-config($theme);
+    $typography: mat-get-typography-config($theme);
 
-  @if $color != null {
-    @include mat-slider-color($color);
-  }
-  @if $density != null {
-    @include _mat-slider-density($density);
-  }
-  @if $typography != null {
-    @include mat-slider-typography($typography);
+    @if $color != null {
+      @include mat-slider-color($color);
+    }
+    @if $density != null {
+      @include _mat-slider-density($density);
+    }
+    @if $typography != null {
+      @include mat-slider-typography($typography);
+    }
   }
 }

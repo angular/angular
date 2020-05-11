@@ -106,18 +106,19 @@
 
 @mixin mat-column-resize-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-column-resize');
-  $color: mat-get-color-config($theme);
-  $density: mat-get-density-config($theme);
-  $typography: mat-get-typography-config($theme);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-column-resize') {
+    $color: mat-get-color-config($theme);
+    $density: mat-get-density-config($theme);
+    $typography: mat-get-typography-config($theme);
 
-  @if $color != null {
-    @include mat-column-resize-color($color);
-  }
-  @if $density != null {
-    @include mat-column-resize-density($density);
-  }
-  @if $typography != null {
-    @include mat-column-resize-typography($typography);
+    @if $color != null {
+      @include mat-column-resize-color($color);
+    }
+    @if $density != null {
+      @include mat-column-resize-density($density);
+    }
+    @if $typography != null {
+      @include mat-column-resize-typography($typography);
+    }
   }
 }

@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "sass_binary", "sass_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "sass_binary", "sass_library", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -35,4 +35,27 @@ sass_binary(
     testonly = True,
     src = "test-theming-bundle.scss",
     deps = [":theming_bundle_scss_lib"],
+)
+
+ts_library(
+    name = "unit_test_lib",
+    testonly = True,
+    srcs = [
+        "theming-api.spec.ts",
+    ],
+    deps = [
+        "//tools/postcss",
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
+        "@npm//@types/sass",
+        "@npm//postcss",
+        "@npm//sass",
+    ],
+)
+
+jasmine_node_test(
+    name = "unit_tests",
+    srcs = [":unit_test_lib"],
+    data = ["//src/material/core:theming_scss_lib"],
+    shard_count = 4,
 )

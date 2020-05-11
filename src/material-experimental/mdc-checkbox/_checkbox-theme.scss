@@ -88,18 +88,19 @@
 
 @mixin mat-mdc-checkbox-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-checkbox');
-  $color: mat-get-color-config($theme);
-  $density: mat-get-density-config($theme);
-  $typography: mat-get-typography-config($theme);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-checkbox') {
+    $color: mat-get-color-config($theme);
+    $density: mat-get-density-config($theme);
+    $typography: mat-get-typography-config($theme);
 
-  @if $color != null {
-    @include mat-mdc-checkbox-color($color);
-  }
-  @if $density != null {
-    @include mat-mdc-checkbox-density($density);
-  }
-  @if $typography != null {
-    @include mat-mdc-checkbox-typography($typography);
+    @if $color != null {
+      @include mat-mdc-checkbox-color($color);
+    }
+    @if $density != null {
+      @include mat-mdc-checkbox-density($density);
+    }
+    @if $typography != null {
+      @include mat-mdc-checkbox-typography($typography);
+    }
   }
 }

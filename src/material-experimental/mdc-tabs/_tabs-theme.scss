@@ -110,19 +110,20 @@
 
 @mixin mat-mdc-tabs-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-tabs');
-  $color: mat-get-color-config($theme);
-  $density: mat-get-density-config($theme);
-  $typography: mat-get-typography-config($theme);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-mdc-tabs') {
+    $color: mat-get-color-config($theme);
+    $density: mat-get-density-config($theme);
+    $typography: mat-get-typography-config($theme);
 
-  @if $color != null {
-    @include mat-mdc-tabs-color($color);
-  }
-  @if $density != null {
-    @include mat-mdc-tabs-density($density);
-  }
-  @if $typography != null {
-    @include mat-mdc-tabs-typography($typography);
+    @if $color != null {
+      @include mat-mdc-tabs-color($color);
+    }
+    @if $density != null {
+      @include mat-mdc-tabs-density($density);
+    }
+    @if $typography != null {
+      @include mat-mdc-tabs-typography($typography);
+    }
   }
 }
 

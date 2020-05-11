@@ -94,7 +94,7 @@
       "ignorePattern": "/https?://.*/"
     }],
     "linebreaks": "unix",
-    "selector-class-pattern": ["^_?(mat-|cdk-|example-|demo-|ng-|mdc-|map-)", {
+    "selector-class-pattern": ["^_?(mat-|cdk-|example-|demo-|ng-|mdc-|map-|test-)", {
       "resolveNestedSelectors": true
     }]
   }

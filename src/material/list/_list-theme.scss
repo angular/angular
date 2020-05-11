@@ -100,18 +100,19 @@
 
 @mixin mat-list-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-list');
-  $color: mat-get-color-config($theme);
-  $density: mat-get-density-config($theme);
-  $typography: mat-get-typography-config($theme);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-list') {
+    $color: mat-get-color-config($theme);
+    $density: mat-get-density-config($theme);
+    $typography: mat-get-typography-config($theme);
 
-  @if $color != null {
-    @include mat-list-color($color);
-  }
-  @if $density != null {
-    @include _mat-list-density($density);
-  }
-  @if $typography != null {
-    @include mat-list-typography($typography);
+    @if $color != null {
+      @include mat-list-color($color);
+    }
+    @if $density != null {
+      @include _mat-list-density($density);
+    }
+    @if $typography != null {
+      @include mat-list-typography($typography);
+    }
   }
 }

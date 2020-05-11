@@ -114,10 +114,11 @@
   }
   @else {
     $theme: _mat-legacy-get-theme($theme-or-color);
-    @include _mat-check-duplicate-theme-styles($theme, 'mat-strong-focus-indicators');
-    $color: mat-get-color-config($theme);
-    @if $color != null {
-      @include mat-strong-focus-indicators-color($color);
+    @include _mat-check-duplicate-theme-styles($theme, 'mat-strong-focus-indicators') {
+      $color: mat-get-color-config($theme);
+      @if $color != null {
+        @include mat-strong-focus-indicators-color($color);
+      }
     }
   }
 }

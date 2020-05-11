@@ -25,6 +25,7 @@
     "**/*.spec.ts"
   ],
   "exclude": [
+    "core/theming/tests/**/*.ts",
     "**/schematics/**/*.ts",
     "**/*.e2e.spec.ts"
   ]

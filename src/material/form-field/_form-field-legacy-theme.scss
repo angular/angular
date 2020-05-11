@@ -181,18 +181,19 @@ $mat-form-field-legacy-dedupe: 0;
 
 @mixin mat-form-field-legacy-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-form-field-legacy');
-  $color: mat-get-color-config($theme);
-  $density: mat-get-density-config($theme);
-  $typography: mat-get-typography-config($theme);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-form-field-legacy') {
+    $color: mat-get-color-config($theme);
+    $density: mat-get-density-config($theme);
+    $typography: mat-get-typography-config($theme);
 
-  @if $color != null {
-    @include mat-form-field-legacy-color($color);
-  }
-  @if $density != null {
-    @include _mat-form-field-legacy-density($density);
-  }
-  @if $typography != null {
-    @include mat-form-field-legacy-typography($typography);
+    @if $color != null {
+      @include mat-form-field-legacy-color($color);
+    }
+    @if $density != null {
+      @include _mat-form-field-legacy-density($density);
+    }
+    @if $typography != null {
+      @include mat-form-field-legacy-typography($typography);
+    }
   }
 }

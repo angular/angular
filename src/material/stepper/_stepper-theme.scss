@@ -112,49 +112,52 @@
   $height: _mat-density-prop-value($mat-stepper-density-config, $density-scale, height);
   $vertical-padding: ($height - $mat-stepper-label-header-height) / 2;
 
-  .mat-horizontal-stepper-header {
-    height: $height;
-  }
+  @include _mat-density-legacy-compatibility() {
+    .mat-horizontal-stepper-header {
+      height: $height;
+    }
 
-  .mat-stepper-label-position-bottom .mat-horizontal-stepper-header,
-  .mat-vertical-stepper-header, {
-    padding: $vertical-padding $mat-stepper-side-gap;
-  }
+    .mat-stepper-label-position-bottom .mat-horizontal-stepper-header,
+    .mat-vertical-stepper-header, {
+      padding: $vertical-padding $mat-stepper-side-gap;
+    }
 
-  // Ensures that the vertical lines for the step content exceed into the step
-  // headers with a given distance (`$mat-stepper-line-gap`) to the step icon.
-  .mat-stepper-vertical-line::before {
-    top: $mat-stepper-line-gap - $vertical-padding;
-    bottom: $mat-stepper-line-gap - $vertical-padding;
-  }
+    // Ensures that the vertical lines for the step content exceed into the step
+    // headers with a given distance (`$mat-stepper-line-gap`) to the step icon.
+    .mat-stepper-vertical-line::before {
+      top: $mat-stepper-line-gap - $vertical-padding;
+      bottom: $mat-stepper-line-gap - $vertical-padding;
+    }
 
-  // Ensures that the horizontal lines for the step header are centered vertically.
-  .mat-stepper-label-position-bottom .mat-horizontal-stepper-header {
-    &::after, &::before {
+    // Ensures that the horizontal lines for the step header are centered vertically.
+    .mat-stepper-label-position-bottom .mat-horizontal-stepper-header {
+      &::after, &::before {
+        top: $vertical-padding + $mat-stepper-label-header-height / 2;
+      }
+    }
+
+    // Ensures that the horizontal line for the step content is aligned centered vertically.
+    .mat-stepper-label-position-bottom .mat-stepper-horizontal-line {
       top: $vertical-padding + $mat-stepper-label-header-height / 2;
     }
-  }
-
-  // Ensures that the horizontal line for the step content is aligned centered vertically.
-  .mat-stepper-label-position-bottom .mat-stepper-horizontal-line {
-    top: $vertical-padding + $mat-stepper-label-header-height / 2;
   }
 }
 
 @mixin mat-stepper-theme($theme-or-color-config) {
   $theme: _mat-legacy-get-theme($theme-or-color-config);
-  @include _mat-check-duplicate-theme-styles($theme, 'mat-stepper');
-  $color: mat-get-color-config($theme);
-  $density: mat-get-density-config($theme);
-  $typography: mat-get-typography-config($theme);
+  @include _mat-check-duplicate-theme-styles($theme, 'mat-stepper') {
+    $color: mat-get-color-config($theme);
+    $density: mat-get-density-config($theme);
+    $typography: mat-get-typography-config($theme);
 
-  @if $color != null {
-    @include mat-stepper-color($color);
-  }
-  @if $density != null {
-    @include _mat-stepper-density($density);
-  }
-  @if $typography != null {
-    @include mat-stepper-typography($typography);
+    @if $color != null {
+      @include mat-stepper-color($color);
+    }
+    @if $density != null {
+      @include _mat-stepper-density($density);
+    }
+    @if $typography != null {
+      @include mat-stepper-typography($typography);
+    }
   }
 }

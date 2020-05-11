@@ -118,8 +118,13 @@ $dark-theme-only-typography: mat-dark-theme((typography: $typography-config));
   $no-color-dark-theme: mat-dark-theme((color: null));
   @include assert(mat-get-color-config($color-config), $color-config,
       'Expected that passing a color config to a theme will work for backwards compatibility.');
-  @include assert(mat-get-color-config($legacy-light-theme), $color-config,
-      'Expected that a color config can be read from a theme object.');
+  // For legacy constructed themes, the color configuration is the actual `$theme` object.
+  // This is done for backwards compatibility because developers could modify colors directly
+  // by updating immediate properties on the `$theme` object.
+  @include assert(mat-get-color-config($legacy-light-theme), $legacy-light-theme,
+      'Expected that the theme object is used for the color configuration.');
+  @include assert(mat-get-color-config($new-api-dark-theme), map_get($new-api-dark-theme, color),
+    'Expected that a color config can be read from a theme object.');
   @include assert(mat-get-color-config($light-theme-only-density), null,
       'Expected that by default, no color configuration is used.');
   @include assert(mat-get-color-config($no-color-light-theme), null,
