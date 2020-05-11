@@ -16,12 +16,14 @@ export interface CommitMessageConfig {
 }
 
 export const COMMIT_MESSAGE = {
-  configKey: 'commitMessage',
-  validator,
+  validator: isCommitMessageConfig,
 };
 
 /** Validate the configuration correctly provides commitMessage information. */
-export function validator(
+export function isCommitMessageConfig(
     config: any, errors: string[]): config is NgDevConfig<{commitMessage: CommitMessageConfig}> {
-  return true;
+  if (config.commitMessage === undefined) {
+    errors.push(`No configuration defined for "commitMessage"`);
+  }
+  return;
 }

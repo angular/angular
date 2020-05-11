@@ -17,31 +17,35 @@ export interface Format {
 }
 
 export const FORMAT = {
-  configKey: 'format',
-  validator,
+  validator: isFormatConfig,
 };
 
 /** Validate the configuration correctly provides format information. */
-export function validator(config: any, errors: string[]): config is NgDevConfig<{format: Format}> {
+export function isFormatConfig(
+    config: any, errors: string[]): config is NgDevConfig<{format: Format}> {
   const formatConfig: Partial<Format> = config.format;
-  const localErrors: string[] = [];
+
+  if (formatConfig === undefined) {
+    errors.push(`No configuration defined for "format"`);
+    return;
+  }
+
   for (const [key, value] of Object.entries(formatConfig)) {
     switch (typeof value) {
       case 'boolean':
         break;
       case 'object':
-        validateFormatterConfig(key, value, localErrors);
+        isFormatterConfig(key, value, errors);
         break;
       default:
-        localErrors.push(`"format.${key}" is not a boolean or Formatter object`);
+        errors.push(`"format.${key}" is not a boolean or Formatter object`);
     }
   }
-  errors.push(...localErrors);
-  return localErrors.length === 0;
+  return;
 }
 
 /** Validate an individual Formatter config. */
-function validateFormatterConfig(key: string, config: Partial<Formatter>, errors: string[]) {
+function isFormatterConfig(key: string, config: Partial<Formatter>, errors: string[]) {
   if (config.matchers === undefined) {
     errors.push(`Missing "format.${key}.matchers" value`);
   }
