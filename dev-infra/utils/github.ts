@@ -26,6 +26,25 @@ const graphql = unauthenticatedGraphql.defaults({
   }
 });
 
+/** Get a PR from github  */
+export async function getPr<PrSchema>(
+    prSchema: PrSchema, number: number, {owner, name}: GithubConfig) {
+  const PR_QUERY = params(
+      {
+        $number: 'Int!',    // The PR number
+        $owner: 'String!',  // The organization to query for
+        $name: 'String!',   // The organization to query for
+      },
+      {
+        repository: params({owner: '$owner', name: '$name'}, {
+          pullRequest: params({number: '$number'}, prSchema),
+        })
+      });
+
+  const result = await graphql(graphqlQuery(PR_QUERY), {number, owner, name}) as typeof PR_QUERY;
+  return result.repository.pullRequest;
+}
+
 /** Get all pending PRs from github  */
 export async function getPendingPrs<PrSchema>(prSchema: PrSchema, {owner, name}: GithubConfig) {
   // The GraphQL query object to get a page of pending PRs

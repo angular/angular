@@ -8,6 +8,7 @@ ts_library(
     deps = [
         "//dev-infra/pr/discover-new-conflicts",
         "//dev-infra/pr/merge",
+        "//dev-infra/pr/rebase",
         "@npm//@types/yargs",
     ],
 )
