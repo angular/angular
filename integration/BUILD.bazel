@@ -86,6 +86,12 @@ INTEGRATION_TESTS = {
         # root @npm//typescript package.
         "pinned_npm_packages": ["typescript"],
     },
+    "typings_test_ts39": {
+        # Special case for `typings_test_ts39` test as we want to pin
+        # `typescript` at version 3.9.x for that test and not link to the
+        # root @npm//typescript package.
+        "pinned_npm_packages": ["typescript"],
+    },
 }
 
 [
