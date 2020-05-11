@@ -13,7 +13,8 @@ import {Serializer, SerializerTypes} from '../shared/serializer';
 
 /**
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 @Injectable()
 export class ServiceMessageBrokerFactory {
@@ -41,7 +42,8 @@ export class ServiceMessageBrokerFactory {
  * If that method returns a promise, the UIMessageBroker returns the result to the worker.
  *
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 export class ServiceMessageBroker {
   private _sink: EventEmitter<any>;
@@ -93,7 +95,8 @@ export class ServiceMessageBroker {
 
 /**
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 export interface ReceivedMessage {
   method: string;
