@@ -10,12 +10,12 @@ import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 
 /**
- * Represents an Angular [view](guide/glossary#view),
- * specifically the [host view](guide/glossary#view-tree) that is defined by a component.
- * Also serves as the base class
- * that adds destroy methods for [embedded views](guide/glossary#view-tree).
+ * Represents an Angular [view](guide/glossary#view "Definition"),
+ * specifically the [host view](guide/glossary#view-tree "Definition") that is defined by a
+ * component. Also serves as the base class that adds destroy methods for [embedded
+ * views](guide/glossary#view-tree "Definition").
  *
- * @see `EmbeddedViewRef`
+ * @see {@link ChangeDetectorRef#usage-notes Change detection usage}
  *
  * @publicApi
  */

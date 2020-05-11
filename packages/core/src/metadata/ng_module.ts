@@ -80,12 +80,10 @@ export interface NgModuleDef<T> {
 }
 
 /**
- * A wrapper around an NgModule that associates it with the providers.
+ * A wrapper around an NgModule that associates it with [providers](guide/glossary#provider
+ * "Definition"). Usage without a generic type is deprecated.
  *
- * @param T the module type.
- *
- * Note that using ModuleWithProviders without a generic type is deprecated.
- * The generic will become required in a future version of Angular.
+ * @see [Deprecations](guide/deprecations#modulewithproviders-type-without-a-generic)
  *
  * @publicApi
  */
@@ -296,10 +294,10 @@ export interface NgModule {
   id?: string;
 
   /**
-   * If true, this module will be skipped by the AOT compiler and so will always be compiled
-   * using JIT.
-   *
-   * This exists to support future Ivy work and has no effect currently.
+   * When present, this module is ignored by the AOT compiler.
+   * It remains in distributed code, and the JIT compiler attempts to compile it
+   * at run time, in the browser.
+   * To ensure the correct behavior, the app must import `@angular/compiler`.
    */
   jit?: true;
 }
