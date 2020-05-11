@@ -9,10 +9,16 @@ Question: Can we remove this file and instead direct readers to https://github.c
 
 <div class="alert is-critical">
 
+<!--
 **Audience:** Use this guide **only** in the context of  [Upgrading from AngularJS](guide/upgrade "Upgrading from AngularJS to Angular") or [Upgrading for Performance](guide/upgrade-performance "Upgrading for Performance").
 Those Upgrade guides refer to this Setup guide for information about using the [deprecated QuickStart GitHub repository](https://github.com/angular/quickstart "Deprecated Angular QuickStart GitHub repository"), which was created prior to the current Angular [CLI](cli "CLI Overview").
 
 **For all other scenarios,** see the current instructions in [Setting up the Local Environment and Workspace](guide/setup-local "Setting up for Local Development").
+-->
+**주의:** 이 가이드에서 설명하는 내용은 [AngularJS 앱을 Angular 앱으로 업그레이드하기](guide/upgrade "Upgrading from AngularJS to Angular") 문서와 [업그레이드 방식과 성능의 관계](guide/upgrade-performance "Upgrading for Performance") 문서의 상황에서만 유효합니다.
+이 업그레이드 가이드 문서는 [이제 사용하지 않는 QuickStart GitHub 저장소](https://github.com/angular/quickstart "Deprecated Angular QuickStart GitHub repository")를 기준으로 설명하는데, 이 문서는 [Angular CLI](cli "CLI Overview")가 지금처럼 중요하게 사용되기 이전에 작성되었습니다.
+
+**일반적인 경우라면** [로컬 개발환경, 워크스페이스 구성하기](guide/setup-local "Setting up for Local Development") 문서를 참고하는 것이 더 좋습니다.
 
 </div>
 
@@ -22,10 +28,15 @@ There are also some differences from a local app, to simplify that live-coding e
 In particular, the QuickStart live-coding example shows just the AppComponent file; it creates the equivalent of app.module.ts and main.ts internally for the playground only.
 -->
 
+<!--
 This guide describes how to develop locally on your own machine.
 Setting up a new project on your machine is quick and easy with the [QuickStart seed on github](https://github.com/angular/quickstart "Install the github QuickStart repo").
 
 **Prerequisite:** Make sure you have [Node.js® and npm installed](guide/setup-local#prerequisites "Angular prerequisites").
+-->
+이 문서는 [GitHub 저장소에 있는 QuickStart 프로젝트](https://github.com/angular/quickstart "Install the github QuickStart repo")를 기준으로 로컬 머신에 새 프로젝트 환경을 구성하는 내용에 대해 다룹니다.
+
+**사전준비:** [Node.js®와 npm](guide/setup-local#prerequisites "Angular prerequisites")가 꼭 설치되어 있어야 합니다.
 
 
 {@a clone}
@@ -37,7 +48,7 @@ Setting up a new project on your machine is quick and easy with the [QuickStart 
 <!--
 Perform the _clone-to-launch_ steps with these terminal commands.
 -->
-터미널에서 다음 명령을 실행해서 _저장소를 복제하고 실행해_ 보세요.
+터미널에서 다음 명령을 실행하면 _저장소를 복제하고 실행_ 할 수 있습니다.
 
 
 <code-example language="sh" class="code-shell">
@@ -72,7 +83,8 @@ Perform the _clone-to-launch_ steps with these terminal commands.
 <a href="https://github.com/angular/quickstart/archive/master.zip" title="Download the QuickStart seed repository">Download the QuickStart seed</a>
 and unzip it into your project folder. Then perform the remaining steps with these terminal commands.
 -->
-<a href="https://github.com/angular/quickstart/archive/master.zip" title="Download the QuickStart seed repository">QuickStart seed</a>를 다운받고 quickstart 폴더에 압축을 푸세요. 그리고 터미널에서 다음 명령을 실행합니다.
+<a href="https://github.com/angular/quickstart/archive/master.zip" title="Download the QuickStart seed repository">QuickStart seed</a>를 다운받고 quickstart 폴더에 압축을 풉니다.
+그리고 터미널에서 다음 명령을 실행합니다.
 
 <code-example language="sh" class="code-shell">
   cd quickstart
@@ -155,7 +167,7 @@ Open a terminal window in the project folder and enter the following commands fo
 <!--
 ## What's in the QuickStart seed?
 -->
-## QuickStart seed에는 어떤 내용이 있나요?
+## QuickStart seed에는 어떤 내용이 있을까요?
 
 
 <!--
@@ -168,7 +180,11 @@ most of which you can [learn about later](guide/file-structure).
 
 <div class="alert is-helpful">
 
+<!--
 **Reminder:** The "QuickStart seed" example was created prior to the Angular CLI, so there are some differences between what is described here and an Angular CLI application.
+-->
+**명심하세요:** "QuickStart seed" 프로젝트는 Angular CLI가 등장하기 전에 만들어진 프로젝트입니다.
+다른 문서에서 설명하는 내용과는 조금 다른 면이 있을 수 있습니다.
 
 </div>
 
@@ -234,28 +250,25 @@ Focus on the following three TypeScript (`.ts`) files in the **`/src`** folder.
 <!--
 All guides and cookbooks have _at least these core files_.
 Each file has a distinct purpose and evolves independently as the application grows.
+
+Files outside `src/` concern building, deploying, and testing your app.
+They include configuration files and external dependencies.
+
+Files inside `src/` "belong" to your app.
+Add new Typescript, HTML and CSS files inside the `src/` directory, most of them inside `src/app`,
+unless told to do otherwise.
+
+The following are all in `src/`
 -->
 모든 가이드 문서에는 _이 3개의 파일이_ 반드시 존재합니다.
 각 파일에는 독자적인 역할이 있으며, 애플리케이션이 확장되면서 점점 복잡해질 것입니다.
 
-<!--
-Files outside `src/` concern building, deploying, and testing your app.
-They include configuration files and external dependencies.
--->
 `src/` 폴더 밖에 있는 파일들은 애플리케이션 빌드하거나 배포, 테스트할 때 필요한 파일입니다.
 이 파일들은 환경을 설정하거나 외부 의존성을 관리하는 용도로 사용합니다.
 
-<!--
-Files inside `src/` "belong" to your app.
-Add new Typescript, HTML and CSS files inside the `src/` directory, most of them inside `src/app`,
-unless told to do otherwise.
--->
 `src/` 폴더 안에 있는 파일들은 애플리케이션을 구성하는 파일입니다.
 그래서 애플리케이션을 확장하기 위해 새롭게 TypeScript, HTML, CSS을 만들면 `src/` 폴더에 만들게 되며, 특별한 이유가 없다면 `src/app` 폴더에 생성하게 될 것입니다.
 
-<!--
-The following are all in `src/`
--->
 위에서 언급한 필수 파일 3개도 `src/` 폴더에 존재합니다.
 
 
@@ -328,8 +341,8 @@ The following are all in `src/`
       Over time, you add more components to declare.
       -->
       [최상위 모듈](guide/bootstrapping "AppModule: the root module") `AppModule`을 정의합니다. Angular는 이 모듈에 정의된 대로 애플리케이션을 구성합니다.
-      When initially created, it declares only the `AppComponent`.
-      Over time, you add more components to declare.
+      처음 프로젝트를 생성하고 나면 프로젝트에는 `AppComponent`만 존재합니다.
+      그리고 이후에 프로젝트가 커질수록 수많은 컴포넌트가 추가될 것입니다.
 
     </td>
 
@@ -352,9 +365,8 @@ The following are all in `src/`
       Alternative [compilation](guide/aot-compiler), [build](guide/build), and [deployment](guide/deployment) options are available.
       -->
       애플리케이션을 [JIT 컴파일러](guide/glossary#jit)로 빌드하고 브라우저에서 애플리케이션 메인 모듈 (`AppModule`)을 [부트스트랩](guide/bootstrapping)할 때 사용하는 파일입니다.
-      The JIT compiler is a reasonable choice during the development of most projects and
-      it's the only viable choice for a sample running in a _live-coding_ environment such as Stackblitz.
-      Alternative [compilation](guide/aot-compiler), [build](guide/build), and [deployment](guide/deployment) options are available.
+      프로젝트가 개발단계라면 JIT 컴파일러도 충분히 좋은 선택이며 Stackblitz와 같은 _라이브 코딩_ 환경에서는 JIT 컴파일러만 사용할 수 있습니다.
+      [AOT 컴파일러로 대체하는 방법](guide/aot-compiler), [빌드](guide/build), [배포](guide/deployment)하는 방법에 대해서도 확인해 보세요.
 
     </td>
 
