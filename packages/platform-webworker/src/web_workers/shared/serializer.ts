@@ -12,7 +12,8 @@ import {RenderStore} from './render_store';
 
 /**
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 export const enum SerializerTypes {
   // RendererType2

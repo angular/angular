@@ -16,6 +16,7 @@ import {Version} from '@angular/core';
 
 /**
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 export const VERSION = new Version('0.0.0-PLACEHOLDER');

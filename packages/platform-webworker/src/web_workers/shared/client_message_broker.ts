@@ -12,7 +12,8 @@ import {Serializer, SerializerTypes} from './serializer';
 
 /**
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 @Injectable()
 export class ClientMessageBrokerFactory {
@@ -40,7 +41,8 @@ interface PromiseCompleter {
 
 /**
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 export class ClientMessageBroker {
   private _pending = new Map<string, PromiseCompleter>();
@@ -146,7 +148,8 @@ interface ResponseMessageData {
 
 /**
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 export class FnArg {
   constructor(
@@ -155,7 +158,8 @@ export class FnArg {
 
 /**
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 export class UiArguments {
   constructor(public method: string, public args?: FnArg[]) {}

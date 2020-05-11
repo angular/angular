@@ -22,7 +22,8 @@ import {WorkerDomAdapter} from './web_workers/worker/worker_adapter';
 
 /**
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 export const platformWorkerApp: (extraProviders?: StaticProvider[]|undefined) => PlatformRef =
     createPlatformFactory(
@@ -56,7 +57,8 @@ export function setupWebWorker(): void {
  * The ng module for the worker app side.
  *
  * @publicApi
- * @deprecated platform-webworker is deprecated in Angular and will be removed in version 10
+ * @deprecated platform-webworker is deprecated in Angular and will be removed in a future version
+ *     of Angular
  */
 @NgModule({
   providers: [
