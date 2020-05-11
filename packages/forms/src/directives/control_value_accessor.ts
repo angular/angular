@@ -80,7 +80,7 @@ export interface ControlValueAccessor {
 
   /**
    * @description
-   * Registers a callback function is called by the forms API on initialization
+   * Registers a callback function that is called by the forms API on initialization
    * to update the form model on blur.
    *
    * When implementing `registerOnTouched` in your own value accessor, save the given
