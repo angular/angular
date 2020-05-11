@@ -100,16 +100,18 @@ const getPopUpName = (ng: AngularDetection) => {
 };
 
 chrome.runtime.onMessage.addListener((req, sender) => {
-  if (sender.tab && req.isAngular) {
+  if (sender && sender.tab) {
+    chrome.browserAction.setPopup({
+      tabId: sender.tab.id,
+      popup: `popups/${getPopUpName(req)}`,
+    });
+  }
+  if (sender && sender.tab && req.isAngular) {
     chrome.browserAction.setIcon({
       tabId: sender.tab.id,
       path: {
         16: `assets/favicon.ico`,
       },
-    });
-    chrome.browserAction.setPopup({
-      tabId: sender.tab.id,
-      popup: `popups/${getPopUpName(req)}`,
     });
   }
 });
