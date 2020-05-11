@@ -1,5 +1,19 @@
 # Playbook for updating TypeScript versions
 
+## Adding support for a TypeScript version
+
+1.  Update `MAX_TS_VERSION` in `packages/compiler-cli/src/typescript_support.ts`
+2.  Update `peerDependencies` in `packages/bazel/package.json` and
+    `packages/compiler-cli/package.json` to reflect the new TypeScript version
+    requirements.
+3.  Create tests for versions of TS being added, i.e. tests sources in
+    `integration/typings_test_ts39/*` and add a test in
+    `integration/BUILD.bazel`
+    *  Run the test with the command 
+       `yarn bazel test //integration:typings_test_tsXX_test` 
+       to ensure code is compatible with the new TS version.
+
+
 ## Removing support for a TypeScript version
 
 1.  Update `MIN_TS_VERSION` in `packages/compiler-cli/src/typescript_support.ts`
