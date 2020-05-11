@@ -1,3 +1,44 @@
+# 10.0.0-next.0 "plywood-heart" (2020-05-08)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **table:** project colgroup and col elements ([#18135](https://github.com/angular/components/issues/18135)) ([5b23084](https://github.com/angular/components/commit/5b23084)) |
+| feature |  **tree:** support optional trackBy in FlatTreeControl ([#18708](https://github.com/angular/components/issues/18708)) ([04d1588](https://github.com/angular/components/commit/04d1588)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **chips:** chip list overriding chip disabled value ([#19228](https://github.com/angular/components/issues/19228)) ([9be5156](https://github.com/angular/components/commit/9be5156)), closes [#19213](https://github.com/angular/components/issues/19213) |
+| bug fix |  **dialog:** focus trap not attached if autoFocus is disabled ([#19251](https://github.com/angular/components/issues/19251)) ([5bb81e8](https://github.com/angular/components/commit/5bb81e8)), closes [#18826](https://github.com/angular/components/issues/18826) [#19246](https://github.com/angular/components/issues/19246) |
+| bug fix |  **form-field:** add missing material common module ([#19093](https://github.com/angular/components/issues/19093)) ([ba521d2](https://github.com/angular/components/commit/ba521d2)) |
+| bug fix |  **input:** avoid repeat accesses to check if element is a textarea ([#19115](https://github.com/angular/components/issues/19115)) ([f8d9c96](https://github.com/angular/components/commit/f8d9c96)) |
+| bug fix |  **list:** selection list marked as touched when tabbing in ([#19177](https://github.com/angular/components/issues/19177)) ([7fde305](https://github.com/angular/components/commit/7fde305)), closes [#18445](https://github.com/angular/components/issues/18445) [#19171](https://github.com/angular/components/issues/19171) |
+| bug fix |  **overlay:** remove potentially leaky observable ([#19146](https://github.com/angular/components/issues/19146)) ([27a812b](https://github.com/angular/components/commit/27a812b)), closes [#10573](https://github.com/angular/components/issues/10573) |
+| bug fix |  **tabs:** don't prevent default space/enter action if action tab doesn't change ([#19207](https://github.com/angular/components/issues/19207)) ([b38c812](https://github.com/angular/components/commit/b38c812)), closes [#19190](https://github.com/angular/components/issues/19190) |
+| feature |  **datepicker:** add date range picker ([#19125](https://github.com/angular/components/issues/19125)) ([96efaad](https://github.com/angular/components/commit/96efaad)), closes [#18090](https://github.com/angular/components/issues/18090) [#17363](https://github.com/angular/components/issues/17363) [#17497](https://github.com/angular/components/issues/17497) [#17766](https://github.com/angular/components/issues/17766) [#17363](https://github.com/angular/components/issues/17363) [#17942](https://github.com/angular/components/issues/17942) [#18159](https://github.com/angular/components/issues/18159) [#18213](https://github.com/angular/components/issues/18213) [#18247](https://github.com/angular/components/issues/18247) [#18278](https://github.com/angular/components/issues/18278) [#18292](https://github.com/angular/components/issues/18292) [#18369](https://github.com/angular/components/issues/18369) [#18404](https://github.com/angular/components/issues/18404) [#18531](https://github.com/angular/components/issues/18531) [#18630](https://github.com/angular/components/issues/18630) [#18660](https://github.com/angular/components/issues/18660) [#18753](https://github.com/angular/components/issues/18753) [#18819](https://github.com/angular/components/issues/18819) [#18874](https://github.com/angular/components/issues/18874) [#18884](https://github.com/angular/components/issues/18884) [#18943](https://github.com/angular/components/issues/18943) [#18936](https://github.com/angular/components/issues/18936) [#18980](https://github.com/angular/components/issues/18980) [#19031](https://github.com/angular/components/issues/19031) [#19098](https://github.com/angular/components/issues/19098) [#19088](https://github.com/angular/components/issues/19088) [#19111](https://github.com/angular/components/issues/19111) [#19174](https://github.com/angular/components/issues/19174) [#19088](https://github.com/angular/components/issues/19088) [#19179](https://github.com/angular/components/issues/19179) [#19176](https://github.com/angular/components/issues/19176) [#19187](https://github.com/angular/components/issues/19187) [#19211](https://github.com/angular/components/issues/19211) [#19219](https://github.com/angular/components/issues/19219) [#19239](https://github.com/angular/components/issues/19239) [#19170](https://github.com/angular/components/issues/19170) |
+| feature |  **datepicker:** allow for the dropdown position to be customized ([#16698](https://github.com/angular/components/issues/16698)) ([9104a0b](https://github.com/angular/components/commit/9104a0b)), closes [#16550](https://github.com/angular/components/issues/16550) |
+| feature |  **focus-indicators:** add config map to base focus indicators mixin, adjust default styles ([#19206](https://github.com/angular/components/issues/19206)) ([574345c](https://github.com/angular/components/commit/574345c)) |
+| feature |  **icon:** allow fetching icons with credentials ([#18896](https://github.com/angular/components/issues/18896)) ([77730e9](https://github.com/angular/components/commit/77730e9)), closes [#18871](https://github.com/angular/components/issues/18871) |
+| feature |  **table:** add the ability to show a data row when no data is available ([#18041](https://github.com/angular/components/issues/18041)) ([e512581](https://github.com/angular/components/commit/e512581)) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  add ground overlay component ([#19143](https://github.com/angular/components/issues/19143)) ([eba622a](https://github.com/angular/components/commit/eba622a)) |
+| feature |  expose the underlying Google Maps objects. ([#18613](https://github.com/angular/components/issues/18613)) ([3e00f4c](https://github.com/angular/components/commit/3e00f4c)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **form-field:** add setLabelRequired adapter ([#19284](https://github.com/angular/components/issues/19284)) ([7b42c7e](https://github.com/angular/components/commit/7b42c7e)) |
+| bug fix |  better server-side rendering support for progress bar ([#19036](https://github.com/angular/components/issues/19036)) ([5d25d1b](https://github.com/angular/components/commit/5d25d1b)) |
+
+
 ## 9.2.3 "chalk-hawk" (2020-05-07)
 
 ### cdk
