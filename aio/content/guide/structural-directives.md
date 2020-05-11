@@ -864,7 +864,7 @@ You can provide such a function to help the type-checker infer the proper type f
 
 For example, the `NgIf` implementation uses type-narrowing to ensure that the
 template is only instantiated if the input expression to `*ngIf` is truthy.
-To provide the specific type requirement, the `NgIf` directive defines a [static property `ngTemplateGuard_ngIf: 'binding`](api/common/NgIf#static-properties).
+To provide the specific type requirement, the `NgIf` directive defines a [static property `ngTemplateGuard_ngIf: 'binding'`](api/common/NgIf#static-properties).
 The `binding` value is a special case for a common kind of type-narrowing where the input expression is evaluated in order to satisfy the type requirement.
 
 To provide a more specific type for an input expression to a directive within the template, add a `ngTemplateGuard_xx` property to the directive, where the suffix to the static property name is the `@Input` field name.
