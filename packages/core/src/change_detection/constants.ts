@@ -11,6 +11,8 @@
  * The strategy that the default change detector uses to detect changes.
  * When set, takes effect the next time change detection is triggered.
  *
+ * @see {@link ChangeDetectorRef#usage-notes Change detection usage}
+ *
  * @publicApi
  */
 export enum ChangeDetectionStrategy {
