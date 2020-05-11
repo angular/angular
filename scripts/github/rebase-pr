@@ -29,9 +29,9 @@ echo Rebasing $USER_GIT_URL branch $BRANCH onto $REBASE_ON
 echo =====================================================
 
 git fetch $USER_GIT_URL $BRANCH
-git co FETCH_HEAD
+git checkout FETCH_HEAD
 PUSH_CMD="git push $USER_GIT_URL HEAD:$BRANCH -f";
-RESTORE_CMD="git co $OLD_BRANCH"
+RESTORE_CMD="git checkout $OLD_BRANCH"
 git rebase upstream/master
 if [ $? -eq 0 ]; then
     $PUSH_CMD
