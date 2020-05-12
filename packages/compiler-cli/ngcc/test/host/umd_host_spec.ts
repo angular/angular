@@ -14,7 +14,7 @@ import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DownleveledEnum, Im
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {DelegatingReflectionHost} from '../../src/host/delegating_host';
-import {getIifeBody} from '../../src/host/esm5_host';
+import {getIifeBody} from '../../src/host/esm2015_host';
 import {NgccReflectionHost} from '../../src/host/ngcc_host';
 import {parseStatementForUmdModule, UmdReflectionHost} from '../../src/host/umd_host';
 import {BundleProgram} from '../../src/packages/bundle_program';
@@ -2399,7 +2399,8 @@ runInEachFileSystem(() => {
         const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
         const outerNode = getDeclaration(
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-        const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+        const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                              .statements.find(isNamedFunctionDeclaration)!;
         const classSymbol = host.getClassSymbol(outerNode);
 
         expect(classSymbol).toBeDefined();
@@ -2413,7 +2414,8 @@ runInEachFileSystem(() => {
         const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
         const outerNode = getDeclaration(
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-        const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+        const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                              .statements.find(isNamedFunctionDeclaration)!;
         const classSymbol = host.getClassSymbol(innerNode);
 
         expect(classSymbol).toBeDefined();
@@ -2428,7 +2430,8 @@ runInEachFileSystem(() => {
            const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
            const outerNode = getDeclaration(
                bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-           const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+           const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                                 .statements.find(isNamedFunctionDeclaration)!;
 
            const innerSymbol = host.getClassSymbol(innerNode)!;
            const outerSymbol = host.getClassSymbol(outerNode)!;
@@ -2443,7 +2446,8 @@ runInEachFileSystem(() => {
            const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
            const outerNode = getDeclaration(
                bundle.program, SIMPLE_CLASS_FILE.name, 'NoParensClass', isNamedVariableDeclaration);
-           const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+           const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                                 .statements.find(isNamedFunctionDeclaration)!;
            const classSymbol = host.getClassSymbol(outerNode);
 
            expect(classSymbol).toBeDefined();
@@ -2459,7 +2463,8 @@ runInEachFileSystem(() => {
            const outerNode = getDeclaration(
                bundle.program, SIMPLE_CLASS_FILE.name, 'InnerParensClass',
                isNamedVariableDeclaration);
-           const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+           const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                                 .statements.find(isNamedFunctionDeclaration)!;
            const classSymbol = host.getClassSymbol(outerNode);
 
            expect(classSymbol).toBeDefined();
@@ -2519,7 +2524,8 @@ runInEachFileSystem(() => {
         const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
         const outerNode = getDeclaration(
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
-        const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+        const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                              .statements.find(isNamedFunctionDeclaration)!;
         expect(host.isClass(innerNode)).toBe(true);
       });
 

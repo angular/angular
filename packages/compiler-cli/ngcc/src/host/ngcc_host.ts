@@ -48,6 +48,12 @@ export interface NgccClassSymbol {
    * declaration.
    */
   implementation: ts.Symbol;
+
+  /**
+   * Represents the symbol corresponding to a variable within a class IIFE that may be used to
+   * attach static properties or decorated.
+   */
+  adjacent?: ts.Symbol;
 }
 
 /**

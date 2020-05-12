@@ -133,6 +133,14 @@ runInEachFileSystem(() => {
     class NoDecoratorConstructorClass {
       constructor(foo) {}
     }
+    let SimpleWrappedClass = /** @class */ (() => {
+      class SimpleWrappedClassInner {}
+      return SimpleWrappedClassInner;
+    })();
+    let AliasedWrappedClass = /** @class */ (() => {
+      let AliasedWrappedClassAdjacent = class AliasedWrappedClassInner {};
+      return SimpleWrappedClassAdjacent;
+    })();
   `,
       };
 
@@ -165,6 +173,11 @@ runInEachFileSystem(() => {
         { type: Directive, args: [{ selector: '[someDirective]' },] }
       ];
       return AliasedWrappedClass;
+    })();
+    let DecoratedWrappedClass = /** @class */ (() => {
+      let DecoratedWrappedClass = class DecoratedWrappedClass {}
+      // ... add decorations ...
+      return DecoratedWrappedClass;
     })();
     let usageOfWrappedClass = AliasedWrappedClass_1;
   `,
@@ -534,7 +547,27 @@ runInEachFileSystem(() => {
       { type: Directive, args: [{ selector: '[b]' }] }
     ];
     class C {}
-    export { A, x, C };
+    var AliasedClass_1;
+    let AliasedClass = AliasedClass_1 = class AliasedClass {}
+    AliasedClass.decorators = [
+      { type: Directive, args: [{ selector: '[aliased]' },] }
+    ];
+    let Wrapped1 = /** @class */ (() => {
+      let Wrapped1 = class Wrapped1 {
+      };
+      Wrapped1 = __decorate([
+          Directive({selector: '[wrapped-1]'})
+      ], Wrapped1);
+      return Wrapped1;
+    })();
+    let Wrapped2 = /** @class */ (() => {
+      class Wrapped2 {}
+      Wrapped2.decorators = [
+        { type: Directive, args: [{ selector: '[wrapped-2]' },] }
+      ];
+      return Wrapped2;
+    })();
+    export { A, x, C, AliasedClass, Wrapped1, Wrapped2 };
     `
         },
         {
@@ -1605,6 +1638,30 @@ runInEachFileSystem(() => {
             .toBe(classDeclaration);
       });
 
+      it('should return the correct declaration for an inner class identifier inside an IIFE',
+         () => {
+           loadTestFiles([SIMPLE_CLASS_FILE]);
+           const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+
+           const outerDeclaration = getDeclaration(
+               bundle.program, SIMPLE_CLASS_FILE.name, 'SimpleWrappedClass',
+               isNamedVariableDeclaration);
+           const innerDeclaration =
+               ((((outerDeclaration.initializer as ts.CallExpression).expression as
+                  ts.ParenthesizedExpression)
+                     .expression as ts.ArrowFunction)
+                    .body as ts.Block)
+                   .statements[0] as ts.ClassDeclaration;
+
+           const outerIdentifier = outerDeclaration.name as ts.Identifier;
+           const innerIdentifier = innerDeclaration.name as ts.Identifier;
+
+           expect(host.getDeclarationOfIdentifier(outerIdentifier)!.node).toBe(outerDeclaration);
+           expect(host.getDeclarationOfIdentifier(innerIdentifier)!.node).toBe(outerDeclaration);
+         });
+
       it('should recognize enum declarations with string values', () => {
         const testFile: TestFile = {
           name: _('/node_modules/test-package/some/file.js'),
@@ -1767,6 +1824,7 @@ runInEachFileSystem(() => {
         expect(classSymbol).toBeDefined();
         expect(classSymbol!.declaration.valueDeclaration).toBe(node);
         expect(classSymbol!.implementation.valueDeclaration).toBe(node);
+        expect(classSymbol!.adjacent).toBeUndefined();
       });
 
       it('should return the class symbol for a class expression (outer variable declaration)',
@@ -1784,6 +1842,7 @@ runInEachFileSystem(() => {
            expect(classSymbol).toBeDefined();
            expect(classSymbol!.declaration.valueDeclaration).toBe(outerNode);
            expect(classSymbol!.implementation.valueDeclaration).toBe(innerNode);
+           expect(classSymbol!.adjacent).toBeUndefined();
          });
 
       it('should return the class symbol for a class expression (inner class expression)', () => {
@@ -1798,6 +1857,7 @@ runInEachFileSystem(() => {
         expect(classSymbol).toBeDefined();
         expect(classSymbol!.declaration.valueDeclaration).toBe(outerNode);
         expect(classSymbol!.implementation.valueDeclaration).toBe(innerNode);
+        expect(classSymbol!.adjacent).toBeUndefined();
       });
 
       it('should return the same class symbol (of the outer declaration) for outer and inner declarations',
@@ -1837,6 +1897,7 @@ runInEachFileSystem(() => {
              return fail('Expected a named class declaration');
            }
            expect(classSymbol.implementation.valueDeclaration.name.text).toBe('SimpleWrappedClass');
+           expect(classSymbol.adjacent).toBeUndefined();
          });
 
       it('should return the class symbol for a wrapped class expression (inner class expression)',
@@ -1861,6 +1922,7 @@ runInEachFileSystem(() => {
              return fail('Expected a named class declaration');
            }
            expect(classSymbol.implementation.valueDeclaration.name.text).toBe('SimpleWrappedClass');
+           expect(classSymbol.adjacent).toBeUndefined();
          });
 
       it('should return the same class symbol (of the outer declaration) for wrapped outer and inner declarations',
@@ -1881,6 +1943,87 @@ runInEachFileSystem(() => {
            expect(innerSymbol.implementation).toBe(outerSymbol.implementation);
          });
 
+      it('should return the class symbol for a decorated wrapped class expression (outer variable declaration)',
+         () => {
+           loadTestFiles([WRAPPED_CLASS_EXPRESSION_FILE]);
+           const bundle = makeTestBundleProgram(WRAPPED_CLASS_EXPRESSION_FILE.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+           const outerNode = getDeclaration(
+               bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'DecoratedWrappedClass',
+               isNamedVariableDeclaration);
+           const classSymbol = host.getClassSymbol(outerNode);
+
+           if (classSymbol === undefined) {
+             return fail('Expected classSymbol to be defined');
+           }
+           expect(classSymbol.name).toEqual('DecoratedWrappedClass');
+           expect(classSymbol.declaration.valueDeclaration).toBe(outerNode);
+
+           if (!ts.isClassExpression(classSymbol.implementation.valueDeclaration)) {
+             return fail('Expected a named class declaration');
+           }
+           expect(classSymbol.implementation.valueDeclaration.name!.text)
+               .toBe('DecoratedWrappedClass');
+
+           if (classSymbol.adjacent === undefined ||
+               !isNamedVariableDeclaration(classSymbol.adjacent.valueDeclaration)) {
+             return fail('Expected a named variable declaration for the adjacent symbol');
+           }
+           expect(classSymbol.adjacent.valueDeclaration.name.text).toBe('DecoratedWrappedClass');
+         });
+
+      it('should return the class symbol for a decorated wrapped class expression (inner class expression)',
+         () => {
+           loadTestFiles([WRAPPED_CLASS_EXPRESSION_FILE]);
+           const bundle = makeTestBundleProgram(WRAPPED_CLASS_EXPRESSION_FILE.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+           const outerNode = getDeclaration(
+               bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'DecoratedWrappedClass',
+               isNamedVariableDeclaration);
+           const innerNode: ts.ClassExpression =
+               (outerNode as any)
+                   .initializer.expression.expression.body.statements[0]
+                   .declarationList.declarations[0]
+                   .initializer;
+           const classSymbol = host.getClassSymbol(innerNode);
+
+           if (classSymbol === undefined) {
+             return fail('Expected classSymbol to be defined');
+           }
+           expect(classSymbol.name).toEqual('DecoratedWrappedClass');
+           expect(classSymbol.declaration.valueDeclaration).toBe(outerNode);
+           expect(classSymbol.implementation.valueDeclaration).toBe(innerNode);
+
+           if (classSymbol.adjacent === undefined ||
+               !isNamedVariableDeclaration(classSymbol.adjacent.valueDeclaration)) {
+             return fail('Expected a named variable declaration for the adjacent symbol');
+           }
+           expect(classSymbol.adjacent.valueDeclaration.name.text).toBe('DecoratedWrappedClass');
+         });
+
+      it('should return the same class symbol (of the outer declaration) for decorated wrapped outer and inner declarations',
+         () => {
+           loadTestFiles([WRAPPED_CLASS_EXPRESSION_FILE]);
+           const bundle = makeTestBundleProgram(WRAPPED_CLASS_EXPRESSION_FILE.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+           const outerNode = getDeclaration(
+               bundle.program, WRAPPED_CLASS_EXPRESSION_FILE.name, 'DecoratedWrappedClass',
+               isNamedVariableDeclaration);
+           const innerNode: ts.ClassExpression =
+               (outerNode as any)
+                   .initializer.expression.expression.body.statements[0]
+                   .declarationList.declarations[0]
+                   .initializer;
+
+           const innerSymbol = host.getClassSymbol(innerNode)!;
+           const outerSymbol = host.getClassSymbol(outerNode)!;
+           expect(innerSymbol.declaration).toBe(outerSymbol.declaration);
+           expect(innerSymbol.implementation).toBe(outerSymbol.implementation);
+         });
+
       it('should return undefined if node is not a class', () => {
         loadTestFiles([FOO_FUNCTION_FILE]);
         const bundle = makeTestBundleProgram(FOO_FUNCTION_FILE.name);
@@ -1892,7 +2035,7 @@ runInEachFileSystem(() => {
         expect(classSymbol).toBeUndefined();
       });
 
-      it('should return undefined if variable declaration is not initialized using a class expression',
+      it('should return undefined if variable declaration is not initialized to a valid class definition',
          () => {
            const testFile = {
              name: _('/test.js'),
@@ -2115,8 +2258,9 @@ runInEachFileSystem(() => {
         const secondaryFile = getSourceFileOrError(bundle.program, DECORATED_FILES[1].name);
 
         const classSymbolsPrimary = host.findClassSymbols(primaryFile);
-        expect(classSymbolsPrimary.length).toEqual(3);
-        expect(classSymbolsPrimary.map(c => c.name)).toEqual(['A', 'B', 'C']);
+        expect(classSymbolsPrimary.map(c => c.name)).toEqual([
+          'A', 'B', 'C', 'AliasedClass', 'Wrapped1', 'Wrapped2'
+        ]);
 
         const classSymbolsSecondary = host.findClassSymbols(secondaryFile);
         expect(classSymbolsSecondary.length).toEqual(1);
@@ -2134,10 +2278,14 @@ runInEachFileSystem(() => {
 
         const classSymbolsPrimary = host.findClassSymbols(primaryFile);
         const classDecoratorsPrimary = classSymbolsPrimary.map(s => host.getDecoratorsOfSymbol(s));
-        expect(classDecoratorsPrimary.length).toEqual(3);
+
+        expect(classDecoratorsPrimary.length).toEqual(6);
         expect(classDecoratorsPrimary[0]!.map(d => d.name)).toEqual(['Directive']);
         expect(classDecoratorsPrimary[1]!.map(d => d.name)).toEqual(['Directive']);
         expect(classDecoratorsPrimary[2]).toBe(null);
+        expect(classDecoratorsPrimary[3]!.map(d => d.name)).toEqual(['Directive']);
+        expect(classDecoratorsPrimary[4]!.map(d => d.name)).toEqual(['Directive']);
+        expect(classDecoratorsPrimary[5]!.map(d => d.name)).toEqual(['Directive']);
 
         const classSymbolsSecondary = host.findClassSymbols(secondaryFile);
         const classDecoratorsSecondary =
@@ -2339,7 +2487,7 @@ runInEachFileSystem(() => {
     });
 
     describe('getInternalNameOfClass()', () => {
-      it('should return the name of the class (there is no separate inner class in ES2015)', () => {
+      it('should return the name of the class (if there is no separate inner class)', () => {
         loadTestFiles([SIMPLE_CLASS_FILE]);
         const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
         const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
@@ -2347,10 +2495,32 @@ runInEachFileSystem(() => {
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
         expect(host.getInternalNameOfClass(node).text).toEqual('EmptyClass');
       });
+
+      it('should return the name of the inner class (if there is an IIFE)', () => {
+        loadTestFiles([SIMPLE_CLASS_FILE]);
+        const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+        const node = getDeclaration(
+            bundle.program, SIMPLE_CLASS_FILE.name, 'SimpleWrappedClass',
+            isNamedVariableDeclaration);
+        expect(host.getInternalNameOfClass(node).text).toEqual('SimpleWrappedClassInner');
+      });
+
+      it('should return the name of the inner variable declaration (if there is an aliased class in an IIFE)',
+         () => {
+           loadTestFiles([SIMPLE_CLASS_FILE]);
+           const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+           const node = getDeclaration(
+               bundle.program, SIMPLE_CLASS_FILE.name, 'AliasedWrappedClass',
+               isNamedVariableDeclaration);
+           expect(host.getInternalNameOfClass(node).text).toEqual('AliasedWrappedClassInner');
+         });
     });
 
     describe('getAdjacentNameOfClass()', () => {
-      it('should return the name of the class (there is no separate inner class in ES2015)', () => {
+      it('should return the name of the class (if there is no separate inner class)', () => {
         loadTestFiles([SIMPLE_CLASS_FILE]);
         const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
         const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
@@ -2358,6 +2528,28 @@ runInEachFileSystem(() => {
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
         expect(host.getAdjacentNameOfClass(node).text).toEqual('EmptyClass');
       });
+
+      it('should return the name of the inner class (if there is an IIFE)', () => {
+        loadTestFiles([SIMPLE_CLASS_FILE]);
+        const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+        const host = createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+        const node = getDeclaration(
+            bundle.program, SIMPLE_CLASS_FILE.name, 'SimpleWrappedClass',
+            isNamedVariableDeclaration);
+        expect(host.getAdjacentNameOfClass(node).text).toEqual('SimpleWrappedClassInner');
+      });
+
+      it('should return the name of the inner variable declaration (if there is an aliased class in an IIFE)',
+         () => {
+           loadTestFiles([SIMPLE_CLASS_FILE]);
+           const bundle = makeTestBundleProgram(SIMPLE_CLASS_FILE.name);
+           const host =
+               createHost(bundle, new Esm2015ReflectionHost(new MockLogger(), false, bundle));
+           const node = getDeclaration(
+               bundle.program, SIMPLE_CLASS_FILE.name, 'AliasedWrappedClass',
+               isNamedVariableDeclaration);
+           expect(host.getAdjacentNameOfClass(node).text).toEqual('AliasedWrappedClassAdjacent');
+         });
     });
 
     describe('getEndOfClass()', () => {

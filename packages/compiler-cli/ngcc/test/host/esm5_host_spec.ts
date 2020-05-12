@@ -14,8 +14,8 @@ import {ClassMemberKind, ConcreteDeclaration, CtorParameter, Decorator, Downleve
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {DelegatingReflectionHost} from '../../src/host/delegating_host';
-import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {Esm5ReflectionHost, getIifeBody} from '../../src/host/esm5_host';
+import {Esm2015ReflectionHost, getIifeBody} from '../../src/host/esm2015_host';
+import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {NgccReflectionHost} from '../../src/host/ngcc_host';
 import {BundleProgram} from '../../src/packages/bundle_program';
 import {MockLogger} from '../helpers/mock_logger';
@@ -2283,7 +2283,8 @@ runInEachFileSystem(() => {
         const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
         const outerNode = getDeclaration(
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-        const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+        const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                              .statements.find(isNamedFunctionDeclaration)!;
         const classSymbol = host.getClassSymbol(outerNode);
 
         expect(classSymbol).toBeDefined();
@@ -2297,7 +2298,8 @@ runInEachFileSystem(() => {
         const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
         const outerNode = getDeclaration(
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-        const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+        const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                              .statements.find(isNamedFunctionDeclaration)!;
         const classSymbol = host.getClassSymbol(innerNode);
 
         expect(classSymbol).toBeDefined();
@@ -2312,7 +2314,8 @@ runInEachFileSystem(() => {
            const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
            const outerNode = getDeclaration(
                bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-           const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+           const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                                 .statements.find(isNamedFunctionDeclaration)!;
 
            const innerSymbol = host.getClassSymbol(innerNode)!;
            const outerSymbol = host.getClassSymbol(outerNode)!;
@@ -2327,7 +2330,8 @@ runInEachFileSystem(() => {
            const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
            const outerNode = getDeclaration(
                bundle.program, SIMPLE_CLASS_FILE.name, 'NoParensClass', isNamedVariableDeclaration);
-           const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+           const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                                 .statements.find(isNamedFunctionDeclaration)!;
            const classSymbol = host.getClassSymbol(outerNode);
 
            expect(classSymbol).toBeDefined();
@@ -2343,7 +2347,8 @@ runInEachFileSystem(() => {
            const outerNode = getDeclaration(
                bundle.program, SIMPLE_CLASS_FILE.name, 'InnerParensClass',
                isNamedVariableDeclaration);
-           const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+           const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                                 .statements.find(isNamedFunctionDeclaration)!;
            const classSymbol = host.getClassSymbol(outerNode);
 
            expect(classSymbol).toBeDefined();
@@ -2403,7 +2408,8 @@ runInEachFileSystem(() => {
         const host = createHost(bundle, new Esm5ReflectionHost(new MockLogger(), false, bundle));
         const outerNode = getDeclaration(
             bundle.program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
-        const innerNode = getIifeBody(outerNode)!.statements.find(isNamedFunctionDeclaration)!;
+        const innerNode = (getIifeBody(outerNode.initializer!) as ts.Block)
+                              .statements.find(isNamedFunctionDeclaration)!;
         expect(host.isClass(innerNode)).toBe(true);
       });
 
