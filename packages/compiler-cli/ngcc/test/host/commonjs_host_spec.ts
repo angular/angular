@@ -517,8 +517,8 @@ var c = file_a.a;
               `var b_module = require('./b_module');\n` +
               `var xtra_module = require('./xtra_module');\n` +
               `var wildcard_reexports_emitted_helpers = require('./wildcard_reexports_emitted_helpers');\n` +
-              `var wildcard_reexports_imported_helpers = require('./wildcard_reexports_imported_helpers');\n`,
-
+              `var wildcard_reexports_imported_helpers = require('./wildcard_reexports_imported_helpers');\n` +
+              `var define_property_reexports = require('./define_property_reexports');\n`
         },
         {
           name: _('/a_module.js'),
@@ -570,6 +570,11 @@ var c = file_a.a;
               `tslib_1.__exportStar(b_module, exports);\n` +
               `tslib_1.__exportStar(require("./xtra_module"), exports);\n`,
         },
+        {
+          name: _('/define_property_reexports.js'),
+          contents: `var moduleA = require("./a_module");\n` +
+              `Object.defineProperty(exports, "newA", { enumerable: true, get: function () { return moduleA.a; } });`,
+        }
       ];
 
       FUNCTION_BODY_FILE = {
@@ -2178,6 +2183,22 @@ exports.MissingClass2 = MissingClass2;
                 ['__spread', KnownDeclaration.TsHelperSpread],
                 ['__spreadArrays', KnownDeclaration.TsHelperSpreadArrays],
                 ['__unknownHelper', null],
+              ]);
+        });
+
+        it('should define property exports from a module', () => {
+          loadFakeCore(getFileSystem());
+          loadTestFiles(EXPORTS_FILES);
+          const bundle = makeTestBundleProgram(_('/index.js'));
+          const host =
+              createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
+          const file = getSourceFileOrError(bundle.program, _('/define_property_reexports.js'));
+          const exportDeclarations = host.getExportsOfModule(file);
+          expect(exportDeclarations).not.toBe(null);
+          expect(Array.from(exportDeclarations!.entries())
+                     .map(entry => [entry[0], entry[1].node!.getText(), entry[1].viaModule]))
+              .toEqual([
+                ['newA', `a = 'a'`, null],
               ]);
         });
       });
