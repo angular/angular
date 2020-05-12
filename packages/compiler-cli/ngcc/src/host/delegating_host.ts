@@ -32,7 +32,8 @@ export class DelegatingReflectionHost implements NgccReflectionHost {
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
     if (isFromDtsFile(id)) {
-      return this.detectKnownDeclaration(this.tsHost.getDeclarationOfIdentifier(id));
+      const declaration = this.tsHost.getDeclarationOfIdentifier(id);
+      return declaration !== null ? this.detectKnownDeclaration(declaration) : null;
     }
     return this.ngccHost.getDeclarationOfIdentifier(id);
   }
@@ -157,10 +158,7 @@ export class DelegatingReflectionHost implements NgccReflectionHost {
     return this.ngccHost.getEndOfClass(classSymbol);
   }
 
-  detectKnownDeclaration(decl: null): null;
-  detectKnownDeclaration<T extends Declaration>(decl: T): T;
-  detectKnownDeclaration<T extends Declaration>(decl: T|null): T|null;
-  detectKnownDeclaration<T extends Declaration>(decl: T|null): T|null {
+  detectKnownDeclaration<T extends Declaration>(decl: T): T {
     return this.ngccHost.detectKnownDeclaration(decl);
   }
 }
