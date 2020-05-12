@@ -11,7 +11,6 @@ ts_library(
         "@npm//@types/node",
         "@npm//@types/yargs",
         "@npm//chalk",
-        "@npm//tslib",
         "@npm//typescript",
     ],
 )

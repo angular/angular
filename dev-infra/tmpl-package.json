@@ -8,19 +8,21 @@
     "ng-dev": "./cli.js",
     "ts-circular-deps": "./ts-circular-dependencies/index.js"
   },
-  "peerDependencies": {
-    "@bazel/buildifier": "<from-root>",
+  "dependencies": {
     "chalk": "<from-root>",
-    "clang-format": "<from-root>",
     "cli-progress": "<from-root>",
     "glob": "<from-root>",
     "inquirer": "<from-root>",
     "minimatch": "<from-root>",
     "multimatch": "<from-root>",
     "shelljs": "<from-root>",
-    "typescript": "<from-root>",
     "yaml": "<from-root>",
-    "yargs": "<from-root>",
-    "tslib": "<from-root>"
+    "yargs": "<from-root>"
+  },
+  "peerDependencies": {
+    "@bazel/buildifier": "<from-root>",
+    "clang-format": "<from-root>",
+    "tslib": "<from-root>",
+    "typescript": "<from-root>"
   }
 }
