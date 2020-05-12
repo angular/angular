@@ -1198,9 +1198,7 @@ describe('Undecorated classes with DI migration', () => {
         @Directive({
             selector: 'my-dir',
             template: SHARED_TEMPLATE_URL,
-            styleUrls: [
-                LOCAL_NAME
-            ]
+            styleUrls: [LOCAL_NAME]
         })
         export class MyDir extends BaseClass {}`);
     });

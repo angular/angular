@@ -142,21 +142,24 @@ describe('compiler compliance: providers', () => {
     const result = compile(files, angularFiles);
     expectEmit(
         result.source, `
-    export class MyComponent {
-    }
-    MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-    MyComponent.ɵcmp = i0.ɵɵdefineComponent({
-      type: MyComponent,
-      selectors: [["my-component"]],
-      decls: 1,
-      vars: 0,
-      template: function MyComponent_Template(rf, ctx) {
-        if (rf & 1) {
-          i0.ɵɵelement(0, "div");
-        }
-      },
-      encapsulation: 2
-    });`,
+        let MyComponent = /** @class */ (() => {
+          class MyComponent {
+          }
+          MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
+          MyComponent.ɵcmp = i0.ɵɵdefineComponent({
+            type: MyComponent,
+            selectors: [["my-component"]],
+            decls: 1,
+            vars: 0,
+            template: function MyComponent_Template(rf, ctx) {
+              if (rf & 1) {
+                i0.ɵɵelement(0, "div");
+              }
+            },
+            encapsulation: 2
+          });
+          return MyComponent;
+        })();`,
         'Incorrect features');
   });
 });

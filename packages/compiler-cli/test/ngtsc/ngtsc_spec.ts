@@ -391,11 +391,11 @@ runInEachFileSystem(os => {
         });
 
         /**
-         * The following set of tests verify that after Tsickle run we do not have cases which
-         * trigger automatic semicolon insertion, which breaks the code. In order to avoid the
-         * problem, we wrap all function expressions in certain fields ("providers" and
-         * "viewProviders") in parentheses. More info on Tsickle processing related to this case can
-         * be found here:
+         * The following set of tests verify that after Tsickle run we do not have cases
+         * which trigger automatic semicolon insertion, which breaks the code. In order
+         * to avoid the problem, we wrap all function expressions in certain fields
+         * ("providers" and "viewProviders") in parentheses. More info on Tsickle
+         * processing related to this case can be found here:
          * https://github.com/angular/tsickle/blob/d7974262571c8a17d684e5ba07680e1b1993afdd/src/jsdoc_transformer.ts#L1021
          */
         describe('wrap functions in certain fields in parentheses', () => {
@@ -422,8 +422,9 @@ runInEachFileSystem(os => {
             `;
 
           const verifyOutput = (jsContents: string) => {
-            // verify that there is no pattern that triggers automatic semicolon insertion
-            // by checking that there are no return statements not wrapped in parentheses
+            // verify that there is no pattern that triggers automatic semicolon
+            // insertion by checking that there are no return statements not wrapped in
+            // parentheses
             expect(trim(jsContents)).not.toContain(trim(`
               return /**
               * @return {?}
@@ -1119,7 +1120,7 @@ runInEachFileSystem(os => {
           .toContain(
               'i0.ɵɵdefineInjector({ factory: function TestModule_Factory(t) ' +
               '{ return new (t || TestModule)(); }, imports: [[OtherModule, RouterModule.forRoot()],' +
-              '\n            OtherModule,\n            RouterModule] });');
+              ' OtherModule, RouterModule] });');
     });
 
     it('should compile NgModules with services without errors', () => {
@@ -2018,7 +2019,8 @@ runInEachFileSystem(os => {
         expect(dtsContents).toContain('PipeDefWithMeta<TestPipe');
         expect(dtsContents).toContain('ɵɵNgModuleDefWithMeta<TestNgModule');
 
-        // Validate that each class's .d.ts declaration also has an injectable definition.
+        // Validate that each class's .d.ts declaration also has an injectable
+        // definition.
         expect(dtsContents).toContain('InjectableDef<TestCmp');
         expect(dtsContents).toContain('InjectableDef<TestDir');
         expect(dtsContents).toContain('InjectableDef<TestPipe');
@@ -2845,8 +2847,9 @@ runInEachFileSystem(os => {
       expect(jsContents).toMatch(contentQueryRegExp('\\w+', true, 'TemplateRef'));
 
       // match `i0.ɵɵviewQuery(_c2, true)`
-      // Note that while ViewQuery doesn't necessarily make sense on a directive, because it doesn't
-      // have a view, we still need to handle it because a component could extend the directive.
+      // Note that while ViewQuery doesn't necessarily make sense on a directive,
+      // because it doesn't have a view, we still need to handle it because a component
+      // could extend the directive.
       expect(jsContents).toMatch(viewQueryRegExp('\\w+', true));
     });
 
@@ -3317,7 +3320,8 @@ runInEachFileSystem(os => {
      class FooCmp {}`);
          env.driveMain();
          const jsContents = env.getContents('test.js');
-         // Note that the colon would only be there if there is an id attached to the string.
+         // Note that the colon would only be there if there is an id attached to the
+         // string.
          expect(jsContents).not.toContain(':Some text');
        });
 
@@ -3679,7 +3683,7 @@ runInEachFileSystem(os => {
           env.write('test.ts', `/** I am a top-level comment. */
 
             import {NgModule} from '@angular/core';
-  
+
             @NgModule({})
             export class TestModule {}
           `);
@@ -4437,10 +4441,11 @@ runInEachFileSystem(os => {
     });
 
     it('should compile programs with typeRoots', () => {
-      // Write out a custom tsconfig.json that includes 'typeRoots' and 'files'. 'files' is
-      // necessary because otherwise TS picks up the testTypeRoot/test/index.d.ts file into the
-      // program automatically. Shims are also turned on because the shim ts.CompilerHost wrapper
-      // can break typeRoot functionality (which this test is meant to detect).
+      // Write out a custom tsconfig.json that includes 'typeRoots' and 'files'. 'files'
+      // is necessary because otherwise TS picks up the testTypeRoot/test/index.d.ts
+      // file into the program automatically. Shims are also turned on because the shim
+      // ts.CompilerHost wrapper can break typeRoot functionality (which this test is
+      // meant to detect).
       env.write('tsconfig.json', `{
       "extends": "./tsconfig-base.json",
       "angularCompilerOptions": {
@@ -4613,8 +4618,9 @@ runInEachFileSystem(os => {
       });
     });
 
-    // Run checks that are present in preanalysis phase in both sync and async mode, to make sure
-    // the error messages are consistently thrown from `analyzeSync` and `analyzeAsync` functions.
+    // Run checks that are present in preanalysis phase in both sync and async mode, to
+    // make sure the error messages are consistently thrown from `analyzeSync` and
+    // `analyzeAsync` functions.
     ['sync', 'async'].forEach(mode => {
       describe(`preanalysis phase checks [${mode}]`, () => {
         let driveDiagnostics: () => Promise<ReadonlyArray<ts.Diagnostic>>;
@@ -5278,7 +5284,7 @@ runInEachFileSystem(os => {
           });
           env.write(`test.ts`, `
             import {Component} from '@angular/core';
-    
+
             @Component({
               template: '<div class="test"></div>',
             })
@@ -6172,8 +6178,8 @@ export const Foo = Foo__PRE_R3__;
         }
       `);
 
-        // The application imports BetaModule from beta, gaining visibility of ExternalDir from
-        // alpha.
+        // The application imports BetaModule from beta, gaining visibility of
+        // ExternalDir from alpha.
         env.write('test.ts', `
         import {Component, NgModule} from '@angular/core';
         import {BetaModule} from './beta';

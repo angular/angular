@@ -140,7 +140,7 @@
     "tsickle": "0.38.1",
     "tslib": "^1.10.0",
     "tslint": "6.0.0",
-    "typescript": "~3.8.3",
+    "typescript": "~3.9.2",
     "xhr2": "0.2.0",
     "yaml": "^1.7.2",
     "yargs": "15.3.0"

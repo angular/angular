@@ -32,7 +32,7 @@ import {AsyncLocker} from './locking/async_locker';
 import {LockFileWithChildProcess} from './locking/lock_file_with_child_process';
 import {SyncLocker} from './locking/sync_locker';
 import {Logger} from './logging/logger';
-import {AsyncNgccOptions, getSharedSetup, NgccOptions, SyncNgccOptions} from './ngcc_options';
+import {AsyncNgccOptions, getSharedSetup, SyncNgccOptions} from './ngcc_options';
 import {NgccConfiguration} from './packages/configuration';
 import {EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point';
 import {EntryPointManifest, InvalidatingEntryPointManifest} from './packages/entry_point_manifest';
@@ -48,9 +48,9 @@ import {DirectPackageJsonUpdater, PackageJsonUpdater} from './writing/package_js
  *
  * @param options The options telling ngcc what to compile and how.
  */
-export function mainNgcc(options: AsyncNgccOptions): Promise<void>;
-export function mainNgcc(options: SyncNgccOptions): void;
-export function mainNgcc(options: NgccOptions): void|Promise<void> {
+export function mainNgcc<T extends AsyncNgccOptions|SyncNgccOptions>(options: T):
+    T extends AsyncNgccOptions ? Promise<void>: void;
+export function mainNgcc(options: AsyncNgccOptions|SyncNgccOptions): void|Promise<void> {
   const {
     basePath,
     targetEntryPointPath,
