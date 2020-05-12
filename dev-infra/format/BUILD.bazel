@@ -18,7 +18,6 @@ ts_library(
         "@npm//inquirer",
         "@npm//multimatch",
         "@npm//shelljs",
-        "@npm//tslib",
         "@npm//yargs",
     ],
 )
