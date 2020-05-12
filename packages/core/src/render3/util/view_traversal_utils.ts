@@ -8,8 +8,10 @@
 
 import {assertDefined} from '../../util/assert';
 import {assertLView} from '../assert';
+import {LContainer} from '../interfaces/container';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, RootContext} from '../interfaces/view';
+import {CHILD_HEAD, CONTEXT, FLAGS, LView, LViewFlags, NEXT, PARENT, RootContext} from '../interfaces/view';
+
 import {readPatchedLView} from './view_utils';
 
 
@@ -52,4 +54,27 @@ export function getRootContext(viewOrComponent: LView|{}): RootContext {
   ngDevMode &&
       assertDefined(rootView[CONTEXT], 'RootView has no context. Perhaps it is disconnected?');
   return rootView[CONTEXT] as RootContext;
+}
+
+
+/**
+ * Gets the first `LContainer` in the LView or `null` if none exists.
+ */
+export function getFirstLContainer(lView: LView): LContainer|null {
+  let viewOrContainer = lView[CHILD_HEAD];
+  while (viewOrContainer !== null && !isLContainer(viewOrContainer)) {
+    viewOrContainer = viewOrContainer[NEXT];
+  }
+  return viewOrContainer;
+}
+
+/**
+ * Gets the next `LContainer` that is a sibling of the given container.
+ */
+export function getNextLContainer(container: LContainer): LContainer|null {
+  let viewOrContainer = container[NEXT];
+  while (viewOrContainer !== null && !isLContainer(viewOrContainer)) {
+    viewOrContainer = viewOrContainer[NEXT];
+  }
+  return viewOrContainer;
 }
