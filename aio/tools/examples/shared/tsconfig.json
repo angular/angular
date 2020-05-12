@@ -13,9 +13,7 @@
     "suppressImplicitAnyIndexErrors": true,
     "typeRoots": [
       "node_modules/@types"
-    ],
-    // TODO(FW-2145): turn lib checks back on after fixing in-memory-api and investigating impact of ModuleWithProviders
-    "skipLibCheck": true
+    ]
   },
   "include": [
     "../../../content/examples/*/e2e-spec.ts"
