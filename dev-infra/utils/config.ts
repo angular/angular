@@ -15,7 +15,7 @@ type CommonConfig = {
 };
 
 /**
- * The configuration for the specific ng-dev command, providing the both the common
+ * The configuration for the specific ng-dev command, providing both the common
  * ng-dev config as well as the specific config of a subcommand.
  */
 export type NgDevConfig<T = {}> = CommonConfig&T;
@@ -24,16 +24,14 @@ export type NgDevConfig<T = {}> = CommonConfig&T;
  * Configuration loader object, providing information needed to load and validate
  * the configuration.
  */
-export type ConfigLoader<T> = {
-  validator: (config: any, errors: string[]) => config is T,
-};
+export type ConfigValidator<T> = (config: any, errors: string[]) => config is T;
 
 // The filename expected for creating the ng-dev config, without the file
 // extension to allow either a typescript or javascript file to be used.
 const CONFIG_FILE_NAME = '.ng-dev-config';
 
 /** The configuration for ng-dev. */
-let CONFIG: any;
+let CONFIG: {}|null = null;
 
 /** Get the configuration for ng-dev, only validating the common configuration. */
 export function getConfig(): NgDevConfig;
@@ -41,8 +39,8 @@ export function getConfig(): NgDevConfig;
  * Get the configuration for ng-dev, validating the config is correct for the common
  * configuration as well as the provided subcommand's validator.
  */
-export function getConfig<T extends NgDevConfig>(loader: ConfigLoader<T>): T;
-export function getConfig<T extends NgDevConfig>(loader?: ConfigLoader<T>) {
+export function getConfig<T extends NgDevConfig>(validator: ConfigValidator<T>): T;
+export function getConfig<T extends NgDevConfig>(validator?: ConfigValidator<T>) {
   // List of errors discovered by validators.
   const errors: string[] = [];
   // The unvalidated ng-dev configuration.
@@ -53,8 +51,8 @@ export function getConfig<T extends NgDevConfig>(loader?: ConfigLoader<T>) {
 
   // If a validator is provided, run it to ensure the sub command's configuration
   // requirements are met.
-  if (loader?.validator !== undefined) {
-    loader.validator(config, errors);
+  if (validator !== undefined) {
+    validator(config, errors);
   }
   // If any errors are defined, log them to the user and exit as a failure.
   if (errors.length !== 0) {
@@ -78,20 +76,17 @@ function validateCommonConfig(config: Partial<NgDevConfig<CommonConfig>>, errors
  * is defined.
  */
 function loadConfig() {
-  // If the global config is defined, return a clone of it rather than reloading from
-  // the  file system.  A clone is to ensure that a new instance of the config is returned
-  // each time, preventing unexpected effects of modifications to the config object.
-  if (CONFIG) {
-    return {...CONFIG};
+  // If the global config is not defined, load it from the file system.
+  if (CONFIG === null) {
+    // The full path to the configuration file.
+    const configPath = join(getRepoBaseDir(), CONFIG_FILE_NAME);
+    // Set the global config object to a clone of the configuration loaded through default exports
+    // from the config file.
+    CONFIG = {...require(configPath)};
   }
-  // The full path to the configuration file.
-  const configPath = join(getRepoBaseDir(), CONFIG_FILE_NAME);
-  // A clone of the configuration loaded through default exports from the config file.
-  const config = {...require(configPath)};
-  // Set the global config object to a clone of newly loaded config.
-  CONFIG = {...config};
-
-  return config;
+  // Return a clone of the global config to ensure that a new instance of the config is returned
+  // each time, preventing unexpected effects of modifications to the config object.
+  return {...CONFIG};
 }
 
 /** Gets the path of the directory for the repository base. */

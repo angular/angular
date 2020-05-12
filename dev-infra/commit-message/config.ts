@@ -15,10 +15,6 @@ export interface CommitMessageConfig {
   scopes: string[];
 }
 
-export const COMMIT_MESSAGE = {
-  validator: isCommitMessageConfig,
-};
-
 /** Validate the configuration correctly provides commitMessage information. */
 export function isCommitMessageConfig(
     config: any, errors: string[]): config is NgDevConfig<{commitMessage: CommitMessageConfig}> {

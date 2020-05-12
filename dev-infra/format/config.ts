@@ -16,10 +16,6 @@ export interface Format {
   [keyof: string]: boolean|Formatter;
 }
 
-export const FORMAT = {
-  validator: isFormatConfig,
-};
-
 /** Validate the configuration correctly provides format information. */
 export function isFormatConfig(
     config: any, errors: string[]): config is NgDevConfig<{format: Format}> {
