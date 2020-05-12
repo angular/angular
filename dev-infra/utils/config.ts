@@ -11,7 +11,11 @@ import {exec} from 'shelljs';
 
 /** The common configuration for ng-dev. */
 type CommonConfig = {
-    // TODO: add common configuration
+  // Github repository configuration used for API Requests, determining upstream remote, etc.
+  github: {
+    owner: string;
+    name: string;
+  }
 };
 
 /**
@@ -46,9 +50,21 @@ export function getConfig(): NgDevConfig {
 }
 
 /** Validate the common configuration has been met for the ng-dev command. */
-function validateCommonConfig(config: NgDevConfig<CommonConfig>) {
-  // TODO: add validation for the common configuration
-  return config;
+function validateCommonConfig(config: Partial<NgDevConfig>) {
+  const errors: string[] = [];
+  // Validate the github configuration.
+  if (config.github === undefined) {
+    errors.push(`Github repository not configured. Set the "github" option.`);
+  } else {
+    if (config.github.name === undefined) {
+      errors.push(`"github.name" is not defined`);
+    }
+    if (config.github.owner === undefined) {
+      errors.push(`"github.owner" is not defined`);
+    }
+  }
+
+  return config as NgDevConfig;
 }
 
 /**
