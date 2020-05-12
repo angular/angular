@@ -17,7 +17,6 @@ const sourceMap = require('source-map');
 
 const someGenFilePath = '/somePackage/someGenFile';
 const someGenFileName = someGenFilePath + '.ts';
-const someSourceFilePath = '/somePackage/someSourceFile';
 const anotherModuleUrl = '/somePackage/someOtherPath';
 
 const sameModuleIdentifier = new o.ExternalReference(null, 'someLocalId', null);
@@ -45,7 +44,7 @@ describe('TypeScriptNodeEmitter', () => {
         [someGenFileName], {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2017}, host);
     const moduleSourceFile = program.getSourceFile(someGenFileName);
     const transformers: ts.CustomTransformers = {
-      before: [context => {
+      before: [() => {
         return sourceFile => {
           const [newSourceFile] = emitter.updateSourceFile(sourceFile, stmts, preamble);
           return newSourceFile;
@@ -53,12 +52,11 @@ describe('TypeScriptNodeEmitter', () => {
       }]
     };
     let result: string = '';
-    const emitResult = program.emit(
-        moduleSourceFile, (fileName, data, writeByteOrderMark, onError, sourceFiles) => {
-          if (fileName.startsWith(someGenFilePath)) {
-            result = data;
-          }
-        }, undefined, undefined, transformers);
+    program.emit(moduleSourceFile, (fileName, data) => {
+      if (fileName.startsWith(someGenFilePath)) {
+        result = data;
+      }
+    }, undefined, undefined, transformers);
     return normalizeResult(result, format);
   }
 
@@ -92,24 +90,42 @@ describe('TypeScriptNodeEmitter', () => {
     });
 
     it('should create a reexport', () => {
-      expect(emitStmt(someVar.set(o.importExpr(externalModuleIdentifier))
-                          .toDeclStmt(null, [o.StmtModifier.Exported])))
-          .toEqual(
-              `var someOtherPath_1 = require("/somePackage/someOtherPath"); exports.someVar = someOtherPath_1.someExternalId;`);
+      const result = emitStmt(someVar.set(o.importExpr(externalModuleIdentifier)).toDeclStmt(null, [
+        o.StmtModifier.Exported
+      ]));
+      expect(result).toContain(`var someOtherPath_1 = require("/somePackage/someOtherPath");`);
+      if (!result.includes('exports.someVar = someOtherPath_1.someExternalId;') &&
+          // In TS 3.9 re-exports of namespaced imports are defined as getters
+          !result.includes(
+              'Object.defineProperty(exports, "someVar", { enumerable: true, get: function () { return someOtherPath_1.someExternalId; } });')) {
+        fail(
+            'Expected `someVar` to be exported directly or via a `definedProperty` call. Instead got:\n' +
+            result);
+      }
     });
 
     it('should create multiple reexports from the same file', () => {
       const someVar2 = o.variable('someVar2');
       const externalModuleIdentifier2 =
           new o.ExternalReference(anotherModuleUrl, 'someExternalId2', null);
-      expect(emitStmt([
+      const result = emitStmt([
         someVar.set(o.importExpr(externalModuleIdentifier))
             .toDeclStmt(null, [o.StmtModifier.Exported]),
         someVar2.set(o.importExpr(externalModuleIdentifier2))
             .toDeclStmt(null, [o.StmtModifier.Exported])
-      ]))
-          .toEqual(
-              `var someOtherPath_1 = require("/somePackage/someOtherPath"); exports.someVar = someOtherPath_1.someExternalId; exports.someVar2 = someOtherPath_1.someExternalId2;`);
+      ]);
+      expect(result).toContain(`var someOtherPath_1 = require("/somePackage/someOtherPath");`);
+      if (!result.includes(
+              'exports.someVar = someOtherPath_1.someExternalId;' +
+              'exports.someVar2 = someOtherPath_1.someExternalId2;') &&
+          // In TS 3.9 re-exports of namespaced imports are defined as getters
+          !result.includes(
+              'Object.defineProperty(exports, "someVar", { enumerable: true, get: function () { return someOtherPath_1.someExternalId; } }); ' +
+              'Object.defineProperty(exports, "someVar2", { enumerable: true, get: function () { return someOtherPath_1.someExternalId2; } })')) {
+        fail(
+            'Expected `someVar` and `someVar2` to be exported directly or via a `definedProperty` call. Instead got:\n' +
+            result);
+      }
     });
   });
 
@@ -575,6 +591,10 @@ function normalizeResult(result: string, format: Format): string {
   let res = result.replace('"use strict";', ' ')
                 .replace('exports.__esModule = true;', ' ')
                 .replace('Object.defineProperty(exports, "__esModule", { value: true });', ' ');
+
+  // Remove hoisted initial export assignments. These were added in TS 3.9:
+  // https://github.com/Microsoft/TypeScript/commit/c6c2c4c8d5aa0947de16f484b8c16fb0eab1c48f
+  res = res.replace(/^exports\.\S+ = void 0;$/gm, '');
 
   // Remove new lines
   // Squish adjacent spaces
