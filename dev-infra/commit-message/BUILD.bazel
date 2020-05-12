@@ -18,7 +18,6 @@ ts_library(
         "@npm//@types/shelljs",
         "@npm//@types/yargs",
         "@npm//shelljs",
-        "@npm//tslib",
         "@npm//yargs",
     ],
 )
