@@ -660,6 +660,9 @@
     "name": "getNativeByTNode"
   },
   {
+    "name": "getNearestLContainer"
+  },
+  {
     "name": "getNextLContainer"
   },
   {
