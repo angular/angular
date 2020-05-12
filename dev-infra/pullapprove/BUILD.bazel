@@ -21,7 +21,6 @@ ts_library(
         "@npm//@types/yargs",
         "@npm//minimatch",
         "@npm//shelljs",
-        "@npm//tslib",
         "@npm//yaml",
         "@npm//yargs",
     ],
