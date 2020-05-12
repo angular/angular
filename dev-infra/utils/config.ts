@@ -25,7 +25,7 @@ export type NgDevConfig<T = {}> = CommonConfig&T;
  * the configuration.
  */
 export type ConfigLoader<T> = {
-  validator: (config: any, errors?: string[]) => config is T,
+  validator: (config: any, errors: string[]) => config is T,
 };
 
 // The filename expected for creating the ng-dev config, without the file
@@ -53,8 +53,8 @@ export function getConfig<T extends NgDevConfig>(loader?: ConfigLoader<T>) {
 
   // If a validator is provided, run it to ensure the sub command's configuration
   // requirements are met.
-  if (loader.validator !== undefined) {
-    loader.validator(config);
+  if (loader?.validator !== undefined) {
+    loader.validator(config, errors);
   }
   // If any errors are defined, log them to the user and exit as a failure.
   if (errors.length !== 0) {

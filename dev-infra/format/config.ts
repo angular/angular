@@ -27,7 +27,7 @@ export function isFormatConfig(
 
   if (formatConfig === undefined) {
     errors.push(`No configuration defined for "format"`);
-    return;
+    return false;
   }
 
   for (const [key, value] of Object.entries(formatConfig)) {
@@ -41,7 +41,7 @@ export function isFormatConfig(
         errors.push(`"format.${key}" is not a boolean or Formatter object`);
     }
   }
-  return;
+  return true;
 }
 
 /** Validate an individual Formatter config. */

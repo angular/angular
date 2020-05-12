@@ -25,5 +25,5 @@ export function isCommitMessageConfig(
   if (config.commitMessage === undefined) {
     errors.push(`No configuration defined for "commitMessage"`);
   }
-  return;
+  return true;
 }
