@@ -16,7 +16,7 @@ import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
 import {ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyzer';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {CompiledClass} from '../analysis/types';
-import {isAssignment} from '../host/esm2015_host';
+import {getContainingStatement, isAssignment} from '../host/esm2015_host';
 import {NgccReflectionHost, POST_R3_MARKER, PRE_R3_MARKER, SwitchableVariableDeclaration} from '../host/ngcc_host';
 
 import {RedundantDecoratorMap, RenderingFormatter} from './rendering_formatter';
@@ -104,7 +104,8 @@ export class EsmRenderingFormatter implements RenderingFormatter {
     if (!classSymbol) {
       throw new Error(`Compiled class does not have a valid symbol: ${compiledClass.name}`);
     }
-    const declarationStatement = getDeclarationStatement(classSymbol.declaration.valueDeclaration);
+    const declarationStatement =
+        getContainingStatement(classSymbol.implementation.valueDeclaration);
     const insertionPoint = declarationStatement.getEnd();
     output.appendLeft(insertionPoint, '\n' + definitions);
   }
@@ -275,17 +276,6 @@ export class EsmRenderingFormatter implements RenderingFormatter {
     return (
         id && id.name === 'ModuleWithProviders' && (this.isCore || id.from === '@angular/core'));
   }
-}
-
-function getDeclarationStatement(node: ts.Node): ts.Statement {
-  let statement = node;
-  while (statement) {
-    if (ts.isVariableStatement(statement) || ts.isClassDeclaration(statement)) {
-      return statement;
-    }
-    statement = statement.parent;
-  }
-  throw new Error(`Class is not defined in a declaration statement: ${node.getText()}`);
 }
 
 function findStatement(node: ts.Node): ts.Statement|undefined {
