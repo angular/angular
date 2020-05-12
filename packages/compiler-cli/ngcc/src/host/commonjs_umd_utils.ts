@@ -45,6 +45,20 @@ export interface WildcardReexportStatement extends ts.ExpressionStatement {
   expression: ts.CallExpression;
 }
 
+/**
+ * A CommonJS or UMD re-export statement using an `Object.defineProperty()` call.
+ * For example:
+ *
+ * ```
+ * Object.defineProperty(exports, "<exported-id>",
+ *     { enumerable: true, get: function () { return <imported-id>; } });
+ * ```
+ */
+export interface DefinePropertyReexportStatement extends ts.ExpressionStatement {
+  expression: ts.CallExpression&
+      {arguments: [ts.Identifier, ts.StringLiteral, ts.ObjectLiteralExpression]};
+}
+
 export interface RequireCall extends ts.CallExpression {
   arguments: ts.CallExpression['arguments']&[ts.StringLiteral];
 }
@@ -131,6 +145,69 @@ export function isWildcardReexportStatement(stmt: ts.Statement): stmt is Wildcar
   // (The first argument is the exported thing and there will be a second `exports` argument in the
   // case of imported helpers).
   return stmt.expression.arguments.length > 0;
+}
+
+
+/**
+ * Check whether the statement is a re-export of the form:
+ *
+ * ```
+ * Object.defineProperty(exports, "<export-name>",
+ *     { enumerable: true, get: function () { return <import-name>; } });
+ * ```
+ */
+export function isDefinePropertyReexportStatement(stmt: ts.Statement):
+    stmt is DefinePropertyReexportStatement {
+  if (!ts.isExpressionStatement(stmt) || !ts.isCallExpression(stmt.expression)) {
+    return false;
+  }
+
+  // Check for Object.defineProperty
+  if (!ts.isPropertyAccessExpression(stmt.expression.expression) ||
+      !ts.isIdentifier(stmt.expression.expression.expression) ||
+      stmt.expression.expression.expression.text !== 'Object' ||
+      !ts.isIdentifier(stmt.expression.expression.name) ||
+      stmt.expression.expression.name.text !== 'defineProperty') {
+    return false;
+  }
+
+  const args = stmt.expression.arguments;
+  if (args.length !== 3) {
+    return false;
+  }
+  const exportsObject = args[0];
+  if (!ts.isIdentifier(exportsObject) || exportsObject.text !== 'exports') {
+    return false;
+  }
+
+  const propertyKey = args[1];
+  if (!ts.isStringLiteral(propertyKey)) {
+    return false;
+  }
+
+  const propertyDescriptor = args[2];
+  if (!ts.isObjectLiteralExpression(propertyDescriptor)) {
+    return false;
+  }
+
+  return (propertyDescriptor.properties.some(
+      prop => prop.name !== undefined && ts.isIdentifier(prop.name) && prop.name.text === 'get'));
+}
+
+export function extractGetterFnExpression(statement: DefinePropertyReexportStatement):
+    ts.Expression|null {
+  const args = statement.expression.arguments;
+  const getterFn = args[2].properties.find(
+      prop => prop.name !== undefined && ts.isIdentifier(prop.name) && prop.name.text === 'get');
+  if (getterFn === undefined || !ts.isPropertyAssignment(getterFn) ||
+      !ts.isFunctionExpression(getterFn.initializer)) {
+    return null;
+  }
+  const returnStatement = getterFn.initializer.body.statements[0];
+  if (!ts.isReturnStatement(returnStatement) || returnStatement.expression === undefined) {
+    return null;
+  }
+  return returnStatement.expression;
 }
 
 /**
