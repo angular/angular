@@ -2489,7 +2489,7 @@ function isSynthesizedSuperCall(expression: ts.Expression): boolean {
  * Find the statement that contains the given node
  * @param node a node whose containing statement we wish to find
  */
-function getContainingStatement(node: ts.Node): ts.Statement {
+export function getContainingStatement(node: ts.Node): ts.Statement {
   while (node.parent) {
     if (ts.isBlock(node.parent) || ts.isSourceFile(node.parent)) {
       break;
