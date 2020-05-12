@@ -128,9 +128,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
   }
 
   hasBaseClass(clazz: ClassDeclaration): boolean {
-    return (ts.isClassDeclaration(clazz) || ts.isClassExpression(clazz)) &&
-        clazz.heritageClauses !== undefined &&
-        clazz.heritageClauses.some(clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
+    return this.getBaseClassExpression(clazz) !== null;
   }
 
   getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null {
