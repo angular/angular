@@ -1649,7 +1649,7 @@ exports.MissingClass2 = MissingClass2;
               bundle.program, SOME_DIRECTIVE_FILE.name, 'SomeDirective',
               isNamedVariableDeclaration);
           const classDecorators = host.getDecoratorsOfDeclaration(classNode)!;
-          const identifierOfDirective =
+          const namespaceIdentifier =
               (((classDecorators[0].node as ts.ObjectLiteralExpression).properties[0] as
                 ts.PropertyAssignment)
                    .initializer as ts.PropertyAccessExpression)
@@ -1657,7 +1657,7 @@ exports.MissingClass2 = MissingClass2;
 
           const expectedDeclarationNode =
               getSourceFileOrError(bundle.program, _('/node_modules/@angular/core/index.d.ts'));
-          const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfDirective);
+          const actualDeclaration = host.getDeclarationOfIdentifier(namespaceIdentifier);
           expect(actualDeclaration).not.toBe(null);
           expect(actualDeclaration!.node).toBe(expectedDeclarationNode);
           expect(actualDeclaration!.viaModule).toBe('@angular/core');
@@ -1858,10 +1858,11 @@ exports.MissingClass2 = MissingClass2;
           const bundle = makeTestBundleProgram(testFile.name);
           const host =
               createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
-          const tslibSourceFile = getSourceFileOrError(bundle.program, tslibFile.name);
 
-          const testForHelper =
-              createTestForTsHelper(bundle.program, host, testFile, () => tslibSourceFile);
+          const testForHelper = createTestForTsHelper(
+              bundle.program, host, testFile,
+              helperName => getDeclaration(
+                  bundle.program, tslibFile.name, helperName, ts.isFunctionDeclaration));
 
           testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign, 'tslib');
           testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread, 'tslib');
@@ -2093,20 +2094,20 @@ exports.MissingClass2 = MissingClass2;
           expect(Array.from(exportDeclarations!.entries())
                      .map(entry => [entry[0], entry[1].node!.getText(), entry[1].viaModule]))
               .toEqual([
-                ['Directive', `Directive: FnWithArg<(clazz: any) => any>`, _('/b_module')],
-                ['a', `a = 'a'`, _('/b_module')],
-                ['b', `b = a_module.a`, _('/b_module')],
-                ['c', `a = 'a'`, _('/b_module')],
-                ['d', `b = a_module.a`, _('/b_module')],
-                ['e', `e = 'e'`, _('/b_module')],
-                ['DirectiveX', `Directive: FnWithArg<(clazz: any) => any>`, _('/b_module')],
+                ['Directive', `Directive: FnWithArg<(clazz: any) => any>`, '@angular/core'],
+                ['a', `a = 'a'`, null],
+                ['b', `b = a_module.a`, null],
+                ['c', `a = 'a'`, null],
+                ['d', `b = a_module.a`, null],
+                ['e', `e = 'e'`, null],
+                ['DirectiveX', `Directive: FnWithArg<(clazz: any) => any>`, '@angular/core'],
                 [
                   'SomeClass',
                   `SomeClass = (function() {\n  function SomeClass() {}\n  return SomeClass;\n}())`,
-                  _('/b_module')
+                  null
                 ],
-                ['xtra1', `xtra1 = 'xtra1'`, _('/xtra_module')],
-                ['xtra2', `xtra2 = 'xtra2'`, _('/xtra_module')],
+                ['xtra1', `xtra1 = 'xtra1'`, null],
+                ['xtra2', `xtra2 = 'xtra2'`, null],
               ]);
         });
 
@@ -2123,20 +2124,20 @@ exports.MissingClass2 = MissingClass2;
           expect(Array.from(exportDeclarations!.entries())
                      .map(entry => [entry[0], entry[1].node!.getText(), entry[1].viaModule]))
               .toEqual([
-                ['Directive', `Directive: FnWithArg<(clazz: any) => any>`, _('/b_module')],
-                ['a', `a = 'a'`, _('/b_module')],
-                ['b', `b = a_module.a`, _('/b_module')],
-                ['c', `a = 'a'`, _('/b_module')],
-                ['d', `b = a_module.a`, _('/b_module')],
-                ['e', `e = 'e'`, _('/b_module')],
-                ['DirectiveX', `Directive: FnWithArg<(clazz: any) => any>`, _('/b_module')],
+                ['Directive', `Directive: FnWithArg<(clazz: any) => any>`, '@angular/core'],
+                ['a', `a = 'a'`, null],
+                ['b', `b = a_module.a`, null],
+                ['c', `a = 'a'`, null],
+                ['d', `b = a_module.a`, null],
+                ['e', `e = 'e'`, null],
+                ['DirectiveX', `Directive: FnWithArg<(clazz: any) => any>`, '@angular/core'],
                 [
                   'SomeClass',
                   `SomeClass = (function() {\n  function SomeClass() {}\n  return SomeClass;\n}())`,
-                  _('/b_module')
+                  null
                 ],
-                ['xtra1', `xtra1 = 'xtra1'`, _('/xtra_module')],
-                ['xtra2', `xtra2 = 'xtra2'`, _('/xtra_module')],
+                ['xtra1', `xtra1 = 'xtra1'`, null],
+                ['xtra2', `xtra2 = 'xtra2'`, null],
               ]);
         });
 
