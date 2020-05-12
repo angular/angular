@@ -13,7 +13,7 @@ import {assertDefined, assertDomNode, assertEqual, assertString} from '../util/a
 
 import {assertLContainer, assertLView, assertTNodeForLView} from './assert';
 import {attachPatchData} from './context_discovery';
-import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
+import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
 import {TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
@@ -276,7 +276,7 @@ function trackMovedView(declarationContainer: LContainer, lView: LView) {
     // At this point the declaration-component is not same as insertion-component; this means that
     // this is a transplanted view. Mark the declared lView as having transplanted views so that
     // those views can participate in CD.
-    declarationContainer[ACTIVE_INDEX] |= ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS;
+    declarationContainer[HAS_TRANSPLANTED_VIEWS] = true;
   }
   if (movedViews === null) {
     declarationContainer[MOVED_VIEWS] = [lView];

@@ -21,7 +21,7 @@ import {getFactoryDef} from '../definition';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
 import {throwMultipleComponentError} from '../errors';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
-import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS} from '../interfaces/container';
+import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from '../interfaces/injector';
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstants, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
@@ -35,7 +35,7 @@ import {enterView, getBindingsEnabled, getCheckNoChangesMode, getCurrentDirectiv
 import {NO_CHANGE} from '../tokens';
 import {isAnimationProp, mergeHostAttrs} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify, stringifyForError} from '../util/misc_utils';
-import {getLViewParent} from '../util/view_traversal_utils';
+import {getFirstLContainer, getLViewParent, getNextLContainer} from '../util/view_traversal_utils';
 import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreationMode, readPatchedLView, resetPreOrderHookFlags, unwrapLView, updateTransplantedViewCount, viewAttachedToChangeDetector} from '../util/view_utils';
 
 import {selectIndexInternal} from './advance';
@@ -1603,16 +1603,16 @@ export function createLContainer(
   ngDevMode && !isProceduralRenderer(currentView[RENDERER]) && assertDomNode(native);
   // https://jsperf.com/array-literal-vs-new-array-really
   const lContainer: LContainer = new (ngDevMode ? LContainerArray : Array)(
-      hostNative,  // host native
-      true,        // Boolean `true` in this position signifies that this is an `LContainer`
-      ActiveIndexFlag.DYNAMIC_EMBEDDED_VIEWS_ONLY << ActiveIndexFlag.SHIFT,  // active index
-      currentView,                                                           // parent
-      null,                                                                  // next
-      0,       // transplanted views to refresh count
-      tNode,   // t_host
-      native,  // native,
-      null,    // view refs
-      null,    // moved views
+      hostNative,   // host native
+      true,         // Boolean `true` in this position signifies that this is an `LContainer`
+      false,        // has transplanted views
+      currentView,  // parent
+      null,         // next
+      0,            // transplanted views to refresh count
+      tNode,        // t_host
+      native,       // native,
+      null,         // view refs
+      null,         // moved views
   );
   ngDevMode &&
       assertEqual(
@@ -1641,62 +1641,31 @@ function refreshDynamicEmbeddedViews(lView: LView) {
 }
 
 /**
- * Gets the first `LContainer` in the LView or `null` if none exists.
- */
-function getFirstLContainer(lView: LView): LContainer|null {
-  let viewOrContainer = lView[CHILD_HEAD];
-  while (viewOrContainer !== null &&
-         !(isLContainer(viewOrContainer) &&
-           viewOrContainer[ACTIVE_INDEX] >> ActiveIndexFlag.SHIFT ===
-               ActiveIndexFlag.DYNAMIC_EMBEDDED_VIEWS_ONLY)) {
-    viewOrContainer = viewOrContainer[NEXT];
-  }
-  return viewOrContainer;
-}
-
-/**
- * Gets the next `LContainer` that is a sibling of the given container.
- */
-function getNextLContainer(container: LContainer): LContainer|null {
-  let viewOrContainer = container[NEXT];
-  while (viewOrContainer !== null &&
-         !(isLContainer(viewOrContainer) &&
-           viewOrContainer[ACTIVE_INDEX] >> ActiveIndexFlag.SHIFT ===
-               ActiveIndexFlag.DYNAMIC_EMBEDDED_VIEWS_ONLY)) {
-    viewOrContainer = viewOrContainer[NEXT];
-  }
-  return viewOrContainer;
-}
-
-/**
  * Mark transplanted views as needing to be refreshed at their insertion points.
- *
- * See: `ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS` and `LView[DECLARATION_COMPONENT_VIEW]` for
- * explanation of transplanted views.
  *
  * @param lView The `LView` that may have transplanted views.
  */
 function markTransplantedViewsForRefresh(lView: LView) {
   for (let lContainer = getFirstLContainer(lView); lContainer !== null;
        lContainer = getNextLContainer(lContainer)) {
-    if ((lContainer[ACTIVE_INDEX] & ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS) !== 0) {
-      const movedViews = lContainer[MOVED_VIEWS]!;
-      ngDevMode && assertDefined(movedViews, 'Transplanted View flags set but missing MOVED_VIEWS');
-      for (let i = 0; i < movedViews.length; i++) {
-        const movedLView = movedViews[i]!;
-        const insertionLContainer = movedLView[PARENT] as LContainer;
-        ngDevMode && assertLContainer(insertionLContainer);
-        // We don't want to increment the counter if the moved LView was already marked for
-        // refresh.
-        if ((movedLView[FLAGS] & LViewFlags.RefreshTransplantedView) === 0) {
-          updateTransplantedViewCount(insertionLContainer, 1);
-        }
-        // Note, it is possible that the `movedViews` is tracking views that are transplanted *and*
-        // those that aren't (declaration component === insertion component). In the latter case,
-        // it's fine to add the flag, as we will clear it immediately in
-        // `refreshDynamicEmbeddedViews` for the view currently being refreshed.
-        movedLView[FLAGS] |= LViewFlags.RefreshTransplantedView;
+    if (!lContainer[HAS_TRANSPLANTED_VIEWS]) continue;
+
+    const movedViews = lContainer[MOVED_VIEWS]!;
+    ngDevMode && assertDefined(movedViews, 'Transplanted View flags set but missing MOVED_VIEWS');
+    for (let i = 0; i < movedViews.length; i++) {
+      const movedLView = movedViews[i]!;
+      const insertionLContainer = movedLView[PARENT] as LContainer;
+      ngDevMode && assertLContainer(insertionLContainer);
+      // We don't want to increment the counter if the moved LView was already marked for
+      // refresh.
+      if ((movedLView[FLAGS] & LViewFlags.RefreshTransplantedView) === 0) {
+        updateTransplantedViewCount(insertionLContainer, 1);
       }
+      // Note, it is possible that the `movedViews` is tracking views that are transplanted *and*
+      // those that aren't (declaration component === insertion component). In the latter case,
+      // it's fine to add the flag, as we will clear it immediately in
+      // `refreshDynamicEmbeddedViews` for the view currently being refreshed.
+      movedLView[FLAGS] |= LViewFlags.RefreshTransplantedView;
     }
   }
 }
