@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Format} from '../config';
+import {FormatConfig} from '../config';
 
 // A callback to determine if the formatter run found a failure in formatting.
 export type CallbackFunc = (file: string, code: number, stdout: string, stderr: string) => boolean;
@@ -44,7 +44,7 @@ export abstract class Formatter {
   /** The default matchers for the formatter for filtering files to be formatted. */
   abstract defaultFileMatcher: string[];
 
-  constructor(private config: Format) {}
+  constructor(private config: FormatConfig) {}
 
   /**
    * Retrieve the command to execute the provided action, including both the binary

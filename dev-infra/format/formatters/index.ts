@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getConfig} from '../../utils/config';
-import {isFormatConfig} from '../config';
+import {getFormatConfig} from '../config';
 
 import {Buildifier} from './buildifier';
 import {ClangFormat} from './clang-format';
@@ -16,7 +15,7 @@ import {ClangFormat} from './clang-format';
  * Get all defined formatters which are active based on the current loaded config.
  */
 export function getActiveFormatters() {
-  const config = getConfig(isFormatConfig).format;
+  const config = getFormatConfig().format;
   return [new Buildifier(config), new ClangFormat(config)].filter(
       formatter => formatter.isEnabled());
 }

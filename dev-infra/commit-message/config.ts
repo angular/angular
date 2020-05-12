@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgDevConfig} from '../utils/config';
+import {getConfig, NgDevConfig, processErrors} from '../utils/config';
 
 export interface CommitMessageConfig {
   maxLineLength: number;
@@ -15,11 +15,17 @@ export interface CommitMessageConfig {
   scopes: string[];
 }
 
-/** Validate the configuration correctly provides commitMessage information. */
-export function isCommitMessageConfig(
-    config: any, errors: string[]): config is NgDevConfig<{commitMessage: CommitMessageConfig}> {
+/** Retrieve and validate the config as FormatConfig. */
+export function getCommitMessageConfig() {
+  // List of errors encountered validating the config.
+  const errors: string[] = [];
+  // The unvalidated config object.
+  const config: Partial<NgDevConfig<{commitMessage: CommitMessageConfig}>> = getConfig();
+
   if (config.commitMessage === undefined) {
     errors.push(`No configuration defined for "commitMessage"`);
   }
-  return true;
+
+  processErrors(errors);
+  return config as Required<typeof config>;
 }

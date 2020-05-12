@@ -6,27 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgDevConfig} from '../utils/config';
+import {getConfig, NgDevConfig, processErrors} from '../utils/config';
 
 interface Formatter {
   matchers: string[];
 }
 
-export interface Format {
+export interface FormatConfig {
   [keyof: string]: boolean|Formatter;
 }
 
-/** Validate the configuration correctly provides format information. */
-export function isFormatConfig(
-    config: any, errors: string[]): config is NgDevConfig<{format: Format}> {
-  const formatConfig: Partial<Format> = config.format;
+/** Retrieve and validate the config as FormatConfig. */
+export function getFormatConfig() {
+  // List of errors encountered validating the config.
+  const errors: string[] = [];
+  // The unvalidated config object.
+  const config: Partial<NgDevConfig<{format: FormatConfig}>> = getConfig();
 
-  if (formatConfig === undefined) {
+  if (config.format === undefined) {
     errors.push(`No configuration defined for "format"`);
-    return false;
   }
 
-  for (const [key, value] of Object.entries(formatConfig)) {
+  for (const [key, value] of Object.entries(config.format!)) {
     switch (typeof value) {
       case 'boolean':
         break;
@@ -37,7 +38,9 @@ export function isFormatConfig(
         errors.push(`"format.${key}" is not a boolean or Formatter object`);
     }
   }
-  return true;
+
+  processErrors(errors);
+  return config as Required<typeof config>;
 }
 
 /** Validate an individual Formatter config. */

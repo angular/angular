@@ -33,49 +33,11 @@ const CONFIG_FILE_NAME = '.ng-dev-config';
 /** The configuration for ng-dev. */
 let CONFIG: {}|null = null;
 
-/** Get the configuration for ng-dev, only validating the common configuration. */
-export function getConfig(): NgDevConfig;
 /**
- * Get the configuration for ng-dev, validating the config is correct for the common
- * configuration as well as the provided subcommand's validator.
- */
-export function getConfig<T extends NgDevConfig>(validator: ConfigValidator<T>): T;
-export function getConfig<T extends NgDevConfig>(validator?: ConfigValidator<T>) {
-  // List of errors discovered by validators.
-  const errors: string[] = [];
-  // The unvalidated ng-dev configuration.
-  const config = loadConfig();
-
-  // Validate the common configuration requirements are met.
-  validateCommonConfig(config, errors);
-
-  // If a validator is provided, run it to ensure the sub command's configuration
-  // requirements are met.
-  if (validator !== undefined) {
-    validator(config, errors);
-  }
-  // If any errors are defined, log them to the user and exit as a failure.
-  if (errors.length !== 0) {
-    console.error(`Errors discovered while loading configuration file:`);
-    for (const error of errors) {
-      console.error(`  - ${error}`);
-    }
-    process.exit(1);
-  }
-  return config;
-}
-
-
-/** Validate the common configuration has been met for the ng-dev command. */
-function validateCommonConfig(config: Partial<NgDevConfig<CommonConfig>>, errors: string[]) {
-  // TODO: add validation for the common configuration
-}
-
-/**
- * Load the configuration from the file system, returning the already loaded copy if it
+ * Get the configuration from the file system, returning the already loaded copy if it
  * is defined.
  */
-function loadConfig() {
+export function getConfig(): NgDevConfig {
   // If the global config is not defined, load it from the file system.
   if (CONFIG === null) {
     // The full path to the configuration file.
@@ -86,7 +48,25 @@ function loadConfig() {
   }
   // Return a clone of the global config to ensure that a new instance of the config is returned
   // each time, preventing unexpected effects of modifications to the config object.
-  return {...CONFIG};
+  return validateCommonConfig({...CONFIG});
+}
+
+/** Validate the common configuration has been met for the ng-dev command. */
+function validateCommonConfig(config: NgDevConfig<CommonConfig>) {
+  // TODO: add validation for the common configuration
+
+  return config;
+}
+
+export function processErrors(errors: string[]) {
+  if (errors.length == 0) {
+    return;
+  }
+  console.error(`Errors discovered while loading configuration file:`);
+  for (const error of errors) {
+    console.error(`  - ${error}`);
+  }
+  process.exit(1);
 }
 
 /** Gets the path of the directory for the repository base. */

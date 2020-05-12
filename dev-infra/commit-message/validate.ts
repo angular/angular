@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {getConfig} from '../utils/config';
-import {isCommitMessageConfig} from './config';
+import {getCommitMessageConfig} from './config';
 
 /** Options for commit message validation. */
 export interface ValidateCommitMessageOptions {
@@ -76,7 +75,7 @@ export function validateCommitMessage(
         `<type>(<scope>): <subject>\n\n<body>`);
   }
 
-  const config = getConfig(isCommitMessageConfig).commitMessage;
+  const config = getCommitMessageConfig().commitMessage;
   const commit = parseCommitMessage(commitMsg);
 
   ////////////////////////////////////
