@@ -11,7 +11,10 @@ import {exec} from 'shelljs';
 
 /** The common configuration for ng-dev. */
 type CommonConfig = {
-    // TODO: add common configuration
+  github: {
+    owner: string;
+    name: string;
+  }
 };
 
 /**
@@ -46,9 +49,21 @@ export function getConfig(): NgDevConfig {
 }
 
 /** Validate the common configuration has been met for the ng-dev command. */
-function validateCommonConfig(config: NgDevConfig<CommonConfig>) {
-  // TODO: add validation for the common configuration
-  return config;
+function validateCommonConfig(config: Partial<NgDevConfig<CommonConfig>>) {
+  const errors: string[] = [];
+  // Validate the github configuration.
+  if (config.github === undefined) {
+    errors.push(`No configuration defined for "format"`);
+  } else {
+    if (config.github.name === undefined) {
+      errors.push(`"github.name" is not defined`);
+    }
+    if (config.github.owner === undefined) {
+      errors.push(`"github.org"  is not defined`);
+    }
+  }
+
+  return config as NgDevConfig<CommonConfig>;
 }
 
 /**
