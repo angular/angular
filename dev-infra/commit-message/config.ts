@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getConfig, NgDevConfig, processErrors} from '../utils/config';
+import {assertNoErrors, getConfig, NgDevConfig} from '../utils/config';
 
 export interface CommitMessageConfig {
   maxLineLength: number;
@@ -15,7 +15,7 @@ export interface CommitMessageConfig {
   scopes: string[];
 }
 
-/** Retrieve and validate the config as FormatConfig. */
+/** Retrieve and validate the config as `CommitMessageConfig`. */
 export function getCommitMessageConfig() {
   // List of errors encountered validating the config.
   const errors: string[] = [];
@@ -26,6 +26,6 @@ export function getCommitMessageConfig() {
     errors.push(`No configuration defined for "commitMessage"`);
   }
 
-  processErrors(errors);
+  assertNoErrors(errors);
   return config as Required<typeof config>;
 }

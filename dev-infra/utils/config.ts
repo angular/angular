@@ -20,12 +20,6 @@ type CommonConfig = {
  */
 export type NgDevConfig<T = {}> = CommonConfig&T;
 
-/**
- * Configuration loader object, providing information needed to load and validate
- * the configuration.
- */
-export type ConfigValidator<T> = (config: any, errors: string[]) => config is T;
-
 // The filename expected for creating the ng-dev config, without the file
 // extension to allow either a typescript or javascript file to be used.
 const CONFIG_FILE_NAME = '.ng-dev-config';
@@ -54,11 +48,14 @@ export function getConfig(): NgDevConfig {
 /** Validate the common configuration has been met for the ng-dev command. */
 function validateCommonConfig(config: NgDevConfig<CommonConfig>) {
   // TODO: add validation for the common configuration
-
   return config;
 }
 
-export function processErrors(errors: string[]) {
+/**
+ * Asserts the provided array of error messages is empty. If any errors are in the array,
+ * logs the errors and exit the process as a failure.
+ */
+export function assertNoErrors(errors: string[]) {
   if (errors.length == 0) {
     return;
   }
