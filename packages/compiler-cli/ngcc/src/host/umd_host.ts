@@ -14,7 +14,7 @@ import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, getTsHelperFnFromIdentifier, stripExtension} from '../utils';
 
-import {ExportDeclaration, ExportStatement, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isReexportStatement, isRequireCall, ReexportStatement} from './commonjs_umd_utils';
+import {ExportDeclaration, ExportStatement, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isRequireCall, isWildcardReexportStatement, WildcardReexportStatement} from './commonjs_umd_utils';
 import {Esm5ReflectionHost} from './esm5_host';
 import {stripParentheses} from './utils';
 
@@ -92,8 +92,8 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
       if (isExportStatement(statement)) {
         const exportDeclaration = this.extractUmdExportDeclaration(statement);
         moduleMap.set(exportDeclaration.name, exportDeclaration.declaration);
-      } else if (isReexportStatement(statement)) {
-        const reexports = this.extractUmdReexports(statement, sourceFile);
+      } else if (isWildcardReexportStatement(statement)) {
+        const reexports = this.extractUmdWildcardReexports(statement, sourceFile);
         for (const reexport of reexports) {
           moduleMap.set(reexport.name, reexport.declaration);
         }
@@ -145,8 +145,8 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     }
   }
 
-  private extractUmdReexports(statement: ReexportStatement, containingFile: ts.SourceFile):
-      ExportDeclaration[] {
+  private extractUmdWildcardReexports(
+      statement: WildcardReexportStatement, containingFile: ts.SourceFile): ExportDeclaration[] {
     const reexportArg = statement.expression.arguments[0];
 
     const requireCall = isRequireCall(reexportArg) ?
