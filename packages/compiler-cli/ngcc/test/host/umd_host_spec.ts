@@ -591,8 +591,8 @@ runInEachFileSystem(() => {
         {
           name: _('/b_module.js'),
           contents: `(function (global, factory) {\n` +
-              `  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('/a_module')) :\n` +
-              `  typeof define === 'function' && define.amd ? define('b_module', ['exports', '@angular/core', 'a_module'], factory) :\n` +
+              `  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('./a_module')) :\n` +
+              `  typeof define === 'function' && define.amd ? define('b_module', ['exports', '@angular/core', './a_module'], factory) :\n` +
               `  (factory(global.b_module));\n` +
               `}(this, (function (exports, core, a_module) { 'use strict';\n` +
               `  var b = a_module.a;\n` +
@@ -1931,9 +1931,10 @@ runInEachFileSystem(() => {
         const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
         const {factoryFn} = parseStatementForUmdModule(
             getSourceFileOrError(bundle.program, testFile.name).statements[0])!;
-        const tslibSourceFile = getSourceFileOrError(bundle.program, tslibFile.name);
-
-        const testForHelper = createTestForTsHelper(host, factoryFn, () => tslibSourceFile);
+        const testForHelper = createTestForTsHelper(
+            host, factoryFn,
+            (_fn, helperName) => getDeclaration(
+                bundle.program, tslibFile.name, helperName, ts.isFunctionDeclaration));
 
         testForHelper('a', '__assign', KnownDeclaration.TsHelperAssign, 'tslib');
         testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread, 'tslib');
@@ -2173,9 +2174,9 @@ runInEachFileSystem(() => {
                    .map(entry => [entry[0], entry[1].node!.getText(), entry[1].viaModule]))
             .toEqual([
               ['Directive', `Directive: FnWithArg<(clazz: any) => any>`, '@angular/core'],
-              ['a', `a = 'a'`, '/a_module'],
+              ['a', `a = 'a'`, null],
               ['b', `b = a_module.a`, null],
-              ['c', `a = 'a'`, '/a_module'],
+              ['c', `a = 'a'`, null],
               ['d', `b = a_module.a`, null],
               ['e', `e = 'e'`, null],
               ['DirectiveX', `Directive: FnWithArg<(clazz: any) => any>`, '@angular/core'],
