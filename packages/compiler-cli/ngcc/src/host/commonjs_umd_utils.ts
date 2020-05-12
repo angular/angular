@@ -56,7 +56,7 @@ export interface RequireCall extends ts.CallExpression {
  * `ts.Identifier` corresponding to `<namespace>` will be returned). Otherwise return `null`.
  */
 export function findNamespaceOfIdentifier(id: ts.Identifier): ts.Identifier|null {
-  return id.parent && ts.isPropertyAccessExpression(id.parent) &&
+  return id.parent && ts.isPropertyAccessExpression(id.parent) && id.parent.name === id &&
           ts.isIdentifier(id.parent.expression) ?
       id.parent.expression :
       null;
