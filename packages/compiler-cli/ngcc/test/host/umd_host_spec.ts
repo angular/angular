@@ -570,107 +570,99 @@ runInEachFileSystem(() => {
       EXPORTS_FILES = [
         {
           name: _('/index.js'),
-          contents: `
-          (function (global, factory) {
-            typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('./a_module'), require('./b_module'), require('./wildcard_reexports'), require('./wildcard_reexports_imported_helpers'), require('./wildcard_reexports_with_require')) :
-            typeof define === 'function' && define.amd ? define('index', ['exports', './a_module', './b_module', './wildcard_reexports', './wildcard_reexports_imported_helpers', './wildcard_reexports_with_require'], factory) :
-            (factory(global.index, global.a_module, global.b_module, global.wildcard_reexports, global.wildcard_reexports_imported_helpers, global.wildcard_reexports_with_require));
-          }(this, (function (exports, a_module, b_module, wildcard_reexports, wildcard_reexports_imported_helpers, wildcard_reexports_with_require) { 'use strict';
-          })));
-          `
+          contents: `(function (global, factory) {\n` +
+              `  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('./a_module'), require('./b_module'), require('./wildcard_reexports'), require('./wildcard_reexports_imported_helpers'), require('./wildcard_reexports_with_require')) :\n` +
+              `  typeof define === 'function' && define.amd ? define('index', ['exports', './a_module', './b_module', './wildcard_reexports', './wildcard_reexports_imported_helpers', './wildcard_reexports_with_require'], factory) :\n` +
+              `  (factory(global.index, global.a_module, global.b_module, global.wildcard_reexports, global.wildcard_reexports_imported_helpers, global.wildcard_reexports_with_require));\n` +
+              `}(this, (function (exports, a_module, b_module, wildcard_reexports, wildcard_reexports_imported_helpers, wildcard_reexports_with_require) { 'use strict';\n` +
+              `})));\n`
         },
         {
           name: _('/a_module.js'),
-          contents: `
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define('a_module', ['exports'], factory) :
-  (factory(global.a_module));
-}(this, (function (exports) { 'use strict';
-  var a = 'a';
-  exports.a = a;
-})));`,
+          contents: `(function (global, factory) {\n` +
+              `  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :\n` +
+              `  typeof define === 'function' && define.amd ? define('a_module', ['exports'], factory) :\n` +
+              `  (factory(global.a_module));\n` +
+              `}(this, (function (exports) { 'use strict';\n` +
+              `  var a = 'a';\n` +
+              `  exports.a = a;\n` +
+              `})));\n`,
         },
         {
           name: _('/b_module.js'),
-          contents: `
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('/a_module')) :
-  typeof define === 'function' && define.amd ? define('b_module', ['exports', '@angular/core', 'a_module'], factory) :
-  (factory(global.b_module));
-}(this, (function (exports, core, a_module) { 'use strict';
-  var b = a_module.a;
-  var e = 'e';
-  var SomeClass = (function() {
-    function SomeClass() {}
-    return SomeClass;
-  }());
-
-  exports.Directive = core.Directive;
-  exports.a = a_module.a;
-  exports.b = b;
-  exports.c = a_module.a;
-  exports.d = b;
-  exports.e = e;
-  exports.DirectiveX = core.Directive;
-  exports.SomeClass = SomeClass;
-})));`,
+          contents: `(function (global, factory) {\n` +
+              `  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('/a_module')) :\n` +
+              `  typeof define === 'function' && define.amd ? define('b_module', ['exports', '@angular/core', 'a_module'], factory) :\n` +
+              `  (factory(global.b_module));\n` +
+              `}(this, (function (exports, core, a_module) { 'use strict';\n` +
+              `  var b = a_module.a;\n` +
+              `  var e = 'e';\n` +
+              `  var SomeClass = (function() {\n` +
+              `    function SomeClass() {}\n` +
+              `    return SomeClass;\n` +
+              `  }());\n` +
+              `\n` +
+              `  exports.Directive = core.Directive;\n` +
+              `  exports.a = a_module.a;\n` +
+              `  exports.b = b;\n` +
+              `  exports.c = a_module.a;\n` +
+              `  exports.d = b;\n` +
+              `  exports.e = e;\n` +
+              `  exports.DirectiveX = core.Directive;\n` +
+              `  exports.SomeClass = SomeClass;\n` +
+              `})));\n`,
         },
         {
           name: _('/xtra_module.js'),
-          contents: `
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define('xtra_module', ['exports'], factory) :
-  (factory(global.xtra_module));
-}(this, (function (exports) { 'use strict';
-  var xtra1 = 'xtra1';
-  var xtra2 = 'xtra2';
-  exports.xtra1 = xtra1;
-  exports.xtra2 = xtra2;
-})));`,
+          contents: `(function (global, factory) {\n` +
+              `  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :\n` +
+              `  typeof define === 'function' && define.amd ? define('xtra_module', ['exports'], factory) :\n` +
+              `  (factory(global.xtra_module));\n` +
+              `}(this, (function (exports) { 'use strict';\n` +
+              `  var xtra1 = 'xtra1';\n` +
+              `  var xtra2 = 'xtra2';\n` +
+              `  exports.xtra1 = xtra1;\n` +
+              `  exports.xtra2 = xtra2;\n` +
+              `})));\n`,
         },
         {
           name: _('/wildcard_reexports.js'),
-          contents: `
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('./b_module'), require('./xtra_module')) :
-  typeof define === 'function' && define.amd ? define('wildcard_reexports', ['exports', './b_module', './xtra_module'], factory) :
-  (factory(global.wildcard_reexports, b_module, xtra_module));
-}(this, (function (exports, b_module, xtra_module) { 'use strict';
-  function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-  }
-  __export(b_module);
-  __export(xtra_module);
-})));`,
+          contents: `(function (global, factory) {\n` +
+              `  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('./b_module'), require('./xtra_module')) :\n` +
+              `  typeof define === 'function' && define.amd ? define('wildcard_reexports', ['exports', './b_module', './xtra_module'], factory) :\n` +
+              `  (factory(global.wildcard_reexports, b_module, xtra_module));\n` +
+              `}(this, (function (exports, b_module, xtra_module) { 'use strict';\n` +
+              `  function __export(m) {\n` +
+              `    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];\n` +
+              `  }\n` +
+              `  __export(b_module);\n` +
+              `  __export(xtra_module);\n` +
+              `})));\n`,
         },
         {
           name: _('/wildcard_reexports_imported_helpers.js'),
-          contents: `
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('tslib'), require('./b_module'), require('./xtra_module')) :
-  typeof define === 'function' && define.amd ? define('wildcard_reexports', ['exports', 'tslib', './b_module', './xtra_module'], factory) :
-  (factory(global.wildcard_reexports_imported_helpers, tslib, b_module, xtra_module));
-}(this, (function (exports, tslib, b_module, xtra_module) { 'use strict';
-  tslib.__exportStar(b_module, exports);
-  tslib.__exportStar(xtra_module, exports);
-})));`,
+          contents: `(function (global, factory) {\n` +
+              `  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('tslib'), require('./b_module'), require('./xtra_module')) :\n` +
+              `  typeof define === 'function' && define.amd ? define('wildcard_reexports', ['exports', 'tslib', './b_module', './xtra_module'], factory) :\n` +
+              `  (factory(global.wildcard_reexports_imported_helpers, tslib, b_module, xtra_module));\n` +
+              `}(this, (function (exports, tslib, b_module, xtra_module) { 'use strict';\n` +
+              `  tslib.__exportStar(b_module, exports);\n` +
+              `  tslib.__exportStar(xtra_module, exports);\n` +
+              `})));\n`,
         },
         {
           name: _('/wildcard_reexports_with_require.js'),
-          contents: `
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(require, exports) :
-  typeof define === 'function' && define.amd ? define('wildcard_reexports_with_require', ['require', 'exports'], factory);
-}(this, (function (require, exports) { 'use strict';
-  function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-  }
-  var b_module = require('./b_module');
-  __export(b_module);
-  __export(require('./xtra_module'));
-})));`,
+          contents: `(function (global, factory) {\n` +
+              `  typeof exports === 'object' && typeof module !== 'undefined' ? factory(require, exports) :\n` +
+              `  typeof define === 'function' && define.amd ? define('wildcard_reexports_with_require', ['require', 'exports'], factory);\n` +
+              `}(this, (function (require, exports) { 'use strict';\n` +
+              `  function __export(m) {\n` +
+              `    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];\n` +
+              `  }\n` +
+              `  var b_module = require('./b_module');\n` +
+              `  __export(b_module);\n` +
+              `  __export(require('./xtra_module'));\n` +
+              `})));\n`,
         }
       ];
 

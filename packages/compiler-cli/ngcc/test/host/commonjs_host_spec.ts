@@ -513,71 +513,62 @@ var c = file_a.a;
       EXPORTS_FILES = [
         {
           name: _('/index.js'),
-          contents: `
-          var a_module = require('./a_module');
-          var b_module = require('./b_module');
-          var xtra_module = require('./xtra_module');
-          var wildcard_reexports_emitted_helpers = require('./wildcard_reexports_emitted_helpers');
-          var wildcard_reexports_imported_helpers = require('./wildcard_reexports_imported_helpers');
-          `
+          contents: `var a_module = require('./a_module');\n` +
+              `var b_module = require('./b_module');\n` +
+              `var xtra_module = require('./xtra_module');\n` +
+              `var wildcard_reexports_emitted_helpers = require('./wildcard_reexports_emitted_helpers');\n` +
+              `var wildcard_reexports_imported_helpers = require('./wildcard_reexports_imported_helpers');\n`,
+
         },
         {
           name: _('/a_module.js'),
-          contents: `
-var a = 'a';
-exports.a = a;
-`,
+          contents: `// In TS 3.9 exports are initialized to undefined at the top of the file\n` +
+              `exports.a = void 0;\n` +
+              `var a = 'a';\n` +
+              `exports.a = a;\n`,
         },
         {
           name: _('/b_module.js'),
-          contents: `
-var core = require('@angular/core');
-var a_module = require('./a_module');
-var b = a_module.a;
-var e = 'e';
-var SomeClass = (function() {
-  function SomeClass() {}
-  return SomeClass;
-}());
-
-exports.Directive = core.Directive;
-exports.a = a_module.a;
-exports.b = b;
-exports.c = a_module.a;
-exports.d = b;
-exports.e = e;
-exports.DirectiveX = core.Directive;
-exports.SomeClass = SomeClass;
-`,
+          contents: `var core = require('@angular/core');\n` +
+              `var a_module = require('./a_module');\n` +
+              `var b = a_module.a;\n` +
+              `var e = 'e';\n` +
+              `var SomeClass = (function() {\n` +
+              `  function SomeClass() {}\n` +
+              `  return SomeClass;\n` +
+              `}());\n` +
+              `\n` +
+              `exports.Directive = core.Directive;\n` +
+              `exports.a = a_module.a;\n` +
+              `exports.b = b;\n` +
+              `exports.c = a_module.a;\n` +
+              `exports.d = b;\n` +
+              `exports.e = e;\n` +
+              `exports.DirectiveX = core.Directive;\n` +
+              `exports.SomeClass = SomeClass;\n`,
         },
         {
           name: _('/xtra_module.js'),
-          contents: `
-var xtra1 = 'xtra1';
-var xtra2 = 'xtra2';
-exports.xtra1 = xtra1;
-exports.xtra2 = xtra2;
-`,
+          contents: `var xtra1 = 'xtra1';\n` +
+              `var xtra2 = 'xtra2';\n` +
+              `exports.xtra1 = xtra1;\n` +
+              `exports.xtra2 = xtra2;\n`,
         },
         {
           name: _('/wildcard_reexports_emitted_helpers.js'),
-          contents: `
-function __export(m) {
-  for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-var b_module = require("./b_module");
-__export(b_module);
-__export(require("./xtra_module"));
-`,
+          contents: `function __export(m) {\n` +
+              `  for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];\n` +
+              `}\n` +
+              `var b_module = require("./b_module");\n` +
+              `__export(b_module);\n` +
+              `__export(require("./xtra_module"));\n`,
         },
         {
           name: _('/wildcard_reexports_imported_helpers.js'),
-          contents: `
-var tslib_1 = require("tslib");
-var b_module = require("./b_module");
-tslib_1.__exportStar(b_module, exports);
-tslib_1.__exportStar(require("./xtra_module"), exports);
-`,
+          contents: `var tslib_1 = require("tslib");\n` +
+              `var b_module = require("./b_module");\n` +
+              `tslib_1.__exportStar(b_module, exports);\n` +
+              `tslib_1.__exportStar(require("./xtra_module"), exports);\n`,
         },
       ];
 
