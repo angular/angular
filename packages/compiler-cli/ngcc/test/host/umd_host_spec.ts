@@ -571,10 +571,10 @@ runInEachFileSystem(() => {
         {
           name: _('/index.js'),
           contents: `(function (global, factory) {\n` +
-              `  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('./a_module'), require('./b_module'), require('./wildcard_reexports'), require('./wildcard_reexports_imported_helpers'), require('./wildcard_reexports_with_require')) :\n` +
-              `  typeof define === 'function' && define.amd ? define('index', ['exports', './a_module', './b_module', './wildcard_reexports', './wildcard_reexports_imported_helpers', './wildcard_reexports_with_require'], factory) :\n` +
-              `  (factory(global.index, global.a_module, global.b_module, global.wildcard_reexports, global.wildcard_reexports_imported_helpers, global.wildcard_reexports_with_require));\n` +
-              `}(this, (function (exports, a_module, b_module, wildcard_reexports, wildcard_reexports_imported_helpers, wildcard_reexports_with_require) { 'use strict';\n` +
+              `  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('./a_module'), require('./b_module'), require('./wildcard_reexports'), require('./wildcard_reexports_imported_helpers'), require('./wildcard_reexports_with_require'), require('./define_property_reexports')) :\n` +
+              `  typeof define === 'function' && define.amd ? define('index', ['exports', './a_module', './b_module', './wildcard_reexports', './wildcard_reexports_imported_helpers', './wildcard_reexports_with_require', './define_property_reexports'], factory) :\n` +
+              `  (factory(global.index, global.a_module, global.b_module, global.wildcard_reexports, global.wildcard_reexports_imported_helpers, global.wildcard_reexports_with_require, global.define_property_reexports));\n` +
+              `}(this, (function (exports, a_module, b_module, wildcard_reexports, wildcard_reexports_imported_helpers, wildcard_reexports_with_require, define_property_reexports) { 'use strict';\n` +
               `})));\n`
         },
         {
@@ -663,7 +663,17 @@ runInEachFileSystem(() => {
               `  __export(b_module);\n` +
               `  __export(require('./xtra_module'));\n` +
               `})));\n`,
-        }
+        },
+        {
+          name: _('/define_property_reexports.js'),
+          contents: `(function (global, factory) {\n` +
+              `  typeof exports === 'object' && typeof module !== 'undefined' ? factory(require, exports) :\n` +
+              `  typeof define === 'function' && define.amd ? define('define_property_reexports', ['require', 'exports'], factory);\n` +
+              `}(this, (function (require, exports) { 'use strict';\n` +
+              `var moduleA = require("./a_module");\n` +
+              `Object.defineProperty(exports, "newA", { enumerable: true, get: function () { return moduleA.a; } });\n` +
+              `})));`,
+        },
       ];
 
       FUNCTION_BODY_FILE = {
@@ -2283,6 +2293,21 @@ runInEachFileSystem(() => {
               ['__spread', KnownDeclaration.TsHelperSpread],
               ['__spreadArrays', KnownDeclaration.TsHelperSpreadArrays],
               ['__unknownHelper', null],
+            ]);
+      });
+
+      it('should define property exports from a module', () => {
+        loadFakeCore(getFileSystem());
+        loadTestFiles(EXPORTS_FILES);
+        const bundle = makeTestBundleProgram(_('/index.js'));
+        const host = createHost(bundle, new UmdReflectionHost(new MockLogger(), false, bundle));
+        const file = getSourceFileOrError(bundle.program, _('/define_property_reexports.js'));
+        const exportDeclarations = host.getExportsOfModule(file);
+        expect(exportDeclarations).not.toBe(null);
+        expect(Array.from(exportDeclarations!.entries())
+                   .map(entry => [entry[0], entry[1].node!.getText(), entry[1].viaModule]))
+            .toEqual([
+              ['newA', `a = 'a'`, null],
             ]);
       });
     });
