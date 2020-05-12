@@ -9,6 +9,9 @@
 3.  Create tests for versions of TS being added, i.e. tests sources in
     `integration/typings_test_ts39/*` and add a test in
     `integration/BUILD.bazel`
+    * Be sure to pin the TypeScript version in the test with 
+      `"pinned_npm_packages": ["typescript"],` to ensure the test always runs 
+      using the same minor version.
     *  Run the test with the command 
        `yarn bazel test //integration:typings_test_tsXX_test` 
        to ensure code is compatible with the new TS version.
