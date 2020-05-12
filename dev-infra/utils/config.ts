@@ -11,10 +11,10 @@ import {exec} from 'shelljs';
 
 /** The common configuration for ng-dev. */
 type CommonConfig = {
-  // Github repository configuration used for API Requests, determining upstream remote, etc.
+  /* Github repository configuration used for API Requests, determining upstream remote, etc. */
   github: {
-    owner: string;
-    name: string;
+    owner: string,
+    name: string,
   }
 };
 
@@ -24,8 +24,10 @@ type CommonConfig = {
  */
 export type NgDevConfig<T = {}> = CommonConfig&T;
 
-// The filename expected for creating the ng-dev config, without the file
-// extension to allow either a typescript or javascript file to be used.
+/**
+ * The filename expected for creating the ng-dev config, without the file
+ * extension to allow either a typescript or javascript file to be used.
+ */
 const CONFIG_FILE_NAME = '.ng-dev-config';
 
 /** The configuration for ng-dev. */
