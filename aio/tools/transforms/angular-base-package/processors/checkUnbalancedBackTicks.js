@@ -15,12 +15,15 @@ module.exports = function checkUnbalancedBackTicks(log, createDocMessage) {
     $runBefore: ['writeFilesProcessor'],
     $process: function(docs) {
       docs
-      .filter(doc => Boolean(doc.renderedContent))
       .forEach(doc => setUnbalancedBackTicks(doc));
     }
   };
 
   function setUnbalancedBackTicks(doc) {
+    if (!doc.renderedContent) {
+      return;
+    }
+
     const matches = doc.renderedContent.match(BACKTICK_REGEX);
     if (matches && matches.length % 2 !== 0) {
       doc.unbalancedBackTicks = true;
