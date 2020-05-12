@@ -318,20 +318,6 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     return null;
   }
 
-  hasBaseClass(clazz: ClassDeclaration): boolean {
-    const superHasBaseClass = super.hasBaseClass(clazz);
-    if (superHasBaseClass) {
-      return superHasBaseClass;
-    }
-
-    const innerClassDeclaration = getInnerClassDeclaration(clazz);
-    if (innerClassDeclaration === null) {
-      return false;
-    }
-
-    return super.hasBaseClass(innerClassDeclaration);
-  }
-
   getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null {
     // First try getting the base class from the "outer" declaration
     const superBaseClassIdentifier = super.getBaseClassExpression(clazz);
