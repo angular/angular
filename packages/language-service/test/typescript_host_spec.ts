@@ -170,9 +170,10 @@ describe('TypeScriptServiceHost', () => {
     tsLSHost.override('/app/test.ng', '<div></div>');
     const newModules = ngLSHost.getAnalyzedModules();
     const newProgram = ngLSHost.program;
-    // Assert that the program has changed because external template was updated
-    expect(newProgram).not.toBe(oldProgram);
-    // But, analyzed modules should remain the same because none of the source
+    // The program should not have changed since external templates are not part of
+    // the TS source files. This is an improvement in TS 3.9 over previous versions.
+    expect(newProgram).toBe(oldProgram);
+    // And also analyzed modules should remain the same because none of the source
     // files have changed.
     expect(newModules).toBe(oldModules);
   });
