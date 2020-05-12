@@ -33,28 +33,6 @@ import {NgccClassSymbol} from './ngcc_host';
  *
  */
 export class Esm5ReflectionHost extends Esm2015ReflectionHost {
-  /**
-   * Determines whether the given declaration, which should be a "class", has a base "class".
-   *
-   * In ES5 code, we need to determine if the IIFE wrapper takes a `_super` parameter .
-   *
-   * @param clazz a `ClassDeclaration` representing the class over which to reflect.
-   */
-  hasBaseClass(clazz: ClassDeclaration): boolean {
-    const classSymbol = this.getClassSymbol(clazz);
-    if (classSymbol === undefined) {
-      return false;
-    }
-
-    const iifeBody = getIifeBody(classSymbol.declaration.valueDeclaration);
-    if (!iifeBody) return false;
-
-    const iife = iifeBody.parent;
-    if (!iife || !ts.isFunctionExpression(iife)) return false;
-
-    return iife.parameters.length === 1 && isSuperIdentifier(iife.parameters[0].name);
-  }
-
   getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null {
     const classSymbol = this.getClassSymbol(clazz);
     if (classSymbol === undefined) {
