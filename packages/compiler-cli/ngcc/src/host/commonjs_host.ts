@@ -14,7 +14,7 @@ import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, isDefined} from '../utils';
 
-import {ExportDeclaration, ExportStatement, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isRequireCall, isWildcardReexportStatement, RequireCall, WildcardReexportStatement} from './commonjs_umd_utils';
+import {DefinePropertyReexportStatement, ExportDeclaration, ExportStatement, extractGetterFnExpression, findNamespaceOfIdentifier, findRequireCallReference, isDefinePropertyReexportStatement, isExportStatement, isExternalImport, isRequireCall, isWildcardReexportStatement, RequireCall, WildcardReexportStatement} from './commonjs_umd_utils';
 import {Esm5ReflectionHost} from './esm5_host';
 import {NgccClassSymbol} from './ngcc_host';
 
@@ -106,6 +106,11 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
         for (const reexport of reexports) {
           moduleMap.set(reexport.name, reexport.declaration);
         }
+      } else if (isDefinePropertyReexportStatement(statement)) {
+        const exportDeclaration = this.extractCommonJsDefinePropertyExportDeclaration(statement);
+        if (exportDeclaration !== null) {
+          moduleMap.set(exportDeclaration.name, exportDeclaration.declaration);
+        }
       }
     }
     return moduleMap;
@@ -139,7 +144,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
       return [];
     }
 
-    const viaModule = importPath.startsWith('./') ? null : importPath;
+    const viaModule = isExternalImport(importPath) ? importPath : null;
     const reexports: ExportDeclaration[] = [];
     importedExports.forEach((declaration, name) => {
       if (viaModule !== null && declaration.viaModule === null) {
@@ -148,6 +153,17 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
       reexports.push({name, declaration});
     });
     return reexports;
+  }
+
+  private extractCommonJsDefinePropertyExportDeclaration(
+      statement: DefinePropertyReexportStatement): ExportDeclaration|null {
+    const args = statement.expression.arguments;
+    const name = args[1].text;
+    const getterFnExpression = extractGetterFnExpression(statement);
+    if (getterFnExpression === null) {
+      return null;
+    }
+    return this.extractCommonJsExportDeclaration(name, getterFnExpression);
   }
 
   private findCommonJsImport(id: ts.Identifier): RequireCall|null {
@@ -187,7 +203,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     if (module === undefined) {
       return null;
     }
-    const viaModule = importPath.startsWith('./') ? null : importPath;
+    const viaModule = isExternalImport(importPath) ? importPath : null;
     return {node: module, known: null, viaModule, identity: null};
   }
 
