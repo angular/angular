@@ -72,8 +72,15 @@ const format = {
   'buildifier': true
 };
 
+// Github metadata information for `ng-dev` commands.
+const github = {
+  owner: 'angular',
+  name: 'angular',
+};
+
 // Export function to build ng-dev configuration object.
 module.exports = {
   commitMessage,
   format,
+  github,
 };
