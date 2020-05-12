@@ -78,7 +78,7 @@ export class LockFileWithChildProcess implements LockFile {
         this.logger.level !== undefined ? this.logger.level.toString() : LogLevel.info.toString();
     const isWindows = process.platform === 'win32';
     const unlocker = fork(
-        this.fs.resolve(__dirname, './unlocker.js'), [path, logLevel],
+        __dirname + '/unlocker.js', [path, logLevel],
         {detached: true, stdio: isWindows ? 'pipe' : 'inherit'});
     if (isWindows) {
       unlocker.stdout?.on('data', process.stdout.write.bind(process.stdout));
