@@ -13,9 +13,9 @@
   global.ng = global.ng || {};
   global.ng.common = global.ng.common || {};
   global.ng.common.locales = global.ng.common.locales || {};
-  var u = undefined;
+  const u = undefined;
   function plural(n) {
-    var i = Math.floor(Math.abs(n));
+    let i = Math.floor(Math.abs(n));
     if (n === 0) return 0;
     if ((i === 0 || i === 1) && !(n === 0)) return 1;
     return 5;
