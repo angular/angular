@@ -283,13 +283,11 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param decl The `Declaration` to check.
    * @return The passed in `Declaration` (potentially enhanced with a `KnownDeclaration`).
    */
-  detectKnownDeclaration(decl: null): null;
-  detectKnownDeclaration<T extends Declaration>(decl: T): T;
-  detectKnownDeclaration<T extends Declaration>(decl: T|null): T|null;
-  detectKnownDeclaration<T extends Declaration>(decl: T|null): T|null {
+  detectKnownDeclaration<T extends Declaration>(decl: T): T {
     decl = super.detectKnownDeclaration(decl);
 
-    if (decl !== null && decl.known === null && decl.node !== null) {
+    // Also check for TS helpers
+    if (decl.known === null && decl.node !== null) {
       decl.known = getTsHelperFnFromDeclaration(decl.node);
     }
 
