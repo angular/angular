@@ -1944,6 +1944,121 @@ exports.MissingClass2 = MissingClass2;
           testForHelper('b', '__spread$2', KnownDeclaration.TsHelperSpread);
           testForHelper('c', '__spreadArrays$3', KnownDeclaration.TsHelperSpreadArrays);
         });
+
+        it('should recognize enum declarations with string values', () => {
+          const testFile: TestFile = {
+            name: _('/node_modules/test-package/some/file.js'),
+            contents: `
+          var Enum;
+          (function (Enum) {
+              Enum["ValueA"] = "1";
+              Enum["ValueB"] = "2";
+          })(exports.Enum || (exports.Enum = {}));
+
+          var value = Enum;`
+          };
+          loadTestFiles([testFile]);
+          const bundle = makeTestBundleProgram(testFile.name);
+          const host =
+              createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
+          const valueDecl = getDeclaration(
+              bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
+              ts.isVariableDeclaration);
+          const declaration = host.getDeclarationOfIdentifier(
+                                  valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
+
+          const enumMembers = (declaration.identity as DownleveledEnum).enumMembers;
+          expect(declaration.node.parent.parent.getText()).toBe('var Enum;');
+          expect(enumMembers!.length).toBe(2);
+          expect(enumMembers![0].name.getText()).toBe('"ValueA"');
+          expect(enumMembers![0].initializer!.getText()).toBe('"1"');
+          expect(enumMembers![1].name.getText()).toBe('"ValueB"');
+          expect(enumMembers![1].initializer!.getText()).toBe('"2"');
+        });
+
+        it('should recognize enum declarations with numeric values', () => {
+          const testFile: TestFile = {
+            name: _('/node_modules/test-package/some/file.js'),
+            contents: `
+          var Enum;
+          (function (Enum) {
+              Enum[Enum["ValueA"] = "1"] = "ValueA";
+              Enum[Enum["ValueB"] = "2"] = "ValueB";
+          })(exports.Enum || (exports.Enum = {}));
+
+          var value = Enum;`
+          };
+          loadTestFiles([testFile]);
+          const bundle = makeTestBundleProgram(testFile.name);
+          const host =
+              createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
+          const valueDecl = getDeclaration(
+              bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
+              ts.isVariableDeclaration);
+          const declaration = host.getDeclarationOfIdentifier(
+                                  valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
+
+          const enumMembers = (declaration.identity as DownleveledEnum).enumMembers;
+          expect(declaration.node.parent.parent.getText()).toBe('var Enum;');
+          expect(enumMembers!.length).toBe(2);
+          expect(enumMembers![0].name.getText()).toBe('"ValueA"');
+          expect(enumMembers![0].initializer!.getText()).toBe('"1"');
+          expect(enumMembers![1].name.getText()).toBe('"ValueB"');
+          expect(enumMembers![1].initializer!.getText()).toBe('"2"');
+        });
+
+        it('should not consider IIFEs that do no assign members to the parameter as an enum declaration',
+           () => {
+             const testFile: TestFile = {
+               name: _('/node_modules/test-package/some/file.js'),
+               contents: `
+          var Enum;
+          (function (E) {
+              Enum["ValueA"] = "1";
+              Enum["ValueB"] = "2";
+          })(exports.Enum || (exports.Enum = {}));
+
+          var value = Enum;`
+             };
+             loadTestFiles([testFile]);
+             const bundle = makeTestBundleProgram(testFile.name);
+             const host =
+                 createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
+             const valueDecl = getDeclaration(
+                 bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
+                 ts.isVariableDeclaration);
+             const declaration = host.getDeclarationOfIdentifier(
+                                     valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
+
+             expect(declaration.node.parent.parent.getText()).toBe('var Enum;');
+             expect(declaration.identity).toBe(null);
+           });
+
+        it('should not consider IIFEs without call argument as an enum declaration', () => {
+          const testFile: TestFile = {
+            name: _('/node_modules/test-package/some/file.js'),
+            contents: `
+          var Enum;
+          (function (Enum) {
+              Enum["ValueA"] = "1";
+              Enum["ValueB"] = "2";
+          })();
+
+          var value = Enum;`
+          };
+          loadTestFiles([testFile]);
+          const bundle = makeTestBundleProgram(testFile.name);
+          const host =
+              createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
+          const valueDecl = getDeclaration(
+              bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
+              ts.isVariableDeclaration);
+          const declaration = host.getDeclarationOfIdentifier(
+                                  valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
+
+          expect(declaration.node.parent.parent.getText()).toBe('var Enum;');
+          expect(declaration.identity).toBe(null);
+        });
       });
 
       describe('getExportsOfModule()', () => {
@@ -2072,121 +2187,6 @@ exports.MissingClass2 = MissingClass2;
                 ['__spreadArrays', KnownDeclaration.TsHelperSpreadArrays],
                 ['__unknownHelper', null],
               ]);
-        });
-
-        it('should recognize enum declarations with string values', () => {
-          const testFile: TestFile = {
-            name: _('/node_modules/test-package/some/file.js'),
-            contents: `
-          var Enum;
-          (function (Enum) {
-              Enum["ValueA"] = "1";
-              Enum["ValueB"] = "2";
-          })(exports.Enum || (exports.Enum = {}));
-
-          var value = Enum;`
-          };
-          loadTestFiles([testFile]);
-          const bundle = makeTestBundleProgram(testFile.name);
-          const host =
-              createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
-          const valueDecl = getDeclaration(
-              bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
-              ts.isVariableDeclaration);
-          const declaration = host.getDeclarationOfIdentifier(
-                                  valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
-
-          const enumMembers = (declaration.identity as DownleveledEnum).enumMembers;
-          expect(declaration.node.parent.parent.getText()).toBe('var Enum;');
-          expect(enumMembers!.length).toBe(2);
-          expect(enumMembers![0].name.getText()).toBe('"ValueA"');
-          expect(enumMembers![0].initializer!.getText()).toBe('"1"');
-          expect(enumMembers![1].name.getText()).toBe('"ValueB"');
-          expect(enumMembers![1].initializer!.getText()).toBe('"2"');
-        });
-
-        it('should recognize enum declarations with numeric values', () => {
-          const testFile: TestFile = {
-            name: _('/node_modules/test-package/some/file.js'),
-            contents: `
-          var Enum;
-          (function (Enum) {
-              Enum[Enum["ValueA"] = "1"] = "ValueA";
-              Enum[Enum["ValueB"] = "2"] = "ValueB";
-          })(exports.Enum || (exports.Enum = {}));
-
-          var value = Enum;`
-          };
-          loadTestFiles([testFile]);
-          const bundle = makeTestBundleProgram(testFile.name);
-          const host =
-              createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
-          const valueDecl = getDeclaration(
-              bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
-              ts.isVariableDeclaration);
-          const declaration = host.getDeclarationOfIdentifier(
-                                  valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
-
-          const enumMembers = (declaration.identity as DownleveledEnum).enumMembers;
-          expect(declaration.node.parent.parent.getText()).toBe('var Enum;');
-          expect(enumMembers!.length).toBe(2);
-          expect(enumMembers![0].name.getText()).toBe('"ValueA"');
-          expect(enumMembers![0].initializer!.getText()).toBe('"1"');
-          expect(enumMembers![1].name.getText()).toBe('"ValueB"');
-          expect(enumMembers![1].initializer!.getText()).toBe('"2"');
-        });
-
-        it('should not consider IIFEs that do no assign members to the parameter as an enum declaration',
-           () => {
-             const testFile: TestFile = {
-               name: _('/node_modules/test-package/some/file.js'),
-               contents: `
-          var Enum;
-          (function (E) {
-              Enum["ValueA"] = "1";
-              Enum["ValueB"] = "2";
-          })(exports.Enum || (exports.Enum = {}));
-
-          var value = Enum;`
-             };
-             loadTestFiles([testFile]);
-             const bundle = makeTestBundleProgram(testFile.name);
-             const host =
-                 createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
-             const valueDecl = getDeclaration(
-                 bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
-                 ts.isVariableDeclaration);
-             const declaration = host.getDeclarationOfIdentifier(
-                                     valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
-
-             expect(declaration.node.parent.parent.getText()).toBe('var Enum;');
-             expect(declaration.identity).toBe(null);
-           });
-
-        it('should not consider IIFEs without call argument as an enum declaration', () => {
-          const testFile: TestFile = {
-            name: _('/node_modules/test-package/some/file.js'),
-            contents: `
-          var Enum;
-          (function (Enum) {
-              Enum["ValueA"] = "1";
-              Enum["ValueB"] = "2";
-          })();
-
-          var value = Enum;`
-          };
-          loadTestFiles([testFile]);
-          const bundle = makeTestBundleProgram(testFile.name);
-          const host =
-              createHost(bundle, new CommonJsReflectionHost(new MockLogger(), false, bundle));
-          const valueDecl = getDeclaration(
-              bundle.program, _('/node_modules/test-package/some/file.js'), 'value',
-              ts.isVariableDeclaration);
-          const declaration = host.getDeclarationOfIdentifier(
-                                  valueDecl.initializer as ts.Identifier) as ConcreteDeclaration;
-
-          expect(declaration.node.parent.parent.getText()).toBe('var Enum;');
-          expect(declaration.identity).toBe(null);
         });
       });
 
