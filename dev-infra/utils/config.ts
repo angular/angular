@@ -12,8 +12,8 @@ import {exec} from 'shelljs';
 /** The common configuration for ng-dev. */
 type CommonConfig = {
   github: {
-    owner: string;
-    name: string;
+    owner: string,
+    name: string,
   }
 };
 
