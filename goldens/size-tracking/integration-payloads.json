@@ -3,7 +3,7 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 1485,
-        "main-es2015": 142794,
+        "main-es2015": 143350,
         "polyfills-es2015": 36657
       }
     }
@@ -21,7 +21,7 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 1485,
-        "main-es2015": 148932,
+        "main-es2015": 149471,
         "polyfills-es2015": 36657
       }
     }
@@ -30,7 +30,7 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 1485,
-        "main-es2015": 138343,
+        "main-es2015": 138866,
         "polyfills-es2015": 37334
       }
     }
@@ -39,7 +39,7 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 2289,
-        "main-es2015": 247761,
+        "main-es2015": 248455,
         "polyfills-es2015": 36657,
         "5-es2015": 751
       }
@@ -49,7 +49,7 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 2289,
-        "main-es2015": 222907,
+        "main-es2015": 223063,
         "polyfills-es2015": 36657,
         "5-es2015": 779
       }
@@ -60,7 +60,8 @@
       "uncompressed": {
         "bundle": "TODO(i): temporarily increase the payload size limit from 105779 - this is due to a closure issue related to ESM reexports that still needs to be investigated",
         "bundle": "TODO(i): we should define ngDevMode to false in Closure, but --define only works in the global scope.",
-        "bundle": 169991
+        "bundle": "TODO(i): (FW-2164) TS 3.9 new class shape seems to have broken Closure in big ways. The size went from 169991 to 252338",
+        "bundle": 252338
       }
     }
   }
