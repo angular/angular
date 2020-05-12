@@ -125,10 +125,11 @@ export function resolveModuleName(
     compilerHost: ts.ModuleResolutionHost&Pick<ts.CompilerHost, 'resolveModuleNames'>,
     moduleResolutionCache: ts.ModuleResolutionCache|null): ts.ResolvedModule|undefined {
   if (compilerHost.resolveModuleNames) {
-    // FIXME: Additional parameters are required in TS3.6, but ignored in 3.5.
-    // Remove the any cast once google3 is fully on TS3.6.
-    return (compilerHost as any)
-        .resolveModuleNames([moduleName], containingFile, undefined, undefined, compilerOptions)[0];
+    return compilerHost.resolveModuleNames(
+        [moduleName], containingFile,
+        undefined,  // reusedNames
+        undefined,  // redirectedReference
+        compilerOptions)[0];
   } else {
     return ts
         .resolveModuleName(
