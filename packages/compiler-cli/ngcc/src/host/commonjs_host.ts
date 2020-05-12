@@ -12,7 +12,7 @@ import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {Declaration, Import} from '../../../src/ngtsc/reflection';
 import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
-import {FactoryMap, getTsHelperFnFromIdentifier, isDefined, stripExtension} from '../utils';
+import {FactoryMap, isDefined} from '../utils';
 
 import {ExportDeclaration, ExportStatement, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isRequireCall, isWildcardReexportStatement, RequireCall, WildcardReexportStatement} from './commonjs_umd_utils';
 import {Esm5ReflectionHost} from './esm5_host';
@@ -43,7 +43,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
   }
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
-    return this.getCommonJsImportedDeclaration(id) || super.getDeclarationOfIdentifier(id);
+    return this.getCommonJsModuleDeclaration(id) || super.getDeclarationOfIdentifier(id);
   }
 
   getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
@@ -99,7 +99,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     const moduleMap = new Map<string, Declaration>();
     for (const statement of this.getModuleStatements(sourceFile)) {
       if (isExportStatement(statement)) {
-        const exportDeclaration = this.extractCommonJsExportDeclaration(statement);
+        const exportDeclaration = this.extractBasicCommonJsExportDeclaration(statement);
         moduleMap.set(exportDeclaration.name, exportDeclaration.declaration);
       } else if (isWildcardReexportStatement(statement)) {
         const reexports = this.extractCommonJsWildcardReexports(statement, sourceFile);
@@ -111,23 +111,10 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     return moduleMap;
   }
 
-  private extractCommonJsExportDeclaration(statement: ExportStatement): ExportDeclaration {
+  private extractBasicCommonJsExportDeclaration(statement: ExportStatement): ExportDeclaration {
     const exportExpression = statement.expression.right;
-    const declaration = this.getDeclarationOfExpression(exportExpression);
     const name = statement.expression.left.name.text;
-    if (declaration !== null) {
-      return {name, declaration};
-    } else {
-      return {
-        name,
-        declaration: {
-          node: null,
-          known: null,
-          expression: exportExpression,
-          viaModule: null,
-        },
-      };
-    }
+    return this.extractCommonJsExportDeclaration(name, exportExpression);
   }
 
   private extractCommonJsWildcardReexports(
@@ -152,18 +139,13 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
       return [];
     }
 
-    const viaModule = stripExtension(importedFile.fileName);
+    const viaModule = importPath.startsWith('./') ? null : importPath;
     const reexports: ExportDeclaration[] = [];
-    importedExports.forEach((decl, name) => {
-      if (decl.node !== null) {
-        reexports.push({
-          name,
-          declaration: {node: decl.node, known: null, viaModule, identity: decl.identity}
-        });
-      } else {
-        reexports.push(
-            {name, declaration: {node: null, known: null, expression: decl.expression, viaModule}});
+    importedExports.forEach((declaration, name) => {
+      if (viaModule !== null && declaration.viaModule === null) {
+        declaration = {...declaration, viaModule};
       }
+      reexports.push({name, declaration});
     });
     return reexports;
   }
@@ -175,19 +157,38 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     return nsIdentifier && findRequireCallReference(nsIdentifier, this.checker);
   }
 
-  private getCommonJsImportedDeclaration(id: ts.Identifier): Declaration|null {
-    const importInfo = this.getImportOfIdentifier(id);
-    if (importInfo === null) {
+  private extractCommonJsExportDeclaration(name: string, expression: ts.Expression):
+      ExportDeclaration {
+    const declaration = this.getDeclarationOfExpression(expression);
+    if (declaration !== null) {
+      return {name, declaration};
+    } else {
+      return {
+        name,
+        declaration: {node: null, known: null, expression, viaModule: null},
+      };
+    }
+  }
+
+  /**
+   * Handle the case where the identifier represents a reference to a whole CommonJS
+   * module, i.e. the result of a call to `require(...)`.
+   *
+   * @param id the identifier whose declaration we are looking for.
+   * @returns a declaration if `id` refers to a CommonJS module, or `null` otherwise.
+   */
+  private getCommonJsModuleDeclaration(id: ts.Identifier): Declaration|null {
+    const requireCall = findRequireCallReference(id, this.checker);
+    if (requireCall === null) {
       return null;
     }
-
-    const importedFile = this.resolveModuleName(importInfo.from, id.getSourceFile());
-    if (importedFile === undefined) {
+    const importPath = requireCall.arguments[0].text;
+    const module = this.resolveModuleName(importPath, id.getSourceFile());
+    if (module === undefined) {
       return null;
     }
-
-    const viaModule = !importInfo.from.startsWith('.') ? importInfo.from : null;
-    return {node: importedFile, known: getTsHelperFnFromIdentifier(id), viaModule, identity: null};
+    const viaModule = importPath.startsWith('./') ? null : importPath;
+    return {node: module, known: null, viaModule, identity: null};
   }
 
   private resolveModuleName(moduleName: string, containingFile: ts.SourceFile): ts.SourceFile
