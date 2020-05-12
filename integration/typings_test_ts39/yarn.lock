@@ -3,13 +3,13 @@
 
 
 "@angular/animations@file:../../dist/packages-dist/animations":
-  version "9.0.0-rc.1"
+  version "9.1.0-next.2"
 
 "@angular/common@file:../../dist/packages-dist/common":
-  version "9.0.0-rc.1"
+  version "9.1.0-next.2"
 
 "@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli":
-  version "9.0.0-rc.1"
+  version "9.1.0-next.2"
   dependencies:
     canonical-path "1.0.0"
     chokidar "^3.0.0"
@@ -21,46 +21,47 @@
     reflect-metadata "^0.1.2"
     semver "^6.3.0"
     source-map "^0.6.1"
+    sourcemap-codec "^1.4.8"
     yargs "13.1.0"
 
 "@angular/compiler@file:../../dist/packages-dist/compiler":
-  version "9.0.0-rc.1"
+  version "9.1.0-next.2"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "9.0.0-rc.1"
+  version "9.1.0-next.2"
 
 "@angular/elements@file:../../dist/packages-dist/elements":
-  version "9.0.0-rc.1"
+  version "9.1.0-next.2"
 
 "@angular/forms@file:../../dist/packages-dist/forms":
-  version "9.0.0-rc.1"
+  version "9.1.0-next.2"
 
 "@angular/platform-browser-dynamic@file:../../dist/packages-dist/platform-browser-dynamic":
-  version "9.0.0-rc.1"
+  version "9.1.0-next.2"
 
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
-  version "9.0.0-rc.1"
+  version "9.1.0-next.2"
 
 "@angular/platform-server@file:../../dist/packages-dist/platform-server":
-  version "9.0.0-rc.1"
+  version "9.1.0-next.2"
   dependencies:
     domino "^2.1.2"
     xhr2 "^0.1.4"
 
 "@angular/platform-webworker-dynamic@file:../../dist/packages-dist/platform-webworker-dynamic":
-  version "9.0.0-rc.1"
+  version "9.1.0-next.2"
 
 "@angular/platform-webworker@file:../../dist/packages-dist/platform-webworker":
-  version "9.0.0-rc.1"
+  version "9.1.0-next.2"
 
 "@angular/router@file:../../dist/packages-dist/router":
-  version "9.0.0-rc.1"
+  version "9.1.0-next.2"
 
 "@angular/service-worker@file:../../dist/packages-dist/service-worker":
-  version "9.0.0-rc.1"
+  version "9.1.0-next.2"
 
 "@angular/upgrade@file:../../dist/packages-dist/upgrade":
-  version "9.0.0-rc.1"
+  version "9.1.0-next.2"
 
 "@types/jasmine@file:../../node_modules/@types/jasmine":
   version "2.8.8"
@@ -323,9 +324,9 @@ locate-path@^3.0.0:
     path-exists "^3.0.0"
 
 magic-string@^0.25.0:
-  version "0.25.5"
-  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.5.tgz#694fa8c6b9a51d83cc4a72c5b6883a7cfa890e40"
-  integrity sha512-vIO/BOm9odBHBAGwv0gZPLJeO9IpwliiIc0uPeAW93rrFMJ/R3M665IAEfOU/IW3kD4S9AtEn76lfTn1Yif+9A==
+  version "0.25.6"
+  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.6.tgz#5586387d1242f919c6d223579cc938bf1420795e"
+  integrity sha512-3a5LOMSGoCTH5rbqobC2HuDNRtE2glHZ8J7pK+QZYppyWA36yuNpsX994rIY2nCuyP7CZYy7lQq/X2jygiZ89g==
   dependencies:
     sourcemap-codec "^1.4.4"
 
@@ -519,10 +520,10 @@ source-map@^0.6.1:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
 
-sourcemap-codec@^1.4.4:
-  version "1.4.7"
-  resolved "https://registry.yarnpkg.com/sourcemap-codec/-/sourcemap-codec-1.4.7.tgz#5b2cd184e3fe51fd30ba049f7f62bf499b4f73ae"
-  integrity sha512-RuN23NzhAOuUtaivhcrjXx1OPXsFeH9m5sI373/U7+tGLKihjUyboZAzOadytMjnqHp1f45RGk1IzDKCpDpSYA==
+sourcemap-codec@^1.4.4, sourcemap-codec@^1.4.8:
+  version "1.4.8"
+  resolved "https://registry.yarnpkg.com/sourcemap-codec/-/sourcemap-codec-1.4.8.tgz#ea804bd94857402e6992d05a38ef1ae35a9ab4c4"
+  integrity sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==
 
 string-width@^1.0.1:
   version "1.0.2"
@@ -584,14 +585,14 @@ to-regex-range@^5.0.1:
     is-number "^7.0.0"
 
 tslib@^1.9.0:
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
-  integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
+  version "1.11.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.11.1.tgz#eb15d128827fbee2841549e171f45ed338ac7e35"
+  integrity sha512-aZW88SY8kQbU7gpV19lN24LtXh/yD4ZZg6qieAJDDg+YBsJcSmLGK9QpnUjAKVG/xefmvJGd1WUmfpT/g6AJGA==
 
-typescript@3.7.4:
-  version "3.7.4"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.4.tgz#1743a5ec5fef6a1fa9f3e4708e33c81c73876c19"
-  integrity sha512-A25xv5XCtarLwXpcDNZzCGvW2D1S3/bACratYBx2sax8PefsFhlYmkQicKHvpYflFS8if4zne5zT5kpJ7pzuvw==
+typescript@3.8.3:
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
+  integrity sha512-MYlEfn5VrLNsgudQTVJeNaQFUAI7DkhnOjdpAp4T+ku1TfQClewlbSuTVHiA+8skNBgaf02TL/kLOvig4y3G8w==
 
 universalify@^0.1.0:
   version "0.1.2"

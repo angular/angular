@@ -135,7 +135,7 @@ describe('ngc transformer command-line', () => {
       const exitCode = main(['-p', basePath], errorSpy);
       const errorText = stripAnsi(errorSpy.calls.mostRecent().args[0]);
       expect(errorText).toContain(
-          `test.ts:1:23 - error TS2307: Cannot find module './not-exist-deps'.` +
+          `test.ts:1:23 - error TS2307: Cannot find module './not-exist-deps' or its corresponding type declarations.` +
           '\n');
       expect(exitCode).toEqual(1);
     });
