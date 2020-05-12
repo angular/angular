@@ -21,7 +21,7 @@ import {assertDefined, assertEqual, assertGreaterThan, assertLessThan} from '../
 import {assertLContainer} from './assert';
 import {getParentInjectorLocation, NodeInjector} from './di';
 import {addToViewTree, createLContainer, createLView, renderView} from './instructions/shared';
-import {ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, VIEW_REFS} from './interfaces/container';
+import {CONTAINER_HEADER_OFFSET, LContainer, VIEW_REFS} from './interfaces/container';
 import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {isProceduralRenderer, RComment, RElement} from './interfaces/renderer';
 import {isComponentHost, isLContainer, isLView, isRootView} from './interfaces/type_checks';
@@ -31,7 +31,7 @@ import {addRemoveViewFromContainer, appendChild, detachView, getBeforeNodeForVie
 import {getParentInjectorTNode} from './node_util';
 import {getLView, getPreviousOrParentTNode} from './state';
 import {getParentInjectorView, hasParentInjector} from './util/injector_utils';
-import {getComponentLViewByIndex, getNativeByTNode, setLContainerActiveIndex, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
+import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
 import {ViewRef} from './view_ref';
 
 
@@ -349,7 +349,6 @@ export function createContainerRef(
   if (isLContainer(slotValue)) {
     // If the host is a container, we don't need to create a new LContainer
     lContainer = slotValue;
-    setLContainerActiveIndex(lContainer, ActiveIndexFlag.DYNAMIC_EMBEDDED_VIEWS_ONLY);
   } else {
     let commentNode: RComment;
     // If the host is an element container, the native host element is guaranteed to be a

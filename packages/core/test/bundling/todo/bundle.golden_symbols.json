@@ -1,8 +1,5 @@
 [
   {
-    "name": "ACTIVE_INDEX"
-  },
-  {
     "name": "BLOOM_MASK"
   },
   {
@@ -70,6 +67,9 @@
   },
   {
     "name": "FLAGS"
+  },
+  {
+    "name": "HAS_TRANSPLANTED_VIEWS"
   },
   {
     "name": "HEADER_OFFSET"
@@ -657,6 +657,9 @@
     "name": "getNativeByTNode"
   },
   {
+    "name": "getNearestLContainer"
+  },
+  {
     "name": "getNextLContainer"
   },
   {
@@ -1135,9 +1138,6 @@
   },
   {
     "name": "setIsNotParent"
-  },
-  {
-    "name": "setLContainerActiveIndex"
   },
   {
     "name": "setPreviousOrParentTNode"

@@ -13,7 +13,7 @@ import {KeyValueArray} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
-import {ACTIVE_INDEX, ActiveIndexFlag, CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
+import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
 import {DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, TIcu} from '../interfaces/i18n';
 import {PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TViewNode} from '../interfaces/node';
@@ -23,7 +23,7 @@ import {RComment, RElement, Renderer3, RendererFactory3, RNode} from '../interfa
 import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling';
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, DestroyHookData, ExpandoInstructions, FLAGS, HEADER_OFFSET, HookData, HOST, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TVIEW, TView as ITView, TView, TViewType} from '../interfaces/view';
 import {attachDebugObject} from '../util/debug_utils';
-import {getLContainerActiveIndex, getTNode, unwrapRNode} from '../util/view_utils';
+import {getTNode, unwrapRNode} from '../util/view_utils';
 
 const NG_DEV_MODE = ((typeof ngDevMode === 'undefined' || !!ngDevMode) && initNgDevMode());
 
@@ -510,12 +510,8 @@ export function buildDebugNode(tNode: ITNode, lView: LView, nodeIndex: number): 
 export class LContainerDebug {
   constructor(private readonly _raw_lContainer: LContainer) {}
 
-  get activeIndex(): number {
-    return getLContainerActiveIndex(this._raw_lContainer);
-  }
   get hasTransplantedViews(): boolean {
-    return (this._raw_lContainer[ACTIVE_INDEX] & ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS) ===
-        ActiveIndexFlag.HAS_TRANSPLANTED_VIEWS;
+    return this._raw_lContainer[HAS_TRANSPLANTED_VIEWS];
   }
   get views(): LViewDebug[] {
     return this._raw_lContainer.slice(CONTAINER_HEADER_OFFSET)

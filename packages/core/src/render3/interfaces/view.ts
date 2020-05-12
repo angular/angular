@@ -262,7 +262,7 @@ export interface LView extends Array<any> {
    *
    * see also:
    *   - https://hackmd.io/@mhevery/rJUJsvv9H write up of the problem
-   *   - `LContainer[ACTIVE_INDEX]` for flag which marks which `LContainer` has transplanted views.
+   *   - `LContainer[HAS_TRANSPLANTED_VIEWS]` which marks which `LContainer` has transplanted views.
    *   - `LContainer[TRANSPLANT_HEAD]` and `LContainer[TRANSPLANT_TAIL]` storage for transplanted
    *   - `LView[DECLARATION_LCONTAINER]` similar problem for queries
    *   - `LContainer[MOVED_VIEWS]` similar problem for queries
