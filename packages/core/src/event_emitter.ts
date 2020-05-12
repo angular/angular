@@ -61,7 +61,7 @@ import {Subject, Subscription} from 'rxjs';
  * @see [Observables in Angular](guide/observables-in-angular)
  * @publicApi
  */
-export class EventEmitter<T extends any> extends Subject<T> {
+export class EventEmitter<T> extends Subject<T> {
   /**
    * @internal
    */
