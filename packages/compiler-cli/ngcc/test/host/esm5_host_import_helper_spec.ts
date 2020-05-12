@@ -12,7 +12,8 @@ import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/test
 import {ClassMemberKind, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {loadFakeCore, loadTestFiles, loadTsLib} from '../../../test/helpers';
-import {Esm5ReflectionHost, getIifeBody} from '../../src/host/esm5_host';
+import {getIifeBody} from '../../src/host/esm2015_host';
+import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {MockLogger} from '../helpers/mock_logger';
 import {convertToDirectTsLibImport, convertToInlineTsLib, makeTestBundleProgram} from '../helpers/utils';
 
@@ -331,7 +332,8 @@ export { AliasedDirective$1 };
             const classNode = getDeclaration(
                 bundle.program, _('/some_minified_directive.js'), 'SomeDirective',
                 isNamedVariableDeclaration);
-            const innerNode = getIifeBody(classNode)!.statements.find(isNamedFunctionDeclaration)!;
+            const innerNode = (getIifeBody(classNode.initializer!) as ts.Block)
+                                  .statements.find(isNamedFunctionDeclaration)!;
             const classSymbol = host.getClassSymbol(classNode);
 
             expect(classSymbol).toBeDefined();
