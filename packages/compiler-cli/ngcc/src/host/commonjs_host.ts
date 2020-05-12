@@ -14,7 +14,7 @@ import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, getTsHelperFnFromIdentifier, isDefined, stripExtension} from '../utils';
 
-import {ExportDeclaration, ExportStatement, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isReexportStatement, isRequireCall, ReexportStatement, RequireCall} from './commonjs_umd_utils';
+import {ExportDeclaration, ExportStatement, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isRequireCall, isWildcardReexportStatement, RequireCall, WildcardReexportStatement} from './commonjs_umd_utils';
 import {Esm5ReflectionHost} from './esm5_host';
 import {NgccClassSymbol} from './ngcc_host';
 
@@ -101,8 +101,8 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
       if (isExportStatement(statement)) {
         const exportDeclaration = this.extractCommonJsExportDeclaration(statement);
         moduleMap.set(exportDeclaration.name, exportDeclaration.declaration);
-      } else if (isReexportStatement(statement)) {
-        const reexports = this.extractCommonJsReexports(statement, sourceFile);
+      } else if (isWildcardReexportStatement(statement)) {
+        const reexports = this.extractCommonJsWildcardReexports(statement, sourceFile);
         for (const reexport of reexports) {
           moduleMap.set(reexport.name, reexport.declaration);
         }
@@ -130,8 +130,8 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     }
   }
 
-  private extractCommonJsReexports(statement: ReexportStatement, containingFile: ts.SourceFile):
-      ExportDeclaration[] {
+  private extractCommonJsWildcardReexports(
+      statement: WildcardReexportStatement, containingFile: ts.SourceFile): ExportDeclaration[] {
     const reexportArg = statement.expression.arguments[0];
 
     const requireCall = isRequireCall(reexportArg) ?

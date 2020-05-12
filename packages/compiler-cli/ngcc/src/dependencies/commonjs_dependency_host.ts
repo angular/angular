@@ -8,7 +8,7 @@
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {isReexportStatement, isRequireCall, RequireCall} from '../host/commonjs_umd_utils';
+import {isRequireCall, isWildcardReexportStatement, RequireCall} from '../host/commonjs_umd_utils';
 
 import {DependencyHostBase} from './dependency_host';
 import {ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
@@ -59,7 +59,7 @@ export class CommonJsDependencyHost extends DependencyHostBase {
           // Import for the side-effects only:
           // `require('...')`
           requireCalls.push(stmt.expression);
-        } else if (isReexportStatement(stmt)) {
+        } else if (isWildcardReexportStatement(stmt)) {
           // Re-export in one of the following formats:
           // - `__export(require('...'))`
           // - `__export(<identifier>)`

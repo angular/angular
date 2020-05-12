@@ -39,7 +39,7 @@ export interface ExportStatement extends ts.ExpressionStatement {
  * expression and can be either a `require('...')` call or an identifier (initialized via a
  * `require('...')` call).
  */
-export interface ReexportStatement extends ts.ExpressionStatement {
+export interface WildcardReexportStatement extends ts.ExpressionStatement {
   expression: ts.CallExpression;
 }
 
@@ -94,7 +94,7 @@ export function isExportStatement(stmt: ts.Statement): stmt is ExportStatement {
  * - `tslib.__export(<foo>, exports)`
  * - `tslib.__exportStar(<foo>, exports)`
  */
-export function isReexportStatement(stmt: ts.Statement): stmt is ReexportStatement {
+export function isWildcardReexportStatement(stmt: ts.Statement): stmt is WildcardReexportStatement {
   // Ensure it is a call expression statement.
   if (!ts.isExpressionStatement(stmt) || !ts.isCallExpression(stmt.expression)) {
     return false;
