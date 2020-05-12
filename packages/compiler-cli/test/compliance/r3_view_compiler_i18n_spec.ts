@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {AttributeMarker} from '@angular/compiler/src/core';
 import {setup} from '@angular/compiler/test/aot/test_util';
+import * as ts from 'typescript';
 
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../compiler/src/compiler';
 import {decimalDigest} from '../../../compiler/src/i18n/digest';
@@ -3759,6 +3759,23 @@ $` + String.raw`{$I18N_4$}:ICU:\`;
                     });
                   }));
         }));
+  });
+
+  describe('es5 support', () => {
+    it('should generate ES5 compliant localized messages if the target is ES5', () => {
+      const input = `
+        <div i18n="meaning:A|descA@@idA">Content A</div>
+      `;
+
+      const output = String.raw`
+        var $I18N_0$;
+        …
+        $I18N_0$ = $localize(…__makeTemplateObject([":meaning:A|descA@@idA:Content A"], [":meaning\\:A|descA@@idA:Content A"])…);
+      `;
+
+      verify(
+          input, output, {skipIdBasedCheck: true, compilerOptions: {target: ts.ScriptTarget.ES5}});
+    });
   });
 
   describe('errors', () => {
