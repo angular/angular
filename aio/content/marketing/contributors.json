@@ -840,5 +840,13 @@
     "bio": "Annie is an engineering resident on the Angular Components team at Google. She is passionate about the intersection between design and technology and enjoys drawing in her free time.",
     "groups": ["Angular"],
     "lead": "jelbourn"
+  },
+  "cindygk": {
+    "name": "Cindy Greene-Kaplan",
+    "picture": "cindygreenekaplan.jpg",
+    "twitter": "CindyGK2019",
+    "bio": "Cindy is a Program Manager on the Angular team at Google.  She is passionate about improving team processes and overall execution.  She enjoys dance fitness, movies and travel.",
+    "groups": ["Angular"],
+    "lead": "juleskremer"
   }
 }
