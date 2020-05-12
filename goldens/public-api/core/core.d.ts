@@ -297,7 +297,7 @@ export declare interface DoCheck {
     ngDoCheck(): void;
 }
 
-export declare class ElementRef<T extends any = any> {
+export declare class ElementRef<T = any> {
     nativeElement: T;
     constructor(nativeElement: T);
 }
@@ -313,7 +313,7 @@ export declare class ErrorHandler {
     handleError(error: any): void;
 }
 
-export declare class EventEmitter<T extends any> extends Subject<T> {
+export declare class EventEmitter<T> extends Subject<T> {
     constructor(isAsync?: boolean);
     emit(value?: T): void;
     subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription;
@@ -974,7 +974,7 @@ export declare function ɵɵresolveWindow(element: RElement & {
     ownerDocument: Document;
 }): {
     name: string;
-    target: Window | null;
+    target: (Window & typeof globalThis) | null;
 };
 
 export declare function ɵɵrestoreView(viewToRestore: OpaqueViewState): void;

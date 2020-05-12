@@ -26,7 +26,7 @@
     }
   },
   "dependencies": {
-    "@microsoft/api-extractor": "^7.3.9",
+    "@microsoft/api-extractor": "^7.7.13",
     "shelljs": "0.8.2",
     "tsickle": "^0.38.0"
   },
@@ -34,7 +34,7 @@
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
     "@bazel/typescript": ">=1.0.0",
     "terser": "^4.3.1",
-    "typescript": ">=3.8 <3.9",
+    "typescript": ">=3.8 <4.0",
     "rollup": ">=1.20.0",
     "rollup-plugin-commonjs": ">=9.0.0",
     "rollup-plugin-node-resolve": ">=4.2.0",
@@ -58,7 +58,7 @@
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "publishConfig":{
-    "registry":"https://wombat-dressing-room.appspot.com"
+  "publishConfig": {
+    "registry": "https://wombat-dressing-room.appspot.com"
   }
 }
