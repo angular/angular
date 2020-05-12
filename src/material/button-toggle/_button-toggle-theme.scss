@@ -101,13 +101,6 @@
     .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
       line-height: $standard-height;
     }
-
-    @include cdk-high-contrast(active, off) {
-      .mat-button-toggle-checked.mat-button-toggle-appearance-standard
-      .mat-button-toggle-focus-overlay {
-        border-bottom: solid $standard-height;
-      }
-    }
   }
 }
 
