@@ -315,8 +315,11 @@ SOME DEFINITION TEXT
             program, absoluteFromSourceFile(sourceFile), 'NoIife', ts.isFunctionDeclaration);
         const mockNoIifeClass: any = {declaration: noIifeDeclaration, name: 'NoIife'};
         expect(() => renderer.addDefinitions(output, mockNoIifeClass, 'SOME DEFINITION TEXT'))
-            .toThrowError(`Compiled class declaration is not inside an IIFE: NoIife in ${
-                _('/node_modules/test-package/some/file.js')}`);
+            .toThrowError(
+                `Compiled class "NoIife" in "${
+                    _('/node_modules/test-package/some/file.js')}" does not have a valid syntax.\n` +
+                `Expected an ES5 IIFE wrapped function. But got:\n` +
+                `function NoIife() {}`);
 
         const badIifeDeclaration = getDeclaration(
             program, absoluteFromSourceFile(sourceFile), 'BadIife', ts.isVariableDeclaration);
