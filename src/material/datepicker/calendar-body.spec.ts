@@ -107,7 +107,7 @@ describe('MatCalendarBody', () => {
     });
 
     it('should have a focus indicator', () => {
-      expect(cellEls.every(element => element.classList.contains('mat-focus-indicator')))
+      expect(cellEls.every(element => !!element.querySelector('.mat-focus-indicator')))
           .toBe(true);
     });
 

@@ -29,7 +29,7 @@
   </td>
   <td *ngFor="let item of row; let colIndex = index"
       role="gridcell"
-      class="mat-calendar-body-cell mat-focus-indicator"
+      class="mat-calendar-body-cell"
       [ngClass]="item.cssClasses"
       [tabindex]="_isActiveCell(rowIndex, colIndex) ? 0 : -1"
       [attr.data-mat-row]="rowIndex"
@@ -54,7 +54,7 @@
       [style.width]="_cellWidth"
       [style.paddingTop]="_cellPadding"
       [style.paddingBottom]="_cellPadding">
-      <div class="mat-calendar-body-cell-content"
+      <div class="mat-calendar-body-cell-content mat-focus-indicator"
         [class.mat-calendar-body-selected]="_isSelected(item)"
         [class.mat-calendar-body-today]="todayValue === item.compareValue">
         {{item.displayValue}}

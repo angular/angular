@@ -70,6 +70,9 @@
   // is present.
   .mat-focus-indicator.mat-option.mat-active::before,
 
+  // The focus indicator in the calendar is placed on an element inside the cell.
+  .mat-calendar-body-active .mat-focus-indicator::before,
+
   // For all other components, render the focus indicator on focus.
   .mat-focus-indicator:focus::before {
     content: '';
