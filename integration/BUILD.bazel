@@ -46,18 +46,18 @@ INTEGRATION_TESTS = {
     "cli-hello-world-ivy-compat": {"commands": "payload_size_tracking"},
     "cli-hello-world-ivy-i18n": {
         "commands": "payload_size_tracking",
-        "tags": ["no-ivy-aot"],
+        "tags": ["fixme-ivy-aot"],
     },
     "cli-hello-world-ivy-minimal": {"commands": "payload_size_tracking"},
     "cli-hello-world-lazy": {
         "commands": "payload_size_tracking",
         # TODO: cli-hello-world-lazy fails on a bundle size check with Ivy bundles
-        "tags": ["no-ivy-aot"],
+        "tags": ["fixme-ivy-aot"],
     },
     "cli-hello-world-lazy-rollup": {
         "commands": "payload_size_tracking",
         # TODO: cli-hello-world-lazy-rollup fails on a bundle size check because Ivy and VE sizes are different
-        "tags": ["no-ivy-aot"],
+        "tags": ["fixme-ivy-aot"],
     },
     "dynamic-compiler": {"tags": ["no-ivy-aot"]},
     "hello_world__closure": {
