@@ -62,7 +62,7 @@ import {Subject, Subscription} from 'rxjs';
  * @publicApi
  */
 export interface EventEmitter<T> extends Subject<T> {
-  emit: (value?: T) => void;
+  emit(value?: T): void;
   subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription;
 }
 /** @publicApi */
@@ -160,5 +160,5 @@ export const EventEmitter:
     }
 
     return sink;
-  };
-}
+  }
+};
