@@ -7,7 +7,7 @@
  */
 
 import {makeParamDecorator} from '../util/decorators';
-
+import {ɵɵinjectAttribute} from '../render3/instructions/di';
 
 
 /**
@@ -274,11 +274,25 @@ export interface Attribute {
   attributeName: string;
 }
 
+function CREATE_ATTRIBUTE_DECORATOR__PRE_R3__(): AttributeDecorator {
+  return makeParamDecorator(
+    'Attribute',
+    (attributeName?: string) => ({attributeName}));
+}
+
+export function CREATE_ATTRIBUTE_DECORATOR__POST_R3__(): AttributeDecorator {
+  return makeParamDecorator(
+    'Attribute',
+    (attributeName?: string) =>
+        ({attributeName, __NG_ELEMENT_ID__: () => ɵɵinjectAttribute(attributeName!)}));
+}
+
+const CREATE_ATTRIBUTE_DECORATOR_IMPL = CREATE_ATTRIBUTE_DECORATOR__PRE_R3__;
+
 /**
  * Attribute decorator and metadata.
  *
  * @Annotation
  * @publicApi
- */
-export const Attribute: AttributeDecorator =
-    makeParamDecorator('Attribute', (attributeName?: string) => ({attributeName}));
+*/
+export const Attribute: AttributeDecorator = CREATE_ATTRIBUTE_DECORATOR_IMPL();
