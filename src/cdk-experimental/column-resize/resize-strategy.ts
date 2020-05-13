@@ -18,20 +18,34 @@ import {ColumnResize} from './column-resize';
  */
 @Injectable()
 export abstract class ResizeStrategy {
+  protected abstract readonly columnResize: ColumnResize;
+
+  /** Updates the width of the specified column. */
   abstract applyColumnSize(
       cssFriendlyColumnName: string,
       columnHeader: HTMLElement,
-      sizeInPx: number): void;
+      sizeInPx: number,
+      previousSizeInPx?: number): void;
 
+  /** Applies a minimum width to the specified column, updating its current width as needed. */
   abstract applyMinColumnSize(
       cssFriendlyColumnName: string,
       columnHeader: HTMLElement,
       minSizeInPx: number): void;
 
+  /** Applies a maximum width to the specified column, updating its current width as needed. */
   abstract applyMaxColumnSize(
       cssFriendlyColumnName: string,
       columnHeader: HTMLElement,
       minSizeInPx: number): void;
+
+  /** Adjusts the width of the table element by the specified delta. */
+  protected updateTableWidth(delta: number): void {
+    const table = this.columnResize.elementRef.nativeElement;
+    const tableWidth = getElementWidth(table);
+
+    table.style.width = coerceCssPixelValue(tableWidth + delta);
+  }
 }
 
 /**
@@ -43,17 +57,31 @@ export abstract class ResizeStrategy {
  */
 @Injectable()
 export class TableLayoutFixedResizeStrategy extends ResizeStrategy {
-  applyColumnSize(_: string, columnHeader: HTMLElement, sizeInPx: number): void {
+  constructor(protected readonly columnResize: ColumnResize) {
+    super();
+  }
+
+  applyColumnSize(_: string, columnHeader: HTMLElement, sizeInPx: number,
+      previousSizeInPx?: number): void {
+    const delta = sizeInPx - (previousSizeInPx ?? getElementWidth(columnHeader));
+
     columnHeader.style.width = coerceCssPixelValue(sizeInPx);
+
+    this.updateTableWidth(delta);
   }
 
   applyMinColumnSize(_: string, columnHeader: HTMLElement, sizeInPx: number): void {
-    columnHeader.style.minWidth = coerceCssPixelValue(sizeInPx);
+    const currentWidth = getElementWidth(columnHeader);
+    const newWidth = Math.max(currentWidth, sizeInPx);
+
+    this.applyColumnSize(_, columnHeader, newWidth, currentWidth);
   }
 
-  applyMaxColumnSize(): void {
-    // Intentionally omitted as max-width causes strange rendering issues in Chrome.
-    // Max size will still apply when the user is resizing this column.
+  applyMaxColumnSize(_: string, columnHeader: HTMLElement, sizeInPx: number): void {
+    const currentWidth = getElementWidth(columnHeader);
+    const newWidth = Math.min(currentWidth, sizeInPx);
+
+    this.applyColumnSize(_, columnHeader, newWidth, currentWidth);
   }
 }
 
@@ -76,16 +104,23 @@ export class CdkFlexTableResizeStrategy extends ResizeStrategy implements OnDest
   protected readonly defaultMaxSize = Number.MAX_SAFE_INTEGER;
 
   constructor(
-      private readonly _columnResize: ColumnResize,
+      protected readonly columnResize: ColumnResize,
       @Inject(DOCUMENT) document: any) {
     super();
     this._document = document;
   }
 
-  applyColumnSize(cssFriendlyColumnName: string, _: HTMLElement, sizeInPx: number): void {
+  applyColumnSize(cssFriendlyColumnName: string, columnHeader: HTMLElement,
+      sizeInPx: number, previousSizeInPx?: number): void {
+    // Optimization: Check applied width first as we probably set it already before reading
+    // offsetWidth which triggers layout.
+    const delta = sizeInPx - (previousSizeInPx ??
+        (this._getAppliedWidth(cssFriendlyColumnName) || columnHeader.offsetWidth));
+
     const cssSize = coerceCssPixelValue(sizeInPx);
 
     this._applyProperty(cssFriendlyColumnName, 'flex', `0 0.01 ${cssSize}`);
+    this.updateTableWidth(delta);
   }
 
   applyMinColumnSize(cssFriendlyColumnName: string, _: HTMLElement, sizeInPx: number): void {
@@ -106,12 +141,21 @@ export class CdkFlexTableResizeStrategy extends ResizeStrategy implements OnDest
     return `cdk-column-${cssFriendlyColumnName}`;
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     // TODO: Use remove() once we're off IE11.
     if (this._styleElement && this._styleElement.parentNode) {
       this._styleElement.parentNode.removeChild(this._styleElement);
       this._styleElement = undefined;
     }
+  }
+
+  private _getPropertyValue(cssFriendlyColumnName: string, key: string): string|undefined {
+    const properties = this._getColumnPropertiesMap(cssFriendlyColumnName);
+    return properties.get(key);
+  }
+
+  private _getAppliedWidth(cssFriendslyColumnName: string): number {
+    return coercePixelsFromFlexValue(this._getPropertyValue(cssFriendslyColumnName, 'flex'));
   }
 
   private _applyProperty(
@@ -166,13 +210,33 @@ export class CdkFlexTableResizeStrategy extends ResizeStrategy implements OnDest
     }
 
     const columnClassName = this.getColumnCssClass(cssFriendlyColumnName);
-    const tableClassName = this._columnResize.getUniqueCssClass();
+    const tableClassName = this.columnResize.getUniqueCssClass();
 
     const selector = `.${tableClassName} .${columnClassName}`;
     const body = propertyKeys.map(key => `${key}:${properties.get(key)}`).join(';');
 
     this._getStyleSheet().insertRule(`${selector} {${body}}`, index!);
   }
+}
+
+/** Converts CSS pixel values to numbers, eg "123px" to 123. Returns NaN for non pixel values. */
+function coercePixelsFromCssValue(cssValue: string): number {
+  return Number(cssValue.match(/(\d+)px/)?.[1]);
+}
+
+/** Gets the style.width pixels on the specified element if present, otherwise its offsetWidth. */
+function getElementWidth(element: HTMLElement) {
+  // Optimization: Check style.width first as we probably set it already before reading
+  // offsetWidth which triggers layout.
+  return coercePixelsFromCssValue(element.style.width) || element.offsetWidth;
+}
+
+/**
+ * Converts CSS flex values as set in CdkFlexTableResizeStrategy to numbers,
+ * eg "0 0.01 123px" to 123.
+ */
+function coercePixelsFromFlexValue(flexValue: string|undefined): number {
+  return Number(flexValue?.match(/0 0\.01 (\d+)px/)?.[1]);
 }
 
 export const TABLE_LAYOUT_FIXED_RESIZE_STRATEGY_PROVIDER: Provider = {

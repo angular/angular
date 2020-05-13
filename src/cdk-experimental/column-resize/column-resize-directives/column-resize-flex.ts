@@ -27,7 +27,7 @@ import {FLEX_PROVIDERS} from './constants';
 export class CdkColumnResizeFlex extends ColumnResize {
   constructor(
       readonly columnResizeNotifier: ColumnResizeNotifier,
-      protected readonly elementRef: ElementRef,
+      readonly elementRef: ElementRef<HTMLElement>,
       protected readonly eventDispatcher: HeaderRowEventDispatcher,
       protected readonly ngZone: NgZone,
       protected readonly notifier: ColumnResizeNotifierSource) {
