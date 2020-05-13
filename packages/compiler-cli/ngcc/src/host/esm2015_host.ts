@@ -1037,7 +1037,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     // ```
     if (symbol.adjacent !== undefined) {
       if (ts.isVariableDeclaration(symbol.adjacent.valueDeclaration)) {
-        if (symbol.adjacent.exports) {
+        if (symbol.adjacent.exports !== undefined) {
           symbol.adjacent.exports.forEach((value, key) => {
             const decorators = decoratorsMap.get(key as string);
             const reflectedMembers = this.reflectMembers(value, decorators, true);
