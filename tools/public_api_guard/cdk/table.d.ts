@@ -209,8 +209,6 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
     removeHeaderRowDef(headerRowDef: CdkHeaderRowDef): void;
     removeRowDef(rowDef: CdkRowDef<T>): void;
     renderRows(): void;
-    setFooterRowDef(footerRowDef: CdkFooterRowDef): void;
-    setHeaderRowDef(headerRowDef: CdkHeaderRowDef): void;
     updateStickyColumnStyles(): void;
     updateStickyFooterRowStyles(): void;
     updateStickyHeaderRowStyles(): void;
