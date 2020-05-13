@@ -2771,6 +2771,38 @@ describe('di', () => {
     });
   });
 
+  describe('attribute tokens', () => {
+    it('should be able to provide an attribute token', () => {
+      const TOKEN = new InjectionToken<string>('Some token');
+      function factory(token: string): string {
+        return token + ' with factory';
+      }
+      @Component({
+        selector: 'my-comp',
+        template: '...',
+        providers: [{
+          provide: TOKEN,
+          deps: [[new Attribute('token')]],
+          useFactory: factory,
+        }]
+      })
+      class MyComp {
+        constructor(@Inject(TOKEN) readonly token: string) {}
+      }
+
+      @Component({template: `<my-comp token='token'></my-comp>`})
+      class WrapperComp {
+        @ViewChild(MyComp) myComp!: MyComp;
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComp, WrapperComp]});
+
+      const fixture = TestBed.createComponent(WrapperComp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.myComp.token).toBe('token with factory');
+    });
+  });
+
   it('should not cause cyclic dependency if same token is requested in deps with @SkipSelf', () => {
     @Component({
       selector: 'my-comp',
