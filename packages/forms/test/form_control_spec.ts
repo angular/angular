@@ -36,7 +36,7 @@ function asyncValidator(expected: string, timeouts = {}): AsyncValidatorFn {
 }
 
 function asyncValidatorReturningObservable(c: AbstractControl) {
-  const e = new EventEmitter<Record<string, any>>();
+  const e = new EventEmitter<Record<string, boolean>>();
   Promise.resolve(null).then(() => {
     e.emit({'async': true});
   });

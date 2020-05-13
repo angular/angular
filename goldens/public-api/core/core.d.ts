@@ -313,7 +313,7 @@ export declare class ErrorHandler {
     handleError(error: any): void;
 }
 
-export declare class EventEmitter<T = any> extends Subject<T> {
+export declare class EventEmitter<T> extends Subject<T> {
     constructor(isAsync?: boolean);
     emit(value?: T): void;
     subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription;

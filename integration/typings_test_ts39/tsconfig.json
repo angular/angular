@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": false,
-    "emitDecoratorMetadata": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "experimentalDecorators": true,
     "module": "commonjs",
     "moduleResolution": "node",
