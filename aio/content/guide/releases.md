@@ -67,7 +67,10 @@ Angular의 버전은 `메이저.마이너.패치` 3단계로 구분할 수 있�
 
 <div class="alert is-helpful">
 
+<!--
 **Note:** As of Angular version 7, the major versions of Angular core and the CLI are aligned. This means that in order to use the CLI as you develop an Angular app, the version of `@angular/core` and the CLI need to be the same.
+-->
+**참고:** Angular 코어 패키지의 메이저 버전과 Angular CLI 메이저 버전은 Angular 7부터 맞춰졌습니다. 이 버전부터는 Angular CLI로 Angular 애플리케이션을 개발하려면 사용하는 Angular CLI의 버전과 `@angular/core` 패키지의 버전이 같아야 합니다.
 
 </div>
 
@@ -103,6 +106,7 @@ Angular 프로젝트를 최신버전으로 유지하는 것에 대해 자세하�
 -->
 ### 시험판 릴리즈
 
+<!--
 We let you preview what's coming by providing "Next" and Release Candidates (`rc`) pre-releases for each major and minor release:
 
 * **Next:** The release that is under active development and testing. The next release is indicated by a release tag appended with the  `-next` identifier, such as  `8.1.0-next.0`.
@@ -110,6 +114,14 @@ We let you preview what's coming by providing "Next" and Release Candidates (`rc
 * **Release candidate:** A release that is feature complete and in final testing. A release candidate is indicated by a release tag appended with the `-rc` identifier, such as version `8.1.0-rc.0`.
 
 The latest `next` or `rc` pre-release version of the documentation is available at [next.angular.io](https://next.angular.io).
+-->
+"Next" 버전이나 앞으로 배포될 배포 후보판(Release Candidates, rc)을 활용하면 메이저 버전과 마이너 버전에 반영될 기능을 미리 확인해볼 수 있습니다:
+
+* **Next:** Angular 개발용이나 테스트용으로 배포되는 릴리즈입니다. 이 버전은 `8.1.0-next.0`과 같이 `-next`라는 접미사가 붙습니다.
+
+* **배포 후보판(Release candidate):** 개발이 끝나고 테스트중인 릴리즈입니다. 이 버전은 `8.1.0-rc.0`과 같이 `-rc`라는 접미사가 붙습니다.
+
+그리고 최신 `next` 버전이나 `rc` 버전에 대한 문서는 [next.angular.io](https://next.angular.io)에서 확인할 수 있습니다.
 
 
 {@a frequency}
@@ -147,7 +159,9 @@ Angular는 일정한 주기로 릴리즈됩니다. 많은 개발자들이 버전
 
 * 패치 버전은 거의 매주 발표됩니다.
 
-This cadence of releases gives eager developers access to new features as soon as they are fully developed and pass through our code review and integration testing processes, while maintaining the stability and reliability of the platform for production users that prefer to receive features after they have been validated by Google and other developers that use the pre-release builds.
+부지런한 개발자라면 새로운 기능이 나올때마다 패키지를 업그레이드해서 새로운 기능이 어떻게 추가되었는지 확인해볼 수 있으며, Angular 코어 팀이 작성한 코드를 리뷰하거나 함께 테스트할 수 있을 것입니다.
+그리고 안전성과 유지보수를 중요시하는 개발자라면 Google Angular 코어 팀과 다른 개발자들에게 충분한 검증을 받을 때까지 안정 버전을 유지하는 정책을 사용할 수도 있습니다.
+
 
 {@a lts}
 {@a support}
