@@ -20,17 +20,27 @@ import {RippleConfig, RippleRenderer, RippleTarget, setLines} from '@angular/mat
 import {Subscription} from 'rxjs';
 import {startWith} from 'rxjs/operators';
 
+function toggleClass(el: Element, className: string, on: boolean) {
+  if (on) {
+    el.classList.add(className);
+  } else {
+    el.classList.remove(className);
+  }
+}
+
 @Directive()
-export class MatListBase {
+/** @docs-private */
+export abstract class MatListBase {
   // @HostBinding is used in the class as it is expected to be extended. Since @Component decorator
   // metadata is not inherited by child classes, instead the host binding data is defined in a way
   // that can be inherited.
   // tslint:disable-next-line:no-host-decorator-in-concrete
   @HostBinding('class.mdc-list--non-interactive')
-  _isNonInteractive: boolean;
+  _isNonInteractive: boolean = false;
 }
 
 @Directive()
+/** @docs-private */
 export abstract class MatListItemBase implements AfterContentInit, OnDestroy, RippleTarget {
   lines: QueryList<ElementRef<Element>>;
 
@@ -67,8 +77,9 @@ export abstract class MatListItemBase implements AfterContentInit, OnDestroy, Ri
       this._subscriptions.add(this.lines.changes.pipe(startWith(this.lines))
           .subscribe((lines: QueryList<ElementRef<Element>>) => {
             lines.forEach((line: ElementRef<Element>, index: number) => {
-              line.nativeElement.classList.toggle('mdc-list-item__primary-text', index === 0);
-              line.nativeElement.classList.toggle('mdc-list-item__secondary-text', index !== 0);
+              toggleClass(line.nativeElement,
+                  'mdc-list-item__primary-text', index === 0 && lines.length > 1);
+              toggleClass(line.nativeElement, 'mdc-list-item__secondary-text', index !== 0);
             });
             setLines(lines, this._element, 'mat-mdc');
           }));

@@ -2,6 +2,8 @@
 @import '@material/ripple/variables.import';
 @import '../mdc-helpers/mdc-helpers';
 
+// TODO: implement mat-list[dense] once density system is in master
+
 @mixin mat-mdc-list-theme($theme) {
   $is-dark-theme: map-get($theme, is-dark);
   $state-opacities:

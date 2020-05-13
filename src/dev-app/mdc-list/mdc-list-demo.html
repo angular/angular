@@ -40,6 +40,15 @@
         <div mat-line>{{message.message}}</div>
       </mat-list-item>
     </mat-list>
+
+    <mat-list>
+      <mat-list-item *ngFor="let link of links">
+        <span mat-line>{{ link.name }}</span>
+        <button mat-icon-button (click)="infoClicked=!infoClicked">
+          <mat-icon>info</mat-icon>
+        </button>
+      </mat-list-item>
+    </mat-list>
   </div>
 
   <div>
@@ -63,8 +72,17 @@
       <mat-list-item *ngFor="let message of messages">
         <img mat-list-avatar [src]="message.image" alt="Image of {{message.from}}">
         <div mat-line>{{message.from}}</div>
-        <div mat-line> {{message.subject}} </div>
-        <div mat-line>{{message.message}} </div>
+        <div mat-line>{{message.subject}}</div>
+        <div mat-line>{{message.message}}</div>
+      </mat-list-item>
+    </mat-list>
+
+    <mat-list dense>
+      <mat-list-item *ngFor="let link of links">
+        <span mat-line>{{ link.name }}</span>
+        <button mat-icon-button (click)="infoClicked=!infoClicked">
+          <mat-icon class="material-icons">info</mat-icon>
+        </button>
       </mat-list-item>
     </mat-list>
   </div>
@@ -79,28 +97,10 @@
       More info!
     </div>
     <mat-nav-list>
-      <mat-list-item *ngFor="let link of links">
-        <a mat-line href="http://www.google.com">{{ link.name }}</a>
-        <button mat-icon-button (click)="infoClicked=!infoClicked">
-          <mat-icon>info</mat-icon>
-        </button>
-      </mat-list-item>
-    </mat-nav-list>
-    <mat-nav-list>
       <a mat-list-item *ngFor="let link of links; last as last" href="http://www.google.com">
         <mat-icon mat-list-icon>folder</mat-icon>
         <span mat-line>{{ link.name }}</span>
-        <span mat-line> Description </span>
-        <mat-divider inset *ngIf="!last"></mat-divider>
       </a>
-    </mat-nav-list>
-    <mat-nav-list dense>
-      <mat-list-item *ngFor="let link of links">
-        <a mat-line href="http://www.google.com">{{ link.name }}</a>
-        <button mat-icon-button (click)="infoClicked=!infoClicked">
-          <mat-icon class="material-icons">info</mat-icon>
-        </button>
-      </mat-list-item>
     </mat-nav-list>
   </div>
 
