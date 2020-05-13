@@ -1,3 +1,38 @@
+<a name="10.0.0-next.7"></a>
+# [10.0.0-next.7](https://github.com/angular/angular/compare/10.0.0-next.6...10.0.0-next.7) (2020-05-13)
+
+
+### Bug Fixes
+
+* **core:** correct "development mode" console message ([#36571](https://github.com/angular/angular/issues/36571)) ([8d8e419](https://github.com/angular/angular/commit/8d8e419)), closes [#36570](https://github.com/angular/angular/issues/36570)
+* add aikidave as reviewer for DOCS: Marketing ([#37014](https://github.com/angular/angular/issues/37014)) ([286fbf4](https://github.com/angular/angular/commit/286fbf4))
+
+
+### Features
+
+* **compiler:** add name spans for property reads and method calls ([#36826](https://github.com/angular/angular/issues/36826)) ([eb34aa5](https://github.com/angular/angular/commit/eb34aa5))
+* **language-service:** [ivy] wrap ngtsc to handle typecheck files ([#36930](https://github.com/angular/angular/issues/36930)) ([1142c37](https://github.com/angular/angular/commit/1142c37))
+
+
+
+<a name="10.0.0-next.7"></a>
+# [10.0.0-next.7](https://github.com/angular/angular/compare/10.0.0-next.6...10.0.0-next.7) (2020-05-13)
+
+
+### Bug Fixes
+
+* **core:** correct "development mode" console message ([#36571](https://github.com/angular/angular/issues/36571)) ([8d8e419](https://github.com/angular/angular/commit/8d8e419)), closes [#36570](https://github.com/angular/angular/issues/36570)
+* add aikidave as reviewer for DOCS: Marketing ([#37014](https://github.com/angular/angular/issues/37014)) ([286fbf4](https://github.com/angular/angular/commit/286fbf4))
+
+
+### Features
+
+* **compiler:** add name spans for property reads and method calls ([#36826](https://github.com/angular/angular/issues/36826)) ([eb34aa5](https://github.com/angular/angular/commit/eb34aa5))
+* **language-service:** [ivy] wrap ngtsc to handle typecheck files ([#36930](https://github.com/angular/angular/issues/36930)) ([1142c37](https://github.com/angular/angular/commit/1142c37))
+* **core** make generic mandatory for ModuleWithProviders ([#36892](https://github.com/angular/angular/issues/36892)) ([20cc3ab](https://github.com/angular/angular/commit/20cc3ab))
+
+
+
 <a name="9.1.7"></a>
 ## [9.1.7](https://github.com/angular/angular/compare/9.1.6...9.1.7) (2020-05-13)
 
