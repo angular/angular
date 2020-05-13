@@ -27,6 +27,7 @@ import './rxjs.merge.spec';
 import './rxjs.never.spec';
 import './rxjs.of.spec';
 import './rxjs.range.spec';
+import './rxjs.retry.spec';
 import './rxjs.throw.spec';
 import './rxjs.timer.spec';
 import './rxjs.zip.spec';
