@@ -1,7 +1,5 @@
 export declare const CDK_DRAG_CONFIG: InjectionToken<DragDropConfig>;
 
-export declare function CDK_DRAG_CONFIG_FACTORY(): DragDropConfig;
-
 export declare const CDK_DROP_LIST: InjectionToken<CdkDropList>;
 
 export declare class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
@@ -166,14 +164,9 @@ export declare class CdkDropList<T = any> implements OnDestroy {
     element: ElementRef<HTMLElement>, dragDrop: DragDrop, _changeDetectorRef: ChangeDetectorRef, _dir?: Directionality | undefined, _group?: CdkDropListGroup<CdkDropList<any>> | undefined,
     _scrollDispatcher?: ScrollDispatcher | undefined, config?: DragDropConfig);
     addItem(item: CdkDrag): void;
-    drop(item: CdkDrag, currentIndex: number, previousContainer: CdkDropList, isPointerOverContainer: boolean): void;
-    enter(item: CdkDrag, pointerX: number, pointerY: number): void;
-    exit(item: CdkDrag): void;
-    getItemIndex(item: CdkDrag): number;
     getSortedItems(): CdkDrag[];
     ngOnDestroy(): void;
     removeItem(item: CdkDrag): void;
-    start(): void;
     static ngAcceptInputType_autoScrollDisabled: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_sortingDisabled: BooleanInput;
