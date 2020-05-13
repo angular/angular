@@ -13,7 +13,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * @ngModule CommonModule
  * @description
  *
- * Creates a new `Array` or `String` containing a subset (slice) of the elements.
+ * Creates a new `Array` or `String` containing a subset (slice) of the elements in a given value.
  *
  * @usageNotes
  *
@@ -27,44 +27,52 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * ### List Example
  *
- * This `ngFor` example:
+ * The following example iterates over an array of strings, selecting the second and third entries.
  *
  * {@example common/pipes/ts/slice_pipe.ts region='SlicePipe_list'}
  *
- * produces the following:
+ * The example produces the following output.
  *
  * ```html
  * <li>b</li>
  * <li>c</li>
  * ```
  *
- * ### String Examples
+ * ### String Example
+ *
+ * The following example iterates over a string, selecting various subsets.
+ * Notice that negative start values start at the given index from the end, and
+ * go from there to the end. A negative end value similarly counts back from the end.
+ * When the start index is greater than the length of the string, an empty string is returned.
  *
  * {@example common/pipes/ts/slice_pipe.ts region='SlicePipe_string'}
+ *
+ * @see [Transforming data with pipes](guide/pipes)
  *
  * @publicApi
  */
 @Pipe({name: 'slice', pure: false})
 export class SlicePipe implements PipeTransform {
-  /**
-   * @param value a list or a string to be sliced.
-   * @param start the starting index of the subset to return:
-   *   - **a positive integer**: return the item at `start` index and all items after
-   *     in the list or string expression.
-   *   - **a negative integer**: return the item at `start` index from the end and all items after
-   *     in the list or string expression.
-   *   - **if positive and greater than the size of the expression**: return an empty list or
-   * string.
-   *   - **if negative and greater than the size of the expression**: return entire list or string.
-   * @param end the ending index of the subset to return:
-   *   - **omitted**: return all items until the end.
-   *   - **if positive**: return all items before `end` index of the list or string.
-   *   - **if negative**: return all items before `end` index from the end of the list or string.
-   */
   transform<T>(value: ReadonlyArray<T>, start: number, end?: number): Array<T>;
   transform(value: string, start: number, end?: number): string;
   transform(value: null, start: number, end?: number): null;
   transform(value: undefined, start: number, end?: number): undefined;
+  /**
+   * @param value A list or string to be sliced. When blank, returns the blank value.
+   * @param start The 0-based starting index.
+   *   - A positive integer returns the item at this index counting from the beginning of the
+   * expression, and all items after it, up to but not including the item at the `end` index. If
+   * greater than the size of the value, returns an empty list or string.
+   *   - A negative integer returns the item at this index counting from the end of the expression,
+   *     and all items after it up to but not including the item at the `end` index.
+   *     If greater than the size of the expression, returns the entire list or string.
+   * @param end The ending index. The item at the `end` index is not returned.
+   * When not supplied, returns all items after the `start` index.
+   *   - A positive integer returns all items before this index, counting from the start of the
+   * expression.
+   *   - A negative integer return all items before this index, counting from the end of the
+   * expression.
+   */
   transform(value: any, start: number, end?: number): any {
     if (value == null) return value;
 

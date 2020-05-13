@@ -82,7 +82,6 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | --------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------- | ----- |
 | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | `{provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}` | v9                    | From v11 the default code will be extracted from the locale data given by `LOCAL_ID`, rather than `USD`. |
 
-
 {@a core}
 ### @angular/core
 
@@ -477,7 +476,7 @@ The final decision was made on three key points:
 
 
 {@a wrapped-value}
-###  `WrappedValue` 
+###  `WrappedValue`
 
 The purpose of `WrappedValue` is to allow the same object instance to be treated as different for the purposes of change detection.
 It is commonly used with the `async` pipe in the case where the `Observable` produces the same instance of the value.
@@ -487,7 +486,7 @@ No replacement is planned for this deprecation.
 
 If you rely on the behavior that the same object instance should cause change detection, you have two options:
 - Clone the resulting value so that it has a new identity.
-- Explicitly call [`ChangeDetectorRef.detectChanges()`](api/core/ChangeDetectorRef#detectchanges) to force the update. 
+- Explicitly call [`ChangeDetectorRef.detectChanges()`](api/core/ChangeDetectorRef#detectchanges) to force the update.
 
 {@a deprecated-cli-flags}
 ## Deprecated CLI APIs and Options

@@ -12,7 +12,7 @@ import {Pipe, PipeTransform} from '@angular/core';
  * @ngModule CommonModule
  * @description
  *
- * Converts a value into its JSON-format representation.  Useful for debugging.
+ * Converts a value into its JSON-format representation. Useful for debugging.
  *
  * @usageNotes
  *

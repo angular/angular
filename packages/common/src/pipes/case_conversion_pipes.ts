@@ -14,6 +14,8 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * @see `UpperCasePipe`
  * @see `TitleCasePipe`
+ * @see [Transforming data with pipes](guide/pipes)
+ *
  * @usageNotes
  *
  * The following example defines a view that allows the user to enter
@@ -58,6 +60,7 @@ const unicodeWordMatch =
  *
  * @see `LowerCasePipe`
  * @see `UpperCasePipe`
+ * @see [Transforming data with pipes](guide/pipes)
  *
  * @usageNotes
  * The following example shows the result of transforming various strings into title case.
@@ -87,6 +90,7 @@ export class TitleCasePipe implements PipeTransform {
  * Transforms text to all upper case.
  * @see `LowerCasePipe`
  * @see `TitleCasePipe`
+ * @see [Transforming data with pipes](guide/pipes)
  *
  * @ngModule CommonModule
  * @publicApi

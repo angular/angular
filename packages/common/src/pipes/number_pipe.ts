@@ -142,27 +142,22 @@ export class PercentPipe implements PipeTransform {
  * and other locale-specific configurations.
  *
  * {@a currency-code-deprecation}
- * <div class="alert is-helpful">
- *
  * **Deprecation notice:**
  *
  * The default currency code is currently always `USD` but this is deprecated from v9.
+ * In v11 the default currency code will be taken from the current locale identified by
+ * the `LOCAL_ID` token.
  *
- * **In v11 the default currency code will be taken from the current locale identified by
- * the `LOCAL_ID` token. See the [i18n guide](guide/i18n#setting-up-the-locale-of-your-app) for
- * more information.**
- *
- * If you need the previous behavior then set it by creating a `DEFAULT_CURRENCY_CODE` provider in
- * your application `NgModule`:
+ * To restore the previous behavior, create a `DEFAULT_CURRENCY_CODE` provider in
+ * your application's root module:
  *
  * ```ts
  * {provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}
  * ```
  *
- * </div>
- *
  * @see `getCurrencySymbol()`
  * @see `formatCurrency()`
+ * @see [Format data based on locale](guide/i18n#format-data-based-on-locale "Internationalization guide")
  *
  * @usageNotes
  * The following code shows how the pipe transforms numbers

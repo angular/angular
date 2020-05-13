@@ -27,17 +27,14 @@ export interface KeyValue<K, V> {
  * @ngModule CommonModule
  * @description
  *
- * Transforms Object or Map into an array of key value pairs.
- *
- * The output array will be ordered by keys.
- * By default the comparator will be by Unicode point value.
- * You can optionally pass a compareFn if your keys are complex types.
+ * Transforms an Object or Map into an array of key value pairs, ordered by key.
+ * The default comparison function for keys uses a Unicode point value.
+ * You can optionally pass a custom comparison function if your keys are complex types.
  *
  * @usageNotes
- * ### Examples
  *
- * This examples show how an Object or a Map can be iterated by ngFor with the use of this
- * keyvalue pipe.
+ * The following example iterates over values collected in an Object and a Map,
+ * displaying them in the numerical order indicated by the key.
  *
  * {@example common/pipes/ts/keyvalue_pipe.ts region='KeyValuePipe'}
  *

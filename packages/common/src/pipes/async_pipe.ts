@@ -64,17 +64,17 @@ const _observableStrategy = new ObservableStrategy();
  *
  * @usageNotes
  *
- * ### Examples
- *
- * This example binds a `Promise` to the view. Clicking the `Resolve` button resolves the
+ * The following example binds a `Promise` to the view. Clicking the `Resolve` button resolves the
  * promise.
  *
  * {@example common/pipes/ts/async_pipe.ts region='AsyncPipePromise'}
  *
- * It's also possible to use `async` with Observables. The example below binds the `time` Observable
- * to the view. The Observable continuously updates the view with the current time.
+ * The following example binds an `Observable` (`time`) to the view.
+ * The observable continuously updates the view with the current time.
  *
  * {@example common/pipes/ts/async_pipe.ts region='AsyncPipeObservable'}
+ *
+ * @see [Transforming data with pipes](guide/pipes)
  *
  * @publicApi
  */

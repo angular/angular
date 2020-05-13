@@ -17,21 +17,20 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * Formats a date value according to locale rules.
  *
+ * `DatePipe` is executed only when it detects a pure change to the input value.
+ * A pure change is either a change to a primitive input value
+ * (such as `String`, `Number`, `Boolean`, or `Symbol`),
+ * or a changed object reference (such as `Date`, `Array`, `Function`, or `Object`).
+ *
+ * Note that mutating a `Date` object does not cause the pipe to be rendered again.
+ * To ensure that the pipe is executed, you must create a new `Date` object.
+ *
  * Only the `en-US` locale data comes with Angular. To localize dates
  * in another language, you must import the corresponding locale data.
  * See the [I18n guide](guide/i18n#i18n-pipes) for more information.
  *
- * @see `formatDate()`
- *
- *
- * @usageNotes
- *
- * The result of this pipe is not reevaluated when the input is mutated. To avoid the need to
- * reformat the date on every change-detection cycle, treat the date as an immutable object
- * and change the reference when the pipe needs to run again.
- *
- * ### Pre-defined format options
- *
+ * The date pipe takes an optional *format* argument.
+ * Angular defines the following format options, and you can also pass a custom format string.
  * Examples are given in `en-US` locale.
  *
  * - `'short'`: equivalent to `'M/d/yy, h:mm a'` (`6/15/15, 9:03 AM`).
@@ -48,6 +47,42 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * - `'mediumTime'`: equivalent to `'h:mm:ss a'` (`9:03:01 AM`).
  * - `'longTime'`: equivalent to `'h:mm:ss a z'` (`9:03:01 AM GMT+1`).
  * - `'fullTime'`: equivalent to `'h:mm:ss a zzzz'` (`9:03:01 AM GMT+01:00`).
+ *
+ * @see `formatDate()`
+ * @see [Transforming data with pipes](guide/pipes)
+ * @see [Internationalization](guide/i18n) guide
+ *
+ * @usageNotes
+ *
+ * The following component uses a date pipe to display the current date in different formats.
+ *
+ * ```
+ * @Component({
+ *  selector: 'date-pipe',
+ *  template: `<div>
+ *    <p>Today is {{today | date}}</p>
+ *    <p>Or if you prefer, {{today | date:'fullDate'}}</p>
+ *    <p>The time is {{today | date:'h:mm a z'}}</p>
+ *  </div>`
+ * })
+ * // Get the current date and time as a date-time value.
+ * export class DatePipeComponent {
+ *   today: number = Date.now();
+ * }
+ * ```
+ * ### Format examples
+ *
+ * These examples transform a date into various formats,
+ * assuming that `dateObj` is a JavaScript `Date` object for
+ * year: 2015, month: 6, day: 15, hour: 21, minute: 43, second: 11,
+ * given in the local time for the `en-US` locale.
+ *
+ * ```
+ * {{ dateObj | date }}               // output is 'Jun 15, 2015'
+ * {{ dateObj | date:'medium' }}      // output is 'Jun 15, 2015, 9:43:11 PM'
+ * {{ dateObj | date:'shortTime' }}   // output is '9:43 PM'
+ * {{ dateObj | date:'mm:ss' }}       // output is '43:11'
+ * ```
  *
  * ### Custom format options
  *
@@ -113,39 +148,6 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *  |                    | OOOO        | Long localized GMT format                                     | GMT-08:00                                                  |
  *
  * Note that timezone correction is not applied to an ISO string that has no time component, such as "2016-09-19"
- *
- * ### Format examples
- *
- * These examples transform a date into various formats,
- * assuming that `dateObj` is a JavaScript `Date` object for
- * year: 2015, month: 6, day: 15, hour: 21, minute: 43, second: 11,
- * given in the local time for the `en-US` locale.
- *
- * ```
- * {{ dateObj | date }}               // output is 'Jun 15, 2015'
- * {{ dateObj | date:'medium' }}      // output is 'Jun 15, 2015, 9:43:11 PM'
- * {{ dateObj | date:'shortTime' }}   // output is '9:43 PM'
- * {{ dateObj | date:'mm:ss' }}       // output is '43:11'
- * ```
- *
- * ### Usage example
- *
- * The following component uses a date pipe to display the current date in different formats.
- *
- * ```
- * @Component({
- *  selector: 'date-pipe',
- *  template: `<div>
- *    <p>Today is {{today | date}}</p>
- *    <p>Or if you prefer, {{today | date:'fullDate'}}</p>
- *    <p>The time is {{today | date:'h:mm a z'}}</p>
- *  </div>`
- * })
- * // Get the current date and time as a date-time value.
- * export class DatePipeComponent {
- *   today: number = Date.now();
- * }
- * ```
  *
  * @publicApi
  */

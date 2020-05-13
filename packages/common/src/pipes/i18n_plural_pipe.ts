@@ -22,9 +22,13 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
  *
  * @usageNotes
  *
- * ### Example
+ * The following example defines a mapping object and uses the pipe to transform
+ * a set of messages using that mapping with the default locale information.
  *
  * {@example common/pipes/ts/i18n_pipe.ts region='I18nPluralPipeComponent'}
+ *
+ * @see [Transforming data with pipes](guide/pipes)
+ * @see [Internationalization](guide/i18n) guide
  *
  * @publicApi
  */
@@ -33,11 +37,10 @@ export class I18nPluralPipe implements PipeTransform {
   constructor(private _localization: NgLocalization) {}
 
   /**
-   * @param value the number to be formatted
-   * @param pluralMap an object that mimics the ICU format, see
+   * @param value The number to be formatted.
+   * @param pluralMap An object that mimics the ICU format. See
    * http://userguide.icu-project.org/formatparse/messages.
-   * @param locale a `string` defining the locale to use (uses the current {@link LOCALE_ID} by
-   * default).
+   * @param locale A locale string to use. Default is the current value of `LOCALE_ID`.
    */
   transform(value: number, pluralMap: {[count: string]: string}, locale?: string): string {
     if (value == null) return '';
