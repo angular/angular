@@ -160,7 +160,7 @@
     "ts-node": "^3.0.4",
     "tsickle": "0.38.1",
     "tslint": "^6.1.0",
-    "tsutils": "^3.0.0",
+    "tsutils": "^3.17.1",
     "typescript": "3.9.1-rc",
     "typescript-3.6": "npm:typescript@~3.6.4",
     "typescript-3.7": "npm:typescript@~3.7.0",
