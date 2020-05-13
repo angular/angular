@@ -1,3 +1,9 @@
+<a name="9.1.7"></a>
+## [9.1.7](https://github.com/angular/angular/compare/9.1.6...9.1.7) (2020-05-13)
+
+This release contains various API docs improvements.
+
+
 <a name="9.1.6"></a>
 ## [9.1.6](https://github.com/angular/angular/compare/9.1.5...9.1.6) (2020-05-08)
 
