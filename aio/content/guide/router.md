@@ -2737,7 +2737,7 @@ If the user is logged in, it returns true and the navigation continues.
 The `ActivatedRouteSnapshot` contains the _future_ route that will be activated and the `RouterStateSnapshot` contains the _future_ `RouterState` of the application, should you pass through the guard check.
 
 If the user is not logged in, you store the attempted URL the user came from using the `RouterStateSnapshot.url` and tell the router to redirect to a login page&mdash;a page you haven't created yet.
-This secondary navigation automatically cancels the current navigation; `checkLogin()` returns `false`.
+Returning a `UrlTree` tells the `Router` to cancel the current navigation and schedule a new one to redirect the user.
 
 {@a add-login-component}
 
@@ -2790,8 +2790,8 @@ Extend the `AuthGuard` to protect when navigating between the `admin` routes.
 Open `auth.guard.ts` and add the `CanActivateChild` interface to the imported tokens from the router package.
 
 Next, implement the `canActivateChild()` method which takes the same arguments as the `canActivate()` method: an `ActivatedRouteSnapshot` and `RouterStateSnapshot`.
-The `canActivateChild()` method can return an `Observable<boolean>` or `Promise<boolean>` for async checks and a `boolean` for sync checks.
-This one returns a `boolean`:
+The `canActivateChild()` method can return an `Observable<boolean|UrlTree>` or `Promise<boolean|UrlTree>` for async checks and a `boolean` or `UrlTree` for sync checks.
+This one returns either `true` to allow the user to access the admin feature module or `UrlTree` to redirect the user to the login page instead:
 
 <code-example path="router/src/app/auth/auth.guard.3.ts" header="src/app/auth/auth.guard.ts (excerpt)" region="can-activate-child"></code-example>
 
