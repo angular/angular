@@ -61,7 +61,14 @@ import {Subject, Subscription} from 'rxjs';
  * @see [Observables in Angular](guide/observables-in-angular)
  * @publicApi
  */
-export class EventEmitter<T> extends Subject<T> {
+export interface EventEmitter<T> extends Subject<T> {
+  emit: (value?: T) => void;
+  subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription;
+}
+/** @publicApi */
+export const EventEmitter:
+    {new<T = any>(isAsync?: boolean): EventEmitter<T>; readonly prototype: EventEmitter<any>;} =
+        class extends Subject<any> implements EventEmitter<any> {
   /**
    * @internal
    */
@@ -83,7 +90,7 @@ export class EventEmitter<T> extends Subject<T> {
    * Emits an event containing a given value.
    * @param value The value to emit.
    */
-  emit(value?: T) {
+  emit(value?: any) {
     super.next(value);
   }
 
@@ -153,5 +160,5 @@ export class EventEmitter<T> extends Subject<T> {
     }
 
     return sink;
-  }
+  };
 }
