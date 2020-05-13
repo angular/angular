@@ -277,6 +277,23 @@ describe('FocusMonitor', () => {
        // After 2 ticks, the timeout has cleared the origin. Default is 'program'.
        expect(changeHandler).toHaveBeenCalledWith('program');
      }));
+
+  it('should check children if monitor was called with different checkChildren', fakeAsync(() => {
+    const parent = fixture.nativeElement.querySelector('.parent');
+
+    focusMonitor.monitor(parent, true);
+    focusMonitor.monitor(parent, false);
+
+    // Simulate focus via mouse.
+    dispatchMouseEvent(buttonElement, 'mousedown');
+    buttonElement.focus();
+    fixture.detectChanges();
+    flush();
+
+    expect(parent.classList).toContain('cdk-focused');
+    expect(parent.classList).toContain('cdk-mouse-focused');
+  }));
+
 });
 
 describe('FocusMonitor with "eventual" detection', () => {
@@ -569,7 +586,7 @@ describe('FocusMonitor observable stream', () => {
 
 
 @Component({
-  template: `<button>focus me!</button>`
+  template: `<div class="parent"><button>focus me!</button></div>`
 })
 class PlainButton {}
 
