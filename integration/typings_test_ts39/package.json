@@ -21,7 +21,7 @@
     "@angular/upgrade": "file:../../dist/packages-dist/upgrade",
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "rxjs": "file:../../node_modules/rxjs",
-    "typescript": "3.9.1-rc",
+    "typescript": "~3.9.2",
     "zone.js": "file:../../dist/zone.js-dist/zone.js"
   },
   "scripts": {
