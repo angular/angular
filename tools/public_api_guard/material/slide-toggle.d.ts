@@ -20,7 +20,6 @@ export declare class MatSlideToggle extends _MatSlideToggleMixinBase implements 
     get checked(): boolean;
     set checked(value: boolean);
     defaults: MatSlideToggleDefaultOptions;
-    readonly dragChange: EventEmitter<void>;
     id: string;
     get inputId(): string;
     labelPosition: 'before' | 'after';
@@ -28,8 +27,7 @@ export declare class MatSlideToggle extends _MatSlideToggleMixinBase implements 
     get required(): boolean;
     set required(value: boolean);
     readonly toggleChange: EventEmitter<void>;
-    constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, tabIndex: string,
-    _ngZone: NgZone, defaults: MatSlideToggleDefaultOptions, _animationMode?: string | undefined, _dir?: Directionality);
+    constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, tabIndex: string, defaults: MatSlideToggleDefaultOptions, _animationMode?: string | undefined);
     _onChangeEvent(event: Event): void;
     _onInputClick(event: Event): void;
     _onLabelTextChange(): void;
@@ -45,8 +43,8 @@ export declare class MatSlideToggle extends _MatSlideToggleMixinBase implements 
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_required: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSlideToggle, "mat-slide-toggle", ["matSlideToggle"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "color": "color"; "tabIndex": "tabIndex"; "name": "name"; "id": "id"; "labelPosition": "labelPosition"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "required": "required"; "checked": "checked"; }, { "change": "change"; "toggleChange": "toggleChange"; "dragChange": "dragChange"; }, never, ["*"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatSlideToggle, [null, null, null, { attribute: "tabindex"; }, null, null, { optional: true; }, { optional: true; }]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSlideToggle, "mat-slide-toggle", ["matSlideToggle"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "color": "color"; "tabIndex": "tabIndex"; "name": "name"; "id": "id"; "labelPosition": "labelPosition"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "required": "required"; "checked": "checked"; }, { "change": "change"; "toggleChange": "toggleChange"; }, never, ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatSlideToggle, [null, null, null, { attribute: "tabindex"; }, null, { optional: true; }]>;
 }
 
 export declare class MatSlideToggleChange {
@@ -58,7 +56,6 @@ export declare class MatSlideToggleChange {
 }
 
 export interface MatSlideToggleDefaultOptions {
-    disableDragValue?: boolean;
     disableToggleValue?: boolean;
 }
 

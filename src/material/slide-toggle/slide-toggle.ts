@@ -7,7 +7,6 @@
  */
 
 import {FocusMonitor} from '@angular/cdk/a11y';
-import {Directionality} from '@angular/cdk/bidi';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   AfterContentInit,
@@ -23,7 +22,6 @@ import {
   Output,
   ViewChild,
   ViewEncapsulation,
-  NgZone,
   Optional,
   Inject,
 } from '@angular/core';
@@ -155,16 +153,6 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
    */
   @Output() readonly toggleChange: EventEmitter<void> = new EventEmitter<void>();
 
-  /**
-   * An event will be dispatched each time the slide-toggle is dragged.
-   * This event is always emitted when the user drags the slide toggle to make a change greater
-   * than 50%. It does not mean the slide toggle's value is changed. The event is not emitted when
-   * the user toggles the slide toggle to change its value.
-   * @deprecated No longer being used. To be removed.
-   * @breaking-change 10.0.0
-   */
-  @Output() readonly dragChange: EventEmitter<void> = new EventEmitter<void>();
-
   /** Returns the unique id for the visual hidden input. */
   get inputId(): string { return `${this.id || this._uniqueId}-input`; }
 
@@ -175,15 +163,9 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
               private _focusMonitor: FocusMonitor,
               private _changeDetectorRef: ChangeDetectorRef,
               @Attribute('tabindex') tabIndex: string,
-                /**
-                 * @deprecated `_ngZone` and `_dir` parameters to be removed.
-                 * @breaking-change 10.0.0
-                 */
-              _ngZone: NgZone,
               @Inject(MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS)
                   public defaults: MatSlideToggleDefaultOptions,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
-              @Optional() _dir?: Directionality) {
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     super(elementRef);
     this.tabIndex = parseInt(tabIndex) || 0;
   }

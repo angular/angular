@@ -1,4 +1,3 @@
-import {BidiModule, Direction} from '@angular/cdk/bidi';
 import {MutationObserverFactory} from '@angular/cdk/observers';
 import {dispatchFakeEvent} from '@angular/cdk/testing/private';
 import {Component} from '@angular/core';
@@ -25,7 +24,7 @@ describe('MatSlideToggle without forms', () => {
     mutationObserverCallbacks = [];
 
     TestBed.configureTestingModule({
-      imports: [MatSlideToggleModule, BidiModule],
+      imports: [MatSlideToggleModule],
       declarations: [
         SlideToggleBasic,
         SlideToggleWithTabindexAttr,
@@ -850,7 +849,7 @@ describe('MatSlideToggle with forms', () => {
 
 @Component({
   template: `
-    <mat-slide-toggle [dir]="direction" [required]="isRequired"
+    <mat-slide-toggle [required]="isRequired"
                      [disabled]="isDisabled"
                      [color]="slideColor"
                      [id]="slideId"
@@ -883,7 +882,6 @@ class SlideToggleBasic {
   labelPosition: string;
   toggleTriggered: number = 0;
   dragTriggered: number = 0;
-  direction: Direction = 'ltr';
 
   onSlideClick: (event?: Event) => void = () => {};
   onSlideChange = (event: MatSlideToggleChange) => this.lastEvent = event;

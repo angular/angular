@@ -12,12 +12,6 @@ import {InjectionToken} from '@angular/core';
 export interface MatSlideToggleDefaultOptions {
   /** Whether toggle action triggers value changes in slide toggle. */
   disableToggleValue?: boolean;
-  /**
-   * Whether drag action triggers value changes in slide toggle.
-   * @deprecated No longer being used.
-   * @breaking-change 10.0.0
-   */
-  disableDragValue?: boolean;
 }
 
 /** Injection token to be used to override the default options for `mat-slide-toggle`. */

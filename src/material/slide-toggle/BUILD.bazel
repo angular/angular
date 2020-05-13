@@ -22,7 +22,6 @@ ng_module(
     module_name = "@angular/material/slide-toggle",
     deps = [
         "//src/cdk/a11y",
-        "//src/cdk/bidi",
         "//src/cdk/coercion",
         "//src/cdk/observers",
         "//src/material/core",
@@ -57,7 +56,6 @@ ng_test_library(
     deps = [
         ":slide-toggle",
         "//src/cdk/a11y",
-        "//src/cdk/bidi",
         "//src/cdk/observers",
         "//src/cdk/testing/private",
         "//src/material/testing",

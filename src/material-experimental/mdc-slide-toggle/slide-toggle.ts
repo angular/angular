@@ -185,16 +185,6 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   /** Event will be dispatched each time the slide-toggle input is toggled. */
   @Output() readonly toggleChange: EventEmitter<void> = new EventEmitter<void>();
 
-  /**
-   * An event will be dispatched each time the slide-toggle is dragged.
-   * This event is always emitted when the user drags the slide toggle to make a change greater
-   * than 50%. It does not mean the slide toggle's value is changed. The event is not emitted when
-   * the user toggles the slide toggle to change its value.
-   * @deprecated No longer being used.
-   * @breaking-change 9.0.0
-   */
-  @Output() readonly dragChange: EventEmitter<void> = new EventEmitter<void>();
-
   /** Returns the unique id for the visual hidden input. */
   get inputId(): string { return `${this.id || this._uniqueId}-input`; }
 
