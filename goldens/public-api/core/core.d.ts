@@ -313,11 +313,17 @@ export declare class ErrorHandler {
     handleError(error: any): void;
 }
 
-export declare class EventEmitter<T> extends Subject<T> {
-    constructor(isAsync?: boolean);
+export declare interface EventEmitter<T> extends Subject<T> {
+    new (isAsync?: boolean): EventEmitter<T>;
     emit(value?: T): void;
     subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription;
 }
+
+export declare const EventEmitter: {
+    new (isAsync?: boolean): EventEmitter<any>;
+    new <T>(isAsync?: boolean): EventEmitter<T>;
+    readonly prototype: EventEmitter<any>;
+};
 
 export declare interface ExistingProvider extends ExistingSansProvider {
     multi?: boolean;
