@@ -94,6 +94,9 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
   /** Used to reference correct document/window */
   protected _document?: Document;
 
+  /** Class that should be applied to the textarea while it's being measured. */
+  private _measuringClass: string;
+
   constructor(private _elementRef: ElementRef<HTMLElement>,
               private _platform: Platform,
               private _ngZone: NgZone,
@@ -102,6 +105,9 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
     this._document = document;
 
     this._textareaElement = this._elementRef.nativeElement as HTMLTextAreaElement;
+    this._measuringClass = _platform.FIREFOX ?
+      'cdk-textarea-autosize-measuring-firefox' :
+      'cdk-textarea-autosize-measuring';
   }
 
   /** Sets the minimum height of the textarea as determined by minRows. */
@@ -229,16 +235,16 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
     // Long placeholders that are wider than the textarea width may lead to a bigger scrollHeight
     // value. To ensure that the scrollHeight is not bigger than the content, the placeholders
     // need to be removed temporarily.
-    textarea.classList.add('cdk-textarea-autosize-measuring');
+    textarea.classList.add(this._measuringClass);
     textarea.placeholder = '';
 
-    // The cdk-textarea-autosize-measuring class includes a 2px padding to workaround an issue with
-    // Chrome, so we account for that extra space here by subtracting 4 (2px top + 2px bottom).
+    // The measuring class includes a 2px padding to workaround an issue with Chrome,
+    // so we account for that extra space here by subtracting 4 (2px top + 2px bottom).
     const height = textarea.scrollHeight - 4;
 
     // Use the scrollHeight to know how large the textarea *would* be if fit its entire value.
     textarea.style.height = `${height}px`;
-    textarea.classList.remove('cdk-textarea-autosize-measuring');
+    textarea.classList.remove(this._measuringClass);
     textarea.placeholder = placeholderText;
 
     this._ngZone.runOutsideAngular(() => {

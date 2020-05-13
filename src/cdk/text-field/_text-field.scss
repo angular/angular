@@ -27,13 +27,28 @@
   // removed when measuring is complete. We use `!important` rules here to make sure user-specified
   // rules do not interfere with the measurement.
   textarea.cdk-textarea-autosize-measuring {
+    @include _cdk-textarea-autosize-measuring-base;
     height: auto !important;
     overflow: hidden !important;
-    // Having 2px top and bottom padding seems to fix a bug where Chrome gets an incorrect
-    // measurement. We just have to account for it later and subtract it off the final result.
-    padding: 2px 0 !important;
-    box-sizing: content-box !important;
   }
+
+  // Similar to the `cdk-textarea-autosize-measuring` class, but only applied on Firefox. We need
+  // to use this class, because Firefox has a bug where changing the `overflow` breaks the user's
+  // ability to undo/redo what they were typing (see #16629). This class is only scoped to Firefox,
+  // because the measurements there don't seem to be affected by the `height: 0`, whereas on other
+  // browsers they are, e.g. Chrome detects longer text and IE does't resize back to normal.
+  // Identical issue report: https://bugzilla.mozilla.org/show_bug.cgi?id=448784
+  textarea.cdk-textarea-autosize-measuring-firefox {
+    @include _cdk-textarea-autosize-measuring-base;
+    height: 0 !important;
+  }
+}
+
+@mixin _cdk-textarea-autosize-measuring-base {
+  // Having 2px top and bottom padding seems to fix a bug where Chrome gets an incorrect
+  // measurement. We just have to account for it later and subtract it off the final result.
+  padding: 2px 0 !important;
+  box-sizing: content-box !important;
 }
 
 // Used to generate UIDs for keyframes used to change the text field autofill styles.
