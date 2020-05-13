@@ -14,7 +14,9 @@ import {DOCUMENT} from '@angular/common';
 import {HttpEvent, HttpRequest, HttpHandler, HttpBackend, XhrFactory, ɵHttpInterceptingHandler as HttpInterceptingHandler} from '@angular/common/http';
 import {Observable, Observer, Subscription} from 'rxjs';
 
+// @see https://www.w3.org/Protocols/HTTP/1.1/draft-ietf-http-v11-spec-01#URI-syntax
 const isAbsoluteUrl = /^[a-zA-Z\-\+.]+:\/\//;
+const FORWARD_SLASH = '/';
 
 @Injectable()
 export class ServerXhr implements XhrFactory {
@@ -108,8 +110,15 @@ export class ZoneClientBackend extends
   }
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
-    if (!isAbsoluteUrl.test(request.url) && this.doc.location.href) {
-      return this.wrap(request.clone({url: this.doc.location.href + request.url}));
+    const href = this.doc.location.href;
+    if (!isAbsoluteUrl.test(request.url) && href) {
+      const urlParts = Array.from(request.url);
+      if (request.url[0] === FORWARD_SLASH && href[href.length - 1] === FORWARD_SLASH) {
+        urlParts.shift();
+      } else if (request.url[0] !== FORWARD_SLASH && href[href.length - 1] !== FORWARD_SLASH) {
+        urlParts.splice(0, 0, FORWARD_SLASH);
+      }
+      return this.wrap(request.clone({url: href + urlParts.join('')}));
     }
     return this.wrap(request);
   }
