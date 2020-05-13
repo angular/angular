@@ -61,32 +61,26 @@ import {Subject, Subscription} from 'rxjs';
  * @see [Observables in Angular](guide/observables-in-angular)
  * @publicApi
  */
-export class EventEmitter<T> extends Subject<T> {
+export interface EventEmitter<T> extends Subject<T> {
   /**
    * @internal
    */
-  __isAsync: boolean;  // tslint:disable-line
+  __isAsync: boolean;
 
   /**
    * Creates an instance of this class that can
    * deliver events synchronously or asynchronously.
    *
-   * @param isAsync When true, deliver events asynchronously.
+   * @param [isAsync=false] When true, deliver events asynchronously.
    *
    */
-  constructor(isAsync: boolean = false) {
-    super();
-    this.__isAsync = isAsync;
-  }
+  new(isAsync?: boolean): EventEmitter<T>;
 
   /**
    * Emits an event containing a given value.
    * @param value The value to emit.
    */
-  emit(value?: T) {
-    super.next(value);
-  }
-
+  emit(value?: T): void;
   /**
    * Registers handlers for events emitted by this instance.
    * @param generatorOrNext When supplied, a custom handler for emitted events.
@@ -95,6 +89,21 @@ export class EventEmitter<T> extends Subject<T> {
    * @param complete When supplied, a custom handler for a completion
    * notification from this emitter.
    */
+  subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription;
+}
+
+class EventEmitter_ extends Subject<any> {
+  __isAsync: boolean;  // tslint:disable-line
+
+  constructor(isAsync: boolean = false) {
+    super();
+    this.__isAsync = isAsync;
+  }
+
+  emit(value?: any) {
+    super.next(value);
+  }
+
   subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription {
     let schedulerFn: (t: any) => any;
     let errorFn = (err: any): any => null;
@@ -155,3 +164,11 @@ export class EventEmitter<T> extends Subject<T> {
     return sink;
   }
 }
+
+/**
+ * @publicApi
+ */
+export const EventEmitter: {
+  new (isAsync?: boolean): EventEmitter<any>; new<T>(isAsync?: boolean): EventEmitter<T>;
+  readonly prototype: EventEmitter<any>;
+} = EventEmitter_ as any;
