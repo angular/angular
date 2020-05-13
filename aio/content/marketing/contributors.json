@@ -840,5 +840,13 @@
     "bio": "Annie is an engineering resident on the Angular Components team at Google. She is passionate about the intersection between design and technology and enjoys drawing in her free time.",
     "groups": ["Angular"],
     "lead": "jelbourn"
+  },
+  "nikpoltoratsky": {
+    "name": "Nikita Poltoratsky",
+    "picture": "nikita-poltoratsky.png",
+    "twitter": "nikpoltoratsky",
+    "website": "https://howtomake.software",
+    "bio": "Nikita is a Solution Architect at Akveo where he builds Angular applications. He is an open source contributor and tech author from Belarus. He is passionate about sharing knowledge and digging into the depths of technologies.",
+    "groups": ["GDE"]
   }
 }
