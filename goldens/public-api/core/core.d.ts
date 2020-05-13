@@ -314,12 +314,14 @@ export declare class ErrorHandler {
 }
 
 export declare interface EventEmitter<T> extends Subject<T> {
+    new (isAsync?: boolean): EventEmitter<T>;
     emit(value?: T): void;
     subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription;
 }
 
 export declare const EventEmitter: {
-    new <T = any>(isAsync?: boolean): EventEmitter<T>;
+    new (isAsync?: boolean): EventEmitter<any>;
+    new <T>(isAsync?: boolean): EventEmitter<T>;
     readonly prototype: EventEmitter<any>;
 };
 
