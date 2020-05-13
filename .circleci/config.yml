@@ -62,6 +62,14 @@ var_10: &only_on_master
       only:
         - master
 
+# Pipeline variables
+# Variables that can be specified manually when a pipeline is triggered through
+# the CircleCI rest API. https://circleci.com/docs/2.0/pipeline-variables
+parameters:
+  run-windows-tests:
+    type: boolean
+    default: false
+
 # Executor Definitions
 # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
 # **NOTE 1**: Pin to exact images using an ID (SHA). See https://circleci.com/docs/2.0/circleci-images/#using-a-docker-image-id-to-pin-an-image-to-a-fixed-version.
@@ -868,6 +876,21 @@ workflows:
           <<: *skip_on_pull_requests
           requires:
             - test_ivy_aot
+
+  # Special workflow that is only enabled when the `run-windows-tests` pipeline
+  # variable is explicitly set to `true`. This workflow usually does not run on
+  # pull requests or or upstream branches, but it can be run manually through the
+  # CircleCI API to run windows tests for a given pull request.
+  manual-windows-tests:
+    when: << pipeline.parameters.run-windows-tests >>
+    jobs:
+      - setup
+      - test_win:
+          requires:
+            - setup
+      - test_ivy_aot_win:
+          requires:
+            - setup
 
   monitoring:
     jobs:
