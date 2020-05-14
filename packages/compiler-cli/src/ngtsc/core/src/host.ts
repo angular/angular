@@ -11,12 +11,12 @@ import * as ts from 'typescript';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {findFlatIndexEntryPoint, FlatIndexGenerator} from '../../entry_point';
 import {AbsoluteFsPath, resolve} from '../../file_system';
-import {FactoryGenerator, FactoryTracker, isShim, ShimAdapter, ShimReferenceTagger, SummaryGenerator} from '../../shims';
-import {PerFileShimGenerator, TopLevelShimGenerator} from '../../shims/api';
+import {FactoryGenerator, isShim, ShimAdapter, ShimReferenceTagger, SummaryGenerator} from '../../shims';
+import {FactoryTracker, PerFileShimGenerator, TopLevelShimGenerator} from '../../shims/api';
 import {TypeCheckShimGenerator} from '../../typecheck';
 import {normalizeSeparators} from '../../util/src/path';
 import {getRootDirs, isDtsPath, isNonDeclarationTsPath} from '../../util/src/typescript';
-import {ExtendedTsCompilerHost, NgCompilerOptions, UnifiedModulesHost} from '../api';
+import {ExtendedTsCompilerHost, NgCompilerAdapter, NgCompilerOptions, UnifiedModulesHost} from '../api';
 
 // A persistent source of bugs in CompilerHost delegation has been the addition by TS of new,
 // optional methods on ts.CompilerHost. Since these methods are optional, it's not a type error that
@@ -89,10 +89,10 @@ export class DelegatingCompilerHost implements
  * `ExtendedTsCompilerHost` methods whenever present.
  */
 export class NgCompilerHost extends DelegatingCompilerHost implements
-    RequiredCompilerHostDelegations, ExtendedTsCompilerHost {
+    RequiredCompilerHostDelegations, ExtendedTsCompilerHost, NgCompilerAdapter {
   readonly factoryTracker: FactoryTracker|null = null;
   readonly entryPoint: AbsoluteFsPath|null = null;
-  readonly diagnostics: ts.Diagnostic[];
+  readonly constructionDiagnostics: ts.Diagnostic[];
 
   readonly inputFiles: ReadonlyArray<string>;
   readonly rootDirs: ReadonlyArray<AbsoluteFsPath>;
@@ -107,7 +107,7 @@ export class NgCompilerHost extends DelegatingCompilerHost implements
 
     this.factoryTracker = factoryTracker;
     this.entryPoint = entryPoint;
-    this.diagnostics = diagnostics;
+    this.constructionDiagnostics = diagnostics;
     this.inputFiles = [...inputFiles, ...shimAdapter.extraInputFiles];
     this.rootDirs = rootDirs;
   }

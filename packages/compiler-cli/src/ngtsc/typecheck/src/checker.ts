@@ -39,7 +39,7 @@ export class TemplateTypeChecker {
       private typeCheckingStrategy: TypeCheckingProgramStrategy,
       private typeCheckAdapter: ProgramTypeCheckAdapter, private config: TypeCheckingConfig,
       private refEmitter: ReferenceEmitter, private reflector: ReflectionHost,
-      private compilerHost: ts.CompilerHost,
+      private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
       private priorBuild: IncrementalBuild<unknown, FileTypeCheckingData>) {}
 
   /**
