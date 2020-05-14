@@ -59,7 +59,9 @@ export class LogicalFileSystem {
    */
   private cache: Map<AbsoluteFsPath, LogicalProjectPath|null> = new Map();
 
-  constructor(rootDirs: AbsoluteFsPath[], private compilerHost: ts.CompilerHost) {
+  constructor(
+      rootDirs: AbsoluteFsPath[],
+      private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>) {
     // Make a copy and sort it by length in reverse order (longest first). This speeds up lookups,
     // since there's no need to keep going through the array once a match is found.
     this.rootDirs = rootDirs.concat([]).sort((a, b) => b.length - a.length);
