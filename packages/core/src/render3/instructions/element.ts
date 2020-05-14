@@ -40,11 +40,11 @@ function elementStartFirstCreatePass(
   ngDevMode && logUnknownElementError(tView, lView, native, tNode, hasDirectives);
 
   if (tNode.attrs !== null) {
-    computeStaticStyling(tNode, tNode.attrs, true);
+    computeStaticStyling(tNode, tNode.attrs, false);
   }
 
   if (tNode.mergedAttrs !== null) {
-    computeStaticStyling(tNode, tNode.mergedAttrs, false);
+    computeStaticStyling(tNode, tNode.mergedAttrs, true);
   }
 
   if (tView.queries !== null) {
@@ -152,12 +152,12 @@ export function ɵɵelementEnd(): void {
     }
   }
 
-  if (tNode.classesNoHost != null && hasClassInput(tNode)) {
-    setDirectiveInputsWhichShadowsStyling(tView, tNode, getLView(), tNode.classesNoHost, true);
+  if (tNode.classesWithoutHost != null && hasClassInput(tNode)) {
+    setDirectiveInputsWhichShadowsStyling(tView, tNode, getLView(), tNode.classesWithoutHost, true);
   }
 
-  if (tNode.stylesNoHost != null && hasStyleInput(tNode)) {
-    setDirectiveInputsWhichShadowsStyling(tView, tNode, getLView(), tNode.stylesNoHost, false);
+  if (tNode.stylesWithoutHost != null && hasStyleInput(tNode)) {
+    setDirectiveInputsWhichShadowsStyling(tView, tNode, getLView(), tNode.stylesWithoutHost, false);
   }
 }
 

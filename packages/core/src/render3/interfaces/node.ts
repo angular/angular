@@ -507,7 +507,7 @@ export interface TNode {
    * This field will be populated if and when:
    *
    * - There are one or more initial `style`s on an element (e.g. `<div style="width:200px;">`)
-   * - There are one or more initial `style`s on an directive/component host
+   * - There are one or more initial `style`s on a directive/component host
    *   (e.g. `@Directive({host: {style: "width:200px;" } }`)
    */
   styles: string|null;
@@ -518,8 +518,13 @@ export interface TNode {
    *
    * Populated when there are one or more initial `style`s on an element
    * (e.g. `<div style="width:200px;">`)
+   * Must be stored separately from `tNode.styles` to facilitate setting directive
+   * inputs that shadow the `style` property. If we used `tNode.styles` as is for shadowed inputs,
+   * we would feed host styles back into directives as "inputs". If we used `tNode.attrs`, we would
+   * have to concatenate the attributes on every template pass. Instead, we process once on first
+   * create pass and store here.
    */
-  stylesNoHost: string|null;
+  stylesWithoutHost: string|null;
 
   /**
    * A `KeyValueArray` version of residual `styles`.
@@ -566,8 +571,13 @@ export interface TNode {
    *
    * Populated when there are one or more initial classes on an element
    * (e.g. `<div class="SOME_CLASS">`)
+   * Must be stored separately from `tNode.classes` to facilitate setting directive
+   * inputs that shadow the `class` property. If we used `tNode.classes` as is for shadowed inputs,
+   * we would feed host class back into directives as "inputs". If we used `tNode.attrs`, we would
+   * have to concatenate the attributes on every template pass. Instead, we process once on first
+   * create pass and store here.
    */
-  classesNoHost: string|null;
+  classesWithoutHost: string|null;
 
   /**
    * A `KeyValueArray` version of residual `classes`.

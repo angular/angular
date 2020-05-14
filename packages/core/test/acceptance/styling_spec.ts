@@ -363,7 +363,7 @@ describe('styling', () => {
     }
 
     @Directive({selector: '[dir-shadows-class-input]', host: {'style': 'color: red;'}})
-    class DirectiveShadowsClassInput {
+    class DirectiveShadowsStyleInput {
       constructor(private elementRef: ElementRef) {}
       @Input('style')
       set style(value: string) {
@@ -371,7 +371,7 @@ describe('styling', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsClassInput]});
+    TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsStyleInput]});
     const fixture = TestBed.createComponent(Cmp);
     fixture.detectChanges();
 
@@ -448,7 +448,7 @@ describe('styling', () => {
         }
 
         @Directive({selector: '[dir-shadows-style-input]'})
-        class DirectiveShadowsClassInput {
+        class DirectiveShadowsStyleInput {
           constructor(private elementRef: ElementRef) {}
           @Input('style')
           set style(value: string) {
@@ -456,7 +456,7 @@ describe('styling', () => {
           }
         }
 
-        TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsClassInput]});
+        TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsStyleInput]});
         const fixture = TestBed.createComponent(Cmp);
         fixture.detectChanges();
 
@@ -483,7 +483,7 @@ describe('styling', () => {
         }
 
         @Directive({selector: '[dir-shadows-style-input]'})
-        class DirectiveShadowsClassInput {
+        class DirectiveShadowsStyleInput {
           constructor(private elementRef: ElementRef) {}
           @Input('style')
           set style(value: string) {
@@ -491,7 +491,7 @@ describe('styling', () => {
           }
         }
 
-        TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsClassInput]});
+        TestBed.configureTestingModule({declarations: [Cmp, DirectiveShadowsStyleInput]});
         const fixture = TestBed.createComponent(Cmp);
         fixture.detectChanges();
 
