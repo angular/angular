@@ -34,7 +34,7 @@ export class TypeCheckFile extends Environment {
 
   constructor(
       readonly fileName: AbsoluteFsPath, config: TypeCheckingConfig, refEmitter: ReferenceEmitter,
-      reflector: ReflectionHost, compilerHost: ts.CompilerHost) {
+      reflector: ReflectionHost, compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>) {
     super(
         config, new ImportManager(new NoopImportRewriter(), 'i'), refEmitter, reflector,
         ts.createSourceFile(

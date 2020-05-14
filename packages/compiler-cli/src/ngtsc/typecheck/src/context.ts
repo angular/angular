@@ -113,7 +113,8 @@ export class TypeCheckContext {
   private fileMap = new Map<AbsoluteFsPath, PendingFileTypeCheckingData>();
 
   constructor(
-      private config: TypeCheckingConfig, private compilerHost: ts.CompilerHost,
+      private config: TypeCheckingConfig,
+      private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
       private refEmitter: ReferenceEmitter, private reflector: ReflectionHost) {}
 
   /**

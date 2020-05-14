@@ -122,7 +122,7 @@ export function nodeDebugInfo(node: ts.Node): string {
  */
 export function resolveModuleName(
     moduleName: string, containingFile: string, compilerOptions: ts.CompilerOptions,
-    compilerHost: ts.CompilerHost,
+    compilerHost: ts.ModuleResolutionHost&Pick<ts.CompilerHost, 'resolveModuleNames'>,
     moduleResolutionCache: ts.ModuleResolutionCache|null): ts.ResolvedModule|undefined {
   if (compilerHost.resolveModuleNames) {
     // FIXME: Additional parameters are required in TS3.6, but ignored in 3.5.
