@@ -31,6 +31,16 @@
 * **language-service:** [ivy] wrap ngtsc to handle typecheck files ([#36930](https://github.com/angular/angular/issues/36930)) ([1142c37](https://github.com/angular/angular/commit/1142c37))
 * **core** make generic mandatory for ModuleWithProviders ([#36892](https://github.com/angular/angular/issues/36892)) ([20cc3ab](https://github.com/angular/angular/commit/20cc3ab))
 
+### BREAKING CHANGES
+
+* **core:** make generic mandatory for ModuleWithProviders 
+
+A generic has always been required for the `ModuleWithProviders` pattern to work with Ivy, but prior to this commit, View Engine allowed the generic to be omitted (though support was officially deprecated).
+If you're using `ModuleWithProviders` without a generic in your application code, a v10 migration will update your code for you. 
+
+However, you may run into issues if you're using View Engine and also depending on a library that omits the generic. 
+In this case, ngcc won't help you (because it's Ivy-only) and the migration only covers application code.
+As a workaround, we suggest setting `skipLibChecks` to false in your tsconfig or updating your app to use Ivy.
 
 
 <a name="9.1.7"></a>
