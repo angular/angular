@@ -27,7 +27,3 @@ import * as ParsingCases from './parsing-cases';
 })
 export class AppModule {
 }
-
-declare function bootstrap(v: any): void;
-
-bootstrap(AppComponent);
