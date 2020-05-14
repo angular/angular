@@ -11,8 +11,7 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, absoluteFromSourceFile, basename, FileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
-import {RawSourceMap} from '../sourcemaps/raw_source_map';
-import {SourceFileLoader} from '../sourcemaps/source_file_loader';
+import {RawSourceMap, SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
 
 import {FileToWrite} from './utils';
 
