@@ -435,7 +435,7 @@ export function refreshView<T>(
     // insertion points. This is needed to avoid the situation where the template is defined in this
     // `LView` but its declaration appears after the insertion component.
     markTransplantedViewsForRefresh(lView);
-    refreshDynamicEmbeddedViews(lView);
+    refreshEmbeddedViews(lView);
 
     // Content query results must be refreshed before content hooks are called.
     if (tView.contentQueries !== null) {
@@ -1623,10 +1623,10 @@ export function createLContainer(
 }
 
 /**
- * Goes over dynamic embedded views (ones created through ViewContainerRef APIs) and refreshes
+ * Goes over embedded views (ones created through ViewContainerRef APIs) and refreshes
  * them by executing an associated template function.
  */
-function refreshDynamicEmbeddedViews(lView: LView) {
+function refreshEmbeddedViews(lView: LView) {
   for (let lContainer = getFirstLContainer(lView); lContainer !== null;
        lContainer = getNextLContainer(lContainer)) {
     for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
@@ -1664,7 +1664,7 @@ function markTransplantedViewsForRefresh(lView: LView) {
       // Note, it is possible that the `movedViews` is tracking views that are transplanted *and*
       // those that aren't (declaration component === insertion component). In the latter case,
       // it's fine to add the flag, as we will clear it immediately in
-      // `refreshDynamicEmbeddedViews` for the view currently being refreshed.
+      // `refreshEmbeddedViews` for the view currently being refreshed.
       movedLView[FLAGS] |= LViewFlags.RefreshTransplantedView;
     }
   }

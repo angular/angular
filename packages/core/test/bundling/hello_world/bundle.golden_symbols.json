@@ -435,7 +435,7 @@
     "name": "refreshContentQueries"
   },
   {
-    "name": "refreshDynamicEmbeddedViews"
+    "name": "refreshEmbeddedViews"
   },
   {
     "name": "refreshView"
