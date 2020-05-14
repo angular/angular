@@ -136,6 +136,11 @@ export function validateCommitMessage(
     return false;
   }
 
+  // Commits with the type of `release` do not require a commit body.
+  if (commit.type === 'release') {
+    return true;
+  }
+
   //////////////////////////
   // Checking commit body //
   //////////////////////////
