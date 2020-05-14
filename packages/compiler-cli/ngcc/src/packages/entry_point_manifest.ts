@@ -8,8 +8,8 @@
 import {createHash} from 'crypto';
 
 import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
 import {EntryPointWithDependencies} from '../dependencies/dependency_host';
-import {Logger} from '../logging/logger';
 
 import {NGCC_VERSION} from './build_marker';
 import {NgccConfiguration} from './configuration';

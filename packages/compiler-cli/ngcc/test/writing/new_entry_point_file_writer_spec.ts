@@ -7,6 +7,7 @@
  */
 import {absoluteFrom, FileSystem, getFileSystem, join} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {NgccConfiguration} from '../../src/packages/configuration';
 import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointInfo, isEntryPoint} from '../../src/packages/entry_point';
@@ -14,7 +15,6 @@ import {EntryPointBundle, makeEntryPointBundle} from '../../src/packages/entry_p
 import {FileWriter} from '../../src/writing/file_writer';
 import {NewEntryPointFileWriter} from '../../src/writing/new_entry_point_file_writer';
 import {DirectPackageJsonUpdater} from '../../src/writing/package_json_updater';
-import {MockLogger} from '../helpers/mock_logger';
 import {loadPackageJson} from '../packages/entry_point_spec';
 
 runInEachFileSystem(() => {

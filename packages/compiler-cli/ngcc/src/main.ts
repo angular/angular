@@ -11,6 +11,7 @@
 import * as os from 'os';
 
 import {AbsoluteFsPath, FileSystem, resolve} from '../../src/ngtsc/file_system';
+import {Logger} from '../../src/ngtsc/logging';
 import {ParsedConfiguration} from '../../src/perform_compile';
 
 import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
@@ -33,7 +34,6 @@ import {composeTaskCompletedCallbacks, createLogErrorHandler, createMarkAsProces
 import {AsyncLocker} from './locking/async_locker';
 import {LockFileWithChildProcess} from './locking/lock_file_with_child_process';
 import {SyncLocker} from './locking/sync_locker';
-import {Logger} from './logging/logger';
 import {AsyncNgccOptions, getSharedSetup, SyncNgccOptions} from './ngcc_options';
 import {NgccConfiguration} from './packages/configuration';
 import {EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point';

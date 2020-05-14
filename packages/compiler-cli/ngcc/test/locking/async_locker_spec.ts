@@ -7,9 +7,9 @@
  */
 import {getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {AsyncLocker} from '../../src/locking/async_locker';
 import {MockLockFile} from '../helpers/mock_lock_file';
-import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
   describe('AsyncLocker', () => {
