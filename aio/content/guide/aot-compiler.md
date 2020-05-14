@@ -551,10 +551,10 @@ In the template type-checking phase, the Angular template compiler uses the Type
 <div class="alert is-helpful">
 
 In [Angular Ivy](guide/ivy), the template type checker has been completely rewritten to be more capable as well as stricter, meaning it can catch a variety of new errors that the previous type checker would not detect.
-
-As a result, templates that previously compiled under View Engine can fail type checking under Ivy.
-
 This stricter type checking is not enabled by default in version 9, but can be enabled by setting the `strictTemplates` configuration option.
+
+Templates that previously compiled under View Engine should continue to work with any previous strictness settings, but may fail when `strictTemplates` is enabled.
+
 We do expect to make strict type checking the default in the future.
 
 For more information about type-checking options, and about improvements to template type checking in version 9 and above, see [Template type checking](guide/template-typecheck).

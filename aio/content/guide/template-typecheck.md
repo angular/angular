@@ -111,20 +111,18 @@ This produces the following error:
   my.component.html:1:11 - error TS2339: Property 'addresss' does not exist on type 'Person'. Did you mean 'address'?
 
 1         {{person.addresss.street}}
+            ~~~~~~~~~~~~~~~~
  ```
 
 The file name reported in the error message, `MyComponent.html`, is either the path of the `.ts` file for inline templates (template), or the path of the `.html` file for external templates (templateUrl).
 
 If a component uses `templateUrl` instead of `template`, the errors are reported in the HTML file referenced by the `templateUrl` instead of a synthetic file.
 
-The error location is the beginning of the text node that contains the interpolation expression with the error.
-If the error is in an attribute binding such as `[value]="person.address.street"`, the error
-location is the location of the attribute that contains the error.
+If the error is in an attribute binding such as `[value]="person.address.street"`, the error location is the part of the expression which failed type-checking.
 
-The validation uses the TypeScript type checker and the options supplied to the TypeScript compiler to control how detailed the type validation is.
-For example, if the `strictTypeChecks` is specified, the error
-```my.component.ts.MyComponent.html(1,1): : Object is possibly 'undefined'```
-is reported as well as the above error message.
+Angular reports template errors like any other TypeScript error and gives you the line and column number references that specify the location of the error.
+
+The validation uses the TypeScript type checker and so the options supplied to the TypeScript compiler control how detailed the type validation is.
 
 ## Type narrowing
 
