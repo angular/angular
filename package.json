@@ -89,7 +89,7 @@
     "ngx-build-plus": "^9.0.4",
     "prettier": "^2.0.0",
     "pretty-quick": "^2.0.1",
-    "protractor": "~5.4.2",
+    "protractor": "~7.0.0",
     "start-server-and-test": "^1.10.11",
     "todomvc-app-css": "^2.3.0",
     "todomvc-common": "^1.0.5",
