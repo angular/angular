@@ -8,7 +8,7 @@
 import {removeComments, removeMapFileComments} from 'convert-source-map';
 import {decode, encode, SourceMapMappings, SourceMapSegment} from 'sourcemap-codec';
 
-import {AbsoluteFsPath, dirname, relative} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, dirname, relative} from '../../file_system';
 
 import {RawSourceMap} from './raw_source_map';
 import {compareSegments, offsetSegment, SegmentMarker} from './segment_marker';

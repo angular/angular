@@ -7,11 +7,11 @@
  */
 import {encode} from 'sourcemap-codec';
 
-import {absoluteFrom} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {RawSourceMap} from '../../src/sourcemaps/raw_source_map';
-import {SegmentMarker} from '../../src/sourcemaps/segment_marker';
-import {computeStartOfLinePositions, ensureOriginalSegmentLinks, extractOriginalSegments, findLastMappingIndexBefore, Mapping, parseMappings, SourceFile} from '../../src/sourcemaps/source_file';
+import {absoluteFrom} from '../../file_system';
+import {runInEachFileSystem} from '../../file_system/testing';
+import {RawSourceMap} from '../src/raw_source_map';
+import {SegmentMarker} from '../src/segment_marker';
+import {computeStartOfLinePositions, ensureOriginalSegmentLinks, extractOriginalSegments, findLastMappingIndexBefore, Mapping, parseMappings, SourceFile} from '../src/source_file';
 
 runInEachFileSystem(() => {
   describe('SourceFile and utilities', () => {

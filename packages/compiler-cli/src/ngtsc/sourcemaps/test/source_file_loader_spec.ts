@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {fromObject} from 'convert-source-map';
 
-import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {RawSourceMap} from '../../src/sourcemaps/raw_source_map';
-import {SourceFileLoader as SourceFileLoader} from '../../src/sourcemaps/source_file_loader';
+import {absoluteFrom, FileSystem, getFileSystem} from '../../file_system';
+import {runInEachFileSystem} from '../../file_system/testing';
+import {MockLogger} from '../../logging/testing';
+import {RawSourceMap} from '../src/raw_source_map';
+import {SourceFileLoader as SourceFileLoader} from '../src/source_file_loader';
 
 runInEachFileSystem(() => {
   describe('SourceFileLoader', () => {
