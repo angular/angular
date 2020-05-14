@@ -316,7 +316,7 @@ describe('styling', () => {
         expect(div2.getAttribute('shadow-class')).toEqual('s2 d2');
       });
 
-  it('should not feed host class back into shadow input', () => {
+  it('should not feed host classes back into shadow input', () => {
     @Component({
       template: `
           <div class="s1" dir-shadows-class-input></div>

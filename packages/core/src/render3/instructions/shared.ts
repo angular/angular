@@ -851,10 +851,10 @@ export function createTNode(
                          tParent,    // parent: TElementNode|TContainerNode|null
                          null,       // projection: number|(ITNode|RNode[])[]|null
                          null,       // styles: string|null
-                         null,       // stylesNoHost: string|null
+                         null,       // stylesWithoutHost: string|null
                          undefined,  // residualStyles: string|null
                          null,       // classes: string|null
-                         null,       // classesNoHost: string|null
+                         null,       // classesWithoutHost: string|null
                          undefined,  // residualClasses: string|null
                          0 as any,   // classBindings: TStylingRange;
                          0 as any,   // styleBindings: TStylingRange;

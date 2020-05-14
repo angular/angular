@@ -573,7 +573,7 @@ export interface TNode {
    * (e.g. `<div class="SOME_CLASS">`)
    * Must be stored separately from `tNode.classes` to facilitate setting directive
    * inputs that shadow the `class` property. If we used `tNode.classes` as is for shadowed inputs,
-   * we would feed host class back into directives as "inputs". If we used `tNode.attrs`, we would
+   * we would feed host classes back into directives as "inputs". If we used `tNode.attrs`, we would
    * have to concatenate the attributes on every template pass. Instead, we process once on first
    * create pass and store here.
    */
