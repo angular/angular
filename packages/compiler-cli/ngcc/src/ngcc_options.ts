@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../src/ngtsc/file_system';
+import {ConsoleLogger, Logger, LogLevel} from '../../src/ngtsc/logging';
 import {ParsedConfiguration, readConfiguration} from '../../src/perform_compile';
 
-import {ConsoleLogger} from './logging/console_logger';
-import {Logger, LogLevel} from './logging/logger';
 import {SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point';
 import {getPathMappingsFromTsConfig, PathMappings} from './path_mappings';
 import {FileWriter} from './writing/file_writer';

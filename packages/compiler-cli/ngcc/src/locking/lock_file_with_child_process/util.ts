@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system';
-import {Logger} from '../../logging/logger';
+import {Logger} from '../../../../src/ngtsc/logging';
 
 /**
  * Remove the lock-file at the provided `lockFilePath` from the given file-system.

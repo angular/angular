@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {NoopImportRewriter} from '../../../src/ngtsc/imports';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {ImportManager} from '../../../src/ngtsc/translator';
 import {loadTestFiles} from '../../../test/helpers';
@@ -20,7 +21,6 @@ import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registr
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {CommonJsReflectionHost} from '../../src/host/commonjs_host';
 import {CommonJsRenderingFormatter} from '../../src/rendering/commonjs_rendering_formatter';
-import {MockLogger} from '../helpers/mock_logger';
 import {makeTestEntryPointBundle} from '../helpers/utils';
 
 runInEachFileSystem(() => {

@@ -7,8 +7,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {absoluteFromSourceFile, AbsoluteFsPath, dirname, FileSystem, join, relative} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
-import {Logger} from '../logging/logger';
 import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 import {FileToWrite} from '../rendering/utils';

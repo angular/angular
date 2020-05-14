@@ -8,12 +8,12 @@
 import {DepGraph} from 'dependency-graph';
 
 import {FileSystem} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
 import {InvalidEntryPoint} from '../dependencies/dependency_resolver';
 import {EntryPointFinder} from '../entry_point_finder/interface';
 import {ParallelTaskQueue} from '../execution/tasks/queues/parallel_task_queue';
 import {SerialTaskQueue} from '../execution/tasks/queues/serial_task_queue';
 import {computeTaskDependencies} from '../execution/tasks/utils';
-import {Logger} from '../logging/logger';
 import {hasBeenProcessed} from '../packages/build_marker';
 import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES} from '../packages/entry_point';
 import {cleanOutdatedPackages} from '../writing/cleaning/package_cleaner';

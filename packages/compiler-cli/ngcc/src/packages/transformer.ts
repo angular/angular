@@ -9,6 +9,7 @@ import * as ts from 'typescript';
 
 import {ParsedConfiguration} from '../../..';
 import {FileSystem} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
 import {TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
 import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
 import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../analysis/module_with_providers_analyzer';
@@ -22,7 +23,6 @@ import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {UmdReflectionHost} from '../host/umd_host';
-import {Logger} from '../logging/logger';
 import {CommonJsRenderingFormatter} from '../rendering/commonjs_rendering_formatter';
 import {DtsRenderer} from '../rendering/dts_renderer';
 import {Esm5RenderingFormatter} from '../rendering/esm5_rendering_formatter';

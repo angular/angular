@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Logger, LogLevel} from '../../src/logging/logger';
+import {Logger, LogLevel} from '../..';
 
 export class MockLogger implements Logger {
   constructor(public level = LogLevel.info) {}

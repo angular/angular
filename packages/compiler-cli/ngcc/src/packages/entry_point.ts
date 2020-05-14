@@ -8,10 +8,12 @@
 import {relative} from 'canonical-path';
 import {basename} from 'path';
 import * as ts from 'typescript';
+
 import {AbsoluteFsPath, FileSystem, join, resolve} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
 import {parseStatementForUmdModule} from '../host/umd_host';
-import {Logger} from '../logging/logger';
 import {resolveFileWithPostfixes} from '../utils';
+
 import {NgccConfiguration, NgccEntryPointConfig} from './configuration';
 
 /**
