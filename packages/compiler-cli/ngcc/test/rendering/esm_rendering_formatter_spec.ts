@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {NoopImportRewriter} from '../../../src/ngtsc/imports';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {ImportManager} from '../../../src/ngtsc/translator';
 import {loadFakeCore, loadTestFiles} from '../../../test/helpers';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
@@ -21,7 +22,6 @@ import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {IMPORT_PREFIX} from '../../src/constants';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {EsmRenderingFormatter} from '../../src/rendering/esm_rendering_formatter';
-import {MockLogger} from '../helpers/mock_logger';
 import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
 
 function setup(files: TestFile[], dtsFiles?: TestFile[]) {

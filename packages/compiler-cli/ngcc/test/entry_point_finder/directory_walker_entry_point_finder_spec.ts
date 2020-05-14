@@ -7,6 +7,7 @@
  */
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relative} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {DependencyResolver} from '../../src/dependencies/dependency_resolver';
 import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
@@ -17,7 +18,6 @@ import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/
 import {EntryPoint} from '../../src/packages/entry_point';
 import {EntryPointManifest, EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
 import {PathMappings} from '../../src/path_mappings';
-import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
   describe('DirectoryWalkerEntryPointFinder', () => {

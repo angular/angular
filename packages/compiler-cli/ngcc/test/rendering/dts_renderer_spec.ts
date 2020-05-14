@@ -13,6 +13,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {Reexport} from '../../../src/ngtsc/imports';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {loadTestFiles} from '../../../test/helpers';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
@@ -23,7 +24,6 @@ import {CompiledClass} from '../../src/analysis/types';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {DtsRenderer} from '../../src/rendering/dts_renderer';
 import {RedundantDecoratorMap, RenderingFormatter} from '../../src/rendering/rendering_formatter';
-import {MockLogger} from '../helpers/mock_logger';
 import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
 
 class TestRenderingFormatter implements RenderingFormatter {

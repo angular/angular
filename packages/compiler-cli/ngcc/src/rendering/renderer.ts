@@ -10,6 +10,7 @@ import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
 import {FileSystem} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
 import {ImportManager} from '../../../src/ngtsc/translator';
 import {ParsedConfiguration} from '../../../src/perform_compile';
 import {PrivateDeclarationsAnalyses} from '../analysis/private_declarations_analyzer';
@@ -17,7 +18,6 @@ import {SwitchMarkerAnalyses, SwitchMarkerAnalysis} from '../analysis/switch_mar
 import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/types';
 import {IMPORT_PREFIX} from '../constants';
 import {NgccReflectionHost} from '../host/ngcc_host';
-import {Logger} from '../logging/logger';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 
 import {RedundantDecoratorMap, RenderingFormatter} from './rendering_formatter';

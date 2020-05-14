@@ -8,7 +8,7 @@
 import {ChildProcess, fork} from 'child_process';
 
 import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system';
-import {Logger, LogLevel} from '../../logging/logger';
+import {Logger, LogLevel} from '../../../../src/ngtsc/logging';
 import {getLockFilePath, LockFile} from '../lock_file';
 
 import {removeLockFile} from './util';

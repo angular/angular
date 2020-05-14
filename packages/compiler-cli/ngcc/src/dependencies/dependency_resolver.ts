@@ -9,7 +9,7 @@
 import {DepGraph} from 'dependency-graph';
 
 import {AbsoluteFsPath, FileSystem, resolve} from '../../../src/ngtsc/file_system';
-import {Logger} from '../logging/logger';
+import {Logger} from '../../../src/ngtsc/logging';
 import {NgccConfiguration} from '../packages/configuration';
 import {EntryPoint, EntryPointFormat, getEntryPointFormat, SUPPORTED_FORMAT_PROPERTIES} from '../packages/entry_point';
 import {PartiallyOrderedList} from '../utils';
