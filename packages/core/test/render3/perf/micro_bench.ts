@@ -28,7 +28,7 @@ export interface Profile {
   noImprovementCount: number;
 }
 
-export function createBenchmark(benchmarkName: string): Benchmark {
+export function createBenchmark(benchmarkName: string, testSetup?: Function): Benchmark {
   const profiles: Profile[] = [];
 
   const benchmark = function Benchmark(profileName: string): Profile {
@@ -69,9 +69,17 @@ export function createBenchmark(benchmarkName: string): Benchmark {
           }
         }
         iterationCounter = profile.iterationCount;
+        if (testSetup) testSetup();
         timestamp = performance.now();
         return runAgain;
       } else {
+        if (testSetup) {
+          const start = performance.now();
+          testSetup();
+          const testSetupTime = performance.now() - start;
+          timestamp += testSetupTime;  // add time to run test setup to timestamp so it's not
+                                       // included in calculations
+        }
         // this is the common path and it needs te be quick!
         iterationCounter--;
         return true;
