@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Logger} from '../../../src/ngtsc/logging';
 import {NGCC_TIMED_OUT_EXIT_CODE} from '../constants';
-import {Logger} from '../logging/logger';
 
 import {LockFile} from './lock_file';
 

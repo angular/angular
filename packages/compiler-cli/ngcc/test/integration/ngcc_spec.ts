@@ -12,6 +12,7 @@ import * as os from 'os';
 
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, join} from '../../../src/ngtsc/file_system';
 import {Folder, MockFileSystem, runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadStandardTestFiles, loadTestFiles} from '../../../test/helpers';
 import {getLockFilePath} from '../../src/locking/lock_file';
 import {mainNgcc} from '../../src/main';
@@ -21,7 +22,6 @@ import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTI
 import {EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
 import {Transformer} from '../../src/packages/transformer';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
-import {MockLogger} from '../helpers/mock_logger';
 
 import {compileIntoApf, compileIntoFlatEs2015Package, compileIntoFlatEs5Package} from './util';
 

@@ -9,9 +9,8 @@
 
 import * as cluster from 'cluster';
 
+import {Logger} from '../../../../src/ngtsc/logging';
 import {parseCommandLineOptions} from '../../command_line_options';
-import {ConsoleLogger} from '../../logging/console_logger';
-import {Logger, LogLevel} from '../../logging/logger';
 import {getSharedSetup} from '../../ngcc_options';
 import {CreateCompileFn} from '../api';
 import {getCreateCompileFn} from '../create_compile_function';

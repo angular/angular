@@ -10,8 +10,8 @@ import * as ts from 'typescript';
 
 import {replaceTsWithNgInErrors} from '../../../src/ngtsc/diagnostics';
 import {FileSystem} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
 import {ParsedConfiguration} from '../../../src/perform_compile';
-import {Logger} from '../logging/logger';
 import {getEntryPointFormat} from '../packages/entry_point';
 import {makeEntryPointBundle} from '../packages/entry_point_bundle';
 import {PathMappings} from '../path_mappings';

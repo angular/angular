@@ -9,8 +9,7 @@
 import * as yargs from 'yargs';
 
 import {resolve, setFileSystem, NodeJSFileSystem} from '../../src/ngtsc/file_system';
-import {ConsoleLogger} from './logging/console_logger';
-import {LogLevel} from './logging/logger';
+import {ConsoleLogger, LogLevel} from '../../src/ngtsc/logging';
 import {NgccOptions} from './ngcc_options';
 
 export function parseCommandLineOptions(args: string[]): NgccOptions {

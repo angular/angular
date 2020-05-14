@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
 import {EntryPointWithDependencies} from '../dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
-import {Logger} from '../logging/logger';
 import {NgccConfiguration} from '../packages/configuration';
 import {getEntryPointInfo, IGNORED_ENTRY_POINT, INCOMPATIBLE_ENTRY_POINT, isEntryPoint, NO_ENTRY_POINT} from '../packages/entry_point';
 import {EntryPointManifest} from '../packages/entry_point_manifest';

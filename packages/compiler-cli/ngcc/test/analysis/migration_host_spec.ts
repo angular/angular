@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 import {makeDiagnostic} from '../../../src/ngtsc/diagnostics';
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration} from '../../../src/ngtsc/reflection';
 import {getDeclaration} from '../../../src/ngtsc/testing';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, TraitState} from '../../../src/ngtsc/transform';
@@ -20,7 +21,6 @@ import {NgccTraitCompiler} from '../../src/analysis/ngcc_trait_compiler';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {createComponentDecorator} from '../../src/migrations/utils';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
-import {MockLogger} from '../helpers/mock_logger';
 import {makeTestEntryPointBundle} from '../helpers/utils';
 
 runInEachFileSystem(() => {

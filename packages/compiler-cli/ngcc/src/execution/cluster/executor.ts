@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {FileSystem} from '../../../../src/ngtsc/file_system';
+import {Logger} from '../../../../src/ngtsc/logging';
 import {AsyncLocker} from '../../locking/async_locker';
-import {Logger} from '../../logging/logger';
 import {FileWriter} from '../../writing/file_writer';
 import {PackageJsonUpdater} from '../../writing/package_json_updater';
 import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from '../api';

@@ -12,11 +12,11 @@ import * as cluster from 'cluster';
 import {EventEmitter} from 'events';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
+import {MockLogger} from '../../../../src/ngtsc/logging/testing';
 import {CreateCompileFn} from '../../../src/execution/api';
 import {startWorker} from '../../../src/execution/cluster/worker';
 import {Task, TaskCompletedCallback, TaskProcessingOutcome} from '../../../src/execution/tasks/api';
 import {FileToWrite} from '../../../src/rendering/utils';
-import {MockLogger} from '../../helpers/mock_logger';
 import {mockProperty, spyProperty} from '../../helpers/spy_utils';
 
 

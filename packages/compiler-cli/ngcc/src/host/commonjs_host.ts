@@ -9,8 +9,8 @@
 import * as ts from 'typescript';
 
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
 import {Declaration, Import} from '../../../src/ngtsc/reflection';
-import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {FactoryMap, isDefined} from '../utils';
 

@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
 import {ParsedConfiguration} from '../../../src/perform_compile';
 
 import {createDependencyInfo} from '../dependencies/dependency_host';
 import {DependencyResolver} from '../dependencies/dependency_resolver';
 import {EsmDependencyHost} from '../dependencies/esm_dependency_host';
 import {ModuleResolver} from '../dependencies/module_resolver';
-import {Logger} from '../logging/logger';
 import {NgccConfiguration} from '../packages/configuration';
 import {getPathMappingsFromTsConfig} from '../path_mappings';
 

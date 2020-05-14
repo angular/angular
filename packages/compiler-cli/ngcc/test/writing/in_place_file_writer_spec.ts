@@ -7,11 +7,11 @@
  */
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadTestFiles} from '../../../test/helpers';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {InPlaceFileWriter, NGCC_BACKUP_EXTENSION} from '../../src/writing/in_place_file_writer';
-import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
   describe('InPlaceFileWriter', () => {

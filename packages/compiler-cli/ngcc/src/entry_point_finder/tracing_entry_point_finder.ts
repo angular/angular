@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath, FileSystem, join, PathSegment, relative, relativeFrom} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
 
 import {EntryPointWithDependencies} from '../dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
-import {Logger} from '../logging/logger';
 import {NgccConfiguration} from '../packages/configuration';
 import {EntryPoint, getEntryPointInfo, isEntryPoint} from '../packages/entry_point';
 import {PathMappings} from '../path_mappings';

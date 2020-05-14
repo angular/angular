@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ConsoleLogger, DEBUG, ERROR, WARN} from '../../src/logging/console_logger';
-import {LogLevel} from '../../src/logging/logger';
+import {ConsoleLogger, DEBUG, ERROR, WARN} from '../src/console_logger';
+import {LogLevel} from '../src/logger';
 
 describe('ConsoleLogger', () => {
   it('should pass through calls to Console', () => {

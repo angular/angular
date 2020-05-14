@@ -8,9 +8,9 @@
 
 import * as ts from 'typescript';
 
+import {Logger} from '../../../src/ngtsc/logging';
 import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, EnumMember, isDecoratorIdentifier, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference} from '../../../src/ngtsc/reflection';
 import {isWithinPackage} from '../analysis/util';
-import {Logger} from '../logging/logger';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
 

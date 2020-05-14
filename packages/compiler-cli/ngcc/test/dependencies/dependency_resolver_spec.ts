@@ -10,6 +10,7 @@ import {DepGraph} from 'dependency-graph';
 
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {DependencyInfo, EntryPointWithDependencies} from '../../src/dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../../src/dependencies/dependency_resolver';
 import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
@@ -17,7 +18,6 @@ import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
 import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {NgccConfiguration} from '../../src/packages/configuration';
 import {EntryPoint} from '../../src/packages/entry_point';
-import {MockLogger} from '../helpers/mock_logger';
 
 
 interface DepMap {

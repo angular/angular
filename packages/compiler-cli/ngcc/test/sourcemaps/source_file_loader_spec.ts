@@ -9,9 +9,9 @@ import {absoluteFrom, FileSystem, getFileSystem} from '@angular/compiler-cli/src
 import {fromObject} from 'convert-source-map';
 
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {RawSourceMap} from '../../src/sourcemaps/raw_source_map';
 import {SourceFileLoader as SourceFileLoader} from '../../src/sourcemaps/source_file_loader';
-import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
   describe('SourceFileLoader', () => {

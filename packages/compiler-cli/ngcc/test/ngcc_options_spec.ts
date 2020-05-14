@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../src/ngtsc/file_system';
+import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../src/ngtsc/logging/testing';
 
 import {clearTsConfigCache, getSharedSetup, NgccOptions} from '../src/ngcc_options';
 
-import {MockLogger} from './helpers/mock_logger';
 
 
 runInEachFileSystem(() => {
