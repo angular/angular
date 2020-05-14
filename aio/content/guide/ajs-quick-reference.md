@@ -339,6 +339,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       </code-example>
 
 
+      <!--
       In AngularJS, the `ng-class` directive includes/excludes CSS classes
       based on an expression. That expression is often a key-value control object with each
       key of the object defined as a CSS class name, and each value defined as a template expression
@@ -347,6 +348,12 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       In the first example, the `active` class is applied to the element if `isActive` is true.
 
       You can specify multiple classes, as shown in the second example.
+      -->
+      `ng-class`는 표현식의 결과에 따라 CSS 클래스를 추가하거나 제거하는 디렉티브입니다.
+      이 표현식은 보통 CSS 클래스 이름을 키(key)로, 이 클래스가 적용되는지 여부를 불리언값으로 구성한 객체 형식을 반환합니다.
+
+      첫번째 예제 코드는 컨트롤러의 `isActive`의 값이 `true` 일때 `active` 클래스를 엘리먼트에 추가하는 코드입니다.
+      그리고 두번째 예제 코드에서 볼 수 있듯이, 한 번에 여러 클래스를 조작할 수도 있습니다.
     </td>
 
     <td>
@@ -357,6 +364,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="ngClass"></code-example>
 
 
+      <!--
       In Angular, the `ngClass` directive works similarly.
       It includes/excludes CSS classes based on an expression.
 
@@ -369,6 +377,17 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       For more information see the [Attribute, class, and style bindings](guide/template-syntax#other-bindings)
       section of the [Template Syntax](guide/template-syntax) page.
+      -->
+      `ngClass`도 비슷하게 동작합니다.
+      이 디렉티브도 표현식이 반환하는 결과에 따라 엘리먼트의 CSS 클래스를 추가하거나 제거합니다.
+
+      첫번째 예제 코드는 컴포넌트의 `isActive` 프로퍼티값이 `true`일 때 `active` 클래스를 엘리먼트에 추가하는 코드입니다.
+
+      그리고 두번째 예제 코드에서 볼 수 있듯이, 한 번에 여러 클래스를 조작할 수도 있습니다.
+
+      세번째 예제 코드에 사용한 것은 **클래스 바인딩** 문법입니다. 조작하려는 클래스가 하나라면 이 방법을 사용하는 것도 좋습니다.
+
+      더 자세한 내용은 [템플릿 문법](guide/template-syntax) 문서의 [어트리뷰트, 클래스, 스타일 바인딩](guide/template-syntax#other-bindings) 섹션을 참고하세요.
 
     </td>
 
@@ -386,18 +405,26 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
         &lt;button ng-click="vm.toggleImage($event)">
       </code-example>
 
-
+      <!--
       In AngularJS, the `ng-click` directive allows you to specify custom behavior when an element is clicked.
 
       In the first example, when the user clicks the button, the `toggleImage()` method in the controller referenced by the `vm` `controller as` alias is executed.
 
       The second example demonstrates passing in the `$event` object, which provides details about the event
       to the controller.
+      -->
+      `ng-click`을 활용하면 사용자가 엘리먼트를 클릭했을 때 특정 로직을 실행할 수 있습니다.
+
+      첫번째 예제 코드는 사용자가 버튼을 클릭했을 때 컨트롤러의 `toggleImage()` 메소드를 실행하는 코드입니다. `controller as` 문법을 사용했기 때문에 `vm`을 정확하게 지정했습니다.
+
+      두번째 예제 코드는 컨트롤러에서 좀 더 복잡한 로직을 실행하기 위해 `$event` 객체를 컨트롤러 메소드로 전달하는 코드입니다.
+
     </td>
 
     <td>
 
 
+      <!--
       ### Bind to the `click` event
 
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="event-binding"></code-example>
@@ -420,6 +447,25 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       For more information, see the [Event binding](guide/template-syntax#event-binding)
       section of the [Template Syntax](guide/template-syntax) page.
+      -->
+      ### `click` 이벤트 바인딩
+      
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="event-binding"></code-example>
+
+      Angular에는 AngularJS에서처럼 이벤트를 기반으로 동작하는 디렉티브가 존재하지 않습니다.
+      이 방식 대신 Angular는 템플릿 뷰에서 컴포넌트 방향으로 연결하는 **이벤트 바인딩**을 제공합니다.
+
+      이벤트를 바인딩하려면 엘리먼트에서 발생하는 이벤트를 소괄호(`(`, `)`)로 감싸고 등호(`=`)를 붙인 다음 템플릿 실행문을 작성하면 됩니다.
+      이렇게 작성하면 Angular가 템플릿 실행문을 이벤트의 이벤트 핸들러로 등록합니다.
+      그리고 이후에 이벤트가 발생하면 이벤트 핸들러가 템플릿 실행문을 실행합니다.
+
+      첫번째 예제 코드는 사용자가 버튼을 클릭했을 때 컴포넌트에 있는 `toggleImage()` 메소드를 실행하는 코드입니다.
+
+      그리고 두번째 예제 코드는 컴포넌트에서 좀 더 복잡한 로직을 실행하기 위해 `$event` 객체를 컴포넌트 메소드로 전달하는 코드입니다.
+
+      DOM에서 발생하는 이벤트 목록은 https://developer.mozilla.org/en-US/docs/Web/Events 를 참고하세요.
+
+      그리고 이벤트 바인딩에 대해 자세하게 알아보려면 [템플릿 문법](guide/template-syntax) 문서의 [이벤트 바인딩](guide/template-syntax#event-binding) 섹션을 참고하세요.
 
     </td>
 
@@ -437,14 +483,19 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       </code-example>
 
 
+      <!--
       In AngularJS, the `ng-controller` directive attaches a controller to the view.
       Using the `ng-controller` (or defining the controller as part of the routing) ties the
       view to the controller code associated with that view.
+      -->
+      `ng-controller`는 뷰에 컨트롤러를 연결할 때 사용합니다.
+      특정 뷰 영역에서 동작하는 컨트롤러를 연결하거나 라우팅하는 용도로 사용할 수 있습니다.
     </td>
 
     <td>
 
 
+      <!--
       ### Component decorator
 
       <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="component"></code-example>
@@ -454,6 +505,15 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       Rather, the component specifies its associated template as part of the component class decorator.
 
       For more information, see [Architecture Overview](guide/architecture#components).
+      -->
+      ### 컴포넌트 데코레이터
+
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="component"></code-example>
+
+      Angular에서는 템플릿에서 컨트롤러를 지정하지 않습니다.
+      Angular는 컴포넌트의 구성요소로 템플릿을 지정하며 컴포넌트 클래스에는 컴포넌트 데코레이터를 붙입니다.
+
+      더 자세한 내용은 [아키텍처 개요](guide/architecture#components) 문서를 참고하세요.
 
     </td>
 
@@ -465,16 +525,30 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
 
       ### ng-hide
+
+      <!--
       In AngularJS, the `ng-hide` directive shows or hides the associated HTML element based on
       an expression. For more information, see [ng-show](guide/ajs-quick-reference#ng-show).
+      -->
+      `ng-hide`는 표현식의 결과에 따라 HTML 엘리먼트를 화면에 표시하거나 화면에서 감추는 용도로 사용합니다.
+      자세한 내용은 [ng-show](guide/ajs-quick-reference#ng-show) 섹션을 참고하세요.
+
     </td>
 
     <td>
 
 
+      <!--
       ### Bind to the `hidden` property
       In Angular, you use property binding; there is no built-in *hide* directive.
       For more information, see [ng-show](guide/ajs-quick-reference#ng-show).
+      -->
+      ### `hidden` 프로퍼티 바인딩
+
+      Angular는 *hide* 디렉티브를 제공하지 않습니다. 이 방식 대신 프로퍼티 바인딩을 사용합니다.
+
+      자세한 내용은 [ng-show](guide/ajs-quick-reference#ng-show) 섹션을 참고하세요.
+
     </td>
 
   </tr>
@@ -491,23 +565,32 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       </code-example>
 
 
+      <!--
       The `ng-href` directive allows AngularJS to preprocess the `href` property so that it
       can replace the binding expression with the appropriate URL before the browser
       fetches from that URL.
 
       In AngularJS, the `ng-href` is often used to activate a route as part of navigation.
+      -->
+      `ng-href`는 브라우저가 링크를 처리하기 전에 AngularJS가 먼저 받아서 `href` 프로퍼티를 조작할 때 사용하는 디렉티브입니다.
+
+      이 디렉티브는 네비게이션에 사용되기도 합니다.
 
       <code-example hideCopy format="">
         &lt;a ng-href="#{{ moviesHash }}">Movies&lt;/a>
       </code-example>
 
 
+      <!--
       Routing is handled differently in Angular.
+      -->
+      Angular에서는 라우팅이 다른 방식으로 동작합니다.
     </td>
 
     <td>
 
 
+      <!--
       ### Bind to the `href` property
 
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="href"></code-example>
@@ -526,6 +609,22 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       For more information on routing, see the [RouterLink binding](guide/router#router-link)
       section of the [Routing & Navigation](guide/router) page.
+      -->
+      ### `href` 프로퍼티 바인딩
+
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="href"></code-example>
+
+      Angular는 *href* 디렉티브를 제공하지 않습니다. 이 방식 대신 프로퍼티 바인딩을 사용합니다.
+      엘리먼트의 `href` 프로퍼티를 대괄호(`[`, `]`)로 감싸고 등호 오른쪽에 템플릿 표현식을 작성하면 됩니다.
+
+      더 자세한 내용은 [템플릿 문법](guide/template-syntax) 문서의 [프로퍼티 바인딩](guide/template-syntax#property-binding) 섹션을 참고하세요.
+
+      Angular에서 라우팅을 한다면 `href`는 더이상 사용하지 않습니다.
+      이 프로퍼티 대신 아래 예제처럼 `routerLink`를 활용합니다.
+
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="router-link"></code-example>
+
+      더 자세한 내용은 [라우팅 & 네비게이션](guide/router) 문서의 [RouterLink 바인딩](guide/router#router-link) 섹션을 참고하세요.
 
     </td>
 
@@ -543,10 +642,15 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       </code-example>
 
 
+      <!--
       In AngularJS, the `ng-if` directive removes or recreates a portion of the DOM,
       based on an expression. If the expression is false, the element is removed from the DOM.
 
       In this example, the `<table>` element is removed from the DOM unless the `movies` array has a length greater than zero.
+      -->
+      `ng-if`는 표현식의 결과에 따라 HTML 조각을 DOM에 추가하거나 DOM에서 제거하는 디렉티브입니다.
+
+      예제 코드에서 `movies` 배열의 길이가 0이면 `<table>` 엘리먼트가 DOM에서 제거됩니다.
     </td>
 
     <td>
@@ -557,6 +661,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="ngIf"></code-example>
 
 
+      <!--
       The `*ngIf` directive in Angular works the same as the `ng-if` directive in AngularJS. It removes
       or recreates a portion of the DOM based on an expression.
 
@@ -564,6 +669,11 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       The (*) before `ngIf` is required in this example.
       For more information, see [Structural Directives](guide/structural-directives).
+      -->
+      `*ngIf`는 AngularJS의 `ng-if`와 동일한 동작을 하는 디렉티브입니다.
+      이 디렉티브도 표현식의 결과에 따라 HTML 조각을 DOM에 추가하거나 DOM에서 제거합니다.
+
+      예제 코드에서 `movies` 배열의 길이가 0이면 `<table>` 엘리먼트가 DOM에서 제거됩니다.
     </td>
 
   </tr>
@@ -580,8 +690,12 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       </code-example>
 
 
+      <!--
       In AngularJS, the `ng-model` directive binds a form control to a property in the controller associated with the template.
       This provides **two-way binding**, whereby any change made to the value in the view is synchronized with the model, and any change to the model is synchronized with the value in the view.
+      -->
+      `ng-model`은 폼 컨트롤과 템플릿의 컨트롤러 프로퍼티를 바인딩하는 디렉티브입니다.
+      이 때 연결되는 방식은 **양방향 바인딩** 입니다. 컨트롤러에서 모델값이 변경되면 화면에서 이 값이 반영되며, 화면에서 값이 변경되어도 컨트롤러 모델에 이 값이 반영됩니다.
     </td>
 
     <td>
@@ -592,12 +706,18 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="ngModel"></code-example>
 
 
+      <!--
       In Angular, **two-way binding** is denoted by `[()]`, descriptively referred to as a "banana in a box". This syntax is a shortcut for defining both property binding (from the component to the view)
       and event binding (from the view to the component), thereby providing two-way binding.
 
       For more information on two-way binding with `ngModel`, see the [NgModel&mdash;Two-way binding to
       form elements with `[(ngModel)]`](../guide/template-syntax.html#ngModel)
       section of the [Template Syntax](guide/template-syntax) page.
+      -->
+      Angular에서는 `[()]`라는 문법으로 **양방향 바인딩**을 사용할 수 있습니다. 괄호 순서를 헷갈리지 않게 "상자에 든 바나나" 라고도 합니다.
+      그런데 이 문법은 사실 프로퍼티 바인딩(컴포넌트에서 화면으로)과 이벤트 바인딩(화면에서 컴포넌트로)을 함께 엮어 양방향 바인딩시키는 문법을 간략화한 것입니다.
+
+      `ngModel`을 사용해서 양방향 바인딩을 활용하는 방법에 대해 자세하게 알아보려면 [템플릿 문법](guide/template-syntax) 문서의 [`[(NgModel)]: 양방향 바인딩](guide/template-syntax#ngModel) 섹션을 참고하세요.
     </td>
 
   </tr>
@@ -614,10 +734,15 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       </code-example>
 
 
+      <!--
       In AngularJS, the `ng-repeat` directive repeats the associated DOM element
       for each item in the specified collection.
 
       In this example, the table row (`<tr>`) element repeats for each movie object in the collection of movies.
+      -->
+      `ng-repeat`은 DOM 엘리먼트를 반복할 때 사용하는 디렉티브입니다.
+
+      예제 코드에서 테이블의 행(`<tr>`)은 `movies` 항목마다 반복됩니다.
     </td>
 
     <td>
@@ -628,6 +753,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="ngFor"></code-example>
 
 
+      <!--
       The `*ngFor` directive in Angular is similar to the `ng-repeat` directive in AngularJS. It repeats
       the associated DOM element for each item in the specified collection.
       More accurately, it turns the defined element (`<tr>` in this example) and its contents into a template and
@@ -639,6 +765,13 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       the list preposition is `of`, not `in`.
 
       For more information, see [Structural Directives](guide/structural-directives).
+      -->
+      `*ngFor`는 `ng-repeat`과 비슷하게 DOM 엘리먼트를 반복할 때 사용합니다.
+      좀 더 정확하게 설명하면, `*ngFor` 디렉티브는 디렉티브가 지정된 엘리먼트(예제에서는 `<tr>`)와 목록에 있는 개별 항목을 조합해서 새로운 템플릿 인스턴스를 생성합니다.
+
+      이 디렉티브를 사용할 때는 문법에 주의해야 합니다: `ngFor` 앞에는 별표(`*`)가 꼭 필요하며 입력 변수를 선언하기 위해 `let` 키워드가 필요합니다. 그리고 목록을 지정할 때는 `in`이 아니라 `of`를 사용해야 합니다.
+
+      더 자세한 내용은 [구조 디렉티브](guide/structural-directives) 문서를 참고하세요.
     </td>
 
   </tr>
@@ -657,15 +790,21 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       </code-example>
 
 
+      <!--
       In AngularJS, the `ng-show` directive shows or hides the associated DOM element, based on
       an expression.
 
       In this example, the `<div>` element is shown if the `favoriteHero` variable is truthy.
+      -->
+      `ng-show`는 표현식의 결과에 따라 DOM 엘리먼트를 화면에 표시하거나 감추는 엘리먼트입니다.
+
+      위 예제 코드에서 `<div>` 엘리먼트는 `favoriteHero` 변수의 값이 참으로 평가될 때 화면에 표시됩니다.
     </td>
 
     <td>
 
 
+      <!--
       ### Bind to the `hidden` property
 
       <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="hidden"></code-example>
@@ -681,6 +820,20 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       For more information on property binding, see the [Property binding](guide/template-syntax#property-binding)
       section of the [Template Syntax](guide/template-syntax) page.
+      -->
+      ### `hidden` 프로퍼티 바인딩
+
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="hidden"></code-example>
+
+      Angular는 *show* 디렉티브를 제공하지 않습니다. 이 방식 대신 프로퍼티 바인딩을 사용합니다.
+      
+      엘리먼트를 조건에 따라 화면에 표시하려면 HTML `hidden` 프로퍼티를 대괄호(`[`, `]`)로 감싸고 등호(`=`)로 템플릿 표현식을 연결하면 됩니다.
+
+      위 예제 코드에서 `<div>` 엘리먼트는 `favoriteHero` 변수의 값이 거짓으로 평가되면 화면에 표시되지 않습니다.
+
+      프로퍼티 바인딩에 대해 더 자세하게 알아보려면 [템플릿 문법](guide/template-syntax) 문서의 [프로퍼티 바인딩](guide/template-syntax#property-binding) 섹션을 참고하세요.
+
+
     </td>
 
   </tr>
@@ -697,14 +850,18 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       </code-example>
 
 
+      <!--
       The `ng-src` directive allows AngularJS to preprocess the `src` property so that it
       can replace the binding expression with the appropriate URL before the browser
       fetches from that URL.
+      -->
+      `ng-src`는 `src` 프로퍼티를 브라우저가 처리하기 전에 AngulaJS 바인딩 표현식으로 교체할 때 사용하는 디렉티브입니다.
     </td>
 
     <td>
 
 
+      <!--
       ### Bind to the `src` property
 
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="src"></code-example>
@@ -715,6 +872,15 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       For more information on property binding, see the [Property binding](guide/template-syntax#property-binding)
       section of the [Template Syntax](guide/template-syntax) page.
+      -->
+      ### `src` 프로퍼티 바인딩
+
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="src"></code-example>
+
+      Angular는 `src` 디렉티브를 제공하지 않습니다. 이 방식 대신 프로퍼티 바인딩을 사용합니다.
+      Angular에서는 `src` 프로퍼티를 대괄호(`[`, `]`)로 감싸고 템플릿 표현식을 연결하면 됩니다.
+
+      프로퍼티 바인딩에 대해 더 자세하게 알아보려면 [템플릿 문법](guide/template-syntax) 문서의 [프로퍼티 바인딩](guide/template-syntax#property-binding) 섹션을 참고하세요.
     </td>
 
   </tr>
@@ -731,12 +897,16 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       </code-example>
 
 
+      <!--
       In AngularJS, the `ng-style` directive sets a CSS style on an HTML element
       based on an expression. That expression is often a key-value control object with each
       key of the object defined as a CSS property, and each value defined as an expression
       that evaluates to a value appropriate for the style.
 
       In the example, the `color` style is set to the current value of the `colorPreference` variable.
+      -->
+      `ng-style`은 HTML 엘리먼트에 적용되는 CSS 스타일을 표현식으로 설정할 때 사용하는 디렉티브입니다.
+      이 표현식은 보통 적용하려는 CSS 프로퍼티를 키(key)로 두고 프로퍼티의 값을 지정하는 객체 형식을 반환합니다.
     </td>
 
     <td>
@@ -747,6 +917,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="ngStyle"></code-example>
 
 
+      <!--
       In Angular, the `ngStyle` directive works similarly. It sets a CSS style on an HTML element based on an expression.
 
       In the first example, the `color` style is set to the current value of the `colorPreference` variable.
@@ -758,6 +929,17 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       For more information on the `ngStyle` directive, see [NgStyle](guide/template-syntax#ngStyle)
       section of the [Template Syntax](guide/template-syntax) page.
+      -->
+      Angular에서는 `ngStyle`가 비슷한 동작을 합니다.
+      이 디렉티브도 템플릿 표현식의 결과에 따라 HTML 엘리먼트에 CSS 스타일을 적용합니다.
+
+      첫번째 예제에서 `color` 스타일은 `colorPreference` 값으로 지정됩니다.
+
+      그리고 Angular는 두번째 예제 코드처럼 사용하는 **스타일 바인딩** 문법도 제공합니다.
+
+      스타일 바인딩에 대해 더 자세하게 알아보려면 [템플릿 문법](guide/template-syntax) 문서의 [스타일 바인딩](guide/template-syntax#style-binding) 섹션을 참고하세요.
+
+      그리고 `ngStyle` 디렉티브에 대해 알아보려면 [템플릿 문법](guide/template-syntax) 문서의 [NgStyle](guide/template-syntax#ngStyle) 섹션을 참고하세요.
     </td>
 
   </tr>
@@ -785,6 +967,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       </code-example>
 
 
+      <!--
       In AngularJS, the `ng-switch` directive swaps the contents of
       an element by selecting one of the templates based on the current value of an expression.
 
@@ -792,6 +975,13 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       If `favoriteHero` is set, it checks the movie hero by calling a controller method.
       If that method returns `true`, the template displays "Excellent choice!".
       If that methods returns `false`, the template displays "No movie, sorry!".
+      -->
+      `ng-switch` 는 표현식의 결과에 따라 템플릿 중 하나를 화면에 표시하는 디렉티브입니다.
+
+      위 예제 코드에서 `favoriteHero` 값이 할당되지 않으면 화면에는 "Please enter ..."가 표시됩니다.
+      그리고 `favoriteHero` 값이 할당되고 나면 컨트롤러 메소드가 반환하는 값에 따라 표시될 템플릿이 결정됩니다.
+      메소드가 `true`를 반환하면 화면에는 "Excellent choice!"가 표시됩니다.
+      그리고 메소드가 `false`를 반환하면 화면에는 "No movie, sorry!"가 표시됩니다.
     </td>
 
     <td>
@@ -802,6 +992,7 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
       <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="ngSwitch"></code-example>
 
 
+      <!--
       In Angular, the `ngSwitch` directive works similarly.
       It displays an element whose `*ngSwitchCase` matches the current `ngSwitch` expression value.
 
@@ -815,6 +1006,18 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
       For more information, see [The NgSwitch directives](guide/template-syntax#ngSwitch)
       section of the [Template Syntax](guide/template-syntax) page.
+      -->
+      Angular의 `ngSwitch` 디렉티브도 비슷하게 동작합니다.
+      이 디렉티브는 `ngSwitch`과 바인딩된 표현식의 결과에 맞는 `*ngSwitchCase`를 찾아서 화면에 표시합니다.
+
+      위 예제 코드에서 `favoriteHero` 값이 할당되지 않으면 `*ngSwitchDefault`에 해당하는 "Please enter ..."가 화면에 표시됩니다.
+      그리고 `favoriteHero` 값이 할당되고 나면 컴포넌트 메소드가 반환하는 값에 따라 표시될 템플릿이 결정됩니다.
+      메소드가 `true`를 반환하면 `*ngSwitchCase="true"`에 해당하는 "Excellent choice!"가 표시됩니다.
+      그리고 메소드가 `false`를 반환하면 `*ngSwitchCase="false"`에 해당하는 "No movie, sorry!"가 표시됩니다.
+
+      `ngSwitchCase`와 `ngSwitchDefault` 앞에는 별표(`*`)가 붙는다는 것에 주의하세요.
+
+      더 자세한 내용을 알아보려면 [템플릿 문법](guide/template-syntax) 문서의 [NgSwitch 디렉티브](guide/template-syntax#ngSwitch) 섹션을 참고하세요.
     </td>
 
   </tr>
