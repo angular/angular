@@ -53,7 +53,7 @@
     "ngx-flamegraph": "0.0.7",
     "rxjs": "~6.5.3",
     "semver-dsl": "^1.0.1",
-    "tslib": "^1.10.0",
+    "tslib": "^2.0.0",
     "uuid": "^8.0.0",
     "webtreemap": "^2.0.1",
     "zone.js": "~0.10.2"
