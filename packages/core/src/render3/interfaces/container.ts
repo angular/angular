@@ -32,7 +32,7 @@ export const TYPE = 1;
  * detected. (see: `LView[DECLARATION_COMPONENT_VIEW])`.
  *
  * This flag, once set, is never unset for the `LContainer`. This means that when unset we can skip
- * a lot of work in `refreshDynamicEmbeddedViews`. But when set we still need to verify
+ * a lot of work in `refreshEmbeddedViews`. But when set we still need to verify
  * that the `MOVED_VIEWS` are transplanted and on-push.
  */
 export const HAS_TRANSPLANTED_VIEWS = 2;
