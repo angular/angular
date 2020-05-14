@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
+
 import {absoluteFrom} from '../../file_system';
 import {getSourceFileOrNull, resolveModuleName} from '../../util/src/typescript';
 
@@ -18,8 +19,8 @@ import {getSourceFileOrNull, resolveModuleName} from '../../util/src/typescript'
 export class ModuleResolver {
   constructor(
       private program: ts.Program, private compilerOptions: ts.CompilerOptions,
-      private host: ts.CompilerHost, private moduleResolutionCache: ts.ModuleResolutionCache|null) {
-  }
+      private host: ts.ModuleResolutionHost&Pick<ts.CompilerHost, 'resolveModuleNames'>,
+      private moduleResolutionCache: ts.ModuleResolutionCache|null) {}
 
   resolveModule(moduleName: string, containingFile: string): ts.SourceFile|null {
     const resolved = resolveModuleName(

@@ -9,26 +9,12 @@ import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath, basename} from '../../file_system';
 import {ImportRewriter} from '../../imports';
-import {PerFileShimGenerator} from '../api';
+import {FactoryInfo, FactoryTracker, PerFileShimGenerator} from '../api';
 
 import {generatedModuleName} from './util';
 
 const TS_DTS_SUFFIX = /(\.d)?\.ts$/;
 const STRIP_NG_FACTORY = /(.*)NgFactory$/;
-
-/**
- * Maintains a mapping of which symbols in a .ngfactory file have been used.
- *
- * .ngfactory files are generated with one symbol per defined class in the source file, regardless
- * of whether the classes in the source files are NgModules (because that isn't known at the time
- * the factory files are generated). A `FactoryTracker` supports removing factory symbols which
- * didn't end up being NgModules, by tracking the ones which are.
- */
-export interface FactoryTracker {
-  readonly sourceInfo: Map<string, FactoryInfo>;
-
-  track(sf: ts.SourceFile, factorySymbolName: string): void;
-}
 
 /**
  * Generates ts.SourceFiles which contain variable declarations for NgFactories for every exported
@@ -116,11 +102,6 @@ export class FactoryGenerator implements PerFileShimGenerator, FactoryTracker {
 function isExported(decl: ts.Declaration): boolean {
   return decl.modifiers !== undefined &&
       decl.modifiers.some(mod => mod.kind == ts.SyntaxKind.ExportKeyword);
-}
-
-export interface FactoryInfo {
-  sourceFilePath: string;
-  moduleSymbolNames: Set<string>;
 }
 
 export function generatedFactoryTransform(

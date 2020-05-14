@@ -11,7 +11,7 @@
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath, dirname, join} from '../../file_system';
-import {TopLevelShimGenerator} from '../../shims';
+import {TopLevelShimGenerator} from '../../shims/api';
 import {relativePathBetween} from '../../util/src/path';
 
 export class FlatIndexGenerator implements TopLevelShimGenerator {

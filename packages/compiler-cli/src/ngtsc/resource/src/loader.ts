@@ -9,26 +9,21 @@
 import * as ts from 'typescript';
 
 import {ResourceLoader} from '../../annotations';
-import {ExtendedTsCompilerHost} from '../../core/api';
+import {NgCompilerAdapter} from '../../core/api';
 import {AbsoluteFsPath, join, PathSegment} from '../../file_system';
-import {getRootDirs} from '../../util/src/typescript';
 
 const CSS_PREPROCESSOR_EXT = /(\.scss|\.sass|\.less|\.styl)$/;
 
 /**
- * `ResourceLoader` which delegates to a `CompilerHost` resource loading method.
+ * `ResourceLoader` which delegates to an `NgCompilerAdapter`'s resource loading methods.
  */
-export class HostResourceLoader implements ResourceLoader {
+export class AdapterResourceLoader implements ResourceLoader {
   private cache = new Map<string, string>();
   private fetching = new Map<string, Promise<void>>();
 
-  private rootDirs: AbsoluteFsPath[];
+  canPreload = !!this.adapter.readResource;
 
-  canPreload = !!this.host.readResource;
-
-  constructor(private host: ExtendedTsCompilerHost, private options: ts.CompilerOptions) {
-    this.rootDirs = getRootDirs(host, options);
-  }
+  constructor(private adapter: NgCompilerAdapter, private options: ts.CompilerOptions) {}
 
   /**
    * Resolve the url of a resource relative to the file that contains the reference to it.
@@ -44,8 +39,8 @@ export class HostResourceLoader implements ResourceLoader {
    */
   resolve(url: string, fromFile: string): string {
     let resolvedUrl: string|null = null;
-    if (this.host.resourceNameToFileName) {
-      resolvedUrl = this.host.resourceNameToFileName(url, fromFile);
+    if (this.adapter.resourceNameToFileName) {
+      resolvedUrl = this.adapter.resourceNameToFileName(url, fromFile);
     } else {
       resolvedUrl = this.fallbackResolve(url, fromFile);
     }
@@ -67,7 +62,7 @@ export class HostResourceLoader implements ResourceLoader {
    * @throws An Error if pre-loading is not available.
    */
   preload(resolvedUrl: string): Promise<void>|undefined {
-    if (!this.host.readResource) {
+    if (!this.adapter.readResource) {
       throw new Error(
           'HostResourceLoader: the CompilerHost provided does not support pre-loading resources.');
     }
@@ -77,7 +72,7 @@ export class HostResourceLoader implements ResourceLoader {
       return this.fetching.get(resolvedUrl);
     }
 
-    const result = this.host.readResource(resolvedUrl);
+    const result = this.adapter.readResource(resolvedUrl);
     if (typeof result === 'string') {
       this.cache.set(resolvedUrl, result);
       return undefined;
@@ -104,8 +99,8 @@ export class HostResourceLoader implements ResourceLoader {
       return this.cache.get(resolvedUrl)!;
     }
 
-    const result = this.host.readResource ? this.host.readResource(resolvedUrl) :
-                                            this.host.readFile(resolvedUrl);
+    const result = this.adapter.readResource ? this.adapter.readResource(resolvedUrl) :
+                                               this.adapter.readFile(resolvedUrl);
     if (typeof result !== 'string') {
       throw new Error(`HostResourceLoader: loader(${resolvedUrl}) returned a Promise`);
     }
@@ -134,7 +129,7 @@ export class HostResourceLoader implements ResourceLoader {
     }
 
     for (const candidate of candidateLocations) {
-      if (this.host.fileExists(candidate)) {
+      if (this.adapter.fileExists(candidate)) {
         return candidate;
       } else if (CSS_PREPROCESSOR_EXT.test(candidate)) {
         /**
@@ -143,7 +138,7 @@ export class HostResourceLoader implements ResourceLoader {
          * again.
          */
         const cssFallbackUrl = candidate.replace(CSS_PREPROCESSOR_EXT, '.css');
-        if (this.host.fileExists(cssFallbackUrl)) {
+        if (this.adapter.fileExists(cssFallbackUrl)) {
           return cssFallbackUrl;
         }
       }
@@ -154,7 +149,7 @@ export class HostResourceLoader implements ResourceLoader {
   private getRootedCandidateLocations(url: string): AbsoluteFsPath[] {
     // The path already starts with '/', so add a '.' to make it relative.
     const segment: PathSegment = ('.' + url) as PathSegment;
-    return this.rootDirs.map(rootDir => join(rootDir, segment));
+    return this.adapter.rootDirs.map(rootDir => join(rootDir, segment));
   }
 
   /**
@@ -172,7 +167,7 @@ export class HostResourceLoader implements ResourceLoader {
         ts.ResolvedModuleWithFailedLookupLocations&{failedLookupLocations: ReadonlyArray<string>};
 
     // clang-format off
-    const failedLookup = ts.resolveModuleName(url + '.$ngresource$', fromFile, this.options, this.host) as ResolvedModuleWithFailedLookupLocations;
+    const failedLookup = ts.resolveModuleName(url + '.$ngresource$', fromFile, this.options, this.adapter) as ResolvedModuleWithFailedLookupLocations;
     // clang-format on
     if (failedLookup.failedLookupLocations === undefined) {
       throw new Error(
