@@ -34,6 +34,15 @@ export function assertNodeOfPossibleTypes(tNode: TNode|null, ...types: TNodeType
       `Should be one of ${types.map(typeName).join(', ')} but got ${typeName(tNode.type)}`);
 }
 
+export function assertNodeNotOfTypes(tNode: TNode, types: TNodeType[], message?: string): void {
+  assertDefined(tNode, 'should be called with a TNode');
+  const found = types.some(type => tNode.type === type);
+  assertEqual(
+      found, false,
+      message ??
+          `Should not be one of ${types.map(typeName).join(', ')} but got ${typeName(tNode.type)}`);
+}
+
 function typeName(type: TNodeType): string {
   if (type == TNodeType.Projection) return 'Projection';
   if (type == TNodeType.Container) return 'Container';
