@@ -1,9 +1,13 @@
+<!--
 # AngularJS to Angular concepts: Quick reference
+-->
+# AngularJS와 Angular 컨셉 비교
 
 
 {@a top}
 
 
+<!--
 _Angular_ is the name for the Angular of today and tomorrow.
 _AngularJS_ is the name for all v1.x versions of Angular.
 
@@ -12,10 +16,32 @@ by mapping AngularJS syntax to the equivalent Angular syntax.
 
 
 **See the Angular syntax in this <live-example name="ajs-quick-reference"></live-example>**.
+-->
+<div class="alert is-helpful">
 
+Angular 프로젝트의 정식 명칭은 _Angular_ 입니다.
+
+_AngularJS_ 는 Angular 1.x 버전을 의미하는 이름입니다.
+
+</div>
+
+이 문서는 AngularJS 앱을 Angular로 바꿀 때 각 프레임워크의 구성요소가 어떤 관계인지 설명합니다.
+
+
+**Angular 문법을 테스트해보려면 <live-example name="ajs-quick-reference"></live-example>를 활용해 보세요.**
+
+
+<!--
 ## Template basics
+-->
+## 템플릿
+
+<!--
 Templates are the user-facing part of an Angular application and are written in HTML.
 The following table lists some of the key AngularJS template features with their equivalent Angular template syntax.
+-->
+템플릿은 Angular 애플리케이션에서 사용자가 눈으로 확인할 수 있는 부분이며 보통 HTML로 작성합니다.
+아래 표를 보면서 AngularJS 템플릿에 활용하는 기능과 Angular 템플릿에 활용하는 기능의 관계에 대해 확인해 보세요.
 
 
 <table width="100%">
@@ -45,6 +71,7 @@ The following table lists some of the key AngularJS template features with their
     <td>
 
 
+      <!--
       ### Bindings/interpolation
 
       <code-example hideCopy>
@@ -59,11 +86,24 @@ The following table lists some of the key AngularJS template features with their
       When using the `controller as` syntax,
       the binding is prefixed with the controller alias (`vm` or `$ctrl`) because you
       have to be specific about the source of the binding.
+      -->
+      ### 바인딩/문자열 바인딩
+
+      <code-example hideCopy>
+        Your favorite hero is: {{vm.favoriteHero}}
+      </code-example>
+
+      AngularJS에서 이중 중괄호 안에 표현식을 작성하는 문법은 단방향 바인딩을 의미합니다.
+      그리고 이 바인딩은 컨트롤러 프로퍼티 값을 템플릿 엘리먼트로 연결하는 방향입니다.
+
+      바인딩하는 대상을 정확하게 지정하려면 `vm`이나 `$ctrl`과 같이 컨트롤러를 명시해야 합니다.
+
     </td>
 
     <td>
 
 
+      <!--
       ### Bindings/interpolation
 
       <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="interpolation"></code-example>
@@ -76,6 +116,16 @@ The following table lists some of the key AngularJS template features with their
 
       For more information, see the [Interpolation](guide/template-syntax#interpolation)
       section of the [Template Syntax](guide/template-syntax) page.
+      -->
+      ### 바인딩/문자열 바인딩
+
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.html" region="interpolation"></code-example>
+
+      Angular에서도 이중 중괄호 안에 템플릿 표현식을 사용하는 문법은 단방향 바인딩을 의미합니다.
+      그리고 이 바인딩은 컴포넌트 프로퍼티 값을 템플릿 엘리먼트로 연결하는 방향입니다.
+      바인딩할 수 있는 컨텍스트는 언제나 컴포넌트와 관련되어 있으며 컴포넌트 자체를 따로 지정할 필요는 없습니다.
+
+      자세한 내용은 [템플릿 문법](guide/template-syntax) 문서의 [문자열 바인딩](guide/template-syntax#interpolation) 섹션을 참고하세요.
     </td>
 
   </tr>
@@ -84,7 +134,7 @@ The following table lists some of the key AngularJS template features with their
 
     <td>
 
-
+      <!--
       ### Filters
 
       <code-example hideCopy>
@@ -95,11 +145,23 @@ The following table lists some of the key AngularJS template features with their
       To filter output in AngularJS templates, use the pipe character (|) and one or more filters.
 
       This example filters the `title` property to uppercase.
+      -->
+      ### 필터(Filters)
+
+      <code-example hideCopy>
+        &lt;td>{{movie.title | uppercase}}&lt;/td>
+      </code-example>
+
+      AngularJS 템플릿에 필터를 사용하려면 파이프 문자(|)를 사용하면 됩니다.
+
+      위 예제에 사용한 필터는 `title` 문자열을 대문자로 변환하는 필터입니다.
+
     </td>
 
     <td>
 
 
+      <!--
       ### Pipes
 
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="uppercase"></code-example>
@@ -110,6 +172,16 @@ The following table lists some of the key AngularJS template features with their
       built-in pipes in Angular.
 
       For more information, see [Filters/pipes](guide/ajs-quick-reference#filters-pipes) below.
+      -->
+      ### 파이프(Pipes)
+
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="uppercase"></code-example>
+
+      Angular에도 파이프 문자(|)를 사용해서 문자열을 변환하는 문법이 있지만 이 문법은 필터가 아니라 **파이프**라고 합니다.
+      AngularJS에서 제공하던 기본 필터는 Angular에도 있지만, 모두 있는 것은 아닙니다.
+
+      자세한 내용은 [Filters/pipes](guide/ajs-quick-reference#filters-pipes) 문서를 참고하세요.
+
     </td>
 
   </tr>
@@ -119,7 +191,10 @@ The following table lists some of the key AngularJS template features with their
     <td>
 
 
+      <!--
       ### Local variables
+      -->
+      ### 지역 변수(Local variables)
 
       <code-example hideCopy format="">
         &lt;tr ng-repeat="movie in vm.movies">
@@ -128,21 +203,33 @@ The following table lists some of the key AngularJS template features with their
       </code-example>
 
 
+      <!--
       Here, `movie` is a user-defined local variable.
+      -->
+      위 코드에서 `movie`는 개발자가 정의한 지역 변수입니다.
     </td>
 
     <td>
 
 
+      <!--
       ### Input variables
+      -->
+      ### 입력 변수(Input variables)
 
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="local"></code-example>
 
 
+      <!--
       Angular has true template input variables that are explicitly defined using the `let` keyword.
 
       For more information, see the [ngFor micro-syntax](guide/template-syntax#microsyntax)
       section of the [Template Syntax](guide/template-syntax) page.
+      -->
+      Angular 템플릿에서는 `let` 키워드를 사용해서 입력 변수를 정의할 수 있습니다.
+
+      더 자세한 내용은 [템플릿 문법](guide/template-syntax) 문서의 [ngFor 세부 문법](guide/template-syntax#microsyntax) 섹션을 참고하세요.
+
     </td>
 
   </tr>
@@ -150,11 +237,19 @@ The following table lists some of the key AngularJS template features with their
 </table>
 
 
+<!--
 ## Template directives
+-->
+## 템플릿 디렉티브
+
+<!--
 AngularJS provides more than seventy built-in directives for templates.
 Many of them aren't needed in Angular because of its more capable and expressive binding system.
 The following are some of the key AngularJS built-in directives and their equivalents in Angular.
-
+-->
+ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이상 제공합니다.
+하지만 이 중 대부분은 크게 유용하지 않기 때문에 Angular로 오면서 많이 제거되었습니다.
+아래 표를 보면서 AngularJS와 Angular 양쪽에 존재하는 디렉티브에 대해 확인해 보세요.
 
 <table width="100%">
 
@@ -190,17 +285,26 @@ The following are some of the key AngularJS built-in directives and their equiva
       </code-example>
 
 
+      <!--
       The application startup process is called **bootstrapping**.
 
       Although you can bootstrap an AngularJS app in code,
       many applications bootstrap declaratively with the `ng-app` directive,
       giving it the name of the application's module (`movieHunter`).
+      -->
+      애플리케이션이 시작되는 과정을 **부트스트랩(bootstrapping)**이라고 합니다.
+
+      AngularJS 앱은 JavaScript 코드에서 부트스트랩할 수도 있지만 템플릿에 `ng-app` 디렉티브를 사용해서 부트스트랩하는 방법이 더 일반적입니다.
+      이 디렉티브에는 애플리케이션 모듈의 이름(`movieHunter`)를 지정합니다.
     </td>
 
     <td>
 
 
+      <!--
       ### Bootstrapping
+      -->
+      ### 부트스트랩(Bootstrapping)
 
       <code-example hideCopy path="ajs-quick-reference/src/main.ts" header="main.ts"></code-example>
       <br>
@@ -208,10 +312,15 @@ The following are some of the key AngularJS built-in directives and their equiva
       <code-example hideCopy path="ajs-quick-reference/src/app/app.module.1.ts" header="app.module.ts"></code-example>
 
 
+      <!--
       Angular doesn't have a bootstrap directive.
       To launch the app in code, explicitly bootstrap the application's root module (`AppModule`)
       in `main.ts`
       and the application's root component (`AppComponent`) in `app.module.ts`.
+      -->
+      Angular에는 부트스트랩을 하는 디렉티브가 존재하지 않습니다.
+      애플리케이션은 `main.ts` 파일에서 애플리케이션 최상위 모듈(`AppModule`)을 직접 지정하는 방식으로 시작합니다.
+      그리고 `app.module.ts` 파일에 존재하는 최상위 컴포넌트(`AppComponent`)가 애플리케이션 최상위 컴포넌트가 됩니다.
     </td>
 
   </tr>
