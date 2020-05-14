@@ -43,9 +43,9 @@
       @include mdc-floating-label-core-styles($query: $mat-theme-styles-query);
       @include mdc-notched-outline-core-styles($query: $mat-theme-styles-query);
       @include mdc-line-ripple-core-styles($query: $mat-theme-styles-query);
-      @include _mat-form-field-subscript-color();
-      @include _mat-form-field-focus-overlay-color();
-      @include _mat-form-field-native-select-color($config);
+      @include _mat-mdc-form-field-subscript-color();
+      @include _mat-mdc-form-field-focus-overlay-color();
+      @include _mat-mdc-form-field-native-select-color($config);
 
       .mat-mdc-form-field.mat-accent {
         @include _mdc-text-field-color-styles(secondary);
@@ -65,7 +65,7 @@
     @include mdc-floating-label-core-styles($query: $mat-typography-styles-query);
     @include mdc-notched-outline-core-styles($query: $mat-typography-styles-query);
     @include mdc-line-ripple-core-styles($query: $mat-typography-styles-query);
-    @include _mat-form-field-subscript-typography($config);
+    @include _mat-mdc-form-field-subscript-typography($config);
 
     .mat-mdc-form-field {
       @include mat-typography-level-to-styles($config, input);
@@ -75,7 +75,7 @@
 
 @mixin mat-mdc-form-field-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
-  @include _mat-form-field-density($density-scale);
+  @include _mat-mdc-form-field-density($density-scale);
 }
 
 @mixin mat-mdc-form-field-theme($theme-or-color-config) {
