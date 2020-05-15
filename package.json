@@ -44,7 +44,6 @@
     "@angular/material": "~9.2.0",
     "@angular/platform-browser": "github:angular/platform-browser-builds#77ea10310c138f2fedf5fd625b567d8097ef8bf8",
     "@angular/platform-browser-dynamic": "github:angular/platform-browser-dynamic-builds#d4a24f6679d86655a650ded46d78b4e290529f94",
-    "@swimlane/ngx-charts": "^14.0.0",
     "memo-decorator": "^2.0.1",
     "ngx-flamegraph": "0.0.7",
     "rxjs": "~6.5.3",

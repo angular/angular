@@ -10,7 +10,8 @@ import { RawData } from 'ngx-flamegraph/lib/utils';
 import { ProfilerFrame } from 'protocol';
 
 export interface GraphNode {
-  name: string;
+  directive: string;
+  method: string;
   value: number;
 }
 
@@ -60,13 +61,15 @@ export class FlamegraphVisualizerComponent {
       const changeDetection = node.changeDetection;
       if (changeDetection !== undefined) {
         graphData.push({
-          name: `${node.name} changeDetection`,
+          directive: node.name,
+          method: 'changes',
           value: parseFloat(changeDetection.toFixed(2)),
         });
       }
       Object.keys(node.lifecycle).forEach((key) => {
         graphData.push({
-          name: `${node.name} ${key}`,
+          directive: node.name,
+          method: key,
           value: +node.lifecycle[key].toFixed(2),
         });
       });
