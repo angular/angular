@@ -23,7 +23,7 @@ The above command completes the following actions:
 2. Enables service worker build support in the CLI.
 3. Imports and registers the service worker in the app module.
 4. Updates the `index.html` file:
-    * Includes a link to add the `manifest.json` file.
+    * Includes a link to add the `manifest.webmanifest` file.
     * Adds meta tags for `theme-color`.
 5. Installs icon files to support the installed Progressive Web App (PWA).
 6. Creates the service worker configuration file called [`ngsw-config.json`](/guide/service-worker-config), which specifies the caching behaviors and other settings.
