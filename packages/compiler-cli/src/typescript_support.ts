@@ -12,7 +12,7 @@ import {compareVersions} from './diagnostics/typescript_version';
  * Minimum supported TypeScript version
  * ∀ supported typescript version v, v >= MIN_TS_VERSION
  */
-const MIN_TS_VERSION = '3.8.3';
+const MIN_TS_VERSION = '3.9.2';
 
 /**
  * Supremum of supported TypeScript versions
