@@ -39,7 +39,7 @@ export type NgDevConfig<T = {}> = CommonConfig&T;
  * The filename expected for creating the ng-dev config, without the file
  * extension to allow either a typescript or javascript file to be used.
  */
-const CONFIG_FILE_NAME = '.ng-dev-config';
+const CONFIG_FILE_PATH = '.ng-dev/config';
 
 /** The configuration for ng-dev. */
 let CONFIG: {}|null = null;
@@ -52,7 +52,7 @@ export function getConfig(): NgDevConfig {
   // If the global config is not defined, load it from the file system.
   if (CONFIG === null) {
     // The full path to the configuration file.
-    const configPath = join(getRepoBaseDir(), CONFIG_FILE_NAME);
+    const configPath = join(getRepoBaseDir(), CONFIG_FILE_PATH);
     // Set the global config object.
     CONFIG = readConfigFile(configPath);
   }
