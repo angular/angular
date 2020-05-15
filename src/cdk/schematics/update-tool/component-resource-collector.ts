@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {dirname, resolve} from 'path';
+import {dirname} from 'path';
 import * as ts from 'typescript';
-import {FileSystem} from './file-system';
+import {FileSystem, WorkspacePath} from './file-system';
 import {getAngularDecorators} from './utils/decorators';
 import {unwrapExpression} from './utils/functions';
 import {
@@ -28,7 +28,7 @@ export interface ResolvedResource {
   /** Whether the given resource is inline or not. */
   inline: boolean;
   /** Path to the file that contains this resource. */
-  filePath: string;
+  filePath: WorkspacePath;
   /**
    * Gets the character and line of a given position index in the resource.
    * If the resource is declared inline within a TypeScript source file, the line and
@@ -81,7 +81,8 @@ export class ComponentResourceCollector {
     }
 
     const sourceFile = node.getSourceFile();
-    const sourceFileName = sourceFile.fileName;
+    const filePath = this._fileSystem.resolve(sourceFile.fileName);
+    const sourceFileDirPath = dirname(sourceFile.fileName);
 
     // Walk through all component metadata properties and determine the referenced
     // HTML templates (either external or inline)
@@ -91,7 +92,6 @@ export class ComponentResourceCollector {
       }
 
       const propertyName = getPropertyNameText(property.name);
-      const filePath = resolve(sourceFileName);
 
       if (propertyName === 'styles' && ts.isArrayLiteralExpression(property.initializer)) {
         property.initializer.elements.forEach(el => {
@@ -100,7 +100,7 @@ export class ComponentResourceCollector {
             // not part of the template content.
             const templateStartIdx = el.getStart() + 1;
             this.resolvedStylesheets.push({
-              filePath: filePath,
+              filePath,
               container: node,
               content: el.text,
               inline: true,
@@ -119,7 +119,7 @@ export class ComponentResourceCollector {
         // not part of the template content.
         const templateStartIdx = property.initializer.getStart() + 1;
         this.resolvedTemplates.push({
-          filePath: filePath,
+          filePath,
           container: node,
           content: property.initializer.text,
           inline: true,
@@ -132,7 +132,7 @@ export class ComponentResourceCollector {
       if (propertyName === 'styleUrls' && ts.isArrayLiteralExpression(property.initializer)) {
         property.initializer.elements.forEach(el => {
           if (ts.isStringLiteralLike(el)) {
-            const stylesheetPath = resolve(dirname(sourceFileName), el.text);
+            const stylesheetPath = this._fileSystem.resolve(sourceFileDirPath, el.text);
 
             // In case the stylesheet does not exist in the file system, skip it gracefully.
             if (!this._fileSystem.exists(stylesheetPath)) {
@@ -145,7 +145,8 @@ export class ComponentResourceCollector {
       }
 
       if (propertyName === 'templateUrl' && ts.isStringLiteralLike(property.initializer)) {
-        const templatePath = resolve(dirname(sourceFileName), property.initializer.text);
+        const templateUrl = property.initializer.text;
+        const templatePath = this._fileSystem.resolve(sourceFileDirPath, templateUrl);
 
         // In case the template does not exist in the file system, skip this
         // external template.
@@ -169,7 +170,7 @@ export class ComponentResourceCollector {
   }
 
   /** Resolves an external stylesheet by reading its content and computing line mappings. */
-  resolveExternalStylesheet(filePath: string, container: ts.ClassDeclaration|null):
+  resolveExternalStylesheet(filePath: WorkspacePath, container: ts.ClassDeclaration|null):
       ResolvedResource {
     const fileContent = this._fileSystem.read(filePath);
     const lineStartsMap = computeLineStartsMap(fileContent);

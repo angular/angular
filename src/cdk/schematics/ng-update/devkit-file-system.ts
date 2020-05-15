@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {normalize} from '@angular-devkit/core';
+import {normalize, Path, relative} from '@angular-devkit/core';
 import {Tree, UpdateRecorder} from '@angular-devkit/schematics';
-import {relative} from 'path';
+import * as path from 'path';
 import {FileSystem} from '../update-tool/file-system';
 
 /**
@@ -16,22 +16,35 @@ import {FileSystem} from '../update-tool/file-system';
  * system is commonly used by `ng update` migrations that run as part of the
  * Angular CLI.
  */
-export class DevkitFileSystem implements FileSystem {
+export class DevkitFileSystem extends FileSystem<Path> {
   private _updateRecorderCache = new Map<string, UpdateRecorder>();
+  private _workspaceFsPath: Path;
 
-  constructor(private _tree: Tree, private _workspaceFsPath: string) {}
-
-  resolve(fsFilePath: string) {
-    return normalize(relative(this._workspaceFsPath, fsFilePath)) as string;
+  constructor(private _tree: Tree, workspaceFsPath: string) {
+    super();
+    this._workspaceFsPath = normalize(workspaceFsPath);
   }
 
-  edit(fsFilePath: string) {
-    const treeFilePath = this.resolve(fsFilePath);
-    if (this._updateRecorderCache.has(treeFilePath)) {
-      return this._updateRecorderCache.get(treeFilePath)!;
+  resolve(...segments: string[]): Path {
+    // Note: We use `posix.resolve` as the devkit paths are using posix separators.
+    const resolvedPath = normalize(path.posix.resolve(...segments.map(normalize)));
+    // If the resolved path points to the workspace root, then this is an absolute disk
+    // path and we need to compute a devkit tree relative path.
+    if (resolvedPath.startsWith(this._workspaceFsPath)) {
+      return relative(this._workspaceFsPath, resolvedPath);
     }
-    const recorder = this._tree.beginUpdate(treeFilePath);
-    this._updateRecorderCache.set(treeFilePath, recorder);
+    // Otherwise we know that the path is absolute (due to the resolve), and that it
+    // refers to an absolute devkit tree path (like `/angular.json`). We keep those
+    // unmodified as they are already resolved workspace paths.
+    return resolvedPath;
+  }
+
+  edit(filePath: Path) {
+    if (this._updateRecorderCache.has(filePath)) {
+      return this._updateRecorderCache.get(filePath)!;
+    }
+    const recorder = this._tree.beginUpdate(filePath);
+    this._updateRecorderCache.set(filePath, recorder);
     return recorder;
   }
 
@@ -40,24 +53,24 @@ export class DevkitFileSystem implements FileSystem {
     this._updateRecorderCache.clear();
   }
 
-  exists(fsFilePath: string) {
-    return this._tree.exists(this.resolve(fsFilePath));
+  exists(filePath: Path) {
+    return this._tree.exists(filePath);
   }
 
-  overwrite(fsFilePath: string, content: string) {
-    this._tree.overwrite(this.resolve(fsFilePath), content);
+  overwrite(filePath: Path, content: string) {
+    this._tree.overwrite(filePath, content);
   }
 
-  create(fsFilePath: string, content: string) {
-    this._tree.create(this.resolve(fsFilePath), content);
+  create(filePath: Path, content: string) {
+    this._tree.create(filePath, content);
   }
 
-  delete(fsFilePath: string) {
-    this._tree.delete(this.resolve(fsFilePath));
+  delete(filePath: Path) {
+    this._tree.delete(filePath);
   }
 
-  read(fsFilePath: string) {
-    const buffer = this._tree.read(this.resolve(fsFilePath));
+  read(filePath: Path) {
+    const buffer = this._tree.read(filePath);
     return buffer !== null ? buffer.toString() : null;
   }
 }

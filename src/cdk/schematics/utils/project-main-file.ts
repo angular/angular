@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Path} from '@angular-devkit/core';
 import {WorkspaceProject} from '@angular-devkit/core/src/experimental/workspace';
 import {SchematicsException} from '@angular-devkit/schematics';
 import {getProjectTargetOptions} from './project-targets';
 
 /** Looks for the main TypeScript file in the given project and returns its path. */
-export function getProjectMainFile(project: WorkspaceProject): string {
+export function getProjectMainFile(project: WorkspaceProject): Path {
   const buildOptions = getProjectTargetOptions(project, 'build');
 
   if (!buildOptions.main) {

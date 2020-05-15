@@ -15,6 +15,7 @@ import {join} from 'path';
 import {UpdateProject} from '../update-tool';
 import {MigrationCtor} from '../update-tool/migration';
 import {TargetVersion} from '../update-tool/target-version';
+import {WorkspacePath} from '../update-tool/file-system';
 import {getTargetTsconfigPath, getWorkspaceConfigGracefully} from '../utils/project-tsconfig-paths';
 
 import {DevkitFileSystem} from './devkit-file-system';
@@ -72,7 +73,7 @@ export function createMigrationSchematicRule(
     // Keep track of all project source files which have been checked/migrated. This is
     // necessary because multiple TypeScript projects can contain the same source file and
     // we don't want to check these again, as this would result in duplicated failure messages.
-    const analyzedFiles = new Set<string>();
+    const analyzedFiles = new Set<WorkspacePath>();
     // The CLI uses the working directory as the base directory for the virtual file system tree.
     const workspaceFsPath = process.cwd();
     const fileSystem = new DevkitFileSystem(tree, workspaceFsPath);

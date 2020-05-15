@@ -288,7 +288,7 @@ export class ImportManager {
    */
   recordChanges() {
     this._importCache.forEach((fileImports, sourceFile) => {
-      const recorder = this._fileSystem.edit(sourceFile.fileName);
+      const recorder = this._fileSystem.edit(this._fileSystem.resolve(sourceFile.fileName));
       const lastUnmodifiedImport =
           fileImports.reverse().find(i => i.state === ImportState.UNMODIFIED);
       const importStartIndex =

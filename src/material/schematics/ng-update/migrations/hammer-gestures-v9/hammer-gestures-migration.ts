@@ -9,6 +9,7 @@
 import {
   join as devkitJoin,
   normalize as devkitNormalize,
+  Path,
   Path as DevkitPath
 } from '@angular-devkit/core';
 import {SchematicContext, Tree} from '@angular-devkit/schematics';
@@ -28,7 +29,7 @@ import {
 } from '@angular/cdk/schematics';
 import {InsertChange} from '@schematics/angular/utility/change';
 import {readFileSync} from 'fs';
-import {dirname, join, relative} from 'path';
+import {dirname, relative, resolve} from 'path';
 import * as ts from 'typescript';
 
 import {findHammerScriptImportElements} from './find-hammer-script-tags';
@@ -306,7 +307,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
   private _removeHammerModuleReferences() {
     this._hammerModuleReferences.forEach(({node, isImport, importData}) => {
       const sourceFile = node.getSourceFile();
-      const recorder = this.fileSystem.edit(sourceFile.fileName);
+      const recorder = this.fileSystem.edit(this.fileSystem.resolve(sourceFile.fileName));
 
       // Only remove the import for the HammerModule if the module has been accessed
       // through a non-namespaced identifier access.
@@ -495,7 +496,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
       {node, importData, isImport}: IdentifierReference, symbolName: string,
       moduleSpecifier: string) {
     const sourceFile = node.getSourceFile();
-    const recorder = this.fileSystem.edit(sourceFile.fileName);
+    const recorder = this.fileSystem.edit(this.fileSystem.resolve(sourceFile.fileName));
 
     // List of all identifiers referring to the gesture config in the current file. This
     // allows us to add an import for the copied gesture configuration without generating a
@@ -542,7 +543,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
    */
   private _removeGestureConfigReference({node, importData, isImport}: IdentifierReference) {
     const sourceFile = node.getSourceFile();
-    const recorder = this.fileSystem.edit(sourceFile.fileName);
+    const recorder = this.fileSystem.edit(this.fileSystem.resolve(sourceFile.fileName));
     // Only remove the import for the gesture config if the gesture config has
     // been accessed through a non-namespaced identifier access.
     if (!isNamespacedIdentifierAccess(node)) {
@@ -640,7 +641,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
   /** Sets up the Hammer gesture config in the root module if needed. */
   private _setupNewGestureConfigInRootModule(gestureConfigPath: string) {
     const {workspaceFsPath, project} = this.context;
-    const mainFilePath = join(workspaceFsPath, getProjectMainFile(project));
+    const mainFilePath = getProjectMainFile(project);
     const rootModuleSymbol = this._getRootModuleSymbol(mainFilePath);
 
     if (rootModuleSymbol === null) {
@@ -662,7 +663,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
       return;
     }
 
-    const recorder = this.fileSystem.edit(sourceFile.fileName);
+    const recorder = this.fileSystem.edit(this.fileSystem.resolve(sourceFile.fileName));
     const providersField = getMetadataField(metadata[0], 'providers')[0];
     const providerIdentifiers =
         providersField ? findMatchingChildNodes(providersField, ts.isIdentifier) : null;
@@ -697,8 +698,9 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
    * Gets the TypeScript symbol of the root module by looking for the module
    * bootstrap expression in the specified source file.
    */
-  private _getRootModuleSymbol(mainFilePath: string): ts.Symbol|null {
-    const mainFile = this.program.getSourceFile(mainFilePath);
+  private _getRootModuleSymbol(mainFilePath: Path): ts.Symbol|null {
+    const mainFile = this.program.getSourceFile(resolve(
+        this.context.workspaceFsPath, mainFilePath));
     if (!mainFile) {
       return null;
     }
@@ -718,7 +720,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
   /** Sets up the "HammerModule" in the root module of the current project. */
   private _setupHammerModuleInRootModule() {
     const {workspaceFsPath, project} = this.context;
-    const mainFilePath = join(workspaceFsPath, getProjectMainFile(project));
+    const mainFilePath = getProjectMainFile(project);
     const rootModuleSymbol = this._getRootModuleSymbol(mainFilePath);
 
     if (rootModuleSymbol === null) {
@@ -741,7 +743,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     const importsField = getMetadataField(metadata[0], 'imports')[0];
     const importIdentifiers =
         importsField ? findMatchingChildNodes(importsField, ts.isIdentifier) : null;
-    const recorder = this.fileSystem.edit(sourceFile.fileName);
+    const recorder = this.fileSystem.edit(this.fileSystem.resolve(sourceFile.fileName));
     const hammerModuleExpr = this._importManager.addImportToSourceFile(
         sourceFile, HAMMER_MODULE_NAME, HAMMER_MODULE_IMPORT);
 
@@ -806,11 +808,11 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     return this._nodeFailures.map(({node, message}) => {
       const sourceFile = node.getSourceFile();
       const offset = node.getStart();
-      const position = ts.getLineAndCharacterOfPosition(node.getSourceFile(), node.getStart());
+      const position = ts.getLineAndCharacterOfPosition(sourceFile, node.getStart());
       return {
         position: this._importManager.correctNodePosition(node, offset, position),
         message: message,
-        filePath: sourceFile.fileName,
+        filePath: this.fileSystem.resolve(sourceFile.fileName),
       };
     });
   }

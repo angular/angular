@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+import {WorkspacePath} from '../../update-tool/file-system';
 import {ResolvedResource} from '../../update-tool/component-resource-collector';
 import {Migration} from '../../update-tool/migration';
 import {AttributeSelectorUpgradeData} from '../data/attribute-selectors';
@@ -63,11 +64,13 @@ export class AttributeSelectorsMigration extends Migration<UpgradeData> {
     this.data.forEach(selector => {
       findAllSubstringIndices(literalText, selector.replace)
           .map(offset => literal.getStart() + offset)
-          .forEach(start => this._replaceSelector(filePath, start, selector));
+          .forEach(start => this._replaceSelector(
+              this.fileSystem.resolve(filePath), start, selector));
     });
   }
 
-  private _replaceSelector(filePath: string, start: number, data: AttributeSelectorUpgradeData) {
+  private _replaceSelector(filePath: WorkspacePath, start: number,
+                           data: AttributeSelectorUpgradeData) {
     this.fileSystem.edit(filePath)
       .remove(start, data.replace.length)
       .insertRight(start, data.replaceWith);

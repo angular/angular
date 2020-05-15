@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+import {WorkspacePath} from '../../update-tool/file-system';
 import {ResolvedResource} from '../../update-tool/component-resource-collector';
 import {Migration} from '../../update-tool/migration';
 import {CssSelectorUpgradeData} from '../data/css-selectors';
@@ -69,11 +70,11 @@ export class CssSelectorsMigration extends Migration<UpgradeData> {
 
       findAllSubstringIndices(textContent, data.replace)
           .map(offset => node.getStart() + offset)
-          .forEach(start => this._replaceSelector(filePath, start, data));
+          .forEach(start => this._replaceSelector(this.fileSystem.resolve(filePath), start, data));
     });
   }
 
-  private _replaceSelector(filePath: string, start: number, data: CssSelectorUpgradeData) {
+  private _replaceSelector(filePath: WorkspacePath, start: number, data: CssSelectorUpgradeData) {
     this.fileSystem.edit(filePath)
       .remove(start, data.replace.length)
       .insertRight(start, data.replaceWith);

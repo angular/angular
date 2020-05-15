@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getSystemPath, normalize} from '@angular-devkit/core';
+import {getSystemPath, normalize, Path} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import * as virtualFs from '@angular-devkit/core/src/virtual-fs/host';
 import {HostTree, Tree} from '@angular-devkit/schematics';
@@ -224,13 +224,13 @@ export function defineJasmineTestCases(versionName: string, collectionFile: stri
  */
 export function _patchTypeScriptDefaultLib(tree: Tree) {
   const _originalRead = tree.read;
-  tree.read = function(filePath: string) {
+  tree.read = function(filePath: Path) {
     // In case a file within the TypeScript package is requested, we read the file from
     // the real file system. This is necessary because within unit tests, the "typeScript"
     // package from within the Bazel "@npm" repository  is used. The virtual tree can't be
     // used because the "@npm" repository directory is not part of the virtual file system.
     if (filePath.match(/node_modules[/\\]typescript/)) {
-      return readFileSync(filePath);
+      return readFileSync(getSystemPath(filePath));
     } else {
       return _originalRead.apply(this, arguments);
     }

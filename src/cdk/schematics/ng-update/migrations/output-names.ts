@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {WorkspacePath} from '../../update-tool/file-system';
 import {ResolvedResource} from '../../update-tool/component-resource-collector';
 import {Migration} from '../../update-tool/migration';
 
@@ -49,7 +50,8 @@ export class OutputNamesMigration extends Migration<UpgradeData> {
     });
   }
 
-  private _replaceOutputName(filePath: string, start: number, width: number, newName: string) {
+  private _replaceOutputName(filePath: WorkspacePath, start: number, width: number,
+                             newName: string) {
     this.fileSystem.edit(filePath)
       .remove(start, width)
       .insertRight(start, newName);

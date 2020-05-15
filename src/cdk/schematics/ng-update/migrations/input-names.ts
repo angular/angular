@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {WorkspacePath} from '../../update-tool/file-system';
 import {findInputsOnElementWithAttr, findInputsOnElementWithTag} from '../html-parsing/angular';
 import {ResolvedResource} from '../../update-tool/component-resource-collector';
 import {Migration} from '../../update-tool/migration';
@@ -63,7 +64,8 @@ export class InputNamesMigration extends Migration<UpgradeData> {
     });
   }
 
-  private _replaceInputName(filePath: string, start: number, width: number, newName: string) {
+  private _replaceInputName(filePath: WorkspacePath, start: number, width: number,
+                            newName: string) {
     this.fileSystem.edit(filePath)
       .remove(start, width)
       .insertRight(start, newName);

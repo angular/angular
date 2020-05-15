@@ -39,7 +39,7 @@ export class PropertyNamesMigration extends Migration<UpgradeData> {
       }
 
       if (!data.whitelist || data.whitelist.classes.includes(typeName)) {
-        this.fileSystem.edit(node.getSourceFile().fileName)
+        this.fileSystem.edit(this.fileSystem.resolve(node.getSourceFile().fileName))
           .remove(node.name.getStart(), node.name.getWidth())
           .insertRight(node.name.getStart(), data.replaceWith);
       }

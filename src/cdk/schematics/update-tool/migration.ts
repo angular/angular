@@ -8,13 +8,13 @@
 
 import * as ts from 'typescript';
 import {ResolvedResource} from './component-resource-collector';
-import {FileSystem} from './file-system';
+import {FileSystem, WorkspacePath} from './file-system';
 import {UpdateLogger} from './logger';
 import {TargetVersion} from './target-version';
 import {LineAndCharacter} from './utils/line-mappings';
 
 export interface MigrationFailure {
-  filePath: string;
+  filePath: WorkspacePath;
   message: string;
   position?: LineAndCharacter;
 }
@@ -79,7 +79,7 @@ export abstract class Migration<Data, Context = never> {
   protected createFailureAtNode(node: ts.Node, message: string) {
     const sourceFile = node.getSourceFile();
     this.failures.push({
-      filePath: sourceFile.fileName,
+      filePath: this.fileSystem.resolve(sourceFile.fileName),
       position: ts.getLineAndCharacterOfPosition(sourceFile, node.getStart()),
       message: message,
     });

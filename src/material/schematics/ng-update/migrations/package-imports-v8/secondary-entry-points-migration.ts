@@ -131,7 +131,9 @@ export class SecondaryEntryPointsMigration extends Migration<null> {
       return;
     }
 
-    const recorder = this.fileSystem.edit(declaration.moduleSpecifier.getSourceFile().fileName);
+    const filePath = this.fileSystem.resolve(
+        declaration.moduleSpecifier.getSourceFile().fileName);
+    const recorder = this.fileSystem.edit(filePath);
 
     // Perform the replacement that switches the primary entry-point import to
     // the individual secondary entry-point imports.

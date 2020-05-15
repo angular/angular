@@ -10,7 +10,7 @@ import {dirname} from 'path';
 import * as ts from 'typescript';
 
 import {ComponentResourceCollector} from './component-resource-collector';
-import {FileSystem} from './file-system';
+import {FileSystem, WorkspacePath} from './file-system';
 import {defaultLogger, UpdateLogger} from './logger';
 import {Migration, MigrationCtor, MigrationFailure} from './migration';
 import {TargetVersion} from './target-version';
@@ -29,7 +29,7 @@ export class UpdateProject<Context> {
   constructor(private _context: Context,
               private _program: ts.Program,
               private _fileSystem: FileSystem,
-              private _analyzedFiles: Set<string> = new Set(),
+              private _analyzedFiles: Set<WorkspacePath> = new Set(),
               private _logger: UpdateLogger = defaultLogger) {}
 
   /**
@@ -78,12 +78,11 @@ export class UpdateProject<Context> {
     // migration. Note that this can only happen after source files have been
     // visited because we find templates through the TypeScript source files.
     resourceCollector.resolvedTemplates.forEach(template => {
-      const resolvedPath = this._fileSystem.resolve(template.filePath);
       // Do not visit the template if it has been checked before. Inline
       // templates cannot be referenced multiple times.
-      if (template.inline || !this._analyzedFiles.has(resolvedPath)) {
+      if (template.inline || !this._analyzedFiles.has(template.filePath)) {
         migrations.forEach(m => m.visitTemplate(template));
-        this._analyzedFiles.add(resolvedPath);
+        this._analyzedFiles.add(template.filePath);
       }
     });
 
@@ -91,12 +90,11 @@ export class UpdateProject<Context> {
     // migration. Note that this can only happen after source files have been
     // visited because we find stylesheets through the TypeScript source files.
     resourceCollector.resolvedStylesheets.forEach(stylesheet => {
-      const resolvedPath = this._fileSystem.resolve(stylesheet.filePath);
       // Do not visit the stylesheet if it has been checked before. Inline
       // stylesheets cannot be referenced multiple times.
-      if (stylesheet.inline || !this._analyzedFiles.has(resolvedPath)) {
+      if (stylesheet.inline || !this._analyzedFiles.has(stylesheet.filePath)) {
         migrations.forEach(r => r.visitStylesheet(stylesheet));
-        this._analyzedFiles.add(resolvedPath);
+        this._analyzedFiles.add(stylesheet.filePath);
       }
     });
 
@@ -105,8 +103,8 @@ export class UpdateProject<Context> {
     // being specified. We visit them in each migration unless they have been already
     // discovered before as actual component resource.
     additionalStylesheetPaths.forEach(filePath => {
-      const stylesheet = resourceCollector.resolveExternalStylesheet(filePath, null);
       const resolvedPath = this._fileSystem.resolve(filePath);
+      const stylesheet = resourceCollector.resolveExternalStylesheet(resolvedPath, null);
       // Do not visit stylesheets which have been referenced from a component.
       if (!this._analyzedFiles.has(resolvedPath)) {
         migrations.forEach(r => r.visitStylesheet(stylesheet));
@@ -124,9 +122,8 @@ export class UpdateProject<Context> {
     // In case there are failures, print these to the CLI logger as warnings.
     if (failures.length) {
       failures.forEach(({filePath, message, position}) => {
-        const posixFilePath = this._fileSystem.resolve(filePath).replace(/\\/g, '/');
         const lineAndCharacter = position ? `@${position.line + 1}:${position.character + 1}` : '';
-        this._logger.warn(`${posixFilePath}${lineAndCharacter} - ${message}`);
+        this._logger.warn(`${filePath}${lineAndCharacter} - ${message}`);
       });
     }
 
@@ -162,7 +159,7 @@ export class UpdateProject<Context> {
     const host = ts.createCompilerHost(parsed.options, true);
     // Patch the host to read files through the specified file system.
     host.readFile = fileName => {
-      const fileContent = fs.read(fileName);
+      const fileContent = fs.read(fs.resolve(fileName));
       // Strip BOM as otherwise TSC methods (e.g. "getWidth") will return an offset which
       // which breaks the CLI UpdateRecorder. https://github.com/angular/angular/pull/30719
       return fileContent !== null ? fileContent.replace(/^\uFEFF/, '') : undefined;

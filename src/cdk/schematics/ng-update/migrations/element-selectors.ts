@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 import {ResolvedResource} from '../../update-tool/component-resource-collector';
+import {WorkspacePath} from '../../update-tool/file-system';
 import {Migration} from '../../update-tool/migration';
 import {ElementSelectorUpgradeData} from '../data/element-selectors';
 import {findAllSubstringIndices} from '../typescript/literal';
@@ -57,11 +58,13 @@ export class ElementSelectorsMigration extends Migration<UpgradeData> {
     this.data.forEach(selector => {
       findAllSubstringIndices(textContent, selector.replace)
           .map(offset => node.getStart() + offset)
-          .forEach(start => this._replaceSelector(filePath, start, selector));
+          .forEach(start => this._replaceSelector(
+              this.fileSystem.resolve(filePath), start, selector));
     });
   }
 
-  private _replaceSelector(filePath: string, start: number, data: ElementSelectorUpgradeData) {
+  private _replaceSelector(filePath: WorkspacePath, start: number,
+                           data: ElementSelectorUpgradeData) {
     this.fileSystem.edit(filePath)
       .remove(start, data.replace.length)
       .insertRight(start, data.replaceWith);

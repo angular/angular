@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Migration, ResolvedResource, TargetVersion} from '@angular/cdk/schematics';
+import {Migration, ResolvedResource, TargetVersion, WorkspacePath} from '@angular/cdk/schematics';
 import * as ts from 'typescript';
 import {
   convertSpeedFactorToDuration,
@@ -80,7 +80,7 @@ export class RippleSpeedFactorMigration extends Migration<null> {
 
     const targetTypeName = targetTypeNode.symbol.getName();
     const propertyName = leftExpression.name.getText();
-    const filePath = leftExpression.getSourceFile().fileName;
+    const filePath = this.fileSystem.resolve(leftExpression.getSourceFile().fileName);
 
     if (targetTypeName === 'MatRipple' && propertyName === 'speedFactor') {
       if (ts.isNumericLiteral(expression.right)) {
@@ -137,7 +137,7 @@ export class RippleSpeedFactorMigration extends Migration<null> {
     // config from a separate file).
 
     const {initializer, name} = assignment;
-    const filePath = assignment.getSourceFile().fileName;
+    const filePath = this.fileSystem.resolve(assignment.getSourceFile().fileName);
 
     if (ts.isNumericLiteral(initializer)) {
       const numericValue = parseFloat(initializer.text);
@@ -165,7 +165,7 @@ export class RippleSpeedFactorMigration extends Migration<null> {
     }
   }
 
-  private _replaceText(filePath: string, start: number, width: number, newText: string) {
+  private _replaceText(filePath: WorkspacePath, start: number, width: number, newText: string) {
     const recorder = this.fileSystem.edit(filePath);
     recorder.remove(start, width);
     recorder.insertRight(start, newText);
