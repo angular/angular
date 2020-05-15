@@ -16,9 +16,11 @@
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
-    "bazel:format": "yarn -s ng-dev format deprecation-warning bazel:format",
-    "bazel:lint": "yarn -s ng-dev format deprecation-warning bazel:lint",
-    "bazel:lint-fix": "yarn -s ng-dev format deprecation-warning bazel:lint-fix",
+    "/": "",
+    "// 1": "Many developer of our checks/scripts/tools have moved to our ng-dev tool",
+    "// 2": "Find the usage you are looking for with:",
+    "// 3": "yarn ng-dev --help",
+    "/ ": "",
     "preinstall": "node tools/yarn/check-yarn.js",
     "postinstall": "node scripts/webdriver-manager-update.js && node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js",
     "check-env": "gulp check-env",
