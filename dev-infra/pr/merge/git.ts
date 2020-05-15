@@ -8,7 +8,7 @@
 
 import * as Octokit from '@octokit/rest';
 import {spawnSync, SpawnSyncOptions, SpawnSyncReturns} from 'child_process';
-import {MergeConfig} from './config';
+import {MergeConfigWithRemote} from './config';
 
 /** Error for failed Github API requests. */
 export class GithubApiRequestError extends Error {
@@ -28,14 +28,15 @@ export class GitCommandError extends Error {
 }
 
 export class GitClient {
-  /** Short-hand for accessing the repository configuration. */
-  repoConfig = this._config.repository;
-  /** Octokit request parameters object for targeting the configured repository. */
-  repoParams = {owner: this.repoConfig.user, repo: this.repoConfig.name};
+  /** Short-hand for accessing the remote configuration. */
+  remoteConfig = this._config.remote;
+  /** Octokit request parameters object for targeting the configured remote. */
+  remoteParams = {owner: this.remoteConfig.owner, repo: this.remoteConfig.name};
   /** URL that resolves to the configured repository. */
-  repoGitUrl = this.repoConfig.useSsh ?
-      `git@github.com:${this.repoConfig.user}/${this.repoConfig.name}.git` :
-      `https://${this._githubToken}@github.com/${this.repoConfig.user}/${this.repoConfig.name}.git`;
+  repoGitUrl = this.remoteConfig.useSsh ?
+      `git@github.com:${this.remoteConfig.owner}/${this.remoteConfig.name}.git` :
+      `https://${this._githubToken}@github.com/${this.remoteConfig.owner}/${
+          this.remoteConfig.name}.git`;
   /** Instance of the authenticated Github octokit API. */
   api: Octokit;
 
@@ -43,7 +44,8 @@ export class GitClient {
   private _tokenRegex = new RegExp(this._githubToken, 'g');
 
   constructor(
-      private _projectRoot: string, private _githubToken: string, private _config: MergeConfig) {
+      private _projectRoot: string, private _githubToken: string,
+      private _config: MergeConfigWithRemote) {
     this.api = new Octokit({auth: _githubToken});
     this.api.hook.error('request', error => {
       // Wrap API errors in a known error class. This allows us to

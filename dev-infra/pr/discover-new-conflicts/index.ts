@@ -9,10 +9,10 @@
 import {Bar} from 'cli-progress';
 import {types as graphQLTypes} from 'typed-graphqlify';
 
-import {getConfig, NgDevConfig} from '../utils/config';
-import {getCurrentBranch, hasLocalChanges} from '../utils/git';
-import {getPendingPrs} from '../utils/github';
-import {exec} from '../utils/shelljs';
+import {getConfig, NgDevConfig} from '../../utils/config';
+import {getCurrentBranch, hasLocalChanges} from '../../utils/git';
+import {getPendingPrs} from '../../utils/github';
+import {exec} from '../../utils/shelljs';
 
 
 /* GraphQL schema for the response body for each pending PR. */
@@ -67,8 +67,6 @@ export async function discoverNewConflictsForPr(
   const progressBar = new Bar({format: `[{bar}] ETA: {eta}s | {value}/{total}`});
   /* PRs which were found to be conflicting. */
   const conflicts: Array<PullRequest> = [];
-  /* String version of the updatedAfter value, for logging. */
-  const updatedAfterString = new Date(updatedAfter).toLocaleDateString();
 
   console.info(`Requesting pending PRs from Github`);
   /** List of PRs from github currently known as mergable. */
