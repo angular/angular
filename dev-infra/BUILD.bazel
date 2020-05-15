@@ -37,10 +37,30 @@ genrule(
 
 pkg_npm(
     name = "npm_package",
+    srcs = [
+        "BUILD.bazel",
+        "//dev-infra/benchmark:files",
+    ],
+    substitutions = {
+        # angular/angular should not consume it's own packages, so we use
+        # substitutions to replace these in the deployed version of dev-infra.
+        "//dev-infra/": "@npm_dev_infra//",
+        "//packages/benchpress": "@npm//@angular/benchpress",
+        "//packages/bazel/src:esm5.bzl": "@npm_angular_bazel//src:esm5.bzl",
+        "//packages/zone.js/dist:zone.js": "@npm//:node_modules/zone.js/dist/zone.js",
+        "//packages/core": "@npm//@angular/core",
+        "//packages/platform-browser": "@npm//@angular/platform-browser",
+
+        # This substitution is particularly verbose because we need to make sure
+        # that only things available via Angular Bazel are imported from
+        # tools/defaults.bzl.
+        "load\(\"//tools:defaults.bzl\", \"ng_module\"\)": "load(\"@npm_angular_bazel//:index.bzl\", \"ng_module\")",
+    },
     visibility = ["//visibility:public"],
     deps = [
         ":cli",
         ":package-json",
+        "//dev-infra/benchmark/driver-utilities",
         "//dev-infra/commit-message",
         "//dev-infra/ts-circular-dependencies",
     ],
