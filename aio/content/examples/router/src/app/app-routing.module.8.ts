@@ -6,13 +6,11 @@ import { Routes, RouterModule } from '@angular/router'; // CLI imports router
 const routes: Routes = [
   { path: 'first-component', component: FirstComponent },
   { path: 'second-component', component: SecondComponent },
-  // #enddocregion routes
+  // #enddocregion routes, routes-with-wildcard
   { path: '',   redirectTo: '/first-component', pathMatch: 'full' }, // redirect to `first-component`
-  { path: '**', component: FirstComponent },
-  // #enddocregion redirect
+  // #docregion routes-with-wildcard
   { path: '**', component: PageNotFoundComponent },  // Wildcard route for a 404 page
   // #docregion routes
-  // #docregion redirect
 ];
 // #enddocregion routes, routes-with-wildcard, redirect
 
