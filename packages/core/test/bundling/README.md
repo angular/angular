@@ -8,7 +8,8 @@ When doing renaming it is often necessary to update the gold files, to do so use
 ```
 yarn bazel run --config=ivy //packages/core/test/bundling/injection:symbol_test.accept
 yarn bazel run --config=ivy //packages/core/test/bundling/cyclic_import:symbol_test.accept
-yarn bazel run --config=ivy //packages/core/test/bundling/forms:symbol_test.accept
+yarn bazel run --config=ivy //packages/core/test/bundling/forms_reactive:symbol_test.accept
+yarn bazel run --config=ivy //packages/core/test/bundling/forms_template_driven:symbol_test.accept
 yarn bazel run --config=ivy //packages/core/test/bundling/hello_world:symbol_test.accept
 yarn bazel run --config=ivy //packages/core/test/bundling/router:symbol_test.accept
 yarn bazel run --config=ivy //packages/core/test/bundling/todo:symbol_test.accept
