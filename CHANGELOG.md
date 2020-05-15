@@ -35,11 +35,18 @@
 
 * **core:** make generic mandatory for ModuleWithProviders 
 
-A generic has always been required for the `ModuleWithProviders` pattern to work with Ivy, but prior to this commit, View Engine allowed the generic to be omitted (though support was officially deprecated).
-If you're using `ModuleWithProviders` without a generic in your application code, a v10 migration will update your code for you. 
+A generic type parameter has always been required for the `ModuleWithProviders` pattern to work with Ivy, but prior to this commit, View Engine allowed the generic type to be omitted (though support was officially deprecated).
+If you're using `ModuleWithProviders` without a generic type in your application code, a v10 migration will update your code for you. 
 
-However, you may run into issues if you're using View Engine and also depending on a library that omits the generic. 
+However, if you are using View Engine and also depending on a library that omits the generic type, you will now get a build time error similar to:
+
+```
+error TS2314: Generic type 'ModuleWithProviders<T>' requires 1 type argument(s).
+```
+ 
 In this case, ngcc won't help you (because it's Ivy-only) and the migration only covers application code.
+You should contact the library author to fix their library to provide a type parameter when they use this class.
+
 As a workaround, we suggest setting `skipLibChecks` to false in your tsconfig or updating your app to use Ivy.
 
 
