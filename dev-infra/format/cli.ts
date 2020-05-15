@@ -34,35 +34,9 @@ export function buildFormatParser(localYargs: yargs.Argv) {
             const executionCmd = check ? checkFiles : formatFiles;
             executionCmd(allChangedFilesSince(sha));
           })
-      .command(
-          'files <files..>', 'Run the formatter on provided files', {},
-          ({check, files}) => {
-            const executionCmd = check ? checkFiles : formatFiles;
-            executionCmd(files);
-          })
-      // TODO(josephperrott): remove this hidden command after deprecation period.
-      .command('deprecation-warning [originalCommand]', false, {}, ({originalCommand}) => {
-        console.warn(`\`yarn ${
-            originalCommand}\` is deprecated in favor of running the formatter via ng-dev`);
-        console.warn();
-        console.warn(`As a replacement of \`yarn ${originalCommand}\`, run:`);
-        switch (originalCommand) {
-          case 'bazel:format':
-          case 'bazel:lint-fix':
-            console.warn(`  yarn ng-dev format all`);
-            break;
-          case 'bazel:lint':
-            console.warn(`  yarn ng-dev format all --check`);
-            break;
-          default:
-            console.warn(`Error: Unrecognized previous command.`);
-        }
-        console.warn();
-        console.warn(`You can find more usage information by running:`);
-        console.warn(`  yarn ng-dev format --help`);
-        console.warn();
-        console.warn(`For more on the rationale and effects of this deprecation visit:`);
-        console.warn(`  https://github.com/angular/angular/pull/36842#issue-410321447`);
+      .command('files <files..>', 'Run the formatter on provided files', {}, ({check, files}) => {
+        const executionCmd = check ? checkFiles : formatFiles;
+        executionCmd(files);
       });
 }
 
