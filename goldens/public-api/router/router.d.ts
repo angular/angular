@@ -408,7 +408,7 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     fragment: string;
     href: string;
     preserveFragment: boolean;
-    set preserveQueryParams(value: boolean);
+    /** @deprecated */ set preserveQueryParams(value: boolean);
     queryParams: {
         [k: string]: any;
     };
