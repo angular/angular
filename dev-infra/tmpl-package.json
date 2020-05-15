@@ -12,10 +12,12 @@
     "@octokit/graphql": "<from-root>",
     "chalk": "<from-root>",
     "cli-progress": "<from-root>",
+    "fs-extra": "<from-root>",
     "glob": "<from-root>",
     "inquirer": "<from-root>",
     "minimatch": "<from-root>",
     "multimatch": "<from-root>",
+    "node-uuid": "<from-root>",
     "semver": "<from-root>",
     "shelljs": "<from-root>",
     "typed-graphqlify": "<from-root>",
@@ -23,15 +25,39 @@
     "yargs": "<from-root>"
   },
   "peerDependencies": {
+    "@angular/bazel": "^9.0.0",
+    "@angular/core": "^9.0.0",
+    "@angular/platform-browser": "^9.0.0",
+    "@angular/benchpress": "^0.1.0",
+    "@angular-devkit/build-optimizer": "<from-root>",
     "@bazel/buildifier": "<from-root>",
+    "@bazel/protractor": "<from-root>",
+    "@bazel/terser": "<from-root>",
+    "@bazel/typescript": "<from-root>",
+    "brotli": "<from-root>",
     "clang-format": "<from-root>",
+    "cli-progress": "<from-root>",
+    "json5": "<from-root>",
+    "protractor": "<from-root>",
+    "rollup": "<from-root>",
+    "rollup-plugin-commonjs": "<from-root>",
+    "rollup-plugin-node-resolve": "<from-root>",
+    "rollup-plugin-sourcemaps": "<from-root>",
+    "selenium-webdriver": "<from-root>",
     "ts-node": "<from-root>",
     "tslib": "<from-root>",
-    "typescript": "<from-root>"
+    "typescript": "<from-root>",
+    "zone.js": "^0.10.3"
   },
   "peerDependenciesMeta": {
     "ts-node": {
       "optional": true
+    }
+  },
+  "bazelWorkspaces": {
+    "npm_dev_infra": {
+      "version": "0.0.0-PLACEHOLDER",
+      "rootPath": "."
     }
   }
 }
