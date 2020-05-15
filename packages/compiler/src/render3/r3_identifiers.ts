@@ -32,11 +32,11 @@ export class Identifiers {
   static select: o.ExternalReference = {name: 'ɵɵselect', moduleName: CORE};
   static advance: o.ExternalReference = {name: 'ɵɵadvance', moduleName: CORE};
 
-  static updateSyntheticHostBinding:
-      o.ExternalReference = {name: 'ɵɵupdateSyntheticHostBinding', moduleName: CORE};
+  static syntheticHostProperty:
+      o.ExternalReference = {name: 'ɵɵsyntheticHostProperty', moduleName: CORE};
 
-  static componentHostSyntheticListener:
-      o.ExternalReference = {name: 'ɵɵcomponentHostSyntheticListener', moduleName: CORE};
+  static syntheticHostListener:
+      o.ExternalReference = {name: 'ɵɵsyntheticHostListener', moduleName: CORE};
 
   static attribute: o.ExternalReference = {name: 'ɵɵattribute', moduleName: CORE};
 

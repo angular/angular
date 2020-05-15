@@ -124,7 +124,6 @@ export {
   ɵɵclassMapInterpolateV,
   ɵɵclassProp,
   ɵɵComponentDefWithMeta,
-  ɵɵcomponentHostSyntheticListener,
   ɵɵcontentQuery,
   ɵɵCopyDefinitionFeature,
   ɵɵdefineComponent,
@@ -227,6 +226,8 @@ export {
   ɵɵstylePropInterpolate7,
   ɵɵstylePropInterpolate8,
   ɵɵstylePropInterpolateV,
+  ɵɵsyntheticHostListener,
+  ɵɵsyntheticHostProperty,
   ɵɵtemplate,
   ɵɵtemplateRefExtractor,
   ɵɵtext,
@@ -240,7 +241,6 @@ export {
   ɵɵtextInterpolate7,
   ɵɵtextInterpolate8,
   ɵɵtextInterpolateV,
-  ɵɵupdateSyntheticHostBinding,
   ɵɵviewQuery,
 } from './render3/index';
 export {
