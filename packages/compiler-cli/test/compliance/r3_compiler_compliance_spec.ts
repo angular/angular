@@ -434,7 +434,7 @@ describe('compiler compliance', () => {
         hostVars: 14,
         hostBindings: function MyComponent_HostBindings(rf, ctx) {
           if (rf & 2) {
-            $r3$.ɵɵupdateSyntheticHostBinding("@expansionHeight",
+            $r3$.ɵɵsyntheticHostProperty("@expansionHeight",
                 $r3$.ɵɵpureFunction2(5, $_c1$, ctx.getExpandedState(),
                   $r3$.ɵɵpureFunction2(2, $_c0$, ctx.collapsedHeight, ctx.expandedHeight)
                 )

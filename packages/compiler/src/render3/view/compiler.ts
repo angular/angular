@@ -640,7 +640,7 @@ function createHostBindingsFunction(
       propertyBindings.push(instructionParams);
     } else if (instruction === R3.attribute) {
       attributeBindings.push(instructionParams);
-    } else if (instruction === R3.updateSyntheticHostBinding) {
+    } else if (instruction === R3.syntheticHostProperty) {
       syntheticHostBindings.push(instructionParams);
     } else {
       updateStatements.push(o.importExpr(instruction).callFn(instructionParams).toStmt());
@@ -657,7 +657,7 @@ function createHostBindingsFunction(
 
   if (syntheticHostBindings.length > 0) {
     updateStatements.push(
-        chainedInstruction(R3.updateSyntheticHostBinding, syntheticHostBindings).toStmt());
+        chainedInstruction(R3.syntheticHostProperty, syntheticHostBindings).toStmt());
   }
 
   // since we're dealing with directives/components and both have hostBinding
@@ -738,7 +738,7 @@ function getBindingNameAndInstruction(binding: ParsedProperty):
       // host bindings that have a synthetic property (e.g. @foo) should always be rendered
       // in the context of the component and not the parent. Therefore there is a special
       // compatibility instruction available for this purpose.
-      instruction = R3.updateSyntheticHostBinding;
+      instruction = R3.syntheticHostProperty;
     } else {
       instruction = R3.hostProperty;
     }
@@ -768,8 +768,7 @@ function createHostListeners(eventBindings: ParsedEvent[], name?: string): o.Sta
   });
 
   if (syntheticListeners.length > 0) {
-    instructions.push(
-        chainedInstruction(R3.componentHostSyntheticListener, syntheticListeners).toStmt());
+    instructions.push(chainedInstruction(R3.syntheticHostListener, syntheticListeners).toStmt());
   }
 
   if (listeners.length > 0) {
