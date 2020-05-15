@@ -35,7 +35,7 @@
     "@nguniversal/express-engine": "~9.0.1",
     "@webcomponents/custom-elements": "^1.4.1",
     "angular": "1.7.9",
-    "angular-in-memory-web-api": "~0.9.0",
+    "angular-in-memory-web-api": "~0.11.0",
     "angular-route": "1.7.9",
     "core-js": "^2.5.4",
     "express": "^4.15.2",
