@@ -848,5 +848,13 @@
     "bio": "Cindy is a Program Manager on the Angular team at Google.  She is passionate about improving team processes and overall execution.  She enjoys dance fitness, movies and travel.",
     "groups": ["Angular"],
     "lead": "juleskremer"
+  },
+  "pato": {
+    "name": "Patricio Vargas",
+    "picture": "patovargas.jpg",
+    "twitter": "devpato",
+    "website": "https://developers.google.com/community/experts/directory/profile/profile-patricio_vargas",
+    "bio": "Pato is Google Developer Expert on Angular & Web Technologies, Auth0 Ambassador and Media Developer Expert at Cloudinary. He loves mentoring people in technology, write articles, contribute to open source, speak at conferences/meetups, and advocate technologies that he loves.",
+    "groups": ["GDE"]
   }
 }
