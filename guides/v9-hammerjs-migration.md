@@ -36,7 +36,7 @@ by default in Angular versions 8 and below.
 If your application provides a custom [`HAMMER_GESTURE_CONFIG`][1] and also references the
 deprecated Angular Material `GestureConfig`, the migration will print a warning about
 ambiguous usage. The migration cannot migrate your project automatically and manual changes
-are required. Read more [in the dedicated section](#The-migration-reported-ambiguous-usage-What-should-I-do).
+are required. Read more [in the dedicated section](#the-migration-reported-ambiguous-usage-what-should-i-do).
 
 ### How does the schematic remove HammerJS?
 
@@ -62,12 +62,12 @@ import 'hammerjs';
 
 The migration cannot automatically remove HammerJS from tests. Please manually clean up
 the test setup and resolve any test issues. Read more in a
-[dedicated section for test migration](#How-to-migrate-my-tests).
+[dedicated section for test migration](#how-to-migrate-my-tests).
 
 ### How do I migrate references to the deprecated `GestureConfig`?
 
 The `GestureConfig` can be consumed in multiple ways. The migration covers the most common cases.
-The most common case is that an `NgModule` in your application directly provides `GestureConfig`: 
+The most common case is that an `NgModule` in your application directly provides `GestureConfig`:
 
 ```typescript
 import {GestureConfig} from '@angular/material/core';
