@@ -34,10 +34,16 @@ export class AutosquashMergeStrategy extends MergeStrategy {
       return PullRequestFailure.unsatisfiedBaseSha();
     }
 
+    // SHA for the first commit the pull request is based on. Usually we would able
+    // to just rely on the base revision provided by `getPullRequestBaseRevision`, but
+    // the revision would rely on the amount of commits in a pull request. This is not
+    // reliable as we rebase the PR with autosquash where the amount of commits could
+    // change. We work around this by parsing the base revision so that we have a fixated
+    // SHA before the autosquash rebase is performed.
+    const baseSha =
+        this.git.run(['rev-parse', this.getPullRequestBaseRevision(pullRequest)]).stdout.trim();
     // Git revision range that matches the pull request commits.
-    const revisionRange = this.getPullRequestRevisionRange(pullRequest);
-    // Git revision for the first commit the pull request is based on.
-    const baseRevision = this.getPullRequestBaseRevision(pullRequest);
+    const revisionRange = `${baseSha}..${TEMP_PR_HEAD_BRANCH}`;
 
     // We always rebase the pull request so that fixup or squash commits are automatically
     // collapsed. Git's autosquash functionality does only work in interactive rebases, so
@@ -49,7 +55,7 @@ export class AutosquashMergeStrategy extends MergeStrategy {
     const rebaseEnv =
         needsCommitMessageFixup ? undefined : {...process.env, GIT_SEQUENCE_EDITOR: 'true'};
     this.git.run(
-        ['rebase', '--interactive', '--autosquash', baseRevision, TEMP_PR_HEAD_BRANCH],
+        ['rebase', '--interactive', '--autosquash', baseSha, TEMP_PR_HEAD_BRANCH],
         {stdio: 'inherit', env: rebaseEnv});
 
     // Update pull requests commits to reference the pull request. This matches what
