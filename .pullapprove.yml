@@ -34,41 +34,8 @@
 ####################################################################################
 #  GitHub usernames
 ####################################################################################
-#  aikidave - Dave Shevitz
-#  alan-agius4 - Alan Agius
-#  alxhub - Alex Rickabaugh
-#  AndrewKushnir - Andrew Kushnir
-#  andrewseguin - Andrew Seguin
-#  atscott - Andrew Scott
-#  ayazhafiz - Ayaz Hafiz
-#  clydin - Charles Lyding
-#  crisbeto - Kristiyan Kostadinov
-#  dennispbrown - Denny Brown
-#  devversion - Paul Gschwendtner
-#  dgp1130 - Doug Parker
-#  filipesilva - Filipe Silva
-#  gkalpak - Georgios Kalpakas
-#  gregmagolan - Greg Magolan
-#  IgorMinar - Igor Minar
-#  jbogarthyde - Judy Bogart
-#  jelbourn - Jeremy Elbourn
-#  JiaLiPassion - Jia Li
-#  JoostK - Joost Koehoorn
-#  josephperrott - Joey Perrott
-#  juleskremer - Jules Kremer
-#  kapunahelewong - Kapunahele Wong
-#  kara - Kara Erickson
-#  kyliau - Keen Yee Liau
-#  manughub - Manu Murthy
-#  matsko - Matias Niemela
-#  mgechev - Minko Gechev
-#  mhevery - Miško Hevery
-#  michaelprentice - Michael Prentice
-#  mmalerba - Miles Malerba
-#  petebacondarwin - Pete Bacon Darwin
-#  pkozlowski-opensource - Pawel Kozlowski
-#  robwormald - Rob Wormald
-#  StephenFluin - Stephen Fluin
+# See reviewer list under `required-minimum-review` group.  Team member names and
+# usernames are managed there.
 
 
 ####################################################################################
@@ -104,6 +71,11 @@ meta:
   2: &can-be-global-docs-approved "\"global-docs-approvers\" not in groups.approved"
   defaults: &defaults
     reviews:
+      # Authors provide their approval implicitly, this approval allows for a reviewer
+      # from a group not to need a review specifically for an area of the repository
+      # they own.  This is coupled with the `required-minimum-review` group which requires
+      # that all PRs are reviewed by at least one team member who is not the author of
+      # the PR.
       author_value: 1
 
 # turn on 'draft' support
@@ -135,6 +107,44 @@ groups:
     reviews:
       request: 0
       required: 1
+      author_value: 0
+    reviewers:
+      users:
+         - aikidave                # Dave Shevitz
+         - alan-agius4             # Alan Agius
+         - alxhub                  # Alex Rickabaugh
+         - AndrewKushnir           # Andrew Kushnir
+         - andrewseguin            # Andrew Seguin
+         - atscott                 # Andrew Scott
+         - ayazhafiz               # Ayaz Hafiz
+         - clydin                  # Charles Lyding
+         - crisbeto                # Kristiyan Kostadinov
+         - dennispbrown            # Denny Brown
+         - devversion              # Paul Gschwendtner
+         - dgp1130                 # Doug Parker
+         - filipesilva             # Filipe Silva
+         - gkalpak                 # Georgios Kalpakas
+         - gregmagolan             # Greg Magolan
+         - IgorMinar               # Igor Minar
+         - jbogarthyde             # Judy Bogart
+         - jelbourn                # Jeremy Elbourn
+         - JiaLiPassion            # Jia Li
+         - JoostK                  # Joost Koehoorn
+         - josephperrott           # Joey Perrott
+         - juleskremer             # Jules Kremer
+         - kapunahelewong          # Kapunahele Wong
+         - kara                    # Kara Erickson
+         - kyliau                  # Keen Yee Liau
+         - manughub                # Manu Murthy
+         - matsko                  # Matias Niemela
+         - mgechev                 # Minko Gechev
+         - mhevery                 # Miško Hevery
+         - michaelprentice         # Michael Prentice
+         - mmalerba                # Miles Malerba
+         - petebacondarwin         # Pete Bacon Darwin
+         - pkozlowski-opensource   # Pawel Kozlowski
+         - robwormald              # Rob Wormald
+         - StephenFluin            # Stephen Fluin
 
   # =========================================================
   #  Global Approvers
