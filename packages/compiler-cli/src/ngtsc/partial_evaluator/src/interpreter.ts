@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {Reference} from '../../imports';
 import {OwningModule} from '../../imports/src/references';
 import {DependencyTracker} from '../../incremental/api';
-import {ConcreteDeclaration, Declaration, EnumMember, InlineDeclaration, ReflectionHost, SpecialDeclarationKind} from '../../reflection';
+import {ConcreteDeclaration, Declaration, EnumMember, FunctionDefinition, InlineDeclaration, ReflectionHost, SpecialDeclarationKind} from '../../reflection';
 import {isDeclaration} from '../../util/src/typescript';
 
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn} from './builtin';
@@ -445,21 +445,54 @@ export class StaticInterpreter {
         };
       }
 
-      const res = this.visitExpression(expr, context);
-      if (res instanceof Reference) {
-        // This Reference was created synthetically, via a foreign function resolver. The real
-        // runtime value of the function expression may be different than the foreign function
-        // resolved value, so mark the Reference as synthetic to avoid it being misinterpreted.
-        res.synthetic = true;
-      }
-      return res;
+      return this.visitFfrExpression(expr, context);
     }
 
-    const body = fn.body;
-    if (body.length !== 1 || !ts.isReturnStatement(body[0])) {
+    let res: ResolvedValue = this.visitFunctionBody(node, fn, context);
+
+    // If the result of attempting to resolve the function body was a DynamicValue, attempt to use
+    // the foreignFunctionResolver if one is present. This could still potentially yield a usable
+    // value.
+    if (res instanceof DynamicValue && context.foreignFunctionResolver !== undefined) {
+      const ffrExpr = context.foreignFunctionResolver(lhs, node.arguments);
+      if (ffrExpr !== null) {
+        // The foreign function resolver was able to extract an expression from this function. See
+        // if that expression leads to a non-dynamic result.
+        const ffrRes = this.visitFfrExpression(ffrExpr, context);
+        if (!(ffrRes instanceof DynamicValue)) {
+          // FFR yielded an actual result that's not dynamic, so use that instead of the original
+          // resolution.
+          res = ffrRes;
+        }
+      }
+    }
+
+    return res;
+  }
+
+  /**
+   * Visit an expression which was extracted from a foreign-function resolver.
+   *
+   * This will process the result and ensure it's correct for FFR-resolved values, including marking
+   * `Reference`s as synthetic.
+   */
+  private visitFfrExpression(expr: ts.Expression, context: Context): ResolvedValue {
+    const res = this.visitExpression(expr, context);
+    if (res instanceof Reference) {
+      // This Reference was created synthetically, via a foreign function resolver. The real
+      // runtime value of the function expression may be different than the foreign function
+      // resolved value, so mark the Reference as synthetic to avoid it being misinterpreted.
+      res.synthetic = true;
+    }
+    return res;
+  }
+
+  private visitFunctionBody(node: ts.CallExpression, fn: FunctionDefinition, context: Context):
+      ResolvedValue {
+    if (fn.body === null || fn.body.length !== 1 || !ts.isReturnStatement(fn.body[0])) {
       return DynamicValue.fromUnknown(node);
     }
-    const ret = body[0] as ts.ReturnStatement;
+    const ret = fn.body[0] as ts.ReturnStatement;
 
     const args = this.evaluateFunctionArguments(node, context);
     const newScope: Scope = new Map<ts.ParameterDeclaration, ResolvedValue>();
