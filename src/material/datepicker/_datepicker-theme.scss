@@ -69,12 +69,14 @@ $mat-calendar-weekday-table-font-size: 11px !default;
     color: mat-color($foreground, secondary-text);
   }
 
-  .mat-calendar-body-cell-content {
+  .mat-calendar-body-cell-content,
+  .mat-date-range-input-separator {
     color: mat-color($foreground, text);
     border-color: transparent;
   }
 
-  .mat-calendar-body-disabled > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
+  .mat-calendar-body-disabled > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected),
+  .mat-form-field-disabled .mat-date-range-input-separator {
     color: mat-color($foreground, disabled-text);
   }
 
@@ -153,7 +155,7 @@ $mat-calendar-weekday-table-font-size: 11px !default;
     }
   }
 
-  .mat-date-range-input-inner:disabled {
+  .mat-date-range-input-inner[disabled] {
     color: mat-color($foreground, disabled-text);
   }
 }
