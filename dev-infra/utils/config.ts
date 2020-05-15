@@ -9,13 +9,20 @@
 import {join} from 'path';
 import {exec} from 'shelljs';
 
+/**
+ * Describes the Github configuration for dev-infra. This configuration is
+ * used for API requests, determining the upstream remote, etc.
+ */
+export interface GithubConfig {
+  /** Owner name of the repository. */
+  owner: string;
+  /** Name of the repository. */
+  name: string;
+}
+
 /** The common configuration for ng-dev. */
 type CommonConfig = {
-  /* Github repository configuration used for API Requests, determining upstream remote, etc. */
-  github: {
-    owner: string,
-    name: string,
-  }
+  github: GithubConfig
 };
 
 /**
