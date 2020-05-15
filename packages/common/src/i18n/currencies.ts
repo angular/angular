@@ -9,11 +9,11 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
-export type CurrenciesSymbols = [string] | [string | undefined, string];
+export type CurrenciesSymbols = [string]|[string | undefined, string];
 
 /** @internal */
 export const CURRENCIES_EN:
-    {[code: string]: CurrenciesSymbols | [string | undefined, string | undefined, number]} = {
+    {[code: string]: CurrenciesSymbols|[string | undefined, string | undefined, number]} = {
       'ADP': [undefined, undefined, 0],
       'AFN': [undefined, undefined, 0],
       'ALL': [undefined, undefined, 0],

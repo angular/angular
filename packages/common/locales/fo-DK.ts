@@ -21,36 +21,29 @@ export default [
   [['AM', 'PM'], u, u],
   u,
   [
-    ['S', 'M', 'T', 'M', 'H', 'F', 'L'],
-    ['sun.', 'mán.', 'týs.', 'mik.', 'hós.', 'frí.', 'ley.'],
-    [
-      'sunnudagur', 'mánadagur', 'týsdagur', 'mikudagur', 'hósdagur', 'fríggjadagur',
-      'leygardagur'
-    ],
+    ['S', 'M', 'T', 'M', 'H', 'F', 'L'], ['sun.', 'mán.', 'týs.', 'mik.', 'hós.', 'frí.', 'ley.'],
+    ['sunnudagur', 'mánadagur', 'týsdagur', 'mikudagur', 'hósdagur', 'fríggjadagur', 'leygardagur'],
     ['su.', 'má.', 'tý.', 'mi.', 'hó.', 'fr.', 'le.']
   ],
   [
     ['S', 'M', 'T', 'M', 'H', 'F', 'L'], ['sun', 'mán', 'týs', 'mik', 'hós', 'frí', 'ley'],
-    [
-      'sunnudagur', 'mánadagur', 'týsdagur', 'mikudagur', 'hósdagur', 'fríggjadagur',
-      'leygardagur'
-    ],
+    ['sunnudagur', 'mánadagur', 'týsdagur', 'mikudagur', 'hósdagur', 'fríggjadagur', 'leygardagur'],
     ['su', 'má', 'tý', 'mi', 'hó', 'fr', 'le']
   ],
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     ['jan.', 'feb.', 'mar.', 'apr.', 'mai', 'jun.', 'jul.', 'aug.', 'sep.', 'okt.', 'nov.', 'des.'],
     [
-      'januar', 'februar', 'mars', 'apríl', 'mai', 'juni', 'juli', 'august', 'september',
-      'oktober', 'november', 'desember'
+      'januar', 'februar', 'mars', 'apríl', 'mai', 'juni', 'juli', 'august', 'september', 'oktober',
+      'november', 'desember'
     ]
   ],
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des'],
     [
-      'januar', 'februar', 'mars', 'apríl', 'mai', 'juni', 'juli', 'august', 'september',
-      'oktober', 'november', 'desember'
+      'januar', 'februar', 'mars', 'apríl', 'mai', 'juni', 'juli', 'august', 'september', 'oktober',
+      'november', 'desember'
     ]
   ],
   [['fKr', 'eKr'], ['f.Kr.', 'e.Kr.'], ['fyri Krist', 'eftir Krist']],

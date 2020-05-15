@@ -23,8 +23,7 @@ export default [
   [['f.', 'e.'], ['f.h.', 'e.h.'], u],
   [['f.h.', 'e.h.'], u, u],
   [
-    ['S', 'M', 'Þ', 'M', 'F', 'F', 'L'],
-    ['sun.', 'mán.', 'þri.', 'mið.', 'fim.', 'fös.', 'lau.'],
+    ['S', 'M', 'Þ', 'M', 'F', 'F', 'L'], ['sun.', 'mán.', 'þri.', 'mið.', 'fim.', 'fös.', 'lau.'],
     [
       'sunnudagur', 'mánudagur', 'þriðjudagur', 'miðvikudagur', 'fimmtudagur', 'föstudagur',
       'laugardagur'
@@ -34,13 +33,10 @@ export default [
   u,
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'Á', 'S', 'O', 'N', 'D'],
+    ['jan.', 'feb.', 'mar.', 'apr.', 'maí', 'jún.', 'júl.', 'ágú.', 'sep.', 'okt.', 'nóv.', 'des.'],
     [
-      'jan.', 'feb.', 'mar.', 'apr.', 'maí', 'jún.', 'júl.', 'ágú.', 'sep.', 'okt.', 'nóv.',
-      'des.'
-    ],
-    [
-      'janúar', 'febrúar', 'mars', 'apríl', 'maí', 'júní', 'júlí', 'ágúst', 'september',
-      'október', 'nóvember', 'desember'
+      'janúar', 'febrúar', 'mars', 'apríl', 'maí', 'júní', 'júlí', 'ágúst', 'september', 'október',
+      'nóvember', 'desember'
     ]
   ],
   u,
