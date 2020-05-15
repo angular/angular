@@ -610,6 +610,42 @@ describe('MatIcon', () => {
       tick();
     }));
 
+    it('should cancel in-progress fetches if the icon changes', fakeAsync(() => {
+      // Register an icon that will resolve immediately.
+      iconRegistry.addSvgIconLiteral('fluffy', trustHtml(FAKE_SVGS.cat));
+
+      // Register a different icon that takes some time to resolve.
+      iconRegistry.addSvgIcon('fido', trustUrl('dog.svg'));
+
+      const fixture = TestBed.createComponent(IconFromSvgName);
+      const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+
+      // Assign the slow icon first.
+      fixture.componentInstance.iconName = 'fido';
+      fixture.detectChanges();
+
+      // Assign the quick icon while the slow one is still in-flight.
+      fixture.componentInstance.iconName = 'fluffy';
+      fixture.detectChanges();
+
+      // Expect for the in-flight request to have been cancelled.
+      expect(http.expectOne('dog.svg').cancelled).toBe(true);
+
+      // Expect the last icon to have been assigned.
+      verifyPathChildElement(verifyAndGetSingleSvgChild(iconElement), 'meow');
+    }));
+
+    it('should cancel in-progress fetches if the component is destroyed', fakeAsync(() => {
+      iconRegistry.addSvgIcon('fido', trustUrl('dog.svg'));
+
+      const fixture = TestBed.createComponent(IconFromSvgName);
+      fixture.componentInstance.iconName = 'fido';
+      fixture.detectChanges();
+      fixture.destroy();
+
+      expect(http.expectOne('dog.svg').cancelled).toBe(true);
+    }));
+
   });
 
   describe('Icons from HTML string', () => {

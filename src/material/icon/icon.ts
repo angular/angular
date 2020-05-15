@@ -27,6 +27,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {CanColor, CanColorCtor, mixinColor} from '@angular/material/core';
+import {Subscription} from 'rxjs';
 import {take} from 'rxjs/operators';
 
 import {MatIconRegistry} from './icon-registry';
@@ -178,6 +179,9 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Aft
   /** Keeps track of the elements and attributes that we've prefixed with the current path. */
   private _elementsWithExternalReferences?: Map<Element, {name: string, value: string}[]>;
 
+  /** Subscription to the current in-progress SVG icon request. */
+  private _currentIconFetch = Subscription.EMPTY;
+
   constructor(
       elementRef: ElementRef<HTMLElement>, private _iconRegistry: MatIconRegistry,
       @Attribute('aria-hidden') ariaHidden: string,
@@ -227,10 +231,12 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Aft
     const svgIconChanges = changes['svgIcon'];
 
     if (svgIconChanges) {
+      this._currentIconFetch.unsubscribe();
+
       if (this.svgIcon) {
         const [namespace, iconName] = this._splitIconName(this.svgIcon);
 
-        this._iconRegistry.getNamedSvgIcon(iconName, namespace)
+        this._currentIconFetch = this._iconRegistry.getNamedSvgIcon(iconName, namespace)
             .pipe(take(1))
             .subscribe(svg => this._setSvgElement(svg), (err: Error) => {
               const errorMessage = `Error retrieving icon ${namespace}:${iconName}! ${err.message}`;
@@ -279,6 +285,8 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Aft
   }
 
   ngOnDestroy() {
+    this._currentIconFetch.unsubscribe();
+
     if (this._elementsWithExternalReferences) {
       this._elementsWithExternalReferences.clear();
     }
