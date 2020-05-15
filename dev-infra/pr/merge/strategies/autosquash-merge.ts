@@ -39,17 +39,18 @@ export class AutosquashMergeStrategy extends MergeStrategy {
     // Git revision for the first commit the pull request is based on.
     const baseRevision = this.getPullRequestBaseRevision(pullRequest);
 
-    // By default, we rebase the pull request so that fixup or squash commits are
-    // automatically collapsed. Optionally, if a commit message fixup is needed, we
-    // make this an interactive rebase so that commits can be selectively modified
-    // before the merge completes.
+    // We always rebase the pull request so that fixup or squash commits are automatically
+    // collapsed. Git's autosquash functionality does only work in interactive rebases, so
+    // our rebase is always interactive. In reality though, unless a commit message fixup
+    // is desired, we set the `GIT_SEQUENCE_EDITOR` environment variable to `true` so that
+    // the rebase seems interactive to Git, while it's not interactive to the user.
+    // See: https://github.com/git/git/commit/891d4a0313edc03f7e2ecb96edec5d30dc182294.
     const branchBeforeRebase = this.git.getCurrentBranch();
-    const rebaseArgs = ['--autosquash', baseRevision, TEMP_PR_HEAD_BRANCH];
-    if (needsCommitMessageFixup) {
-      this.git.run(['rebase', '--interactive', ...rebaseArgs], {stdio: 'inherit'});
-    } else {
-      this.git.run(['rebase', ...rebaseArgs]);
-    }
+    const rebaseEnv =
+        needsCommitMessageFixup ? undefined : {...process.env, GIT_SEQUENCE_EDITOR: 'true'};
+    this.git.run(
+        ['rebase', '--interactive', '--autosquash', baseRevision, TEMP_PR_HEAD_BRANCH],
+        {stdio: 'inherit', env: rebaseEnv});
 
     // Update pull requests commits to reference the pull request. This matches what
     // Github does when pull requests are merged through the Web UI. The motivation is
