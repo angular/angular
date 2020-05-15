@@ -189,14 +189,16 @@ export class DocViewerComponent implements OnDestroy {
       const seconds = Number(cssValue.replace(/s$/, ''));
       return 1000 * seconds;
     };
+
+    // Some properties are not assignable and thus cannot be animated.
+    // Example methods, readonly and CSS properties:
+    // "length", "parentRule", "getPropertyPriority", "getPropertyValue", "item", "removeProperty", "setProperty"
+    type StringValueCSSStyleDeclaration
+      = Exclude<{ [K in keyof CSSStyleDeclaration]: CSSStyleDeclaration[K] extends string ? K : never }[keyof CSSStyleDeclaration], number>;
     const animateProp =
-        (elem: HTMLElement, prop: keyof CSSStyleDeclaration, from: string, to: string, duration = 200) => {
+        (elem: HTMLElement, prop: StringValueCSSStyleDeclaration, from: string, to: string, duration = 200) => {
           const animationsDisabled = !DocViewerComponent.animationsEnabled
                                      || this.hostElement.classList.contains(NO_ANIMATIONS);
-          if (prop === 'length' || prop === 'parentRule') {
-            // We cannot animate length or parentRule properties because they are readonly
-            return this.void$;
-          }
           elem.style.transition = '';
           return animationsDisabled
               ? this.void$.pipe(tap(() => elem.style[prop] = to))
