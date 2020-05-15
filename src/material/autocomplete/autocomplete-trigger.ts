@@ -228,11 +228,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
     const window = this._getWindow();
 
     if (typeof window !== 'undefined') {
-      this._zone.runOutsideAngular(() => {
-        window.addEventListener('blur', this._windowBlurHandler);
-      });
-
-      this._isInsideShadowRoot = !!_getShadowRoot(this._element.nativeElement);
+      this._zone.runOutsideAngular(() => window.addEventListener('blur', this._windowBlurHandler));
     }
   }
 
@@ -617,6 +613,12 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
   private _attachOverlay(): void {
     if (!this.autocomplete) {
       throw getMatAutocompleteMissingPanelError();
+    }
+
+    // We want to resolve this once, as late as possible so that we can be
+    // sure that the element has been moved into its final place in the DOM.
+    if (this._isInsideShadowRoot == null) {
+      this._isInsideShadowRoot = !!_getShadowRoot(this._element.nativeElement);
     }
 
     let overlayRef = this._overlayRef;
