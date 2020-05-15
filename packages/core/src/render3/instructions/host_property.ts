@@ -62,9 +62,9 @@ export function ɵɵhostProperty<T>(
  *
  * @codeGenApi
  */
-export function ɵɵupdateSyntheticHostBinding<T>(
+export function ɵɵsyntheticHostProperty<T>(
     propName: string, value: T|NO_CHANGE,
-    sanitizer?: SanitizerFn|null): typeof ɵɵupdateSyntheticHostBinding {
+    sanitizer?: SanitizerFn|null): typeof ɵɵsyntheticHostProperty {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
@@ -75,5 +75,5 @@ export function ɵɵupdateSyntheticHostBinding<T>(
     elementPropertyInternal(tView, tNode, lView, propName, value, renderer, sanitizer, true);
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
-  return ɵɵupdateSyntheticHostBinding;
+  return ɵɵsyntheticHostProperty;
 }
