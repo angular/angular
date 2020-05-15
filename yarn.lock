@@ -1570,10 +1570,10 @@
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.2.7.tgz#1c8c25cbf6e59ffa7d6b9652c78e547d9a41692d"
   integrity sha512-luq8meHGYwvky0O7u0eQZdA7B4Wd9owUCqvbw2m3XCrCU8mplYOujMBbvyS547AxJkC+pGnd0Cm15eNxEUNU8g==
 
-"@types/chrome@^0.0.111":
-  version "0.0.111"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.111.tgz#f018eb179c121d7af6c9e125ba273a4922bd7901"
-  integrity sha512-Vxo44zBE3EjBW5RZd11GL8aKo14EdcmPxaETtRR4khZHU2BEw0YBLLZMRRgcgRgpbO0pAGhSfUyI8htHJsyTIg==
+"@types/chrome@^0.0.112":
+  version "0.0.112"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.112.tgz#fd2a8fd9a410435c79eca2a52ddacddc5bdf9a14"
+  integrity sha512-VJjHiDuF4Xmcn1DuOnGcrMDiGBvoJnaIE6u3ZkhsSz2L16HhnfqIuuM8EAvgQa0ODbNpotHqtPRTKpYoNfpAqQ==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
