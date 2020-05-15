@@ -94,7 +94,7 @@ export declare class MapGroundOverlay implements OnInit, OnDestroy {
     mapClick: Observable<google.maps.MouseEvent>;
     mapDblclick: Observable<google.maps.MouseEvent>;
     set opacity(opacity: number);
-    url: string;
+    set url(url: string);
     constructor(_map: GoogleMap, _ngZone: NgZone);
     getBounds(): google.maps.LatLngBounds;
     getOpacity(): number;

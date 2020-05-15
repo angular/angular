@@ -241,6 +241,7 @@ export function createCircleConstructorSpy(circleSpy: jasmine.SpyObj<google.maps
 export function createGroundOverlaySpy(
     url: string, bounds: google.maps.LatLngBoundsLiteral,
     options?: google.maps.GroundOverlayOptions): jasmine.SpyObj<google.maps.GroundOverlay> {
+  const values: {[key: string]: any} = {url};
   const groundOverlaySpy = jasmine.createSpyObj('google.maps.GroundOverlay', [
     'addListener',
     'getBounds',
@@ -248,8 +249,10 @@ export function createGroundOverlaySpy(
     'getUrl',
     'setMap',
     'setOpacity',
+    'set',
   ]);
   groundOverlaySpy.addListener.and.returnValue({remove: () => {}});
+  groundOverlaySpy.set.and.callFake((key: string, value: any) => values[key] = value);
   return groundOverlaySpy;
 }
 

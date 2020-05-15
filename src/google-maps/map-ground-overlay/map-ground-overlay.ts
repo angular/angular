@@ -28,6 +28,7 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
   private _eventManager = new MapEventManager(this._ngZone);
 
   private readonly _opacity = new BehaviorSubject<number>(1);
+  private readonly _url = new BehaviorSubject<string>('');
   private readonly _destroyed = new Subject<void>();
 
   /**
@@ -37,13 +38,19 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
    */
   groundOverlay?: google.maps.GroundOverlay;
 
-  @Input() url!: string;  // Asserted in ngOnInit.
-
+  /** URL of the image that will be shown in the overlay. */
   @Input()
-  bounds!: google.maps.LatLngBounds|google.maps.LatLngBoundsLiteral;  // Asserted in ngOnInit.
+  set url(url: string) {
+    this._url.next(url);
+  }
 
-  @Input() clickable = false;
+  /** Bounds for the overlay. */
+  @Input() bounds: google.maps.LatLngBounds|google.maps.LatLngBoundsLiteral;
 
+  /** Whether the overlay is clickable */
+  @Input() clickable: boolean = false;
+
+  /** Opacity of the overlay. */
   @Input()
   set opacity(opacity: number) {
     this._opacity.next(opacity);
@@ -69,9 +76,6 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
   constructor(private readonly _map: GoogleMap, private readonly _ngZone: NgZone) {}
 
   ngOnInit() {
-    if (!this.url) {
-      throw Error('An image url is required');
-    }
     if (!this.bounds) {
       throw Error('Image bounds are required');
     }
@@ -81,7 +85,8 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
         // We'll bring it back in inside the `MapEventManager` only for the events that the
         // user has subscribed to.
         this._ngZone.runOutsideAngular(() => {
-          this.groundOverlay = new google.maps.GroundOverlay(this.url, this.bounds, options);
+          this.groundOverlay =
+              new google.maps.GroundOverlay(this._url.getValue(), this.bounds, options);
         });
         this._assertInitialized();
         this.groundOverlay.setMap(this._map.googleMap!);
@@ -89,6 +94,7 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
       });
 
       this._watchForOpacityChanges();
+      this._watchForUrlChanges();
     }
   }
 
@@ -147,6 +153,18 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
         this._assertInitialized();
         this.groundOverlay.setOpacity(opacity);
       }
+    });
+  }
+
+  private _watchForUrlChanges() {
+    this._url.pipe(takeUntil(this._destroyed)).subscribe(url => {
+      this._assertInitialized();
+      const overlay = this.groundOverlay;
+      overlay.set('url', url);
+
+      // Google Maps only redraws the overlay if we re-set the map.
+      overlay.setMap(null);
+      overlay.setMap(this._map.googleMap!);
     });
   }
 

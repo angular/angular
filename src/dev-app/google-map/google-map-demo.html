@@ -101,4 +101,16 @@
     </label>
   </div>
 
+  <div>
+    <label for="ground-overlay-image">
+      Ground Overlay image
+
+      <select id="ground-overlay-image" (change)="groundOverlayUrlChanged($event)">
+        <option
+          *ngFor="let image of groundOverlayImages"
+          [value]="image.url">{{image.title}}</option>
+      </select>
+    </label>
+  </div>
+
 </div>

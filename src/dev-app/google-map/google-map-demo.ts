@@ -66,7 +66,17 @@ export class GoogleMapDemo {
   circleOptions: google.maps.CircleOptions =
       {center: CIRCLE_CENTER, radius: CIRCLE_RADIUS, strokeColor: 'grey', strokeOpacity: 0.8};
   isGroundOverlayDisplayed = false;
-  groundOverlayUrl = 'https://angular.io/assets/images/logos/angular/angular.svg';
+  groundOverlayImages = [
+    {
+      title: 'Red logo',
+      url: 'https://angular.io/assets/images/logos/angular/angular.svg'
+    },
+    {
+      title: 'Black logo',
+      url: 'https://angular.io/assets/images/logos/angular/angular_solidBlack.svg'
+    }
+  ];
+  groundOverlayUrl = this.groundOverlayImages[0].url;
   groundOverlayBounds = RECTANGLE_BOUNDS;
 
   mapTypeId: google.maps.MapTypeId;
@@ -148,5 +158,9 @@ export class GoogleMapDemo {
 
   toggleGroundOverlayDisplay() {
     this.isGroundOverlayDisplayed = !this.isGroundOverlayDisplayed;
+  }
+
+  groundOverlayUrlChanged(event: Event) {
+    this.groundOverlayUrl = (event.target as HTMLSelectElement).value;
   }
 }

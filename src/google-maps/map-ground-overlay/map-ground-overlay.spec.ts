@@ -57,11 +57,11 @@ describe('MapGroundOverlay', () => {
     expect(groundOverlaySpy.setMap).toHaveBeenCalledWith(mapSpy);
   });
 
-  it('has an error if required url or bounds are not provided', () => {
+  it('has an error if required bounds are not provided', () => {
     expect(() => {
       const fixture = TestBed.createComponent(TestApp);
       fixture.detectChanges();
-    }).toThrow(new Error('An image url is required'));
+    }).toThrow(new Error('Image bounds are required'));
   });
 
   it('exposes methods that provide information about the Ground Overlay', () => {
@@ -119,6 +119,32 @@ describe('MapGroundOverlay', () => {
     expect(addSpy).toHaveBeenCalledWith('dblclick', jasmine.any(Function));
     subscription.unsubscribe();
   });
+
+  it('should be able to change the image after init', () => {
+    const groundOverlaySpy = createGroundOverlaySpy(url, bounds, groundOverlayOptions);
+    const groundOverlayConstructorSpy =
+        createGroundOverlayConstructorSpy(groundOverlaySpy).and.callThrough();
+
+    const fixture = TestBed.createComponent(TestApp);
+    fixture.componentInstance.url = url;
+    fixture.componentInstance.bounds = bounds;
+    fixture.componentInstance.clickable = clickable;
+    fixture.componentInstance.opacity = opacity;
+    fixture.detectChanges();
+
+    expect(groundOverlayConstructorSpy).toHaveBeenCalledWith(url, bounds, groundOverlayOptions);
+    expect(groundOverlaySpy.setMap).toHaveBeenCalledWith(mapSpy);
+
+    groundOverlaySpy.setMap.calls.reset();
+    fixture.componentInstance.url = 'foo.png';
+    fixture.detectChanges();
+
+    expect(groundOverlaySpy.set).toHaveBeenCalledWith('url', 'foo.png');
+    expect(groundOverlaySpy.setMap).toHaveBeenCalledTimes(2);
+    expect(groundOverlaySpy.setMap).toHaveBeenCalledWith(null);
+    expect(groundOverlaySpy.setMap).toHaveBeenCalledWith(mapSpy);
+  });
+
 });
 
 @Component({
