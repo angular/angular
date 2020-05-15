@@ -23,30 +23,23 @@ export default [
   u,
   [
     ['p', 'V', 'M', 'K', 'T', 'V', 'L'], ['pas', 'vuo', 'maj', 'kos', 'tuo', 'vás', 'láv'],
-    [
-      'pasepeeivi', 'vuossaargâ', 'majebaargâ', 'koskoho', 'tuorâstuv', 'vástuppeeivi',
-      'lávurduv'
-    ],
+    ['pasepeeivi', 'vuossaargâ', 'majebaargâ', 'koskoho', 'tuorâstuv', 'vástuppeeivi', 'lávurduv'],
     ['pa', 'vu', 'ma', 'ko', 'tu', 'vá', 'lá']
   ],
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['pas', 'vuo', 'maj', 'kos', 'tuo', 'vás', 'láv'],
-    [
-      'pasepeivi', 'vuossargâ', 'majebargâ', 'koskokko', 'tuorâstâh', 'vástuppeivi',
-      'lávurdâh'
-    ],
+    ['pasepeivi', 'vuossargâ', 'majebargâ', 'koskokko', 'tuorâstâh', 'vástuppeivi', 'lávurdâh'],
     ['pa', 'vu', 'ma', 'ko', 'tu', 'vá', 'lá']
   ],
   [
     ['U', 'K', 'NJ', 'C', 'V', 'K', 'S', 'P', 'Č', 'R', 'S', 'J'],
     [
-      'uđiv', 'kuovâ', 'njuhčâ', 'cuáŋui', 'vyesi', 'kesi', 'syeini', 'porge', 'čohčâ',
-      'roovvâd', 'skammâ', 'juovlâ'
+      'uđiv', 'kuovâ', 'njuhčâ', 'cuáŋui', 'vyesi', 'kesi', 'syeini', 'porge', 'čohčâ', 'roovvâd',
+      'skammâ', 'juovlâ'
     ],
     [
-      'uđđâivemáánu', 'kuovâmáánu', 'njuhčâmáánu', 'cuáŋuimáánu', 'vyesimáánu',
-      'kesimáánu', 'syeinimáánu', 'porgemáánu', 'čohčâmáánu', 'roovvâdmáánu',
-      'skammâmáánu', 'juovlâmáánu'
+      'uđđâivemáánu', 'kuovâmáánu', 'njuhčâmáánu', 'cuáŋuimáánu', 'vyesimáánu', 'kesimáánu',
+      'syeinimáánu', 'porgemáánu', 'čohčâmáánu', 'roovvâdmáánu', 'skammâmáánu', 'juovlâmáánu'
     ]
   ],
   u,
