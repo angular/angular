@@ -6,7 +6,9 @@ ts_project(
     testonly = True,
     srcs = glob(["**/*.ts"]),
     interop_deps = [
+        "//packages/animations/browser",
         "//packages/platform-browser",
+        "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
     ],
