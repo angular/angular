@@ -115,19 +115,49 @@ import {UrlTree} from '../url_tree';
 export class RouterLink {
   // TODO(issue/24571): remove '!'.
   @Input() queryParams!: {[k: string]: any};
+  /**
+   * Passed to `Router.createUrlTree` as part of the `NavigationExtras`.
+   * @see [NavigationExtras](https://angular.io/api/router/NavigationExtras#navigationextras)
+   * @see [Router.createUrlTree](https://angular.io/api/router/Router#createurltree)
+   */
   // TODO(issue/24571): remove '!'.
   @Input() fragment!: string;
+  /**
+   * Passed to `Router.createUrlTree` as part of the `NavigationExtras`.
+   * @see [QueryParamsHandling](https://angular.io/api/router/QueryParamsHandling#queryparamshandling)
+   * @see [NavigationExtras](https://angular.io/api/router/NavigationExtras#navigationextras)
+   * @see [Router.createUrlTree](https://angular.io/api/router/Router#createurltree)
+   */
   // TODO(issue/24571): remove '!'.
   @Input() queryParamsHandling!: QueryParamsHandling;
+  /**
+   * Passed to `Router.createUrlTree` as part of the `NavigationExtras`.
+   * @see [NavigationExtras](https://angular.io/api/router/NavigationExtras#navigationextras)
+   * @see [Router.createUrlTree](https://angular.io/api/router/Router#createurltree)
+   */
   // TODO(issue/24571): remove '!'.
   @Input() preserveFragment!: boolean;
+  /**
+   * Passed to `Router.createUrlTree` as part of the `NavigationExtras`.
+   * @see [NavigationExtras](https://angular.io/api/router/NavigationExtras#navigationextras)
+   * @see [Router.createUrlTree](https://angular.io/api/router/Router#createurltree)
+   */
   // TODO(issue/24571): remove '!'.
   @Input() skipLocationChange!: boolean;
+  /**
+   * Passed to `Router.createUrlTree` as part of the `NavigationExtras`.
+   * @see [NavigationExtras](https://angular.io/api/router/NavigationExtras#navigationextras)
+   * @see [Router.createUrlTree](https://angular.io/api/router/Router#createurltree)
+   */
   // TODO(issue/24571): remove '!'.
   @Input() replaceUrl!: boolean;
+  /**
+   * Passed to `Router.createUrlTree` as part of the `NavigationExtras`.
+   * @see [NavigationExtras](https://angular.io/api/router/NavigationExtras#navigationextras)
+   * @see [Router.createUrlTree](https://angular.io/api/router/Router#createurltree)
+   */
   @Input() state?: {[k: string]: any};
   private commands: any[] = [];
-  // TODO(issue/24571): remove '!'.
   private preserve!: boolean;
 
   constructor(
@@ -138,6 +168,13 @@ export class RouterLink {
     }
   }
 
+  /**
+   * @param commands An array of commands to pass to `Router.createUrlTree`.
+   *   - **array**: commands to pass to `Router.createUrlTree`.
+   *   - **string**: shorthand for array of commands with just the string, i.e. `['/route']`
+   *   - **null|undefined**: shorthand for an empty array of commands, i.e. `[]`
+   * @see [Router.createUrlTree](https://angular.io/api/router/Router#createurltree)
+   */
   @Input()
   set routerLink(commands: any[]|string|null|undefined) {
     if (commands != null) {
@@ -196,18 +233,53 @@ export class RouterLink {
 export class RouterLinkWithHref implements OnChanges, OnDestroy {
   // TODO(issue/24571): remove '!'.
   @HostBinding('attr.target') @Input() target!: string;
+  /**
+   * Passed to `Router.createUrlTree` as part of the `NavigationExtras`.
+   * @see [NavigationExtras](https://angular.io/api/router/NavigationExtras#navigationextras)
+   * @see [Router.createUrlTree](https://angular.io/api/router/Router#createurltree)
+   */
   // TODO(issue/24571): remove '!'.
   @Input() queryParams!: {[k: string]: any};
+  /**
+   * Passed to `Router.createUrlTree` as part of the `NavigationExtras`.
+   * @see [NavigationExtras](https://angular.io/api/router/NavigationExtras#navigationextras)
+   * @see [Router.createUrlTree](https://angular.io/api/router/Router#createurltree)
+   */
   // TODO(issue/24571): remove '!'.
   @Input() fragment!: string;
+  /**
+   * Passed to `Router.createUrlTree` as part of the `NavigationExtras`.
+   * @see [NavigationExtras](https://angular.io/api/router/NavigationExtras#navigationextras)
+   * @see [Router.createUrlTree](https://angular.io/api/router/Router#createurltree)
+   */
   // TODO(issue/24571): remove '!'.
   @Input() queryParamsHandling!: QueryParamsHandling;
+  /**
+   * Passed to `Router.createUrlTree` as part of the `NavigationExtras`.
+   * @see [NavigationExtras](https://angular.io/api/router/NavigationExtras#navigationextras)
+   * @see [Router.createUrlTree](https://angular.io/api/router/Router#createurltree)
+   */
   // TODO(issue/24571): remove '!'.
   @Input() preserveFragment!: boolean;
+  /**
+   * Passed to `Router.createUrlTree` as part of the `NavigationExtras`.
+   * @see [NavigationExtras](https://angular.io/api/router/NavigationExtras#navigationextras)
+   * @see [Router.createUrlTree](https://angular.io/api/router/Router#createurltree)
+   */
   // TODO(issue/24571): remove '!'.
   @Input() skipLocationChange!: boolean;
+  /**
+   * Passed to `Router.createUrlTree` as part of the `NavigationExtras`.
+   * @see [NavigationExtras](https://angular.io/api/router/NavigationExtras#navigationextras)
+   * @see [Router.createUrlTree](https://angular.io/api/router/Router#createurltree)
+   */
   // TODO(issue/24571): remove '!'.
   @Input() replaceUrl!: boolean;
+  /**
+   * Passed to `Router.createUrlTree` as part of the `NavigationExtras`.
+   * @see [NavigationExtras](https://angular.io/api/router/NavigationExtras#navigationextras)
+   * @see [Router.createUrlTree](https://angular.io/api/router/Router#createurltree)
+   */
   @Input() state?: {[k: string]: any};
   private commands: any[] = [];
   private subscription: Subscription;
@@ -228,6 +300,13 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     });
   }
 
+  /**
+   * @param commands An array of commands to pass to `Router.createUrlTree`.
+   *   - **array**: commands to pass to `Router.createUrlTree`.
+   *   - **string**: shorthand for array of commands with just the string, i.e. `['/route']`
+   *   - **null|undefined**: shorthand for an empty array of commands, i.e. `[]`
+   * @see [Router.createUrlTree](https://angular.io/api/router/Router#createurltree)
+   */
   @Input()
   set routerLink(commands: any[]|string|null|undefined) {
     if (commands != null) {
@@ -237,6 +316,9 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     }
   }
 
+  /**
+   * @deprecated 4.0.0 use `queryParamsHandling` instead.
+   */
   @Input()
   set preserveQueryParams(value: boolean) {
     if (isDevMode() && <any>console && <any>console.warn) {
