@@ -28,8 +28,6 @@ function loadTask(fileName, taskName) {
 
 
 gulp.task('source-map-test', loadTask('source-map-test'));
-gulp.task('changelog', loadTask('changelog'));
-gulp.task('changelog:zonejs', loadTask('changelog-zonejs'));
 gulp.task('check-env', () => {/* this is a noop because the env test ran already above */});
 gulp.task('cldr:extract', loadTask('cldr', 'extract'));
 gulp.task('cldr:gen-closure-locale', loadTask('cldr', 'closure'));
