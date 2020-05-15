@@ -6,31 +6,45 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MergeResult, MergeStatus, PullRequestMergeTask} from './task';
-import {GithubApiRequestError} from './git';
 import chalk from 'chalk';
-import {promptConfirm} from './console';
-import {loadAndValidateConfig} from './config';
+
 import {getRepoBaseDir} from '../../utils/config';
+import {promptConfirm} from '../../utils/console';
+
+import {loadAndValidateConfig, MergeConfigWithRemote} from './config';
+import {GithubApiRequestError} from './git';
+import {MergeResult, MergeStatus, PullRequestMergeTask} from './task';
 
 /** URL to the Github page where personal access tokens can be generated. */
 export const GITHUB_TOKEN_GENERATE_URL = `https://github.com/settings/tokens`;
 
 
 /**
- * Entry-point for the merge script CLI. The script can be used to merge individual pull requests
- * into branches based on the `PR target` labels that have been set in a configuration. The script
- * aims to reduce the manual work that needs to be performed to cherry-pick a PR into multiple
- * branches based on a target label.
+ * Merges a given pull request based on labels configured in the given merge configuration.
+ * Pull requests can be merged with different strategies such as the Github API merge
+ * strategy, or the local autosquash strategy. Either strategy has benefits and downsides.
+ * More information on these strategies can be found in their dedicated strategy classes.
+ *
+ * See {@link GithubApiMergeStrategy} and {@link AutosquashMergeStrategy}
+ *
+ * @param prNumber Number of the pull request that should be merged.
+ * @param githubToken Github token used for merging (i.e. fetching and pushing)
+ * @param projectRoot Path to the local Git project that is used for merging.
+ * @param config Configuration for merging pull requests.
  */
-export async function mergePullRequest(prNumber: number, githubToken: string) {
-  const projectRoot = getRepoBaseDir();
-  const {config, errors} = loadAndValidateConfig();
-
-  if (errors) {
-    console.error(chalk.red('Invalid configuration:'));
-    errors.forEach(desc => console.error(chalk.yellow(`  -  ${desc}`)));
-    process.exit(1);
+export async function mergePullRequest(
+    prNumber: number, githubToken: string, projectRoot: string = getRepoBaseDir(),
+    config?: MergeConfigWithRemote) {
+  // If no explicit configuration has been specified, we load and validate
+  // the configuration from the shared dev-infra configuration.
+  if (config === undefined) {
+    const {config: _config, errors} = loadAndValidateConfig();
+    if (errors) {
+      console.error(chalk.red('Invalid configuration:'));
+      errors.forEach(desc => console.error(chalk.yellow(`  -  ${desc}`)));
+      process.exit(1);
+    }
+    config = _config!;
   }
 
   const api = new PullRequestMergeTask(projectRoot, config, githubToken);

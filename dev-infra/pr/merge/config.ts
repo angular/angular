@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getAngularDevConfig} from '../../utils/config';
+import {getConfig, NgDevConfig} from '../../utils/config';
 
 import {GithubApiMergeStrategyConfig} from './strategies/api-merge';
 
@@ -31,10 +31,30 @@ export interface TargetLabel {
   branches: string[]|((githubTargetBranch: string) => string[]);
 }
 
+/** Describes the remote used for merging pull requests. */
+export interface MergeRemote {
+  /** Owner name of the repository. */
+  owner: string;
+  /** Name of the repository. */
+  name: string;
+  /** Whether SSH should be used for merging pull requests. */
+  useSsh?: boolean
+}
+
+/**
+ * Configuration for the merge script with all remote options specified. The
+ * default `MergeConfig` has does not require any of these options as defaults
+ * are provided by the common dev-infra github configuration.
+ */
+export type MergeConfigWithRemote = MergeConfig&{remote: MergeRemote};
+
 /** Configuration for the merge script. */
 export interface MergeConfig {
-  /** Configuration for the upstream repository. */
-  repository: {user: string; name: string; useSsh?: boolean};
+  /**
+   * Configuration for the upstream remote. All of these options are optional as
+   * defaults are provided by the common dev-infra github configuration.
+   */
+  remote?: Partial<MergeRemote>;
   /** List of target labels. */
   labels: TargetLabel[];
   /** Required base commits for given branches. */
@@ -54,33 +74,55 @@ export interface MergeConfig {
   githubApiMerge: false|GithubApiMergeStrategyConfig;
 }
 
+/**
+ * Configuration of the merge script in the dev-infra configuration. Note that the
+ * merge configuration is retrieved lazily as usually these configurations rely
+ * on branch name computations. We don't want to run these immediately whenever
+ * the dev-infra configuration is loaded as that could slow-down other commands.
+ */
+export type DevInfraMergeConfig = NgDevConfig<{'merge': () => MergeConfig}>;
+
 /** Loads and validates the merge configuration. */
-export function loadAndValidateConfig(): {config?: MergeConfig, errors?: string[]} {
-  const config = getAngularDevConfig<'merge', MergeConfig>().merge;
-  if (config === undefined) {
+export function loadAndValidateConfig(): {config?: MergeConfigWithRemote, errors?: string[]} {
+  const config: Partial<DevInfraMergeConfig> = getConfig();
+
+  if (config.merge === undefined) {
     return {
       errors: ['No merge configuration found. Set the `merge` configuration.']
     }
   }
-  const errors = validateConfig(config);
+
+  if (typeof config.merge !== 'function') {
+    return {
+      errors: ['Expected merge configuration to be defined lazily through a function.']
+    }
+  }
+
+  const mergeConfig = config.merge();
+  const errors = validateMergeConfig(mergeConfig);
+
   if (errors.length) {
     return {errors};
   }
-  return {config};
+
+  if (mergeConfig.remote) {
+    mergeConfig.remote = {...config.github, ...mergeConfig.remote};
+  } else {
+    mergeConfig.remote = config.github;
+  }
+
+  // We always set the `remote` option, so we can safely cast the
+  // config to `MergeConfigWithRemote`.
+  return {config: mergeConfig as MergeConfigWithRemote};
 }
 
 /** Validates the specified configuration. Returns a list of failure messages. */
-function validateConfig(config: MergeConfig): string[] {
+function validateMergeConfig(config: Partial<MergeConfig>): string[] {
   const errors: string[] = [];
   if (!config.labels) {
     errors.push('No label configuration.');
   } else if (!Array.isArray(config.labels)) {
     errors.push('Label configuration needs to be an array.');
-  }
-  if (!config.repository) {
-    errors.push('No repository is configured.');
-  } else if (!config.repository.user || !config.repository.name) {
-    errors.push('Repository configuration needs to specify a `user` and repository `name`.');
   }
   if (!config.claSignedLabel) {
     errors.push('No CLA signed label configured.');

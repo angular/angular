@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MergeConfig} from './config';
+import {MergeConfigWithRemote} from './config';
 import {PullRequestFailure} from './failures';
 import {GitClient, GitCommandError} from './git';
 import {isPullRequest, loadAndValidatePullRequest,} from './pull-request';
@@ -39,7 +39,8 @@ export class PullRequestMergeTask {
   git = new GitClient(this.projectRoot, this._githubToken, this.config);
 
   constructor(
-      public projectRoot: string, public config: MergeConfig, private _githubToken: string) {}
+      public projectRoot: string, public config: MergeConfigWithRemote,
+      private _githubToken: string) {}
 
   /**
    * Merges the given pull request and pushes it upstream.

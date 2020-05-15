@@ -77,7 +77,7 @@ export class GithubApiMergeStrategy extends MergeStrategy {
     const mergeOptions: PullsMergeParams = {
       pull_number: prNumber,
       merge_method: method,
-      ...this.git.repoParams,
+      ...this.git.remoteParams,
     };
 
     if (needsCommitMessageFixup) {
@@ -190,7 +190,7 @@ export class GithubApiMergeStrategy extends MergeStrategy {
   /** Gets all commit messages of commits in the pull request. */
   private async _getPullRequestCommitMessages({prNumber}: PullRequest) {
     const request = this.git.api.pulls.listCommits.endpoint.merge(
-        {...this.git.repoParams, pull_number: prNumber});
+        {...this.git.remoteParams, pull_number: prNumber});
     const allCommits: PullsListCommitsResponse = await this.git.api.paginate(request);
     return allCommits.map(({commit}) => commit.message);
   }
