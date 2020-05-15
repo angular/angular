@@ -743,6 +743,12 @@
             "logo": "https://angular.de/assets/img/angular-de-logo.svg",
             "title": "Angular.de (German)",
             "url": "https://angular.de/"
+          },
+          "AngularArchitects": {
+            "desc": "In-depth training and consulting with focus on enterprise-scale Angular applications and architecture (remote, on-site company trainings, and public workshops). We also blog about these topics on a regular basis.",
+            "rev": true,
+            "title": "Angular Architects (German and English)",
+            "url": "https://www.angulararchitects.io/"
           }
         }
       }
