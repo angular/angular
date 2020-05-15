@@ -30,16 +30,16 @@ export default [
     ['R', 'R', 'A', 'A', 'G', 'P', 'T', 'G', 'R', 'K', 'S', 'B'],
     ['rêb', 'reş', 'ada', 'avr', 'gul', 'pûş', 'tîr', 'gel', 'rez', 'kew', 'ser', 'ber'],
     [
-      'rêbendanê', 'reşemiyê', 'adarê', 'avrêlê', 'gulanê', 'pûşperê', 'tîrmehê',
-      'gelawêjê', 'rezberê', 'kewçêrê', 'sermawezê', 'berfanbarê'
+      'rêbendanê', 'reşemiyê', 'adarê', 'avrêlê', 'gulanê', 'pûşperê', 'tîrmehê', 'gelawêjê',
+      'rezberê', 'kewçêrê', 'sermawezê', 'berfanbarê'
     ]
   ],
   [
     ['R', 'R', 'A', 'A', 'G', 'P', 'T', 'G', 'R', 'K', 'S', 'B'],
     ['rêb', 'reş', 'ada', 'avr', 'gul', 'pûş', 'tîr', 'gel', 'rez', 'kew', 'ser', 'ber'],
     [
-      'rêbendan', 'reşemî', 'adar', 'avrêl', 'gulan', 'pûşper', 'tîrmeh', 'gelawêj',
-      'rezber', 'kewçêr', 'sermawez', 'berfanbar'
+      'rêbendan', 'reşemî', 'adar', 'avrêl', 'gulan', 'pûşper', 'tîrmeh', 'gelawêj', 'rezber',
+      'kewçêr', 'sermawez', 'berfanbar'
     ]
   ],
   [['BZ', 'PZ'], u, ['berî zayînê', 'piştî zayînê']],
