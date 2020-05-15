@@ -1,4 +1,4 @@
-import {MergeConfig} from './dev-infra/pr/merge/config';
+import {MergeConfig} from '../dev-infra/pr/merge/config';
 
 // The configuration for `ng-dev commit-message` commands.
 const commitMessage = {

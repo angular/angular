@@ -953,6 +953,7 @@ groups:
           '.circleci/**',
           '.devcontainer/**',
           '.github/**',
+          '.ng-dev/**',
           '.vscode/**',
           '.yarn/**',
           'dev-infra/**',
