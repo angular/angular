@@ -27,7 +27,8 @@ if (require.main === module) {
   // Bazel bin directory.
   inputFiles.forEach(inputPath => {
     const outputPath = join(bazelBinPath, inputPath.replace(markdownExtension, '.html'));
-    const htmlOutput = markdownRenderer.finalizeOutput(marked(readFileSync(inputPath, 'utf8')));
+    const htmlOutput = markdownRenderer.finalizeOutput(
+        marked(readFileSync(inputPath, 'utf8')), inputPath);
 
     writeFileSync(outputPath, htmlOutput);
   });
