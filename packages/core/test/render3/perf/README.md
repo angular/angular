@@ -80,5 +80,7 @@ To profile, append `_profile` to the target name and attach a debugger via chrom
 To interactively edit/rerun benchmarks use `ibazel` instead of `bazel`.
 
 To debug
+- Follow the directions in `profile_in_browser.html`
+OR
 - `yarn bazel build --config=ivy //packages/core/test/render3/perf:noop_change_detection`
 - `node --inspect-brk bazel-out/darwin-fastbuild/bin/packages/core/test/render3/perf/noop_change_detection.min_debug.es2015.js`
