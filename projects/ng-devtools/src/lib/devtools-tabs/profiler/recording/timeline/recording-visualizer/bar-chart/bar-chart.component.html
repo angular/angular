@@ -1,0 +1,7 @@
+<div class="wrapper">
+  <div *ngFor="let bar of internalData; let i = index" class="element-wrapper">
+    <div (click)="select(i)" class="bar" [style.backgroundColor]="color" [style.width.%]="bar.value">
+      <span>{{ bar.label }}</span>
+    </div>
+  </div>
+</div>

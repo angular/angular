@@ -20,16 +20,7 @@
       <label>Did not run change detection</label>
     </div>
     <div *ngIf="selectedEntry.value > 0">
-      <ngx-charts-pie-chart
-        legendTitle=""
-        [view]="view"
-        [scheme]="colorScheme"
-        [results]="graphData"
-        [tooltipText]="formatToolTip"
-        legend="true"
-        legendPosition="bottom"
-      >
-      </ngx-charts-pie-chart>
+      <ng-execution-details [data]="graphData"></ng-execution-details>
     </div>
   </section>
 </div>

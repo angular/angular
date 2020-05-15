@@ -5,7 +5,7 @@ import memo from 'memo-decorator';
 export interface BargraphNode {
   parents: ElementProfile[];
   value: number;
-  name: string;
+  label: string;
   original: ElementProfile;
 }
 
@@ -31,11 +31,10 @@ export class BarGraphFormatter extends RecordFormatter<BargraphNode[]> {
       timeSpent += super.getValue(element);
 
       element.directives.forEach((dir) => {
-        const suffix = addSpaces(nodes.length);
         const innerNode: BargraphNode = {
           parents,
           value: super.getDirectiveValue(dir),
-          name: dir.name + suffix,
+          label: dir.name,
           original: element,
         };
         nodes.push(innerNode);
@@ -44,5 +43,3 @@ export class BarGraphFormatter extends RecordFormatter<BargraphNode[]> {
     return timeSpent;
   }
 }
-
-const addSpaces = (length: number) => ' '.repeat(length);

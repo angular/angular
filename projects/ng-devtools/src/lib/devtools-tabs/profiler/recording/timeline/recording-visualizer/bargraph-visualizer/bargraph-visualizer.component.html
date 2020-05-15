@@ -1,31 +1,13 @@
 <div class="level-profile-wrapper" [class.split-width]="selectedEntry">
-  <ngx-charts-bar-horizontal
-    [view]="view"
-    [scheme]="colorScheme"
-    [results]="profileRecords"
-    [xAxis]="true"
-    [yAxis]="true"
-    [roundEdges]="false"
-    (select)="selectNode($event)"
-  >
-  </ngx-charts-bar-horizontal>
+  <ng-bar-chart (pick)="selectNode($event)" [color]="barColor" [data]="profileRecords"> </ng-bar-chart>
 </div>
 
 <div class="selected-entry" *ngIf="selectedEntry">
-  <header>{{ selectedEntry.name }} details</header>
+  <header>{{ selectedEntry.label }} details</header>
   <section class="entry-statistics">
     <div class="txt-total-time"><label>Total time spent:</label> {{ selectedEntry.value | number }}ms</div>
     <div *ngIf="selectedEntry.value > 0">
-      <ngx-charts-pie-chart
-        legendTitle=""
-        [view]="pieChartView"
-        [scheme]="pieChartColorScheme"
-        [results]="pieChartData"
-        [tooltipText]="formatToolTip"
-        legend="true"
-        legendPosition="bottom"
-      >
-      </ngx-charts-pie-chart>
+      <ng-execution-details [data]="selectedDirectives"> </ng-execution-details>
     </div>
     <div *ngIf="parentHierarchy.length > 0">
       <div class="txt-total-time"><label>Parent Hierarchy</label></div>
