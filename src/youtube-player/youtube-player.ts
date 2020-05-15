@@ -21,7 +21,6 @@ import {
   Output,
   ViewChild,
   ViewEncapsulation,
-  Optional,
   Inject,
   PLATFORM_ID,
 } from '@angular/core';
@@ -187,17 +186,8 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   @ViewChild('youtubeContainer')
   youtubeContainer: ElementRef<HTMLElement>;
 
-  constructor(
-    private _ngZone: NgZone,
-    /**
-     * @deprecated `platformId` parameter to become required.
-     * @breaking-change 10.0.0
-     */
-    @Optional() @Inject(PLATFORM_ID) platformId?: Object) {
-
-    // @breaking-change 10.0.0 Remove null check for `platformId`.
-    this._isBrowser =
-        platformId ? isPlatformBrowser(platformId) : typeof window === 'object' && !!window;
+  constructor(private _ngZone: NgZone, @Inject(PLATFORM_ID) platformId: Object) {
+    this._isBrowser = isPlatformBrowser(platformId);
   }
 
   ngOnInit() {

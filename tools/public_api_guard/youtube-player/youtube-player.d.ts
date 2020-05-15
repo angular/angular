@@ -16,8 +16,7 @@ export declare class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     get width(): number | undefined;
     set width(width: number | undefined);
     youtubeContainer: ElementRef<HTMLElement>;
-    constructor(_ngZone: NgZone,
-    platformId?: Object);
+    constructor(_ngZone: NgZone, platformId: Object);
     createEventsBoundInZone(): YT.Events;
     getAvailablePlaybackRates(): number[];
     getAvailableQualityLevels(): YT.SuggestedVideoQuality[];
@@ -43,7 +42,7 @@ export declare class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     stopVideo(): void;
     unMute(): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<YouTubePlayer, "youtube-player", never, { "videoId": "videoId"; "height": "height"; "width": "width"; "startSeconds": "startSeconds"; "endSeconds": "endSeconds"; "suggestedQuality": "suggestedQuality"; "showBeforeIframeApiLoads": "showBeforeIframeApiLoads"; }, { "ready": "ready"; "stateChange": "stateChange"; "error": "error"; "apiChange": "apiChange"; "playbackQualityChange": "playbackQualityChange"; "playbackRateChange": "playbackRateChange"; }, never, never>;
-    static ɵfac: i0.ɵɵFactoryDef<YouTubePlayer, [null, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDef<YouTubePlayer, never>;
 }
 
 export declare class YouTubePlayerModule {
