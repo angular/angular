@@ -45,7 +45,7 @@ describe('DocViewerComponent', () => {
     let renderSpy: jasmine.Spy;
 
     const setCurrentDoc = (newDoc: TestParentComponent['currentDoc']) => {
-      parentComponent.currentDoc = newDoc && {id: 'fizz/buzz', ...newDoc};
+      parentComponent.currentDoc = newDoc;
       parentFixture.detectChanges();  // Run change detection to propagate the new doc to `DocViewer`.
       safeFlushAsapScheduler();  // Flush `asapScheduler` to trigger `DocViewer#render()`.
     };
