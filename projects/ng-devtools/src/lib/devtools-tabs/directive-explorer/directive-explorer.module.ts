@@ -9,9 +9,9 @@ import { MatTreeModule } from '@angular/material/tree';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { PropertyTabModule } from './property-tab/property-tab.module';
-import { AngularSplitModule } from 'angular-split';
 import { DirectiveForestModule } from './directive-forest/directive-forest.module';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { AngularSplitModule } from '../../vendor/angular-split/lib/module';
 
 @NgModule({
   declarations: [DirectiveExplorerComponent, DirectiveForestComponent, FilterComponent],
