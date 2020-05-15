@@ -69,7 +69,7 @@ class CustomValidatorDirective implements Validator {
         });
 
         it('should return select accessor when provided', () => {
-          const selectAccessor = new SelectControlValueAccessor(null!, null!);
+          const selectAccessor = new SelectControlValueAccessor(null!, null!, null!);
           expect(selectValueAccessor(dir, [
             defaultAccessor, selectAccessor
           ])).toEqual(selectAccessor);
@@ -84,7 +84,7 @@ class CustomValidatorDirective implements Validator {
 
         it('should throw when more than one build-in accessor is provided', () => {
           const checkboxAccessor = new CheckboxControlValueAccessor(null!, null!);
-          const selectAccessor = new SelectControlValueAccessor(null!, null!);
+          const selectAccessor = new SelectControlValueAccessor(null!, null!, null!);
           expect(() => selectValueAccessor(dir, [checkboxAccessor, selectAccessor])).toThrowError();
         });
 

@@ -4,6 +4,7 @@
 
 ```ts
 
+import { AfterViewChecked } from '@angular/core';
 import { AfterViewInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { ElementRef } from '@angular/core';
@@ -12,6 +13,7 @@ import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
+import { NgZone } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OnChanges } from '@angular/core';
 import { OnDestroy } from '@angular/core';
@@ -827,8 +829,10 @@ export class RequiredValidator extends AbstractValidatorDirective {
 }
 
 // @public
-export class SelectControlValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor {
+export class SelectControlValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor, AfterViewChecked {
+    constructor(_renderer: Renderer2, _elementRef: ElementRef, _ngZone: NgZone);
     set compareWith(fn: (o1: any, o2: any) => boolean);
+    ngAfterViewChecked(): void;
     registerOnChange(fn: (value: any) => any): void;
     // (undocumented)
     value: any;
