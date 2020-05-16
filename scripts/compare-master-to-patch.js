@@ -34,10 +34,9 @@ const ignorePatterns = [
   'build(docs-infra): upgrade cli command docs sources',
 ];
 
-// Limit the log history to start from v9.0.0 release date.
-// Note: this is needed only for 9.0.x branch to avoid RC history.
-// Remove it once `9.1.x` branch is created.
-const after = '--after="2020-02-05"';
+// String to be displayed as a version for initial commits in a branch
+// (before first release from that branch).
+const initialVersion = 'initial';
 
 // Helper methods
 
@@ -55,7 +54,7 @@ function toArray(rawGitCommandOutput) {
 }
 
 function maybeExtractReleaseVersion(commit) {
-  const versionRegex = /release: cut the (.*?) release|docs: release notes for the (.*?) release/;
+  const versionRegex = /release: cut the (.*?) release/;
   const matches = commit.match(versionRegex);
   return matches ? matches[1] || matches[2] : null;
 }
@@ -67,7 +66,7 @@ function maybeExtractReleaseVersion(commit) {
 function collectCommitsAsMap(rawGitCommits) {
   const commits = toArray(rawGitCommits);
   const commitsMap = new Map();
-  let version = 'initial';
+  let version = initialVersion;
   commits.reverse().forEach((item) => {
     const skip = ignorePatterns.some(pattern => item.indexOf(pattern) > -1);
     // Keep track of the current version while going though the list of commits, so that we can use
@@ -89,7 +88,8 @@ function collectCommitsAsMap(rawGitCommits) {
 }
 
 function getCommitInfoAsString(version, commitInfo) {
-  return `[${version}+] ${commitInfo}`;
+  const formattedVersion = version === initialVersion ? version : `${version}+`;
+  return `[${formattedVersion}] ${commitInfo}`;
 }
 
 /**
@@ -149,9 +149,9 @@ function main() {
 
   // Extract master-only and patch-only commits using `git log` command.
   const masterCommits = execGitCommand(
-      `git log --cherry-pick --oneline --right-only ${after} upstream/${branch}...upstream/master`);
+      `git log --cherry-pick --oneline --right-only upstream/${branch}...upstream/master`);
   const patchCommits = execGitCommand(
-      `git log --cherry-pick --oneline --left-only ${after} upstream/${branch}...upstream/master`);
+      `git log --cherry-pick --oneline --left-only upstream/${branch}...upstream/master`);
 
   // Post-process commits and convert raw data into a Map, so that we can diff it easier.
   const masterCommitsMap = collectCommitsAsMap(masterCommits);
