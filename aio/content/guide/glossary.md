@@ -601,7 +601,7 @@ Compare to [NgModule](#ngmodule).
 ## ngcc
 
 Angular compatibility compiler.
-If you build your app using [Ivy](#ivy), but it depends on libraries have not been compiled with Ivy, the CLI uses `ngcc` to automatically update the dependent libraries to use Ivy.
+If you build your app using [Ivy](#ivy), but it depends on libraries that have not been compiled with Ivy, the CLI uses `ngcc` to automatically update the dependent libraries to use Ivy.
 
 
 {@a ngmodule}
