@@ -1,7 +1,7 @@
 # Using published libraries
 
 When building Angular applications you can take advantage of sophisticated first-party libraries, such as [Angular Material](https://material.angular.io/), as well as rich ecosystem of third-party libraries.
-See the [Angular Resources](https://angular.io/resources) page for links to the most popular ones.
+See the [Angular Resources](resources) page for links to the most popular ones.
 
 ## Installing libraries
 

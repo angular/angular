@@ -1455,7 +1455,7 @@ Angular provides *value accessors* for all of the basic HTML form elements and t
 
 You can't apply `[(ngModel)]` to a non-form native element or a
 third-party custom component until you write a suitable value accessor. For more information, see
-the API documentation on [DefaultValueAccessor](https://angular.io/api/forms/DefaultValueAccessor).
+the API documentation on [DefaultValueAccessor](api/forms/DefaultValueAccessor).
 
 You don't need a value accessor for an Angular component that
 you write because you can name the value and event properties
