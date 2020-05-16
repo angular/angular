@@ -112,7 +112,7 @@ To learn more, see [Schematics Overview](guide/schematics) and [Schematics for
 Use the Angular CLI and the npm package manager to build and publish your library as an npm package. It is not recommended to publish Ivy libraries to NPM repositories. Before publishing a library to NPM, build it using the `--prod` flag which will use the older compiler and runtime known as View Engine instead of Ivy.
 
 <code-example language="bash">
-ng build my-lib --prod
+ng build my-lib
 cd dist/my-lib
 npm publish
 </code-example>
