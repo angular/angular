@@ -228,7 +228,7 @@ The following table lists some of the key AngularJS template features with their
       -->
       Angular 템플릿에서는 `let` 키워드를 사용해서 입력 변수를 정의할 수 있습니다.
 
-      더 자세한 내용은 [템플릿 문법](guide/template-syntax) 문서의 [ngFor 세부 문법](guide/template-syntax#microsyntax) 섹션을 참고하세요.
+      자세한 내용은 [템플릿 문법](guide/template-syntax) 문서의 [ngFor 세부 문법](guide/template-syntax#microsyntax) 섹션을 참고하세요.
 
     </td>
 
@@ -1040,7 +1040,7 @@ Many of the built-in filters in AngularJS have corresponding pipes in Angular.
 For more information on pipes, see [Pipes](guide/pipes).
 -->
 Angular에서 말하는 **파이프**는 템플릿에 있는 데이터를 다른 형태로 변환하는 역할을 하며 AngularJS **필터**와 비슷합니다.
-그리고 AngularJS에서 제공하던 기본 필터들은 Angular에서도 제공합니다.
+그리고 AngularJS에서 제공하던 기본 필터중 대부분은 Angular에서도 제공합니다.
 파이프에 대해 자세하게 알아보려면 [파이프](guide/pipes) 문서를 참고하세요.
 
 
@@ -1366,8 +1366,12 @@ Angular에서 말하는 **파이프**는 템플릿에 있는 데이터를 다른
 {@a controllers-components}
 
 
-
+<!--
 ## Modules/controllers/components
+-->
+## 모듈/컨트롤러/컴포넌트
+
+<!--
 In both AngularJS and Angular, modules help you organize your application into cohesive blocks of functionality.
 
 In AngularJS, you write the code that provides the model and the methods for the view in a **controller**.
@@ -1375,7 +1379,14 @@ In Angular, you build a **component**.
 
 Because much AngularJS code is in JavaScript, JavaScript code is shown in the AngularJS column.
 The Angular code is shown using TypeScript.
+-->
+AngularJS와 Angular에는 각각 애플리케이션을 기능별로 구성하기 위한 모듈 시스템이 있습니다.
 
+AngularJS에서는 화면의 특정 영역과 연결된 **컨트롤러(controller)**에 모델과 메소드를 정의합니다.
+그리고 Angular에서는 **컴포넌트(component)**가 이 역할을 합니다.
+
+AngularJS 애플리케이션 코드는 대부분 JavaScript 파일 안에 있을 것입니다.
+반면에 Angular 코드는 TypeScript로 작성합니다.
 
 <table width="100%">
 
@@ -1413,20 +1424,30 @@ The Angular code is shown using TypeScript.
       </code-example>
 
 
+      <!--
       In AngularJS, an immediately invoked function expression (or IIFE) around controller code
       keeps it out of the global namespace.
+      -->
+      AngularJS에서 컨트롤러 안에 정의한 즉시실행함수는 전역 네임스페이스에 존재하지 않습니다.
 
     </td>
 
     <td>
 
 
+      <!--
       ### none
       This is a nonissue in Angular because ES 2015 modules
       handle the namespacing for you.
 
       For more information on modules, see the [Modules](guide/architecture#modules) section of the
       [Architecture Overview](guide/architecture).
+      -->
+      ### 지원하지 않음
+
+      네임스페이스는 ES2015 모듈 시스템이 처리하기 때문에 Angular가 따로 제공하지 않습니다.
+
+      모듈에 대해 더 자세하게 알아보려면 [아키텍처 개요](guide/architecture) 문서의 [모듈](guide/architecture#modules) 섹션을 참고하세요.
     </td>
 
   </tr>
@@ -1436,6 +1457,7 @@ The Angular code is shown using TypeScript.
     <td>
 
 
+      <!--
       ### Angular modules
 
       <code-example hideCopy>
@@ -1445,6 +1467,15 @@ The Angular code is shown using TypeScript.
 
       In AngularJS, an Angular module keeps track of controllers, services, and other code.
       The second argument defines the list of other modules that this module depends upon.
+      -->
+      ### Angular 모듈
+
+      <code-example hideCopy>
+        angular.module("movieHunter", ["ngRoute"]);
+      </code-example>
+
+      AngularJS 모듈은 컨트롤러와 서비스를 관리합니다.
+      모듈 정의 메소드의 두번째 인자는 의존성 관계에 있는 모듈의 목록을 지정한 것입니다.
     </td>
 
     <td>
@@ -1455,12 +1486,20 @@ The Angular code is shown using TypeScript.
       <code-example hideCopy path="ajs-quick-reference/src/app/app.module.1.ts"></code-example>
 
 
+      <!--
       NgModules, defined with the `NgModule` decorator, serve the same purpose:
 
       * `imports`: specifies the list of other modules that this module depends upon
       * `declaration`: keeps track of your components, pipes, and directives.
 
       For more information on modules, see [NgModules](guide/ngmodules).
+      -->
+      NgModule은 `NgModule` 데코레이터로 정의합니다.
+
+      * `imports`: 해당 모듈과 의존성 관계에 있는 모듈의 목록을 지정합니다.
+      * `declaration`: 모듈에 포함되는 컴포넌트, 파이프, 디렉티브를 등록합니다.
+
+      모듈에 대해 더 자세하게 알아보려면 [NgModule](guide/ngmodules) 문서를 참고하세요.
     </td>
 
   </tr>
@@ -1470,6 +1509,7 @@ The Angular code is shown using TypeScript.
     <td>
 
 
+      <!--
       ### Controller registration
 
       <code-example hideCopy>
@@ -1486,11 +1526,27 @@ The Angular code is shown using TypeScript.
 
       The first argument is the controller name. The second argument defines the string names of
       all dependencies injected into this controller, and a reference to the controller function.
+      -->
+      ### 컨트롤러 등록
+
+      <code-example hideCopy>
+        angular
+          .module("movieHunter")
+          .controller("MovieListCtrl",
+                      ["movieService",
+                       MovieListCtrl]);
+      </code-example>
+
+      AngularJS의 동작 로직은 컨트롤러에 정의하며, 이 컨트롤러는 해당되는 모듈에 직접 등록합니다.
+
+      첫번째 인자는 컨트롤러의 이름입니다.
+      그리고 두번째 인자는 이 컨트롤러에 의존성으로 주입되어야 하는 객체들의 이름을 지정합니다.
     </td>
 
     <td>
 
 
+      <!--
       ### Component decorator
 
       <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="component"></code-example>
@@ -1504,6 +1560,17 @@ The Angular code is shown using TypeScript.
 
       For more information, see the [Components](guide/architecture#components)
       section of the [Architecture Overview](guide/architecture) page.
+      -->
+      ### 컴포넌트 데코레이터
+
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="component"></code-example>
+
+      Angular에서는 컴포넌트 클래스에 필요한 것들을 컴포넌트 데코레이터의 메타데이터로 지정합니다.
+      그래서 `@Component` 데코레이터는 이 데코레이터가 붙는 클래스가 컴포넌트라는 것 외에도 컴포넌트의 셀렉터나 템플릿도 지정합니다.
+
+      결국 템플릿과 로직을 연결하는 것이 컴포넌트 클래스를 정의하는 것이라고 할 수 있습니다.
+
+      더 자세한 내용은 [아키텍처 개요](guide/architecture) 문서의 [컴포넌트](guide/architecture#components) 섹션을 참고하세요.
     </td>
 
   </tr>
@@ -1513,6 +1580,7 @@ The Angular code is shown using TypeScript.
     <td>
 
 
+      <!--
       ### Controller function
 
       <code-example hideCopy>
@@ -1522,11 +1590,21 @@ The Angular code is shown using TypeScript.
 
 
       In AngularJS, you write the code for the model and methods in a controller function.
+      -->
+      ### 컨트롤러 함수
+
+      <code-example hideCopy>
+        function MovieListCtrl(movieService) {
+        }
+      </code-example>
+
+      AngularJS에서는 데이터 모델과 메소드를 컨트롤러 함수에 정의합니다.
     </td>
 
     <td>
 
 
+      <!--
       ### Component class
 
       <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="class"></code-example>
@@ -1536,6 +1614,15 @@ The Angular code is shown using TypeScript.
 
       For more information, see the [Components](guide/architecture#components)
       section of the [Architecture Overview](guide/architecture) page.
+      -->
+      ### 컴포넌트 클래스
+
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="class"></code-example>
+
+      Angular에서는 데이터 모델과 메소드를 컴포넌트 클래스에 정의합니다.
+      그리고 이 클래스는 TypeScript로 작성하기 때문에 <code>export</code> 키워드를 사용해서 외부로 공개하면 NgModule이 이 클래스를 로드해서 등록할 수 있습니다.
+
+      더 자세한 내용은 [아키텍처 개요](guide/architecture) 문서의 [컴포넌트](guide/architecture#components) 섹션을 참고하세요.
     </td>
 
   </tr>
@@ -1545,6 +1632,7 @@ The Angular code is shown using TypeScript.
     <td>
 
 
+      <!--
       ### Dependency injection
 
       <code-example hideCopy>
@@ -1559,11 +1647,25 @@ The Angular code is shown using TypeScript.
 
       To guard against minification problems, tell Angular explicitly
       that it should inject an instance of the `MovieService` in the first parameter.
+      -->
+      ### 의존성 주입
+
+      <code-example hideCopy>
+        MovieListCtrl.$inject = ['MovieService'];
+        function MovieListCtrl(movieService) {
+        }
+      </code-example>
+
+      AngularJS에서 컨트롤러를 생성할 때 인자를 지정하면 의존성 객체를 주입할 수 잇습니다.
+      위 예제는 `MovieService`를 의존성으로 주입하는 예제 코드입니다.
+
+      그리고 코드를 난독화하거나 압축할 때 발생하는 문제를 피하기 위해 컨트롤러의 첫번째 인자로 `MovieService`가 주입된다는 것을 명시해야 합니다.
     </td>
 
     <td>
 
 
+      <!--
       ### Dependency injection
 
       <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="di"></code-example>
@@ -1575,6 +1677,16 @@ The Angular code is shown using TypeScript.
 
       For more information, see the [Dependency injection](guide/architecture#dependency-injection)
       section of the [Architecture Overview](guide/architecture).
+      -->
+      ### 의존성 주입
+
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="di"></code-example>
+
+      Angular에서는 의존성으로 주입되는 객체를 컴포넌트 클래스 생성자에 지정합니다.
+      위 예제는 컴포넌트에 `MovieService`를 주입하는 예제 코드입니다.
+      Angular는 생성자의 인자에 지정된 TypeScript 타입으로 의존성 객체를 탐색하기 때문에 코드 난독화나 압축의 영향을 받지 않습니다.
+
+      더 자세한 내용은 [아키텍처 개요](guide/architecture) 문서의 [의존성 주입](guide/architecture#dependency-injection) 섹션을 참고하세요.
     </td>
 
   </tr>
@@ -1585,13 +1697,24 @@ The Angular code is shown using TypeScript.
 
 
 
+<!--
 ## Style sheets
+-->
+## 스타일 시트
+
+<!--
 Style sheets give your application a nice look.
 In AngularJS, you specify the style sheets for your entire application.
 As the application grows over time, the styles for the many parts of the application
 merge, which can cause unexpected results.
 In Angular, you can still define style sheets for your entire application. But now you can
 also encapsulate a style sheet within a specific component.
+-->
+스타일 시트를 추가하면 애플리케이션의 모습을 멋지게 꾸밀 수 있습니다.
+AngularJS에서는 스타일 추가하면 애플리케이션 전체에 이 스타일이 반영되었습니다.
+하지만 애플리케이션은 시간이 지남에 따라 점점 커지고 복잡해지기 때문에 애플리케이션 각 부분의 스타일이 섞여서 예상치 못한 결과가 나타나는 경우가 많았습니다.
+Angular에서도 애플리케이션 전 영역에 스타일 시트를 적용할 수 있습니다.
+하지만 특정 컴포넌트에만 적용되도록 스타일을 캡슐화할 수도 있습니다.
 
 <table width="100%">
 
@@ -1620,6 +1743,7 @@ also encapsulate a style sheet within a specific component.
     <td>
 
 
+      <!--
       ### Link tag
 
       <code-example hideCopy>
@@ -1629,12 +1753,21 @@ also encapsulate a style sheet within a specific component.
 
       AngularJS, uses a `link` tag in the head section of the `index.html` file
       to define the styles for the application.
+      -->
+      ### 링크 태그
+
+      <code-example hideCopy>
+        &lt;link href="styles.css" rel="stylesheet" />
+      </code-example>
+
+      AngularJS에서는 `index.html` 파일의 헤드 영역에 `link` 태그를 사용해서 애플리케이션 스타일 파일을 로드합니다.
     </td>
 
     <td>
 
 
 
+      <!--
       ### Styles configuration
       <code-example hideCopy path="ajs-quick-reference/.angular-cli.1.json" region="styles"></code-example>
 
@@ -1650,6 +1783,21 @@ also encapsulate a style sheet within a specific component.
 
       This allows you to set appropriate styles for individual components that won’t leak into
       other parts of the application.
+      -->
+      ### 스타일 설정
+
+      <code-example hideCopy path="ajs-quick-reference/.angular-cli.1.json" region="styles"></code-example>
+
+      Angular CLI로 생성한 프로젝트는 `angular.json` 파일로 전역 스타일을 설정합니다.
+      SASS를 사용한다면 기본 스타일 파일의 확장자를 `.scss`로 변경할 수도 있습니다.
+
+      ### StyleUrls
+
+      Angular에서는 `@Component` 메타 데이터에 `styles`나 `styleUrls` 프로퍼티를 지정해서 특정 컴포넌트에만 스타일을 적용할 수 있습니다.
+
+      <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="style-url"></code-example>
+
+      이렇게 구현하면 외부에 있는 컴포넌트에 영향을 주지 않습니다.
     </td>
 
   </tr>
