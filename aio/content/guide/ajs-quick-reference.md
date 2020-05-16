@@ -1029,10 +1029,19 @@ ANgularJS에서는 템플릿에 사용할 수 있는 디렉티브를 70개 이�
 
 
 
+<!--
 ## Filters/pipes
+-->
+## 필터/파이프
+
+<!--
 Angular **pipes** provide formatting and transformation for data in the template, similar to AngularJS **filters**.
 Many of the built-in filters in AngularJS have corresponding pipes in Angular.
 For more information on pipes, see [Pipes](guide/pipes).
+-->
+Angular에서 말하는 **파이프**는 템플릿에 있는 데이터를 다른 형태로 변환하는 역할을 하며 AngularJS **필터**와 비슷합니다.
+그리고 AngularJS에서 제공하던 기본 필터들은 Angular에서도 제공합니다.
+파이프에 대해 자세하게 알아보려면 [파이프](guide/pipes) 문서를 참고하세요.
 
 
 <table width="100%">
@@ -1069,7 +1078,10 @@ For more information on pipes, see [Pipes](guide/pipes).
       </code-example>
 
 
+      <!--
       Formats a number as currency.
+      -->
+      숫자를 통화 단위로 표현합니다.
     </td>
 
     <td>
@@ -1080,7 +1092,10 @@ For more information on pipes, see [Pipes](guide/pipes).
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="currency"></code-example>
 
 
+      <!--
       The Angular `currency` pipe is similar although some of the parameters have changed.
+      -->
+      AngularJS와 비슷하지만 인자를 사용하는 방식이 변경되었습니다.
     </td>
 
   </tr>
@@ -1097,7 +1112,10 @@ For more information on pipes, see [Pipes](guide/pipes).
       </code-example>
 
 
+      <!--
       Formats a date to a string based on the requested format.
+      -->
+      일자 데이터를 특정 형태로 변경합니다.
     </td>
 
     <td>
@@ -1108,7 +1126,10 @@ For more information on pipes, see [Pipes](guide/pipes).
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="date"></code-example>
 
 
+      <!--
       The Angular `date` pipe is similar.
+      -->
+      Angular에서도 비슷합니다.
 
     </td>
 
@@ -1126,14 +1147,24 @@ For more information on pipes, see [Pipes](guide/pipes).
       </code-example>
 
 
+      <!--
       Selects a subset of items from the defined collection, based on the filter criteria.
+      -->
+      목록 중 필터 조건에 맞지 않는 데이터를 제외합니다.
     </td>
 
     <td>
 
 
+      <!--
       ### none
       For performance reasons, no comparable pipe exists in Angular. Do all your filtering in the component. If you need the same filtering code in several templates, consider building a custom pipe.
+      -->
+      ### 지원하지 않음
+
+      필터의 성능문제로 Angular는 이 기능을 파이프로 제공하지 않습니다.
+      목록을 필터링하려면 컴포넌트 안에서 하세요.
+      꼭 템플릿에서 필터링해야 한다면 커스텀 파이프를 정의해야 합니다.
 
     </td>
 
@@ -1151,7 +1182,11 @@ For more information on pipes, see [Pipes](guide/pipes).
       </code-example>
 
 
+      <!--
       Converts a JavaScript object into a JSON string. This is useful for debugging.
+      -->
+      JavaScript 객체를 JSON 문자열로 변환합니다.
+      디버깅할 때 활용하면 좋습니다.
     </td>
 
     <td>
@@ -1162,7 +1197,10 @@ For more information on pipes, see [Pipes](guide/pipes).
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="json"></code-example>
 
 
+      <!--
       The Angular `json` pipe does the same thing.
+      -->
+      AngularJS에서 제공하는 기능과 같습니다.
     </td>
 
   </tr>
@@ -1179,8 +1217,11 @@ For more information on pipes, see [Pipes](guide/pipes).
       </code-example>
 
 
+      <!--
       Selects up to the first parameter (2) number of items from the collection
       starting (optionally) at the beginning index (0).
+      -->
+      시작 인덱스(생략 가능, 0)부터 첫번째 인자(2) 갯수만큼 목록을 필터링합니다.
     </td>
 
     <td>
@@ -1191,10 +1232,16 @@ For more information on pipes, see [Pipes](guide/pipes).
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="slice"></code-example>
 
 
+      <!--
       The `SlicePipe` does the same thing but the *order of the parameters is reversed*, in keeping
       with the JavaScript `Slice` method.
       The first parameter is the starting index; the second is the limit.
       As in AngularJS, coding this operation within the component instead could improve performance.
+      -->
+      `SlicePipe`가 동일한 기능을 하지만 *인자의 순서가 반대입니다*.
+      Angular에서는 JavaScript `Slice` 메소드의 인자 순서대로 사용합니다.
+      첫번째 인자는 시작 인덱스이고 두번째 인자가 갯수입니다.
+      그리고 AngularJS와 마찬가지로 목록을 필터링하는 로직은 컴포넌트에서 하는 것이 성능 향상에 도움이 됩니다.
     </td>
 
   </tr>
@@ -1211,7 +1258,10 @@ For more information on pipes, see [Pipes](guide/pipes).
       </code-example>
 
 
+      <!--
       Converts the string to lowercase.
+      -->
+      문자열을 소문자로 변환합니다.
     </td>
 
     <td>
@@ -1222,7 +1272,10 @@ For more information on pipes, see [Pipes](guide/pipes).
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="lowercase"></code-example>
 
 
+      <!--
       The Angular `lowercase` pipe does the same thing.
+      -->
+      AngularJS와 동일합니다.
     </td>
 
   </tr>
@@ -1239,7 +1292,10 @@ For more information on pipes, see [Pipes](guide/pipes).
       </code-example>
 
 
+      <!--
       Formats a number as text.
+      -->
+      숫자를 특정 형식의 문자열로 변환합니다.
     </td>
 
     <td>
@@ -1250,12 +1306,17 @@ For more information on pipes, see [Pipes](guide/pipes).
       <code-example hideCopy path="ajs-quick-reference/src/app/app.component.html" region="number"></code-example>
 
 
+      <!--
       The Angular `number` pipe is similar.
       It provides more functionality when defining
       the decimal places, as shown in the second example above.
 
       Angular also has a `percent` pipe, which formats a number as a local percentage
       as shown in the third example.
+      -->
+      AngularJS와 비슷하지만, 두번째 예제에서 보는 것처럼 소수점 자리수를 지정할 수 있습니다.
+
+      그리고 Angular는 세번째 예제처럼 `percent` 파이프도 지원하는데, 이 파이프는 로컬 형식을 반영합니다.
     </td>
 
   </tr>
@@ -1272,16 +1333,27 @@ For more information on pipes, see [Pipes](guide/pipes).
       </code-example>
 
 
+      <!--
       Displays the collection in the order specified by the expression.
       In this example, the movie title orders the `movieList`.
+      -->
+      배열을 정렬합니다.
+      이 예제에서는 `movieList`의 `title`을 기준으로 정렬합니다.
     </td>
 
     <td>
 
 
+      <!--
       ### none
       For performance reasons, no comparable pipe exists in Angular.
       Instead, use component code to order or sort results. If you need the same ordering or sorting code in several templates, consider building a custom pipe.
+      -->
+      ### 지원하지 않음
+
+      성능 문제로 Angular는 이 기능을 파이프로 제공하지 않습니다.
+      목록을 정렬하려면 컴포넌트 안에서 하세요.
+      꼭 템플릿 안에서 정렬해야 한다면 커스텀 파이프를 정의해야 합니다.
 
     </td>
 
