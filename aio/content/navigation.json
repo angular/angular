@@ -767,13 +767,13 @@
           "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
         },
         {
-          "title": "Updating to Version 9",
-          "tooltip": "Support for updating your application from version 8 to 9.",
+          "title": "Updating to Version 10",
+          "tooltip": "Support for updating your application from version 9 to 10.",
           "children": [
             {
-              "url": "guide/updating-to-version-9",
+              "url": "guide/updating-to-version-10",
               "title": "Overview",
-              "tooltip": "Everything you need to know for updating your application from version 8 to 9."
+              "tooltip": "Everything you need to know for updating your application from version 9 to 10."
             },
             {
               "url": "guide/ivy-compatibility",
@@ -781,29 +781,9 @@
               "tooltip": "Details to help you make sure your application is compatible with Ivy."
             },
             {
-              "title": "Optional Migrations",
-              "tooltip": "Optional migration details regarding updating to version 9.",
+              "title": "Migrations",
+              "tooltip": "Migration details regarding updating to version 10.",
               "children": [
-                {
-                  "url": "guide/migration-renderer",
-                  "title": "Renderer to Renderer2",
-                  "tooltip": "Migration from the deprecated Renderer API to the newer Renderer2 API."
-                },
-                {
-                  "url": "guide/migration-dynamic-flag",
-                  "title": "Dynamic Queries Flag",
-                  "tooltip": "Migration to remove unnecessary `static: false` flag from @ViewChild and @ContentChild queries."
-                },
-                {
-                  "url": "guide/migration-injectable",
-                  "title": "Missing @Injectable() Decorators",
-                  "tooltip": "Migration to add missing @Injectable() decorators and incomplete provider definitions."
-                },
-                {
-                  "url": "guide/migration-localize",
-                  "title": "$localize Global Import",
-                  "tooltip": "Migration to add an import statement for @angular/localize to polyfills.ts."
-                },
                 {
                   "url": "guide/migration-module-with-providers",
                   "title": "Missing ModuleWithProviders Generic",
@@ -813,6 +793,11 @@
                   "url": "guide/migration-undecorated-classes",
                   "title": "Missing @Directive() Decorators",
                   "tooltip": "Migration to add missing @Directive()/@Component() decorators."
+                },
+                {
+                  "url": "guide/migration-injectable",
+                  "title": "Missing @Injectable() Decorators",
+                  "tooltip": "Migration to add missing @Injectable() decorators and incomplete provider definitions."
                 }
               ]
             }
