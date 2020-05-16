@@ -44,7 +44,7 @@ NOTE:
 
    By convention, HTML attributes use lowercase names (`tabindex`), while properties use camelCase names (`tabIndex`).
 
-   See the [Template Syntax](https://angular.io/guide/template-syntax#html-attribute-vs-dom-property) guide for more background on the difference between attributes and properties.
+   See the [Template Syntax](guide/template-syntax#html-attribute-vs-dom-property) guide for more background on the difference between attributes and properties.
 
 </div>
 

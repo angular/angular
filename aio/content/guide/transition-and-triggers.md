@@ -153,7 +153,7 @@ You can define more than one animation trigger for a component. You can attach a
 
 ### Parent-child animations
 
-Each time an animation is triggered in Angular, the parent animation always get priority and child animations are blocked. In order for a child animation to run, the parent animation must query each of the elements containing child animations and then allow the animations to run using the [`animateChild()`](https://angular.io/api/animations/animateChild) function.
+Each time an animation is triggered in Angular, the parent animation always get priority and child animations are blocked. In order for a child animation to run, the parent animation must query each of the elements containing child animations and then allow the animations to run using the [`animateChild()`](api/animations/animateChild) function.
 
 #### Disabling an animation on an HTML element
 
@@ -178,7 +178,7 @@ You can't selectively disable multiple animations on a single element.
 
 However, selective child animations can still be run on a disabled parent in one of the following ways:
 
-* A parent animation can use the [`query()`](https://angular.io/api/animations/query) function to collect inner elements located in disabled areas of the HTML template.
+* A parent animation can use the [`query()`](api/animations/query) function to collect inner elements located in disabled areas of the HTML template.
 Those elements can still animate.
 
 * A subanimation can be queried by a parent and then later animated with the `animateChild()` function.

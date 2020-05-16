@@ -86,6 +86,6 @@ Angular offers many more capabilities, and you now have a foundation that empowe
 * Angular provides advanced capabilities for mobile apps, animation, internationalization, server-side rendering, and more.
 * [Angular Material](https://material.angular.io/ "Angular Material web site") offers an extensive library of Material Design components.
 * [Angular Protractor](https://protractor.angular.io/ "Angular Protractor web site") offers an end-to-end testing framework for Angular apps.
-* Angular also has an extensive [network of 3rd-party tools and libraries](https://angular.io/resources "Angular resources list").
+* Angular also has an extensive [network of 3rd-party tools and libraries](resources "Angular resources list").
 
 Keep current by following the [Angular blog](https://blog.angular.io/ "Angular blog").
