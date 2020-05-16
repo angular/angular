@@ -53,11 +53,11 @@ With dynamic queries (`static: false`), the query resolves after either `ngAfter
 The result will be updated for changes to your view, such as changes to `ngIf` and `ngFor` blocks.
 
 For more information, see the following entries in the
-[Static Query Migration Guide](https://angular.io/guide/static-query-migration):
+[Static Query Migration Guide](guide/static-query-migration):
 
-* [How do I choose which `static` flag value to use: `true` or `false`?](https://angular.io/guide/static-query-migration#how-do-i-choose-which-static-flag-value-to-use-true-or-false)
+* [How do I choose which `static` flag value to use: `true` or `false`?](guide/static-query-migration#how-do-i-choose-which-static-flag-value-to-use-true-or-false)
 
-* [Is there a case where I should use `{static: true}`?](https://angular.io/guide/static-query-migration#is-there-a-case-where-i-should-use-static-true)
+* [Is there a case where I should use `{static: true}`?](guide/static-query-migration#is-there-a-case-where-i-should-use-static-true)
 
 </div>
 

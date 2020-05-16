@@ -9,11 +9,11 @@ A basic understanding of the following concepts:
 
 <hr>
 
-The [AnimationOptions](https://angular.io/api/animations/AnimationOptions) interface in Angular animations enables you to create animations that you can reuse across different components.
+The [AnimationOptions](api/animations/AnimationOptions) interface in Angular animations enables you to create animations that you can reuse across different components.
 
 ## Creating reusable animations
 
-To create a reusable animation, use the [`animation()`](https://angular.io/api/animations/animation) method to define an animation in a separate `.ts` file and declare this animation definition as a `const` export variable. You can then import and reuse this animation in any of your app components using the [`useAnimation()`](https://angular.io/api/animations/useAnimation) API.
+To create a reusable animation, use the [`animation()`](api/animations/animation) method to define an animation in a separate `.ts` file and declare this animation definition as a `const` export variable. You can then import and reuse this animation in any of your app components using the [`useAnimation()`](api/animations/useAnimation) API.
 
 <code-example path="animations/src/app/animations.ts" header="src/app/animations.ts" region="reusable" language="typescript"></code-example>
 
