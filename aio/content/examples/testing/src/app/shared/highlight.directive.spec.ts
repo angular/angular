@@ -61,7 +61,7 @@ describe('HighlightDirective', () => {
 
     // dispatch a DOM event so that Angular responds to the input value change.
     input.value = 'green';
-    input.dispatchEvent(newEvent('input'));
+    input.dispatchEvent(new Event('input'));
     fixture.detectChanges();
 
     expect(input.style.backgroundColor).toBe('green', 'changed backgroundColor');
