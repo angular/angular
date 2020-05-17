@@ -3351,7 +3351,7 @@ describe('Integration', () => {
              advance(fixture);
 
              expect(log.map((a: any) => a.path)).toEqual(['b']);
-             expect(location.path()).toEqual('/two-outlets/(a)');
+             expect(location.path()).toEqual('/two-outlets/a');
            })));
 
         it('works with a nested route',
