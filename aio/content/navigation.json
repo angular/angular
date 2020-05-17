@@ -729,9 +729,9 @@
             {
               "url": "guide/using-libraries",
               "!title": "Using Published Libraries",
-              "title": "공유된 라이브러리 사용하기",
+              "title": "배포된 라이브러리 활용하기",
               "!tooltip": "Integrate published libraries into an app.",
-              "tooltip": "공유된 라이브러리를 앱에 추가해 봅시다."
+              "tooltip": "배포된 라이브러리를 앱에 추가해 봅시다."
             },
             {
               "url": "guide/creating-libraries",
