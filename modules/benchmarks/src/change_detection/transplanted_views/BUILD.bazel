@@ -29,7 +29,7 @@ ng_rollup_bundle(
 
 ts_devserver(
     name = "prodserver",
-    bootstrap = ["//packages/zone.js/dist:zone.js"],
+    bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
     port = 4200,
     static_files = ["index.html"],
     deps = [":bundle.min_debug.es2015.js"],

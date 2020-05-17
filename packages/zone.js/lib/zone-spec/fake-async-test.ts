@@ -30,29 +30,32 @@ interface MacroTaskOptions {
 }
 
 const OriginalDate = global.Date;
-class FakeDate {
-  constructor() {
-    if (arguments.length === 0) {
-      const d = new OriginalDate();
-      d.setTime(FakeDate.now());
-      return d;
-    } else {
-      const args = Array.prototype.slice.call(arguments);
-      return new OriginalDate(...args);
-    }
-  }
-
-  static now() {
-    const fakeAsyncTestZoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
-    if (fakeAsyncTestZoneSpec) {
-      return fakeAsyncTestZoneSpec.getCurrentRealTime() + fakeAsyncTestZoneSpec.getCurrentTime();
-    }
-    return OriginalDate.now.apply(this, arguments);
+// Since when we compile this file to `es2015`, and if we define
+// this `FakeDate` as `class FakeDate`, and then set `FakeDate.prototype`
+// there will be an error which is `Cannot assign to read only property 'prototype'`
+// so we need to use function implementation here.
+function FakeDate() {
+  if (arguments.length === 0) {
+    const d = new OriginalDate();
+    d.setTime(FakeDate.now());
+    return d;
+  } else {
+    const args = Array.prototype.slice.call(arguments);
+    return new OriginalDate(...args);
   }
 }
 
-(FakeDate as any).UTC = OriginalDate.UTC;
-(FakeDate as any).parse = OriginalDate.parse;
+FakeDate.now =
+    function(this: unknown) {
+  const fakeAsyncTestZoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
+  if (fakeAsyncTestZoneSpec) {
+    return fakeAsyncTestZoneSpec.getCurrentRealTime() + fakeAsyncTestZoneSpec.getCurrentTime();
+  }
+  return OriginalDate.now.apply(this, arguments);
+}
+
+    FakeDate.UTC = OriginalDate.UTC;
+FakeDate.parse = OriginalDate.parse;
 
 // keep a reference for zone patched timer function
 const timers = {

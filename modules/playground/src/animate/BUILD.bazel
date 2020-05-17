@@ -22,7 +22,7 @@ ts_devserver(
     scripts = ["@npm//:node_modules/tslib/tslib.js"],
     static_files = [
         "index.html",
-        "//packages/zone.js/dist:zone.js",
+        "//packages/zone.js/bundles:zone.umd.js",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
     ],
     deps = [":animate"],

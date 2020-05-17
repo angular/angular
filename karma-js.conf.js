@@ -36,9 +36,9 @@ module.exports = function(config) {
       {pattern: 'node_modules/angular-mocks/angular-mocks.js', included: false, watched: false},
 
       'node_modules/core-js/client/core.js',
-      'dist/bin/packages/zone.js/npm_package/dist/zone.js',
-      'dist/bin/packages/zone.js/npm_package/dist/zone-testing.js',
-      'dist/bin/packages/zone.js/npm_package/dist/task-tracking.js',
+      'dist/bin/packages/zone.js/npm_package/bundles/zone.umd.js',
+      'dist/bin/packages/zone.js/npm_package/bundles/zone-testing.umd.js',
+      'dist/bin/packages/zone.js/npm_package/bundles/task-tracking.umd.js',
 
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
       'test-events.js',

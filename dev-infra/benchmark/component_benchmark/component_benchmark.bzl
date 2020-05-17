@@ -129,7 +129,7 @@ def component_benchmark(
     # The server for our application.
     ts_devserver(
         name = server,
-        bootstrap = ["//packages/zone.js/dist:zone.js"],
+        bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
         port = 4200,
         static_files = assets + styles,
         deps = [":" + app_main + ".min_debug.es2015.js"],

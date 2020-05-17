@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import 'zone.js/dist/zone.js';
+import 'zone.js/bundles/zone.umd';
 
 import {enableProdMode} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';

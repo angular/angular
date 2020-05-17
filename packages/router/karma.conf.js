@@ -35,8 +35,8 @@ module.exports = function(config) {
       'node_modules/systemjs/dist/system.src.js',
 
       // Zone.js dependencies
-      'dist/bin/packages/zone.js/npm_package/dist/zone.js',
-      'dist/bin/packages/zone.js/npm_package/dist/zone-testing.js',
+      'dist/bin/packages/zone.js/npm_package/bundles/zone.umd.js',
+      'dist/bin/packages/zone.js/npm_package/bundles/zone-testing.umd.js',
 
       {pattern: 'node_modules/rxjs/**/*', included: false, watched: false},
 
