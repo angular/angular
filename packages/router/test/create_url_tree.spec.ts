@@ -128,6 +128,12 @@ describe('createUrlTree', () => {
     expect(serializer.serialize(t)).toEqual('/a');
   });
 
+  it('should support removing parenthesis for primary segment on second path element', () => {
+    const p = serializer.parse('/a/(b//right:c)');
+    const t = createRoot(p, ['a', {outlets: {right: null}}]);
+    expect(serializer.serialize(t)).toEqual('/a/b');
+  });
+
   it('should update matrix parameters', () => {
     const p = serializer.parse('/a;pp=11');
     const t = createRoot(p, ['/a', {pp: 22, dd: 33}]);
