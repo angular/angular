@@ -53,8 +53,8 @@ ts_devserver(
     name = "devserver",
     additional_root_paths = ["angular/packages/examples"],
     bootstrap = [
-        "//packages/zone.js/dist:zone.js",
-        "//packages/zone.js/dist:task-tracking.js",
+        "//packages/zone.js/bundles:zone.umd.js",
+        "//packages/zone.js/bundles:task-tracking.umd.js",
     ],
     entry_module = "@angular/examples/core/main",
     port = 4200,

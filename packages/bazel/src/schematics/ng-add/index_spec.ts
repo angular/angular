@@ -204,7 +204,7 @@ describe('ng-add schematic', () => {
     const {files} = host;
     expect(files).toContain('/src/index.html');
     const content = host.readContent('/src/index.html');
-    expect(content).not.toMatch('<script src="/zone.min.js"></script>');
+    expect(content).not.toMatch('<script src="/zone.umd.min.js"></script>');
     expect(content).not.toMatch('<script src="/bundle.min.js"></script>');
   });
 

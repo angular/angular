@@ -16,7 +16,7 @@ ng_module(
 ts_devserver(
     name = "devserver",
     bootstrap = [
-        "//packages/zone.js/dist:zone.js",
+        "//packages/zone.js/bundles:zone.umd.js",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
     ],
     entry_module = "angular/modules/playground/src/hello_world/index",

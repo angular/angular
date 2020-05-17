@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/zone-patch-canvas",
+  "main": "../../bundles/zone-patch-canvas.umd.js",
+  "fesm2015": "../../fesm2015/zone-patch-canvas.js",
+  "es2015": "../../fesm2015/zone-patch-canvas.js",
+  "module": "../../fesm2015/zone-patch-canvas.js"
+}

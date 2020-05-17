@@ -30,7 +30,7 @@ ts_devserver(
     static_files = [
         ":bundle.min_debug.es2015.js",
         ":bundle.min.es2015.js",
-        "//packages/zone.js/dist:zone.js",
+        "//packages/zone.js/bundles:zone.umd.js",
         "index.html",
     ],
 )
@@ -44,7 +44,7 @@ ts_devserver(
     ],
     serving_path = "/index.js",
     static_files = [
-        "//packages/zone.js/dist:zone.js",
+        "//packages/zone.js/bundles:zone.umd.js",
         "index.html",
     ],
     deps = [":application_lib"],

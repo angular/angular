@@ -27,7 +27,7 @@
           });
         }
         // zone.js must be loaded and processed before Angular bundle gets executed
-        loadScript('/npm/node_modules/zone.js/dist/zone.js').then(function () {
+        loadScript('/npm/node_modules/zone.js/bundles/zone.umd.js').then(function () {
           loadScript(document.location.search.endsWith('debug') ? 'bundle.min_debug.es2015.js' : 'bundle.min.es2015.js');
         });
       }
