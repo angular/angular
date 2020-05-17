@@ -12,7 +12,8 @@ import {RendererStyleFlags2} from '../render/api_flags';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertDomNode, assertEqual, assertFunction, assertString} from '../util/assert';
 import {escapeCommentText} from '../util/dom';
-import {assertLContainer, assertLView, assertTNodeForLView} from './assert';
+
+import {assertLContainer, assertLView, assertParentView, assertProjectionSlots, assertTNodeForLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {icuContainerIterate} from './i18n/i18n_tree_shaking';
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
@@ -772,20 +773,31 @@ function getFirstNativeNode(lView: LView, tNode: TNode|null): RNode|null {
       // If the ICU container has no nodes, than we use the ICU anchor as the node.
       return rNode || unwrapRNode(lView[tNode.index]);
     } else {
-      const componentView = lView[DECLARATION_COMPONENT_VIEW];
-      const componentHost = componentView[T_HOST] as TElementNode;
-      const parentView = getLViewParent(componentView);
-      const firstProjectedTNode: TNode|null =
-          (componentHost.projection as (TNode | null)[])[tNode.projection as number];
-
-      if (firstProjectedTNode != null) {
-        return getFirstNativeNode(parentView!, firstProjectedTNode);
+      const projectionNodes = getProjectionNodes(lView, tNode);
+      if (projectionNodes !== null) {
+        if (Array.isArray(projectionNodes)) {
+          return projectionNodes[0];
+        }
+        const parentView = getLViewParent(lView[DECLARATION_COMPONENT_VIEW]);
+        ngDevMode && assertParentView(parentView);
+        return getFirstNativeNode(parentView!, projectionNodes);
       } else {
         return getFirstNativeNode(lView, tNode.next);
       }
     }
   }
 
+  return null;
+}
+
+export function getProjectionNodes(lView: LView, tNode: TNode|null): TNode|RNode[]|null {
+  if (tNode !== null) {
+    const componentView = lView[DECLARATION_COMPONENT_VIEW];
+    const componentHost = componentView[T_HOST] as TElementNode;
+    const slotIdx = tNode.projection as number;
+    ngDevMode && assertProjectionSlots(lView);
+    return componentHost.projection![slotIdx];
+  }
   return null;
 }
 
