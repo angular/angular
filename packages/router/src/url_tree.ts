@@ -341,6 +341,11 @@ function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
       return [`${k}:${serializeSegment(v, false)}`];
     });
 
+    // use no parenthesis if the only child is a primary outlet route
+    if (Object.keys(segment.children).length === 1 && segment.children[PRIMARY_OUTLET] != null) {
+      return `${serializePaths(segment)}/${children[0]}`;
+    }
+
     return `${serializePaths(segment)}/(${children.join('//')})`;
   }
 }
