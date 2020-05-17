@@ -1089,6 +1089,9 @@
     "name": "getPreviousIndex"
   },
   {
+    "name": "getProjectionNodes"
+  },
+  {
     "name": "getPromiseCtor"
   },
   {

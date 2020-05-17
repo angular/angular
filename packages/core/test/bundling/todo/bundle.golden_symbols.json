@@ -438,6 +438,9 @@
     "name": "getPreviousIndex"
   },
   {
+    "name": "getProjectionNodes"
+  },
+  {
     "name": "getSelectedIndex"
   },
   {
