@@ -8,7 +8,7 @@
 var domino = require('domino');
 var mockRequire = require('mock-require');
 var nativeTimeout = setTimeout;
-require('./zone-mix');
+require('./zone-mix.umd');
 mockRequire('electron', {
   desktopCapturer: {
     getSources: function(callback) {
@@ -26,7 +26,7 @@ mockRequire('electron', {
     }
   },
 });
-require('./zone-patch-electron');
+require('./zone-patch-electron.umd');
 var electron = require('electron');
 var zone = Zone.current.fork({name: 'zone'});
 zone.run(function() {

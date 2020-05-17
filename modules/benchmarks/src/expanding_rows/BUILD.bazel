@@ -42,7 +42,7 @@ ng_rollup_bundle(
 
 ts_devserver(
     name = "prodserver",
-    bootstrap = ["//packages/zone.js/dist:zone.js"],
+    bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
     port = 4200,
     static_files = ["index.html"],
     deps = [":bundle.min_debug.es2015.js"],
@@ -50,7 +50,7 @@ ts_devserver(
 
 ts_devserver(
     name = "devserver",
-    bootstrap = ["//packages/zone.js/dist:zone.js"],
+    bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
     entry_module = "angular/modules/benchmarks/src/expanding_rows/index_aot",
     port = 4200,
     scripts = [

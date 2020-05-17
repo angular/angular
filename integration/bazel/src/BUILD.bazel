@@ -46,7 +46,7 @@ ts_devserver(
     serving_path = "/bundle.min.js",
     static_files = [
         "index.html",
-        "@npm//:node_modules/zone.js/dist/zone.min.js",
+        "@npm//:node_modules/zone.js/bundles/zone.umd.min.js",
     ],
     deps = ["//src"],
 )
@@ -72,7 +72,7 @@ pkg_web(
     srcs = [
         "index.html",
         ":bundle.min",
-        "@npm//:node_modules/zone.js/dist/zone.min.js",
+        "@npm//:node_modules/zone.js/bundles/zone.umd.min.js",
     ],
 )
 

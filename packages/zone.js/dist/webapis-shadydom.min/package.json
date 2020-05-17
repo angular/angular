@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/webapis-shadydom.min",
+  "main": "../../bundles/webapis-shadydom.umd.min.js",
+  "fesm2015": "../../fesm2015/webapis-shadydom.min.js",
+  "es2015": "../../fesm2015/webapis-shadydom.min.js",
+  "module": "../../fesm2015/webapis-shadydom.min.js"
+}

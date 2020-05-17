@@ -34,7 +34,7 @@ ts_devserver(
     name = "devserver",
     additional_root_paths = ["angular/packages/examples"],
     bootstrap = [
-        "//packages/zone.js/dist:zone.js",
+        "//packages/zone.js/bundles:zone.umd.js",
         "ngsw-worker.js",
     ],
     entry_module = "@angular/examples/service-worker/registration-options/main",

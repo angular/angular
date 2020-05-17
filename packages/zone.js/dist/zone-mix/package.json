@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/zone-mix",
+  "main": "../../bundles/zone-mix.umd.js",
+  "fesm2015": "../../fesm2015/zone-mix.js",
+  "es2015": "../../fesm2015/zone-mix.js",
+  "module": "../../fesm2015/zone-mix.js"
+}

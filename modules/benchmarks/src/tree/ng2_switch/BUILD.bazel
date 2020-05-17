@@ -22,7 +22,7 @@ ts_devserver(
     name = "devserver",
     bootstrap = [
         "@npm//:node_modules/reflect-metadata/Reflect.js",
-        "//packages/zone.js/dist:zone.js",
+        "//packages/zone.js/bundles:zone.umd.js",
     ],
     entry_module = "angular/modules/benchmarks/src/tree/ng2_switch/index",
     port = 4200,
