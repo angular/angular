@@ -652,8 +652,8 @@ export function trigger(name: string, definitions: AnimationMetadata[]): Animati
  * ```typescript
  * animate(500, keyframes(
  *  [
- *   style({ background: "blue" })),
- *   style({ background: "red" }))
+ *   style({ background: "blue" }),
+ *   style({ background: "red" })
  *  ])
  * ```
  *
