@@ -26,7 +26,7 @@ ts_devserver(
         "//third_party/fonts.google.com/open-sans",
         "@npm//:node_modules/rxjs/bundles/rxjs.umd.js",
         "@npm//:node_modules/tslib/tslib.js",
-        "//packages/zone.js/dist:zone.js",
+        "//packages/zone.js/bundles:zone.umd.js",
         "index.html",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
         "@npm//:node_modules/systemjs/dist/system.js",

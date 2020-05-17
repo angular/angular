@@ -3,7 +3,7 @@ var fsExtra = require('fs-extra');
 var resources = [
   // polyfills
   'node_modules/core-js/client/shim.min.js',
-  'node_modules/zone.js/dist/zone.min.js',
+  'node_modules/zone.js/bundles/zone.umd.min.js',
   // css
   'app/app.css',
   'app/app.animations.css',
@@ -20,6 +20,7 @@ var resources = [
   'app/phone-detail/phone-detail.module.js'
 ];
 resources.map(function(sourcePath) {
-  var destPath = `aot/${sourcePath}`;
+  // Need to rename zone.umd.min.js to zone.min.js
+  var destPath = `aot/${sourcePath}`.replace('.umd.min.js', '.min.js');
   fsExtra.copySync(sourcePath, destPath);
 });

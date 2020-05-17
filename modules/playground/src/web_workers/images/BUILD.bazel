@@ -20,7 +20,7 @@ ts_devserver(
     # Workaround for: https://github.com/bazelbuild/rules_typescript/issues/409
     additional_root_paths = ["angular"],
     bootstrap = [
-        "//packages/zone.js/dist:zone.js",
+        "//packages/zone.js/bundles:zone.umd.js",
         "@npm//:node_modules/jquery/dist/jquery.min.js",
         "@npm//:node_modules/materialize-css/dist/js/materialize.min.js",
     ],

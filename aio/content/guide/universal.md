@@ -227,7 +227,7 @@ as a navigation URL intended for the router.
 
 Fortunately, application routes have something in common: their URLs lack file extensions.
 (Data requests also lack extensions but they're easy to recognize because they always begin with `/api`.)
-All static asset requests have a file extension (such as `main.js` or `/node_modules/zone.js/dist/zone.js`).
+All static asset requests have a file extension (such as `main.js` or `/node_modules/zone.js/bundles/zone.umd.js`).
 
 Because we use routing, we can easily recognize the three types of requests and handle them differently.
 
