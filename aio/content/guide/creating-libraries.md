@@ -1,16 +1,36 @@
-﻿# Creating libraries
+﻿<!--
+# Creating libraries
+-->
+# 라이브러리 만들기
 
+<!--
 You can create and publish new libraries to extend Angular functionality. If you find that you need to solve the same problem in more than one app (or want to share your solution with other developers), you have a candidate for a library.
 
 A simple example might be a button that sends users to your company website, that would be included in all apps that your company builds.
+-->
+Angular의 기능으로 라이브러리를 만들어서 배포할 수 있습니다.
+이렇게 배포한 라이브러리를 활용하면 여러 앱에서 발생할 수 있는 특정 문제를 한 번에 해결할 수 있으며 같은 문제를 겪고 있는 다른 개발자들을 도울수도 있습니다.
+라이브러리는 누구나 배포할 수 있습니다.
 
 <div class="alert is-helpful">
+     <!--
      <p>For more details on how a library project is structured you can refer the <a href="guide/file-structure#library-project-files">Library Project Files</a></p>
+     -->
+
+   라이브러리 프로젝트가 어떤 파일들로 구성되는지 확인하려면 [라이브러리 프로젝트 파일구조](guide/file-structure#library-project-files) 문서를 참고하세요.</p>
+
 </div>
 
-## Getting started
 
+<!--
+## Getting started
+-->
+## 시작하기
+
+<!--
 Use the Angular CLI to generate a new library skeleton with the following command:
+-->
+라이브러리 프로젝트의 기본 틀은 Angular CLI로 다음 명령을 실행하면 생성할 수 있습니다:
 
 <code-example language="bash">
  ng new my-workspace --create-application=false
@@ -19,11 +39,22 @@ Use the Angular CLI to generate a new library skeleton with the following comman
 </code-example>
 
 <div class="alert is-helpful">
+     
+     <!--
      <p>You can use the monorepo model to use the same workspace for multiple projects. See <a href="guide/file-structure#multiple-projects">Setting up for a multi-project workspace</a>.</p>
+     -->
+
+     워크스페이스 하나에 여러 프로젝트를 생성할 수도 있습니다. 자세한 내용은 [한 워크스페이스에 여러 프로젝트 생성하기](guide/file-structure#multiple-projects) 문서를 참고하세요.
+
+
 </div>
 
+<!--
 This creates the `projects/my-lib` folder in your workspace, which contains a component and a service inside an NgModule.
 The workspace configuration file, `angular.json`, is updated with a project of type 'library'.
+-->
+이 명령을 실행하면 워크스페이스에 `projects/my-lib` 폴더가 생성되고 이 폴더에 컴포넌트 하나와 서비스 하나, NgModule 하나가 생성됩니다.
+그리고 워크스페이스 환경설정 파일인 `angular.json`에 `library` 타입으로 프로젝트가 추가됩니다.
 
 <code-example format="json">
 "projects": {
@@ -39,7 +70,10 @@ The workspace configuration file, `angular.json`, is updated with a project of t
         ...
 </code-example>
 
+<!--
 You can build, test, and lint the project with CLI commands:
+-->
+이렇게 만든 프로젝트는 Angular CLI를 사용해서 빌드하고, 테스트하며, 코딩 스타일도 점검(lint)할 수 있습니다.
 
 <code-example language="bash">
  ng build my-lib
@@ -47,6 +81,7 @@ You can build, test, and lint the project with CLI commands:
  ng lint my-lib
 </code-example>
 
+<!--
 Notice that the configured builder for the project is different from the default builder for app projects.
 This builder, among other things, ensures that the library is always built with the [AOT compiler](guide/aot-compiler), without the need to specify the `--prod` flag.
 
@@ -57,9 +92,24 @@ Anything exported from this file is made public when your library is imported in
 Use an NgModule to expose services and components.
 
 Your library should supply documentation (typically a README file) for installation and maintenance.
+-->
+그런데 이 프로젝트의 빌더 설정은 기본 프로젝트 빌더 설정과 조금 다릅니다.
+라이브러리용 빌더는 말그대로 라이브러리에 사용되는 것이기 때문에 `--prod` 옵션을 붙이지 않아도 언제나 [AOT 컴파일러](guide/aot-compiler)로 빌드됩니다.
 
+라이브러리는 퍼블릭(public) API를 정의해야 다른 개발자가 이 API를 통해 라이브러리의 기능을 활용할 수 있습니다.
+
+퍼블릭 API는 라이브러리 폴더에 `public-api.ts` 파일로 정의하는데, 이 파일에서 외부로 공개(export)하는 심볼이 이 라이브러리의 API가 됩니다.
+그리고 NgModule을 외부로 공개하면 이 모듈에 포함된 서비스와 컴포넌트도 함께 제공할 수 있습니다.
+
+라이브러리의 설치방법이나 사용법을 제공하기 위해 README 파일을 만드는 것도 좋습니다.
+
+
+<!--
 ## Refactoring parts of an app into a library
+-->
+## 앱 코드를 라이브러리용으로 리팩토링하기
 
+<!--
 To make your solution reusable, you need to adjust it so that it does not depend on app-specific code.
 Here are some things to consider in migrating application functionality to a library.
 
@@ -77,6 +127,25 @@ Here are some things to consider in migrating application functionality to a lib
    * For custom classes or interfaces used in components or service, check whether they depend on additional classes or interfaces that also need to be migrated.
    * Similarly, if your library code depends on a service, that service needs to be migrated.
    * If your library code or its templates depend on other libraries (such a Angular Material, for instance), you must configure your library with those dependencies.
+-->
+어떤 솔루션을 재사용하려면 그 솔루션이 특정 문제만 해결해야 하고 다른 영향을 주지 않아야 합니다.
+애플리케이션의 기능을 라이브러리용으로 만들때 고려해야하는 점에 대해 알아봅시다.
+
+* 컴포넌트나 파이프는 상태에 관계없이 동작하도록 설계해야 합니다. 이 말은 외부에 존재하는 값에 따라 동작이 달라져서는 안되며 외부 변수를 변경해서도 안된다는 것을 의미합니다. 꼭 상태가 존재해야 한다면 애플리케이션과 라이브러리에 존재할 수 있는 모든 상태를 고려해야 합니다.
+
+* 라이브러리에 컴포넌트가 있고 이 컴포넌트가 옵저버블을 구독한다면, 이 옵저버블은 컴포넌트가 종료되면서 반드시 구독 해제 되어야 합니다.
+
+* 컴포넌트에 입력으로 들어오는 값이나 출력으로 나가는 값은 사전에 지정되어야 합니다.
+
+* 서비스는 NgModule이나 컴포넌트에 등록되지 않고 자체적으로 등록되는 프로바이더를 사용해야 *트리 셰이킹* 대상이 될 수 있습니다. 이렇게 설정하면 라이브러리가 서비스를 제공하지만 이 서비스를 실제로 사용하지 않았을 때 최종 빌드 결과물에 포함되지 않습니다. 자세한 내용은 [트리 셰이킹 대상이 되는 프로바이더](guide/dependency-injection-providers#tree-shakable-providers) 문서를 참고하세요.
+
+* 제공하는 서비스가 전역에서도 사용되고 다른 NgModule에도 사용된다면 [RouterModule](api/router/RouterModule)처럼 [`forRoot()`, `forChild()` 패턴](guide/singleton-services)을 사용하세요.
+
+* 내부 의존성 관계를 꼭 점검하세요.
+   * 라이브러리가 제공하는 컴포넌트나 서비스에 사용되는 커스텀 클래스/인터페이스가 다른 객체와 연관되어 있다면 이 객체도 라이브러리에 포함해야 할 수 있습니다.
+   * 그리고 라이브러리가 다른 서비스를 활용한다면 이 서비스도 포함해야 할 수 있습니다.
+   * 라이브러리 코드가 Angular Material과 같은 다른 라이브러리를 활용한다면 이 라이브러리를 의존성 패키지로 추가해야 합니다.
+
 
 ## Reusable code and schematics
 
