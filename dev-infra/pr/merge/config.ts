@@ -111,7 +111,8 @@ export function loadAndValidateConfig(): {config?: MergeConfigWithRemote, errors
     mergeConfig.remote = config.github;
   }
 
-  // We ensures that the `remote` is set, so we can cast it to a `MergeConfigWithRemote`.
+  // We always set the `remote` option, so we can safely cast the
+  // config to `MergeConfigWithRemote`.
   return {config: mergeConfig as MergeConfigWithRemote};
 }
 
