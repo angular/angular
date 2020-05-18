@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbstractType, Component, Directive, InjectFlags, InjectionToken, NgModule, Pipe, PlatformRef, SchemaMetadata, Type} from '@angular/core';
+import {AbstractType, Component, Directive, InjectFlags, InjectionToken, ModuleWithProviders, NgModule, Pipe, PlatformRef, Provider, SchemaMetadata, Type} from '@angular/core';
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
@@ -36,9 +36,9 @@ export const ComponentFixtureNoNgZone = new InjectionToken<boolean[]>('Component
  * @publicApi
  */
 export type TestModuleMetadata = {
-  providers?: any[],
-  declarations?: any[],
-  imports?: any[],
+  providers?: Provider[],
+  declarations?: Array<Type<any>|any[]>,
+  imports?: Array<Type<any>|ModuleWithProviders<{}>|any[]>,
   schemas?: Array<SchemaMetadata|any[]>,
   aotSummaries?: () => any[],
 };
