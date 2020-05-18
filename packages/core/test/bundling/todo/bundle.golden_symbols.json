@@ -942,9 +942,6 @@
     "name": "locateHostElement"
   },
   {
-    "name": "looseIdentical"
-  },
-  {
     "name": "makeMetadataCtor"
   },
   {
