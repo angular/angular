@@ -232,7 +232,7 @@ export function _patchTypeScriptDefaultLib(tree: Tree) {
     if (filePath.match(/node_modules[/\\]typescript/)) {
       return readFileSync(getSystemPath(filePath));
     } else {
-      return _originalRead.apply(this, arguments);
+      return _originalRead.call(this, filePath);
     }
   };
 }

@@ -9,7 +9,6 @@ import {
   createMapSpy,
   createRectangleConstructorSpy,
   createRectangleSpy,
-  TestingWindow,
 } from '../testing/fake-google-map-utils';
 
 import {MapRectangle} from './map-rectangle';
@@ -36,8 +35,7 @@ describe('MapRectangle', () => {
   });
 
   afterEach(() => {
-    const testingWindow: TestingWindow = window;
-    delete testingWindow.google;
+    delete window.google;
   });
 
   it('initializes a Google Map Rectangle', () => {

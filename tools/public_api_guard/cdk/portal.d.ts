@@ -22,7 +22,7 @@ export declare class CdkPortal extends TemplatePortal {
 }
 
 export declare class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestroy {
-    attachDomPortal: (portal: DomPortal<HTMLElement>) => void;
+    attachDomPortal: (portal: DomPortal) => void;
     attached: EventEmitter<CdkPortalOutletAttachedRef>;
     get attachedRef(): CdkPortalOutletAttachedRef;
     get portal(): Portal<any> | null;
@@ -61,7 +61,7 @@ export declare class DomPortalHost extends DomPortalOutlet {
 }
 
 export declare class DomPortalOutlet extends BasePortalOutlet {
-    attachDomPortal: (portal: DomPortal<HTMLElement>) => void;
+    attachDomPortal: (portal: DomPortal) => void;
     outletElement: Element;
     constructor(
     outletElement: Element, _componentFactoryResolver: ComponentFactoryResolver, _appRef: ApplicationRef, _defaultInjector: Injector,

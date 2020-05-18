@@ -4,7 +4,7 @@ describe('expansion', () => {
   beforeEach(async () => await browser.get('/expansion'));
 
   it('should show an accordion', async () => {
-    expect(await element(by.css('.mat-accordion'))).toBeDefined();
+    expect(await element(by.css('.mat-accordion')).isPresent()).toBe(true);
   });
 
   it('should show two panels', async () => {

@@ -9,7 +9,6 @@ import {
   createMapSpy,
   createPolygonConstructorSpy,
   createPolygonSpy,
-  TestingWindow,
 } from '../testing/fake-google-map-utils';
 
 import {MapPolygon} from './map-polygon';
@@ -36,8 +35,7 @@ describe('MapPolygon', () => {
   });
 
   afterEach(() => {
-    const testingWindow: TestingWindow = window;
-    delete testingWindow.google;
+    delete window.google;
   });
 
   it('initializes a Google Map Polygon', () => {

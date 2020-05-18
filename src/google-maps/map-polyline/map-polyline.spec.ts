@@ -9,7 +9,6 @@ import {
   createMapSpy,
   createPolylineConstructorSpy,
   createPolylineSpy,
-  TestingWindow,
 } from '../testing/fake-google-map-utils';
 
 import {MapPolyline} from './map-polyline';
@@ -40,8 +39,7 @@ describe('MapPolyline', () => {
   });
 
   afterEach(() => {
-    const testingWindow: TestingWindow = window;
-    delete testingWindow.google;
+    delete window.google;
   });
 
   it('initializes a Google Map Polyline', () => {

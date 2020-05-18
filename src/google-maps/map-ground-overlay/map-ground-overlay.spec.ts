@@ -9,7 +9,6 @@ import {
   createGroundOverlaySpy,
   createMapConstructorSpy,
   createMapSpy,
-  TestingWindow,
 } from '../testing/fake-google-map-utils';
 
 import {MapGroundOverlay} from './map-ground-overlay';
@@ -37,8 +36,7 @@ describe('MapGroundOverlay', () => {
   });
 
   afterEach(() => {
-    const testingWindow: TestingWindow = window;
-    delete testingWindow.google;
+    delete window.google;
   });
 
   it('initializes a Google Map Ground Overlay', () => {

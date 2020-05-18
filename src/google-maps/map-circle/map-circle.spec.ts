@@ -9,7 +9,6 @@ import {
   createCircleSpy,
   createMapConstructorSpy,
   createMapSpy,
-  TestingWindow,
 } from '../testing/fake-google-map-utils';
 
 import {MapCircle} from './map-circle';
@@ -43,8 +42,7 @@ describe('MapCircle', () => {
   });
 
   afterEach(() => {
-    const testingWindow: TestingWindow = window;
-    delete testingWindow.google;
+    delete window.google;
   });
 
   it('initializes a Google Map Circle', () => {

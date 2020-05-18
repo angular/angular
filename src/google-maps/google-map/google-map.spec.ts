@@ -3,17 +3,8 @@ import {async, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
 import {GoogleMapsModule} from '../google-maps-module';
-import {
-  createMapConstructorSpy,
-  createMapSpy,
-  TestingWindow
-} from '../testing/fake-google-map-utils';
-import {
-  DEFAULT_HEIGHT,
-  DEFAULT_OPTIONS,
-  DEFAULT_WIDTH,
-  GoogleMap,
-} from './google-map';
+import {createMapConstructorSpy, createMapSpy} from '../testing/fake-google-map-utils';
+import {DEFAULT_HEIGHT, DEFAULT_OPTIONS, DEFAULT_WIDTH, GoogleMap} from './google-map';
 
 /** Represents boundaries of a map to be used in tests. */
 const testBounds: google.maps.LatLngBoundsLiteral = {
@@ -47,8 +38,7 @@ describe('GoogleMap', () => {
   });
 
   afterEach(() => {
-    const testingWindow: TestingWindow = window;
-    delete testingWindow.google;
+    delete window.google;
   });
 
   it('throws an error is the Google Maps JavaScript API was not loaded', () => {

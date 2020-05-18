@@ -3,16 +3,15 @@ import {async, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
 import {DEFAULT_OPTIONS} from '../google-map/google-map';
+
+import {GoogleMapsModule} from '../google-maps-module';
 import {MapMarker} from '../map-marker/map-marker';
 import {
   createInfoWindowConstructorSpy,
   createInfoWindowSpy,
   createMapConstructorSpy,
-  createMapSpy,
-  TestingWindow
+  createMapSpy
 } from '../testing/fake-google-map-utils';
-
-import {GoogleMapsModule} from '../google-maps-module';
 import {MapInfoWindow} from './map-info-window';
 
 describe('MapInfoWindow', () => {
@@ -33,8 +32,7 @@ describe('MapInfoWindow', () => {
   });
 
   afterEach(() => {
-    const testingWindow: TestingWindow = window;
-    delete testingWindow.google;
+    delete window.google;
   });
 
   it('initializes a Google Map Info Window', () => {

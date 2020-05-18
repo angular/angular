@@ -6,6 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// The global `window` variable is typed as an intersection of `Window` and `globalThis`.
+// We re-declare `window` here and omit `globalThis` as it is typed with the actual Google
+// Maps types which we intend to override with jasmine spies for testing. Keeping `globalThis`
+// would mean that `window` is not assignable to our testing window.
+declare var window: Window;
+
 /** Window interface for testing */
 export interface TestingWindow extends Window {
   google?: {

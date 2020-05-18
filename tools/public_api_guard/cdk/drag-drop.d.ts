@@ -247,24 +247,24 @@ export declare class DragRef<T = any> {
     dropped: Subject<{
         previousIndex: number;
         currentIndex: number;
-        item: DragRef<any>;
+        item: DragRef;
         container: DropListRef;
         previousContainer: DropListRef;
         distance: Point;
         isPointerOverContainer: boolean;
     }>;
     ended: Subject<{
-        source: DragRef<any>;
+        source: DragRef;
         distance: Point;
     }>;
     entered: Subject<{
         container: DropListRef;
-        item: DragRef<any>;
+        item: DragRef;
         currentIndex: number;
     }>;
     exited: Subject<{
         container: DropListRef;
-        item: DragRef<any>;
+        item: DragRef;
     }>;
     lockAxis: 'x' | 'y';
     moved: Observable<{
@@ -282,10 +282,10 @@ export declare class DragRef<T = any> {
     }>;
     previewClass: string | string[] | undefined;
     released: Subject<{
-        source: DragRef<any>;
+        source: DragRef;
     }>;
     started: Subject<{
-        source: DragRef<any>;
+        source: DragRef;
     }>;
     constructor(element: ElementRef<HTMLElement> | HTMLElement, _config: DragRefConfig, _document: Document, _ngZone: NgZone, _viewportRuler: ViewportRuler, _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>);
     _sortFromLastPointerPosition(): void;
@@ -330,8 +330,8 @@ export declare class DropListRef<T = any> {
         item: DragRef;
         currentIndex: number;
         previousIndex: number;
-        container: DropListRef<any>;
-        previousContainer: DropListRef<any>;
+        container: DropListRef;
+        previousContainer: DropListRef;
         isPointerOverContainer: boolean;
         distance: Point;
     }>;
@@ -339,18 +339,18 @@ export declare class DropListRef<T = any> {
     enterPredicate: (drag: DragRef, drop: DropListRef) => boolean;
     entered: Subject<{
         item: DragRef;
-        container: DropListRef<any>;
+        container: DropListRef;
         currentIndex: number;
     }>;
     exited: Subject<{
         item: DragRef;
-        container: DropListRef<any>;
+        container: DropListRef;
     }>;
     lockAxis: 'x' | 'y';
     sorted: Subject<{
         previousIndex: number;
         currentIndex: number;
-        container: DropListRef<any>;
+        container: DropListRef;
         item: DragRef;
     }>;
     sortingDisabled: boolean;

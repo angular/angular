@@ -5,7 +5,7 @@ describe('mat-toolbar', () => {
   beforeEach(async () => await browser.get('/toolbar'));
 
   it('should show a toolbar', async () => {
-    expect(await element(by.tagName('mat-toolbar'))).toBeDefined();
+    expect(await element(by.tagName('mat-toolbar')).isPresent()).toBe(true);
   });
 
 });
