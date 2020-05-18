@@ -992,8 +992,6 @@ runInEachFileSystem(os => {
          () => assertErrorUndecoratedClassWithLifecycleHook('ngOnChanges'));
       it(`should error if ngOnInit lifecycle hook has been discovered`,
          () => assertErrorUndecoratedClassWithLifecycleHook('ngOnInit'));
-      it(`should error if ngOnDestroy lifecycle hook has been discovered`,
-         () => assertErrorUndecoratedClassWithLifecycleHook('ngOnDestroy'));
       it(`should error if ngDoCheck lifecycle hook has been discovered`,
          () => assertErrorUndecoratedClassWithLifecycleHook('ngDoCheck'));
       it(`should error if ngAfterViewInit lifecycle hook has been discovered`,
@@ -1004,6 +1002,42 @@ runInEachFileSystem(os => {
          () => assertErrorUndecoratedClassWithLifecycleHook('ngAfterContentInit'));
       it(`should error if ngAfterContentChecked lifecycle hook has been discovered`,
          () => assertErrorUndecoratedClassWithLifecycleHook('ngAfterContentChecked'));
+
+      it('should recommend adding `@Directive` if class uses ngOnDestroy lifecycle hook with ' +
+             'with decorated directive fields.',
+         () => {
+           env.write('test.ts', `
+          import {Component, Input, NgModule} from '@angular/core';
+
+          export class SomeBaseClass {
+            ngOnDestroy() {}
+            
+            @Input() someMember: any;
+          }
+        `);
+
+           const errors = env.driveDiagnostics();
+           expect(errors.length).toBe(1);
+           assertErrorUndecoratedClass(errors[0], '@Directive', 'SomeBaseClass');
+         });
+
+      // If only the `ngOnDestroy` lifecycle hook is defined, the Angular feature usage
+      // is ambiguous and we cannot propose adding `@Directive` as decorator. Instead, we
+      // expect a more generic error where any arbitrary Angular decorator fits.
+      it('should not recommend adding `@Directive` if class only uses ngOnDestroy lifecycle hook',
+         () => {
+           env.write('test.ts', `
+          import {Component, Input, NgModule} from '@angular/core';
+
+          export class SomeBaseClass {
+            ngOnDestroy() {}
+          }
+        `);
+
+           const errors = env.driveDiagnostics();
+           expect(errors.length).toBe(1);
+           assertErrorUndecoratedClass(errors[0], 'Angular', 'SomeBaseClass');
+         });
 
       function assertErrorUndecoratedClassWithField(fieldDecoratorName: string) {
         env.write('test.ts', `
@@ -1016,10 +1050,7 @@ runInEachFileSystem(os => {
 
         const errors = env.driveDiagnostics();
         expect(errors.length).toBe(1);
-        expect(trim(errors[0].messageText as string))
-            .toContain(
-                'Class is using Angular features but is not decorated. Please add an explicit ' +
-                'Angular decorator.');
+        assertErrorUndecoratedClass(errors[0], '@Directive', 'SomeBaseClass');
       }
 
       function assertErrorUndecoratedClassWithLifecycleHook(lifecycleName: string) {
@@ -1035,10 +1066,17 @@ runInEachFileSystem(os => {
 
         const errors = env.driveDiagnostics();
         expect(errors.length).toBe(1);
-        expect(trim(errors[0].messageText as string))
-            .toContain(
-                'Class is using Angular features but is not decorated. Please add an explicit ' +
-                'Angular decorator.');
+        assertErrorUndecoratedClass(errors[0], '@Directive', 'SomeBaseClass');
+      }
+
+      function assertErrorUndecoratedClass(
+          error: ts.Diagnostic, expectedDecorator: string, className: string) {
+        expect(trim(error.messageText as string))
+            .toContain('Cannot use Angular features in an undecorated class.');
+        expect(error.relatedInformation).toBeDefined();
+        expect(error.relatedInformation!.length).toBe(1);
+        expect(trim(error.relatedInformation![0].messageText as string))
+            .toBe(`Add an explicit ${expectedDecorator} decorator to ${className}.`);
       }
     });
 

@@ -16,6 +16,7 @@ import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {identifierOfNode} from '../../util/src/typescript';
 
+import {DetectedAngularFeature} from './directive';
 import {makeDuplicateDeclarationError, readBaseClass} from './util';
 
 /**
@@ -120,12 +121,25 @@ export function getDirectiveDiagnostics(
   return diagnostics;
 }
 
-export function getUndecoratedClassWithAngularFeaturesDiagnostic(node: ClassDeclaration):
-    ts.Diagnostic {
+export function getUndecoratedClassWithAngularFeaturesDiagnostic(
+    node: ClassDeclaration, detectedFeature: DetectedAngularFeature): ts.Diagnostic {
+  const proposedDecorator = detectedFeature.kind === 'directive' ? '@Directive' : 'Angular';
+  const addDecoratorMessage =
+      `Add an explicit ${proposedDecorator} decorator to ${node.name.text}.`;
+  const unexpectedAngularFeatureMessage = `Cannot use Angular features in an undecorated class.`;
+
+  // The trigger could technically not have a corresponding TypeScipt node. We handle this by
+  // creating the diagnostic on the containing class declaration. This should never be the case
+  // at time of writing because undecorated class with Angular features currently do not produce
+  // any errors in ngcc (which could produce class members without associated nodes).
+  if (detectedFeature.trigger === null) {
+    return makeDiagnostic(
+        ErrorCode.UNDECORATED_CLASS_USING_ANGULAR_FEATURES, node,
+        unexpectedAngularFeatureMessage + ` ${addDecoratorMessage}`);
+  }
   return makeDiagnostic(
-      ErrorCode.UNDECORATED_CLASS_USING_ANGULAR_FEATURES, node.name,
-      `Class is using Angular features but is not decorated. Please add an explicit ` +
-          `Angular decorator.`);
+      ErrorCode.UNDECORATED_CLASS_USING_ANGULAR_FEATURES, detectedFeature.trigger,
+      unexpectedAngularFeatureMessage, [{node: node, messageText: addDecoratorMessage}]);
 }
 
 export function checkInheritanceOfDirective(
