@@ -9,6 +9,11 @@
   position: relative; // Necessary for the strong focus indication.
   transition: height $mat-expansion-panel-header-transition;
 
+  // If the `NoopAnimationsModule` is used, disable the height transition.
+  &._mat-animation-noopable {
+    transition: none;
+  }
+
   &:focus,
   &:hover {
     outline: none;

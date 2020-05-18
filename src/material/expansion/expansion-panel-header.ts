@@ -21,6 +21,7 @@ import {
   Optional,
   Inject,
 } from '@angular/core';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {merge, Subscription, EMPTY} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {matExpansionAnimations} from './expansion-animations';
@@ -57,6 +58,7 @@ import {MatAccordionTogglePosition} from './accordion-base';
     '[class.mat-expanded]': '_isExpanded()',
     '[class.mat-expansion-toggle-indicator-after]': `_getTogglePosition() === 'after'`,
     '[class.mat-expansion-toggle-indicator-before]': `_getTogglePosition() === 'before'`,
+    '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
     '[style.height]': '_getHeaderHeight()',
     '(click)': '_toggle()',
     '(keydown)': '_keydown($event)',
@@ -71,7 +73,8 @@ export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
       private _focusMonitor: FocusMonitor,
       private _changeDetectorRef: ChangeDetectorRef,
       @Inject(MAT_EXPANSION_PANEL_DEFAULT_OPTIONS) @Optional()
-          defaultOptions?: MatExpansionPanelDefaultOptions) {
+          defaultOptions?: MatExpansionPanelDefaultOptions,
+      @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     const accordionHideToggleChange = panel.accordion ?
         panel.accordion._stateChanges.pipe(
             filter(changes => !!(changes['hideToggle'] || changes['togglePosition']))) :
