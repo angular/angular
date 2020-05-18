@@ -42,9 +42,7 @@ export async function getPr<PrSchema>(
       });
 
   const result = await graphql(graphqlQuery(PR_QUERY), {number, owner, name}) as typeof PR_QUERY;
-  const pr = result.repository.pullRequest;
-
-  return pr;
+  return result.repository.pullRequest;
 }
 
 /** Get all pending PRs from github  */
