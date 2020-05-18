@@ -11,6 +11,7 @@ import {types as graphQLTypes} from 'typed-graphqlify';
 import {URL} from 'url';
 
 import {getConfig, NgDevConfig} from '../../utils/config';
+import {promptConfirm} from '../../utils/console';
 import {getCurrentBranch, hasLocalChanges} from '../../utils/git';
 import {getPr} from '../../utils/github';
 import {exec} from '../../utils/shelljs';
@@ -101,15 +102,8 @@ export async function rebasePr(
   // manually or aborted now.
   console.info(`Rebase was unable to complete automatically without conflicts.`);
   // If the command is run in a non-CI environment, prompt to format the files immediately.
-  let continueRebase = false;
-  if (!process.env['CI']) {
-    continueRebase = (await prompt({
-                       type: 'confirm',
-                       name: 'continueRebase',
-                       message: 'Manually complete rebase?',
-                     })).continueRebase;
-  }
-  console.info();
+  const continueRebase =
+      process.env['CI'] === undefined && await promptConfirm('Manually complete rebase?');
 
   if (continueRebase) {
     console.info(

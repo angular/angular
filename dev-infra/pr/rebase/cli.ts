@@ -13,7 +13,7 @@ import {rebasePr} from './index';
 /** URL to the Github page where personal access tokens can be generated. */
 export const GITHUB_TOKEN_GENERATE_URL = `https://github.com/settings/tokens`;
 
-/** Builds the discover-new-conflicts pull request command. */
+/** Builds the rebase pull request command. */
 export function buildRebaseCommand(yargs: Argv) {
   return yargs.option('github-token', {
     type: 'string',
@@ -21,7 +21,7 @@ export function buildRebaseCommand(yargs: Argv) {
   });
 }
 
-/** Handles the discover-new-conflicts pull request command. */
+/** Handles the rebase pull request command. */
 export async function handleRebaseCommand(args: Arguments) {
   const githubToken = args.githubToken || process.env.GITHUB_TOKEN || process.env.TOKEN;
   if (!githubToken) {
