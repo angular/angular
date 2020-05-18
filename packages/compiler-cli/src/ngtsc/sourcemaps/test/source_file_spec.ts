@@ -518,6 +518,149 @@ runInEachFileSystem(() => {
           expect(aTocSourceMap.mappings).toEqual(aToBSourceMap.mappings);
         });
       });
+
+      describe('getOriginalLocation()', () => {
+        it('should return null for source files with no flattened mappings', () => {
+          const sourceFile =
+              new SourceFile(_('/foo/src/index.js'), 'index contents', null, false, []);
+          expect(sourceFile.getOriginalLocation(1, 1)).toEqual(null);
+        });
+
+        it('should return offset locations in multiple flattened original source files', () => {
+          const cSource = new SourceFile(_('/foo/src/c.js'), 'bcd123', null, false, []);
+          const dSource = new SourceFile(_('/foo/src/d.js'), 'aef', null, false, []);
+
+          const bSourceMap: RawSourceMap = {
+            mappings: encode([
+              [
+                [0, 1, 0, 0],  // "a" is in d.js [source 1]
+                [1, 0, 0, 0],  // "bcd" are in c.js [source 0]
+                [4, 1, 0, 1],  // "ef" are in d.js [source 1]
+              ],
+            ]),
+            names: [],
+            sources: ['c.js', 'd.js'],
+            version: 3
+          };
+          const bSource =
+              new SourceFile(_('/foo/src/b.js'), 'abcdef', bSourceMap, false, [cSource, dSource]);
+
+          const aSourceMap: RawSourceMap = {
+            mappings: encode([
+              [
+                [0, 0, 0, 0], [2, 0, 0, 3],  // "c" is missing from first line
+              ],
+              [
+                [4, 0, 0, 2],  // second line has new indentation, and starts with "c"
+                [5, 0, 0, 5],  // "f" is here
+              ],
+            ]),
+            names: [],
+            sources: ['b.js'],
+            version: 3
+          };
+          const aSource =
+              new SourceFile(_('/foo/src/a.js'), 'abde\n    cf', aSourceMap, false, [bSource]);
+
+          // Line 0
+          expect(aSource.getOriginalLocation(0, 0))  // a
+              .toEqual({file: dSource.sourcePath, line: 0, column: 0});
+          expect(aSource.getOriginalLocation(0, 1))  // b
+              .toEqual({file: cSource.sourcePath, line: 0, column: 0});
+          expect(aSource.getOriginalLocation(0, 2))  // d
+              .toEqual({file: cSource.sourcePath, line: 0, column: 2});
+          expect(aSource.getOriginalLocation(0, 3))  // e
+              .toEqual({file: dSource.sourcePath, line: 0, column: 1});
+          expect(aSource.getOriginalLocation(0, 4))  // off the end of the line
+              .toEqual({file: dSource.sourcePath, line: 0, column: 2});
+
+          // Line 1
+          expect(aSource.getOriginalLocation(1, 0))  // indent
+              .toEqual({file: dSource.sourcePath, line: 0, column: 3});
+          expect(aSource.getOriginalLocation(1, 1))  // indent
+              .toEqual({file: dSource.sourcePath, line: 0, column: 4});
+          expect(aSource.getOriginalLocation(1, 2))  // indent
+              .toEqual({file: dSource.sourcePath, line: 0, column: 5});
+          expect(aSource.getOriginalLocation(1, 3))  // indent
+              .toEqual({file: dSource.sourcePath, line: 0, column: 6});
+          expect(aSource.getOriginalLocation(1, 4))  // c
+              .toEqual({file: cSource.sourcePath, line: 0, column: 1});
+          expect(aSource.getOriginalLocation(1, 5))  // f
+              .toEqual({file: dSource.sourcePath, line: 0, column: 2});
+          expect(aSource.getOriginalLocation(1, 6))  // off the end of the line
+              .toEqual({file: dSource.sourcePath, line: 0, column: 3});
+        });
+
+        it('should return offset locations across multiple lines', () => {
+          const originalSource =
+              new SourceFile(_('/foo/src/original.js'), 'abcdef\nghijk\nlmnop', null, false, []);
+          const generatedSourceMap: RawSourceMap = {
+            mappings: encode([
+              [
+                [0, 0, 0, 0],  // "ABC" [0,0] => [0,0]
+              ],
+              [
+                [0, 0, 1, 0],  // "GHIJ" [1, 0] => [1,0]
+                [4, 0, 0, 3],  // "DEF" [1, 4] => [0,3]
+                [7, 0, 1, 4],  // "K" [1, 7] => [1,4]
+              ],
+              [
+                [0, 0, 2, 0],  // "LMNOP" [2,0] => [2,0]
+              ],
+            ]),
+            names: [],
+            sources: ['original.js'],
+            version: 3
+          };
+          const generatedSource = new SourceFile(
+              _('/foo/src/generated.js'), 'ABC\nGHIJDEFK\nLMNOP', generatedSourceMap, false,
+              [originalSource]);
+
+          // Line 0
+          expect(generatedSource.getOriginalLocation(0, 0))  // A
+              .toEqual({file: originalSource.sourcePath, line: 0, column: 0});
+          expect(generatedSource.getOriginalLocation(0, 1))  // B
+              .toEqual({file: originalSource.sourcePath, line: 0, column: 1});
+          expect(generatedSource.getOriginalLocation(0, 2))  // C
+              .toEqual({file: originalSource.sourcePath, line: 0, column: 2});
+          expect(generatedSource.getOriginalLocation(0, 3))  // off the end of line 0
+              .toEqual({file: originalSource.sourcePath, line: 0, column: 3});
+
+          // Line 1
+          expect(generatedSource.getOriginalLocation(1, 0))  // G
+              .toEqual({file: originalSource.sourcePath, line: 1, column: 0});
+          expect(generatedSource.getOriginalLocation(1, 1))  // H
+              .toEqual({file: originalSource.sourcePath, line: 1, column: 1});
+          expect(generatedSource.getOriginalLocation(1, 2))  // I
+              .toEqual({file: originalSource.sourcePath, line: 1, column: 2});
+          expect(generatedSource.getOriginalLocation(1, 3))  // J
+              .toEqual({file: originalSource.sourcePath, line: 1, column: 3});
+          expect(generatedSource.getOriginalLocation(1, 4))  // D
+              .toEqual({file: originalSource.sourcePath, line: 0, column: 3});
+          expect(generatedSource.getOriginalLocation(1, 5))  // E
+              .toEqual({file: originalSource.sourcePath, line: 0, column: 4});
+          expect(generatedSource.getOriginalLocation(1, 6))  // F
+              .toEqual({file: originalSource.sourcePath, line: 0, column: 5});
+          expect(generatedSource.getOriginalLocation(1, 7))  // K
+              .toEqual({file: originalSource.sourcePath, line: 1, column: 4});
+          expect(generatedSource.getOriginalLocation(1, 8))  // off the end of line 1
+              .toEqual({file: originalSource.sourcePath, line: 1, column: 5});
+
+          // Line 2
+          expect(generatedSource.getOriginalLocation(2, 0))  // L
+              .toEqual({file: originalSource.sourcePath, line: 2, column: 0});
+          expect(generatedSource.getOriginalLocation(2, 1))  // M
+              .toEqual({file: originalSource.sourcePath, line: 2, column: 1});
+          expect(generatedSource.getOriginalLocation(2, 2))  // N
+              .toEqual({file: originalSource.sourcePath, line: 2, column: 2});
+          expect(generatedSource.getOriginalLocation(2, 3))  // O
+              .toEqual({file: originalSource.sourcePath, line: 2, column: 3});
+          expect(generatedSource.getOriginalLocation(2, 4))  // P
+              .toEqual({file: originalSource.sourcePath, line: 2, column: 4});
+          expect(generatedSource.getOriginalLocation(2, 5))  // off the end of line 2
+              .toEqual({file: originalSource.sourcePath, line: 2, column: 5});
+        });
+      });
     });
 
     describe('computeStartOfLinePositions()', () => {

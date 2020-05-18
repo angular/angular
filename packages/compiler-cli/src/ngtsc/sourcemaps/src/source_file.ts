@@ -88,6 +88,48 @@ export class SourceFile {
   }
 
   /**
+   * Find the original mapped location for the given `line` and `column` in the generated file.
+   *
+   * First we search for a mapping whose generated segment is at or directly before the given
+   * location. Then we compute the offset between the given location and the matching generated
+   * segment. Finally we apply this offset to the original source segment to get the desired
+   * original location.
+   */
+  getOriginalLocation(line: number, column: number):
+      {file: AbsoluteFsPath, line: number, column: number}|null {
+    if (this.flattenedMappings.length === 0) {
+      return null;
+    }
+
+    let position: number;
+    if (line < this.startOfLinePositions.length) {
+      position = this.startOfLinePositions[line] + column;
+    } else {
+      // The line is off the end of the file, so just assume we are at the end of the file.
+      position = this.contents.length;
+    }
+
+    const locationSegment: SegmentMarker = {line, column, position, next: undefined};
+
+    let mappingIndex =
+        findLastMappingIndexBefore(this.flattenedMappings, locationSegment, false, 0);
+    if (mappingIndex < 0) {
+      mappingIndex = 0;
+    }
+    const {originalSegment, originalSource, generatedSegment} =
+        this.flattenedMappings[mappingIndex];
+    const offset = locationSegment.position - generatedSegment.position;
+    const offsetOriginalSegment =
+        offsetSegment(originalSource.startOfLinePositions, originalSegment, offset);
+
+    return {
+      file: originalSource.sourcePath,
+      line: offsetOriginalSegment.line,
+      column: offsetOriginalSegment.column,
+    };
+  }
+
+  /**
    * Flatten the parsed mappings for this source file, so that all the mappings are to pure original
    * source files with no transitive source maps.
    */
