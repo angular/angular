@@ -86,8 +86,9 @@ export interface OnInit {
  *
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='DoCheck'}
  * 
- * For more detailed examples on the DoCheck lifecycle hook please
- * visit the [DoCheck](guide/lifecycle-hooks#docheck) Lifecycle hooks guide.
+ * For more details on the `DoCheck` lifecycle hook see the 
+ * [Defining custom change detection](guide/lifecycle-hooks#defining-custom-change-detection)
+ * section in the Lifecycle hooks guide.
  * 
  * @publicApi
  */
