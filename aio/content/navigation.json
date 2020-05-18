@@ -749,6 +749,11 @@
           "url": "guide/router-tutorial",
           "title": "Using Angular Routes in a Single-page Application",
           "tooltip": "A tutorial that covers many patterns associated with Angular routing."
+        },
+        {
+          "url": "guide/router-refactoring-tutorial",
+          "title": "Refactoring routes in Angular",
+          "tooltip": "A tutorial that covers how to refactor your routes to make them easier to maintain."
         }
       ]
     },
