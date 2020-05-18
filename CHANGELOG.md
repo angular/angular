@@ -1,3 +1,34 @@
+# 10.0.0-next.1 "thorium-temple" (2020-05-18)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **datepicker:** set color on range separator ([#19308](https://github.com/angular/components/issues/19308)) ([2f8b271](https://github.com/angular/components/commit/2f8b271)) |
+| bug fix |  **datepicker:** strong focus indication in calendar always shown ([#19304](https://github.com/angular/components/issues/19304)) ([4eee81a](https://github.com/angular/components/commit/4eee81a)) |
+| bug fix |  **expansion:** disable header height transition if noop animations is set ([#19373](https://github.com/angular/components/issues/19373)) ([189d98e](https://github.com/angular/components/commit/189d98e)) |
+| feature |  report warning if duplicate theme styles are generated ([6095e29](https://github.com/angular/components/commit/6095e29)), closes [#19141](https://github.com/angular/components/issues/19141) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  allow for ground overlay image to be changed ([#19306](https://github.com/angular/components/issues/19306)) ([485352e](https://github.com/angular/components/commit/485352e)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  **mdc-button:** support density scaling ([9500e75](https://github.com/angular/components/commit/9500e75)) |
+| feature |  **mdc-checkbox:** support density scaling ([84f2c1a](https://github.com/angular/components/commit/84f2c1a)) |
+| feature |  **mdc-chips:** support for density scaling ([ee1e181](https://github.com/angular/components/commit/ee1e181)) |
+| feature |  **mdc-form-field:** support density scaling ([3bcdc5e](https://github.com/angular/components/commit/3bcdc5e)) |
+| feature |  **mdc-radio:** support for density scaling ([c659664](https://github.com/angular/components/commit/c659664)) |
+| feature |  **mdc-slide-toggle:** support density scaling ([feafb2b](https://github.com/angular/components/commit/feafb2b)) |
+| feature |  **mdc-table:** support for density scaling ([e288558](https://github.com/angular/components/commit/e288558)) |
+| feature |  **mdc-tabs:** support for density scaling ([90d294b](https://github.com/angular/components/commit/90d294b)) |
+
+
 # 10.0.0-next.0 "plywood-heart" (2020-05-08)
 
 ### cdk

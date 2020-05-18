@@ -46,7 +46,7 @@
     "merge": "ts-node --project scripts scripts/merge-script/cli.ts --config ./merge-config.js",
     "approve-api": "node ./scripts/approve-api-golden.js"
   },
-  "version": "10.0.0-next.0",
+  "version": "10.0.0-next.1",
   "dependencies": {
     "@angular/animations": "^10.0.0-next.8",
     "@angular/common": "^10.0.0-next.8",
