@@ -648,7 +648,6 @@ groups:
       - >
         contains_any_globs(files, [
           'packages/bazel/**',
-          'aio/content/guide/bazel.md'
           ])
     reviewers:
       users:
