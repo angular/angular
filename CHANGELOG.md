@@ -1,3 +1,31 @@
+<a name="10.0.0-next.8"></a>
+# [10.0.0-next.8](https://github.com/angular/angular/compare/10.0.0-next.7...10.0.0-next.8) (2020-05-18)
+
+
+### Bug Fixes
+
+* **compiler-cli:** compute the correct target output for `$localize` messages ([#36989](https://github.com/angular/angular/issues/36989)) ([4e1b5e4](https://github.com/angular/angular/commit/4e1b5e4))
+* **core:** Host classes should not be fed back into `@Input` ([#35889](https://github.com/angular/angular/issues/35889)) ([cda2530](https://github.com/angular/angular/commit/cda2530)), closes [#35383](https://github.com/angular/angular/issues/35383)
+* **core:** inheritance delegate ctor regex updated to work on minified code ([#36962](https://github.com/angular/angular/issues/36962)) ([ea971f7](https://github.com/angular/angular/commit/ea971f7))
+* **language-service:** use empty statement as parent of type node ([#36989](https://github.com/angular/angular/issues/36989)) ([a32cbed](https://github.com/angular/angular/commit/a32cbed))
+* **ngcc:** `viaModule` should be `null` for local imports ([#36989](https://github.com/angular/angular/issues/36989)) ([d268d2a](https://github.com/angular/angular/commit/d268d2a))
+* **ngcc:** ensure reflection hosts can handle TS 3.9 IIFE wrapped classes ([#36989](https://github.com/angular/angular/issues/36989)) ([d7440c4](https://github.com/angular/angular/commit/d7440c4))
+* **ngcc:** ensure rendering formatters work with IIFE wrapped classes ([#36989](https://github.com/angular/angular/issues/36989)) ([c8ee390](https://github.com/angular/angular/commit/c8ee390))
+* **ngcc:** support `defineProperty()` re-exports in CommonJS and UMD ([#36989](https://github.com/angular/angular/issues/36989)) ([91092f6](https://github.com/angular/angular/commit/91092f6))
+
+
+### Features
+
+* remove support for TypeScript 3.8 ([#37129](https://github.com/angular/angular/issues/37129)) ([6466fb2](https://github.com/angular/angular/commit/6466fb2))
+* **platform-server:** use absolute URLs from Location for HTTP ([#37071](https://github.com/angular/angular/issues/37071)) ([9edea0b](https://github.com/angular/angular/commit/9edea0b))
+
+
+### BREAKING CHANGES
+
+* TypeScript 3.8 is no longer supported, please update to TypeScript 3.9.
+
+
+
 <a name="10.0.0-next.7"></a>
 # [10.0.0-next.7](https://github.com/angular/angular/compare/10.0.0-next.6...10.0.0-next.7) (2020-05-13)
 
