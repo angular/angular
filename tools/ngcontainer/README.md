@@ -46,7 +46,7 @@ $ xvfb-run -a yarn test
 
 Install Docker on your machine in order to build/pull/push this image.
 
-Log in to `hub.docker.com` as `teamangular` using the follow command:
+Log in to `hub.docker.com` as `teamangular` using the following command:
 
 `$ docker login`
 
