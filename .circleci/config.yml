@@ -848,9 +848,12 @@ workflows:
             - build-npm-packages
             - build-ivy-npm-packages
             - legacy-unit-tests-saucelabs
-      - components-repo-unit-tests:
-          requires:
-            - build-npm-packages
+      # The below 'components-repo-unit-tests' is disabled until the Components team support building and testing their
+      # repo with TypeScript 3.9. The TS 3.9 update is being done in https://github.com/angular/components/pull/19336.
+      # We should re-enable this CI job, when the mentioned PR gets merged.
+      # - components-repo-unit-tests:
+      #     requires:
+      #       - build-npm-packages
       - test_zonejs:
           requires:
             - setup
