@@ -629,11 +629,6 @@
           "tooltip": "Building and serving Angular apps."
         },
         {
-          "url": "guide/bazel",
-          "title": "Building with Bazel",
-          "tooltip": "How to set up your environment to build and test with Bazel."
-        },
-        {
           "url": "guide/testing",
           "title": "Testing",
           "tooltip": "Techniques and practices for testing an Angular app."
