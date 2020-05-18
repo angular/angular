@@ -10,7 +10,6 @@ import {devModeEqual, WrappedValue} from '../change_detection/change_detection';
 import {SOURCE} from '../di/injector_compatibility';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererType2} from '../render/api';
-import {looseIdentical} from '../util/comparison';
 import {stringify} from '../util/stringify';
 
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
@@ -81,7 +80,7 @@ export function checkBinding(
     view: ViewData, def: NodeDef, bindingIdx: number, value: any): boolean {
   const oldValues = view.oldValues;
   if ((view.state & ViewState.FirstCheck) ||
-      !looseIdentical(oldValues[def.bindingIndex + bindingIdx], value)) {
+      !Object.is(oldValues[def.bindingIndex + bindingIdx], value)) {
     return true;
   }
   return false;

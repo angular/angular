@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {looseIdentical} from '../../util/comparison';
 import {stringify} from '../../util/stringify';
 import {isListLikeIterable, iterateListLike} from '../change_detection_util';
 
@@ -180,7 +179,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
       for (let index = 0; index < this.length; index++) {
         item = collection[index];
         itemTrackBy = this._trackByFn(index, item);
-        if (record === null || !looseIdentical(record.trackById, itemTrackBy)) {
+        if (record === null || !Object.is(record.trackById, itemTrackBy)) {
           record = this._mismatch(record, item, itemTrackBy, index);
           mayBeDirty = true;
         } else {
@@ -188,7 +187,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
             // TODO(misko): can we limit this to duplicates only?
             record = this._verifyReinsertion(record, item, itemTrackBy, index);
           }
-          if (!looseIdentical(record.item, item)) this._addIdentityChange(record, item);
+          if (!Object.is(record.item, item)) this._addIdentityChange(record, item);
         }
 
         record = record._next;
@@ -197,7 +196,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
       index = 0;
       iterateListLike(collection, (item: V) => {
         itemTrackBy = this._trackByFn(index, item);
-        if (record === null || !looseIdentical(record.trackById, itemTrackBy)) {
+        if (record === null || !Object.is(record.trackById, itemTrackBy)) {
           record = this._mismatch(record, item, itemTrackBy, index);
           mayBeDirty = true;
         } else {
@@ -205,7 +204,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
             // TODO(misko): can we limit this to duplicates only?
             record = this._verifyReinsertion(record, item, itemTrackBy, index);
           }
-          if (!looseIdentical(record.item, item)) this._addIdentityChange(record, item);
+          if (!Object.is(record.item, item)) this._addIdentityChange(record, item);
         }
         record = record._next;
         index++;
@@ -289,7 +288,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
     if (record !== null) {
       // We have seen this before, we need to move it forward in the collection.
       // But first we need to check if identity changed, so we can update in view if necessary
-      if (!looseIdentical(record.item, item)) this._addIdentityChange(record, item);
+      if (!Object.is(record.item, item)) this._addIdentityChange(record, item);
 
       this._moveAfter(record, previousRecord, index);
     } else {
@@ -298,7 +297,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
       if (record !== null) {
         // It is an item which we have evicted earlier: reinsert it back into the list.
         // But first we need to check if identity changed, so we can update in view if necessary
-        if (!looseIdentical(record.item, item)) this._addIdentityChange(record, item);
+        if (!Object.is(record.item, item)) this._addIdentityChange(record, item);
 
         this._reinsertAfter(record, previousRecord, index);
       } else {
@@ -628,7 +627,7 @@ class _DuplicateItemRecordList<V> {
     let record: IterableChangeRecord_<V>|null;
     for (record = this._head; record !== null; record = record._nextDup) {
       if ((atOrAfterIndex === null || atOrAfterIndex <= record.currentIndex!) &&
-          looseIdentical(record.trackById, trackById)) {
+          Object.is(record.trackById, trackById)) {
         return record;
       }
     }
