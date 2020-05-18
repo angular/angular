@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, forwardRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider, ɵlooseIdentical as looseIdentical} from '@angular/core';
+import {Directive, ElementRef, forwardRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
@@ -118,7 +118,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
     this._compareWith = fn;
   }
 
-  private _compareWith: (o1: any, o2: any) => boolean = looseIdentical;
+  private _compareWith: (o1: any, o2: any) => boolean = Object.is;
 
   constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
 
