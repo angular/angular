@@ -23,8 +23,8 @@ export function buildPrParser(localYargs: yargs.Argv) {
           'Check if a pending PR causes new conflicts for other pending PRs',
           buildDiscoverNewConflictsCommand, handleDiscoverNewConflictsCommand)
       .command(
-          'rebase <pr-number>', 'Rebase the provide PR and push back to Github', buildRebaseCommand,
-          handleRebaseCommand)
+          'rebase <pr-number>', 'Rebase a pending PR and push the rebased commits back to Github',
+          buildRebaseCommand, handleRebaseCommand);
 }
 
 if (require.main === module) {

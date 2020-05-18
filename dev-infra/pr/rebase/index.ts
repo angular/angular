@@ -140,7 +140,7 @@ export async function rebasePr(
   }
 }
 
-/** Adds username and token as username and password to the provided url. */
+/** Adds the provided token as username to the provided url. */
 function addAuthenticationToUrl(urlString: string, token: string) {
   const url = new URL(urlString);
   url.username = token;
