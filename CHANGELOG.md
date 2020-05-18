@@ -39,6 +39,39 @@
 | bug fix |  better server-side rendering support for progress bar ([#19036](https://github.com/angular/components/issues/19036)) ([5d25d1b](https://github.com/angular/components/commit/5d25d1b)) |
 
 
+## 9.2.4 "aether-axiom" (2020-05-18)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** focus monitor not checking children if monitor is called multiple times with different parameters ([#19237](https://github.com/angular/components/issues/19237)) ([07711b4](https://github.com/angular/components/commit/07711b4)), closes [/github.com/angular/components/pull/19135#discussion_r412471591](https://github.com//github.com/angular/components/pull/19135/issues/discussion_r412471591) [#19218](https://github.com/angular/components/issues/19218) |
+| bug fix |  **overlay:** remove potentially leaky observable ([#19146](https://github.com/angular/components/issues/19146)) ([6f79527](https://github.com/angular/components/commit/6f79527)), closes [#10573](https://github.com/angular/components/issues/10573) |
+
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **autocomplete:** incorrectly detecting shadow DOM when inserted through an embedded view ([#19332](https://github.com/angular/components/issues/19332)) ([8d79d73](https://github.com/angular/components/commit/8d79d73)) |
+| bug fix |  **chips:** chip list overriding chip disabled value ([#19228](https://github.com/angular/components/issues/19228)) ([49be570](https://github.com/angular/components/commit/49be570)), closes [#19213](https://github.com/angular/components/issues/19213) |
+| bug fix |  **dialog:** focus trap not attached if autoFocus is disabled ([#19251](https://github.com/angular/components/issues/19251)) ([e61deb9](https://github.com/angular/components/commit/e61deb9)), closes [#18826](https://github.com/angular/components/issues/18826) [#19246](https://github.com/angular/components/issues/19246) |
+| bug fix |  **form-field:** add missing material common module ([#19093](https://github.com/angular/components/issues/19093)) ([8e9e1fb](https://github.com/angular/components/commit/8e9e1fb)) |
+| bug fix |  **icon:** cancel in-flight icon requests if the icon changes ([#19303](https://github.com/angular/components/issues/19303)) ([bef4e80](https://github.com/angular/components/commit/bef4e80)) |
+| bug fix |  **input:** avoid repeat accesses to check if element is a textarea ([#19115](https://github.com/angular/components/issues/19115)) ([8688dd8](https://github.com/angular/components/commit/8688dd8)) |
+| bug fix |  **list:** selection list marked as touched when tabbing in ([#19177](https://github.com/angular/components/issues/19177)) ([2e7dc62](https://github.com/angular/components/commit/2e7dc62)), closes [#18445](https://github.com/angular/components/issues/18445) [#19171](https://github.com/angular/components/issues/19171) |
+| bug fix |  **tabs:** don't prevent default space/enter action if action tab doesn't change ([#19207](https://github.com/angular/components/issues/19207)) ([7a4128b](https://github.com/angular/components/commit/7a4128b)), closes [#19190](https://github.com/angular/components/issues/19190) |
+| bug fix |  **text-field:** unable to undo/redo in autosized text field on firefox ([#19238](https://github.com/angular/components/issues/19238)) ([7e1fd89](https://github.com/angular/components/commit/7e1fd89)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **column-resize:** Resize table as well as columns, improve handing … ([#19264](https://github.com/angular/components/issues/19264)) ([87b8edb](https://github.com/angular/components/commit/87b8edb)) |
+| bug fix |  **form-field:** add setLabelRequired adapter ([#19284](https://github.com/angular/components/issues/19284)) ([e43f4ac](https://github.com/angular/components/commit/e43f4ac)) |
+| bug fix |  **mdc-list:** properly render leading and trailing icons on list items ([#19201](https://github.com/angular/components/issues/19201)) ([ce136a9](https://github.com/angular/components/commit/ce136a9)) |
+
+
 ## 9.2.3 "chalk-hawk" (2020-05-07)
 
 ### cdk
